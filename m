@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C1E139EC6E
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 04:56:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CCBB39EC71
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 04:57:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230462AbhFHC6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 22:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48020 "EHLO
+        id S231186AbhFHC7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 22:59:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbhFHC6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 22:58:43 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407A7C061574;
-        Mon,  7 Jun 2021 19:56:51 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id t3so22780507edc.7;
-        Mon, 07 Jun 2021 19:56:51 -0700 (PDT)
+        with ESMTP id S231176AbhFHC7K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 22:59:10 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B02C061787
+        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 19:57:09 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id ba2so21035748edb.2
+        for <netdev@vger.kernel.org>; Mon, 07 Jun 2021 19:57:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UEnzAiZukL+aXV+T6AA0wBe65UG5nyqALOrpT9n86U0=;
-        b=BAcdRbecgSWL288sNA4G3r/zWnO2TdJ3wC5gK8kiGEBa73FTEhAjFKMc+XkK8xYlYm
-         erLB0CZTSbZpnQSd3spxKFK1v5f6wRfdgBUGPDGs+MJeGndmu7M2lCkHNw/XkWQXVKGl
-         E+h2YpZvFH3FdUGfyMfYgRJOZlse2YJUa2PCK0R5IngWryYufGnN09QHaI6hbqd+gYoD
-         7t+re8fcrdT2JILTN5cjd+vY6QabknxWT8upJURPcRa2kkpkp3K4B1qiWQ0kAnDe74Is
-         /AoiRItFdeThWRmijhD/GLuT8w5U2JbMb/WAgSc122sbdCDiV1/+fJe1u9dxGv9xn+6Y
-         fdlw==
+        bh=EuJsYuOqrG8SwCz3ljrkwXN4K75nXvxXvYn9NFBNIIk=;
+        b=b/Tb/DenmCtu38YpFqyJ5pZcHaHq4/WyfqjMlIGoJNiMNfANIToEi7K3/qi09KX65a
+         HRsvOsFx+++DN8XaG4MI5HPv4SMOBayo6cqyJGsiG6aGwNoWgOThbdrCnc1M/kiKTDuw
+         +e8aOaNSZer3m2ERgU+iQHrkKM9Ih6pE7oq8p94nEBr5JM3cGp+CaEFXg0uwOaZKTMLi
+         VWfNBoB4fieEEYeHmPRvLyGxPP0rDQCj53AfH2C1O8iLMWQYLKlUGZ/IFMgxHPVAYjNV
+         Vz/YtPwa1I1AqE2X//PBAtJTAGCg5fSzP+dHq5E3HFtwmfeft43ZUpLKzAyaTKk9fqqT
+         Q3RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UEnzAiZukL+aXV+T6AA0wBe65UG5nyqALOrpT9n86U0=;
-        b=H1ny5oxDaNcZ/CXmfvhINcltwSjWrkn304FSbMiTDAqitW3cWNc8gtC7aUtFI992Ky
-         ZFCwrINNT/2L1L29YlmBSryUytcgGsBV+b9BVVAoFYH996XVK4AcnkM+mae53v5HXfNA
-         vSCTfLAQ36Cdstr6qk9kApE3zsf0Z5EwZQ849qPGrIeRi7tepCM4G51yYawx4mfA7prJ
-         fi0oToUkmeQvLOZVaDNiWtwynzWRwLLS9g8/w/HnY+qZwhvpRX/WrQQhyW97A6draaQf
-         XbjiY7CFlGKVT9xCuEZ8d0cUgg4WGIEBbIGZ3WpQMrFOo7Oinj6GpUHRzsmMN1CBCMs9
-         gMiA==
-X-Gm-Message-State: AOAM530V0eyGpLtTu76fxWdHd1f6/l54NOsAY8W8r5O3Uo5ZCtNjjTbt
-        dBqqkrQoFHm0yCVfzX9Gc3/Pnt5toqVDZ2EfScs=
-X-Google-Smtp-Source: ABdhPJyeR7tDzCb/XkuxLTgxes+Kb/lkuwwGYSPgxrWrxPVvtcKSEnmduuQXEG4iBouApoXoLEyytJEMalzvBML+tPM=
-X-Received: by 2002:a05:6402:3082:: with SMTP id de2mr10891650edb.214.1623121009694;
- Mon, 07 Jun 2021 19:56:49 -0700 (PDT)
+        bh=EuJsYuOqrG8SwCz3ljrkwXN4K75nXvxXvYn9NFBNIIk=;
+        b=XK4DqhGXwciAYoWTJOT/AJo1/uYJrSWXIbtlx1CQTnBkPwMCBWNNfm3WK3yztvvFab
+         bd2EMerkJ3RKltDrrRjje/jaXYUXzfb3pwCHIZKIYu2RMjMNZU5ji0UqMcY15SCXBW9k
+         b9g0ZXUiKzwR5U0unEEC5N4HPKie9MtVnRLRrYtViwLdjXxLmBCg4mxKi/FNLu/8HggW
+         k1lJUvexltrA9lRHA3ZGqAd99vL1SIqXgb1yoe9tEaDJ8F8uCdMc7pDzn3UGUtqYYvQL
+         wMw7TCOmkNr9Uui+7qPJ5nDWp3Jahdqd6VlCzw5FRwspREZfAL3AFIquNO6XwZecdAYx
+         AqOg==
+X-Gm-Message-State: AOAM530Uga8dan8KGIBZrKwQiDiihyq1xFpBhrABU69M/qIQLRL5uhv5
+        aOr4Sfd3kREQ8CxVISLL5ns/fb/Vc8J6hO53ndhx
+X-Google-Smtp-Source: ABdhPJxmiiOxK28u0wIUfqakPqSPdOGryiWaqVkUadFKJswOOkz07/rWunWEUHe2KpR3G3nPPsBjc/LJMKVW1pJVeqU=
+X-Received: by 2002:a05:6402:1771:: with SMTP id da17mr19127260edb.31.1623121028094;
+ Mon, 07 Jun 2021 19:57:08 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210608015158.3848878-1-sunnanyong@huawei.com>
  <CAHC9VhTqDjN1VwakrYZznaMVTyqkEKcYLo=bPtHsOXugS_mexQ@mail.gmail.com> <CAD-N9QXFbO_FVBTHN6k+ZPw7GF6bKp+f4wK_LfMQLRsdML=XcA@mail.gmail.com>
 In-Reply-To: <CAD-N9QXFbO_FVBTHN6k+ZPw7GF6bKp+f4wK_LfMQLRsdML=XcA@mail.gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Tue, 8 Jun 2021 10:56:23 +0800
-Message-ID: <CAD-N9QU+nq1AxpBqodZWisT4x=BTjW_S45Yq=ZaaDp1cOi72iA@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 7 Jun 2021 22:56:57 -0400
+Message-ID: <CAHC9VhQZVOmy7n14nTSRGHzwN-y=E_JTUP+NpRCgD8rJN5sOGA@mail.gmail.com>
 Subject: Re: [PATCH] net: ipv4: fix memory leak in netlbl_cipsov4_add_std
-To:     Paul Moore <paul@paul-moore.com>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
 Cc:     Nanyong Sun <sunnanyong@huawei.com>, davem@davemloft.net,
         yoshfuji@linux-ipv6.org, dsahern@kernel.org,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
@@ -62,10 +62,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 8, 2021 at 10:30 AM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
+On Mon, Jun 7, 2021 at 10:31 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
 > On Tue, Jun 8, 2021 at 9:57 AM Paul Moore <paul@paul-moore.com> wrote:
-> >
 > > On Mon, Jun 7, 2021 at 9:19 PM Nanyong Sun <sunnanyong@huawei.com> wrote:
 > > >
 > > > Reported by syzkaller:
@@ -129,51 +127,32 @@ On Tue, Jun 8, 2021 at 10:30 AM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
 > I doubt this patch may cause invalid free in other functions where
 > map.std is not allocated or initialized, such as
 > netlbl_cipsov4_add_local, netlbl_cipsov4_add_pass.
->
-> Take netlbl_cipsov4_add_pass as an example, any failure after the
-> doi_def allocation failure will go to cipso_v4_doi_free, and free
-> doi_def->map.std.
 
-Sorry for the false alarm.
+It isn't perfectly clear to me if you are implying there is a problem
+with the proposed patch or not, so I thought it might help to try and
+add some clarity.
 
-The new added kfree(doi_def->map.std) is under the condition - case
-CIPSO_V4_MAP_TRANS. So there will be not invalid free. Sorry about
-this.
+The patch above frees the cipso_v4_doi->map.std field, which is only
+valid when the cipso_v4_doi->type field is equal to
+CIPSO_V4_MAP_TRANS.  This is why the cipso_v4_doi_free() function
+checks the type field before freeing the cipso_v4_doi->map related
+fields, and why the proposed patch places the new kfree() inside that
+conditional code block.
 
->
-> static int netlbl_cipsov4_add_pass(struct genl_info *info,
->   struct netlbl_audit *audit_info)
-> {
-> int ret_val;
-> struct cipso_v4_doi *doi_def = NULL;
->
-> if (!info->attrs[NLBL_CIPSOV4_A_TAGLST])
-> return -EINVAL;
->
-> doi_def = kmalloc(sizeof(*doi_def), GFP_KERNEL);
-> if (doi_def == NULL)
-> return -ENOMEM;
-> doi_def->type = CIPSO_V4_MAP_PASS;
->
-> ret_val = netlbl_cipsov4_add_common(info, doi_def);
-> if (ret_val != 0)
-> goto add_pass_failure;
->
-> ret_val = cipso_v4_doi_add(doi_def, audit_info);
-> if (ret_val != 0)
-> goto add_pass_failure;
-> return 0;
->
-> add_pass_failure:
-> cipso_v4_doi_free(doi_def);
-> return ret_val;
-> }
->
-> [1] https://elixir.bootlin.com/linux/latest/source/net/netlabel/netlabel_cipso_v4.c#L326
->
-> > > --
-> > > 2.18.0.huawei.25
-> >
-> > --
-> > paul moore
-> > www.paul-moore.com
+If we look at netlalbel_cipsov4_add_pass() we see that the first thing
+it does after allocating a cipso_v4_doi struct is to set the type
+field to CIPSO_V4_MAP_PASS.  Any calls to cipso_v4_doi_free after this
+point will not end up calling the proposed kfree() addition due to the
+cipso_v4_doi->type check.
+
+We see something very similar with netlbl_cipsov4_add_local(),
+although in this case the type field is set to CIPSO_V4_MAP_LOCAL.
+This type value will also not trigger the proposed kfree().
+
+If you are aware of any other potential issues with this patch please
+do let us know, but from what I can see, the two concerns you
+presented here are not problems with the current or proposed code.
+
+-- 
+paul moore
+www.paul-moore.com
