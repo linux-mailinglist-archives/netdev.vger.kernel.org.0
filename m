@@ -2,136 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 052103A022C
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 902F23A0237
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:20:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236457AbhFHTBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 15:01:38 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:28032 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236086AbhFHS7S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 14:59:18 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1623178624; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=klyteFDZ+WDekeP6QtMLUV+5wOl5ku5ghoMuNNz7VcWVIutWkSmNdNZptVTGWRNx+3
-    tXs9nDu5q5acpPP4W7M0FkHaC/zFAJB5zt6OBsIpdjX2/oVtO2uFLaQBUW4LN8Kq6upN
-    ClcAhhwAOpiTVjTcgbjckNqpwZHyk0U8FOUeC+vXufSQCF0ESv51D+ZdrqQIhWiiHiYG
-    TyXZylWqmOSxOAtozJ95HyQmCfk58ChqGa7cPyC0+rscQJide6uPsEEwb2ecg/8Qpmir
-    kVqCT03mJNAvteH557iO9GdLe5x4fMGB67lUwgz++/CzSc8GInNKIOUH8KkkRAUMmGeN
-    5OMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623178624;
-    s=strato-dkim-0002; d=strato.com;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=K7m0ttXxl3h7ZX+LO6SZjTt3dphMnFPY1o2TmpIgYSg=;
-    b=BLAo/bTXsnKPzKRQb1W9BKrncoPZXte7581ZtS3tRB8/0lQKY3KA/eppXIEF5URwrH
-    lag1S5fbRtPsz4r1SAmi1yA42/nwZJPAfy4KiXx2+LEDYGRijcTSmL90VLNred1SfwuV
-    8GJ0doK/Yr4WfmoM8caL9IyOuPT3fcBnWM3uJR02aUo22FKKNSlyiIznTdrZYrXiQGDx
-    kaFbYqC0tB4tPXLOVJ/c+vk3yfT9UPAST0Z1wYA6GNrzKiFWS0LWgbAGwtlGnWcUcc7L
-    7hJQsB148pRFAsx/z7Pxx3nl8wNqq3KKmeCHZAe/sDfgKp33IYXic/rv8/B00jcj5NSS
-    cpVw==
-ARC-Authentication-Results: i=1; strato.com;
-    dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623178624;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=K7m0ttXxl3h7ZX+LO6SZjTt3dphMnFPY1o2TmpIgYSg=;
-    b=aW/ej2qcTignCuQy/xs0XaCDfjpIkseld878Gxt1uaQVIboqk2Hfhn/ePF5CWN+p78
-    6kcji3uLkkfR5DMSWlF6cFTa+ryKEJgLdF4pM5O33lLnQP+32zKvoc3RQgWp9uPo49jp
-    hA6VWYSEzxFxY5p8WK5SjSTaN7bWQ/YTXJICfb332pfe4ExGw+P8mgSthc4B6CoojIHR
-    xkkAYyNRFZ0rFM3fBTmOtvrdaDz+FTLjGdTObREZ2sfm9R4iUs+DUtw3nR2gEDrSD0Bq
-    /FxRKt1jEmLLaxiGUHuoBkn+3wDIQJygX4FJeuY1QWYwzPuTw368bfYq3uH7p7fC9ZBF
-    Jyyw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTEVR9J8xozF0="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-    by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
-    with ESMTPSA id d075c5x58Iv3HZJ
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 8 Jun 2021 20:57:03 +0200 (CEST)
-Subject: Re: [PATCH v2] can: bcm/raw/isotp: use per module netdevice notifier
-To:     Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-References: <20210602151733.3630-1-penguin-kernel@I-love.SAKURA.ne.jp>
- <265c1129-96f1-7bb1-1d01-b2b8cc5b1a42@hartkopp.net>
- <51ed3352-b5b0-03a1-ec25-faa368adcc46@i-love.sakura.ne.jp>
- <5e4693cf-4691-e7da-9a04-3e70cc449bf5@i-love.sakura.ne.jp>
- <e5a53bed-4333-bd99-ca3d-0e25dfb546e5@virtuozzo.com>
- <54a5f451-05ed-f977-8534-79e7aa2bcc8f@i-love.sakura.ne.jp>
- <5922ca3a-b7ed-ca19-afeb-2f55233434ae@virtuozzo.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <6dc06795-9bfd-9bde-cab7-66dae0920b14@hartkopp.net>
-Date:   Tue, 8 Jun 2021 20:56:57 +0200
+        id S235557AbhFHTCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 15:02:06 -0400
+Received: from mail-wm1-f47.google.com ([209.85.128.47]:54024 "EHLO
+        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237144AbhFHS75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 14:59:57 -0400
+Received: by mail-wm1-f47.google.com with SMTP id h3so2498383wmq.3;
+        Tue, 08 Jun 2021 11:58:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=zR+JC/2SzttVA6Wi+7iVGlwak4IerMBJeQ5vLiMBGTE=;
+        b=aCAfFsjvN26ao1o5VbYA1hb4S5BPr3VSPmBYi+tPbj+6rNMp+HtfA3naWv3DEkYR8u
+         gcoTAeKJl3oWKupFwMct7p1SNfqDPlIHjPdaMbsgh4cBZ9qQozuUoGWeBnhbiyA6+lm9
+         2IboWynabOYoqfxcioZtSNb/o6WuSDo2pRGgfpGXBiQBgZlb/2WINKFNdFFQrhfIvyvN
+         SVmX8d/BtmV2n30TpS1q9Ak27Lu9/KTYFz9+HDw1wYADWLUkkIvHQ8UTpe2eM0uS+ABP
+         AicSK+tPE0hIc5tyaE6g8uBV0vwT5dj3ML0LRh27ZHXjW6StvDCa2Tqi1Ngl2w8jkiqd
+         8pSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=zR+JC/2SzttVA6Wi+7iVGlwak4IerMBJeQ5vLiMBGTE=;
+        b=fyNrNjV4VzV6cRvF2tFbznGTwDC1BE/98rgVuKCHHz0QteC8bZvyKd6WeZ4mhxEMlJ
+         Cd9aqJMCV9S2VXSSEOXGDcntAFOR5OxkkTG37Jmtvg/R3bCwJ0AdLCVo58lMLBb/u92x
+         XYNZi3x991VZ847BJhPAts2dpYM4xQwXPMpqk7iKF9eCRBKOfuPyZvDitHBniIYmRLoV
+         2PSKLa58f4mDl3zI/vgkLy/feFj/zE2sHTJZHhDSWGQr6HnfsBE558p6P9d2Ivd5SXCn
+         2JPwKI6aFI0pBaffrLM0QLk7T8ftPDDlQwPWS5YiFXa2JJPyONzr1xU+mQ9JGFeSGOpf
+         +7yQ==
+X-Gm-Message-State: AOAM531cl7x+0yNgNFanKGtqTA5qnNkZTG5fftbAAoYbzaG1wF1Z3cyp
+        /BC995GxT8GEfKUtuRcjZqZDtJLuj09g9g==
+X-Google-Smtp-Source: ABdhPJw4vJl+POy6CcWej23a3H9QQOC6ZezJQemdBY1dxn4yCgZHjAn5j8tYrqgir5u1r4h6c0FEAw==
+X-Received: by 2002:a05:600c:8a6:: with SMTP id l38mr23602133wmp.108.1623178623426;
+        Tue, 08 Jun 2021 11:57:03 -0700 (PDT)
+Received: from localhost.localdomain (haganm.plus.com. [212.159.108.31])
+        by smtp.gmail.com with ESMTPSA id q20sm26200223wrf.45.2021.06.08.11.57.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Jun 2021 11:57:02 -0700 (PDT)
+Subject: Re: [PATCH v2] net: stmmac: explicitly deassert GMAC_AHB_RESET
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     bjorn.andersson@linaro.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <3436f8f0-77dc-d4ff-4489-e9294c434a08@gmail.com>
+ <20210606103019.2807397-1-mnhagan88@gmail.com>
+ <b89d828a08528aaa07e3527d254785f1e40b9bee.camel@pengutronix.de>
+From:   Matthew Hagan <mnhagan88@gmail.com>
+Message-ID: <c223051b-c11c-3c08-055b-544f9e31cf00@gmail.com>
+Date:   Tue, 8 Jun 2021 19:57:00 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <5922ca3a-b7ed-ca19-afeb-2f55233434ae@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+In-Reply-To: <b89d828a08528aaa07e3527d254785f1e40b9bee.camel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 07/06/2021 10:45, Philipp Zabel wrote:
 
-
-On 07.06.21 18:15, Kirill Tkhai wrote:
-> On 05.06.2021 13:26, Tetsuo Handa wrote:
-
+> On Sun, 2021-06-06 at 11:30 +0100, Matthew Hagan wrote:
+>> We are currently assuming that GMAC_AHB_RESET will already be deasserted
+>> by the bootloader. However if this has not been done, probing of the GMAC
+>> will fail. To remedy this we must ensure GMAC_AHB_RESET has been deasserted
+>> prior to probing.
 >>
->> Updated patch is shown below.
+>> v2 changes:
+>>  - remove NULL condition check for stmmac_ahb_rst in stmmac_main.c
+>>  - unwrap dev_err() message in stmmac_main.c
+>>  - add PTR_ERR() around plat->stmmac_ahb_rst in stmmac_platform.c
 >>
->>
->>  From 12c61ae3d06889c9bbc414f0230c05dc630f6409 Mon Sep 17 00:00:00 2001
->> From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
->> Date: Sat, 5 Jun 2021 19:18:21 +0900
->> Subject: [PATCH v2] can: bcm/raw/isotp: use per module netdevice notifier
->>
->> syzbot is reporting hung task at register_netdevice_notifier() [1] and
->> unregister_netdevice_notifier() [2], for cleanup_net() might perform
->> time consuming operations while CAN driver's raw/bcm/isotp modules are
->> calling {register,unregister}_netdevice_notifier() on each socket.
->>
->> Change raw/bcm/isotp modules to call register_netdevice_notifier() from
->> module's __init function and call unregister_netdevice_notifier() from
->> module's __exit function, as with gw/j1939 modules are doing.
->>
->> Link: https://syzkaller.appspot.com/bug?id=391b9498827788b3cc6830226d4ff5be87107c30 [1]
->> Link: https://syzkaller.appspot.com/bug?id=1724d278c83ca6e6df100a2e320c10d991cf2bce [2]
->> Reported-by: syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com>
->> Reported-by: syzbot <syzbot+0f1827363a305f74996f@syzkaller.appspotmail.com>
->> Tested-by: syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com>
->> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> 
-> Reviewed-by: Kirill Tkhai <ktkhai@virtuozzo.com>
-
-Tested-by: Oliver Hartkopp <socketcan@hartkopp.net>
-
-Hello Tetsuo and Kirill,
-
-thanks for your effort and the review!
-
-Indeed I really had problems to get behind the locking but now I got it 
-(hopefully) :-)
-
-At least I can confirm that the original functionality still works for 
-all three affected CAN protocols (bcm/isotp/raw).
-
-Many thanks and best regards,
-Oliver
-
-> 
+>> Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
 >> ---
->>   net/can/bcm.c   | 59 +++++++++++++++++++++++++++++++++++-----------
->>   net/can/isotp.c | 61 +++++++++++++++++++++++++++++++++++++-----------
->>   net/can/raw.c   | 62 ++++++++++++++++++++++++++++++++++++++-----------
->>   3 files changed, 142 insertions(+), 40 deletions(-)
+>>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c     | 4 ++++
+>>  drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 7 +++++++
+>>  include/linux/stmmac.h                                | 1 +
+>>  3 files changed, 12 insertions(+)
 >>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> index 6d41dd6f9f7a..0d4cb423cbbd 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> @@ -6840,6 +6840,10 @@ int stmmac_dvr_probe(struct device *device,
+>>  			reset_control_reset(priv->plat->stmmac_rst);
+>>  	}
+>>  
+>> +	ret = reset_control_deassert(priv->plat->stmmac_ahb_rst);
+>> +	if (ret == -ENOTSUPP)
+>> +		dev_err(priv->device, "unable to bring out of ahb reset\n");
+>> +
+> I would make this
+>
+> 	if (ret)
+> 		dev_err(priv->device, "unable to bring out of ahb reset: %pe\n", ERR_PTR(ret));
+
+Done.
+
+>
+> Also consider asserting the reset again in the remove path. Or is there
+> a reason not to?
+
+Don't see any issue doing this. As this is a shared reset, the assert will only occur
+when the final GMAC is removed, due to the tracking of deassert_count.
+
+> With that addressed,
+>
+> Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+>
+> regards
+> Philipp
+
+Thanks,
+
+Matthew
+
