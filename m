@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0350F3A066D
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3787C3A066F
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234848AbhFHVwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 17:52:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47290 "EHLO mail.kernel.org"
+        id S234794AbhFHVwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 17:52:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47284 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234782AbhFHVwC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234779AbhFHVwC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 8 Jun 2021 17:52:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 70B67613AE;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5C16F6139A;
         Tue,  8 Jun 2021 21:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623189009;
-        bh=1lQSwCTbXG9WgcmTscLTWXGWEEMybDfAUISlTNJPcPM=;
+        bh=SuZf5CCqqwfWwZLQBRQFTsWwPtyHFG/LGSMt/78I1gM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AZ4ns5N1mhM7rAhavqFA+g3/duOOakEqDMHupRaJOPGa6YMaQ8qxvbBkTXfuOrFs/
-         DT8qLQisr96GvLkCKZs0et7gd9z8yrgPfu14NP5c4GagtQ3qt2avRk5E8OZc4Xd/p7
-         sk5K+eNfo6a6+CDYSIzyY6kuc8Yij++s1FPr1UcDHkDLCFy9nTRQN/3/SZqNfYr0sM
-         L69yuL9ohO7HDjrnIEdTGTuO12pBGVetJED3Auu/frhw1PO13OFGfjAqLN0i1RqaQ5
-         EZMVRCOppX471WJVYuc4YB92q/CU6zVh8d0uUWXzRF+Sxk3z3ZD2VtLY2Kk8eg8y5T
-         FOAq/sBoY90qA==
+        b=VaxR1TnZvcKdmaGZ206X230Obdb6HljyYAmmes4BQ34xqyg63YKY2Zg/EkLeP/B90
+         BvjHJdtHP7AVosi4SLw//10D2g8k2ywqb6LaySDpuJIDqgROm+BL3oYk9+zPRQB3vE
+         c4imgc0cOC1wfG0zJs8rdd222ZQRtIALVqGN7EBaHvqWjBDorsZgImOQ6iWqvdfl34
+         5MbdIEqJPIMUa/r417ZOe0/0+0rBgAfwEqgC9Za6SC7QqK9lJTz4RCWUbL9XFMtOBm
+         J8Zjr34UNC1Q0eUBtPzJqJKcEGTuAut9m10K/s8EAeyLJLLIs7gvnojyaNMBHxF6rf
+         monlPBAlBSQ3w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5CDBB60CD1;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 50B0E609D2;
         Tue,  8 Jun 2021 21:50:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/8] mlxsw: Various updates
+Subject: Re: [PATCH 00/10] net: WWAN subsystem improvements
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162318900937.8715.11614110035580933447.git-patchwork-notify@kernel.org>
+Message-Id: <162318900932.8715.4669669259208557381.git-patchwork-notify@kernel.org>
 Date:   Tue, 08 Jun 2021 21:50:09 +0000
-References: <20210608124414.1664294-1-idosch@idosch.org>
-In-Reply-To: <20210608124414.1664294-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, petrm@nvidia.com, amcohen@nvidia.com,
-        vadimp@nvidia.com, c_mykolak@nvidia.com, mlxsw@nvidia.com,
-        idosch@nvidia.com
+References: <20210608040241.10658-1-ryazanov.s.a@gmail.com>
+In-Reply-To: <20210608040241.10658-1-ryazanov.s.a@gmail.com>
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc:     loic.poulain@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,35 +46,41 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue,  8 Jun 2021 15:44:06 +0300 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Tue,  8 Jun 2021 07:02:31 +0300 you wrote:
+> While working on WWAN netdev creation support, I notice a few things
+> that could be done to make the wwan subsystem more developer and user
+> friendly. This series implements them.
 > 
-> This patchset contains various updates for mlxsw. The most significant
-> change is the long overdue removal of the abort mechanism in the first
-> two patches.
-> 
-> Patches #1-#2 remove the route abort mechanism. This change is long
-> overdue and explained in detail in the commit message.
+> The series begins with a WWAN HW simulator designed simplify testing
+> and make the WWAN subsystem available for a wider audience. The next two
+> patches are intended to make the code a bit more clearer. This is
+> followed by a few patches to make the port device naming more
+> user-friendly. The series is finishes with a set of changes that allow
+> the WWAN AT port to be used with terminal emulation software.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/8] mlxsw: spectrum_router: Remove abort mechanism
-    https://git.kernel.org/netdev/net-next/c/a08a61934cfa
-  - [net-next,2/8] selftests: router_scale: Do not count failed routes
-    https://git.kernel.org/netdev/net-next/c/00190c2b19eb
-  - [net-next,3/8] selftests: Clean forgotten resources as part of cleanup()
-    https://git.kernel.org/netdev/net-next/c/e67dfb8d15de
-  - [net-next,4/8] selftests: devlink_lib: Fix bouncing of netdevsim DEVLINK_DEV
-    https://git.kernel.org/netdev/net-next/c/0521a262f043
-  - [net-next,5/8] mlxsw: reg: Extend MTMP register with new threshold field
-    https://git.kernel.org/netdev/net-next/c/314dbb19f95b
-  - [net-next,6/8] mlxsw: core_env: Read module temperature thresholds using MTMP register
-    https://git.kernel.org/netdev/net-next/c/befc2048088a
-  - [net-next,7/8] mlxsw: thermal: Add function for reading module temperature and thresholds
-    https://git.kernel.org/netdev/net-next/c/e57977b34ab5
-  - [net-next,8/8] mlxsw: thermal: Read module temperature thresholds using MTMP register
-    https://git.kernel.org/netdev/net-next/c/72a64c2fe9d8
+  - [01/10] wwan_hwsim: WWAN device simulator
+    https://git.kernel.org/netdev/net-next/c/f36a111a74e7
+  - [02/10] wwan_hwsim: add debugfs management interface
+    https://git.kernel.org/netdev/net-next/c/9ee23f48f670
+  - [03/10] net: wwan: make WWAN_PORT_MAX meaning less surprised
+    https://git.kernel.org/netdev/net-next/c/b64d76b78226
+  - [04/10] net: wwan: core: init port type string array using enum values
+    https://git.kernel.org/netdev/net-next/c/64cc80c0ff2e
+  - [05/10] net: wwan: core: spell port device name in lowercase
+    https://git.kernel.org/netdev/net-next/c/392c26f7f133
+  - [06/10] net: wwan: core: make port names more user-friendly
+    https://git.kernel.org/netdev/net-next/c/f458709ff40b
+  - [07/10] net: wwan: core: expand ports number limit
+    https://git.kernel.org/netdev/net-next/c/72eedfc4bbc7
+  - [08/10] net: wwan: core: implement TIOCINQ ioctl
+    https://git.kernel.org/netdev/net-next/c/e263c5b2e891
+  - [09/10] net: wwan: core: implement terminal ioctls for AT port
+    https://git.kernel.org/netdev/net-next/c/c230035c2f2f
+  - [10/10] net: wwan: core: purge rx queue on port close
+    https://git.kernel.org/netdev/net-next/c/504672038b17
 
 You are awesome, thank you!
 --
