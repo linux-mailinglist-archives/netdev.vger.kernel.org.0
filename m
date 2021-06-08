@@ -2,114 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 820CB3A01BC
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:18:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 052103A022C
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:20:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236958AbhFHS4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 14:56:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22712 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236062AbhFHSx3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 14:53:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623178296;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AteLOuehZrKRBifQp7t2eCpFqM5PYx89clHcr7jZONw=;
-        b=SYRC7H6s8gYPCdMgYIYEIzRutTM3CkbC2BEarWxO9ANEeztmh859tMYHHpKWQyequ33u+m
-        jYfUhcS5X/y9okjRI7aN3ai0LkxnrlFvb3/aeAte0Rkte5NbxdiGLHYRXH30UdY9iwsHXW
-        b6iyaMmiOgTIt1lxAeDBOYpvNzyjLyI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-3-WXdMcdbxN8eSCRpoo4FlBw-1; Tue, 08 Jun 2021 14:51:31 -0400
-X-MC-Unique: WXdMcdbxN8eSCRpoo4FlBw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 93882107ACC7;
-        Tue,  8 Jun 2021 18:51:29 +0000 (UTC)
-Received: from krava (unknown [10.40.192.49])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 825C45C1C2;
-        Tue,  8 Jun 2021 18:51:26 +0000 (UTC)
-Date:   Tue, 8 Jun 2021 20:51:25 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCH 03/19] x86/ftrace: Make function graph use ftrace directly
-Message-ID: <YL+8LRsVndGdgOMF@krava>
-References: <20210605111034.1810858-1-jolsa@kernel.org>
- <20210605111034.1810858-4-jolsa@kernel.org>
- <CAEf4BzY5ngJz_=e2wnqG7yB996xdQAPCBfz3_4mB9P2N-1RoCw@mail.gmail.com>
+        id S236457AbhFHTBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 15:01:38 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:28032 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236086AbhFHS7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 14:59:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1623178624; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=klyteFDZ+WDekeP6QtMLUV+5wOl5ku5ghoMuNNz7VcWVIutWkSmNdNZptVTGWRNx+3
+    tXs9nDu5q5acpPP4W7M0FkHaC/zFAJB5zt6OBsIpdjX2/oVtO2uFLaQBUW4LN8Kq6upN
+    ClcAhhwAOpiTVjTcgbjckNqpwZHyk0U8FOUeC+vXufSQCF0ESv51D+ZdrqQIhWiiHiYG
+    TyXZylWqmOSxOAtozJ95HyQmCfk58ChqGa7cPyC0+rscQJide6uPsEEwb2ecg/8Qpmir
+    kVqCT03mJNAvteH557iO9GdLe5x4fMGB67lUwgz++/CzSc8GInNKIOUH8KkkRAUMmGeN
+    5OMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623178624;
+    s=strato-dkim-0002; d=strato.com;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=K7m0ttXxl3h7ZX+LO6SZjTt3dphMnFPY1o2TmpIgYSg=;
+    b=BLAo/bTXsnKPzKRQb1W9BKrncoPZXte7581ZtS3tRB8/0lQKY3KA/eppXIEF5URwrH
+    lag1S5fbRtPsz4r1SAmi1yA42/nwZJPAfy4KiXx2+LEDYGRijcTSmL90VLNred1SfwuV
+    8GJ0doK/Yr4WfmoM8caL9IyOuPT3fcBnWM3uJR02aUo22FKKNSlyiIznTdrZYrXiQGDx
+    kaFbYqC0tB4tPXLOVJ/c+vk3yfT9UPAST0Z1wYA6GNrzKiFWS0LWgbAGwtlGnWcUcc7L
+    7hJQsB148pRFAsx/z7Pxx3nl8wNqq3KKmeCHZAe/sDfgKp33IYXic/rv8/B00jcj5NSS
+    cpVw==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623178624;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=K7m0ttXxl3h7ZX+LO6SZjTt3dphMnFPY1o2TmpIgYSg=;
+    b=aW/ej2qcTignCuQy/xs0XaCDfjpIkseld878Gxt1uaQVIboqk2Hfhn/ePF5CWN+p78
+    6kcji3uLkkfR5DMSWlF6cFTa+ryKEJgLdF4pM5O33lLnQP+32zKvoc3RQgWp9uPo49jp
+    hA6VWYSEzxFxY5p8WK5SjSTaN7bWQ/YTXJICfb332pfe4ExGw+P8mgSthc4B6CoojIHR
+    xkkAYyNRFZ0rFM3fBTmOtvrdaDz+FTLjGdTObREZ2sfm9R4iUs+DUtw3nR2gEDrSD0Bq
+    /FxRKt1jEmLLaxiGUHuoBkn+3wDIQJygX4FJeuY1QWYwzPuTw368bfYq3uH7p7fC9ZBF
+    Jyyw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTEVR9J8xozF0="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+    by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
+    with ESMTPSA id d075c5x58Iv3HZJ
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 8 Jun 2021 20:57:03 +0200 (CEST)
+Subject: Re: [PATCH v2] can: bcm/raw/isotp: use per module netdevice notifier
+To:     Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+References: <20210602151733.3630-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <265c1129-96f1-7bb1-1d01-b2b8cc5b1a42@hartkopp.net>
+ <51ed3352-b5b0-03a1-ec25-faa368adcc46@i-love.sakura.ne.jp>
+ <5e4693cf-4691-e7da-9a04-3e70cc449bf5@i-love.sakura.ne.jp>
+ <e5a53bed-4333-bd99-ca3d-0e25dfb546e5@virtuozzo.com>
+ <54a5f451-05ed-f977-8534-79e7aa2bcc8f@i-love.sakura.ne.jp>
+ <5922ca3a-b7ed-ca19-afeb-2f55233434ae@virtuozzo.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <6dc06795-9bfd-9bde-cab7-66dae0920b14@hartkopp.net>
+Date:   Tue, 8 Jun 2021 20:56:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzY5ngJz_=e2wnqG7yB996xdQAPCBfz3_4mB9P2N-1RoCw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <5922ca3a-b7ed-ca19-afeb-2f55233434ae@virtuozzo.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 08, 2021 at 11:35:58AM -0700, Andrii Nakryiko wrote:
 
-SNIP
 
-> > diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
-> > index b8a0d1d564fb..58e96b45e9da 100644
-> > --- a/kernel/trace/fgraph.c
-> > +++ b/kernel/trace/fgraph.c
-> > @@ -115,6 +115,7 @@ int function_graph_enter(unsigned long ret, unsigned long func,
-> >  {
-> >         struct ftrace_graph_ent trace;
-> >
-> > +#ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
-> >         /*
-> >          * Skip graph tracing if the return location is served by direct trampoline,
-> >          * since call sequence and return addresses are unpredictable anyway.
-> > @@ -124,6 +125,7 @@ int function_graph_enter(unsigned long ret, unsigned long func,
-> >         if (ftrace_direct_func_count &&
-> >             ftrace_find_rec_direct(ret - MCOUNT_INSN_SIZE))
-> >                 return -EBUSY;
-> > +#endif
-> >         trace.func = func;
-> >         trace.depth = ++current->curr_ret_depth;
-> >
-> > @@ -333,10 +335,10 @@ unsigned long ftrace_graph_ret_addr(struct task_struct *task, int *idx,
-> >  #endif /* HAVE_FUNCTION_GRAPH_RET_ADDR_PTR */
-> >
-> >  static struct ftrace_ops graph_ops = {
-> > -       .func                   = ftrace_stub,
-> > +       .func                   = ftrace_graph_func,
-> >         .flags                  = FTRACE_OPS_FL_INITIALIZED |
-> > -                                  FTRACE_OPS_FL_PID |
-> > -                                  FTRACE_OPS_FL_STUB,
-> > +                                  FTRACE_OPS_FL_PID
-> > +                                  FTRACE_OPS_GRAPH_STUB,
+On 07.06.21 18:15, Kirill Tkhai wrote:
+> On 05.06.2021 13:26, Tetsuo Handa wrote:
+
+>>
+>> Updated patch is shown below.
+>>
+>>
+>>  From 12c61ae3d06889c9bbc414f0230c05dc630f6409 Mon Sep 17 00:00:00 2001
+>> From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+>> Date: Sat, 5 Jun 2021 19:18:21 +0900
+>> Subject: [PATCH v2] can: bcm/raw/isotp: use per module netdevice notifier
+>>
+>> syzbot is reporting hung task at register_netdevice_notifier() [1] and
+>> unregister_netdevice_notifier() [2], for cleanup_net() might perform
+>> time consuming operations while CAN driver's raw/bcm/isotp modules are
+>> calling {register,unregister}_netdevice_notifier() on each socket.
+>>
+>> Change raw/bcm/isotp modules to call register_netdevice_notifier() from
+>> module's __init function and call unregister_netdevice_notifier() from
+>> module's __exit function, as with gw/j1939 modules are doing.
+>>
+>> Link: https://syzkaller.appspot.com/bug?id=391b9498827788b3cc6830226d4ff5be87107c30 [1]
+>> Link: https://syzkaller.appspot.com/bug?id=1724d278c83ca6e6df100a2e320c10d991cf2bce [2]
+>> Reported-by: syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com>
+>> Reported-by: syzbot <syzbot+0f1827363a305f74996f@syzkaller.appspotmail.com>
+>> Tested-by: syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com>
+>> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 > 
-> nit: this looks so weird... Why not define FTRACE_OPS_GRAPH_STUB as
-> zero in case of #ifdef ftrace_graph_func? Then it will be natural and
-> correctly looking | FTRACE_OPS_GRAPH_STUB?
+> Reviewed-by: Kirill Tkhai <ktkhai@virtuozzo.com>
 
-ok, I can change that
+Tested-by: Oliver Hartkopp <socketcan@hartkopp.net>
 
-thanks,
-jirka
+Hello Tetsuo and Kirill,
+
+thanks for your effort and the review!
+
+Indeed I really had problems to get behind the locking but now I got it 
+(hopefully) :-)
+
+At least I can confirm that the original functionality still works for 
+all three affected CAN protocols (bcm/isotp/raw).
+
+Many thanks and best regards,
+Oliver
 
 > 
-> >  #ifdef FTRACE_GRAPH_TRAMP_ADDR
-> >         .trampoline             = FTRACE_GRAPH_TRAMP_ADDR,
-> >         /* trampoline_size is only needed for dynamically allocated tramps */
-> > --
-> > 2.31.1
-> >
-> 
-
+>> ---
+>>   net/can/bcm.c   | 59 +++++++++++++++++++++++++++++++++++-----------
+>>   net/can/isotp.c | 61 +++++++++++++++++++++++++++++++++++++-----------
+>>   net/can/raw.c   | 62 ++++++++++++++++++++++++++++++++++++++-----------
+>>   3 files changed, 142 insertions(+), 40 deletions(-)
+>>
