@@ -2,106 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE5183A01DD
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:19:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 820CB3A01BC
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 21:18:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235450AbhFHS5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 14:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236684AbhFHSzB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 14:55:01 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0BFC061787;
-        Tue,  8 Jun 2021 11:50:26 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id b13so31667257ybk.4;
-        Tue, 08 Jun 2021 11:50:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7M9VFsKxrdlHw7/FHmSJbgO0028h75HscQCU07Ex82A=;
-        b=r8sOulUb+7Oo4UIhwZeOlhEmOVKFUnbKJdPHPpvItasm9l1e/OuimK82WismH5johH
-         eFH6ziz3Eic9iwreIahg0F34U6Cq5pGhPBvXtP7/lVk+ex3XTG34z4oG2j4Os/vPzhHG
-         p5bpBobMFS2yi+POFP7nWQy9q9DeS0itQmgEDqWv4r7QiobKh7nZUu7PaHl+nbOn5fj+
-         tK4JNVrtMPyAB5/TgPrzY0qpS2tObfgjWiG/ClAQoLkE5mOHSk3NCtjqhJOjOoSgGfI4
-         P+2Ks/3iD1L2MKPTRAE+tXUGD3fxoNYCt2oZ0EpBJtjbGOyMu5eK2l45GOT4hY/Zzls/
-         XOiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7M9VFsKxrdlHw7/FHmSJbgO0028h75HscQCU07Ex82A=;
-        b=b90Z5c6GDD8nk8FzOE8py0JJ0PphuWhgHyV8RwRi04KZpYK02tD9RVMrthitc0Vs5+
-         FQMnHcwRpRa8YhvZr6yjYGVCpCCKwMXsUuGl5eRzTJUwVd1x3WGFNfpjFk7DZcSkvKty
-         qkXAwd8N69i6v2Zx+K5qZ2hr8bAZkRgvYQqq8FYsvfY1laCxmrRhkkG7jX/clj/hUtD4
-         Iqmc/4SLQN0KTazmq5NS1z9xzgDxlfS8PE+WkxvfejxRofroYSYStSYdl35Jr1ybyw20
-         I3HFSQbWjnyoD1s4JUhMtWX3dhJvUYKEqi8cMEgP0JIvBKIV6sRUOiSJFWFqG0lzC32F
-         /cOg==
-X-Gm-Message-State: AOAM530LmyBHH6GTpddZeiFfhl87/uTP9Ct2f0Cgkf6XpJxWWnsf/Z1K
-        Dxs2aHR4o+z521zTw8K1AnUa64K5yGoAKfno5J5264uU
-X-Google-Smtp-Source: ABdhPJz3xMma3vSOQfDOk0uVSq7V1AQYYr07TtsGqokzUkZW8FU1/kPpaxcikO29kCtIOjTZ1gDrgUc7jNIWu0ECDIc=
-X-Received: by 2002:a05:6902:114c:: with SMTP id p12mr35693284ybu.282.1623178224957;
- Tue, 08 Jun 2021 11:50:24 -0700 (PDT)
+        id S236958AbhFHS4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 14:56:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22712 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236062AbhFHSx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 14:53:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623178296;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AteLOuehZrKRBifQp7t2eCpFqM5PYx89clHcr7jZONw=;
+        b=SYRC7H6s8gYPCdMgYIYEIzRutTM3CkbC2BEarWxO9ANEeztmh859tMYHHpKWQyequ33u+m
+        jYfUhcS5X/y9okjRI7aN3ai0LkxnrlFvb3/aeAte0Rkte5NbxdiGLHYRXH30UdY9iwsHXW
+        b6iyaMmiOgTIt1lxAeDBOYpvNzyjLyI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-3-WXdMcdbxN8eSCRpoo4FlBw-1; Tue, 08 Jun 2021 14:51:31 -0400
+X-MC-Unique: WXdMcdbxN8eSCRpoo4FlBw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 93882107ACC7;
+        Tue,  8 Jun 2021 18:51:29 +0000 (UTC)
+Received: from krava (unknown [10.40.192.49])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 825C45C1C2;
+        Tue,  8 Jun 2021 18:51:26 +0000 (UTC)
+Date:   Tue, 8 Jun 2021 20:51:25 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Viktor Malik <vmalik@redhat.com>
+Subject: Re: [PATCH 03/19] x86/ftrace: Make function graph use ftrace directly
+Message-ID: <YL+8LRsVndGdgOMF@krava>
+References: <20210605111034.1810858-1-jolsa@kernel.org>
+ <20210605111034.1810858-4-jolsa@kernel.org>
+ <CAEf4BzY5ngJz_=e2wnqG7yB996xdQAPCBfz3_4mB9P2N-1RoCw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210603215249.1048521-1-luiz.dentz@gmail.com>
-In-Reply-To: <20210603215249.1048521-1-luiz.dentz@gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Tue, 8 Jun 2021 11:50:14 -0700
-Message-ID: <CABBYNZJqBbq0pMRt9w7XLLw0MnxmavokT2t6_PqwGVf4YfdnNA@mail.gmail.com>
-Subject: Re: pull request: bluetooth 2021-06-03
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzY5ngJz_=e2wnqG7yB996xdQAPCBfz3_4mB9P2N-1RoCw@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, Jakub,
+On Tue, Jun 08, 2021 at 11:35:58AM -0700, Andrii Nakryiko wrote:
 
-On Thu, Jun 3, 2021 at 2:52 PM Luiz Augusto von Dentz
-<luiz.dentz@gmail.com> wrote:
->
-> The following changes since commit 62f3415db237b8d2aa9a804ff84ce2efa87df179:
->
->   net: phy: Document phydev::dev_flags bits allocation (2021-05-26 13:15:55 -0700)
->
-> are available in the Git repository at:
->
->   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2021-06-03
->
-> for you to fetch changes up to 1f14a620f30b01234f8b61df396f513e2ec4887f:
->
->   Bluetooth: btusb: Fix failing to init controllers with operation firmware (2021-06-03 14:02:17 -0700)
->
-> ----------------------------------------------------------------
-> bluetooth pull request for net:
->
->  - Fixes UAF and CVE-2021-3564
->  - Fix VIRTIO_ID_BT to use an unassigned ID
->  - Fix firmware loading on some Intel Controllers
->
-> ----------------------------------------------------------------
-> Lin Ma (2):
->       Bluetooth: fix the erroneous flush_work() order
->       Bluetooth: use correct lock to prevent UAF of hdev object
->
-> Luiz Augusto von Dentz (1):
->       Bluetooth: btusb: Fix failing to init controllers with operation firmware
->
-> Marcel Holtmann (1):
->       Bluetooth: Fix VIRTIO_ID_BT assigned number
->
->  drivers/bluetooth/btusb.c       | 23 +++++++++++++++++++++--
->  include/uapi/linux/virtio_ids.h |  2 +-
->  net/bluetooth/hci_core.c        |  7 ++++++-
->  net/bluetooth/hci_sock.c        |  4 ++--
->  4 files changed, 30 insertions(+), 6 deletions(-)
+SNIP
 
-We are hoping we could merge these before the release.
+> > diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
+> > index b8a0d1d564fb..58e96b45e9da 100644
+> > --- a/kernel/trace/fgraph.c
+> > +++ b/kernel/trace/fgraph.c
+> > @@ -115,6 +115,7 @@ int function_graph_enter(unsigned long ret, unsigned long func,
+> >  {
+> >         struct ftrace_graph_ent trace;
+> >
+> > +#ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
+> >         /*
+> >          * Skip graph tracing if the return location is served by direct trampoline,
+> >          * since call sequence and return addresses are unpredictable anyway.
+> > @@ -124,6 +125,7 @@ int function_graph_enter(unsigned long ret, unsigned long func,
+> >         if (ftrace_direct_func_count &&
+> >             ftrace_find_rec_direct(ret - MCOUNT_INSN_SIZE))
+> >                 return -EBUSY;
+> > +#endif
+> >         trace.func = func;
+> >         trace.depth = ++current->curr_ret_depth;
+> >
+> > @@ -333,10 +335,10 @@ unsigned long ftrace_graph_ret_addr(struct task_struct *task, int *idx,
+> >  #endif /* HAVE_FUNCTION_GRAPH_RET_ADDR_PTR */
+> >
+> >  static struct ftrace_ops graph_ops = {
+> > -       .func                   = ftrace_stub,
+> > +       .func                   = ftrace_graph_func,
+> >         .flags                  = FTRACE_OPS_FL_INITIALIZED |
+> > -                                  FTRACE_OPS_FL_PID |
+> > -                                  FTRACE_OPS_FL_STUB,
+> > +                                  FTRACE_OPS_FL_PID
+> > +                                  FTRACE_OPS_GRAPH_STUB,
+> 
+> nit: this looks so weird... Why not define FTRACE_OPS_GRAPH_STUB as
+> zero in case of #ifdef ftrace_graph_func? Then it will be natural and
+> correctly looking | FTRACE_OPS_GRAPH_STUB?
 
+ok, I can change that
 
--- 
-Luiz Augusto von Dentz
+thanks,
+jirka
+
+> 
+> >  #ifdef FTRACE_GRAPH_TRAMP_ADDR
+> >         .trampoline             = FTRACE_GRAPH_TRAMP_ADDR,
+> >         /* trampoline_size is only needed for dynamically allocated tramps */
+> > --
+> > 2.31.1
+> >
+> 
+
