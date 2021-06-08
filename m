@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3193239EC97
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 05:01:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F55639EC9B
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 05:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231459AbhFHDDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 23:03:35 -0400
-Received: from mail-eopbgr30074.outbound.protection.outlook.com ([40.107.3.74]:43425
+        id S231502AbhFHDDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 23:03:39 -0400
+Received: from mail-eopbgr30076.outbound.protection.outlook.com ([40.107.3.76]:50913
         "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231393AbhFHDDe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Jun 2021 23:03:34 -0400
+        id S231465AbhFHDDi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 23:03:38 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oAAxGPYRnvh/dt38WTh3gDzRQie9GKUN981cRH3DS1e+AWhcBO/r2V0Q6di6Tjy5qcgIbgCD4IQzJsWC4yPYu7gjiP50Yo3mcgXbeeN4uxK+kE69nk/aT7gRFfdH+yzMKkfvNVoasUOJo1BbdVKtCdQ5wGSxpyJgJlm6nH5Jfct+YWVSyFLRmUZ9x8yD6TAoVskqmCPOxmLdd9FWk68F8xOD+M81CFWaQ72pxPh9hO8eNEqLuufo2D7ubpFRlTjdH6FYlTIBHqUXqd5D8b6SKGVu0qxhxGGMYf7Hl0eGeiY81jP2VDCOIRh/f3YNNYEtNTcSUwC7WFrBXcjaYKz3hg==
+ b=Rjm/5T/wRFmSKfBGlkZqkLp5Y0fD0VlQV18dvCxmRPQ6UtfbwmFqoX/VCDcgC+RwrNvrYNlVUQIcyKjh/OCW6q9yncKbJtUaErGFod6fZRL7xmjXT01en8PGvHGlHRm+6jmAsJYehi/w8ugxmtmAb38l5yE8PW0CNOP7bLd9e8O2iRhb0b4JsagXiYJoB2FFx3lgIQ+iwu76t+ADq/IAWjeU6wD+hoKbENaa3dM6MWm1+g6yLf62SWue29T8QMm9KAvwoYK0KNsVKsxS7exCMw2507oknWaWIiZx9CwpIVKxL/Y1UZGe0qf06u7nl3EYyk77n0ICG2JsfuzNj3pv4Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uybfxS5nmvyuPdoUS1ib3fB5t0WM31xUyjA49eJmzKM=;
- b=OO72qODhiWbMErcK2yk+QNFrjBeJWrFfvDOkpbGlb6ANL+MEul2SXHloKud1uCiS2XrOm1pBTdhHteypj9B0MNNb8FLGMplfDR3eSjiS/PonHPBG4pMhYOcQD35aqgbpWAAFsDm7WD2+ptDzhX2oiWZ8xXBzoYKIWZL8AJHdS6ixjsnZcIv0iFRq0fiy3RpXNgJquwoG8TPfQ7nCotkiXvHl28Jvm+yMu3s7oRwWW0L4fAUjyi1aU9F7wklAGft2EUyU45CcTa3ShyHpEeF0tw6kv0LIk1YkZbdlY4L1wO+HzmWQhpMOpvE4RwwfdBElRu8IiObpl4lp8bc20uF0xg==
+ bh=XoJr1xoxYoHqMvfgMN1jpHrsrbHvTrgIezAdGHxm2no=;
+ b=kyabTEtjLsm2rO4uMeFN0jova7qHlMQMDRmSReejFWUmOlEz9fLviH3N1z0HiLuFWJtf/F6RLsui35kPV/PCSR4ap0E/o2UhK7LHwdUMuE6Xuey1uoubgRCBPGM4pu00jhP7nIqWQaDifFgQO5iXMAbeOLag7vZjOzIXpTRO20g+XaavkvmUfkcfQ6C9sAlJ9ylW/0pjoOhZY3Im3pdrmBQsqSfi/NaIxT7vpzighlm9IJGciPwDNulUQn0B7IXv4q7M9CEXxF1i6/jAElXlAhSCwlWt5oYSDl6B062/sH1h1ydX/+PxWnI5ChSlWTjnYzBnmIbh04zPN+9MCnikug==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uybfxS5nmvyuPdoUS1ib3fB5t0WM31xUyjA49eJmzKM=;
- b=rGsV6LUKjDeXXZYdv7PIhDWPdr+55H730fqeQHK1sNJb1/RG5eGyQUv+DHISJhdNyPhW3R6EGQjq4xE6+gUb4tiWZlyMj+Fl79rRYia4D9K+VC7RWZC9CQ59QSm0h4mS9/JJ/eZD0KiBdc6ZgoP9PrXYg6PrggtAOiDOJleNdFc=
+ bh=XoJr1xoxYoHqMvfgMN1jpHrsrbHvTrgIezAdGHxm2no=;
+ b=KfFlmFMUjYl7fdITpy5qGRG0T6CO7iDekbRaim1duX0Q+tAFJCdt4U/IUbWn6+2KR2hc7HXptUFggmEurFHoTlX4WvWGhmNxkr8uG7GUaGTAa+Epz3TEwL0rGqWCQkIfiL8Ik5cHc2kccX1AWvncJUowSFpKwjvzG25zOBvb2UY=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
  by DB6PR0402MB2904.eurprd04.prod.outlook.com (2603:10a6:4:9c::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.26; Tue, 8 Jun
- 2021 03:01:40 +0000
+ 2021 03:01:44 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4195.030; Tue, 8 Jun 2021
- 03:01:40 +0000
+ 03:01:44 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         f.fainelli@gmail.com, Jisheng.Zhang@synaptics.com
 Cc:     linux-imx@nxp.com, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH V2 net-next 3/4] net: phy: realtek: add dt property to disable ALDPS mode
-Date:   Tue,  8 Jun 2021 11:00:33 +0800
-Message-Id: <20210608030034.3113-4-qiangqing.zhang@nxp.com>
+Subject: [PATCH V2 net-next 4/4] net: phy: realtek: add delay to fix RXC generation issue
+Date:   Tue,  8 Jun 2021 11:00:34 +0800
+Message-Id: <20210608030034.3113-5-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210608030034.3113-1-qiangqing.zhang@nxp.com>
 References: <20210608030034.3113-1-qiangqing.zhang@nxp.com>
@@ -56,123 +56,98 @@ X-ClientProxiedBy: SG2PR01CA0151.apcprd01.prod.exchangelabs.com
  (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR01CA0151.apcprd01.prod.exchangelabs.com (2603:1096:4:8f::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.21 via Frontend Transport; Tue, 8 Jun 2021 03:01:36 +0000
+Received: from localhost.localdomain (119.31.174.71) by SG2PR01CA0151.apcprd01.prod.exchangelabs.com (2603:1096:4:8f::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.21 via Frontend Transport; Tue, 8 Jun 2021 03:01:40 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d7132483-25ec-4b61-4e5b-08d92a29bcba
+X-MS-Office365-Filtering-Correlation-Id: de3e8c6b-b820-4378-e542-08d92a29bf0e
 X-MS-TrafficTypeDiagnostic: DB6PR0402MB2904:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB6PR0402MB290473BB22A55AE6537826A1E6379@DB6PR0402MB2904.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
+X-Microsoft-Antispam-PRVS: <DB6PR0402MB2904289C49D562B11179C0A2E6379@DB6PR0402MB2904.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0A/kU4u5FkFKWaQ6dvFiX7JYZHVl/uhPFdnAwHV7zXCv0oEE1j4Th2bg6U8OCr747gCV4dTnBFgPc1HCOnIzhctA6taoM//5YUO1jbO/ckfWg3BYof+InQVgvnTUNjOtQC3dl5cLS/aMOOFPupO0gW5ieEPjQ/sk6pghxj1DjaY6EvOUpt4E+WUCc2ymkJBhkd5HhB7Bpk5/5RkZUDgrzMS8L+8OLNSNonZcvBRefeFXvYvhgKoGeez7KPWuGxUb5SEHaemjFvoSrKE1mn6jBJW5NTYmlcvv38748iTWICyj8wcU7xrIwLeEcHLKPauLiTXPm3/3JY1+3PS+G+mKwHtJSfc+lNmUWSSo9Sk57NRt8kOw3u7ssuDfhS0cXmransBvLpJ8gBOtcScSNgfTNUQkyTFwE6Lfu1NAwZ4WHKNWUzPd/I9laxRvmTpAzAgQnK1klAdO9j/7S5myeVJODGvjv7daJ0/wJNfeM2oBWb5UcCEe2ypV1Ty8N54DTJ/QaZr3xh1T8m1n74wbBAND1zR7WNvS5Czlh1eevyKyMMvcMS9jL/iYajAvicUaZE8D7lL4kawFVa4NOdUCQHdaZpjWZxxdaTTXyQI3qTeeHAAqG5Y/UKX51c4hWuMYv+/nmOcsJC2KtQ/o9zQTCzKGVhXBHzhxFLhZDgdbxdG6f2P2LcLt3Tvd1jijySgAMqqY
+X-Microsoft-Antispam-Message-Info: ok3JvQt9TNSikZrIt0cFsqK2ammKhalzydpCGJEM48TNHQ2SJUJZqRA10GoGS83JsimnbCktN6gZuub7S0OhYCSifWbBzIlfLfpBW/zHZsN52HLvl6WJ1MnzT8Ime2mv+gD01UXC+qdlaLcXSAkCPu1bMLQWAlGcVJn7CAXI9HRtIsE06QV+XQ8EZi4uDML2IOHgMiC2j3Lg7mN8C4+HyIk09WXStwQUmNEQiR8YrQg+9GfMcVz24Fj+gnkDIPm3iFw7ThnnX8op2eshfmSttlA4MQzuaCLOimQsu8NhBMMuH4E84RMP/IO1AKOva0W0nM04QAAMkYPNTI2s6tVJq3njDTuoFVvAX2dTsZftsewDZMWamCUACpAbtO63ZkfN4SeRjbxYHdBmdowEvU9Bqnp+cRLNi9/mG3mILmRCmGxS/hu6lqbVHv/P797G7/pwoEObiwmr+bMcqxZkPGkKW5z5GaUarF3OCjArSXLuGpndzmKbdHIB0FpQ9S3DGc+qkI/r+/lrzLDWqNF7FrROCblcvxVnqoSj8sZhY45IipycE77zsmZmQm92cnElj7kbjHYGWw162ExstjmxeJfYToyOrepRbK1ECDm3JvZvubEG7OGg0wTFbcoky/z3usnMLRMp07EldyGMRFl5kNcuEuqYkfj8PjZrAhMgxgvk5JPO9VwMY58jn8xc9C6pGjI8
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(83380400001)(6666004)(38350700002)(86362001)(7416002)(6486002)(52116002)(16526019)(6512007)(6506007)(38100700002)(4326008)(2906002)(66476007)(66556008)(8936002)(956004)(316002)(66946007)(5660300002)(8676002)(186003)(26005)(2616005)(1076003)(478600001)(36756003)(69590400013);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?pJRD85xmb7FrkqbP+16UB7JJTJHclLI294FYwuhuuIIoK4I8X3+Jx+TZETNl?=
- =?us-ascii?Q?HM0S63aVmfa2nG1kYwZxr5noWr8AU/dB457JVkt9ffnoFdBcnzcOLyxT2fFP?=
- =?us-ascii?Q?uFx7zKJvG3sJebkFAqKQN96pN+bup/wgHCuj9+dPMjU5jl/SY/2onupwMQE+?=
- =?us-ascii?Q?iwR2xrNYO8wZDbIeoV24CbCfiPcacGSRFxuj8iB9TZHygy7sWU1Wk8JI1VpK?=
- =?us-ascii?Q?l/f87B6cIQnJhVxDQtHHY7X4XRtFMFm3ACcEu1rr42q/w+/C7wNhV+keOgDn?=
- =?us-ascii?Q?O7zkJqLScubt1mAL3izBIPy3ajl938e8KkLoDU4eUXI2D8sdChEfXC2azGSi?=
- =?us-ascii?Q?zvKEtj2msWBWdo4qjxLiSxnjAv6pKzt3oj343CZW+nZpaNgQTdc5zo2XxZSX?=
- =?us-ascii?Q?1vjJlrj0eyboSOGqgYqdm01706l84VV1nWwNQazpvRxYWO6QFHBaiPAVWck/?=
- =?us-ascii?Q?T++CuSET1HdcATsnd5FlVJ/wLvJT8HzUfDaExBChUCYtDlQcr910BityX3v+?=
- =?us-ascii?Q?KbUp+Sx/BLUDMzcSPkiOpRPWxjeQaYaXBx9rl0dHkF3lX/HbTZm+VFu14vpc?=
- =?us-ascii?Q?7DkErftbuRTSQZTIE3mOmm55iM2tTxt+1H8GigtlV4jRAUYwZNKDuZNm7/xU?=
- =?us-ascii?Q?Mk3Z2TxrOFlx5yk0xgu1d7GioCcwlmok1JCOJhoFyDaDQONoj22Fsl3RCX1r?=
- =?us-ascii?Q?dw/0n9gNesYTAqI9nSqQ3gbE846+EhqBjn7Cm2/HFpt0B+67OY87ZwABLyrJ?=
- =?us-ascii?Q?j2a9omZjZ4XhI8s+nywVIuc3W4XA4eWQGyp572gchkVdOFMjhGH1GXezSirz?=
- =?us-ascii?Q?DJbQPQcJPexG+XLsiFNLaGuU/BHaEuTaRc+4WO2bpDRKCxs+zzufWa9vhMpa?=
- =?us-ascii?Q?/PCgLPVBRT9dJhocGVGCLHKvq0ATG1ZSI7jlAppnCL0YkdUYXjkKNJOsmk34?=
- =?us-ascii?Q?zOK6WNudS6ohtUdMobLFPZqL0pxZNkFEsbNDLDgUHEJq0iM99Qk/fk+9iwpg?=
- =?us-ascii?Q?pimmSDLndrabehoa/EhZha2bdDwV8Mo1QFGcWY7qr0CMBw+JsuCG+XL7TGr0?=
- =?us-ascii?Q?TSagKe+JtnPIi7Tkk4bKLXz+YP3leYJ1X/r2BsUg7p6XOCKHNXiH1dgwhAbQ?=
- =?us-ascii?Q?5gtV+6VECs6Otd/N8qsaHxj4SCK7i5c6IDChuX8obHG+Jk7aXEE5kU1EAUYl?=
- =?us-ascii?Q?AnJNGB34oaIyBl1NRJJlPO82c3at6qJFr2TKVIbhEsw+hLfVnAtx488yWom+?=
- =?us-ascii?Q?6BggoPacnCr7VcimkChmGsr06HwwcUMCTl1C5vkRg4jxnxl5e0713AFDqvWY?=
- =?us-ascii?Q?Ww23iwgTgfB7VFhcz/c67a5x?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?wdNt01EapliesshgoqBO+YJszgHo/TZTJiWeLNYXMpOstxisfDpWOgUO97RW?=
+ =?us-ascii?Q?iBd9iwB0rdptI4tyQuPPSLeoOdxzX7hmLXKltByju1imOsQ064YBNANGuwz5?=
+ =?us-ascii?Q?NxVvhO2hITQ7X+hqigOujPcf+7tQTHqMxtCfKDyqpx+efRvflvvjgxkbuz7T?=
+ =?us-ascii?Q?2cisAMjV6BT//E5UJ1BbEQo1AzfDPRiL4GZJx9hWpjpM0onwCPOmAGYrbBuQ?=
+ =?us-ascii?Q?1FPK9MCXPpJfyrdZlvnVPdCoHkhGxkR/MCXa93XFYGPA/KM86tox6ObfdQtf?=
+ =?us-ascii?Q?1Xo2F5+AlSeg25X0Tp22pvbG2cm0ZW6Rr9sP4Jeo3+Q033VqWfApfw5aQKUh?=
+ =?us-ascii?Q?kupapuVkEky+eH/rQLV+MYKscb4TxOMCpCwAp4U1TK+6AdkV9TjzeXgawybe?=
+ =?us-ascii?Q?K9raIzWJgZNg+sKXehY7Z7d/TurJnDftLYilrV4OlONxD4cP/hOb+i0olJs8?=
+ =?us-ascii?Q?Q0vccEUjKzSGJHabPalDaBWIMpn2rmTtaeotQMZ/BHTixh8hotTMk6K1tC9+?=
+ =?us-ascii?Q?kmfiEPdUlGzq5hYqYXjH2khRyEu2J2nYIKsI0BnAeRfE7IIcsbblXcNqzG/S?=
+ =?us-ascii?Q?J8ITeWRRqGZWXLotmMu0U3rWQVPgZfM7ZvqmozTkN45JzZr/1Zkn6OFR4Hyh?=
+ =?us-ascii?Q?JPZ5GISYuNfPss+ytSOVnwUe3gIJu5eDtpevgYpCcPQV7K0JTdiKv8pL2Tao?=
+ =?us-ascii?Q?J6KLaN8mhD9yxtbaX29lRISJKNcr5KUtEnzuPC3U2E4zyzmgOO8sKsCAgWRn?=
+ =?us-ascii?Q?QYck/ddX7NdpkvWu/objOv4N1aSdKO2uNQ8wwvpNxyJehisLDtaMojtBjowa?=
+ =?us-ascii?Q?xK7fu2AYycZ0bvXoU/eFDYFyxGtzoIN7OpLL58W1QZCwO7gCE0BRLbnt2dOT?=
+ =?us-ascii?Q?oDBMR/B+nKYuGk72BNS5uiXmx6t4CPMANwPMHMNodQkxN8CujuRsc/kge7P+?=
+ =?us-ascii?Q?Jzcj/2eslBQd9Ln0m0131Fj/3LNp377ImvcTPYJqdmn6TPKfFmCa2E7GHLc6?=
+ =?us-ascii?Q?92fkraiqwDE865S6cYUL0LcYb08VCEBTWG+3MIGTHX6o7glJ2YHqjthPL4C7?=
+ =?us-ascii?Q?afLi6Lcdd7Ka0foGbRrIqkHdbfNf3ILwgrVBp2J9+g7Nw41t86RUGr6Xf3NB?=
+ =?us-ascii?Q?7qN9SRP2G9dO65BsWulMGgmZfoGzddYJGwdnQuJuBbcKDcNaayPsYsjZkn6o?=
+ =?us-ascii?Q?p9K/E3iSOF1+SU7k2TooIDASgbQm23qRiFgk4ltrnLn9GBGJiNATfi5b1HPz?=
+ =?us-ascii?Q?pFtJENsY41CdnJEQLpuLClsDUCy8xd41asA7/8/ALMZiKdiIMB59Tl94Quq+?=
+ =?us-ascii?Q?uu/vbjvbfhPnWyV2mBZyLCmK?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d7132483-25ec-4b61-4e5b-08d92a29bcba
+X-MS-Exchange-CrossTenant-Network-Message-Id: de3e8c6b-b820-4378-e542-08d92a29bf0e
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2021 03:01:39.9770
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2021 03:01:43.9963
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Q5BgrND1J6E3ntdx0DMyuHADsTLMVv1wS1z7Eai+C9jbRcvXgpHQTpWmCBdkS/B6IypDGEy9DMfeeckDPQNKhw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: mlyJhrHvGemqcYFEb1vWZLpxq3oIa2hH1pLRHI4mSM6qfidsTWYOp9WGB184y7Fg/I4ngfPGeSwDKK2ecNwrxw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2904
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If enable Advance Link Down Power Saving (ALDPS) mode, it will change
-crystal/clock behavior, which cause RXC clock stop for dozens to hundreds
-of miliseconds. This is comfirmed by Realtek engineer. For some MACs, it
-needs RXC clock to support RX logic, after this patch, PHY can generate
-continuous RXC clock during auto-negotiation.
+PHY will delay about 11.5ms to generate RXC clock when switching from
+power down to normal operation. Read/write registers would also cause RXC
+become unstable and stop for a while during this process. Realtek engineer
+suggests 15ms or more delay can workaround this issue.
 
-ALDPS default is disabled after hardware reset, it's more reasonable to
-add a property to enable this feature, since ALDPS would introduce side effect.
-This patch adds dt property "realtek,aldps-enable" to enable ALDPS mode
-per users' requirement.
-
-Jisheng Zhang enables this feature, changes the default behavior. Since
-mine patch breaks the rule that new implementation should not break
-existing design, so Cc'ed let him know to see if it can be accepted.
-
-Cc: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- drivers/net/phy/realtek.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ drivers/net/phy/realtek.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index ca258f2a9613..79dc55bb4091 100644
+index 79dc55bb4091..1b844a06fe72 100644
 --- a/drivers/net/phy/realtek.c
 +++ b/drivers/net/phy/realtek.c
-@@ -76,6 +76,7 @@ MODULE_AUTHOR("Johnson Leung");
- MODULE_LICENSE("GPL");
+@@ -410,6 +410,19 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ 	return genphy_soft_reset(phydev);
+ }
  
- struct rtl821x_priv {
-+	u16 phycr1;
- 	u16 phycr2;
- };
- 
-@@ -98,6 +99,14 @@ static int rtl821x_probe(struct phy_device *phydev)
- 	if (!priv)
- 		return -ENOMEM;
- 
-+	priv->phycr1 = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR1);
-+	if (priv->phycr1 < 0)
-+		return priv->phycr1;
++static int rtl821x_resume(struct phy_device *phydev)
++{
++	int ret;
 +
-+	priv->phycr1 &= (RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_XTAL_OFF);
-+	if (of_property_read_bool(dev->of_node, "realtek,aldps-enable"))
-+		priv->phycr1 |= RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_XTAL_OFF;
-+
- 	priv->phycr2 = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR2);
- 	if (priv->phycr2 < 0)
- 		return priv->phycr2;
-@@ -324,11 +333,16 @@ static int rtl8211f_config_init(struct phy_device *phydev)
- 	struct rtl821x_priv *priv = phydev->priv;
- 	struct device *dev = &phydev->mdio.dev;
- 	u16 val_txdly, val_rxdly;
--	u16 val;
- 	int ret;
- 
--	val = RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_XTAL_OFF;
--	phy_modify_paged_changed(phydev, 0xa43, RTL8211F_PHYCR1, val, val);
-+	ret = phy_modify_paged_changed(phydev, 0xa43, RTL8211F_PHYCR1,
-+				       RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_XTAL_OFF,
-+				       priv->phycr1);
-+	if (ret < 0) {
-+		dev_err(dev, "aldps mode  configuration failed: %pe\n",
-+			ERR_PTR(ret));
++	ret = genphy_resume(phydev);
++	if (ret < 0)
 +		return ret;
-+	}
- 
- 	switch (phydev->interface) {
- 	case PHY_INTERFACE_MODE_RGMII:
++
++	msleep(20);
++
++	return 0;
++}
++
+ static int rtl8211e_config_init(struct phy_device *phydev)
+ {
+ 	int ret = 0, oldpage;
+@@ -906,7 +919,7 @@ static struct phy_driver realtek_drvs[] = {
+ 		.config_intr	= &rtl8211f_config_intr,
+ 		.handle_interrupt = rtl8211f_handle_interrupt,
+ 		.suspend	= genphy_suspend,
+-		.resume		= genphy_resume,
++		.resume		= rtl821x_resume,
+ 		.read_page	= rtl821x_read_page,
+ 		.write_page	= rtl821x_write_page,
+ 	}, {
 -- 
 2.17.1
 
