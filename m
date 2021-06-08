@@ -2,83 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A2AE39EBD0
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 04:16:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 535CC39EBF4
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 04:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbhFHCRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 22:17:54 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:4388 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230209AbhFHCRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 22:17:53 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FzYf150KCz6vSv;
-        Tue,  8 Jun 2021 10:12:09 +0800 (CST)
-Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 8 Jun 2021 10:16:00 +0800
-Received: from [10.174.179.215] (10.174.179.215) by
- dggema769-chm.china.huawei.com (10.1.198.211) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 8 Jun 2021 10:15:59 +0800
-Subject: Re: [PATCH net-next] tipc: Return the correct errno code
-To:     <patchwork-bot+netdevbpf@kernel.org>,
-        zhengyongjun <zhengyongjun3@huawei.com>
-CC:     <jmaloy@redhat.com>, <ying.xue@windriver.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <tipc-discussion@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>
-References: <20210604014702.2087584-1-zhengyongjun3@huawei.com>
- <162284160438.23356.17911968954229324185.git-patchwork-notify@kernel.org>
-From:   YueHaibing <yuehaibing@huawei.com>
-Message-ID: <410bbe52-5ead-4719-d711-8dc355a9a5f4@huawei.com>
-Date:   Tue, 8 Jun 2021 10:15:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S231538AbhFHC1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 22:27:50 -0400
+Received: from m12-14.163.com ([220.181.12.14]:59335 "EHLO m12-14.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231503AbhFHC1t (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Jun 2021 22:27:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=yBMmM
+        54KDZIxVMl8qj7WE3ycDDyRNvRFccsKD+T2FHg=; b=U2UgxxqUVB1tAwUWm23ZV
+        tJ7tlJ0cwixItxYbqACKczylAr1xIpQvtCu4RH5oXVsJRHmVW53vMxrrJuxuCMyx
+        w/FRBAvBeyhv33U7v9Ng0fQIh7f1pjF+gfk3HrzgPmFmtm9dT2tFJbOL4wEQAaHb
+        utNXm2erP3QTN8NBST+Qjk=
+Received: from ubuntu.localdomain (unknown [218.17.89.92])
+        by smtp10 (Coremail) with SMTP id DsCowAD3UnAt1b5gOokXNg--.58682S2;
+        Tue, 08 Jun 2021 10:25:50 +0800 (CST)
+From:   13145886936@163.com
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gushengxian <gushengxian@yulong.com>
+Subject: [PATCH] net: appletalk: fix some mistakes in grammar
+Date:   Mon,  7 Jun 2021 19:25:46 -0700
+Message-Id: <20210608022546.7587-1-13145886936@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <162284160438.23356.17911968954229324185.git-patchwork-notify@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggema769-chm.china.huawei.com (10.1.198.211)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DsCowAD3UnAt1b5gOokXNg--.58682S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJF1rGw15ArykZr1xtFWxXrb_yoW8Gr4rpr
+        n5ur4Ygan5JrnrKwnrWan2qrW8uF4kWay3uFyayF4SvF15Gr93GF4DXrWavF45GryrJFWS
+        9rZrWFWIva4UJw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07bUc_fUUUUU=
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/xtbBRxKrg1PAC-HN+gAAsj
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: gushengxian <gushengxian@yulong.com>
 
-On 2021/6/5 5:20, patchwork-bot+netdevbpf@kernel.org wrote:
-> Hello:
-> 
-> This patch was applied to netdev/net-next.git (refs/heads/master):
+Fix some mistakes in grammar.
 
-This should not be applied.
+Signed-off-by: gushengxian <gushengxian@yulong.com>
+---
+ net/appletalk/ddp.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-tipc_node_xmit() now check -ENOBUFS rather than -ENOMEM.
+diff --git a/net/appletalk/ddp.c b/net/appletalk/ddp.c
+index ebda397fa95a..bc76b2fa3dfb 100644
+--- a/net/appletalk/ddp.c
++++ b/net/appletalk/ddp.c
+@@ -707,7 +707,7 @@ static int atif_ioctl(int cmd, void __user *arg)
+ 
+ 		/*
+ 		 * Phase 1 is fine on LocalTalk but we don't do
+-		 * EtherTalk phase 1. Anyone wanting to add it go ahead.
++		 * EtherTalk phase 1. Anyone wanting to add it goes ahead.
+ 		 */
+ 		if (dev->type == ARPHRD_ETHER && nr->nr_phase != 2)
+ 			return -EPROTONOSUPPORT;
+@@ -828,7 +828,7 @@ static int atif_ioctl(int cmd, void __user *arg)
+ 		nr = (struct atalk_netrange *)&(atif->nets);
+ 		/*
+ 		 * Phase 1 is fine on Localtalk but we don't do
+-		 * Ethertalk phase 1. Anyone wanting to add it go ahead.
++		 * Ethertalk phase 1. Anyone wanting to add it goes ahead.
+ 		 */
+ 		if (dev->type == ARPHRD_ETHER && nr->nr_phase != 2)
+ 			return -EPROTONOSUPPORT;
+@@ -2018,7 +2018,7 @@ module_init(atalk_init);
+  * by the network device layer.
+  *
+  * Ergo, before the AppleTalk module can be removed, all AppleTalk
+- * sockets be closed from user space.
++ * sockets should be closed from user space.
+  */
+ static void __exit atalk_exit(void)
+ {
+-- 
+2.25.1
 
-Yongjun, maybe you fix this now?
-
-> 
-> On Fri, 4 Jun 2021 09:47:02 +0800 you wrote:
->> When kalloc or kmemdup failed, should return ENOMEM rather than ENOBUF.
->>
->> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
->> ---
->>  net/tipc/link.c | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> Here is the summary with links:
->   - [net-next] tipc: Return the correct errno code
->     https://git.kernel.org/netdev/net-next/c/0efea3c649f0
-> 
-> You are awesome, thank you!
-> --
-> Deet-doot-dot, I am a bot.
-> https://korg.docs.kernel.org/patchwork/pwbot.html
-> 
-> 
-> .
-> 
