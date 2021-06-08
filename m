@@ -2,60 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E8E39EC1A
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 04:31:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D261B39EC1B
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 04:32:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230407AbhFHCdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Jun 2021 22:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230330AbhFHCdf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 22:33:35 -0400
-Received: from frotz.zork.net (frotz.zork.net [IPv6:2600:3c00:e000:35f::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40461C061574
-        for <netdev@vger.kernel.org>; Mon,  7 Jun 2021 19:31:43 -0700 (PDT)
-Received: by frotz.zork.net (Postfix, from userid 1008)
-        id C34091198A; Tue,  8 Jun 2021 02:31:41 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 frotz.zork.net C34091198A
-Date:   Mon, 7 Jun 2021 19:31:41 -0700
-From:   Seth David Schoen <schoen@loyalty.org>
-To:     13145886936@163.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
+        id S230385AbhFHCeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Jun 2021 22:34:36 -0400
+Received: from smtprelay0237.hostedemail.com ([216.40.44.237]:38438 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230266AbhFHCeg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Jun 2021 22:34:36 -0400
+Received: from omf03.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 2CFB4182CED2A;
+        Tue,  8 Jun 2021 02:32:43 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf03.hostedemail.com (Postfix) with ESMTPA id E8B6613D93;
+        Tue,  8 Jun 2021 02:32:41 +0000 (UTC)
+Message-ID: <150d317762ebcbe7cb824ba6850bf6dc25ee1c00.camel@perches.com>
 Subject: Re: [PATCH] net: appletalk: fix some mistakes in grammar
-Message-ID: <20210608023141.GP2193875@frotz.zork.net>
-Mail-Followup-To: Seth David Schoen <schoen@loyalty.org>,
-        13145886936@163.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+From:   Joe Perches <joe@perches.com>
+To:     13145886936@163.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         gushengxian <gushengxian@yulong.com>
-References: <20210608022546.7587-1-13145886936@163.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Date:   Mon, 07 Jun 2021 19:32:40 -0700
 In-Reply-To: <20210608022546.7587-1-13145886936@163.com>
+References: <20210608022546.7587-1-13145886936@163.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=4.04
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: E8B6613D93
+X-Stat-Signature: qz1shhxwedewfudwyyc47p91crcas61w
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX191kmvKT1LUwfoWM3gCXs+QOyLiKMaPuEU=
+X-HE-Tag: 1623119561-911196
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-13145886936@163.com writes:
-
->   * Ergo, before the AppleTalk module can be removed, all AppleTalk
-> - * sockets be closed from user space.
-> + * sockets should be closed from user space.
->   */
-
-This is a good correction, but in the other case
-
->  		/*
->  		 * Phase 1 is fine on LocalTalk but we don't do
+On Mon, 2021-06-07 at 19:25 -0700, 13145886936@163.com wrote:
+> From: gushengxian <gushengxian@yulong.com>
+> 
+> Fix some mistakes in grammar.
+[]
+> diff --git a/net/appletalk/ddp.c b/net/appletalk/ddp.c
+[]
+> @@ -707,7 +707,7 @@ static int atif_ioctl(int cmd, void __user *arg)
+>  
+> 
+>  		/*
+>  		 * Phase 1 is fine on LocalTalk but we don't do
 > -		 * EtherTalk phase 1. Anyone wanting to add it go ahead.
 > +		 * EtherTalk phase 1. Anyone wanting to add it goes ahead.
 
-"go ahead" is meant as an imperative (like "If you want to add EtherTalk
-phase 1 support, please go ahead [and do so]"), not an indicative (like
-"If you want to add EtherTalk phase 1 support, you are adding it").  It
-is an invitation addressed to future developers.
+This is really not better grammar.
+It's describing how anyone should feel free to create an implementation.
 
-Addressing unspecified people directly in the second person with "anyone"
-is a little unusual, but is grammatically acceptable (more usually with a
-comma).  Anyone reading this, you now understand this point.
+It's also really old code that no one will use much anymore, so any
+change to this module isn't particularly useful.
+
+
