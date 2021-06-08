@@ -2,128 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B00C3A07C8
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 01:31:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6DC23A07E5
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 01:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234541AbhFHXdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 19:33:21 -0400
-Received: from mail-ot1-f54.google.com ([209.85.210.54]:45909 "EHLO
-        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbhFHXdU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 19:33:20 -0400
-Received: by mail-ot1-f54.google.com with SMTP id 6-20020a9d07860000b02903e83bf8f8fcso9048976oto.12
-        for <netdev@vger.kernel.org>; Tue, 08 Jun 2021 16:31:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VA6HpTZTggQzmDDm2zRbyLc42cW39MJeFVBC4/t8+Aw=;
-        b=Me/k+jPlkZCEGcgcxyxfIdPl94uE+KVz2Ha7HuDBW8vLwTHaATIUIOLx8QhaXFirMK
-         OvThRZNN/IaIxJbwHRSVzNdWohmk46Z8gqcM5NiuzOxfHTRx4lILvpWZCTxYX/qSHWLj
-         Q5brkZxCzrdsYHMqVUyeF234/M+cDYDTArEyUGOXeWdVPH5BbigYMeVCavz2v6H67AW/
-         SKn7yLNyqa3TwFwqYml/YyLfWZ2iUJqjgQmN0N5rSdmeIWt44f+aGVzeN/PyR7HG/X+4
-         whn70dXB1PUiv+xKTaD9SW/QjYPUJPkRZKynzqNPw5Hc/crYhoezzTZgCvtB9W2mN0PJ
-         esgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VA6HpTZTggQzmDDm2zRbyLc42cW39MJeFVBC4/t8+Aw=;
-        b=PCtrM5HLfOwlhIGRq0Xg2PEV8lqvp+vR8UArkXsSEskkNzfTRpYW+K/SBc/TwceS1q
-         ZgYA9Tbc/6/23PM2/6OckD7b7qxRDvblkVLv7SHKK1ESl+sDerPUdGG9pP3/7QyWFxIV
-         k5G+D71JLRnHxZxNLs2wMj/t7USZ5E9ETY5BQpaEO1seysaxje54xvgSuj7QjsE+Gqkx
-         U7tGcDxH9znNs3f2ABHk3Bil8vrDcsI9GNIzc51z1TP1kI7myC6Kr/VyW2uOhqcPBWV/
-         Z2LvjJxmRx3awa6nD49AEo0wo8dJNChUTzUfPNSe6+sL097PGlHJDLEy1HP5KBtuxxDg
-         rJPA==
-X-Gm-Message-State: AOAM530G1WU+o36Po/eOL7gJdaGJdPY9jUlTz2zZIrVCSgOBfHKyfWFw
-        qwu1S/E4hjMS72E27xpRpBBuvUIyGUdRlXUWyTI=
-X-Google-Smtp-Source: ABdhPJycT0izrj2bSw+NaiBPb/cBpm/heEoVDQCzaDxU6QMaIey7uz3Zy1R8Pfw60+RoF1+G/VQvQ2wleMKbs0ZRHtk=
-X-Received: by 2002:a9d:3e5:: with SMTP id f92mr20059271otf.181.1623195027052;
- Tue, 08 Jun 2021 16:30:27 -0700 (PDT)
+        id S235596AbhFHXmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 19:42:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234692AbhFHXl5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 19:41:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4CE2961185;
+        Tue,  8 Jun 2021 23:40:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623195604;
+        bh=MfjY+4mOVdt6VE5TPbl5TyoBmS1OqK9boAp59L3xbOo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EpT3VbXGls2Wi3ON7ze35Z7KfRRm3PLtevL4buHNtuqW9EJKkwRTwWGfM+jZwMCrJ
+         EOZJKH7poMuzA0U3WK6ylud0W9VwB7nHq30Dv7AbXN+lLAZJV7AL3CDju+8qOIUAB6
+         EFHjYcMQd7fQ9Heo2zVaFdt7mKXNMTvE/tv31i+duQmrpChthHi288MmjGb+X/I1yL
+         LhShlhUHZ0oCnikEGxmOHcD3QLh7RLNJ89dIK6jk+MaZ7Wa9CeTegMu7IMyq6x+yBQ
+         2N6pj6o6WmDU2e+C5mqgmkq14Up4IcyKvwUe4FOUHUL/Gjgw+1EsvDm3uOENX+w8Az
+         VBqjuAPXLxGKw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3ACA760CD1;
+        Tue,  8 Jun 2021 23:40:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1623161227-29930-1-git-send-email-loic.poulain@linaro.org>
- <1623161227-29930-3-git-send-email-loic.poulain@linaro.org> <PH0PR12MB5481A464F99D1BAD60006AFEDC379@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB5481A464F99D1BAD60006AFEDC379@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Wed, 9 Jun 2021 02:30:15 +0300
-Message-ID: <CAHNKnsSuAMK8NEAbeVT7g-Rm1a2yS1JiVwxz-5Y0x_0QxXNQow@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/4] rtnetlink: fill IFLA_PARENT_DEV_NAME on link dump
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "johannes.berg@intel.com" <johannes.berg@intel.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "m.chetan.kumar@intel.com" <m.chetan.kumar@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dsa: felix: re-enable TX flow control in
+ ocelot_port_flush()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162319560423.24693.7169178263106663031.git-patchwork-notify@kernel.org>
+Date:   Tue, 08 Jun 2021 23:40:04 +0000
+References: <20210608111535.4084131-1-olteanv@gmail.com>
+In-Reply-To: <20210608111535.4084131-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        michael@walle.cc, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Parav,
+Hello:
 
-On Tue, Jun 8, 2021 at 7:54 PM Parav Pandit <parav@nvidia.com> wrote:
->> From: Loic Poulain <loic.poulain@linaro.org>
->> Sent: Tuesday, June 8, 2021 7:37 PM
->>
->> From: Sergey Ryazanov <ryazanov.s.a@gmail.com>
->>
->> Return a parent device using the FLA_PARENT_DEV_NAME attribute during
->> links dump. This should help a user figure out which links belong to a
->> particular HW device. E.g. what data channels exists on a specific WWAN
->> modem.
->>
-> Please add the output sample in the commit message, for this additional field possibly for a more common netdevice of a pci device or some other one.
->
->> Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
->> ---
->>  net/core/rtnetlink.c | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c index 56ac16a..120887c
->> 100644
->> --- a/net/core/rtnetlink.c
->> +++ b/net/core/rtnetlink.c
->> @@ -1819,6 +1819,11 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
->>       if (rtnl_fill_prop_list(skb, dev))
->>               goto nla_put_failure;
->>
->> +     if (dev->dev.parent &&
->> +         nla_put_string(skb, IFLA_PARENT_DEV_NAME,
->> +                        dev_name(dev->dev.parent)))
->> +             goto nla_put_failure;
->> +
-> A device name along with device bus establishes a unique identity in the system.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Sure. To uniquely identify an abstract device we need a full path,
-including a device parent. In sysfs it will be a device bus. But
-IFLA_PARENT_DEV_NAME was introduced to identify the parent device
-within a scope of a specific subsystem, which is specified by the
-IFLA_INFO_KIND attribute. IFLA_PARENT_DEV_NAME should become a sane
-alternative for the IFLA_LINK usage when the link parent is not a
-netdev themself.
+On Tue,  8 Jun 2021 14:15:35 +0300 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Because flow control is set up statically in ocelot_init_port(), and not
+> in phylink_mac_link_up(), what happens is that after the blamed commit,
+> the flow control remains disabled after the port flushing procedure.
+> 
+> Fixes: eb4733d7cffc ("net: dsa: felix: implement port flushing on .phylink_mac_link_down")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> [...]
 
-You can find more details in the description of IFLA_PARENT_DEV_NAME
-introduction patch [1], my explanation, why we need to make the
-attribute common [2] and see a usage example in the wwan interface
-creation patch [3].
+Here is the summary with links:
+  - [net] net: dsa: felix: re-enable TX flow control in ocelot_port_flush()
+    https://git.kernel.org/netdev/net/c/1650bdb1c516
 
-1. https://lore.kernel.org/netdev/1623161227-29930-2-git-send-email-loic.poulain@linaro.org/
-2. https://lore.kernel.org/netdev/CAHNKnsTKfFF9EckwSnLrwaPdH_tkjvdB3PVraMD-OLqFdLmp_Q@mail.gmail.com/
-3. https://lore.kernel.org/netdev/1623161227-29930-4-git-send-email-loic.poulain@linaro.org/
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> Hence you should add IFLA_PARENT_DEV_BUS_NAME and return it optionally if the device is on a bus.
-> If (dev->dev.parent->bus)
->  return parent->bus->name string.
 
-Looks like we are able to export the device bus name. Do you have a
-use case for this attribute? And even so, should we bloat this simple
-patch with auxiliary attributes?
-
-I would even prefer that this patch was merged with the attribute
-introduction patch into a single patch. This way the purpose of the
-attribute will become more clear.
-
--- 
-Sergey
