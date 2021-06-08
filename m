@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EECF13A0672
-	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:50:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D8A03A0680
+	for <lists+netdev@lfdr.de>; Tue,  8 Jun 2021 23:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234880AbhFHVwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 17:52:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47300 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234788AbhFHVwC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 17:52:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 80DAD613BE;
-        Tue,  8 Jun 2021 21:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623189009;
-        bh=7HaHqXDkQAaRmLuluhwhaz+pMlSPbe51C6w0nDiCRmU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iP6t6aRPlOFIxZCTjewUjpLHYg2kCRGviV1B752hTRLqurh/qmP6tWEmJ4d+uuM43
-         tuYfk9J8LddEoRvbGDgNjxyY7FormTJT8aTH7jklV0QNnS6LraOKFC4XtBCxRSfehx
-         SpaPgyaQ7cqU9rmCMbfPqJRzkXdG0qD4Cb57BUbQqRmcf4fMc/9bYNHR9HQZB5cWjn
-         ow4tLwD2+kQD6efQ0MUQDab28jzz1RUso0mMW46I1FLwQu1Dcp0F1X4XnzIuyv+473
-         uwVHj/Xr2dCFjiC/nWz4ZbmS1qippQDc/N7tKrSldCxRwOVQzzYb25HxO/4XRjmSax
-         mKo7HlgmLMEiQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7A558609E3;
-        Tue,  8 Jun 2021 21:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234839AbhFHWAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 18:00:22 -0400
+Received: from mail-ed1-f44.google.com ([209.85.208.44]:44840 "EHLO
+        mail-ed1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234725AbhFHWAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 18:00:21 -0400
+Received: by mail-ed1-f44.google.com with SMTP id u24so26253556edy.11;
+        Tue, 08 Jun 2021 14:58:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1GgIM9q2yv+S/hbk8Q7E6JbvUMBu7C8HzNxlIoVCmk0=;
+        b=CdxDwO0i61xJE4WZR0yWRqXWpvbHZ4F57wswSDvCELatiFaKDsOayisBbkrUlXFzf/
+         kz7nvmQtqPorajhf50xRVcly9eLEo/4MTyXm5XkTmcZqqBPUHIHzJ/sBgWk9f9YDd/0f
+         2B+fSuSwfY87yghlqID+fTia/adY7ynIXWfErBqSApFLojNPqj5Wu451SUjmbJy0TEVP
+         FBub2eCuk7sQdn+c6x2KF26y90Q6ITjTKXZfZ1LmVQ8mFcLIgo83VLjS6JTiUdAtMlKV
+         SXYV9ccFtVeEYadzH7Hq6DrXMhJTNqFkJzESo60wRApYwFa5tY2uQMIBRxoTpgUGoY59
+         Mr2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1GgIM9q2yv+S/hbk8Q7E6JbvUMBu7C8HzNxlIoVCmk0=;
+        b=LXtRlzLJosTAW0TaUHPOtgOZEfCgPKofPlrNTIuh2FtUwgc8OMdYA7yssLqcZlgN23
+         ilEm+wKJDlRlj9ainq0xWr4OouT3kiEDEhuaysiIDXpiwVJPHnyTVd/VtKQ+nFHhFC5p
+         itVVWFjZQjdhGiUDKlJYVhdDXJ6NtmRaddjwlH3TPQ/66s7Xtxhel676DDtbsZdCN3vM
+         1ZLTrnJb4V7lqybkSzxqvl7Sib6tRrRZdcNXSCchAGZpK87eUi7KIZTEdPGxaXjd0bGM
+         bl6kK4rgvi26Rckzbv3efwnMV6a1zRPX4T/UX/+22ZG6CnSyM0taSnHZeD+VRO5T24Uq
+         076A==
+X-Gm-Message-State: AOAM531qYvfzVOhlp6PT7gm4QDYslhpd6Jlih7wIzjJPbZgBdAnRvxlX
+        mQUqwN8doHIU4ew4ic8+mP+XbfNzJQw=
+X-Google-Smtp-Source: ABdhPJz0I8y0Zosfr0ARoXE+tH2lDvOKJ+YV+0JSQaMjjok+0ByKOBo0RxuMdMcaYtMkYL4ZRQe30Q==
+X-Received: by 2002:a05:6402:51c9:: with SMTP id r9mr28249608edd.238.1623189433848;
+        Tue, 08 Jun 2021 14:57:13 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id v4sm325401ejh.86.2021.06.08.14.57.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Jun 2021 14:57:13 -0700 (PDT)
+Date:   Wed, 9 Jun 2021 00:57:12 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, mnhagan88@gmail.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2] net: dsa: b53: Do not force CPU to be always
+ tagged
+Message-ID: <20210608215712.3ae24qudzvbzknww@skbuf>
+References: <20210608212204.3978634-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net-next 0/4] Add NXP SJA1110 support to the sja1105 DSA
- driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162318900949.8715.14591221292425232059.git-patchwork-notify@kernel.org>
-Date:   Tue, 08 Jun 2021 21:50:09 +0000
-References: <20210608092538.3920217-1-olteanv@gmail.com>
-In-Reply-To: <20210608092538.3920217-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        vladimir.oltean@nxp.com, linux@armlinux.org.uk,
-        hkallweit1@gmail.com, robh+dt@kernel.org,
-        devicetree@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210608212204.3978634-1-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue,  8 Jun 2021 12:25:34 +0300 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, Jun 08, 2021 at 02:22:04PM -0700, Florian Fainelli wrote:
+> Commit ca8931948344 ("net: dsa: b53: Keep CPU port as tagged in all
+> VLANs") forced the CPU port to be always tagged in any VLAN membership.
+> This was necessary back then because we did not support Broadcom tags
+> for all configurations so the only way to differentiate tagged and
+> untagged traffic while DSA_TAG_PROTO_NONE was used was to force the CPU
+> port into being always tagged.
 > 
-> The NXP SJA1110 is an automotive Ethernet switch with an embedded Arm
-> Cortex-M7 microcontroller. The switch has 11 ports (10 external + one
-> for the DSA-style connection to the microcontroller).
-> The microcontroller can be disabled and the switch can be controlled
-> over SPI, a la SJA1105 - this is how this driver handles things.
+> With most configurations enabling Broadcom tags, especially after
+> 8fab459e69ab ("net: dsa: b53: Enable Broadcom tags for 531x5/539x
+> families") we do not need to apply this unconditional force tagging of
+> the CPU port in all VLANs.
 > 
-> [...]
+> A helper function is introduced to faciliate the encapsulation of the
+> specific condition requiring the CPU port to be tagged in all VLANs and
+> the dsa_switch_ops::untag_bridge_pvid boolean is moved to when
+> dsa_switch_ops::setup is called when we have already determined the
+> tagging protocol we will be using.
+> 
+> Reported-by: Matthew Hagan <mnhagan88@gmail.com>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
 
-Here is the summary with links:
-  - [v3,net-next,1/4] dt-bindings: net: dsa: sja1105: add SJA1110 bindings
-    https://git.kernel.org/netdev/net-next/c/070f5b701d55
-  - [v3,net-next,2/4] net: dsa: sja1105: add support for the SJA1110 switch family
-    https://git.kernel.org/netdev/net-next/c/3e77e59bf8cf
-  - [v3,net-next,3/4] net: dsa: sja1105: make sure the retagging port is enabled for SJA1110
-    https://git.kernel.org/netdev/net-next/c/ceec8bc0988d
-  - [v3,net-next,4/4] net: dsa: sja1105: register the MDIO buses for 100base-T1 and 100base-TX
-    https://git.kernel.org/netdev/net-next/c/5a8f09748ee7
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
