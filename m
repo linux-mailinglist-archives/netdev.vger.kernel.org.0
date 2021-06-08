@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6653A07EB
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 01:40:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 325B23A07EF
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 01:40:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235661AbhFHXmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 19:42:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58666 "EHLO mail.kernel.org"
+        id S235705AbhFHXmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 19:42:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58678 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235536AbhFHXl7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235554AbhFHXl7 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 8 Jun 2021 19:41:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E679A61352;
-        Tue,  8 Jun 2021 23:40:05 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0104E61375;
+        Tue,  8 Jun 2021 23:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623195605;
-        bh=7smAwj36Y0do9tPeG4lDnw5wjf9WaWS6wNo+jMx9fAk=;
+        s=k20201202; t=1623195606;
+        bh=gmlE+JZ9J5AR9yqjxmn/4DVZPPZmM0oZ53Y8Mn1pMYw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=W9V82pPbs9BA1Iy+PCM9pT3hvKTvpxJxl7nbsLM/bQ20su1N3E6Ihr3Dz1MH1uncU
-         foJGJph/uLvPqbp+gMR1oifyyUvSx9PTrIy0Rx7u5yoNGXnmecixlfncK3i+jaB/Yh
-         k8mn66u75RE15po94zrha8aVGm4m4t1MLkFqFvBapSZVVGUHyYeO0SIkqDOG/F1nfS
-         3emxvnhH172bRCmpNAVfNzlxWk/GenGTEFQ9LFXCUKtm4yMdxK/sG9+kqhU1isu7Ne
-         /5Td7wsf5h7P+F5vZjfW2U2CaUcTHMjJwuiMb11OR9y3JwfG+IjZk4qTgcDc17CGG6
-         5PVxkME+oIKqg==
+        b=apGcRViiiPRrsqPTc2A12eoy/04xG+4tNVYXcipUsn7YjaIlXUjKhil9dTdZh5NHw
+         u3DoGUax9NiUpABK9AxC4OmAvWYE4Yz01S945w4dkjPfuaO7UfKFrHX05JApBmwLN6
+         dQ4tNt8GqH3DQ6d8Ey2j45vewztciOz/L0j/4zw1Z4YRhuK4K2GkHiqT73o9RBpihN
+         OkXK/eyekj206wZ/MtjxZgcSR+itfTBPyl5LJ0kd5I9qSwGaprec5mYNiTlQAPYvK3
+         otprkkAByTPisWAh9SsYNOkekRuVHp6Jse2LuUcXady+PIrDJH20y0T8uTHQJLPhLk
+         OSUXfflf3NcQA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E07CC60CD1;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EBE11609E3;
         Tue,  8 Jun 2021 23:40:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ethernet/qlogic: Use list_for_each_entry() to
- simplify code in qlcnic_hw.c
+Subject: Re: [PATCH net-next] net: dsa: felix: set TX flow control according to
+ the phylink_mac_link_up resolution
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162319560591.24693.16780473741484256213.git-patchwork-notify@kernel.org>
+Message-Id: <162319560596.24693.11715284868769075021.git-patchwork-notify@kernel.org>
 Date:   Tue, 08 Jun 2021 23:40:05 +0000
-References: <20210608132908.68891-1-wanghai38@huawei.com>
-In-Reply-To: <20210608132908.68891-1-wanghai38@huawei.com>
-To:     Wang Hai <wanghai38@huawei.com>
-Cc:     shshaikh@marvell.com, manishc@marvell.com, davem@davemloft.net,
-        kuba@kernel.org, GR-Linux-NIC-Dev@marvell.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210608111651.4084572-1-olteanv@gmail.com>
+In-Reply-To: <20210608111651.4084572-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        michael@walle.cc, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +50,20 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 8 Jun 2021 13:29:08 +0000 you wrote:
-> Convert list_for_each() to list_for_each_entry() where
-> applicable. This simplifies the code.
+On Tue,  8 Jun 2021 14:16:51 +0300 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> ---
->  drivers/net/ethernet/qlogic/qlcnic/qlcnic_hw.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
+> Instead of relying on the static initialization done by ocelot_init_port()
+> which enables flow control unconditionally, set SYS_PAUSE_CFG_PAUSE_ENA
+> according to the parameters negotiated by the PHY.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] ethernet/qlogic: Use list_for_each_entry() to simplify code in qlcnic_hw.c
-    https://git.kernel.org/netdev/net-next/c/78595dfcb29b
+  - [net-next] net: dsa: felix: set TX flow control according to the phylink_mac_link_up resolution
+    https://git.kernel.org/netdev/net-next/c/de274be32cb2
 
 You are awesome, thank you!
 --
