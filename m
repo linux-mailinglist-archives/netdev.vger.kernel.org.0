@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6323D3A190A
+	by mail.lfdr.de (Postfix) with ESMTP id 000893A190C
 	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239195AbhFIPSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 11:18:49 -0400
+        id S239177AbhFIPSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 11:18:53 -0400
 Received: from mail-eopbgr80090.outbound.protection.outlook.com ([40.107.8.90]:23438
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235373AbhFIPSp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 11:18:45 -0400
+        id S239162AbhFIPSu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 11:18:50 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fn8N9kyY8SQu8O4vz7l2diTBdfZ+Q0rMxoepEWXsLkF+poMfDZF852J8FXnA3cEInjvj9HElxIaG+/P+0ltcz7sIJYSqj/+n/NgOSZWhenPoXfi+HSkk7QrMVtQSRNHLi8d5/582tdui1atIz4BfthBzJi7qXp5tXacp5tvsP/myUJQE/N7BYWAV1RoV8aQX9jVXeMd7HnS6tcfpwfPGqlyBfp8dYqgYN5XtyNGuYsVyM4wfRSROGQTCOPtdXmulDiCL1u8ddkDlsxbkwoo1IJhOuD7B6inrOF17LdihqIBTXm0zHEX8RwaNxS5+vZB5PTY+oLfYFlLo0P+gkkBDng==
+ b=Bir8F7cfSMK8VtvvkbivVHTLrVLt2LIKbZ5Q3ogtgq+TlmiP7dquFb1efUtweL6OybytgOssz3qk9KCUm0zzdAvaFyD6V4/C0HWgCmNyLfsmrvsrKVEKR6IauQb6DlrQcKvBAur6KhGmFmCAWf2OKUu1xV76YNFee7w8nGq6hAj2nVVI3n7gTVGnZZm/AA3cWLp1WnlyItBM03AhTF/3c1E+ARAeZzSlNeP19HIStCyY/6I8IIG/mKoAHyad0czJ/6xBmcufkLuU2fePZCoTWQNvWccinM9sHiQHqpbXUqw7EMQUtXHlShMqDQ/SkLeojKL9DfAUOwa18323ZeeyRg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fKAkV/OPpzpSQKXKJfSfJxIoQpc+PhchYElk4pIUACk=;
- b=KgSW9SbNBATUXWMvMhpjBI0wa7Tj2SxSVfMzY2hKCytX4EFk56MAmPK1PgCgaBJ84Xs9g7V3nMl4G1VDMQFxK56WiJM6Zz4BSABU8FVwMiQH7p9yC5lLSyZRypE35xAQWmmE4GstBxrjKFSs0zn0sfarDS+HKKReiNs5+bTvSBmF98p+10FhapYKLmKR1JSBKeJkjamrjVQTtiN3Iizb4f4M1+sy7emW+z/8cORfvypmfjrOEiE95mWye42ZioGX2V2LQdfI8EGHzzy4qRP5j9SfvPqGhU2DphxO/I2er8FdXSu28QHs8LDUJiBofe/lRs8UqdeYk4frV7UASsyWQw==
+ bh=2Qk3NsaokKMhNVfRwOlR1LecjFPqaGPOWYjvNfSa/9c=;
+ b=J27RtnIyyQO/5Ou+2janFvm0IqDoMHH2zlpbyFMrY0xngTK6cRJrNV4lkZTtReoCeACfD5y6q3SrEzcAPF99dVQGwi6uwy9sifMn80+dYBDoDa9bdkqjQORdSlBKDgVLwcf6uF5J1rAI12nRtXsbl+qhglXaTGyQcLRoaPWiPDodljBZ732UegB0OoMq6Q32wqPzzVLPU2D2JeP+y+kq3Q/W/w7SmY7uP5GSA1FSiQChCWLCeAtSNNAQENlUveiroYCL8kyZ0tdItqSn9Ci0fJz2EmTNrcsFKD+n3jgjaBVt+71TF5HB4G1Mvwyz9e6kT6oYAhEEioicn8s9Mghehg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fKAkV/OPpzpSQKXKJfSfJxIoQpc+PhchYElk4pIUACk=;
- b=vOUEYNjJ5otP2kVOxJjmA3prIJPOEmvlFD8SUXicsJn5QUpojOD3X9fIbgB5Cnn+gxHOIu7EV+tDQXv60YwkRzDRpsFJ+OeDZYsF2qS6J5/k+t9luv14PQTfzCBK9zgz88kmxAOeg+VzJI0VJmqkNE6sR4+pCKKdWiHUsEXlDEU=
+ bh=2Qk3NsaokKMhNVfRwOlR1LecjFPqaGPOWYjvNfSa/9c=;
+ b=t/kddqTFi8sLnUSXeFBAFcvoMaJ5t/6TJKi4b+Z1Kx7Nkzt4xwUVkHnfiPj6utenr/pFISRLD59MJxbRpwo1rg9mV7BxRw7R5Dm5RALmbVGX9Q02jxoIfoVFGhciMoFMnC4P+K8txchRWSlupvV4K7z5MFW0dmqm8FOeytglx9c=
 Authentication-Results: plvision.eu; dkim=none (message not signed)
  header.d=none;plvision.eu; dmarc=none action=none header.from=plvision.eu;
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
  by AM9P190MB1427.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:3ea::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21; Wed, 9 Jun
- 2021 15:16:49 +0000
+ 2021 15:16:52 +0000
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe%9]) with mapi id 15.20.4219.021; Wed, 9 Jun 2021
- 15:16:49 +0000
+ 15:16:52 +0000
 From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 To:     oleksandr.mazur@plvision.eu, jiri@nvidia.com, davem@davemloft.net,
         kuba@kernel.org, Vadym Kochan <vkochan@marvell.com>,
         Taras Chornyi <tchornyi@marvell.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 09/11] net: marvell: prestera: devlink: add traps with DROP action
-Date:   Wed,  9 Jun 2021 18:15:59 +0300
-Message-Id: <20210609151602.29004-10-oleksandr.mazur@plvision.eu>
+Subject: [PATCH net-next 10/11] net: marvell: prestera: add storm control (rate limiter) implementation
+Date:   Wed,  9 Jun 2021 18:16:00 +0300
+Message-Id: <20210609151602.29004-11-oleksandr.mazur@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210609151602.29004-1-oleksandr.mazur@plvision.eu>
 References: <20210609151602.29004-1-oleksandr.mazur@plvision.eu>
@@ -56,310 +56,372 @@ X-ClientProxiedBy: AM0PR06CA0092.eurprd06.prod.outlook.com
  (2603:10a6:208:19b::9)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0092.eurprd06.prod.outlook.com (2603:10a6:208:fa::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Wed, 9 Jun 2021 15:16:48 +0000
+Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0092.eurprd06.prod.outlook.com (2603:10a6:208:fa::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Wed, 9 Jun 2021 15:16:51 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: baa9b42f-edc4-400e-de5b-08d92b599a3f
+X-MS-Office365-Filtering-Correlation-Id: 526c133a-6ef5-4a9d-3fdf-08d92b599bf5
 X-MS-TrafficTypeDiagnostic: AM9P190MB1427:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM9P190MB14276AAA04F6CCCF563C7E07E4369@AM9P190MB1427.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
+X-Microsoft-Antispam-PRVS: <AM9P190MB14274AEE81377E528AA2C484E4369@AM9P190MB1427.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1051;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cHgD97P41tisIMoGCPokhd7h9TJv/XrMM7WYOaOlIFRJbvw39Dx92Ut0M1TqozO2DBELs9wDTkPkU48rgkdlff4lq/u1G8xF9mULKBqacjBlQwnT+gGYDieWpZcehKFKkZXN2YebsWShzlxn4dHq9bq22fNe8eZjZi8nOPCcUSSdtll95Ge/SYfvuJQR3I8wIRZLKmrHMwihuePEv8x0l0c+bqBjO8fjAsItR+yibZsCwE3Kc/r8uaFz+ZVa+xTHKFtzstFAQD8NTCIfPLwNhvSEjibB4Vfrwf2COrZdCeSdO64xwQIw1foRiz7EQy78pXU5o0XjiHa9Wjb67NDSKVcINVTpHl0we8/1vpI1OOeqkABjl4FEvvqli6S6wQKtChk+siX9naWYWSPk9y6xwcYJ+uVKzkK6U29/owBoshbL7hVKtvaT+6eS+YNG0JNfE5Rk3Tr4gOCWomHZH1L9uliJiE0nsKRfrBsH058Os/OX8G3XJbvFt+tfTf+D7zzcUZ/hZ2fR46JT9iwmWFGPrEXRQUbRnQgP/w2wdpe3U8wkilBhTJWoSJmsCWcHWTVvdAjx0ZBLmVBg44u3c8BA+DeUTXS29GwNAdr4yBHjm931ySh8JMbb40laxm9fq2ftuOLkGktmW931dZ2dR9ag0ruqSUVbjeIu6mSmHynmLCc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(376002)(396003)(136003)(39830400003)(366004)(956004)(52116002)(2906002)(1076003)(186003)(66556008)(66946007)(16526019)(6506007)(2616005)(6486002)(6666004)(26005)(66476007)(38350700002)(8676002)(36756003)(86362001)(4326008)(110136005)(5660300002)(478600001)(44832011)(6512007)(38100700002)(316002)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?4VB8/RDIjtZ4FKHzQ9AOeyu7idFzGXlodtuJq9jJ0VuF0TANQAXYyHsDdiNy?=
- =?us-ascii?Q?C1QBBBslM3HpJH6Glum+IqwKmaarDP4kjLj6BPjoj2xc4XOfC9iusS3U/8PD?=
- =?us-ascii?Q?3J5rmTMBqo4/CbwpQGfVhBrx6GyedhZwsRP1ARoCtQbX+p//w+UhJZDkeJCI?=
- =?us-ascii?Q?OWsw3nOb9GG+vT1bkGQ73eyHvNFWgUMpLBSmdK2dY1HlE3UoNiWjJv2Zuw7p?=
- =?us-ascii?Q?ScQwRy4XkOVNP+lg7F9HUD5DThUClbeOT5dktQxy6SWxW6jzaCDkiu7uUbwA?=
- =?us-ascii?Q?G9sxzubj265TGdlNd3GLJ8WhIke52o/GnzmWdVx4nWjtzrtILeqH0skokFmh?=
- =?us-ascii?Q?ok04nhi0qx7bsuWjJxS7WJqEVGdOs9VCQb1WIF2g53ySHCpIJ57sizbKG3Sj?=
- =?us-ascii?Q?SWuUKTl/8KrQquBX3zLLyI46oK+nh1NFHu7ViGCUOk+DSnBknggPs3nEKAeB?=
- =?us-ascii?Q?YL93sCzaMZVxQT0AoIGm3PSMBrU6VIoskmAhGGSZ3WthoJ06zGz43mj0C+Eb?=
- =?us-ascii?Q?RQs47nUanLtXlE8zXjEahXe2p9UOB2EBKmr6/j0a73sHXuya90yLhFwg8Wq+?=
- =?us-ascii?Q?zJaBgfthkV8U0xNhJc3gmwuFEEjzcTFICTmMmiUy67INNMS6Yqr6/HDvL8xA?=
- =?us-ascii?Q?5w7D3QYvitjAF9iRkW7Jx0v9xgd/6+3Y3EbTjI6RASWqwLZksF6UaxIZoNYJ?=
- =?us-ascii?Q?3eTLwLFwdkuCS3R4bo0ETk8GfUcwrF4hC6QED5SeDFOq+PW/DO+MdQGqxsuw?=
- =?us-ascii?Q?ENaUc1P6mLOdaC538hV9T8VofquV68TdXHPKuW+A+rEd0caBsMSbdGGOriul?=
- =?us-ascii?Q?2h3Nk89svCRte0QnBqjATGJypg85FjmYxwr8XBiDNnib1MgTtHjLtcg3u/nD?=
- =?us-ascii?Q?2o3r9cHDDZ6bJOj4kEIp9tTxpz89E8zNEQdGDlNYxoJ9bYDKqWFw5CZqAlPQ?=
- =?us-ascii?Q?saCKM2wshyoSUEwrvwEl9WkME9v+QQ2zQ4dpUXPMlJz2ABxpsB9CGcyvqrG5?=
- =?us-ascii?Q?4uMz6QzZ13RVLiQ17Rgykk4dWWBA13soE1zck/T/v5juOrbISSr9DOD6SkIQ?=
- =?us-ascii?Q?FUF+VVW/O6LOV5qxaPDwKi6UW7ne3ui+TWLOHCJ1/AJHJegEe5xa94iWP0Xw?=
- =?us-ascii?Q?oXvq6Lf5ezErcIAxJhoqcLvKHwQrApliNvgz2rYFc+tg0EhaHoFlCT7SJE8e?=
- =?us-ascii?Q?NY4YVSofLa5Hligj4hm+sYTF8l7jBy0sLurArGgMujJFdvp024vWkf8HreC8?=
- =?us-ascii?Q?tl6AeeERqHq+y4S9MpuqSWp8rRXvbYHVW7AHve//tWoZDKPzGqTX/lhqj+i/?=
- =?us-ascii?Q?X7M5zDp3h05vFZiX/cPlskcg?=
+X-Microsoft-Antispam-Message-Info: ZKx1SIIqnajHcJLqt4rKFydWo+496THIerDk4oXdzj65flO10KS5vxBAzFyUEjL7A7XC1SiG5sNTU7fEKMSb8zkAK1Qt7K3GUH98W+qWf370EMEYVoENaMqH4w0U0Z5Fs5FNOfK98psblL05k/YcjjNUoE8qgIbGomgSh4vA5kU/c9WRrhvXDmzmYz/bJqM+JxfljWs4dN8KrlaYPVnoQr6i6pFnDUTpw3CYV3dpsY4KaNKJCzAAR9xHdC8R1Wg7BPtwRCu73YLT6bUBBNbVzFqT8/ybtOLYHx3c01xs2D82y5SJHIqkoX2gFs3XllOrJEIY6mOwLUsYdBS8lyCBtlm5vmeLxxgYXB+11ztrm7qEwyhMGnwESVQgXuMTHuPeGfhcyqRoXwwHQHUS2CGNawyts4yCbN7/2hBRAXCGScuqG2sUqp4YmFP9PxmNTJal4I8+cBwMEOMI59ohr3DBY8uo5U1D2ODoVTajBuRDMujhteErDgSPPxmG3q21wqdZdFzB/fIHZBoAjvKYrAyD6O/GhsZyybn+V02QT7CD2avjIwyROwoRfVY8F8CZQ1WHKKm2bkyFYIVUCDblaB1IEr6suJbVIOKURL8frfBHrvTjsQIqCGfRgdsxAfCA5/20FNUJsOnTrdPFM+Z+QHQII6a8kA6U1EOus/W2Is9drgs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(376002)(396003)(136003)(39830400003)(366004)(83380400001)(956004)(52116002)(2906002)(1076003)(186003)(66556008)(66946007)(16526019)(6506007)(2616005)(6486002)(6666004)(26005)(66476007)(38350700002)(8676002)(36756003)(86362001)(4326008)(30864003)(110136005)(5660300002)(478600001)(44832011)(6512007)(38100700002)(316002)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?oy80KUBCI8n5Oii9r/XLknvyZ7K2HK2DGqjTgH6xTDWTNbcEAqCEd2nXhkuS?=
+ =?us-ascii?Q?JlNyNKGx22EGiThX1Zy13/crbDoO9ungdtHbuOXDomIgRX++f9N3GjcUDb3k?=
+ =?us-ascii?Q?ycdTW8DRp4prowYhbaOYsYTUoiyOHFYGJ1J1sVzefBZbYxtMvkmopA9Sn94O?=
+ =?us-ascii?Q?9Hkia4mnatBRuqZAgTz0ZQI47gx8nhrqSz7HG7EUF84UU1kgiJBbX6aTh2hJ?=
+ =?us-ascii?Q?uQ2uV3vevO2BLQzW49ZoVnU9Ju+sqX6HewVhD+bMYk763DL2Xlr7fjxwZUfG?=
+ =?us-ascii?Q?+UaRW8ukM946R1gJiX/6cGDE9OQ/yOoaeX5mf/ecWI7uUU24TT2BPpc6fjvK?=
+ =?us-ascii?Q?8L8PycPntB0p2LBf/f+8ArRjjVHL+B9cy6vX33mF6SqqDbq31xbsEpzEwqoY?=
+ =?us-ascii?Q?jILlCQUazOrX645S+n3g0OI0u1VFcsjzvpLn9p5cA/Ww4TAv37vZ5cy2TlJh?=
+ =?us-ascii?Q?2NPLG1aKvqPKSmMjxf756LNe9YToQaBobxPrHjZTwZSJxkVjJL1MVzscolQd?=
+ =?us-ascii?Q?hPacE5FwGYd75Hd3QAI3T2GUq4WAMabBuan9SFWRaZfZwhX4HzUmvjWmDOle?=
+ =?us-ascii?Q?p23oTWiTNJzcoejiQ5HZbLTgrk98RMVy6MmuTpHDn0lMpf89mifYWWC1BpPW?=
+ =?us-ascii?Q?2x2edQr86rieEI98qQKaCc603CweiFIGXlncuQMjWFK+OasW78vU8jvUwFgM?=
+ =?us-ascii?Q?CV7relv2b0C0v7/jKxf43zufrsfYCGI4XX/1oYYwewSJzJQ/FTaNibUr/zYj?=
+ =?us-ascii?Q?p6WzB8S3JEHw5cSM+KMB6SXr8f6kwFlukHONVtsbDm4u3C3Vi4ekpJSY2s1i?=
+ =?us-ascii?Q?oHLKFn+BayCwbZa1TtPBCyTFisWU/7eyjMQU3DBoUdbxR/9jkSCNpA2+22RP?=
+ =?us-ascii?Q?+JwakDQNAIJ/59ZsPMW/B8FEfHFI/wHupBhpj1e/jUdBYvXQsI/st5+vkVkZ?=
+ =?us-ascii?Q?LLQEAXLIBTMKUdaUF2cL02rf1TWudu4bzvTfIE40bgg6o3jPxlO9qOGeazeq?=
+ =?us-ascii?Q?ct7dpX9Zvm5e4hwAb74XjeFLIzrBSG7zEGJ+Wk9f2kjZfottlbwyeQcnOvOr?=
+ =?us-ascii?Q?boKSn8Yj34Nmz1lavBWUNS0Hgq8DiouiCaaPd/Tj2sob0vK9RDw9X4+B2kjo?=
+ =?us-ascii?Q?MpsiyR8Xh4oHVkANeT0EliNpK+V9kzbxOtWkatolZzTERSkecOTiB9/+u1z/?=
+ =?us-ascii?Q?ZyfW3mg5LaHxnIS3ozSCrWPxLQnbYcGjKHqPY7ni7d9/aejGL1CRd/+f1CoT?=
+ =?us-ascii?Q?hakHpeKcr0LWpJPC5tdKJZlJSYEO/RO5Uc+tk2B6XmyGGR0n8WJFcjs2JFq0?=
+ =?us-ascii?Q?m/+uzCnYka3OC21+3FKvH7PS?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: baa9b42f-edc4-400e-de5b-08d92b599a3f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 526c133a-6ef5-4a9d-3fdf-08d92b599bf5
 X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2021 15:16:49.1458
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2021 15:16:51.9306
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9Xwv+2H8kHpfBSMRw7RBPSUGdYreMPf4Km1G1Mmn0XfuX53Os/4UEiqKk/HcqktvlGHdlPxYvroqPZbong4kMv7dq7jDZaPfKuSrJ06gR38=
+X-MS-Exchange-CrossTenant-UserPrincipalName: FC3zfmGdmapekZd2Mv+8Hb7ivgQA/DDu2zVtrx8APc21J5MfhoLZPUVc85FuklYP1ox6dshH080QFZuQfPLZ4Y6TV245V09YM8LQGzExucs=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P190MB1427
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add traps that have init_action being set to DROP.
-Add 'trap_drop_counter_get' (devlink API) callback implementation,
-that is used to get number of packets that have been dropped by the HW
-(traps with action 'DROP').
-Add new FW command CPU_CODE_COUNTERS_GET.
+Storm control (BUM) provides a mechanism to limit rate of ingress
+port traffic (matched by type). Devlink port parameter API is used:
+driver registers a set of per-port parameters that can be accessed to both
+get/set per-port per-type rate limit.
+Add new FW command - RATE_LIMIT_MODE_SET.
 
 Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 ---
- .../marvell/prestera/prestera_devlink.c       | 91 +++++++++++++++++++
- .../ethernet/marvell/prestera/prestera_hw.c   | 35 +++++++
- .../ethernet/marvell/prestera/prestera_hw.h   | 11 +++
- 3 files changed, 137 insertions(+)
+ .../net/ethernet/marvell/prestera/prestera.h  |   7 +
+ .../marvell/prestera/prestera_devlink.c       | 134 +++++++++++++++++-
+ .../ethernet/marvell/prestera/prestera_hw.c   |  25 ++++
+ .../ethernet/marvell/prestera/prestera_hw.h   |   9 ++
+ 4 files changed, 174 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-index f59727f050ba..d12e21db9fd6 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-@@ -4,6 +4,7 @@
- #include <net/devlink.h>
- 
- #include "prestera_devlink.h"
-+#include "prestera_hw.h"
- 
- /* All driver-specific traps must be documented in
-  * Documentation/networking/devlink/prestera.rst
-@@ -34,6 +35,15 @@ enum {
- 	DEVLINK_PRESTERA_TRAP_ID_SSH,
- 	DEVLINK_PRESTERA_TRAP_ID_TELNET,
- 	DEVLINK_PRESTERA_TRAP_ID_ICMP,
-+	DEVLINK_PRESTERA_TRAP_ID_MET_RED,
-+	DEVLINK_PRESTERA_TRAP_ID_IP_SIP_IS_ZERO,
-+	DEVLINK_PRESTERA_TRAP_ID_IP_UC_DIP_DA_MISMATCH,
-+	DEVLINK_PRESTERA_TRAP_ID_ILLEGAL_IPV4_HDR,
-+	DEVLINK_PRESTERA_TRAP_ID_ILLEGAL_IP_ADDR,
-+	DEVLINK_PRESTERA_TRAP_ID_INVALID_SA,
-+	DEVLINK_PRESTERA_TRAP_ID_LOCAL_PORT,
-+	DEVLINK_PRESTERA_TRAP_ID_PORT_NO_VLAN,
-+	DEVLINK_PRESTERA_TRAP_ID_RXDMA_DROP,
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
+index 2c94bdec84b1..4b99a7421452 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera.h
+@@ -60,6 +60,12 @@ struct prestera_port_caps {
+ 	u8 transceiver;
  };
  
- #define DEVLINK_PRESTERA_TRAP_NAME_ARP_BC \
-@@ -84,6 +94,24 @@ enum {
- 	"telnet"
- #define DEVLINK_PRESTERA_TRAP_NAME_ICMP \
- 	"icmp"
-+#define DEVLINK_PRESTERA_TRAP_NAME_RXDMA_DROP \
-+	"rxdma_drop"
-+#define DEVLINK_PRESTERA_TRAP_NAME_PORT_NO_VLAN \
-+	"port_no_vlan"
-+#define DEVLINK_PRESTERA_TRAP_NAME_LOCAL_PORT \
-+	"local_port"
-+#define DEVLINK_PRESTERA_TRAP_NAME_INVALID_SA \
-+	"invalid_sa"
-+#define DEVLINK_PRESTERA_TRAP_NAME_ILLEGAL_IP_ADDR \
-+	"illegal_ip_addr"
-+#define DEVLINK_PRESTERA_TRAP_NAME_ILLEGAL_IPV4_HDR \
-+	"illegal_ipv4_hdr"
-+#define DEVLINK_PRESTERA_TRAP_NAME_IP_UC_DIP_DA_MISMATCH \
-+	"ip_uc_dip_da_mismatch"
-+#define DEVLINK_PRESTERA_TRAP_NAME_IP_SIP_IS_ZERO \
-+	"ip_sip_is_zero"
-+#define DEVLINK_PRESTERA_TRAP_NAME_MET_RED \
-+	"met_red"
++struct prestera_strom_control_cfg {
++	u32 bc_kbyte_per_sec_rate;
++	u32 unk_uc_kbyte_per_sec_rate;
++	u32 unreg_mc_kbyte_per_sec_rate;
++};
++
+ struct prestera_port {
+ 	struct net_device *dev;
+ 	struct prestera_switch *sw;
+@@ -79,6 +85,7 @@ struct prestera_port {
+ 		struct prestera_port_stats stats;
+ 		struct delayed_work caching_dw;
+ 	} cached_hw_stats;
++	struct prestera_strom_control_cfg storm_control;
+ };
  
- struct prestera_trap {
- 	struct devlink_trap trap;
-@@ -125,6 +153,12 @@ struct prestera_trap_data {
+ struct prestera_device {
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+index d12e21db9fd6..0786fbb09f71 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+@@ -2,6 +2,8 @@
+ /* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+ 
+ #include <net/devlink.h>
++#include <linux/bitops.h>
++#include <linux/bitfield.h>
+ 
+ #include "prestera_devlink.h"
+ #include "prestera_hw.h"
+@@ -159,6 +161,34 @@ struct prestera_trap_data {
  			    DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id,	      \
  			    PRESTERA_TRAP_METADATA)
  
-+#define PRESTERA_TRAP_DRIVER_DROP(_id, _group_id)			      \
-+	DEVLINK_TRAP_DRIVER(DROP, DROP, DEVLINK_PRESTERA_TRAP_ID_##_id,	      \
-+			    DEVLINK_PRESTERA_TRAP_NAME_##_id,		      \
-+			    DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id,	      \
-+			    PRESTERA_TRAP_METADATA)
++#define PRESTERA_PORT_PARAM_DRIVER_RUNTIME(_id, _name, _type)		      \
++	DEVLINK_PARAM_DRIVER(PRESTERA_DEVLINK_PORT_PARAM_ID_##_id, _name,     \
++			     _type, BIT(DEVLINK_PARAM_CMODE_RUNTIME), NULL,   \
++			     NULL, NULL)
++
++struct prestera_storm_control {
++	struct prestera_switch *sw;
++	struct prestera_strom_control_cfg *cfg;
++};
++
++enum prestera_devlink_port_param_id {
++	PRESTERA_DEVLINK_PORT_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX + 1,
++	PRESTERA_DEVLINK_PORT_PARAM_ID_BC_RATE,
++	PRESTERA_DEVLINK_PORT_PARAM_ID_UC_UNK_RATE,
++	PRESTERA_DEVLINK_PORT_PARAM_ID_MC_RATE,
++};
++
++struct devlink_param prestera_devlink_port_params[] = {
++	PRESTERA_PORT_PARAM_DRIVER_RUNTIME(BC_RATE, "bc_kbyte_per_sec_rate",
++					   DEVLINK_PARAM_TYPE_U32),
++	PRESTERA_PORT_PARAM_DRIVER_RUNTIME(UC_UNK_RATE,
++					   "unk_uc_kbyte_per_sec_rate",
++					   DEVLINK_PARAM_TYPE_U32),
++	PRESTERA_PORT_PARAM_DRIVER_RUNTIME(MC_RATE,
++					   "unreg_mc_kbyte_per_sec_rate",
++					   DEVLINK_PARAM_TYPE_U32),
++};
 +
  static const struct devlink_trap_group prestera_trap_groups_arr[] = {
  	/* No policer is associated with following groups (policerid == 0)*/
  	DEVLINK_TRAP_GROUP_GENERIC(L2_DROPS, 0),
-@@ -142,6 +176,7 @@ static const struct devlink_trap_group prestera_trap_groups_arr[] = {
- 	DEVLINK_TRAP_GROUP_GENERIC(DHCP, 0),
- 	DEVLINK_TRAP_GROUP_GENERIC(BGP, 0),
- 	DEVLINK_TRAP_GROUP_GENERIC(LOCAL_DELIVERY, 0),
-+	DEVLINK_TRAP_GROUP_GENERIC(BUFFER_DROPS, 0),
- };
+@@ -350,6 +380,10 @@ static void prestera_devlink_traps_fini(struct prestera_switch *sw);
+ static int prestera_drop_counter_get(struct devlink *devlink,
+ 				     const struct devlink_trap *trap,
+ 				     u64 *p_drops);
++static int prestera_devlink_port_param_set(struct devlink_port *dl_port, u32 id,
++					   struct devlink_param_gset_ctx *ctx);
++static int prestera_devlink_port_param_get(struct devlink_port *dl_port, u32 id,
++					   struct devlink_param_gset_ctx *ctx);
  
- /* Initialize trap list, as well as associate CPU code with them. */
-@@ -271,10 +306,51 @@ static struct prestera_trap prestera_trap_items_arr[] = {
- 		.trap = PRESTERA_TRAP_DRIVER_CONTROL(ICMP, LOCAL_DELIVERY),
- 		.cpu_code = 209,
- 	},
-+	{
-+		.trap = PRESTERA_TRAP_DRIVER_DROP(RXDMA_DROP, BUFFER_DROPS),
-+		.cpu_code = 37,
-+	},
-+	{
-+		.trap = PRESTERA_TRAP_DRIVER_DROP(PORT_NO_VLAN, L2_DROPS),
-+		.cpu_code = 39,
-+	},
-+	{
-+		.trap = PRESTERA_TRAP_DRIVER_DROP(LOCAL_PORT, L2_DROPS),
-+		.cpu_code = 56,
-+	},
-+	{
-+		.trap = PRESTERA_TRAP_DRIVER_DROP(INVALID_SA, L2_DROPS),
-+		.cpu_code = 60,
-+	},
-+	{
-+		.trap = PRESTERA_TRAP_DRIVER_DROP(ILLEGAL_IP_ADDR, L3_DROPS),
-+		.cpu_code = 136,
-+	},
-+	{
-+		.trap = PRESTERA_TRAP_DRIVER_DROP(ILLEGAL_IPV4_HDR, L3_DROPS),
-+		.cpu_code = 137,
-+	},
-+	{
-+		.trap = PRESTERA_TRAP_DRIVER_DROP(IP_UC_DIP_DA_MISMATCH,
-+						  L3_DROPS),
-+		.cpu_code = 138,
-+	},
-+	{
-+		.trap = PRESTERA_TRAP_DRIVER_DROP(IP_SIP_IS_ZERO, L3_DROPS),
-+		.cpu_code = 145,
-+	},
-+	{
-+		.trap = PRESTERA_TRAP_DRIVER_DROP(MET_RED, BUFFER_DROPS),
-+		.cpu_code = 185,
-+	},
- };
- 
- static void prestera_devlink_traps_fini(struct prestera_switch *sw);
- 
-+static int prestera_drop_counter_get(struct devlink *devlink,
-+				     const struct devlink_trap *trap,
-+				     u64 *p_drops);
-+
  static int prestera_dl_info_get(struct devlink *dl,
  				struct devlink_info_req *req,
- 				struct netlink_ext_ack *extack)
-@@ -311,6 +387,7 @@ static const struct devlink_ops prestera_dl_ops = {
+@@ -383,11 +417,17 @@ static int prestera_trap_action_set(struct devlink *devlink,
+ 
+ static int prestera_devlink_traps_register(struct prestera_switch *sw);
+ 
++static const struct devlink_port_param_ops prestera_devlink_port_param_ops = {
++	.get = prestera_devlink_port_param_get,
++	.set = prestera_devlink_port_param_set,
++};
++
+ static const struct devlink_ops prestera_dl_ops = {
  	.info_get = prestera_dl_info_get,
  	.trap_init = prestera_trap_init,
  	.trap_action_set = prestera_trap_action_set,
-+	.trap_drop_counter_get = prestera_drop_counter_get,
+ 	.trap_drop_counter_get = prestera_drop_counter_get,
++	.port_param_ops = &prestera_devlink_port_param_ops,
  };
  
  struct prestera_switch *prestera_devlink_alloc(void)
-@@ -531,6 +608,20 @@ static int prestera_trap_action_set(struct devlink *devlink,
- 	return -EOPNOTSUPP;
+@@ -443,10 +483,12 @@ void prestera_devlink_unregister(struct prestera_switch *sw)
+ int prestera_devlink_port_register(struct prestera_port *port)
+ {
+ 	struct prestera_switch *sw = port->sw;
+-	struct devlink *dl = priv_to_devlink(sw);
+ 	struct devlink_port_attrs attrs = {};
++	struct devlink *dl;
+ 	int err;
+ 
++	dl = priv_to_devlink(sw);
++
+ 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+ 	attrs.phys.port_number = port->fp_id;
+ 	attrs.switch_id.id_len = sizeof(sw->id);
+@@ -460,12 +502,32 @@ int prestera_devlink_port_register(struct prestera_port *port)
+ 		return err;
+ 	}
+ 
++	err = devlink_port_params_register(
++			&port->dl_port,
++			prestera_devlink_port_params,
++			ARRAY_SIZE(prestera_devlink_port_params));
++	if (err) {
++		devlink_port_unregister(&port->dl_port);
++		dev_err(sw->dev->dev, "devlink_port_params_register failed\n");
++		return err;
++	}
++
++	devlink_port_params_publish(&port->dl_port);
++
+ 	return 0;
  }
  
-+static int prestera_drop_counter_get(struct devlink *devlink,
-+				     const struct devlink_trap *trap,
-+				     u64 *p_drops)
-+{
-+	struct prestera_switch *sw = devlink_priv(devlink);
-+	enum prestera_hw_cpu_code_cnt_t cpu_code_type =
-+		PRESTERA_HW_CPU_CODE_CNT_TYPE_DROP;
-+	struct prestera_trap *prestera_trap =
-+		container_of(trap, struct prestera_trap, trap);
+ void prestera_devlink_port_unregister(struct prestera_port *port)
+ {
++	devlink_port_params_unpublish(&port->dl_port);
 +
-+	return prestera_hw_cpu_code_counters_get(sw, prestera_trap->cpu_code,
-+						 cpu_code_type, p_drops);
++	devlink_port_params_unregister(
++			&port->dl_port,
++			prestera_devlink_port_params,
++			ARRAY_SIZE(prestera_devlink_port_params));
++
+ 	devlink_port_unregister(&port->dl_port);
++
+ }
+ 
+ void prestera_devlink_port_set(struct prestera_port *port)
+@@ -622,6 +684,76 @@ static int prestera_drop_counter_get(struct devlink *devlink,
+ 						 cpu_code_type, p_drops);
+ }
+ 
++static int prestera_devlink_port_param_set(struct devlink_port *dl_port, u32 id,
++					   struct devlink_param_gset_ctx *ctx)
++{
++	struct prestera_strom_control_cfg *cfg;
++	u32 kbyte_per_sec_rate = ctx->val.vu32;
++	struct prestera_port *port;
++	struct prestera_switch *sw;
++	u32 *param_to_set;
++	u32 storm_type;
++	int ret;
++
++	port = container_of(dl_port, struct prestera_port, dl_port);
++	sw = devlink_priv(dl_port->devlink);
++	cfg = &port->storm_control;
++
++	switch (id) {
++	case PRESTERA_DEVLINK_PORT_PARAM_ID_BC_RATE:
++		param_to_set = &cfg->bc_kbyte_per_sec_rate;
++		storm_type = PRESTERA_PORT_STORM_CTL_TYPE_BC;
++		break;
++	case PRESTERA_DEVLINK_PORT_PARAM_ID_UC_UNK_RATE:
++		param_to_set = &cfg->unk_uc_kbyte_per_sec_rate;
++		storm_type = PRESTERA_PORT_STORM_CTL_TYPE_UC_UNK;
++		break;
++	case PRESTERA_DEVLINK_PORT_PARAM_ID_MC_RATE:
++		param_to_set = &cfg->unreg_mc_kbyte_per_sec_rate;
++		storm_type = PRESTERA_PORT_STORM_CTL_TYPE_MC;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if (kbyte_per_sec_rate != *param_to_set) {
++		ret = prestera_hw_port_storm_control_cfg_set(port, storm_type,
++							     kbyte_per_sec_rate);
++		if (ret)
++			return ret;
++
++		*param_to_set = kbyte_per_sec_rate;
++	}
++
++	return 0;
++}
++
++static int prestera_devlink_port_param_get(struct devlink_port *dl_port, u32 id,
++					   struct devlink_param_gset_ctx *ctx)
++{
++	struct prestera_strom_control_cfg *cfg;
++	struct prestera_port *port;
++	struct prestera_switch *sw;
++
++	port = container_of(dl_port, struct prestera_port, dl_port);
++	sw = devlink_priv(dl_port->devlink);
++	cfg = &port->storm_control;
++
++	switch (id) {
++	case PRESTERA_DEVLINK_PORT_PARAM_ID_BC_RATE:
++		ctx->val.vu32 = cfg->bc_kbyte_per_sec_rate;
++		return 0;
++	case PRESTERA_DEVLINK_PORT_PARAM_ID_UC_UNK_RATE:
++		ctx->val.vu32 = cfg->unk_uc_kbyte_per_sec_rate;
++		return 0;
++	case PRESTERA_DEVLINK_PORT_PARAM_ID_MC_RATE:
++		ctx->val.vu32 = cfg->unreg_mc_kbyte_per_sec_rate;
++		return 0;
++	default:
++		return -EINVAL;
++	}
 +}
 +
  static void prestera_devlink_traps_fini(struct prestera_switch *sw)
  {
  	struct devlink *dl = priv_to_devlink(sw);
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-index 96ce73b50fec..0e5b3f8e7dc7 100644
+index 0e5b3f8e7dc7..85a1a15717df 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-@@ -42,6 +42,8 @@ enum prestera_cmd_type_t {
+@@ -20,6 +20,7 @@ enum prestera_cmd_type_t {
+ 	PRESTERA_CMD_TYPE_PORT_ATTR_SET = 0x100,
+ 	PRESTERA_CMD_TYPE_PORT_ATTR_GET = 0x101,
+ 	PRESTERA_CMD_TYPE_PORT_INFO_GET = 0x110,
++	PRESTERA_CMD_TYPE_PORT_RATE_LIMIT_MODE_SET = 0x111,
  
- 	PRESTERA_CMD_TYPE_STP_PORT_SET = 0x1000,
- 
-+	PRESTERA_CMD_TYPE_CPU_CODE_COUNTERS_GET = 0x2000,
-+
- 	PRESTERA_CMD_TYPE_ACK = 0x10000,
- 	PRESTERA_CMD_TYPE_MAX
+ 	PRESTERA_CMD_TYPE_VLAN_CREATE = 0x200,
+ 	PRESTERA_CMD_TYPE_VLAN_DELETE = 0x201,
+@@ -251,6 +252,14 @@ struct prestera_msg_port_info_resp {
+ 	u16 fp_id;
  };
-@@ -305,6 +307,17 @@ struct prestera_msg_rxtx_port_req {
- 	u32 dev;
- };
  
-+struct prestera_msg_cpu_code_counter_req {
++struct prestera_msg_port_storm_control_cfg_set_req {
 +	struct prestera_msg_cmd cmd;
-+	u8 counter_type;
-+	u8 code;
++	u32 port;
++	u32 dev;
++	u32 storm_type;
++	u32 kbyte_per_sec_rate;
 +};
 +
-+struct mvsw_msg_cpu_code_counter_ret {
-+	struct prestera_msg_ret ret;
-+	u64 packet_count;
-+};
-+
- struct prestera_msg_event {
- 	u16 type;
- 	u16 id;
-@@ -1295,6 +1308,28 @@ int prestera_hw_rxtx_port_init(struct prestera_port *port)
+ struct prestera_msg_vlan_req {
+ 	struct prestera_msg_cmd cmd;
+ 	u32 port;
+@@ -639,6 +648,22 @@ int prestera_hw_port_accept_frm_type(struct prestera_port *port,
  			    &req.cmd, sizeof(req));
  }
  
-+int
-+prestera_hw_cpu_code_counters_get(struct prestera_switch *sw, u8 code,
-+				  enum prestera_hw_cpu_code_cnt_t counter_type,
-+				  u64 *packet_count)
++int prestera_hw_port_storm_control_cfg_set(const struct prestera_port *port,
++					   u32 storm_type,
++					   u32 kbyte_per_sec_rate)
 +{
-+	struct prestera_msg_cpu_code_counter_req req = {
-+		.counter_type = counter_type,
-+		.code = code,
++	struct prestera_msg_port_storm_control_cfg_set_req req = {
++		.port = port->hw_id,
++		.dev = port->dev_id,
++		.storm_type = storm_type,
++		.kbyte_per_sec_rate = kbyte_per_sec_rate
 +	};
-+	struct mvsw_msg_cpu_code_counter_ret resp;
-+	int err;
 +
-+	err = prestera_cmd_ret(sw, PRESTERA_CMD_TYPE_CPU_CODE_COUNTERS_GET,
-+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-+	if (err)
-+		return err;
-+
-+	*packet_count = resp.packet_count;
-+
-+	return 0;
++	return prestera_cmd(port->sw,
++			    PRESTERA_CMD_TYPE_PORT_RATE_LIMIT_MODE_SET,
++			    &req.cmd, sizeof(req));
 +}
 +
- int prestera_hw_event_handler_register(struct prestera_switch *sw,
- 				       enum prestera_event_type type,
- 				       prestera_event_cb_t fn,
+ int prestera_hw_port_cap_get(const struct prestera_port *port,
+ 			     struct prestera_port_caps *caps)
+ {
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-index e8dd0e2b81d2..aafecf0ecd16 100644
+index aafecf0ecd16..85373f1d3971 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-@@ -89,6 +89,11 @@ enum {
+@@ -89,6 +89,12 @@ enum {
  	PRESTERA_STP_FORWARD,
  };
  
-+enum prestera_hw_cpu_code_cnt_t {
-+	PRESTERA_HW_CPU_CODE_CNT_TYPE_DROP = 0,
-+	PRESTERA_HW_CPU_CODE_CNT_TYPE_TRAP = 1,
++enum {
++	PRESTERA_PORT_STORM_CTL_TYPE_BC = 0,
++	PRESTERA_PORT_STORM_CTL_TYPE_UC_UNK = 1,
++	PRESTERA_PORT_STORM_CTL_TYPE_MC = 2
 +};
 +
- struct prestera_switch;
- struct prestera_port;
- struct prestera_port_stats;
-@@ -180,4 +185,10 @@ int prestera_hw_rxtx_init(struct prestera_switch *sw,
- 			  struct prestera_rxtx_params *params);
- int prestera_hw_rxtx_port_init(struct prestera_port *port);
- 
-+/* HW trap/drop counters API */
-+int
-+prestera_hw_cpu_code_counters_get(struct prestera_switch *sw, u8 code,
-+				  enum prestera_hw_cpu_code_cnt_t counter_type,
-+				  u64 *packet_count);
-+
- #endif /* _PRESTERA_HW_H_ */
+ enum prestera_hw_cpu_code_cnt_t {
+ 	PRESTERA_HW_CPU_CODE_CNT_TYPE_DROP = 0,
+ 	PRESTERA_HW_CPU_CODE_CNT_TYPE_TRAP = 1,
+@@ -123,6 +129,9 @@ int prestera_hw_port_mac_set(const struct prestera_port *port, const char *mac);
+ int prestera_hw_port_mac_get(const struct prestera_port *port, char *mac);
+ int prestera_hw_port_cap_get(const struct prestera_port *port,
+ 			     struct prestera_port_caps *caps);
++int prestera_hw_port_storm_control_cfg_set(const struct prestera_port *port,
++					   u32 storm_type,
++					   u32 kbyte_per_sec_rate);
+ int prestera_hw_port_remote_cap_get(const struct prestera_port *port,
+ 				    u64 *link_mode_bitmap);
+ int prestera_hw_port_remote_fc_get(const struct prestera_port *port,
 -- 
 2.17.1
 
