@@ -2,125 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D35C43A0DD3
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 09:37:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5D223A0E3B
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 10:01:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232412AbhFIHjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 03:39:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50700 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230233AbhFIHjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 03:39:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623224269;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dKHLpYCGx0g7EoGipPcjgNbmX1MLZSaTZNKvZi1Yge0=;
-        b=BanBmrlkWiESpeBlPJUeA7gBEPRBbrNZ8f8svdOhUDKSjJMyYtFyIrkW3QjAbI4ua8VbNo
-        ceikR63Qiby7QAnQdrfaebr4fpctVrX5tRB4qj3thEG30m/jsEEP0LmXs/HNhvPQuiq7TF
-        mwvOAlvhJun4HdOonNRzkg4fZsFaNQA=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-142-92_3efykO7K_GP0hrYtFYw-1; Wed, 09 Jun 2021 03:34:36 -0400
-X-MC-Unique: 92_3efykO7K_GP0hrYtFYw-1
-Received: by mail-qt1-f198.google.com with SMTP id a5-20020ac84d850000b029024998e61d00so2028397qtw.14
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 00:34:36 -0700 (PDT)
+        id S237413AbhFIIDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 04:03:03 -0400
+Received: from mail-pj1-f46.google.com ([209.85.216.46]:34607 "EHLO
+        mail-pj1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237399AbhFIIDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 04:03:00 -0400
+Received: by mail-pj1-f46.google.com with SMTP id g6-20020a17090adac6b029015d1a9a6f1aso3181924pjx.1
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 01:00:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TCD52nTwTei4FNtUewt/0/MhitLNjGYdeI4x9Bv2eWE=;
+        b=Pjip2Mwkjy6Kx3wjOQNnmk19kgXgp1vwz5+YXVJ+4jyCPVUiX+/JDFyiI+K9xjXsKt
+         K2neoklfZgX8mwRj3HbKQDEARh7ZOikJULhjaqor6YpOBaHUU/nhHToM0ksoH4Q2SaQ7
+         udgp8bVr7XwzPevC7FkP66xG11LQA+W4pHg+X4bWFB+/69YpVBkWg6L1Fy3oQqrWYsdG
+         NhRPh/vO86JizL8R1dTKwxONleve/paFQx86krqRpwUCD0nCI2sp2sCd14AwziJ1Np6i
+         enyE592rlHaskClYpanVbV32fWpi4S+f8Nnw9b5AGPxjOcVBZlcJySVlmEglwdxUu9nd
+         zLCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=dKHLpYCGx0g7EoGipPcjgNbmX1MLZSaTZNKvZi1Yge0=;
-        b=GjdIMaBro2sNnYPVK3TdFo8oIEmr/eflMeeTJMKN2J7xK/dNl3rg2yyAk2NM8rahBx
-         Slq0R167qKW3iEQL3iwZuJua39mtmK7GPV/cdxf5AuJlfj/KhYLejEvaXzWzttbbZZvu
-         yLv/hX4vAnM8TkU1GW38g/UCyplZza4NMRwlgJQwX4y39w0mSAseqy8EWuqEhmeGTkVi
-         bA5tAjocOfH5+5XOWQn3GWE8FkGOYmYrb6ubHY+gTR/CqAysOIYw7RqgO8BomZVDcs+R
-         9vTb8fXE+yi4JqM9q+s72ntmMQQs/MEEIy8foRhMB2UwB3wUwacndLa6s5Hr9QW3RgU9
-         0i+A==
-X-Gm-Message-State: AOAM530SsS6U5nK95WggaTl0j1FoJd6SoHAwuN5DRrxiGTGJWpwt8b72
-        PFlDKons3oXTmJw8j+8kg6zBreLfSOCnj/ohm48yP7Y8Vef70x3z+PTm9i6TvfWjJqVhWzszr1q
-        4fHv/c92BBjU4ckTw
-X-Received: by 2002:a05:620a:1253:: with SMTP id a19mr11372148qkl.365.1623224076136;
-        Wed, 09 Jun 2021 00:34:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyeQ3vZwJD5V9+1RCCrE3JekeNNLTpi7d82jJPwWzCuGoj9yPBCBVWCXy2YNny96QDa4zPseQ==
-X-Received: by 2002:a05:620a:1253:: with SMTP id a19mr11372138qkl.365.1623224075940;
-        Wed, 09 Jun 2021 00:34:35 -0700 (PDT)
-Received: from [192.168.0.106] ([24.225.235.43])
-        by smtp.gmail.com with ESMTPSA id g19sm6014609qto.49.2021.06.09.00.34.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Jun 2021 00:34:35 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: tipc: fix FB_MTU eat two pages
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     ying.xue@windriver.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net,
-        Menglong Dong <dong.menglong@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20210604074419.53956-1-dong.menglong@zte.com.cn>
- <e997a058-9f6e-86a0-8591-56b0b89441aa@redhat.com>
- <CADxym3ZostCAY0GwUpTxEHcOPyOj5Lmv4F7xP-Q4=AEAVaEAxw@mail.gmail.com>
- <998cce2c-b18d-59c1-df64-fc62856c63a1@redhat.com> <20210607125120.GA4262@www>
- <46d2a694-6a85-0f8e-4156-9bb1c4dbdb69@redhat.com>
- <20210609025412.GA58348@www>
-From:   Jon Maloy <jmaloy@redhat.com>
-Message-ID: <927af5e7-6194-d94e-1497-6b3dce26c583@redhat.com>
-Date:   Wed, 9 Jun 2021 03:34:33 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TCD52nTwTei4FNtUewt/0/MhitLNjGYdeI4x9Bv2eWE=;
+        b=tu9h8xJfwU1NLma9CryVvCPlm1OIHxwzuB9uFZAeDPcbL+DcHUKNtX7vS/pFIDv4ci
+         eWDvgdlsw45al0kukBhWnB2Su/+N6LjB0KPRzXZb+4J7uZ+BOoMXAwTugGvh39HJIamF
+         r1is8MsTGChW9fztYg4JuapHDtd9B+j2li2vU+jnjAvmrLKbFdzIqkJG/vVjc65gUfwW
+         zBfj0dHaI/iXih9ss1eZQUsJMYofyuXc0/cwSwbjnFaebEBHeCHiKCTlyO6tr6uFzJc5
+         bvXljUO9NO8+5aok2/bYn0U7vGV5JByilUxl/uVXJmJuKUFT0XJ4b9uRknIGkVESpaI4
+         4iDg==
+X-Gm-Message-State: AOAM531UQXCgQWkmaxKuTaKMwCdjPmO3M4036ms41dre6VU6ZMEQ1bzn
+        wkCdy44RpmMhhXNUOw/dEfE=
+X-Google-Smtp-Source: ABdhPJx7rbYUPbVsT8cJ8GWXxus9IQhPNSAP7iFeHdYaeweEsSuDkSvZA2zpAm/u0+EXJ0qFMKgUNA==
+X-Received: by 2002:a17:90a:6305:: with SMTP id e5mr9292004pjj.232.1623225590212;
+        Wed, 09 Jun 2021 00:59:50 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6726:fcf9:18f4:66f2])
+        by smtp.gmail.com with ESMTPSA id j12sm13629555pgs.83.2021.06.09.00.59.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Jun 2021 00:59:49 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] inet: annotate data race in inet_send_prepare() and inet_dgram_connect()
+Date:   Wed,  9 Jun 2021 00:59:45 -0700
+Message-Id: <20210609075945.3976469-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.32.0.rc1.229.g3e70b5a671-goog
 MIME-Version: 1.0
-In-Reply-To: <20210609025412.GA58348@www>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
 
+Both functions are known to be racy when reading inet_num
+as we do not want to grab locks for the common case the socket
+has been bound already. The race is resolved in inet_autobind()
+by reading again inet_num under the socket lock.
 
-On 6/8/21 10:54 PM, Menglong Dong wrote:
-> On Tue, Jun 08, 2021 at 06:37:38PM -0400, Jon Maloy wrote:
->>
-> [...]
->> I spent a little more time looking into this. I think the best we can do is
->> to keep FB_MTU internal to msg.c, and then add an outline function to msg.c
->> that can be used by bcast.c. The way it is used is never time critical.
->>
->> I also see that we could need a little cleanup around this. There is a
->> redundant align() function that should be removed and replaced with the
->> global ALIGN() macro.
->> Even tipc_buf_acquire() should use this macro instead of the explicit method
->> that is used now.
->> In general, I stongly dislike conditional code, and it is not necessary in
->> this function. If we redefine the non-crypto BUF_TAILROOM to 0 instead of 16
->> (it is not used anywhere else) we could get rid of this too.
->>
->> But I leave that to you. If you only fix the FB_MTU macro I am content.
->>
-> Yeah, I think I can handle it, just leave it to me.
->
-> (finger heart :/)
-> Menglong DongI
-It seems like I have been misleading you. It turns out that these 
-messages *will* be sent out over the nework in some cases, i.e. at 
-multicast/broadcast over an UDP bearer.
-So, what we need is two macros, one with the conditional crypto 
-head/tailroom defined as you first suggested, and one that only use the 
-non-crypto head/tailroom as we have been discussing now.
-The first one can be defined inside bcast.c, the latter  inside msg.c.
-It might also be a good idea to give the macros more descriptive names, 
-such as ONEPAGE_MTU in the broadcast version, and ONEPAGE_SKB in the 
-node local
-version.
+syzbot reported:
+BUG: KCSAN: data-race in inet_send_prepare / udp_lib_get_port
 
-Does that make sense?
+write to 0xffff88812cba150e of 2 bytes by task 24135 on cpu 0:
+ udp_lib_get_port+0x4b2/0xe20 net/ipv4/udp.c:308
+ udp_v6_get_port+0x5e/0x70 net/ipv6/udp.c:89
+ inet_autobind net/ipv4/af_inet.c:183 [inline]
+ inet_send_prepare+0xd0/0x210 net/ipv4/af_inet.c:807
+ inet6_sendmsg+0x29/0x80 net/ipv6/af_inet6.c:639
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg net/socket.c:674 [inline]
+ ____sys_sendmsg+0x360/0x4d0 net/socket.c:2350
+ ___sys_sendmsg net/socket.c:2404 [inline]
+ __sys_sendmmsg+0x315/0x4b0 net/socket.c:2490
+ __do_sys_sendmmsg net/socket.c:2519 [inline]
+ __se_sys_sendmmsg net/socket.c:2516 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2516
+ do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-///jon
+read to 0xffff88812cba150e of 2 bytes by task 24132 on cpu 1:
+ inet_send_prepare+0x21/0x210 net/ipv4/af_inet.c:806
+ inet6_sendmsg+0x29/0x80 net/ipv6/af_inet6.c:639
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg net/socket.c:674 [inline]
+ ____sys_sendmsg+0x360/0x4d0 net/socket.c:2350
+ ___sys_sendmsg net/socket.c:2404 [inline]
+ __sys_sendmmsg+0x315/0x4b0 net/socket.c:2490
+ __do_sys_sendmmsg net/socket.c:2519 [inline]
+ __se_sys_sendmmsg net/socket.c:2516 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2516
+ do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
+value changed: 0x0000 -> 0x9db4
 
->
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 24132 Comm: syz-executor.2 Not tainted 5.13.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/ipv4/af_inet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index f17870ee558bbaa043c10dc5b8a61a3fa1304880..2f94d221c00e9888d0f5f3738593fda811215cc6 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -575,7 +575,7 @@ int inet_dgram_connect(struct socket *sock, struct sockaddr *uaddr,
+ 			return err;
+ 	}
+ 
+-	if (!inet_sk(sk)->inet_num && inet_autobind(sk))
++	if (data_race(!inet_sk(sk)->inet_num) && inet_autobind(sk))
+ 		return -EAGAIN;
+ 	return sk->sk_prot->connect(sk, uaddr, addr_len);
+ }
+@@ -803,7 +803,7 @@ int inet_send_prepare(struct sock *sk)
+ 	sock_rps_record_flow(sk);
+ 
+ 	/* We may need to bind the socket. */
+-	if (!inet_sk(sk)->inet_num && !sk->sk_prot->no_autobind &&
++	if (data_race(!inet_sk(sk)->inet_num) && !sk->sk_prot->no_autobind &&
+ 	    inet_autobind(sk))
+ 		return -EAGAIN;
+ 
+-- 
+2.32.0.rc1.229.g3e70b5a671-goog
 
