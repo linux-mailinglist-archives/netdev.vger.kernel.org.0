@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C3C3A2094
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 01:11:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE543A208B
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 01:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbhFIXN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 19:13:29 -0400
-Received: from mail-wm1-f43.google.com ([209.85.128.43]:37498 "EHLO
-        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230039AbhFIXN2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 19:13:28 -0400
-Received: by mail-wm1-f43.google.com with SMTP id f16-20020a05600c1550b02901b00c1be4abso5333833wmg.2;
-        Wed, 09 Jun 2021 16:11:16 -0700 (PDT)
+        id S229980AbhFIXM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 19:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229770AbhFIXM1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 19:12:27 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562B4C061574;
+        Wed,  9 Jun 2021 16:10:20 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id t4-20020a1c77040000b029019d22d84ebdso5315796wmi.3;
+        Wed, 09 Jun 2021 16:10:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+v7noDDRjraZ3GHj7whVM5w/zJdcTfcXwuJlEu0MOc4=;
-        b=O5hsZofqb6rEFyCevIV0McfFwrQRiPmWBIF1w3zJhgShliHklTJfDFxoT0qBzQV3ta
-         Ap+Lo/7kS8FBBCXIZlBtHj1SmZHR2f3D9OQd/PUPllG4tW5xyLjgkeFTOXJr4pXY2f0Z
-         /Mv+Ztt2pEzk7AJl9mRhzlFHoNHSBqNEOSxKyxhLkeP6bZIJt0msYhrbURU+c9EmewOg
-         lqXuhko5OdEBlf+OCzTDv9UwRWmZ8HrftTtpH1u3OYNhNlR1KYVc/cPLKqc012WZhhBk
-         lRhMqI4Rsdn++skyGHKVyJcNAqU/vuRhC31XtSA4kNBqMJO4VGf0JCTyP+NbTnplf2jV
-         bbMQ==
+        bh=PfozX53mqIuTOWhokMnsagdrlUUXn9Pvjxrq3cTYwNo=;
+        b=HpzZu3FRw41etxBMDpD3F0ip0twtq1OU43K362uqWo1Hx68Az/GlYVQUNCjRDN/TRd
+         lsIxjBsCHy2u6y4QdDo/4FElf9VIwc7la2HD4do5pF9pxJieCSc+GUK2bOsSnLn5JJs+
+         PVcToGcwGpfZJ2KG1Vx8vSYhSe00T7mGFX1qo46rbJFwQt01hWgQRCccBENKKQ1HOzck
+         2NwJ8BiK/pF/g8YM4is7q9IJnB2xJ3p3mSA4UrEREgnvgHkT4wvn5nKEA4VknXGy1DHU
+         PxOpNVnyKjKooble35qu/jMgPeMa7rIZbmp3piriO6vZi832Yzlow5J+PljM1ljdzZeR
+         ex8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+v7noDDRjraZ3GHj7whVM5w/zJdcTfcXwuJlEu0MOc4=;
-        b=cmiAXYte1W3cdaZV336eQVZOsMICkVv6S669oknpX4OVNCEXvy+qJhnDB1UobnxLho
-         y2cuCACpkP1u7iI3im8v8r6dOsPtnfAVhgmUnm28WTg5vgNFL5NI1YvfeVsnFq6J1GCp
-         9TXa7bua0uC6wJL1vC+wHB3bHZovk0zg1BzKIOJhQ8x23+19ByulO3mqbR+hZF4TtRJI
-         la+5t5bfYKtYTbQph0EdtQKDeK0VwWEKY7nDe4o79nIXj5+MFIkbEOOLjqTQOazPLujc
-         ve38VK0dlDZFNR0sCJRxakDBt6ymu0L+99J9rZSUaoJaNA8WCwk5CYNoflkMWXJt8dFd
-         SeXg==
-X-Gm-Message-State: AOAM5331NlM5WRmnOKglLSHw4zzNZNlBD9xqBhEs/j16p/iC09otpQpk
-        o+yQwFg+BIBpcTdJ0goAO1rj5jb/FK4=
-X-Google-Smtp-Source: ABdhPJzFPxXx/VEdil7rGJL2h229tnpHYjaM+Z+Ps0NmnemF7QhFx7pbDIILRvCriYw4IqB+vpRi9g==
-X-Received: by 2002:a05:600c:5112:: with SMTP id o18mr1987316wms.15.1623280215866;
-        Wed, 09 Jun 2021 16:10:15 -0700 (PDT)
+        bh=PfozX53mqIuTOWhokMnsagdrlUUXn9Pvjxrq3cTYwNo=;
+        b=PK04DJKtl+fLQP7UgqitcTfwdZdh82eJE5HhNCx/AJtNlZow6sN0SY4ae46iRCcE0q
+         yVbATZO4K2alwoOlTmkX+6W6MtOBjYMzhso2Ssn1LlV3gFgOCPmhPZhbRvnXGBbJiXNE
+         +6TZPjb6JmsS85LbS4SIxEdU4XmGk/Au7f5pMpgtIy3ohDv87yLsOpXMXGTaN0NSvm7s
+         MqGGBmFjhlXEZImrbfC16wUURWYYoO6jo5rnu/7L3dicgyjh9NH7mq9eFu5V7HzTvTDY
+         w3wLE2y+hHQ2Ef4Zr1IiQitmVknkd7DPlbAt/Xx0A5it9qt9kZsjM7B4726KpCn7bUwW
+         FQIA==
+X-Gm-Message-State: AOAM531tYyTgsN8BZpypDMG1MeIdBSbppQvpya9kx0/Y0lkmm5Vi7W+l
+        BltjP3JJ/P19UO5kYNywY3BE+UUt4Tc=
+X-Google-Smtp-Source: ABdhPJyjoIkw0I76bE7J5Ty+8KMNGSbrvux+nanyZyhIJAx8BRYOGTkTUfdMq84b41WCj5alfyDVxg==
+X-Received: by 2002:a7b:c4da:: with SMTP id g26mr12286319wmk.64.1623280218702;
+        Wed, 09 Jun 2021 16:10:18 -0700 (PDT)
 Received: from cluster5 ([80.76.206.81])
-        by smtp.gmail.com with ESMTPSA id o5sm1300684wrw.65.2021.06.09.16.10.15
+        by smtp.gmail.com with ESMTPSA id q4sm2830147wma.32.2021.06.09.16.10.17
         (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Wed, 09 Jun 2021 16:10:15 -0700 (PDT)
+        Wed, 09 Jun 2021 16:10:18 -0700 (PDT)
 From:   Matthew Hagan <mnhagan88@gmail.com>
 Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
         Matthew Hagan <mnhagan88@gmail.com>,
@@ -54,9 +57,9 @@ Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH RESEND 1/2] ARM: dts: qcom: add ahb reset to ipq806x-gmac
-Date:   Thu, 10 Jun 2021 00:09:44 +0100
-Message-Id: <20210609230946.1294326-2-mnhagan88@gmail.com>
+Subject: [PATCH RESEND 2/2] dt-bindings: net: stmmac: add ahb reset to example
+Date:   Thu, 10 Jun 2021 00:09:45 +0100
+Message-Id: <20210609230946.1294326-3-mnhagan88@gmail.com>
 X-Mailer: git-send-email 2.26.3
 In-Reply-To: <20210609230946.1294326-1-mnhagan88@gmail.com>
 References: <20210609230946.1294326-1-mnhagan88@gmail.com>
@@ -67,65 +70,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add GMAC_AHB_RESET to the resets property of each GMAC node.
+Add ahb reset to the reset properties within the example GMAC node.
 
 Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
 ---
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ Documentation/devicetree/bindings/net/ipq806x-dwmac.txt | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 98995ead4413..1dbceaf3454b 100644
---- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -643,8 +643,9 @@ gmac0: ethernet@37000000 {
- 			clocks = <&gcc GMAC_CORE1_CLK>;
- 			clock-names = "stmmaceth";
+diff --git a/Documentation/devicetree/bindings/net/ipq806x-dwmac.txt b/Documentation/devicetree/bindings/net/ipq806x-dwmac.txt
+index 6d7ab4e524d4..ef5fd9f0b156 100644
+--- a/Documentation/devicetree/bindings/net/ipq806x-dwmac.txt
++++ b/Documentation/devicetree/bindings/net/ipq806x-dwmac.txt
+@@ -30,6 +30,7 @@ Example:
+ 		clocks = <&gcc GMAC_CORE1_CLK>;
+ 		clock-names = "stmmaceth";
  
--			resets = <&gcc GMAC_CORE1_RESET>;
--			reset-names = "stmmaceth";
-+			resets = <&gcc GMAC_CORE1_RESET>,
-+				 <&gcc GMAC_AHB_RESET>;
-+			reset-names = "stmmaceth", "ahb";
- 
- 			status = "disabled";
- 		};
-@@ -666,8 +667,9 @@ gmac1: ethernet@37200000 {
- 			clocks = <&gcc GMAC_CORE2_CLK>;
- 			clock-names = "stmmaceth";
- 
--			resets = <&gcc GMAC_CORE2_RESET>;
--			reset-names = "stmmaceth";
-+			resets = <&gcc GMAC_CORE2_RESET>,
-+				 <&gcc GMAC_AHB_RESET>;
-+			reset-names = "stmmaceth", "ahb";
- 
- 			status = "disabled";
- 		};
-@@ -689,8 +691,9 @@ gmac2: ethernet@37400000 {
- 			clocks = <&gcc GMAC_CORE3_CLK>;
- 			clock-names = "stmmaceth";
- 
--			resets = <&gcc GMAC_CORE3_RESET>;
--			reset-names = "stmmaceth";
-+			resets = <&gcc GMAC_CORE3_RESET>,
-+				 <&gcc GMAC_AHB_RESET>;
-+			reset-names = "stmmaceth", "ahb";
- 
- 			status = "disabled";
- 		};
-@@ -712,8 +715,9 @@ gmac3: ethernet@37600000 {
- 			clocks = <&gcc GMAC_CORE4_CLK>;
- 			clock-names = "stmmaceth";
- 
--			resets = <&gcc GMAC_CORE4_RESET>;
--			reset-names = "stmmaceth";
-+			resets = <&gcc GMAC_CORE4_RESET>,
-+				 <&gcc GMAC_AHB_RESET>;
-+			reset-names = "stmmaceth", "ahb";
- 
- 			status = "disabled";
- 		};
+-		resets = <&gcc GMAC_CORE1_RESET>;
+-		reset-names = "stmmaceth";
++		resets = <&gcc GMAC_CORE1_RESET>,
++			 <&gcc GMAC_AHB_RESET>;
++		reset-names = "stmmaceth", "ahb";
+ 	};
 -- 
 2.26.3
 
