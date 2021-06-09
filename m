@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 506AC3A09E9
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 04:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4133A0A0F
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 04:30:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233475AbhFICV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 22:21:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51070 "EHLO mail.kernel.org"
+        id S232821AbhFICb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 22:31:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55634 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229911AbhFICV5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 22:21:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id BC97960FDB;
-        Wed,  9 Jun 2021 02:20:03 +0000 (UTC)
+        id S230444AbhFICb5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 22:31:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B512E6128A;
+        Wed,  9 Jun 2021 02:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623205203;
-        bh=bv01djUeF4szVNu9W89WMbXytcJTU721/mip35uNkMA=;
+        s=k20201202; t=1623205803;
+        bh=PARdrkRjxakvMMymGfKkxFhEapnRH2kfvbyg5msrzDo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ITl41tcOezQZOEl/gyeCMZozV/rbOFtLRZx9X+zNePJ+hHyTJKWX9r/Irl7J+2ML3
-         SX8tTWmakemoAGjxBIiZmAoX58dTGa3gxLRAEGp4c6vRjgaTPGrynlknBJireoYcJM
-         qj0nYzbSLxzoYYu0bBEEyAnwLzMuq5DJIG4fpY16rhc0j05WsbPBS12uwobJbMyDDL
-         8CCiGATrkbUl0kabkZ1GrvyiltDu9dbbK3QD/OBzf+jnuexeFBQ6/dCSDJZt+CGkK9
-         80gWtT6a3BQqI8VTVtyIWdpULO2IeD1bbA4dXGmU0DimkpC9ssDS5ycyCV4unsHOlv
-         9tt2I8zbX9otQ==
+        b=kBge/D+px3rl7oxIvuSwDgS5F0zQONSTetEPu8/OUi16IZCxpcUbIQDNFAHXppu3V
+         OaPNj8lTS+slmulnErgFFlLcX4P4Sr4jh0hkhSJXxq26AuQveoOzjpCrb66KNgt7It
+         W1+lRaYOOvZJqFN/3CaxXiqE90vW/u9vMSHSvvDCVzvLEC6a+mvePcDTotnKrueyDq
+         41sb0xDhnBi7uqsdGY3dn2F3CGzJK97O+uPUoKSujBdc94TH7Pp2hJDaQcYE3T6oD8
+         VKcrV7FYcSghHEwO/eF+zqa+dnze/KJw8/M4FxxDB/N6eXoRITmjinOTjyZ6x5rW6Y
+         cIcJZSu36Ilbg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A719460192;
-        Wed,  9 Jun 2021 02:20:03 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A7F0160BE2;
+        Wed,  9 Jun 2021 02:30:03 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: lantiq: disable interrupt before sheduling NAPI
+Subject: Re: [PATCH] net: appletalk: fix some mistakes in grammar
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162320520367.32397.3856716167633372569.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Jun 2021 02:20:03 +0000
-References: <20210608212107.222690-1-olek2@wp.pl>
-In-Reply-To: <20210608212107.222690-1-olek2@wp.pl>
-To:     Aleksander Jan Bajkowski <olek2@wp.pl>
-Cc:     hauke@hauke-m.de, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <162320580368.4034.9799798999462632567.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Jun 2021 02:30:03 +0000
+References: <20210609015257.15262-1-13145886936@163.com>
+In-Reply-To: <20210609015257.15262-1-13145886936@163.com>
+To:     None <13145886936@163.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gushengxian@yulong.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue,  8 Jun 2021 23:21:07 +0200 you wrote:
-> This patch fixes TX hangs with threaded NAPI enabled. The scheduled
-> NAPI seems to be executed in parallel with the interrupt on second
-> thread. Sometimes it happens that ltq_dma_disable_irq() is executed
-> after xrx200_tx_housekeeping(). The symptom is that TX interrupts
-> are disabled in the DMA controller. As a result, the TX hangs after
-> a few seconds of the iperf test. Scheduling NAPI after disabling
-> interrupts fixes this issue.
+On Tue,  8 Jun 2021 18:52:57 -0700 you wrote:
+> From: gushengxian <gushengxian@yulong.com>
 > 
-> [...]
+> Fix some mistakes in grammar.
+> 
+> Signed-off-by: gushengxian <gushengxian@yulong.com>
+> ---
+>  net/appletalk/ddp.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
 Here is the summary with links:
-  - [net] net: lantiq: disable interrupt before sheduling NAPI
-    https://git.kernel.org/netdev/net/c/f2386cf7c5f4
+  - net: appletalk: fix some mistakes in grammar
+    https://git.kernel.org/netdev/net-next/c/2aa8eca6cbb5
 
 You are awesome, thank you!
 --
