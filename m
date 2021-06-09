@@ -2,120 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4236A3A1B60
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 18:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C9363A1B6E
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 19:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231222AbhFIRAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 13:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbhFIRAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 13:00:46 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30974C061574
-        for <netdev@vger.kernel.org>; Wed,  9 Jun 2021 09:58:39 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id o3so7898539wri.8
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 09:58:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GfWEsUAani6bJBHKwb6jb6ETVwG0Lc/7D2zrjHlZFP0=;
-        b=Pn0hJvh/qVcqU4HVY7W9QR2N49gbnx9RCBYeNSzBJziMUtF9UI+YqugOvJfgBoqlxO
-         oYtu8x/FLWoA7jzjursJuZAMy2G4OrndFz35Pcl5G0FIVi5UyOiSjXtEdB37hKWUaZU0
-         JyDW9OsnYmAnge6bq6ZNhc8f9DChSez3+0HHtMvvWmkwRE/oNMBBBiV3fYehm4qRumy2
-         6QxfZHDbR+l1GluQwEhcPNaNmfU0nYPFJ3MwxYnDxlLCkP1iZlyvXX2CfJ5Go2zbAir9
-         DC1557vxK9L8LhpnQ8CmkIeT7RymxRJjrhhymll8MdMbuBtikcSzQeyHfFSSOInrFUBW
-         uHFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GfWEsUAani6bJBHKwb6jb6ETVwG0Lc/7D2zrjHlZFP0=;
-        b=WOF5N/fEjQ3lAgTidg20/0q1MWsP5mgqcQURsRA9+cXGOIcVIbPauAxZcR7Zo3C3wn
-         HWwMYgQO1h9y11MsZVOkrVGkW9HBlZloSnisqsriq777Ol06bx+pAuEUedZXCBVpU3t/
-         ioCjiCWiee/5T+b5aFvHZIniQgFgqH8Bs13p4uoCXHfh/25kNg5TLgIXpF/9S/hJnY8D
-         79k+M8m7NsBhlEDj+yPJoU+vO9mK0NsaP/Yixf0U8z3JXKkhH7CL7V//IExwLSyeMWEk
-         4xGyXGMZGpz+PcgsmHRWQNe2apS034PM4w4fb6xVErNMx2enKU8l6PtM/Ymeb6aIidpF
-         iKLQ==
-X-Gm-Message-State: AOAM532l64tx+nthABudl8cmpBzzK2WLOTqS0ZehGSSwn/+fA9mugFnQ
-        cjZdxYdwXpNeW8dKKNqKJDY=
-X-Google-Smtp-Source: ABdhPJxb2AbRJ6cG5lJDxnSWEYbGUDzHQ5u631vX8CGqCrn7Nb3Ak+6J9W0jBxGDOJkwlLF1wNGFyw==
-X-Received: by 2002:a5d:5388:: with SMTP id d8mr731869wrv.423.1623257917835;
-        Wed, 09 Jun 2021 09:58:37 -0700 (PDT)
-Received: from [192.168.181.98] (171.251.23.93.rev.sfr.net. [93.23.251.171])
-        by smtp.gmail.com with ESMTPSA id n18sm327350wmq.41.2021.06.09.09.58.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Jun 2021 09:58:37 -0700 (PDT)
+        id S230448AbhFIRFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 13:05:45 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:46014 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230269AbhFIRFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 13:05:43 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 159H3O43082589;
+        Wed, 9 Jun 2021 12:03:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1623258204;
+        bh=8tV/mlNsqlqAQLJnwWc4yK/c+olAVVllPTnr/Jd7mlY=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=QaLOUCQ9R1lVewfjYLCB86Rb51jSGGxU2b28WHvJo2TArhj854lu8cN2NfutK5t7i
+         Ky9WPMnYRTqBjn8RiTT591LUroeME9zRBTiKAtwM7nGuMcvicyY6uADZgiPv58fl9o
+         DPGx1NylVfH0KADRuQqv6Lo172o6cYtRn/5Lxwjo=
+Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 159H3OGU041744
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 9 Jun 2021 12:03:24 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 9 Jun
+ 2021 12:03:24 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Wed, 9 Jun 2021 12:03:24 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 159H3MuJ071385;
+        Wed, 9 Jun 2021 12:03:22 -0500
 Subject: Re: [RFT net-next] net: ti: add pp skb recycling support
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Matteo Croce <mcroce@linux.microsoft.com>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+To:     Matteo Croce <mcroce@linux.microsoft.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+CC:     <netdev@vger.kernel.org>,
         Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
         David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+        Jesper Dangaard Brouer <brouer@redhat.com>
 References: <ef808c4d8447ee8cf832821a985ba68939455461.1623239847.git.lorenzo@kernel.org>
  <CAFnufp11ANN3MRNDAWBN5AifJbfKMPrVD+6THhZHtuyqZCUmqg@mail.gmail.com>
- <e2ac36df-42a7-37d8-3101-ff03fd40510a@ti.com>
- <CAFnufp1vY79fxJEL6eKopTFzJkFz_bZCwaD84CaR_=yqjt6QNw@mail.gmail.com>
- <20210609175527.2f321eca@carbon>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e5538afd-6202-7a5b-7440-229e4f9a6879@gmail.com>
-Date:   Wed, 9 Jun 2021 18:58:35 +0200
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <8f6624b3-b197-1cc7-ede3-03198c6f1936@ti.com>
+Date:   Wed, 9 Jun 2021 20:03:19 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210609175527.2f321eca@carbon>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAFnufp11ANN3MRNDAWBN5AifJbfKMPrVD+6THhZHtuyqZCUmqg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 6/9/21 5:55 PM, Jesper Dangaard Brouer wrote:
-> On Wed, 9 Jun 2021 17:43:57 +0200
-> Matteo Croce <mcroce@linux.microsoft.com> wrote:
-> 
->> On Wed, Jun 9, 2021 at 5:03 PM Grygorii Strashko
->> <grygorii.strashko@ti.com> wrote:
->>>
->>> On 09/06/2021 15:20, Matteo Croce wrote:  
->>>> On Wed, Jun 9, 2021 at 2:01 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:  
->>>>>
->>>>> As already done for mvneta and mvpp2, enable skb recycling for ti
->>>>> ethernet drivers
->>>>>
->>>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>  
->>>>
->>>> Looks good! If someone with the HW could provide a with and without
->>>> the patch, that would be nice!
->>>>  
->>>
->>> What test would you recommend to run?
->>>
-> [...]
+On 09/06/2021 15:20, Matteo Croce wrote:
+> On Wed, Jun 9, 2021 at 2:01 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 >>
->> A test which benefits most from this kind of change is one in which
->> the frames are freed early.
+>> As already done for mvneta and mvpp2, enable skb recycling for ti
+>> ethernet drivers
+>>
+>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > 
-> I would also recommend running an XDP_PASS program, and then running
-> something that let the packets travel as deep as possible into netstack.
-> Not to test performance, but to make sure we didn't break something!
-> 
-> I've hacked up bnxt driver (it's not as straight forward as this driver
-> to convert) and is running some TCP tests.  Not problems so-far :-0
-> 
-> I wanted to ask if someone knows howto setup the zero-copy TCP stuff
-> that google did? (but is that TX only?)
+> Looks good! If someone with the HW could provide a with and without
+> the patch, that would be nice!
 > 
 
-TX does not need anything fancy really.
+Not sure to which mail to answer, so answering here - thanks all
 
-For RX part, you can look at https://netdevconf.info/0x14/pub/slides/62/Implementing%20TCP%20RX%20zero%20copy.pdf
+1) I've simulated packet drop using iperf
+Host:
+- arp -s <some IP> <unknown MAC>
+- iperf -c <some IP> -u -l60 -b700M -t60 -i1
+
+DUP:
+- place interface in promisc mode
+- check rx_packets stats
+
+I see big improvement ~47Kpps vs ~64Kpps
+
+2) I've run iperf3 tests - see no regressions, but also not too much improvements
+
+3) I've applied 2 patches
+- this one
+- and [1]
+
+Results are below, Thank you
+
+Tested-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
+
+[1] https://patchwork.kernel.org/project/netdevbpf/patch/20210609103326.278782-18-toke@redhat.com/
+
+=========== Before:
+[perf top]
+  47.15%  [kernel]                   [k] _raw_spin_unlock_irqrestore
+   11.77%  [kernel]                   [k] __cpdma_chan_free
+    3.16%  [kernel]                   [k] ___bpf_prog_run
+    2.52%  [kernel]                   [k] cpsw_rx_vlan_encap
+    2.34%  [kernel]                   [k] __netif_receive_skb_core
+    2.27%  [kernel]                   [k] free_unref_page
+    2.26%  [kernel]                   [k] kmem_cache_free
+    2.24%  [kernel]                   [k] kmem_cache_alloc
+    1.69%  [kernel]                   [k] __softirqentry_text_start
+    1.61%  [kernel]                   [k] cpsw_rx_handler
+    1.19%  [kernel]                   [k] page_pool_release_page
+    1.19%  [kernel]                   [k] clear_bits_ll
+    1.15%  [kernel]                   [k] page_frag_free
+    1.06%  [kernel]                   [k] __dma_page_dev_to_cpu
+    0.99%  [kernel]                   [k] memset
+    0.94%  [kernel]                   [k] __alloc_pages_bulk
+    0.92%  [kernel]                   [k] kfree_skb
+    0.85%  [kernel]                   [k] packet_rcv
+    0.78%  [kernel]                   [k] page_address
+    0.75%  [kernel]                   [k] v7_dma_inv_range
+    0.71%  [kernel]                   [k] __lock_text_start
+
+[rx packets - with packet drop]
+rxdiff 48004
+rxdiff 47630
+rxdiff 47538
+
+[iperf3 TCP]
+iperf3 -c 192.168.1.1 -i1
+[  5]   0.00-10.00  sec   873 MBytes   732 Mbits/sec    0             sender
+[  5]   0.00-10.01  sec   866 MBytes   726 Mbits/sec                  receiver
+
+=========== After:
+[perf top - with packet drop]
+  40.58%  [kernel]                   [k] _raw_spin_unlock_irqrestore
+   16.18%  [kernel]                   [k] __softirqentry_text_start
+   10.33%  [kernel]                   [k] __cpdma_chan_free
+    2.62%  [kernel]                   [k] ___bpf_prog_run
+    2.05%  [kernel]                   [k] cpsw_rx_vlan_encap
+    2.00%  [kernel]                   [k] kmem_cache_alloc
+    1.86%  [kernel]                   [k] __netif_receive_skb_core
+    1.80%  [kernel]                   [k] kmem_cache_free
+    1.63%  [kernel]                   [k] cpsw_rx_handler
+    1.12%  [kernel]                   [k] cpsw_rx_mq_poll
+    1.11%  [kernel]                   [k] page_pool_put_page
+    1.04%  [kernel]                   [k] _raw_spin_unlock
+    0.97%  [kernel]                   [k] clear_bits_ll
+    0.90%  [kernel]                   [k] packet_rcv
+    0.88%  [kernel]                   [k] __dma_page_dev_to_cpu
+    0.85%  [kernel]                   [k] kfree_skb
+    0.80%  [kernel]                   [k] memset
+    0.71%  [kernel]                   [k] __lock_text_start
+    0.66%  [kernel]                   [k] v7_dma_inv_range
+    0.64%  [kernel]                   [k] gen_pool_free_owner
+    0.58%  [kernel]                   [k] __rcu_read_unlock
+
+[rx packets - with packet drop]
+rxdiff 65843
+rxdiff 66722
+rxdiff 65264
+
+[iperf3 TCP]
+iperf3 -c 192.168.1.1 -i1
+[  5]   0.00-10.00  sec   884 MBytes   742 Mbits/sec    0             sender
+[  5]   0.00-10.01  sec   878 MBytes   735 Mbits/sec                  receiver
+
+
+-- 
+Best regards,
+grygorii
