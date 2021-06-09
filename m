@@ -2,66 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A705B3A1FEE
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 00:19:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5CEA3A2008
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 00:30:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbhFIWVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 18:21:43 -0400
-Received: from mga17.intel.com ([192.55.52.151]:20664 "EHLO mga17.intel.com"
+        id S229972AbhFIWcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 18:32:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34314 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229542AbhFIWVm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 18:21:42 -0400
-IronPort-SDR: u2IyVKA1gkQ0htT9LOFhE+RykOU032BsHfXhtv1WnLJvz8ZEOLsszzV6LedUxWQhwM196ey4SG
- Cfb2FmqHdOZQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="185556025"
-X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
-   d="scan'208";a="185556025"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 15:19:46 -0700
-IronPort-SDR: nv+aQ2uz386ovpA9ZvQDqGWhF8Ul9InQEU47EE7X0D3FGsGXEsXO1lZCpHWPq79AD8+47KZ28t
- NLO+dMQZrEhQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
-   d="scan'208";a="477096374"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by FMSMGA003.fm.intel.com with ESMTP; 09 Jun 2021 15:19:44 -0700
-Date:   Thu, 10 Jun 2021 00:07:13 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Jussi Maki <joamaki@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        j.vosburgh@gmail.com, andy@greyhouse.net, vfalico@gmail.com,
-        andrii@kernel.org, magnus.karlsson@intel.com
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: Add tests for XDP bonding
-Message-ID: <20210609220713.GA14929@ranger.igk.intel.com>
-References: <20210609135537.1460244-1-joamaki@gmail.com>
- <20210609135537.1460244-4-joamaki@gmail.com>
+        id S229788AbhFIWcB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 18:32:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id CD71061040;
+        Wed,  9 Jun 2021 22:30:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623277805;
+        bh=lkWP9PANZgEUE9+eUCm7BT/HBVIVFmcVIjo2L3ELd5g=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=vATwzMkcRxGAiRHD0VABjmvDy8FUPXmFe4wQdLfB0QeCPSfzNvfoncuSO3bHzHjkq
+         Y+8UQIl3tjc9vVwZUqx9aXlLFajn4ok8uRdHwOgch6m4g8pVf428+VDwwqcrwqu0RR
+         Eb3mdSCk/xfX8BDiN63xhGY7duPHErZXLqQ8873JI0tJakexN9CHFX9qAQNUSpu3w3
+         ONQ/DTKB8QY30Yg2XbwqFK7Nq2HedpbANGIugfjOPahsqVYnv8PR2QFQKY4zLo43C3
+         1CEQ5rWzpGaJzgnupUa8Tm1NyKEvaOTehpv4qN+UKh2p7zPzCuxs8SdLmoH/giTfl7
+         HhSTvUGGPMMUQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BA98E60CD8;
+        Wed,  9 Jun 2021 22:30:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210609135537.1460244-4-joamaki@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] Revert "nvme-tcp-offload: ULP Series"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162327780575.20375.5665830051923528863.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Jun 2021 22:30:05 +0000
+References: <20210609104918.10329-1-smalin@marvell.com>
+In-Reply-To: <20210609104918.10329-1-smalin@marvell.com>
+To:     Shai Malin <smalin@marvell.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        geert@linux-m68k.org, hch@lst.de, sagi@grimberg.me,
+        kbusch@kernel.org, axboe@fb.com, himanshu.madhani@oracle.com,
+        pmladek@suse.com, hare@suse.de, aelior@marvell.com,
+        mkalderon@marvell.com, okulkarni@marvell.com,
+        pkushwaha@marvell.com, malin1024@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 09, 2021 at 01:55:37PM +0000, Jussi Maki wrote:
-> Add a test suite to test XDP bonding implementation
-> over a pair of veth devices.
+Hello:
 
-Cc: Magnus
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-Jussi,
-AF_XDP selftests have very similar functionality just like you are trying
-to introduce over here, e.g. we setup veth pair and generate traffic.
-After a quick look seems that we could have a generic layer that would
-be used by both AF_XDP and bonding selftests.
-
-WDYT?
-
+On Wed, 9 Jun 2021 13:49:18 +0300 you wrote:
+> This reverts commits:
+> - 762411542050dbe27c7c96f13c57f93da5d9b89a
+>      nvme: NVME_TCP_OFFLOAD should not default to m
+> - 5ff5622ea1f16d535f1be4e478e712ef48fe183b:
+>      Merge branch 'NVMeTCP-Offload-ULP'
 > 
-> Signed-off-by: Jussi Maki <joamaki@gmail.com>
-> ---
->  .../selftests/bpf/prog_tests/xdp_bonding.c    | 342 ++++++++++++++++++
->  tools/testing/selftests/bpf/vmtest.sh         |  30 +-
->  2 files changed, 360 insertions(+), 12 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+> As requested on the mailing-list: https://lore.kernel.org/netdev/SJ0PR18MB3882C20793EA35A3E8DAE300CC379@SJ0PR18MB3882.namprd18.prod.outlook.com/
+> This patch will revert the nvme-tcp-offload ULP from net-next.
+> 
+> [...]
+
+Here is the summary with links:
+  - Revert "nvme-tcp-offload: ULP Series"
+    https://git.kernel.org/netdev/net-next/c/daf6e8c9caa0
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
