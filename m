@@ -2,91 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1DE83A201C
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 00:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38E6B3A2025
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 00:35:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230285AbhFIWdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 18:33:46 -0400
-Received: from mail-ej1-f41.google.com ([209.85.218.41]:40822 "EHLO
-        mail-ej1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230186AbhFIWdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 18:33:45 -0400
-Received: by mail-ej1-f41.google.com with SMTP id my49so24094329ejc.7;
-        Wed, 09 Jun 2021 15:31:50 -0700 (PDT)
+        id S229961AbhFIWhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 18:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33440 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229935AbhFIWhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 18:37:02 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05918C061760
+        for <netdev@vger.kernel.org>; Wed,  9 Jun 2021 15:35:06 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id l64so2919494ioa.7
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 15:35:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Qnrz+d0W6EP/OXsEGMakUPgEbPOwWrm7cX+jALqX9ic=;
-        b=Mu/E/S4+HM9QDnhfr57f18w4iNWiaW5fr2x/HfVG1Q52OV89wfCihIHI/qYItFppp6
-         /7kgFtDlKh2g4s/ZRAv7XiwhhxNcCTU4fI+0C3Tr8htDbHElQXqKb+/2bVmvua3g7VUM
-         ViUnHX9heQQKQwwB5e2gCqOuNY3LtHd0iVOMJEQ1i/5KmciNDIS5vJfJUEtR8aV2OoAJ
-         J0+4ziwMVvFEv+LA69pJLTgXAeSCRoXFfJ6rK15qRhinf47mh4A8hKop20JUnz/FMDkb
-         qODV5kWdZhv/wP5Fb0N2lgxMl+z7t6UVeo06cOTU1dudMy6B2bDt1pMfRNFo8lmtt35I
-         U+Fw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ui1h2/lSGVRiQONBoWaBIz37PCDVCaei4l7Zfbmyt1o=;
+        b=yAmrt0d9LAu3cHvGNP7zACcD3e9r64TysgH7QY3IrtmWGZDBKY09Es05iiGj5+dLoy
+         QJ7xlRn+/AczqW2l+K+Y53ybJ6gq0pSlRBPGmpDHTeZIFxQP0sQdyI+OvHnTFdfunBkK
+         FQgqy4K10ls8tebZfEcpMz1s10oq5vD+oMpE1D44lo36oYTuOnGkMIM97Tc7t92lO6h9
+         aUgmtZiHW7EgwgfZjz/7X+e9rrDeUmqqgr6toToiaqHlXBoTzrwwAxV0EtAlVOcjskLx
+         EnA/Nl6GcVYBS6DT7oPLDIta1Xh64BZbq9xl/dbZ0svj9JMBmRa/rZ77Cob0GYtB+XMw
+         tZmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Qnrz+d0W6EP/OXsEGMakUPgEbPOwWrm7cX+jALqX9ic=;
-        b=ISGM++dtxfXhvRbm6vcPwfyiWrm8DxoPHDG5XXDiYxWPeUiNS+zNsVjcnwGjPN5Zka
-         3THZvtJ8Ubw8IUgGjv5trsxPGdNC2hjsSwACnSpynrOvIAvK+DrYxLxR6201i0LPHF0/
-         Va6nlwYcfJHWjNr+TKSkovppVOA3nnc0vPHr2Ob7Nvgr3ZndSrOLLfTL+Qn+P8SthnWv
-         eC0Z7ATfsljQrDIZ20E0YkTV0LIZnvTBaauXh65n11rDAj7PJiAcXP0c/vlo4vooj2ps
-         9SKvxWN0Modg6TF/91qgVZbqqs6QkV++dT4bZaWEHupxcwIGsIpj2ncuA3DY7OmxsKSk
-         jHJw==
-X-Gm-Message-State: AOAM532wcc0fNVmOsua554I4hhVBQn1btzhc5REmujjdFk3cXo9gt0oO
-        AGVbkQCOFAGm4v77164TWj0=
-X-Google-Smtp-Source: ABdhPJzkOEEZmcK8SU60iXpYtlX5JkiuTVxdUJ9FCW1pJP7zogFEk+m1ryKNi4ysNdSnxvb93+UVcA==
-X-Received: by 2002:a17:907:f9b:: with SMTP id kb27mr1809860ejc.44.1623277849503;
-        Wed, 09 Jun 2021 15:30:49 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id c26sm422043edu.42.2021.06.09.15.30.48
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ui1h2/lSGVRiQONBoWaBIz37PCDVCaei4l7Zfbmyt1o=;
+        b=Db1Q3xC6SNmr8bhTyAiadWNy8TUl5jD7fwWbvbsjhVB02vly4OJXJu7O2rsl1x1J+p
+         +qOGdurPEFvc6ICy2V6N2Qv2Z1+rypC0ImxiMlxHeCDEZTiRbQuP9sTmRRaWdDY5d5H5
+         4C2DvVeEmVlg/cCtXmeyQWAf3EqegqtOVqhXOWb7u+O3gHiWdSDVWPS5OTD2/in+K9xx
+         YRmIg9MK7oMLwfobdOOND2fc0JDcxtxEjUhRetWxMabdDI0NQ3kdDA9u12ZGd+f86wmN
+         kto7V/nUskQQtQw+HOJ7ZFT/1zrvXqrDg7c1noOPYppTlUnT+2+z3cOQFRCigEAAgi4D
+         owVA==
+X-Gm-Message-State: AOAM530jW2wm32ofEamHZ46UuvlOoE6D3d7JaQIh2G1WthGwawx6DgyV
+        FlnGlI82GkOj2RnBUz/SR6IA+w==
+X-Google-Smtp-Source: ABdhPJykbFctufQfaPqz9EI9sNhxYW5geFhf20IIojB7NpG3KhV7jvhnobjONjbEuzEhJ7sAgGY0MQ==
+X-Received: by 2002:a6b:7948:: with SMTP id j8mr1294767iop.32.1623278106398;
+        Wed, 09 Jun 2021 15:35:06 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id c19sm750165ili.62.2021.06.09.15.35.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Jun 2021 15:30:49 -0700 (PDT)
-Date:   Thu, 10 Jun 2021 01:30:48 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, mnhagan88@gmail.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net: dsa: b53: Do not force CPU to be always
- tagged
-Message-ID: <20210609223048.xsnyaoqzr6uhlqsm@skbuf>
-References: <20210608212204.3978634-1-f.fainelli@gmail.com>
+        Wed, 09 Jun 2021 15:35:05 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 00/11] net: ipa: memory region rework, part 1
+Date:   Wed,  9 Jun 2021 17:34:52 -0500
+Message-Id: <20210609223503.2649114-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210608212204.3978634-1-f.fainelli@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 08, 2021 at 02:22:04PM -0700, Florian Fainelli wrote:
-> Commit ca8931948344 ("net: dsa: b53: Keep CPU port as tagged in all
-> VLANs") forced the CPU port to be always tagged in any VLAN membership.
-> This was necessary back then because we did not support Broadcom tags
-> for all configurations so the only way to differentiate tagged and
-> untagged traffic while DSA_TAG_PROTO_NONE was used was to force the CPU
-> port into being always tagged.
-> 
-> With most configurations enabling Broadcom tags, especially after
-> 8fab459e69ab ("net: dsa: b53: Enable Broadcom tags for 531x5/539x
-> families") we do not need to apply this unconditional force tagging of
-> the CPU port in all VLANs.
-> 
-> A helper function is introduced to faciliate the encapsulation of the
-> specific condition requiring the CPU port to be tagged in all VLANs and
-> the dsa_switch_ops::untag_bridge_pvid boolean is moved to when
-> dsa_switch_ops::setup is called when we have already determined the
-> tagging protocol we will be using.
-> 
-> Reported-by: Matthew Hagan <mnhagan88@gmail.com>
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
+This is the first portion of a very long series of patches that has
+been split in two.  Once these patches are accepted, I'll post the
+remaining patches.
 
-Florian, does the hardware behave in the same way if you disable
-CONFIG_VLAN_8021Q?
+The combined series reworks the way memory regions are defined in
+the configuration data, and in the process solidifies code that
+ensures configurations are valid.
+
+In this portion (part 1), most of the focus is on improving
+validation of code.  This validation is now done unconditionally
+(something I promised Leon Romanovsky I would work on).  Validation
+will occur earlier than before, catching configuration problems as
+early as possible and permitting the rest of the driver to avoid
+needing to do some error checking.  There will now be checks to
+ensure all defined regions are supported by the hardware, that
+required regions are all defined, and that there are no duplicate
+regions.
+
+The second portion (part 2) is mainly a set of small but pervasive
+changes whose result is to have the memory region array not be
+indexed by region ID.  I'll provide further explanation when I post
+that series.
+
+					-Alex
+
+Alex Elder (11):
+  net: ipa: define IPA_MEM_END_MARKER
+  net: ipa: store memory region id in descriptor
+  net: ipa: validate memory regions unconditionally
+  net: ipa: separate memory validation from initialization
+  net: ipa: separate region range check from other validation
+  net: ipa: validate memory regions at init time
+  net: ipa: pass memory configuration data to ipa_mem_valid()
+  net: ipa: introduce ipa_mem_id_optional()
+  net: ipa: validate memory regions based on version
+  net: ipa: flag duplicate memory regions
+  net: ipa: use bitmap to check for missing regions
+
+ drivers/net/ipa/ipa_data-v3.5.1.c |  15 +++
+ drivers/net/ipa/ipa_data-v4.11.c  |  24 +++-
+ drivers/net/ipa/ipa_data-v4.2.c   |  20 ++-
+ drivers/net/ipa/ipa_data-v4.5.c   |  23 ++++
+ drivers/net/ipa/ipa_data-v4.9.c   |  26 +++-
+ drivers/net/ipa/ipa_mem.c         | 196 ++++++++++++++++++++++++++----
+ drivers/net/ipa/ipa_mem.h         |  25 ++--
+ 7 files changed, 291 insertions(+), 38 deletions(-)
+
+-- 
+2.27.0
+
