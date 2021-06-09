@@ -2,154 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 017F93A0870
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 02:34:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A8723A08EA
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 03:16:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232524AbhFIAgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 20:36:45 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:51384 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232202AbhFIAgn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 20:36:43 -0400
+        id S234402AbhFIBS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 21:18:29 -0400
+Received: from mail-ot1-f47.google.com ([209.85.210.47]:42992 "EHLO
+        mail-ot1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230303AbhFIBS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 21:18:29 -0400
+Received: by mail-ot1-f47.google.com with SMTP id w23-20020a9d5a970000b02903d0ef989477so17874066oth.9;
+        Tue, 08 Jun 2021 18:16:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1623198890; x=1654734890;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mLH4j0tpi3aVM2PjiX7dgm3Yj3RRjDwIaDvyaMgv1nE=;
-  b=kcTa0d2KFvpXi8BqwPV/EDXyTYcUJn58OQg0SYkWrWFDLUwVwsDjV54L
-   VpeYkW97hYmusVibID37BhZ/y6HomAINvKuHMLHsV2ECUGGL/SyuHyjoF
-   9IPbndk3Y0jeLRiKksRCFihb37WgPJUUAXBo5zNw3LcLtOHc6/ci0mZta
-   8=;
-X-IronPort-AV: E=Sophos;i="5.83,259,1616457600"; 
-   d="scan'208";a="117519497"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 09 Jun 2021 00:34:48 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id 1F0F8A178D;
-        Wed,  9 Jun 2021 00:34:44 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Wed, 9 Jun 2021 00:34:43 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.201) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Wed, 9 Jun 2021 00:34:37 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <ycheng@google.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
-        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kafai@fb.com>,
-        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <linux-kernel@vger.kernel.org>, <ncardwell@google.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v7 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-Date:   Wed, 9 Jun 2021 09:34:34 +0900
-Message-ID: <20210609003434.49627-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CAK6E8=cgFKuGecTzSCSQ8z3YJ_163C0uwO9yRvfDSE7vOe9mJA@mail.gmail.com>
-References: <CAK6E8=cgFKuGecTzSCSQ8z3YJ_163C0uwO9yRvfDSE7vOe9mJA@mail.gmail.com>
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gc6LRAE93UAouk5r1UrRQsU79NB0S8R7+iG/4LiWPCc=;
+        b=QzYmixMODh3QOA/deGZCdchRnjDAYO9awTNRffPjYvC92V6vK2pJm5/kOuJEFZTSfp
+         RDAeeNcf9ciKKvyEqsbXIQdlvoQ45VtTmYWISfmrBHDfaIiUFt+8+P75EuCv41UGzrmI
+         pRKs5LfRf1bN4S/QqCwyZrSWZEvbvnaktsZTcty2BU4syEYhYDuP0sll1JbM6FUpZC8f
+         rJcHqOImjyvVI6VQFJe+hkr3W59D/ZE9rbiZhlegiRcqei7NmMV7pGf5PlWlXJiT0e5y
+         pc+jQYn0DTzYyvNdRYZoy5zrJ8ziCutlQCwNuIgeXE+RDb5kDcgMj03puatwhcn4xvRY
+         k9RQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gc6LRAE93UAouk5r1UrRQsU79NB0S8R7+iG/4LiWPCc=;
+        b=MOo7CUBitXKb4HwTPR4RU/YAMv8hpDE8nUK+6LWkkAdRof+09IgO/zrxT51ljO6wxx
+         RI+4tLTdF+/HjB2rC57NKDYDlmlREIYaUsxZmDH4FSN02ld9Pkpt8F8FU1QyVk9xzDYi
+         sVq6joDizhcxAq7MajthlhNBALBD76uUO9Xq9GGN/ifHsGXw/kr3jS/n6SjqHx0zUtTj
+         xWEK2JAeth4TDAt/u+rmoyCBIzcmtIxRxDey0gS7gBZ4dF10jQJFS8J255vsMXbzBZuO
+         LvLGuBMWzu+6UvpbsB2mS4Ppyb/g/Cbo7J5HStu45mO8AL3Jm34367acJORjhUwbfn6K
+         3bpA==
+X-Gm-Message-State: AOAM530xYq+qqg4Z4STTWizlbASL8DBxCSk2W2rGYpYD5MahM8w2jRUT
+        M/SL+YoqCXDVfknyoGfMcLw=
+X-Google-Smtp-Source: ABdhPJyzKokATSCEHbzoP9aFIkQGIxZ5gd7X2QsYI4s5NhgD9lo9RumqlaVZqZ9eEiGh0eqU/e0DmQ==
+X-Received: by 2002:a9d:541:: with SMTP id 59mr15538169otw.301.1623201321896;
+        Tue, 08 Jun 2021 18:15:21 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.22])
+        by smtp.googlemail.com with ESMTPSA id x13sm3398105ote.70.2021.06.08.18.15.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Jun 2021 18:15:21 -0700 (PDT)
+Subject: Re: [RFC net-next 1/2] seg6: add support for SRv6 End.DT46 Behavior
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+References: <20210608104017.21181-1-andrea.mayer@uniroma2.it>
+ <20210608104017.21181-2-andrea.mayer@uniroma2.it>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <548983f7-a06c-ea80-0906-88231851bc17@gmail.com>
+Date:   Tue, 8 Jun 2021 19:15:19 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.201]
-X-ClientProxiedBy: EX13D40UWC002.ant.amazon.com (10.43.162.191) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+In-Reply-To: <20210608104017.21181-2-andrea.mayer@uniroma2.it>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Yuchung Cheng <ycheng@google.com>
-Date:   Tue, 8 Jun 2021 16:47:37 -0700
-> On Tue, Jun 8, 2021 at 4:04 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
-> >
-> > From:   Yuchung Cheng <ycheng@google.com>
-> > Date:   Tue, 8 Jun 2021 10:48:06 -0700
-> > > On Tue, May 25, 2021 at 11:42 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > >
-> > > > On 5/21/21 8:20 PM, Kuniyuki Iwashima wrote:
-> > > > > The SO_REUSEPORT option allows sockets to listen on the same port and to
-> > > > > accept connections evenly. However, there is a defect in the current
-> > > > > implementation [1]. When a SYN packet is received, the connection is tied
-> > > > > to a listening socket. Accordingly, when the listener is closed, in-flight
-> > > > > requests during the three-way handshake and child sockets in the accept
-> > > > > queue are dropped even if other listeners on the same port could accept
-> > > > > such connections.
-> > > > >
-> > > > > This situation can happen when various server management tools restart
-> > > > > server (such as nginx) processes. For instance, when we change nginx
-> > > > > configurations and restart it, it spins up new workers that respect the new
-> > > > > configuration and closes all listeners on the old workers, resulting in the
-> > > > > in-flight ACK of 3WHS is responded by RST.
-> > > > >
-> > > > > To avoid such a situation, users have to know deeply how the kernel handles
-> > > > > SYN packets and implement connection draining by eBPF [2]:
-> > > > >
-> > > > >    1. Stop routing SYN packets to the listener by eBPF.
-> > > > >    2. Wait for all timers to expire to complete requests
-> > > > >    3. Accept connections until EAGAIN, then close the listener.
-> > > > >
-> > > > >    or
-> > > > >
-> > > > >    1. Start counting SYN packets and accept syscalls using the eBPF map.
-> > > > >    2. Stop routing SYN packets.
-> > > > >    3. Accept connections up to the count, then close the listener.
-> > > > >
-> > > > > In either way, we cannot close a listener immediately. However, ideally,
-> > > > > the application need not drain the not yet accepted sockets because 3WHS
-> > > > > and tying a connection to a listener are just the kernel behaviour. The
-> > > > > root cause is within the kernel, so the issue should be addressed in kernel
-> > > > > space and should not be visible to user space. This patchset fixes it so
-> > > > > that users need not take care of kernel implementation and connection
-> > > > > draining. With this patchset, the kernel redistributes requests and
-> > > > > connections from a listener to the others in the same reuseport group
-> > > > > at/after close or shutdown syscalls.
-> > > > >
-> > > > > Although some software does connection draining, there are still merits in
-> > > > > migration. For some security reasons, such as replacing TLS certificates,
-> > > > > we may want to apply new settings as soon as possible and/or we may not be
-> > > > > able to wait for connection draining. The sockets in the accept queue have
-> > > > > not started application sessions yet. So, if we do not drain such sockets,
-> > > > > they can be handled by the newer listeners and could have a longer
-> > > > > lifetime. It is difficult to drain all connections in every case, but we
-> > > > > can decrease such aborted connections by migration. In that sense,
-> > > > > migration is always better than draining.
-> > > > >
-> > > > > Moreover, auto-migration simplifies user space logic and also works well in
-> > > > > a case where we cannot modify and build a server program to implement the
-> > > > > workaround.
-> > > > >
-> > > > > Note that the source and destination listeners MUST have the same settings
-> > > > > at the socket API level; otherwise, applications may face inconsistency and
-> > > > > cause errors. In such a case, we have to use the eBPF program to select a
-> > > > > specific listener or to cancel migration.
-> > > This looks to be a useful feature. What happens to migrating a
-> > > passively fast-opened socket in the old listener but it has not yet
-> > > been accepted (TFO is both a mini-socket and a full-socket)?
-> > > It gets tricky when the old and new listener have different TFO key
-> >
-> > The tricky situation can happen without this patch set. We can change
-> > the listener's TFO key when TCP_SYN_RECV sockets are still in the accept
-> > queue. The change is already handled properly, so it does not crash
-> > applications.
-> >
-> > In the normal 3WHS case, a full-socket is created after 3WHS. In the TFO
-> > case, a full-socket is created after validating the TFO cookie in the
-> > initial SYN packet.
-> >
-> > After that, the connection is basically handled via the full-socket, except
-> > for accept() syscall. So in the both cases, the mini-socket is poped out of
-> > old listener's queue, cloned, and put into the new listner's queue. Then we
-> > can accept() its full-socket via the cloned mini-socket.
+On 6/8/21 4:40 AM, Andrea Mayer wrote:
+> IETF RFC 8986 [1] includes the definition of SRv6 End.DT4, End.DT6, and
+> End.DT46 Behaviors.
 > 
-> Thanks, that makes sense. Eric is the expert in this part to review
-> the correctness. My only suggestion is to add some stats tracking the
-> mini-sockets that fail to migrate due to a variety of reasons (the
-> code locations that the requests need to be dropped). This can be
-> useful to evaluate the effectiveness of this new feature.
+> The current SRv6 code in the Linux kernel only implements End.DT4 and
+> End.DT6 which can be used respectively to support IPv4-in-IPv6 and
+> IPv6-in-IPv6 VPNs. With End.DT4 and End.DT6 it is not possible to create a
+> single SRv6 VPN tunnel to carry both IPv4 and IPv6 traffic.
+> 
+> The proposed End.DT46 implementation is meant to support the decapsulation
+> of IPv4 and IPv6 traffic coming from a single SRv6 tunnel.
+> The implementation of the SRv6 End.DT46 Behavior in the Linux kernel
+> greatly simplifies the setup and operations of SRv6 VPNs.
+> 
+> The SRv6 End.DT46 Behavior leverages the infrastructure of SRv6 End.DT{4,6}
+> Behaviors implemented so far, because it makes use of a VRF device in
+> order to force the routing lookup into the associated routing table.
+> 
+> To make the End.DT46 work properly, it must be guaranteed that the routing
+> table used for routing lookup operations is bound to one and only one VRF
+> during the tunnel creation. Such constraint has to be enforced by enabling
+> the VRF strict_mode sysctl parameter, i.e.:
+> 
+>  $ sysctl -wq net.vrf.strict_mode=1
+> 
+> Note that the same approach is used for the SRv6 End.DT4 Behavior and for
+> the End.DT6 Behavior in VRF mode.
+> 
+> The command used to instantiate an SRv6 End.DT46 Behavior is
+> straightforward, i.e.:
+> 
+>  $ ip -6 route add 2001:db8::1 encap seg6local action End.DT46 vrftable 100 dev vrf100.
+> 
+> [1] https://www.rfc-editor.org/rfc/rfc8986.html#name-enddt46-decapsulation-and-s
+> 
+> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> Performance and impact of SRv6 End.DT46 Behavior on the SRv6 Networking
+> =======================================================================
+> 
+> This patch aims to add the SRv6 End.DT46 Behavior with minimal impact on
+> the performance of SRv6 End.DT4 and End.DT6 Behaviors.
+> In order to verify this, we tested the performance of the newly introduced
+> SRv6 End.DT46 Behavior and compared it with the performance of SRv6
+> End.DT{4,6} Behaviors, considering both the patched kernel and the kernel
+> before applying the End.DT46 patch (referred to as vanilla kernel).
+> 
+> In details, the following decapsulation scenarios were considered:
+> 
+>  1.a) IPv6 traffic in SRv6 End.DT46 Behavior on patched kernel;
+>  1.b) IPv4 traffic in SRv6 End.DT46 Behavior on patched kernel;
+>  2.a) SRv6 End.DT6 Behavior (VRF mode) on patched kernel;
+>  2.b) SRv6 End.DT4 Behavior on patched kernel;
+>  3.a) SRv6 End.DT6 Behavior (VRF mode) on vanilla kernel (without the
+>       End.DT46 patch);
+>  3.b) SRv6 End.DT4 Behavior on vanilla kernel (without the End.DT46 patch).
+> 
+> All tests were performed on a testbed deployed on the CloudLab [2]
+> facilities. We considered IPv{4,6} traffic handled by a single core (at 2.4
+> GHz on a Xeon(R) CPU E5-2630 v3) on kernel 5.13-rc1 using packets of size
+> ~ 100 bytes.
+> 
+> Scenario (1.a): average 684.70 kpps; std. dev. 0.7 kpps;
+> Scenario (1.b): average 711.69 kpps; std. dev. 1.2 kpps;
+> Scenario (2.a): average 690.70 kpps; std. dev. 1.2 kpps;
+> Scenario (2.b): average 722.22 kpps; std. dev. 1.7 kpps;
+> Scenario (3.a): average 690.02 kpps; std. dev. 2.6 kpps;
+> Scenario (3.b): average 721.91 kpps; std. dev. 1.2 kpps;
+> 
+> Considering the results for the patched kernel (1.a, 1.b, 2.a, 2.b) we
+> observe that the performance degradation incurred in using End.DT46 rather
+> than End.DT6 and End.DT4 respectively for IPv6 and IPv4 traffic is minimal,
+> around 0.9% and 1.5%. Such very minimal performance degradation is the
+> price to be paid if one prefers to use a single tunnel capable of handling
+> both types of traffic (IPv4 and IPv6).
+> 
+> Comparing the results for End.DT4 and End.DT6 under the patched and the
+> vanilla kernel (2.a, 2.b, 3.a, 3.b) we observe that the introduction of the
+> End.DT46 patch has no impact on the performance of End.DT4 and End.DT6.
+> 
+> [2] https://www.cloudlab.us
+> 
+> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+> ---
+>  include/uapi/linux/seg6_local.h |  2 +
+>  net/ipv6/seg6_local.c           | 94 +++++++++++++++++++++++++--------
+>  2 files changed, 74 insertions(+), 22 deletions(-)
+> 
 
-That's nice idea.
-I'll implement it as a follow-up patch or in the next spin.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-For now, I would like to wait for Eric's review.
-
-Thank you.
