@@ -2,61 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 652A63A1866
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:02:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C939D3A1871
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238817AbhFIPDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 11:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238801AbhFIPDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 11:03:06 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16638C061574;
-        Wed,  9 Jun 2021 08:01:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=ffjZdEaHfFJL2PlBT1Pi9QMrYzsEmrd1QXquQzBQ3MI=; b=agVhEldAJI80iEC/bn2apBj6dj
-        GShcrxSObtemYZVq7w0qS86pRLEuBNhoO6Lj0AIFSOBqjOP5Q++7p2bZOa2sYfhuYk4pqwcXP+30Y
-        hz/YOlzHP8iNOmzami6ODx0OZNVYgIWnBMkM0bOfOjqU9EOK234N6YvSufy4dSCSNEHNHAjG8eEre
-        ZgiRHunrZwOuijUfNJ6Bc0ljF7liAZsnmLAJq7da3ZYD4lPDEXrjFNxAxtNcWioFg1Y1NeTiVLYw7
-        uJpv3IMCtEuSgHzn1DCS3S1LLSL+jqHBYD8dEyZOENfT9QAJFxtJoBCLlH31VhB2ZpDgw+lq03XzA
-        ninwpdqg==;
-Received: from [2601:1c0:6280:3f0::bd57]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lqzhd-00ET7w-JV; Wed, 09 Jun 2021 15:01:09 +0000
-Subject: Re: [PATCH] nl80211: fix a mistake in grammar
-To:     Johannes Berg <johannes@sipsolutions.net>, 13145886936@163.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
-References: <20210609081556.19641-1-13145886936@163.com>
- <d32bec575d204a17531f61c8d2f67443ffdaee6c.camel@sipsolutions.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <c4ab41c7-7230-2548-f7ab-1a0aa8d16e36@infradead.org>
-Date:   Wed, 9 Jun 2021 08:01:05 -0700
+        id S234324AbhFIPFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 11:05:10 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:59664 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232446AbhFIPFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 11:05:07 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 159F340Y076944;
+        Wed, 9 Jun 2021 10:03:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1623250984;
+        bh=OAtpdMKEWVQ9YW9nLXIwRCyDoKCWVnm+kcDeskm2VhE=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=qTscTW8MlD4ZMspi1VbyTX8rP8GEDeRiIOQaMzC555nKy54aE+9fmogM2dK6HmTfE
+         4L/Ol15dsOQJQq/4F2oO9ni25yUhd1/sYWVVkl2XVUFGZj+pwJLyOKfpGn4/UiefnZ
+         QtxpiJlWldFkgQLQ45xO/tKj5j/0jzJ4NPFM87V4=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 159F34VZ026197
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 9 Jun 2021 10:03:04 -0500
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 9 Jun
+ 2021 10:03:04 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Wed, 9 Jun 2021 10:03:04 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 159F31nI019469;
+        Wed, 9 Jun 2021 10:03:02 -0500
+Subject: Re: [RFT net-next] net: ti: add pp skb recycling support
+To:     Matteo Croce <mcroce@linux.microsoft.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+CC:     <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+References: <ef808c4d8447ee8cf832821a985ba68939455461.1623239847.git.lorenzo@kernel.org>
+ <CAFnufp11ANN3MRNDAWBN5AifJbfKMPrVD+6THhZHtuyqZCUmqg@mail.gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <e2ac36df-42a7-37d8-3101-ff03fd40510a@ti.com>
+Date:   Wed, 9 Jun 2021 18:02:54 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <d32bec575d204a17531f61c8d2f67443ffdaee6c.camel@sipsolutions.net>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAFnufp11ANN3MRNDAWBN5AifJbfKMPrVD+6THhZHtuyqZCUmqg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/9/21 1:55 AM, Johannes Berg wrote:
-> On Wed, 2021-06-09 at 01:15 -0700, 13145886936@163.com wrote:
+hi
+
+On 09/06/2021 15:20, Matteo Croce wrote:
+> On Wed, Jun 9, 2021 at 2:01 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 >>
->> -	/* don't allow or configure an mcast address */
->> +	/* don't allow or configure a mcast address */
+>> As already done for mvneta and mvpp2, enable skb recycling for ti
+>> ethernet drivers
+>>
+>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > 
-> Arguable? I'd say "an M-cast" address, and I guess that's why it's
-> written that way. Not sure how else you'd say it, unless you always
-> expand it to "multicast" when reading.
+> Looks good! If someone with the HW could provide a with and without
+> the patch, that would be nice!
+> 
 
-Agreed, it's ok as is.
+What test would you recommend to run?
 
+-- 
+Best regards,
+grygorii
