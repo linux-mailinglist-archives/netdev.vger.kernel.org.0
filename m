@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC0323A170F
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 16:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06ABE3A1713
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 16:23:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237812AbhFIOYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 10:24:48 -0400
-Received: from mail-bn8nam11on2061.outbound.protection.outlook.com ([40.107.236.61]:8224
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        id S237783AbhFIOY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 10:24:57 -0400
+Received: from mail-dm3nam07on2047.outbound.protection.outlook.com ([40.107.95.47]:13920
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237783AbhFIOYn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 10:24:43 -0400
+        id S237794AbhFIOYs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 10:24:48 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gpscje2hnmp4OX6y48V2AzNFsfYYZCInt3JCo+2egu62Rf3qLKQMwe4yoOWVF0Miti/v5aDqrZjL6QftL26MtRe4Pba1EojeYA1WOLlJnaqgOpUsC10OBmfXezeokz9w9rMIdkaZ4CXdf6QHVWnqBBUEOwwS//U+JHuruSxhJhsa3bzTT0u8bcja3+zTeNorIm5flVTJN2j/xALPtJSYZLEv+etHi+Gygp23EaMaNED2Cic8kF0O6ezUkyOe0cPkZycmLS4fu70dUWIG+wIHLAA0iArbXNqsa1n8hC9E1kGGy41lkLN1pHOn8Ji7XZ1awQR1q49OiU16r1EZOm8v/g==
+ b=BEt0mdwyVBzehEIIktD5x4mI8gaj5PWCzLb60ZZvs4fJGMn1iA+Nfb7wAvZFjRaNVEGxZKPy8zw/q3U37ggGPz5Bi1b38dV25MURGqH0KJLh0CWgasSaRco8ix70MRGeRMhglVCOw7eMR/A7pl45U3Vuf5Kk21LEYBJ/bCauJAfpOvocyDR6pd85Gc+NSwIsz95zAal/DdZFYlJEFwYKpx+BTBm3IWbTO4h54eytiSyDYM9JbIF6avhk3s6oNpcqpHhl3tVW/1bZ+LMyl366SwACy3csFHGwKQNW8ivKUTWypBfnHBTSWnjkmA5cFE6IS/S0liZDbVf6hXwBM/aIMg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5jKjatjtp4j+nEZB2Mp0fF84nkGSH4r0mtH6JmL1Jn8=;
- b=YQRz2X0TDWiE35h2rXWmHmIOhWyinHFKBJ6et3If4cvqK4DGoAh1s3iNQSPLX6aWBkaDZhz4rye/AqrDlrcnEcun+D1MmSJHVTgUYqvAoZxeG34ygLYR2ShhCohh4eE4bjNwQclRpvV9UvxXG0mBmuJT8ivxsfgTfVjg4Ysr8Rd2unE9cwD4dIOC38jf6Mt1KRJ51F7C0ADvmigbyADr/DtNm0gGLFGf9wRRlMWZS8+ig763VQaW9uaOERKmUe8NDEFPXikTT2oB+zDDaU4GGzNMB/rmLBg57iRhfuufqzHGcmJCCzbC/F5wOTdaxP/6h5UthGe6CljENxlDqIgs6Q==
+ bh=8yMCxIxZol2c+lPp7M0M/1j3OtKTnf2YOuTKQI2ug8c=;
+ b=ODZfNwZFPK+sMQg91xo2hcq7snAQ7lKTpqQ5DYQpQHP09cX0Hwxri2IeQuwRjqlrfk4gyTEKrUElcO2FNZ2Gofu52gue5VeNoD28N79MP8w9sdhGYkVsVJLLXT702jRBBUHjLr9ZflEfdSZW1ctgralRf+DNtFtLjL7xAcunVKLhHMQ1OPf/VwRcYCI3E3k71EiQzUuIQoUXuUo3tVOD8jGsHkl652elVMb6FKgMYoqw6ziY5JQ/j8M0t8/HC8iPzV6na3fWvX0ixtzBykR+2Zt8CnCQI/hgIAdTsMILPaV145nuSS42TOfYU9+gA35ms3025kqB+0ZxPUAUjh0z2w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.36) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 216.228.112.35) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5jKjatjtp4j+nEZB2Mp0fF84nkGSH4r0mtH6JmL1Jn8=;
- b=ZL/wsvWbEjVsFFrjz3rhe7V785ktoRTCBOSeidArSwRFR+Av7+Ho+Qip6Li8ouL9Nyl9DfmIWQmLCyTBCphg/K5a4plkcdSd//ttjw9uJTUJKwBlOQUlDNQ5O7eX6OMVI0NqJLOa9Uyk0JHmsrx6HUPeqj52ZRSxPC7S5FiAnWxGIjbFP3EdzHou98ndaEYwg4BJ/PUsl2T/JOMD7cwPcnN/8bsZA9rbNtTwb6OFUm7SdEPpkEJ0NOa1CHkGp7XGC7g1Q36u1SLznmgIL25xPjd32h79Yuftw0KerkEdqO/UvlP8XKdW0v3E6x/BLR3JchbNFM2ce55ATA7Guv0phQ==
-Received: from MWHPR1701CA0002.namprd17.prod.outlook.com
- (2603:10b6:301:14::12) by BYAPR12MB4711.namprd12.prod.outlook.com
- (2603:10b6:a03:95::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.29; Wed, 9 Jun
- 2021 14:22:46 +0000
-Received: from CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:14:cafe::1b) by MWHPR1701CA0002.outlook.office365.com
- (2603:10b6:301:14::12) with Microsoft SMTP Server (version=TLS1_2,
+ bh=8yMCxIxZol2c+lPp7M0M/1j3OtKTnf2YOuTKQI2ug8c=;
+ b=pvrQPY1g5UNUdarHwzdrVN43+eMhpuoG45OZ+eu72oUVPcWvKPtbg4NHvAINZ4nGjRkgelHFDpCnV1Bil6PaGx+4ZZcXv+vD6Bj85AzO0dOefxLplar47xqlFz6MTmEg6XDcZiNkvOOGUYJ7TD1334XSqUahQLAP1dW61oS20z+GwxgtIvxIgWkMkLCbBTQ0Ck3jVQ2Yt8GLmdJflsuvivsHyuO1/9vK5L3Ylmmc11NiBJYsy/XINOPUMBvAZmFkYTvBSYqd+WcHJJSl1RvHYdI/f8SMxWovCj+8TTHbBIEBtlPzNsfxc1aRJ3mxvSg2vCoq9Xg1DSVIp2w1dDR+Xw==
+Received: from CO1PR15CA0102.namprd15.prod.outlook.com (2603:10b6:101:21::22)
+ by CH0PR12MB5106.namprd12.prod.outlook.com (2603:10b6:610:bd::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.24; Wed, 9 Jun
+ 2021 14:22:52 +0000
+Received: from CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:101:21:cafe::d7) by CO1PR15CA0102.outlook.office365.com
+ (2603:10b6:101:21::22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend
- Transport; Wed, 9 Jun 2021 14:22:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
- smtp.mailfrom=nvidia.com; redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=pass action=none header.from=nvidia.com;
+ Transport; Wed, 9 Jun 2021 14:22:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
+ smtp.mailfrom=nvidia.com; linux.intel.com; dkim=none (message not signed)
+ header.d=none;linux.intel.com; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.36; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.36) by
- CO1NAM11FT018.mail.protection.outlook.com (10.13.175.16) with Microsoft SMTP
+ 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.35; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.35) by
+ CO1NAM11FT037.mail.protection.outlook.com (10.13.174.91) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4219.21 via Frontend Transport; Wed, 9 Jun 2021 14:22:46 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 9 Jun
- 2021 14:22:46 +0000
+ 15.20.4219.21 via Frontend Transport; Wed, 9 Jun 2021 14:22:51 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 9 Jun
+ 2021 14:22:51 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 9 Jun
+ 2021 14:22:50 +0000
 Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 9 Jun 2021 14:22:41 +0000
+ Transport; Wed, 9 Jun 2021 14:22:46 +0000
 From:   Maxim Mikityanskiy <maximmi@nvidia.com>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -73,51 +76,68 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Peter Krystad <peter.krystad@linux.intel.com>
 CC:     Young Xiao <92siuyang@gmail.com>, <netdev@vger.kernel.org>,
         "Maxim Mikityanskiy" <maximmi@nvidia.com>
-Subject: [PATCH net 0/3] Fix out of bounds when parsing TCP options
-Date:   Wed, 9 Jun 2021 17:22:09 +0300
-Message-ID: <20210609142212.3096691-1-maximmi@nvidia.com>
+Subject: [PATCH net 1/3] netfilter: synproxy: Fix out of bounds when parsing TCP options
+Date:   Wed, 9 Jun 2021 17:22:10 +0300
+Message-ID: <20210609142212.3096691-2-maximmi@nvidia.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210609142212.3096691-1-maximmi@nvidia.com>
+References: <20210609142212.3096691-1-maximmi@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 352daf34-ad81-457b-3510-08d92b520da5
-X-MS-TrafficTypeDiagnostic: BYAPR12MB4711:
-X-Microsoft-Antispam-PRVS: <BYAPR12MB4711D4393E465405828DC1E9DC369@BYAPR12MB4711.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-MS-Office365-Filtering-Correlation-Id: 7d3327c2-8ce3-4958-3a67-08d92b5210c2
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5106:
+X-Microsoft-Antispam-PRVS: <CH0PR12MB510675318E2B10D504661045DC369@CH0PR12MB5106.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:538;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D1SWrP3hOq4XdXUKeJSI76BBRrQ4Ek2OWz3/j8lHZyOUUBXMDhwaR6DvZIRLjQCXvOBCqmPEbSyilrVg63phClhsx+MxXMaIecvEkedYqIptdUtkyih/VD88+1MBSqxElieOMDTMlmWM4/FgX/y3v9pQmvKKT05yBWT3qEus1oHdX7F8gBqXH8X5X9t2utQYdu6mAZimvUrrPZmwSgEf4sQ9tHTaCQ81C9rERFdwu+7C8EjIpngdyg6IXadchxlCpwvmODCcRP6YnWls1gO1z7Jn1eke6+TvjMR3mNmKM+Q4eW3RkHY7BV+ZjruhmQVI7ICpAdOwzdw82R5n+4M3DkyJLx8f3fvbWAtuQuybJFgqmm1AYqI+ve0T+RJmeZq0CHzTjRExk7joK8DTrgBKVXGKdwUiu0qvg/fl/t1b6iaFwkZUFR9s0bOvvoZJvicSu429dMl2D8HagDiR8G+dWBLy8Mi5j56MWQZrDNZatHyRDGGl5VURdCv/3iKUY+HGHaNZi0mhX84a/y/FILk39z+ABMOWsrDXRijVCSdtn5Qh2VbAp91zT+YLJqbij72uwYn7jnRps9mSqeuAlFAZp75Cpx0Cnr0gq6dp8ZWBmXtv3A3Bju77dphcbsfiwqVDIJJwsoZlG+puSJh0Q+auVFRBa+mR0fu2xU8pteR1slk=
-X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(136003)(346002)(376002)(46966006)(36840700001)(426003)(2906002)(8936002)(83380400001)(186003)(110136005)(47076005)(86362001)(36860700001)(478600001)(316002)(82740400003)(336012)(70586007)(70206006)(6666004)(54906003)(2616005)(82310400003)(36756003)(1076003)(7416002)(4326008)(356005)(7636003)(5660300002)(921005)(107886003)(4744005)(36906005)(8676002)(7696005)(26005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: U4r/ZE+kv1twrAOvB/76znE0xC77Se79sepeAVVPmkCprN1CIK5Xpovt5Sd+a/YQbQ1EN+CzPmAxkdlVxcR8kH26oLgoQnTKKpMVQlx+vO2S6sBE5faw4Z1H5883H6j7MGcrWlNHvSe179wUyUaLd/IBePRfQDxr/92uvNzlOHHc4Y8TzIoWFpKxfHG/a2GSPCm+u4KAeXp7R/fDajfRyy02C3wHTG8L0aIRWgE8uKlBq9W+Q/o2PUSAA5aWG/mUVbf91qo1FwraCw19YT28jG1LLnC9uC/J0ssF+R7euvSsQZBjvnd9UXhs3uiMcMQhAZhRv35UbwxoL1oHNUJL6BsTWfTAS+mtr/Impotf/DqziHLehDZUn3xWCmIV8Cg44Bl6w1WrZx+92sKkhK5+xrL7cv8Vp+T9stD8aIt4JSxjCgYcTLphjs0vynLmeoN4iOLkccXy23hxnGNG0RI/XBjsbduUxN4q6TjV6sj9gRnhOY419x/ihe2K9bTfaE8qIXDC3/vhJfYeC2o09eNKkI45kKkrnjprFMn4MwQOOyEJCRKy3I+hr0YoEtOwbLLr6V+GoBErBMjCeq1yeHWvzwqqAdJvyEeh44uRGmVIb0KOQm0EI9ovafUQb+8Yk+g90A1myhDTQGeOr0nlhINsMXSww4fYRQLotf+ByRUEqTQ=
+X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(39860400002)(346002)(46966006)(36840700001)(86362001)(426003)(82310400003)(7636003)(316002)(356005)(6666004)(186003)(7696005)(54906003)(47076005)(110136005)(8676002)(336012)(478600001)(36906005)(4326008)(26005)(83380400001)(1076003)(5660300002)(921005)(107886003)(70206006)(8936002)(82740400003)(36756003)(7416002)(36860700001)(70586007)(2616005)(2906002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2021 14:22:46.4769
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2021 14:22:51.6963
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 352daf34-ad81-457b-3510-08d92b520da5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d3327c2-8ce3-4958-3a67-08d92b5210c2
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB4711
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series fixes out-of-bounds access in various places in the kernel
-where parsing of TCP options takes place. Fortunately, many more
-occurrences don't have this bug.
+The TCP option parser in synproxy (synproxy_parse_options) could read
+one byte out of bounds. When the length is 1, the execution flow gets
+into the loop, reads one byte of the opcode, and if the opcode is
+neither TCPOPT_EOL nor TCPOPT_NOP, it reads one more byte, which exceeds
+the length of 1.
 
-Maxim Mikityanskiy (3):
-  netfilter: synproxy: Fix out of bounds when parsing TCP options
-  mptcp: Fix out of bounds when parsing TCP options
-  sch_cake: Fix out of bounds when parsing TCP options
+This fix is inspired by commit 9609dad263f8 ("ipv4: tcp_input: fix stack
+out of bounds when parsing TCP options.").
 
- net/mptcp/options.c              | 2 ++
+Cc: Young Xiao <92siuyang@gmail.com>
+Fixes: 48b1de4c110a ("netfilter: add SYNPROXY core/target")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+---
  net/netfilter/nf_synproxy_core.c | 2 ++
- net/sched/sch_cake.c             | 4 ++++
- 3 files changed, 8 insertions(+)
+ 1 file changed, 2 insertions(+)
 
+diff --git a/net/netfilter/nf_synproxy_core.c b/net/netfilter/nf_synproxy_core.c
+index b100c04a0e43..621eb5ef9727 100644
+--- a/net/netfilter/nf_synproxy_core.c
++++ b/net/netfilter/nf_synproxy_core.c
+@@ -47,6 +47,8 @@ synproxy_parse_options(const struct sk_buff *skb, unsigned int doff,
+ 			length--;
+ 			continue;
+ 		default:
++			if (length < 2)
++				return true;
+ 			opsize = *ptr++;
+ 			if (opsize < 2)
+ 				return true;
 -- 
 2.25.1
 
