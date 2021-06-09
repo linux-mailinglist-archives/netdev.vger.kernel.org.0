@@ -2,89 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAA0E3A1751
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 16:33:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4CA63A1753
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 16:34:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237080AbhFIOfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 10:35:18 -0400
-Received: from mail.satchell.net ([99.65.194.97]:46590 "EHLO mail.satchell.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237156AbhFIOfQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 10:35:16 -0400
-X-Greylist: delayed 438 seconds by postgrey-1.27 at vger.kernel.org; Wed, 09 Jun 2021 10:35:16 EDT
-Received: from c7-i5.satchell.net (unknown [10.1.1.36])
-        by mail.satchell.net (Postfix) with ESMTP id 997D7601EF
-        for <netdev@vger.kernel.org>; Wed,  9 Jun 2021 07:26:03 -0700 (PDT)
-Reply-To: list@satchell.net
-To:     netdev@vger.kernel.org
-From:   Stephen Satchell <list@satchell.net>
-Subject: Proposed addition to sysctl rp_filter documentation
-Message-ID: <ff98f7eb-e21b-b765-f7a0-9c7126043118@satchell.net>
-Date:   Wed, 9 Jun 2021 07:26:03 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S236044AbhFIOf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 10:35:56 -0400
+Received: from mail-lf1-f54.google.com ([209.85.167.54]:43822 "EHLO
+        mail-lf1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237156AbhFIOfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 10:35:48 -0400
+Received: by mail-lf1-f54.google.com with SMTP id n12so31373328lft.10
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 07:33:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8PDNC8Mo/P5rc+m2CaBOXRYUGdGE0Y+FOQz4Z9q23kE=;
+        b=cmlainbjPOaGda6DkAkCK1nAK6ncxjkgH1uHbt1hsPu+LgRNS/WYVld7xPy8h1LWle
+         QYlB06deJoPdtpQ/RtRlNCitiNzn4duDJwMN3fFwsOnyqsDjuGwgZGx1JLZqO8Kinj5I
+         JF9oDx6mVHce5F7+ptbydorrhRSqTRfA84gv45D+B8HaKmi1gbHDh1W+xNFq+tJyKkte
+         pNZaXKOiGX8nGNIBppaEfb44GCJ9arGsKNe/JmDcahjPfdO4C6hXJc9jPtYau8uVkuD4
+         VvczvccSfS64Q9YlUFy4HwemoLNipcg9RSiIbGwSPVtGy9Uo7ir00H8fLbKA4o6GQagW
+         16eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8PDNC8Mo/P5rc+m2CaBOXRYUGdGE0Y+FOQz4Z9q23kE=;
+        b=Q4gN3scj3xEaAaVdPr+etMsrccpw4ag9zY+N9q7r0E5wbucb7QyAQp1PsBAedneGyL
+         2E9pgAOMv/r29+k0tDJVInthbgjY65NJjPZV/mUaj0UNYBqdTiRRkfDj8ScwQ5kyFfGl
+         qNz2ArCskDn1foC+ZjfsPjr6mtUq3ILIZSXpgTxjb71qxOETTffNeFFXCbJy51N4zHv7
+         QODOMQDruiVfNkoY0ZBgzWHphqR8aH9pmAQ4BzRZZhoaYCJqvGBAnaD3/AvaB+cv0o7i
+         sG5M49ORA+1YaZwJ+pndWofX3zNXWQZD1+IGPjCwMTvIdf03ZE/8iY4ql+lipcJBlTfZ
+         q+UQ==
+X-Gm-Message-State: AOAM532FPlkouz1V9t4NVIFyx3aogDoEZ4roXD4QGOSYmHZqvKG+R6AY
+        Ngy0qmmYV6V9rhD3tZ3j+5EL5nSFlqI=
+X-Google-Smtp-Source: ABdhPJwc4drnroaNNNb8ujwzT11JcIWTxZ5XbmGYtWHc7s7ZgIP+qWWmkbInpO0DwyVzaAP2TiVREw==
+X-Received: by 2002:a05:6512:12c8:: with SMTP id p8mr12030185lfg.65.1623249171668;
+        Wed, 09 Jun 2021 07:32:51 -0700 (PDT)
+Received: from kristrev-XPS-15-9570.lan (2.149.207.108.tmi.telenormobil.no. [2.149.207.108])
+        by smtp.gmail.com with ESMTPSA id u10sm353908lji.16.2021.06.09.07.32.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Jun 2021 07:32:51 -0700 (PDT)
+From:   Kristian Evensen <kristian.evensen@gmail.com>
+To:     netdev@vger.kernel.org, sharathv@codeaurora.org,
+        stranche@codeaurora.org, subashab@codeaurora.org
+Cc:     Kristian Evensen <kristian.evensen@gmail.com>
+Subject: [PATCH] net: ethernet: rmnet: Always subtract MAP header
+Date:   Wed,  9 Jun 2021 16:32:49 +0200
+Message-Id: <20210609143249.2279285-1-kristian.evensen@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've been trying to find a definitive description how the IPv4 rp_filter 
-actually works in detail, and found nothing in searching around.  There 
-are hints here and there, but nothing that spells out how the filter 
-works.  So I obeyed the mantra "Use the source, Luke" and dived in. 
-This proposal is a distillation of what I found and believe to be 
-accurate about how rp_filter works.
+Commit e1d9a90a9bfd ("net: ethernet: rmnet: Support for ingress MAPv5
+checksum offload") broke ingress handling for devices where
+RMNET_FLAGS_INGRESS_MAP_CKSUMV5 or RMNET_FLAGS_INGRESS_MAP_CKSUMV4 are
+not set. Unless either of these flags are set, the MAP header is not
+removed. This commit restores the original logic by ensuring that the
+MAP header is removed for all MAP packets.
 
-I appreciate a review by the people who are deep in the weeds.
+Fixes: e1d9a90a9bfd ("net: ethernet: rmnet: Support for ingress MAPv5 checksum offload")
+Signed-off-by: Kristian Evensen <kristian.evensen@gmail.com>
+---
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-After receiving comments, I plan to submit an appropriate page
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
+index 2504d0363b6b..bfbd7847f946 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
+@@ -88,11 +88,12 @@ __rmnet_map_ingress_handler(struct sk_buff *skb,
+ 			goto free_skb;
+ 		skb_pull(skb, sizeof(*map_header));
+ 		rmnet_set_skb_proto(skb);
+-	} else if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4) {
++	} else {
+ 		/* Subtract MAP header */
+ 		skb_pull(skb, sizeof(*map_header));
+ 		rmnet_set_skb_proto(skb);
+-		if (!rmnet_map_checksum_downlink_packet(skb, len + pad))
++		if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4 &&
++		    !rmnet_map_checksum_downlink_packet(skb, len + pad))
+ 			skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 	}
+ 
+-- 
+2.25.1
 
-After looking at the source that appears to implement rp_filter
-     linux/net/ipv4/fib_frontend.c
-I believe that I now understand the tests rp_filter performs to
-validate the source address when net.ipv4.conf.*.rp_filter is
-set to one or two for a given interface.  I have also reviewed
-the commit history for fib_frontend.c to better understand the
-evolution of the code.
-
-Does the new paragraph I have written accurately reflect what
-happens?
-
-Description of rp_filter from
-https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
---------------------------------------------------------------------
-rp_filter - INTEGER
-	0 - No source validation.
-	1 - Strict mode as defined in RFC3704 Strict Reverse Path
-	    Each incoming packet is tested against the FIB and if the
-	    interface is not the best reverse path the packet check will
-	    fail. By default failed packets are discarded.
-	2 - Loose mode as defined in RFC3704 Loose Reverse Path
-	    Each incoming packet's source address is also tested against
-	    the FIB and if the source address is not reachable via any
-	    interface the packet check will fail.
-
-	[*proposed-addition]
-	
-	Current recommended practice in RFC3704 is to enable strict mode
-	to prevent IP spoofing from DDos attacks. If using asymmetric
-	routing or other complicated routing, then loose mode is
-	recommended.
-
-	The max value from conf/{all,interface}/rp_filter is used
-	when doing source validation on the {interface}.
-
-	Default value is 0. Note that some distributions enable it
-	in startup scripts.
---------------------------------------------------------------------
-
-Recommended addition where marked with "[*proposed-addition]":
-     rp_filter will examine the source address of an incoming IP
-     packet by performing an FIB lookup.  In loose mode (value 2),
-     the packet is rejected if the source address is neither
-     UNICAST nor LOCAL(when interface allows) nor IPSEC.  For
-     strict mode (value 1) the interface indicated by the FIB table
-     entry must also match the interface on which the packet arrived.
