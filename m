@@ -2,151 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E403A20CD
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 01:29:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32E733A20C4
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 01:29:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230245AbhFIXbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 19:31:19 -0400
-Received: from mail-pf1-f173.google.com ([209.85.210.173]:42747 "EHLO
-        mail-pf1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbhFIXbF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 19:31:05 -0400
-Received: by mail-pf1-f173.google.com with SMTP id s14so31056pfd.9
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 16:28:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=XAzb3VkfUYxU1teKArHCgpj6NOb9ejMO6tAx0JjUIoQ=;
-        b=O88kABLyJToxtXQQFFjKPeMLrJ6YesZtMujpSNeGlQr4FiygAaEUmju5bI0djjtyMO
-         fmcAoWXx+PQjavZKTMLpBmCljJ1id5ISpmeoUMvTwVllZ38QED5U5oIuNgaW/8FJouyL
-         OiLP0c9ZxGG9OOuD6Jj5yFH8xh1WJo4xhhiJnI4Ewx6elUoDWibQFNeKjkHo6Q41BgVZ
-         6OhFZ6U33EpgC9MKiUFgd9OVoT0548QMf4OzuoRrZcGp5QgdYh/+iS6Pzfu0KaDlqjjv
-         FBKDBtgmajPmIt/ZcOzKSapooa1CDhL0tp2kafx6jHLIeKGMC1KlffQdYwljAhBcx5Rl
-         UFjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=XAzb3VkfUYxU1teKArHCgpj6NOb9ejMO6tAx0JjUIoQ=;
-        b=A6Xd2w7UDL8YirEezpONkTMgFEBt6ThGyvMgPcjGQ+cSvwrI4VX3cp+utGFk0JtCNW
-         0voX/bAfxNAZrL5gAuA9nLQ6JCeoHOmhTRi4ztuzipUxncg0Z9LWD17f5zCLRlkGiTWO
-         5PESBDN0ntqV7tGaD/6pfk/RBy1SDdbE1LxI4/HKxrvzEU7N2yH/W6j4BwnUpjV7VSEL
-         uvQxsKtRDj0s2dvyF3l+Jh7JAWmkphiownCJge9TiyPu9gdwo+NbVgs8RtG9z8tXsIQ5
-         5M/uAmrIFfQy7zdqpaIApdjOYPUcOINgv4DtCbCFaueko3fEw5fawYsFc02/WGnLci8e
-         158A==
-X-Gm-Message-State: AOAM531vmwFxj9/ddLsNCCuwQ6MdRum2a3aFXT6n12CbcFCbZpPf9O0Y
-        suvhfGFpvGvpTFi9eEFImXIjLQ==
-X-Google-Smtp-Source: ABdhPJxf83Qcv5sMhiGgL1PwI1FYFWMLIxV5hrXF/xSHNmKBquW4gmSwSNNe2aOfHo5UenCXytSasw==
-X-Received: by 2002:a63:de02:: with SMTP id f2mr2100758pgg.32.1623281273711;
-        Wed, 09 Jun 2021 16:27:53 -0700 (PDT)
-Received: from n124-121-013.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
-        by smtp.gmail.com with ESMTPSA id k1sm526783pfa.30.2021.06.09.16.27.52
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 09 Jun 2021 16:27:53 -0700 (PDT)
-From:   Jiang Wang <jiang.wang@bytedance.com>
-To:     sgarzare@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, stefanha@redhat.com,
-        mst@redhat.com, arseny.krasnov@kaspersky.com,
-        jhansen@vmware.comments, cong.wang@bytedance.com,
-        duanxiongchun@bytedance.com, xieyongji@bytedance.com,
-        chaiwen.cc@bytedance.com, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Lu Wei <luwei32@huawei.com>,
-        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC v1 6/6] virtio/vsock: add sysfs for rx buf len for dgram
-Date:   Wed,  9 Jun 2021 23:24:58 +0000
-Message-Id: <20210609232501.171257-7-jiang.wang@bytedance.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20210609232501.171257-1-jiang.wang@bytedance.com>
-References: <20210609232501.171257-1-jiang.wang@bytedance.com>
+        id S230167AbhFIXat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 19:30:49 -0400
+Received: from mga05.intel.com ([192.55.52.43]:4795 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230137AbhFIXaq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 19:30:46 -0400
+IronPort-SDR: qNIrkD6Q9HSzoGgDzJPOkLYj5cbnqAuT47YiZrbYIo+Q8z5Ccn/68sZhR2reslir5dgZ1EZdpi
+ YGV0NmjhYa+A==
+X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="290822356"
+X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
+   d="scan'208";a="290822356"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 16:28:50 -0700
+IronPort-SDR: Eq+S4FXQslvh8RwuEX/RoTyAlOVApfsuXAL6VSOxe9M+e4Zh+bhAY+NGgMfSiRQ7F4PRpvcbrL
+ +kNPy0ygXaeQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
+   d="scan'208";a="441002693"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga007.jf.intel.com with ESMTP; 09 Jun 2021 16:28:50 -0700
+Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 688045802A4;
+        Wed,  9 Jun 2021 16:28:46 -0700 (PDT)
+Date:   Thu, 10 Jun 2021 07:28:43 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 02/13] net: stmmac: reverse Christmas tree
+ notation in stmmac_xpcs_setup
+Message-ID: <20210609232843.GC8706@linux.intel.com>
+References: <20210609184155.921662-1-olteanv@gmail.com>
+ <20210609184155.921662-3-olteanv@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210609184155.921662-3-olteanv@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make rx buf len configurable via sysfs
+On Wed, Jun 09, 2021 at 09:41:44PM +0300, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Reorder the variable declarations in descending line length order,
+> according to the networking coding style.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
----
- net/vmw_vsock/virtio_transport.c | 37 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 35 insertions(+), 2 deletions(-)
+Reviewed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index cf47aadb0c34..2e4dd9c48472 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -29,6 +29,14 @@ static struct virtio_vsock __rcu *the_virtio_vsock;
- static struct virtio_vsock *the_virtio_vsock_dgram;
- static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
- 
-+static int rx_buf_len = VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE;
-+static struct kobject *kobj_ref;
-+static ssize_t  sysfs_show(struct kobject *kobj,
-+			struct kobj_attribute *attr, char *buf);
-+static ssize_t  sysfs_store(struct kobject *kobj,
-+			struct kobj_attribute *attr, const char *buf, size_t count);
-+static struct kobj_attribute rxbuf_attr = __ATTR(rx_buf_value, 0660, sysfs_show, sysfs_store);
-+
- struct virtio_vsock {
- 	struct virtio_device *vdev;
- 	struct virtqueue **vqs;
-@@ -360,7 +368,7 @@ virtio_transport_cancel_pkt(struct vsock_sock *vsk)
- 
- static void virtio_vsock_rx_fill(struct virtio_vsock *vsock, bool is_dgram)
- {
--	int buf_len = VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE;
-+	int buf_len = rx_buf_len;
- 	struct virtio_vsock_pkt *pkt;
- 	struct scatterlist hdr, buf, *sgs[2];
- 	struct virtqueue *vq;
-@@ -1003,6 +1011,22 @@ static struct virtio_driver virtio_vsock_driver = {
- 	.remove = virtio_vsock_remove,
- };
- 
-+static ssize_t sysfs_show(struct kobject *kobj,
-+		struct kobj_attribute *attr, char *buf)
-+{
-+	return sprintf(buf, "%d", rx_buf_len);
-+}
-+
-+static ssize_t sysfs_store(struct kobject *kobj,
-+		struct kobj_attribute *attr, const char *buf, size_t count)
-+{
-+	if (kstrtou32(buf, 0, &rx_buf_len) < 0)
-+		return -EINVAL;
-+	if (rx_buf_len < 1024)
-+		rx_buf_len = 1024;
-+	return count;
-+}
-+
- static int __init virtio_vsock_init(void)
- {
- 	int ret;
-@@ -1020,8 +1044,17 @@ static int __init virtio_vsock_init(void)
- 	if (ret)
- 		goto out_vci;
- 
--	return 0;
-+	kobj_ref = kobject_create_and_add("vsock", kernel_kobj);
- 
-+	/*Creating sysfs file for etx_value*/
-+	ret = sysfs_create_file(kobj_ref, &rxbuf_attr.attr);
-+	if (ret)
-+		goto out_sysfs;
-+
-+	return 0;
-+out_sysfs:
-+	kobject_put(kobj_ref);
-+	sysfs_remove_file(kernel_kobj, &rxbuf_attr.attr);
- out_vci:
- 	vsock_core_unregister(&virtio_transport.transport);
- out_wq:
--- 
-2.11.0
-
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+> index 3b3033b20b1d..a5d150c5f3d8 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+> @@ -399,11 +399,11 @@ int stmmac_mdio_reset(struct mii_bus *bus)
+>  
+>  int stmmac_xpcs_setup(struct mii_bus *bus)
+>  {
+> -	int mode, addr;
+>  	struct net_device *ndev = bus->priv;
+> -	struct dw_xpcs *xpcs;
+> -	struct stmmac_priv *priv;
+>  	struct mdio_device *mdiodev;
+> +	struct stmmac_priv *priv;
+> +	struct dw_xpcs *xpcs;
+> +	int mode, addr;
+>  
+>  	priv = netdev_priv(ndev);
+>  	mode = priv->plat->phy_interface;
+> -- 
+> 2.25.1
+> 
