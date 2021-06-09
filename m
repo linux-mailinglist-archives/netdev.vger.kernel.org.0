@@ -2,74 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7380E3A0CF0
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 09:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 955D13A0D1A
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 09:04:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236821AbhFIHCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 03:02:12 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:5301 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236781AbhFIHCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 03:02:08 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4G0HtJ5r13z1455X;
-        Wed,  9 Jun 2021 14:55:20 +0800 (CST)
-Received: from dggpeml500020.china.huawei.com (7.185.36.88) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 9 Jun 2021 15:00:12 +0800
-Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
- (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 9 Jun 2021
- 15:00:11 +0800
-From:   Baokun Li <libaokun1@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <yangjihong1@huawei.com>, <yukuai3@huawei.com>,
-        <libaokun1@huawei.com>, <oss-drivers@corigine.com>,
-        <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH net-next v2] nfp: use list_move instead of list_del/list_add in nfp_cppcore.c
-Date:   Wed, 9 Jun 2021 15:09:21 +0800
-Message-ID: <20210609070921.1330407-1-libaokun1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        id S234872AbhFIHG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 03:06:29 -0400
+Received: from mail-wr1-f53.google.com ([209.85.221.53]:42669 "EHLO
+        mail-wr1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236926AbhFIHG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 03:06:28 -0400
+Received: by mail-wr1-f53.google.com with SMTP id c5so24159040wrq.9
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 00:04:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=j++2FBMiYBi82J8WpozJKI2i0YC/mJJCF2pcaAZdwU4=;
+        b=crM4DD5Z7o92SvAiAGDFmIOhDpo5q4whTV+lOm20Kghu9hagAn3eoakcLyfyttKlkY
+         MmxWTBXhRu7aGCIT/rRxkEhyeOeDw0y4YZJqfgvXEe8QoBpghslmnwHI0jIa3DhDITG2
+         fUBUz+OZTmGcrBApYIsoU3xuHX2a3dgphwe0MZPyBBPqbeBesO4KQK20TqbGBK7Ei6Gz
+         RUHR7Jeq4Yj3yc3u8GlAhSKcOshowoqjNfeBMsBgVFbCWeNnPXDwSPS45Tt6Mb0kIxiQ
+         3ZS7N4EHUqInH7OTpqFQup8RaPg1DnW58bUG87L/6gHW+xZGZMNkBg+XjMnyMM0E0dgU
+         vbyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j++2FBMiYBi82J8WpozJKI2i0YC/mJJCF2pcaAZdwU4=;
+        b=DsFxgVeMEgcs8aIjNZka20ef10/uAFPsP2MHqv0qqNrx523veqSEKof/hAY8aN8oGB
+         NNEQ2q3CebT7lEXKobwHkzSdFoyW5sdtsSG6Fp3/k5sgImvNejvtoVNx3jV0NyFZWOdq
+         wneDTYDgEeLWUe3+TcndoZTokQmpaJppNmjepdbgOAycgKOz7bLrnSIit74hImAqOgfX
+         O47ZAeuRNZQevX62fkfxbqp3RvdbBmKL2va3nQlDNKkQ/RFQHLHhwLKB9i51Y/86WDui
+         P6wq8dLnEEHvbh9szO5qPb+jbYHctpnnl4WQUoZXzPuiljrlyAFwuO/bRZc9Aq13SXc8
+         bgoQ==
+X-Gm-Message-State: AOAM533KI9PIC/qMCTxfWuRWKgeIgnGg/ivuvRijtlAkCODfg6HBnyxO
+        JxyPMxK/E7f0HCKC1IT5uVPwJf1kSmF1UuOHE1v3wpY0IDE=
+X-Google-Smtp-Source: ABdhPJz+vWOGi8ri7GziYq8APXvJ3POmzLJ6QIrlWSSpQ5B+l1Qm1379XlVCg5JgqRKwkdD3vvWxjjL0aAFBz3EPgBQ=
+X-Received: by 2002:a5d:4a43:: with SMTP id v3mr26456293wrs.397.1623222211576;
+ Wed, 09 Jun 2021 00:03:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500020.china.huawei.com (7.185.36.88)
-X-CFilter-Loop: Reflected
+References: <20210607154534.57034-1-dust.li@linux.alibaba.com>
+ <CANn89i+dDy6ev50mBMwoK7f0NN+0xHf8V-Jas8zAmew02hJV4w@mail.gmail.com>
+ <20210608030903.GN53857@linux.alibaba.com> <CANn89i+VEA4rc3T_oC7tJXYvA7OAmDc=Vk_wyxYwzYz23nENPg@mail.gmail.com>
+ <20210609002542.GO53857@linux.alibaba.com>
+In-Reply-To: <20210609002542.GO53857@linux.alibaba.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 9 Jun 2021 09:03:14 +0200
+Message-ID: <CANn89i+vBRxKFy_Bb2_tKTh1ttLanZj99UNZcmjSQ=oq4-j6og@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: avoid spurious loopback retransmit
+To:     "dust.li" <dust.li@linux.alibaba.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using list_move() instead of list_del() + list_add() in nfp_cppcore.c.
+On Wed, Jun 9, 2021 at 2:25 AM dust.li <dust.li@linux.alibaba.com> wrote:
+>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
----
-V1->V2:
-	CC mailist
+> Normal RTO and fast retransmits are rarely triggerred.
+> But for TLP timers, it is easy since its timeout is usally only 2ms.
+>
 
- .../ethernet/netronome/nfp/nfpcore/nfp_cppcore.c   | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+OK, by definition rtx timers can fire too early, so I think we will
+leave the code as it is.
+(ie not try to do special things for 'special' interfaces like loopback)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
-index 94994a939277..d7ac0307797f 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
-@@ -905,8 +905,7 @@ area_cache_put(struct nfp_cpp *cpp, struct nfp_cpp_area_cache *cache)
- 		return;
- 
- 	/* Move to front of LRU */
--	list_del(&cache->entry);
--	list_add(&cache->entry, &cpp->area_cache_list);
-+	list_move(&cache->entry, &cpp->area_cache_list);
- 
- 	mutex_unlock(&cpp->area_cache_mutex);
- }
+We want to be generic as much as possible.
 
+Thanks
