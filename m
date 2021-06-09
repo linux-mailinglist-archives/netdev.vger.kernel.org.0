@@ -2,101 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9053A209B
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 01:15:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC2E83A20A8
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 01:20:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbhFIXRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 19:17:24 -0400
-Received: from mga17.intel.com ([192.55.52.151]:24337 "EHLO mga17.intel.com"
+        id S229715AbhFIXWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 19:22:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34418 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229634AbhFIXRV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 19:17:21 -0400
-IronPort-SDR: UKm2Fdmt3Unr6S7OjLmPC3FHi6l+eRnbNW5l4C+v0JOP4ZJuJbEn8ktXTCGpMLX930UIjQBb4M
- WLfnjBnsH+pg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="185564494"
-X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
-   d="scan'208";a="185564494"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 16:15:25 -0700
-IronPort-SDR: 0uIjvVfnXilRnu3ZgFOY/01uICFyBhTT0uwnpPyboN302cDZtAqr1Ja8u5vQVOd+2r3nGDXugz
- cJqjwXJK5pTA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
-   d="scan'208";a="485914991"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga002.fm.intel.com with ESMTP; 09 Jun 2021 16:15:25 -0700
-Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 74A375802A4;
-        Wed,  9 Jun 2021 16:15:21 -0700 (PDT)
-Date:   Thu, 10 Jun 2021 07:15:18 +0800
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 03/13] net: stmmac: reduce indentation when
- calling stmmac_xpcs_setup
-Message-ID: <20210609231518.GA8706@linux.intel.com>
-References: <20210609184155.921662-1-olteanv@gmail.com>
- <20210609184155.921662-4-olteanv@gmail.com>
+        id S229542AbhFIXWb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 19:22:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 351DA613EA;
+        Wed,  9 Jun 2021 23:20:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623280836;
+        bh=Iqdd5M4M7EtRVepzlnqCfEtpxl5wcylP1LowaP5LcOY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=HaHU4Kuq+35kCUGf97dmvchdiFfXdaF7NfwycGu1Ywj6X44jLHG3s6etLZVFLMPji
+         PQPetFAnL11kfEQk1T10Ar7KFs6+TDvtgQM0oiBONNSKj2XTV6UQAKe/6fe2DNY3Yh
+         KDvhxCunDUXJerQPMqTbTL2j9WpJvf7u8r95zqkMAYGDLumBH+czs0i7FAOQB/7pY5
+         ImOwAPBiGBiSVRmLHTiZ2FEO7EdHA+XulNyljOPsooErjVXvly42j3HrYXqbmRONVi
+         sjznhZswIRDAbBt9CCXvYZkeiGgk5fTInZRLaRyZiOzGgAACGwoIdI5jTrHg+JPrTK
+         xhJyEaDlC5Zfg==
+Date:   Wed, 9 Jun 2021 18:20:34 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>, linux-pci@vger.kernel.org,
+        richardcochran@gmail.com, hch@infradead.org,
+        netdev@vger.kernel.org, bhelgaas@google.com,
+        intel-wired-lan@lists.osuosl.org
+Subject: Re: [Intel-wired-lan] [PATCH next-queue v5 3/4] igc: Enable PCIe PTM
+Message-ID: <20210609232034.GA2681266@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210609184155.921662-4-olteanv@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87k0n2vdqv.fsf@vcostago-mobl2.amr.corp.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 09, 2021 at 09:41:45PM +0300, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed, Jun 09, 2021 at 04:07:20PM -0700, Vinicius Costa Gomes wrote:
+> Hi Paul,
 > 
-> There is no reason to embed an if within an if, we can just logically
-> AND the two conditions.
+> >> 
+> >>> Regarding my comment, I did not mean returning an error but the log
+> >>> *level* of the message. So, `dmesg --level err` would show that message.
+> >>> But if there are PCI controllers not supporting that, it’s not an error,
+> >>> but a warning at most. So, I’d use:
+> >>>
+> >>> 	dev_warn(&pdev->dev, "PTM not supported by PCI bus/controller
+> >>> (pci_enable_ptm() failed)\n");
+> >> 
+> >> I will use you suggestion for the message, but I think that warn is a
+> >> bit too much, info or notice seem to be better.
+> >
+> > I do not know, if modern PCI(e)(?) controllers normally support PTM or 
+> > not. If recent controllers should support it, then a warning would be 
+> > warranted, otherwise a notice.
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> From the Intel side, it seems that it's been supported for a few years.
+> So, fair enough, let's go with a warn.
 
-Reviewed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+I'm not sure about this.  I think "warning" messages interrupt distro
+graphical boot scenarios and cause user complaints.  In this case,
+there is nothing broken and the user can do nothing about it; it's
+merely a piece of missing optional functionality.  So I think "info"
+is a more appropriate level.
 
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 1c881ec8cd04..372673f9af30 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -7002,12 +7002,10 @@ int stmmac_dvr_probe(struct device *device,
->  	if (priv->plat->speed_mode_2500)
->  		priv->plat->speed_mode_2500(ndev, priv->plat->bsp_priv);
->  
-> -	if (priv->plat->mdio_bus_data) {
-> -		if (priv->plat->mdio_bus_data->has_xpcs) {
-> -			ret = stmmac_xpcs_setup(priv->mii);
-> -			if (ret)
-> -				goto error_xpcs_setup;
-> -		}
-> +	if (priv->plat->mdio_bus_data && priv->plat->mdio_bus_data->has_xpcs) {
-> +		ret = stmmac_xpcs_setup(priv->mii);
-> +		if (ret)
-> +			goto error_xpcs_setup;
->  	}
->  
->  	ret = stmmac_phy_setup(priv);
-> -- 
-> 2.25.1
-> 
+Bjorn
