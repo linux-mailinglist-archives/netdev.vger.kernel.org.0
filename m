@@ -2,136 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9BBF3A1DF4
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 22:08:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 252653A1E3A
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 22:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbhFIUKW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Jun 2021 16:10:22 -0400
-Received: from mga02.intel.com ([134.134.136.20]:8730 "EHLO mga02.intel.com"
+        id S229678AbhFIUrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 16:47:33 -0400
+Received: from mga06.intel.com ([134.134.136.31]:64108 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229472AbhFIUKV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 16:10:21 -0400
-IronPort-SDR: 7yyOQZvyBjly8GOBzpYHNmHZXzO9e0JTNVaCN5TNThu2N22y3Pta+F3q7T4dMPUONBIevS3aRW
- La0txz4FjtOw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="192268277"
+        id S229542AbhFIUra (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 16:47:30 -0400
+IronPort-SDR: 4LLxRdv9WR3WMS+5so4ddxxGCfY7ntZQxCIs3M6KdAmC7P7kY8lu2QC3PDXcrlabyMkuo0Slek
+ RLaipS02L/rw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="266318585"
 X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
-   d="scan'208";a="192268277"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 13:08:24 -0700
-IronPort-SDR: 3TGz301bugDjWwRg6Bww+l0yeV9Yscc3z+HOtZkb450U+OKLqmtKOUM21zN9lUth5+S81ZObjc
- h+CjizKW+QZA==
+   d="scan'208";a="266318585"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 13:45:30 -0700
+IronPort-SDR: sL2RUBF+uP1nGYY1M862KBPphKqNEwbpO9KeqP5EJ5A3bvgkD/rndQsEB7pvgrBvxLxb/RQNj5
+ G44AJjwgxo+w==
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
-   d="scan'208";a="482519863"
-Received: from kotikala-mobl1.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.209.25.177])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 13:08:24 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     linux-pci@vger.kernel.org, richardcochran@gmail.com,
-        hch@infradead.org, netdev@vger.kernel.org, bhelgaas@google.com,
-        helgaas@kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v5 3/4] igc: Enable PCIe PTM
-In-Reply-To: <939b8042-a313-47db-43d9-ea37e95b724b@molgen.mpg.de>
-References: <20210605002356.3996853-1-vinicius.gomes@intel.com>
- <20210605002356.3996853-4-vinicius.gomes@intel.com>
- <70d32740-eb4b-f7bf-146e-8dc06199d6c9@molgen.mpg.de>
- <87sg1sw56h.fsf@vcostago-mobl2.amr.corp.intel.com>
- <939b8042-a313-47db-43d9-ea37e95b724b@molgen.mpg.de>
-Date:   Wed, 09 Jun 2021 13:08:22 -0700
-Message-ID: <87r1havm15.fsf@vcostago-mobl2.amr.corp.intel.com>
+   d="scan'208";a="413861105"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga007.fm.intel.com with ESMTP; 09 Jun 2021 13:45:30 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com
+Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2021-06-09
+Date:   Wed,  9 Jun 2021 13:48:01 -0700
+Message-Id: <20210609204803.234983-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paul Menzel <pmenzel@molgen.mpg.de> writes:
+This series contains updates to ice driver only.
 
-> Dear Vinicius,
->
->
-> Am 08.06.21 um 21:02 schrieb Vinicius Costa Gomes:
->
->> Paul Menzel writes:
->
->>> Am 05.06.21 um 02:23 schrieb Vinicius Costa Gomes:
->>>> Enables PCIe PTM (Precision Time Measurement) support in the igc
->>>> driver. Notifies the PCI devices that PCIe PTM should be enabled.
->>>>
->>>> PCIe PTM is similar protocol to PTP (Precision Time Protocol) running
->>>> in the PCIe fabric, it allows devices to report time measurements from
->>>> their internal clocks and the correlation with the PCIe root clock.
->>>>
->>>> The i225 NIC exposes some registers that expose those time
->>>> measurements, those registers will be used, in later patches, to
->>>> implement the PTP_SYS_OFFSET_PRECISE ioctl().
->>>>
->>>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
->>>> ---
->>>>    drivers/net/ethernet/intel/igc/igc_main.c | 6 ++++++
->>>>    1 file changed, 6 insertions(+)
->>>>
->>>> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
->>>> index a05e6d8ec660..f23d0303e53b 100644
->>>> --- a/drivers/net/ethernet/intel/igc/igc_main.c
->>>> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
->>>> @@ -12,6 +12,8 @@
->>>>    #include <net/pkt_sched.h>
->>>>    #include <linux/bpf_trace.h>
->>>>    #include <net/xdp_sock_drv.h>
->>>> +#include <linux/pci.h>
->>>> +
->>>>    #include <net/ipv6.h>
->>>>    
->>>>    #include "igc.h"
->>>> @@ -5864,6 +5866,10 @@ static int igc_probe(struct pci_dev *pdev,
->>>>    
->>>>    	pci_enable_pcie_error_reporting(pdev);
->>>>    
->>>> +	err = pci_enable_ptm(pdev, NULL);
->>>> +	if (err < 0)
->>>> +		dev_err(&pdev->dev, "PTM not supported\n");
->>>> +
->>>
->>> Sorry, if I am missing something, but do all devices supported by this
->>> driver support PTM or only the i225 NIC? In that case, it wouldn’t be an
->>> error for a device not supporting PTM, would it?
->> 
->> That was a very good question. I had to talk with the hardware folks.
->> All the devices supported by the igc driver should support PTM.
->
-> Thank you for checking that, that is valuable information.
->
->> And just to be clear, the reason that I am not returning an error here
->> is that PTM could not be supported by the host system (think PCI
->> controller).
->
-> I just checked `pci_enable_ptm()` and on success it calls 
-> `pci_ptm_info()` logging a message:
->
-> 	pci_info(dev, "PTM enabled%s, %s granularity\n",
-> 		 dev->ptm_root ? " (root)" : "", clock_desc);
->
-> Was that present on your system with your patch? Please add that to the 
-> commit message.
+Maciej informs the user when XDP is not supported due to the driver
+being in the 'safe mode' state. He also adds a parameter to Tx queue
+configuration to resolve an issue in configuring XDP queues as it cannot
+rely on using the number Tx or Rx queues.
 
-Yes, with my patches applied I can see this message on my systems.
+The following are changes since commit f2386cf7c5f4ff5d7b584f5d92014edd7df6c676:
+  net: lantiq: disable interrupt before sheduling NAPI
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
 
-Sure, will add this to the commit message.
+Maciej Fijalkowski (2):
+  ice: add ndo_bpf callback for safe mode netdev ops
+  ice: parameterize functions responsible for Tx ring management
 
->
-> Regarding my comment, I did not mean returning an error but the log 
-> *level* of the message. So, `dmesg --level err` would show that message. 
-> But if there are PCI controllers not supporting that, it’s not an error, 
-> but a warning at most. So, I’d use:
->
-> 	dev_warn(&pdev->dev, "PTM not supported by PCI bus/controller 
-> (pci_enable_ptm() failed)\n");
+ drivers/net/ethernet/intel/ice/ice_lib.c  | 18 ++++++++++--------
+ drivers/net/ethernet/intel/ice/ice_main.c | 15 +++++++++++++++
+ 2 files changed, 25 insertions(+), 8 deletions(-)
 
-I will use you suggestion for the message, but I think that warn is a
-bit too much, info or notice seem to be better.
-
-
-Cheers,
 -- 
-Vinicius
+2.26.2
+
