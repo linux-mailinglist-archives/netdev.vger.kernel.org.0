@@ -2,70 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7495B3A1EDA
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 23:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 052573A1EF8
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 23:26:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbhFIVWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 17:22:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58114 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229689AbhFIVWA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 17:22:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 68CC1613F9;
-        Wed,  9 Jun 2021 21:20:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623273605;
-        bh=UcYrvICvDlac5FlUB606gCPD6/q7sEx0CvVxyl8+p2M=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PxO561wGZn/SruPj/8LV20hfrGw4JQEQTtBKSk0qzO5xmnzLgqTRCI7C7hLI0lYG6
-         7neJ6OTdXzhF2lI9e7q3Yu3UoaT9w55Nk59zgDZBIez7ON4whVCt06+SEAl1wnZ0yL
-         xdl0uCmJatAhGav8nJMjNtOnS90LpzPz9dPlvi8U60LdPeKHJJA890ZbiWi/EW8Xho
-         +93dEA5ef0VVLkcvpV3t1ulzFKjXdfEABxAD5zjsLKmM+hEmCA36pFO6dQp3QM/j/m
-         TvAwnORsbzSYqSVC4Xd+qk+DKuJryejuWR40GaonPshgvFKmRpQIiWvqgJgvg38bH1
-         5ffolbbrbEpsw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5BEC960A4D;
-        Wed,  9 Jun 2021 21:20:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229659AbhFIV2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 17:28:07 -0400
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:37177 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229536AbhFIV2G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 17:28:06 -0400
+Received: from [192.168.0.2] (ip5f5ae88d.dynamic.kabel-deutschland.de [95.90.232.141])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 7651261E646D4;
+        Wed,  9 Jun 2021 23:26:09 +0200 (CEST)
+Subject: Re: [Intel-wired-lan] [PATCH next-queue v5 3/4] igc: Enable PCIe PTM
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     linux-pci@vger.kernel.org, richardcochran@gmail.com,
+        hch@infradead.org, netdev@vger.kernel.org, bhelgaas@google.com,
+        helgaas@kernel.org, intel-wired-lan@lists.osuosl.org
+References: <20210605002356.3996853-1-vinicius.gomes@intel.com>
+ <20210605002356.3996853-4-vinicius.gomes@intel.com>
+ <70d32740-eb4b-f7bf-146e-8dc06199d6c9@molgen.mpg.de>
+ <87sg1sw56h.fsf@vcostago-mobl2.amr.corp.intel.com>
+ <939b8042-a313-47db-43d9-ea37e95b724b@molgen.mpg.de>
+ <87r1havm15.fsf@vcostago-mobl2.amr.corp.intel.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Message-ID: <d8740484-3879-1c13-65ce-82d3e71cb96c@molgen.mpg.de>
+Date:   Wed, 9 Jun 2021 23:26:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <87r1havm15.fsf@vcostago-mobl2.amr.corp.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] netdevsim: delete unnecessary debugfs checking
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162327360537.22106.14280192879737938519.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Jun 2021 21:20:05 +0000
-References: <YMCQXQx4kHdk7Whx@mwanda>
-In-Reply-To: <YMCQXQx4kHdk7Whx@mwanda>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     kuba@kernel.org, vladbu@nvidia.com, dlinkin@nvidia.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        jiri@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Dear Vinicius,
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 9 Jun 2021 12:56:45 +0300 you wrote:
-> In normal situations where the driver doesn't dereference
-> "nsim_node->ddir" or "nsim_node->rate_parent" itself then we are not
-> supposed to check the return from debugfs functions.  In the case of
-> debugfs_create_dir() the check was wrong as well because it doesn't
-> return NULL, it returns error pointers.
+Am 09.06.21 um 22:08 schrieb Vinicius Costa Gomes:
+> Paul Menzel writes:
+
+>> Am 08.06.21 um 21:02 schrieb Vinicius Costa Gomes:
+>>
+>>> Paul Menzel writes:
+>>
+>>>> Am 05.06.21 um 02:23 schrieb Vinicius Costa Gomes:
+>>>>> Enables PCIe PTM (Precision Time Measurement) support in the igc
+>>>>> driver. Notifies the PCI devices that PCIe PTM should be enabled.
+>>>>>
+>>>>> PCIe PTM is similar protocol to PTP (Precision Time Protocol) running
+>>>>> in the PCIe fabric, it allows devices to report time measurements from
+>>>>> their internal clocks and the correlation with the PCIe root clock.
+>>>>>
+>>>>> The i225 NIC exposes some registers that expose those time
+>>>>> measurements, those registers will be used, in later patches, to
+>>>>> implement the PTP_SYS_OFFSET_PRECISE ioctl().
+>>>>>
+>>>>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+>>>>> ---
+>>>>>     drivers/net/ethernet/intel/igc/igc_main.c | 6 ++++++
+>>>>>     1 file changed, 6 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+>>>>> index a05e6d8ec660..f23d0303e53b 100644
+>>>>> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+>>>>> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+>>>>> @@ -12,6 +12,8 @@
+>>>>>     #include <net/pkt_sched.h>
+>>>>>     #include <linux/bpf_trace.h>
+>>>>>     #include <net/xdp_sock_drv.h>
+>>>>> +#include <linux/pci.h>
+>>>>> +
+>>>>>     #include <net/ipv6.h>
+>>>>>     
+>>>>>     #include "igc.h"
+>>>>> @@ -5864,6 +5866,10 @@ static int igc_probe(struct pci_dev *pdev,
+>>>>>     
+>>>>>     	pci_enable_pcie_error_reporting(pdev);
+>>>>>     
+>>>>> +	err = pci_enable_ptm(pdev, NULL);
+>>>>> +	if (err < 0)
+>>>>> +		dev_err(&pdev->dev, "PTM not supported\n");
+>>>>> +
+>>>>
+>>>> Sorry, if I am missing something, but do all devices supported by this
+>>>> driver support PTM or only the i225 NIC? In that case, it wouldn’t be an
+>>>> error for a device not supporting PTM, would it?
+>>>
+>>> That was a very good question. I had to talk with the hardware folks.
+>>> All the devices supported by the igc driver should support PTM.
+>>
+>> Thank you for checking that, that is valuable information.
+>>
+>>> And just to be clear, the reason that I am not returning an error here
+>>> is that PTM could not be supported by the host system (think PCI
+>>> controller).
+>>
+>> I just checked `pci_enable_ptm()` and on success it calls
+>> `pci_ptm_info()` logging a message:
+>>
+>> 	pci_info(dev, "PTM enabled%s, %s granularity\n",
+>> 		 dev->ptm_root ? " (root)" : "", clock_desc);
+>>
+>> Was that present on your system with your patch? Please add that to the
+>> commit message.
 > 
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Yes, with my patches applied I can see this message on my systems.
 > 
-> [...]
+> Sure, will add this to the commit message.
+> 
+>> Regarding my comment, I did not mean returning an error but the log
+>> *level* of the message. So, `dmesg --level err` would show that message.
+>> But if there are PCI controllers not supporting that, it’s not an error,
+>> but a warning at most. So, I’d use:
+>>
+>> 	dev_warn(&pdev->dev, "PTM not supported by PCI bus/controller
+>> (pci_enable_ptm() failed)\n");
+> 
+> I will use you suggestion for the message, but I think that warn is a
+> bit too much, info or notice seem to be better.
 
-Here is the summary with links:
-  - [net-next] netdevsim: delete unnecessary debugfs checking
-    https://git.kernel.org/netdev/net-next/c/4e744cb8126d
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I do not know, if modern PCI(e)(?) controllers normally support PTM or 
+not. If recent controllers should support it, then a warning would be 
+warranted, otherwise a notice.
 
 
+Kind regards,
+
+Paul
