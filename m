@@ -2,69 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 808673A0A28
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 04:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 025403A0A14
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 04:34:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235593AbhFICrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 22:47:12 -0400
-Received: from m12-13.163.com ([220.181.12.13]:34450 "EHLO m12-13.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231668AbhFICrL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 22:47:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=AhPpV
-        fv7B9WklPn9o3YVBYYVlRebfLQtig3SsQelQUU=; b=caWlzmbwo4nYa68SHBsWx
-        oqd7ke4GeOmtHT3HdkDxijFrD6pjRf/ZGCj5/k5a8Bx7MXzmsQvih6K2jqcNzZf3
-        kAedW6FJaEIQ4T9SVKkZxxFLFj1LHSz2Bfm1hFoxuPLcU0uc895dYAJV6Y4VRRiw
-        u1YeGha0wjPuHrt+PgJIS0=
-Received: from ubuntu.localdomain (unknown [218.17.89.92])
-        by smtp9 (Coremail) with SMTP id DcCowAA3OnonJ8BgFCJgFQ--.855S2;
-        Wed, 09 Jun 2021 10:27:52 +0800 (CST)
-From:   13145886936@163.com
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        davem@davemloft.net, kuba@kernel.org
+        id S234991AbhFICge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 22:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230444AbhFICgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 22:36:32 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B752C061574;
+        Tue,  8 Jun 2021 19:34:31 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id h16so487836pjv.2;
+        Tue, 08 Jun 2021 19:34:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=cUOirqNA+Jrq6bmd/rqs4xfQ5uYMyR0S/qTKzd8aK20=;
+        b=GKtCJte0YIlQdpdHbTuG9Z2A3RgP1JkKNS4RX61jZGFAH6CCjQLOL+oIIEIBpH4DxZ
+         D018h8p8GDFi+GSIFXa56UVqrKCHLg1CppytVe47x+ZLVhh5bQYRz1BfPBWqoek1Uf2t
+         aE8k0rwItfYoVZSOaO/qk829YOHenQEpvjH8gGuqQ9aBFozW9Lp9VIhgn/mfGSPBWRDe
+         X5LzlhUolWpSe5rDiWfC8/TZvxXuPREglA9LHauAN2MfOZrFa/i089eTwz4XLh5a6e+B
+         xGNygV5sIiiMcUi7aQ5IoDNdyk24DBu0bSkgyCvEl1L1JuWQtUSHEabxmC7/cisecJP+
+         yt6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=cUOirqNA+Jrq6bmd/rqs4xfQ5uYMyR0S/qTKzd8aK20=;
+        b=YAc4Y/DofLPCW8tOmhPznYTOOEGdZy/5jH6hLVHHuKCJYotw+ka2unLYxrTFFOhcSq
+         tBOqojXLFLPeitdbGLCuLKHrw9X9MZKPXT/5ARzQYZzFKTZfrc+19dcnGejYPNENcDIV
+         f0taNbnEZfp/bBAp0DKw0PKOFkhypoWn60H1PcwAh5/AYWmad4iMoSxIfluEaYMq2z07
+         wMZw4CvlRQZj2eg9cNG3dx9kgNw7bVAP0eKimZUEH0bnmeO4fg272kYxfxyajUBCBQx6
+         RVlLXkCikGVDtEru8azXubmic9RqMSWLjf1AKdtizacBrfY2PVfxPql/bC5H7fkyjO4P
+         wjGw==
+X-Gm-Message-State: AOAM530pLX6r2hpIh5rCXILizbxt0UCia13SyuJNApIANPIf5wa2uVzG
+        ASaaiAGU1uqAq9sdby+0ocI=
+X-Google-Smtp-Source: ABdhPJyioCWPvHjA4n8/ff48v5qwBh9YBX035SZFg7jQ3DFfK07mWqXZ/UUgIx+JkvV5suow3aP0rQ==
+X-Received: by 2002:a17:90b:3ecb:: with SMTP id rm11mr29001510pjb.95.1623206070595;
+        Tue, 08 Jun 2021 19:34:30 -0700 (PDT)
+Received: from raspberrypi ([125.141.84.155])
+        by smtp.gmail.com with ESMTPSA id p36sm12542193pgm.74.2021.06.08.19.34.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Jun 2021 19:34:30 -0700 (PDT)
+Date:   Wed, 9 Jun 2021 03:34:25 +0100
+From:   Austin Kim <austindh.kim@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, gustavoars@kernel.org,
+        andrew@lunn.ch, bjorn@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gushengxian <gushengxian@yulong.com>
-Subject: [PATCH] xfrm: policy: fix a spelling mistake
-Date:   Tue,  8 Jun 2021 19:27:46 -0700
-Message-Id: <20210609022746.16743-1-13145886936@163.com>
-X-Mailer: git-send-email 2.25.1
+        austin.kim@lge.com, austindh.kim@gmail.com
+Subject: [PATCH] net: ethtool: clear heap allocations for ethtool function
+Message-ID: <20210609023425.GA2024@raspberrypi>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcCowAA3OnonJ8BgFCJgFQ--.855S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtFW7ZFykZw1DXFy3KF18AFb_yoWfJwb_Ww
-        1fXryDWry5trs2y3WrJr4DZrWfXr4ruF97u3s7t3Wqg348JrZ5K3srWrZ8Wr47WryUuFnr
-        XF98W392yw1UKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5ouWJUUUUU==
-X-Originating-IP: [218.17.89.92]
-X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/xtbBRwusg1PAC-8h8gAAsX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: gushengxian <gushengxian@yulong.com>
+Several ethtool functions leave heap uncleared (potentially) by
+drivers. This will leave the unused portion of heap unchanged and
+might copy the full contents back to userspace.
 
-Fix a spelling mistake.
-
-Signed-off-by: gushengxian <gushengxian@yulong.com>
+Signed-off-by: Austin Kim <austindh.kim@gmail.com>
 ---
- net/xfrm/xfrm_policy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ethtool/ioctl.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index ec84d11c3fc1..827d84255021 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3252,7 +3252,7 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 3fa7a394eabf..baa5d10043cb 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -1421,7 +1421,7 @@ static int ethtool_get_any_eeprom(struct net_device *dev, void __user *useraddr,
+ 	if (eeprom.offset + eeprom.len > total_len)
+ 		return -EINVAL;
  
- /*
-  * 0 or more than 0 is returned when validation is succeeded (either bypass
-- * because of optional transport mode, or next index of the mathced secpath
-+ * because of optional transport mode, or next index of the matched secpath
-  * state with the template.
-  * -1 is returned when no matching template is found.
-  * Otherwise "-2 - errored_index" is returned.
+-	data = kmalloc(PAGE_SIZE, GFP_USER);
++	data = kzalloc(PAGE_SIZE, GFP_USER);
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+@@ -1486,7 +1486,7 @@ static int ethtool_set_eeprom(struct net_device *dev, void __user *useraddr)
+ 	if (eeprom.offset + eeprom.len > ops->get_eeprom_len(dev))
+ 		return -EINVAL;
+ 
+-	data = kmalloc(PAGE_SIZE, GFP_USER);
++	data = kzalloc(PAGE_SIZE, GFP_USER);
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+@@ -1765,7 +1765,7 @@ static int ethtool_self_test(struct net_device *dev, char __user *useraddr)
+ 		return -EFAULT;
+ 
+ 	test.len = test_len;
+-	data = kmalloc_array(test_len, sizeof(u64), GFP_USER);
++	data = kcalloc(test_len, sizeof(u64), GFP_USER);
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+@@ -2293,7 +2293,7 @@ static int ethtool_get_tunable(struct net_device *dev, void __user *useraddr)
+ 	ret = ethtool_tunable_valid(&tuna);
+ 	if (ret)
+ 		return ret;
+-	data = kmalloc(tuna.len, GFP_USER);
++	data = kzalloc(tuna.len, GFP_USER);
+ 	if (!data)
+ 		return -ENOMEM;
+ 	ret = ops->get_tunable(dev, &tuna, data);
+@@ -2485,7 +2485,7 @@ static int get_phy_tunable(struct net_device *dev, void __user *useraddr)
+ 	ret = ethtool_phy_tunable_valid(&tuna);
+ 	if (ret)
+ 		return ret;
+-	data = kmalloc(tuna.len, GFP_USER);
++	data = kzalloc(tuna.len, GFP_USER);
+ 	if (!data)
+ 		return -ENOMEM;
+ 	if (phy_drv_tunable) {
 -- 
-2.25.1
-
+2.20.1
 
