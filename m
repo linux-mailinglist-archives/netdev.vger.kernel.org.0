@@ -2,70 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C94EA3A15D0
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 15:41:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 929933A15F9
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 15:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233449AbhFINne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 09:43:34 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:5359 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232031AbhFINnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 09:43:31 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4G0SpT6pJ8z6tmm;
-        Wed,  9 Jun 2021 21:37:37 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 9 Jun 2021 21:41:29 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 9 Jun 2021
- 21:41:29 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>
-Subject: [PATCH net-next] net: ethernet: ti: am65-cpts: Use devm_platform_ioremap_resource_byname()
-Date:   Wed, 9 Jun 2021 21:45:37 +0800
-Message-ID: <20210609134537.3188927-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S236612AbhFINtj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 09:49:39 -0400
+Received: from mail-wm1-f45.google.com ([209.85.128.45]:55115 "EHLO
+        mail-wm1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235676AbhFINti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 09:49:38 -0400
+Received: by mail-wm1-f45.google.com with SMTP id o127so4048890wmo.4;
+        Wed, 09 Jun 2021 06:47:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PFgz/1tQM60sdhxORV5wAxYQfiArT5ICKQQEdiEUvNA=;
+        b=f1okKktLpv/C6EJAqLj5sUc0ihYOfta9XUQlnwfeyjHuewWjzcHkerS0BEcEdVKvsX
+         AB+CX5StYdl6Nu2mogw7yo0Uf39Lh94qzupsXGFk83JdsIShkmLIb+QkF5hR5csSwAX3
+         9yu7sAl5rA1dAPPiiamxHF+8ffTsiNxo3rKjViq6apRAGEzB6gJxx/BkdpZeaNkXYtOi
+         hYYauRHqjhXS7wsmZ3o3bYcvk+p4MP6Zt64sR5+v9yWMRRx9HlPZx7FVFF9tlcXsZjLF
+         YiMLKrK46zCZLEg1R9a2qBfVGTq4Bi2cvYjfeePI39FCUb5e876TYv65kR/IdMxQ+6Y8
+         INWQ==
+X-Gm-Message-State: AOAM53223XQBQmhA+7GW6+mFwoZ9Civ6f28HVcW+9tAesu85TJeReOSp
+        LYkU+5bfAxDWB/XeP9iKLySO4ahPuEMGNA==
+X-Google-Smtp-Source: ABdhPJwR/kfpu5EHkt6lqhvqu5Ly7EbCJzHmr7xbETCpJJ2qx0IJpnewhq3/CtEnp8o/Z9Opk7iWdQ==
+X-Received: by 2002:a1c:5f86:: with SMTP id t128mr10062978wmb.165.1623246446830;
+        Wed, 09 Jun 2021 06:47:26 -0700 (PDT)
+Received: from msft-t490s.teknoraver.net (net-37-119-128-179.cust.vodafonedsl.it. [37.119.128.179])
+        by smtp.gmail.com with ESMTPSA id o5sm13882351wrw.65.2021.06.09.06.47.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Jun 2021 06:47:26 -0700 (PDT)
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sven Auhagen <sven.auhagen@voleatech.de>
+Subject: [PATCH net-next 0/2] mvpp2: prefetch data early
+Date:   Wed,  9 Jun 2021 15:47:12 +0200
+Message-Id: <20210609134714.13715-1-mcroce@linux.microsoft.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the devm_platform_ioremap_resource_byname() helper instead of
-calling platform_get_resource_byname() and devm_ioremap_resource()
-separately.
+From: Matteo Croce <mcroce@microsoft.com>
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/ethernet/ti/am65-cpts.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+These two patches prefetch some data from RAM so to reduce stall
+and speedup the packet processing.
 
-diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-index 9caaae79fc95..c30a6e510aa3 100644
---- a/drivers/net/ethernet/ti/am65-cpts.c
-+++ b/drivers/net/ethernet/ti/am65-cpts.c
-@@ -1037,11 +1037,9 @@ static int am65_cpts_probe(struct platform_device *pdev)
- 	struct device_node *node = pdev->dev.of_node;
- 	struct device *dev = &pdev->dev;
- 	struct am65_cpts *cpts;
--	struct resource *res;
- 	void __iomem *base;
- 
--	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "cpts");
--	base = devm_ioremap_resource(dev, res);
-+	base = devm_platform_ioremap_resource_byname(pdev, "cpts");
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
- 
+Matteo Croce (2):
+  mvpp2: prefetch right address
+  mvpp2: prefetch page
+
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
 -- 
-2.25.1
+2.31.1
 
