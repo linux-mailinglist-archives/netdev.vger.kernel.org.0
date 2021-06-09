@@ -2,140 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5D223A0E3B
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 10:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4E1C3A0E7C
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 10:06:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237413AbhFIIDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 04:03:03 -0400
-Received: from mail-pj1-f46.google.com ([209.85.216.46]:34607 "EHLO
-        mail-pj1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237399AbhFIIDA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 04:03:00 -0400
-Received: by mail-pj1-f46.google.com with SMTP id g6-20020a17090adac6b029015d1a9a6f1aso3181924pjx.1
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 01:00:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TCD52nTwTei4FNtUewt/0/MhitLNjGYdeI4x9Bv2eWE=;
-        b=Pjip2Mwkjy6Kx3wjOQNnmk19kgXgp1vwz5+YXVJ+4jyCPVUiX+/JDFyiI+K9xjXsKt
-         K2neoklfZgX8mwRj3HbKQDEARh7ZOikJULhjaqor6YpOBaHUU/nhHToM0ksoH4Q2SaQ7
-         udgp8bVr7XwzPevC7FkP66xG11LQA+W4pHg+X4bWFB+/69YpVBkWg6L1Fy3oQqrWYsdG
-         NhRPh/vO86JizL8R1dTKwxONleve/paFQx86krqRpwUCD0nCI2sp2sCd14AwziJ1Np6i
-         enyE592rlHaskClYpanVbV32fWpi4S+f8Nnw9b5AGPxjOcVBZlcJySVlmEglwdxUu9nd
-         zLCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TCD52nTwTei4FNtUewt/0/MhitLNjGYdeI4x9Bv2eWE=;
-        b=tu9h8xJfwU1NLma9CryVvCPlm1OIHxwzuB9uFZAeDPcbL+DcHUKNtX7vS/pFIDv4ci
-         eWDvgdlsw45al0kukBhWnB2Su/+N6LjB0KPRzXZb+4J7uZ+BOoMXAwTugGvh39HJIamF
-         r1is8MsTGChW9fztYg4JuapHDtd9B+j2li2vU+jnjAvmrLKbFdzIqkJG/vVjc65gUfwW
-         zBfj0dHaI/iXih9ss1eZQUsJMYofyuXc0/cwSwbjnFaebEBHeCHiKCTlyO6tr6uFzJc5
-         bvXljUO9NO8+5aok2/bYn0U7vGV5JByilUxl/uVXJmJuKUFT0XJ4b9uRknIGkVESpaI4
-         4iDg==
-X-Gm-Message-State: AOAM531UQXCgQWkmaxKuTaKMwCdjPmO3M4036ms41dre6VU6ZMEQ1bzn
-        wkCdy44RpmMhhXNUOw/dEfE=
-X-Google-Smtp-Source: ABdhPJx7rbYUPbVsT8cJ8GWXxus9IQhPNSAP7iFeHdYaeweEsSuDkSvZA2zpAm/u0+EXJ0qFMKgUNA==
-X-Received: by 2002:a17:90a:6305:: with SMTP id e5mr9292004pjj.232.1623225590212;
-        Wed, 09 Jun 2021 00:59:50 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6726:fcf9:18f4:66f2])
-        by smtp.gmail.com with ESMTPSA id j12sm13629555pgs.83.2021.06.09.00.59.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Jun 2021 00:59:49 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] inet: annotate data race in inet_send_prepare() and inet_dgram_connect()
-Date:   Wed,  9 Jun 2021 00:59:45 -0700
-Message-Id: <20210609075945.3976469-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.32.0.rc1.229.g3e70b5a671-goog
+        id S236851AbhFIIIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 04:08:01 -0400
+Received: from mail-am6eur05on2055.outbound.protection.outlook.com ([40.107.22.55]:10354
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235910AbhFIIH7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 04:07:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=b9zWP+a6uSYmKRYpw/w+4zuOV0+16T2j3UiiwyQUdQiS6eC4ARfPyPtZZUAmt1g1Kv285zVAgkxFoeix0GjXabTzeni0YCd7GK8tDvagHlN3hB2Mf1NctGF0b7RN6dlqZvCbKAE7RzX01/OzzG9vjYpvb7Yd68cR+WykUe1qY42MHlYKXIKUi8pB0JrosYibnl/VfkiCVJSGg5mkPRzsWySQ2r78tfx79oRi/IRV33MvI+sJ1a1Xxs4uMSwD/60AYiqRPxAbHkOWCrQs9+MnXUDmJcs7Nc+0Ea0CqKcxfjYP9Uay6UMkuOa5hk+dIIWv+jG6tn5gnEqcKfYXPBlrww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DjO2goWVp3+yGxeEkDvuIQGPo54j04mAqxpaAI6XTAo=;
+ b=Wtn9kq3zS5iPOE90XHH8V51QswqRn8Tt4W/H/djil+1U+iWt6GX1VQ9Ea1HjcFdogDGfQcmhz71tBC63U1Ymk2KbLaFIeGMac7q+SM43pweWTkHptkLV4DUqgjGz0sTtURC6X7IMet8Dq9he1GUiaMp28ogbT6VPrf9WyOTp3IvhM5EXy3UsoCo5qc+m1FYl4QdO+YmFM7mogdg+7qOaj8nUA/xMRyhtPsgaduQwoCPq1GICYKr1N8b1NOEC/ii/z+l+PTQsh8Cfy+NmZBYYXHogbZDe03TXF2mpEpdum6hKsYIj7cPlCGJ8QXk6sc5+C4uvZHlDeQQ5Sr559uCKWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DjO2goWVp3+yGxeEkDvuIQGPo54j04mAqxpaAI6XTAo=;
+ b=H2u9aQk7Yj+q8MhbTdVHbbez66gWW7QA3yHQ7Jm0qrqpEJkdhaIOaG7IZdg3wxvcwyleTMI+vLyZZ1KeLTfr0T+l7gbP4SrqpKlYeG/C5t3vMtWnbH6AJqiKi2JF4KTWH9p/0qzNJer93Jb3fCX3fkeQbK10UmvEpN/JPJG17HU=
+Received: from DB8PR04MB5785.eurprd04.prod.outlook.com (2603:10a6:10:b0::22)
+ by DB7PR04MB4522.eurprd04.prod.outlook.com (2603:10a6:5:35::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.25; Wed, 9 Jun
+ 2021 08:06:03 +0000
+Received: from DB8PR04MB5785.eurprd04.prod.outlook.com
+ ([fe80::b463:c504:8081:dee5]) by DB8PR04MB5785.eurprd04.prod.outlook.com
+ ([fe80::b463:c504:8081:dee5%6]) with mapi id 15.20.4195.030; Wed, 9 Jun 2021
+ 08:06:03 +0000
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     Michael Walle <michael@walle.cc>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Po Liu <po.liu@nxp.com>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>
+Subject: RE: [EXT] Re: [net-next] net: dsa: felix: disable always guard band
+ bit for TAS config
+Thread-Topic: [EXT] Re: [net-next] net: dsa: felix: disable always guard band
+ bit for TAS config
+Thread-Index: AQHXQzswpEDnn4xhQEy35Y5IB0uagKsImWwAgALnfyA=
+Date:   Wed, 9 Jun 2021 08:06:03 +0000
+Message-ID: <DB8PR04MB5785C5BDBDD51401362563D6F0369@DB8PR04MB5785.eurprd04.prod.outlook.com>
+References: <c7618025da6723418c56a54fe4683bd7@walle.cc>
+ <20210504185040.ftkub3ropuacmyel@skbuf>
+ <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
+ <20210504191739.73oejybqb6z7dlxr@skbuf>
+ <d933eef300cb1e1db7d36ca2cb876ef6@walle.cc>
+ <20210504213259.l5rbnyhxrrbkykyg@skbuf>
+ <efe5ac03ceddc8ff472144b5fe9fd046@walle.cc>
+ <DB8PR04MB5785A6A773FEA4F3E0E77698F0579@DB8PR04MB5785.eurprd04.prod.outlook.com>
+ <2898c3ae1319756e13b95da2b74ccacc@walle.cc>
+ <DB8PR04MB5785D01D2F9091FB9267D515F0579@DB8PR04MB5785.eurprd04.prod.outlook.com>
+ <20210507121909.ojzlsiexficjjjun@skbuf>
+ <07b1bc11eee83d724d4ddc4ee8378a12@walle.cc>
+In-Reply-To: <07b1bc11eee83d724d4ddc4ee8378a12@walle.cc>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: walle.cc; dkim=none (message not signed)
+ header.d=none;walle.cc; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 28d66786-6214-4400-fc51-08d92b1d6d36
+x-ms-traffictypediagnostic: DB7PR04MB4522:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB45220F49EA78FFAA054665ACF0369@DB7PR04MB4522.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: u1isYf2JKMLsfxe4QtgqlBJtkht/4/KHE1080kd/Ev09LHQ3iK+nO5wiFfHyyEKZjpUv8+WeEn/T64Crr4v4BjcdFFcvu8YO1XBryydhWnzdj4w+gBxQ84iq7srgr+GEprS77N7V5vV3XIR2Qvd4N2muaxeZ6dlnR5TukYIW394fjdTOR9zxBi8n6XAtnUUhnm6t8IHqw1xjk/Sv3g/lfrj/3rUp6XMGZ6XKnPmrggumItS2FDYUshE4QpvY0VqP//PB9i3zNyIqHi1sYJFzRB5n9f1xLwu4L5UdVA+34ZWa5+4e+UYZGdQST4cHZvTuffUnijZhMKM+E/wC7AZKsCz/IxCZrvSVP7NreqIiWM+234pQY8BeySRqoF5kXbe6p4WcevebnvzWzPbOrzbB3l6nbj7FmF5pWuTJ/M3DL821TbB2gaAq0/5+/e3xkihvlrS8z30cqaFBc209PBqI0VuWcRVQO5hynJemX6JJF0y9/aXn5lWpSO3mcxZGVfjnfhbDx2jlGTsX3OEJUtVgEAJib2jG/5AXzBINwiE0KA9Ak40f8hlir3JXRWUFoagahtXos3VA6qIYfPrBqsHI7Zxsfe7CDWeDVTePfkzpWos=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB5785.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(346002)(136003)(376002)(39860400002)(7696005)(53546011)(478600001)(186003)(26005)(316002)(76116006)(66556008)(6506007)(66946007)(54906003)(66476007)(8936002)(66446008)(4326008)(64756008)(86362001)(52536014)(110136005)(83380400001)(5660300002)(38100700002)(33656002)(2906002)(55016002)(71200400001)(6636002)(9686003)(122000001)(7416002)(8676002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?4/2G5RYXnqyIcHQoigksYDYF4R8188cli3u6R7WyvQjPQLnLmox0GpESRK5F?=
+ =?us-ascii?Q?ErVUpWmVqBWcDn+2fFb1lbb+EYt3gmZ8R8PbPoFwBfDvnRO6zTttf64b0HZn?=
+ =?us-ascii?Q?Cu/dPCZ1sWbksskOqBGN5COJhD1TQrLEUtH3p3y0LVFmsXaJfNvukdP2ox6+?=
+ =?us-ascii?Q?FpHkfgaGrCUAonF4bL3hu0cQ8gzZHaF3cDUWFVoBmVwisWM4kxI3zhrD2KDr?=
+ =?us-ascii?Q?cSYgbFPipENFd3aP3bmr2nBNzTNlZ1JWUJ8g06n9bRMlLYMrj/IyRKLcUNHq?=
+ =?us-ascii?Q?fSVTBC6/UyLT51BuY1/vNB0MJLwgPbovKBXjrUTCeEcqkPcXJuaZSBc6++09?=
+ =?us-ascii?Q?WQ7EstR1dQx6zCHqrufNhbSJ3NndSsC3WPlDGPYMn37CJ0BT5FE7V3/PvF4k?=
+ =?us-ascii?Q?RHMvmDRLchRV1F5ezbFYNGHX8v4n4Hf1C1+4N3WXs6rSDtZGSRVRFUsFGvFo?=
+ =?us-ascii?Q?vUYRnpssThppRiEXudafKexmo2gsGYnl2aASz+zJb/HQlaYkJHsm7cCilD5l?=
+ =?us-ascii?Q?uKL+RVKkM+sI4M6yYMHzaygO0FIoLcvnP4rzCX0o+tsvA5crqjsIzSw80kDP?=
+ =?us-ascii?Q?1A0iDdVZjPHySNHW2AfNnFR3txQxz04x9tqhSjPmm5k35fbE6Z9P5VBq/Fco?=
+ =?us-ascii?Q?TzTvvyC28lNe4bhyNY9Jwm3MEvL9gEFKeMe57Jr794LW4KTMG5BFJKU9Qi5Q?=
+ =?us-ascii?Q?Jrf6dz9bqGMbap/A+7aCkc70TZvkUiRPZHTOPJe9Kwsbjqf3XpB+5klqRe23?=
+ =?us-ascii?Q?V/lkul4rbetInXkY9rlsv6VBZ3ltxidxsMB6ipSEedUV0Yu6uydtr1fW0Yce?=
+ =?us-ascii?Q?KkpGN3ODcDUN/G1B4y4NfQoEkXNnemv7iAFm5dmM0hTg/emPVd8wXTin5D3A?=
+ =?us-ascii?Q?YA0OdV7lxRSkRJekbToOzZLVBWg2jUSeBaZV9ccTQEQ2Ur2mzPonFlUVnhDA?=
+ =?us-ascii?Q?f98dnyMvuObPnch46YT4E4oERfmDvLSYMUKC+c2uj7komnmB0zw1Ww1ph301?=
+ =?us-ascii?Q?53JmDN6uwKT1aqLKToei0jcgDsFri1tq69TXf6F/VN6NQNEwXzXAy59cGFox?=
+ =?us-ascii?Q?sQv/FkoTC8tNJCMPsb9K57GFXo7x24ntAyslEFkUTiZasn5MilZOM87LzOqS?=
+ =?us-ascii?Q?87Q/+xe/d79oWl7S1fVEY8lAI8l/hfip4CpP9gB5WJQRBMmaDm0NWiDv0KsA?=
+ =?us-ascii?Q?ZFRT1IRL3l+fj5nU8wQ3AyS6vALs274lTCFgncH6kO+OWjJC0fD/yp7ZdrzM?=
+ =?us-ascii?Q?J1JTYZ1mvvxI6fBfaWjHIQNazbGI0FkRR40tpHtFgf25nkGKEiYlBgdOTR6K?=
+ =?us-ascii?Q?H/EFl0AHnSZhcOavUKhUgbPV?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB5785.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28d66786-6214-4400-fc51-08d92b1d6d36
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jun 2021 08:06:03.4892
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jih+4+0REi1F0glhEJyX3i8cD7Y86rDd8/lhu5zw5Nspdbn9fXcgzmpYwAu+V9SJHRC2Kv1PDR1KVMCAjh9+fVqwZZQypLNu6aZufNbXdmM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4522
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
 
-Both functions are known to be racy when reading inet_num
-as we do not want to grab locks for the common case the socket
-has been bound already. The race is resolved in inet_autobind()
-by reading again inet_num under the socket lock.
+On 2021-06-07 19:26, Michael Walle wrote:
+>=20
+> Hi Vladimir, Hi Xiaoliang,
+>=20
+> Am 2021-05-07 14:19, schrieb Vladimir Oltean:
+> > Devices like Felix need the per-queue max SDU from the user - if that
+> > isn's specified in the netlink message they'll have to default to the
+> > interface's MTU.
+>=20
+> Btw. just to let you and Xiaoliang know:
+>=20
+> It appears that PORT_MAX_SDU isn't working as expected. It is used as a
+> fallback if QMAXSDU_CFG_n isn't set for the guard band calculation. But i=
+t
+> appears to be _not_ used for discarding any frames. E.g. if you set
+> PORT_MAX_SDU to 500 the port will still happily send frames larger than 5=
+00
+> bytes. (Unless of course you hit the guard band of 500 bytes). OTOH
+> QMAXSDU_CFG_n works as expected, it will discard oversized frames - and
+> presumly will set the guard band accordingly, I haven't tested this expli=
+citly.
+>=20
+> Thus, I wonder what sense PORT_MAX_SDU makes at all. If you set the guard
+> band to a smaller value than the MTU, you'll also need to make sure, ther=
+e will
+> be no larger frames scheduled on that port.
+>=20
+> In any case, the workaround is to set QMAXSDU_CFG_n (for all
+> n=3D0..7) to the desired max_sdu value instead of using PORT_MAX_SDU.
+>=20
+> It might also make sense to check with the IP supplier.
+>=20
+> In the case anyone wants to implement that for (upstream) linux ;)
+>=20
+> -michael
 
-syzbot reported:
-BUG: KCSAN: data-race in inet_send_prepare / udp_lib_get_port
+Yes, PORT_MAX_SDU is only used for guard band calculation. DEV_GMII: MAC_MA=
+XLEN_CFG
+limited the frame length accepted by the MAC. I am worried that QMAXSDU is =
+not a universal
+setting, it may just be set on Felix, so there is no suitable place to add =
+this configuration.
 
-write to 0xffff88812cba150e of 2 bytes by task 24135 on cpu 0:
- udp_lib_get_port+0x4b2/0xe20 net/ipv4/udp.c:308
- udp_v6_get_port+0x5e/0x70 net/ipv6/udp.c:89
- inet_autobind net/ipv4/af_inet.c:183 [inline]
- inet_send_prepare+0xd0/0x210 net/ipv4/af_inet.c:807
- inet6_sendmsg+0x29/0x80 net/ipv6/af_inet6.c:639
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0x360/0x4d0 net/socket.c:2350
- ___sys_sendmsg net/socket.c:2404 [inline]
- __sys_sendmmsg+0x315/0x4b0 net/socket.c:2490
- __do_sys_sendmmsg net/socket.c:2519 [inline]
- __se_sys_sendmmsg net/socket.c:2516 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2516
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff88812cba150e of 2 bytes by task 24132 on cpu 1:
- inet_send_prepare+0x21/0x210 net/ipv4/af_inet.c:806
- inet6_sendmsg+0x29/0x80 net/ipv6/af_inet6.c:639
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0x360/0x4d0 net/socket.c:2350
- ___sys_sendmsg net/socket.c:2404 [inline]
- __sys_sendmmsg+0x315/0x4b0 net/socket.c:2490
- __do_sys_sendmmsg net/socket.c:2519 [inline]
- __se_sys_sendmmsg net/socket.c:2516 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2516
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x0000 -> 0x9db4
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 24132 Comm: syz-executor.2 Not tainted 5.13.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/ipv4/af_inet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index f17870ee558bbaa043c10dc5b8a61a3fa1304880..2f94d221c00e9888d0f5f3738593fda811215cc6 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -575,7 +575,7 @@ int inet_dgram_connect(struct socket *sock, struct sockaddr *uaddr,
- 			return err;
- 	}
- 
--	if (!inet_sk(sk)->inet_num && inet_autobind(sk))
-+	if (data_race(!inet_sk(sk)->inet_num) && inet_autobind(sk))
- 		return -EAGAIN;
- 	return sk->sk_prot->connect(sk, uaddr, addr_len);
- }
-@@ -803,7 +803,7 @@ int inet_send_prepare(struct sock *sk)
- 	sock_rps_record_flow(sk);
- 
- 	/* We may need to bind the socket. */
--	if (!inet_sk(sk)->inet_num && !sk->sk_prot->no_autobind &&
-+	if (data_race(!inet_sk(sk)->inet_num) && !sk->sk_prot->no_autobind &&
- 	    inet_autobind(sk))
- 		return -EAGAIN;
- 
--- 
-2.32.0.rc1.229.g3e70b5a671-goog
-
+Thanks,
+xiaoliang
