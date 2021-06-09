@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 000893A190C
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:17:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A783A1910
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:17:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239177AbhFIPSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 11:18:53 -0400
+        id S239337AbhFIPTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 11:19:04 -0400
 Received: from mail-eopbgr80090.outbound.protection.outlook.com ([40.107.8.90]:23438
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239162AbhFIPSu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 11:18:50 -0400
+        id S239228AbhFIPSx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 11:18:53 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bir8F7cfSMK8VtvvkbivVHTLrVLt2LIKbZ5Q3ogtgq+TlmiP7dquFb1efUtweL6OybytgOssz3qk9KCUm0zzdAvaFyD6V4/C0HWgCmNyLfsmrvsrKVEKR6IauQb6DlrQcKvBAur6KhGmFmCAWf2OKUu1xV76YNFee7w8nGq6hAj2nVVI3n7gTVGnZZm/AA3cWLp1WnlyItBM03AhTF/3c1E+ARAeZzSlNeP19HIStCyY/6I8IIG/mKoAHyad0czJ/6xBmcufkLuU2fePZCoTWQNvWccinM9sHiQHqpbXUqw7EMQUtXHlShMqDQ/SkLeojKL9DfAUOwa18323ZeeyRg==
+ b=mIKmE0ghTetTUDgQCsUL0VhXgOmGR0FGF+iIO0De+kg7DG9kFAUjAiti8tlQ7OtDGCeIg41X+o0cpnQZ3gTGtu9tt0RzIIZ8ZBwmeuEoq9g+rt8b+bXvoMZI/hc/XDIrw0RJl1UpdI3dLE61rNKTjgTCMJWxMg6TmxjiNov2uKTP20vhJpKyNIjsBTd6r3lDD5BOkA+VXCxxAvIlEGqoByunQ/0u6Nq5e88hp8AeWzH19nAT9GplGy83eHcvHhWlQ5JUh20eOOe1poJwldEY0VU7Rx9NQLUf/G8H6/wva00VWdJU/qK+jS7fQxq5RrHInmYXwa+VP6gXJwZbL5fL7Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2Qk3NsaokKMhNVfRwOlR1LecjFPqaGPOWYjvNfSa/9c=;
- b=J27RtnIyyQO/5Ou+2janFvm0IqDoMHH2zlpbyFMrY0xngTK6cRJrNV4lkZTtReoCeACfD5y6q3SrEzcAPF99dVQGwi6uwy9sifMn80+dYBDoDa9bdkqjQORdSlBKDgVLwcf6uF5J1rAI12nRtXsbl+qhglXaTGyQcLRoaPWiPDodljBZ732UegB0OoMq6Q32wqPzzVLPU2D2JeP+y+kq3Q/W/w7SmY7uP5GSA1FSiQChCWLCeAtSNNAQENlUveiroYCL8kyZ0tdItqSn9Ci0fJz2EmTNrcsFKD+n3jgjaBVt+71TF5HB4G1Mvwyz9e6kT6oYAhEEioicn8s9Mghehg==
+ bh=dEB4xA52d2+ZwzXblV37zF8N4CPjkyGKhYIScADcpqs=;
+ b=PQKRoFPQMTlVlzMmJW/WZmv2i5jUJmaxZX0xo3d2DWaBeDynBJo88RbyJ0Rg2x2y/3FMZAP3oBockTHTqVmNyCFb+cxG87xF/ioHOyjyKgigIzvt/UY4pmCPecwvYfzdPoig7AF9ktoevY8V4Jw/h44sRxPQDLq07vQyM+Qer/qxx8ITW73oWLFLdUvT6pCIOmpTUqXlNFsVl4iwcYYDl927jrgouYTwsL3bKwAAkVjYIffP8YuvbbFa2txdRuQU/iLfKKhIcGjlHoi2QLOtA4gqIcHZCKeOysdp+jowQKDH35eF+Z+ZPjjpnWmZDrfV6jxI03CVOWtz3ORXP621KA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2Qk3NsaokKMhNVfRwOlR1LecjFPqaGPOWYjvNfSa/9c=;
- b=t/kddqTFi8sLnUSXeFBAFcvoMaJ5t/6TJKi4b+Z1Kx7Nkzt4xwUVkHnfiPj6utenr/pFISRLD59MJxbRpwo1rg9mV7BxRw7R5Dm5RALmbVGX9Q02jxoIfoVFGhciMoFMnC4P+K8txchRWSlupvV4K7z5MFW0dmqm8FOeytglx9c=
+ bh=dEB4xA52d2+ZwzXblV37zF8N4CPjkyGKhYIScADcpqs=;
+ b=p5HLMYMptwG1iR4w79QsYaMTjDjlXO7NJ415rFYAQTCP1PVRxxUDl1eVOiRQNz4SjVwm5YVoKWjDyymCyhaI+I0D5Qya/VLGohihMlNyn8TAftzcAA9F2ezEn6iVkH35lwpyDWP2GfBSq/ZslPytm0wiUiKPnjxM1wvG0RbL0hE=
 Authentication-Results: plvision.eu; dkim=none (message not signed)
  header.d=none;plvision.eu; dmarc=none action=none header.from=plvision.eu;
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
  by AM9P190MB1427.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:3ea::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21; Wed, 9 Jun
- 2021 15:16:52 +0000
+ 2021 15:16:54 +0000
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe%9]) with mapi id 15.20.4219.021; Wed, 9 Jun 2021
- 15:16:52 +0000
+ 15:16:54 +0000
 From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 To:     oleksandr.mazur@plvision.eu, jiri@nvidia.com, davem@davemloft.net,
-        kuba@kernel.org, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 10/11] net: marvell: prestera: add storm control (rate limiter) implementation
-Date:   Wed,  9 Jun 2021 18:16:00 +0300
-Message-Id: <20210609151602.29004-11-oleksandr.mazur@plvision.eu>
+        kuba@kernel.org, Jonathan Corbet <corbet@lwn.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH net-next 11/11] documentation: networking: devlink: add prestera switched driver Documentation
+Date:   Wed,  9 Jun 2021 18:16:01 +0300
+Message-Id: <20210609151602.29004-12-oleksandr.mazur@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210609151602.29004-1-oleksandr.mazur@plvision.eu>
 References: <20210609151602.29004-1-oleksandr.mazur@plvision.eu>
@@ -56,372 +56,240 @@ X-ClientProxiedBy: AM0PR06CA0092.eurprd06.prod.outlook.com
  (2603:10a6:208:19b::9)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0092.eurprd06.prod.outlook.com (2603:10a6:208:fa::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Wed, 9 Jun 2021 15:16:51 +0000
+Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0092.eurprd06.prod.outlook.com (2603:10a6:208:fa::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Wed, 9 Jun 2021 15:16:53 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 526c133a-6ef5-4a9d-3fdf-08d92b599bf5
+X-MS-Office365-Filtering-Correlation-Id: 3c04fb28-6ac5-4224-7bf2-08d92b599d24
 X-MS-TrafficTypeDiagnostic: AM9P190MB1427:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM9P190MB14274AEE81377E528AA2C484E4369@AM9P190MB1427.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1051;
+X-Microsoft-Antispam-PRVS: <AM9P190MB142773F1BFDC5DEE6C0DC424E4369@AM9P190MB1427.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZKx1SIIqnajHcJLqt4rKFydWo+496THIerDk4oXdzj65flO10KS5vxBAzFyUEjL7A7XC1SiG5sNTU7fEKMSb8zkAK1Qt7K3GUH98W+qWf370EMEYVoENaMqH4w0U0Z5Fs5FNOfK98psblL05k/YcjjNUoE8qgIbGomgSh4vA5kU/c9WRrhvXDmzmYz/bJqM+JxfljWs4dN8KrlaYPVnoQr6i6pFnDUTpw3CYV3dpsY4KaNKJCzAAR9xHdC8R1Wg7BPtwRCu73YLT6bUBBNbVzFqT8/ybtOLYHx3c01xs2D82y5SJHIqkoX2gFs3XllOrJEIY6mOwLUsYdBS8lyCBtlm5vmeLxxgYXB+11ztrm7qEwyhMGnwESVQgXuMTHuPeGfhcyqRoXwwHQHUS2CGNawyts4yCbN7/2hBRAXCGScuqG2sUqp4YmFP9PxmNTJal4I8+cBwMEOMI59ohr3DBY8uo5U1D2ODoVTajBuRDMujhteErDgSPPxmG3q21wqdZdFzB/fIHZBoAjvKYrAyD6O/GhsZyybn+V02QT7CD2avjIwyROwoRfVY8F8CZQ1WHKKm2bkyFYIVUCDblaB1IEr6suJbVIOKURL8frfBHrvTjsQIqCGfRgdsxAfCA5/20FNUJsOnTrdPFM+Z+QHQII6a8kA6U1EOus/W2Is9drgs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(376002)(396003)(136003)(39830400003)(366004)(83380400001)(956004)(52116002)(2906002)(1076003)(186003)(66556008)(66946007)(16526019)(6506007)(2616005)(6486002)(6666004)(26005)(66476007)(38350700002)(8676002)(36756003)(86362001)(4326008)(30864003)(110136005)(5660300002)(478600001)(44832011)(6512007)(38100700002)(316002)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?oy80KUBCI8n5Oii9r/XLknvyZ7K2HK2DGqjTgH6xTDWTNbcEAqCEd2nXhkuS?=
- =?us-ascii?Q?JlNyNKGx22EGiThX1Zy13/crbDoO9ungdtHbuOXDomIgRX++f9N3GjcUDb3k?=
- =?us-ascii?Q?ycdTW8DRp4prowYhbaOYsYTUoiyOHFYGJ1J1sVzefBZbYxtMvkmopA9Sn94O?=
- =?us-ascii?Q?9Hkia4mnatBRuqZAgTz0ZQI47gx8nhrqSz7HG7EUF84UU1kgiJBbX6aTh2hJ?=
- =?us-ascii?Q?uQ2uV3vevO2BLQzW49ZoVnU9Ju+sqX6HewVhD+bMYk763DL2Xlr7fjxwZUfG?=
- =?us-ascii?Q?+UaRW8ukM946R1gJiX/6cGDE9OQ/yOoaeX5mf/ecWI7uUU24TT2BPpc6fjvK?=
- =?us-ascii?Q?8L8PycPntB0p2LBf/f+8ArRjjVHL+B9cy6vX33mF6SqqDbq31xbsEpzEwqoY?=
- =?us-ascii?Q?jILlCQUazOrX645S+n3g0OI0u1VFcsjzvpLn9p5cA/Ww4TAv37vZ5cy2TlJh?=
- =?us-ascii?Q?2NPLG1aKvqPKSmMjxf756LNe9YToQaBobxPrHjZTwZSJxkVjJL1MVzscolQd?=
- =?us-ascii?Q?hPacE5FwGYd75Hd3QAI3T2GUq4WAMabBuan9SFWRaZfZwhX4HzUmvjWmDOle?=
- =?us-ascii?Q?p23oTWiTNJzcoejiQ5HZbLTgrk98RMVy6MmuTpHDn0lMpf89mifYWWC1BpPW?=
- =?us-ascii?Q?2x2edQr86rieEI98qQKaCc603CweiFIGXlncuQMjWFK+OasW78vU8jvUwFgM?=
- =?us-ascii?Q?CV7relv2b0C0v7/jKxf43zufrsfYCGI4XX/1oYYwewSJzJQ/FTaNibUr/zYj?=
- =?us-ascii?Q?p6WzB8S3JEHw5cSM+KMB6SXr8f6kwFlukHONVtsbDm4u3C3Vi4ekpJSY2s1i?=
- =?us-ascii?Q?oHLKFn+BayCwbZa1TtPBCyTFisWU/7eyjMQU3DBoUdbxR/9jkSCNpA2+22RP?=
- =?us-ascii?Q?+JwakDQNAIJ/59ZsPMW/B8FEfHFI/wHupBhpj1e/jUdBYvXQsI/st5+vkVkZ?=
- =?us-ascii?Q?LLQEAXLIBTMKUdaUF2cL02rf1TWudu4bzvTfIE40bgg6o3jPxlO9qOGeazeq?=
- =?us-ascii?Q?ct7dpX9Zvm5e4hwAb74XjeFLIzrBSG7zEGJ+Wk9f2kjZfottlbwyeQcnOvOr?=
- =?us-ascii?Q?boKSn8Yj34Nmz1lavBWUNS0Hgq8DiouiCaaPd/Tj2sob0vK9RDw9X4+B2kjo?=
- =?us-ascii?Q?MpsiyR8Xh4oHVkANeT0EliNpK+V9kzbxOtWkatolZzTERSkecOTiB9/+u1z/?=
- =?us-ascii?Q?ZyfW3mg5LaHxnIS3ozSCrWPxLQnbYcGjKHqPY7ni7d9/aejGL1CRd/+f1CoT?=
- =?us-ascii?Q?hakHpeKcr0LWpJPC5tdKJZlJSYEO/RO5Uc+tk2B6XmyGGR0n8WJFcjs2JFq0?=
- =?us-ascii?Q?m/+uzCnYka3OC21+3FKvH7PS?=
+X-Microsoft-Antispam-Message-Info: uHdTlv4LkyiLr4UkE9FkYfsLPcX7zPHJgwT+PEsXj38rX4LIv0PZ/+S2KNjV1ptpIhzrIyAxNsU0iyRLpZtJ/TsdWBLmnK6R7t24HEmVmgt6KvAeMi2PaGCpbOpyXDRKk9razgS0+uFZDJvpkivk+f4LB6VEcF11eed1SL0PJGdpLrG3kxuX05tQ7SH4+vY2ogK5CUJTN7RSk0Srnnbx1cjy2SpMvWOxTj+jlvciBV7Sfw4jDv27iEyuDX3EEedoOGzCBjJt7F8fnoUexqCwoWHUxYDsmfX6LP3XCsw7bNjUm5XAWfWrQvXfXx9Pm8kzdfggDn/aV9X5uVjqUd3wPbFL2SiPfTSRaguSdNOflElgW/zwulq9maIazdqZvDHv98LB4loVlfcH78Km2s4eVdd2/doAwapb7MD7ZLOriIE/+JioLZkUSewdsMphf6UrfCUa/HYbYnYG/3qhmr8BOuuScqvDRNd+l1hT+1yNMeKKwTqtxR+sQNS7Q7Ja8V8ErzUHSZO/UTGFPCpfOZlrT+xRoJX6rNI07AKq7PfpIfVxYB8/+45vdYgIQmoFHSw4IqiX5YbXo2KpIPW78vhyozMmy6vKDLcn2yB04XEMjYYdNJwscjPljuI2vs5eVwbubj0z0QDB1zDnYTE5Ou6nH7ikLu0n0HjAyJtaJ6OsPaQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(376002)(396003)(136003)(39830400003)(366004)(83380400001)(956004)(52116002)(2906002)(1076003)(186003)(66556008)(66946007)(16526019)(6506007)(2616005)(6486002)(6666004)(26005)(66476007)(38350700002)(8676002)(36756003)(86362001)(4326008)(6916009)(66574015)(5660300002)(478600001)(44832011)(6512007)(38100700002)(316002)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?4UpGOH3kumlVdbH/zl6hsKtyP3oRStD3zruO/dd+xJM8HOsRetRQsHitveIY?=
+ =?us-ascii?Q?Wi2bsw0BbywdaEKrQgu/UeTlmBtNBtK7MMncYMubVhyWuLuz/ob5CHbvEahe?=
+ =?us-ascii?Q?NsQXocSR3iVjAMDa/D2LZ94jLuVAgfeOq0IOe3m7rIB2EbhxUFzAWw1J+IG4?=
+ =?us-ascii?Q?E2H0gNkNugT8+lqieyHd9xwy8XGxYlRK2nwMY0LjNX8kp24k0PZFAZUyq9gF?=
+ =?us-ascii?Q?6uexiLKF+JJT7sC1E9pkS3UpCP6ioZvimpYm5CZxVxEAhSBLpEHYgrxx+DjU?=
+ =?us-ascii?Q?Z70v39Dt7Qmq/Cgq9G+2qB6id+tE5Wigo/s89WO4yqeCCSJyRw/ISrwvBkOb?=
+ =?us-ascii?Q?meE3oIJUdwPX0OqiLVIBrqKV0jD1s4fgbV2JzUWd/vgbHJf0UlAWxr/wUMhl?=
+ =?us-ascii?Q?X9+UpE5P/PgU3wGBdmiVD376HygWvIDasOaO+KZ10KJ7EZXObPuo9np5yolX?=
+ =?us-ascii?Q?L1WyvL1OCZa2XsInbEa/+2z32hNm5qC6t/D5geTF6suQP1O8shpqYiLW+QD2?=
+ =?us-ascii?Q?A1PhelbHMt0OPS5I9hN86iPcRWhMnggSTkwBH76cs5+dDgoXOvn4mh1vAoKf?=
+ =?us-ascii?Q?rgRM+k7inQcycQ5Wl9u2jt9LEGDJwI0hXZtXdiRYpX0PmBKO/0X11Im6AT5s?=
+ =?us-ascii?Q?lKglSQ9lF4Q/pQ2a3jgBsYNN2L9qvmyeIeiyLGlG1NW0PB0MA3Td6Lk1uCYh?=
+ =?us-ascii?Q?SuFY72U0IB/JM8pNmCmaa3nwy5YsTCTwOkCFhJ5WPyeyQO03TzNTh1u0UZ5y?=
+ =?us-ascii?Q?wQm/SD8ZA8gqgLRrpQsUQ4/6mc0l3y6F9excXCuQ46DClyuPQ6qsNva0MjQv?=
+ =?us-ascii?Q?t/fshNIZ44XMIWGqOZSqiKuM36kWhcNX217CLydKivQGx7eennQbppimWkYV?=
+ =?us-ascii?Q?0otmKOoGzSdsLrzdDXhpu0wyy4COKLJr6p+nvcpsecZZIS0BHwH5cnw75ZZP?=
+ =?us-ascii?Q?n1WTZ8/3j2/OoPnGtyxMoHCi/sAgkp67BY/bzjwI0nzRte1ZGW3KFSQpxiVo?=
+ =?us-ascii?Q?Dh+npKb+AyvPa/warmZAeuXfnVQ+qW/2zg94JavNT52yBb65aWq8AOTlYadA?=
+ =?us-ascii?Q?rcfWyrAckdZLkVwk2MGe6g+W4S42B1iXGHfbcjVumt/mRJ/knA2uKMUd6EV8?=
+ =?us-ascii?Q?svI6sAL/i0kAOXY55ZO8CNKjV81hS+5gj1PRYzLMxhHM2fPlV5oK6JUvVdCd?=
+ =?us-ascii?Q?BmnEX+2Rgzt6J/W5MuAP6J5j11sjFoK3uErHe7JxKF83TCgL8jw+eFufCiQe?=
+ =?us-ascii?Q?a2D3L+I8dfOnhszhV2ORt3UB7OoNQQP5fLWWwpbKwY4znidBW0Kwl05XbDWR?=
+ =?us-ascii?Q?Kyg+jnzh2u9kVq1axWMvBulP?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 526c133a-6ef5-4a9d-3fdf-08d92b599bf5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c04fb28-6ac5-4224-7bf2-08d92b599d24
 X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2021 15:16:51.9306
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2021 15:16:53.9149
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FC3zfmGdmapekZd2Mv+8Hb7ivgQA/DDu2zVtrx8APc21J5MfhoLZPUVc85FuklYP1ox6dshH080QFZuQfPLZ4Y6TV245V09YM8LQGzExucs=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6owVsztwFTXqj01dbK47EQyoDs3SaFTgG4XtA1VEg5yeeJJnKAkTNkIZQVMRXHTBT158DBQJWsruK//JLoE9CCla1iAdT/pNgBDmGAQ5B+4=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P190MB1427
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Storm control (BUM) provides a mechanism to limit rate of ingress
-port traffic (matched by type). Devlink port parameter API is used:
-driver registers a set of per-port parameters that can be accessed to both
-get/set per-port per-type rate limit.
-Add new FW command - RATE_LIMIT_MODE_SET.
+Add documentation for the devlink feature prestera switchdev driver supports:
+add description for the support for the per-port devlink Parameters
+(used form storm control);
+add description for the support of the driver-specific devlink traps
+(include both traps with action TRAP and action DROP);
 
 Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 ---
- .../net/ethernet/marvell/prestera/prestera.h  |   7 +
- .../marvell/prestera/prestera_devlink.c       | 134 +++++++++++++++++-
- .../ethernet/marvell/prestera/prestera_hw.c   |  25 ++++
- .../ethernet/marvell/prestera/prestera_hw.h   |   9 ++
- 4 files changed, 174 insertions(+), 1 deletion(-)
+ Documentation/networking/devlink/prestera.rst | 167 ++++++++++++++++++
+ 1 file changed, 167 insertions(+)
+ create mode 100644 Documentation/networking/devlink/prestera.rst
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
-index 2c94bdec84b1..4b99a7421452 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera.h
-@@ -60,6 +60,12 @@ struct prestera_port_caps {
- 	u8 transceiver;
- };
- 
-+struct prestera_strom_control_cfg {
-+	u32 bc_kbyte_per_sec_rate;
-+	u32 unk_uc_kbyte_per_sec_rate;
-+	u32 unreg_mc_kbyte_per_sec_rate;
-+};
+diff --git a/Documentation/networking/devlink/prestera.rst b/Documentation/networking/devlink/prestera.rst
+new file mode 100644
+index 000000000000..b73d70319344
+--- /dev/null
++++ b/Documentation/networking/devlink/prestera.rst
+@@ -0,0 +1,167 @@
++.. SPDX-License-Identifier: GPL-2.0
 +
- struct prestera_port {
- 	struct net_device *dev;
- 	struct prestera_switch *sw;
-@@ -79,6 +85,7 @@ struct prestera_port {
- 		struct prestera_port_stats stats;
- 		struct delayed_work caching_dw;
- 	} cached_hw_stats;
-+	struct prestera_strom_control_cfg storm_control;
- };
- 
- struct prestera_device {
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-index d12e21db9fd6..0786fbb09f71 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
-@@ -2,6 +2,8 @@
- /* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
- 
- #include <net/devlink.h>
-+#include <linux/bitops.h>
-+#include <linux/bitfield.h>
- 
- #include "prestera_devlink.h"
- #include "prestera_hw.h"
-@@ -159,6 +161,34 @@ struct prestera_trap_data {
- 			    DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id,	      \
- 			    PRESTERA_TRAP_METADATA)
- 
-+#define PRESTERA_PORT_PARAM_DRIVER_RUNTIME(_id, _name, _type)		      \
-+	DEVLINK_PARAM_DRIVER(PRESTERA_DEVLINK_PORT_PARAM_ID_##_id, _name,     \
-+			     _type, BIT(DEVLINK_PARAM_CMODE_RUNTIME), NULL,   \
-+			     NULL, NULL)
++=====================
++prestera devlink support
++=====================
 +
-+struct prestera_storm_control {
-+	struct prestera_switch *sw;
-+	struct prestera_strom_control_cfg *cfg;
-+};
++This document describes the devlink features implemented by the ``prestera``
++device driver.
 +
-+enum prestera_devlink_port_param_id {
-+	PRESTERA_DEVLINK_PORT_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX + 1,
-+	PRESTERA_DEVLINK_PORT_PARAM_ID_BC_RATE,
-+	PRESTERA_DEVLINK_PORT_PARAM_ID_UC_UNK_RATE,
-+	PRESTERA_DEVLINK_PORT_PARAM_ID_MC_RATE,
-+};
++Parameters (per-port)
++=====================
 +
-+struct devlink_param prestera_devlink_port_params[] = {
-+	PRESTERA_PORT_PARAM_DRIVER_RUNTIME(BC_RATE, "bc_kbyte_per_sec_rate",
-+					   DEVLINK_PARAM_TYPE_U32),
-+	PRESTERA_PORT_PARAM_DRIVER_RUNTIME(UC_UNK_RATE,
-+					   "unk_uc_kbyte_per_sec_rate",
-+					   DEVLINK_PARAM_TYPE_U32),
-+	PRESTERA_PORT_PARAM_DRIVER_RUNTIME(MC_RATE,
-+					   "unreg_mc_kbyte_per_sec_rate",
-+					   DEVLINK_PARAM_TYPE_U32),
-+};
++.. list-table:: Driver-specific parameters (per-port) implemented
++   :widths: 5 5 5 85
 +
- static const struct devlink_trap_group prestera_trap_groups_arr[] = {
- 	/* No policer is associated with following groups (policerid == 0)*/
- 	DEVLINK_TRAP_GROUP_GENERIC(L2_DROPS, 0),
-@@ -350,6 +380,10 @@ static void prestera_devlink_traps_fini(struct prestera_switch *sw);
- static int prestera_drop_counter_get(struct devlink *devlink,
- 				     const struct devlink_trap *trap,
- 				     u64 *p_drops);
-+static int prestera_devlink_port_param_set(struct devlink_port *dl_port, u32 id,
-+					   struct devlink_param_gset_ctx *ctx);
-+static int prestera_devlink_port_param_get(struct devlink_port *dl_port, u32 id,
-+					   struct devlink_param_gset_ctx *ctx);
- 
- static int prestera_dl_info_get(struct devlink *dl,
- 				struct devlink_info_req *req,
-@@ -383,11 +417,17 @@ static int prestera_trap_action_set(struct devlink *devlink,
- 
- static int prestera_devlink_traps_register(struct prestera_switch *sw);
- 
-+static const struct devlink_port_param_ops prestera_devlink_port_param_ops = {
-+	.get = prestera_devlink_port_param_get,
-+	.set = prestera_devlink_port_param_set,
-+};
++   * - Name
++     - Type
++     - Mode
++     - Description
++   * - ``bc_kbyte_per_sec_rate``
++     - u32
++     - runtime
++    - Sets the maximum ingress traffic rate, at which port can
++      receive broadcast traffic.
++   * - ``unk_uc_kbyte_per_sec_rate``
++     - u32
++     - runtime
++    - Sets the maximum ingress traffic rate, at which port can
++      receive unknown unicast traffic.
++   * - ``unreg_mc_kbyte_per_sec_rate``
++     - u32
++     - runtime
++    - Sets the maximum ingress traffic rate, at which port can
++      receive unregistered multicast traffic.
 +
- static const struct devlink_ops prestera_dl_ops = {
- 	.info_get = prestera_dl_info_get,
- 	.trap_init = prestera_trap_init,
- 	.trap_action_set = prestera_trap_action_set,
- 	.trap_drop_counter_get = prestera_drop_counter_get,
-+	.port_param_ops = &prestera_devlink_port_param_ops,
- };
- 
- struct prestera_switch *prestera_devlink_alloc(void)
-@@ -443,10 +483,12 @@ void prestera_devlink_unregister(struct prestera_switch *sw)
- int prestera_devlink_port_register(struct prestera_port *port)
- {
- 	struct prestera_switch *sw = port->sw;
--	struct devlink *dl = priv_to_devlink(sw);
- 	struct devlink_port_attrs attrs = {};
-+	struct devlink *dl;
- 	int err;
- 
-+	dl = priv_to_devlink(sw);
++Driver-specific Traps
++=====================
 +
- 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
- 	attrs.phys.port_number = port->fp_id;
- 	attrs.switch_id.id_len = sizeof(sw->id);
-@@ -460,12 +502,32 @@ int prestera_devlink_port_register(struct prestera_port *port)
- 		return err;
- 	}
- 
-+	err = devlink_port_params_register(
-+			&port->dl_port,
-+			prestera_devlink_port_params,
-+			ARRAY_SIZE(prestera_devlink_port_params));
-+	if (err) {
-+		devlink_port_unregister(&port->dl_port);
-+		dev_err(sw->dev->dev, "devlink_port_params_register failed\n");
-+		return err;
-+	}
++.. list-table:: List of Driver-specific Traps Registered by ``prestera``
++   :widths: 5 5 90
 +
-+	devlink_port_params_publish(&port->dl_port);
++   * - Name
++     - Type
++     - Description
++.. list-table:: List of Driver-specific Traps Registered by ``prestera``
++   :widths: 5 5 90
 +
- 	return 0;
- }
- 
- void prestera_devlink_port_unregister(struct prestera_port *port)
- {
-+	devlink_port_params_unpublish(&port->dl_port);
-+
-+	devlink_port_params_unregister(
-+			&port->dl_port,
-+			prestera_devlink_port_params,
-+			ARRAY_SIZE(prestera_devlink_port_params));
-+
- 	devlink_port_unregister(&port->dl_port);
-+
- }
- 
- void prestera_devlink_port_set(struct prestera_port *port)
-@@ -622,6 +684,76 @@ static int prestera_drop_counter_get(struct devlink *devlink,
- 						 cpu_code_type, p_drops);
- }
- 
-+static int prestera_devlink_port_param_set(struct devlink_port *dl_port, u32 id,
-+					   struct devlink_param_gset_ctx *ctx)
-+{
-+	struct prestera_strom_control_cfg *cfg;
-+	u32 kbyte_per_sec_rate = ctx->val.vu32;
-+	struct prestera_port *port;
-+	struct prestera_switch *sw;
-+	u32 *param_to_set;
-+	u32 storm_type;
-+	int ret;
-+
-+	port = container_of(dl_port, struct prestera_port, dl_port);
-+	sw = devlink_priv(dl_port->devlink);
-+	cfg = &port->storm_control;
-+
-+	switch (id) {
-+	case PRESTERA_DEVLINK_PORT_PARAM_ID_BC_RATE:
-+		param_to_set = &cfg->bc_kbyte_per_sec_rate;
-+		storm_type = PRESTERA_PORT_STORM_CTL_TYPE_BC;
-+		break;
-+	case PRESTERA_DEVLINK_PORT_PARAM_ID_UC_UNK_RATE:
-+		param_to_set = &cfg->unk_uc_kbyte_per_sec_rate;
-+		storm_type = PRESTERA_PORT_STORM_CTL_TYPE_UC_UNK;
-+		break;
-+	case PRESTERA_DEVLINK_PORT_PARAM_ID_MC_RATE:
-+		param_to_set = &cfg->unreg_mc_kbyte_per_sec_rate;
-+		storm_type = PRESTERA_PORT_STORM_CTL_TYPE_MC;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	if (kbyte_per_sec_rate != *param_to_set) {
-+		ret = prestera_hw_port_storm_control_cfg_set(port, storm_type,
-+							     kbyte_per_sec_rate);
-+		if (ret)
-+			return ret;
-+
-+		*param_to_set = kbyte_per_sec_rate;
-+	}
-+
-+	return 0;
-+}
-+
-+static int prestera_devlink_port_param_get(struct devlink_port *dl_port, u32 id,
-+					   struct devlink_param_gset_ctx *ctx)
-+{
-+	struct prestera_strom_control_cfg *cfg;
-+	struct prestera_port *port;
-+	struct prestera_switch *sw;
-+
-+	port = container_of(dl_port, struct prestera_port, dl_port);
-+	sw = devlink_priv(dl_port->devlink);
-+	cfg = &port->storm_control;
-+
-+	switch (id) {
-+	case PRESTERA_DEVLINK_PORT_PARAM_ID_BC_RATE:
-+		ctx->val.vu32 = cfg->bc_kbyte_per_sec_rate;
-+		return 0;
-+	case PRESTERA_DEVLINK_PORT_PARAM_ID_UC_UNK_RATE:
-+		ctx->val.vu32 = cfg->unk_uc_kbyte_per_sec_rate;
-+		return 0;
-+	case PRESTERA_DEVLINK_PORT_PARAM_ID_MC_RATE:
-+		ctx->val.vu32 = cfg->unreg_mc_kbyte_per_sec_rate;
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static void prestera_devlink_traps_fini(struct prestera_switch *sw)
- {
- 	struct devlink *dl = priv_to_devlink(sw);
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-index 0e5b3f8e7dc7..85a1a15717df 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-@@ -20,6 +20,7 @@ enum prestera_cmd_type_t {
- 	PRESTERA_CMD_TYPE_PORT_ATTR_SET = 0x100,
- 	PRESTERA_CMD_TYPE_PORT_ATTR_GET = 0x101,
- 	PRESTERA_CMD_TYPE_PORT_INFO_GET = 0x110,
-+	PRESTERA_CMD_TYPE_PORT_RATE_LIMIT_MODE_SET = 0x111,
- 
- 	PRESTERA_CMD_TYPE_VLAN_CREATE = 0x200,
- 	PRESTERA_CMD_TYPE_VLAN_DELETE = 0x201,
-@@ -251,6 +252,14 @@ struct prestera_msg_port_info_resp {
- 	u16 fp_id;
- };
- 
-+struct prestera_msg_port_storm_control_cfg_set_req {
-+	struct prestera_msg_cmd cmd;
-+	u32 port;
-+	u32 dev;
-+	u32 storm_type;
-+	u32 kbyte_per_sec_rate;
-+};
-+
- struct prestera_msg_vlan_req {
- 	struct prestera_msg_cmd cmd;
- 	u32 port;
-@@ -639,6 +648,22 @@ int prestera_hw_port_accept_frm_type(struct prestera_port *port,
- 			    &req.cmd, sizeof(req));
- }
- 
-+int prestera_hw_port_storm_control_cfg_set(const struct prestera_port *port,
-+					   u32 storm_type,
-+					   u32 kbyte_per_sec_rate)
-+{
-+	struct prestera_msg_port_storm_control_cfg_set_req req = {
-+		.port = port->hw_id,
-+		.dev = port->dev_id,
-+		.storm_type = storm_type,
-+		.kbyte_per_sec_rate = kbyte_per_sec_rate
-+	};
-+
-+	return prestera_cmd(port->sw,
-+			    PRESTERA_CMD_TYPE_PORT_RATE_LIMIT_MODE_SET,
-+			    &req.cmd, sizeof(req));
-+}
-+
- int prestera_hw_port_cap_get(const struct prestera_port *port,
- 			     struct prestera_port_caps *caps)
- {
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-index aafecf0ecd16..85373f1d3971 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-@@ -89,6 +89,12 @@ enum {
- 	PRESTERA_STP_FORWARD,
- };
- 
-+enum {
-+	PRESTERA_PORT_STORM_CTL_TYPE_BC = 0,
-+	PRESTERA_PORT_STORM_CTL_TYPE_UC_UNK = 1,
-+	PRESTERA_PORT_STORM_CTL_TYPE_MC = 2
-+};
-+
- enum prestera_hw_cpu_code_cnt_t {
- 	PRESTERA_HW_CPU_CODE_CNT_TYPE_DROP = 0,
- 	PRESTERA_HW_CPU_CODE_CNT_TYPE_TRAP = 1,
-@@ -123,6 +129,9 @@ int prestera_hw_port_mac_set(const struct prestera_port *port, const char *mac);
- int prestera_hw_port_mac_get(const struct prestera_port *port, char *mac);
- int prestera_hw_port_cap_get(const struct prestera_port *port,
- 			     struct prestera_port_caps *caps);
-+int prestera_hw_port_storm_control_cfg_set(const struct prestera_port *port,
-+					   u32 storm_type,
-+					   u32 kbyte_per_sec_rate);
- int prestera_hw_port_remote_cap_get(const struct prestera_port *port,
- 				    u64 *link_mode_bitmap);
- int prestera_hw_port_remote_fc_get(const struct prestera_port *port,
++   * - Name
++     - Type
++     - Description
++   * - ``arp_bc``
++     - ``trap``
++     - Traps ARP broadcast packets (both requests/responses)
++   * - ``is_is``
++     - ``trap``
++     - Traps IS-IS packets
++   * - ``ospf``
++     - ``trap``
++     - Traps OSPF packets
++   * - ``ip_bc_mac``
++     - ``trap``
++     - Traps IPv4 packets with broadcast DA Mac address
++   * - ``stp``
++     - ``trap``
++     - Traps STP BPDU
++   * - ``lacp``
++     - ``trap``
++     - Traps LACP packets
++   * - ``lldp``
++     - ``trap``
++     - Traps LLDP packets
++   * - ``router_mc``
++     - ``trap``
++     - Traps multicast packets
++   * - ``vrrp``
++     - ``trap``
++     - Traps VRRP packets
++   * - ``dhcp``
++     - ``trap``
++     - Traps DHCP packets
++   * - ``mtu_error``
++     - ``trap``
++     - Traps (exception) packets that exceeded port's MTU
++   * - ``mac_to_me``
++     - ``trap``
++     -  Traps packets with switch-port's DA Mac address
++   * - ``ttl_error``
++     - ``trap``
++     - Traps (exception) IPv4 packets whose TTL exceeded
++   * - ``ipv4_options``
++     - ``trap``
++     - Traps (exception) packets due to the malformed IPV4 header options
++   * - ``ip_default_route``
++     - ``trap``
++     - Traps packets that have no specific IP interface (IP to me) and no forwarding prefix
++   * - ``local_route``
++     - ``trap``
++     - Traps packets that have been send to one of switch IP interfaces addresses
++   * - ``ipv4_icmp_redirect``
++     - ``trap``
++     - Traps (exception) IPV4 ICMP redirect packets
++   * - ``arp_response``
++     - ``trap``
++     - Traps ARP replies packets that have switch-port's DA Mac address
++   * - ``acl_code_0``
++     - ``trap``
++     - Traps packets that have ACL priority set to 0 (tc pref 0)
++   * - ``acl_code_1``
++     - ``trap``
++     - Traps packets that have ACL priority set to 1 (tc pref 1)
++   * - ``acl_code_2``
++     - ``trap``
++     - Traps packets that have ACL priority set to 2 (tc pref 2)
++   * - ``acl_code_3``
++     - ``trap``
++     - Traps packets that have ACL priority set to 3 (tc pref 3)
++   * - ``acl_code_4``
++     - ``trap``
++     - Traps packets that have ACL priority set to 4 (tc pref 4)
++   * - ``acl_code_5``
++     - ``trap``
++     - Traps packets that have ACL priority set to 5 (tc pref 5)
++   * - ``acl_code_6``
++     - ``trap``
++     - Traps packets that have ACL priority set to 6 (tc pref 6)
++   * - ``acl_code_7``
++     - ``trap``
++     - Traps packets that have ACL priority set to 7 (tc pref 7)
++   * - ``ipv4_bgp``
++     - ``trap``
++     - Traps IPv4 BGP packets
++   * - ``ssh``
++     - ``trap``
++     - Traps SSH packets
++   * - ``telnet``
++     - ``trap``
++     - Traps Telnet packets
++   * - ``icmp``
++     - ``trap``
++     - Traps ICMP packets
++   * - ``rxdma_drop``
++     - ``drop``
++     - Drops packets (RxDMA) due to the lack of ingress buffers etc.
++   * - ``port_no_vlan``
++     - ``drop``
++     - Drops packets due to faulty-configured network or due to internal bug (config issue).
++   * - ``local_port``
++     - ``drop``
++     - Drops packets whose decision (FDB entry) is to bridge packet back to the incoming port/trunk.
++   * - ``invalid_sa``
++     - ``drop``
++     - Drops packets with multicast source MAC address.
++   * - ``illegal_ip_addr``
++     - ``drop``
++     - Drops packets with illegal SIP/DIP multicast/unicast addresses.
++   * - ``illegal_ipv4_hdr``
++     - ``drop``
++     - Drops packets with illegal IPV4 header.
++   * - ``ip_uc_dip_da_mismatch``
++     - ``drop``
++     - Drops packets with destination MAC being unicast, but destination IP address being multicast.
++   * - ``ip_sip_is_zero``
++     - ``drop``
++     - Drops packets with zero (0) IPV4 source address.
++   * - ``met_red``
++     - ``drop``
++     - Drops non-conforming packets (dropped by Ingress policer, metering drop), e.g. packet rate exceeded configured bandwith.
 -- 
 2.17.1
 
