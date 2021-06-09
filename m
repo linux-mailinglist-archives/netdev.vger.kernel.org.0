@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 141FC3A1A18
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:48:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2923A1A3B
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:55:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236269AbhFIPtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 11:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236225AbhFIPtt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 11:49:49 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F97C061574
-        for <netdev@vger.kernel.org>; Wed,  9 Jun 2021 08:47:54 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id n12so31744608lft.10
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 08:47:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=user-agent:from:to:cc:subject:date:message-id:mime-version;
-        bh=VTOOV2HamW2xff+Be3idNu/kmRGU5Py9AUeUXwSEtGw=;
-        b=XLLMEpas+9Ur0pSHE8VV7V+/tSISv8xdtslDPxq2tpngkIGA7IIkuCbzJOVgHKNBBv
-         fvf9ECLApxsxQklrK5orVkfEQfQd2QvWmUu+REESRWuFid1IYHEvl3zp1jIy7lwkZHP5
-         okeO54snKnOpL153vB8DQlbueN92kPT65qo3U2pnwKwucY6H5hY0ne28p+pmGCK/8AzG
-         xx5O3+wSR/SzT1KQUoDGX+XfvsvqqJAUkg/bpAdPp07Ir6myC8abT7AkNza1w/loF5r0
-         O1RzHkaGJhcH4lZpoyX+QJ4RWwYHRpmxh9ynLkrn4ZAn/BWLtiem6lYcNPPw/Dpei8Ab
-         CpvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:user-agent:from:to:cc:subject:date:message-id
-         :mime-version;
-        bh=VTOOV2HamW2xff+Be3idNu/kmRGU5Py9AUeUXwSEtGw=;
-        b=FyGiEBVu4amaE9169mdMiXyKR+vI6snnnOXUGzgwZus6fDDKWaGCszau1rvwdxJzHB
-         kUH0tRt7zrITFAByZe4X9VpPfA/SF4fanQtGsaYZK7+ZPXCCa4Vdg/bC3jrTMYPHwW1T
-         dpMrEvdWHQnFBLgsmakCB0qUKBIz/E5whacM0QmGqls1TrmEriw4x/cC7503p1aNnazS
-         uG3DWt7ajPZ2Nq8Y2HuX2FVORrBbUKR636FuVGPu9GOU0kkNm6FyFnaT+2mFHeu8mmc5
-         FQSD08LFXcNo9mJ3dQO3Ch4c/Ta3cd/SIXUfrkGomceOaafT34U7nJG0m1rzBZ60DwOu
-         42GA==
-X-Gm-Message-State: AOAM5317jNLbFdggoLt7+WmLMGhGTbrlLhO3uVfs9mYrsnvPtQarjzPF
-        dwXCUKJKfeur/J/LbFUDd9SC3u0dS6pL6w==
-X-Google-Smtp-Source: ABdhPJyRmPHU4Ryls5OGGDOKofkG/3kd8f2zEiysgn//1LknTv6na2RKyVkHti6mdRS8sw/mQTWk5w==
-X-Received: by 2002:ac2:53ad:: with SMTP id j13mr125752lfh.594.1623253672192;
-        Wed, 09 Jun 2021 08:47:52 -0700 (PDT)
-Received: from localhost ([95.165.9.116])
-        by smtp.gmail.com with ESMTPSA id 2sm14746ljr.127.2021.06.09.08.47.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Jun 2021 08:47:51 -0700 (PDT)
-User-agent: mu4e 1.4.12; emacs 27.2
-From:   Peter Kosyh <p.kosyh@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Peter Kosyh <p.kosyh@gmail.com>,
-        'Mikhail Smirnov' <smirnov@factor-ts.ru>,
-        "David S. Miller" <davem@davemloft.net>
-Subject:  [PATCH] udp: compute_score and sk_bound_dev_if regression
-Date:   Wed, 09 Jun 2021 18:47:51 +0300
-Message-ID: <87a6nzrqe0.fsf@factor-ts.ru>
+        id S234183AbhFIP5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 11:57:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51894 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230311AbhFIP5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 11:57:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623254145;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=keilHIV5bACKUg1mjHegqweisKM/7NCx/zq57buVyEU=;
+        b=Ud9zJRS7kOxc6gaSI4GSTLUKuRldHeMyhOhlT/SzOfFRwZt7+NFfhEIf2AUixHkDE0SxS0
+        6h01CHzOgsEmV6tp2y4vYjPSWyP5T1JDJ1A7nSe+kutHEALCJ9OvGpkm+LWqi9y0EeeXkk
+        6jMYiYMbEYy3nu+Cho2YRiM2HKQCEms=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-603-6R7Mh9AeMNis9DH0m7jMew-1; Wed, 09 Jun 2021 11:55:43 -0400
+X-MC-Unique: 6R7Mh9AeMNis9DH0m7jMew-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 95422100A8EE;
+        Wed,  9 Jun 2021 15:55:41 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 419FC19C45;
+        Wed,  9 Jun 2021 15:55:29 +0000 (UTC)
+Date:   Wed, 9 Jun 2021 17:55:27 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        brouer@redhat.com,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [RFT net-next] net: ti: add pp skb recycling support
+Message-ID: <20210609175527.2f321eca@carbon>
+In-Reply-To: <CAFnufp1vY79fxJEL6eKopTFzJkFz_bZCwaD84CaR_=yqjt6QNw@mail.gmail.com>
+References: <ef808c4d8447ee8cf832821a985ba68939455461.1623239847.git.lorenzo@kernel.org>
+        <CAFnufp11ANN3MRNDAWBN5AifJbfKMPrVD+6THhZHtuyqZCUmqg@mail.gmail.com>
+        <e2ac36df-42a7-37d8-3101-ff03fd40510a@ti.com>
+        <CAFnufp1vY79fxJEL6eKopTFzJkFz_bZCwaD84CaR_=yqjt6QNw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 9 Jun 2021 17:43:57 +0200
+Matteo Croce <mcroce@linux.microsoft.com> wrote:
 
-udp: commit 6da5b0f027a825df2aebc1927a27bda185dc03d4
-introduced regression in compute_score() Previously for addr_any sockets an
-interface bound socket had a higher priority than an unbound socket that
-seems right. For example, this feature is used in dhcprelay daemon and now it
-is broken.
-So, this patch returns the old behavior and gives higher score for sk_bound_dev_if sockets.
+> On Wed, Jun 9, 2021 at 5:03 PM Grygorii Strashko
+> <grygorii.strashko@ti.com> wrote:
+> >
+> > On 09/06/2021 15:20, Matteo Croce wrote:  
+> > > On Wed, Jun 9, 2021 at 2:01 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:  
+> > >>
+> > >> As already done for mvneta and mvpp2, enable skb recycling for ti
+> > >> ethernet drivers
+> > >>
+> > >> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>  
+> > >
+> > > Looks good! If someone with the HW could provide a with and without
+> > > the patch, that would be nice!
+> > >  
+> >
+> > What test would you recommend to run?
+> >
+[...]
+> 
+> A test which benefits most from this kind of change is one in which
+> the frames are freed early.
 
-Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
----
- net/ipv4/udp.c | 3 ++-
- net/ipv6/udp.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+I would also recommend running an XDP_PASS program, and then running
+something that let the packets travel as deep as possible into netstack.
+Not to test performance, but to make sure we didn't break something!
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 15f5504adf5b..4239ffa93c6f 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -390,7 +390,8 @@ static int compute_score(struct sock *sk, struct net *net,
- 					dif, sdif);
- 	if (!dev_match)
- 		return -1;
--	score += 4;
-+	if (sk->sk_bound_dev_if)
-+		score += 4;
+I've hacked up bnxt driver (it's not as straight forward as this driver
+to convert) and is running some TCP tests.  Not problems so-far :-0
 
- 	if (READ_ONCE(sk->sk_incoming_cpu) == raw_smp_processor_id())
- 		score++;
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 199b080d418a..c2f88b5def25 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -133,7 +133,8 @@ static int compute_score(struct sock *sk, struct net *net,
- 	dev_match = udp_sk_bound_dev_eq(net, sk->sk_bound_dev_if, dif, sdif);
- 	if (!dev_match)
- 		return -1;
--	score++;
-+	if (sk->sk_bound_dev_if)
-+		score++;
+I wanted to ask if someone knows howto setup the zero-copy TCP stuff
+that google did? (but is that TX only?)
 
- 	if (READ_ONCE(sk->sk_incoming_cpu) == raw_smp_processor_id())
- 		score++;
---
-2.31.1
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
