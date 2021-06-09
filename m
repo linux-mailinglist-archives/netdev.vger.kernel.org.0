@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 486963A1156
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 12:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C58F3A1151
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 12:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238992AbhFIKkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 06:40:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32081 "EHLO
+        id S238981AbhFIKkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 06:40:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36371 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238857AbhFIKkl (ORCPT
+        by vger.kernel.org with ESMTP id S238460AbhFIKkl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 06:40:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1623235127;
@@ -17,41 +17,41 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XVpjMkk8Gj+sNRZ7mlrzY9T8oghFils6hen5lUAvCOo=;
-        b=QJS6q++ILOv9bKvTGqGdD3GUa5E/RCRPDygyNO18Nc7JBB/r1SVWk2z8g2KgN/5iPtySoV
-        80nJT5DfhLTxbdvv1BhMmZOKTn/gL0NYH4eZO0kTORFMvUFVeOh0KFLMeByJIgCrBXMvxT
-        3lV/HZzUI1wWUczGRpw8HA+5N+EEaug=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-485-2fU40ilIPC2LH9nRiKQW5g-1; Wed, 09 Jun 2021 06:38:45 -0400
-X-MC-Unique: 2fU40ilIPC2LH9nRiKQW5g-1
-Received: by mail-ed1-f69.google.com with SMTP id dd28-20020a056402313cb029038fc9850034so12234837edb.7
+        bh=13osPXmV51CM+evqtQb1PXhLMNKO0hGWYKSryosHfNU=;
+        b=Ivz5q1qNoNMHmQjOUavQKy32OCgaj3/806mm+5DwrXIcBhik9sHsYOCqRWZ6e1CUfEf99j
+        Qniozg6dlb58G5mserf//c2/CnGlBdXhaxdB2rf9UBZXqVpyOEqdj+p9bySfinc0fSnKds
+        4/QC3YIW/aomQMmRYUJqrIkT7K7oLT4=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-36-VDcqdq_GMNi6Zc-AAWCHwQ-1; Wed, 09 Jun 2021 06:38:45 -0400
+X-MC-Unique: VDcqdq_GMNi6Zc-AAWCHwQ-1
+Received: by mail-ed1-f70.google.com with SMTP id x8-20020aa7d3880000b029038fe468f5f4so12135628edq.10
         for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 03:38:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XVpjMkk8Gj+sNRZ7mlrzY9T8oghFils6hen5lUAvCOo=;
-        b=jY9D5SY96p+yefuSND6i7UBKaZZU9nXYoLerVpWO/8sPfSr7GUPEx37COMNRp/OgKc
-         flFY1wM/nCGZCQtjl1VcOM/xkxzcIW+2+Raw51JjQC6ZYZL8CIa8k9Odd58dixbNRbCb
-         RoBQ1mapUQjnxB/Kxn4oqtT/N2Gs0+niRKrQbEbX4rNji1JvkVh90tIXZsjuHLMdjFcN
-         SXowvlglvEl9t5favKUvTL9eIFrVARwI0NpRDOd7mJ+VkFuUi1TPe5SgPWHTFNNTjMzz
-         kLyt7Zy+C5CXWHS94jlFljY8K/iKjJJw1OnwwT2ZRLMxRecKjfsG/WDdCsS7YX1ODeHz
-         ku7Q==
-X-Gm-Message-State: AOAM532IbjWa5zpy4ILOj9MXjV6Yn5lfYiM9FTU07lM2F0qrZJfwaXFe
-        4qrb6/lhP1cs6TFQmSxPvIZc1Y0MoBd11FJST6MdGA8WZj15u/8H6s36AiW1qrux7rqzV1Cth3+
-        CGHC0nS0l9NraWw/R
-X-Received: by 2002:a05:6402:175b:: with SMTP id v27mr29875918edx.61.1623235124603;
+        bh=13osPXmV51CM+evqtQb1PXhLMNKO0hGWYKSryosHfNU=;
+        b=s/bjfO4LNpnWsrvoachV2ZcgoI+4vaQMJRPsmw2yVGArhKvngC2x1ZyOOajqAhvp/t
+         Uf1HpHODpPzBaF6Gfpz72kI2jP/i91Gj4xK3EPE8P6NB/b22OiRHJTqkDpzsviIxDhTu
+         6VIkXMas+AN7uP4ax8py/WGhtQAAU5fczFbKJ2tNi8RW+krvhBQmoNF28Az63a+/bCKu
+         142N17b0lm7eYamFSKbNYNOWfuExTM5yjy4Bnsv8Bbp1ul6Lxq8C8mgwBIQxZ0Tv2IXh
+         qugLAkXDjfdYTjfabzY24GiVRjdywFj5maRpuzMIccDPFihLnkSALme7DBgdo+2hMlLz
+         4vpQ==
+X-Gm-Message-State: AOAM5302zBbuungOJwENkuiT4ede2Vg/vlU+GyffIzUgaOlsJgkJ2bgM
+        aB9Ic9RdDr7veJ0nmmuyOWdrdflbssIoeNl6xBQXuI49J60/9crtFpZEBSOrd8TDRf3jNCNjI2U
+        DtvasKqZ36IXJ68Z8
+X-Received: by 2002:a17:907:270c:: with SMTP id w12mr28462792ejk.175.1623235124381;
         Wed, 09 Jun 2021 03:38:44 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyeg8YZkdSRKAD9U94TGCLmHyCR0FZopyRpYHvGYd6V6x/Dm2yQwQ70S9kEXmHvlcWDOFO/Dw==
-X-Received: by 2002:a05:6402:175b:: with SMTP id v27mr29875895edx.61.1623235124234;
+X-Google-Smtp-Source: ABdhPJx9e5nyoFDDTAOzGAf14fh0+8uA9uZPhafO8NuCa6RdoAIPeTeu87RD7Wd8bQzzXvdc4Qhuag==
+X-Received: by 2002:a17:907:270c:: with SMTP id w12mr28462775ejk.175.1623235124029;
         Wed, 09 Jun 2021 03:38:44 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id p10sm927332ejc.14.2021.06.09.03.38.43
+        by smtp.gmail.com with ESMTPSA id dh18sm966980edb.92.2021.06.09.03.38.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 09 Jun 2021 03:38:43 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B757318072E; Wed,  9 Jun 2021 12:33:30 +0200 (CEST)
+        id BFE8A18072F; Wed,  9 Jun 2021 12:33:30 +0200 (CEST)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Martin KaFai Lau <kafai@fb.com>,
@@ -60,12 +60,10 @@ Cc:     Martin KaFai Lau <kafai@fb.com>,
         Magnus Karlsson <magnus.karlsson@gmail.com>,
         "Paul E . McKenney" <paulmck@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH bpf-next 10/17] marvell: remove rcu_read_lock() around XDP program invocation
-Date:   Wed,  9 Jun 2021 12:33:19 +0200
-Message-Id: <20210609103326.278782-11-toke@redhat.com>
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH bpf-next 11/17] mlx4: remove rcu_read_lock() around XDP program invocation
+Date:   Wed,  9 Jun 2021 12:33:20 +0200
+Message-Id: <20210609103326.278782-12-toke@redhat.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210609103326.278782-1-toke@redhat.com>
 References: <20210609103326.278782-1-toke@redhat.com>
@@ -76,70 +74,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mvneta and mvpp2 drivers have rcu_read_lock()/rcu_read_unlock() pairs
-around XDP program invocations. However, the actual lifetime of the objects
-referred by the XDP program invocation is longer, all the way through to
-the call to xdp_do_flush(), making the scope of the rcu_read_lock() too
-small. This turns out to be harmless because it all happens in a single
-NAPI poll cycle (and thus under local_bh_disable()), but it makes the
-rcu_read_lock() misleading.
+The mlx4 driver has rcu_read_lock()/rcu_read_unlock() pairs around XDP
+program invocations. However, the actual lifetime of the objects referred
+by the XDP program invocation is longer, all the way through to the call to
+xdp_do_flush(), making the scope of the rcu_read_lock() too small. This
+turns out to be harmless because it all happens in a single NAPI poll
+cycle (and thus under local_bh_disable()), but it makes the rcu_read_lock()
+misleading.
 
 Rather than extend the scope of the rcu_read_lock(), just get rid of it
 entirely. With the addition of RCU annotations to the XDP_REDIRECT map
 types that take bh execution into account, lockdep even understands this to
-be safe, so there's really no reason to keep it around.
+be safe, so there's really no reason to keep it around. Also switch the RCU
+dereferences in the driver loop itself to the _bh variants.
 
-Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Cc: Marcin Wojtas <mw@semihalf.com>
-Cc: Russell King <linux@armlinux.org.uk>
+Cc: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/ethernet/marvell/mvneta.c           | 2 --
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 4 ----
- 2 files changed, 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 7d5cd9bc6c99..b9e5875b20bc 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2370,7 +2370,6 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 	/* Get number of received packets */
- 	rx_todo = mvneta_rxq_busy_desc_num_get(pp, rxq);
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+index e35e4d7ef4d1..3f08c14d0441 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+@@ -679,9 +679,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
  
+ 	ring = priv->rx_ring[cq_ring];
+ 
+-	/* Protect accesses to: ring->xdp_prog, priv->mac_hash list */
 -	rcu_read_lock();
- 	xdp_prog = READ_ONCE(pp->xdp_prog);
+-	xdp_prog = rcu_dereference(ring->xdp_prog);
++	xdp_prog = rcu_dereference_bh(ring->xdp_prog);
+ 	xdp_init_buff(&xdp, priv->frag_info[0].frag_stride, &ring->xdp_rxq);
+ 	doorbell_pending = false;
  
- 	/* Fairness NAPI loop */
-@@ -2448,7 +2447,6 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 		xdp_buf.data_hard_start = NULL;
- 		sinfo.nr_frags = 0;
- 	}
--	rcu_read_unlock();
- 
- 	if (xdp_buf.data_hard_start)
- 		mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &sinfo, -1);
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index b2259bf1d299..521ed3c1cfe9 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3852,8 +3852,6 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 	int rx_done = 0;
- 	u32 xdp_ret = 0;
- 
--	rcu_read_lock();
--
- 	xdp_prog = READ_ONCE(port->xdp_prog);
- 
- 	/* Get number of received packets and clamp the to-do */
-@@ -3988,8 +3986,6 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 		mvpp2_bm_pool_put(port, pool, dma_addr, phys_addr);
+@@ -744,7 +742,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+ 				/* Drop the packet, since HW loopback-ed it */
+ 				mac_hash = ethh->h_source[MLX4_EN_MAC_HASH_IDX];
+ 				bucket = &priv->mac_hash[mac_hash];
+-				hlist_for_each_entry_rcu(entry, bucket, hlist) {
++				hlist_for_each_entry_rcu_bh(entry, bucket, hlist) {
+ 					if (ether_addr_equal_64bits(entry->mac,
+ 								    ethh->h_source))
+ 						goto next;
+@@ -899,8 +897,6 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+ 			break;
  	}
  
 -	rcu_read_unlock();
 -
- 	if (xdp_ret & MVPP2_XDP_REDIR)
- 		xdp_do_flush_map();
- 
+ 	if (likely(polled)) {
+ 		if (doorbell_pending) {
+ 			priv->tx_cq[TX_XDP][cq_ring]->xdp_busy = true;
 -- 
 2.31.1
 
