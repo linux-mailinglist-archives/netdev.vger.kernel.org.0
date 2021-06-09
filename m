@@ -2,50 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D65B3A18F7
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F38863A18FB
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:17:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233392AbhFIPSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 11:18:16 -0400
-Received: from mail-eopbgr50127.outbound.protection.outlook.com ([40.107.5.127]:39182
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        id S234841AbhFIPSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 11:18:20 -0400
+Received: from mail-eopbgr80093.outbound.protection.outlook.com ([40.107.8.93]:47918
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233257AbhFIPSM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 11:18:12 -0400
+        id S231462AbhFIPSO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 11:18:14 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OkDwRlLEqy1tRmnKVM4NWoaY940Ln/4pstvrW2Ghu6T21qgrGk3bB68QvGULb4SHDJZ+VmFRpOqt/IlmkEH/5VN6BdILYOp1htDjzBTPB1JdgeXUlijfafed3bRUI5zlcPjLswTpUe4mWfou0xqRTzdzpMwziCQvHd3/YKgufMHI3GER3kXUGfCu93d73aVB439kF7hGZ1T/B7pJxj3YY+K5AMrGVmuACIajv0VeRVyAVR44OjX6rSjmzO4V0aHfQ1ly5ZdXvA6Q8Uzu5KPtysb/Jew/BSJfA5rc2IOTkG0xT2mmLwiLAGgD0QssyEnHiA3qC1s8aYrHZHlYy6HirA==
+ b=UzLbMtcDDYetwDei4OAUOCF+UolpijLISC+fSBRLsDYrQhCNoXniagWV/tt8x1PJk30h0rF8MvKvGnFUHMcCeGdCzw+JlKTVJhXFZb8auYg/2IvYYBWlsMVmBps+wtnjbvb0dGQ0aYTFEWM5CtZNvC+f+cQK84BQEnF0tOWgr5EJjglWpBG0b9JDqO9PFTBCv7o29RgGlrtYHpb2c9pgqRBmf4eeKbiP6XytF0XeAFoEYXa9Q18o5b7AaSpK1YiQpsBtbXyVsmCmiXrN6yYHKdEKFuUeGx3pIuuSJFEfmKS10h51IL7PMb9ghlJmM5+MY+xbNgrhwVPfV3liSwc5hA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DAZu146b7e6ypjuMjavajC4ODeIU/lBLsC4MZ+gN/hk=;
- b=iH/CqX5oDg7hwj/7q7gaa4/9BFRPIaGxwJEY2J/9ZiY2YM0nyqR/0g1xv8CoXQyxQZV7CeoUP5s5q5KBc3UDMWY7BnR/A9ywOckB8Og5XsN7SBmEoSlYdBeET5kr2AIlCiocE/SjYP828bkWS5TUW/Jm4LH3xpdOzniYoHQy+zOCWuGYTE4AXmqAWo1+2cTmp+ne01WJ66MyGgsPhK/Wo1COC6faQjFVG4etf+6cXawBCY30GsFDBSResh5C6DN0QCxs1GDYtttknNw9C3WT6MP/bTxzuUtn1CyKrlgZb1HmjaIYHF9zqiKCobwRqWybhZKOgc1LSOXxy09dtstQPQ==
+ bh=o+qg66OwWzrIdWEEIrfhMXzl+KEFQbAiQOehmW0xEX0=;
+ b=iKXVII5sr8bvPtbKXODeZ730gAG5iRMPo7mJJRwm88VMi8WEw6kf8HqyeUS5al+mroWSEWKaAl21dPuAhpdRrHjhsDwlpoUBCtS3DEAw0tg5WF2UyLpTbI5cYNg6jM0gSjo99NXUPp4RyxFNMwTPckl/5mus8UNvwWucEKYfk0CoNUnfHCik13+3BC1hRr3jumFCnjCUD1u3ZtqycFAwO0/jHlVwRn7AD/7c4YK/CQ8mJnOldcjfT9TUT5KgOE4MVyjKEmn5+2VbSZUWYJ97keOANZQzBtcXu5+Cxy6+Yc0mkHni8u3RH36I8o4IV4uBsi/o/2OGN+zDV0u8TeRTew==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DAZu146b7e6ypjuMjavajC4ODeIU/lBLsC4MZ+gN/hk=;
- b=FgBPhVGT7dyigx+FGyebwQhmxtYhxt7oUC9tVK4oRu4L+HUJA4b80/ph7KIsJm1wUJj1B3Kot2Z81RIEFRLzuqoFABuWw4F9gk0jEkXOcMRMIZYgKlk7MtwoP2/iBoZjDKEyRgNb5exuVOcIxUo613tahwtesOsgtx3p7uKAxU4=
+ bh=o+qg66OwWzrIdWEEIrfhMXzl+KEFQbAiQOehmW0xEX0=;
+ b=ng1mOcebFc3PQPr6D9b+6vhqTYP7hp/Mn7nkutUiMSnFF7YBz3XJe3cb1PGY8lLG1jj4rkh9ZHce5O8HOeWl6+Nxh6AKNLqzLqo6fLtFuNQeJLo9CNgr16LfF7BOQL9I3Wi2jOz093DvDbC4aXMV40J7cFwKuFoSeJKujquIypM=
 Authentication-Results: plvision.eu; dkim=none (message not signed)
  header.d=none;plvision.eu; dmarc=none action=none header.from=plvision.eu;
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
- by AM4P190MB0004.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:65::19) with
+ by AM9P190MB1427.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:3ea::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21; Wed, 9 Jun
- 2021 15:16:14 +0000
+ 2021 15:16:17 +0000
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe%9]) with mapi id 15.20.4219.021; Wed, 9 Jun 2021
- 15:16:14 +0000
+ 15:16:17 +0000
 From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 To:     oleksandr.mazur@plvision.eu, jiri@nvidia.com, davem@davemloft.net,
         kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 00/11] Marvell Prestera driver implementation of devlink functionality.
-Date:   Wed,  9 Jun 2021 18:15:50 +0300
-Message-Id: <20210609151602.29004-1-oleksandr.mazur@plvision.eu>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
+        Ariel Elior <aelior@marvell.com>
+Subject: [PATCH net-next 01/11] net: core: devlink: add apis to publish/unpublish port params
+Date:   Wed,  9 Jun 2021 18:15:51 +0300
+Message-Id: <20210609151602.29004-2-oleksandr.mazur@plvision.eu>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210609151602.29004-1-oleksandr.mazur@plvision.eu>
+References: <20210609151602.29004-1-oleksandr.mazur@plvision.eu>
 Content-Type: text/plain
 X-Originating-IP: [217.20.186.93]
 X-ClientProxiedBy: AM0PR06CA0092.eurprd06.prod.outlook.com
@@ -53,117 +57,137 @@ X-ClientProxiedBy: AM0PR06CA0092.eurprd06.prod.outlook.com
  (2603:10a6:208:19b::9)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0092.eurprd06.prod.outlook.com (2603:10a6:208:fa::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Wed, 9 Jun 2021 15:16:13 +0000
+Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0092.eurprd06.prod.outlook.com (2603:10a6:208:fa::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Wed, 9 Jun 2021 15:16:16 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 60fbf8af-c5db-47d8-863e-08d92b598576
-X-MS-TrafficTypeDiagnostic: AM4P190MB0004:
+X-MS-Office365-Filtering-Correlation-Id: 0c79d80a-d3e8-4819-2fb8-08d92b59873a
+X-MS-TrafficTypeDiagnostic: AM9P190MB1427:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM4P190MB0004DFE3545533D7A9E04C2EE4369@AM4P190MB0004.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <AM9P190MB142704DDB07381146E50903CE4369@AM9P190MB1427.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dVskKLvT7ZAFkO31JDMymWjgnnyV7kjpvjDI4N+V5PN9mXWjLLyWXu+Pq23JNG55nTk0XkuIy2LlMtUqwG47r4k5rKvPxq5+hVP3BPq5VX+TQ19DzC+Vq+lrzBbzjpqVRsKlcKjnVVUjgiXp6UtAobKuXP/Cp4iEy2xKjwCMtAWYTljwfCJ8dp0gP9whERVDHupM+7s43TGZNL/SiW111yum9KZYpHkzZ2a5mqIE7Yd1EXgacm1wAy1rV/WPJaLDyvvUbBOGLiYW8E28aKKb1jqlnZy6mwp3oGOinpxcfGdzGHEY9SGdO/gx3JHw6WAUDTPWJKOzXX3wPSKFlKHnzANjbKsa9ED1ff9Gg99S6+MnxGN2QD1loskqm7rYEd/HCRzhMCxyqNtO/UvS2XsgTqYIIV7A+5vtcqMD3kWOuL2NpS7865hfBCHaTBZKQn9uyV/8zYsGKxXoPuA0S3vf/bs8HBr4PIfOPUNgxmZEt0NB9jIaeJRh9Y/cMyDhObj+chLeuWHFgt6Xb8g/w7JB3znebwiwaWH4kqgJJIw7r9jrbncEZWPAGsykc2PPETzixemeuIJKYNmvsBpdiLgEW9DiYSI1aHVeCumqDUTjkrUkvqOoCAPUCm68/Kfww6oHe5nTL7VXIDaaVC3RpRZMWg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(136003)(396003)(39830400003)(376002)(366004)(38100700002)(38350700002)(316002)(8936002)(36756003)(478600001)(26005)(956004)(6506007)(6512007)(2616005)(5660300002)(4326008)(52116002)(83380400001)(2906002)(86362001)(16526019)(66946007)(1076003)(66476007)(66556008)(6666004)(44832011)(8676002)(6486002)(186003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?DYpt1M0QhGdUB3mHCuYdk0+i1V9JkShQjyfyIKdUKJ67YAvTKd4Id+91wiqG?=
- =?us-ascii?Q?mNREmqtstLu/UMivaTQajsot4ZGUlmiM+91Kf1x6a+O7pbo/6vXnzPgYKKEf?=
- =?us-ascii?Q?EKqASg6dG44dRn7RrBx4CYObSKl8G/50TkgG8xVEc09twXgm4I+rMEdplQh2?=
- =?us-ascii?Q?B/D8ameoVbEH+vpx7k770ZyYPVIEuwO0TM+12KPSbFg91Q1aGjvTTejFllBj?=
- =?us-ascii?Q?SqQvw63IBRhx3lqliiAwiMbSpwnLmpJ99asJnCErCKwNvO72r/FQkUGj4/ZD?=
- =?us-ascii?Q?Q6lw25/QwNQWPqJsBdAe8aSBeOy0ClBcHdsXF/xVW8VcfQzMR+7Myz46uDzA?=
- =?us-ascii?Q?R7YfVmP5fEO7qtuyEFWZVCIUkY7u6YNiXNC8sNm31r5XX9h7CCjq7gjchgns?=
- =?us-ascii?Q?sWQ5M3N0D5GQcnvRH1tzf88Ie9cHfh16ukdjYJXP7v7al46C9gVfOO7l8Y5f?=
- =?us-ascii?Q?tQxyfI7001rvo3Yp527eWxJo8VkGi+4aTIXAUza6VhEHFABPfEJWHON3CdX1?=
- =?us-ascii?Q?aaHHFhQFUVIX/YrdC8nbsR9fmwdeb/BCJtNsmPe0Ae4jfpsEsQZqFX8d2vun?=
- =?us-ascii?Q?8qgyP1VCJ0Of0GuduRQRQigjMzS/SX6FbOW8zt5o4X0+dYDJw/q3ZFXoebuY?=
- =?us-ascii?Q?38C2zEVArvEujduQknM3ltX3rOZcQxVhC5GKYLHQfmP1OZ29lEYi6S0cKCU/?=
- =?us-ascii?Q?4mhwrbzG3uuX8caBrSnHSmjllTxmLjU2kavCXQ01KLRFkv0Y5Q6mRoSgFWwm?=
- =?us-ascii?Q?WvhaUvlkKtA3pII+6ED4IpYpcWEr1rvubmFM/V4xDv/aIwo1dWoQ+3OYYsuX?=
- =?us-ascii?Q?qn4RJOCdlYa+EhoEibJdmVGVdD3j2TBa9y/IodwyJTLI583+PgpnOaiA0AM2?=
- =?us-ascii?Q?RSf08eg/jxZFBrshafX/PNpNux3bljWnExeLRCHg2o6t3MLwY1dNCB8AnsVj?=
- =?us-ascii?Q?Yna8HGrUkdpXE6TUSuxZig8qJH3FiYIx1h9eGHQfTjhqiAlh11YzCmtlDFgr?=
- =?us-ascii?Q?UWpUARQ/DrYWno+BrFQmqaVG7tXzAKCacE+8R1HuIyN8qsjpO4Q4hzvZYh35?=
- =?us-ascii?Q?kZUvzP9vD5WVSOBQPy17IhhMYG0yShtpAI1hqng6WSzvgywjtQDFTIvu4zyb?=
- =?us-ascii?Q?SE8Hvm84BlXNiutDR6IZ5S6xFbp99g8L8BWIElRCX+HF0p+ilg5xOXuRzJtd?=
- =?us-ascii?Q?8dJkSWlqg+ZlXOv5/TPPBEiubeDGhDtRgZtSV0Vpf1TqGsuU5ZsSJhByTZKW?=
- =?us-ascii?Q?X93sR6nTiAwvo9TxgJc4Koe0SRUmsMAKdoCkwp5J26cHV2/OqLD3m/NNd9nI?=
- =?us-ascii?Q?OFpw2E09pqv2a1D+qvdUh6Wn?=
+X-Microsoft-Antispam-Message-Info: neTyJqUWh24hZdv2l4EvlRxd8nAbxGaVycg2pL+61v+A8yCZ7Y0tdTYcAWUMRgwA/bwdJTDIivgOEPjmXDw+5YAnXBZOjEao6JRtj/rYTcPxZPpl5TSX2my4p/802s+f708H3n4ivV8ztmXdnoaNQCW8EF2e74+tJKEgfjTXddKb252GYlPN9lQoAOB8Yp+SrkbJqWGphxHbhTZEtHRO9ueXUWQg5urPtNw/c3KDKDpRDWMlgpQEVFUCQPO7eTKYGCMY7XzyUN+le3ptPUeHQvONcvqiwcMhZClWlv1ihhglAYSI/TuvbQ03ewsW9P47MOvJlWjGe3XSYJce6DytvCq6JYDECFoV9KQXrAT2nxGol5q3Nx5ExIXSxdBss7nCcMXKD//E5/o8xDziogisT+y9Qv9SESU8LkhaimYBa/oAd2UMtgI4MTNYfrDIq6aT/6p8vHhcwV/iieYJa9aq8i/hjrVq+m/i/B604ns592UrvUol1HqBivoMXzTbnP9Iq4swPaLM2rhKdGbYNHs6O2303VobbiklWrgjTgNQSmk/4pgC+Zna1fCUdeCpExrYG5Y5jW8gG2CqwWO73LoC2VlfVMTXPcPxP7LutirFGnjAvoB46YYKr56gOfU6osncGehtDaV4xfb5wiCFykrTRJ3CE0+lloFr8dnd+r+qfuU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(376002)(396003)(136003)(39830400003)(366004)(83380400001)(956004)(52116002)(2906002)(1076003)(186003)(66556008)(66946007)(16526019)(6506007)(2616005)(6486002)(6666004)(26005)(66476007)(38350700002)(8676002)(36756003)(86362001)(4326008)(54906003)(5660300002)(478600001)(44832011)(6512007)(38100700002)(316002)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?b9REdH+TqGyygOofNkoO3U0FXnAKPZL04zL00WnEK4x15xvPa7Kg+cXFHTDk?=
+ =?us-ascii?Q?mo+FuWOD09DgymF4GagODRlnomuZpxM7G/mVgcVjvBh89ItW7Cn2E02f/n6y?=
+ =?us-ascii?Q?OdP3AYMe7V4edLe957qUAtRUDGo+dKAvOnW6vwqJV+OTqKfbCdwdDSOkQwQa?=
+ =?us-ascii?Q?u1p2d+iik/5W6fT2mLv6ZXfWSG2s7ifuqPCIH7Oq5eQ4X2SqRcWA9qWpU2jB?=
+ =?us-ascii?Q?rLNZTGsL4UzoMscgtJ4UxXCKs1Fl1+IoOyOTMAj498mkib1ZWP4YmIsuYXIZ?=
+ =?us-ascii?Q?BBNcm0s/dORLbKBDFwwouniBSo56nL0gaugJNaRFS2mHVvHKJ/2YSfdVaivG?=
+ =?us-ascii?Q?5UEcV6WR/SeGpVAeV/cDfu5HaIwKTeQyRo83c9Auasc4ea20FQappxI9RCvI?=
+ =?us-ascii?Q?CD9T916ok6tnTd1LPy6ktK5Th+C2nKF3pd3BMDuauxVXTXbDEGruaa3V7fku?=
+ =?us-ascii?Q?uz+qsZGEEZCpjR08QQbXq0WZFbBO07MRaYMkfCeuBJFg1iHIbIZ84ahBsGn+?=
+ =?us-ascii?Q?wRvkMWzZ6GO59bTUUwzMC4CW9V5cbPq4/fHtZiLdgLMdoCN1vIowqqxaG9AX?=
+ =?us-ascii?Q?Lrr4bajvaqTA/9cXYs8Eu4t7ekUaSTwqqTOPGz+lawVyYNBOpcTnxcliebOA?=
+ =?us-ascii?Q?oI4RM87oaL6ViufjtMt7/3cVUEVwRA5/xCsHVDoJ/sPDPo3NS87Zpz/4yMYw?=
+ =?us-ascii?Q?mZ4XYK1HmFsK3++mFA3WT9DziT3qWKqz9N+fbWPhifavfrwRw2qzNohYbVAE?=
+ =?us-ascii?Q?0f9kEV1rOoA4hXzx2/VyV04vqZwa85tQ7QAtFuPokIe2+XWxBd0O0nNGaNGU?=
+ =?us-ascii?Q?6suC6O7WHjwoCBTkk1L3Yx+ogXXwxBZSz4Pd2HNYS9gL9j69sYeOhq7JyIkp?=
+ =?us-ascii?Q?9mOjwM+XZXcDypZKh7mgYfYaCEJRE0NWdsNG1KOcxgBLPwHiChDIV4fd4xF3?=
+ =?us-ascii?Q?Oef9TNEO2NFqwif3j3e1vTk1meu2rEgCvWEhtOqLV2B5BSnNhKx+eyBisU+J?=
+ =?us-ascii?Q?zDZhywc76AwokZrxYlEt92UIF4jDJ2ZU/X2UMxeT2yHsNxHTqQh8X17FB0c6?=
+ =?us-ascii?Q?H99sKzfiMTyHcW8ZadHgdyQhSGlj6ypeFv2pabIx62Y+9mp+Pv2vaqSxng2b?=
+ =?us-ascii?Q?LyEnH5+dtGBRVddleyr2+xJc4iINTTVhdA1bpgjgV4Ah7Kp9qFBzCJ1F1dhR?=
+ =?us-ascii?Q?8rt/ZTJL+dQ1OmrI5YjgpaqEMHX48pZq1Cq4OrxbrElnP/qq/+As5bAALhxr?=
+ =?us-ascii?Q?NwtuT/YCbR/MU8/t1TUFTyKovfkSOu6zul91o/roVz7pHLOBO1H3DwPiyebW?=
+ =?us-ascii?Q?sXFNy2J6sWHHLabIcCxtt9/C?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60fbf8af-c5db-47d8-863e-08d92b598576
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c79d80a-d3e8-4819-2fb8-08d92b59873a
 X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2021 15:16:14.2101
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2021 15:16:17.1542
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yPd1CZlvtwNso47qzAPpZgZbXqoUqH8r2Cq/bKRejUsCQELQaTmdVWeUFr3yPpC9ql1qOLveUEAUldZd+AqOdpZ/DXFrMS2/ZtIz9ylSvlY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4P190MB0004
+X-MS-Exchange-CrossTenant-UserPrincipalName: hgIHg7mLK++/jpDwOaTIviBrOrvZT4CIRUtDGlxP56CudhGDjrvDmnaI4gBtqntJkC6L7ZGn9VD94Zjlj3+xUjxCfyU85zZv+Ecaw6LO8eU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P190MB1427
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prestera Switchdev driver implements a set of devlink-based features,
-that include both debug functionality (traps with trap statistics), as well
-as functional rate limiter that is based on the devlink kernel API (interfaces).
+From: Sudarsana Reddy Kalluru <skalluru@marvell.com>
 
-The core prestera-devlink functionality is implemented in the prestera_devlink.c.
+Kernel has no interface to publish the devlink port
+parameters. This is required for exporting the port params to the user space,
+so that user can read or update the port params. This patch adds devlink
+interfaces (for drivers) to publish/unpublish the devlink port parameters.
 
-The patch series also extends the existing devlink kernel API with a list of core
-features:
- - devlink: add API for both publish/unpublish port parameters.
- - devlink: add port parameters-specific ops, as current design makes it impossible
-   to register one parameter for multiple ports, and effectively distinguish for
-   what port parameter_op is called.
- - devlink: add trap_drop_counter_get callback for driver to register - make it possible
-   to keep track of how many packets have been dropped (hard) by the switch device, before
-   the packets even made it to the devlink subsystem (e.g. dropped due to RXDMA buffer
-   overflow).
+Co-developed-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+---
+ include/net/devlink.h |  2 ++
+ net/core/devlink.c    | 42 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 44 insertions(+)
 
-The core features that extend current functionality of prestera Switchdev driver:
- - add storm control (BUM control) functionality, that is driven through the
-   devlink (per) port parameters.
- - add logic for driver traps and drops registration (also traps with DROP action).
- - add documentation for prestera driver traps and drops group.
-
-Oleksandr Mazur (10):
-  net: core: devlink: add dropped stats traps field
-  net: core: devlink: add port_params_ops for devlink port parameters
-    altering
-  testing: selftests: net: forwarding: add devlink-required
-    functionality to test (hard) dropped stats field
-  drivers: net: netdevsim: add devlink trap_drop_counter_get
-    implementation
-  testing: selftests: drivers: net: netdevsim: devlink: add test case
-    for hard drop statistics
-  drivers: net: netdevsim: add devlink port params usage
-  net: marvell: prestera: devlink: add traps/groups implementation
-  net: marvell: prestera: devlink: add traps with DROP action
-  net: marvell: prestera: add storm control (rate limiter)
-    implementation
-  documentation: networking: devlink: add prestera switched driver
-    Documentation
-
-Sudarsana Reddy Kalluru (1):
-  net: core: devlink: add apis to publish/unpublish port params
-
- Documentation/networking/devlink/prestera.rst | 167 +++++
- .../net/ethernet/marvell/prestera/prestera.h  |   9 +
- .../marvell/prestera/prestera_devlink.c       | 664 +++++++++++++++++-
- .../marvell/prestera/prestera_devlink.h       |   3 +
- .../ethernet/marvell/prestera/prestera_dsa.c  |   3 +
- .../ethernet/marvell/prestera/prestera_dsa.h  |   1 +
- .../ethernet/marvell/prestera/prestera_hw.c   |  60 ++
- .../ethernet/marvell/prestera/prestera_hw.h   |  20 +
- .../ethernet/marvell/prestera/prestera_rxtx.c |   7 +-
- drivers/net/netdevsim/dev.c                   | 108 ++-
- drivers/net/netdevsim/netdevsim.h             |   3 +
- include/net/devlink.h                         |  35 +
- net/core/devlink.c                            | 139 +++-
- .../drivers/net/netdevsim/devlink_trap.sh     |  10 +
- .../selftests/net/forwarding/devlink_lib.sh   |  26 +
- 15 files changed, 1238 insertions(+), 17 deletions(-)
- create mode 100644 Documentation/networking/devlink/prestera.rst
-
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 7c984cadfec4..8def0f7365da 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1575,6 +1575,8 @@ int devlink_port_params_register(struct devlink_port *devlink_port,
+ void devlink_port_params_unregister(struct devlink_port *devlink_port,
+ 				    const struct devlink_param *params,
+ 				    size_t params_count);
++void devlink_port_params_publish(struct devlink_port *devlink_port);
++void devlink_port_params_unpublish(struct devlink_port *ddevlink_port);
+ int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
+ 				       union devlink_param_value *init_val);
+ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 69681f19388e..e43ffc1891a4 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -9265,6 +9265,48 @@ void devlink_port_params_unregister(struct devlink_port *devlink_port,
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_params_unregister);
+ 
++/**
++ *	devlink_port_params_publish - publish port configuration parameters
++ *
++ *	@devlink_port: devlink port
++ *
++ *	Publish previously registered port configuration parameters.
++ */
++void devlink_port_params_publish(struct devlink_port *devlink_port)
++{
++	struct devlink_param_item *param_item;
++
++	list_for_each_entry(param_item, &devlink_port->param_list, list) {
++		if (param_item->published)
++			continue;
++		param_item->published = true;
++		devlink_param_notify(devlink_port->devlink, devlink_port->index,
++				     param_item, DEVLINK_CMD_PORT_PARAM_NEW);
++	}
++}
++EXPORT_SYMBOL_GPL(devlink_port_params_publish);
++
++/**
++ *	devlink_port_params_unpublish - unpublish port configuration parameters
++ *
++ *	@devlink_port: devlink port
++ *
++ *	Unpublish previously registered port configuration parameters.
++ */
++void devlink_port_params_unpublish(struct devlink_port *devlink_port)
++{
++	struct devlink_param_item *param_item;
++
++	list_for_each_entry(param_item, &devlink_port->param_list, list) {
++		if (!param_item->published)
++			continue;
++		param_item->published = false;
++		devlink_param_notify(devlink_port->devlink, devlink_port->index,
++				     param_item, DEVLINK_CMD_PORT_PARAM_DEL);
++	}
++}
++EXPORT_SYMBOL_GPL(devlink_port_params_unpublish);
++
+ static int
+ __devlink_param_driverinit_value_get(struct list_head *param_list, u32 param_id,
+ 				     union devlink_param_value *init_val)
 -- 
 2.17.1
 
