@@ -2,118 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D273A1DD3
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 21:46:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9BBF3A1DF4
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 22:08:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbhFITsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 15:48:20 -0400
-Received: from mail-ed1-f54.google.com ([209.85.208.54]:33651 "EHLO
-        mail-ed1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbhFITsT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 15:48:19 -0400
-Received: by mail-ed1-f54.google.com with SMTP id f5so24883385eds.0
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 12:46:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sHlW+S5466iVOZLyCOhoxRhctVC3g1V4iMRZKlGZs/I=;
-        b=WMQsyVo0Jegz15yNBpHu0sswY2d/44EuG6bq9/6aI580rKI4ZJtBz8IyT3wDJzUPNG
-         yLo3t2nm2lfjMVbR4wm2TQelNrCiRxMk4ZTKQLaoMnPnD1sfwuMuamz7N02VwmgGx5wr
-         vH51ZCJic9rCx1jcgaPz5Wv7SoEYEXHV4RYCLGq4koR6l8r1y0ZZVfaY8ngUV27g0TGv
-         21KETKMwXsywMnUAG6NZVB7oa/K4iyz0LGQDdXcFPBAoua3QYqveNygBRR0f+cl+13Pw
-         BkNoYN2ePYlJDwiwmsD8VT3TGQK8wdDmLk4GcgxBu/+1Rv8HZNLYpjbRkGTLgvFrkrBZ
-         S96Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sHlW+S5466iVOZLyCOhoxRhctVC3g1V4iMRZKlGZs/I=;
-        b=UZp2ny+vsMbP7iEEsyEN98XPtUocMy7PrIEhKm0yXLiyCwKVDNOkFF3Sc3x6irphqj
-         U/iDfvoxNHTgtyZ/lSf9YD1je8hm9U8P1exGdq1p2/HbP/IxEaCy15JPFPhHgaCeXjpR
-         lL9DNKJfBZrkLW6QuYFfyC37G8xKWQlvfw/mlMNzWbta65rxq9Mot62Ha32Rd+eJ/5Wf
-         1UruY01/kuNF/ICvR6cO42wmYICRAmLq4C3G382KGEkiNwHqvPupKYylbUExgExJ0FnA
-         MY6lAEVbOeWtV1aWKSAIkZU35kdsKQP09z3K4k20GpNBS/uZzskYdpIqn+wwdYOoATb+
-         Jsdg==
-X-Gm-Message-State: AOAM532zGS3jSViP33p6LqcgTuBgmqhlPGehRQZAq52rll8bWu35Sr2u
-        1e6kcePomJxLbuSxlfgd7Xz7LH1Na+k=
-X-Google-Smtp-Source: ABdhPJyVhzp53ymJDsgrYdk3/3ZMYlJL3jdbF8Wb6kP3lFbprA1qClznBSIk9ETaZwjSOZ5HF8d4PQ==
-X-Received: by 2002:aa7:cf0f:: with SMTP id a15mr993795edy.313.1623267923943;
-        Wed, 09 Jun 2021 12:45:23 -0700 (PDT)
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
-        by smtp.gmail.com with ESMTPSA id r2sm227426ejc.78.2021.06.09.12.45.22
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Jun 2021 12:45:23 -0700 (PDT)
-Received: by mail-wm1-f48.google.com with SMTP id f16-20020a05600c1550b02901b00c1be4abso5053496wmg.2
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 12:45:22 -0700 (PDT)
-X-Received: by 2002:a1c:2456:: with SMTP id k83mr1405196wmk.87.1623267922516;
- Wed, 09 Jun 2021 12:45:22 -0700 (PDT)
+        id S229659AbhFIUKW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Jun 2021 16:10:22 -0400
+Received: from mga02.intel.com ([134.134.136.20]:8730 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229472AbhFIUKV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 16:10:21 -0400
+IronPort-SDR: 7yyOQZvyBjly8GOBzpYHNmHZXzO9e0JTNVaCN5TNThu2N22y3Pta+F3q7T4dMPUONBIevS3aRW
+ La0txz4FjtOw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="192268277"
+X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
+   d="scan'208";a="192268277"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 13:08:24 -0700
+IronPort-SDR: 3TGz301bugDjWwRg6Bww+l0yeV9Yscc3z+HOtZkb450U+OKLqmtKOUM21zN9lUth5+S81ZObjc
+ h+CjizKW+QZA==
+X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
+   d="scan'208";a="482519863"
+Received: from kotikala-mobl1.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.209.25.177])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 13:08:24 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     linux-pci@vger.kernel.org, richardcochran@gmail.com,
+        hch@infradead.org, netdev@vger.kernel.org, bhelgaas@google.com,
+        helgaas@kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: Re: [Intel-wired-lan] [PATCH next-queue v5 3/4] igc: Enable PCIe PTM
+In-Reply-To: <939b8042-a313-47db-43d9-ea37e95b724b@molgen.mpg.de>
+References: <20210605002356.3996853-1-vinicius.gomes@intel.com>
+ <20210605002356.3996853-4-vinicius.gomes@intel.com>
+ <70d32740-eb4b-f7bf-146e-8dc06199d6c9@molgen.mpg.de>
+ <87sg1sw56h.fsf@vcostago-mobl2.amr.corp.intel.com>
+ <939b8042-a313-47db-43d9-ea37e95b724b@molgen.mpg.de>
+Date:   Wed, 09 Jun 2021 13:08:22 -0700
+Message-ID: <87r1havm15.fsf@vcostago-mobl2.amr.corp.intel.com>
 MIME-Version: 1.0
-References: <87a6nzrqe0.fsf@factor-ts.ru>
-In-Reply-To: <87a6nzrqe0.fsf@factor-ts.ru>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 9 Jun 2021 15:44:45 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSf7WbEN_yhf_LR9RxZzgxHUcdb-OeMEA2--rci+HN2dqw@mail.gmail.com>
-Message-ID: <CA+FuTSf7WbEN_yhf_LR9RxZzgxHUcdb-OeMEA2--rci+HN2dqw@mail.gmail.com>
-Subject: Re: [PATCH] udp: compute_score and sk_bound_dev_if regression
-To:     Peter Kosyh <p.kosyh@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Mikhail Smirnov <smirnov@factor-ts.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        mmanning@vyatta.att-mail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 9, 2021 at 11:50 AM Peter Kosyh <p.kosyh@gmail.com> wrote:
->
->
-> udp: commit 6da5b0f027a825df2aebc1927a27bda185dc03d4
+Paul Menzel <pmenzel@molgen.mpg.de> writes:
 
-For completeness, this is commit 6da5b0f027a8 ("net: ensure unbound
-datagram socket to be chosen when not in a VRF"). Adding the author.
+> Dear Vinicius,
+>
+>
+> Am 08.06.21 um 21:02 schrieb Vinicius Costa Gomes:
+>
+>> Paul Menzel writes:
+>
+>>> Am 05.06.21 um 02:23 schrieb Vinicius Costa Gomes:
+>>>> Enables PCIe PTM (Precision Time Measurement) support in the igc
+>>>> driver. Notifies the PCI devices that PCIe PTM should be enabled.
+>>>>
+>>>> PCIe PTM is similar protocol to PTP (Precision Time Protocol) running
+>>>> in the PCIe fabric, it allows devices to report time measurements from
+>>>> their internal clocks and the correlation with the PCIe root clock.
+>>>>
+>>>> The i225 NIC exposes some registers that expose those time
+>>>> measurements, those registers will be used, in later patches, to
+>>>> implement the PTP_SYS_OFFSET_PRECISE ioctl().
+>>>>
+>>>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+>>>> ---
+>>>>    drivers/net/ethernet/intel/igc/igc_main.c | 6 ++++++
+>>>>    1 file changed, 6 insertions(+)
+>>>>
+>>>> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+>>>> index a05e6d8ec660..f23d0303e53b 100644
+>>>> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+>>>> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+>>>> @@ -12,6 +12,8 @@
+>>>>    #include <net/pkt_sched.h>
+>>>>    #include <linux/bpf_trace.h>
+>>>>    #include <net/xdp_sock_drv.h>
+>>>> +#include <linux/pci.h>
+>>>> +
+>>>>    #include <net/ipv6.h>
+>>>>    
+>>>>    #include "igc.h"
+>>>> @@ -5864,6 +5866,10 @@ static int igc_probe(struct pci_dev *pdev,
+>>>>    
+>>>>    	pci_enable_pcie_error_reporting(pdev);
+>>>>    
+>>>> +	err = pci_enable_ptm(pdev, NULL);
+>>>> +	if (err < 0)
+>>>> +		dev_err(&pdev->dev, "PTM not supported\n");
+>>>> +
+>>>
+>>> Sorry, if I am missing something, but do all devices supported by this
+>>> driver support PTM or only the i225 NIC? In that case, it wouldn’t be an
+>>> error for a device not supporting PTM, would it?
+>> 
+>> That was a very good question. I had to talk with the hardware folks.
+>> All the devices supported by the igc driver should support PTM.
+>
+> Thank you for checking that, that is valuable information.
+>
+>> And just to be clear, the reason that I am not returning an error here
+>> is that PTM could not be supported by the host system (think PCI
+>> controller).
+>
+> I just checked `pci_enable_ptm()` and on success it calls 
+> `pci_ptm_info()` logging a message:
+>
+> 	pci_info(dev, "PTM enabled%s, %s granularity\n",
+> 		 dev->ptm_root ? " (root)" : "", clock_desc);
+>
+> Was that present on your system with your patch? Please add that to the 
+> commit message.
 
-> introduced regression in compute_score() Previously for addr_any sockets an
-> interface bound socket had a higher priority than an unbound socket that
-> seems right. For example, this feature is used in dhcprelay daemon and now it
-> is broken.
-> So, this patch returns the old behavior and gives higher score for sk_bound_dev_if sockets.
+Yes, with my patches applied I can see this message on my systems.
+
+Sure, will add this to the commit message.
+
 >
-> Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
-> ---
->  net/ipv4/udp.c | 3 ++-
->  net/ipv6/udp.c | 3 ++-
->  2 files changed, 4 insertions(+), 2 deletions(-)
+> Regarding my comment, I did not mean returning an error but the log 
+> *level* of the message. So, `dmesg --level err` would show that message. 
+> But if there are PCI controllers not supporting that, it’s not an error, 
+> but a warning at most. So, I’d use:
 >
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 15f5504adf5b..4239ffa93c6f 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -390,7 +390,8 @@ static int compute_score(struct sock *sk, struct net *net,
->                                         dif, sdif);
->         if (!dev_match)
->                 return -1;
-> -       score += 4;
-> +       if (sk->sk_bound_dev_if)
-> +               score += 4;
->
->         if (READ_ONCE(sk->sk_incoming_cpu) == raw_smp_processor_id())
->                 score++;
-> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> index 199b080d418a..c2f88b5def25 100644
-> --- a/net/ipv6/udp.c
-> +++ b/net/ipv6/udp.c
-> @@ -133,7 +133,8 @@ static int compute_score(struct sock *sk, struct net *net,
->         dev_match = udp_sk_bound_dev_eq(net, sk->sk_bound_dev_if, dif, sdif);
->         if (!dev_match)
->                 return -1;
-> -       score++;
-> +       if (sk->sk_bound_dev_if)
-> +               score++;
->
->         if (READ_ONCE(sk->sk_incoming_cpu) == raw_smp_processor_id())
->                 score++;
-> --
-> 2.31.1
+> 	dev_warn(&pdev->dev, "PTM not supported by PCI bus/controller 
+> (pci_enable_ptm() failed)\n");
+
+I will use you suggestion for the message, but I think that warn is a
+bit too much, info or notice seem to be better.
+
+
+Cheers,
+-- 
+Vinicius
