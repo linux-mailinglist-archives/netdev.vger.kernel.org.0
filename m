@@ -2,68 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1964F3A1394
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 13:57:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 696983A1376
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 13:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239658AbhFIL7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 07:59:44 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:8114 "EHLO
+        id S239499AbhFILwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 07:52:25 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:8113 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239557AbhFIL7n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 07:59:43 -0400
-Received: from dggeme766-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G0QWy6L8wzYrkY;
-        Wed,  9 Jun 2021 19:54:54 +0800 (CST)
-Received: from huawei.com (10.175.104.82) by dggeme766-chm.china.huawei.com
- (10.3.19.112) with Microsoft SMTP Server (version=TLS1_2,
+        with ESMTP id S231704AbhFILwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 07:52:23 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G0QMS3s2YzYsXR;
+        Wed,  9 Jun 2021 19:47:32 +0800 (CST)
+Received: from dggema761-chm.china.huawei.com (10.1.198.203) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Wed, 9 Jun 2021 19:50:22 +0800
+Received: from huawei.com (10.175.127.227) by dggema761-chm.china.huawei.com
+ (10.1.198.203) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 9 Jun
- 2021 19:57:42 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
-        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@kernel.org>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH bpf-next] libbpf: simplify the return expression of bpf_object__init_maps function
-Date:   Wed, 9 Jun 2021 19:56:51 +0800
-Message-ID: <20210609115651.3392580-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 2021 19:50:21 +0800
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <quentin@isovalent.com>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <chengzhihao1@huawei.com>,
+        <yukuai3@huawei.com>
+Subject: [PATCH] tools/bpftool: Fix error return code in do_batch()
+Date:   Wed, 9 Jun 2021 19:59:16 +0800
+Message-ID: <20210609115916.2186872-1-chengzhihao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggeme766-chm.china.huawei.com (10.3.19.112)
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggema761-chm.china.huawei.com (10.1.198.203)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no need for special treatment of the 'ret == 0' case.
-This patch simplifies the return expression.
+Fix to return a negative error code from the error handling
+case instead of 0, as done elsewhere in this function.
 
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Fixes: 668da745af3c2 ("tools: bpftool: add support for quotations ...")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
 ---
- tools/lib/bpf/libbpf.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ tools/bpf/bpftool/main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index c41d9b2b59ac..e49fcac45fdc 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2425,10 +2425,8 @@ static int bpf_object__init_maps(struct bpf_object *obj,
- 	err = err ?: bpf_object__init_global_data_maps(obj);
- 	err = err ?: bpf_object__init_kconfig_map(obj);
- 	err = err ?: bpf_object__init_struct_ops_maps(obj);
--	if (err)
--		return err;
+diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
+index 7f2817d97079..3ddfd4843738 100644
+--- a/tools/bpf/bpftool/main.c
++++ b/tools/bpf/bpftool/main.c
+@@ -341,8 +341,10 @@ static int do_batch(int argc, char **argv)
+ 		n_argc = make_args(buf, n_argv, BATCH_ARG_NB_MAX, lines);
+ 		if (!n_argc)
+ 			continue;
+-		if (n_argc < 0)
++		if (n_argc < 0) {
++			err = n_argc;
+ 			goto err_close;
++		}
  
--	return 0;
-+	return err;
- }
- 
- static bool section_have_execinstr(struct bpf_object *obj, int idx)
+ 		if (json_output) {
+ 			jsonw_start_object(json_wtr);
 -- 
-2.17.1
+2.31.1
 
