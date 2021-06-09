@@ -2,135 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB8273A1A0B
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 141FC3A1A18
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235211AbhFIPss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 11:48:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56250 "EHLO
+        id S236269AbhFIPtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 11:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234044AbhFIPsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 11:48:47 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BADC061574;
-        Wed,  9 Jun 2021 08:46:52 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id x10so12742929plg.3;
-        Wed, 09 Jun 2021 08:46:52 -0700 (PDT)
+        with ESMTP id S236225AbhFIPtt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 11:49:49 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F97C061574
+        for <netdev@vger.kernel.org>; Wed,  9 Jun 2021 08:47:54 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id n12so31744608lft.10
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 08:47:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e4aq/DyThBNoxMj07ot0bkg9LS2d0lWSCk/xRtR93s8=;
-        b=YMWlm3oqjplYs/n4JR52ku/DKZ7xKAGjqx3rXE/XvL/DmvDQfJcZ3sKDrH8moXCoKe
-         OvHl43kF5z1m/FPQm+1sZlzvoCD3N5EgAYZAvbtQSuqXW3azfHLHs9oCPWRlwIsnM6np
-         BLcEPyV6E0tO1TVTFpo0pJV+a9DtRaXUR6KJ275tTJvhNROBmtWbJhcprbyRWHa12gkM
-         vtU4L1AfQgDxF29A8rrjxZb+UwXERw6NVPGOZzvXa7HNrwGe49ryaAxxZkIu8m3XI9kv
-         RnTYtwXDG0QHX/kmp3HCr9J8Dr47BOvYaN8qfTJ9L78dPGF85QpTEU/avVdNhuumFj2F
-         UlEw==
+        h=user-agent:from:to:cc:subject:date:message-id:mime-version;
+        bh=VTOOV2HamW2xff+Be3idNu/kmRGU5Py9AUeUXwSEtGw=;
+        b=XLLMEpas+9Ur0pSHE8VV7V+/tSISv8xdtslDPxq2tpngkIGA7IIkuCbzJOVgHKNBBv
+         fvf9ECLApxsxQklrK5orVkfEQfQd2QvWmUu+REESRWuFid1IYHEvl3zp1jIy7lwkZHP5
+         okeO54snKnOpL153vB8DQlbueN92kPT65qo3U2pnwKwucY6H5hY0ne28p+pmGCK/8AzG
+         xx5O3+wSR/SzT1KQUoDGX+XfvsvqqJAUkg/bpAdPp07Ir6myC8abT7AkNza1w/loF5r0
+         O1RzHkaGJhcH4lZpoyX+QJ4RWwYHRpmxh9ynLkrn4ZAn/BWLtiem6lYcNPPw/Dpei8Ab
+         CpvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e4aq/DyThBNoxMj07ot0bkg9LS2d0lWSCk/xRtR93s8=;
-        b=af4Xiu6TrrLv+/Pl2nQgCKajWWvLPEdpC79GTnK7vIV/zc1Qygr9WzV1a8HJyWQaXf
-         /plIhtgwGb2vj6CFU/h96tE3nZAouY6ZXwhsHuagu5geHTebAnKW1ErqKxOlGy/iOsfv
-         m2S970xmy2zu8ZNQQvVTO9+Mbr6ulmd9Rurw28ZzwdwUxT6K1ZFdMYKr8WHzDbN9QO1c
-         xj4d2gdjEtl/4vjij1KtUAmu+ga9lrja65hLvxRs4Vwc4K6ZEI5dvoQmfOkFlqBU7b/w
-         0ZBhLsYxnvKHrCHczQY1IWJNSL/w0K68Bf9LNcPqvpTduDyLH7AtESvQcoTzgy5TP/C2
-         ShKw==
-X-Gm-Message-State: AOAM5317DTL0BgIfeZw+k69sfJqp0QUl4Hz4Wu6yCmV1cVp1yVSkHhi4
-        wQNKpDYGh96mx/QFajVf4tzDvhJDKsn/rQ==
-X-Google-Smtp-Source: ABdhPJz9it0NlbsWH0N+DNWPmelWAKAr0gcHsh1EmXiwp5vViDogczoL5DxxX5fEnkvRDT4wZI6uPA==
-X-Received: by 2002:a17:902:b94a:b029:10d:6f56:eeac with SMTP id h10-20020a170902b94ab029010d6f56eeacmr403539pls.54.1623253612379;
-        Wed, 09 Jun 2021 08:46:52 -0700 (PDT)
-Received: from WRT-WX9.. ([141.164.41.4])
-        by smtp.gmail.com with ESMTPSA id u20sm39753pfn.192.2021.06.09.08.46.42
+        h=x-gm-message-state:user-agent:from:to:cc:subject:date:message-id
+         :mime-version;
+        bh=VTOOV2HamW2xff+Be3idNu/kmRGU5Py9AUeUXwSEtGw=;
+        b=FyGiEBVu4amaE9169mdMiXyKR+vI6snnnOXUGzgwZus6fDDKWaGCszau1rvwdxJzHB
+         kUH0tRt7zrITFAByZe4X9VpPfA/SF4fanQtGsaYZK7+ZPXCCa4Vdg/bC3jrTMYPHwW1T
+         dpMrEvdWHQnFBLgsmakCB0qUKBIz/E5whacM0QmGqls1TrmEriw4x/cC7503p1aNnazS
+         uG3DWt7ajPZ2Nq8Y2HuX2FVORrBbUKR636FuVGPu9GOU0kkNm6FyFnaT+2mFHeu8mmc5
+         FQSD08LFXcNo9mJ3dQO3Ch4c/Ta3cd/SIXUfrkGomceOaafT34U7nJG0m1rzBZ60DwOu
+         42GA==
+X-Gm-Message-State: AOAM5317jNLbFdggoLt7+WmLMGhGTbrlLhO3uVfs9mYrsnvPtQarjzPF
+        dwXCUKJKfeur/J/LbFUDd9SC3u0dS6pL6w==
+X-Google-Smtp-Source: ABdhPJyRmPHU4Ryls5OGGDOKofkG/3kd8f2zEiysgn//1LknTv6na2RKyVkHti6mdRS8sw/mQTWk5w==
+X-Received: by 2002:ac2:53ad:: with SMTP id j13mr125752lfh.594.1623253672192;
+        Wed, 09 Jun 2021 08:47:52 -0700 (PDT)
+Received: from localhost ([95.165.9.116])
+        by smtp.gmail.com with ESMTPSA id 2sm14746ljr.127.2021.06.09.08.47.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Jun 2021 08:46:52 -0700 (PDT)
-From:   Changbin Du <changbin.du@gmail.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kici nski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Changbin Du <changbin.du@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Subject: [PATCH v2] net: do not invoke open_related_ns when NET_NS is disabled
-Date:   Wed,  9 Jun 2021 23:46:35 +0800
-Message-Id: <20210609154635.46792-1-changbin.du@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 09 Jun 2021 08:47:51 -0700 (PDT)
+User-agent: mu4e 1.4.12; emacs 27.2
+From:   Peter Kosyh <p.kosyh@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Peter Kosyh <p.kosyh@gmail.com>,
+        'Mikhail Smirnov' <smirnov@factor-ts.ru>,
+        "David S. Miller" <davem@davemloft.net>
+Subject:  [PATCH] udp: compute_score and sk_bound_dev_if regression
+Date:   Wed, 09 Jun 2021 18:47:51 +0300
+Message-ID: <87a6nzrqe0.fsf@factor-ts.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When NET_NS is not enabled, socket ioctl cmd SIOCGSKNS should do nothing
-but acknowledge userspace it is not supported. Otherwise, kernel would
-panic wherever nsfs trys to access ns->ops since the proc_ns_operations
-is not implemented in this case.
 
-[7.670023] Unable to handle kernel NULL pointer dereference at virtual address 00000010
-[7.670268] pgd = 32b54000
-[7.670544] [00000010] *pgd=00000000
-[7.671861] Internal error: Oops: 5 [#1] SMP ARM
-[7.672315] Modules linked in:
-[7.672918] CPU: 0 PID: 1 Comm: systemd Not tainted 5.13.0-rc3-00375-g6799d4f2da49 #16
-[7.673309] Hardware name: Generic DT based system
-[7.673642] PC is at nsfs_evict+0x24/0x30
-[7.674486] LR is at clear_inode+0x20/0x9c
+udp: commit 6da5b0f027a825df2aebc1927a27bda185dc03d4
+introduced regression in compute_score() Previously for addr_any sockets an
+interface bound socket had a higher priority than an unbound socket that
+seems right. For example, this feature is used in dhcprelay daemon and now it
+is broken.
+So, this patch returns the old behavior and gives higher score for sk_bound_dev_if sockets.
 
-The same to tun SIOCGSKNS command.
-
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: David Laight <David.Laight@ACULAB.COM>
-Cc: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Peter Kosyh <p.kosyh@gmail.com>
 ---
- drivers/net/tun.c | 4 ++++
- net/socket.c      | 4 ++++
- 2 files changed, 8 insertions(+)
+ net/ipv4/udp.c | 3 ++-
+ net/ipv6/udp.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 84f832806313..8ec5977d2f34 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -3003,9 +3003,13 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
- 	} else if (cmd == TUNSETQUEUE) {
- 		return tun_set_queue(file, &ifr);
- 	} else if (cmd == SIOCGSKNS) {
-+#ifdef CONFIG_NET_NS
- 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
- 			return -EPERM;
- 		return open_related_ns(&net->ns, get_net_ns);
-+#else
-+		return -EOPNOTSUPP;
-+#endif
- 	}
- 
- 	rtnl_lock();
-diff --git a/net/socket.c b/net/socket.c
-index 27e3e7d53f8e..bc644030d2e8 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -1149,11 +1149,15 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
- 			mutex_unlock(&vlan_ioctl_mutex);
- 			break;
- 		case SIOCGSKNS:
-+#ifdef CONFIG_NET_NS
- 			err = -EPERM;
- 			if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
- 				break;
- 
- 			err = open_related_ns(&net->ns, get_net_ns);
-+#else
-+			err = -EOPNOTSUPP;
-+#endif
- 			break;
- 		case SIOCGSTAMP_OLD:
- 		case SIOCGSTAMPNS_OLD:
--- 
-2.30.2
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 15f5504adf5b..4239ffa93c6f 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -390,7 +390,8 @@ static int compute_score(struct sock *sk, struct net *net,
+ 					dif, sdif);
+ 	if (!dev_match)
+ 		return -1;
+-	score += 4;
++	if (sk->sk_bound_dev_if)
++		score += 4;
 
+ 	if (READ_ONCE(sk->sk_incoming_cpu) == raw_smp_processor_id())
+ 		score++;
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 199b080d418a..c2f88b5def25 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -133,7 +133,8 @@ static int compute_score(struct sock *sk, struct net *net,
+ 	dev_match = udp_sk_bound_dev_eq(net, sk->sk_bound_dev_if, dif, sdif);
+ 	if (!dev_match)
+ 		return -1;
+-	score++;
++	if (sk->sk_bound_dev_if)
++		score++;
+
+ 	if (READ_ONCE(sk->sk_incoming_cpu) == raw_smp_processor_id())
+ 		score++;
+--
+2.31.1
