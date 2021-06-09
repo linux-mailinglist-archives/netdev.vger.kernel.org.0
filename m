@@ -2,77 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5605A3A0808
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 01:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C29C23A0847
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 02:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231644AbhFHXwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 19:52:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34126 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231492AbhFHXv6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Jun 2021 19:51:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7921F61364;
-        Tue,  8 Jun 2021 23:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623196204;
-        bh=3qZVdO8JJlicODgnOb7ivyERyp17IaM46xEbA1u3zfk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=t0EFD+neQTCPNIIzlizY/jvpn1WE/6TF7hk8uXMrRK2Mpmnn57CMpZCtIYynucJgk
-         9El+KEXD3o29oNRdkzaAvv3Z5WXyuV1Pc3udghccmxakFTTKysS13DGoVmbgA83lQm
-         chk0s0syWHHPo+ftcixUEGLB+/w9UMMBV5tDqbEe6XT+b6W/LJqjIxGSgtExQko8es
-         MobMI8lhRrAK3H4Kkf7GI/YeinBymto3fya7eLQXoS/ClIy2m65uKLEqCaYApVjp6X
-         W30TDrED44iBM6GoKt5gg4vCd0Mp5rBL2L+9INqCysnB5bIyr2X928tnji2KNfg8EL
-         uvSsgS4cwHGSA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6EE21608B9;
-        Tue,  8 Jun 2021 23:50:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234167AbhFIA1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 20:27:38 -0400
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:58236 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233937AbhFIA1h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 20:27:37 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0Ubo-Hba_1623198342;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0Ubo-Hba_1623198342)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Jun 2021 08:25:42 +0800
+Date:   Wed, 9 Jun 2021 08:25:42 +0800
+From:   "dust.li" <dust.li@linux.alibaba.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next] tcp: avoid spurious loopback retransmit
+Message-ID: <20210609002542.GO53857@linux.alibaba.com>
+Reply-To: dust.li@linux.alibaba.com
+References: <20210607154534.57034-1-dust.li@linux.alibaba.com>
+ <CANn89i+dDy6ev50mBMwoK7f0NN+0xHf8V-Jas8zAmew02hJV4w@mail.gmail.com>
+ <20210608030903.GN53857@linux.alibaba.com>
+ <CANn89i+VEA4rc3T_oC7tJXYvA7OAmDc=Vk_wyxYwzYz23nENPg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] net: stmmac: explicitly deassert GMAC_AHB_RESET
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162319620444.30091.10501807716630909257.git-patchwork-notify@kernel.org>
-Date:   Tue, 08 Jun 2021 23:50:04 +0000
-References: <20210608185913.3909878-1-mnhagan88@gmail.com>
-In-Reply-To: <20210608185913.3909878-1-mnhagan88@gmail.com>
-To:     Matthew Hagan <mnhagan88@gmail.com>
-Cc:     bjorn.andersson@linaro.org, p.zabel@pengutronix.de,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, linux@armlinux.org.uk,
-        weifeng.voon@intel.com, boon.leong.ong@intel.com,
-        vee.khee.wong@linux.intel.com, tee.min.tan@intel.com,
-        vee.khee.wong@intel.com, michael.wei.hong.sit@intel.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89i+VEA4rc3T_oC7tJXYvA7OAmDc=Vk_wyxYwzYz23nENPg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Jun 08, 2021 at 06:04:14PM +0200, Eric Dumazet wrote:
+>On Tue, Jun 8, 2021 at 5:09 AM dust.li <dust.li@linux.alibaba.com> wrote:
+>>
+>> On Mon, Jun 07, 2021 at 06:17:45PM +0200, Eric Dumazet wrote:
+>> >On Mon, Jun 7, 2021 at 5:45 PM Dust Li <dust.li@linux.alibaba.com> wrote:
+>> >>
+>> >> We found there are pretty much loopback TCP retransmitions
+>> >> on our online servers. Most of them are TLP retransmition.
+>> >>
+>> >> This is because for loopback communication, TLP is usally
+>> >> triggered about 2ms after the last packet was sent if no
+>> >> ACK was received within that period.
+>> >> This condition can be met if there are some kernel tasks
+>> >> running on that CPU for more than 2ms, which delays the
+>> >> softirq to process the sd->backlog.
+>> >>
+>> >> We sampled the loopback TLP retransmit on our online servers,
+>> >> and found an average 2K+ retransmit per hour. But in some cases,
+>> >> this can be much bigger, I found a peak 40 retrans/s on the
+>> >> same server.
+>> >> Actually, those loopback retransmitions are not a big problem as
+>> >> long as they don't happen too frequently. It's just spurious and
+>> >> meanless and waste some CPU cycles.
+>> >
+>> >So, why do you send such a patch, adding a lot of code ?
+>> It's because we are doing retransmition analysis, we did a statistic
+>> on our online server and found the most frequented retransmitted
+>> (src_ip, dst_ip) tuple of all is between (127.0.0.1, 127.0.0.1),
+>> but actually there are no loopback drop at all.
+>>
+>> Those loopback retransmittions distract us, and are really meaningless,
+>> that why I tried to get rid of it.
+>>
+>> >
+>> >>
+>> >> I also write a test module which just busy-loop in the kernel
+>> >> for more then 2ms, and the lo retransmition can be triggered
+>> >> every time we run the busy-loop on the target CPU.
+>> >> With this patch, the retransmition is gone and the throughput
+>> >> is not affected.
+>> >
+>> >
+>> >This makes no sense to me.
+>> >
+>> >Are you running a pristine linux kernel, or some modified version of it ?
+>> No, I did the exact same test on the current upstream kernel.
+>>
+>> >
+>> >Why loopback is magical, compared to veth pair ?
+>> >
+>> >The only case where skb_fclone_busy() might have an issue is when a driver
+>> >is very slow to perform tx completion (compared to possible RTX)
+>> >
+>> >But given that the loopback driver does an skb_orphan() in its
+>> >ndo_start_xmit (loopback_xmit()),
+>> >the skb_fclone_busy() should not be fired at all.
+>> >
+>> >(skb->sk is NULL, before packet is 'looped back')
+>> >
+>> >It seems your diagnosis is wrong.
+>>
+>> For loopback, this should be the opposite, because in most cases
+>> the orignal packet maybe still in the per CPU backlog queue.
+>> We want the skb_fclone_busy() to fire to prevent the retransmittion
+>>
+>> But now after skb->sk set to NULL in loopback_xmit(),
+>> skb_still_in_host_queue() returns false, and triggered the unneeded
+>> retransmittion.
+>
+>Honestly I do not see how this is even possible.
+>
+>Normal TCP RTO timers are at least 200 ms
+>
+>For fast retransmits, this would mean you have huge OOO issues, maybe
+>because of crazy thread migrations.
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Normal RTO and fast retransmits are rarely triggerred.
+But for TLP timers, it is easy since its timeout is usally only 2ms.
 
-On Tue,  8 Jun 2021 19:59:06 +0100 you wrote:
-> We are currently assuming that GMAC_AHB_RESET will already be deasserted
-> by the bootloader. However if this has not been done, probing of the GMAC
-> will fail. To remedy this we must ensure GMAC_AHB_RESET has been deasserted
-> prior to probing.
-> 
-> v2 changes:
->  - remove NULL condition check for stmmac_ahb_rst in stmmac_main.c
->  - unwrap dev_err() message in stmmac_main.c
->  - add PTR_ERR() around plat->stmmac_ahb_rst in stmmac_platform.c
-> 
-> [...]
+Thanks.
 
-Here is the summary with links:
-  - [v3] net: stmmac: explicitly deassert GMAC_AHB_RESET
-    https://git.kernel.org/netdev/net-next/c/e67f325e9cd6
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>
+>I would rather address the root cause instead of risking serious bugs,
+>if the packet is _dropped_ by some eBPF filter or something.
+>
+>If we do not retransmit while we _must_, then the flow is definitely broken.
+>
+>I prefer spurious retransmits, especially because they seem to be
+>absolute noise in normal setups.
+>
+>>
+>> Given the following case:
+>>
+>>      CPU0                        CPU1
+>> -----------------
+>>       |
+>>       v
+>> loopback_xmit()                 -----
+>>       |                           ^
+>>       v                           |
+>> enqueue_to_backlog()              | CPU1 is doing some work in
+>>       |                           | kernel for more than 2ms without
+>>  (more then 2ms                   | calling net_rx_action()
+>>   without ACK)                    | CPU1's backlog queue not been processed.
+>>       |                           v
+>>       v                         -----
+>> CPU0 try TLP probe                |
+>> and skb_fclone_busy()             |
+>> found skb been orphaned.          |
+>> So, send the TLP probe            |
+>>                                   v
+>>                            process_backlog()
+>>                                 After CPU0's TLP probe, CPU1 finnally
+>>                                 come back and processed its backlog queue,
+>>                                 and saw the original packet, send the ACK
+>>                                 back to CPU0.
+>>
+>>
+>> The problem here is packet sent by CPU0 is first queued in CPU1's
+>> backlog queue, but CPU1 is busy doing something else for longer
+>> then TLP probe time. And CPU0 don't think the packet is still in
+>> "host queue", so he retransmitted.
+>>
+>> I think the core problem is how we define "host queue", currently we
+>> only think qdisc and device driver is "host queue", I think we should
+>> also cover the per CPU backlog queue.
+>>
+>>
+>> For veth, since it also uses netif_rx() to receive the packet on the
+>> peer's device, it should have the some problem.
+>> Yeah, checking sock_is_loopback() seems not a good solution, maybe any
+>> better suggestions ?
+>>
+>>
+>> Thanks.
+>>
+>> >
+>> >>
+>> >> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+>> >> ---
+>> >>  include/linux/skbuff.h |  7 +++++--
+>> >>  net/ipv4/tcp_output.c  | 31 +++++++++++++++++++++++++++----
+>> >>  net/xfrm/xfrm_policy.c |  2 +-
+>> >>  3 files changed, 33 insertions(+), 7 deletions(-)
+>> >>
+>> >> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+>> >> index dbf820a50a39..290e0a6a3a47 100644
+>> >> --- a/include/linux/skbuff.h
+>> >> +++ b/include/linux/skbuff.h
+>> >> @@ -1131,9 +1131,12 @@ struct sk_buff_fclones {
+>> >>   * Returns true if skb is a fast clone, and its clone is not freed.
+>> >>   * Some drivers call skb_orphan() in their ndo_start_xmit(),
+>> >>   * so we also check that this didnt happen.
+>> >> + * For loopback, the skb maybe in the target sock's receive_queue
+>> >> + * we need to ignore that case.
+>> >>   */
+>> >>  static inline bool skb_fclone_busy(const struct sock *sk,
+>> >> -                                  const struct sk_buff *skb)
+>> >> +                                  const struct sk_buff *skb,
+>> >> +                                  bool is_loopback)
+>> >>  {
+>> >>         const struct sk_buff_fclones *fclones;
+>> >>
+>> >> @@ -1141,7 +1144,7 @@ static inline bool skb_fclone_busy(const struct sock *sk,
+>> >>
+>> >>         return skb->fclone == SKB_FCLONE_ORIG &&
+>> >>                refcount_read(&fclones->fclone_ref) > 1 &&
+>> >> -              READ_ONCE(fclones->skb2.sk) == sk;
+>> >> +              is_loopback ? true : READ_ONCE(fclones->skb2.sk) == sk;
+>> >>  }
+>> >>
+>> >>  /**
+>> >> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+>> >> index bde781f46b41..f51a6a565678 100644
+>> >> --- a/net/ipv4/tcp_output.c
+>> >> +++ b/net/ipv4/tcp_output.c
+>> >> @@ -2771,6 +2771,20 @@ bool tcp_schedule_loss_probe(struct sock *sk, bool advancing_rto)
+>> >>         return true;
+>> >>  }
+>> >>
+>> >> +static int sock_is_loopback(const struct sock *sk)
+>> >> +{
+>> >> +       struct dst_entry *dst;
+>> >> +       int loopback = 0;
+>> >> +
+>> >> +       rcu_read_lock();
+>> >> +       dst = rcu_dereference(sk->sk_dst_cache);
+>> >> +       if (dst && dst->dev &&
+>> >> +           (dst->dev->features & NETIF_F_LOOPBACK))
+>> >> +               loopback = 1;
+>> >> +       rcu_read_unlock();
+>> >> +       return loopback;
+>> >> +}
+>> >> +
+>> >>  /* Thanks to skb fast clones, we can detect if a prior transmit of
+>> >>   * a packet is still in a qdisc or driver queue.
+>> >>   * In this case, there is very little point doing a retransmit !
+>> >> @@ -2778,15 +2792,24 @@ bool tcp_schedule_loss_probe(struct sock *sk, bool advancing_rto)
+>> >>  static bool skb_still_in_host_queue(struct sock *sk,
+>> >>                                     const struct sk_buff *skb)
+>> >>  {
+>> >> -       if (unlikely(skb_fclone_busy(sk, skb))) {
+>> >> -               set_bit(TSQ_THROTTLED, &sk->sk_tsq_flags);
+>> >> -               smp_mb__after_atomic();
+>> >> -               if (skb_fclone_busy(sk, skb)) {
+>> >> +       bool is_loopback = sock_is_loopback(sk);
+>> >> +
+>> >> +       if (unlikely(skb_fclone_busy(sk, skb, is_loopback))) {
+>> >> +               if (!is_loopback) {
+>> >> +                       set_bit(TSQ_THROTTLED, &sk->sk_tsq_flags);
+>> >> +                       smp_mb__after_atomic();
+>> >> +                       if (skb_fclone_busy(sk, skb, is_loopback)) {
+>> >> +                               NET_INC_STATS(sock_net(sk),
+>> >> +                                             LINUX_MIB_TCPSPURIOUS_RTX_HOSTQUEUES);
+>> >> +                               return true;
+>> >> +                       }
+>> >> +               } else {
+>> >>                         NET_INC_STATS(sock_net(sk),
+>> >>                                       LINUX_MIB_TCPSPURIOUS_RTX_HOSTQUEUES);
+>> >>                         return true;
+>> >>                 }
+>> >>         }
+>> >> +
+>> >>         return false;
+>> >>  }
+>> >>
+>> >> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+>> >> index ce500f847b99..f8ea62a840e9 100644
+>> >> --- a/net/xfrm/xfrm_policy.c
+>> >> +++ b/net/xfrm/xfrm_policy.c
+>> >> @@ -2846,7 +2846,7 @@ static int xdst_queue_output(struct net *net, struct sock *sk, struct sk_buff *s
+>> >>         struct xfrm_policy *pol = xdst->pols[0];
+>> >>         struct xfrm_policy_queue *pq = &pol->polq;
+>> >>
+>> >> -       if (unlikely(skb_fclone_busy(sk, skb))) {
+>> >> +       if (unlikely(skb_fclone_busy(sk, skb, false))) {
+>> >>                 kfree_skb(skb);
+>> >>                 return 0;
+>> >>         }
+>> >> --
+>> >> 2.19.1.3.ge56e4f7
+>> >>
