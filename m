@@ -2,111 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61D013A0FA5
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 11:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBB5E3A10D1
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 12:49:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238026AbhFIJaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 05:30:16 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:50370 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237993AbhFIJaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 05:30:15 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1599F4M9170872;
-        Wed, 9 Jun 2021 09:28:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=sFRB38PhM3Ekerd+v4R3UAA8bG0qfH1+I7ZpFgJhBJw=;
- b=COylQu9qMY6lp5Y7V+RoGiQH6T+Q1Zwx32s0RqipC41mcKiGvA0EyVuFoXEGjncXuPtd
- sKGT1iJ46xpi1QW/D58jnsiQfsdDGRAqdXicF8Ee0gocqtQY+toEx88hMG733mps7m+8
- F3JRqre9T4JZVMqNzgug7D4XdSvQHEFQ3qV/mSkEGxgjvEvg1VpO18MHYx1XvZxT1oQa
- +/qTkkS2PDnCFylblJR0uUvrFwZoMFhk2iG1NkS+rajooFNK0+OaGC9owkUuBEy88ZBE
- hIeSfO1J64sLnNti3DznK7veke7qqLPAym0kkTwIEVvEo0aqWLzOAoGVWruaZxQucntz +g== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 3914quq3kf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Jun 2021 09:28:11 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1599P4D5128183;
-        Wed, 9 Jun 2021 09:28:11 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 390k1rs898-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Jun 2021 09:28:11 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 1599SB0I138997;
-        Wed, 9 Jun 2021 09:28:11 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 390k1rs892-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Jun 2021 09:28:10 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 1599S5E5031717;
-        Wed, 9 Jun 2021 09:28:05 GMT
-Received: from kadam (/41.212.42.34)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 09 Jun 2021 02:28:04 -0700
-Date:   Wed, 9 Jun 2021 12:27:57 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        id S235388AbhFIKGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 06:06:45 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:38276 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232972AbhFIKGp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 06:06:45 -0400
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1599bP2c9007528, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1599bP2c9007528
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 9 Jun 2021 17:37:25 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 9 Jun 2021 17:37:24 +0800
+Received: from localhost.localdomain (172.21.177.191) by
+ RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 9 Jun 2021 17:37:23 +0800
+From:   Edward Wu <edwardwu@realtek.com>
+To:     <netdev@vger.kernel.org>
+CC:     <nic_swsd@realtek.com>, Edward Wu <edwardwu@realtek.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2][next] net: usb: asix: Fix less than zero comparison
- of a u16
-Message-ID: <20210609092757.GF1955@kadam>
-References: <20210608152249.160333-1-colin.king@canonical.com>
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-dev] net: Exposing more skb fields in netif_receive_skb trace event
+Date:   Wed, 9 Jun 2021 17:36:54 +0800
+Message-ID: <20210609093656.8984-1-edwardwu@realtek.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210608152249.160333-1-colin.king@canonical.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-ORIG-GUID: QVXrQoM-CFcb2Tyn9bZFrzTPnJArQoeC
-X-Proofpoint-GUID: QVXrQoM-CFcb2Tyn9bZFrzTPnJArQoeC
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10009 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 impostorscore=0 phishscore=0
- spamscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0
- priorityscore=1501 adultscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106090042
+Content-Type: text/plain
+X-Originating-IP: [172.21.177.191]
+X-ClientProxiedBy: RTEXMBS02.realtek.com.tw (172.21.6.95) To
+ RTEXMBS03.realtek.com.tw (172.21.6.96)
+X-KSE-ServerInfo: RTEXMBS03.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/09/2021 09:22:00
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzYvOSCkV6TIIDA2OjAwOjAw?=
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/09/2021 09:24:29
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 164206 [Jun 09 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: edwardwu@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/09/2021 09:27:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 08, 2021 at 04:22:48PM +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The comparison of the u16 priv->phy_addr < 0 is always false because
-> phy_addr is unsigned. Fix this by assigning the return from the call
-> to function asix_read_phy_addr to int ret and using this for the
-> less than zero error check comparison.
-> 
-> Addresses-Coverity: ("Unsigned compared against 0")
-> Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/usb/asix_devices.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-> index 57dafb3262d9..211c5a87eb15 100644
-> --- a/drivers/net/usb/asix_devices.c
-> +++ b/drivers/net/usb/asix_devices.c
-> @@ -704,9 +704,10 @@ static int ax88772_init_phy(struct usbnet *dev)
->  	struct asix_common_private *priv = dev->driver_priv;
->  	int ret;
->  
-> -	priv->phy_addr = asix_read_phy_addr(dev, true);
-> -	if (priv->phy_addr < 0)
-> +	ret = asix_read_phy_addr(dev, true);
-> +	if (ret < 0)
->  		return priv->phy_addr;
+This exposing helps to analyze network behavior.
 
-		return ret;
+In performance tuning, we will check nr_frags to analyze
+GRO aggregation behavior. By this commit, we can
+enable netif_receive_skb trace event for dynamic debugging.
 
-regards,
-dan carpenter
+Signed-off-by: Edward Wu <edwardwu@realtek.com>
+---
+ include/trace/events/net.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/include/trace/events/net.h b/include/trace/events/net.h
+index 2399073c3afc..48aa7168b68f 100644
+--- a/include/trace/events/net.h
++++ b/include/trace/events/net.h
+@@ -147,13 +147,6 @@ DEFINE_EVENT(net_dev_template, net_dev_queue,
+ 	TP_ARGS(skb)
+ );
+ 
+-DEFINE_EVENT(net_dev_template, netif_receive_skb,
+-
+-	TP_PROTO(struct sk_buff *skb),
+-
+-	TP_ARGS(skb)
+-);
+-
+ DEFINE_EVENT(net_dev_template, netif_rx,
+ 
+ 	TP_PROTO(struct sk_buff *skb),
+@@ -239,6 +232,13 @@ DEFINE_EVENT(net_dev_rx_verbose_template, napi_gro_receive_entry,
+ 	TP_ARGS(skb)
+ );
+ 
++DEFINE_EVENT(net_dev_rx_verbose_template, netif_receive_skb,
++
++	TP_PROTO(const struct sk_buff *skb),
++
++	TP_ARGS(skb)
++);
++
+ DEFINE_EVENT(net_dev_rx_verbose_template, netif_receive_skb_entry,
+ 
+ 	TP_PROTO(const struct sk_buff *skb),
+-- 
+2.17.1
 
