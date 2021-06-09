@@ -2,101 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BD163A20AE
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 01:24:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D723A20B6
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 01:27:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbhFIX0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 19:26:30 -0400
-Received: from mga12.intel.com ([192.55.52.136]:55247 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229542AbhFIX03 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 19:26:29 -0400
-IronPort-SDR: 6HpdVh9E5ZKVALH12gUQGOdstkZmMLyigxK6o3SlzpbmrRZzg5Vc1qxizuOzua5ygms4xH0dsH
- wCpPUYOa8lBQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="184881136"
-X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
-   d="scan'208";a="184881136"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2021 16:24:31 -0700
-IronPort-SDR: Xlgi0XtmMkUsNi8AukI0Cf34BXKT0Q7BtrB8dza4cBG7E+W22tlB3k9D1iYxi0xsQ35VL30uCH
- eRvCXnEYDuPw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,261,1616482800"; 
-   d="scan'208";a="470034494"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga004.fm.intel.com with ESMTP; 09 Jun 2021 16:24:31 -0700
-Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 3E2305802A4;
-        Wed,  9 Jun 2021 16:24:27 -0700 (PDT)
-Date:   Thu, 10 Jun 2021 07:24:24 +0800
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 03/13] net: stmmac: reduce indentation when
- calling stmmac_xpcs_setup
-Message-ID: <20210609232424.GB8706@linux.intel.com>
-References: <20210609184155.921662-1-olteanv@gmail.com>
- <20210609184155.921662-4-olteanv@gmail.com>
+        id S229757AbhFIX3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 19:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229705AbhFIX3d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 19:29:33 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896E0C06175F
+        for <netdev@vger.kernel.org>; Wed,  9 Jun 2021 16:27:25 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id e7so13553647plj.7
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 16:27:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rPwFm+rW5VJo250kQOZcru/sRI6+UZ6fSWYAEKjNOl8=;
+        b=koQ9XOS9Ahh++/EJkQYsM/lmckBNtNk3H15jg9UrEF+0vJyfvFlAa/gQhNntz9gu1w
+         Oqs61SCcdSCMc9H5FE4ZdoooczAaIPcxe7jAJxGaFaFKASEslnvZ6mQDqd5rYc8npZmh
+         0isbpH8z/+CjhFiJHWfargQyKl+5Ht4rUjK5jpkUo31LpnfC9GTUkrgEmEXjVgd4V0DC
+         V6WlFXcSgBGg7EKnZDJcgXtuOk5CErlGosgLzxm0O0L+Gak1ws8U/hS7hyAv4/PA0bPh
+         8K9yGOI3EaKetOMc1Ru2ifH5BxK58xfPsr/H8Q9ofhN51F4bQ43i8Vv6FFy7qXVo5p/z
+         Sg1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rPwFm+rW5VJo250kQOZcru/sRI6+UZ6fSWYAEKjNOl8=;
+        b=t1C59GhxrpMUeLsmXcDj+/6u//FpMyTIT1kDToQTPsNnsQRncGe6kIBbOB8Ybf8Ewz
+         b3w6coezbz8+o15ohesuKM/zrGiFoBWLPrf7A9B3+nWQXC06m3mMILWiRPZ2Zc2wc7w4
+         D3lhL2gGU8LvhElE9dJI91T/PR8tPTJ3K9R2nCttMd0poePnZp13Um0B+xsV4xhdyZCg
+         g7mtRHpchFRVE7exQi2hv1ReDgfzyLir4NaH7pRhWcLuBX2ziLXpqIB9VP8qoumzWexb
+         0yewLrlRI+lWLI9MyOSibU/ZgQagHa6rOv8yl988dtvdXw4ZB7s+sdB0xfbA8sT78FgX
+         pUGg==
+X-Gm-Message-State: AOAM530SKbkDtnVnxJ0TFUfV8dClf4Vj+1jcGZEXuFJjFfoOXP0SscTb
+        M4R4DRSe76ssM1HdX+qeNp2RLQ==
+X-Google-Smtp-Source: ABdhPJx7y5w6Y2cekg09LzZc1GmAicnE6+tSkLAtxpBWIyREqveDAqIwuJX1FGXwpqEcOmgaufVpkg==
+X-Received: by 2002:a17:90a:dc04:: with SMTP id i4mr135874pjv.75.1623281244893;
+        Wed, 09 Jun 2021 16:27:24 -0700 (PDT)
+Received: from n124-121-013.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
+        by smtp.gmail.com with ESMTPSA id k1sm526783pfa.30.2021.06.09.16.27.23
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 09 Jun 2021 16:27:24 -0700 (PDT)
+From:   Jiang Wang <jiang.wang@bytedance.com>
+To:     sgarzare@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, stefanha@redhat.com,
+        mst@redhat.com, arseny.krasnov@kaspersky.com,
+        jhansen@vmware.comments, cong.wang@bytedance.com,
+        duanxiongchun@bytedance.com, xieyongji@bytedance.com,
+        chaiwen.cc@bytedance.com, Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Lu Wei <luwei32@huawei.com>,
+        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC v1 0/6] virtio/vsock: introduce SOCK_DGRAM support
+Date:   Wed,  9 Jun 2021 23:24:52 +0000
+Message-Id: <20210609232501.171257-1-jiang.wang@bytedance.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210609184155.921662-4-olteanv@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 09, 2021 at 09:41:45PM +0300, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> There is no reason to embed an if within an if, we can just logically
-> AND the two conditions.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+This patchset implements support of SOCK_DGRAM for virtio
+transport.
 
-Reviewed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Datagram sockets are connectionless and unreliable. To avoid unfair contention
+with stream and other sockets, add two more virtqueues and
+a new feature bit to indicate if those two new queues exist or not.
 
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 1c881ec8cd04..372673f9af30 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -7002,12 +7002,10 @@ int stmmac_dvr_probe(struct device *device,
->  	if (priv->plat->speed_mode_2500)
->  		priv->plat->speed_mode_2500(ndev, priv->plat->bsp_priv);
->  
-> -	if (priv->plat->mdio_bus_data) {
-> -		if (priv->plat->mdio_bus_data->has_xpcs) {
-> -			ret = stmmac_xpcs_setup(priv->mii);
-> -			if (ret)
-> -				goto error_xpcs_setup;
-> -		}
-> +	if (priv->plat->mdio_bus_data && priv->plat->mdio_bus_data->has_xpcs) {
-> +		ret = stmmac_xpcs_setup(priv->mii);
-> +		if (ret)
-> +			goto error_xpcs_setup;
->  	}
->  
->  	ret = stmmac_phy_setup(priv);
-> -- 
-> 2.25.1
-> 
+Dgram does not use the existing credit update mechanism for
+stream sockets. When sending from the guest/driver, sending packets 
+synchronously, so the sender will get an error when the virtqueue is full.
+When sending from the host/device, send packets asynchronously
+because the descriptor memory belongs to the corresponding QEMU
+process.
+
+The virtio spec patch is here: 
+https://www.spinics.net/lists/linux-virtualization/msg50027.html
+
+For those who prefer git repo, here is the link for the linux kernel：
+https://github.com/Jiang1155/linux/tree/vsock-dgram-v1
+
+qemu patch link:
+https://github.com/Jiang1155/qemu/tree/vsock-dgram-v1
+
+
+To do:
+1. use skb when receiving packets
+2. support multiple transport
+3. support mergeable rx buffer
+
+
+Jiang Wang (6):
+  virtio/vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
+  virtio/vsock: add support for virtio datagram
+  vhost/vsock: add support for vhost dgram.
+  vsock_test: add tests for vsock dgram
+  vhost/vsock: add kconfig for vhost dgram support
+  virtio/vsock: add sysfs for rx buf len for dgram
+
+ drivers/vhost/Kconfig                              |   8 +
+ drivers/vhost/vsock.c                              | 207 ++++++++--
+ include/linux/virtio_vsock.h                       |   9 +
+ include/net/af_vsock.h                             |   1 +
+ .../trace/events/vsock_virtio_transport_common.h   |   5 +-
+ include/uapi/linux/virtio_vsock.h                  |   4 +
+ net/vmw_vsock/af_vsock.c                           |  12 +
+ net/vmw_vsock/virtio_transport.c                   | 433 ++++++++++++++++++---
+ net/vmw_vsock/virtio_transport_common.c            | 184 ++++++++-
+ tools/testing/vsock/util.c                         | 105 +++++
+ tools/testing/vsock/util.h                         |   4 +
+ tools/testing/vsock/vsock_test.c                   | 195 ++++++++++
+ 12 files changed, 1070 insertions(+), 97 deletions(-)
+
+-- 
+2.11.0
+
