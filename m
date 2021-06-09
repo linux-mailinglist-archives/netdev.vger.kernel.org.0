@@ -2,51 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 520DC3A0BDD
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 07:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAC003A0BE3
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 07:34:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236210AbhFIFck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 01:32:40 -0400
-Received: from mail-yb1-f173.google.com ([209.85.219.173]:41859 "EHLO
-        mail-yb1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbhFIFck (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 01:32:40 -0400
-Received: by mail-yb1-f173.google.com with SMTP id q21so33696872ybg.8;
-        Tue, 08 Jun 2021 22:30:30 -0700 (PDT)
+        id S232204AbhFIFge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 01:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230222AbhFIFgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 01:36:33 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F16C061574;
+        Tue,  8 Jun 2021 22:34:25 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id m9so27283161ybo.5;
+        Tue, 08 Jun 2021 22:34:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8YlOJZ+r6aLVjjfIp7idcCqX4B6xw/jCujxoJAaZI3s=;
-        b=ha6aJftWz30d3EtmwjQj/1ii9vH5rQdwquY1Pi31gW3FJogSENa466/gSxK3EHbd9v
-         KsyfINinRnJkxr60pa5Eg0ZnvpS2l/AHNOYqtM6dK4dIp1u7s9ikt6SKzDQVI00/4lLg
-         I/IeyplAxmqg/LBdXiUBx2KxkzaRCps0N1EiAPzPXNZ4fWqNSlgautNjSoJK3c4lomHb
-         BrPuaQyWpJu0AHWyrV9oGvGi/76U0e66nNSiEPkzxIhagrSvltJ84B1wTOiQLKoow9Gt
-         ItOg6wxAdjBNYJq3GO2lPqy/ii/fyJnUYhUXqePPU3J7G/GNi0S0Qj/Q7pEm0pGJ7kyw
-         Eb6w==
+        bh=2ciAGGcKwmzry9596GXBQ69plLDVjKjBKM8fXtxcv5I=;
+        b=S4auukTVQ/9KAd4eLYqA7CYB/B6URU7rX2Sm0uZkGAyBjhYu8UsYhFAjCB8zzZ6f5u
+         zJw7apXJeZkzTf1O9hED0YQg5NyEmKgXy+E1Z8qsb6iWNC4W6IcjDuqwlJ4N18qTDdNf
+         8HgzHOTlua3zr04ICQydbPvBYwAsVENQAg+pXXkA6x9Thxh+bFSYFkOJeei4zkp7OqNN
+         bBDYgk7XHUvBA4WXZUYv24Ouklw+XZLkwnE8JdlFFmWQadZ8qjeWd2lZpUk3P7fBOxJY
+         N7ZqSQEc19boIaYgub2s6tuI9KR8cb1tttq52DY0xjGAzCLelQeGQ7q/yqTDskORjA0w
+         hXnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8YlOJZ+r6aLVjjfIp7idcCqX4B6xw/jCujxoJAaZI3s=;
-        b=WQ/E7RsP0eCkwy2zsMMVtEiLBNfiiUg1n8ryl3OH1YPBwRR5niJtzUTnQAn23+sRJd
-         PnziUpu1/GpUa3/Btz9vmdhAD82UDFyWHaWHtjodHFvDRMo1qjyfttNg0dJsA8tUnGpn
-         9V+D/Lh8l75U/AGSqtSgan37tsoDm6vnbaItqv85uhdQp0erymG7opaEqaGcEIlhv26X
-         iSKCr9RN16iiMKsKgNvKynIc2RTKv4VwKbZOMU1qTpt1HXxKqcd5xPjLm4vfwH58wYTH
-         8Nq9kRVmnwmHxPn2Km9hc8PVt7l/1r+ImVGmb4OcQZHq9rnOtCJ6mSk4E49Q93lKy1XR
-         YcgA==
-X-Gm-Message-State: AOAM5326369HeluiT/hLk/KGPQ1yd6xszMvPpB3aFIyNriIEcyXHS4AS
-        IdksclGerYPkVWSB4+6/66VRJrBlwnvYb1myFqI=
-X-Google-Smtp-Source: ABdhPJxenRpktScHEzxOzkPjobeCeWLPzUhHNSlTJcYgwPHvgxtl92KmxGh1K+dQxpg4fthvN54ypaLxlycYzoqxoGg=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr34349565ybg.459.1623216570592;
- Tue, 08 Jun 2021 22:29:30 -0700 (PDT)
+        bh=2ciAGGcKwmzry9596GXBQ69plLDVjKjBKM8fXtxcv5I=;
+        b=LnwlKeEpRxasGECzgQQUpDkcT2XjPCUgk0MQRroAaol3lGuQPo0Ulv5DlTEA9TnjKA
+         9KMtCmaiI12DcQcCOOW4blR3BkIs83AlJfZKEDa5O3UixrNtaJHKOpsBCFwOl+HVMSmw
+         0RqVdckWX6+pwBmT/1znCwfkDgpk5tnsvlxZAQ3HC6OVL0kpsrCX0vrSm2gQQJvAL09a
+         MtQJCqEXh9I67Adypcz3HowBY5oefYZe391uteCDSpBBb0KZWemXmmw56bI0AlKatgey
+         RTljGh4h9beu59UOemRECdtxaa4wRL4IGI3zDSaKaHxcJ0ccL0S/tVA7ljyzaSuTQjZ+
+         173w==
+X-Gm-Message-State: AOAM530qqDEiz9UrQhYIZwmQM9VwR7MV0sfBf5MRSmPh2RPbWH2jg7bo
+        fDp41Rr3aRxsH9DE0UfNtkZZVQfHBWNh1m5REHY=
+X-Google-Smtp-Source: ABdhPJxb7raOAZsvKjwq0xBLtuFkBOLFled9n5m98+W2z1BYThxgLyKBJcxQO2ewhq6+eNGbPffsjJ878vvfcrN4Syc=
+X-Received: by 2002:a25:aa66:: with SMTP id s93mr25687600ybi.260.1623216862654;
+ Tue, 08 Jun 2021 22:34:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210605111034.1810858-1-jolsa@kernel.org> <20210605111034.1810858-15-jolsa@kernel.org>
-In-Reply-To: <20210605111034.1810858-15-jolsa@kernel.org>
+References: <20210605111034.1810858-1-jolsa@kernel.org> <20210605111034.1810858-16-jolsa@kernel.org>
+In-Reply-To: <20210605111034.1810858-16-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 8 Jun 2021 22:29:19 -0700
-Message-ID: <CAEf4BzaT9eiyMrpKbmmq3hOpD29b8K6DiRzB0eRKnTso93YRoA@mail.gmail.com>
-Subject: Re: [PATCH 14/19] libbpf: Add btf__find_by_pattern_kind function
+Date:   Tue, 8 Jun 2021 22:34:11 -0700
+Message-ID: <CAEf4BzaCWG1WtkQA6gZGvvGUhk3Si9jkZ2s6ToWowKhU4cXMuw@mail.gmail.com>
+Subject: Re: [PATCH 15/19] libbpf: Add support to link multi func tracing program
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -63,141 +66,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 5, 2021 at 4:14 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Sat, Jun 5, 2021 at 4:12 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Adding btf__find_by_pattern_kind function that returns
-> array of BTF ids for given function name pattern.
+> Adding support to link multi func tracing program
+> through link_create interface.
 >
-> Using libc's regex.h support for that.
+> Adding special types for multi func programs:
+>
+>   fentry.multi
+>   fexit.multi
+>
+> so you can define multi func programs like:
+>
+>   SEC("fentry.multi/bpf_fentry_test*")
+>   int BPF_PROG(test1, unsigned long ip, __u64 a, __u64 b, __u64 c, __u64 d, __u64 e, __u64 f)
+>
+> that defines test1 to be attached to bpf_fentry_test* functions,
+> and able to attach ip and 6 arguments.
+>
+> If functions are not specified the program needs to be attached
+> manually.
+>
+> Adding new btf id related fields to bpf_link_create_opts and
+> bpf_link_create to use them.
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  tools/lib/bpf/btf.c | 68 +++++++++++++++++++++++++++++++++++++++++++++
->  tools/lib/bpf/btf.h |  3 ++
->  2 files changed, 71 insertions(+)
+>  tools/lib/bpf/bpf.c    | 11 ++++++-
+>  tools/lib/bpf/bpf.h    |  4 ++-
+>  tools/lib/bpf/libbpf.c | 72 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 85 insertions(+), 2 deletions(-)
 >
-> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> index b46760b93bb4..421dd6c1e44a 100644
-> --- a/tools/lib/bpf/btf.c
-> +++ b/tools/lib/bpf/btf.c
-> @@ -1,6 +1,7 @@
->  // SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
->  /* Copyright (c) 2018 Facebook */
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index 86dcac44f32f..da892737b522 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -674,7 +674,8 @@ int bpf_link_create(int prog_fd, int target_fd,
+>                     enum bpf_attach_type attach_type,
+>                     const struct bpf_link_create_opts *opts)
+>  {
+> -       __u32 target_btf_id, iter_info_len;
+> +       __u32 target_btf_id, iter_info_len, multi_btf_ids_cnt;
+> +       __s32 *multi_btf_ids;
+>         union bpf_attr attr;
+>         int fd;
 >
-> +#define _GNU_SOURCE
->  #include <byteswap.h>
->  #include <endian.h>
->  #include <stdio.h>
-> @@ -16,6 +17,7 @@
->  #include <linux/err.h>
->  #include <linux/btf.h>
->  #include <gelf.h>
-> +#include <regex.h>
->  #include "btf.h"
->  #include "bpf.h"
->  #include "libbpf.h"
-> @@ -711,6 +713,72 @@ __s32 btf__find_by_name_kind(const struct btf *btf, const char *type_name,
->         return libbpf_err(-ENOENT);
+> @@ -687,6 +688,9 @@ int bpf_link_create(int prog_fd, int target_fd,
+>         if (iter_info_len && target_btf_id)
+
+here we check that mutually exclusive options are not specified, we
+should do the same for multi stuff
+
+>                 return libbpf_err(-EINVAL);
+>
+> +       multi_btf_ids = OPTS_GET(opts, multi_btf_ids, 0);
+> +       multi_btf_ids_cnt = OPTS_GET(opts, multi_btf_ids_cnt, 0);
+> +
+>         memset(&attr, 0, sizeof(attr));
+>         attr.link_create.prog_fd = prog_fd;
+>         attr.link_create.target_fd = target_fd;
+> @@ -701,6 +705,11 @@ int bpf_link_create(int prog_fd, int target_fd,
+>                 attr.link_create.target_btf_id = target_btf_id;
+>         }
+>
+> +       if (multi_btf_ids && multi_btf_ids_cnt) {
+> +               attr.link_create.multi_btf_ids = (__u64) multi_btf_ids;
+> +               attr.link_create.multi_btf_ids_cnt = multi_btf_ids_cnt;
+> +       }
+> +
+>         fd = sys_bpf(BPF_LINK_CREATE, &attr, sizeof(attr));
+>         return libbpf_err_errno(fd);
 >  }
+> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+> index 4f758f8f50cd..2f78b6c34765 100644
+> --- a/tools/lib/bpf/bpf.h
+> +++ b/tools/lib/bpf/bpf.h
+> @@ -177,8 +177,10 @@ struct bpf_link_create_opts {
+>         union bpf_iter_link_info *iter_info;
+>         __u32 iter_info_len;
+>         __u32 target_btf_id;
+> +       __s32 *multi_btf_ids;
+
+why ids are __s32?..
+
+> +       __u32 multi_btf_ids_cnt;
+>  };
+> -#define bpf_link_create_opts__last_field target_btf_id
+> +#define bpf_link_create_opts__last_field multi_btf_ids_cnt
 >
-> +static bool is_wildcard(char c)
-> +{
-> +       static const char *wildchars = "*?[|";
-> +
-> +       return strchr(wildchars, c);
-> +}
-> +
-> +int btf__find_by_pattern_kind(const struct btf *btf,
-> +                             const char *type_pattern, __u32 kind,
-> +                             __s32 **__ids)
-> +{
-> +       __u32 i, nr_types = btf__get_nr_types(btf);
-> +       __s32 *ids = NULL;
-> +       int cnt = 0, alloc = 0, ret;
-> +       regex_t regex;
-> +       char *pattern;
-> +
-> +       if (kind == BTF_KIND_UNKN || !strcmp(type_pattern, "void"))
+>  LIBBPF_API int bpf_link_create(int prog_fd, int target_fd,
+>                                enum bpf_attach_type attach_type,
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 65f87cc1220c..bd31de3b6a85 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -228,6 +228,7 @@ struct bpf_sec_def {
+>         bool is_attachable;
+>         bool is_attach_btf;
+>         bool is_sleepable;
+> +       bool is_multi_func;
+>         attach_fn_t attach_fn;
+>  };
+>
+> @@ -7609,6 +7610,8 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+>
+>                 if (prog->sec_def->is_sleepable)
+>                         prog->prog_flags |= BPF_F_SLEEPABLE;
+> +               if (prog->sec_def->is_multi_func)
+> +                       prog->prog_flags |= BPF_F_MULTI_FUNC;
+>                 bpf_program__set_type(prog, prog->sec_def->prog_type);
+>                 bpf_program__set_expected_attach_type(prog,
+>                                 prog->sec_def->expected_attach_type);
+> @@ -9070,6 +9073,8 @@ static struct bpf_link *attach_raw_tp(const struct bpf_sec_def *sec,
+>                                       struct bpf_program *prog);
+>  static struct bpf_link *attach_trace(const struct bpf_sec_def *sec,
+>                                      struct bpf_program *prog);
+> +static struct bpf_link *attach_trace_multi(const struct bpf_sec_def *sec,
+> +                                          struct bpf_program *prog);
+>  static struct bpf_link *attach_lsm(const struct bpf_sec_def *sec,
+>                                    struct bpf_program *prog);
+>  static struct bpf_link *attach_iter(const struct bpf_sec_def *sec,
+> @@ -9143,6 +9148,14 @@ static const struct bpf_sec_def section_defs[] = {
+>                 .attach_fn = attach_iter),
+>         SEC_DEF("syscall", SYSCALL,
+>                 .is_sleepable = true),
+> +       SEC_DEF("fentry.multi/", TRACING,
+> +               .expected_attach_type = BPF_TRACE_FENTRY,
+
+BPF_TRACE_MULTI_FENTRY instead of is_multi stuff everywhere?.. Or a
+new type of BPF program altogether?
+
+> +               .is_multi_func = true,
+> +               .attach_fn = attach_trace_multi),
+> +       SEC_DEF("fexit.multi/", TRACING,
+> +               .expected_attach_type = BPF_TRACE_FEXIT,
+> +               .is_multi_func = true,
+> +               .attach_fn = attach_trace_multi),
+>         BPF_EAPROG_SEC("xdp_devmap/",           BPF_PROG_TYPE_XDP,
+>                                                 BPF_XDP_DEVMAP),
+>         BPF_EAPROG_SEC("xdp_cpumap/",           BPF_PROG_TYPE_XDP,
+> @@ -9584,6 +9597,9 @@ static int libbpf_find_attach_btf_id(struct bpf_program *prog, int *btf_obj_fd,
+>         if (!name)
+>                 return -EINVAL;
+>
+> +       if (prog->prog_flags & BPF_F_MULTI_FUNC)
 > +               return 0;
 > +
-> +       /* When the pattern does not start with wildcard, treat it as
-> +        * if we'd want to match it from the beginning of the string.
-> +        */
-
-This assumption is absolutely atrocious. If we say it's regexp, then
-it has to always be regexp, not something based on some random
-heuristic based on the first character.
-
-Taking a step back, though. Do we really need to provide this API? Why
-applications can't implement it on their own, given regexp
-functionality is provided by libc. Which I didn't know, actually, so
-that's pretty nice, assuming that it's also available in more minimal
-implementations like musl.
-
-> +       asprintf(&pattern, "%s%s",
-> +                is_wildcard(type_pattern[0]) ? "^" : "",
-> +                type_pattern);
-> +
-> +       ret = regcomp(&regex, pattern, REG_EXTENDED);
-> +       if (ret) {
-> +               pr_warn("failed to compile regex\n");
-> +               free(pattern);
-> +               return -EINVAL;
-> +       }
-> +
-> +       free(pattern);
-> +
-> +       for (i = 1; i <= nr_types; i++) {
-> +               const struct btf_type *t = btf__type_by_id(btf, i);
-> +               const char *name;
-> +               __s32 *p;
-> +
-> +               if (btf_kind(t) != kind)
-> +                       continue;
-> +               name = btf__name_by_offset(btf, t->name_off);
-> +               if (name && regexec(&regex, name, 0, NULL, 0))
-> +                       continue;
-> +               if (cnt == alloc) {
-> +                       alloc = max(100, alloc * 3 / 2);
-> +                       p = realloc(ids, alloc * sizeof(__u32));
-
-this memory allocation and re-allocation on behalf of users is another
-argument against this API
-
-> +                       if (!p) {
-> +                               free(ids);
-> +                               regfree(&regex);
-> +                               return -ENOMEM;
-> +                       }
-> +                       ids = p;
-> +               }
-> +
-> +               ids[cnt] = i;
-> +               cnt++;
-> +       }
-> +
-> +       regfree(&regex);
-> +       *__ids = ids;
-> +       return cnt ?: -ENOENT;
-> +}
-> +
->  static bool btf_is_modifiable(const struct btf *btf)
->  {
->         return (void *)btf->hdr != btf->raw_data;
-> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> index b54f1c3ebd57..036857aded94 100644
-> --- a/tools/lib/bpf/btf.h
-> +++ b/tools/lib/bpf/btf.h
-> @@ -371,6 +371,9 @@ btf_var_secinfos(const struct btf_type *t)
->         return (struct btf_var_secinfo *)(t + 1);
+>         for (i = 0; i < ARRAY_SIZE(section_defs); i++) {
+>                 if (!section_defs[i].is_attach_btf)
+>                         continue;
+> @@ -10537,6 +10553,62 @@ static struct bpf_link *bpf_program__attach_btf_id(struct bpf_program *prog)
+>         return (struct bpf_link *)link;
 >  }
 >
-> +int btf__find_by_pattern_kind(const struct btf *btf,
-> +                             const char *type_pattern, __u32 kind,
-> +                             __s32 **__ids);
->  #ifdef __cplusplus
->  } /* extern "C" */
->  #endif
+> +static struct bpf_link *bpf_program__attach_multi(struct bpf_program *prog)
+> +{
+> +       char *pattern = prog->sec_name + prog->sec_def->len;
+> +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
+> +       enum bpf_attach_type attach_type;
+> +       int prog_fd, link_fd, cnt, err;
+> +       struct bpf_link *link = NULL;
+> +       __s32 *ids = NULL;
+> +
+> +       prog_fd = bpf_program__fd(prog);
+> +       if (prog_fd < 0) {
+> +               pr_warn("prog '%s': can't attach before loaded\n", prog->name);
+> +               return ERR_PTR(-EINVAL);
+> +       }
+> +
+> +       err = bpf_object__load_vmlinux_btf(prog->obj, true);
+> +       if (err)
+> +               return ERR_PTR(err);
+> +
+> +       cnt = btf__find_by_pattern_kind(prog->obj->btf_vmlinux, pattern,
+> +                                       BTF_KIND_FUNC, &ids);
+
+I wonder if it would be better to just support a simplified glob
+patterns like "prefix*", "*suffix", "exactmatch", and "*substring*"?
+That should be sufficient for majority of cases. For the cases where
+user needs something more nuanced, they can just construct BTF ID list
+with custom code and do manual attach.
+
+> +       if (cnt <= 0)
+> +               return ERR_PTR(-EINVAL);
+> +
+> +       link = calloc(1, sizeof(*link));
+> +       if (!link) {
+> +               err = -ENOMEM;
+> +               goto out_err;
+> +       }
+> +       link->detach = &bpf_link__detach_fd;
+> +
+> +       opts.multi_btf_ids = ids;
+> +       opts.multi_btf_ids_cnt = cnt;
+> +
+> +       attach_type = bpf_program__get_expected_attach_type(prog);
+> +       link_fd = bpf_link_create(prog_fd, 0, attach_type, &opts);
+> +       if (link_fd < 0) {
+> +               err = -errno;
+> +               goto out_err;
+> +       }
+> +       link->fd = link_fd;
+> +       free(ids);
+> +       return link;
+> +
+> +out_err:
+> +       free(link);
+> +       free(ids);
+> +       return ERR_PTR(err);
+> +}
+> +
+> +static struct bpf_link *attach_trace_multi(const struct bpf_sec_def *sec,
+> +                                          struct bpf_program *prog)
+> +{
+> +       return bpf_program__attach_multi(prog);
+> +}
+> +
+>  struct bpf_link *bpf_program__attach_trace(struct bpf_program *prog)
+>  {
+>         return bpf_program__attach_btf_id(prog);
 > --
 > 2.31.1
 >
