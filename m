@@ -2,126 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7E733A0C5A
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 08:24:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7380E3A0CF0
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 09:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232659AbhFIG0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 02:26:15 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:50575 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229724AbhFIG0O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 02:26:14 -0400
-Received: from [192.168.0.3] (ip5f5aef16.dynamic.kabel-deutschland.de [95.90.239.22])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 6992161E6476C;
-        Wed,  9 Jun 2021 08:24:18 +0200 (CEST)
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v5 3/4] igc: Enable PCIe PTM
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     linux-pci@vger.kernel.org, richardcochran@gmail.com,
-        hch@infradead.org, netdev@vger.kernel.org, bhelgaas@google.com,
-        helgaas@kernel.org, intel-wired-lan@lists.osuosl.org
-References: <20210605002356.3996853-1-vinicius.gomes@intel.com>
- <20210605002356.3996853-4-vinicius.gomes@intel.com>
- <70d32740-eb4b-f7bf-146e-8dc06199d6c9@molgen.mpg.de>
- <87sg1sw56h.fsf@vcostago-mobl2.amr.corp.intel.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <939b8042-a313-47db-43d9-ea37e95b724b@molgen.mpg.de>
-Date:   Wed, 9 Jun 2021 08:24:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S236821AbhFIHCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 03:02:12 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:5301 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236781AbhFIHCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 03:02:08 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4G0HtJ5r13z1455X;
+        Wed,  9 Jun 2021 14:55:20 +0800 (CST)
+Received: from dggpeml500020.china.huawei.com (7.185.36.88) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 9 Jun 2021 15:00:12 +0800
+Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
+ (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 9 Jun 2021
+ 15:00:11 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <yangjihong1@huawei.com>, <yukuai3@huawei.com>,
+        <libaokun1@huawei.com>, <oss-drivers@corigine.com>,
+        <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH net-next v2] nfp: use list_move instead of list_del/list_add in nfp_cppcore.c
+Date:   Wed, 9 Jun 2021 15:09:21 +0800
+Message-ID: <20210609070921.1330407-1-libaokun1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <87sg1sw56h.fsf@vcostago-mobl2.amr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Vinicius,
+Using list_move() instead of list_del() + list_add() in nfp_cppcore.c.
 
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+---
+V1->V2:
+	CC mailist
 
-Am 08.06.21 um 21:02 schrieb Vinicius Costa Gomes:
+ .../ethernet/netronome/nfp/nfpcore/nfp_cppcore.c   | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> Paul Menzel writes:
+diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+index 94994a939277..d7ac0307797f 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
++++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+@@ -905,8 +905,7 @@ area_cache_put(struct nfp_cpp *cpp, struct nfp_cpp_area_cache *cache)
+ 		return;
+ 
+ 	/* Move to front of LRU */
+-	list_del(&cache->entry);
+-	list_add(&cache->entry, &cpp->area_cache_list);
++	list_move(&cache->entry, &cpp->area_cache_list);
+ 
+ 	mutex_unlock(&cpp->area_cache_mutex);
+ }
 
->> Am 05.06.21 um 02:23 schrieb Vinicius Costa Gomes:
->>> Enables PCIe PTM (Precision Time Measurement) support in the igc
->>> driver. Notifies the PCI devices that PCIe PTM should be enabled.
->>>
->>> PCIe PTM is similar protocol to PTP (Precision Time Protocol) running
->>> in the PCIe fabric, it allows devices to report time measurements from
->>> their internal clocks and the correlation with the PCIe root clock.
->>>
->>> The i225 NIC exposes some registers that expose those time
->>> measurements, those registers will be used, in later patches, to
->>> implement the PTP_SYS_OFFSET_PRECISE ioctl().
->>>
->>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
->>> ---
->>>    drivers/net/ethernet/intel/igc/igc_main.c | 6 ++++++
->>>    1 file changed, 6 insertions(+)
->>>
->>> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
->>> index a05e6d8ec660..f23d0303e53b 100644
->>> --- a/drivers/net/ethernet/intel/igc/igc_main.c
->>> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
->>> @@ -12,6 +12,8 @@
->>>    #include <net/pkt_sched.h>
->>>    #include <linux/bpf_trace.h>
->>>    #include <net/xdp_sock_drv.h>
->>> +#include <linux/pci.h>
->>> +
->>>    #include <net/ipv6.h>
->>>    
->>>    #include "igc.h"
->>> @@ -5864,6 +5866,10 @@ static int igc_probe(struct pci_dev *pdev,
->>>    
->>>    	pci_enable_pcie_error_reporting(pdev);
->>>    
->>> +	err = pci_enable_ptm(pdev, NULL);
->>> +	if (err < 0)
->>> +		dev_err(&pdev->dev, "PTM not supported\n");
->>> +
->>
->> Sorry, if I am missing something, but do all devices supported by this
->> driver support PTM or only the i225 NIC? In that case, it wouldn’t be an
->> error for a device not supporting PTM, would it?
-> 
-> That was a very good question. I had to talk with the hardware folks.
-> All the devices supported by the igc driver should support PTM.
-
-Thank you for checking that, that is valuable information.
-
-> And just to be clear, the reason that I am not returning an error here
-> is that PTM could not be supported by the host system (think PCI
-> controller).
-
-I just checked `pci_enable_ptm()` and on success it calls 
-`pci_ptm_info()` logging a message:
-
-	pci_info(dev, "PTM enabled%s, %s granularity\n",
-		 dev->ptm_root ? " (root)" : "", clock_desc);
-
-Was that present on your system with your patch? Please add that to the 
-commit message.
-
-Regarding my comment, I did not mean returning an error but the log 
-*level* of the message. So, `dmesg --level err` would show that message. 
-But if there are PCI controllers not supporting that, it’s not an error, 
-but a warning at most. So, I’d use:
-
-	dev_warn(&pdev->dev, "PTM not supported by PCI bus/controller 
-(pci_enable_ptm() failed)\n");
-
->>>    	pci_set_master(pdev);
->>>    
->>>    	err = -ENOMEM;
-
-
-Kind regards,
-
-Paul
