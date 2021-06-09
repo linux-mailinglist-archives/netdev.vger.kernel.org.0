@@ -2,95 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8552E3A0A4E
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 04:55:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CBA23A0A6D
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 05:03:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236172AbhFIC5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Jun 2021 22:57:14 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36625 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232690AbhFIC5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Jun 2021 22:57:09 -0400
-Received: by mail-pl1-f195.google.com with SMTP id x10so11772907plg.3;
-        Tue, 08 Jun 2021 19:55:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2/c6KMsKX6alZWBNUlZL1Vqah+CZUobnDVfUuNr6j0Q=;
-        b=auri21nXSbQkAa3dvUFlWOI+SPSQ4IImLBtzfVw/IqXZDH/SR46D7ke3hItt9/DFHv
-         Je40qmnqLMKvhRUV6Q4lCLMC9biyrw71rBjCsgpl+gU9vBvIkXoOPrO3immBN6iJdi0G
-         JW+7Xkm1cLPzPbYaFAPPR5mcpfHO4hV7fsGjMw/Ile5/qi4oMPmrNnU52ydu2oMcObBu
-         Pjggsq3hWSDuCOB9mqFZn1msujdotUWrtxaXndFDwM94+omZX2ZhpNeNUYZF3JDzHdIa
-         CReV2iY0CQXP6+qYntXHohMS/7p+Hmzq2Q+7Mq942PG1sGaiBoss7W3hupqJ01bmMQUD
-         AIrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2/c6KMsKX6alZWBNUlZL1Vqah+CZUobnDVfUuNr6j0Q=;
-        b=ujDchfT6+IGWQGvhIw1jPnAcKoqaQk/IwZQG4H5eACNVm58z4YscLH/50baMn4axfL
-         CfT0FvbzTur1xloQ/Er7sU8VbMgvhCK5U0mVbuYCGPXFagYbkVLPvxBY9gb6cCUELAQB
-         1/NM/4R746Pq2qvVcOvS9VfStVQ+Kwp7bJtztDlaIlVSeHJuC3prSZCe/HxP08P8dZyI
-         qi7JeOpSxHcckz9zLHAZw01iP3A0yLrQ5EW2hmmsFnxTPRzCJnCWTBkOEjGv+WWhxUzG
-         yzHwJaTjSW29XKv6UuAOiNY/zvYzfGDx6rDn2HZHagD5XeMMVNFAouIGQ0LkUOljVcc2
-         bGvg==
-X-Gm-Message-State: AOAM533fBZQCAtZItU1FujDPETih7ORKgkjcFV7FBLMRC2itvEqD4YCM
-        uztxvMlcI7iNiWLSLYZujmI=
-X-Google-Smtp-Source: ABdhPJwK7TIs+2Ga1pYR/gRHxcn4W1H2uk1DWAYqYpMpYa1YFA1dgiYVMAy1/eTQZyW/srD9+Fc0MA==
-X-Received: by 2002:a17:90a:f197:: with SMTP id bv23mr28900818pjb.113.1623207255713;
-        Tue, 08 Jun 2021 19:54:15 -0700 (PDT)
-Received: from localhost ([178.236.46.205])
-        by smtp.gmail.com with ESMTPSA id b14sm12527247pgl.52.2021.06.08.19.54.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Jun 2021 19:54:15 -0700 (PDT)
-Date:   Tue, 8 Jun 2021 19:54:12 -0700
-From:   Menglong Dong <menglong8.dong@gmail.com>
-To:     Jon Maloy <jmaloy@redhat.com>
-Cc:     ying.xue@windriver.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net,
-        Menglong Dong <dong.menglong@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH net-next] net: tipc: fix FB_MTU eat two pages
-Message-ID: <20210609025412.GA58348@www>
-References: <20210604074419.53956-1-dong.menglong@zte.com.cn>
- <e997a058-9f6e-86a0-8591-56b0b89441aa@redhat.com>
- <CADxym3ZostCAY0GwUpTxEHcOPyOj5Lmv4F7xP-Q4=AEAVaEAxw@mail.gmail.com>
- <998cce2c-b18d-59c1-df64-fc62856c63a1@redhat.com>
- <20210607125120.GA4262@www>
- <46d2a694-6a85-0f8e-4156-9bb1c4dbdb69@redhat.com>
+        id S233231AbhFIDFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Jun 2021 23:05:30 -0400
+Received: from m12-16.163.com ([220.181.12.16]:50675 "EHLO m12-16.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231438AbhFIDFa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Jun 2021 23:05:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=gZKwd
+        3aNIP9rzeKxuDyxIhrIwFgUfqysdlRMC5Q9IXM=; b=TeZqfdWaRT4Eokcf2FXew
+        BeGuaCNYZT2riTXgxVhCHKYep3rKexUpiUneUL5rAd+ZIwhW6pGU/kIpObyT8YTR
+        7vHlBHLNIDEDGQplvTpRLFmAzmCOV2+A6OiMDCQ4221lwOpP4MAQ8mSzNXUVV35o
+        OqklUC2miLaAdTP+fTGnP4=
+Received: from ubuntu.localdomain (unknown [218.17.89.92])
+        by smtp12 (Coremail) with SMTP id EMCowACnszR3L8Bg01hwwA--.15351S2;
+        Wed, 09 Jun 2021 11:03:20 +0800 (CST)
+From:   13145886936@163.com
+To:     ms@dev.tdt.de, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gushengxian <gushengxian@yulong.com>
+Subject: [PATCH] net/x25: fix a mistake in grammar
+Date:   Tue,  8 Jun 2021 20:03:17 -0700
+Message-Id: <20210609030317.17687-1-13145886936@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <46d2a694-6a85-0f8e-4156-9bb1c4dbdb69@redhat.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EMCowACnszR3L8Bg01hwwA--.15351S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7JFyDurWkXr45uw1xCF43Awb_yoW3urg_WF
+        nrKF4UWrWDJr1I9ay7GF4Fqr4Sy34Uu3yfZayI9FZxJ348Zr45K3sIgw4rAF1S9r48Cr9I
+        g3yFg34Fkw17CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5Ub15UUUUU==
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/1tbiQhWsg1aD-MOnSwABs-
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 08, 2021 at 06:37:38PM -0400, Jon Maloy wrote:
-> 
-> 
-[...]
-> I spent a little more time looking into this. I think the best we can do is
-> to keep FB_MTU internal to msg.c, and then add an outline function to msg.c
-> that can be used by bcast.c. The way it is used is never time critical.
-> 
-> I also see that we could need a little cleanup around this. There is a
-> redundant align() function that should be removed and replaced with the
-> global ALIGN() macro.
-> Even tipc_buf_acquire() should use this macro instead of the explicit method
-> that is used now.
-> In general, I stongly dislike conditional code, and it is not necessary in
-> this function. If we redefine the non-crypto BUF_TAILROOM to 0 instead of 16
-> (it is not used anywhere else) we could get rid of this too.
-> 
-> But I leave that to you. If you only fix the FB_MTU macro I am content.
-> 
+From: gushengxian <gushengxian@yulong.com>
 
-Yeah, I think I can handle it, just leave it to me.
+Fix a mistake in grammar.
 
-(finger heart :/)
-Menglong Dong
+Signed-off-by: gushengxian <gushengxian@yulong.com>
+---
+ net/x25/af_x25.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index 1816899499ce..3583354a7d7f 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -366,7 +366,7 @@ static void x25_destroy_timer(struct timer_list *t)
+ 
+ /*
+  *	This is called from user mode and the timers. Thus it protects itself
+- *	against interrupt users but doesn't worry about being called during
++ *	against interrupting users but doesn't worry about being called during
+  *	work. Once it is removed from the queue no interrupt or bottom half
+  *	will touch it and we are (fairly 8-) ) safe.
+  *	Not static as it's used by the timer
+-- 
+2.25.1
+
+
