@@ -2,79 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EB953A1B32
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 18:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4236A3A1B60
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 18:58:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbhFIQuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 12:50:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42514 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229504AbhFIQuO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 12:50:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5E22D613C7;
-        Wed,  9 Jun 2021 16:48:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623257299;
-        bh=hHxaS0PsHl0aV79Af27WsPfXn9a5Kv7gST9ycrsXUy8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MYEcht6K+HpkclU45W88qEiWG3ymrqGxG9fB3rG5YgdwGPSIHs6bSLlO8zzK26lAi
-         yFnBgsAB9xrUUjgUQ4jcfdVK7aXOAEQYYaAwaQ4o3A8PogZTgVfjgNuYwd252KRco5
-         szUagbD5RS9IZBOirQ7jSbM+420RzuJiFZd135UL0L8e90iodAvDjkTw/qpkf3SfnR
-         Qlj/dEH6XrqJkNMO8n6XJw8K2pq5/IEi3arUJghERuoT31R5+7xe91D6b2Mb411JDv
-         V5aMRhEckyipSQhFxEk7+G5je1W5wijrZngpajK8+CbsnhG08S74KjY+ZXiAVPW3/8
-         rSHtKOQYrMgJg==
-Date:   Wed, 9 Jun 2021 09:48:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Alexander Aring <aahringo@redhat.com>,
-        Stefan Metzmacher <metze@samba.org>,
-        Steve French <smfrench@gmail.com>,
-        =?UTF-8?B?QXVyw6ls?= =?UTF-8?B?aWVu?= Aptel <aaptel@suse.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-nfs <linux-nfs@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        Leif Sahlberg <lsahlber@redhat.com>,
-        Steven Whitehouse <swhiteho@redhat.com>
-Subject: Re: quic in-kernel implementation?
-Message-ID: <20210609094818.7aaf21bd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20210608153349.0f02ba71@hermes.local>
-References: <CAK-6q+hS29yoTF4tKq+Xt3G=_PPDi9vmFVwGPmutbsQyD2i=CA@mail.gmail.com>
-        <87pmwxsjxm.fsf@suse.com>
-        <CAH2r5msMBZ5AYQcfK=-xrOASzVC0SgoHdPnyqEPRcfd-tzUstw@mail.gmail.com>
-        <35352ef0-86ed-aaa5-4a49-b2b08dc3674d@samba.org>
-        <CAK-6q+g3_9g++wQGbhzBhk2cp=0fb3aVL9GoAoYNPq6M4QnCdQ@mail.gmail.com>
-        <20210608153349.0f02ba71@hermes.local>
+        id S231222AbhFIRAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 13:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229734AbhFIRAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 13:00:46 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30974C061574
+        for <netdev@vger.kernel.org>; Wed,  9 Jun 2021 09:58:39 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id o3so7898539wri.8
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 09:58:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GfWEsUAani6bJBHKwb6jb6ETVwG0Lc/7D2zrjHlZFP0=;
+        b=Pn0hJvh/qVcqU4HVY7W9QR2N49gbnx9RCBYeNSzBJziMUtF9UI+YqugOvJfgBoqlxO
+         oYtu8x/FLWoA7jzjursJuZAMy2G4OrndFz35Pcl5G0FIVi5UyOiSjXtEdB37hKWUaZU0
+         JyDW9OsnYmAnge6bq6ZNhc8f9DChSez3+0HHtMvvWmkwRE/oNMBBBiV3fYehm4qRumy2
+         6QxfZHDbR+l1GluQwEhcPNaNmfU0nYPFJ3MwxYnDxlLCkP1iZlyvXX2CfJ5Go2zbAir9
+         DC1557vxK9L8LhpnQ8CmkIeT7RymxRJjrhhymll8MdMbuBtikcSzQeyHfFSSOInrFUBW
+         uHFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GfWEsUAani6bJBHKwb6jb6ETVwG0Lc/7D2zrjHlZFP0=;
+        b=WOF5N/fEjQ3lAgTidg20/0q1MWsP5mgqcQURsRA9+cXGOIcVIbPauAxZcR7Zo3C3wn
+         HWwMYgQO1h9y11MsZVOkrVGkW9HBlZloSnisqsriq777Ol06bx+pAuEUedZXCBVpU3t/
+         ioCjiCWiee/5T+b5aFvHZIniQgFgqH8Bs13p4uoCXHfh/25kNg5TLgIXpF/9S/hJnY8D
+         79k+M8m7NsBhlEDj+yPJoU+vO9mK0NsaP/Yixf0U8z3JXKkhH7CL7V//IExwLSyeMWEk
+         4xGyXGMZGpz+PcgsmHRWQNe2apS034PM4w4fb6xVErNMx2enKU8l6PtM/Ymeb6aIidpF
+         iKLQ==
+X-Gm-Message-State: AOAM532l64tx+nthABudl8cmpBzzK2WLOTqS0ZehGSSwn/+fA9mugFnQ
+        cjZdxYdwXpNeW8dKKNqKJDY=
+X-Google-Smtp-Source: ABdhPJxb2AbRJ6cG5lJDxnSWEYbGUDzHQ5u631vX8CGqCrn7Nb3Ak+6J9W0jBxGDOJkwlLF1wNGFyw==
+X-Received: by 2002:a5d:5388:: with SMTP id d8mr731869wrv.423.1623257917835;
+        Wed, 09 Jun 2021 09:58:37 -0700 (PDT)
+Received: from [192.168.181.98] (171.251.23.93.rev.sfr.net. [93.23.251.171])
+        by smtp.gmail.com with ESMTPSA id n18sm327350wmq.41.2021.06.09.09.58.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Jun 2021 09:58:37 -0700 (PDT)
+Subject: Re: [RFT net-next] net: ti: add pp skb recycling support
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+References: <ef808c4d8447ee8cf832821a985ba68939455461.1623239847.git.lorenzo@kernel.org>
+ <CAFnufp11ANN3MRNDAWBN5AifJbfKMPrVD+6THhZHtuyqZCUmqg@mail.gmail.com>
+ <e2ac36df-42a7-37d8-3101-ff03fd40510a@ti.com>
+ <CAFnufp1vY79fxJEL6eKopTFzJkFz_bZCwaD84CaR_=yqjt6QNw@mail.gmail.com>
+ <20210609175527.2f321eca@carbon>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e5538afd-6202-7a5b-7440-229e4f9a6879@gmail.com>
+Date:   Wed, 9 Jun 2021 18:58:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210609175527.2f321eca@carbon>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Jun 2021 15:33:49 -0700 Stephen Hemminger wrote:
-> On Tue, 8 Jun 2021 17:03:16 -0400
-> > > With having the fuse-like socket before it should be trivial to switch
-> > > between the implementations.    
-> > 
-> > So a good starting point would be to have such a "fuse-like socket"
-> > component? What about having a simple example for that at first
-> > without having quic involved. The kernel calls some POSIX-like socket
-> > interface which triggers a communication to a user space application.
-> > This user space application will then map everything to a user space
-> > generated socket. This would be a map from socket struct
-> > "proto/proto_ops" to user space and vice versa. The kernel application
-> > probably can use the kernel_FOO() (e.g. kernel_recvmsg()) socket api
-> > directly then. Exactly like "fuse" as you mentioned just for sockets.
-> > 
-> > I think two veth interfaces can help to test something like that,
-> > either with a "fuse-like socket" on the other end or an user space
-> > application. Just doing a ping-pong example.
-> > 
-> > Afterwards we can look at how to replace the user generated socket
-> > application with any $LIBQUIC e.g. msquic implementation as second
-> > step.
-> 
-> Socket state management is complex and timers etc in userspace are hard.
 
-+1 seeing the struggles fuse causes in storage land "fuse for sockets"
-is not an exciting temporary solution IMHO..
+
+On 6/9/21 5:55 PM, Jesper Dangaard Brouer wrote:
+> On Wed, 9 Jun 2021 17:43:57 +0200
+> Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> 
+>> On Wed, Jun 9, 2021 at 5:03 PM Grygorii Strashko
+>> <grygorii.strashko@ti.com> wrote:
+>>>
+>>> On 09/06/2021 15:20, Matteo Croce wrote:  
+>>>> On Wed, Jun 9, 2021 at 2:01 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:  
+>>>>>
+>>>>> As already done for mvneta and mvpp2, enable skb recycling for ti
+>>>>> ethernet drivers
+>>>>>
+>>>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>  
+>>>>
+>>>> Looks good! If someone with the HW could provide a with and without
+>>>> the patch, that would be nice!
+>>>>  
+>>>
+>>> What test would you recommend to run?
+>>>
+> [...]
+>>
+>> A test which benefits most from this kind of change is one in which
+>> the frames are freed early.
+> 
+> I would also recommend running an XDP_PASS program, and then running
+> something that let the packets travel as deep as possible into netstack.
+> Not to test performance, but to make sure we didn't break something!
+> 
+> I've hacked up bnxt driver (it's not as straight forward as this driver
+> to convert) and is running some TCP tests.  Not problems so-far :-0
+> 
+> I wanted to ask if someone knows howto setup the zero-copy TCP stuff
+> that google did? (but is that TX only?)
+> 
+
+TX does not need anything fancy really.
+
+For RX part, you can look at https://netdevconf.info/0x14/pub/slides/62/Implementing%20TCP%20RX%20zero%20copy.pdf
