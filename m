@@ -2,82 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C939D3A1871
-	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 501D43A18C2
+	for <lists+netdev@lfdr.de>; Wed,  9 Jun 2021 17:12:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234324AbhFIPFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 11:05:10 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:59664 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232446AbhFIPFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 11:05:07 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 159F340Y076944;
-        Wed, 9 Jun 2021 10:03:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1623250984;
-        bh=OAtpdMKEWVQ9YW9nLXIwRCyDoKCWVnm+kcDeskm2VhE=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=qTscTW8MlD4ZMspi1VbyTX8rP8GEDeRiIOQaMzC555nKy54aE+9fmogM2dK6HmTfE
-         4L/Ol15dsOQJQq/4F2oO9ni25yUhd1/sYWVVkl2XVUFGZj+pwJLyOKfpGn4/UiefnZ
-         QtxpiJlWldFkgQLQ45xO/tKj5j/0jzJ4NPFM87V4=
-Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 159F34VZ026197
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 9 Jun 2021 10:03:04 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 9 Jun
- 2021 10:03:04 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Wed, 9 Jun 2021 10:03:04 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 159F31nI019469;
-        Wed, 9 Jun 2021 10:03:02 -0500
-Subject: Re: [RFT net-next] net: ti: add pp skb recycling support
-To:     Matteo Croce <mcroce@linux.microsoft.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-CC:     <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        id S233119AbhFIPO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 11:14:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21873 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230306AbhFIPOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 11:14:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623251543;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9YaeZIMyQxtcpyjkUij4G1l5WZpuzj3dtoky0a3If40=;
+        b=WeVM1B/Dm70EcKAuHPn9ft5xZzC4TE6fhGXptZGGaTjEU9kOa7cUCYBGt8SCgPdpVCVYpi
+        hCh6ZqOw64tWGIWA+LFHz2mQHwu17bLgHtrcpOgAXYaJf6kYl9/NANfNiAxsk1wObWeEDP
+        mVP01/gfxUkHLeqn6fbX5X17t+gaaeE=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-43-fgZf8hOTOfiQLTJm921FFQ-1; Wed, 09 Jun 2021 11:12:21 -0400
+X-MC-Unique: fgZf8hOTOfiQLTJm921FFQ-1
+Received: by mail-wr1-f72.google.com with SMTP id m27-20020a056000025bb0290114d19822edso10904575wrz.21
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 08:12:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9YaeZIMyQxtcpyjkUij4G1l5WZpuzj3dtoky0a3If40=;
+        b=Pnz9/x+E5MzTKOSBolXHaipHqwSPBXw18eMphg1gHTi+qzmIjvKCNiCmh8xX/Ka6t7
+         UhjmjROcvHwqmscNz42WW5gAfPGOSiO4GoRzCMnWa9sJUcPSYBirh0nt9PTg/cDbpPyL
+         dwnUBIjvW2G7uroi0hGP/rNwDvc6ARjZXZokXCTrfiG3FjRSbqpHI+qY/JiZE5FS3Lpb
+         7r0FOVSK6cgtKOv+Q4qmZhmvZMgQzwzOCy0gOK9vKuCb70Hbi6ftAEmOEG6uWm4WbBw/
+         PK6bRAxhRWXe8513fIVgZO8zjNoYrZSy/dOhLlu6CExTThIUMKsJ76+Mx2Nmhb/nN/dz
+         LWfg==
+X-Gm-Message-State: AOAM532wi8xJMIh8D3btI0y9ZfEX12iTi/d2OW2Rf2sJagkoNb50MomR
+        1ohKu1n0dfussB3BLCgjjnEO4WYYnDlpAQPKpNdPeeL0KIuA5EU7HO4Yi89EMhJMKyEZcIutdDf
+        bV8qBkiQNh1sobY0c
+X-Received: by 2002:a05:600c:4148:: with SMTP id h8mr10251390wmm.176.1623251539921;
+        Wed, 09 Jun 2021 08:12:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx6m9O6G5/N2G6o4RM/fcpSx0DbTIqAvv9jWej7QLohnQTSBez1Kq1Ez7Anc94MrZG1KZfJCg==
+X-Received: by 2002:a05:600c:4148:: with SMTP id h8mr10251378wmm.176.1623251539780;
+        Wed, 09 Jun 2021 08:12:19 -0700 (PDT)
+Received: from localhost (net-47-53-237-43.cust.vodafonedsl.it. [47.53.237.43])
+        by smtp.gmail.com with ESMTPSA id 62sm300180wrm.1.2021.06.09.08.12.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Jun 2021 08:12:19 -0700 (PDT)
+Date:   Wed, 9 Jun 2021 17:12:16 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Matteo Croce <mcroce@linux.microsoft.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
         David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [RFT net-next] net: ti: add pp skb recycling support
+Message-ID: <YMDaUHrpniXOQ4ib@lore-desk>
 References: <ef808c4d8447ee8cf832821a985ba68939455461.1623239847.git.lorenzo@kernel.org>
  <CAFnufp11ANN3MRNDAWBN5AifJbfKMPrVD+6THhZHtuyqZCUmqg@mail.gmail.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <e2ac36df-42a7-37d8-3101-ff03fd40510a@ti.com>
-Date:   Wed, 9 Jun 2021 18:02:54 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ <e2ac36df-42a7-37d8-3101-ff03fd40510a@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <CAFnufp11ANN3MRNDAWBN5AifJbfKMPrVD+6THhZHtuyqZCUmqg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="es89WqdzKxuvZOp2"
+Content-Disposition: inline
+In-Reply-To: <e2ac36df-42a7-37d8-3101-ff03fd40510a@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi
 
-On 09/06/2021 15:20, Matteo Croce wrote:
-> On Wed, Jun 9, 2021 at 2:01 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->>
->> As already done for mvneta and mvpp2, enable skb recycling for ti
->> ethernet drivers
->>
->> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> 
-> Looks good! If someone with the HW could provide a with and without
-> the patch, that would be nice!
-> 
+--es89WqdzKxuvZOp2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-What test would you recommend to run?
+> hi
+>=20
+> On 09/06/2021 15:20, Matteo Croce wrote:
+> > On Wed, Jun 9, 2021 at 2:01 PM Lorenzo Bianconi <lorenzo@kernel.org> wr=
+ote:
+> > >=20
+> > > As already done for mvneta and mvpp2, enable skb recycling for ti
+> > > ethernet drivers
+> > >=20
+> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> >=20
+> > Looks good! If someone with the HW could provide a with and without
+> > the patch, that would be nice!
+> >=20
+>=20
+> What test would you recommend to run?
 
--- 
-Best regards,
-grygorii
+Hi Grygorii,
+
+Just pass the skb to the stack, so I think regular XDP_PASS use case is eno=
+ugh.
+
+Regards,
+Lorenzo
+
+>=20
+> --=20
+> Best regards,
+> grygorii
+>=20
+
+--es89WqdzKxuvZOp2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYMDaTAAKCRA6cBh0uS2t
+rKXUAP9/FuZ6t5h6zY/GgVaAxG6OcVeaG0DYPdx7P6iXLPfusQEA/ftma4O3dckN
+uIm+c4YG8qn6ATcUkeslsMx0NxIiXQI=
+=7q3T
+-----END PGP SIGNATURE-----
+
+--es89WqdzKxuvZOp2--
+
