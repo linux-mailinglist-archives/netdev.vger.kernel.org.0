@@ -2,256 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 423A53A32F3
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:20:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14EF93A32F8
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbhFJSWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 14:22:01 -0400
-Received: from mail-oi1-f173.google.com ([209.85.167.173]:36767 "EHLO
-        mail-oi1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbhFJSWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:22:00 -0400
-Received: by mail-oi1-f173.google.com with SMTP id r16so2746114oiw.3;
-        Thu, 10 Jun 2021 11:20:03 -0700 (PDT)
+        id S231210AbhFJSXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 14:23:13 -0400
+Received: from mail-wr1-f52.google.com ([209.85.221.52]:41640 "EHLO
+        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229963AbhFJSXM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:23:12 -0400
+Received: by mail-wr1-f52.google.com with SMTP id o3so3336038wri.8;
+        Thu, 10 Jun 2021 11:21:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Eqm4ERZ6h/WqHjEhJGoI0O+yCyk+QKdXa8kIv9Ki3oY=;
+        b=DEXY7oJdM85vIOGwoOIIVmLNdMO7qybnn0lXygsKXhbL4fKQAwbPA2Weqep3H7ZymM
+         d2YTpgzoRh33Jg/arpFtI+R8ISfPi/Imh4vAuAgzQI2ZycBxCfc09zmWimD3aC79Pk11
+         W0TlG3HDXmS1BN3a3nivj7RaVur9CgGVut6jvPyk6zlO/O2lI4BW4l+CtVMmpxdq5+tu
+         8xekqEsE3xoAZvIjoW+WG1Ximicaj2h4pZTEurWfX5hf86vTLE5V9OzINOqT51eKxbcE
+         D8nf4+PfJrTJ5ODT82XM4Beoe4CYbfxhkypI4UFpWKVcLLoEJsDmHCjJTrEHQM2FGCN2
+         a4zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Uohm87Etb/rBg5mKs9nVh8ZMC92Dh4yfCsCNdezrbus=;
-        b=ZuHQKMIEyYI7w7TMRtfZ+8/us9DvgD0Xhpj6ybehJtj5IT+SPvJ9JJ7EpHcBG0NXvY
-         KPBVOf18zef5refUHdYd80Pw3PteB6Yg6F7poR+Xk6xf6+n8j+t5W85oGr3FfwcsUCjf
-         KwqLrx8yF90ltJ27IyunrnIbOUorQSTglpw0dYmGlCTSBNU5F1Cts/jwWz+3YCoGXtsh
-         qG6bYF5/OB86cYDGsRCAguZ7834JYlsl6V/RpwhjfxFlqW9CkI7V/oNSLPl24Xgb96qC
-         aGSTo3mnGJzMK7R1e7lqFZIlQzcIhJD2aHDi+4/4S14V5cCMmKv27bnRfcLNu9c5Mx8M
-         /tUQ==
-X-Gm-Message-State: AOAM533AXNGO9RVbHrgB6HW2wryhb9/Rf4td/CDQkg1MiDAJH04xULEk
-        wJn0/uPnDxfzlRyHzqkk/+Y4LuEbluQqx68JoSU=
-X-Google-Smtp-Source: ABdhPJwUR0OJZ0xjx5rmH/6DM0jkwqo3UoA4jvOVwkqjp7T6sOv4W+KMIbv1LEkYGkawwOvrK5OeEn6AeWAXIHvAm7Q=
-X-Received: by 2002:aca:b406:: with SMTP id d6mr4403033oif.71.1623349203445;
- Thu, 10 Jun 2021 11:20:03 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Eqm4ERZ6h/WqHjEhJGoI0O+yCyk+QKdXa8kIv9Ki3oY=;
+        b=rvzmszs7ErWGMwzq8np60oJcLMU9lFRBO92JdVtR8YIU9KOzFJ7q+wUS9ABK6Pws1Q
+         yZuIuYb09sMwj9611u0p66NyDKOfbUr86jq2fFhHXCfgsKkCcuQdb43+DZOBEOc9Ojpd
+         0RyGPT0YFWnsC219XqShqOuNO/z7yKKEBbQcNhEJhwhJd/H4WHUkPO4Ytrky8fEbFfUs
+         SXm9/c/3a3puHfVlpxkGD4oyDVkOTteZhlZAG4oi+F2DZkhMjjeX1V9Y6aiewmUXPP0D
+         kRKmvlUbU2KI4zTBQQS1Mw6flaUenuLjexkfr5bFyFHb8iYRjPy7Vxh9dD89avsPWmWr
+         mOVA==
+X-Gm-Message-State: AOAM5328GgJ05AqJx7wKGWai2k+8LMtuRsyAiDtCqCW/uzb36jD1rqay
+        mbpqEQcpyvH48oeNz0ckMVEXGOJGJZ8=
+X-Google-Smtp-Source: ABdhPJxkjsYkOzZE7mN3JZEckq5gTUdXaG7XdUEF3AHDGs9v4FmtXWlyUep2IkhqCa1nDfngmPbHdQ==
+X-Received: by 2002:a5d:564a:: with SMTP id j10mr6956285wrw.171.1623349214816;
+        Thu, 10 Jun 2021 11:20:14 -0700 (PDT)
+Received: from [192.168.181.98] (228.18.23.93.rev.sfr.net. [93.23.18.228])
+        by smtp.gmail.com with ESMTPSA id k12sm10280228wmr.2.2021.06.10.11.20.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Jun 2021 11:20:14 -0700 (PDT)
+Subject: Re: [PATCH v7 bpf-next 05/11] tcp: Migrate
+ TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
+Cc:     Benjamin Herrenschmidt <benh@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210521182104.18273-1-kuniyu@amazon.co.jp>
+ <20210521182104.18273-6-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <erdnetdev@gmail.com>
+Message-ID: <612b0da4-1e3e-66b8-0902-f76840796f36@gmail.com>
+Date:   Thu, 10 Jun 2021 20:20:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-References: <20210610163917.4138412-1-ciorneiioana@gmail.com> <20210610163917.4138412-12-ciorneiioana@gmail.com>
-In-Reply-To: <20210610163917.4138412-12-ciorneiioana@gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 10 Jun 2021 20:19:52 +0200
-Message-ID: <CAJZ5v0jjkzyxRD=mXkZj5DOgOaBuePwFBqzi_zJ3ZMeVW-Pk9A@mail.gmail.com>
-Subject: Re: [PATCH net-next v8 11/15] net: mdio: Add ACPI support code for mdio
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>, calvin.johnson@nxp.com,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>, netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Len Brown <lenb@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210521182104.18273-6-kuniyu@amazon.co.jp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 10, 2021 at 6:40 PM Ioana Ciornei <ciorneiioana@gmail.com> wrote:
->
-> From: Calvin Johnson <calvin.johnson@oss.nxp.com>
->
-> Define acpi_mdiobus_register() to Register mii_bus and create PHYs for
-> each ACPI child node.
->
-> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+
+
+On 5/21/21 8:20 PM, Kuniyuki Iwashima wrote:
+> When we call close() or shutdown() for listening sockets, each child socket
+> in the accept queue are freed at inet_csk_listen_stop(). If we can get a
+> new listener by reuseport_migrate_sock() and clone the request by
+> inet_reqsk_clone(), we try to add it into the new listener's accept queue
+> by inet_csk_reqsk_queue_add(). If it fails, we have to call __reqsk_free()
+> to call sock_put() for its listener and free the cloned request.
+> 
+> After putting the full socket into ehash, tcp_v[46]_syn_recv_sock() sets
+> NULL to ireq_opt/pktopts in struct inet_request_sock, but ipv6_opt can be
+> non-NULL. So, we have to set NULL to ipv6_opt of the old request to avoid
+> double free.
+> 
+> Note that we do not update req->rsk_listener and instead clone the req to
+> migrate because another path may reference the original request. If we
+> protected it by RCU, we would need to add rcu_read_lock() in many places.
+> 
+> Link: https://lore.kernel.org/netdev/20201209030903.hhow5r53l6fmozjn@kafai-mbp.dhcp.thefacebook.com/
+> Suggested-by: Martin KaFai Lau <kafai@fb.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 > ---
->
-> Changes in v8: None
-> Changes in v7:
-> - Include headers directly used in acpi_mdio.c
->
-> Changes in v6:
-> - use GENMASK() and ACPI_COMPANION_SET()
-> - some cleanup
-> - remove unwanted header inclusion
->
-> Changes in v5:
-> - add missing MODULE_LICENSE()
-> - replace fwnode_get_id() with OF and ACPI function calls
->
-> Changes in v4: None
-> Changes in v3: None
-> Changes in v2: None
->
->  MAINTAINERS                  |  1 +
->  drivers/net/mdio/Kconfig     |  7 +++++
->  drivers/net/mdio/Makefile    |  1 +
->  drivers/net/mdio/acpi_mdio.c | 56 ++++++++++++++++++++++++++++++++++++
->  include/linux/acpi_mdio.h    | 26 +++++++++++++++++
->  5 files changed, 91 insertions(+)
->  create mode 100644 drivers/net/mdio/acpi_mdio.c
->  create mode 100644 include/linux/acpi_mdio.h
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index e8f8b6c33a51..2172f594be8f 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -6811,6 +6811,7 @@ F:        Documentation/devicetree/bindings/net/mdio*
->  F:     Documentation/devicetree/bindings/net/qca,ar803x.yaml
->  F:     Documentation/networking/phy.rst
->  F:     drivers/net/mdio/
-> +F:     drivers/net/mdio/acpi_mdio.c
->  F:     drivers/net/mdio/fwnode_mdio.c
->  F:     drivers/net/mdio/of_mdio.c
->  F:     drivers/net/pcs/
-> diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-> index 422e9e042a3c..99a6c13a11af 100644
-> --- a/drivers/net/mdio/Kconfig
-> +++ b/drivers/net/mdio/Kconfig
-> @@ -34,6 +34,13 @@ config OF_MDIO
->         help
->           OpenFirmware MDIO bus (Ethernet PHY) accessors
->
-> +config ACPI_MDIO
-> +       def_tristate PHYLIB
-> +       depends on ACPI
-> +       depends on PHYLIB
-> +       help
-> +         ACPI MDIO bus (Ethernet PHY) accessors
-> +
->  if MDIO_BUS
->
->  config MDIO_DEVRES
-> diff --git a/drivers/net/mdio/Makefile b/drivers/net/mdio/Makefile
-> index 2e6813c709eb..15f8dc4042ce 100644
-> --- a/drivers/net/mdio/Makefile
-> +++ b/drivers/net/mdio/Makefile
-> @@ -1,6 +1,7 @@
->  # SPDX-License-Identifier: GPL-2.0
->  # Makefile for Linux MDIO bus drivers
->
-> +obj-$(CONFIG_ACPI_MDIO)                += acpi_mdio.o
->  obj-$(CONFIG_FWNODE_MDIO)      += fwnode_mdio.o
->  obj-$(CONFIG_OF_MDIO)          += of_mdio.o
->
-> diff --git a/drivers/net/mdio/acpi_mdio.c b/drivers/net/mdio/acpi_mdio.c
-> new file mode 100644
-> index 000000000000..60a86e3fc246
-> --- /dev/null
-> +++ b/drivers/net/mdio/acpi_mdio.c
-> @@ -0,0 +1,56 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * ACPI helpers for the MDIO (Ethernet PHY) API
-> + *
-> + * This file provides helper functions for extracting PHY device information
-> + * out of the ACPI ASL and using it to populate an mii_bus.
-> + */
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/acpi_mdio.h>
-> +#include <linux/bits.h>
-> +#include <linux/dev_printk.h>
-> +#include <linux/fwnode_mdio.h>
-> +#include <linux/module.h>
-> +#include <linux/types.h>
-> +
-> +MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
-> +MODULE_LICENSE("GPL");
-> +
-> +/**
-> + * acpi_mdiobus_register - Register mii_bus and create PHYs from the ACPI ASL.
-> + * @mdio: pointer to mii_bus structure
-> + * @fwnode: pointer to fwnode of MDIO bus.
-> + *
-> + * This function registers the mii_bus structure and registers a phy_device
-> + * for each child node of @fwnode.
-
-It would be good to mention that @fwnode is expected to represent an
-ACPI device object corresponding to mdiio and its children are
-expected to correspond to the PHY devices on that bus (if my
-understanding of this is correct, that is).
-
-With that addressed, please feel free to add
-
-Acked-by: Rafael J. Wysocki <rafael@kernel.org>
-
-to this patch.
-
-> + */
-> +int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
+>  net/ipv4/inet_connection_sock.c | 71 ++++++++++++++++++++++++++++++++-
+>  1 file changed, 70 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> index fa806e9167ec..07e97b2f3635 100644
+> --- a/net/ipv4/inet_connection_sock.c
+> +++ b/net/ipv4/inet_connection_sock.c
+> @@ -695,6 +695,53 @@ int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req)
+>  }
+>  EXPORT_SYMBOL(inet_rtx_syn_ack);
+>  
+> +static struct request_sock *inet_reqsk_clone(struct request_sock *req,
+> +					     struct sock *sk)
 > +{
-> +       struct fwnode_handle *child;
-> +       u32 addr;
-> +       int ret;
+> +	struct sock *req_sk, *nreq_sk;
+> +	struct request_sock *nreq;
 > +
-> +       /* Mask out all PHYs from auto probing. */
-> +       mdio->phy_mask = GENMASK(31, 0);
-> +       ret = mdiobus_register(mdio);
-> +       if (ret)
-> +               return ret;
+> +	nreq = kmem_cache_alloc(req->rsk_ops->slab, GFP_ATOMIC | __GFP_NOWARN);
+> +	if (!nreq) {
+> +		/* paired with refcount_inc_not_zero() in reuseport_migrate_sock() */
+> +		sock_put(sk);
+> +		return NULL;
+> +	}
 > +
-> +       ACPI_COMPANION_SET(&mdio->dev, to_acpi_device_node(fwnode));
+> +	req_sk = req_to_sk(req);
+> +	nreq_sk = req_to_sk(nreq);
 > +
-> +       /* Loop over the child nodes and register a phy_device for each PHY */
-> +       fwnode_for_each_child_node(fwnode, child) {
-> +               ret = acpi_get_local_address(ACPI_HANDLE_FWNODE(child), &addr);
-> +               if (ret || addr >= PHY_MAX_ADDR)
-> +                       continue;
+> +	memcpy(nreq_sk, req_sk,
+> +	       offsetof(struct sock, sk_dontcopy_begin));
+> +	memcpy(&nreq_sk->sk_dontcopy_end, &req_sk->sk_dontcopy_end,
+> +	       req->rsk_ops->obj_size - offsetof(struct sock, sk_dontcopy_end));
 > +
-> +               ret = fwnode_mdiobus_register_phy(mdio, child, addr);
-> +               if (ret == -ENODEV)
-> +                       dev_err(&mdio->dev,
-> +                               "MDIO device at address %d is missing.\n",
-> +                               addr);
-> +       }
-> +       return 0;
-> +}
-> +EXPORT_SYMBOL(acpi_mdiobus_register);
-> diff --git a/include/linux/acpi_mdio.h b/include/linux/acpi_mdio.h
-> new file mode 100644
-> index 000000000000..0a24ab7cb66f
-> --- /dev/null
-> +++ b/include/linux/acpi_mdio.h
-> @@ -0,0 +1,26 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * ACPI helper for the MDIO (Ethernet PHY) API
-> + */
-> +
-> +#ifndef __LINUX_ACPI_MDIO_H
-> +#define __LINUX_ACPI_MDIO_H
-> +
-> +#include <linux/phy.h>
-> +
-> +#if IS_ENABLED(CONFIG_ACPI_MDIO)
-> +int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode);
-> +#else /* CONFIG_ACPI_MDIO */
-> +static inline int
-> +acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
-> +{
-> +       /*
-> +        * Fall back to mdiobus_register() function to register a bus.
-> +        * This way, we don't have to keep compat bits around in drivers.
-> +        */
-> +
-> +       return mdiobus_register(mdio);
-> +}
+> +	sk_node_init(&nreq_sk->sk_node);
+> +	nreq_sk->sk_tx_queue_mapping = req_sk->sk_tx_queue_mapping;
+> +#ifdef CONFIG_XPS
+> +	nreq_sk->sk_rx_queue_mapping = req_sk->sk_rx_queue_mapping;
 > +#endif
+> +	nreq_sk->sk_incoming_cpu = req_sk->sk_incoming_cpu;
+> +	refcount_set(&nreq_sk->sk_refcnt, 0);
+
+Not sure why you clear sk_refcnt here (it is set to 1 later)
+
 > +
-> +#endif /* __LINUX_ACPI_MDIO_H */
-> --
-> 2.31.1
->
+> +	nreq->rsk_listener = sk;
+> +
+> +	/* We need not acquire fastopenq->lock
+> +	 * because the child socket is locked in inet_csk_listen_stop().
+> +	 */
+> +	if (sk->sk_protocol == IPPROTO_TCP && tcp_rsk(nreq)->tfo_listener)
+> +		rcu_assign_pointer(tcp_sk(nreq->sk)->fastopen_rsk, nreq);
+> +
+> +	return nreq;
+> +}
+
+Ouch, this is going to be hard to maintain...
+
+
+
+
+> +
+> +static void reqsk_migrate_reset(struct request_sock *req)
+> +{
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	inet_rsk(req)->ipv6_opt = NULL;
+> +#endif
+> +}
+> +
+>  /* return true if req was found in the ehash table */
+>  static bool reqsk_queue_unlink(struct request_sock *req)
+>  {
+> @@ -1036,14 +1083,36 @@ void inet_csk_listen_stop(struct sock *sk)
+>  	 * of the variants now.			--ANK
+>  	 */
+>  	while ((req = reqsk_queue_remove(queue, sk)) != NULL) {
+> -		struct sock *child = req->sk;
+> +		struct sock *child = req->sk, *nsk;
+> +		struct request_sock *nreq;
+>  
+>  		local_bh_disable();
+>  		bh_lock_sock(child);
+>  		WARN_ON(sock_owned_by_user(child));
+>  		sock_hold(child);
+>  
+> +		nsk = reuseport_migrate_sock(sk, child, NULL);
+> +		if (nsk) {
+> +			nreq = inet_reqsk_clone(req, nsk);
+> +			if (nreq) {
+> +				refcount_set(&nreq->rsk_refcnt, 1);
+> +
+> +				if (inet_csk_reqsk_queue_add(nsk, nreq, child)) {
+> +					reqsk_migrate_reset(req);
+> +				} else {
+> +					reqsk_migrate_reset(nreq);
+> +					__reqsk_free(nreq);
+> +				}
+> +
+> +				/* inet_csk_reqsk_queue_add() has already
+> +				 * called inet_child_forget() on failure case.
+> +				 */
+> +				goto skip_child_forget;
+> +			}
+> +		}
+> +
+>  		inet_child_forget(sk, req, child);
+> +skip_child_forget:
+>  		reqsk_put(req);
+>  		bh_unlock_sock(child);
+>  		local_bh_enable();
+> 
