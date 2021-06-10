@@ -2,139 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6570C3A22C3
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 05:26:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DACD23A22B6
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 05:21:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229802AbhFJD2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 23:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbhFJD2O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 23:28:14 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AFAC06175F
-        for <netdev@vger.kernel.org>; Wed,  9 Jun 2021 20:16:05 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id dj8so31084666edb.6
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 20:16:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sFWAe2ALPDKGhy3OZyUvHuuEB8Ewhkz6l9ClApaZjNo=;
-        b=XPY5fqVrtCZq5R90ISxsw+IakFoZ38rNGIqlncqohjQUihGjjpGgBW2YzwyIAtdEEJ
-         rjaGlnz0iAXwg0zEjdLAXPRAwTHVPzUoAw1qTonYyhPrK+L5ZWjDhMcU3tGekDUm4APq
-         Nug2o3kExNv1UeSA54+KnoBbmQW658pD/Y38QLuz8wvwK50QZw3bxyzyI9n+ZME+FOkR
-         dVAu3EmNpEMQdE3PZFmPXh7361zv5XS6qyDaSVKNhBh3PR35DJJRvnJPYioy49+ZcNKf
-         WV0lZ914uS8mcw46HKeIcqgxUgGqhQ1DOac8ceKMRxwR3T6gaAx1GMXUNvn0z1aFq2Ly
-         qigw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sFWAe2ALPDKGhy3OZyUvHuuEB8Ewhkz6l9ClApaZjNo=;
-        b=nUFVjndmBfi2edprdAN1Kpw7xpwpTwFhv9uAd5MJtynD+nir0kTQ6pirSz0YVsUsNC
-         BD8NYcpHejCxQ/jxXvu2k4fWQrvMfX+EYm39OPP9CYMslKUqxk4XhxGFlD1qD/1jm4Ii
-         MJe2VAqKvJSi5YddY32x4HOQJO6ykLtufhw90JDH7elg2K3Hr4anhp4xANZ8ZZCGxRUk
-         Fit6UiIbm0jzQ3oUwAKGa6iZx092v4YByC9WW4pfZVNrZX+tdmOpKw870TPQ+3g9oHf1
-         4Wa+20WDMo44RxZxLR9xcl1R9V2ryIowJofaceuWACFZuwD/HU5tOGxkEzKg/d/Cfjxa
-         IvLw==
-X-Gm-Message-State: AOAM5300O2F2t3qBwXO08suXi0LRL1W+yB9mExOMcULEkdoLCyzdtlQt
-        e0eddgaPF0yMRvJiuCnqkDtNgK4GNKhJow==
-X-Google-Smtp-Source: ABdhPJzBRA6MzZWt9ByVJ2B9H7rHTko9M+hk2ctkNoSxjIv80/nagDAOdQFSVyFc5K9eisjmHOFzBA==
-X-Received: by 2002:a05:6402:4c5:: with SMTP id n5mr2482961edw.322.1623294963849;
-        Wed, 09 Jun 2021 20:16:03 -0700 (PDT)
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
-        by smtp.gmail.com with ESMTPSA id p13sm471847ejr.87.2021.06.09.20.16.02
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Jun 2021 20:16:03 -0700 (PDT)
-Received: by mail-wm1-f45.google.com with SMTP id m3so10703wms.4
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 20:16:02 -0700 (PDT)
-X-Received: by 2002:a05:600c:3514:: with SMTP id h20mr408383wmq.70.1623294962541;
- Wed, 09 Jun 2021 20:16:02 -0700 (PDT)
+        id S230059AbhFJDXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 23:23:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55504 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229802AbhFJDW6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 23:22:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=jWmr2xlRwn6JQaehy4GwAbYBW8L4D3ESDbeB+eyjFlI=; b=hhiJjKT6WeE4zxbXF0IMfq/cIp
+        4f29LBeN15gfX1AVIvAng+bg3qf9bFv4B9FvdCvxTnIDHot3hU6fdyvFxCB+L1skt3f3wTRAu4Y/K
+        XQ44pUFutdRWIB7WN+v7catNdKHEgF0mCEaMjZLPh97X6hBkFGOR19LeXsxGtklpHdko=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lrBE2-008axE-Ng; Thu, 10 Jun 2021 05:19:22 +0200
+Date:   Thu, 10 Jun 2021 05:19:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?B?5ZGo55Cw5p2wIChaaG91IFlhbmppZSk=?= 
+        <zhouyanjie@wanyeetech.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
+        sernia.zhou@foxmail.com, paul@crapouillou.net
+Subject: Re: [PATCH v2 2/2] net: stmmac: Add Ingenic SoCs MAC support.
+Message-ID: <YMGEutCet7fP1NZ9@lunn.ch>
+References: <1623260110-25842-1-git-send-email-zhouyanjie@wanyeetech.com>
+ <1623260110-25842-3-git-send-email-zhouyanjie@wanyeetech.com>
 MIME-Version: 1.0
-References: <20210608170224.1138264-1-tannerlove.kernel@gmail.com>
- <20210608170224.1138264-3-tannerlove.kernel@gmail.com> <17315e5a-ee1c-489c-a6bf-0fa26371d710@redhat.com>
-In-Reply-To: <17315e5a-ee1c-489c-a6bf-0fa26371d710@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 9 Jun 2021 23:15:25 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfvdHBLOqAAU=vPmqnUxhp_b61Cixm=0cd7uh_KsJZGGw@mail.gmail.com>
-Message-ID: <CA+FuTSfvdHBLOqAAU=vPmqnUxhp_b61Cixm=0cd7uh_KsJZGGw@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/3] virtio_net: add optional flow dissection
- in virtio_net_hdr_to_skb
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Tanner Love <tannerlove.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Tanner Love <tannerlove@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1623260110-25842-3-git-send-email-zhouyanjie@wanyeetech.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 9, 2021 at 11:09 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2021/6/9 =E4=B8=8A=E5=8D=881:02, Tanner Love =E5=86=99=E9=81=93=
-:
-> >   retry:
-> > -                     if (!skb_flow_dissect_flow_keys_basic(NULL, skb, =
-&keys,
-> > +                     /* only if flow dissection not already done */
-> > +                     if (!static_branch_unlikely(&sysctl_flow_dissect_=
-vnet_hdr_key) &&
-> > +                         !skb_flow_dissect_flow_keys_basic(NULL, skb, =
-&keys,
-> >                                                             NULL, 0, 0,=
- 0,
-> >                                                             0)) {
->
->
-> So I still wonder the benefit we could gain from reusing the bpf flow
-> dissector here. Consider the only context we need is the flow keys,
+> +static int jz4775_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
+> +{
+> +	struct ingenic_mac *mac = plat_dat->bsp_priv;
+> +	unsigned int val;
 
-Maybe I misunderstand the comment, but the goal is not just to access
-the flow keys, but to correlate data in the packet payload with the fields
-of the virtio_net_header. E.g., to parse a packet payload to verify that
-it matches the gso type and header length. I don't see how we could
-make that two separate programs, one to parse a packet (flow dissector)
-and one to validate the vnet_hdr.
 
-> we
-> had two choices
->
-> a1) embed the vnet header checking inside bpf flow dissector
-> a2) introduce a dedicated eBPF type for doing that
->
-> And we have two ways to access the vnet header
->
-> b1) via pesudo __sk_buff
-> b2) introduce bpf helpers
->
-> I second for a2 and b2. The main motivation is to hide the vnet header
-> details from the bpf subsystem.
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +	case PHY_INTERFACE_MODE_RGMII_ID:
+> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
+> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
+> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII\n");
+> +		break;
 
-b2 assumes that we might have many different variants of
-vnet_hdr, but that all will be able to back a functional
-interface like "return the header length"? Historically, the
-struct has not seen such a rapid rate of change that I think
-would warrant introducing this level of indirection.
+So this does what DT writes expect. They put 'rgmii-id' as phy
+mode. The MAC does not add a delay. PHY_INTERFACE_MODE_RGMII_ID is
+passed to the PHY and it adds the delay. And frames flow to/from the
+PHY and users are happy. The majority of MAC drivers are like this.
 
-The little_endian field does demonstrate one form of how
-the struct can be context sensitive -- and not self describing.
+> +static int x2000_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
+> +{
+> +	struct ingenic_mac *mac = plat_dat->bsp_priv;
+> +	unsigned int val;
 
-I think we can capture multiple variants of the struct, if it ever
-comes to that, with a versioning field. We did not add that
-right away, because that can be introduced later, when a
-new version arrives. But we have a plan for the eventuality.
->
-> Thanks
->
+Here we have a complete different story. 
+
+
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
+> +
+> +		if (mac->tx_delay == 0) {
+> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN);
+> +		} else {
+> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_DELAY);
+> +
+> +			if (mac->tx_delay > MACPHYC_TX_DELAY_MAX)
+> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, MACPHYC_TX_DELAY_MAX - 1);
+> +			else
+> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, mac->tx_delay - 1);
+> +		}
+
+What are the units of tx_delay. The DT binding should be pS, and you
+need to convert from that to whatever the hardware is using.
+
+If mac->tx_delay is greater than MACPHYC_TX_DELAY_MAX, please return
+-EINVAL when parsing the binding. We want the DT writer to know they
+have requested something the hardware cannot do.
+
+So if the device tree contains 'rgmii' for PHY mode, you can use this
+for when you have long clock lines on your board adding the delay, and
+you just need to fine tune the delay, add a few pS. The PHY will also
+not add a delay, due to receiving PHY_INTERFACE_MODE_RGMII.
+
+> +
+> +		if (mac->rx_delay == 0) {
+> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN);
+> +		} else {
+> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_DELAY);
+> +
+> +			if (mac->rx_delay > MACPHYC_RX_DELAY_MAX)
+> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, MACPHYC_RX_DELAY_MAX - 1);
+> +			else
+> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, mac->rx_delay - 1);
+> +		}
+> +
+> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII\n");
+> +		break;
+> +
+> +	case PHY_INTERFACE_MODE_RGMII_ID:
+> +		val = FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN) |
+> +			  FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN) |
+> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
+> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII_ID\n");
+> +		break;
+
+So this one is pretty normal. The MAC does not add a delay,
+PHY_INTERFACE_MODE_RGMII_ID is passed to the PHY, and it adds the
+delay. The interface will likely work.
+
+> +
+> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> +		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII) |
+> +			  FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN);
+> +
+> +		if (mac->tx_delay == 0) {
+> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN);
+> +		} else {
+> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_DELAY);
+> +
+> +			if (mac->tx_delay > MACPHYC_TX_DELAY_MAX)
+> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, MACPHYC_TX_DELAY_MAX - 1);
+> +			else
+> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, mac->tx_delay - 1);
+> +		}
+
+So here, the PHY is going to be passed PHY_INTERFACE_MODE_RGMII_RXID.
+The PHY will add a delay in the receive path. The MAC needs to add the
+delay in the transmit path. So tx_delay needs to be the full 2ns, not
+just a small fine tuning value, or the PCB is adding the delay. And
+you also cannot fine tune the RX delay, since rx_delay is ignored.
+
+> +
+> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII_RXID\n");
+> +		break;
+> +
+> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII) |
+> +			  FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN);
+> +
+> +		if (mac->rx_delay == 0) {
+> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN);
+> +		} else {
+> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_DELAY);
+> +
+> +			if (mac->rx_delay > MACPHYC_RX_DELAY_MAX)
+> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, MACPHYC_RX_DELAY_MAX - 1);
+> +			else
+> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, mac->rx_delay - 1);
+> +		}
+
+And here we have the opposite to PHY_INTERFACE_MODE_RGMII_RXID.
+
+So you need to clearly document in the device tree binding when
+rx_delay and tx_delay are used, and when they are ignored. You don't
+want to have DT writers having to look deep into the code to figure
+this out.
+
+Personally, i would simply this, in a big way. I see two options:
+
+1) The MAC never adds a delay. The hardware is there, but simply don't
+use it, to keep thing simple, and the same as nearly every other MAC.
+
+2) If the hardware can do small steps of delay, allow this delay, both
+RX and TX, to be configured in all four modes, in order to allow for
+fine tuning. Leave the PHY to insert the majority of the delay.
+
+> +	/* Get MAC PHY control register */
+> +	mac->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node, "mode-reg");
+> +	if (IS_ERR(mac->regmap)) {
+> +		dev_err(&pdev->dev, "%s: failed to get syscon regmap\n", __func__);
+> +		goto err_remove_config_dt;
+> +	}
+
+Please document this in the device tree binding.
+
+> +
+> +	ret = of_property_read_u32(pdev->dev.of_node, "rx-clk-delay", &mac->rx_delay);
+> +	if (ret)
+> +		mac->rx_delay = 0;
+> +
+> +	ret = of_property_read_u32(pdev->dev.of_node, "tx-clk-delay", &mac->tx_delay);
+> +	if (ret)
+> +		mac->tx_delay = 0;
+
+Please take a look at dwmac-mediatek.c. It handles delays nicely. I
+would suggest that is the model to follow.
+
+       Andrew
