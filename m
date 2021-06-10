@@ -2,165 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 504A33A295B
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 12:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF0803A298D
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 12:43:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbhFJKcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 06:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbhFJKcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 06:32:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F92FC061574
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 03:30:13 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lrHwq-0003px-Ap; Thu, 10 Jun 2021 12:30:04 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lrHwp-0002SC-Ru; Thu, 10 Jun 2021 12:30:03 +0200
-Date:   Thu, 10 Jun 2021 12:30:03 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: Re: [PATCH net-next v3 3/9] net: phy: micrel: use consistent
- indention after define
-Message-ID: <20210610103003.n5jgeppvf4aod5hw@pengutronix.de>
-References: <20210526043037.9830-1-o.rempel@pengutronix.de>
- <20210526043037.9830-4-o.rempel@pengutronix.de>
- <20210526222448.zjpw3olck75332px@skbuf>
+        id S229961AbhFJKpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 06:45:49 -0400
+Received: from mail.chalver.com.ec ([186.3.12.10]:30062 "EHLO
+        mail.chalver.com.ec" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229770AbhFJKps (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 06:45:48 -0400
+Received: from mail.chalver.com.ec (localhost.localdomain [127.0.0.1])
+        by mail.chalver.com.ec (Postfix) with ESMTPS id 47A211F27775;
+        Thu, 10 Jun 2021 04:16:47 -0500 (ECT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mail.chalver.com.ec (Postfix) with ESMTP id C8D1A1F25C2F;
+        Thu, 10 Jun 2021 03:10:17 -0500 (ECT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.chalver.com.ec C8D1A1F25C2F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chalver.com.ec;
+        s=E2A417BC-DDA7-11E6-85F6-38495636B764; t=1623312617;
+        bh=PxMh0SAMbBGlctefOH2OhvTlJNlHw25bONEEE7Ldp0I=;
+        h=MIME-Version:To:From:Date:Message-Id;
+        b=QCy/tfO7C86ka0M3y5+avTVaf1rt6lCQy5jv06u3N/2QEzQJxBwVoVAlE+htGyA+h
+         /cKNG1bpVMgYkPXCGPGLYKEydIJe40uR3DFlcvQaXSnUWSjFWKHU79XNy9F7EMVOc1
+         gbHSmUypabyGFqUDaA5IlkHuCqiAGmIywOpVsSNmaXkGM1oxFH83iFUYIUR9ELehfK
+         lbkz3bzlES24GyE/wA2mw1zbWmJJM2K0+r//hkDmEwRHXiDVnuk2cdUdqhhoyQjJ9P
+         mpb4JPP3uiQIEX54w0hCVCI67z5GlN+RLUtml43+sxWxFGdcES/Ep/Nnz8aFU7vbae
+         Fs/FEkbJic9jw==
+X-Virus-Scanned: amavisd-new at chalver.com.ec
+Received: from mail.chalver.com.ec ([127.0.0.1])
+        by localhost (mail.chalver.com.ec [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id lS0EJWUsn74C; Thu, 10 Jun 2021 03:10:17 -0500 (ECT)
+Received: from cris-PC.wifi (unknown [105.9.120.116])
+        by mail.chalver.com.ec (Postfix) with ESMTPSA id C0E331F25C14;
+        Thu, 10 Jun 2021 03:10:04 -0500 (ECT)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210526222448.zjpw3olck75332px@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 12:27:39 up 190 days, 34 min, 40 users,  load average: 0.01, 0.03,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: =?utf-8?q?Covid_19_Wohlt=C3=A4tigkeitsfonds?=
+To:     Recipients <mpaucar@chalver.com.ec>
+From:   ''Tayeb souami'' <mpaucar@chalver.com.ec>
+Date:   Thu, 10 Jun 2021 10:17:18 +0200
+Reply-To: Tayebsouam.spende@gmail.com
+Message-Id: <20210610081004.C0E331F25C14@mail.chalver.com.ec>
+X-Laboratorios-Chalver-MailScanner-Information: Please contact the ISP for more information
+X-Laboratorios-Chalver-MailScanner-ID: C0E331F25C14.AF3B5
+X-Laboratorios-Chalver-MailScanner: Not scanned: please contact your Internet E-Mail Service Provider for details
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 27, 2021 at 01:24:48AM +0300, Vladimir Oltean wrote:
-> On Wed, May 26, 2021 at 06:30:31AM +0200, Oleksij Rempel wrote:
-> > This patch changes the indention to one space between "#define" and the
-> 
-> indention
-> /ɪnˈdɛnʃ(ə)n/
-> noun
-> noun: indention; plural noun: indentions
-> 
->     archaic term for indentation.
-> 
-> Interesting, I learned something new.
-> 
-> Also, technically it's alignment not indentation.
 
-ok, changed :)
+Lieber Freund,
 
-> > macro.
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  drivers/net/phy/micrel.c | 24 ++++++++++++------------
-> >  1 file changed, 12 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> > index a14a00328fa3..227d88db7d27 100644
-> > --- a/drivers/net/phy/micrel.c
-> > +++ b/drivers/net/phy/micrel.c
-> > @@ -38,15 +38,15 @@
-> >  
-> >  /* general Interrupt control/status reg in vendor specific block. */
-> >  #define MII_KSZPHY_INTCS			0x1B
-> > -#define	KSZPHY_INTCS_JABBER			BIT(15)
-> > -#define	KSZPHY_INTCS_RECEIVE_ERR		BIT(14)
-> > -#define	KSZPHY_INTCS_PAGE_RECEIVE		BIT(13)
-> > -#define	KSZPHY_INTCS_PARELLEL			BIT(12)
-> > -#define	KSZPHY_INTCS_LINK_PARTNER_ACK		BIT(11)
-> > -#define	KSZPHY_INTCS_LINK_DOWN			BIT(10)
-> > -#define	KSZPHY_INTCS_REMOTE_FAULT		BIT(9)
-> > -#define	KSZPHY_INTCS_LINK_UP			BIT(8)
-> > -#define	KSZPHY_INTCS_ALL			(KSZPHY_INTCS_LINK_UP |\
-> > +#define KSZPHY_INTCS_JABBER			BIT(15)
-> > +#define KSZPHY_INTCS_RECEIVE_ERR		BIT(14)
-> > +#define KSZPHY_INTCS_PAGE_RECEIVE		BIT(13)
-> > +#define KSZPHY_INTCS_PARELLEL			BIT(12)
-> > +#define KSZPHY_INTCS_LINK_PARTNER_ACK		BIT(11)
-> > +#define KSZPHY_INTCS_LINK_DOWN			BIT(10)
-> > +#define KSZPHY_INTCS_REMOTE_FAULT		BIT(9)
-> > +#define KSZPHY_INTCS_LINK_UP			BIT(8)
-> > +#define KSZPHY_INTCS_ALL			(KSZPHY_INTCS_LINK_UP |\
-> >  						KSZPHY_INTCS_LINK_DOWN)
-> >  #define	KSZPHY_INTCS_LINK_DOWN_STATUS		BIT(2)
-> >  #define	KSZPHY_INTCS_LINK_UP_STATUS		BIT(0)
-> 
-> You left these aligned using tabs.
+Ich bin Herr Tayeb Souami, New Jersey, Vereinigte Staaten von Amerika, der =
+Mega-Gewinner von $ 315million In Mega Millions Jackpot, spende ich an 5 zu=
+f=C3=A4llige Personen, wenn Sie diese E-Mail erhalten, dann wurde Ihre E-Ma=
+il nach einem Spinball ausgew=C3=A4hlt.Ich habe den gr=C3=B6=C3=9Ften Teil =
+meines Verm=C3=B6gens auf eine Reihe von Wohlt=C3=A4tigkeitsorganisationen =
+und Organisationen verteilt.Ich habe mich freiwillig dazu entschieden, die =
+Summe von =E2=82=AC 2.000.000,00 an Sie als eine der ausgew=C3=A4hlten 5 zu=
+ spenden, um meine Gewinne zu =C3=BCberpr=C3=BCfen, sehen Sie bitte meine Y=
+ou Tube Seite unten.
 
-done.
+UHR MICH HIER: https://www.youtube.com/watch?v=3DZ6ui8ZDQ6Ks
 
-> > @@ -54,11 +54,11 @@
-> >  						 KSZPHY_INTCS_LINK_UP_STATUS)
-> >  
-> >  /* PHY Control 1 */
-> > -#define	MII_KSZPHY_CTRL_1			0x1e
-> > +#define MII_KSZPHY_CTRL_1			0x1e
-> >  
-> >  /* PHY Control 2 / PHY Control (if no PHY Control 1) */
-> > -#define	MII_KSZPHY_CTRL_2			0x1f
-> > -#define	MII_KSZPHY_CTRL				MII_KSZPHY_CTRL_2
-> > +#define MII_KSZPHY_CTRL_2			0x1f
-> > +#define MII_KSZPHY_CTRL				MII_KSZPHY_CTRL_2
-> >  /* bitmap of PHY register to set interrupt mode */
-> >  #define KSZPHY_CTRL_INT_ACTIVE_HIGH		BIT(9)
-> >  #define KSZPHY_RMII_REF_CLK_SEL			BIT(7)
-> > -- 
-> > 2.29.2
-> > 
-> 
-> And the last column of these macros at the end is aligned with spaces
-> unlike everything else:
-> 
-> /* Write/read to/from extended registers */
-> #define MII_KSZPHY_EXTREG                       0x0b
-> #define KSZPHY_EXTREG_WRITE                     0x8000
-> 
-> #define MII_KSZPHY_EXTREG_WRITE                 0x0c
-> #define MII_KSZPHY_EXTREG_READ                  0x0d
-> 
-> /* Extended registers */
-> #define MII_KSZPHY_CLK_CONTROL_PAD_SKEW         0x104
-> #define MII_KSZPHY_RX_DATA_PAD_SKEW             0x105
-> #define MII_KSZPHY_TX_DATA_PAD_SKEW             0x106
-> 
-> I guess if you're going to send this patch you might as well refactor it all.
 
-Ok, done.
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Das ist dein Spendencode: [TS530342018]
+
+
+
+Antworten Sie mit dem SPENDE-CODE an diese
+
+E-Mail:Tayebsouam.spende@gmail.com
+
+
+Ich hoffe, Sie und Ihre Familie gl=C3=BCcklich zu machen.
+
+Gr=C3=BC=C3=9Fe
+Herr Tayeb Souami
