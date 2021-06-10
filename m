@@ -2,99 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6F893A2190
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 02:43:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC17C3A219B
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 02:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230017AbhFJApr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 20:45:47 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:37170 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbhFJApq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 20:45:46 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 15A0hgB3125931;
-        Wed, 9 Jun 2021 19:43:42 -0500
+        id S229942AbhFJAtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 20:49:20 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:47604 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229557AbhFJAtU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 20:49:20 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 15A0lIQ2035269;
+        Wed, 9 Jun 2021 19:47:19 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1623285822;
-        bh=TWF0rV/swOt00TUr1BLIJqsEXjaJJeA+VDeQwUbOhZU=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=VBbPz+KJLM69HXguapwpEpJsIa7jBGIqROgCxBzuyo3NeP3tKXmgBZHsM0sre+fOX
-         H85T+fL49GrUBEw7nEaRty8FsXXaT/zEtK0SMKjEEeGyOY+W8u48px6NVOOqtqXJMq
-         JC8EIYx4J5khYPkA2pcMxnEiNIcih0HANj+Cu8pQ=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 15A0hgxX079270
+        s=ti-com-17Q1; t=1623286039;
+        bh=/V9t/npogsGFkO8y3koHA2bVOzUPrE5rQACqM8GfjIk=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=ipXoOqzLPmiLUIgFSAryX9nRW7FjVFxPfftIOAJYYgD3E1W6a8uq2AypHMNbjWnNk
+         wnA4UlkLQxeZtapDtHUssqB49cHpNkzu/vyQTTQkDxEiIN+CeR7ecAqf7FqcDVu1Q5
+         dQTaolKhgOy7z8edllpRB9CC8EGllKyJYyYk2mZA=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 15A0lIA6117845
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 9 Jun 2021 19:43:42 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 9 Jun 2021 19:47:18 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 9 Jun
- 2021 19:43:42 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ 2021 19:47:18 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Wed, 9 Jun 2021 19:43:42 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 15A0hgpY005753;
-        Wed, 9 Jun 2021 19:43:42 -0500
-From:   <praneeth@ti.com>
-To:     Praneeth Bajjuri <praneeth@ti.com>, Andrew Lunn <andrew@lunn.ch>,
-        Geet Modi <geet.modi@ti.com>, <netdev@vger.kernel.org>
+ Frontend Transport; Wed, 9 Jun 2021 19:47:18 -0500
+Received: from [10.247.25.23] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 15A0lILe012301;
+        Wed, 9 Jun 2021 19:47:18 -0500
+Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH] net: phy: dp83867: perform
+ soft reset and retain established link
+To:     Andrew Lunn <andrew@lunn.ch>, "Modi, Geet" <geet.modi@ti.com>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] net: phy: dp83867: perform soft reset and retain established link
-Date:   Wed, 9 Jun 2021 19:43:42 -0500
-Message-ID: <20210610004342.4493-1-praneeth@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <3494dcf6-14ca-be2b-dbf8-dda2e208b70b@ti.com>
-References: <3494dcf6-14ca-be2b-dbf8-dda2e208b70b@ti.com>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210324010006.32576-1-praneeth@ti.com>
+ <YFsxaBj/AvPpo13W@lunn.ch> <404285EC-BBF0-4482-8454-3289C7AF3084@ti.com>
+ <YGSk4W4mW8JQPyPl@lunn.ch> <3494dcf6-14ca-be2b-dbf8-dda2e208b70b@ti.com>
+ <YLEf128OEADi0Kb1@lunn.ch> <5480BEB5-B540-4BB6-AC32-65CB27439270@ti.com>
+ <EC713CBF-D669-4A0E-ADF2-093902C03C49@ti.com> <YLaICrmU8ND+66mU@lunn.ch>
+From:   "Bajjuri, Praneeth" <praneeth@ti.com>
+Message-ID: <e2972a60-25e0-c444-8397-facda4a75b3c@ti.com>
+Date:   Wed, 9 Jun 2021 19:47:18 -0500
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <YLaICrmU8ND+66mU@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Praneeth Bajjuri <praneeth@ti.com>
+Andrew,
 
-Current logic is performing hard reset and causing the programmed
-registers to be wiped out.
+On 6/1/2021 2:18 PM, Andrew Lunn wrote:
+> On Tue, Jun 01, 2021 at 07:01:04PM +0000, Modi, Geet wrote:
+>> Hello Andrew,
+>>
+>>   
+>>
+>> Please let me know if you have additional questions/clarifications to approve
+>> below change request.
+>>
+>>   
+>>
+>> Regards,
+>> Geet
+>>
+>>   
+>>
+>>   
+>>
+>> From: Geet Modi <geet.modi@ti.com>
+>> Date: Friday, May 28, 2021 at 10:10 AM
+>> To: Andrew Lunn <andrew@lunn.ch>, "Bajjuri, Praneeth" <praneeth@ti.com>
+>> Cc: "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+>> "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+>> "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+>> Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH] net: phy: dp83867: perform
+>> soft reset and retain established link
+> 
+> So this all seems to boil down to, it does not matter if it is
+> acceptable or not, you are going to do it. So please just remove that
+> part of the comment. It has no value.
 
-as per datasheet: https://www.ti.com/lit/ds/symlink/dp83867cr.pdf
-8.6.26 Control Register (CTRL)
+Sent v2 addressing comment as per your suggestion.
+Ref: https://lore.kernel.org/patchwork/patch/1444281/
 
-do SW_RESTART to perform a reset not including the registers,
-If performed when link is already present,
-it will drop the link and trigger re-auto negotiation.
+Thanks
+Praneeth
 
-Signed-off-by: Praneeth Bajjuri <praneeth@ti.com>
-Signed-off-by: Geet Modi <geet.modi@ti.com>
----
- drivers/net/phy/dp83867.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 9bd9a5c0b1db..6bbc81ad295f 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -826,16 +826,12 @@ static int dp83867_phy_reset(struct phy_device *phydev)
- {
- 	int err;
- 
--	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESET);
-+	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESTART);
- 	if (err < 0)
- 		return err;
- 
- 	usleep_range(10, 20);
- 
--	/* After reset FORCE_LINK_GOOD bit is set. Although the
--	 * default value should be unset. Disable FORCE_LINK_GOOD
--	 * for the phy to work properly.
--	 */
- 	return phy_modify(phydev, MII_DP83867_PHYCTRL,
- 			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
- }
--- 
-2.17.1
-
+> 
+> 	 Andrew
+> 
