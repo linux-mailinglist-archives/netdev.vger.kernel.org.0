@@ -2,215 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66D6B3A371C
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 00:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B46FC3A3726
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 00:31:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230248AbhFJW3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 18:29:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44996 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230001AbhFJW3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 18:29:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623364076;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IF5wbm9XqVBGzIYcxugb/26YEZipTwS/Jt7VVR3EcJQ=;
-        b=ZGbDUMIqcOjPyd+XWj41m8dGwIPgKdF7YoxOlYKqqRMTZLYczJMCzmVzcm+BI5IWlGrQXB
-        azWyEOoX/QlFxCeXXGxMRETGj9amUpp5IrZhM+4jh9bUXd8WayhZibWJaugOKX43eW4uI7
-        FmCDi28b7hMIMyk28q7Tn+SOOXcC0so=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-201-iTHEauVnNKCYd8cj1RWyfw-1; Thu, 10 Jun 2021 18:27:54 -0400
-X-MC-Unique: iTHEauVnNKCYd8cj1RWyfw-1
-Received: by mail-ed1-f72.google.com with SMTP id z16-20020aa7d4100000b029038feb83da57so14946939edq.4
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 15:27:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=IF5wbm9XqVBGzIYcxugb/26YEZipTwS/Jt7VVR3EcJQ=;
-        b=Fmc7Vjqb5Rv1urfN9L0T0ouLgfjPJp8//yA2Bq+EBbZEZARAvPDrOkQcsZHaCT9vST
-         F1QGA4Gl3scaKwHeU1LbYrJSi0vxgRVE5unkOwvqUaApoaYcMEvZazaGDKhfmgpRTC97
-         nDoXFVovtdpO8wx78LVDrkj7ZkV+y3TyP0tOkFx+3uru663O25fKSJOOavveBekV2V/w
-         VDTorJ7Tp2FXg+Dd4s4vAe3vCvZUwi6D1QgeJ6eKaCcHP6Dnvb3cWRsvEgwcPQYwv+yc
-         nzmKCDBCUUVil9BIEB1eHD7tSzFAi4zQSn7vcuiJhlzm/Z84RcZa6SZDgtaG65UU5TGs
-         ScRA==
-X-Gm-Message-State: AOAM530B11ucwRl+H9rR9X6JqHpyACECBGhqHGAadN0YAhihTDZBRw9X
-        8dzPrI4flmNJEaiGgKFF/krHuKc1tS5+kpAHIp0fPhNk25aKC5a4lOPZZnZE/naF0nyaebDfElb
-        vgPVUKTLY2rGwlZBM
-X-Received: by 2002:a05:6402:885:: with SMTP id e5mr691304edy.248.1623364073760;
-        Thu, 10 Jun 2021 15:27:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwl/acrlBsVAf9oBWLj9CquBE14VTjBxVpStedLAQ1ucZQW/B1MwrK3iKY8PXJhJU54vZl5nw==
-X-Received: by 2002:a05:6402:885:: with SMTP id e5mr691289edy.248.1623364073599;
-        Thu, 10 Jun 2021 15:27:53 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id e22sm1957905edu.35.2021.06.10.15.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 15:27:52 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 4F1BF18071E; Fri, 11 Jun 2021 00:27:52 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH bpf-next 02/17] bpf: allow RCU-protected lookups to
- happen from bh context
-In-Reply-To: <c5192ab3-1c05-8679-79f2-59d98299095b@iogearbox.net>
-References: <20210609103326.278782-1-toke@redhat.com>
- <20210609103326.278782-3-toke@redhat.com>
- <CAADnVQJrETg1NsqBv2HE06tra=q5K8f1US8tGuHqc_FDMKR6XQ@mail.gmail.com>
- <c5192ab3-1c05-8679-79f2-59d98299095b@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 11 Jun 2021 00:27:52 +0200
-Message-ID: <874ke5we1j.fsf@toke.dk>
+        id S230469AbhFJWdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 18:33:14 -0400
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:45656 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230001AbhFJWdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 18:33:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1623364275; x=1654900275;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=4L1uhlRXfuioW8/my8xTSASqKD8SZtwMJGn66ovgUUw=;
+  b=SjIItNbD0kFb2t0aBo7jgpXKHv9aj3/NKFTv/UB/gKrKzdg8iYboZjFb
+   PGjKPmO8U3QEdYKIEJPoDJPI8ZhG7at5yuEV+0abx8RmokhkInJU01WDM
+   BtpSX5XkwpdpQxfXwgVAxb1ds9VVSK3KnL7gXN2rTHTmJZ33nuiL8A7oh
+   E=;
+X-IronPort-AV: E=Sophos;i="5.83,264,1616457600"; 
+   d="scan'208";a="6050384"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 10 Jun 2021 22:31:15 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com (Postfix) with ESMTPS id 2A066A1DE8;
+        Thu, 10 Jun 2021 22:31:14 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Thu, 10 Jun 2021 22:31:13 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.41) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Thu, 10 Jun 2021 22:31:08 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <eric.dumazet@gmail.com>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
+        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kafai@fb.com>,
+        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v7 bpf-next 01/11] net: Introduce net.ipv4.tcp_migrate_req.
+Date:   Fri, 11 Jun 2021 07:31:05 +0900
+Message-ID: <20210610223105.97080-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <3a9ecbe4-fe7e-1acf-36b7-1f999f8f01d6@gmail.com>
+References: <3a9ecbe4-fe7e-1acf-36b7-1f999f8f01d6@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.41]
+X-ClientProxiedBy: EX13D41UWC003.ant.amazon.com (10.43.162.30) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Date:   Thu, 10 Jun 2021 19:24:14 +0200
+> On 5/21/21 8:20 PM, Kuniyuki Iwashima wrote:
+> > This commit adds a new sysctl option: net.ipv4.tcp_migrate_req. If this
+> > option is enabled or eBPF program is attached, we will be able to migrate
+> > child sockets from a listener to another in the same reuseport group after
+> > close() or shutdown() syscalls.
+> > 
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+> > Acked-by: Martin KaFai Lau <kafai@fb.com>
+> > ---
+> >  Documentation/networking/ip-sysctl.rst | 25 +++++++++++++++++++++++++
+> >  include/net/netns/ipv4.h               |  1 +
+> >  net/ipv4/sysctl_net_ipv4.c             |  9 +++++++++
+> >  3 files changed, 35 insertions(+)
+> 
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-> Hi Paul,
->
-> On 6/10/21 8:38 PM, Alexei Starovoitov wrote:
->> On Wed, Jun 9, 2021 at 7:24 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>>
->>> XDP programs are called from a NAPI poll context, which means the RCU
->>> reference liveness is ensured by local_bh_disable(). Add
->>> rcu_read_lock_bh_held() as a condition to the RCU checks for map lookup=
-s so
->>> lockdep understands that the dereferences are safe from inside *either*=
- an
->>> rcu_read_lock() section *or* a local_bh_disable() section. This is done=
- in
->>> preparation for removing the redundant rcu_read_lock()s from the driver=
-s.
->>>
->>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->>> ---
->>>   kernel/bpf/hashtab.c  | 21 ++++++++++++++-------
->>>   kernel/bpf/helpers.c  |  6 +++---
->>>   kernel/bpf/lpm_trie.c |  6 ++++--
->>>   3 files changed, 21 insertions(+), 12 deletions(-)
->>>
->>> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
->>> index 6f6681b07364..72c58cc516a3 100644
->>> --- a/kernel/bpf/hashtab.c
->>> +++ b/kernel/bpf/hashtab.c
->>> @@ -596,7 +596,8 @@ static void *__htab_map_lookup_elem(struct bpf_map =
-*map, void *key)
->>>          struct htab_elem *l;
->>>          u32 hash, key_size;
->>>
->>> -       WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held=
-());
->>> +       WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held=
-() &&
->>> +                    !rcu_read_lock_bh_held());
->>=20
->> It's not clear to me whether rcu_read_lock_held() is still needed.
->> All comments sound like rcu_read_lock_bh_held() is a superset of rcu
->> that includes bh.
->> But reading rcu source code it looks like RCU_BH is its own rcu flavor...
->> which is confusing.
->
-> The series is a bit confusing to me as well. I recall we had a discussion=
- with
-> Paul, but it was back in 2016 aka very early days of XDP to get some clar=
-ifications
-> about RCU vs RCU-bh flavour on this. Paul, given the series in here, I as=
-sume the
-> below is not true anymore, and in this case (since we're removing rcu_rea=
-d_lock()
-> from drivers), the RCU-bh acts as a real superset?
->
-> Back then from your clarifications this was not the case:
->
->    On Mon, Jul 25, 2016 at 11:26:02AM -0700, Alexei Starovoitov wrote:
->    > On Mon, Jul 25, 2016 at 11:03 AM, Paul E. McKenney
->    > <paulmck@linux.vnet.ibm.com> wrote:
->    [...]
->    >>> The crux of the question is whether a particular driver rx handler=
-, when
->    >>> called from __do_softirq, needs to add an additional rcu_read_lock=
- or
->    >>> whether it can rely on the mechanics of softirq.
->    >>
->    >> If it was rcu_read_lock_bh(), you could.
->    >>
->    >> But you didn't say rcu_read_lock_bh(), you instead said rcu_read_lo=
-ck(),
->    >> which means that you absolutely cannot rely on softirq semantics.
->    >>
->    >> In particular, in CONFIG_PREEMPT=3Dy kernels, rcu_preempt_check_cal=
-lbacks()
->    >> will notice that there is no rcu_read_lock() in effect and report
->    >> a quiescent state for that CPU.  Because rcu_preempt_check_callback=
-s()
->    >> is invoked from the scheduling-clock interrupt, it absolutely can
->    >> execute during do_softirq(), and therefore being in softirq context
->    >> in no way provides rcu_read_lock()-style protection.
->    >>
->    >> Now, Alexei's question was for CONFIG_PREEMPT=3Dn kernels.  However=
-, in
->    >> that case, rcu_read_lock() and rcu_read_unlock() generate no code
->    >> in recent production kernels, so there is no performance penalty for
->    >> using them.  (In older kernels, they implied a barrier().)
->    >>
->    >> So either way, with or without CONFIG_PREEMPT, you should use
->    >> rcu_read_lock() to get RCU protection.
->    >>
->    >> One alternative might be to switch to rcu_read_lock_bh(), but that
->    >> will add local_disable_bh() overhead to your read paths.
->    >>
->    >> Does that help, or am I missing the point of the question?
->    >
->    > thanks a lot for explanation.
->
->    Glad you liked it!
->
->    > I mistakenly assumed that _bh variants are 'stronger' and
->    > act as inclusive, but sounds like they're completely orthogonal
->    > especially with preempt_rcu=3Dy.
->
->    Yes, they are pretty much orthogonal.
->
->    > With preempt_rcu=3Dn and preempt=3Dy, it would be the case, since
->    > bh disables preemption and rcu_read_lock does the same as well,
->    > right? Of course, the code shouldn't be relying on that, so we
->    > have to fix our stuff.
->
->    Indeed, especially given that the kernel currently won't allow you
->    to configure CONFIG_PREEMPT_RCU=3Dn and CONFIG_PREEMPT=3Dy.  If it doe=
-s,
->    please let me know, as that would be a bug that needs to be fixed.
->    (For one thing, I do not test that combination.)
->
-> 							Thanx, Paul
->
-> And now, fast-forward again to 2021 ... :)
-
-We covered this in the thread I linked from the cover letter.
-Specifically, this seems to have been a change from v4.20, see Paul's
-reply here:
-https://lore.kernel.org/bpf/20210417002301.GO4212@paulmck-ThinkPad-P17-Gen-=
-1/
-
-and the follow-up covering -rt here:
-https://lore.kernel.org/bpf/20210419165837.GA975577@paulmck-ThinkPad-P17-Ge=
-n-1/
-
--Toke
-
+Thank you!
