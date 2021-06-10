@@ -2,118 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0EA03A327C
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 19:52:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A36D3A3279
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 19:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230444AbhFJRx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 13:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230422AbhFJRx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 13:53:56 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC5AC061760
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:51:44 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id i13so34068825edb.9
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:51:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W5N9tssE2i0AgVK7/2trUERhx4u2w/EofSnQ2711Vg0=;
-        b=NwyASavLYyq5W9Tb2GGDH2wkOtzzWTAyyvhi06tuRc3Ne1GMb9L1kbyJ13EscFk3nO
-         BFnHWcY9XiM6T+TsIcgSCGFGXmAt7sZ99gmzYCKEJnfghHERCC8XWQgzxn+CovjpBM83
-         BtWyOwSUC3iO/EzsLahGQhj7+v8LpXrDRQfYHPdmiTfOJu8U4zcx24XdPFpEuEjfp/Q+
-         kTQqBQVlGd6FklnVW0c3pxM/u8bVdL+BvKwWURshHDQrNdBPS0FtUOcufze255FZ8Mje
-         kMGNfSQKyz3bHaeFACGsWJuV1cBXZRjGmV5lawxXT0aL/P5M5VETkrqhQjbz6tnTcixz
-         YZXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W5N9tssE2i0AgVK7/2trUERhx4u2w/EofSnQ2711Vg0=;
-        b=GVHPwb0tOFhp4Afa84oTSuYCbH3zejnNj4BIkLKWbd8lR8GzI4fwfr4yoPjdRm4AXF
-         GHeQVAGTUDMCB1TYR1bXfejVc16/4YMECmjbP9iEga1mMtxQSAl0kxjMyyWOJTebaYmo
-         gbyUJvkfRVvDy/Uep1qfG/pJvHbtv3zARZYwn3r2vE3FQ4qbKTzXXUVoKA2pLMpsZkQA
-         PPYd3vR4rnm5wux8ZnqfI712yJX+ADfEgn/+b8cAIlCD+mKU3Z5o73IUPmvyRr6YV6Pr
-         EwYS2mWocDtJ4dh8i9F1CaCCiHofm5XGBmFHYLaj+VECVJmuBaRYAdL5ggkxxf2MRY5/
-         ayjA==
-X-Gm-Message-State: AOAM532Ae+7o7hQFs/A+pPJw7fFc27lvPtcAKcmZi1SX8ZMSCuR+Jbz8
-        ps3IXkP3cq4RxeV89WT629podN5ucGtIo/YOTm/wOg==
-X-Google-Smtp-Source: ABdhPJzCoetYoBQDDWOYa33AgKwAl3+emGrXImDnBKCyVLiFrGTBa7kK2HiwwjAhOB5hDtHoyt6aO6lmFkRa/p6cU/k=
-X-Received: by 2002:aa7:c753:: with SMTP id c19mr675196eds.33.1623347503093;
- Thu, 10 Jun 2021 10:51:43 -0700 (PDT)
+        id S230376AbhFJRxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 13:53:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57590 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229802AbhFJRxK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 13:53:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 626B0613CA;
+        Thu, 10 Jun 2021 17:51:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623347473;
+        bh=lCGJRHFmgyGy14hX7d0GCF2ozflAS/+GEcyyj0awbxo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UcqnFRY0InkyUs9iHJsHROBDaSWwxKwEd0n2YZ577/dS6RTqcloWIirdpUiXfDNRs
+         iACitaJqN+aIg85zx4+RRcytoXb4rkvIf5gKGVvYs1PWjdaeYFuGZIKjaUBjFOyKTU
+         39839+Bg3u/aBcWokJgdeuwNe7DxBtSIvI45wzCMt8T03uZe5AmCSOSxJpHBjDHRDq
+         ZVMAfULEhDzbPQunKERzicvvjZFjeK5jnbmEkXZVwI0KUUEFkX2YZQznd/O0sjGIdu
+         pqCyYzL8pd2pkI6S1aPix9eTpbiYJcA68QP3hboGewE1K73CdJcCMMmrh9/bHqCeuS
+         OH19NSWVlmc/Q==
+Date:   Thu, 10 Jun 2021 10:51:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Changbin Du <changbin.du@gmail.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Christian Brauner <christian.brauner@ubuntu.com>
+Subject: Re: [PATCH v3] net: make get_net_ns return error if NET_NS is
+ disabled
+Message-ID: <20210610105112.787a0d5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210610153941.118945-1-changbin.du@gmail.com>
+References: <20210610153941.118945-1-changbin.du@gmail.com>
 MIME-Version: 1.0
-References: <20210610163917.4138412-1-ciorneiioana@gmail.com> <YMJEMXEDAE/m9MhA@lunn.ch>
-In-Reply-To: <YMJEMXEDAE/m9MhA@lunn.ch>
-From:   Jon Nettleton <jon@solid-run.com>
-Date:   Thu, 10 Jun 2021 19:51:03 +0200
-Message-ID: <CABdtJHv-Xu5bC2-T7a0UgbYpkNP1SLfWwdLWLLKj5MBvA2Ajyw@mail.gmail.com>
-Subject: Re: [PATCH net-next v8 00/15] ACPI support for dpaa2 driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ioana Ciornei <ciorneiioana@gmail.com>,
-        Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Calvin Johnson <calvin.johnson@nxp.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Len Brown <lenb@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 10, 2021 at 6:56 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Thu, Jun 10, 2021 at 07:39:02PM +0300, Ioana Ciornei wrote:
-> > From: Ioana Ciornei <ioana.ciornei@nxp.com>
-> >
-> > This patch set provides ACPI support to DPAA2 network drivers.
->
-> Just to be clear and avoid confusion, there is a standing NACK against
-> this patchset. Please see the discussion here:
->
-> https://patchwork.kernel.org/project/linux-acpi/patch/20200715090400.4733-2-calvin.johnson@oss.nxp.com/#23518385
->
-> So far, i've not seen any indication the issues raised there have been
-> resolved. I don't see any Acked-by from an ACPI maintainer. So this
-> code remains NACKed.
+On Thu, 10 Jun 2021 23:39:41 +0800 Changbin Du wrote:
+> There is a panic in socket ioctl cmd SIOCGSKNS when NET_NS is not enabled.
+> The reason is that nsfs tries to access ns->ops but the proc_ns_operations
+> is not implemented in this case.
+> 
+> [7.670023] Unable to handle kernel NULL pointer dereference at virtual address 00000010
+> [7.670268] pgd = 32b54000
+> [7.670544] [00000010] *pgd=00000000
+> [7.671861] Internal error: Oops: 5 [#1] SMP ARM
+> [7.672315] Modules linked in:
+> [7.672918] CPU: 0 PID: 1 Comm: systemd Not tainted 5.13.0-rc3-00375-g6799d4f2da49 #16
+> [7.673309] Hardware name: Generic DT based system
+> [7.673642] PC is at nsfs_evict+0x24/0x30
+> [7.674486] LR is at clear_inode+0x20/0x9c
+> 
+> The same to tun SIOCGSKNS command.
+> 
+> To fix this problem, we make get_net_ns() return -EINVAL when NET_NS is
+> disabled. Meanwhile move it to right place net/core/net_namespace.c.
 
-Andrew,
+I'm assuming you went from EOPNOTSUPP to EINVAL to follow what the
+existing helpers in the header do?
 
-The ACPI maintainers did bless the use of the ACPI standards followed
-in this patchset, and their only abstinence from ACK'ing the patchset
-was whether the code was used in production systems.  Well currently,
-not only have we, SolidRun, been using this patchset and the associated
-ACPI tables in our SystemsReady certified firmware for the HoneyComb,
-but we also have customers using this same patchset and firmware on
-their systems rolled out to customers.
+Acked-by: Jakub Kicinski <kuba@kernel.org>
 
-Additionally we have an entire new product line based on Marvell's
-Armada CN913x series, which also needs this patchset to be fully
-functional.
-
-I am quite certain this is more than enough production systems using
-this ACPI description method for networking to progress this patchset
-forward.
-
--Jon
+Thanks!
