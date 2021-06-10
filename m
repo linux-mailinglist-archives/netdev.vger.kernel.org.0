@@ -2,61 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 581D23A3005
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:01:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD4363A3013
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:05:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230220AbhFJQD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 12:03:27 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56654 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230184AbhFJQD0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Jun 2021 12:03:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=hPwBfiq+EkDhbSpGp/S0/Q4kz8T22XzRb8/GRZUETBU=; b=qPuOfW2e58phjlkVYnrhIN1XEA
-        hO2QyCzeh9JyOWrgUJSI8WnlMXSOq8etHn2VULLIfXPW9AH5x0gy9A8Q2xEiCq8r2+qXPNbTnBNOO
-        y3efzMCF5Hu3MXBVtIaldRBmc8srMECAj8YWA2fgtgrh6hdavKhiaDu5TlqsI0fsYBGc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lrN7W-008gcj-H9; Thu, 10 Jun 2021 18:01:26 +0200
-Date:   Thu, 10 Jun 2021 18:01:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Subject: Re: [PATCH net-next] net: mdio: mscc-miim: Use
- devm_platform_get_and_ioremap_resource()
-Message-ID: <YMI3VsR/jnVVhmsh@lunn.ch>
-References: <20210610091154.4141911-1-yangyingliang@huawei.com>
+        id S230083AbhFJQHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 12:07:52 -0400
+Received: from mail-oo1-f43.google.com ([209.85.161.43]:42694 "EHLO
+        mail-oo1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229942AbhFJQHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 12:07:51 -0400
+Received: by mail-oo1-f43.google.com with SMTP id y18-20020a4ae7120000b02902496b7708cfso4062oou.9
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 09:05:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=kVGqpAL8u87a9dEz6rqHJJVepezU3tGlXLFcyhVYGuY=;
+        b=LgxhvNw3A/GF1/H8ZeC5dGQwGmkpG8tccJYzLzAmCWQrgSPsbOWwwoIc+1sMBhIKSi
+         JPEA7OiDSRR5rUW7AqwTyvdpbdOx/A4jxAp9M+Cvhiz0popoYdCjiMCxUJ0j5szU0VIy
+         fYxvxZR8iSB7G4D6qIiKRn4Hh3YKUN15gYNf9zk4o0BGc3h6S11BLPFIMmAiSTijzzW+
+         HRnTK4HMkmu7KfzPsh8BzmpsecFsehJVH2cAPVP1UswM84gNE3+Jqp1oQ712Futcisjv
+         Vdtmg0zGErjGFEwWckeG858tfiI1js2P3BpXKlZW2qMymFCcf1pjc/iVz7/5WYARCyqn
+         vTeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=kVGqpAL8u87a9dEz6rqHJJVepezU3tGlXLFcyhVYGuY=;
+        b=K3YTwB4GKydwZeuidSQBvOKStGUllpBz9yrDVP2n1s+KBpDg0wRHjkA0bmBH0cZms8
+         VX2DRvCuwmLTFZ3RRfrrv6CYAGTI1GjYXEXwYDmbcUoMhOIupUzv9knuyQuPFscM9BUU
+         J/OlJmbohCVBbdus1LDSs7NvZ2NhtwDIII2EIcQTpaS82P3Q75Zvs8VqiGy6N5dDySvg
+         eisZSvdzOPU1rA1e3Udm+X9istQ8MBlS+48CN+2lyRwfuomqhtKWPyCdJQLyJrbUdHIF
+         c4Vfzg29ZpZoTzx7GkbvfFwrZ8FWSfdK8byhDdBr1ngh9J+pcKE7pBPNdC6YPQIsTyl/
+         zXZw==
+X-Gm-Message-State: AOAM530g8t3gW+rRAvj7UB+bWp8cjRkXbCIEFeegBCWqr3Fasj3RaI1c
+        /8W7twjPAl6g8AQr9IR45QQsvy+CvVcdiKKkGynghZu4
+X-Google-Smtp-Source: ABdhPJxsftynEms0C+SKmaFOYgzLv/xbmTmrHDFbIc4iKlMr1XBh5xQv2lEiRuggMmYUb1kfnOEfbKbHsupAsgCBVzA=
+X-Received: by 2002:a4a:ba87:: with SMTP id d7mr2914002oop.6.1623341081432;
+ Thu, 10 Jun 2021 09:04:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210610091154.4141911-1-yangyingliang@huawei.com>
+References: <CAKfDRXgBcW4Ps57Bfj7y=NwDX3K-vB8Hpa-ykJ0BOnOdUfdcmg@mail.gmail.com>
+In-Reply-To: <CAKfDRXgBcW4Ps57Bfj7y=NwDX3K-vB8Hpa-ykJ0BOnOdUfdcmg@mail.gmail.com>
+From:   Kristian Evensen <kristian.evensen@gmail.com>
+Date:   Thu, 10 Jun 2021 18:04:30 +0200
+Message-ID: <CAKfDRXge7RmsTx2Xh6BFwX+qObZXtukkm0LKkZQo+z9vubpybw@mail.gmail.com>
+Subject: Re: Kernel oops when using rmnet together with qmi_wwan on kernel 5.4
+To:     Network Development <netdev@vger.kernel.org>,
+        subashab@codeaurora.org, stranche@codeaurora.org,
+        sharathv@codeaurora.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -	dev->regs = devm_ioremap_resource(&pdev->dev, res);
-> +	dev->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
->  	if (IS_ERR(dev->regs)) {
+Hi,
 
-Here, only dev->regs is considered.
+On Wed, Jun 9, 2021 at 8:39 PM Kristian Evensen
+<kristian.evensen@gmail.com> wrote:
+> Does anyone have any idea about what could be wrong, where to look or
+> how to fix the problem? Are there for example any related commits that
+> I should backport to my 5.4 kernel?
 
->  		dev_err(&pdev->dev, "Unable to map MIIM registers\n");
->  		return PTR_ERR(dev->regs);
->  	}
+I spent some more time looking into this problem today and I believe I
+have figured out what goes wrong. Please note that my knowledge of the
+network driver infrastructure is a bit limited, so please excuse any
+mistakes :)
 
+I started out by taking a closer look at the rmnet code, and I noticed
+that rmnet calls consume_skb() when the processing of the aggregated
+skb is done. Instrumenting the kernel revealed that the reference
+count of the aggregated is one, so the skb will be freed inside
+consume_skb(). I believe the call to consume_skb can cause problems
+with usbnet, depending on the order of operations. The skb that is
+passed to rmnet is owned by usbnet and is referenced after the
+qmi_wwan rx_fixup-callback has been called.
 
+In order to try to prove my theory, I modified qmi_wwan to clone the
+skb inside qmi_wwan_rx_fixup (before the call to netif_rx()). When
+cloning the skb, I am no longer able to trigger the crash. Without
+cloning, the crash happens more or less instantaneously. I don't know
+if my reasoning and fix makes sense, or if I have misunderstood
+something or there is a better way to fix the problem? I also tried to
+only call skb_get() but this did not help.
 
-> +	dev->phy_regs = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
-> +	if (res && IS_ERR(dev->phy_regs)) {
-
-Here you look at both res and dev->phy_regs.
-
-This seems inconsistent. Can devm_platform_get_and_ioremap_resource()
-return success despite res being NULL?
-
-       Andrew
+BR,
+Kristian
