@@ -2,74 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A80243A377F
+	by mail.lfdr.de (Postfix) with ESMTP id 54DF33A377E
 	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 00:59:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231152AbhFJXBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 19:01:48 -0400
+        id S230483AbhFJXBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 19:01:47 -0400
 Received: from mga09.intel.com ([134.134.136.24]:55161 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230484AbhFJXBr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230103AbhFJXBr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 10 Jun 2021 19:01:47 -0400
-IronPort-SDR: /jiZEsooGhYBR02r0Sx7RJtoUASLKZWMBoIYtuig03RRSC0L1HGMXYcXeZ2ceK/2o8i++no3dn
- shOqp+Cz+FEg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10011"; a="205383801"
+IronPort-SDR: XH37uWhgPFhRH7/uXpuPcsJnDqm8mb6RTJGSiukDX2v1We6FKuNsgtiBwZVQQUiuUY09uSSv0H
+ UUAe2dVMKEvw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10011"; a="205383802"
 X-IronPort-AV: E=Sophos;i="5.83,264,1616482800"; 
-   d="scan'208";a="205383801"
+   d="scan'208";a="205383802"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2021 15:59:50 -0700
-IronPort-SDR: HQY8/5wxQYDJ2ev1x8LFPECtKofreEBLMMzXjSR/KH6tX8+DoqggqRT5TaqmS/rpfeDu44Wqaf
- 9OOv6FF49xtw==
+IronPort-SDR: 1C/FuNPpMYZlVHSvidCbR830ZYzFELsp3/ADTNfNkr98m8J582trb0r/MVRatuwzFHsGkr2TZo
+ 7Z0LwaBGSuAQ==
 X-IronPort-AV: E=Sophos;i="5.83,264,1616482800"; 
-   d="scan'208";a="441387018"
+   d="scan'208";a="441387020"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.70.185])
   by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2021 15:59:49 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-Subject: [PATCH net 0/5] mptcp: More v5.13 fixes
-Date:   Thu, 10 Jun 2021 15:59:39 -0700
-Message-Id: <20210610225944.351224-1-mathew.j.martineau@linux.intel.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net 1/5] mptcp: try harder to borrow memory from subflow under pressure
+Date:   Thu, 10 Jun 2021 15:59:40 -0700
+Message-Id: <20210610225944.351224-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210610225944.351224-1-mathew.j.martineau@linux.intel.com>
+References: <20210610225944.351224-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here's another batch of MPTCP fixes for v5.13.
+From: Paolo Abeni <pabeni@redhat.com>
 
-Patch 1 cleans up memory accounting between the MPTCP-level socket and
-the subflows to more reliably transfer forward allocated memory under
-pressure.
+If the host is under sever memory pressure, and RX forward
+memory allocation for the msk fails, we try to borrow the
+required memory from the ingress subflow.
 
-Patch 2 wakes up socket readers more reliably.
+The current attempt is a bit flaky: if skb->truesize is less
+than SK_MEM_QUANTUM, the ssk will not release any memory, and
+the next schedule will fail again.
 
-Patch 3 changes a WARN_ONCE to a pr_debug.
+Instead, directly move the required amount of pages from the
+ssk to the msk, if available
 
-Patch 4 changes the selftests to only use syncookies in test cases where
-they do not cause spurious failures.
+Fixes: 9c3f94e1681b ("mptcp: add missing memory scheduling in the rx path")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ net/mptcp/protocol.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Patch 5 modifies socket error reporting to avoid a possible soft lockup.
-
-
-Paolo Abeni (5):
-  mptcp: try harder to borrow memory from subflow under pressure
-  mptcp: wake-up readers only for in sequence data
-  mptcp: do not warn on bad input from the network
-  selftests: mptcp: enable syncookie only in absence of reorders
-  mptcp: fix soft lookup in subflow_error_report()
-
- net/mptcp/protocol.c                          |  52 +++++----
- net/mptcp/protocol.h                          |   1 -
- net/mptcp/subflow.c                           | 108 +++++++++---------
- .../selftests/net/mptcp/mptcp_connect.sh      |  11 +-
- 4 files changed, 88 insertions(+), 84 deletions(-)
-
-
-base-commit: 22488e45501eca74653b502b194eb0eb25d2ad00
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 5edc686faff1..534cf500521d 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -280,11 +280,13 @@ static bool __mptcp_move_skb(struct mptcp_sock *msk, struct sock *ssk,
+ 
+ 	/* try to fetch required memory from subflow */
+ 	if (!sk_rmem_schedule(sk, skb, skb->truesize)) {
+-		if (ssk->sk_forward_alloc < skb->truesize)
+-			goto drop;
+-		__sk_mem_reclaim(ssk, skb->truesize);
+-		if (!sk_rmem_schedule(sk, skb, skb->truesize))
++		int amount = sk_mem_pages(skb->truesize) << SK_MEM_QUANTUM_SHIFT;
++
++		if (ssk->sk_forward_alloc < amount)
+ 			goto drop;
++
++		ssk->sk_forward_alloc -= amount;
++		sk->sk_forward_alloc += amount;
+ 	}
+ 
+ 	/* the skb map_seq accounts for the skb offset:
 -- 
 2.32.0
 
