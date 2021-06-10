@@ -2,109 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E57FF3A28F5
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 12:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 231973A28FB
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 12:04:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbhFJKGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 06:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        id S230001AbhFJKGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 06:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbhFJKGL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 06:06:11 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55AEC061574
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 03:04:15 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lrHXh-0000Mt-7N; Thu, 10 Jun 2021 12:04:05 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lrHXf-0001Jt-N6; Thu, 10 Jun 2021 12:04:03 +0200
-Date:   Thu, 10 Jun 2021 12:04:03 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: Re: [PATCH net-next v3 8/9] net: dsa: dsa_slave_phy_connect():
- extend phy's flags with port specific phy flags
-Message-ID: <20210610100403.4lgte3x2kw5hvcci@pengutronix.de>
-References: <20210526043037.9830-1-o.rempel@pengutronix.de>
- <20210526043037.9830-9-o.rempel@pengutronix.de>
- <20210526150811.GF30436@shell.armlinux.org.uk>
+        with ESMTP id S230215AbhFJKGp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 06:06:45 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FB8C061760
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 03:04:49 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id c14so10904909ybk.3
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 03:04:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y1t1gThwqk4P3CmoGImUqahvI/YhwYgwDOhTQsQgvaA=;
+        b=Fo5PxKwzHWbMPPS1iiWO2GC+MRsiSG+6qXKY/mJ/8+7ab/qIWgpJGQVg99FSMR59zt
+         L+z+SMHv4atQvkUU+725zAvAEtaDTy9Yh0HZGmPZkqEve5SDUZFOBscTmtgsyMenyG8S
+         IAi76+d89mduQPDfXVeeIyAVTDccEEn+imq2ABlI57gwY5WGv1pXTZaqp/BRpHisTPPS
+         GfaHjkwECD96YVgA8t1W0kmiioSEfBzKDGXtbuEV7jmAInCnH7zyVxf0GHB8pyzJZZiO
+         4EAZOM+pokM+kdAIbQR6JsQkllDWaMu7mFrz1GoNVlfNvBL4u4BlbvA7PYQ6pp0ynTax
+         zLNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y1t1gThwqk4P3CmoGImUqahvI/YhwYgwDOhTQsQgvaA=;
+        b=QrEoKY4UbtJ9OXJWxcEuBJsWpXynBQF31cR0tmsmZ225FokecXClbmpBFPosye4IBu
+         t9xde8cZxD/rufK4Uu4jPyn8zDHi3ZtuXhAUGC91qdtwLbe5xCcGtNQ4yF/RACuu8Pw4
+         IztyAkGxhcSlN6sUJBvyR080/m7kubN6Yy3LuWC3hGlKptfUlL0VbA1BQ0xMr/q0AicN
+         HTRN1OeDqkR+fqMIC+f1cE8Y9OLxJeFDANEx7CvgHdjEmSe4/xHqA2VRtw9Y65exMGbJ
+         VZKTyRjujCyhyIwWgrX6yW0JSA2dAgnivGXtA3+cpMUrY1joxeqfWDnCQkb8XX9XXt5Y
+         lzLQ==
+X-Gm-Message-State: AOAM5313ZDqnOXKYz+pWpw9czP/G9pF39z19Oc2r5qe2uvxpYb9abilB
+        Fmqh8Nwg2ZU0q7bA9mh2UWN5dYwli1a32/cmxxrOfA==
+X-Google-Smtp-Source: ABdhPJw8FlL5flBN8UKGv2Ytl7fRld47EDaX0RjIibn23UBr+CVj3m34UcaHSCn4L0eFgSgFRwvJl6oK4wC2nEgDyQ4=
+X-Received: by 2002:a05:6902:4b2:: with SMTP id r18mr6636440ybs.446.1623319488149;
+ Thu, 10 Jun 2021 03:04:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210526150811.GF30436@shell.armlinux.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 12:02:07 up 190 days, 8 min, 39 users,  load average: 0.00, 0.02,
- 0.00
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <1623058534-78782-1-git-send-email-chengshuyi@linux.alibaba.com>
+ <CANn89iLNf+73MsPH7O7wX3PrN26FVLcjw_SmsN6jNwnjrYg4KQ@mail.gmail.com>
+ <0e938649-986d-ce79-e3c4-1f29bdcb64e0@linux.alibaba.com> <CANn89iKnT5Ebk5vovFJKHY4Fe7ERkN3ak_Nkqyc=vXL=VWvyPg@mail.gmail.com>
+ <258e3c94-f479-509c-a4b0-5a881779dd14@linux.alibaba.com>
+In-Reply-To: <258e3c94-f479-509c-a4b0-5a881779dd14@linux.alibaba.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 10 Jun 2021 12:04:37 +0200
+Message-ID: <CANn89iL8bkiJdDH110U5uD4mSJM7v9fU8xFa9BXAu4wCf+y13Q@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: tcp: Updating MSS, when the sending window
+ is smaller than MSS.
+To:     Shuyi Cheng <chengshuyi@linux.alibaba.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Mao Wenan <wenan.mao@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 04:08:11PM +0100, Russell King (Oracle) wrote:
-> On Wed, May 26, 2021 at 06:30:36AM +0200, Oleksij Rempel wrote:
-> > This patch extends the flags of the phy that's being connected with the
-> > port specific flags of the switch port.
-> > 
-> > This is needed to handle a port specific erratum of the KSZ8873 switch,
-> > which is added in a later patch.
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  drivers/net/phy/phylink.c | 2 +-
-> >  net/dsa/slave.c           | 4 ++++
-> >  2 files changed, 5 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> > index 96d8e88b4e46..167c2277814f 100644
-> > --- a/drivers/net/phy/phylink.c
-> > +++ b/drivers/net/phy/phylink.c
-> > @@ -1029,7 +1029,7 @@ static int phylink_attach_phy(struct phylink *pl, struct phy_device *phy,
-> >  	if (pl->phydev)
-> >  		return -EBUSY;
-> >  
-> > -	return phy_attach_direct(pl->netdev, phy, 0, interface);
-> > +	return phy_attach_direct(pl->netdev, phy, phy->dev_flags, interface);
-> 
-> I don't think this has any benefit. phy_attach_direct() does this
-> internally:
-> 
->         phydev->dev_flags |= flags;
-> 
-> which means the above change is effectively doing:
-> 
->         phydev->dev_flags |= phydev->dev_flags;
-> 
-> So, are you sure you need this?
+On Thu, Jun 10, 2021 at 8:00 AM Shuyi Cheng
+<chengshuyi@linux.alibaba.com> wrote:
 
-Ah, good point. Back for two years, phy_attach_direct() was doing
-	phydev->dev_flags = flags;
+> Thank you very much for your reply!
+>
+> Maybe it's not clear enough that I described it. The scenario where the
+> above problem occurs is precisely because the tcp server sets the size
+> of RCVBUFF to be smaller after the connection is established. Here is a
+> sample code that caused the problem.
+>
+> # default tcp_rmem is 87380
 
-I didn't noticed this change.
+Except that this value is overridden at connection establishment.
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+tcp_rmem[1] is only a floor value, say if you want a reasonable value
+even if MSS == 100
+
+> tcpServerSocket= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+> tcpServerSocket.bind(server_addr)
+> tcpServerSocket.listen()
+> while True:
+>      connection,client_addr = tcpServerSocket.accept()
+>      # Shrink rmem
+>      connection.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 16*1024)
+>
+> Therefore, when the developer calls the sock_setsockopt function to
+> reset RCVBUF, we can use sock to determine the TCP state. When in the
+> connected state, it is not allowed to set RCVBUF smaller than mss.
+>
+
+Sure, but the application can _also_ set SO_RCVBUF before listen() or connect()
+
+We can not have assumptions about SO_RCVBUF values and socket states.
+Otherwise we would have to add some sk_rcvbuf adjustments every time
+the socket state is changed.
