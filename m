@@ -2,73 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99FA53A3166
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:52:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B0E3A3157
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:49:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbhFJQy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 12:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230272AbhFJQyW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 12:54:22 -0400
-X-Greylist: delayed 463 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Jun 2021 09:52:25 PDT
-Received: from mail1.systemli.org (mail1.systemli.org [IPv6:2a00:c38:11e:ffff::a032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4313C061574;
-        Thu, 10 Jun 2021 09:52:25 -0700 (PDT)
-Subject: Re: [PATCH -next] dccp: tfrc: fix doc warnings in tfrc_equation.c
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=systemli.org;
-        s=default; t=1623343478;
-        bh=uZE8Th48OJiDQ9WnoC2cT/ZZKeuF68wKkFGlFE6GfyM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=kO1CMB4/qrYS5j+GDCiNhE6VsJiP4E+JGBINvxBsv1d4GlfpzbA9pJ+clT7wpu5fU
-         512fMEhyqGLNoXVbTkUJnZvibizz0505/A4ITz1NS9Lrg41Qp4TEhWJ8OFy6ZfGQ7a
-         ACysX5sS/gz8FHE+J1W+EwMLK76NlptyHRBLmdqvWAdl09BWvHt+WyUjt6T5KIZ3Ih
-         fRlF04R3HX5cfPJxtYY1iYzv1mX2sqgbX8Kue8LiBbCnMCBg7kf6fNAC6WuFta4fwE
-         QZduAHYrrhQdjJFxuBr5ptFtrDCO/QXXyKp2BVWQG7E8aVweZED4Sa6lDEGWqgDSU/
-         4Oon8JiheHTjA==
-To:     Baokun Li <libaokun1@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, dccp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     weiyongjun1@huawei.com, yuehaibing@huawei.com,
-        yangjihong1@huawei.com, yukuai3@huawei.com
-References: <20210610132603.597563-1-libaokun1@huawei.com>
-From:   Richard Sailer <richard_siegfried@systemli.org>
-Message-ID: <1ef2e838-5cf9-c121-624d-3c6e5d5f1649@systemli.org>
-Date:   Thu, 10 Jun 2021 18:44:35 +0200
+        id S231489AbhFJQvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 12:51:24 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:42550 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231153AbhFJQvY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 12:51:24 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15AGYJj9191943;
+        Thu, 10 Jun 2021 12:48:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
+ content-type : content-transfer-encoding : date : from : to : cc : subject
+ : in-reply-to : references : message-id; s=pp1;
+ bh=O16dIPOu+lA989Tusv2fGa0q2M5u6OuqRTodshl8cXw=;
+ b=gxBRII4T5KSTDb0YPAYqOXjGlyb/TbLmcJAtLggjXLxjFlLEOeJXww4h+AYCuv2O0bN1
+ IKlJ8mgV9+/jszNJFspPizd1W2FFTwtlb26wBCt5LtqkJdwQiYsz8meP4Tquc5IAXyp3
+ MFCTymdCqETsQLWd3FaQeZ6NNmgG/ZhHLtX36wWduqgXhUFENhDU2bQNu2zuTOLGaykw
+ JPssn/fKDepKTr85aacncXQJWc0uvUNd3ggvBIbEuW8pf0wl5L6mTAXNlEyOBMWCXPZU
+ tLltYvMNBNf5JpmKMSMZMSvtR0I9ivBXLv7zWO9tfkNncA76w+yRl/jp+sb434rUd/7P FQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 393n76k40h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Jun 2021 12:48:52 -0400
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 15AGYYKD193372;
+        Thu, 10 Jun 2021 12:48:52 -0400
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 393n76k407-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Jun 2021 12:48:51 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 15AGlOWe031296;
+        Thu, 10 Jun 2021 16:48:51 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma01dal.us.ibm.com with ESMTP id 3900wa3yex-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Jun 2021 16:48:51 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 15AGmnDV10224340
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 10 Jun 2021 16:48:49 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 51B57136051;
+        Thu, 10 Jun 2021 16:48:49 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AAC0413604F;
+        Thu, 10 Jun 2021 16:48:48 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 10 Jun 2021 16:48:48 +0000 (GMT)
 MIME-Version: 1.0
-In-Reply-To: <20210610132603.597563-1-libaokun1@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Thu, 10 Jun 2021 09:48:48 -0700
+From:   Dany Madden <drt@linux.ibm.com>
+To:     Lijun Pan <lijunp213@gmail.com>
+Cc:     Wang Hai <wanghai38@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Thomas Falcon <tlfalcon@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] ibmvnic: Use list_for_each_entry() to simplify
+ code in ibmvnic.c
+In-Reply-To: <CAOhMmr4LQpX79ksQOuZ1ft=M2B4tFOPechV9b_5iJWWL1yekSA@mail.gmail.com>
+References: <20210610125417.3834300-1-wanghai38@huawei.com>
+ <CAOhMmr4LQpX79ksQOuZ1ft=M2B4tFOPechV9b_5iJWWL1yekSA@mail.gmail.com>
+Message-ID: <cef4c1fc2c769c1463ba06b23c7e7d3c@imap.linux.ibm.com>
+X-Sender: drt@linux.ibm.com
+User-Agent: Roundcube Webmail/1.1.12
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qL_OelDesDuwWtwLzpz6pzFTPWWtDwMu
+X-Proofpoint-ORIG-GUID: JDmX18QMSIhnX5N-5_HdB6m4xZdjcevx
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-10_11:2021-06-10,2021-06-10 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ mlxlogscore=984 lowpriorityscore=0 bulkscore=0 adultscore=0 suspectscore=0
+ spamscore=0 priorityscore=1501 clxscore=1011 mlxscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106100105
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just adds a correct comment. Looks fine to me.
-
-Reviewed-by: Richard Sailer <richard_siegfried@systemli.org>
-
-On 10/06/2021 15:26, Baokun Li wrote:
-> Add description for `tfrc_invert_loss_event_rate` to fix the W=1 warnings:
+On 2021-06-10 07:52, Lijun Pan wrote:
+> On Thu, Jun 10, 2021 at 7:56 AM Wang Hai <wanghai38@huawei.com> wrote:
+>> 
+>> Convert list_for_each() to list_for_each_entry() where
+>> applicable. This simplifies the code.
+>> 
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+>> ---
 > 
->   net/dccp/ccids/lib/tfrc_equation.c:695: warning: Function parameter or
->    member 'loss_event_rate' not described in 'tfrc_invert_loss_event_rate'
-> 
-> Signed-off-by: Baokun Li <libaokun1@huawei.com>
-> ---
->   net/dccp/ccids/lib/tfrc_equation.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/dccp/ccids/lib/tfrc_equation.c b/net/dccp/ccids/lib/tfrc_equation.c
-> index e2a337fa9ff7..92a8c6bea316 100644
-> --- a/net/dccp/ccids/lib/tfrc_equation.c
-> +++ b/net/dccp/ccids/lib/tfrc_equation.c
-> @@ -688,6 +688,7 @@ u32 tfrc_calc_x_reverse_lookup(u32 fvalue)
->   
->   /**
->    * tfrc_invert_loss_event_rate  -  Compute p so that 10^6 corresponds to 100%
-> + * @loss_event_rate: loss event rate to invert
->    * When @loss_event_rate is large, there is a chance that p is truncated to 0.
->    * To avoid re-entering slow-start in that case, we set p = TFRC_SMALLEST_P > 0.
->    */
-> 
+> Acked-by: Lijun Pan <lijunp213@gmail.com>
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
