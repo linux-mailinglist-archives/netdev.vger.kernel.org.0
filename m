@@ -2,62 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB243A34F9
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 22:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B3E3A3519
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 22:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230280AbhFJUmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 16:42:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39468 "EHLO mail.kernel.org"
+        id S230323AbhFJUwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 16:52:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41648 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229941AbhFJUmE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Jun 2021 16:42:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7111061419;
-        Thu, 10 Jun 2021 20:40:07 +0000 (UTC)
+        id S230059AbhFJUwC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 16:52:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id A871C613E9;
+        Thu, 10 Jun 2021 20:50:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623357607;
-        bh=aO4K6/jBgH801B2DguKrjFR4LerJDVVqdD0Y4lBjqh4=;
+        s=k20201202; t=1623358205;
+        bh=nDPXjGVUvWJP8WgMSZftcr/O2Qn5kU3KWnLTxuhM5pE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=W+go+ZAvJP8Z44K/TjMcdf2EsFFw7AmEDyU5bDtwLTjQ6paUYqlI9p4Nh8BuiAfuf
-         EakylcNLZEdciaCiyHMGIu0rjroYqrN4/7gVNMFbpWyFAayvmm2i/c8XXdwVjrRTzA
-         hgBCNMJNZNKet5UviY7EqHYHvs8N/XPn2dwz9nBxZ0fi35rkxmEC7WAmI/RLs13C7J
-         hu6AB62zF6iMMFFmHf+m/8JV/4qzjAmVRyF7b3hrQax8cEn2mtSpiMjAeLtXkxfLoF
-         LvROWiuiyhQibO7S9KS4ESyCYbpfQwX6VtAX31hMj5OP30xpErit+1EVUejSHtZbMB
-         4z266pESWju5w==
+        b=jekCwlthO6mJXMTBksnAv6vCySTL1/QJLEqH6MhvARegSuXA+AvHCjBSWzh3TMI9d
+         fgAe/aydfCopjbu+z9dTlJaQysnzM7uATtzpRrh/3THtsjQgCI0qrZdJF7ulTyRBj7
+         g4TGahMg1omAflbNZQQZaQMA5rM0JVaLtRWI6+3Nxua0IyytN9o+EJ85k9NQJvYPLl
+         xlXH4oGsKQCptbH8cuT6YySrGqS72L/+KAHoMTT/OPrDQTi/FqoF2aQu+3/uVf2+A8
+         mXTp/KcuCWaGH6ufrEzobAdK0BP819fW2SWYzTXpQqQbomla1mZdPOI4RCAChTXCcT
+         u0slUQUeu1amQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6511C60A6C;
-        Thu, 10 Jun 2021 20:40:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9BEFC60952;
+        Thu, 10 Jun 2021 20:50:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] netlink: simplify NLMSG_DATA with NLMSG_HDRLEN
+Subject: Re: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates
+ 2021-06-09
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162335760740.27474.16215837875566738426.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Jun 2021 20:40:07 +0000
-References: <87r1hemosc.wl-chenli@uniontech.com>
-In-Reply-To: <87r1hemosc.wl-chenli@uniontech.com>
-To:     Chen Li <chenli@uniontech.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
+Message-Id: <162335820563.975.2284808192421945722.git-patchwork-notify@kernel.org>
+Date:   Thu, 10 Jun 2021 20:50:05 +0000
+References: <20210609204803.234983-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20210609204803.234983-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sassmann@redhat.com, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 07 Jun 2021 09:44:35 +0800 you wrote:
-> The NLMSG_LENGTH(0) may confuse the API users,
-> NLMSG_HDRLEN is much more clear.
+On Wed,  9 Jun 2021 13:48:01 -0700 you wrote:
+> This series contains updates to ice driver only.
 > 
-> Besides, some code style problems are also fixed.
-> Signed-off-by: Chen Li <chenli@uniontech.com>
-> ---
->  include/uapi/linux/netlink.h | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+> Maciej informs the user when XDP is not supported due to the driver
+> being in the 'safe mode' state. He also adds a parameter to Tx queue
+> configuration to resolve an issue in configuring XDP queues as it cannot
+> rely on using the number Tx or Rx queues.
+> 
+> [...]
 
 Here is the summary with links:
-  - netlink: simplify NLMSG_DATA with NLMSG_HDRLEN
-    https://git.kernel.org/netdev/net-next/c/d409989b59ad
+  - [net,1/2] ice: add ndo_bpf callback for safe mode netdev ops
+    https://git.kernel.org/netdev/net/c/ebc5399ea1df
+  - [net,2/2] ice: parameterize functions responsible for Tx ring management
+    https://git.kernel.org/netdev/net/c/2e84f6b3773f
 
 You are awesome, thank you!
 --
