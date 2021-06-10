@@ -2,72 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9D4C3A262B
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 10:04:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE603A26A4
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 10:22:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230238AbhFJIGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 04:06:04 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:34327 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229941AbhFJIGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 04:06:03 -0400
-Received: by mail-io1-f70.google.com with SMTP id z8-20020a5e92480000b02904ae394676efso12923735iop.1
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 01:04:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=EXuC5hR+DxXmhBYFDXYIPj2wRbgENSDGNStCsBqTJu0=;
-        b=pCUOqtgfcYX0PAVFzUkua0fFVuuFs9tJZyVCSDf0VZR89hm6Sea9/A/M2c6ywIbxNW
-         AtbiSfWGJEy79ykn7l0G6t05wjvOLREJjEWZhU1AIbbYRSwE25OhStbSt1u0bfho13P9
-         Kygcw5LCC6TrpdwBJEppfTVPrRzh76n9tfrXghrlN4vOWtVxFPKzVMCxVf5hceuBGjkX
-         I9iHI/FpgKZL9yN0gJxfz9tpaHYmgihRlHRZMkweI/HWaByjtx3oxF21Y3i8V6Tsb8vD
-         DsGIm1eyNS3RQRUj/xHpBcWR0bfV00XZJkPni2PbybJtMiUtTV9oam5Ldj3t+Pb25bXj
-         rSlg==
-X-Gm-Message-State: AOAM530qxBQlhKb6agrbUzWzKDahPUNqxACKw1Bjv5s9yKxkxg3TnEl3
-        Ldd47hMIGP/Fn+sKPA2hyoS19j+MJrVC3R99fdyXZBfUMt9K
-X-Google-Smtp-Source: ABdhPJxRRi/1I5TNhoQba1+i+apRY6ysQAyvYPwt9CP8LLzEVHGx0ECuewSq/IOcrMT0gR4jj+XFBdzrofOIP0eVpO+iJSk1UUPl
+        id S230460AbhFJIYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 04:24:10 -0400
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:42051 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230469AbhFJIYH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 04:24:07 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0UbxH88i_1623313329;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UbxH88i_1623313329)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 10 Jun 2021 16:22:09 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        "dust . li" <dust.li@linux.alibaba.com>
+Subject: [PATCH net-next v5 00/15] virtio-net: support xdp socket zero copy
+Date:   Thu, 10 Jun 2021 16:21:54 +0800
+Message-Id: <20210610082209.91487-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:640d:: with SMTP id y13mr3083856ilb.158.1623312247492;
- Thu, 10 Jun 2021 01:04:07 -0700 (PDT)
-Date:   Thu, 10 Jun 2021 01:04:07 -0700
-In-Reply-To: <0000000000003842c805c44e7951@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000df175a05c464d5b7@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in blk_mq_exit_sched
-From:   syzbot <syzbot+77ba3d171a25c56756ea@syzkaller.appspotmail.com>
-To:     axboe@kernel.dk, coreteam@netfilter.org, davem@davemloft.net,
-        dsahern@kernel.org, fw@strlen.de, hch@lst.de,
-        john.garry@huawei.com, kadlec@netfilter.org, kuba@kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ming.lei@redhat.com, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+XDP socket is an excellent by pass kernel network transmission framework. The
+zero copy feature of xsk (XDP socket) needs to be supported by the driver. The
+performance of zero copy is very good. mlx5 and intel ixgbe already support this
+feature, This patch set allows virtio-net to support xsk's zerocopy xmit
+feature.
 
-commit f9006acc8dfe59e25aa75729728ac57a8d84fc32
-Author: Florian Westphal <fw@strlen.de>
-Date:   Wed Apr 21 07:51:08 2021 +0000
+Compared with other drivers, the trouble with virtio-net is that when we bind
+the channel to xsk, we cannot directly disable/enable the channel. So we have to
+consider the buf that has been placed in the vq after the xsk is released by the
+upper layer.
 
-    netfilter: arp_tables: pass table pointer via nf_hook_ops
+My solution is to add a ctx to each buf placed in vq to record the page used,
+and add a reference to the page. So when the upper xsk is released, these pages
+are still safe in vq. We will process these bufs when we recycle buf or
+receive new data.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14e76d88300000
-start commit:   a1f92694 Add linux-next specific files for 20210518
-git tree:       linux-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=16e76d88300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12e76d88300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d612e75ffd53a6d3
-dashboard link: https://syzkaller.appspot.com/bug?extid=77ba3d171a25c56756ea
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13c901ebd00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1406b797d00000
+In the case of rx, it will be more complicated, because we may encounter the buf
+of xsk, or it may be a normal buf. Especially in the case of merge, we may
+receive multiple bufs, and these bufs may be xsk buf and normal are
+mixed together.
 
-Reported-by: syzbot+77ba3d171a25c56756ea@syzkaller.appspotmail.com
-Fixes: f9006acc8dfe ("netfilter: arp_tables: pass table pointer via nf_hook_ops")
+v5:
+   support rx
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+v4:
+    1. add priv_flags IFF_NOT_USE_DMA_ADDR
+    2. more reasonable patch split
+
+Xuan Zhuo (15):
+  netdevice: priv_flags extend to 64bit
+  netdevice: add priv_flags IFF_NOT_USE_DMA_ADDR
+  virtio-net: add priv_flags IFF_NOT_USE_DMA_ADDR
+  xsk: XDP_SETUP_XSK_POOL support option IFF_NOT_USE_DMA_ADDR
+  virtio: support virtqueue_detach_unused_buf_ctx
+  virtio-net: unify the code for recycling the xmit ptr
+  virtio-net: standalone virtnet_aloc_frag function
+  virtio-net: split the receive_mergeable function
+  virtio-net: virtnet_poll_tx support budget check
+  virtio-net: independent directory
+  virtio-net: move to virtio_net.h
+  virtio-net: support AF_XDP zc tx
+  virtio-net: support AF_XDP zc rx
+  virtio-net: xsk direct xmit inside xsk wakeup
+  virtio-net: xsk zero copy xmit kick by threshold
+
+ MAINTAINERS                           |   2 +-
+ drivers/net/Kconfig                   |   8 +-
+ drivers/net/Makefile                  |   2 +-
+ drivers/net/virtio/Kconfig            |  11 +
+ drivers/net/virtio/Makefile           |   7 +
+ drivers/net/{ => virtio}/virtio_net.c | 670 +++++++++++-----------
+ drivers/net/virtio/virtio_net.h       | 288 ++++++++++
+ drivers/net/virtio/xsk.c              | 766 ++++++++++++++++++++++++++
+ drivers/net/virtio/xsk.h              | 176 ++++++
+ drivers/virtio/virtio_ring.c          |  22 +-
+ include/linux/netdevice.h             | 143 ++---
+ include/linux/virtio.h                |   2 +
+ net/8021q/vlanproc.c                  |   2 +-
+ net/xdp/xsk_buff_pool.c               |   2 +-
+ 14 files changed, 1664 insertions(+), 437 deletions(-)
+ create mode 100644 drivers/net/virtio/Kconfig
+ create mode 100644 drivers/net/virtio/Makefile
+ rename drivers/net/{ => virtio}/virtio_net.c (92%)
+ create mode 100644 drivers/net/virtio/virtio_net.h
+ create mode 100644 drivers/net/virtio/xsk.c
+ create mode 100644 drivers/net/virtio/xsk.h
+
+--
+2.31.0
+
