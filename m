@@ -2,325 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 047E63A310D
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8201B3A30EF
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:41:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231912AbhFJQoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 12:44:16 -0400
-Received: from mail-ed1-f47.google.com ([209.85.208.47]:36848 "EHLO
-        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231728AbhFJQno (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 12:43:44 -0400
-Received: by mail-ed1-f47.google.com with SMTP id w21so33743944edv.3;
-        Thu, 10 Jun 2021 09:41:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yvHFyQ/agosabwkcKUcNoOmx65V0N/UbwYIAHR5bR5w=;
-        b=GPsbG6YiuA0hWWC6GQYoQLw98R+dnbg3lepYbmDUS/B+uLwtN/p+3iM2p/31MGfN87
-         SbCnDYQ6uT87nDYVV9poNQSYTeRXmCQDHAjPOU4A9La2dgdmR+ocC6Yqx18lqY4aEsU6
-         EEuWO3QqF21w2h+umfMXuLkvQDhxLDcM7iaOQz2ysjQtJziE4I7oEucWw3G04IZUF+zL
-         H8oVocPk+73eXnDH8D1MLhViZotjm/ArsEWUAgvePPXgBYVq/Vw3D9fTubMXOKBrEhK8
-         6R1f4rCi99wttsYibEfWCIX82e0AG63/as9+gITtxcrw+V/PKap2EwCe/REeJuqGJRYZ
-         GvZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yvHFyQ/agosabwkcKUcNoOmx65V0N/UbwYIAHR5bR5w=;
-        b=TXNJiToszVT+JXOH3YD95s8gMx6GbCXwyDMUdrxRUUDYXjgG1WsETUpCdcdXNn8LcH
-         U1qm6wdxJtA6xJQlLKG8/C+bnjfvPIbuKm8/1GGGYoJ/dXhOnDEeygqu/7/VahNeXBAs
-         ATBmAwOK7sdXXU/0YW4K/ZLKFgJuQdUr+46ovmuoOdkhpvyBpfheHUxESU0mTMEsmxgG
-         kgKoHnZ+wHhAKtmay1SWRd8CW8GiSasJLA23r2AbbOhL6BNOgHAWnKZJhbIYWqb6EoC4
-         1Q2G/mjQu97SFwnz1BLwzIHjIFOxkg+b62vLyZgawtUk69K2en7g2wNFaXK1QSQHnNSu
-         JgdQ==
-X-Gm-Message-State: AOAM5336ekZswKI1bdlL02UvEoPV0nOvfT+iOZy0vbXoAmt7luNAnTWq
-        crcL5BFtO1z+N+Sl8RD2798=
-X-Google-Smtp-Source: ABdhPJxKWEyLvrBNQBzGx/LDQrqfxoDGWqOMvSzIDoHJQ2idKxwuEt6UqvBSrJJweVxZG19zuf6VTQ==
-X-Received: by 2002:a05:6402:5256:: with SMTP id t22mr404335edd.54.1623343246463;
-        Thu, 10 Jun 2021 09:40:46 -0700 (PDT)
-Received: from yoga-910.localhost ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id e22sm1657166edv.57.2021.06.10.09.40.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 09:40:46 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-To:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>, calvin.johnson@nxp.com
-Cc:     Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux.cj@gmail.com, netdev@vger.kernel.org,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Len Brown <lenb@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v8 15/15] net: dpaa2-mac: Add ACPI support for DPAA2 MAC driver
-Date:   Thu, 10 Jun 2021 19:39:17 +0300
-Message-Id: <20210610163917.4138412-16-ciorneiioana@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210610163917.4138412-1-ciorneiioana@gmail.com>
-References: <20210610163917.4138412-1-ciorneiioana@gmail.com>
+        id S231597AbhFJQnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 12:43:04 -0400
+Received: from mail-dm6nam10on2059.outbound.protection.outlook.com ([40.107.93.59]:31456
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231511AbhFJQmw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 12:42:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PH0sE5dEiJCAU1m0J50/vXWMCDg4eGuZzArcJ5JRMNyS0bJmmnQc2bJelgf4c/RcVIn+8Fmdnqv0EH4HEpRd94dLKO2oReHtWEmxqb6tAM7eAaSkjnGAYnxFqsxV75aFgMPRp0ofFiXNO5IKxKQWtrnjI3h6qcZoUgFZDw/IzL3p3jUZjNZK61qC4DhK2gtzLD7cJotp4TOmEAR+gIH8D2CDGyB5IlafaxOQfcZ8T65P4Vtlsp/z0UChrTawemm+8Rrtd/8xoaRjAT+/WfZx+wk0aqWA17W75ez04xNI2px6SKABjuIdYkEb+0PfBQDtZyvAjalTnpgnh5etyhhR7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AvprJ3L3ICGKaIPl1rU7+Izgeni2jORQKxGDmpweAGg=;
+ b=dUSKeQrIJ7QtfI3EVa6ltlx67vzNrumxjcF6fZ2v0IoM+j+a7spt2yrPsdkm9Av6zBir2HeyyO0PO39aIGSxKZq541llrKEVG+BzngrXzX/KKf++UcaNTnpKNSleRlcCJvaWMoNZ1zpjCAB3zeZ0+zCXGI5MocJWLjVlMEBxoIotOc9AFY1s1Oo+tBcuvo6Mdg+ed9YPOxF8yfJbAPGdFZsuDxaoIjULtdIPuL/kfWvpj4kaD/hBajcPuuNStCofiiIUHs1luXU7IzYqwNC0RBLdQmYlHf+MHELC3DRWwgqtpv9o6YUddK11FijLfD1UQ08oh+OKATPFIhrcw6zMNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AvprJ3L3ICGKaIPl1rU7+Izgeni2jORQKxGDmpweAGg=;
+ b=U9ZxXw/EqDDfXBqJFfa+cYdol0tsqJGXcXIgMr3+9CJu87j0UtyZE+25hTTdQfKUnRziRsL7eT2YJodHnsvrpDC3NdNJbg9nawXKQxMaVp+x5j4fvwwK41btGq/Q4Ag4yP0yO6FHPyei8ulBnq53yTwAih0o51hVKTWItxQWh7feaPxgmQwjq37EIZzQYuJGQ2iuArUjepMKb7uECTum9mb+YIQV9PrG9HVdzmwXOaNw6IowJJhAGJcuRhUp/llvEm3ezW0fn36jwmKzyFFXZ5bKgzAjGESJtvxYrvLJOlNENEJou37y4NQN/jkclPOwBX06hGs5VaERwSrgTdfwBA==
+Received: from MW4PR04CA0386.namprd04.prod.outlook.com (2603:10b6:303:81::31)
+ by BYAPR12MB4709.namprd12.prod.outlook.com (2603:10b6:a03:98::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.29; Thu, 10 Jun
+ 2021 16:40:53 +0000
+Received: from CO1NAM11FT032.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:81:cafe::c7) by MW4PR04CA0386.outlook.office365.com
+ (2603:10b6:303:81::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend
+ Transport; Thu, 10 Jun 2021 16:40:53 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT032.mail.protection.outlook.com (10.13.174.218) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4219.21 via Frontend Transport; Thu, 10 Jun 2021 16:40:53 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Jun
+ 2021 16:40:52 +0000
+Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 10 Jun 2021 16:40:38 +0000
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        "Jamal Hadi Salim" <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Patrick McHardy <kaber@trash.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Peter Krystad <peter.krystad@linux.intel.com>
+CC:     Young Xiao <92siuyang@gmail.com>, <netdev@vger.kernel.org>,
+        <mptcp@lists.linux.dev>, Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: [PATCH net v2 0/3] Fix out of bounds when parsing TCP options
+Date:   Thu, 10 Jun 2021 19:40:28 +0300
+Message-ID: <20210610164031.3412479-1-maximmi@nvidia.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b07931c8-d78c-4d87-ec05-08d92c2e8382
+X-MS-TrafficTypeDiagnostic: BYAPR12MB4709:
+X-Microsoft-Antispam-PRVS: <BYAPR12MB47096A6C6BF7D924C99F32CADC359@BYAPR12MB4709.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:541;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vSdTlIlbTsbRYwfnXnMW76N+iZlw6BVHT6N6ZsrBw/0SP1tDIDRnYSZCe1XFUlfj1Yz+FfcsLEWPLKjhsbMplMCbilhTdApk7TM1ot739FpfaUdIEJM1r+XK02w35rvGi8im007A9+LkuQQQHuqar79mmjxLHFkJO75p/vmYx+iAvwFMw6EiSQDTbF+HCEWpOjQndensSP6CSxSQx3fAz6NCyz8P6PQj49kz/qowIKwHGRnQAS5FcknxDrmls9W3zBlOP/IffRQGPb9o/B29457aruXTiT/pA6v+CGjQvN45MzBjXqZmSXjGEz/y8GK8WRoGFmzKkI6/s6t3sJ9riPAaz4fpuQYfD58x1owq5oKrEdWvGu/deWDrClWWqu43o32WqHi13RNk3JD0S92uhvLnUFIy2C5PP3jPAT3BHVxX/XUcZxxBsbBOEFutxdw4QAgmwaU8fw3pY0sc2SYIeclxZh2BLJOrHwMqa9HhsCC11Q95hQQiC5HSMh/TOjt246kBlNl8ayKZLgOHEzwysSwM+ZPtAZ5xHhLOfYNEKUv9bhn1bqKzGm0879/PXJd0PHFny+vWVGWSpKNch3yChP7TkKaD+2zVMvLNFnBja88vEdo0KbZ1n6DEHgZj1kNGQG4GPDFbJ3SE/8tPcAdY8wxS6pqiVnjYmHH38TRZIBM=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(39860400002)(136003)(376002)(346002)(46966006)(36840700001)(5660300002)(82310400003)(186003)(7416002)(82740400003)(36906005)(2906002)(26005)(70586007)(1076003)(4744005)(6666004)(921005)(316002)(8936002)(70206006)(54906003)(36860700001)(107886003)(7636003)(110136005)(2616005)(478600001)(83380400001)(356005)(36756003)(86362001)(47076005)(426003)(7696005)(8676002)(4326008)(336012);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2021 16:40:53.5089
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b07931c8-d78c-4d87-ec05-08d92c2e8382
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT032.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB4709
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Calvin Johnson <calvin.johnson@oss.nxp.com>
+This series fixes out-of-bounds access in various places in the kernel
+where parsing of TCP options takes place. Fortunately, many more
+occurrences don't have this bug.
 
-Modify dpaa2_mac_get_node() to get the dpmac fwnode from either
-DT or ACPI.
+v2 changes:
 
-Modify dpaa2_mac_get_if_mode() to get interface mode from dpmac_node
-which is a fwnode.
+synproxy: Added an early return when length < 0 to avoid calling
+skb_header_pointer with negative length.
 
-Modify dpaa2_pcs_create() to create pcs from dpmac_node fwnode.
+sch_cake: Added doff validation to avoid parsing garbage.
 
-Modify dpaa2_mac_connect() to support ACPI along with DT.
+Maxim Mikityanskiy (3):
+  netfilter: synproxy: Fix out of bounds when parsing TCP options
+  mptcp: Fix out of bounds when parsing TCP options
+  sch_cake: Fix out of bounds when parsing TCP options and header
 
-Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
+ net/mptcp/options.c              | 2 ++
+ net/netfilter/nf_synproxy_core.c | 5 +++++
+ net/sched/sch_cake.c             | 6 +++++-
+ 3 files changed, 12 insertions(+), 1 deletion(-)
 
-Changes in v8:
-- adjust code over latest changes applied on the driver
-
-Changes in v7:
-- remove unnecassary checks
-
-Changes in v6:
-- use dev_fwnode()
-- remove useless else
-- replace of_device_is_available() to fwnode_device_is_available()
-
-Changes in v5:
-- replace fwnode_get_id() with OF and ACPI function calls
-
-Changes in v4: None
-Changes in v3: None
-Changes in v2:
-- Refactor OF functions to use fwnode functions
-
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 88 +++++++++++--------
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |  2 +-
- 2 files changed, 53 insertions(+), 37 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 4dfadf2b70d6..ae6d382d8735 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -1,6 +1,9 @@
- // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
- /* Copyright 2019 NXP */
- 
-+#include <linux/acpi.h>
-+#include <linux/property.h>
-+
- #include "dpaa2-eth.h"
- #include "dpaa2-mac.h"
- 
-@@ -34,39 +37,51 @@ static int phy_mode(enum dpmac_eth_if eth_if, phy_interface_t *if_mode)
- 	return 0;
- }
- 
--/* Caller must call of_node_put on the returned value */
--static struct device_node *dpaa2_mac_get_node(u16 dpmac_id)
-+static struct fwnode_handle *dpaa2_mac_get_node(struct device *dev,
-+						u16 dpmac_id)
- {
--	struct device_node *dpmacs, *dpmac = NULL;
--	u32 id;
-+	struct fwnode_handle *fwnode, *parent, *child  = NULL;
-+	struct device_node *dpmacs = NULL;
- 	int err;
-+	u32 id;
- 
--	dpmacs = of_find_node_by_name(NULL, "dpmacs");
--	if (!dpmacs)
--		return NULL;
-+	fwnode = dev_fwnode(dev->parent);
-+	if (is_of_node(fwnode)) {
-+		dpmacs = of_find_node_by_name(NULL, "dpmacs");
-+		if (!dpmacs)
-+			return NULL;
-+		parent = of_fwnode_handle(dpmacs);
-+	} else if (is_acpi_node(fwnode)) {
-+		parent = fwnode;
-+	}
- 
--	while ((dpmac = of_get_next_child(dpmacs, dpmac)) != NULL) {
--		err = of_property_read_u32(dpmac, "reg", &id);
-+	fwnode_for_each_child_node(parent, child) {
-+		err = -EINVAL;
-+		if (is_acpi_device_node(child))
-+			err = acpi_get_local_address(ACPI_HANDLE_FWNODE(child), &id);
-+		else if (is_of_node(child))
-+			err = of_property_read_u32(to_of_node(child), "reg", &id);
- 		if (err)
- 			continue;
--		if (id == dpmac_id)
--			break;
--	}
- 
-+		if (id == dpmac_id) {
-+			of_node_put(dpmacs);
-+			return child;
-+		}
-+	}
- 	of_node_put(dpmacs);
--
--	return dpmac;
-+	return NULL;
- }
- 
--static int dpaa2_mac_get_if_mode(struct device_node *node,
-+static int dpaa2_mac_get_if_mode(struct fwnode_handle *dpmac_node,
- 				 struct dpmac_attr attr)
- {
- 	phy_interface_t if_mode;
- 	int err;
- 
--	err = of_get_phy_mode(node, &if_mode);
--	if (!err)
--		return if_mode;
-+	err = fwnode_get_phy_mode(dpmac_node);
-+	if (err > 0)
-+		return err;
- 
- 	err = phy_mode(attr.eth_if, &if_mode);
- 	if (!err)
-@@ -235,26 +250,27 @@ static const struct phylink_mac_ops dpaa2_mac_phylink_ops = {
- };
- 
- static int dpaa2_pcs_create(struct dpaa2_mac *mac,
--			    struct device_node *dpmac_node, int id)
-+			    struct fwnode_handle *dpmac_node,
-+			    int id)
- {
- 	struct mdio_device *mdiodev;
--	struct device_node *node;
-+	struct fwnode_handle *node;
- 
--	node = of_parse_phandle(dpmac_node, "pcs-handle", 0);
--	if (!node) {
-+	node = fwnode_find_reference(dpmac_node, "pcs-handle", 0);
-+	if (IS_ERR(node)) {
- 		/* do not error out on old DTS files */
- 		netdev_warn(mac->net_dev, "pcs-handle node not found\n");
- 		return 0;
- 	}
- 
--	if (!of_device_is_available(node)) {
-+	if (!fwnode_device_is_available(node)) {
- 		netdev_err(mac->net_dev, "pcs-handle node not available\n");
--		of_node_put(node);
-+		fwnode_handle_put(node);
- 		return -ENODEV;
- 	}
- 
--	mdiodev = of_mdio_find_device(node);
--	of_node_put(node);
-+	mdiodev = fwnode_mdio_find_device(node);
-+	fwnode_handle_put(node);
- 	if (!mdiodev)
- 		return -EPROBE_DEFER;
- 
-@@ -283,13 +299,13 @@ static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
- int dpaa2_mac_connect(struct dpaa2_mac *mac)
- {
- 	struct net_device *net_dev = mac->net_dev;
--	struct device_node *dpmac_node;
-+	struct fwnode_handle *dpmac_node;
- 	struct phylink *phylink;
- 	int err;
- 
- 	mac->if_link_type = mac->attr.link_type;
- 
--	dpmac_node = mac->of_node;
-+	dpmac_node = mac->fw_node;
- 	if (!dpmac_node) {
- 		netdev_err(net_dev, "No dpmac@%d node found.\n", mac->attr.id);
- 		return -ENODEV;
-@@ -304,7 +320,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 	 * error out if the interface mode requests them and there is no PHY
- 	 * to act upon them
- 	 */
--	if (of_phy_is_fixed_link(dpmac_node) &&
-+	if (of_phy_is_fixed_link(to_of_node(dpmac_node)) &&
- 	    (mac->if_mode == PHY_INTERFACE_MODE_RGMII_ID ||
- 	     mac->if_mode == PHY_INTERFACE_MODE_RGMII_RXID ||
- 	     mac->if_mode == PHY_INTERFACE_MODE_RGMII_TXID)) {
-@@ -324,7 +340,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 	mac->phylink_config.type = PHYLINK_NETDEV;
- 
- 	phylink = phylink_create(&mac->phylink_config,
--				 of_fwnode_handle(dpmac_node), mac->if_mode,
-+				 dpmac_node, mac->if_mode,
- 				 &dpaa2_mac_phylink_ops);
- 	if (IS_ERR(phylink)) {
- 		err = PTR_ERR(phylink);
-@@ -335,9 +351,9 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 	if (mac->pcs)
- 		phylink_set_pcs(mac->phylink, &mac->pcs->pcs);
- 
--	err = phylink_of_phy_connect(mac->phylink, dpmac_node, 0);
-+	err = phylink_fwnode_phy_connect(mac->phylink, dpmac_node, 0);
- 	if (err) {
--		netdev_err(net_dev, "phylink_of_phy_connect() = %d\n", err);
-+		netdev_err(net_dev, "phylink_fwnode_phy_connect() = %d\n", err);
- 		goto err_phylink_destroy;
- 	}
- 
-@@ -384,8 +400,8 @@ int dpaa2_mac_open(struct dpaa2_mac *mac)
- 	/* Find the device node representing the MAC device and link the device
- 	 * behind the associated netdev to it.
- 	 */
--	mac->of_node = dpaa2_mac_get_node(mac->attr.id);
--	net_dev->dev.of_node = mac->of_node;
-+	mac->fw_node = dpaa2_mac_get_node(&mac->mc_dev->dev, mac->attr.id);
-+	net_dev->dev.of_node = to_of_node(mac->fw_node);
- 
- 	return 0;
- 
-@@ -399,8 +415,8 @@ void dpaa2_mac_close(struct dpaa2_mac *mac)
- 	struct fsl_mc_device *dpmac_dev = mac->mc_dev;
- 
- 	dpmac_close(mac->mc_io, 0, dpmac_dev->mc_handle);
--	if (mac->of_node)
--		of_node_put(mac->of_node);
-+	if (mac->fw_node)
-+		fwnode_handle_put(mac->fw_node);
- }
- 
- static char dpaa2_mac_ethtool_stats[][ETH_GSTRING_LEN] = {
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-index 8ebcb3420d02..7842cbb2207a 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-@@ -24,7 +24,7 @@ struct dpaa2_mac {
- 	phy_interface_t if_mode;
- 	enum dpmac_link_type if_link_type;
- 	struct lynx_pcs *pcs;
--	struct device_node *of_node;
-+	struct fwnode_handle *fw_node;
- };
- 
- bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,
 -- 
-2.31.1
+2.25.1
 
