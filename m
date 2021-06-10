@@ -2,164 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFA6B3A34F3
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 22:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87C873A34F1
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 22:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230405AbhFJUjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 16:39:35 -0400
-Received: from mail-wr1-f48.google.com ([209.85.221.48]:44679 "EHLO
-        mail-wr1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230059AbhFJUjf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 16:39:35 -0400
-Received: by mail-wr1-f48.google.com with SMTP id f2so3666678wri.11;
-        Thu, 10 Jun 2021 13:37:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oh72w4rgMejUZgAEUa3Dv6nTCHIteYQxK1W67TXLoCg=;
-        b=W2l/B+dZZ+JKr86Rggvtzo0t+WDdiqjim9cF9sPLy6UlaK9Qs3WBvemPQkmtOGkDb4
-         hIWilqUPVgAxu0k0Eiu8jF7TPlz4FNKAc/SAcKrYicR8764mqDikyLsDqNacNXZBWyim
-         SLZxZ6o7kNYxSOoML2+vh+iazp72UcLdc9SSj3x5k7Uyo/SSaITA2e/XBqULE815Bf7K
-         6pVws8f41IA+t8bW9KvP1Vb37J4dk2xEsLu5PwOgj7eGR3SlSCzT2jArTNb6yBN6MNDI
-         zZSbKLohsp9x9fLhqDvthuqWZcx0IGFPRToX+Cu7W/TG9ismJeW+ABwjKUwssIwsv/TC
-         3xqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oh72w4rgMejUZgAEUa3Dv6nTCHIteYQxK1W67TXLoCg=;
-        b=JTSnZwVOy50zWkyatU5T9RRgEkoAny4nRXkJwHjKWaDsZ/5/fHN+qVd8j9yr8irGpy
-         RQ4RIb4Ig3YTTnJtBZqS4eC4NKNzXRXhpFmatap49+juQK8/PG5RguiKXLCcZlGW/qKx
-         jRxt6DfqoglXpHiX60U0/+HSeIXppuOEu6COkCLqZo3u0jLE99C2mfhtVN028ZTsXN2J
-         /gRdpUftxYLhwtUsOzyYz9WJ6xzfU2+KkHUy2kr4TFjZp5qX5qGmsHQOTaCaj6WtUDUO
-         U76T6p/9Y/ZJwArOe7nIQiW+JWyUWIxsPcJU9SEa1m7p8jtLWdIMZCrlrmsScMjW0jKV
-         7KQA==
-X-Gm-Message-State: AOAM5302kq9UHzVqekIp0e5b+xAsTH1UXRE6wn9mu57iv/IOE4ks+G3C
-        hGDV9Pr26GMqpy/mrElHvZHe5gMmMm0yuA==
-X-Google-Smtp-Source: ABdhPJwRXWO43ebTzOT2525REo6y22ydpmDshSWjtM4sS3imkCg8xM4V2cgwOpC68JRvy5i3WnbhKw==
-X-Received: by 2002:adf:e7d0:: with SMTP id e16mr294706wrn.202.1623357390717;
-        Thu, 10 Jun 2021 13:36:30 -0700 (PDT)
-Received: from [192.168.181.98] (228.18.23.93.rev.sfr.net. [93.23.18.228])
-        by smtp.gmail.com with ESMTPSA id q5sm4842057wrm.15.2021.06.10.13.36.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 13:36:29 -0700 (PDT)
-Subject: Re: [PATCH v7 bpf-next 07/11] tcp: Migrate TCP_NEW_SYN_RECV requests
- at receiving the final ACK.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Cc:     Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210521182104.18273-1-kuniyu@amazon.co.jp>
- <20210521182104.18273-8-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <89c4ce38-fe2c-1d80-f814-c4b3a5e4781d@gmail.com>
-Date:   Thu, 10 Jun 2021 22:36:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S230169AbhFJUil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 16:38:41 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:60366 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230059AbhFJUik (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 16:38:40 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15AKWwBQ170786;
+        Thu, 10 Jun 2021 16:36:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
+ content-type : content-transfer-encoding : date : from : to : cc : subject
+ : in-reply-to : references : message-id; s=pp1;
+ bh=Qg8F5bpHm9upwUm940/1y/8iuglrZTeh5EMJnr/H3o8=;
+ b=G6PBKidbXNKntuqQCDbE3O68SgkLzZVVED/e2v6G6aFn+UM+F77vuQAnQT6YRJXjvrMn
+ XFKIbo/2LA7t2emoIe5z+AzLz3pyeCvZm7EcfrseV8j34jGwYv6dOSHJ+mcvsN2EPJ6G
+ 6WzGqy7GW/KW5BrPDHvHBoom2pijg9nMyvL2JV7j0EACKH2Fw84vrLH1OBo/313DQLLm
+ XAZ6TesJFF/GBwsDpmi+UrLHgiCM6IpJJ0PYEP8KrqNF6blw6QL6n/GPbQKD8l0XtC+2
+ spcfk4vxYUIezJgsKrqsEliEknXBQMw1u612piT58tuMft6+kAouoR5tVgVjXPTvO1MP Fw== 
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 393njwfwhu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Jun 2021 16:36:29 -0400
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 15AKCs3b001196;
+        Thu, 10 Jun 2021 20:36:29 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma05wdc.us.ibm.com with ESMTP id 3900wa30h0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Jun 2021 20:36:29 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 15AKaRZ628901784
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 10 Jun 2021 20:36:28 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DB7A6BE04F;
+        Thu, 10 Jun 2021 20:36:27 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5769FBE053;
+        Thu, 10 Jun 2021 20:36:27 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 10 Jun 2021 20:36:27 +0000 (GMT)
 MIME-Version: 1.0
-In-Reply-To: <20210521182104.18273-8-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Thu, 10 Jun 2021 13:36:27 -0700
+From:   Dany Madden <drt@linux.ibm.com>
+To:     Cristobal Forno <cforno12@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, sukadev@linux.ibm.com, mpe@ellerman.id.au,
+        benh@kernel.crashing.org, paulus@samba.org, davem@davemloft.net,
+        kuba@kernel.org, Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: Re: [PATCH, net-next, v2] ibmvnic: Allow device probe if the device
+ is not ready at boot
+In-Reply-To: <20210610170835.10190-1-cforno12@linux.ibm.com>
+References: <20210610170835.10190-1-cforno12@linux.ibm.com>
+Message-ID: <b72a543228cde360d35a710f72fb8968@imap.linux.ibm.com>
+X-Sender: drt@linux.ibm.com
+User-Agent: Roundcube Webmail/1.1.12
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: dJ1nXqwCyKHcTxhx7BuB6B0IF0pukRD8
+X-Proofpoint-GUID: dJ1nXqwCyKHcTxhx7BuB6B0IF0pukRD8
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-10_13:2021-06-10,2021-06-10 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ priorityscore=1501 mlxscore=0 bulkscore=0 phishscore=0 lowpriorityscore=0
+ mlxlogscore=674 suspectscore=0 adultscore=0 spamscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
+ definitions=main-2106100130
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/21/21 8:21 PM, Kuniyuki Iwashima wrote:
-> This patch also changes the code to call reuseport_migrate_sock() and
-> inet_reqsk_clone(), but unlike the other cases, we do not call
-> inet_reqsk_clone() right after reuseport_migrate_sock().
+On 2021-06-10 10:08, Cristobal Forno wrote:
+> Allow the device to be initialized at a later time if
+> it is not available at boot. The device will be allowed to probe but
+> will be given a "down" state. After completing device probe and
+> registering the net device, the driver will await an interrupt signal
+> from its partner device, indicating that it is ready for boot. The
+> driver will schedule a work event to perform the necessary procedure
+> and begin operation.
 > 
-> Currently, in the receive path for TCP_NEW_SYN_RECV sockets, its listener
-> has three kinds of refcnt:
+> Co-developed-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+> Signed-off-by: Cristobal Forno <cforno12@linux.ibm.com>
 > 
->   (A) for listener itself
->   (B) carried by reuqest_sock
->   (C) sock_hold() in tcp_v[46]_rcv()
-> 
-> While processing the req, (A) may disappear by close(listener). Also, (B)
-> can disappear by accept(listener) once we put the req into the accept
-> queue. So, we have to hold another refcnt (C) for the listener to prevent
-> use-after-free.
-> 
-> For socket migration, we call reuseport_migrate_sock() to select a listener
-> with (A) and to increment the new listener's refcnt in tcp_v[46]_rcv().
-> This refcnt corresponds to (C) and is cleaned up later in tcp_v[46]_rcv().
-> Thus we have to take another refcnt (B) for the newly cloned request_sock.
-> 
-> In inet_csk_complete_hashdance(), we hold the count (B), clone the req, and
-> try to put the new req into the accept queue. By migrating req after
-> winning the "own_req" race, we can avoid such a worst situation:
-> 
->   CPU 1 looks up req1
->   CPU 2 looks up req1, unhashes it, then CPU 1 loses the race
->   CPU 3 looks up req2, unhashes it, then CPU 2 loses the race
->   ...
-> 
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
 > ---
->  net/ipv4/inet_connection_sock.c | 34 ++++++++++++++++++++++++++++++---
->  net/ipv4/tcp_ipv4.c             | 20 +++++++++++++------
->  net/ipv4/tcp_minisocks.c        |  4 ++--
->  net/ipv6/tcp_ipv6.c             | 14 +++++++++++---
->  4 files changed, 58 insertions(+), 14 deletions(-)
-> 
-> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> index c1f068464363..b795198f919a 100644
-> --- a/net/ipv4/inet_connection_sock.c
-> +++ b/net/ipv4/inet_connection_sock.c
-> @@ -1113,12 +1113,40 @@ struct sock *inet_csk_complete_hashdance(struct sock *sk, struct sock *child,
->  					 struct request_sock *req, bool own_req)
->  {
->  	if (own_req) {
-> -		inet_csk_reqsk_queue_drop(sk, req);
-> -		reqsk_queue_removed(&inet_csk(sk)->icsk_accept_queue, req);
-> -		if (inet_csk_reqsk_queue_add(sk, req, child))
-> +		inet_csk_reqsk_queue_drop(req->rsk_listener, req);
-> +		reqsk_queue_removed(&inet_csk(req->rsk_listener)->icsk_accept_queue, req);
-> +
-> +		if (sk != req->rsk_listener) {
-> +			/* another listening sk has been selected,
-> +			 * migrate the req to it.
-> +			 */
-> +			struct request_sock *nreq;
-> +
-> +			/* hold a refcnt for the nreq->rsk_listener
-> +			 * which is assigned in inet_reqsk_clone()
-> +			 */
-> +			sock_hold(sk);
-> +			nreq = inet_reqsk_clone(req, sk);
-> +			if (!nreq) {
-> +				inet_child_forget(sk, req, child);
-
-Don't you need a sock_put(sk) here ?
-
-\
-> +				goto child_put;
-> +			}
-> +
-> +			refcount_set(&nreq->rsk_refcnt, 1);
-> +			if (inet_csk_reqsk_queue_add(sk, nreq, child)) {
-> +				reqsk_migrate_reset(req);
-> +				reqsk_put(req);
-> +				return child;
-> +			}
-> +
-> +			reqsk_migrate_reset(nreq);
-> +			__reqsk_free(nreq);
-> +		} else if (inet_csk_reqsk_queue_add(sk, req, child)) {
->  			return child;
-> +		}
-> 
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
