@@ -2,108 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F843A34C4
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 22:22:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D08773A34D3
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 22:29:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230427AbhFJUYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 16:24:16 -0400
-Received: from mail-wr1-f41.google.com ([209.85.221.41]:46844 "EHLO
-        mail-wr1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbhFJUYO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 16:24:14 -0400
-Received: by mail-wr1-f41.google.com with SMTP id a11so3634759wrt.13;
-        Thu, 10 Jun 2021 13:22:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TN2cshQq+RX26SMmNXh1Nu44ZA1Ux0EDgXl9lnKWGk4=;
-        b=ZxG0lJ7pNGKSIONSvneoDHyc9N5VroxhPRBF8zZ6uJJpUBffCXeBDahel9ZrhMslxw
-         qmhhUZIwuCw0aRasco/oO8D/3AuVInr7PLghKazzTaFrils04scdqkTfMjLQAGpwqpDo
-         xaizBCYTs+NDt+OzePKS/i+qAlM/WJW207Uwqwh7t2Et4BYkE6VjuNlql94EbunJLRwl
-         ssYMPWz/7fhG3KvzB9lvKA586IllARZIPwKDWxBa4lPIkkYaj2tLrMVQ05COLlpSt8hz
-         7LleAW2uDjDAlTH5djq0Bb6WJyVMuOPj1tJuOFEP9PvR3RF1Quq1N9pRCbsWA68eCtRT
-         aMrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TN2cshQq+RX26SMmNXh1Nu44ZA1Ux0EDgXl9lnKWGk4=;
-        b=uTOLPjLZKNnZozNtCWLz4UIpELH6bWsV2tDWnUaJUGCI9PX2ICJ98EKeE/2KcPvvFg
-         Arg/8h/kRHuhXPx0nG4jrh2ssI1L5gpIN8UXg1UV0PuNc8IViDFJwr5T94Usc8fpZD3b
-         tWFCKL+/tas+pXGBPNkEFRzbr6JMgm4n6J3eurMP/tfEN83EfZdVcvoOPivGjdoWU1go
-         f8hxEcWep96F64A2W/5RruXjI1Xrk4HEI8lpwGAD0pL9e7JIKIPwwHnYEXmmBXzNVB0D
-         y/tIKsoZwdjT67v6ADeAc8bAIUHPhUqLe8EXOQAqjGduSkbg37U2vo4ZcXLUTFAL5Mbc
-         3VjA==
-X-Gm-Message-State: AOAM533luUb4P7Cryp00a6o8ZWM8F+j2yrJKmltRuMLe6VFIJv9nEhBc
-        7qwgITHaFW2ngMeUHbyBz2IbtMEaIizqfg==
-X-Google-Smtp-Source: ABdhPJxinlYLVoxRistGCFjG3FNYheDpd1itdip/HlJmQpagg9rAFamMRmNloFnq4oQWpa66Z82IqA==
-X-Received: by 2002:a05:6000:2a3:: with SMTP id l3mr210126wry.395.1623356463466;
-        Thu, 10 Jun 2021 13:21:03 -0700 (PDT)
-Received: from [192.168.181.98] (228.18.23.93.rev.sfr.net. [93.23.18.228])
-        by smtp.gmail.com with ESMTPSA id z3sm4807643wrl.13.2021.06.10.13.21.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 13:21:03 -0700 (PDT)
-Subject: Re: [PATCH v7 bpf-next 06/11] tcp: Migrate TCP_NEW_SYN_RECV requests
- at retransmitting SYN+ACKs.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S230336AbhFJUbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 16:31:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38951 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230299AbhFJUbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 16:31:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623356942;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+liY71qkNc3av4c7FTZuDMakAHUn8vcZt9xyuXI59Mw=;
+        b=NMiHq+xLaG0aS66S0VkgZ4/NjDENvA3DHk27oWqsaDRx+CyD98yxxXsFl9zWHwD4OPwTkx
+        aUUCF3AoQg177b5IBX5y3I5kQkEdo2lYvQjYBgbutR0PeM0QXYSh526S3S1E2fKA6w/AFL
+        7v5dAfDvNiarD8RZt1GATDfGRojVhd8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-325-Z0-QMy42MdWm-K9JbDkRkA-1; Thu, 10 Jun 2021 16:28:58 -0400
+X-MC-Unique: Z0-QMy42MdWm-K9JbDkRkA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E16DC801B12;
+        Thu, 10 Jun 2021 20:28:55 +0000 (UTC)
+Received: from krava (unknown [10.40.195.165])
+        by smtp.corp.redhat.com (Postfix) with SMTP id B372060CC9;
+        Thu, 10 Jun 2021 20:28:52 +0000 (UTC)
+Date:   Thu, 10 Jun 2021 22:28:51 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Cc:     Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210521182104.18273-1-kuniyu@amazon.co.jp>
- <20210521182104.18273-7-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <3e02db84-1cda-8b5a-49ea-cdbad900e3ea@gmail.com>
-Date:   Thu, 10 Jun 2021 22:21:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        Andrii Nakryiko <andriin@fb.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Viktor Malik <vmalik@redhat.com>
+Subject: Re: [PATCH 16/19] selftests/bpf: Add fentry multi func test
+Message-ID: <YMJ2A1hvmnDdFlRt@krava>
+References: <20210605111034.1810858-1-jolsa@kernel.org>
+ <20210605111034.1810858-17-jolsa@kernel.org>
+ <CAEf4BzbBGB+hm0LJRUWDi1EXRkbj86FDOt_ZHdQbT=za47p9ZA@mail.gmail.com>
+ <YMDQOIhRh9tDy1Tg@krava>
+ <CAEf4Bzboi7Wsf94Z-0OjyYehjazELqdR-gWgxuS_y3AqzDY=rQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210521182104.18273-7-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzboi7Wsf94Z-0OjyYehjazELqdR-gWgxuS_y3AqzDY=rQ@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/21/21 8:20 PM, Kuniyuki Iwashima wrote:
-> As with the preceding patch, this patch changes reqsk_timer_handler() to
-> call reuseport_migrate_sock() and inet_reqsk_clone() to migrate in-flight
-> requests at retransmitting SYN+ACKs. If we can select a new listener and
-> clone the request, we resume setting the SYN+ACK timer for the new req. If
-> we can set the timer, we call inet_ehash_insert() to unhash the old req and
-> put the new req into ehash.
+On Thu, Jun 10, 2021 at 10:00:34AM -0700, Andrii Nakryiko wrote:
+> On Wed, Jun 9, 2021 at 7:29 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Tue, Jun 08, 2021 at 10:40:24PM -0700, Andrii Nakryiko wrote:
+> > > On Sat, Jun 5, 2021 at 4:12 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > > >
+> > > > Adding selftest for fentry multi func test that attaches
+> > > > to bpf_fentry_test* functions and checks argument values
+> > > > based on the processed function.
+> > > >
+> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > > ---
+> > > >  tools/testing/selftests/bpf/multi_check.h     | 52 +++++++++++++++++++
+> > > >  .../bpf/prog_tests/fentry_multi_test.c        | 43 +++++++++++++++
+> > > >  .../selftests/bpf/progs/fentry_multi_test.c   | 18 +++++++
+> > > >  3 files changed, 113 insertions(+)
+> > > >  create mode 100644 tools/testing/selftests/bpf/multi_check.h
+> > > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/fentry_multi_test.c
+> > > >  create mode 100644 tools/testing/selftests/bpf/progs/fentry_multi_test.c
+> > > >
+> > > > diff --git a/tools/testing/selftests/bpf/multi_check.h b/tools/testing/selftests/bpf/multi_check.h
+> > > > new file mode 100644
+> > > > index 000000000000..36c2a93f9be3
+> > > > --- /dev/null
+> > > > +++ b/tools/testing/selftests/bpf/multi_check.h
+> > >
+> > > we have a proper static linking now, we don't have to use header
+> > > inclusion hacks, let's do this properly?
+> >
+> > ok, will change
+> >
+> > >
+> > > > @@ -0,0 +1,52 @@
+> > > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > > +
+> > > > +#ifndef __MULTI_CHECK_H
+> > > > +#define __MULTI_CHECK_H
+> > > > +
+> > > > +extern unsigned long long bpf_fentry_test[8];
+> > > > +
+> > > > +static __attribute__((unused)) inline
+> > > > +void multi_arg_check(unsigned long ip, __u64 a, __u64 b, __u64 c, __u64 d, __u64 e, __u64 f, __u64 *test_result)
+> > > > +{
+> > > > +       if (ip == bpf_fentry_test[0]) {
+> > > > +               *test_result += (int) a == 1;
+> > > > +       } else if (ip == bpf_fentry_test[1]) {
+> > > > +               *test_result += (int) a == 2 && (__u64) b == 3;
+> > > > +       } else if (ip == bpf_fentry_test[2]) {
+> > > > +               *test_result += (char) a == 4 && (int) b == 5 && (__u64) c == 6;
+> > > > +       } else if (ip == bpf_fentry_test[3]) {
+> > > > +               *test_result += (void *) a == (void *) 7 && (char) b == 8 && (int) c == 9 && (__u64) d == 10;
+> > > > +       } else if (ip == bpf_fentry_test[4]) {
+> > > > +               *test_result += (__u64) a == 11 && (void *) b == (void *) 12 && (short) c == 13 && (int) d == 14 && (__u64) e == 15;
+> > > > +       } else if (ip == bpf_fentry_test[5]) {
+> > > > +               *test_result += (__u64) a == 16 && (void *) b == (void *) 17 && (short) c == 18 && (int) d == 19 && (void *) e == (void *) 20 && (__u64) f == 21;
+> > > > +       } else if (ip == bpf_fentry_test[6]) {
+> > > > +               *test_result += 1;
+> > > > +       } else if (ip == bpf_fentry_test[7]) {
+> > > > +               *test_result += 1;
+> > > > +       }
+> > >
+> > > why not use switch? and why the casting?
+> >
+> > hum, for switch I'd need constants right?
 > 
+> doh, of course :)
+> 
+> but! you don't need to fill out bpf_fentry_test[] array from
+> user-space, just use extern const void variables to get addresses of
+> those functions:
+> 
+> extern const void bpf_fentry_test1 __ksym;
+> extern const void bpf_fentry_test2 __ksym;
+> ...
 
-...
+nice, will use that
 
->  static void reqsk_migrate_reset(struct request_sock *req)
->  {
-> +	req->saved_syn = NULL;
-> +	inet_rsk(req)->ireq_opt = NULL;
->  #if IS_ENABLED(CONFIG_IPV6)
-> -	inet_rsk(req)->ipv6_opt = NULL;
-> +	inet_rsk(req)->pktopts = NULL;
->  #endif
->  }
+jirka
 
-This is fragile. 
-
-Maybe instead :
-
-#if IS_ENABLED(CONFIG_IPV6)
-	inet_rsk(req)->ipv6_opt = NULL;
-	inet_rsk(req)->pktopts = NULL;
-#else
-	inet_rsk(req)->ireq_opt = NULL;
-#endif
