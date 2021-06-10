@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1D403A2B04
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 14:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6E93A2B06
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 14:05:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230281AbhFJMHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 08:07:19 -0400
-Received: from mail-ed1-f43.google.com ([209.85.208.43]:42592 "EHLO
-        mail-ed1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbhFJMHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 08:07:14 -0400
-Received: by mail-ed1-f43.google.com with SMTP id i13so32712522edb.9
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 05:05:18 -0700 (PDT)
+        id S230294AbhFJMHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 08:07:30 -0400
+Received: from mail-ej1-f48.google.com ([209.85.218.48]:40774 "EHLO
+        mail-ej1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230247AbhFJMH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 08:07:29 -0400
+Received: by mail-ej1-f48.google.com with SMTP id my49so27078994ejc.7
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 05:05:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uyvb0KXxpyWq3qgClhEraKLbShn/5Bbg2WwPvVCXfZI=;
-        b=R2QTvvFGONS5s4TaVG6tqiMLak2GgyzRPyzHUQhEQBzKk6CebQa1MVhWLTdmy7awPo
-         oXL3PmVuZBozjOz1QYWelanvjWtEGY1Vw/nhGnarHMPIkSulq9GZxupTKfdjClHwuxJV
-         SdRpGGkT62YSfvM7WYqSmOqwLgSozS5midYQAPk3Y8jNLz9WJs/JIyh1W9Lwinb51oYK
-         EY2xfhbcB1mOvPVJ9bY0V/bU6WII+SzMEv1VbYDtv+RtMW5+9Mywh6nILtTbrFGVeOj4
-         qay4W7+5ll/pFZNTTvCskx/klF+QVe6jgyTgiiKRgZpPwHtAzWv7MFc/F71g3OdSsNpY
-         KyVA==
+        bh=qZNZ5KxFU7vy74lltv18MRtH+5O3R4eorm9vewc1yQk=;
+        b=u62RL9Xw+GXD+9EvKEU1yBWVvluGsqVNQBmYCWQF6Ug996WjoSW6KObLngXEeMbukb
+         CMWrFkITchgvTo8yZZHOcMYHeMnuln9pMr5HvNUuvqJnFCCB4ASWJ7FgCiM3t0gkjg83
+         FAA+xDVUlkHoSR09/WtroHdl11gbyWyJ2P4g2Ywp+X5Fn8UeimhKZt4uu1BMGc5kTO6E
+         wb0G1b+Bzxak2rHd+e0aWlBAarwfxoiLMnjrHxCYmir7RxlIAHY6Yan4BFzI6IpBVEuX
+         XCyx5cAP1n+e7RL+Mv9c8m0OhdZydL/VsW4PbUDEjZMZOd76SwdKw9tsbyyZBxUFNQGP
+         sZgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uyvb0KXxpyWq3qgClhEraKLbShn/5Bbg2WwPvVCXfZI=;
-        b=NaJlXayY2dnsrX1lilSORUDkiyPrW9wjAjFiI5U4Q2GPlDRYr5VergO9hdYyESJBXw
-         +d+vm8+8AhgK9dh+HzOYcyzKwWuK558sLkdLBiCLFmwgl1M5Kv6mVuMBUd0nACBu/OE6
-         lEAu0SacGWndQVMj7o22xkxia6EIS3lHEg+xH35nVIwZEO0ONUxsdqyqT8FVzgYVFfa8
-         RxAKqbLBHePhZFEGZWP9mIoUszRHlOkrq5ejIBEbQeavFNjDQXvqIRtpOMHtu0/ELiqJ
-         XPJEVYhffdMLVhPIFQo5/03OJKpq3bdIx+FvDO4vmkvCMTZIFGhyTDQR+4MpQa01nVX4
-         7Kmw==
-X-Gm-Message-State: AOAM532Mv4q/RHqhte1E6fsLUSrsQcejWkzLUrowodFrDkmXxnBve5uf
-        u4lulIjOK9V6eiDfEF4FVrqmDaHxHR4txxdHTPc=
-X-Google-Smtp-Source: ABdhPJztlClfs8oow/rAkwsgfiXH4D4o4+lQ7cHv2vO45L2aVCUEctZpKCYGdI+ZBZQQqP6QWzXNtg==
-X-Received: by 2002:a05:6402:1a:: with SMTP id d26mr4397408edu.105.1623326657676;
-        Thu, 10 Jun 2021 05:04:17 -0700 (PDT)
+        bh=qZNZ5KxFU7vy74lltv18MRtH+5O3R4eorm9vewc1yQk=;
+        b=DvApaD0ufiLiGAwOMmUXx00mXw0qwfbZD6QNdin9nz+OvitM4/SoSh2EhpTzCiOYNY
+         dZNUNVZ4CbYV7jLa4PGkqdl6ZajUXO4f5ImqJCI8RzwwF0E5RVom+nzrY9WeSG1W6laY
+         5fnoV6Sy/OfPe8ITXpNq9F0/kbJqWrS6Fy3J6RiXVo2t+oSQEqPtvJqUrprAScejaaDS
+         I0rT+hxzo2blVHOqJF8MmoCUX03RQ+qcohqqgqu5xkJW1MYNW4yRDVHVkvSW/KoIoelu
+         91oBlwNS6c9f3CzI0qMCuIRa+Nlco3vGQqleAUeS4HtHODxdbR+3f8Ic1+gccnq2NTol
+         nN2Q==
+X-Gm-Message-State: AOAM533T7ZsYnCafDyZ6mWTvHXgFS43tiR2u6HDR/Rj/a4tNLNyJlxV9
+        lh7UUYBOZVoODcsrGHqsEWg7aUaetwCsT+RMY0A=
+X-Google-Smtp-Source: ABdhPJyOcJpeUGbGe31+onyJAV1861v12ZVQfNMasZcMNUTxKpu4p9y4Kzuv6pV+ufLDbG0+eqCtMg==
+X-Received: by 2002:a17:906:22c7:: with SMTP id q7mr4047357eja.547.1623326658738;
+        Thu, 10 Jun 2021 05:04:18 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id e18sm967193ejh.64.2021.06.10.05.04.16
+        by smtp.gmail.com with ESMTPSA id e18sm967193ejh.64.2021.06.10.05.04.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 05:04:17 -0700 (PDT)
+        Thu, 10 Jun 2021 05:04:18 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, davem@davemloft.net,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         stable@vger.kernel.org
-Subject: [PATCH net 1/2 v2] net: bridge: fix vlan tunnel dst null pointer dereference
-Date:   Thu, 10 Jun 2021 15:04:10 +0300
-Message-Id: <20210610120411.128339-2-razor@blackwall.org>
+Subject: [PATCH net 2/2 v2] net: bridge: fix vlan tunnel dst refcnt when egressing
+Date:   Thu, 10 Jun 2021 15:04:11 +0300
+Message-Id: <20210610120411.128339-3-razor@blackwall.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210610120411.128339-1-razor@blackwall.org>
 References: <20210610120411.128339-1-razor@blackwall.org>
@@ -64,131 +64,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-This patch fixes a tunnel_dst null pointer dereference due to lockless
-access in the tunnel egress path. When deleting a vlan tunnel the
-tunnel_dst pointer is set to NULL without waiting a grace period (i.e.
-while it's still usable) and packets egressing are dereferencing it
-without checking. Use READ/WRITE_ONCE to annotate the lockless use of
-tunnel_id, use RCU for accessing tunnel_dst and make sure it is read
-only once and checked in the egress path. The dst is already properly RCU
-protected so we don't need to do anything fancy than to make sure
-tunnel_id and tunnel_dst are read only once and checked in the egress path.
+The egress tunnel code uses dst_clone() and directly sets the result
+which is wrong because the entry might have 0 refcnt or be already deleted,
+causing number of problems. It also triggers the WARN_ON() in dst_hold()[1]
+when a refcnt couldn't be taken. Fix it by using dst_hold_safe() and
+checking if a reference was actually taken before setting the dst.
+
+[1] dmesg WARN_ON log and following refcnt errors
+ WARNING: CPU: 5 PID: 38 at include/net/dst.h:230 br_handle_egress_vlan_tunnel+0x10b/0x134 [bridge]
+ Modules linked in: 8021q garp mrp bridge stp llc bonding ipv6 virtio_net
+ CPU: 5 PID: 38 Comm: ksoftirqd/5 Kdump: loaded Tainted: G        W         5.13.0-rc3+ #360
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-1.fc33 04/01/2014
+ RIP: 0010:br_handle_egress_vlan_tunnel+0x10b/0x134 [bridge]
+ Code: e8 85 bc 01 e1 45 84 f6 74 90 45 31 f6 85 db 48 c7 c7 a0 02 19 a0 41 0f 94 c6 31 c9 31 d2 44 89 f6 e8 64 bc 01 e1 85 db 75 02 <0f> 0b 31 c9 31 d2 44 89 f6 48 c7 c7 70 02 19 a0 e8 4b bc 01 e1 49
+ RSP: 0018:ffff8881003d39e8 EFLAGS: 00010246
+ RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+ RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffffffffa01902a0
+ RBP: ffff8881040c6700 R08: 0000000000000000 R09: 0000000000000001
+ R10: 2ce93d0054fe0d00 R11: 54fe0d00000e0000 R12: ffff888109515000
+ R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000401
+ FS:  0000000000000000(0000) GS:ffff88822bf40000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 00007f42ba70f030 CR3: 0000000109926000 CR4: 00000000000006e0
+ Call Trace:
+  br_handle_vlan+0xbc/0xca [bridge]
+  __br_forward+0x23/0x164 [bridge]
+  deliver_clone+0x41/0x48 [bridge]
+  br_handle_frame_finish+0x36f/0x3aa [bridge]
+  ? skb_dst+0x2e/0x38 [bridge]
+  ? br_handle_ingress_vlan_tunnel+0x3e/0x1c8 [bridge]
+  ? br_handle_frame_finish+0x3aa/0x3aa [bridge]
+  br_handle_frame+0x2c3/0x377 [bridge]
+  ? __skb_pull+0x33/0x51
+  ? vlan_do_receive+0x4f/0x36a
+  ? br_handle_frame_finish+0x3aa/0x3aa [bridge]
+  __netif_receive_skb_core+0x539/0x7c6
+  ? __list_del_entry_valid+0x16e/0x1c2
+  __netif_receive_skb_list_core+0x6d/0xd6
+  netif_receive_skb_list_internal+0x1d9/0x1fa
+  gro_normal_list+0x22/0x3e
+  dev_gro_receive+0x55b/0x600
+  ? detach_buf_split+0x58/0x140
+  napi_gro_receive+0x94/0x12e
+  virtnet_poll+0x15d/0x315 [virtio_net]
+  __napi_poll+0x2c/0x1c9
+  net_rx_action+0xe6/0x1fb
+  __do_softirq+0x115/0x2d8
+  run_ksoftirqd+0x18/0x20
+  smpboot_thread_fn+0x183/0x19c
+  ? smpboot_unregister_percpu_thread+0x66/0x66
+  kthread+0x10a/0x10f
+  ? kthread_mod_delayed_work+0xb6/0xb6
+  ret_from_fork+0x22/0x30
+ ---[ end trace 49f61b07f775fd2b ]---
+ dst_release: dst:00000000c02d677a refcnt:-1
+ dst_release underflow
 
 Cc: stable@vger.kernel.org
 Fixes: 11538d039ac6 ("bridge: vlan dst_metadata hooks in ingress and egress paths")
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- net/bridge/br_private.h     |  4 ++--
- net/bridge/br_vlan_tunnel.c | 38 +++++++++++++++++++++++--------------
- 2 files changed, 26 insertions(+), 16 deletions(-)
+ net/bridge/br_vlan_tunnel.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 7ce8a77cc6b6..e013d33f1c7c 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -90,8 +90,8 @@ struct bridge_mcast_stats {
- #endif
- 
- struct br_tunnel_info {
--	__be64			tunnel_id;
--	struct metadata_dst	*tunnel_dst;
-+	__be64				tunnel_id;
-+	struct metadata_dst __rcu	*tunnel_dst;
- };
- 
- /* private vlan flags */
 diff --git a/net/bridge/br_vlan_tunnel.c b/net/bridge/br_vlan_tunnel.c
-index 0d3a8c01552e..03de461a0d44 100644
+index 03de461a0d44..01017448ebde 100644
 --- a/net/bridge/br_vlan_tunnel.c
 +++ b/net/bridge/br_vlan_tunnel.c
-@@ -41,26 +41,33 @@ static struct net_bridge_vlan *br_vlan_tunnel_lookup(struct rhashtable *tbl,
- 				      br_vlan_tunnel_rht_params);
- }
- 
-+static void vlan_tunnel_info_release(struct net_bridge_vlan *vlan)
-+{
-+	struct metadata_dst *tdst = rtnl_dereference(vlan->tinfo.tunnel_dst);
-+
-+	WRITE_ONCE(vlan->tinfo.tunnel_id, 0);
-+	RCU_INIT_POINTER(vlan->tinfo.tunnel_dst, NULL);
-+	dst_release(&tdst->dst);
-+}
-+
- void vlan_tunnel_info_del(struct net_bridge_vlan_group *vg,
- 			  struct net_bridge_vlan *vlan)
- {
--	if (!vlan->tinfo.tunnel_dst)
-+	if (!rcu_access_pointer(vlan->tinfo.tunnel_dst))
- 		return;
- 	rhashtable_remove_fast(&vg->tunnel_hash, &vlan->tnode,
- 			       br_vlan_tunnel_rht_params);
--	vlan->tinfo.tunnel_id = 0;
--	dst_release(&vlan->tinfo.tunnel_dst->dst);
--	vlan->tinfo.tunnel_dst = NULL;
-+	vlan_tunnel_info_release(vlan);
- }
- 
- static int __vlan_tunnel_info_add(struct net_bridge_vlan_group *vg,
- 				  struct net_bridge_vlan *vlan, u32 tun_id)
- {
--	struct metadata_dst *metadata = NULL;
-+	struct metadata_dst *metadata = rtnl_dereference(vlan->tinfo.tunnel_dst);
- 	__be64 key = key32_to_tunnel_id(cpu_to_be32(tun_id));
- 	int err;
- 
--	if (vlan->tinfo.tunnel_dst)
-+	if (metadata)
- 		return -EEXIST;
- 
- 	metadata = __ip_tun_set_dst(0, 0, 0, 0, 0, TUNNEL_KEY,
-@@ -69,8 +76,8 @@ static int __vlan_tunnel_info_add(struct net_bridge_vlan_group *vg,
- 		return -EINVAL;
- 
- 	metadata->u.tun_info.mode |= IP_TUNNEL_INFO_TX | IP_TUNNEL_INFO_BRIDGE;
--	vlan->tinfo.tunnel_dst = metadata;
--	vlan->tinfo.tunnel_id = key;
-+	rcu_assign_pointer(vlan->tinfo.tunnel_dst, metadata);
-+	WRITE_ONCE(vlan->tinfo.tunnel_id, key);
- 
- 	err = rhashtable_lookup_insert_fast(&vg->tunnel_hash, &vlan->tnode,
- 					    br_vlan_tunnel_rht_params);
-@@ -79,9 +86,7 @@ static int __vlan_tunnel_info_add(struct net_bridge_vlan_group *vg,
- 
- 	return 0;
- out:
--	dst_release(&vlan->tinfo.tunnel_dst->dst);
--	vlan->tinfo.tunnel_dst = NULL;
--	vlan->tinfo.tunnel_id = 0;
-+	vlan_tunnel_info_release(vlan);
- 
- 	return err;
- }
-@@ -182,12 +187,15 @@ int br_handle_ingress_vlan_tunnel(struct sk_buff *skb,
- int br_handle_egress_vlan_tunnel(struct sk_buff *skb,
- 				 struct net_bridge_vlan *vlan)
- {
-+	struct metadata_dst *tunnel_dst;
-+	__be64 tunnel_id;
- 	int err;
- 
--	if (!vlan || !vlan->tinfo.tunnel_id)
-+	if (!vlan)
- 		return 0;
- 
--	if (unlikely(!skb_vlan_tag_present(skb)))
-+	tunnel_id = READ_ONCE(vlan->tinfo.tunnel_id);
-+	if (!tunnel_id || unlikely(!skb_vlan_tag_present(skb)))
- 		return 0;
- 
- 	skb_dst_drop(skb);
-@@ -195,7 +203,9 @@ int br_handle_egress_vlan_tunnel(struct sk_buff *skb,
- 	if (err)
+@@ -204,8 +204,8 @@ int br_handle_egress_vlan_tunnel(struct sk_buff *skb,
  		return err;
  
--	skb_dst_set(skb, dst_clone(&vlan->tinfo.tunnel_dst->dst));
-+	tunnel_dst = rcu_dereference(vlan->tinfo.tunnel_dst);
-+	if (tunnel_dst)
-+		skb_dst_set(skb, dst_clone(&tunnel_dst->dst));
+ 	tunnel_dst = rcu_dereference(vlan->tinfo.tunnel_dst);
+-	if (tunnel_dst)
+-		skb_dst_set(skb, dst_clone(&tunnel_dst->dst));
++	if (tunnel_dst && dst_hold_safe(&tunnel_dst->dst))
++		skb_dst_set(skb, &tunnel_dst->dst);
  
  	return 0;
  }
