@@ -2,208 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DACD23A22B6
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 05:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C403A22EF
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 05:45:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230059AbhFJDXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 23:23:03 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55504 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229802AbhFJDW6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 23:22:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=jWmr2xlRwn6JQaehy4GwAbYBW8L4D3ESDbeB+eyjFlI=; b=hhiJjKT6WeE4zxbXF0IMfq/cIp
-        4f29LBeN15gfX1AVIvAng+bg3qf9bFv4B9FvdCvxTnIDHot3hU6fdyvFxCB+L1skt3f3wTRAu4Y/K
-        XQ44pUFutdRWIB7WN+v7catNdKHEgF0mCEaMjZLPh97X6hBkFGOR19LeXsxGtklpHdko=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lrBE2-008axE-Ng; Thu, 10 Jun 2021 05:19:22 +0200
-Date:   Thu, 10 Jun 2021 05:19:22 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?utf-8?B?5ZGo55Cw5p2wIChaaG91IFlhbmppZSk=?= 
-        <zhouyanjie@wanyeetech.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, dongsheng.qiu@ingenic.com,
-        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
-        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
-        sernia.zhou@foxmail.com, paul@crapouillou.net
-Subject: Re: [PATCH v2 2/2] net: stmmac: Add Ingenic SoCs MAC support.
-Message-ID: <YMGEutCet7fP1NZ9@lunn.ch>
-References: <1623260110-25842-1-git-send-email-zhouyanjie@wanyeetech.com>
- <1623260110-25842-3-git-send-email-zhouyanjie@wanyeetech.com>
+        id S229814AbhFJDqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 23:46:24 -0400
+Received: from mail-ot1-f43.google.com ([209.85.210.43]:42540 "EHLO
+        mail-ot1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229655AbhFJDqX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 23:46:23 -0400
+Received: by mail-ot1-f43.google.com with SMTP id w23-20020a9d5a970000b02903d0ef989477so21739989oth.9
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 20:44:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=d/HsOChtoCYv2fZLAnHj+L8OfimOjEe4YM7F//2V4UM=;
+        b=Xh67DyPE6Dr/kBZT1T6WHVHNDgnklob0hvRge79XgS3dUfpC+iqe3geJA0EJxO4kzK
+         Ot37b8Pulgxw5XN5Fa6KGf7GYNhkyGy+9RcqdrLjnpbSuIDFQPEbKb0Xf44MrNP1zLm2
+         WrWY3RAEWZtR0mQ87N4jnbpzkvSxN3+BHFZgazaGKzsNdaOKZFiEScjc0GExA2l5UsJ4
+         F0wFDYmOkxIRvWpAt2j18370FgzP+3AndnwDqjm1R/xH7PG3XDpFClhwRA5bo5+vnqTl
+         HWjnxbrNmbjoFG/D0xBPsqZ+n+UakseIticWoF9S9UcgMHc0R+YVxkD8cqlRd/7fe3CB
+         Zt2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=d/HsOChtoCYv2fZLAnHj+L8OfimOjEe4YM7F//2V4UM=;
+        b=AsY+U/wynkQip9WARy5MmwnzagZ5GLaemZ/wBNWEIMTxxjdHqtAANr4Nv0QQ4b/asI
+         QMSleSa75WOWQH5DrJQFKZy6S/o7aYtl2acF1q2Vu360bjDVvMWvzxWZhCEfAGppS0dP
+         cfrsjgVAAsRlRqnvXnIj8kmgOsVyWuCdmSSTCNRBF+pwWc/T6oqYo99LOeitUf2M+jRA
+         X6zyKMVuIXRPMCnoGPOcHIDpQsqRIWt18aL7WjlHJNIhfvRztqmANNIr994uAqNqdwCu
+         67lG/LJs7Coeg6mXNlcGWgP0Kus2FW6PJTfn7k7MJMBL+4Z75+btyDxZq7SfkcqoOMPU
+         5SMg==
+X-Gm-Message-State: AOAM532r4inl90FDEGwiyvu42QB3+Z3uhpPwkFNsGFepesyMAv9YIBUL
+        1juqxYFo0AxFW68zYPi4PWYwe1nJ5Vp1ObJypGA7BQ==
+X-Google-Smtp-Source: ABdhPJwaI7pY5h+Lp2iauvfmhJT8Zg+jqsNfguAo720I85KWBapKSLe5j38W7lEBj40rsZP877aszFSAKUNQM7jHv0A=
+X-Received: by 2002:a9d:711c:: with SMTP id n28mr704194otj.180.1623296592541;
+ Wed, 09 Jun 2021 20:43:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1623260110-25842-3-git-send-email-zhouyanjie@wanyeetech.com>
+References: <20210609232501.171257-1-jiang.wang@bytedance.com> <da90f17a-1c24-b475-76ef-f6a7fc2bcdd5@redhat.com>
+In-Reply-To: <da90f17a-1c24-b475-76ef-f6a7fc2bcdd5@redhat.com>
+From:   "Jiang Wang ." <jiang.wang@bytedance.com>
+Date:   Wed, 9 Jun 2021 20:43:01 -0700
+Message-ID: <CAP_N_Z_VDd+JUJ_Y-peOEc7FgwNGB8O3uZpVumQT_DbW62Jpjw@mail.gmail.com>
+Subject: Re: Re: [RFC v1 0/6] virtio/vsock: introduce SOCK_DGRAM support
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Stefano Garzarella <sgarzare@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        jhansen@vmware.comments, cong.wang@bytedance.com,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Yongji Xie <xieyongji@bytedance.com>,
+        =?UTF-8?B?5p+056iz?= <chaiwen.cc@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Lu Wei <luwei32@huawei.com>,
+        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int jz4775_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
-> +{
-> +	struct ingenic_mac *mac = plat_dat->bsp_priv;
-> +	unsigned int val;
+On Wed, Jun 9, 2021 at 6:51 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/6/10 =E4=B8=8A=E5=8D=887:24, Jiang Wang =E5=86=99=E9=81=93=
+:
+> > This patchset implements support of SOCK_DGRAM for virtio
+> > transport.
+> >
+> > Datagram sockets are connectionless and unreliable. To avoid unfair con=
+tention
+> > with stream and other sockets, add two more virtqueues and
+> > a new feature bit to indicate if those two new queues exist or not.
+> >
+> > Dgram does not use the existing credit update mechanism for
+> > stream sockets. When sending from the guest/driver, sending packets
+> > synchronously, so the sender will get an error when the virtqueue is fu=
+ll.
+> > When sending from the host/device, send packets asynchronously
+> > because the descriptor memory belongs to the corresponding QEMU
+> > process.
+>
+>
+> What's the use case for the datagram vsock?
+>
+One use case is for non critical info logging from the guest
+to the host, such as the performance data of some applications.
 
+It can also be used to replace UDP communications between
+the guest and the host.
 
-> +	case PHY_INTERFACE_MODE_RGMII:
-> +	case PHY_INTERFACE_MODE_RGMII_ID:
-> +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> +		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
-> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
-> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII\n");
-> +		break;
+> >
+> > The virtio spec patch is here:
+> > https://www.spinics.net/lists/linux-virtualization/msg50027.html
+>
+>
+> Have a quick glance, I suggest to split mergeable rx buffer into an
+> separate patch.
 
-So this does what DT writes expect. They put 'rgmii-id' as phy
-mode. The MAC does not add a delay. PHY_INTERFACE_MODE_RGMII_ID is
-passed to the PHY and it adds the delay. And frames flow to/from the
-PHY and users are happy. The majority of MAC drivers are like this.
+Sure.
 
-> +static int x2000_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
-> +{
-> +	struct ingenic_mac *mac = plat_dat->bsp_priv;
-> +	unsigned int val;
+> But I think it's time to revisit the idea of unifying the virtio-net and
+> virtio-vsock. Otherwise we're duplicating features and bugs.
 
-Here we have a complete different story. 
+For mergeable rxbuf related code, I think a set of common helper
+functions can be used by both virtio-net and virtio-vsock. For other
+parts, that may not be very beneficial. I will think about more.
 
+If there is a previous email discussion about this topic, could you send me
+some links? I did a quick web search but did not find any related
+info. Thanks.
 
-> +	case PHY_INTERFACE_MODE_RGMII:
-> +		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
-> +
-> +		if (mac->tx_delay == 0) {
-> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN);
-> +		} else {
-> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_DELAY);
-> +
-> +			if (mac->tx_delay > MACPHYC_TX_DELAY_MAX)
-> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, MACPHYC_TX_DELAY_MAX - 1);
-> +			else
-> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, mac->tx_delay - 1);
-> +		}
-
-What are the units of tx_delay. The DT binding should be pS, and you
-need to convert from that to whatever the hardware is using.
-
-If mac->tx_delay is greater than MACPHYC_TX_DELAY_MAX, please return
--EINVAL when parsing the binding. We want the DT writer to know they
-have requested something the hardware cannot do.
-
-So if the device tree contains 'rgmii' for PHY mode, you can use this
-for when you have long clock lines on your board adding the delay, and
-you just need to fine tune the delay, add a few pS. The PHY will also
-not add a delay, due to receiving PHY_INTERFACE_MODE_RGMII.
-
-> +
-> +		if (mac->rx_delay == 0) {
-> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN);
-> +		} else {
-> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_DELAY);
-> +
-> +			if (mac->rx_delay > MACPHYC_RX_DELAY_MAX)
-> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, MACPHYC_RX_DELAY_MAX - 1);
-> +			else
-> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, mac->rx_delay - 1);
-> +		}
-> +
-> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII\n");
-> +		break;
-> +
-> +	case PHY_INTERFACE_MODE_RGMII_ID:
-> +		val = FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN) |
-> +			  FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN) |
-> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
-> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII_ID\n");
-> +		break;
-
-So this one is pretty normal. The MAC does not add a delay,
-PHY_INTERFACE_MODE_RGMII_ID is passed to the PHY, and it adds the
-delay. The interface will likely work.
-
-> +
-> +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> +		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII) |
-> +			  FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN);
-> +
-> +		if (mac->tx_delay == 0) {
-> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN);
-> +		} else {
-> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_DELAY);
-> +
-> +			if (mac->tx_delay > MACPHYC_TX_DELAY_MAX)
-> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, MACPHYC_TX_DELAY_MAX - 1);
-> +			else
-> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, mac->tx_delay - 1);
-> +		}
-
-So here, the PHY is going to be passed PHY_INTERFACE_MODE_RGMII_RXID.
-The PHY will add a delay in the receive path. The MAC needs to add the
-delay in the transmit path. So tx_delay needs to be the full 2ns, not
-just a small fine tuning value, or the PCB is adding the delay. And
-you also cannot fine tune the RX delay, since rx_delay is ignored.
-
-> +
-> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII_RXID\n");
-> +		break;
-> +
-> +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> +		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII) |
-> +			  FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN);
-> +
-> +		if (mac->rx_delay == 0) {
-> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN);
-> +		} else {
-> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_DELAY);
-> +
-> +			if (mac->rx_delay > MACPHYC_RX_DELAY_MAX)
-> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, MACPHYC_RX_DELAY_MAX - 1);
-> +			else
-> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, mac->rx_delay - 1);
-> +		}
-
-And here we have the opposite to PHY_INTERFACE_MODE_RGMII_RXID.
-
-So you need to clearly document in the device tree binding when
-rx_delay and tx_delay are used, and when they are ignored. You don't
-want to have DT writers having to look deep into the code to figure
-this out.
-
-Personally, i would simply this, in a big way. I see two options:
-
-1) The MAC never adds a delay. The hardware is there, but simply don't
-use it, to keep thing simple, and the same as nearly every other MAC.
-
-2) If the hardware can do small steps of delay, allow this delay, both
-RX and TX, to be configured in all four modes, in order to allow for
-fine tuning. Leave the PHY to insert the majority of the delay.
-
-> +	/* Get MAC PHY control register */
-> +	mac->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node, "mode-reg");
-> +	if (IS_ERR(mac->regmap)) {
-> +		dev_err(&pdev->dev, "%s: failed to get syscon regmap\n", __func__);
-> +		goto err_remove_config_dt;
-> +	}
-
-Please document this in the device tree binding.
-
-> +
-> +	ret = of_property_read_u32(pdev->dev.of_node, "rx-clk-delay", &mac->rx_delay);
-> +	if (ret)
-> +		mac->rx_delay = 0;
-> +
-> +	ret = of_property_read_u32(pdev->dev.of_node, "tx-clk-delay", &mac->tx_delay);
-> +	if (ret)
-> +		mac->tx_delay = 0;
-
-Please take a look at dwmac-mediatek.c. It handles delays nicely. I
-would suggest that is the model to follow.
-
-       Andrew
+> Thanks
+>
+>
+> >
+> > For those who prefer git repo, here is the link for the linux kernel=EF=
+=BC=9A
+> > https://github.com/Jiang1155/linux/tree/vsock-dgram-v1
+> >
+> > qemu patch link:
+> > https://github.com/Jiang1155/qemu/tree/vsock-dgram-v1
+> >
+> >
+> > To do:
+> > 1. use skb when receiving packets
+> > 2. support multiple transport
+> > 3. support mergeable rx buffer
+> >
+> >
+> > Jiang Wang (6):
+> >    virtio/vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
+> >    virtio/vsock: add support for virtio datagram
+> >    vhost/vsock: add support for vhost dgram.
+> >    vsock_test: add tests for vsock dgram
+> >    vhost/vsock: add kconfig for vhost dgram support
+> >    virtio/vsock: add sysfs for rx buf len for dgram
+> >
+> >   drivers/vhost/Kconfig                              |   8 +
+> >   drivers/vhost/vsock.c                              | 207 ++++++++--
+> >   include/linux/virtio_vsock.h                       |   9 +
+> >   include/net/af_vsock.h                             |   1 +
+> >   .../trace/events/vsock_virtio_transport_common.h   |   5 +-
+> >   include/uapi/linux/virtio_vsock.h                  |   4 +
+> >   net/vmw_vsock/af_vsock.c                           |  12 +
+> >   net/vmw_vsock/virtio_transport.c                   | 433 ++++++++++++=
+++++++---
+> >   net/vmw_vsock/virtio_transport_common.c            | 184 ++++++++-
+> >   tools/testing/vsock/util.c                         | 105 +++++
+> >   tools/testing/vsock/util.h                         |   4 +
+> >   tools/testing/vsock/vsock_test.c                   | 195 ++++++++++
+> >   12 files changed, 1070 insertions(+), 97 deletions(-)
+> >
+>
