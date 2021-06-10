@@ -2,94 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0CEC3A2F5B
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 17:30:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C8033A2F87
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 17:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231658AbhFJPcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 11:32:39 -0400
-Received: from mail-wm1-f51.google.com ([209.85.128.51]:42697 "EHLO
-        mail-wm1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231374AbhFJPcg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 11:32:36 -0400
-Received: by mail-wm1-f51.google.com with SMTP id l7-20020a05600c1d07b02901b0e2ebd6deso6692733wms.1;
-        Thu, 10 Jun 2021 08:30:28 -0700 (PDT)
+        id S231712AbhFJPmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 11:42:23 -0400
+Received: from mail-pj1-f42.google.com ([209.85.216.42]:40794 "EHLO
+        mail-pj1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231719AbhFJPmU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 11:42:20 -0400
+Received: by mail-pj1-f42.google.com with SMTP id mp5-20020a17090b1905b029016dd057935fso3962601pjb.5;
+        Thu, 10 Jun 2021 08:40:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=oaRjenhc1WwiDGK8u6oFfetNiLL2rVHkSL9XAdr5Dbw=;
-        b=mEqyHv3MzfHQY3IEH7s9P82X1gstWrwozu0jwlEbye2p47KkY8Z7Ansypatb3ZQaQr
-         et+BAW0A0lOLVnBOw8NAC58S/IUpzAMdiHgItE2Qly7Qf04OhnBUn7jzLckO7cd3h+HP
-         99IK1H6JTJn732RAxP6LmOjxCLzvEQ0ui0JQzLc+lwfi8Nwp1zRhMKrf27Grz3pRImQX
-         NE8LeM+s2KqT2GlkuQMVynZc8RaZ6Kta3dksuzPNVAm7/zGD1oxpVMJO9eKpPoUT/M8K
-         BxGoVpd0w5tUp2GSNrOW6pzL2SOBMcW6Y77qAsMVcOD67kVHHaUqUu5K5BunQq6CCuyw
-         XOoA==
+        bh=K/k5CLOePGEq4ALoOuLfOb/BkxtInR8bR4U+kAjjuQQ=;
+        b=XpxSjuw8JtsYCP1TPKyX6Ix2eRNFOP8AB1xCWZ7HDdVOP9QGu4Y4EEnNL/IUxVE9N7
+         hfzEEYVPcNQ9RY1y5kJGc+nDM/4DmmZtjtLyYNNm7SSYi0hMIio4PQCvDNh1iSwGru+m
+         rMAm78S/ZtKOAFLCvtZbd2RAxjxjwtLyON9veD9ocPjTcYR+fgTt1aVR97R0Tl9TEpaQ
+         XU5wr8MEumLZds98j2TGCnEosXj5vUkzwje+vku6bu5GuM8dXpveP+G+MMqIFwCUN4iH
+         Gz6CANft3Odcux5UmEgS77YJxDHqWd6UU3X7Q5jTQa4lJd861GEyQwyPNEBcImCibrF5
+         3tuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=oaRjenhc1WwiDGK8u6oFfetNiLL2rVHkSL9XAdr5Dbw=;
-        b=uak3ZCDPegpCRUfh/vB/t29fMpkuPBs87dGxa+sHdCe4SrA7HU0jJnVHH+oPnMmKdT
-         EP+o69QXaYsNKvdN3/ddeNdRzm/vS8zEz6Ycg2ewBqe3N2w2FosP0Bnsp53/1q7wADVA
-         9aN5ogLBsOGflAyMLFPYvc+MoU9aQQh9+G5wCD9oynYeBx/NLeOhc+ftvpuFi2Qouj/x
-         JCVnHsLo0208JlTTW53nhPQ9tKeHiVjIQ/fUj8JZ+i5UF2CyezKtXf/4FwqviqOhMFq7
-         WakcJUiN3okxdUnHxOz8L8oyqKy5OCx3l+uBTwJdVEbpI250ETL7icOzET+jphKU5q6O
-         /fyQ==
-X-Gm-Message-State: AOAM530wDmbrCBCUQAM6fsbefENsoz44o1mjBnfdTpRFqyfTP31PYtjA
-        X7PBJeh8Qxi+HgXqGMuihts=
-X-Google-Smtp-Source: ABdhPJxKAGPcfo/suMMBuNxkPEEps4X4SvaC2vR2JcINz7wzqUUgEOPjX8FGdrDDODkZ7MECDlmrvg==
-X-Received: by 2002:a1c:f30a:: with SMTP id q10mr5650158wmq.138.1623338967558;
-        Thu, 10 Jun 2021 08:29:27 -0700 (PDT)
-Received: from localhost.localdomain (190.1.93.209.dyn.plus.net. [209.93.1.190])
-        by smtp.gmail.com with ESMTPSA id b22sm3309802wmj.22.2021.06.10.08.29.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Jun 2021 08:29:27 -0700 (PDT)
-From:   Dhiraj Shah <find.dhiraj@gmail.com>
-Cc:     find.dhiraj@gmail.com, "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shachar Raindel <shacharr@microsoft.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] function mana_hwc_create_wq leaks memory
-Date:   Thu, 10 Jun 2021 16:29:17 +0100
-Message-Id: <20210610152925.18145-1-find.dhiraj@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        bh=K/k5CLOePGEq4ALoOuLfOb/BkxtInR8bR4U+kAjjuQQ=;
+        b=kfhQSh4dbY8gR6gWJa9ACsKIywJp0oy3kyZiD4FoX27hHCVlMiVyDaUc5qClueK8fu
+         mQPUPcg7tpFg+RaREht+D/OWAHrQuGBBOn3/omM5f3bCDa2i5PEFt8hiXkOxHHNzqP6c
+         uqfeQT0uMRqSiMRaBTWZ3uPlTTYQxM9m8Ctlnar4HezOlGShkP2QD4abon/AiHOQIlBq
+         jj9XECGDaZ5dhX0o5EHDY2JDvQBmokPtXDuBnwIM1tPH/Gcr/lptu1B7LyNSrb67cwp9
+         eEOf9rHScHSOXEnGpCTjGEzGQeFEi29JAZxnoxUiiRP1JgLRyxexiOZAkD8y9Y9MgL7L
+         s1EA==
+X-Gm-Message-State: AOAM530eDoNnrHUUMNC9anny83nH0o0x6ObANOpceMIeI1KiKQJcmiB2
+        AvMtj7Yd9BNpbqMBQrcdJnY=
+X-Google-Smtp-Source: ABdhPJzTe77hC6bd/zlNCUFDIMKL1TVQbtL4RxRofNzpdiYBSrZnHdltINXesc/xg1kMF9FaaFHMRA==
+X-Received: by 2002:a17:90a:de07:: with SMTP id m7mr3999831pjv.100.1623339550713;
+        Thu, 10 Jun 2021 08:39:10 -0700 (PDT)
+Received: from WRT-WX9.. ([141.164.41.4])
+        by smtp.gmail.com with ESMTPSA id s4sm2835948pjn.31.2021.06.10.08.39.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Jun 2021 08:39:10 -0700 (PDT)
+From:   Changbin Du <changbin.du@gmail.com>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jakub Kici nski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Changbin Du <changbin.du@gmail.com>
+Subject: [PATCH] net: make get_net_ns_by_fd inline if NET_NS is disabled
+Date:   Thu, 10 Jun 2021 23:38:58 +0800
+Message-Id: <20210610153858.118822-1-changbin.du@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-memory space allocated for the queue in function
-mana_gd_create_hwc_queue is not freed during error condition.
+The function get_net_ns_by_fd() could be inlined when NET_NS is not
+enabled.
 
-Signed-off-by: Dhiraj Shah <find.dhiraj@gmail.com>
+Signed-off-by: Changbin Du <changbin.du@gmail.com>
 ---
- drivers/net/ethernet/microsoft/mana/hw_channel.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/net/net_namespace.h | 8 +++++++-
+ net/core/net_namespace.c    | 8 +-------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-index 1a923fd99990..4aa4bda518fb 100644
---- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
-+++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-@@ -501,8 +501,10 @@ static int mana_hwc_create_wq(struct hw_channel_context *hwc,
- 	*hwc_wq_ptr = hwc_wq;
- 	return 0;
- out:
--	if (err)
-+	if (err) {
-+		kfree(queue);
- 		mana_hwc_destroy_wq(hwc, hwc_wq);
-+	}
- 	return err;
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index fa5887143f0d..0a25f95691d9 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -184,6 +184,8 @@ struct net *copy_net_ns(unsigned long flags, struct user_namespace *user_ns,
+ void net_ns_get_ownership(const struct net *net, kuid_t *uid, kgid_t *gid);
+ 
+ void net_ns_barrier(void);
++
++struct net *get_net_ns_by_fd(int fd);
+ #else /* CONFIG_NET_NS */
+ #include <linux/sched.h>
+ #include <linux/nsproxy.h>
+@@ -203,13 +205,17 @@ static inline void net_ns_get_ownership(const struct net *net,
  }
  
+ static inline void net_ns_barrier(void) {}
++
++static inline struct net *get_net_ns_by_fd(int fd)
++{
++	return ERR_PTR(-EINVAL);
++}
+ #endif /* CONFIG_NET_NS */
+ 
+ 
+ extern struct list_head net_namespace_list;
+ 
+ struct net *get_net_ns_by_pid(pid_t pid);
+-struct net *get_net_ns_by_fd(int fd);
+ 
+ #ifdef CONFIG_SYSCTL
+ void ipx_register_sysctl(void);
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index 43b6ac4c4439..6a0d9583d69c 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -660,14 +660,8 @@ struct net *get_net_ns_by_fd(int fd)
+ 	fput(file);
+ 	return net;
+ }
+-
+-#else
+-struct net *get_net_ns_by_fd(int fd)
+-{
+-	return ERR_PTR(-EINVAL);
+-}
+-#endif
+ EXPORT_SYMBOL_GPL(get_net_ns_by_fd);
++#endif
+ 
+ struct net *get_net_ns_by_pid(pid_t pid)
+ {
 -- 
-2.30.1 (Apple Git-130)
+2.30.2
 
