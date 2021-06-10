@@ -2,125 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFBC03A3034
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A1B93A3038
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:08:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230467AbhFJQKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 12:10:17 -0400
-Received: from mail-mw2nam08on2075.outbound.protection.outlook.com ([40.107.101.75]:32629
-        "EHLO NAM04-MW2-obe.outbound.protection.outlook.com"
+        id S231229AbhFJQKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 12:10:36 -0400
+Received: from mail-eopbgr80113.outbound.protection.outlook.com ([40.107.8.113]:42247
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229979AbhFJQKQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Jun 2021 12:10:16 -0400
+        id S230166AbhFJQK3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 12:10:29 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L6JgmHqPYIBtIf1iA6ZxGPqg2ZAb+PU54Uj+LtkvOtoN1z/7RCgimXZNng4ppKvOBIfjzd+WX108faGmbdU4WLD4HUnbpWDt8/fvujGf8MXCuOM/b0sn/Fs26wh1oAQmLmoV209gV1yEVIWpIY5DVVVRjHMVcSwZmlNN9lW3Nt6/PER4Rfz/4zxtgql0GPb+/JFlMrTSfROz3wD8OfrcGrFVSNWCXf+f8Uae5NZ7GwHjXz+KSPgFLth3yjrokgIGOv6oWFWXfUsGopk+Vq9X3OAczgMtCagya3l2A7iRLs0MqHaQY0FBEY/YMR7HotbgC7rIUoSeWWPdtBo0nfRyJg==
+ b=dV5o9n79T0v4OUO8/+EGtqv5k40wlD7fuf8IkfRKCjO2SHeGAyaPy+imQV7efFfKiBuZxiTkn5Iae4Vxr1bbhr0ztJAQA7Z5dAsWe24NsuzDFn+r5W7bRoaz6UEK/xh2RPQhQo8lSqteExhpMmbYPgXfJ9uvO7f9EEWOo/KH2mDrbYJcUtkbB5Im0GHLXcGnHJBoi7km4/jhnVc4f6pDmOBsB7ovfaZG0CdFHcYFP8t+cCv5/CASJSWHpXYeYPFh/kVvGd5mUNJwPT9EsOQ3NYXE4zO1YgE5mpRwjOm04ye4PS4UM0S7O0/d1B1cIOUoMOFGFJKKPW8Ov9fmOZiRAg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=29GhoepTH2rjN7X+1AJEqNOtfR5d5L2secJ4ip3H53Q=;
- b=ld171HQfiIKR6WMmfTOJAhEPekRGe2O8/PDameYvpyuDOD9YrVTZ8INkl5STaI1suMr7zqJ5rjUyKELj1O110B8WNuKsIvQQJfnZyEyx8l+7QttoeUk1XV75BY2jlIYdBgSAM05mSsQyRGUNAl7zGrNHw1XquiFiSb7oBlOjJ0gC2++DgObY5rhbcEUZ7xOXDXzkAtWqcTixGExkztq++uoiqen0JGEge/ikNWf/gTajhxiygN9Xn0+2zS6AhGXGPB6m4wc604i8LiQOKqOYtfITaLOx650NWJ6Spvw2ojjqOV/qykz+kCtkvZI0CjblyHPBrguRtkQtqjmCRSTUPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=lunn.ch smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ bh=NnS5ednMH6uQ+ILIKkfff6BrBZscg0rbdVfmhDJ6K2s=;
+ b=gFRWZJtd05j9YzBf4bpnuzx8JXo5V1x7REIS/qeF8HIQZCpfilyJn3PVNqQ8Ic6Ixkbn1RXrXdWqi6x5x4SPqnIzO9aZD4B03hoNuFP+cZp8Fc2MsfCE5eABpmjYalWAwndO4wyBnQMuPPPVW+sKiVqbra6/8DcO7DOCMHxyMX1qX9ZSvi8foturQbxb01p4iOLNmSLiXCjhW0654Br0CXIMwyt39dTRnmAaKP2Pwxy4UEecY5d+62WGo/9HxdCqkHlDLrENuIZqum6zmlDyTn6S2wTNoXbzrqqWuVfzIgapsojyj1TIIV/Zk+S+X8fLknqADw10GF0y7qcX3zE7hg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=29GhoepTH2rjN7X+1AJEqNOtfR5d5L2secJ4ip3H53Q=;
- b=uF3QOJyYkoE5FaHXSjRKVG3cQq0ZjRQbGSHhZktuXK40cbPPvxuR8aVEQ6dQxysa7DgSnbG3DW0XgIzJGDHXqA7xAZSS6sskT/4UhE3Ijr3aoDcfFLoKRIFcrnxmideZPsQL9Lsi3N6BkbWU4pQKErVqki47d3lS/R+A02SfkmC78flzmTKTBcmkxeyt2dZy4T+iG7K/WJDFhhk9UtEuZpOp7Tz7iCPmaMOmCcnPkA9nzqzAaKMJIOTrEG8eAt/AdKGaRFI3mlOXBdGL3ye1K7xYJj5LX6pv5rrudpqCNTpIsNkZ9ZWtqllWpPzBiQW1oone2fjSSI2Nf//yi9+5xw==
-Received: from MWHPR17CA0067.namprd17.prod.outlook.com (2603:10b6:300:93::29)
- by MWHPR12MB1502.namprd12.prod.outlook.com (2603:10b6:301:10::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21; Thu, 10 Jun
- 2021 16:08:18 +0000
-Received: from CO1NAM11FT011.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:93:cafe::5) by MWHPR17CA0067.outlook.office365.com
- (2603:10b6:300:93::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend
- Transport; Thu, 10 Jun 2021 16:08:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT011.mail.protection.outlook.com (10.13.175.186) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4219.21 via Frontend Transport; Thu, 10 Jun 2021 16:08:18 +0000
-Received: from [10.26.49.10] (172.20.187.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Jun
- 2021 16:08:15 +0000
-Subject: Re: [PATCH v1 1/1] net: usb: asix: ax88772: manage PHY PM from MAC
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-CC:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        <kernel@pengutronix.de>, <linux-kernel@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-References: <20210610142009.16162-1-o.rempel@pengutronix.de>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <852dd4cf-206a-ff36-e219-3454c419a126@nvidia.com>
-Date:   Thu, 10 Jun 2021 17:08:13 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ bh=NnS5ednMH6uQ+ILIKkfff6BrBZscg0rbdVfmhDJ6K2s=;
+ b=fDt3RqCrFFsdZ7zcEAxCZaPCy8RaiD/5xqZ9GVmqKSTYuLRQIS28gshtCbwWCOjfmG39XoD3x/L5qj8tIaYQYOoMmCQtpC+9wGysJcICz0ieTqrGxfCzrA+92KbRUDxddVs+9pIXZS/81hfEOEfXAo8kkVAh1xJBWL6NMpD2UJQ=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
+ HE1P190MB0428.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:5c::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4195.27; Thu, 10 Jun 2021 16:08:31 +0000
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a%6]) with mapi id 15.20.4219.023; Thu, 10 Jun 2021
+ 16:08:31 +0000
+Date:   Thu, 10 Jun 2021 19:08:28 +0300
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Taras Chornyi <tchornyi@marvell.com>, linux-kernel@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Vadym Kochan <vkochan@marvell.com>
+Subject: Re: [PATCH v2 0/3] net: marvell: prestera: add LAG support
+Message-ID: <20210610160828.GB29315@plvision.eu>
+References: <20210610154311.23818-1-vadym.kochan@plvision.eu>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210610154311.23818-1-vadym.kochan@plvision.eu>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Originating-IP: [217.20.186.93]
+X-ClientProxiedBy: AM0PR01CA0120.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:168::25) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:7:56::28)
 MIME-Version: 1.0
-In-Reply-To: <20210610142009.16162-1-o.rempel@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from plvision.eu (217.20.186.93) by AM0PR01CA0120.eurprd01.prod.exchangelabs.com (2603:10a6:208:168::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.20 via Frontend Transport; Thu, 10 Jun 2021 16:08:30 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8d352902-8d82-4bb7-a1f5-08d92c29f61a
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1502:
-X-Microsoft-Antispam-PRVS: <MWHPR12MB1502F972810B0C55832EE7C9D9359@MWHPR12MB1502.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-MS-Office365-Filtering-Correlation-Id: 19206592-d135-4852-bacc-08d92c29fd96
+X-MS-TrafficTypeDiagnostic: HE1P190MB0428:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1P190MB0428C0D12DCE89B9055E78E095359@HE1P190MB0428.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HkHOG6xM/11kpfPVglojlATbQOpDUwPiXLN+Af3nokWYDPThduzmqbddqK7RtGLYOt6sqIyKd6asoBh1X+K4oS4zsqrPU9VElDpncSyAPdKdAD2VatFGb1cuyRYjFfmR4YfB54xx90oouniHVwGy5LuBwZSFoa/LLcZykDggdjzZ2YVz/YZ5pZpyikCIS/PeYQ0xubOMeheQUbkG+DFKjPQFaxAgxHaHjxPWuRzFO0hfuRJmG9OgzQ43fhH/4J0JJjZAJSwi3Zen0zjjIsbEq3ms024BOX2gVEyelL6TizM5issWfme0rteJ86kxpoA3gea7kp3H4enl/8rtNCygGz5w6jvj9KDnTzJOSpm5J/iz0evgsJ7+b30eEP7nL1QwR+Qw7tB2qN7dYYXPpdPleoKbcB7hcfAWIkWQMMTzhltAA7aW+16ivOSRLY3fu9aP4Lo5loD2RG73fEYeNG9H2r6N/c1hb/l1sSzLJw1p3Rh3qc0bDDrl+y5WpsN8BhN6VUBvovad29BVJCnKB9dQ8NqAb7szewSUdNsfmW5DD18O8G3FOCDmBDnZJP6eK0R0x6fDnwBD5q5mj0p4O6PwyLXdJ+qJWyQslZQ+xtDu/+/85LjlgPrWSU5wDAJThqj+SR2EsIAlgSaK+TOHGTeJntpjUW23GVGVChsO/dsUQMjACdltYsVh3fj/XlO2jm3C
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(39860400002)(136003)(346002)(376002)(46966006)(36840700001)(36860700001)(53546011)(36906005)(8676002)(16576012)(110136005)(316002)(86362001)(31686004)(426003)(54906003)(4326008)(186003)(26005)(8936002)(2616005)(16526019)(5660300002)(336012)(4744005)(478600001)(47076005)(7636003)(70586007)(36756003)(70206006)(7416002)(83380400001)(2906002)(356005)(31696002)(82310400003)(82740400003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2021 16:08:18.2008
+X-Microsoft-Antispam-Message-Info: y7E08zoH1fbRCtEp69SkcpWSG954YBzesbxOUuJEDKKXNHKCSreN9EhHApbA0p8xQW5NnzOZUASFObnG81mX9BXm/2Pg6/eR+4GrEahG5LxB6/EQj7ZxZaCVKlUdGqI0daQiLMZk48gIa9OdnYOd1IFXoPHUKPgQa1X28r/Sxj5LUfzP6ZD54FNdi1P8rtsEHoCJiUyRIUX47Agx73GKwM1UX+2E/idGskn7uHvtD3Jsd6/z4y5iuw+P6Ef4NYMbQd/Yrwvj5MmXjgY0g7TPLXRdBggs0lgrUrs4nt+alRjh0UeQJLeRX3995rCqp3tScM4nIdLeeQxcnU+GZWCW+ozcslaD2W/ev7rvz66ytuByUSm/5PfDl6mxM/qEN7VvRcwrwhKc8zjBs71X3fSEM6m+E5zLBQ21Sp++QqK3kRU7N7RvTfryIposNLRKhdecSyFWWxkTzsLRP7ZEM6kwykzHEMLFwW2zH3j+HftZRu4t4PNA4dc5R46pha2PNjukUVk1mftX4a76B4zCQgVHd22aSl+UmgG1w8UrNH9afTv0amCHUqXXJHkTis/7Q/A2e0N4zSCX826XjLxxo8004KUFR68MIx/xRZQyy258UMFZv8vdcB36u61ZN6Ip6DiDumwYk+XRfWmEC3df8dsSS6t2UMOcezAgaALFmPRmeSu5ZQnsICKqePBmVIqruDm6oF3a6lrYB3Pv65ytenNIzPeaGHjdclqNlGuTM9GCZio6ZyndR8p6tW5REk/8oZWw3e2eCKraVgu+VBaVWgvoiw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(346002)(136003)(366004)(39830400003)(376002)(110136005)(8936002)(26005)(36756003)(54906003)(8676002)(16526019)(956004)(186003)(8886007)(4326008)(44832011)(316002)(38350700002)(38100700002)(52116002)(966005)(478600001)(5660300002)(1076003)(86362001)(66946007)(66556008)(66476007)(55016002)(2616005)(33656002)(83380400001)(2906002)(7696005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?6mPBVCQ4TOIyoe/CuuRiPpYyqI1MqVITqX0I/z6zYXzUszNDHBRPFCGNlUMa?=
+ =?us-ascii?Q?g9LtM3MGWx5Dg6zAIEZwz61RxfiTrBG/ipenTnldEq7lYhi0hRdWy9W1u/P6?=
+ =?us-ascii?Q?pdl/G0JF/H40oizW41dn93F12fTmcvmqdOhYZupFYkOsboQSz3+Zg350I+eu?=
+ =?us-ascii?Q?j+WcBhak6aRPn/O9wBlg3wVWw608Rbs3L3O5CyKyNd42YNV/KcQbBpeuTLtb?=
+ =?us-ascii?Q?AB3g/N4AJgU8EXQGE235QuS1VLjYvyqQ1BSiIrCK0bEYVBhGjaEa4qSO3YQG?=
+ =?us-ascii?Q?3/9ltM5EKWkVVnMSRrdxS7JdenmW2GrgRWDPZqgDBADfSOgsXT/aFZMpGrqL?=
+ =?us-ascii?Q?8Wgzp1Rr24FgHseGMl841ZR2VFHjcoNGRcr9Wh9QS8gD8Fogw5anh8W9koG3?=
+ =?us-ascii?Q?CvJRfKyN2RFZD0X6iybVGSOFjU9Hz3f/nMCeRooCqFZSVxt3AliSzTSKoGQc?=
+ =?us-ascii?Q?xH5sER8z3U1vMAR9B/33HpVl+d4ld0nyu+F1zdMQQM2OEnpgx6jzHuiZQxl2?=
+ =?us-ascii?Q?tGrvzthOuLFBHbV+Ng9ULXf4gVWh10zrWRh3ubWg9pORl63oSa3LpLXQ8vqK?=
+ =?us-ascii?Q?oGDE1XOL/YUFlQ10vROwXaLAQxHLSs0kBlwA9mof1G10M7XDbhceS4pvV3UJ?=
+ =?us-ascii?Q?PaQZAGko9TIKRG+N1ORCULlnS0D7uLQki9QcB4snl6fFJC7JpOZMShlbTkL2?=
+ =?us-ascii?Q?zBo6EaPdyplbFftmo1Jr7dIgGna7MIz4tmijsOqqxF+DS/dZ68L1CBPrrqOa?=
+ =?us-ascii?Q?oUymwBFO1DwBGSruXb8n99wp4/SO7YGbqYqAuV8r4po8GQYG3X28Kn3ERHDa?=
+ =?us-ascii?Q?rnAHMFCZ2bOwyk9Sj0rLLBKC3Nu0oosLBYqLAapsNg5zyuJhPxyyU7dsjtgN?=
+ =?us-ascii?Q?U1HIFdtpv1uaufDVBtZTkSH/v6QiEoeuDRA206JfjpcCtotbGPKplw3xmn1A?=
+ =?us-ascii?Q?M8LWcz/C7HSqYUgyy7xBbzarfIWmVFGzp5WS4/ero/g+u0qzAkEdYySba5VN?=
+ =?us-ascii?Q?/YcWrPmC0qUCofjUTpfl/KT1AT3u3lP+Lpe08MNo3v+V7IefVMaySuvDsL4E?=
+ =?us-ascii?Q?qkU7UK3GE7DYZFjl7cTU9uUZ5Ugi5pjeSccJ9YdVgiQcofA6gebOGE7u7qhX?=
+ =?us-ascii?Q?meMJsOClJC6u/4quQ6vzZYYeHAIqlis2lYWiI/5X9yFbcpBUsbwVFKwE8bgL?=
+ =?us-ascii?Q?nAA/SecCncGKCTVU5kOhkQjyT/C8G8+H6Y2w1EK1VYMG4MkWW/GfLE4ockru?=
+ =?us-ascii?Q?FMmIChxdDRzD+jeRgVTpv65EEv6gQVUWD/vBpIRxeCA6eV4aLd0dJuHLcHQR?=
+ =?us-ascii?Q?F2sw9Y6z3KOOoLTu7lOiNu/R?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19206592-d135-4852-bacc-08d92c29fd96
+X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2021 16:08:31.0600
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d352902-8d82-4bb7-a1f5-08d92c29f61a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT011.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1502
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qJ52z+BXBMpaZNMnHHQiYREj1veBhWLgVbqOCQf/FeMgXnuoa2wMG41YHT9uKQQLaj6zuEVRtuOUcqDMgA+R30OvGJIYZfyLQ0r6SQAUl3o=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0428
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Sorry, I did not mark it with a "net-next", will resend.
 
-
-On 10/06/2021 15:20, Oleksij Rempel wrote:
-> Take over PHY power management, otherwise PHY framework will try to
-> access ASIX MDIO bus before MAC resume was completed.
+On Thu, Jun 10, 2021 at 06:43:08PM +0300, Vadym Kochan wrote:
+> From: Vadym Kochan <vkochan@marvell.com>
 > 
-> Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Reported-by: Jon Hunter <jonathanh@nvidia.com>
-> Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/usb/asix_devices.c | 43 ++++++++++------------------------
->  1 file changed, 12 insertions(+), 31 deletions(-)
-
-
-Thanks! Works for me ...
-
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-
-Cheers
-Jon
-
--- 
-nvpublic
+> The following features are supported:
+> 
+>     - LAG basic operations
+>         - create/delete LAG
+>         - add/remove a member to LAG
+>         - enable/disable member in LAG
+>     - LAG Bridge support
+>     - LAG VLAN support
+>     - LAG FDB support
+> 
+> Limitations:
+> 
+>     - Only HASH lag tx type is supported
+>     - The Hash parameters are not configurable. They are applied
+>       during the LAG creation stage.
+>     - Enslaving a port to the LAG device that already has an
+>       upper device is not supported.
+> 
+> Changes extracted from:
+> 
+>     https://lkml.org/lkml/2021/2/3/877
+> 
+> and marked with "v2".
+> 
+> v2:
+> 
+>     There are 2 additional preparation patches which simplifies the
+>     netdev topology handling.
+> 
+>     1) Initialize 'lag' with NULL in prestera_lag_create()             [suggested by Vladimir Oltean]
+> 
+>     2) Use -ENOSPC in prestera_lag_port_add() if max lag               [suggested by Vladimir Oltean]
+>        numbers were reached.
+> 
+>     3) Do not propagate netdev events to prestera_switchdev            [suggested by Vladimir Oltean]
+>        but call bridge specific funcs. It simplifies the code.
+> 
+>     4) Check on info->link_up in prestera_netdev_port_lower_event()    [suggested by Vladimir Oltean]
+> 
+>     5) Return -EOPNOTSUPP in prestera_netdev_port_event() in case      [suggested by Vladimir Oltean]
+>        LAG hashing mode is not supported.
+> 
+>     6) Do not pass "lower" netdev to bridge join/leave functions.      [suggested by Vladimir Oltean]
+>        It is not need as offloading settings applied on particular
+>        physical port. It requires to do extra upper dev lookup
+>        in case port is in the LAG which is in the bridge on vlans add/del.
+> 
+> Serhiy Boiko (1):
+>   net: marvell: prestera: add LAG support
+> 
+> Vadym Kochan (2):
+>   net: marvell: prestera: move netdev topology validation to
+>     prestera_main
+>   net: marvell: prestera: do not propagate netdev events to
+>     prestera_switchdev.c
+> 
+>  .../net/ethernet/marvell/prestera/prestera.h  |  30 +-
+>  .../ethernet/marvell/prestera/prestera_hw.c   | 180 +++++++++++-
+>  .../ethernet/marvell/prestera/prestera_hw.h   |  14 +
+>  .../ethernet/marvell/prestera/prestera_main.c | 267 +++++++++++++++++-
+>  .../marvell/prestera/prestera_switchdev.c     | 163 ++++++-----
+>  .../marvell/prestera/prestera_switchdev.h     |   7 +-
+>  6 files changed, 573 insertions(+), 88 deletions(-)
+> 
+> -- 
+> 2.17.1
+> 
