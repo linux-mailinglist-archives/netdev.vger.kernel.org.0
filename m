@@ -2,171 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 289403A32E1
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3073A32E9
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:18:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231262AbhFJSSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 14:18:11 -0400
-Received: from mail-ed1-f46.google.com ([209.85.208.46]:35639 "EHLO
-        mail-ed1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231251AbhFJSSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:18:05 -0400
-Received: by mail-ed1-f46.google.com with SMTP id ba2so32391030edb.2
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 11:15:57 -0700 (PDT)
+        id S230216AbhFJSUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 14:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40452 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229823AbhFJSUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:20:20 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE27DC061760;
+        Thu, 10 Jun 2021 11:18:08 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ci15so588838ejc.10;
+        Thu, 10 Jun 2021 11:18:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SucwMnq9NJLV1ff/Z+/DSiytMZwr1VyFk3b3FwGhQRg=;
-        b=hx94KNHTsdogXEP9flLYsQCDChzXjwNfj98flakoWVT20um90ULvpjl7FjZ43YR2J3
-         v0GV/1nB8irsbHUXBIWFZh1BlIsCgzZN0Aw0mrwdc9f6G2oqnrMU9tXiYFxC2G3yfO1l
-         lKrUXNNqWPzFsOdiW2zr+6eIuO8emiTpZfCddDqRevbkfdT7gdwg0As4M5R0nOhCFYWj
-         CVfpHw3BSSuOlpofJNp5D/cKpSAHFxepH07fId7IqXHi5r/9foPcwlrUW+rIMsmds31c
-         O80QCIYkh72ixZ9z0HDL/7P0kozfYIa/nyxLawhMoeHtpIoSvobBZQm/GwiAVgdtc2/v
-         CJdw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ddkMOrU72AYUM53Ybp4/qMMNjLFPCiMpCnph8t5gs0c=;
+        b=OsNugS7dh+vxYSmZk4cyGBinxIS6MlfaFn3nrlIlbVdCtQwoXJOc+FtZkwwh+nVLSi
+         iQ5fmBjT1iTgmvCk/O3W4nGS1FqhZklUMXTI0iMNcm3b0rMaCgLtkElGgOxqIo1xDVXj
+         7NirYD8r2V2r7bXlbP2fji+ocwvhoGI94aihg7cq+6Bqlfpz1qrD2XvqJRdt3uJgaS4q
+         lfG1sHa4xb+IYU6CgwWazplxyG6JQkH7CwY6LTgETZdyqDyRLmKttnuzG/Lbaod26wGi
+         xyM1+M9OLFcvKtMgJxyTTlo+RnHNYYwHxH+CWzApZzd1+DqHelUySA0LnOvrzDPqB+aY
+         ACnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SucwMnq9NJLV1ff/Z+/DSiytMZwr1VyFk3b3FwGhQRg=;
-        b=OY5rhPpz+B/Njv4aexVBzQ8JcoAr0jTz6D2ueIeHsLQ0a5DR0edB908EOkmiPwxkBG
-         4hCCnhGPXA5k8s1OdgyZJMlsclyxYvOYK+YVuPNY07wlFf65J0TbqEjFIeq1tqNKE814
-         Dh3tJRE83WXC+nvN8aSnFjrpS9DBxIwd0thuOZHdCQDjYaYl/AQBhmuXQ0qduDao45Q+
-         WcuGQaSp6evcgxmaJKdYG8KvsT8ZwrtodpBXS6JCYinysxqjNN0PeyAdk2VjurazrJfi
-         lM0TKALysl6EGFLD5vXhVaF5nnV3VgWRXIUC/0hU+A9hcAlcxf2H7M7s3RSDAkGfVuVS
-         AyPA==
-X-Gm-Message-State: AOAM530pjAfVtnX45aQY9ohwi/jDcWYo045TqZcOM89fSYAc/JAZrThV
-        c3JLsw9w6KKQXfeR2ZITfgU=
-X-Google-Smtp-Source: ABdhPJx0SpSRS9nxlVMDo/lPdUAVH/whwoVSwHPKtR33Y2dO6Ijatmo5+CFCLWvpvsDxxnVFFfk85Q==
-X-Received: by 2002:a05:6402:2317:: with SMTP id l23mr753162eda.265.1623348897286;
-        Thu, 10 Jun 2021 11:14:57 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id dh18sm1705660edb.92.2021.06.10.11.14.53
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ddkMOrU72AYUM53Ybp4/qMMNjLFPCiMpCnph8t5gs0c=;
+        b=JnqV/OVRS21+GBqcFQBgoStCZLEzSgqlz52Jqlefom8p249FrHGWdUrB7GzEXfWLya
+         b+9oQOgBNzcWOB6jVMPUUoTVsYWQklcbximI2tk9jU5Z3tfOHtkAQlMaSxGC+WhXt8mX
+         eXKMJbOl0eCTdf1Ta+r6Pkkmi1BN7Pjtt8h0HIPwBRpc8MH6Uc20O/vwHoe22UmRd3xO
+         nEAE+aVmqAzOvyGnZRwbcqbFZK67XpeOGum+E3Ze/bZu/Gsp0WSO6plzaFhfFrB7ooE8
+         4runASuW1+926bhr7D25GJm0Y41DFncyO/oIVkfz+xCRSer2ia8ni/ogvytB72gZaDhy
+         gqiw==
+X-Gm-Message-State: AOAM531N6roUe2dMC1wiaURggIjsTHuWOiVPcv+QlzX3VvwFCEkjcvYk
+        S0zjfb7kTHRtmylXyfiCaiI=
+X-Google-Smtp-Source: ABdhPJzja1YvgQANCb3NHskptQhcPJ2aCYu7SRvTxOGJTCRnFCOq+irWeDpyPVkPpNFgfOvvnZ+Jbw==
+X-Received: by 2002:a17:906:b7d7:: with SMTP id fy23mr863618ejb.49.1623349087474;
+        Thu, 10 Jun 2021 11:18:07 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id p5sm1278266ejm.115.2021.06.10.11.18.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 11:14:55 -0700 (PDT)
+        Thu, 10 Jun 2021 11:18:04 -0700 (PDT)
+Date:   Thu, 10 Jun 2021 21:18:03 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
         Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 13/13] net: dsa: sja1105: plug in support for 2500base-x
-Date:   Thu, 10 Jun 2021 21:14:10 +0300
-Message-Id: <20210610181410.1886658-14-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210610181410.1886658-1-olteanv@gmail.com>
-References: <20210610181410.1886658-1-olteanv@gmail.com>
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v3 4/9] net: phy: micrel: apply resume errata
+ workaround for ksz8873 and ksz8863
+Message-ID: <20210610181803.cnfwrqh2lorwqlbp@skbuf>
+References: <20210526043037.9830-1-o.rempel@pengutronix.de>
+ <20210526043037.9830-5-o.rempel@pengutronix.de>
+ <20210526224329.raaxr6b2s2uid4dw@skbuf>
+ <20210610114920.w5xyijxe62svzdfp@pengutronix.de>
+ <20210610130445.l5iiswxpzpez25cv@skbuf>
+ <20210610132505.wgv6454sfahqmd27@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210610132505.wgv6454sfahqmd27@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Thu, Jun 10, 2021 at 03:25:05PM +0200, Oleksij Rempel wrote:
+> Yes, this issue was seen  at some early point of development (back in 2019)
+> reproducible on system start. Where switch was in some default state or
+> on a state configured by the bootloader. I didn't tried to reproduce it
+> now. With other words, there is no need to provide global power
+> management by the DSA driver to trigger it.
 
-The MAC treats 2500base-x same as SGMII (yay for that) except that it
-must be set to a different speed.
-
-Extend all places that check for SGMII to also check for 2500base-x.
-
-Also add the missing 2500base-x compatibility matrix entry for SJA1110D.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-v1->v2:
-- add the 2500base-x check in one place where it was missing (before
-  mdio_device_create)
-- remove it from a few places where it is no longer necessary now that
-  we check more generically for the presence of priv->xpcs[port]
-
- drivers/net/dsa/sja1105/sja1105_main.c | 13 ++++++++++++-
- drivers/net/dsa/sja1105/sja1105_mdio.c |  3 ++-
- drivers/net/dsa/sja1105/sja1105_spi.c  |  2 ++
- 3 files changed, 16 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 4392ffcfa8a0..9881ef134666 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1045,6 +1045,9 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
- 	case SPEED_1000:
- 		speed = priv->info->port_speed[SJA1105_SPEED_1000MBPS];
- 		break;
-+	case SPEED_2500:
-+		speed = priv->info->port_speed[SJA1105_SPEED_2500MBPS];
-+		break;
- 	default:
- 		dev_err(dev, "Invalid speed %iMbps\n", speed_mbps);
- 		return -EINVAL;
-@@ -1059,6 +1062,8 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
- 	 */
- 	if (priv->phy_mode[port] == PHY_INTERFACE_MODE_SGMII)
- 		mac[port].speed = priv->info->port_speed[SJA1105_SPEED_1000MBPS];
-+	else if (priv->phy_mode[port] == PHY_INTERFACE_MODE_2500BASEX)
-+		mac[port].speed = priv->info->port_speed[SJA1105_SPEED_2500MBPS];
- 	else
- 		mac[port].speed = speed;
- 
-@@ -1171,6 +1176,10 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
- 	if (mii->xmii_mode[port] == XMII_MODE_RGMII ||
- 	    mii->xmii_mode[port] == XMII_MODE_SGMII)
- 		phylink_set(mask, 1000baseT_Full);
-+	if (priv->info->supports_2500basex[port]) {
-+		phylink_set(mask, 2500baseT_Full);
-+		phylink_set(mask, 2500baseX_Full);
-+	}
- 
- 	bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
- 	bitmap_and(state->advertising, state->advertising, mask,
-@@ -1931,7 +1940,9 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 		if (!phylink_autoneg_inband(mode)) {
- 			int speed = SPEED_UNKNOWN;
- 
--			if (bmcr[i] & BMCR_SPEED1000)
-+			if (priv->phy_mode[i] == PHY_INTERFACE_MODE_2500BASEX)
-+				speed = SPEED_2500;
-+			else if (bmcr[i] & BMCR_SPEED1000)
- 				speed = SPEED_1000;
- 			else if (bmcr[i] & BMCR_SPEED100)
- 				speed = SPEED_100;
-diff --git a/drivers/net/dsa/sja1105/sja1105_mdio.c b/drivers/net/dsa/sja1105/sja1105_mdio.c
-index 9f894efa6604..b59a1bb63d65 100644
---- a/drivers/net/dsa/sja1105/sja1105_mdio.c
-+++ b/drivers/net/dsa/sja1105/sja1105_mdio.c
-@@ -427,7 +427,8 @@ static int sja1105_mdiobus_pcs_register(struct sja1105_private *priv)
- 		if (dsa_is_unused_port(ds, port))
- 			continue;
- 
--		if (priv->phy_mode[port] != PHY_INTERFACE_MODE_SGMII)
-+		if (priv->phy_mode[port] != PHY_INTERFACE_MODE_SGMII &&
-+		    priv->phy_mode[port] != PHY_INTERFACE_MODE_2500BASEX)
- 			continue;
- 
- 		mdiodev = mdio_device_create(bus, port);
-diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index e6c2cb68fcc4..53c2213660a3 100644
---- a/drivers/net/dsa/sja1105/sja1105_spi.c
-+++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -939,6 +939,8 @@ const struct sja1105_info sja1110d_info = {
- 				   false, false, false, false, false, false},
- 	.supports_sgmii		= {false, true, true, true, true,
- 				   false, false, false, false, false, false},
-+	.supports_2500basex     = {false, false, false, true, true,
-+				   false, false, false, false, false, false},
- 	.internal_phy		= {SJA1105_NO_PHY, SJA1105_NO_PHY,
- 				   SJA1105_NO_PHY, SJA1105_NO_PHY,
- 				   SJA1105_NO_PHY, SJA1105_PHY_BASE_T1,
--- 
-2.25.1
-
+If you're sure about that then add it to the commit message or comments,
+since this is not what the ERR description says.
