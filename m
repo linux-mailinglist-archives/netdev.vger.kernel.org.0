@@ -2,293 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B896A3A324B
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 19:39:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC3B03A322E
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 19:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230435AbhFJRlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 13:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
+        id S230444AbhFJRhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 13:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbhFJRlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 13:41:00 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6337AC061574;
-        Thu, 10 Jun 2021 10:38:50 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id c5so3220745wrq.9;
-        Thu, 10 Jun 2021 10:38:50 -0700 (PDT)
+        with ESMTP id S230479AbhFJRhG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 13:37:06 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFD4C0617AF
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:35:09 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id a11so3208912wrt.13
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:35:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tUXqSeEZXltOhPTHiAdqKtvdjZ0xLSS8jzn9c1dkxjY=;
-        b=pjfRdjx4L/QnD58wtcJ6TM/aLvwpHmU8YQJfsqmj8xb85HSGjgBfshNjR/j9kr4yVj
-         OMYST3l5aaJQ1VCSksnoUJfqWNPfT4epA7pIrymzyp6AZWuDodv1/WXkF74xTrD+4rx+
-         MEWljkHKYzkZyNj/naudRBHTLluWido3OoIKMQGZtqj+u3DUETqIAMedUNDhFjfIiGDy
-         mm6QfrmcSGDNqvZH6R/yE0SFsTHRbGVn15qSzvSS4i76ObSDml5+0IkxMhBQm/85sRuP
-         B2NsbCtgPsq3WceqC+hzgWSSp6K/LBSjVbfVGEn7UOVeuhT4ybflbbnXLVXSmjsiJdzI
-         LCCQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=4M1DTS/TUH4XveU37GHDSqJrM0/UlPwmrZnAJgu64K0=;
+        b=REqtCeCup9q4KYbh/dTDqS5jaD2az2csqn+hBszw7/j1U5daMNrhWb/YRbmsr0X2z8
+         MU7tV8J5y/oJX/MNcPgZS3DMk4/lYVS87Zi88yorr5FRgDvlTzqiuxUN3KsVaFAOBM+B
+         Fsq6G9ymEod5zkaRDRv6gU+mWYayGS36IoiAedTnjZDL+mBH8lJGxGKqoyI93WZhr8oC
+         UC4g4ER94WvqfJmFlZzu+eLht5yE7ZfcU2fMbXfw4GQl0G4vd5C8T/xj4TxTwQtaoYB3
+         Smma9jNmzmm8nf2I90U3m9BOic2UIQmgM5JSpZP0HeONfbiCabyxIpwy6elmv8VMG0Eb
+         Jj6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tUXqSeEZXltOhPTHiAdqKtvdjZ0xLSS8jzn9c1dkxjY=;
-        b=d06oyO8dvSjkHi/e1fwh2b6aWG/QFLvF9RnYoCA26MFUGTOOLOmTg+u3MPU1MgtCBa
-         7km0gVSaOvWj+HuLAVYbQ/sXh3AhTS8gCKrjysAN9Kxt4NB70YqEEIPTHU7Xo80SucEH
-         T3dbM/xcVs/tbbaTZSaLgAf3vrR+ETu1yP7Fux6fon/OAtjHDqTXNZmb/v52u3FyQSXv
-         ALB0Zn2kzS4x0+nzaxqcFcGmDQUPsljCwCyoUSx6Idoo6veFEG6vl0nFmojwh7jqIt8g
-         ZXL9Aj6AGWKy4xWmXvXpjomdPderrpYwzDRARlBUBkv4C49QsmlnF3OKP9fAaRh4VWHs
-         H+Qg==
-X-Gm-Message-State: AOAM5303wy736Kr3AB7Sv1KTdywhUa/WcDDGlAiYJnKXGLOL4nDLudpA
-        1RLjUu0g4r74TKq7ivRuFST6F/nCZsDAqQ==
-X-Google-Smtp-Source: ABdhPJyW3em1GAoiY1cGwoDdGbzEerrtlDApG0CGW8yDf/p5nnK70PRh4ID0ShpihZuNsXMyeFUd5g==
-X-Received: by 2002:adf:de03:: with SMTP id b3mr6724701wrm.15.1623346728707;
-        Thu, 10 Jun 2021 10:38:48 -0700 (PDT)
-Received: from [192.168.181.98] (228.18.23.93.rev.sfr.net. [93.23.18.228])
-        by smtp.gmail.com with ESMTPSA id f14sm9074150wmq.10.2021.06.10.10.38.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 10:38:48 -0700 (PDT)
-Subject: Re: [PATCH v7 bpf-next 02/11] tcp: Add num_closed_socks to struct
- sock_reuseport.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Cc:     Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210521182104.18273-1-kuniyu@amazon.co.jp>
- <20210521182104.18273-3-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <942283cd-4b8a-5127-b047-0e26031adc6c@gmail.com>
-Date:   Thu, 10 Jun 2021 19:38:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
-MIME-Version: 1.0
-In-Reply-To: <20210521182104.18273-3-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4M1DTS/TUH4XveU37GHDSqJrM0/UlPwmrZnAJgu64K0=;
+        b=fGqwsaQOnAJgoRnXBDo+g66FBLuTqwsX5/C50S9cYNl72w2Bv1/8KVcC1oA4dwtYvS
+         SjlVUVk2riX6IcMaxrWMwn5RZldaanT/SCrJcQ9lqtxss49ncm8jX8PJfVOplSueAHD5
+         tYSKXvbmziTFhaifukDahvp210XK+MmjYNBTXsFWrbSvYFjfUe46AWTtxpOg4LpeHtlf
+         5uNvTcWqfJemdwouuwXDxqpydc+b2sbRSyQnAkAQ4YB8ljdZV8XxIi5Hh5Bufznn+Kaz
+         rEfj/PN4tvQLHTBNOltSPA8MZaR8ZnFS7pNZvFXp9D+SdCdXK/dWEs9aKjC83PwfH+9F
+         yHyg==
+X-Gm-Message-State: AOAM5300Q0ftt6Kl7Wgy/G1ytqxBeh5EWVRrqG6Ajq/FgW165uwZUggZ
+        Ju+hdqcbEAX14XNlD7o/WJv4Ug==
+X-Google-Smtp-Source: ABdhPJyovkII9B1N/0HNvGQMhkLTvxHdNB8EP6kQq49UWr0hprRbT3cjfcwG3U9lVkjADLEyNcEzHA==
+X-Received: by 2002:a5d:5307:: with SMTP id e7mr6848077wrv.300.1623346507967;
+        Thu, 10 Jun 2021 10:35:07 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:e0a:82c:5f0:85ed:406e:1bc4:a268])
+        by smtp.gmail.com with ESMTPSA id x3sm9921356wmj.30.2021.06.10.10.35.06
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 10 Jun 2021 10:35:07 -0700 (PDT)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, johannes.berg@intel.com, leon@kernel.org,
+        m.chetan.kumar@intel.com, parav@nvidia.com,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Subject: [PATCH net-next v2 1/3] rtnetlink: add alloc() method to rtnl_link_ops
+Date:   Thu, 10 Jun 2021 19:44:47 +0200
+Message-Id: <1623347089-28788-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Johannes Berg <johannes.berg@intel.com>
 
+In order to make rtnetlink ops that can create different
+kinds of devices, like what we want to add to the WWAN
+framework, the priv_size and setup parameters aren't quite
+sufficient. Make this easier to manage by allowing ops to
+allocate their own netdev via an @alloc method that gets
+the tb netlink data.
 
-On 5/21/21 8:20 PM, Kuniyuki Iwashima wrote:
-> As noted in the following commit, a closed listener has to hold the
-> reference to the reuseport group for socket migration. This patch adds a
-> field (num_closed_socks) to struct sock_reuseport to manage closed sockets
-> within the same reuseport group. Moreover, this and the following commits
-> introduce some helper functions to split socks[] into two sections and keep
-> TCP_LISTEN and TCP_CLOSE sockets in each section. Like a double-ended
-> queue, we will place TCP_LISTEN sockets from the front and TCP_CLOSE
-> sockets from the end.
-> 
->   TCP_LISTEN---------->       <-------TCP_CLOSE
->   +---+---+  ---  +---+  ---  +---+  ---  +---+
->   | 0 | 1 |  ...  | i |  ...  | j |  ...  | k |
->   +---+---+  ---  +---+  ---  +---+  ---  +---+
-> 
->   i = num_socks - 1
->   j = max_socks - num_closed_socks
->   k = max_socks - 1
-> 
-> This patch also extends reuseport_add_sock() and reuseport_grow() to
-> support num_closed_socks.
-> 
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
-> ---
->  include/net/sock_reuseport.h |  5 ++-
->  net/core/sock_reuseport.c    | 76 +++++++++++++++++++++++++++---------
->  2 files changed, 60 insertions(+), 21 deletions(-)
-> 
-> diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
-> index 505f1e18e9bf..0e558ca7afbf 100644
-> --- a/include/net/sock_reuseport.h
-> +++ b/include/net/sock_reuseport.h
-> @@ -13,8 +13,9 @@ extern spinlock_t reuseport_lock;
->  struct sock_reuseport {
->  	struct rcu_head		rcu;
->  
-> -	u16			max_socks;	/* length of socks */
-> -	u16			num_socks;	/* elements in socks */
-> +	u16			max_socks;		/* length of socks */
-> +	u16			num_socks;		/* elements in socks */
-> +	u16			num_closed_socks;	/* closed elements in socks */
->  	/* The last synq overflow event timestamp of this
->  	 * reuse->socks[] group.
->  	 */
-> diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-> index b065f0a103ed..079bd1aca0e7 100644
-> --- a/net/core/sock_reuseport.c
-> +++ b/net/core/sock_reuseport.c
-> @@ -18,6 +18,49 @@ DEFINE_SPINLOCK(reuseport_lock);
->  
->  static DEFINE_IDA(reuseport_ida);
->  
-> +static int reuseport_sock_index(struct sock *sk,
-> +				struct sock_reuseport *reuse,
-> +				bool closed)
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+---
+ v2: no change
 
+ include/net/rtnetlink.h |  8 ++++++++
+ net/core/rtnetlink.c    | 19 ++++++++++++++-----
+ 2 files changed, 22 insertions(+), 5 deletions(-)
 
-const struct sock_reuseport *reuse
+diff --git a/include/net/rtnetlink.h b/include/net/rtnetlink.h
+index 479f60e..384e800 100644
+--- a/include/net/rtnetlink.h
++++ b/include/net/rtnetlink.h
+@@ -37,6 +37,9 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
+  *	@maxtype: Highest device specific netlink attribute number
+  *	@policy: Netlink policy for device specific attribute validation
+  *	@validate: Optional validation function for netlink/changelink parameters
++ *	@alloc: netdev allocation function, can be %NULL and is then used
++ *		in place of alloc_netdev_mqs(), in this case @priv_size
++ *		and @setup are unused. Returns a netdev or ERR_PTR().
+  *	@priv_size: sizeof net_device private space
+  *	@setup: net_device setup function
+  *	@newlink: Function for configuring and registering a new device
+@@ -63,6 +66,11 @@ struct rtnl_link_ops {
+ 	const char		*kind;
+ 
+ 	size_t			priv_size;
++	struct net_device	*(*alloc)(struct nlattr *tb[],
++					  const char *ifname,
++					  unsigned char name_assign_type,
++					  unsigned int num_tx_queues,
++					  unsigned int num_rx_queues);
+ 	void			(*setup)(struct net_device *dev);
+ 
+ 	bool			netns_refund;
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index cd87c76..92c3e43 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -376,12 +376,12 @@ int __rtnl_link_register(struct rtnl_link_ops *ops)
+ 	if (rtnl_link_ops_get(ops->kind))
+ 		return -EEXIST;
+ 
+-	/* The check for setup is here because if ops
++	/* The check for alloc/setup is here because if ops
+ 	 * does not have that filled up, it is not possible
+ 	 * to use the ops for creating device. So do not
+ 	 * fill up dellink as well. That disables rtnl_dellink.
+ 	 */
+-	if (ops->setup && !ops->dellink)
++	if ((ops->alloc || ops->setup) && !ops->dellink)
+ 		ops->dellink = unregister_netdevice_queue;
+ 
+ 	list_add_tail(&ops->list, &link_ops);
+@@ -3165,8 +3165,17 @@ struct net_device *rtnl_create_link(struct net *net, const char *ifname,
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+-	dev = alloc_netdev_mqs(ops->priv_size, ifname, name_assign_type,
+-			       ops->setup, num_tx_queues, num_rx_queues);
++	if (ops->alloc) {
++		dev = ops->alloc(tb, ifname, name_assign_type,
++				 num_tx_queues, num_rx_queues);
++		if (IS_ERR(dev))
++			return dev;
++	} else {
++		dev = alloc_netdev_mqs(ops->priv_size, ifname,
++				       name_assign_type, ops->setup,
++				       num_tx_queues, num_rx_queues);
++	}
++
+ 	if (!dev)
+ 		return ERR_PTR(-ENOMEM);
+ 
+@@ -3399,7 +3408,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	if (!ops->setup)
++	if (!ops->alloc && !ops->setup)
+ 		return -EOPNOTSUPP;
+ 
+ 	if (!ifname[0]) {
+-- 
+2.7.4
 
-
-> +{
-> +	int left, right;
-> +
-> +	if (!closed) {
-> +		left = 0;
-> +		right = reuse->num_socks;
-> +	} else {
-> +		left = reuse->max_socks - reuse->num_closed_socks;
-> +		right = reuse->max_socks;
-> +	}
-
-
-
-> +
-> +	for (; left < right; left++)
-> +		if (reuse->socks[left] == sk)
-> +			return left;
-
-
-Is this even possible (to return -1) ?
-
-> +	return -1;
-> +}
-> +
-> +static void __reuseport_add_sock(struct sock *sk,
-> +				 struct sock_reuseport *reuse)
-> +{
-> +	reuse->socks[reuse->num_socks] = sk;
-> +	/* paired with smp_rmb() in reuseport_select_sock() */
-> +	smp_wmb();
-> +	reuse->num_socks++;
-> +}
-> +
-> +static bool __reuseport_detach_sock(struct sock *sk,
-> +				    struct sock_reuseport *reuse)
-> +{
-> +	int i = reuseport_sock_index(sk, reuse, false);
-> +
-> +	if (i == -1)
-> +		return false;
-> +
-> +	reuse->socks[i] = reuse->socks[reuse->num_socks - 1];
-> +	reuse->num_socks--;
-> +
-> +	return true;
-> +}
-> +
->  static struct sock_reuseport *__reuseport_alloc(unsigned int max_socks)
->  {
->  	unsigned int size = sizeof(struct sock_reuseport) +
-> @@ -72,9 +115,8 @@ int reuseport_alloc(struct sock *sk, bool bind_inany)
->  	}
->  
->  	reuse->reuseport_id = id;
-> -	reuse->socks[0] = sk;
-> -	reuse->num_socks = 1;
->  	reuse->bind_inany = bind_inany;
-> +	__reuseport_add_sock(sk, reuse);
-
-Not sure why you changed this part, really no smp_wmb() is needed at this point ?
-
->  	rcu_assign_pointer(sk->sk_reuseport_cb, reuse);
->  
->  out:
-> @@ -98,6 +140,7 @@ static struct sock_reuseport *reuseport_grow(struct sock_reuseport *reuse)
->  		return NULL;
->  
->  	more_reuse->num_socks = reuse->num_socks;
-> +	more_reuse->num_closed_socks = reuse->num_closed_socks;
->  	more_reuse->prog = reuse->prog;
->  	more_reuse->reuseport_id = reuse->reuseport_id;
->  	more_reuse->bind_inany = reuse->bind_inany;
-> @@ -105,9 +148,13 @@ static struct sock_reuseport *reuseport_grow(struct sock_reuseport *reuse)
->  
->  	memcpy(more_reuse->socks, reuse->socks,
->  	       reuse->num_socks * sizeof(struct sock *));
-> +	memcpy(more_reuse->socks +
-> +	       (more_reuse->max_socks - more_reuse->num_closed_socks),
-> +	       reuse->socks + reuse->num_socks,
-
-The second memcpy() is to copy the closed sockets,
-they should start at reuse->socks + (reuse->max_socks - reuse->num_closed_socks) ?
-
-
-> +	       reuse->num_closed_socks * sizeof(struct sock *));
->  	more_reuse->synq_overflow_ts = READ_ONCE(reuse->synq_overflow_ts);
->  
-> -	for (i = 0; i < reuse->num_socks; ++i)
-> +	for (i = 0; i < reuse->max_socks; ++i)
->  		rcu_assign_pointer(reuse->socks[i]->sk_reuseport_cb,
->  				   more_reuse);
->  
-> @@ -158,7 +205,7 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
->  		return -EBUSY;
->  	}
->  
-> -	if (reuse->num_socks == reuse->max_socks) {
-> +	if (reuse->num_socks + reuse->num_closed_socks == reuse->max_socks) {
->  		reuse = reuseport_grow(reuse);
->  		if (!reuse) {
->  			spin_unlock_bh(&reuseport_lock);
-> @@ -166,10 +213,7 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
->  		}
->  	}
->  
-> -	reuse->socks[reuse->num_socks] = sk;
-> -	/* paired with smp_rmb() in reuseport_select_sock() */
-> -	smp_wmb();
-> -	reuse->num_socks++;
-> +	__reuseport_add_sock(sk, reuse);
->  	rcu_assign_pointer(sk->sk_reuseport_cb, reuse);
->  
->  	spin_unlock_bh(&reuseport_lock);
-> @@ -183,7 +227,6 @@ EXPORT_SYMBOL(reuseport_add_sock);
->  void reuseport_detach_sock(struct sock *sk)
->  {
->  	struct sock_reuseport *reuse;
-> -	int i;
->  
->  	spin_lock_bh(&reuseport_lock);
->  	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
-> @@ -200,16 +243,11 @@ void reuseport_detach_sock(struct sock *sk)
->  	bpf_sk_reuseport_detach(sk);
->  
->  	rcu_assign_pointer(sk->sk_reuseport_cb, NULL);
-> +	__reuseport_detach_sock(sk, reuse);
-> +
-> +	if (reuse->num_socks + reuse->num_closed_socks == 0)
-> +		call_rcu(&reuse->rcu, reuseport_free_rcu);
->  
-> -	for (i = 0; i < reuse->num_socks; i++) {
-> -		if (reuse->socks[i] == sk) {
-> -			reuse->socks[i] = reuse->socks[reuse->num_socks - 1];
-> -			reuse->num_socks--;
-> -			if (reuse->num_socks == 0)
-> -				call_rcu(&reuse->rcu, reuseport_free_rcu);
-> -			break;
-> -		}
-> -	}
->  	spin_unlock_bh(&reuseport_lock);
->  }
->  EXPORT_SYMBOL(reuseport_detach_sock);
-> @@ -274,7 +312,7 @@ struct sock *reuseport_select_sock(struct sock *sk,
->  	prog = rcu_dereference(reuse->prog);
->  	socks = READ_ONCE(reuse->num_socks);
->  	if (likely(socks)) {
-> -		/* paired with smp_wmb() in reuseport_add_sock() */
-> +		/* paired with smp_wmb() in __reuseport_add_sock() */
->  		smp_rmb();
->  
->  		if (!prog || !skb)
-> 
