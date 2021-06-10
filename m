@@ -2,211 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6A753A32A1
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA6C53A32B0
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:05:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbhFJSCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 14:02:16 -0400
-Received: from mail-wm1-f48.google.com ([209.85.128.48]:44907 "EHLO
-        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbhFJSCQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:02:16 -0400
-Received: by mail-wm1-f48.google.com with SMTP id m41-20020a05600c3b29b02901b9e5d74f02so3861075wms.3;
-        Thu, 10 Jun 2021 11:00:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yuHv6RIBLHggxcOlKYOigl4Pz2f4+BXgIKr78us9l0c=;
-        b=XYLoAuRI4wC3/lTj9rPk8L7qJF6v7KXS6YrFkw4ud0LLJ7FDIvGq2cQqEG7hGU+Cxa
-         uOUUqL83kkn1UnZoLky1chZbHO+r2ob0m2hNfkUVvIQ1k+237n2k7a8uaZKQf3XcikwB
-         0EXPXBZf8EyRAcTlGWR2EF42poWGu2hFUpDEgtwc/4c+Xrp7g1n5uqu8PiRYP4YQ5OUs
-         +Hu5LVeiO7bM9090wiql0ysGJtVF17WtIabIZi2CrPRlIeK35p6LqBp89sMd+YbwoY2r
-         wRwBXQ0Fcifdog89a19s+mvzZkx7diyYtAFvxLlUmRQD9jJ394esHcJntV4cHrxfoVmM
-         bNOA==
+        id S230370AbhFJSHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 14:07:49 -0400
+Received: from mail-oi1-f169.google.com ([209.85.167.169]:37669 "EHLO
+        mail-oi1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229941AbhFJSHs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:07:48 -0400
+Received: by mail-oi1-f169.google.com with SMTP id h9so3050584oih.4;
+        Thu, 10 Jun 2021 11:05:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yuHv6RIBLHggxcOlKYOigl4Pz2f4+BXgIKr78us9l0c=;
-        b=gix4RYcEjl1Xnx4YA2aduSCMa3hShVq0Ms92LemLhuc5eNJd9R+02KBJ0rw0mumovY
-         UCkwhxkXb+t6JDM37d4UvxepHJ1YfWY35EFRVlAFpqTcmXTH/DWCcybfE9Ls1NZng7bj
-         6RFqEtF1TlG2Ij0i/Tj61c2CriWzD/xQ3ZWCRo6fdYCo6O5nHNE/AYx7Cmeilp9VzDyG
-         k4tACwKeKhTX81sMekruKUOjTs9+tgsWU1uOEEOPI4OOnOsPWgKR+AkD0+BfrHYm/iZx
-         n5pVZyO6kQdILNJLS6g0TR1WBjzpfjcvS+9A2Aq1e4oCcUAVG7y24EgzYe4R2bao3SbH
-         j+fw==
-X-Gm-Message-State: AOAM531Wfj28aISWXQCkrR7pLTud7MGVfQ3HKlu90LU1NZhvN8A//tjL
-        qAwnPcv3DvW7ie9ZvllDYft/8GfbwWISMg==
-X-Google-Smtp-Source: ABdhPJyDjo7Tdxg5kVxwRX8DoqxanBiePRw1F6nh5nQedv93R0/glByw2dbe4920UrV5kg3u7ac9MA==
-X-Received: by 2002:a7b:c3da:: with SMTP id t26mr60961wmj.63.1623347958477;
-        Thu, 10 Jun 2021 10:59:18 -0700 (PDT)
-Received: from [192.168.181.98] (228.18.23.93.rev.sfr.net. [93.23.18.228])
-        by smtp.gmail.com with ESMTPSA id p16sm4442505wrs.52.2021.06.10.10.59.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 10:59:17 -0700 (PDT)
-Subject: Re: [PATCH v7 bpf-next 03/11] tcp: Keep TCP_CLOSE sockets in the
- reuseport group.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Cc:     Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210521182104.18273-1-kuniyu@amazon.co.jp>
- <20210521182104.18273-4-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <c89d2cec-4cf2-1972-354b-5f5ca1330d82@gmail.com>
-Date:   Thu, 10 Jun 2021 19:59:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6tFMdKF66GtiGCGuvjiXKRo9ePOn5bxziMQAgLo1RwQ=;
+        b=tXifdLjtt7Hj0WOCAAbhwvnB7W4trRIs5WTgpiu7nAEYY2x4q5r+tnEp9a6s9zbcZ5
+         2f+npVuIKn+YLGMSjrGjYQ6yWus/T80JEvB05w7XM+SucEIoj83W3NuTlR6HGCyLpK/+
+         9XLfKL40uj72VdSnTu7NRnjHuMvQWnRRakj1SB1shWT9kxrF7rpj3gXfOM5ma+0oH6Nf
+         OM4Pq1Q3KqxQqkpdNOP5vrfldzgRM+eTMuqHjQhHl4bqOefV61lx2KdNyUGiYQ2AKPj/
+         0oN/AXPl3zlkrVOUPzVbN2iU1SFinw8qIxBLdrHxzDaDZx1uKzsU7sGf9mcLUgXDpXjM
+         h32A==
+X-Gm-Message-State: AOAM5334/7ecQbXz7/MDI97TjHo0oJW5kz0/WkX7Ed9IiTsGHhV00AGQ
+        s0i5qDRhIUmnijrzvhzH+KfPkH/0J2+2N6os1OE=
+X-Google-Smtp-Source: ABdhPJye8bhCZ3nvbsoG/AWSQExSaZgQ+UgWztP4soqwRMwdfz+Yf6AgchrvP9rp8nrhLcVOg1JZ7oftyXUEbxzdG7w=
+X-Received: by 2002:a05:6808:f08:: with SMTP id m8mr1212972oiw.69.1623348342904;
+ Thu, 10 Jun 2021 11:05:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210521182104.18273-4-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210610163917.4138412-1-ciorneiioana@gmail.com> <20210610163917.4138412-2-ciorneiioana@gmail.com>
+In-Reply-To: <20210610163917.4138412-2-ciorneiioana@gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 10 Jun 2021 20:05:31 +0200
+Message-ID: <CAJZ5v0jMspgw8tvA3xV5p7sRxTUOq89G5zSgaZa52EAi+9Cfbw@mail.gmail.com>
+Subject: Re: [PATCH net-next v8 01/15] Documentation: ACPI: DSD: Document MDIO PHY
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>, calvin.johnson@nxp.com,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux.cj" <linux.cj@gmail.com>, netdev <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Len Brown <lenb@kernel.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 10, 2021 at 6:40 PM Ioana Ciornei <ciorneiioana@gmail.com> wrote:
+>
+> From: Calvin Johnson <calvin.johnson@oss.nxp.com>
+>
+> Introduce ACPI mechanism to get PHYs registered on a MDIO bus and
+> provide them to be connected to MAC.
 
+This is not an "ACPI mechanism", because it is not part of the ACPI
+specification or support documentation thereof.
 
-On 5/21/21 8:20 PM, Kuniyuki Iwashima wrote:
-> When we close a listening socket, to migrate its connections to another
-> listener in the same reuseport group, we have to handle two kinds of child
-> sockets. One is that a listening socket has a reference to, and the other
-> is not.
-> 
-> The former is the TCP_ESTABLISHED/TCP_SYN_RECV sockets, and they are in the
-> accept queue of their listening socket. So we can pop them out and push
-> them into another listener's queue at close() or shutdown() syscalls. On
-> the other hand, the latter, the TCP_NEW_SYN_RECV socket is during the
-> three-way handshake and not in the accept queue. Thus, we cannot access
-> such sockets at close() or shutdown() syscalls. Accordingly, we have to
-> migrate immature sockets after their listening socket has been closed.
-> 
-> Currently, if their listening socket has been closed, TCP_NEW_SYN_RECV
-> sockets are freed at receiving the final ACK or retransmitting SYN+ACKs. At
-> that time, if we could select a new listener from the same reuseport group,
-> no connection would be aborted. However, we cannot do that because
-> reuseport_detach_sock() sets NULL to sk_reuseport_cb and forbids access to
-> the reuseport group from closed sockets.
-> 
-> This patch allows TCP_CLOSE sockets to remain in the reuseport group and
-> access it while any child socket references them. The point is that
-> reuseport_detach_sock() was called twice from inet_unhash() and
-> sk_destruct(). This patch replaces the first reuseport_detach_sock() with
-> reuseport_stop_listen_sock(), which checks if the reuseport group is
-> capable of migration. If capable, it decrements num_socks, moves the socket
-> backwards in socks[] and increments num_closed_socks. When all connections
-> are migrated, sk_destruct() calls reuseport_detach_sock() to remove the
-> socket from socks[], decrement num_closed_socks, and set NULL to
-> sk_reuseport_cb.
-> 
-> By this change, closed or shutdowned sockets can keep sk_reuseport_cb.
-> Consequently, calling listen() after shutdown() can cause EADDRINUSE or
-> EBUSY in inet_csk_bind_conflict() or reuseport_add_sock() which expects
-> such sockets not to have the reuseport group. Therefore, this patch also
-> loosens such validation rules so that a socket can listen again if it has a
-> reuseport group with num_closed_socks more than 0.
-> 
-> When such sockets listen again, we handle them in reuseport_resurrect(). If
-> there is an existing reuseport group (reuseport_add_sock() path), we move
-> the socket from the old group to the new one and free the old one if
-> necessary. If there is no existing group (reuseport_alloc() path), we
-> allocate a new reuseport group, detach sk from the old one, and free it if
-> necessary, not to break the current shutdown behaviour:
-> 
->   - we cannot carry over the eBPF prog of shutdowned sockets
->   - we cannot attach/detach an eBPF prog to/from listening sockets via
->     shutdowned sockets
-> 
-> Note that when the number of sockets gets over U16_MAX, we try to detach a
-> closed socket randomly to make room for the new listening socket in
-> reuseport_grow().
-> 
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+I would call it "a mechanism based on generic ACPI _DSD device
+properties definition []1]".  And provide a reference to the _DSD
+properties definition document.
+
+With that changed, you can add
+
+Acked-by: Rafael J. Wysocki <rafael@kernel.org>
+
+to this patch.
+
+Note, however, that within the traditional ACPI framework, the _DSD
+properties are consumed by the driver that binds to the device
+represented by the ACPI device object containing the _DSD in question
+in its scope, while in this case IIUC the properties are expected to
+be consumed by the general networking code in the kernel.  That is not
+wrong in principle, but it means that operating systems other than
+Linux are not likely to be using them.
+
+> Describe properties "phy-handle" and "phy-mode".
+>
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 > ---
->  include/net/sock_reuseport.h    |   1 +
->  net/core/sock_reuseport.c       | 184 ++++++++++++++++++++++++++++++--
->  net/ipv4/inet_connection_sock.c |  12 ++-
->  net/ipv4/inet_hashtables.c      |   2 +-
->  4 files changed, 188 insertions(+), 11 deletions(-)
-> 
-> diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
-> index 0e558ca7afbf..1333d0cddfbc 100644
-> --- a/include/net/sock_reuseport.h
-> +++ b/include/net/sock_reuseport.h
-> @@ -32,6 +32,7 @@ extern int reuseport_alloc(struct sock *sk, bool bind_inany);
->  extern int reuseport_add_sock(struct sock *sk, struct sock *sk2,
->  			      bool bind_inany);
->  extern void reuseport_detach_sock(struct sock *sk);
-> +void reuseport_stop_listen_sock(struct sock *sk);
->  extern struct sock *reuseport_select_sock(struct sock *sk,
->  					  u32 hash,
->  					  struct sk_buff *skb,
-> diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-> index 079bd1aca0e7..ea0e900d3e97 100644
-> --- a/net/core/sock_reuseport.c
-> +++ b/net/core/sock_reuseport.c
-> @@ -17,6 +17,8 @@
->  DEFINE_SPINLOCK(reuseport_lock);
->  
->  static DEFINE_IDA(reuseport_ida);
-> +static int reuseport_resurrect(struct sock *sk, struct sock_reuseport *old_reuse,
-> +			       struct sock_reuseport *reuse, bool bind_inany);
->  
->  static int reuseport_sock_index(struct sock *sk,
->  				struct sock_reuseport *reuse,
-> @@ -61,6 +63,29 @@ static bool __reuseport_detach_sock(struct sock *sk,
->  	return true;
->  }
->  
-> +static void __reuseport_add_closed_sock(struct sock *sk,
-> +					struct sock_reuseport *reuse)
-> +{
-> +	reuse->socks[reuse->max_socks - reuse->num_closed_socks - 1] = sk;
-> +	/* paired with READ_ONCE() in inet_csk_bind_conflict() */
-> +	WRITE_ONCE(reuse->num_closed_socks, reuse->num_closed_socks + 1);
-> +}
+>
+> Changes in v8: None
+> Changes in v7: None
+> Changes in v6:
+> - Minor cleanup
+>
+> Changes in v5:
+> - More cleanup
+>
+> Changes in v4:
+> - More cleanup
+>
+> Changes in v3: None
+> Changes in v2:
+> - Updated with more description in document
+>
+>  Documentation/firmware-guide/acpi/dsd/phy.rst | 133 ++++++++++++++++++
+>  1 file changed, 133 insertions(+)
+>  create mode 100644 Documentation/firmware-guide/acpi/dsd/phy.rst
+>
+> diff --git a/Documentation/firmware-guide/acpi/dsd/phy.rst b/Documentation/firmware-guide/acpi/dsd/phy.rst
+> new file mode 100644
+> index 000000000000..7d01ae8b3cc6
+> --- /dev/null
+> +++ b/Documentation/firmware-guide/acpi/dsd/phy.rst
+> @@ -0,0 +1,133 @@
+> +.. SPDX-License-Identifier: GPL-2.0
 > +
-> +static bool __reuseport_detach_closed_sock(struct sock *sk,
-> +					   struct sock_reuseport *reuse)
-> +{
-> +	int i = reuseport_sock_index(sk, reuse, true);
+> +=========================
+> +MDIO bus and PHYs in ACPI
+> +=========================
 > +
-> +	if (i == -1)
-> +		return false;
+> +The PHYs on an MDIO bus [1] are probed and registered using
+> +fwnode_mdiobus_register_phy().
 > +
-> +	reuse->socks[i] = reuse->socks[reuse->max_socks - reuse->num_closed_socks];
-> +	/* paired with READ_ONCE() in inet_csk_bind_conflict() */
-> +	WRITE_ONCE(reuse->num_closed_socks, reuse->num_closed_socks - 1);
+> +Later, for connecting these PHYs to their respective MACs, the PHYs registered
+> +on the MDIO bus have to be referenced.
 > +
-> +	return true;
-> +}
+> +This document introduces two _DSD properties that are to be used
+> +for connecting PHYs on the MDIO bus [3] to the MAC layer.
 > +
->  static struct sock_reuseport *__reuseport_alloc(unsigned int max_socks)
->  {
->  	unsigned int size = sizeof(struct sock_reuseport) +
-> @@ -92,6 +117,14 @@ int reuseport_alloc(struct sock *sk, bool bind_inany)
->  	reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
->  					  lockdep_is_held(&reuseport_lock));
->  	if (reuse) {
-> +		if (reuse->num_closed_socks) {
-> +			/* sk was shutdown()ed before */
-> +			int err = reuseport_resurrect(sk, reuse, NULL, bind_inany);
+> +These properties are defined in accordance with the "Device
+> +Properties UUID For _DSD" [2] document and the
+> +daffd814-6eba-4d8c-8a91-bc9bbf4aa301 UUID must be used in the Device
+> +Data Descriptors containing them.
 > +
-> +			spin_unlock_bh(&reuseport_lock);
-> +			return err;
-
-It seems coding style in this function would rather do
-			ret = reuseport_resurrect(sk, reuse, NULL, bind_inany);
-			goto out;
-
-Overall, changes in this commit are a bit scarry.
+> +phy-handle
+> +----------
+> +For each MAC node, a device property "phy-handle" is used to reference
+> +the PHY that is registered on an MDIO bus. This is mandatory for
+> +network interfaces that have PHYs connected to MAC via MDIO bus.
+> +
+> +During the MDIO bus driver initialization, PHYs on this bus are probed
+> +using the _ADR object as shown below and are registered on the MDIO bus.
+> +
+> +::
+> +      Scope(\_SB.MDI0)
+> +      {
+> +        Device(PHY1) {
+> +          Name (_ADR, 0x1)
+> +        } // end of PHY1
+> +
+> +        Device(PHY2) {
+> +          Name (_ADR, 0x2)
+> +        } // end of PHY2
+> +      }
+> +
+> +Later, during the MAC driver initialization, the registered PHY devices
+> +have to be retrieved from the MDIO bus. For this, the MAC driver needs
+> +references to the previously registered PHYs which are provided
+> +as device object references (e.g. \_SB.MDI0.PHY1).
+> +
+> +phy-mode
+> +--------
+> +The "phy-mode" _DSD property is used to describe the connection to
+> +the PHY. The valid values for "phy-mode" are defined in [4].
+> +
+> +The following ASL example illustrates the usage of these properties.
+> +
+> +DSDT entry for MDIO node
+> +------------------------
+> +
+> +The MDIO bus has an SoC component (MDIO controller) and a platform
+> +component (PHYs on the MDIO bus).
+> +
+> +a) Silicon Component
+> +This node describes the MDIO controller, MDI0
+> +---------------------------------------------
+> +::
+> +       Scope(_SB)
+> +       {
+> +         Device(MDI0) {
+> +           Name(_HID, "NXP0006")
+> +           Name(_CCA, 1)
+> +           Name(_UID, 0)
+> +           Name(_CRS, ResourceTemplate() {
+> +             Memory32Fixed(ReadWrite, MDI0_BASE, MDI_LEN)
+> +             Interrupt(ResourceConsumer, Level, ActiveHigh, Shared)
+> +              {
+> +                MDI0_IT
+> +              }
+> +           }) // end of _CRS for MDI0
+> +         } // end of MDI0
+> +       }
+> +
+> +b) Platform Component
+> +The PHY1 and PHY2 nodes represent the PHYs connected to MDIO bus MDI0
+> +---------------------------------------------------------------------
+> +::
+> +       Scope(\_SB.MDI0)
+> +       {
+> +         Device(PHY1) {
+> +           Name (_ADR, 0x1)
+> +         } // end of PHY1
+> +
+> +         Device(PHY2) {
+> +           Name (_ADR, 0x2)
+> +         } // end of PHY2
+> +       }
+> +
+> +DSDT entries representing MAC nodes
+> +-----------------------------------
+> +
+> +Below are the MAC nodes where PHY nodes are referenced.
+> +phy-mode and phy-handle are used as explained earlier.
+> +------------------------------------------------------
+> +::
+> +       Scope(\_SB.MCE0.PR17)
+> +       {
+> +         Name (_DSD, Package () {
+> +            ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+> +                Package () {
+> +                    Package (2) {"phy-mode", "rgmii-id"},
+> +                    Package (2) {"phy-handle", \_SB.MDI0.PHY1}
+> +             }
+> +          })
+> +       }
+> +
+> +       Scope(\_SB.MCE0.PR18)
+> +       {
+> +         Name (_DSD, Package () {
+> +           ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+> +               Package () {
+> +                   Package (2) {"phy-mode", "rgmii-id"},
+> +                   Package (2) {"phy-handle", \_SB.MDI0.PHY2}}
+> +           }
+> +         })
+> +       }
+> +
+> +References
+> +==========
+> +
+> +[1] Documentation/networking/phy.rst
+> +
+> +[2] https://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
+> +
+> +[3] Documentation/firmware-guide/acpi/DSD-properties-rules.rst
+> +
+> +[4] Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> --
+> 2.31.1
+>
