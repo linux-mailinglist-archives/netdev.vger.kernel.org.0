@@ -2,93 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32BCF3A3368
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DAB43A3371
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:41:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231361AbhFJSmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 14:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45382 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbhFJSmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:42:06 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF00C061574;
-        Thu, 10 Jun 2021 11:40:09 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 5A8BE8D4;
-        Thu, 10 Jun 2021 20:40:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1623350407;
-        bh=3OnZB1761PB+ay2D9PLynmCjGhCXhNjzmmTAaqHSDKk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R351bkpH3ApWxPQMlPcqE/s2/L58xwMdjvOStsdVnFG3jNwq00tuRSaQ+WrbLfOvr
-         tIRfRcMfwoIp02htQIoKPDdp00AtXBtVgB5F7dNzRX6B8yxo8VObb8hsFjgR0ZNFbb
-         67HEIO/yoCNzyOJbl3Qac5R4BVddQTQi+0vTaGgc=
-Date:   Thu, 10 Jun 2021 21:39:49 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-Cc:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-Message-ID: <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
-References: <YH2hs6EsPTpDAqXc@mit.edu>
- <nycvar.YFH.7.76.2104281228350.18270@cbobk.fhfr.pm>
- <YIx7R6tmcRRCl/az@mit.edu>
- <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
- <YK+esqGjKaPb+b/Q@kroah.com>
- <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
- <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
- <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
- <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
+        id S230487AbhFJSnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 14:43:09 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57250 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230086AbhFJSnI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 14:43:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=nmp1JrKWQ1DrFzI3CBSSvjm1La6Wxfkpwm0/xwJFPC0=; b=iTHE1jHz6kJQoC1g0ChuvSbnfh
+        +dX8Jld4Q//+aEnfCZ8pejM/SIoj5UFliJzTILkegSTjBeRUKrWgPrTSNQBhyRnA5+L7r4Rd2HJTV
+        QgWTfR+tdH5qaVhU/f0v73BQ9UJ7PSsAfVc/ZPKNkg+/gEUgLnznNyo31MNzBRYV3CpE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lrPbs-008iCD-3e; Thu, 10 Jun 2021 20:40:56 +0200
+Date:   Thu, 10 Jun 2021 20:40:56 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Jon Nettleton <jon@solid-run.com>,
+        Ioana Ciornei <ciorneiioana@gmail.com>,
+        Grant Likely <grant.likely@arm.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Calvin Johnson <calvin.johnson@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux.cj" <linux.cj@gmail.com>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Len Brown <lenb@kernel.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next v8 00/15] ACPI support for dpaa2 driver
+Message-ID: <YMJcuIaqi8Bzb29A@lunn.ch>
+References: <20210610163917.4138412-1-ciorneiioana@gmail.com>
+ <YMJEMXEDAE/m9MhA@lunn.ch>
+ <CABdtJHv-Xu5bC2-T7a0UgbYpkNP1SLfWwdLWLLKj5MBvA2Ajyw@mail.gmail.com>
+ <CAJZ5v0iNTaFQuZZid77qTpfbs-4YdDgZdcC+rt4+mXV9f=OpTA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
+In-Reply-To: <CAJZ5v0iNTaFQuZZid77qTpfbs-4YdDgZdcC+rt4+mXV9f=OpTA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 10, 2021 at 02:23:18PM -0400, Konstantin Ryabitsev wrote:
-> On Thu, Jun 10, 2021 at 08:07:55PM +0200, Enrico Weigelt, metux IT consult wrote:
-> > On 09.06.21 12:37, David Hildenbrand wrote:
-> > > On 28.05.21 16:58, James Bottomley wrote:
-> 
-> *moderator hat on*
-> 
-> I'm requesting that all vaccine talk is restricted solely to how it would
-> impact international travel to/from ksummit.
+> And I believe that you have all of the requisite ACKs from the ACPI
+> side now, so it is up to the networking guys to decide what to do
+> next.
 
-Which will largely be set by governments, travel companies and
-conference venues, so there's probably very little to discuss on that
-topic.
+Thanks for the Acked-by's.
 
-The topic of how to best organize hybrid events to maximize
-inclusiveness for remote participants is more interesting to me. LPC did
-an amazing job last year with the fully remote setup, but a hybrid setup
-brings new challenges. One issue I've previously experienced in hybrid
-setups, especially for brainstorming-type discussions, was that on-site
-attendees can very quickly break out conversations in small groups (it's
-an issue for fully on-site events too). Session leads should be aware of
-the need to ensure even more than usual that all speakers use
-microphones. I don't think we need to go as far as specific training on
-these topics, but emphasizing the importance of moderation would be
-useful in my opinion.
+Since they were missing, the networking guys have deliberately been
+ignoring this code. Now they have been given, we will start the review
+work.
 
-There will always be more informal discussions between on-site
-participants. After all, this is one of the benefits of conferences, by
-being all together we can easily organize ad-hoc discussions. This is
-traditionally done by finding a not too noisy corner in the conference
-center, would it be useful to have more break-out rooms with A/V
-equipment than usual ?
-
--- 
-Regards,
-
-Laurent Pinchart
+Thanks
+	Andrew
