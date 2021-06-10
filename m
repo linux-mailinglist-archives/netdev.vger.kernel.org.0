@@ -2,175 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD70C3A2D38
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 15:38:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C85A63A2D33
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 15:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbhFJNj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 09:39:58 -0400
-Received: from mail-wr1-f52.google.com ([209.85.221.52]:44865 "EHLO
-        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbhFJNj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 09:39:57 -0400
-Received: by mail-wr1-f52.google.com with SMTP id f2so2347951wri.11
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 06:38:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0sj7tSYkdDY6cg0JGPEaS057smMW6C6/SG3QI1zQncQ=;
-        b=I2cXkmM0iGW8TFdbsdBJvf49KrZW/ecFaWyjKG3wJIFVFqGfX29/LzGf1rAGfXXr9C
-         UoEgUAWaEMwelWi1bJslwkHRdnYQZT9EnOMRQopWHTlTDtQUspw/TULExB3uVjJjz1kX
-         4qMBbmaqpbXzUAnAR0FOr19eGcOLK7L6q2K3qZBwd9hopMVJKhoAKwG2hOuTnS8Mxxys
-         ed5TOyLEW7f5g1aWdw4vYEm7zMoJ9pMfyT0u3qeX+mQGdabfi6G7XlRFxrqNlk//Y0un
-         yPMEzV62srxY0OBalW/+u75Abx6FpsIPOzOZek5MIYHBli04jrbrqZIoe3fnAjxmQjhL
-         yNPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0sj7tSYkdDY6cg0JGPEaS057smMW6C6/SG3QI1zQncQ=;
-        b=EpjDXsXJYz9zYS0uOLAhUtCFZeyZQfLLdBZ2Th0nY5SuNjD2qUjyOIQIJjyF+iUkSN
-         bOxmamoXe7HZL8cRACy96/KDnM3terdyfGug0G3Df3yTEPtrM3qnS5bmirg0psSSJNhn
-         D9hmVfnfg3qWs+KTP6fvJihu3yKmkJpWismBEslsaeY0JCHN4VLRAFgeB3YdFKHmgKBI
-         m/lt7zKnMtjzbLqf3Dd5pQGz2+AdP8/bbChdSSwZaGpIslu/uoO61ycMTgHogxEZaZpJ
-         nAcDiR6uTel3G4QpxRO7V7dFxQTQpsd71vHE4mQiuxEJ3wZj99nm+QpcvQZIaXpKffyT
-         y7hA==
-X-Gm-Message-State: AOAM533ES4LNcltFxNBiE4o4+0qZK/xBeVJSbo/kDNoD8iBmbOXx4Z/e
-        mCnJIjohYUqZBxEpkhfX9Tu6Mw==
-X-Google-Smtp-Source: ABdhPJw2lJ/LhEbUnzzq7jGGuxZ7BJLNMX7N0aLXBpzRnYkJcuMxtv1bvHdKI3tDJhcgwiRI3kWTOA==
-X-Received: by 2002:a5d:6e92:: with SMTP id k18mr5592603wrz.94.1623332220947;
-        Thu, 10 Jun 2021 06:37:00 -0700 (PDT)
-Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id f184sm2078294wmf.38.2021.06.10.06.37.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 06:37:00 -0700 (PDT)
-Date:   Thu, 10 Jun 2021 17:36:55 +0400
-From:   Dmitrii Banshchikov <me@ubique.spb.ru>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, davem@davemloft.net,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, rdna@fb.com
-Subject: Re: [PATCH bpf-next v1 00/10] bpfilter
-Message-ID: <20210610133655.d25say2ialzhtdhq@amnesia>
-References: <20210603101425.560384-1-me@ubique.spb.ru>
- <4dd3feeb-8b4a-0bdb-683e-c5c5643b1195@fb.com>
+        id S231209AbhFJNjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 09:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231231AbhFJNjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 09:39:07 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13499C061760
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 06:37:11 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lrKrl-0001DZ-0G; Thu, 10 Jun 2021 15:37:01 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lrKrh-00017e-Kr; Thu, 10 Jun 2021 15:36:57 +0200
+Date:   Thu, 10 Jun 2021 15:36:57 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 4/8] net: usb: asix: ax88772: add phylib
+ support
+Message-ID: <20210610133657.7hchbeidynpd7m7b@pengutronix.de>
+References: <20210607082727.26045-1-o.rempel@pengutronix.de>
+ <20210607082727.26045-5-o.rempel@pengutronix.de>
+ <CGME20210609095923eucas1p2e692c9a482151742d543316c91f29802@eucas1p2.samsung.com>
+ <84ff1dab-ab0a-f27c-a948-e1ebdf778485@samsung.com>
+ <20210609124609.zngg6sfcu6cj4p2m@pengutronix.de>
+ <44a16219-0575-49ee-758b-be6fe9971962@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <4dd3feeb-8b4a-0bdb-683e-c5c5643b1195@fb.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <44a16219-0575-49ee-758b-be6fe9971962@gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 15:36:14 up 190 days,  3:42, 50 users,  load average: 0.07, 0.04,
+ 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 09, 2021 at 05:50:13PM -0700, Yonghong Song wrote:
+On Wed, Jun 09, 2021 at 03:12:37PM +0200, Heiner Kallweit wrote:
+> On 09.06.2021 14:46, Oleksij Rempel wrote:
+> > Hi Marek,
+> > 
+> > On Wed, Jun 09, 2021 at 11:59:23AM +0200, Marek Szyprowski wrote:
+> >> Hi Oleksij,
+> >>
+> >> On 07.06.2021 10:27, Oleksij Rempel wrote:
+> >>> To be able to use ax88772 with external PHYs and use advantage of
+> >>> existing PHY drivers, we need to port at least ax88772 part of asix
+> >>> driver to the phylib framework.
+> >>>
+> >>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> >>
+> >> This patch landed recently in linux-next as commit e532a096be0e ("net: 
+> >> usb: asix: ax88772: add phylib support"). I found that it causes some 
+> >> warnings on boards with those devices, see the following log:
+> >>
+> >> root@target:~# time rtcwake -s10 -mmem
+> >> rtcwake: wakeup from "mem" using /dev/rtc0 at Wed Jun  9 08:16:41 2021
+> >> [  231.226579] PM: suspend entry (deep)
+> >> [  231.231697] Filesystems sync: 0.002 seconds
+> >> [  231.261761] Freezing user space processes ... (elapsed 0.002 seconds) 
+> >> done.
+> >> [  231.270526] OOM killer disabled.
+> >> [  231.273557] Freezing remaining freezable tasks ... (elapsed 0.002 
+> >> seconds) done.
+> >> [  231.282229] printk: Suspending console(s) (use no_console_suspend to 
+> >> debug)
+> >> ...
+> >> [  231.710852] Disabling non-boot CPUs ...
+> >> ...
+> >> [  231.901794] Enabling non-boot CPUs ...
+> >> ...
+> >> [  232.225640] usb usb3: root hub lost power or was reset
+> >> [  232.225746] usb usb1: root hub lost power or was reset
+> >> [  232.225864] usb usb5: root hub lost power or was reset
+> >> [  232.226206] usb usb6: root hub lost power or was reset
+> >> [  232.226207] usb usb4: root hub lost power or was reset
+> >> [  232.297749] usb usb2: root hub lost power or was reset
+> >> [  232.343227] asix 3-1:1.0 eth0: Failed to write reg index 0x0000: -22
+> >> [  232.343293] asix 3-1:1.0 eth0: Failed to enable software MII access
+> >> [  232.344486] asix 3-1:1.0 eth0: Failed to read reg index 0x0000: -22
+> >> [  232.344512] asix 3-1:1.0 eth0: Failed to write reg index 0x0000: -22
+> >> [  232.344529] PM: dpm_run_callback(): mdio_bus_phy_resume+0x0/0x78 
+> >> returns -22
+> >> [  232.344554] Asix Electronics AX88772C usb-003:002:10: PM: failed to 
+> >> resume: error -22
+> >> [  232.563712] usb 1-1: reset high-speed USB device number 2 using 
+> >> exynos-ehci
+> >> [  232.757653] usb 3-1: reset high-speed USB device number 2 using xhci-hcd
+> >> [  233.730994] OOM killer enabled.
+> >> [  233.734122] Restarting tasks ... done.
+> >> [  233.754992] PM: suspend exit
+> >>
+> >> real    0m11.546s
+> >> user    0m0.000s
+> >> sys     0m0.530s
+> >> root@target:~# sleep 2
+> >> root@target:~# time rtcwake -s10 -mmem
+> >> rtcwake: wakeup from "mem" using /dev/rtc0 at Wed Jun  9 08:17:02 2021
+> >> [  241.959608] PM: suspend entry (deep)
+> >> [  241.963446] Filesystems sync: 0.001 seconds
+> >> [  241.978619] Freezing user space processes ... (elapsed 0.004 seconds) 
+> >> done.
+> >> [  241.989199] OOM killer disabled.
+> >> [  241.992215] Freezing remaining freezable tasks ... (elapsed 0.005 
+> >> seconds) done.
+> >> [  242.003979] printk: Suspending console(s) (use no_console_suspend to 
+> >> debug)
+> >> ...
+> >> [  242.592030] Disabling non-boot CPUs ...
+> >> ...
+> >> [  242.879721] Enabling non-boot CPUs ...
+> >> ...
+> >> [  243.145870] usb usb3: root hub lost power or was reset
+> >> [  243.145910] usb usb4: root hub lost power or was reset
+> >> [  243.147084] usb usb5: root hub lost power or was reset
+> >> [  243.147157] usb usb6: root hub lost power or was reset
+> >> [  243.147298] usb usb1: root hub lost power or was reset
+> >> [  243.217137] usb usb2: root hub lost power or was reset
+> >> [  243.283807] asix 3-1:1.0 eth0: Failed to write reg index 0x0000: -22
+> >> [  243.284005] asix 3-1:1.0 eth0: Failed to enable software MII access
+> >> [  243.285526] asix 3-1:1.0 eth0: Failed to read reg index 0x0000: -22
+> >> [  243.285676] asix 3-1:1.0 eth0: Failed to read reg index 0x0004: -22
+> >> [  243.285769] ------------[ cut here ]------------
+> >> [  243.286011] WARNING: CPU: 2 PID: 2069 at drivers/net/phy/phy.c:916 
+> >> phy_error+0x28/0x68
+> >> [  243.286115] Modules linked in: cmac bnep mwifiex_sdio mwifiex 
+> >> sha256_generic libsha256 sha256_arm cfg80211 btmrvl_sdio btmrvl 
+> >> bluetooth s5p_mfc uvcvideo s5p_jpeg exynos_gsc v
+> >> [  243.287490] CPU: 2 PID: 2069 Comm: kworker/2:5 Not tainted 
+> >> 5.13.0-rc5-next-20210608 #10443
+> >> [  243.287555] Hardware name: Samsung Exynos (Flattened Device Tree)
+> >> [  243.287609] Workqueue: events_power_efficient phy_state_machine
+> >> [  243.287716] [<c0111920>] (unwind_backtrace) from [<c010d0cc>] 
+> >> (show_stack+0x10/0x14)
+> >> [  243.287807] [<c010d0cc>] (show_stack) from [<c0b62360>] 
+> >> (dump_stack_lvl+0xa0/0xc0)
+> >> [  243.287882] [<c0b62360>] (dump_stack_lvl) from [<c0127960>] 
+> >> (__warn+0x118/0x11c)
+> >> [  243.287954] [<c0127960>] (__warn) from [<c0127a18>] 
+> >> (warn_slowpath_fmt+0xb4/0xbc)
+> >> [  243.288021] [<c0127a18>] (warn_slowpath_fmt) from [<c0734968>] 
+> >> (phy_error+0x28/0x68)
+> >> [  243.288094] [<c0734968>] (phy_error) from [<c0735d6c>] 
+> >> (phy_state_machine+0x218/0x278)
+> >> [  243.288173] [<c0735d6c>] (phy_state_machine) from [<c014ae08>] 
+> >> (process_one_work+0x30c/0x884)
+> >> [  243.288254] [<c014ae08>] (process_one_work) from [<c014b3d8>] 
+> >> (worker_thread+0x58/0x594)
+> >> [  243.288333] [<c014b3d8>] (worker_thread) from [<c0153944>] 
+> >> (kthread+0x160/0x1c0)
+> >> [  243.288408] [<c0153944>] (kthread) from [<c010011c>] 
+> >> (ret_from_fork+0x14/0x38)
+> >> [  243.288475] Exception stack(0xc4683fb0 to 0xc4683ff8)
+> >> [  243.288531] 3fa0:                                     00000000 
+> >> 00000000 00000000 00000000
+> >> [  243.288587] 3fc0: 00000000 00000000 00000000 00000000 00000000 
+> >> 00000000 00000000 00000000
+> >> [  243.288641] 3fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> >> [  243.288690] irq event stamp: 1611
+> >> [  243.288744] hardirqs last  enabled at (1619): [<c01a6ef0>] 
+> >> vprintk_emit+0x230/0x290
+> >> [  243.288830] hardirqs last disabled at (1626): [<c01a6f2c>] 
+> >> vprintk_emit+0x26c/0x290
+> >> [  243.288906] softirqs last  enabled at (1012): [<c0101768>] 
+> >> __do_softirq+0x500/0x63c
+> >> [  243.288978] softirqs last disabled at (1007): [<c01315b4>] 
+> >> irq_exit+0x214/0x220
+> >> [  243.289055] ---[ end trace eeacda95eb7db60a ]---
+> >> [  243.289345] asix 3-1:1.0 eth0: Failed to write reg index 0x0000: -22
+> >> [  243.289466] asix 3-1:1.0 eth0: Failed to write Medium Mode mode to 
+> >> 0x0000: ffffffea
+> >> [  243.289540] asix 3-1:1.0 eth0: Link is Down
+> >> [  243.482809] usb 1-1: reset high-speed USB device number 2 using 
+> >> exynos-ehci
+> >> [  243.647251] usb 3-1: reset high-speed USB device number 2 using xhci-hcd
+> >> [  244.847161] OOM killer enabled.
+> >> [  244.850221] Restarting tasks ... done.
+> >> [  244.861372] PM: suspend exit
+> >>
+> >> real    0m13.050s
+> >> user    0m0.000s
+> >> sys     0m1.152s
+> >> root@target:~#
+> >>
+> >> It looks that some kind of system suspend/resume integration for phylib 
+> >> is not implemented.
+> > 
+> > Probably it is should be handled only by the asix driver. I'll take a
+> > look in to it. Did interface was able to resume after printing some
+> > warnings?
+> > 
+> > Regards,
+> > Oleksij
+> > 
 > 
-> 
-> On 6/3/21 3:14 AM, Dmitrii Banshchikov wrote:
-> > The patchset is based on the patches from David S. Miller [1] and
-> > Daniel Borkmann [2].
-> > 
-> > The main goal of the patchset is to prepare bpfilter for
-> > iptables' configuration blob parsing and code generation.
-> > 
-> > The patchset introduces data structures and code for matches,
-> > targets, rules and tables.
-> > 
-> > The current version misses handling of counters. Postpone its
-> > implementation until the code generation phase as it's not clear
-> > yet how to better handle them.
-> > 
-> > Beside that there is no support of net namespaces at all.
-> > 
-> > In the next iteration basic code generation shall be introduced.
-> > 
-> > The rough plan for the code generation.
-> > 
-> > It seems reasonable to assume that the first rules should cover
-> > most of the packet flow.  This is why they are critical from the
-> > performance point of view.  At the same time number of user
-> > defined rules might be pretty large. Also there is a limit on
-> > size and complexity of a BPF program introduced by the verifier.
-> > 
-> > There are two approaches how to handle iptables' rules in
-> > generated BPF programs.
-> > 
-> > The first approach is to generate a BPF program that is an
-> > equivalent to a set of rules on a rule by rule basis. This
-> > approach should give the best performance. The drawback is the
-> > limitation from the verifier on size and complexity of BPF
-> > program.
-> > 
-> > The second approach is to use an internal representation of rules
-> > stored in a BPF map and use bpf_for_each_map_elem() helper to
-> > iterate over them. In this case the helper's callback is a BPF
-> > function that is able to process any valid rule.
-> > 
-> > Combination of the two approaches should give most of the
-> > benefits - a heuristic should help to select a small subset of
-> > the rules for code generation on a rule by rule basis. All other
-> > rules are cold and it should be possible to store them in an
-> > internal form in a BPF map. The rules will be handled by
-> > bpf_for_each_map_elem().  This should remove the limit on the
-> > number of supported rules.
-> 
-> Agree. A bpf program inlines some hot rule handling and put
-> the rest in for_each_map_elem() sounds reasonable to me.
-> 
-> > 
-> > During development it was useful to use statically linked
-> > sanitizers in bpfilter usermode helper. Also it is possible to
-> > use fuzzers but it's not clear if it is worth adding them to the
-> > test infrastructure - because there are no other fuzzers under
-> > tools/testing/selftests currently.
-> > 
-> > Patch 1 adds definitions of the used types.
-> > Patch 2 adds logging to bpfilter.
-> > Patch 3 adds bpfilter header to tools
-> > Patch 4 adds an associative map.
-> > Patches 5/6/7/8 add code for matches, targets, rules and table.
-> > Patch 9 handles hooked setsockopt(2) calls.
-> > Patch 10 uses prepared code in main().
-> > 
-> > Here is an example:
-> > % dmesg  | tail -n 2
-> > [   23.636102] bpfilter: Loaded bpfilter_umh pid 181
-> > [   23.658529] bpfilter: started
-> > % /usr/sbin/iptables-legacy -L -n
-> 
-> So this /usr/sbin/iptables-legacy is your iptables variant to
-> translate iptable command lines to BPFILTER_IPT_SO_*,
-> right? It could be good to provide a pointer to the source
-> or binary so people can give a try.
-> 
-> I am not an expert in iptables. Reading codes, I kind of
-> can grasp the high-level ideas of the patch, but probably
-> Alexei or Daniel can review some details whether the
-> design is sufficient to be an iptable replacement.
+> Maybe it's a use case for the new mac_managed_pm flag, see
+> fba863b81604 ("net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM")
 > 
 
-The goal of a complete iptables replacement is too ambigious for
-the moment - because existings hooks and helpers don't cover all
-required functionality.
+Thx! this is the right one :)
 
-A more achievable goal is to have something simple that could
-replace a significant part of use cases for filter table.
-
-Having something simple that would work as a stateless firewall
-and provide some performance benefits is a good start. For more
-complex scenarios there is a safe fallback to the existing
-implementation.
-
-
-> 
-> > Chain INPUT (policy ACCEPT)
-> > target     prot opt source               destination
-> > 
-> > Chain FORWARD (policy ACCEPT)
-> > target     prot opt source               destination
-> > 
-> [...]
-
+Regards,
+Oleksij
 -- 
-
-Dmitrii Banshchikov
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
