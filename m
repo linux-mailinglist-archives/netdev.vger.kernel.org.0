@@ -2,138 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D74403A2DB0
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 16:05:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 619273A2DD0
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 16:14:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbhFJOHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 10:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
+        id S231259AbhFJOP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 10:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbhFJOHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 10:07:19 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A8BC061574
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 07:05:16 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id he7so24944372ejc.13
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 07:05:16 -0700 (PDT)
+        with ESMTP id S230153AbhFJOP4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 10:15:56 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8AE7C061574;
+        Thu, 10 Jun 2021 07:13:47 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id u18so1715544pfk.11;
+        Thu, 10 Jun 2021 07:13:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=O68LTwdMkJTPL4/GAGTyk/CDx9zRZmkpq5dKsgDWAag=;
-        b=gWDtipOsTu0+GzqDS/qvvNo3mTkuNlFPZPnbJnj6n3E6etGyx+V/cUthorZ6ESVst3
-         e/c64+ra5ic4zsLDAoyMSCHVytNmWOOzSM8wgQMhCy63YPe7NUKdncMDRi75hUclm6j4
-         mW9q9HcmLvSIRBgZrohY6m2UqVvxcKYv9Xk6In5YpBGFQHCErRzPO8onxlPmA5gQC+LW
-         HHLa4C3NOxWBe/p51cpDpkJF4LtWdEsHUllVdMxsnhe0Dxni4A8n1lLYkYhdn7BOgXHA
-         czVyt8VkAU+3DXZfEsEQv0kcW54C90wqSzkdDfbuEJdPMebJBl6w+CuxDxtVu1/O0K3w
-         RRaw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=uVvPHfIwriaeCqaGS4SWF2JfjGEeCNMTseqgcHKL0PY=;
+        b=ot0iffXK2/znAlvDWUx0DvEHPs9Hu42jQhvk3aHGx+T2NhWFpnwKA1vIkYGIy+cgYb
+         LxEbfgCrbULtFd7nVuJsfQAH+IMqZIL2R35dwiAl9sJZz1GKTswJr7viHRHzd8ec6z9L
+         cpBdHTN6hAjfnZCW/MdapYStRdZ2pSAmS2zSYAlKj+wqby1v1sKfa0Z3IJGU1Q2S8YcP
+         HqfC/opPsY22Z36tiTPSUNG8yLuAg9Bq77HzKuJDM2mT1cANyfp9SOlXy6wpSwett2B6
+         yucBibCk75zJ2NzA/8lMhfuq11vR41IllnpzmIyKLTH/P3wGLWQCIUfWmxQ4zGD/3HTx
+         tacA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=O68LTwdMkJTPL4/GAGTyk/CDx9zRZmkpq5dKsgDWAag=;
-        b=O2kqcOBEiHyCM92cCuMByrKOLMaBzSEow3bCq4AV4CyoU9+loavM/pR6askLoXhznn
-         JJj9Hl4Xr+kaCgo+8JPi1broaXDSF5uEKo0T3GuYMb4IXTG9nb1cW2C9M0DTPnagc/WO
-         JW19yWhuY5sGgflyeXPpvFqJj2E67zg5PbkRHPwgoxpgGCetVyt2fLcJI7hXTt2//i12
-         nVngx9G+W/dSkyNijuHY/JihdIS6kI1VBb8hNUqNj5rEdtZEZ3qsu4LGdmW23QBRc9vt
-         4vxZn0bEbuhKWJx6hD6CMTCa4EzP1NTMkyZDHDI7KTLYS8K3Wu1fDh1qzeeIE8p9ohSw
-         1GGw==
-X-Gm-Message-State: AOAM532urVqzviq1BIeDC3qZ52Jf4JA9GeAbbazWZiAj6VkieKjuV91+
-        fGOk0IsgwWd64zKvaBusnHL98j5Ej9w6EQ==
-X-Google-Smtp-Source: ABdhPJwsy6Gs49UIIQeL0JrJry/vyUNUNtjenfQu49lZ4/qL+WUBoD6qWHaAAUIQp3ub8l/TKC7WFA==
-X-Received: by 2002:a17:906:af55:: with SMTP id ly21mr4500140ejb.276.1623333914643;
-        Thu, 10 Jun 2021 07:05:14 -0700 (PDT)
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com. [209.85.128.43])
-        by smtp.gmail.com with ESMTPSA id f10sm1391387edx.60.2021.06.10.07.05.13
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=uVvPHfIwriaeCqaGS4SWF2JfjGEeCNMTseqgcHKL0PY=;
+        b=Ob5AjVJlmewWgR91C2iGfH32rqVp9W5EnF11+BLWmpEgtRimFpEQMaBysOyo7RcTVj
+         kvxM2SaGFg8t5sfZ0L6oqoxpQjkqb7ySAyb9AFHodVAL9+Q8Z5jiZKjH9JAeNUFNeeKq
+         oYwL/EVQzB5PZX307pQc+Z1dcVZr09VYTuAbSCmARcFaDgDyZwFTv/oUze7mKDo27IId
+         zdrUSWdvZ6rQZ+a0M5xP8L82dq/cSAqGONkxuMCVmtwV/exS+dccGbDtkwIXsz+8T8Om
+         lyrwZspUfEnEq4X191QY4ap5ptVgz2zhFRZnhbEP0NbU0nTigIrw9MXypsXQAf8jnKP1
+         MC/w==
+X-Gm-Message-State: AOAM530It9T+D/oLpTv3sg30GnJpQoKABxSxMfca/I5TP5FZrDaRkoBG
+        bk4gPaWYunVAN/RQi3+Ix3s=
+X-Google-Smtp-Source: ABdhPJz4FYgWX1XRVYnd1fLznm93BCcmg2/a4wkuQ7x2l90mgEwjIr25Q5mcrDlHBGTMoQXHYCH6CA==
+X-Received: by 2002:a05:6a00:2353:b029:2f2:987a:5da2 with SMTP id j19-20020a056a002353b02902f2987a5da2mr3220673pfj.58.1623334427380;
+        Thu, 10 Jun 2021 07:13:47 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+        by smtp.gmail.com with ESMTPSA id h12sm3035510pgn.54.2021.06.10.07.13.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 07:05:13 -0700 (PDT)
-Received: by mail-wm1-f43.google.com with SMTP id t4-20020a1c77040000b029019d22d84ebdso6626410wmi.3
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 07:05:13 -0700 (PDT)
-X-Received: by 2002:a7b:c935:: with SMTP id h21mr15233756wml.183.1623333912587;
- Thu, 10 Jun 2021 07:05:12 -0700 (PDT)
+        Thu, 10 Jun 2021 07:13:46 -0700 (PDT)
+Subject: Re: [RFC PATCH V3 01/11] x86/HV: Initialize GHCB page in Isolation VM
+To:     Joerg Roedel <joro@8bytes.org>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        arnd@arndb.de, dave.hansen@linux.intel.com, luto@kernel.org,
+        peterz@infradead.org, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        hannes@cmpxchg.org, cai@lca.pw, krish.sadhukhan@oracle.com,
+        saravanand@fb.com, Tianyu.Lan@microsoft.com,
+        konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
+        robin.murphy@arm.com, boris.ostrovsky@oracle.com, jgross@suse.com,
+        sstabellini@kernel.org, will@kernel.org,
+        xen-devel@lists.xenproject.org, davem@davemloft.net,
+        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, thomas.lendacky@amd.com,
+        brijesh.singh@amd.com, sunilmut@microsoft.com
+References: <20210530150628.2063957-1-ltykernel@gmail.com>
+ <20210530150628.2063957-2-ltykernel@gmail.com> <YMC2RSr/J1WYCvtz@8bytes.org>
+From:   Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <c9a7eaa8-a8b3-3ed3-c52c-7a2cea3c95bc@gmail.com>
+Date:   Thu, 10 Jun 2021 22:13:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210608170224.1138264-1-tannerlove.kernel@gmail.com>
- <20210608170224.1138264-3-tannerlove.kernel@gmail.com> <17315e5a-ee1c-489c-a6bf-0fa26371d710@redhat.com>
- <CA+FuTSfvdHBLOqAAU=vPmqnUxhp_b61Cixm=0cd7uh_KsJZGGw@mail.gmail.com>
- <51d301ee-8856-daa4-62bd-10d3d53a3c26@redhat.com> <CAADnVQKHpk5aXA-MiuHyvBC7ZCxDPmN_gKAVww8kQAjoZkkmjA@mail.gmail.com>
- <6ae4f189-a3be-075d-167c-2ad3f8d7d975@redhat.com> <CAADnVQL_+oKjH341ccC_--ing6dviAPwWRocgYrTKidkKo-NcA@mail.gmail.com>
- <2fd24801-bf77-02e3-03f5-b5e8fac595b6@redhat.com>
-In-Reply-To: <2fd24801-bf77-02e3-03f5-b5e8fac595b6@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 10 Jun 2021 10:04:34 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeuq4K=nA_JPomyZv4SkQY0cGWdEf1jftx_1Znd+=tOZw@mail.gmail.com>
-Message-ID: <CA+FuTSeuq4K=nA_JPomyZv4SkQY0cGWdEf1jftx_1Znd+=tOZw@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/3] virtio_net: add optional flow dissection
- in virtio_net_hdr_to_skb
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Tanner Love <tannerlove.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Tanner Love <tannerlove@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YMC2RSr/J1WYCvtz@8bytes.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 10, 2021 at 1:25 AM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2021/6/10 =E4=B8=8B=E5=8D=8812:19, Alexei Starovoitov =E5=86=99=
-=E9=81=93:
-> > On Wed, Jun 9, 2021 at 9:13 PM Jason Wang <jasowang@redhat.com> wrote:
-> >> So I wonder why not simply use helpers to access the vnet header like
-> >> how tcp-bpf access the tcp header?
-> > Short answer - speed.
-> > tcp-bpf accesses all uapi and non-uapi structs directly.
-> >
->
-> Ok, this makes sense. But instead of coupling device specific stuffs
-> like vnet header and neediness into general flow_keys as a context.
->
-> It would be better to introduce a vnet header context which contains
->
-> 1) vnet header
-> 2) flow keys
-> 3) other contexts like endian and virtio-net features
->
-> So we preserve the performance and decouple the virtio-net stuffs from
-> general structures like flow_keys or __sk_buff.
+Hi Joerg：
+	Thanks for your review.
 
-You are advocating for a separate BPF program that takes a vnet hdr
-and flow_keys as context and is run separately after flow dissection?
 
-I don't understand the benefit of splitting the program in two in this mann=
-er.
+On 6/9/2021 8:38 PM, Joerg Roedel wrote:
+> On Sun, May 30, 2021 at 11:06:18AM -0400, Tianyu Lan wrote:
+>> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+>>
+>> Hyper-V exposes GHCB page via SEV ES GHCB MSR for SNP guest
+>> to communicate with hypervisor. Map GHCB page for all
+>> cpus to read/write MSR register and submit hvcall request
+>> via GHCB.
+>>
+>> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+>> ---
+>>   arch/x86/hyperv/hv_init.c       | 60 ++++++++++++++++++++++++++++++---
+>>   arch/x86/include/asm/mshyperv.h |  2 ++
+>>   include/asm-generic/mshyperv.h  |  2 ++
+>>   3 files changed, 60 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+>> index bb0ae4b5c00f..dc74d01cb859 100644
+>> --- a/arch/x86/hyperv/hv_init.c
+>> +++ b/arch/x86/hyperv/hv_init.c
+>> @@ -60,6 +60,9 @@ static int hv_cpu_init(unsigned int cpu)
+>>   	struct hv_vp_assist_page **hvp = &hv_vp_assist_page[smp_processor_id()];
+>>   	void **input_arg;
+>>   	struct page *pg;
+>> +	u64 ghcb_gpa;
+>> +	void *ghcb_va;
+>> +	void **ghcb_base;
+> 
+> Any reason you can't reuse the SEV-ES support code in the Linux kernel?
+> It already has code to setup GHCBs for all vCPUs.
+> 
+> I see that you don't need #VC handling in your SNP VMs because of the
+> paravisor running underneath it, but just re-using the GHCB setup code
+> shouldn't be too hard.
+> 
 
-Your previous comment mentions two vnet_hdr definitions that can get
-out of sync. Do you mean v1 of this patch, that adds the individual
-fields to bpf_flow_dissector? That is no longer the case: the latest
-version directly access the real struct. As Alexei points out, doing
-this does not set virtio_net_hdr in stone in the ABI. That is a valid
-worry. But so this patch series will not restrict how that struct may
-develop over time. A version field allows a BPF program to parse the
-different variants of the struct -- in the same manner as other
-protocol headers. If you prefer, we can add that field from the start.
-I don't see a benefit to an extra layer of indirection in the form of
-helper functions.
+Thanks for your suggestion. I will have a try to use SEV-ES code.
 
-I do see downsides to splitting the program. The goal is to ensure
-consistency between vnet_hdr and packet payload. A program split
-limits to checking vnet_hdr against what the flow_keys struct has
-extracted. That is a great reduction over full packet access. For
-instance, does the packet contain IP options? No idea.
-
-If stable ABI is not a concern and there are no different struct
-definitions that can go out of sync, does that address your main
-concerns?
