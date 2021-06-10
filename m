@@ -2,330 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A319B3A226E
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 04:58:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C9843A226F
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 04:58:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229792AbhFJDAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 23:00:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33628 "EHLO mail.kernel.org"
+        id S229943AbhFJDAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 23:00:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33636 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229634AbhFJDAO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229797AbhFJDAO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 9 Jun 2021 23:00:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7FCF660D07;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EA38C6141D;
         Thu, 10 Jun 2021 02:58:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623293898;
-        bh=kdt+QYuMaZXz6rKgJk7k0EL6lSdCYikbMUi6742Ldfg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Gxhx9oy0RXQUliDPe2dGhvw7N1dqQa5McQTNMR40YpuXdU2pMADvXlpKwAf2n30yv
-         oXOslMcGHyjOCY7SHxrTqI13YBLRGhtHgKT+z+sBX4zCpsX9Zy/UU8S3kDUXOTLmws
-         M/M2XnRECA6ZEAwV/030xKk/eX3AiPJSdScz35Ajuw5SRfTrsUqjl6/V0eiG0hmV9U
-         Bpahhc7mwYS66ZeoQPcW78x/Craw0T5wzjDoFZztX6blF07Fz6kS6H0BeIwoWoGHSW
-         zaR7rkD/GJqTuYVaIXbm7pskYa5qoQJsgyjjd/FgYJ6a80th4grTwSdqacvmAd1DqX
-         k2DZ0w08wufrw==
+        s=k20201202; t=1623293899;
+        bh=ufyKlj6t71WpS6cyX3c5aQ7cB/rV5mE7Yue9VYPm/S4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KG5M29+huj7bZQfJnNBBKzU0VTZsfP4voBn5X3RxmXc5EXYwJXY1wCAXf7EwLuLg/
+         digW0XNBK2D8bQEEZLIu+0h/9TmyCYA2l3QKVV5EYkvkhr7IyZSBs6Puqxv5ULCls6
+         /fatF4/TWdNVWatwhxRQA/Hg/O77pE7MmEZwdwSaIP9BkvWakq+45CqmXn2qpyZKFP
+         j7iltfNbmQyXvN4i8B8qlZ45xf39ZUSYnPHMLEkxUHa0jddTwJOgZ4ZLKVpZLUn0fB
+         XdysLirjGS7EKk3mC9BvDSQnwUzkmX4i+BhtofwB9I7y2p3GKVX7XN6S1nlmNTmRWC
+         oqK6Di9XkY15w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/16] mlx5 updates 2021-06-09
-Date:   Wed,  9 Jun 2021 19:57:58 -0700
-Message-Id: <20210610025814.274607-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Jianbo Liu <jianbol@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 01/16] net/mlx5: mlx5_ifc support for header insert/remove
+Date:   Wed,  9 Jun 2021 19:57:59 -0700
+Message-Id: <20210610025814.274607-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210610025814.274607-1-saeed@kernel.org>
+References: <20210610025814.274607-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Hi Dave and Jakub,
+Add support for HCA caps 2 that contains capabilities for the new
+insert/remove header actions.
 
-This series introduces insert/remove header support
-for sw steering and switchdev bridge offloads support.
+Added the required definitions for supporting the new reformat type:
+added packet reformat parameters, reformat anchors and definitions
+to allow copy/set into the inserted EMD (Embedded MetaData) tag.
 
-For more information please see tag log below.
-
-Please pull and let me know if there is any problem.
-
-Thanks,
-Saeed.
-
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Jianbo Liu <jianbol@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit 0d155170d6eebbd6c50e16bc928c31b3f5473025:
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c |  6 +++
+ include/linux/mlx5/device.h                  | 10 +++++
+ include/linux/mlx5/mlx5_ifc.h                | 40 +++++++++++++++++---
+ 3 files changed, 50 insertions(+), 6 deletions(-)
 
-  Merge branch 'ipa-mem-1' (2021-06-09 15:59:34 -0700)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+index 02558ac2ace6..016d26f809a5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+@@ -148,6 +148,12 @@ int mlx5_query_hca_caps(struct mlx5_core_dev *dev)
+ 	if (err)
+ 		return err;
+ 
++	if (MLX5_CAP_GEN(dev, hca_cap_2)) {
++		err = mlx5_core_get_caps(dev, MLX5_CAP_GENERAL_2);
++		if (err)
++			return err;
++	}
++
+ 	if (MLX5_CAP_GEN(dev, eth_net_offloads)) {
+ 		err = mlx5_core_get_caps(dev, MLX5_CAP_ETHERNET_OFFLOADS);
+ 		if (err)
+diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
+index 578c4ccae91c..0025913505ab 100644
+--- a/include/linux/mlx5/device.h
++++ b/include/linux/mlx5/device.h
+@@ -1179,6 +1179,7 @@ enum mlx5_cap_type {
+ 	MLX5_CAP_VDPA_EMULATION = 0x13,
+ 	MLX5_CAP_DEV_EVENT = 0x14,
+ 	MLX5_CAP_IPSEC,
++	MLX5_CAP_GENERAL_2 = 0x20,
+ 	/* NUM OF CAP Types */
+ 	MLX5_CAP_NUM
+ };
+@@ -1220,6 +1221,15 @@ enum mlx5_qcam_feature_groups {
+ #define MLX5_CAP_GEN_MAX(mdev, cap) \
+ 	MLX5_GET(cmd_hca_cap, mdev->caps.hca_max[MLX5_CAP_GENERAL], cap)
+ 
++#define MLX5_CAP_GEN_2(mdev, cap) \
++	MLX5_GET(cmd_hca_cap_2, mdev->caps.hca_cur[MLX5_CAP_GENERAL_2], cap)
++
++#define MLX5_CAP_GEN_2_64(mdev, cap) \
++	MLX5_GET64(cmd_hca_cap_2, mdev->caps.hca_cur[MLX5_CAP_GENERAL_2], cap)
++
++#define MLX5_CAP_GEN_2_MAX(mdev, cap) \
++	MLX5_GET(cmd_hca_cap_2, mdev->caps.hca_max[MLX5_CAP_GENERAL_2], cap)
++
+ #define MLX5_CAP_ETH(mdev, cap) \
+ 	MLX5_GET(per_protocol_networking_offload_caps,\
+ 		 mdev->caps.hca_cur[MLX5_CAP_ETHERNET_OFFLOADS], cap)
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index eb86e80e4643..057db0eaf195 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -435,7 +435,10 @@ struct mlx5_ifc_flow_table_prop_layout_bits {
+ 
+ 	u8         reserved_at_40[0x20];
+ 
+-	u8         reserved_at_60[0x18];
++	u8         reserved_at_60[0x2];
++	u8         reformat_insert[0x1];
++	u8         reformat_remove[0x1];
++	u8         reserver_at_64[0x14];
+ 	u8         log_max_ft_num[0x8];
+ 
+ 	u8         reserved_at_80[0x10];
+@@ -1312,7 +1315,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         reserved_at_0[0x1f];
+ 	u8         vhca_resource_manager[0x1];
+ 
+-	u8         reserved_at_20[0x3];
++	u8         hca_cap_2[0x1];
++	u8         reserved_at_21[0x2];
+ 	u8         event_on_vhca_state_teardown_request[0x1];
+ 	u8         event_on_vhca_state_in_use[0x1];
+ 	u8         event_on_vhca_state_active[0x1];
+@@ -1732,6 +1736,17 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8	   reserved_at_7c0[0x40];
+ };
+ 
++struct mlx5_ifc_cmd_hca_cap_2_bits {
++	u8	   reserved_at_0[0xa0];
++
++	u8	   max_reformat_insert_size[0x8];
++	u8	   max_reformat_insert_offset[0x8];
++	u8	   max_reformat_remove_size[0x8];
++	u8	   max_reformat_remove_offset[0x8];
++
++	u8	   reserved_at_c0[0x740];
++};
++
+ enum mlx5_flow_destination_type {
+ 	MLX5_FLOW_DESTINATION_TYPE_VPORT        = 0x0,
+ 	MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE   = 0x1,
+@@ -3105,6 +3120,7 @@ struct mlx5_ifc_roce_addr_layout_bits {
+ 
+ union mlx5_ifc_hca_cap_union_bits {
+ 	struct mlx5_ifc_cmd_hca_cap_bits cmd_hca_cap;
++	struct mlx5_ifc_cmd_hca_cap_2_bits cmd_hca_cap_2;
+ 	struct mlx5_ifc_odp_cap_bits odp_cap;
+ 	struct mlx5_ifc_atomic_caps_bits atomic_caps;
+ 	struct mlx5_ifc_roce_cap_bits roce_cap;
+@@ -5785,12 +5801,14 @@ struct mlx5_ifc_query_eq_in_bits {
+ };
+ 
+ struct mlx5_ifc_packet_reformat_context_in_bits {
+-	u8         reserved_at_0[0x5];
+-	u8         reformat_type[0x3];
+-	u8         reserved_at_8[0xe];
++	u8         reformat_type[0x8];
++	u8         reserved_at_8[0x4];
++	u8         reformat_param_0[0x4];
++	u8         reserved_at_10[0x6];
+ 	u8         reformat_data_size[0xa];
+ 
+-	u8         reserved_at_20[0x10];
++	u8         reformat_param_1[0x8];
++	u8         reserved_at_28[0x8];
+ 	u8         reformat_data[2][0x8];
+ 
+ 	u8         more_reformat_data[][0x8];
+@@ -5830,12 +5848,20 @@ struct mlx5_ifc_alloc_packet_reformat_context_out_bits {
+ 	u8         reserved_at_60[0x20];
+ };
+ 
++enum {
++	MLX5_REFORMAT_CONTEXT_ANCHOR_MAC_START = 0x1,
++	MLX5_REFORMAT_CONTEXT_ANCHOR_IP_START = 0x7,
++	MLX5_REFORMAT_CONTEXT_ANCHOR_TCP_UDP_START = 0x9,
++};
++
+ enum mlx5_reformat_ctx_type {
+ 	MLX5_REFORMAT_TYPE_L2_TO_VXLAN = 0x0,
+ 	MLX5_REFORMAT_TYPE_L2_TO_NVGRE = 0x1,
+ 	MLX5_REFORMAT_TYPE_L2_TO_L2_TUNNEL = 0x2,
+ 	MLX5_REFORMAT_TYPE_L3_TUNNEL_TO_L2 = 0x3,
+ 	MLX5_REFORMAT_TYPE_L2_TO_L3_TUNNEL = 0x4,
++	MLX5_REFORMAT_TYPE_INSERT_HDR = 0xf,
++	MLX5_REFORMAT_TYPE_REMOVE_HDR = 0x10,
+ };
+ 
+ struct mlx5_ifc_alloc_packet_reformat_context_in_bits {
+@@ -5956,6 +5982,8 @@ enum {
+ 	MLX5_ACTION_IN_FIELD_OUT_TCP_SEQ_NUM   = 0x59,
+ 	MLX5_ACTION_IN_FIELD_OUT_TCP_ACK_NUM   = 0x5B,
+ 	MLX5_ACTION_IN_FIELD_IPSEC_SYNDROME    = 0x5D,
++	MLX5_ACTION_IN_FIELD_OUT_EMD_47_32     = 0x6F,
++	MLX5_ACTION_IN_FIELD_OUT_EMD_31_0      = 0x70,
+ };
+ 
+ struct mlx5_ifc_alloc_modify_header_context_out_bits {
+-- 
+2.31.1
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-06-09
-
-for you to fetch changes up to 9724fd5d9c2a0d3686b799ed5ca90cb9378ca4f2:
-
-  net/mlx5: Bridge, add tracepoints (2021-06-09 18:36:12 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2021-06-09
-
-Introduce steering header insert/remove and switchdev bridge offloads
-
-1) From Yevgeny, Steering header insert/remove support
-
-ConnectX supports offloading of various encapsulations and decapsulations
-(e.g. VXLAN), which are performed by 'Packet Reformat' action.
-Starting with ConnectX-6 DX, a new reformat type is supported - INSERT_HEADER.
-This reformat allows inserting an arbitrary size buffer at a selected location
-in the packet on RX flows.
-
-The insert/remove header support are needed as a prerequisite for the
-bridge offloads vlan pop/push supprt, see below.
-
-2) From Vlad, Support for bridge offloads for switchdev mode
-
-This change implements bridge offloads with VLAN-support that works on top
-of mlx5 representors in switchdev mode.
-
-HIGH-LEVEL OVERVIEW
-
-Hardware supported by mlx5 driver doesn't provide dynamic learning or aging
-functionality and requires the driver to emulate all switch-like behavior
-in software. As such, all packets by default go through miss path, appear
-on representor and get to software bridge, if it is the upper device of the
-representor. This causes bridge to process packet in software, learn the
-MAC address to FDB and send SWITCHDEV_FDB_ADD_TO_DEVICE event to all
-subscribers. Upon reception of SWITCHDEV_FDB_ADD_TO_DEVICE notification
-mlx5 bridge offloads the FDB to hardware and sends back
-SWITCHDEV_FDB_ADD_TO_BRIDGE notification to prevent such entries from being
-aged out by kernel bridge. Leaving aging to kernel bridge would result
-deletion of offloaded dynamic FDB entries every aging_time period due to
-packets being processed by hardware and, consecutively, 'used' timestamp
-for FDB entry not being updated. Hardware aging is emulated in driver by
-running periodic workqueue task that manually updates the rules according
-to their hardware counter:
-
-- If hardware counter has changed since last update, the handler updates
-'used' timestamp in kernel bridge dynamic entry by sending
-SWITCHDEV_FDB_ADD_TO_BRIDGE notification for the entry.
-
-- If FDB entry wasn't updated for user-controllable aging_time period,
-then the FDB entry is unoffloaded from hardware and corresponding
-SWITCHDEV_FDB_DEL_TO_BRIDGE notification is sent to kernel bridge.
-
-The mlx5 bridge offload implementation fully supports port VLAN objects,
-including PVID (vlan push) and "Egress Untagged" (vlan pop).
-
-SOFTWARE ARCHITECTURE
-
-Mlx5_eswitch is extended with pointer to new mlx5_esw_bridge_offloads
-structure which has a linked list of mlx5_esw_bridge objects. Struct
-mlx5_esw_bridge is the main switch object in mlx5 that holds all data for
-offloaded FDB entries and metadata for bridge ports and their vlans. The
-mlx5_esw_bridge object is created when first representor of eswitch vport
-is added to bridge and deleted when the last representor is detached from
-it. Bridge FDB entries are saved in linked list (to iterate over all FDB
-entries in aging workqueue task) and also in hashtable for quick lookup by
-MAC+VLAN tuple. Bridge FDB entries are saved in linked list (to iterate
-over all FDB entries in aging workqueue task) and in hashtable for quick
-lookup by MAC+VLAN tuple. Port metadata is stored in struct
-mlx5_esw_bridge_port that is saved in xarray to allow quick lookup by vport
-number. Part of the port metadata is the set of port vlans that are
-represented by mlx5_esw_bridge_vlan structure. The vlan structure points to
-all FDBs on vlan/port via fdb_list linked list.
-
-Simplified diagram of mlx5 bridge objects:
-
-                      +------------------+
-                      |  mxl5_eswitch    |
-                      |                  |
-                      |  br_offloads     |
-                      +--------+---------+
-                               |
-                      +--------v-------------------+
-                      |  mlx5_esw_bridge_offloads  |
-                      |                            |
-                   +-->  bridges                   |
-                   |  +-------+--------------------+
-                   |          |
-                   |          |
-                   |      +---v---------------+
-                   |      | mlx5_esw_bridge   |
-                   |      |                   |
-                   |      | vports            |
-                   |      |                   |
-                   |      | fdb_ht            |
-                   |      +---+---------------+
-                   |          |
-                   |      +---v---------------+
-                   +------+ mlx5_esw_bridge   |
-                          |                   |
-+-------------------------+ vports            |
-|                         |                   |
-|                         | fdb_ht            +------------------------------------------+
-|                         +-------------------+                                          |
-|                                                                                        |
-|                                                                                        |
-| +----------------------+                                 +---------------------------+ |
-+-> mlx5_esw_bridge_port |                              +--> mlx5_esw_bridge_fdb_entry <-+
-| |                      |    +----------------------+  |  +--+------------------------+ |
-| | vlans                +--+-> mlx5_esw_bridge_vlan |  |     |                          |
-| |                      |  | |                      |  |  +--v------------------------+ |
-| +----------------------+  | | fdb_list             +--+  | mlx5_esw_bridge_fdb_entry <-+
-|                           | +-------^--------------+     +--+------------------------+ |
-| +----------------------+  |         |                       |                          |
-+-> mlx5_esw_bridge_port |  |         +-----------------------+                          |
-  |                      |  |                                                            |
-  | vlans                |  | -----------------------+                                   |
-  |                      |  +-> mlx5_esw_bridge_vlan |                                   |
-  +----------------------+    |                      |     +---------------------------+ |
-                              | fdb_list             +-----> mlx5_esw_bridge_fdb_entry <-+
-                              +-------^--------------+     +--+------------------------+
-                                      |                       |
-                                      +-----------------------+
-
-HARDWARE REPRESENTATION
-
-In order to adhere to kernel software datapath model bridge offloads must
-come after TC and NF FDBs. However, since netfilter offload in mlx5 is
-implemented with unmanaged tables, its miss path is not automatically
-connected to next priority and requires the code to manually connect with
-slow table. To keep bridge offloads encapsulated and not mix it with
-eswitch offloads new FDB_TC_MISS priority is created between FDB_FT_OFFLOAD
-and FDB_SLOW_PATH which allows bridge offloads to be created without
-exposing its internal tables to any other modules since miss path of
-managed TC-miss table is automatically wired to next priority.
-
-The bridge tables are created with new priority FDB_BR_OFFLOAD in FDB
-namespace. The new priority is between tc-miss and slow path priorities.
-Priority consist of two levels: the ingress table that is global per
-eswitch and matches incoming packets by src_mac/vid and redirects them to
-next level (egress table) that is chosen according to ingress port bridge
-membership and matches on dst_mac/vid in order to redirect packet to vport
-according to the following diagram:
-
-                +
-                |
-      +---------v----------+
-      |                    |
-      |   FDB_TC_OFFLOAD   |
-      |                    |
-      +---------+----------+
-                |
-                |
-      +---------v----------+
-      |                    |
-      |   FDB_FT_OFFLOAD   |
-      |                    |
-      +---------+----------+
-                |
-                |
-      +---------v----------+
-      |                    |
-      |    FDB_TC_MISS     |
-      |                    |
-      +---------+----------+
-                |
-+--------------------------------------+
-|               |                      |
-|        +------+                      |
-|        |                             |
-| +------v--------+   FDB_BR_OFFLOAD   |
-| | INGRESS_TABLE |                    |
-| +------+---+----+                    |
-|        |   |      match              |
-|        |   +---------+               |
-|        |             |               |    +-------+
-|        |     +-------v-------+ match |    |       |
-|        |     | EGRESS_TABLE  +------------> vport |
-|        |     +-------+-------+       |    |       |
-|        |             |               |    +-------+
-|        |    miss     |               |
-|        +------+------+               |
-|               |                      |
-+--------------------------------------+
-                |
-                |
-      +---------v----------+
-      |                    |
-      |   FDB_SLOW_PATH    |
-      |                    |
-      +---------+----------+
-                |
-                v
-
-PATCHES OVERVIEW
-
-1-3 - Miscellaneous refactorings and infrastructure changes.
-
-4 - Mlx5 bridge offload infrastructure and dedicated fs_core
-namespace/tables implementation.
-
-5 - FDB entry offload.
-
-6 - Dynamic FDB entry aging.
-
-7-10 - VLAN filtering offload.
-
-11 - Tracepoints for main mlx5 bridge offload events (FDB entry
-offload/unoffload, VLAN add/delete, etc.)
-
---
-
-----------------------------------------------------------------
-Vlad Buslov (10):
-      net/mlx5: Create TC-miss priority and table
-      net/mlx5e: Refactor mlx5e_eswitch_{*}rep() helpers
-      net/mlx5: Bridge, add offload infrastructure
-      net/mlx5: Bridge, handle FDB events
-      net/mlx5: Bridge, dynamic entry ageing
-      net/mlx5: Bridge, implement infrastructure for vlans
-      net/mlx5: Bridge, match FDB entry vlan tag
-      net/mlx5: Bridge, support pvid and untagged vlan configurations
-      net/mlx5: Bridge, filter tagged packets that didn't match tagged fg
-      net/mlx5: Bridge, add tracepoints
-
-Yevgeny Kliteynik (6):
-      net/mlx5: mlx5_ifc support for header insert/remove
-      net/mlx5: DR, Split reformat state to Encap and Decap
-      net/mlx5: DR, Allow encap action for RX for supporting devices
-      net/mlx5: Added new parameters to reformat context
-      net/mlx5: DR, Added support for INSERT_HEADER reformat type
-      net/mlx5: DR, Support EMD tag in modify header for STEv1
-
- .../device_drivers/ethernet/mellanox/mlx5.rst      |   88 ++
- drivers/infiniband/hw/mlx5/fs.c                    |    9 +-
- drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |   10 +
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |    1 +
- .../ethernet/mellanox/mlx5/core/en/rep/bridge.c    |  424 +++++++
- .../ethernet/mellanox/mlx5/core/en/rep/bridge.h    |   21 +
- .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |   38 +-
- .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  |   17 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |    7 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |    6 +-
- .../net/ethernet/mellanox/mlx5/core/esw/bridge.c   | 1299 ++++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/esw/bridge.h   |   53 +
- .../ethernet/mellanox/mlx5/core/esw/bridge_priv.h  |   53 +
- .../mlx5/core/esw/diag/bridge_tracepoint.h         |  113 ++
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |    7 +
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   19 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |   29 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h   |    4 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   21 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw.c       |    6 +
- .../mellanox/mlx5/core/steering/dr_action.c        |  187 ++-
- .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |    7 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_ste.h  |    1 +
- .../mellanox/mlx5/core/steering/dr_ste_v0.c        |    5 +-
- .../mellanox/mlx5/core/steering/dr_ste_v1.c        |  120 +-
- .../mellanox/mlx5/core/steering/dr_types.h         |   22 +-
- .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   20 +-
- .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |    3 +
- include/linux/mlx5/device.h                        |   10 +
- include/linux/mlx5/fs.h                            |   14 +-
- include/linux/mlx5/mlx5_ifc.h                      |   40 +-
- 31 files changed, 2523 insertions(+), 131 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h
