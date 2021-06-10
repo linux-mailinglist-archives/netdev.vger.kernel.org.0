@@ -2,168 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C403A22EF
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 05:45:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 074B73A22FA
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 05:53:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbhFJDqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 23:46:24 -0400
-Received: from mail-ot1-f43.google.com ([209.85.210.43]:42540 "EHLO
-        mail-ot1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbhFJDqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 23:46:23 -0400
-Received: by mail-ot1-f43.google.com with SMTP id w23-20020a9d5a970000b02903d0ef989477so21739989oth.9
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 20:44:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=d/HsOChtoCYv2fZLAnHj+L8OfimOjEe4YM7F//2V4UM=;
-        b=Xh67DyPE6Dr/kBZT1T6WHVHNDgnklob0hvRge79XgS3dUfpC+iqe3geJA0EJxO4kzK
-         Ot37b8Pulgxw5XN5Fa6KGf7GYNhkyGy+9RcqdrLjnpbSuIDFQPEbKb0Xf44MrNP1zLm2
-         WrWY3RAEWZtR0mQ87N4jnbpzkvSxN3+BHFZgazaGKzsNdaOKZFiEScjc0GExA2l5UsJ4
-         F0wFDYmOkxIRvWpAt2j18370FgzP+3AndnwDqjm1R/xH7PG3XDpFClhwRA5bo5+vnqTl
-         HWjnxbrNmbjoFG/D0xBPsqZ+n+UakseIticWoF9S9UcgMHc0R+YVxkD8cqlRd/7fe3CB
-         Zt2g==
+        id S229753AbhFJDzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 23:55:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43784 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229655AbhFJDzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 23:55:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623297232;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rlHeDaRpj14Nh5x7bGrc9HFbf+z4n0+A508Ev0DirBo=;
+        b=X/ZpjncnLfjnFod+8HH3Mf5iSHm2GVyJAyIsnI+ILNYGlHDS4f2FfMa0slJn1l+fadNTZ+
+        5F8FUbCr/1LIqq8CuzbYdYFmdx8VnXnz5oGkvN/2M6ZegaTeemIj3BLPio89amgOBayPum
+        1h9EzHvQzvrPpuZgX4QuKiPYVH7thCk=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-518-QHyOg044P7WQ89HqOKH2Xw-1; Wed, 09 Jun 2021 23:53:51 -0400
+X-MC-Unique: QHyOg044P7WQ89HqOKH2Xw-1
+Received: by mail-pj1-f72.google.com with SMTP id t8-20020a17090aba88b029016baed73c00so2889746pjr.5
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 20:53:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=d/HsOChtoCYv2fZLAnHj+L8OfimOjEe4YM7F//2V4UM=;
-        b=AsY+U/wynkQip9WARy5MmwnzagZ5GLaemZ/wBNWEIMTxxjdHqtAANr4Nv0QQ4b/asI
-         QMSleSa75WOWQH5DrJQFKZy6S/o7aYtl2acF1q2Vu360bjDVvMWvzxWZhCEfAGppS0dP
-         cfrsjgVAAsRlRqnvXnIj8kmgOsVyWuCdmSSTCNRBF+pwWc/T6oqYo99LOeitUf2M+jRA
-         X6zyKMVuIXRPMCnoGPOcHIDpQsqRIWt18aL7WjlHJNIhfvRztqmANNIr994uAqNqdwCu
-         67lG/LJs7Coeg6mXNlcGWgP0Kus2FW6PJTfn7k7MJMBL+4Z75+btyDxZq7SfkcqoOMPU
-         5SMg==
-X-Gm-Message-State: AOAM532r4inl90FDEGwiyvu42QB3+Z3uhpPwkFNsGFepesyMAv9YIBUL
-        1juqxYFo0AxFW68zYPi4PWYwe1nJ5Vp1ObJypGA7BQ==
-X-Google-Smtp-Source: ABdhPJwaI7pY5h+Lp2iauvfmhJT8Zg+jqsNfguAo720I85KWBapKSLe5j38W7lEBj40rsZP877aszFSAKUNQM7jHv0A=
-X-Received: by 2002:a9d:711c:: with SMTP id n28mr704194otj.180.1623296592541;
- Wed, 09 Jun 2021 20:43:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210609232501.171257-1-jiang.wang@bytedance.com> <da90f17a-1c24-b475-76ef-f6a7fc2bcdd5@redhat.com>
-In-Reply-To: <da90f17a-1c24-b475-76ef-f6a7fc2bcdd5@redhat.com>
-From:   "Jiang Wang ." <jiang.wang@bytedance.com>
-Date:   Wed, 9 Jun 2021 20:43:01 -0700
-Message-ID: <CAP_N_Z_VDd+JUJ_Y-peOEc7FgwNGB8O3uZpVumQT_DbW62Jpjw@mail.gmail.com>
-Subject: Re: Re: [RFC v1 0/6] virtio/vsock: introduce SOCK_DGRAM support
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Stefano Garzarella <sgarzare@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        jhansen@vmware.comments, cong.wang@bytedance.com,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Yongji Xie <xieyongji@bytedance.com>,
-        =?UTF-8?B?5p+056iz?= <chaiwen.cc@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=rlHeDaRpj14Nh5x7bGrc9HFbf+z4n0+A508Ev0DirBo=;
+        b=Xd+1e+odyxeM71/aiIh3mokQvnZ1DxUDQkggTeRTSr3AEMXQp4b4k3Zg+K0kN4a0TA
+         P/9pFRv+e5GR0Ml7CsD3alIIZOin/MV2+LkqQpK71vpEiq3FfMZ6HCcqPl311F2+ncjt
+         lS3/XgaISfycfgim0ZQgs/eb3sB3tiK3yZrlB1l5uoGY2S9pPHmZGvcPDmPatSVPzNoL
+         LYjwAUivNkrJoAvmQLJgdXiB5anHWOduU3551dnl6V1vtedkirEp0e+ZxuqnuCQ98z34
+         jLsnpGFAyXXXVm8TdUjJGb0FDjcGNKlZvhlPB+I44ieQPFbTeocgcXeU0zp8FfZYlm32
+         kNyw==
+X-Gm-Message-State: AOAM533ngr3u+lJVnQom2Z1gwpZRsDTiZMJrxomdr6fI5xV/XJ+Upa94
+        KgVeMQpaGbvRrOJu2tJ4a1fHt1bZ2+7iWXgtjZ1LXFeMH9he8Nskfxn5eIIg2St/TEaoQ1jk8e8
+        12+MnTHfNmDMCwRp5
+X-Received: by 2002:a17:90a:a107:: with SMTP id s7mr1130562pjp.1.1623297230415;
+        Wed, 09 Jun 2021 20:53:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz91JY6xpohd4Ejz6oQ06kcY/qW4ulZ5MZqVqJjGhG6SRmlisz8a+C8CKJcQzGPwLLA8f8MWw==
+X-Received: by 2002:a17:90a:a107:: with SMTP id s7mr1130537pjp.1.1623297230106;
+        Wed, 09 Jun 2021 20:53:50 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id p11sm1069040pgn.65.2021.06.09.20.53.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Jun 2021 20:53:49 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 2/3] virtio_net: add optional flow dissection
+ in virtio_net_hdr_to_skb
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Tanner Love <tannerlove.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Petar Penkov <ppenkov@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Lu Wei <luwei32@huawei.com>,
-        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Tanner Love <tannerlove@google.com>
+References: <20210608170224.1138264-1-tannerlove.kernel@gmail.com>
+ <20210608170224.1138264-3-tannerlove.kernel@gmail.com>
+ <17315e5a-ee1c-489c-a6bf-0fa26371d710@redhat.com>
+ <CA+FuTSfvdHBLOqAAU=vPmqnUxhp_b61Cixm=0cd7uh_KsJZGGw@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <51d301ee-8856-daa4-62bd-10d3d53a3c26@redhat.com>
+Date:   Thu, 10 Jun 2021 11:53:40 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <CA+FuTSfvdHBLOqAAU=vPmqnUxhp_b61Cixm=0cd7uh_KsJZGGw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 9, 2021 at 6:51 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2021/6/10 =E4=B8=8A=E5=8D=887:24, Jiang Wang =E5=86=99=E9=81=93=
-:
-> > This patchset implements support of SOCK_DGRAM for virtio
-> > transport.
-> >
-> > Datagram sockets are connectionless and unreliable. To avoid unfair con=
-tention
-> > with stream and other sockets, add two more virtqueues and
-> > a new feature bit to indicate if those two new queues exist or not.
-> >
-> > Dgram does not use the existing credit update mechanism for
-> > stream sockets. When sending from the guest/driver, sending packets
-> > synchronously, so the sender will get an error when the virtqueue is fu=
-ll.
-> > When sending from the host/device, send packets asynchronously
-> > because the descriptor memory belongs to the corresponding QEMU
-> > process.
->
->
-> What's the use case for the datagram vsock?
->
-One use case is for non critical info logging from the guest
-to the host, such as the performance data of some applications.
 
-It can also be used to replace UDP communications between
-the guest and the host.
+在 2021/6/10 上午11:15, Willem de Bruijn 写道:
+> On Wed, Jun 9, 2021 at 11:09 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> 在 2021/6/9 上午1:02, Tanner Love 写道:
+>>>    retry:
+>>> -                     if (!skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
+>>> +                     /* only if flow dissection not already done */
+>>> +                     if (!static_branch_unlikely(&sysctl_flow_dissect_vnet_hdr_key) &&
+>>> +                         !skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
+>>>                                                              NULL, 0, 0, 0,
+>>>                                                              0)) {
+>>
+>> So I still wonder the benefit we could gain from reusing the bpf flow
+>> dissector here. Consider the only context we need is the flow keys,
+> Maybe I misunderstand the comment, but the goal is not just to access
+> the flow keys, but to correlate data in the packet payload with the fields
+> of the virtio_net_header. E.g., to parse a packet payload to verify that
+> it matches the gso type and header length. I don't see how we could
+> make that two separate programs, one to parse a packet (flow dissector)
+> and one to validate the vnet_hdr.
 
-> >
-> > The virtio spec patch is here:
-> > https://www.spinics.net/lists/linux-virtualization/msg50027.html
+
+I may miss something here. I think it could be done via passing flow 
+keys built by flow dissectors to vnet header validation eBPF program.
+
+(Looking at validate_vnet_hdr(), it needs only flow keys and skb length).
+
+Having two programs may have other advantages:
+
+1) bpf vnet header validation can work without bpf flow dissector
+2) keep bpf flow dissector simpler (unaware of vnet header), otherwise 
+you need to prepare a dedicated bpf dissector for virtio-net/tap etc.
+
+
 >
+>> we
+>> had two choices
+>>
+>> a1) embed the vnet header checking inside bpf flow dissector
+>> a2) introduce a dedicated eBPF type for doing that
+>>
+>> And we have two ways to access the vnet header
+>>
+>> b1) via pesudo __sk_buff
+>> b2) introduce bpf helpers
+>>
+>> I second for a2 and b2. The main motivation is to hide the vnet header
+>> details from the bpf subsystem.
+> b2 assumes that we might have many different variants of
+> vnet_hdr, but that all will be able to back a functional
+> interface like "return the header length"?
+
+
+Probably.
+
+
+> Historically, the
+> struct has not seen such a rapid rate of change that I think
+> would warrant introducing this level of indirection.
+
+
+For the rapid change, yes. But:
+
+1) __sk_buff is part of the general uAPI, adding virtio-net fields looks 
+like a layer violation and a duplication to the existing virtio-net uAPI
+2) as you said below the vnet header is not self contained
+3) using helpers we can make vnet header format transparent to bpf core 
+(that's the way how bpf access TCP headers AFAIK)
+
+
 >
-> Have a quick glance, I suggest to split mergeable rx buffer into an
-> separate patch.
+> The little_endian field does demonstrate one form of how
+> the struct can be context sensitive -- and not self describing.
 
-Sure.
 
-> But I think it's time to revisit the idea of unifying the virtio-net and
-> virtio-vsock. Otherwise we're duplicating features and bugs.
+Yes and we probably need to provide more context, e.g the negotiated 
+features.
 
-For mergeable rxbuf related code, I think a set of common helper
-functions can be used by both virtio-net and virtio-vsock. For other
-parts, that may not be very beneficial. I will think about more.
 
-If there is a previous email discussion about this topic, could you send me
-some links? I did a quick web search but did not find any related
-info. Thanks.
-
-> Thanks
 >
->
-> >
-> > For those who prefer git repo, here is the link for the linux kernel=EF=
-=BC=9A
-> > https://github.com/Jiang1155/linux/tree/vsock-dgram-v1
-> >
-> > qemu patch link:
-> > https://github.com/Jiang1155/qemu/tree/vsock-dgram-v1
-> >
-> >
-> > To do:
-> > 1. use skb when receiving packets
-> > 2. support multiple transport
-> > 3. support mergeable rx buffer
-> >
-> >
-> > Jiang Wang (6):
-> >    virtio/vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
-> >    virtio/vsock: add support for virtio datagram
-> >    vhost/vsock: add support for vhost dgram.
-> >    vsock_test: add tests for vsock dgram
-> >    vhost/vsock: add kconfig for vhost dgram support
-> >    virtio/vsock: add sysfs for rx buf len for dgram
-> >
-> >   drivers/vhost/Kconfig                              |   8 +
-> >   drivers/vhost/vsock.c                              | 207 ++++++++--
-> >   include/linux/virtio_vsock.h                       |   9 +
-> >   include/net/af_vsock.h                             |   1 +
-> >   .../trace/events/vsock_virtio_transport_common.h   |   5 +-
-> >   include/uapi/linux/virtio_vsock.h                  |   4 +
-> >   net/vmw_vsock/af_vsock.c                           |  12 +
-> >   net/vmw_vsock/virtio_transport.c                   | 433 ++++++++++++=
-++++++---
-> >   net/vmw_vsock/virtio_transport_common.c            | 184 ++++++++-
-> >   tools/testing/vsock/util.c                         | 105 +++++
-> >   tools/testing/vsock/util.h                         |   4 +
-> >   tools/testing/vsock/vsock_test.c                   | 195 ++++++++++
-> >   12 files changed, 1070 insertions(+), 97 deletions(-)
-> >
->
+> I think we can capture multiple variants of the struct, if it ever
+> comes to that, with a versioning field. We did not add that
+> right away, because that can be introduced later, when a
+> new version arrives. But we have a plan for the eventuality.
+
+
+It works but it couples virtio with bpf.
+
+Thanks
+
+
+>> Thanks
+>>
+
