@@ -2,85 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3D093A2314
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 06:07:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 332503A2313
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 06:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229865AbhFJEIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 00:08:55 -0400
-Received: from mail-lf1-f50.google.com ([209.85.167.50]:40627 "EHLO
-        mail-lf1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbhFJEIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 00:08:54 -0400
-Received: by mail-lf1-f50.google.com with SMTP id k40so831452lfv.7
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 21:06:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2uTw/zuSQ3CHJiNcw+dmursgnAfC/lxHwCP2iXC1rh0=;
-        b=LA6F1I+9tnm85mk3kfF1zI94jdYisokGWetSEGhFkm/mQ8AT1E8ZYkVwBi7yM5+nBq
-         xte7gENJQ2DxvbyplMLYsgetV2qDENzHzoaB/TGsE7ZSYFZpj/mbIbKcl+1FO7DjLBIa
-         mE0DAbhDccGJQMrNev3u+xan3M3CbPQrBD9ZAj5egcUS6zGG6gbHfD8UJt1DxzX1LPrN
-         +gVeT44JgeTleDWTQ9GjqPaLz9sQ31ydmmqb7WWrW7NRg+hduyRx5gr2XEw2U7efqRLb
-         lkTm7DutmkHLAIDLJwKdkEj+VQOonxs3vKNxZdL1bnsxZfy69je7xBpaZEzQN+gb5i8M
-         ZZ6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2uTw/zuSQ3CHJiNcw+dmursgnAfC/lxHwCP2iXC1rh0=;
-        b=D+BiWb5kkJk5SOIGIBNqAr6T+fuwSCgt0t7G8lm7kIvqeUy3dYWQky791r373isn5C
-         AgiNmDQ81cVzeSU8U42Qm61n5A3kbR6YbBe3F34AEwf8e1rijqtGqBBsn3uEJ13dXi5O
-         fl9bgJAd4paLHwkqEh5G26nCxRa9nzdZlTeGcct7cW4SbiIVIGRv1jM5CrqrzhMVMdWj
-         qopADC788c5TllWmfCvo1mqUkEFe0J9ch7Te82BIqcNSD9CtWeVFSRV65zAFZye4+0iO
-         Fk5N5+SMX2VTTYuoZt3G7IkziSiaeUFCey9Ul+jcPyb7yNqAbRw38LyaxogaPqYPM8Kd
-         bzcg==
-X-Gm-Message-State: AOAM532vJ6reA92zF8z/pvwE1LmzjrsXhPC1JNXIt2cqD0MBGnpmrfvq
-        ZuELEB0X9S2T6GBhkTfZGJK4v6/KqYUl098xW8c=
-X-Google-Smtp-Source: ABdhPJzsR5Q9IvyYsHaVk2itlCmdhzD+/9XxEdV2U3y21+vLVQ+K4wMDbfhG6jJa9N+577VLqbHnVLZJFKaSh9wVtRo=
-X-Received: by 2002:a05:6512:2010:: with SMTP id a16mr654963lfb.38.1623297944826;
- Wed, 09 Jun 2021 21:05:44 -0700 (PDT)
+        id S230026AbhFJEIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 00:08:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55578 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229529AbhFJEIB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 00:08:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=KjuI8jCqUcyAfx/5RiZL0Drr0Q511dbsI0/UHVUJCP8=; b=rO4X1G0tCX5Sohmhmo7qnuwcHQ
+        IQbYkL+40DJiuLX/GRDJgHGB48j2wcUgEdNXw/d/YSzTMVWHKJEn8F7VKZfBMZswvdUAhvvZU/Suj
+        EsqUsc3DlYkO/NY03/M4krmZ5RK9hv0cskiEZU7pwSzFJpRpzVrjmztGVXwz03dgsvjI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lrBx6-008bPL-He; Thu, 10 Jun 2021 06:05:56 +0200
+Date:   Thu, 10 Jun 2021 06:05:56 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/1] net: phy: probe for C45 PHYs that return
+ PHY ID of zero in C22 space
+Message-ID: <YMGPpIH0OXNS9TuA@lunn.ch>
+References: <20210607023645.2958840-1-vee.khee.wong@linux.intel.com>
 MIME-Version: 1.0
-References: <20210608170224.1138264-1-tannerlove.kernel@gmail.com>
- <20210608170224.1138264-3-tannerlove.kernel@gmail.com> <17315e5a-ee1c-489c-a6bf-0fa26371d710@redhat.com>
- <CA+FuTSfvdHBLOqAAU=vPmqnUxhp_b61Cixm=0cd7uh_KsJZGGw@mail.gmail.com> <51d301ee-8856-daa4-62bd-10d3d53a3c26@redhat.com>
-In-Reply-To: <51d301ee-8856-daa4-62bd-10d3d53a3c26@redhat.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 9 Jun 2021 21:05:33 -0700
-Message-ID: <CAADnVQKHpk5aXA-MiuHyvBC7ZCxDPmN_gKAVww8kQAjoZkkmjA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/3] virtio_net: add optional flow dissection
- in virtio_net_hdr_to_skb
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Tanner Love <tannerlove.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Tanner Love <tannerlove@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210607023645.2958840-1-vee.khee.wong@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 9, 2021 at 8:53 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> It works but it couples virtio with bpf.
+On Mon, Jun 07, 2021 at 10:36:45AM +0800, Wong Vee Khee wrote:
+> PHY devices such as the Marvell Alaska 88E2110 does not return a valid
+> PHY ID when probed using Clause-22. The current implementation treats
+> PHY ID of zero as a non-error and valid PHY ID, and causing the PHY
+> device failed to bind to the Marvell driver.
+> 
+> For such devices, we do an additional probe in the Clause-45 space,
+> if a valid PHY ID is returned, we then proceed to attach the PHY
+> device to the matching PHY ID driver.
+> 
+> Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
 
-Jason,
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-I think your main concern is that it makes virtio_net_hdr into uapi?
-That's not the case. __sk_buff is uapi, but pointers to sockets
-and other kernel data structures are not.
-Yes. It's a bit weird that uapi struct has a pointer to kernel internal,
-but I don't see it as a deal breaker.
-Tracing progs have plenty of such cases.
-In networking there is tcp-bpf where everything is kernel internal and non-uapi.
-So after this patch virtio_net_hdr is free to change without worrying about bpf
-progs reading it.
+    Andrew
