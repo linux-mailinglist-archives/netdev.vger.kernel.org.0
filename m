@@ -2,112 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0833A23F4
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 07:24:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 888F33A2401
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 07:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230313AbhFJFZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 01:25:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36985 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230255AbhFJFZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 01:25:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623302639;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1cQAWV6+xELYFimr4307JFkGjR0Djgx1k9GWHA/hI38=;
-        b=I/Cujullrf3wF2IJJlM/hlNDnRDKuD82mTEP9IOVpyRRyUGdNobG2zaCXAp/uH+D3F8m9w
-        BW2X7t13fyM5gCjLR+i3oYQNpXL+2ul++uPKOoPF0iNgeWXH3lWmA8nDhbOKC51O7Q3dwQ
-        M5g0Iu8JzZFvGOdPj3Sf0kBMgZPh9rk=
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
- [209.85.210.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-176-e9-pB0ftOc60HPlZZqlbAw-1; Thu, 10 Jun 2021 01:23:55 -0400
-X-MC-Unique: e9-pB0ftOc60HPlZZqlbAw-1
-Received: by mail-pf1-f197.google.com with SMTP id k22-20020aa788d60000b02902ec984951ffso580674pff.11
-        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 22:23:55 -0700 (PDT)
+        id S229808AbhFJFc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 01:32:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229634AbhFJFc6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 01:32:58 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B42C061574
+        for <netdev@vger.kernel.org>; Wed,  9 Jun 2021 22:31:02 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id i6so24312134ybm.1
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 22:31:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lIDUVSk62aGQFCrPWNU4KjW7FrPBH0uImlaY1uF3s70=;
+        b=fiCdlz7jySErXU5K0U8K2zAE3EWQLnmDD2hG+/FP6b3Taq7EFwnPRcgj23aM7wO9bf
+         trPcZ9tjMXkNZ+Xo78hVVc2nheYVO8Hhw2v/vpBZbECHaC4Js5s6UkBdoEgqGaup/Cqi
+         8TsUx3tO/mDeYZXX0CNnaBYCZBdUyxgmNSeF41zMzh7tRQeiI722Gvk6BRpC/C+ErlGh
+         j/1YCHDX8W5p3BPSX91Ti/tXSldmYT/t6ShuUa8XQeHO9IskjhRC2h+vcQdP3fSwBWKj
+         ALew5/h892GGE6wPmsg+4XBJPeA1kGyIJ7aDC3oTT8dH2+VQTIzn0SPOX14cmd3caNll
+         DrIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=1cQAWV6+xELYFimr4307JFkGjR0Djgx1k9GWHA/hI38=;
-        b=Oybk9FGONEpxaKMyAVEL1eLL8WJPK6Qgydh3k9Kfolly9cmU6rwuZVwxkCj0Gx3ier
-         pTcoyTTkdL+abGk2ofgu2oPTwMeDe5Yy78PwnIt/Xnt+3vxRdqln+KNlwuPfgSMD80iX
-         JFRUsWemTjy4q6Om/MEowG8k07h8gZXVReW33YDSbluy/LpHWmvtMBbILUiRRQ+4OdAG
-         npcsLSbXWbyYGobKe7JtD9b6W2aWrQzqzbuOPdThPdyfZ+YGlZrVLryLoB9A0HI4bYj6
-         37hLPbbhxu+SreRFfL2/rtDap6Fh1lP7TcS3HjFNsUb8o4TVYcld6LGj8QDZdx+BxumQ
-         xENQ==
-X-Gm-Message-State: AOAM5318R1j4UFiTy4NhvymTvaakgY+ReDszu90uODPorZiv7emrND3m
-        BRZlGok5lZ4EPJjF8cSieA7VbofSJaBn7hJfjBqcZjwqwCz/1lRNyKzdBlPZE6+2sQ3rVqATHm+
-        rxqSMI/JYpTgqeqGg
-X-Received: by 2002:a63:7f0f:: with SMTP id a15mr3248144pgd.380.1623302634137;
-        Wed, 09 Jun 2021 22:23:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxp9v7qBB1T+Ig7Gtki4tX6BOR7rqTrBDR5jOPTczyAGAFQ2b7KszeKE76FYh4QiwRdig3nFg==
-X-Received: by 2002:a63:7f0f:: with SMTP id a15mr3248125pgd.380.1623302633912;
-        Wed, 09 Jun 2021 22:23:53 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f28sm1313417pgb.12.2021.06.09.22.23.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Jun 2021 22:23:53 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 2/3] virtio_net: add optional flow dissection
- in virtio_net_hdr_to_skb
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Tanner Love <tannerlove.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Tanner Love <tannerlove@google.com>
-References: <20210608170224.1138264-1-tannerlove.kernel@gmail.com>
- <20210608170224.1138264-3-tannerlove.kernel@gmail.com>
- <17315e5a-ee1c-489c-a6bf-0fa26371d710@redhat.com>
- <CA+FuTSfvdHBLOqAAU=vPmqnUxhp_b61Cixm=0cd7uh_KsJZGGw@mail.gmail.com>
- <51d301ee-8856-daa4-62bd-10d3d53a3c26@redhat.com>
- <CAADnVQKHpk5aXA-MiuHyvBC7ZCxDPmN_gKAVww8kQAjoZkkmjA@mail.gmail.com>
- <6ae4f189-a3be-075d-167c-2ad3f8d7d975@redhat.com>
- <CAADnVQL_+oKjH341ccC_--ing6dviAPwWRocgYrTKidkKo-NcA@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <2fd24801-bf77-02e3-03f5-b5e8fac595b6@redhat.com>
-Date:   Thu, 10 Jun 2021 13:23:44 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lIDUVSk62aGQFCrPWNU4KjW7FrPBH0uImlaY1uF3s70=;
+        b=Ca/dSHaGRRG8eN/xXBIjc0/Mj2kVg6kdeSrMLiEF/XO04KKt2iWc39lnb66eDAe5sU
+         LKhEOKKtklP7HCGlqy3Vo/FZttTq40JGRChtFHzIQDEMfn3MxwQ84DCM+i14SMagNK0j
+         XfE4oN4YFoV9uvRdcIizuytv12Eo0nW73AzmiBvTQG599Cdr/2y2MQu6d7nDvU8T0h/K
+         h77YW4mDT9W3/uDHptwrnpV604zVtzj9MBTvhjoDEafe+rhs5uN1qH4Fhos/wwTQOkrH
+         9cdWXPGFjyBA+DUnI0dIAdjzlNq5Kxy4AumsFbAWARIH143oHLF7fEjraq4DkMgzYJo4
+         tNiw==
+X-Gm-Message-State: AOAM5335KzCZ/x3i2l11ipdJyeWv/JuKdNRDKIIygncpnX5LvOxMmvuW
+        joEkccf81FJcRQCdMC7tzV46EbxF2Fh6finHWVgFdw==
+X-Google-Smtp-Source: ABdhPJwoZU+p9lvLTCn4AhMkpQVN5yY78JFoOAC/8FFAxBEdJRTL+DhhPeF657CoAcZ3SVa7g5jjqCtX2YO8sCMWZS8=
+X-Received: by 2002:a05:6902:102d:: with SMTP id x13mr5268183ybt.408.1623303061888;
+ Wed, 09 Jun 2021 22:31:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQL_+oKjH341ccC_--ing6dviAPwWRocgYrTKidkKo-NcA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20210609103326.278782-1-toke@redhat.com> <20210609103326.278782-16-toke@redhat.com>
+In-Reply-To: <20210609103326.278782-16-toke@redhat.com>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Thu, 10 Jun 2021 08:30:25 +0300
+Message-ID: <CAC_iWjJ9qyYHKe2QZtmSTQRc4jB4PQM9pT=vmLnd6YYSGd6zBg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 15/17] netsec: remove rcu_read_lock() around XDP
+ program invocation
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jassi Brar <jaswinder.singh@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-在 2021/6/10 下午12:19, Alexei Starovoitov 写道:
-> On Wed, Jun 9, 2021 at 9:13 PM Jason Wang <jasowang@redhat.com> wrote:
->> So I wonder why not simply use helpers to access the vnet header like
->> how tcp-bpf access the tcp header?
-> Short answer - speed.
-> tcp-bpf accesses all uapi and non-uapi structs directly.
+On Wed, 9 Jun 2021 at 13:33, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.=
+com> wrote:
+>
+> The netsec driver has a rcu_read_lock()/rcu_read_unlock() pair around the
+> full RX loop, covering everything up to and including xdp_do_flush(). Thi=
+s
+> is actually the correct behaviour, but because it all happens in a single
+> NAPI poll cycle (and thus under local_bh_disable()), it is also technical=
+ly
+> redundant.
+>
+> With the addition of RCU annotations to the XDP_REDIRECT map types that
+> take bh execution into account, lockdep even understands this to be safe,
+> so there's really no reason to keep the rcu_read_lock() around anymore, s=
+o
+> let's just remove it.
+>
+> Cc: Jassi Brar <jaswinder.singh@linaro.org>
+> Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  drivers/net/ethernet/socionext/netsec.c | 3 ---
+>  1 file changed, 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethern=
+et/socionext/netsec.c
+> index dfc85cc68173..20d148c019d8 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -958,7 +958,6 @@ static int netsec_process_rx(struct netsec_priv *priv=
+, int budget)
+>
+>         xdp_init_buff(&xdp, PAGE_SIZE, &dring->xdp_rxq);
+>
+> -       rcu_read_lock();
+>         xdp_prog =3D READ_ONCE(priv->xdp_prog);
+>         dma_dir =3D page_pool_get_dma_dir(dring->page_pool);
+>
+> @@ -1069,8 +1068,6 @@ static int netsec_process_rx(struct netsec_priv *pr=
+iv, int budget)
+>         }
+>         netsec_finalize_xdp_rx(priv, xdp_act, xdp_xmit);
+>
+> -       rcu_read_unlock();
+> -
+>         return done;
+>  }
+>
+> --
+> 2.31.1
 >
 
-Ok, this makes sense. But instead of coupling device specific stuffs 
-like vnet header and neediness into general flow_keys as a context.
-
-It would be better to introduce a vnet header context which contains
-
-1) vnet header
-2) flow keys
-3) other contexts like endian and virtio-net features
-
-So we preserve the performance and decouple the virtio-net stuffs from 
-general structures like flow_keys or __sk_buff.
-
-Thanks
-
+Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
