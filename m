@@ -2,240 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B07223A2CB4
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 15:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 243053A2CE8
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 15:25:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230405AbhFJNTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 09:19:42 -0400
-Received: from mail-qk1-f175.google.com ([209.85.222.175]:42680 "EHLO
-        mail-qk1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230293AbhFJNTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 09:19:41 -0400
-Received: by mail-qk1-f175.google.com with SMTP id q16so1253644qkm.9
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 06:17:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i/aU52fr2Ejj7ORjSCkaydnx3ewIOqeFi8vx2uwavKQ=;
-        b=Bw5mQiaFfXmUq9jU22+TiMfVl+xBLkGuufthvEsAyEecqkLobHPrXZ7pKLN5pQsHq2
-         HM3gs0HzHGZ0HkyI9y2gkRP1fYfmwr+fQFSE0X4vUgZctPFdnZQmb9iv28UtAtyK5eP4
-         uiSZCxykTOjkI2CcYU72Boj0d4q68iDLtuecqgQQnYFNy74SHsq22bwPoxW08CliglCK
-         H+tg01xMqDkyZcpvAaZavlbevTRJLM7Kct+faR9Cum3PW1CtRiw6zbN6VGdFGjTFPVAF
-         vSYLDxU6C/CmuxMqe3gh7JGrjXL1GKZDRXNUMifb0M9aKqql3++l/VbrJuOUwPXFgMne
-         pr8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i/aU52fr2Ejj7ORjSCkaydnx3ewIOqeFi8vx2uwavKQ=;
-        b=UEBJWHIEMP72Xtc0jkf5+h7GaMIjdD/NRwmZ3OWUWsp6nE8a6RI9AG85WoQfO3iOb6
-         /k7xEGX6QUKRmXbqiVySqYHaKqg+ORoaSDYWbp70XYFul1MaRhlToNaGrWVwpn7uy4ez
-         w1g3loL64As1xdsHQEMWSt8RD8HQ9g0UxmPRabkdYOvmQ9gGLA9g1gJjFh8XhZaCJg0W
-         pYg4axhPABTHnDVhF7sN6L21EOzdhvLkNJfTxeqlqewzLbkVEIq/j2dMhQMB5/LCO/lQ
-         hi1XOgMtERFjFmJw5YBi8VSgio+KEjJoFJFsPN0DT05AERQ9FcEDWmfDMOUFSVQ8bnA6
-         TZJw==
-X-Gm-Message-State: AOAM532TS7bh7S/tQBlncy87AWJKc8Ti0+YCCE+wMKNoy1psYOiHUjbp
-        PKE6JRPX5fQOXdWY7aZhrgZtTA==
-X-Google-Smtp-Source: ABdhPJzKkiywmIVNUVEnJG6zvreg+tX/ksWHJxIMyQckqqasdW3sE0dWLuBtc4hKfFO0peVUfY2xbg==
-X-Received: by 2002:a05:620a:39c:: with SMTP id q28mr4528574qkm.351.1623331004276;
-        Thu, 10 Jun 2021 06:16:44 -0700 (PDT)
-Received: from localhost ([154.21.15.43])
-        by smtp.gmail.com with ESMTPSA id g5sm2125618qth.39.2021.06.10.06.16.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 06:16:43 -0700 (PDT)
-Date:   Thu, 10 Jun 2021 17:16:35 +0400
-From:   Dmitrii Banshchikov <me@ubique.spb.ru>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, davem@davemloft.net,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, rdna@fb.com
-Subject: Re: [PATCH bpf-next v1 07/10] bpfilter: Add struct rule
-Message-ID: <20210610131635.w5pshflih4che74s@amnesia>
-References: <20210603101425.560384-1-me@ubique.spb.ru>
- <20210603101425.560384-8-me@ubique.spb.ru>
- <8040518a-572a-18d8-5a50-fd3e82f13f5c@fb.com>
+        id S230511AbhFJN1I convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Jun 2021 09:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230490AbhFJN1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 09:27:06 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690F4C061760
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 06:25:10 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lrKgG-000829-53; Thu, 10 Jun 2021 15:25:08 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lrKgD-0000cv-1a; Thu, 10 Jun 2021 15:25:05 +0200
+Date:   Thu, 10 Jun 2021 15:25:05 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v3 4/9] net: phy: micrel: apply resume errata
+ workaround for ksz8873 and ksz8863
+Message-ID: <20210610132505.wgv6454sfahqmd27@pengutronix.de>
+References: <20210526043037.9830-1-o.rempel@pengutronix.de>
+ <20210526043037.9830-5-o.rempel@pengutronix.de>
+ <20210526224329.raaxr6b2s2uid4dw@skbuf>
+ <20210610114920.w5xyijxe62svzdfp@pengutronix.de>
+ <20210610130445.l5iiswxpzpez25cv@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <8040518a-572a-18d8-5a50-fd3e82f13f5c@fb.com>
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20210610130445.l5iiswxpzpez25cv@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 15:21:05 up 190 days,  3:27, 50 users,  load average: 0.06, 0.07,
+ 0.05
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 09, 2021 at 05:30:56PM -0700, Yonghong Song wrote:
-> 
-> 
-> On 6/3/21 3:14 AM, Dmitrii Banshchikov wrote:
-> > struct rule is an equivalent of struct ipt_entry. A rule consists of
-> > zero or more matches and a target. A rule has a pointer to its ipt_entry
-> > in entries blob.  struct rule should simplify iteration over a blob and
-> > avoid blob's guts in code generation.
+On Thu, Jun 10, 2021 at 04:04:45PM +0300, Vladimir Oltean wrote:
+> On Thu, Jun 10, 2021 at 01:49:20PM +0200, Oleksij Rempel wrote:
+> > On Thu, May 27, 2021 at 01:43:29AM +0300, Vladimir Oltean wrote:
+> > > On Wed, May 26, 2021 at 06:30:32AM +0200, Oleksij Rempel wrote:
+> > > > The ksz8873 and ksz8863 switches are affected by following errata:
+> > > > 
+> > > > | "Receiver error in 100BASE-TX mode following Soft Power Down"
+> > > > |
+> > > > | Some KSZ8873 devices may exhibit receiver errors after transitioning
+> > > > | from Soft Power Down mode to Normal mode, as controlled by register 195
+> > > > | (0xC3) bits [1:0]. When exiting Soft Power Down mode, the receiver
+> > > > | blocks may not start up properly, causing the PHY to miss data and
+> > > > | exhibit erratic behavior. The problem may appear on either port 1 or
+> > > > | port 2, or both ports. The problem occurs only for 100BASE-TX, not
+> > > > | 10BASE-T.
+> > > > |
+> > > > | END USER IMPLICATIONS
+> > > > | When the failure occurs, the following symptoms are seen on the affected
+> > > > | port(s):
+> > > > | - The port is able to link
+> > > > | - LED0 blinks, even when there is no traffic
+> > > > | - The MIB counters indicate receive errors (Rx Fragments, Rx Symbol
+> > > > |   Errors, Rx CRC Errors, Rx Alignment Errors)
+> > > > | - Only a small fraction of packets is correctly received and forwarded
+> > > > |   through the switch. Most packets are dropped due to receive errors.
+> > > > |
+> > > > | The failing condition cannot be corrected by the following:
+> > > > | - Removing and reconnecting the cable
+> > > > | - Hardware reset
+> > > > | - Software Reset and PCS Reset bits in register 67 (0x43)
+> > > > |
+> > > > | Work around:
+> > > > | The problem can be corrected by setting and then clearing the Port Power
+> > > > | Down bits (registers 29 (0x1D) and 45 (0x2D), bit 3). This must be done
+> > > > | separately for each affected port after returning from Soft Power Down
+> > > > | Mode to Normal Mode. The following procedure will ensure no further
+> > > > | issues due to this erratum. To enter Soft Power Down Mode, set register
+> > > > | 195 (0xC3), bits [1:0] = 10.
+> > > > |
+> > > > | To exit Soft Power Down Mode, follow these steps:
+> > > > | 1. Set register 195 (0xC3), bits [1:0] = 00 // Exit soft power down mode
+> > > > | 2. Wait 1ms minimum
+> > > > | 3. Set register 29 (0x1D), bit [3] = 1 // Enter PHY port 1 power down mode
+> > > > | 4. Set register 29 (0x1D), bit [3] = 0 // Exit PHY port 1 power down mode
+> > > > | 5. Set register 45 (0x2D), bit [3] = 1 // Enter PHY port 2 power down mode
+> > > > | 6. Set register 45 (0x2D), bit [3] = 0 // Exit PHY port 2 power down mode
+> > > > 
+> > > > This patch implements steps 2...6 of the suggested workaround. The first
+> > > > step needs to be implemented in the switch driver.
+> > > 
+> > > Am I right in understanding that register 195 (0xc3) is not a port register?
+> > > 
+> > > To hit the erratum, you have to enter Soft Power Down in the first place,
+> > > presumably by writing register 0xc3 from somewhere, right?
+> > > 
+> > > Where does Linux write this register from?
+> > > 
+> > > Once we find that place that enters/exits Soft Power Down mode, can't we
+> > > just toggle the Port Power Down bits for each port, exactly like the ERR
+> > > workaround says, instead of fooling around with a PHY driver?
 > > 
-> > Signed-off-by: Dmitrii Banshchikov <me@ubique.spb.ru>
-> > ---
-> >   net/bpfilter/Makefile                         |   2 +-
-> >   net/bpfilter/rule.c                           | 163 ++++++++++++++++++
-> >   net/bpfilter/rule.h                           |  32 ++++
-> >   .../testing/selftests/bpf/bpfilter/.gitignore |   1 +
-> >   tools/testing/selftests/bpf/bpfilter/Makefile |   5 +-
-> >   .../selftests/bpf/bpfilter/bpfilter_util.h    |   8 +
-> >   .../selftests/bpf/bpfilter/test_rule.c        |  55 ++++++
-> >   7 files changed, 264 insertions(+), 2 deletions(-)
-> >   create mode 100644 net/bpfilter/rule.c
-> >   create mode 100644 net/bpfilter/rule.h
-> >   create mode 100644 tools/testing/selftests/bpf/bpfilter/test_rule.c
+> > The KSZ8873 switch is using multiple register mappings.
+> > https://ww1.microchip.com/downloads/en/DeviceDoc/00002348A.pdf
+> > Page 38:
+> > "The MIIM interface is used to access the MII PHY registers defined in
+> > this section. The SPI, I2C, and SMI interfaces can also be used to access
+> > some of these registers. The latter three interfaces use a different
+> > mapping mechanism than the MIIM interface."
 > > 
-> [...]
-> > +
-> > +bool rule_has_standard_target(const struct rule *rule);
-> > +bool is_rule_unconditional(const struct rule *rule);
-> > +int init_rule(struct context *ctx, const struct bpfilter_ipt_entry *ipt_entry, struct rule *rule);
-> > +void free_rule(struct rule *rule);
-> > +
-> > +#endif // NET_BPFILTER_RULE_H
-> > diff --git a/tools/testing/selftests/bpf/bpfilter/.gitignore b/tools/testing/selftests/bpf/bpfilter/.gitignore
-> > index 7e077f506af1..4d7c5083d980 100644
-> > --- a/tools/testing/selftests/bpf/bpfilter/.gitignore
-> > +++ b/tools/testing/selftests/bpf/bpfilter/.gitignore
-> > @@ -2,3 +2,4 @@
-> >   test_map
-> >   test_match
-> >   test_target
-> > +test_rule
-> > diff --git a/tools/testing/selftests/bpf/bpfilter/Makefile b/tools/testing/selftests/bpf/bpfilter/Makefile
-> > index a11775e8b5af..27a1ddcb6dc9 100644
-> > --- a/tools/testing/selftests/bpf/bpfilter/Makefile
-> > +++ b/tools/testing/selftests/bpf/bpfilter/Makefile
-> > @@ -11,6 +11,7 @@ CFLAGS += -Wall -g -pthread -I$(TOOLSINCDIR) -I$(APIDIR) -I$(BPFILTERSRCDIR)
-> >   TEST_GEN_PROGS += test_map
-> >   TEST_GEN_PROGS += test_match
-> >   TEST_GEN_PROGS += test_target
-> > +TEST_GEN_PROGS += test_rule
-> >   KSFT_KHDR_INSTALL := 1
-> > @@ -19,9 +20,11 @@ include ../../lib.mk
-> >   BPFILTER_MATCH_SRCS := $(BPFILTERSRCDIR)/match.c $(BPFILTERSRCDIR)/xt_udp.c
-> >   BPFILTER_TARGET_SRCS := $(BPFILTERSRCDIR)/target.c
-> > -BPFILTER_COMMON_SRCS := $(BPFILTERSRCDIR)/map-common.c $(BPFILTERSRCDIR)/context.c
-> > +BPFILTER_COMMON_SRCS := $(BPFILTERSRCDIR)/map-common.c $(BPFILTERSRCDIR)/context.c \
-> > +	$(BPFILTERSRCDIR)/rule.c
-> >   BPFILTER_COMMON_SRCS += $(BPFILTER_MATCH_SRCS) $(BPFILTER_TARGET_SRCS)
-> >   $(OUTPUT)/test_map: test_map.c $(BPFILTERSRCDIR)/map-common.c
-> >   $(OUTPUT)/test_match: test_match.c $(BPFILTER_COMMON_SRCS)
-> >   $(OUTPUT)/test_target: test_target.c $(BPFILTER_COMMON_SRCS)
-> > +$(OUTPUT)/test_rule: test_rule.c $(BPFILTER_COMMON_SRCS)
-> > diff --git a/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h b/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
-> > index d82ff86f280e..55fb0e959fca 100644
-> > --- a/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
-> > +++ b/tools/testing/selftests/bpf/bpfilter/bpfilter_util.h
-> > @@ -7,6 +7,7 @@
-> >   #include <linux/netfilter/x_tables.h>
-> >   #include <stdio.h>
-> > +#include <string.h>
-> >   static inline void init_standard_target(struct xt_standard_target *ipt_target, int revision,
-> >   					int verdict)
-> > @@ -28,4 +29,11 @@ static inline void init_error_target(struct xt_error_target *ipt_target, int rev
-> >   	snprintf(ipt_target->errorname, sizeof(ipt_target->errorname), "%s", error_name);
-> >   }
-> > +static inline void init_standard_entry(struct ipt_entry *entry, __u16 matches_size)
-> > +{
-> > +	memset(entry, 0, sizeof(*entry));
-> > +	entry->target_offset = sizeof(*entry) + matches_size;
-> > +	entry->next_offset = sizeof(*entry) + matches_size + sizeof(struct xt_standard_target);
-> > +}
-> > +
-> >   #endif // BPFILTER_UTIL_H
-> > diff --git a/tools/testing/selftests/bpf/bpfilter/test_rule.c b/tools/testing/selftests/bpf/bpfilter/test_rule.c
-> > new file mode 100644
-> > index 000000000000..fe12adf32fe5
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/bpfilter/test_rule.c
-> > @@ -0,0 +1,55 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#define _GNU_SOURCE
-> > +
-> > +#include "rule.h"
-> > +
-> > +#include <linux/bpfilter.h>
-> > +#include <linux/err.h>
-> > +
-> > +#include <linux/netfilter_ipv4/ip_tables.h>
-> > +
-> > +#include <stdio.h>
-> > +#include <stdlib.h>
-> > +
-> > +#include "../../kselftest_harness.h"
-> > +
-> > +#include "context.h"
-> > +#include "rule.h"
-> > +
-> > +#include "bpfilter_util.h"
-> > +
-> > +FIXTURE(test_standard_rule)
-> > +{
-> > +	struct context ctx;
-> > +	struct {
-> > +		struct ipt_entry entry;
-> > +		struct xt_standard_target target;
-> > +	} entry;
-> > +	struct rule rule;
-> > +};
-> > +
-> > +FIXTURE_SETUP(test_standard_rule)
-> > +{
-> > +	const int verdict = BPFILTER_NF_ACCEPT;
-> > +
-> > +	ASSERT_EQ(create_context(&self->ctx), 0);
-> > +	self->ctx.log_file = stderr;
-> > +
-> > +	init_standard_entry(&self->entry.entry, 0);
-> > +	init_standard_target(&self->entry.target, 0, -verdict - 1);
-> > +}
-> > +
-> > +FIXTURE_TEARDOWN(test_standard_rule)
-> > +{
-> > +	free_rule(&self->rule);
-> > +	free_context(&self->ctx);
-> > +}
-> > +
-> > +TEST_F(test_standard_rule, init)
-> > +{
-> > +	ASSERT_EQ(0, init_rule(&self->ctx, (const struct bpfilter_ipt_entry *)&self->entry.entry,
-> > +			       &self->rule));
-> > +}
-> > +
-> > +TEST_HARNESS_MAIN
+> > This PHY driver is able to work directly over MIIM (MDIO). Or work with DSA over
+> > integrated register translation mapping.
 > 
-> When compiling selftests/bpf/bpfilter, I got the following compilation
-> warning:
+> This doesn't answer my question of where is the Soft Power Down mode enabled.
 > 
-> gcc -Wall -g -pthread -I/home/yhs/work/bpf-next/tools/include
-> -I/home/yhs/work/bpf-next/tools/include/uapi -I../../../../../net/bpfilter
-> test_rule.c ../../../../../net/bpfilter/map-common.c
-> ../../../../../net/bpfilter/context.c ../../../../../net/bpfilter/rule.c
-> ../../../../../net/bpfilter/table.c ../../../../../net/bpfilter/match.c
-> ../../../../../net/bpfilter/xt_udp.c ../../../../../net/bpfilter/target.c
-> -o /home/yhs/work/bpf-next/tools/testing/selftests/bpf/bpfilter/test_rule
-> In file included from test_rule.c:15:
-> ../../kselftest_harness.h:674: warning: "ARRAY_SIZE" redefined
->  #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+> > > > 
+> > > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > > > ---
+> > > >  drivers/net/phy/micrel.c | 22 +++++++++++++++++++++-
+> > > >  1 file changed, 21 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> > > > index 227d88db7d27..f03188ed953a 100644
+> > > > --- a/drivers/net/phy/micrel.c
+> > > > +++ b/drivers/net/phy/micrel.c
+> > > > @@ -1048,6 +1048,26 @@ static int ksz8873mll_config_aneg(struct phy_device *phydev)
+> > > >  	return 0;
+> > > >  }
+> > > >  
+> > > > +static int ksz886x_resume(struct phy_device *phydev)
+> > > > +{
+> > > > +	int ret;
+> > > > +
+> > > > +	/* Apply errata workaround for KSZ8863 and KSZ8873:
+> > > > +	 * Receiver error in 100BASE-TX mode following Soft Power Down
+> > > > +	 *
+> > > > +	 * When exiting Soft Power Down mode, the receiver blocks may not start
+> > > > +	 * up properly, causing the PHY to miss data and exhibit erratic
+> > > > +	 * behavior.
+> > > > +	 */
+> > > > +	usleep_range(1000, 2000);
+> > > > +
+> > > > +	ret = phy_set_bits(phydev, MII_BMCR, BMCR_PDOWN);
+> > > > +	if (ret)
+> > > > +		return ret;
+> > > > +
+> > > > +	return phy_clear_bits(phydev, MII_BMCR, BMCR_PDOWN);
+> > > > +}
+> > > > +
+> > > >  static int kszphy_get_sset_count(struct phy_device *phydev)
+> > > >  {
+> > > >  	return ARRAY_SIZE(kszphy_hw_stats);
+> > > > @@ -1401,7 +1421,7 @@ static struct phy_driver ksphy_driver[] = {
+> > > >  	/* PHY_BASIC_FEATURES */
+> > > >  	.config_init	= kszphy_config_init,
+> > > >  	.suspend	= genphy_suspend,
+> > > > -	.resume		= genphy_resume,
+> > > > +	.resume		= ksz886x_resume,
+> > > 
+> > > Are you able to explain the relation between the call paths of
+> > > phy_resume() and the lifetime of the Soft Power Down setting of the
+> > > switch? How do we know that the PHYs are resumed after the switch has
+> > > exited Soft Power Down mode?
+> > 
+> > The MII_BMCRs BMCR_PDOWN bit is mapped to the "register 29 (0x1D), bit
+> > [3]" for the PHY0 and to "register 45 (0x2D), bit [3]" for the PHY1.
+> > 
+> > I assume, I'll need to add this comments to the commit message. Or do
+> > you have other suggestions on how this should be implemented?
 > 
-> In file included from /usr/include/linux/netfilter/x_tables.h:4,
->                  from /usr/include/linux/netfilter_ipv4/ip_tables.h:24,
->                  from test_rule.c:10:
-> /home/yhs/work/bpf-next/tools/include/linux/kernel.h:105: note: this is the
-> location of the previous definition
->  #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) +
-> __must_be_array(arr))
+> According to "3.2 Power Management" in the datasheet you shared:
 > 
+> There are 5 (five) operation modes under the power management function,
+> which is controlled by two bits in Register 195 (0xC3) and one bit in
+> Register 29 (0x1D), 45 (0x2D) as shown below:
+> 
+> Register 195 bit[1:0] = 00 Normal Operation Mode
+> Register 195 bit[1:0] = 01 Energy Detect Mode
+> Register 195 bit[1:0] = 10 Soft Power Down Mode
+> Register 195 bit[1:0] = 11 Power Saving Mode
+> Register 29, 45 bit 3 = 1 Port Based Power Down Mode
+> 
+> 3.2.4 SOFT POWER DOWN MODE
+> 
+> The soft power down mode is entered by setting bit[1:0]=10 in register
+> 195. When KSZ8873MLL/FLL/RLL is in this mode, all PLL clocks are
+> disabled, the PHY and the MAC are off, all internal registers values
+> will not change. When the host set bit[1:0]=00 in register 195, this
+> device will be back from current soft power down mode to normal
+> operation mode.
+> 
+> 3.2.5 PORT-BASED POWER DOWN MODE
+> 
+> In addition, the KSZ8873MLL/FLL/RLL features a per-port power down mode.
+> To save power, a PHY port that is not in use can be powered down via
+> port control register 29 or 45 bit 3, or MIIM PHY register. It saves
+> about 15 mA per port.
+> 
+> 
+> 
+> From the above I understand that the first 4 power management modes are
+> global, and the 5th isn't.
+> 
+> You've explained how the PHY driver enters port-based power down mode.
+> But the ERR describes an issue being triggered by a global power down
+> mode. What you are describing is not what the ERR text is describing.
+> 
+> Excuse my perhaps stupid question, but have you triggered the issue
+> described by the erratum? Does this patch fix that? Where is the disconnect?
 
-Hmm. I cannot reproduce it locally now though I saw this error and
-fixed it by removing some of the includes from header files.
-I will double check it.
+Yes, this issue was seen  at some early point of development (back in 2019)
+reproducible on system start. Where switch was in some default state or
+on a state configured by the bootloader. I didn't tried to reproduce it
+now. With other words, there is no need to provide global power
+management by the DSA driver to trigger it.
 
-
+Regards,
+Oleksij
 -- 
-
-Dmitrii Banshchikov
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
