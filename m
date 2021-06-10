@@ -2,198 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C402B3A2ED8
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 17:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0CEC3A2F5B
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 17:30:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231424AbhFJPCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 11:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230361AbhFJPCW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 11:02:22 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9FDC061574;
-        Thu, 10 Jun 2021 08:00:25 -0700 (PDT)
-Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id CFF0682CBE;
-        Thu, 10 Jun 2021 17:00:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1623337222;
-        bh=PADnBC1hC+qklNMDKZekmyPWlUIaLgQUhXUWm16s4DQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QugxXniDMQwNer/nR9j552qb6njAOPw7R8sWvaWy0+ytmuNNenrzNqGgHF3YZqchy
-         AVwchd4YpQwD4oOHBfgTlrpDULr6rYJP5uGb8Rvjqqk49y2EyqQ9YQl/ivquDC/Lc2
-         0+v45rSVaOyCB8a+en9GaqqKWxpSUePGeR27lB01s7Es78g4wonnq45sc0pfm/kNag
-         7+SM/yiyoTTMgpSAl0KBlU9B6R043Iwrl1anDXnao6YdG7f7/LFhRvLjnT94fx/V4Q
-         GdUia6+fKPffBsZ4EdNEtCPYuXmBCn7zfc/lDVamT/rAqp/gUsGaPYRStef71Ub9hw
-         qXfNsaGMfSmDg==
-From:   Marek Vasut <marex@denx.de>
-To:     devicetree@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        Rob Herring <robh+dt@kernel.org>, linux@dh-electronics.com,
-        netdev@vger.kernel.org
-Subject: [PATCH V2] dt-bindings: net: ks8851: Convert to YAML schema
-Date:   Thu, 10 Jun 2021 16:59:54 +0200
-Message-Id: <20210610145954.29719-1-marex@denx.de>
-X-Mailer: git-send-email 2.30.2
+        id S231658AbhFJPcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 11:32:39 -0400
+Received: from mail-wm1-f51.google.com ([209.85.128.51]:42697 "EHLO
+        mail-wm1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231374AbhFJPcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 11:32:36 -0400
+Received: by mail-wm1-f51.google.com with SMTP id l7-20020a05600c1d07b02901b0e2ebd6deso6692733wms.1;
+        Thu, 10 Jun 2021 08:30:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oaRjenhc1WwiDGK8u6oFfetNiLL2rVHkSL9XAdr5Dbw=;
+        b=mEqyHv3MzfHQY3IEH7s9P82X1gstWrwozu0jwlEbye2p47KkY8Z7Ansypatb3ZQaQr
+         et+BAW0A0lOLVnBOw8NAC58S/IUpzAMdiHgItE2Qly7Qf04OhnBUn7jzLckO7cd3h+HP
+         99IK1H6JTJn732RAxP6LmOjxCLzvEQ0ui0JQzLc+lwfi8Nwp1zRhMKrf27Grz3pRImQX
+         NE8LeM+s2KqT2GlkuQMVynZc8RaZ6Kta3dksuzPNVAm7/zGD1oxpVMJO9eKpPoUT/M8K
+         BxGoVpd0w5tUp2GSNrOW6pzL2SOBMcW6Y77qAsMVcOD67kVHHaUqUu5K5BunQq6CCuyw
+         XOoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oaRjenhc1WwiDGK8u6oFfetNiLL2rVHkSL9XAdr5Dbw=;
+        b=uak3ZCDPegpCRUfh/vB/t29fMpkuPBs87dGxa+sHdCe4SrA7HU0jJnVHH+oPnMmKdT
+         EP+o69QXaYsNKvdN3/ddeNdRzm/vS8zEz6Ycg2ewBqe3N2w2FosP0Bnsp53/1q7wADVA
+         9aN5ogLBsOGflAyMLFPYvc+MoU9aQQh9+G5wCD9oynYeBx/NLeOhc+ftvpuFi2Qouj/x
+         JCVnHsLo0208JlTTW53nhPQ9tKeHiVjIQ/fUj8JZ+i5UF2CyezKtXf/4FwqviqOhMFq7
+         WakcJUiN3okxdUnHxOz8L8oyqKy5OCx3l+uBTwJdVEbpI250ETL7icOzET+jphKU5q6O
+         /fyQ==
+X-Gm-Message-State: AOAM530wDmbrCBCUQAM6fsbefENsoz44o1mjBnfdTpRFqyfTP31PYtjA
+        X7PBJeh8Qxi+HgXqGMuihts=
+X-Google-Smtp-Source: ABdhPJxKAGPcfo/suMMBuNxkPEEps4X4SvaC2vR2JcINz7wzqUUgEOPjX8FGdrDDODkZ7MECDlmrvg==
+X-Received: by 2002:a1c:f30a:: with SMTP id q10mr5650158wmq.138.1623338967558;
+        Thu, 10 Jun 2021 08:29:27 -0700 (PDT)
+Received: from localhost.localdomain (190.1.93.209.dyn.plus.net. [209.93.1.190])
+        by smtp.gmail.com with ESMTPSA id b22sm3309802wmj.22.2021.06.10.08.29.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 10 Jun 2021 08:29:27 -0700 (PDT)
+From:   Dhiraj Shah <find.dhiraj@gmail.com>
+Cc:     find.dhiraj@gmail.com, "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shachar Raindel <shacharr@microsoft.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] function mana_hwc_create_wq leaks memory
+Date:   Thu, 10 Jun 2021 16:29:17 +0100
+Message-Id: <20210610152925.18145-1-find.dhiraj@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.102.4 at phobos.denx.de
-X-Virus-Status: Clean
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Micrel KSZ8851 DT bindings to YAML schema.
+memory space allocated for the queue in function
+mana_gd_create_hwc_queue is not freed during error condition.
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Petr Stetiar <ynezz@true.cz>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: linux@dh-electronics.com
-Cc: netdev@vger.kernel.org
-To: devicetree@vger.kernel.org
+Signed-off-by: Dhiraj Shah <find.dhiraj@gmail.com>
 ---
-V2: - Explicitly state the bindings are for both SPI and parallel bus options
-    - Switch the license to (GPL-2.0-only OR BSD-2-Clause)
----
- .../bindings/net/micrel,ks8851.yaml           | 94 +++++++++++++++++++
- .../devicetree/bindings/net/micrel-ks8851.txt | 18 ----
- 2 files changed, 94 insertions(+), 18 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/micrel,ks8851.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/micrel-ks8851.txt
+ drivers/net/ethernet/microsoft/mana/hw_channel.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/micrel,ks8851.yaml b/Documentation/devicetree/bindings/net/micrel,ks8851.yaml
-new file mode 100644
-index 000000000000..3a3fc61baac3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/micrel,ks8851.yaml
-@@ -0,0 +1,94 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/micrel,ks8851.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Micrel KS8851 Ethernet MAC (SPI and Parallel bus options)
-+
-+maintainers:
-+  - Marek Vasut <marex@denx.de>
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: "micrel,ks8851"      # SPI bus option
-+      - const: "micrel,ks8851-mll"  # Parallel bus option
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  reg:
-+    minItems: 1
-+    maxItems: 2
-+
-+  reset-gpios:
-+    maxItems: 1
-+    description:
-+      The reset_n input pin
-+
-+  vdd-supply:
-+    description: |
-+      Analog 3.3V supply for Ethernet MAC (see regulator/regulator.yaml)
-+
-+  vdd-io-supply:
-+    description: |
-+      Digital 1.8V IO supply for Ethernet MAC (see regulator/regulator.yaml)
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+allOf:
-+  - $ref: ethernet-controller.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: "micrel,ks8851"
-+    then:
-+      properties:
-+        reg:
-+          maxItems: 1
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: "micrel,ks8851-mll"
-+    then:
-+      properties:
-+        reg:
-+          minItems: 2
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    /* SPI bus option */
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        ethernet@0 {
-+            compatible = "micrel,ks8851";
-+            reg = <0>;
-+            interrupt-parent = <&msmgpio>;
-+            interrupts = <90 8>;
-+            vdd-supply = <&ext_l2>;
-+            vdd-io-supply = <&pm8921_lvs6>;
-+            reset-gpios = <&msmgpio 89 0>;
-+        };
-+    };
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    /* Parallel bus option */
-+    memory-controller {
-+        #address-cells = <2>;
-+        #size-cells = <1>;
-+        ethernet@1,0 {
-+            compatible = "micrel,ks8851-mll";
-+            reg = <1 0x0 0x2>, <1 0x2 0x20000>;
-+            interrupt-parent = <&gpioc>;
-+            interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/micrel-ks8851.txt b/Documentation/devicetree/bindings/net/micrel-ks8851.txt
-deleted file mode 100644
-index bbdf9a7359a2..000000000000
---- a/Documentation/devicetree/bindings/net/micrel-ks8851.txt
-+++ /dev/null
-@@ -1,18 +0,0 @@
--Micrel KS8851 Ethernet mac (MLL)
--
--Required properties:
--- compatible = "micrel,ks8851-mll" of parallel interface
--- reg : 2 physical address and size of registers for data and command
--- interrupts : interrupt connection
--
--Micrel KS8851 Ethernet mac (SPI)
--
--Required properties:
--- compatible = "micrel,ks8851" or the deprecated "ks8851"
--- reg : chip select number
--- interrupts : interrupt connection
--
--Optional properties:
--- vdd-supply: analog 3.3V supply for Ethernet mac
--- vdd-io-supply: digital 1.8V IO supply for Ethernet mac
--- reset-gpios: reset_n input pin
+diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c b/drivers/net/ethernet/microsoft/mana/hw_channel.c
+index 1a923fd99990..4aa4bda518fb 100644
+--- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
++++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
+@@ -501,8 +501,10 @@ static int mana_hwc_create_wq(struct hw_channel_context *hwc,
+ 	*hwc_wq_ptr = hwc_wq;
+ 	return 0;
+ out:
+-	if (err)
++	if (err) {
++		kfree(queue);
+ 		mana_hwc_destroy_wq(hwc, hwc_wq);
++	}
+ 	return err;
+ }
+ 
 -- 
-2.30.2
+2.30.1 (Apple Git-130)
 
