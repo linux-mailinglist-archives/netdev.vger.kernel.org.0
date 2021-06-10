@@ -2,160 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87CA03A37FE
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 01:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C541F3A3803
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 01:41:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230358AbhFJXmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 19:42:19 -0400
-Received: from mail-ej1-f44.google.com ([209.85.218.44]:38717 "EHLO
-        mail-ej1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbhFJXmP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 19:42:15 -0400
-Received: by mail-ej1-f44.google.com with SMTP id og14so1695690ejc.5
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 16:40:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PbPy0sLFc6s1iVCDr+0Neuhg5szqPhBqV3IvM8xe9Rc=;
-        b=MdASbkKBw1qZi8qXv8QILiOVDXfXorlejkwLkYa9mTv0mfWe3/65hu6qCgVdU+GaQG
-         08XIP2PKL6Vbau47nQbrwBYpvOZu09GKmjDFd5ci9XLj+MleAhQ2g/WThXeEqQYaCUPY
-         S+EqIQ+mSlG5UR5/3VnMhwsm+BVXq05gGJkev2hoA+n/NREA5yEjLOcDPSYksV5h9dpt
-         OtQNFcaE/bV24bFxHy4liEWcWHi8ADsxK1Rnmz7iBVVV9aYniCWpLujCbFy9pTIPMdkj
-         0AVtmZFR1A/B0GiBPUsl6ElPL1Hjhihiea1rOLNjpIWi4dSamfNWQjr28g/8dNs8dAhm
-         ANOQ==
+        id S231152AbhFJXnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 19:43:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27592 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230351AbhFJXnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 19:43:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623368481;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AR0ush4P46QAA/VTr4sxcEcbJnlOs/9qEWXHNYSYYUQ=;
+        b=Y3Q2JmryRvG9sc602XNmPb4l6vzWb/PV7hZBPdNFdFgGJrUJRkRZTCx7pXQfzFcX17eEuO
+        SYrRxbindGbyHmh59QXQtxJdQz6K/G+0jRTHJk3oclAcnrLyXsg5i9hxwtMnPe/O5U3lVY
+        PRpR+65djJsVob9jr01AuVV/tJPf0uM=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-293-2jtcd9BhNRag6rxJaPxzfQ-1; Thu, 10 Jun 2021 19:41:19 -0400
+X-MC-Unique: 2jtcd9BhNRag6rxJaPxzfQ-1
+Received: by mail-ej1-f70.google.com with SMTP id a25-20020a1709064a59b0290411db435a1eso335485ejv.11
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 16:41:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PbPy0sLFc6s1iVCDr+0Neuhg5szqPhBqV3IvM8xe9Rc=;
-        b=sSwoUpe+c7NPct8hIX3wT5PZUaPcSLMLVvHkAox4yRUk7QfeFaah66yM1BM3emCpNZ
-         mcCLnBuEzN/jE3FUVfRNLfdaVnNo/vcjDlwo6XsX/FxWfR217jO73iV7LqRaMpsg++/Q
-         orkelY3wCH0fm6S63DfZwkxHBuBCTe0V8zJ9Y6fK4dcLN53FPXABOB1h8VkaVIFX1aet
-         7HFDUNccUisALNdnclZbd+G1PgtZxKgsl3JlmAtUeAqtNjW0xNfopUZUmPtMEIMwy735
-         XJON6YgEKN/uiNaiSsPxk3XF3+DEfH97Cb8vzm/juD/B1nCqaieYQqMB4UfM1mhKAKo/
-         JxrA==
-X-Gm-Message-State: AOAM531dlLmJimjBo+OUEcsf+D86NFYZeE2ytUOMAS9f83UYdWLPg6EB
-        a4jXKe4rJvrxxJ9IB9yUjfJmJPHRiBV2CD2+nRgp
-X-Google-Smtp-Source: ABdhPJx3HkT0cnFJM6rU/xn9g9XPuNXhwJemA19TgZ/Z+YQGjVGxZ2pUb4AP1eoSda2Zuba1PC1W/lpXBbVk/1gaYhU=
-X-Received: by 2002:a17:906:2c54:: with SMTP id f20mr812366ejh.91.1623368345578;
- Thu, 10 Jun 2021 16:39:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=AR0ush4P46QAA/VTr4sxcEcbJnlOs/9qEWXHNYSYYUQ=;
+        b=kQXGpn6DjKzVrcFXSnBjo0O2YIj2OOI9F01FjM85CczcchN+ZZafvgUtH1BkNggXsF
+         dG9H2Xv4IkJ3Gbr1bGq9Jf9UEI8SRWF7UOdrdq3sBNIGMkMmTrazFeqcgRuRVHRKwzeR
+         nM3UYKMN7Tis5NqrPgKodh9oggNnyY9Mi98bn6FhUHW2yqXOFh06IQGs120dbMe9bG28
+         quSHM8vmdp0njQ4RgtLYOxv1Fte5EsxQ96ydw58KUf111vzVes5nWws+o18LR21q8GQw
+         L/qlgeP0pngEhk6C4ya8Z8FctKzcViRNE/odKLyvRDOkkVGdNB8PsDOZal1A9AsbruBZ
+         rk7w==
+X-Gm-Message-State: AOAM532mI8mzceyNLNpyO29+ZcM7/kNvk6ldP2BdsEhOt8ij3BmMobd5
+        Yq0JuUNp4WyFo8BJWqkq2MqoNQwQsV80DaK8JxcqnZn7KYF3qFY97UQsP3IZtcGcjTzNc+LtzT1
+        dk8u91DzpILhOE7VV
+X-Received: by 2002:a17:906:5593:: with SMTP id y19mr804340ejp.195.1623368478609;
+        Thu, 10 Jun 2021 16:41:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwfAVO4j19hF8iHvKpB3Qu7rdUUGFfFgZC6tpT4QpPjBqlLyhJfjXi+mQHXRw8tGerKkBYXwg==
+X-Received: by 2002:a17:906:5593:: with SMTP id y19mr804327ejp.195.1623368478286;
+        Thu, 10 Jun 2021 16:41:18 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id bd3sm1979645edb.34.2021.06.10.16.41.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Jun 2021 16:41:17 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2100F18071E; Fri, 11 Jun 2021 01:41:17 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH bpf-next 04/17] xdp: add proper __rcu annotations to
+ redirect map entries
+In-Reply-To: <20210610233250.pef2dwo2r5atluwt@kafai-mbp>
+References: <20210609103326.278782-1-toke@redhat.com>
+ <20210609103326.278782-5-toke@redhat.com>
+ <20210610210907.hgfnlja3hbmgeqxx@kafai-mbp> <87h7i5ux3r.fsf@toke.dk>
+ <20210610233250.pef2dwo2r5atluwt@kafai-mbp>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 11 Jun 2021 01:41:17 +0200
+Message-ID: <875yyluw2q.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20210610020108.1356361-1-liushixin2@huawei.com>
-In-Reply-To: <20210610020108.1356361-1-liushixin2@huawei.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 10 Jun 2021 19:38:54 -0400
-Message-ID: <CAHC9VhQM4YP527Z9ijTBk2i++S=viZ1hKVo6GgCOUcNCVgB2vw@mail.gmail.com>
-Subject: Re: [PATCH -next] netlabel: Fix memory leak in netlbl_mgmt_add_common
-To:     Liu Shixin <liushixin2@huawei.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 9, 2021 at 9:29 PM Liu Shixin <liushixin2@huawei.com> wrote:
->
-> Hulk Robot reported memory leak in netlbl_mgmt_add_common.
-> The problem is non-freed map in case of netlbl_domhsh_add() failed.
->
-> BUG: memory leak
-> unreferenced object 0xffff888100ab7080 (size 96):
->   comm "syz-executor537", pid 360, jiffies 4294862456 (age 22.678s)
->   hex dump (first 32 bytes):
->     05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     fe 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01  ................
->   backtrace:
->     [<0000000008b40026>] netlbl_mgmt_add_common.isra.0+0xb2a/0x1b40
->     [<000000003be10950>] netlbl_mgmt_add+0x271/0x3c0
->     [<00000000c70487ed>] genl_family_rcv_msg_doit.isra.0+0x20e/0x320
->     [<000000001f2ff614>] genl_rcv_msg+0x2bf/0x4f0
->     [<0000000089045792>] netlink_rcv_skb+0x134/0x3d0
->     [<0000000020e96fdd>] genl_rcv+0x24/0x40
->     [<0000000042810c66>] netlink_unicast+0x4a0/0x6a0
->     [<000000002e1659f0>] netlink_sendmsg+0x789/0xc70
->     [<000000006e43415f>] sock_sendmsg+0x139/0x170
->     [<00000000680a73d7>] ____sys_sendmsg+0x658/0x7d0
->     [<0000000065cbb8af>] ___sys_sendmsg+0xf8/0x170
->     [<0000000019932b6c>] __sys_sendmsg+0xd3/0x190
->     [<00000000643ac172>] do_syscall_64+0x37/0x90
->     [<000000009b79d6dc>] entry_SYSCALL_64_after_hwframe+0x44/0xae
->
-> Fixes: 63c416887437 ("netlabel: Add network address selectors to the NetLabel/LSM domain mapping")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
-> ---
->  net/netlabel/netlabel_mgmt.c | 20 ++++++++++++++++----
->  1 file changed, 16 insertions(+), 4 deletions(-)
->
-> diff --git a/net/netlabel/netlabel_mgmt.c b/net/netlabel/netlabel_mgmt.c
-> index e664ab990941..e7f00c0f441e 100644
-> --- a/net/netlabel/netlabel_mgmt.c
-> +++ b/net/netlabel/netlabel_mgmt.c
-> @@ -191,6 +191,12 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
->                 entry->family = AF_INET;
->                 entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
->                 entry->def.addrsel = addrmap;
-> +
-> +               ret_val = netlbl_domhsh_add(entry, audit_info);
-> +               if (ret_val != 0) {
-> +                       kfree(map);
-> +                       goto add_free_addrmap;
-> +               }
->  #if IS_ENABLED(CONFIG_IPV6)
->         } else if (info->attrs[NLBL_MGMT_A_IPV6ADDR]) {
->                 struct in6_addr *addr;
-> @@ -243,13 +249,19 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
->                 entry->family = AF_INET6;
->                 entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
->                 entry->def.addrsel = addrmap;
-> +
-> +               ret_val = netlbl_domhsh_add(entry, audit_info);
-> +               if (ret_val != 0) {
-> +                       kfree(map);
-> +                       goto add_free_addrmap;
-> +               }
->  #endif /* IPv6 */
-> +       } else {
-> +               ret_val = netlbl_domhsh_add(entry, audit_info);
-> +               if (ret_val != 0)
-> +                       goto add_free_addrmap;
->         }
->
-> -       ret_val = netlbl_domhsh_add(entry, audit_info);
-> -       if (ret_val != 0)
-> -               goto add_free_addrmap;
-> -
->         return 0;
+Martin KaFai Lau <kafai@fb.com> writes:
 
-Thanks for the report and a fix, although I think there may be a
-simpler fix that results in less code duplication; some quick pseudo
-code below:
+> On Fri, Jun 11, 2021 at 01:19:04AM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> >> @@ -149,7 +152,8 @@ static int xsk_map_update_elem(struct bpf_map *ma=
+p, void *key, void *value,
+>> >>  			       u64 map_flags)
+>> >>  {
+>> >>  	struct xsk_map *m =3D container_of(map, struct xsk_map, map);
+>> >> -	struct xdp_sock *xs, *old_xs, **map_entry;
+>> >> +	struct xdp_sock __rcu **map_entry;
+>> >> +	struct xdp_sock *xs, *old_xs;
+>> >>  	u32 i =3D *(u32 *)key, fd =3D *(u32 *)value;
+>> >>  	struct xsk_map_node *node;
+>> >>  	struct socket *sock;
+>> >> @@ -179,7 +183,7 @@ static int xsk_map_update_elem(struct bpf_map *ma=
+p, void *key, void *value,
+>> >>  	}
+>> >>=20=20
+>> >>  	spin_lock_bh(&m->lock);
+>> >> -	old_xs =3D READ_ONCE(*map_entry);
+>> >> +	old_xs =3D rcu_dereference_check(*map_entry, rcu_read_lock_bh_held(=
+));
+>> > Is it actually protected by the m->lock at this point?
+>>=20
+>> True, can just add that to the check.
+> this should be enough
+> rcu_dereference_protected(*map_entry, lockdep_is_held(&m->lock));
 
-  int netlbl_mgmt_add_common(...)
-  {
-     void *map_p = NULL;
+Right, that's what I had in mind as well :)
 
-     if (NLBL_MGMT_A_IPV4ADDR) {
-       struct netlbl_domaddr4_map *map;
-       map_p = map;
+-Toke
 
-     } else if (NLBL_MGMT_A_IPV6ADDR) {
-       struct netlbl_domaddr4_map *map;
-       map_p = map;
-    }
-
-  add_free_addrmap:
-    kfree(map_p);
-    kfree(addrmap);
-  }
-
-... this approach would even simplify the error handling after the
-netlbl_af{4,6}list_add() calls a bit too (you could jump straight to
-add_free_addrmap).
-
--- 
-paul moore
-www.paul-moore.com
