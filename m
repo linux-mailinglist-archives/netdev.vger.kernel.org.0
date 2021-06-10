@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0D843A3115
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:42:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98C5E3A310F
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:42:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231863AbhFJQoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 12:44:25 -0400
-Received: from mail-ej1-f46.google.com ([209.85.218.46]:45735 "EHLO
-        mail-ej1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231648AbhFJQnu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 12:43:50 -0400
-Received: by mail-ej1-f46.google.com with SMTP id k7so161147ejv.12;
-        Thu, 10 Jun 2021 09:41:38 -0700 (PDT)
+        id S231932AbhFJQoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 12:44:18 -0400
+Received: from mail-ej1-f52.google.com ([209.85.218.52]:41505 "EHLO
+        mail-ej1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230467AbhFJQnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 12:43:45 -0400
+Received: by mail-ej1-f52.google.com with SMTP id ho18so191134ejc.8;
+        Thu, 10 Jun 2021 09:41:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rRvwfKkukgnoScSahSMFZLRC5h4rW9MQ8oHY/dsa0CU=;
-        b=aHI+Pj3SA0nCldSK7rXsO6hP+jGwaE6IW07XrKEEHSkDNew4YG2JTnjt27+2ZAPRnf
-         RC8KXMTxfHm6qMHOVzaiVuTg1R+hy32Ms1HYer+OLcBUSksLHYvsXfNIMBW/bSojiIrS
-         j6i9lzw1mqdS9KfllULTePyca9ec50Vqvv8K3LSpeI/TyvB1qD4SL2RKnMP8fLFWlmP5
-         HmN9oeWoBBr7l7edk8czk7jnUH+4sd/3KHzB4P73IJcWVtjImsWqfXX4EI/AlvjXR7JS
-         Sy0wgnCFXcROo2l1ojBTXUJoL9V3GaN1kQa+2TQZP+h3gb7wEuULFBaana/6rE/tg9kK
-         9GNQ==
+        bh=pjkqTURZcurLq7jUGUIyX7EynFbeWen/UMWsVgV3fKg=;
+        b=cTpMc8jCE9xA8gcBZpV/laGcmSvfQK3/zLSvJRRa/LuR7xxJE4gn15+M/0/IFgg4AI
+         fz9Hex/ZLp8rbn92FXt2tapsLYWXHsUl4+YjhJTOsBYlnqSQZdR4N4bJy3ad7JZo1sfO
+         p0jpAg49x53M7TMyO6fE4DPL3r8iEbCkDbvZdoz2sj7ExMINwDyHcnqfMNfnNfhFgkAI
+         5NCXAFP/QA3+Hdx/VEmbB/MtxWuTewaxzpbSWUH2JkvNnsmnQhQ3irzYmhyyKa86mPTZ
+         XChXStoNtCnPimL9DRzsZ08c/JmstHLShtpu+ITwhbHy9wIGqxKsIRv7QpCLxIAQ+mIU
+         cROA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rRvwfKkukgnoScSahSMFZLRC5h4rW9MQ8oHY/dsa0CU=;
-        b=JY31oBIx2ylsTvIUVIEKLdsKwuzAzfGDKArnugDAYfO9QpFLpCeGOToRiNB9+eMI/n
-         m3kr3dVuggNB3bXd2/S9Ax1l3CDfpA3cNV84R0uMlHpU2c6Uzb25hgzHWbhJjNcTCbq7
-         X0nF+e85nEFDkEh1K/UixGej1IebKkhAN3uoQ0kKwaHuE4Hnv19tf6qXAgoabamuVU6s
-         37vqntUuPUE8O/RFyi4xlfDPn9Vnc7+LnUzaRQNjGwM2Ev9NOI1pgPsUGYWClXUX0NvF
-         6MpGhHbGGsByII/FKgFNDdW9/UQ13+W95ygTTGEIsvU9tS0eKitChWd1StcT1qoBrmmr
-         z9GA==
-X-Gm-Message-State: AOAM532meHB67F27gr/PmOaA70kvI0kPMQ5bvmd/SPlJCoudHB2aLSJI
-        ZxaYaJ3wrpDPZJWKZxebu44=
-X-Google-Smtp-Source: ABdhPJz4YWRBuxeFIQcGWxDtMKhJvdtWzIe7Vy6kryVThIQL7lMptpfJil7bBVFS+oUTz/kkBJ+dkg==
-X-Received: by 2002:a17:906:f889:: with SMTP id lg9mr509833ejb.82.1623343238190;
-        Thu, 10 Jun 2021 09:40:38 -0700 (PDT)
+        bh=pjkqTURZcurLq7jUGUIyX7EynFbeWen/UMWsVgV3fKg=;
+        b=Vlup4JTxbwUHdyyxlAca6Yew9tTfUOiT36J7HV4tYM4CPu6bkUdL5RTXr8IOkLQSF9
+         I12n+dWA1KcCscR2JbIaZ9a8f61Xqz9UW3Au91nEfy5Q1IroTYgRmIRWTsf/eDm7baZ5
+         nP0RXxEgtI7WEfs61KjESK3hHQ3o13aYcs6QbBVWlw2OcXRFUhy1dVu0TUeAItssQbNU
+         TvV63VWScjXWVggEn5fZk6mzcQLnV393sR1dO3u9EfUVFjEm9TMxm8zi4zaSJ9RWRfJR
+         leD5ayK5uAIvqekT1lF5Ln4ytv7UDW0evawovlNaUoHK1j4aCidlcXSAcWgizZIfkKHl
+         xzLg==
+X-Gm-Message-State: AOAM532xD8kp0ORr3oXuxS72MnsRq25g1CS1IbQQlZ3aFRI0phZLRnuP
+        DNKgnB3egt+LFJWpp/Resmo=
+X-Google-Smtp-Source: ABdhPJyDIC3eLsbUKMaH2OPVPIW4L3pqRfdNlX77J3xTS/RFImBYy9jKRfsXYFs6JHtEUFOToqBLlQ==
+X-Received: by 2002:a17:906:82c3:: with SMTP id a3mr477659ejy.230.1623343240314;
+        Thu, 10 Jun 2021 09:40:40 -0700 (PDT)
 Received: from yoga-910.localhost ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id e22sm1657166edv.57.2021.06.10.09.40.36
+        by smtp.gmail.com with ESMTPSA id e22sm1657166edv.57.2021.06.10.09.40.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 09:40:37 -0700 (PDT)
+        Thu, 10 Jun 2021 09:40:40 -0700 (PDT)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Grant Likely <grant.likely@arm.com>,
         "Rafael J . Wysocki" <rafael@kernel.org>,
@@ -69,9 +69,9 @@ Cc:     Cristi Sovaiala <cristian.sovaiala@nxp.com>,
         "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Calvin Johnson <calvin.johnson@oss.nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v8 11/15] net: mdio: Add ACPI support code for mdio
-Date:   Thu, 10 Jun 2021 19:39:13 +0300
-Message-Id: <20210610163917.4138412-12-ciorneiioana@gmail.com>
+Subject: [PATCH net-next v8 12/15] net/fsl: Use [acpi|of]_mdiobus_register
+Date:   Thu, 10 Jun 2021 19:39:14 +0300
+Message-Id: <20210610163917.4138412-13-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210610163917.4138412-1-ciorneiioana@gmail.com>
 References: <20210610163917.4138412-1-ciorneiioana@gmail.com>
@@ -83,175 +83,117 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Calvin Johnson <calvin.johnson@oss.nxp.com>
 
-Define acpi_mdiobus_register() to Register mii_bus and create PHYs for
-each ACPI child node.
+Depending on the device node type, call the specific OF or ACPI
+mdiobus_register function.
+
+Note: For both ACPI and DT cases, endianness of MDIO controller
+need to be specified using "little-endian" property.
 
 Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 
-Changes in v8: None
+Changes in v8:
+- Directly call the OF or ACPI variants of registering the MDIO bus.
+  This is needed because the fwnode_mdio.c module should only implement
+  features which can be achieved without going back to the OF/ACPI
+  variants. Without this restrictions we directly end up in a dependency
+  cycle: of_mdio -> fwnode_mdio -> of_mdio.
+- Changed the commit title since the fwnode_mdiobus_register() is no
+  longer available
+
 Changes in v7:
-- Include headers directly used in acpi_mdio.c
+- Include fwnode_mdio.h
+- Alphabetically sort header inclusions
 
-Changes in v6:
-- use GENMASK() and ACPI_COMPANION_SET()
-- some cleanup
-- remove unwanted header inclusion
+Changes in v6: None
+Changes in v5: None
+Changes in v4:
+- Cleanup xgmac_mdio_probe()
 
-Changes in v5:
-- add missing MODULE_LICENSE()
-- replace fwnode_get_id() with OF and ACPI function calls
+Changes in v3:
+- Avoid unnecessary line removal
+- Remove unused inclusion of acpi.h
 
-Changes in v4: None
-Changes in v3: None
 Changes in v2: None
 
- MAINTAINERS                  |  1 +
- drivers/net/mdio/Kconfig     |  7 +++++
- drivers/net/mdio/Makefile    |  1 +
- drivers/net/mdio/acpi_mdio.c | 56 ++++++++++++++++++++++++++++++++++++
- include/linux/acpi_mdio.h    | 26 +++++++++++++++++
- 5 files changed, 91 insertions(+)
- create mode 100644 drivers/net/mdio/acpi_mdio.c
- create mode 100644 include/linux/acpi_mdio.h
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e8f8b6c33a51..2172f594be8f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6811,6 +6811,7 @@ F:	Documentation/devicetree/bindings/net/mdio*
- F:	Documentation/devicetree/bindings/net/qca,ar803x.yaml
- F:	Documentation/networking/phy.rst
- F:	drivers/net/mdio/
-+F:	drivers/net/mdio/acpi_mdio.c
- F:	drivers/net/mdio/fwnode_mdio.c
- F:	drivers/net/mdio/of_mdio.c
- F:	drivers/net/pcs/
-diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-index 422e9e042a3c..99a6c13a11af 100644
---- a/drivers/net/mdio/Kconfig
-+++ b/drivers/net/mdio/Kconfig
-@@ -34,6 +34,13 @@ config OF_MDIO
- 	help
- 	  OpenFirmware MDIO bus (Ethernet PHY) accessors
+ drivers/net/ethernet/freescale/xgmac_mdio.c | 30 ++++++++++++++-------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
+index bfa2826c5545..0b68852379da 100644
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -2,6 +2,7 @@
+  * QorIQ 10G MDIO Controller
+  *
+  * Copyright 2012 Freescale Semiconductor, Inc.
++ * Copyright 2021 NXP
+  *
+  * Authors: Andy Fleming <afleming@freescale.com>
+  *          Timur Tabi <timur@freescale.com>
+@@ -11,15 +12,17 @@
+  * kind, whether express or implied.
+  */
  
-+config ACPI_MDIO
-+	def_tristate PHYLIB
-+	depends on ACPI
-+	depends on PHYLIB
-+	help
-+	  ACPI MDIO bus (Ethernet PHY) accessors
-+
- if MDIO_BUS
- 
- config MDIO_DEVRES
-diff --git a/drivers/net/mdio/Makefile b/drivers/net/mdio/Makefile
-index 2e6813c709eb..15f8dc4042ce 100644
---- a/drivers/net/mdio/Makefile
-+++ b/drivers/net/mdio/Makefile
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- # Makefile for Linux MDIO bus drivers
- 
-+obj-$(CONFIG_ACPI_MDIO)		+= acpi_mdio.o
- obj-$(CONFIG_FWNODE_MDIO)	+= fwnode_mdio.o
- obj-$(CONFIG_OF_MDIO)		+= of_mdio.o
- 
-diff --git a/drivers/net/mdio/acpi_mdio.c b/drivers/net/mdio/acpi_mdio.c
-new file mode 100644
-index 000000000000..60a86e3fc246
---- /dev/null
-+++ b/drivers/net/mdio/acpi_mdio.c
-@@ -0,0 +1,56 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * ACPI helpers for the MDIO (Ethernet PHY) API
-+ *
-+ * This file provides helper functions for extracting PHY device information
-+ * out of the ACPI ASL and using it to populate an mii_bus.
-+ */
-+
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
 +#include <linux/acpi.h>
 +#include <linux/acpi_mdio.h>
-+#include <linux/bits.h>
-+#include <linux/dev_printk.h>
-+#include <linux/fwnode_mdio.h>
+ #include <linux/interrupt.h>
+-#include <linux/module.h>
+-#include <linux/phy.h>
++#include <linux/kernel.h>
+ #include <linux/mdio.h>
 +#include <linux/module.h>
-+#include <linux/types.h>
-+
-+MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
-+MODULE_LICENSE("GPL");
-+
-+/**
-+ * acpi_mdiobus_register - Register mii_bus and create PHYs from the ACPI ASL.
-+ * @mdio: pointer to mii_bus structure
-+ * @fwnode: pointer to fwnode of MDIO bus.
-+ *
-+ * This function registers the mii_bus structure and registers a phy_device
-+ * for each child node of @fwnode.
-+ */
-+int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
-+{
-+	struct fwnode_handle *child;
-+	u32 addr;
-+	int ret;
-+
-+	/* Mask out all PHYs from auto probing. */
-+	mdio->phy_mask = GENMASK(31, 0);
-+	ret = mdiobus_register(mdio);
-+	if (ret)
-+		return ret;
-+
-+	ACPI_COMPANION_SET(&mdio->dev, to_acpi_device_node(fwnode));
-+
-+	/* Loop over the child nodes and register a phy_device for each PHY */
-+	fwnode_for_each_child_node(fwnode, child) {
-+		ret = acpi_get_local_address(ACPI_HANDLE_FWNODE(child), &addr);
-+		if (ret || addr >= PHY_MAX_ADDR)
-+			continue;
-+
-+		ret = fwnode_mdiobus_register_phy(mdio, child, addr);
-+		if (ret == -ENODEV)
-+			dev_err(&mdio->dev,
-+				"MDIO device at address %d is missing.\n",
-+				addr);
-+	}
-+	return 0;
-+}
-+EXPORT_SYMBOL(acpi_mdiobus_register);
-diff --git a/include/linux/acpi_mdio.h b/include/linux/acpi_mdio.h
-new file mode 100644
-index 000000000000..0a24ab7cb66f
---- /dev/null
-+++ b/include/linux/acpi_mdio.h
-@@ -0,0 +1,26 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * ACPI helper for the MDIO (Ethernet PHY) API
-+ */
-+
-+#ifndef __LINUX_ACPI_MDIO_H
-+#define __LINUX_ACPI_MDIO_H
-+
+ #include <linux/of_address.h>
+-#include <linux/of_platform.h>
+ #include <linux/of_mdio.h>
++#include <linux/of_platform.h>
 +#include <linux/phy.h>
-+
-+#if IS_ENABLED(CONFIG_ACPI_MDIO)
-+int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode);
-+#else /* CONFIG_ACPI_MDIO */
-+static inline int
-+acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
-+{
-+	/*
-+	 * Fall back to mdiobus_register() function to register a bus.
-+	 * This way, we don't have to keep compat bits around in drivers.
++#include <linux/slab.h>
+ 
+ /* Number of microseconds to wait for a register to respond */
+ #define TIMEOUT	1000
+@@ -243,10 +246,10 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 
+ static int xgmac_mdio_probe(struct platform_device *pdev)
+ {
+-	struct device_node *np = pdev->dev.of_node;
+-	struct mii_bus *bus;
+-	struct resource *res;
++	struct fwnode_handle *fwnode;
+ 	struct mdio_fsl_priv *priv;
++	struct resource *res;
++	struct mii_bus *bus;
+ 	int ret;
+ 
+ 	/* In DPAA-1, MDIO is one of the many FMan sub-devices. The FMan
+@@ -279,13 +282,22 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
+ 		goto err_ioremap;
+ 	}
+ 
++	/* For both ACPI and DT cases, endianness of MDIO controller
++	 * needs to be specified using "little-endian" property.
 +	 */
-+
-+	return mdiobus_register(mdio);
-+}
-+#endif
-+
-+#endif /* __LINUX_ACPI_MDIO_H */
+ 	priv->is_little_endian = device_property_read_bool(&pdev->dev,
+ 							   "little-endian");
+ 
+ 	priv->has_a011043 = device_property_read_bool(&pdev->dev,
+ 						      "fsl,erratum-a011043");
+ 
+-	ret = of_mdiobus_register(bus, np);
++	fwnode = pdev->dev.fwnode;
++	if (is_of_node(fwnode))
++		ret = of_mdiobus_register(bus, to_of_node(fwnode));
++	else if (is_acpi_node(fwnode))
++		ret = acpi_mdiobus_register(bus, fwnode);
++	else
++		ret = -EINVAL;
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "cannot register MDIO bus\n");
+ 		goto err_registration;
 -- 
 2.31.1
 
