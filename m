@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8A993A37DB
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 01:28:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 773123A37D0
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 01:27:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbhFJX34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 19:29:56 -0400
-Received: from mail-ed1-f51.google.com ([209.85.208.51]:45753 "EHLO
-        mail-ed1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231209AbhFJX3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 19:29:55 -0400
-Received: by mail-ed1-f51.google.com with SMTP id r7so20641274edv.12
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 16:27:43 -0700 (PDT)
+        id S230493AbhFJX27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 19:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230001AbhFJX26 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 19:28:58 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766A6C061574
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 16:26:45 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ci15so1629427ejc.10
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 16:26:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lLZajE0kF2yv7O85pmFs2crS5Zf9rKc0mk2l/qV3sWM=;
-        b=M5QdytZTp4Q8xN6q7JNQ3UA2zjLjrdOKG43dMYbDTdWprCODXQzyR5LxEVtAPQfGi2
-         R0/cXE9tfrRGoxKo2iIbkBJm1dq4bJAMVrWKlCO9BcRxagdpxpUHkmDi5Ku68MATz9vA
-         9pQ211yT96BOF8TXK5/FXijCvniAgxrvs0Qzb81B8EdSmLTeTyoXIBtFGEhLJdo4jRNE
-         2DaS5BPUXlRyD0Ge7BD5nFHBaCht/FEvBf9Hh3WlSpBOV312yFk97rPyh5L1+ruqZwN7
-         +dlddISqDW85Vj0X9DRi0uioX58VjScnY62lTZryWBrHuknfYH163J9YyINzO8+Rc0YO
-         5CTw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=aszyaYZsJcZYQj2Xj4LwuEfwn7jbhFlbU+YBkgFvQ3Q=;
+        b=ljavh+DxOM0rbbFw5h/Oa0VEcoODQr8jw9WFrSjY35ePWwW4euYDNf3POa/OL/QBlN
+         Pp+VPDcfn9zChfB4bg57AzyfCaZ/TRUmkuGIR9e4iJ/0q0Ojw4BoG7Q7wZhTPVXj46tG
+         0r3C4HfMfYx/8/Ohmx/s4PXbFrK3kbzJsucBfXSXGCjuz15kgdRi+RVFfgaOIKRbKKHv
+         AIYCpCxV5MhCp43NYxNkB5xsIIyKOJtnuHoWU3TwDc4IloxQk+ge91V5QkRUIVufZO3p
+         T11OVPRJRidL9Yw6hFCt/2UWdEW4zHxbqTaOn9G4180xJse904dqWGTwp8sfkGFOVvCJ
+         AZ2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lLZajE0kF2yv7O85pmFs2crS5Zf9rKc0mk2l/qV3sWM=;
-        b=oSoTqqcn7+W7yg40WfmIa08AnJ0Au84s6iZpPhKcxGdRS1PdSIMM5G7xqdo2tvInN9
-         gpwUnqAB4xx+MoVUP1u6pXOuPBwDMAUwFr9ALaIoKeoUFQeMhQuaJWmg7Uf2fW5SVmj3
-         9+BuzSLl/fNzvIcN9EuwV5oUg+UxlSuIbWMdvED0SsuI6PVhcJUywcYDMdVcu06Yo58t
-         EBHoQH+5+XhJyK0bWz/XqgDXThiqyYV6VUlZRhHw9UOIkzCLh2yavnCPfN9D/GDN4cB1
-         yBGu4xOr9JdsScRt2iOS30MKfb9VDHU7Q5MkPa8EbcJuvjpN6T2L7uDCs07bn7YyZ8hK
-         kIJA==
-X-Gm-Message-State: AOAM531p9qa3X8dPechXCEwRyRjVOwmC03/sIG/Gb0gqiZmS3rPlZrQT
-        q325RFxLtl+lMTVFUO+yfyg=
-X-Google-Smtp-Source: ABdhPJyB4onJEgvQK2H/APnrbPiFy4TnCYnLa9qtc9wQRpRRYnPLHoPdrAS2Od4ntsgkhnAF56k+nA==
-X-Received: by 2002:a50:fd0a:: with SMTP id i10mr877677eds.78.1623367602981;
-        Thu, 10 Jun 2021 16:26:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=aszyaYZsJcZYQj2Xj4LwuEfwn7jbhFlbU+YBkgFvQ3Q=;
+        b=ClMyFz/6dgmHEnvmXLxnndxJxw1O9KECs8cxHTzbe9n6eOTEtW/qmxYXo4v+goQ4Il
+         BMh35/E43kmSOn0KKWBQIoK32iNrM9WVtY6tvdn6W3WOSGnshXVX9tDuJw3699aa21Li
+         S6QKvIimrL9qPMXdwBr9zOY8qJP72cJc1hOlrk966JdMiz5+1a2SAHfNdmYI0CT4aGD+
+         lTbREyGgwO4LXjzsITAc1Kss6pgDYHNGRdFlbWHExLBha0cT++VMO/Oc0t6WqRqMzkW0
+         fuilEQoNvTRULvHN5jZnNLuYe/xjatr8YQzMBLMx+fV2VuWDVlFPloU12W9qO1SGDh7V
+         QxgA==
+X-Gm-Message-State: AOAM530YbuifcNQTIggwfPk2Li0z4Vw44MkNEQdobPlzbOROEB8aEwMw
+        eopERuIiIPHjNU6wEUBTxgY=
+X-Google-Smtp-Source: ABdhPJzso/R7uH5KOSWGjUb0Tj5Ev9EbsOSXyNouOESQug9hPVpHvoSRUO9LZEr9Cz6hJypUo4k3tg==
+X-Received: by 2002:a17:906:f9d1:: with SMTP id lj17mr781607ejb.345.1623367603982;
+        Thu, 10 Jun 2021 16:26:43 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id j22sm1534187ejt.11.2021.06.10.16.26.42
+        by smtp.gmail.com with ESMTPSA id j22sm1534187ejt.11.2021.06.10.16.26.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 16:26:42 -0700 (PDT)
+        Thu, 10 Jun 2021 16:26:43 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -52,10 +55,12 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 00/10] DSA tagging driver for NXP SJA1110
-Date:   Fri, 11 Jun 2021 02:26:19 +0300
-Message-Id: <20210610232629.1948053-1-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 01/10] net: dsa: sja1105: enable the TTEthernet engine on SJA1110
+Date:   Fri, 11 Jun 2021 02:26:20 +0300
+Message-Id: <20210610232629.1948053-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210610232629.1948053-1-olteanv@gmail.com>
+References: <20210610232629.1948053-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -64,71 +69,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This series adds support for tagging data and control packets on the new
-NXP SJA1110 switch (supported by the sja1105 driver). Up to this point
-it used the sja1105 driver, which allowed it to send data packets, but
-not PDUs as those required by STP and PTP.
+As opposed to SJA1105 where there are parts with TTEthernet and parts
+without, in SJA1110 all parts support it, but it must be enabled in the
+static config. So enable it unconditionally. We use it for the tc-taprio
+and tc-gate offload.
 
-To accommodate this new tagger which has both a header and a trailer, we
-need to refactor the entire DSA tagging scheme, to replace the "overhead"
-concept with separate "needed_headroom" and "needed_tailroom" concepts,
-so that SJA1110 can declare its need for both.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+v1->v2: none
 
-There is also some consolidation work for the receive path of tag_8021q
-and its callers (sja1105 and ocelot-8021q).
+ drivers/net/dsa/sja1105/sja1105_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Changes in v2:
-Export the dsa_8021q_rcv and sja1110_process_meta_tstamp symbols to
-avoid build errors as modules.
-
-Vladimir Oltean (10):
-  net: dsa: sja1105: enable the TTEthernet engine on SJA1110
-  net: dsa: sja1105: allow RX timestamps to be taken on all ports for
-    SJA1110
-  net: dsa: generalize overhead for taggers that use both headers and
-    trailers
-  net: dsa: tag_sja1105: stop resetting network and transport headers
-  net: dsa: tag_8021q: remove shim declarations
-  net: dsa: tag_8021q: refactor RX VLAN parsing into a dedicated
-    function
-  net: dsa: sja1105: make SJA1105_SKB_CB fit a full timestamp
-  net: dsa: add support for the SJA1110 native tagging protocol
-  net: dsa: sja1105: add the RX timestamping procedure for SJA1110
-  net: dsa: sja1105: implement TX timestamping for SJA1110
-
- Documentation/networking/dsa/dsa.rst          |  21 +-
- drivers/net/dsa/sja1105/sja1105.h             |   4 +
- drivers/net/dsa/sja1105/sja1105_main.c        |  35 +-
- drivers/net/dsa/sja1105/sja1105_ptp.c         |  97 +++++-
- drivers/net/dsa/sja1105/sja1105_ptp.h         |  13 +
- drivers/net/dsa/sja1105/sja1105_spi.c         |  28 ++
- .../net/dsa/sja1105/sja1105_static_config.c   |   1 +
- .../net/dsa/sja1105/sja1105_static_config.h   |   1 +
- include/linux/dsa/8021q.h                     |  79 +----
- include/linux/dsa/sja1105.h                   |  26 +-
- include/net/dsa.h                             |   8 +-
- net/core/flow_dissector.c                     |   2 +-
- net/dsa/dsa_priv.h                            |   5 +
- net/dsa/master.c                              |   6 +-
- net/dsa/slave.c                               |  10 +-
- net/dsa/tag_8021q.c                           |  23 ++
- net/dsa/tag_ar9331.c                          |   2 +-
- net/dsa/tag_brcm.c                            |   6 +-
- net/dsa/tag_dsa.c                             |   4 +-
- net/dsa/tag_gswip.c                           |   2 +-
- net/dsa/tag_hellcreek.c                       |   3 +-
- net/dsa/tag_ksz.c                             |   9 +-
- net/dsa/tag_lan9303.c                         |   2 +-
- net/dsa/tag_mtk.c                             |   2 +-
- net/dsa/tag_ocelot.c                          |   4 +-
- net/dsa/tag_ocelot_8021q.c                    |  20 +-
- net/dsa/tag_qca.c                             |   2 +-
- net/dsa/tag_rtl4_a.c                          |   2 +-
- net/dsa/tag_sja1105.c                         | 312 ++++++++++++++++--
- net/dsa/tag_trailer.c                         |   3 +-
- net/dsa/tag_xrs700x.c                         |   3 +-
- 31 files changed, 551 insertions(+), 184 deletions(-)
-
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 9881ef134666..86563e6fd85f 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -675,6 +675,8 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
+ 		 */
+ 		.tpid = ETH_P_SJA1105,
+ 		.tpid2 = ETH_P_SJA1105,
++		/* Enable the TTEthernet engine on SJA1110 */
++		.tte_en = true,
+ 	};
+ 	struct dsa_switch *ds = priv->ds;
+ 	struct sja1105_table *table;
 -- 
 2.25.1
 
