@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98C5E3A310F
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 690933A30F2
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:41:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231932AbhFJQoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 12:44:18 -0400
-Received: from mail-ej1-f52.google.com ([209.85.218.52]:41505 "EHLO
-        mail-ej1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230467AbhFJQnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 12:43:45 -0400
-Received: by mail-ej1-f52.google.com with SMTP id ho18so191134ejc.8;
-        Thu, 10 Jun 2021 09:41:40 -0700 (PDT)
+        id S231634AbhFJQnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 12:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231465AbhFJQmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 12:42:55 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2200EC0617AF;
+        Thu, 10 Jun 2021 09:40:44 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id ci15so174042ejc.10;
+        Thu, 10 Jun 2021 09:40:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pjkqTURZcurLq7jUGUIyX7EynFbeWen/UMWsVgV3fKg=;
-        b=cTpMc8jCE9xA8gcBZpV/laGcmSvfQK3/zLSvJRRa/LuR7xxJE4gn15+M/0/IFgg4AI
-         fz9Hex/ZLp8rbn92FXt2tapsLYWXHsUl4+YjhJTOsBYlnqSQZdR4N4bJy3ad7JZo1sfO
-         p0jpAg49x53M7TMyO6fE4DPL3r8iEbCkDbvZdoz2sj7ExMINwDyHcnqfMNfnNfhFgkAI
-         5NCXAFP/QA3+Hdx/VEmbB/MtxWuTewaxzpbSWUH2JkvNnsmnQhQ3irzYmhyyKa86mPTZ
-         XChXStoNtCnPimL9DRzsZ08c/JmstHLShtpu+ITwhbHy9wIGqxKsIRv7QpCLxIAQ+mIU
-         cROA==
+        bh=OP4A8JlGO2Dl0G4k2AQZx6BKD9WAdkVxy5GnYXxTceM=;
+        b=Haz8Rvxk0LJKNvGhRutlpDPeXm316Wy2zEnVdHdcnw51FRnoU2177kL99J02Los+Mj
+         D28c1hMiJ+wR6LBiQ5VLY4MKmeuwFKD0BCQUj2CjVTxmAEyxj8JWfObyrC2GkNZbehW2
+         u+LmOef1Bjiy01qhpI/epZ3AnTRKBnflmlKBqUkCbk1wr7bXsGoW0zqz48ufww0HlOXZ
+         7cPj8S27hzgp7wy1AoSnE+b4PlF8OFj+eR8QnczREi5nRuuiBzI4YUAjucjNTn7N97ck
+         737yYA1JcjMJ2CwXGVrnaddKR234jKwm5nxiw45pUoagy/fObrpoAeDEWxb94eG8r6SC
+         oM/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pjkqTURZcurLq7jUGUIyX7EynFbeWen/UMWsVgV3fKg=;
-        b=Vlup4JTxbwUHdyyxlAca6Yew9tTfUOiT36J7HV4tYM4CPu6bkUdL5RTXr8IOkLQSF9
-         I12n+dWA1KcCscR2JbIaZ9a8f61Xqz9UW3Au91nEfy5Q1IroTYgRmIRWTsf/eDm7baZ5
-         nP0RXxEgtI7WEfs61KjESK3hHQ3o13aYcs6QbBVWlw2OcXRFUhy1dVu0TUeAItssQbNU
-         TvV63VWScjXWVggEn5fZk6mzcQLnV393sR1dO3u9EfUVFjEm9TMxm8zi4zaSJ9RWRfJR
-         leD5ayK5uAIvqekT1lF5Ln4ytv7UDW0evawovlNaUoHK1j4aCidlcXSAcWgizZIfkKHl
-         xzLg==
-X-Gm-Message-State: AOAM532xD8kp0ORr3oXuxS72MnsRq25g1CS1IbQQlZ3aFRI0phZLRnuP
-        DNKgnB3egt+LFJWpp/Resmo=
-X-Google-Smtp-Source: ABdhPJyDIC3eLsbUKMaH2OPVPIW4L3pqRfdNlX77J3xTS/RFImBYy9jKRfsXYFs6JHtEUFOToqBLlQ==
-X-Received: by 2002:a17:906:82c3:: with SMTP id a3mr477659ejy.230.1623343240314;
-        Thu, 10 Jun 2021 09:40:40 -0700 (PDT)
+        bh=OP4A8JlGO2Dl0G4k2AQZx6BKD9WAdkVxy5GnYXxTceM=;
+        b=Ag08yXuqvt9dmhXmcjj1ouFfGFjeH7Duv2i2X9tKW4hdJB2dbhs8MN5TIkUln7AjRL
+         B4/d7+4z1/eIL8r1o0RmUgV9SfLZvhDGxkvxrUf6uUWaPSfeQBdfVIbpCxPfcE3fw9Pk
+         apy2j6bxtJ7nB2CFXUm+G7le9WI4tq5caFGI/lxUaYsVLxezti7TSIa3g3iC4GLp9Ykq
+         3+w/xmbMx/W325bWF18Vlubnt4UpTtuyXAARBCf2DMFgDWhb8ndJ2XlGYSjNnoUMSvls
+         kRdvqk+YL+h1Kpv4hQ0JPRJXXFuHd4kBxxpMoyR4FZNSnkaJIOd+TlPknN9OOPxg2WsB
+         /+rw==
+X-Gm-Message-State: AOAM533ibhIIRTFkCKjqn4FYV5VcMj+QmSs0pAl8xMGXVmPN0dpTYIPM
+        tcYFVmmivXo7PRqX36BgaBw=
+X-Google-Smtp-Source: ABdhPJzZW5gzrfQuuDI152iey6UWe7uJ1Wa+K7+hykGv7xDljoQY+QU7h5SfzfJ6fJ1/O8f4Hiz+kQ==
+X-Received: by 2002:a17:906:7052:: with SMTP id r18mr445919ejj.449.1623343242563;
+        Thu, 10 Jun 2021 09:40:42 -0700 (PDT)
 Received: from yoga-910.localhost ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id e22sm1657166edv.57.2021.06.10.09.40.38
+        by smtp.gmail.com with ESMTPSA id e22sm1657166edv.57.2021.06.10.09.40.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 09:40:40 -0700 (PDT)
+        Thu, 10 Jun 2021 09:40:42 -0700 (PDT)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Grant Likely <grant.likely@arm.com>,
         "Rafael J . Wysocki" <rafael@kernel.org>,
@@ -69,9 +72,9 @@ Cc:     Cristi Sovaiala <cristian.sovaiala@nxp.com>,
         "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Calvin Johnson <calvin.johnson@oss.nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v8 12/15] net/fsl: Use [acpi|of]_mdiobus_register
-Date:   Thu, 10 Jun 2021 19:39:14 +0300
-Message-Id: <20210610163917.4138412-13-ciorneiioana@gmail.com>
+Subject: [PATCH net-next v8 13/15] net: phylink: introduce phylink_fwnode_phy_connect()
+Date:   Thu, 10 Jun 2021 19:39:15 +0300
+Message-Id: <20210610163917.4138412-14-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210610163917.4138412-1-ciorneiioana@gmail.com>
 References: <20210610163917.4138412-1-ciorneiioana@gmail.com>
@@ -83,117 +86,115 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Calvin Johnson <calvin.johnson@oss.nxp.com>
 
-Depending on the device node type, call the specific OF or ACPI
-mdiobus_register function.
-
-Note: For both ACPI and DT cases, endianness of MDIO controller
-need to be specified using "little-endian" property.
+Define phylink_fwnode_phy_connect() to connect phy specified by
+a fwnode to a phylink instance.
 
 Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 
-Changes in v8:
-- Directly call the OF or ACPI variants of registering the MDIO bus.
-  This is needed because the fwnode_mdio.c module should only implement
-  features which can be achieved without going back to the OF/ACPI
-  variants. Without this restrictions we directly end up in a dependency
-  cycle: of_mdio -> fwnode_mdio -> of_mdio.
-- Changed the commit title since the fwnode_mdiobus_register() is no
-  longer available
+Changes in v8: None
+Changes in v7: None
+Changes in v6:
+- remove OF check for fixed-link
 
-Changes in v7:
-- Include fwnode_mdio.h
-- Alphabetically sort header inclusions
-
-Changes in v6: None
 Changes in v5: None
 Changes in v4:
-- Cleanup xgmac_mdio_probe()
+- call phy_device_free() before returning
 
-Changes in v3:
-- Avoid unnecessary line removal
-- Remove unused inclusion of acpi.h
-
+Changes in v3: None
 Changes in v2: None
 
+ drivers/net/phy/phylink.c | 54 +++++++++++++++++++++++++++++++++++++++
+ include/linux/phylink.h   |  3 +++
+ 2 files changed, 57 insertions(+)
 
- drivers/net/ethernet/freescale/xgmac_mdio.c | 30 ++++++++++++++-------
- 1 file changed, 21 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
-index bfa2826c5545..0b68852379da 100644
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -2,6 +2,7 @@
-  * QorIQ 10G MDIO Controller
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 96d8e88b4e46..9cc0f69faafe 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -5,6 +5,7 @@
   *
-  * Copyright 2012 Freescale Semiconductor, Inc.
-+ * Copyright 2021 NXP
-  *
-  * Authors: Andy Fleming <afleming@freescale.com>
-  *          Timur Tabi <timur@freescale.com>
-@@ -11,15 +12,17 @@
-  * kind, whether express or implied.
+  * Copyright (C) 2015 Russell King
   */
- 
--#include <linux/kernel.h>
--#include <linux/slab.h>
 +#include <linux/acpi.h>
-+#include <linux/acpi_mdio.h>
- #include <linux/interrupt.h>
--#include <linux/module.h>
--#include <linux/phy.h>
-+#include <linux/kernel.h>
- #include <linux/mdio.h>
-+#include <linux/module.h>
- #include <linux/of_address.h>
--#include <linux/of_platform.h>
- #include <linux/of_mdio.h>
-+#include <linux/of_platform.h>
-+#include <linux/phy.h>
-+#include <linux/slab.h>
+ #include <linux/ethtool.h>
+ #include <linux/export.h>
+ #include <linux/gpio/consumer.h>
+@@ -1125,6 +1126,59 @@ int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
+ }
+ EXPORT_SYMBOL_GPL(phylink_of_phy_connect);
  
- /* Number of microseconds to wait for a register to respond */
- #define TIMEOUT	1000
-@@ -243,10 +246,10 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
++/**
++ * phylink_fwnode_phy_connect() - connect the PHY specified in the fwnode.
++ * @pl: a pointer to a &struct phylink returned from phylink_create()
++ * @fwnode: a pointer to a &struct fwnode_handle.
++ * @flags: PHY-specific flags to communicate to the PHY device driver
++ *
++ * Connect the phy specified @fwnode to the phylink instance specified
++ * by @pl.
++ *
++ * Returns 0 on success or a negative errno.
++ */
++int phylink_fwnode_phy_connect(struct phylink *pl,
++			       struct fwnode_handle *fwnode,
++			       u32 flags)
++{
++	struct fwnode_handle *phy_fwnode;
++	struct phy_device *phy_dev;
++	int ret;
++
++	/* Fixed links and 802.3z are handled without needing a PHY */
++	if (pl->cfg_link_an_mode == MLO_AN_FIXED ||
++	    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
++	     phy_interface_mode_is_8023z(pl->link_interface)))
++		return 0;
++
++	phy_fwnode = fwnode_get_phy_node(fwnode);
++	if (IS_ERR(phy_fwnode)) {
++		if (pl->cfg_link_an_mode == MLO_AN_PHY)
++			return -ENODEV;
++		return 0;
++	}
++
++	phy_dev = fwnode_phy_find_device(phy_fwnode);
++	/* We're done with the phy_node handle */
++	fwnode_handle_put(phy_fwnode);
++	if (!phy_dev)
++		return -ENODEV;
++
++	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
++				pl->link_interface);
++	if (ret) {
++		phy_device_free(phy_dev);
++		return ret;
++	}
++
++	ret = phylink_bringup_phy(pl, phy_dev, pl->link_config.interface);
++	if (ret)
++		phy_detach(phy_dev);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(phylink_fwnode_phy_connect);
++
+ /**
+  * phylink_disconnect_phy() - disconnect any PHY attached to the phylink
+  *   instance.
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index fd2acfd9b597..afb3ded0b691 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -441,6 +441,9 @@ void phylink_destroy(struct phylink *);
  
- static int xgmac_mdio_probe(struct platform_device *pdev)
- {
--	struct device_node *np = pdev->dev.of_node;
--	struct mii_bus *bus;
--	struct resource *res;
-+	struct fwnode_handle *fwnode;
- 	struct mdio_fsl_priv *priv;
-+	struct resource *res;
-+	struct mii_bus *bus;
- 	int ret;
+ int phylink_connect_phy(struct phylink *, struct phy_device *);
+ int phylink_of_phy_connect(struct phylink *, struct device_node *, u32 flags);
++int phylink_fwnode_phy_connect(struct phylink *pl,
++			       struct fwnode_handle *fwnode,
++			       u32 flags);
+ void phylink_disconnect_phy(struct phylink *);
  
- 	/* In DPAA-1, MDIO is one of the many FMan sub-devices. The FMan
-@@ -279,13 +282,22 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
- 		goto err_ioremap;
- 	}
- 
-+	/* For both ACPI and DT cases, endianness of MDIO controller
-+	 * needs to be specified using "little-endian" property.
-+	 */
- 	priv->is_little_endian = device_property_read_bool(&pdev->dev,
- 							   "little-endian");
- 
- 	priv->has_a011043 = device_property_read_bool(&pdev->dev,
- 						      "fsl,erratum-a011043");
- 
--	ret = of_mdiobus_register(bus, np);
-+	fwnode = pdev->dev.fwnode;
-+	if (is_of_node(fwnode))
-+		ret = of_mdiobus_register(bus, to_of_node(fwnode));
-+	else if (is_acpi_node(fwnode))
-+		ret = acpi_mdiobus_register(bus, fwnode);
-+	else
-+		ret = -EINVAL;
- 	if (ret) {
- 		dev_err(&pdev->dev, "cannot register MDIO bus\n");
- 		goto err_registration;
+ void phylink_mac_change(struct phylink *, bool up);
 -- 
 2.31.1
 
