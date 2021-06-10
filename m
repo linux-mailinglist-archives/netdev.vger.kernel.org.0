@@ -2,233 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C85A63A2D33
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 15:37:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B62363A2D44
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 15:42:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbhFJNjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 09:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231231AbhFJNjH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 09:39:07 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13499C061760
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 06:37:11 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lrKrl-0001DZ-0G; Thu, 10 Jun 2021 15:37:01 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lrKrh-00017e-Kr; Thu, 10 Jun 2021 15:36:57 +0200
-Date:   Thu, 10 Jun 2021 15:36:57 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 4/8] net: usb: asix: ax88772: add phylib
- support
-Message-ID: <20210610133657.7hchbeidynpd7m7b@pengutronix.de>
-References: <20210607082727.26045-1-o.rempel@pengutronix.de>
- <20210607082727.26045-5-o.rempel@pengutronix.de>
- <CGME20210609095923eucas1p2e692c9a482151742d543316c91f29802@eucas1p2.samsung.com>
- <84ff1dab-ab0a-f27c-a948-e1ebdf778485@samsung.com>
- <20210609124609.zngg6sfcu6cj4p2m@pengutronix.de>
- <44a16219-0575-49ee-758b-be6fe9971962@gmail.com>
+        id S230483AbhFJNoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 09:44:06 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:5378 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230291AbhFJNoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 09:44:06 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4G14mj3VHXz6wFf;
+        Thu, 10 Jun 2021 21:38:13 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Thu, 10 Jun 2021 21:42:06 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Thu, 10 Jun 2021 21:42:06 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <richardcochran@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <lipeng321@huawei.com>,
+        <tanhuazhong@huawei.com>, <huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 0/2] net: hns3: add support for PTP
+Date:   Thu, 10 Jun 2021 21:38:55 +0800
+Message-ID: <1623332337-54480-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <44a16219-0575-49ee-758b-be6fe9971962@gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 15:36:14 up 190 days,  3:42, 50 users,  load average: 0.07, 0.04,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 09, 2021 at 03:12:37PM +0200, Heiner Kallweit wrote:
-> On 09.06.2021 14:46, Oleksij Rempel wrote:
-> > Hi Marek,
-> > 
-> > On Wed, Jun 09, 2021 at 11:59:23AM +0200, Marek Szyprowski wrote:
-> >> Hi Oleksij,
-> >>
-> >> On 07.06.2021 10:27, Oleksij Rempel wrote:
-> >>> To be able to use ax88772 with external PHYs and use advantage of
-> >>> existing PHY drivers, we need to port at least ax88772 part of asix
-> >>> driver to the phylib framework.
-> >>>
-> >>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> >>
-> >> This patch landed recently in linux-next as commit e532a096be0e ("net: 
-> >> usb: asix: ax88772: add phylib support"). I found that it causes some 
-> >> warnings on boards with those devices, see the following log:
-> >>
-> >> root@target:~# time rtcwake -s10 -mmem
-> >> rtcwake: wakeup from "mem" using /dev/rtc0 at Wed Jun  9 08:16:41 2021
-> >> [  231.226579] PM: suspend entry (deep)
-> >> [  231.231697] Filesystems sync: 0.002 seconds
-> >> [  231.261761] Freezing user space processes ... (elapsed 0.002 seconds) 
-> >> done.
-> >> [  231.270526] OOM killer disabled.
-> >> [  231.273557] Freezing remaining freezable tasks ... (elapsed 0.002 
-> >> seconds) done.
-> >> [  231.282229] printk: Suspending console(s) (use no_console_suspend to 
-> >> debug)
-> >> ...
-> >> [  231.710852] Disabling non-boot CPUs ...
-> >> ...
-> >> [  231.901794] Enabling non-boot CPUs ...
-> >> ...
-> >> [  232.225640] usb usb3: root hub lost power or was reset
-> >> [  232.225746] usb usb1: root hub lost power or was reset
-> >> [  232.225864] usb usb5: root hub lost power or was reset
-> >> [  232.226206] usb usb6: root hub lost power or was reset
-> >> [  232.226207] usb usb4: root hub lost power or was reset
-> >> [  232.297749] usb usb2: root hub lost power or was reset
-> >> [  232.343227] asix 3-1:1.0 eth0: Failed to write reg index 0x0000: -22
-> >> [  232.343293] asix 3-1:1.0 eth0: Failed to enable software MII access
-> >> [  232.344486] asix 3-1:1.0 eth0: Failed to read reg index 0x0000: -22
-> >> [  232.344512] asix 3-1:1.0 eth0: Failed to write reg index 0x0000: -22
-> >> [  232.344529] PM: dpm_run_callback(): mdio_bus_phy_resume+0x0/0x78 
-> >> returns -22
-> >> [  232.344554] Asix Electronics AX88772C usb-003:002:10: PM: failed to 
-> >> resume: error -22
-> >> [  232.563712] usb 1-1: reset high-speed USB device number 2 using 
-> >> exynos-ehci
-> >> [  232.757653] usb 3-1: reset high-speed USB device number 2 using xhci-hcd
-> >> [  233.730994] OOM killer enabled.
-> >> [  233.734122] Restarting tasks ... done.
-> >> [  233.754992] PM: suspend exit
-> >>
-> >> real    0m11.546s
-> >> user    0m0.000s
-> >> sys     0m0.530s
-> >> root@target:~# sleep 2
-> >> root@target:~# time rtcwake -s10 -mmem
-> >> rtcwake: wakeup from "mem" using /dev/rtc0 at Wed Jun  9 08:17:02 2021
-> >> [  241.959608] PM: suspend entry (deep)
-> >> [  241.963446] Filesystems sync: 0.001 seconds
-> >> [  241.978619] Freezing user space processes ... (elapsed 0.004 seconds) 
-> >> done.
-> >> [  241.989199] OOM killer disabled.
-> >> [  241.992215] Freezing remaining freezable tasks ... (elapsed 0.005 
-> >> seconds) done.
-> >> [  242.003979] printk: Suspending console(s) (use no_console_suspend to 
-> >> debug)
-> >> ...
-> >> [  242.592030] Disabling non-boot CPUs ...
-> >> ...
-> >> [  242.879721] Enabling non-boot CPUs ...
-> >> ...
-> >> [  243.145870] usb usb3: root hub lost power or was reset
-> >> [  243.145910] usb usb4: root hub lost power or was reset
-> >> [  243.147084] usb usb5: root hub lost power or was reset
-> >> [  243.147157] usb usb6: root hub lost power or was reset
-> >> [  243.147298] usb usb1: root hub lost power or was reset
-> >> [  243.217137] usb usb2: root hub lost power or was reset
-> >> [  243.283807] asix 3-1:1.0 eth0: Failed to write reg index 0x0000: -22
-> >> [  243.284005] asix 3-1:1.0 eth0: Failed to enable software MII access
-> >> [  243.285526] asix 3-1:1.0 eth0: Failed to read reg index 0x0000: -22
-> >> [  243.285676] asix 3-1:1.0 eth0: Failed to read reg index 0x0004: -22
-> >> [  243.285769] ------------[ cut here ]------------
-> >> [  243.286011] WARNING: CPU: 2 PID: 2069 at drivers/net/phy/phy.c:916 
-> >> phy_error+0x28/0x68
-> >> [  243.286115] Modules linked in: cmac bnep mwifiex_sdio mwifiex 
-> >> sha256_generic libsha256 sha256_arm cfg80211 btmrvl_sdio btmrvl 
-> >> bluetooth s5p_mfc uvcvideo s5p_jpeg exynos_gsc v
-> >> [  243.287490] CPU: 2 PID: 2069 Comm: kworker/2:5 Not tainted 
-> >> 5.13.0-rc5-next-20210608 #10443
-> >> [  243.287555] Hardware name: Samsung Exynos (Flattened Device Tree)
-> >> [  243.287609] Workqueue: events_power_efficient phy_state_machine
-> >> [  243.287716] [<c0111920>] (unwind_backtrace) from [<c010d0cc>] 
-> >> (show_stack+0x10/0x14)
-> >> [  243.287807] [<c010d0cc>] (show_stack) from [<c0b62360>] 
-> >> (dump_stack_lvl+0xa0/0xc0)
-> >> [  243.287882] [<c0b62360>] (dump_stack_lvl) from [<c0127960>] 
-> >> (__warn+0x118/0x11c)
-> >> [  243.287954] [<c0127960>] (__warn) from [<c0127a18>] 
-> >> (warn_slowpath_fmt+0xb4/0xbc)
-> >> [  243.288021] [<c0127a18>] (warn_slowpath_fmt) from [<c0734968>] 
-> >> (phy_error+0x28/0x68)
-> >> [  243.288094] [<c0734968>] (phy_error) from [<c0735d6c>] 
-> >> (phy_state_machine+0x218/0x278)
-> >> [  243.288173] [<c0735d6c>] (phy_state_machine) from [<c014ae08>] 
-> >> (process_one_work+0x30c/0x884)
-> >> [  243.288254] [<c014ae08>] (process_one_work) from [<c014b3d8>] 
-> >> (worker_thread+0x58/0x594)
-> >> [  243.288333] [<c014b3d8>] (worker_thread) from [<c0153944>] 
-> >> (kthread+0x160/0x1c0)
-> >> [  243.288408] [<c0153944>] (kthread) from [<c010011c>] 
-> >> (ret_from_fork+0x14/0x38)
-> >> [  243.288475] Exception stack(0xc4683fb0 to 0xc4683ff8)
-> >> [  243.288531] 3fa0:                                     00000000 
-> >> 00000000 00000000 00000000
-> >> [  243.288587] 3fc0: 00000000 00000000 00000000 00000000 00000000 
-> >> 00000000 00000000 00000000
-> >> [  243.288641] 3fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-> >> [  243.288690] irq event stamp: 1611
-> >> [  243.288744] hardirqs last  enabled at (1619): [<c01a6ef0>] 
-> >> vprintk_emit+0x230/0x290
-> >> [  243.288830] hardirqs last disabled at (1626): [<c01a6f2c>] 
-> >> vprintk_emit+0x26c/0x290
-> >> [  243.288906] softirqs last  enabled at (1012): [<c0101768>] 
-> >> __do_softirq+0x500/0x63c
-> >> [  243.288978] softirqs last disabled at (1007): [<c01315b4>] 
-> >> irq_exit+0x214/0x220
-> >> [  243.289055] ---[ end trace eeacda95eb7db60a ]---
-> >> [  243.289345] asix 3-1:1.0 eth0: Failed to write reg index 0x0000: -22
-> >> [  243.289466] asix 3-1:1.0 eth0: Failed to write Medium Mode mode to 
-> >> 0x0000: ffffffea
-> >> [  243.289540] asix 3-1:1.0 eth0: Link is Down
-> >> [  243.482809] usb 1-1: reset high-speed USB device number 2 using 
-> >> exynos-ehci
-> >> [  243.647251] usb 3-1: reset high-speed USB device number 2 using xhci-hcd
-> >> [  244.847161] OOM killer enabled.
-> >> [  244.850221] Restarting tasks ... done.
-> >> [  244.861372] PM: suspend exit
-> >>
-> >> real    0m13.050s
-> >> user    0m0.000s
-> >> sys     0m1.152s
-> >> root@target:~#
-> >>
-> >> It looks that some kind of system suspend/resume integration for phylib 
-> >> is not implemented.
-> > 
-> > Probably it is should be handled only by the asix driver. I'll take a
-> > look in to it. Did interface was able to resume after printing some
-> > warnings?
-> > 
-> > Regards,
-> > Oleksij
-> > 
-> 
-> Maybe it's a use case for the new mac_managed_pm flag, see
-> fba863b81604 ("net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM")
-> 
+This series adds PTP support for the HNS3 ethernet driver.
 
-Thx! this is the right one :)
+change log:
+V1 -> V2:
+1. use spinlock to prevent concurrency
+2. add the handling when ptp_clock_register() returns NULL
 
-Regards,
-Oleksij
+Huazhong Tan (2):
+  net: hns3: add support for PTP
+  net: hns3: add debugfs support for ptp info
+
+ drivers/net/ethernet/hisilicon/Kconfig             |   1 +
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  13 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  13 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  27 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   9 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  12 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/Makefile    |   2 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |   4 +
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  55 +++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  61 ++-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   6 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_ptp.c | 544 +++++++++++++++++++++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_ptp.h | 134 +++++
+ 13 files changed, 873 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_ptp.c
+ create mode 100644 drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_ptp.h
+
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.8.1
+
