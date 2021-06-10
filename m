@@ -2,103 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 753F03A2478
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 08:24:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A2923A2494
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 08:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230148AbhFJG0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 02:26:20 -0400
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:53658 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229634AbhFJG0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 02:26:19 -0400
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15A6G35i022915;
-        Thu, 10 Jun 2021 06:24:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=cxapp2OSP/95LVw7tdGcnxuS5fjaY5U8T8+WTbN4vKc=;
- b=uIw5FFiRdSzgD367etO1V9hXexwlkTym9fK4mzTcT8Vb5ZY3P1GdWRo54CbYfcHiNGLF
- KNcuue+b68ebB/SR36r0PbymVaE3ujg6jHN3cAhkKxfp87ors/4b4k0mHrRTnVnQdebx
- zsBa0rBoMhaj54gdLUGCJxkm4KFcK5eGeYYb3+zbzA005+SQdQ2t7jZn7iPEjOiAilR5
- ilKLRIO1hjOVP8Ltf2TrB9K7pza6UESji7JhFSQhYhccURtoXu+UQbGFNDSR4R21U2/k
- 626siu30xbnbDcOOc2NSYJFv+rQMaCctfRCBWH+4fPRCvVRmyyRYYSg1T20S9OhBSlHa 9A== 
-Received: from oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 392yvb88md-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Jun 2021 06:24:17 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 15A6OEvB159994;
-        Thu, 10 Jun 2021 06:24:16 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 38yyaca6xe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Jun 2021 06:24:16 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15A6HYaC148013;
-        Thu, 10 Jun 2021 06:24:15 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 38yyaca6wt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Jun 2021 06:24:15 +0000
-Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 15A6O89j017890;
-        Thu, 10 Jun 2021 06:24:08 GMT
-Received: from kadam (/41.212.42.34)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 09 Jun 2021 23:24:07 -0700
-Date:   Thu, 10 Jun 2021 09:23:58 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] net: dsa: sja1105: Fix assigned yet unused return
- code rc
-Message-ID: <20210610062358.GH1955@kadam>
-References: <20210609174353.298731-1-colin.king@canonical.com>
+        id S230080AbhFJGil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 02:38:41 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:39742 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229770AbhFJGik (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 02:38:40 -0400
+Received: from mail-wr1-f69.google.com ([209.85.221.69])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lrEJ1-0004aM-Jc
+        for netdev@vger.kernel.org; Thu, 10 Jun 2021 06:36:43 +0000
+Received: by mail-wr1-f69.google.com with SMTP id z13-20020adfec8d0000b0290114cc6b21c4so390611wrn.22
+        for <netdev@vger.kernel.org>; Wed, 09 Jun 2021 23:36:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=WtLXS+0tm1k1bpg9yjdyBFk1R42VryqZ5m7j5SsaTlI=;
+        b=fulaulMe5/N0j50CYJI6ME6jIRnvmAC2GzFovzzPS9FIqI8/FU3azfHWHjvKbak+E3
+         7NXS7T+hH1iww10YGReFo+7C+GiBnzE34q9MrCjTvFwWadWYRaNAjXmJ8KElF7YVGeLa
+         2cXmWLqUyzXaHKTGjm3n9xPejyAU8+o/2+pw/mr8nfvxoZsdGapBsDHhLQnN11JdBei+
+         v++u2sT8fDw9CZFjBlDgptxMpDwOGdRylNRVsNUfDLZOPxzZ1DHZnkLTMfOpNJg5zJrm
+         EZgQ8qFG3dypuSLBmuSQN8THOjIq8T4X8ciEfzHvrmv8dcuVqLvp7c8ypim15s1lcdPd
+         24TQ==
+X-Gm-Message-State: AOAM532f5lpjKfb9UyR09wXMFiiArn5/HP+ZZtibDIPdIatF03ADc00Q
+        kqWvdzbV8qEqwAnPPFrjRldzxGlGHBk0JVfsylQqRv1URpQD/+fDgPvY34GtrDbO8cIVrB/ETzj
+        +LYEJNMaGaJBwzBCQ7ubvazqx+3gclmOo6A==
+X-Received: by 2002:a7b:c453:: with SMTP id l19mr12784104wmi.154.1623307003334;
+        Wed, 09 Jun 2021 23:36:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzrKbTB2dPyTcgsNWbqMxfPi2n18eMS3fGLXwsHyavospcUWmdxoXbYyMBB4fiIvgtYPSOVfQ==
+X-Received: by 2002:a7b:c453:: with SMTP id l19mr12784093wmi.154.1623307003211;
+        Wed, 09 Jun 2021 23:36:43 -0700 (PDT)
+Received: from [192.168.1.115] (xdsl-188-155-177-222.adslplus.ch. [188.155.177.222])
+        by smtp.gmail.com with ESMTPSA id a10sm459607wrr.48.2021.06.09.23.36.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Jun 2021 23:36:42 -0700 (PDT)
+Subject: Re: [PATCH] nfc: fdp: remove unnecessary labels
+To:     samirweng1979 <samirweng1979@163.com>, davem@davemloft.net,
+        kuba@kernel.org, unixbhaskar@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+References: <20210610024616.1804-1-samirweng1979@163.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <a4dd4569-2f81-7aac-e8f7-405866bb1b7d@canonical.com>
+Date:   Thu, 10 Jun 2021 08:36:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210609174353.298731-1-colin.king@canonical.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-ORIG-GUID: hnzEYv2Q0scNvl_zw9nEKYxrm9K3MU53
-X-Proofpoint-GUID: hnzEYv2Q0scNvl_zw9nEKYxrm9K3MU53
+In-Reply-To: <20210610024616.1804-1-samirweng1979@163.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 09, 2021 at 06:43:53PM +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On 10/06/2021 04:46, samirweng1979 wrote:
+> From: wengjianfeng <wengjianfeng@yulong.com>
 > 
-> The return code variable rc is being set to return error values in two
-> places in sja1105_mdiobus_base_tx_register and yet it is not being
-> returned, the function always returns 0 instead. Fix this by replacing
-> the return 0 with the return code rc.
+> Some labels are meaningless, so we delete them and use the
+> return statement instead of the goto statement.
 > 
-> Addresses-Coverity: ("Unused value")
-> Fixes: 5a8f09748ee7 ("net: dsa: sja1105: register the MDIO buses for 100base-T1 and 100base-TX")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
 > ---
->  drivers/net/dsa/sja1105/sja1105_mdio.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/nfc/fdp/fdp.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/net/dsa/sja1105/sja1105_mdio.c b/drivers/net/dsa/sja1105/sja1105_mdio.c
-> index 8dfd06318b23..08517c70cb48 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_mdio.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_mdio.c
-> @@ -171,7 +171,7 @@ static int sja1105_mdiobus_base_tx_register(struct sja1105_private *priv,
->  out_put_np:
->  	of_node_put(np);
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+
+Best regards,
+Krzysztof
+
+> diff --git a/drivers/nfc/fdp/fdp.c b/drivers/nfc/fdp/fdp.c
+> index 7863b25..5287458 100644
+> --- a/drivers/nfc/fdp/fdp.c
+> +++ b/drivers/nfc/fdp/fdp.c
+> @@ -266,7 +266,7 @@ static int fdp_nci_request_firmware(struct nci_dev *ndev)
+>  	r = request_firmware(&info->ram_patch, FDP_RAM_PATCH_NAME, dev);
+>  	if (r < 0) {
+>  		nfc_err(dev, "RAM patch request error\n");
+> -		goto error;
+> +		return r;
+>  	}
 >  
-> -	return 0;
-> +	return rc;
-
-Should this function really return success if of_device_is_available()?
-
-regards,
-dan carpenter
-
+>  	data = (u8 *) info->ram_patch->data;
+> @@ -283,7 +283,7 @@ static int fdp_nci_request_firmware(struct nci_dev *ndev)
+>  	r = request_firmware(&info->otp_patch, FDP_OTP_PATCH_NAME, dev);
+>  	if (r < 0) {
+>  		nfc_err(dev, "OTP patch request error\n");
+> -		goto out;
+> +		return 0;
+>  	}
+>  
+>  	data = (u8 *) info->otp_patch->data;
+> @@ -295,10 +295,7 @@ static int fdp_nci_request_firmware(struct nci_dev *ndev)
+>  
+>  	dev_dbg(dev, "OTP patch version: %d, size: %d\n",
+>  		 info->otp_patch_version, (int) info->otp_patch->size);
+> -out:
+>  	return 0;
+> -error:
+> -	return r;
+>  }
+>  
+>  static void fdp_nci_release_firmware(struct nci_dev *ndev)
+> 
