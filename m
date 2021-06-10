@@ -2,229 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9183A36F3
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 00:23:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66D6B3A371C
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 00:27:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbhFJWY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 18:24:56 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:50654 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbhFJWYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 18:24:55 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20210610222256euoutp026c144152efe8211799d63e39d97907e1~HWMEAPPGZ2501225012euoutp02L
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 22:22:56 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20210610222256euoutp026c144152efe8211799d63e39d97907e1~HWMEAPPGZ2501225012euoutp02L
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1623363776;
-        bh=poyn9dHD5RqCV1XpJrNOKXbO2e1N8eoPLi+JPYKOJhI=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=dnZaSQhrWCCpxtMY8vTjECDreW6TQWT2zFxDNIajbYWQXXXEx0vXrgIRkhhZa6XrY
-         mMWx6bDJ8WV1t+unPSudNXjHr/8oRhqqeV0eycoZaWrBNwBhnIZUDAHdvNzDTRuLxU
-         9QzliucNytXGZFsXZwIkrfIzs81jc4cYS+PN4qLI=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20210610222255eucas1p1b75114d25b06cd7534ed17b2b69c6c53~HWMCuRh4g2034220342eucas1p16;
-        Thu, 10 Jun 2021 22:22:55 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 7F.A5.09439.FB092C06; Thu, 10
-        Jun 2021 23:22:55 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20210610222254eucas1p1d8cdccfa1befe370be30c7b8d9312230~HWMBj8WJk0602306023eucas1p1w;
-        Thu, 10 Jun 2021 22:22:54 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210610222253eusmtrp1a5c9b28324eed2f8ce8ebeeb2af06915~HWMBgH16c2475224752eusmtrp1D;
-        Thu, 10 Jun 2021 22:22:53 +0000 (GMT)
-X-AuditID: cbfec7f5-c03ff700000024df-f0-60c290bf1fb6
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 83.68.08696.DB092C06; Thu, 10
-        Jun 2021 23:22:53 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20210610222253eusmtip1c73d70c9aaccda3fd0b9f20ca34b9d21~HWMA3wfJO1363213632eusmtip1m;
-        Thu, 10 Jun 2021 22:22:53 +0000 (GMT)
-Subject: Re: [PATCH v1 1/1] net: usb: asix: ax88772: manage PHY PM from MAC
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Jon Hunter <jonathanh@nvidia.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <48ad8efd-e1c7-a352-8295-31bb14f85575@samsung.com>
-Date:   Fri, 11 Jun 2021 00:22:53 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
-        Gecko/20100101 Thunderbird/78.10.2
+        id S230248AbhFJW3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 18:29:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44996 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230001AbhFJW3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 18:29:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623364076;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IF5wbm9XqVBGzIYcxugb/26YEZipTwS/Jt7VVR3EcJQ=;
+        b=ZGbDUMIqcOjPyd+XWj41m8dGwIPgKdF7YoxOlYKqqRMTZLYczJMCzmVzcm+BI5IWlGrQXB
+        azWyEOoX/QlFxCeXXGxMRETGj9amUpp5IrZhM+4jh9bUXd8WayhZibWJaugOKX43eW4uI7
+        FmCDi28b7hMIMyk28q7Tn+SOOXcC0so=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-201-iTHEauVnNKCYd8cj1RWyfw-1; Thu, 10 Jun 2021 18:27:54 -0400
+X-MC-Unique: iTHEauVnNKCYd8cj1RWyfw-1
+Received: by mail-ed1-f72.google.com with SMTP id z16-20020aa7d4100000b029038feb83da57so14946939edq.4
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 15:27:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=IF5wbm9XqVBGzIYcxugb/26YEZipTwS/Jt7VVR3EcJQ=;
+        b=Fmc7Vjqb5Rv1urfN9L0T0ouLgfjPJp8//yA2Bq+EBbZEZARAvPDrOkQcsZHaCT9vST
+         F1QGA4Gl3scaKwHeU1LbYrJSi0vxgRVE5unkOwvqUaApoaYcMEvZazaGDKhfmgpRTC97
+         nDoXFVovtdpO8wx78LVDrkj7ZkV+y3TyP0tOkFx+3uru663O25fKSJOOavveBekV2V/w
+         VDTorJ7Tp2FXg+Dd4s4vAe3vCvZUwi6D1QgeJ6eKaCcHP6Dnvb3cWRsvEgwcPQYwv+yc
+         nzmKCDBCUUVil9BIEB1eHD7tSzFAi4zQSn7vcuiJhlzm/Z84RcZa6SZDgtaG65UU5TGs
+         ScRA==
+X-Gm-Message-State: AOAM530B11ucwRl+H9rR9X6JqHpyACECBGhqHGAadN0YAhihTDZBRw9X
+        8dzPrI4flmNJEaiGgKFF/krHuKc1tS5+kpAHIp0fPhNk25aKC5a4lOPZZnZE/naF0nyaebDfElb
+        vgPVUKTLY2rGwlZBM
+X-Received: by 2002:a05:6402:885:: with SMTP id e5mr691304edy.248.1623364073760;
+        Thu, 10 Jun 2021 15:27:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwl/acrlBsVAf9oBWLj9CquBE14VTjBxVpStedLAQ1ucZQW/B1MwrK3iKY8PXJhJU54vZl5nw==
+X-Received: by 2002:a05:6402:885:: with SMTP id e5mr691289edy.248.1623364073599;
+        Thu, 10 Jun 2021 15:27:53 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id e22sm1957905edu.35.2021.06.10.15.27.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Jun 2021 15:27:52 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 4F1BF18071E; Fri, 11 Jun 2021 00:27:52 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH bpf-next 02/17] bpf: allow RCU-protected lookups to
+ happen from bh context
+In-Reply-To: <c5192ab3-1c05-8679-79f2-59d98299095b@iogearbox.net>
+References: <20210609103326.278782-1-toke@redhat.com>
+ <20210609103326.278782-3-toke@redhat.com>
+ <CAADnVQJrETg1NsqBv2HE06tra=q5K8f1US8tGuHqc_FDMKR6XQ@mail.gmail.com>
+ <c5192ab3-1c05-8679-79f2-59d98299095b@iogearbox.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 11 Jun 2021 00:27:52 +0200
+Message-ID: <874ke5we1j.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20210610142009.16162-1-o.rempel@pengutronix.de>
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrHKsWRmVeSWpSXmKPExsWy7djP87r7JxxKMDhyh9Pi/N1DzBZzzrew
-        WCx6P4PVomXWIhaLVVN3slhc2NbHanF51xw2i0XLWpktDk3dy2hxbIGYxZN7jA7cHpevXWT2
-        2LLyJpPHzll32T02repk89i54zOTR2/zOzaP/r8GHp83yQVwRHHZpKTmZJalFunbJXBlzFz1
-        ga3gm0zFrtMbWRsYm8S7GDk5JARMJDY+Pc3WxcjFISSwglGicc9uRgjnC6PEsrZmKOczo0TH
-        gQcsMC0L5h1mArGFBJYzSpy/HAxR9JFRYvKxNjaQhLCAt8T2h4vAGkQEXjJKrJ6XDVLELDCR
-        UWLf+2/sIAk2AUOJrrddYA28AnYSP168A4uzCKhK/NjwF6iZg0NUIFni90ZdiBJBiZMzn4DN
-        5BSwlWht/QXWyiwgL7H97RxmCFtc4taT+UwguyQE+jkl9nfeZoW42kViXfdzZghbWOLV8S3s
-        ELaMxOnJPSwQDc2MEg/PrWWHcHoYJS43zWCEqLKWuHMOZB0H0ApNifW79CHCjhIzJj5gBQlL
-        CPBJ3HgrCHEEn8SkbdOZIcK8Eh1tQhDVahKzjq+DW3vwwiXmCYxKs5C8NgvJO7OQvDMLYe8C
-        RpZVjOKppcW56anFxnmp5XrFibnFpXnpesn5uZsYgUns9L/jX3cwrnj1Ue8QIxMH4yFGCQ5m
-        JRHeHLVDCUK8KYmVValF+fFFpTmpxYcYpTlYlMR5d21dEy8kkJ5YkpqdmlqQWgSTZeLglGpg
-        Ku65w2FV1pmiOkva5XZw1r7Sxonzc2p9Zk06FHb6XzfXZe+tVVevuXKKSv4UeODiEajMv672
-        SrXc9Avq7n826k88cZR/cbuP+6uGunA/YYHMmZ1JWhx6y85yXPBtl5pYn5KYz5xuxNDiuzim
-        csLBay6PZx9bd3HSloCre97nihxZfHP14qmSJz7oRktEzd+w9XhsEIND9873zalr7qhZKS5l
-        MRSJzWpI4dY4fvTGKxb+ytvshzi3L8s4xuoTNUn44Ltzq59mcf9blfbm+RmWC7pzahcnyxUb
-        H9JKuLb7d130nAU/134/bBSuKTN5xt4o7izFv0nia+577Z93fX3KUyWvricux3WnvvzafXTW
-        PCWW4oxEQy3mouJEAHuhKxrRAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMIsWRmVeSWpSXmKPExsVy+t/xu7p7JxxKMPgx28zi/N1DzBZzzrew
-        WCx6P4PVomXWIhaLVVN3slhc2NbHanF51xw2i0XLWpktDk3dy2hxbIGYxZN7jA7cHpevXWT2
-        2LLyJpPHzll32T02repk89i54zOTR2/zOzaP/r8GHp83yQVwROnZFOWXlqQqZOQXl9gqRRta
-        GOkZWlroGZlY6hkam8daGZkq6dvZpKTmZJalFunbJehlzFz1ga3gm0zFrtMbWRsYm8S7GDk5
-        JARMJBbMO8zUxcjFISSwlFHi3ITp7BAJGYmT0xpYIWxhiT/Xutggit4zSkyaupAZJCEs4C2x
-        /eEiFpCEiMBLRolfW5+AVTELTARyni1jhmiZwCixfXcH2Cw2AUOJrrcgszg5eAXsJH68eAe2
-        j0VAVeLHhr8sILaoQLLEhvb/rBA1ghInZz4Bi3MK2Eq0tv4C62UWMJOYt/khM4QtL7H97Rwo
-        W1zi1pP5TBMYhWYhaZ+FpGUWkpZZSFoWMLKsYhRJLS3OTc8tNtIrTswtLs1L10vOz93ECIzd
-        bcd+btnBuPLVR71DjEwcjIcYJTiYlUR4c9QOJQjxpiRWVqUW5ccXleakFh9iNAX6ZyKzlGhy
-        PjB55JXEG5oZmBqamFkamFqaGSuJ85ocWRMvJJCeWJKanZpakFoE08fEwSnVwBTEq31N86fz
-        5DK5up7PFdaRTvyPJ7Qs2RRTwHiZZd0Jp1u9zNsvrwh+yP3d6/9qzoftCizOf5fosy9z/yu2
-        N83rcfC85KU/kxbsbwtj+qp498zp3BMW3Dtn60gxaNjc2HFsYccjrWl8uaxRXTsn71KZMYt5
-        BafPnFpp1V1vbpzMWm9Y5qUkcrTw1fwEn3+PbE9udys9tj5g5csjjya4h54wNv+xzKF43Rel
-        fyFzP99sP7SmY6mcoLPDpdK3lRMPfM27JO2sXpEs5Bg80cn3Ub3jlPr7n289fsHM8FF/19HH
-        R5jfJ1umnQjILn/Hrxbeq7InylHn28YTx9nO1jCEf7rMLVYbp8jy/86u9SpN4gJKLMUZiYZa
-        zEXFiQD2YYYnZgMAAA==
-X-CMS-MailID: 20210610222254eucas1p1d8cdccfa1befe370be30c7b8d9312230
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20210610142025eucas1p2f3377bf0dbf1b02e37513ab338adc384
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20210610142025eucas1p2f3377bf0dbf1b02e37513ab338adc384
-References: <CGME20210610142025eucas1p2f3377bf0dbf1b02e37513ab338adc384@eucas1p2.samsung.com>
-        <20210610142009.16162-1-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+Daniel Borkmann <daniel@iogearbox.net> writes:
 
-On 10.06.2021 16:20, Oleksij Rempel wrote:
-> Take over PHY power management, otherwise PHY framework will try to
-> access ASIX MDIO bus before MAC resume was completed.
+> Hi Paul,
 >
-> Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Reported-by: Jon Hunter <jonathanh@nvidia.com>
-> Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
-
-This fixes the issues observed on my test systems. Thanks!
-
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
-> ---
->   drivers/net/usb/asix_devices.c | 43 ++++++++++------------------------
->   1 file changed, 12 insertions(+), 31 deletions(-)
+> On 6/10/21 8:38 PM, Alexei Starovoitov wrote:
+>> On Wed, Jun 9, 2021 at 7:24 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>>
+>>> XDP programs are called from a NAPI poll context, which means the RCU
+>>> reference liveness is ensured by local_bh_disable(). Add
+>>> rcu_read_lock_bh_held() as a condition to the RCU checks for map lookup=
+s so
+>>> lockdep understands that the dereferences are safe from inside *either*=
+ an
+>>> rcu_read_lock() section *or* a local_bh_disable() section. This is done=
+ in
+>>> preparation for removing the redundant rcu_read_lock()s from the driver=
+s.
+>>>
+>>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>> ---
+>>>   kernel/bpf/hashtab.c  | 21 ++++++++++++++-------
+>>>   kernel/bpf/helpers.c  |  6 +++---
+>>>   kernel/bpf/lpm_trie.c |  6 ++++--
+>>>   3 files changed, 21 insertions(+), 12 deletions(-)
+>>>
+>>> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+>>> index 6f6681b07364..72c58cc516a3 100644
+>>> --- a/kernel/bpf/hashtab.c
+>>> +++ b/kernel/bpf/hashtab.c
+>>> @@ -596,7 +596,8 @@ static void *__htab_map_lookup_elem(struct bpf_map =
+*map, void *key)
+>>>          struct htab_elem *l;
+>>>          u32 hash, key_size;
+>>>
+>>> -       WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held=
+());
+>>> +       WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held=
+() &&
+>>> +                    !rcu_read_lock_bh_held());
+>>=20
+>> It's not clear to me whether rcu_read_lock_held() is still needed.
+>> All comments sound like rcu_read_lock_bh_held() is a superset of rcu
+>> that includes bh.
+>> But reading rcu source code it looks like RCU_BH is its own rcu flavor...
+>> which is confusing.
 >
-> diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-> index 8a477171e8f5..aec97b021a73 100644
-> --- a/drivers/net/usb/asix_devices.c
-> +++ b/drivers/net/usb/asix_devices.c
-> @@ -598,6 +598,9 @@ static void ax88772_suspend(struct usbnet *dev)
->   	struct asix_common_private *priv = dev->driver_priv;
->   	u16 medium;
->   
-> +	if (netif_running(dev->net))
-> +		phy_stop(priv->phydev);
-> +
->   	/* Stop MAC operation */
->   	medium = asix_read_medium_status(dev, 1);
->   	medium &= ~AX_MEDIUM_RE;
-> @@ -605,14 +608,6 @@ static void ax88772_suspend(struct usbnet *dev)
->   
->   	netdev_dbg(dev->net, "ax88772_suspend: medium=0x%04x\n",
->   		   asix_read_medium_status(dev, 1));
-> -
-> -	/* Preserve BMCR for restoring */
-> -	priv->presvd_phy_bmcr =
-> -		asix_mdio_read_nopm(dev->net, dev->mii.phy_id, MII_BMCR);
-> -
-> -	/* Preserve ANAR for restoring */
-> -	priv->presvd_phy_advertise =
-> -		asix_mdio_read_nopm(dev->net, dev->mii.phy_id, MII_ADVERTISE);
->   }
->   
->   static int asix_suspend(struct usb_interface *intf, pm_message_t message)
-> @@ -626,39 +621,22 @@ static int asix_suspend(struct usb_interface *intf, pm_message_t message)
->   	return usbnet_suspend(intf, message);
->   }
->   
-> -static void ax88772_restore_phy(struct usbnet *dev)
-> -{
-> -	struct asix_common_private *priv = dev->driver_priv;
-> -
-> -	if (priv->presvd_phy_advertise) {
-> -		/* Restore Advertisement control reg */
-> -		asix_mdio_write_nopm(dev->net, dev->mii.phy_id, MII_ADVERTISE,
-> -				     priv->presvd_phy_advertise);
-> -
-> -		/* Restore BMCR */
-> -		if (priv->presvd_phy_bmcr & BMCR_ANENABLE)
-> -			priv->presvd_phy_bmcr |= BMCR_ANRESTART;
-> -
-> -		asix_mdio_write_nopm(dev->net, dev->mii.phy_id, MII_BMCR,
-> -				     priv->presvd_phy_bmcr);
-> -
-> -		priv->presvd_phy_advertise = 0;
-> -		priv->presvd_phy_bmcr = 0;
-> -	}
-> -}
-> -
->   static void ax88772_resume(struct usbnet *dev)
->   {
-> +	struct asix_common_private *priv = dev->driver_priv;
->   	int i;
->   
->   	for (i = 0; i < 3; i++)
->   		if (!ax88772_hw_reset(dev, 1))
->   			break;
-> -	ax88772_restore_phy(dev);
-> +
-> +	if (netif_running(dev->net))
-> +		phy_start(priv->phydev);
->   }
->   
->   static void ax88772a_resume(struct usbnet *dev)
->   {
-> +	struct asix_common_private *priv = dev->driver_priv;
->   	int i;
->   
->   	for (i = 0; i < 3; i++) {
-> @@ -666,7 +644,8 @@ static void ax88772a_resume(struct usbnet *dev)
->   			break;
->   	}
->   
-> -	ax88772_restore_phy(dev);
-> +	if (netif_running(dev->net))
-> +		phy_start(priv->phydev);
->   }
->   
->   static int asix_resume(struct usb_interface *intf)
-> @@ -722,6 +701,8 @@ static int ax88772_init_phy(struct usbnet *dev)
->   		return ret;
->   	}
->   
-> +	priv->phydev->mac_managed_pm = 1;
-> +
->   	phy_attached_info(priv->phydev);
->   
->   	return 0;
+> The series is a bit confusing to me as well. I recall we had a discussion=
+ with
+> Paul, but it was back in 2016 aka very early days of XDP to get some clar=
+ifications
+> about RCU vs RCU-bh flavour on this. Paul, given the series in here, I as=
+sume the
+> below is not true anymore, and in this case (since we're removing rcu_rea=
+d_lock()
+> from drivers), the RCU-bh acts as a real superset?
+>
+> Back then from your clarifications this was not the case:
+>
+>    On Mon, Jul 25, 2016 at 11:26:02AM -0700, Alexei Starovoitov wrote:
+>    > On Mon, Jul 25, 2016 at 11:03 AM, Paul E. McKenney
+>    > <paulmck@linux.vnet.ibm.com> wrote:
+>    [...]
+>    >>> The crux of the question is whether a particular driver rx handler=
+, when
+>    >>> called from __do_softirq, needs to add an additional rcu_read_lock=
+ or
+>    >>> whether it can rely on the mechanics of softirq.
+>    >>
+>    >> If it was rcu_read_lock_bh(), you could.
+>    >>
+>    >> But you didn't say rcu_read_lock_bh(), you instead said rcu_read_lo=
+ck(),
+>    >> which means that you absolutely cannot rely on softirq semantics.
+>    >>
+>    >> In particular, in CONFIG_PREEMPT=3Dy kernels, rcu_preempt_check_cal=
+lbacks()
+>    >> will notice that there is no rcu_read_lock() in effect and report
+>    >> a quiescent state for that CPU.  Because rcu_preempt_check_callback=
+s()
+>    >> is invoked from the scheduling-clock interrupt, it absolutely can
+>    >> execute during do_softirq(), and therefore being in softirq context
+>    >> in no way provides rcu_read_lock()-style protection.
+>    >>
+>    >> Now, Alexei's question was for CONFIG_PREEMPT=3Dn kernels.  However=
+, in
+>    >> that case, rcu_read_lock() and rcu_read_unlock() generate no code
+>    >> in recent production kernels, so there is no performance penalty for
+>    >> using them.  (In older kernels, they implied a barrier().)
+>    >>
+>    >> So either way, with or without CONFIG_PREEMPT, you should use
+>    >> rcu_read_lock() to get RCU protection.
+>    >>
+>    >> One alternative might be to switch to rcu_read_lock_bh(), but that
+>    >> will add local_disable_bh() overhead to your read paths.
+>    >>
+>    >> Does that help, or am I missing the point of the question?
+>    >
+>    > thanks a lot for explanation.
+>
+>    Glad you liked it!
+>
+>    > I mistakenly assumed that _bh variants are 'stronger' and
+>    > act as inclusive, but sounds like they're completely orthogonal
+>    > especially with preempt_rcu=3Dy.
+>
+>    Yes, they are pretty much orthogonal.
+>
+>    > With preempt_rcu=3Dn and preempt=3Dy, it would be the case, since
+>    > bh disables preemption and rcu_read_lock does the same as well,
+>    > right? Of course, the code shouldn't be relying on that, so we
+>    > have to fix our stuff.
+>
+>    Indeed, especially given that the kernel currently won't allow you
+>    to configure CONFIG_PREEMPT_RCU=3Dn and CONFIG_PREEMPT=3Dy.  If it doe=
+s,
+>    please let me know, as that would be a bug that needs to be fixed.
+>    (For one thing, I do not test that combination.)
+>
+> 							Thanx, Paul
+>
+> And now, fast-forward again to 2021 ... :)
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+We covered this in the thread I linked from the cover letter.
+Specifically, this seems to have been a change from v4.20, see Paul's
+reply here:
+https://lore.kernel.org/bpf/20210417002301.GO4212@paulmck-ThinkPad-P17-Gen-=
+1/
+
+and the follow-up covering -rt here:
+https://lore.kernel.org/bpf/20210419165837.GA975577@paulmck-ThinkPad-P17-Ge=
+n-1/
+
+-Toke
 
