@@ -2,109 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F02A13A2760
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 10:47:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22E043A2767
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 10:49:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbhFJItC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 04:49:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59907 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229770AbhFJItB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 04:49:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623314825;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9zSJ4Cz0GkyUckoB2hpt+KI040LkYH89elDBGT2GRlo=;
-        b=hcuho6Q1gH/ZOpFf3w3lnUfe5XmZxHbDfsN8JXdi5DGKy5pLm6B41Qqhjc71JTstqSnmYP
-        fv6o/RC6LZjPitYS1O/L/QTfwR3N+l9EmVcv5wwUcdlm1tlOHL8djDmLD46iKIKa/RlvA/
-        am5kiXQhOzr7RYYavpC+2qBEGRfngIM=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-455-wxOVTdonNUqYXn5GhYI9GQ-1; Thu, 10 Jun 2021 04:47:03 -0400
-X-MC-Unique: wxOVTdonNUqYXn5GhYI9GQ-1
-Received: by mail-ej1-f71.google.com with SMTP id e11-20020a170906080bb02903f9c27ad9f5so8709090ejd.6
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 01:47:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=9zSJ4Cz0GkyUckoB2hpt+KI040LkYH89elDBGT2GRlo=;
-        b=TlY7YbJmJ9c8dhBiJ5Qoecip3a2gzpezRxLNMQm3ohvmsNQIpDa4UlP8gNUpZxiXOR
-         nXKMODKTD47zUbQ3U1pCuyOXfgKDRouqoArv5MqbQCJmuqUlZALUg8OAPApOvUcZ6GHl
-         WSi5KkV4w3s745z3kk4m2wsk8jFkv/gxywiS5veof4k0r6wLgbgdP3EkOPwJE0zXpkYi
-         5jpDCjBpZTSCWq4ym/7Z3Rjg7GsXpTpXHscTV5ehG0/wzzBZZu2Dl5pNqD0OodRY7SCz
-         jOvWKfLzwsSABAqa7V2JySP4jrviRL+LEqkGlWtZc2Lt4Og5pceE0K3hZhSjFCKgr7pa
-         qtmQ==
-X-Gm-Message-State: AOAM530953kTgamxgG4/iWxmPXOMtUQNuYbmculpA+jJZ3fjQqAfPUit
-        KHbMNTWhq+r/kkHFith5qescBnQKcHMXdd7qSP+MSlX208IO/khhUXP57/QL0TQTgqdLmDOPZpc
-        fbke3eLFjlMPqpwDR
-X-Received: by 2002:aa7:db94:: with SMTP id u20mr3556181edt.381.1623314822164;
-        Thu, 10 Jun 2021 01:47:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwnnF4yowBK/HgD7Dfu8coBdUJY/ohwenLzxo3R+Sbyw8sVOVCUkVzrxltIVyfEShOjkCWqIw==
-X-Received: by 2002:aa7:db94:: with SMTP id u20mr3556161edt.381.1623314821829;
-        Thu, 10 Jun 2021 01:47:01 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id v23sm1021156eds.25.2021.06.10.01.47.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 01:47:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 99B731802AC; Thu, 10 Jun 2021 10:47:00 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     paulmck@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH bpf-next 06/17] bnxt: remove rcu_read_lock() around XDP
- program invocation
-In-Reply-To: <20210609135834.GC4397@paulmck-ThinkPad-P17-Gen-1>
-References: <20210609103326.278782-1-toke@redhat.com>
- <20210609103326.278782-7-toke@redhat.com>
- <20210609135834.GC4397@paulmck-ThinkPad-P17-Gen-1>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 10 Jun 2021 10:47:00 +0200
-Message-ID: <87eedam7i3.fsf@toke.dk>
+        id S230001AbhFJIvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 04:51:15 -0400
+Received: from mga07.intel.com ([134.134.136.100]:4236 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229778AbhFJIvO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 04:51:14 -0400
+IronPort-SDR: Y6QQFDInwVutPzBqjsZhoecevuzZhpUFAcSE22PxCBoZ4W8ruiOWPilrMHI5u9RjKfZtOQQQj/
+ ELQs6YS/MAkw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="269109593"
+X-IronPort-AV: E=Sophos;i="5.83,263,1616482800"; 
+   d="scan'208";a="269109593"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2021 01:49:13 -0700
+IronPort-SDR: tWyKEu0tHSOZusqlFndwFkERH2/HlIARjRaOnVupIdzhJH6dxixEZq+MF66efislk7Mmn1ZObI
+ vnFHtpqXTpdg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,263,1616482800"; 
+   d="scan'208";a="486088008"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga002.fm.intel.com with ESMTP; 10 Jun 2021 01:49:13 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
+        by linux.intel.com (Postfix) with ESMTP id C2C8D580B58;
+        Thu, 10 Jun 2021 01:49:10 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v1 1/1] net: stmmac: Fix mixed enum type warning
+Date:   Thu, 10 Jun 2021 16:53:54 +0800
+Message-Id: <20210610085354.656580-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Paul E. McKenney" <paulmck@kernel.org> writes:
+The commit 5a5586112b92 ("net: stmmac: support FPE link partner
+hand-shaking procedure") introduced the following coverity warning:
 
-> On Wed, Jun 09, 2021 at 12:33:15PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> The bnxt driver has rcu_read_lock()/rcu_read_unlock() pairs around XDP
->> program invocations. However, the actual lifetime of the objects referred
->> by the XDP program invocation is longer, all the way through to the call=
- to
->> xdp_do_flush(), making the scope of the rcu_read_lock() too small. This
->> turns out to be harmless because it all happens in a single NAPI poll
->> cycle (and thus under local_bh_disable()), but it makes the rcu_read_loc=
-k()
->> misleading.
->>=20
->> Rather than extend the scope of the rcu_read_lock(), just get rid of it
->> entirely. With the addition of RCU annotations to the XDP_REDIRECT map
->> types that take bh execution into account, lockdep even understands this=
- to
->> be safe, so there's really no reason to keep it around.
->
-> And same for the rest of these removals.  Someone might be very happy
-> to have that comment at some later date, and that someone just might
-> be you.  ;-)
+  "Parse warning (PW.MIXED_ENUM_TYPE)"
+  "1. mixed_enum_type: enumerated type mixed with another type"
 
-Bah, why do you have to go and make sensible suggestions like that? ;)
+This is due to both "lo_state" and "lp_sate" which their datatype are
+enum stmmac_fpe_state type, and being assigned with "FPE_EVENT_UNKNOWN"
+which is a macro-defined of 0. Fixed this by assigned both these
+variables with the correct enum value.
 
-Will wait for Martin's review and add this in a v2. BTW, is it OK to
-include your patch in the series like this, or should I rather request
-that your tree be merged into bpf-next?
+Fixes: 5a5586112b92 ("net: stmmac: support FPE link partner hand-shaking procedure")
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
--Toke
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 180f347b4c8e..db97cd4b871d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1021,8 +1021,8 @@ static void stmmac_fpe_link_state_handle(struct stmmac_priv *priv, bool is_up)
+ 	if (is_up && *hs_enable) {
+ 		stmmac_fpe_send_mpacket(priv, priv->ioaddr, MPACKET_VERIFY);
+ 	} else {
+-		*lo_state = FPE_EVENT_UNKNOWN;
+-		*lp_state = FPE_EVENT_UNKNOWN;
++		*lo_state = FPE_STATE_OFF;
++		*lp_state = FPE_STATE_OFF;
+ 	}
+ }
+ 
+-- 
+2.25.1
 
