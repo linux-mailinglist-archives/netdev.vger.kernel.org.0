@@ -2,92 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5DDB3A326A
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 19:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0EA03A327C
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 19:52:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229990AbhFJRsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 13:48:20 -0400
-Received: from mail-ed1-f44.google.com ([209.85.208.44]:37437 "EHLO
-        mail-ed1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbhFJRsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 13:48:18 -0400
-Received: by mail-ed1-f44.google.com with SMTP id b11so34050736edy.4
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:46:21 -0700 (PDT)
+        id S230444AbhFJRx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 13:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230422AbhFJRx4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 13:53:56 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC5AC061760
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:51:44 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id i13so34068825edb.9
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:51:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tfujEkV1ar40+NestlUagDwSwO9ngrtdnyh+S5BFhwQ=;
-        b=tINPLVQAFy+TjgJS8rfu1u1s4IIBbKEc+9F9FtyEQ/2Uo7Imw8uCLqqh8AlFyfT5vx
-         G0OdPaqksIZUjN+RF/g0Hqr9lwk1PvfzODsL8cA1rMMxT7lISi0w4TNhZTWmL5GM4RKw
-         FVQMl57zED5uEuwy1HLz2wez4wVChS++yv0J4b2BgBnX0I+bCXbws0fO0JUxhHtKuL5H
-         xLUpk7CEUkWswNmDBjTvC80knnZ+xA2LLGz3TgyDoqV4u9DPXdZuEjEqdW2xFVzBwBS1
-         fT7nuCu1S1zAccOwV16+iteXHFyeLNwIGsigWObgInRpcf0J5Borwq8HfDC360iPf2sq
-         b9xg==
+        d=solid-run-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W5N9tssE2i0AgVK7/2trUERhx4u2w/EofSnQ2711Vg0=;
+        b=NwyASavLYyq5W9Tb2GGDH2wkOtzzWTAyyvhi06tuRc3Ne1GMb9L1kbyJ13EscFk3nO
+         BFnHWcY9XiM6T+TsIcgSCGFGXmAt7sZ99gmzYCKEJnfghHERCC8XWQgzxn+CovjpBM83
+         BtWyOwSUC3iO/EzsLahGQhj7+v8LpXrDRQfYHPdmiTfOJu8U4zcx24XdPFpEuEjfp/Q+
+         kTQqBQVlGd6FklnVW0c3pxM/u8bVdL+BvKwWURshHDQrNdBPS0FtUOcufze255FZ8Mje
+         kMGNfSQKyz3bHaeFACGsWJuV1cBXZRjGmV5lawxXT0aL/P5M5VETkrqhQjbz6tnTcixz
+         YZXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tfujEkV1ar40+NestlUagDwSwO9ngrtdnyh+S5BFhwQ=;
-        b=DegbeZnEY15jRGa6970QTLsvqo0zh1tFwyAg7AiFusghfPsSDstPkJgWjRLjLeY8Pk
-         OOvp+p1heUSe9v1Ze1OGW4a1SIh7ZQ2Dj0U65ioki0YUqp5UsA6KpVqPY5Ugsmg61ky4
-         kBs79c5f5UYhdt7p49eGAb/TtgkXX5xKBzSQc4qU8CdpnVwJyybgc/h/hsrFs48UJWM2
-         lsDb2191fOhUb7qQ3ScxYcCWBYondUBYUg6RIFCNC2P8q//E4zaG/WHzsaOawt6OUTEX
-         MpoaDqBmpa3a5R1g81Fjs6ZclVAB/N/O0haoDt+CSc2DxDdYQbVpFN5aq9TRI8H+vDMH
-         9rHg==
-X-Gm-Message-State: AOAM530obaPgOn/QodS9kjcN4KI2qpw1cG45nVsXwBTzKTTYkH07C+SW
-        3zX1RytpU7a1hZQpe79vfbk=
-X-Google-Smtp-Source: ABdhPJzLSKLrSUiy02p8h09TfMhE+bI5ICcCq0sxAIy8n0FIyr220SP25Xo9E0gM5hdWW5D1ZPakiA==
-X-Received: by 2002:aa7:de90:: with SMTP id j16mr612347edv.385.1623347120939;
-        Thu, 10 Jun 2021 10:45:20 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id wq10sm1282959ejb.79.2021.06.10.10.45.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 10:45:20 -0700 (PDT)
-Date:   Thu, 10 Jun 2021 20:45:18 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 00/13] Port the SJA1105 DSA driver to XPCS
-Message-ID: <20210610174518.5stvpwgx2rzdzqk5@skbuf>
-References: <20210609184155.921662-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W5N9tssE2i0AgVK7/2trUERhx4u2w/EofSnQ2711Vg0=;
+        b=GVHPwb0tOFhp4Afa84oTSuYCbH3zejnNj4BIkLKWbd8lR8GzI4fwfr4yoPjdRm4AXF
+         GHeQVAGTUDMCB1TYR1bXfejVc16/4YMECmjbP9iEga1mMtxQSAl0kxjMyyWOJTebaYmo
+         gbyUJvkfRVvDy/Uep1qfG/pJvHbtv3zARZYwn3r2vE3FQ4qbKTzXXUVoKA2pLMpsZkQA
+         PPYd3vR4rnm5wux8ZnqfI712yJX+ADfEgn/+b8cAIlCD+mKU3Z5o73IUPmvyRr6YV6Pr
+         EwYS2mWocDtJ4dh8i9F1CaCCiHofm5XGBmFHYLaj+VECVJmuBaRYAdL5ggkxxf2MRY5/
+         ayjA==
+X-Gm-Message-State: AOAM532Ae+7o7hQFs/A+pPJw7fFc27lvPtcAKcmZi1SX8ZMSCuR+Jbz8
+        ps3IXkP3cq4RxeV89WT629podN5ucGtIo/YOTm/wOg==
+X-Google-Smtp-Source: ABdhPJzCoetYoBQDDWOYa33AgKwAl3+emGrXImDnBKCyVLiFrGTBa7kK2HiwwjAhOB5hDtHoyt6aO6lmFkRa/p6cU/k=
+X-Received: by 2002:aa7:c753:: with SMTP id c19mr675196eds.33.1623347503093;
+ Thu, 10 Jun 2021 10:51:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210609184155.921662-1-olteanv@gmail.com>
+References: <20210610163917.4138412-1-ciorneiioana@gmail.com> <YMJEMXEDAE/m9MhA@lunn.ch>
+In-Reply-To: <YMJEMXEDAE/m9MhA@lunn.ch>
+From:   Jon Nettleton <jon@solid-run.com>
+Date:   Thu, 10 Jun 2021 19:51:03 +0200
+Message-ID: <CABdtJHv-Xu5bC2-T7a0UgbYpkNP1SLfWwdLWLLKj5MBvA2Ajyw@mail.gmail.com>
+Subject: Re: [PATCH net-next v8 00/15] ACPI support for dpaa2 driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ioana Ciornei <ciorneiioana@gmail.com>,
+        Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Calvin Johnson <calvin.johnson@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux.cj" <linux.cj@gmail.com>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Len Brown <lenb@kernel.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 09, 2021 at 09:41:42PM +0300, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> As requested when adding support for the NXP SJA1110, the SJA1105 driver
-> could make use of the common XPCS driver, to eliminate some hardware
-> specific code duplication.
-> 
-> This series modifies the XPCS driver so that it can accommodate the XPCS
-> instantiation from NXP switches, and the SJA1105 driver so it can expose
-> what the XPCS driver expects.
-> 
-> Tested on NXP SJA1105S and SJA1110A.
+On Thu, Jun 10, 2021 at 6:56 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Thu, Jun 10, 2021 at 07:39:02PM +0300, Ioana Ciornei wrote:
+> > From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> >
+> > This patch set provides ACPI support to DPAA2 network drivers.
+>
+> Just to be clear and avoid confusion, there is a standing NACK against
+> this patchset. Please see the discussion here:
+>
+> https://patchwork.kernel.org/project/linux-acpi/patch/20200715090400.4733-2-calvin.johnson@oss.nxp.com/#23518385
+>
+> So far, i've not seen any indication the issues raised there have been
+> resolved. I don't see any Acked-by from an ACPI maintainer. So this
+> code remains NACKed.
 
-I expected there to be more objections to the choices I made, but I
-guess silence is a feedback of sorts too.
+Andrew,
 
-I need to resend because of some small fixups that I need to make, so
-please mark this as obsolete. Thanks.
+The ACPI maintainers did bless the use of the ACPI standards followed
+in this patchset, and their only abstinence from ACK'ing the patchset
+was whether the code was used in production systems.  Well currently,
+not only have we, SolidRun, been using this patchset and the associated
+ACPI tables in our SystemsReady certified firmware for the HoneyComb,
+but we also have customers using this same patchset and firmware on
+their systems rolled out to customers.
+
+Additionally we have an entire new product line based on Marvell's
+Armada CN913x series, which also needs this patchset to be fully
+functional.
+
+I am quite certain this is more than enough production systems using
+this ACPI description method for networking to progress this patchset
+forward.
+
+-Jon
