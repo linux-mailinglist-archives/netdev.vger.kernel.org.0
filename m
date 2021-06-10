@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1D6E3A2271
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 04:58:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D453A2272
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 04:58:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbhFJDAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 23:00:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33680 "EHLO mail.kernel.org"
+        id S230059AbhFJDAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 23:00:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33696 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229797AbhFJDAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229957AbhFJDAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 9 Jun 2021 23:00:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6290A61429;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C69686141D;
         Thu, 10 Jun 2021 02:58:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623293900;
-        bh=7bJiASbB8gAPfnGQtyUoG0Q7kOHxe6YkJKVwUPasGis=;
+        s=k20201202; t=1623293901;
+        bh=wqUVz0wHRNAEuWibRjCSvtxJLf1DcvvPG5QTHkTgasU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E535yM0cXJBvU42ZHEaRyiM36NkuFfMaaFwG2HCBQe5YpsM9qbpgxcF+wIwsHU9xd
-         Fp9yajudPrVb17WAfYlS5JuH2IhVhYGUCEX4oJiyKThbnop33qdC8Dxmuk4gp4Zy/b
-         s+hj67yCYVXRUPja+ut8ZNtjdZcdk5xvGjNu2waLpfhZhiUgWapef1Mj9HxFwijwNi
-         5Z8emgDc/Bx651y/jzpSUqUteK6mrZMyjDgXePDUynVqsD0Gj6JWjWy7Uzluf8wQg0
-         owRXwLTwllv0+8kyBuq08his2RLrogsJmrw2d57LgDObBCOPC1vxbvDrvmvk0Hxx5/
-         cl9DodAeF11bA==
+        b=swhgrhhOlstfixQXhf8eIn9sojzAQJJgkyfoRl++NvQFKq42+nNXnlxDcKUNsETRF
+         jAtMITKPssRlFDCDOqGDesOOsLstz0jaJ/0rtoofOJxszU1PTGdLon5OqpVEPsNEHK
+         5oDxtGIYzQqlsWAlsolmba1Qv1QNMfvghpo6004WOT9r4u2KLno3KtU+Y129eCqqmg
+         2CRwPsHINJwmYED7XQ9CYm0yk68J518tiK03ECqLPW8RtSb56E83xZQcoLZv+nMv5O
+         hpH0b+3YD6DhpNIoRFnL+r80adhAFruF7Jmvn2ItMeh98H+fZ8iu9UT+MpXjPRnegF
+         OPP7uqSMXli1w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 04/16] net/mlx5: Added new parameters to reformat context
-Date:   Wed,  9 Jun 2021 19:58:02 -0700
-Message-Id: <20210610025814.274607-5-saeed@kernel.org>
+Subject: [net-next 05/16] net/mlx5: DR, Added support for INSERT_HEADER reformat type
+Date:   Wed,  9 Jun 2021 19:58:03 -0700
+Message-Id: <20210610025814.274607-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210610025814.274607-1-saeed@kernel.org>
 References: <20210610025814.274607-1-saeed@kernel.org>
@@ -42,429 +42,552 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Adding new reformat context type (INSERT_HEADER) requires adding two new
-parameters to reformat context - reformat_param_0 and reformat_param_1.
-As defined by HW spec, these parameters have different meaning for
-different reformat context type.
-
-The first parameter (reformat_param_0) is not new to HW spec, but it
-wasn't used by any of the supported reformats. The second parameter
-(reformat_param_1) is new to the HW spec - it was added to allow
-supporting INSERT_HEADER.
-
-For NSERT_HEADER, reformat_param_0 indicates the header used to
-reference the location of the inserted header, and reformat_param_1
-indicates the offset of the inserted header from the reference point
-defined by reformat_param_0.
+Add support for INSERT_HEADER packet reformat context type
 
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/fs.c               |  9 ++++-
- .../ethernet/mellanox/mlx5/core/en/tc_tun.c   | 38 +++++++++++++------
- .../mellanox/mlx5/core/en/tc_tun_encap.c      | 17 ++++++---
- .../net/ethernet/mellanox/mlx5/core/fs_cmd.c  | 29 +++++++-------
- .../net/ethernet/mellanox/mlx5/core/fs_cmd.h  |  4 +-
- .../net/ethernet/mellanox/mlx5/core/fs_core.c |  9 ++---
- .../mellanox/mlx5/core/steering/dr_action.c   |  2 +
- .../mellanox/mlx5/core/steering/fs_dr.c       | 17 +++++----
- .../mellanox/mlx5/core/steering/mlx5dr.h      |  2 +
- include/linux/mlx5/fs.h                       | 12 ++++--
- 10 files changed, 86 insertions(+), 53 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_action.c   | 76 ++++++++++++++++---
+ .../mellanox/mlx5/core/steering/dr_cmd.c      |  7 +-
+ .../mellanox/mlx5/core/steering/dr_ste_v0.c   |  4 +-
+ .../mellanox/mlx5/core/steering/dr_ste_v1.c   | 68 ++++++++++++++---
+ .../mellanox/mlx5/core/steering/dr_types.h    | 17 ++++-
+ .../mellanox/mlx5/core/steering/fs_dr.c       |  3 +
+ .../mellanox/mlx5/core/steering/mlx5dr.h      |  1 +
+ 7 files changed, 150 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
-index 2fc6a60c4e77..941adf5cf3d0 100644
---- a/drivers/infiniband/hw/mlx5/fs.c
-+++ b/drivers/infiniband/hw/mlx5/fs.c
-@@ -2280,6 +2280,7 @@ static int mlx5_ib_flow_action_create_packet_reformat_ctx(
- 	u8 ft_type, u8 dv_prt,
- 	void *in, size_t len)
- {
-+	struct mlx5_pkt_reformat_params reformat_params;
- 	enum mlx5_flow_namespace_type namespace;
- 	u8 prm_prt;
- 	int ret;
-@@ -2292,9 +2293,13 @@ static int mlx5_ib_flow_action_create_packet_reformat_ctx(
- 	if (ret)
- 		return ret;
- 
-+	memset(&reformat_params, 0, sizeof(reformat_params));
-+	reformat_params.type = prm_prt;
-+	reformat_params.size = len;
-+	reformat_params.data = in;
- 	maction->flow_action_raw.pkt_reformat =
--		mlx5_packet_reformat_alloc(dev->mdev, prm_prt, len,
--					   in, namespace);
-+		mlx5_packet_reformat_alloc(dev->mdev, &reformat_params,
-+					   namespace);
- 	if (IS_ERR(maction->flow_action_raw.pkt_reformat)) {
- 		ret = PTR_ERR(maction->flow_action_raw.pkt_reformat);
- 		return ret;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-index 172e0474f2e6..8f79f04eccd6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-@@ -212,6 +212,7 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
- {
- 	int max_encap_size = MLX5_CAP_ESW(priv->mdev, max_encap_header_size);
- 	const struct ip_tunnel_key *tun_key = &e->tun_info->key;
-+	struct mlx5_pkt_reformat_params reformat_params;
- 	struct mlx5e_neigh m_neigh = {};
- 	TC_TUN_ROUTE_ATTR_INIT(attr);
- 	int ipv4_encap_size;
-@@ -295,9 +296,12 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
- 		 */
- 		goto release_neigh;
- 	}
--	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev,
--						     e->reformat_type,
--						     ipv4_encap_size, encap_header,
-+
-+	memset(&reformat_params, 0, sizeof(reformat_params));
-+	reformat_params.type = e->reformat_type;
-+	reformat_params.size = ipv4_encap_size;
-+	reformat_params.data = encap_header;
-+	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev, &reformat_params,
- 						     MLX5_FLOW_NAMESPACE_FDB);
- 	if (IS_ERR(e->pkt_reformat)) {
- 		err = PTR_ERR(e->pkt_reformat);
-@@ -324,6 +328,7 @@ int mlx5e_tc_tun_update_header_ipv4(struct mlx5e_priv *priv,
- {
- 	int max_encap_size = MLX5_CAP_ESW(priv->mdev, max_encap_header_size);
- 	const struct ip_tunnel_key *tun_key = &e->tun_info->key;
-+	struct mlx5_pkt_reformat_params reformat_params;
- 	TC_TUN_ROUTE_ATTR_INIT(attr);
- 	int ipv4_encap_size;
- 	char *encap_header;
-@@ -396,9 +401,12 @@ int mlx5e_tc_tun_update_header_ipv4(struct mlx5e_priv *priv,
- 		 */
- 		goto release_neigh;
- 	}
--	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev,
--						     e->reformat_type,
--						     ipv4_encap_size, encap_header,
-+
-+	memset(&reformat_params, 0, sizeof(reformat_params));
-+	reformat_params.type = e->reformat_type;
-+	reformat_params.size = ipv4_encap_size;
-+	reformat_params.data = encap_header;
-+	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev, &reformat_params,
- 						     MLX5_FLOW_NAMESPACE_FDB);
- 	if (IS_ERR(e->pkt_reformat)) {
- 		err = PTR_ERR(e->pkt_reformat);
-@@ -471,6 +479,7 @@ int mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
- {
- 	int max_encap_size = MLX5_CAP_ESW(priv->mdev, max_encap_header_size);
- 	const struct ip_tunnel_key *tun_key = &e->tun_info->key;
-+	struct mlx5_pkt_reformat_params reformat_params;
- 	struct mlx5e_neigh m_neigh = {};
- 	TC_TUN_ROUTE_ATTR_INIT(attr);
- 	struct ipv6hdr *ip6h;
-@@ -553,9 +562,11 @@ int mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
- 		goto release_neigh;
- 	}
- 
--	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev,
--						     e->reformat_type,
--						     ipv6_encap_size, encap_header,
-+	memset(&reformat_params, 0, sizeof(reformat_params));
-+	reformat_params.type = e->reformat_type;
-+	reformat_params.size = ipv6_encap_size;
-+	reformat_params.data = encap_header;
-+	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev, &reformat_params,
- 						     MLX5_FLOW_NAMESPACE_FDB);
- 	if (IS_ERR(e->pkt_reformat)) {
- 		err = PTR_ERR(e->pkt_reformat);
-@@ -582,6 +593,7 @@ int mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
- {
- 	int max_encap_size = MLX5_CAP_ESW(priv->mdev, max_encap_header_size);
- 	const struct ip_tunnel_key *tun_key = &e->tun_info->key;
-+	struct mlx5_pkt_reformat_params reformat_params;
- 	TC_TUN_ROUTE_ATTR_INIT(attr);
- 	struct ipv6hdr *ip6h;
- 	int ipv6_encap_size;
-@@ -654,9 +666,11 @@ int mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
- 		goto release_neigh;
- 	}
- 
--	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev,
--						     e->reformat_type,
--						     ipv6_encap_size, encap_header,
-+	memset(&reformat_params, 0, sizeof(reformat_params));
-+	reformat_params.type = e->reformat_type;
-+	reformat_params.size = ipv6_encap_size;
-+	reformat_params.data = encap_header;
-+	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev, &reformat_params,
- 						     MLX5_FLOW_NAMESPACE_FDB);
- 	if (IS_ERR(e->pkt_reformat)) {
- 		err = PTR_ERR(e->pkt_reformat);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-index f1fb11680d20..0dfd51d2d178 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-@@ -120,6 +120,7 @@ void mlx5e_tc_encap_flows_add(struct mlx5e_priv *priv,
- 			      struct list_head *flow_list)
- {
- 	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct mlx5_pkt_reformat_params reformat_params;
- 	struct mlx5_esw_flow_attr *esw_attr;
- 	struct mlx5_flow_handle *rule;
- 	struct mlx5_flow_attr *attr;
-@@ -130,9 +131,12 @@ void mlx5e_tc_encap_flows_add(struct mlx5e_priv *priv,
- 	if (e->flags & MLX5_ENCAP_ENTRY_NO_ROUTE)
- 		return;
- 
-+	memset(&reformat_params, 0, sizeof(reformat_params));
-+	reformat_params.type = e->reformat_type;
-+	reformat_params.size = e->encap_size;
-+	reformat_params.data = e->encap_header;
- 	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev,
--						     e->reformat_type,
--						     e->encap_size, e->encap_header,
-+						     &reformat_params,
- 						     MLX5_FLOW_NAMESPACE_FDB);
- 	if (IS_ERR(e->pkt_reformat)) {
- 		mlx5_core_warn(priv->mdev, "Failed to offload cached encapsulation header, %lu\n",
-@@ -812,6 +816,7 @@ int mlx5e_attach_decap(struct mlx5e_priv *priv,
- {
- 	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
- 	struct mlx5_esw_flow_attr *attr = flow->attr->esw_attr;
-+	struct mlx5_pkt_reformat_params reformat_params;
- 	struct mlx5e_tc_flow_parse_attr *parse_attr;
- 	struct mlx5e_decap_entry *d;
- 	struct mlx5e_decap_key key;
-@@ -853,10 +858,12 @@ int mlx5e_attach_decap(struct mlx5e_priv *priv,
- 	hash_add_rcu(esw->offloads.decap_tbl, &d->hlist, hash_key);
- 	mutex_unlock(&esw->offloads.decap_tbl_lock);
- 
-+	memset(&reformat_params, 0, sizeof(reformat_params));
-+	reformat_params.type = MLX5_REFORMAT_TYPE_L3_TUNNEL_TO_L2;
-+	reformat_params.size = sizeof(parse_attr->eth);
-+	reformat_params.data = &parse_attr->eth;
- 	d->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev,
--						     MLX5_REFORMAT_TYPE_L3_TUNNEL_TO_L2,
--						     sizeof(parse_attr->eth),
--						     &parse_attr->eth,
-+						     &reformat_params,
- 						     MLX5_FLOW_NAMESPACE_FDB);
- 	if (IS_ERR(d->pkt_reformat)) {
- 		err = PTR_ERR(d->pkt_reformat);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-index b7aae8b75760..896a6c3dbdb7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-@@ -111,9 +111,7 @@ static int mlx5_cmd_stub_delete_fte(struct mlx5_flow_root_namespace *ns,
- }
- 
- static int mlx5_cmd_stub_packet_reformat_alloc(struct mlx5_flow_root_namespace *ns,
--					       int reformat_type,
--					       size_t size,
--					       void *reformat_data,
-+					       struct mlx5_pkt_reformat_params *params,
- 					       enum mlx5_flow_namespace_type namespace,
- 					       struct mlx5_pkt_reformat *pkt_reformat)
- {
-@@ -701,9 +699,7 @@ int mlx5_cmd_fc_bulk_query(struct mlx5_core_dev *dev, u32 base_id, int bulk_len,
- }
- 
- static int mlx5_cmd_packet_reformat_alloc(struct mlx5_flow_root_namespace *ns,
--					  int reformat_type,
--					  size_t size,
--					  void *reformat_data,
-+					  struct mlx5_pkt_reformat_params *params,
- 					  enum mlx5_flow_namespace_type namespace,
- 					  struct mlx5_pkt_reformat *pkt_reformat)
- {
-@@ -721,14 +717,14 @@ static int mlx5_cmd_packet_reformat_alloc(struct mlx5_flow_root_namespace *ns,
- 	else
- 		max_encap_size = MLX5_CAP_FLOWTABLE(dev, max_encap_header_size);
- 
--	if (size > max_encap_size) {
-+	if (params->size > max_encap_size) {
- 		mlx5_core_warn(dev, "encap size %zd too big, max supported is %d\n",
--			       size, max_encap_size);
-+			       params->size, max_encap_size);
- 		return -EINVAL;
- 	}
- 
--	in = kzalloc(MLX5_ST_SZ_BYTES(alloc_packet_reformat_context_in) + size,
--		     GFP_KERNEL);
-+	in = kzalloc(MLX5_ST_SZ_BYTES(alloc_packet_reformat_context_in) +
-+		     params->size, GFP_KERNEL);
- 	if (!in)
- 		return -ENOMEM;
- 
-@@ -737,15 +733,20 @@ static int mlx5_cmd_packet_reformat_alloc(struct mlx5_flow_root_namespace *ns,
- 	reformat = MLX5_ADDR_OF(packet_reformat_context_in,
- 				packet_reformat_context_in,
- 				reformat_data);
--	inlen = reformat - (void *)in  + size;
-+	inlen = reformat - (void *)in + params->size;
- 
- 	MLX5_SET(alloc_packet_reformat_context_in, in, opcode,
- 		 MLX5_CMD_OP_ALLOC_PACKET_REFORMAT_CONTEXT);
- 	MLX5_SET(packet_reformat_context_in, packet_reformat_context_in,
--		 reformat_data_size, size);
-+		 reformat_data_size, params->size);
- 	MLX5_SET(packet_reformat_context_in, packet_reformat_context_in,
--		 reformat_type, reformat_type);
--	memcpy(reformat, reformat_data, size);
-+		 reformat_type, params->type);
-+	MLX5_SET(packet_reformat_context_in, packet_reformat_context_in,
-+		 reformat_param_0, params->param_0);
-+	MLX5_SET(packet_reformat_context_in, packet_reformat_context_in,
-+		 reformat_param_1, params->param_1);
-+	if (params->data && params->size)
-+		memcpy(reformat, params->data, params->size);
- 
- 	err = mlx5_cmd_exec(dev, in, inlen, out, sizeof(out));
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h
-index c2e102ed82ad..5ecd33cdc087 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h
-@@ -77,9 +77,7 @@ struct mlx5_flow_cmds {
- 			      bool disconnect);
- 
- 	int (*packet_reformat_alloc)(struct mlx5_flow_root_namespace *ns,
--				     int reformat_type,
--				     size_t size,
--				     void *reformat_data,
-+				     struct mlx5_pkt_reformat_params *params,
- 				     enum mlx5_flow_namespace_type namespace,
- 				     struct mlx5_pkt_reformat *pkt_reformat);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 1b7a1cde097c..c0936b4e53a9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -3165,9 +3165,7 @@ void mlx5_modify_header_dealloc(struct mlx5_core_dev *dev,
- EXPORT_SYMBOL(mlx5_modify_header_dealloc);
- 
- struct mlx5_pkt_reformat *mlx5_packet_reformat_alloc(struct mlx5_core_dev *dev,
--						     int reformat_type,
--						     size_t size,
--						     void *reformat_data,
-+						     struct mlx5_pkt_reformat_params *params,
- 						     enum mlx5_flow_namespace_type ns_type)
- {
- 	struct mlx5_pkt_reformat *pkt_reformat;
-@@ -3183,9 +3181,8 @@ struct mlx5_pkt_reformat *mlx5_packet_reformat_alloc(struct mlx5_core_dev *dev,
- 		return ERR_PTR(-ENOMEM);
- 
- 	pkt_reformat->ns_type = ns_type;
--	pkt_reformat->reformat_type = reformat_type;
--	err = root->cmds->packet_reformat_alloc(root, reformat_type, size,
--						reformat_data, ns_type,
-+	pkt_reformat->reformat_type = params->type;
-+	err = root->cmds->packet_reformat_alloc(root, params, ns_type,
- 						pkt_reformat);
- 	if (err) {
- 		kfree(pkt_reformat);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-index 1b7a0e94d432..13fceba11d3f 100644
+index 13fceba11d3f..de68c0ec2143 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -937,6 +937,8 @@ struct mlx5dr_action *mlx5dr_action_create_push_vlan(struct mlx5dr_domain *dmn,
- struct mlx5dr_action *
- mlx5dr_action_create_packet_reformat(struct mlx5dr_domain *dmn,
- 				     enum mlx5dr_action_reformat_type reformat_type,
-+				     u8 reformat_param_0,
-+				     u8 reformat_param_1,
- 				     size_t data_sz,
- 				     void *data)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index ee0e9d79aaec..d866cd609d0b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -289,7 +289,8 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
- 			DR_ACTION_REFORMAT_TYP_TNL_L2_TO_L2;
- 
- 		tmp_action = mlx5dr_action_create_packet_reformat(domain,
--								  decap_type, 0,
-+								  decap_type,
-+								  0, 0, 0,
- 								  NULL);
- 		if (!tmp_action) {
- 			err = -ENOMEM;
-@@ -522,9 +523,7 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
- }
- 
- static int mlx5_cmd_dr_packet_reformat_alloc(struct mlx5_flow_root_namespace *ns,
--					     int reformat_type,
--					     size_t size,
--					     void *reformat_data,
-+					     struct mlx5_pkt_reformat_params *params,
- 					     enum mlx5_flow_namespace_type namespace,
- 					     struct mlx5_pkt_reformat *pkt_reformat)
- {
-@@ -532,7 +531,7 @@ static int mlx5_cmd_dr_packet_reformat_alloc(struct mlx5_flow_root_namespace *ns
- 	struct mlx5dr_action *action;
- 	int dr_reformat;
- 
--	switch (reformat_type) {
-+	switch (params->type) {
- 	case MLX5_REFORMAT_TYPE_L2_TO_VXLAN:
- 	case MLX5_REFORMAT_TYPE_L2_TO_NVGRE:
- 	case MLX5_REFORMAT_TYPE_L2_TO_L2_TUNNEL:
-@@ -546,14 +545,16 @@ static int mlx5_cmd_dr_packet_reformat_alloc(struct mlx5_flow_root_namespace *ns
+@@ -37,6 +37,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_TNL_L3_TO_L2]	= DR_ACTION_STATE_DECAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_POP_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 		},
+@@ -48,6 +49,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_CTR]		= DR_ACTION_STATE_DECAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_POP_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 		},
+@@ -66,6 +68,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_CTR]		= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 		},
+ 		[DR_ACTION_STATE_MODIFY_VLAN] = {
+ 			[DR_ACTION_TYP_DROP]		= DR_ACTION_STATE_TERM,
+@@ -77,6 +80,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 		},
+ 		[DR_ACTION_STATE_NON_TERM] = {
+ 			[DR_ACTION_TYP_DROP]		= DR_ACTION_STATE_TERM,
+@@ -88,6 +92,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_TNL_L3_TO_L2]	= DR_ACTION_STATE_DECAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_POP_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 		},
+@@ -102,6 +107,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_CTR]		= DR_ACTION_STATE_NON_TERM,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_PUSH_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 		},
+@@ -116,6 +122,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_CTR]		= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_PUSH_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 		},
+ 		[DR_ACTION_STATE_MODIFY_VLAN] = {
+@@ -125,6 +132,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_PUSH_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 		},
+ 		[DR_ACTION_STATE_NON_TERM] = {
+ 			[DR_ACTION_TYP_DROP]		= DR_ACTION_STATE_TERM,
+@@ -132,6 +140,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_CTR]		= DR_ACTION_STATE_NON_TERM,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_PUSH_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 		},
+@@ -148,6 +157,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_TNL_L3_TO_L2]	= DR_ACTION_STATE_DECAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_POP_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 			[DR_ACTION_TYP_VPORT]		= DR_ACTION_STATE_TERM,
+@@ -161,6 +171,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_VPORT]		= DR_ACTION_STATE_TERM,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 		},
+ 		[DR_ACTION_STATE_ENCAP] = {
+ 			[DR_ACTION_TYP_DROP]		= DR_ACTION_STATE_TERM,
+@@ -176,6 +187,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_VPORT]		= DR_ACTION_STATE_TERM,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 		},
+ 		[DR_ACTION_STATE_MODIFY_VLAN] = {
+ 			[DR_ACTION_TYP_DROP]		= DR_ACTION_STATE_TERM,
+@@ -186,6 +198,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 		},
+ 		[DR_ACTION_STATE_NON_TERM] = {
+ 			[DR_ACTION_TYP_DROP]		= DR_ACTION_STATE_TERM,
+@@ -195,6 +208,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_TNL_L3_TO_L2]	= DR_ACTION_STATE_DECAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_POP_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 			[DR_ACTION_TYP_VPORT]		= DR_ACTION_STATE_TERM,
+@@ -211,6 +225,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_PUSH_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 			[DR_ACTION_TYP_VPORT]		= DR_ACTION_STATE_TERM,
+ 		},
+@@ -226,6 +241,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_CTR]		= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_PUSH_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 			[DR_ACTION_TYP_VPORT]		= DR_ACTION_STATE_TERM,
+ 		},
+@@ -236,6 +252,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_CTR]		= DR_ACTION_STATE_MODIFY_VLAN,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_VPORT]		= DR_ACTION_STATE_TERM,
+ 		},
+ 		[DR_ACTION_STATE_NON_TERM] = {
+@@ -245,6 +262,7 @@ next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP_MAX]
+ 			[DR_ACTION_TYP_MODIFY_HDR]	= DR_ACTION_STATE_MODIFY_HDR,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L2]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_L2_TO_TNL_L3]	= DR_ACTION_STATE_ENCAP,
++			[DR_ACTION_TYP_INSERT_HDR]	= DR_ACTION_STATE_ENCAP,
+ 			[DR_ACTION_TYP_PUSH_VLAN]	= DR_ACTION_STATE_MODIFY_VLAN,
+ 			[DR_ACTION_TYP_VPORT]		= DR_ACTION_STATE_TERM,
+ 		},
+@@ -271,6 +289,9 @@ dr_action_reformat_to_action_type(enum mlx5dr_action_reformat_type reformat_type
+ 	case DR_ACTION_REFORMAT_TYP_L2_TO_TNL_L3:
+ 		*action_type = DR_ACTION_TYP_L2_TO_TNL_L3;
  		break;
++	case DR_ACTION_REFORMAT_TYP_INSERT_HDR:
++		*action_type = DR_ACTION_TYP_INSERT_HDR;
++		break;
  	default:
- 		mlx5_core_err(ns->dev, "Packet-reformat not supported(%d)\n",
--			      reformat_type);
-+			      params->type);
- 		return -EOPNOTSUPP;
+ 		return -EINVAL;
+ 	}
+@@ -495,8 +516,8 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
+ 				mlx5dr_info(dmn, "Device doesn't support Encap on RX\n");
+ 				goto out_invalid_arg;
+ 			}
+-			attr.reformat_size = action->reformat->reformat_size;
+-			attr.reformat_id = action->reformat->reformat_id;
++			attr.reformat.size = action->reformat->size;
++			attr.reformat.id = action->reformat->id;
+ 			break;
+ 		case DR_ACTION_TYP_VPORT:
+ 			attr.hit_gvmi = action->vport->caps->vhca_gvmi;
+@@ -522,6 +543,12 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
+ 
+ 			attr.vlans.headers[attr.vlans.count++] = action->push_vlan->vlan_hdr;
+ 			break;
++		case DR_ACTION_TYP_INSERT_HDR:
++			attr.reformat.size = action->reformat->size;
++			attr.reformat.id = action->reformat->id;
++			attr.reformat.param_0 = action->reformat->param_0;
++			attr.reformat.param_1 = action->reformat->param_1;
++			break;
+ 		default:
+ 			goto out_invalid_arg;
+ 		}
+@@ -584,6 +611,7 @@ static unsigned int action_size[DR_ACTION_TYP_MAX] = {
+ 	[DR_ACTION_TYP_MODIFY_HDR]   = sizeof(struct mlx5dr_action_rewrite),
+ 	[DR_ACTION_TYP_VPORT]        = sizeof(struct mlx5dr_action_vport),
+ 	[DR_ACTION_TYP_PUSH_VLAN]    = sizeof(struct mlx5dr_action_push_vlan),
++	[DR_ACTION_TYP_INSERT_HDR]   = sizeof(struct mlx5dr_action_reformat),
+ };
+ 
+ static struct mlx5dr_action *
+@@ -692,7 +720,7 @@ mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
+ 			if (reformat_action) {
+ 				reformat_req = true;
+ 				hw_dests[i].vport.reformat_id =
+-					reformat_action->reformat->reformat_id;
++					reformat_action->reformat->id;
+ 				ref_actions[num_of_ref++] = reformat_action;
+ 				hw_dests[i].vport.flags |= MLX5_FLOW_DEST_VPORT_REFORMAT_ID;
+ 			}
+@@ -799,11 +827,15 @@ struct mlx5dr_action *mlx5dr_action_create_tag(u32 tag_value)
+ static int
+ dr_action_verify_reformat_params(enum mlx5dr_action_type reformat_type,
+ 				 struct mlx5dr_domain *dmn,
++				 u8 reformat_param_0,
++				 u8 reformat_param_1,
+ 				 size_t data_sz,
+ 				 void *data)
+ {
+-	if ((!data && data_sz) || (data && !data_sz) || reformat_type >
+-		DR_ACTION_TYP_L2_TO_TNL_L3) {
++	if ((!data && data_sz) || (data && !data_sz) ||
++	    ((reformat_param_0 || reformat_param_1) &&
++	     reformat_type != DR_ACTION_TYP_INSERT_HDR) ||
++	    reformat_type > DR_ACTION_TYP_INSERT_HDR) {
+ 		mlx5dr_dbg(dmn, "Invalid reformat parameter!\n");
+ 		goto out_err;
+ 	}
+@@ -835,6 +867,7 @@ dr_action_verify_reformat_params(enum mlx5dr_action_type reformat_type,
+ 
+ static int
+ dr_action_create_reformat_action(struct mlx5dr_domain *dmn,
++				 u8 reformat_param_0, u8 reformat_param_1,
+ 				 size_t data_sz, void *data,
+ 				 struct mlx5dr_action *action)
+ {
+@@ -852,13 +885,14 @@ dr_action_create_reformat_action(struct mlx5dr_domain *dmn,
+ 		else
+ 			rt = MLX5_REFORMAT_TYPE_L2_TO_L3_TUNNEL;
+ 
+-		ret = mlx5dr_cmd_create_reformat_ctx(dmn->mdev, rt, data_sz, data,
++		ret = mlx5dr_cmd_create_reformat_ctx(dmn->mdev, rt, 0, 0,
++						     data_sz, data,
+ 						     &reformat_id);
+ 		if (ret)
+ 			return ret;
+ 
+-		action->reformat->reformat_id = reformat_id;
+-		action->reformat->reformat_size = data_sz;
++		action->reformat->id = reformat_id;
++		action->reformat->size = data_sz;
+ 		return 0;
+ 	}
+ 	case DR_ACTION_TYP_TNL_L2_TO_L2:
+@@ -900,6 +934,23 @@ dr_action_create_reformat_action(struct mlx5dr_domain *dmn,
+ 		}
+ 		return 0;
+ 	}
++	case DR_ACTION_TYP_INSERT_HDR:
++	{
++		ret = mlx5dr_cmd_create_reformat_ctx(dmn->mdev,
++						     MLX5_REFORMAT_TYPE_INSERT_HDR,
++						     reformat_param_0,
++						     reformat_param_1,
++						     data_sz, data,
++						     &reformat_id);
++		if (ret)
++			return ret;
++
++		action->reformat->id = reformat_id;
++		action->reformat->size = data_sz;
++		action->reformat->param_0 = reformat_param_0;
++		action->reformat->param_1 = reformat_param_1;
++		return 0;
++	}
+ 	default:
+ 		mlx5dr_info(dmn, "Reformat type is not supported %d\n", action->action_type);
+ 		return -EINVAL;
+@@ -955,7 +1006,9 @@ mlx5dr_action_create_packet_reformat(struct mlx5dr_domain *dmn,
+ 		goto dec_ref;
  	}
  
- 	action = mlx5dr_action_create_packet_reformat(dr_domain,
- 						      dr_reformat,
--						      size,
--						      reformat_data);
-+						      params->param_0,
-+						      params->param_1,
-+						      params->size,
-+						      params->data);
- 	if (!action) {
- 		mlx5_core_err(ns->dev, "Failed allocating packet-reformat action\n");
- 		return -EINVAL;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-index 612b0ac31db2..8d821bbe3309 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-@@ -105,6 +105,8 @@ mlx5dr_action_create_flow_counter(u32 counter_id);
- struct mlx5dr_action *
- mlx5dr_action_create_packet_reformat(struct mlx5dr_domain *dmn,
- 				     enum mlx5dr_action_reformat_type reformat_type,
-+				     u8 reformat_param_0,
-+				     u8 reformat_param_1,
- 				     size_t data_sz,
- 				     void *data);
+-	ret = dr_action_verify_reformat_params(action_type, dmn, data_sz, data);
++	ret = dr_action_verify_reformat_params(action_type, dmn,
++					       reformat_param_0, reformat_param_1,
++					       data_sz, data);
+ 	if (ret)
+ 		goto dec_ref;
  
-diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index 1f51f4c3b1af..f69f68fba946 100644
---- a/include/linux/mlx5/fs.h
-+++ b/include/linux/mlx5/fs.h
-@@ -254,10 +254,16 @@ struct mlx5_modify_hdr *mlx5_modify_header_alloc(struct mlx5_core_dev *dev,
- void mlx5_modify_header_dealloc(struct mlx5_core_dev *dev,
- 				struct mlx5_modify_hdr *modify_hdr);
+@@ -966,6 +1019,8 @@ mlx5dr_action_create_packet_reformat(struct mlx5dr_domain *dmn,
+ 	action->reformat->dmn = dmn;
  
-+struct mlx5_pkt_reformat_params {
-+	int type;
+ 	ret = dr_action_create_reformat_action(dmn,
++					       reformat_param_0,
++					       reformat_param_1,
+ 					       data_sz,
+ 					       data,
+ 					       action);
+@@ -1559,8 +1614,9 @@ int mlx5dr_action_destroy(struct mlx5dr_action *action)
+ 		break;
+ 	case DR_ACTION_TYP_L2_TO_TNL_L2:
+ 	case DR_ACTION_TYP_L2_TO_TNL_L3:
++	case DR_ACTION_TYP_INSERT_HDR:
+ 		mlx5dr_cmd_destroy_reformat_ctx((action->reformat->dmn)->mdev,
+-						action->reformat->reformat_id);
++						action->reformat->id);
+ 		refcount_dec(&action->reformat->dmn->refcount);
+ 		break;
+ 	case DR_ACTION_TYP_MODIFY_HDR:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+index 5970cb8fc0c0..6314f50efbd4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+@@ -460,6 +460,8 @@ int mlx5dr_cmd_destroy_flow_table(struct mlx5_core_dev *mdev,
+ 
+ int mlx5dr_cmd_create_reformat_ctx(struct mlx5_core_dev *mdev,
+ 				   enum mlx5_reformat_ctx_type rt,
++				   u8 reformat_param_0,
++				   u8 reformat_param_1,
+ 				   size_t reformat_size,
+ 				   void *reformat_data,
+ 				   u32 *reformat_id)
+@@ -486,8 +488,11 @@ int mlx5dr_cmd_create_reformat_ctx(struct mlx5_core_dev *mdev,
+ 	pdata = MLX5_ADDR_OF(packet_reformat_context_in, prctx, reformat_data);
+ 
+ 	MLX5_SET(packet_reformat_context_in, prctx, reformat_type, rt);
++	MLX5_SET(packet_reformat_context_in, prctx, reformat_param_0, reformat_param_0);
++	MLX5_SET(packet_reformat_context_in, prctx, reformat_param_1, reformat_param_1);
+ 	MLX5_SET(packet_reformat_context_in, prctx, reformat_data_size, reformat_size);
+-	memcpy(pdata, reformat_data, reformat_size);
++	if (reformat_data && reformat_size)
++		memcpy(pdata, reformat_data, reformat_size);
+ 
+ 	err = mlx5_cmd_exec(mdev, in, inlen, out, sizeof(out));
+ 	if (err)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
+index 7e26a9e3afc7..f1950e4968da 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
+@@ -437,8 +437,8 @@ dr_ste_v0_set_actions_tx(struct mlx5dr_domain *dmn,
+ 						attr->gvmi);
+ 
+ 		dr_ste_v0_set_tx_encap(last_ste,
+-				       attr->reformat_id,
+-				       attr->reformat_size,
++				       attr->reformat.id,
++				       attr->reformat.size,
+ 				       action_type_set[DR_ACTION_TYP_L2_TO_TNL_L3]);
+ 		/* Whenever prio_tag_required enabled, we can be sure that the
+ 		 * previous table (ACL) already push vlan to our packet,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
+index a5807d190698..b4dae628e716 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
+@@ -374,6 +374,26 @@ static void dr_ste_v1_set_encap(u8 *hw_ste_p, u8 *d_action,
+ 	dr_ste_v1_set_reparse(hw_ste_p);
+ }
+ 
++static void dr_ste_v1_set_insert_hdr(u8 *hw_ste_p, u8 *d_action,
++				     u32 reformat_id,
++				     u8 anchor, u8 offset,
++				     int size)
++{
++	MLX5_SET(ste_double_action_insert_with_ptr_v1, d_action,
++		 action_id, DR_STE_V1_ACTION_ID_INSERT_POINTER);
++	MLX5_SET(ste_double_action_insert_with_ptr_v1, d_action, start_anchor, anchor);
++
++	/* The hardware expects here size and offset in words (2 byte) */
++	MLX5_SET(ste_double_action_insert_with_ptr_v1, d_action, size, size / 2);
++	MLX5_SET(ste_double_action_insert_with_ptr_v1, d_action, start_offset, offset / 2);
++
++	MLX5_SET(ste_double_action_insert_with_ptr_v1, d_action, pointer, reformat_id);
++	MLX5_SET(ste_double_action_insert_with_ptr_v1, d_action, attributes,
++		 DR_STE_V1_ACTION_INSERT_PTR_ATTR_NONE);
++
++	dr_ste_v1_set_reparse(hw_ste_p);
++}
++
+ static void dr_ste_v1_set_tx_push_vlan(u8 *hw_ste_p, u8 *d_action,
+ 				       u32 vlan_hdr)
+ {
+@@ -520,8 +540,8 @@ static void dr_ste_v1_set_actions_tx(struct mlx5dr_domain *dmn,
+ 			allow_encap = true;
+ 		}
+ 		dr_ste_v1_set_encap(last_ste, action,
+-				    attr->reformat_id,
+-				    attr->reformat_size);
++				    attr->reformat.id,
++				    attr->reformat.size);
+ 		action_sz -= DR_STE_ACTION_DOUBLE_SZ;
+ 		action += DR_STE_ACTION_DOUBLE_SZ;
+ 	} else if (action_type_set[DR_ACTION_TYP_L2_TO_TNL_L3]) {
+@@ -534,10 +554,23 @@ static void dr_ste_v1_set_actions_tx(struct mlx5dr_domain *dmn,
+ 
+ 		dr_ste_v1_set_encap_l3(last_ste,
+ 				       action, d_action,
+-				       attr->reformat_id,
+-				       attr->reformat_size);
++				       attr->reformat.id,
++				       attr->reformat.size);
+ 		action_sz -= DR_STE_ACTION_TRIPLE_SZ;
+ 		action += DR_STE_ACTION_TRIPLE_SZ;
++	} else if (action_type_set[DR_ACTION_TYP_INSERT_HDR]) {
++		if (!allow_encap || action_sz < DR_STE_ACTION_DOUBLE_SZ) {
++			dr_ste_v1_arr_init_next_match(&last_ste, added_stes, attr->gvmi);
++			action = MLX5_ADDR_OF(ste_mask_and_match_v1, last_ste, action);
++			action_sz = DR_STE_ACTION_TRIPLE_SZ;
++		}
++		dr_ste_v1_set_insert_hdr(last_ste, action,
++					 attr->reformat.id,
++					 attr->reformat.param_0,
++					 attr->reformat.param_1,
++					 attr->reformat.size);
++		action_sz -= DR_STE_ACTION_DOUBLE_SZ;
++		action += DR_STE_ACTION_DOUBLE_SZ;
+ 	}
+ 
+ 	dr_ste_v1_set_hit_gvmi(last_ste, attr->hit_gvmi);
+@@ -616,7 +649,9 @@ static void dr_ste_v1_set_actions_rx(struct mlx5dr_domain *dmn,
+ 	}
+ 
+ 	if (action_type_set[DR_ACTION_TYP_CTR]) {
+-		/* Counter action set after decap to exclude decaped header */
++		/* Counter action set after decap and before insert_hdr
++		 * to exclude decaped / encaped header respectively.
++		 */
+ 		if (!allow_ctr) {
+ 			dr_ste_v1_arr_init_next_match(&last_ste, added_stes, attr->gvmi);
+ 			action = MLX5_ADDR_OF(ste_mask_and_match_v1, last_ste, action);
+@@ -634,8 +669,8 @@ static void dr_ste_v1_set_actions_rx(struct mlx5dr_domain *dmn,
+ 			action_sz = DR_STE_ACTION_TRIPLE_SZ;
+ 		}
+ 		dr_ste_v1_set_encap(last_ste, action,
+-				    attr->reformat_id,
+-				    attr->reformat_size);
++				    attr->reformat.id,
++				    attr->reformat.size);
+ 		action_sz -= DR_STE_ACTION_DOUBLE_SZ;
+ 		action += DR_STE_ACTION_DOUBLE_SZ;
+ 		allow_modify_hdr = false;
+@@ -652,10 +687,25 @@ static void dr_ste_v1_set_actions_rx(struct mlx5dr_domain *dmn,
+ 
+ 		dr_ste_v1_set_encap_l3(last_ste,
+ 				       action, d_action,
+-				       attr->reformat_id,
+-				       attr->reformat_size);
++				       attr->reformat.id,
++				       attr->reformat.size);
+ 		action_sz -= DR_STE_ACTION_TRIPLE_SZ;
+ 		allow_modify_hdr = false;
++	} else if (action_type_set[DR_ACTION_TYP_INSERT_HDR]) {
++		/* Modify header, decap, and encap must use different STEs */
++		if (!allow_modify_hdr || action_sz < DR_STE_ACTION_DOUBLE_SZ) {
++			dr_ste_v1_arr_init_next_match(&last_ste, added_stes, attr->gvmi);
++			action = MLX5_ADDR_OF(ste_mask_and_match_v1, last_ste, action);
++			action_sz = DR_STE_ACTION_TRIPLE_SZ;
++		}
++		dr_ste_v1_set_insert_hdr(last_ste, action,
++					 attr->reformat.id,
++					 attr->reformat.param_0,
++					 attr->reformat.param_1,
++					 attr->reformat.size);
++		action_sz -= DR_STE_ACTION_DOUBLE_SZ;
++		action += DR_STE_ACTION_DOUBLE_SZ;
++		allow_modify_hdr = false;
+ 	}
+ 
+ 	dr_ste_v1_set_hit_gvmi(last_ste, attr->hit_gvmi);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+index b34018d49326..60b8c04e165e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -123,6 +123,7 @@ enum mlx5dr_action_type {
+ 	DR_ACTION_TYP_VPORT,
+ 	DR_ACTION_TYP_POP_VLAN,
+ 	DR_ACTION_TYP_PUSH_VLAN,
++	DR_ACTION_TYP_INSERT_HDR,
+ 	DR_ACTION_TYP_MAX,
+ };
+ 
+@@ -266,8 +267,12 @@ struct mlx5dr_ste_actions_attr {
+ 	u32	ctr_id;
+ 	u16	gvmi;
+ 	u16	hit_gvmi;
+-	u32	reformat_id;
+-	u32	reformat_size;
++	struct {
++		u32	id;
++		u32	size;
++		u8	param_0;
++		u8	param_1;
++	} reformat;
+ 	struct {
+ 		int	count;
+ 		u32	headers[MLX5DR_MAX_VLANS];
+@@ -908,8 +913,10 @@ struct mlx5dr_action_rewrite {
+ 
+ struct mlx5dr_action_reformat {
+ 	struct mlx5dr_domain *dmn;
+-	u32 reformat_id;
+-	u32 reformat_size;
++	u32 id;
++	u32 size;
 +	u8 param_0;
 +	u8 param_1;
-+	size_t size;
-+	void *data;
-+};
-+
- struct mlx5_pkt_reformat *mlx5_packet_reformat_alloc(struct mlx5_core_dev *dev,
--						     int reformat_type,
--						     size_t size,
--						     void *reformat_data,
-+						     struct mlx5_pkt_reformat_params *params,
- 						     enum mlx5_flow_namespace_type ns_type);
- void mlx5_packet_reformat_dealloc(struct mlx5_core_dev *dev,
- 				  struct mlx5_pkt_reformat *reformat);
+ };
+ 
+ struct mlx5dr_action_dest_tbl {
+@@ -1147,6 +1154,8 @@ int mlx5dr_cmd_query_flow_table(struct mlx5_core_dev *dev,
+ 				struct mlx5dr_cmd_query_flow_table_details *output);
+ int mlx5dr_cmd_create_reformat_ctx(struct mlx5_core_dev *mdev,
+ 				   enum mlx5_reformat_ctx_type rt,
++				   u8 reformat_param_0,
++				   u8 reformat_param_1,
+ 				   size_t reformat_size,
+ 				   void *reformat_data,
+ 				   u32 *reformat_id);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+index d866cd609d0b..00b4c753cae2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+@@ -543,6 +543,9 @@ static int mlx5_cmd_dr_packet_reformat_alloc(struct mlx5_flow_root_namespace *ns
+ 	case MLX5_REFORMAT_TYPE_L2_TO_L3_TUNNEL:
+ 		dr_reformat = DR_ACTION_REFORMAT_TYP_L2_TO_TNL_L3;
+ 		break;
++	case MLX5_REFORMAT_TYPE_INSERT_HDR:
++		dr_reformat = DR_ACTION_REFORMAT_TYP_INSERT_HDR;
++		break;
+ 	default:
+ 		mlx5_core_err(ns->dev, "Packet-reformat not supported(%d)\n",
+ 			      params->type);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+index 8d821bbe3309..0e2b73731117 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+@@ -26,6 +26,7 @@ enum mlx5dr_action_reformat_type {
+ 	DR_ACTION_REFORMAT_TYP_L2_TO_TNL_L2,
+ 	DR_ACTION_REFORMAT_TYP_TNL_L3_TO_L2,
+ 	DR_ACTION_REFORMAT_TYP_L2_TO_TNL_L3,
++	DR_ACTION_REFORMAT_TYP_INSERT_HDR,
+ };
+ 
+ struct mlx5dr_match_parameters {
 -- 
 2.31.1
 
