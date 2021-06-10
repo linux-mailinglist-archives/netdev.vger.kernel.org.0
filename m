@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD8633A3233
+	by mail.lfdr.de (Postfix) with ESMTP id 70D5F3A3232
 	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 19:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbhFJRha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 13:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59148 "EHLO
+        id S231174AbhFJRh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 13:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231153AbhFJRhW (ORCPT
+        with ESMTP id S231124AbhFJRhW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 13:37:22 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C60C061760
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:35:10 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id t3so34005695edc.7
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:35:10 -0700 (PDT)
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6EBC0617A8
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:35:12 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id i13so34011859edb.9
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 10:35:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jxLh/WF1huv8WI/G2nthBCTAxv11ECLDRHuW5UnGaRA=;
-        b=Ncob5lI6TYWLVyXsAM/FTJBcmF3MTO8vfPdHoyLYJpv+L0/WlFMcCF56D2kdJbMaAi
-         +XLHeFN8/gyokwTvi+RPtB0BrDvQsATNEh4GL1O7MHkkQr3vfUklb/wAY7U34m0S8DiE
-         ObKO2vqrrf6QQ6lMNnqMwzOEGlM2NVOV+JrvzpjjAedOYk7UeERXenl/mEB+AxekPVe/
-         onNMvsrGPBfHW5Ll9hlERmk/zzKcQFw2Jzt7LJe97iVl+HfpxTpxQaqJDZSqGbgoC8zh
-         gRItBCKTQ7nhxLYpFbAoJwsVVukIeFVbWtLFvlP0TYcEq3c17ssky/N8tksg6i9TAfOC
-         P/KQ==
+        bh=CY20aR77Xp9kZ48oWEPpIMd4qGPA/k6lpuOYJU7wiXk=;
+        b=GR4Yvedtmfb+jw4y3zLdvq1TP37ttiYg5x7hZjIfl0brDwXPj7x/e8X/7TfigfCQFZ
+         virk/Mth6IOPxJrJdQEYsdBcyK05+k4pCFVdU4GE30EL2QNXuPyUVMNRSRtXNy3LJ6Xo
+         4XZFn+bOtgR3P0OvhFWI1NnnupflR5v3tCQWvuBTMlvQiU9VbklnVClf2yd+DXdpk3Zh
+         mCaMg8FDkbpwqDx+V2/bXjgqE+sy8A4j8V+mlMtCIDlZuvlV0A0upWsfbZ+Z9OCu/uvp
+         VZMB7zQ8oYR9sgqSIQi6U7Qes1RUrRXnHSt6GPL3PICDHvqHH1IsyiGs+HQCBH/QGzbA
+         NWzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jxLh/WF1huv8WI/G2nthBCTAxv11ECLDRHuW5UnGaRA=;
-        b=sVPOAZb7ndrnRKibQBkXqQwpFmdA3PfeFbCzAXAPVzR+A9gcEUGKJaHxwtYke0+i5i
-         t8VHgjiLLUBKZTKpmBX3v+qoLFrt+7zHVYyTRlmtGCV6iak/m+M5cqpIuEHJ4e6vVkp0
-         8z1oK4c5qyk7+dlaKXEvpgWQWkpnsNgx2ZbyRAMyZA8vWMGQkQ1+1H0gL9FBKCczheDo
-         dRCaxZnVJJVLthNliznfqv04l5Z+V+b11FUhM5iKYevmYqw5AZcsvHla05OOZwDgeTaL
-         Bc9YKWTCDea0C94FCTK4HdbIX3a1KALgst3PqyPeqnI1d/8ucmy6BbpIGvr8Kds/OAMI
-         vIqQ==
-X-Gm-Message-State: AOAM533fzZVt3B7Ny8BvuApWIirsw06DvMlxpT0D0as88H9zgt5Jr4sK
-        4eZE9w+ZEAJiAJI4EPElToEkWsYxveg=
-X-Google-Smtp-Source: ABdhPJwlIykHa3//My9eAw7WPnqktxWupGNvlJtxZV0yproPCbTJ/tC04yGAT+0mAOeXkc0or5Q36g==
-X-Received: by 2002:a05:6402:157:: with SMTP id s23mr638494edu.282.1623346508617;
-        Thu, 10 Jun 2021 10:35:08 -0700 (PDT)
+        bh=CY20aR77Xp9kZ48oWEPpIMd4qGPA/k6lpuOYJU7wiXk=;
+        b=oIq9p0g1t8jRXfIWybSjtJbdV0ZwrUTWnLjoGBB0txisoWGC03CoX/jCdGSccmNGn/
+         PpbBUPfUEYI6ED5GXl8syHV6ZTqfB3qHuFMlDPA9pcSLldQc+Sy6R52csoStu+1U1zMy
+         cfUkys14DG4KDHTeRc+PxyTtTxzM/tYwjI4PGwiaobv6bADgYYscfwNfMPALUnv0iytU
+         zFG8oobsf8jX+FJMJKW5jc+8M3w2SHzrePUHqaXS3JbU/IlW4G5C/FNA/Vk6esu2xQ8/
+         b+c932+rHt2d3xMUvZSqQTDS3ltNx8ClFj0kM5Nrknxcpm7rXQOKGrf0knaPfe1H8Aou
+         BmQw==
+X-Gm-Message-State: AOAM532lmpX28jiTo85sdVWpZ0AkB2jjn8wQMpc5+4xgg9cKXxejGPre
+        bBpWqj3kakDe207hsNuhpv0=
+X-Google-Smtp-Source: ABdhPJyGttoiihogAO0MClGfVzDRU5Yoj6/iZEKdJ4IuY7XPAL5yNvd0B/njZAUlOkzJHuPnuQrKYQ==
+X-Received: by 2002:a05:6402:2790:: with SMTP id b16mr601080ede.115.1623346510772;
+        Thu, 10 Jun 2021 10:35:10 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id g17sm1789595edp.14.2021.06.10.10.35.07
+        by smtp.gmail.com with ESMTPSA id g17sm1789595edp.14.2021.06.10.10.35.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 10:35:07 -0700 (PDT)
+        Thu, 10 Jun 2021 10:35:09 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -55,9 +55,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 09/10] net: dsa: sja1105: add the RX timestamping procedure for SJA1110
-Date:   Thu, 10 Jun 2021 20:34:24 +0300
-Message-Id: <20210610173425.1791379-10-olteanv@gmail.com>
+Subject: [PATCH net-next 10/10] net: dsa: sja1105: implement TX timestamping for SJA1110
+Date:   Thu, 10 Jun 2021 20:34:25 +0300
+Message-Id: <20210610173425.1791379-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210610173425.1791379-1-olteanv@gmail.com>
 References: <20210610173425.1791379-1-olteanv@gmail.com>
@@ -69,187 +69,386 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This is really easy, since the full RX timestamp is in the DSA trailer
-and the tagger code transfers it to SJA1105_SKB_CB(skb)->tstamp, we just
-need to move it to the skb shared info region. This is as opposed to
-SJA1105, where the RX timestamp was received in a meta frame (so there
-needed to be a state machine to pair the 2 packets) and the timestamp
-was partial (so the packet, once matched with its timestamp, needed to
-be added to an RX timestamping queue where the PTP aux worker would
-reconstruct that timestamp).
+The TX timestamping procedure for SJA1105 is a bit unconventional
+because the transmit procedure itself is unconventional.
+
+Control packets (and therefore PTP as well) are transmitted to a
+specific port in SJA1105 using "management routes" which must be written
+over SPI to the switch. These are one-shot rules that match by
+destination MAC address on traffic coming from the CPU port, and select
+the precise destination port for that packet. So to transmit a packet
+from NET_TX softirq context, we actually need to defer to a process
+context so that we can perform that SPI write before we send the packet.
+The DSA master dev_queue_xmit() runs in process context, and we poll
+until the switch confirms it took the TX timestamp, then we annotate the
+skb clone with that TX timestamp. This is why the sja1105 driver does
+not need an skb queue for TX timestamping.
+
+But the SJA1110 is a bit (not much!) more conventional, and you can
+request 2-step TX timestamping through the DSA header, as well as give
+the switch a cookie (timestamp ID) which it will give back to you when
+it has the timestamp. So now we do need a queue for keeping the skb
+clones until their TX timestamps become available.
+
+The interesting part is that the metadata frames from SJA1105 haven't
+disappeared completely. On SJA1105 they were used as follow-ups which
+contained RX timestamps, but on SJA1110 they are actually TX completion
+packets, which contain a variable (up to 32) array of timestamps.
+Why an array? Because:
+- not only is the TX timestamp on the egress port being communicated,
+  but also the RX timestamp on the CPU port. Nice, but we don't care
+  about that, so we ignore it.
+- because a packet could be multicast to multiple egress ports, each
+  port takes its own timestamp, and the TX completion packet contains
+  the individual timestamps on each port.
+
+This is unconventional because switches typically have a timestamping
+FIFO and raise an interrupt, but this one doesn't. So the tagger needs
+to detect and parse meta frames, and call into the main switch driver,
+which pairs the timestamps with the skbs in the TX timestamping queue
+which are waiting for one.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
  drivers/net/dsa/sja1105/sja1105.h     |  1 +
- drivers/net/dsa/sja1105/sja1105_ptp.c | 26 +++++++++++++++++++++++---
- drivers/net/dsa/sja1105/sja1105_ptp.h |  6 ++++++
- drivers/net/dsa/sja1105/sja1105_spi.c | 10 ++++++++++
- 4 files changed, 40 insertions(+), 3 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_ptp.c | 68 +++++++++++++++++++++++++++
+ drivers/net/dsa/sja1105/sja1105_ptp.h |  7 +++
+ drivers/net/dsa/sja1105/sja1105_spi.c |  4 ++
+ include/linux/dsa/sja1105.h           | 23 +++++++++
+ net/dsa/tag_sja1105.c                 | 52 ++++++++++++++++++++
+ 6 files changed, 155 insertions(+)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index a6d64b27e6a9..201bca282884 100644
+index 201bca282884..5f3449351668 100644
 --- a/drivers/net/dsa/sja1105/sja1105.h
 +++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -130,6 +130,7 @@ struct sja1105_info {
- 			   const unsigned char *addr, u16 vid);
+@@ -131,6 +131,7 @@ struct sja1105_info {
  	void (*ptp_cmd_packing)(u8 *buf, struct sja1105_ptp_cmd *cmd,
  				enum packing_op op);
-+	bool (*rxtstamp)(struct dsa_switch *ds, int port, struct sk_buff *skb);
+ 	bool (*rxtstamp)(struct dsa_switch *ds, int port, struct sk_buff *skb);
++	void (*txtstamp)(struct dsa_switch *ds, int port, struct sk_buff *skb);
  	int (*clocking_setup)(struct sja1105_private *priv);
  	const char *name;
  	bool supports_mii[SJA1105_MAX_NUM_PORTS];
 diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
-index dea82f8a40c4..62fe05b4cb60 100644
+index 62fe05b4cb60..72eb2cb5140b 100644
 --- a/drivers/net/dsa/sja1105/sja1105_ptp.c
 +++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
-@@ -413,9 +413,7 @@ static long sja1105_rxtstamp_work(struct ptp_clock_info *ptp)
- 	return -1;
+@@ -79,6 +79,7 @@ static int sja1105_change_rxtstamping(struct sja1105_private *priv,
+ 		priv->tagger_data.stampable_skb = NULL;
+ 	}
+ 	ptp_cancel_worker_sync(ptp_data->clock);
++	skb_queue_purge(&ptp_data->skb_txtstamp_queue);
+ 	skb_queue_purge(&ptp_data->skb_rxtstamp_queue);
+ 
+ 	return sja1105_static_config_reload(priv, SJA1105_RX_HWTSTAMPING);
+@@ -451,6 +452,66 @@ bool sja1105_port_rxtstamp(struct dsa_switch *ds, int port,
+ 	return priv->info->rxtstamp(ds, port, skb);
  }
  
--/* Called from dsa_skb_defer_rx_timestamp */
--bool sja1105_port_rxtstamp(struct dsa_switch *ds, int port,
--			   struct sk_buff *skb, unsigned int type)
-+bool sja1105_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
- {
- 	struct sja1105_private *priv = ds->priv;
- 	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
-@@ -431,6 +429,28 @@ bool sja1105_port_rxtstamp(struct dsa_switch *ds, int port,
- 	return true;
- }
- 
-+bool sja1110_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
-+{
-+	struct skb_shared_hwtstamps *shwt = skb_hwtstamps(skb);
-+	u64 ts = SJA1105_SKB_CB(skb)->tstamp;
-+
-+	*shwt = (struct skb_shared_hwtstamps) {0};
-+
-+	shwt->hwtstamp = ns_to_ktime(sja1105_ticks_to_ns(ts));
-+
-+	/* Don't defer */
-+	return false;
-+}
-+
-+/* Called from dsa_skb_defer_rx_timestamp */
-+bool sja1105_port_rxtstamp(struct dsa_switch *ds, int port,
-+			   struct sk_buff *skb, unsigned int type)
++void sja1110_process_meta_tstamp(struct dsa_switch *ds, int port, u8 ts_id,
++				 enum sja1110_meta_tstamp dir, u64 tstamp)
 +{
 +	struct sja1105_private *priv = ds->priv;
++	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
++	struct sk_buff *skb, *skb_tmp, *skb_match = NULL;
++	struct skb_shared_hwtstamps shwt = {0};
 +
-+	return priv->info->rxtstamp(ds, port, skb);
++	/* We don't care about RX timestamps on the CPU port */
++	if (dir == SJA1110_META_TSTAMP_RX)
++		return;
++
++	spin_lock(&ptp_data->skb_txtstamp_queue.lock);
++
++	skb_queue_walk_safe(&ptp_data->skb_txtstamp_queue, skb, skb_tmp) {
++		if (SJA1105_SKB_CB(skb)->ts_id != ts_id)
++			continue;
++
++		__skb_unlink(skb, &ptp_data->skb_txtstamp_queue);
++		skb_match = skb;
++
++		break;
++	}
++
++	spin_unlock(&ptp_data->skb_txtstamp_queue.lock);
++
++	if (WARN_ON(!skb_match))
++		return;
++
++	shwt.hwtstamp = ns_to_ktime(sja1105_ticks_to_ns(tstamp));
++	skb_complete_tx_timestamp(skb_match, &shwt);
++}
++
++/* In addition to cloning the skb which is done by the common
++ * sja1105_port_txtstamp, we need to generate a timestamp ID and save the
++ * packet to the TX timestamping queue.
++ */
++void sja1110_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
++{
++	struct sk_buff *clone = SJA1105_SKB_CB(skb)->clone;
++	struct sja1105_private *priv = ds->priv;
++	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
++	struct sja1105_port *sp = &priv->ports[port];
++	u8 ts_id;
++
++	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
++
++	spin_lock(&sp->data->meta_lock);
++
++	ts_id = sp->data->ts_id;
++	/* Deal automatically with 8-bit wraparound */
++	sp->data->ts_id++;
++
++	SJA1105_SKB_CB(clone)->ts_id = ts_id;
++
++	spin_unlock(&sp->data->meta_lock);
++
++	skb_queue_tail(&ptp_data->skb_txtstamp_queue, clone);
 +}
 +
  /* Called from dsa_skb_tx_timestamp. This callback is just to clone
   * the skb and have it available in SJA1105_SKB_CB in the .port_deferred_xmit
   * callback, where we will timestamp it synchronously.
+@@ -469,6 +530,9 @@ void sja1105_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
+ 		return;
+ 
+ 	SJA1105_SKB_CB(skb)->clone = clone;
++
++	if (priv->info->txtstamp)
++		priv->info->txtstamp(ds, port, skb);
+ }
+ 
+ static int sja1105_ptp_reset(struct dsa_switch *ds)
+@@ -885,7 +949,10 @@ int sja1105_ptp_clock_register(struct dsa_switch *ds)
+ 		.n_per_out	= 1,
+ 	};
+ 
++	/* Only used on SJA1105 */
+ 	skb_queue_head_init(&ptp_data->skb_rxtstamp_queue);
++	/* Only used on SJA1110 */
++	skb_queue_head_init(&ptp_data->skb_txtstamp_queue);
+ 	spin_lock_init(&tagger_data->meta_lock);
+ 
+ 	ptp_data->clock = ptp_clock_register(&ptp_data->caps, ds->dev);
+@@ -910,6 +977,7 @@ void sja1105_ptp_clock_unregister(struct dsa_switch *ds)
+ 
+ 	del_timer_sync(&ptp_data->extts_timer);
+ 	ptp_cancel_worker_sync(ptp_data->clock);
++	skb_queue_purge(&ptp_data->skb_txtstamp_queue);
+ 	skb_queue_purge(&ptp_data->skb_rxtstamp_queue);
+ 	ptp_clock_unregister(ptp_data->clock);
+ 	ptp_data->clock = NULL;
 diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.h b/drivers/net/dsa/sja1105/sja1105_ptp.h
-index 34f97f58a355..bf0c4f1dfed7 100644
+index bf0c4f1dfed7..3c874bb4c17b 100644
 --- a/drivers/net/dsa/sja1105/sja1105_ptp.h
 +++ b/drivers/net/dsa/sja1105/sja1105_ptp.h
-@@ -122,6 +122,9 @@ int __sja1105_ptp_adjtime(struct dsa_switch *ds, s64 delta);
- int sja1105_ptp_commit(struct dsa_switch *ds, struct sja1105_ptp_cmd *cmd,
- 		       sja1105_spi_rw_mode_t rw);
+@@ -75,7 +75,12 @@ struct sja1105_ptp_cmd {
  
-+bool sja1105_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb);
-+bool sja1110_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb);
-+
+ struct sja1105_ptp_data {
+ 	struct timer_list extts_timer;
++	/* Used only on SJA1105 to reconstruct partial timestamps */
+ 	struct sk_buff_head skb_rxtstamp_queue;
++	/* Used on SJA1110 where meta frames are generated only for
++	 * 2-step TX timestamps
++	 */
++	struct sk_buff_head skb_txtstamp_queue;
+ 	struct ptp_clock_info caps;
+ 	struct ptp_clock *clock;
+ 	struct sja1105_ptp_cmd cmd;
+@@ -124,6 +129,7 @@ int sja1105_ptp_commit(struct dsa_switch *ds, struct sja1105_ptp_cmd *cmd,
+ 
+ bool sja1105_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb);
+ bool sja1110_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb);
++void sja1110_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb);
+ 
  #else
  
- struct sja1105_ptp_cmd;
-@@ -184,6 +187,9 @@ static inline int sja1105_ptp_commit(struct dsa_switch *ds,
+@@ -189,6 +195,7 @@ static inline int sja1105_ptp_commit(struct dsa_switch *ds,
  
- #define sja1105_hwtstamp_set NULL
+ #define sja1105_rxtstamp NULL
+ #define sja1110_rxtstamp NULL
++#define sja1110_txtstamp NULL
  
-+#define sja1105_rxtstamp NULL
-+#define sja1110_rxtstamp NULL
-+
  #endif /* IS_ENABLED(CONFIG_NET_DSA_SJA1105_PTP) */
  
- #endif /* _SJA1105_PTP_H */
 diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index 9156f4cc11f2..f7dd86271891 100644
+index f7dd86271891..32d00212423c 100644
 --- a/drivers/net/dsa/sja1105/sja1105_spi.c
 +++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -580,6 +580,7 @@ const struct sja1105_info sja1105e_info = {
- 	.fdb_add_cmd		= sja1105et_fdb_add,
- 	.fdb_del_cmd		= sja1105et_fdb_del,
- 	.ptp_cmd_packing	= sja1105et_ptp_cmd_packing,
-+	.rxtstamp		= sja1105_rxtstamp,
- 	.clocking_setup		= sja1105_clocking_setup,
- 	.regs			= &sja1105et_regs,
- 	.port_speed		= {
-@@ -612,6 +613,7 @@ const struct sja1105_info sja1105t_info = {
- 	.fdb_add_cmd		= sja1105et_fdb_add,
- 	.fdb_del_cmd		= sja1105et_fdb_del,
- 	.ptp_cmd_packing	= sja1105et_ptp_cmd_packing,
-+	.rxtstamp		= sja1105_rxtstamp,
- 	.clocking_setup		= sja1105_clocking_setup,
- 	.regs			= &sja1105et_regs,
- 	.port_speed		= {
-@@ -645,6 +647,7 @@ const struct sja1105_info sja1105p_info = {
- 	.fdb_add_cmd		= sja1105pqrs_fdb_add,
+@@ -788,6 +788,7 @@ const struct sja1105_info sja1110a_info = {
  	.fdb_del_cmd		= sja1105pqrs_fdb_del,
  	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
-+	.rxtstamp		= sja1105_rxtstamp,
- 	.clocking_setup		= sja1105_clocking_setup,
- 	.regs			= &sja1105pqrs_regs,
- 	.port_speed		= {
-@@ -678,6 +681,7 @@ const struct sja1105_info sja1105q_info = {
- 	.fdb_add_cmd		= sja1105pqrs_fdb_add,
- 	.fdb_del_cmd		= sja1105pqrs_fdb_del,
- 	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
-+	.rxtstamp		= sja1105_rxtstamp,
- 	.clocking_setup		= sja1105_clocking_setup,
- 	.regs			= &sja1105pqrs_regs,
- 	.port_speed		= {
-@@ -711,6 +715,7 @@ const struct sja1105_info sja1105r_info = {
- 	.fdb_add_cmd		= sja1105pqrs_fdb_add,
- 	.fdb_del_cmd		= sja1105pqrs_fdb_del,
- 	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
-+	.rxtstamp		= sja1105_rxtstamp,
- 	.clocking_setup		= sja1105_clocking_setup,
- 	.regs			= &sja1105pqrs_regs,
- 	.port_speed		= {
-@@ -746,6 +751,7 @@ const struct sja1105_info sja1105s_info = {
- 	.fdb_add_cmd		= sja1105pqrs_fdb_add,
- 	.fdb_del_cmd		= sja1105pqrs_fdb_del,
- 	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
-+	.rxtstamp		= sja1105_rxtstamp,
- 	.clocking_setup		= sja1105_clocking_setup,
- 	.port_speed		= {
- 		[SJA1105_SPEED_AUTO] = 0,
-@@ -781,6 +787,7 @@ const struct sja1105_info sja1110a_info = {
- 	.fdb_add_cmd		= sja1105pqrs_fdb_add,
- 	.fdb_del_cmd		= sja1105pqrs_fdb_del,
- 	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
-+	.rxtstamp		= sja1110_rxtstamp,
+ 	.rxtstamp		= sja1110_rxtstamp,
++	.txtstamp		= sja1110_txtstamp,
  	.clocking_setup		= sja1110_clocking_setup,
  	.port_speed		= {
  		[SJA1105_SPEED_AUTO] = 0,
-@@ -828,6 +835,7 @@ const struct sja1105_info sja1110b_info = {
- 	.fdb_add_cmd		= sja1105pqrs_fdb_add,
+@@ -836,6 +837,7 @@ const struct sja1105_info sja1110b_info = {
  	.fdb_del_cmd		= sja1105pqrs_fdb_del,
  	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
-+	.rxtstamp		= sja1110_rxtstamp,
+ 	.rxtstamp		= sja1110_rxtstamp,
++	.txtstamp		= sja1110_txtstamp,
  	.clocking_setup		= sja1110_clocking_setup,
  	.port_speed		= {
  		[SJA1105_SPEED_AUTO] = 0,
-@@ -875,6 +883,7 @@ const struct sja1105_info sja1110c_info = {
- 	.fdb_add_cmd		= sja1105pqrs_fdb_add,
+@@ -884,6 +886,7 @@ const struct sja1105_info sja1110c_info = {
  	.fdb_del_cmd		= sja1105pqrs_fdb_del,
  	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
-+	.rxtstamp		= sja1110_rxtstamp,
+ 	.rxtstamp		= sja1110_rxtstamp,
++	.txtstamp		= sja1110_txtstamp,
  	.clocking_setup		= sja1110_clocking_setup,
  	.port_speed		= {
  		[SJA1105_SPEED_AUTO] = 0,
-@@ -922,6 +931,7 @@ const struct sja1105_info sja1110d_info = {
- 	.fdb_add_cmd		= sja1105pqrs_fdb_add,
+@@ -932,6 +935,7 @@ const struct sja1105_info sja1110d_info = {
  	.fdb_del_cmd		= sja1105pqrs_fdb_del,
  	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
-+	.rxtstamp		= sja1110_rxtstamp,
+ 	.rxtstamp		= sja1110_rxtstamp,
++	.txtstamp		= sja1110_txtstamp,
  	.clocking_setup		= sja1110_clocking_setup,
  	.port_speed		= {
  		[SJA1105_SPEED_AUTO] = 0,
+diff --git a/include/linux/dsa/sja1105.h b/include/linux/dsa/sja1105.h
+index b02cf7b515ae..b6089b88314c 100644
+--- a/include/linux/dsa/sja1105.h
++++ b/include/linux/dsa/sja1105.h
+@@ -45,11 +45,14 @@ struct sja1105_tagger_data {
+ 	 */
+ 	spinlock_t meta_lock;
+ 	unsigned long state;
++	u8 ts_id;
+ };
+ 
+ struct sja1105_skb_cb {
+ 	struct sk_buff *clone;
+ 	u64 tstamp;
++	/* Only valid for packets cloned for 2-step TX timestamping */
++	u8 ts_id;
+ };
+ 
+ #define SJA1105_SKB_CB(skb) \
+@@ -66,4 +69,24 @@ struct sja1105_port {
+ 	u16 xmit_tpid;
+ };
+ 
++enum sja1110_meta_tstamp {
++	SJA1110_META_TSTAMP_TX = 0,
++	SJA1110_META_TSTAMP_RX = 1,
++};
++
++#if IS_ENABLED(CONFIG_NET_DSA_SJA1105_PTP)
++
++void sja1110_process_meta_tstamp(struct dsa_switch *ds, int port, u8 ts_id,
++				 enum sja1110_meta_tstamp dir, u64 tstamp);
++
++#else
++
++static inline void sja1110_process_meta_tstamp(struct dsa_switch *ds, int port,
++					       u8 ts_id, enum sja1110_meta_tstamp dir,
++					       u64 tstamp)
++{
++}
++
++#endif /* IS_ENABLED(CONFIG_NET_DSA_SJA1105_PTP) */
++
+ #endif /* _NET_DSA_SJA1105_H */
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index 37e1d64e07c6..9c2df9ece01b 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -25,6 +25,9 @@
+ #define SJA1110_RX_TRAILER_SWITCH_ID(x)		(((x) & GENMASK(7, 4)) >> 4)
+ #define SJA1110_RX_TRAILER_SRC_PORT(x)		((x) & GENMASK(3, 0))
+ 
++/* Meta frame format (for 2-step TX timestamps) */
++#define SJA1110_RX_HEADER_N_TS(x)		(((x) & GENMASK(8, 4)) >> 4)
++
+ /* TX header */
+ #define SJA1110_TX_HEADER_UPDATE_TC		BIT(14)
+ #define SJA1110_TX_HEADER_TAKE_TS		BIT(13)
+@@ -43,6 +46,8 @@
+ #define SJA1110_TX_TRAILER_SWITCHID(x)		(((x) << 12) & GENMASK(15, 12))
+ #define SJA1110_TX_TRAILER_DESTPORTS(x)		(((x) << 1) & GENMASK(11, 1))
+ 
++#define SJA1110_META_TSTAMP_SIZE		10
++
+ #define SJA1110_HEADER_LEN			4
+ #define SJA1110_RX_TRAILER_LEN			13
+ #define SJA1110_TX_TRAILER_LEN			4
+@@ -184,6 +189,7 @@ static struct sk_buff *sja1105_xmit(struct sk_buff *skb,
+ static struct sk_buff *sja1110_xmit(struct sk_buff *skb,
+ 				    struct net_device *netdev)
+ {
++	struct sk_buff *clone = SJA1105_SKB_CB(skb)->clone;
+ 	struct dsa_port *dp = dsa_slave_to_port(netdev);
+ 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
+ 	u16 queue_mapping = skb_get_queue_mapping(skb);
+@@ -221,6 +227,12 @@ static struct sk_buff *sja1110_xmit(struct sk_buff *skb,
+ 	*tx_trailer = cpu_to_be32(SJA1110_TX_TRAILER_PRIO(pcp) |
+ 				  SJA1110_TX_TRAILER_SWITCHID(dp->ds->index) |
+ 				  SJA1110_TX_TRAILER_DESTPORTS(BIT(dp->index)));
++	if (clone) {
++		u8 ts_id = SJA1105_SKB_CB(clone)->ts_id;
++
++		*tx_header |= htons(SJA1110_TX_HEADER_TAKE_TS);
++		*tx_trailer |= cpu_to_be32(SJA1110_TX_TRAILER_TSTAMP_ID(ts_id));
++	}
+ 
+ 	return skb;
+ }
+@@ -423,6 +435,43 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 					      is_meta);
+ }
+ 
++static struct sk_buff *sja1110_rcv_meta(struct sk_buff *skb, u16 rx_header)
++{
++	int switch_id = SJA1110_RX_HEADER_SWITCH_ID(rx_header);
++	int n_ts = SJA1110_RX_HEADER_N_TS(rx_header);
++	struct net_device *master = skb->dev;
++	struct dsa_port *cpu_dp;
++	u8 *buf = skb->data + 2;
++	struct dsa_switch *ds;
++	int i;
++
++	cpu_dp = master->dsa_ptr;
++	ds = dsa_switch_find(cpu_dp->dst->index, switch_id);
++	if (!ds) {
++		net_err_ratelimited("%s: cannot find switch id %d\n",
++				    master->name, switch_id);
++		return NULL;
++	}
++
++	for (i = 0; i <= n_ts; i++) {
++		u8 ts_id, source_port, dir;
++		u64 tstamp;
++
++		ts_id = buf[0];
++		source_port = (buf[1] & GENMASK(7, 4)) >> 4;
++		dir = (buf[1] & BIT(3)) >> 3;
++		tstamp = be64_to_cpu(*(__be64 *)(buf + 2));
++
++		sja1110_process_meta_tstamp(ds, source_port, ts_id, dir,
++					    tstamp);
++
++		buf += SJA1110_META_TSTAMP_SIZE;
++	}
++
++	/* Discard the meta frame, we've consumed the timestamps it contained */
++	return NULL;
++}
++
+ static struct sk_buff *sja1110_rcv_inband_control_extension(struct sk_buff *skb,
+ 							    int *source_port,
+ 							    int *switch_id)
+@@ -439,6 +488,9 @@ static struct sk_buff *sja1110_rcv_inband_control_extension(struct sk_buff *skb,
+ 	 */
+ 	rx_header = ntohs(*(__be16 *)skb->data);
+ 
++	if (rx_header & SJA1110_RX_HEADER_IS_METADATA)
++		return sja1110_rcv_meta(skb, rx_header);
++
+ 	/* Timestamp frame, we have a trailer */
+ 	if (rx_header & SJA1110_RX_HEADER_HAS_TRAILER) {
+ 		int start_of_padding = SJA1110_RX_HEADER_TRAILER_POS(rx_header);
 -- 
 2.25.1
 
