@@ -2,133 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72BD63A345C
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 21:55:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60B743A3469
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 22:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230385AbhFJT5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 15:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33738 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230365AbhFJT5f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 15:57:35 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE108C061760
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 12:55:25 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id b9so3002256ilr.2
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 12:55:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yThRUwhG7TVMYzDnZQ36xlr9oSGBGPDfSkCu6ZGlYLg=;
-        b=bPBjb3iQyivF7+ujnusT5zb7CgKPA/MPb60wwSSgl0fWJCJFIRsspxS5FLO3i3Db7o
-         QTBIFLfWtoa+OTwkJsl8Od0iL6SjdITaP1KUiA1ZLnO0nbgYzNu8qBP6bqF9wOw6coVS
-         0TZuIt7YeN1EtKC3bKArUXZMWQq1C4xTGVKSk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yThRUwhG7TVMYzDnZQ36xlr9oSGBGPDfSkCu6ZGlYLg=;
-        b=p+Lb0L+eO1wGza4lSXZbnRL079omGAyWZe8MyksyH6fm/U5Wh+DSS5QSzPZXVmwIBJ
-         SAPMpgH1NaanRdXj70P7awHBs0Sn7LqlucCBO5Cm4QCd5ku3J1Tgh4I1q7sokLPR6ESw
-         1rF7Mx53iwUkCYYwOp4Of0vjR9DD+Xz1cNarNyED23ctWLCAlUk1mNsgvePSJfbtjKZy
-         H+7RbEL8oPjmqkk0q/UA5JQx5k5WLPQ9P1Ssjzy/+dvAzPIbPXGXdvjg0sbtLDnOLm5t
-         ENDbwAseJSbmwURvG3zYi+yjxFg3+k4NRd5O5RrQZo5PNKC3mpj/3FtaQ9hpDVOo4bCR
-         Olkw==
-X-Gm-Message-State: AOAM531pkMim/oW1I0bkRRKrcOd0g76QT+7diOZuMfty/7hDK0UTKj6h
-        4/xH3slzV3nFwd5IZ0CMY8nvvA==
-X-Google-Smtp-Source: ABdhPJxrEvwWy3XAmz/7jj02iTalwtXM7UAmJCMJjFJ1UH5U58C7wt3JsSnlbOrDwD06v36kFE802g==
-X-Received: by 2002:a05:6e02:4b0:: with SMTP id e16mr335801ils.71.1623354925138;
-        Thu, 10 Jun 2021 12:55:25 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id u18sm2447941ilb.51.2021.06.10.12.55.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 12:55:24 -0700 (PDT)
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <YH2hs6EsPTpDAqXc@mit.edu>
- <nycvar.YFH.7.76.2104281228350.18270@cbobk.fhfr.pm>
- <YIx7R6tmcRRCl/az@mit.edu>
- <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
- <YK+esqGjKaPb+b/Q@kroah.com>
- <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
- <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
- <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
- <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
- <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
- <20210610152633.7e4a7304@oasis.local.home>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
-Date:   Thu, 10 Jun 2021 13:55:23 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S230297AbhFJUCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 16:02:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230188AbhFJUCn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 16:02:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2DAEC613F1;
+        Thu, 10 Jun 2021 20:00:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623355247;
+        bh=ZbRvzCT7wna4OsitGKZ+uEppwjq/LPjh5F/SwhxsvIw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=it1PG+R5MO443wIpHpOu52Wp7/yNhdoVxG8Ar5iSyJLybhL0qRCWf+X1Js86t3GNz
+         9X2d4POr6Z8djOs42/VuoWMyLaM3oTyaagYIzVmMRiM7EiynqhPxtfyTZqbFMR1rvo
+         fxTtwWzLdXGGd+h9Rw06HuGpDATp4XLAcGwL6Je4gcJi8HU7Kpfs3Fm6l+jXisE8il
+         I5SEZkaU3f/ZVbStLDvmwkO9oufSpN5FVnVmz4VCS5oEhuC4mJyGn3NidjN3qS32Zv
+         DafKhl5qLVDFD/Ly7Wl6shQjosw6s8FsamH/AE+KynX1+5FNSagLp0VOQNAsTO+ceQ
+         UCtSRuWwEEtsA==
+Date:   Thu, 10 Jun 2021 13:00:44 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Kees Cook <keescook@chromium.org>, Yonghong Song <yhs@fb.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Kurt Manucredo <fuzzybritches0@gmail.com>,
+        syzbot+bed360704c521841c85d@syzkaller.appspotmail.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        nathan@kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        kasan-dev <kasan-dev@googlegroups.com>
+Subject: Re: [PATCH v4] bpf: core: fix shift-out-of-bounds in ___bpf_prog_run
+Message-ID: <YMJvbGEz0xu9JU9D@gmail.com>
+References: <87609-531187-curtm@phaethon>
+ <6a392b66-6f26-4532-d25f-6b09770ce366@fb.com>
+ <CAADnVQKexxZQw0yK_7rmFOdaYabaFpi2EmF6RGs5bXvFHtUQaA@mail.gmail.com>
+ <CACT4Y+b=si6NCx=nRHKm_pziXnVMmLo-eSuRajsxmx5+Hy_ycg@mail.gmail.com>
+ <202106091119.84A88B6FE7@keescook>
+ <752cb1ad-a0b1-92b7-4c49-bbb42fdecdbe@fb.com>
+ <CACT4Y+a592rxFmNgJgk2zwqBE8EqW1ey9SjF_-U3z6gt3Yc=oA@mail.gmail.com>
+ <1aaa2408-94b9-a1e6-beff-7523b66fe73d@fb.com>
+ <202106101002.DF8C7EF@keescook>
+ <CAADnVQKMwKYgthoQV4RmGpZm9Hm-=wH3DoaNqs=UZRmJKefwGw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210610152633.7e4a7304@oasis.local.home>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQKMwKYgthoQV4RmGpZm9Hm-=wH3DoaNqs=UZRmJKefwGw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/10/21 1:26 PM, Steven Rostedt wrote:
-> On Thu, 10 Jun 2021 21:39:49 +0300
-> Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+On Thu, Jun 10, 2021 at 10:52:37AM -0700, Alexei Starovoitov wrote:
+> On Thu, Jun 10, 2021 at 10:06 AM Kees Cook <keescook@chromium.org> wrote:
+> >
+> > > > I guess the main question: what should happen if a bpf program writer
+> > > > does _not_ use compiler nor check_shl_overflow()?
+> >
+> > I think the BPF runtime needs to make such actions defined, instead of
+> > doing a blind shift. It needs to check the size of the shift explicitly
+> > when handling the shift instruction.
 > 
->> There will always be more informal discussions between on-site
->> participants. After all, this is one of the benefits of conferences, by
->> being all together we can easily organize ad-hoc discussions. This is
->> traditionally done by finding a not too noisy corner in the conference
->> center, would it be useful to have more break-out rooms with A/V
->> equipment than usual ?
-> 
-> I've been giving this quite some thought too, and I've come to the
-> understanding (and sure I can be wrong, but I don't think that I am),
-> is that when doing a hybrid event, the remote people will always be
-> "second class citizens" with respect to the communication that is going
-> on. Saying that we can make it the same is not going to happen unless
-> you start restricting what people can do that are present, and that
-> will just destroy the conference IMO.
-> 
-> That said, I think we should add more to make the communication better
-> for those that are not present. Maybe an idea is to have break outs
-> followed by the presentation and evening events that include remote
-> attendees to discuss with those that are there about what they might
-> have missed. Have incentives at these break outs (free stacks and
-> beer?) to encourage the live attendees to attend and have a discussion
-> with the remote attendees.
-> 
-> The presentations would have remote access, where remote attendees can
-> at the very least write in some chat their questions or comments. If
-> video and connectivity is good enough, perhaps have a screen where they
-> can show up and talk, but that may have logistical limitations.
-> 
+> Such ideas were brought up in the past and rejected.
+> We're not going to sacrifice performance to make behavior a bit more
+> 'defined'. CPUs are doing it deterministically.
 
-You are absolutely right that the remote people will have a hard time
-participating and keeping up with in-person participants. I have a
-couple of ideas on how we might be able to improve remote experience
-without restricting in-person experience.
+What CPUs do is not the whole story.  The compiler can assume that the shift
+amount is less than the width and use that assumption in other places, resulting
+in other things being miscompiled.
 
-- Have one or two moderators per session to watch chat and Q&A to enable
-   remote participants to chime in and participate.
-- Moderators can make sure remote participation doesn't go unnoticed and
-   enable taking turns for remote vs. people participating in person.
+Couldn't you just AND the shift amounts with the width minus 1?  That would make
+the shifts defined, and the compiler would optimize out the AND on any CPU that
+interprets the shift amounts modulo the width anyway (e.g., x86).
 
-It will be change in the way we interact in all in-person sessions for
-sure, however it might enhance the experience for remote attendees.
-
-thanks,
--- Shuah
+- Eric
