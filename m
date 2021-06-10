@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFCC83A2159
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 02:22:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 345F03A215A
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 02:22:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230264AbhFJAYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 20:24:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46984 "EHLO mail.kernel.org"
+        id S230272AbhFJAYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 20:24:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46986 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230153AbhFJAYR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230154AbhFJAYR (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 9 Jun 2021 20:24:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A230B613F9;
-        Thu, 10 Jun 2021 00:22:20 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 266BB61405;
+        Thu, 10 Jun 2021 00:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623284541;
-        bh=Dn04M6pKVRqi410TOg6b9Boj7mzjs+oROLgZV5Rg3GU=;
+        bh=UT4bRoY4r750vnIS8n/ntKe6s0TAOpA/C9HJkEv3Cd4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NAaDVsih45GOcW2ZSAumFAxCAKUHp38Br+q/l7tlmv7T8U6PL1Ftz8owTn+zdEoFc
-         ytAu7kLqpRO6OKOgu5OGLGxPqIozRpK/4ih8BECNoxTGUZ2+y8tME7VGaXpZd8qrOZ
-         dwrRxs3ql0SYUvQH6hE+0YXrmk34ZFiNRYakdSLIWVd6/T9piwOZpiE/saoyThIeBU
-         VzVC/oltAkZHZIlfEI0BPooRy6ta9PlFf4bkZ5d3WKJWP7CBUbao+0XI0sXqcOcg5U
-         o/s7kBzRklMliBXWL04lKE2BZFsBnyWHqz1mBZAdX2l8z4l8mGpNEcwFCAN+aj6gzO
-         RvpHGd7BEdz/Q==
+        b=GPIFQ1SJ7sgxpQ2aS84Jnau+cK3uy4ZbfTyHSycgRfmNeCVxYBE+70gAJW6fd99nW
+         4jQYM3sDwrm4XgTWVLeDJl3wTEL3UgmLxie9vjnfLt6ZNQ35EKqqXkNTedKt6gOd0d
+         PDpx8CLG+hbp8fC4GmOLI5su1dSY0iuEfFXODAPhFndtAvbiXxCV6xciw2C9fPfoLh
+         zpJeCUIJsut5+J2FUYUr2QyEDKpSRnTM7xIPMO5EEG2kZ4ghmghP2S+dv1kzChhYXG
+         31IAJk3Iqf3zDxLKESHTdw67NTYJ2Y7GPzwWIXNh3Xkg6DKylrAvArN/AgLrMHinkw
+         IW767WjyBxbQw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>,
-        Aya Levin <ayal@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Shay Drory <shayd@nvidia.com>, Parav Pandit <parav@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 09/12] net/mlx5e: Fix select queue to consider SKBTX_HW_TSTAMP
-Date:   Wed,  9 Jun 2021 17:21:52 -0700
-Message-Id: <20210610002155.196735-10-saeed@kernel.org>
+Subject: [net 10/12] Revert "net/mlx5: Arm only EQs with EQEs"
+Date:   Wed,  9 Jun 2021 17:21:53 -0700
+Message-Id: <20210610002155.196735-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210610002155.196735-1-saeed@kernel.org>
 References: <20210610002155.196735-1-saeed@kernel.org>
@@ -43,126 +42,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-Steering packets to PTP-SQ should be done only if the SKB has
-SKBTX_HW_TSTAMP set in the tx_flags. While here, take the function into
-a header and inline it.
-Set the whole condition to select the PTP-SQ to unlikely.
+In the scenario described below, an EQ can remain in FIRED state which
+can result in missing an interrupt generation.
 
-Fixes: 24c22dd0918b ("net/mlx5e: Add states to PTP channel")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+The scenario:
+
+device                       mlx5_core driver
+------                       ----------------
+EQ1.eqe generated
+EQ1.MSI-X sent
+EQ1.state = FIRED
+EQ2.eqe generated
+                             mlx5_irq()
+                               polls - eq1_eqes()
+                               arm eq1
+                               polls - eq2_eqes()
+                               arm eq2
+EQ2.MSI-X sent
+EQ2.state = FIRED
+                              mlx5_irq()
+                              polls - eq2_eqes() -- no eqes found
+                              driver skips EQ arming;
+
+->EQ2 remains fired, misses generating interrupt.
+
+Hence, always arm the EQ by reverting the cited commit in fixes tag.
+
+Fixes: d894892dda25 ("net/mlx5: Arm only EQs with EQEs")
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/ptp.c  |  1 -
- .../net/ethernet/mellanox/mlx5/core/en/ptp.h  | 22 ++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 25 +++----------------
- 3 files changed, 25 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-index d907c1acd4d5..778e229310a9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-@@ -1,7 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- // Copyright (c) 2020 Mellanox Technologies
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 77c0ca655975..940333410267 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -136,7 +136,7 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
  
--#include <linux/ptp_classify.h>
- #include "en/ptp.h"
- #include "en/txrx.h"
- #include "en/params.h"
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
-index ab935cce952b..c96668bd701c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
-@@ -6,6 +6,7 @@
+ 	eqe = next_eqe_sw(eq);
+ 	if (!eqe)
+-		return 0;
++		goto out;
  
- #include "en.h"
- #include "en_stats.h"
-+#include <linux/ptp_classify.h>
+ 	do {
+ 		struct mlx5_core_cq *cq;
+@@ -161,6 +161,8 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
+ 		++eq->cons_index;
  
- struct mlx5e_ptpsq {
- 	struct mlx5e_txqsq       txqsq;
-@@ -43,6 +44,27 @@ struct mlx5e_ptp {
- 	DECLARE_BITMAP(state, MLX5E_PTP_STATE_NUM_STATES);
- };
- 
-+static inline bool mlx5e_use_ptpsq(struct sk_buff *skb)
-+{
-+	struct flow_keys fk;
+ 	} while ((++num_eqes < MLX5_EQ_POLLING_BUDGET) && (eqe = next_eqe_sw(eq)));
 +
-+	if (!(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
-+		return false;
-+
-+	if (!skb_flow_dissect_flow_keys(skb, &fk, 0))
-+		return false;
-+
-+	if (fk.basic.n_proto == htons(ETH_P_1588))
-+		return true;
-+
-+	if (fk.basic.n_proto != htons(ETH_P_IP) &&
-+	    fk.basic.n_proto != htons(ETH_P_IPV6))
-+		return false;
-+
-+	return (fk.basic.ip_proto == IPPROTO_UDP &&
-+		fk.ports.dst == htons(PTP_EV_PORT));
-+}
-+
- int mlx5e_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
- 		   u8 lag_port, struct mlx5e_ptp **cp);
- void mlx5e_ptp_close(struct mlx5e_ptp *c);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-index 8ba62671f5f1..320fe0cda917 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -32,7 +32,6 @@
++out:
+ 	eq_update_ci(eq, 1);
  
- #include <linux/tcp.h>
- #include <linux/if_vlan.h>
--#include <linux/ptp_classify.h>
- #include <net/geneve.h>
- #include <net/dsfield.h>
- #include "en.h"
-@@ -67,24 +66,6 @@ static inline int mlx5e_get_dscp_up(struct mlx5e_priv *priv, struct sk_buff *skb
- }
- #endif
+ 	if (cqn != -1)
+@@ -248,9 +250,9 @@ static int mlx5_eq_async_int(struct notifier_block *nb,
+ 		++eq->cons_index;
  
--static bool mlx5e_use_ptpsq(struct sk_buff *skb)
--{
--	struct flow_keys fk;
--
--	if (!skb_flow_dissect_flow_keys(skb, &fk, 0))
--		return false;
--
--	if (fk.basic.n_proto == htons(ETH_P_1588))
--		return true;
--
--	if (fk.basic.n_proto != htons(ETH_P_IP) &&
--	    fk.basic.n_proto != htons(ETH_P_IPV6))
--		return false;
--
--	return (fk.basic.ip_proto == IPPROTO_UDP &&
--		fk.ports.dst == htons(PTP_EV_PORT));
--}
--
- static u16 mlx5e_select_ptpsq(struct net_device *dev, struct sk_buff *skb)
- {
- 	struct mlx5e_priv *priv = netdev_priv(dev);
-@@ -145,9 +126,9 @@ u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
- 		}
+ 	} while ((++num_eqes < MLX5_EQ_POLLING_BUDGET) && (eqe = next_eqe_sw(eq)));
+-	eq_update_ci(eq, 1);
  
- 		ptp_channel = READ_ONCE(priv->channels.ptp);
--		if (unlikely(ptp_channel) &&
--		    test_bit(MLX5E_PTP_STATE_TX, ptp_channel->state) &&
--		    mlx5e_use_ptpsq(skb))
-+		if (unlikely(ptp_channel &&
-+			     test_bit(MLX5E_PTP_STATE_TX, ptp_channel->state) &&
-+			     mlx5e_use_ptpsq(skb)))
- 			return mlx5e_select_ptpsq(dev, skb);
+ out:
++	eq_update_ci(eq, 1);
+ 	mlx5_eq_async_int_unlock(eq_async, recovery, &flags);
  
- 		txq_ix = netdev_pick_tx(dev, skb, NULL);
+ 	return unlikely(recovery) ? num_eqes : 0;
 -- 
 2.31.1
 
