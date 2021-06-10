@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FB263A2782
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 10:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30CF83A27C9
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 11:07:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbhFJI6U convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Jun 2021 04:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbhFJI6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 04:58:20 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6B9C061574
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 01:56:24 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1lrGTv-0007uR-Ab; Thu, 10 Jun 2021 10:56:07 +0200
-Date:   Thu, 10 Jun 2021 10:56:07 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Toke =?iso-8859-15?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Patrick McHardy <kaber@trash.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Peter Krystad <peter.krystad@linux.intel.com>,
-        Young Xiao <92siuyang@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/3] netfilter: synproxy: Fix out of bounds when
- parsing TCP options
-Message-ID: <20210610085607.GN20020@breakpoint.cc>
-References: <20210609142212.3096691-1-maximmi@nvidia.com>
- <20210609142212.3096691-2-maximmi@nvidia.com>
- <20210609145115.GL20020@breakpoint.cc>
- <4ec99ea3-6ab1-eee4-be60-992cf2f9cd45@nvidia.com>
+        id S230199AbhFJJJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 05:09:51 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:3827 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229937AbhFJJJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 05:09:50 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G0yg6652PzWtLX;
+        Thu, 10 Jun 2021 17:02:58 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 10 Jun 2021 17:07:52 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
+ (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 10 Jun
+ 2021 17:07:51 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>
+Subject: [PATCH net-next] net: mdio: mscc-miim: Use devm_platform_get_and_ioremap_resource()
+Date:   Thu, 10 Jun 2021 17:11:54 +0800
+Message-ID: <20210610091154.4141911-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <4ec99ea3-6ab1-eee4-be60-992cf2f9cd45@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
-> On 2021-06-09 17:51, Florian Westphal wrote:
-> > Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
-> > > The TCP option parser in synproxy (synproxy_parse_options) could read
-> > > one byte out of bounds. When the length is 1, the execution flow gets
-> > > into the loop, reads one byte of the opcode, and if the opcode is
-> > > neither TCPOPT_EOL nor TCPOPT_NOP, it reads one more byte, which exceeds
-> > > the length of 1.
-> > > 
-> > > This fix is inspired by commit 9609dad263f8 ("ipv4: tcp_input: fix stack
-> > > out of bounds when parsing TCP options.").
-> > > 
-> > > Cc: Young Xiao <92siuyang@gmail.com>
-> > > Fixes: 48b1de4c110a ("netfilter: add SYNPROXY core/target")
-> > > Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> > > ---
-> > >   net/netfilter/nf_synproxy_core.c | 2 ++
-> > >   1 file changed, 2 insertions(+)
-> > > 
-> > > diff --git a/net/netfilter/nf_synproxy_core.c b/net/netfilter/nf_synproxy_core.c
-> > > index b100c04a0e43..621eb5ef9727 100644
-> > > --- a/net/netfilter/nf_synproxy_core.c
-> > > +++ b/net/netfilter/nf_synproxy_core.c
-> > > @@ -47,6 +47,8 @@ synproxy_parse_options(const struct sk_buff *skb, unsigned int doff,
-> > >   			length--;
-> > >   			continue;
-> > >   		default:
-> > > +			if (length < 2)
-> > > +				return true;
-> > 
-> > Would you mind a v2 that also rejects bogus th->doff value when
-> > computing the length?
-> 
-> Could you elaborate? The length is a signed int calculated as `(th->doff *
-> 4) - sizeof(*th)`. Invalid doff values (0..4) lead to negative length, so we
-> never enter the loop. Or are you concerned of passing a negative length to
-> skb_header_pointer?
+Use devm_platform_get_and_ioremap_resource() to simplify
+code.
 
-Yes, negative length to skb_header_pointer.  For other usage (mptcp for
-example) tcp stack validated th->doff already, but thats not the case for synproxy.
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/mdio/mdio-mscc-miim.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
+index b36e5ea04ddf..b8491efbd330 100644
+--- a/drivers/net/mdio/mdio-mscc-miim.c
++++ b/drivers/net/mdio/mdio-mscc-miim.c
+@@ -139,10 +139,6 @@ static int mscc_miim_probe(struct platform_device *pdev)
+ 	struct mscc_miim_dev *dev;
+ 	int ret;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res)
+-		return -ENODEV;
+-
+ 	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*dev));
+ 	if (!bus)
+ 		return -ENOMEM;
+@@ -155,19 +151,16 @@ static int mscc_miim_probe(struct platform_device *pdev)
+ 	bus->parent = &pdev->dev;
+ 
+ 	dev = bus->priv;
+-	dev->regs = devm_ioremap_resource(&pdev->dev, res);
++	dev->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(dev->regs)) {
+ 		dev_err(&pdev->dev, "Unable to map MIIM registers\n");
+ 		return PTR_ERR(dev->regs);
+ 	}
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	if (res) {
+-		dev->phy_regs = devm_ioremap_resource(&pdev->dev, res);
+-		if (IS_ERR(dev->phy_regs)) {
+-			dev_err(&pdev->dev, "Unable to map internal phy registers\n");
+-			return PTR_ERR(dev->phy_regs);
+-		}
++	dev->phy_regs = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
++	if (res && IS_ERR(dev->phy_regs)) {
++		dev_err(&pdev->dev, "Unable to map internal phy registers\n");
++		return PTR_ERR(dev->phy_regs);
+ 	}
+ 
+ 	ret = of_mdiobus_register(bus, pdev->dev.of_node);
+-- 
+2.25.1
+
