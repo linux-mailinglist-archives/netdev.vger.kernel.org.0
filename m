@@ -2,150 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC58F3A31FA
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 19:24:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 501F83A320B
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 19:28:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbhFJR0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 13:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbhFJR0l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 13:26:41 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E363C061574;
-        Thu, 10 Jun 2021 10:24:45 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id p184so363301yba.11;
-        Thu, 10 Jun 2021 10:24:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eW+5V+zbDfUdAlLcDcRVdOxN1l6x5Hh789VvE9XY038=;
-        b=q+Sze6h033k9a8LBwJXN5cVATMf3X84rcfng3rsxlWmiXFf5SNqxPCXoH7H45vPrTq
-         s5ne4pvnV6QPM0pi1a2Tm8yIMMJJY1AnLLebySuMqoMPPSVdoc/4cMDl0N77pN4A0Mnk
-         A8KTYOoilXhxhyyNoClVBMprF2hWHoJ3C25+vyF+dYb3Ip3C7v6Nc/V4GZMJcWxl0lnM
-         QQXCjQMtXwSXpF/nBfyXyJZn/G1U0o/YX7c1NaXlRfWH+IUQNvQ9qkoRJVdTbZE0Wu0y
-         i5rzrsnD36Bw8Nls6SM9913/mzfquQPNYKlmOJ5z03CVvYt5I7KzOJetk/TAYVA39zLr
-         axFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eW+5V+zbDfUdAlLcDcRVdOxN1l6x5Hh789VvE9XY038=;
-        b=rxq6CK5WuiIyCTiHDFIRNSixT7+xKJjAGPYwhUcT1YGTFjcNetlyiJQerhJ0C8AsXw
-         ZRoS5WaWK3/QjsiyAOGYoWFHHkZZ//n4qTvMub8byjLQPrCVy80ZWXCbbd0adnrkdxLe
-         KFtm6MLaaYJXt/0OWpS1Diqis8VlWWQP/kfrrnY7mj3h6e5gV3LvGJ51h2DCtfxW8wzL
-         9yc8s6n8C4tc97jOVyssux1dyRwpI4Fmqp+5YRL66nwKFfSjjiBcvAKSqXDHv7UuVWsX
-         PmWr5/tEFBcmrPkhvSPQ46Go7QcsgjkpXDU8AmbGPQZuoaSF78mmte4WzO5v/M2nJUQV
-         +2aA==
-X-Gm-Message-State: AOAM533ViI5xHsb63oNZNEfBmyNFub2zxrWS7YCULSLk5/bzqclupbfy
-        2XR9m4RbWAAkXpzGXRMbdemrwl3cHA81Bvvxtco=
-X-Google-Smtp-Source: ABdhPJwklyvU0Q8rmj0IRZV39jUSVWLBBaCQC+kN6HBez3IDqgr/L8Hiw9N50OCsZ23j7/J37xEQJ9ZIMAK8q6vRn/o=
-X-Received: by 2002:a25:1455:: with SMTP id 82mr9054485ybu.403.1623345884428;
- Thu, 10 Jun 2021 10:24:44 -0700 (PDT)
+        id S230304AbhFJRaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 13:30:10 -0400
+Received: from mail-mw2nam12on2097.outbound.protection.outlook.com ([40.107.244.97]:11781
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229935AbhFJRaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 13:30:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iCCmdx3H3Ld28yLx/TRsTXZnt323+5cYDNna2DaebcIyEmTPdiKtP2r16cpxzq4zmhk9nAgdyFcm+Ezyg8fHQ0BB9RqV5EUUFDqckPt2KQKx5K5ulZe4JcTtabakdT+56B9UKmX3ciV7kkaWlwL29OhBPxeUV4L5zhs57Nl2LcW8yKuGElB+UHWEeVydunJVje0OVYWUyBRyPe5GAz30DFgI772MzXUBYBaGNm/2KnCKhLXGHucSqdQqt2w15Zq/HrzrPnoVMF5bD/1wcKtnQk6TTMnG5/mpYgDGLwsx8/Xi61DaTYm5kN7cr4LrlWqAc2hMM8dMZEta7EZTB4AeLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZWHIcT75HpVAhUbGlIMNhULTfCwV2qwKj/t6229lxBQ=;
+ b=SBO2ZRgBH+wSS0SaCTfXqvI17QKC5oeyq64XEz8K9C5hOPjKGFYWx4rjmUq85exnZUubEJVGt+Vt+3TnPZw64RDYEK8C6ygcelFWdH3/ueexcYsoCXiwCDy9ztvpm698vMo0VebDcCMoX71+/hQqFDNlnQuZ1ikdKemRup2CXzR7jFEtNyoOKzqRfxRJeX7zJcq4DO/KRhtN/nOPuDNoZnNNSDiQC911jmEDbfFOVOnmjYcWqMyBrGfevQjAr01jYt7jkiYxecZDFJ+GPN8dOdK1eczKdFAmFak7y7xJpcLgtfM49M3e6aD67dutwl5qMAqeBp7qjzrxJKTeLsTTrQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZWHIcT75HpVAhUbGlIMNhULTfCwV2qwKj/t6229lxBQ=;
+ b=AvUVpJjY/ITbXoC9MTNpOirq3A+ofg6DZb/t9ONp0OJfBUUKPAIaBvsm13tpzwt3vYBhSRpLeSNsjm9O7iY4o2JMjAVWHDoHZJxujhjHKD5n/7cY5HIjeXHEp5KdIhjyzGrxqdVg6WFiIGrgTJwfeEDWBl8TEUadEIf1a6tbmVM=
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com (2603:10b6:a03:105::15)
+ by SJ0PR21MB1950.namprd21.prod.outlook.com (2603:10b6:a03:2a0::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.8; Thu, 10 Jun
+ 2021 17:28:11 +0000
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::fcf8:a9d4:ac25:c7ce]) by BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::fcf8:a9d4:ac25:c7ce%3]) with mapi id 15.20.4242.012; Thu, 10 Jun 2021
+ 17:28:11 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Dhiraj Shah <find.dhiraj@gmail.com>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shachar Raindel <shacharr@microsoft.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] function mana_hwc_create_wq leaks memory
+Thread-Topic: [PATCH] function mana_hwc_create_wq leaks memory
+Thread-Index: AQHXXg1ojJMEZe7SE0uvKv3Tzsr7JasNfBjAgAAB/jA=
+Date:   Thu, 10 Jun 2021 17:28:11 +0000
+Message-ID: <BYAPR21MB127087B408352336E0A8BF2ABF359@BYAPR21MB1270.namprd21.prod.outlook.com>
+References: <20210610152925.18145-1-find.dhiraj@gmail.com>
+ <BYAPR21MB1270FC995760BE925179F353BF359@BYAPR21MB1270.namprd21.prod.outlook.com>
+In-Reply-To: <BYAPR21MB1270FC995760BE925179F353BF359@BYAPR21MB1270.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=aa31c948-516e-4a40-bcc8-6b4f69306577;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-06-10T17:14:41Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 35c2ed1d-b15c-40b0-765d-08d92c351eeb
+x-ms-traffictypediagnostic: SJ0PR21MB1950:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SJ0PR21MB1950A22F1CDC98AC30680E4BBF359@SJ0PR21MB1950.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3173;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TS2Yrmv91+wAzlWrihRFHW+T2tYSPxB4NsGrPXRsCTFf8yb9UjNdTfRmB8R0yKSqqqXsuTLiBasrLKjsUaEwZhd0tKbZmv5fDnW+vadd7nkOvSNqV04bi5Fm5lVMthYl2hqE7yiB7q+H+Ug+CoPMOr5/e9NYdKxC+Oi/GH3/F4ZWmzSZVXTKuQTdP3KRQizCgkzxKMSXw1QKrIB1Z/k1ykmlP+ZeXYSEBpjbLQ5Rl2IDNSc/D/nEp0AZGUyjCwoxu6xFHBaKhSKRSA/wCfPAgCABJ8nQhqRXM1c2h5cqqg21uo+FK4CGcXqnp4Y5BOc0skyezR9yto941PCOGg5d5tPUfE3JChkbDwCl4jBfwNSUJyZo/XVy5zbY4v+Ihlgw9EQLkl+6PK4AessFhH06tS7ISG7NjgBYWxcs2l/zqFuI7Vj4euy04JmtOagY9bHgHWpnJRTYtE+0Oo61PI9xU3WURDvYEg0HGAsdLGTEAqYQbisHlnCWuddYNdcTXatyEbGE4xvoi23tlqzf/VbndZpBWoGDJmBVV2wsXxDz8voYJU8sQuHCtqiFTM9FSL0mg4bm6qaf9HweTOC0npFEIR0lIBiDYu5EzcfXYz4Scju6YAIHxMMKa3XpHSx+dUrFPoX/BcTXcwx2qlzJLRZ23w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1270.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38100700002)(122000001)(4326008)(5660300002)(8676002)(76116006)(2940100002)(10290500003)(71200400001)(8990500004)(186003)(66446008)(6916009)(66946007)(64756008)(7696005)(316002)(82960400001)(82950400001)(8936002)(6506007)(54906003)(66476007)(66556008)(33656002)(9686003)(478600001)(52536014)(2906002)(86362001)(55016002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?vBo1Es0ojnqfKfYq0wNhsCB4ihOuW9CwODgk/ZPyzXz43AVUqJsKG3pTTbmo?=
+ =?us-ascii?Q?dzNUQO3Ri79Kfr0pspbQq3ur0nFWSFqEwVOEpHrgBdivvhPLHbs8G+w9mkrj?=
+ =?us-ascii?Q?h4AZjE0OLVkBh3fWilt45WGXt4UV+6ZN1btGoPsKxm44nk+Pjxoq9T96bFRS?=
+ =?us-ascii?Q?dyEayA+Kynnb8eJapH++50geyWMwhF5wA43O1f5X5mfpigJ0DCdo0KFUumVN?=
+ =?us-ascii?Q?8XfcVWEnmqIzSyxntDDtXRH0xMQUWqCqMSSGPjbLAhnof3+0rX/9lCHHc1hS?=
+ =?us-ascii?Q?u5tXYIeoelj70PQx4S3w1u/eFLT6WUD5ceKlNrrdqAaxCyN+G6OeWEeTjP0g?=
+ =?us-ascii?Q?DAYD03fzqQ2lsNWFbG+Eut0cTi8vDat62nlN9SyCcxABsFKLQ3QccYANpP3/?=
+ =?us-ascii?Q?W0gAlgwSXnfVKGwtVqN+u6L0Cwv6b4Ll6O5PwMgKv4dSnvdKyblgTjc3cTcX?=
+ =?us-ascii?Q?2Q6sKwP3mo8mBM2Ad5cclDR1//JEJQzJzluS56+9vsvE4hodkAPRu8x1sh9A?=
+ =?us-ascii?Q?ae++7U0g1jAf9Z6tNzeTMB68LLi9ZonfIfsRcSZT/jOkZ6lww1PLgNAx+WzF?=
+ =?us-ascii?Q?iEGKWfipZS33QackV9iiisCUqv384glqjZX+W1ctQ66TW1shpCRaen4R2Krx?=
+ =?us-ascii?Q?SytDTOygqnV6M5/cOQDcpbIKGuWLsUClVOsYFxuW0cVFLx7jdSYiwEUI82kP?=
+ =?us-ascii?Q?UtE2sjeOJWdvpJlJReWWb9lhbK2xkOnm5S4feMI7Bh5WzidYhXtQ79OUFV4R?=
+ =?us-ascii?Q?xO5ghU0r4GSaDYP02szr26cgTqeTD6oDC2T90gJQidYOfC355bNeGlTm2SZ4?=
+ =?us-ascii?Q?fxIYrkNK9gdbuXa0buHXSdFnT2Bhuo94nGK//Y9EcbcUGLEAacKfHJ4GMnqF?=
+ =?us-ascii?Q?1E6v+2UU3WyTKKlyyLONVbEK+7Ss3VtR5GebcWSQQFNwnt837S3O1uZIgmZi?=
+ =?us-ascii?Q?hYIYt/6kk5iOQZeKUCs8sm5mFR5HNDUKlPdxUqsFbqqU89mJCO0t3j4pVWjE?=
+ =?us-ascii?Q?OmoU3Ifhv9AlQTq8yiNCDJdP65RJgigG12C1dVusFz7ef5K8SclzTggGfA22?=
+ =?us-ascii?Q?AZo+xw/U0PmbhR59L4K574hzX05w4CxbB9LNPYD2wr1osgg99AP9aP0OEi/w?=
+ =?us-ascii?Q?FKrNu7qQ35AYDv2yYxps8CnHcNthreJW3pt8T6bLm7j1JQvkCkJvVDexI/Vd?=
+ =?us-ascii?Q?1uRTEDBlImcpcuncBnq7pg0q2FgQV22EfFW7+xhfrckYNOa5FlN+d7kOzbk8?=
+ =?us-ascii?Q?EoOR7XjAlKikii9VX+CUznMHMA7KestrhECE383GHI1K4DVfPjOtINCpQOUc?=
+ =?us-ascii?Q?Ii4vt8aVmhquu7A05V+HDNC+YPCDRhg4hFy8naR3Ac7d2DUWIjKZPrnne168?=
+ =?us-ascii?Q?4b1zSHZdW3dI0yeJTgPZCwuitPcK?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20210609135537.1460244-1-joamaki@gmail.com>
-In-Reply-To: <20210609135537.1460244-1-joamaki@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 10 Jun 2021 10:24:33 -0700
-Message-ID: <CAEf4Bzar4+HQ_0BBGt75_UPG-tVpjqz9YVdeBi2GVY1iam4Y2g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] XDP bonding support
-To:     Jussi Maki <joamaki@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, j.vosburgh@gmail.com,
-        andy@greyhouse.net, vfalico@gmail.com,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1270.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 35c2ed1d-b15c-40b0-765d-08d92c351eeb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jun 2021 17:28:11.1453
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lnfhGxE3vEszAmZVC9Z3SPTH7wlc6UeLEmMkbu/UEw2R1X/9cEQo+ZcD3iIjMA0vupBlQWYea2wxeSOqsL3UUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR21MB1950
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 9, 2021 at 6:55 AM Jussi Maki <joamaki@gmail.com> wrote:
->
-> This patchset introduces XDP support to the bonding driver.
->
-> Patch 1 contains the implementation, including support for
-> the recently introduced EXCLUDE_INGRESS. Patch 2 contains a
-> performance fix to the roundrobin mode which switches rr_tx_counter
-> to be per-cpu. Patch 3 contains the test suite for the implementation
-> using a pair of veth devices.
->
-> The vmtest.sh is modified to enable the bonding module and install
-> modules. The config change should probably be done in the libbpf
-> repository. Andrii: How would you like this done properly?
+> From: Dexuan Cui <decui@microsoft.com>
+> Sent: Thursday, June 10, 2021 10:18 AM
+> ...
+> > diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c
+> > b/drivers/net/ethernet/microsoft/mana/hw_channel.c
+> > index 1a923fd99990..4aa4bda518fb 100644
+> > --- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
+> > +++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
+> > @@ -501,8 +501,10 @@ static int mana_hwc_create_wq(struct
+> > hw_channel_context *hwc,
+> >  	*hwc_wq_ptr =3D hwc_wq;
+> >  	return 0;
+> >  out:
+> > -	if (err)
+> > +	if (err) {
+>=20
+> Here the 'err' must be non-zero. Can you please remove this 'if'?
+>=20
+> > +		kfree(queue);
+> >  		mana_hwc_destroy_wq(hwc, hwc_wq);
+> > +	}
+> >  	return err;
+> >  }
+>=20
+> Reviewed-by: Dexuan Cui <decui@microsoft.com>
 
-I think vmtest.sh and CI setup doesn't support modules (not easily at
-least). Can we just compile that driver in? Then you can submit a PR
-against libbpf Github repo to adjust the config. We have also kernel
-CI repo where we'll need to make this change.
+Hi Dhiraj,
+I checked the code again and it looks like your patch is actually
+unnecessary as IMO there is no memory leak here: the 'queue'
+pointer is passed to mana_hwc_destroy_wq() as hwc_wq->gdma_wq,
+and is later freed in mana_gd_destroy_queue() ->
+mana_gd_destroy_queue().
 
->
-> The motivation for this change is to enable use of bonding (and
-> 802.3ad) in hairpinning L4 load-balancers such as [1] implemented with
-> XDP and also to transparently support bond devices for projects that
-> use XDP given most modern NICs have dual port adapters.  An alternative
-> to this approach would be to implement 802.3ad in user-space and
-> implement the bonding load-balancing in the XDP program itself, but
-> is rather a cumbersome endeavor in terms of slave device management
-> (e.g. by watching netlink) and requires separate programs for native
-> vs bond cases for the orchestrator. A native in-kernel implementation
-> overcomes these issues and provides more flexibility.
->
-> Below are benchmark results done on two machines with 100Gbit
-> Intel E810 (ice) NIC and with 32-core 3970X on sending machine, and
-> 16-core 3950X on receiving machine. 64 byte packets were sent with
-> pktgen-dpdk at full rate. Two issues [2, 3] were identified with the
-> ice driver, so the tests were performed with iommu=off and patch [2]
-> applied. Additionally the bonding round robin algorithm was modified
-> to use per-cpu tx counters as high CPU load (50% vs 10%) and high rate
-> of cache misses were caused by the shared rr_tx_counter (see patch
-> 2/3). The statistics were collected using "sar -n dev -u 1 10".
->
->  -----------------------|  CPU  |--| rxpck/s |--| txpck/s |----
->  without patch (1 dev):
->    XDP_DROP:              3.15%      48.6Mpps
->    XDP_TX:                3.12%      18.3Mpps     18.3Mpps
->    XDP_DROP (RSS):        9.47%      116.5Mpps
->    XDP_TX (RSS):          9.67%      25.3Mpps     24.2Mpps
->  -----------------------
->  with patch, bond (1 dev):
->    XDP_DROP:              3.14%      46.7Mpps
->    XDP_TX:                3.15%      13.9Mpps     13.9Mpps
->    XDP_DROP (RSS):        10.33%     117.2Mpps
->    XDP_TX (RSS):          10.64%     25.1Mpps     24.0Mpps
->  -----------------------
->  with patch, bond (2 devs):
->    XDP_DROP:              6.27%      92.7Mpps
->    XDP_TX:                6.26%      17.6Mpps     17.5Mpps
->    XDP_DROP (RSS):       11.38%      117.2Mpps
->    XDP_TX (RSS):         14.30%      28.7Mpps     27.4Mpps
->  --------------------------------------------------------------
->
-> RSS: Receive Side Scaling, e.g. the packets were sent to a range of
-> destination IPs.
->
-> [1]: https://cilium.io/blog/2021/05/20/cilium-110#standalonelb
-> [2]: https://lore.kernel.org/bpf/20210601113236.42651-1-maciej.fijalkowski@intel.com/T/#t
-> [3]: https://lore.kernel.org/bpf/CAHn8xckNXci+X_Eb2WMv4uVYjO2331UWB2JLtXr_58z0Av8+8A@mail.gmail.com/
->
-> ---
->
-> Jussi Maki (3):
->   net: bonding: Add XDP support to the bonding driver
->   net: bonding: Use per-cpu rr_tx_counter
->   selftests/bpf: Add tests for XDP bonding
->
->  drivers/net/bonding/bond_main.c               | 459 +++++++++++++++---
->  include/linux/filter.h                        |  13 +-
->  include/linux/netdevice.h                     |   5 +
->  include/net/bonding.h                         |   3 +-
->  kernel/bpf/devmap.c                           |  34 +-
->  net/core/filter.c                             |  37 +-
->  .../selftests/bpf/prog_tests/xdp_bonding.c    | 342 +++++++++++++
->  tools/testing/selftests/bpf/vmtest.sh         |  30 +-
->  8 files changed, 843 insertions(+), 80 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
->
-> --
-> 2.30.2
->
+The 'if' test can be removed as the 'err's is always non-zero there.
+
+Thanks,
+Dexuan
