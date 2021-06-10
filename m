@@ -2,151 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D570B3A25F8
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 09:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D64093A2603
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 10:01:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229778AbhFJIBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 04:01:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32005 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230120AbhFJIA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 04:00:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623311943;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VBw1udpHWu0ICMQTCJT7xYM4Al6unbCRKTXQMUMBSOA=;
-        b=e2TGWwHjtouvfpnLJ07lZNYisgfWlVEUxImaRKQJj8RJW8NPfTTv4LRINbDeOACmjDwuVk
-        fvPJ7CPsGlGGMPOk06POfcNvasywwsOIjU6eGF1ZrempzOTiw7v0Xy7Jg8j3snl/Dor48a
-        UNwOIjoJVvfQRG4ArLad1nU2uNOZTN0=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-220-_zWGj0uXPhuXFbl6dc2XMQ-1; Thu, 10 Jun 2021 03:59:02 -0400
-X-MC-Unique: _zWGj0uXPhuXFbl6dc2XMQ-1
-Received: by mail-wm1-f71.google.com with SMTP id f186-20020a1c1fc30000b02901aaa08ad8f4so3468238wmf.8
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 00:59:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VBw1udpHWu0ICMQTCJT7xYM4Al6unbCRKTXQMUMBSOA=;
-        b=n7+aTBXVe2l33K80Tc25dJDBp1GAazeTaIyvc5eQYCfIFDn4Bm3RPJEOi4X9eYRfvq
-         NQiKpuQ2dJvM6ozRwqp+2UM/DKHfBuU2zQA8Pp9GOUa/33II0dK85VuAplzt5ioSBRjk
-         jMCDDwcWFjT/jgRmG2eagKTqwSNt18nZDvgpVKTDr8ELGMpIuM8vA8nZ9hRpBX2cksuG
-         spYuD77bG9Cm8wbnzdtP0wGX3DiZ+WPicrl6mI4MJOxfjjadVmIw8BSTzP47Vukjfb6M
-         3+GsdNwbStTG4/y3MZa4x33cobbETfs2Y5Cz+4oiWym0lJ3UUJ5Ro6YDj4/uLK4E0QHF
-         eZcA==
-X-Gm-Message-State: AOAM5308dLrz7GIvQR/wOteRn50iu6wU7VxJ7MF536tm9Zb04lliUAho
-        Ze4H1Pika4LclurT7nfHiK6mJxKHzA3QC5ivSizgS3h2RM8g5ie86ZH+Lm1DHFyU19lEbjklFvb
-        XDwWoGdLyT2RNfZpm
-X-Received: by 2002:adf:e401:: with SMTP id g1mr3715663wrm.415.1623311940478;
-        Thu, 10 Jun 2021 00:59:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyULHnGEEM1u9BzDNIdiHkMjf/6GIp7jpgs0OlEbaWkpg+ROoFcrjR3vJVuYwi88nFqPmyizw==
-X-Received: by 2002:adf:e401:: with SMTP id g1mr3715644wrm.415.1623311940230;
-        Thu, 10 Jun 2021 00:59:00 -0700 (PDT)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id b22sm2105774wmj.22.2021.06.10.00.58.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 00:58:59 -0700 (PDT)
-Date:   Thu, 10 Jun 2021 09:58:57 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] utils: bump max args number to 256 for batch
- files
-Message-ID: <20210610075857.GA7611@linux.home>
-References: <4a0fcf72130d3ef5c4ca91b518f66ac6449cf57f.1622565590.git.gnault@redhat.com>
- <20210609165949.5806f75d@hermes.local>
+        id S229935AbhFJICw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 04:02:52 -0400
+Received: from out28-97.mail.aliyun.com ([115.124.28.97]:51002 "EHLO
+        out28-97.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230171AbhFJIC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 04:02:29 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07436536|-1;CH=green;DM=|CONTINUE|false|;DS=||;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047206;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=21;RT=21;SR=0;TI=SMTPD_---.KQMISdx_1623312022;
+Received: from 192.168.88.129(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.KQMISdx_1623312022)
+          by smtp.aliyun-inc.com(10.147.41.120);
+          Thu, 10 Jun 2021 16:00:23 +0800
+Subject: Re: [PATCH v2 2/2] net: stmmac: Add Ingenic SoCs MAC support.
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
+        sernia.zhou@foxmail.com, paul@crapouillou.net
+References: <1623260110-25842-1-git-send-email-zhouyanjie@wanyeetech.com>
+ <1623260110-25842-3-git-send-email-zhouyanjie@wanyeetech.com>
+ <YMGEutCet7fP1NZ9@lunn.ch>
+From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
+Message-ID: <405696cb-5987-0e56-87f8-5a1443eadc19@wanyeetech.com>
+Date:   Thu, 10 Jun 2021 16:00:00 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210609165949.5806f75d@hermes.local>
+In-Reply-To: <YMGEutCet7fP1NZ9@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 09, 2021 at 04:59:49PM -0700, Stephen Hemminger wrote:
-> On Tue, 1 Jun 2021 19:09:31 +0200
-> Guillaume Nault <gnault@redhat.com> wrote:
-> 
-> > Large tc filters can have many arguments. For example the following
-> > filter matches the first 7 MPLS LSEs, pops all of them, then updates
-> > the Ethernet header and redirects the resulting packet to eth1.
-> > 
-> > filter add dev eth0 ingress handle 44 priority 100 \
-> >   protocol mpls_uc flower mpls                     \
-> >     lse depth 1 label 1040076 tc 4 bos 0 ttl 175   \
-> >     lse depth 2 label 89648 tc 2 bos 0 ttl 9       \
-> >     lse depth 3 label 63417 tc 5 bos 0 ttl 185     \
-> >     lse depth 4 label 593135 tc 5 bos 0 ttl 67     \
-> >     lse depth 5 label 857021 tc 0 bos 0 ttl 181    \
-> >     lse depth 6 label 239239 tc 1 bos 0 ttl 254    \
-> >     lse depth 7 label 30 tc 7 bos 1 ttl 237        \
-> >   action mpls pop protocol mpls_uc pipe            \
-> >   action mpls pop protocol mpls_uc pipe            \
-> >   action mpls pop protocol mpls_uc pipe            \
-> >   action mpls pop protocol mpls_uc pipe            \
-> >   action mpls pop protocol mpls_uc pipe            \
-> >   action mpls pop protocol mpls_uc pipe            \
-> >   action mpls pop protocol ipv6 pipe               \
-> >   action vlan pop_eth pipe                         \
-> >   action vlan push_eth                             \
-> >     dst_mac 00:00:5e:00:53:7e                      \
-> >     src_mac 00:00:5e:00:53:03 pipe                 \
-> >   action mirred egress redirect dev eth1
-> > 
-> > This filter has 149 arguments, so it can't be used with tc -batch
-> > which is limited to a 100.
-> > 
-> > Let's bump the limit to the next power of 2. That should leave a lot of
-> > room for big batch commands.
-> > 
-> > Signed-off-by: Guillaume Nault <gnault@redhat.com>
-> 
-> Good idea, but we should probably go further up to 512.
-> Also, rather than keeping magic constant. Why not add value to
-> utils.h.
+Hi Andrew,
 
-Yes, right.
+On 2021/6/10 上午11:19, Andrew Lunn wrote:
+>> +static int jz4775_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
+>> +{
+>> +	struct ingenic_mac *mac = plat_dat->bsp_priv;
+>> +	unsigned int val;
+>
+>> +	case PHY_INTERFACE_MODE_RGMII:
+>> +	case PHY_INTERFACE_MODE_RGMII_ID:
+>> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+>> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+>> +		val = FIELD_PREP(MACPHYC_TXCLK_SEL_MASK, MACPHYC_TXCLK_SEL_INPUT) |
+>> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
+>> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII\n");
+>> +		break;
+> So this does what DT writes expect. They put 'rgmii-id' as phy
+> mode. The MAC does not add a delay. PHY_INTERFACE_MODE_RGMII_ID is
+> passed to the PHY and it adds the delay. And frames flow to/from the
+> PHY and users are happy. The majority of MAC drivers are like this.
 
-> I considered using sysconf(_SC_ARG_MAX) gut that is huge on modern
-> machines (2M). And we don't need to allocate for all possible args.
 
-Yes, 2M is probably overkill (and too much to allocate on the stack).
+Got it, thanks!
 
-> diff --git a/include/utils.h b/include/utils.h
-> index 187444d52b41..6c4c403fe6c2 100644
-> --- a/include/utils.h
-> +++ b/include/utils.h
-> @@ -50,6 +50,9 @@ void incomplete_command(void) __attribute__((noreturn));
->  #define NEXT_ARG_FWD() do { argv++; argc--; } while(0)
->  #define PREV_ARG() do { argv--; argc++; } while(0)
->  
-> +/* upper limit for batch mode */
-> +#define MAX_ARGS 512
-> +
->  #define TIME_UNITS_PER_SEC     1000000
->  #define NSEC_PER_USEC 1000
->  #define NSEC_PER_MSEC 1000000
-> diff --git a/lib/utils.c b/lib/utils.c
-> index 93ae0c55063a..0559923beced 100644
-> --- a/lib/utils.c
-> +++ b/lib/utils.c
-> @@ -1714,10 +1714,10 @@ int do_batch(const char *name, bool force,
->  
->         cmdlineno = 0;
->         while (getcmdline(&line, &len, stdin) != -1) {
-> -               char *largv[100];
-> +               char *largv[MAX_ARGS];
->                 int largc;
->  
-> -               largc = makeargs(line, largv, 100);
-> +               largc = makeargs(line, largv, MAX_ARGS);
->                 if (!largc)
->                         continue;       /* blank line */
->  
-> 
 
-Is this a patch you're going to apply, or should I repost it formally?
+>
+>> +static int x2000_mac_set_mode(struct plat_stmmacenet_data *plat_dat)
+>> +{
+>> +	struct ingenic_mac *mac = plat_dat->bsp_priv;
+>> +	unsigned int val;
+> Here we have a complete different story.
+>
+>
+>> +	case PHY_INTERFACE_MODE_RGMII:
+>> +		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
+>> +
+>> +		if (mac->tx_delay == 0) {
+>> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN);
+>> +		} else {
+>> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_DELAY);
+>> +
+>> +			if (mac->tx_delay > MACPHYC_TX_DELAY_MAX)
+>> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, MACPHYC_TX_DELAY_MAX - 1);
+>> +			else
+>> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, mac->tx_delay - 1);
+>> +		}
+> What are the units of tx_delay. The DT binding should be pS, and you
+> need to convert from that to whatever the hardware is using.
 
+
+The manual does not tell how much ps a unit is.
+
+I am confirming with Ingenic, but there is no reply
+
+at the moment. Can we follow Rockchip's approach?
+
+According to the description in "rockchip-dwmac.yaml"
+
+and the related code in "dwmac-rk.c", it seems that their
+
+delay parameter seems to be the value used by the hardware
+
+directly instead of ps.
+
+
+> If mac->tx_delay is greater than MACPHYC_TX_DELAY_MAX, please return
+> -EINVAL when parsing the binding. We want the DT writer to know they
+> have requested something the hardware cannot do.
+
+
+Sure, I'll change it in the next version.
+
+
+> So if the device tree contains 'rgmii' for PHY mode, you can use this
+> for when you have long clock lines on your board adding the delay, and
+> you just need to fine tune the delay, add a few pS. The PHY will also
+> not add a delay, due to receiving PHY_INTERFACE_MODE_RGMII.
+>
+>> +
+>> +		if (mac->rx_delay == 0) {
+>> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN);
+>> +		} else {
+>> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_DELAY);
+>> +
+>> +			if (mac->rx_delay > MACPHYC_RX_DELAY_MAX)
+>> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, MACPHYC_RX_DELAY_MAX - 1);
+>> +			else
+>> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, mac->rx_delay - 1);
+>> +		}
+>> +
+>> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII\n");
+>> +		break;
+>> +
+>> +	case PHY_INTERFACE_MODE_RGMII_ID:
+>> +		val = FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN) |
+>> +			  FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN) |
+>> +			  FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII);
+>> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII_ID\n");
+>> +		break;
+> So this one is pretty normal. The MAC does not add a delay,
+> PHY_INTERFACE_MODE_RGMII_ID is passed to the PHY, and it adds the
+> delay. The interface will likely work.
+>
+>> +
+>> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+>> +		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII) |
+>> +			  FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN);
+>> +
+>> +		if (mac->tx_delay == 0) {
+>> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN);
+>> +		} else {
+>> +			val |= FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_DELAY);
+>> +
+>> +			if (mac->tx_delay > MACPHYC_TX_DELAY_MAX)
+>> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, MACPHYC_TX_DELAY_MAX - 1);
+>> +			else
+>> +				val |= FIELD_PREP(MACPHYC_TX_DELAY_MASK, mac->tx_delay - 1);
+>> +		}
+> So here, the PHY is going to be passed PHY_INTERFACE_MODE_RGMII_RXID.
+> The PHY will add a delay in the receive path. The MAC needs to add the
+> delay in the transmit path. So tx_delay needs to be the full 2ns, not
+> just a small fine tuning value, or the PCB is adding the delay. And
+> you also cannot fine tune the RX delay, since rx_delay is ignored.
+>
+>> +
+>> +		dev_dbg(mac->dev, "MAC PHY Control Register: PHY_INTERFACE_MODE_RGMII_RXID\n");
+>> +		break;
+>> +
+>> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+>> +		val = FIELD_PREP(MACPHYC_PHY_INFT_MASK, MACPHYC_PHY_INFT_RGMII) |
+>> +			  FIELD_PREP(MACPHYC_TX_SEL_MASK, MACPHYC_TX_SEL_ORIGIN);
+>> +
+>> +		if (mac->rx_delay == 0) {
+>> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_ORIGIN);
+>> +		} else {
+>> +			val |= FIELD_PREP(MACPHYC_RX_SEL_MASK, MACPHYC_RX_SEL_DELAY);
+>> +
+>> +			if (mac->rx_delay > MACPHYC_RX_DELAY_MAX)
+>> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, MACPHYC_RX_DELAY_MAX - 1);
+>> +			else
+>> +				val |= FIELD_PREP(MACPHYC_RX_DELAY_MASK, mac->rx_delay - 1);
+>> +		}
+> And here we have the opposite to PHY_INTERFACE_MODE_RGMII_RXID.
+>
+> So you need to clearly document in the device tree binding when
+> rx_delay and tx_delay are used, and when they are ignored. You don't
+> want to have DT writers having to look deep into the code to figure
+> this out.
+
+
+Sure, maybe I should write a new independent document
+
+for Ingenic instead of just making corresponding changes
+
+in "snps, dwmac.yaml"
+
+
+>
+> Personally, i would simply this, in a big way. I see two options:
+>
+> 1) The MAC never adds a delay. The hardware is there, but simply don't
+> use it, to keep thing simple, and the same as nearly every other MAC.
+>
+> 2) If the hardware can do small steps of delay, allow this delay, both
+> RX and TX, to be configured in all four modes, in order to allow for
+> fine tuning. Leave the PHY to insert the majority of the delay.
+
+
+It seems that this method is better, I will adopt it in v3.
+
+
+>> +	/* Get MAC PHY control register */
+>> +	mac->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node, "mode-reg");
+>> +	if (IS_ERR(mac->regmap)) {
+>> +		dev_err(&pdev->dev, "%s: failed to get syscon regmap\n", __func__);
+>> +		goto err_remove_config_dt;
+>> +	}
+> Please document this in the device tree binding.
+
+
+Sure.
+
+
+>
+>> +
+>> +	ret = of_property_read_u32(pdev->dev.of_node, "rx-clk-delay", &mac->rx_delay);
+>> +	if (ret)
+>> +		mac->rx_delay = 0;
+>> +
+>> +	ret = of_property_read_u32(pdev->dev.of_node, "tx-clk-delay", &mac->tx_delay);
+>> +	if (ret)
+>> +		mac->tx_delay = 0;
+> Please take a look at dwmac-mediatek.c. It handles delays nicely. I
+> would suggest that is the model to follow.
+
+
+Sure.
+
+
+Thanks and best regards!
+
+
+>
+>         Andrew
