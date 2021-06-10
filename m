@@ -2,110 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78C663A33DB
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 21:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7253A33F6
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 21:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbhFJTVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 15:21:24 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:40691 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230262AbhFJTVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 15:21:23 -0400
-Received: by mail-il1-f198.google.com with SMTP id b4-20020a920b040000b02901dc81bf7e72so2019429ilf.7
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 12:19:27 -0700 (PDT)
+        id S231243AbhFJT0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 15:26:24 -0400
+Received: from mail-io1-f54.google.com ([209.85.166.54]:38619 "EHLO
+        mail-io1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230368AbhFJT0V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 15:26:21 -0400
+Received: by mail-io1-f54.google.com with SMTP id b25so28242719iot.5
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 12:24:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0LR/OcJQA5f3nDTdvxLJUu8ZyXktmwHl0RJH9FX7qQU=;
+        b=p8bKXIRy/IYNOEsQHxYEIA9Gjl3E5CCO326wvJDzLigfgsJXy7ISwuK1xQauRVmvjN
+         6KcUXBGDXZJ4/UxE1TpcGAj9HIfEIVAtBOlizxO3wXy/VekaZlNeNQ0WBMwvrKGLeBjd
+         tggx/s7Ky5VmyD+8uFpROFz6v6wgz6FCCPBBlXqgyU/081ycJMfM5trSt9q+oMIA26rg
+         O9dx5NYFoZ1YzkZaJ5/EOdUa+gd/IGff5dtje9OsyJBHBea5UQwi3EzAEvz3JF9k6iY5
+         2ePr1RKBXQvuOBqLuFmatvVA5EAFIFCpA/9V46i9MocEBL7EMMoN24j3NlsrLj1hNLHE
+         7kqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=AZmsQXd5CZpxLe8fqTa7gGyaG//gGPqyJgcMYH0vyds=;
-        b=WkVkk83D0DDxU98gk4nYid5YnwtUuf9QdSllPr53J4gcX6iLgBFIRLV7KHYHmLljiy
-         Ljev+tH4T26Gu/elJBhP6BHN0b7xSmMlEsk2pdn3C+eMjYjzsLR4C/Hz1ul1WaC/S83z
-         Debt8JWQ/EECHza6moJBKi+enWciIQeSBovPeUf1P99BdcPLv8ejACuuPuL0DPBabs56
-         Q2cl57lmXrxwHPj+pGF0ZVdBJ+LxMs4ZtY9XfUYWxAMTDHumY1kUcMVv0d5UmDkQOvg6
-         UVp4UGVFHGEtniLokqfpJA0XlmlxcMEU9Evxe8kIC4YKR8kalc6JggJQF4gfTmqkpQKH
-         EPAw==
-X-Gm-Message-State: AOAM53210JtbuFDbzXl+bxEXZJEhMXuk0qCM/dtaDPBCQ8WVSGCaVepm
-        JMbnp7qqLk27Cr7FvYZrL6IFgBnDBif5+f4h7oiQB847Cy0U
-X-Google-Smtp-Source: ABdhPJwOTuOREVmyJLMfd0rKxf6hD5AT2c32N5qlbJgWMCMcoS80jYs13pv08ezNuKH3FnJRUiOAi7FMzP1cpLmRwXyq2JbusYfK
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0LR/OcJQA5f3nDTdvxLJUu8ZyXktmwHl0RJH9FX7qQU=;
+        b=oholwY85DlZ1MzIzFxOEfE9mPbWjV0jA+MjcsXO8A+fMkaVsCUcnK7CgG1YL6rlZHs
+         ecnvy9c7sTlfo76wpEBnOMOenRSGnTUkwlFGmzyMhVDerwhcJy3yqXCdNNTuLWI/midm
+         64UzdiKETNGQSyc8tPe4XPkRU4L2UrWyxQ+B641pnIMH4MZNxRTkJGkCM79LYrfkpbKq
+         uYq/aCIuoBvSlwSL4ibJ/d8uyYqnmr5O3nY0RL6ESLLLl2Ws7PdMM4nnIHrYrl8OfOU8
+         vlzTXQUCuru4wPWWfbsI36e5kGAfQAeHxkl24SM5RrXMZD4v5hJ7ySJCLuLaCpN03gLe
+         SzaQ==
+X-Gm-Message-State: AOAM532y3+9iAdXY61p6n4lNwTblAsaXJpJfeMv2Mat+p9/XFkLB+oeV
+        wSRBwSjwgHauqM3axYwxgNyWUg==
+X-Google-Smtp-Source: ABdhPJxJvAmJ5Aw8IVf8MFUDDyV90tKS6G0r2DQ9J3FnHQN+ENtfoAYGiKjfYY480kvllUsunhoBUg==
+X-Received: by 2002:a05:6638:144f:: with SMTP id l15mr169728jad.131.1623352992650;
+        Thu, 10 Jun 2021 12:23:12 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id w21sm2028684iol.52.2021.06.10.12.23.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Jun 2021 12:23:12 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/8] net: ipa: memory region rework, part 2
+Date:   Thu, 10 Jun 2021 14:23:00 -0500
+Message-Id: <20210610192308.2739540-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2145:: with SMTP id y5mr112285ioy.4.1623352766662;
- Thu, 10 Jun 2021 12:19:26 -0700 (PDT)
-Date:   Thu, 10 Jun 2021 12:19:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000008a6c05c46e45a4@google.com>
-Subject: [syzbot] UBSAN: shift-out-of-bounds in xfrm_selector_match
-From:   syzbot <syzbot+e4c1dd36fc6b98c50859@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This is the second portion of a set of patches updating the IPA
+memory region code.
 
-syzbot found the following issue on:
+In this portion (part 2), the focus is on adjusting the code so that
+it no longer assumes the memory region descriptor array is indexed
+by the region identifier.  This brings with it some related cleanup.
 
-HEAD commit:    13c62f53 net/sched: act_ct: handle DNAT tuple collision
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=16635470300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=770708ea7cfd4916
-dashboard link: https://syzkaller.appspot.com/bug?extid=e4c1dd36fc6b98c50859
+Three loops are changed so their loop index variable is an unsigned
+rather than an enumerated type.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+A set of functions is changed so a region identifier (rather than a
+memory region descriptor pointer) is passed as argument, to simplify
+their call sites.  This isn't entirely related or required, but I
+think it improves the code.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e4c1dd36fc6b98c50859@syzkaller.appspotmail.com
+A validation function for filter and route table memory regions is
+changed to take memory region IDs, rather than determining which
+region to validate based on a set of Boolean flags.
 
-UBSAN: shift-out-of-bounds in ./include/net/xfrm.h:838:23
-shift exponent -64 is negative
-CPU: 0 PID: 12625 Comm: syz-executor.1 Not tainted 5.13.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
- __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:327
- addr4_match include/net/xfrm.h:838 [inline]
- __xfrm4_selector_match net/xfrm/xfrm_policy.c:201 [inline]
- xfrm_selector_match.cold+0x35/0x3a net/xfrm/xfrm_policy.c:227
- xfrm_state_look_at+0x16d/0x440 net/xfrm/xfrm_state.c:1022
- xfrm_state_find+0x16c0/0x4d10 net/xfrm/xfrm_state.c:1096
- xfrm_tmpl_resolve_one net/xfrm/xfrm_policy.c:2394 [inline]
- xfrm_tmpl_resolve+0x2f3/0xd40 net/xfrm/xfrm_policy.c:2439
- xfrm_resolve_and_create_bundle+0x123/0x2590 net/xfrm/xfrm_policy.c:2729
- xfrm_lookup_with_ifid+0x227/0x20e0 net/xfrm/xfrm_policy.c:3063
- xfrm_lookup net/xfrm/xfrm_policy.c:3187 [inline]
- xfrm_lookup_route+0x36/0x1e0 net/xfrm/xfrm_policy.c:3198
- ip_route_output_flow+0x114/0x150 net/ipv4/route.c:2733
- udp_sendmsg+0x1a2f/0x2730 net/ipv4/udp.c:1206
- inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:821
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- ____sys_sendmsg+0x331/0x810 net/socket.c:2350
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
- __sys_sendmmsg+0x195/0x470 net/socket.c:2490
- __do_sys_sendmmsg net/socket.c:2519 [inline]
- __se_sys_sendmmsg net/socket.c:2516 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2516
- do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665d9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb1023dd188 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 000000000056bf80 RCX: 00000000004665d9
-RDX: 000000000800001d RSI: 0000000020007fc0 RDI: 0000000000000003
-RBP: 00000000004bfcb9 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
-R13: 00007ffc4542d68f R14: 00007fb1023dd300 R15: 0000000000022000
-================================================================================
+Finally, ipa_mem_find() is created to abstract getting a memory
+descriptor based on its ID, and it is used everywhere rather than
+indexing the array.  With that implemented, all of the memory
+regions can be defined by arrays of entries defined without
+providing index designators.
 
+					-Alex
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Alex Elder (8):
+  net: ipa: don't assume mem array indexed by ID
+  net: ipa: clean up header memory validation
+  net: ipa: pass mem_id to ipa_filter_reset_table()
+  net: ipa: pass mem ID to ipa_mem_zero_region_add()
+  net: ipa: pass mem_id to ipa_table_reset_add()
+  net: ipa: pass memory id to ipa_table_valid_one()
+  net: ipa: introduce ipa_mem_find()
+  net: ipa: don't index mem data array by ID
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+ drivers/net/ipa/ipa_cmd.c         |  50 +++++++++-----
+ drivers/net/ipa/ipa_data-v3.5.1.c |  30 ++++-----
+ drivers/net/ipa/ipa_data-v4.11.c  |  44 ++++++------
+ drivers/net/ipa/ipa_data-v4.2.c   |  36 +++++-----
+ drivers/net/ipa/ipa_data-v4.5.c   |  46 ++++++-------
+ drivers/net/ipa/ipa_data-v4.9.c   |  46 ++++++-------
+ drivers/net/ipa/ipa_mem.c         | 108 ++++++++++++++++--------------
+ drivers/net/ipa/ipa_mem.h         |   3 +-
+ drivers/net/ipa/ipa_qmi.c         |  32 ++++-----
+ drivers/net/ipa/ipa_table.c       |  94 ++++++++++----------------
+ drivers/net/ipa/ipa_uc.c          |   3 +-
+ 11 files changed, 247 insertions(+), 245 deletions(-)
+
+-- 
+2.27.0
+
