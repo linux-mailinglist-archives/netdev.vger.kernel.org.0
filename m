@@ -2,169 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA2833A24F9
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 09:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF1553A2504
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 09:05:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbhFJHG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 03:06:28 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3932 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbhFJHG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 03:06:27 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G0vyn0pbFz6xDh;
-        Thu, 10 Jun 2021 15:01:21 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 10 Jun 2021 15:04:24 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 10 Jun
- 2021 15:04:24 +0800
-Subject: Re: [RFC net-next 0/8] Introducing subdev bus and devlink extension
-To:     Parav Pandit <parav@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-CC:     moyufeng <moyufeng@huawei.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        id S230220AbhFJHHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 03:07:38 -0400
+Received: from mail-dm6nam10on2046.outbound.protection.outlook.com ([40.107.93.46]:39617
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229935AbhFJHHg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 03:07:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dnWMbRcZNZgxb65rzOvgcV7JKGRi24OZwIWtFy4bETyFAXXc5yngIaKWDB1AypoT8MDNp7P2FhArGDHsydOaqtK4fDFJU7NJesySm3LuWwqayc5nZbsFF/tUC7GrDFEXwbaZNBrmSq5l9cKcv3a7ZZjVPvwFSNQw9A5bTLgq8mloPruhoLppvl0suEqO8xemO5WKLUoZ71IOGCt279wmw51qD/AwroNhEWA0+GuMH6+VQQJk0H46iX5JefrEphv3aYQRCKo7PuXuT9L42VJQLmbs3wpPGse1ozZQ6Gu5YQcKGKlVC0mn90qI1bEBm1ZApzwVphlYGc5Ys4OJRa1AIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4/OMHgtNS8kwx0nOtwSSV60pShc8PCfRZmCHdz0kYDA=;
+ b=ImhQDish93rWvPIOV+TEBk9GpjR5LtQT2/lxLBh/Ex17uorPrTxNajrCB/tVP4y2YY9vYpF6GPLgYnlZZ1ktt3W9UORKmh00REULmVab2JMxCcqZVPc6JRwufX0FsFqyn0AfWEkY1Fy58HH4iz5P/yZFgGkuNKDjCdl7kc4e3tu+Ze2Zu9OtWOmc4WIp2jZ8k4BKTMdYwiFcQs2Mmk6oMBzLADWD7Gw06UMM1Z9uuFmGvgWluha4SnG/SHEOBaNSooxPtZMQ2o9p3k6j+ShC+p50YcOMY45iQLs+9GWfV8iA1yKJDzVDUiBKGSQSdPDeb51Lc8SUYFbf0t/0Drb8dw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=netfilter.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4/OMHgtNS8kwx0nOtwSSV60pShc8PCfRZmCHdz0kYDA=;
+ b=td6w5CFXwLnkbZZPl3KPuGDckEMjd9FxFHrOY3QOH83Pzz2GJZ4Gob036jdtbt+/ab0RZaAU0EH6ADBn/K0LZO+zdyZM2utvqIA+3fVHd74O/UUdDs8fnTNVII6XmartNhXCqBc2YQ0l6N0uG25ffJrwoCUfhe7/S04yYc2CuVEanG1+lmBjvAsuoYRBTf9AW14erV6ZgKP64TQGAzoeYBqo0q8YNFF9GS0E+6IzEGGCTbqRJF60otuxH94iqPnUD/CLfLqVcK+XnXrXDAntQH1TatzLn2fJJjX4BslrP+S6g14bn1QTXAJDZ/mCm2M8hE4lGDmhT5m+WwTF79T7ew==
+Received: from DS7PR03CA0200.namprd03.prod.outlook.com (2603:10b6:5:3b6::25)
+ by CH2PR12MB4023.namprd12.prod.outlook.com (2603:10b6:610:14::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.24; Thu, 10 Jun
+ 2021 07:05:40 +0000
+Received: from DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b6:cafe::fe) by DS7PR03CA0200.outlook.office365.com
+ (2603:10b6:5:3b6::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend
+ Transport; Thu, 10 Jun 2021 07:05:39 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; netfilter.org; dkim=none (message not signed)
+ header.d=none;netfilter.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT064.mail.protection.outlook.com (10.13.172.234) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4219.21 via Frontend Transport; Thu, 10 Jun 2021 07:05:39 +0000
+Received: from [172.27.14.78] (172.20.187.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Jun
+ 2021 07:05:32 +0000
+Subject: Re: [PATCH net 1/3] netfilter: synproxy: Fix out of bounds when
+ parsing TCP options
+To:     Florian Westphal <fw@strlen.de>
+CC:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        Or Gerlitz <gerlitz.or@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "michal.lkml@markovi.net" <michal.lkml@markovi.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "lipeng (Y)" <lipeng321@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "shenjian15@huawei.com" <shenjian15@huawei.com>,
-        "chenhao (DY)" <chenhao288@hisilicon.com>,
-        Jiaran Zhang <zhangjiaran@huawei.com>,
-        "linuxarm@openeuler.org" <linuxarm@openeuler.org>
-References: <1551418672-12822-1-git-send-email-parav@mellanox.com>
- <857e7a19-1559-b929-fd15-05e8f38e9d45@huawei.com>
- <20210603105311.27bb0c4d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <c9afecb5-3c0e-6421-ea58-b041d8173636@huawei.com>
- <20210604114109.3a7ada85@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <4e7a41ed-3f4d-d55d-8302-df3bc42dedd4@huawei.com>
- <20210607124643.1bb1c6a1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <530ff54c-3cee-0eb6-30b0-b607826f68cf@huawei.com>
- <20210608102945.3edff79a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <2acd8373-b3dc-4920-1cbe-2b5ae29acb5b@huawei.com>
- <DM8PR12MB54802CA9A47F1585DC3347A5DC369@DM8PR12MB5480.namprd12.prod.outlook.com>
- <d54ae715-8634-c983-1602-8cd8dea2a5e2@huawei.com>
- <DM8PR12MB5480F577E5F02105B8C1FE9BDC369@DM8PR12MB5480.namprd12.prod.outlook.com>
- <acf08577-34c6-bc9e-a788-568b67fa8d2e@huawei.com>
- <DM8PR12MB5480CA5904F1242202F9D51ADC369@DM8PR12MB5480.namprd12.prod.outlook.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <387c80e7-e50f-8f2f-0fea-d699902ef84e@huawei.com>
-Date:   Thu, 10 Jun 2021 15:04:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        Patrick McHardy <kaber@trash.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Peter Krystad <peter.krystad@linux.intel.com>,
+        Young Xiao <92siuyang@gmail.com>, <netdev@vger.kernel.org>
+References: <20210609142212.3096691-1-maximmi@nvidia.com>
+ <20210609142212.3096691-2-maximmi@nvidia.com>
+ <20210609145115.GL20020@breakpoint.cc>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+Message-ID: <4ec99ea3-6ab1-eee4-be60-992cf2f9cd45@nvidia.com>
+Date:   Thu, 10 Jun 2021 10:05:29 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <DM8PR12MB5480CA5904F1242202F9D51ADC369@DM8PR12MB5480.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210609145115.GL20020@breakpoint.cc>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme705-chm.china.huawei.com (10.1.199.101) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 159eba39-36a7-4624-05b4-08d92bde2797
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4023:
+X-Microsoft-Antispam-PRVS: <CH2PR12MB40236C9C8C50349935F633F0DC359@CH2PR12MB4023.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1303;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lBFpNLF+dbHuVSKHR3c6VLPhPZutHk9Zv3EELbUF0XA/FznWnPJVqOB5A8bCZctsFFolNxrradV5/BGZqhlLiHIWi3TW/bMz7k5Sw0psGgURAKVAh+SYmpXnKwkt8sY28aJyl+IlB/88HphOi+g02ec1TAan8QWNELYlNXbJThlSXtZvivqXl2obWsqKNPf1KvgzddwegBhB2wmdf9LXT0lCiaSdnnI2rg3mCe+c1YYb1aIFBho7EwIUrK4BGp1gaJsNctEhr/aiIuC3rY3lOJ9JHyMJo6m1TGi7QoVIDVt3T0tle4CEYft4RIhATqioSCjRU0MCpv6+TPFNIcEPUo8UccPWacwPtTonD3Zx7Yun1JdC5pzgX8eI4fa1zImk3EmO3D7qE05xcAtLfjAkUYU/EMavbO3Nin9CNJVYj8snZc3f0aOWZP8JSCZYYA+9gNzeq7moXC6WXJvy/8rS8vpSEhIpHmRr7XNj2l1WomEa7LwhIV+9G8CFHRe+MNDOHgqxIykD4yeYFGxrSXfaRnb9nSBBFcYz8myDBrCKX5VFxzE4upkXLBhePuqgXw5usgMpkky0tPayZoMbKUEG8I2lAF4iWd5PVoDnFTa/wKYMti5UjbezUyRSaY1zpNU2Iu3FBrdK2i9OrwvdL1Qe5+KxYMRU5CHaZIKg1v80RQLyuiKpAyVI8Yr3OlwD23z7
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(136003)(376002)(396003)(346002)(46966006)(36840700001)(54906003)(2616005)(2906002)(8676002)(36860700001)(4326008)(356005)(426003)(8936002)(47076005)(7416002)(86362001)(336012)(82310400003)(31686004)(83380400001)(16526019)(7636003)(6916009)(6666004)(70586007)(53546011)(70206006)(82740400003)(26005)(478600001)(186003)(316002)(31696002)(5660300002)(36756003)(16576012)(36906005)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2021 07:05:39.5499
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 159eba39-36a7-4624-05b4-08d92bde2797
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4023
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/6/9 21:45, Parav Pandit wrote:
- >> From: Yunsheng Lin <linyunsheng@huawei.com>
->> Sent: Wednesday, June 9, 2021 6:00 PM
+On 2021-06-09 17:51, Florian Westphal wrote:
+> Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+>> The TCP option parser in synproxy (synproxy_parse_options) could read
+>> one byte out of bounds. When the length is 1, the execution flow gets
+>> into the loop, reads one byte of the opcode, and if the opcode is
+>> neither TCPOPT_EOL nor TCPOPT_NOP, it reads one more byte, which exceeds
+>> the length of 1.
 >>
->> On 2021/6/9 19:59, Parav Pandit wrote:
->>>> From: Yunsheng Lin <linyunsheng@huawei.com>
->>>> Sent: Wednesday, June 9, 2021 4:35 PM
->>>>
->>>> On 2021/6/9 17:38, Parav Pandit wrote:
->>>>>
->>>>>> From: Yunsheng Lin <linyunsheng@huawei.com>
->>>>>> Sent: Wednesday, June 9, 2021 2:46 PM
->>>>>>
->>>>> [..]
->>>>>
->>>>>>>> Is there any reason why VF use its own devlink instance?
->>>>>>>
->>>>>>> Primary use case for VFs is virtual environments where guest isn't
->>>>>>> trusted, so tying the VF to the main devlink instance, over which
->>>>>>> guest should have no control is counter productive.
->>>>>>
->>>>>> The security is mainly about VF using in container case, right?
->>>>>> Because VF using in VM, it is different host, it means a different
->>>>>> devlink instance for VF, so there is no security issue for VF using
->>>>>> in VM
->>>> case?
->>>>>> But it might not be the case for VF using in container?
->>>>> Devlink instance has net namespace attached to it controlled using
->>>>> devlink
->>>> reload command.
->>>>> So a VF devlink instance can be assigned to a container/process
->>>>> running in a
->>>> specific net namespace.
->>>>>
->>>>> $ ip netns add n1
->>>>> $ devlink dev reload pci/0000:06:00.4 netns n1
->>>>>                                      ^^^^^^^^^^^^^
->>>>>                                      PCI VF/PF/SF.
->>>>
->>>> Could we create another devlink instance when the net namespace of
->>>> devlink port instance is changed?
->>> Net namespace of (a) netdevice (b) rdma device (c) devlink instance can be
->> changed.
->>> Net namespace of devlink port cannot be changed.
+>> This fix is inspired by commit 9609dad263f8 ("ipv4: tcp_input: fix stack
+>> out of bounds when parsing TCP options.").
 >>
->> Yes, net namespace is changed based on the devlink instance, not devlink
->> port instance, *right now*.
+>> Cc: Young Xiao <92siuyang@gmail.com>
+>> Fixes: 48b1de4c110a ("netfilter: add SYNPROXY core/target")
+>> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+>> ---
+>>   net/netfilter/nf_synproxy_core.c | 2 ++
+>>   1 file changed, 2 insertions(+)
 >>
->>>
->>>> It may seems we need to change the net namespace based on devlink
->>>> port instance instead of devlink instance.
->>>> This way container case seems be similiar to the VM case?
->>> I mostly do not understand the topology you have in mind or if you
->> explained previously I missed the thread.
->>> In your case what is the flavour of a devlink port?
->>
->> flavour of the devlink port instance is FLAVOUR_PHYSICAL or
->> FLAVOUR_VIRTUAL.
->>
->> The reason I suggest to change the net namespace on devlink port instance
->> instead of devlink instance is：
->> I proposed that all the PF and VF in the same ASIC are registered to the same
->> devlink instance as flavour FLAVOUR_PHYSICAL or FLAVOUR_VIRTUAL when
->> there are in the same host and in the same net namespace.
->>
->> If a VF's devlink port instance is unregistered from old devlink instance in the
->> old net namespace and registered to new devlink instance in the new net
->> namespace(create a new devlink instance if
->> needed) when devlink port instance's net namespace is changed, then the
->> security mentioned by jakub is not a issue any more?
+>> diff --git a/net/netfilter/nf_synproxy_core.c b/net/netfilter/nf_synproxy_core.c
+>> index b100c04a0e43..621eb5ef9727 100644
+>> --- a/net/netfilter/nf_synproxy_core.c
+>> +++ b/net/netfilter/nf_synproxy_core.c
+>> @@ -47,6 +47,8 @@ synproxy_parse_options(const struct sk_buff *skb, unsigned int doff,
+>>   			length--;
+>>   			continue;
+>>   		default:
+>> +			if (length < 2)
+>> +				return true;
 > 
-> It seems that devlink instance of VF is not needed in your case, and if so what is the motivation to even have VIRTUAL port attach to the PF?
+> Would you mind a v2 that also rejects bogus th->doff value when
+> computing the length?
 
-The devlink instance is mainly used to hold the devlink port instance
-of VF if there is only one VF in vm, we might still need to have
-param/health specific to the VF to registered to the devlink port
-instance of that VF.
-
-> If only netdevice of the VF is of interest, it can be assigned to net namespace directly.
-
-I think that is another option, if there is nothing in the devlink port
-instance specific to VF that need exposing to the user in another net
-namespace.
+Could you elaborate? The length is a signed int calculated as `(th->doff 
+* 4) - sizeof(*th)`. Invalid doff values (0..4) lead to negative length, 
+so we never enter the loop. Or are you concerned of passing a negative 
+length to skb_header_pointer?
 
 > 
-> It doesn’t make sense to me to create new devlink instance in new net namespace, that also needs to be deleted when net ns is deleted.
-> And pre_exit() routine will mostly deadlock holding global devlink_mutex.
-
-Would you be more specific why there is deadlock?
-It seems more of implementation detail, which we can discuss later
-when we are agreed it is the right way to go down deeper?
-
+> Thanks.
 > 
 
