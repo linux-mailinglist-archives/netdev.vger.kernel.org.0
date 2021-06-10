@@ -2,235 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E342F3A25C5
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 09:47:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D570B3A25F8
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 09:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbhFJHtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 03:49:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58444 "EHLO
+        id S229778AbhFJIBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 04:01:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32005 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229845AbhFJHtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 03:49:09 -0400
+        by vger.kernel.org with ESMTP id S230120AbhFJIA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 04:00:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623311233;
+        s=mimecast20190719; t=1623311943;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=loF5cb29gw2Qr4WX1KQpGHzr7ki9z/ToQpTxS3i6VWU=;
-        b=M5ctXOVP1oSvIgYF1KSfIBTTIh0uBkrT+p/jqdsYlgXdrwh1ezgU2Awc2zzhsO0xh4tBWV
-        6dJQZftu44rpYVA/gQqKEZ0jGzaAXpA0ovndTX8+jeuyJGgqJyXauJveV3TYsRecqckz3/
-        TTgc0OPT7JX4v2htHtZ0t9Cb31ORo1s=
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
- [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-558-C0E1bRhtP9yP7edGC6Uueg-1; Thu, 10 Jun 2021 03:47:11 -0400
-X-MC-Unique: C0E1bRhtP9yP7edGC6Uueg-1
-Received: by mail-pf1-f199.google.com with SMTP id e19-20020aa78c530000b02902e9ca53899dso781949pfd.22
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 00:47:11 -0700 (PDT)
+        bh=VBw1udpHWu0ICMQTCJT7xYM4Al6unbCRKTXQMUMBSOA=;
+        b=e2TGWwHjtouvfpnLJ07lZNYisgfWlVEUxImaRKQJj8RJW8NPfTTv4LRINbDeOACmjDwuVk
+        fvPJ7CPsGlGGMPOk06POfcNvasywwsOIjU6eGF1ZrempzOTiw7v0Xy7Jg8j3snl/Dor48a
+        UNwOIjoJVvfQRG4ArLad1nU2uNOZTN0=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-220-_zWGj0uXPhuXFbl6dc2XMQ-1; Thu, 10 Jun 2021 03:59:02 -0400
+X-MC-Unique: _zWGj0uXPhuXFbl6dc2XMQ-1
+Received: by mail-wm1-f71.google.com with SMTP id f186-20020a1c1fc30000b02901aaa08ad8f4so3468238wmf.8
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 00:59:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=loF5cb29gw2Qr4WX1KQpGHzr7ki9z/ToQpTxS3i6VWU=;
-        b=YzEBBFVjtzf/FP9mzJoHegvHUZGdwgVB/om2zr4xZ1g/rajQfCbnJeI1A1xngagKrx
-         Rkiw8ZPLqMRdXdwfDKHqoyLXsKxMBZVCAaSejpMWUQEeitV+1S63d08CqNCWJpgp3wnB
-         fYN3Q2hKQqcn3CkhmAORrhJT6/yaK4tEkTRr7/2Y8P1A/mCDGInHIjww3ABjIAq6ddui
-         NPTltTO2fyruIbmsiSsEKhGQxewS06qOyQ3i3qio+WXhe1YKUWl6hJM/to7SlJs+OcOr
-         BrMqr4Gs+DWD3f8PzHIqqEPjor7Of/Cnj3NvmknsYXaYM6YejypSR/71P/VYE5ZEAzIy
-         U4MQ==
-X-Gm-Message-State: AOAM533TBoLrApsCMOOGQsF0uaXtjX57Z2zJXW72qG3S5xS8BA8bDV6H
-        EnNLlyJwyLBjlxx8o5fnk9rMGbvW11APGal/2dkyoAOLOq9z96pvfPY6LuhZjnYmcEj0f+ueLDg
-        xkNkElLed7IEWqnCS
-X-Received: by 2002:a62:6805:0:b029:2e9:a7c9:2503 with SMTP id d5-20020a6268050000b02902e9a7c92503mr1763805pfc.26.1623311230728;
-        Thu, 10 Jun 2021 00:47:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyqrvDw/tkXuYDtQELqf02BdCoSYQh21xwSXFSnN/JVfuMs/MqAAlU+YEIkeQA3no0RJlH3gQ==
-X-Received: by 2002:a62:6805:0:b029:2e9:a7c9:2503 with SMTP id d5-20020a6268050000b02902e9a7c92503mr1763775pfc.26.1623311230441;
-        Thu, 10 Jun 2021 00:47:10 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id n37sm1570183pfv.47.2021.06.10.00.47.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 00:47:09 -0700 (PDT)
-Subject: Re: [RFC v1 0/6] virtio/vsock: introduce SOCK_DGRAM support
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Jiang Wang ." <jiang.wang@bytedance.com>,
-        virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        jhansen@vmware.comments, cong.wang@bytedance.com,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Yongji Xie <xieyongji@bytedance.com>,
-        =?UTF-8?B?5p+056iz?= <chaiwen.cc@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Lu Wei <luwei32@huawei.com>,
-        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
-References: <20210609232501.171257-1-jiang.wang@bytedance.com>
- <da90f17a-1c24-b475-76ef-f6a7fc2bcdd5@redhat.com>
- <CAP_N_Z_VDd+JUJ_Y-peOEc7FgwNGB8O3uZpVumQT_DbW62Jpjw@mail.gmail.com>
- <ac0c241c-1013-1304-036f-504d0edc5fd7@redhat.com>
- <20210610072358.3fuvsahxec2sht4y@steredhat>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <47ce307b-f95e-25c7-ed58-9cd1cbff5b57@redhat.com>
-Date:   Thu, 10 Jun 2021 15:46:55 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VBw1udpHWu0ICMQTCJT7xYM4Al6unbCRKTXQMUMBSOA=;
+        b=n7+aTBXVe2l33K80Tc25dJDBp1GAazeTaIyvc5eQYCfIFDn4Bm3RPJEOi4X9eYRfvq
+         NQiKpuQ2dJvM6ozRwqp+2UM/DKHfBuU2zQA8Pp9GOUa/33II0dK85VuAplzt5ioSBRjk
+         jMCDDwcWFjT/jgRmG2eagKTqwSNt18nZDvgpVKTDr8ELGMpIuM8vA8nZ9hRpBX2cksuG
+         spYuD77bG9Cm8wbnzdtP0wGX3DiZ+WPicrl6mI4MJOxfjjadVmIw8BSTzP47Vukjfb6M
+         3+GsdNwbStTG4/y3MZa4x33cobbETfs2Y5Cz+4oiWym0lJ3UUJ5Ro6YDj4/uLK4E0QHF
+         eZcA==
+X-Gm-Message-State: AOAM5308dLrz7GIvQR/wOteRn50iu6wU7VxJ7MF536tm9Zb04lliUAho
+        Ze4H1Pika4LclurT7nfHiK6mJxKHzA3QC5ivSizgS3h2RM8g5ie86ZH+Lm1DHFyU19lEbjklFvb
+        XDwWoGdLyT2RNfZpm
+X-Received: by 2002:adf:e401:: with SMTP id g1mr3715663wrm.415.1623311940478;
+        Thu, 10 Jun 2021 00:59:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyULHnGEEM1u9BzDNIdiHkMjf/6GIp7jpgs0OlEbaWkpg+ROoFcrjR3vJVuYwi88nFqPmyizw==
+X-Received: by 2002:adf:e401:: with SMTP id g1mr3715644wrm.415.1623311940230;
+        Thu, 10 Jun 2021 00:59:00 -0700 (PDT)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id b22sm2105774wmj.22.2021.06.10.00.58.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Jun 2021 00:58:59 -0700 (PDT)
+Date:   Thu, 10 Jun 2021 09:58:57 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] utils: bump max args number to 256 for batch
+ files
+Message-ID: <20210610075857.GA7611@linux.home>
+References: <4a0fcf72130d3ef5c4ca91b518f66ac6449cf57f.1622565590.git.gnault@redhat.com>
+ <20210609165949.5806f75d@hermes.local>
 MIME-Version: 1.0
-In-Reply-To: <20210610072358.3fuvsahxec2sht4y@steredhat>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210609165949.5806f75d@hermes.local>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jun 09, 2021 at 04:59:49PM -0700, Stephen Hemminger wrote:
+> On Tue, 1 Jun 2021 19:09:31 +0200
+> Guillaume Nault <gnault@redhat.com> wrote:
+> 
+> > Large tc filters can have many arguments. For example the following
+> > filter matches the first 7 MPLS LSEs, pops all of them, then updates
+> > the Ethernet header and redirects the resulting packet to eth1.
+> > 
+> > filter add dev eth0 ingress handle 44 priority 100 \
+> >   protocol mpls_uc flower mpls                     \
+> >     lse depth 1 label 1040076 tc 4 bos 0 ttl 175   \
+> >     lse depth 2 label 89648 tc 2 bos 0 ttl 9       \
+> >     lse depth 3 label 63417 tc 5 bos 0 ttl 185     \
+> >     lse depth 4 label 593135 tc 5 bos 0 ttl 67     \
+> >     lse depth 5 label 857021 tc 0 bos 0 ttl 181    \
+> >     lse depth 6 label 239239 tc 1 bos 0 ttl 254    \
+> >     lse depth 7 label 30 tc 7 bos 1 ttl 237        \
+> >   action mpls pop protocol mpls_uc pipe            \
+> >   action mpls pop protocol mpls_uc pipe            \
+> >   action mpls pop protocol mpls_uc pipe            \
+> >   action mpls pop protocol mpls_uc pipe            \
+> >   action mpls pop protocol mpls_uc pipe            \
+> >   action mpls pop protocol mpls_uc pipe            \
+> >   action mpls pop protocol ipv6 pipe               \
+> >   action vlan pop_eth pipe                         \
+> >   action vlan push_eth                             \
+> >     dst_mac 00:00:5e:00:53:7e                      \
+> >     src_mac 00:00:5e:00:53:03 pipe                 \
+> >   action mirred egress redirect dev eth1
+> > 
+> > This filter has 149 arguments, so it can't be used with tc -batch
+> > which is limited to a 100.
+> > 
+> > Let's bump the limit to the next power of 2. That should leave a lot of
+> > room for big batch commands.
+> > 
+> > Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> 
+> Good idea, but we should probably go further up to 512.
+> Also, rather than keeping magic constant. Why not add value to
+> utils.h.
 
-在 2021/6/10 下午3:23, Stefano Garzarella 写道:
-> On Thu, Jun 10, 2021 at 12:02:35PM +0800, Jason Wang wrote:
->>
->> 在 2021/6/10 上午11:43, Jiang Wang . 写道:
->>> On Wed, Jun 9, 2021 at 6:51 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>
->>>> 在 2021/6/10 上午7:24, Jiang Wang 写道:
->>>>> This patchset implements support of SOCK_DGRAM for virtio
->>>>> transport.
->>>>>
->>>>> Datagram sockets are connectionless and unreliable. To avoid 
->>>>> unfair contention
->>>>> with stream and other sockets, add two more virtqueues and
->>>>> a new feature bit to indicate if those two new queues exist or not.
->>>>>
->>>>> Dgram does not use the existing credit update mechanism for
->>>>> stream sockets. When sending from the guest/driver, sending packets
->>>>> synchronously, so the sender will get an error when the virtqueue 
->>>>> is full.
->>>>> When sending from the host/device, send packets asynchronously
->>>>> because the descriptor memory belongs to the corresponding QEMU
->>>>> process.
->>>>
->>>> What's the use case for the datagram vsock?
->>>>
->>> One use case is for non critical info logging from the guest
->>> to the host, such as the performance data of some applications.
->>
->>
->> Anything that prevents you from using the stream socket?
->>
->>
->>>
->>> It can also be used to replace UDP communications between
->>> the guest and the host.
->>
->>
->> Any advantage for VSOCK in this case? Is it for performance (I guess 
->> not since I don't exepct vsock will be faster).
->
-> I think the general advantage to using vsock are for the guest agents 
-> that potentially don't need any configuration.
+Yes, right.
 
+> I considered using sysconf(_SC_ARG_MAX) gut that is huge on modern
+> machines (2M). And we don't need to allocate for all possible args.
 
-Right, I wonder if we really need datagram consider the host to guest 
-communication is reliable.
+Yes, 2M is probably overkill (and too much to allocate on the stack).
 
-(Note that I don't object it since vsock has already supported that, 
-just wonder its use cases)
+> diff --git a/include/utils.h b/include/utils.h
+> index 187444d52b41..6c4c403fe6c2 100644
+> --- a/include/utils.h
+> +++ b/include/utils.h
+> @@ -50,6 +50,9 @@ void incomplete_command(void) __attribute__((noreturn));
+>  #define NEXT_ARG_FWD() do { argv++; argc--; } while(0)
+>  #define PREV_ARG() do { argv--; argc++; } while(0)
+>  
+> +/* upper limit for batch mode */
+> +#define MAX_ARGS 512
+> +
+>  #define TIME_UNITS_PER_SEC     1000000
+>  #define NSEC_PER_USEC 1000
+>  #define NSEC_PER_MSEC 1000000
+> diff --git a/lib/utils.c b/lib/utils.c
+> index 93ae0c55063a..0559923beced 100644
+> --- a/lib/utils.c
+> +++ b/lib/utils.c
+> @@ -1714,10 +1714,10 @@ int do_batch(const char *name, bool force,
+>  
+>         cmdlineno = 0;
+>         while (getcmdline(&line, &len, stdin) != -1) {
+> -               char *largv[100];
+> +               char *largv[MAX_ARGS];
+>                 int largc;
+>  
+> -               largc = makeargs(line, largv, 100);
+> +               largc = makeargs(line, largv, MAX_ARGS);
+>                 if (!largc)
+>                         continue;       /* blank line */
+>  
+> 
 
-
->
->>
->> An obvious drawback is that it breaks the migration. Using UDP you 
->> can have a very rich features support from the kernel where vsock can't.
->>
->
-> Thanks for bringing this up!
-> What features does UDP support and datagram on vsock could not support?
-
-
-E.g the sendpage() and busy polling. And using UDP means qdiscs and eBPF 
-can work.
-
-
->
->>
->>>
->>>>> The virtio spec patch is here:
->>>>> https://www.spinics.net/lists/linux-virtualization/msg50027.html
->>>>
->>>> Have a quick glance, I suggest to split mergeable rx buffer into an
->>>> separate patch.
->>> Sure.
->>>
->>>> But I think it's time to revisit the idea of unifying the 
->>>> virtio-net and
->>>> virtio-vsock. Otherwise we're duplicating features and bugs.
->>> For mergeable rxbuf related code, I think a set of common helper
->>> functions can be used by both virtio-net and virtio-vsock. For other
->>> parts, that may not be very beneficial. I will think about more.
->>>
->>> If there is a previous email discussion about this topic, could you 
->>> send me
->>> some links? I did a quick web search but did not find any related
->>> info. Thanks.
->>
->>
->> We had a lot:
->>
->> [1] 
->> https://patchwork.kernel.org/project/kvm/patch/5BDFF537.3050806@huawei.com/
->> [2] 
->> https://lists.linuxfoundation.org/pipermail/virtualization/2018-November/039798.html
->> [3] https://www.lkml.org/lkml/2020/1/16/2043
->>
->
-> When I tried it, the biggest problem that blocked me were all the 
-> features strictly related to TCP/IP stack and ethernet devices that 
-> vsock device doesn't know how to handle: TSO, GSO, checksums, MAC, 
-> napi, xdp, min ethernet frame size, MTU, etc.
-
-
-It depends on which level we want to share:
-
-1) sharing codes
-2) sharing devices
-3) make vsock a protocol that is understood by the network core
-
-We can start from 1), the low level tx/rx logic can be shared at both 
-virtio-net and vhost-net. For 2) we probably need some work on the spec, 
-probably with a new feature bit to demonstrate that it's a vsock device 
-not a ethernet device. Then if it is probed as a vsock device we won't 
-let packet to be delivered in the TCP/IP stack. For 3), it would be even 
-harder and I'm not sure it's worth to do that.
-
-
->
-> So in my opinion to unify them is not so simple, because vsock is not 
-> really an ethernet device, but simply a socket.
-
-
-We can start from sharing codes.
-
-
->
-> But I fully agree that we shouldn't duplicate functionality and code, 
-> so maybe we could find those common parts and create helpers to be 
-> used by both.
-
-
-Yes.
-
-Thanks
-
-
->
-> Thanks,
-> Stefano
->
+Is this a patch you're going to apply, or should I repost it formally?
 
