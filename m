@@ -2,127 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F4D3A37BF
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 01:19:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A993A37DB
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 01:28:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231133AbhFJXVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 19:21:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52563 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230212AbhFJXVH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 19:21:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623367149;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aD2LL3NxQAPf5GU2IavUhu+JCNdlw6JkWCN21CEpMvM=;
-        b=N2qLKV0ioxQNH2Fq6NyKdN562ErJYg3wibEf5k1GaHgeylQrcUP2tGXTq6DMmo7ng21FaG
-        KaBiFE97G/taqgmt189zRAY9ZDiaT0iT3IXG24N3DhrRa5chDZ2bhPYKF23p8XsdtQvkHs
-        LIVSkatPvmZ3LD4ZpKpNac7IccLG8o8=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-392-ubI5g64fMYazxwnPJogD5Q-1; Thu, 10 Jun 2021 19:19:08 -0400
-X-MC-Unique: ubI5g64fMYazxwnPJogD5Q-1
-Received: by mail-ed1-f70.google.com with SMTP id ch5-20020a0564021bc5b029039389929f28so7256960edb.16
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 16:19:08 -0700 (PDT)
+        id S230212AbhFJX34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 19:29:56 -0400
+Received: from mail-ed1-f51.google.com ([209.85.208.51]:45753 "EHLO
+        mail-ed1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231209AbhFJX3z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 19:29:55 -0400
+Received: by mail-ed1-f51.google.com with SMTP id r7so20641274edv.12
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 16:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lLZajE0kF2yv7O85pmFs2crS5Zf9rKc0mk2l/qV3sWM=;
+        b=M5QdytZTp4Q8xN6q7JNQ3UA2zjLjrdOKG43dMYbDTdWprCODXQzyR5LxEVtAPQfGi2
+         R0/cXE9tfrRGoxKo2iIbkBJm1dq4bJAMVrWKlCO9BcRxagdpxpUHkmDi5Ku68MATz9vA
+         9pQ211yT96BOF8TXK5/FXijCvniAgxrvs0Qzb81B8EdSmLTeTyoXIBtFGEhLJdo4jRNE
+         2DaS5BPUXlRyD0Ge7BD5nFHBaCht/FEvBf9Hh3WlSpBOV312yFk97rPyh5L1+ruqZwN7
+         +dlddISqDW85Vj0X9DRi0uioX58VjScnY62lTZryWBrHuknfYH163J9YyINzO8+Rc0YO
+         5CTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=aD2LL3NxQAPf5GU2IavUhu+JCNdlw6JkWCN21CEpMvM=;
-        b=pb2W+Q4TOgN8SNhqGmeuzVsD3zxRXGCFn/s1W8INfd+f5zFD0QpEAgQTmkhSJfASuB
-         kodKwAZ62k7hS1Qx5xSPu2C5d1w1kMIDR2rzcK43DGaqx5X5NXRSRKMZu9TD7c0w6Btj
-         njnjgxouueRFyON7wOVERG8CJhIILvdxUtw73qLC/yCeFno1gkYP9xWtUSPMmm/TXXFO
-         x4wId7k7uaW9oOXdNcHqWZMOz3zeKajPa4+lT32nfWszc78irrPSCowEuqp8KQQACz2F
-         mLeKCjK4QTZosTbb/GjgJZsFFJO847JK3CkxkYaedHXu6R3dyapLxH7rTuBuAqynkILW
-         06rw==
-X-Gm-Message-State: AOAM531ucyeyDTcsQtDnkNgM4ESpVJfk1eA25QON6H0XmO+6Z1e4te3R
-        QGVFYmC9u1MFBpKzi3bPK88iJEJl28OEFbjgnGFr1xp3XPDWpWhNN2pHRqLxIEaDO6fewzQEQFb
-        3LOf6PQaTtr2902TJ
-X-Received: by 2002:a05:6402:543:: with SMTP id i3mr813015edx.173.1623367147339;
-        Thu, 10 Jun 2021 16:19:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzJcQHadF+yyqcRV1h5SBOoobAmF9eGTr/BROLCWcwTjLdMTEy2ywy8fwdMBnCkASCzU23cSQ==
-X-Received: by 2002:a05:6402:543:: with SMTP id i3mr813002edx.173.1623367147217;
-        Thu, 10 Jun 2021 16:19:07 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id f10sm1951780edx.60.2021.06.10.16.19.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lLZajE0kF2yv7O85pmFs2crS5Zf9rKc0mk2l/qV3sWM=;
+        b=oSoTqqcn7+W7yg40WfmIa08AnJ0Au84s6iZpPhKcxGdRS1PdSIMM5G7xqdo2tvInN9
+         gpwUnqAB4xx+MoVUP1u6pXOuPBwDMAUwFr9ALaIoKeoUFQeMhQuaJWmg7Uf2fW5SVmj3
+         9+BuzSLl/fNzvIcN9EuwV5oUg+UxlSuIbWMdvED0SsuI6PVhcJUywcYDMdVcu06Yo58t
+         EBHoQH+5+XhJyK0bWz/XqgDXThiqyYV6VUlZRhHw9UOIkzCLh2yavnCPfN9D/GDN4cB1
+         yBGu4xOr9JdsScRt2iOS30MKfb9VDHU7Q5MkPa8EbcJuvjpN6T2L7uDCs07bn7YyZ8hK
+         kIJA==
+X-Gm-Message-State: AOAM531p9qa3X8dPechXCEwRyRjVOwmC03/sIG/Gb0gqiZmS3rPlZrQT
+        q325RFxLtl+lMTVFUO+yfyg=
+X-Google-Smtp-Source: ABdhPJyB4onJEgvQK2H/APnrbPiFy4TnCYnLa9qtc9wQRpRRYnPLHoPdrAS2Od4ntsgkhnAF56k+nA==
+X-Received: by 2002:a50:fd0a:: with SMTP id i10mr877677eds.78.1623367602981;
+        Thu, 10 Jun 2021 16:26:42 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id j22sm1534187ejt.11.2021.06.10.16.26.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 16:19:06 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BFCD618071E; Fri, 11 Jun 2021 01:19:04 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH bpf-next 04/17] xdp: add proper __rcu annotations to
- redirect map entries
-In-Reply-To: <20210610210907.hgfnlja3hbmgeqxx@kafai-mbp>
-References: <20210609103326.278782-1-toke@redhat.com>
- <20210609103326.278782-5-toke@redhat.com>
- <20210610210907.hgfnlja3hbmgeqxx@kafai-mbp>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 11 Jun 2021 01:19:04 +0200
-Message-ID: <87h7i5ux3r.fsf@toke.dk>
+        Thu, 10 Jun 2021 16:26:42 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 00/10] DSA tagging driver for NXP SJA1110
+Date:   Fri, 11 Jun 2021 02:26:19 +0300
+Message-Id: <20210610232629.1948053-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin KaFai Lau <kafai@fb.com> writes:
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> On Wed, Jun 09, 2021 at 12:33:13PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
-> [ ... ]
->
->> @@ -551,7 +551,8 @@ static void cpu_map_free(struct bpf_map *map)
->>  	for (i =3D 0; i < cmap->map.max_entries; i++) {
->>  		struct bpf_cpu_map_entry *rcpu;
->>=20=20
->> -		rcpu =3D READ_ONCE(cmap->cpu_map[i]);
->> +		rcpu =3D rcu_dereference_check(cmap->cpu_map[i],
->> +					     rcu_read_lock_bh_held());
-> Is rcu_read_lock_bh_held() true during map_free()?
+This series adds support for tagging data and control packets on the new
+NXP SJA1110 switch (supported by the sja1105 driver). Up to this point
+it used the sja1105 driver, which allowed it to send data packets, but
+not PDUs as those required by STP and PTP.
 
-Hmm, no, I guess not since that's called from a workqueue. Will fix!
+To accommodate this new tagger which has both a header and a trailer, we
+need to refactor the entire DSA tagging scheme, to replace the "overhead"
+concept with separate "needed_headroom" and "needed_tailroom" concepts,
+so that SJA1110 can declare its need for both.
 
->> @@ -149,7 +152,8 @@ static int xsk_map_update_elem(struct bpf_map *map, =
-void *key, void *value,
->>  			       u64 map_flags)
->>  {
->>  	struct xsk_map *m =3D container_of(map, struct xsk_map, map);
->> -	struct xdp_sock *xs, *old_xs, **map_entry;
->> +	struct xdp_sock __rcu **map_entry;
->> +	struct xdp_sock *xs, *old_xs;
->>  	u32 i =3D *(u32 *)key, fd =3D *(u32 *)value;
->>  	struct xsk_map_node *node;
->>  	struct socket *sock;
->> @@ -179,7 +183,7 @@ static int xsk_map_update_elem(struct bpf_map *map, =
-void *key, void *value,
->>  	}
->>=20=20
->>  	spin_lock_bh(&m->lock);
->> -	old_xs =3D READ_ONCE(*map_entry);
->> +	old_xs =3D rcu_dereference_check(*map_entry, rcu_read_lock_bh_held());
-> Is it actually protected by the m->lock at this point?
+There is also some consolidation work for the receive path of tag_8021q
+and its callers (sja1105 and ocelot-8021q).
 
-True, can just add that to the check.
+Changes in v2:
+Export the dsa_8021q_rcv and sja1110_process_meta_tstamp symbols to
+avoid build errors as modules.
 
->>  void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
->> -			     struct xdp_sock **map_entry)
->> +			     struct xdp_sock __rcu **map_entry)
->>  {
->>  	spin_lock_bh(&map->lock);
->> -	if (READ_ONCE(*map_entry) =3D=3D xs) {
->> -		WRITE_ONCE(*map_entry, NULL);
->> +	if (rcu_dereference(*map_entry) =3D=3D xs) {
-> nit. rcu_access_pointer()?
+Vladimir Oltean (10):
+  net: dsa: sja1105: enable the TTEthernet engine on SJA1110
+  net: dsa: sja1105: allow RX timestamps to be taken on all ports for
+    SJA1110
+  net: dsa: generalize overhead for taggers that use both headers and
+    trailers
+  net: dsa: tag_sja1105: stop resetting network and transport headers
+  net: dsa: tag_8021q: remove shim declarations
+  net: dsa: tag_8021q: refactor RX VLAN parsing into a dedicated
+    function
+  net: dsa: sja1105: make SJA1105_SKB_CB fit a full timestamp
+  net: dsa: add support for the SJA1110 native tagging protocol
+  net: dsa: sja1105: add the RX timestamping procedure for SJA1110
+  net: dsa: sja1105: implement TX timestamping for SJA1110
 
-Yup.
+ Documentation/networking/dsa/dsa.rst          |  21 +-
+ drivers/net/dsa/sja1105/sja1105.h             |   4 +
+ drivers/net/dsa/sja1105/sja1105_main.c        |  35 +-
+ drivers/net/dsa/sja1105/sja1105_ptp.c         |  97 +++++-
+ drivers/net/dsa/sja1105/sja1105_ptp.h         |  13 +
+ drivers/net/dsa/sja1105/sja1105_spi.c         |  28 ++
+ .../net/dsa/sja1105/sja1105_static_config.c   |   1 +
+ .../net/dsa/sja1105/sja1105_static_config.h   |   1 +
+ include/linux/dsa/8021q.h                     |  79 +----
+ include/linux/dsa/sja1105.h                   |  26 +-
+ include/net/dsa.h                             |   8 +-
+ net/core/flow_dissector.c                     |   2 +-
+ net/dsa/dsa_priv.h                            |   5 +
+ net/dsa/master.c                              |   6 +-
+ net/dsa/slave.c                               |  10 +-
+ net/dsa/tag_8021q.c                           |  23 ++
+ net/dsa/tag_ar9331.c                          |   2 +-
+ net/dsa/tag_brcm.c                            |   6 +-
+ net/dsa/tag_dsa.c                             |   4 +-
+ net/dsa/tag_gswip.c                           |   2 +-
+ net/dsa/tag_hellcreek.c                       |   3 +-
+ net/dsa/tag_ksz.c                             |   9 +-
+ net/dsa/tag_lan9303.c                         |   2 +-
+ net/dsa/tag_mtk.c                             |   2 +-
+ net/dsa/tag_ocelot.c                          |   4 +-
+ net/dsa/tag_ocelot_8021q.c                    |  20 +-
+ net/dsa/tag_qca.c                             |   2 +-
+ net/dsa/tag_rtl4_a.c                          |   2 +-
+ net/dsa/tag_sja1105.c                         | 312 ++++++++++++++++--
+ net/dsa/tag_trailer.c                         |   3 +-
+ net/dsa/tag_xrs700x.c                         |   3 +-
+ 31 files changed, 551 insertions(+), 184 deletions(-)
+
+-- 
+2.25.1
 
