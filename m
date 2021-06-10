@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F28F73A3780
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 00:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C06783A3782
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 00:59:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231164AbhFJXBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 19:01:49 -0400
+        id S230103AbhFJXBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 19:01:52 -0400
 Received: from mga09.intel.com ([134.134.136.24]:55161 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230493AbhFJXBr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Jun 2021 19:01:47 -0400
-IronPort-SDR: YwII/ZHaOOBLYZBe8dt04QslMxlAQZQsaScY/KwyjlLYxqriMArzI/+x1mZC2J7+QtQoq5u9dU
- v0lzYdfAY7Qw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10011"; a="205383804"
+        id S231145AbhFJXBs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 19:01:48 -0400
+IronPort-SDR: jNvB6LMd8HCDl16I5CoUa3e7yQ2g5DM+8bzUQsNjS0EVSY5zaRGvG12XmYvmbP8OL9ZifdgxTh
+ VmNNMQEGi+rA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10011"; a="205383805"
 X-IronPort-AV: E=Sophos;i="5.83,264,1616482800"; 
-   d="scan'208";a="205383804"
+   d="scan'208";a="205383805"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2021 15:59:50 -0700
-IronPort-SDR: kkcBhYAt3ouJSzhZt8r08lksxvnNk0o834OgOa7mxLeyvt2PoP6riqDsi0xfKz9xYLI2+gq85+
- HIOFI78zSBSA==
+IronPort-SDR: v1fW9fIqXiF1jvD+m5rmac24OyBq9uKJcZj0HNpIM52NhtUUnYIW/GjZEHvs1f96XXqF1n8ls1
+ bLTMJMp8T1Pw==
 X-IronPort-AV: E=Sophos;i="5.83,264,1616482800"; 
-   d="scan'208";a="441387035"
+   d="scan'208";a="441387042"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.70.185])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2021 15:59:49 -0700
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2021 15:59:50 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net, fw@strlen.de,
-        dcaratti@redhat.com, cpaasch@apple.com, mptcp@lists.linux.dev,
+        mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 3/5] mptcp: do not warn on bad input from the network
-Date:   Thu, 10 Jun 2021 15:59:42 -0700
-Message-Id: <20210610225944.351224-4-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net 4/5] selftests: mptcp: enable syncookie only in absence of reorders
+Date:   Thu, 10 Jun 2021 15:59:43 -0700
+Message-Id: <20210610225944.351224-5-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210610225944.351224-1-mathew.j.martineau@linux.intel.com>
 References: <20210610225944.351224-1-mathew.j.martineau@linux.intel.com>
@@ -44,55 +44,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-warn_bad_map() produces a kernel WARN on bad input coming
-from the network. Use pr_debug() to avoid spamming the system
-log.
+Syncookie validation may fail for OoO packets, causing spurious
+resets and self-tests failures, so let's force syncookie only
+for tests iteration with no OoO.
 
-Additionally, when the right bound check fails, warn_bad_map() reports
-the wrong ssn value, let's fix it.
-
-Fixes: 648ef4b88673 ("mptcp: Implement MPTCP receive path")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/107
+Fixes: fed61c4b584c ("selftests: mptcp: make 2nd net namespace use tcp syn cookies unconditionally")
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/198
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/subflow.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ tools/testing/selftests/net/mptcp/mptcp_connect.sh | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index ebb898acd65a..e05e05ec9687 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -784,10 +784,10 @@ static u64 expand_seq(u64 old_seq, u16 old_data_len, u64 seq)
- 	return seq | ((old_seq + old_data_len + 1) & GENMASK_ULL(63, 32));
- }
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+index 9ca5f1ba461e..2b495dc8d78e 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+@@ -197,9 +197,6 @@ ip -net "$ns4" link set ns4eth3 up
+ ip -net "$ns4" route add default via 10.0.3.2
+ ip -net "$ns4" route add default via dead:beef:3::2
  
--static void warn_bad_map(struct mptcp_subflow_context *subflow, u32 ssn)
-+static void dbg_bad_map(struct mptcp_subflow_context *subflow, u32 ssn)
- {
--	WARN_ONCE(1, "Bad mapping: ssn=%d map_seq=%d map_data_len=%d",
--		  ssn, subflow->map_subflow_seq, subflow->map_data_len);
-+	pr_debug("Bad mapping: ssn=%d map_seq=%d map_data_len=%d",
-+		 ssn, subflow->map_subflow_seq, subflow->map_data_len);
- }
+-# use TCP syn cookies, even if no flooding was detected.
+-ip netns exec "$ns2" sysctl -q net.ipv4.tcp_syncookies=2
+-
+ set_ethtool_flags() {
+ 	local ns="$1"
+ 	local dev="$2"
+@@ -737,6 +734,14 @@ for sender in $ns1 $ns2 $ns3 $ns4;do
+ 		exit $ret
+ 	fi
  
- static bool skb_is_fully_mapped(struct sock *ssk, struct sk_buff *skb)
-@@ -812,13 +812,13 @@ static bool validate_mapping(struct sock *ssk, struct sk_buff *skb)
- 		/* Mapping covers data later in the subflow stream,
- 		 * currently unsupported.
- 		 */
--		warn_bad_map(subflow, ssn);
-+		dbg_bad_map(subflow, ssn);
- 		return false;
- 	}
- 	if (unlikely(!before(ssn, subflow->map_subflow_seq +
- 				  subflow->map_data_len))) {
- 		/* Mapping does covers past subflow data, invalid */
--		warn_bad_map(subflow, ssn + skb->len);
-+		dbg_bad_map(subflow, ssn);
- 		return false;
- 	}
- 	return true;
++	# ns1<->ns2 is not subject to reordering/tc delays. Use it to test
++	# mptcp syncookie support.
++	if [ $sender = $ns1 ]; then
++		ip netns exec "$ns2" sysctl -q net.ipv4.tcp_syncookies=2
++	else
++		ip netns exec "$ns2" sysctl -q net.ipv4.tcp_syncookies=1
++	fi
++
+ 	run_tests "$ns2" $sender 10.0.1.2
+ 	run_tests "$ns2" $sender dead:beef:1::2
+ 	run_tests "$ns2" $sender 10.0.2.1
 -- 
 2.32.0
 
