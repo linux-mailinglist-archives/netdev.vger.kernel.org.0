@@ -2,96 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DE433A2DA9
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 16:03:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D74403A2DB0
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 16:05:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231210AbhFJOFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 10:05:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40032 "EHLO
+        id S231197AbhFJOHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 10:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229941AbhFJOFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 10:05:05 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3D3C061574
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 07:03:09 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id l7-20020a05600c1d07b02901b0e2ebd6deso6513117wms.1
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 07:03:09 -0700 (PDT)
+        with ESMTP id S230153AbhFJOHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 10:07:19 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A8BC061574
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 07:05:16 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id he7so24944372ejc.13
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 07:05:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4GYLgmzJwYdicgqzVFCYd++zR6GCRkkcjYkUG80fals=;
-        b=dJko7L1YiYnHtTOGVRM4xUXH9i6KXxmcWLobwX9occvsdEjy1E0y7vbUSaf1/cCL3J
-         zzEQ6b0fnyBjXvz0OExUG8gl0AxlOF4ZljHcFMvq2olg1gjQpUYk5io8xr57cLFaT5vH
-         U4ocPo0dkpafhi4k3k4tGB5VtfXiYIa/K4t6BMPlQ1i4H1YCo87JAofYUDn4NWZrAEJE
-         nB+NHn9XqFXxsc241coRb7DO5sciUY3nCFfv5P3m4JzwMJm6KX5Uh2ptxO/Fz/BUCo7+
-         Bf9391E5/hcyF1ca0hh2kbIXfVvSHbNHpGLD8GXVy+eSK0NUlglyV7VjP6U4YHAGqMdI
-         Ztyg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=O68LTwdMkJTPL4/GAGTyk/CDx9zRZmkpq5dKsgDWAag=;
+        b=gWDtipOsTu0+GzqDS/qvvNo3mTkuNlFPZPnbJnj6n3E6etGyx+V/cUthorZ6ESVst3
+         e/c64+ra5ic4zsLDAoyMSCHVytNmWOOzSM8wgQMhCy63YPe7NUKdncMDRi75hUclm6j4
+         mW9q9HcmLvSIRBgZrohY6m2UqVvxcKYv9Xk6In5YpBGFQHCErRzPO8onxlPmA5gQC+LW
+         HHLa4C3NOxWBe/p51cpDpkJF4LtWdEsHUllVdMxsnhe0Dxni4A8n1lLYkYhdn7BOgXHA
+         czVyt8VkAU+3DXZfEsEQv0kcW54C90wqSzkdDfbuEJdPMebJBl6w+CuxDxtVu1/O0K3w
+         RRaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4GYLgmzJwYdicgqzVFCYd++zR6GCRkkcjYkUG80fals=;
-        b=XGGYurMFRfk9yYAiaSwxmdfofyzZPD6JWaYBnr4ZSwoaQ3JZphPQw3uEmDxGSF0oP9
-         fI2qfjjADI0BwwmaryVPX8hItNSvI9dMI61GJm0nVxAbrVCiCgg1AO5zHltOFSBsli78
-         4cEU4zjxItqOUD94/TZ8ztkOxkF1/lGhVFODcJ+oRq/2bjXBkSS8i0wGcB0FIQdkGmff
-         n742bgXRmyj6fHRpEftCbTomak+XU55Kdv1NL7ZhoYY8k0yC+SAOR8/b3vY6gRkIQAcM
-         eEYrSBOowTvPYLwLdfKLTQ6YR/8PEO85q5rOah6Xw8XTKzOvWRtedXhMAkYkbJe91Wsq
-         4OfA==
-X-Gm-Message-State: AOAM533kh4lmC5bTfrj8pEgACjR8WmBBMfo/4lkjSjhixWc1i6CtJeQr
-        b98PLWRBXLcc5ZMccwyLYUE=
-X-Google-Smtp-Source: ABdhPJwP9M+2ur1horOb7pmRQhlW3s8jBTCUeUpFt6EPSIPbq7Nf/oQcX1ecfwE/Y2LVn91fyh66mg==
-X-Received: by 2002:a05:600c:a01:: with SMTP id z1mr1810486wmp.77.1623333787787;
-        Thu, 10 Jun 2021 07:03:07 -0700 (PDT)
-Received: from [192.168.181.98] ([93.23.18.228])
-        by smtp.gmail.com with ESMTPSA id n20sm3052671wmk.12.2021.06.10.07.03.06
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=O68LTwdMkJTPL4/GAGTyk/CDx9zRZmkpq5dKsgDWAag=;
+        b=O2kqcOBEiHyCM92cCuMByrKOLMaBzSEow3bCq4AV4CyoU9+loavM/pR6askLoXhznn
+         JJj9Hl4Xr+kaCgo+8JPi1broaXDSF5uEKo0T3GuYMb4IXTG9nb1cW2C9M0DTPnagc/WO
+         JW19yWhuY5sGgflyeXPpvFqJj2E67zg5PbkRHPwgoxpgGCetVyt2fLcJI7hXTt2//i12
+         nVngx9G+W/dSkyNijuHY/JihdIS6kI1VBb8hNUqNj5rEdtZEZ3qsu4LGdmW23QBRc9vt
+         4vxZn0bEbuhKWJx6hD6CMTCa4EzP1NTMkyZDHDI7KTLYS8K3Wu1fDh1qzeeIE8p9ohSw
+         1GGw==
+X-Gm-Message-State: AOAM532urVqzviq1BIeDC3qZ52Jf4JA9GeAbbazWZiAj6VkieKjuV91+
+        fGOk0IsgwWd64zKvaBusnHL98j5Ej9w6EQ==
+X-Google-Smtp-Source: ABdhPJwsy6Gs49UIIQeL0JrJry/vyUNUNtjenfQu49lZ4/qL+WUBoD6qWHaAAUIQp3ub8l/TKC7WFA==
+X-Received: by 2002:a17:906:af55:: with SMTP id ly21mr4500140ejb.276.1623333914643;
+        Thu, 10 Jun 2021 07:05:14 -0700 (PDT)
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com. [209.85.128.43])
+        by smtp.gmail.com with ESMTPSA id f10sm1391387edx.60.2021.06.10.07.05.13
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 07:03:07 -0700 (PDT)
-Subject: Re: [PATCH net] skbuff: fix incorrect msg_zerocopy copy notifications
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, soheil@google.com,
-        jonathan.lemon@gmail.com, Willem de Bruijn <willemb@google.com>,
-        Talal Ahmad <talalahmad@google.com>
-References: <20210609224157.1800831-1-willemdebruijn.kernel@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e9b3d5a9-96b4-f857-e9b8-82f1e3c49c1d@gmail.com>
-Date:   Thu, 10 Jun 2021 16:03:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        Thu, 10 Jun 2021 07:05:13 -0700 (PDT)
+Received: by mail-wm1-f43.google.com with SMTP id t4-20020a1c77040000b029019d22d84ebdso6626410wmi.3
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 07:05:13 -0700 (PDT)
+X-Received: by 2002:a7b:c935:: with SMTP id h21mr15233756wml.183.1623333912587;
+ Thu, 10 Jun 2021 07:05:12 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210609224157.1800831-1-willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210608170224.1138264-1-tannerlove.kernel@gmail.com>
+ <20210608170224.1138264-3-tannerlove.kernel@gmail.com> <17315e5a-ee1c-489c-a6bf-0fa26371d710@redhat.com>
+ <CA+FuTSfvdHBLOqAAU=vPmqnUxhp_b61Cixm=0cd7uh_KsJZGGw@mail.gmail.com>
+ <51d301ee-8856-daa4-62bd-10d3d53a3c26@redhat.com> <CAADnVQKHpk5aXA-MiuHyvBC7ZCxDPmN_gKAVww8kQAjoZkkmjA@mail.gmail.com>
+ <6ae4f189-a3be-075d-167c-2ad3f8d7d975@redhat.com> <CAADnVQL_+oKjH341ccC_--ing6dviAPwWRocgYrTKidkKo-NcA@mail.gmail.com>
+ <2fd24801-bf77-02e3-03f5-b5e8fac595b6@redhat.com>
+In-Reply-To: <2fd24801-bf77-02e3-03f5-b5e8fac595b6@redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 10 Jun 2021 10:04:34 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeuq4K=nA_JPomyZv4SkQY0cGWdEf1jftx_1Znd+=tOZw@mail.gmail.com>
+Message-ID: <CA+FuTSeuq4K=nA_JPomyZv4SkQY0cGWdEf1jftx_1Znd+=tOZw@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 2/3] virtio_net: add optional flow dissection
+ in virtio_net_hdr_to_skb
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Tanner Love <tannerlove.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Tanner Love <tannerlove@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 10, 2021 at 1:25 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/6/10 =E4=B8=8B=E5=8D=8812:19, Alexei Starovoitov =E5=86=99=
+=E9=81=93:
+> > On Wed, Jun 9, 2021 at 9:13 PM Jason Wang <jasowang@redhat.com> wrote:
+> >> So I wonder why not simply use helpers to access the vnet header like
+> >> how tcp-bpf access the tcp header?
+> > Short answer - speed.
+> > tcp-bpf accesses all uapi and non-uapi structs directly.
+> >
+>
+> Ok, this makes sense. But instead of coupling device specific stuffs
+> like vnet header and neediness into general flow_keys as a context.
+>
+> It would be better to introduce a vnet header context which contains
+>
+> 1) vnet header
+> 2) flow keys
+> 3) other contexts like endian and virtio-net features
+>
+> So we preserve the performance and decouple the virtio-net stuffs from
+> general structures like flow_keys or __sk_buff.
 
+You are advocating for a separate BPF program that takes a vnet hdr
+and flow_keys as context and is run separately after flow dissection?
 
-On 6/10/21 12:41 AM, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
-> 
-> msg_zerocopy signals if a send operation required copying with a flag
-> in serr->ee.ee_code.
-> 
-> This field can be incorrect as of the below commit, as a result of
-> both structs uarg and serr pointing into the same skb->cb[].
-> 
-> uarg->zerocopy must be read before skb->cb[] is reinitialized to hold
-> serr. Similar to other fields len, hi and lo, use a local variable to
-> temporarily hold the value.
-> 
-> This was not a problem before, when the value was passed as a function
-> argument.
-> 
-> Fixes: 75518851a2a0 ("skbuff: Push status and refcounts into sock_zerocopy_callback")
-> Reported-by: Talal Ahmad <talalahmad@google.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> ---
+I don't understand the benefit of splitting the program in two in this mann=
+er.
 
+Your previous comment mentions two vnet_hdr definitions that can get
+out of sync. Do you mean v1 of this patch, that adds the individual
+fields to bpf_flow_dissector? That is no longer the case: the latest
+version directly access the real struct. As Alexei points out, doing
+this does not set virtio_net_hdr in stone in the ABI. That is a valid
+worry. But so this patch series will not restrict how that struct may
+develop over time. A version field allows a BPF program to parse the
+different variants of the struct -- in the same manner as other
+protocol headers. If you prefer, we can add that field from the start.
+I don't see a benefit to an extra layer of indirection in the form of
+helper functions.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+I do see downsides to splitting the program. The goal is to ensure
+consistency between vnet_hdr and packet payload. A program split
+limits to checking vnet_hdr against what the flow_keys struct has
+extracted. That is a great reduction over full packet access. For
+instance, does the packet contain IP options? No idea.
 
+If stable ABI is not a concern and there are no different struct
+definitions that can go out of sync, does that address your main
+concerns?
