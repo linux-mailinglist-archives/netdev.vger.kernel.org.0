@@ -2,477 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 267353A227F
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 04:58:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D423A229E
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 05:14:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbhFJDAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 23:00:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33744 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230106AbhFJDAW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 23:00:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A71816142E;
-        Thu, 10 Jun 2021 02:58:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623293907;
-        bh=5FWYjzI0wqza3+803TAgiZddT0IXHafmPsmvvWyzXNU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K3VdXi5hkLhwYo13iXs21ZqoRzduXteSSslWfSsaDFCDFLJiyf/imHwweHu+yu0bH
-         a9k3RflEgS0fucfAJJCfUrcBIOtf2Dm5kpXi+MIZzZ34LShp+iU/CKbizTdDv+vvra
-         M0xQ42URlm0fa7hPZl7F6wIhd84WmsTYPE5gcyu2Xr45MFUpQOJTo5YSzlnEtzsZkD
-         2APnyjTJ9JLiTiAOEML5f8OwDf1dkE/McyWlPepKKC6jPyJrJqVgO8Uvcn4YoaCRS3
-         HNego78ccYlGaO0pQoxqSdnX72yoLM4KMGStUH3xaEDBHS48gMDZaN/qqUZ9ZRywdm
-         s4RgCbclen5Aw==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 16/16] net/mlx5: Bridge, add tracepoints
-Date:   Wed,  9 Jun 2021 19:58:14 -0700
-Message-Id: <20210610025814.274607-17-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210610025814.274607-1-saeed@kernel.org>
-References: <20210610025814.274607-1-saeed@kernel.org>
+        id S229705AbhFJDQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 23:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37122 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229925AbhFJDQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Jun 2021 23:16:16 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F63C061760;
+        Wed,  9 Jun 2021 20:09:03 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id w21so30984108edv.3;
+        Wed, 09 Jun 2021 20:09:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XwhrgajC6sjsC/HOcZZ9qIFMdsIPeaNkncBtG+FZ390=;
+        b=cYeZ8jmhyDeyWJZ76ZwPW/ouMZaJmS5KoE/dA43/MvxJIkxKxQKBefUjvdBpUrurGv
+         S01vFZ56iUzme0IURhvxpmAzmRHiAa03vX4aMZNYB3zvnse/YU1rrCral0zCpx42sj6s
+         gH9qHRe6DjDWTneuLcRnGhRc4kTwi6qA9fV8Wu94XwNj9pRxI5SJ99X5niYVsOmPLQJX
+         400QFG0YT1Vn91JtIcVGPyaiOiMGDjWH+PDnvQvGKs5XFhDM1Z3uAoivGYGXRsQuXhId
+         HLCpYwUPB/R9EVzVnGYlUbhAK/FfZ+pj2YJCgdcW0N9b6c/75oKtvlRo7VfI0AGjaCic
+         SNJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XwhrgajC6sjsC/HOcZZ9qIFMdsIPeaNkncBtG+FZ390=;
+        b=o193D3v3xpne6t3wKuoJ5xSVHP2/I57dKBV9SgCTApDHjkzN2YOoPwlBaz5mpddQmp
+         rvoKg9CCjoLgkYX/D7cO0uVd2ni/QVy922+c+WUPX0tX0gC/biLqdxEPbQU3O2XsLMVj
+         oPAFgao+xGyXJcnd3tpN5Ynp6DFoywE3PAA7vFStK0UFuar5A0qaqfJtyJaKgwZDAb2P
+         3gI211pYlgASfb397DyM/L93aDxP7HUMUmFHLTPHM64afKnQFoFYk42wiPs/lTXHLcHw
+         Sr+Yj2dlw41+pvGjaHRuxTPzIOlJ79TUqiK4AxZ0Cbj05r+gnPpsmczbpRkCGs0neim5
+         Npfw==
+X-Gm-Message-State: AOAM530QV0q1cr5TQ8tpKDPhV43YDbp20HaEjme3HvjKf3hbqNgzEPIt
+        jkW35Qx48Sy9GbTcIHvHIe+/ltRJdKhk0OHv/rOz7d9lJfC7Yv7o1VI=
+X-Google-Smtp-Source: ABdhPJw8wNmuyUNNJaeUtfiMKY6pDHrmZpMJpa7G9slaLupkB1V2sVGvs9V8+RzrQlijMQ6ZzRRuJljQNKWfZNDigtQ=
+X-Received: by 2002:a05:6402:3082:: with SMTP id de2mr2459158edb.214.1623294541934;
+ Wed, 09 Jun 2021 20:09:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210610020108.1356361-1-liushixin2@huawei.com>
+In-Reply-To: <20210610020108.1356361-1-liushixin2@huawei.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Thu, 10 Jun 2021 11:08:35 +0800
+Message-ID: <CAD-N9QWypyEa65-sz3rrtM2o5xzQd_5kJPyC4n+nK5JTviQvEQ@mail.gmail.com>
+Subject: Re: [PATCH -next] netlabel: Fix memory leak in netlbl_mgmt_add_common
+To:     Liu Shixin <liushixin2@huawei.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+On Thu, Jun 10, 2021 at 9:31 AM Liu Shixin <liushixin2@huawei.com> wrote:
+>
+> Hulk Robot reported memory leak in netlbl_mgmt_add_common.
+> The problem is non-freed map in case of netlbl_domhsh_add() failed.
+>
+> BUG: memory leak
+> unreferenced object 0xffff888100ab7080 (size 96):
+>   comm "syz-executor537", pid 360, jiffies 4294862456 (age 22.678s)
+>   hex dump (first 32 bytes):
+>     05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     fe 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01  ................
+>   backtrace:
+>     [<0000000008b40026>] netlbl_mgmt_add_common.isra.0+0xb2a/0x1b40
+>     [<000000003be10950>] netlbl_mgmt_add+0x271/0x3c0
+>     [<00000000c70487ed>] genl_family_rcv_msg_doit.isra.0+0x20e/0x320
+>     [<000000001f2ff614>] genl_rcv_msg+0x2bf/0x4f0
+>     [<0000000089045792>] netlink_rcv_skb+0x134/0x3d0
+>     [<0000000020e96fdd>] genl_rcv+0x24/0x40
+>     [<0000000042810c66>] netlink_unicast+0x4a0/0x6a0
+>     [<000000002e1659f0>] netlink_sendmsg+0x789/0xc70
+>     [<000000006e43415f>] sock_sendmsg+0x139/0x170
+>     [<00000000680a73d7>] ____sys_sendmsg+0x658/0x7d0
+>     [<0000000065cbb8af>] ___sys_sendmsg+0xf8/0x170
+>     [<0000000019932b6c>] __sys_sendmsg+0xd3/0x190
+>     [<00000000643ac172>] do_syscall_64+0x37/0x90
+>     [<000000009b79d6dc>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+>
+> Fixes: 63c416887437 ("netlabel: Add network address selectors to the NetLabel/LSM domain mapping")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+> ---
+>  net/netlabel/netlabel_mgmt.c | 20 ++++++++++++++++----
+>  1 file changed, 16 insertions(+), 4 deletions(-)
+>
+> diff --git a/net/netlabel/netlabel_mgmt.c b/net/netlabel/netlabel_mgmt.c
+> index e664ab990941..e7f00c0f441e 100644
+> --- a/net/netlabel/netlabel_mgmt.c
+> +++ b/net/netlabel/netlabel_mgmt.c
+> @@ -191,6 +191,12 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+>                 entry->family = AF_INET;
+>                 entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
+>                 entry->def.addrsel = addrmap;
+> +
+> +               ret_val = netlbl_domhsh_add(entry, audit_info);
+> +               if (ret_val != 0) {
+> +                       kfree(map);
+> +                       goto add_free_addrmap;
+> +               }
+>  #if IS_ENABLED(CONFIG_IPV6)
+>         } else if (info->attrs[NLBL_MGMT_A_IPV6ADDR]) {
+>                 struct in6_addr *addr;
+> @@ -243,13 +249,19 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+>                 entry->family = AF_INET6;
+>                 entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
+>                 entry->def.addrsel = addrmap;
+> +
+> +               ret_val = netlbl_domhsh_add(entry, audit_info);
+> +               if (ret_val != 0) {
+> +                       kfree(map);
+> +                       goto add_free_addrmap;
+> +               }
+>  #endif /* IPv6 */
+> +       } else {
+> +               ret_val = netlbl_domhsh_add(entry, audit_info);
+> +               if (ret_val != 0)
+> +                       goto add_free_addrmap;
+>         }
+>
+> -       ret_val = netlbl_domhsh_add(entry, audit_info);
+> -       if (ret_val != 0)
+> -               goto add_free_addrmap;
+> -
 
-Move private bridge structures to dedicated headers that is accessible to
-bridge tracepoint header. Implemented following tracepoints:
+Hi Shixin,
 
-- Initialize FDB entry.
-- Refresh FDB entry.
-- Cleanup FDB entry.
-- Create VLAN.
-- Cleanup VLAN.
-- Attach port to bridge.
-- Detach port from bridge.
+I have a small suggestion about this patch: you can move the variable
+map out of if/else if branches, like the following code snippet.
 
-Usage example:
+Be aware to assign the variable map to NULL at first. Then kfree in
+the last else branch will do nothing.
 
-># cd /sys/kernel/debug/tracing
-># echo mlx5:mlx5_esw_bridge_fdb_entry_init >> set_event
-># cat trace
-...
-   kworker/u20:1-96      [001] ....   231.892503: mlx5_esw_bridge_fdb_entry_init: net_device=enp8s0f0_0 addr=e4:fd:05:08:00:02 vid=3 flags=0 lastuse=4294895695
+I don't test the following diff, if there are any issues, please let me know.
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Jianbo Liu <jianbol@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../device_drivers/ethernet/mellanox/mlx5.rst |  56 +++++++++
- .../ethernet/mellanox/mlx5/core/esw/bridge.c  |  75 ++++--------
- .../mellanox/mlx5/core/esw/bridge_priv.h      |  53 ++++++++
- .../mlx5/core/esw/diag/bridge_tracepoint.h    | 113 ++++++++++++++++++
- 4 files changed, 247 insertions(+), 50 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h
-
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index 058882dca17b..ef8cb62e82a1 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -600,3 +600,59 @@ tc and eswitch offloads tracepoints:
-     $ cat /sys/kernel/debug/tracing/trace
-     ...
-     kworker/u48:7-2221  [009] ...1  1475.387435: mlx5e_rep_neigh_update: netdev: ens1f0 MAC: 24:8a:07:9a:17:9a IPv4: 1.1.1.10 IPv6: ::ffff:1.1.1.10 neigh_connected=1
-+
-+Bridge offloads tracepoints:
-+
-+- mlx5_esw_bridge_fdb_entry_init: trace bridge FDB entry offloaded to mlx5::
-+
-+    $ echo mlx5:mlx5_esw_bridge_fdb_entry_init >> set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    kworker/u20:9-2217    [003] ...1   318.582243: mlx5_esw_bridge_fdb_entry_init: net_device=enp8s0f0_0 addr=e4:fd:05:08:00:02 vid=0 flags=0 used=0
-+
-+- mlx5_esw_bridge_fdb_entry_cleanup: trace bridge FDB entry deleted from mlx5::
-+
-+    $ echo mlx5:mlx5_esw_bridge_fdb_entry_cleanup >> set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    ip-2581    [005] ...1   318.629871: mlx5_esw_bridge_fdb_entry_cleanup: net_device=enp8s0f0_1 addr=e4:fd:05:08:00:03 vid=0 flags=0 used=16
-+
-+- mlx5_esw_bridge_fdb_entry_refresh: trace bridge FDB entry offload refreshed in
-+  mlx5::
-+
-+    $ echo mlx5:mlx5_esw_bridge_fdb_entry_refresh >> set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    kworker/u20:8-3849    [003] ...1       466716: mlx5_esw_bridge_fdb_entry_refresh: net_device=enp8s0f0_0 addr=e4:fd:05:08:00:02 vid=3 flags=0 used=0
-+
-+- mlx5_esw_bridge_vlan_create: trace bridge VLAN object add on mlx5
-+  representor::
-+
-+    $ echo mlx5:mlx5_esw_bridge_vlan_create >> set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    ip-2560    [007] ...1   318.460258: mlx5_esw_bridge_vlan_create: vid=1 flags=6
-+
-+- mlx5_esw_bridge_vlan_cleanup: trace bridge VLAN object delete from mlx5
-+  representor::
-+
-+    $ echo mlx5:mlx5_esw_bridge_vlan_cleanup >> set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    bridge-2582    [007] ...1   318.653496: mlx5_esw_bridge_vlan_cleanup: vid=2 flags=8
-+
-+- mlx5_esw_bridge_vport_init: trace mlx5 vport assigned with bridge upper
-+  device::
-+
-+    $ echo mlx5:mlx5_esw_bridge_vport_init >> set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    ip-2560    [007] ...1   318.458915: mlx5_esw_bridge_vport_init: vport_num=1
-+
-+- mlx5_esw_bridge_vport_cleanup: trace mlx5 vport removed from bridge upper
-+  device::
-+
-+    $ echo mlx5:mlx5_esw_bridge_vport_cleanup >> set_event
-+    $ cat /sys/kernel/debug/tracing/trace
-+    ...
-+    ip-5387    [000] ...1       573713: mlx5_esw_bridge_vport_cleanup: vport_num=1
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-index b6345619cbfe..a6e1d4f78268 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-@@ -1,17 +1,15 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- /* Copyright (c) 2021 Mellanox Technologies. */
- 
--#include <linux/netdevice.h>
- #include <linux/list.h>
--#include <linux/rhashtable.h>
--#include <linux/xarray.h>
--#include <linux/if_bridge.h>
--#include <linux/if_vlan.h>
--#include <linux/if_ether.h>
-+#include <linux/notifier.h>
-+#include <net/netevent.h>
- #include <net/switchdev.h>
- #include "bridge.h"
- #include "eswitch.h"
--#include "fs_core.h"
-+#include "bridge_priv.h"
-+#define CREATE_TRACE_POINTS
-+#include "diag/bridge_tracepoint.h"
- 
- #define MLX5_ESW_BRIDGE_INGRESS_TABLE_SIZE 64000
- #define MLX5_ESW_BRIDGE_INGRESS_TABLE_VLAN_GRP_IDX_FROM 0
-@@ -39,31 +37,6 @@ enum {
- 	MLX5_ESW_BRIDGE_LEVEL_SKIP_TABLE,
- };
- 
--struct mlx5_esw_bridge_fdb_key {
--	unsigned char addr[ETH_ALEN];
--	u16 vid;
--};
--
--enum {
--	MLX5_ESW_BRIDGE_FLAG_ADDED_BY_USER = BIT(0),
--};
--
--struct mlx5_esw_bridge_fdb_entry {
--	struct mlx5_esw_bridge_fdb_key key;
--	struct rhash_head ht_node;
--	struct net_device *dev;
--	struct list_head list;
--	struct list_head vlan_list;
--	u16 vport_num;
--	u16 flags;
--
--	struct mlx5_flow_handle *ingress_handle;
--	struct mlx5_fc *ingress_counter;
--	unsigned long lastuse;
--	struct mlx5_flow_handle *egress_handle;
--	struct mlx5_flow_handle *filter_handle;
--};
--
- static const struct rhashtable_params fdb_ht_params = {
- 	.key_offset = offsetof(struct mlx5_esw_bridge_fdb_entry, key),
- 	.key_len = sizeof(struct mlx5_esw_bridge_fdb_key),
-@@ -71,19 +44,6 @@ static const struct rhashtable_params fdb_ht_params = {
- 	.automatic_shrinking = true,
- };
- 
--struct mlx5_esw_bridge_vlan {
--	u16 vid;
--	u16 flags;
--	struct list_head fdb_list;
--	struct mlx5_pkt_reformat *pkt_reformat_push;
--	struct mlx5_pkt_reformat *pkt_reformat_pop;
--};
--
--struct mlx5_esw_bridge_port {
--	u16 vport_num;
--	struct xarray vlans;
--};
--
- enum {
- 	MLX5_ESW_BRIDGE_VLAN_FILTERING_FLAG = BIT(0),
- };
-@@ -697,10 +657,23 @@ static void mlx5_esw_bridge_port_erase(struct mlx5_esw_bridge_port *port,
- 	xa_erase(&bridge->vports, port->vport_num);
- }
- 
-+static void mlx5_esw_bridge_fdb_entry_refresh(unsigned long lastuse,
-+					      struct mlx5_esw_bridge_fdb_entry *entry)
-+{
-+	trace_mlx5_esw_bridge_fdb_entry_refresh(entry);
-+
-+	entry->lastuse = lastuse;
-+	mlx5_esw_bridge_fdb_offload_notify(entry->dev, entry->key.addr,
-+					   entry->key.vid,
-+					   SWITCHDEV_FDB_ADD_TO_BRIDGE);
-+}
-+
- static void
- mlx5_esw_bridge_fdb_entry_cleanup(struct mlx5_esw_bridge_fdb_entry *entry,
- 				  struct mlx5_esw_bridge *bridge)
+diff --git a/net/netlabel/netlabel_mgmt.c b/net/netlabel/netlabel_mgmt.c
+index ca52f5085989..1824bcd2272b 100644
+--- a/net/netlabel/netlabel_mgmt.c
++++ b/net/netlabel/netlabel_mgmt.c
+@@ -78,6 +78,7 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
  {
-+	trace_mlx5_esw_bridge_fdb_entry_cleanup(entry);
-+
- 	rhashtable_remove_fast(&bridge->fdb_ht, &entry->ht_node, fdb_ht_params);
- 	mlx5_del_flow_rules(entry->egress_handle);
- 	if (entry->filter_handle)
-@@ -842,6 +815,7 @@ mlx5_esw_bridge_vlan_create(u16 vid, u16 flags, struct mlx5_esw_bridge_port *por
- 	if (err)
- 		goto err_xa_insert;
- 
-+	trace_mlx5_esw_bridge_vlan_create(vlan);
- 	return vlan;
- 
- err_xa_insert:
-@@ -884,6 +858,7 @@ static void mlx5_esw_bridge_vlan_cleanup(struct mlx5_esw_bridge_port *port,
- 					 struct mlx5_esw_bridge_vlan *vlan,
- 					 struct mlx5_esw_bridge *bridge)
- {
-+	trace_mlx5_esw_bridge_vlan_cleanup(vlan);
- 	mlx5_esw_bridge_vlan_flush(vlan, bridge);
- 	mlx5_esw_bridge_vlan_erase(port, vlan);
- 	kvfree(vlan);
-@@ -1007,6 +982,8 @@ mlx5_esw_bridge_fdb_entry_init(struct net_device *dev, u16 vport_num, const unsi
- 	else
- 		INIT_LIST_HEAD(&entry->vlan_list);
- 	list_add(&entry->list, &bridge->fdb_list);
-+
-+	trace_mlx5_esw_bridge_fdb_entry_init(entry);
- 	return entry;
- 
- err_ht_init:
-@@ -1078,6 +1055,7 @@ static int mlx5_esw_bridge_vport_init(struct mlx5_esw_bridge_offloads *br_offloa
- 			 vport->vport, err);
- 		goto err_port_insert;
- 	}
-+	trace_mlx5_esw_bridge_vport_init(port);
- 
- 	vport->bridge = bridge;
- 	return 0;
-@@ -1106,6 +1084,7 @@ static int mlx5_esw_bridge_vport_cleanup(struct mlx5_esw_bridge_offloads *br_off
- 		return -EINVAL;
- 	}
- 
-+	trace_mlx5_esw_bridge_vport_cleanup(port);
- 	mlx5_esw_bridge_port_vlans_flush(port, bridge);
- 	mlx5_esw_bridge_port_erase(port, bridge);
- 	kvfree(port);
-@@ -1266,11 +1245,7 @@ void mlx5_esw_bridge_update(struct mlx5_esw_bridge_offloads *br_offloads)
- 				continue;
- 
- 			if (time_after(lastuse, entry->lastuse)) {
--				entry->lastuse = lastuse;
--				/* refresh existing bridge entry */
--				mlx5_esw_bridge_fdb_offload_notify(entry->dev, entry->key.addr,
--								   entry->key.vid,
--								   SWITCHDEV_FDB_ADD_TO_BRIDGE);
-+				mlx5_esw_bridge_fdb_entry_refresh(lastuse, entry);
- 			} else if (time_is_before_jiffies(entry->lastuse + bridge->ageing_time)) {
- 				mlx5_esw_bridge_fdb_offload_notify(entry->dev, entry->key.addr,
- 								   entry->key.vid,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
-new file mode 100644
-index 000000000000..d9ab2e8bc2cb
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
-@@ -0,0 +1,53 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+#ifndef _MLX5_ESW_BRIDGE_PRIVATE_
-+#define _MLX5_ESW_BRIDGE_PRIVATE_
-+
-+#include <linux/netdevice.h>
-+#include <linux/if_bridge.h>
-+#include <linux/if_vlan.h>
-+#include <linux/if_ether.h>
-+#include <linux/rhashtable.h>
-+#include <linux/xarray.h>
-+#include "fs_core.h"
-+
-+struct mlx5_esw_bridge_fdb_key {
-+	unsigned char addr[ETH_ALEN];
-+	u16 vid;
-+};
-+
-+enum {
-+	MLX5_ESW_BRIDGE_FLAG_ADDED_BY_USER = BIT(0),
-+};
-+
-+struct mlx5_esw_bridge_fdb_entry {
-+	struct mlx5_esw_bridge_fdb_key key;
-+	struct rhash_head ht_node;
-+	struct net_device *dev;
-+	struct list_head list;
-+	struct list_head vlan_list;
-+	u16 vport_num;
-+	u16 flags;
-+
-+	struct mlx5_flow_handle *ingress_handle;
-+	struct mlx5_fc *ingress_counter;
-+	unsigned long lastuse;
-+	struct mlx5_flow_handle *egress_handle;
-+	struct mlx5_flow_handle *filter_handle;
-+};
-+
-+struct mlx5_esw_bridge_vlan {
-+	u16 vid;
-+	u16 flags;
-+	struct list_head fdb_list;
-+	struct mlx5_pkt_reformat *pkt_reformat_push;
-+	struct mlx5_pkt_reformat *pkt_reformat_pop;
-+};
-+
-+struct mlx5_esw_bridge_port {
-+	u16 vport_num;
-+	struct xarray vlans;
-+};
-+
-+#endif /* _MLX5_ESW_BRIDGE_PRIVATE_ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h
-new file mode 100644
-index 000000000000..227964b7d3b9
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/diag/bridge_tracepoint.h
-@@ -0,0 +1,113 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM mlx5
-+
-+#if !defined(_MLX5_ESW_BRIDGE_TRACEPOINT_) || defined(TRACE_HEADER_MULTI_READ)
-+#define _MLX5_ESW_BRIDGE_TRACEPOINT_
-+
-+#include <linux/tracepoint.h>
-+#include "../bridge_priv.h"
-+
-+DECLARE_EVENT_CLASS(mlx5_esw_bridge_fdb_template,
-+		    TP_PROTO(const struct mlx5_esw_bridge_fdb_entry *fdb),
-+		    TP_ARGS(fdb),
-+		    TP_STRUCT__entry(
-+			    __array(char, dev_name, IFNAMSIZ)
-+			    __array(unsigned char, addr, ETH_ALEN)
-+			    __field(u16, vid)
-+			    __field(u16, flags)
-+			    __field(unsigned int, used)
-+			    ),
-+		    TP_fast_assign(
-+			    strncpy(__entry->dev_name,
-+				    netdev_name(fdb->dev),
-+				    IFNAMSIZ);
-+			    memcpy(__entry->addr, fdb->key.addr, ETH_ALEN);
-+			    __entry->vid = fdb->key.vid;
-+			    __entry->flags = fdb->flags;
-+			    __entry->used = jiffies_to_msecs(jiffies - fdb->lastuse)
-+			    ),
-+		    TP_printk("net_device=%s addr=%pM vid=%hu flags=%hx used=%u",
-+			      __entry->dev_name,
-+			      __entry->addr,
-+			      __entry->vid,
-+			      __entry->flags,
-+			      __entry->used / 1000)
-+	);
-+
-+DEFINE_EVENT(mlx5_esw_bridge_fdb_template,
-+	     mlx5_esw_bridge_fdb_entry_init,
-+	     TP_PROTO(const struct mlx5_esw_bridge_fdb_entry *fdb),
-+	     TP_ARGS(fdb)
-+	);
-+DEFINE_EVENT(mlx5_esw_bridge_fdb_template,
-+	     mlx5_esw_bridge_fdb_entry_refresh,
-+	     TP_PROTO(const struct mlx5_esw_bridge_fdb_entry *fdb),
-+	     TP_ARGS(fdb)
-+	);
-+DEFINE_EVENT(mlx5_esw_bridge_fdb_template,
-+	     mlx5_esw_bridge_fdb_entry_cleanup,
-+	     TP_PROTO(const struct mlx5_esw_bridge_fdb_entry *fdb),
-+	     TP_ARGS(fdb)
-+	);
-+
-+DECLARE_EVENT_CLASS(mlx5_esw_bridge_vlan_template,
-+		    TP_PROTO(const struct mlx5_esw_bridge_vlan *vlan),
-+		    TP_ARGS(vlan),
-+		    TP_STRUCT__entry(
-+			    __field(u16, vid)
-+			    __field(u16, flags)
-+			    ),
-+		    TP_fast_assign(
-+			    __entry->vid = vlan->vid;
-+			    __entry->flags = vlan->flags;
-+			    ),
-+		    TP_printk("vid=%hu flags=%hx",
-+			      __entry->vid,
-+			      __entry->flags)
-+	);
-+
-+DEFINE_EVENT(mlx5_esw_bridge_vlan_template,
-+	     mlx5_esw_bridge_vlan_create,
-+	     TP_PROTO(const struct mlx5_esw_bridge_vlan *vlan),
-+	     TP_ARGS(vlan)
-+	);
-+DEFINE_EVENT(mlx5_esw_bridge_vlan_template,
-+	     mlx5_esw_bridge_vlan_cleanup,
-+	     TP_PROTO(const struct mlx5_esw_bridge_vlan *vlan),
-+	     TP_ARGS(vlan)
-+	);
-+
-+DECLARE_EVENT_CLASS(mlx5_esw_bridge_port_template,
-+		    TP_PROTO(const struct mlx5_esw_bridge_port *port),
-+		    TP_ARGS(port),
-+		    TP_STRUCT__entry(
-+			    __field(u16, vport_num)
-+			    ),
-+		    TP_fast_assign(
-+			    __entry->vport_num = port->vport_num;
-+			    ),
-+		    TP_printk("vport_num=%hu", __entry->vport_num)
-+	);
-+
-+DEFINE_EVENT(mlx5_esw_bridge_port_template,
-+	     mlx5_esw_bridge_vport_init,
-+	     TP_PROTO(const struct mlx5_esw_bridge_port *port),
-+	     TP_ARGS(port)
-+	);
-+DEFINE_EVENT(mlx5_esw_bridge_port_template,
-+	     mlx5_esw_bridge_vport_cleanup,
-+	     TP_PROTO(const struct mlx5_esw_bridge_port *port),
-+	     TP_ARGS(port)
-+	);
-+
-+#endif
-+
-+/* This part must be outside protection */
-+#undef TRACE_INCLUDE_PATH
-+#define TRACE_INCLUDE_PATH esw/diag
-+#undef TRACE_INCLUDE_FILE
-+#define TRACE_INCLUDE_FILE bridge_tracepoint
-+#include <trace/define_trace.h>
--- 
-2.31.1
+        int ret_val = -EINVAL;
+        struct netlbl_domaddr_map *addrmap = NULL;
++       struct netlbl_domaddr4_map *map = NULL;
+        struct cipso_v4_doi *cipsov4 = NULL;
+ #if IS_ENABLED(CONFIG_IPV6)
+        struct calipso_doi *calipso = NULL;
+@@ -147,7 +148,6 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+        if (info->attrs[NLBL_MGMT_A_IPV4ADDR]) {
+                struct in_addr *addr;
+                struct in_addr *mask;
+-               struct netlbl_domaddr4_map *map;
 
+                addrmap = kzalloc(sizeof(*addrmap), GFP_KERNEL);
+                if (addrmap == NULL) {
+@@ -195,7 +195,6 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+        } else if (info->attrs[NLBL_MGMT_A_IPV6ADDR]) {
+                struct in6_addr *addr;
+                struct in6_addr *mask;
+-               struct netlbl_domaddr6_map *map;
+
+                addrmap = kzalloc(sizeof(*addrmap), GFP_KERNEL);
+                if (addrmap == NULL) {
+@@ -247,8 +246,10 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+        }
+
+        ret_val = netlbl_domhsh_add(entry, audit_info);
+-       if (ret_val != 0)
++       if (ret_val != 0) {
++               kfree(map);
+                goto add_free_addrmap;
++       }
+
+        return 0;
+
+
+
+
+
+>         return 0;
+>
+>  add_free_addrmap:
+> --
+> 2.18.0.huawei.25
+>
