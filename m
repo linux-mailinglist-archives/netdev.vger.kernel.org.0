@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 345F03A215A
+	by mail.lfdr.de (Postfix) with ESMTP id EA1A23A215C
 	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 02:22:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbhFJAYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Jun 2021 20:24:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46986 "EHLO mail.kernel.org"
+        id S230294AbhFJAYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Jun 2021 20:24:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47002 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230154AbhFJAYR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Jun 2021 20:24:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 266BB61405;
+        id S230161AbhFJAYS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Jun 2021 20:24:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 980C4613FA;
         Thu, 10 Jun 2021 00:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623284541;
-        bh=UT4bRoY4r750vnIS8n/ntKe6s0TAOpA/C9HJkEv3Cd4=;
+        bh=W6L03CM7auTKxp84cA8W3FEfco1+DGB5kInjc61/js8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GPIFQ1SJ7sgxpQ2aS84Jnau+cK3uy4ZbfTyHSycgRfmNeCVxYBE+70gAJW6fd99nW
-         4jQYM3sDwrm4XgTWVLeDJl3wTEL3UgmLxie9vjnfLt6ZNQ35EKqqXkNTedKt6gOd0d
-         PDpx8CLG+hbp8fC4GmOLI5su1dSY0iuEfFXODAPhFndtAvbiXxCV6xciw2C9fPfoLh
-         zpJeCUIJsut5+J2FUYUr2QyEDKpSRnTM7xIPMO5EEG2kZ4ghmghP2S+dv1kzChhYXG
-         31IAJk3Iqf3zDxLKESHTdw67NTYJ2Y7GPzwWIXNh3Xkg6DKylrAvArN/AgLrMHinkw
-         IW767WjyBxbQw==
+        b=tdxbnTpwZLJq4RnNfx8rtjCyMXbbCrxmEf+rWDFyTONZUZxsRTOrVm44k5FGcMuOC
+         NLzCEAw6D5Ic9YNMcUO0Qn791Jsdwp632GCSnGa2frJbNMetC5aG0EoOBc/4SEgaFN
+         Del4f7yHj2osvIDI43Sh/D26Fhlq+aoooylSS4+4GI1u56tVX3CSX6Uf5ENs0jkgFZ
+         2rZjmC1pUyCGRO300QBoYj1zfKDmPkQ7R97+R5quP4TFddwMHGFzbNUB/SpyWtod3h
+         Pis6CyC6sjxuQ+K2wySNYMYNZ4yeVsakI3Ut65ph97D3EeXAnp86XP5mgrfeefRkbK
+         8syoWCN2WJNOQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>, Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 10/12] Revert "net/mlx5: Arm only EQs with EQEs"
-Date:   Wed,  9 Jun 2021 17:21:53 -0700
-Message-Id: <20210610002155.196735-11-saeed@kernel.org>
+        Aya Levin <ayal@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 11/12] net/mlx5e: Block offload of outer header csum for UDP tunnels
+Date:   Wed,  9 Jun 2021 17:21:54 -0700
+Message-Id: <20210610002155.196735-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210610002155.196735-1-saeed@kernel.org>
 References: <20210610002155.196735-1-saeed@kernel.org>
@@ -42,75 +41,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shay Drory <shayd@nvidia.com>
+From: Aya Levin <ayal@nvidia.com>
 
-In the scenario described below, an EQ can remain in FIRED state which
-can result in missing an interrupt generation.
+The device is able to offload either the outer header csum or inner
+header csum. The driver utilizes the inner csum offload. Hence, block
+setting of tx-udp_tnl-csum-segmentation and set it to off[fixed].
 
-The scenario:
-
-device                       mlx5_core driver
-------                       ----------------
-EQ1.eqe generated
-EQ1.MSI-X sent
-EQ1.state = FIRED
-EQ2.eqe generated
-                             mlx5_irq()
-                               polls - eq1_eqes()
-                               arm eq1
-                               polls - eq2_eqes()
-                               arm eq2
-EQ2.MSI-X sent
-EQ2.state = FIRED
-                              mlx5_irq()
-                              polls - eq2_eqes() -- no eqes found
-                              driver skips EQ arming;
-
-->EQ2 remains fired, misses generating interrupt.
-
-Hence, always arm the EQ by reverting the cited commit in fixes tag.
-
-Fixes: d894892dda25 ("net/mlx5: Arm only EQs with EQEs")
-Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
+Fixes: b49663c8fb49 ("net/mlx5e: Add support for UDP tunnel segmentation with outer checksum offload")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 77c0ca655975..940333410267 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -136,7 +136,7 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 263adc82b4e1..d4167f7be99c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4822,13 +4822,9 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+ 	}
  
- 	eqe = next_eqe_sw(eq);
- 	if (!eqe)
--		return 0;
-+		goto out;
+ 	if (mlx5_vxlan_allowed(mdev->vxlan) || mlx5_geneve_tx_allowed(mdev)) {
+-		netdev->hw_features     |= NETIF_F_GSO_UDP_TUNNEL |
+-					   NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-		netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL |
+-					   NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-		netdev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-		netdev->vlan_features |= NETIF_F_GSO_UDP_TUNNEL |
+-					 NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		netdev->hw_features     |= NETIF_F_GSO_UDP_TUNNEL;
++		netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL;
++		netdev->vlan_features |= NETIF_F_GSO_UDP_TUNNEL;
+ 	}
  
- 	do {
- 		struct mlx5_core_cq *cq;
-@@ -161,6 +161,8 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
- 		++eq->cons_index;
- 
- 	} while ((++num_eqes < MLX5_EQ_POLLING_BUDGET) && (eqe = next_eqe_sw(eq)));
-+
-+out:
- 	eq_update_ci(eq, 1);
- 
- 	if (cqn != -1)
-@@ -248,9 +250,9 @@ static int mlx5_eq_async_int(struct notifier_block *nb,
- 		++eq->cons_index;
- 
- 	} while ((++num_eqes < MLX5_EQ_POLLING_BUDGET) && (eqe = next_eqe_sw(eq)));
--	eq_update_ci(eq, 1);
- 
- out:
-+	eq_update_ci(eq, 1);
- 	mlx5_eq_async_int_unlock(eq_async, recovery, &flags);
- 
- 	return unlikely(recovery) ? num_eqes : 0;
+ 	if (mlx5e_tunnel_proto_supported_tx(mdev, IPPROTO_GRE)) {
 -- 
 2.31.1
 
