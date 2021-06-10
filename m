@@ -2,188 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 485613A2F82
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 17:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6AF3A2F9B
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 17:43:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231701AbhFJPmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 11:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbhFJPmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 11:42:08 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2381FC061574;
-        Thu, 10 Jun 2021 08:39:58 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id g24so3886874pji.4;
-        Thu, 10 Jun 2021 08:39:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Kc4pXr5gVNJ0GV4/7ScD/COeGEHHNK7iRy2xX2e12DI=;
-        b=IyHkDvw7B+4DLlhCIY1ijXU4xhYagkAothzqzrFunFLKuLnEVOqkdR2K4sb+G4yX4u
-         6tM4ZgYCPl6sy7KEg4m4SLIebhn6p+6GQAP2L6UVjjnnc5UXmpDqdIe+Y0FiEM8UhSe8
-         mkzSBptJ3N80xbNZshoFQReZ2hLe5viMlsmrAmcvh+9o7RlhVVlIGyYhy02LUBEF4an1
-         4+N1CKRID8/C2PcAORbife1Ix0eibaTSni68Ulr2YbI+Mzm1AxXZCKyVBBbU1i7if2hY
-         oQ/aoy0YCI39Whwwr5XipCmfiPViR1OaZ7oyXtfNyYZTCdnrxE6f5taifFDN4QQwKdzq
-         +Q0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Kc4pXr5gVNJ0GV4/7ScD/COeGEHHNK7iRy2xX2e12DI=;
-        b=dhnMFblOrHYLA22AiRbqWq57yBEMA9E63IO+oXxwiOmv/beHnYDsiVBaMyJUaxiX37
-         IO6nYKhQCqsZIMNR4W+7Ov+G8YDZf0K2n4fSSfpo7IhkG/XlLoLzhgMSz2swfCMPXYpi
-         jEtkPwjUXKQAz15DiDGZa0LodyQGyIAA2GqKdws68rKVVhfukdHBTeTleLhq0Y45PUDw
-         lq9tmVBWuAJ+r6JL5i4d+zjpBCoK7+o7T/3u7zfrpA6+Crp69ohv4cka3IBQEy7dhp6+
-         IiYzqAW8eLC4vs4vvCr9AFmoolGzQK8NClWwrznQNnJjxQCqBOzvN+/FtOTVQfzurvPS
-         p8cg==
-X-Gm-Message-State: AOAM532Tfq7r8hQAjp6tEqL8wjAaMHCIKAKUTI8bUA6MIGuoQY0o+/er
-        Yh04W6zYvjerLcvIkpg9v5A=
-X-Google-Smtp-Source: ABdhPJy1+X7uMGr8zSTlJxnbngnw425lzx3UTys1Mj/5qiNq30fMS492iOZMLFe6EE7yv4rXyxMmcw==
-X-Received: by 2002:a17:902:728d:b029:113:23:c65f with SMTP id d13-20020a170902728db02901130023c65fmr5425981pll.23.1623339597692;
-        Thu, 10 Jun 2021 08:39:57 -0700 (PDT)
-Received: from WRT-WX9.. ([141.164.41.4])
-        by smtp.gmail.com with ESMTPSA id o20sm2864553pjq.4.2021.06.10.08.39.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 08:39:57 -0700 (PDT)
-From:   Changbin Du <changbin.du@gmail.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Jakub Kici nski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Changbin Du <changbin.du@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Subject: [PATCH v3] net: make get_net_ns return error if NET_NS is disabled
-Date:   Thu, 10 Jun 2021 23:39:41 +0800
-Message-Id: <20210610153941.118945-1-changbin.du@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        id S231696AbhFJPpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 11:45:50 -0400
+Received: from mail-eopbgr80109.outbound.protection.outlook.com ([40.107.8.109]:46158
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230280AbhFJPpt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 11:45:49 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J4Jy1de3MXkYq6nTBB4RAwlpLBfxf6nhNcCFLnibiiUw22MHTm59fqnowTMKMcb7R4SrxHAhqZxfyo5TPP/JTxKpi++1LMUjF126dC9IhhG8RGh5xtBXW0W4GmQFqRwVgyDDht9B0MxYY7yFvtOoFF/11+LldIFO+ViZXCBQnil8gizMltLft4PcvYeZcubXkWHEnzb0UAZE0gzIC6PlAkXEenmyulHp/W9Q6Y9AZ54D2+u/uFZ9dfTQr6HFN9yHJ1yHz4kRictKMe7IyhUgBfIGUIcPCai1Nln3tNm1Nnb7p12KRldwvQViBFomRRveccTzKUi7ioGMGn5hMN9oLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SupeTJcAJle5SBF4sfDlfnIXtgA3Rq9AKXzhTokp6mw=;
+ b=VG1feMqTy5UxLuGzQqpvYlafj0iol6xhOsvGcmBQ+eXmlnAj3nDCYaPf/t/a5Sx0zkIm1DsYaujNnEx6ca97SBHIlrW7bjJJdbeUR8mKflR1BRBiXy6CTWKHIZ2WW95F63SyJEOFPBEc8qMxHFvvl5rnjYOR5DhmR+tHy4S8cYWcXA6qlRnoSBKrzfnDOobDoLc/wezUaEhGlxFkjZQlcjpjWLYEjrNyPiDstc42U56Z5zxNHTWd0/cMp0t8PyCuhii5StakCQJM0sWnPKeVdmtdqTDij2K8h/+fpPaU3Uq3vSWdWhjY5vEwJAk6NF0EUkJmVTM83sUIl03MpvGTXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SupeTJcAJle5SBF4sfDlfnIXtgA3Rq9AKXzhTokp6mw=;
+ b=MtMVB9uMbI4/EHNZxxQJQzJ48c6orXAGjmfdq4QnnVFXhq6exUHL2dLyIH64uFJLvNn82XKWKREFN6mg954rFWRA5jnLqX6ZbB1uZ/ipWuPDgjMVOsg6yBrQ3fU8ZcgowQwiZkqlY3DkvgWPAIyJTkT4lx7lms0QWPvrH3cEIak=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
+ HE1P190MB0268.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:62::24) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4219.21; Thu, 10 Jun 2021 15:43:48 +0000
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a%6]) with mapi id 15.20.4219.023; Thu, 10 Jun 2021
+ 15:43:48 +0000
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        linux-kernel@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Vadym Kochan <vkochan@marvell.com>
+Subject: [PATCH v2 0/3] net: marvell: prestera: add LAG support
+Date:   Thu, 10 Jun 2021 18:43:08 +0300
+Message-Id: <20210610154311.23818-1-vadym.kochan@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [217.20.186.93]
+X-ClientProxiedBy: AM3PR07CA0082.eurprd07.prod.outlook.com
+ (2603:10a6:207:6::16) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:7:56::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM3PR07CA0082.eurprd07.prod.outlook.com (2603:10a6:207:6::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.9 via Frontend Transport; Thu, 10 Jun 2021 15:43:47 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3d28fff7-7662-4cc1-dcdc-08d92c268989
+X-MS-TrafficTypeDiagnostic: HE1P190MB0268:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1P190MB02688C6E0551ECFD22EC975695359@HE1P190MB0268.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qSArwzWUeFueDvnmkmKhisAH5Fe5BD/w1buVblaVrYjel1mhbejpUKyQbGSQkR1SnXJAjHr71r/n+kdQ5So1q2fQzOutwiccAsvzNlGzWxlRD8mbqKX6dggOmn3xulu9VZujtkGQH5CDu7/CvAMcTT7OIlIls06s7tSQJDRJQ0J3KDSpZ7f5PdqvR/w0q5U0G98xr5n7VIHtOqknXpnwxW7nj8tWj2pCnzHKfojoy0oycuIeUe8dK24LaigBKW9M2uCWBCb5T3LBvv2hAnYvX1+6pH3adVFSlq7bb4xDYikZLQ3rWyHWyOkCPs3TR6KxlBoc02pHRFX5HAXaFWi088o2T9ytPKJdBgjdQONBLaI4JAUuCKxo9rtkYukaoIyoI4LZShCisDMUe7yHd2foB86ifXK04mh20sSuu8C60P2bLteEI5G6rvszx6OnPXRyiUlPlYQtkt0YlQbgnPGJjzpyGG6HBER4sAVBNxtz4wDdLVBy8lkO+9mYI6u14wlSMeU4zMgEhQpYBgMvABCRmWyuFU164opqFZsw2waJZCyc9moPvjFKXtNyRuvqgeIf+k6DVQL70NGESYWpMaMApdtPqx9vTO3WM04Y5//08w5W7iocDLBSuq+78r5jtdU4tpL7msFMkHmDYYfAIZzLsRcintaEhHg7MJWQnxv6dPC1F8Oq9AV8fGhP+7U7SjZwc2GIA2sTc+L1j5HLRn6h3oOZtxh8WEJ5bvSTiofZkzjjsJZ7oJHpQUFcYcz5FbIqr30d2F9wG1mubDIIeteCOQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(376002)(39830400003)(346002)(136003)(366004)(66476007)(66556008)(8936002)(66946007)(8676002)(6486002)(6512007)(478600001)(2906002)(83380400001)(1076003)(6666004)(186003)(956004)(5660300002)(2616005)(6506007)(38350700002)(38100700002)(52116002)(36756003)(44832011)(966005)(110136005)(316002)(26005)(16526019)(54906003)(86362001)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?P1s678kP4kGMdQl1KAxZnYwZX5Gsd8FM5GxXaDGZcGLBK0GMhBt9anSOrEP8?=
+ =?us-ascii?Q?WIs4wSZM9dHqRWtkB252jE1/O647Z/VROHytqU/0LMAASllD2WaWD5dutzwK?=
+ =?us-ascii?Q?zq3PJbroNrJKWC2yvyjCF3P+NEZ2mPZjCON9ZA1f2D88prW7fHM1t7++dQhv?=
+ =?us-ascii?Q?wdVDVzOqufwHeWaUuqZbzghhxpPuc+dHSPOWwykPJcPv/Ua0Jr/KaHEpLbRz?=
+ =?us-ascii?Q?aPNghkbFbGBhRiF4OAvkCv24z32nzzCzBFnvq/CK0bKO9PsMAdeiSQ7l34EJ?=
+ =?us-ascii?Q?JwCTPto5tjMzHBBUmpGHUo6TZhQWjkGo7YIN7gOA513WjrePXMuTLZCG7zgQ?=
+ =?us-ascii?Q?h2mF3CvsLxEKbeeYXtmtEAyfQWugzvO+SqzkC22ufqSbIw71lOML1UOenk2I?=
+ =?us-ascii?Q?OXR6XpCTyDechNSkJj6pzDIT1+MYZuBcb4lL11IMFO05MclKUU2i2Y8IX1VB?=
+ =?us-ascii?Q?28OiEJ5G8SeCKTuszQTAr/Yzdr4gyWs0uZ53p8GBVeITRCAix7i3FdvdS1wH?=
+ =?us-ascii?Q?ukrCJBMfaL4yVQfgueBAdc5sEBU6/P5VFs/2M9a/wBAT9ONT0Qylo67MyUc9?=
+ =?us-ascii?Q?U2TgOu5jdSJJnMzEw+iSMYiLsN2YgyBpbTC89k1O7EzcybMpcruLFLWW9A4x?=
+ =?us-ascii?Q?fB9KISOAD54VwvZTguw4CpGfD7ItZtzXmcB/EJamH+dZidfqPYCn5gyzekdc?=
+ =?us-ascii?Q?39LgzH42Wa0rFzKeM6OLyLpqKuRePvE1AWvVYF20CoAOg72vfZSWjo2X6hQX?=
+ =?us-ascii?Q?1tVj7PKKw3JrlMh8QkbWQ28BqwI4IfcG7xha0rxIPkBHPFBJeaGv+3ISYGw0?=
+ =?us-ascii?Q?ei67t4c2CyTkp0ryNdh293+/InnEbzON4kXejjKK3Y5+TAYsVp8Xx+SRPHLO?=
+ =?us-ascii?Q?TL0Tt35ezogQdz5WURraJyLl04Ez7O9NkSwoTG9ucuqchWVwd1yOVkaff+XD?=
+ =?us-ascii?Q?kfo4+030W/CsYEcXz4WwCa/9mDjBsHjbpSufwFnNFtyhEgQnyqqWjoP+fjic?=
+ =?us-ascii?Q?R9L6lzssVxCFfk/3Ri6PGHHYlOuxV6wkor8a27/89YVRtWmyNtquHIVyfEGH?=
+ =?us-ascii?Q?JnTp/7ztEy4VFXXGXKGFuCFh99xIkBQdj7GeN0BkZqb26BtEvUn8KF3roWof?=
+ =?us-ascii?Q?Dloui0m2s54wINyL1FplPntxumJz0xs4MN2SyDabZ6DUCC2IbvU8ckcmNkp2?=
+ =?us-ascii?Q?fwEh50zZO/7wG7/YPBalWyFJSMu87LDIDXPk8BfkqCmo/R9VO4lJNqh+Y4zO?=
+ =?us-ascii?Q?Um3Zr+9qCliRLoJ/YeE1KmYEiTeEnmJN7zgMNU+iLZqvAwJE6CKMi3S8+NyQ?=
+ =?us-ascii?Q?lkR/OIE7OD5j6KrYMM4ycNOm?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d28fff7-7662-4cc1-dcdc-08d92c268989
+X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2021 15:43:47.9397
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: k7UfCf/9okwmcMoYYVIt8s8TSIVPdnC8Bwme8aYLYO262vTx9VlAEZa6qbi7odWDcoLIserbduyl0gZdtd5sFBrOwxuu+zRa+VB1HhVbQ9w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0268
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a panic in socket ioctl cmd SIOCGSKNS when NET_NS is not enabled.
-The reason is that nsfs tries to access ns->ops but the proc_ns_operations
-is not implemented in this case.
+From: Vadym Kochan <vkochan@marvell.com>
 
-[7.670023] Unable to handle kernel NULL pointer dereference at virtual address 00000010
-[7.670268] pgd = 32b54000
-[7.670544] [00000010] *pgd=00000000
-[7.671861] Internal error: Oops: 5 [#1] SMP ARM
-[7.672315] Modules linked in:
-[7.672918] CPU: 0 PID: 1 Comm: systemd Not tainted 5.13.0-rc3-00375-g6799d4f2da49 #16
-[7.673309] Hardware name: Generic DT based system
-[7.673642] PC is at nsfs_evict+0x24/0x30
-[7.674486] LR is at clear_inode+0x20/0x9c
+The following features are supported:
 
-The same to tun SIOCGSKNS command.
+    - LAG basic operations
+        - create/delete LAG
+        - add/remove a member to LAG
+        - enable/disable member in LAG
+    - LAG Bridge support
+    - LAG VLAN support
+    - LAG FDB support
 
-To fix this problem, we make get_net_ns() return -EINVAL when NET_NS is
-disabled. Meanwhile move it to right place net/core/net_namespace.c.
+Limitations:
 
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: David Laight <David.Laight@ACULAB.COM>
-Cc: Christian Brauner <christian.brauner@ubuntu.com>
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
+    - Only HASH lag tx type is supported
+    - The Hash parameters are not configurable. They are applied
+      during the LAG creation stage.
+    - Enslaving a port to the LAG device that already has an
+      upper device is not supported.
 
----
-Patch "net: make get_net_ns_by_fd inline if NET_NS is disabled" must be
-applied first.
----
- include/linux/socket.h      |  2 --
- include/net/net_namespace.h |  6 ++++++
- net/core/net_namespace.c    | 12 ++++++++++++
- net/socket.c                | 13 -------------
- 4 files changed, 18 insertions(+), 15 deletions(-)
+Changes extracted from:
 
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index b8fc5c53ba6f..0d8e3dcb7f88 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -438,6 +438,4 @@ extern int __sys_socketpair(int family, int type, int protocol,
- 			    int __user *usockvec);
- extern int __sys_shutdown_sock(struct socket *sock, int how);
- extern int __sys_shutdown(int fd, int how);
--
--extern struct ns_common *get_net_ns(struct ns_common *ns);
- #endif /* _LINUX_SOCKET_H */
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index 0a25f95691d9..bdc0459a595e 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -185,6 +185,7 @@ void net_ns_get_ownership(const struct net *net, kuid_t *uid, kgid_t *gid);
- 
- void net_ns_barrier(void);
- 
-+struct ns_common *get_net_ns(struct ns_common *ns);
- struct net *get_net_ns_by_fd(int fd);
- #else /* CONFIG_NET_NS */
- #include <linux/sched.h>
-@@ -206,6 +207,11 @@ static inline void net_ns_get_ownership(const struct net *net,
- 
- static inline void net_ns_barrier(void) {}
- 
-+static inline struct ns_common *get_net_ns(struct ns_common *ns)
-+{
-+	return ERR_PTR(-EINVAL);
-+}
-+
- static inline struct net *get_net_ns_by_fd(int fd)
- {
- 	return ERR_PTR(-EINVAL);
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 6a0d9583d69c..9b5a767eddd5 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -641,6 +641,18 @@ void __put_net(struct net *net)
- }
- EXPORT_SYMBOL_GPL(__put_net);
- 
-+/**
-+ * get_net_ns - increment the refcount of the network namespace
-+ * @ns: common namespace (net)
-+ *
-+ * Returns the net's common namespace.
-+ */
-+struct ns_common *get_net_ns(struct ns_common *ns)
-+{
-+	return &get_net(container_of(ns, struct net, ns))->ns;
-+}
-+EXPORT_SYMBOL_GPL(get_net_ns);
-+
- struct net *get_net_ns_by_fd(int fd)
- {
- 	struct file *file;
-diff --git a/net/socket.c b/net/socket.c
-index 27e3e7d53f8e..4f2c6d2795d0 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -1072,19 +1072,6 @@ static long sock_do_ioctl(struct net *net, struct socket *sock,
-  *	what to do with it - that's up to the protocol still.
-  */
- 
--/**
-- *	get_net_ns - increment the refcount of the network namespace
-- *	@ns: common namespace (net)
-- *
-- *	Returns the net's common namespace.
-- */
--
--struct ns_common *get_net_ns(struct ns_common *ns)
--{
--	return &get_net(container_of(ns, struct net, ns))->ns;
--}
--EXPORT_SYMBOL_GPL(get_net_ns);
--
- static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
- {
- 	struct socket *sock;
+    https://lkml.org/lkml/2021/2/3/877
+
+and marked with "v2".
+
+v2:
+
+    There are 2 additional preparation patches which simplifies the
+    netdev topology handling.
+
+    1) Initialize 'lag' with NULL in prestera_lag_create()             [suggested by Vladimir Oltean]
+
+    2) Use -ENOSPC in prestera_lag_port_add() if max lag               [suggested by Vladimir Oltean]
+       numbers were reached.
+
+    3) Do not propagate netdev events to prestera_switchdev            [suggested by Vladimir Oltean]
+       but call bridge specific funcs. It simplifies the code.
+
+    4) Check on info->link_up in prestera_netdev_port_lower_event()    [suggested by Vladimir Oltean]
+
+    5) Return -EOPNOTSUPP in prestera_netdev_port_event() in case      [suggested by Vladimir Oltean]
+       LAG hashing mode is not supported.
+
+    6) Do not pass "lower" netdev to bridge join/leave functions.      [suggested by Vladimir Oltean]
+       It is not need as offloading settings applied on particular
+       physical port. It requires to do extra upper dev lookup
+       in case port is in the LAG which is in the bridge on vlans add/del.
+
+Serhiy Boiko (1):
+  net: marvell: prestera: add LAG support
+
+Vadym Kochan (2):
+  net: marvell: prestera: move netdev topology validation to
+    prestera_main
+  net: marvell: prestera: do not propagate netdev events to
+    prestera_switchdev.c
+
+ .../net/ethernet/marvell/prestera/prestera.h  |  30 +-
+ .../ethernet/marvell/prestera/prestera_hw.c   | 180 +++++++++++-
+ .../ethernet/marvell/prestera/prestera_hw.h   |  14 +
+ .../ethernet/marvell/prestera/prestera_main.c | 267 +++++++++++++++++-
+ .../marvell/prestera/prestera_switchdev.c     | 163 ++++++-----
+ .../marvell/prestera/prestera_switchdev.h     |   7 +-
+ 6 files changed, 573 insertions(+), 88 deletions(-)
+
 -- 
-2.30.2
+2.17.1
 
