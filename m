@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C50C3A365A
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 23:45:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C553E3A3668
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 23:45:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbhFJVrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 17:47:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51632 "EHLO
+        id S231283AbhFJVrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 17:47:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33844 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231148AbhFJVrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 17:47:10 -0400
+        by vger.kernel.org with ESMTP id S231290AbhFJVrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 17:47:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623361510;
+        s=mimecast20190719; t=1623361526;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=guTfU4e8GDRqzy/1ajS1PObKT8FQPjuFX79A5J7ymwU=;
-        b=ccp5ZMfpWqhUHbA4RgIS+5tl5VxnJUDLXM5OVwuVsS7SXXGv3179zlWJjYzT8fSiJfulVW
-        yEJPfqEcGXn5KlVJ0awflg1ho2LlOVQhf9mds1G9eUGo8qkpoqT5HHrLidtBb3RHoTS109
-        qLfZa4n/NBXXc4HfmeKhSoirm/BPUE0=
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
- [209.85.167.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-596-RM5oKQh8O12FAGdUL5tVAw-1; Thu, 10 Jun 2021 17:45:09 -0400
-X-MC-Unique: RM5oKQh8O12FAGdUL5tVAw-1
-Received: by mail-oi1-f200.google.com with SMTP id w12-20020aca490c0000b02901f1fdc1435aso1886981oia.14
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 14:45:09 -0700 (PDT)
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ViPuuVG2OqeHFqV52axiUAscOGrI/FqROmXXJfWF5s0=;
+        b=VHHj7JjwQvXeSwEguEQvikIAA397PeoHb/8QYPC9DPhXHcg1SKEJ2CEn/3VhoGoS8jc7Y9
+        aZBG0N75L39rJVY4udu6lNjCAZxnbED/3SQ+Noau2U7MSkkjvlg9wQHcX4b8xB6USSzD4a
+        DRInDhepfnZZLg3wZI0TNkeZP6XD98A=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-554-mfSQgxq1OcSIfpbQK_4CRw-1; Thu, 10 Jun 2021 17:45:25 -0400
+X-MC-Unique: mfSQgxq1OcSIfpbQK_4CRw-1
+Received: by mail-ot1-f69.google.com with SMTP id e16-20020a0568302010b02903feaaa5cf10so667205otp.8
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 14:45:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=guTfU4e8GDRqzy/1ajS1PObKT8FQPjuFX79A5J7ymwU=;
-        b=JSs0WfZX3PAbdm1tGwC9hrYBZ4s0SO4GcZiDCmQRbg/CKXTFox7lf11GbtKZjfc2Pf
-         QUInL+hYSXM48xJhNf4fRnpH5qvmsV3tvMS7O3ekQZFcuw26kuPRmXFaaRyIfFookrgL
-         Dm/bb/ofDiFMVs2rxx+O3G8PKNld8uqsMz00uuRy830WGnawEklZ+1p1AxWjEItD4zhn
-         IGnUpHZxvnFZYmfFupTD8xUxZ+TlgdaV4gLX4OpKv7FqQm1V+pjzNDgYjmzNqCjNu27G
-         msX7gjLaNWoRbNlnDNCEeSOVSg4xAplx+Rzs0F10KKMVSfYJBTod7izI+SwozPvEbjQh
-         EiqA==
-X-Gm-Message-State: AOAM532gmdHAcuipmKvqlh+Xm5m6ZNLOyR0OFGEN0RJAdzPYYl2Ha/Oc
-        DoPls1KtddTXgbY7saYaowBqyccelcaYQQMZ0ONRxbcyoWmk1Vn33zIlq4/wqPUIp0rNUAdvNA2
-        6+kS8Z/XuHcbhIBt7
-X-Received: by 2002:a9d:17d0:: with SMTP id j74mr386209otj.92.1623361509077;
-        Thu, 10 Jun 2021 14:45:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyjBwKjRTZldk72q+UJkwklQ0sAnXANOb5b/9su/9MNUdqJcH0ISmXgySFJudebSgHFMzWVdQ==
-X-Received: by 2002:a9d:17d0:: with SMTP id j74mr386187otj.92.1623361508840;
-        Thu, 10 Jun 2021 14:45:08 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ViPuuVG2OqeHFqV52axiUAscOGrI/FqROmXXJfWF5s0=;
+        b=gznpnqDeWeHjviHNfHpOlxodOviVmzb8ZJ15VpR1beWoaZXOBTdH6wM8OQu2+jkig3
+         1hFL+oRGpsmfPOiM5WJrBA6LLu3hd5kVXZbRqoTq1vQB8I7E5k1a69izi06S+Y9J+QNI
+         Aq7SvHN5rZ6mG7MmHnoSTcOaaSGhAmuhKUu8BSWFmp5MJyFbGrExWTUZsMtWnUMXrUAb
+         yeEfJhFbwjzQkyL175vSkSER7j4SDKsjgmhff+PNZ5uPOo45TjIqsmdxfd3RXitJYzgM
+         dKq7Qo25aesv/jRU2ZGk3SxbLRTbYiOxGcJAfQlJTI14Tt7FtjvDpi7/DmineomAZeES
+         SbOg==
+X-Gm-Message-State: AOAM532OmC6XyNnO5SsmzFrMb/+awVZyTHyLqE1xpIqZeINi7DoFPGtZ
+        LJ9eCebKDBw9WeITeUSf14XDg+Ouyfxbu4OjDc/aXYyDfd00tm9VUKVXna/a038jajX0Henzjo9
+        /pabtVy2XOxRW0DlJ
+X-Received: by 2002:a4a:1145:: with SMTP id 66mr522753ooc.14.1623361524883;
+        Thu, 10 Jun 2021 14:45:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzMoOE2fXWndbKi6EkTffFwfztc6UDDB9ZibLraP0UKVrXK7cwIRfO3Zax6Rh3Y2+SPIntMDQ==
+X-Received: by 2002:a4a:1145:: with SMTP id 66mr522721ooc.14.1623361524719;
+        Thu, 10 Jun 2021 14:45:24 -0700 (PDT)
 Received: from localhost.localdomain.com (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id i15sm881839ots.39.2021.06.10.14.45.04
+        by smtp.gmail.com with ESMTPSA id i15sm881839ots.39.2021.06.10.14.45.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 14:45:08 -0700 (PDT)
+        Thu, 10 Jun 2021 14:45:24 -0700 (PDT)
 From:   trix@redhat.com
 To:     robh+dt@kernel.org, tsbogend@alpha.franken.de, jic23@kernel.org,
         lars@metafoo.de, tomas.winkler@intel.com, arnd@arndb.de,
@@ -70,10 +71,12 @@ Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com, Tom Rix <trix@redhat.com>
-Subject: [PATCH 0/7] check Makefile and Kconfigs for SPDX tag
-Date:   Thu, 10 Jun 2021 14:44:30 -0700
-Message-Id: <20210610214438.3161140-1-trix@redhat.com>
+Subject: [PATCH 1/7] checkpatch: check Makefiles and Kconfigs for SPDX tag
+Date:   Thu, 10 Jun 2021 14:44:32 -0700
+Message-Id: <20210610214438.3161140-3-trix@redhat.com>
 X-Mailer: git-send-email 2.26.3
+In-Reply-To: <20210610214438.3161140-1-trix@redhat.com>
+References: <20210610214438.3161140-1-trix@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -82,42 +85,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tom Rix <trix@redhat.com>
 
-A followup to
-https://lore.kernel.org/linux-fpga/YMD2yxtsQN16MoPA@kroah.com/
-So I do not repeat this problem,  add a SPDX checker for Makefiles and
-Kconfigs to checkpatch.
+Both Makefiles and Kconfigs should carry an SPDX tag.
+Something like
+ # SPDX-License-Identifier: GPL-2.0-only
 
-Then treewide fix the malformed Makefiles and Kconfigs.
-Those missing tags are numerous.
-Kconfig has 46
-Makefile has 141
+Add a matcher to existing check
 
-Run checkpatch generally over the dirs with Makefile or Kconfig problems
-to check nothing broke in checkpatch.  Fix the few problems turned up
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ scripts/checkpatch.pl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-Tom Rix (7):
-  checkpatch: check Makefiles and Kconfigs for SPDX tag
-  mei: hdcp: SPDX tag should be the first line
-  drivers/soc/litex: fix spelling of SPDX tag
-  MIPS: Loongson64: fix spelling of SPDX tag
-  iio/scmi: fix spelling of SPDX tag
-  mt76: add a space between comment char and SPDX tag
-  mt76: use SPDX header file comment style
-
- arch/mips/boot/dts/loongson/Makefile                 | 2 +-
- drivers/iio/common/scmi_sensors/Makefile             | 2 +-
- drivers/misc/mei/hdcp/Kconfig                        | 1 -
- drivers/net/wireless/mediatek/mt76/mt7615/Makefile   | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7615/sdio.h     | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7915/Makefile   | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7915/testmode.h | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7921/Makefile   | 2 +-
- drivers/soc/litex/Kconfig                            | 2 +-
- drivers/soc/litex/Makefile                           | 2 +-
- scripts/checkpatch.pl                                | 2 +-
- 11 files changed, 10 insertions(+), 11 deletions(-)
-
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index dad87c3686326..7fca3a7c38791 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -3572,7 +3572,7 @@ sub process {
+ 					$comment = '/*';
+ 				} elsif ($realfile =~ /\.(c|dts|dtsi)$/) {
+ 					$comment = '//';
+-				} elsif (($checklicenseline == 2) || $realfile =~ /\.(sh|pl|py|awk|tc|yaml)$/) {
++				} elsif (($checklicenseline == 2) || $realfile =~ /\.(sh|pl|py|awk|tc|yaml)$|Kconfig|Makefile/) {
+ 					$comment = '#';
+ 				} elsif ($realfile =~ /\.rst$/) {
+ 					$comment = '..';
 -- 
 2.26.3
 
