@@ -2,67 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3B1C3A35A6
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 23:10:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38BF43A35B0
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 23:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbhFJVMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 17:12:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47488 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231270AbhFJVMB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Jun 2021 17:12:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id BAED561431;
-        Thu, 10 Jun 2021 21:10:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623359404;
-        bh=m6fNHg3pqR5yrubis6OTYhXnestF5ROcnkVag5Iyg5g=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ieBfoY6z//+z/Ezv3PHLot1WdJKLnfY7i2bxzMJzhZ3sXbF3Rd/a5DgzZv+hs/8fo
-         4NFakA4LfHaRjrxzKpLii+bwK0keAKcJrG39qywIgr8mEWzt981z6HVa9jWG+tS5lD
-         FpOiUCkIhKZONMjXT6sT5tsS8Rgo0gH+++1vKIVPcYgYMPDzpjOkLK/lmmsgmVSPYI
-         KGt9SwrFxjRIT6mNiMztA8QlWXY9TFn3I4x3nU4dbycXs4lFETSyZqmZoqEzt9wJpu
-         srxOeH5j4jMBjNB2sztoHGXhqUPJcnXZZ2jjBpeEYlu0ChTi+TngqetgJGxc1Yj7KN
-         Mt8KytKYi08lg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B12D660A6C;
-        Thu, 10 Jun 2021 21:10:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: mido: mdio-mux-bcm-iproc: Use
- devm_platform_get_and_ioremap_resource()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162335940472.9889.16622785228018966409.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Jun 2021 21:10:04 +0000
-References: <20210610091712.4146291-1-yangyingliang@huawei.com>
-In-Reply-To: <20210610091712.4146291-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch
+        id S230297AbhFJVNo convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Jun 2021 17:13:44 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:49980 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229963AbhFJVNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 17:13:43 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id AA6424F7DFB91;
+        Thu, 10 Jun 2021 14:11:46 -0700 (PDT)
+Date:   Thu, 10 Jun 2021 14:11:42 -0700 (PDT)
+Message-Id: <20210610.141142.1384244468678097702.davem@davemloft.net>
+To:     hbut_tan@163.com
+Cc:     elder@kernel.org, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tanzhongjun@yulong.com
+Subject: Re: [PATCH] soc: qcom: ipa: Remove superfluous error message
+ around platform_get_irq()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210610140118.1437-1-hbut_tan@163.com>
+References: <20210610140118.1437-1-hbut_tan@163.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 10 Jun 2021 14:11:46 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From:  Zhongjun Tan <hbut_tan@163.com>
+Date: Thu, 10 Jun 2021 22:01:18 +0800
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 10 Jun 2021 17:17:12 +0800 you wrote:
-> Use devm_platform_get_and_ioremap_resource() to simplify
-> code and avoid a null-ptr-deref by checking 'res' in it.
-> 
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/net/mdio/mdio-mux-bcm-iproc.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-
-Here is the summary with links:
-  - [net-next] net: mido: mdio-mux-bcm-iproc: Use devm_platform_get_and_ioremap_resource()
-    https://git.kernel.org/netdev/net-next/c/8a55a73433e7
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> diff --git a/drivers/net/ipa/ipa_smp2p.c b/drivers/net/ipa/ipa_smp2p.c
+> index 34b68dc43886..93270e50b6b3 100644
+> --- a/drivers/net/ipa/ipa_smp2p.c
+> +++ b/drivers/net/ipa/ipa_smp2p.c
+> @@ -177,11 +177,8 @@ static int ipa_smp2p_irq_init(struct ipa_smp2p *smp2p, const char *name,
+>  	int ret;
+>  
+>  	ret = platform_get_irq_byname(smp2p->ipa->pdev, name);
+> -	if (ret <= 0) {
+> -		dev_err(dev, "DT error %d getting \"%s\" IRQ property\n",
+> -			ret, name);
+> +	if (ret <= 0)
+Applied, but this code still rejects an irq of zero which is a valid irq number.
 
