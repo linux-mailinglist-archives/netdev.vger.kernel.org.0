@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 331143A32D0
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:14:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ABC13A32D6
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:15:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbhFJSQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 14:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230428AbhFJSQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:16:43 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61171C061760
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 11:14:32 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id ce15so620799ejb.4
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 11:14:32 -0700 (PDT)
+        id S231146AbhFJSRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 14:17:40 -0400
+Received: from mail-ej1-f45.google.com ([209.85.218.45]:37608 "EHLO
+        mail-ej1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229963AbhFJSRj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:17:39 -0400
+Received: by mail-ej1-f45.google.com with SMTP id ce15so620999ejb.4
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 11:15:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=G07YeSLYEs/CHaiFtuKkZ30d/lVM7JF2e8O5v758x8Y=;
-        b=Ar07Llw+O+n+EBKbXKCY6ckOmFSHeGu1VPIdQJHp33g90LN0wqKmGbQ+NGZPxRUVRr
-         yF7R7MgY/stuZTHWQe3Isbiv83CTln9f8UpVGCoZkOJo6c82R1yQnfGHA3ZF1Bl7DI2B
-         2SOEK7iMAwMTZkOTXtIKxpVIRhQCZYEO1o0UrH/i2LRvaLIozs0c8if/L9KVcxO7kOtD
-         RVf04ZFEttVl4VFVxOSqtGcqQgVyJV7gKFoMaNbfmS/Ykkdk5zzNjYn15pF5LITgJFuU
-         yXFpgq1j1JVbqyTuLJAGVy+HvNbzWQmk7QJhXsWtYdh8nEm4/jOVjNwdBkkYJEnvR22/
-         cERQ==
+        bh=a7vhUiTYDEG/V1oZMelDSdoMfqEJq1hJ94swJWeR58A=;
+        b=hAsmwndiCHmufp2lbNk5junpdsZCk0Ev53GOeLOTDza0SsDgw5s6b5vu13VcHsDAn3
+         1QyJSMhiwX5WfZr5BD9ueTMP8lmb8zrdPLi3Fu7uMnGeiLtDU6hsI8JwWTaOheG+Nth/
+         r0iHMv0rBoYfOf6qsjIcSEV1iZJ9DPV1jOppfexn4orV6BiWnDDRE+rmL0yc8cFANNci
+         lw8U4DXtJr+vANQOxqTMYGopNYvz0iWHpMrFwbGhILFDtyN6VF7vTg1D+P5VyniM6sLG
+         Qj4WHLPMF1PO+6nQDKuXGoFLT55oHbQltYA+YNnjVBWhkP/C7ximuTC2DPEzBdGbqfpD
+         gv4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=G07YeSLYEs/CHaiFtuKkZ30d/lVM7JF2e8O5v758x8Y=;
-        b=MdNnzZ4JaAdsBPgOCIp9c/WBWAW8eMQt0a3tlV8zWzxnEVKUjzRSogdBqMFFIcIydF
-         qdcUMxoiwK5CpjXhiKMXWNiCu6Q/vF8L2MTmn75iZ7EqP4LkJmoU2MAi3Kfz8slywmlI
-         jwn9lj5vMxTBxa3+PtAIFnv9eU2zmk/y8Xz8j8BpUDHYdC8AuwSgGWrLeJF70xbJADWC
-         RFNHGW/FEfIQyew3YPToJpXjQ48FG979va7Ia5FepmT5EISfO+sJEhdiIT1l2orCnC/W
-         DkdvLYtBO0fnEcTdPF8BfEu8eHvfUKxXyB9eM8zQiqjirtfJKj03hR0uBu0mZp4tNd78
-         DRXA==
-X-Gm-Message-State: AOAM530S5M8nbHgG0kFcU8IBTiQv+zxFgfqhgC/zLUXxfz8e/h1wCFe0
-        kliZVg1WqEJYFWx9HkcjuYg=
-X-Google-Smtp-Source: ABdhPJwdyvfSeO/GK14PTJGI6kBFj+r1VZx8kagpkD/qUIrYy6h6oDS81cLfG0BIyh7VAiMy9qtRxw==
-X-Received: by 2002:a17:906:1912:: with SMTP id a18mr833650eje.117.1623348870860;
-        Thu, 10 Jun 2021 11:14:30 -0700 (PDT)
+        bh=a7vhUiTYDEG/V1oZMelDSdoMfqEJq1hJ94swJWeR58A=;
+        b=C8ZcHpocL4nyF0seYPVrtkydLJhwfs9Bi74vNucVI5VTnBc6IsaXmvENLHQNhbFqr4
+         PIGoGNiGYc0cMrGKDQF0aewURMH+rjRCNFDo34k7VjD57nvJgKoAvYgqNNl/CL+Qp70/
+         COL5zEeD4tbLMEFiUGS1pTiKe/C/2AXmO0GQCxV4G6GG9Azk2a2uMgd9kyCPEpRuWFQp
+         NHjMJxAmZzYa458lmKxc/EiphHsuhzDPI9A8wXNjy/v9p3VBBZqswwIQhErGI1iq0Gyw
+         IR9wPh/UliaDpuljC9KZ9poemhxqrlmwrJ3lke5ryrboOzYVRb4MxpYrYiQe+N4vrmuS
+         wv+Q==
+X-Gm-Message-State: AOAM530PINdf6psiwXY8aTMKtX2IR3UOIKuIa5PfStfQyasmgnsO+3dK
+        aOCR+9leiDUh2lWLjZ6gTW61BpNpgug=
+X-Google-Smtp-Source: ABdhPJx9Q2VHtaKFjYhRfWGGWEkr7Zzf0tviL72m28YULFJg45SsYOnQ6IUJxlVp92mO92DvEFILvQ==
+X-Received: by 2002:a17:906:520f:: with SMTP id g15mr873012ejm.126.1623348873890;
+        Thu, 10 Jun 2021 11:14:33 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id dh18sm1705660edb.92.2021.06.10.11.14.28
+        by smtp.gmail.com with ESMTPSA id dh18sm1705660edb.92.2021.06.10.11.14.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jun 2021 11:14:29 -0700 (PDT)
+        Thu, 10 Jun 2021 11:14:32 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -64,9 +61,9 @@ Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 04/13] net: pcs: xpcs: move register bit descriptions to a header file
-Date:   Thu, 10 Jun 2021 21:14:01 +0300
-Message-Id: <20210610181410.1886658-5-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 05/13] net: pcs: xpcs: add support for sgmii with no inband AN
+Date:   Thu, 10 Jun 2021 21:14:02 +0300
+Message-Id: <20210610181410.1886658-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210610181410.1886658-1-olteanv@gmail.com>
 References: <20210610181410.1886658-1-olteanv@gmail.com>
@@ -78,253 +75,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Vendors which integrate the Designware XPCS might modify a few things
-here and there, and to support those, it's best to create separate C
-files in order to not clutter up the main pcs-xpcs.c.
+In fixed-link use cases, the XPCS can disable the clause 37 in-band
+autoneg process, disable the "Automatic Speed Mode Change after CL37 AN"
+setting, and force operation in a speed dictated by management.
 
-Because the vendor files might want to access the common xpcs registers
-too, let's move them in a header file which is local to this driver and
-can be included by vendor files as appropriate.
+Add support for this operating mode.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 v1->v2: none
 
- MAINTAINERS                |   1 +
- drivers/net/pcs/pcs-xpcs.c |  97 +---------------------------------
- drivers/net/pcs/pcs-xpcs.h | 103 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 105 insertions(+), 96 deletions(-)
- create mode 100644 drivers/net/pcs/pcs-xpcs.h
+ drivers/net/pcs/pcs-xpcs.c | 41 +++++++++++++++++++++++++++++++++++---
+ 1 file changed, 38 insertions(+), 3 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 85a87a93e194..004c0d1e723d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17682,6 +17682,7 @@ M:	Jose Abreu <Jose.Abreu@synopsys.com>
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/pcs/pcs-xpcs.c
-+F:	drivers/net/pcs/pcs-xpcs.h
- F:	include/linux/pcs/pcs-xpcs.h
- 
- SYNOPSYS DESIGNWARE I2C DRIVER
 diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index a2cbb2d926b7..8ca7592b02ec 100644
+index 8ca7592b02ec..743b53734eeb 100644
 --- a/drivers/net/pcs/pcs-xpcs.c
 +++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -11,102 +11,7 @@
- #include <linux/mdio.h>
- #include <linux/phylink.h>
- #include <linux/workqueue.h>
--
--#define SYNOPSYS_XPCS_ID		0x7996ced0
--#define SYNOPSYS_XPCS_MASK		0xffffffff
--
--/* Vendor regs access */
--#define DW_VENDOR			BIT(15)
--
--/* VR_XS_PCS */
--#define DW_USXGMII_RST			BIT(10)
--#define DW_USXGMII_EN			BIT(9)
--#define DW_VR_XS_PCS_DIG_STS		0x0010
--#define DW_RXFIFO_ERR			GENMASK(6, 5)
--
--/* SR_MII */
--#define DW_USXGMII_FULL			BIT(8)
--#define DW_USXGMII_SS_MASK		(BIT(13) | BIT(6) | BIT(5))
--#define DW_USXGMII_10000		(BIT(13) | BIT(6))
--#define DW_USXGMII_5000			(BIT(13) | BIT(5))
--#define DW_USXGMII_2500			(BIT(5))
--#define DW_USXGMII_1000			(BIT(6))
--#define DW_USXGMII_100			(BIT(13))
--#define DW_USXGMII_10			(0)
--
--/* SR_AN */
--#define DW_SR_AN_ADV1			0x10
--#define DW_SR_AN_ADV2			0x11
--#define DW_SR_AN_ADV3			0x12
--#define DW_SR_AN_LP_ABL1		0x13
--#define DW_SR_AN_LP_ABL2		0x14
--#define DW_SR_AN_LP_ABL3		0x15
--
--/* Clause 73 Defines */
--/* AN_LP_ABL1 */
--#define DW_C73_PAUSE			BIT(10)
--#define DW_C73_ASYM_PAUSE		BIT(11)
--#define DW_C73_AN_ADV_SF		0x1
--/* AN_LP_ABL2 */
--#define DW_C73_1000KX			BIT(5)
--#define DW_C73_10000KX4			BIT(6)
--#define DW_C73_10000KR			BIT(7)
--/* AN_LP_ABL3 */
--#define DW_C73_2500KX			BIT(0)
--#define DW_C73_5000KR			BIT(1)
--
--/* Clause 37 Defines */
--/* VR MII MMD registers offsets */
--#define DW_VR_MII_MMD_CTRL		0x0000
--#define DW_VR_MII_DIG_CTRL1		0x8000
--#define DW_VR_MII_AN_CTRL		0x8001
--#define DW_VR_MII_AN_INTR_STS		0x8002
--/* Enable 2.5G Mode */
--#define DW_VR_MII_DIG_CTRL1_2G5_EN	BIT(2)
--/* EEE Mode Control Register */
--#define DW_VR_MII_EEE_MCTRL0		0x8006
--#define DW_VR_MII_EEE_MCTRL1		0x800b
--
--/* VR_MII_DIG_CTRL1 */
--#define DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW		BIT(9)
--
--/* VR_MII_AN_CTRL */
--#define DW_VR_MII_AN_CTRL_TX_CONFIG_SHIFT	3
--#define DW_VR_MII_TX_CONFIG_MASK		BIT(3)
--#define DW_VR_MII_TX_CONFIG_PHY_SIDE_SGMII	0x1
--#define DW_VR_MII_TX_CONFIG_MAC_SIDE_SGMII	0x0
--#define DW_VR_MII_AN_CTRL_PCS_MODE_SHIFT	1
--#define DW_VR_MII_PCS_MODE_MASK			GENMASK(2, 1)
--#define DW_VR_MII_PCS_MODE_C37_1000BASEX	0x0
--#define DW_VR_MII_PCS_MODE_C37_SGMII		0x2
--
--/* VR_MII_AN_INTR_STS */
--#define DW_VR_MII_AN_STS_C37_ANSGM_FD		BIT(1)
--#define DW_VR_MII_AN_STS_C37_ANSGM_SP_SHIFT	2
--#define DW_VR_MII_AN_STS_C37_ANSGM_SP		GENMASK(3, 2)
--#define DW_VR_MII_C37_ANSGM_SP_10		0x0
--#define DW_VR_MII_C37_ANSGM_SP_100		0x1
--#define DW_VR_MII_C37_ANSGM_SP_1000		0x2
--#define DW_VR_MII_C37_ANSGM_SP_LNKSTS		BIT(4)
--
--/* SR MII MMD Control defines */
--#define AN_CL37_EN		BIT(12)	/* Enable Clause 37 auto-nego */
--#define SGMII_SPEED_SS13	BIT(13)	/* SGMII speed along with SS6 */
--#define SGMII_SPEED_SS6		BIT(6)	/* SGMII speed along with SS13 */
--
--/* VR MII EEE Control 0 defines */
--#define DW_VR_MII_EEE_LTX_EN		BIT(0)  /* LPI Tx Enable */
--#define DW_VR_MII_EEE_LRX_EN		BIT(1)  /* LPI Rx Enable */
--#define DW_VR_MII_EEE_TX_QUIET_EN		BIT(2)  /* Tx Quiet Enable */
--#define DW_VR_MII_EEE_RX_QUIET_EN		BIT(3)  /* Rx Quiet Enable */
--#define DW_VR_MII_EEE_TX_EN_CTRL		BIT(4)  /* Tx Control Enable */
--#define DW_VR_MII_EEE_RX_EN_CTRL		BIT(7)  /* Rx Control Enable */
--
--#define DW_VR_MII_EEE_MULT_FACT_100NS_SHIFT	8
--#define DW_VR_MII_EEE_MULT_FACT_100NS		GENMASK(11, 8)
--
--/* VR MII EEE Control 1 defines */
--#define DW_VR_MII_EEE_TRN_LPI		BIT(0)	/* Transparent Mode Enable */
-+#include "pcs-xpcs.h"
+@@ -690,7 +690,7 @@ int xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns, int enable)
+ }
+ EXPORT_SYMBOL_GPL(xpcs_config_eee);
  
- #define phylink_pcs_to_xpcs(pl_pcs) \
- 	container_of((pl_pcs), struct dw_xpcs, pcs)
-diff --git a/drivers/net/pcs/pcs-xpcs.h b/drivers/net/pcs/pcs-xpcs.h
-new file mode 100644
-index 000000000000..867537a68c63
---- /dev/null
-+++ b/drivers/net/pcs/pcs-xpcs.h
-@@ -0,0 +1,103 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (c) 2020 Synopsys, Inc. and/or its affiliates.
-+ * Synopsys DesignWare XPCS helpers
-+ *
-+ * Author: Jose Abreu <Jose.Abreu@synopsys.com>
-+ */
+-static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs)
++static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
+ {
+ 	int ret;
+ 
+@@ -726,7 +726,10 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret |= DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
++	if (phylink_autoneg_inband(mode))
++		ret |= DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
++	else
++		ret &= ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
+ 
+ 	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
+ }
+@@ -772,7 +775,7 @@ static int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
+ 		}
+ 		break;
+ 	case DW_AN_C37_SGMII:
+-		ret = xpcs_config_aneg_c37_sgmii(xpcs);
++		ret = xpcs_config_aneg_c37_sgmii(xpcs, mode);
+ 		if (ret)
+ 			return ret;
+ 		break;
+@@ -905,6 +908,36 @@ static void xpcs_get_state(struct phylink_pcs *pcs,
+ 	}
+ }
+ 
++static void xpcs_link_up_sgmii(struct dw_xpcs *xpcs, unsigned int mode,
++			       int speed, int duplex)
++{
++	int val, ret;
 +
-+#define SYNOPSYS_XPCS_ID		0x7996ced0
-+#define SYNOPSYS_XPCS_MASK		0xffffffff
++	if (phylink_autoneg_inband(mode))
++		return;
 +
-+/* Vendor regs access */
-+#define DW_VENDOR			BIT(15)
++	switch (speed) {
++	case SPEED_1000:
++		val = BMCR_SPEED1000;
++		break;
++	case SPEED_100:
++		val = BMCR_SPEED100;
++		break;
++	case SPEED_10:
++		val = BMCR_SPEED10;
++		break;
++	default:
++		return;
++	}
 +
-+/* VR_XS_PCS */
-+#define DW_USXGMII_RST			BIT(10)
-+#define DW_USXGMII_EN			BIT(9)
-+#define DW_VR_XS_PCS_DIG_STS		0x0010
-+#define DW_RXFIFO_ERR			GENMASK(6, 5)
++	if (duplex == DUPLEX_FULL)
++		val |= BMCR_FULLDPLX;
 +
-+/* SR_MII */
-+#define DW_USXGMII_FULL			BIT(8)
-+#define DW_USXGMII_SS_MASK		(BIT(13) | BIT(6) | BIT(5))
-+#define DW_USXGMII_10000		(BIT(13) | BIT(6))
-+#define DW_USXGMII_5000			(BIT(13) | BIT(5))
-+#define DW_USXGMII_2500			(BIT(5))
-+#define DW_USXGMII_1000			(BIT(6))
-+#define DW_USXGMII_100			(BIT(13))
-+#define DW_USXGMII_10			(0)
++	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, MDIO_CTRL1, val);
++	if (ret)
++		pr_err("%s: xpcs_write returned %pe\n", __func__, ERR_PTR(ret));
++}
 +
-+/* SR_AN */
-+#define DW_SR_AN_ADV1			0x10
-+#define DW_SR_AN_ADV2			0x11
-+#define DW_SR_AN_ADV3			0x12
-+#define DW_SR_AN_LP_ABL1		0x13
-+#define DW_SR_AN_LP_ABL2		0x14
-+#define DW_SR_AN_LP_ABL3		0x15
-+
-+/* Clause 73 Defines */
-+/* AN_LP_ABL1 */
-+#define DW_C73_PAUSE			BIT(10)
-+#define DW_C73_ASYM_PAUSE		BIT(11)
-+#define DW_C73_AN_ADV_SF		0x1
-+/* AN_LP_ABL2 */
-+#define DW_C73_1000KX			BIT(5)
-+#define DW_C73_10000KX4			BIT(6)
-+#define DW_C73_10000KR			BIT(7)
-+/* AN_LP_ABL3 */
-+#define DW_C73_2500KX			BIT(0)
-+#define DW_C73_5000KR			BIT(1)
-+
-+/* Clause 37 Defines */
-+/* VR MII MMD registers offsets */
-+#define DW_VR_MII_MMD_CTRL		0x0000
-+#define DW_VR_MII_DIG_CTRL1		0x8000
-+#define DW_VR_MII_AN_CTRL		0x8001
-+#define DW_VR_MII_AN_INTR_STS		0x8002
-+/* Enable 2.5G Mode */
-+#define DW_VR_MII_DIG_CTRL1_2G5_EN	BIT(2)
-+/* EEE Mode Control Register */
-+#define DW_VR_MII_EEE_MCTRL0		0x8006
-+#define DW_VR_MII_EEE_MCTRL1		0x800b
-+
-+/* VR_MII_DIG_CTRL1 */
-+#define DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW		BIT(9)
-+
-+/* VR_MII_AN_CTRL */
-+#define DW_VR_MII_AN_CTRL_TX_CONFIG_SHIFT	3
-+#define DW_VR_MII_TX_CONFIG_MASK		BIT(3)
-+#define DW_VR_MII_TX_CONFIG_PHY_SIDE_SGMII	0x1
-+#define DW_VR_MII_TX_CONFIG_MAC_SIDE_SGMII	0x0
-+#define DW_VR_MII_AN_CTRL_PCS_MODE_SHIFT	1
-+#define DW_VR_MII_PCS_MODE_MASK			GENMASK(2, 1)
-+#define DW_VR_MII_PCS_MODE_C37_1000BASEX	0x0
-+#define DW_VR_MII_PCS_MODE_C37_SGMII		0x2
-+
-+/* VR_MII_AN_INTR_STS */
-+#define DW_VR_MII_AN_STS_C37_ANSGM_FD		BIT(1)
-+#define DW_VR_MII_AN_STS_C37_ANSGM_SP_SHIFT	2
-+#define DW_VR_MII_AN_STS_C37_ANSGM_SP		GENMASK(3, 2)
-+#define DW_VR_MII_C37_ANSGM_SP_10		0x0
-+#define DW_VR_MII_C37_ANSGM_SP_100		0x1
-+#define DW_VR_MII_C37_ANSGM_SP_1000		0x2
-+#define DW_VR_MII_C37_ANSGM_SP_LNKSTS		BIT(4)
-+
-+/* SR MII MMD Control defines */
-+#define AN_CL37_EN			BIT(12)	/* Enable Clause 37 auto-nego */
-+#define SGMII_SPEED_SS13		BIT(13)	/* SGMII speed along with SS6 */
-+#define SGMII_SPEED_SS6			BIT(6)	/* SGMII speed along with SS13 */
-+
-+/* VR MII EEE Control 0 defines */
-+#define DW_VR_MII_EEE_LTX_EN			BIT(0)  /* LPI Tx Enable */
-+#define DW_VR_MII_EEE_LRX_EN			BIT(1)  /* LPI Rx Enable */
-+#define DW_VR_MII_EEE_TX_QUIET_EN		BIT(2)  /* Tx Quiet Enable */
-+#define DW_VR_MII_EEE_RX_QUIET_EN		BIT(3)  /* Rx Quiet Enable */
-+#define DW_VR_MII_EEE_TX_EN_CTRL		BIT(4)  /* Tx Control Enable */
-+#define DW_VR_MII_EEE_RX_EN_CTRL		BIT(7)  /* Rx Control Enable */
-+
-+#define DW_VR_MII_EEE_MULT_FACT_100NS_SHIFT	8
-+#define DW_VR_MII_EEE_MULT_FACT_100NS		GENMASK(11, 8)
-+
-+/* VR MII EEE Control 1 defines */
-+#define DW_VR_MII_EEE_TRN_LPI		BIT(0)	/* Transparent Mode Enable */
+ static void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
+ 			 phy_interface_t interface, int speed, int duplex)
+ {
+@@ -912,6 +945,8 @@ static void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
+ 
+ 	if (interface == PHY_INTERFACE_MODE_USXGMII)
+ 		return xpcs_config_usxgmii(xpcs, speed);
++	if (interface == PHY_INTERFACE_MODE_SGMII)
++		return xpcs_link_up_sgmii(xpcs, mode, speed, duplex);
+ }
+ 
+ static u32 xpcs_get_id(struct dw_xpcs *xpcs)
 -- 
 2.25.1
 
