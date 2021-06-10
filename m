@@ -2,110 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEF353A3322
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:32:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8A53A3357
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 20:39:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230311AbhFJSeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 14:34:01 -0400
-Received: from mail-ot1-f48.google.com ([209.85.210.48]:45782 "EHLO
-        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbhFJSeA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:34:00 -0400
-Received: by mail-ot1-f48.google.com with SMTP id 6-20020a9d07860000b02903e83bf8f8fcso603787oto.12;
-        Thu, 10 Jun 2021 11:31:50 -0700 (PDT)
+        id S231283AbhFJSlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 14:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230001AbhFJSk6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 14:40:58 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B0AC061574
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 11:39:02 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id if15so4401993qvb.2
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 11:39:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9G474QRmmAjLiQADd887poTIVnN5MD75j0r48SsuWC0=;
+        b=m8hZue/ecKuK8bsbsz/Rj0vZ+L06X82yT7SDNAjZBNzC0zFgyeZyadGQY9fzoHAOrk
+         rO4lQLNdK4z9RDAErp5LOrWLlT/zs8aqfxP5caKTHj/enDE+pRDuP7WoFcVvY1HncHpO
+         ciivHbM3Xn5vvOBP1rSNBuyBySMNLg+wA69vcD8qP30eEvY4bHtWjm1wONu7JrZtUXXU
+         eYIEeZ7YQ2wwWQx87C9pmSgrYmk8xZMPC3ok+PgHzp5FGrGIKMhNP6l1vuhJU9a4FO2U
+         5WA5Q5WI3YakQaYMHAZEpaIxYszp4Dncc6MIFodpB9g+pgmso11oCEk99V9WTSeWF+yN
+         VWCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5UHeRo+PeTe+UX0jKZ5h3WsZ6XhyTgBwX+84SB07u34=;
-        b=BukyVmaVIJx+UrX1FX2BCe56Tb/d+V0wd/tMBIAzMNwQnRZwkMvwY37M754PccC/d9
-         sG68z0dGdYWBA4isCN+VOxCVKA/v+zRJLSRDH852iZyjZmyGbw824Wc4fvt9iKqDbL0T
-         tv+Z3EnoKigOW2Cpx1LbA4HkPOhXfPlqzAU+m+8j1Tm+38+S67f+CauTEs7s43VvJfzS
-         3xGrvB+vSQCq5sWdZFRrv4mhLl9gIojZbBxUxPFr3SD4uXbJr+ytLobrzCnN46eFw8+1
-         3h5pBcc/n3Zd1qXNVhK5OeWTw6xzDcZCkbjNbqOTyj8IJgBAF+Nfl75/EiYG8qRYJR7e
-         ViQQ==
-X-Gm-Message-State: AOAM530/bXfrYHDAbOAAdk/EE78ID1aGgq3ALofrtaICf+49DNZV+tYH
-        lthfvwZ88TDv68o7qlYipsQzuZQOd3DeVReKr2E=
-X-Google-Smtp-Source: ABdhPJxhecC2IikQgyLki26FFDVelXz6iZP1RA1+NieCihmrWAWrD7QsiGQY3niB2yTYbQjlmdZCJ+ovTB9ATLNK2dM=
-X-Received: by 2002:a05:6830:1bf7:: with SMTP id k23mr3646464otb.206.1623349910111;
- Thu, 10 Jun 2021 11:31:50 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9G474QRmmAjLiQADd887poTIVnN5MD75j0r48SsuWC0=;
+        b=s1hkWIdPRahbU7s3Br0LSNNWTRTPADOAiuDXrqm/Q0A7cu/vDV1QojgofTVboe20Mm
+         x4WaVU59Q2tReTQ/Lpu6yys29P3fvMUo7Nbm+a+SCcjeDzwQR5uRsx9LToROGeHVXsCn
+         grIa1WKjvOmEoqMhx9cKKigRIJWEJftJRgJOuJdf8ij7kKgRMOx1EguCtWf/59HfH/F7
+         UTuJF3/T/N3fR2+bAvPRhWnGkN01sZNsLLXmOXnY72Nm4evr2Vzk3MErJAk6P8PkJrUh
+         l7b58cjtT/cye2wC4gxp9KCRA0QyIfslEWDK2P6D+OenOSa0mpBpMDuELJLKvkOZ4Mf0
+         4Myg==
+X-Gm-Message-State: AOAM533hJ0J3gtx0VF0ZnT7N8b+fOxxOsxsbKgMp/kZOq7TZ56nhFUeF
+        ruyMcjNYzJ+Of+dZ7AaISmKJhYjX4p0=
+X-Google-Smtp-Source: ABdhPJyV2Ul/mQERi3LZiwn/BTcx7akifXINQXaddl0KcjZmBBZk39gFCNlVQi1G9kLeTp3kCP/+hw==
+X-Received: by 2002:a05:6214:11b4:: with SMTP id u20mr1091586qvv.4.1623350341445;
+        Thu, 10 Jun 2021 11:39:01 -0700 (PDT)
+Received: from tannerlove.nyc.corp.google.com ([2620:0:1003:1000:840f:b35f:63b2:482e])
+        by smtp.gmail.com with ESMTPSA id a134sm2760350qkg.114.2021.06.10.11.39.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Jun 2021 11:39:01 -0700 (PDT)
+From:   Tanner Love <tannerlove.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Tanner Love <tannerlove@google.com>
+Subject: [PATCH net-next v5 0/3] virtio_net: add optional flow dissection in virtio_net_hdr_to_skb
+Date:   Thu, 10 Jun 2021 14:38:50 -0400
+Message-Id: <20210610183853.3530712-1-tannerlove.kernel@gmail.com>
+X-Mailer: git-send-email 2.32.0.272.g935e593368-goog
 MIME-Version: 1.0
-References: <20210610163917.4138412-1-ciorneiioana@gmail.com>
- <20210610163917.4138412-2-ciorneiioana@gmail.com> <CAJZ5v0jMspgw8tvA3xV5p7sRxTUOq89G5zSgaZa52EAi+9Cfbw@mail.gmail.com>
- <070d33be-8056-d54c-05c1-a13432b3167e@arm.com>
-In-Reply-To: <070d33be-8056-d54c-05c1-a13432b3167e@arm.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 10 Jun 2021 20:31:38 +0200
-Message-ID: <CAJZ5v0g-NNJv=NBHxuUi6C0eJwOaZeU1nswEAuEaLciVD9wmFg@mail.gmail.com>
-Subject: Re: [PATCH net-next v8 01/15] Documentation: ACPI: DSD: Document MDIO PHY
-To:     Grant Likely <grant.likely@arm.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ioana Ciornei <ciorneiioana@gmail.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>, calvin.johnson@nxp.com,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>, netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Len Brown <lenb@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "nd@arm.com" <nd@arm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 10, 2021 at 8:23 PM Grant Likely <grant.likely@arm.com> wrote:
->
-> On 10/06/2021 19:05, Rafael J. Wysocki wrote:
-> > On Thu, Jun 10, 2021 at 6:40 PM Ioana Ciornei <ciorneiioana@gmail.com> wrote:
-> >>
-> >> From: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> >>
-> >> Introduce ACPI mechanism to get PHYs registered on a MDIO bus and
-> >> provide them to be connected to MAC.
-> >
-> > This is not an "ACPI mechanism", because it is not part of the ACPI
-> > specification or support documentation thereof.
-> >
-> > I would call it "a mechanism based on generic ACPI _DSD device
-> > properties definition []1]".  And provide a reference to the _DSD
-> > properties definition document.
-> >
-> > With that changed, you can add
-> >
-> > Acked-by: Rafael J. Wysocki <rafael@kernel.org>
-> >
-> > to this patch.
-> >
-> > Note, however, that within the traditional ACPI framework, the _DSD
-> > properties are consumed by the driver that binds to the device
-> > represented by the ACPI device object containing the _DSD in question
-> > in its scope, while in this case IIUC the properties are expected to
-> > be consumed by the general networking code in the kernel.  That is not
-> > wrong in principle, but it means that operating systems other than
-> > Linux are not likely to be using them.
-> >
->
-> Doesn't this land at the level of device drivers though? None of this
-> data needs to be consumed by the OS generic ACPI parsing code, but the
-> network device driver can use it to parse the MDIO and MAC configuraiton
-> and set itself up appropriately.
+From: Tanner Love <tannerlove@google.com>
 
-That's right in general, which is why I said that doing it this way
-wasn't wrong.
+First patch extends the flow dissector BPF program type to accept
+pointer to virtio-net header. 
+
+Second patch uses this feature to add optional flow dissection in
+virtio_net_hdr_to_skb(). This allows admins to define permitted
+packets more strictly, for example dropping deprecated UDP_UFO
+packets.
+
+Third patch extends kselftest to cover this feature.
+
+Tanner Love (3):
+  net: flow_dissector: extend bpf flow dissector support with vnet hdr
+  virtio_net: add optional flow dissection in virtio_net_hdr_to_skb
+  selftests/net: amend bpf flow dissector prog to do vnet hdr validation
+
+ drivers/net/bonding/bond_main.c               |   2 +-
+ include/linux/skbuff.h                        |  35 ++-
+ include/linux/virtio_net.h                    |  25 ++-
+ include/uapi/linux/bpf.h                      |   2 +
+ kernel/bpf/verifier.c                         |  50 ++++-
+ net/bpf/test_run.c                            |   2 +-
+ net/core/filter.c                             |  26 +++
+ net/core/flow_dissector.c                     |  21 +-
+ net/core/sysctl_net_core.c                    |   9 +
+ tools/include/uapi/linux/bpf.h                |   2 +
+ tools/testing/selftests/bpf/progs/bpf_flow.c  | 208 ++++++++++++++----
+ .../selftests/bpf/test_flow_dissector.c       | 181 +++++++++++++--
+ .../selftests/bpf/test_flow_dissector.sh      |  19 ++
+ 13 files changed, 495 insertions(+), 87 deletions(-)
+
+-- 
+2.32.0.272.g935e593368-goog
+
