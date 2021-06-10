@@ -2,91 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21FEF3A3181
-	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:55:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23A1B3A3189
+	for <lists+netdev@lfdr.de>; Thu, 10 Jun 2021 18:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231620AbhFJQ5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 12:57:06 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:34640 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231558AbhFJQ5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 12:57:03 -0400
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 93BEE64240;
-        Thu, 10 Jun 2021 18:53:51 +0200 (CEST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/3] netfilter: nft_fib_ipv6: skip ipv6 packets from any to link-local
-Date:   Thu, 10 Jun 2021 18:54:58 +0200
-Message-Id: <20210610165458.23071-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210610165458.23071-1-pablo@netfilter.org>
-References: <20210610165458.23071-1-pablo@netfilter.org>
+        id S231655AbhFJQ63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 12:58:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56898 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230291AbhFJQ62 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 12:58:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=NVa3X1j+fsnPH5/Ju/TMeZbGLDoT3Mwb3nTRMPGmAS4=; b=R11xA4+CYfxGLXxeg9CpOba5S6
+        f+etBL+dddvusFVgiuvRxRivnEQclSKo/ZqaHb7yKlVwKSD48fQR6uXVNOHgwWt7A7aLNHNVtgIB/
+        zbbvseMhj65nmVM8/wzAP/Y92xzV4GXob+coU/V7BxhMYd9aZf7MHMddb7+gDToqkxbE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lrNyb-008hGe-M1; Thu, 10 Jun 2021 18:56:17 +0200
+Date:   Thu, 10 Jun 2021 18:56:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>, calvin.johnson@nxp.com,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux.cj@gmail.com, netdev@vger.kernel.org,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Len Brown <lenb@kernel.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next v8 00/15] ACPI support for dpaa2 driver
+Message-ID: <YMJEMXEDAE/m9MhA@lunn.ch>
+References: <20210610163917.4138412-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210610163917.4138412-1-ciorneiioana@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On Thu, Jun 10, 2021 at 07:39:02PM +0300, Ioana Ciornei wrote:
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> 
+> This patch set provides ACPI support to DPAA2 network drivers.
 
-The ip6tables rpfilter match has an extra check to skip packets with
-"::" source address.
+Just to be clear and avoid confusion, there is a standing NACK against
+this patchset. Please see the discussion here:
 
-Extend this to ipv6 fib expression.  Else ipv6 duplicate address detection
-packets will fail rpf route check -- lookup returns -ENETUNREACH.
+https://patchwork.kernel.org/project/linux-acpi/patch/20200715090400.4733-2-calvin.johnson@oss.nxp.com/#23518385
 
-While at it, extend the prerouting check to also cover the ingress hook.
+So far, i've not seen any indication the issues raised there have been
+resolved. I don't see any Acked-by from an ACPI maintainer. So this
+code remains NACKed.
 
-Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1543
-Fixes: f6d0cbcf09c5 ("netfilter: nf_tables: add fib expression")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/ipv6/netfilter/nft_fib_ipv6.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv6/netfilter/nft_fib_ipv6.c b/net/ipv6/netfilter/nft_fib_ipv6.c
-index e204163c7036..92f3235fa287 100644
---- a/net/ipv6/netfilter/nft_fib_ipv6.c
-+++ b/net/ipv6/netfilter/nft_fib_ipv6.c
-@@ -135,6 +135,17 @@ void nft_fib6_eval_type(const struct nft_expr *expr, struct nft_regs *regs,
- }
- EXPORT_SYMBOL_GPL(nft_fib6_eval_type);
- 
-+static bool nft_fib_v6_skip_icmpv6(const struct sk_buff *skb, u8 next, const struct ipv6hdr *iph)
-+{
-+	if (likely(next != IPPROTO_ICMPV6))
-+		return false;
-+
-+	if (ipv6_addr_type(&iph->saddr) != IPV6_ADDR_ANY)
-+		return false;
-+
-+	return ipv6_addr_type(&iph->daddr) & IPV6_ADDR_LINKLOCAL;
-+}
-+
- void nft_fib6_eval(const struct nft_expr *expr, struct nft_regs *regs,
- 		   const struct nft_pktinfo *pkt)
- {
-@@ -163,10 +174,13 @@ void nft_fib6_eval(const struct nft_expr *expr, struct nft_regs *regs,
- 
- 	lookup_flags = nft_fib6_flowi_init(&fl6, priv, pkt, oif, iph);
- 
--	if (nft_hook(pkt) == NF_INET_PRE_ROUTING &&
--	    nft_fib_is_loopback(pkt->skb, nft_in(pkt))) {
--		nft_fib_store_result(dest, priv, nft_in(pkt));
--		return;
-+	if (nft_hook(pkt) == NF_INET_PRE_ROUTING ||
-+	    nft_hook(pkt) == NF_INET_INGRESS) {
-+		if (nft_fib_is_loopback(pkt->skb, nft_in(pkt)) ||
-+		    nft_fib_v6_skip_icmpv6(pkt->skb, pkt->tprot, iph)) {
-+			nft_fib_store_result(dest, priv, nft_in(pkt));
-+			return;
-+		}
- 	}
- 
- 	*dest = 0;
--- 
-2.20.1
-
+	Andrew
