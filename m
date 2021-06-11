@@ -2,84 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2BBA3A496C
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 21:24:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 197973A499D
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 21:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbhFKT0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 15:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230374AbhFKT0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 15:26:32 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A60EC061574;
-        Fri, 11 Jun 2021 12:24:20 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id k7so6077709ejv.12;
-        Fri, 11 Jun 2021 12:24:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QVn2XpNydMMfSU7bRQCNWOFOmVIdLgML4UEm0EkT7pQ=;
-        b=TXuWpJuPWpt3qqHX5SFrlDo4EPqrxK8R5S4Jw5oPL5VNKvPgjsBnWabOjL9ew29gW0
-         jsCdhhjq42JIFokffm2W5W/mLfk1L0B8jq1EWjz5/EuZ9pTpGPpbCHo4Di0gWaaYz9k8
-         R7PbGeQKW36hxl6us6bshYAzeLw3GdCAXYVRHgE4IYUyd4N7a6fkcR8k86G1Y5xRCTRX
-         4EvKl+Dw9aeFDUf9c7F7I4xANM0d9Va7nA/yL7YuAVvyPDDwdoEpFJzFSuXxvPsWTjbA
-         JmBeAn2I+3orMj0x3xSkNzk1GtvnIPA9NE6eo+3MREA2rL0lr2JMyeuit+tlZs/4ZiSN
-         luiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QVn2XpNydMMfSU7bRQCNWOFOmVIdLgML4UEm0EkT7pQ=;
-        b=bO39r+KBQ225TUjxhFNg/DImOyFCOt6A6A9dqL2RzRFyHUjRWWE3yNq6K/R/9ILC1M
-         wnXIrUUTinEDlKx8p+W5j0DATM+Bj9QzDtEOmILuNrkeTLPl3FgTCTb3ej+qpXIhMtKY
-         T/Ej+3ygHfIPA/Wcjbtl4CeVsVfhohbueyXne2LHCwUBmkUf84xGASIYj+KuZH3gLoWp
-         r0l1cbA5+TvhhXac9myA4dH80vUFMbXtnEt5vnF3oleHi5KqrH9163R+LSwD71eJUMtj
-         ty+mg0yRaz7161s9nfn0aIPkzFQUSOhISEMTzsYN1dp2aWUqIuYg4UiTeIAuatVGKTjE
-         SbOg==
-X-Gm-Message-State: AOAM531iNoG/Wh8VwAuy5gqj/9QONLYBAGAGQIfBEWkuuYVXLjL2MHhG
-        ZNhSfZJoa54YSq7mtgYxw43elH8Rtmk=
-X-Google-Smtp-Source: ABdhPJz46iCdebyRYDndYc2A5VY55T92JgyLWmkTWxaliADt8/+l924Qc5JLRa3CFWLcc+MZ/FIgzw==
-X-Received: by 2002:a17:906:1806:: with SMTP id v6mr4994778eje.454.1623439458835;
-        Fri, 11 Jun 2021 12:24:18 -0700 (PDT)
-Received: from skbuf ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id f12sm2887977edf.72.2021.06.11.12.24.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Jun 2021 12:24:18 -0700 (PDT)
-Date:   Fri, 11 Jun 2021 22:24:17 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: Re: [PATCH net-next v4 8/9] net: dsa: dsa_slave_phy_connect():
- extend phy's flags with port specific phy flags
-Message-ID: <20210611192417.gvfxi2kbfjx4jv3d@skbuf>
-References: <20210611071527.9333-1-o.rempel@pengutronix.de>
- <20210611071527.9333-9-o.rempel@pengutronix.de>
+        id S230035AbhFKTwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 15:52:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55708 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229530AbhFKTwE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Jun 2021 15:52:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2E0A1613D2;
+        Fri, 11 Jun 2021 19:50:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623441006;
+        bh=iYKEnI3mHnFC00UHH4ayZvqSXM4YakryJ7rwF+k5iLE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kbeLN5YQRu9PBAWtNsZ5+0sAdiouh1zltJCoWICFLOwdKgXNobDFn3vMs/XLH4kV8
+         Vx6L5+8vQnHMPbrU5A5M63NdNtSI9gHLh+wgmDnikbhm62efPvGwm4j3mPpVTbcS9r
+         s3lUrk5KWs241MflKiXs14WA1m1MeK+qd3/MpRLBHW2i0b8/bZGllbV25ZuzSqU1rx
+         3/7ptAh741eCI9lA9+FQb5Ogx1Pw0qLWpr8rOhYZ3FMoXjbXadEKycmXc/T5l+dCMa
+         aNkmcljf8XM9BgIm8DqAVkuCC3+wKW2Mka3BqTbOHNyvL49Ty93aZxB5FAbV37REOE
+         g5kZbmyReneIA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 20716609E4;
+        Fri, 11 Jun 2021 19:50:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210611071527.9333-9-o.rempel@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 net-next 00/10] DSA tagging driver for NXP SJA1110
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162344100612.31473.9219537976281390378.git-patchwork-notify@kernel.org>
+Date:   Fri, 11 Jun 2021 19:50:06 +0000
+References: <20210611190131.2362911-1-olteanv@gmail.com>
+In-Reply-To: <20210611190131.2362911-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        richardcochran@gmail.com, vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 09:15:26AM +0200, Oleksij Rempel wrote:
-> This patch extends the flags of the phy that's being connected with the
-> port specific flags of the switch port.
-> 
-> This is needed to handle a port specific erratum of the KSZ8873 switch,
-> which is added in a later patch.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
+Hello:
 
-What happens differently between having this patch and not having it?
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Fri, 11 Jun 2021 22:01:21 +0300 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> This series adds support for tagging data and control packets on the new
+> NXP SJA1110 switch (supported by the sja1105 driver). Up to this point
+> it used the sja1105 driver, which allowed it to send data packets, but
+> not PDUs as those required by STP and PTP.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v3,net-next,01/10] net: dsa: sja1105: enable the TTEthernet engine on SJA1110
+    https://git.kernel.org/netdev/net-next/c/29305260d29e
+  - [v3,net-next,02/10] net: dsa: sja1105: allow RX timestamps to be taken on all ports for SJA1110
+    https://git.kernel.org/netdev/net-next/c/6c0de59b3d73
+  - [v3,net-next,03/10] net: dsa: generalize overhead for taggers that use both headers and trailers
+    https://git.kernel.org/netdev/net-next/c/4e50025129ef
+  - [v3,net-next,04/10] net: dsa: tag_sja1105: stop resetting network and transport headers
+    https://git.kernel.org/netdev/net-next/c/baa3ad08de6d
+  - [v3,net-next,05/10] net: dsa: tag_8021q: remove shim declarations
+    https://git.kernel.org/netdev/net-next/c/ab6a303c5440
+  - [v3,net-next,06/10] net: dsa: tag_8021q: refactor RX VLAN parsing into a dedicated function
+    https://git.kernel.org/netdev/net-next/c/233697b3b3f6
+  - [v3,net-next,07/10] net: dsa: sja1105: make SJA1105_SKB_CB fit a full timestamp
+    https://git.kernel.org/netdev/net-next/c/617ef8d9377b
+  - [v3,net-next,08/10] net: dsa: add support for the SJA1110 native tagging protocol
+    https://git.kernel.org/netdev/net-next/c/4913b8ebf8a9
+  - [v3,net-next,09/10] net: dsa: sja1105: add the RX timestamping procedure for SJA1110
+    https://git.kernel.org/netdev/net-next/c/30b73242e679
+  - [v3,net-next,10/10] net: dsa: sja1105: implement TX timestamping for SJA1110
+    https://git.kernel.org/netdev/net-next/c/566b18c8b752
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
