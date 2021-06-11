@@ -2,68 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B45C3A3962
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 03:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB8663A3952
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 03:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbhFKBuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 21:50:51 -0400
-Received: from mail-m975.mail.163.com ([123.126.97.5]:41262 "EHLO
-        mail-m975.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbhFKBuv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 21:50:51 -0400
-X-Greylist: delayed 909 seconds by postgrey-1.27 at vger.kernel.org; Thu, 10 Jun 2021 21:50:50 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=RfdB9
-        tWXj/0u5slrh/pTsGjDY40XZRxXML2/XdGZTUc=; b=ZnahpEM7bL86T6zYM6Lc0
-        fB5MpZcseC28RQnhSCOcgrS0nAhdpIe+vO5EN8P1NsNdN9Pto+JTU7z83EcZC32b
-        u8dQHhHMhNnf6HFR8BdxiUEjtbVh4AIak365xYqiPR1kSfcnVbY4pTXtnxbrJqka
-        vpGLYYu3VZiOwaPY404k/c=
-Received: from ubuntu.localdomain (unknown [103.220.76.197])
-        by smtp5 (Coremail) with SMTP id HdxpCgDHetVvvcJgtiDYHQ--.65S2;
-        Fri, 11 Jun 2021 09:33:38 +0800 (CST)
-From:   13145886936@163.com
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gushengxian <gushengxian@yulong.com>
-Subject: [PATCH] net: devres: Correct a grammatical error
-Date:   Fri, 11 Jun 2021 09:33:33 +0800
-Message-Id: <20210611013333.12843-1-13145886936@163.com>
-X-Mailer: git-send-email 2.25.1
+        id S231192AbhFKBhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 21:37:07 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:9069 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230169AbhFKBhF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 21:37:05 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G1Ncb3Cw7zYsDk;
+        Fri, 11 Jun 2021 09:32:15 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 11 Jun 2021 09:35:06 +0800
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpeml500017.china.huawei.com (7.185.36.243) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 11 Jun 2021 09:35:05 +0800
+Subject: Re: [PATCH net-next] net: mdio: mscc-miim: Use
+ devm_platform_get_and_ioremap_resource()
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+References: <20210610091154.4141911-1-yangyingliang@huawei.com>
+ <YMI3VsR/jnVVhmsh@lunn.ch>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <fd9cbc9c-478e-85c8-62ec-58a8baf4333c@huawei.com>
+Date:   Fri, 11 Jun 2021 09:35:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HdxpCgDHetVvvcJgtiDYHQ--.65S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Xr4DtryUXw4DZF18Gw1ftFb_yoW3CFc_Jw
-        1Fkrn7Xw4rJw1I9w45Zr4rZr42yw40qFW8Kwn7XFZ5t34UX395G395Zr4agF4vgr17Ar9x
-        u3Z8Jr45K34a9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8epBDUUUUU==
-X-Originating-IP: [103.220.76.197]
-X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/xtbBzhKug1QHM2xPCQAAs7
+In-Reply-To: <YMI3VsR/jnVVhmsh@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: gushengxian <gushengxian@yulong.com>
+Hi,
 
-Correct a grammatical error.
+On 2021/6/11 0:01, Andrew Lunn wrote:
+>> -	dev->regs = devm_ioremap_resource(&pdev->dev, res);
+>> +	dev->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+>>   	if (IS_ERR(dev->regs)) {
+> Here, only dev->regs is considered.
+>
+>>   		dev_err(&pdev->dev, "Unable to map MIIM registers\n");
+>>   		return PTR_ERR(dev->regs);
+>>   	}
+>
+>
+>> +	dev->phy_regs = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
+>> +	if (res && IS_ERR(dev->phy_regs)) {
+> Here you look at both res and dev->phy_regs.
+>
+> This seems inconsistent. Can devm_platform_get_and_ioremap_resource()
+> return success despite res being NULL?
+No, if res is NULL, devm_platform_get_and_ioremap_resource() returns failed.
+But, before this patch, if the internal phy res is NULL, it doesn't 
+return error
+code, so I checked the res to make sure it doesn't change the origin 
+code logic.
 
-Signed-off-by: gushengxian <gushengxian@yulong.com>
----
- net/devres.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/devres.c b/net/devres.c
-index 1f9be2133787..5ccf6ca311dc 100644
---- a/net/devres.c
-+++ b/net/devres.c
-@@ -60,7 +60,7 @@ static int netdev_devres_match(struct device *dev, void *this, void *match_data)
-  *	@ndev: device to register
-  *
-  *	This is a devres variant of register_netdev() for which the unregister
-- *	function will be call automatically when the managing device is
-+ *	function will be called automatically when the managing device is
-  *	detached. Note: the net_device used must also be resource managed by
-  *	the same struct device.
-  */
--- 
-2.25.1
-
+Thanks,
+Yang
+>
+>         Andrew
+> .
