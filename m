@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A9C23A39D4
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 04:36:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2504C3A39D7
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 04:41:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231287AbhFKCiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 22:38:05 -0400
-Received: from mail-ot1-f50.google.com ([209.85.210.50]:38640 "EHLO
-        mail-ot1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbhFKCiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 22:38:05 -0400
-Received: by mail-ot1-f50.google.com with SMTP id j11-20020a9d738b0000b02903ea3c02ded8so1749990otk.5
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 19:36:08 -0700 (PDT)
+        id S230488AbhFKCn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 22:43:29 -0400
+Received: from mail-ot1-f42.google.com ([209.85.210.42]:39564 "EHLO
+        mail-ot1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230358AbhFKCn2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 22:43:28 -0400
+Received: by mail-ot1-f42.google.com with SMTP id 5-20020a9d01050000b02903c700c45721so1746799otu.6
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 19:41:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nCHPjgidBaFl/yWAffnmU8OdIOw/DsEmB+bsIp+Cu8A=;
-        b=mcFtj0oJnlqavv8236iAEiE94L9wkmFYUF90XMJ5kG35/jYXDBguVI2bzCA6nGkW/j
-         EXxo8QoIBn70ovX22DJmmN/HhFc0kwZROqfZZ4XnXSi+PM1Q9qhoMVgMgG5utPz+W3eM
-         ZLdyw3UFjQy8eqijrE1QD7cQ0M4KQPvGqGhcdo6Oh7INNgu3ffAcc/0safpKTRpqoasw
-         4xlWfpzo/POBNc3NtUIWPX2+KtQpG+Cazt3jaJZS+RzQKM3SN2x19PI8jA5qmq1qqVpJ
-         9zwqAMwBF0Y2tqshEFcx3mphgW+HrDuQtdT90wKPiO7qrqiHuz8wrZChfwQHklN3XxB8
-         gFRw==
+        bh=jUFxb829kZNY6qXhnW+ceq6eAYh4muY8u/n6OywWO5k=;
+        b=e92QUNt5CPJVRobCZw8OKcQD337dpqTQ7hCTVCKxCfxr6KXmA7RVrffKiSygemosD5
+         Q3EDbytdSdTfn0OoMNX1SEEKLCGWppHLyidjRA9wuAPzoUsCe5DzIotSp/j/hxsmwoq/
+         dnbrOWgD2y68+ZchDwWWvfouy1J+nd5+BQKMpx5vHwdF4nw6lCBxbEiBRxFKqHEXBl++
+         DtMXAw1y2OlvTahIcWZeJFp14UMiXhbAMcxRNQ2sYZnn1V1+1xcjXh/aZnL+JXno+w5e
+         /QfYODcqiC9XkSwrCWHii2gEygqXTJwpgyrTixucEN6v3sFPLRn8uLfIaZePYc/Gygn5
+         /v6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=nCHPjgidBaFl/yWAffnmU8OdIOw/DsEmB+bsIp+Cu8A=;
-        b=i5y0swvoL6x06OsgA+lgISoPThJXN5VYhrMSTtR0DFtiZf9jxNtjRrbINhQkXwjMm7
-         Mv9pHFU1VbE5kBDlaT2HnF9fahBfPtZw2baiZQUqFbEwrVeBQw4xW7qP81K5cbiZjpTr
-         dXrs/C4IHnzNnQU9RgPqKF3QBuo5yjJmt6Fhp0gaW048MrwamusUiahG37u8nZ1vLRrO
-         8SQWJrjzgaSKQKA1qVUVM/WM0frSgbK7FbxCXghLK2PJvY07JVIxnO6hwwLgtDtRmVok
-         86JbxprMdsVTqd5rrzQd8w3Ao73kdZQKSqUKCfrIyhc9C0NCr8SW4jB8vEEpNyvYAjDt
-         fIHA==
-X-Gm-Message-State: AOAM5323f0Abxo2XP+lzRHlXIoW7bGdkf+zm0jzQ/aChVFezaYL98B2d
-        HojcuDeLBrW/l2D2uh8zuKH/H89/ZiY=
-X-Google-Smtp-Source: ABdhPJx9UfZ8Q9Bw/mbpjSVt37Vz/cgYbWdagCRFNcunHDv1ExIlRRl+7whxx4V8nxM8AJ0wIjfnig==
-X-Received: by 2002:a05:6830:2117:: with SMTP id i23mr1045837otc.279.1623378907874;
-        Thu, 10 Jun 2021 19:35:07 -0700 (PDT)
+        bh=jUFxb829kZNY6qXhnW+ceq6eAYh4muY8u/n6OywWO5k=;
+        b=h315fGw017uPbI+pE2fuM/qJiwXBy79m2HTcgnPpAsdAgRSO12J9mTnuTMDiiZb89g
+         mzEneUZiNGj2wxBySIs+TIKF2NAx0AYevz+d44XVONLatmyJg3T2GKIZAOTwUcLCRgRz
+         fqK+STQRzG8HXAb8HHm3IOrc+5lNsY1t4B9qEgDNDr5SU1DbYhcsBzVzuEQUuWUBeYTz
+         XiHMO8a9kY0jB1M5dFTUesnI16MZbeckNWqYXgtRarCX9ZaHSVWWra7bI4+rYPvPhUIl
+         9vEtgqZY9CzvRB4UPRyTcJ5Yt+dibHkA+VN+Q0+kek+6706YGh9tURJzBO9lFelKMcy0
+         BaOg==
+X-Gm-Message-State: AOAM532gqVpGmYdU7hTofyYMX1Oa+ngpOxUWaPEUrZco4pevfRFkj4hi
+        RZntZYxzZs4OpTatnurO9o31hfMt8LI=
+X-Google-Smtp-Source: ABdhPJxuHJTmr1GxwWUcWheIXNCf3m8mJAo1j0i65kYI/3qiFoAZyRplqftcbDaB/Cl4LldSCf30Mg==
+X-Received: by 2002:a05:6830:270a:: with SMTP id j10mr1158093otu.26.1623379216903;
+        Thu, 10 Jun 2021 19:40:16 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id 184sm887615ooi.3.2021.06.10.19.35.06
+        by smtp.googlemail.com with ESMTPSA id u1sm884215ooo.18.2021.06.10.19.40.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 19:35:06 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v4 1/1] police: Add support for json output
-To:     Roi Dayan <roid@nvidia.com>, netdev@vger.kernel.org
-Cc:     Paul Blakey <paulb@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-References: <20210607064408.1668142-1-roid@nvidia.com>
+        Thu, 10 Jun 2021 19:40:16 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2] devlink: Add optional controller user
+ input
+To:     Parav Pandit <parav@nvidia.com>, stephen@networkplumber.org,
+        netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@nvidia.com>
+References: <20210607192406.14884-1-parav@nvidia.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b2d21f24-2b76-710c-f895-2c803ffa4d78@gmail.com>
-Date:   Thu, 10 Jun 2021 20:35:05 -0600
+Message-ID: <a673776a-7bc9-2253-d6ea-68474c56bd49@gmail.com>
+Date:   Thu, 10 Jun 2021 20:40:14 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210607064408.1668142-1-roid@nvidia.com>
+In-Reply-To: <20210607192406.14884-1-parav@nvidia.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -65,70 +65,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/7/21 12:44 AM, Roi Dayan wrote:
-> Change to use the print wrappers instead of fprintf().
+On 6/7/21 1:24 PM, Parav Pandit wrote:
+> A user optionally provides the external controller number when user
+> wants to create devlink port for the external controller.
 > 
-> This is example output of the options part before this commit:
+> An example on eswitch system:
+> $ devlink dev eswitch set pci/0033:01:00.0 mode switchdev
 > 
->         "options": {
->             "handle": 1,
->             "in_hw": true,
->             "actions": [ {
->                     "order": 1 police 0x2 ,
->                     "control_action": {
->                         "type": "drop"
->                     },
->                     "control_action": {
->                         "type": "continue"
->                     }overhead 0b linklayer unspec
->         ref 1 bind 1
-> ,
->                     "used_hw_stats": [ "delayed" ]
->                 } ]
->         }
+> $ devlink port show
+> pci/0033:01:00.0/196607: type eth netdev enP51p1s0f0np0 flavour physical port 0 splittable false
+> pci/0033:01:00.0/131072: type eth netdev eth0 flavour pcipf controller 1 pfnum 0 external true splittable false
+>   function:
+>     hw_addr 00:00:00:00:00:00
 > 
-> This is the output of the same dump with this commit:
+> $ devlink port add pci/0033:01:00.0 flavour pcisf pfnum 0 sfnum 77 controller 1
+> pci/0033:01:00.0/163840: type eth netdev eth1 flavour pcisf controller 1 pfnum 0 sfnum 77 external true splittable false
+>   function:
+>     hw_addr 00:00:00:00:00:00 state inactive opstate detached
 > 
->         "options": {
->             "handle": 1,
->             "in_hw": true,
->             "actions": [ {
->                     "order": 1,
->                     "kind": "police",
->                     "index": 2,
->                     "control_action": {
->                         "type": "drop"
->                     },
->                     "control_action": {
->                         "type": "continue"
->                     },
->                     "overhead": 0,
->                     "linklayer": "unspec",
->                     "ref": 1,
->                     "bind": 1,
->                     "used_hw_stats": [ "delayed" ]
->                 } ]
->         }
-> 
-> Signed-off-by: Roi Dayan <roid@nvidia.com>
-> Reviewed-by: Paul Blakey <paulb@nvidia.com>
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 > ---
-> 
-> Notes:
->     v2
->     - fix json output to match correctly the other actions
->       i.e. output the action name in key 'kind' and unsigned for the index
->     
->     v3
->     - print errors to stderr.
->     - return -1 on null key.
->     
->     v4
->     - removed left over debug that was forgotten. sorry for that.
-> 
->  tc/m_police.c | 30 +++++++++++++++++-------------
->  1 file changed, 17 insertions(+), 13 deletions(-)
+> changelog:
+> v1->v2: (addresssed comments from David)
+>  - split the command help output and man page to multiple lines to make it readable
+> ---
+>  devlink/devlink.c       | 21 ++++++++++++++++++---
+>  man/man8/devlink-port.8 | 21 +++++++++++++++++++++
+>  2 files changed, 39 insertions(+), 3 deletions(-)
 > 
 
-applied to iproute2-next
+applied to iproute2-next, but ...
+
+> @@ -3795,7 +3806,9 @@ static void cmd_port_help(void)
+>  	pr_err("       devlink port param set DEV/PORT_INDEX name PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
+>  	pr_err("       devlink port param show [DEV/PORT_INDEX name PARAMETER]\n");
+>  	pr_err("       devlink port health show [ DEV/PORT_INDEX reporter REPORTER_NAME ]\n");
+> -	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM [ sfnum SFNUM ]\n");
+> +	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR pfnum PFNUM\n"
+> +	       "                      [ sfnum SFNUM ]\n"
+> +	       "                      [ controller CNUM ]\n");
+
+
+I put both of those lines on 1 since they fit within 80. Same below.
+
 
