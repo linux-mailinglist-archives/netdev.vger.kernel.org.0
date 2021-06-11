@@ -2,79 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5605D3A4622
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 18:05:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3EDA3A4623
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 18:05:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbhFKQHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 12:07:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59500 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230298AbhFKQHH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Jun 2021 12:07:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=pOUTLvcE1v7NqIp2eapNaGHmWwOnoyEPTjul5Q+Mgrg=; b=qHESekrPMAdarI+69K8BiSb6Ik
-        xz/YrCBB6J2kUGVfkhu/z01rXghX3N6Kx/Vf/c3lTaczfwQ+KkAlUWll6+CGtGtwDYziOa4FbRa5Q
-        x9Jll3iV/MQ1SKiEFgyKJ1aP/k06QNuGhUmyferxugIitTe7/nVraW4NSkoPHu+AJL48=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lrjeY-008sPM-6E; Fri, 11 Jun 2021 18:05:02 +0200
-Date:   Fri, 11 Jun 2021 18:05:02 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Weihang Li <liweihang@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, linuxarm@huawei.com,
-        Wenpeng Liang <liangwenpeng@huawei.com>
-Subject: Re: [PATCH net-next 6/8] net: phy: print the function name by
- __func__ instead of an fixed string
-Message-ID: <YMOJrv0ZRGCP26F7@lunn.ch>
-References: <1623393419-2521-1-git-send-email-liweihang@huawei.com>
- <1623393419-2521-7-git-send-email-liweihang@huawei.com>
+        id S230396AbhFKQHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 12:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230083AbhFKQHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 12:07:32 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C31C061574
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 09:05:34 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id 102-20020a9d0eef0000b02903fccc5b733fso3628562otj.4
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 09:05:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2Ol9LmHX2jY59Zf0Udzv9fgb6HaOvJq8tTOEhATtJBQ=;
+        b=eu1wbg4OE9zp1gAi46aS3nctjtOBc1No6o69K2tqZzD7kaRvn20zu4EEJ/qzsd50U+
+         A/IxHP8+zy4Bm6ImtEEazonoZiUND9Ow1ULBjzq+t5Fo3SuaHyyiy2KCST4YYz9IzPQg
+         TgQNWLCXutjYVMSNwHvo2iqkVOYiBWlQVaZ2kaSmVW7z+0G51Wh6FbRTD9g2RwmyzpZr
+         bfItvC16LrvQbD81FW6sWN3rmU0HD1yJ5rGCShP+vaRIDyXE5IW6HdJffwSip0v2VRmo
+         AtQ470Ov0gaWPCjeHOiu/htTXaTtdgCt7dvHw0gwTOC/gCau6/mqx6VPNCsF9a4frqDb
+         Bn0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2Ol9LmHX2jY59Zf0Udzv9fgb6HaOvJq8tTOEhATtJBQ=;
+        b=EokbIjshahYT70CkxH06GYpeL9dSLFN2C/QO6pS25I/UHnBEeFq0t3a7W3jTnmZpe0
+         hop37fSHr6SfxbEprpsUKuaXODDqV8AJtM7KWVQADAN/THjuQQ+llC4S7+RsZSKemw95
+         3vkEsoO/AtKQn18Ekl1tYoonmor6jiTWfdPwDkhWFUapm2qe41MnX15GPliYmUXo05ci
+         4npNQdgmApYVE9/mYRaDfgUbOBfRCBNkoVYh2gBTvKVkOlSjHuiRtzVVfF/jMVvOTh5g
+         2ROGOpwe0fZyBad57iRnGbhLDw5begB//PgrjrDDfJfhfvLska9n853x7RpoBlNvs41V
+         Cb7A==
+X-Gm-Message-State: AOAM533G2jpAkGLC2/pY0dPfnl4zRr9vnytKdtTx1703OHjdjVx9ayzC
+        izST7u/3+Bt6eHY2TK4vACi/d5l6dAio8A==
+X-Google-Smtp-Source: ABdhPJyT+4BExUuWDZtizDT3dZkkp1oUYjQOFKEP0EBOVoWYqSB172QnaOjPmAvMsHNTKsc5CK67Hg==
+X-Received: by 2002:a9d:66d9:: with SMTP id t25mr3769260otm.217.1623427533921;
+        Fri, 11 Jun 2021 09:05:33 -0700 (PDT)
+Received: from fedora.attlocal.net ([2600:1700:271:1a80::2d])
+        by smtp.gmail.com with ESMTPSA id w186sm1258872oib.58.2021.06.11.09.05.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Jun 2021 09:05:33 -0700 (PDT)
+From:   Lijun Pan <lijunp213@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Lijun Pan <lijunp213@gmail.com>
+Subject: [PATCH net-next] ibmvnic: fix kernel build warning in strncpy
+Date:   Fri, 11 Jun 2021 11:05:29 -0500
+Message-Id: <20210611160529.88936-1-lijunp213@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1623393419-2521-7-git-send-email-liweihang@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 02:36:57PM +0800, Weihang Li wrote:
-> From: Wenpeng Liang <liangwenpeng@huawei.com>
-> 
-> It's better to use __func__ than a fixed string to print a
-> function's name.
-> 
-> Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
-> Signed-off-by: Weihang Li <liweihang@huawei.com>
-> ---
->  drivers/net/phy/mdio_device.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
-> index 0837319..c94cb53 100644
-> --- a/drivers/net/phy/mdio_device.c
-> +++ b/drivers/net/phy/mdio_device.c
-> @@ -77,7 +77,7 @@ int mdio_device_register(struct mdio_device *mdiodev)
->  {
->  	int err;
->  
-> -	dev_dbg(&mdiodev->dev, "mdio_device_register\n");
-> +	dev_dbg(&mdiodev->dev, "%s\n", __func__);
->  
->  	err = mdiobus_register_device(mdiodev);
->  	if (err)
-> @@ -188,7 +188,7 @@ int mdio_driver_register(struct mdio_driver *drv)
->  	struct mdio_driver_common *mdiodrv = &drv->mdiodrv;
->  	int retval;
->  
-> -	pr_debug("mdio_driver_register: %s\n", mdiodrv->driver.name);
-> +	pr_debug("%s: %s\n", __func__, mdiodrv->driver.name);
+drivers/net/ethernet/ibm/ibmvnic.c: In function ‘handle_vpd_rsp’:
+drivers/net/ethernet/ibm/ibmvnic.c:4393:3: warning: ‘strncpy’ output truncated before terminating nul copying 3 bytes from a string of the same length [-Wstringop-truncation]
+ 4393 |   strncpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-It would be nice to make this
+Signed-off-by: Lijun Pan <lijunp213@gmail.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-        dev_dbg(&mdiodev->dev, "%s: %s\n", __func__, mdiodrv->driver.name);
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 497f1a7da70b..2675b2301ed7 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -4390,7 +4390,7 @@ static void handle_vpd_rsp(union ibmvnic_crq *crq,
+ 
+ complete:
+ 	if (adapter->fw_version[0] == '\0')
+-		strncpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
++		memcpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
+ 	complete(&adapter->fw_done);
+ }
+ 
+-- 
+2.23.0
 
-	Andrew
