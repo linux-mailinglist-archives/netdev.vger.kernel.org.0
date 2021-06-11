@@ -2,112 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42A393A48F1
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 20:59:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D2E43A4906
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 21:01:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbhFKTBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 15:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57904 "EHLO
+        id S231351AbhFKTDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 15:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbhFKTBO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 15:01:14 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11B0C061574
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 11:59:14 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id v11so3289721ply.6
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 11:59:14 -0700 (PDT)
+        with ESMTP id S231258AbhFKTDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 15:03:44 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC4AC0617AF
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 12:01:45 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id ce15so6029653ejb.4
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 12:01:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=+g/jRO9YwjHrtzLwxVZI9j41m/vkdBwa6eMe+3C5+tQ=;
-        b=gfN8S/JFRfj7Fn18j64SLXXW3YIpjWEIJE0Hrp5JYsFPigBySyLvvMYFqSXBw2aPMK
-         f0QUi2ZOdgdgkjqMVEwA2SlPqtJVrEkVBc9Sm9iTDOzESbPdx6mKSE92fRAhE76fvu+Y
-         WeGc/ZTfq55jjggZV86C1cEmmenlPY60T18u3EAHrHqpBPTHxzWAbn1oPa5Ox314Fo9h
-         OU4bM6OMBL84ZfsoVJ9TCz6ydHmcjsdg4vPeoEtslUExr4ZYezWWuZHef67GPPJ+I76j
-         QfI+p81DUM/HqN3nity5Zx4hQppKauddwqYt7A0i+A9FQW8ly4bnJH5aqgSeK4Sx5dqe
-         i+jg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3pDtYpUsnA0jpurkBzyUaqdeveASWrdqGaFuapRPnEM=;
+        b=BY+oSUj/9LhZcHcUbA1TAaxYA4GgFYdxf2CDNRWbCabNLo7DbpR1vrKtBVLot4ztsK
+         d8tSagoJf07ebEnvFZe2sVXfgvdOVKta6TdPwrI3k4IZmcHgKxEB866FfhwiGio7cqIU
+         dpEmWVe8zf6QLnMMOsXWxEKgjORAIpTcPRDi8C9bj8CpL9DKVsyIqsmR3gB/9cZ2iZxu
+         xB9Y+89qMGTRPZCxVjVV+ZU160LRYdoCOgLTU3JscI48QNr4Xjs0yUrhI8UHqR9XIHuP
+         /Na8VjAtidvamJLCQoQj+gGIE+e45PtYHhiNtSIzwWJp78E2eSrFjgal47grvhLu2i93
+         F4qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=+g/jRO9YwjHrtzLwxVZI9j41m/vkdBwa6eMe+3C5+tQ=;
-        b=WfmwXkUosyAsWuJYFGiV7vIxJVRkxSf3E6qXEmG6ZcVo+leabyFjgpTZoSp+a8qVjQ
-         Mt2p6WomO6y3SdNFfN4LVoi5P/T9aPoGOY2iW1ztaVBArljNPLhXTRjfqhH9dBpMOPMs
-         xOiMK7aMiSa8jcE54eDazd+zNfBOi7P+6ZlQ2GeZ1RbPOqflDzcHyEpvR65y/tqgcbcA
-         fY9qXtAQnzDpS26vAkGdqTWQcZX1TFwmrZJbgeqq6rZ0Bh7Sz2uPrzYUDS8V/zx8IEuS
-         JzERKVMYq3MfYenpYsmzeSMAn3+1pziLJXgbvQvoQmO/+b+DOy8eEKxDs07W+3qhcCRy
-         zwJA==
-X-Gm-Message-State: AOAM5320wDiZcSKbE9FjOUyONk5NjHQ9wcUr3QWEzHztg46tgecT2DnP
-        keUyJvOLHS53+n54c9v/UvtYwe4k7GF9PQ==
-X-Google-Smtp-Source: ABdhPJwd3jrLrlO9q6b9BEBCUsbEaBRnIV46bmrhyXz7qyDQ6o4q8rERSCuWhM0rAIGnXcfiOdBC9w==
-X-Received: by 2002:a17:902:ed95:b029:ee:aa46:547a with SMTP id e21-20020a170902ed95b02900eeaa46547amr5183811plj.27.1623437954059;
-        Fri, 11 Jun 2021 11:59:14 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id d23sm10856415pjz.15.2021.06.11.11.59.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Jun 2021 11:59:13 -0700 (PDT)
-Subject: Re: [PATCH net-next] ibmvnic: fix kernel build warning in strncpy
-To:     Lijun Pan <lijunp213@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>
-References: <20210611160529.88936-1-lijunp213@gmail.com>
- <e53a2d46-fd6d-d0cc-8b78-205c5bd6784b@pensando.io>
- <CAOhMmr4Kumw7XCUG1RaN9U+nYR_a6NcY6Z28FnhswV2+ceQuhw@mail.gmail.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <bf41b970-d2bd-9e44-aaaa-0820cf54867b@pensando.io>
-Date:   Fri, 11 Jun 2021 11:59:12 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3pDtYpUsnA0jpurkBzyUaqdeveASWrdqGaFuapRPnEM=;
+        b=eH9Vp7m/go6wuZxr8IYveCG+OZkDwKPrE7+h0rFZXr2j8maPbuxTZW1N9K13SiHrNg
+         sbdj9dZZ6Mo0pbcJJHc+TGu042BhrNdruoO51ExmMuVAFk7XY84dTnOBSViKbWQV14Cw
+         kjIPJsG7YmvlLCTgpaEcreZNKebcim0jxtY75HRFbnu5vP3yjqUMIjYLjuEF+dIZUJDO
+         kBdKjTotcP7Fo6boRcJoGqK4Ep9+AbPPfojq5B3gGSY7JDpXk4CkIYQaSzdeXZ+zB6Uy
+         jPMiRyh8vCfiqYHZl5nRwB8sN1BgxbB//gKkqRpa+ir7UnOXBksiJ7PfnOO5IiyyKgWe
+         pGWA==
+X-Gm-Message-State: AOAM532UtCBzDlF+k645Sb3oIJ6sDzm7CRnc7IQD2Q85aDt+8z3UMQKQ
+        a+tJ5taHXWAVPt8wr8HoMbY=
+X-Google-Smtp-Source: ABdhPJwp5SqZebaeRnVTUYHhnHqg6WmLFeYWqZ0y90/+BK2D+v7gNaBoexywO4r1CyaRTietvcQ4fg==
+X-Received: by 2002:a17:907:2895:: with SMTP id em21mr4791962ejc.164.1623438103912;
+        Fri, 11 Jun 2021 12:01:43 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id c19sm2922016edw.10.2021.06.11.12.01.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Jun 2021 12:01:43 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 00/10] DSA tagging driver for NXP SJA1110
+Date:   Fri, 11 Jun 2021 22:01:21 +0300
+Message-Id: <20210611190131.2362911-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAOhMmr4Kumw7XCUG1RaN9U+nYR_a6NcY6Z28FnhswV2+ceQuhw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/11/21 11:36 AM, Lijun Pan wrote:
-> On Fri, Jun 11, 2021 at 11:28 AM Shannon Nelson <snelson@pensando.io> wrote:
->> On 6/11/21 9:05 AM, Lijun Pan wrote:
->>> drivers/net/ethernet/ibm/ibmvnic.c: In function ‘handle_vpd_rsp’:
->>> drivers/net/ethernet/ibm/ibmvnic.c:4393:3: warning: ‘strncpy’ output truncated before terminating nul copying 3 bytes from a string of the same length [-Wstringop-truncation]
->>>    4393 |   strncpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
->>>         |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>>
->>> Signed-off-by: Lijun Pan <lijunp213@gmail.com>
->>> ---
->>>    drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
->>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
->>> index 497f1a7da70b..2675b2301ed7 100644
->>> --- a/drivers/net/ethernet/ibm/ibmvnic.c
->>> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
->>> @@ -4390,7 +4390,7 @@ static void handle_vpd_rsp(union ibmvnic_crq *crq,
->>>
->>>    complete:
->>>        if (adapter->fw_version[0] == '\0')
->>> -             strncpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
->>> +             memcpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
->>>        complete(&adapter->fw_done);
->>>    }
->>>
->> This doesn't fix the real problem.  The error message is saying that
->> there is no string terminating '\0' byte getting set after the "N/A"
->> string, meaning that there could be garbage in the buffer after the
->> string that could allow for surprising and bad things to happen when
->> that string is used later, including buffer overruns that can cause
->> stack smash or other memory munging.
->>
->> Better would be to use strlcpy() with a limiter of
->> sizeof(adapter->fw_version).
->>
->> sln
-> Thanks for the tip. I looked up both strscpy and strlcpy. It seems nowadays
-> strscpy is preferred.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Sure, that works too.
-sln
+This series adds support for tagging data and control packets on the new
+NXP SJA1110 switch (supported by the sja1105 driver). Up to this point
+it used the sja1105 driver, which allowed it to send data packets, but
+not PDUs as those required by STP and PTP.
+
+To accommodate this new tagger which has both a header and a trailer, we
+need to refactor the entire DSA tagging scheme, to replace the "overhead"
+concept with separate "needed_headroom" and "needed_tailroom" concepts,
+so that SJA1110 can declare its need for both.
+
+There is also some consolidation work for the receive path of tag_8021q
+and its callers (sja1105 and ocelot-8021q).
+
+Changes in v3:
+Rebase in front of the "Port the SJA1105 DSA driver to XPCS" series
+which seems to have stalled for now.
+
+Changes in v2:
+Export the dsa_8021q_rcv and sja1110_process_meta_tstamp symbols to
+avoid build errors as modules.
+
+Vladimir Oltean (10):
+  net: dsa: sja1105: enable the TTEthernet engine on SJA1110
+  net: dsa: sja1105: allow RX timestamps to be taken on all ports for
+    SJA1110
+  net: dsa: generalize overhead for taggers that use both headers and
+    trailers
+  net: dsa: tag_sja1105: stop resetting network and transport headers
+  net: dsa: tag_8021q: remove shim declarations
+  net: dsa: tag_8021q: refactor RX VLAN parsing into a dedicated
+    function
+  net: dsa: sja1105: make SJA1105_SKB_CB fit a full timestamp
+  net: dsa: add support for the SJA1110 native tagging protocol
+  net: dsa: sja1105: add the RX timestamping procedure for SJA1110
+  net: dsa: sja1105: implement TX timestamping for SJA1110
+
+ Documentation/networking/dsa/dsa.rst          |  21 +-
+ drivers/net/dsa/sja1105/sja1105.h             |   4 +
+ drivers/net/dsa/sja1105/sja1105_main.c        |  35 +-
+ drivers/net/dsa/sja1105/sja1105_ptp.c         |  97 +++++-
+ drivers/net/dsa/sja1105/sja1105_ptp.h         |  13 +
+ drivers/net/dsa/sja1105/sja1105_spi.c         |  28 ++
+ .../net/dsa/sja1105/sja1105_static_config.c   |   1 +
+ .../net/dsa/sja1105/sja1105_static_config.h   |   1 +
+ include/linux/dsa/8021q.h                     |  79 +----
+ include/linux/dsa/sja1105.h                   |  26 +-
+ include/net/dsa.h                             |   8 +-
+ net/core/flow_dissector.c                     |   2 +-
+ net/dsa/dsa_priv.h                            |   5 +
+ net/dsa/master.c                              |   6 +-
+ net/dsa/slave.c                               |  10 +-
+ net/dsa/tag_8021q.c                           |  23 ++
+ net/dsa/tag_ar9331.c                          |   2 +-
+ net/dsa/tag_brcm.c                            |   6 +-
+ net/dsa/tag_dsa.c                             |   4 +-
+ net/dsa/tag_gswip.c                           |   2 +-
+ net/dsa/tag_hellcreek.c                       |   3 +-
+ net/dsa/tag_ksz.c                             |   9 +-
+ net/dsa/tag_lan9303.c                         |   2 +-
+ net/dsa/tag_mtk.c                             |   2 +-
+ net/dsa/tag_ocelot.c                          |   4 +-
+ net/dsa/tag_ocelot_8021q.c                    |  20 +-
+ net/dsa/tag_qca.c                             |   2 +-
+ net/dsa/tag_rtl4_a.c                          |   2 +-
+ net/dsa/tag_sja1105.c                         | 312 ++++++++++++++++--
+ net/dsa/tag_trailer.c                         |   3 +-
+ net/dsa/tag_xrs700x.c                         |   3 +-
+ 31 files changed, 551 insertions(+), 184 deletions(-)
+
+-- 
+2.25.1
 
