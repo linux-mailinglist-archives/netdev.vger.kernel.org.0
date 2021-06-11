@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CE403A38E9
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 02:38:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2E883A38F7
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 02:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231401AbhFKAkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 20:40:43 -0400
-Received: from m12-11.163.com ([220.181.12.11]:59638 "EHLO m12-11.163.com"
+        id S231272AbhFKAng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 20:43:36 -0400
+Received: from m12-13.163.com ([220.181.12.13]:34787 "EHLO m12-13.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229578AbhFKAkm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Jun 2021 20:40:42 -0400
+        id S230230AbhFKAnf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 20:43:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=CyN9y
-        auZ9A10j7+vRszAOPbzX0M3IqT0uJAzoEoUjPs=; b=fcNTEOlUd/tAT/bIAUtaO
-        bbBz8oIo4v8z0s8Euu30M4S+YkaXayd8trQHxQStXa8EUEQsNXUv3VcMoD3nvr+F
-        UT6wzmRVm2576A8GuWN7xH+PzJOEtkctcHAUWcqKgqzf48zLaR2/EUmCTnYzPp6p
-        7VH9A7sgDZLTpKlqPMJAEA=
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=AhPpV
+        fv7B9WklPn9o3YVBYYVlRebfLQtig3SsQelQUU=; b=QtCwsJlsc6us73Oum1gVy
+        MEJH7xvTE0sSq8JnY0BDC2MV5Asn+SOERhr/jGOP/q7lCujBRHzCDufGmD3kzDwg
+        lqH0XQLL0eBM3SgDJ17yn9cr9LLJZkkyff7OXYDYYYe0sJ80D/c5qXofVHMBgI4B
+        Bb3f5GeiYcOz4ANB6suaL4=
 Received: from ubuntu.localdomain (unknown [218.17.89.92])
-        by smtp7 (Coremail) with SMTP id C8CowABXY5OHsMJgtJRxhQ--.36259S2;
-        Fri, 11 Jun 2021 08:38:32 +0800 (CST)
+        by smtp9 (Coremail) with SMTP id DcCowABnbJAqscJgforHFg--.31626S2;
+        Fri, 11 Jun 2021 08:41:15 +0800 (CST)
 From:   13145886936@163.com
-To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
-Subject: [PATCH] wext: fix a misspelling
-Date:   Thu, 10 Jun 2021 17:38:26 -0700
-Message-Id: <20210611003826.3294-1-13145886936@163.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gushengxian <gushengxian@yulong.com>
+Subject: [PATCH] xfrm: policy: fix a spelling mistake
+Date:   Thu, 10 Jun 2021 17:41:13 -0700
+Message-Id: <20210611004113.3373-1-13145886936@163.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8CowABXY5OHsMJgtJRxhQ--.36259S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtryrtw15trWkKw1rtr15twb_yoW3CrX_Gr
-        WxJw1kKFW8JrnavayUuw4xur4jy3y0qa1Fga9xtrySyw4DA3yDt3s5Cr4Utw429w4jyrWf
-        C3Z5Jr45tF4fZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUefcTJUUUUU==
+X-CM-TRANSID: DcCowABnbJAqscJgforHFg--.31626S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtFW7ZFykZw1DXFy3KF18AFb_yoWfJwb_Ww
+        1fXryDWry5trs2y3WrJr4DZrWfXr4ruF97u3s7t3Wqg348JrZ5K3srWrZ8Wr47WryUuFnr
+        XF98W392yw1UKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU52fO7UUUUU==
 X-Originating-IP: [218.17.89.92]
-X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/1tbiXAiug1Xlz7HHpwAAsX
+X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/xtbBzgyug1QHM2vH7gAAsN
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: gushengxian <gushengxian@yulong.com>
 
-Fix a misspelling.
+Fix a spelling mistake.
 
 Signed-off-by: gushengxian <gushengxian@yulong.com>
 ---
- net/wireless/wext-compat.c | 2 +-
+ net/xfrm/xfrm_policy.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/wireless/wext-compat.c b/net/wireless/wext-compat.c
-index a8320dc59af7..7ef6fd26450c 100644
---- a/net/wireless/wext-compat.c
-+++ b/net/wireless/wext-compat.c
-@@ -1183,7 +1183,7 @@ static int cfg80211_wext_siwpower(struct net_device *dev,
- 		switch (wrq->flags & IW_POWER_MODE) {
- 		case IW_POWER_ON:       /* If not specified */
- 		case IW_POWER_MODE:     /* If set all mask */
--		case IW_POWER_ALL_R:    /* If explicitely state all */
-+		case IW_POWER_ALL_R:    /* If explicitly state all */
- 			ps = true;
- 			break;
- 		default:                /* Otherwise we ignore */
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index ec84d11c3fc1..827d84255021 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3252,7 +3252,7 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
+ 
+ /*
+  * 0 or more than 0 is returned when validation is succeeded (either bypass
+- * because of optional transport mode, or next index of the mathced secpath
++ * because of optional transport mode, or next index of the matched secpath
+  * state with the template.
+  * -1 is returned when no matching template is found.
+  * Otherwise "-2 - errored_index" is returned.
 -- 
 2.25.1
+
 
