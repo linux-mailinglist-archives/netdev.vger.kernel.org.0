@@ -2,129 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 858223A3D43
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 09:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44D983A3D5B
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 09:40:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231531AbhFKHgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 03:36:10 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:49618 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230035AbhFKHf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 03:35:56 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15B7WoXo151285;
-        Fri, 11 Jun 2021 03:33:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=dc/8tHGg//0/TYtrt6XIXy9/rgkbUNg4kJ+e5t9dtfE=;
- b=Xxx2ACvdd5hp0cOheyRVcNLzUbQTkKs9tsTsGqi9/k6wmfUkP8SQVAf8Y3PKrw69vGqX
- FJLewEcoR4bWmQdaXua3cDW8fN1eRueqiIkdCUB9gdHK7VTvY3CAeTUrAGja22zD/JM3
- z6l10cHzD09ToVDhxNr3P1fj3f+4RUGMD/ZlgsEulXQTfaqVjBcUbRvQnXFCYr+d6E9L
- Dm4RzD9aoh5lKTrMatPe8WLV7MTrGi8nwiGzfBQJnV0Gt5897FxG5W8yIF6hV2pLLTIf
- QMCBLpwpqNK0jlGxPTpq94Q4uFS3LfBX8ZeXOwJrY/dY9131lNOm5mdvnpmmw8xBeCnv xA== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 39439g0dh8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Jun 2021 03:33:56 -0400
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 15B7WjOM029212;
-        Fri, 11 Jun 2021 07:33:54 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04fra.de.ibm.com with ESMTP id 3900w89ts1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Jun 2021 07:33:54 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 15B7Xo5L14877086
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Jun 2021 07:33:51 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D85A6A4064;
-        Fri, 11 Jun 2021 07:33:50 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 95AD9A4071;
-        Fri, 11 Jun 2021 07:33:50 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 11 Jun 2021 07:33:50 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>
-Subject: [PATCH net-next 9/9] s390/qeth: Consider dependency on SWITCHDEV module
-Date:   Fri, 11 Jun 2021 09:33:41 +0200
-Message-Id: <20210611073341.1634501-10-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210611073341.1634501-1-jwi@linux.ibm.com>
-References: <20210611073341.1634501-1-jwi@linux.ibm.com>
+        id S231446AbhFKHmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 03:42:23 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:5385 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230035AbhFKHmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 03:42:22 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4G1Xhs4WVsz6wbn;
+        Fri, 11 Jun 2021 15:36:29 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 11 Jun 2021 15:40:23 +0800
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpeml500017.china.huawei.com (7.185.36.243) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 11 Jun 2021 15:40:22 +0800
+Subject: Re: [PATCH net-next v2] net: mdio: mscc-miim: Use
+ devm_platform_get_and_ioremap_resource()
+To:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+References: <20210611045049.3905429-1-yangyingliang@huawei.com>
+ <72e99523-b1f0-bff4-ad96-0d71b3901480@huawei.com>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <6e467434-7d38-7810-03fb-c884447f3d75@huawei.com>
+Date:   Fri, 11 Jun 2021 15:40:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <72e99523-b1f0-bff4-ad96-0d71b3901480@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 4kwxm2bb59i4Ql39kHC4Yi8L6H9H3uLl
-X-Proofpoint-GUID: 4kwxm2bb59i4Ql39kHC4Yi8L6H9H3uLl
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-06-11_01:2021-06-11,2021-06-11 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
- clxscore=1015 phishscore=0 mlxlogscore=999 mlxscore=0 adultscore=0
- malwarescore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106110048
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexandra Winter <wintera@linux.ibm.com>
 
-Without the SWITCHDEV module, the bridgeport attribute LEARNING_SYNC
-of the physical device (self) does not provide any functionality.
-Instead of calling the no-op stub version of the switchdev functions,
-fail the setting of the attribute with an appropriate message.
+On 2021/6/11 14:57, weiyongjun (A) wrote:
+>
+>> Use devm_platform_get_and_ioremap_resource() to simplify
+>> code.
+>>
+>> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+>> ---
+>> v2:
+>>    only convert the first platform_get_resource()
+>> ---
+>>   drivers/net/mdio/mdio-mscc-miim.c | 6 +-----
+>>   1 file changed, 1 insertion(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/net/mdio/mdio-mscc-miim.c 
+>> b/drivers/net/mdio/mdio-mscc-miim.c
+>> index b36e5ea04ddf..071c654bab29 100644
+>> --- a/drivers/net/mdio/mdio-mscc-miim.c
+>> +++ b/drivers/net/mdio/mdio-mscc-miim.c
+>> @@ -139,10 +139,6 @@ static int mscc_miim_probe(struct 
+>> platform_device *pdev)
+>>       struct mscc_miim_dev *dev;
+>>       int ret;
+>>   -    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> -    if (!res)
+>> -        return -ENODEV;
+>> -
+>>       bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*dev));
+>>       if (!bus)
+>>           return -ENOMEM;
+>> @@ -155,7 +151,7 @@ static int mscc_miim_probe(struct platform_device 
+>> *pdev)
+>>       bus->parent = &pdev->dev;
+>>         dev = bus->priv;
+>> -    dev->regs = devm_ioremap_resource(&pdev->dev, res);
+>> +    dev->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+>
+>
+> res not used later, so should be
+>
+> dev->regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
+Yes, I will send a v3 later.
 
-While at it, also add an error message for the 'not supported by HW'
-case.
-
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Reviewed-by: Julian Wiedmann <jwi@linux.ibm.com>
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- drivers/s390/net/qeth_l2_main.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index ca44421a6d6e..2abf86c104d5 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -805,8 +805,6 @@ static int qeth_l2_bridge_setlink(struct net_device *dev, struct nlmsghdr *nlh,
- 
- 	if (!netif_device_present(dev))
- 		return -ENODEV;
--	if (!(priv->brport_hw_features))
--		return -EOPNOTSUPP;
- 
- 	nlmsg_for_each_attr(attr, nlh, sizeof(struct ifinfomsg), rem1) {
- 		if (nla_type(attr) == IFLA_PROTINFO) {
-@@ -832,6 +830,16 @@ static int qeth_l2_bridge_setlink(struct net_device *dev, struct nlmsghdr *nlh,
- 		return 0;
- 	if (!bp_tb[IFLA_BRPORT_LEARNING_SYNC])
- 		return -EINVAL;
-+	if (!(priv->brport_hw_features & BR_LEARNING_SYNC)) {
-+		NL_SET_ERR_MSG_ATTR(extack, bp_tb[IFLA_BRPORT_LEARNING_SYNC],
-+				    "Operation not supported by HW");
-+		return -EOPNOTSUPP;
-+	}
-+	if (!IS_ENABLED(CONFIG_NET_SWITCHDEV)) {
-+		NL_SET_ERR_MSG_ATTR(extack, bp_tb[IFLA_BRPORT_LEARNING_SYNC],
-+				    "Requires NET_SWITCHDEV");
-+		return -EOPNOTSUPP;
-+	}
- 	enable = !!nla_get_u8(bp_tb[IFLA_BRPORT_LEARNING_SYNC]);
- 
- 	if (enable == !!(priv->brport_features & BR_LEARNING_SYNC))
--- 
-2.25.1
-
+Thanks,
+Yang
+>
+>
+>>       if (IS_ERR(dev->regs)) {
+>>           dev_err(&pdev->dev, "Unable to map MIIM registers\n");
+>>           return PTR_ERR(dev->regs);
+> .
