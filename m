@@ -2,161 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AC4C3A462E
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 18:09:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC9373A4620
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 18:04:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbhFKQLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 12:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbhFKQLf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 12:11:35 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CAAC061574
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 09:09:23 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id i94so6665738wri.4
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 09:09:23 -0700 (PDT)
+        id S231371AbhFKQG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 12:06:28 -0400
+Received: from mail-pg1-f170.google.com ([209.85.215.170]:44646 "EHLO
+        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231610AbhFKQGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 12:06:10 -0400
+Received: by mail-pg1-f170.google.com with SMTP id y11so2816670pgp.11
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 09:03:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Tm0i4ZRiw071gfbneeD3WBys+y2c9gDppQDlJO1W8Xc=;
-        b=beqlJRZ+HBI7dFbyEDmeseRkiL8KIpvtantI5PgSHFILBJdvtQjxcI59OJcDUuSh1P
-         /pSl+KEMVnWptnsqifTvGWdIyD8h8M8RRFCIxxp+dDqmmFvI4Rs/Bs8HrslJRRwGS46U
-         2PYoDAzrce/ioRH0tFpIek9tb1KZh/2I8CA/zRKfBnIBo+VX4qzFpovhq2zqTGQTcSs0
-         QG9aVJ1TGRX508Mj5aomRZpIaZxQthHuiE6bVC2iIwl2pGEH5cz1/Va3HWkpu7xAriJg
-         Jmjqmkb6t3pDbTuiW9+B8k+yggUNG7BFdr9/L51snHuS5uilDOQXRwJo/wy6/gyaCTqF
-         3jYQ==
+         :cc:content-transfer-encoding;
+        bh=LFmDj29W+ZxaCRet0MpwoPiDOpfYcZjGsEz7cZN6NGQ=;
+        b=wHDz9e2QbxaQ5GZ2mwO3fDHyybaNCUJEXhk5bzYnzpDEXIXePSj24EzxxXdd/tig2e
+         UVEt32IuXNDbQU1E6tF5IQ4KTiu+F6JpRVL8+yCGUCOVXlY5ZrlRzUFEIrBmck64oDbZ
+         nznhoquoS3w+Xl44+rqpH+rvs4Stld2KVVYqS0W9VY9ACdMIfYQoiAwVuh7mcO6p/TPO
+         3pv8cFL5qHWBnI88ZvQfqfyWIfZeQ1ttX9Rxln3fOMdfRerXLFiusNC2s32sf8e0x0VX
+         9+8FKjFLE2VEfjQcfFfDzEq1LJLgLG5KF5TBZ0ifd1Q3g0Ra0n/TbNEnV6LwlBDPMP/f
+         BFdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Tm0i4ZRiw071gfbneeD3WBys+y2c9gDppQDlJO1W8Xc=;
-        b=re3ah4Q7MkEFhxdBuqc96GiOSq7oMhHqjPW+cGzzWZ/f8mzaZro3GaMrMg2clnduya
-         UAtV/0G0OUR9Mcv6nepGn+zNqqXtRa6FLouQ1BzXsfAS5mp6ao4Km2UPV5TJvNq0oSpY
-         6XjOxR5fauXrko8eX2berFMYR9nXhPwdRMOeesThbRAn6/YL7XcOCB7uTek75m0LhsAn
-         xfM46Q9+vTUj0o0pR6ijt/UFEq1vma4BtrxuCrYAxO42QXcDSvPV+4HsXVkQ3CXYwrMp
-         ufM3oWDTtdKGNMavy3OynbH3volUPIHgKKfoGzJIM3XPVXSzFtVsiReA2i28MSkBMpAL
-         LWwQ==
-X-Gm-Message-State: AOAM530dDdPUda+pZyJ8ITy+5EYyBWkmO9OE9Cf0s0cA2xu968ZfQV0m
-        IH0cD6yQZDMZgjO3Ov0TKguJhmUtvv06tCeLVus=
-X-Google-Smtp-Source: ABdhPJwRK/J9Cpi6XFQRd1ruJFV+VTd6ENOzakMATgtqJ1ZdIyuj63CX6mFqh8bPO0do8I+uWFvFtB8Er9znJBvfALA=
-X-Received: by 2002:adf:ebc4:: with SMTP id v4mr4867308wrn.217.1623427761769;
- Fri, 11 Jun 2021 09:09:21 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LFmDj29W+ZxaCRet0MpwoPiDOpfYcZjGsEz7cZN6NGQ=;
+        b=X63ngwaKVNqWhF1eH330VchARZfXKSFw3ar+0ld27Or7/1wtxqRwbjZrI8Gb/hYKUx
+         lyG982i708SN62A8LHPJsQP/IBzPMMM555MHyGl1Aw31mehLlH/3Q6diO8mi/mT+1p3p
+         6JX+XhMp7w6zg7Q2f7ZBPEUUYmglkfc9tb+SQjz7bZ7hEx10UvX2hrw936/t6bvY5+Bs
+         y88Ha0WQijL1qjcDSxNRFhodH/jRvQBfKqesVxoHX+GjOP7EoswUJJSmNFm/kj01WX5/
+         rEzWY0DcmfYN4ji712ydrSqiQzFdbuuO2veIwOZhch63fHmv7jEf18mCPeRfBOznB7Gy
+         krXA==
+X-Gm-Message-State: AOAM5329evbkGPS4N7mFg5bA4RxddPeUyARxaG5mcGlF5dT/x/4scdd3
+        w7rFvum6NRE5ffpICMoJP4TIXu2a2JePDQln6lXQA6m6XDqXeA==
+X-Google-Smtp-Source: ABdhPJxGQ2zunH7fYmC5jB25rufBk9x2H65oIQCG0LXTkTAmQp2ffsO3r2ogj6zEG/n+GVgsUG/o1JHKfAwVcccSF9s=
+X-Received: by 2002:a62:5c1:0:b029:2a9:7589:dd30 with SMTP id
+ 184-20020a6205c10000b02902a97589dd30mr8978509pff.66.1623427378581; Fri, 11
+ Jun 2021 09:02:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <202106111102.iUAxbjgy-lkp@intel.com>
-In-Reply-To: <202106111102.iUAxbjgy-lkp@intel.com>
-From:   Lijun Pan <lijunp213@gmail.com>
-Date:   Fri, 11 Jun 2021 11:09:11 -0500
-Message-ID: <CAOhMmr5AC66WuU+ScsnLm7G1MKhPYJRxc8jCjBdC_BHqjbscUg@mail.gmail.com>
-Subject: Re: [net-next:master 183/184] drivers/net/ethernet/ibm/ibmvnic.c:855:2:
- warning: enumeration value 'VNIC_DOWN' not handled in switch
-To:     kernel test robot <lkp@intel.com>
-Cc:     Cristobal Forno <cforno12@linux.ibm.com>, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>
+References: <1623347089-28788-1-git-send-email-loic.poulain@linaro.org>
+ <1623347089-28788-2-git-send-email-loic.poulain@linaro.org>
+ <PH0PR12MB5481986BF646806E23909CD7DC349@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CAMZdPi9HhO9Z0W9hDLgNaj6jwiofVyQEp6pAwAO1Z8zqFGmGCA@mail.gmail.com> <PH0PR12MB5481E2A21AE5E9B7BF0B2C73DC349@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB5481E2A21AE5E9B7BF0B2C73DC349@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Fri, 11 Jun 2021 18:12:05 +0200
+Message-ID: <CAMZdPi-_1y7nxovrNVgBH45QAtr_t4pozmUGQpDhymKNETq3Bg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/3] rtnetlink: add IFLA_PARENT_[DEV|DEV_BUS]_NAME
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "johannes.berg@intel.com" <johannes.berg@intel.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "m.chetan.kumar@intel.com" <m.chetan.kumar@intel.com>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 10, 2021 at 10:33 PM kernel test robot <lkp@intel.com> wrote:
+On Fri, 11 Jun 2021 at 18:00, Parav Pandit <parav@nvidia.com> wrote:
 >
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-> head:   76cf404c40ae8efcf8c6405535a3f6f69e6ba2a5
-> commit: 53f8b1b25419a14b784feb6706bfe5bac03c5a75 [183/184] ibmvnic: Allow device probe if the device is not ready at boot
-> config: powerpc-allyesconfig (attached as .config)
-> compiler: powerpc64-linux-gcc (GCC) 9.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=53f8b1b25419a14b784feb6706bfe5bac03c5a75
->         git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
->         git fetch --no-tags net-next master
->         git checkout 53f8b1b25419a14b784feb6706bfe5bac03c5a75
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=powerpc
 >
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
 >
-> All warnings (new ones prefixed by >>):
->
->    drivers/net/ethernet/ibm/ibmvnic.c: In function 'adapter_state_to_string':
-> >> drivers/net/ethernet/ibm/ibmvnic.c:855:2: warning: enumeration value 'VNIC_DOWN' not handled in switch [-Wswitch]
->      855 |  switch (state) {
->          |  ^~~~~~
->    drivers/net/ethernet/ibm/ibmvnic.c: In function 'reset_reason_to_string':
-> >> drivers/net/ethernet/ibm/ibmvnic.c:1958:2: warning: enumeration value 'VNIC_RESET_PASSIVE_INIT' not handled in switch [-Wswitch]
->     1958 |  switch (reason) {
->          |  ^~~~~~
+> > From: Loic Poulain <loic.poulain@linaro.org>
+> > Sent: Friday, June 11, 2021 9:16 PM
+> >
+> > Hi Parav,
+> >
+> > On Fri, 11 Jun 2021 at 15:01, Parav Pandit <parav@nvidia.com> wrote:
+> > >
+> > >
+> > >
+> > > > From: Loic Poulain <loic.poulain@linaro.org>
+> > > > Sent: Thursday, June 10, 2021 11:15 PM
+> > > >
+> > > > From: Johannes Berg <johannes.berg@intel.com>
+> > > >
+> > > > In some cases, for example in the upcoming WWAN framework changes,
+> > > > there's no natural "parent netdev", so sometimes dummy netdevs are
+> > > > created or similar. IFLA_PARENT_DEV_NAME is a new attribute intende=
+d
+> > > > to contain a device (sysfs, struct device) name that can be used
+> > > > instead when creating a new netdev, if the rtnetlink family impleme=
+nts it.
+> > > >
+> > > > As suggested by Parav Pandit, we also introduce
+> > > > IFLA_PARENT_DEV_BUS_NAME attribute in order to uniquely identify a
+> > > > device on the system (with bus/name pair).
+> >
+> > [...]
+> >
+> > > > diff --git a/include/uapi/linux/if_link.h
+> > > > b/include/uapi/linux/if_link.h index
+> > > > a5a7f0e..4882e81 100644
+> > > > --- a/include/uapi/linux/if_link.h
+> > > > +++ b/include/uapi/linux/if_link.h
+> > > > @@ -341,6 +341,13 @@ enum {
+> > > >       IFLA_ALT_IFNAME, /* Alternative ifname */
+> > > >       IFLA_PERM_ADDRESS,
+> > > >       IFLA_PROTO_DOWN_REASON,
+> > > > +
+> > > > +     /* device (sysfs) name as parent, used instead
+> > > > +      * of IFLA_LINK where there's no parent netdev
+> > > > +      */
+> > > > +     IFLA_PARENT_DEV_NAME,
+> > > > +     IFLA_PARENT_DEV_BUS_NAME,
+> > > > +
+> > > >       __IFLA_MAX
+> > > >  };
+> > > >
+> > > > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c index
+> > > > 92c3e43..32599f3
+> > > > 100644
+> > > > --- a/net/core/rtnetlink.c
+> > > > +++ b/net/core/rtnetlink.c
+> > > > @@ -1821,6 +1821,16 @@ static int rtnl_fill_ifinfo(struct sk_buff *=
+skb,
+> > > >       if (rtnl_fill_prop_list(skb, dev))
+> > > >               goto nla_put_failure;
+> > > >
+> > > > +     if (dev->dev.parent &&
+> > > > +         nla_put_string(skb, IFLA_PARENT_DEV_NAME,
+> > > > +                        dev_name(dev->dev.parent)))
+> > > > +             goto nla_put_failure;
+> > > > +
+> > > > +     if (dev->dev.parent && dev->dev.parent->bus &&
+> > > > +         nla_put_string(skb, IFLA_PARENT_DEV_BUS_NAME,
+> > > > +                        dev->dev.parent->bus->name))
+> > > > +             goto nla_put_failure;
+> > > > +
+> > > >       nlmsg_end(skb, nlh);
+> > > >       return 0;
+> > > >
+> > > > @@ -1880,6 +1890,8 @@ static const struct nla_policy
+> > > > ifla_policy[IFLA_MAX+1] =3D {
+> > > >       [IFLA_PERM_ADDRESS]     =3D { .type =3D NLA_REJECT },
+> > > >       [IFLA_PROTO_DOWN_REASON] =3D { .type =3D NLA_NESTED },
+> > > >       [IFLA_NEW_IFINDEX]      =3D NLA_POLICY_MIN(NLA_S32, 1),
+> > > > +     [IFLA_PARENT_DEV_NAME]  =3D { .type =3D NLA_NUL_STRING },
+> > > > +     [IFLA_PARENT_DEV_BUS_NAME] =3D { .type =3D NLA_NUL_STRING },
+> > > >  };
+> > > >
+> > > This hunk should go in the patch that enables users to use these fiel=
+ds to
+> > specify it for new link creation.
+> >
+> > Don't get it, the previous changes I see in the tree change both if_lin=
+k.h and
+> > rtnetlink.c for new atributes (e.g. f74877a5457d). Can you elaborate on=
+ what
+> > you expect here?
+> >
+> Commit f74877a5457d did in same patch because one of the objective of com=
+mit f74877a5457d is to also block PERM_ADDR using policy NLA_REJECT.
+> This patch-2 is not enabling user to pass these params via new_link comma=
+nd.
+> It is done in a later patch. So ifla_policy doesn=E2=80=99t need to have =
+these fields in this patch.
 
-https://lore.kernel.org/netdev/20210611153537.83420-1-lijunp213@gmail.com/T/#u
-
->    In file included from include/linux/string.h:269,
->                     from arch/powerpc/include/asm/paca.h:15,
->                     from arch/powerpc/include/asm/current.h:13,
->                     from include/linux/thread_info.h:22,
->                     from include/asm-generic/preempt.h:5,
->                     from ./arch/powerpc/include/generated/asm/preempt.h:1,
->                     from include/linux/preempt.h:78,
->                     from include/linux/spinlock.h:51,
->                     from include/linux/mmzone.h:8,
->                     from include/linux/gfp.h:6,
->                     from include/linux/umh.h:4,
->                     from include/linux/kmod.h:9,
->                     from include/linux/module.h:16,
->                     from drivers/net/ethernet/ibm/ibmvnic.c:35:
->    In function 'strncpy',
->        inlined from 'handle_vpd_rsp' at drivers/net/ethernet/ibm/ibmvnic.c:4388:3:
->    include/linux/fortify-string.h:27:30: warning: '__builtin_strncpy' output truncated before terminating nul copying 3 bytes from a string of the same length [-Wstringop-truncation]
->       27 | #define __underlying_strncpy __builtin_strncpy
->          |                              ^
->    include/linux/fortify-string.h:38:9: note: in expansion of macro '__underlying_strncpy'
->       38 |  return __underlying_strncpy(p, q, size);
->          |         ^~~~~~~~~~~~~~~~~~~~
->
->
-
-https://lore.kernel.org/netdev/20210611160529.88936-1-lijunp213@gmail.com/T/#u
-
-> vim +/VNIC_DOWN +855 drivers/net/ethernet/ibm/ibmvnic.c
->
-> 86f669b2b7491b Nathan Fontenot 2018-02-19  852
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  853  static const char *adapter_state_to_string(enum vnic_state state)
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  854  {
-> 0666ef7f61ca76 Lijun Pan       2021-04-12 @855          switch (state) {
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  856          case VNIC_PROBING:
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  857                  return "PROBING";
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  858          case VNIC_PROBED:
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  859                  return "PROBED";
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  860          case VNIC_OPENING:
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  861                  return "OPENING";
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  862          case VNIC_OPEN:
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  863                  return "OPEN";
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  864          case VNIC_CLOSING:
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  865                  return "CLOSING";
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  866          case VNIC_CLOSED:
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  867                  return "CLOSED";
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  868          case VNIC_REMOVING:
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  869                  return "REMOVING";
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  870          case VNIC_REMOVED:
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  871                  return "REMOVED";
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  872          }
-> 07b5dc1d515a9a Michal Suchanek 2021-05-20  873          return "UNKNOWN";
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  874  }
-> 0666ef7f61ca76 Lijun Pan       2021-04-12  875
->
-> :::::: The code at line 855 was first introduced by commit
-> :::::: 0666ef7f61ca763897fdcd385d65555dd4764514 ibmvnic: print adapter state as a string
->
-> :::::: TO: Lijun Pan <lijunp213@gmail.com>
-> :::::: CC: David S. Miller <davem@davemloft.net>
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
-
-Thanks,
-Lijun
+Understood, thanks.
+Loic
