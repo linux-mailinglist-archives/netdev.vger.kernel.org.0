@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D12113A49E3
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 22:07:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD1AF3A49DD
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 22:06:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231289AbhFKUJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 16:09:16 -0400
-Received: from mail-ed1-f52.google.com ([209.85.208.52]:36359 "EHLO
-        mail-ed1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbhFKUJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 16:09:15 -0400
-Received: by mail-ed1-f52.google.com with SMTP id w21so38383469edv.3
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 13:07:00 -0700 (PDT)
+        id S230502AbhFKUIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 16:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230443AbhFKUIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 16:08:12 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35AAC0613A3
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 13:06:02 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id ba2so36694890edb.2
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 13:06:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9J82lfUtfOhld0+zQlTxDsuWpTNh0bxTBpmDmOlV2PA=;
-        b=Alta6xDeTN7DRmmYxXL3IQ/X8sdytpS/n+GrYjjCG+93ybbRgoiTbtUlTuwrejXkS3
-         37KscVpgba9Ajo8v4+ukFvsZdgCV3Eis4Y8B2w5+VmiMXmZSBqKI9yPFFwf6B3oaCvb0
-         3XD+BX8twxmcSQJsUYyiRU+SvtCuan0UyDTDNXa0B/ASWbIOsHWj7WKXT0EZSUZKwZmx
-         SVp8EzuSGVTqS4NY+MMh6HXNZEDfePGudBMp55S89oUIJHkuW0RfXCYZ8dsBNKJKJAVh
-         Wx6dfaNXWSt91P3JjBsFl+UbfBuuy7yvPpt5gOWoAHBzCq4zRxb/RGNMCMWOO5grSWhb
-         +hNQ==
+        bh=z46jrFzncV5lFslA06MMmXv+9G9F+yn3GXPAye7ZHrc=;
+        b=m32NlrVICpx7EKkhnf5RQ6LCRdjGTca+GAfqS4m3VC/ybMf4HQ7pytFlFudJRzhgsr
+         BEuwBdbZpkuf2j4w87WXJdlkoTifqQ6LSVlA1p3m/0UiRQWvqN+OIqX92pT9aEtiChcQ
+         CcfR4Ho9xCxHUyTa0VpzdVLKoukjhmUgm2OXlUp3QPPR2pBuV4h1e1SehzaktYKaAyDw
+         HJIghdylkBKE/2a4Tu+0Oxb6vPdIp480BKKJfLShjOxSQmgcKrnBA1TcowHnY8Eo9xrM
+         2bZMwoEo3l8uos8dYw5coakwFgRQAnQ5Uk0pL6obsuZMDKaqZySxW6bTlj6DRUGCCV+B
+         RwaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9J82lfUtfOhld0+zQlTxDsuWpTNh0bxTBpmDmOlV2PA=;
-        b=HfNk1UWvVYVA5PH9lmA70xrMhuMqan1+kyWle6MPK7sQIXe05U1iNRxqQ7JlkKyYl+
-         3QtSycAqfagteVxvVUZHIF4p3vZUbnMeXZeqy1qOdtjLYo4rKT3Nk3Wp4nWUVLzMIx3u
-         mLwzAyVKuMHB+PZxQAAV6dhQPkglWgKmxl9MzDiXAwKo7544WO31AwS8ZB4ompLsUS4o
-         JBRQA21itVMXU38+0CZ0SAHbrii7HR3Lgq+MM3m2NuO5MDGygJZ+GXAimqF/hvoTUv9g
-         huWr2E/5v3sCtwyO7l3ylM5hjR7cxwjXVYaDvSkgL1mWsuI64Fy1l7368grcp8ADwn0K
-         rWbQ==
-X-Gm-Message-State: AOAM533kNUUATIoeu7+YiToE3x9xHmXxN2cpZtb7qM5zZuO38Wap56py
-        pGSdwsXIQSGLXqDke/g2Q3o=
-X-Google-Smtp-Source: ABdhPJxNlEpITTIafXz9TBGJwWkEwcqI6EwN3AZjuzC31TaR/L75yoR1cwbJcMlwbIx7aX9G5kR7UQ==
-X-Received: by 2002:a50:ec08:: with SMTP id g8mr5549553edr.376.1623441959700;
-        Fri, 11 Jun 2021 13:05:59 -0700 (PDT)
+        bh=z46jrFzncV5lFslA06MMmXv+9G9F+yn3GXPAye7ZHrc=;
+        b=nNxB+zbXP+/o4MkfLeldgzHuA4hujlGdb35uPynIrAXarpOtybzkU+4YENXe3LuxQV
+         sSm3M4IZIfd5AxiLwRBE/z0W3OgNxG7SzpJ5RBVL48RTdEHrMUXzTQ55K9N+A/MlbdHZ
+         l62eCEwzqaSK9BRQow6JE7BZu+PPMqaaayeveBW35R2ZHRm/k0CfAv+lP1WnyQtQkpQo
+         ckPEJYhbwBivvqDStbXH/pPR8gJ3cTyIjPSxwAf/VAwujo/uLC+Wkj880eYVlyLXuFE9
+         nv/7ncuEonEY9ScvpIi+7nOCrw5AnFcYiXEMbketOW0N6DntFMWYBQkrlBzs5IKmH+sp
+         f0jg==
+X-Gm-Message-State: AOAM532t7Skal3fo6zTRqn6VEhf1nigl9ZX6Bd8O8ZpclbcFbmIFnCrL
+        wV+4EWG4LWeOZyLtgMD2+DTW7xxfrhI=
+X-Google-Smtp-Source: ABdhPJzC43SJ15M6UKKt7LjCHHUpxoqBS16b6TvJxA8vPu29Si8e7ATdWVb3eiYxGkycn3jA5udwSA==
+X-Received: by 2002:aa7:c753:: with SMTP id c19mr5423587eds.33.1623441961306;
+        Fri, 11 Jun 2021 13:06:01 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id w2sm2392084ejn.118.2021.06.11.13.05.58
+        by smtp.gmail.com with ESMTPSA id w2sm2392084ejn.118.2021.06.11.13.05.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Jun 2021 13:05:59 -0700 (PDT)
+        Fri, 11 Jun 2021 13:06:00 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -63,9 +66,9 @@ Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 09/13] net: pcs: xpcs: export xpcs_do_config and xpcs_link_up
-Date:   Fri, 11 Jun 2021 23:05:27 +0300
-Message-Id: <20210611200531.2384819-10-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 10/13] net: dsa: sja1105: migrate to xpcs for SGMII
+Date:   Fri, 11 Jun 2021 23:05:28 +0300
+Message-Id: <20210611200531.2384819-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210611200531.2384819-1-olteanv@gmail.com>
 References: <20210611200531.2384819-1-olteanv@gmail.com>
@@ -77,97 +80,632 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The sja1105 hardware has a quirk in that some changes require a switch
-reset, which loses all configuration. When the reset is initiated,
-everything needs to be reprogrammed, including the MACs and the PCS.
-This is currently done in sja1105_static_config_reload() - we manually
-call sja1105_adjust_port_config(), sja1105_sgmii_pcs_config() and
-sja1105_sgmii_pcs_force_speed() which are all internal functions.
+There is a desire to use the generic driver for the Synopsys XPCS
+located in drivers/net/pcs, and to achieve that, the sja1105 driver must
+expose an MDIO bus for the SGMII PCS, because the XPCS probes as an
+mdio_device.
 
-There is a desire for sja1105 to use the common xpcs driver, and that
-means that the equivalents of those functions, xpcs_do_config() and
-xpcs_link_up() respectively, will no longer be local functions.
+In preparation of the SJA1110 which in fact has a different access
+procedure for the SJA1105, we register this PCS MDIO bus once in the
+common code, but we implement function pointers for the read and write
+methods. In this patch there is a single implementation for them.
 
-Forcing phylink to retrigger a resolve somehow, say by doing dev_close()
-followed by dev_open() is not really an option, because the CPU port
-might have a PCS as well, and there is no net device which we can close
-and reopen for that. Additionally, the dev_close/dev_open sequence might
-force a renegotiation of the copper-side link for SGMII ports connected
-to a PHY, and this is undesirable as well, because the switch reset is
-much quicker than a PHY autoneg, so we would have a lot more downtime.
+There is exactly one MDIO bus for the PCS, this will contain all PCSes
+at MDIO addresses equal to the port number.
 
-The only solution I see is for the sja1105 driver to keep doing what
-it's doing, and that means we need to export the equivalents from xpcs
-for sja1105_sgmii_pcs_config and sja1105_sgmii_pcs_force_speed, and call
-them directly in sja1105_static_config_reload(). This will be done
-during the conversion patch.
+We delete a bunch of hardware support code because the xpcs driver
+already does what we need.
+
+We need to hack up the MDIO reads for the PHY ID, since our XPCS
+instantiation returns zeroes and there are some specific fixups which
+need to be applied by the xpcs driver.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 v2->v3: none
-v1->v2: none
+v1->v2:
+- delete sja1105_sgmii.h
+- just check for priv->pcs[port] instead of checking the PHY interface
+  mode each time.
 
- drivers/net/pcs/pcs-xpcs.c   | 10 ++++++----
- include/linux/pcs/pcs-xpcs.h |  4 ++++
- 2 files changed, 10 insertions(+), 4 deletions(-)
+ drivers/net/dsa/sja1105/Kconfig         |   1 +
+ drivers/net/dsa/sja1105/sja1105.h       |   6 +
+ drivers/net/dsa/sja1105/sja1105_main.c  | 171 ++++--------------------
+ drivers/net/dsa/sja1105/sja1105_mdio.c  | 159 ++++++++++++++++++++++
+ drivers/net/dsa/sja1105/sja1105_sgmii.h |  53 --------
+ drivers/net/dsa/sja1105/sja1105_spi.c   |   4 +
+ 6 files changed, 195 insertions(+), 199 deletions(-)
+ delete mode 100644 drivers/net/dsa/sja1105/sja1105_sgmii.h
 
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index b66e46fc88dc..63fda3fc40aa 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -757,8 +757,8 @@ static int xpcs_config_2500basex(struct dw_xpcs *xpcs)
- 	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL, ret);
+diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
+index 5e83b365f17a..8383cd6d2178 100644
+--- a/drivers/net/dsa/sja1105/Kconfig
++++ b/drivers/net/dsa/sja1105/Kconfig
+@@ -3,6 +3,7 @@ config NET_DSA_SJA1105
+ tristate "NXP SJA1105 Ethernet switch family support"
+ 	depends on NET_DSA && SPI
+ 	select NET_DSA_TAG_SJA1105
++	select PCS_XPCS
+ 	select PACKING
+ 	select CRC32
+ 	help
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index 5f3449351668..82450921059a 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -133,6 +133,8 @@ struct sja1105_info {
+ 	bool (*rxtstamp)(struct dsa_switch *ds, int port, struct sk_buff *skb);
+ 	void (*txtstamp)(struct dsa_switch *ds, int port, struct sk_buff *skb);
+ 	int (*clocking_setup)(struct sja1105_private *priv);
++	int (*pcs_mdio_read)(struct mii_bus *bus, int phy, int reg);
++	int (*pcs_mdio_write)(struct mii_bus *bus, int phy, int reg, u16 val);
+ 	const char *name;
+ 	bool supports_mii[SJA1105_MAX_NUM_PORTS];
+ 	bool supports_rmii[SJA1105_MAX_NUM_PORTS];
+@@ -265,6 +267,8 @@ struct sja1105_private {
+ 	struct sja1105_cbs_entry *cbs;
+ 	struct mii_bus *mdio_base_t1;
+ 	struct mii_bus *mdio_base_tx;
++	struct mii_bus *mdio_pcs;
++	struct dw_xpcs *xpcs[SJA1105_MAX_NUM_PORTS];
+ 	struct sja1105_tagger_data tagger_data;
+ 	struct sja1105_ptp_data ptp_data;
+ 	struct sja1105_tas_data tas_data;
+@@ -297,6 +301,8 @@ void sja1105_frame_memory_partitioning(struct sja1105_private *priv);
+ /* From sja1105_mdio.c */
+ int sja1105_mdiobus_register(struct dsa_switch *ds);
+ void sja1105_mdiobus_unregister(struct dsa_switch *ds);
++int sja1105_pcs_mdio_read(struct mii_bus *bus, int phy, int reg);
++int sja1105_pcs_mdio_write(struct mii_bus *bus, int phy, int reg, u16 val);
+ 
+ /* From sja1105_devlink.c */
+ int sja1105_devlink_setup(struct dsa_switch *ds);
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 6e2cfbf605ef..bd1f2686e37d 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -16,13 +16,13 @@
+ #include <linux/of_net.h>
+ #include <linux/of_mdio.h>
+ #include <linux/of_device.h>
++#include <linux/pcs/pcs-xpcs.h>
+ #include <linux/netdev_features.h>
+ #include <linux/netdevice.h>
+ #include <linux/if_bridge.h>
+ #include <linux/if_ether.h>
+ #include <linux/dsa/8021q.h>
+ #include "sja1105.h"
+-#include "sja1105_sgmii.h"
+ #include "sja1105_tas.h"
+ 
+ #define SJA1105_UNKNOWN_MULTICAST	0x010000000000ull
+@@ -1002,93 +1002,6 @@ static int sja1105_parse_dt(struct sja1105_private *priv)
+ 	return rc;
  }
  
--static int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
--			  unsigned int mode)
-+int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
-+		   unsigned int mode)
+-static int sja1105_sgmii_read(struct sja1105_private *priv, int port, int mmd,
+-			      int pcs_reg)
+-{
+-	u64 addr = (mmd << 16) | pcs_reg;
+-	u32 val;
+-	int rc;
+-
+-	if (port != SJA1105_SGMII_PORT)
+-		return -ENODEV;
+-
+-	rc = sja1105_xfer_u32(priv, SPI_READ, addr, &val, NULL);
+-	if (rc < 0)
+-		return rc;
+-
+-	return val;
+-}
+-
+-static int sja1105_sgmii_write(struct sja1105_private *priv, int port, int mmd,
+-			       int pcs_reg, u16 pcs_val)
+-{
+-	u64 addr = (mmd << 16) | pcs_reg;
+-	u32 val = pcs_val;
+-	int rc;
+-
+-	if (port != SJA1105_SGMII_PORT)
+-		return -ENODEV;
+-
+-	rc = sja1105_xfer_u32(priv, SPI_WRITE, addr, &val, NULL);
+-	if (rc < 0)
+-		return rc;
+-
+-	return val;
+-}
+-
+-static void sja1105_sgmii_pcs_config(struct sja1105_private *priv, int port,
+-				     bool an_enabled, bool an_master)
+-{
+-	u16 ac = SJA1105_AC_AUTONEG_MODE_SGMII;
+-
+-	/* DIGITAL_CONTROL_1: Enable vendor-specific MMD1, allow the PHY to
+-	 * stop the clock during LPI mode, make the MAC reconfigure
+-	 * autonomously after PCS autoneg is done, flush the internal FIFOs.
+-	 */
+-	sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, SJA1105_DC1,
+-			    SJA1105_DC1_EN_VSMMD1 |
+-			    SJA1105_DC1_CLOCK_STOP_EN |
+-			    SJA1105_DC1_MAC_AUTO_SW |
+-			    SJA1105_DC1_INIT);
+-	/* DIGITAL_CONTROL_2: No polarity inversion for TX and RX lanes */
+-	sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, SJA1105_DC2,
+-			    SJA1105_DC2_TX_POL_INV_DISABLE);
+-	/* AUTONEG_CONTROL: Use SGMII autoneg */
+-	if (an_master)
+-		ac |= SJA1105_AC_PHY_MODE | SJA1105_AC_SGMII_LINK;
+-	sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, SJA1105_AC, ac);
+-	/* BASIC_CONTROL: enable in-band AN now, if requested. Otherwise,
+-	 * sja1105_sgmii_pcs_force_speed must be called later for the link
+-	 * to become operational.
+-	 */
+-	if (an_enabled)
+-		sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, MDIO_CTRL1,
+-				    BMCR_ANENABLE | BMCR_ANRESTART);
+-}
+-
+-static void sja1105_sgmii_pcs_force_speed(struct sja1105_private *priv,
+-					  int port, int speed)
+-{
+-	int pcs_speed;
+-
+-	switch (speed) {
+-	case SPEED_1000:
+-		pcs_speed = BMCR_SPEED1000;
+-		break;
+-	case SPEED_100:
+-		pcs_speed = BMCR_SPEED100;
+-		break;
+-	case SPEED_10:
+-		pcs_speed = BMCR_SPEED10;
+-		break;
+-	default:
+-		dev_err(priv->ds->dev, "Invalid speed %d\n", speed);
+-		return;
+-	}
+-	sja1105_sgmii_write(priv, port, MDIO_MMD_VEND2, MDIO_CTRL1,
+-			    pcs_speed | BMCR_FULLDPLX);
+-}
+-
+ /* Convert link speed from SJA1105 to ethtool encoding */
+ static int sja1105_port_speed_to_ethtool(struct sja1105_private *priv,
+ 					 u64 speed)
+@@ -1195,10 +1108,9 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
+ 			       unsigned int mode,
+ 			       const struct phylink_link_state *state)
  {
- 	const struct xpcs_compat *compat;
- 	int ret;
-@@ -797,6 +797,7 @@ static int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
++	struct dsa_port *dp = dsa_to_port(ds, port);
+ 	struct sja1105_private *priv = ds->priv;
+-	bool is_sgmii;
+-
+-	is_sgmii = (state->interface == PHY_INTERFACE_MODE_SGMII);
++	struct dw_xpcs *xpcs;
  
- 	return 0;
+ 	if (sja1105_phy_mode_mismatch(priv, port, state->interface)) {
+ 		dev_err(ds->dev, "Changing PHY mode to %s not supported!\n",
+@@ -1206,15 +1118,10 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
+ 		return;
+ 	}
+ 
+-	if (phylink_autoneg_inband(mode) && !is_sgmii) {
+-		dev_err(ds->dev, "In-band AN not supported!\n");
+-		return;
+-	}
++	xpcs = priv->xpcs[port];
+ 
+-	if (is_sgmii)
+-		sja1105_sgmii_pcs_config(priv, port,
+-					 phylink_autoneg_inband(mode),
+-					 false);
++	if (xpcs)
++		phylink_set_pcs(dp->pl, &xpcs->pcs);
  }
-+EXPORT_SYMBOL_GPL(xpcs_do_config);
  
- static int xpcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 		       phy_interface_t interface,
-@@ -945,8 +946,8 @@ static void xpcs_link_up_sgmii(struct dw_xpcs *xpcs, unsigned int mode,
- 		pr_err("%s: xpcs_write returned %pe\n", __func__, ERR_PTR(ret));
+ static void sja1105_mac_link_down(struct dsa_switch *ds, int port,
+@@ -1235,10 +1142,6 @@ static void sja1105_mac_link_up(struct dsa_switch *ds, int port,
+ 
+ 	sja1105_adjust_port_config(priv, port, speed);
+ 
+-	if (priv->phy_mode[port] == PHY_INTERFACE_MODE_SGMII &&
+-	    !phylink_autoneg_inband(mode))
+-		sja1105_sgmii_pcs_force_speed(priv, port, speed);
+-
+ 	sja1105_inhibit_tx(priv, BIT(port), false);
  }
  
--static void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
--			 phy_interface_t interface, int speed, int duplex)
-+void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
-+		  phy_interface_t interface, int speed, int duplex)
+@@ -1283,38 +1186,6 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+ 		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+ }
+ 
+-static int sja1105_mac_pcs_get_state(struct dsa_switch *ds, int port,
+-				     struct phylink_link_state *state)
+-{
+-	struct sja1105_private *priv = ds->priv;
+-	int ais;
+-
+-	/* Read the vendor-specific AUTONEG_INTR_STATUS register */
+-	ais = sja1105_sgmii_read(priv, port, MDIO_MMD_VEND2, SJA1105_AIS);
+-	if (ais < 0)
+-		return ais;
+-
+-	switch (SJA1105_AIS_SPEED(ais)) {
+-	case 0:
+-		state->speed = SPEED_10;
+-		break;
+-	case 1:
+-		state->speed = SPEED_100;
+-		break;
+-	case 2:
+-		state->speed = SPEED_1000;
+-		break;
+-	default:
+-		dev_err(ds->dev, "Invalid SGMII PCS speed %lu\n",
+-			SJA1105_AIS_SPEED(ais));
+-	}
+-	state->duplex = SJA1105_AIS_DUPLEX_MODE(ais);
+-	state->an_complete = SJA1105_AIS_COMPLETE(ais);
+-	state->link = SJA1105_AIS_LINK_STATUS(ais);
+-
+-	return 0;
+-}
+-
+ static int
+ sja1105_find_static_fdb_entry(struct sja1105_private *priv, int port,
+ 			      const struct sja1105_l2_lookup_entry *requested)
+@@ -1990,14 +1861,14 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 	 * change it through the dynamic interface later.
+ 	 */
+ 	for (i = 0; i < ds->num_ports; i++) {
++		u32 reg_addr = mdiobus_c45_addr(MDIO_MMD_VEND2, MDIO_CTRL1);
++
+ 		speed_mbps[i] = sja1105_port_speed_to_ethtool(priv,
+ 							      mac[i].speed);
+ 		mac[i].speed = priv->info->port_speed[SJA1105_SPEED_AUTO];
+ 
+-		if (priv->phy_mode[i] == PHY_INTERFACE_MODE_SGMII)
+-			bmcr[i] = sja1105_sgmii_read(priv, i,
+-						     MDIO_MMD_VEND2,
+-						     MDIO_CTRL1);
++		if (priv->xpcs[i])
++			bmcr[i] = mdiobus_read(priv->mdio_pcs, i, reg_addr);
+ 	}
+ 
+ 	/* No PTP operations can run right now */
+@@ -2045,20 +1916,28 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 		goto out;
+ 
+ 	for (i = 0; i < ds->num_ports; i++) {
+-		bool an_enabled;
++		struct dw_xpcs *xpcs = priv->xpcs[i];
++		unsigned int mode;
+ 
+ 		rc = sja1105_adjust_port_config(priv, i, speed_mbps[i]);
+ 		if (rc < 0)
+ 			goto out;
+ 
+-		if (priv->phy_mode[i] != PHY_INTERFACE_MODE_SGMII)
++		if (!xpcs)
+ 			continue;
+ 
+-		an_enabled = !!(bmcr[i] & BMCR_ANENABLE);
++		if (bmcr[i] & BMCR_ANENABLE)
++			mode = MLO_AN_INBAND;
++		else if (priv->fixed_link[i])
++			mode = MLO_AN_FIXED;
++		else
++			mode = MLO_AN_PHY;
+ 
+-		sja1105_sgmii_pcs_config(priv, i, an_enabled, false);
++		rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode);
++		if (rc < 0)
++			goto out;
+ 
+-		if (!an_enabled) {
++		if (!phylink_autoneg_inband(mode)) {
+ 			int speed = SPEED_UNKNOWN;
+ 
+ 			if (bmcr[i] & BMCR_SPEED1000)
+@@ -2068,7 +1947,8 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 			else
+ 				speed = SPEED_10;
+ 
+-			sja1105_sgmii_pcs_force_speed(priv, i, speed);
++			xpcs_link_up(&xpcs->pcs, mode, priv->phy_mode[i],
++				     speed, DUPLEX_FULL);
+ 		}
+ 	}
+ 
+@@ -3649,7 +3529,6 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.port_change_mtu	= sja1105_change_mtu,
+ 	.port_max_mtu		= sja1105_get_max_mtu,
+ 	.phylink_validate	= sja1105_phylink_validate,
+-	.phylink_mac_link_state	= sja1105_mac_pcs_get_state,
+ 	.phylink_mac_config	= sja1105_mac_config,
+ 	.phylink_mac_link_up	= sja1105_mac_link_up,
+ 	.phylink_mac_link_down	= sja1105_mac_link_down,
+diff --git a/drivers/net/dsa/sja1105/sja1105_mdio.c b/drivers/net/dsa/sja1105/sja1105_mdio.c
+index 08517c70cb48..5185471e9b7c 100644
+--- a/drivers/net/dsa/sja1105/sja1105_mdio.c
++++ b/drivers/net/dsa/sja1105/sja1105_mdio.c
+@@ -1,9 +1,61 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright 2021, NXP Semiconductors
+  */
++#include <linux/pcs/pcs-xpcs.h>
+ #include <linux/of_mdio.h>
+ #include "sja1105.h"
+ 
++int sja1105_pcs_mdio_read(struct mii_bus *bus, int phy, int reg)
++{
++	struct sja1105_mdio_private *mdio_priv = bus->priv;
++	struct sja1105_private *priv = mdio_priv->priv;
++	u64 addr;
++	u32 tmp;
++	u16 mmd;
++	int rc;
++
++	if (!(reg & MII_ADDR_C45))
++		return -EINVAL;
++
++	mmd = (reg >> MII_DEVADDR_C45_SHIFT) & 0x1f;
++	addr = (mmd << 16) | (reg & GENMASK(15, 0));
++
++	if (mmd != MDIO_MMD_VEND1 && mmd != MDIO_MMD_VEND2)
++		return 0xffff;
++
++	if (mmd == MDIO_MMD_VEND2 && (reg & GENMASK(15, 0)) == MII_PHYSID1)
++		return NXP_SJA1105_XPCS_ID >> 16;
++	if (mmd == MDIO_MMD_VEND2 && (reg & GENMASK(15, 0)) == MII_PHYSID2)
++		return NXP_SJA1105_XPCS_ID & GENMASK(15, 0);
++
++	rc = sja1105_xfer_u32(priv, SPI_READ, addr, &tmp, NULL);
++	if (rc < 0)
++		return rc;
++
++	return tmp & 0xffff;
++}
++
++int sja1105_pcs_mdio_write(struct mii_bus *bus, int phy, int reg, u16 val)
++{
++	struct sja1105_mdio_private *mdio_priv = bus->priv;
++	struct sja1105_private *priv = mdio_priv->priv;
++	u64 addr;
++	u32 tmp;
++	u16 mmd;
++
++	if (!(reg & MII_ADDR_C45))
++		return -EINVAL;
++
++	mmd = (reg >> MII_DEVADDR_C45_SHIFT) & 0x1f;
++	addr = (mmd << 16) | (reg & GENMASK(15, 0));
++	tmp = val;
++
++	if (mmd != MDIO_MMD_VEND1 && mmd != MDIO_MMD_VEND2)
++		return -EINVAL;
++
++	return sja1105_xfer_u32(priv, SPI_WRITE, addr, &tmp, NULL);
++}
++
+ enum sja1105_mdio_opcode {
+ 	SJA1105_C45_ADDR = 0,
+ 	SJA1105_C22 = 1,
+@@ -239,6 +291,107 @@ static void sja1105_mdiobus_base_t1_unregister(struct sja1105_private *priv)
+ 	priv->mdio_base_t1 = NULL;
+ }
+ 
++static int sja1105_mdiobus_pcs_register(struct sja1105_private *priv)
++{
++	struct sja1105_mdio_private *mdio_priv;
++	struct dsa_switch *ds = priv->ds;
++	struct mii_bus *bus;
++	int rc = 0;
++	int port;
++
++	if (!priv->info->pcs_mdio_read || !priv->info->pcs_mdio_write)
++		return 0;
++
++	bus = mdiobus_alloc_size(sizeof(*mdio_priv));
++	if (!bus)
++		return -ENOMEM;
++
++	bus->name = "SJA1105 PCS MDIO bus";
++	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-pcs",
++		 dev_name(ds->dev));
++	bus->read = priv->info->pcs_mdio_read;
++	bus->write = priv->info->pcs_mdio_write;
++	bus->parent = ds->dev;
++	/* There is no PHY on this MDIO bus => mask out all PHY addresses
++	 * from auto probing.
++	 */
++	bus->phy_mask = ~0;
++	mdio_priv = bus->priv;
++	mdio_priv->priv = priv;
++
++	rc = mdiobus_register(bus);
++	if (rc) {
++		mdiobus_free(bus);
++		return rc;
++	}
++
++	for (port = 0; port < ds->num_ports; port++) {
++		struct mdio_device *mdiodev;
++		struct dw_xpcs *xpcs;
++
++		if (dsa_is_unused_port(ds, port))
++			continue;
++
++		if (priv->phy_mode[port] != PHY_INTERFACE_MODE_SGMII)
++			continue;
++
++		mdiodev = mdio_device_create(bus, port);
++		if (IS_ERR(mdiodev)) {
++			rc = PTR_ERR(mdiodev);
++			goto out_pcs_free;
++		}
++
++		xpcs = xpcs_create(mdiodev, priv->phy_mode[port]);
++		if (IS_ERR(xpcs)) {
++			rc = PTR_ERR(xpcs);
++			goto out_pcs_free;
++		}
++
++		priv->xpcs[port] = xpcs;
++	}
++
++	priv->mdio_pcs = bus;
++
++	return 0;
++
++out_pcs_free:
++	for (port = 0; port < ds->num_ports; port++) {
++		if (!priv->xpcs[port])
++			continue;
++
++		mdio_device_free(priv->xpcs[port]->mdiodev);
++		xpcs_destroy(priv->xpcs[port]);
++		priv->xpcs[port] = NULL;
++	}
++
++	mdiobus_unregister(bus);
++	mdiobus_free(bus);
++
++	return rc;
++}
++
++static void sja1105_mdiobus_pcs_unregister(struct sja1105_private *priv)
++{
++	struct dsa_switch *ds = priv->ds;
++	int port;
++
++	if (!priv->mdio_pcs)
++		return;
++
++	for (port = 0; port < ds->num_ports; port++) {
++		if (!priv->xpcs[port])
++			continue;
++
++		mdio_device_free(priv->xpcs[port]->mdiodev);
++		xpcs_destroy(priv->xpcs[port]);
++		priv->xpcs[port] = NULL;
++	}
++
++	mdiobus_unregister(priv->mdio_pcs);
++	mdiobus_free(priv->mdio_pcs);
++	priv->mdio_pcs = NULL;
++}
++
+ int sja1105_mdiobus_register(struct dsa_switch *ds)
  {
- 	struct dw_xpcs *xpcs = phylink_pcs_to_xpcs(pcs);
+ 	struct sja1105_private *priv = ds->priv;
+@@ -247,6 +400,10 @@ int sja1105_mdiobus_register(struct dsa_switch *ds)
+ 	struct device_node *mdio_node;
+ 	int rc;
  
-@@ -955,6 +956,7 @@ static void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
- 	if (interface == PHY_INTERFACE_MODE_SGMII)
- 		return xpcs_link_up_sgmii(xpcs, mode, speed, duplex);
++	rc = sja1105_mdiobus_pcs_register(priv);
++	if (rc)
++		return rc;
++
+ 	mdio_node = of_get_child_by_name(switch_node, "mdios");
+ 	if (!mdio_node)
+ 		return 0;
+@@ -275,6 +432,7 @@ int sja1105_mdiobus_register(struct dsa_switch *ds)
+ 	sja1105_mdiobus_base_tx_unregister(priv);
+ err_put_mdio_node:
+ 	of_node_put(mdio_node);
++	sja1105_mdiobus_pcs_unregister(priv);
+ 
+ 	return rc;
  }
-+EXPORT_SYMBOL_GPL(xpcs_link_up);
+@@ -285,4 +443,5 @@ void sja1105_mdiobus_unregister(struct dsa_switch *ds)
  
- static u32 xpcs_get_id(struct dw_xpcs *xpcs)
- {
-diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
-index dae7dd8ac683..add077a81b21 100644
---- a/include/linux/pcs/pcs-xpcs.h
-+++ b/include/linux/pcs/pcs-xpcs.h
-@@ -27,6 +27,10 @@ struct dw_xpcs {
- };
- 
- int xpcs_get_an_mode(struct dw_xpcs *xpcs, phy_interface_t interface);
-+void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
-+		  phy_interface_t interface, int speed, int duplex);
-+int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
-+		   unsigned int mode);
- void xpcs_validate(struct dw_xpcs *xpcs, unsigned long *supported,
- 		   struct phylink_link_state *state);
- int xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns,
+ 	sja1105_mdiobus_base_t1_unregister(priv);
+ 	sja1105_mdiobus_base_tx_unregister(priv);
++	sja1105_mdiobus_pcs_unregister(priv);
+ }
+diff --git a/drivers/net/dsa/sja1105/sja1105_sgmii.h b/drivers/net/dsa/sja1105/sja1105_sgmii.h
+deleted file mode 100644
+index 24d9bc046e70..000000000000
+--- a/drivers/net/dsa/sja1105/sja1105_sgmii.h
++++ /dev/null
+@@ -1,53 +0,0 @@
+-/* SPDX-License-Identifier: BSD-3-Clause */
+-/* Copyright 2020, NXP Semiconductors
+- */
+-#ifndef _SJA1105_SGMII_H
+-#define _SJA1105_SGMII_H
+-
+-#define SJA1105_SGMII_PORT		4
+-
+-/* DIGITAL_CONTROL_1 (address 1f8000h) */
+-#define SJA1105_DC1			0x8000
+-#define SJA1105_DC1_VS_RESET		BIT(15)
+-#define SJA1105_DC1_REMOTE_LOOPBACK	BIT(14)
+-#define SJA1105_DC1_EN_VSMMD1		BIT(13)
+-#define SJA1105_DC1_POWER_SAVE		BIT(11)
+-#define SJA1105_DC1_CLOCK_STOP_EN	BIT(10)
+-#define SJA1105_DC1_MAC_AUTO_SW		BIT(9)
+-#define SJA1105_DC1_INIT		BIT(8)
+-#define SJA1105_DC1_TX_DISABLE		BIT(4)
+-#define SJA1105_DC1_AUTONEG_TIMER_OVRR	BIT(3)
+-#define SJA1105_DC1_BYP_POWERUP		BIT(1)
+-#define SJA1105_DC1_PHY_MODE_CONTROL	BIT(0)
+-
+-/* DIGITAL_CONTROL_2 register (address 1f80E1h) */
+-#define SJA1105_DC2			0x80e1
+-#define SJA1105_DC2_TX_POL_INV_DISABLE	BIT(4)
+-#define SJA1105_DC2_RX_POL_INV		BIT(0)
+-
+-/* DIGITAL_ERROR_CNT register (address 1f80E2h) */
+-#define SJA1105_DEC			0x80e2
+-#define SJA1105_DEC_ICG_EC_ENA		BIT(4)
+-#define SJA1105_DEC_CLEAR_ON_READ	BIT(0)
+-
+-/* AUTONEG_CONTROL register (address 1f8001h) */
+-#define SJA1105_AC			0x8001
+-#define SJA1105_AC_MII_CONTROL		BIT(8)
+-#define SJA1105_AC_SGMII_LINK		BIT(4)
+-#define SJA1105_AC_PHY_MODE		BIT(3)
+-#define SJA1105_AC_AUTONEG_MODE(x)	(((x) << 1) & GENMASK(2, 1))
+-#define SJA1105_AC_AUTONEG_MODE_SGMII	SJA1105_AC_AUTONEG_MODE(2)
+-
+-/* AUTONEG_INTR_STATUS register (address 1f8002h) */
+-#define SJA1105_AIS			0x8002
+-#define SJA1105_AIS_LINK_STATUS(x)	(!!((x) & BIT(4)))
+-#define SJA1105_AIS_SPEED(x)		(((x) & GENMASK(3, 2)) >> 2)
+-#define SJA1105_AIS_DUPLEX_MODE(x)	(!!((x) & BIT(1)))
+-#define SJA1105_AIS_COMPLETE(x)		(!!((x) & BIT(0)))
+-
+-/* DEBUG_CONTROL register (address 1f8005h) */
+-#define SJA1105_DC			0x8005
+-#define SJA1105_DC_SUPPRESS_LOS		BIT(4)
+-#define SJA1105_DC_RESTART_SYNC		BIT(0)
+-
+-#endif
+diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
+index 32d00212423c..c1c54b7ff0e4 100644
+--- a/drivers/net/dsa/sja1105/sja1105_spi.c
++++ b/drivers/net/dsa/sja1105/sja1105_spi.c
+@@ -717,6 +717,8 @@ const struct sja1105_info sja1105r_info = {
+ 	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
+ 	.rxtstamp		= sja1105_rxtstamp,
+ 	.clocking_setup		= sja1105_clocking_setup,
++	.pcs_mdio_read		= sja1105_pcs_mdio_read,
++	.pcs_mdio_write		= sja1105_pcs_mdio_write,
+ 	.regs			= &sja1105pqrs_regs,
+ 	.port_speed		= {
+ 		[SJA1105_SPEED_AUTO] = 0,
+@@ -753,6 +755,8 @@ const struct sja1105_info sja1105s_info = {
+ 	.ptp_cmd_packing	= sja1105pqrs_ptp_cmd_packing,
+ 	.rxtstamp		= sja1105_rxtstamp,
+ 	.clocking_setup		= sja1105_clocking_setup,
++	.pcs_mdio_read		= sja1105_pcs_mdio_read,
++	.pcs_mdio_write		= sja1105_pcs_mdio_write,
+ 	.port_speed		= {
+ 		[SJA1105_SPEED_AUTO] = 0,
+ 		[SJA1105_SPEED_10MBPS] = 3,
 -- 
 2.25.1
 
