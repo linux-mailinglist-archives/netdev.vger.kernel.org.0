@@ -2,134 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E17143A3ED9
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 11:13:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D80B73A3EE5
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 11:16:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231678AbhFKJPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 05:15:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231609AbhFKJPM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Jun 2021 05:15:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E431D60FDA;
-        Fri, 11 Jun 2021 09:13:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623402794;
-        bh=0Tv6dk09LYXtiWu3+YyS09NcTBZcnmopruN7Ttw2A3c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qCE0A2hE5eLvV8SAX8VsVaLsmx7G+YhwHIGuIbtiETIq98w68vFvtv3s1bhzDjAJ1
-         zAwEklDt1RkuJy4xO1mhyVGn5CoqoCJlfqGcOzbWGGdCb/cl21ED/qg6om4QDr6Qgw
-         hAsXyCGbL1jtQZUE1mmW8Fz57Pe8pBJAijmfw+8qSkasiv7gs8Bn4yv5Nf3uQnoBiX
-         zxb7Zjkljrgndxxd99Pyb9NRcFNuEpikSsPzNHA+8Ye4WGjHy7LoVAmriVbgeAzAuX
-         sIG1CoqZMtlY/m4KJAESInsxp1yQtkOqy6u3nFjtUmy8jmmfx5n/O/lOLN4k8Jv3p4
-         6ODFKkgxpj1ug==
-Date:   Fri, 11 Jun 2021 11:13:07 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
-        "Theodore Ts'o" <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-Message-ID: <20210611111248.250e6da8@coco.lan>
-In-Reply-To: <20210611025942.GE25638@1wt.eu>
-References: <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
-        <YK+esqGjKaPb+b/Q@kroah.com>
-        <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
-        <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
-        <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
-        <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
-        <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
-        <20210610152633.7e4a7304@oasis.local.home>
-        <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
-        <87tum5uyrq.fsf@toke.dk>
-        <20210611025942.GE25638@1wt.eu>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S231497AbhFKJS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 05:18:26 -0400
+Received: from mail-wr1-f43.google.com ([209.85.221.43]:44015 "EHLO
+        mail-wr1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231168AbhFKJSU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 05:18:20 -0400
+Received: by mail-wr1-f43.google.com with SMTP id r9so5239786wrz.10
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 02:16:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=K8F10TRyleI4UPtq6CmbqILrYPwMwqooKyNnGn2buJw=;
+        b=M05MxjZX6m1dTN5keWfOdaJ3t9eB3Suqc7AOitI2q+OPpRaLHyHP1sCeS70qYzxIPm
+         62wU1zkFsMnxfm+OLnUw37P/WmKUimpE6h0CDgqJUfOTuptkG8gkp4PwjzTHXD5cBq+4
+         S3E+AoKCg6IdgkacN/GsmO9Aeg2GvPhhTrvo5R57r6Z8F5B90Q7bhQLTnNVDQds5Dwnz
+         CYfRg/JjuiNGZ4v1p4I3WiY4HQ/+JVvFeOf8jANLdTTLQZx2kdR8nKTDvYmqX/GIa6Py
+         UfdoxIK3rTUjC4Iw29eWTOngMLHJh1QbqJRueh14mH9WidLTiO53xzSHm5aBS5+Ec0k6
+         lTrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=K8F10TRyleI4UPtq6CmbqILrYPwMwqooKyNnGn2buJw=;
+        b=qvt0JopSdZnOrU1cb9kWydZCxBAkGlf2I0PbIitSPtyHIjnfLnO5KvB8lbVAgmb5S5
+         uU3V46WUbSai9ph41+Lkiy+UkIKv+M96QguFC6GFUR7f+dEovHmWxmT/t9Jefsp+Wcz8
+         lguf0wd/lnAW8eIyP/DheEcQS26TrJc+1px8tP1bCD5nKmD9x8QV1fEtufs3ta2WhPeB
+         VrcIPNzv1LTshJBwcX6iU5VpNiFOdHMfHubt8Ac3IoTJwhgwa2t23tzWB2GQBjP82Aga
+         uDy90GOYsNOajsbFbLGdEkXb5R9T4DKNTWxgX4mAETSLejMiLus9yTRXGT5B4uctqR0t
+         FFCA==
+X-Gm-Message-State: AOAM531FxVKv7OrPb8rtKnWRbrfHaoaokrDeCZH0gBNgsfAxuUzhfl7I
+        p+uleWo5oNiSbkgiJBJS7A883e9P/Ds=
+X-Google-Smtp-Source: ABdhPJx+lIlMhfC9qgvUPp/rVIci3MgdiTxy0tJLLzqZnkRQ7eOv01EKvHFpbeutJpHVuP1bDlsJRQ==
+X-Received: by 2002:a5d:4538:: with SMTP id j24mr2872452wra.391.1623402906253;
+        Fri, 11 Jun 2021 02:15:06 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:3800:6d14:9c4d:7f29:fc0d? (p200300ea8f2938006d149c4d7f29fc0d.dip0.t-ipconnect.de. [2003:ea:8f29:3800:6d14:9c4d:7f29:fc0d])
+        by smtp.googlemail.com with ESMTPSA id n18sm6016562wmq.41.2021.06.11.02.15.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Jun 2021 02:15:05 -0700 (PDT)
+To:     Koba Ko <koba.ko@canonical.com>,
+        Kai Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <7060a8ba-720f-904f-a6c6-c873559d8dbe@gmail.com>
+ <CAJB-X+WXVcd21eoT_usuVASa8D34Vkrbt5q7dcHSyE1T-vZD8A@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next] r8169: avoid link-up interrupt issue on RTL8106e
+ if user enables ASPM
+Message-ID: <d7358ff5-d037-b539-f373-d28fc402cff4@gmail.com>
+Date:   Fri, 11 Jun 2021 11:14:56 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAJB-X+WXVcd21eoT_usuVASa8D34Vkrbt5q7dcHSyE1T-vZD8A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Fri, 11 Jun 2021 04:59:42 +0200
-Willy Tarreau <w@1wt.eu> escreveu:
+On 11.06.2021 10:04, Koba Ko wrote:
+> On Fri, Jun 11, 2021 at 4:57 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>
+>> It has been reported that on RTL8106e the link-up interrupt may be
+>> significantly delayed if the user enables ASPM L1. Per default ASPM
+>> is disabled. The change leaves L1 enabled on the PCIe link (thus still
+>> allowing to reach higher package power saving states), but the
+>> NIC won't actively trigger it.
+>>
+>> Reported-by: Koba Ko <koba.ko@canonical.com>
+>> Tested-by: Koba Ko <koba.ko@canonical.com>
+>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>> ---
+>>  drivers/net/ethernet/realtek/r8169_main.c | 1 -
+>>  1 file changed, 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>> index 64f94a3fe..6a9fe9f7e 100644
+>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>> @@ -3508,7 +3508,6 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
+>>         rtl_eri_write(tp, 0x1b0, ERIAR_MASK_0011, 0x0000);
+>>
+>>         rtl_pcie_state_l2l3_disable(tp);
+>> -       rtl_hw_aspm_clkreq_enable(tp, true);
+>>  }
+> 
+> As per 0866cd15029b, this also affects the intel soc idle state.
+> Even the result is positive currently, I think this modification would
+> have higher risk.
+> 
+At the time of 0866cd15029b ASPM was enabled in r8169. Interesting that
+after 0866cd15029b nobody reported the link-up issue you're facing.
+A few months later (with b75bb8a5b755) we had to disable ASPM again
+because of several problem reports. Since then 0866cd15029b has no
+practical relevance in mainline.
 
-> On Fri, Jun 11, 2021 at 12:43:05AM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
-> > Shuah Khan <skhan@linuxfoundation.org> writes: =20
-> > > I have a
-> > > couple of ideas on how we might be able to improve remote experience
-> > > without restricting in-person experience.
-> > >
-> > > - Have one or two moderators per session to watch chat and Q&A to ena=
-ble
-> > >    remote participants to chime in and participate.
-> > > - Moderators can make sure remote participation doesn't go unnoticed =
-and
-> > >    enable taking turns for remote vs. people participating in person.
-> > >
-> > > It will be change in the way we interact in all in-person sessions for
-> > > sure, however it might enhance the experience for remote attendees. =
-=20
-> >=20
-> > This is basically how IETF meetings function: At the beginning of every
-> > session, a volunteer "jabber scribe" is selected to watch the chat and
-> > relay any questions to a microphone in the room. And the video streaming
-> > platform has a "virtual queue" that remove participants can enter and
-> > the session chairs are then responsible for giving people a chance to
-> > speak. Works reasonably well, I'd say :) =20
->=20
-> I was about to say the same. In addition, local participants line up
-> at a microphone and do not interrupt the speaker, but the organiser
-> gives them the signal to ask a question. This allows to maintain a
-> good balance between local and remote participants. Also it's common
-> to see some locals go back to their seat because someone else just
-> asked the same question. And when remote questions are asked using
-> pure text, it's easy for the organiser to skip them if already
-> responded as well.
->=20
-> This method is rather efficient because it doesn't require to keep the
-> questions for the end of the session, yet questions do not interrupt
-> the speaker. It also solves the problem of people not speaking in the
-> microphone. The only thing is that it can be quite intimidating for
-> local participants who are too shy of standing up in front of a
-> microphone and everyone else.
+>>
+>>  DECLARE_RTL_COND(rtl_mac_ocp_e00e_cond)
+>> --
+>> 2.32.0
+>>
 
-If someone is shy, he/she could simply type the question as a
-remote participant would do.
-
-This should work fine for a normal speech, but for BoFs and the
-usual "round table" discussions we have at Kernel Maintainers,
-this may not work well for local participants.
-
-I guess that, for such kind of discussions, I can see two
-possible alternatives:
-
-1. everyone would use their laptop cameras/mics;
-2. every round table would have their on camera/mic set.
-
-(1) is probably simpler to implement, but may provide a worse
-experience for local participants. (2) is probably harder to
-implement, as the usual conference logistics company may not
-have cameras.
-
-In either case, a moderator (or some moderating software) is needed
-in order queue requests for speech. So, basically, when someone
-(either in a table or remote) wants to speak, it adds its name to
-a queue, which will then be parsed at the queue's order. This is not
-as natural as a physical meeting, but I guess it won't bring too
-much burden to local people.
-
-Thanks,
-Mauro
