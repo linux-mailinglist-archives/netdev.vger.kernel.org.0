@@ -2,120 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D832C3A468A
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 18:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A8833A46AC
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 18:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbhFKQds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 12:33:48 -0400
-Received: from mail-ej1-f45.google.com ([209.85.218.45]:44595 "EHLO
-        mail-ej1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbhFKQdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 12:33:46 -0400
-Received: by mail-ej1-f45.google.com with SMTP id c10so5397495eja.11
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 09:31:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=X0nvZpnGky/NWn0KopF5FVyAGtyugTVgLVACKDgJ6N0=;
-        b=SzrVoysPkmpkhm+YtHTNxDPDieszvX6KrHwg4BKm3oLCZOTksJURLj1yBwie1pQ4Na
-         QkX282UeZs3huPBVofe6GhC9bibKNkTM9vMNuGNnhlRQ7apDKIQOdHG3hU4Vaw2zlDUp
-         tyIDpI80X66xTI71mCgXo4k4uPMmH1cZ4OmW7IIj3Agmd65/LhOUzcsZz7asS4S3Io8i
-         VJjxxnva3Fgw8tyGAi9kAKpt8gLblz0vSpsgHTHnRMSCR6TzUFlBx5cWnLfVtisVsxND
-         /s43pqVRkzCk6bRqR/kTTx/n8DRC2Lmyheu8wNuHCJsuCh/5Bx9wYjv1cziAyLTQ99X4
-         cDfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=X0nvZpnGky/NWn0KopF5FVyAGtyugTVgLVACKDgJ6N0=;
-        b=ug0ZhwGDcz/ANr4EgM9THmIcX3llotwmyrWPSBUsvuvppHkYbVoQIue5DvyaFT62u0
-         M4ieO3oFwWUuJ1fo7KbBfb4ec0CqCFEEJKekKA4lYvZv3w66PLTPyFjvF/ib2ags+XMa
-         8ZsyW6H+DMCGFSZZUmFF3SH6iRKMH3NqDMSxMZzl70FotF2tnHN0010CF36Bmu1eoGZa
-         k75BUEFZz066GvYzbdoa31XwvamLY+0t0C3VSOD7kxlHIH4/aBRGKtqxybUOxVd03UWN
-         Ywe4ZjrHzV8N7EEhYFxfjYwLHCEyHqy0WfaD3a8Ga8xvZFgvblRSvQYhKjWPq5xl0/7u
-         487Q==
-X-Gm-Message-State: AOAM531xPWxmnqh9+Ir/6xRc5oRucc5QJNK2/SVnlxynYFbZ7pDoJnaC
-        L28lqEV+9Z6KLa2kVEt9QSZrUg==
-X-Google-Smtp-Source: ABdhPJx5DuAyNbqVmovvIBW2ZsiwnHJaXz2jRxKlr2Sk4FcGAo2l1zfQN8RwPtEWQXWUwvxcsfpm+A==
-X-Received: by 2002:a17:906:6d51:: with SMTP id a17mr4442434ejt.543.1623429047404;
-        Fri, 11 Jun 2021 09:30:47 -0700 (PDT)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id jo13sm2248869ejb.91.2021.06.11.09.30.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Jun 2021 09:30:46 -0700 (PDT)
-Date:   Fri, 11 Jun 2021 18:30:46 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        id S230406AbhFKQnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 12:43:31 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:47279 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229935AbhFKQn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 12:43:26 -0400
+X-Greylist: delayed 9071 seconds by postgrey-1.27 at vger.kernel.org; Fri, 11 Jun 2021 12:43:25 EDT
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4G1mnW3mnLz1s3pb;
+        Fri, 11 Jun 2021 18:41:19 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4G1mnV6lD7z1r0wv;
+        Fri, 11 Jun 2021 18:41:18 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id DNOF1t6SXpEc; Fri, 11 Jun 2021 18:41:17 +0200 (CEST)
+X-Auth-Info: UjAl/qSEJiAcUzh+KfzDTVzON+wrDx36PXw07BKvqDwzz+F6woY6oRGDBmF8tT9C
+Received: from igel.home (ppp-46-244-189-84.dynamic.mnet-online.de [46.244.189.84])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Fri, 11 Jun 2021 18:41:17 +0200 (CEST)
+Received: by igel.home (Postfix, from userid 1000)
+        id C31282C3655; Fri, 11 Jun 2021 18:41:16 +0200 (CEST)
+From:   Andreas Schwab <schwab@linux-m68k.org>
+To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        oss-drivers@netronome.com, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH bpf-next 12/17] nfp: remove rcu_read_lock() around XDP
- program invocation
-Message-ID: <20210611163045.GC10632@netronome.com>
-References: <20210609103326.278782-1-toke@redhat.com>
- <20210609103326.278782-13-toke@redhat.com>
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 7/9] riscv: bpf: Avoid breaking W^X
+References: <20210330022144.150edc6e@xhacker>
+        <20210330022521.2a904a8c@xhacker> <87o8ccqypw.fsf@igel.home>
+        <20210612002334.6af72545@xhacker>
+X-Yow:  I will SHAVE and buy JELL-O and bring my MARRIAGE MANUAL!!
+Date:   Fri, 11 Jun 2021 18:41:16 +0200
+In-Reply-To: <20210612002334.6af72545@xhacker> (Jisheng Zhang's message of
+        "Sat, 12 Jun 2021 00:23:34 +0800")
+Message-ID: <87bl8cqrpv.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210609103326.278782-13-toke@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+Jakub
+On Jun 12 2021, Jisheng Zhang wrote:
 
-On Wed, Jun 09, 2021 at 12:33:21PM +0200, Toke Høiland-Jørgensen wrote:
-> The nfp driver has rcu_read_lock()/rcu_read_unlock() pairs around XDP
-> program invocations. However, the actual lifetime of the objects referred
-> by the XDP program invocation is longer, all the way through to the call to
-> xdp_do_flush(), making the scope of the rcu_read_lock() too small.
-> 
-> While this is not actually an issue for the nfp driver because it doesn't
-> support XDP_REDIRECT (and thus doesn't call xdp_do_flush()), the
-> rcu_read_lock() is still unneeded. And With the addition of RCU annotations
-> to the XDP_REDIRECT map types that take bh execution into account, lockdep
-> even understands this to be safe, so there's really no reason to keep it
-> around.
-> 
-> Cc: Simon Horman <simon.horman@netronome.com>
-> Cc: oss-drivers@netronome.com
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> I reproduced an kernel panic with the defconfig on qemu, but I'm not sure whether
+> this is the issue you saw, I will check.
+>
+>     0.161959] futex hash table entries: 512 (order: 3, 32768 bytes, linear)
+> [    0.167028] pinctrl core: initialized pinctrl subsystem
+> [    0.190727] Unable to handle kernel paging request at virtual address ffffffff81651bd8
+> [    0.191361] Oops [#1]
+> [    0.191509] Modules linked in:
+> [    0.191814] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-rc5-default+ #3
+> [    0.192179] Hardware name: riscv-virtio,qemu (DT)
+> [    0.192492] epc : __memset+0xc4/0xfc
+> [    0.192712]  ra : skb_flow_dissector_init+0x22/0x86
 
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
+Yes, that's the same.
 
-> ---
->  drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> index eeb30680b4dc..5dfa4799c34f 100644
-> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> @@ -1819,7 +1819,6 @@ static int nfp_net_rx(struct nfp_net_rx_ring *rx_ring, int budget)
->  	struct xdp_buff xdp;
->  	int idx;
->  
-> -	rcu_read_lock();
->  	xdp_prog = READ_ONCE(dp->xdp_prog);
->  	true_bufsz = xdp_prog ? PAGE_SIZE : dp->fl_bufsz;
->  	xdp_init_buff(&xdp, PAGE_SIZE - NFP_NET_RX_BUF_HEADROOM,
-> @@ -2036,7 +2035,6 @@ static int nfp_net_rx(struct nfp_net_rx_ring *rx_ring, int budget)
->  			if (!nfp_net_xdp_complete(tx_ring))
->  				pkts_polled = budget;
->  	}
-> -	rcu_read_unlock();
->  
->  	return pkts_polled;
->  }
-> -- 
-> 2.31.1
-> 
+Andreas.
+
+-- 
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
