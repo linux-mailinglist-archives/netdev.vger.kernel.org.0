@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C15813A4130
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 13:22:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED05D3A4137
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 13:27:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbhFKLYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 07:24:22 -0400
-Received: from mail-pg1-f172.google.com ([209.85.215.172]:36385 "EHLO
-        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230460AbhFKLYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 07:24:20 -0400
-Received: by mail-pg1-f172.google.com with SMTP id 27so2204162pgy.3;
-        Fri, 11 Jun 2021 04:22:07 -0700 (PDT)
+        id S231495AbhFKL3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 07:29:41 -0400
+Received: from mail-pj1-f54.google.com ([209.85.216.54]:38735 "EHLO
+        mail-pj1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230248AbhFKL3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 07:29:40 -0400
+Received: by mail-pj1-f54.google.com with SMTP id m13-20020a17090b068db02901656cc93a75so5672025pjz.3;
+        Fri, 11 Jun 2021 04:27:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FodfrTReLfYqXpPW4ser5dvPXRsRi7JBcumQmAiu440=;
-        b=JUe+i1ceTGgyIbJTuXjjpw517J6SO1aslFOvGpJJl3XZQ+nHYglKdRSrViSL1d5z0S
-         s9MKpOivSpcr5NqwURdIdhwZY9LkifU/tNSnYTc//IidKp4HW6HSDhe/22+H8IvR8cXn
-         uiV15s+CPWLar1tiKr3uju4SRFD22oHqanCbVelNoMjS5nPPygoB1RfvaeFUarP9j/gz
-         33weRduesVldYNoYQuwH7dFWjkgMcJa9jcZ/d2ZTFHcmjxZmV3T6uBSENRfhWELeJk6b
-         IUC1EhMTcV4ux8DQZvl6li95TvbSihG6ruO14G3AiH+F+QYD2IAj5/wdMRqTnMKvKimV
-         RkVg==
+        bh=h4XBx6hy/8HemTestI8gx5CVIEJQPh5SHNT2c3CXnb4=;
+        b=rcciTaLnGKf0bY+pPO8FwxoOXt0lVZm79aIo1gkrehaurfpJDOI9ugW/6rpoprP2p0
+         eR/c/rDamGM2HF4c0TNczIAXWs7O9JyvxdCPnkBGndSC0i767zSjoV+BmvfHVBSqQWyV
+         iFlBuXhampJ7t8Cb7+xV3/yCngTtHrPHnmeqY7OCasqUjntyocJljMWz1CTpzHNnTzpb
+         LVx6xMLL1nB4S/kpUW/NJ9s6Zysk3DvGmYCA7bXvEqXmQqRkn6Lc9tnp3WIZbRd7vFRI
+         oWbbq5BXntVc/zufWP6Lz0wJhvzSivys4gB6sPnbseSYghKvWidvHxifW9jRBajTumSr
+         qn4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FodfrTReLfYqXpPW4ser5dvPXRsRi7JBcumQmAiu440=;
-        b=UEcDS0tfAjoeVgttQ0X55GArPBr4vRcJykqQLo+Ll7YjfNZR+NyMGG9xu1ltmJ62kN
-         JuNKtXQWmSSWdV/vImIY2rfaHs6X2Bmp/or8S+UAgiLVCjbPE+/OcduiLatIHrHGY2Tg
-         c39DCfH0pxJ8xSNct52/HePHXQc3Zz5J+Gt437B5DlbQuEWgRny30IjS5SQuH2WECWuR
-         BsAPnJUHLt7i7WAd6Gax/2e3vDtVyB4d71hJknVpdgMi6SuRskwGH3nrpFxfFjLApiWi
-         ClZrv71qVlskOXKVkuQyU2NQqTnRJc1XE1XrCZZxAic9JvvctxDhJDHy9TZ5xHyCDlbv
-         86zQ==
-X-Gm-Message-State: AOAM531cQEeuItxMCrLA8vVDU99MREgfyad3GKBhg+qLZjjGhfwl67FN
-        4XThZ/nfxVktgvlr39YjuPrDONtMUCdSxi9Aeto=
-X-Google-Smtp-Source: ABdhPJyFUIflNwxdK/RMN6foD2ei8C1GZpfb7m9sYaupbEySMmuH6cy++r2H96e5rX2rM3xDWUh4NX4ds9+UubmkTsI=
-X-Received: by 2002:a05:6a00:a1e:b029:2e2:89d8:5c87 with SMTP id
- p30-20020a056a000a1eb02902e289d85c87mr7917887pfh.73.1623410467613; Fri, 11
- Jun 2021 04:21:07 -0700 (PDT)
+        bh=h4XBx6hy/8HemTestI8gx5CVIEJQPh5SHNT2c3CXnb4=;
+        b=mFuJr2jNjg56fuqQouxJkqGDxTM8UNeTFMV5RkHgDr2A8CQPH90OaoBHTaxB91zPEu
+         T+ZllQ1weay6zU7+toMBC+dvVNsf3Oz3BxBCSSw50W44yEmhEgZaU+A0CMkux79iB5Ow
+         kuX38SlvRuqXUcgkzNlQw79873zKMnzN0zForW+K+0htd1GdF+e+nlbDqQQMbMR7njXL
+         uGhZfzGO1Fb3o587YZINb9fhPtUUvb3FnC41jXUvKIbDfmoXVCBNfmE+8xr3U+Vj1DY/
+         ZOZ8kYo1lUwIZ9aiAExeZ1vGBrV5G4Ib//7PyvyCC7KmuCWGH/SNIYc3rnVXk48agNnE
+         X7Ng==
+X-Gm-Message-State: AOAM532T/AcTkuLs1mjS9kAD6rZJxeHhzX5+c3taSKpGa2tDshiYw2cd
+        aoC2gJoGu/iSbSt7W6liOTJz7ukC2JkS5mSXSOY=
+X-Google-Smtp-Source: ABdhPJzu9xzYtnBrRvh2AQos0EplFhBidiSQVytvzwTGQJ7UQDj+xrv8IWDD18RS/gAhTpmrdgRZsL5uHfb4I1HK1vU=
+X-Received: by 2002:a17:90a:80c5:: with SMTP id k5mr8780907pjw.129.1623410802452;
+ Fri, 11 Jun 2021 04:26:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210611105401.270673-1-ciorneiioana@gmail.com> <20210611105401.270673-3-ciorneiioana@gmail.com>
-In-Reply-To: <20210611105401.270673-3-ciorneiioana@gmail.com>
+References: <20210611105401.270673-1-ciorneiioana@gmail.com> <20210611105401.270673-4-ciorneiioana@gmail.com>
+In-Reply-To: <20210611105401.270673-4-ciorneiioana@gmail.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 11 Jun 2021 14:20:51 +0300
-Message-ID: <CAHp75Ve1URDqjZUevbTxH1zDekvwDoSKw5B787ahR1BJ+0ij+Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v9 02/15] net: phy: Introduce fwnode_mdio_find_device()
+Date:   Fri, 11 Jun 2021 14:26:26 +0300
+Message-ID: <CAHp75VcfEbMecsGprNW33OtiddVw1MhmOVrtb9Gx4tKL5BjvYw@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 03/15] net: phy: Introduce phy related fwnode functions
 To:     Ioana Ciornei <ciorneiioana@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -86,14 +85,48 @@ On Fri, Jun 11, 2021 at 1:54 PM Ioana Ciornei <ciorneiioana@gmail.com> wrote:
 >
 > From: Calvin Johnson <calvin.johnson@oss.nxp.com>
 >
-> Define fwnode_mdio_find_device() to get a pointer to the
-> mdio_device from fwnode passed to the function.
+> Define fwnode_phy_find_device() to iterate an mdiobus and find the
+> phy device of the provided phy fwnode. Additionally define
+> device_phy_find_device() to find phy device of provided device.
+>
+> Define fwnode_get_phy_node() to get phy_node using named reference.
 
-> Refactor of_mdio_find_device() to use fwnode_mdio_find_device().
+using a named
 
-That's what I meant. Is this series converting two users to use
-fwnode_mdio_find_device()? If not, it should do this and kill
-of_mdio_find_device() completely.
+...
+
+> +struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode)
+> +{
+> +       struct fwnode_handle *phy_node;
+> +
+> +       /* Only phy-handle is used for ACPI */
+> +       phy_node = fwnode_find_reference(fwnode, "phy-handle", 0);
+> +       if (is_acpi_node(fwnode) || !IS_ERR(phy_node))
+> +               return phy_node;
+> +       phy_node = fwnode_find_reference(fwnode, "phy", 0);
+> +       if (IS_ERR(phy_node))
+> +               phy_node = fwnode_find_reference(fwnode, "phy-device", 0);
+> +       return phy_node;
+
+Looking into the patterns in this code I would perhaps refactor it the
+following way:
+
+     /* First try "phy-handle" as most common in use */
+     phy_node = fwnode_find_reference(fwnode, "phy-handle", 0);
+     /* Only phy-handle is used for ACPI */
+     if (is_acpi_node(fwnode))
+              return phy_node;
+     if (!IS_ERR(phy_node))
+              return phy_node;
+     /* Try "phy" reference */
+     phy_node = fwnode_find_reference(fwnode, "phy", 0);
+     if (!IS_ERR(phy_node))
+              return phy_node;
+     /* At last try "phy-device" reference */
+     return fwnode_find_reference(fwnode, "phy-device", 0);
+
+> +}
+
 
 -- 
 With Best Regards,
