@@ -2,119 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB03D3A3C95
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 09:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACDD43A3CBC
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 09:16:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbhFKHJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 03:09:39 -0400
-Received: from mga12.intel.com ([192.55.52.136]:17509 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229540AbhFKHJi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Jun 2021 03:09:38 -0400
-IronPort-SDR: qMP3c1W5YYO7OcH7rYaVk3YWGfN+wDpfBFzBXH5nZfP1ZXX15r1DHi6hixFxq9Ff6JatA9X6zd
- EvKv6AilKZHQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10011"; a="185166837"
-X-IronPort-AV: E=Sophos;i="5.83,265,1616482800"; 
-   d="scan'208";a="185166837"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2021 00:07:04 -0700
-IronPort-SDR: afjxRnVnKdW7kcXTge4k/NNkVMeLOqvtprD/PsspPRHe5JKjDig+E7erlN7fy+rUahcnJ5tQvL
- rc0eajHzK7NA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,265,1616482800"; 
-   d="scan'208";a="486491531"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga002.fm.intel.com with ESMTP; 11 Jun 2021 00:07:02 -0700
-Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.69])
-        by linux.intel.com (Postfix) with ESMTP id B189F580BD5;
-        Fri, 11 Jun 2021 00:06:59 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>
-Subject: [PATCH net-next v1 1/1] net: stmmac: Fix unused values warnings
-Date:   Fri, 11 Jun 2021 15:11:43 +0800
-Message-Id: <20210611071143.987866-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S231420AbhFKHRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 03:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231235AbhFKHRi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 03:17:38 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C10C061283
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 00:15:40 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lrbO7-0000vF-8J; Fri, 11 Jun 2021 09:15:31 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lrbO5-0002TP-Dr; Fri, 11 Jun 2021 09:15:29 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+Subject: [PATCH net-next v4 0/9] provide cable test support for the ksz886x switch
+Date:   Fri, 11 Jun 2021 09:15:18 +0200
+Message-Id: <20210611071527.9333-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit 8532f613bc78 ("net: stmmac: introduce MSI Interrupt routines
-for mac, safety, RX & TX") introduced the converity warnings:-
+changes v4:
+- use fallthrough;
+- use EOPNOTSUPP instead of ENOTSUPP
+- drop flags variable in dsa_slave_phy_connect patch
+- extend description for the "net: phy: micrel: apply resume errat"
+  patch
+- fix "use consistent alignments" patch
 
-  1. Unused value (UNUSED_VALUE)
-     assigned_value: Assigning value REQ_IRQ_ERR_MAC to irq_err here,
-     but that stored value is not used.
+changes v3:
+- remove RFC tag
 
-  2. Unused value (UNUSED_VALUE)
-     assigned_value: Assigning value REQ_IRQ_ERR_NO to irq_err here,
-     but that stored value is overwritten before it can used.
+changes v2:
+- use generic MII_* defines where possible
+- rework phylink validate
+- remove phylink get state function
+- reorder cabletest patches to make PHY flag patch in the right order
+- fix MDI-X detection
 
-  3. Unused value (UNUSED_VALUE)
-     assigned_value: Assigning value REQ_IRQ_ERR_WOL to irq_err here,
-     but that stored value is not used.
+This patches provide support for cable testing on the ksz886x switches.
+Since it has one special port, we needed to add phylink with validation
+and extra quirk for the PHY to signal, that one port will not provide
+valid cable testing reports.
 
-Fixed these by removing the unnecessary value assignments.
+Michael Grzeschik (2):
+  net: phy: micrel: move phy reg offsets to common header
+  net: dsa: microchip: ksz8795: add phylink support
 
-Fixes: 8532f613bc78 ("net: stmmac: introduce MSI Interrupt routines for mac, safety, RX & TX")
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Oleksij Rempel (7):
+  net: phy: micrel: use consistent alignments
+  net: phy: micrel: apply resume errata workaround for ksz8873 and
+    ksz8863
+  net: phy/dsa micrel/ksz886x add MDI-X support
+  net: phy: micrel: ksz8081 add MDI-X support
+  net: dsa: microchip: ksz8795: add LINK_MD register support
+  net: dsa: dsa_slave_phy_connect(): extend phy's flags with port
+    specific phy flags
+  net: phy: micrel: ksz886x/ksz8081: add cabletest support
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index db97cd4b871d..4177fd6a9db5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3406,8 +3406,8 @@ static void stmmac_free_irq(struct net_device *dev,
- 
- static int stmmac_request_irq_multi_msi(struct net_device *dev)
- {
--	enum request_irq_err irq_err = REQ_IRQ_ERR_NO;
- 	struct stmmac_priv *priv = netdev_priv(dev);
-+	enum request_irq_err irq_err;
- 	cpumask_t cpu_mask;
- 	int irq_idx = 0;
- 	char *int_name;
-@@ -3554,8 +3554,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- 
- static int stmmac_request_irq_single(struct net_device *dev)
- {
--	enum request_irq_err irq_err = REQ_IRQ_ERR_NO;
- 	struct stmmac_priv *priv = netdev_priv(dev);
-+	enum request_irq_err irq_err;
- 	int ret;
- 
- 	ret = request_irq(dev->irq, stmmac_interrupt,
-@@ -3565,7 +3565,7 @@ static int stmmac_request_irq_single(struct net_device *dev)
- 			   "%s: ERROR: allocating the IRQ %d (error: %d)\n",
- 			   __func__, dev->irq, ret);
- 		irq_err = REQ_IRQ_ERR_MAC;
--		return ret;
-+		goto irq_error;
- 	}
- 
- 	/* Request the Wake IRQ in case of another line
-@@ -3579,7 +3579,7 @@ static int stmmac_request_irq_single(struct net_device *dev)
- 				   "%s: ERROR: allocating the WoL IRQ %d (%d)\n",
- 				   __func__, priv->wol_irq, ret);
- 			irq_err = REQ_IRQ_ERR_WOL;
--			return ret;
-+			goto irq_error;
- 		}
- 	}
- 
+ drivers/net/dsa/microchip/ksz8795.c     | 214 ++++++++----
+ drivers/net/dsa/microchip/ksz8795_reg.h |  67 +---
+ drivers/net/ethernet/micrel/ksz884x.c   | 105 +-----
+ drivers/net/phy/micrel.c                | 423 ++++++++++++++++++++++--
+ include/linux/micrel_phy.h              |  16 +
+ net/dsa/slave.c                         |   4 +
+ 6 files changed, 593 insertions(+), 236 deletions(-)
+
 -- 
-2.25.1
+2.29.2
 
