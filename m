@@ -2,75 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB2FB3A3A4D
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:35:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE2F3A3A67
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231439AbhFKDhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 23:37:22 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58080 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230479AbhFKDhV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Jun 2021 23:37:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=jrzkXDGoUHtqmy4odHiE/JuI9qwK6iCvH8gOoN3YBxM=; b=rdBay5upgW2U5MUQkDPt/P/0m4
-        e0+qnNrHQjb2a4L1mdjD/jl5w8Pjjdsod6QAgbV6ZKohmvrOWsQvAUUrw+jbLOKT8Z2mVH+2aloFX
-        uxCsCfHkdYHE93UT+jlbJLAxYIbJ1Q43gCtbmXJOxMHrSb2GA757/is7qgp+vnoGqi60=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lrXx4-008mbn-7z; Fri, 11 Jun 2021 05:35:22 +0200
-Date:   Fri, 11 Jun 2021 05:35:22 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Subject: Re: [PATCH net-next] net: mdio: mscc-miim: Use
- devm_platform_get_and_ioremap_resource()
-Message-ID: <YMLZ+k0rjlZY9+7b@lunn.ch>
-References: <20210610091154.4141911-1-yangyingliang@huawei.com>
- <YMI3VsR/jnVVhmsh@lunn.ch>
- <fd9cbc9c-478e-85c8-62ec-58a8baf4333c@huawei.com>
+        id S231588AbhFKDlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 23:41:49 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:5332 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231511AbhFKDlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 23:41:32 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4G1RKq2bHbz1BL9m;
+        Fri, 11 Jun 2021 11:34:39 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Fri, 11 Jun 2021 11:39:31 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Fri, 11 Jun 2021 11:39:31 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
+        <ms@dev.tdt.de>, <willemb@google.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
+Subject: [PATCH net-next 0/8] net: pc300too: clean up some code style issues
+Date:   Fri, 11 Jun 2021 11:36:14 +0800
+Message-ID: <1623382582-37854-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fd9cbc9c-478e-85c8-62ec-58a8baf4333c@huawei.com>
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 09:35:04AM +0800, Yang Yingliang wrote:
-> Hi,
-> 
-> On 2021/6/11 0:01, Andrew Lunn wrote:
-> > > -	dev->regs = devm_ioremap_resource(&pdev->dev, res);
-> > > +	dev->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-> > >   	if (IS_ERR(dev->regs)) {
-> > Here, only dev->regs is considered.
-> > 
-> > >   		dev_err(&pdev->dev, "Unable to map MIIM registers\n");
-> > >   		return PTR_ERR(dev->regs);
-> > >   	}
-> > 
-> > 
-> > > +	dev->phy_regs = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
-> > > +	if (res && IS_ERR(dev->phy_regs)) {
-> > Here you look at both res and dev->phy_regs.
-> > 
-> > This seems inconsistent. Can devm_platform_get_and_ioremap_resource()
-> > return success despite res being NULL?
-> No, if res is NULL, devm_platform_get_and_ioremap_resource() returns failed.
-> But, before this patch, if the internal phy res is NULL, it doesn't return
-> error
-> code, so I checked the res to make sure it doesn't change the origin code
-> logic.
+From: Peng Li <lipeng321@huawei.com>
 
-O.K, so IORESOURCE_MEM, 1 is optional. By making this change, i think
-you have made this less clear. So i would say it is O.K. to change the
-first platform_get_resource(pdev, IORESOURCE_MEM, 0) and
-devm_ioremap_resource(&pdev->dev, res) to one call, but i would leave
-the second pair alone.
+This patchset clean up some code style issues.
 
-    Andrew
+Peng Li (8):
+  net: pc300too: remove redundant blank lines
+  net: pc300too: add blank line after declarations
+  net: pc300too: fix the code style issue about "foo * bar"
+  net: pc300too: move out assignment in if condition
+  net: pc300too: remove redundant initialization for statics
+  net: pc300too: replace comparison to NULL with "!card->plxbase"
+  net: pc300too: add some required spaces
+  net: pc300too: fix the comments style issue
+
+ drivers/net/wan/pc300too.c | 52 +++++++++++++---------------------------------
+ 1 file changed, 15 insertions(+), 37 deletions(-)
+
+-- 
+2.8.1
+
