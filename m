@@ -2,88 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3EDA3A4623
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 18:05:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 472DC3A462A
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 18:08:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230396AbhFKQHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 12:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbhFKQHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 12:07:32 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C31C061574
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 09:05:34 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id 102-20020a9d0eef0000b02903fccc5b733fso3628562otj.4
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 09:05:34 -0700 (PDT)
+        id S231150AbhFKQKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 12:10:14 -0400
+Received: from mail-wm1-f47.google.com ([209.85.128.47]:33404 "EHLO
+        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230298AbhFKQKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 12:10:12 -0400
+Received: by mail-wm1-f47.google.com with SMTP id s70-20020a1ca9490000b02901a589651424so6623204wme.0;
+        Fri, 11 Jun 2021 09:07:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2Ol9LmHX2jY59Zf0Udzv9fgb6HaOvJq8tTOEhATtJBQ=;
-        b=eu1wbg4OE9zp1gAi46aS3nctjtOBc1No6o69K2tqZzD7kaRvn20zu4EEJ/qzsd50U+
-         A/IxHP8+zy4Bm6ImtEEazonoZiUND9Ow1ULBjzq+t5Fo3SuaHyyiy2KCST4YYz9IzPQg
-         TgQNWLCXutjYVMSNwHvo2iqkVOYiBWlQVaZ2kaSmVW7z+0G51Wh6FbRTD9g2RwmyzpZr
-         bfItvC16LrvQbD81FW6sWN3rmU0HD1yJ5rGCShP+vaRIDyXE5IW6HdJffwSip0v2VRmo
-         AtQ470Ov0gaWPCjeHOiu/htTXaTtdgCt7dvHw0gwTOC/gCau6/mqx6VPNCsF9a4frqDb
-         Bn0w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y4C/j8fDmkF8F2f66X7DXEUPmSO7gkABoscrxSq9XiA=;
+        b=nI6Gqei7FQyaAEPK3N9pcZAp0i4dF4wt30vgb2lMVaxrcXZfQ8IErbShfHHNSVwduD
+         ZuoC4wlBU3p27QNYM/fdDDbjZNUarPwKq8cRhC4cU19jpQoPpq9mVojJAqtj+v0SW1lV
+         dA9A9Pb9JqvRzm+VeDMxosFkwAFaZRk9LLZZi63er920hbJW8Ocf+rjwi42+oxFBpHLN
+         vN7wf0GAqpXV++4Vpsa6Lva3SDmAXGIVlWBbYdNTZkSjoSSVJSZKF573aaASTGSrWrkP
+         ILPIYgkg1gWyBpMrT9oH20v30Zx4R9woa7llCC9LQVaxYLx58NwSTh8o9gk38lQQJAQZ
+         KjJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2Ol9LmHX2jY59Zf0Udzv9fgb6HaOvJq8tTOEhATtJBQ=;
-        b=EokbIjshahYT70CkxH06GYpeL9dSLFN2C/QO6pS25I/UHnBEeFq0t3a7W3jTnmZpe0
-         hop37fSHr6SfxbEprpsUKuaXODDqV8AJtM7KWVQADAN/THjuQQ+llC4S7+RsZSKemw95
-         3vkEsoO/AtKQn18Ekl1tYoonmor6jiTWfdPwDkhWFUapm2qe41MnX15GPliYmUXo05ci
-         4npNQdgmApYVE9/mYRaDfgUbOBfRCBNkoVYh2gBTvKVkOlSjHuiRtzVVfF/jMVvOTh5g
-         2ROGOpwe0fZyBad57iRnGbhLDw5begB//PgrjrDDfJfhfvLska9n853x7RpoBlNvs41V
-         Cb7A==
-X-Gm-Message-State: AOAM533G2jpAkGLC2/pY0dPfnl4zRr9vnytKdtTx1703OHjdjVx9ayzC
-        izST7u/3+Bt6eHY2TK4vACi/d5l6dAio8A==
-X-Google-Smtp-Source: ABdhPJyT+4BExUuWDZtizDT3dZkkp1oUYjQOFKEP0EBOVoWYqSB172QnaOjPmAvMsHNTKsc5CK67Hg==
-X-Received: by 2002:a9d:66d9:: with SMTP id t25mr3769260otm.217.1623427533921;
-        Fri, 11 Jun 2021 09:05:33 -0700 (PDT)
-Received: from fedora.attlocal.net ([2600:1700:271:1a80::2d])
-        by smtp.gmail.com with ESMTPSA id w186sm1258872oib.58.2021.06.11.09.05.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Jun 2021 09:05:33 -0700 (PDT)
-From:   Lijun Pan <lijunp213@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Lijun Pan <lijunp213@gmail.com>
-Subject: [PATCH net-next] ibmvnic: fix kernel build warning in strncpy
-Date:   Fri, 11 Jun 2021 11:05:29 -0500
-Message-Id: <20210611160529.88936-1-lijunp213@gmail.com>
-X-Mailer: git-send-email 2.23.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y4C/j8fDmkF8F2f66X7DXEUPmSO7gkABoscrxSq9XiA=;
+        b=RMYDZPr9wkmQwRiHpHdIiY7Mb5TrJBit+L4fLv/8eqeg11e0OcEnGUWDkQMZ/ImRgJ
+         gpNbsmHzH7f8XPasuvjnKs27Fsm/CcZBuMfDyBKqrq9+GVGn8jKL+7QghLJ8068bp7J4
+         CmghJTgiw3pkBUf0CLwEjbILS9/x6oTwBDB6YzXdcW0oAaw8eMPey2FWjAiCjjTlTOnG
+         ewtxKtkZFbWYRfxElNiMTasQr/+PEHPsr08ErwO3RkqSlTibQaQP+31UhMjvUdzq4tO7
+         KPrAhvZhyJ+VT3yKxy4fTe98lkTxvH8LgZquZBklFK4KR6q/PJSNM7rV+fY1VR++a9i6
+         k1aQ==
+X-Gm-Message-State: AOAM5310SwVlrB/5rzosz8hNVdyTGSAYvQ93ku6vm79t9PBVP7d0mpLm
+        Qyw0FvgkDL00qX5ha3jI6amw10MmPwzp0KgyhDs=
+X-Google-Smtp-Source: ABdhPJzA0zs07wMJ3XvA1oqrOkPDf6tVWFUKkAKlOXgjRdU1XWw5boYiUcRe2B4kW/wCI521ZjMI4h15CfzbK/6zWsA=
+X-Received: by 2002:a7b:c1c5:: with SMTP id a5mr4794416wmj.134.1623427618524;
+ Fri, 11 Jun 2021 09:06:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20210611132428.74f6c1f9@canb.auug.org.au>
+In-Reply-To: <20210611132428.74f6c1f9@canb.auug.org.au>
+From:   Lijun Pan <lijunp213@gmail.com>
+Date:   Fri, 11 Jun 2021 11:06:47 -0500
+Message-ID: <CAOhMmr5jwij9TU9nv6nRv53iiCM4GpED+DPXamZmquHnEPqLDg@mail.gmail.com>
+Subject: Re: linux-next: build warning after merge of the net-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Cristobal Forno <cforno12@linux.ibm.com>,
+        Thomas Falcon <tlfalcon@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/ethernet/ibm/ibmvnic.c: In function ‘handle_vpd_rsp’:
-drivers/net/ethernet/ibm/ibmvnic.c:4393:3: warning: ‘strncpy’ output truncated before terminating nul copying 3 bytes from a string of the same length [-Wstringop-truncation]
- 4393 |   strncpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
-      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+On Thu, Jun 10, 2021 at 10:26 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> After merging the net-next tree, today's linux-next build (powerpc
+> ppc64_defconfig) produced this warning:
+>
+> drivers/net/ethernet/ibm/ibmvnic.c: In function 'adapter_state_to_string':
+> drivers/net/ethernet/ibm/ibmvnic.c:855:2: warning: enumeration value 'VNIC_DOWN' not handled in switch [-Wswitch]
+>   855 |  switch (state) {
+>       |  ^~~~~~
+> drivers/net/ethernet/ibm/ibmvnic.c: In function 'reset_reason_to_string':
+> drivers/net/ethernet/ibm/ibmvnic.c:1958:2: warning: enumeration value 'VNIC_RESET_PASSIVE_INIT' not handled in switch [-Wswitch]
+>  1958 |  switch (reason) {
+>       |  ^~~~~~
+>
+> Introduced by commit
+>
+>   53f8b1b25419 ("ibmvnic: Allow device probe if the device is not ready at boot")
+>
+> --
+> Cheers,
+> Stephen Rothwell
 
-Signed-off-by: Lijun Pan <lijunp213@gmail.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+https://lore.kernel.org/netdev/20210611153537.83420-1-lijunp213@gmail.com/T/#u
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 497f1a7da70b..2675b2301ed7 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -4390,7 +4390,7 @@ static void handle_vpd_rsp(union ibmvnic_crq *crq,
- 
- complete:
- 	if (adapter->fw_version[0] == '\0')
--		strncpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
-+		memcpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
- 	complete(&adapter->fw_done);
- }
- 
--- 
-2.23.0
-
+Thanks,
+Lijun
