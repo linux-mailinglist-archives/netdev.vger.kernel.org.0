@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E5D3A407B
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 12:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D4F23A4094
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 12:56:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231217AbhFKK4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 06:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34878 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbhFKK4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 06:56:35 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EE1C061574;
-        Fri, 11 Jun 2021 03:54:37 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id f5so31588401eds.0;
-        Fri, 11 Jun 2021 03:54:37 -0700 (PDT)
+        id S231716AbhFKK6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 06:58:02 -0400
+Received: from mail-ed1-f47.google.com ([209.85.208.47]:41504 "EHLO
+        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231704AbhFKK5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 06:57:37 -0400
+Received: by mail-ed1-f47.google.com with SMTP id g18so34603309edq.8;
+        Fri, 11 Jun 2021 03:55:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2Ux2SQCORlPMjNOBrBuKATIZMDyltSEBhL6Zi8erjHQ=;
-        b=XR9golhpoRDMEM1W0xvPg3r+YOEwLNdHE/+Wfrd9lSjCdCI3sHxHqI6HdVuM7iH+2V
-         vTFJxvpHMF/aStBsZFwZwFuHB+KQWVtm9zEIeoVv5rCdI+06zkQql8fYZFrXthXv+DJr
-         2UlzsbwqscuK83aximHBdlQIkWalAIXPLbxLHcWsXRfYfaaHvZLrd+TA7fBQOSQqsoUq
-         fguS+SqMQVLzw32/3W/ahXG4jnAGuYTK9CwUt+G3ArhRTKRs71IJ71je6CnETEVZxlEI
-         h6ENhbGU+eyHdvYW1iYSspdPAyAFB6VkPPUj2LTdVcD/PGsmQe8k7OuoHMKQh6whQqPa
-         6cww==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gbwVNa3S8li5NCVOh4mFUhXpgiQevg73Tb0jCktd9T4=;
+        b=aUOrr0il8JxtyF4SJWqbAN+Yvnryyq3/lS1vMcJB8pA2R8zpVzedPXNMuQLn3JNqm2
+         dBXuypz/2GvMjzTpyZr/8/b8V+1X+DWF1LyzFlnVfe3BkeNOTRoMptKjmRhHe8oAehLp
+         R1J4pIpV4aRh7jRi7GKzcJQQQGLbzty0wjjDMsTfgAhHZ/iKf/C1l5IawOBaOtLvBiUL
+         q8PxoKpJ4D9SZZZ4SnhAQitzZMf1vw5NlNq1Ea/fQyviafjNOlqZiulV9aGcixB7FFDI
+         L0YPPt2e9R3IHB4I4cHCY3oiuOB+BzBiSwRfIKF07OWXUQ3YzoY/o3frhIC/ncDnZ3FJ
+         jisQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2Ux2SQCORlPMjNOBrBuKATIZMDyltSEBhL6Zi8erjHQ=;
-        b=c2vABbfvoBmTUbCE5jBiolqWVAuOjb/ZTI3X/Dl7T9c6LusqxmgpIRNJ+JIH1ws6iY
-         MgjY0M/trXpItW9EMIm3azrHpo8RfvcDYtJ/nuNE3plR7Oy+3Riork0rb8BHgLhJcXFd
-         8m1vKpge8zxcMQdxcnmMtowCm/2K0J6SCOEmLIf828x1dfOmO9me1MQR1OHBlJ+dTf0C
-         L6GNyBM05hB1WmmLSTx33zAIJTHI//yBc2b1hu0B+2oDpQ3l9dyYBz+AnNb+NEbXzYrC
-         ncqYdAlA5MYDCgz2aqAFD8kWNuQFjQ3w3wkPTJ4wYw89wc8CQHzF2kqApG0QwEpJPebl
-         SuPA==
-X-Gm-Message-State: AOAM532E/+7ICg16J/0u0eSQXNk6AP9L0IrSGd6kyeUbNZ+x2U4DeW6y
-        MFABtnuZk6TFUhDqKBb6L/k=
-X-Google-Smtp-Source: ABdhPJxldsmT7axIpk3cuSse3qDaAkHxgbpnsNtUOunimJq5LK00+JpUxc+Kg/nVKdVTO1At5oYcOQ==
-X-Received: by 2002:aa7:dc12:: with SMTP id b18mr3030990edu.52.1623408875887;
-        Fri, 11 Jun 2021 03:54:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gbwVNa3S8li5NCVOh4mFUhXpgiQevg73Tb0jCktd9T4=;
+        b=O3NeWyZ8F3PpZGn41RBYeTCE9WukVS6H2f+rHV/qGSNLHClUcx9/JSYtK/4wr+r1D0
+         NsS4yj9d5IVvh3y+pXZjB9kVXmp4qEVOZCaSEyhy/JoQCJKGUmrXPCChA1jJGzjVO8EJ
+         zsCXntH9UiOw5nW4XQgFy9dFWMytBmTkYcs3SGRjOceueF9pZuYUsowoJTe5W89B24O8
+         3ts00IuSiQ7cNzbpWf+bpvEdS7w9rOlKF+S5il696kb0eTpW8Ouht1ZR9dU/YvGx/o2h
+         NjAc9m6CYuCdlWiwG5sRq1EuNclJ5JDps+3BpOlg7qmqoa8vihjFSNanHHL9uGLqrVEY
+         eWoA==
+X-Gm-Message-State: AOAM532wKHegHfZtqAByzsQTphyEPgm2h7Vsd4kn+PkDXRJlwXnXSPX3
+        yAaIRAnQ9+MfJR7+0uxrqtk=
+X-Google-Smtp-Source: ABdhPJxIDJolZFi1bIHlyLHtY6oI64I2tnTaxEpyzIUhG0f81a9sJEc0/S9zrYtiGSfufK1XmJVOKw==
+X-Received: by 2002:a50:bf0f:: with SMTP id f15mr2954896edk.205.1623408878131;
+        Fri, 11 Jun 2021 03:54:38 -0700 (PDT)
 Received: from yoga-910.localhost ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id r19sm2492051eds.75.2021.06.11.03.54.33
+        by smtp.gmail.com with ESMTPSA id r19sm2492051eds.75.2021.06.11.03.54.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Jun 2021 03:54:35 -0700 (PDT)
+        Fri, 11 Jun 2021 03:54:37 -0700 (PDT)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, hkallweit1@gmail.com,
         netdev@vger.kernel.org, Grant Likely <grant.likely@arm.com>,
@@ -72,156 +69,196 @@ Cc:     Cristi Sovaiala <cristian.sovaiala@nxp.com>,
         Len Brown <lenb@kernel.org>,
         "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v9 00/15] ACPI support for dpaa2 driver
-Date:   Fri, 11 Jun 2021 13:53:46 +0300
-Message-Id: <20210611105401.270673-1-ciorneiioana@gmail.com>
+Subject: [PATCH net-next v9 01/15] Documentation: ACPI: DSD: Document MDIO PHY
+Date:   Fri, 11 Jun 2021 13:53:47 +0300
+Message-Id: <20210611105401.270673-2-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210611105401.270673-1-ciorneiioana@gmail.com>
+References: <20210611105401.270673-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana Ciornei <ioana.ciornei@nxp.com>
+From: Calvin Johnson <calvin.johnson@oss.nxp.com>
 
-This patch set provides ACPI support to DPAA2 network drivers.
+Introduce a mechanism based on generic ACPI _DSD device properties
+definition [1] to get PHYs registered on a MDIO bus and provide them to
+be connected to MAC.
 
-It also introduces new fwnode based APIs to support phylink and phy
-layers
-    Following functions are defined:
-      phylink_fwnode_phy_connect()
-      fwnode_mdiobus_register_phy()
-      fwnode_get_phy_id()
-      fwnode_phy_find_device()
-      device_phy_find_device()
-      fwnode_get_phy_node()
-      fwnode_mdio_find_device()
-      acpi_get_local_address()
+[1] http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
 
-    First one helps in connecting phy to phylink instance.
-    Next three helps in getting phy_id and registering phy to mdiobus
-    Next two help in finding a phy on a mdiobus.
-    Next one helps in getting phy_node from a fwnode.
-    Last one is used to get local address from _ADR object.
+Describe properties "phy-handle" and "phy-mode".
 
-    Corresponding OF functions are refactored.
-
-Tested-on: LX2160ARDB
+Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Acked-by: Rafael J. Wysocki <rafael@kernel.org>
+Acked-by: Grant Likely <grant.likely@arm.com>
+---
 
 Changes in v9:
- - merged some minimal changes requested in the wording of the commit
-   messages
- - fixed some build problems in patch 8/15 by moving the removal of
-   of_find_mii_timestamper from patch 8/15 to 9/15.
+- Reworded the commit message
 
-Changes in v8:
- - fixed some checkpatch warnings/checks
- - included linux/fwnode_mdio.h in fwnode_mdio.c (fixed the build warnings)
- - added fwnode_find_mii_timestamper() and
-   fwnode_mdiobus_phy_device_register() in order to get rid of the cycle
-   dependency.
- - change to 'depends on (ACPI || OF) || COMPILE_TEST (for FWNODE_MDIO)
- - remove the fwnode_mdiobus_register from fwnode_mdio.c since it
-   introduces a cycle of dependencies.
-
-Changes in v7:
-- correct fwnode_mdio_find_device() description
-- check NULL in unregister_mii_timestamper()
-- Call unregister_mii_timestamper() without NULL check
-- Create fwnode_mdio.c and move fwnode_mdiobus_register_phy()
-- include fwnode_mdio.h
-- Include headers directly used in acpi_mdio.c
-- Move fwnode_mdiobus_register() to fwnode_mdio.c
-- Include fwnode_mdio.h
-- Alphabetically sort header inclusions
-- remove unnecassary checks
-
+Changes in v8: None
+Changes in v7: None
 Changes in v6:
 - Minor cleanup
-- fix warning for function parameter of fwnode_mdio_find_device()
-- Initialize mii_ts to NULL
-- use GENMASK() and ACPI_COMPANION_SET()
-- some cleanup
-- remove unwanted header inclusion
-- remove OF check for fixed-link
-- use dev_fwnode()
-- remove useless else
-- replace of_device_is_available() to fwnode_device_is_available()
 
 Changes in v5:
 - More cleanup
-- Replace fwnode_get_id() with acpi_get_local_address()
-- add missing MODULE_LICENSE()
-- replace fwnode_get_id() with OF and ACPI function calls
-- replace fwnode_get_id() with OF and ACPI function calls
 
 Changes in v4:
 - More cleanup
-- Improve code structure to handle all cases
-- Remove redundant else from fwnode_mdiobus_register()
-- Cleanup xgmac_mdio_probe()
-- call phy_device_free() before returning
 
-Changes in v3:
-- Add more info on legacy DT properties "phy" and "phy-device"
-- Redefine fwnode_phy_find_device() to follow of_phy_find_device()
-- Use traditional comparison pattern
-- Use GENMASK
-- Modified to retrieve reg property value for ACPI as well
-- Resolved compilation issue with CONFIG_ACPI = n
-- Added more info into documentation
-- Use acpi_mdiobus_register()
-- Avoid unnecessary line removal
-- Remove unused inclusion of acpi.h
-
+Changes in v3: None
 Changes in v2:
 - Updated with more description in document
-- use reverse christmas tree ordering for local variables
-- Refactor OF functions to use fwnode functions
 
-Calvin Johnson (15):
-  Documentation: ACPI: DSD: Document MDIO PHY
-  net: phy: Introduce fwnode_mdio_find_device()
-  net: phy: Introduce phy related fwnode functions
-  of: mdio: Refactor of_phy_find_device()
-  net: phy: Introduce fwnode_get_phy_id()
-  of: mdio: Refactor of_get_phy_id()
-  net: mii_timestamper: check NULL in unregister_mii_timestamper()
-  net: mdiobus: Introduce fwnode_mdiobus_register_phy()
-  of: mdio: Refactor of_mdiobus_register_phy()
-  ACPI: utils: Introduce acpi_get_local_address()
-  net: mdio: Add ACPI support code for mdio
-  net/fsl: Use [acpi|of]_mdiobus_register
-  net: phylink: introduce phylink_fwnode_phy_connect()
-  net: phylink: Refactor phylink_of_phy_connect()
-  net: dpaa2-mac: Add ACPI support for DPAA2 MAC driver
 
- Documentation/firmware-guide/acpi/dsd/phy.rst | 133 ++++++++++++++++
- MAINTAINERS                                   |   2 +
- drivers/acpi/utils.c                          |  14 ++
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  |  88 ++++++-----
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |   2 +-
- drivers/net/ethernet/freescale/xgmac_mdio.c   |  30 ++--
- drivers/net/mdio/Kconfig                      |  14 ++
- drivers/net/mdio/Makefile                     |   4 +-
- drivers/net/mdio/acpi_mdio.c                  |  58 +++++++
- drivers/net/mdio/fwnode_mdio.c                | 144 ++++++++++++++++++
- drivers/net/mdio/of_mdio.c                    | 138 ++---------------
- drivers/net/phy/mii_timestamper.c             |   3 +
- drivers/net/phy/phy_device.c                  | 109 ++++++++++++-
- drivers/net/phy/phylink.c                     |  41 +++--
- include/linux/acpi.h                          |   7 +
- include/linux/acpi_mdio.h                     |  26 ++++
- include/linux/fwnode_mdio.h                   |  35 +++++
- include/linux/phy.h                           |  32 ++++
- include/linux/phylink.h                       |   3 +
- 19 files changed, 693 insertions(+), 190 deletions(-)
+ Documentation/firmware-guide/acpi/dsd/phy.rst | 133 ++++++++++++++++++
+ 1 file changed, 133 insertions(+)
  create mode 100644 Documentation/firmware-guide/acpi/dsd/phy.rst
- create mode 100644 drivers/net/mdio/acpi_mdio.c
- create mode 100644 drivers/net/mdio/fwnode_mdio.c
- create mode 100644 include/linux/acpi_mdio.h
- create mode 100644 include/linux/fwnode_mdio.h
 
+diff --git a/Documentation/firmware-guide/acpi/dsd/phy.rst b/Documentation/firmware-guide/acpi/dsd/phy.rst
+new file mode 100644
+index 000000000000..7d01ae8b3cc6
+--- /dev/null
++++ b/Documentation/firmware-guide/acpi/dsd/phy.rst
+@@ -0,0 +1,133 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++=========================
++MDIO bus and PHYs in ACPI
++=========================
++
++The PHYs on an MDIO bus [1] are probed and registered using
++fwnode_mdiobus_register_phy().
++
++Later, for connecting these PHYs to their respective MACs, the PHYs registered
++on the MDIO bus have to be referenced.
++
++This document introduces two _DSD properties that are to be used
++for connecting PHYs on the MDIO bus [3] to the MAC layer.
++
++These properties are defined in accordance with the "Device
++Properties UUID For _DSD" [2] document and the
++daffd814-6eba-4d8c-8a91-bc9bbf4aa301 UUID must be used in the Device
++Data Descriptors containing them.
++
++phy-handle
++----------
++For each MAC node, a device property "phy-handle" is used to reference
++the PHY that is registered on an MDIO bus. This is mandatory for
++network interfaces that have PHYs connected to MAC via MDIO bus.
++
++During the MDIO bus driver initialization, PHYs on this bus are probed
++using the _ADR object as shown below and are registered on the MDIO bus.
++
++::
++      Scope(\_SB.MDI0)
++      {
++        Device(PHY1) {
++          Name (_ADR, 0x1)
++        } // end of PHY1
++
++        Device(PHY2) {
++          Name (_ADR, 0x2)
++        } // end of PHY2
++      }
++
++Later, during the MAC driver initialization, the registered PHY devices
++have to be retrieved from the MDIO bus. For this, the MAC driver needs
++references to the previously registered PHYs which are provided
++as device object references (e.g. \_SB.MDI0.PHY1).
++
++phy-mode
++--------
++The "phy-mode" _DSD property is used to describe the connection to
++the PHY. The valid values for "phy-mode" are defined in [4].
++
++The following ASL example illustrates the usage of these properties.
++
++DSDT entry for MDIO node
++------------------------
++
++The MDIO bus has an SoC component (MDIO controller) and a platform
++component (PHYs on the MDIO bus).
++
++a) Silicon Component
++This node describes the MDIO controller, MDI0
++---------------------------------------------
++::
++	Scope(_SB)
++	{
++	  Device(MDI0) {
++	    Name(_HID, "NXP0006")
++	    Name(_CCA, 1)
++	    Name(_UID, 0)
++	    Name(_CRS, ResourceTemplate() {
++	      Memory32Fixed(ReadWrite, MDI0_BASE, MDI_LEN)
++	      Interrupt(ResourceConsumer, Level, ActiveHigh, Shared)
++	       {
++		 MDI0_IT
++	       }
++	    }) // end of _CRS for MDI0
++	  } // end of MDI0
++	}
++
++b) Platform Component
++The PHY1 and PHY2 nodes represent the PHYs connected to MDIO bus MDI0
++---------------------------------------------------------------------
++::
++	Scope(\_SB.MDI0)
++	{
++	  Device(PHY1) {
++	    Name (_ADR, 0x1)
++	  } // end of PHY1
++
++	  Device(PHY2) {
++	    Name (_ADR, 0x2)
++	  } // end of PHY2
++	}
++
++DSDT entries representing MAC nodes
++-----------------------------------
++
++Below are the MAC nodes where PHY nodes are referenced.
++phy-mode and phy-handle are used as explained earlier.
++------------------------------------------------------
++::
++	Scope(\_SB.MCE0.PR17)
++	{
++	  Name (_DSD, Package () {
++	     ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++		 Package () {
++		     Package (2) {"phy-mode", "rgmii-id"},
++		     Package (2) {"phy-handle", \_SB.MDI0.PHY1}
++	      }
++	   })
++	}
++
++	Scope(\_SB.MCE0.PR18)
++	{
++	  Name (_DSD, Package () {
++	    ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++		Package () {
++		    Package (2) {"phy-mode", "rgmii-id"},
++		    Package (2) {"phy-handle", \_SB.MDI0.PHY2}}
++	    }
++	  })
++	}
++
++References
++==========
++
++[1] Documentation/networking/phy.rst
++
++[2] https://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
++
++[3] Documentation/firmware-guide/acpi/DSD-properties-rules.rst
++
++[4] Documentation/devicetree/bindings/net/ethernet-controller.yaml
 -- 
 2.31.1
 
