@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C10B73A4A73
+	by mail.lfdr.de (Postfix) with ESMTP id E1FD73A4A74
 	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 23:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231145AbhFKVCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 17:02:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37580 "EHLO mail.kernel.org"
+        id S231172AbhFKVCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 17:02:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37584 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229540AbhFKVCM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230040AbhFKVCM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 11 Jun 2021 17:02:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B48BA613B8;
+Received: by mail.kernel.org (Postfix) with ESMTPS id C1690613CD;
         Fri, 11 Jun 2021 21:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623445213;
-        bh=upUd+AoCKBHFGMJ0ODUJEI6u0gOfxF3E2djQbrqg6EE=;
+        bh=BFn579BHo+V6RuRMsasFONBDcF/mkZeJBCnimQQAz84=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gXhu7B2xWvH+qw261tS9l4bWlwgAC0D4a+VCZW8EdFMLfqL5IRVZa1YmRv912PXxR
-         SaE2ZUc1ZvBkdvY3iNOTMptgugAa9nuW09PX1Nuz9tnkBhbM7ce/qqXm6Aj8o5OKw/
-         Jpp6QW2Tp0MfTw+pzAsnLVRzBZNhfOSeuxZCsyyP3j6nocM2I7IDnvx1LqRjDejO1q
-         1hvH67OwAMDTYXmJ9DGia6ti0KffmV+J9ClqFH6i+tH2f4qTYuukxsO1UWbE3MpBqv
-         ADedjPY7LMTTZJS/0xPZFsR/wnBHMdmWPth7ay6+L/1ovZK3Fhjg6O+oHjxR82f4s5
-         MRoWEoI2sh3/Q==
+        b=o5goQld7cEvRqWyuOYLz7Dn2f0Ty4jMMh+mWSQ7w3Knnr62pmAnIxhTAyvWPlSNx5
+         0kDtK2nyKwYbZ3jZcYlhhrOE/MbKanhQtzObL7FX1A5XrsROYy68pJNM4tnWoqFeR/
+         z/tmTbvVqCUZiU0+y/hbAkV2KCLLhlfEKva1NAA7H9sic1gK+MEQbXSL/8pSOEggVi
+         RNImNX9lDRWuw5IGMXlizgdwUOAuvY8qzv4FC//rEGKYOxsWgwouChkO8h/eviNe4T
+         hqflJczogl9mkZFZIFY6GEotdEWQedEPifgqEuIcJazbSdOldCQNoQSS2H/tXq8X/j
+         mD480OKzj+u3w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AC71360A49;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B531760D07;
         Fri, 11 Jun 2021 21:00:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/8][pull request] 100GbE Intel Wired LAN Driver
- Updates 2021-06-11
+Subject: Re: [PATCH v11 00/18] virtio/vsock: introduce SOCK_SEQPACKET support
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162344521370.30951.207313918787426556.git-patchwork-notify@kernel.org>
+Message-Id: <162344521373.30951.11000282953901961373.git-patchwork-notify@kernel.org>
 Date:   Fri, 11 Jun 2021 21:00:13 +0000
-References: <20210611162000.2438023-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210611162000.2438023-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com, richardcochran@gmail.com,
-        jacob.e.keller@intel.com
+References: <20210611110744.3650456-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <20210611110744.3650456-1-arseny.krasnov@kaspersky.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     stefanha@redhat.com, sgarzare@redhat.com, mst@redhat.com,
+        jasowang@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        andraprs@amazon.com, nslusarek@gmx.net, colin.king@canonical.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        oxffffaa@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,34 +50,59 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 11 Jun 2021 09:19:52 -0700 you wrote:
-> Jake Keller says:
-> 
-> Extend the ice driver to support basic PTP clock functionality for E810
-> devices.
-> 
-> This includes some tangential work required to setup the sideband queue and
-> driver shared parameters as well.
+On Fri, 11 Jun 2021 14:07:40 +0300 you wrote:
+> This patchset implements support of SOCK_SEQPACKET for virtio
+> transport.
+> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+> do it, new bit for field 'flags' was added: SEQ_EOR. This bit is
+> set to 1 in last RW packet of message.
+> 	Now as  packets of one socket are not reordered neither on vsock
+> nor on vhost transport layers, such bit allows to restore original
+> message on receiver's side. If user's buffer is smaller than message
+> length, when all out of size data is dropped.
+> 	Maximum length of datagram is limited by 'peer_buf_alloc' value.
+> 	Implementation also supports 'MSG_TRUNC' flags.
+> 	Tests also implemented.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/8] ice: add support for sideband messages
-    https://git.kernel.org/netdev/net-next/c/8f5ee3c477a8
-  - [net-next,2/8] ice: process 1588 PTP capabilities during initialization
-    https://git.kernel.org/netdev/net-next/c/9733cc94c523
-  - [net-next,3/8] ice: add support for set/get of driver-stored firmware parameters
-    https://git.kernel.org/netdev/net-next/c/7f9ab54d3144
-  - [net-next,4/8] ice: add low level PTP clock access functions
-    https://git.kernel.org/netdev/net-next/c/03cb4473be92
-  - [net-next,5/8] ice: register 1588 PTP clock device object for E810 devices
-    https://git.kernel.org/netdev/net-next/c/06c16d89d2cb
-  - [net-next,6/8] ice: report the PTP clock index in ethtool .get_ts_info
-    https://git.kernel.org/netdev/net-next/c/67569a7f9401
-  - [net-next,7/8] ice: enable receive hardware timestamping
-    https://git.kernel.org/netdev/net-next/c/77a781155a65
-  - [net-next,8/8] ice: enable transmit timestamps for E810 devices
-    https://git.kernel.org/netdev/net-next/c/ea9b847cda64
+  - [v11,01/18] af_vsock: update functions for connectible socket
+    https://git.kernel.org/netdev/net-next/c/a9e29e5511b9
+  - [v11,02/18] af_vsock: separate wait data loop
+    https://git.kernel.org/netdev/net-next/c/b3f7fd54881b
+  - [v11,03/18] af_vsock: separate receive data loop
+    https://git.kernel.org/netdev/net-next/c/19c1b90e1979
+  - [v11,04/18] af_vsock: implement SEQPACKET receive loop
+    https://git.kernel.org/netdev/net-next/c/9942c192b256
+  - [v11,05/18] af_vsock: implement send logic for SEQPACKET
+    https://git.kernel.org/netdev/net-next/c/fbe70c480796
+  - [v11,06/18] af_vsock: rest of SEQPACKET support
+    https://git.kernel.org/netdev/net-next/c/0798e78b102b
+  - [v11,07/18] af_vsock: update comments for stream sockets
+    https://git.kernel.org/netdev/net-next/c/8cb48554ad82
+  - [v11,08/18] virtio/vsock: set packet's type in virtio_transport_send_pkt_info()
+    https://git.kernel.org/netdev/net-next/c/b93f8877c1f2
+  - [v11,09/18] virtio/vsock: simplify credit update function API
+    https://git.kernel.org/netdev/net-next/c/c10844c59799
+  - [v11,10/18] virtio/vsock: defines and constants for SEQPACKET
+    https://git.kernel.org/netdev/net-next/c/f07b2a5b04d4
+  - [v11,11/18] virtio/vsock: dequeue callback for SOCK_SEQPACKET
+    https://git.kernel.org/netdev/net-next/c/44931195a541
+  - [v11,12/18] virtio/vsock: add SEQPACKET receive logic
+    https://git.kernel.org/netdev/net-next/c/e4b1ef152f53
+  - [v11,13/18] virtio/vsock: rest of SOCK_SEQPACKET support
+    https://git.kernel.org/netdev/net-next/c/9ac841f5e9f2
+  - [v11,14/18] virtio/vsock: enable SEQPACKET for transport
+    https://git.kernel.org/netdev/net-next/c/53efbba12cc7
+  - [v11,15/18] vhost/vsock: support SEQPACKET for transport
+    https://git.kernel.org/netdev/net-next/c/ced7b713711f
+  - [v11,16/18] vsock/loopback: enable SEQPACKET for transport
+    https://git.kernel.org/netdev/net-next/c/6e90a57795aa
+  - [v11,17/18] vsock_test: add SOCK_SEQPACKET tests
+    https://git.kernel.org/netdev/net-next/c/41b792d7a86d
+  - [v11,18/18] virtio/vsock: update trace event for SEQPACKET
+    https://git.kernel.org/netdev/net-next/c/184039eefeae
 
 You are awesome, thank you!
 --
