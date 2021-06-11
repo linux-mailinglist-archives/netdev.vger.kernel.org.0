@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1FD73A4A74
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 23:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01F453A4A70
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 23:00:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbhFKVCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 17:02:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37584 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230040AbhFKVCM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230425AbhFKVCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 11 Jun 2021 17:02:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C1690613CD;
+Received: from mail.kernel.org ([198.145.29.99]:37578 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230017AbhFKVCM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Jun 2021 17:02:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id AB70F613C6;
         Fri, 11 Jun 2021 21:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623445213;
-        bh=BFn579BHo+V6RuRMsasFONBDcF/mkZeJBCnimQQAz84=;
+        bh=4mihPOL2CONCSUOGSr2nPR24uK+oNcPDUrIwpH6k1hk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=o5goQld7cEvRqWyuOYLz7Dn2f0Ty4jMMh+mWSQ7w3Knnr62pmAnIxhTAyvWPlSNx5
-         0kDtK2nyKwYbZ3jZcYlhhrOE/MbKanhQtzObL7FX1A5XrsROYy68pJNM4tnWoqFeR/
-         z/tmTbvVqCUZiU0+y/hbAkV2KCLLhlfEKva1NAA7H9sic1gK+MEQbXSL/8pSOEggVi
-         RNImNX9lDRWuw5IGMXlizgdwUOAuvY8qzv4FC//rEGKYOxsWgwouChkO8h/eviNe4T
-         hqflJczogl9mkZFZIFY6GEotdEWQedEPifgqEuIcJazbSdOldCQNoQSS2H/tXq8X/j
-         mD480OKzj+u3w==
+        b=YuMl4+hH0gRSiXUjAO9FRxqVXvmsLrWNN9n9kR1EgB/llV3YyCKPt0ae18hM3dSFG
+         ScM1OBiMIabeDGNKa4AYtjL25wqDkKXVVlr7H9UIUGjFFMAJIl3eHguvRYSc4/FVP1
+         Uq6DL3yskxTRcp5H8F16nvx4aLPfFBpS+CodDLBR+kQQqJkCLOK25zaOF1VwNQcSlk
+         LgzYFsosjoqff2bGGp11Th58zep47gpQcWSFxHsLhxaEAvK2+Tkl9dxRvKbbg0OICg
+         q97bYxFsI3s6pbRG8KVPFmXg80/s4AWg0uCIX7upHi6A3GzIlvEfIlPwzipjfxxAVu
+         tmtjVeefovETQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B531760D07;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9F7C360BE1;
         Fri, 11 Jun 2021 21:00:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v11 00/18] virtio/vsock: introduce SOCK_SEQPACKET support
+Subject: Re: [PATCH v3 net-next 00/13] Port the SJA1105 DSA driver to XPCS
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162344521373.30951.11000282953901961373.git-patchwork-notify@kernel.org>
+Message-Id: <162344521364.30951.15091113709707705012.git-patchwork-notify@kernel.org>
 Date:   Fri, 11 Jun 2021 21:00:13 +0000
-References: <20210611110744.3650456-1-arseny.krasnov@kaspersky.com>
-In-Reply-To: <20210611110744.3650456-1-arseny.krasnov@kaspersky.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     stefanha@redhat.com, sgarzare@redhat.com, mst@redhat.com,
-        jasowang@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        andraprs@amazon.com, nslusarek@gmx.net, colin.king@canonical.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        oxffffaa@gmail.com
+References: <20210611200531.2384819-1-olteanv@gmail.com>
+In-Reply-To: <20210611200531.2384819-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        vee.khee.wong@linux.intel.com, boon.leong.ong@intel.com,
+        michael.wei.hong.sit@intel.com, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        Jose.Abreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, f.fainelli@gmail.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -50,59 +53,46 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 11 Jun 2021 14:07:40 +0300 you wrote:
-> This patchset implements support of SOCK_SEQPACKET for virtio
-> transport.
-> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
-> do it, new bit for field 'flags' was added: SEQ_EOR. This bit is
-> set to 1 in last RW packet of message.
-> 	Now as  packets of one socket are not reordered neither on vsock
-> nor on vhost transport layers, such bit allows to restore original
-> message on receiver's side. If user's buffer is smaller than message
-> length, when all out of size data is dropped.
-> 	Maximum length of datagram is limited by 'peer_buf_alloc' value.
-> 	Implementation also supports 'MSG_TRUNC' flags.
-> 	Tests also implemented.
+On Fri, 11 Jun 2021 23:05:18 +0300 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> As requested when adding support for the NXP SJA1110, the SJA1105 driver
+> could make use of the common XPCS driver, to eliminate some hardware
+> specific code duplication.
+> 
+> This series modifies the XPCS driver so that it can accommodate the XPCS
+> instantiation from NXP switches, and the SJA1105 driver so it can expose
+> what the XPCS driver expects.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v11,01/18] af_vsock: update functions for connectible socket
-    https://git.kernel.org/netdev/net-next/c/a9e29e5511b9
-  - [v11,02/18] af_vsock: separate wait data loop
-    https://git.kernel.org/netdev/net-next/c/b3f7fd54881b
-  - [v11,03/18] af_vsock: separate receive data loop
-    https://git.kernel.org/netdev/net-next/c/19c1b90e1979
-  - [v11,04/18] af_vsock: implement SEQPACKET receive loop
-    https://git.kernel.org/netdev/net-next/c/9942c192b256
-  - [v11,05/18] af_vsock: implement send logic for SEQPACKET
-    https://git.kernel.org/netdev/net-next/c/fbe70c480796
-  - [v11,06/18] af_vsock: rest of SEQPACKET support
-    https://git.kernel.org/netdev/net-next/c/0798e78b102b
-  - [v11,07/18] af_vsock: update comments for stream sockets
-    https://git.kernel.org/netdev/net-next/c/8cb48554ad82
-  - [v11,08/18] virtio/vsock: set packet's type in virtio_transport_send_pkt_info()
-    https://git.kernel.org/netdev/net-next/c/b93f8877c1f2
-  - [v11,09/18] virtio/vsock: simplify credit update function API
-    https://git.kernel.org/netdev/net-next/c/c10844c59799
-  - [v11,10/18] virtio/vsock: defines and constants for SEQPACKET
-    https://git.kernel.org/netdev/net-next/c/f07b2a5b04d4
-  - [v11,11/18] virtio/vsock: dequeue callback for SOCK_SEQPACKET
-    https://git.kernel.org/netdev/net-next/c/44931195a541
-  - [v11,12/18] virtio/vsock: add SEQPACKET receive logic
-    https://git.kernel.org/netdev/net-next/c/e4b1ef152f53
-  - [v11,13/18] virtio/vsock: rest of SOCK_SEQPACKET support
-    https://git.kernel.org/netdev/net-next/c/9ac841f5e9f2
-  - [v11,14/18] virtio/vsock: enable SEQPACKET for transport
-    https://git.kernel.org/netdev/net-next/c/53efbba12cc7
-  - [v11,15/18] vhost/vsock: support SEQPACKET for transport
-    https://git.kernel.org/netdev/net-next/c/ced7b713711f
-  - [v11,16/18] vsock/loopback: enable SEQPACKET for transport
-    https://git.kernel.org/netdev/net-next/c/6e90a57795aa
-  - [v11,17/18] vsock_test: add SOCK_SEQPACKET tests
-    https://git.kernel.org/netdev/net-next/c/41b792d7a86d
-  - [v11,18/18] virtio/vsock: update trace event for SEQPACKET
-    https://git.kernel.org/netdev/net-next/c/184039eefeae
+  - [v3,net-next,01/13] net: pcs: xpcs: rename mdio_xpcs_args to dw_xpcs
+    https://git.kernel.org/netdev/net-next/c/5673ef863804
+  - [v3,net-next,02/13] net: stmmac: reverse Christmas tree notation in stmmac_xpcs_setup
+    https://git.kernel.org/netdev/net-next/c/47538dbeb701
+  - [v3,net-next,03/13] net: stmmac: reduce indentation when calling stmmac_xpcs_setup
+    https://git.kernel.org/netdev/net-next/c/7413f9a6af00
+  - [v3,net-next,04/13] net: pcs: xpcs: move register bit descriptions to a header file
+    https://git.kernel.org/netdev/net-next/c/d4433d5b7b34
+  - [v3,net-next,05/13] net: pcs: xpcs: add support for sgmii with no inband AN
+    https://git.kernel.org/netdev/net-next/c/2031c09e6d5f
+  - [v3,net-next,06/13] net: pcs: xpcs: also ignore phy id if it's all ones
+    https://git.kernel.org/netdev/net-next/c/36641b045c83
+  - [v3,net-next,07/13] net: pcs: xpcs: add support for NXP SJA1105
+    https://git.kernel.org/netdev/net-next/c/dd0721ea4c7a
+  - [v3,net-next,08/13] net: pcs: xpcs: add support for NXP SJA1110
+    https://git.kernel.org/netdev/net-next/c/f7380bba42fd
+  - [v3,net-next,09/13] net: pcs: xpcs: export xpcs_do_config and xpcs_link_up
+    https://git.kernel.org/netdev/net-next/c/a853c68e29bb
+  - [v3,net-next,10/13] net: dsa: sja1105: migrate to xpcs for SGMII
+    https://git.kernel.org/netdev/net-next/c/3ad1d171548e
+  - [v3,net-next,11/13] net: dsa: sja1105: register the PCS MDIO bus for SJA1110
+    https://git.kernel.org/netdev/net-next/c/27871359bdf8
+  - [v3,net-next,12/13] net: dsa: sja1105: SGMII and 2500base-x on the SJA1110 are 'special'
+    https://git.kernel.org/netdev/net-next/c/ece578bc3ea4
+  - [v3,net-next,13/13] net: dsa: sja1105: plug in support for 2500base-x
+    https://git.kernel.org/netdev/net-next/c/56b63466333b
 
 You are awesome, thank you!
 --
