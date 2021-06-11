@@ -2,117 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F06D3A3E7C
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 11:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E17143A3ED9
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 11:13:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbhFKJD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 05:03:28 -0400
-Received: from mail-pl1-f173.google.com ([209.85.214.173]:43710 "EHLO
-        mail-pl1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230460AbhFKJD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 05:03:27 -0400
-Received: by mail-pl1-f173.google.com with SMTP id v12so2504224plo.10;
-        Fri, 11 Jun 2021 02:01:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fIlvnpCPbICwDJ4Vl00FPiAYRz1ggW2QfBtE3qOeQVk=;
-        b=TCKGtdywZsQ0mUdoNA1VIXMy1S4UFr0Ur7QxJ8scHxxHbnqqyS3zEccbMsxmjBTYF1
-         m5rPzJFtJuk4Y8f048RqUFJ2pXMI/EOQ8zAqiQ6Akh1+HrXreQP6fO83PnO7auH/J72A
-         W9ugS5yt3wF/4/3yY6ZpFl/Se6GdI4MXMq9oM4+Pjfc7iEajS3aeMqnsYPrH012T1JmA
-         O+kcBd9nMucev4zJwCRO6GxNVUibopNwpiTs7VsqPHd2aRj2/7kn8fqR527gbCQbT8K4
-         x+8+w37HZ7gyaUzd1KRNEj7YiE8h5f7EgBK85+PltyFgMEZ+ObAF07llCg276oaM2umZ
-         qeiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fIlvnpCPbICwDJ4Vl00FPiAYRz1ggW2QfBtE3qOeQVk=;
-        b=N95S2MhLkYQru+a5U6vwPC1YeDyPoKNlqjNF2zhF+vM2xGWrlMFOEhVSF3S9R+Unv2
-         jX4+o+iGJBH+ZfASXlMG8LjCeu5kSmApjpqKbHe4OtWuwtmejYVx4xQGAobJQxXgqiZe
-         ts888de+dRgbilLs2AeaRSxsxR8FkBLWinjpDC9UekyDEu5qJrW2GYQXMjcXPByytZPK
-         J3VagULo+TXAvvSsj2nj6P6dTCIZgGf5UNe00JBFXRQJaUr8thBbR2eZeQss1J0Vo/8G
-         MpAkwkqK4ztQW1fBHyXSKlVrlWuSCbhD7dJ4x6e6Fv77zrnU3JPa2F3SXRf7HcvFx+wO
-         epLA==
-X-Gm-Message-State: AOAM533U9RxSKoXtE/fKayTaoVExowa01hy5esHOutMxFY6Su/IwHSWU
-        TiEbToZxVAO6T3BHGGN9/pA9KDnKvEkYUGC4pSQ=
-X-Google-Smtp-Source: ABdhPJzWieTjQAnrXBUrCrA/glfRXSe+6PTqF2ceabrTCs2gWSFNY6hUn/WuRybe32pJBCyFKUReYtmPNT/trGAAtQE=
-X-Received: by 2002:a17:90b:818:: with SMTP id bk24mr3566082pjb.228.1623402018625;
- Fri, 11 Jun 2021 02:00:18 -0700 (PDT)
+        id S231678AbhFKJPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 05:15:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35134 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231609AbhFKJPM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Jun 2021 05:15:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E431D60FDA;
+        Fri, 11 Jun 2021 09:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623402794;
+        bh=0Tv6dk09LYXtiWu3+YyS09NcTBZcnmopruN7Ttw2A3c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qCE0A2hE5eLvV8SAX8VsVaLsmx7G+YhwHIGuIbtiETIq98w68vFvtv3s1bhzDjAJ1
+         zAwEklDt1RkuJy4xO1mhyVGn5CoqoCJlfqGcOzbWGGdCb/cl21ED/qg6om4QDr6Qgw
+         hAsXyCGbL1jtQZUE1mmW8Fz57Pe8pBJAijmfw+8qSkasiv7gs8Bn4yv5Nf3uQnoBiX
+         zxb7Zjkljrgndxxd99Pyb9NRcFNuEpikSsPzNHA+8Ye4WGjHy7LoVAmriVbgeAzAuX
+         sIG1CoqZMtlY/m4KJAESInsxp1yQtkOqy6u3nFjtUmy8jmmfx5n/O/lOLN4k8Jv3p4
+         6ODFKkgxpj1ug==
+Date:   Fri, 11 Jun 2021 11:13:07 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+        David Hildenbrand <david@redhat.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
+        "Theodore Ts'o" <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
+        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
+Message-ID: <20210611111248.250e6da8@coco.lan>
+In-Reply-To: <20210611025942.GE25638@1wt.eu>
+References: <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
+        <YK+esqGjKaPb+b/Q@kroah.com>
+        <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
+        <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
+        <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
+        <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
+        <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
+        <20210610152633.7e4a7304@oasis.local.home>
+        <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
+        <87tum5uyrq.fsf@toke.dk>
+        <20210611025942.GE25638@1wt.eu>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20210610163917.4138412-1-ciorneiioana@gmail.com>
-In-Reply-To: <20210610163917.4138412-1-ciorneiioana@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 11 Jun 2021 12:00:02 +0300
-Message-ID: <CAHp75VfeyWYKRYuufd8CkCwjCWPRssuQVNfCSknnJWB9HvUcMA@mail.gmail.com>
-Subject: Re: [PATCH net-next v8 00/15] ACPI support for dpaa2 driver
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Calvin Johnson <calvin.johnson@nxp.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>, netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Len Brown <lenb@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 10, 2021 at 7:40 PM Ioana Ciornei <ciorneiioana@gmail.com> wrote:
->
-> From: Ioana Ciornei <ioana.ciornei@nxp.com>
->
-> This patch set provides ACPI support to DPAA2 network drivers.
->
-> It also introduces new fwnode based APIs to support phylink and phy
-> layers
->     Following functions are defined:
->       phylink_fwnode_phy_connect()
->       fwnode_mdiobus_register_phy()
->       fwnode_get_phy_id()
->       fwnode_phy_find_device()
->       device_phy_find_device()
->       fwnode_get_phy_node()
->       fwnode_mdio_find_device()
->       acpi_get_local_address()
->
->     First one helps in connecting phy to phylink instance.
->     Next three helps in getting phy_id and registering phy to mdiobus
->     Next two help in finding a phy on a mdiobus.
->     Next one helps in getting phy_node from a fwnode.
->     Last one is used to get local address from _ADR object.
->
->     Corresponding OF functions are refactored.
+Em Fri, 11 Jun 2021 04:59:42 +0200
+Willy Tarreau <w@1wt.eu> escreveu:
 
-In general it looks fine to me. What really worries me is the calls like
+> On Fri, Jun 11, 2021 at 12:43:05AM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+> > Shuah Khan <skhan@linuxfoundation.org> writes: =20
+> > > I have a
+> > > couple of ideas on how we might be able to improve remote experience
+> > > without restricting in-person experience.
+> > >
+> > > - Have one or two moderators per session to watch chat and Q&A to ena=
+ble
+> > >    remote participants to chime in and participate.
+> > > - Moderators can make sure remote participation doesn't go unnoticed =
+and
+> > >    enable taking turns for remote vs. people participating in person.
+> > >
+> > > It will be change in the way we interact in all in-person sessions for
+> > > sure, however it might enhance the experience for remote attendees. =
+=20
+> >=20
+> > This is basically how IETF meetings function: At the beginning of every
+> > session, a volunteer "jabber scribe" is selected to watch the chat and
+> > relay any questions to a microphone in the room. And the video streaming
+> > platform has a "virtual queue" that remove participants can enter and
+> > the session chairs are then responsible for giving people a chance to
+> > speak. Works reasonably well, I'd say :) =20
+>=20
+> I was about to say the same. In addition, local participants line up
+> at a microphone and do not interrupt the speaker, but the organiser
+> gives them the signal to ask a question. This allows to maintain a
+> good balance between local and remote participants. Also it's common
+> to see some locals go back to their seat because someone else just
+> asked the same question. And when remote questions are asked using
+> pure text, it's easy for the organiser to skip them if already
+> responded as well.
+>=20
+> This method is rather efficient because it doesn't require to keep the
+> questions for the end of the session, yet questions do not interrupt
+> the speaker. It also solves the problem of people not speaking in the
+> microphone. The only thing is that it can be quite intimidating for
+> local participants who are too shy of standing up in front of a
+> microphone and everyone else.
 
-of_foo -> fwnode_bar -> of_baz.
+If someone is shy, he/she could simply type the question as a
+remote participant would do.
 
-As I have commented in one patch the idea of fwnode APIs is to have a
-common ground for all resource providers. So, at the end it shouldn't
-be a chain of calls like above mentioned. Either fix the name (so, the
-first one will be in fwnode or device namespace) or fix the API that
-it will be fwnode/device API.
+This should work fine for a normal speech, but for BoFs and the
+usual "round table" discussions we have at Kernel Maintainers,
+this may not work well for local participants.
 
--- 
-With Best Regards,
-Andy Shevchenko
+I guess that, for such kind of discussions, I can see two
+possible alternatives:
+
+1. everyone would use their laptop cameras/mics;
+2. every round table would have their on camera/mic set.
+
+(1) is probably simpler to implement, but may provide a worse
+experience for local participants. (2) is probably harder to
+implement, as the usual conference logistics company may not
+have cameras.
+
+In either case, a moderator (or some moderating software) is needed
+in order queue requests for speech. So, basically, when someone
+(either in a table or remote) wants to speak, it adds its name to
+a queue, which will then be parsed at the queue's order. This is not
+as natural as a physical meeting, but I guess it won't bring too
+much burden to local people.
+
+Thanks,
+Mauro
