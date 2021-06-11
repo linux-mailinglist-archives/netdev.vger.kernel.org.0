@@ -2,147 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B11853A4B0D
-	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 01:05:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FC403A4B32
+	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 01:27:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230211AbhFKXHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 19:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbhFKXHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 19:07:38 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FD5C061574
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 16:05:24 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id he7so6725244ejc.13
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 16:05:24 -0700 (PDT)
+        id S230410AbhFKX3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 19:29:51 -0400
+Received: from mail-pl1-f169.google.com ([209.85.214.169]:34570 "EHLO
+        mail-pl1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230130AbhFKX3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 19:29:50 -0400
+Received: by mail-pl1-f169.google.com with SMTP id h1so3598873plt.1;
+        Fri, 11 Jun 2021 16:27:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=4K10XBALODv1W6k2TEM7jmG7R3p87EEFGTZ8MoCMmWo=;
-        b=E6rk1+dcXYmF/WxCMNigVKA7vFO/ayTWeYveSOBEBbq1kW9R2TA6eBCf87S8EdPpEX
-         xZ7iCCG3uBhSZjax7u674XfUBElXHYBn5WG3lQrSQ4fXSlqt6YOSDPoqNYjFBEsRMV34
-         dHPy1La77pI3XPU5nnDUewUlOy9Uso4jbx0xfccy9pIwDwkGg2L74uUtLfQYKP5bUM2G
-         g4bXxQj2BItT0b6xoJogr929a2JrUbu/kEhUck/Sy1ijkKTqDBoGEZac8F9re5/vlUC0
-         l6KEOnrHOsj/L8rrPLoFT9qOgHjnpH0EpFllylTNhXjw8MYoWMdiy9DutSPL05m5HyYq
-         wlBA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xmvWhepk7+DTWIJD3sxkKjlDCnRliUseIcDMgkGbSgQ=;
+        b=HJZDKWsJ9+eYY2vRW8WzQe2ODlyiRphnZ4rrdHi0akPJaH6NhuJEvdgoCX29IAkNqu
+         fuXe1AAEIJpXDabP9OTJUngfY3d12oR3HzWrMSxCGme0fj25de2YOpguoKM7sBjxggP9
+         r/dkorJkGnZ7RBErpopXnEuFh07d2bwTA6iwJZFP0uXWGcwOciVU4G8mElov7LPLxEAt
+         ZXpejrl4jd6Lp+a4gM2GjE8/mcIaOnSSUwrGvgM9Rg7G6Q3khj6fC7KOEG1RsTHCIFHP
+         YV5nQmrz6hy+hLbfSzbga/bioQ98yUyX27iWuWtW2I736s/FIzXITiEOJcWqViTukx7Y
+         HwnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=4K10XBALODv1W6k2TEM7jmG7R3p87EEFGTZ8MoCMmWo=;
-        b=itgHXIeTIlh/WTl+RnA2Ii0TLbCOB1kLncnxVFLZNviE78EsqIZP0oog1oVSH8TkZA
-         vE5OtbOrSzbW7WrvC2Ex/T3Ac9B7abf+r19RPVuXM/Y2wtElbMa0fke8t2dV81PFBzu0
-         fCFRQT9OsN6OAM2dYVhdPIZUUifqLA3jXXXTC/QxUqJ2frjNzhMO6rUky8sCn4qLVsOx
-         MEjU/+9pna1D+xvmzEheuxmXZxLDrqelFwaqeQ4+Zv/MNUH5MaoO//h3eFnwlCPYDh3q
-         GNSe0D7iNi3juRWEDgYRR1epzgCSx27B1ToAjqXlaEv5gxil6e4ni0G5NxIM+leijS+U
-         hAxQ==
-X-Gm-Message-State: AOAM530TPrYBORx2QiZc45Dq7jJj9xqEkpIBOV3/0qPeMthHEvmQAg8e
-        uc1kIuprr7u9heyKrY2R1KkETeema0/HFLwVdlDpuRV6gSc=
-X-Google-Smtp-Source: ABdhPJwq8JUA9p0O0p0+4fvPrse8TJ5/2cH9fr7M2g48+4SC//Df8yNC5t20fzWkAkLq0UBcS/PomKGwm1kykD/j5hg=
-X-Received: by 2002:a17:906:dbc2:: with SMTP id yc2mr5680834ejb.390.1623452722492;
- Fri, 11 Jun 2021 16:05:22 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xmvWhepk7+DTWIJD3sxkKjlDCnRliUseIcDMgkGbSgQ=;
+        b=uThJd7E+aQrJClaLoWnKqA11NWPpAsCcoXoaaHSPGx/Ys8so1pdMbW4TNERsjqZBcg
+         1QAqeq+hKFxsGWIxh+ZPZharR4e9JiiofAdCSfVe0f/3nL2x/yWX4+0kc+t8CIYzT9hn
+         xsQxWX1FPuXWmLZPps6nfdB6iQNfP8wvzXrKD6esvook7wB1bJdNAixcX5u6cVu2BCGv
+         i1IvlEdCnuPRjHQeJ7y65r8jKpp9HGG0k1uiMzGskZ8CZBtcCzw9Uz72TutogdRd8LR9
+         6ry6MRVuaGPLXfzLfnwHrZvsvkTepGj5M7NW4TsMSwNYIGecG8w4weLwhpQzFyNWqdVW
+         c5YQ==
+X-Gm-Message-State: AOAM531EmZECk1cSZrMsIgu2JdBVvHLkNyVp53hy3MZC7wIsVOOlV+C6
+        2znyZnt5WSrjo6PNJyRCwy0=
+X-Google-Smtp-Source: ABdhPJxKVJcXQx4+NSa6O4GnyDEzzhXVMpjUDTiEdzxznFgKLJ3hYQukWRkk4KZ+0ilHM0n+yZNGWg==
+X-Received: by 2002:a17:902:c403:b029:106:7793:3fcc with SMTP id k3-20020a170902c403b029010677933fccmr6048181plk.81.1623453995890;
+        Fri, 11 Jun 2021 16:26:35 -0700 (PDT)
+Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id g29sm5978314pgm.11.2021.06.11.16.26.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Jun 2021 16:26:35 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 8/9] net: dsa: dsa_slave_phy_connect(): extend
+ phy's flags with port specific phy flags
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+References: <20210611071527.9333-1-o.rempel@pengutronix.de>
+ <20210611071527.9333-9-o.rempel@pengutronix.de>
+ <20210611192417.gvfxi2kbfjx4jv3d@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <97ea2ff1-d3a3-b2d5-f829-3863409bfecc@gmail.com>
+Date:   Fri, 11 Jun 2021 16:26:33 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-References: <CAK3+h2x2pxbU0BS=mxCZPJxy702BXFjJrQfvt4q9Ls=sijCo=w@mail.gmail.com>
-In-Reply-To: <CAK3+h2x2pxbU0BS=mxCZPJxy702BXFjJrQfvt4q9Ls=sijCo=w@mail.gmail.com>
-From:   Vincent Li <vincent.mc.li@gmail.com>
-Date:   Fri, 11 Jun 2021 16:05:11 -0700
-Message-ID: <CAK3+h2yQtrd_7P4jQ+eJwB8ciA9994ipHk3Sdo3FtXXRpX-XXw@mail.gmail.com>
-Subject: Re: packet seems disappeared after vxlan_rcv/gro_cells_receive/napi_schedule(&cell->napi)
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210611192417.gvfxi2kbfjx4jv3d@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just reply myself for conclusion, I figured out the problem in
-https://github.com/cilium/cilium/issues/16462#issuecomment-859680801
 
-On Wed, Jun 9, 2021 at 4:50 PM Vincent Li <vincent.mc.li@gmail.com> wrote:
->
-> Hi Experts,
->
-> I am doing a tunnel communication  test between Cilium eBPF tunnel and
-> Linux VXLAN vni key based tunnel device (to simulate BIG-IP VXLAN vni
-> key based device), https://github.com/cilium/cilium/issues/16462
->
-> I came across a problem when packet is handled by
-> vxlan_rcv->gro_cells_receive->napi_schedule(&cell->napi),  the packet
-> seems getting dropped somewhere after that. I suspect I might have
-> done something wrong to setup the VXLAN device.
->
-> Here is how I setup the vxlan device  test on my Centos 8 with most
-> recent mainline git kernel build (5.13.0-rc4+ )
->
-> ====start of the script====
-> #!/bin/bash
->
->
-> ip link add vxlan666 type vxlan id 666 dstport 8472 local
-> 10.169.72.236 dev ens192 nolearning l2miss l3miss proxy
->
-> ip link set vxlan666 up
->
-> ip a add 10.0.4.236/24 dev vxlan666
->
-> ip route add 10.0.1.0/24 dev vxlan666  proto kernel  scope link  src 10.0.4.236
->
-> arp -i vxlan666 -s 10.0.1.17 6a:29:d2:78:63:7d
->
-> bridge fdb append 6a:29:d2:78:63:7d dst 10.169.72.238 dev vxlan666
->
-> ====end of the script====
->
-> then I run tcpdump in the background
->
-> #tcpdump -nn -e -i vxlan666 &
->
-> and start to ping the IP 10.0.1.17 which is a POD IP in Cilium managed
-> K8S cluster
->
-> #ping -c 1 10.0.1.17
->
->
-> PING 10.0.1.17 (10.0.1.17) 56(84) bytes of data.
->
-> 19:06:44.452994 d6:04:7c:b2:93:54 > 6a:29:d2:78:63:7d, ethertype IPv4
-> (0x0800), length 98: 10.0.4.236 > 10.0.1.17: ICMP echo request, id
-> 1522, seq 1, length 64
->
-> 19:06:44.454515 56:3d:9c:3a:09:78 > b2:1c:3c:57:9e:97, ethertype IPv4
-> (0x0800), length 98: 10.0.1.17 > 10.0.4.236: ICMP echo reply, id 1522,
-> seq 1, length 64
->
->
-> ^C
->
-> --- 10.0.1.17 ping statistics ---
->
-> 1 packets transmitted, 0 received, 100% packet loss, time 0ms
->
-> You can see the tcpdump shows ICMP echo reply, but ping did not get
-> the ICMP echo reply  and shows 100% packet loss.
->
-> I added netdev_info log below and I can see the kernel log:
->
-> @@ -35,13 +39,17 @@ int gro_cells_receive(struct gro_cells *gcells,
-> struct sk_buff *skb)
->
->         }
->
->
->         __skb_queue_tail(&cell->napi_skbs, skb);
-> -       if (skb_queue_len(&cell->napi_skbs) == 1)
-> +       if (skb_queue_len(&cell->napi_skbs) == 1) {
-> +               netdev_info(skb->dev, "gro_cells_receive: napi_schedule\n");
->                 napi_schedule(&cell->napi);
-> +       }
-> +       netdev_info(skb->dev, "gro_cells_receive: NET_RX_SUCCESS\n");
->         res = NET_RX_SUCCESS;
->
-> Jun  9 19:06:44 kernel-dev kernel: vxlan666: gro_cells_receive: napi_schedule
->
-> Jun  9 19:06:44 kernel-dev kernel: vxlan666: gro_cells_receive: NET_RX_SUCCESS
->
->
->  I don't know where I have done wrong, any help is appreciated ! :)
+
+On 6/11/2021 12:24 PM, Vladimir Oltean wrote:
+> On Fri, Jun 11, 2021 at 09:15:26AM +0200, Oleksij Rempel wrote:
+>> This patch extends the flags of the phy that's being connected with the
+>> port specific flags of the switch port.
+>>
+>> This is needed to handle a port specific erratum of the KSZ8873 switch,
+>> which is added in a later patch.
+>>
+>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+>> ---
+> 
+> What happens differently between having this patch and not having it?
+
+The current get_phy_flags() is only processed when we connect to a PHY
+via a designed phy-handle property via phylink_of_phy_connect((, but if
+we fallback on the internal MDIO bus created by a switch and take the
+dsa_slave_phy_connect() path then we would not be processing that flag
+and using it at PHY connection time. Oleksij, your proposed patch fails
+to check that dsa_switch_ops::get_phy_flags is actually non-NULL, how
+about this approach instead where we only fetch the flags once, and we
+deal with an option get_phy_flags callback too:
+
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index d4756b920108..ba7866ec946f 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1749,7 +1749,7 @@ static void dsa_slave_phylink_fixed_state(struct
+phylink_config *config,
+ }
+
+ /* slave device setup
+*******************************************************/
+-static int dsa_slave_phy_connect(struct net_device *slave_dev, int addr)
++static int dsa_slave_phy_connect(struct net_device *slave_dev, int
+addr, u32 flags)
+ {
+        struct dsa_port *dp = dsa_slave_to_port(slave_dev);
+        struct dsa_switch *ds = dp->ds;
+@@ -1760,6 +1760,8 @@ static int dsa_slave_phy_connect(struct net_device
+*slave_dev, int addr)
+                return -ENODEV;
+        }
+
++       slave_dev->phydev->dev_flags |= flags;
++
+        return phylink_connect_phy(dp->pl, slave_dev->phydev);
+ }
+
+@@ -1804,7 +1806,7 @@ static int dsa_slave_phy_setup(struct net_device
+*slave_dev)
+                /* We could not connect to a designated PHY or SFP, so
+try to
+                 * use the switch internal MDIO bus instead
+                 */
+-               ret = dsa_slave_phy_connect(slave_dev, dp->index);
++               ret = dsa_slave_phy_connect(slave_dev, dp->index,
+phy_flags);
+                if (ret) {
+                        netdev_err(slave_dev,
+                                   "failed to connect to port %d: %d\n",
+-- 
+Florian
