@@ -2,107 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 975E03A48C4
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 20:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA573A48D3
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 20:46:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbhFKSkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 14:40:05 -0400
-Received: from mail-wm1-f50.google.com ([209.85.128.50]:55913 "EHLO
-        mail-wm1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbhFKSkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 14:40:04 -0400
-Received: by mail-wm1-f50.google.com with SMTP id g204so8565388wmf.5
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 11:38:06 -0700 (PDT)
+        id S230444AbhFKSsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 14:48:19 -0400
+Received: from mail-pj1-f48.google.com ([209.85.216.48]:33502 "EHLO
+        mail-pj1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229942AbhFKSsS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 14:48:18 -0400
+Received: by mail-pj1-f48.google.com with SMTP id k22-20020a17090aef16b0290163512accedso7701138pjz.0;
+        Fri, 11 Jun 2021 11:46:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=opvuVJz+DjWenBUhH3u8+GxXMO3eYLaFOvpeSH8t3rI=;
-        b=t27Sb8Jd3hRKIwhxyA74tSSY+nZG0MMdJSOj0MmNrrxJC7vzZi4C617ebN+BLuYmUl
-         wJGNHKwQBzsznHG6g8G1GAb66EQ/a/SKbD6Wzya3tYB8BvHDFqHND9PChueAg8ncGpjt
-         OYsdIMukcsmQYhOZcY1/GaUVh4vC/cFQ2KmX/JwcW0XVnk0xRmYoRvrc2cryRHiwJg2W
-         pdJm1o4yq/Pec1IcDlJlpQZsNgS7QFJXrm6Y/EaSp2zajU4IhzPmYfSCHMjNL+lZWn7p
-         mLi85jaGFysUwuoKfI23NEwfPmoAfILTRra7qrwAfw35uOzYNvl6+Gd6m0z8ih6xJaHL
-         kNIQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ks2AqW9cDJsFT7c7uP3+IJTIHt4mIVoxcBhjJ2KbT6I=;
+        b=gopHh/zOTYiyhfqVK/dB9u7LEy0YsPawdh8u/sBuMf9iCIBu5PjMKbWyHLi39JbIGu
+         EgEGxA+tdaF69BF4iflulPViRG/+ZvTh6KdsoRNREqZeaCim28yyjkJAzjfMAGj8LHya
+         ES8eusN5bPgzm/gI339bDp0RQFZMRv/ZtaI7fxME+2xHmknpBf/IlLIZnMVEo2sqmG3Q
+         ApRcJnkjmBfVUGoSP+Odaf1YhX0gmFqrmc+TlCPePuhJQo2jcsY4gD5b2jm9DEnTLVBe
+         BgkKVLpBb1s8Kw7PiEp/mETVXnbFyFKPZZt6Uaacwai6s69qouDuLwkjzkGgMJtvvw3e
+         FFqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=opvuVJz+DjWenBUhH3u8+GxXMO3eYLaFOvpeSH8t3rI=;
-        b=tLlh3Xu+xx8KaXTT8+LJKzvdC5o5CGYwRzqaPGpoZOiD4yDRXYndq2mYWLH+omN2T6
-         UuaFzn/qvB7LHVVFNp/mBsFBJhefjeWWs6dfyZEp6cJO616t23konIDawxBWmLLdwzH9
-         p/8vIsPGOXPCq+FvlLmsa+7Xj3QdmfbgdYm1La1W63E9UQqeWZD3ukjiSyvHWzjMchEx
-         70Mh/RotRLop01kfu0N2VdkWEIEBolqeXY1kpJ18KmUaLf4QKkgF/U0xMwf3LInz24uX
-         S+DCxdj4CAC92ty6xlvzZsFao5/Gei85JXY77z5kidQ18EMpDzEJ5CPeGvvhE1SM7+tr
-         5A8Q==
-X-Gm-Message-State: AOAM531qH/X2WNhl+MbrIwQs0kIXP83NWpQyJ3TQXIRnyl6V5OKFx37d
-        vPEN5ing4mPfWA17BQvgRdkJMuBF5wsaYXAa5NI=
-X-Google-Smtp-Source: ABdhPJwG2z/kgTOIW56/u4FnkLAf2Uj1VdFTSdZ0vOIE+ED2NH5Pr+FiDYVpSI+6dA3aQflux3/8+wKuH6U2oJR0tlc=
-X-Received: by 2002:a05:600c:290:: with SMTP id 16mr5331440wmk.162.1623436625993;
- Fri, 11 Jun 2021 11:37:05 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ks2AqW9cDJsFT7c7uP3+IJTIHt4mIVoxcBhjJ2KbT6I=;
+        b=D3QjPPrwI0GbV2b0OMxw4XgWTBJiyGiXcK6KjyL0v/YVNaVBncV4BlQk8upaGRMIIz
+         +9fHUl5/f0HEKmfGGNuSa3olyNKa3jtzVyQflgzy04sXD4EmLtKyLlOsbzBO8WCcz589
+         CezwvTZP3V1h9MS2qm9KO0bnTGWc9axMFiLZsP6yKEgNSr6idTYtp0OKWD/+LeYndfEf
+         Wm0TxZmP3l4rpHu9Xqcfu8JLmCxP93sYLpkas4IKYlAKuaaHIFMrKPKFLfkokw83Th9B
+         mCSlxLQORKTPvcjP1LVx1Udav253kD7Xn0utgv0mIgfMU9RmtPc6/pFVuu1pYnmPdu2W
+         6TUw==
+X-Gm-Message-State: AOAM533BYJVsRNfcKPBGKND6CE+9wie7dRSOQwBx4XTLER63zv2I8TJF
+        KEn8oKCZiUvxGvT36C7vIU8=
+X-Google-Smtp-Source: ABdhPJzweqY6YbUF1Q5duWsvMgTHsOjDM0sYYZs5CoOKCvx3pSBzKaLydwMK2vsUMk5dlbl2oijf/A==
+X-Received: by 2002:a17:90b:152:: with SMTP id em18mr5820732pjb.96.1623437120301;
+        Fri, 11 Jun 2021 11:45:20 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e168])
+        by smtp.gmail.com with ESMTPSA id t143sm6804025pgb.93.2021.06.11.11.45.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Jun 2021 11:45:19 -0700 (PDT)
+Date:   Fri, 11 Jun 2021 11:45:16 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Introduce bpf_timer
+Message-ID: <20210611184516.tpjvlaxjc4zdeqe6@ast-mbp.dhcp.thefacebook.com>
+References: <20210611042442.65444-1-alexei.starovoitov@gmail.com>
+ <20210611042442.65444-2-alexei.starovoitov@gmail.com>
+ <CAM_iQpW=a_ukO574qtZ6m4rqo2FrQifoGC1jcrd7yWK=6WWg1w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210611160529.88936-1-lijunp213@gmail.com> <e53a2d46-fd6d-d0cc-8b78-205c5bd6784b@pensando.io>
-In-Reply-To: <e53a2d46-fd6d-d0cc-8b78-205c5bd6784b@pensando.io>
-From:   Lijun Pan <lijunp213@gmail.com>
-Date:   Fri, 11 Jun 2021 13:36:55 -0500
-Message-ID: <CAOhMmr4Kumw7XCUG1RaN9U+nYR_a6NcY6Z28FnhswV2+ceQuhw@mail.gmail.com>
-Subject: Re: [PATCH net-next] ibmvnic: fix kernel build warning in strncpy
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpW=a_ukO574qtZ6m4rqo2FrQifoGC1jcrd7yWK=6WWg1w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 11:28 AM Shannon Nelson <snelson@pensando.io> wrote=
-:
->
-> On 6/11/21 9:05 AM, Lijun Pan wrote:
-> > drivers/net/ethernet/ibm/ibmvnic.c: In function =E2=80=98handle_vpd_rsp=
-=E2=80=99:
-> > drivers/net/ethernet/ibm/ibmvnic.c:4393:3: warning: =E2=80=98strncpy=E2=
-=80=99 output truncated before terminating nul copying 3 bytes from a strin=
-g of the same length [-Wstringop-truncation]
-> >   4393 |   strncpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char)=
-);
-> >        |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
-~
+On Thu, Jun 10, 2021 at 11:42:24PM -0700, Cong Wang wrote:
+> On Thu, Jun 10, 2021 at 9:27 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
 > >
-> > Signed-off-by: Lijun Pan <lijunp213@gmail.com>
-> > ---
-> >   drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/=
-ibm/ibmvnic.c
-> > index 497f1a7da70b..2675b2301ed7 100644
-> > --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> > +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> > @@ -4390,7 +4390,7 @@ static void handle_vpd_rsp(union ibmvnic_crq *crq=
-,
-> >
-> >   complete:
-> >       if (adapter->fw_version[0] =3D=3D '\0')
-> > -             strncpy((char *)adapter->fw_version, "N/A", 3 * sizeof(ch=
-ar));
-> > +             memcpy((char *)adapter->fw_version, "N/A", 3 * sizeof(cha=
-r));
-> >       complete(&adapter->fw_done);
-> >   }
-> >
->
-> This doesn't fix the real problem.  The error message is saying that
-> there is no string terminating '\0' byte getting set after the "N/A"
-> string, meaning that there could be garbage in the buffer after the
-> string that could allow for surprising and bad things to happen when
-> that string is used later, including buffer overruns that can cause
-> stack smash or other memory munging.
->
-> Better would be to use strlcpy() with a limiter of
-> sizeof(adapter->fw_version).
->
-> sln
+> > From: Alexei Starovoitov <ast@kernel.org>
 
-Thanks for the tip. I looked up both strscpy and strlcpy. It seems nowadays
-strscpy is preferred.
+Please stick to one email thread in the future, ok?
+
+I'll consolidate them here:
+
+> What is your use case to justify your own code? Asking because
+> you deny mine, so clearly my use case is not yours.
+
+I mentioned several use cases in the prior threads.
+tldr: any periodic event in tracing, networking, security.
+Garbage collection falls into this category as well, but please internalize
+that implementing conntrack as it is today in the kernel is an explicit non-goal.
+
+> And more importantly, why not just use BPF_TEST_RUN with
+> a user-space timer? Asking because you offer no API to read or
+> modify timer expiration, so literally the same with BPF_TEST_RUN
+> approach.
+
+a wrapper on top of hrtimer_get_remaining() like bpf_timer_get_remaining()
+is trivial to add, but what is the use case?
+
+> >
+> > Introduce 'struct bpf_timer { __u64 :64; __u64 :64; };' that can be embedded
+> > in hash/array/lru maps as regular field and helpers to operate on it:
+> 
+> Can be or has to be? Huge difference here.
+
+map elements don't have to use timers.
+
+> In the other thread, you said it is global data, which implies that it does
+> not have to be in a map.
+
+global data is a map. That was explained in the prior thread as well.
+
+> 
+> In your test case or your example, all timers are still in a map. So what has
+> changed since then? Looks nothing to me.
+
+look again?
+
+> Hmm, finally you begin refcounting it, which you were strongly against. ;)
+
+That was already answered in the prior thread.
+tldr: there were two options. This is one of them. Another can be added
+in the future as well.
+
+> Three questions:
+> 
+> 1. Can t->prog be freed between bpf_timer_init() and bpf_timer_start()?
+
+yes.
+
+> If the timer subprog is always in the same prog which installs it, then
+
+installs it? I'm not following the quesiton.
+
+> this is fine. But then how do multiple programs share a timer? 
+
+there is only one callback function.
+
+> In the
+> case of conntrack, either ingress or egress could install the timer,
+> it only depends which one gets traffic first. Do they have to copy
+> the same subprog for the same timer?
+
+conntrack is an explicit non-goal.
+
+> 
+> 2. Can t->prog be freed between a timer expiration and bpf_timer_start()
+> again? 
+
+If it's already armed with the first bpf_timer_start() it won't be freed.
+
+> It gets a refcnt when starting a timer and puts it when cancelling
+> or expired, so t->prog can be freed right after cancelling or expired. What
+> if another program which shares this timer wants to restart this timer?
+
+There is only one callback_fn per timer. Another program can share
+the struct bpf_timer and the map. It might have subprog callback_fn code
+that looks exactly the same as callback_fn in the first prog.
+For example when libbpf loads progs/timer.c (after it was compiled into .o)
+it might share a subprog in the future (when kernel has support for
+dynamic linking). From bpf user pov it's a single .c file.
+The split into programs and subprograms is an implemenation detail
+that C programmer doesn't need to worry about.
+
+> 3. Since you offer no API to read the expiration time, why not just use
+> BPF_TEST_RUN with a user-space timer? This is preferred by Andrii.
+
+Andrii point was that there should be no syscall cmds that replicate
+bpf_timer_init/start/cancel helpers. I agree with this.
+
+
+> Thanks.
+>
+> Another unpopular point of view:
+>
+> This init() is not suitable for bpf programs, because unlike kernel modules,
+> there is no init or exit functions for a bpf program. And timer init
+> is typically
+> called during module init.
+
+Already answerd this in the prior thread. There will be __init and __fini like
+subprograms in bpf progs.
+
+Please apply the patches to your local tree and do few experiments based
+on selftests/bpf/progs/timer.c. I think experimenting with the code
+will answer all of your questions.
