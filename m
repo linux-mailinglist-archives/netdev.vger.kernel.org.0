@@ -2,113 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D80B73A3EE5
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 11:16:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C073A3EF3
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 11:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231497AbhFKJS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 05:18:26 -0400
-Received: from mail-wr1-f43.google.com ([209.85.221.43]:44015 "EHLO
-        mail-wr1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbhFKJSU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 05:18:20 -0400
-Received: by mail-wr1-f43.google.com with SMTP id r9so5239786wrz.10
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 02:16:06 -0700 (PDT)
+        id S231607AbhFKJTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 05:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231366AbhFKJTs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 05:19:48 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BC5C061574;
+        Fri, 11 Jun 2021 02:17:36 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id og14so3538292ejc.5;
+        Fri, 11 Jun 2021 02:17:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=K8F10TRyleI4UPtq6CmbqILrYPwMwqooKyNnGn2buJw=;
-        b=M05MxjZX6m1dTN5keWfOdaJ3t9eB3Suqc7AOitI2q+OPpRaLHyHP1sCeS70qYzxIPm
-         62wU1zkFsMnxfm+OLnUw37P/WmKUimpE6h0CDgqJUfOTuptkG8gkp4PwjzTHXD5cBq+4
-         S3E+AoKCg6IdgkacN/GsmO9Aeg2GvPhhTrvo5R57r6Z8F5B90Q7bhQLTnNVDQds5Dwnz
-         CYfRg/JjuiNGZ4v1p4I3WiY4HQ/+JVvFeOf8jANLdTTLQZx2kdR8nKTDvYmqX/GIa6Py
-         UfdoxIK3rTUjC4Iw29eWTOngMLHJh1QbqJRueh14mH9WidLTiO53xzSHm5aBS5+Ec0k6
-         lTrg==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tT/Yhme4HpUxJW8MmdpDHTWwIDpMbpzEcGbpZ+AnSGE=;
+        b=oqrGz3C4XTzBWyPPlCOe7wKQomXhQCEyJTjuBZuI5ImLQ3TJD4Vh/LWqTMpeJ9iQXm
+         4z++kNx0JE0vNMMXFfs6ozDm+zULaVpgIlZlb4zwvkrSeoIGtSiM1DYZu4PWz2Cr0wSm
+         iB7LMHcATjL+sRL/4cnQVBXvLnnnyyPCjZBojIRZ4/tqldOsJaae+EZtMYIoOu7ddbtC
+         +uiWcGCT0p5NbuBNhAQ+HsCUWyqmStS2JTVxA0h7pkXH331RNXNmjCwyTrLdsaHCeEmE
+         lj8BMQw5Y4VBsEnDXusm65/nFHwQgwQhuvhtfPfkbZd6xMr+xTsqkhyTZn/G6m3Fxso4
+         CxDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=K8F10TRyleI4UPtq6CmbqILrYPwMwqooKyNnGn2buJw=;
-        b=qvt0JopSdZnOrU1cb9kWydZCxBAkGlf2I0PbIitSPtyHIjnfLnO5KvB8lbVAgmb5S5
-         uU3V46WUbSai9ph41+Lkiy+UkIKv+M96QguFC6GFUR7f+dEovHmWxmT/t9Jefsp+Wcz8
-         lguf0wd/lnAW8eIyP/DheEcQS26TrJc+1px8tP1bCD5nKmD9x8QV1fEtufs3ta2WhPeB
-         VrcIPNzv1LTshJBwcX6iU5VpNiFOdHMfHubt8Ac3IoTJwhgwa2t23tzWB2GQBjP82Aga
-         uDy90GOYsNOajsbFbLGdEkXb5R9T4DKNTWxgX4mAETSLejMiLus9yTRXGT5B4uctqR0t
-         FFCA==
-X-Gm-Message-State: AOAM531FxVKv7OrPb8rtKnWRbrfHaoaokrDeCZH0gBNgsfAxuUzhfl7I
-        p+uleWo5oNiSbkgiJBJS7A883e9P/Ds=
-X-Google-Smtp-Source: ABdhPJx+lIlMhfC9qgvUPp/rVIci3MgdiTxy0tJLLzqZnkRQ7eOv01EKvHFpbeutJpHVuP1bDlsJRQ==
-X-Received: by 2002:a5d:4538:: with SMTP id j24mr2872452wra.391.1623402906253;
-        Fri, 11 Jun 2021 02:15:06 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:3800:6d14:9c4d:7f29:fc0d? (p200300ea8f2938006d149c4d7f29fc0d.dip0.t-ipconnect.de. [2003:ea:8f29:3800:6d14:9c4d:7f29:fc0d])
-        by smtp.googlemail.com with ESMTPSA id n18sm6016562wmq.41.2021.06.11.02.15.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Jun 2021 02:15:05 -0700 (PDT)
-To:     Koba Ko <koba.ko@canonical.com>,
-        Kai Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <7060a8ba-720f-904f-a6c6-c873559d8dbe@gmail.com>
- <CAJB-X+WXVcd21eoT_usuVASa8D34Vkrbt5q7dcHSyE1T-vZD8A@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next] r8169: avoid link-up interrupt issue on RTL8106e
- if user enables ASPM
-Message-ID: <d7358ff5-d037-b539-f373-d28fc402cff4@gmail.com>
-Date:   Fri, 11 Jun 2021 11:14:56 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tT/Yhme4HpUxJW8MmdpDHTWwIDpMbpzEcGbpZ+AnSGE=;
+        b=csIJG5+u+NjhwHCJORE3kdP+ouvIUvcWomY58m2agGnAbltOWIf22NZaQiImy8Kfgz
+         hdHsCLVUMCtbiheE2hjG5DXp+iENnWzmqORmPBAVJlnl+LuDk9gMt19C0uycI8LJ22rV
+         UqBn/id2vC4i+c/kD/C1uZzIhZV5zkqlnB2TZA9a4clKBtU4s00IvCoAEIdL1gBKbTDj
+         pUVDiapEuNkHbJAnJe1qwtX0D3plpXo/1FOdCMBQsIr7Yc/V42Ue6WRblLGhlRQJZ5lj
+         S/W0af7QEBBSOf7Uzz6Ov8gNk6vlH7A8HWazUkwvPJ+QrKDpOfjmrf2nzDCaU+CND1CD
+         v+Yw==
+X-Gm-Message-State: AOAM533pU/YELcdlJH/adjp8UPqU1dn7+w3fRUBAcn7sJu5PTxDttXJT
+        Bte6TyHLXImmHIPUJS7LbqE=
+X-Google-Smtp-Source: ABdhPJxL1EBhK72LCCLBXOmmSrmvpfplT+xDm4HCNYeQEmXEWq0ih+Xhk9nUoE0D3oE45Uf22v7chQ==
+X-Received: by 2002:a17:906:c010:: with SMTP id e16mr2793715ejz.214.1623403055047;
+        Fri, 11 Jun 2021 02:17:35 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id dy19sm2337908edb.68.2021.06.11.02.17.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Jun 2021 02:17:34 -0700 (PDT)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
+Date:   Fri, 11 Jun 2021 12:17:32 +0300
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Ioana Ciornei <ciorneiioana@gmail.com>,
+        Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Calvin Johnson <calvin.johnson@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux.cj" <linux.cj@gmail.com>, netdev <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Len Brown <lenb@kernel.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next v8 00/15] ACPI support for dpaa2 driver
+Message-ID: <20210611091732.wms3g3mnghvmcw3n@skbuf>
+References: <20210610163917.4138412-1-ciorneiioana@gmail.com>
+ <CAHp75VfeyWYKRYuufd8CkCwjCWPRssuQVNfCSknnJWB9HvUcMA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJB-X+WXVcd21eoT_usuVASa8D34Vkrbt5q7dcHSyE1T-vZD8A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75VfeyWYKRYuufd8CkCwjCWPRssuQVNfCSknnJWB9HvUcMA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11.06.2021 10:04, Koba Ko wrote:
-> On Fri, Jun 11, 2021 at 4:57 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>
->> It has been reported that on RTL8106e the link-up interrupt may be
->> significantly delayed if the user enables ASPM L1. Per default ASPM
->> is disabled. The change leaves L1 enabled on the PCIe link (thus still
->> allowing to reach higher package power saving states), but the
->> NIC won't actively trigger it.
->>
->> Reported-by: Koba Ko <koba.ko@canonical.com>
->> Tested-by: Koba Ko <koba.ko@canonical.com>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/ethernet/realtek/r8169_main.c | 1 -
->>  1 file changed, 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
->> index 64f94a3fe..6a9fe9f7e 100644
->> --- a/drivers/net/ethernet/realtek/r8169_main.c
->> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->> @@ -3508,7 +3508,6 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
->>         rtl_eri_write(tp, 0x1b0, ERIAR_MASK_0011, 0x0000);
->>
->>         rtl_pcie_state_l2l3_disable(tp);
->> -       rtl_hw_aspm_clkreq_enable(tp, true);
->>  }
+On Fri, Jun 11, 2021 at 12:00:02PM +0300, Andy Shevchenko wrote:
+> On Thu, Jun 10, 2021 at 7:40 PM Ioana Ciornei <ciorneiioana@gmail.com> wrote:
+> >
+> > From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> >
+> > This patch set provides ACPI support to DPAA2 network drivers.
+> >
+> > It also introduces new fwnode based APIs to support phylink and phy
+> > layers
+> >     Following functions are defined:
+> >       phylink_fwnode_phy_connect()
+> >       fwnode_mdiobus_register_phy()
+> >       fwnode_get_phy_id()
+> >       fwnode_phy_find_device()
+> >       device_phy_find_device()
+> >       fwnode_get_phy_node()
+> >       fwnode_mdio_find_device()
+> >       acpi_get_local_address()
+> >
+> >     First one helps in connecting phy to phylink instance.
+> >     Next three helps in getting phy_id and registering phy to mdiobus
+> >     Next two help in finding a phy on a mdiobus.
+> >     Next one helps in getting phy_node from a fwnode.
+> >     Last one is used to get local address from _ADR object.
+> >
+> >     Corresponding OF functions are refactored.
 > 
-> As per 0866cd15029b, this also affects the intel soc idle state.
-> Even the result is positive currently, I think this modification would
-> have higher risk.
+> In general it looks fine to me. What really worries me is the calls like
 > 
-At the time of 0866cd15029b ASPM was enabled in r8169. Interesting that
-after 0866cd15029b nobody reported the link-up issue you're facing.
-A few months later (with b75bb8a5b755) we had to disable ASPM again
-because of several problem reports. Since then 0866cd15029b has no
-practical relevance in mainline.
+> of_foo -> fwnode_bar -> of_baz.
+> 
+> As I have commented in one patch the idea of fwnode APIs is to have a
+> common ground for all resource providers. So, at the end it shouldn't
+> be a chain of calls like above mentioned. Either fix the name (so, the
+> first one will be in fwnode or device namespace) or fix the API that
+> it will be fwnode/device API.
 
->>
->>  DECLARE_RTL_COND(rtl_mac_ocp_e00e_cond)
->> --
->> 2.32.0
->>
 
+These types of cyclic calls do not exist anymore.
+The fwnode_mdio does not call back into of_mdio but instead it directly
+implements any necessary operations using the fwnode_handle.
+
+The only calls happening are 'of_mdio -> fwnode_mdio' so that we
+leverage the common fwnode handling and do not duplicate code.
+
+Ioana
