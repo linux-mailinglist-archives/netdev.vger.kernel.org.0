@@ -2,88 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79C883A39F9
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 04:54:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77EC73A3A05
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbhFKC4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 22:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230236AbhFKC4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 22:56:45 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194A7C061574
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 19:54:48 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id q5-20020a9d66450000b02903f18d65089fso1757791otm.11
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 19:54:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=DINKFOqOMhxxSvYAQRZTNA7fBlEmiuST1PHK60SsnSg=;
-        b=oCXZL/gaa9F4fKQDVopQ1sJgDPYR0URxfq7ygPAp2IjBOszlgnK9sq/GuQoV2kwVBY
-         BJIsvdoWjkDAs9FJpvW4GLmHsoyFETq9eiKwn1ari0fHSZQWB39YWlETpsoAKf58XOwE
-         fOzbLanzJF7ySbjd2bm65odG3TIU/DPjq37KXsc+nJgkT1agofpg8q6NNo6MjgYnNUqZ
-         wuE32j4bjEubYd6m8oKlZZnfn4yE5IxIIKVcFP6TUdUYYbrdW+S0DPQL0lMeyVlWGVUY
-         2d4eRfNpNOd6M3q7X/X8YewfMLnAMPReH5d5UYSLRoAz/ZJH9tIX7WrVWIjhNNKl9aiq
-         I24Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DINKFOqOMhxxSvYAQRZTNA7fBlEmiuST1PHK60SsnSg=;
-        b=Ut+Lcq1r+hbPlU7iWLob1E8Gjmc5AaaLoIKLg5OalsrnPOMinfsZtT0v9mnOWfHuNl
-         6tC6cah9x3ZjRNMyxlBnVRsXuiDaORU6JwkVwm1SWAM9bFVuEM7AMAGKBdFs/1s7TX8T
-         iyHM+p/FgqNpTt4HuRT3+x/7hx/STjVob+UckeysY7IpRyAEZu5Sr3jKvpo5sWJRgS1Z
-         PuYQp0XVBZMgQBPdHUh5UBgGHoV2p3EgnGxpTCegBI6gl9FewzRMWoBArI7bYgkZKuYk
-         70j4EAgyJMSpkpk8V0f/Sacz7HchVIRw25FC8q4zAyzekwtv5BPMCSZV6aSbQ8NYMFuX
-         FPzQ==
-X-Gm-Message-State: AOAM530366jVZ4SDzWjiPLxsecQ1AuiSDGWDAnFxA1nc7++a/H0XAzqd
-        Wo3NxNoHk6bf/Mpx5TlGsvDHZnVyCII=
-X-Google-Smtp-Source: ABdhPJxjiJ0+viBqQ3t1i9e0c+YoE71ojhp6DFZbI8mbRP0QJ3AAMPAbAWHN4PCUYkCds38zuvMGIw==
-X-Received: by 2002:a05:6830:154b:: with SMTP id l11mr1175522otp.66.1623380087306;
-        Thu, 10 Jun 2021 19:54:47 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id 102sm1017120otf.37.2021.06.10.19.54.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 19:54:46 -0700 (PDT)
-Subject: Re: [PATCH iproute2] uapi: add missing virtio related headers
-To:     Parav Pandit <parav@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20210423174011.11309-1-stephen@networkplumber.org>
- <DM8PR12MB5480D92EE39584EDCFF2ECFBDC369@DM8PR12MB5480.namprd12.prod.outlook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <41c8cf83-6b7d-1d55-fd88-5b84732f9d70@gmail.com>
-Date:   Thu, 10 Jun 2021 20:54:45 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        id S230514AbhFKDCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 23:02:45 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:55624 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230001AbhFKDCm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 23:02:42 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 15B2xgZD025772;
+        Fri, 11 Jun 2021 04:59:42 +0200
+Date:   Fri, 11 Jun 2021 04:59:42 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+        David Hildenbrand <david@redhat.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
+        "Theodore Ts'o" <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
+        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
+Message-ID: <20210611025942.GE25638@1wt.eu>
+References: <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
+ <YK+esqGjKaPb+b/Q@kroah.com>
+ <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
+ <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
+ <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
+ <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
+ <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
+ <20210610152633.7e4a7304@oasis.local.home>
+ <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
+ <87tum5uyrq.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <DM8PR12MB5480D92EE39584EDCFF2ECFBDC369@DM8PR12MB5480.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87tum5uyrq.fsf@toke.dk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/8/21 11:15 PM, Parav Pandit wrote:
-> Hi Stephen,
+On Fri, Jun 11, 2021 at 12:43:05AM +0200, Toke Høiland-Jørgensen wrote:
+> Shuah Khan <skhan@linuxfoundation.org> writes:
+> > I have a
+> > couple of ideas on how we might be able to improve remote experience
+> > without restricting in-person experience.
+> >
+> > - Have one or two moderators per session to watch chat and Q&A to enable
+> >    remote participants to chime in and participate.
+> > - Moderators can make sure remote participation doesn't go unnoticed and
+> >    enable taking turns for remote vs. people participating in person.
+> >
+> > It will be change in the way we interact in all in-person sessions for
+> > sure, however it might enhance the experience for remote attendees.
 > 
-> vdpa headers were present in commit c2ecc82b9d4c at [1].
-> 
-> I added them at [1] after David's recommendation in [2].
-> 
-> Should we remove [1]?
-> Did you face compilation problem without this fix?
-> 
-> [1] ./vdpa/include/uapi/linux/vdpa.h
-> [2] https://lore.kernel.org/netdev/abc71731-012e-eaa4-0274-5347fc99c249@gmail.com/
-> 
-> Parav
+> This is basically how IETF meetings function: At the beginning of every
+> session, a volunteer "jabber scribe" is selected to watch the chat and
+> relay any questions to a microphone in the room. And the video streaming
+> platform has a "virtual queue" that remove participants can enter and
+> the session chairs are then responsible for giving people a chance to
+> speak. Works reasonably well, I'd say :)
 
-Stephen: Did you hit a compile issue? vdpa goes beyond networking and
-features go through other trees AIUI so the decision was to put the uapi
-file under the vdpa command similar to what rdma is doing.
+I was about to say the same. In addition, local participants line up
+at a microphone and do not interrupt the speaker, but the organiser
+gives them the signal to ask a question. This allows to maintain a
+good balance between local and remote participants. Also it's common
+to see some locals go back to their seat because someone else just
+asked the same question. And when remote questions are asked using
+pure text, it's easy for the organiser to skip them if already
+responded as well.
 
+This method is rather efficient because it doesn't require to keep the
+questions for the end of the session, yet questions do not interrupt
+the speaker. It also solves the problem of people not speaking in the
+microphone. The only thing is that it can be quite intimidating for
+local participants who are too shy of standing up in front of a
+microphone and everyone else.
+
+Just my two cents,
+Willy
