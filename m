@@ -2,442 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EE9F3A3AD8
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 06:24:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE5433A3B1B
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 06:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230422AbhFKE0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 00:26:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbhFKE0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 00:26:49 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B605C061574;
-        Thu, 10 Jun 2021 21:24:52 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id u126so3397304pfu.13;
-        Thu, 10 Jun 2021 21:24:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sJjUN1LD4t2MZyPgPtpeB48O4s0T3Cw/JidiElHpjWU=;
-        b=OJlfsDceMkgN/nvydJBjs/gxyizCuIxYm4LI/eHJH/dbMDFQocuriPvmRxbPiDlKRJ
-         nhsuJs9AdWfr6pav0Wg8sHRXQiw4Fqfxip/OoPQRY6ispOf68bu3dubKm3g0fASqiobQ
-         8HednaEgeQ/Hxi71PwDUlx4qZjPzHR8SPgVWQXBxfV6BoZCiZeNbANnRKaYamyyftJXj
-         MKHc1ZIXnMBDOOeIiDjJGqGsIr8JH0I1+afzNfuU5qowSRqxdQ6N+4zKV7Bs8PtY0NOA
-         F/ZZ1kWVGqNSpconoyR2LFBxiKOUmpEbcD8pNfwvbDy8qUHfPr0q+F6bK1wpQ+Jdt4g9
-         DEtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=sJjUN1LD4t2MZyPgPtpeB48O4s0T3Cw/JidiElHpjWU=;
-        b=TkTbAcDX5RaUmA5dAo8+YAZpRCTeT7na99XvWrxHkoJbHWjVl2plkJW+eSnUDht0sU
-         2Ov/ybSrMRhxvqMbflMH63jhOVShL0jj4mGsgEXjdgNrQuQPNFHGzZOqP9sRbTJmJj28
-         opNJfXby7O/jAG3GGiAmCAR9sBdiCM3pNJuSUWcEzl8GnYAEhW4Aifm2nhgkLjHSmqRK
-         EmRNgIZ/X8QSNRkDcpswnjtftOPne25pEMf0LAMgRYvvPCN2G3zLYza37j9u6KyrLF+1
-         nJcUlVvdbe4owuwKwLJQzyhNOX+QtGEwMzN8zM+rH2pfnVHZtQYYNY0u3bdHjtpNnyTQ
-         m5Gg==
-X-Gm-Message-State: AOAM5323ZCJumJCFTJmujkegWq/rQL2+0fwSbdZCMaGaR5HMiBN9rnJc
-        lvkhLCpm5azzxgyNKhDTyYQ=
-X-Google-Smtp-Source: ABdhPJz8fZqo5ipy+CgQ2Ui9e87HyTc2XRM5AdhJMKLDcclmSynHDTAHCMzs5pp80/Y0TEd2VqrVzQ==
-X-Received: by 2002:aa7:96fc:0:b029:2e9:e827:928f with SMTP id i28-20020aa796fc0000b02902e9e827928fmr6363633pfq.49.1623385491493;
-        Thu, 10 Jun 2021 21:24:51 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:7360])
-        by smtp.gmail.com with ESMTPSA id p11sm3942234pgn.65.2021.06.10.21.24.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Jun 2021 21:24:50 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v2 bpf-next 3/3] selftests/bpf: Add bpf_timer test.
-Date:   Thu, 10 Jun 2021 21:24:42 -0700
-Message-Id: <20210611042442.65444-4-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
-In-Reply-To: <20210611042442.65444-1-alexei.starovoitov@gmail.com>
-References: <20210611042442.65444-1-alexei.starovoitov@gmail.com>
+        id S230322AbhFKEmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 00:42:03 -0400
+Received: from mail-m975.mail.163.com ([123.126.97.5]:44402 "EHLO
+        mail-m975.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229562AbhFKEmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 00:42:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=JK59B
+        nQzsQzGiQN6t1hIY6FUxl4BZr02ov496yuGuzc=; b=dr5sjJ2HLI5Tv3Z02oIiY
+        /YM1sw5AgLpHY1UrkqK/NAyXQjbNCIyQV/VYKM9P39V/3tA79qcbctkDqf073GQ0
+        jSTS5FZ/4TE0a9gWpo5ZktPE2cGIqFxmb2I2CQ51NGa19mT9Fl6KuwKoollWSTLe
+        /6OaDf81sNnaIJeZrKRI60=
+Received: from ubuntu.localdomain (unknown [103.220.76.197])
+        by smtp5 (Coremail) with SMTP id HdxpCgDHuOYI6cJguurtHQ--.954S2;
+        Fri, 11 Jun 2021 12:39:38 +0800 (CST)
+From:   13145886936@163.com
+To:     robin@protonic.nl, linux@rempel-privat.de, kernel@pengutronix.de,
+        socketcan@hartkopp.net, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
+Subject: [PATCH net-next] can: j1939: socket: correct a grammatical error
+Date:   Fri, 11 Jun 2021 12:39:33 +0800
+Message-Id: <20210611043933.17047-1-13145886936@163.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HdxpCgDHuOYI6cJguurtHQ--.954S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Xr4Dtr4DAF1fXw1UZFyDGFg_yoW3GFg_Zr
+        n3Ar18X3yUXr1S9a15uwsrXryxt3WUWr18Zwn8tFy5K34xArW8Kwn8ua13Gry5KrWSvrya
+        vwnYy3s8trWIqjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8OBMtUUUUU==
+X-Originating-IP: [103.220.76.197]
+X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/1tbiXAuug1Xlz7STBQAAsn
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+From: gushengxian <gushengxian@yulong.com>
 
-Add bpf_timer test that creates timers in preallocated and
-non-preallocated hash, in array and in lru maps.
-Let array timer expire once and then re-arm it for 35 seconds.
-Arm lru timer into the same callback.
-Then arm and re-arm hash timers 10 times each.
-At the last invocation of prealloc hash timer cancel the array timer.
-Force timer free via LRU eviction and direct bpf_map_delete_elem.
+Correct a grammatical error.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: gushengxian <gushengxian@yulong.com>
 ---
- .../testing/selftests/bpf/prog_tests/timer.c  |  55 ++++
- tools/testing/selftests/bpf/progs/timer.c     | 293 ++++++++++++++++++
- 2 files changed, 348 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/timer.c
- create mode 100644 tools/testing/selftests/bpf/progs/timer.c
+ net/can/j1939/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/timer.c b/tools/testing/selftests/bpf/prog_tests/timer.c
-new file mode 100644
-index 000000000000..25f40e1b9967
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/timer.c
-@@ -0,0 +1,55 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <test_progs.h>
-+#include "timer.skel.h"
-+
-+static int timer(struct timer *timer_skel)
-+{
-+	int err, prog_fd;
-+	__u32 duration = 0, retval;
-+
-+	err = timer__attach(timer_skel);
-+	if (!ASSERT_OK(err, "timer_attach"))
-+		return err;
-+
-+	ASSERT_EQ(timer_skel->data->callback_check, 52, "callback_check1");
-+	ASSERT_EQ(timer_skel->data->callback2_check, 52, "callback2_check1");
-+
-+	prog_fd = bpf_program__fd(timer_skel->progs.test1);
-+	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-+				NULL, NULL, &retval, &duration);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(retval, 0, "test_run");
-+	timer__detach(timer_skel);
-+
-+	usleep(50); /* 10 usecs should be enough, but give it extra */
-+	/* check that timer_cb1() was executed 10+10 times */
-+	ASSERT_EQ(timer_skel->data->callback_check, 42, "callback_check2");
-+	ASSERT_EQ(timer_skel->data->callback2_check, 42, "callback2_check2");
-+
-+	/* check that timer_cb2() was executed twice */
-+	ASSERT_EQ(timer_skel->bss->bss_data, 10, "bss_data");
-+
-+	/* check that there were no errors in timer execution */
-+	ASSERT_EQ(timer_skel->bss->err, 0, "err");
-+
-+	/* check that code paths completed */
-+	ASSERT_EQ(timer_skel->bss->ok, 1 | 2 | 4, "ok");
-+
-+	return 0;
-+}
-+
-+void test_timer(void)
-+{
-+	struct timer *timer_skel = NULL;
-+	int err;
-+
-+	timer_skel = timer__open_and_load();
-+	if (!ASSERT_OK_PTR(timer_skel, "timer_skel_load"))
-+		goto cleanup;
-+
-+	err = timer(timer_skel);
-+	ASSERT_OK(err, "timer");
-+cleanup:
-+	timer__destroy(timer_skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/timer.c b/tools/testing/selftests/bpf/progs/timer.c
-new file mode 100644
-index 000000000000..665e13b2fa64
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/timer.c
-@@ -0,0 +1,293 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <linux/bpf.h>
-+#include <time.h>
-+#include <errno.h>
-+#include <bpf/bpf_helpers.h>
-+#include "bpf_tcp_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+struct hmap_elem {
-+	int counter;
-+	struct bpf_timer timer;
-+	struct bpf_spin_lock lock; /* unused */
-+};
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 1000);
-+	__type(key, int);
-+	__type(value, struct hmap_elem);
-+} hmap SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(map_flags, BPF_F_NO_PREALLOC);
-+	__uint(max_entries, 1000);
-+	__type(key, int);
-+	__type(value, struct hmap_elem);
-+} hmap_malloc SEC(".maps");
-+
-+struct elem {
-+	struct bpf_timer t;
-+};
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 2);
-+	__type(key, int);
-+	__type(value, struct elem);
-+} array SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_LRU_HASH);
-+	__uint(max_entries, 4);
-+	__type(key, int);
-+	__type(value, struct elem);
-+} lru SEC(".maps");
-+
-+__u64 bss_data;
-+__u64 err;
-+__u64 ok;
-+__u64 callback_check = 52;
-+__u64 callback2_check = 52;
-+
-+#define ARRAY 1
-+#define HTAB 2
-+#define HTAB_MALLOC 3
-+#define LRU 4
-+
-+/* callback for array and lru timers */
-+static int timer_cb1(void *map, int *key, struct bpf_timer *timer)
-+{
-+	/* increment bss variable twice.
-+	 * Once via array timer callback and once via lru timer callback
-+	 */
-+	bss_data += 5;
-+
-+	/* *key == 0 - the callback was called for array timer.
-+	 * *key == 3 - the callback was called from lru timer.
-+	 */
-+	if (*key == ARRAY) {
-+		struct bpf_timer *lru_timer;
-+		int lru_key = LRU;
-+
-+		/* rearm array timer to be called again in ~35 seconds */
-+		if (bpf_timer_start(timer, 1ull << 35) != 0)
-+			err |= 1;
-+
-+		lru_timer = bpf_map_lookup_elem(&lru, &lru_key);
-+		if (!lru_timer)
-+			return 0;
-+		if (bpf_timer_start(lru_timer, 0) != 0)
-+			err |= 2;
-+	} else if (*key == LRU) {
-+		int lru_key, i;
-+
-+		for (i = LRU + 1;
-+		     i <= 100  /* for current LRU eviction algorithm this number
-+				* should be larger than ~ lru->max_entries * 2
-+				*/;
-+		     i++) {
-+			struct elem init = {};
-+
-+			/* lru_key cannot be used as loop induction variable
-+			 * otherwise the loop will be unbounded.
-+			 */
-+			lru_key = i;
-+
-+			/* add more elements into lru map to push out current
-+			 * element and force deletion of this timer
-+			 */
-+			bpf_map_update_elem(map, &lru_key, &init, 0);
-+			/* look it up to bump it into active list */
-+			bpf_map_lookup_elem(map, &lru_key);
-+
-+			/* keep adding until *key changes underneath,
-+			 * which means that key/timer memory was reused
-+			 */
-+			if (*key != LRU)
-+				break;
-+		}
-+
-+		/* check that the timer was removed */
-+		if (bpf_timer_cancel(timer) != -EINVAL)
-+			err |= 4;
-+		ok |= 1;
-+	}
-+	return 0;
-+}
-+
-+SEC("fentry/bpf_fentry_test1")
-+int BPF_PROG(test1, int a)
-+{
-+	struct bpf_timer *arr_timer, *lru_timer;
-+	struct elem init = {};
-+	int lru_key = LRU;
-+	int array_key = ARRAY;
-+
-+	arr_timer = bpf_map_lookup_elem(&array, &array_key);
-+	if (!arr_timer)
-+		return 0;
-+	bpf_timer_init(arr_timer, timer_cb1, CLOCK_MONOTONIC);
-+
-+	bpf_map_update_elem(&lru, &lru_key, &init, 0);
-+	lru_timer = bpf_map_lookup_elem(&lru, &lru_key);
-+	if (!lru_timer)
-+		return 0;
-+	bpf_timer_init(lru_timer, timer_cb1, CLOCK_MONOTONIC);
-+
-+	bpf_timer_start(arr_timer, 0 /* call timer_cb1 asap */);
-+
-+	/* init more timers to check that array destruction
-+	 * doesn't leak timer memory.
-+	 */
-+	array_key = 0;
-+	arr_timer = bpf_map_lookup_elem(&array, &array_key);
-+	if (!arr_timer)
-+		return 0;
-+	bpf_timer_init(arr_timer, timer_cb1, CLOCK_MONOTONIC);
-+	return 0;
-+}
-+
-+/* callback for prealloc and non-prealloca hashtab timers */
-+static int timer_cb2(void *map, int *key, struct hmap_elem *val)
-+{
-+	if (*key == HTAB)
-+		callback_check--;
-+	else
-+		callback2_check--;
-+	if (val->counter > 0 && --val->counter) {
-+		/* re-arm the timer again to execute after 1 usec */
-+		bpf_timer_start(&val->timer, 1000);
-+	} else if (*key == HTAB) {
-+		struct bpf_timer *arr_timer;
-+		int array_key = ARRAY;
-+
-+		/* cancel arr_timer otherwise bpf_fentry_test1 prog
-+		 * will stay alive forever.
-+		 */
-+		arr_timer = bpf_map_lookup_elem(&array, &array_key);
-+		if (!arr_timer)
-+			return 0;
-+		if (bpf_timer_cancel(arr_timer) != 1)
-+			/* bpf_timer_cancel should return 1 to indicate
-+			 * that arr_timer was active at this time
-+			 */
-+			err |= 8;
-+
-+		/* try to cancel ourself. It shouldn't deadlock. */
-+		if (bpf_timer_cancel(&val->timer) != -EDEADLK)
-+			err |= 16;
-+
-+		/* delete this key and this timer anyway.
-+		 * It shouldn't deadlock either.
-+		 */
-+		bpf_map_delete_elem(map, key);
-+
-+		/* in preallocated hashmap both 'key' and 'val' could have been
-+		 * reused to store another map element (like in LRU above),
-+		 * but in controlled test environment the below test works.
-+		 * It's not a use-after-free. The memory is owned by the map.
-+		 */
-+		if (bpf_timer_start(&val->timer, 1000) != -EINVAL)
-+			err |= 32;
-+		ok |= 2;
-+	} else {
-+		if (*key != HTAB_MALLOC)
-+			err |= 64;
-+
-+		/* try to cancel ourself. It shouldn't deadlock. */
-+		if (bpf_timer_cancel(&val->timer) != -EDEADLK)
-+			err |= 128;
-+
-+		/* delete this key and this timer anyway.
-+		 * It shouldn't deadlock either.
-+		 */
-+		bpf_map_delete_elem(map, key);
-+
-+		/* in non-preallocated hashmap both 'key' and 'val' are RCU
-+		 * protected and still valid though this element was deleted
-+		 * from the map. Arm this timer for ~35 seconds. When callback
-+		 * finishes the call_rcu will invoke:
-+		 * htab_elem_free_rcu
-+		 *   check_and_free_timer
-+		 *     bpf_timer_cancel_and_free
-+		 * to cancel this 35 second sleep and delete the timer for real.
-+		 */
-+		if (bpf_timer_start(&val->timer, 1ull << 35) != 0)
-+			err |= 256;
-+		ok |= 4;
-+	}
-+	return 0;
-+}
-+
-+int bpf_timer_test(void)
-+{
-+	struct hmap_elem *val;
-+	int key = HTAB, key_malloc = HTAB_MALLOC;
-+
-+	val = bpf_map_lookup_elem(&hmap, &key);
-+	if (val) {
-+		if (bpf_timer_init(&val->timer, timer_cb2, CLOCK_BOOTTIME) != 0)
-+			err |= 512;
-+		bpf_timer_start(&val->timer, 1000);
-+	}
-+	val = bpf_map_lookup_elem(&hmap_malloc, &key_malloc);
-+	if (val) {
-+		if (bpf_timer_init(&val->timer, timer_cb2, CLOCK_BOOTTIME) != 0)
-+			err |= 1024;
-+		bpf_timer_start(&val->timer, 1000);
-+	}
-+	return 0;
-+}
-+
-+SEC("fentry/bpf_fentry_test2")
-+int BPF_PROG(test2, int a, int b)
-+{
-+	struct hmap_elem init = {}, *val;
-+	int key = HTAB, key_malloc = HTAB_MALLOC;
-+
-+	init.counter = 10; /* number of times to trigger timer_cb1 */
-+	bpf_map_update_elem(&hmap, &key, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap, &key);
-+	if (val)
-+		bpf_timer_init(&val->timer, timer_cb2, CLOCK_BOOTTIME);
-+	/* update the same key to free the timer */
-+	bpf_map_update_elem(&hmap, &key, &init, 0);
-+
-+	bpf_map_update_elem(&hmap_malloc, &key_malloc, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap_malloc, &key_malloc);
-+	if (val)
-+		bpf_timer_init(&val->timer, timer_cb2, CLOCK_BOOTTIME);
-+	/* update the same key to free the timer */
-+	bpf_map_update_elem(&hmap_malloc, &key_malloc, &init, 0);
-+
-+	/* init more timers to check that htab operations
-+	 * don't leak timer memory.
-+	 */
-+	key = 0;
-+	bpf_map_update_elem(&hmap, &key, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap, &key);
-+	if (val)
-+		bpf_timer_init(&val->timer, timer_cb2, CLOCK_BOOTTIME);
-+	bpf_map_delete_elem(&hmap, &key);
-+	bpf_map_update_elem(&hmap, &key, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap, &key);
-+	if (val)
-+		bpf_timer_init(&val->timer, timer_cb2, CLOCK_BOOTTIME);
-+
-+	/* and with non-prealloc htab */
-+	key_malloc = 0;
-+	bpf_map_update_elem(&hmap_malloc, &key_malloc, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap_malloc, &key_malloc);
-+	if (val)
-+		bpf_timer_init(&val->timer, timer_cb2, CLOCK_BOOTTIME);
-+	bpf_map_delete_elem(&hmap_malloc, &key_malloc);
-+	bpf_map_update_elem(&hmap_malloc, &key_malloc, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap_malloc, &key_malloc);
-+	if (val)
-+		bpf_timer_init(&val->timer, timer_cb2, CLOCK_BOOTTIME);
-+
-+	return bpf_timer_test();
-+}
+diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+index 56aa66147d5a..31ec493a0fca 100644
+--- a/net/can/j1939/socket.c
++++ b/net/can/j1939/socket.c
+@@ -352,7 +352,7 @@ static void j1939_sk_sock_destruct(struct sock *sk)
+ {
+ 	struct j1939_sock *jsk = j1939_sk(sk);
+ 
+-	/* This function will be call by the generic networking code, when then
++	/* This function will be called by the generic networking code, when
+ 	 * the socket is ultimately closed (sk->sk_destruct).
+ 	 *
+ 	 * The race between
 -- 
-2.30.2
+2.25.1
 
