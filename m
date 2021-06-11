@@ -2,68 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCA5F3A3A3C
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:26:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFB03A3A43
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231451AbhFKD2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 23:28:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58056 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230479AbhFKD2G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Jun 2021 23:28:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=fSnwROAFLm7Q7uOls0Q2WAjyN5fsoEmLVk3kc7F/XUU=; b=AAjyVQMwM1w3eKz9N/56QpxQ3K
-        8aNSx2EA0iaMyJEEkNqhFfI/Dghbw4oitqdx5NpNqTgXqIP4t4Oni5iS2wEvuhjQu8rAaCmdt9wo0
-        RMlnALf2c/AqS5ye+OC1tcDbyfV23HyUnSQJq0czf1jNobwGZFKQ7qSUWdmp6SQ3DZEE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lrXo2-008mVT-06; Fri, 11 Jun 2021 05:26:02 +0200
-Date:   Fri, 11 Jun 2021 05:26:01 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev@vger.kernel.org, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, richardcochran@gmail.com,
-        vladimir.oltean@nxp.com
-Subject: Re: [PATCH v2 net-next 00/10] DSA tagging driver for NXP SJA1110
-Message-ID: <YMLXyf5g/PLSYpj7@lunn.ch>
-References: <20210610232629.1948053-1-olteanv@gmail.com>
- <20210610.165050.1024675046668459735.davem@davemloft.net>
- <20210611000915.ufp2db4qtv2vsjqb@skbuf>
+        id S231341AbhFKDcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 23:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230205AbhFKDcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 23:32:04 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48F4C061574;
+        Thu, 10 Jun 2021 20:30:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Message-ID:From:CC:To:Subject:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:
+        Date:Sender:Reply-To:Content-ID:Content-Description;
+        bh=J6yJVC8shbMIBqLlAVsvKyu6KL64sSYBjvb9KFGvJec=; b=FCYMElWUCposNo6q+a7wmUrZIP
+        u+1pzdEUjOxUs9rPgWEQN7/wANnwfEIVK0CfDRVFAwu78J/pQovtpn7lHxkCJmb8Frpe6/qzs+K3S
+        Wv7LUS6Jxgrg/RbEdUmWo2wQRlRBiVlUgq9JLblTZnIh77Plzcw2+vUUVN0Ub/XBkf/P3ZCxdh532
+        om50RFZd6YABKDuMvkL+CG6ZvftqeiAGHYIT40Rjhx03BbdU263u71C+k4zm5g/jjzqW4kRmA+csQ
+        SjXr4jh2AHHq5bIW3NQ2wH5WABMPm+XptyLjAPDLWrpM2bKc169Op9o7/uh+bL76fKX6dQY+1jWGe
+        PrdB2EFg==;
+Received: from [2603:3004:62:d400:6c3a:d576:fed:b48]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1lrXrX-005lDI-EP; Fri, 11 Jun 2021 03:29:46 +0000
+Date:   Thu, 10 Jun 2021 20:29:37 -0700
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20210611014051.13081-1-13145886936@163.com>
+References: <20210611014051.13081-1-13145886936@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210611000915.ufp2db4qtv2vsjqb@skbuf>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] can: j1939: socket: correct a grammatical error
+To:     13145886936@163.com, robin@protonic.nl, linux@rempel-privat.de,
+        kernel@pengutronix.de, socketcan@hartkopp.net, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org
+CC:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <4251D856-85E6-489A-ACAF-8D62AB539CB0@infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 03:09:15AM +0300, Vladimir Oltean wrote:
-> On Thu, Jun 10, 2021 at 04:50:50PM -0700, David Miller wrote:
-> > 
-> > Patch 9 no longer applies cleanly.
-> > 
-> > Thank you.
-> 
-> Ah, that is because I also have the "Port the SJA1105 DSA driver to XPCS"
-> patches in my tree, and they are photobombing this series. With git rebase -i
-> they apply both ways, but git rebase has more context when applying than
-> git am, so I'm not in fact surprised that it fails, now that you mention it.
-> 
-> I could probably dodge that by moving some lines of code here and there
-> so they aren't near the XPCS changes
+On June 10, 2021 6:40:51 PM PDT, 13145886936@163=2Ecom wrote:
+>From: gushengxian <gushengxian@yulong=2Ecom>
+>
+>Correct a grammatical error=2E
+>
+>Signed-off-by: gushengxian <gushengxian@yulong=2Ecom>
+>---
+> net/can/j1939/socket=2Ec | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+>diff --git a/net/can/j1939/socket=2Ec b/net/can/j1939/socket=2Ec
+>index 56aa66147d5a=2E=2E31ec493a0fca 100644
+>--- a/net/can/j1939/socket=2Ec
+>+++ b/net/can/j1939/socket=2Ec
+>@@ -352,7 +352,7 @@ static void j1939_sk_sock_destruct(struct sock *sk)
+> {
+> 	struct j1939_sock *jsk =3D j1939_sk(sk);
+>=20
+>-	/* This function will be call by the generic networking code, when
+>then
+>+	/* This function will be called by the generic networking code, when
+>then
 
-Hi Vladimir
+Please drop "then"=2E
 
-git am is very pedantic. It does not use fuzz. So just moving lines
-within the same line is unlikely to work, you need to make the changes
-in non intersecting sets of files.
+> 	 * the socket is ultimately closed (sk->sk_destruct)=2E
+> 	 *
+> 	 * The race between
 
-Your best bet is to be patient and wait for one patchset to get
-merged, and then submit the second patchset.
+Thanks=2E=20
 
-	Andrew
+
+--=20
+Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
