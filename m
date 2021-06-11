@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C9DF3A49F7
+	by mail.lfdr.de (Postfix) with ESMTP id 5A9953A49F9
 	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 22:10:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231284AbhFKUMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 16:12:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58528 "EHLO mail.kernel.org"
+        id S231319AbhFKUMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 16:12:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58542 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230299AbhFKUMC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230305AbhFKUMC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 11 Jun 2021 16:12:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3229B613DD;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4335B613DE;
         Fri, 11 Jun 2021 20:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623442204;
-        bh=WuTiQjeodNRfELT25Dm1Y4fiX/3qt6eu8otI/lMVgCg=;
+        bh=gu7bxTsifzGZ4LA+en1PGdaj0Xd8ax3gohr8WXQGvXU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=b55JqRmt7oGR5agfroZso3l9BvILmGZyV90LbgPQqApDQtI5/JnPpLEKzB3bxRTHn
-         syv3RIPBt8W5s+GzrKjfT5c+EMY4zRaKUzulvcyi2WVyO8SawDuD+uyvzVttvjkY6e
-         2cGYH2jjuw1fz75s70yJHRuz/8pAi0xkbbPHfPPy90uvNBuwNal/FcTneXpaZgGfpv
-         WJcrBQoWG/FKe9U8Pr5jSovNCeidchgaSjzGkf5giI/Woe5CRivtpC1he/8xeQn080
-         F5hD+xFaQDLeP3/vQmHNbwRJ+WnZM1aBsBlwwDOirImQzOD1D4uR1kIiq9DWKLBT6w
-         r8NLpZ7G5pHHg==
+        b=jRZWQMn4nq2BQNV/WxIrpDc5pRCPZaiWtxURhdtxregrLHtPDr5KXUoaaAle4RmZs
+         1OF+7uR+90ylsmhK7K7oHjdAvyFICi7lkhzteQrsD4AB/CiRp8XTsB/xbw/ooAbxuT
+         pKzTbZtk69JbOqNYZ/6y8SFomCYTg51DVs/4IpaMPhVQG4b2ICpeBPKNfen6ckhBg+
+         Nf/n/baHxUS2vGVnxsa7asj244kiilW57WSFi19zGdUOFY5qwdI14B2xR+SjnVxxWf
+         1Ulw1Td7xiMGXE7d5wsVBu22QhQ+uWQnLYVRu8OWtgLo9t2kmp0cGtLkfhENc626L0
+         DPxX0EbViV3cw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 23B3560972;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3189260CE4;
         Fri, 11 Jun 2021 20:10:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v1 1/1] net: stmmac: Fix unused values warnings
+Subject: Re: [PATCH net-next v2] net: usb: asix: ax88772: manage PHY PM from MAC
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162344220414.8005.8449324972783579265.git-patchwork-notify@kernel.org>
+Message-Id: <162344220419.8005.4275764665021801891.git-patchwork-notify@kernel.org>
 Date:   Fri, 11 Jun 2021 20:10:04 +0000
-References: <20210611071143.987866-1-vee.khee.wong@linux.intel.com>
-In-Reply-To: <20210611071143.987866-1-vee.khee.wong@linux.intel.com>
-To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, qiangqing.zhang@nxp.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        boon.leong.ong@intel.com, weifeng.voon@intel.com
+References: <20210611035559.13252-1-o.rempel@pengutronix.de>
+In-Reply-To: <20210611035559.13252-1-o.rempel@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        m.szyprowski@samsung.com, jonathanh@nvidia.com,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -50,19 +49,23 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 11 Jun 2021 15:11:43 +0800 you wrote:
-> The commit 8532f613bc78 ("net: stmmac: introduce MSI Interrupt routines
-> for mac, safety, RX & TX") introduced the converity warnings:-
+On Fri, 11 Jun 2021 05:55:59 +0200 you wrote:
+> Take over PHY power management, otherwise PHY framework will try to
+> access ASIX MDIO bus before MAC resume was completed.
 > 
->   1. Unused value (UNUSED_VALUE)
->      assigned_value: Assigning value REQ_IRQ_ERR_MAC to irq_err here,
->      but that stored value is not used.
+> Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Reported-by: Jon Hunter <jonathanh@nvidia.com>
+> Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Tested-by: Jon Hunter <jonathanh@nvidia.com>
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v1,1/1] net: stmmac: Fix unused values warnings
-    https://git.kernel.org/netdev/net-next/c/3e6dc7b65025
+  - [net-next,v2] net: usb: asix: ax88772: manage PHY PM from MAC
+    https://git.kernel.org/netdev/net-next/c/4a2c7217cd5a
 
 You are awesome, thank you!
 --
