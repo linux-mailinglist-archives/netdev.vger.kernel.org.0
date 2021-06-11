@@ -2,92 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77EC73A3A05
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CB903A3A14
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:05:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbhFKDCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 23:02:45 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:55624 "EHLO 1wt.eu"
+        id S230469AbhFKDHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 23:07:02 -0400
+Received: from m12-15.163.com ([220.181.12.15]:59915 "EHLO m12-15.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230001AbhFKDCm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Jun 2021 23:02:42 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 15B2xgZD025772;
-        Fri, 11 Jun 2021 04:59:42 +0200
-Date:   Fri, 11 Jun 2021 04:59:42 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
-        "Theodore Ts'o" <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-Message-ID: <20210611025942.GE25638@1wt.eu>
-References: <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
- <YK+esqGjKaPb+b/Q@kroah.com>
- <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
- <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
- <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
- <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
- <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
- <20210610152633.7e4a7304@oasis.local.home>
- <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
- <87tum5uyrq.fsf@toke.dk>
+        id S230205AbhFKDHC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 23:07:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:Message-ID:MIME-Version; bh=0Ym6k
+        /3DmPhpmY+UFOFonjPWD4GzBEfsl7y9mwmxEh4=; b=Pho3XBuvvbSLEQR0iqLrn
+        yS9VrGM/Ogb+8vKHyvyES5m4YJaBFJrgidP8QIXPhoYmEXzyYeBX1AuCT/vyZ6fq
+        w/OWXu+IBgJJ7E3+Us+aD8+ilsCCWv9WVViyL6DbABAl65+OwYctZnNOcozaToSF
+        v0sl39o3Nabifl9BKGr6UI=
+Received: from localhost (unknown [218.17.89.92])
+        by smtp11 (Coremail) with SMTP id D8CowAAXa9C00sJgL3t8AA--.2S2;
+        Fri, 11 Jun 2021 11:04:28 +0800 (CST)
+Date:   Fri, 11 Jun 2021 11:04:19 +0800
+From:   Zhongjun Tan <hbut_tan@163.com>
+To:     Alex Elder <elder@ieee.org>
+Cc:     David Miller <davem@davemloft.net>, elder@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tanzhongjun@yulong.com
+Subject: Re: [PATCH] soc: qcom: ipa: Remove superfluous error message around
+ platform_get_irq()
+Message-ID: <20210611110419.00003810.hbut_tan@163.com>
+In-Reply-To: <a3765a86-bb9e-b5f8-32a1-3c3fa939bb4e@ieee.org>
+References: <20210610140118.1437-1-hbut_tan@163.com>
+        <20210610.141142.1384244468678097702.davem@davemloft.net>
+        <a3765a86-bb9e-b5f8-32a1-3c3fa939bb4e@ieee.org>
+Organization: Yulong
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=GB18030
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87tum5uyrq.fsf@toke.dk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-CM-TRANSID: D8CowAAXa9C00sJgL3t8AA--.2S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Ww4fGr1kAw1xCr4xGw1kuFg_yoW8Ar18pr
+        s0kayayr95ta1xG3W8Ja4ruFy5ur18tFW3Kw1Yg3WruFW5Xr90qr1rtFWF9rn5ur48C3W5
+        XF4j9ws5CFyFva7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jDPE-UUUUU=
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: xkex3sxwdqqiywtou0bp/1tbiKB2uxl7WF+SVIwAAsQ
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 12:43:05AM +0200, Toke H鴌land-J鴕gensen wrote:
-> Shuah Khan <skhan@linuxfoundation.org> writes:
-> > I have a
-> > couple of ideas on how we might be able to improve remote experience
-> > without restricting in-person experience.
-> >
-> > - Have one or two moderators per session to watch chat and Q&A to enable
-> >    remote participants to chime in and participate.
-> > - Moderators can make sure remote participation doesn't go unnoticed and
-> >    enable taking turns for remote vs. people participating in person.
-> >
-> > It will be change in the way we interact in all in-person sessions for
-> > sure, however it might enhance the experience for remote attendees.
+On Thu, 10 Jun 2021 16:38:43 -0500
+Alex Elder <elder@ieee.org> wrote:
+
+> On 6/10/21 4:11 PM, David Miller wrote:
+> > From:  Zhongjun Tan <hbut_tan@163.com>
+> > Date: Thu, 10 Jun 2021 22:01:18 +0800
+> >   
+> >> diff --git a/drivers/net/ipa/ipa_smp2p.c
+> >> b/drivers/net/ipa/ipa_smp2p.c index 34b68dc43886..93270e50b6b3
+> >> 100644 --- a/drivers/net/ipa/ipa_smp2p.c
+> >> +++ b/drivers/net/ipa/ipa_smp2p.c
+> >> @@ -177,11 +177,8 @@ static int ipa_smp2p_irq_init(struct
+> >> ipa_smp2p *smp2p, const char *name, int ret;
+> >>   
+> >>   	ret = platform_get_irq_byname(smp2p->ipa->pdev, name);
+> >> -	if (ret <= 0) {
+> >> -		dev_err(dev, "DT error %d getting \"%s\" IRQ
+> >> property\n",
+> >> -			ret, name);
+> >> +	if (ret <= 0)  
+> > Applied, but this code still rejects an irq of zero which is a
+> > valid irq number.  
 > 
-> This is basically how IETF meetings function: At the beginning of every
-> session, a volunteer "jabber scribe" is selected to watch the chat and
-> relay any questions to a microphone in the room. And the video streaming
-> platform has a "virtual queue" that remove participants can enter and
-> the session chairs are then responsible for giving people a chance to
-> speak. Works reasonably well, I'd say :)
+> It rejects IRQ 0 intentionally.  And if 0 is returned, there
+> will now be no message printed by the platform code.
+> 
+> As I recall, I looked for a *long* time to see whether IRQ 0
+> was a valid IRQ number in Linux.  One reason I even questioned
+> it is that NO_IRQ is defined with value 0 on some architectures
+> (though not for Arm).  I even asked Rob Herring about privately
+> it a few years back and he suggested I shouldn't allow 0.
+> 
+> Yes, it *looked* like IRQ 0 could be a valid return.  But I
+> decided it was safer to just reject it, on the assumption
+> that it's unlikely to be returned (I don't believe it is
+> or ever will be used as the IRQ for SMP2P).
+> 
+> If you are certain it's valid, and should be allowed, I
+> have no objection to changing that "<=" to be "<".
+> 
+> 					-Alex
+> 
+> PS  A quick search found this oldie:
+>        https://yarchive.net/comp/linux/no_irq.html
 
-I was about to say the same. In addition, local participants line up
-at a microphone and do not interrupt the speaker, but the organiser
-gives them the signal to ask a question. This allows to maintain a
-good balance between local and remote participants. Also it's common
-to see some locals go back to their seat because someone else just
-asked the same question. And when remote questions are asked using
-pure text, it's easy for the organiser to skip them if already
-responded as well.
+I think so , It is better to change "<=" to be "<".
 
-This method is rather efficient because it doesn't require to keep the
-questions for the end of the session, yet questions do not interrupt
-the speaker. It also solves the problem of people not speaking in the
-microphone. The only thing is that it can be quite intimidating for
-local participants who are too shy of standing up in front of a
-microphone and everyone else.
-
-Just my two cents,
-Willy
