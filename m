@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF6D3A3A5C
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:39:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DECF3A3A65
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231552AbhFKDle (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 23:41:34 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3951 "EHLO
+        id S231648AbhFKDlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 23:41:47 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:5497 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231487AbhFKDlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 23:41:31 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G1RMv3Nx0z6x9k;
-        Fri, 11 Jun 2021 11:36:27 +0800 (CST)
+        with ESMTP id S231526AbhFKDld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 23:41:33 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G1RNC32FczZg2H;
+        Fri, 11 Jun 2021 11:36:43 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Fri, 11 Jun 2021 11:39:32 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 5/8] net: pc300too: remove redundant initialization for statics
-Date:   Fri, 11 Jun 2021 11:36:19 +0800
-Message-ID: <1623382582-37854-6-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 6/8] net: pc300too: replace comparison to NULL with "!card->plxbase"
+Date:   Fri, 11 Jun 2021 11:36:20 +0800
+Message-ID: <1623382582-37854-7-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1623382582-37854-1-git-send-email-huangguangbin2@huawei.com>
 References: <1623382582-37854-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,26 +45,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peng Li <lipeng321@huawei.com>
 
-Should not initialise statics to 0.
+According to the chackpatch.pl, comparison to NULL could
+be written "!card->plxbase".
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/wan/pc300too.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wan/pc300too.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/wan/pc300too.c b/drivers/net/wan/pc300too.c
-index 7d8eae5..56f7d96 100644
+index 56f7d96..ecce999 100644
 --- a/drivers/net/wan/pc300too.c
 +++ b/drivers/net/wan/pc300too.c
-@@ -44,7 +44,7 @@
- #define MAX_TX_BUFFERS		10
+@@ -298,7 +298,7 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
+ 	}
  
- static int pci_clock_freq = 33000000;
--static int use_crystal_clock = 0;
-+static int use_crystal_clock;
- static unsigned int CLOCK_BASE;
+ 	card = kzalloc(sizeof(card_t), GFP_KERNEL);
+-	if (card == NULL) {
++	if (!card) {
+ 		pci_release_regions(pdev);
+ 		pci_disable_device(pdev);
+ 		return -ENOBUFS;
+@@ -322,9 +322,7 @@ static int pc300_pci_init_one(struct pci_dev *pdev,
+ 	ramphys = pci_resource_start(pdev, 3) & PCI_BASE_ADDRESS_MEM_MASK;
+ 	card->rambase = pci_ioremap_bar(pdev, 3);
  
- /* Masks to access the init_ctrl PLX register */
+-	if (card->plxbase == NULL ||
+-	    card->scabase == NULL ||
+-	    card->rambase == NULL) {
++	if (!card->plxbase || !card->scabase || !card->rambase) {
+ 		pr_err("ioremap() failed\n");
+ 		pc300_pci_remove_one(pdev);
+ 		return -ENOMEM;
 -- 
 2.8.1
 
