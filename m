@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30BED3A39F3
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 04:53:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79C883A39F9
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 04:54:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230458AbhFKCzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 22:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40770 "EHLO
+        id S230507AbhFKC4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 22:56:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbhFKCzM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 22:55:12 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A5EC061574
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 19:53:01 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id s23so4362961oiw.9
-        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 19:53:01 -0700 (PDT)
+        with ESMTP id S230236AbhFKC4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 22:56:45 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194A7C061574
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 19:54:48 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id q5-20020a9d66450000b02903f18d65089fso1757791otm.11
+        for <netdev@vger.kernel.org>; Thu, 10 Jun 2021 19:54:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KApcPjkt1VOLM33a7921YejbrgANfOQNEqTW7oqDR+Q=;
-        b=HGJHlqh5jrg+bhgXZ2Ahv+Mu4mHm29URagYkXFysIzXjla7zqbMMw/ghtsEqHHp8kh
-         +kGpXZqGTPHN97vT50+BHrEDFjK5QK+wd5fdKLeXO+Mm6PkUHRGyy0w1cOROuvGax5M5
-         LaVyzwdD2j5XJA62hZes6acKNT1QKXRHdQhuy4I7jGQQIbavw4eiaW7je5RYyHLnKbsW
-         wEZIvnJSE6i15DrRn2RoeFxx1ePq8QNsLamf2Z+DLuQ8KQFyStoVxWimc/pBtyqFuRTc
-         WLzFJ1/s80aVf9cBWRd5EExs1yEEDLAyeZbyqtmwZMOgPrFlOL2TXI7gY+gwSFFiBZID
-         cDhg==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=DINKFOqOMhxxSvYAQRZTNA7fBlEmiuST1PHK60SsnSg=;
+        b=oCXZL/gaa9F4fKQDVopQ1sJgDPYR0URxfq7ygPAp2IjBOszlgnK9sq/GuQoV2kwVBY
+         BJIsvdoWjkDAs9FJpvW4GLmHsoyFETq9eiKwn1ari0fHSZQWB39YWlETpsoAKf58XOwE
+         fOzbLanzJF7ySbjd2bm65odG3TIU/DPjq37KXsc+nJgkT1agofpg8q6NNo6MjgYnNUqZ
+         wuE32j4bjEubYd6m8oKlZZnfn4yE5IxIIKVcFP6TUdUYYbrdW+S0DPQL0lMeyVlWGVUY
+         2d4eRfNpNOd6M3q7X/X8YewfMLnAMPReH5d5UYSLRoAz/ZJH9tIX7WrVWIjhNNKl9aiq
+         I24Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=KApcPjkt1VOLM33a7921YejbrgANfOQNEqTW7oqDR+Q=;
-        b=iMrjlfb2GUQgY4+bkkrUsOjZyI7IUjiayO/pmnUD//b3iJ9Xc9nc3PErmiXh51GPiR
-         ZSkijXJXoCjrBDaHeuLWp1POHvQ8I6yhziSimz52vpD+ZsK3kq6J8I8hPMguv3Up+Sr/
-         sGZ0xm/ZVJMxfukyZ6R10RDR2twVuIdUViuF3xkh6yMWe5iUGhW/nnIOnc2N2ausPC2C
-         ownoiWrdYTFy6VeuN2w2uPSfun/5aXILOxfyo9wJzvEc6SPEpWLSLhHYlmlkK24ObB8i
-         NCrp8dT/AyOEqkM8MS8xofJuGm9RfXdYtLkbAlgc1TGexqvsI3AKJYD7PT9dXzjqo7N4
-         6C9g==
-X-Gm-Message-State: AOAM5327NsUQ7t0ae53QfGVU4yd9tHsBSsf40BMwJuJjjB7orKH/djno
-        MlMLX8AkRszJfDSWChiKElM=
-X-Google-Smtp-Source: ABdhPJzgX7kiC6oDVk9rQm+1KHZ279AKMCmNLqWaPdx/q6cIw7jWMrrViYS95sLq3IJNH+uzJRwEhw==
-X-Received: by 2002:aca:4d46:: with SMTP id a67mr961507oib.52.1623379981414;
-        Thu, 10 Jun 2021 19:53:01 -0700 (PDT)
+        bh=DINKFOqOMhxxSvYAQRZTNA7fBlEmiuST1PHK60SsnSg=;
+        b=Ut+Lcq1r+hbPlU7iWLob1E8Gjmc5AaaLoIKLg5OalsrnPOMinfsZtT0v9mnOWfHuNl
+         6tC6cah9x3ZjRNMyxlBnVRsXuiDaORU6JwkVwm1SWAM9bFVuEM7AMAGKBdFs/1s7TX8T
+         iyHM+p/FgqNpTt4HuRT3+x/7hx/STjVob+UckeysY7IpRyAEZu5Sr3jKvpo5sWJRgS1Z
+         PuYQp0XVBZMgQBPdHUh5UBgGHoV2p3EgnGxpTCegBI6gl9FewzRMWoBArI7bYgkZKuYk
+         70j4EAgyJMSpkpk8V0f/Sacz7HchVIRw25FC8q4zAyzekwtv5BPMCSZV6aSbQ8NYMFuX
+         FPzQ==
+X-Gm-Message-State: AOAM530366jVZ4SDzWjiPLxsecQ1AuiSDGWDAnFxA1nc7++a/H0XAzqd
+        Wo3NxNoHk6bf/Mpx5TlGsvDHZnVyCII=
+X-Google-Smtp-Source: ABdhPJxjiJ0+viBqQ3t1i9e0c+YoE71ojhp6DFZbI8mbRP0QJ3AAMPAbAWHN4PCUYkCds38zuvMGIw==
+X-Received: by 2002:a05:6830:154b:: with SMTP id l11mr1175522otp.66.1623380087306;
+        Thu, 10 Jun 2021 19:54:47 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.22])
-        by smtp.googlemail.com with ESMTPSA id l8sm911672ooo.13.2021.06.10.19.53.00
+        by smtp.googlemail.com with ESMTPSA id 102sm1017120otf.37.2021.06.10.19.54.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Jun 2021 19:53:01 -0700 (PDT)
-Subject: Re: [PATCH RESEND iproute2 net-next 3/4] devlink: Add port func rate
- support
-To:     dlinkin@nvidia.com, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        stephen@networkplumber.org, vladbu@nvidia.com, parav@nvidia.com,
-        huyn@nvidia.com
-References: <1623151354-30930-1-git-send-email-dlinkin@nvidia.com>
- <1623151354-30930-4-git-send-email-dlinkin@nvidia.com>
+        Thu, 10 Jun 2021 19:54:46 -0700 (PDT)
+Subject: Re: [PATCH iproute2] uapi: add missing virtio related headers
+To:     Parav Pandit <parav@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20210423174011.11309-1-stephen@networkplumber.org>
+ <DM8PR12MB5480D92EE39584EDCFF2ECFBDC369@DM8PR12MB5480.namprd12.prod.outlook.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <503b179f-5831-46a3-f8f8-3271e3b796e6@gmail.com>
-Date:   Thu, 10 Jun 2021 20:52:59 -0600
+Message-ID: <41c8cf83-6b7d-1d55-fd88-5b84732f9d70@gmail.com>
+Date:   Thu, 10 Jun 2021 20:54:45 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <1623151354-30930-4-git-send-email-dlinkin@nvidia.com>
+In-Reply-To: <DM8PR12MB5480D92EE39584EDCFF2ECFBDC369@DM8PR12MB5480.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,4 +68,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This one needs to be rebased. Must be Parav's patch that created a conflict.
+On 6/8/21 11:15 PM, Parav Pandit wrote:
+> Hi Stephen,
+> 
+> vdpa headers were present in commit c2ecc82b9d4c at [1].
+> 
+> I added them at [1] after David's recommendation in [2].
+> 
+> Should we remove [1]?
+> Did you face compilation problem without this fix?
+> 
+> [1] ./vdpa/include/uapi/linux/vdpa.h
+> [2] https://lore.kernel.org/netdev/abc71731-012e-eaa4-0274-5347fc99c249@gmail.com/
+> 
+> Parav
+
+Stephen: Did you hit a compile issue? vdpa goes beyond networking and
+features go through other trees AIUI so the decision was to put the uapi
+file under the vdpa command similar to what rdma is doing.
+
