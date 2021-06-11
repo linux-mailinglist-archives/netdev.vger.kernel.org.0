@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50FF83A49DF
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 22:06:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF1873A49D0
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 22:05:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231157AbhFKUIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 16:08:53 -0400
-Received: from mail-ej1-f46.google.com ([209.85.218.46]:43609 "EHLO
-        mail-ej1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbhFKUIw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 16:08:52 -0400
-Received: by mail-ej1-f46.google.com with SMTP id ci15so6224038ejc.10
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 13:06:54 -0700 (PDT)
+        id S230190AbhFKUHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 16:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229572AbhFKUHz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 16:07:55 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2017C0613A2
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 13:05:56 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id ho18so6234424ejc.8
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 13:05:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cCwEJUHeAoTnvtQiOv8/qIkgEHZZI2eLgqihKWStCTA=;
-        b=UladNP+iMMAw277jet/G1MBHS6R4dHEwZtSNVjceKmd1O5TDqUgXSiAy8ihf1M5HBk
-         0K/QLGV8+B0o3dOaOCs4IRR4ylQVVIY3+Wj2LzfIPLMeHZPpyrcJDiksYXyfGH3hBAI+
-         X8rx4haL+lsNOOxYW+kVP73UqWe+CXqFqKuPzPMa4MiyTgMTl1vYTbWVYZ41+RjTW8mc
-         8r1MxBJGW3zAxOMu4l48u1NxyjWx0NyQ2uJI2Kx/jy+TtST6UsDh5AqM/PnQh+9JX1hj
-         obkOw52ngn57PvHUVmlj2MpVLGDHLukmaBLhL1GC0XSnf09fgrqyvzgABEFUpOcSxEVz
-         97iw==
+        bh=hYLxhuwHVg89Dl/lCk/ypB8Gf9ORlIGXC8Igf4TEJuo=;
+        b=uj2ns78lP9PM5eOEarBfs0nLqIBqapJ9u+ITOjY5yDGMfB68oDYGduL3ZjEiOai6q3
+         ieD5L03FqpCCvrkqcJUuEvlMUdWbSdacCFt8oszPbLIvCkCVsD6pedceB2r36zC1GpWd
+         G+omc13Mbvh+pRqGokXT1nub1cQtWOnNvqr57DJRKlO5eMs7h8M2qu3R0Lj1Eocy+o4m
+         Cs5wy8p16HNdhaPTRkRzxm5aRpEL0iY+DDOXQkDDDiAkQIg0KYrAniCAsRspx/iQ8+QK
+         tn8LhK42B2CNWT97FeQTGnI8ncPq2k7rKoRZBm+sVvPIlZkHX2ndRoDyjzEWkcLfslCF
+         IX9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cCwEJUHeAoTnvtQiOv8/qIkgEHZZI2eLgqihKWStCTA=;
-        b=bOjyVDd0M5QPLW0++JiN3sM3M7YwOMCfQpmt17MIM6LS2GHBjvIQlmvUjDchkrdqO7
-         D8sHCiX/9pIYUuWgwmp/vENebchucxGfUwCUj1l4s+h6yN+DkWjBQ7nCyOucizInwT9M
-         +knEwaa7JzABeDfy2nn33uWYXR6RxFLcL303Qxl3reb709cnyuTwa1seLvj6pxle0O4t
-         XTJoIy9Bt1v3auGMfOVAxEUf40WVi683nuw3V8KML6zDRoF2jB+xttQWyX7PKdN52nB2
-         Svq4rQJJHG3jc+blEBbWqoKdPVBfZcbVymTbKGogY9UJURBnPORSdslZqhmRli/Er3Cp
-         cBDw==
-X-Gm-Message-State: AOAM533blTz4z64Mee6B5EUZx8volC+dLna1mt1g/TCVbw228EHsWTQR
-        zZVFtuDmoIzteHsA5vS4vVw=
-X-Google-Smtp-Source: ABdhPJy9gtLuOD1wJaJl7UX1fgXHvNi8IgK7khyGFgXFBf/7UKrvioUjhswjSXXNFZhaWTKS8giy/g==
-X-Received: by 2002:a17:906:4c91:: with SMTP id q17mr5221433eju.512.1623441953473;
-        Fri, 11 Jun 2021 13:05:53 -0700 (PDT)
+        bh=hYLxhuwHVg89Dl/lCk/ypB8Gf9ORlIGXC8Igf4TEJuo=;
+        b=LJ663xXAkRvk/aBA+DdRM2ELRl2oPxgvEjBnlg77xAm4xx00ucLBym9cWKt2B7gRQG
+         sybzTBHWW5cw7mhAoowPwwUVRN8Fy7JUqp3jW3ukNoJM93Lja2ZeweGeEreklzJqvysO
+         6YOONNTJDMQ4ItD1e4ANvecYLnvfYS+DLjKX95osMFjc32f7OD/zp0nXrlaK0DsMHRrM
+         Z4DOf5X+SS1NqUOoD/C7MBTdtq5D3ACM9bVTX2KF/Qd1GrnaWLhKPmyXbrjiuAVBk5Ki
+         PvcJrwYIiGNsAL4E/EO1z+MH3g8zdiOiY71KuDoG/1/1sal6QWT7FqvE016B5Zfd7Kcn
+         5nTQ==
+X-Gm-Message-State: AOAM531tn8dmD/aox9eOXJvOVTyQMx3SSGjZfVKNK3Dhjt/kWkBZ9V3X
+        mCYZ0nUKnXMbsETMznMiNo4=
+X-Google-Smtp-Source: ABdhPJwoPXlVRrU44Dx3Wfyg7Y5dBhlDaehsaVMJPlrsyPJ20Zt4U5vH54p9acY15RLnrafahtXwpw==
+X-Received: by 2002:a17:907:92e:: with SMTP id au14mr5043497ejc.194.1623441955250;
+        Fri, 11 Jun 2021 13:05:55 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id w2sm2392084ejn.118.2021.06.11.13.05.52
+        by smtp.gmail.com with ESMTPSA id w2sm2392084ejn.118.2021.06.11.13.05.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Jun 2021 13:05:53 -0700 (PDT)
+        Fri, 11 Jun 2021 13:05:54 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -63,9 +66,9 @@ Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 05/13] net: pcs: xpcs: add support for sgmii with no inband AN
-Date:   Fri, 11 Jun 2021 23:05:23 +0300
-Message-Id: <20210611200531.2384819-6-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 06/13] net: pcs: xpcs: also ignore phy id if it's all ones
+Date:   Fri, 11 Jun 2021 23:05:24 +0300
+Message-Id: <20210611200531.2384819-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210611200531.2384819-1-olteanv@gmail.com>
 References: <20210611200531.2384819-1-olteanv@gmail.com>
@@ -77,100 +80,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-In fixed-link use cases, the XPCS can disable the clause 37 in-band
-autoneg process, disable the "Automatic Speed Mode Change after CL37 AN"
-setting, and force operation in a speed dictated by management.
+xpcs_get_id() searches multiple MMDs for a known PHY ID, starting with
+MDIO_MMD_PCS (3). However not all integrators might have implemented
+that MMD on their MDIO bus. For example, the NXP SJA1105 and SJA1110
+switches only implement vendor-specific MMD 1 and 2.
 
-Add support for this operating mode.
+When there is nothing on an MDIO bus at a certain address, traditionally
+the bus returns 0xffff, which means that the bus remained in its default
+pull-up state for the duration of the MDIO transaction. The 0xffff value
+is widely used in drivers/net/phy/phy_device.c (see get_phy_c22_id for
+example) to denote a missing device.
+
+So it makes sense for the xpcs to ignore this value as well, and
+continue its search, eventually finding the proper PHY ID in the
+vendor-specific MMDs.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 v2->v3: none
 v1->v2: none
 
- drivers/net/pcs/pcs-xpcs.c | 41 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 38 insertions(+), 3 deletions(-)
+ drivers/net/pcs/pcs-xpcs.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index 8ca7592b02ec..743b53734eeb 100644
+index 743b53734eeb..ecf5011977d3 100644
 --- a/drivers/net/pcs/pcs-xpcs.c
 +++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -690,7 +690,7 @@ int xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns, int enable)
- }
- EXPORT_SYMBOL_GPL(xpcs_config_eee);
- 
--static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs)
-+static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs, unsigned int mode)
- {
- 	int ret;
- 
-@@ -726,7 +726,10 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs)
+@@ -965,8 +965,10 @@ static u32 xpcs_get_id(struct dw_xpcs *xpcs)
  	if (ret < 0)
- 		return ret;
+ 		return 0xffffffff;
  
--	ret |= DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
-+	if (phylink_autoneg_inband(mode))
-+		ret |= DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
-+	else
-+		ret &= ~DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
+-	/* If Device IDs are not all zeros, we found C73 AN-type device */
+-	if (id | ret)
++	/* If Device IDs are not all zeros or all ones,
++	 * we found C73 AN-type device
++	 */
++	if ((id | ret) && (id | ret) != 0xffffffff)
+ 		return id | ret;
  
- 	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
- }
-@@ -772,7 +775,7 @@ static int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
- 		}
- 		break;
- 	case DW_AN_C37_SGMII:
--		ret = xpcs_config_aneg_c37_sgmii(xpcs);
-+		ret = xpcs_config_aneg_c37_sgmii(xpcs, mode);
- 		if (ret)
- 			return ret;
- 		break;
-@@ -905,6 +908,36 @@ static void xpcs_get_state(struct phylink_pcs *pcs,
- 	}
- }
- 
-+static void xpcs_link_up_sgmii(struct dw_xpcs *xpcs, unsigned int mode,
-+			       int speed, int duplex)
-+{
-+	int val, ret;
-+
-+	if (phylink_autoneg_inband(mode))
-+		return;
-+
-+	switch (speed) {
-+	case SPEED_1000:
-+		val = BMCR_SPEED1000;
-+		break;
-+	case SPEED_100:
-+		val = BMCR_SPEED100;
-+		break;
-+	case SPEED_10:
-+		val = BMCR_SPEED10;
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	if (duplex == DUPLEX_FULL)
-+		val |= BMCR_FULLDPLX;
-+
-+	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, MDIO_CTRL1, val);
-+	if (ret)
-+		pr_err("%s: xpcs_write returned %pe\n", __func__, ERR_PTR(ret));
-+}
-+
- static void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
- 			 phy_interface_t interface, int speed, int duplex)
- {
-@@ -912,6 +945,8 @@ static void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
- 
- 	if (interface == PHY_INTERFACE_MODE_USXGMII)
- 		return xpcs_config_usxgmii(xpcs, speed);
-+	if (interface == PHY_INTERFACE_MODE_SGMII)
-+		return xpcs_link_up_sgmii(xpcs, mode, speed, duplex);
- }
- 
- static u32 xpcs_get_id(struct dw_xpcs *xpcs)
+ 	/* Next, search C37 PCS using Vendor-Specific MII MMD */
 -- 
 2.25.1
 
