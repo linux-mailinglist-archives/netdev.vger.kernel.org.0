@@ -2,90 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE8493A3C83
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 09:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C8D63A3C8C
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 09:05:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbhFKHFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 03:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39260 "EHLO
+        id S230334AbhFKHHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 03:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbhFKHFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 03:05:18 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B018BC061574
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 00:03:19 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lrbC5-0007o2-Rg; Fri, 11 Jun 2021 09:03:05 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:4d4a:8a80:782c:77df])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 98DF6638E82;
-        Fri, 11 Jun 2021 07:02:58 +0000 (UTC)
-Date:   Fri, 11 Jun 2021 09:02:57 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     13145886936@163.com
-Cc:     robin@protonic.nl, linux@rempel-privat.de, kernel@pengutronix.de,
-        socketcan@hartkopp.net, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
-Subject: Re: [PATCH net-next] can: j1939: socket: correct a grammatical error
-Message-ID: <20210611070257.xbca7pi6hwjrynsn@pengutronix.de>
-References: <20210611043933.17047-1-13145886936@163.com>
+        with ESMTP id S229540AbhFKHHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 03:07:49 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F312C061574;
+        Fri, 11 Jun 2021 00:05:39 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id h16so5177092pjv.2;
+        Fri, 11 Jun 2021 00:05:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K6EWbdBAOzulK/Dcd8nCsMPpxQ85NMizCbZctaEs360=;
+        b=m0s0C02Le100A4PatD5rxYr4dSMjmXE8b/appgTXCoq3XppCO4fgjAR0PGb1JTJtHd
+         QJCs1pkWicr9tLBsnDzdFSFKMucW5t0Tqb8i4uIogYnomS0gVG1JvDlZaJccmbz+u5gG
+         c6nyH0VnKHFawjzpdBRH4YPODsVKfh4seR8gASzGQRfQBy4Sd61poJ2gnzWl0/a14mMd
+         OECua/fVJjotWcgRZWwdBdUj0ea2hdy7eiGhpL+SiOFwq/I8e/FWxQ/xH0/4CvoZLvB4
+         LASgAcYIgPm53jkNjvT4zLExwxX5sbkwb/KHlcVEcyrUwKY6Op6Mq/nGwHdUG+X8zt2c
+         jqUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=K6EWbdBAOzulK/Dcd8nCsMPpxQ85NMizCbZctaEs360=;
+        b=Oe0M5nPMGeQ3fCzKMWcs5UH4rAhnpYrInWMhnsMjrmgm1Zqx8UhJ7COliV4RtTsh1j
+         h6SIvDc+knllkZMY3rskv98QJxlcuYvPNCuODb0K406tWzvKk1whoipAB1q5D0SeSvdt
+         vAuCuG7Ost6q98Ddv9USBxpamoWGm6ZpfUXI8DMDIGSGuoLPCOg6fSrH/D70sywIoS2E
+         YUbgZf2xXhIE2weILZejkq6vtfCzGRq/oBLU7QXLuEmPKKg6KXNIksGrOYN5sdqed+IO
+         CYUXp27mFQF0vqM3fxxEXnKF28P1uGMtxJsCRSRir9TuemT25Dy3xMAUG4+c9ZjdIuS3
+         k70w==
+X-Gm-Message-State: AOAM530mUm6cWJ4uue9dBfKmWmJc5kuiKAWetSV/jLnbSKzU/dscYGAC
+        naZSxbnkPL/n/8Tmeal8Scx7uol/E565ilRXOH8=
+X-Google-Smtp-Source: ABdhPJw/7eCgDTVvTRS2YHio28EO/TNuwNLQKnxPt5qhs1EXNAsQpwQHdytMJYxIMggvEz121Uoraxw/VkugZrzdjZ0=
+X-Received: by 2002:a17:903:2281:b029:113:1edb:97d0 with SMTP id
+ b1-20020a1709032281b02901131edb97d0mr2718643plh.64.1623395138622; Fri, 11 Jun
+ 2021 00:05:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lpt7vlyp74ppkexj"
-Content-Disposition: inline
-In-Reply-To: <20210611043933.17047-1-13145886936@163.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210611042442.65444-1-alexei.starovoitov@gmail.com> <20210611042442.65444-2-alexei.starovoitov@gmail.com>
+In-Reply-To: <20210611042442.65444-2-alexei.starovoitov@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 11 Jun 2021 00:05:27 -0700
+Message-ID: <CAM_iQpWh3AHNZ+J0Au7VqkJ9h4kgrLDop4asrofoCpzuBuJPkw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Introduce bpf_timer
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 10, 2021 at 9:27 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+> // Initialize the timer to call 'callback_fn' static function
+> // First 4 bits of 'flags' specify clockid.
+> // Only CLOCK_MONOTONIC, CLOCK_REALTIME, CLOCK_BOOTTIME are allowed.
+> long bpf_timer_init(struct bpf_timer *timer, void *callback_fn, int flags);
 
---lpt7vlyp74ppkexj
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Another unpopular point of view:
 
-On 11.06.2021 12:39:33, 13145886936@163.com wrote:
-> From: gushengxian <gushengxian@yulong.com>
->=20
-> Correct a grammatical error.
->=20
-> Signed-off-by: gushengxian <gushengxian@yulong.com>
+This init() is not suitable for bpf programs, because unlike kernel modules,
+there is no init or exit functions for a bpf program. And timer init
+is typically
+called during module init.
 
-Applied can-next/testing.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---lpt7vlyp74ppkexj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDDCp8ACgkQqclaivrt
-76nxrQf/b0qn6ydgv+6zMROr7Yd7xpct4O1iDdgH2SfflTnQGQ/J21sU9UL71nKM
-c0peAaZDERVcUeWpfitgAQ0CHSe6sEZ+ueB69W3GYL6gW3gJMU02Rexr2BtXir8G
-YI7xsyNS/5ARS7XUMj30XA+Vf5qnyUnjf6kGHC6+dekDhMWIKtHhivp+tHMGZ+rz
-3Enn0pW/ayAatm3+0WY1CRKYM0vfRPzEShMFt0cOb7prxhq2YMU9HSE+fkNuDmoZ
-7Rm2x48XRrMuxSKfaDJiqBxx0rLWwLJN3mKEck1/yKpZInJBr51Qh+jS0eD3M36Q
-5TcSjTokeNnbTqepzmYKPGcegVgd+w==
-=FTh+
------END PGP SIGNATURE-----
-
---lpt7vlyp74ppkexj--
+(bpf spinlock is different, because it can be simply initialized as UNLOCKED.)
