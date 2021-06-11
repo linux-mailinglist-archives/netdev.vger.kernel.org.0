@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 721123A49E1
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 22:07:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3AC3A49DA
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 22:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbhFKUI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 16:08:59 -0400
-Received: from mail-ej1-f53.google.com ([209.85.218.53]:47100 "EHLO
-        mail-ej1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbhFKUIz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 16:08:55 -0400
-Received: by mail-ej1-f53.google.com with SMTP id he7so6197051ejc.13
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 13:06:49 -0700 (PDT)
+        id S230465AbhFKUIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 16:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230298AbhFKUIG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 16:08:06 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80CCC061574
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 13:05:51 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id s6so38421755edu.10
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 13:05:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TAyARCwymts80UfSaJxc+A+RseuakUzeRsZERPmV1Kc=;
-        b=ZsK2C8U7Y6zGtixzFqwU2f0qKlJ/48dNKaCasvleVmITH+fpVbVNZlChvOjnSMKb4d
-         Et1NAI7OfiOLAo26jPwIXldDyUYYQw244Sex2p89SRqorGrIPeQbtkX9AQKjDUGG4Qts
-         5Pe/UAnF6RtLhO/qk6bru7DfrB+PZBRUT55QRargLFZsvVcdVq7mMYVC8TS9E76qw3Ly
-         tT0EbnaIP1HjAmM00oVUQeJIippTi7ff9/yytAL5jRoWVhbfYGrWezi4oFimGngc7QFD
-         cSUsr/KyAHXfmrI0TDEB8xd7J27jV7cY6386t8dHAL/wEKZ8piCncZfCATGh2YmaGUVz
-         EXRg==
+        bh=9aLb5MTiMiX+eIH3cIXkfteLFULp/N00+e1rMmviAS8=;
+        b=Km1XT8H83tLT8TNyIdLMRFimyUb95Z0/elr91QOxZ5/pCz2ISBWGfpm29wY2XYnH7V
+         L2AvEZo1tb3v3QMaggr3aXQ4vIjG10EYNX8mdYVKgMBw2woWqqukBPj1zx6azfFpleIZ
+         ZygKuEZwjRACnhxVW8nACqSr8UmrJv2DHpWy6ki6GBvy/giHXciB8ZV69wiWpOZKktlP
+         nLj4VPBujEw1s4KM/j/4k7VRrtY3jqPg+DM4trsgSOvZmBOVR0cADLNsZQ2Kw4gJjnPh
+         0NlfqLzF7qLF95C8ypzYhUuXlL49LMiUAu8SWWX4ZJ503LQ3GOdYEXM4ZxkgOn2qV+46
+         zH9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TAyARCwymts80UfSaJxc+A+RseuakUzeRsZERPmV1Kc=;
-        b=hHMcaUmPd5EHUPJR0CrCWJz7e651KP3MgvByXlHhXIXNSd1WFIzRO9EPs7u1BpHFOH
-         +25EVCPiIHWL4mREukwzp+aNxAjulRPG2Q9w8f3V6JAvTYf+HW/rOJEKGIDAgLQ24gub
-         6cLjNbJvSackwciXZvf8EVtkLo+3qa8LvhKRW2+MOye0uewy7zyLTxP6pUCbKk00zg0a
-         IWPDV4IR8u6o7sIYJrlAsdt/WvhhRSAhqZEW9WTydKodAAezM2bfWXRil5c120z6nTvp
-         YkvMM/2Suu3Fg1ODqeasY2WZqUSbdjigbNjSRG1KZRO2UckmfhfWdJbz8oDkTcv/6zvO
-         6onA==
-X-Gm-Message-State: AOAM532nSOBLoTpXzfDUraXdbogfVPT9KGQ5ltUW8xBgDzwl/WWMADx6
-        QFvwmU52WXtR3LXp/KTUGZU=
-X-Google-Smtp-Source: ABdhPJx0q3keaviy8zOp5QcWBmI9rN2JzJZ65MC3OfzZ0hFWUYMyILNEktPbrqluD5xD5LRSMEh7PA==
-X-Received: by 2002:a17:906:b2c1:: with SMTP id cf1mr4991692ejb.544.1623441948579;
-        Fri, 11 Jun 2021 13:05:48 -0700 (PDT)
+        bh=9aLb5MTiMiX+eIH3cIXkfteLFULp/N00+e1rMmviAS8=;
+        b=k/BfC+fJLMdPhu9uWauRetP1eMjgcUVAhl/7PjeWp96r2hb7eLVR5X/7ZGsk/atZaD
+         XsLvj6ZwtXkvpqEoamXlDL/kwFqb2rXwQ6YE+fxkDAjwYalu2sjy41KE5Y9ODFIkrl4R
+         97WdaO5eUchBfvXVfl80SRPKKXof+/1isW1TROVJHt1oo0BNBE/WAoAGEPc/Qvbaxixf
+         O9v2EhPhtQ8oycCpRRAsqRACgGXGUsE6nnpBOb/vfhiLndvUcfOzh61l9QmyVT7eNNOO
+         8L3S9Mp/uu0G7IMhC3pVTDsHTZ40ZJpLcZisYdAiunfSheVnLN/6ElAv5jt7CEJsN+Fc
+         fGzg==
+X-Gm-Message-State: AOAM53382HsmdkeV4HQo0kw2BDonsQ3txn3nMYlzcWMxEWHd6FVur6ZM
+        HoLk9wd0ipCtkuOyfgpgHqEvFWWTYoQ=
+X-Google-Smtp-Source: ABdhPJzmu8weoHDB0sMFCwMDVFSD6la1dr12loV+A+iUkl97xaxZjnJz5nrydk6D8sqLXDXAxV3bIg==
+X-Received: by 2002:aa7:d555:: with SMTP id u21mr5600674edr.84.1623441950434;
+        Fri, 11 Jun 2021 13:05:50 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.52.84])
-        by smtp.gmail.com with ESMTPSA id w2sm2392084ejn.118.2021.06.11.13.05.47
+        by smtp.gmail.com with ESMTPSA id w2sm2392084ejn.118.2021.06.11.13.05.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Jun 2021 13:05:48 -0700 (PDT)
+        Fri, 11 Jun 2021 13:05:50 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -63,9 +66,9 @@ Cc:     Wong Vee Khee <vee.khee.wong@linux.intel.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 02/13] net: stmmac: reverse Christmas tree notation in stmmac_xpcs_setup
-Date:   Fri, 11 Jun 2021 23:05:20 +0300
-Message-Id: <20210611200531.2384819-3-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 03/13] net: stmmac: reduce indentation when calling stmmac_xpcs_setup
+Date:   Fri, 11 Jun 2021 23:05:21 +0300
+Message-Id: <20210611200531.2384819-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210611200531.2384819-1-olteanv@gmail.com>
 References: <20210611200531.2384819-1-olteanv@gmail.com>
@@ -77,8 +80,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reorder the variable declarations in descending line length order,
-according to the networking coding style.
+There is no reason to embed an if within an if, we can just logically
+AND the two conditions.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
@@ -86,28 +89,30 @@ Reviewed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
 v2->v3: none
 v1->v2: none
 
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 3b3033b20b1d..a5d150c5f3d8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -399,11 +399,11 @@ int stmmac_mdio_reset(struct mii_bus *bus)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index db97cd4b871d..975b90805359 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7003,12 +7003,10 @@ int stmmac_dvr_probe(struct device *device,
+ 	if (priv->plat->speed_mode_2500)
+ 		priv->plat->speed_mode_2500(ndev, priv->plat->bsp_priv);
  
- int stmmac_xpcs_setup(struct mii_bus *bus)
- {
--	int mode, addr;
- 	struct net_device *ndev = bus->priv;
--	struct dw_xpcs *xpcs;
--	struct stmmac_priv *priv;
- 	struct mdio_device *mdiodev;
-+	struct stmmac_priv *priv;
-+	struct dw_xpcs *xpcs;
-+	int mode, addr;
+-	if (priv->plat->mdio_bus_data) {
+-		if (priv->plat->mdio_bus_data->has_xpcs) {
+-			ret = stmmac_xpcs_setup(priv->mii);
+-			if (ret)
+-				goto error_xpcs_setup;
+-		}
++	if (priv->plat->mdio_bus_data && priv->plat->mdio_bus_data->has_xpcs) {
++		ret = stmmac_xpcs_setup(priv->mii);
++		if (ret)
++			goto error_xpcs_setup;
+ 	}
  
- 	priv = netdev_priv(ndev);
- 	mode = priv->plat->phy_interface;
+ 	ret = stmmac_phy_setup(priv);
 -- 
 2.25.1
 
