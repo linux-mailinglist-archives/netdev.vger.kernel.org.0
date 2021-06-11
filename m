@@ -2,118 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA9CD3A4A90
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 23:18:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34BED3A4A93
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 23:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbhFKVUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 17:20:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39140 "EHLO mail.kernel.org"
+        id S230409AbhFKVWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 17:22:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39314 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230040AbhFKVUA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Jun 2021 17:20:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8944761285;
-        Fri, 11 Jun 2021 21:18:01 +0000 (UTC)
+        id S230355AbhFKVWB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Jun 2021 17:22:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 589DB613CA;
+        Fri, 11 Jun 2021 21:20:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623446281;
-        bh=cIwXXrxo+3Sl5XAoI/5z137H/ZoLFCvWmAJ0x7mP7fk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pS2GIAA4AcH4WzmSeIA4h0YQUoKmnONlh4zah258Y4g9jvum6da4HVJE5dsZ/yF+W
-         dm0iF7gDToEr8y/m7owqX0RUKQUyE8g716jAcEF4j2gHf2viQmNOEBw/foXP9Zpgp0
-         9+3xmcvKGSYHjI94Plf1Kicf3eSphlieF8rOyIyO4ZpWPUBiBZ+ld6NN+/9JCFnl/x
-         FnVgNLcnkVTjcdyMgMRBhaTvhGGeR5MJ+ghJgVCYPjIlBxNeEOKjaixN2F08da6CMG
-         pkJg2QM0N5Z0YatKoue+MnUP8/p2FD5VEK/+PX5a3P88EOtDeOrd7jmMAz1pZL+pJ8
-         bvpqUCr1/3bww==
-Date:   Fri, 11 Jun 2021 14:18:00 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, Jacob Keller <jacob.e.keller@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        richardcochran@gmail.com,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: Re: [PATCH net-next 5/8] ice: register 1588 PTP clock device object
- for E810 devices
-Message-ID: <20210611141800.5ebe1d4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210611162000.2438023-6-anthony.l.nguyen@intel.com>
-References: <20210611162000.2438023-1-anthony.l.nguyen@intel.com>
-        <20210611162000.2438023-6-anthony.l.nguyen@intel.com>
+        s=k20201202; t=1623446403;
+        bh=+r89U6KGu2f7MNGrj9ySGI1AQCtIsgF9/XzU+rc3CVI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ty1hJcVzyA3nwy2eQCXTX1RuDh9jg3soKlceGRiKXe9nql+wgWGjkJlcRoZXlQr9n
+         +qBw94w5tzsKVlnloXzMtIkYR8m1SLRfsQiisq3a0J2xXFRwVxftQ6CmoO04nVPqpZ
+         trsHSNOud7vUX1oKPv2pK7I7WLVGXM7Jnj2rxmYWdxRVvbqQfi9JpmhwIOGewcgFPa
+         v0Y7p7I91lPOUTzc4uhnC/3zBvgrNeLB78ZnMNZ0aMR4bi7QW/ERMHO7iYIfN3LCcY
+         hlGoSgs9bK9T30XoRloPb2Rdp3NdG3/dD9HCiqkeCDTlLUimilsU5E4pL2t+5qPli3
+         AL2BXSHZZ6QNw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4E30460A53;
+        Fri, 11 Jun 2021 21:20:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] ibmvnic: fix kernel build warning in strncpy
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162344640331.8269.6819397375303273378.git-patchwork-notify@kernel.org>
+Date:   Fri, 11 Jun 2021 21:20:03 +0000
+References: <20210611183353.91951-1-lijunp213@gmail.com>
+In-Reply-To: <20210611183353.91951-1-lijunp213@gmail.com>
+To:     Lijun Pan <lijunp213@gmail.com>
+Cc:     netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Jun 2021 09:19:57 -0700 Tony Nguyen wrote:
-> +static u64
-> +ice_ptp_read_src_clk_reg(struct ice_pf *pf, struct ptp_system_timestamp *sts)
-> +{
-> +	struct ice_hw *hw = &pf->hw;
-> +	u32 hi, lo, lo2;
-> +	u8 tmr_idx;
-> +
-> +	tmr_idx = ice_get_ptp_src_clock_index(hw);
-> +	/* Read the system timestamp pre PHC read */
-> +	if (sts)
-> +		ptp_read_system_prets(sts);
-> +
-> +	lo = rd32(hw, GLTSYN_TIME_L(tmr_idx));
-> +
-> +	/* Read the system timestamp post PHC read */
-> +	if (sts)
-> +		ptp_read_system_postts(sts);
-> +
-> +	hi = rd32(hw, GLTSYN_TIME_H(tmr_idx));
-> +	lo2 = rd32(hw, GLTSYN_TIME_L(tmr_idx));
-> +
-> +	if (lo2 < lo) {
-> +		/* if TIME_L rolled over read TIME_L again and update
-> +		 * system timestamps
-> +		 */
-> +		if (sts)
-> +			ptp_read_system_prets(sts);
-> +		lo = rd32(hw, GLTSYN_TIME_L(tmr_idx));
-> +		if (sts)
-> +			ptp_read_system_postts(sts);
+Hello:
 
-ptp_read_system* helpers already check for NULL sts.
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Fri, 11 Jun 2021 13:33:53 -0500 you wrote:
+> drivers/net/ethernet/ibm/ibmvnic.c: In function ‘handle_vpd_rsp’:
+> drivers/net/ethernet/ibm/ibmvnic.c:4393:3: warning: ‘strncpy’ output truncated before terminating nul copying 3 bytes from a string of the same length [-Wstringop-truncation]
+>  4393 |   strncpy((char *)adapter->fw_version, "N/A", 3 * sizeof(char));
+>       |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> Signed-off-by: Lijun Pan <lijunp213@gmail.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2] ibmvnic: fix kernel build warning in strncpy
+    https://git.kernel.org/netdev/net-next/c/0b217d3d7462
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-> +static int ice_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
-> +{
-> +	struct ice_pf *pf = ptp_info_to_pf(info);
-> +	u64 freq, divisor = 1000000ULL;
-> +	struct ice_hw *hw = &pf->hw;
-> +	s64 incval, diff;
-> +	int neg_adj = 0;
-> +	int err;
-> +
-> +	incval = ICE_PTP_NOMINAL_INCVAL_E810;
-> +
-> +	if (scaled_ppm < 0) {
-> +		neg_adj = 1;
-> +		scaled_ppm = -scaled_ppm;
-> +	}
-> +
-> +	while ((u64)scaled_ppm > div_u64(U64_MAX, incval)) {
-> +		/* handle overflow by scaling down the scaled_ppm and
-> +		 * the divisor, losing some precision
-> +		 */
-> +		scaled_ppm >>= 2;
-> +		divisor >>= 2;
-> +	}
-
-I have a question regarding ppm overflows.
-
-We have the max_adj field in struct ptp_clock_info which is checked
-against ppb, but ppb is a signed 32 bit and scaled_ppm is a long,
-meaning values larger than S32_MAX << 16 / 1000 will overflow 
-the ppb calculation, and therefore the check.
-
-Are we okay with that? Is my math off? Did I miss some part 
-of the kernel which filters crazy high scaled_ppm/freq?
-
-Since dialed_freq is updated regardless of return value of .adjfine 
-the driver has no clear way to reject bad scaled_ppm.
-
-> +	freq = (incval * (u64)scaled_ppm) >> 16;
-> +	diff = div_u64(freq, divisor);
