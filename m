@@ -2,71 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FC403A4B32
-	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 01:27:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6DF63A4B37
+	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 01:28:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbhFKX3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 19:29:51 -0400
-Received: from mail-pl1-f169.google.com ([209.85.214.169]:34570 "EHLO
-        mail-pl1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230130AbhFKX3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 19:29:50 -0400
-Received: by mail-pl1-f169.google.com with SMTP id h1so3598873plt.1;
-        Fri, 11 Jun 2021 16:27:36 -0700 (PDT)
+        id S230488AbhFKXaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 19:30:55 -0400
+Received: from mail-pf1-f176.google.com ([209.85.210.176]:44924 "EHLO
+        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230017AbhFKXay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 19:30:54 -0400
+Received: by mail-pf1-f176.google.com with SMTP id u18so5650370pfk.11;
+        Fri, 11 Jun 2021 16:28:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xmvWhepk7+DTWIJD3sxkKjlDCnRliUseIcDMgkGbSgQ=;
-        b=HJZDKWsJ9+eYY2vRW8WzQe2ODlyiRphnZ4rrdHi0akPJaH6NhuJEvdgoCX29IAkNqu
-         fuXe1AAEIJpXDabP9OTJUngfY3d12oR3HzWrMSxCGme0fj25de2YOpguoKM7sBjxggP9
-         r/dkorJkGnZ7RBErpopXnEuFh07d2bwTA6iwJZFP0uXWGcwOciVU4G8mElov7LPLxEAt
-         ZXpejrl4jd6Lp+a4gM2GjE8/mcIaOnSSUwrGvgM9Rg7G6Q3khj6fC7KOEG1RsTHCIFHP
-         YV5nQmrz6hy+hLbfSzbga/bioQ98yUyX27iWuWtW2I736s/FIzXITiEOJcWqViTukx7Y
-         HwnQ==
+        bh=8Jn6liQ/3aNa2Ev96jT361t7JUeEtDD45f4j/igbt/E=;
+        b=aXv+TWPwW6c6QUnKLYUBE1l2sT9y1CHUWOMOL2Dai3vx6PNLtaSRzo4HFVH6kdDves
+         K/pUSR3ECInn0xbVmjPKi8yAWBHFWM1LajD9WuO/77wChkRGjdB6ydni+bixTdq1bfty
+         goMfe2eg8MLP5ZJ5zqojMEZumg1UW1SfaGULLHVXiklaU+Jh1iC4DACGwcKfHGjrP1R6
+         02AIa4Zb0W9SkWzGpJeC/vCfvMG4xh4M+lB2MrClQN3b+KUJJMXv8BAVcmCRmWCIXakc
+         6FkTd9uzUZa7kYwSBV3AFzLmjZ6oDmRswzYGsxmFe8Jq0tex3ubL4Eg6bpF6OYXs3y0C
+         FYYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=xmvWhepk7+DTWIJD3sxkKjlDCnRliUseIcDMgkGbSgQ=;
-        b=uThJd7E+aQrJClaLoWnKqA11NWPpAsCcoXoaaHSPGx/Ys8so1pdMbW4TNERsjqZBcg
-         1QAqeq+hKFxsGWIxh+ZPZharR4e9JiiofAdCSfVe0f/3nL2x/yWX4+0kc+t8CIYzT9hn
-         xsQxWX1FPuXWmLZPps6nfdB6iQNfP8wvzXrKD6esvook7wB1bJdNAixcX5u6cVu2BCGv
-         i1IvlEdCnuPRjHQeJ7y65r8jKpp9HGG0k1uiMzGskZ8CZBtcCzw9Uz72TutogdRd8LR9
-         6ry6MRVuaGPLXfzLfnwHrZvsvkTepGj5M7NW4TsMSwNYIGecG8w4weLwhpQzFyNWqdVW
-         c5YQ==
-X-Gm-Message-State: AOAM531EmZECk1cSZrMsIgu2JdBVvHLkNyVp53hy3MZC7wIsVOOlV+C6
-        2znyZnt5WSrjo6PNJyRCwy0=
-X-Google-Smtp-Source: ABdhPJxKVJcXQx4+NSa6O4GnyDEzzhXVMpjUDTiEdzxznFgKLJ3hYQukWRkk4KZ+0ilHM0n+yZNGWg==
-X-Received: by 2002:a17:902:c403:b029:106:7793:3fcc with SMTP id k3-20020a170902c403b029010677933fccmr6048181plk.81.1623453995890;
-        Fri, 11 Jun 2021 16:26:35 -0700 (PDT)
+        bh=8Jn6liQ/3aNa2Ev96jT361t7JUeEtDD45f4j/igbt/E=;
+        b=IuppxRL/ZYVcext6hTwNuTTgCa1aRtt7zCLIGvd0H6yQsLTKbQxTOd0pZKXkwPGRxY
+         Z2PmoXQSl2OT+gYsrwqca0sK3lJLvHo4iQDxsOF8M/98TrOxNhmTQ60NX8bogtELean0
+         fhNC1h0n+y/L74zDwaZ0+jxMgIdkex3uvg8keotCuy858ZtYCUXt1lKnkdEu9sI/qI9r
+         T1hz5ekOQZB2zbh8L7e6FwYIJ6pAQAwRhrUgB7KF1TkeoEhROrw+0XlxGibtlZLcJyOp
+         JumAQWQ2qY1MAoK5ONA//y6bobe6wRiyGca8H/nLup0bD+xMuiWLr/9oJZi7JWflUMp2
+         w0dg==
+X-Gm-Message-State: AOAM531ocWlDrWy9blcBCHIbrhFXLRRSFfbYUzFADngxVUExqffW5f8O
+        cuSCADybjSFZhTwYoZ7EH/8=
+X-Google-Smtp-Source: ABdhPJxEDKYSYwrCwmLbnPzjJ69rP+6r4MGfLDuW4hR6LsUfBOb72p5FiTwPHPbQhRRTAh4ax2ZTXQ==
+X-Received: by 2002:a63:5f8b:: with SMTP id t133mr5831206pgb.411.1623454075804;
+        Fri, 11 Jun 2021 16:27:55 -0700 (PDT)
 Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id g29sm5978314pgm.11.2021.06.11.16.26.33
+        by smtp.gmail.com with ESMTPSA id p1sm5820839pfp.137.2021.06.11.16.27.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Jun 2021 16:26:35 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 8/9] net: dsa: dsa_slave_phy_connect(): extend
- phy's flags with port specific phy flags
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Fri, 11 Jun 2021 16:27:55 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 1/9] net: phy: micrel: move phy reg offsets to
+ common header
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
 References: <20210611071527.9333-1-o.rempel@pengutronix.de>
- <20210611071527.9333-9-o.rempel@pengutronix.de>
- <20210611192417.gvfxi2kbfjx4jv3d@skbuf>
+ <20210611071527.9333-2-o.rempel@pengutronix.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <97ea2ff1-d3a3-b2d5-f829-3863409bfecc@gmail.com>
-Date:   Fri, 11 Jun 2021 16:26:33 -0700
+Message-ID: <859d59a5-b24c-c708-502a-0edce94ab51c@gmail.com>
+Date:   Fri, 11 Jun 2021 16:27:53 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210611192417.gvfxi2kbfjx4jv3d@skbuf>
+In-Reply-To: <20210611071527.9333-2-o.rempel@pengutronix.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -76,65 +75,16 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 6/11/2021 12:24 PM, Vladimir Oltean wrote:
-> On Fri, Jun 11, 2021 at 09:15:26AM +0200, Oleksij Rempel wrote:
->> This patch extends the flags of the phy that's being connected with the
->> port specific flags of the switch port.
->>
->> This is needed to handle a port specific erratum of the KSZ8873 switch,
->> which is added in a later patch.
->>
->> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
->> ---
+On 6/11/2021 12:15 AM, Oleksij Rempel wrote:
+> From: Michael Grzeschik <m.grzeschik@pengutronix.de>
 > 
-> What happens differently between having this patch and not having it?
+> Some micrel devices share the same PHY register defines. This patch
+> moves them to one common header so other drivers can reuse them.
+> And reuse generic MII_* defines where possible.
+> 
+> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-The current get_phy_flags() is only processed when we connect to a PHY
-via a designed phy-handle property via phylink_of_phy_connect((, but if
-we fallback on the internal MDIO bus created by a switch and take the
-dsa_slave_phy_connect() path then we would not be processing that flag
-and using it at PHY connection time. Oleksij, your proposed patch fails
-to check that dsa_switch_ops::get_phy_flags is actually non-NULL, how
-about this approach instead where we only fetch the flags once, and we
-deal with an option get_phy_flags callback too:
-
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index d4756b920108..ba7866ec946f 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1749,7 +1749,7 @@ static void dsa_slave_phylink_fixed_state(struct
-phylink_config *config,
- }
-
- /* slave device setup
-*******************************************************/
--static int dsa_slave_phy_connect(struct net_device *slave_dev, int addr)
-+static int dsa_slave_phy_connect(struct net_device *slave_dev, int
-addr, u32 flags)
- {
-        struct dsa_port *dp = dsa_slave_to_port(slave_dev);
-        struct dsa_switch *ds = dp->ds;
-@@ -1760,6 +1760,8 @@ static int dsa_slave_phy_connect(struct net_device
-*slave_dev, int addr)
-                return -ENODEV;
-        }
-
-+       slave_dev->phydev->dev_flags |= flags;
-+
-        return phylink_connect_phy(dp->pl, slave_dev->phydev);
- }
-
-@@ -1804,7 +1806,7 @@ static int dsa_slave_phy_setup(struct net_device
-*slave_dev)
-                /* We could not connect to a designated PHY or SFP, so
-try to
-                 * use the switch internal MDIO bus instead
-                 */
--               ret = dsa_slave_phy_connect(slave_dev, dp->index);
-+               ret = dsa_slave_phy_connect(slave_dev, dp->index,
-phy_flags);
-                if (ret) {
-                        netdev_err(slave_dev,
-                                   "failed to connect to port %d: %d\n",
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
