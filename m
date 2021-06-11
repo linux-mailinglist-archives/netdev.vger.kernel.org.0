@@ -2,94 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81F213A3A39
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCA5F3A3A3C
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 05:26:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231284AbhFKD0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Jun 2021 23:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbhFKD0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Jun 2021 23:26:32 -0400
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D0CC061574;
-        Thu, 10 Jun 2021 20:24:34 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G1R672BSXz9sVb;
-        Fri, 11 Jun 2021 13:24:30 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1623381871;
-        bh=Rhn5+R2MWACwQyfO1X4gGUHE7SYNLWc4cq+JGmoGgn4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=mQW0gwOnni19qFEn9YLgFPsQxH7m1XLgdDoMxkWtVLpqzx8JBDGxeTUsJTKYq4KOb
-         iQ/KRkFbtHwS0yIF0CR+PMvZwsSKMFpXfOHcDzprlApkr3dr3hs4aOsdoljVUxN9pl
-         MKwUOJSQrPXyLzL9eEWRlJDS2dTsmvUsldI4eO5V0CvZxNeKKjzuEmq38MFd66BcLi
-         ZUxTPXR8VvkoUkFH491z/jvSEZ/5WSbdPBaVSldmduUKLH4yemg/eOKfyCDt9yX0ME
-         61v14Rb15ED4BFjbsyBxYARkGFEye1DYU2m+3ygkOskllRQbsWX4A96BityqKYOFMx
-         2KnPl+hroRPlQ==
-Date:   Fri, 11 Jun 2021 13:24:28 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Cristobal Forno <cforno12@linux.ibm.com>,
-        Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20210611132428.74f6c1f9@canb.auug.org.au>
+        id S231451AbhFKD2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Jun 2021 23:28:08 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58056 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230479AbhFKD2G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Jun 2021 23:28:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=fSnwROAFLm7Q7uOls0Q2WAjyN5fsoEmLVk3kc7F/XUU=; b=AAjyVQMwM1w3eKz9N/56QpxQ3K
+        8aNSx2EA0iaMyJEEkNqhFfI/Dghbw4oitqdx5NpNqTgXqIP4t4Oni5iS2wEvuhjQu8rAaCmdt9wo0
+        RMlnALf2c/AqS5ye+OC1tcDbyfV23HyUnSQJq0czf1jNobwGZFKQ7qSUWdmp6SQ3DZEE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lrXo2-008mVT-06; Fri, 11 Jun 2021 05:26:02 +0200
+Date:   Fri, 11 Jun 2021 05:26:01 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev@vger.kernel.org, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, richardcochran@gmail.com,
+        vladimir.oltean@nxp.com
+Subject: Re: [PATCH v2 net-next 00/10] DSA tagging driver for NXP SJA1110
+Message-ID: <YMLXyf5g/PLSYpj7@lunn.ch>
+References: <20210610232629.1948053-1-olteanv@gmail.com>
+ <20210610.165050.1024675046668459735.davem@davemloft.net>
+ <20210611000915.ufp2db4qtv2vsjqb@skbuf>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/zZ0lldrmVKcOFzK4.x/go5U";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210611000915.ufp2db4qtv2vsjqb@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/zZ0lldrmVKcOFzK4.x/go5U
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, Jun 11, 2021 at 03:09:15AM +0300, Vladimir Oltean wrote:
+> On Thu, Jun 10, 2021 at 04:50:50PM -0700, David Miller wrote:
+> > 
+> > Patch 9 no longer applies cleanly.
+> > 
+> > Thank you.
+> 
+> Ah, that is because I also have the "Port the SJA1105 DSA driver to XPCS"
+> patches in my tree, and they are photobombing this series. With git rebase -i
+> they apply both ways, but git rebase has more context when applying than
+> git am, so I'm not in fact surprised that it fails, now that you mention it.
+> 
+> I could probably dodge that by moving some lines of code here and there
+> so they aren't near the XPCS changes
 
-Hi all,
+Hi Vladimir
 
-After merging the net-next tree, today's linux-next build (powerpc
-ppc64_defconfig) produced this warning:
+git am is very pedantic. It does not use fuzz. So just moving lines
+within the same line is unlikely to work, you need to make the changes
+in non intersecting sets of files.
 
-drivers/net/ethernet/ibm/ibmvnic.c: In function 'adapter_state_to_string':
-drivers/net/ethernet/ibm/ibmvnic.c:855:2: warning: enumeration value 'VNIC_=
-DOWN' not handled in switch [-Wswitch]
-  855 |  switch (state) {
-      |  ^~~~~~
-drivers/net/ethernet/ibm/ibmvnic.c: In function 'reset_reason_to_string':
-drivers/net/ethernet/ibm/ibmvnic.c:1958:2: warning: enumeration value 'VNIC=
-_RESET_PASSIVE_INIT' not handled in switch [-Wswitch]
- 1958 |  switch (reason) {
-      |  ^~~~~~
+Your best bet is to be patient and wait for one patchset to get
+merged, and then submit the second patchset.
 
-Introduced by commit
-
-  53f8b1b25419 ("ibmvnic: Allow device probe if the device is not ready at =
-boot")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/zZ0lldrmVKcOFzK4.x/go5U
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDC12wACgkQAVBC80lX
-0GytjAgAjnmH5QhAcdHm1zWjXG1lYpqm4C8IyFEjBNx3D010yeGBngBQVwrV0I0n
-14NVqRiwAk4yQdlloEHlY4WBs2ImhzaXUxIS1HLxI00Aqk8XwTyoOA5Rgc7pV0mp
-JsCbI8o9QoLrq8pylyxiwvV+4tlm4F81YoryRTCupKPlgOJlw9LmHJas3XyLn0n3
-VaNaUZQj1zjSsdxQdNEOZbVcm/5L30J5Vo6u0U8sbV8dELJ51YAD30STfjQkKc4p
-H9inSd8HoAXpMui/rvKdGzD4jQLul8GnVPvthVMi1T9de70/z0n/tDOHa9V5g4pF
-xvItw3bewqJTMASMFGrRjDyGpTpSMQ==
-=Wm3b
------END PGP SIGNATURE-----
-
---Sig_/zZ0lldrmVKcOFzK4.x/go5U--
+	Andrew
