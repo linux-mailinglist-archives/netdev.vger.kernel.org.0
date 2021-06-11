@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF8C3A3E4D
-	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 10:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 708703A3E4E
+	for <lists+netdev@lfdr.de>; Fri, 11 Jun 2021 10:49:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231383AbhFKIu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 04:50:58 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:53848 "EHLO
+        id S231401AbhFKIvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 04:51:01 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:29900 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231363AbhFKIu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 04:50:56 -0400
+        with ESMTP id S231390AbhFKIu7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 04:50:59 -0400
 Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 15B8muo1022147;
-        Fri, 11 Jun 2021 01:48:57 -0700
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 15B8mxQ5022150;
+        Fri, 11 Jun 2021 01:49:00 -0700
 From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com
-Subject: [PATCH net 2/3] cxgb4: fix sleep in atomic when flashing PHY firmware
-Date:   Fri, 11 Jun 2021 12:17:46 +0530
-Message-Id: <ef7ce471759b21428ba258a0355615b73646d073.1623400558.git.rahul.lakkireddy@chelsio.com>
+Subject: [PATCH net 3/3] cxgb4: halt chip before flashing PHY firmware image
+Date:   Fri, 11 Jun 2021 12:17:47 +0530
+Message-Id: <fead13617a4cdcac8cc918be34d9e3a111ef625b.1623400558.git.rahul.lakkireddy@chelsio.com>
 X-Mailer: git-send-email 2.5.3
 In-Reply-To: <cover.1623400558.git.rahul.lakkireddy@chelsio.com>
 References: <cover.1623400558.git.rahul.lakkireddy@chelsio.com>
@@ -29,64 +29,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before writing new PHY firmware to on-chip memory, driver queries
-firmware for current running PHY firmware version, which can result
-in sleep waiting for reply. So, move spinlock closer to the actual
-on-chip memory write operation, instead of taking it at the callers.
+When using firmware-assisted PHY firmware image write to flash,
+halt the chip before beginning the flash write operation to allow
+the running firmware to store the image persistently. Otherwise,
+the running firmware will only store the PHY image in local on-chip
+RAM, which will be lost after next reset.
 
-Fixes: 5fff701c838e ("cxgb4: always sync access when flashing PHY firmware")
+Fixes: 4ee339e1e92a ("cxgb4: add support to flash PHY image")
 Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c | 2 --
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c    | 2 --
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c         | 2 ++
- 3 files changed, 2 insertions(+), 4 deletions(-)
+ .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 22 ++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-index 61ea3ec5c3fc..bc2de01d0539 100644
+index bc2de01d0539..df20485b5744 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-@@ -1337,9 +1337,7 @@ static int cxgb4_ethtool_flash_phy(struct net_device *netdev,
+@@ -1337,11 +1337,27 @@ static int cxgb4_ethtool_flash_phy(struct net_device *netdev,
  		return ret;
  	}
  
--	spin_lock_bh(&adap->win0_lock);
++	/* We have to RESET the chip/firmware because we need the
++	 * chip in uninitialized state for loading new PHY image.
++	 * Otherwise, the running firmware will only store the PHY
++	 * image in local RAM which will be lost after next reset.
++	 */
++	ret = t4_fw_reset(adap, adap->mbox, PIORSTMODE_F | PIORST_F);
++	if (ret < 0) {
++		dev_err(adap->pdev_dev,
++			"Set FW to RESET for flashing PHY FW failed. ret: %d\n",
++			ret);
++		return ret;
++	}
++
  	ret = t4_load_phy_fw(adap, MEMWIN_NIC, NULL, data, size);
--	spin_unlock_bh(&adap->win0_lock);
- 	if (ret)
- 		dev_err(adap->pdev_dev, "Failed to load PHY FW\n");
+-	if (ret)
+-		dev_err(adap->pdev_dev, "Failed to load PHY FW\n");
++	if (ret < 0) {
++		dev_err(adap->pdev_dev, "Failed to load PHY FW. ret: %d\n",
++			ret);
++		return ret;
++	}
  
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 1f601de02e70..762113a04dde 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -4424,10 +4424,8 @@ static int adap_init0_phy(struct adapter *adap)
+-	return ret;
++	return 0;
+ }
  
- 	/* Load PHY Firmware onto adapter.
- 	 */
--	spin_lock_bh(&adap->win0_lock);
- 	ret = t4_load_phy_fw(adap, MEMWIN_NIC, phy_info->phy_fw_version,
- 			     (u8 *)phyf->data, phyf->size);
--	spin_unlock_bh(&adap->win0_lock);
- 	if (ret < 0)
- 		dev_err(adap->pdev_dev, "PHY Firmware transfer error %d\n",
- 			-ret);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index 1293505025c1..a0555f4d76fc 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -3820,9 +3820,11 @@ int t4_load_phy_fw(struct adapter *adap, int win,
- 	/* Copy the supplied PHY Firmware image to the adapter memory location
- 	 * allocated by the adapter firmware.
- 	 */
-+	spin_lock_bh(&adap->win0_lock);
- 	ret = t4_memory_rw(adap, win, mtype, maddr,
- 			   phy_fw_size, (__be32 *)phy_fw_data,
- 			   T4_MEMORY_WRITE);
-+	spin_unlock_bh(&adap->win0_lock);
- 	if (ret)
- 		return ret;
- 
+ static int cxgb4_ethtool_flash_fw(struct net_device *netdev,
 -- 
 2.27.0
 
