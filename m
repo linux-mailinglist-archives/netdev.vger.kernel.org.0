@@ -2,81 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC223A50C7
-	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 23:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 475313A5123
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 00:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231431AbhFLVM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Jun 2021 17:12:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44588 "EHLO mail.kernel.org"
+        id S231556AbhFLWpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Jun 2021 18:45:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35694 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229753AbhFLVMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Jun 2021 17:12:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 338DA61009;
-        Sat, 12 Jun 2021 21:10:25 +0000 (UTC)
+        id S229753AbhFLWpj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Jun 2021 18:45:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4834561078
+        for <netdev@vger.kernel.org>; Sat, 12 Jun 2021 22:43:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623532225;
-        bh=vISTxnNCH4cZAzIm4j+RJ46TMBgMiM3mwpRjIkvwTg0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=E0VanTqFC3Z4EcpQ1UAx+nT1uxDq89Uct/sBNTP8JHbeN1aIqFKjZi+zhSD1rP0mn
-         iylqDnvWHODohWs9Y/XbAHz1X9pGDIg1BH+RP0r21hfLaqr4oP2L7Ju9eBLniQpxMe
-         pMv/FlXTkZnwD77uGDL9xWeTZLmtXbrASj5ixvIp7F1+CtPuWr5F2SroW8SaWxMNsV
-         Wy43fKQjWgGdB8I83QkCfoDQRbr94ZgIsZ7Mp1AdEyVCKgpr7FeqN6V4HvyJA//WdK
-         gXA9+puqnY/AwDxjeWMh30M6Li1yyYAb8rQ38C5Tqx2KmUKOEWxJ6M5B2hPBsgZuba
-         SsHOQaTobWYig==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 217B160CE2;
-        Sat, 12 Jun 2021 21:10:25 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1623537819;
+        bh=goJ8aJR9Ya+hWT/awbHD8I6tvWjdOqmoIBdf/EsJyio=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=VyOuWd6Nah+dFFNDCilXfVhwOsG5jrQ+r3Po1qf4QKQcN0SziTmTslwPG63Noxiwx
+         7UH75cCHhW5PLv5QP/aihm3cNu4MgkEwIdInKPhhqZ26HLd9uJZYg0VFzGO/6T00Kv
+         NIM81jVTeDepsHEJttmuCwpd8yC8L7DxIKdALW2ecYUV3SkLyV488NBourFnf94fjT
+         kXhs+0/oCeJrL7s/Sy5lU2e9Fp7cVRXx6uAUnBZBg1/ag/9Mi5bFa1B11/MuAbhbO6
+         0NA3ZIOGtZa93Ii3bdsyhD8gFMUIXMyKG7LHekmeZiREJry+JjOrcpiVLjZAVLgej5
+         j/tutTJ/EiyiQ==
+Received: by mail-wm1-f41.google.com with SMTP id t4-20020a1c77040000b029019d22d84ebdso10615903wmi.3
+        for <netdev@vger.kernel.org>; Sat, 12 Jun 2021 15:43:39 -0700 (PDT)
+X-Gm-Message-State: AOAM5332vZ480WMo90EYfkYwSO+yEn5ZssDdbmdpUPZ181NT/RJCyu4Z
+        W90IkgRejHtwjJFrAhfZQx9aaDdcOFiE8+8Bb24=
+X-Google-Smtp-Source: ABdhPJx6bkxDm8JA+Xxfkq0TiazT1E/ulUI2EWqwStjwKpL/A7K7zE0asPM567xX7qT07O2iKsK+QdR6R4EDpxTAe5U=
+X-Received: by 2002:a1c:c90f:: with SMTP id f15mr26125872wmb.142.1623537817912;
+ Sat, 12 Jun 2021 15:43:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/4] net: Add WWAN link creation support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162353222513.27672.3139028019417802781.git-patchwork-notify@kernel.org>
-Date:   Sat, 12 Jun 2021 21:10:25 +0000
-References: <1623486057-13075-1-git-send-email-loic.poulain@linaro.org>
-In-Reply-To: <1623486057-13075-1-git-send-email-loic.poulain@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        m.chetan.kumar@intel.com, johannes.berg@intel.com, leon@kernel.org,
-        ryazanov.s.a@gmail.com, parav@nvidia.com
+References: <60B24AC2.9050505@gmail.com> <60B36A9A.4010806@gmail.com>
+ <60B3CAF8.90902@gmail.com> <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
+ <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com>
+ <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
+ <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
+ <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com>
+ <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com>
+ <60B6C4B2.1080704@gmail.com> <CAK8P3a0iwVpU_inEVH9mwkMkBxrxbGsXAfeR9_bOYBaNP4Wx5g@mail.gmail.com>
+ <60BEA6CF.9080500@gmail.com> <CAK8P3a12-c136eHmjiN+BJfZYfRjXz6hk25uo_DMf+tvbTDzGw@mail.gmail.com>
+ <60BFD3D9.4000107@gmail.com> <CAK8P3a0Wry54wUGpdRnet3WAx1yfd-RiAgXvmTdPd1aCTTSsFw@mail.gmail.com>
+ <60BFEA2D.2060003@gmail.com> <CAK8P3a0j+kSsEYwzdERJ7EZ8KheAPhyj+zYi645pbykrxgZYdQ@mail.gmail.com>
+ <60C4F187.3050808@gmail.com>
+In-Reply-To: <60C4F187.3050808@gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Sun, 13 Jun 2021 00:41:37 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3vnnaYf6+v9N1WmH0N7uG55DrC=Hy71mYi4Kt+FXBRuw@mail.gmail.com>
+Message-ID: <CAK8P3a3vnnaYf6+v9N1WmH0N7uG55DrC=Hy71mYi4Kt+FXBRuw@mail.gmail.com>
+Subject: Re: Realtek 8139 problem on 486.
+To:     Nikolai Zhubr <zhubr.2@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Sat, 12 Jun 2021 10:20:53 +0200 you wrote:
-> Most of the modern WWAN modems are able to support multiple network
-> contexts, allowing user to connect to different APNs (e.g. Internet,
-> MMS, etc...). These contexts are usually dynamically configured via
-> a control channel such as MBIM, QMI or AT.
-> 
-> Each context is naturally represented as a network link/device, and
-> the muxing of these links is usually vendor/bus specific (QMAP, MBIM,
-> intel iosm...). Today some drivers create a static collection of
-> netdevs at init time, some relies on VLAN link for associating a context
-> (cdc-mbim), some exposes sysfs attribute for dynamically creating
-> additional netdev (qmi_wwan add_mux attr) or relies on vendor specific
-> link type (rmnet) for performing the muxing... so there is no generic
-> way to handle WWAN links, making user side integration painful.
-> 
+On Sat, Jun 12, 2021 at 7:40 PM Nikolai Zhubr <zhubr.2@gmail.com> wrote:
+> 09.06.2021 10:09, Arnd Bergmann:
 > [...]
+> > If it's only a bit slower, that is not surprising, I'd expect it to
+> > use fewer CPU
+> > cycles though, as it avoids the expensive polling.
+> >
+> > There are a couple of things you could do to make it faster without reducing
+> > reliability, but I wouldn't recommend major surgery on this driver, I was just
+> > going for the simplest change that would make it work right with broken
+> > IRQ settings.
+> >
+> > You could play around a little with the order in which you process events:
+> > doing RX first would help free up buffer space in the card earlier, possibly
+> > alternating between TX and RX one buffer at a time, or processing both
+> > in a loop until the budget runs out would also help.
+>
+> I've modified your patch so as to quickly test several approaches within
+> a single file by just switching some conditional defines.
+> My diff against 4.14 is here:
+> https://pastebin.com/mgpLPciE
+>
+> The tests were performed using a simple shell script:
+> https://pastebin.com/Vfr8JC3X
+>
+> Each cell in the resulting table shows:
+> - tcp sender/receiver (Mbit/s) as reported by iperf3 (total)
+> - udp sender/receiver (Mbit/s) as reported by iperf3 (total)
+> - accumulated cpu utilization during tcp+upd test.
+>
+> The first line in the table essentially corresponds to a standard
+> unmodified kernel. The second line corresponds to your initially
+> proposed approach.
+>
+> All tests run with the same physical instance of 8139D card against the
+> same server.
+>
+> (The table best viewed in monospace font)
+> +-------------------+-------------+-----------+-----------+
+> | #Defines          ; i486dx2/66  ; Pentium3/ ; PentiumE/ |
+> |                   ; (Edge IRQ)  ;  1200     ; Dual 2600 |
+> +-------------------+-------------+-----------+-----------+
+> | TX_WORK_IN_IRQ 1  ;             ; tcp 86/86 ; tcp 94/94 |
+> | TX_WORK_IN_POLL 0 ;  (fails)    ; udp 96/96 ; udp 96/96 |
+> | LOOP_IN_IRQ 0     ;             ; cpu 59%   ; cpu 15%   |
+> | LOOP_IN_POLL 0    ;             ;           ;           |
+> +-------------------+-------------+-----------+-----------+
+> | TX_WORK_IN_IRQ 0  ; tcp 9.4/9.1 ; tcp 88/88 ; tcp 95/94 |
+> | TX_WORK_IN_POLL 1 ; udp 5.5/5.5 ; udp 96/96 ; udp 96/96 |
+> | LOOP_IN_IRQ 0     ; cpu 98%     ; cpu 55%   ; cpu 19%   |
+> | LOOP_IN_POLL 0    ;             ;           ;           |
+> +-------------------+-------------+-----------+-----------+
+> | TX_WORK_IN_IRQ 0  ; tcp 9.0/8.7 ; tcp 87/87 ; tcp 95/94 |
+> | TX_WORK_IN_POLL 1 ; udp 5.8/5.8 ; udp 96/96 ; udp 96/96 |
+> | LOOP_IN_IRQ 0     ; cpu 98%     ; cpu 58%   ; cpu 20%   |
+> | LOOP_IN_POLL 1    ;             ;           ;           |
+> +-------------------+-------------+-----------+-----------+
+> | TX_WORK_IN_IRQ 1  ; tcp 7.3/7.3 ; tcp 87/86 ; tcp 94/94 |
+> | TX_WORK_IN_POLL 0 ; udp 6.2/6.2 ; udp 96/96 ; udp 96/96 |
+> | LOOP_IN_IRQ 1     ; cpu 99%     ; cpu 57%   ; cpu 17%   |
+> | LOOP_IN_POLL 0    ;             ;           ;           |
+> +-------------------+-------------+-----------+-----------+
+> | TX_WORK_IN_IRQ 1  ; tcp 6.5/6.5 ; tcp 88/88 ; tcp 94/94 |
+> | TX_WORK_IN_POLL 1 ; udp 6.1/6.1 ; udp 96/96 ; udp 96/96 |
+> | LOOP_IN_IRQ 1     ; cpu 99%     ; cpu 55%   ; cpu 16%   |
+> | LOOP_IN_POLL 1    ;             ;           ;           |
+> +-------------------+-------------+-----------+-----------+
+> | TX_WORK_IN_IRQ 1  ; tcp 5.7/5.7 ; tcp 87/87 ; tcp 95/94 |
+> | TX_WORK_IN_POLL 1 ; udp 6.1/6.1 ; udp 96/96 ; udp 96/96 |
+> | LOOP_IN_IRQ 1     ; cpu 98%     ; cpu 56%   ; cpu 15%   |
+> | LOOP_IN_POLL 0    ;             ;           ;           |
+> +-------------------+-------------+-----------+-----------+
+>
+> Hopefully this helps to choose the most benefical approach.
 
-Here is the summary with links:
-  - [net-next,v3,1/4] rtnetlink: add alloc() method to rtnl_link_ops
-    https://git.kernel.org/netdev/net-next/c/8c713dc93ca9
-  - [net-next,v3,2/4] rtnetlink: add IFLA_PARENT_[DEV|DEV_BUS]_NAME
-    https://git.kernel.org/netdev/net-next/c/00e77ed8e64d
-  - [net-next,v3,3/4] wwan: add interface creation support
-    https://git.kernel.org/netdev/net-next/c/88b710532e53
-  - [net-next,v3,4/4] net: mhi_net: Register wwan_ops for link creation
-    https://git.kernel.org/netdev/net-next/c/13adac032982
+I think several variants can just be eliminated without looking
+at the numbers:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+- doing the TX work in the irq handler (with the loop) but not in
+  the poll function is incorrect with the edge interupts, as it has
+  the same race as before, you just make it much harder to hit
 
+- doing the tx work in both the irq handler and the poll function
+  is probably not helpful, you just do extra work
 
+- calling the tx cleanup loop in a second loop is not helpful
+  if you don't do anything interesting after finding that all
+  TX frames are done.
+
+For best performance I would suggest restructuring the poll
+function from your current
+
+  while (boguscnt--) {
+       handle_rare_events();
+       while (tx_pending())
+             handle_one_tx();
+  }
+  while (rx_pending && work_done < budged)
+         work_done += handle_one_rx();
+
+to something like
+
+   handle_rare_events();
+   do {
+      if (rx_pending())
+          work_done += handle_one_rx();
+      if (tx_pending())
+          work_done += handle_one_tx();
+   } while ((tx_pending || rx_pending) && work_done < budget)
+
+This way, you can catch the most events in one poll function
+if new work comes in while you are processing the pending
+events.
+
+Or, to keep the change simpler, keep the inner loop in the tx
+and rx processing, doing all rx events before moving on
+to processing all tx events, but then looping back to try both
+again, until either the budget runs out or no further events
+are pending.
+
+      Arnd
