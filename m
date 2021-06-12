@@ -2,140 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA8E23A4CCC
-	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 06:26:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D6E93A4CDF
+	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 06:40:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbhFLE2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Jun 2021 00:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40038 "EHLO
+        id S229942AbhFLEmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Jun 2021 00:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbhFLE2q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 00:28:46 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A8CC061574
-        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 21:26:47 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lrvEH-0008IN-Uw; Sat, 12 Jun 2021 06:26:41 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lrvEF-0002Aj-Hc; Sat, 12 Jun 2021 06:26:39 +0200
-Date:   Sat, 12 Jun 2021 06:26:39 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v4 4/9] net: phy: micrel: apply resume errata
- workaround for ksz8873 and ksz8863
-Message-ID: <20210612042639.bgsloltuqoipmwtk@pengutronix.de>
-References: <20210611071527.9333-1-o.rempel@pengutronix.de>
- <20210611071527.9333-5-o.rempel@pengutronix.de>
- <20210611192010.ptmblzpj6ilt24ly@skbuf>
+        with ESMTP id S229446AbhFLEmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 00:42:02 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2BDC061574
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 21:40:03 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id u11so8088504oiv.1
+        for <netdev@vger.kernel.org>; Fri, 11 Jun 2021 21:40:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/bNJypyILWJRiJof5Hzmdp6rFylQ1GYiaRupnxAGT+8=;
+        b=Wwco+iPb23wPr6T3ejUk5dIoQPxBuhn9OlNKP0xtu1YXFhRv0NsuLcT4h5mr50Fk3D
+         bAa7eCgKrZBGMSgRIp/VSisuSH1qbIRwRkrXcXLAG1NlrcP8PRMN7r32fOkWHQb1N//l
+         /IA4hxIg1oNQv0cY0Ur2k+PQmpROMy7BDf1GVYst+NQiAJ/cyYadiPt0JwdSfi2BEg7u
+         TBmOQ7T8VoPCciMQJPt97HpC/TE51Isj//ZLK9lAk2guSI6QQPCZrdiyxy5cRfjj7yiO
+         4enSZpwABgg/qRHous4Le2/CGtwo+YNRmCUktruBuPOL/FdcxaWg65Y8Rp31iAeO77Qq
+         /pCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/bNJypyILWJRiJof5Hzmdp6rFylQ1GYiaRupnxAGT+8=;
+        b=OWTH5Z4XAwceZc0MoJeW6LBdf9pf4QBFxHJcDXIz97P9/1i9ksbuvjsQQpMB60wprq
+         p3QQfjreB1EmuMpRnxla/2KV8iLRbruf+SjmY0gKKT7NAxnF4H63JDn2yCWqgbhGYXP5
+         BwWA9u8mabP127ZLprr4szaKCA2iQyFFOl7ROxvbHctmrHGRVcyHXXdwNkZ4TPXeV1ZA
+         LWtlcrli/8P1wGoZngDw0CQes4+jTBT1wuSta4CK6q7TmRUl4KX7rR96BHY/nrOWQjs+
+         uSM/ghRxjSPfpP4PQqAGjk+2kyqAXCFix68E+9z2awPN6q6yZ+vApBuV6TIYXlOg8Ff/
+         PG/g==
+X-Gm-Message-State: AOAM533QeNeCwifiikVM+qKbZq4Z1HnqVhBnm+VwuwqiqX90AzZ1UTy8
+        DnqLdU78Gzgu0IcEk+w8fpQ=
+X-Google-Smtp-Source: ABdhPJyJgcF8KI0KzRwY6B7J/8+g9R3vnthoXF237hTuhv0kYg4GQSb+kh5AJmoMqVOtYWT8dLYZGw==
+X-Received: by 2002:aca:f5c3:: with SMTP id t186mr4552240oih.97.1623472801968;
+        Fri, 11 Jun 2021 21:40:01 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.22])
+        by smtp.googlemail.com with ESMTPSA id n7sm1578083oom.37.2021.06.11.21.40.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Jun 2021 21:40:01 -0700 (PDT)
+Subject: Re: [PATCH RESEND2 iproute2 net-next 0/3] devlink rate support
+To:     dlinkin@nvidia.com, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        stephen@networkplumber.org, vladbu@nvidia.com, parav@nvidia.com,
+        huyn@nvidia.com
+References: <1623396337-30106-1-git-send-email-dlinkin@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <437c3d79-ed18-ee9f-cfb7-615da1e68f36@gmail.com>
+Date:   Fri, 11 Jun 2021 22:39:59 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <1623396337-30106-1-git-send-email-dlinkin@nvidia.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210611192010.ptmblzpj6ilt24ly@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 06:26:05 up 191 days, 18:32, 38 users,  load average: 0.17, 0.10,
- 0.02
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 10:20:10PM +0300, Vladimir Oltean wrote:
-> On Fri, Jun 11, 2021 at 09:15:22AM +0200, Oleksij Rempel wrote:
-> > The ksz8873 and ksz8863 switches are affected by following errata:
-> > 
-> > | "Receiver error in 100BASE-TX mode following Soft Power Down"
-> > |
-> > | Some KSZ8873 devices may exhibit receiver errors after transitioning
-> > | from Soft Power Down mode to Normal mode, as controlled by register 195
-> > | (0xC3) bits [1:0]. When exiting Soft Power Down mode, the receiver
-> > | blocks may not start up properly, causing the PHY to miss data and
-> > | exhibit erratic behavior. The problem may appear on either port 1 or
-> > | port 2, or both ports. The problem occurs only for 100BASE-TX, not
-> > | 10BASE-T.
-> > |
-> > | END USER IMPLICATIONS
-> > | When the failure occurs, the following symptoms are seen on the affected
-> > | port(s):
-> > | - The port is able to link
-> > | - LED0 blinks, even when there is no traffic
-> > | - The MIB counters indicate receive errors (Rx Fragments, Rx Symbol
-> > |   Errors, Rx CRC Errors, Rx Alignment Errors)
-> > | - Only a small fraction of packets is correctly received and forwarded
-> > |   through the switch. Most packets are dropped due to receive errors.
-> > |
-> > | The failing condition cannot be corrected by the following:
-> > | - Removing and reconnecting the cable
-> > | - Hardware reset
-> > | - Software Reset and PCS Reset bits in register 67 (0x43)
-> > |
-> > | Work around:
-> > | The problem can be corrected by setting and then clearing the Port Power
-> > | Down bits (registers 29 (0x1D) and 45 (0x2D), bit 3). This must be done
-> > | separately for each affected port after returning from Soft Power Down
-> > | Mode to Normal Mode. The following procedure will ensure no further
-> > | issues due to this erratum. To enter Soft Power Down Mode, set register
-> > | 195 (0xC3), bits [1:0] = 10.
-> > |
-> > | To exit Soft Power Down Mode, follow these steps:
-> > | 1. Set register 195 (0xC3), bits [1:0] = 00 // Exit soft power down mode
-> > | 2. Wait 1ms minimum
-> > | 3. Set register 29 (0x1D), bit [3] = 1 // Enter PHY port 1 power down mode
-> > | 4. Set register 29 (0x1D), bit [3] = 0 // Exit PHY port 1 power down mode
-> > | 5. Set register 45 (0x2D), bit [3] = 1 // Enter PHY port 2 power down mode
-> > | 6. Set register 45 (0x2D), bit [3] = 0 // Exit PHY port 2 power down mode
-> > 
-> > This patch implements steps 2...6 of the suggested workaround. During
-> > (initial) switch power up, step 1 is executed by the dsa/ksz8795
-> > driver's probe function.
-> > 
-> > Note: In this workaround we toggle the MII_BMCR register's BMCR_PDOWN
-> > bit, this is translated to the actual register and bit (as mentioned in
-> > the arratum) by the ksz8_r_phy()/ksz8_w_phy() functions.
+On 6/11/21 1:25 AM, dlinkin@nvidia.com wrote:
+> From: Dmytro Linkin <dlinkin@nvidia.com>
 > 
-> s/arratum/erratum/
+> Resend rebased on top of net-next. Dropped header update patch.
 > 
-> Also, the commit message is still missing this piece of information you
-> gave in the previous thread:
+> Serries implements devlink rate commands, which are:
+> - Dump particular or all rate objects (JSON or non-JSON)
+> - Add/Delete node rate object
+> - Set tx rate share/max values for rate object
+> - Set/Unset parent rate object for other rate object
 > 
-> | this issue was seen  at some early point of development (back in 2019)
-> | reproducible on system start. Where switch was in some default state or
-> | on a state configured by the bootloader. I didn't tried to reproduce it
-> | now.
+> Examples:
 > 
-> Years from now, some poor souls might struggle to understand why this
-> patch was done this way. If it is indeed the case that the issue is only
-> seen during the handover between bootloader and kernel, there is really
-> no reason to implement the ERR workaround in phy_resume instead of doing
-> it once at probe time.
+> Display all rate objects:
+> 
+>     # devlink port function rate show
+>     pci/0000:03:00.0/1 type leaf parent some_group
+>     pci/0000:03:00.0/2 type leaf tx_share 12Mbit
+>     pci/0000:03:00.0/some_group type node tx_share 1Gbps tx_max 5Gbps
+> 
+> Display leaf rate object bound to the 1st devlink port of the
+> pci/0000:03:00.0 device:
+> 
+>     # devlink port function rate show pci/0000:03:00.0/1
+>     pci/0000:03:00.0/1 type leaf
+> 
+> Display node rate object with name some_group of the pci/0000:03:00.0
+> device:
+> 
+>     # devlink port function rate show pci/0000:03:00.0/some_group
+>     pci/0000:03:00.0/some_group type node
+> 
+> Display leaf rate object rate values using IEC units:
+> 
+>     # devlink -i port function rate show pci/0000:03:00.0/2
+>     pci/0000:03:00.0/2 type leaf 11718Kibit
+> 
+> Display pci/0000:03:00.0/2 leaf rate object as pretty JSON output:
+> 
+>     # devlink -jp port function rate show pci/0000:03:00.0/2
+>     {
+>         "rate": {
+>             "pci/0000:03:00.0/2": {
+>                 "type": "leaf",
+>                 "tx_share": 1500000
+>             }
+>         }
+>     }
+> 
+> Create node rate object with name "1st_group" on pci/0000:03:00.0 device:
+> 
+>     # devlink port function rate add pci/0000:03:00.0/1st_group
+> 
+> Create node rate object with specified parameters:
+> 
+>     # devlink port function rate add pci/0000:03:00.0/2nd_group \
+>         tx_share 10Mbit tx_max 30Mbit parent 1st_group
+> 
+> Set parameters to the specified leaf rate object:
+> 
+>     # devlink port function rate set pci/0000:03:00.0/1 \
+>         tx_share 2Mbit tx_max 10Mbit
+> 
+> Set leaf's parent to "1st_group":
+> 
+>     # devlink port function rate set pci/0000:03:00.0/1 parent 1st_group
+> 
+> Unset leaf's parent:
+> 
+>     # devlink port function rate set pci/0000:03:00.0/1 noparent
+> 
+> Delete node rate object:
+> 
+>     # devlink port function rate del pci/0000:03:00.0/2nd_group
+> 
+> Rate values can be specified in bits or bytes per second (bit|bps), with
+> any SI (k, m, g, t) or IEC (ki, mi, gi, ti) prefix. Bare number means
+> bits per second. Units also printed in "show" command output, but not
+> necessarily the same which were specified with "set" or "add" command.
+> -i/--iec switch force output in IEC units. JSON output always print
+> values as bytes per sec.
+> 
+> Dmytro Linkin (3):
+>   devlink: Add helper function to validate object handler
+>   devlink: Add port func rate support
+>   devlink: Add ISO/IEC switch
+> 
+>  devlink/devlink.c       | 527 +++++++++++++++++++++++++++++++++++++++++++++---
+>  man/man8/devlink-port.8 |   8 +
+>  man/man8/devlink-rate.8 | 270 +++++++++++++++++++++++++
+>  man/man8/devlink.8      |   4 +
+>  4 files changed, 780 insertions(+), 29 deletions(-)
+>  create mode 100644 man/man8/devlink-rate.8
+> 
 
-Ok, i'll drop this patch for now.
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+applied to iproute2-next. Thanks,
