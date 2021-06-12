@@ -2,35 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7E533A4C2A
-	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 03:49:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7FF43A4C43
+	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 04:37:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230380AbhFLBvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Jun 2021 21:51:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55370 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229942AbhFLBvt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Jun 2021 21:51:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 98A7661181;
-        Sat, 12 Jun 2021 01:49:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623462589;
-        bh=4aGCfXJUv4O0zaIVk5GoGeelKCUSZd8Tv4bFiHsM5WA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RrY4s9VH+p66niaNjdatF7B8aSnGDy34KaaGPB/CFGCPlTbF3WP+jtqpRNeYr4s0m
-         7YqyXS0luJ0UOi8dW0GaK7RNs7XmunOlP4pShDwl06JdPaDiLNyMenNRGCIJ3gAP65
-         6hK2tBvgGpbObxnEki0t/nfW6Wh6j4yoq5Zxd8MZam3PE4GdvH75GPrJi9T5BZTFBV
-         xwegTEK6IWn/T9lMNg+65yiLb2h6/JeSGesXZNJoUn7v/78NpRzGjxAQLPpybY/Ky5
-         JQVHqGYQ5vdmWHPWlaXyZmDW4twM3js540cwEYZfKIB35yfW54oHCvVU/gbe7emYx/
-         Ad7Tji4lstHJA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, mkubecek@suse.cz, f.fainelli@gmail.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        syzbot+59aa77b92d06cd5a54f2@syzkaller.appspotmail.com
-Subject: [PATCH net] ethtool: strset: fix message length calculation
-Date:   Fri, 11 Jun 2021 18:49:48 -0700
-Message-Id: <20210612014948.211817-1-kuba@kernel.org>
+        id S230465AbhFLCjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Jun 2021 22:39:31 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:44017 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229584AbhFLCjb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Jun 2021 22:39:31 -0400
+Received: by mail-pl1-f193.google.com with SMTP id v12so3724406plo.10;
+        Fri, 11 Jun 2021 19:37:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IITX7U/U2NxdQ4BXZwOJpYFoyLbJ0R4PGybi+Tq0JRM=;
+        b=qLhWylQHjo/V0ABaewfoPz2kj0xo0y+oG51iT858MekfOVQ2vMaSou6Bk7AFE7Bty6
+         qKfvUhqpnNLik+UH4NEN/cZl/l9rEkAoEWmiLHmVuqk/jJ14ahtoxxdT34f9mii1qRCj
+         gvuwkfdfmfQCep7zsZyF2/Jscq6cIcTBWQHqd//zcmEsXPs7CA1asdvZ7P21joR1q6aC
+         RqyAxNawNjIPu8PLjA+f+3DQV1WEWgl+KjuW8cZHlozYlAvhYHyneGLTJ39htUxy6I1P
+         r3RBZ1DqRHQuOLPQCzBOUxrEtX+grae4OgBsiZ65EtB8hoGyktstWaGhF2VJvoedCA/C
+         1V2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IITX7U/U2NxdQ4BXZwOJpYFoyLbJ0R4PGybi+Tq0JRM=;
+        b=irPuKuxjRkJp0WBCw6CENkmpgaNgydkwkzamZdKWP5j7k7To5r7KCDUKbEcNEuhlJo
+         8xqFCVhpgcTT/PvfwPPADDmGkVSgbTdX/Yz6KFdPQfKPv5lfKqY6WFhZCHGkQxXqehxU
+         kfsrULhruS5BdEdpq3vM1VQ8eA2CURSdIMoUjIyJlqnPKGfjXF4MhEHzlz8wHNJiZNry
+         6NLf4lHNqa0inJBrqjJbnK6flPHXBAiMKsMzaV501H9cIcYGCJWIAc2fm/ejWqEhTC1v
+         t2wtSM8T0HOtT7+LLk9tDSIhKq7lKyOGM9JzKsxmhyaNi4oiybXV/2RqQGSd0McJCNi/
+         H+nQ==
+X-Gm-Message-State: AOAM533Q3PFRYfsMwDTKOmxs+L7KRhstdhnSnPaxv1Dtn9CYU3IPEjcp
+        CA/2JkcpjakiqA4t+R3r4+YRzmqK8lU=
+X-Google-Smtp-Source: ABdhPJzFTmx0hBg0Jz7gl16khYdFFsmpdbuPl4Eyv3u8X/o6i6CqHoCsBUZ/XXCVQmpVbB4l5lNTjg==
+X-Received: by 2002:a17:90a:d204:: with SMTP id o4mr7281964pju.23.1623465381271;
+        Fri, 11 Jun 2021 19:36:21 -0700 (PDT)
+Received: from localhost ([2409:4063:4d05:9fb3:bc63:2dba:460a:d70e])
+        by smtp.gmail.com with ESMTPSA id fs24sm6059161pjb.6.2021.06.11.19.36.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Jun 2021 19:36:20 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf-next 0/3] Fixes for TC-BPF series
+Date:   Sat, 12 Jun 2021 08:04:59 +0530
+Message-Id: <20210612023502.1283837-1-memxor@gmail.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -38,43 +62,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Outer nest for ETHTOOL_A_STRSET_STRINGSETS is not accounted for.
-This may result in ETHTOOL_MSG_STRSET_GET producing a warning like:
+These are a few simple cleanups. Two of these hopefully silence the coverity
+warnings. Even though there is no real bug here, the report is valid as per
+language rules, and overall it does make the code a bit simpler. There's one
+other patch to add the forgotten NLM_F_EXCL that I spotted while doing this.
 
-    calculated message payload length (684) not sufficient
-    WARNING: CPU: 0 PID: 30967 at net/ethtool/netlink.c:369 ethnl_default_doit+0x87a/0xa20
+Andrii, would you be able to tell whether this silences the warnings? I wasn't
+able to figure out how to run the Coverity suite locally.
 
-and a splat.
+Kumar Kartikeya Dwivedi (3):
+  libbpf: remove unneeded check for flags during detach
+  libbpf: set NLM_F_EXCL when creating qdisc
+  libbpf: add request buffer type for netlink messages
 
-As usually with such warnings three conditions must be met for the warning
-to trigger:
- - there must be no skb size rounding up (e.g. reply_size of 684);
- - string set must be per-device (so that the header gets populated);
- - the device name must be at least 12 characters long.
+ tools/lib/bpf/netlink.c | 111 +++++++++++++++-------------------------
+ tools/lib/bpf/nlattr.h  |  37 +++++++++-----
+ 2 files changed, 66 insertions(+), 82 deletions(-)
 
-all in all with current user space it looks like reading priv flags
-is the only place this could potentially happen. Or with syzbot :)
-
-Reported-by: syzbot+59aa77b92d06cd5a54f2@syzkaller.appspotmail.com
-Fixes: 71921690f974 ("ethtool: provide string sets with STRSET_GET request")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/ethtool/strset.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
-index b3029fff715d..2d51b7ab4dc5 100644
---- a/net/ethtool/strset.c
-+++ b/net/ethtool/strset.c
-@@ -353,6 +353,8 @@ static int strset_reply_size(const struct ethnl_req_info *req_base,
- 	int len = 0;
- 	int ret;
- 
-+	len += nla_total_size(0); /* ETHTOOL_A_STRSET_STRINGSETS */
-+
- 	for (i = 0; i < ETH_SS_COUNT; i++) {
- 		const struct strset_info *set_info = &data->sets[i];
- 
 -- 
 2.31.1
 
