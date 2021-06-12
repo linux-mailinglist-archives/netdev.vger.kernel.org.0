@@ -2,70 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF63E3A502D
-	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 20:54:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06BFC3A5073
+	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 22:00:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231558AbhFLS4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Jun 2021 14:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbhFLS4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 14:56:17 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D21FC061574;
-        Sat, 12 Jun 2021 11:54:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=pQBdmDTKEn+U8FsRQoW74iIU5Efy0AtD7tjnaULbgjk=; b=o+TDTOaqgYbz5RdMX5NXvIGAt
-        Et1k8yhIwK5MMNHjrzxILWxiCfZz7BRVZctG9oiaeBZqrFf3BXtJTOA+NApSMhAHGh4rHtdeD4iOP
-        8QwFGPN/BOSLv4v8D/Ee8W05Sz1WzmWQXizoicmj+a7GOCy87XTO0a4Kb3apdpVXZfzCUNrKROMDl
-        FlBIN8VWoP8YgBQdod84HP2UwO6MVvB3FvPOCnhHJVLJbjZonWztfBgmU0Xhi9bTCW3SW2KvNfzAU
-        QfYmIcDc6oO9fxwKbsFL6m87/Xl2LN0bN8w6gs/U0K7WUnA6QF8sZPtuiddDuriL+t8uFEgicgOLe
-        /hC9W9BJw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44954)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ls8lq-0002kT-Nh; Sat, 12 Jun 2021 19:54:14 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ls8lq-0002Se-H8; Sat, 12 Jun 2021 19:54:14 +0100
-Date:   Sat, 12 Jun 2021 19:54:14 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>
-Subject: Re: [PATCH net-next 4/4] net: phylink: Add 25G BASE-R support
-Message-ID: <20210612185414.GO22278@shell.armlinux.org.uk>
-References: <20210611125453.313308-1-steen.hegelund@microchip.com>
- <20210611125453.313308-5-steen.hegelund@microchip.com>
+        id S231417AbhFLUCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Jun 2021 16:02:14 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:26660 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229985AbhFLUCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 16:02:12 -0400
+Received: from localhost.localdomain ([86.243.172.93])
+        by mwinf5d33 with ME
+        id GL062500J21Fzsu03L07KJ; Sat, 12 Jun 2021 22:00:11 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 12 Jun 2021 22:00:11 +0200
+X-ME-IP: 86.243.172.93
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, jeffrey.t.kirsher@intel.com,
+        sasha.neftin@intel.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] igc: Fix an error handling path in 'igc_probe()'
+Date:   Sat, 12 Jun 2021 22:00:05 +0200
+Message-Id: <f24ae8234fedd1689fa0116038e10e4d3a033802.1623527947.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210611125453.313308-5-steen.hegelund@microchip.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 02:54:53PM +0200, Steen Hegelund wrote:
-> Add 25gbase-r interface type and speed to phylink.
-> This is needed for the Sparx5 switch.
-> 
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+If an error occurs after a 'pci_enable_pcie_error_reporting()' call, it
+must be undone by a corresponding 'pci_disable_pcie_error_reporting()'
+call, as already done in the remove function.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Fixes: c9a11c23ceb6 ("igc: Add netdev")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/intel/igc/igc_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 3f6b6d4543a8..6389a41cacc1 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -6057,6 +6057,7 @@ static int igc_probe(struct pci_dev *pdev,
+ err_ioremap:
+ 	free_netdev(netdev);
+ err_alloc_etherdev:
++	pci_disable_pcie_error_reporting(pdev);
+ 	pci_release_mem_regions(pdev);
+ err_pci_reg:
+ err_dma:
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
