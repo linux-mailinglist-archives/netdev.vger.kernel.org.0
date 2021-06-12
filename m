@@ -2,59 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E303A4F47
-	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 16:37:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F81D3A4F4D
+	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 16:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231415AbhFLOjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Jun 2021 10:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231408AbhFLOjp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 10:39:45 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BE8C0613A3
-        for <netdev@vger.kernel.org>; Sat, 12 Jun 2021 07:37:45 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id l64so13065707ioa.7
-        for <netdev@vger.kernel.org>; Sat, 12 Jun 2021 07:37:45 -0700 (PDT)
+        id S231484AbhFLOkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Jun 2021 10:40:47 -0400
+Received: from mail-io1-f42.google.com ([209.85.166.42]:39717 "EHLO
+        mail-io1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231461AbhFLOkp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 10:40:45 -0400
+Received: by mail-io1-f42.google.com with SMTP id f10so20205601iok.6
+        for <netdev@vger.kernel.org>; Sat, 12 Jun 2021 07:38:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sVpsNjSma8gM+rAIpOEpuls8lMMnYBT1zZkyUPGfEFw=;
-        b=hOPtH3zpGyr1MV5KOt5zRKenpTYTd117KUeSynzayvtWHqD8DFx5VRUBZQy6mMwS6f
-         eyOqfO9BuxOWigyV+lcbyc0fxYiE5vwb+Ds561lZQKBO/UpaSqc9+bMZOBrMfyCNp+N4
-         2yj9JKIsWP0btROkRPBboi26dkUSiDDeefvL1lKC7j9yO8AMIx+UwbH5/8/MVena7UdQ
-         wUkzOR0cexOHVyeD4QRo/++Mc8E4VW41YpIEn5zjTA8f5cBpORVDDusFzTJbNsJNFQ7g
-         S51+d8yf/WarPTfI7GofmR0jAtYUxhgBNbucwYJidKmPFhL8lrrT/cTHLWMRr90fALUY
-         OtCg==
+        bh=XdGocdnkWEhyGlWBEvMTXuqlG7P/EjC9lkmvGdkeF8Y=;
+        b=Zm4N0uZcjB0fKwr+fcqoXcomkjX5uGAtQwpxvbw9ddhNqvUSCkXVPiDHenZ5/H4Bpg
+         zIdROMvqaBPtm1ynaHGl9WiCt+K2P4bTQQueHqqhO50QnoN2hnZdtTK8sxdenRJT28hF
+         BT+z3Lu913mpAh+x8OadVadY6Xihwh0ifuUvvujgm5dWHH/EDTWX4pTHq+mux0JzNTG2
+         sP/0iZs0hZqwH+z0OK3Zg5CB/eKVoEYndhIoosDiRXI6+ZhgejITCkU37qrjjEjWNWpp
+         zG+p2nHnmjiqvfDE4T0yMozGHXF5rOSVQBStxK6XdDWglwD4ZRmFI1lN+joRRpwvADMv
+         1RBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=sVpsNjSma8gM+rAIpOEpuls8lMMnYBT1zZkyUPGfEFw=;
-        b=Th6CdozC+Ml+vzjHqR+74uVqq+btnO+oD5tdlOcsQFHdqMRSEcJ9/eqx/Eh98F0stc
-         xWhTAtV8bz2APLK5D2XLmook9jaWY+hY6oJBvWOWkf2w+TUhEPnk2kfyFVMs27wl+jsX
-         pxpJvYuoeYgGLl2Ca9MUkMzKe/xQalSfWjxLqKy9u5iVPGgjX1UjxEiccy5dkXMgaZhQ
-         67tqdC4VqA615Sud2F+zScO0QLwoFsaiBXixmDgtO3vjIh5TlJSLclXLasRiy+OZ0T3u
-         tPPNiFbg0CBzzDpvm2/v08pfhN3VY0PlIQ3AwwU2pBla7EtKWds6D2uAUlQovm2Bq1AY
-         uasQ==
-X-Gm-Message-State: AOAM533faqVWBB1opDHrNRSaxPf25xyPz1iNEl7QdoPgcoTNlOybZZz8
-        2IGUhCST2yey0wp2MqCCSUBIWdOrLfpeLVjB
-X-Google-Smtp-Source: ABdhPJzClMEThmFRq31OhIVO5ERWyfTasoDwNWUWfEo6BifoMZl3AfQRHsB4Ceenem7zJlu3cmSZbA==
-X-Received: by 2002:a05:6602:2143:: with SMTP id y3mr7447828ioy.89.1623508664920;
-        Sat, 12 Jun 2021 07:37:44 -0700 (PDT)
+        bh=XdGocdnkWEhyGlWBEvMTXuqlG7P/EjC9lkmvGdkeF8Y=;
+        b=KhFMoRwnAW4YLkYYoMU/Vo++gxBjVQ2/u4lK1qh0bnbY+BUkIk2pSkYd2HIVmp5Cus
+         7FUJ3+uBIxinyJT4hHw8s3H/v5qfl7FB0TAdLzLPQKh5s7Jue8Lxn9Rc4bthYVxfQ7I+
+         zSpEQFb6mpyoDjUcJCxe9fTYaFKsizRaiseVFHgz5EQCfIIusISXZaQNPy8DtZPYFwc/
+         Y8v9bmsKG68MuDePxcD+oqyv/XOEuovh8OZcSpwKOOq5hI+twC2BoT7H62ENloM7c8li
+         5Qzfp7NEFf9wAy3JVmDrbwukTZmyVRwWi/y5cCZ4dBXrtxbVECB86L95dNBMQTYZY15H
+         txAg==
+X-Gm-Message-State: AOAM531Z5nko8dlHUZETXwLe/5JF/lQ1dgGX2zgFB5pvQmzT6cqLIF+G
+        BHYKn7Wu4SV2PmfkZ+Dfhma4/w==
+X-Google-Smtp-Source: ABdhPJwzos8hat4ZiV35fsZZn+J2uRBUMFuxvxkarIyMQfrAnpR2FDodp9Kfn1CqDNwjgXypQEPFVg==
+X-Received: by 2002:a6b:b7d6:: with SMTP id h205mr7554507iof.188.1623508665772;
+        Sat, 12 Jun 2021 07:37:45 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id k4sm5126559ior.55.2021.06.12.07.37.44
+        by smtp.gmail.com with ESMTPSA id k4sm5126559ior.55.2021.06.12.07.37.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Jun 2021 07:37:44 -0700 (PDT)
+        Sat, 12 Jun 2021 07:37:45 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     subashab@codeaurora.org, stranche@codeaurora.org,
         davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 6/8] net: qualcomm: rmnet: trailer value is a checksum
-Date:   Sat, 12 Jun 2021 09:37:34 -0500
-Message-Id: <20210612143736.3498712-7-elder@linaro.org>
+Subject: [PATCH net-next 7/8] net: qualcomm: rmnet: drop some unary NOTs
+Date:   Sat, 12 Jun 2021 09:37:35 -0500
+Message-Id: <20210612143736.3498712-8-elder@linaro.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210612143736.3498712-1-elder@linaro.org>
 References: <20210612143736.3498712-1-elder@linaro.org>
@@ -64,57 +61,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The csum_value field in the rmnet_map_dl_csum_trailer structure is a
-"real" Internet checksum.  It is a 16 bit value, in big endian format,
-which represents an inverted ones' complement sum over pairs of bytes.
+We compare a payload checksum with a pseudo checksum value for
+equality in rmnet_map_ipv4_dl_csum_trailer().  Both of those values
+are computed with a unary NOT (~) operation.  The result of the
+comparison is the same if we omit that NOT for both values.
 
-Make that clear by changing its type to __sum16.
-
-This makes a typecast in rmnet_map_ipv4_dl_csum_trailer() and
-another in rmnet_map_ipv6_dl_csum_trailer() unnecessary.
+Remove these operations in rmnet_map_ipv6_dl_csum_trailer() also.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c | 5 ++---
- include/linux/if_rmnet.h                             | 2 +-
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index 033b8ad3d7356..610c8b5a8f46a 100644
+index 610c8b5a8f46a..ed4737d0043d6 100644
 --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
 +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -87,7 +87,7 @@ rmnet_map_ipv4_dl_csum_trailer(struct sk_buff *skb,
+@@ -87,11 +87,11 @@ rmnet_map_ipv4_dl_csum_trailer(struct sk_buff *skb,
  	 * header checksum value; it is already accounted for in the
  	 * checksum value found in the trailer.
  	 */
--	ip_payload_csum = (__force __sum16)~csum_trailer->csum_value;
-+	ip_payload_csum = ~csum_trailer->csum_value;
+-	ip_payload_csum = ~csum_trailer->csum_value;
++	ip_payload_csum = csum_trailer->csum_value;
  
- 	pseudo_csum = ~csum_tcpudp_magic(ip4h->saddr, ip4h->daddr,
- 					 ntohs(ip4h->tot_len) - ip4h->ihl * 4,
-@@ -132,8 +132,7 @@ rmnet_map_ipv6_dl_csum_trailer(struct sk_buff *skb,
+-	pseudo_csum = ~csum_tcpudp_magic(ip4h->saddr, ip4h->daddr,
+-					 ntohs(ip4h->tot_len) - ip4h->ihl * 4,
+-					 ip4h->protocol, 0);
++	pseudo_csum = csum_tcpudp_magic(ip4h->saddr, ip4h->daddr,
++					ntohs(ip4h->tot_len) - ip4h->ihl * 4,
++					ip4h->protocol, 0);
+ 
+ 	/* The cast is required to ensure only the low 16 bits are examined */
+ 	if (ip_payload_csum != (__sum16)~pseudo_csum) {
+@@ -132,13 +132,13 @@ rmnet_map_ipv6_dl_csum_trailer(struct sk_buff *skb,
  	 * checksum computed over the pseudo header.
  	 */
  	ip_header_csum = (__force __be16)ip_fast_csum(ip6h, sizeof(*ip6h) / 4);
--	ip6_payload_csum = ~csum16_sub((__force __sum16)csum_trailer->csum_value,
--				       ip_header_csum);
-+	ip6_payload_csum = ~csum16_sub(csum_trailer->csum_value, ip_header_csum);
+-	ip6_payload_csum = ~csum16_sub(csum_trailer->csum_value, ip_header_csum);
++	ip6_payload_csum = csum16_sub(csum_trailer->csum_value, ip_header_csum);
  
  	length = (ip6h->nexthdr == IPPROTO_UDP) ?
  		 ntohs(((struct udphdr *)txporthdr)->len) :
-diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
-index be17610a981ef..10e7521ecb6cd 100644
---- a/include/linux/if_rmnet.h
-+++ b/include/linux/if_rmnet.h
-@@ -25,7 +25,7 @@ struct rmnet_map_dl_csum_trailer {
- 	u8 flags;			/* MAP_CSUM_DL_VALID_FLAG */
- 	__be16 csum_start_offset;
- 	__be16 csum_length;
--	__be16 csum_value;
-+	__sum16 csum_value;
- } __aligned(1);
+ 		 ntohs(ip6h->payload_len);
+-	pseudo_csum = ~csum_ipv6_magic(&ip6h->saddr, &ip6h->daddr,
+-				       length, ip6h->nexthdr, 0);
++	pseudo_csum = csum_ipv6_magic(&ip6h->saddr, &ip6h->daddr,
++				      length, ip6h->nexthdr, 0);
  
- /* rmnet_map_dl_csum_trailer flags field:
+ 	/* It's sufficient to compare the IP payload checksum with the
+ 	 * negated pseudo checksum to determine whether the packet
 -- 
 2.27.0
 
