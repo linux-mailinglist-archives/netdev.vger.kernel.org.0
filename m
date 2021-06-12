@@ -2,102 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91DFB3A4F63
-	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 16:52:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE0AE3A4F6E
+	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 17:04:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231302AbhFLOyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Jun 2021 10:54:33 -0400
-Received: from mail-lj1-f181.google.com ([209.85.208.181]:46741 "EHLO
-        mail-lj1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbhFLOyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 10:54:33 -0400
-Received: by mail-lj1-f181.google.com with SMTP id e11so13559942ljn.13;
-        Sat, 12 Jun 2021 07:52:33 -0700 (PDT)
+        id S231314AbhFLPF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Jun 2021 11:05:59 -0400
+Received: from mail-ej1-f47.google.com ([209.85.218.47]:36769 "EHLO
+        mail-ej1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230191AbhFLPF6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 11:05:58 -0400
+Received: by mail-ej1-f47.google.com with SMTP id nd37so1348869ejc.3;
+        Sat, 12 Jun 2021 08:03:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IfSODAyyxeJC2Hg3fkcy946+rmEpB2MnnxIzir05N7c=;
-        b=POfhabJR9QRaNfEorSQoVmu4P1PNeqtUgkGKOpgVCXENQ+U2q25ZmuiWTDlnr+jD6+
-         DzTNMpm3srVfSYnF1ikKMLi97cj+iluC2Ah15XP6Iza14QA3n/pptxZcAwQrlYks3RMv
-         RK96CVd3ny/heuzeVJmbIpGEdCynP/kNopSN5LrRb8taz7Ih3NNhCv545ojOS4Htfxnz
-         taMdSIzfeALGF3vnFVC5WOHN42TXaNW+Zct4vcPZPtHZnHsaJvUQ5GLgyfO/wXh5302k
-         3VfMj3Wry4zubvcidH19OBakNWEG2PYJuQkIkNC0BTmqskmPmjOU3rYX+xYbF7LJ+S7V
-         lsjg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lzkuIcYZnAVqMXyxD6xyd/7tudQR5k0g+A1SIi5XBXM=;
+        b=NGTfdSi11NO/flIjG1D0AwbccPck7H8Gp2yO3ZR2Mff84O8SQpXJ8HIDulyokJAKIu
+         gm+w8JXuPA/4WRQ8JIOFqRQAS7pRa1AKQztJMlidL9J0o1BXOVLq5/XsDh0PxxQhVQ3L
+         lwpvyer+pSWOx9kb5Ye1vzXiesPFmrx1tJ4E7/eGQh47MOehWIwwwnLfMFeH4mHTa1t3
+         +CjZNSP4zye7MSOUj8NJ3S7tEkKFKbje7QiWfDUq/8NUZmubAV6CGqz+qgc4HSMl8HPQ
+         7xRWiCrsBt49t7h+jGTkQoDwXDd8EzVvzx49Im8TpdZhNgceUmc1hTXknQIS9T+XDsQz
+         s77A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IfSODAyyxeJC2Hg3fkcy946+rmEpB2MnnxIzir05N7c=;
-        b=r/HNezKqjWIugi/McU51+uc7znBSMg6OsaCSmBcUVqFFJ95uyPgLb2BJUdC5s4sWie
-         KDqm0EBX3I2gCyFYBFjvilA1IDmCYGJM7hQT6srY6NXsgsqZBVFUHNgZ2Z3P8oWf2MaA
-         XuRYbTXEe3CzahAY97PXxhEBKfltnvXwZqWHn4yx8ltSB3EhgjHzBW1lGLvzmoV97a9k
-         7491vyaQ118FHx3RGdIlHpHMPubThTQ5NBJqImLQVh5JOZi5x4w6HZxdt1mMi/gOrtbZ
-         KOZaFY6x/AjWAF5qb8XJMdR/UcV+i1WOZp2j/fsrA5iL6cv/+ocGjw3WivxuubMaZxC6
-         vGVA==
-X-Gm-Message-State: AOAM531ZFNQPXbFTFT/H40BNW1qs5pzC2CXieC2EUkztJ81Z68ytYWoD
-        Hn18/SCKraAqBa2JghCPoT8=
-X-Google-Smtp-Source: ABdhPJwB2T70k2VgztQlcmTak9ni2Tyk6NcXl+akzNGLNjBAmiWDk5Tlqbs9I/os5nTO9F/BV8JRGA==
-X-Received: by 2002:a2e:3c06:: with SMTP id j6mr6884614lja.495.1623509492712;
-        Sat, 12 Jun 2021 07:51:32 -0700 (PDT)
-Received: from localhost.localdomain ([185.215.60.70])
-        by smtp.gmail.com with ESMTPSA id g28sm911286lfv.142.2021.06.12.07.51.31
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lzkuIcYZnAVqMXyxD6xyd/7tudQR5k0g+A1SIi5XBXM=;
+        b=LnqH+iM4MfaCVh9Zi80qAz6Yo9KPmzFhj4KVoQ1h6mYXHmiylR2k87AsPvA3NjPqEn
+         y+rMDWnBJEd8dp8tc55mNNlu0OKBuOvhkrwixRnrsgYxoR4sKExDIvv9thCiqUnoI6Dy
+         KE2zsNWAmO3l1omLcMj9ywzMYDmRhcpX2oMXRqA4lBV1N9ZWd8ul7uJa5JUHmpW+xeyp
+         2mUL44hL8zlEIC1pj8iSsg36KZqADEyiAzSo4Yu21KtTczpRzfwTkvKo3ngEgag3VSwz
+         v2rc9unPXYtQCsrpdVjEBE4VpbJuMd1rClG8j0izPr8zPT+fbe1qhrqdiMWliw5fQR+Y
+         noiQ==
+X-Gm-Message-State: AOAM533ivS8ffEgf6ZfyyadguEW03QYFQX5f6L+najL0RLxluJDK/x9c
+        MHQNIZchJ2i/ycnI2vicFpw=
+X-Google-Smtp-Source: ABdhPJzSO+Lw4ZmsVe+cS+swewzYpfxKi+2oYyEABFnks0olrceriyOcYej+IRW1DQZsGAR2pDUheA==
+X-Received: by 2002:a17:907:2895:: with SMTP id em21mr7852119ejc.164.1623510177795;
+        Sat, 12 Jun 2021 08:02:57 -0700 (PDT)
+Received: from skbuf ([188.26.52.84])
+        by smtp.gmail.com with ESMTPSA id t18sm3985455edw.47.2021.06.12.08.02.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Jun 2021 07:51:32 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+f303e045423e617d2cad@syzkaller.appspotmail.com
-Subject: [PATCH] net: caif: fix memory leak in ldisc_open
-Date:   Sat, 12 Jun 2021 17:51:22 +0300
-Message-Id: <20210612145122.9354-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Sat, 12 Jun 2021 08:02:57 -0700 (PDT)
+Date:   Sat, 12 Jun 2021 18:02:56 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: b53: Fix dereference of null dev
+Message-ID: <20210612150256.jziw3xhk7i6fyms4@skbuf>
+References: <20210612144407.60259-1-colin.king@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210612144407.60259-1-colin.king@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported memory leak in tty_init_dev().
-The problem was in unputted tty in ldisc_open()
+On Sat, Jun 12, 2021 at 03:44:07PM +0100, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Currently pointer priv is dereferencing dev before dev is being null
+> checked so a potential null pointer dereference can occur. Fix this
+> by only assigning and using priv if dev is not-null.
+> 
+> Addresses-Coverity: ("Dereference before null check")
+> Fixes: 16994374a6fc ("net: dsa: b53: Make SRAB driver manage port interrupts")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>  drivers/net/dsa/b53/b53_srab.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/b53/b53_srab.c b/drivers/net/dsa/b53/b53_srab.c
+> index aaa12d73784e..e77ac598f859 100644
+> --- a/drivers/net/dsa/b53/b53_srab.c
+> +++ b/drivers/net/dsa/b53/b53_srab.c
+> @@ -629,11 +629,13 @@ static int b53_srab_probe(struct platform_device *pdev)
+>  static int b53_srab_remove(struct platform_device *pdev)
+>  {
+>  	struct b53_device *dev = platform_get_drvdata(pdev);
+> -	struct b53_srab_priv *priv = dev->priv;
+>  
+> -	b53_srab_intr_set(priv, false);
+> -	if (dev)
+> +	if (dev) {
+> +		struct b53_srab_priv *priv = dev->priv;
+> +
+> +		b53_srab_intr_set(priv, false);
+>  		b53_switch_remove(dev);
+> +	}
+>  
+>  	return 0;
+>  }
+> -- 
+> 2.31.1
+> 
 
-static int ldisc_open(struct tty_struct *tty)
-{
-...
-	ser->tty = tty_kref_get(tty);
-...
-	result = register_netdevice(dev);
-	if (result) {
-		rtnl_unlock();
-		free_netdev(dev);
-		return -ENODEV;
-	}
-...
-}
-
-Ser pointer is netdev private_data, so after free_netdev()
-this pointer goes away with unputted tty reference. So, fix
-it by adding tty_kref_put() before freeing netdev.
-
-Reported-and-tested-by: syzbot+f303e045423e617d2cad@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- drivers/net/caif/caif_serial.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
-index d17482395a4d..4ffbfd534f18 100644
---- a/drivers/net/caif/caif_serial.c
-+++ b/drivers/net/caif/caif_serial.c
-@@ -350,6 +350,7 @@ static int ldisc_open(struct tty_struct *tty)
- 	rtnl_lock();
- 	result = register_netdevice(dev);
- 	if (result) {
-+		tty_kref_put(tty);
- 		rtnl_unlock();
- 		free_netdev(dev);
- 		return -ENODEV;
--- 
-2.32.0
-
+I think the better question is how can "dev" be NULL in the first
+place, since b53_srab_probe() does an unconditional platform_set_drvdata()
+with what appears to be a non-NULL dev.
