@@ -2,73 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46B613A4F5A
-	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 16:44:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91DFB3A4F63
+	for <lists+netdev@lfdr.de>; Sat, 12 Jun 2021 16:52:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbhFLOqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Jun 2021 10:46:13 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:32788 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbhFLOqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 10:46:12 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <colin.king@canonical.com>)
-        id 1ls4ro-0001ut-0z; Sat, 12 Jun 2021 14:44:08 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: dsa: b53: Fix dereference of null dev
-Date:   Sat, 12 Jun 2021 15:44:07 +0100
-Message-Id: <20210612144407.60259-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.31.1
+        id S231302AbhFLOyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Jun 2021 10:54:33 -0400
+Received: from mail-lj1-f181.google.com ([209.85.208.181]:46741 "EHLO
+        mail-lj1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230191AbhFLOyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 10:54:33 -0400
+Received: by mail-lj1-f181.google.com with SMTP id e11so13559942ljn.13;
+        Sat, 12 Jun 2021 07:52:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IfSODAyyxeJC2Hg3fkcy946+rmEpB2MnnxIzir05N7c=;
+        b=POfhabJR9QRaNfEorSQoVmu4P1PNeqtUgkGKOpgVCXENQ+U2q25ZmuiWTDlnr+jD6+
+         DzTNMpm3srVfSYnF1ikKMLi97cj+iluC2Ah15XP6Iza14QA3n/pptxZcAwQrlYks3RMv
+         RK96CVd3ny/heuzeVJmbIpGEdCynP/kNopSN5LrRb8taz7Ih3NNhCv545ojOS4Htfxnz
+         taMdSIzfeALGF3vnFVC5WOHN42TXaNW+Zct4vcPZPtHZnHsaJvUQ5GLgyfO/wXh5302k
+         3VfMj3Wry4zubvcidH19OBakNWEG2PYJuQkIkNC0BTmqskmPmjOU3rYX+xYbF7LJ+S7V
+         lsjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IfSODAyyxeJC2Hg3fkcy946+rmEpB2MnnxIzir05N7c=;
+        b=r/HNezKqjWIugi/McU51+uc7znBSMg6OsaCSmBcUVqFFJ95uyPgLb2BJUdC5s4sWie
+         KDqm0EBX3I2gCyFYBFjvilA1IDmCYGJM7hQT6srY6NXsgsqZBVFUHNgZ2Z3P8oWf2MaA
+         XuRYbTXEe3CzahAY97PXxhEBKfltnvXwZqWHn4yx8ltSB3EhgjHzBW1lGLvzmoV97a9k
+         7491vyaQ118FHx3RGdIlHpHMPubThTQ5NBJqImLQVh5JOZi5x4w6HZxdt1mMi/gOrtbZ
+         KOZaFY6x/AjWAF5qb8XJMdR/UcV+i1WOZp2j/fsrA5iL6cv/+ocGjw3WivxuubMaZxC6
+         vGVA==
+X-Gm-Message-State: AOAM531ZFNQPXbFTFT/H40BNW1qs5pzC2CXieC2EUkztJ81Z68ytYWoD
+        Hn18/SCKraAqBa2JghCPoT8=
+X-Google-Smtp-Source: ABdhPJwB2T70k2VgztQlcmTak9ni2Tyk6NcXl+akzNGLNjBAmiWDk5Tlqbs9I/os5nTO9F/BV8JRGA==
+X-Received: by 2002:a2e:3c06:: with SMTP id j6mr6884614lja.495.1623509492712;
+        Sat, 12 Jun 2021 07:51:32 -0700 (PDT)
+Received: from localhost.localdomain ([185.215.60.70])
+        by smtp.gmail.com with ESMTPSA id g28sm911286lfv.142.2021.06.12.07.51.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Jun 2021 07:51:32 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+f303e045423e617d2cad@syzkaller.appspotmail.com
+Subject: [PATCH] net: caif: fix memory leak in ldisc_open
+Date:   Sat, 12 Jun 2021 17:51:22 +0300
+Message-Id: <20210612145122.9354-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+Syzbot reported memory leak in tty_init_dev().
+The problem was in unputted tty in ldisc_open()
 
-Currently pointer priv is dereferencing dev before dev is being null
-checked so a potential null pointer dereference can occur. Fix this
-by only assigning and using priv if dev is not-null.
+static int ldisc_open(struct tty_struct *tty)
+{
+...
+	ser->tty = tty_kref_get(tty);
+...
+	result = register_netdevice(dev);
+	if (result) {
+		rtnl_unlock();
+		free_netdev(dev);
+		return -ENODEV;
+	}
+...
+}
 
-Addresses-Coverity: ("Dereference before null check")
-Fixes: 16994374a6fc ("net: dsa: b53: Make SRAB driver manage port interrupts")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Ser pointer is netdev private_data, so after free_netdev()
+this pointer goes away with unputted tty reference. So, fix
+it by adding tty_kref_put() before freeing netdev.
+
+Reported-and-tested-by: syzbot+f303e045423e617d2cad@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- drivers/net/dsa/b53/b53_srab.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/caif/caif_serial.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/dsa/b53/b53_srab.c b/drivers/net/dsa/b53/b53_srab.c
-index aaa12d73784e..e77ac598f859 100644
---- a/drivers/net/dsa/b53/b53_srab.c
-+++ b/drivers/net/dsa/b53/b53_srab.c
-@@ -629,11 +629,13 @@ static int b53_srab_probe(struct platform_device *pdev)
- static int b53_srab_remove(struct platform_device *pdev)
- {
- 	struct b53_device *dev = platform_get_drvdata(pdev);
--	struct b53_srab_priv *priv = dev->priv;
- 
--	b53_srab_intr_set(priv, false);
--	if (dev)
-+	if (dev) {
-+		struct b53_srab_priv *priv = dev->priv;
-+
-+		b53_srab_intr_set(priv, false);
- 		b53_switch_remove(dev);
-+	}
- 
- 	return 0;
- }
+diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
+index d17482395a4d..4ffbfd534f18 100644
+--- a/drivers/net/caif/caif_serial.c
++++ b/drivers/net/caif/caif_serial.c
+@@ -350,6 +350,7 @@ static int ldisc_open(struct tty_struct *tty)
+ 	rtnl_lock();
+ 	result = register_netdevice(dev);
+ 	if (result) {
++		tty_kref_put(tty);
+ 		rtnl_unlock();
+ 		free_netdev(dev);
+ 		return -ENODEV;
 -- 
-2.31.1
+2.32.0
 
