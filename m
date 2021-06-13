@@ -2,116 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C0413A5907
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 16:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EEFE3A5916
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 16:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231843AbhFMO1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 10:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231755AbhFMO1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 10:27:45 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AD8C061574
-        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 07:25:31 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id i68so32443551qke.3
-        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 07:25:31 -0700 (PDT)
+        id S231905AbhFMOjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Jun 2021 10:39:22 -0400
+Received: from mail-pj1-f43.google.com ([209.85.216.43]:37753 "EHLO
+        mail-pj1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231782AbhFMOjV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 10:39:21 -0400
+Received: by mail-pj1-f43.google.com with SMTP id 22-20020a17090a0c16b0290164a5354ad0so8570533pjs.2;
+        Sun, 13 Jun 2021 07:37:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eGlbIuvyPrFNLTch5ZKTb6/OjYTk+PwqYaQbu3V8zPQ=;
-        b=oqaRvE8jB+7n1H4nBHIMCTj2LiwFRUly4eylqaqfiSyyh543eVzrJJFv6MG8G4WE5W
-         y69rUuXgFAUGQMyMyWaCnDYQv7gfXV28v+sbDKuKRvcMDGcjyHW8oTkwulrp8DQ6kfy/
-         Yb74BWN6hyGYjzSs7g+yhu4PUyE+eJYV896ZWAZfVEUra0cFelqOuGcqgpxOVqkLMXCS
-         st2bZRd81/o1X7OasCDE7Je+CIkXxadJYZwwM/fXIV8z3MIMcWAQUeBjljMMKIbV1bTL
-         gFvFmPwAW1FNW9DGkYh5MeGNvKKNcZitdyqBb6eiKu9ky+k5Ovhvz0PMQAybU2Js8cJC
-         szeQ==
+        bh=EA4ywZJGJgO/S0GCMMfw5wsW/fmHuUSs+6+pUCTlOuw=;
+        b=VoDm0XhRof9E9YzseYhNh0LHoXNNqDwwyl1kLv7tOXi+Mq8XaMu36G0gQJ/6rBswLa
+         5ISLicU1zrU9vZpLL5u/s8sXH2uXzzTdSsKgMyV5NQ/tghZUpboEhBtRXx1D6s8uhH9l
+         jRXes9J2M8dVYwqxR3dTaz4+2c+wOa0djILU5sq5dK6e/7IY0Q5A4N6nlt9Fh/zpJ+Zy
+         aa67tee7Dk4oYNjLdMZPXBUNiZ6Spf0+mCihx5mK6mUFtjUAHOxK8C2fBFsslHd2T+PO
+         A9jjSJxcstF0LyazwW1zkuGKBT09KIheU0XDCCJkRMXQCXoGNPPvCuasG6V4COIl0jbp
+         p60Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eGlbIuvyPrFNLTch5ZKTb6/OjYTk+PwqYaQbu3V8zPQ=;
-        b=KedjDpqzIxtn17d5Xpl8ZHZ/SF0Xm6vNA42PTxU8Gio4vOkkw7YMk2GKtGMyDwyZZg
-         Vk/i1BGoNaXvb7TWbFu2oZaQm+C4BEGHJ6ffnhFocJnGQgGr8O2ZYOuDPZ9D00uhjAhR
-         G85xdU5Tj4IhZuUNLs3dkje5dlLHXOE7oXHIfOQsN5NZrqdq71tlCdb/GSZjf7c+XHXZ
-         gMWE6wY2TsvqPkg1SdO0uWBuEkq0dIP6LdL87Z1ZKST9c7rjX2qzaVWDBQkqrucmQ5cr
-         U2DEQwdH6GyRwBtaDxus5VEHO9e2OLns8xuYJHvKMIzCQcFs6UqAaAyK4+PM2sjcHmFl
-         x40A==
-X-Gm-Message-State: AOAM531zydyFQvsDzAB/ruFGapAP07fW06RiQo9YEbuIB8S4aotXJyiB
-        u+Oj9T4FXS0gmBO23fswcA8645EmYcqXbhKa
-X-Google-Smtp-Source: ABdhPJzJ+AiQWnCTCvXFMB+pZH4H093khqB/qnW44kfCsTUaYElCAhFbAx/XtPexOv7CSULREjkPag==
-X-Received: by 2002:a37:a095:: with SMTP id j143mr12310329qke.68.1623594330603;
-        Sun, 13 Jun 2021 07:25:30 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id z3sm8382706qkj.40.2021.06.13.07.25.29
+        bh=EA4ywZJGJgO/S0GCMMfw5wsW/fmHuUSs+6+pUCTlOuw=;
+        b=QU7vFekzYB98f5gsww1SHcV5lZd0MZGXhdAKcRBaKDkhGVV349pgvJXjl8bFNyec1j
+         tINSU5iqEn8z0oCwFolYAfcmJ8E11QnEs4LDriCPXmytWhoncawMorcLl6bqGvX9kflg
+         sizRuGbBzHXOWYmSOs0dgVSIYr2+lEmLOGlhIbWoIDp4L34JTuGTusPOmqLWBtVHWqpU
+         XqSAYcZRiYyym4JxIXezxoEhorMATfbWgnA1ARV/IUgup+0/oIN99oETQa4ck/BL5GGY
+         l5KNbLhLSVr8XIV5QLRz8p3oOAVx/Ty+r/6UtHxhcibRprgGml0PxSuL2xIWlQRGGqqG
+         3Ukw==
+X-Gm-Message-State: AOAM533hX3fUmvo6TvsdAWrym6bFw6Da22FLAby+bVFAaE/27P/xvUbY
+        XsMl5BGwavNRbWs08uKGixI=
+X-Google-Smtp-Source: ABdhPJygLdD8SUpY6TYgvdshITwhWKYR50QBGYOfWAjZh7xkmcVgmLV7ZGyTu5GM66kuTQ0eFU/lrQ==
+X-Received: by 2002:a17:90a:8c14:: with SMTP id a20mr14029790pjo.167.1623594966297;
+        Sun, 13 Jun 2021 07:36:06 -0700 (PDT)
+Received: from localhost.localdomain ([14.169.121.97])
+        by smtp.gmail.com with ESMTPSA id kb14sm8181985pjb.2.2021.06.13.07.36.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Jun 2021 07:25:30 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     subashab@codeaurora.org, stranche@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     lkp@intel.com, bjorn.andersson@linaro.org, netdev@vger.kernel.org,
+        Sun, 13 Jun 2021 07:36:06 -0700 (PDT)
+From:   Bui Quang Minh <minhquangbui99@gmail.com>
+Cc:     minhquangbui99@gmail.com, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Roman Gushchin <guro@fb.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 1/1] net: qualcomm: rmnet: always expose a few functions
-Date:   Sun, 13 Jun 2021 09:25:22 -0500
-Message-Id: <20210613142522.3585441-1-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
+Subject: [PATCH v2] bpf: Fix integer overflow in argument calculation for bpf_map_area_alloc
+Date:   Sun, 13 Jun 2021 21:34:39 +0700
+Message-Id: <20210613143440.71975-1-minhquangbui99@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A recent change tidied up some conditional code, avoiding the use of
-some #ifdefs.  Unfortunately, if CONFIG_IPV6 was not enabled, it
-meant that two functions were referenced but never defined.
+In 32-bit architecture, the result of sizeof() is a 32-bit integer so
+the expression becomes the multiplication between 2 32-bit integer which
+can potentially leads to integer overflow. As a result,
+bpf_map_area_alloc() allocates less memory than needed.
 
-The easiest fix is to just define stubs for these functions if
-CONFIG_IPV6 is not defined.  This will soon be simplified further
-by some other development in the works...
+Fix this by casting 1 operand to u64.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 75db5b07f8c39 ("net: qualcomm: rmnet: eliminate some ifdefs")
-Signed-off-by: Alex Elder <elder@linaro.org>
+Fixes: 0d2c4f964050 ("bpf: Eliminate rlimit-based memory accounting for sockmap
+and sockhash maps")
+Fixes: 99c51064fb06 ("devmap: Use bpf_map_area_alloc() for allocating hash
+buckets")
+Fixes: 546ac1ffb70d ("bpf: add devmap, a map for storing net device references")
+Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
 ---
-v2: Rebased on current net-next/master; this fixes a bug there.
+v2: Add Fixes tag
 
- .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c  | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ kernel/bpf/devmap.c | 4 ++--
+ net/core/sock_map.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index a6ce22f60a00c..39fba3a347fa6 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -153,6 +153,14 @@ rmnet_map_ipv6_dl_csum_trailer(struct sk_buff *skb,
- 	priv->stats.csum_ok++;
- 	return 0;
- }
-+#else
-+static int
-+rmnet_map_ipv6_dl_csum_trailer(struct sk_buff *skb,
-+			       struct rmnet_map_dl_csum_trailer *csum_trailer,
-+			       struct rmnet_priv *priv)
-+{
-+	return 0;
-+}
- #endif
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index aa516472ce46..3b45c23286c0 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -92,7 +92,7 @@ static struct hlist_head *dev_map_create_hash(unsigned int entries,
+ 	int i;
+ 	struct hlist_head *hash;
  
- static void rmnet_map_complement_ipv4_txporthdr_csum_field(void *iphdr)
-@@ -223,6 +231,13 @@ rmnet_map_ipv6_ul_csum_header(struct ipv6hdr *ipv6hdr,
+-	hash = bpf_map_area_alloc(entries * sizeof(*hash), numa_node);
++	hash = bpf_map_area_alloc((u64) entries * sizeof(*hash), numa_node);
+ 	if (hash != NULL)
+ 		for (i = 0; i < entries; i++)
+ 			INIT_HLIST_HEAD(&hash[i]);
+@@ -143,7 +143,7 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
  
- 	rmnet_map_complement_ipv6_txporthdr_csum_field(ipv6hdr);
- }
-+#else
-+static void
-+rmnet_map_ipv6_ul_csum_header(void *ip6hdr,
-+			      struct rmnet_map_ul_csum_header *ul_header,
-+			      struct sk_buff *skb)
-+{
-+}
- #endif
+ 		spin_lock_init(&dtab->index_lock);
+ 	} else {
+-		dtab->netdev_map = bpf_map_area_alloc(dtab->map.max_entries *
++		dtab->netdev_map = bpf_map_area_alloc((u64) dtab->map.max_entries *
+ 						      sizeof(struct bpf_dtab_netdev *),
+ 						      dtab->map.numa_node);
+ 		if (!dtab->netdev_map)
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index 6f1b82b8ad49..60decd6420ca 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -48,7 +48,7 @@ static struct bpf_map *sock_map_alloc(union bpf_attr *attr)
+ 	bpf_map_init_from_attr(&stab->map, attr);
+ 	raw_spin_lock_init(&stab->lock);
  
- static void rmnet_map_v5_checksum_uplink_packet(struct sk_buff *skb,
+-	stab->sks = bpf_map_area_alloc(stab->map.max_entries *
++	stab->sks = bpf_map_area_alloc((u64) stab->map.max_entries *
+ 				       sizeof(struct sock *),
+ 				       stab->map.numa_node);
+ 	if (!stab->sks) {
 -- 
-2.27.0
+2.25.1
 
