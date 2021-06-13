@@ -2,76 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F3CD3A56F1
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 09:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 460AD3A571A
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 10:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbhFMHnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 03:43:55 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:6464 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231241AbhFMHnk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 03:43:40 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G2mfW1GTFzZgfZ;
-        Sun, 13 Jun 2021 15:38:43 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Sun, 13 Jun 2021 15:41:36 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Sun, 13 Jun 2021 15:41:35 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
-        <ms@dev.tdt.de>, <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 11/11] net: z85230: remove unnecessary out of memory message
-Date:   Sun, 13 Jun 2021 15:38:23 +0800
-Message-ID: <1623569903-47930-12-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1623569903-47930-1-git-send-email-huangguangbin2@huawei.com>
-References: <1623569903-47930-1-git-send-email-huangguangbin2@huawei.com>
+        id S231192AbhFMI2i convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 13 Jun 2021 04:28:38 -0400
+Received: from out28-124.mail.aliyun.com ([115.124.28.124]:34219 "EHLO
+        out28-124.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230136AbhFMI2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 04:28:37 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1052365|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0758817-0.0072256-0.916893;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047201;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=21;RT=21;SR=0;TI=SMTPD_---.KRgdwVg_1623572789;
+Received: from zhouyanjie-virtual-machine(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.KRgdwVg_1623572789)
+          by smtp.aliyun-inc.com(10.147.41.121);
+          Sun, 13 Jun 2021 16:26:31 +0800
+Date:   Sun, 13 Jun 2021 16:26:28 +0800
+From:   =?UTF-8?B?5ZGo55Cw5p2w?= <zhouyanjie@wanyeetech.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
+        sernia.zhou@foxmail.com, paul@crapouillou.net
+Subject: Re: [PATCH v2 2/2] net: stmmac: Add Ingenic SoCs MAC support.
+Message-ID: <20210613162628.2a21d7ea@zhouyanjie-virtual-machine>
+In-Reply-To: <YMIk0NfOPryoY607@lunn.ch>
+References: <1623260110-25842-1-git-send-email-zhouyanjie@wanyeetech.com>
+        <1623260110-25842-3-git-send-email-zhouyanjie@wanyeetech.com>
+        <YMGEutCet7fP1NZ9@lunn.ch>
+        <405696cb-5987-0e56-87f8-5a1443eadc19@wanyeetech.com>
+        <YMICTvjyEAgPMH9u@lunn.ch>
+        <346f64d9-6949-b506-258f-4cfa7eb22784@wanyeetech.com>
+        <YMIk0NfOPryoY607@lunn.ch>
+X-Mailer: Claws Mail 3.14.1 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+Hi Andrew,
 
-This patch removes unnecessary out of memory message,
-to fix the following checkpatch.pl warning:
-"WARNING: Possible unnecessary 'out of memory' message"
+于 Thu, 10 Jun 2021 16:42:24 +0200
+Andrew Lunn <andrew@lunn.ch> 写道:
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/wan/z85230.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+> >     We are much more strict about this now than before. You have to
+> > use standard units and convert to hardware values. It also makes it
+> > a lot easier for DT writers, if they have an idea what the units
+> > mean.
+> > 
+> >     Having the MAC add small delays is something you can add later,
+> >     without breaking backwards compatibility. So if you cannot
+> > determine what the units are now, just submit the glue driver
+> > without support for this feature. If anybody really needs it, they
+> > can do the needed research, maybe do some measurements, and then
+> > add the code.
+> > 
+> > 
+> > I did an experiment, when the tx delay is not set, RGMII works a  
+> 
+> You had rgmii-id in your device tree, so that the PHY added the
+> delays?
 
-diff --git a/drivers/net/wan/z85230.c b/drivers/net/wan/z85230.c
-index 17bdf5e..aac6f31 100644
---- a/drivers/net/wan/z85230.c
-+++ b/drivers/net/wan/z85230.c
-@@ -1531,10 +1531,9 @@ static void z8530_rx_done(struct z8530_channel *c)
- 		RT_UNLOCK;
- 
- 		c->skb2 = dev_alloc_skb(c->mtu);
--		if (!c->skb2)
--			netdev_warn(c->netdevice, "memory squeeze\n");
--		else
-+		if (c->skb2)
- 			skb_put(c->skb2, c->mtu);
-+
- 		c->netdevice->stats.rx_packets++;
- 		c->netdevice->stats.rx_bytes += ct;
- 	}
--- 
-2.8.1
+I have tried rgmii-id and rgmii-txid. If we don’t add a fine-tuning
+parameter, it still can’t work properly. In these two modes, we still
+need to add about 500ps delay on the mac side to ensure it works
+properly.
 
+Thanks and best regards!
+
+> 
+> 	Andrew
