@@ -2,118 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 807C63A572F
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 11:02:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC0A3A5748
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 11:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231286AbhFMJEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 05:04:10 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:22947 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230201AbhFMJEJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Jun 2021 05:04:09 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1623574928; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=dQoeZwVu2n9jRfR6UQm6hwPctLkAmGru9+XJJja6Lvo=; b=bpqb/3X94QGio8RpQc/gCLwgmKyywTDAc/w3YjXTHshTeBS9Gbw1kRMt8G/mO9se0zC2SasD
- kQ9MQcUVHdt/jbNV9feuMUkyBGQapbDJc/UtuAN2incRiitJSLbDfm/XnV1byDZCtI/AkB6V
- xtGIvdeR5c2PD8lb2PlcV7bpCGU=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 60c5c98c8491191eb36e29bb (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 13 Jun 2021 09:02:04
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 7794AC433D3; Sun, 13 Jun 2021 09:02:04 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3D256C433D3;
-        Sun, 13 Jun 2021 09:02:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3D256C433D3
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Caleb Connolly <caleb@connolly.tech>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ath10k: demote chan info without scan request warning
-References: <20210522171609.299611-1-caleb@connolly.tech>
-        <20210612103640.2FD93C433F1@smtp.codeaurora.org>
-        <f39034ea-f4da-1564-e22f-398e4a1ae077@connolly.tech>
-Date:   Sun, 13 Jun 2021 12:01:56 +0300
-In-Reply-To: <f39034ea-f4da-1564-e22f-398e4a1ae077@connolly.tech> (Caleb
-        Connolly's message of "Sat, 12 Jun 2021 13:00:57 +0000")
-Message-ID: <871r96yw6z.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S231565AbhFMJcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Jun 2021 05:32:21 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:9109 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231192AbhFMJcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 05:32:19 -0400
+Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G2q3t0FQFzZdL0;
+        Sun, 13 Jun 2021 17:27:22 +0800 (CST)
+Received: from SZX1000464847.huawei.com (10.21.59.169) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Sun, 13 Jun 2021 17:30:14 +0800
+From:   Dongdong Liu <liudongdong3@huawei.com>
+To:     <helgaas@kernel.org>, <hch@infradead.org>, <kw@linux.com>,
+        <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
+        <hverkuil-cisco@xs4all.nl>
+CC:     <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [RESEND PATCH V3 0/6] PCI: Enable 10-Bit tag support for PCIe devices
+Date:   Sun, 13 Jun 2021 17:29:09 +0800
+Message-ID: <1623576555-40338-1-git-send-email-liudongdong3@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [10.21.59.169]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Caleb Connolly <caleb@connolly.tech> writes:
+10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
+field size from 8 bits to 10 bits.
 
-> Hi Kalle,
->
-> On 12/06/2021 11:36 am, Kalle Valo wrote:
->> Caleb Connolly <caleb@connolly.tech> wrote:
->>
->>> Some devices/firmwares cause this to be printed every 5-15 seconds,
->>> though it has no impact on functionality. Demote this to a debug
->>> message.
->>>
->>> Signed-off-by: Caleb Connolly <caleb@connolly.tech>
->>> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
->
-> Is this meant to be an Ack?
+This patchset is to enable 10-Bit tag for PCIe EP devices (include VF) and
+RP devices.
 
-No, my patchwork script has few quirks and it actually takes the quoted
-text from my pending branch, not from your actual email. That's why you
-see my s-o-b there. I haven't bothered to fix that yet, but hopefully
-one day.
+V2->V3:
+- Use cached Device Capabilities Register suggested by Christoph.
+- Fix code style to avoid > 80 char lines.
+- Renamve devcap2 to pcie_devcap2.
 
->> On what hardware and firmware version do you see this?
->
-> I see this on SDM845 and MSM8998 platforms, specifically the OnePlus 6
-> devices, PocoPhone F1 and OnePlus 5.
-> On the OnePlus 6 (SDM845) we are stuck with the following signed vendor fw:
->
-> [    9.339873] ath10k_snoc 18800000.wifi: qmi chip_id 0x30214
-> chip_family 0x4001 board_id 0xff soc_id 0x40030001
-> [    9.339897] ath10k_snoc 18800000.wifi: qmi fw_version 0x20060029
-> fw_build_timestamp 2019-07-12 02:14 fw_build_id
-> QC_IMAGE_VERSION_STRING=WLAN.HL.2.0.c8-00041-QCAHLSWMTPLZ-1
->
-> The OnePlus 5 (MSM8998) is using firmware:
->
-> [ 6096.956799] ath10k_snoc 18800000.wifi: qmi chip_id 0x30214
-> chip_family 0x4001 board_id 0xff soc_id 0x40010002
-> [ 6096.956824] ath10k_snoc 18800000.wifi: qmi fw_version 0x1007007e
-> fw_build_timestamp 2020-04-14 22:45 fw_build_id
-> QC_IMAGE_VERSION_STRING=WLAN.HL.1.0.c6-00126-QCAHLSWMTPLZ-1.211883.1.278648.
+V1->V2: Fix some comments by Christoph.
+- Store the devcap2 value in the pci_dev instead of reading it multiple
+  times.
+  - Change pci_info to pci_dbg to avoid the noisy log.
+  - Rename ext_10bit_tag_comp_path to ext_10bit_tag.
+  - Fix the compile error.
+  - Rebased on v5.13-rc1.
 
-Thanks, I'll include this information to the commit log and then apply
-the patch. And I'll assume you have also tested this patch on those
-platforms so that I can add a Tested-on tag?
+Dongdong Liu (6):
+  PCI: Use cached Device Capabilities Register
+  PCI: Use cached Device Capabilities 2 Register
+  PCI: Add 10-Bit Tag register definitions
+  PCI: Enable 10-Bit tag support for PCIe Endpoint devices
+  PCI/IOV: Enable 10-Bit tag support for PCIe VF devices
+  PCI: Enable 10-Bit tag support for PCIe RP devices
 
-BTW, ath10k should strip that ugly "QC_IMAGE_VERSION_STRING=" string in
-the firmware version. Patches very welcome :)
+ drivers/media/pci/cobalt/cobalt-driver.c        |  4 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c |  4 +-
+ drivers/pci/iov.c                               |  8 +++
+ drivers/pci/pci.c                               | 13 ++---
+ drivers/pci/pcie/aspm.c                         | 11 ++--
+ drivers/pci/pcie/portdrv_pci.c                  | 75 +++++++++++++++++++++++++
+ drivers/pci/probe.c                             | 65 ++++++++++++++++-----
+ drivers/pci/quirks.c                            |  3 +-
+ include/linux/pci.h                             |  5 ++
+ include/uapi/linux/pci_regs.h                   |  5 ++
+ 10 files changed, 156 insertions(+), 37 deletions(-)
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+--
+2.7.4
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
