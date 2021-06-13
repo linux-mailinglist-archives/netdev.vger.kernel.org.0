@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5FFC3A5607
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 04:06:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9199C3A5604
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 04:06:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231674AbhFMCI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Jun 2021 22:08:27 -0400
-Received: from mail-pl1-f174.google.com ([209.85.214.174]:40449 "EHLO
-        mail-pl1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230492AbhFMCI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 22:08:26 -0400
-Received: by mail-pl1-f174.google.com with SMTP id e7so4758687plj.7;
-        Sat, 12 Jun 2021 19:06:13 -0700 (PDT)
+        id S231655AbhFMCH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Jun 2021 22:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230492AbhFMCH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Jun 2021 22:07:57 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6C8C061574;
+        Sat, 12 Jun 2021 19:05:44 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id e1so4754127plh.8;
+        Sat, 12 Jun 2021 19:05:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
         bh=HK9QkMsSHMCH9F1POXVVodHF5zTfkcy2ylP+LXUUESY=;
-        b=MHAOANyD29AhE2dTY/Y8agJk6DREkCcgLEkU7L8kQ9jfLSbehNtQQu3YzfpnYY+xfn
-         jOb4wIAnV9G3MrkhA7ZQkBywbl4Xu428c/ERSojAOkFcYXrFA9pQjWYT5eEYSc48HGVl
-         s4IHiS2j5LtXFOQGm4hUxAdSCtT7JkLdVELStRj3RU+GXVlKpMvIWFUR9Gklg4DOfRRv
-         w5APMtCWHy6UqxBu3tnMMWu5HYczC4Iu4d4lcVvannjxb2UbE/yPRkSZyrNkC586YCQL
-         +kZu9TpvngT/Q7aZJ5+CXMmllGm8c8zhb8uFbVzco6sV+com4K3e0icTq77LzJTHGuha
-         +iFA==
+        b=Zo/7U2HGGF/LclKXExjbJ0Pxo1EKJY4m57Tgqp08olqW3Z6OkqS5VSZLb8+v9SZxf5
+         KLEe9En5ePjtLZ6dW8BKLwnTk7JgDey/l7KgQ5FtXWb43riqaz2sSFf84xlSqvXXky7J
+         LWyQ8pe1EyzoD7CtlNAbQmmuPi7QbpjC8URZqJEWfepje80n+1PgdUKNPgEjgoE/qAUD
+         5N3JgfUV3ks7r/M1jIkzTLSDd6eovpGMskdCIoAV2XnhywETi1FIg20QBOrxZC86Hp1i
+         vmuRQNpQdwuY09x9TKRbYx59KYuZIi+6Xy3h1oQSodoEAONcKxkrazlGRZ2i2IDqMW+i
+         4S0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
         bh=HK9QkMsSHMCH9F1POXVVodHF5zTfkcy2ylP+LXUUESY=;
-        b=sPe/11sVqj2SZbjGpLrrIy+p/EvjGfkUVzyczJCchq+XomP4eYz8Awn5uQEm6OzV2r
-         6KvjKY2PdBTGgGuTUUsNWvDW1Q3l0Ufs1aAIpcNd29IalIbDLCBnfvqD2KF85zyLLRCd
-         3VPGHzQSSs8kiII69u+LhZhQkFwELS/I7pkQni6zzCQsBNabDYU0uQCBGcx9QKS4mBxd
-         9GHxYirbNiMsZqqza9hNCjNQUYROyVsHgVaVqlz2h73YR6c3hGNeGpiJYEsIzyY6Jscw
-         nTPRht7thaBpKlOQYE0LdlZTrbmxpb5wwwLcPlQ9Rf6W6eRhw9ta8x6XZbMFTzHDQ3O4
-         PKMg==
-X-Gm-Message-State: AOAM530j2vf5sC6G32uQS8tN3v9aiolDwKqKZcZkBNh6zwJDbghXINZM
-        nNxD1II4anvBpBCYs+D3VQo=
-X-Google-Smtp-Source: ABdhPJx950iON4FYls/eYzbZkGwMuAgOyttY8yePbaRfAKAfExxwiaWI0BHWJiOkL/NMsS+FYfLsrg==
-X-Received: by 2002:a17:903:31d3:b029:ee:bccd:e686 with SMTP id v19-20020a17090331d3b02900eebccde686mr10850437ple.1.1623549913212;
-        Sat, 12 Jun 2021 19:05:13 -0700 (PDT)
+        b=YWXHUHOcF0iAYePSAhv78ynKqXYv3cjOvPNmtOig6UUBu3A+mcsDxb7K5Gd4FMx2Zm
+         9Srp7FcnV8mE6oBVUALUSfhcsH2wuVgLr9vrdRajkIJ64rEUOjyQ/jpxRx2rJTtPrWb+
+         BndE6z7O5IgsbecHnzBmEMR2oI97wcFmcuUXiAGafrlGL5C36Z5jCC8m0pI62E/bLrs2
+         VCcZ3mYrqOfpzYjjhBqVqmFF7+n1/nk8cClBRh6lp/DSPogRX4XnCYlv9JGJ0CPM1k+C
+         ek8ngnKxoLW2cyyrH7KyHa0+7RBdfbe3n1G/SiR7RwJ6xMUi0pm/XDSSPWU+XJxJX+xI
+         F5bw==
+X-Gm-Message-State: AOAM532a5VQd8lqx5+gh2XhEPGWHjsPdteObnr1QtLaqMl0Qxsaj7+2G
+        8Cr6xF+FiHyIVT5bv/WUc6o=
+X-Google-Smtp-Source: ABdhPJwVGGM3rOB5faaggN7Vd1V1bZ2QBEkWZ8KqhpetpPJq0mSpnMN7zx5GS/PSKX7cAHYT3ePm1g==
+X-Received: by 2002:a17:90a:fa04:: with SMTP id cm4mr5791025pjb.111.1623549944407;
+        Sat, 12 Jun 2021 19:05:44 -0700 (PDT)
 Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y3sm5079835pgr.46.2021.06.12.19.05.11
+        by smtp.gmail.com with ESMTPSA id u7sm9116070pgl.39.2021.06.12.19.05.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Jun 2021 19:05:12 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 5/9] net: phy/dsa micrel/ksz886x add MDI-X
+        Sat, 12 Jun 2021 19:05:43 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 6/9] net: phy: micrel: ksz8081 add MDI-X
  support
 To:     Oleksij Rempel <o.rempel@pengutronix.de>,
         Woojung Huh <woojung.huh@microchip.com>,
@@ -58,14 +61,14 @@ Cc:     kernel@pengutronix.de, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>
 References: <20210611071527.9333-1-o.rempel@pengutronix.de>
- <20210611071527.9333-6-o.rempel@pengutronix.de>
+ <20210611071527.9333-7-o.rempel@pengutronix.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <9cb4d9fa-d817-dda9-35b6-1bf58bba78b4@gmail.com>
-Date:   Sat, 12 Jun 2021 19:05:10 -0700
+Message-ID: <fff4ba6c-73c8-57c8-293f-ba13247c251d@gmail.com>
+Date:   Sat, 12 Jun 2021 19:05:41 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
-In-Reply-To: <20210611071527.9333-6-o.rempel@pengutronix.de>
+In-Reply-To: <20210611071527.9333-7-o.rempel@pengutronix.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
