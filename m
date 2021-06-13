@@ -2,148 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0952B3A574B
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 11:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F08473A576B
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 11:51:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbhFMJcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 05:32:31 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:6298 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231258AbhFMJcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 05:32:20 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4G2q1V6QwVz1BLwW;
-        Sun, 13 Jun 2021 17:25:18 +0800 (CST)
-Received: from SZX1000464847.huawei.com (10.21.59.169) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Sun, 13 Jun 2021 17:30:15 +0800
-From:   Dongdong Liu <liudongdong3@huawei.com>
-To:     <helgaas@kernel.org>, <hch@infradead.org>, <kw@linux.com>,
-        <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
-        <hverkuil-cisco@xs4all.nl>
-CC:     <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [RESEND PATCH V3 6/6] PCI: Enable 10-Bit tag support for PCIe RP devices
-Date:   Sun, 13 Jun 2021 17:29:15 +0800
-Message-ID: <1623576555-40338-7-git-send-email-liudongdong3@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1623576555-40338-1-git-send-email-liudongdong3@huawei.com>
-References: <1623576555-40338-1-git-send-email-liudongdong3@huawei.com>
+        id S231667AbhFMJxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Jun 2021 05:53:53 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.21]:20671 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231223AbhFMJxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 05:53:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1623577899; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=Ek/ootHM4vaMzT2EpE+Lyl6ZgpOuEZKAGfjJDG/U/hmirvs7ywAEf7ZsNe2DtAsvUU
+    azHWwrGaWrZi74ig2LpcjKrUGisKhus5Fk/wa1Dt/6rE8ekk/H4GrwFrK9MJaFvO5Wy7
+    x8SzhOEMKCvJYTrZEf50c/sjuM4zj0IRT7wqas8jzS6aYOJ8JlBQv2EGdg9xKbfcMmFh
+    LBiix8H4JcnkrUjESKnHpgoK0poELAzetsGdkywBq3xh2P86YYRcKVYHSeTAzpJa9XS9
+    Jlp0+mpQWh9pJurlk4YpXRcDDyXYjr8PcijUa6KMU00L2YuFCUPJl8DWoGRERBtOxws2
+    sWfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623577899;
+    s=strato-dkim-0002; d=strato.com;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=yRn/NkknMjFNPm+iKgTuo3/Mq9bdemw03ZI+Ugm7CcM=;
+    b=O3jCm9sUucyN7tP80GGtTZgg9AKOE6DCymBUAG+Y97L9iAvV7Gsu46gVa+ixVdWq+/
+    ytwGZ1IxKtSwgdG/PPoyvChxZyB8yau66WCsfRcCYB3u6vQ2zvLx9PN8Dp/MPatpbgtQ
+    CVFZcXK6hFg53sfSuRUGr2/ZyqfsemxVehKfUuGrGUZlbRhcobc3QBCDlkMi4kV40jmg
+    Mrtqsyn2Qz4B/fdjiRXfXgg8biUQLTfyXIzacb5aU225ccebfHT9yA5Ghoy2ZJ5H/0ff
+    NbipozhsE9qZhJZu5+RYVq4alWzeHfCssimoZBMNTSPhpQC9KP0DUgWN4ieP8pdp2Bzc
+    h0ag==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623577899;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=yRn/NkknMjFNPm+iKgTuo3/Mq9bdemw03ZI+Ugm7CcM=;
+    b=PNl/btihdnKYgf9dGyL/cQKav3aawDtQNi+zYgcZAYifIPy5xQd6rcLSvENm9i4NP7
+    y4QfyCTWjNbp2mI0bwtdD1eueBV5cDnUKXuXfi283MAgubUjjJVEwQsh9dz5Kp2LQffN
+    5YwpGg1W31iu/M+YTdQ2nlFAuglVwYtV+kdG7hLoSbrquX1XLEkb3s7mINqE8xjQZOH9
+    V1eeG/JNVLWM/rppX5dkFZzgcr7+AR6ypuLoqDfvq2eZCXQ4oRHDs//Ax7QBOjJAu4A5
+    zPxy4HU6LnSc3ocUIKr8rXYzV57m+x2X83RwtDSXUrtyJvuSmOMz5bgq7UQu49xdxeTB
+    Z9Qw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTEVR9J8xozF0="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+    by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
+    with ESMTPSA id d075c5x5D9pcSQ1
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Sun, 13 Jun 2021 11:51:38 +0200 (CEST)
+Subject: Re: [PATCH] can: bcm: fix infoleak in struct bcm_msg_head
+To:     Norbert Slusarek <nslusarek@gmx.net>
+Cc:     mkl@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+References: <trinity-7c1b2e82-e34f-4885-8060-2cd7a13769ce-1623532166177@3c-app-gmx-bs52>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <f9d008bc-2416-8032-0005-35d7c6d87fc1@hartkopp.net>
+Date:   Sun, 13 Jun 2021 11:51:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.21.59.169]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+In-Reply-To: <trinity-7c1b2e82-e34f-4885-8060-2cd7a13769ce-1623532166177@3c-app-gmx-bs52>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PCIe spec 5.0r1.0 section 2.2.6.2 implementation note, In configurations
-where a Requester with 10-Bit Tag Requester capability needs to target
-multiple Completers, one needs to ensure that the Requester sends 10-Bit
-Tag Requests only to Completers that have 10-Bit Tag Completer capability.
-So we enable 10-Bit Tag Requester for root port only when the devices
-under the root port support 10-Bit Tag Completer.
 
-Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
----
- drivers/pci/pcie/portdrv_pci.c | 75 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 75 insertions(+)
 
-diff --git a/drivers/pci/pcie/portdrv_pci.c b/drivers/pci/pcie/portdrv_pci.c
-index c7ff1ee..baf413f 100644
---- a/drivers/pci/pcie/portdrv_pci.c
-+++ b/drivers/pci/pcie/portdrv_pci.c
-@@ -90,6 +90,78 @@ static const struct dev_pm_ops pcie_portdrv_pm_ops = {
- #define PCIE_PORTDRV_PM_OPS	NULL
- #endif /* !PM */
- 
-+static int pci_10bit_tag_comp_support(struct pci_dev *dev, void *data)
-+{
-+	u8 *support = data;
-+
-+	if (*support == 0)
-+		return 0;
-+
-+	if (!pci_is_pcie(dev)) {
-+		*support = 0;
-+		return 0;
-+	}
-+
-+	/*
-+	 * PCIe spec 5.0r1.0 section 2.2.6.2 implementation note.
-+	 * For configurations where a Requester with 10-Bit Tag Requester
-+	 * capability targets Completers where some do and some do not have
-+	 * 10-Bit Tag Completer capability, how the Requester determines which
-+	 * NPRs include 10-Bit Tags is outside the scope of this specification.
-+	 * So we do not consider hotplug scenario.
-+	 */
-+	if (dev->is_hotplug_bridge) {
-+		*support = 0;
-+		return 0;
-+	}
-+
-+	if (!(dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP)) {
-+		*support = 0;
-+		return 0;
-+	}
-+
-+	return 0;
-+}
-+
-+static void pci_configure_rp_10bit_tag(struct pci_dev *dev)
-+{
-+	u8 support = 1;
-+	struct pci_dev *pchild;
-+
-+	if (dev->subordinate == NULL)
-+		return;
-+
-+	/* If no devices under the root port, no need to enable 10-Bit Tag. */
-+	pchild = list_first_entry_or_null(&dev->subordinate->devices,
-+					  struct pci_dev, bus_list);
-+	if (pchild == NULL)
-+		return;
-+
-+	pci_10bit_tag_comp_support(dev, &support);
-+	if (!support)
-+		return;
-+
-+	/*
-+	 * PCIe spec 5.0r1.0 section 2.2.6.2 implementation note.
-+	 * In configurations where a Requester with 10-Bit Tag Requester
-+	 * capability needs to target multiple Completers, one needs to ensure
-+	 * that the Requester sends 10-Bit Tag Requests only to Completers
-+	 * that have 10-Bit Tag Completer capability. So we enable 10-Bit Tag
-+	 * Requester for root port only when the devices under the root port
-+	 * support 10-Bit Tag Completer.
-+	 */
-+	pci_walk_bus(dev->subordinate, pci_10bit_tag_comp_support, &support);
-+	if (!support)
-+		return;
-+
-+	if (!(dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_REQ))
-+		return;
-+
-+	pci_dbg(dev, "enabling 10-Bit Tag Requester\n");
-+	pcie_capability_set_word(dev, PCI_EXP_DEVCTL2,
-+				 PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
-+}
-+
- /*
-  * pcie_portdrv_probe - Probe PCI-Express port devices
-  * @dev: PCI-Express port device being probed
-@@ -111,6 +183,9 @@ static int pcie_portdrv_probe(struct pci_dev *dev,
- 	     (type != PCI_EXP_TYPE_RC_EC)))
- 		return -ENODEV;
- 
-+	if (type == PCI_EXP_TYPE_ROOT_PORT)
-+		pci_configure_rp_10bit_tag(dev);
-+
- 	if (type == PCI_EXP_TYPE_RC_EC)
- 		pcie_link_rcec(dev);
- 
--- 
-2.7.4
+On 12.06.21 23:09, Norbert Slusarek wrote:
+> From: Norbert Slusarek <nslusarek@gmx.net>
+> Date: Sat, 12 Jun 2021 22:18:54 +0200
+> Subject: [PATCH] can: bcm: fix infoleak in struct bcm_msg_head
+> 
+> On 64-bit systems, struct bcm_msg_head has an added padding of 4 bytes between
+> struct members count and ival1. Even though all struct members are initialized,
+> the 4-byte hole will contain data from the kernel stack. This patch zeroes out
+> struct bcm_msg_head before usage, preventing infoleaks to userspace.
+> 
+> Fixes: ffd980f976e7 ("[CAN]: Add broadcast manager (bcm) protocol")
+> Signed-off-by: Norbert Slusarek <nslusarek@gmx.net>
 
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+
+Thanks Norbert!
+
+Yes, when this data structure was created in 2003 either 64 bit machines 
+were far away for me and infoleaks were not a hot topic like today.
+
+Would be interesting to check where data structures are used in the 
+Linux UAPI that became an infoleak in the 32-to-64-bit compilation 
+transistion.
+
+Thanks for the heads up!
+
+Best regards,
+Oliver
+
+> 
+> ---
+>   net/can/bcm.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/can/bcm.c b/net/can/bcm.c
+> index 909b9e684e04..b03062f84fe7 100644
+> --- a/net/can/bcm.c
+> +++ b/net/can/bcm.c
+> @@ -402,6 +402,7 @@ static enum hrtimer_restart bcm_tx_timeout_handler(struct hrtimer *hrtimer)
+>                  if (!op->count && (op->flags & TX_COUNTEVT)) {
+> 
+>                          /* create notification to user */
+> +                       memset(&msg_head, 0, sizeof(msg_head));
+>                          msg_head.opcode  = TX_EXPIRED;
+>                          msg_head.flags   = op->flags;
+>                          msg_head.count   = op->count;
+> @@ -439,6 +440,7 @@ static void bcm_rx_changed(struct bcm_op *op, struct canfd_frame *data)
+>          /* this element is not throttled anymore */
+>          data->flags &= (BCM_CAN_FLAGS_MASK|RX_RECV);
+> 
+> +       memset(&head, 0, sizeof(head));
+>          head.opcode  = RX_CHANGED;
+>          head.flags   = op->flags;
+>          head.count   = op->count;
+> @@ -560,6 +562,7 @@ static enum hrtimer_restart bcm_rx_timeout_handler(struct hrtimer *hrtimer)
+>          }
+> 
+>          /* create notification to user */
+> +       memset(&msg_head, 0, sizeof(msg_head));
+>          msg_head.opcode  = RX_TIMEOUT;
+>          msg_head.flags   = op->flags;
+>          msg_head.count   = op->count;
+> --
+> 2.30.2
+> 
