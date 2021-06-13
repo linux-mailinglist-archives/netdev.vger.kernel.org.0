@@ -2,105 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31EF23A5903
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 16:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C0413A5907
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 16:25:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231858AbhFMOW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 10:22:28 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:37395 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231755AbhFMOW1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 10:22:27 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 398B75C0139;
-        Sun, 13 Jun 2021 10:20:24 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Sun, 13 Jun 2021 10:20:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=2FQGJvpsmo59Q6mFDomE5LV/huAUCemMLMXnMIEXC
-        EQ=; b=fy5OKX47QWl5CxI04X00kletorCqapC+TU03ItlxadFG0NUJGYWHlOQcJ
-        l2g0zjq0M/7JUCCF4GRpqxpaUV4QJr2ckreRZcW/fSdjxsHnrb08xDsRqgO6VseH
-        5nOqwJP9ZKBaae/vb4Ac6brrv2ZNFZ+d484jmG0k/tsDfzvMHNr3OiIC0ZGfaJCz
-        olMZW5RQpXilv9qpO0J/c8pC9Mf0GKtS6xEQa3M8ZgHpOXN4AgbkdCIzGWMhDjzs
-        445jbxj35maDX0SdnME9S4PJzGYD0p4Doa5k9qNkLDVV2/r7Z2/idZkuBobB85zd
-        Gph51t2q6xaOtP5wlW98ci+a+ling==
-X-ME-Sender: <xms:JhTGYBi8e5dSrIs1UDW9MhPzTKnFyvEzXj-_VkX0U84CKClSI5aBbA>
-    <xme:JhTGYGDCwihkbC4FnemZDGpXI1ENHFYsKjQCluldyd7pwchCfgcZqNgKKybdNDlHj
-    grm7i3uBIMp2ko>
-X-ME-Received: <xmr:JhTGYBFbb72g8vALniE-Sev2DctRaKSQgVAuWwFgkmtjEwkKZgjX98A2L3dS>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedvfedgjeekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtjeenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepuefgjeefveeivdektdfggefhgeevudegvefgtedugfetveevuedtgffhkefg
-    gefgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:JhTGYGR4yqoMuoYI493_i0mrRLMCW47fZ2c_VRzphqh6yJnTiYsxlA>
-    <xmx:JhTGYOze0pCHyHGkAN9evBniI6LxjCxmUpM6NFTUgGUs3CQRucNA1A>
-    <xmx:JhTGYM6Oh8hAdUGjfwz8hDsqHwk9gfPdHlPpWAOpbvLKp2pHx89AmQ>
-    <xmx:KBTGYIutCDiur6Aldc7gyLghrA8AbOGemgXrE9lDXwbsA_HlB_ogIQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 13 Jun 2021 10:20:22 -0400 (EDT)
-Date:   Sun, 13 Jun 2021 17:20:19 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Moshe Shemesh <moshe@nvidia.com>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Don Bollinger <don@thebollingers.org>, netdev@vger.kernel.org,
-        Vladyslav Tarasiuk <vladyslavt@nvidia.com>
-Subject: Re: [PATCH ethtool v3 3/4] ethtool: Rename QSFP-DD identifiers to
- use CMIS
-Message-ID: <YMYUI164vtDYCOhP@shredder>
-References: <1623148348-2033898-1-git-send-email-moshe@nvidia.com>
- <1623148348-2033898-4-git-send-email-moshe@nvidia.com>
+        id S231843AbhFMO1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Jun 2021 10:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231755AbhFMO1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 10:27:45 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AD8C061574
+        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 07:25:31 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id i68so32443551qke.3
+        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 07:25:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eGlbIuvyPrFNLTch5ZKTb6/OjYTk+PwqYaQbu3V8zPQ=;
+        b=oqaRvE8jB+7n1H4nBHIMCTj2LiwFRUly4eylqaqfiSyyh543eVzrJJFv6MG8G4WE5W
+         y69rUuXgFAUGQMyMyWaCnDYQv7gfXV28v+sbDKuKRvcMDGcjyHW8oTkwulrp8DQ6kfy/
+         Yb74BWN6hyGYjzSs7g+yhu4PUyE+eJYV896ZWAZfVEUra0cFelqOuGcqgpxOVqkLMXCS
+         st2bZRd81/o1X7OasCDE7Je+CIkXxadJYZwwM/fXIV8z3MIMcWAQUeBjljMMKIbV1bTL
+         gFvFmPwAW1FNW9DGkYh5MeGNvKKNcZitdyqBb6eiKu9ky+k5Ovhvz0PMQAybU2Js8cJC
+         szeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eGlbIuvyPrFNLTch5ZKTb6/OjYTk+PwqYaQbu3V8zPQ=;
+        b=KedjDpqzIxtn17d5Xpl8ZHZ/SF0Xm6vNA42PTxU8Gio4vOkkw7YMk2GKtGMyDwyZZg
+         Vk/i1BGoNaXvb7TWbFu2oZaQm+C4BEGHJ6ffnhFocJnGQgGr8O2ZYOuDPZ9D00uhjAhR
+         G85xdU5Tj4IhZuUNLs3dkje5dlLHXOE7oXHIfOQsN5NZrqdq71tlCdb/GSZjf7c+XHXZ
+         gMWE6wY2TsvqPkg1SdO0uWBuEkq0dIP6LdL87Z1ZKST9c7rjX2qzaVWDBQkqrucmQ5cr
+         U2DEQwdH6GyRwBtaDxus5VEHO9e2OLns8xuYJHvKMIzCQcFs6UqAaAyK4+PM2sjcHmFl
+         x40A==
+X-Gm-Message-State: AOAM531zydyFQvsDzAB/ruFGapAP07fW06RiQo9YEbuIB8S4aotXJyiB
+        u+Oj9T4FXS0gmBO23fswcA8645EmYcqXbhKa
+X-Google-Smtp-Source: ABdhPJzJ+AiQWnCTCvXFMB+pZH4H093khqB/qnW44kfCsTUaYElCAhFbAx/XtPexOv7CSULREjkPag==
+X-Received: by 2002:a37:a095:: with SMTP id j143mr12310329qke.68.1623594330603;
+        Sun, 13 Jun 2021 07:25:30 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id z3sm8382706qkj.40.2021.06.13.07.25.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Jun 2021 07:25:30 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     subashab@codeaurora.org, stranche@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     lkp@intel.com, bjorn.andersson@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 1/1] net: qualcomm: rmnet: always expose a few functions
+Date:   Sun, 13 Jun 2021 09:25:22 -0500
+Message-Id: <20210613142522.3585441-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1623148348-2033898-4-git-send-email-moshe@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 08, 2021 at 01:32:27PM +0300, Moshe Shemesh wrote:
-> +void cmis_show_all(const struct ethtool_module_eeprom *page_zero,
-> +		   const struct ethtool_module_eeprom *page_one)
-> +{
-> +	const __u8 *page_zero_data = page_zero->data;
-> +
-> +	cmis_show_identifier(page_zero_data);
-> +	cmis_show_power_info(page_zero_data);
-> +	cmis_show_connector(page_zero_data);
-> +	cmis_show_cbl_asm_len(page_zero_data);
-> +	cmis_show_sig_integrity(page_zero_data);
-> +	cmis_show_mit_compliance(page_zero_data);
-> +	cmis_show_mod_lvl_monitors(page_zero_data);
-> +
-> +	if (page_one)
-> +		cmis_show_link_len_from_page(page_one->data - 0x80);
-> +
-> +	cmis_show_vendor_info(page_zero_data);
-> +	cmis_show_rev_compliance(page_zero_data);
-> +}
-> diff --git a/cmis.h b/cmis.h
-> new file mode 100644
-> index 0000000..5b7ac38
-> --- /dev/null
-> +++ b/cmis.h
-> @@ -0,0 +1,128 @@
+A recent change tidied up some conditional code, avoiding the use of
+some #ifdefs.  Unfortunately, if CONFIG_IPV6 was not enabled, it
+meant that two functions were referenced but never defined.
 
-[...]
+The easiest fix is to just define stubs for these functions if
+CONFIG_IPV6 is not defined.  This will soon be simplified further
+by some other development in the works...
 
-> +void cmis4_show_all(const struct ethtool_module_eeprom *page_zero,
-> +		    const struct ethtool_module_eeprom *page_one);
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 75db5b07f8c39 ("net: qualcomm: rmnet: eliminate some ifdefs")
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+v2: Rebased on current net-next/master; this fixes a bug there.
 
-Should be cmis_show_all():
+ .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c  | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-netlink/module-eeprom.c:335:17: warning: implicit declaration of function ‘cmis_show_all’; did you mean ‘cmis4_show_all’? [-Wimplicit-function-declaration]
-  335 |                 cmis_show_all(page_zero, page_one);
-      |                 ^~~~~~~~~~~~~
-      |                 cmis4_show_all
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+index a6ce22f60a00c..39fba3a347fa6 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+@@ -153,6 +153,14 @@ rmnet_map_ipv6_dl_csum_trailer(struct sk_buff *skb,
+ 	priv->stats.csum_ok++;
+ 	return 0;
+ }
++#else
++static int
++rmnet_map_ipv6_dl_csum_trailer(struct sk_buff *skb,
++			       struct rmnet_map_dl_csum_trailer *csum_trailer,
++			       struct rmnet_priv *priv)
++{
++	return 0;
++}
+ #endif
+ 
+ static void rmnet_map_complement_ipv4_txporthdr_csum_field(void *iphdr)
+@@ -223,6 +231,13 @@ rmnet_map_ipv6_ul_csum_header(struct ipv6hdr *ipv6hdr,
+ 
+ 	rmnet_map_complement_ipv6_txporthdr_csum_field(ipv6hdr);
+ }
++#else
++static void
++rmnet_map_ipv6_ul_csum_header(void *ip6hdr,
++			      struct rmnet_map_ul_csum_header *ul_header,
++			      struct sk_buff *skb)
++{
++}
+ #endif
+ 
+ static void rmnet_map_v5_checksum_uplink_packet(struct sk_buff *skb,
+-- 
+2.27.0
+
