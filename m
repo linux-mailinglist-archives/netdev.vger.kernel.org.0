@@ -2,108 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A25553A59F3
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 20:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E1F83A5A04
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 20:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232013AbhFMSKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 14:10:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39672 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232007AbhFMSKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 14:10:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623607716;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3pYZS7x7b04VP8FNau30s2/Cq5LtjA4+buK1KVo4qzw=;
-        b=ax661Ege8lwDSlcFfl0dtgvGhe5l4XHhGSF6b140UTmFk4m8RQZG3bUfL8FAG9E/2IqtN/
-        5Wa2h4spS6pYZsnlahyw/JE+/oOXI9OH7UHqVv31ut2rz/w2isu2P4ufloGcWwhqhWQsq1
-        uFVgDuNtLUnIOdMYwAR8rLlzyzf02n8=
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
- [209.85.166.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-550-4xRjQcGNPfG8DZIHndHsWA-1; Sun, 13 Jun 2021 14:08:35 -0400
-X-MC-Unique: 4xRjQcGNPfG8DZIHndHsWA-1
-Received: by mail-io1-f71.google.com with SMTP id a24-20020a5d95580000b029044cbcdddd23so23267616ios.13
-        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 11:08:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3pYZS7x7b04VP8FNau30s2/Cq5LtjA4+buK1KVo4qzw=;
-        b=s9RVi6qc8bjfLRiVk3WRiZSnKvIzhxaZpDmB5B5JE5nyZ2WkRrRkZhcSei/WskiIuj
-         HpdzGthg7A/YrNvYblHD8laQCfqlp41M07BIb30zO62CxF/Paf1FEkWjpIZuzD5kqn0y
-         A3UlHLhLP9XFr6FWaqzPmU8wc16t38RTCaifGF5pnXTe42j5DvApDMXxTD4IFdRbUz8Q
-         gCuyFsasYpNah5Ua1Lm2XWXkOb9zRxTDdgn1ra73YOuO1cq/1hfP7erpo5XWKmRJzLsy
-         b45IDtCWNwxPjsSG1MkYQ3iZTJzMA/Ac80E4JYf9o/WqiksmB3UPk2rcpqwT0zvhuFWl
-         r29Q==
-X-Gm-Message-State: AOAM530dE1k9zY+gCUUn5SWhtAkefVzMs9CnCu9bvcQztL2xPT8zlFF/
-        gvj++xpflohStE2jQoTu9tmN3fRjrA88pl9KglmPraZy5XUU8wQaiU6VSgiUDHc9ORJ2gIxY598
-        5Mig7irgZJV1CnnBm5qYmGzjnyy96+PE2
-X-Received: by 2002:a92:c7b0:: with SMTP id f16mr11144719ilk.169.1623607714607;
-        Sun, 13 Jun 2021 11:08:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyIi9hotsCKR1PI95T0JBy1nXBb8+3YoxdXbzCEHQKONUHmAfhjykePgLXlW5o0SNudp+NlmbTdS6VPl4DECjg=
-X-Received: by 2002:a92:c7b0:: with SMTP id f16mr11144704ilk.169.1623607714374;
- Sun, 13 Jun 2021 11:08:34 -0700 (PDT)
+        id S232021AbhFMSfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Jun 2021 14:35:48 -0400
+Received: from mout.gmx.net ([212.227.15.19]:47127 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232003AbhFMSfr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Jun 2021 14:35:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1623609211;
+        bh=MQseig5tFaIs7XyP57Ofm/Ey7EBnz8UVR3sISIhinaY=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=c+FL3PQqlRXDWv1VRW3uMAQhFEvhVGubgOMCW+c6w/r7WSCbQ1zBnFI3sVg8Dysjz
+         Tqu7gLa5e8F4WxZvc2zBQJQWyOLBYPL8rQaqFUpq5kGIP4pQAIZl+MejWHBtgmRuJg
+         UkRRy8MKgBCMzkOA0STJaqQHDT0Sx9WPrk6jcEO8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [88.130.61.210] ([88.130.61.210]) by web-mail.gmx.net
+ (3c-app-gmx-bs04.server.lan [172.19.170.53]) (via HTTP); Sun, 13 Jun 2021
+ 20:33:31 +0200
 MIME-Version: 1.0
-References: <CAK-6q+hS29yoTF4tKq+Xt3G=_PPDi9vmFVwGPmutbsQyD2i=CA@mail.gmail.com>
- <87pmwxsjxm.fsf@suse.com> <CAH2r5msMBZ5AYQcfK=-xrOASzVC0SgoHdPnyqEPRcfd-tzUstw@mail.gmail.com>
- <35352ef0-86ed-aaa5-4a49-b2b08dc3674d@samba.org> <CAK-6q+g3_9g++wQGbhzBhk2cp=0fb3aVL9GoAoYNPq6M4QnCdQ@mail.gmail.com>
- <20210608153349.0f02ba71@hermes.local> <20210609094818.7aaf21bd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <166ca5b32a9d4576bc02cd8972a281e9@AcuMS.aculab.com>
-In-Reply-To: <166ca5b32a9d4576bc02cd8972a281e9@AcuMS.aculab.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sun, 13 Jun 2021 14:08:23 -0400
-Message-ID: <CAK-6q+id+CJgoSHaMGMs=d1Lr81bukrdjbszhujVEYnimtnq8w@mail.gmail.com>
-Subject: Re: quic in-kernel implementation?
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stefan Metzmacher <metze@samba.org>,
-        Steve French <smfrench@gmail.com>,
-        =?UTF-8?Q?Aur=C3=A9lien_Aptel?= <aaptel@suse.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-nfs <linux-nfs@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        Leif Sahlberg <lsahlber@redhat.com>,
-        Steven Whitehouse <swhiteho@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <trinity-87eaea25-2a7d-4aa9-92a5-269b822e5d95-1623609211076@3c-app-gmx-bs04>
+From:   Norbert Slusarek <nslusarek@gmx.net>
+To:     Patrick Menschel <menschel.p@posteo.de>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] can: bcm: fix infoleak in struct bcm_msg_head
+Content-Type: text/plain; charset=UTF-8
+Date:   Sun, 13 Jun 2021 20:33:31 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <a44df2a0-a403-40ba-3312-c6eb53ddf291@posteo.de>
+References: <trinity-7c1b2e82-e34f-4885-8060-2cd7a13769ce-1623532166177@3c-app-gmx-bs52>
+ <f9d008bc-2416-8032-0005-35d7c6d87fc1@hartkopp.net>
+ <34cc6b6a-6eb0-f3ce-1864-9057b80fab9e@posteo.de>
+ <trinity-0d8be729-1e3c-452c-8171-962963abed0d-1623591348277@3c-app-gmx-bap71>
+ <a44df2a0-a403-40ba-3312-c6eb53ddf291@posteo.de>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:72QZUHTqgv0X1VMAKMyxCIB0dcV//n1OARefLbxDgahS72wpWxd+xqpmGKZr1bTmVJyPK
+ NjaIvZtuzp4U4Iq6rUYufunN6GWvgw2KYg36N8LRUOjERKGZCFN/iXXPSKAy+Nym3dPcPK9UJi+0
+ 2RSrEusYx0AX4NGmljiwwnu66XQ/9eRDST7DJN38qA4AflqRsB64tANnBaSZQqc2wa2To8oeByGf
+ 01rgvSXFKtCXR7IOM9WpJ7gKIHOWTHIuAk7goDQIPGSP8vlWKmqm8FprcjSz9MNrH23N5IZXCn8M
+ R8=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:l6TsaChUdpk=:6r2pATKbEVjXhO7QU9KAs5
+ j1c1tCo1HcLhEarn6lyj7Rxv5bSbOC+QUzL2U7BgfCuyXvZzyPn9TigCAM+t5D9z69TN12smz
+ vMAnnS+E+CiC3+YDr8BDO831n3vN0ZVgBHDRLPFgqgf3sPff0CDGXtEFdPXD80if0A4WND1tu
+ xKmL+9D6kV3teWSApmHV/Y4iBWg1antHuhasKEeorTy3a3Rc1wwUUb0yjrEw7DRbEcEGxgaQU
+ 8uYkT+BhIn4GQUkaqXjIdZhkzQVJsBWxutdkpCL1dnyisNdqYtX7fxBl+oy0iDhVO5ZNIanEx
+ IuFvJzhCSjr3aiUxYvoKACDxwneVnZmHjE7TyQHfsv6eRnSrspDWR7618XOiyP/Qc6PYVops3
+ WhU/5jhL1NnMluknrlRd+LYeOFVktEWgpK2rdhsKLFmFk3VhzkxpI+1vfCBp89jMMmbfwtL0j
+ iJNJFrpthG617oYedFprwmq3xn6C4KXOHSY4pJ67I1aIw0dk8TQG+ka8K337uN39V0yrrAP52
+ 0JGTiBLDcZ3roFXPYNnEK5P7wgsRxIm1oFubbK3RVPf+DIy9qpiMPSZrq6gko6JqV3yAsQ1fJ
+ j42SupWKg4KqTfteJa6zMI3jCkF4aJxValgISAm4XxArKqL+bpHfRhjhh4AYZXzPFBe/LLw/O
+ 9oRfURzSaI+n7dmVRqDQ3n6+5zRQ4KMe8psp3HQsejiVLuKB4nRYGbn2zSsavnvaRsNlD8Eh8
+ Ida/PQVyfmK8EDy7OaDx3O/BIu7bHxvjimfUDiC4eO/FGmOHd9fU5cTtiPfjgdHD8bH+CUwGf
+ KsvUQOrwCyvGDUe4cMLIdNjH09JkQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Sun, Jun 13, 2021 at 8:17 AM David Laight <David.Laight@aculab.com> wrote:
+>Ouch,
 >
-> From: Jakub Kicinski
-> > Sent: 09 June 2021 17:48
-> ...
-> > > > I think two veth interfaces can help to test something like that,
-> > > > either with a "fuse-like socket" on the other end or an user space
-> > > > application. Just doing a ping-pong example.
-> > > >
-> > > > Afterwards we can look at how to replace the user generated socket
-> > > > application with any $LIBQUIC e.g. msquic implementation as second
-> > > > step.
-> > >
-> > > Socket state management is complex and timers etc in userspace are hard.
-> >
-> > +1 seeing the struggles fuse causes in storage land "fuse for sockets"
-> > is not an exciting temporary solution IMHO..
+>I should not skip lines while reading.
+>We're talking about different gaps as it seems. I didn't realize the gap
+>in front of ival1 before.
 >
-> Especially since you'd want reasonable performance for quic.
+>There is also a gap in between nframes and frames[0].
+>That one is caused by align(8) of data in struct can_frame.
+>It propagates upwards into that gap on 32bit arch.
+>You can find it if you actually fill frames[] with a frame.
 >
-> Fuse is normally used to access obscure filesystems where
-> you just need access, rather than something that really
-> needs to be quick.
+>I found it while concatenating bcm_msg_head and a can frame into a
+>python bytearray which was too short for the raspberry pi as I forgot
+>the alignment.
 >
+>I came up with a format string "IIIllllII0q" for bcm_msg_head.
+>
+>Kind Regards,
+>Patrick
 
-or you have library dependencies like sshfs. That is the case in quic
-for some parts of TLS (see TLS socket API). Sure it will not be the
-final solution, that was never the intention. It is to establish a
-kernel-API which will be replaced for a final in-kernel solution later
-and not trying to solve all problems at once.
+I confirm that there is a similar 4-byte leak happening on 32-bit systems.
+It's possible to retrieve kernel addresses etc. which allows for a KASLR
+bypass. I will request a CVE and publish a notice regarding
+this on oss-security where I will mention Patrick too.
 
-- Alex
+Anyways, this patch seems to be working for the leak on 32-bit systems as well.
 
+Norbert
