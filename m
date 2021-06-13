@@ -2,108 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA423A5A99
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 23:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68AA73A5AA3
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 23:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbhFMVZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 17:25:00 -0400
-Received: from mail-qk1-f175.google.com ([209.85.222.175]:42826 "EHLO
-        mail-qk1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232087AbhFMVY7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 17:24:59 -0400
-Received: by mail-qk1-f175.google.com with SMTP id q16so10678278qkm.9
-        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 14:22:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=C1mExJCPgpNZd6cbu2tb/gKgZ1aY7W1ClExqPNOLIuM=;
-        b=o6BAwb9ioitFPZC+O4R1JfrJ7u/Pry4ztI6ZM3Dp71fihRrQe9mbOsxp5FZk+oO01A
-         U1MjiGhae9OU+m0eNPSaB+ibVPgbB8UnDKFm7xqDLH7wQ/p2t1fA3rcaZseHe4Pgt0Mc
-         aQ8cbvrxihCZo6fmJIxMwIfTkkTMDKOqFWipfSZvQOrGS0YTwZ6F3CJ4ICV/DHN1yjML
-         CzsW07h6O38Q6kRoQ6bq41WauJ9aYiUebkR/LKBxt9PDb4NScclamAxH8DWMv5QESy/5
-         OiHg57McCFZFu8Lbies3hgXOww6VnzGY2NrW1/i+ukY3jk2mu7D1kNYGAFK+DTmJ2Q0a
-         nWCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=C1mExJCPgpNZd6cbu2tb/gKgZ1aY7W1ClExqPNOLIuM=;
-        b=ap39WkVGQbDQ8SGIj0r4LIG91KYrInO29XoivbvQRvyM6HbQIoH3F7m89qUPXoRRzd
-         EyK30vZeKMqBRanO1x1MoBi15/f3HXArJGTZCMgRfEOKlbGdVAxXHG68xtSOFfhdpieu
-         wxzVhURzBVyRrRGQC9aA6oq1yetDiSLIcUlzNmhMRLo+uzwPdkb5Icitr5KrEUTh/AEk
-         LxXb2RZgi+nbArU/YrY/B0xbWEBQXIvQkHTfVtf0THiaipbO6r8RJJ34p9XyawdNFR0N
-         wBSl56t69kYud+osbHAgQdaCVT50EcjUH2NQ+TJHWVD9VC8oqfoLtnBB+RhQq+QFRJ2P
-         4Whw==
-X-Gm-Message-State: AOAM5323FCk4AKx3RynMrXmwEIVOErb3UnTH3C4gnprpOjUeO1aq8m5L
-        C9Ir9+UOjuwbIHLAkthVDyiccJ7dW4fyQzubWLFv0Q==
-X-Google-Smtp-Source: ABdhPJy+BXBgTbT3yDL5YymQ1TbVkHw/a4ewerFPNMTywKSUAJlw1M8cD3FBM/LBbdaP7dDvdYFEE1w7FzuXyL75Uk4=
-X-Received: by 2002:a37:a041:: with SMTP id j62mr13554877qke.155.1623619317071;
- Sun, 13 Jun 2021 14:21:57 -0700 (PDT)
+        id S232139AbhFMVcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Jun 2021 17:32:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232087AbhFMVcJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Jun 2021 17:32:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B7FE761357;
+        Sun, 13 Jun 2021 21:30:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623619807;
+        bh=EPnmic1qiae6Uj6aIPU4YXMIMUGygUDIQszUiKijFwA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GrOzcHc/XFdYsOFQdlaAiQbk2xYskMw/LYdYxOxWxw8EGKQ63gTtgG8K2zUKBiuob
+         ZZqnwceg2sYZ01UyNPHwJp+BgZ4zw+Ix14/ov9i5pPvzVknHbdRGe85QTttfogvsX0
+         HQeIiZDo//TtTDopGtYBDdisFv42O8nV0dqL9GBigdIEaGgPshFZcFIdktSOCn4cDI
+         z/tFq1CSSpereSr43mZK4LFSZl9LuSSZLOwgT3k+n+Ot2UrSV8cCVRs32+9W1l+RU+
+         lg4EoH0GJ+v8/4RSMcupRAg4dz1cXVx28u0HBgtkp7vHEIdP79Im3mXNCl+G6qa7nE
+         l9isl0Me/hKjg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AA872609AE;
+        Sun, 13 Jun 2021 21:30:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210613183520.2247415-1-mw@semihalf.com> <20210613183520.2247415-3-mw@semihalf.com>
- <YMZg27EkTuebBXwo@lunn.ch>
-In-Reply-To: <YMZg27EkTuebBXwo@lunn.ch>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Sun, 13 Jun 2021 23:21:44 +0200
-Message-ID: <CAPv3WKfWqdpntPKknZ+H+sscyH9mursvCUwe8Q1DH-wGpsWknQ@mail.gmail.com>
-Subject: Re: [net-next: PATCH 2/3] net: mvpp2: enable using phylink with ACPI
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V5 00/16] net: iosm: PCIe Driver for Intel M.2 Modem
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162361980669.14320.17522019509048799009.git-patchwork-notify@kernel.org>
+Date:   Sun, 13 Jun 2021 21:30:06 +0000
+References: <20210613125023.18945-1-m.chetan.kumar@intel.com>
+In-Reply-To: <20210613125023.18945-1-m.chetan.kumar@intel.com>
+To:     M Chetan Kumar <m.chetan.kumar@intel.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        johannes@sipsolutions.net, krishna.c.sudi@intel.com,
+        linuxwwan@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello:
 
-niedz., 13 cze 2021 o 21:47 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
->
-> > +static bool mvpp2_use_acpi_compat_mode(struct fwnode_handle *port_fwno=
-de)
-> > +{
-> > +     if (!is_acpi_node(port_fwnode))
-> > +             return false;
-> > +
-> > +     return (!fwnode_property_present(port_fwnode, "phy-handle") &&
-> > +             !fwnode_property_present(port_fwnode, "managed") &&
-> > +             !fwnode_get_named_child_node(port_fwnode, "fixed-link"));
->
-> fixed-link and managed are not documented in
-> Documentation/firmware-guide/acpi/dsd/phy.rst.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-True. I picked the port type properties that are interpreted by
-phylink. Basically, I think that everything that's described in:
-devicetree/bindings/net/ethernet-controller.yaml
-is valid for the ACPI as well - the kernel already is using 'fwnode_'
-in most (if not all) cases.
+On Sun, 13 Jun 2021 18:20:07 +0530 you wrote:
+> The IOSM (IPC over Shared Memory) driver is a PCIe host driver implemented
+> for linux or chrome platform for data exchange over PCIe interface between
+> Host platform & Intel M.2 Modem. The driver exposes interface conforming to
+> the MBIM protocol. Any front end application ( eg: Modem Manager) could
+> easily manage the MBIM interface to enable data communication towards WWAN.
+> 
+> Intel M.2 modem uses 2 BAR regions. The first region is dedicated to Doorbell
+> register for IRQs and the second region is used as scratchpad area for book
+> keeping modem execution stage details along with host system shared memory
+> region context details. The upper edge of the driver exposes the control and
+> data channels for user space application interaction. At lower edge these data
+> and control channels are associated to pipes. The pipes are lowest level
+> interfaces used over PCIe as a logical channel for message exchange. A single
+> channel maps to UL and DL pipe and are initialized on device open.
+> 
+> [...]
 
-Would you like me to add "managed" and "fixed-link"
-description/examples to the mentioned file?
+Here is the summary with links:
+  - [V5,01/16] net: iosm: entry point
+    https://git.kernel.org/netdev/net-next/c/7e98d785ae61
+  - [V5,02/16] net: iosm: irq handling
+    https://git.kernel.org/netdev/net-next/c/7f41ce085de0
+  - [V5,03/16] net: iosm: mmio scratchpad
+    https://git.kernel.org/netdev/net-next/c/dc0514f5d828
+  - [V5,04/16] net: iosm: shared memory IPC interface
+    https://git.kernel.org/netdev/net-next/c/3670970dd8c6
+  - [V5,05/16] net: iosm: shared memory I/O operations
+    https://git.kernel.org/netdev/net-next/c/edf6423c0403
+  - [V5,06/16] net: iosm: channel configuration
+    https://git.kernel.org/netdev/net-next/c/30ebda7a313d
+  - [V5,07/16] net: iosm: wwan port control device
+    https://git.kernel.org/netdev/net-next/c/10685b6e9868
+  - [V5,08/16] net: iosm: bottom half
+    https://git.kernel.org/netdev/net-next/c/3b575260cb86
+  - [V5,09/16] net: iosm: multiplex IP sessions
+    https://git.kernel.org/netdev/net-next/c/51c45fa95435
+  - [V5,10/16] net: iosm: encode or decode datagram
+    https://git.kernel.org/netdev/net-next/c/9413491e20e1
+  - [V5,11/16] net: iosm: power management
+    https://git.kernel.org/netdev/net-next/c/be8c936e540f
+  - [V5,12/16] net: iosm: shared memory protocol
+    https://git.kernel.org/netdev/net-next/c/faed4c6f6f48
+  - [V5,13/16] net: iosm: protocol operations
+    https://git.kernel.org/netdev/net-next/c/64516f633bfd
+  - [V5,14/16] net: iosm: uevent support
+    https://git.kernel.org/netdev/net-next/c/110e6e02eb19
+  - [V5,15/16] net: iosm: net driver
+    https://git.kernel.org/netdev/net-next/c/2a54f2c77934
+  - [V5,16/16] net: iosm: infrastructure
+    https://git.kernel.org/netdev/net-next/c/f7af616c632e
 
->
-> Also, should you be looking for phy-mode?
->
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-In the beginning of the mvpp2_port_probe, there's:
 
-        phy_mode =3D fwnode_get_phy_mode(port_fwnode);
-        if (phy_mode < 0) {
-                dev_err(&pdev->dev, "incorrect phy mode\n");
-                err =3D phy_mode;
-                goto err_free_netdev;
-        }
-
-So we won't reach further checks in case anything is wrong with it.
-
-Best regards,
-Marcin
