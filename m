@@ -2,67 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A5C03A5A13
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 20:44:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BE163A5A28
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 21:20:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232047AbhFMSqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 14:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232000AbhFMSqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 14:46:18 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C95C061574;
-        Sun, 13 Jun 2021 11:44:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=zd0ykvRTbEDpr2q2WgUG100JamY8WG7iW9Jws5t14Yc=; b=C0a5LoW6hFM+jmDI7Ejooc5Ot
-        swqQSr8yHOXmKy6c7Hdu3ure1bUTpBsdVtyOJYtNCMjEjgsvWUjM+sVb1a9Eix/bytRECO+5uKYJd
-        mGNQAHcp1aAgkjZkqWqwmOfOeKi0RdqHT7F18kp3MC5P69LFZIOI3TW399IGymE78osRTN4OeqqBq
-        fBOyuQnwxEMCVv2F/xysisyiXK8Cd3ha3MRq78GZ1HdtEVKw3eT5y2EPoyngHB3MUsp1/dCBhoUdL
-        lMldUTRynEcuIfB+RKVrPdkeEGKktKYXKqy8EIsl+xmcXeeoqIbeqbfB9XSZjlZVhk5IhRu+y+UF9
-        luaNsTeZg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44982)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lsV5g-0003Zw-Ii; Sun, 13 Jun 2021 19:44:12 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lsV5d-0003OV-W4; Sun, 13 Jun 2021 19:44:10 +0100
-Date:   Sun, 13 Jun 2021 19:44:09 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+        id S232052AbhFMTWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Jun 2021 15:22:14 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33784 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231912AbhFMTWN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Jun 2021 15:22:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=b+44vKs6VriBl5euKFeZE0tFHHDGn+m9x2DT4kAxVlI=; b=SbxmZ24OJykt28WsfYLMGUq/lV
+        YHXkl/CsWs8O+1XAXJ2EDQ+0p/LmbkwU8Lbu2SMF1UNt8vZ18FeNMquIQzMC4FZCK1Dy7mEX+2Vzi
+        q46496XbqHG+HqMu+xHyHRet8DeCxas4epEEq0gHJbk217G4G6iMb+BUy7lx2cz2iGvA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lsVeR-009Bnd-Ny; Sun, 13 Jun 2021 21:20:07 +0200
+Date:   Sun, 13 Jun 2021 21:20:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Marcin Wojtas <mw@semihalf.com>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jaz@semihalf.com,
-        gjb@semihalf.com, upstream@semihalf.com,
+        davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
+        jaz@semihalf.com, gjb@semihalf.com, upstream@semihalf.com,
         Samer.El-Haj-Mahmoud@arm.com, jon@solid-run.com
-Subject: Re: [net-next: PATCH 2/3] net: mvpp2: enable using phylink with ACPI
-Message-ID: <20210613184409.GQ22278@shell.armlinux.org.uk>
+Subject: Re: [net-next: PATCH 1/3] net: mvmdio: add ACPI support
+Message-ID: <YMZaZx3oZ7tYCEPH@lunn.ch>
 References: <20210613183520.2247415-1-mw@semihalf.com>
- <20210613183520.2247415-3-mw@semihalf.com>
+ <20210613183520.2247415-2-mw@semihalf.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210613183520.2247415-3-mw@semihalf.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20210613183520.2247415-2-mw@semihalf.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 13, 2021 at 08:35:19PM +0200, Marcin Wojtas wrote:
->  
->  	/* Phylink isn't used w/ ACPI as of now */
-> -	if (port_node) {
-> +	if (!mvpp2_use_acpi_compat_mode(port_fwnode)) {
+> -	ret = of_mdiobus_register(bus, pdev->dev.of_node);
+> +	if (pdev->dev.of_node)
+> +		ret = of_mdiobus_register(bus, pdev->dev.of_node);
+> +	else if (is_acpi_node(pdev->dev.fwnode))
+> +		ret = acpi_mdiobus_register(bus, pdev->dev.fwnode);
+> +	else
+> +		ret = -EINVAL;
 
-Does this comment need to be updated?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+This seems like something which could be put into fwnode_mdio.c.
+
+     Andrew
