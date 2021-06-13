@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32B833A5824
-	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 13:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEA903A5822
+	for <lists+netdev@lfdr.de>; Sun, 13 Jun 2021 13:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231782AbhFMMAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 08:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51236 "EHLO
+        id S231768AbhFMMAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Jun 2021 08:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231691AbhFMMAs (ORCPT
+        with ESMTP id S231688AbhFMMAs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 08:00:48 -0400
-Received: from mxout012.mail.hostpoint.ch (mxout012.mail.hostpoint.ch [IPv6:2a00:d70:0:e::312])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E887C061574;
+Received: from mxout013.mail.hostpoint.ch (mxout013.mail.hostpoint.ch [IPv6:2a00:d70:0:e::313])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1E0C061766;
         Sun, 13 Jun 2021 04:58:46 -0700 (PDT)
 Received: from [10.0.2.44] (helo=asmtp014.mail.hostpoint.ch)
-        by mxout012.mail.hostpoint.ch with esmtp (Exim 4.94.2 (FreeBSD))
+        by mxout013.mail.hostpoint.ch with esmtp (Exim 4.94.2 (FreeBSD))
         (envelope-from <code@reto-schneider.ch>)
-        id 1lsOlF-0001z5-Sq; Sun, 13 Jun 2021 13:58:41 +0200
+        id 1lsOlG-000MXX-HL; Sun, 13 Jun 2021 13:58:42 +0200
 Received: from [2a02:168:6182:1:d747:8127:5b7a:4266] (helo=eleanor.home.reto-schneider.ch)
         by asmtp014.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
         (Exim 4.94.2 (FreeBSD))
         (envelope-from <code@reto-schneider.ch>)
-        id 1lsOlF-0008UX-Qz; Sun, 13 Jun 2021 13:58:41 +0200
+        id 1lsOlG-0008UX-FR; Sun, 13 Jun 2021 13:58:42 +0200
 X-Authenticated-Sender-Id: reto-schneider@reto-schneider.ch
 From:   Reto Schneider <code@reto-schneider.ch>
 To:     devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
@@ -30,14 +30,19 @@ To:     devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
 Cc:     Stefan Roese <sr@denx.de>,
         Reto Schneider <reto.schneider@husqvarnagroup.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Jakub Kicinski <kuba@kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/2] dt-bindings: net: mediatek: Support custom ifname
-Date:   Sun, 13 Jun 2021 13:58:18 +0200
-Message-Id: <20210613115820.1525478-1-code@reto-schneider.ch>
+Subject: [PATCH v1 2/2] net: ethernet: mtk_eth_soc: Support custom ifname
+Date:   Sun, 13 Jun 2021 13:58:19 +0200
+Message-Id: <20210613115820.1525478-2-code@reto-schneider.ch>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210613115820.1525478-1-code@reto-schneider.ch>
+References: <20210613115820.1525478-1-code@reto-schneider.ch>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -46,42 +51,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 
-The (optional) label property allows to specify customized interfaces
-names.
-
-The motivation behind this change is to allow embedded devices to keep
-their first switch port be named "eth0", even when switching to the DSA
-architecture. In order to do so, it must be possible to name the MAC
-interface differently from eth0.
+Name the MAC interface name according to the label property. If the
+property is missing, the default name (ethX) gets used.
 
 Signed-off-by: Reto Schneider <reto.schneider@husqvarnagroup.com>
+
 ---
 
- Documentation/devicetree/bindings/net/mediatek-net.txt | 4 ++++
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek-net.txt b/Documentation/devicetree/bindings/net/mediatek-net.txt
-index 72d03e07cf7c..93e35f239a0a 100644
---- a/Documentation/devicetree/bindings/net/mediatek-net.txt
-+++ b/Documentation/devicetree/bindings/net/mediatek-net.txt
-@@ -51,6 +51,9 @@ Required properties:
- 	is equal to 0 and the MAC uses fixed-link to connect
- 	with internal switch such as MT7530.
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 64adfd24e134..8bb09801918f 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -2948,6 +2948,7 @@ static const struct net_device_ops mtk_netdev_ops = {
+ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+ {
+ 	const __be32 *_id = of_get_property(np, "reg", NULL);
++	const char *const name = of_get_property(np, "label", NULL);
+ 	phy_interface_t phy_mode;
+ 	struct phylink *phylink;
+ 	struct mtk_mac *mac;
+@@ -3020,6 +3021,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
  
-+Optional properties:
-+- label: Name of interface, defaults to ethX if missing
+ 	mac->phylink = phylink;
+ 
++	if (name)
++		strncpy(eth->netdev[id]->name, name, IFNAMSIZ);
 +
- Example:
- 
- eth: ethernet@1b100000 {
-@@ -76,6 +79,7 @@ eth: ethernet@1b100000 {
- 		compatible = "mediatek,eth-mac";
- 		reg = <0>;
- 		phy-handle = <&phy0>;
-+		label = "mac1";
- 	};
- 
- 	gmac2: mac@1 {
+ 	SET_NETDEV_DEV(eth->netdev[id], eth->dev);
+ 	eth->netdev[id]->watchdog_timeo = 5 * HZ;
+ 	eth->netdev[id]->netdev_ops = &mtk_netdev_ops;
 -- 
 2.30.2
 
