@@ -2,87 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86C543A6669
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:20:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B4643A6678
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:24:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233397AbhFNMWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 08:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232940AbhFNMWo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 08:22:44 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F9BC061574;
-        Mon, 14 Jun 2021 05:20:41 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id 5so58677qkc.8;
-        Mon, 14 Jun 2021 05:20:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6+NR/KKSaOj6WVEi9WsTz9NzkFk26S1P3gzSzNQD9Oc=;
-        b=tmpfVFoAugwz926HRfi6/VLJP2ONtsTUsebc+DJfzaULfZFWsokwoZ3ZLI8F4BQI5T
-         4u7ZgKJN61lBd2hFiyNJmuszLK/lEsQvu5oJsIj9jxkfK1U8sfrzCh5Xe/tq7j+m7OHz
-         hw0wiW6fTXMyqQscNhn/f8DUhhL/zc2JhNZgGvOpUXbzza1Yg8+l0iXJA8556aYnq484
-         az/Rvs+3CX9zvMvXQeHZvgcrgf9WtHmQzfV2riQ5npONyL4PfR1K5g4EjfYjz7NKU69u
-         wMWt+U/iyVUZ1DD2M2IpORgkN76nT1nDzvsmJ0Mc9Rc7aFrAfhgGld0AR/wOLurD7pKM
-         V/ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6+NR/KKSaOj6WVEi9WsTz9NzkFk26S1P3gzSzNQD9Oc=;
-        b=LsjPaCDlTmXiMwENSLaAn2CZsempFapQBNL+21IVS6dFtHSdzOk8BrPcQJWiBYLyUe
-         EI3YwI5Lfb5XQ1ITqanzt9d6jMwib14AQiejA2bZZDoPivL0p1CaHnSmh3WGQKQ//Ixb
-         Tm7VTNMJQZxNEWhUbVxF1KRSLPFcveApmJh2eyaIOPOdHSzgDHiOW0Y/8IuZbo+TzQxL
-         oDomlINFynR4/SjuVaPPCEQWXMfGJTV6lHWqp3HlWOKlk19Bo/kdzyxqPtNWnPOZp2Y1
-         9epN/i8MvNmw3lj6rpZ+QHCqUftbiAVN8ZlAVJYeogjvIE1CBXUZJfW0TJOFOBMfkeZx
-         Kopg==
-X-Gm-Message-State: AOAM531mZBJXhCPtqaGUQr4ItfA1scM8zZI7YootG+XJpD3TeQZjPw+T
-        vqAfWJWu0K/t2irRKPvc9euBBjdUXGtIR91zUw==
-X-Google-Smtp-Source: ABdhPJzVaUTVtnHsGE1LcIPHrNrEhwMXwy1xdSIQCfLUCttVnjzDlxMRqvc/becrPDMGFyyS6E3Qa5wGYrTzJiW6dxA=
-X-Received: by 2002:a05:620a:1093:: with SMTP id g19mr15925857qkk.254.1623673240782;
- Mon, 14 Jun 2021 05:20:40 -0700 (PDT)
+        id S233600AbhFNM0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 08:26:06 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35470 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233071AbhFNM0F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Jun 2021 08:26:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=oiBH2JKjoAAJbc4R4FuVxQ59nQgyPuSoFXb64F6CMmU=; b=slkrvpp+tamTu2ZaMxFaIDixL+
+        oRV4DLfpYHor4zMd8HmORon+sEyP1ls3SpDmlnryret0sFXgIl9coS0dPWcz1G3peItdGfT1zXsnN
+        KykDF2++tlhKywwJkY07Aq+yKSK8hMPX+nfPt3jU2eLC+rCRErQAzTKFwfBdxBIrqlnY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lsldB-009JmZ-8C; Mon, 14 Jun 2021 14:23:53 +0200
+Date:   Mon, 14 Jun 2021 14:23:53 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jonathan Davies <jonathan.davies@nutanix.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usbnet: allow overriding of default USB interface
+ naming
+Message-ID: <YMdKWSjiXeiDESKR@lunn.ch>
+References: <20210611152339.182710-1-jonathan.davies@nutanix.com>
+ <YMRbt+or+QTlqqP9@kroah.com>
+ <469dd530-ebd2-37a4-9c6a-9de86e7a38dc@nutanix.com>
+ <YMckz2Yu8L3IQNX9@kroah.com>
+ <a620bc87-5ee7-6132-6aa0-6b99e1052960@nutanix.com>
 MIME-Version: 1.0
-References: <20210609135537.1460244-1-joamaki@gmail.com> <20210609135537.1460244-4-joamaki@gmail.com>
- <20210609220713.GA14929@ranger.igk.intel.com> <CAHn8xcnMX03sX0n5VrTA2kJTSgcUj5s07mUHHc0wqB76QWpqeQ@mail.gmail.com>
- <CAJ8uoz0i2Y4bUXCGEgqWwP3QzLp2dqUfGZg+rWNt76qBwQezOw@mail.gmail.com>
-In-Reply-To: <CAJ8uoz0i2Y4bUXCGEgqWwP3QzLp2dqUfGZg+rWNt76qBwQezOw@mail.gmail.com>
-From:   Jussi Maki <joamaki@gmail.com>
-Date:   Mon, 14 Jun 2021 14:20:29 +0200
-Message-ID: <CAHn8xcmgeV+NBt7t9t46AK_x7oSrRvPC6QnP34BhL=VLs_q3hA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: Add tests for XDP bonding
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, j.vosburgh@gmail.com,
-        Andy Gospodarek <andy@greyhouse.net>, vfalico@gmail.com,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a620bc87-5ee7-6132-6aa0-6b99e1052960@nutanix.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 10:48 AM Magnus Karlsson
-<magnus.karlsson@gmail.com> wrote:
->
-> On Mon, Jun 14, 2021 at 10:09 AM Jussi Maki <joamaki@gmail.com> wrote:
-> > Sounds like a good idea to me to have more shared code in the
-> > selftests and I don't see a reason not to use the AF_XDP datapath in
-> > the bonding selftests. I'll look into it this week and get back to
-> > you.
->
-> Note, that I am currently rewriting a large part of the AF_XDP
-> selftests making it more amenable to adding various tests. A test is
-> in my patch set is described as a set of packets to send, a set of
-> packets that should be received in a certain order with specified
-> contents, and configuration/setup information for the sender and
-> receiver. The current code is riddled with test specific if-statements
-> that make it hard to extend and use generically. So please hold off
-> for a week or so and review my patch set when I send it to the list.
-> Better use of your time. Hopefully we can make it fit your bill too
-> with not too much work.
+> > > Userspace solutions include:
+> > >   1. udev backing off and retrying in the event of a collision; or
+> > >   2. avoiding ever renaming a device to a name in the "eth%d" namespace.
+> > 
+> > Picking a different namespace does not cause a lack of collisions to
+> > happen, you could have multiple usb network devices being found at the
+> > same time, right?
+> > 
+> > So no matter what, 1) has to happen.
+> 
+> Within a namespace, the "%d" in "eth%d" means __dev_alloc_name finds a name
+> that's not taken. I didn't check the locking but assume that can only happen
+> serially, in which case two devices probed in parallel would not mutually
+> collide.
+> 
+> So I don't think it's necessarily true that 1) has to happen.
 
-Ok, thanks for the heads up! Looking forward to your patch set.
+Say you changed the namespace to usb%d. And you want the device in USB
+port 1.4 to be usb1 and the device in USB port 1.3 to be usb0. They
+probe the other way around. You have the same problem, you need to
+handle the race condition in udev, back off an try again.
+
+As GregKH said, 1) has to happen.
+
+   Andrew
