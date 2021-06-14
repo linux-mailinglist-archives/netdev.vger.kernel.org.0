@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B2AD3A7104
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 23:10:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 128973A711D
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 23:20:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234397AbhFNVMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 17:12:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55690 "EHLO mail.kernel.org"
+        id S235153AbhFNVWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 17:22:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58324 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229771AbhFNVMG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 17:12:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 35ADB61378;
-        Mon, 14 Jun 2021 21:10:03 +0000 (UTC)
+        id S235156AbhFNVWG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Jun 2021 17:22:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 324CB61209;
+        Mon, 14 Jun 2021 21:20:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623705003;
-        bh=Mpbxx++TkhiINmd3NAD9NYSXRgXHCONL+qDxcxqnFQI=;
+        s=k20201202; t=1623705603;
+        bh=AkDNscB7sJNc/oJNy6ys+Yc/Lxli0Gk0CEZExSF3334=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Dha7yIWdcFZe0N9HbGS/j/uRP3br5ekiGAjuOrpNrmWS6q34bixVFWe4K9SE3d2QP
-         UEH47Qb6hs7rOVYBbRKj3vI2c+u00vhUPtlaLyYRZH0R02WCd4mqDmChCl25PN+33r
-         14N7Z+Wy1qKMTJTb85WSmXZ85aLf4vaRLVTReDIN2FUMw2OOJnAtIrRuX7VzTXGWpx
-         GLlsQwU8rCUpezNAUqffdCAiS1nCyBSy2E9mzpE7uilcShyJwRBgZGYwu0GReJVd6L
-         72RZKvHJ81wk1gGVrw1B8bMThwsXSwxc6bqInLNUYPin3E5HkvSsC2a9Xc9nkmuhaX
-         6oCbARJ4dyudg==
+        b=PcRr1/aQ3YtLCsEv3jrzkGAyk6OQF1g1gThZG5VfMhGrjligCS5lLHBD/PuqbeMUw
+         qfVsXMDar8P3kfiaXaIt3CdsExCWH8ahdxDMngGHnFpZzXPAHYijrdCay70289NGzD
+         aLeCmHyAwlQkbQHWYKEN1+KwxTLQ/xLtHQXtk0Hj4PgKmguHkr+YMTlUvgRCSpe7Nc
+         FtBlXxE51n6p42ml9j9/rvbSY0CJUiu/S4bNSeirZU4a35Yn6k/PZhoRMwW5Y0lUHg
+         r2sTdHzIbkpYH5il3+QGvVRvXanZpDslELHhBOEWionGmbBnJ19ZnS9/A6XqX7Tx58
+         3/BPYJw3mSvvQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2972C609E7;
-        Mon, 14 Jun 2021 21:10:03 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 25C1B60977;
+        Mon, 14 Jun 2021 21:20:03 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull request: bluetooth 2021-06-14
+Subject: Re: [PATCH net] net: mhi_net: Update the transmit handler prototype
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162370500316.16866.4127985181873331369.git-patchwork-notify@kernel.org>
-Date:   Mon, 14 Jun 2021 21:10:03 +0000
-References: <20210614204311.1284512-1-luiz.dentz@gmail.com>
-In-Reply-To: <20210614204311.1284512-1-luiz.dentz@gmail.com>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Message-Id: <162370560314.22470.17540540933115942569.git-patchwork-notify@kernel.org>
+Date:   Mon, 14 Jun 2021 21:20:03 +0000
+References: <1623704605-22913-1-git-send-email-subashab@codeaurora.org>
+In-Reply-To: <1623704605-22913-1-git-send-email-subashab@codeaurora.org>
+To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Cc:     stranche@codeaurora.org, hemantk@codeaurora.org,
+        manivannan.sadhasivam@linaro.org, loic.poulain@linaro.org,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This pull request was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 14 Jun 2021 13:43:11 -0700 you wrote:
-> The following changes since commit ad9d24c9429e2159d1e279dc3a83191ccb4daf1d:
+On Mon, 14 Jun 2021 15:03:25 -0600 you wrote:
+> Update the function prototype of mhi_ndo_xmit to match
+> ndo_start_xmit. This otherwise leads to run time failures when
+> CFI is enabled in kernel.
 > 
->   net: qrtr: fix OOB Read in qrtr_endpoint_post (2021-06-14 13:01:26 -0700)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2021-06-14
+> Fixes: 3ffec6a14f24 ("net: Add mhi-net driver")
+> Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 > 
 > [...]
 
 Here is the summary with links:
-  - pull request: bluetooth 2021-06-14
-    https://git.kernel.org/netdev/net/c/45deacc731d7
+  - [net] net: mhi_net: Update the transmit handler prototype
+    https://git.kernel.org/netdev/net/c/2214fb53006e
 
 You are awesome, thank you!
 --
