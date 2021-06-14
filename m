@@ -2,135 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C23D3A724A
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 01:02:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E3023A726D
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 01:21:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231499AbhFNXE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 19:04:57 -0400
-Received: from mail-ed1-f42.google.com ([209.85.208.42]:43529 "EHLO
-        mail-ed1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229760AbhFNXE4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 19:04:56 -0400
-Received: by mail-ed1-f42.google.com with SMTP id s6so48560827edu.10;
-        Mon, 14 Jun 2021 16:02:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xptdFCYBt+DjA9CbQxpyV5Tq5GSDlhdqPmEhWjQXrUg=;
-        b=MHouzfSasrE3u/M3ZGURu717kwnTWfQprP27KA63w+Af6l4ZfunAfkZo9STcczn+zz
-         SzDBnuIVED0rEhGUWBpGcQeSJWGwCyp812i3mH7UwHr+pNN03Lq4i5Ej33AhryhBYVQm
-         8NjFnw242+Ghtl3sTzidgZZUopZoOOJnbD3pXjVOXNPkj5WFM1bTH6GZVwd/1ShOD4nc
-         3MXntAkjMfsi6GHJ2euph0PQ2pQ6+KZwpESxDjLyZ5/uBsMtwsLYISE41XG9EMV0wwvy
-         FQqFH0+6hSIbn23/J+801S9hSgPfJkPZbAIs0PVF07h0M2fVHZ8HXsA2BFTXiWQNfNE8
-         SJdg==
+        id S231499AbhFNXXS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Jun 2021 19:23:18 -0400
+Received: from mail-ej1-f41.google.com ([209.85.218.41]:46692 "EHLO
+        mail-ej1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229649AbhFNXXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 19:23:17 -0400
+Received: by mail-ej1-f41.google.com with SMTP id he7so19070052ejc.13;
+        Mon, 14 Jun 2021 16:21:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xptdFCYBt+DjA9CbQxpyV5Tq5GSDlhdqPmEhWjQXrUg=;
-        b=Vcv6TEsL4AaruIsn1s/XJRQqZVizRcQ6G22slDJGnGrBVXOe6QM0YGL544DZX3N6mQ
-         uX+T2fgIpoKuNPC7pPxu1+X2DOGrKUjKAN+inK3uR1mAGRs/L5QXlibkEfe91G+Xwj7Z
-         VptKDAu9FhOYGSqin++gLtl9MpojTHvOD4+I0FkGwb+6gZCwfrSIWIS+/Ha0EGGGTpzk
-         Ic3avxLMh7uwlfmVx6/FncKKYr3JKNpH1nBjkbHZ0BfxToZjnGU7ScunWJMK5cwpUHkl
-         P7Ej9lupRBW7m81Ey2I5cZLIVt6DXBfTtd14+sj6xkntchPuNQ9ZRfNsWolJVS+AQpPi
-         c+Rg==
-X-Gm-Message-State: AOAM532zbbGMtk4RlNL0jL/zZzEOsS4oSM3nNWl1IiuCJhaC67L5vbAu
-        kVc5ljFgrB+3h4UCyPwmPjQPAVcg6ewYJCZOmW4=
-X-Google-Smtp-Source: ABdhPJzDIFrOVrYqg2F2uDLxlfsHL3r4DyaB1+6ZAAk9b2Uj7NKSjPce91VFwOgzPxqET8X5vPj+nkZi8x1SqDCmipA=
-X-Received: by 2002:a05:6402:54f:: with SMTP id i15mr19390460edx.339.1623711699919;
- Mon, 14 Jun 2021 16:01:39 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Mjn4ljykZJX6wf5SsiiT1XVgNk3B8Z6jPKynaaT/71I=;
+        b=VIRgXpsuhqtsUgP4Sc+c3rNb+XHO2ePoTdBRKWtxphcYidm2V1zAcV2fycMQIl9DG0
+         0L20E/YrQTTyYeWEQNq1B6jNp3rl3XEuiyLb1Q5L9eTzbOQd/xmdUN7qFA/kxibsSUvJ
+         SUDGuo9pSEGmeOp2YfV7G+goM12HqwWZ6tR6Ihz1IttsQ3EoXMW9IGakeGohwciiRJc5
+         l/449PYEl5uxlCJR2aiikNXGvuCRR1422823PZsWsGyWSuRimIbELrSZFSBk+G86yhql
+         EVH7/2eC4dW122VcWLge53JCfKhePwERAqUTpMPNkplRc9VaO1Ioi9eeKLd9vesq6Qy6
+         dquw==
+X-Gm-Message-State: AOAM5331AwnfK1JyOwBz6vjIyiIcOJCySRLOpqQXQyV9hsPv3/ITZzTI
+        lFtRu8uo8ZgGrRo9D86+2II=
+X-Google-Smtp-Source: ABdhPJyUmP/3hRcpGOQzPA/32Bp362+ANYKYRrh35FuBJdG3GgsfIbntCk0vm3fVrykLXRJM5SpXEg==
+X-Received: by 2002:a17:906:26db:: with SMTP id u27mr17664140ejc.532.1623712873308;
+        Mon, 14 Jun 2021 16:21:13 -0700 (PDT)
+Received: from localhost (net-37-119-128-179.cust.vodafonedsl.it. [37.119.128.179])
+        by smtp.gmail.com with ESMTPSA id y20sm4862456ejm.44.2021.06.14.16.21.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Jun 2021 16:21:12 -0700 (PDT)
+Date:   Tue, 15 Jun 2021 01:21:07 +0200
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, kuba@kernel.org, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, drew@beagleboard.org, kernel@esmil.dk
+Subject: Re: [PATCH net-next] stmmac: align RX buffers
+Message-ID: <20210615012107.577ead86@linux.microsoft.com>
+In-Reply-To: <20210614.125111.1519954686951337716.davem@davemloft.net>
+References: <20210614022504.24458-1-mcroce@linux.microsoft.com>
+        <20210614.125111.1519954686951337716.davem@davemloft.net>
+Organization: Microsoft
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20210614153712.2172662-1-mudongliangabcd@gmail.com> <20210614190045.5b4c92e6@gmail.com>
-In-Reply-To: <20210614190045.5b4c92e6@gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Tue, 15 Jun 2021 07:01:13 +0800
-Message-ID: <CAD-N9QVG40CqgkHb1w68FL-d1LkTzjcAhF9O8whmzWo67=4KJg@mail.gmail.com>
-Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 12:00 AM Pavel Skripkin <paskripkin@gmail.com> wrote:
->
-> On Mon, 14 Jun 2021 23:37:12 +0800
-> Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
-> > The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> > fails to clean up the work scheduled in smsc75xx_reset->
-> > smsc75xx_set_multicast, which leads to use-after-free if the work is
-> > scheduled to start after the deallocation. In addition, this patch
-> > also removes one dangling pointer - dev->data[0].
-> >
-> > This patch calls cancel_work_sync to cancel the schedule work and set
-> > the dangling pointer to NULL.
-> >
-> > Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > ---
-> >  drivers/net/usb/smsc75xx.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-> > index b286993da67c..f81740fcc8d5 100644
-> > --- a/drivers/net/usb/smsc75xx.c
-> > +++ b/drivers/net/usb/smsc75xx.c
-> > @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev,
-> > struct usb_interface *intf) return 0;
-> >
-> >  err:
-> > +     cancel_work_sync(&pdata->set_multicast);
-> >       kfree(pdata);
-> > +     pdata = NULL;
-> > +     dev->data[0] = 0;
-> >       return ret;
-> >  }
-> >
->
-> Hi, Dongliang!
->
-> Just my thougth about this patch:
->
-> INIT_WORK(&pdata->set_multicast, smsc75xx_deferred_multicast_write);
-> does not queue anything, it just initalizes list structure and assigns
-> callback function. The actual work sheduling happens in
-> smsc75xx_set_multicast() which is smsc75xx_netdev_ops member.
->
+On Mon, 14 Jun 2021 12:51:11 -0700 (PDT)
+David Miller <davem@davemloft.net> wrote:
 
-Yes, you are right. However, as written in the commit message,
-smsc75xx_set_multicast will be called by smsc75xx_reset [1].
+> 
+> But thois means the ethernet header will be misaliugned and this will
+> kill performance on some cpus as misaligned accessed are resolved
+> wioth a trap handler.
+> 
+> Even on cpus that don't trap, the access will be slower.
+> 
+> Thanks.
 
-If smsc75xx_set_multicast is called before any check failure occurs,
-this work(set_multicast) will be queued into the global list with
+Isn't the IP header which should be aligned to avoid expensive traps?
+From include/linux/skbuff.h:
 
-schedule_work(&pdata->set_multicast); [2]
+ * Since an ethernet header is 14 bytes network drivers often end up with
+ * the IP header at an unaligned offset. The IP header can be aligned by
+ * shifting the start of the packet by 2 bytes. Drivers should do this
+ * with:
+ *
+ * skb_reserve(skb, NET_IP_ALIGN);
 
-At last, if the pdata or dev->data[0] is freed before the
-set_multicast really executes, it may lead to a UAF. Is this correct?
+But the problem here really is not the header alignment, the problem is
+that the rx buffer is copied into an skb, and the two buffers have
+different alignments.
+If I add this print, I get this for every packet:
 
-BTW, even if the above is true, I don't know if I call the API
-``cancel_work_sync(&pdata->set_multicast)'' properly if the
-schedule_work is not called.
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5460,6 +5460,8 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
++               printk("skb->data alignment: %lu\n", (uintptr_t)skb->data & 7);
++               printk("xdp.data alignment: %lu\n" , (uintptr_t)xdp.data & 7);
+                skb_copy_to_linear_data(skb, xdp.data, buf1_len);
 
-[1] https://elixir.bootlin.com/linux/latest/source/drivers/net/usb/smsc75xx.c#L1322
+[ 1060.967768] skb->data alignment: 2
+[ 1060.971174] xdp.data alignment: 0
+[ 1061.967589] skb->data alignment: 2
+[ 1061.970994] xdp.data alignment: 0
 
-[2] https://elixir.bootlin.com/linux/latest/source/drivers/net/usb/smsc75xx.c#L583
+And many architectures do an optimized memcpy when the low order bits of the
+two pointers match, to name a few:
 
-> In case of any error in smsc75xx_bind() the device registration fails
-> and smsc75xx_netdev_ops won't be registered, so, i guess, there is no
-> chance of UAF.
->
->
-> Am I missing something? :)
->
->
->
-> With regards,
-> Pavel Skripkin
+arch/alpha/lib/memcpy.c:
+	/* If both source and dest are word aligned copy words */
+	if (!((unsigned int)dest_w & 3) && !((unsigned int)src_w & 3)) {
+
+arch/xtensa/lib/memcopy.S:
+	/*
+	 * Destination and source are word-aligned, use word copy.
+	 */
+	# copy 16 bytes per iteration for word-aligned dst and word-aligned src
+
+arch/openrisc/lib/memcpy.c:
+	/* If both source and dest are word aligned copy words */
+	if (!((unsigned int)dest_w & 3) && !((unsigned int)src_w & 3)) {
+
+And so on. With my patch I (mis)align the two buffer at an offset 2
+(NET_IP_ALIGN) so the data can be copied faster:
+
+[   16.648485] skb->data alignment: 2
+[   16.651894] xdp.data alignment: 2
+[   16.714260] skb->data alignment: 2
+[   16.717688] xdp.data alignment: 2
+
+Does this make sense?
+
+Regards,
+-- 
+per aspera ad upstream
