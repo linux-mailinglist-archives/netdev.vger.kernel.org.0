@@ -2,178 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A8F3A6C5E
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 18:48:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC5D3A6C81
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 18:55:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234963AbhFNQuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 12:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
+        id S235102AbhFNQ5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 12:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234769AbhFNQuc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 12:50:32 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D135C061574
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 09:48:29 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id u18so6261836plc.0
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 09:48:29 -0700 (PDT)
+        with ESMTP id S234789AbhFNQ5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 12:57:44 -0400
+Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A543EC061767;
+        Mon, 14 Jun 2021 09:55:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=CHwO9C6JyrMqrBYpoGco7BPKrb1HtpJuL/+NY4NbA7k=;
-        b=aKT04cfSzraWIpTd46uJ1NpyhanzK9S9WobHu5i+zKgD6J4EKw+RRn8m4sDEpDUchK
-         BJCzA1Wims8hUD9I9NNFVCeiSjm2iiC1GPgS9vUA56sjDOnoKuWw+J3/TErZkQD3HkxP
-         1GBDqNTMhbMIKymgZuamjyvO5YZqX5YZx0kN7N7E13iYcp/tYG72hDEisqNIB3L3fjvW
-         oC+MqcluYZ0mcynWV3Ba4n5ZWr2FRzdQTRIeOZ4D3jzmWsy/izjFvtG31SMrJ37/GGGN
-         V54Q39nsxOBad+ZFGYAtQUwVlciGtWmBNXygS69Wq99RRkIHpCRY3jHGwIM/ccre/rdP
-         9C2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=CHwO9C6JyrMqrBYpoGco7BPKrb1HtpJuL/+NY4NbA7k=;
-        b=di9PItZ+n5B/dYJJuDos8Grbu4tABhZZ+/auHq4WyRQoru2xmmSn8zH+ftbIESF07R
-         BgQ0F36pVc2MaPsb+OoCYTD0Q/P5F43b/dS99Ga7z3qdKmukAoU9uV/nwpYaVWK9GM8K
-         quEvHgovWtXxHpJsh+c0XfnBCVWO1ClZTzl8AI7sleE074a771vIXy+acIKYQBmr46vw
-         1l7UZFE6542nzlYd6RLHBXh2ld5k3jcqvBJR6FQcIEDYQZXEnKNvpgseVnzf7MO1hr6j
-         2xVCzQkTOgrzvNzuevwFF7VBUWr3+bvT0tbGAP5Hj7oATnd4yRq1HvWyu2u3r3Pz5MLc
-         ZbGQ==
-X-Gm-Message-State: AOAM532NquSBZ0h+Z2p2AmkJZiZDfL2F01KBZvc4WBgfFSbIs5kpzsTq
-        ocp3zTDySyC1Y5RRywKaZuIwRA==
-X-Google-Smtp-Source: ABdhPJyEIqHTN7+76IwYyPiWvvNUFbx+DYmGovpqBZKFIzpHWQ6wXtdjYQpMpx+ni+G0UKrPsL6JEA==
-X-Received: by 2002:a17:90b:1d02:: with SMTP id on2mr17801120pjb.192.1623689308747;
-        Mon, 14 Jun 2021 09:48:28 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id l201sm13133599pfd.183.2021.06.14.09.48.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Jun 2021 09:48:27 -0700 (PDT)
-Subject: Re: [PATCH] net: 3com: 3c59x: add a check against null pointer
- dereference
-To:     Zheyu Ma <zheyuma97@gmail.com>, klassert@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jeffrey.t.kirsher@intel.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1623498978-30759-1-git-send-email-zheyuma97@gmail.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <7ca72971-e072-2489-99cc-3b25e111d333@pensando.io>
-Date:   Mon, 14 Jun 2021 09:48:26 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
+        Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
+        Content-Transfer-Encoding; bh=cTQGzuLTNvXEGjTEb/xgHNPQ2J7ygTLFE8
+        lIngQ6Kvo=; b=wWznm3uOYMP7ZaPY0FbHy2D0Gm9kzmPwgpizUTsOaAhFkkouL6
+        NgLIEabXd3vxCW95bcATrbHvcnopyPoqkIiG0jF7PTENzeD7JXxe+NZmUPTEcImv
+        k6mZ4qp6PVKmLg2Zy5cnPz508vd4/5GvVv+D22hQDEk7Ypjk7a60Ovf7o=
+Received: from xhacker (unknown [101.86.20.15])
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygDHz8PpicdgdkfbAA--.3750S2;
+        Tue, 15 Jun 2021 00:55:05 +0800 (CST)
+Date:   Tue, 15 Jun 2021 00:49:27 +0800
+From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
+To:     Andreas Schwab <schwab@linux-m68k.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] riscv: Ensure BPF_JIT_REGION_START aligned with PMD size
+Message-ID: <20210615004928.2d27d2ac@xhacker>
+In-Reply-To: <87im2hsfvm.fsf@igel.home>
+References: <20210330022144.150edc6e@xhacker>
+        <20210330022521.2a904a8c@xhacker>
+        <87o8ccqypw.fsf@igel.home>
+        <20210612002334.6af72545@xhacker>
+        <87bl8cqrpv.fsf@igel.home>
+        <20210614010546.7a0d5584@xhacker>
+        <87im2hsfvm.fsf@igel.home>
 MIME-Version: 1.0
-In-Reply-To: <1623498978-30759-1-git-send-email-zheyuma97@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+X-CM-TRANSID: LkAmygDHz8PpicdgdkfbAA--.3750S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxury3Cr1DGrWxGr4DZF4DCFg_yoWrGr4kpF
+        15tr13GrW8Jry7XFy8Zry5Ar1UJw15A3W3JrnrJr15X3W7G3WDZr10qFW7ur1DXF4xJ3W7
+        Kr4DXr48Kr4UAaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkGb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwV
+        C2z280aVCY1x0267AKxVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVAC
+        Y4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJV
+        W8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkI
+        wI1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
+        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI
+        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
+        4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4U
+        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07b5sjbUUU
+        UU=
+X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/12/21 4:56 AM, Zheyu Ma wrote:
-> When the driver is processing the interrupt, it will read the value of
-> the register to determine the status of the device. If the device is in
-> an incorrect state, the driver may mistakenly enter this branch. At this
-> time, the dma buffer has not been allocated, which will result in a null
-> pointer dereference.
->
-> Fix this by checking whether the buffer is allocated.
->
-> This log reveals it:
->
-> BUG: kernel NULL pointer dereference, address: 0000000000000070
-> PGD 0 P4D 0
-> Oops: 0000 [#1] PREEMPT SMP PTI
-> CPU: 5 PID: 0 Comm: swapper/5 Not tainted 5.12.4-g70e7f0549188-dirty #88
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-> RIP: 0010:_vortex_interrupt+0x323/0x670
-> Code: 84 d4 00 00 00 e8 bd e9 60 fe 48 8b 45 d8 48 83 c0 0c 48 89 c6 bf 00 10 00 00 e8 98 d0 f0 fe 48 8b 45 d0 48 8b 80 d8 01 00 00 <8b> 40 70 83 c0 03 89 c0 83 e0 fc 48 89 c2 48 8b 45 d0 48 8b b0 e0
-> RSP: 0018:ffffc900001a4dd0 EFLAGS: 00010046
-> RAX: 0000000000000000 RBX: ffff888115da0580 RCX: 0000000000000000
-> RDX: 0000000000000000 RSI: ffffffff81bf710e RDI: 0000000000001000
-> RBP: ffffc900001a4e30 R08: ffff8881008edbc0 R09: 00000000fffffffe
-> R10: 0000000000000001 R11: 00000000a5c81234 R12: ffff8881049530a8
-> R13: 0000000000000000 R14: ffffffff87313288 R15: ffff888108c92000
-> FS:  0000000000000000(0000) GS:ffff88817b200000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000070 CR3: 00000001198c2000 CR4: 00000000000006e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->   <IRQ>
->   ? _raw_spin_lock_irqsave+0x81/0xa0
->   vortex_boomerang_interrupt+0x56/0xc10
->   ? __this_cpu_preempt_check+0x1c/0x20
->   __handle_irq_event_percpu+0x58/0x3e0
->   handle_irq_event_percpu+0x3a/0x90
->   handle_irq_event+0x3e/0x60
->   handle_fasteoi_irq+0xc7/0x1d0
->   __common_interrupt+0x84/0x150
->   common_interrupt+0xb4/0xd0
->   </IRQ>
->   asm_common_interrupt+0x1e/0x40
-> RIP: 0010:native_safe_halt+0x17/0x20
-> Code: 07 0f 00 2d 3b 3e 4b 00 f4 5d c3 0f 1f 84 00 00 00 00 00 8b 05 42 a9 72 02 55 48 89 e5 85 c0 7e 07 0f 00 2d 1b 3e 4b 00 fb f4 <5d> c3 cc cc cc cc cc cc cc 0f 1f 44 00 00 55 48 89 e5 e8 92 4a ff
-> RSP: 0018:ffffc900000afe90 EFLAGS: 00000246
-> RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
-> RDX: 0000000000000000 RSI: ffffffff8666cafb RDI: ffffffff865058de
-> RBP: ffffc900000afe90 R08: 0000000000000001 R09: 0000000000000001
-> R10: 0000000000000001 R11: 0000000000000000 R12: ffffffff87313288
-> R13: 0000000000000000 R14: 0000000000000000 R15: ffff8881008ed1c0
->   default_idle+0xe/0x20
->   arch_cpu_idle+0xf/0x20
->   default_idle_call+0x73/0x250
->   do_idle+0x1f5/0x2d0
->   cpu_startup_entry+0x1d/0x20
->   start_secondary+0x11f/0x160
->   secondary_startup_64_no_verify+0xb0/0xbb
-> Modules linked in:
-> Dumping ftrace buffer:
->     (ftrace buffer empty)
-> CR2: 0000000000000070
-> ---[ end trace 0735407a540147e1 ]---
-> RIP: 0010:_vortex_interrupt+0x323/0x670
-> Code: 84 d4 00 00 00 e8 bd e9 60 fe 48 8b 45 d8 48 83 c0 0c 48 89 c6 bf 00 10 00 00 e8 98 d0 f0 fe 48 8b 45 d0 48 8b 80 d8 01 00 00 <8b> 40 70 83 c0 03 89 c0 83 e0 fc 48 89 c2 48 8b 45 d0 48 8b b0 e0
-> RSP: 0018:ffffc900001a4dd0 EFLAGS: 00010046
-> RAX: 0000000000000000 RBX: ffff888115da0580 RCX: 0000000000000000
-> RDX: 0000000000000000 RSI: ffffffff81bf710e RDI: 0000000000001000
-> RBP: ffffc900001a4e30 R08: ffff8881008edbc0 R09: 00000000fffffffe
-> R10: 0000000000000001 R11: 00000000a5c81234 R12: ffff8881049530a8
-> R13: 0000000000000000 R14: ffffffff87313288 R15: ffff888108c92000
-> FS:  0000000000000000(0000) GS:ffff88817b200000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000070 CR3: 00000001198c2000 CR4: 00000000000006e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Kernel panic - not syncing: Fatal exception in interrupt
-> Dumping ftrace buffer:
->     (ftrace buffer empty)
-> Kernel Offset: disabled
-> Rebooting in 1 seconds..
->
-> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> ---
->   drivers/net/ethernet/3com/3c59x.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
-> index 741c67e546d4..e27901ded7a0 100644
-> --- a/drivers/net/ethernet/3com/3c59x.c
-> +++ b/drivers/net/ethernet/3com/3c59x.c
-> @@ -2300,7 +2300,7 @@ _vortex_interrupt(int irq, struct net_device *dev)
->   		}
->   
->   		if (status & DMADone) {
-> -			if (ioread16(ioaddr + Wn7_MasterStatus) & 0x1000) {
-> +			if ((ioread16(ioaddr + Wn7_MasterStatus) & 0x1000) && vp->tx_skb_dma) {
->   				iowrite16(0x1000, ioaddr + Wn7_MasterStatus); /* Ack the event. */
->   				dma_unmap_single(vp->gendev, vp->tx_skb_dma, (vp->tx_skb->len + 3) & ~3, DMA_TO_DEVICE);
->   				pkts_compl++;
+From: Jisheng Zhang <jszhang@kernel.org>
 
-This means you won't be ack'ing the event - is this unacknowledged event 
-going to cause an issue later?
+Andreas reported commit fc8504765ec5 ("riscv: bpf: Avoid breaking W^X")
+breaks booting with one kind of config file, I reproduced a kernel panic
+with the config:
 
-If the error is because the buffer doesn't exist, then can you simply 
-put the buffer check on the dma_unmap_single() and allow the rest of the 
-handling to happen?
+[    0.138553] Unable to handle kernel paging request at virtual address ffffffff81201220
+[    0.139159] Oops [#1]
+[    0.139303] Modules linked in:
+[    0.139601] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-rc5-default+ #1
+[    0.139934] Hardware name: riscv-virtio,qemu (DT)
+[    0.140193] epc : __memset+0xc4/0xfc
+[    0.140416]  ra : skb_flow_dissector_init+0x1e/0x82
+[    0.140609] epc : ffffffff8029806c ra : ffffffff8033be78 sp : ffffffe001647da0
+[    0.140878]  gp : ffffffff81134b08 tp : ffffffe001654380 t0 : ffffffff81201158
+[    0.141156]  t1 : 0000000000000002 t2 : 0000000000000154 s0 : ffffffe001647dd0
+[    0.141424]  s1 : ffffffff80a43250 a0 : ffffffff81201220 a1 : 0000000000000000
+[    0.141654]  a2 : 000000000000003c a3 : ffffffff81201258 a4 : 0000000000000064
+[    0.141893]  a5 : ffffffff8029806c a6 : 0000000000000040 a7 : ffffffffffffffff
+[    0.142126]  s2 : ffffffff81201220 s3 : 0000000000000009 s4 : ffffffff81135088
+[    0.142353]  s5 : ffffffff81135038 s6 : ffffffff8080ce80 s7 : ffffffff80800438
+[    0.142584]  s8 : ffffffff80bc6578 s9 : 0000000000000008 s10: ffffffff806000ac
+[    0.142810]  s11: 0000000000000000 t3 : fffffffffffffffc t4 : 0000000000000000
+[    0.143042]  t5 : 0000000000000155 t6 : 00000000000003ff
+[    0.143220] status: 0000000000000120 badaddr: ffffffff81201220 cause: 000000000000000f
+[    0.143560] [<ffffffff8029806c>] __memset+0xc4/0xfc
+[    0.143859] [<ffffffff8061e984>] init_default_flow_dissectors+0x22/0x60
+[    0.144092] [<ffffffff800010fc>] do_one_initcall+0x3e/0x168
+[    0.144278] [<ffffffff80600df0>] kernel_init_freeable+0x1c8/0x224
+[    0.144479] [<ffffffff804868a8>] kernel_init+0x12/0x110
+[    0.144658] [<ffffffff800022de>] ret_from_exception+0x0/0xc
+[    0.145124] ---[ end trace f1e9643daa46d591 ]---
 
-sln
+After some investigation, I think I found the root cause: commit
+2bfc6cd81bd ("move kernel mapping outside of linear mapping") moves
+BPF JIT region after the kernel:
+
+The &_end is unlikely aligned with PMD size, so the front bpf jit
+region sits with part of kernel .data section in one PMD size mapping.
+But kernel is mapped in PMD SIZE, when bpf_jit_binary_lock_ro() is
+called to make the first bpf jit prog ROX, we will make part of kernel
+.data section RO too, so when we write to, for example memset the
+.data section, MMU will trigger a store page fault.
+
+To fix the issue, we need to ensure the BPF JIT region is PMD size
+aligned. This patch acchieve this goal by restoring the BPF JIT region
+to original position, I.E the 128MB before kernel .text section.
+
+Reported-by: Andreas Schwab <schwab@linux-m68k.org>
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+---
+ arch/riscv/include/asm/pgtable.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
+index 9469f464e71a..380cd3a7e548 100644
+--- a/arch/riscv/include/asm/pgtable.h
++++ b/arch/riscv/include/asm/pgtable.h
+@@ -30,9 +30,8 @@
+ 
+ #define BPF_JIT_REGION_SIZE	(SZ_128M)
+ #ifdef CONFIG_64BIT
+-/* KASLR should leave at least 128MB for BPF after the kernel */
+-#define BPF_JIT_REGION_START	PFN_ALIGN((unsigned long)&_end)
+-#define BPF_JIT_REGION_END	(BPF_JIT_REGION_START + BPF_JIT_REGION_SIZE)
++#define BPF_JIT_REGION_START	(BPF_JIT_REGION_END - BPF_JIT_REGION_SIZE)
++#define BPF_JIT_REGION_END	(MODULES_END)
+ #else
+ #define BPF_JIT_REGION_START	(PAGE_OFFSET - BPF_JIT_REGION_SIZE)
+ #define BPF_JIT_REGION_END	(VMALLOC_END)
+-- 
+2.32.0
+
 
