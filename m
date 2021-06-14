@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77DE93A6708
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:51:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA33E3A670C
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233621AbhFNMxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 08:53:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43850 "EHLO mail.kernel.org"
+        id S233693AbhFNMxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 08:53:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43938 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233554AbhFNMxC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 08:53:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7633D6134F;
-        Mon, 14 Jun 2021 12:50:56 +0000 (UTC)
+        id S233673AbhFNMxG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Jun 2021 08:53:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C8CB61350;
+        Mon, 14 Jun 2021 12:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623675059;
-        bh=mnga0PPw6gBLpUsVl6ojsAX0mRejzoCGvDtYlRVZF7o=;
+        s=k20201202; t=1623675063;
+        bh=1UOgEyiGSzIUDPSteKTTfU0RTqIkE7EXXb81wVVqdFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pETRHBJcVq5tvNOQvvWZnKJYWEuVqIVZf7U4mGmXbdVdZDJW+uU6r/4C77aqAHc61
-         hXDnYr1h2eJ6ByuKTjpOfJB2hKjzAbQZmQBQHHzTHJKyuACCdBPe6EYN3emDp80YS/
-         sSfv/nfo7u9ubRNiJxq/SzVKp2BA+RPjS0DQJW08Od3Q9Mlvn8+OTiwkJ/7hiwcaC0
-         YIhrK7zUV9WMjkFFo4tQJfUnt62jkIwa6fT3T3isNSNNfogg34NFlRyvWSBfYf09SF
-         a7wDJ71eVPjgH4wTusghZhm6Dlox3JsZwfrvXvF8KKLwvVvKRZQQ67MQy7lL6tqgKe
-         9DALIV2G74CCA==
+        b=tgOdreFYTddnBvWkpARrfeHfnZOxmhTq/Ym8m9WbcGFx+dJeJ6zvqdOyB6fdVSopO
+         ezbLtvIfdImYKxfdcCthNShWrY1mMZAmxH9opZ3tDxITGOMEsDOS0bFLUoIA5fd9j8
+         v05tQKAUYTi37IOIkXMJkFyf0fXoVtd2GXlTdsL+yzdVLrbQXvEL/WHIRm/TND629O
+         Zp5FpTJhBSzkadwDZD7VhgHlJqfBV+kuIKFZvYahAuNbacs/Fm0ZOj8HffK0ZQy5Nn
+         TwyDReL4rHugLz9Qp7TcMlqI4iUM62RJj/Foqpg4b0kncWCJmAbx+11F03fH9jNPQt
+         5YmeSXlmgNfug==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -32,9 +32,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com
-Subject: [PATCH v9 bpf-next 06/14] net: mvneta: enable jumbo frames for XDP
-Date:   Mon, 14 Jun 2021 14:49:44 +0200
-Message-Id: <eaa4405b02ce8f397ef1f2667d9acb196b7e241e.1623674025.git.lorenzo@kernel.org>
+Subject: [PATCH v9 bpf-next 07/14] net: xdp: add multi-buff support to xdp_build_skb_from_frame
+Date:   Mon, 14 Jun 2021 14:49:45 +0200
+Message-Id: <7f61f8f7d38cf819383db739c14c874ccd3b53e2.1623674025.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1623674025.git.lorenzo@kernel.org>
 References: <cover.1623674025.git.lorenzo@kernel.org>
@@ -44,42 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable the capability to receive jumbo frames even if the interface is
-running in XDP mode
+Introduce xdp multi-buff support to
+__xdp_build_skb_from_frame/xdp_build_skb_from_frame
+utility routines.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 10 ----------
- 1 file changed, 10 deletions(-)
+ net/core/xdp.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index ab57be38ba03..505bec673ff7 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3780,11 +3780,6 @@ static int mvneta_change_mtu(struct net_device *dev, int mtu)
- 		mtu = ALIGN(MVNETA_RX_PKT_SIZE(mtu), 8);
- 	}
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index f61c63115c95..71bedf6049a1 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -582,9 +582,15 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 					   struct sk_buff *skb,
+ 					   struct net_device *dev)
+ {
++	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
+ 	unsigned int headroom, frame_size;
++	int i, num_frags = 0;
+ 	void *hard_start;
  
--	if (pp->xdp_prog && mtu > MVNETA_MAX_RX_BUF_SIZE) {
--		netdev_info(dev, "Illegal MTU value %d for XDP mode\n", mtu);
--		return -EINVAL;
--	}
--
- 	dev->mtu = mtu;
++	/* xdp multi-buff frame */
++	if (unlikely(xdp_frame_is_mb(xdpf)))
++		num_frags = sinfo->nr_frags;
++
+ 	/* Part of headroom was reserved to xdpf */
+ 	headroom = sizeof(*xdpf) + xdpf->headroom;
  
- 	if (!netif_running(dev)) {
-@@ -4486,11 +4481,6 @@ static int mvneta_xdp_setup(struct net_device *dev, struct bpf_prog *prog,
- 	struct mvneta_port *pp = netdev_priv(dev);
- 	struct bpf_prog *old_prog;
+@@ -603,6 +609,13 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 	if (xdpf->metasize)
+ 		skb_metadata_set(skb, xdpf->metasize);
  
--	if (prog && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
--		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
--		return -EOPNOTSUPP;
--	}
--
- 	if (pp->bm_priv) {
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "Hardware Buffer Management not supported on XDP");
++	for (i = 0; i < num_frags; i++)
++		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++				skb_frag_page(&sinfo->frags[i]),
++				skb_frag_off(&sinfo->frags[i]),
++				skb_frag_size(&sinfo->frags[i]),
++				xdpf->frame_sz);
++
+ 	/* Essential SKB info: protocol and skb->dev */
+ 	skb->protocol = eth_type_trans(skb, dev);
+ 
 -- 
 2.31.1
 
