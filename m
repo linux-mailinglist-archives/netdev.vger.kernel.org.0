@@ -2,80 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C10FA3A6765
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 15:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B93853A6791
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 15:18:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbhFNNG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 09:06:28 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:6469 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233226AbhFNNG0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 09:06:26 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G3WmS1kJXzZh5N;
-        Mon, 14 Jun 2021 21:01:28 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Mon, 14 Jun 2021 21:04:19 +0800
-Received: from [10.67.102.67] (10.67.102.67) by dggemi759-chm.china.huawei.com
- (10.1.198.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 14
- Jun 2021 21:04:18 +0800
-Subject: Re: [PATCH V2 net-next 00/11] net: z85230: clean up some code style
- issues
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
-        <ms@dev.tdt.de>, <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>
-References: <1623670131-49973-1-git-send-email-huangguangbin2@huawei.com>
-From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
-Message-ID: <17dc444e-2a28-eaf0-7426-30bf9e6f2825@huawei.com>
-Date:   Mon, 14 Jun 2021 21:04:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S233403AbhFNNUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 09:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232825AbhFNNUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 09:20:06 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABFEC061574
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 06:18:03 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id b205so7422500wmb.3
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 06:18:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZTA57oOz8Cdz7Ap0zeagZ1NVaajdzSi2IzO+/mv1lRI=;
+        b=FarIWjuocwFevFTICawiUlOPLBkN2IDCx6tamjQ4Uvo82pD/sTH1drfgDw5Ih7tNu9
+         PifDWuz4jhapKG+nwMQI/byFbG1qKJrHhzsg5p2R8SSO3huy9fwZowADDIQ8X3thBXBH
+         keCY+l87rrat6v4mfdoFQ9N0Lvw1XvOxRrXh5+2p8OKQ1RawRAfAj56zPBbIl2wC7DVm
+         0Cz6OcZ0MMUxzn2diYQANRXndxzk5tIxQwNkFDg6TMM/T+sw6lgS5a6B7zSab7uOQJYT
+         rfvhQ5dLjv5ZDrFqbWHbJw4E2MeKb0etToK/FbesgqlwgZzIlHn7SJjG4HDlcRWjIXfh
+         2J1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ZTA57oOz8Cdz7Ap0zeagZ1NVaajdzSi2IzO+/mv1lRI=;
+        b=RloFHMw8o5pfMyWqpWZBEYDb25FNfLGZ1mMdGGuFCaso7ZSpICEFQaDm+E8n0F3NX/
+         HA3GifVI2hCEqJsENWKPU7qNtX8wny5YUF3qgXeVNphGiv/YPHfxmNtAo2OGrK7EfVe8
+         MvSZN+cab+cnz/vHFP0QBoLXbPYeuNWtSkaG5KlpK2TJzeO4dFdHKU2fsM+j1Z56f3qo
+         ifSQAo7i6nER+en09rGw+IjWEU0VcuAzk4lxaOr7c47ebak+nC/B7yhDrGDLc8/4D43s
+         vDgp6iFEdykpRLh12cdjldjAcyfi//pkRpNcsFL3gOVkTtj43PgVQHwmWtY0N9UF7a/u
+         4Fkg==
+X-Gm-Message-State: AOAM533KiC/BC1rp0ofiv9xGgtGSRk8xkwcP/UUa/W1x/mdyhV7EP+93
+        CqK3XYKwz556MXo2hL2/Sn50rssy60Gd+Q==
+X-Google-Smtp-Source: ABdhPJzI5raTilhic38b/8STLJOYFtdiUsvq4un3+YbZDUVNkkFAx43hiKBHx78KUY8Dj9/Jk1ZuMA==
+X-Received: by 2002:a7b:cb01:: with SMTP id u1mr33141372wmj.188.1623676682254;
+        Mon, 14 Jun 2021 06:18:02 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:ddd2:2038:ae02:164a? ([2a01:e0a:410:bb00:ddd2:2038:ae02:164a])
+        by smtp.gmail.com with ESMTPSA id n10sm16570348wre.95.2021.06.14.06.18.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Jun 2021 06:18:01 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH nf] MAINTAINERS: netfilter: add irc channel
+To:     pablo@netfilter.org
+Cc:     netfilter-devel@vger.kernel.org,
+        Arturo Borrero Gonzalez <arturo@netfilter.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20210528084849.19058-1-nicolas.dichtel@6wind.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <9b60107e-dcd4-3ca0-f83d-0e51ccf5d67c@6wind.com>
+Date:   Mon, 14 Jun 2021 15:18:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <1623670131-49973-1-git-send-email-huangguangbin2@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.67]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20210528084849.19058-1-nicolas.dichtel@6wind.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Le 28/05/2021 à 10:48, Nicolas Dichtel a écrit :
+> The community #netfilter IRC channel is now live on the libera.chat network
+> (https://libera.chat/).
+> 
+> CC: Arturo Borrero Gonzalez <arturo@netfilter.org>
+> Link: https://marc.info/?l=netfilter&m=162210948632717
+> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+I have no feedback on this. Is there a problem to add the irc channel in the
+MAINTAINERS file?
 
 
-On 2021/6/14 19:28, Guangbin Huang wrote:
-> From: Peng Li <lipeng321@huawei.com>
-> 
-> This patchset clean up some code style issues.
-> 
-> 
+Regards,
+Nicolas
+
 > ---
-> Change Log:
-> V1 -> V2:
-> 1, fix the comments from Andrew, add commit message to [patch 04/11]
->     about remove volatile.
-> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Peng Li (11):
->    net: z85230: remove redundant blank lines
->    net: z85230: add blank line after declarations
->    net: z85230: fix the code style issue about EXPORT_SYMBOL(foo)
->    net: z85230: remove redundant initialization for statics
->    net: z85230: replace comparison to NULL with "!skb"
->    net: z85230: fix the comments style issue
->    net: z85230: fix the code style issue about "if..else.."
->    net: z85230: remove trailing whitespaces
->    net: z85230: add some required spaces
->    net: z85230: fix the code style issue about open brace {
->    net: z85230: remove unnecessary out of memory message
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1d834bebf469..d9c7f8b5cae2 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -12649,6 +12649,7 @@ W:	http://www.netfilter.org/
+>  W:	http://www.iptables.org/
+>  W:	http://www.nftables.org/
+>  Q:	http://patchwork.ozlabs.org/project/netfilter-devel/list/
+> +C:	irc://irc.libera.chat/netfilter
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+>  F:	include/linux/netfilter*
 > 
->   drivers/net/wan/z85230.c | 995 ++++++++++++++++++++---------------------------
->   1 file changed, 423 insertions(+), 572 deletions(-)
-> 
-
-Please ignore this series, there is new comment has not been dealt with.
