@@ -2,77 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA7AD3A6CA2
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 19:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69F213A6CF3
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 19:18:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235289AbhFNRFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 13:05:38 -0400
-Received: from mail-oi1-f180.google.com ([209.85.167.180]:44938 "EHLO
-        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235276AbhFNRF3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 13:05:29 -0400
-Received: by mail-oi1-f180.google.com with SMTP id a26so14980691oie.11
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 10:03:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qUD1nzeCJjz28MISB5nQ0Rc0a40kxWRVNB9uQtzdX7M=;
-        b=b9HRtOmxIpZjMLYild1RTE/eKbG/RgKq2v6xZ7r8m3BS91ZL+dU1zOvCsw18LE8Lfe
-         ljAui7fBDbS7Hn3zfvvEDom3aqWhZfr7jkZfWWHVpdUxLI1QXX9R36it7as4m+QS7j3a
-         hPNx0tVG2IpU75NIykWf78YxOtH5Vt6Cn35i7Qy67IqQvwc2at5pzaJr+PjLdBC3dofy
-         7ju7dvXMtKZJDEJctgRwlLA71PG4wxLVAAoDTGyLlk1wOZB2EBSqYDpM6RgVosCHyVDr
-         xYr7PTasWvvKrjkCRA5vF8YTq41Rqfj00cTgJKwbukOa2bb8ZuA3KfC7zRGenp9acjAW
-         LPdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qUD1nzeCJjz28MISB5nQ0Rc0a40kxWRVNB9uQtzdX7M=;
-        b=oOczppcunGuBHIc5mnolvopT+RJMGOPVD4E0IJOVFWbZtZYxeWaLEe2a2nG7/X2YcN
-         rG5szRB87hCBBugIdADnZ58aPDpfZnTQACwC0pFQpBN0BE3im6PkikoRHIeMWfRlCWT4
-         4bd/xB5hrHfwlIWZaemG/Sf6adFRZajkUju0eBgEKdMDJlxRjXmLvYa+CKCRW1upY4v2
-         H2wGYYpufh0PqTPkkoz5VzPDElabF06GgJxkhFaclN0YazKad89vbeDqnzC93BxCCFnC
-         3xE2wTut8kL/kGXHWNfRmzHTbEej3KBkDRiiM+j0jp6c7AaufUGPL1Q/KoT+eZyE9JVa
-         pJ5g==
-X-Gm-Message-State: AOAM530nYsyq5INCyyAfo+2sLaq8m0avi7WOjjhGtCwRmUWtMDiTdklo
-        hlYIVci4rRq2jyqs4J21rs46STISaX34jnOCVLg=
-X-Google-Smtp-Source: ABdhPJwWl5vo8sBvjdzUr9bzwt2xnzRvFbkTdhcE+rcxhhc7bjn2zux4cSKeLWPEGlKSjNcHacw+NjwtU1frRr+1LsQ=
-X-Received: by 2002:aca:b8c2:: with SMTP id i185mr56981oif.172.1623690146603;
- Mon, 14 Jun 2021 10:02:26 -0700 (PDT)
+        id S235387AbhFNRUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 13:20:04 -0400
+Received: from out28-193.mail.aliyun.com ([115.124.28.193]:59975 "EHLO
+        out28-193.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233653AbhFNRUD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 13:20:03 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.3305371|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.00425795-0.000892991-0.994849;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047208;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=21;RT=21;SR=0;TI=SMTPD_---.KSAJpVJ_1623691068;
+Received: from localhost.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.KSAJpVJ_1623691068)
+          by smtp.aliyun-inc.com(10.147.41.121);
+          Tue, 15 Jun 2021 01:17:57 +0800
+From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
+        <zhouyanjie@wanyeetech.com>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        matthias.bgg@gmail.com
+Cc:     alexandre.torgue@st.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
+        sernia.zhou@foxmail.com
+Subject: [PATCH v3 0/2] Add Ingenic SoCs MAC support.
+Date:   Tue, 15 Jun 2021 01:15:35 +0800
+Message-Id: <1623690937-52389-1-git-send-email-zhouyanjie@wanyeetech.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20210614141849.3587683-1-kristian.evensen@gmail.com>
- <8735tky064.fsf@miraculix.mork.no> <CAKfDRXgZeWCeGXhfukeeAGrHHUMtsHWRPEebUkZf07QCnU4CFw@mail.gmail.com>
-In-Reply-To: <CAKfDRXgZeWCeGXhfukeeAGrHHUMtsHWRPEebUkZf07QCnU4CFw@mail.gmail.com>
-From:   Kristian Evensen <kristian.evensen@gmail.com>
-Date:   Mon, 14 Jun 2021 19:02:15 +0200
-Message-ID: <CAKfDRXi=4Vsf_a40EdLsyunjKGXaFnA0ZeNbMcBDw1Tk+eSzMQ@mail.gmail.com>
-Subject: Re: [PATCH net] qmi_wwan: Clone the skb when in pass-through mode
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        subashab@codeaurora.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bj=C3=B8rn,
+v2->v3:
+1.Add "ingenic,mac.yaml" for Ingenic SoCs.
+2.Change tx clk delay and rx clk delay from hardware value to ps.
+3.return -EINVAL when a unsupported value is encountered when
+  parsing the binding.
+4.Simplify the code of the RGMII part of X2000 SoC according to
+  Andrew Lunn’s suggestion.
+5.Follow the example of "dwmac-mediatek.c" to improve the code
+  that handles delays according to Andrew Lunn’s suggestion.
 
-On Mon, Jun 14, 2021 at 5:49 PM Kristian Evensen
-<kristian.evensen@gmail.com> wrote:
-> I will do some more testing tomorrow and see if I can figure out
-> something. So far, the only thing I know is that if I try to perform a
-> more demanding transfer (like downloading a file) using qmi_wwan +
-> rmnet then I get a kernel oops immediatly.
+周琰杰 (Zhou Yanjie) (2):
+  dt-bindings: dwmac: Add bindings for new Ingenic SoCs.
+  net: stmmac: Add Ingenic SoCs MAC support.
 
-I got curios and decided to test your proposed changed today.
-Replacing the call to netif_rx() with return 1, and then letting
-usbnet_skb_return() do the netif_rx() call, seems to have resolved the
-issue. At least I am not longer able to trigger the oops using my
-earlier reproducer (running a couple of Speedtest).
+ .../devicetree/bindings/net/ingenic,mac.yaml       |  76 ++++
+ .../devicetree/bindings/net/snps,dwmac.yaml        |  15 +
+ drivers/net/ethernet/stmicro/stmmac/Kconfig        |  12 +
+ drivers/net/ethernet/stmicro/stmmac/Makefile       |   1 +
+ .../net/ethernet/stmicro/stmmac/dwmac-ingenic.c    | 401 +++++++++++++++++++++
+ 5 files changed, 505 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/ingenic,mac.yaml
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
 
-Unless someone beats me to it, I will prepare another patch tomorrow.
-Thanks for the help.
+-- 
+2.7.4
 
-Kristian
