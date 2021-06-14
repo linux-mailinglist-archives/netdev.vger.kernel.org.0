@@ -2,55 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25DC43A5F92
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 11:57:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06E353A5FE5
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 12:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232743AbhFNJ7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 05:59:45 -0400
-Received: from mailout1.secunet.com ([62.96.220.44]:48268 "EHLO
-        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232718AbhFNJ7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 05:59:44 -0400
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout1.secunet.com (Postfix) with ESMTP id 6BCDF800053;
-        Mon, 14 Jun 2021 11:57:40 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 14 Jun 2021 11:57:40 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 14 Jun
- 2021 11:57:40 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id C1CE13180609; Mon, 14 Jun 2021 11:57:39 +0200 (CEST)
-Date:   Mon, 14 Jun 2021 11:57:39 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Antony Antony <antony.antony@secunet.com>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH] xfrm: delete xfrm4_output_finish xfrm6_output_finish
- declarations
-Message-ID: <20210614095739.GW40979@gauss3.secunet.de>
-References: <d65237e307458f84e33687bff5be9fd93d6b375b.1623332566.git.antony.antony@secunet.com>
+        id S232804AbhFNKWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 06:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232743AbhFNKWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 06:22:07 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A95C061574;
+        Mon, 14 Jun 2021 03:20:05 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id i34so8228412pgl.9;
+        Mon, 14 Jun 2021 03:20:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0wdxFoyZhLUQIgeRMpuNtUz23AzX1EH+9KJWYMAQ0uI=;
+        b=XoIYGwnhli0plkGuRxzN71a/gQhaLEVXp5a+dNmDUf5sUUKqXht1uqDMrLO5Ur+b4r
+         y6/52Bvg49tmuoFcn8qSc07o0IDFxCR8CC96W5lOx2f4FJMeODik2XpVAznEKY6NB7+g
+         Fnf1r9K1rQPCvnIxFgjHSm8VFd6fiGJ+tlN1QI5AEkPwWw3uQLyR3HHGH4n3PlhVEFJR
+         +i/YafzcL1lar9SRQPIwH/UmxrQ4MMqyP9b3oUj7A2Sdc+U/c0VKMVZBXOif8PesHJtn
+         BYbjuyat79i6YITMgORavh1UCEXlbHXut5oCWwXIL24sWhjRmI4UF93+YE3CjDGm37KZ
+         c7Lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0wdxFoyZhLUQIgeRMpuNtUz23AzX1EH+9KJWYMAQ0uI=;
+        b=l+dQM7WVM3ALgp5drZDV9SXI/Rp4y9xmmlCB9W/mrPctuF4qs650I3dRjxr3P0t8z3
+         IdZ4VDxqYzuSEPEFjVvDzeEk6IRkzxIBwumFpF8KrrxMD6k53lwe2F4rf0gcguTpEurH
+         pWbcaGZ+pSqtdScsI6G+TojURI1/RpaPHQB4C0yEuGbPtfhuZILlIkeSwAdqXkhe7WYE
+         +hp2GSZ0AQgYJmh8lDJO4lSB/mX0Li9kpDGH/sbIJt8NOn6b375fvqPlx458cu3CO0V/
+         2EDiWKwjyl1g6LhaQToA5Cj7ATucLXTnv7uG3DosV3L9i9/Cxq1DA8EsHZQshuoeIQyk
+         MyzQ==
+X-Gm-Message-State: AOAM530LhxxId1dm43F3P7oTxXKm62+xbag5LK5d0LnJ2T88Sr+CWDf6
+        NKPwcf9AAC8CqNjTkpYVa5Q=
+X-Google-Smtp-Source: ABdhPJyalE1XBeOi9j6VjUVRoQbj1R8H0xsP7LTF345m03pMm4KI2gZt1F6NPuqyQILK7jhXxM8iAA==
+X-Received: by 2002:aa7:9af6:0:b029:2e9:dfed:6a59 with SMTP id y22-20020aa79af60000b02902e9dfed6a59mr20900390pfp.37.1623666004507;
+        Mon, 14 Jun 2021 03:20:04 -0700 (PDT)
+Received: from localhost ([2402:3a80:11da:e842:a475:28cf:d9ad:7d88])
+        by smtp.gmail.com with ESMTPSA id k136sm12494207pfd.87.2021.06.14.03.20.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Jun 2021 03:20:04 -0700 (PDT)
+Date:   Mon, 14 Jun 2021 15:48:44 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Yaniv Agman <yanivagman@gmail.com>
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, toke@redhat.com
+Subject: Re: [PATCH bpf-next 0/3] Fixes for TC-BPF series
+Message-ID: <20210614101844.4jgq6sh7vodgxojj@apollo>
+References: <CAMy7=ZUXRJni3uUVWkWFu8Dkc5XCVsM54i_iLDwHQ5Y0Z3inJw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d65237e307458f84e33687bff5be9fd93d6b375b.1623332566.git.antony.antony@secunet.com>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <CAMy7=ZUXRJni3uUVWkWFu8Dkc5XCVsM54i_iLDwHQ5Y0Z3inJw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 10, 2021 at 03:46:38PM +0200, Antony Antony wrote:
-> These function declarations are not needed any more.
-> The definitions wer deleted.
-> 
-> Fixes: 2ab6096db2f1 ("xfrm: remove output_finish indirection from xfrm_state_afinfo")
-> Signed-off-by: Antony Antony <antony.antony@secunet.com>
+On Mon, Jun 14, 2021 at 03:02:07PM IST, Yaniv Agman wrote:
+> Hi Kartikeya,
+>
+> I recently started experimenting with the new tc-bpf API (which is
+> great, many thanks!) and I wanted to share a potential problem I
+> found.
+> I'm using this "Fixes for TC-BPF series" thread to write about it, but
+> it is not directly related to this patch set.
+>
+> According to the API summary given in
+> https://lore.kernel.org/bpf/20210512103451.989420-3-memxor@gmail.com/,
+> "It is advised that if the qdisc is operated on by many programs,
+> then the program at least check that there are no other existing
+> filters before deleting the clsact qdisc."
+> In the example given, one should:
+>
+> /* set opts as NULL, as we're not really interested in
+> * getting any info for a particular filter, but just
+> * detecting its presence.
+> */
+> r = bpf_tc_query(&hook, NULL);
+>
 
-Your patch does not apply to ipsec-next, can you please rebase?
+Yes, at some revision this worked, but then we changed it to not allow passing
+opts as NULL and I forgot to remove the snippet from the commit message. Sorry
+for that, but now it's buried in the git history forever :/. Mea Culpa.
 
-Thanks!
+> However, following in this summary, where bpf_tc_query is described,
+> it is written that the opts argument cannot be NULL.
+> And indeed, when I tried to use the example above, an error (EINVAL)
+> was returned (as expected?)
+>
+> Am I missing something?
+>
+
+You are correct. We could do a few thing things:
+
+1. Add a separate documentation file that correctly describes things (everything
+minus that para).
+2. Support passing NULL to just detect presence of filters at a hook.
+3. Add a multi query API that dumps all filters.
+
+Regardless of what we choose here, it will still be racy to clean up the qdisc a
+program installs itself, as there is a small race (but a race nonetheless)
+between checking of installed filters and removing the qdisc.
+
+I will discuss this today in the TC meeting to find some proper solution instead
+of the current hack. For now it would probably be best to leave it around I
+guess, though that does entail a small performance impact (due to enabling the
+sch_handle_{ingress,egress} static key).
+
+--
+Kartikeya
