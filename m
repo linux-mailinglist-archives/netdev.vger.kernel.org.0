@@ -2,136 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBC733A5EFF
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 11:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A03E93A5F2B
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 11:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232670AbhFNJTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 05:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232528AbhFNJTd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 05:19:33 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3160C061574;
-        Mon, 14 Jun 2021 02:17:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=wr1eqezgKE+EC2ay7cbljK5Hx/4WVtHnmh+ygNM8Bls=; b=Knvz8m7IgZ/JC0F5PlCV7i4/UP
-        TyuPU6/SW1JDuAyTSr6lxW7MjO0ao4bHFbtEZFClXoCA69JCAowVIA9noXNB+b1cj32Q9oL6Ap+Ls
-        LUu6xw9XhUOaC/9M8MTAmJFq1YKdbP4YN+374CEOKtDJROk6oPiL4scmOHF8h7PxzAAq1VO2tv7r5
-        XVjI/M4YJ3RaWHQHyzPCRw1ddL8VEXqzwPoXIk4DP6/rb4bK2FZHcpAXGmN5hYKD6/Ak/d5Pzgwcj
-        RqmE7gLXkw+B3vKaZa1/7eMcGQ+1mg0LS05opHR+YiMHtsQp0juoNwLq7SK1GDLHIHd6DAFbPaPgS
-        s+tvt7qQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lsiiJ-006zFk-AO; Mon, 14 Jun 2021 09:17:06 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D4CA63001E3;
-        Mon, 14 Jun 2021 11:17:02 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B09212026A646; Mon, 14 Jun 2021 11:17:02 +0200 (CEST)
-Date:   Mon, 14 Jun 2021 11:17:02 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     syzbot <syzbot+df16599805dec43e5fc2@syzkaller.appspotmail.com>
-Cc:     bp@alien8.de, hpa@zytor.com, jirislaby@kernel.org,
-        jpoimboe@redhat.com, jthierry@redhat.com,
-        linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, rostedt@goodmis.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, x86@kernel.org
-Subject: Re: [syzbot] BUG: stack guard page was hit in preempt_count_add
-Message-ID: <YMcejm3Df4d668B7@hirez.programming.kicks-ass.net>
-References: <0000000000002cf2d905c4b38bee@google.com>
+        id S232732AbhFNJed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 05:34:33 -0400
+Received: from mx0b-002c1b01.pphosted.com ([148.163.155.12]:54444 "EHLO
+        mx0b-002c1b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232630AbhFNJeb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 05:34:31 -0400
+Received: from pps.filterd (m0127842.ppops.net [127.0.0.1])
+        by mx0b-002c1b01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15E9P2tP025184;
+        Mon, 14 Jun 2021 02:32:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nutanix.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=proofpoint20171006;
+ bh=Fv6GXCaxOeGsnSHBU5tXC/61x5fr5pUOpe7xtayhdcU=;
+ b=bzltjwhA9w77HpH6CafR0de4NxtzhLw6xHHEcxRKqULdrpkB0Dn85lX6fiCr1hVmHgKd
+ ttml5OWGdFRqxdwR2A4koCa4/nOIzT91kN8wJgobVUVMLQrqpE+DNq7r5CbvxcX97O6s
+ WZzkm/p0B90i+XwdYNcA/DAZdD8IHiviCBHMjD4mYO+B2ui85ti+KG8IMZFmtvdM6nws
+ yHVSAq2/S21qIpqETQXjILg0wNGB3D4XHSTIGHLh28fFxK2k5GMRMTIBrO6x9r3io2lV
+ +dl+2tjey1LQvVlQOWndKyy+iivHRx+EOSlu6MvdDkhMUzEMD92h8zL2X20+ksAHoEKy qQ== 
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2103.outbound.protection.outlook.com [104.47.70.103])
+        by mx0b-002c1b01.pphosted.com with ESMTP id 395p44s95p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Jun 2021 02:32:19 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CwZzOmPcYQq3/U84Kh3SFLr6EExzXxZq+rPj6oJVp1RNpkLPmCbC4VhG/OxAzS8Ng6StF5WENzNlbRUvcsY0WFkpRukYqsHCxbxDRCQ2/vM1BSr9h/6f36Xq7z+hIPBDxm4MiuJaV13a4/Eg7zLRveoXLpIM/2Vc058jEyCirh2l/Z8xktAKchw//HvpUXP4nDvs/LK3FLIPz7rsgEIqXkmZyMj7dU2fxw8Elr8ne//OisvswJReO+NkzlRs7WHBj5F0G5J8DMGEzCGQhPIG0GWL+Zid66U9gy/WwDqzkt4z3JlUObl6Kf8EQHzMfuwWCoMm3c4nEfYLEd/Cl+EfuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fv6GXCaxOeGsnSHBU5tXC/61x5fr5pUOpe7xtayhdcU=;
+ b=l1tpV9PYL7EvzddzFaS9Zrs42y5jtklbf+Yen8hZD/CYSGPOsAhzUgEN/YPsd/DrMKVcM23bAKpjx56/ARoevjrEnqkF/x2uEgseYP9i48jjHH1RlWSq9YVB2+Z/AwcWdT04jF4C0/Pz7QCrNebedcy/6mm9GGhhfTDPedOigyPvR6El7A7nrFnbOxSi+PhgHcONlBRPwT0Xtfy/y1enyHXsd5fKme7/sahRYIN5L4SpgE+RaykKC8oAGd3+XK5Lomc4xncgQ3F0pxtbA+NE7hV8Xruh7grGH//Y9nk911jM2cnmq/ox7ZiAwRIKlwPLpDQciz8D8rr31RMt9MbP5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nutanix.com; dmarc=pass action=none header.from=nutanix.com;
+ dkim=pass header.d=nutanix.com; arc=none
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nutanix.com;
+Received: from CH0PR02MB7964.namprd02.prod.outlook.com (2603:10b6:610:105::16)
+ by CH2PR02MB6998.namprd02.prod.outlook.com (2603:10b6:610:88::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.22; Mon, 14 Jun
+ 2021 09:32:18 +0000
+Received: from CH0PR02MB7964.namprd02.prod.outlook.com
+ ([fe80::f833:4420:8225:5d12]) by CH0PR02MB7964.namprd02.prod.outlook.com
+ ([fe80::f833:4420:8225:5d12%7]) with mapi id 15.20.4219.025; Mon, 14 Jun 2021
+ 09:32:18 +0000
+Subject: Re: [PATCH] net: usbnet: allow overriding of default USB interface
+ naming
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrew@lunn.ch
+References: <20210611152339.182710-1-jonathan.davies@nutanix.com>
+ <YMRbt+or+QTlqqP9@kroah.com>
+From:   Jonathan Davies <jonathan.davies@nutanix.com>
+Message-ID: <469dd530-ebd2-37a4-9c6a-9de86e7a38dc@nutanix.com>
+Date:   Mon, 14 Jun 2021 10:32:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+In-Reply-To: <YMRbt+or+QTlqqP9@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [92.13.244.69]
+X-ClientProxiedBy: AM3PR05CA0086.eurprd05.prod.outlook.com
+ (2603:10a6:207:1::12) To CH0PR02MB7964.namprd02.prod.outlook.com
+ (2603:10b6:610:105::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000002cf2d905c4b38bee@google.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.249] (92.13.244.69) by AM3PR05CA0086.eurprd05.prod.outlook.com (2603:10a6:207:1::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.22 via Frontend Transport; Mon, 14 Jun 2021 09:32:16 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 38a0c23e-79ea-4497-894a-08d92f174d73
+X-MS-TrafficTypeDiagnostic: CH2PR02MB6998:
+X-Microsoft-Antispam-PRVS: <CH2PR02MB6998D8B015DFA90DC58A0989CB319@CH2PR02MB6998.namprd02.prod.outlook.com>
+x-proofpoint-crosstenant: true
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: f0mbwj3Dir31GKjW1oe12CWKVAShUYr7BFdZCMBaZfMdU0FKC8Uv1vggs797rpqM3a0qNmJqgCuehLSL3WSvIfHjjF4bZeaLLL5KcK4Ph6en9dOdPMDjSAB27s9ueZ/hpytqf//tiBqfLWMQ1mI+St3ImGjK/EamQbpAuP9YUz2sy9BmNpyy8qZUMkMvmO1iguT1YxD7a2OgxvKRtKIdpFilZAA7cRfNpBKRzL/7u/2vX9Y6t8kajUtKi7AHhhtP97XHmNf5jBLpVcpx+bCYtPQQbLF0epJESnXNgoOoYtXuxSWDQlBRCZpJRpSsraq39sGCFIP0o5WxepjCZnp5gnCyV9ilMaQn/txpn4JE97+kq54BjPaIzWVnQAO/GIHo4niVMd3crnCxZp1gYj3VBICYOXLT9vr4kG6gaca0br4RmV6TX/OE1Go5rIbHhOpxFNWUvAJj96+c7npDzbqFhAHXGgUXUaUTqN6u51JAbuFs4xru62i36cu4UNc+KNwhGC08M35e9Nos9pIGloR7H76k6Pyiw+B0Wre056B9zadePH3i0dLj4joZd2FJCuB78GU5CYtZjrX3Z1DLrzEOy6uh1cG+EXJPcg1eINlPCwn2gBMuBUJSXjxhlwU0vN2vDBHJ0qCy3ew4zZ54wYwJDUKxTshhUzrmI+S8+/TcAwFwelAchUuMNHnlZ5AIQuEuCHJAZAipPL5gihQ0wYjpm0zn93VAl2wrmj6c2soz1vE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR02MB7964.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(396003)(39860400002)(346002)(376002)(136003)(8936002)(8676002)(53546011)(2906002)(52116002)(66556008)(44832011)(31696002)(66476007)(6486002)(6666004)(66946007)(4326008)(26005)(54906003)(6916009)(31686004)(5660300002)(16526019)(478600001)(316002)(16576012)(186003)(83380400001)(2616005)(36756003)(956004)(38100700002)(38350700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bnVMVUE4VG9OQzc5NVpSSlZPQnpGZHRkSHpJcHJ4YlpCMUh5a3g5N0t3VWxu?=
+ =?utf-8?B?bGtYNkxwcW4wbUJocFN6ejFNWUZYVGdBQnpwanJCODNmMWVsTXB0M0pMTEVC?=
+ =?utf-8?B?ak12S3owblQvOWVCY09QNUNhNTViajM4L1FORkk1MHdtS2kvdEFZNG16dkt6?=
+ =?utf-8?B?VVo5VytyY24rZnZpb0FCOGo3YjlKYUZHTTFCZS9hVEVaTTFyZVVmbEZBbU9v?=
+ =?utf-8?B?YkorYlZId3FKcURFZEl2aU16MkpOUVpmUWVHWVRMaUVYa29sK0ZITjBCdjJO?=
+ =?utf-8?B?M20zM1h1TFRwU1Zad1ZBUEdMZFhDMFpmQ0hvekRkVmZlMitCd09zTXgvU28x?=
+ =?utf-8?B?QWQ1bDUvRUNOOGw3VS9HYkpXWDBJVDZrNHVNVkUzdlJJdU9UTlUxSWNsKy8r?=
+ =?utf-8?B?TXMreEFMM2xzODNmZ2JSRDRadVArSjRUTzdnSTJ1OWh2enVXMHNHTEVrS08v?=
+ =?utf-8?B?N3ZiNFJRYmhyWEN2U04rcUdhU081bGpWRnhNeFZZdk5JaHlCb3dUT29XckRw?=
+ =?utf-8?B?ckVvdVIwaUVUNVU2OGllZlE2T3h1N0xUMnNKOWlRY3NSdU8vbHBpWEdDbXd4?=
+ =?utf-8?B?TVk3NGNCUGdrZ2VGb2ZHaVBwSnc4VW9KQXBpZnRFcGdRVmNCcG1hK3Y3Q2Fl?=
+ =?utf-8?B?VktwMmtvNHRtRnVTTUxxRHFyNXoxTHNrSXdIN3pOQi9FUTlxcit3M1A4NmQz?=
+ =?utf-8?B?Z0JVS2cranVqNnBaWDlMM3J2enV6YWpvVEtLeElVcVNpWlc5S0s3L2FhMC9v?=
+ =?utf-8?B?SHJWTDhkMzM2eTdFb21UV0h4MDhadUVBVERpVEdCVUdqcVlLU3RBdFNNUHdp?=
+ =?utf-8?B?T21VKzkxQ2FXZWdodzNlZjhsMFJjTjQ4aTNEQm5hb0RXNmdnRTA3TFlwMTFz?=
+ =?utf-8?B?eGRWbmNlRHJxbVI3d2ZGYUhBQ3hhclh3bG1xOXBjdm82eHVBLzRMUGFRdHJU?=
+ =?utf-8?B?cWlzQnNsamo5bEVWaUNUT2Z6bkN4U2NRWHBXdWVOQXM3bzVNY21TNGVaOUM3?=
+ =?utf-8?B?Tk1aTGhXaXRXUmR1UHk3M24zcE1YdjVGS2ZwT3RjQ2F1bHNXYnhKMlovcm1J?=
+ =?utf-8?B?MDJTL1M0V28vMlFkNXJvVWlsOE1JU0FWQWQrZ1o5UGtHeUtQck1jL0xiQUEx?=
+ =?utf-8?B?aFZwc3YxeXYwdHdEK2hMb1orMUN4eTRmd1JTN1ZxTUlrekVXS2VkRjhmb0Q2?=
+ =?utf-8?B?LzRHRTJBeTQyV0RxNzNzbDZ3eG5tM0dNZGtFaTBXLzFmbkR0UG1RSTBURDNv?=
+ =?utf-8?B?Qkt5S1cvTktvT2M1VVZRVG5OLzlRR0JpRlJjMDM0N05lQTRoejIrYmZWeGtD?=
+ =?utf-8?B?SWViNGROVG5qc1BiVTQ0bHJZSnl4djdpSXJITWVhSlpReVNxOTRHVjBLV1ll?=
+ =?utf-8?B?bEpncVRiWkN5NU40ZUxneHQ0cDRmN09zWll6YUxYZEluR1RMd3VqNjBTcUQ4?=
+ =?utf-8?B?MXZYeW1SUjV1STJ4N0ErVXl2clpyeTFTZ3I2Q2hPb1NoZTdFekFsU3h1UmVS?=
+ =?utf-8?B?NGIxNnBtMUVuSTBBR0dCVlR6NTFnR3h5emdlcTVUZTAzV3hRTGVwbDRJUFAv?=
+ =?utf-8?B?SFRnY2NVUnl1b2xFMVM4ODdDZVVobFl5T01VaW5XRmFUQ1d4YTRYeit0QVND?=
+ =?utf-8?B?WHVTYXBXTnVaUTcxell3bFpwZEhNdEJGc2NmWlI1cmk4VVN2RFVuSHRhSUZn?=
+ =?utf-8?B?OTVuTEdEcEJTcFRvb3REK3cwQUV4QTVkWUdEVFFXVHdpeENkSTltRFlPM3I4?=
+ =?utf-8?Q?nq6QMBjrC/5TFlwN/4WuvDlGS8yBVWzV/6Rypi1?=
+X-OriginatorOrg: nutanix.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 38a0c23e-79ea-4497-894a-08d92f174d73
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR02MB7964.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2021 09:32:18.0841
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bb047546-786f-4de1-bd75-24e5b6f79043
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: P27goWvI+cW2bNfqerCqkxSb72VCdyo7hvFYwf+Z4oevlbHhmrEJ/dKbzGCxL+8zwxbz73QAxtzjMhMc1QnDQxZKijMSCbhMvaCt5ThlFVg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6998
+X-Proofpoint-ORIG-GUID: hgRpvmp3trxcYpq5Qi_tHhStjwVquH0h
+X-Proofpoint-GUID: hgRpvmp3trxcYpq5Qi_tHhStjwVquH0h
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-14_04:2021-06-11,2021-06-14 signatures=0
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 13, 2021 at 10:58:16PM -0700, syzbot wrote:
-> Hello,
+On 12/06/2021 08:01, Greg KH wrote:
+> On Fri, Jun 11, 2021 at 03:23:39PM +0000, Jonathan Davies wrote:
+>> When the predictable device naming scheme for NICs is not in use, it is
+>> common for there to be udev rules to rename interfaces to names with
+>> prefix "eth".
+>>
+>> Since the timing at which USB NICs are discovered is unpredictable, it
+>> can be interfere with udev's attempt to rename another interface to
+>> "eth0" if a freshly discovered USB interface is initially given the name
+>> "eth0".
+>>
+>> Hence it is useful to be able to override the default name. A new usbnet
+>> module parameter allows this to be configured.
+>>
+>> Signed-off-by: Jonathan Davies <jonathan.davies@nutanix.com>
+>> Suggested-by: Prashanth Sreenivasa <prashanth.sreenivasa@nutanix.com>
+>> ---
+>>   drivers/net/usb/usbnet.c | 13 ++++++++++---
+>>   1 file changed, 10 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+>> index ecf6284..55f6230 100644
+>> --- a/drivers/net/usb/usbnet.c
+>> +++ b/drivers/net/usb/usbnet.c
+>> @@ -72,6 +72,13 @@ static int msg_level = -1;
+>>   module_param (msg_level, int, 0);
+>>   MODULE_PARM_DESC (msg_level, "Override default message level");
+>>   
+>> +#define DEFAULT_ETH_DEV_NAME "eth%d"
+>> +
+>> +static char *eth_device_name = DEFAULT_ETH_DEV_NAME;
+>> +module_param(eth_device_name, charp, 0644);
+>> +MODULE_PARM_DESC(eth_device_name, "Device name pattern for Ethernet devices"
+>> +				  " (default: \"" DEFAULT_ETH_DEV_NAME "\")");
 > 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    2aa8eca6 net: appletalk: fix some mistakes in grammar
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10c653afd00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a43776cd214e447a
-> dashboard link: https://syzkaller.appspot.com/bug?extid=df16599805dec43e5fc2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+df16599805dec43e5fc2@syzkaller.appspotmail.com
-> 
-> BUG: stack guard page was hit at ffffc90009defff8 (stack is ffffc90009df0000..ffffc90009df7fff)
+> This is not the 1990's, please do not add new module parameters as they
+> are on a global driver level, and not on a device level.
 
-Something bond/netdev blows the stack, see below..
+The initial name is set at probe-time, so the device doesn't exist yet. 
+So I felt like it was a choice between either changing the hard-coded 
+"eth%d" string or providing a driver-level module parameter. Is there a 
+better alternative?
 
-> kernel stack overflow (double-fault): 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 17591 Comm: syz-executor.0 Not tainted 5.13.0-rc3-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:get_lock_parent_ip include/linux/ftrace.h:841 [inline]
-> RIP: 0010:preempt_latency_start kernel/sched/core.c:4780 [inline]
-> RIP: 0010:preempt_latency_start kernel/sched/core.c:4777 [inline]
-> RIP: 0010:preempt_count_add+0x6f/0x140 kernel/sched/core.c:4805
-> Code: 05 16 f0 b2 7e 0f b6 c0 3d f4 00 00 00 7f 64 65 8b 05 05 f0 b2 7e 25 ff ff ff 7f 39 c3 74 03 5b 5d c3 48 8b 5c 24 10 48 89 df <e8> 8c cd 0b 00 85 c0 75 35 65 48 8b 2c 25 00 f0 01 00 48 8d bd f0
-> RSP: 0018:ffffc90009df0000 EFLAGS: 00010246
-> RAX: 0000000000000001 RBX: ffffffff81331a80 RCX: 1ffffffff20f20e4
-> RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff81331a80
-> RBP: 0000000000000001 R08: 0000000000000001 R09: ffffc90009df0140
-> R10: fffff520013be033 R11: 0000000000000000 R12: ffffc90009df0188
-> R13: fffff520013be029 R14: ffffc90009df0140 R15: ffffc90009df0140
-> FS:  00007f6395c14700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffffc90009defff8 CR3: 0000000094018000 CR4: 00000000001506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  unwind_next_frame+0x120/0x1ce0 arch/x86/kernel/unwind_orc.c:428
->  __unwind_start+0x51b/0x800 arch/x86/kernel/unwind_orc.c:699
->  unwind_start arch/x86/include/asm/unwind.h:60 [inline]
->  arch_stack_walk+0x5c/0xe0 arch/x86/kernel/stacktrace.c:24
->  stack_trace_save+0x8c/0xc0 kernel/stacktrace.c:121
->  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
->  kasan_set_track mm/kasan/common.c:46 [inline]
->  set_alloc_info mm/kasan/common.c:428 [inline]
->  __kasan_slab_alloc+0x84/0xa0 mm/kasan/common.c:461
->  kasan_slab_alloc include/linux/kasan.h:236 [inline]
->  slab_post_alloc_hook mm/slab.h:524 [inline]
->  slab_alloc_node mm/slub.c:2913 [inline]
->  kmem_cache_alloc_node+0x269/0x3e0 mm/slub.c:2949
->  __alloc_skb+0x20b/0x340 net/core/skbuff.c:414
->  alloc_skb include/linux/skbuff.h:1112 [inline]
->  nlmsg_new include/net/netlink.h:953 [inline]
+> Also changing the way usb network devices are named is up to userspace,
+> the kernel should not be involved in this.  What is wrong with just
+> renaming it in userspace as you want to today?
 
->  rtmsg_ifinfo_build_skb+0x72/0x1a0 net/core/rtnetlink.c:3791
->  rtmsg_ifinfo_event net/core/rtnetlink.c:3827 [inline]
->  rtmsg_ifinfo_event net/core/rtnetlink.c:3818 [inline]
->  rtnetlink_event+0x123/0x1d0 net/core/rtnetlink.c:5603
+Yes, renaming devices is the responsibility of userspace. Normally udev 
+will rename a device shortly after it is probed. But there's a window 
+during which it has the name the kernel initially assigns. If there's 
+other renaming activity happening during that window there's a chance of 
+collisions.
 
+Userspace solutions include:
+  1. udev backing off and retrying in the event of a collision; or
+  2. avoiding ever renaming a device to a name in the "eth%d" namespace.
 
->  notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
->  call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
->  call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
->  call_netdevice_notifiers net/core/dev.c:2147 [inline]
->  netdev_features_change net/core/dev.c:1493 [inline]
->  netdev_sync_lower_features net/core/dev.c:9814 [inline]
->  __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
->  netdev_change_features+0x61/0xb0 net/core/dev.c:10033
->  bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
->  bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
->  bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
+Solution 1 is ugly and slow. It's much neater to avoid the collisions in 
+the first place where possible.
 
-And this piece repeats at least 9 times... bond_* calls
-netdev_change_features, which calls a notifiers chain which includes
-bond_netdev_event and around it goes, until the stack gives out.
+Solution 2 arises naturally from use of the predictable device naming 
+scheme. But when userspace is not using that, solution 2 may not apply.
 
+Yes, the problem is a result of userspace decisions, but that doesn't 
+mean the kernel can't help make things easier.
 
-
+Thanks,
+Jonathan
