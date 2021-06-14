@@ -2,110 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C81B63A66BE
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:38:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 055BE3A66CC
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:40:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233051AbhFNMkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 08:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232775AbhFNMkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 08:40:37 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08693C061766
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 05:38:34 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id r7so31864656edv.12
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 05:38:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=C7yUyUUuYRfzS7MJnVml7BYaeIIuGU7FGAU580X186I=;
-        b=qEHb0OD86AoSy1+MiBajkerL9RomUVRHNlz3DgqVTX+lY8qdpUDeg93XaulS5yMJ2y
-         /i71u0/HqwzptmMMqWhUu/4IWxxjv1lUMAmEbVWF4dIJr0S8p1tvCV7V+2DQ/RRGF2e/
-         ls9Iwh+ojtuVg7GZ+6SJGTmS6e3KcSMRYwwF9XQtYJEi3si+u7rTYzug/o8vl4ItfXwD
-         N1FQJyUu+vQmiWUUNdBBXbS6eetBsjlNZy58Au1jQigNS2B555byLeVLAf/hsuwxWxl5
-         2rvJanOhIKxbGRcXRu9QC8Ql7iybDu6+BpawU1TJiY1h/nS98ZJ6I2dnk6MZh5LfbZeE
-         sLew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=C7yUyUUuYRfzS7MJnVml7BYaeIIuGU7FGAU580X186I=;
-        b=fkBk8Mz9eJNuIqWYM9CF6c7s5tUD3VTukDIVA86VcXtjZHojQRSewBkYWV+kZifl9+
-         +sKQHNRsFNukfHPv6G/WDM3z4vmfTUtGgrz0sGYKZIe2VxVM0OoJTg/56mQsoJ9cXM0t
-         pnsHbzk6DZZABp9MF41fcTtg+/5zaeQRPr2xUPujNn1Ce5RfCfkBB0cY1DGqWodKplm2
-         8+5/HPHZzrQlIwkvNMa0EzCY01Ki9D7K1WdxbgMOt0di8atx0cVb90p3RNrRDIPwVMGG
-         EnzMNZNn+2opy/28f8Dsd8acdJIXyp9hXRz07Zk+M+DDIZO3vY+TE54NRxEgtHMuEk8O
-         HgeQ==
-X-Gm-Message-State: AOAM530o/Xwk2XdUOvErQBua7E1l9xNoRgknWY3C5VPpRvs7GgUPLqV4
-        GpH687Azny57wUKxGgUe3Uw=
-X-Google-Smtp-Source: ABdhPJwZsEoN7DlX/+Barjirca0qTQ4npcUxRtUC7d8HGoKXIWIaAGMGaBHHK4ogRI7Dkev3Ju6x7w==
-X-Received: by 2002:a50:fe8d:: with SMTP id d13mr657945edt.14.1623674312658;
-        Mon, 14 Jun 2021 05:38:32 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id f6sm7157965eja.108.2021.06.14.05.38.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 05:38:32 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 3/3] net: phy: nxp-c45-tja11xx: enable MDIO write access to the master/slave registers
-Date:   Mon, 14 Jun 2021 15:38:15 +0300
-Message-Id: <20210614123815.443467-4-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210614123815.443467-1-olteanv@gmail.com>
-References: <20210614123815.443467-1-olteanv@gmail.com>
+        id S233437AbhFNMmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 08:42:45 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:37366 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232791AbhFNMmn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 08:42:43 -0400
+Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
+        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 027192197A;
+        Mon, 14 Jun 2021 12:40:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1623674439; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XBYOvFAFTda/NVTkMZ0PeZiEtTLP6Wn9QeCT3FHWm6s=;
+        b=k4e1oIMCQH05405X0OEqHcA34zn7X5BMMFN6uRoeakLI/bSmkKyqmv2xUk3whG0BRMMgJg
+        KT+Xzggu277Ntm78EwDPzStut9sDhEVfNyFIkdTYOcnlMb4/hFO/7Y5WB/ckYNywz0I4oW
+        KrrvC1jedquufkilCZBjfGvlV+1Rkfc=
+Received: from imap3-int (imap-alt.suse-dmz.suse.de [192.168.254.47])
+        by imap.suse.de (Postfix) with ESMTP id A24C5118DD;
+        Mon, 14 Jun 2021 12:40:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1623674438; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XBYOvFAFTda/NVTkMZ0PeZiEtTLP6Wn9QeCT3FHWm6s=;
+        b=bI7gcEeAsDNvz1ea4QsseLE+hrztdiYgYiiCLWdVt99cR415yNbJdVuxHmu1vdM/EUC6Kn
+        iv8VQg8QZ0OV09xWfkqEpEK1VH5uZfHyFnRra/KOGfUeBiXHL3PWqTVtZAQGyGC7e5O+Wi
+        GcX7U7JRzwMz0WCwl9QIDzFCf5kStEA=
+Received: from director2.suse.de ([192.168.254.72])
+        by imap3-int with ESMTPSA
+        id iLUpJUZOx2DuPAAALh3uQQ
+        (envelope-from <oneukum@suse.com>); Mon, 14 Jun 2021 12:40:38 +0000
+Message-ID: <3567e925f1750babe9508377678c55a2e4610af5.camel@suse.com>
+Subject: Re: [PATCH] net: usbnet: allow overriding of default USB interface
+ naming
+From:   Oliver Neukum <oneukum@suse.com>
+To:     Jonathan Davies <jonathan.davies@nutanix.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 14 Jun 2021 14:40:37 +0200
+In-Reply-To: <e35ddece-3fd2-4252-6786-af507ba819d2@nutanix.com>
+References: <20210611152339.182710-1-jonathan.davies@nutanix.com>
+         <YMOaZB6xf2xOpC0S@lunn.ch>
+         <e35ddece-3fd2-4252-6786-af507ba819d2@nutanix.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Am Montag, den 14.06.2021, 10:32 +0100 schrieb Jonathan Davies:
+> On 11/06/2021 18:16, Andrew Lunn wrote:
+> > On Fri, Jun 11, 2021 at 03:23:39PM +0000, Jonathan Davies wrote:
 
-The SJA1110 switch integrates TJA1103 PHYs, but in SJA1110 switch rev B
-silicon, there is a bug in that the registers for selecting the 100base-T1
-autoneg master/slave roles are not writable.
+Hi,
 
-To enable write access to the master/slave registers, these additional
-PHY writes are necessary during initialization.
+> > > Hence it is useful to be able to override the default name. A new
+> > > usbnet
+> > > module parameter allows this to be configured.
 
-The issue has been corrected in later SJA1110 silicon versions and is
-not present in the standalone PHY variants, but applying the workaround
-unconditionally in the driver should not do any harm.
+1. This issue exists with all hotpluggable interfaces
+2. It exists for all USB devices so it does not belong in usbnet,
+leaving out drivers like kaweth.
 
-Suggested-by: Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-v1->v2: added a comment
+> > > 
+> > Module parameter are not liked in the network stack.
+> 
+> Thanks, I wasn't aware. Please help me understand: is that in an
+> effort 
+> to avoid configurability altogether, or because there's some
+> preferred 
+> mechanism for performing configuration?
 
- drivers/net/phy/nxp-c45-tja11xx.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Configurability belongs into user space if possible.
+> 
+> > It actually seems like a udev problem, and you need to solve it
+> > there. It is also not specific to USB. Any sort of interface can
+> > pop
+> > up at an time, especially with parallel probing of busses.
+> 
+> Yes, this is also applicable to the naming done for all ethernet 
+> devices. But I've seen the problem multiple times for USB NICs, which
+> is 
+> why I proposed a fix here first.
 
-diff --git a/drivers/net/phy/nxp-c45-tja11xx.c b/drivers/net/phy/nxp-c45-tja11xx.c
-index 118b393b1cbb..f8b2ecd0d6bf 100644
---- a/drivers/net/phy/nxp-c45-tja11xx.c
-+++ b/drivers/net/phy/nxp-c45-tja11xx.c
-@@ -1035,6 +1035,12 @@ static int nxp_c45_config_init(struct phy_device *phydev)
- 		return ret;
- 	}
- 
-+	/* Bug workaround for SJA1110 rev B: enable write access
-+	 * to MDIO_MMD_PMAPMD
-+	 */
-+	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x01F8, 1);
-+	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x01F9, 2);
-+
- 	phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, VEND1_PHY_CONFIG,
- 			 PHY_CONFIG_AUTO);
- 
--- 
-2.25.1
+Because USb devices are common. Your observations are determined
+by ubiquity, not intrinsic factors.
+
+> > So you need
+> > udev to detect there has been a race condition and try again with
+> > the
+> > rename.
+> 
+
+Yes, now, it may be that we do not export the information udev
+would need to or you want new kinds of rules. But I see no evidence
+of that.
+
+	Regards
+		Oliver
+
+
 
