@@ -2,113 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D0C93A6761
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 15:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AB743A6762
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 15:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233263AbhFNNFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 09:05:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44467 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232878AbhFNNFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 09:05:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623675824;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=C+NdEmHtv+U5FdoShfhVB+Z6EqvzPfegd34Orltzayw=;
-        b=hq7aaiyzTqXZXRr/Y4IHQltVyPZXCkmAXX5V3x+IwsNLd2xeTn39rlm01Kjn6+oUB6qlbu
-        B45tPyjX9Ar44Fsm6FTmE+6VVw1hdXoK+sKFneZcAbhw55XvmpeuHEo45EuxQU1/7qnnav
-        OVyBRL/2dA9hbqP4tvW9JmRC2bvl3cA=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-333-G933BNjrPiq6_bRaeOjKCA-1; Mon, 14 Jun 2021 09:03:43 -0400
-X-MC-Unique: G933BNjrPiq6_bRaeOjKCA-1
-Received: by mail-il1-f200.google.com with SMTP id a7-20020a9233070000b02901edc50cdfdcso2757682ilf.19
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 06:03:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:references:mime-version:in-reply-to:date
-         :message-id:subject:to:cc;
-        bh=C+NdEmHtv+U5FdoShfhVB+Z6EqvzPfegd34Orltzayw=;
-        b=CmJJheFpDBc7xYeJGRsCI1unrrMqHtHJOzUyuBDEmACFX1GHf8jYqKd29usDnS+qrG
-         53ti7QhuBO/oiStG6nroFkThHJV/Qk00NqNPXmL54UwR0+WL6og3jTl9MRVRt8iJco7L
-         nqV/OC7ehhz0PfcvaH5+VhHY+4nMbDX/LxJgcr1C+mZFLscQtxXhFmDDmwXd2h+Qsa8u
-         wCtbni8ydI83LqfqaNV2ZBDmqPoVzhdlA5fPIHpK0FeRENj84LhrV9RgwD+rhF+bz99p
-         Fczlnl+ILmurZfdl1XPquO+7Qjv6pZK0R/pBpX/aSrV/R+TFRCXNw9PGvxjMZR5R1H3a
-         NRfQ==
-X-Gm-Message-State: AOAM531molqtshxybsDLH3cxWRX6y4FxI1/xqTeHNHldgbsZ+fZuUtJq
-        sI0eXlztaayPXXTyHP/C1kwTBNxILlCHr4bvAFk7HSV96VgKVhvcgLrL3vsakTXghnH9H0NkJoe
-        UT7AZyvKM2RObhxsOSfF5GpbVy8+y3clq
-X-Received: by 2002:a5d:8190:: with SMTP id u16mr14604146ion.158.1623675821986;
-        Mon, 14 Jun 2021 06:03:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyrU4LJttwq1ITunciECemINCXpj/qSXAPjpZKx/67YXAmXbHKgB7ohKD7/t/BfeOOkJkDvUnHY/EQIRxefV5k=
-X-Received: by 2002:a5d:8190:: with SMTP id u16mr14604120ion.158.1623675821724;
- Mon, 14 Jun 2021 06:03:41 -0700 (PDT)
-Received: from 868169051519 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 14 Jun 2021 06:03:41 -0700
-From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
-References: <20210607033724.wn6qn4v42dlm4j4o@apollo> <CAM_iQpVCnG8pSci2sMbJ1B5YE-y=reAUp82itgrguecyNBCUVQ@mail.gmail.com>
- <20210607060724.4nidap5eywb23l3d@apollo> <CAM_iQpWA=SXNR3Ya8_L2aoVJGP_uaRP8EYCpDrnq3y8Uf6qu=g@mail.gmail.com>
- <20210608071908.sos275adj3gunewo@apollo> <CAM_iQpXFmsWhMA-RO2j5Ph5Ak8yJgUVBppGj2_5NS3BuyjkvzQ@mail.gmail.com>
- <20210613025308.75uia7rnt4ue2k7q@apollo> <30ab29b9-c8b0-3b0f-af5f-78421b27b49c@mojatatu.com>
- <20210613203438.d376porvf5zycatn@apollo> <4b1046ef-ba16-f8d8-c02e-d69648ab510b@mojatatu.com>
+        id S233589AbhFNNGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 09:06:02 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:6468 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233421AbhFNNGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 09:06:01 -0400
+Received: from dggeme755-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G3Wly5SD2zZfDR;
+        Mon, 14 Jun 2021 21:01:02 +0800 (CST)
+Received: from [10.67.100.138] (10.67.100.138) by
+ dggeme755-chm.china.huawei.com (10.3.19.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Mon, 14 Jun 2021 21:03:56 +0800
+Subject: Re: [PATCH net-next 04/11] net: z85230: remove redundant
+ initialization for statics
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Guangbin Huang <huangguangbin2@huawei.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <xie.he.0141@gmail.com>, <ms@dev.tdt.de>,
+        <willemb@google.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1623569903-47930-1-git-send-email-huangguangbin2@huawei.com>
+ <1623569903-47930-5-git-send-email-huangguangbin2@huawei.com>
+ <YMYw4kJ/Erq6fbVh@lunn.ch> <3b15d3bd-4116-ebed-ba86-13efbe7958f4@huawei.com>
+ <YMdLYzr4QjrQIe0o@lunn.ch>
+From:   "lipeng (Y)" <lipeng321@huawei.com>
+Message-ID: <bf51962d-b567-5d87-188a-6a0e4d79c670@huawei.com>
+Date:   Mon, 14 Jun 2021 21:03:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-In-Reply-To: <4b1046ef-ba16-f8d8-c02e-d69648ab510b@mojatatu.com>
-Date:   Mon, 14 Jun 2021 06:03:41 -0700
-Message-ID: <CALnP8ZZGu_H1_gvJNKXnn3HTnPzwoEkUbWfpS4YufYbUrP=H-w@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Vlad Buslov <vladbu@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YMdLYzr4QjrQIe0o@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.100.138]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggeme755-chm.china.huawei.com (10.3.19.101)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 13, 2021 at 05:10:14PM -0400, Jamal Hadi Salim wrote:
-> On 2021-06-13 4:34 p.m., Kumar Kartikeya Dwivedi wrote:
-> > On Mon, Jun 14, 2021 at 01:57:16AM IST, Jamal Hadi Salim wrote:
-> > > We do have this monthly tc meetup every second monday of the month.
-> > > Unfortunately it is short notice since the next one is monday 12pm
-> > > eastern time. Maybe you can show up and a high bandwidth discussion
-> > > (aka voice) would help?
-> > >
-> >
-> > That would be best, please let me know how to join tomorrow. There are a few
-> > other things I was working on that I also want to discuss with this.
-> >
+
+在 2021/6/14 20:28, Andrew Lunn 写道:
+> On Mon, Jun 14, 2021 at 06:16:12PM +0800, lipeng (Y) wrote:
+>> 在 2021/6/14 0:22, Andrew Lunn 写道:
+>>
+>>      On Sun, Jun 13, 2021 at 03:38:16PM +0800, Guangbin Huang wrote:
+>>
+>>          From: Peng Li <lipeng321@huawei.com>
+>>
+>>          Should not initialise statics to 0.
+>>
+>>          Signed-off-by: Peng Li <lipeng321@huawei.com>
+>>          Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+>>          ---
+>>           drivers/net/wan/z85230.c | 2 +-
+>>           1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>>          diff --git a/drivers/net/wan/z85230.c b/drivers/net/wan/z85230.c
+>>          index 94ed9a2..f815bb5 100644
+>>          --- a/drivers/net/wan/z85230.c
+>>          +++ b/drivers/net/wan/z85230.c
+>>          @@ -685,7 +685,7 @@ irqreturn_t z8530_interrupt(int irq, void *dev_id)
+>>           {
+>>                  struct z8530_dev *dev=dev_id;
+>>                  u8 intr;
+>>          -       static volatile int locker=0;
+>>          +       static int locker;
+>>
+>>      Is the volatile unneeded? Please document that in the commit message.
+>>
+>>         Andrew
+>>      .
+>>
+>> Hi,  Andrew:
+>>
+>> When i create this patch, it will WARNING: Use of volatile is usually wrong:
+>> see Documentation/process/volatile-considered-harmful.rst
+>>
+>> According to the file in kernel:    Documentation/process/volatile-considered-​
+>> harmful.rst
+>>
+>> the "volatile" type class should not be used.
+>>
+>> So i remove  "volatile" in this patch.
+> Please be very careful to explain exactly why it is wrong, in this
+> specific case.  You could also consider adding another patch which
+> replaces the volatile with what is recommended.
 >
-> That would be great - thanks for your understanding.
-> +Cc Marcelo (who is the keeper of the meetup)
-> in case the link may change..
+>         Andrew
+> .
+Hi,  Andrew:
 
-We have 2 URLs for today. The official one [1] and a test one [2].
-We will be testing a new video conferencing system today and depending
-on how it goes, we will be on one or another. I'll try to be always
-present in the official one [1] to point people towards the testing
-one [2] in case we're there.
+I will remove patch  04/11 from this clean-up patchset.
+Will send another patch with detail reason for this line if needed.
+Thanks for your comments.
 
-Also, we have an agenda doc [3]. I can't openly share it to the public
-but if you send a request for access, I'll grant it.
+         Peng Li
 
-1.https://meet.kernel.social/tc-meetup
-2.https://www.airmeet.com/e/2494c770-cc8c-11eb-830b-e787c099d9c3
-3.https://docs.google.com/document/d/1uUm_o7lR9jCAH0bqZ1dyscXZbIF4GN3mh1FwwIuePcM/edit#
-
-  Marcelo
 
