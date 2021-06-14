@@ -2,63 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C401B3A6D50
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 19:37:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE84C3A6D8F
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 19:47:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235584AbhFNRjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 13:39:16 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36210 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235583AbhFNRjJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 13:39:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=cONCX2OHCfk2/XaURxX1uWtX4MnH7IVZGQBhzW25uws=; b=us
-        ds8I821Kurup69t/J7weKC3U5A9SmnaIbvOtCBMJGXNfzOUN+10F/6v3RpJF6wrX9WQbziMcY5MRA
-        5H8fM8q+pLY/lB/yoNI6e3KdCmPf/Q1DsiCQ/LdeGsJ7+pNwtRKaBPYhvpBpxZpQHwo0L2lbSz91D
-        PTsmCsxHTxTsQHM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lsqW7-009Mmp-M8; Mon, 14 Jun 2021 19:36:55 +0200
-Date:   Mon, 14 Jun 2021 19:36:55 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?utf-8?B?5ZGo55Cw5p2wIChaaG91IFlhbmppZSk=?= 
-        <zhouyanjie@wanyeetech.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
-        matthias.bgg@gmail.com, alexandre.torgue@st.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, dongsheng.qiu@ingenic.com,
-        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
-        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
-        sernia.zhou@foxmail.com
-Subject: Re: [PATCH v3 1/2] dt-bindings: dwmac: Add bindings for new Ingenic
- SoCs.
-Message-ID: <YMeTt35Q6gTG8UL/@lunn.ch>
-References: <1623690937-52389-1-git-send-email-zhouyanjie@wanyeetech.com>
- <1623690937-52389-2-git-send-email-zhouyanjie@wanyeetech.com>
+        id S234131AbhFNRtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 13:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233975AbhFNRtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 13:49:13 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DA4C061574
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 10:46:59 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id e22so9229878pgv.10
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 10:46:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vftzWlyIrExXWJmqBX7OeGsfHVmPSnmnCXq1p5nOPtQ=;
+        b=UqTnq3Lr4wnZ52BI0zxf/ZDKRz6xGHW7vrbZ/ranStiYRE0Ysh7aDVhbg2nsK9DYGD
+         NN7SDxhwt7lgn9ftvB4gaYt48grvZS9j98qf15fxXkU4z716WvH7YmEyMcL90Z3cInC2
+         DpPpvBZuf+Kmzo1cDaTzJbLyppi+P6uA9vFZ3LkccXTws+Mf+9gifk8S/UwfSh/hGg6/
+         gzzEKokStnJIXjO5gaLG1TJEARgBLyoXAxH2SYrXxkVkiYaxXJFTdqMFaBWkducNWDMN
+         tyQ2yMG2/8jKxgex6WSLo9RUCIU0IerGWHErCjiawWiG9HRefjzaWqjJrra4V2B1QO1f
+         FNTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vftzWlyIrExXWJmqBX7OeGsfHVmPSnmnCXq1p5nOPtQ=;
+        b=k48aynAhlDPuYDDduWUFNjBpUEG0/WBzDoHdGTRP63AM5toCisXRPZ1QQkUPkGJFiB
+         CbOnTV7Ljxn4sJWV84i63urUG/2NzqNw+fN3ETLMU1fIidv25S0vNxDxY0w6TJ5yamvt
+         1YcMLYID35UaCNlLfmtFbip/j7ewA0KuVrZeuwU1kc0hqxTwUrQvPu1UvueQ4z6olCnC
+         01H5FpMCJ8b+KiI7t3FES95VOBurTtOaa+iRdbsIQ9N5/XYD+n142UcoISZoUfAUlxCT
+         sxTPBOYmgjivqT/zdxPMDg4yUvUZqKuUi8Dgneo4+D9ga9FCiiDKmUTACqmTkhpkhfKX
+         ipbw==
+X-Gm-Message-State: AOAM532rMCMV99Rdxf4HXn6Wyem5OzkwtcnWgQFvOCxJ9ZCndInXp/Nv
+        CPyk12Z9oVOFc3Q1xjczyJY=
+X-Google-Smtp-Source: ABdhPJynz4762M5WC8efWFrduCmEqk/jhfNAaLm6TsdnSxCpORAElnofaZeq+7TssvithcwdT/j8QA==
+X-Received: by 2002:a05:6a00:d65:b029:2ec:2bfa:d0d1 with SMTP id n37-20020a056a000d65b02902ec2bfad0d1mr153876pfv.14.1623692818923;
+        Mon, 14 Jun 2021 10:46:58 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id g63sm13145384pfb.55.2021.06.14.10.46.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Jun 2021 10:46:58 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: dsa: sja1105: constify the sja1105_regs
+ structures
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20210614135050.500826-1-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <adaecbb4-657b-01d6-0e3b-1c0a7e4023b8@gmail.com>
+Date:   Mon, 14 Jun 2021 10:46:56 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.10.2
 MIME-Version: 1.0
+In-Reply-To: <20210614135050.500826-1-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1623690937-52389-2-git-send-email-zhouyanjie@wanyeetech.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 01:15:36AM +0800, 周琰杰 (Zhou Yanjie) wrote:
-> Add the dwmac bindings for the JZ4775 SoC, the X1000 SoC,
-> the X1600 SoC, the X1830 SoC and the X2000 SoC from Ingenic.
+
+
+On 6/14/2021 6:50 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+> The struct sja1105_regs tables are not modified during the runtime of
+> the driver, so they can be made constant. In fact, struct sja1105_info
+> already holds a const pointer to these.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
