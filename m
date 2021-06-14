@@ -2,39 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D83F63A5F89
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 11:55:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25DC43A5F92
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 11:57:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232711AbhFNJ5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 05:57:13 -0400
-Received: from mailout2.secunet.com ([62.96.220.49]:42956 "EHLO
-        mailout2.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232630AbhFNJ5M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 05:57:12 -0400
+        id S232743AbhFNJ7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 05:59:45 -0400
+Received: from mailout1.secunet.com ([62.96.220.44]:48268 "EHLO
+        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232718AbhFNJ7o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 05:59:44 -0400
 Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout2.secunet.com (Postfix) with ESMTP id 531EF800051;
-        Mon, 14 Jun 2021 11:55:08 +0200 (CEST)
+        by mailout1.secunet.com (Postfix) with ESMTP id 6BCDF800053;
+        Mon, 14 Jun 2021 11:57:40 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 14 Jun 2021 11:55:08 +0200
+ 15.1.2176.2; Mon, 14 Jun 2021 11:57:40 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 14 Jun
- 2021 11:55:07 +0200
+ 2021 11:57:40 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 563233180609; Mon, 14 Jun 2021 11:55:07 +0200 (CEST)
-Date:   Mon, 14 Jun 2021 11:55:07 +0200
+        id C1CE13180609; Mon, 14 Jun 2021 11:57:39 +0200 (CEST)
+Date:   Mon, 14 Jun 2021 11:57:39 +0200
 From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Florian Westphal <fw@strlen.de>
-CC:     <netdev@vger.kernel.org>, <herbert@gondor.apana.org.au>
-Subject: Re: [PATCH ipsec-next v2 0/5] xfrm: ipv6: remove hdr_off indirection
-Message-ID: <20210614095507.GV40979@gauss3.secunet.de>
-References: <20210611105014.4675-1-fw@strlen.de>
+To:     Antony Antony <antony.antony@secunet.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH] xfrm: delete xfrm4_output_finish xfrm6_output_finish
+ declarations
+Message-ID: <20210614095739.GW40979@gauss3.secunet.de>
+References: <d65237e307458f84e33687bff5be9fd93d6b375b.1623332566.git.antony.antony@secunet.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20210611105014.4675-1-fw@strlen.de>
+In-Reply-To: <d65237e307458f84e33687bff5be9fd93d6b375b.1623332566.git.antony.antony@secunet.com>
 X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
  mbx-essen-01.secunet.de (10.53.40.197)
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
@@ -42,29 +44,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 12:50:09PM +0200, Florian Westphal wrote:
-> v2: fix build failure with MIP6=y in last patch.
+On Thu, Jun 10, 2021 at 03:46:38PM +0200, Antony Antony wrote:
+> These function declarations are not needed any more.
+> The definitions wer deleted.
 > 
-> IPV6 xfrm moves mutable extension headers to make space for the
-> encapsulation header.
-> 
-> For Mobile ipv6 sake this uses an indirect call (ipv6 can be built
-> as module).
-> 
-> These patches remove those indirections by placing a
-> small parsing function in the xfrm core.
-> 
-> While at it, the merged dstopt/rt hdroff function is
-> realigned with ip6_find_1stfragopt (where they were copied from).
-> 
-> ip6_find_1stfragopt received bug fixes that were missing from the
-> cloned ones.
-> 
-> Florian Westphal (5):
->   xfrm: ipv6: add xfrm6_hdr_offset helper
->   xfrm: ipv6: move mip6_destopt_offset into xfrm core
->   xfrm: ipv6: move mip6_rthdr_offset into xfrm core
->   xfrm: remove hdr_offset indirection
->   xfrm: merge dstopt and routing hdroff functions
+> Fixes: 2ab6096db2f1 ("xfrm: remove output_finish indirection from xfrm_state_afinfo")
+> Signed-off-by: Antony Antony <antony.antony@secunet.com>
 
-Series applied, thanks Florian!
+Your patch does not apply to ipsec-next, can you please rebase?
+
+Thanks!
