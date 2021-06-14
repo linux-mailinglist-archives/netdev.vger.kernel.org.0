@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C2C63A6DF5
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 20:08:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D18223A6E0B
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 20:13:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235010AbhFNSKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 14:10:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42218 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233427AbhFNSKh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 14:10:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A239B61075;
-        Mon, 14 Jun 2021 18:08:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623694112;
-        bh=qrjuQm9P9B7DB+Umdys0YcvR95UPMm0tJN+AIKoB+Jc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=huiOFekAJEgQPdX/j9JJvixdZpZjCFQjSu9NA+/831ufPdRRuQz7IIdkTXxyXiy8E
-         lfYXISkYJvhMXCc+4Rz/6kIeNLFhsIxBhETEqxB2kG3NvY0M5Q3WmaXTb0DCQpD4wH
-         umcBmn8BihzMy2qwTXQSRy+s2NsU/CfNhBkDyMxflRYqGbh5GyLfbzKnOPYjmX0/PH
-         bT28Z5hkoXGQI3/qZXX+isc7/WQCw//DJ+aBQpaQT5IU4ZoNqLe4yBoiszDe3gJURN
-         z8EX/ycLhGGBgfCB0/mzPUDUuidkuRLiSvHIxHYWFv2hNWnTEXJC4ld7s1hzZ98tYn
-         9QTiGoN5F5aWw==
-Date:   Mon, 14 Jun 2021 11:08:31 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
+        id S233848AbhFNSPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 14:15:32 -0400
+Received: from mail-ej1-f42.google.com ([209.85.218.42]:45759 "EHLO
+        mail-ej1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233591AbhFNSPb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 14:15:31 -0400
+Received: by mail-ej1-f42.google.com with SMTP id k7so18102098ejv.12
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 11:13:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=i7Dz7ltG0kW+wyMN4N65nG4XNYkS2sz8JZOfqqhPBow=;
+        b=uS8GRtKW7BC14TGS7Guc7xB9/Sg5OsbFjyz5jX3H9KGP2Rq9I6vlk2QJfNCWbFXnwN
+         w/n7nk8HUlpsSpezQiYuK7Ljh9ZOos3SXkTZ3z+4wYKo/M4bE6yMQXcu8rF2RUaJ5D5J
+         r/cWiFb1zTxz/0Kh7T9jQHV2u6Q+ExLRQyZs1cfSuwsfnzpJ7elGLLN/Ql68lrUMxLeM
+         J3yX+343r/7fK1xQEI7uSuuk0l/fhYC2Zmtclsiuy1OBP7jRlNi3H/oSJ8PJOFz51t+q
+         VJf31Lt5fCs8TwgBiMyQC/BBOSpgVHSJ8FpVWXFYaLWzpoc7BJEErGE2BXkuKbJaASNo
+         5pAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=i7Dz7ltG0kW+wyMN4N65nG4XNYkS2sz8JZOfqqhPBow=;
+        b=ajHi6ruzeCTr5gwhLg/qpPiNWm4ideBpnsHgTPusoF4kf8SGu6hYgepNzVTBYBzCYN
+         FZjZa++di5GBXoXlNK6sMez16nzoZ26j8Eq2VP/8NYFppz8dVfZrU+1F67GoCtWXOIOb
+         kDnpGYvMpXcX189gWIUK/2cyohc3wZfYEQ7fN0DEeB8QPgM6n2Ttmzcy2g+LzXd+4MYF
+         3z5aORf9Z92Y9Gr3/IMghEN+S/4jnbAEMn10Dje3nPzqN5vPoRXSMbEozst7XIxKsU0J
+         gBvWlCc8Vlv0J/jW7qsXnCxGTtzMdjeftM/ASPKSNPLtMAy58CqyfTCpi2aCGOiwcPxV
+         q/mw==
+X-Gm-Message-State: AOAM532ytvgi8cQcoP6CNRrxvniUVI5zdlPnZPI6hqTW4XEalrMkkD9x
+        v7sTjVGtK0lWNGO5U26aBf4=
+X-Google-Smtp-Source: ABdhPJz1Qc9XYILPcmFJWz8PG8SEZ0j/CGmKp/6n/ESFv33JeqzE7nM0sKwz/0LMjuLE7A7oh0/r7A==
+X-Received: by 2002:a17:906:f285:: with SMTP id gu5mr16535253ejb.226.1623694347442;
+        Mon, 14 Jun 2021 11:12:27 -0700 (PDT)
+Received: from localhost ([185.246.22.209])
+        by smtp.gmail.com with ESMTPSA id a2sm7919494ejp.1.2021.06.14.11.12.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Jun 2021 11:12:27 -0700 (PDT)
+Date:   Mon, 14 Jun 2021 11:12:20 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
 To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        davem@davemloft.net, netdev@vger.kernel.org, sassmann@redhat.com,
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, sassmann@redhat.com,
         Tony Brelinski <tonyx.brelinski@intel.com>
 Subject: Re: [PATCH net-next 5/8] ice: register 1588 PTP clock device object
  for E810 devices
-Message-ID: <20210614110831.65d21c8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <ca27bafc-fdc2-c5f1-fc37-1cdf48d393b2@intel.com>
+Message-ID: <20210614181218.GA7788@localhost>
 References: <20210611162000.2438023-1-anthony.l.nguyen@intel.com>
-        <20210611162000.2438023-6-anthony.l.nguyen@intel.com>
-        <20210611141800.5ebe1d4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <ca27bafc-fdc2-c5f1-fc37-1cdf48d393b2@intel.com>
+ <20210611162000.2438023-6-anthony.l.nguyen@intel.com>
+ <20210611141800.5ebe1d4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <ca27bafc-fdc2-c5f1-fc37-1cdf48d393b2@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ca27bafc-fdc2-c5f1-fc37-1cdf48d393b2@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Jun 2021 09:43:17 -0700 Jacob Keller wrote:
-> >> +static int ice_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
-> >> +{
-> >> +	struct ice_pf *pf = ptp_info_to_pf(info);
-> >> +	u64 freq, divisor = 1000000ULL;
-> >> +	struct ice_hw *hw = &pf->hw;
-> >> +	s64 incval, diff;
-> >> +	int neg_adj = 0;
-> >> +	int err;
-> >> +
-> >> +	incval = ICE_PTP_NOMINAL_INCVAL_E810;
-> >> +
-> >> +	if (scaled_ppm < 0) {
-> >> +		neg_adj = 1;
-> >> +		scaled_ppm = -scaled_ppm;
-> >> +	}
-> >> +
-> >> +	while ((u64)scaled_ppm > div_u64(U64_MAX, incval)) {
-> >> +		/* handle overflow by scaling down the scaled_ppm and
-> >> +		 * the divisor, losing some precision
-> >> +		 */
-> >> +		scaled_ppm >>= 2;
-> >> +		divisor >>= 2;
-> >> +	}  
-> > 
-> > I have a question regarding ppm overflows.
-> > 
-> > We have the max_adj field in struct ptp_clock_info which is checked
-> > against ppb, but ppb is a signed 32 bit and scaled_ppm is a long,
-> > meaning values larger than S32_MAX << 16 / 1000 will overflow 
-> > the ppb calculation, and therefore the check.
-> 
-> Hmmm.. I thought ppb was a s64, not an s32.
-> 
-> In general, I believe max_adj is usually capped at 1 billion anyways,
-> since it doesn't make sense to slow a clock by more than 1billioln ppb,
-> and increasing it more than that isn't really useful either.
-
-Do you mean it's capped somewhere in the code to 1B?
-
-I'm no time expert but this is not probability where 1 is a magic
-value, adjusting clock by 1 - 1ppb vs 1 + 1ppb makes little difference,
-no? Both mean something is super fishy with the nominal or expected
-frequency, but the hardware can do that and more.
-
-Flipping the question, if adjusting by large ppb values is not correct,
-why not cap the adjustment at the value which would prevent the u64
-overflow?
-
-I don't really have a preferences here, I'm mostly disturbed by 
-the overflow in the ppb vs max_adj check.
-
-> > Are we okay with that? Is my math off? Did I miss some part 
-> > of the kernel which filters crazy high scaled_ppm/freq?
-> > 
+On Mon, Jun 14, 2021 at 09:43:17AM -0700, Jacob Keller wrote:
 > > Since dialed_freq is updated regardless of return value of .adjfine 
-> > the driver has no clear way to reject bad scaled_ppm>  
+> > the driver has no clear way to reject bad scaled_ppm>
 > 
 > I'm not sure. +Richard?
+
+The driver advertises "max_adj".  The PHC layer checks user space inputs:
+
+ptp_clock.c line 140:
+	} else if (tx->modes & ADJ_FREQUENCY) {
+		s32 ppb = scaled_ppm_to_ppb(tx->freq);
+		if (ppb > ops->max_adj || ppb < -ops->max_adj)
+			return -ERANGE;
+
+So, if the max_adj is correct for the driver/HW, then all is well.
+
+Thanks,
+Richard
+
+
