@@ -2,109 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD3283A6B1E
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:59:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F5683A6B1A
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233910AbhFNQBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 12:01:03 -0400
-Received: from mail-oi1-f179.google.com ([209.85.167.179]:45583 "EHLO
-        mail-oi1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233482AbhFNQBC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 12:01:02 -0400
-Received: by mail-oi1-f179.google.com with SMTP id w127so14847034oig.12
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 08:58:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=94iIJWdnufdLWAXQdWLP9tyvdsiAcGYzNeNNwgwJVDg=;
-        b=IqTXgIT+Cl8Wo9ps3519Xaw5nP9M00zvUCAESiMwX2JltCyvmClzopQPyd/gV29uYU
-         AJgedo2DeLfn5nx9CzA4y/kbAtunlZgY1BjhfVljwo74gbDn4JxvRLFLMLgZ3hdatGLG
-         QZmBMuqmSDIvKsmaDy9i4xx4pSHccwXsHrWZPbol306BOxH2iV6qgRLIEoMHSalJ7KM2
-         J6mB8jxB9tWItV6w9t7QsTnWQy9is97/eaCy2kbWhE6esMZx/PmnnHamYfcDh0aOzUjk
-         d/PRWj0+VPRespIVqfRDKmIQxAyEgdwEL+Qil9EoLlOy/gQuazuROa7qaJO/kFebP+LD
-         qpRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=94iIJWdnufdLWAXQdWLP9tyvdsiAcGYzNeNNwgwJVDg=;
-        b=hP1dNlGc00v1krf1A5+D/LyBrN0wRV0w3vBAK5N1UM52nCpnj6TNAYga6HRDMPuOM4
-         O9lnz6wMe25vjp0hNeT3ymYbRzwGzC5HNiF3FikWGlnsx5qZUZ0O1aR8/V3mSJ2vEQCX
-         oT3m/MXXAF+9qMCOiPMxTMNg45ElVFkUcMVfS9kSG+vgBZaUFjWcVzozKTaVAZTcPGSt
-         cgXaWkspPX7ccrz4W+WhOP2KoY8/UeEzsslbW5odz6Jpcvgpe6FcAM/le9UWhyjgYQXp
-         2XgCCuVt+lR1yEwm9re37nQB0vctYjryYZ2HDFdaX09zeSjChV6uhIO7iUzIc6R+v80c
-         GEpA==
-X-Gm-Message-State: AOAM533sTIB9lMcI6y4XM5fEtWyMq+czOqF+X7xLJzHFR2V8jt1F1OXy
-        04OTrDdmhIIMTIHQmQz1gESd3g==
-X-Google-Smtp-Source: ABdhPJxl00X8N39+K/fL/lQtc3Y9cNUIlK/sTxo5x7SmvJMEDgs+x/NARXztwoamyE8n6s/bhqicGA==
-X-Received: by 2002:aca:b609:: with SMTP id g9mr22032540oif.141.1623686267640;
-        Mon, 14 Jun 2021 08:57:47 -0700 (PDT)
-Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id c205sm3137575oob.38.2021.06.14.08.57.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 08:57:47 -0700 (PDT)
-Date:   Mon, 14 Jun 2021 10:57:45 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     mani@kernel.org, davem@davemloft.net,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+1917d778024161609247@syzkaller.appspotmail.com
-Subject: Re: [PATCH] net: qrtr: fix OOB Read in qrtr_endpoint_post
-Message-ID: <YMd8eb/yu1Ds4oVV@yoga>
-References: <20210614120650.2731-1-paskripkin@gmail.com>
+        id S234447AbhFNQAI convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Jun 2021 12:00:08 -0400
+Received: from out28-1.mail.aliyun.com ([115.124.28.1]:40862 "EHLO
+        out28-1.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234124AbhFNQAH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 12:00:07 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.08197881|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0568616-0.00167767-0.941461;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047199;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=21;RT=21;SR=0;TI=SMTPD_---.KS9PVcH_1623686276;
+Received: from zhouyanjie-virtual-machine(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.KS9PVcH_1623686276)
+          by smtp.aliyun-inc.com(10.147.41.137);
+          Mon, 14 Jun 2021 23:57:57 +0800
+Date:   Mon, 14 Jun 2021 23:57:55 +0800
+From:   =?UTF-8?B?5ZGo55Cw5p2w?= <zhouyanjie@wanyeetech.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
+        sernia.zhou@foxmail.com, paul@crapouillou.net
+Subject: Re: [PATCH v2 2/2] net: stmmac: Add Ingenic SoCs MAC support.
+Message-ID: <20210614235755.6c1bd34e@zhouyanjie-virtual-machine>
+In-Reply-To: <YMYy6JMSHm1Cqdt2@lunn.ch>
+References: <1623260110-25842-1-git-send-email-zhouyanjie@wanyeetech.com>
+        <1623260110-25842-3-git-send-email-zhouyanjie@wanyeetech.com>
+        <YMGEutCet7fP1NZ9@lunn.ch>
+        <405696cb-5987-0e56-87f8-5a1443eadc19@wanyeetech.com>
+        <YMICTvjyEAgPMH9u@lunn.ch>
+        <346f64d9-6949-b506-258f-4cfa7eb22784@wanyeetech.com>
+        <12f35415-532e-5514-bc97-683fb9655091@wanyeetech.com>
+        <YMIoWS57Ra19E1qT@lunn.ch>
+        <20210613163452.1f01d418@zhouyanjie-virtual-machine>
+        <YMYy6JMSHm1Cqdt2@lunn.ch>
+X-Mailer: Claws Mail 3.14.1 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210614120650.2731-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 14 Jun 07:06 CDT 2021, Pavel Skripkin wrote:
+Hi Andrew,
 
-> Syzbot reported slab-out-of-bounds Read in
-> qrtr_endpoint_post. The problem was in wrong
-> _size_ type:
-> 
-> 	if (len != ALIGN(size, 4) + hdrlen)
-> 		goto err;
-> 
-> If size from qrtr_hdr is 4294967293 (0xfffffffd), the result of
-> ALIGN(size, 4) will be 0. In case of len == hdrlen and size == 4294967293
-> in header this check won't fail and
-> 
-> 	skb_put_data(skb, data + hdrlen, size);
-> 
-> will read out of bound from data, which is hdrlen allocated block.
-> 
-> Fixes: 194ccc88297a ("net: qrtr: Support decoding incoming v2 packets")
-> Reported-and-tested-by: syzbot+1917d778024161609247@syzkaller.appspotmail.com
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+于 Sun, 13 Jun 2021 18:31:36 +0200
+Andrew Lunn <andrew@lunn.ch> 写道:
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-
-Regards,
-Bjorn
-
-> ---
->  net/qrtr/qrtr.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> On Sun, Jun 13, 2021 at 04:34:52PM +0800, 周琰杰 wrote:
+> > 于 Thu, 10 Jun 2021 16:57:29 +0200
+> > Andrew Lunn <andrew@lunn.ch> 写道:
+> >   
+> > > > Here is Ingenic's reply, the time length corresponding to a
+> > > > unit is 19.5ps (19500fs).    
+> > > 
+> > > Sometimes, there is a negative offset in the delays. So a delay
+> > > value of 0 written to the register actually means -200ps or
+> > > something.  
+> > 
+> > Ah, perhaps this explains why we still need to add fine-tuning
+> > parameter in rgmii-id and rgmii-txid modes to ensure that the
+> > network works properly.  
 > 
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index c0477bec09bd..f2efaa4225f9 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -436,7 +436,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
->  	struct qrtr_sock *ipc;
->  	struct sk_buff *skb;
->  	struct qrtr_cb *cb;
-> -	unsigned int size;
-> +	size_t size;
->  	unsigned int ver;
->  	size_t hdrlen;
->  
-> -- 
-> 2.32.0
+> Please try to find this out. rgmii means no delay. If the hardware is
+> doing -500pS by default, you need to take this into account, and add
+> the 500pS back on.
+
+I think I may have found the problem. At present, my PHY uses a
+general driver, and there is no specific setting for delay-related
+registers. The default delay value of PHY is 1ns, which does not meet
+the delay requirement of 2ns, after and the MAC side add 500ps delay
+(and possibly some delays introduced on the hardware circuit), it just
+meets the requirement of 2ns delay.
+
 > 
+>     Andrew
