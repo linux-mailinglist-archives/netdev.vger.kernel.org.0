@@ -2,62 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C36683A6A7F
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:33:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81D793A6A97
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:37:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233707AbhFNPfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 11:35:51 -0400
-Received: from verein.lst.de ([213.95.11.211]:45003 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232985AbhFNPfp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 11:35:45 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 4E32868AFE; Mon, 14 Jun 2021 17:33:39 +0200 (CEST)
-Date:   Mon, 14 Jun 2021 17:33:39 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com, arnd@arndb.de,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
-        rppt@kernel.org, hannes@cmpxchg.org, cai@lca.pw,
-        krish.sadhukhan@oracle.com, saravanand@fb.com,
-        Tianyu.Lan@microsoft.com, konrad.wilk@oracle.com,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        boris.ostrovsky@oracle.com, jgross@suse.com,
-        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
-        xen-devel@lists.xenproject.org, davem@davemloft.net,
-        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, thomas.lendacky@amd.com,
-        brijesh.singh@amd.com, sunilmut@microsoft.com
-Subject: Re: [RFC PATCH V3 10/11] HV/Netvsc: Add Isolation VM support for
- netvsc driver
-Message-ID: <20210614153339.GB1741@lst.de>
-References: <20210530150628.2063957-1-ltykernel@gmail.com> <20210530150628.2063957-11-ltykernel@gmail.com> <20210607065007.GE24478@lst.de> <279cb4bf-c5b6-6db9-0f1e-9238e902c8f2@gmail.com> <20210614070903.GA29976@lst.de> <e10c2696-23c3-befe-4f4d-25e18918132f@gmail.com>
+        id S233571AbhFNPjp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Jun 2021 11:39:45 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:57247 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233985AbhFNPjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 11:39:15 -0400
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1lsoe9-00085z-Vs; Mon, 14 Jun 2021 15:37:06 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id F15C55FBC4; Mon, 14 Jun 2021 08:37:03 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id EC06EA040B;
+        Mon, 14 Jun 2021 08:37:03 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jussi Maki <joamaki@gmail.com>
+cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andy Gospodarek <andy@greyhouse.net>, vfalico@gmail.com,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: Re: [PATCH bpf-next 0/3] XDP bonding support
+In-reply-to: <CAHn8xckZAwozmRVLDUuPv-gFCy9AaBC-3cKZ4iU4enfkN5my-g@mail.gmail.com>
+References: <20210609135537.1460244-1-joamaki@gmail.com> <CAEf4Bzar4+HQ_0BBGt75_UPG-tVpjqz9YVdeBi2GVY1iam4Y2g@mail.gmail.com> <CAHn8xckZAwozmRVLDUuPv-gFCy9AaBC-3cKZ4iU4enfkN5my-g@mail.gmail.com>
+Comments: In-reply-to Jussi Maki <joamaki@gmail.com>
+   message dated "Mon, 14 Jun 2021 14:25:42 +0200."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e10c2696-23c3-befe-4f4d-25e18918132f@gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <6698.1623685023.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Mon, 14 Jun 2021 08:37:03 -0700
+Message-ID: <6705.1623685023@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 10:04:06PM +0800, Tianyu Lan wrote:
-> The pages in the hv_page_buffer array here are in the kernel linear 
-> mapping. The packet sent to host will contain an array which contains 
-> transaction data. In the isolation VM, data in the these pages needs to be 
-> copied to bounce buffer and so call dma_map_single() here to map these data 
-> pages with bounce buffer. The vmbus has ring buffer where the send/receive 
-> packets are copied to/from. The ring buffer has been remapped to the extra 
-> space above shared gpa boundary/vTom during probing Netvsc driver and so 
-> not call dma map function for vmbus ring
-> buffer.
+Jussi Maki <joamaki@gmail.com> wrote:
 
-So why do we have all that PFN magic instead of using struct page or
-the usual kernel I/O buffers that contain a page pointer?
+>On Thu, Jun 10, 2021 at 7:24 PM Andrii Nakryiko
+><andrii.nakryiko@gmail.com> wrote:
+>>
+>> On Wed, Jun 9, 2021 at 6:55 AM Jussi Maki <joamaki@gmail.com> wrote:
+>> >
+>> > This patchset introduces XDP support to the bonding driver.
+>> >
+>> > Patch 1 contains the implementation, including support for
+>> > the recently introduced EXCLUDE_INGRESS. Patch 2 contains a
+>> > performance fix to the roundrobin mode which switches rr_tx_counter
+>> > to be per-cpu. Patch 3 contains the test suite for the implementation
+>> > using a pair of veth devices.
+>> >
+>> > The vmtest.sh is modified to enable the bonding module and install
+>> > modules. The config change should probably be done in the libbpf
+>> > repository. Andrii: How would you like this done properly?
+>>
+>> I think vmtest.sh and CI setup doesn't support modules (not easily at
+>> least). Can we just compile that driver in? Then you can submit a PR
+>> against libbpf Github repo to adjust the config. We have also kernel
+>> CI repo where we'll need to make this change.
+>
+>Unfortunately the mode and xmit_policy options of the bonding driver
+>are module params, so it'll need to be a module so the different modes
+>can be tested. I already modified vmtest.sh [1] to "make
+>module_install" into the rootfs and enable the bonding module via
+>scripts/config, but a cleaner approach would probably be to, as you
+>suggested, update latest.config in libbpf repo and probably get the
+>"modules_install" change into vmtest.sh separately (if you're happy
+>with this approach). What do you think?
+
+	The bonding mode and xmit_hash_policy (and any other option) can
+be changed via "ip link"; no module parameter needed, e.g.,
+
+ip link set dev bond0 type bond xmit_hash_policy layer2
+
+	-J
+
+>[1] https://lore.kernel.org/netdev/20210609135537.1460244-1-joamaki@gmail.com/T/#maaf15ecd6b7c3af764558589118a3c6213e0af81
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
