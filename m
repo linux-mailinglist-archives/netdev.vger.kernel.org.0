@@ -2,147 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F09F3A692E
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 16:42:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 461473A6936
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 16:46:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232995AbhFNOom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 10:44:42 -0400
-Received: from mail-ed1-f41.google.com ([209.85.208.41]:38598 "EHLO
-        mail-ed1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232789AbhFNOol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 10:44:41 -0400
-Received: by mail-ed1-f41.google.com with SMTP id t7so1629248edd.5;
-        Mon, 14 Jun 2021 07:42:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xeKhQPh1Flb+tUHgI3Evju8LkzF+UVVPLnM1EMj1AbE=;
-        b=hnyEavFEYT7mdJN620u6qpcNNOmQT6H8ehoFk5TXIUs2wWzp5y8mxp9Qdiwe3d3J3a
-         pp/nEzoWJaRvsT/f9WF/pGE3FgG+bIzvKPNCxBLtddyzxRdjK4wnn4C+h84o1vI3Z9u1
-         TmDBrKxIzyCTqejUO2I/jI3WZ6oHcTE8ai83ZnutlGWxYgP16y+zvBn96WFlJCCErKH1
-         UqqhhmKLORDiQDkXsGr9gBIlEZcncJIBUj+DxGfZJdyrfLH20FdDuF7LjqVez180top3
-         sfwKbax9qxxET/7FQ33K3WkMT9PtHTFHRwmNJQi3NCD2LjH8YMogziFTelHb6TYTTrGN
-         wzWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xeKhQPh1Flb+tUHgI3Evju8LkzF+UVVPLnM1EMj1AbE=;
-        b=tV63JH7VCRQaxzRnOTeDlPpVc4Y06g/yXakxPir57rqu7iz/vleJBF85ZRMOdAiJEs
-         PF1695zjoKUTbxoYo/mKA/XKm1cRLA0314IueTNYE4S2b6+yaBJELBnE+QN0yuEKuk5r
-         vDOOY40v372KChqZiCrGB8ltAxeP6icplIsOv3yxoZ/RC7ofj9wdjmjQIqD0rk1Mdkwg
-         mKkBhWpCe18Dc/YDPC8RlSWHRk2dNLLOxD5kTopXFZRAcoslD2D8kuErzH66Gz1VISpU
-         5cch5El/q6UcRw342Ngt2rMW1CsYV8+Sx1ZLLA4VgdxzFRTa0Zflkzdpo5XlGKY3mjEk
-         eI2w==
-X-Gm-Message-State: AOAM530DdQdGfMi7mNvQSsyB4wY/VwjErjCc8XDuqFlmqof6Lw+zFXcy
-        axm8xa4uTCTQ22IpAVNGpds7xocyWiDoKUuk/AU=
-X-Google-Smtp-Source: ABdhPJyvn6iYmzaX/eieuNnZhYu4qyZbRg3qRXb0Tqi0Lvnpu1osLzRWrOifWWBX00nFinh7TSC7oRwhdVtpqMYvAvQ=
-X-Received: by 2002:aa7:ce86:: with SMTP id y6mr17434142edv.309.1623681690012;
- Mon, 14 Jun 2021 07:41:30 -0700 (PDT)
+        id S233051AbhFNOsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 10:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232798AbhFNOsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 10:48:06 -0400
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23F6C061574
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 07:46:03 -0700 (PDT)
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9e:6708:7fba:f3d4:906e:68a0])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 15EEjtUR022864
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Mon, 14 Jun 2021 16:45:55 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1623681955; bh=EfU28Grrt03CCrOmSOelKP8Bw5fwYa3u71dOmsiOoCM=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=jaH1iUy1cpaptJr/cRkfoM4hxBgThdJf2FQDseiwW18Dn2Q/EAxIG4mXqTlI7OdRF
+         yjk/18uLL3l4pctMcbG9Em04uQxAz1/n7P5GQdgz1SjI08ZPv+MaQMXpRbbA1Nb5Qy
+         iJdMCJRxgODEoEGnwUe8ncT273Z3GkG8wHm1b+eU=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
+        (envelope-from <bjorn@mork.no>)
+        id 1lsnqd-000W2c-9O; Mon, 14 Jun 2021 16:45:55 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Kristian Evensen <kristian.evensen@gmail.com>
+Cc:     netdev@vger.kernel.org, subashab@codeaurora.org
+Subject: Re: [PATCH net] qmi_wwan: Clone the skb when in pass-through mode
+Organization: m
+References: <20210614141849.3587683-1-kristian.evensen@gmail.com>
+Date:   Mon, 14 Jun 2021 16:45:55 +0200
+In-Reply-To: <20210614141849.3587683-1-kristian.evensen@gmail.com> (Kristian
+        Evensen's message of "Mon, 14 Jun 2021 16:18:49 +0200")
+Message-ID: <8735tky064.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <CAD-N9QUUCSpZjg5RwdKBNF7xx127E6fUowTZkUhm66C891Fpkg@mail.gmail.com>
- <20210614163401.52807197@gmail.com> <CAD-N9QV5_91A6n5QcrafmQRbqH_qzFRatno-6z0i7q-V9VnLzg@mail.gmail.com>
- <20210614172512.799db10d@gmail.com>
-In-Reply-To: <20210614172512.799db10d@gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Mon, 14 Jun 2021 22:40:55 +0800
-Message-ID: <CAD-N9QUhQT8pG8Une8Fac1pJaiVd_mi9AU2c_nkPjTi36xbutQ@mail.gmail.com>
-Subject: Re: Suggestions on how to debug kernel crashes where printk and gdb
- both does not work
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     alex.aring@gmail.com, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        stefan@datenfreihafen.org,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.4 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 10:25 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
->
-> On Mon, 14 Jun 2021 22:19:10 +0800
-> Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
-> > On Mon, Jun 14, 2021 at 9:34 PM Pavel Skripkin <paskripkin@gmail.com>
-> > wrote:
-> > >
-> > > On Mon, 14 Jun 2021 21:22:43 +0800
-> > > Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> > >
-> > > > Dear kernel developers,
-> > > >
-> > > > I was trying to debug the crash - memory leak in hwsim_add_one [1]
-> > > > recently. However, I encountered a disgusting issue: my
-> > > > breakpoint and printk/pr_alert in the functions that will be
-> > > > surely executed do not work. The stack trace is in the following.
-> > > > I wrote this email to ask for some suggestions on how to debug
-> > > > such cases?
-> > > >
-> > > > Thanks very much. Looking forward to your reply.
-> > > >
-> > >
-> > > Hi, Dongliang!
-> > >
-> > > This bug is not similar to others on the dashboard. I spent some
-> > > time debugging it a week ago. The main problem here, that memory
-> > > allocation happens in the boot time:
-> > >
-> > > > [<ffffffff84359255>] kernel_init+0xc/0x1a7 init/main.c:1447
-> > >
-> >
-> > Oh, nice catch. No wonder why my debugging does not work. :(
-> >
-> > > and reproducer simply tries to
-> > > free this data. You can use ftrace to look at it. Smth like this:
-> > >
-> > > $ echo 'hwsim_*' > $TRACE_DIR/set_ftrace_filter
-> >
-> > Thanks for your suggestion.
-> >
-> > Do you have any conclusions about this case? If you have found out the
-> > root cause and start writing patches, I will turn my focus to other
-> > cases.
->
-> No, I had some busy days and I have nothing about this bug for now.
-> I've just traced the reproducer execution and that's all :)
->
-> I guess, some error handling paths are broken, but Im not sure
+Kristian Evensen <kristian.evensen@gmail.com> writes:
 
-In the beginning, I agreed with you. However, after I manually checked
-functions: hwsim_probe (initialization) and  hwsim_remove (cleanup),
-then things may be different. The cleanup looks correct to me. I would
-like to debug but stuck with the debugging process.
+> The skb that we pass to the rmnet driver is owned by usbnet and is freed
+> soon after the rx_fixup() callback is called (in usbnet_bh()).  There is
+> no guarantee that rmnet is done handling the skb before it is freed. We
+> should clone the skb before we call netif_rx() to prevent use-after-free
+> and misc. kernel oops.
+>
+> Fixes: 59e139cf0b32 ("net: qmi_wwan: Add pass through mode")
+>
+> Signed-off-by: Kristian Evensen <kristian.evensen@gmail.com>
+> ---
+>  drivers/net/usb/qmi_wwan.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+> index db8d3a4f2678..5ac307eb0bfd 100644
+> --- a/drivers/net/usb/qmi_wwan.c
+> +++ b/drivers/net/usb/qmi_wwan.c
+> @@ -620,6 +620,10 @@ static int qmi_wwan_rx_fixup(struct usbnet *dev, str=
+uct sk_buff *skb)
+>  		return qmimux_rx_fixup(dev, skb);
+>=20=20
+>  	if (info->flags & QMI_WWAN_FLAG_PASS_THROUGH) {
+> +		skb =3D skb_clone(skb, GFP_ATOMIC);
+> +		if (!skb)
+> +			return 0;
+> +
+>  		skb->protocol =3D htons(ETH_P_MAP);
+>  		return (netif_rx(skb) =3D=3D NET_RX_SUCCESS);
+>  	}
 
-And there is another issue: the cleanup function also does not output
-anything or hit the breakpoint. I don't quite understand it since the
-cleanup is not at the boot time.
 
-Any idea?
+Thanks for pointing this out.  But it still looks strange to me.  Why do
+we call netif_rx(skb) here instead of just returning 1 and leave that
+for usbnet_skb_return()?  With cloning we end up doing eth_type_trans()
+on the duplicate - is that wise?
 
->
->
-> >
-> > BTW, I only found another possible memory leak after some manual code
-> > review [1]. However, it is not the root cause for this crash.
-> >
-> > [1] https://lkml.org/lkml/2021/6/10/1297
-> >
-> > >
-> > > would work.
-> > >
-> > >
-> > > With regards,
-> > > Pavel Skripkin
->
->
->
->
-> With regards,
-> Pavel Skripkin
+
+Bj=C3=B8rn
