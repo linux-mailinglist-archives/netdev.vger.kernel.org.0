@@ -2,89 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81D793A6A97
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:37:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD36B3A6AA1
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:39:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233571AbhFNPjp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Jun 2021 11:39:45 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:57247 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233985AbhFNPjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 11:39:15 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1lsoe9-00085z-Vs; Mon, 14 Jun 2021 15:37:06 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id F15C55FBC4; Mon, 14 Jun 2021 08:37:03 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id EC06EA040B;
-        Mon, 14 Jun 2021 08:37:03 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jussi Maki <joamaki@gmail.com>
-cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andy Gospodarek <andy@greyhouse.net>, vfalico@gmail.com,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: Re: [PATCH bpf-next 0/3] XDP bonding support
-In-reply-to: <CAHn8xckZAwozmRVLDUuPv-gFCy9AaBC-3cKZ4iU4enfkN5my-g@mail.gmail.com>
-References: <20210609135537.1460244-1-joamaki@gmail.com> <CAEf4Bzar4+HQ_0BBGt75_UPG-tVpjqz9YVdeBi2GVY1iam4Y2g@mail.gmail.com> <CAHn8xckZAwozmRVLDUuPv-gFCy9AaBC-3cKZ4iU4enfkN5my-g@mail.gmail.com>
-Comments: In-reply-to Jussi Maki <joamaki@gmail.com>
-   message dated "Mon, 14 Jun 2021 14:25:42 +0200."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S233980AbhFNPkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 11:40:39 -0400
+Received: from mail-pg1-f178.google.com ([209.85.215.178]:42598 "EHLO
+        mail-pg1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233528AbhFNPkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 11:40:36 -0400
+Received: by mail-pg1-f178.google.com with SMTP id i34so8936625pgl.9;
+        Mon, 14 Jun 2021 08:38:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k0S1cmvYXsguMzhn//4kJjmpVofxyX3uWpaVIXA04XY=;
+        b=RdfUGhVGFRZUhJaIg6tmSBAzhW2dDn+0dJ/8oEa+w5mP7UHzck/r9lTG7T2WwnY13w
+         5zqIUZj8oIqr5ZDL97A+hACiJFJ9q19DiaIe3QJsGO4HjSRAWctmz9GYRB72/PljDh7U
+         i2cKAwo+uGY0ahOh7Xurf+jIJ6fVR7uPSljJ+sVgmPYy7gInoHF3Y6yCWF3kcarnTNBn
+         P8uCHaNDdtxQ/wdc7kBuENjJx0rMT0YV2mFshOBNXGd6WbvbNEY5RAkN/1FPd+4PXNQr
+         yFOhIycBuSWzSfbM7xeQy+FzkSv28G/VGITt8KQr6FJnC2eEyTyRP3CveTNXRdj524LD
+         OmeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k0S1cmvYXsguMzhn//4kJjmpVofxyX3uWpaVIXA04XY=;
+        b=ZmMuf6iI9vKTkzqefqMbpTmgqapZ/Jow1Guizx1FN52bk5tHfWk3NUCd4ncRTWlVC6
+         xkpAHIe73Qv7ffqRrzUWtGwspI0x1xzAw1u1G5lGYHj0NkRvSCfgFwZ4glDJasgyGDW9
+         1Q2XF5KT+g2/NHyLCHpbsYCFe3zkbe0Txdm25Gplhmc+B9mPXu0poRenOhydt+iIzBj0
+         x2wQUFn32PbGIrXwLKbT9SU/6z0hPmMAZkaB77ecSTNV+EwLJ+FreIGZx7xBykp4+LOu
+         Yvk+jrf8NSd93wH2R/N5geXsNRUibJ8nVfc28qnEQmauvxn/HVFLDIsCN07w36XLdlrk
+         pIEQ==
+X-Gm-Message-State: AOAM532EU0DR1I4o7iRNKlsnQkHowj6PsyQ/zYnWKCxaDVEhQZe5dRi7
+        u1p01QP3e261Vs7mYVdeFrY=
+X-Google-Smtp-Source: ABdhPJyE7XZOKUhHvkQqFzcFoLFmaeIi7yd9MTxC3uYdE+DkmYD9+fvnMjRYrO2FAvGcZO8wB199dA==
+X-Received: by 2002:a63:d213:: with SMTP id a19mr17878821pgg.28.1623685045224;
+        Mon, 14 Jun 2021 08:37:25 -0700 (PDT)
+Received: from localhost.localdomain ([45.135.186.34])
+        by smtp.gmail.com with ESMTPSA id z18sm1216630pfe.214.2021.06.14.08.37.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Jun 2021 08:37:24 -0700 (PDT)
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+To:     steve.glendinning@shawell.net, davem@davemloft.net,
+        kuba@kernel.org, paskripkin@gmail.com
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dongliang Mu <mudongliangabcd@gmail.com>
+Subject: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
+Date:   Mon, 14 Jun 2021 23:37:12 +0800
+Message-Id: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <6698.1623685023.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Mon, 14 Jun 2021 08:37:03 -0700
-Message-ID: <6705.1623685023@famine>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jussi Maki <joamaki@gmail.com> wrote:
+The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+fails to clean up the work scheduled in smsc75xx_reset->
+smsc75xx_set_multicast, which leads to use-after-free if the work is
+scheduled to start after the deallocation. In addition, this patch also
+removes one dangling pointer - dev->data[0].
 
->On Thu, Jun 10, 2021 at 7:24 PM Andrii Nakryiko
-><andrii.nakryiko@gmail.com> wrote:
->>
->> On Wed, Jun 9, 2021 at 6:55 AM Jussi Maki <joamaki@gmail.com> wrote:
->> >
->> > This patchset introduces XDP support to the bonding driver.
->> >
->> > Patch 1 contains the implementation, including support for
->> > the recently introduced EXCLUDE_INGRESS. Patch 2 contains a
->> > performance fix to the roundrobin mode which switches rr_tx_counter
->> > to be per-cpu. Patch 3 contains the test suite for the implementation
->> > using a pair of veth devices.
->> >
->> > The vmtest.sh is modified to enable the bonding module and install
->> > modules. The config change should probably be done in the libbpf
->> > repository. Andrii: How would you like this done properly?
->>
->> I think vmtest.sh and CI setup doesn't support modules (not easily at
->> least). Can we just compile that driver in? Then you can submit a PR
->> against libbpf Github repo to adjust the config. We have also kernel
->> CI repo where we'll need to make this change.
->
->Unfortunately the mode and xmit_policy options of the bonding driver
->are module params, so it'll need to be a module so the different modes
->can be tested. I already modified vmtest.sh [1] to "make
->module_install" into the rootfs and enable the bonding module via
->scripts/config, but a cleaner approach would probably be to, as you
->suggested, update latest.config in libbpf repo and probably get the
->"modules_install" change into vmtest.sh separately (if you're happy
->with this approach). What do you think?
+This patch calls cancel_work_sync to cancel the schedule work and set
+the dangling pointer to NULL.
 
-	The bonding mode and xmit_hash_policy (and any other option) can
-be changed via "ip link"; no module parameter needed, e.g.,
-
-ip link set dev bond0 type bond xmit_hash_policy layer2
-
-	-J
-
->[1] https://lore.kernel.org/netdev/20210609135537.1460244-1-joamaki@gmail.com/T/#maaf15ecd6b7c3af764558589118a3c6213e0af81
-
+Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 ---
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+ drivers/net/usb/smsc75xx.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
+index b286993da67c..f81740fcc8d5 100644
+--- a/drivers/net/usb/smsc75xx.c
++++ b/drivers/net/usb/smsc75xx.c
+@@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	return 0;
+ 
+ err:
++	cancel_work_sync(&pdata->set_multicast);
+ 	kfree(pdata);
++	pdata = NULL;
++	dev->data[0] = 0;
+ 	return ret;
+ }
+ 
+-- 
+2.25.1
+
