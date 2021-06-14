@@ -2,117 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 055BE3A66CC
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:40:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F0A3A66EB
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233437AbhFNMmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 08:42:45 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:37366 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232791AbhFNMmn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 08:42:43 -0400
-Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 027192197A;
-        Mon, 14 Jun 2021 12:40:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1623674439; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XBYOvFAFTda/NVTkMZ0PeZiEtTLP6Wn9QeCT3FHWm6s=;
-        b=k4e1oIMCQH05405X0OEqHcA34zn7X5BMMFN6uRoeakLI/bSmkKyqmv2xUk3whG0BRMMgJg
-        KT+Xzggu277Ntm78EwDPzStut9sDhEVfNyFIkdTYOcnlMb4/hFO/7Y5WB/ckYNywz0I4oW
-        KrrvC1jedquufkilCZBjfGvlV+1Rkfc=
-Received: from imap3-int (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        by imap.suse.de (Postfix) with ESMTP id A24C5118DD;
-        Mon, 14 Jun 2021 12:40:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1623674438; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XBYOvFAFTda/NVTkMZ0PeZiEtTLP6Wn9QeCT3FHWm6s=;
-        b=bI7gcEeAsDNvz1ea4QsseLE+hrztdiYgYiiCLWdVt99cR415yNbJdVuxHmu1vdM/EUC6Kn
-        iv8VQg8QZ0OV09xWfkqEpEK1VH5uZfHyFnRra/KOGfUeBiXHL3PWqTVtZAQGyGC7e5O+Wi
-        GcX7U7JRzwMz0WCwl9QIDzFCf5kStEA=
-Received: from director2.suse.de ([192.168.254.72])
-        by imap3-int with ESMTPSA
-        id iLUpJUZOx2DuPAAALh3uQQ
-        (envelope-from <oneukum@suse.com>); Mon, 14 Jun 2021 12:40:38 +0000
-Message-ID: <3567e925f1750babe9508377678c55a2e4610af5.camel@suse.com>
-Subject: Re: [PATCH] net: usbnet: allow overriding of default USB interface
- naming
-From:   Oliver Neukum <oneukum@suse.com>
-To:     Jonathan Davies <jonathan.davies@nutanix.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 14 Jun 2021 14:40:37 +0200
-In-Reply-To: <e35ddece-3fd2-4252-6786-af507ba819d2@nutanix.com>
-References: <20210611152339.182710-1-jonathan.davies@nutanix.com>
-         <YMOaZB6xf2xOpC0S@lunn.ch>
-         <e35ddece-3fd2-4252-6786-af507ba819d2@nutanix.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        id S233383AbhFNMtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 08:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33522 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232841AbhFNMts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 08:49:48 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB07AC061574
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 05:47:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=UjlDAk0BT/vYypA3Vq6M6dSZoWkc6vAwBgPwgko2yxI=; b=OwNEkXYRsukABJFgElUHF04ZW
+        5h50B9R+65gCktPoPc8JZAq/JxCumWBjEHlGgwk+aximy18VqiBYnduOAvV35Ctus9juWuNwme5oP
+        14eF+Jw6nah+ARCPO+vl6OgjSLzE4jwsR5IG8Cl28crEphDRJjmBz5S7wEAg+ylMdeLcEXqkwfVOH
+        HYa1bkZazIZO50OFZakq5nTEsoU1DrCox6pQJOqk5LVwVo2I+xmn9Ajm2s3wHuQsvkVDZkG4F4uQ2
+        i6oAKd16XNSkdkvOorsvG9inj3EU9Rpy+WXbq+fl8+OPg4LuGaJoqfP8//jTkPoqxz9gTKZL/3POM
+        IJj4Zu0CQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45002)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lsm0C-0004Gd-TD; Mon, 14 Jun 2021 13:47:40 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lsm0C-000487-30; Mon, 14 Jun 2021 13:47:40 +0100
+Date:   Mon, 14 Jun 2021 13:47:40 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v2 net-next 1/3] net: phy: nxp-c45-tja11xx: demote the
+ "no PTP support" message to debug
+Message-ID: <20210614124739.GS22278@shell.armlinux.org.uk>
+References: <20210614123815.443467-1-olteanv@gmail.com>
+ <20210614123815.443467-2-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210614123815.443467-2-olteanv@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Montag, den 14.06.2021, 10:32 +0100 schrieb Jonathan Davies:
-> On 11/06/2021 18:16, Andrew Lunn wrote:
-> > On Fri, Jun 11, 2021 at 03:23:39PM +0000, Jonathan Davies wrote:
-
-Hi,
-
-> > > Hence it is useful to be able to override the default name. A new
-> > > usbnet
-> > > module parameter allows this to be configured.
-
-1. This issue exists with all hotpluggable interfaces
-2. It exists for all USB devices so it does not belong in usbnet,
-leaving out drivers like kaweth.
-
-> > > 
-> > Module parameter are not liked in the network stack.
+On Mon, Jun 14, 2021 at 03:38:13PM +0300, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Thanks, I wasn't aware. Please help me understand: is that in an
-> effort 
-> to avoid configurability altogether, or because there's some
-> preferred 
-> mechanism for performing configuration?
-
-Configurability belongs into user space if possible.
+> The SJA1110 switch integrates these PHYs, and they do not have support
+> for timestamping. This message becomes quite overwhelming:
 > 
-> > It actually seems like a udev problem, and you need to solve it
-> > there. It is also not specific to USB. Any sort of interface can
-> > pop
-> > up at an time, especially with parallel probing of busses.
+> [   10.056596] NXP C45 TJA1103 spi1.0-base-t1:01: the phy does not support PTP
+> [   10.112625] NXP C45 TJA1103 spi1.0-base-t1:02: the phy does not support PTP
+> [   10.167461] NXP C45 TJA1103 spi1.0-base-t1:03: the phy does not support PTP
+> [   10.223510] NXP C45 TJA1103 spi1.0-base-t1:04: the phy does not support PTP
+> [   10.278239] NXP C45 TJA1103 spi1.0-base-t1:05: the phy does not support PTP
+> [   10.332663] NXP C45 TJA1103 spi1.0-base-t1:06: the phy does not support PTP
+> [   15.390828] NXP C45 TJA1103 spi1.2-base-t1:01: the phy does not support PTP
+> [   15.445224] NXP C45 TJA1103 spi1.2-base-t1:02: the phy does not support PTP
+> [   15.499673] NXP C45 TJA1103 spi1.2-base-t1:03: the phy does not support PTP
+> [   15.554074] NXP C45 TJA1103 spi1.2-base-t1:04: the phy does not support PTP
+> [   15.608516] NXP C45 TJA1103 spi1.2-base-t1:05: the phy does not support PTP
+> [   15.662996] NXP C45 TJA1103 spi1.2-base-t1:06: the phy does not support PTP
 > 
-> Yes, this is also applicable to the naming done for all ethernet 
-> devices. But I've seen the problem multiple times for USB NICs, which
-> is 
-> why I proposed a fix here first.
-
-Because USb devices are common. Your observations are determined
-by ubiquity, not intrinsic factors.
-
-> > So you need
-> > udev to detect there has been a race condition and try again with
-> > the
-> > rename.
+> So reduce its log level to debug.
 > 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Yes, now, it may be that we do not export the information udev
-would need to or you want new kinds of rules. But I see no evidence
-of that.
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-	Regards
-		Oliver
-
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
