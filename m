@@ -2,53 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEB973A64C3
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 13:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96FEA3A6337
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 13:09:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235386AbhFNL2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 07:28:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52700 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235487AbhFNL0Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 07:26:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4144061241;
-        Mon, 14 Jun 2021 11:05:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623668714;
-        bh=geaHpEsX7suWp6lWKB0/fPGDUdSFf8ykCEssPlUGhDE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tIq2/pvce0Av/P+agyDUQ3piNTFCuv3R5f1a4hjFIHgj+jR7vYsfd7vgQaRJognkY
-         OBidyuANhajpMGK1VH2ua671M8ErtbqXGuA+nF5D6CBV99GhK1NB5g06LpRAOASuYb
-         2cxYkLlyicwOoR6gpaZcEqba4GWezX9BwRY8blK9EZ4SBcxDlfioRfm/9yxbUXxyCx
-         MnThI24PWnEjU+jDHrzaNiiArRaAJJGzTgQHy8tfzCfuXK8WqjjeUIMLIA6VycEI6j
-         5BgajKGd24wET0FsZ2XSHH4PYw4fUAH7BCE3TBtw1b1cFHEHhCaXXhEFvrvQ2jLGy/
-         NmJqlFjOLgu1Q==
-Date:   Mon, 14 Jun 2021 14:05:08 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        m.chetan.kumar@intel.com
-Subject: Re: [PATCH] net: wwan: iosm: Remove DEBUG flag
-Message-ID: <YMc35MS3kN4WiA+D@unreal>
-References: <1623658600-21100-1-git-send-email-loic.poulain@linaro.org>
+        id S233730AbhFNLLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 07:11:32 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:33834 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234616AbhFNLIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 07:08:22 -0400
+Received: from [IPv6:2003:e9:d709:46c5:895f:5712:ed71:b02d] (p200300e9d70946c5895f5712ed71b02d.dip0.t-ipconnect.de [IPv6:2003:e9:d709:46c5:895f:5712:ed71:b02d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id DBADFC0209;
+        Mon, 14 Jun 2021 13:06:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1623668770;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nXlKb7AF6abmep/OhK+3nloRQ3gBLLmiigWv8Q57llg=;
+        b=Lx75bPvAIra2817vcWVhtTwrkg7l3HUIVn3Rd6WX5orjkbRABhKzh3eXXttqpuACJB5AZ3
+        F6fX0V9qOvAekcNOIADzBbwzXWGAzY8DaIa4f5Uw9sX2+EbuZpDqCsocM3YoLx04CK+wrb
+        WrtbxHkuGYlS8aA0YDe71zInk3RD3Rwf+R0PdJXw8flCA9tbpS3KhEYQCxXJF2jIcoHMTl
+        ZENHfUZEMYpz1HPrBmBIWqkRu3VKdQ5hMfRHnZ+5RXwJEUx/bIqX8yRIpp5GRk2fmUl+NV
+        MAGGqfx8A4mtXmqaW1s3ST1/6kwBejSMvU3w2sHbWltlgPxhAbSs6/QozatMAA==
+Subject: Re: [PATCH] ieee802154: hwsim: Fix possible memory leak in
+ hwsim_subscribe_all_others
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>
+References: <20210611015812.1626999-1-mudongliangabcd@gmail.com>
+ <CAB_54W4djgY19-z8Pr9A4FgECDTESwjprk-P-x4gQCLBxvt3xA@mail.gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <eeb3625c-7308-7cec-351e-7ebbf7affff4@datenfreihafen.org>
+Date:   Mon, 14 Jun 2021 13:06:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1623658600-21100-1-git-send-email-loic.poulain@linaro.org>
+In-Reply-To: <CAB_54W4djgY19-z8Pr9A4FgECDTESwjprk-P-x4gQCLBxvt3xA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 10:16:40AM +0200, Loic Poulain wrote:
-> Author forgot to remove that flag.
-> 
-> Fixes: f7af616c632e ("net: iosm: infrastructure")
-> Reported-by: Leon Romanovsky <leon@kernel.org>
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
->  drivers/net/wwan/iosm/Makefile | 3 ---
->  1 file changed, 3 deletions(-)
-> 
+Hello.
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+On 12.06.21 14:49, Alexander Aring wrote:
+> Hi,
+> 
+> On Thu, 10 Jun 2021 at 21:58, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+>>
+>> In hwsim_subscribe_all_others, the error handling code performs
+>> incorrectly if the second hwsim_alloc_edge fails. When this issue occurs,
+>> it goes to sub_fail, without cleaning the edges allocated before.
+>>
+>> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+>> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> 
+> Acked-by: Alexander Aring <aahringo@redhat.com>
+> 
+> sorry, it is a correct fix. Thanks.
+
+
+This patch has been applied to the wpan tree and will be
+part of the next pull request to net. Thanks!
+
+regards
+Stefan Schmidt
