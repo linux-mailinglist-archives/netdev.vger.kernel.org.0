@@ -2,126 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB9A23A5B21
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 02:08:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 168663A5B7C
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 04:11:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232235AbhFNAK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Jun 2021 20:10:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34874 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232076AbhFNAKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Jun 2021 20:10:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=Inv7FxLlJNFNOYFXJpWfC0TcFgAvHVW5NM8/fw1hffE=; b=R8
-        HjPwiPuSs8ZagDi0rLWtYL3jDyrZw7AGFoqVJyxU8y1B3u6KvRWdnek+HTTKdxgzIc8mAgX0GoARm
-        diDc+RUWwlsV9kejPxA2e3SwhxMPNttpwzNFxeP9miD8xF6uH5xQhYGkNjr87G6Yz8r4D8hJOLjLF
-        qoYvNcXHTu/RlzM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lsa9L-009E8L-GP; Mon, 14 Jun 2021 02:08:19 +0200
-Date:   Mon, 14 Jun 2021 02:08:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>,
-        Jon Masters <jcm@redhat.com>, rjw@rjwysocki.net,
-        lenb@kernel.org
-Subject: Re: [net-next: PATCH 2/3] net: mvpp2: enable using phylink with ACPI
-Message-ID: <YMad84t7mOl0DFzk@lunn.ch>
-References: <20210613183520.2247415-1-mw@semihalf.com>
- <20210613183520.2247415-3-mw@semihalf.com>
- <YMZg27EkTuebBXwo@lunn.ch>
- <CAPv3WKfWqdpntPKknZ+H+sscyH9mursvCUwe8Q1DH-wGpsWknQ@mail.gmail.com>
- <YMZ6E99Q/zuFh4b1@lunn.ch>
- <CAPv3WKetRLOkkOz3Cj_D5pf824VGoz+sQ6wNukTS2PKoAcdFyw@mail.gmail.com>
+        id S232320AbhFNCNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Jun 2021 22:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232269AbhFNCNr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Jun 2021 22:13:47 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9FAC061574;
+        Sun, 13 Jun 2021 19:11:31 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id w4so12266674qvr.11;
+        Sun, 13 Jun 2021 19:11:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=/pYpS7z9b3a/6qRwLgr21klDpDKmQtlWnOviQqkYZ5Y=;
+        b=MXFiXfB//FGQvrfCVcyKi13yZLX8QO3gQ1Fs8a+3hEVU+pqPP7gM0F8+tFH0i61t1z
+         a9OS7MAgUfMo4ti4QzqUs8m63FSCEYOHEZwTPrZuk+0nbW9/lwXyelMxcwzXsznBm0ge
+         /FJ3NDdxgT5PHQggefPEe0VId1ROWsP28XLOLKyyf5LfECNU5eIFfetf4GaWNjxxREN6
+         wfPWARvyXRWxNYkSzTCWhzsEQHquYAsoMqeljVSo6At7Zuhk0J584TDYFA0sMaRH9ZOT
+         ChHz4ax7eCED4sgUbe8AQKUtUpKngCIuYB0UdKqj4ghFpzesfNw3YbINupGepEBWOPqf
+         FPZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=/pYpS7z9b3a/6qRwLgr21klDpDKmQtlWnOviQqkYZ5Y=;
+        b=r8CzcGkDL+ZIegGygQty0QAxUidHj0eoKiVERaEOCZoP+cqR/MhVFtOx5UJdGuiq7C
+         6+/KoPXAgNv8QdWD5pq+lNGcu4NCzRsHwXeo9u6k/9ehP0dDiM4oCXPUZ8TcEpqGgRuR
+         Kux0mVGjWXY4tZsVVM+fQZeDRdav0N/tEy+NGM7ScDOIs9amIvLL5MRyeiI8wPskcnOr
+         q8oWn4CuQ2URbJTibffvFzaBmLu36j+M6xF6GpjHDN6GyisR3OAwBB/3PhwgEP+KA+Ng
+         ZYMyu4NA1TVgNChi9b0E0smSUyJqnZq+2EFhkpFWomCmEKPmrwa1mINxgs2ZTFrT80bQ
+         cmTA==
+X-Gm-Message-State: AOAM533lbZ5PvV713QgGLE2Ggeo2r+bH3vVk2Ww+fraqaXsqzSuiq1BY
+        TmWfzT/RnZ0OKvYVjm7JYy16rnvsYFR+6zyxRb4=
+X-Google-Smtp-Source: ABdhPJwxRYJeq9Jsx574+RgiHVOKhUsOAnplR8AyrKgoOtsl57ncyd0oeoda6WAU93g3Y6VdAofllw==
+X-Received: by 2002:a0c:9e68:: with SMTP id z40mr16402873qve.17.1623636691013;
+        Sun, 13 Jun 2021 19:11:31 -0700 (PDT)
+Received: from tobias-VirtualBox (ool-18ba8988.dyn.optonline.net. [24.186.137.136])
+        by smtp.gmail.com with ESMTPSA id o5sm8747078qta.51.2021.06.13.19.11.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Jun 2021 19:11:30 -0700 (PDT)
+Date:   Sun, 13 Jun 2021 22:11:30 -0400
+From:   Tobias Alam <tobiasalam@gmail.com>
+To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: qlge: change msleep to usleep_range
+Message-ID: <YMa60p5dl0LMV/9D@tobias-VirtualBox>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPv3WKetRLOkkOz3Cj_D5pf824VGoz+sQ6wNukTS2PKoAcdFyw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 01:46:06AM +0200, Marcin Wojtas wrote:
-> <Adding ACPI Maintainers>
-> 
-> Hi Andrew,
-> 
-> niedz., 13 cze 2021 o 23:35 Andrew Lunn <andrew@lunn.ch> napisał(a):
-> >
-> > > True. I picked the port type properties that are interpreted by
-> > > phylink. Basically, I think that everything that's described in:
-> > > devicetree/bindings/net/ethernet-controller.yaml
-> > > is valid for the ACPI as well
-> >
-> > So you are saying ACPI is just DT stuff into tables? Then why bother
-> > with ACPI? Just use DT.
-> 
-> Any user is free to use whatever they like, however apparently there
-> must have been valid reasons, why ARM is choosing ACPI as the
-> preferred way of describing the hardware over DT. In such
-> circumstances, we all work to improve adoption and its usability for
-> existing devices.
-> 
-> Regarding the properties in _DSD package, please refer to
-> https://www.kernel.org/doc/html/latest/firmware-guide/acpi/DSD-properties-rules.html,
-> especially to two fragments:
-> "The _DSD (Device Specific Data) configuration object, introduced in
-> ACPI 5.1, allows any type of device configuration data to be provided
-> via the ACPI namespace. In principle, the format of the data may be
-> arbitrary [...]"
-> "It often is useful to make _DSD return property sets that follow
-> Device Tree bindings."
-> Therefore what I understand is that (within some constraints) simple
-> reusing existing sets of nodes' properties, should not violate ACPI
-> spec. In this patchset no new extension/interfaces/method is
-> introduced.
-> 
-> >
-> > Right, O.K. Please document anything which phylink already supports:
-> >
-> > hylink.c:               ret = fwnode_property_read_u32(fixed_node, "speed", &speed);
-> > phylink.c:              if (fwnode_property_read_bool(fixed_node, "full-duplex"))
-> > phylink.c:              if (fwnode_property_read_bool(fixed_node, "pause"))
-> > phylink.c:              if (fwnode_property_read_bool(fixed_node, "asym-pause"))
-> > phylink.c:              ret = fwnode_property_read_u32_array(fwnode, "fixed-link",
-> > phylink.c:              ret = fwnode_property_read_u32_array(fwnode, "fixed-link",
-> > phylink.c:      if (dn || fwnode_property_present(fwnode, "fixed-link"))
-> > phylink.c:      if ((fwnode_property_read_string(fwnode, "managed", &managed) == 0 &&
-> >
-> > If you are adding new properties, please do that In a separate patch,
-> > which needs an ACPI maintainer to ACK it before it gets merged.
-> >
-> 
-> Ok, I can extend the documentation.
+This patch changes msleep() to usleep_range() based on
+Documentation/timers/timers-howto.txt. It suggests using usleep_range()
+for small msec(1ms - 20ms) because msleep() will often sleep longer than
+the desired value. Issue found by checkpatch.
 
-My real fear is snowflakes. Each ACPI implementation is unique. That
-is going to be a maintenance nightmare, and it will make it very hard
-to change the APIs between phylib/phylink and MAC drivers. To avoid
-that, we need to push are much as possible into the core, document as
-much as possible, and NACK anything does looks like a snowflake.
+Signed-off-by: Tobias Alam <tobiasalam@gmail.com>
+---
+ drivers/staging/qlge/qlge_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I actually like what you pointed out above. It makes it possible to
-say, ACPI for phylink/phylib needs to follow device tree, 1 to 1.
-It also means we should be able to remove a lot of the
+diff --git a/drivers/staging/qlge/qlge_ethtool.c b/drivers/staging/qlge/qlge_ethtool.c
+index b70570b7b467..87d60115ac67 100644
+--- a/drivers/staging/qlge/qlge_ethtool.c
++++ b/drivers/staging/qlge/qlge_ethtool.c
+@@ -553,7 +553,7 @@ static int qlge_run_loopback_test(struct qlge_adapter *qdev)
+ 		atomic_inc(&qdev->lb_count);
+ 	}
+ 	/* Give queue time to settle before testing results. */
+-	msleep(2);
++	usleep_range(2000, 2100);
+ 	qlge_clean_lb_rx_ring(&qdev->rx_ring[0], 128);
+ 	return atomic_read(&qdev->lb_count) ? -EIO : 0;
+ }
+-- 
+2.30.2
 
-if (is_of()) {}
-else if (is_acpi() {}
-else
-	return -EINVAL;
-
-in drivers, and put it into the core.
-
-   Andrew
