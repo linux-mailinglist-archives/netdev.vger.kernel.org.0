@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A40B3A66C5
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:39:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C81B63A66BE
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:38:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233381AbhFNMlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 08:41:37 -0400
-Received: from mail-ed1-f44.google.com ([209.85.208.44]:37746 "EHLO
-        mail-ed1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232775AbhFNMlf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 08:41:35 -0400
-Received: by mail-ed1-f44.google.com with SMTP id b11so46297254edy.4
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 05:39:32 -0700 (PDT)
+        id S233051AbhFNMkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 08:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232775AbhFNMkh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 08:40:37 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08693C061766
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 05:38:34 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id r7so31864656edv.12
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 05:38:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hgFkwjcJJLaBU8nE16Qln3qRxVwMomFvhqvRMqMhxus=;
-        b=OCcTvZHPcXTl2AJYDO1QFoNIs47QkqawY2WsLpMbZobgWz1IkqvuQEfpwPxq9XtuxV
-         uil26lz823dpwLSdSFFtsWhVyfX7uvXZnJHvi6QEoO3Wnx5wqMhiV2XYvnmwCH6fkEQA
-         Rot49P1/pmdI/ATKXmSXddAuZQ6PtLAHTHuBFwBqwwIB/D8N2xZNTQUT/c+SnUSA+axc
-         XPzdOnngC7heIbVenSdDpZK3fTDDrb3gclAFaQVgT4/XeAFdV9FTLDAfmxue9RW4SsuF
-         WL9w825v4yZ778qEYLpEtTRWEWjJ+xyDwcx2asjofV/LKQ6jPSSwznHcICXJJF/g2/u+
-         MFnQ==
+        bh=C7yUyUUuYRfzS7MJnVml7BYaeIIuGU7FGAU580X186I=;
+        b=qEHb0OD86AoSy1+MiBajkerL9RomUVRHNlz3DgqVTX+lY8qdpUDeg93XaulS5yMJ2y
+         /i71u0/HqwzptmMMqWhUu/4IWxxjv1lUMAmEbVWF4dIJr0S8p1tvCV7V+2DQ/RRGF2e/
+         ls9Iwh+ojtuVg7GZ+6SJGTmS6e3KcSMRYwwF9XQtYJEi3si+u7rTYzug/o8vl4ItfXwD
+         N1FQJyUu+vQmiWUUNdBBXbS6eetBsjlNZy58Au1jQigNS2B555byLeVLAf/hsuwxWxl5
+         2rvJanOhIKxbGRcXRu9QC8Ql7iybDu6+BpawU1TJiY1h/nS98ZJ6I2dnk6MZh5LfbZeE
+         sLew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hgFkwjcJJLaBU8nE16Qln3qRxVwMomFvhqvRMqMhxus=;
-        b=V9UMVbwGmBWz6j5xQOq22kGNSNv7f57cxzSPxJN8/T7iZNSDSpvv4opInCe5GOSOOE
-         BShP/7tFnyKUIub86D/0BMUZtUHLIuaxWNMEmuBBh6YqpDvWAJbDtwEhnPK9hyd/yMCi
-         tNiwoAdYgB10TsJ7m7a3podU/5rCX8r1qUCGTOXY5cdxLM1oF2P7mZPA3xjsUgaABH3v
-         FvRTt3+RYqJ1N0aTAbnDua0HptfpQca/tcdcDpsu/rpYVIySKHrJNavKa9BK0/YS847V
-         l3PPqeJHm6lz/ErljCgbW48JC+oMDBOffzMRnP3uhWxd0p2AxazeKwOuR8hN0JWKGYh/
-         lMdQ==
-X-Gm-Message-State: AOAM530FF+oRsSR9TQXbIe2LdKxkG3NN1S0ajre5svuPJLXD9vyYlklZ
-        uyKLfWzcTJuab4OD5LAtyGs=
-X-Google-Smtp-Source: ABdhPJxFMG6f3Z2+GzabkVyxw4VJ2lLHLZe9Kju99XOI6Hwte4u8nWkaB4fobXTkSEqEh90G5LyKbw==
-X-Received: by 2002:a05:6402:31f3:: with SMTP id dy19mr16673100edb.153.1623674311770;
-        Mon, 14 Jun 2021 05:38:31 -0700 (PDT)
+        bh=C7yUyUUuYRfzS7MJnVml7BYaeIIuGU7FGAU580X186I=;
+        b=fkBk8Mz9eJNuIqWYM9CF6c7s5tUD3VTukDIVA86VcXtjZHojQRSewBkYWV+kZifl9+
+         +sKQHNRsFNukfHPv6G/WDM3z4vmfTUtGgrz0sGYKZIe2VxVM0OoJTg/56mQsoJ9cXM0t
+         pnsHbzk6DZZABp9MF41fcTtg+/5zaeQRPr2xUPujNn1Ce5RfCfkBB0cY1DGqWodKplm2
+         8+5/HPHZzrQlIwkvNMa0EzCY01Ki9D7K1WdxbgMOt0di8atx0cVb90p3RNrRDIPwVMGG
+         EnzMNZNn+2opy/28f8Dsd8acdJIXyp9hXRz07Zk+M+DDIZO3vY+TE54NRxEgtHMuEk8O
+         HgeQ==
+X-Gm-Message-State: AOAM530o/Xwk2XdUOvErQBua7E1l9xNoRgknWY3C5VPpRvs7GgUPLqV4
+        GpH687Azny57wUKxGgUe3Uw=
+X-Google-Smtp-Source: ABdhPJwZsEoN7DlX/+Barjirca0qTQ4npcUxRtUC7d8HGoKXIWIaAGMGaBHHK4ogRI7Dkev3Ju6x7w==
+X-Received: by 2002:a50:fe8d:: with SMTP id d13mr657945edt.14.1623674312658;
+        Mon, 14 Jun 2021 05:38:32 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id f6sm7157965eja.108.2021.06.14.05.38.30
+        by smtp.gmail.com with ESMTPSA id f6sm7157965eja.108.2021.06.14.05.38.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 05:38:31 -0700 (PDT)
+        Mon, 14 Jun 2021 05:38:32 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -52,11 +55,10 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH v2 net-next 2/3] net: phy: nxp-c45-tja11xx: fix potential RX timestamp wraparound
-Date:   Mon, 14 Jun 2021 15:38:14 +0300
-Message-Id: <20210614123815.443467-3-olteanv@gmail.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 3/3] net: phy: nxp-c45-tja11xx: enable MDIO write access to the master/slave registers
+Date:   Mon, 14 Jun 2021 15:38:15 +0300
+Message-Id: <20210614123815.443467-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210614123815.443467-1-olteanv@gmail.com>
 References: <20210614123815.443467-1-olteanv@gmail.com>
@@ -68,78 +70,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The reconstruction procedure for partial timestamps reads the current
-PTP time and fills in the low 2 bits of the second portion, as well as
-the nanoseconds portion, from the actual hardware packet timestamp.
-Critically, the reconstruction procedure works because it assumes that
-the current PTP time is strictly larger than the hardware timestamp was:
-it detects a 2-bit wraparound of the 'seconds' portion by checking whether
-the 'seconds' portion of the partial hardware timestamp is larger than
-the 'seconds' portion of the current time. That can only happen if the
-hardware timestamp was captured by the PHY during the last phase of a
-'modulo 4 seconds' interval, and the current PTP time was read by the
-driver during the initial phase of the next 'modulo 4 seconds' interval.
+The SJA1110 switch integrates TJA1103 PHYs, but in SJA1110 switch rev B
+silicon, there is a bug in that the registers for selecting the 100base-T1
+autoneg master/slave roles are not writable.
 
-The partial RX timestamps are added to priv->rx_queue in
-nxp_c45_rxtstamp() and they are processed potentially in parallel by the
-aux worker thread in nxp_c45_do_aux_work(). This means that it is
-possible for nxp_c45_do_aux_work() to process more than one RX timestamp
-during the same schedule.
+To enable write access to the master/slave registers, these additional
+PHY writes are necessary during initialization.
 
-There is one premature optimization that will cause issues: for RX
-timestamping, the driver reads the current time only once, and it uses
-that to reconstruct all PTP RX timestamps in the queue. For the second
-and later timestamps, this will be an issue if we are processing two RX
-timestamps which are to the left and to the right, respectively, of a
-4-bit wraparound of the 'seconds' portion of the PTP time, and the
-current PTP time is also pre-wraparound.
+The issue has been corrected in later SJA1110 silicon versions and is
+not present in the standalone PHY variants, but applying the workaround
+unconditionally in the driver should not do any harm.
 
- 0.000000000        4.000000000        8.000000000        12.000000000
- |..................|..................|..................|............>
-                 ^ ^ ^ ^                                            time
-                 | | | |
-                 | | | process hwts 1 and hwts 2
-                 | | |
-                 | | hwts 2
-                 | |
-                 | read current PTP time
-                 |
-                 hwts 1
-
-What will happen in that case is that hwts 2 (post-wraparound) will use
-a stale current PTP time that is pre-wraparound.
-But nxp_c45_reconstruct_ts will not detect this condition, because it is
-not coded up for it, so it will reconstruct hwts 2 with a current time
-from the previous 4 second interval (i.e. 0.something instead of
-4.something).
-
-This is solvable by making sure that the full 64-bit current time is
-always read after the PHY has taken the partial RX timestamp. We do this
-by reading the current PTP time for every timestamp in the RX queue.
-
-Fixes: 514def5dd339 ("phy: nxp-c45-tja11xx: add timestamping support")
-Cc: Richard Cochran <richardcochran@gmail.com>
+Suggested-by: Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2: none
+v1->v2: added a comment
 
- drivers/net/phy/nxp-c45-tja11xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/nxp-c45-tja11xx.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/net/phy/nxp-c45-tja11xx.c b/drivers/net/phy/nxp-c45-tja11xx.c
-index 902fe1aa7782..118b393b1cbb 100644
+index 118b393b1cbb..f8b2ecd0d6bf 100644
 --- a/drivers/net/phy/nxp-c45-tja11xx.c
 +++ b/drivers/net/phy/nxp-c45-tja11xx.c
-@@ -427,8 +427,8 @@ static long nxp_c45_do_aux_work(struct ptp_clock_info *ptp)
- 		nxp_c45_process_txts(priv, &hwts);
+@@ -1035,6 +1035,12 @@ static int nxp_c45_config_init(struct phy_device *phydev)
+ 		return ret;
  	}
  
--	nxp_c45_ptp_gettimex64(&priv->caps, &ts, NULL);
- 	while ((skb = skb_dequeue(&priv->rx_queue)) != NULL) {
-+		nxp_c45_ptp_gettimex64(&priv->caps, &ts, NULL);
- 		ts_raw = __be32_to_cpu(NXP_C45_SKB_CB(skb)->header->reserved2);
- 		hwts.sec = ts_raw >> 30;
- 		hwts.nsec = ts_raw & GENMASK(29, 0);
++	/* Bug workaround for SJA1110 rev B: enable write access
++	 * to MDIO_MMD_PMAPMD
++	 */
++	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x01F8, 1);
++	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x01F9, 2);
++
+ 	phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, VEND1_PHY_CONFIG,
+ 			 PHY_CONFIG_AUTO);
+ 
 -- 
 2.25.1
 
