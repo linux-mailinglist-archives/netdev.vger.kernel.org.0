@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B84CE3A6747
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 15:01:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43FD13A674A
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 15:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233247AbhFNNDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 09:03:42 -0400
+        id S233421AbhFNNDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 09:03:44 -0400
 Received: from mail-eopbgr50111.outbound.protection.outlook.com ([40.107.5.111]:61697
         "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232685AbhFNNDk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 09:03:40 -0400
+        id S232992AbhFNNDm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Jun 2021 09:03:42 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TbRA1og/ihJgjMAscTO9e/W3QNeibomZSQ2NsgD4wSdMKNNOb/nBHDCudEEqgHlouJGS+PVASLzjuseSCr8ERS8wyD5+Y0S4db0pCKUhDANk96/d9l6DmfJ3Cof+QeVL07vZdELymu3AiWTLouy3fyzpz1JwNR5r9rg3SY1flu4t+xs2YmX0xDruCcRx42BMerum9Fyn/vbJ27AWo5H7vfHY+Ny05S0++R3ojm2J9omNZ2vJv877ZRY5RqLClb3KlrhJ5PN4Dh7PcyTVt7VZj6GHJIUxKjRdVpMcduXwy1L6HpjwY3zrgv79WumI9RlM70Nfab38OgOJZLq18h44yQ==
+ b=WdzF0utG1ohSE+R/IdZeISrqDXkB4SCRtzxRpGvKckaT4LsITcIU+WwFjJ98RMZgqCQzXIzZLF85UgJVDrgjp7ryclOgpu8dMzUgyshLW6DxHG4VOtOvqXS8RkjyjCWzTfAcUArgTdqrT7bDBrS9WHm82Q6mWKHfau+3lf11hP+ddUmTyWTgN9QWzyM+q9jSI05VkWB/cKXVZzM6vpxNdBiIK6QjRS34EtJ4ipXA8SaWyooHJIykYQEe+QmKZT6qt3XYSjtEkJ/F6Ne/nmJiNAXQqgWnaGI3kh7R0CqGrEAx0NcZUj0EUskVT9F4efSzPm3SS5h9d3k0JrFQm0wQyg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WlSjSTguo3+MEuOSRVgMqwZBz/GuEBWZbhzCTTnvlpw=;
- b=DOy18gVJNkjKuHIO/jo1KZJxgMBHirC6LBq0GltNitTGuRCHHxZWciIbwwxP4QtxGAk07elGiW31s1QVAMNFxmet13Ni8R3NZOyA27ymzpvnGORKvvCjKA0hY1v7OpUDJ2+1WbRNBH/H3GRnBUB9jQEsHEr2bEKCZzGP6ef1D8ilhVyafvGugpU6wl/nys4Hq3xTh1mU1eoDls0RwGtWQyxFd31J3NTbLEhLpiFD6lL2v4OMyoZjxqSJmz2wY+SvPyPnEvUTkUj1l4HQxZjh6Y4ONHYDjk3QHDH0tiUs1WUAiROTuN0kG21LeM1Wb/I1z7XbF8YQUWmqJpq6IAYx1w==
+ bh=wK4o5aIQ7jo1S0csDb7st7QmTMF1krndvVDrHRiTHIA=;
+ b=c3+GRWxQ8NtzlcJO3G9wlAZJ4YTIvhUhs5ZyuO3sNpErHaqhk0S+w7zo03R91lTTPXQBfTwCvETMDzjxb1+nw/a+wA3uv/VWaRFZn++pwnLdO0YdhCgxZ/ICFUxT4pFFdgzKvYw57D4xeVUVErGQIR5Z5RJSNyW69/GB7UqbdvH/SEs/UrI9hrXNttsFY6qXGftEPWZBG8P1o7Lq2NF3hpsEjJmX5LwYHwCfdFPrF0nM5kv0I/qtH2Go6/4OzHfK55OA2+J8KgXEk3I5/MXucs7oHjK/CLLpzHnQdQjeIVSyiUM1i+vnJARfyKpDGqQUPEmXix6r7Cd+xTVAILZZ4w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WlSjSTguo3+MEuOSRVgMqwZBz/GuEBWZbhzCTTnvlpw=;
- b=Rs1On4CJ81N9vvmXg9dhpEuCUBBDm0JCuSi5MuDdXc8Mzv8VpQhYztbb2ajnNjuJJrGPQA8XBPhhG8rhDDtsSbeL0Dja3YTtydP994eOgHsZoiX9jvlOYOWg0kJngX26Y6wh18jr5qaAxoOQcWLZqS4o/LBNjw03pIMGIcEoHLU=
+ bh=wK4o5aIQ7jo1S0csDb7st7QmTMF1krndvVDrHRiTHIA=;
+ b=UR+wTfrlrJ5qUWv+FcdMvBTLlo+hW3utnFxoQ/h+13fadls0bk/eruEixoGqHFWbFe7Xy5el3SHb+vRyFYfxCeHjL+TELlteL0Dy7D8WkOLyKwi6BlyaDnU4qFugooH9oGzPZgHgmN6rsf/JlpTIx5gyRHOlq0Yb5A32KHsY4Xk=
 Authentication-Results: plvision.eu; dkim=none (message not signed)
  header.d=none;plvision.eu; dmarc=none action=none header.from=plvision.eu;
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
  by AM9P190MB1396.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:3b6::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.22; Mon, 14 Jun
- 2021 13:01:35 +0000
+ 2021 13:01:36 +0000
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe%9]) with mapi id 15.20.4219.025; Mon, 14 Jun 2021
- 13:01:35 +0000
+ 13:01:36 +0000
 From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 To:     oleksandr.mazur@plvision.eu, jiri@nvidia.com, davem@davemloft.net,
         kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Vadym Kochan <vadym.kochan@plvision.eu>, andrew@lunn.ch,
         nikolay@nvidia.com, idosch@idosch.org
-Subject: [PATCH net-next v2 0/7] Marvell Prestera driver implementation of devlink functionality.
-Date:   Mon, 14 Jun 2021 16:01:11 +0300
-Message-Id: <20210614130118.20395-1-oleksandr.mazur@plvision.eu>
+Subject: [PATCH net-next v2 1/7] net: core: devlink: add dropped stats traps field
+Date:   Mon, 14 Jun 2021 16:01:12 +0300
+Message-Id: <20210614130118.20395-2-oleksandr.mazur@plvision.eu>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210614130118.20395-1-oleksandr.mazur@plvision.eu>
+References: <20210614130118.20395-1-oleksandr.mazur@plvision.eu>
 Content-Type: text/plain
 X-Originating-IP: [217.20.186.93]
 X-ClientProxiedBy: AM0PR06CA0140.eurprd06.prod.outlook.com
@@ -55,112 +57,175 @@ X-ClientProxiedBy: AM0PR06CA0140.eurprd06.prod.outlook.com
  (2603:10a6:208:19b::9)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0140.eurprd06.prod.outlook.com (2603:10a6:208:ab::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Mon, 14 Jun 2021 13:01:34 +0000
+Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0140.eurprd06.prod.outlook.com (2603:10a6:208:ab::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Mon, 14 Jun 2021 13:01:35 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 002dc202-b7f0-43e6-ad55-08d92f348a02
+X-MS-Office365-Filtering-Correlation-Id: a6cd0985-3d8f-42a4-096c-08d92f348acd
 X-MS-TrafficTypeDiagnostic: AM9P190MB1396:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM9P190MB1396E50005BBA7A60D09A7A3E4319@AM9P190MB1396.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <AM9P190MB13965C5D0FF6A3504AEFD23FE4319@AM9P190MB1396.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ngmkr60krsabnqTJCFuJsUilkWOHRrl7pQDAKG5xk/CLsO+yT/FaOHC31P1VS1qwndIz7lNSfUGd8x1kAnM63qzf0eDhqht4wJ+uw0gVcC3QUf9tpzoEWIyWqitDlcZtkTqm8xBH1sujiPfWcxjq9j8c7pRSYiid1ZAf6cFaLdwoZo0b0UV/213FIo3muHCZVz9y+rOtibFGWF6Ixwu+a4vq9F4r4Li0OHhmfs4hPyXkIjQhU4j93wDKla1L3QEwVeiYLnYrzseV9dedz2un5V2Xv8TG1/dn2OSZa0uA0z1J33+kosj00iMywH94J0gM7Uloz6akueWovUMTzxg+R119YPnvlYfK5Hg6xF5Iu8pASrdQhpe0Dhk6hPmLUXAdejEWxmRkHBwkwvd/3q+7BGaaNxkQYJ7kY62PBi+qQBR9oVd/iP8i8+Q5qafcMKF617AGf0V+4mZ6CK+OdKwVqLs1ulMvxS443ck5uNMRzRPkFr1IXrHdvXBK5llOvI/eYQSjrCTiPlifO/rJ0DbkQKnfg0SdpYE2WJ9Ma2+eAEivOd2MoXlsPhmzE0gEzSzEqr0W2qndf7mROTe+KvDgoESgzr3WdmZeNKfCkDjys9L8MLIzppeipBmqWVGYXJODrPFzbwXzetDfiAvW6hbWLw==
+X-Microsoft-Antispam-Message-Info: QfJ1QUKXhyMsKLb47hcfqJo1nS1lpLGzXKB941fTJxKR1QEFfV9oLyRv94SBu9Gvy2lIzkfuKr5AiQlEVtQfPsqZfJ993mHufJbUTHdU82Yimw+3VfbN/GuIeIdZFPmfeOqV3opbU7Jxkw/HSA8ZNLMcvLmTKtpx+KT28N8O7nQPzykBMeyymhfqfDVyatqYEZH9HXyH08z3WiGX6NNlG52kSnXt65vXPrFZcrP9mJ5Ken1QfECCpGO9vn8aJXCYISKOQRxiMakKTvpRm/vM633Lz4RlWUrpCbj1myhsPvJwBW4rs/uNTetIiV9gO5TAD5dT0jZuoqjfQJ+FGo2hzcRqnElwe/8E7RmcrAeOwcbCD6qy0VguOFun9xSTIY0BLtkpbCmcrw4BVMZu1qOEFAccuqRsTgpw7G1ufaFy9chgp7W74X7C3PO5TCRxi2nu7YxxoqxS0IrYm0k29JMdxvnF8/g9KkY+zgmBPaMRTvahLoa2YaHnHOjsQ00HTxeZQfnmx5b4XlgrKja8U1u+aL0hIixb51JYWCyJ1JdK6YsBbCh1C2a5QLYSKunQekgLUFQ1w4SDWM7THFjlbAhXhK78PxHdYYp0MbFzbMABeTix5buv+X1CmaoD/5qOTL5EG5HWL91OTRmeqru2yJWoeaDKQCIrBIFDsVKym8R5B9s=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(396003)(376002)(136003)(39830400003)(346002)(6486002)(66556008)(16526019)(186003)(83380400001)(66946007)(956004)(66476007)(2616005)(316002)(86362001)(26005)(8936002)(4326008)(8676002)(478600001)(2906002)(44832011)(38350700002)(36756003)(6512007)(5660300002)(52116002)(6666004)(6506007)(1076003)(38100700002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?A8s04hmywCGXPaX3oVHmS8ul9HuP7vd4r+6a8LQAbUpVjX8ZRRt5D3glFjtD?=
- =?us-ascii?Q?PKXYl/jPl3bYQkl9PZPqMacCJeWM4mAUWNtlAVw/lonkaNYgyd3kRbOVtmJY?=
- =?us-ascii?Q?EXi851fVoHIJ1U+ty8ekCeI9wGx5N5cZFUsLGdRpmnI0jN/dQ3jxETuK6yqt?=
- =?us-ascii?Q?UWdti6yEXU26BRuryN0pLJAZ8JNOkQzk4Y2VvJVL9VbnC4i4HcBt3/ANG0CP?=
- =?us-ascii?Q?MlJqe+WeIPlEtsvVKuyTP5ckRo9duAN8SQZrZtrEZDmTwC8CozBmYJfdsO/q?=
- =?us-ascii?Q?lI4sAsUgB4Mm7OEonavHjbztIiNAWkNNoCUfLvgf0c22iLrvwZvyC436CctD?=
- =?us-ascii?Q?PsNPaaWuW4MefQxC3mECjbtU6ej0d/3wvEit3sYmkPEIkTkRYqZIxVqM5Bbn?=
- =?us-ascii?Q?rUq5T5jfOjkc/J+9795jhltB9i2LQGqbM2hnVQS8U1NTNtkIU1ouBnZm25Bl?=
- =?us-ascii?Q?aYs/niB+mvBKuyQKiaOvXBO6GIWEWyozInHZKwhLCu310/r13MMlA/g3p4fC?=
- =?us-ascii?Q?ub89gHyPYQBKfO6lsTybug64b4gdZJYOIqRMAKHE275Y23I+JSxxQ54TTscb?=
- =?us-ascii?Q?l5z1ok/HTgqsNdPHxZmpeck8s3toLSTKl+4PHm9/Enca6gvQ5TVxT0czKhVk?=
- =?us-ascii?Q?3yuQlOcatm4c51U04DCStlSu3F9yA3pnPCqzEfYRgTX0/1QAxtfWDg0xriro?=
- =?us-ascii?Q?e49bcP68vIRLRu45+PGwDeAgfJwL4Ff1BIehnKzRfhR6dDPqHktuECrJ8KY6?=
- =?us-ascii?Q?/2DnUIiy5oraDZABJ6x9z5aaH4rW8F+HfImsetKqQtnxCQNf9KbHkjPiuRvt?=
- =?us-ascii?Q?D0q1E0BD52IVfra93bxSLIWn0+hrwSAwCHM0NKFfEg5o0YcyG0BsUZ0nXBBU?=
- =?us-ascii?Q?IFpuz+Yuk93U85vf9H58Su2Yc4y+RJXK3WvRywjMHNBAtyZUJU+hEga+/fGu?=
- =?us-ascii?Q?l7aoc0IkcStkX3YkeZtgFStUIYs+wbi/tRx+dc4EHWQiaozriFJAVh4HAP7q?=
- =?us-ascii?Q?t776klKPeaEakSz5UODSxSz+DTJu/Qqtoo/U86zyoCtnE/q5rALzBbFhPIpd?=
- =?us-ascii?Q?NsBJIZCD2RIkudtXAIb/LFQtmvuqCYrlgY5J84AU4xY+Ot85f/8fqDQN03oy?=
- =?us-ascii?Q?2uBJ819zUB5Q3zpZLCLnj4KwQQscgIyvjB+jUEzPYrJiJXMzqA6SKMpEYs3w?=
- =?us-ascii?Q?D3P8klJ3cY+cXa9ja9a/YnJ9qVhQaSTUgiiDBEuVxFjXygAZzre19mIx1Sz9?=
- =?us-ascii?Q?B/z3yyscYdHOms2RnQtDz3FFlI4dH8WX9+THHKmFkL+4/qSgI3Kd59wmjuvR?=
- =?us-ascii?Q?AwJju2QoOY5zI8BOGSkzzjWH?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hLcEpVrAMy3zub8AiUaZhivRR/Ud4gdFjF498elWc7lcBtsufwr7golFxWha?=
+ =?us-ascii?Q?37DpyL7DQLe+WBFc65E07gEmaAyKZ6DKWT2FA9U434kC8Noz4gnd592bYRHW?=
+ =?us-ascii?Q?PzoAMPzmMojV3TPJPS29vahe5+mheGZ5D/G868X2//+m0yIx1ylOTLTMV+19?=
+ =?us-ascii?Q?9GF08Ya1Ha4jtZow4hhDU8x78ENr5rnrfAzWvyim7vyADGRZFHO7RTXsXKL9?=
+ =?us-ascii?Q?zKp8t4zljIM8Sl/neEvPozF+XyoUIEIJRB3/bwCSj38tmTji9AGJuEzO4uJ6?=
+ =?us-ascii?Q?rvkmrdH1rLlzNo8vUm/Q/FILdzhVchZIm/Ocqok85D97jnZECK0GMGO3Tupc?=
+ =?us-ascii?Q?jDJ+VZ69P6WoMTuws7/LXW4yNexvuxhSyOiwnyBBjgO/oZJsG46p7AO2t+UK?=
+ =?us-ascii?Q?scJmruChayRNXMDu/mWLKYCSW1gqMoiEZ225k4tFN9n9USPoXDwxI/6jj9oX?=
+ =?us-ascii?Q?xsdpwyDINSXLoS052z3itkqI+NxUw+6RP5w/2xO1fLjvKecHt/n2rVSvHmeC?=
+ =?us-ascii?Q?oJvQCXwsVhTuwW5Og4HRLBKZinwNxOKDNBgj5eyPsk3zxLei0qHVwYDkkPqD?=
+ =?us-ascii?Q?n6wE+O8mTFCa8Q891qf9qfbDZQCf8SeO6wcJZm/Xl7jbjVysEa/xyc6l+KjU?=
+ =?us-ascii?Q?k5hljyi9ggpZIgAVW6LQxXK72kwjkefvsG42tpITIiqSkW/c670J9OABQv3c?=
+ =?us-ascii?Q?V+5yMI7LgYxUeW09mF2+xzN0/FSIvX423AnOxsfE1xBLuo2ygzY1XTZSIxAv?=
+ =?us-ascii?Q?rt0c2H/rdUx1X/xZIWbUQ5R5rym14fik74ihJclUOAzeWdfR0Ocwl0F1g18e?=
+ =?us-ascii?Q?Jz5yngnDp9NReku3gE+jWMuOe9caoc3gNrbTS4c6t66W4eayrcEIHUjW0MJ3?=
+ =?us-ascii?Q?OqgZFPMepxfgZdkBfWtoDZZn0Xn3ex+tKnwWazOzQDOdI/LhrK1uMmYb0sL4?=
+ =?us-ascii?Q?zBQjKtfZAnUlfa1aiWwQwFCnnyZCF5CPeVlAcJnhEbdRBof87u4+6ULloBV+?=
+ =?us-ascii?Q?DfrxdUUVCMrnc8DxkEYg0eoTEPfmifJTTSBSjjpPRdA6lw4rbcyOs0pEWByq?=
+ =?us-ascii?Q?Dl8dzR2XvdJWIpjROA1XECwu32RhzzQd1nVP1j5CX3yh2Ptxr07Ln+E9uti7?=
+ =?us-ascii?Q?w83jVgyntYp7gxSlIt4H5BRbA7+95DTXIVHaIi1hqI1+H7j5ES0p/GrrNVaU?=
+ =?us-ascii?Q?5skgcbnwauWv7Y6jAhzYxe/JFohpvF1coDzshHwvX3aiapu3bWq4tO6EZ7nf?=
+ =?us-ascii?Q?dukRK7U0v6twrsUCa/srpR6BO1OtL2dO28ICIaF8iFily9u1t4kNh+yopDl+?=
+ =?us-ascii?Q?eDMTAn75Uvu/A3+tO2xuFi0L?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 002dc202-b7f0-43e6-ad55-08d92f348a02
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6cd0985-3d8f-42a4-096c-08d92f348acd
 X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2021 13:01:35.4780
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2021 13:01:36.5433
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9YAI1DE3BGR2H2t2PGW1vsNPJdRSWlg2GTMyGGEtqqKxcKSAyikdGslY5WbFrxaiQzMl3L4rClLSVn4XrpgWPv10Q56MsojRs2JUFKFO6Ho=
+X-MS-Exchange-CrossTenant-UserPrincipalName: lFIHBs2HqmNsl8FUviySOOG6orszys4IBMxDnniW9vJUoaqXSmJO7W2hjK4uQwG4pyeIuJdksL1KCWqcxhyC4jw9jyFvcyVoKeN8vyl1OoI=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P190MB1396
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series implement Prestera Switchdev driver devlink traps,
-that are registered within the driver, as well as extend current devlink
-functionality by adding new hard drop statistics counter, that could be
-retrieved on-demand: the counter shows number of packets that have been
-dropped by the underlying device and haven't been passed to the devlink
-subsystem.
+Whenever query statistics is issued for trap, devlink subsystem
+would also fill-in statistics 'dropped' field. This field indicates
+the number of packets HW dropped and failed to report to the device driver,
+and thus - to the devlink subsystem itself.
+In case if device driver didn't register callback for hard drop
+statistics querying, 'dropped' field will be omitted and not filled.
 
-The core prestera-devlink functionality is implemented in the prestera_devlink.c.
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+---
+ include/net/devlink.h | 10 ++++++++
+ net/core/devlink.c    | 53 +++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 59 insertions(+), 4 deletions(-)
 
-The patch series also extends the existing devlink kernel API:
- - devlink: add trap_drop_counter_get callback for driver to register - make it possible
-   to keep track of how many packets have been dropped (hard) by the switch device, before
-   the packets even made it to the devlink subsystem (e.g. dropped due to RXDMA buffer
-   overflow).
-
-The core features that extend current functionality of prestera Switchdev driver:
- - add logic for driver traps and drops registration (also traps with DROP action).
- - add documentation for prestera driver traps and drops group.
-
-
-PATCH v2:
- 1) Rebase whole series on top of latest mater;
- 2) Remove storm control-related patches, as they're out of devlink
-    scope;
-
-Oleksandr Mazur (7):
-  net: core: devlink: add dropped stats traps field
-  testing: selftests: net: forwarding: add devlink-required
-    functionality to test (hard) dropped stats field
-  drivers: net: netdevsim: add devlink trap_drop_counter_get
-    implementation
-  testing: selftests: drivers: net: netdevsim: devlink: add test case
-    for hard drop statistics
-  net: marvell: prestera: devlink: add traps/groups implementation
-  net: marvell: prestera: devlink: add traps with DROP action
-  documentation: networking: devlink: add prestera switched driver
-    Documentation
-
- Documentation/networking/devlink/prestera.rst | 141 +++++
- .../net/ethernet/marvell/prestera/prestera.h  |   2 +
- .../marvell/prestera/prestera_devlink.c       | 530 +++++++++++++++++-
- .../marvell/prestera/prestera_devlink.h       |   3 +
- .../ethernet/marvell/prestera/prestera_dsa.c  |   3 +
- .../ethernet/marvell/prestera/prestera_dsa.h  |   1 +
- .../ethernet/marvell/prestera/prestera_hw.c   |  35 ++
- .../ethernet/marvell/prestera/prestera_hw.h   |  11 +
- .../ethernet/marvell/prestera/prestera_rxtx.c |   7 +-
- drivers/net/netdevsim/dev.c                   |  22 +
- drivers/net/netdevsim/netdevsim.h             |   1 +
- include/net/devlink.h                         |  10 +
- net/core/devlink.c                            |  53 +-
- .../drivers/net/netdevsim/devlink_trap.sh     |  10 +
- .../selftests/net/forwarding/devlink_lib.sh   |  26 +
- 15 files changed, 848 insertions(+), 7 deletions(-)
- create mode 100644 Documentation/networking/devlink/prestera.rst
-
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index eb045f1b5d1d..57b738b78073 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1347,6 +1347,16 @@ struct devlink_ops {
+ 				     const struct devlink_trap_group *group,
+ 				     enum devlink_trap_action action,
+ 				     struct netlink_ext_ack *extack);
++	/**
++	 * @trap_drop_counter_get: Trap drop counter get function.
++	 *
++	 * Should be used by device drivers to report number of packets
++	 * that have been dropped, and cannot be passed to the devlink
++	 * subsystem by the underlying device.
++	 */
++	int (*trap_drop_counter_get)(struct devlink *devlink,
++				     const struct devlink_trap *trap,
++				     u64 *p_drops);
+ 	/**
+ 	 * @trap_policer_init: Trap policer initialization function.
+ 	 *
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 3bdb7eac730a..566ddd147633 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -7519,8 +7519,9 @@ static void devlink_trap_stats_read(struct devlink_stats __percpu *trap_stats,
+ 	}
+ }
+ 
+-static int devlink_trap_stats_put(struct sk_buff *msg,
+-				  struct devlink_stats __percpu *trap_stats)
++static int
++devlink_trap_group_stats_put(struct sk_buff *msg,
++			     struct devlink_stats __percpu *trap_stats)
+ {
+ 	struct devlink_stats stats;
+ 	struct nlattr *attr;
+@@ -7548,6 +7549,50 @@ static int devlink_trap_stats_put(struct sk_buff *msg,
+ 	return -EMSGSIZE;
+ }
+ 
++static int devlink_trap_stats_put(struct sk_buff *msg, struct devlink *devlink,
++				  const struct devlink_trap_item *trap_item)
++{
++	struct devlink_stats stats;
++	struct nlattr *attr;
++	u64 drops = 0;
++	int err;
++
++	if (devlink->ops->trap_drop_counter_get) {
++		err = devlink->ops->trap_drop_counter_get(devlink,
++							  trap_item->trap,
++							  &drops);
++		if (err)
++			return err;
++	}
++
++	devlink_trap_stats_read(trap_item->stats, &stats);
++
++	attr = nla_nest_start(msg, DEVLINK_ATTR_STATS);
++	if (!attr)
++		return -EMSGSIZE;
++
++	if (devlink->ops->trap_drop_counter_get &&
++	    nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_DROPPED, drops,
++			      DEVLINK_ATTR_PAD))
++		goto nla_put_failure;
++
++	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_PACKETS,
++			      stats.rx_packets, DEVLINK_ATTR_PAD))
++		goto nla_put_failure;
++
++	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_BYTES,
++			      stats.rx_bytes, DEVLINK_ATTR_PAD))
++		goto nla_put_failure;
++
++	nla_nest_end(msg, attr);
++
++	return 0;
++
++nla_put_failure:
++	nla_nest_cancel(msg, attr);
++	return -EMSGSIZE;
++}
++
+ static int devlink_nl_trap_fill(struct sk_buff *msg, struct devlink *devlink,
+ 				const struct devlink_trap_item *trap_item,
+ 				enum devlink_command cmd, u32 portid, u32 seq,
+@@ -7585,7 +7630,7 @@ static int devlink_nl_trap_fill(struct sk_buff *msg, struct devlink *devlink,
+ 	if (err)
+ 		goto nla_put_failure;
+ 
+-	err = devlink_trap_stats_put(msg, trap_item->stats);
++	err = devlink_trap_stats_put(msg, devlink, trap_item);
+ 	if (err)
+ 		goto nla_put_failure;
+ 
+@@ -7802,7 +7847,7 @@ devlink_nl_trap_group_fill(struct sk_buff *msg, struct devlink *devlink,
+ 			group_item->policer_item->policer->id))
+ 		goto nla_put_failure;
+ 
+-	err = devlink_trap_stats_put(msg, group_item->stats);
++	err = devlink_trap_group_stats_put(msg, group_item->stats);
+ 	if (err)
+ 		goto nla_put_failure;
+ 
 -- 
 2.17.1
 
