@@ -2,102 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1083A663F
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 236913A6666
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 14:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233414AbhFNMJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 08:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232809AbhFNMJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 08:09:00 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49DCC061574;
-        Mon, 14 Jun 2021 05:06:57 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id v22so20758260lfa.3;
-        Mon, 14 Jun 2021 05:06:57 -0700 (PDT)
+        id S233454AbhFNMWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 08:22:24 -0400
+Received: from mail-ed1-f47.google.com ([209.85.208.47]:41784 "EHLO
+        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233393AbhFNMWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 08:22:23 -0400
+Received: by mail-ed1-f47.google.com with SMTP id g18so44236353edq.8
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 05:20:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YvCTZ8Ov3VDpQbRCsTM4YPqIWNSx/HQdD9qBch5pmqM=;
-        b=Rn660CcH4NICQmGulWlYdC8iDhHyqwQBhdMkYPV0WtMEfdJIeHOcSn62tKuerNOglg
-         +Davlc/9jecoZE8351ZMz8/V/GQtJHT9FPIX0lSmMA/AkFW7BfW7Df9p1GEBbgXq+k5E
-         WpbsvAh8/hJf4YbdZc0Y/CWRofX/076tJpstkfp6ZCORseYjCPxXbk8LFs1oPliiBc2a
-         dB1Xqj4LqIwAsUkNSKKo2mpyUNuTlKICM40DSArDVycLJKdg5OLmWoJ/MDUv5kRzaw7q
-         a8zL6P/WEqqkmX1iIG6EClcnE1rr1nt7LfZhPiUMKsUULAnjrgGP5WOM4JQ8P34GTZs1
-         Osjw==
+        bh=liYMUDr3dkA/DDxcxQG97Q4+m1jz380+d+yc0u9TVxg=;
+        b=Ikhp7E0J4ceZznmArokTjQbYIcotdycnLm1ft9ANhKWxW4UQ6r+qkxokr2/f7+/NNd
+         s/r/W8GF+vGN39kYOKrmRlh82HMuZwt3KX4mMZeRZqu88mOdk73oY6tPK9D67xENy+SS
+         kGJcVSOYOOvO/hMZ57/Oe/EOsSSOMA7B0QvoksfHWhYdDHhr/SHfcqKFjaT1EYtL8cFT
+         ZCt6zQ+NwUql64vhLc2s9MSwml2xq/CBDzJK35sBL5+I9sI59VQcV6RLXKvCV0mHopQE
+         y+bA69kSGg5iMXMWO/jehdALOEc4JMVY4/Y8JuGWSsFwIhXpLtcAKuOfeAur1X6pvhrA
+         R4Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YvCTZ8Ov3VDpQbRCsTM4YPqIWNSx/HQdD9qBch5pmqM=;
-        b=WWARCpXQLI6QfRm1h/j/kj84aB9805bg6tSXQ9a/j0lTg5Sn/FoBN+gki4wGhj2dUp
-         ZTC4i3TkjsC4eeyIZhTEjrRRvB2i9E9CDqhkWwaMBxsUTwwnLs3VgASpSA+nWB+8/rDQ
-         RnCTE8lzN+cpLdjdFKfMs1rPMESK2lBcJLlVcdPkcj7F53cv0uJWsi++QHSOysB58/iK
-         +dqgrjl8BwK9xT3MhPWLyFTn2qe3ZbvsNgTw/Sndf9lSs0ZY/vyzjh381GN2Yfh67LRE
-         ETA7ukaH7SFH6HOYWwUouoG5mt9MEFZ5KbQeEdSbUgl7hugyQpgiYk5HSH8hCFoVBQ6B
-         04jQ==
-X-Gm-Message-State: AOAM5326uSP92R7bA+A1plsIk2+CljIAN/Kx/2lknauGtTtvLsty9RsQ
-        i24gtyKT3E5GjJwBK3smKsQ=
-X-Google-Smtp-Source: ABdhPJygl9rxk2JNOkZNkFoxlvl7VNgZYvRDtsB5F+1jfOqxhOZuxtwluYZnU2AkZBtupmb77CWbDA==
-X-Received: by 2002:a19:383:: with SMTP id 125mr11789671lfd.228.1623672415968;
-        Mon, 14 Jun 2021 05:06:55 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.229.24])
-        by smtp.gmail.com with ESMTPSA id h12sm1789212ljg.59.2021.06.14.05.06.53
+        bh=liYMUDr3dkA/DDxcxQG97Q4+m1jz380+d+yc0u9TVxg=;
+        b=t1/fd75SzQIJ74LOtE44HZraCEPkj2zY6hVRJB/OR6QmpASXyqOk5cCbwtj9v3rrKm
+         b2OMELg2eTmglaC4D0uZW64LTEidw2aVoEpN+X3c7iPs87pClhW9uTg8esji2839REZu
+         vxvYdNRGiwljDKEI09x56FBl5hP2yOlz0afE0DS+TfAN4bADWDtxXSvkHMgdx4xV1tL/
+         ULYkWl2AAF28lApXHle3fjP5vKzT1kNaRqL6wZj4Q2RWcqtCbEscT2D2fm3jHCP+RRqo
+         R7zpjlyaTt5VR+6laYnssElSue1mfV50MglDYQobC/wnjunMKfDuN6JB6pB07vyMn8Ys
+         GDkg==
+X-Gm-Message-State: AOAM532AlNX83nKGGO1GyH5LlaW/7WVIqooNOuNXuLSrU0z5kFwoOFFr
+        DBse4AWtY1J0Toqb+/FLFCU=
+X-Google-Smtp-Source: ABdhPJzHEV2kbV4kXARg61vHB7fsdj5EAGUr1AAUxDytZhh3Gt7ZGIzmCaebkj/vyqp9hICma8F12w==
+X-Received: by 2002:a05:6402:cb1:: with SMTP id cn17mr16746730edb.42.1623673147245;
+        Mon, 14 Jun 2021 05:19:07 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.224.68])
+        by smtp.gmail.com with ESMTPSA id c18sm8722495edt.97.2021.06.14.05.19.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 05:06:54 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     mani@kernel.org, davem@davemloft.net, bjorn.andersson@linaro.org
-Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+1917d778024161609247@syzkaller.appspotmail.com
-Subject: [PATCH] net: qrtr: fix OOB Read in qrtr_endpoint_post
-Date:   Mon, 14 Jun 2021 15:06:50 +0300
-Message-Id: <20210614120650.2731-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 14 Jun 2021 05:19:06 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 0/3] Fixes and improvements to TJA1103 PHY driver
+Date:   Mon, 14 Jun 2021 15:18:46 +0300
+Message-Id: <20210614121849.437119-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported slab-out-of-bounds Read in
-qrtr_endpoint_post. The problem was in wrong
-_size_ type:
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-	if (len != ALIGN(size, 4) + hdrlen)
-		goto err;
+This series contains:
+- an erratum workaround for the TJA1103 PHY integrated in SJA1110
+- an adaptation of the driver so it prints less unnecessary information
+  when probing on SJA1110
+- a PTP RX timestamping bug fix
 
-If size from qrtr_hdr is 4294967293 (0xfffffffd), the result of
-ALIGN(size, 4) will be 0. In case of len == hdrlen and size == 4294967293
-in header this check won't fail and
+Targeting net-next since the PHY support is currently in net-next only.
 
-	skb_put_data(skb, data + hdrlen, size);
+Vladimir Oltean (3):
+  net: phy: nxp-c45-tja11xx: demote the "no PTP support" message to
+    debug
+  net: phy: nxp-c45-tja11xx: fix potential RX timestamp wraparound
+  net: phy: nxp-c45-tja11xx: enable MDIO write access to the
+    master/slave registers
 
-will read out of bound from data, which is hdrlen allocated block.
+ drivers/net/phy/nxp-c45-tja11xx.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Fixes: 194ccc88297a ("net: qrtr: Support decoding incoming v2 packets")
-Reported-and-tested-by: syzbot+1917d778024161609247@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- net/qrtr/qrtr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index c0477bec09bd..f2efaa4225f9 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -436,7 +436,7 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
- 	struct qrtr_sock *ipc;
- 	struct sk_buff *skb;
- 	struct qrtr_cb *cb;
--	unsigned int size;
-+	size_t size;
- 	unsigned int ver;
- 	size_t hdrlen;
- 
 -- 
-2.32.0
+2.25.1
 
