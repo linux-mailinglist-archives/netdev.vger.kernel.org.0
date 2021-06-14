@@ -2,73 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E3A3A6AAB
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:41:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AF333A6AAD
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233299AbhFNPnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 11:43:10 -0400
-Received: from mail-ed1-f47.google.com ([209.85.208.47]:46628 "EHLO
-        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233619AbhFNPnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 11:43:06 -0400
-Received: by mail-ed1-f47.google.com with SMTP id s15so6193342edt.13
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 08:41:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=n+MlXz6Nd/GRZl3FuIJYdSDBtjnNADvVwbkIxBrBfSw=;
-        b=BmmMkq0ProVSHl8SzwwxE5FealmYNyFlgwT7i+hzbTwaiZ43DK+QIKmXHpJ78hu027
-         V9MIgWuxV0YDC5ddIfziu3m2EbcGoW7UpnuuKW8c6hRPmcSnCUgazclkn3qAaUL3HxFD
-         ctc6yFvOQtQA7r1h61t1eMb+IIbMyGgoomQG2gN3G3/IavM34octTp18txXS3mLwplnd
-         USZcwl81KX9+XgSTVeV1oS4O66EYNJQLfBYs0WDApEM3X81zaLewC/5SKGY70Bb7oF2T
-         qO6ljg8ELCLKmvB9XEbI1OMqGM1O03ijdoNqOZzhJH/QjxqJPUqh9V1r7A/j/cZbB9fO
-         XAOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=n+MlXz6Nd/GRZl3FuIJYdSDBtjnNADvVwbkIxBrBfSw=;
-        b=aBes99aYXeH1H4F1oMRV9htg2JvOMj8J2eHQsewsyh9rJppL+4lDMxyO1J1dYEUPpd
-         s3BSh9LK/v7vDziiLSQvHbJmzVCTCcV4Jr4fzvjIu/Bvseu2W2UMKjxJwYVMozIiu0FA
-         saM++Q5ddp8xtxj0cE5AtokiVZcUbWs6Mpt2nFaGDB76jdb3pu9JzfGQTPB54kGBBP+Y
-         p/TsEgiG+SAVtWYCQbLH0ySciVDsiAg+9X55a4CiIBLoTU4vkVtZkUv6Qw2BD2G6O5bn
-         Kv8o5mIE9cGjMRA46w2+JEIrQMKiAAlHFdnb0Zs+0AzdgxryeytqtmY8esEcj4tUn5Xz
-         Fl7A==
-X-Gm-Message-State: AOAM5317pK/TPYoX5xxykr/ZSizIEuxnqEcAn+Rfl16G63ZnHZfVGC5J
-        JQMs87fkFD+Rz+6ZSujs7E3273R9Y22xoq1atC4=
-X-Google-Smtp-Source: ABdhPJzpdC7rb1kmjAv2GcqDDcpOmNbQWgafB30zUwK0YnfSZvxYGB37s0ExWV/MdUwFgsEt+1FytxsVE0rTfXXPtg8=
-X-Received: by 2002:a05:6402:3581:: with SMTP id y1mr2353891edc.143.1623685202626;
- Mon, 14 Jun 2021 08:40:02 -0700 (PDT)
+        id S234089AbhFNPnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 11:43:19 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:20605 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234056AbhFNPnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 11:43:18 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1623685275; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=1VUK17VDEqlhzzGGrjKr05lLrqM02n+e4Lw+khFBvkc=;
+ b=va6Q9KSTSf6agCbK1/hvznA3nu1O4mg0MxlDnw8Ki9uUpqvjS4aXlJZDPdQFsJhqfBPfvmBN
+ 5ZZ57AHvFbvSOq961pEF2tQOnTgzAcgZlLXqg7GVG74GELUfDiRTgJdq9GRpTvivN1Uqj6O6
+ V6OroFR1pJstvsM2Vxxl8Lk3bfE=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 60c77881ed59bf69cc5b15a4 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 14 Jun 2021 15:40:49
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id AFD84C433D3; Mon, 14 Jun 2021 15:40:48 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5E5CBC4338A;
+        Mon, 14 Jun 2021 15:40:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5E5CBC4338A
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a17:907:2cce:0:0:0:0 with HTTP; Mon, 14 Jun 2021 08:40:01
- -0700 (PDT)
-Reply-To: bill.chantallawrence@gmail.com
-From:   "Mrs. Bill Chantal Lawrence" <hmusa5205@gmail.com>
-Date:   Mon, 14 Jun 2021 03:40:01 -1200
-Message-ID: <CABs6fuOqM+fC=d6bCK+HUZ6+8vdk70+kBw994yvpTpkMLruMaw@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath10k: Fix an error code in ath10k_add_interface()
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1621939577-62218-1-git-send-email-yang.lee@linux.alibaba.com>
+References: <1621939577-62218-1-git-send-email-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210614154048.AFD84C433D3@smtp.codeaurora.org>
+Date:   Mon, 14 Jun 2021 15:40:48 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-You have been compensated with the sum of 3.9 million dollars in this
-united nation the payment will be issue into atm visa card and send to
-you from the santander bank we need your address and your whatsapp
-number
+Yang Li <yang.lee@linux.alibaba.com> wrote:
 
-Fill the followings with your details;
+> When the code execute this if statement, the value of ret is 0.
+> However, we can see from the ath10k_warn() log that the value of
+> ret should be -EINVAL.
+> 
+> Clean up smatch warning:
+> 
+> drivers/net/wireless/ath/ath10k/mac.c:5596 ath10k_add_interface() warn:
+> missing error code 'ret'
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Fixes: 'commit ccec9038c721 ("ath10k: enable raw encap mode and software
+> crypto engine")'
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-1. Your Name:
-2. Country :
-3. Age and Sex:
-4. Occupation :
-5. Mobile Telephone:
-6. Delivery Address:
-7. Id Card Identification
+Fixes tag is wrong, it should be:
 
-Thanks
-Mrs. Bill Chantal Lawrence.
-Regional Operations Senior Officer United Nation Inter-government
-Organization
+Fixes: ccec9038c721 ("ath10k: enable raw encap mode and software crypto engine")
+
+I fixed this in the pending branch, no need to resend because of this.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/1621939577-62218-1-git-send-email-yang.lee@linux.alibaba.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
