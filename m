@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 168493A6750
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 15:02:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 206E13A6753
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 15:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233533AbhFNNDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 09:03:50 -0400
+        id S233587AbhFNNDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 09:03:52 -0400
 Received: from mail-eopbgr50111.outbound.protection.outlook.com ([40.107.5.111]:61697
         "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232685AbhFNNDp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 09:03:45 -0400
+        id S233450AbhFNNDq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Jun 2021 09:03:46 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cVp3DKzr3WeqZO6rqevsvcadFBgvVc9FPT9p1E0TXHfYQghjUgnOktj8/T+UAmQdEkMQXH550HkGkz3eeWUUsXcgtJo0SWsrGTgL/N232FXswjGCG3sOvpGO+Qze20xDDexVZQBPsFe0VCwhih/wb05S8af9K7Cmx2Qab/USdHXbKaC0ODKxLP+ebZrKP8m46LXXqbNkL0ZRN1Rq7PtQ9W4N7FFOb8Ish3YQ1WZN02SYCXf/knUYS41kBG7a1iRbTB6JUl7pkLq4NVbjHkYw4253v/hcXtjOasbiUi5yvQ0wb1hry8ZACkH5Npx1rGm78FofjiEjJ4Vv1fs3LV9oyQ==
+ b=f1eh4xN/GT87IU/t7iZ0uUI0Ai8ti8UD7kTYNX2DwvDucZOgc8UMY8Zaetubmm0ecAoIiw8vou99MYJyDTlrZFcinOWiEe1gn2O7qd0lh+ZexIsdlpYMM09vNpDHfwCdDPTCMr/5ayv9vUqtSPDituUG5SNg5uDi4naVVyDyvtg8sxM8fgIOaY9xxWgfW7JdoUup4an05Ig08zLcmw6zzajHaivc/KVTnFOXTQoMOeGb7AudXEBkkIcSWoJUFkkZyLeI0wd0Byxoo5N1Iyp+lopGMheLbuTX8mJ6iuMpeM5pxA5IWYyUV441dF8dIs5CtU84FskzYB8EKafBk9mblA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HPtHZVfICTIGXvtL9tlbiyLUJttkTefZ8jBk/zM7xZs=;
- b=NA/bUSnJVbPWcxMFDTxzouWYYcjz3Pd/MlBcaCFDRIYwo3L9HZUSh8hnxVn+Gk+ul5dwumA2M2h+TSlx5KvY7V1Ii6E/P0qioPSEx4yHNc9QnktrWjmGA69/3nC7NkpH/GaCHLrizU4qeebU0deR3T8Q4BRWW350yaGIj03nbGfBXFOWkq7gqO8lmZQ7e2Pl9flNoZx660p919tvlD7X7AY8Qj8pTSzMFSHVw5HaRmNiRP1a73oGQyPfkCFAbDqKO86rsaY/e2j1YXMszXlku4KD71sd5J0aAQiUGk7p2RHIHZ3j6HeUxrkhMvSI09CIwX+gCUGr+mw7iOzIJf4ikw==
+ bh=wFxkSwjoKn1xfp5wQEgW+LqTGwSJ4sBvfTsa35Bqq48=;
+ b=PcgmBDk0gt4m9MYPjxuAuWadSfzlTWMwuGpIigA7xZh726kgAqHIOByL3NXr1P/zL3tU2Mp1KDctSbBz5ckgDMahjiVOw676PTFsXikJLL0spxw10vxcHY091FysdPhgbcQR9Icf46yA6cHEbpFHL3ozt6diccRyyXKhMdTkOUhlHuWGSZcGdNYd//gyYKGB1zKSRj9Eu5XBNPJr6ESeBM18oIqXwSuzRN703TX/z1lNXYm0+p8rbXMJvWuXMu8egHFF3wt91drq7oZdyQAZ8VIQ9Ywbr0VxU+e4WUw1N1SjEbEkJdF8J5UDoyw8GW2HKqRBFGkVyOHDRcuAbJCMHg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HPtHZVfICTIGXvtL9tlbiyLUJttkTefZ8jBk/zM7xZs=;
- b=xXbaImDpRjnPTpBbC5J2zCDZNGOHTKVJ/fwg75BqyGpWnCXN2NTjeVLZ04N24ZZ2zWuqpuobfQISrKQhHITRrYASQWVGWxhYhyCdSV85XLyhSpRtJpEi7eYiJyMhtNlJ7sOwyedWUZguW75KcqrV6jgWlgorNWdSaVahqn+9Pxg=
+ bh=wFxkSwjoKn1xfp5wQEgW+LqTGwSJ4sBvfTsa35Bqq48=;
+ b=lONHFy5u/MXAipcRH+1pNc3pEiiCujBdSCwd0y9qJ+bxV+KJJJDLYuRd3tB8j6hxtoYtBtyAjdb7EaL921siRVUut0M1Yy/NwSa4aPh+RNHVT/9GKukb/rwMZjLkcJrEJ/fHoPgTUceJNMLCi+DjM0pOCpCVndP0VU6j1V3IlCo=
 Authentication-Results: plvision.eu; dkim=none (message not signed)
  header.d=none;plvision.eu; dmarc=none action=none header.from=plvision.eu;
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
  by AM9P190MB1396.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:3b6::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.22; Mon, 14 Jun
- 2021 13:01:39 +0000
+ 2021 13:01:40 +0000
 Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
  ([fe80::d018:6384:155:a2fe%9]) with mapi id 15.20.4219.025; Mon, 14 Jun 2021
- 13:01:39 +0000
+ 13:01:40 +0000
 From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 To:     oleksandr.mazur@plvision.eu, jiri@nvidia.com, davem@davemloft.net,
-        kuba@kernel.org
+        kuba@kernel.org, Shuah Khan <shuah@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Vadym Kochan <vadym.kochan@plvision.eu>, andrew@lunn.ch,
-        nikolay@nvidia.com, idosch@idosch.org
-Subject: [PATCH net-next v2 3/7] drivers: net: netdevsim: add devlink trap_drop_counter_get implementation
-Date:   Mon, 14 Jun 2021 16:01:14 +0300
-Message-Id: <20210614130118.20395-4-oleksandr.mazur@plvision.eu>
+        nikolay@nvidia.com, idosch@idosch.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH net-next v2 4/7] testing: selftests: drivers: net: netdevsim: devlink: add test case for hard drop statistics
+Date:   Mon, 14 Jun 2021 16:01:15 +0300
+Message-Id: <20210614130118.20395-5-oleksandr.mazur@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210614130118.20395-1-oleksandr.mazur@plvision.eu>
 References: <20210614130118.20395-1-oleksandr.mazur@plvision.eu>
@@ -57,136 +58,85 @@ X-ClientProxiedBy: AM0PR06CA0140.eurprd06.prod.outlook.com
  (2603:10a6:208:19b::9)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0140.eurprd06.prod.outlook.com (2603:10a6:208:ab::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Mon, 14 Jun 2021 13:01:38 +0000
+Received: from omazur.x.ow.s (217.20.186.93) by AM0PR06CA0140.eurprd06.prod.outlook.com (2603:10a6:208:ab::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Mon, 14 Jun 2021 13:01:39 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8b8ffc2a-9d02-4556-4f70-08d92f348c4e
+X-MS-Office365-Filtering-Correlation-Id: 4956b812-4000-4fa9-f2f9-08d92f348d1a
 X-MS-TrafficTypeDiagnostic: AM9P190MB1396:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM9P190MB1396A938159344737158FDB8E4319@AM9P190MB1396.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-Microsoft-Antispam-PRVS: <AM9P190MB13969EF671421BB4DDF823D2E4319@AM9P190MB1396.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:179;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Kwy3lRFVtwnXnCAtD+6EWZ7NsyHovQUr82fktsvYzRPepnj7g0rmDmTQWBz8g7XmutWlcHUQkLbCdUt+qKUFhaJz+g5L0Ae5SGwJK/61OCdCCiJ7W5OPibEAEZVfgabMBBgoHTo0oNAC5dmceJ/jpH2IDxgUUvKZPUFIRYLJmciE7mZORi6NXyxtN+HEviqKGxNQuFAEwrnbpU6kkKn07zGsQygg+ztJ6EVdN7nCYsDIsYkjp9QYK2yqffV7lD8gCV9kMtuuO9RgMceuB6NXRYfhROUVVHp9NgOVq4jPEaGsQanxrFWt8QyvgL/yD/eCWU6rp7wW3U1uY42sXUsM7E/h4G/n7HcetUd4fLgL1mzKtNP5QVVB3qhF7MDXuNMEh4aEXab6/NMn19ZuHfTh+ZQGQhhf0ojPw2ihrK/UuEoq31TorKsGOavjO8q6OEmwSl1iu02/PDh7A5hETeEmdMQBlPeRuc5YGClT5rh++tC24Dg1aZPFv9WXLy7avuFgRHgyh7iCpO6vtX2XrgFTaYdteo00HzpOz7bb7iGHDKXhkVKp22m2IVSj/tZb5cckWxbttfE8xxtpY77ESTK5klFDVbzaHOO8uqm4ATe2mEuDTXBpP/6cDU1puWtW6W9l4HPy/tOIyXJMp7A5IZrgmZsTWMEQcNQcoJRmII+Mrig=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(396003)(376002)(136003)(39830400003)(346002)(6486002)(66556008)(16526019)(186003)(83380400001)(66946007)(956004)(66476007)(2616005)(316002)(86362001)(26005)(8936002)(4326008)(8676002)(478600001)(2906002)(44832011)(38350700002)(36756003)(6512007)(5660300002)(52116002)(6666004)(6506007)(1076003)(38100700002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: ALYqXfYKGu8KzjRGp6VkBkcFqxzWjkoPrOY7nv+kQ6/bG6U7OoVJMP2hCHVASA6zQmHglHo/Bv88Mr7HlLx+ttHjEDnaMOXr5KBawNoCQoe0bBsJJRXTJQ7iUi2PTo9yypgsRXytZK+PAwO63HrAm9amL7mTDblXsIrzXtspXZ6t4KEDzNv45wtWLVyXgGXV2RvLkN9xI+LN2Wyx0Pox4CUASasPy6s6Rl3X1YWlmj4boJ10HjVxXyEnTKMMrzziTF9Meqy5mKJxOu3PrY8Q56jCd4uCWM6k+zbxNQlGbGR/r4MFqVva/flw3ADfA9tSenG65KWN+lTr1NXK5FG1j2fPax1YxoWtG2HG0apGOXNkMZtV/fWZ1UCNzoS8ngvTP0lOcOvUlQz86GkUKJbCDLNMx6MpPAgGxCKgrC8hsVe1ZDm7EektbN4tzAH29JcZYqyL/1iGMDPPhrGrfTLWlo+nJDKixAoOOfGMWn7sECdsG5/GZZuPgglkF5TFK9DXbsF6c6FdbrsX6K0NnvmJSFOIhQKsg6wfoxGtM2QDqSOI/Lslh/NNxuwqtKdyxPHzAbq9wU6qZYlgQN2/WWJm9bUczuCDa6zaQKxj/39xa5T9duwXDipfMX94pEnyK5TNqsVBlYuRPM9Q3eUFzgNpQ7V7xMYDxMiIMrHpUoM1pVY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(396003)(376002)(136003)(39830400003)(346002)(6486002)(7416002)(66556008)(16526019)(186003)(66946007)(956004)(66476007)(2616005)(316002)(86362001)(26005)(8936002)(4326008)(8676002)(478600001)(2906002)(44832011)(38350700002)(36756003)(6512007)(6916009)(5660300002)(52116002)(6666004)(6506007)(1076003)(38100700002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Lgz6Ja+ETz++2TbpFEBLq2qLwv49BcRBxoShNGnno0e1/RTb2GI2ny9ECkAs?=
- =?us-ascii?Q?QQ1UE6O7QBd5ve9WnESTFIwcrziAPpVqgQFtM5Ddio1kpVrtTLGlYCRcPysK?=
- =?us-ascii?Q?+ZcPbzj8ITgweHhRPFPO2bSJBapY6sGqUAeYcizULdlXCQk/iZ13wHJuOy7B?=
- =?us-ascii?Q?jvM/7fXLxiTNMUuBnhU+whbnZ8h+0GViWhfP7UU/qWSBsJctd+Q607HhjVKS?=
- =?us-ascii?Q?GTQaZPhZ7lvLbTyu0R/mjyFbw13Teo5iO/N1+gRVGhUku288XyetOkQecBfB?=
- =?us-ascii?Q?1BObiOAy1ITRTiziazR3YK/a3iZ0GxPDoFIL2QagFa233K3ieVbD/sF5F63I?=
- =?us-ascii?Q?WAKqw/ZbWlXQrYcgCZVTDRFPY/pcfJ3lEB4O5s5YkIv/97Lk8x5pcJGsBrDw?=
- =?us-ascii?Q?3qQRs9FkcCqYrqKdaOrCqRrn1ng1HZ4kOi3vQvcD3pmqEypbdz7328+PBGkw?=
- =?us-ascii?Q?bUwTUhNEGGYQAP9jcouVosyD7HKTPTvTGbknItJUFPyWCHmOy21BAbqt8jrk?=
- =?us-ascii?Q?OLtWRhGdKRdeKm53Ph2VufHpzw8b6oe28a0txQq4SiXmeNV3E2JavX5dv1Ic?=
- =?us-ascii?Q?p9PsEDKixkBWvDmmocQEeX1qnDlQ3SIDo1u2qtqJ/I3BBFl8lA0UtySMf3Uw?=
- =?us-ascii?Q?Rir8YM+U7aouW7wjzfc2HDxiOVpABXwQkrjfRafd9w2bcgrFufujewwAlR/9?=
- =?us-ascii?Q?dh4zBqeOqBbqL8yIuvYrAZigFlo3BC4hIxAKhKb1g5L2v1ZAVmVp5PMKWEwU?=
- =?us-ascii?Q?W1xYVT7rGatKqG3i9MCN7CdlWMAp3EAq0GZrSNns0QEWUr0mNXnlah8Tejan?=
- =?us-ascii?Q?EuZ+NRLCuVFlA6FsZzIDldNqH4aaCjncyMABORGsnOYX4sH8l8eiz9/EnkvH?=
- =?us-ascii?Q?IqLgH0vjWdozzPUEsWtZTQy2K5ZBGjltUMXmJrFkiWnqupYeLCbNm4K0+5Sz?=
- =?us-ascii?Q?U1EB6THDbiURSbRjtvBZIGOiJwsUaD3HT4C/7vejw6xOC2vC74nCKKyjshqO?=
- =?us-ascii?Q?GUjnKGORwdJVTKRUTvE2Ub00gA6MoRnO1rgQowFs0IhbqfZWkGvWRuiVcwhy?=
- =?us-ascii?Q?TY4IeHdpwF+ucmHE9lmlnFHF6vCL4IfQk+K139f25/ZY5vAUVa5VDpjitdhc?=
- =?us-ascii?Q?XYc3KKEyxsCpmdNx1Czh16+C87x0YRNIewYVnyo/lDg/bBv2AX5EiTSkslwu?=
- =?us-ascii?Q?VqRiR+sR6X/k4k0HuIxrF2Bf30qP7ZuT+07MrQOBvm7jaVu2tf6d/fq2UqBM?=
- =?us-ascii?Q?AExSOSCnI3CotvmnnquEVfea4V/4s3Aj7QTYLueX3SAbduXHi40aCQ9bbtQT?=
- =?us-ascii?Q?uiGGXMAyzCIfRJmdwAb5D8b8?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Xp/+zWMe3Md5n4vaK6MrFdI16c/ydjNnMlkOU0G/8btjQWPewV8jMU2v2ssR?=
+ =?us-ascii?Q?nYQ7byxyaou5uqlHRdsWMwLpJWUc1ph3qqD0bqosDPZM7/8Q42UGoKXdquLq?=
+ =?us-ascii?Q?nBZV9CPaWMnHhkcO/CDPLfmGOsgrysQUBV9vEd1cFkNIVyzB8eIH/3zi8VkX?=
+ =?us-ascii?Q?ypbkkI57iKp9HwpKnLpcSmFNsxR2rHTBJC5EZH0WsMzQ4PlCh3VTr1Kf6hp8?=
+ =?us-ascii?Q?liQLGkoKJ9bycXepL74pLgRhUC6/4rX2Ko9phv+ndR+Ksz05aujp2n3BX2rY?=
+ =?us-ascii?Q?hYXWKOITR6SCmFUqHioJuFiqzIgoxqc6AzHyvF380qwQ0x9wfwvqLK54Lnuv?=
+ =?us-ascii?Q?Dou1O3LWV9vEFZ/S6Ck8k1bSKk+N9GmiMGMTfAb/1Zfg6CW2lf4ikdL3+1bu?=
+ =?us-ascii?Q?NSslM+L4pYWiqqjHN18z6GgqjiX/9YFsCWVOgpwUPqr6pUxsvn7wMSdEyz1x?=
+ =?us-ascii?Q?3ZBJLYxjvUWJ9p5ZdzgD3O+zZQhxHF3xJI5LAgP+vGT9iGyK8iL4SdcEWgoQ?=
+ =?us-ascii?Q?rURWBIhyT0jInM1dUOk7e7sO2jDhnH4tZq81fkLB8Pe2NEwIweZXlJBkwLoB?=
+ =?us-ascii?Q?e2VtdR8dro8Xw/9cCJK15BGUy40bBUImoyxeB8dcl4rlC+irVlJWbnisquZ+?=
+ =?us-ascii?Q?nPdq7SNxgy8AV3a0lwlvokT1qwAXnY9UXsJzcEDTvXetNiols6wPV65YR2V7?=
+ =?us-ascii?Q?XlyPdRAjxq6eLlOpRShmR9N1m4l7UnomvmcLRvSCuczVsCyb/GdD36YDXnBX?=
+ =?us-ascii?Q?3ZyeK0Vd21JyAj7YzPlVk7KMBToPjfqhIN5HXjWcwB3Ybv/uISGhBZI7hMDT?=
+ =?us-ascii?Q?lCOTuF4xm7lbR0LMM1zfWnOuGijswFY4bHEy7APAwc6KX1KidwfPmqJOFgG4?=
+ =?us-ascii?Q?XMdRtANO7+dfkXg7YY+9N0sA3+cUI2XFzzHdPEqui+kJL1EyhuOGffA0dWRt?=
+ =?us-ascii?Q?YnthRq9r6ty+yMJaP6USQl/Kh0KdY1Y1muhO2ev6TnpuWodlVW7k6ZfbkKKE?=
+ =?us-ascii?Q?/9JbOFxh41nCe4DLg2bjWQmLmQWnmx0u8ixv8p8bBVFFtdfRCAtheAlOSrW8?=
+ =?us-ascii?Q?ydKXnYFHGNhR5Nq6r3ReTVoNfxhJBzRe/C/siXPqjgrcYo/yLfFnA4wE/ydl?=
+ =?us-ascii?Q?yjfuYA9AOZ5pqtCURP86dJ8La7v8VzUTls8jHqHEn6lDcyJ1Cncg1oAxbbOl?=
+ =?us-ascii?Q?G6+k8kM4val3unj+G46cR/S42nZZIgg8xSStfMA5m+eaMlOCtFakisEgJ0g2?=
+ =?us-ascii?Q?R68WoQkBe6go3ES9Kxzjmxmr/QimvsoYJslg4pxspu6ThsGVw+eh+ETT0+f0?=
+ =?us-ascii?Q?jSQnQlBQ7+8TnHbKunMr83Tt?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8b8ffc2a-9d02-4556-4f70-08d92f348c4e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4956b812-4000-4fa9-f2f9-08d92f348d1a
 X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2021 13:01:39.0444
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2021 13:01:40.4203
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LUp5q6WrX+BvYw3ApgNkUXJa1N3sVkXdIw5JWShXYCTgBbFYFwVGj/UUK5Ua0mN9skLCua3oWd4Ew/P+CFc2Ag7ljt37FOt7dS2++kASuDw=
+X-MS-Exchange-CrossTenant-UserPrincipalName: Hn+Y1CoC72HSwe8SFpeGeHmd92pKO86DCVpxLn0uz+UzH9qmjxDiyN+zvh5fE/3ri4JayA/2M3MxREOPtLhsxmxun2FgjOqy27HE4RCmXgE=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P190MB1396
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Whenever query statistics is issued for trap with DROP action,
-devlink subsystem would also fill-in statistics 'dropped' field.
-In case if device driver did't register callback for hard drop
-statistics querying, 'dropped' field will be omitted and not filled.
-Add trap_drop_counter_get callback implementation to the netdevsim.
-Add new test cases for netdevsim, to test both the callback
-functionality, as well as drop statistics alteration check.
+Add hard drop counter check testcase, to make sure netdevsim driver
+properly handles the devlink hard drop counters get/set callbacks.
 
 Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 ---
- drivers/net/netdevsim/dev.c       | 22 ++++++++++++++++++++++
- drivers/net/netdevsim/netdevsim.h |  1 +
- 2 files changed, 23 insertions(+)
+ .../selftests/drivers/net/netdevsim/devlink_trap.sh    | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 6f4bc70049d2..d85521989753 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -269,6 +269,9 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
- 		err = PTR_ERR(nsim_dev->nodes_ddir);
- 		goto err_out;
- 	}
-+	debugfs_create_bool("fail_trap_counter_get", 0600,
-+			    nsim_dev->ddir,
-+			    &nsim_dev->fail_trap_counter_get);
- 	nsim_udp_tunnels_debugfs_create(nsim_dev);
- 	return 0;
- 
-@@ -563,6 +566,7 @@ struct nsim_trap_data {
- 	struct delayed_work trap_report_dw;
- 	struct nsim_trap_item *trap_items_arr;
- 	u64 *trap_policers_cnt_arr;
-+	u64 trap_pkt_cnt;
- 	struct nsim_dev *nsim_dev;
- 	spinlock_t trap_lock;	/* Protects trap_items_arr */
- };
-@@ -1203,6 +1207,23 @@ static int nsim_rate_node_parent_set(struct devlink_rate *child,
- 	return 0;
- }
- 
-+static int
-+nsim_dev_devlink_trap_hw_counter_get(struct devlink *devlink,
-+				     const struct devlink_trap *trap,
-+				     u64 *p_drops)
-+{
-+	struct nsim_dev *nsim_dev = devlink_priv(devlink);
-+	u64 *cnt;
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
+index 6165901a1cf3..109900c817be 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
+@@ -165,6 +165,16 @@ trap_stats_test()
+ 			devlink_trap_action_set $trap_name "drop"
+ 			devlink_trap_stats_idle_test $trap_name
+ 			check_err $? "Stats of trap $trap_name not idle when action is drop"
 +
-+	if (nsim_dev->fail_trap_counter_get)
-+		return -EINVAL;
++			echo "y"> $DEBUGFS_DIR/fail_trap_drop_counter_get
++			devlink -s trap show $DEVLINK_DEV trap $trap_name &> /dev/null
++			check_fail $? "Managed to read trap (hard dropped) statistics when should not"
++			echo "n"> $DEBUGFS_DIR/fail_trap_drop_counter_get
++			devlink -s trap show $DEVLINK_DEV trap $trap_name &> /dev/null
++			check_err $? "Did not manage to read trap (hard dropped) statistics when should"
 +
-+	cnt = &nsim_dev->trap_data->trap_pkt_cnt;
-+	*p_drops = (*cnt)++;
-+
-+	return 0;
-+}
-+
- static const struct devlink_ops nsim_dev_devlink_ops = {
- 	.eswitch_mode_set = nsim_devlink_eswitch_mode_set,
- 	.eswitch_mode_get = nsim_devlink_eswitch_mode_get,
-@@ -1226,6 +1247,7 @@ static const struct devlink_ops nsim_dev_devlink_ops = {
- 	.rate_node_del = nsim_rate_node_del,
- 	.rate_leaf_parent_set = nsim_rate_leaf_parent_set,
- 	.rate_node_parent_set = nsim_rate_node_parent_set,
-+	.trap_drop_counter_get = nsim_dev_devlink_trap_hw_counter_get,
- };
- 
- #define NSIM_DEV_MAX_MACS_DEFAULT 32
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index cdfdf2a99578..f2304e61919a 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -249,6 +249,7 @@ struct nsim_dev {
- 	bool fail_trap_group_set;
- 	bool fail_trap_policer_set;
- 	bool fail_trap_policer_counter_get;
-+	bool fail_trap_counter_get;
- 	struct {
- 		struct udp_tunnel_nic_shared utn_shared;
- 		u32 __ports[2][NSIM_UDP_TUNNEL_N_PORTS];
++			devlink_trap_drop_stats_idle_test $trap_name
++			check_fail $? "Drop stats of trap $trap_name idle when should not"
+ 		else
+ 			devlink_trap_stats_idle_test $trap_name
+ 			check_fail $? "Stats of non-drop trap $trap_name idle when should not"
 -- 
 2.17.1
 
