@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DEEE3A7026
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 22:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B97483A7028
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 22:20:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235162AbhFNUWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 16:22:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35244 "EHLO mail.kernel.org"
+        id S235236AbhFNUWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 16:22:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35322 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233352AbhFNUWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 16:22:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 481D261246;
+        id S234505AbhFNUWK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Jun 2021 16:22:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 65103613B9;
         Mon, 14 Jun 2021 20:20:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623702006;
-        bh=l/ile9LpGGslUF1/IXMULKglaz9RzVmifIqK1zP0p0E=;
+        bh=aQ86z2xEHi28Zm1jTu12JfIdNNmh/bdWvZi1N0iq4ak=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dwbS9LtrqgSWl0nMphOEeSNdn4J8hA9fHDzQanfYnBES4icFwc1SooWqxaP2VTr2h
-         NzQcSEucfzd/eP+DgVtKpYjoYacZpCburkmNgu20Z+ze8aMzpgV3RzzrfEtfKst+DK
-         dmSMX1fPVA1VpL1qT4G3Bg3u4PJHMv/96RJ5mhnK/a8H/p9nWRoZhs/AAQ7E29dD8T
-         O87n3vlTZ3DYnmhWfp/P+141wa8DSIfwmvZDMrvufcWiWobpFKmCU66ZxAbP7xawhL
-         HRNIKdo2LuOxLU3EeVi7vu6JdjGpBCN35I+tHnfLaaN37UDSepEyh0gLJdLt2N4Tzr
-         EZoA/a5v1jbNQ==
+        b=k3M05tApP70dRbX2OvSqsWDNeeYnwrBpaVU8i9ecK/hudLR2gsf1VR65kUiG2AVbd
+         cMRQ5I6O4y4mOEe6tHwGah2mDWufCkNCitvMQQHrTfFCqKa+OQdJnH779bdh2igIa0
+         PP+OftsZ30WNI8YjteErQPA5zbTDx9yuxaVQiMNisMmATJNbReujv8oO6EkIBSxzYJ
+         4UYoHcSQ9qKevlAhO+/21Y51agHoqOEAtTJ1GN3uishO1geligSRb2ZfVfMXbbdJjg
+         uYSCunXhBkpyV/+LUpSv4/L60aDS9vgl72UC13+k+RB5b+aKaIzNllwLhnZxCz+uxu
+         IDCrmOAuM5GWw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 37AE860972;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5D80560953;
         Mon, 14 Jun 2021 20:20:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: flow_dissector: fix RPS on DSA masters
+Subject: Re: [PATCH net-next] net: wwan: Fix WWAN config symbols
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162370200622.25455.4104278884892114200.git-patchwork-notify@kernel.org>
+Message-Id: <162370200637.25455.17316488762841330599.git-patchwork-notify@kernel.org>
 Date:   Mon, 14 Jun 2021 20:20:06 +0000
-References: <20210614135819.504455-1-olteanv@gmail.com>
-In-Reply-To: <20210614135819.504455-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        vladimir.oltean@nxp.com
+References: <1623689796-8740-1-git-send-email-loic.poulain@linaro.org>
+In-Reply-To: <1623689796-8740-1-git-send-email-loic.poulain@linaro.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        ryazanov.s.a@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,20 +46,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 14 Jun 2021 16:58:19 +0300 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, 14 Jun 2021 18:56:36 +0200 you wrote:
+> There is not strong reason to have both WWAN and WWAN_CORE symbols,
+> Let's build the WWAN core framework when WWAN is selected, in the
+> same way as for other subsystems.
 > 
-> After the blamed patch, __skb_flow_dissect() on the DSA master stopped
-> adjusting for the length of the DSA headers. This is because it was told
-> to adjust only if the needed_headroom is zero, aka if there is no DSA
-> header. Of course, the adjustment should be done only if there _is_ a
-> DSA header.
+> This fixes issue with mhi_net selecting WWAN_CORE without WWAN and
+> reported by kernel test robot:
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: flow_dissector: fix RPS on DSA masters
-    https://git.kernel.org/netdev/net-next/c/ec13357263fb
+  - [net-next] net: wwan: Fix WWAN config symbols
+    https://git.kernel.org/netdev/net-next/c/89212e160b81
 
 You are awesome, thank you!
 --
