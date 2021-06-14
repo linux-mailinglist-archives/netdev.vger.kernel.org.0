@@ -2,90 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 595633A6C8D
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 18:59:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7AD3A6CA2
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 19:03:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234808AbhFNRBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 13:01:31 -0400
-Received: from mga14.intel.com ([192.55.52.115]:64907 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233606AbhFNRBa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 13:01:30 -0400
-IronPort-SDR: ErHoNXL0X6P7JUr1bOtHlsmYBUovRXGBFAcapMVPvpIYavlKuywr3OtzYajU3GYHcRpdRXcSBJ
- RpqBdu5wnf5A==
-X-IronPort-AV: E=McAfee;i="6200,9189,10015"; a="205662780"
-X-IronPort-AV: E=Sophos;i="5.83,273,1616482800"; 
-   d="scan'208";a="205662780"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2021 09:59:26 -0700
-IronPort-SDR: Hb0QNbkD4TYfSdvYZN4sBTvGWaIgOK3TUlo+2C7zP5HOwRm4Gx3SbB3EmDEZNTIKei4oCO4qty
- gvHbmIL6TTMQ==
-X-IronPort-AV: E=Sophos;i="5.83,273,1616482800"; 
-   d="scan'208";a="403707909"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.4])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2021 09:59:25 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] ice: remove unnecessary NULL checks before ptp_read_system_*
-Date:   Mon, 14 Jun 2021 09:59:16 -0700
-Message-Id: <20210614165916.1403027-1-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.31.1.331.gb0c09ab8796f
+        id S235289AbhFNRFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 13:05:38 -0400
+Received: from mail-oi1-f180.google.com ([209.85.167.180]:44938 "EHLO
+        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235276AbhFNRF3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 13:05:29 -0400
+Received: by mail-oi1-f180.google.com with SMTP id a26so14980691oie.11
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 10:03:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=qUD1nzeCJjz28MISB5nQ0Rc0a40kxWRVNB9uQtzdX7M=;
+        b=b9HRtOmxIpZjMLYild1RTE/eKbG/RgKq2v6xZ7r8m3BS91ZL+dU1zOvCsw18LE8Lfe
+         ljAui7fBDbS7Hn3zfvvEDom3aqWhZfr7jkZfWWHVpdUxLI1QXX9R36it7as4m+QS7j3a
+         hPNx0tVG2IpU75NIykWf78YxOtH5Vt6Cn35i7Qy67IqQvwc2at5pzaJr+PjLdBC3dofy
+         7ju7dvXMtKZJDEJctgRwlLA71PG4wxLVAAoDTGyLlk1wOZB2EBSqYDpM6RgVosCHyVDr
+         xYr7PTasWvvKrjkCRA5vF8YTq41Rqfj00cTgJKwbukOa2bb8ZuA3KfC7zRGenp9acjAW
+         LPdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qUD1nzeCJjz28MISB5nQ0Rc0a40kxWRVNB9uQtzdX7M=;
+        b=oOczppcunGuBHIc5mnolvopT+RJMGOPVD4E0IJOVFWbZtZYxeWaLEe2a2nG7/X2YcN
+         rG5szRB87hCBBugIdADnZ58aPDpfZnTQACwC0pFQpBN0BE3im6PkikoRHIeMWfRlCWT4
+         4bd/xB5hrHfwlIWZaemG/Sf6adFRZajkUju0eBgEKdMDJlxRjXmLvYa+CKCRW1upY4v2
+         H2wGYYpufh0PqTPkkoz5VzPDElabF06GgJxkhFaclN0YazKad89vbeDqnzC93BxCCFnC
+         3xE2wTut8kL/kGXHWNfRmzHTbEej3KBkDRiiM+j0jp6c7AaufUGPL1Q/KoT+eZyE9JVa
+         pJ5g==
+X-Gm-Message-State: AOAM530nYsyq5INCyyAfo+2sLaq8m0avi7WOjjhGtCwRmUWtMDiTdklo
+        hlYIVci4rRq2jyqs4J21rs46STISaX34jnOCVLg=
+X-Google-Smtp-Source: ABdhPJwWl5vo8sBvjdzUr9bzwt2xnzRvFbkTdhcE+rcxhhc7bjn2zux4cSKeLWPEGlKSjNcHacw+NjwtU1frRr+1LsQ=
+X-Received: by 2002:aca:b8c2:: with SMTP id i185mr56981oif.172.1623690146603;
+ Mon, 14 Jun 2021 10:02:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210614141849.3587683-1-kristian.evensen@gmail.com>
+ <8735tky064.fsf@miraculix.mork.no> <CAKfDRXgZeWCeGXhfukeeAGrHHUMtsHWRPEebUkZf07QCnU4CFw@mail.gmail.com>
+In-Reply-To: <CAKfDRXgZeWCeGXhfukeeAGrHHUMtsHWRPEebUkZf07QCnU4CFw@mail.gmail.com>
+From:   Kristian Evensen <kristian.evensen@gmail.com>
+Date:   Mon, 14 Jun 2021 19:02:15 +0200
+Message-ID: <CAKfDRXi=4Vsf_a40EdLsyunjKGXaFnA0ZeNbMcBDw1Tk+eSzMQ@mail.gmail.com>
+Subject: Re: [PATCH net] qmi_wwan: Clone the skb when in pass-through mode
+To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        subashab@codeaurora.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ptp_read_system_prets and ptp_read_system_postts functions already
-check for the NULL value of the ptp_system_timestamp structure pointer.
-There is no need to check this manually in the ice driver code. Remove
-the checks.
+Hi Bj=C3=B8rn,
 
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_ptp.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+On Mon, Jun 14, 2021 at 5:49 PM Kristian Evensen
+<kristian.evensen@gmail.com> wrote:
+> I will do some more testing tomorrow and see if I can figure out
+> something. So far, the only thing I know is that if I try to perform a
+> more demanding transfer (like downloading a file) using qmi_wwan +
+> rmnet then I get a kernel oops immediatly.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index e14f81321768..609f433a4b96 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -219,14 +219,12 @@ ice_ptp_read_src_clk_reg(struct ice_pf *pf, struct ptp_system_timestamp *sts)
- 
- 	tmr_idx = ice_get_ptp_src_clock_index(hw);
- 	/* Read the system timestamp pre PHC read */
--	if (sts)
--		ptp_read_system_prets(sts);
-+	ptp_read_system_prets(sts);
- 
- 	lo = rd32(hw, GLTSYN_TIME_L(tmr_idx));
- 
- 	/* Read the system timestamp post PHC read */
--	if (sts)
--		ptp_read_system_postts(sts);
-+	ptp_read_system_postts(sts);
- 
- 	hi = rd32(hw, GLTSYN_TIME_H(tmr_idx));
- 	lo2 = rd32(hw, GLTSYN_TIME_L(tmr_idx));
-@@ -235,11 +233,9 @@ ice_ptp_read_src_clk_reg(struct ice_pf *pf, struct ptp_system_timestamp *sts)
- 		/* if TIME_L rolled over read TIME_L again and update
- 		 * system timestamps
- 		 */
--		if (sts)
--			ptp_read_system_prets(sts);
-+		ptp_read_system_prets(sts);
- 		lo = rd32(hw, GLTSYN_TIME_L(tmr_idx));
--		if (sts)
--			ptp_read_system_postts(sts);
-+		ptp_read_system_postts(sts);
- 		hi = rd32(hw, GLTSYN_TIME_H(tmr_idx));
- 	}
- 
+I got curios and decided to test your proposed changed today.
+Replacing the call to netif_rx() with return 1, and then letting
+usbnet_skb_return() do the netif_rx() call, seems to have resolved the
+issue. At least I am not longer able to trigger the oops using my
+earlier reproducer (running a couple of Speedtest).
 
-base-commit: a212d9f33ed0b8399bd9829a779c4024068742a2
--- 
-2.31.1.331.gb0c09ab8796f
+Unless someone beats me to it, I will prepare another patch tomorrow.
+Thanks for the help.
 
+Kristian
