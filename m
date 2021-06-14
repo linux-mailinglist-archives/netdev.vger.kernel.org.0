@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78FBF3A5D6D
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 09:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E7293A5D7D
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 09:12:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232508AbhFNHLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 03:11:14 -0400
-Received: from verein.lst.de ([213.95.11.211]:43049 "EHLO verein.lst.de"
+        id S232506AbhFNHOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 03:14:34 -0400
+Received: from verein.lst.de ([213.95.11.211]:43092 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232455AbhFNHLM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 03:11:12 -0400
+        id S232096AbhFNHOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Jun 2021 03:14:31 -0400
 Received: by verein.lst.de (Postfix, from userid 2407)
-        id 1F7FB67373; Mon, 14 Jun 2021 09:09:04 +0200 (CEST)
-Date:   Mon, 14 Jun 2021 09:09:03 +0200
+        id 537CA67373; Mon, 14 Jun 2021 09:12:23 +0200 (CEST)
+Date:   Mon, 14 Jun 2021 09:12:23 +0200
 From:   Christoph Hellwig <hch@lst.de>
 To:     Tianyu Lan <ltykernel@gmail.com>
 Cc:     Christoph Hellwig <hch@lst.de>, kys@microsoft.com,
@@ -35,27 +35,22 @@ Cc:     Christoph Hellwig <hch@lst.de>, kys@microsoft.com,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
         vkuznets@redhat.com, thomas.lendacky@amd.com,
         brijesh.singh@amd.com, sunilmut@microsoft.com
-Subject: Re: [RFC PATCH V3 10/11] HV/Netvsc: Add Isolation VM support for
- netvsc driver
-Message-ID: <20210614070903.GA29976@lst.de>
-References: <20210530150628.2063957-1-ltykernel@gmail.com> <20210530150628.2063957-11-ltykernel@gmail.com> <20210607065007.GE24478@lst.de> <279cb4bf-c5b6-6db9-0f1e-9238e902c8f2@gmail.com>
+Subject: Re: [RFC PATCH V3 08/11] swiotlb: Add bounce buffer remap address
+ setting function
+Message-ID: <20210614071223.GA30171@lst.de>
+References: <20210530150628.2063957-1-ltykernel@gmail.com> <20210530150628.2063957-9-ltykernel@gmail.com> <20210607064312.GB24478@lst.de> <48516ce3-564c-419e-b355-0ce53794dcb1@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <279cb4bf-c5b6-6db9-0f1e-9238e902c8f2@gmail.com>
+In-Reply-To: <48516ce3-564c-419e-b355-0ce53794dcb1@gmail.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 07, 2021 at 11:21:20PM +0800, Tianyu Lan wrote:
->> dma_map_single can only be used on page baked memory, and if this is
->> using page backed memory you wouldn't need to do thee phys_to_virt
->> tricks.  Can someone explain the mess here in more detail?
->
-> Sorry. Could you elaborate the issue? These pages in the pb array are not 
-> allocated by DMA API and using dma_map_single() here is to map these pages' 
-> address to bounce buffer physical address.
+On Mon, Jun 07, 2021 at 10:56:47PM +0800, Tianyu Lan wrote:
+> These addresses in extra address space works as system memory mirror. The 
+> shared memory with host in Isolation VM needs to be accessed via extra 
+> address space which is above shared gpa boundary.
 
-dma_map_single just calls dma_map_page using virt_to_page.  So this
-can't work on addresses not in the kernel linear mapping.
+Why?
