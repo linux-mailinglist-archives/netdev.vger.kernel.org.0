@@ -2,231 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 433F23A5CAA
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 07:58:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 213BF3A5D4C
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 08:55:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232394AbhFNGAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 02:00:36 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:35455 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbhFNGAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 02:00:32 -0400
-Received: by mail-il1-f198.google.com with SMTP id n18-20020a92dd120000b02901eda20e4362so6087371ilm.2
-        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 22:58:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=iolwSrBLU5wcSTW/N0CiJLq6wC7qoEFtQEKW0DDo1fc=;
-        b=ZpWWY0LVKzwfWseDaooZ9Xf4RO7/zlhQbbDV0D9cbFeZ9h+Zk59hcpQUI76tkkbk3h
-         Lw7+Fl98mOcR6p3zTpUWsEDKNcqvYoGAR4TjjXIw41ftz+27g4jF6DwS+J2XOfWzXr6z
-         wb0DMdIHV8uK5VHc1iHwCdW5ZnhV5ULtN4cAyXqpfKc7vWhzMjqWLyMPIFjcPZOD8r9+
-         E3s37dHLNA1O/Un4DX4ZoGewg4Ie2M3bxw1J3///mKwZaW1f18gltv4qhpC4qBCsNUdT
-         OMJrBwUYZbQZZ7ievgHJaagsakPzgpQGWonkt3IamEMR2FL/9YstNvAavziwmOR+7xCr
-         SGZw==
-X-Gm-Message-State: AOAM531UGK8Xv5d+kCplNK5GMyx/ZkgxRMZos9NqSheWhTY5GGAW/UeI
-        DETs5YGEGL2Mz04dBKdriUuUdbVXtFjfnSAgl5afHVEQe1wK
-X-Google-Smtp-Source: ABdhPJy6CFJhViExCUyijYTrppYaOtBX+UmeEp+WNK5oxst0Kvv0cP1NrKo57iwv0a/qyhrK0GfcrmSxdXbovNwmor5OrY1FQJYp
+        id S232434AbhFNG5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 02:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232096AbhFNG5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 02:57:48 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6D4C061574
+        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 23:55:46 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lsgVa-0006U6-3t; Mon, 14 Jun 2021 08:55:42 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lsgVY-0005ch-4R; Mon, 14 Jun 2021 08:55:40 +0200
+Date:   Mon, 14 Jun 2021 08:55:40 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH net-next v4 4/9] net: phy: micrel: apply resume errata
+ workaround for ksz8873 and ksz8863
+Message-ID: <20210614065540.cnvgtc4v7ac5k3xc@pengutronix.de>
+References: <20210611071527.9333-1-o.rempel@pengutronix.de>
+ <20210611071527.9333-5-o.rempel@pengutronix.de>
+ <20210611192010.ptmblzpj6ilt24ly@skbuf>
+ <20210612042639.bgsloltuqoipmwtk@pengutronix.de>
+ <20210612151330.nvin5ldcx6xunexx@skbuf>
 MIME-Version: 1.0
-X-Received: by 2002:a92:d24a:: with SMTP id v10mr13215606ilg.246.1623650296720;
- Sun, 13 Jun 2021 22:58:16 -0700 (PDT)
-Date:   Sun, 13 Jun 2021 22:58:16 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002cf2d905c4b38bee@google.com>
-Subject: [syzbot] BUG: stack guard page was hit in preempt_count_add
-From:   syzbot <syzbot+df16599805dec43e5fc2@syzkaller.appspotmail.com>
-To:     bp@alien8.de, hpa@zytor.com, jirislaby@kernel.org,
-        jpoimboe@redhat.com, jthierry@redhat.com,
-        linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210612151330.nvin5ldcx6xunexx@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:52:07 up 193 days, 20:58, 48 users,  load average: 0.10, 0.05,
+ 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, Jun 12, 2021 at 06:13:30PM +0300, Vladimir Oltean wrote:
+> On Sat, Jun 12, 2021 at 06:26:39AM +0200, Oleksij Rempel wrote:
+> > On Fri, Jun 11, 2021 at 10:20:10PM +0300, Vladimir Oltean wrote:
+> > > On Fri, Jun 11, 2021 at 09:15:22AM +0200, Oleksij Rempel wrote:
+> > > > The ksz8873 and ksz8863 switches are affected by following errata:
+> > > > 
+> > > > | "Receiver error in 100BASE-TX mode following Soft Power Down"
+> > > > |
+> > > > | Some KSZ8873 devices may exhibit receiver errors after transitioning
+> > > > | from Soft Power Down mode to Normal mode, as controlled by register 195
+> > > > | (0xC3) bits [1:0]. When exiting Soft Power Down mode, the receiver
+> > > > | blocks may not start up properly, causing the PHY to miss data and
+> > > > | exhibit erratic behavior. The problem may appear on either port 1 or
+> > > > | port 2, or both ports. The problem occurs only for 100BASE-TX, not
+> > > > | 10BASE-T.
+> > > > |
+> > > > | END USER IMPLICATIONS
+> > > > | When the failure occurs, the following symptoms are seen on the affected
+> > > > | port(s):
+> > > > | - The port is able to link
+> > > > | - LED0 blinks, even when there is no traffic
+> > > > | - The MIB counters indicate receive errors (Rx Fragments, Rx Symbol
+> > > > |   Errors, Rx CRC Errors, Rx Alignment Errors)
+> > > > | - Only a small fraction of packets is correctly received and forwarded
+> > > > |   through the switch. Most packets are dropped due to receive errors.
+> > > > |
+> > > > | The failing condition cannot be corrected by the following:
+> > > > | - Removing and reconnecting the cable
+> > > > | - Hardware reset
+> > > > | - Software Reset and PCS Reset bits in register 67 (0x43)
+> > > > |
+> > > > | Work around:
+> > > > | The problem can be corrected by setting and then clearing the Port Power
+> > > > | Down bits (registers 29 (0x1D) and 45 (0x2D), bit 3). This must be done
+> > > > | separately for each affected port after returning from Soft Power Down
+> > > > | Mode to Normal Mode. The following procedure will ensure no further
+> > > > | issues due to this erratum. To enter Soft Power Down Mode, set register
+> > > > | 195 (0xC3), bits [1:0] = 10.
+> > > > |
+> > > > | To exit Soft Power Down Mode, follow these steps:
+> > > > | 1. Set register 195 (0xC3), bits [1:0] = 00 // Exit soft power down mode
+> > > > | 2. Wait 1ms minimum
+> > > > | 3. Set register 29 (0x1D), bit [3] = 1 // Enter PHY port 1 power down mode
+> > > > | 4. Set register 29 (0x1D), bit [3] = 0 // Exit PHY port 1 power down mode
+> > > > | 5. Set register 45 (0x2D), bit [3] = 1 // Enter PHY port 2 power down mode
+> > > > | 6. Set register 45 (0x2D), bit [3] = 0 // Exit PHY port 2 power down mode
+> > > > 
+> > > > This patch implements steps 2...6 of the suggested workaround. During
+> > > > (initial) switch power up, step 1 is executed by the dsa/ksz8795
+> > > > driver's probe function.
+> > > > 
+> > > > Note: In this workaround we toggle the MII_BMCR register's BMCR_PDOWN
+> > > > bit, this is translated to the actual register and bit (as mentioned in
+> > > > the arratum) by the ksz8_r_phy()/ksz8_w_phy() functions.
+> > > 
+> > > s/arratum/erratum/
+> > > 
+> > > Also, the commit message is still missing this piece of information you
+> > > gave in the previous thread:
+> > > 
+> > > | this issue was seen  at some early point of development (back in 2019)
+> > > | reproducible on system start. Where switch was in some default state or
+> > > | on a state configured by the bootloader. I didn't tried to reproduce it
+> > > | now.
+> > > 
+> > > Years from now, some poor souls might struggle to understand why this
+> > > patch was done this way. If it is indeed the case that the issue is only
+> > > seen during the handover between bootloader and kernel, there is really
+> > > no reason to implement the ERR workaround in phy_resume instead of doing
+> > > it once at probe time.
+> > 
+> > Ok, i'll drop this patch for now.
+> 
+> I mean, you don't have to drop it,
 
-syzbot found the following issue on:
+Right now it blocks other patches, so it is easier for me to send it
+separately.
 
-HEAD commit:    2aa8eca6 net: appletalk: fix some mistakes in grammar
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=10c653afd00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a43776cd214e447a
-dashboard link: https://syzkaller.appspot.com/bug?extid=df16599805dec43e5fc2
+> you just have to provide a competent
+> explanation for how the patch addresses the ERR as described by Microchip.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Sorry fail to formulate it competent enough. Can you please suggest a
+needed description. 
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+df16599805dec43e5fc2@syzkaller.appspotmail.com
+> Do you still have a board with this switch?
 
-BUG: stack guard page was hit at ffffc90009defff8 (stack is ffffc90009df0000..ffffc90009df7fff)
-kernel stack overflow (double-fault): 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 17591 Comm: syz-executor.0 Not tainted 5.13.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:get_lock_parent_ip include/linux/ftrace.h:841 [inline]
-RIP: 0010:preempt_latency_start kernel/sched/core.c:4780 [inline]
-RIP: 0010:preempt_latency_start kernel/sched/core.c:4777 [inline]
-RIP: 0010:preempt_count_add+0x6f/0x140 kernel/sched/core.c:4805
-Code: 05 16 f0 b2 7e 0f b6 c0 3d f4 00 00 00 7f 64 65 8b 05 05 f0 b2 7e 25 ff ff ff 7f 39 c3 74 03 5b 5d c3 48 8b 5c 24 10 48 89 df <e8> 8c cd 0b 00 85 c0 75 35 65 48 8b 2c 25 00 f0 01 00 48 8d bd f0
-RSP: 0018:ffffc90009df0000 EFLAGS: 00010246
-RAX: 0000000000000001 RBX: ffffffff81331a80 RCX: 1ffffffff20f20e4
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff81331a80
-RBP: 0000000000000001 R08: 0000000000000001 R09: ffffc90009df0140
-R10: fffff520013be033 R11: 0000000000000000 R12: ffffc90009df0188
-R13: fffff520013be029 R14: ffffc90009df0140 R15: ffffc90009df0140
-FS:  00007f6395c14700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffc90009defff8 CR3: 0000000094018000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- unwind_next_frame+0x120/0x1ce0 arch/x86/kernel/unwind_orc.c:428
- __unwind_start+0x51b/0x800 arch/x86/kernel/unwind_orc.c:699
- unwind_start arch/x86/include/asm/unwind.h:60 [inline]
- arch_stack_walk+0x5c/0xe0 arch/x86/kernel/stacktrace.c:24
- stack_trace_save+0x8c/0xc0 kernel/stacktrace.c:121
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:428 [inline]
- __kasan_slab_alloc+0x84/0xa0 mm/kasan/common.c:461
- kasan_slab_alloc include/linux/kasan.h:236 [inline]
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:2913 [inline]
- kmem_cache_alloc_node+0x269/0x3e0 mm/slub.c:2949
- __alloc_skb+0x20b/0x340 net/core/skbuff.c:414
- alloc_skb include/linux/skbuff.h:1112 [inline]
- nlmsg_new include/net/netlink.h:953 [inline]
- rtmsg_ifinfo_build_skb+0x72/0x1a0 net/core/rtnetlink.c:3791
- rtmsg_ifinfo_event net/core/rtnetlink.c:3827 [inline]
- rtmsg_ifinfo_event net/core/rtnetlink.c:3818 [inline]
- rtnetlink_event+0x123/0x1d0 net/core/rtnetlink.c:5603
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
- call_netdevice_notifiers net/core/dev.c:2147 [inline]
- netdev_features_change net/core/dev.c:1493 [inline]
- netdev_sync_lower_features net/core/dev.c:9814 [inline]
- __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
- netdev_change_features+0x61/0xb0 net/core/dev.c:10033
- bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
- bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
- call_netdevice_notifiers net/core/dev.c:2147 [inline]
- netdev_features_change net/core/dev.c:1493 [inline]
- netdev_sync_lower_features net/core/dev.c:9814 [inline]
- __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
- netdev_change_features+0x61/0xb0 net/core/dev.c:10033
- bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
- bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
- call_netdevice_notifiers net/core/dev.c:2147 [inline]
- netdev_features_change net/core/dev.c:1493 [inline]
- netdev_sync_lower_features net/core/dev.c:9814 [inline]
- __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
- netdev_change_features+0x61/0xb0 net/core/dev.c:10033
- bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
- bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
- call_netdevice_notifiers net/core/dev.c:2147 [inline]
- netdev_features_change net/core/dev.c:1493 [inline]
- netdev_sync_lower_features net/core/dev.c:9814 [inline]
- __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
- netdev_change_features+0x61/0xb0 net/core/dev.c:10033
- bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
- bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
- call_netdevice_notifiers net/core/dev.c:2147 [inline]
- netdev_features_change net/core/dev.c:1493 [inline]
- netdev_sync_lower_features net/core/dev.c:9814 [inline]
- __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
- netdev_change_features+0x61/0xb0 net/core/dev.c:10033
- bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
- bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
- call_netdevice_notifiers net/core/dev.c:2147 [inline]
- netdev_features_change net/core/dev.c:1493 [inline]
- netdev_sync_lower_features net/core/dev.c:9814 [inline]
- __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
- netdev_change_features+0x61/0xb0 net/core/dev.c:10033
- bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
- bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
- call_netdevice_notifiers net/core/dev.c:2147 [inline]
- netdev_features_change net/core/dev.c:1493 [inline]
- netdev_sync_lower_features net/core/dev.c:9814 [inline]
- __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
- netdev_change_features+0x61/0xb0 net/core/dev.c:10033
- bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
- bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
- call_netdevice_notifiers net/core/dev.c:2147 [inline]
- netdev_features_change net/core/dev.c:1493 [inline]
- netdev_sync_lower_features net/core/dev.c:9814 [inline]
- __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
- netdev_change_features+0x61/0xb0 net/core/dev.c:10033
- bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
- bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
- call_netdevice_notifiers net/core/dev.c:2147 [inline]
- netdev_features_change net/core/dev.c:1493 [inline]
- netdev_sync_lower_features net/core/dev.c:9814 [inline]
- __netdev_update_features+0x95d/0x17d0 net/core/dev.c:9961
- netdev_change_features+0x61/0xb0 net/core/dev.c:10033
- bond_compute_features+0x56c/0xaa0 drivers/net/bonding/bond_main.c:1329
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3431 [inline]
- bond_netdev_event+0x5d6/0xa80 drivers/net/bonding/bond_main.c:3471
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
- __netdev_update_features+0x9
-Lost 457 message(s)!
----[ end trace 910abc79cbd754ed ]---
-RIP: 0010:get_lock_parent_ip include/linux/ftrace.h:841 [inline]
-RIP: 0010:preempt_latency_start kernel/sched/core.c:4780 [inline]
-RIP: 0010:preempt_latency_start kernel/sched/core.c:4777 [inline]
-RIP: 0010:preempt_count_add+0x6f/0x140 kernel/sched/core.c:4805
-Code: 05 16 f0 b2 7e 0f b6 c0 3d f4 00 00 00 7f 64 65 8b 05 05 f0 b2 7e 25 ff ff ff 7f 39 c3 74 03 5b 5d c3 48 8b 5c 24 10 48 89 df <e8> 8c cd 0b 00 85 c0 75 35 65 48 8b 2c 25 00 f0 01 00 48 8d bd f0
-RSP: 0018:ffffc90009df0000 EFLAGS: 00010246
-RAX: 0000000000000001 RBX: ffffffff81331a80 RCX: 1ffffffff20f20e4
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff81331a80
-RBP: 0000000000000001 R08: 0000000000000001 R09: ffffc90009df0140
-R10: fffff520013be033 R11: 0000000000000000 R12: ffffc90009df0188
-R13: fffff520013be029 R14: ffffc90009df0140 R15: ffffc90009df0140
-FS:  00007f6395c14700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffc90009defff8 CR3: 0000000094018000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Yes.
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
