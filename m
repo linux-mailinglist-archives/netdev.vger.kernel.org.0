@@ -2,162 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC5E03A6993
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:05:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 338B93A69F1
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 17:20:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233414AbhFNPHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 11:07:37 -0400
-Received: from mail-ed1-f54.google.com ([209.85.208.54]:41891 "EHLO
-        mail-ed1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232869AbhFNPHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 11:07:33 -0400
-Received: by mail-ed1-f54.google.com with SMTP id g18so44970731edq.8;
-        Mon, 14 Jun 2021 08:05:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gKOqFyi4Kfd36nKwUO//09yp/Fk/9vPvsaRoEvmhhEw=;
-        b=YGqkqsr7KhcdZj9qKkcEDepxpSMy/3yWai0cAk3yDde0be9PQj04rQf/a3INGwYEai
-         Ygqeo5gaf6lQku45u80xltUtahGhhgjiin/svVZfJEi2WfF3Tg4n57bQGYb+uUOgVEeT
-         FGaexQeqy1CWSVk7c/UM9wOSAT3eMeH3thofGgthHa0wmuV60LcyyAH1p1TTASb6kPYv
-         VUAd7Vn6oENLipOseM8oLplTVZYRVky/meSbESDxDFpQWs333dZ3ioe7vG1Pcl5p8KQB
-         IKkX68uUQhaYVFu055a8GjUX2Ja1yDgKJJ96PKW+8NZjqwjejBmwkLj30hotGc8coJFG
-         8sXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gKOqFyi4Kfd36nKwUO//09yp/Fk/9vPvsaRoEvmhhEw=;
-        b=iX8YKSmG7yJ13G/1B6u4WRNXLvzsSE4oPXEr+LZCbxPK1SPEUbwdZ0JBLhSplrk3wE
-         PEIXJCoIExC1HT9dExcLAB5gUz2J93xNdcSx6R5AttCwIgDy3K9K3TJsPI8MHs/emvk8
-         SCgNU5LD/vI3TBp38548ksWC/+7dU62f/8Y4fV4v5ELRJQ1AwLV2hlaiGFnq3vKpzgiD
-         VlZyhCw96lmhnO/eW3RF/e+oXC0VnwtZlXFCdbAZO2uHsK0lhANpNFi5YuapTC0tJA9p
-         o8plxPop9YZCpi5M9ltTbskgGm2QBksCjBA23ikLih41pAVu+9GDR4131HngLI+w5t8s
-         39KQ==
-X-Gm-Message-State: AOAM531REm1VJcByUpiGoZpz29ukGTDbCbiRkFiWjDV3EHAY/+ZcrGa8
-        eNWelTIR8sBO00u4KE8wUlFJ//a3D0CsO6bVNp4=
-X-Google-Smtp-Source: ABdhPJzdQ6lrhG9gpBqbvd6q0ekw1bd9mvfGMN3acxnq3U50/r85H2JU/wbAkH9ghaZDAN4S9pOU2P4lgeipIHQ0aVE=
-X-Received: by 2002:a05:6402:22f9:: with SMTP id dn25mr17519671edb.241.1623683069887;
- Mon, 14 Jun 2021 08:04:29 -0700 (PDT)
+        id S233351AbhFNPWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 11:22:39 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:44884 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232869AbhFNPWi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Jun 2021 11:22:38 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1623684036; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=TgruFaOHgaX1w1KfWjUbiFXZ4JxCDk9YTxQIoQffRp0=;
+ b=auYqu4BqX8sqrtGWbCct+WE3IlhDahTBvxgq5uoJnEFRS0nH9UdaC7e3WHkTraJEnYR57l4U
+ 06GqtTbu8nzXZF+ZFMn579h0EZT6pPiY0Udi0SL2DK7CJ0wjfgtS4fswUhhzr9hNskReOn5M
+ q8wMMqoaWNbmFfdSftnlPNftvK0=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 60c773c2ed59bf69cc41d324 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 14 Jun 2021 15:20:34
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 9BA62C4323A; Mon, 14 Jun 2021 15:20:34 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 10BBCC433D3;
+        Mon, 14 Jun 2021 15:20:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 10BBCC433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <CAD-N9QUUCSpZjg5RwdKBNF7xx127E6fUowTZkUhm66C891Fpkg@mail.gmail.com>
- <20210614163401.52807197@gmail.com> <CAD-N9QV5_91A6n5QcrafmQRbqH_qzFRatno-6z0i7q-V9VnLzg@mail.gmail.com>
- <20210614172512.799db10d@gmail.com> <CAD-N9QUhQT8pG8Une8Fac1pJaiVd_mi9AU2c_nkPjTi36xbutQ@mail.gmail.com>
- <20210614174727.6a38b584@gmail.com>
-In-Reply-To: <20210614174727.6a38b584@gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Mon, 14 Jun 2021 23:04:03 +0800
-Message-ID: <CAD-N9QXUrv7zjSyUjsJsWO6KZDhGYtkTCK9U_ZuPA7awJ8P3Yw@mail.gmail.com>
-Subject: Re: Suggestions on how to debug kernel crashes where printk and gdb
- both does not work
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     alex.aring@gmail.com, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        stefan@datenfreihafen.org,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] wcn36xx: Fix inconsistent indenting
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1622024568-32130-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+References: <1622024568-32130-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210614152034.9BA62C4323A@smtp.codeaurora.org>
+Date:   Mon, 14 Jun 2021 15:20:34 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 10:47 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
->
-> On Mon, 14 Jun 2021 22:40:55 +0800
-> Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
-> > On Mon, Jun 14, 2021 at 10:25 PM Pavel Skripkin
-> > <paskripkin@gmail.com> wrote:
-> > >
-> > > On Mon, 14 Jun 2021 22:19:10 +0800
-> > > Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> > >
-> > > > On Mon, Jun 14, 2021 at 9:34 PM Pavel Skripkin
-> > > > <paskripkin@gmail.com> wrote:
-> > > > >
-> > > > > On Mon, 14 Jun 2021 21:22:43 +0800
-> > > > > Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> > > > >
-> > > > > > Dear kernel developers,
-> > > > > >
-> > > > > > I was trying to debug the crash - memory leak in
-> > > > > > hwsim_add_one [1] recently. However, I encountered a
-> > > > > > disgusting issue: my breakpoint and printk/pr_alert in the
-> > > > > > functions that will be surely executed do not work. The stack
-> > > > > > trace is in the following. I wrote this email to ask for some
-> > > > > > suggestions on how to debug such cases?
-> > > > > >
-> > > > > > Thanks very much. Looking forward to your reply.
-> > > > > >
-> > > > >
-> > > > > Hi, Dongliang!
-> > > > >
-> > > > > This bug is not similar to others on the dashboard. I spent some
-> > > > > time debugging it a week ago. The main problem here, that memory
-> > > > > allocation happens in the boot time:
-> > > > >
-> > > > > > [<ffffffff84359255>] kernel_init+0xc/0x1a7 init/main.c:1447
-> > > > >
-> > > >
-> > > > Oh, nice catch. No wonder why my debugging does not work. :(
-> > > >
-> > > > > and reproducer simply tries to
-> > > > > free this data. You can use ftrace to look at it. Smth like
-> > > > > this:
-> > > > >
-> > > > > $ echo 'hwsim_*' > $TRACE_DIR/set_ftrace_filter
-> > > >
-> > > > Thanks for your suggestion.
-> > > >
-> > > > Do you have any conclusions about this case? If you have found
-> > > > out the root cause and start writing patches, I will turn my
-> > > > focus to other cases.
-> > >
-> > > No, I had some busy days and I have nothing about this bug for now.
-> > > I've just traced the reproducer execution and that's all :)
-> > >
-> > > I guess, some error handling paths are broken, but Im not sure
-> >
-> > In the beginning, I agreed with you. However, after I manually checked
-> > functions: hwsim_probe (initialization) and  hwsim_remove (cleanup),
-> > then things may be different. The cleanup looks correct to me. I would
-> > like to debug but stuck with the debugging process.
-> >
-> > And there is another issue: the cleanup function also does not output
-> > anything or hit the breakpoint. I don't quite understand it since the
-> > cleanup is not at the boot time.
-> >
-> > Any idea?
-> >
->
-> Output from ftrace (syzkaller repro):
->
-> root@syzkaller:~# cat /sys/kernel/tracing/trace
-> # tracer: function_graph
-> #
-> # CPU  DURATION                  FUNCTION CALLS
-> # |     |   |                     |   |   |   |
->  1)               |  hwsim_del_radio_nl() {
->  1)               |    hwsim_del() {
->  1)               |      hwsim_edge_unsubscribe_me() {
->  1) ! 310.041 us  |        hwsim_free_edge();
->  1) ! 665.221 us  |      }
->  1) * 52999.05 us |    }
->  1) * 53035.38 us |  }
->
-> Cleanup function is not the case, I think :)
+Jiapeng Chong <jiapeng.chong@linux.alibaba.com> wrote:
 
-It seems like I spot the incorrect cleanup function (hwsim_remove is
-the right one is in my mind). Let me learn how to use ftrace to log
-the executed functions and then discuss this case with you guys.
+> Eliminate the follow smatch warning:
+> 
+> drivers/net/wireless/ath/wcn36xx/dxe.c:803 wcn36xx_dxe_tx_frame() warn:
+> inconsistent indenting.
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
->
->
->
-> With regards,
-> Pavel Skripkin
+Patch applied to ath-next branch of ath.git, thanks.
+
+743b575af18d wcn36xx: Fix inconsistent indenting
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/1622024568-32130-1-git-send-email-jiapeng.chong@linux.alibaba.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
