@@ -2,114 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FD313A68B1
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 16:05:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5351B3A68C5
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 16:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234491AbhFNOHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 10:07:31 -0400
-Received: from mail-pg1-f172.google.com ([209.85.215.172]:40837 "EHLO
-        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234235AbhFNOHZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 10:07:25 -0400
-Received: by mail-pg1-f172.google.com with SMTP id m2so2003980pgk.7;
-        Mon, 14 Jun 2021 07:05:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yJB+B/uqyT8Yj8oTe4yW/iwZF1PlGwEGbYmCRyf4VPs=;
-        b=WH301YVkd+NT/H+jeV6pcNYHdcjqtaqvIdtbpu0fkkYAmJ7rw0/VnTDAhSvIgbv4c0
-         oazbEKmF+c7M1WRPaxGMZU5xoCLTUJgtdxU9APUEzGlzXnchk40ZNp3QFWLwuNrBu83j
-         e2ylhCoSYk62pl120eNuhLwuvfMbaggtn+gXAD60VuMlb9RO9aR6yjsww4EENQAJey5G
-         2ZzxWZw9pL2yOQEQRAidkW9g0ErNbkj+wegNJA0H7wJ55BH2rzTM1HnAVz1Nh8SFyWFK
-         I7BbhU7Q2hwWxihuFlWkGm+R8myZotEgjwBltHJuCwGgHkDJ5/gTI6uquz0y/0l8g0ap
-         0ueg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yJB+B/uqyT8Yj8oTe4yW/iwZF1PlGwEGbYmCRyf4VPs=;
-        b=O7SsglrsisO5g9SvVXVyGOQsdgDPrGN+Z/o6DksgNz+HXxec6qxB6E5eZ5uSIxMAK/
-         hDgOrergHjYSlDA4avlmAJDSas3u8k29m7ZG6CujVv9WfbreHSG6yFU1VMMwcNE5+fRX
-         7EaiqmvjtvkT+8vP7jN33UWI0BPIh6xa2Kd421NuiUxSrhzBgPUmX51f3yjUFqnThOhX
-         fFcQ8r4jA8UCOkWLcydLpvmMvoyTudTVn02RtQHtJUi25CBAQ6b78KzHLv/zTuSEBfR6
-         Dvrt3VwDlxQRxuZHH6mHWweVx19h34MfBIHTgTLoH0mMu2M4avUkgMgLqZd+r5AmhgZN
-         I5Ug==
-X-Gm-Message-State: AOAM531prSayypQTp290EodSMoY1aDSwj3O+bnpNnPDgEU2a6wbQkqLE
-        zUAgPbpplvXgp/FTg+Hs4DY=
-X-Google-Smtp-Source: ABdhPJyxkq2bPSQ3rYusHXFwzEn3le7fAXsaXh5Rh36tAMz0+W6V1tW5a8HSqlbDYgsTNNATX2tI2A==
-X-Received: by 2002:a63:5760:: with SMTP id h32mr17200205pgm.367.1623679460361;
-        Mon, 14 Jun 2021 07:04:20 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
-        by smtp.gmail.com with ESMTPSA id x206sm12950089pfc.211.2021.06.14.07.04.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Jun 2021 07:04:20 -0700 (PDT)
-Subject: Re: [RFC PATCH V3 10/11] HV/Netvsc: Add Isolation VM support for
- netvsc driver
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        arnd@arndb.de, dave.hansen@linux.intel.com, luto@kernel.org,
-        peterz@infradead.org, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org,
-        hannes@cmpxchg.org, cai@lca.pw, krish.sadhukhan@oracle.com,
-        saravanand@fb.com, Tianyu.Lan@microsoft.com,
-        konrad.wilk@oracle.com, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, boris.ostrovsky@oracle.com, jgross@suse.com,
-        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
-        xen-devel@lists.xenproject.org, davem@davemloft.net,
-        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, thomas.lendacky@amd.com,
-        brijesh.singh@amd.com, sunilmut@microsoft.com
-References: <20210530150628.2063957-1-ltykernel@gmail.com>
- <20210530150628.2063957-11-ltykernel@gmail.com>
- <20210607065007.GE24478@lst.de>
- <279cb4bf-c5b6-6db9-0f1e-9238e902c8f2@gmail.com>
- <20210614070903.GA29976@lst.de>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <e10c2696-23c3-befe-4f4d-25e18918132f@gmail.com>
-Date:   Mon, 14 Jun 2021 22:04:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S233421AbhFNOQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 10:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232745AbhFNOQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 10:16:14 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1DDC061574
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 07:14:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=B2TZHk381oHEqI2pFW8AwGFr0g6/WiFU6NInsUgaBQc=; b=RLj5BwTkGTo5tdB81YUdfjjf9
+        1Kw4K6uFQQl494Bkoh64oB/2AYalOVHHheBjaClYU1x7FuaCVNNhNRPHzgthwZSHLZll5W4zGf4pf
+        encDtFAaYYXosPqSIpsAmLZr2ZjfK1V9OEOWY+tQT+MZKRA/C/J0O0BHo6hbPwdhVrnIw8VBIIEM3
+        aSN3qUgLsITERb3Qza86Ef1F0spB0hk4Snzbvai+WAq+TRexNHvnGzAZkMSwqioGrf15s2+J2RtEP
+        jR1QTf+1HHhvqUpb8uxeZ9w1jlOXD0O2b57peEPiFEZbrHiNi4UwKE7YFi+f/091rpket2D8/xYlh
+        m65xzfsfg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45008)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lsnLr-0004NG-Rk; Mon, 14 Jun 2021 15:14:07 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lsnLp-0004Bm-Ob; Mon, 14 Jun 2021 15:14:05 +0100
+Date:   Mon, 14 Jun 2021 15:14:05 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH v3 net-next 2/4] net: phy: nxp-c45-tja11xx: express
+ timestamp wraparound interval in terms of TS_SEC_MASK
+Message-ID: <20210614141405.GV22278@shell.armlinux.org.uk>
+References: <20210614134441.497008-1-olteanv@gmail.com>
+ <20210614134441.497008-3-olteanv@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210614070903.GA29976@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210614134441.497008-3-olteanv@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 6/14/2021 3:09 PM, Christoph Hellwig wrote:
-> On Mon, Jun 07, 2021 at 11:21:20PM +0800, Tianyu Lan wrote:
->>> dma_map_single can only be used on page baked memory, and if this is
->>> using page backed memory you wouldn't need to do thee phys_to_virt
->>> tricks.  Can someone explain the mess here in more detail?
->>
->> Sorry. Could you elaborate the issue? These pages in the pb array are not
->> allocated by DMA API and using dma_map_single() here is to map these pages'
->> address to bounce buffer physical address.
+On Mon, Jun 14, 2021 at 04:44:39PM +0300, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> dma_map_single just calls dma_map_page using virt_to_page.  So this
-> can't work on addresses not in the kernel linear mapping.
+> nxp_c45_reconstruct_ts() takes a partial hardware timestamp in @hwts,
+> with 2 bits of the 'seconds' portion, and a full PTP time in @ts.
 > 
+> It patches in the lower bits of @hwts into @ts, and to ensure that the
+> reconstructed timestamp is correct, it checks whether the lower 2 bits
+> of @hwts are not in fact higher than the lower 2 bits of @ts. This is
+> not logically possible because, according to the calling convention, @ts
+> was collected later in time than @hwts, but due to two's complement
+> arithmetic it can actually happen, because the current PTP time might
+> have wrapped around between when @hwts was collected and when @ts was,
+> yielding the lower 2 bits of @ts smaller than those of @hwts.
+> 
+> To correct for that situation which is expected to happen under normal
+> conditions, the driver subtracts exactly one wraparound interval from
+> the reconstructed timestamp, since the upper bits of that need to
+> correspond to what the upper bits of @hwts were, not to what the upper
+> bits of @ts were.
+> 
+> Readers might be confused because the driver denotes the amount of bits
+> that the partial hardware timestamp has to offer as TS_SEC_MASK
+> (timestamp mask for seconds). But it subtracts a seemingly unrelated
+> BIT(2), which is in fact more subtle: if the hardware timestamp provides
+> 2 bits of partial 'seconds' timestamp, then the wraparound interval is
+> 2^2 == BIT(2).
+> 
+> But nonetheless, it is better to express the wraparound interval in
+> terms of a definition we already have, so replace BIT(2) with
+> 1 + GENMASK(1, 0) which produces the same result but is clearer.
+> 
+> Suggested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> Cc: Richard Cochran <richardcochran@gmail.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The pages in the hv_page_buffer array here are in the kernel linear 
-mapping. The packet sent to host will contain an array which contains 
-transaction data. In the isolation VM, data in the these pages needs to 
-be copied to bounce buffer and so call dma_map_single() here to map 
-these data pages with bounce buffer. The vmbus has ring buffer where the 
-send/receive packets are copied to/from. The ring buffer has been 
-remapped to the extra space above shared gpa boundary/vTom during 
-probing Netvsc driver and so not call dma map function for vmbus ring
-buffer.
+Thanks!
 
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
