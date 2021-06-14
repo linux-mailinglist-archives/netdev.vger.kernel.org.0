@@ -2,202 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9193A706C
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 22:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA5923A70A7
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 22:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234397AbhFNUcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 16:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51224 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234626AbhFNUcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 16:32:21 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C5CC061574;
-        Mon, 14 Jun 2021 13:30:16 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id c11so21906496ljd.6;
-        Mon, 14 Jun 2021 13:30:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/hnnncj7vzT6xrqQOtqK95hj1J3zQcIX0GD5ENHwYGs=;
-        b=Sf/C6jQAejQ7QgbqyKgzN5j9RKIEIYJ5qRCASL/CGyadtbYOldpIm39EE+PC/IKXuf
-         P8tJ6EJIryYoPG1+Fy2KA1D+ZHhcsLap7Y8VKeDn1AnPFqUxZ+rNJ4xuw8fmFAzS0n7F
-         DbJG3wesc2UbKZsKsj+rHOO9uXSbn86OdUlQalg6+3hnLjAJ/AhVrRQjFzYaXK+ynlfZ
-         IwG6Lx/G3uFxuU+hEOIPhrvgt/LS6Bg1CNUWUv3FIcqdaSjwP8Aim+e1DsTbUoskgPFH
-         07q4i7KlMmaO5Q4Z4XqSLYnOmdSguEV8WZjDyE3riaIy+dUZzZ6zOsOy/NnRPDA1TL14
-         TEig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/hnnncj7vzT6xrqQOtqK95hj1J3zQcIX0GD5ENHwYGs=;
-        b=TaZwYsptwrnXkdtpktSroOvEm+uT1+8XrfqQuL5Nmwk3+iToA6UsxnNUySDmNxtw68
-         aWDE/8tt5H5kOKtrPcdiiMrtkZFglPtXq9y4rXYhbMSuhpQOlonGZM1/LyDHxoyp+u87
-         Z/Ym+S+/LxDY3WdjRk1U7lixWHB+wB1SgibXHuTq4jQsup3DvOQR0GMue8uGCYvSMIYs
-         MLPSSYY8gHG9hdG0oWq9JmlT+WCAsY5OBYdkpywhN/5bM07ji+++K8Sv1yL0hsuDOO0V
-         0FdghefG/ct1VtFsUqgpiSyUtbOgN7nWrFHE7jUn8w08TP1qc1SvqO4FaoUg7S1J1Ngn
-         leiA==
-X-Gm-Message-State: AOAM531lu4WKRlrtEvnVdxQmxEXB5cgoy8bPud54jCSuH83HFfopfyQU
-        ddhAiXX/cVV5FgKLNLr9hkM=
-X-Google-Smtp-Source: ABdhPJwIAkPoePHhzl7KL6lSn4/Ac+1NH4oqgxaj2w/nYPwdN8ocoZPG8abc63Nw9LkwP5vtZ0O+8w==
-X-Received: by 2002:a2e:9959:: with SMTP id r25mr14631258ljj.317.1623702614608;
-        Mon, 14 Jun 2021 13:30:14 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.229.24])
-        by smtp.gmail.com with ESMTPSA id d4sm1574079lfk.295.2021.06.14.13.30.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 13:30:14 -0700 (PDT)
-Date:   Mon, 14 Jun 2021 23:30:11 +0300
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     alex.aring@gmail.com, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        stefan@datenfreihafen.org,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Suggestions on how to debug kernel crashes where printk and gdb
- both does not work
-Message-ID: <20210614233011.79ebe38a@gmail.com>
-In-Reply-To: <CAD-N9QXUrv7zjSyUjsJsWO6KZDhGYtkTCK9U_ZuPA7awJ8P3Yw@mail.gmail.com>
-References: <CAD-N9QUUCSpZjg5RwdKBNF7xx127E6fUowTZkUhm66C891Fpkg@mail.gmail.com>
-        <20210614163401.52807197@gmail.com>
-        <CAD-N9QV5_91A6n5QcrafmQRbqH_qzFRatno-6z0i7q-V9VnLzg@mail.gmail.com>
-        <20210614172512.799db10d@gmail.com>
-        <CAD-N9QUhQT8pG8Une8Fac1pJaiVd_mi9AU2c_nkPjTi36xbutQ@mail.gmail.com>
-        <20210614174727.6a38b584@gmail.com>
-        <CAD-N9QXUrv7zjSyUjsJsWO6KZDhGYtkTCK9U_ZuPA7awJ8P3Yw@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
+        id S235748AbhFNUpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 16:45:04 -0400
+Received: from mail.asbjorn.biz ([185.38.24.25]:49359 "EHLO mail.asbjorn.biz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234933AbhFNUpD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Jun 2021 16:45:03 -0400
+X-Greylist: delayed 384 seconds by postgrey-1.27 at vger.kernel.org; Mon, 14 Jun 2021 16:45:02 EDT
+Received: from x201s (space.labitat.dk [185.38.175.0])
+        by mail.asbjorn.biz (Postfix) with ESMTPSA id E8C581C29733;
+        Mon, 14 Jun 2021 20:36:29 +0000 (UTC)
+Received: by x201s (Postfix, from userid 1000)
+        id 834A1201BAA; Mon, 14 Jun 2021 20:34:20 +0000 (UTC)
+From:   =?UTF-8?q?Asbj=C3=B8rn=20Sloth=20T=C3=B8nnesen?= 
+        <asbjorn@asbjorn.st>
+To:     netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Asbj=C3=B8rn=20Sloth=20T=C3=B8nnesen?= 
+        <asbjorn@asbjorn.st>, Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH iproute2] tc: pedit: add decrement operation
+Date:   Mon, 14 Jun 2021 20:33:24 +0000
+Message-Id: <20210614203324.236756-1-asbjorn@asbjorn.st>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Jun 2021 23:04:03 +0800
-Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+Implement a decrement operation for ttl and hoplimit.
 
-> On Mon, Jun 14, 2021 at 10:47 PM Pavel Skripkin
-> <paskripkin@gmail.com> wrote:
-> >
-> > On Mon, 14 Jun 2021 22:40:55 +0800
-> > Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> >
-> > > On Mon, Jun 14, 2021 at 10:25 PM Pavel Skripkin
-> > > <paskripkin@gmail.com> wrote:
-> > > >
-> > > > On Mon, 14 Jun 2021 22:19:10 +0800
-> > > > Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> > > >
-> > > > > On Mon, Jun 14, 2021 at 9:34 PM Pavel Skripkin
-> > > > > <paskripkin@gmail.com> wrote:
-> > > > > >
-> > > > > > On Mon, 14 Jun 2021 21:22:43 +0800
-> > > > > > Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> > > > > >
-> > > > > > > Dear kernel developers,
-> > > > > > >
-> > > > > > > I was trying to debug the crash - memory leak in
-> > > > > > > hwsim_add_one [1] recently. However, I encountered a
-> > > > > > > disgusting issue: my breakpoint and printk/pr_alert in the
-> > > > > > > functions that will be surely executed do not work. The
-> > > > > > > stack trace is in the following. I wrote this email to
-> > > > > > > ask for some suggestions on how to debug such cases?
-> > > > > > >
-> > > > > > > Thanks very much. Looking forward to your reply.
-> > > > > > >
-> > > > > >
-> > > > > > Hi, Dongliang!
-> > > > > >
-> > > > > > This bug is not similar to others on the dashboard. I spent
-> > > > > > some time debugging it a week ago. The main problem here,
-> > > > > > that memory allocation happens in the boot time:
-> > > > > >
-> > > > > > > [<ffffffff84359255>] kernel_init+0xc/0x1a7
-> > > > > > > init/main.c:1447
-> > > > > >
-> > > > >
-> > > > > Oh, nice catch. No wonder why my debugging does not work. :(
-> > > > >
-> > > > > > and reproducer simply tries to
-> > > > > > free this data. You can use ftrace to look at it. Smth like
-> > > > > > this:
-> > > > > >
-> > > > > > $ echo 'hwsim_*' > $TRACE_DIR/set_ftrace_filter
-> > > > >
-> > > > > Thanks for your suggestion.
-> > > > >
-> > > > > Do you have any conclusions about this case? If you have found
-> > > > > out the root cause and start writing patches, I will turn my
-> > > > > focus to other cases.
-> > > >
-> > > > No, I had some busy days and I have nothing about this bug for
-> > > > now. I've just traced the reproducer execution and that's all :)
-> > > >
-> > > > I guess, some error handling paths are broken, but Im not sure
-> > >
-> > > In the beginning, I agreed with you. However, after I manually
-> > > checked functions: hwsim_probe (initialization) and  hwsim_remove
-> > > (cleanup), then things may be different. The cleanup looks
-> > > correct to me. I would like to debug but stuck with the debugging
-> > > process.
-> > >
-> > > And there is another issue: the cleanup function also does not
-> > > output anything or hit the breakpoint. I don't quite understand
-> > > it since the cleanup is not at the boot time.
-> > >
-> > > Any idea?
-> > >
-> >
-> > Output from ftrace (syzkaller repro):
-> >
-> > root@syzkaller:~# cat /sys/kernel/tracing/trace
-> > # tracer: function_graph
-> > #
-> > # CPU  DURATION                  FUNCTION CALLS
-> > # |     |   |                     |   |   |   |
-> >  1)               |  hwsim_del_radio_nl() {
-> >  1)               |    hwsim_del() {
-> >  1)               |      hwsim_edge_unsubscribe_me() {
-> >  1) ! 310.041 us  |        hwsim_free_edge();
-> >  1) ! 665.221 us  |      }
-> >  1) * 52999.05 us |    }
-> >  1) * 53035.38 us |  }
-> >
-> > Cleanup function is not the case, I think :)
-> 
-> It seems like I spot the incorrect cleanup function (hwsim_remove is
-> the right one is in my mind). Let me learn how to use ftrace to log
-> the executed functions and then discuss this case with you guys.
-> 
+Since this is just syntactic sugar, it goes that:
 
-Hmmm, I think, there is a mess with lists.
+  tc filter add ... action pedit ex munge ip ttl dec ...
+  tc filter add ... action pedit ex munge ip6 hoplimit dec ...
 
-I just want to share my debug results, I have no idea about the fix for
-now.
+is just a more readable version of this:
 
-In hwsim_probe() edge for phy->idx = 1 is allocated, then reproduces
-sends a request to delete phy with idx == 0, so this check in
-hwsim_edge_unsubscribe_me():
+  tc filter add ... action pedit ex munge ip ttl add 0xff ...
+  tc filter add ... action pedit ex munge ip6 hoplimit add 0xff ...
 
-	if (e->endpoint->idx == phy->idx) { 
-		... clean up code ...
-	}
+This feature was suggested by some pseudo tc examples in Mellanox's
+documentation[1], but wasn't present in neither their mlnx-iproute2
+nor iproute2.
 
-won't be passed and edge won't be freed (because it was allocated for
-phy with idx == 1). Allocated edge for phy 1 becomes leaked after
-hwsim_del(). I can't really see the code where phy with idx == 1 can
-be deleted from list...
+In order to avoid adding an extra parameter to parse_cmd(),
+I have re-used the `int type` parameter to also carry flags.
 
-Maybe, it's kmemleak bug. Similar strange case was with this one
-https://syzkaller.appspot.com/bug?id=3a325b8389fc41c1bc94de0f4ac437ed13cce584.
-I find it strange, that I could reach leaked pointers after kmemleak reported a
-leak. Im not familiar with kmemleak internals and I might be wrong 
+Tested with skip_sw on Mellanox ConnectX-6 Dx.
 
+[1] https://docs.mellanox.com/pages/viewpage.action?pageId=47033989
 
-With regards,
-Pavel Skripkin
+Signed-off-by: Asbjørn Sloth Tønnesen <asbjorn@asbjorn.st>
+---
+ man/man8/tc-pedit.8 |  8 +++++++-
+ tc/m_pedit.c        | 27 ++++++++++++++++++++++-----
+ tc/m_pedit.h        |  2 ++
+ tc/p_ip.c           |  2 +-
+ tc/p_ip6.c          |  2 +-
+ 5 files changed, 33 insertions(+), 8 deletions(-)
+
+diff --git a/man/man8/tc-pedit.8 b/man/man8/tc-pedit.8
+index 376ad4a8..2e2662cd 100644
+--- a/man/man8/tc-pedit.8
++++ b/man/man8/tc-pedit.8
+@@ -76,8 +76,9 @@ pedit - generic packet editor action
+ .BR clear " | " invert " | " set
+ .IR VAL " | "
+ .BR add
+ .IR VAL " | "
++.BR decrement " | "
+ .BR preserve " } [ " retain
+ .IR RVAL " ]"
+ 
+ .ti -8
+@@ -95,9 +96,9 @@ chosen automatically based on the header field size.
+ .TP
+ .B ex
+ Use extended pedit.
+ .I EXTENDED_LAYERED_OP
+-and the add
++and the add/decrement
+ .I CMD_SPEC
+ are allowed only in this mode.
+ .TP
+ .BI offset " OFFSET " "\fR{ \fBu32 \fR| \fBu16 \fR| \fBu8 \fR}"
+@@ -287,8 +288,13 @@ Add the addressed data by a specific value. The size of
+ is defined by the size of the addressed header field in
+ .IR EXTENDED_LAYERED_OP .
+ This operation is supported only for extended layered op.
+ .TP
++.BI decrement
++Decrement the addressed data by one.
++This operation is supported only for
++.BR ip " " ttl " and " ip6 " " hoplimit "."
++.TP
+ .B preserve
+ Keep the addressed data as is.
+ .TP
+ .BI retain " RVAL"
+diff --git a/tc/m_pedit.c b/tc/m_pedit.c
+index 74c91e8d..9ac52336 100644
+--- a/tc/m_pedit.c
++++ b/tc/m_pedit.c
+@@ -339,8 +339,11 @@ int parse_cmd(int *argc_p, char ***argv_p, __u32 len, int type, __u32 retain,
+ 	__u32 o = 0xFF;
+ 	int res = -1;
+ 	int argc = *argc_p;
+ 	char **argv = *argv_p;
++	int flags = type;
++
++	type &= 0xff; /* strip flags */
+ 
+ 	if (argc <= 0)
+ 		return -1;
+ 
+@@ -359,17 +362,26 @@ int parse_cmd(int *argc_p, char ***argv_p, __u32 len, int type, __u32 retain,
+ 		   matches(*argv, "add") == 0) {
+ 		if (matches(*argv, "add") == 0)
+ 			tkey->cmd = TCA_PEDIT_KEY_EX_CMD_ADD;
+ 
+-		if (!sel->extended && tkey->cmd) {
+-			fprintf(stderr,
+-				"Non extended mode. only 'set' command is supported\n");
+-			return -1;
+-		}
++		if (!sel->extended && tkey->cmd)
++			goto non_ext_only_set_cmd;
+ 
+ 		NEXT_ARG();
+ 		if (parse_val(&argc, &argv, val, type))
+ 			return -1;
++	} else if (matches(*argv, "decrement") == 0) {
++		if ((flags & TFLAG_ALLOW_DEC) == 0) {
++			fprintf(stderr,
++				"decrement command is not supported for this field\n");
++			return -1;
++		}
++
++		if (!sel->extended)
++			goto non_ext_only_set_cmd;
++
++		tkey->cmd = TCA_PEDIT_KEY_EX_CMD_ADD;
++		*v = retain; /* decrement by overflow */
+ 	} else if (matches(*argv, "preserve") == 0) {
+ 		retain = 0;
+ 	} else {
+ 		if (matches(*argv, "clear") != 0)
+@@ -422,16 +434,21 @@ int parse_cmd(int *argc_p, char ***argv_p, __u32 len, int type, __u32 retain,
+ 		goto done;
+ 	}
+ 
+ 	return -1;
++
+ done:
+ 	if (pedit_debug)
+ 		printf("parse_cmd done argc %d %s offset %d length %d\n",
+ 		       argc, *argv, tkey->off, len);
+ 	*argc_p = argc;
+ 	*argv_p = argv;
+ 	return res;
+ 
++non_ext_only_set_cmd:
++	fprintf(stderr,
++		"Non extended mode. only 'set' command is supported\n");
++	return -1;
+ }
+ 
+ static int parse_offset(int *argc_p, char ***argv_p, struct m_pedit_sel *sel,
+ 			struct m_pedit_key *tkey)
+diff --git a/tc/m_pedit.h b/tc/m_pedit.h
+index 5d3628a7..ed6bb8da 100644
+--- a/tc/m_pedit.h
++++ b/tc/m_pedit.h
+@@ -32,8 +32,10 @@
+ #define TINT 3
+ #define TU32 4
+ #define TMAC 5
+ 
++#define TFLAG_ALLOW_DEC (1<<8)
++
+ #define RU32 0xFFFFFFFF
+ #define RU16 0xFFFF
+ #define RU8 0xFF
+ 
+diff --git a/tc/p_ip.c b/tc/p_ip.c
+index c385ac6d..5c5a94bf 100644
+--- a/tc/p_ip.c
++++ b/tc/p_ip.c
+@@ -67,9 +67,9 @@ parse_ip(int *argc_p, char ***argv_p,
+ 	}
+ 	if (strcmp(*argv, "ttl") == 0) {
+ 		NEXT_ARG();
+ 		tkey->off = 8;
+-		res = parse_cmd(&argc, &argv, 1, TU32, RU8, sel, tkey);
++		res = parse_cmd(&argc, &argv, 1, TU32 | TFLAG_ALLOW_DEC, RU8, sel, tkey);
+ 		goto done;
+ 	}
+ 	if (strcmp(*argv, "protocol") == 0) {
+ 		NEXT_ARG();
+diff --git a/tc/p_ip6.c b/tc/p_ip6.c
+index 83a6ae81..c82b1244 100644
+--- a/tc/p_ip6.c
++++ b/tc/p_ip6.c
+@@ -70,9 +70,9 @@ parse_ip6(int *argc_p, char ***argv_p,
+ 	}
+ 	if (strcmp(*argv, "hoplimit") == 0) {
+ 		NEXT_ARG();
+ 		tkey->off = 7;
+-		res = parse_cmd(&argc, &argv, 1, TU32, RU8, sel, tkey);
++		res = parse_cmd(&argc, &argv, 1, TU32 | TFLAG_ALLOW_DEC, RU8, sel, tkey);
+ 		goto done;
+ 	}
+ 	if (strcmp(*argv, "traffic_class") == 0) {
+ 		NEXT_ARG();
+-- 
+2.32.0
+
