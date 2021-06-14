@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 800D43A5C3B
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 06:32:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 301903A5C32
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 06:32:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232469AbhFNEeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 00:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38222 "EHLO
+        id S232405AbhFNEd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 00:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232336AbhFNEdk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 00:33:40 -0400
+        with ESMTP id S232251AbhFNEdj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 00:33:39 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A61C061756
-        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 21:31:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680A6C061766
+        for <netdev@vger.kernel.org>; Sun, 13 Jun 2021 21:31:37 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lseFz-0001kU-Uk; Mon, 14 Jun 2021 06:31:27 +0200
+        id 1lseFz-0001kV-Q5; Mon, 14 Jun 2021 06:31:27 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lseFy-00035K-So; Mon, 14 Jun 2021 06:31:26 +0200
+        id 1lseFy-00035T-Tp; Mon, 14 Jun 2021 06:31:26 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -30,14 +30,13 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <linux@rempel-privat.de>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [PATCH net-next v5 6/8] net: dsa: microchip: ksz8795: add LINK_MD register support
-Date:   Mon, 14 Jun 2021 06:31:23 +0200
-Message-Id: <20210614043125.11658-7-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v5 7/8] net: dsa: dsa_slave_phy_connect(): extend phy's flags with port specific phy flags
+Date:   Mon, 14 Jun 2021 06:31:24 +0200
+Message-Id: <20210614043125.11658-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210614043125.11658-1-o.rempel@pengutronix.de>
 References: <20210614043125.11658-1-o.rempel@pengutronix.de>
@@ -51,101 +50,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oleksij Rempel <linux@rempel-privat.de>
+The current get_phy_flags() is only processed when we connect to a PHY
+via a designed phy-handle property via phylink_of_phy_connect(), but if
+we fallback on the internal MDIO bus created by a switch and take the
+dsa_slave_phy_connect() path then we would not be processing that flag
+and using it at PHY connection time.
 
-Add mapping for LINK_MD register to enable cable testing functionality.
-
+Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c     | 22 ++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz8795_reg.h |  5 +++--
- 2 files changed, 25 insertions(+), 2 deletions(-)
+ net/dsa/slave.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 690304c87b02..e1731ae4497d 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -6,6 +6,7 @@
-  *	Tristram Ha <Tristram.Ha@microchip.com>
-  */
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index d4756b920108..915c7cab7900 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1749,7 +1749,8 @@ static void dsa_slave_phylink_fixed_state(struct phylink_config *config,
+ }
  
-+#include <linux/bitfield.h>
- #include <linux/delay.h>
- #include <linux/export.h>
- #include <linux/gpio.h>
-@@ -729,6 +730,7 @@ static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 	u8 restart, speed, ctrl, link;
- 	const u8 *regs = ksz8->regs;
- 	int processed = true;
-+	u8 val1, val2;
- 	u16 data = 0;
- 	u8 p = phy;
- 
-@@ -816,6 +818,22 @@ static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 		if (data & ~LPA_SLCT)
- 			data |= LPA_LPACK;
- 		break;
-+	case PHY_REG_LINK_MD:
-+		ksz_pread8(dev, p, REG_PORT_LINK_MD_CTRL, &val1);
-+		ksz_pread8(dev, p, REG_PORT_LINK_MD_RESULT, &val2);
-+		if (val1 & PORT_START_CABLE_DIAG)
-+			data |= PHY_START_CABLE_DIAG;
-+
-+		if (val1 & PORT_CABLE_10M_SHORT)
-+			data |= PHY_CABLE_10M_SHORT;
-+
-+		data |= FIELD_PREP(PHY_CABLE_DIAG_RESULT_M,
-+				FIELD_GET(PORT_CABLE_DIAG_RESULT_M, val1));
-+
-+		data |= FIELD_PREP(PHY_CABLE_FAULT_COUNTER_M,
-+				(FIELD_GET(PORT_CABLE_FAULT_COUNTER_H, val1) << 8) |
-+				FIELD_GET(PORT_CABLE_FAULT_COUNTER_L, val2));
-+		break;
- 	case PHY_REG_PHY_CTRL:
- 		ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
- 		if (link & PORT_MDIX_STATUS)
-@@ -932,6 +950,10 @@ static void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 		if (data != ctrl)
- 			ksz_pwrite8(dev, p, regs[P_LOCAL_CTRL], data);
- 		break;
-+	case PHY_REG_LINK_MD:
-+		if (val & PHY_START_CABLE_DIAG)
-+			ksz_port_cfg(dev, p, REG_PORT_LINK_MD_CTRL, PORT_START_CABLE_DIAG, true);
-+		break;
- 	default:
- 		break;
+ /* slave device setup *******************************************************/
+-static int dsa_slave_phy_connect(struct net_device *slave_dev, int addr)
++static int dsa_slave_phy_connect(struct net_device *slave_dev, int addr,
++				 u32 flags)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(slave_dev);
+ 	struct dsa_switch *ds = dp->ds;
+@@ -1760,6 +1761,8 @@ static int dsa_slave_phy_connect(struct net_device *slave_dev, int addr)
+ 		return -ENODEV;
  	}
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index f925ddee5238..a32355624f31 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -249,7 +249,7 @@
- #define REG_PORT_4_LINK_MD_CTRL		0x4A
  
- #define PORT_CABLE_10M_SHORT		BIT(7)
--#define PORT_CABLE_DIAG_RESULT_M	0x3
-+#define PORT_CABLE_DIAG_RESULT_M	GENMASK(6, 5)
- #define PORT_CABLE_DIAG_RESULT_S	5
- #define PORT_CABLE_STAT_NORMAL		0
- #define PORT_CABLE_STAT_OPEN		1
-@@ -753,13 +753,14 @@
- #define PHY_REG_LINK_MD			0x1D
++	slave_dev->phydev->dev_flags |= flags;
++
+ 	return phylink_connect_phy(dp->pl, slave_dev->phydev);
+ }
  
- #define PHY_START_CABLE_DIAG		BIT(15)
-+#define PHY_CABLE_DIAG_RESULT_M		GENMASK(14, 13)
- #define PHY_CABLE_DIAG_RESULT		0x6000
- #define PHY_CABLE_STAT_NORMAL		0x0000
- #define PHY_CABLE_STAT_OPEN		0x2000
- #define PHY_CABLE_STAT_SHORT		0x4000
- #define PHY_CABLE_STAT_FAILED		0x6000
- #define PHY_CABLE_10M_SHORT		BIT(12)
--#define PHY_CABLE_FAULT_COUNTER		0x01FF
-+#define PHY_CABLE_FAULT_COUNTER_M	GENMASK(8, 0)
- 
- #define PHY_REG_PHY_CTRL		0x1F
- 
+@@ -1804,7 +1807,7 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
+ 		/* We could not connect to a designated PHY or SFP, so try to
+ 		 * use the switch internal MDIO bus instead
+ 		 */
+-		ret = dsa_slave_phy_connect(slave_dev, dp->index);
++		ret = dsa_slave_phy_connect(slave_dev, dp->index, phy_flags);
+ 		if (ret) {
+ 			netdev_err(slave_dev,
+ 				   "failed to connect to port %d: %d\n",
 -- 
 2.29.2
 
