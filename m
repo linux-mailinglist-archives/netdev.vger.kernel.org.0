@@ -2,253 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF8303A6913
-	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 16:34:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F09F3A692E
+	for <lists+netdev@lfdr.de>; Mon, 14 Jun 2021 16:42:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbhFNOgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 10:36:11 -0400
-Received: from mail-dm6nam11on2065.outbound.protection.outlook.com ([40.107.223.65]:6977
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232815AbhFNOgI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Jun 2021 10:36:08 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aUuVzY+ZCefYcZwx2l7k4epZL/J2HXiARvB8aFgNBdsVXMemE6SFmSUvo+4HZXelSB4R6f/YQ9963LnJ8HQCs6xQJ5gpOSJmfSLV3ByWUXiD+YzOFDB5g/RHxCwNK/w1V81w2MJxhV4czzfgez1u00jU3QQ7TDC5GqBdr8ZgMsYYAMk6zOS8ru3s3ymBPbqc82rokRX+3tu3n16USROTFnva6tRARopVAFwnlen1WGSlIy5wJ6rsprogEbM6g7vcRGlxzq99CisC59AjF2ZdqcOWfODvzZZnpBlhuX+uDaJ9t78Rw5q9Tssued0zCPgSwQb+ycN/kRKCE6uwmtQXHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j59L922PEVGUZI5CBGMuU3BFYi9NceluLMaftbnxxA4=;
- b=nEbsD8JoN2/458nWMMgAIZa3gUG1J1ERBf9yOt9/uS+nOjiEu9rRsW56qvTzKDDW9wKwN4CF9ejNmb9wwGClDNoUIo6aLwX8VyQTLZvFhZ0Ce85croKoxT+JV1nGoZRCtr9z8OAX8WyZrKncI6tk8/LS/xl9CYfwcGWaDy1pEywYKoKPYR7Us+zZ1x+w2m6LtCaoJ613yyCK4I4YFACM+MeXj67M9BzY5DvKcRwn9ggTAW7GVeq1rVrZoBYB3itQ/hEFapiks924iKE/XA9nOnuKl7cwWqbGvq1MkLLgLjF9+9Rb0hQw7IqUblrf0F9dXLTceO0C+yVKaZBmKiBqVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j59L922PEVGUZI5CBGMuU3BFYi9NceluLMaftbnxxA4=;
- b=KxE24u+1d7YBkf9YqGZH0lOxc/vwdrD5CldYeEvl8RimJ576cCCA46l9CW38RJ3J1ITvVwnQRxxQMv2Ki7c+MYFVE0Or7faZ/X7+un1OupQ1npeOt4FYa910oACRRxfgrKFg+tDbZO0gW9rCIuir4Mx9TlvOUwk5LgSfonHutoySn4RIXsmJ3FPB42lAqimZFCkveZiTpsyHJplPl6/GAL+eSOgbyqyfwhFarR7Q0rrgnKc0toLrGvnHoOjJItjmawTRCAJcle+mKr3xBPOXZzeV0XNnPhoMLxtWWxkm1kb7f71odDuSYVpJzzYB5JHM0Wlpwg7xMFbXd1PUlRtZgw==
-Received: from CO2PR05CA0008.namprd05.prod.outlook.com (2603:10b6:102:2::18)
- by MN2PR12MB3950.namprd12.prod.outlook.com (2603:10b6:208:16d::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21; Mon, 14 Jun
- 2021 14:34:02 +0000
-Received: from CO1NAM11FT040.eop-nam11.prod.protection.outlook.com
- (2603:10b6:102:2:cafe::db) by CO2PR05CA0008.outlook.office365.com
- (2603:10b6:102:2::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.9 via Frontend
- Transport; Mon, 14 Jun 2021 14:34:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT040.mail.protection.outlook.com (10.13.174.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4219.21 via Frontend Transport; Mon, 14 Jun 2021 14:34:02 +0000
-Received: from sw-mtx-036.mtx.labs.mlnx (172.20.187.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 14 Jun
- 2021 14:34:02 +0000
-From:   Huy Nguyen <huyn@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <steffen.klassert@secunet.com>, <saeedm@nvidia.com>,
-        <borisp@nvidia.com>, <raeds@nvidia.com>, <danielj@nvidia.com>,
-        <yossiku@nvidia.com>, <kuba@kernel.org>, <huyn@nvidia.com>
-Subject: [PATCH net-next v5 3/3] net/mlx5: Fix checksum issue of VXLAN and IPsec crypto offload
-Date:   Mon, 14 Jun 2021 17:33:49 +0300
-Message-ID: <20210614143349.74866-4-huyn@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210614143349.74866-1-huyn@nvidia.com>
-References: <20210614143349.74866-1-huyn@nvidia.com>
+        id S232995AbhFNOom (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 10:44:42 -0400
+Received: from mail-ed1-f41.google.com ([209.85.208.41]:38598 "EHLO
+        mail-ed1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232789AbhFNOol (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 10:44:41 -0400
+Received: by mail-ed1-f41.google.com with SMTP id t7so1629248edd.5;
+        Mon, 14 Jun 2021 07:42:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xeKhQPh1Flb+tUHgI3Evju8LkzF+UVVPLnM1EMj1AbE=;
+        b=hnyEavFEYT7mdJN620u6qpcNNOmQT6H8ehoFk5TXIUs2wWzp5y8mxp9Qdiwe3d3J3a
+         pp/nEzoWJaRvsT/f9WF/pGE3FgG+bIzvKPNCxBLtddyzxRdjK4wnn4C+h84o1vI3Z9u1
+         TmDBrKxIzyCTqejUO2I/jI3WZ6oHcTE8ai83ZnutlGWxYgP16y+zvBn96WFlJCCErKH1
+         UqqhhmKLORDiQDkXsGr9gBIlEZcncJIBUj+DxGfZJdyrfLH20FdDuF7LjqVez180top3
+         sfwKbax9qxxET/7FQ33K3WkMT9PtHTFHRwmNJQi3NCD2LjH8YMogziFTelHb6TYTTrGN
+         wzWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xeKhQPh1Flb+tUHgI3Evju8LkzF+UVVPLnM1EMj1AbE=;
+        b=tV63JH7VCRQaxzRnOTeDlPpVc4Y06g/yXakxPir57rqu7iz/vleJBF85ZRMOdAiJEs
+         PF1695zjoKUTbxoYo/mKA/XKm1cRLA0314IueTNYE4S2b6+yaBJELBnE+QN0yuEKuk5r
+         vDOOY40v372KChqZiCrGB8ltAxeP6icplIsOv3yxoZ/RC7ofj9wdjmjQIqD0rk1Mdkwg
+         mKkBhWpCe18Dc/YDPC8RlSWHRk2dNLLOxD5kTopXFZRAcoslD2D8kuErzH66Gz1VISpU
+         5cch5El/q6UcRw342Ngt2rMW1CsYV8+Sx1ZLLA4VgdxzFRTa0Zflkzdpo5XlGKY3mjEk
+         eI2w==
+X-Gm-Message-State: AOAM530DdQdGfMi7mNvQSsyB4wY/VwjErjCc8XDuqFlmqof6Lw+zFXcy
+        axm8xa4uTCTQ22IpAVNGpds7xocyWiDoKUuk/AU=
+X-Google-Smtp-Source: ABdhPJyvn6iYmzaX/eieuNnZhYu4qyZbRg3qRXb0Tqi0Lvnpu1osLzRWrOifWWBX00nFinh7TSC7oRwhdVtpqMYvAvQ=
+X-Received: by 2002:aa7:ce86:: with SMTP id y6mr17434142edv.309.1623681690012;
+ Mon, 14 Jun 2021 07:41:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7e75165c-0ed0-4141-01e8-08d92f4174b5
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3950:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB39505141541CB0207DDA9EC5A2319@MN2PR12MB3950.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SHSnuhyraRjor9i+chu1qg+2IqoExZjOk4gADgc33P6vt14fnZ2S765NrGk6GvsUllvtser/pWLTLtQYhWkDDkMWo9Zyj96K9br//WjiM2jcGb/HH4e7YROJdm7buVS2S9vbfuCbs8BmJGMZShEp+p/7qmCNS5a4sMFXAyrNSQRWzs0qr0k/hkF4sCbpaYV/6jG2GIAIZtd4OWBMs2LBWJN7XFpjylRMZ6InqN5kortT7K6SuIXs51BLKK8d5G0QSSOZsHcj4ldoOtST/r3QAWovc3lDq6HFUwyRYdCa97Skv8N4SG49TbKYVOVA+Z1umtQW7esvUcBka3gsJw1a/W+06y/eZ5BALJs9RLwYwNXxUDnmF/rdjRrksDDBYWJrpuUR3A35lbjpQo1O73Yy+sJQ3JGDMpfdsb/ZMhjJ1WxAKcj5f/EGfq6z7aaIfRAFqM9SJPhIl0DPD4gC3nxogvB5G+G5pzZTqyDPciy9B9yQSswki73VfCgbdtCNBD83LhMllPkq9mnf5eyVQazueY+N5f9PZ1J8l5lMLLx5mIMbY5G3XUxrn3D/5Iyh6YdPjd2PBHULVq3zSIwpLIJpZb/T3mv1sExGXsj7nT3PN4hdaujRn4608Dzj1IqUuHVMjM+t1lNSxk+ohXdkbKtLRb/Nf1AtQl/DupBf7P4lAcI=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(1076003)(26005)(36860700001)(7636003)(82310400003)(36906005)(16526019)(186003)(4326008)(6666004)(54906003)(2616005)(356005)(8676002)(426003)(2906002)(8936002)(83380400001)(498600001)(5660300002)(336012)(86362001)(47076005)(107886003)(36756003)(70206006)(70586007)(6916009);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2021 14:34:02.5895
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e75165c-0ed0-4141-01e8-08d92f4174b5
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT040.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3950
+References: <CAD-N9QUUCSpZjg5RwdKBNF7xx127E6fUowTZkUhm66C891Fpkg@mail.gmail.com>
+ <20210614163401.52807197@gmail.com> <CAD-N9QV5_91A6n5QcrafmQRbqH_qzFRatno-6z0i7q-V9VnLzg@mail.gmail.com>
+ <20210614172512.799db10d@gmail.com>
+In-Reply-To: <20210614172512.799db10d@gmail.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Mon, 14 Jun 2021 22:40:55 +0800
+Message-ID: <CAD-N9QUhQT8pG8Une8Fac1pJaiVd_mi9AU2c_nkPjTi36xbutQ@mail.gmail.com>
+Subject: Re: Suggestions on how to debug kernel crashes where printk and gdb
+ both does not work
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     alex.aring@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        stefan@datenfreihafen.org,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The packet is VXLAN packet over IPsec transport mode tunnel
-which has the following format: [IP1 | ESP | UDP | VXLAN | IP2 | TCP]
-NVIDIA ConnectX card cannot do checksum offload for two L4 headers.
-The solution is using the checksum partial offload similar to
-VXLAN | TCP packet. Hardware calculates IP1, IP2 and TCP checksums and
-software calculates UDP checksum. However, unlike VXLAN | TCP case,
-IPsec's mlx5 driver cannot access the inner plaintext IP protocol type.
-Therefore, inner_ipproto is added in the sec_path structure
-to provide this information. Also, utilize the skb's csum_start to
-program L4 inner checksum offset.
+On Mon, Jun 14, 2021 at 10:25 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
+>
+> On Mon, 14 Jun 2021 22:19:10 +0800
+> Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+>
+> > On Mon, Jun 14, 2021 at 9:34 PM Pavel Skripkin <paskripkin@gmail.com>
+> > wrote:
+> > >
+> > > On Mon, 14 Jun 2021 21:22:43 +0800
+> > > Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+> > >
+> > > > Dear kernel developers,
+> > > >
+> > > > I was trying to debug the crash - memory leak in hwsim_add_one [1]
+> > > > recently. However, I encountered a disgusting issue: my
+> > > > breakpoint and printk/pr_alert in the functions that will be
+> > > > surely executed do not work. The stack trace is in the following.
+> > > > I wrote this email to ask for some suggestions on how to debug
+> > > > such cases?
+> > > >
+> > > > Thanks very much. Looking forward to your reply.
+> > > >
+> > >
+> > > Hi, Dongliang!
+> > >
+> > > This bug is not similar to others on the dashboard. I spent some
+> > > time debugging it a week ago. The main problem here, that memory
+> > > allocation happens in the boot time:
+> > >
+> > > > [<ffffffff84359255>] kernel_init+0xc/0x1a7 init/main.c:1447
+> > >
+> >
+> > Oh, nice catch. No wonder why my debugging does not work. :(
+> >
+> > > and reproducer simply tries to
+> > > free this data. You can use ftrace to look at it. Smth like this:
+> > >
+> > > $ echo 'hwsim_*' > $TRACE_DIR/set_ftrace_filter
+> >
+> > Thanks for your suggestion.
+> >
+> > Do you have any conclusions about this case? If you have found out the
+> > root cause and start writing patches, I will turn my focus to other
+> > cases.
+>
+> No, I had some busy days and I have nothing about this bug for now.
+> I've just traced the reproducer execution and that's all :)
+>
+> I guess, some error handling paths are broken, but Im not sure
 
-While at it, remove the call to mlx5e_set_eseg_swp and setup software parser
-fields directly in mlx5e_ipsec_set_swp. mlx5e_set_eseg_swp is not
-needed as the two features (GENEVE and IPsec) are different and adding
-this sharing layer creates unnecessary complexity and affect
-performance.
+In the beginning, I agreed with you. However, after I manually checked
+functions: hwsim_probe (initialization) and  hwsim_remove (cleanup),
+then things may be different. The cleanup looks correct to me. I would
+like to debug but stuck with the debugging process.
 
-For the case VXLAN packet over IPsec tunnel mode tunnel, checksum offload
-is disabled because the hardware does not support checksum offload for
-three L3 (IP) headers.
+And there is another issue: the cleanup function also does not output
+anything or hit the breakpoint. I don't quite understand it since the
+cleanup is not at the boot time.
 
-Signed-off-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Huy Nguyen <huyn@nvidia.com>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
----
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c  | 65 ++++++++++++++-----
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h  | 24 ++++++-
- 2 files changed, 70 insertions(+), 19 deletions(-)
+Any idea?
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-index a97e8d205094..33de8f0092a6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-@@ -136,8 +136,6 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
- 				struct mlx5_wqe_eth_seg *eseg, u8 mode,
- 				struct xfrm_offload *xo)
- {
--	struct mlx5e_swp_spec swp_spec = {};
--
- 	/* Tunnel Mode:
- 	 * SWP:      OutL3       InL3  InL4
- 	 * Pkt: MAC  IP     ESP  IP    L4
-@@ -146,23 +144,58 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
- 	 * SWP:      OutL3       InL4
- 	 *           InL3
- 	 * Pkt: MAC  IP     ESP  L4
-+	 *
-+	 * Tunnel(VXLAN TCP/UDP) over Transport Mode
-+	 * SWP:      OutL3                   InL3  InL4
-+	 * Pkt: MAC  IP     ESP  UDP  VXLAN  IP    L4
- 	 */
--	swp_spec.l3_proto = skb->protocol;
--	swp_spec.is_tun = mode == XFRM_MODE_TUNNEL;
--	if (swp_spec.is_tun) {
--		if (xo->proto == IPPROTO_IPV6) {
--			swp_spec.tun_l3_proto = htons(ETH_P_IPV6);
--			swp_spec.tun_l4_proto = inner_ipv6_hdr(skb)->nexthdr;
--		} else {
--			swp_spec.tun_l3_proto = htons(ETH_P_IP);
--			swp_spec.tun_l4_proto = inner_ip_hdr(skb)->protocol;
--		}
--	} else {
--		swp_spec.tun_l3_proto = skb->protocol;
--		swp_spec.tun_l4_proto = xo->proto;
-+
-+	/* Shared settings */
-+	eseg->swp_outer_l3_offset = skb_network_offset(skb) / 2;
-+	if (skb->protocol == htons(ETH_P_IPV6))
-+		eseg->swp_flags |= MLX5_ETH_WQE_SWP_OUTER_L3_IPV6;
-+
-+	/* Tunnel mode */
-+	if (mode == XFRM_MODE_TUNNEL) {
-+		eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
-+		eseg->swp_inner_l4_offset = skb_inner_transport_offset(skb) / 2;
-+		if (xo->proto == IPPROTO_IPV6)
-+			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
-+		if (inner_ip_hdr(skb)->protocol == IPPROTO_UDP)
-+			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
-+		return;
-+	}
-+
-+	/* Transport mode */
-+	if (mode != XFRM_MODE_TRANSPORT)
-+		return;
-+
-+	if (!xo->inner_ipproto) {
-+		eseg->swp_inner_l3_offset = skb_network_offset(skb) / 2;
-+		eseg->swp_inner_l4_offset = skb_inner_transport_offset(skb) / 2;
-+		if (skb->protocol == htons(ETH_P_IPV6))
-+			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
-+		if (xo->proto == IPPROTO_UDP)
-+			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
-+		return;
-+	}
-+
-+	/* Tunnel(VXLAN TCP/UDP) over Transport Mode */
-+	switch (xo->inner_ipproto) {
-+	case IPPROTO_UDP:
-+		eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
-+		fallthrough;
-+	case IPPROTO_TCP:
-+		eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
-+		eseg->swp_inner_l4_offset = (skb->csum_start + skb->head - skb->data) / 2;
-+		if (skb->protocol == htons(ETH_P_IPV6))
-+			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
-+		break;
-+	default:
-+		break;
- 	}
- 
--	mlx5e_set_eseg_swp(skb, eseg, &swp_spec);
-+	return;
- }
- 
- void mlx5e_ipsec_set_iv_esn(struct sk_buff *skb, struct xfrm_state *x,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-index cfa98272e4a9..5120a59361e6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-@@ -96,16 +96,34 @@ void mlx5e_ipsec_tx_build_eseg(struct mlx5e_priv *priv, struct sk_buff *skb,
- static inline netdev_features_t
- mlx5e_ipsec_feature_check(struct sk_buff *skb, netdev_features_t features)
- {
-+	struct xfrm_offload *xo = xfrm_offload(skb);
- 	struct sec_path *sp = skb_sec_path(skb);
- 
--	if (sp && sp->len) {
-+	if (sp && sp->len && xo) {
- 		struct xfrm_state *x = sp->xvec[0];
- 
--		if (x && x->xso.offload_handle)
--			return features;
-+		if (!x || !x->xso.offload_handle)
-+			goto out_disable;
-+
-+		if (xo->inner_ipproto) {
-+			/* Cannot support tunnel packet over IPsec tunnel mode
-+			 * because we cannot offload three IP header csum
-+			 */
-+			if (x->props.mode == XFRM_MODE_TUNNEL)
-+				goto out_disable;
-+
-+			/* Only support UDP or TCP L4 checksum */
-+			if (xo->inner_ipproto != IPPROTO_UDP &&
-+			    xo->inner_ipproto != IPPROTO_TCP)
-+				goto out_disable;
-+		}
-+
-+		return features;
-+
- 	}
- 
- 	/* Disable CSUM and GSO for software IPsec */
-+out_disable:
- 	return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
- }
- 
--- 
-2.24.1
-
+>
+>
+> >
+> > BTW, I only found another possible memory leak after some manual code
+> > review [1]. However, it is not the root cause for this crash.
+> >
+> > [1] https://lkml.org/lkml/2021/6/10/1297
+> >
+> > >
+> > > would work.
+> > >
+> > >
+> > > With regards,
+> > > Pavel Skripkin
+>
+>
+>
+>
+> With regards,
+> Pavel Skripkin
