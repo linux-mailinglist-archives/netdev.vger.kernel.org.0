@@ -2,68 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D10CD3A8909
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 21:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9EB33A8941
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 21:10:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231228AbhFOTCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 15:02:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51354 "EHLO mail.kernel.org"
+        id S230280AbhFOTM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 15:12:29 -0400
+Received: from mga12.intel.com ([192.55.52.136]:31617 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229749AbhFOTCI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Jun 2021 15:02:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1194260233;
-        Tue, 15 Jun 2021 19:00:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623783604;
-        bh=ude39hIxq49TflpRGJ66Qi5iNJUMs+vDTLBbbYYp1yE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qHU+a+el32mwuxfku0ywbEOyXgMpowc5g6kG4kmRzPYUCPsatvBD6BOPrrXWFfM5r
-         fWnG1DH59uqRKnUdhYe/cXom3m8kEaIRV6Dsmwy9rmNDbaQYXOWwE+ZJo2g3pqiPrP
-         bzLj9wgVvXVXko8eQM/BS4DDhqX+HBlvvSU9LndhRQw/PdFctBkKSDRBe/MWWTVmCy
-         6gWnoGN2tyE9cFRwUbZDh9cg/jOBvCql8PCjYUsV1STzHHEoTczE1tAo0XTfwldoIh
-         IIbzV9zKzpZwsfCEacBYjQANvT0l//PAKStEX81APQ9UCWyYR4wG+XDS/lkYCNBIHv
-         kEIurbeKpFScw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 01095609D8;
-        Tue, 15 Jun 2021 19:00:04 +0000 (UTC)
+        id S229965AbhFOTM1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 15:12:27 -0400
+IronPort-SDR: ce2NZFd+TeEI44pWfpuvinLsrLojCOaiBY77gkxL8JU2gt1jIsUKgU2fDGrolF+8W7lHdCURel
+ qZwP4CAriDmA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10016"; a="185746833"
+X-IronPort-AV: E=Sophos;i="5.83,276,1616482800"; 
+   d="scan'208";a="185746833"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2021 12:10:22 -0700
+IronPort-SDR: BBNWZZGqMtdYPlOKGya2IVVrKlKIErJ1J1T/1nnCVwL0ngXPP8rByLkAWUcEtYQQTtERSHPUJ3
+ 97gvO98efxGA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,276,1616482800"; 
+   d="scan'208";a="421225339"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga002.jf.intel.com with ESMTP; 15 Jun 2021 12:10:21 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Tue, 15 Jun 2021 12:10:21 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Tue, 15 Jun 2021 12:10:20 -0700
+Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
+ ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.2242.008;
+ Tue, 15 Jun 2021 12:10:20 -0700
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "lorenzo.bianconi@redhat.com" <lorenzo.bianconi@redhat.com>
+Subject: RE: [PATCH net-next] net: ice: ptp: fix compilation warning if
+ PTP_1588_CLOCK is disabled
+Thread-Topic: [PATCH net-next] net: ice: ptp: fix compilation warning if
+ PTP_1588_CLOCK is disabled
+Thread-Index: AQHXYfC+2ycw0ilY+kC1Kg1v1BdMpqsVcB2w
+Date:   Tue, 15 Jun 2021 19:10:20 +0000
+Message-ID: <94536f439c894854b5109e77e830729c@intel.com>
+References: <a4d2c3cd609708de38ca59b75e4eb7468750af47.1623766418.git.lorenzo@kernel.org>
+In-Reply-To: <a4d2c3cd609708de38ca59b75e4eb7468750af47.1623766418.git.lorenzo@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.22.254.132]
 Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: wwan: iosm: Fix htmldocs warnings
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162378360399.14059.5179537402082270786.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Jun 2021 19:00:03 +0000
-References: <20210615130822.26441-1-m.chetan.kumar@intel.com>
-In-Reply-To: <20210615130822.26441-1-m.chetan.kumar@intel.com>
-To:     M Chetan Kumar <m.chetan.kumar@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        johannes@sipsolutions.net, krishna.c.sudi@intel.com,
-        linuxwwan@intel.com, sfr@canb.auug.org.au
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue, 15 Jun 2021 18:38:22 +0530 you wrote:
-> Fixes .rst file warnings seen on linux-next build.
-> 
-> Fixes: f7af616c632e ("net: iosm: infrastructure")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: M Chetan Kumar <m.chetan.kumar@intel.com>
-> ---
->  Documentation/networking/device_drivers/wwan/iosm.rst | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-
-Here is the summary with links:
-  - net: wwan: iosm: Fix htmldocs warnings
-    https://git.kernel.org/netdev/net-next/c/925a56b2c085
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTG9yZW56byBCaWFuY29u
+aSA8bG9yZW56b0BrZXJuZWwub3JnPg0KPiBTZW50OiBUdWVzZGF5LCBKdW5lIDE1LCAyMDIxIDc6
+MTQgQU0NCj4gVG86IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGxvcmVuem8uYmlhbmNv
+bmlAcmVkaGF0LmNvbTsgS2VsbGVyLCBKYWNvYiBFIDxqYWNvYi5lLmtlbGxlckBpbnRlbC5jb20+
+DQo+IFN1YmplY3Q6IFtQQVRDSCBuZXQtbmV4dF0gbmV0OiBpY2U6IHB0cDogZml4IGNvbXBpbGF0
+aW9uIHdhcm5pbmcgaWYNCj4gUFRQXzE1ODhfQ0xPQ0sgaXMgZGlzYWJsZWQNCj4gDQo+IEZpeCB0
+aGUgZm9sbG93aW5nIGNvbXBpbGF0aW9uIHdhcm5pbmcgaWYgUFRQXzE1ODhfQ0xPQ0sgaXMgbm90
+IGVuYWJsZWQNCj4gDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2ljZS9pY2VfcHRwLmg6
+MTQ5OjE6DQo+ICAgIGVycm9yOiByZXR1cm4gdHlwZSBkZWZhdWx0cyB0byDigJhpbnTigJkgWy1X
+ZXJyb3I9cmV0dXJuLXR5cGVdDQo+ICAgIGljZV9wdHBfcmVxdWVzdF90cyhzdHJ1Y3QgaWNlX3B0
+cF90eCAqdHgsIHN0cnVjdCBza19idWZmICpza2IpDQo+IA0KPiBGaXhlczogZWE5Yjg0N2NkYTY0
+NyAoImljZTogZW5hYmxlIHRyYW5zbWl0IHRpbWVzdGFtcHMgZm9yIEU4MTAgZGV2aWNlcyIpDQo+
+IFNpZ25lZC1vZmYtYnk6IExvcmVuem8gQmlhbmNvbmkgPGxvcmVuem9Aa2VybmVsLm9yZz4NCg0K
+DQpIYWguIFRoYW5rcy4gVGhpcyBpcyBvYnZpb3VzbHkgY29ycmVjdC4NCg0KUmV2aWV3ZWQtYnk6
+IEphY29iIEtlbGxlciA8amFjb2IuZS5rZWxsZXJAaW50ZWwuY29tPg0KDQo+IC0tLQ0KPiAgZHJp
+dmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWNlL2ljZV9wdHAuaCB8IDIgKy0NCj4gIDEgZmlsZSBj
+aGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBh
+L2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2ljZS9pY2VfcHRwLmgNCj4gYi9kcml2ZXJzL25l
+dC9ldGhlcm5ldC9pbnRlbC9pY2UvaWNlX3B0cC5oDQo+IGluZGV4IDQxZTE0Zjk4ZjBlNi4uZDAx
+NTA3ZWJhMDM2IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9pY2Uv
+aWNlX3B0cC5oDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2ljZS9pY2VfcHRw
+LmgNCj4gQEAgLTE0NSw3ICsxNDUsNyBAQCBzdGF0aWMgaW5saW5lIGludCBpY2VfZ2V0X3B0cF9j
+bG9ja19pbmRleChzdHJ1Y3QgaWNlX3BmICpwZikNCj4gIAlyZXR1cm4gLTE7DQo+ICB9DQo+IA0K
+PiAtc3RhdGljIGlubGluZQ0KPiArc3RhdGljIGlubGluZSBzOA0KPiAgaWNlX3B0cF9yZXF1ZXN0
+X3RzKHN0cnVjdCBpY2VfcHRwX3R4ICp0eCwgc3RydWN0IHNrX2J1ZmYgKnNrYikNCj4gIHsNCj4g
+IAlyZXR1cm4gLTE7DQo+IC0tDQo+IDIuMzEuMQ0KDQo=
