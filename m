@@ -2,107 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E689E3A83E4
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 17:25:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B27CE3A8416
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 17:35:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231520AbhFOP1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 11:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52946 "EHLO
+        id S231629AbhFOPha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 11:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231307AbhFOP1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 11:27:15 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C46C061574;
-        Tue, 15 Jun 2021 08:25:09 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id v7so3002476pgl.2;
-        Tue, 15 Jun 2021 08:25:09 -0700 (PDT)
+        with ESMTP id S231623AbhFOPh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 11:37:28 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E836FC061767
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 08:35:22 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id c8so19422500ybq.1
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 08:35:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=phyWWBHzkBpxWNeuQJLinu+go2K8vm0IQjBk4bPOC5o=;
-        b=lLzyvAx1eLMBBQ9Nv6UWlyfS7bq09JfNMuTSA72Pidzs3ADzEJh5UZNx1+KXAA3QS7
-         9qLwmHEZw5Xk+RHIQHD4WFV677p8Yi8BHKdEaKAbO078PZhHBwsAaiGPsQh7STbxJ28j
-         3L9M/FShV9IoCoZ9A/Eh9ROBNoQr5F07JQAgtoeaUjtdIexg1Nk9GrQcrUXxHc9NNgOV
-         D2nJiITYw2LCAuwzkpdFMOLcTULHsDylV5FWGHXPlqFv03pjAoTRz+TNqy9uLL90+fK0
-         edPtBl2ZDPRtYC3zVnWadcZFdsLes9V2OCmaC/x9ZwogRVqJGjkXmr9UDyWpPbPkMxE8
-         xgYA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/TW++UaYH676wBlxAmC5epOAFhyC7J56lUkKh39lO7w=;
+        b=i9s9QuGtGYUZIpHX1mDsmvAli3APV1bnEClSUAQuQkTp6lMS5FBJ3rNm6CHo/TmTky
+         cCSQllfsfxI0Otq8jBh0LSthABYKt5wtuPiiV94lS9FfZfv4r1lfLRoVhAb7GhxdccOq
+         G+3zUsMBML7/+CbFx0w6DlyLp7QCEhjfDX9USfwbFNXfrvhhT9Ph6kuW73CclrBFekDG
+         6BI5skkWF91+i2He/zCobWaFuTzJi/4OTiOzg3WVcbBR4RUUJAl3+6IuctcpyAph+NoL
+         xQkAhb5ENwOuhvhLnBxRTUtcEhe9pcpXPudD9XW/yYFi4NZO7+c3CxcpzDQrKKgMYm/k
+         Bscg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=phyWWBHzkBpxWNeuQJLinu+go2K8vm0IQjBk4bPOC5o=;
-        b=r/+D0eo5vByu6Z5a5LdMbGRd1WPYAHS+JolUben3rfWchrPihzES/s2APVCiLTXZgY
-         xEWRlLhc2MaMrHSkbU5nPyIyKrHfbgZ2OAdCGP23qV74boRXi8Lr7WE0ht4PNaDXYktT
-         Fr2GutsYE2nChwuvTMCbp1HM4cxTfS0sMSQQhEctxDgj6sRrJ/3OCkFsbGu/AMecZoQa
-         W9rvqtMPILmZtrICGHcaO4J1QM2mEgAwmaG+9MUB3C6Oc8Pm0bKulf7ZYhfxJqidBHrW
-         UtKjAnwEsK+WJxqsFRPAcoDkRjvzRO9zlQ+3D/qf2hfTjFVp839p2VHn+yqA/iN01rUz
-         +guA==
-X-Gm-Message-State: AOAM533/8P0U7U6zvTbi75I1f3Bxx1m4Dn0I6HneBCii/K9iZhBS40R+
-        ghBTh0MhWDSnKsLGIu1DtBk=
-X-Google-Smtp-Source: ABdhPJwV2uWurEEhhhqeCwFEjPg+6PpMse5GS6lAolB+VF7P2QpHJP+RpOWgZ5BBFF0RzwB+7lXyqg==
-X-Received: by 2002:a65:6481:: with SMTP id e1mr85503pgv.140.1623770709416;
-        Tue, 15 Jun 2021 08:25:09 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
-        by smtp.gmail.com with ESMTPSA id u2sm15258266pfg.67.2021.06.15.08.24.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Jun 2021 08:25:09 -0700 (PDT)
-Subject: Re: [RFC PATCH V3 08/11] swiotlb: Add bounce buffer remap address
- setting function
-To:     Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        arnd@arndb.de, dave.hansen@linux.intel.com, luto@kernel.org,
-        peterz@infradead.org, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org,
-        hannes@cmpxchg.org, cai@lca.pw, krish.sadhukhan@oracle.com,
-        saravanand@fb.com, Tianyu.Lan@microsoft.com,
-        konrad.wilk@oracle.com, m.szyprowski@samsung.com,
-        boris.ostrovsky@oracle.com, jgross@suse.com,
-        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
-        xen-devel@lists.xenproject.org, davem@davemloft.net,
-        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, thomas.lendacky@amd.com,
-        brijesh.singh@amd.com, sunilmut@microsoft.com
-References: <20210530150628.2063957-1-ltykernel@gmail.com>
- <20210530150628.2063957-9-ltykernel@gmail.com>
- <20210607064312.GB24478@lst.de>
- <94038087-a33c-93c5-27bf-7ec1f6f5f0e3@arm.com> <20210614153252.GA1741@lst.de>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <9e347c4c-d4b9-129c-10d2-0d7ff1b917cc@gmail.com>
-Date:   Tue, 15 Jun 2021 23:24:57 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/TW++UaYH676wBlxAmC5epOAFhyC7J56lUkKh39lO7w=;
+        b=T02+nycez8uQpYo01NSBin/iROW7DIcJH5uKMTCTBkXWAzOd9BA6hjg1n9xJs53Urp
+         g1k73PYHG4cFg9XjJfN5VQDih+TRErwLRIDFSEmA3eoheDQgIRFlSMwvOqM14HpHOBOg
+         lfecrlyhYrekucKkjS8ZbZtzRRUU0vFYR2Kp4QGfoXixTULLQ18helfyyVaAik6Z1WrU
+         KB6ES1KrBAC5mXXAF8iD60SRWOlAVE3123i+HCMp0qFvSQttq6qPQenY6RFlPW9vd/zV
+         xrQzmPbaDLqZSWxaBn2YdFajoIU0ocm5kqL4Z4sgKzICDBM5cPg1Ica+7Sx24l1LMEFR
+         M+iQ==
+X-Gm-Message-State: AOAM530vfwG1ZIQk3wgUvyJJSZKrJ3L3Ofy/tSPQvD095cw3m9BOpioy
+        dsT1Gop18NE0Kc1gfnjQEwYy1jGMcRfzMHXNfR/fEw==
+X-Google-Smtp-Source: ABdhPJyU4VoPOerwCdHdI/jGGLIbnbwrAkYWkiCKScaeblfZCVDF0S0kXo5eZbi0qJoHTNMn0naDL9ROsuN4+BIxc08=
+X-Received: by 2002:a25:1fc6:: with SMTP id f189mr33298185ybf.452.1623771321743;
+ Tue, 15 Jun 2021 08:35:21 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210614153252.GA1741@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210612123224.12525-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20210612123224.12525-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 15 Jun 2021 17:35:10 +0200
+Message-ID: <CANn89iLxZxGXaVxLkxTkmNPF7XZdb8DKGMBFuMJLBdtrJRbrsA@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 00/11] Socket migration for SO_REUSEPORT.
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/14/2021 11:32 PM, Christoph Hellwig wrote:
-> On Mon, Jun 14, 2021 at 02:49:51PM +0100, Robin Murphy wrote:
->> FWIW, I think a better generalisation for this would be allowing
->> set_memory_decrypted() to return an address rather than implicitly
->> operating in-place, and hide all the various hypervisor hooks behind that.
-> 
-> Yes, something like that would be a good idea.  As-is
-> set_memory_decrypted is a pretty horribly API anyway due to passing
-> the address as void, and taking a size parameter while it works in units
-> of pages.  So I'd very much welcome a major overhaul of this API.
-> 
+On Sat, Jun 12, 2021 at 2:32 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+>
 
-Hi Christoph and Robin:
-	Thanks for your suggestion. I will try this idea in the next version. 
-Besides make the address translation into set_memory_
-decrypted() and return address, do you want to make other changes to the 
-API in order to make it more reasonable(e.g size parameter)?
+>
+>
+> Changelog:
+>  v8:
+>   * Make reuse const in reuseport_sock_index()
+>   * Don't use __reuseport_add_sock() in reuseport_alloc()
+>   * Change the arg of the second memcpy() in reuseport_grow()
+>   * Fix coding style to use goto in reuseport_alloc()
+>   * Keep sk_refcnt uninitialized in inet_reqsk_clone()
+>   * Initialize ireq_opt and ipv6_opt separately in reqsk_migrate_reset()
+>
+>   [ This series does not include a stats patch suggested by Yuchung Cheng
+>     not to drop Acked-by/Reviewed-by tags and save reviewer's time. I will
+>     post the patch as a follow up after this series is merged. ]
+>
 
-Thanks
+For the whole series.
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
