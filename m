@@ -2,77 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E335B3A7AE2
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 11:37:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF9083A7B48
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 11:56:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbhFOJjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 05:39:08 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:57078 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231651AbhFOJi4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Jun 2021 05:38:56 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 305C41A0466;
-        Tue, 15 Jun 2021 11:36:51 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 15BA81A29CD;
-        Tue, 15 Jun 2021 11:36:45 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 5660440310;
-        Tue, 15 Jun 2021 17:36:37 +0800 (+08)
-From:   Yangbo Lu <yangbo.lu@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, mptcp@lists.linux.dev,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
-        Sebastien Laveze <sebastien.laveze@nxp.com>
-Subject: [net-next, v3, 10/10] MAINTAINERS: add entry for PTP virtual clock driver
-Date:   Tue, 15 Jun 2021 17:45:17 +0800
-Message-Id: <20210615094517.48752-11-yangbo.lu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210615094517.48752-1-yangbo.lu@nxp.com>
-References: <20210615094517.48752-1-yangbo.lu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S231288AbhFOJ66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 05:58:58 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:39724 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230502AbhFOJ65 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 05:58:57 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 1F8651C0B76; Tue, 15 Jun 2021 11:56:52 +0200 (CEST)
+Date:   Tue, 15 Jun 2021 11:56:51 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     kernel list <linux-kernel@vger.kernel.org>,
+        Colin Ian King <colin.king@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Subject: [PATCH] cxgb4: fix wrong shift.
+Message-ID: <20210615095651.GA7479@duo.ucw.cz>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="5mCyUwZo2JvN/JJP"
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add entry for PTP virtual clock driver.
 
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
----
-Changes for v3:
-	- Added this patch.
----
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+--5mCyUwZo2JvN/JJP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 183cc61e2dc0..537f9f19dfa8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14841,6 +14841,13 @@ F:	drivers/net/phy/dp83640*
- F:	drivers/ptp/*
- F:	include/linux/ptp_cl*
- 
-+PTP VIRTUAL CLOCK SUPPORT
-+M:	Yangbo Lu <yangbo.lu@nxp.com>
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	drivers/ptp/ptp_vclock.c
-+F:	net/ethtool/phc_vclocks.c
-+
- PTRACE SUPPORT
- M:	Oleg Nesterov <oleg@redhat.com>
- S:	Maintained
--- 
-2.25.1
+While fixing coverity warning, commit
+dd2c79677375c37f8f9f8d663eb4708495d595ef introduced typo in shift
+value. Fix that.
+   =20
+Signed-off-by: Pavel Machek (CIP) <pavel@denx.de>
 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c b/drivers/ne=
+t/ethernet/chelsio/cxgb4/cxgb4_filter.c
+index 22c9ac922eba..6260b3bebd2b 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
+@@ -198,7 +198,7 @@ static void set_nat_params(struct adapter *adap, struct=
+ filter_entry *f,
+ 				      WORD_MASK, f->fs.nat_lip[3] |
+ 				      f->fs.nat_lip[2] << 8 |
+ 				      f->fs.nat_lip[1] << 16 |
+-				      (u64)f->fs.nat_lip[0] << 25, 1);
++				      (u64)f->fs.nat_lip[0] << 24, 1);
+ 		}
+ 	}
+=20
+
+
+--5mCyUwZo2JvN/JJP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYMh5YwAKCRAw5/Bqldv6
+8q6tAJ0QjHLPy2qQuG/ME6jlmA1SdaBCuACeL/XHAcxqI4Pf/8WPIHZTbHpgNwg=
+=6RO4
+-----END PGP SIGNATURE-----
+
+--5mCyUwZo2JvN/JJP--
