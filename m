@@ -2,84 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B0643A7645
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 07:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B0763A764D
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 07:13:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230303AbhFOFLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 01:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
+        id S230319AbhFOFPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 01:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbhFOFLE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 01:11:04 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982D5C061574
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 22:08:59 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id k7so20299021ejv.12
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 22:08:59 -0700 (PDT)
+        with ESMTP id S230286AbhFOFPi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 01:15:38 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BBEC061574
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 22:13:33 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ce15so20288004ejb.4
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 22:13:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=09R47lKbCpWZRtAc3ORA/O+p7bPMVZCUL7kYcHlzHt4=;
-        b=azLNpRDxSH0DjzxWYj6dQHZYFjfbwsWy2mCWabu5sapYVMqebWkMXS6nJFBvcxj0j2
-         DAiw+IsqPMCgtzKeAly/mInwvjTzZLCyub175dRba/c0g10SUqyESkDRZxZZfiKPwFEG
-         D1MdtKQzFXjJUNNzjIBFxKuKR+k8OKcPuQIiXvEiG7eta0/lkZ3I6l0NfvBiwikrrSVo
-         Ix0V6m39fPWKjErXLBJiBzmhXXOusOpdhQqPflEmWqw3PYWBpW7NSQtP9r+gMeXBHrY0
-         07uIFMmui1AgvLEwsZIxZU4UN9abpvouLX26+HkOPh0DK0woEJY+Fzv3+sbo/KZAbxrE
-         FZ0g==
+        bh=zBluklgTMc/Uw2SUbhlHlxNUQrJuHjtLqb4c08vReFY=;
+        b=m3J06Z8B8hXA4ArgylSzs1eaQ0pqCTRaBAPcJt86PEXgMhECQFoHcvl61zIBo8K7TR
+         lcEZSp3G5pZJV8W0Xk4Ranhrf+svixKh8LdtbTWXfWXVX046Cf5DawdLYz7KXo+1GxrT
+         w5pO1eF3+8FOQkGYIZ+skOQY57Sk+s4fwy77EfNJ1rLSssT6v/1tnW5B6p6SLHSRBuHh
+         9l1KkDWLxOvF7XvTYjvBme3aA5w9wgRvipkIk9C5+qlIRcVevOXI49zffg4yrtL+LrIZ
+         tA7dXGkuRPB4OURbI8+Hy8ZuHs0tSIsFXAc6wwrtTlhmkBc8ac3/Or6rlRCPTe5sch94
+         FlqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=09R47lKbCpWZRtAc3ORA/O+p7bPMVZCUL7kYcHlzHt4=;
-        b=rTkh0acuhke19/LZNi4IPo1xr1jW3mPrJcDytgpURm8O5bdq4w61bF1DKWXmBAADN5
-         WUDXHj2tQchhCBd6GirG+n4IGt0HDxcNxircI9lT006b3YgEAoR8OybITSiB8UlbtJfS
-         TwAUpvKVySZjZPYSP75hRxHEBT81sSBaLLmA4d5GrRscjrhsVorRAZGF0dFHUJ0Aj3Fq
-         Lr4eeJXxPzSZkcD6hkmc78FGav+gCkjm3xk9qcPBobsXH+iS3J+w9HcgJcDqQaT4yd86
-         zuxF+evpfvhzczTAy3JNLeCXVwuf/sAgK4OUI8hEdYlP5vJnOGMQZQ5/Y8RsAAaKk8cl
-         WvqA==
-X-Gm-Message-State: AOAM530R2aJ/Xta4Qew3MGUmJ6anWDhjUBas4bqOL+HehsNg+0acT1I2
-        8TSf8C2N0wblBU1kAnglPu8=
-X-Google-Smtp-Source: ABdhPJw30li4hg6jr9xjSRltGlhr9as5Cm803aCbni0FraTj1JouOEuiGUHqF3Fr21HHgcof/JeN4Q==
-X-Received: by 2002:a17:906:180a:: with SMTP id v10mr18815776eje.22.1623733738246;
-        Mon, 14 Jun 2021 22:08:58 -0700 (PDT)
+        bh=zBluklgTMc/Uw2SUbhlHlxNUQrJuHjtLqb4c08vReFY=;
+        b=NMVHK4+k4ptb5x3hFy/JF0HXHaf6ppY+2QJlfIqkwyfbNqN43gV4bAMgf6hQWVI2Ok
+         EeC9CVzrV6pBXNVYQuTGlUa/lh70vZQA1O+164m2JboPpf3GmzVZq4LryMlFuGUM7V8t
+         A1nIzbvQkRFs6tX4OyaXogqXoP/nMMlKd7pbqL39/hD6HcaMLS+BodbuocVlJ4drqMJ9
+         MH02O6j7Z3rCgPK0P0j8HChZ0/3S7Obash2cnin39HA27gQ8MJFFhjme1AgsyaVuOwBB
+         Nqoiwh6TeKquusIgfG6bZm9a2xVrqQgJJaNUkU3a7eEbqroUbkDcYpZepR0Q/F5bBH4/
+         sYBw==
+X-Gm-Message-State: AOAM531TyX6Neax18n3KSbi8YUG366kAjhTFVJOYt801Sdq7AGJ4JumN
+        5gWu1u3pDD8+8TMdqG1Q530=
+X-Google-Smtp-Source: ABdhPJxqesoDzZxhFIKalMycmOXqmvEFz/OlnO39prMRNH4jbM+YUJDYx+qbBCCmsnqiLirstRxKFw==
+X-Received: by 2002:a17:907:20f7:: with SMTP id rh23mr19307936ejb.414.1623734011919;
+        Mon, 14 Jun 2021 22:13:31 -0700 (PDT)
 Received: from localhost ([185.246.22.209])
-        by smtp.gmail.com with ESMTPSA id v26sm9007802ejk.70.2021.06.14.22.08.56
+        by smtp.gmail.com with ESMTPSA id z63sm11168636ede.36.2021.06.14.22.13.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 22:08:57 -0700 (PDT)
-Date:   Mon, 14 Jun 2021 22:08:50 -0700
+        Mon, 14 Jun 2021 22:13:31 -0700 (PDT)
+Date:   Mon, 14 Jun 2021 22:13:24 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: Re: [PATCH net-next 5/8] ice: register 1588 PTP clock device object
- for E810 devices
-Message-ID: <20210615050850.GB5517@localhost>
-References: <20210611162000.2438023-1-anthony.l.nguyen@intel.com>
- <20210611162000.2438023-6-anthony.l.nguyen@intel.com>
- <20210611141800.5ebe1d4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <ca27bafc-fdc2-c5f1-fc37-1cdf48d393b2@intel.com>
- <20210614181218.GA7788@localhost>
- <20210614115043.4e2b48da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Cc:     davem@davemloft.net, jacob.e.keller@intel.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] ptp: improve max_adj check against unreasonable
+ values
+Message-ID: <20210615051324.GC5517@localhost>
+References: <20210614222405.378030-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210614115043.4e2b48da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210614222405.378030-1-kuba@kernel.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 11:50:43AM -0700, Jakub Kicinski wrote:
-> tx->freq is a long, and the conversion to ppb can overflow the s32 type.
-> E.g. 281474976645 will become -2 AFAICT. I hacked up phc_ctl to not do
-> range checking and kernel happily accepted that value. Shall we do this?
+On Mon, Jun 14, 2021 at 03:24:05PM -0700, Jakub Kicinski wrote:
+> Scaled PPM conversion to PPB may (on 64bit systems) result
+> in a value larger than s32 can hold (freq/scaled_ppm is a long).
+> This means the kernel will not correctly reject unreasonably
+> high ->freq values (e.g. > 4294967295ppb, 281474976645 scaled PPM).
+> 
+> The conversion is equivalent to a division by ~66 (65.536),
+> so the value of ppb is always smaller than ppm, but not small
+> enough to assume narrowing the type from long -> s32 is okay.
+> 
+> Note that reasonable user space (e.g. ptp4l) will not use such
+> high values, anyway, 4289046510ppb ~= 4.3x, so the fix is
+> somewhat pedantic.
 
-Yes, you are right.  The range check has a bug, and your fix is good.
+But still important to defend against fuzzing!
+ 
+> Fixes: d39a743511cd ("ptp: validate the requested frequency adjustment.")
+> Fixes: d94ba80ebbea ("ptp: Added a brand new class driver for ptp clocks.")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Thanks,
-Richard
-
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
