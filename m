@@ -2,140 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CB343A7F6D
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 466A03A7FE5
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:31:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231416AbhFONaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 09:30:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35076 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230146AbhFON37 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Jun 2021 09:29:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 86D3961474;
-        Tue, 15 Jun 2021 13:27:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623763675;
-        bh=mne4/DxiogxCmcs1XlEDrh6D/Q+G4LwKYHNeIX0G448=;
-        h=From:To:Cc:Subject:Date:From;
-        b=XPEywf+5EUdjUptF3GM0q+qMyYsJm+qJ8dohI3e2dP4FdgOzIKu8fAJgjCPQJcO14
-         M62AUiYB5cNlygFHo+GJZXYDIRfV0X4y2e7nPFI4Ozz+Ho5jjIPSxWYSKdQ0fN6bwv
-         ABYHpWXLoqHooVgpgBenaUw9PYG882xyEdtCIZtmhteXEntd0B01m38ycjL4OzBxLI
-         5zZ3RkitLCfdoC/GPJjZvMZI8KuhqFFL99hMYlkQNH98XcQPqlnVZLayjDwM+gdmaR
-         4JiXFFcmu7rJUccxY0ctaVxKs98XKGTpHDa7m67qA3SM+z7j65p1jQXOslUr9Yz2Ot
-         rbJwlFeaqjfuw==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        grygorii.strashko@ti.com, mcroce@linux.microsoft.com,
-        ilias.apalodimas@linaro.org, brouer@redhat.com
-Subject: [PATCH net-next] net: ti: add pp skb recycling support
-Date:   Tue, 15 Jun 2021 15:27:41 +0200
-Message-Id: <fa2ec166605fc2a60d9ed5e74bc349bd1e322b8d.1623763509.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S231486AbhFONdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 09:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55008 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231740AbhFONdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:33:19 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE258C0611C0;
+        Tue, 15 Jun 2021 06:31:14 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id r198so27033832lff.11;
+        Tue, 15 Jun 2021 06:31:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=X7QyFpMRaIz1rkNDj3CFhI3o4WQb4st3n6J/P7lJ3Sg=;
+        b=prwqd50vb1jED1ChJkbgOKTYUSRG3d8znIigmJ36m6usDi8dy6y0j1aw6lRsUEIzlC
+         2zzvTmV6pHr7AMRGDyYFgcnUWdRHhv17ZTGzBhaKN0agg+wsbRd7QRyxocsZPT1vlHP8
+         2vxIWP+7m4fBmMWttxahSsU97OhQleqE07OFEqpdAFK3Jup/2bJxNM5qtLFSeKF+jiIH
+         IFdcX80N81WJ1e9q7o2pgOPP8Ui0cIq/hsTCzyaNQdHcjAPvbU8Arg3FNEElWgIbbUtE
+         zqcv00r566ut5Veq4+x1Ool2fN7WE2A2agNkbAkPnngPjDxa9kGF6XgQ+B4Ye1Sip8iV
+         U8oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=X7QyFpMRaIz1rkNDj3CFhI3o4WQb4st3n6J/P7lJ3Sg=;
+        b=tAGF4vsIIAVphKX3n2ri6o7cLevZ1vZxV4aNgByQfIXbrGHwyrZ48d0Hgq6uOMJKUj
+         wIX1rTqLZrxHxp/7wsXeKJf4MeIJgu7q9Xt4oj+CcG12vAEd/rfjcBFrGzBLog5TZcpZ
+         xPCKN5vS2/jRn2UP5TFW+f8vnt08UyKl71H4Ij9B3o+v7QN37XhuL+x/d20PI96VKSEL
+         ZvvdsX55GX7aaQphKQAAdNvxqEdg9iMgMP/AephbFAILdoMUZ/VRLhZ5lQuSaA5cyEXy
+         gYen85OSA1vJlFzzfdi467snUyz0RNwQKtMwHPjquS7KoKbSqGErHKlXeRce6ymIKKTZ
+         aXkg==
+X-Gm-Message-State: AOAM533/MnHwsP+FINhjLhwqbG57jePyG8lIO8Lgmoa4lRmZJGDQ+25K
+        kzU/C1e5mCDJPN6gmXAlPtE=
+X-Google-Smtp-Source: ABdhPJw94FAsLDrGBTvWO123dKNb9daIY+CCi2QI8rsnF4OSdz/E2yANZv47gE84FfW4plSn8qOD2Q==
+X-Received: by 2002:a05:6512:944:: with SMTP id u4mr15978195lft.30.1623763873226;
+        Tue, 15 Jun 2021 06:31:13 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.229.24])
+        by smtp.gmail.com with ESMTPSA id z8sm1806752lfg.243.2021.06.15.06.31.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Jun 2021 06:31:12 -0700 (PDT)
+Date:   Tue, 15 Jun 2021 16:31:08 +0300
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
+Message-ID: <20210615163108.4e17e119@gmail.com>
+In-Reply-To: <CAD-N9QVG40CqgkHb1w68FL-d1LkTzjcAhF9O8whmzWo67=4KJg@mail.gmail.com>
+References: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
+        <20210614190045.5b4c92e6@gmail.com>
+        <CAD-N9QVG40CqgkHb1w68FL-d1LkTzjcAhF9O8whmzWo67=4KJg@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As already done for mvneta and mvpp2, enable skb recycling for ti
-ethernet drivers
+On Tue, 15 Jun 2021 07:01:13 +0800
+Dongliang Mu <mudongliangabcd@gmail.com> wrote:
 
-ti driver on net-next:
-----------------------
-[perf top]
- 47.15%  [kernel]     [k] _raw_spin_unlock_irqrestore
- 11.77%  [kernel]     [k] __cpdma_chan_free
-  3.16%  [kernel]     [k] ___bpf_prog_run
-  2.52%  [kernel]     [k] cpsw_rx_vlan_encap
-  2.34%  [kernel]     [k] __netif_receive_skb_core
-  2.27%  [kernel]     [k] free_unref_page
-  2.26%  [kernel]     [k] kmem_cache_free
-  2.24%  [kernel]     [k] kmem_cache_alloc
-  1.69%  [kernel]     [k] __softirqentry_text_start
-  1.61%  [kernel]     [k] cpsw_rx_handler
-  1.19%  [kernel]     [k] page_pool_release_page
-  1.19%  [kernel]     [k] clear_bits_ll
-  1.15%  [kernel]     [k] page_frag_free
-  1.06%  [kernel]     [k] __dma_page_dev_to_cpu
-  0.99%  [kernel]     [k] memset
-  0.94%  [kernel]     [k] __alloc_pages_bulk
-  0.92%  [kernel]     [k] kfree_skb
-  0.85%  [kernel]     [k] packet_rcv
-  0.78%  [kernel]     [k] page_address
-  0.75%  [kernel]     [k] v7_dma_inv_range
-  0.71%  [kernel]     [k] __lock_text_start
+> On Tue, Jun 15, 2021 at 12:00 AM Pavel Skripkin
+> <paskripkin@gmail.com> wrote:
+> >
+> > On Mon, 14 Jun 2021 23:37:12 +0800
+> > Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+> >
+> > > The commit 46a8b29c6306 ("net: usb: fix memory leak in
+> > > smsc75xx_bind") fails to clean up the work scheduled in
+> > > smsc75xx_reset-> smsc75xx_set_multicast, which leads to
+> > > use-after-free if the work is scheduled to start after the
+> > > deallocation. In addition, this patch also removes one dangling
+> > > pointer - dev->data[0].
+> > >
+> > > This patch calls cancel_work_sync to cancel the schedule work and
+> > > set the dangling pointer to NULL.
+> > >
+> > > Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > ---
+> > >  drivers/net/usb/smsc75xx.c | 3 +++
+> > >  1 file changed, 3 insertions(+)
+> > >
+> > > diff --git a/drivers/net/usb/smsc75xx.c
+> > > b/drivers/net/usb/smsc75xx.c index b286993da67c..f81740fcc8d5
+> > > 100644 --- a/drivers/net/usb/smsc75xx.c
+> > > +++ b/drivers/net/usb/smsc75xx.c
+> > > @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet
+> > > *dev, struct usb_interface *intf) return 0;
+> > >
+> > >  err:
+> > > +     cancel_work_sync(&pdata->set_multicast);
+> > >       kfree(pdata);
+> > > +     pdata = NULL;
+> > > +     dev->data[0] = 0;
+> > >       return ret;
+> > >  }
+> > >
+> >
+> > Hi, Dongliang!
+> >
+> > Just my thougth about this patch:
+> >
+> > INIT_WORK(&pdata->set_multicast, smsc75xx_deferred_multicast_write);
+> > does not queue anything, it just initalizes list structure and
+> > assigns callback function. The actual work sheduling happens in
+> > smsc75xx_set_multicast() which is smsc75xx_netdev_ops member.
+> >
+> 
+> Yes, you are right. However, as written in the commit message,
+> smsc75xx_set_multicast will be called by smsc75xx_reset [1].
+> 
+> If smsc75xx_set_multicast is called before any check failure occurs,
+> this work(set_multicast) will be queued into the global list with
+> 
+> schedule_work(&pdata->set_multicast); [2]
 
-[iperf3 tcp]
-[  5]   0.00-10.00  sec   873 MBytes   732 Mbits/sec    0   sender
-[  5]   0.00-10.01  sec   866 MBytes   726 Mbits/sec        receiver
+Ah, I missed it, sorry :)
 
-ti + skb recycling:
--------------------
-[perf top]
- 40.58%  [kernel]    [k] _raw_spin_unlock_irqrestore
- 16.18%  [kernel]    [k] __softirqentry_text_start
- 10.33%  [kernel]    [k] __cpdma_chan_free
-  2.62%  [kernel]    [k] ___bpf_prog_run
-  2.05%  [kernel]    [k] cpsw_rx_vlan_encap
-  2.00%  [kernel]    [k] kmem_cache_alloc
-  1.86%  [kernel]    [k] __netif_receive_skb_core
-  1.80%  [kernel]    [k] kmem_cache_free
-  1.63%  [kernel]    [k] cpsw_rx_handler
-  1.12%  [kernel]    [k] cpsw_rx_mq_poll
-  1.11%  [kernel]    [k] page_pool_put_page
-  1.04%  [kernel]    [k] _raw_spin_unlock
-  0.97%  [kernel]    [k] clear_bits_ll
-  0.90%  [kernel]    [k] packet_rcv
-  0.88%  [kernel]    [k] __dma_page_dev_to_cpu
-  0.85%  [kernel]    [k] kfree_skb
-  0.80%  [kernel]    [k] memset
-  0.71%  [kernel]    [k] __lock_text_start
-  0.66%  [kernel]    [k] v7_dma_inv_range
-  0.64%  [kernel]    [k] gen_pool_free_owner
+Maybe, small optimization for error handling path like:
 
-[iperf3 tcp]
-[  5]   0.00-10.00  sec   884 MBytes   742 Mbits/sec    0   sender
-[  5]   0.00-10.01  sec   878 MBytes   735 Mbits/sec        receiver
+cancel_work:
+	cancel_work_sync(&pdata->set_multicast);
+	dev->data[0] = 0;
+free_pdata:
+	kfree(pdata);
+	return ret;
 
-Tested-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/ti/cpsw.c     | 4 ++--
- drivers/net/ethernet/ti/cpsw_new.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index b1e80cc96f56..cbbd0f665796 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -430,8 +430,8 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 		cpts_rx_timestamp(cpsw->cpts, skb);
- 	skb->protocol = eth_type_trans(skb, ndev);
- 
--	/* unmap page as no netstack skb page recycling */
--	page_pool_release_page(pool, page);
-+	/* mark skb for recycling */
-+	skb_mark_for_recycle(skb, page, pool);
- 	netif_receive_skb(skb);
- 
- 	ndev->stats.rx_bytes += len;
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 8d4f3c53385d..57d279fdcc9f 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -373,8 +373,8 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 		cpts_rx_timestamp(cpsw->cpts, skb);
- 	skb->protocol = eth_type_trans(skb, ndev);
- 
--	/* unmap page as no netstack skb page recycling */
--	page_pool_release_page(pool, page);
-+	/* mark skb for recycling */
-+	skb_mark_for_recycle(skb, page, pool);
- 	netif_receive_skb(skb);
- 
- 	ndev->stats.rx_bytes += len;
--- 
-2.31.1
+is suitbale here.
 
+> 
+> At last, if the pdata or dev->data[0] is freed before the
+> set_multicast really executes, it may lead to a UAF. Is this correct?
+> 
+> BTW, even if the above is true, I don't know if I call the API
+> ``cancel_work_sync(&pdata->set_multicast)'' properly if the
+> schedule_work is not called.
+> 
+
+Yeah, it will be ok.
+
+> [1]
+> https://elixir.bootlin.com/linux/latest/source/drivers/net/usb/smsc75xx.c#L1322
+> 
+> [2]
+> https://elixir.bootlin.com/linux/latest/source/drivers/net/usb/smsc75xx.c#L583
+> 
+> > In case of any error in smsc75xx_bind() the device registration
+> > fails and smsc75xx_netdev_ops won't be registered, so, i guess,
+> > there is no chance of UAF.
+> >
+> >
+> > Am I missing something? :)
+> >
+> >
+> >
+> > With regards,
+> > Pavel Skripkin
+
+
+
+
+With regards,
+Pavel Skripkin
