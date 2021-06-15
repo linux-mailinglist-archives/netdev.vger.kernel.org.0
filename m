@@ -2,73 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0323F3A76FC
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 08:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6175E3A76FF
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 08:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbhFOGX7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Jun 2021 02:23:59 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:4781 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbhFOGX5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 02:23:57 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G3yl84fffzXg43;
-        Tue, 15 Jun 2021 14:16:52 +0800 (CST)
-Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 15 Jun 2021 14:21:52 +0800
-Received: from dggema753-chm.china.huawei.com (10.1.198.195) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 15 Jun 2021 14:21:52 +0800
-Received: from dggema753-chm.china.huawei.com ([10.9.48.84]) by
- dggema753-chm.china.huawei.com ([10.9.48.84]) with mapi id 15.01.2176.012;
- Tue, 15 Jun 2021 14:21:52 +0800
-From:   liweihang <liweihang@huawei.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linuxarm <linuxarm@huawei.com>,
-        liangwenpeng <liangwenpeng@huawei.com>
-Subject: Re: [PATCH net-next 3/8] net: phy: delete repeated word of block
- comments
-Thread-Topic: [PATCH net-next 3/8] net: phy: delete repeated word of block
- comments
-Thread-Index: AQHXXoyiV8JepZszkUmSW3Y3nxL8sg==
-Date:   Tue, 15 Jun 2021 06:21:52 +0000
-Message-ID: <8d3ef499d1964b23a0f3ee3cf55e57ec@huawei.com>
-References: <1623393419-2521-1-git-send-email-liweihang@huawei.com>
- <1623393419-2521-4-git-send-email-liweihang@huawei.com>
- <YMN1hjqpAJWDhLDI@lunn.ch>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.67.100.165]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S229781AbhFOGZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 02:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229463AbhFOGZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 02:25:28 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D49C061574;
+        Mon, 14 Jun 2021 23:23:24 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id q21so18866012ybg.8;
+        Mon, 14 Jun 2021 23:23:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1G52dZbe7zbZLAVRxdP2yNfSeJPuHgFFHCvs43Nag7E=;
+        b=W5ydF1MdDBdzd4xXw/hALSkJ7GJd8tMZXAg/TzyWmDQjIzFQVGwhLoIrJeZqzIcmB0
+         ZjOYtTk0DIyXQjMXQN33jDn8+eOlHT08nIFxFcNLqZIHVzbCpjyqJ3uMKZy9IzrKWKIA
+         kdaR2h4KZb9q9hutdL2DM8SLDGklCn71fz512KhS9xCvFeMrsqWNi/SL/LVMPNungqu9
+         MdN44xC5rgLYcpfEMclbTgGfJj3cP9JADM+tnWhEhy1tGSDAfE3wsHN6daYttBx172F5
+         iIr7zZQHJTqWAS0kpnNfmieGn3+oQT66B5wLRmOKBe1Z4FnT5tbg1GllZw2SXLP2Gvez
+         VQ9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1G52dZbe7zbZLAVRxdP2yNfSeJPuHgFFHCvs43Nag7E=;
+        b=mNCW/6jobi4bSkuvviKn4T/8YbHWacPOgQG3pnaIQYAYIwro2s8jXcoitB4roioJ5V
+         h/vIhx/f6laDOcrabvViJjo67iD5SIJLYPEPiy19qCAFJRESrF6ORzty2KZkSzQM7LQA
+         eE1mS7deYq4lq/JPXOHJ73iDG6bisBz/tFt/0MPZLENnmm3D8CDJtvgdcmplkMOgveT6
+         Ql5PhR8h8IBkDZraJF/epSK+cbqljwj+1kP1sqK39gsVEpwaTJPHbkCgNZEu3pvXNKpC
+         6uXU0+qvHDm6NmgwvVMJ72PXsp66amXCdOOwa9hlS6tkS643CLS1gsG/njyXV1DJEGPJ
+         4y1w==
+X-Gm-Message-State: AOAM532mkDiChYp4A5Oqa4lEZD++oMRYA36fOXU04hszyL0OgsmfDhhT
+        Y6LFCpGeUHFHV89hpiYUlGeI+RUhntB3uY736rn4i2fCeQE=
+X-Google-Smtp-Source: ABdhPJyYPw9qe1+HPCpxSg5KNotvIHZQH1xFKX47FoaqKwzOUfpkriVIK9Vk0BP7PSOlkOJwJxh2X5kHuRO0P3JghA0=
+X-Received: by 2002:a25:7246:: with SMTP id n67mr30309413ybc.510.1623738203791;
+ Mon, 14 Jun 2021 23:23:23 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20210609115916.2186872-1-chengzhihao1@huawei.com> <7883956d-4042-5f6b-e7dd-de135062a2ef@isovalent.com>
+In-Reply-To: <7883956d-4042-5f6b-e7dd-de135062a2ef@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 14 Jun 2021 23:23:12 -0700
+Message-ID: <CAEf4BzYE=kRDz4e+8MEe6Pget-C4XKg8bwAgEHYf+KujUtFJeQ@mail.gmail.com>
+Subject: Re: [PATCH] tools/bpftool: Fix error return code in do_batch()
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Zhihao Cheng <chengzhihao1@huawei.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "yukuai (C)" <yukuai3@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/6/11 22:39, Andrew Lunn wrote:
-> On Fri, Jun 11, 2021 at 02:36:54PM +0800, Weihang Li wrote:
->> From: Wenpeng Liang <liangwenpeng@huawei.com>
->>
->> Fix syntax errors in block comments.
-> 
-> I supposed double words could be considered syntax errors, but it is
-> pushing the definition a bit.
-> 
-> 	Andrew
-> 
+On Wed, Jun 9, 2021 at 6:34 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2021-06-09 19:59 UTC+0800 ~ Zhihao Cheng <chengzhihao1@huawei.com>
+> > Fix to return a negative error code from the error handling
+> > case instead of 0, as done elsewhere in this function.
+> >
+> > Fixes: 668da745af3c2 ("tools: bpftool: add support for quotations ...")
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+>
+> Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+>
+> Thank you for the fix.
 
-OK, I will use more appropriate words.
+This has been applied to bpf-next last Friday. Patchbot missed it.
 
-Thanks
-Weihang
+> Quentin
