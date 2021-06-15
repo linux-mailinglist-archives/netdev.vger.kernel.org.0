@@ -2,120 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49BA53A88DF
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75E283A88F1
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:54:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbhFOSxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 14:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43212 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbhFOSxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 14:53:16 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E918C061574;
-        Tue, 15 Jun 2021 11:51:11 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id y7so19401513wrh.7;
-        Tue, 15 Jun 2021 11:51:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QojazdBWoM3SyAlRdVHgqcAEHJPhAD/lO190hYA/8jw=;
-        b=keYPy5Ik8+o66m6E25AGSE/i051lEKyA7J37a24FhFdDO+zv5FEgFaR9O03PJ1iQWC
-         rivCZbjUHnzjLG67BYdOEW9k3DlTpVilMw7prbTimR5sju+pTpc0bqkk9sNNJo0g2NYH
-         +tQqnRDPbUyABwcAqU+H0EY5xFOgIlUVk7N2FY+xmUXHMbnn6FFl3im0LV3xsT6hHSc1
-         j4WroaJNJbp4Jl68hvVssfgRfioRbqQhcsBwHsXHwdqP+GT/9N4E2IHpVjhYRqjRs675
-         kemdVE3OdgzrWMM2DYxy/Hmw9LEbi7Lojr6gze/7EZSGLIy3DZqPN2oAkaTujgKXgnCR
-         /tJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QojazdBWoM3SyAlRdVHgqcAEHJPhAD/lO190hYA/8jw=;
-        b=lyfKKkHCJdPQPSOHLVAPTZuIX5S6UdXOU+3yYa8apF2xs7n0/PorkJf4jlNcDhzc9O
-         rKRt+lOs25Bp6FonCs/ry7/lP1LMiCfMVpSDgzy413JmcqEN2kPRMTnvSvqfn+47Yt4v
-         F7uresEuNigGoghN8Mpf7urXOK+1FHSHCy1+UcLuBUt4RwI19R/O3WJmrYhFvJcc539L
-         aUVSNMMcR/l5nXaeEINNGEjDEuNP6K4dyyMDMf0EMGza36DVWq+BN78yRiUn+pKk92Tt
-         cQ2Us97ZxrjVMqmvOjYJf7cUxZVsYQnIkDXRoqLQqMeOwPHE6iL9Tdpr22fZq1ES5nVO
-         fX8A==
-X-Gm-Message-State: AOAM530gmWNXZFzZnyOhLMndNBwaGpTYN6xMd90F04VnNazpZxq0Y542
-        ajm36RYTLtlRpqDywHM0nvM=
-X-Google-Smtp-Source: ABdhPJwB6XJA9CTa5qdtOSQ4XzUu9peP7FYU4f0dbek7wM8P79YQW/nuPW3hilLe77UeROzfim0Hdg==
-X-Received: by 2002:a5d:658a:: with SMTP id q10mr618994wru.258.1623783069593;
-        Tue, 15 Jun 2021 11:51:09 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id v15sm2900252wmj.39.2021.06.15.11.51.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Jun 2021 11:51:09 -0700 (PDT)
-Subject: Re: [PATCH v5] bpf: core: fix shift-out-of-bounds in ___bpf_prog_run
-To:     Kurt Manucredo <fuzzybritches0@gmail.com>, ebiggers@kernel.org,
-        syzbot+bed360704c521841c85d@syzkaller.appspotmail.com
-Cc:     keescook@chromium.org, yhs@fb.com, dvyukov@google.com,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, nathan@kernel.org,
-        ndesaulniers@google.com, clang-built-linux@googlegroups.com,
-        kernel-hardening@lists.openwall.com, kasan-dev@googlegroups.com
-References: <87609-531187-curtm@phaethon>
- <6a392b66-6f26-4532-d25f-6b09770ce366@fb.com>
- <CAADnVQKexxZQw0yK_7rmFOdaYabaFpi2EmF6RGs5bXvFHtUQaA@mail.gmail.com>
- <CACT4Y+b=si6NCx=nRHKm_pziXnVMmLo-eSuRajsxmx5+Hy_ycg@mail.gmail.com>
- <202106091119.84A88B6FE7@keescook>
- <752cb1ad-a0b1-92b7-4c49-bbb42fdecdbe@fb.com>
- <CACT4Y+a592rxFmNgJgk2zwqBE8EqW1ey9SjF_-U3z6gt3Yc=oA@mail.gmail.com>
- <1aaa2408-94b9-a1e6-beff-7523b66fe73d@fb.com> <202106101002.DF8C7EF@keescook>
- <CAADnVQKMwKYgthoQV4RmGpZm9Hm-=wH3DoaNqs=UZRmJKefwGw@mail.gmail.com>
- <85536-177443-curtm@phaethon>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <bac16d8d-c174-bdc4-91bd-bfa62b410190@gmail.com>
-Date:   Tue, 15 Jun 2021 19:51:07 +0100
+        id S231215AbhFOS4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 14:56:34 -0400
+Received: from relay11.mail.gandi.net ([217.70.178.231]:35101 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229749AbhFOS4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 14:56:34 -0400
+Received: (Authenticated sender: alex@ghiti.fr)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 6C97B100006;
+        Tue, 15 Jun 2021 18:54:21 +0000 (UTC)
+Subject: Re: [PATCH] riscv: Ensure BPF_JIT_REGION_START aligned with PMD size
+To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>,
+        Andreas Schwab <schwab@linux-m68k.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20210330022144.150edc6e@xhacker>
+ <20210330022521.2a904a8c@xhacker> <87o8ccqypw.fsf@igel.home>
+ <20210612002334.6af72545@xhacker> <87bl8cqrpv.fsf@igel.home>
+ <20210614010546.7a0d5584@xhacker> <87im2hsfvm.fsf@igel.home>
+ <20210615004928.2d27d2ac@xhacker>
+From:   Alex Ghiti <alex@ghiti.fr>
+Message-ID: <ab536c78-ba1c-c65c-325a-8f9fba6e9d46@ghiti.fr>
+Date:   Tue, 15 Jun 2021 20:54:19 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <85536-177443-curtm@phaethon>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210615004928.2d27d2ac@xhacker>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/06/2021 17:42, Kurt Manucredo wrote:
-> Syzbot detects a shift-out-of-bounds in ___bpf_prog_run()
-> kernel/bpf/core.c:1414:2.
+Hi Jisheng,
+
+Le 14/06/2021 à 18:49, Jisheng Zhang a écrit :
+> From: Jisheng Zhang <jszhang@kernel.org>
 > 
-> The shift-out-of-bounds happens when we have BPF_X. This means we have
-> to go the same way we go when we want to avoid a divide-by-zero. We do
-> it in do_misc_fixups().
+> Andreas reported commit fc8504765ec5 ("riscv: bpf: Avoid breaking W^X")
+> breaks booting with one kind of config file, I reproduced a kernel panic
+> with the config:
+> 
+> [    0.138553] Unable to handle kernel paging request at virtual address ffffffff81201220
+> [    0.139159] Oops [#1]
+> [    0.139303] Modules linked in:
+> [    0.139601] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-rc5-default+ #1
+> [    0.139934] Hardware name: riscv-virtio,qemu (DT)
+> [    0.140193] epc : __memset+0xc4/0xfc
+> [    0.140416]  ra : skb_flow_dissector_init+0x1e/0x82
+> [    0.140609] epc : ffffffff8029806c ra : ffffffff8033be78 sp : ffffffe001647da0
+> [    0.140878]  gp : ffffffff81134b08 tp : ffffffe001654380 t0 : ffffffff81201158
+> [    0.141156]  t1 : 0000000000000002 t2 : 0000000000000154 s0 : ffffffe001647dd0
+> [    0.141424]  s1 : ffffffff80a43250 a0 : ffffffff81201220 a1 : 0000000000000000
+> [    0.141654]  a2 : 000000000000003c a3 : ffffffff81201258 a4 : 0000000000000064
+> [    0.141893]  a5 : ffffffff8029806c a6 : 0000000000000040 a7 : ffffffffffffffff
+> [    0.142126]  s2 : ffffffff81201220 s3 : 0000000000000009 s4 : ffffffff81135088
+> [    0.142353]  s5 : ffffffff81135038 s6 : ffffffff8080ce80 s7 : ffffffff80800438
+> [    0.142584]  s8 : ffffffff80bc6578 s9 : 0000000000000008 s10: ffffffff806000ac
+> [    0.142810]  s11: 0000000000000000 t3 : fffffffffffffffc t4 : 0000000000000000
+> [    0.143042]  t5 : 0000000000000155 t6 : 00000000000003ff
+> [    0.143220] status: 0000000000000120 badaddr: ffffffff81201220 cause: 000000000000000f
+> [    0.143560] [<ffffffff8029806c>] __memset+0xc4/0xfc
+> [    0.143859] [<ffffffff8061e984>] init_default_flow_dissectors+0x22/0x60
+> [    0.144092] [<ffffffff800010fc>] do_one_initcall+0x3e/0x168
+> [    0.144278] [<ffffffff80600df0>] kernel_init_freeable+0x1c8/0x224
+> [    0.144479] [<ffffffff804868a8>] kernel_init+0x12/0x110
+> [    0.144658] [<ffffffff800022de>] ret_from_exception+0x0/0xc
+> [    0.145124] ---[ end trace f1e9643daa46d591 ]---
+> 
+> After some investigation, I think I found the root cause: commit
+> 2bfc6cd81bd ("move kernel mapping outside of linear mapping") moves
+> BPF JIT region after the kernel:
+> 
+> The &_end is unlikely aligned with PMD size, so the front bpf jit
+> region sits with part of kernel .data section in one PMD size mapping.
+> But kernel is mapped in PMD SIZE, when bpf_jit_binary_lock_ro() is
+> called to make the first bpf jit prog ROX, we will make part of kernel
+> .data section RO too, so when we write to, for example memset the
+> .data section, MMU will trigger a store page fault.
 
-Shifts by more than insn_bitness are legal in the eBPF ISA; they are
- implementation-defined behaviour, rather than UB, and have been made
- legal for performance reasons.  Each of the JIT backends compiles the
- eBPF shift operations to machine instructions which produce
- implementation-defined results in such a case; the resulting contents
- of the register may be arbitrary but program behaviour as a whole
- remains defined.
-Guard checks in the fast path (i.e. affecting JITted code) will thus
- not be accepted.
-The case of division by zero is not truly analogous, as division
- instructions on many of the JIT-targeted architectures will raise a
- machine exception / fault on division by zero, whereas (to the best of
- my knowledge) none will do so on an out-of-bounds shift.
-(That said, it would be possible to record from the verifier division
- instructions in the program which are known never to be passed zero as
- divisor, and eliding the fixup patch in those cases.  However, the
- extra complexity may not be worthwhile.)
+Good catch, we make sure no physical allocation happens between _end and 
+the next PMD aligned address, but I missed this one.
 
-As I understand it, the UBSAN report is coming from the eBPF interpreter,
- which is the *slow path* and indeed on many production systems is
- compiled out for hardening reasons (CONFIG_BPF_JIT_ALWAYS_ON).
-Perhaps a better approach to the fix would be to change the interpreter
- to compute "DST = DST << (SRC & 63);" (and similar for other shifts and
- bitnesses), thus matching the behaviour of most chips' shift opcodes.
-This would shut up UBSAN, without affecting JIT code generation.
+> 
+> To fix the issue, we need to ensure the BPF JIT region is PMD size
+> aligned. This patch acchieve this goal by restoring the BPF JIT region
+> to original position, I.E the 128MB before kernel .text section.
 
--ed
+But I disagree with your solution: I made sure modules and BPF programs 
+get their own virtual regions to avoid worst case scenario where one 
+could allocate all the space and leave nothing to the other (we are 
+limited to +- 2GB offset). Why don't just align BPF_JIT_REGION_START to 
+the next PMD aligned address?
+
+Again, good catch, thanks,
+
+Alex
+
+> 
+> Reported-by: Andreas Schwab <schwab@linux-m68k.org>
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>   arch/riscv/include/asm/pgtable.h | 5 ++---
+>   1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
+> index 9469f464e71a..380cd3a7e548 100644
+> --- a/arch/riscv/include/asm/pgtable.h
+> +++ b/arch/riscv/include/asm/pgtable.h
+> @@ -30,9 +30,8 @@
+>   
+>   #define BPF_JIT_REGION_SIZE	(SZ_128M)
+>   #ifdef CONFIG_64BIT
+> -/* KASLR should leave at least 128MB for BPF after the kernel */
+> -#define BPF_JIT_REGION_START	PFN_ALIGN((unsigned long)&_end)
+> -#define BPF_JIT_REGION_END	(BPF_JIT_REGION_START + BPF_JIT_REGION_SIZE)
+> +#define BPF_JIT_REGION_START	(BPF_JIT_REGION_END - BPF_JIT_REGION_SIZE)
+> +#define BPF_JIT_REGION_END	(MODULES_END)
+>   #else
+>   #define BPF_JIT_REGION_START	(PAGE_OFFSET - BPF_JIT_REGION_SIZE)
+>   #define BPF_JIT_REGION_END	(VMALLOC_END)
+> 
