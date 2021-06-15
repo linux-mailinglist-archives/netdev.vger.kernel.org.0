@@ -2,116 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FEEA3A8120
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:43:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D57B63A8126
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:43:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231849AbhFONpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 09:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56994 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232078AbhFONo2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:44:28 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150C3C06175F;
-        Tue, 15 Jun 2021 06:42:10 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id g18so49218890edq.8;
-        Tue, 15 Jun 2021 06:42:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1BN6ka8aYD/zipZHtQ3y56/ePjTmrvXl8aD7xLTdCHM=;
-        b=OFuFU8EIEHlMX+bdiC8hzLdMYPzi+koN1mvMJpfbsfFGVTFYR64fyco94O6CEGxRFS
-         NPnzgWa4fXXrfhLf0raCN0zdZ7DEZJDhIsOnmmwHUfoCunhipg7nxknQgVX3QDLlwbTu
-         gDGdqe97LBE+dbaeRyycN1cOpH+EMr7sn/OqW8fIyPtLr/6rLYldAUsaHP9ufJAoTjMV
-         VilUi8USscbt+3iMLC1bVh0Stno2POEU5seu/Z9ffyOxL6Wk+qhDYYe+EQ3FO2KEXwtX
-         HEgXakuqEfn8hp4XEzmr4TFYIo342fqRjukiUg31Wjy8ENrxvflt1+rj+ClV7XLnX9Xq
-         A/cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1BN6ka8aYD/zipZHtQ3y56/ePjTmrvXl8aD7xLTdCHM=;
-        b=O67rNXcDCYWakxszFE7mijJ/4SjWSYBfNwRV7cWuOqkhNL5yHf9pjYNIALtdeBhtyt
-         Cak5DKk/2/svAxxZnViJXozc6xbVRWoDMPQLSso5aSFygrJWt6JMry5y71ntiT21R3h6
-         yrDBenjCwHK/jeSrnB36ASV2hnh5FcayOLSDEJPIMUq5QTV/qgnZ7owOfsN9lmlm0GI1
-         7uxed+fLDHnTzI2bspyVRQnqWAs1Ra/VLgiTE8Qnoh5ox/wCaXPQh9WNMYjLZWTao+FU
-         ESdegdvaySqOI3CaOyidw3QeEdpSrYWqNz3Jvn0yRIYa/QRFwcmimYXEv3rO3OE1gSSj
-         v4jA==
-X-Gm-Message-State: AOAM530kHJrZ8gAq/LHCQn9nZ4wHI8qgU8DC7/N9ojUeo6t8XdKHzsK/
-        7GzzlRgrH/GhjIkmAu10FBg=
-X-Google-Smtp-Source: ABdhPJzekSNEtS5nzI5oHVfb9zc88FNEHzGJQvDBU+1BW/URxGutgBsgIo6L0AFtZkyDMl0BOXnzbg==
-X-Received: by 2002:a05:6402:128d:: with SMTP id w13mr23597498edv.38.1623764528629;
-        Tue, 15 Jun 2021 06:42:08 -0700 (PDT)
-Received: from skbuf ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id br21sm9985840ejb.124.2021.06.15.06.42.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Jun 2021 06:42:08 -0700 (PDT)
-Date:   Tue, 15 Jun 2021 16:42:06 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] net: pcs: xpcs: Fix a less than zero u16
- comparision error
-Message-ID: <20210615134206.ayjpjk2sqv7umjah@skbuf>
-References: <20210615131601.57900-1-colin.king@canonical.com>
+        id S231590AbhFONpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 09:45:46 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:34828 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231531AbhFONo4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:44:56 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1623764571; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=fBg3Q6qMpWy0ix/BOTxexwlZllzXH0IwcYdedtXwM6A=;
+ b=V/eNbbLvBYJein4800vDygmU2bMT49qa6k9OcSN+vkTawKuaDjjvJrIIIokMyAUYou0EMyws
+ HbrIYNb+YRVTdXIslJcQooTNPup8VzYn+ZMLrSesJr+Zv16FSWXRbPYkF7JWfTk8pVQMh28G
+ /r2MKWZTxHy97X3IJesMobmkdt8=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 60c8ae45f726fa4188a40307 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 15 Jun 2021 13:42:29
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 7A50BC43460; Tue, 15 Jun 2021 13:42:28 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D3F5DC433F1;
+        Tue, 15 Jun 2021 13:42:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D3F5DC433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210615131601.57900-1-colin.king@canonical.com>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH V2] rsi: fix AP mode with WPA failure due to encrypted
+ EAPOL
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1622564459-24430-1-git-send-email-martin.fuzzey@flowbird.group>
+References: <1622564459-24430-1-git-send-email-martin.fuzzey@flowbird.group>
+To:     Martin Fuzzey <martin.fuzzey@flowbird.group>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>, stable@vger.kernel.org,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        Marek Vasut <marex@denx.de>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210615134228.7A50BC43460@smtp.codeaurora.org>
+Date:   Tue, 15 Jun 2021 13:42:28 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some nitpicks, fix them if you'd like, ignore them if not:
+Martin Fuzzey <martin.fuzzey@flowbird.group> wrote:
 
-s/comparision/comparison/
-
-On Tue, Jun 15, 2021 at 02:16:01PM +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+> In AP mode WPA2-PSK connections were not established.
 > 
-> Currently the check for the u16 variable val being less than zero is
-> always false because val is unsigned. Fix this by using the int
-> variable for the assignment and less than zero check.
+> The reason was that the AP was sending the first message
+> of the 4 way handshake encrypted, even though no pairwise
+> key had (correctly) yet been set.
 > 
-> Addresses-Coverity: ("Unsigned compared against 0")
-> Fixes: f7380bba42fd ("net: pcs: xpcs: add support for NXP SJA1110")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/pcs/pcs-xpcs-nxp.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+> Encryption was enabled if the "security_enable" driver flag
+> was set and encryption was not explicitly disabled by
+> IEEE80211_TX_INTFL_DONT_ENCRYPT.
 > 
-> diff --git a/drivers/net/pcs/pcs-xpcs-nxp.c b/drivers/net/pcs/pcs-xpcs-nxp.c
-> index de99c37cf2ae..80430ca94fbf 100644
-> --- a/drivers/net/pcs/pcs-xpcs-nxp.c
-> +++ b/drivers/net/pcs/pcs-xpcs-nxp.c
-> @@ -152,11 +152,11 @@ static int nxp_sja1110_pma_config(struct dw_xpcs *xpcs,
->  	/* Enable TX and RX PLLs and circuits.
->  	 * Release reset of PMA to enable data flow to/from PCS.
->  	 */
-> -	val = xpcs_read(xpcs, MDIO_MMD_VEND2, SJA1110_POWERDOWN_ENABLE);
-> -	if (val < 0)
-> -		return val;
-> +	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, SJA1110_POWERDOWN_ENABLE);
-> +	if (ret < 0)
-> +		return ret;
->  
-> -	val &= ~(SJA1110_TXPLL_PD | SJA1110_TXPD | SJA1110_RXCH_PD |
-> +	val = ret & ~(SJA1110_TXPLL_PD | SJA1110_TXPD | SJA1110_RXCH_PD |
-
-You could have realigned the following 2 lines as well with the new
-position of SJA1110_TXPLL_PD.
-
->  		 SJA1110_RXBIAS_PD | SJA1110_RESET_SER_EN |
->  		 SJA1110_RESET_SER | SJA1110_RESET_DES);
->  	val |= SJA1110_RXPKDETEN | SJA1110_RCVEN;
-> -- 
-> 2.31.1
+> However security_enable was set when *any* key, including
+> the AP GTK key, had been set which was causing unwanted
+> encryption even if no key was avaialble for the unicast
+> packet to be sent.
 > 
+> Fix this by adding a check that we have a key and drop
+> the old security_enable driver flag which is insufficient
+> and redundant.
+> 
+> The Redpine downstream out of tree driver does it this way too.
+> 
+> Regarding the Fixes tag the actual code being modified was
+> introduced earlier, with the original driver submission, in
+> dad0d04fa7ba ("rsi: Add RS9113 wireless driver"), however
+> at that time AP mode was not yet supported so there was
+> no bug at that point.
+> 
+> So I have tagged the introduction of AP support instead
+> which was part of the patch set "rsi: support for AP mode" [1]
+> 
+> It is not clear whether AP WPA has ever worked, I can see nothing
+> on the kernel side that broke it afterwards yet the AP support
+> patch series says "Tests are performed to confirm aggregation,
+> connections in WEP and WPA/WPA2 security."
+> 
+> One possibility is that the initial tests were done with a modified
+> userspace (hostapd).
+> 
+> [1] https://www.spinics.net/lists/linux-wireless/msg165302.html
+> 
+> Signed-off-by: Martin Fuzzey <martin.fuzzey@flowbird.group>
+> Fixes: 38ef62353acb ("rsi: security enhancements for AP mode")
+> CC: stable@vger.kernel.org
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Patch applied to wireless-drivers-next.git, thanks.
+
+314538041b56 rsi: fix AP mode with WPA failure due to encrypted EAPOL
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/1622564459-24430-1-git-send-email-martin.fuzzey@flowbird.group/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
