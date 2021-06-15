@@ -2,88 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 399AC3A81A2
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 500AB3A81B8
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:04:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbhFOODQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 10:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbhFOODP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:03:15 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8B8C061574;
-        Tue, 15 Jun 2021 07:01:09 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gt18so4272195ejc.11;
-        Tue, 15 Jun 2021 07:01:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JsgNJW5wIP1wTY7QeUlV4IUxG5/Fna3sXYQD6HqLWoE=;
-        b=UH54iboglCqZMsyMxaNx1cykI8qEc0gVz47KT1RhFpE0pCCL6YoqjQckTNNTXQdDs2
-         Abds+du6hJAjYTyqllnZa7Ou8d+TzUS3xf4axeT1oe9slGnxUOpPf9kS6Q9LimkxgWYI
-         AC4WcTvLlM1pUxaGjTj7cen+PMrAXt4k4aEWhxsiVDa78FIeNfom1KUm8c3z0ywgyvSd
-         XlKYSkikqbaCwRiLmKkFnrG8MfHejTpUkm7H5vD+23fLHhQFYQok75cB19CEaJzpjUWA
-         SLaY5JLnDOXej3FXartZTjG61DJKHcm+DMbatHy5ZuiM23E09AWr1fjy9yfKbfFEayI4
-         HKpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JsgNJW5wIP1wTY7QeUlV4IUxG5/Fna3sXYQD6HqLWoE=;
-        b=Yn6oow986U4IIDWXGfcYHyW9v5SPj6ODglHSi4Vd9M1Lm06daH/nmw7JhkPGNG5cHl
-         u0ALqAVQgaI9s0X25iK1fGD2Y58vH6qTUMhanR4kvB+qWqgDs7KCmGjaY4FQR2MQymRv
-         E45gOo98jb0Nm/ZhfgOFy+ux/dFvJmTgBYMNsFR4VY79zU5u1kAgzl9Gbh677YJuIS8u
-         45yjLzfjOun4XI6MZXiF9s6TpE7IF376R+KNuNo4a9kbSeHtWRjW5QzOAzOm3bhSeKlZ
-         gknnICqwwSO6rkNftXbdZ0+Tq+CvFTb7MkyqbmcBml0H8yvjgGHVYP1m2OCNmEryhOr7
-         Z0Zw==
-X-Gm-Message-State: AOAM531S6NCuaBS6U0kxTrg5f2Sj16C44uC0RDL8PHa3fvioLMdubyX3
-        0XJ+xCqjrmJL8Dj87uiq+EE=
-X-Google-Smtp-Source: ABdhPJxvfsmJPHywGAB0aAnPn2QYmgFyJLTx9cz4bFNoJLzejT3gfx3slPC8yum+K4Y/NzmFFKyVfA==
-X-Received: by 2002:a17:906:dbc4:: with SMTP id yc4mr2556302ejb.119.1623765668368;
-        Tue, 15 Jun 2021 07:01:08 -0700 (PDT)
-Received: from skbuf ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id z7sm10046836ejm.122.2021.06.15.07.01.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Jun 2021 07:01:08 -0700 (PDT)
-Date:   Tue, 15 Jun 2021 17:01:06 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next][V2] net: pcs: xpcs: Fix a less than zero u16
- comparison error
-Message-ID: <20210615140106.4qqygvptmx4yctwb@skbuf>
-References: <20210615135253.59159-1-colin.king@canonical.com>
+        id S231284AbhFOOGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 10:06:30 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:60310 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231246AbhFOOGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:06:04 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1623765840; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=uSOjW2PIXQ8WAoXFoxYSHFnVzsjgBvCSgyXBJHrOxfM=;
+ b=ixyxqDN6qmgnhHKk4bBU0KFn5tKLGsrv+v6RljLIQejtf7lJrw3WBwHJflorC3pSQ8EpYy5Z
+ +KMK1Ir5w4L9gm0MCn2YLUh3xqT3/c2m6Ahd0kHaNyrPubEMmRZjwZGd1LRnUrXQ3xdfITSO
+ 8UY2q6wPzsNVbEt6T8QPt4JQQlI=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 60c8b2e7f726fa4188bacb2a (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 15 Jun 2021 14:02:15
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 73C95C433D3; Tue, 15 Jun 2021 14:02:14 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id CA6C8C433D3;
+        Tue, 15 Jun 2021 14:02:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CA6C8C433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210615135253.59159-1-colin.king@canonical.com>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath11k: Fix an error handling path in
+ 'ath11k_core_fetch_board_data_api_n()'
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <e959eb544f3cb04258507d8e25a6f12eab126bde.1621676864.git.christophe.jaillet@wanadoo.fr>
+References: <e959eb544f3cb04258507d8e25a6f12eab126bde.1621676864.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     davem@davemloft.net, kuba@kernel.org, bperumal@codeaurora.org,
+        akolli@codeaurora.org, milehu@codeaurora.org, lkp@intel.com,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210615140214.73C95C433D3@smtp.codeaurora.org>
+Date:   Tue, 15 Jun 2021 14:02:14 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 02:52:53PM +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Currently the check for the u16 variable val being less than zero is
-> always false because val is unsigned. Fix this by using the int
-> variable for the assignment and less than zero check.
-> 
-> Addresses-Coverity: ("Unsigned compared against 0")
-> Fixes: f7380bba42fd ("net: pcs: xpcs: add support for NXP SJA1110")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
-> V2: Fix typo in subject and align the following 2 lines after the 
->     val = ret & ... assignment.  Thanks to Vladimir Oltean for spotting
->     these.
-> ---
+Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
 
-Thanks.
+> All error paths but this one 'goto err' in order to release some
+> resources.
+> Fix this.
+> 
+> Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Patch applied to ath-next branch of ath.git, thanks.
+
+515bda1d1e51 ath11k: Fix an error handling path in ath11k_core_fetch_board_data_api_n()
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/e959eb544f3cb04258507d8e25a6f12eab126bde.1621676864.git.christophe.jaillet@wanadoo.fr/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
