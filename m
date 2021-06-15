@@ -2,82 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B3E33A886F
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:20:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13BF23A8871
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231651AbhFOSWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 14:22:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39170 "EHLO mail.kernel.org"
+        id S231683AbhFOSWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 14:22:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39182 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231447AbhFOSWO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231450AbhFOSWO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 15 Jun 2021 14:22:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0A622613DB;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1B46E613E9;
         Tue, 15 Jun 2021 18:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623781210;
-        bh=HRRaznNGBoxwvKxvfU0Nvk1ndcMGA+i5SIfOCPR0wjU=;
+        bh=YqFTQR999wuoyOeVVhR9qefjDWTrJrtx63JzrYBjN1Q=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PKYEIJ9RyNv9XfJQoQJyuO5fWEwzZtJ+gLku9UoOkcUaWS7G+6gP9YLecwLdQtYb2
-         uMgHoKkkIlfbEgnVDXOGFlg71/7Du7PHVMa8KiDiLW46n3RPYBMOxSZx2EN7ph0Ysc
-         UU0nKaZTLiNNMDKEOkz7HPlnNlmxQziQApQP3ylpki5CMTOu3qWnYTXj+oVEx+puB3
-         DQmcmyArlItbvWvY10yJ/o1/01r1XyxqxNx6bAQF4tMLvx9s+yzL8S9ywHviab0mah
-         OXm506Atfv2AaiCvQMj5HXB+UWJkYUigwt+RTRV23RtAaklW66Pj145Aqnk9LEKs9C
-         rLlo3dzeQ7wCQ==
+        b=dmjut/MLvdKu/V9d1loh3HF0dKBXrifT7g2V/wNaJJJvkyiymRlC6+WunEQhPMUTV
+         IRxXkh3EeM2/0VE41k86G3iC3PZ3sRULxN64zfGi4MCkc9G6z8dp3UQ0hn4VHT0MeW
+         1dvDeGgUhVvvFcb5BcOY2QpVXgh4akr0i6/VosN/KNVYrwbmrrttm5Iv2vQWcGJnbM
+         gUzdpzZETd9C7W8Bn3yp+2nYY3EaJKR1RRH1afLKAh7whgHsDogiMbcO/AOOtL99H2
+         VibLCg1yrLNr5TQrMHbR5l4a0RR3HH2bzFASLjgiH9mWgk9WEltYfBYo/Vn+GbfXaY
+         F3vNlcxzzMieQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 02110609F5;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 141C660A0A;
         Tue, 15 Jun 2021 18:20:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next v3] netlabel: Fix memory leak in netlbl_mgmt_add_common
+Subject: Re: [net-next PATCH 0/6] Add ingress ratelimit offload
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162378121000.26290.15147502138863217161.git-patchwork-notify@kernel.org>
+Message-Id: <162378121007.26290.15121739739901895294.git-patchwork-notify@kernel.org>
 Date:   Tue, 15 Jun 2021 18:20:10 +0000
-References: <20210615021444.2306687-1-liushixin2@huawei.com>
-In-Reply-To: <20210615021444.2306687-1-liushixin2@huawei.com>
-To:     Liu Shixin <liushixin2@huawei.com>
-Cc:     paul@paul-moore.com, mudongliangabcd@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1623756871-12524-1-git-send-email-sbhatta@marvell.com>
+In-Reply-To: <1623756871-12524-1-git-send-email-sbhatta@marvell.com>
+To:     Subbaraya Sundeep <sbhatta@marvell.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        sgoutham@marvell.com, hkelam@marvell.com, gakula@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 15 Jun 2021 10:14:44 +0800 you wrote:
-> Hulk Robot reported memory leak in netlbl_mgmt_add_common.
-> The problem is non-freed map in case of netlbl_domhsh_add() failed.
-> 
-> BUG: memory leak
-> unreferenced object 0xffff888100ab7080 (size 96):
->   comm "syz-executor537", pid 360, jiffies 4294862456 (age 22.678s)
->   hex dump (first 32 bytes):
->     05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     fe 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01  ................
->   backtrace:
->     [<0000000008b40026>] netlbl_mgmt_add_common.isra.0+0xb2a/0x1b40
->     [<000000003be10950>] netlbl_mgmt_add+0x271/0x3c0
->     [<00000000c70487ed>] genl_family_rcv_msg_doit.isra.0+0x20e/0x320
->     [<000000001f2ff614>] genl_rcv_msg+0x2bf/0x4f0
->     [<0000000089045792>] netlink_rcv_skb+0x134/0x3d0
->     [<0000000020e96fdd>] genl_rcv+0x24/0x40
->     [<0000000042810c66>] netlink_unicast+0x4a0/0x6a0
->     [<000000002e1659f0>] netlink_sendmsg+0x789/0xc70
->     [<000000006e43415f>] sock_sendmsg+0x139/0x170
->     [<00000000680a73d7>] ____sys_sendmsg+0x658/0x7d0
->     [<0000000065cbb8af>] ___sys_sendmsg+0xf8/0x170
->     [<0000000019932b6c>] __sys_sendmsg+0xd3/0x190
->     [<00000000643ac172>] do_syscall_64+0x37/0x90
->     [<000000009b79d6dc>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+On Tue, 15 Jun 2021 17:04:26 +0530 you wrote:
+> This patchset adds ingress rate limiting hardware
+> offload support for CN10K silicons. Police actions
+> are added for TC matchall and flower filters.
+> CN10K has ingress rate limiting feature where
+> a receive queue is mapped to bandwidth profile
+> and the profile is configured with rate and burst
+> parameters by software. CN10K hardware supports
+> three levels of ingress policing or ratelimiting.
+> Multiple leaf profiles can  point to a single mid
+> level profile and multiple mid level profile can
+> point to a single top level one. Only leaf level
+> profiles are used for configuring rate limiting.
 > 
 > [...]
 
 Here is the summary with links:
-  - [-next,v3] netlabel: Fix memory leak in netlbl_mgmt_add_common
-    https://git.kernel.org/netdev/net-next/c/b8f6b0522c29
+  - [net-next,1/5] octeontx2-af: cn10k: Bandwidth profiles config support
+    https://git.kernel.org/netdev/net-next/c/e8e095b3b370
+  - [net-next,2/5] octeontx2-af: cn10k: Debugfs support for bandwidth profiles
+    https://git.kernel.org/netdev/net-next/c/e7d8971763f3
+  - [net-next,3/5] octeontx2-pf: TC_MATCHALL ingress ratelimiting offload
+    https://git.kernel.org/netdev/net-next/c/2ca89a2c3752
+  - [net-next,4/5] octeontx2-pf: Use NL_SET_ERR_MSG_MOD for TC
+    https://git.kernel.org/netdev/net-next/c/5d2fdd86d517
+  - [net-next,5/5] octeontx2-pf: Add police action for TC flower
+    https://git.kernel.org/netdev/net-next/c/68fbff68dbea
 
 You are awesome, thank you!
 --
