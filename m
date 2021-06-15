@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5913B3A8279
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27AFB3A827C
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231817AbhFOOTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 10:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36804 "EHLO
+        id S231796AbhFOOTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 10:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231433AbhFOORj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:17:39 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B913C061152
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 07:14:07 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id t17so11563355pga.5
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 07:14:07 -0700 (PDT)
+        with ESMTP id S231538AbhFOOSA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:18:00 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912F6C061157
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 07:14:12 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id h1so8544367plt.1
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 07:14:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=b7apvPbQfTG1FYg2uNsocmvMG/QdC7c4RuzNmrGKxtc=;
-        b=teEC3X5118RCoqRjDpVinxrBxb/ZnCm6ryA5hTE///DNJNJIJ7ry41IlzLM/WQ5RZi
-         5rM29Gvy1WbJsWL0k3ucFdrxybEvdyBmK744/4SAfTdXMBCd9dtjzdV6h4lNYp1H3YAe
-         RaY/wxthVmrWQYX778EfdTQbqgDLnqWYzbbAUF0xXFFqFVkE4KxZ564GQjL0iwdHK9zR
-         QipmY/L7g/sua/MKoU4gAbpjYDQ8XMk0LrElfchchmEY96U4NRRm7211KAJCMtvD/tLG
-         2zK0nUfsHKDTzh/XdBfdvD4OZrzHRQtNECYGSoQtBcAELiDzP1QZt2UELiaroy3e2M1k
-         QF/Q==
+        bh=WWAi/i4+n9XG5D57vjCca2tNocYxaQJOYj5KH2bJ384=;
+        b=0kIA76yEil4BDyN3USnHD3/M8FrPXcpFiBtM5SrfGm4D/hRLIWWQevjzMrmXkvkdwU
+         /I8AKMWCkHdw2qTuchBfN/PK2PZZLJMcsPq6LBQFkREk6RWRwnzts6osF//EZXIafzq0
+         annTM6mRM+CObk1LmodpcuGI18iPMdrO+f07wL2i7sL4hExnopN7djnuXypf9qHNytXJ
+         GbZ58bvDW/a2OGejh65bmDZlKAV+279i3TTA8RA+It3vMuXrP07HIIzP9P/tUf0O5Ghx
+         ygd5K2GEyaRP+PSFqmHdZRFnbeBqy6jOJ+pho5sg6ufX4iyz0SatX81p0eMgUcrnXIGv
+         ohrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=b7apvPbQfTG1FYg2uNsocmvMG/QdC7c4RuzNmrGKxtc=;
-        b=G4j9bHtp9ClEhz4TgEB6pGI/jZYTf4VVwmb0eV2IcmmGdwyV0nxewvLMp3gMa7yDSL
-         WhcZhfxiun7hSekCdnrupS2i/z5c6t6zkJ7zeFzQYL3Js2ihwZlIUCZbCuPAnOdvwxum
-         QXdEOT2aggENWexsX/GlboA/NkwFYTHzVmGSHQGDK147r/po3QcN6Fk1rs3bQVD59+ng
-         +wNFuJG/ETs1xxzIv3pV8UEHtwH2xjSgzTAaGD7DGzRuX4KWz3lErf/rHGty7BGf3mTn
-         z0dtwTkJ+cKAOy95Qh1U44xOn9kESY3PCatVO6XUjTFfLX/WVLJMDzmYwgA9lCHRYvdV
-         /UIg==
-X-Gm-Message-State: AOAM531CGDRSXu0m/rBSNo4VvQ9TrvDb3LBseFG0izzXxJ+3BRHfQXuf
-        72iy+IB1kT9zU41liWboBZOn
-X-Google-Smtp-Source: ABdhPJzJT+1d1E8F4L3uwEMXEuWS3/RAonqjFcnOvR03YvpVA7eJh794mNzTaDsLprM6LBC/PxXhrA==
-X-Received: by 2002:a63:9302:: with SMTP id b2mr3039614pge.277.1623766446912;
-        Tue, 15 Jun 2021 07:14:06 -0700 (PDT)
+        bh=WWAi/i4+n9XG5D57vjCca2tNocYxaQJOYj5KH2bJ384=;
+        b=rOWmbEbEom2fzFvItF9SwhojqQdDd/DK0YrOf/SCiOWvziK9cehOzahkFn2VdLNkLk
+         MklOptP4RJTmluB+mfnghdoddxgJpEvcgdESHSJUXh86YgaBsQb3ZOqKanK42oYG8XB6
+         skMFHwvriQd3XaYZhUPJFTc40QnmKHO1v/S76zRCJCO551VCFfg6SbanfZG7UstQdYlF
+         o8NwgvJULBl8sTIh9bz/WhN+K3onOb9F/GDiTMUcmi1t1YV+y3SJc8Y5FAsP6V3BjSBH
+         pB3OrwLcHopDy9BDcEtNUa/Y47c3LCZeu4EhWUFXT6dCVS7vBv/uHmdBAGIvePlg/Ycv
+         Uong==
+X-Gm-Message-State: AOAM530h5Wnj/XjY8i5YL7R46S+wZTNx8kKvxU3ETAHKnaZH8AH/V8Hn
+        zE4pTtUr3kVMVuGaPUBeF5tE
+X-Google-Smtp-Source: ABdhPJwW+q5dHWJSz6MNIvxr3iew20vYFe9rQ1otKyLj3TsWzRln7lNFm51HBugcs9X5HKNDyYkcuA==
+X-Received: by 2002:a17:90a:6482:: with SMTP id h2mr5018877pjj.188.1623766451749;
+        Tue, 15 Jun 2021 07:14:11 -0700 (PDT)
 Received: from localhost ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id d8sm16097026pfq.198.2021.06.15.07.14.05
+        by smtp.gmail.com with ESMTPSA id f18sm2692741pjq.48.2021.06.15.07.14.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Jun 2021 07:14:06 -0700 (PDT)
+        Tue, 15 Jun 2021 07:14:11 -0700 (PDT)
 From:   Xie Yongji <xieyongji@bytedance.com>
 To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
         sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -59,9 +59,9 @@ Cc:     songmuchun@bytedance.com,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v8 03/10] eventfd: Increase the recursion depth of eventfd_signal()
-Date:   Tue, 15 Jun 2021 22:13:24 +0800
-Message-Id: <20210615141331.407-4-xieyongji@bytedance.com>
+Subject: [PATCH v8 04/10] vhost-iotlb: Add an opaque pointer for vhost IOTLB
+Date:   Tue, 15 Jun 2021 22:13:25 +0800
+Message-Id: <20210615141331.407-5-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210615141331.407-1-xieyongji@bytedance.com>
 References: <20210615141331.407-1-xieyongji@bytedance.com>
@@ -71,60 +71,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Increase the recursion depth of eventfd_signal() to 1. This
-is the maximum recursion depth we have found so far, which
-can be triggered with the following call chain:
+Add an opaque pointer for vhost IOTLB. And introduce
+vhost_iotlb_add_range_ctx() to accept it.
 
-    kvm_io_bus_write                        [kvm]
-      --> ioeventfd_write                   [kvm]
-        --> eventfd_signal                  [eventfd]
-          --> vhost_poll_wakeup             [vhost]
-            --> vduse_vdpa_kick_vq          [vduse]
-              --> eventfd_signal            [eventfd]
-
+Suggested-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- fs/eventfd.c            | 2 +-
- include/linux/eventfd.h | 5 ++++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/vhost/iotlb.c       | 20 ++++++++++++++++----
+ include/linux/vhost_iotlb.h |  3 +++
+ 2 files changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/fs/eventfd.c b/fs/eventfd.c
-index e265b6dd4f34..cc7cd1dbedd3 100644
---- a/fs/eventfd.c
-+++ b/fs/eventfd.c
-@@ -71,7 +71,7 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
- 	 * it returns true, the eventfd_signal() call should be deferred to a
- 	 * safe context.
- 	 */
--	if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
-+	if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count) > EFD_WAKE_DEPTH))
- 		return 0;
+diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
+index 0fd3f87e913c..5c99e1112cbb 100644
+--- a/drivers/vhost/iotlb.c
++++ b/drivers/vhost/iotlb.c
+@@ -36,19 +36,21 @@ void vhost_iotlb_map_free(struct vhost_iotlb *iotlb,
+ EXPORT_SYMBOL_GPL(vhost_iotlb_map_free);
  
- 	spin_lock_irqsave(&ctx->wqh.lock, flags);
-diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
-index fa0a524baed0..886d99cd38ef 100644
---- a/include/linux/eventfd.h
-+++ b/include/linux/eventfd.h
-@@ -29,6 +29,9 @@
- #define EFD_SHARED_FCNTL_FLAGS (O_CLOEXEC | O_NONBLOCK)
- #define EFD_FLAGS_SET (EFD_SHARED_FCNTL_FLAGS | EFD_SEMAPHORE)
- 
-+/* Maximum recursion depth */
-+#define EFD_WAKE_DEPTH 1
-+
- struct eventfd_ctx;
- struct file;
- 
-@@ -47,7 +50,7 @@ DECLARE_PER_CPU(int, eventfd_wake_count);
- 
- static inline bool eventfd_signal_count(void)
+ /**
+- * vhost_iotlb_add_range - add a new range to vhost IOTLB
++ * vhost_iotlb_add_range_ctx - add a new range to vhost IOTLB
+  * @iotlb: the IOTLB
+  * @start: start of the IOVA range
+  * @last: last of IOVA range
+  * @addr: the address that is mapped to @start
+  * @perm: access permission of this range
++ * @opaque: the opaque pointer for the new mapping
+  *
+  * Returns an error last is smaller than start or memory allocation
+  * fails
+  */
+-int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
+-			  u64 start, u64 last,
+-			  u64 addr, unsigned int perm)
++int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
++			      u64 start, u64 last,
++			      u64 addr, unsigned int perm,
++			      void *opaque)
  {
--	return this_cpu_read(eventfd_wake_count);
-+	return this_cpu_read(eventfd_wake_count) > EFD_WAKE_DEPTH;
- }
+ 	struct vhost_iotlb_map *map;
  
- #else /* CONFIG_EVENTFD */
+@@ -71,6 +73,7 @@ int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
+ 	map->last = last;
+ 	map->addr = addr;
+ 	map->perm = perm;
++	map->opaque = opaque;
+ 
+ 	iotlb->nmaps++;
+ 	vhost_iotlb_itree_insert(map, &iotlb->root);
+@@ -80,6 +83,15 @@ int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(vhost_iotlb_add_range_ctx);
++
++int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
++			  u64 start, u64 last,
++			  u64 addr, unsigned int perm)
++{
++	return vhost_iotlb_add_range_ctx(iotlb, start, last,
++					 addr, perm, NULL);
++}
+ EXPORT_SYMBOL_GPL(vhost_iotlb_add_range);
+ 
+ /**
+diff --git a/include/linux/vhost_iotlb.h b/include/linux/vhost_iotlb.h
+index 6b09b786a762..2d0e2f52f938 100644
+--- a/include/linux/vhost_iotlb.h
++++ b/include/linux/vhost_iotlb.h
+@@ -17,6 +17,7 @@ struct vhost_iotlb_map {
+ 	u32 perm;
+ 	u32 flags_padding;
+ 	u64 __subtree_last;
++	void *opaque;
+ };
+ 
+ #define VHOST_IOTLB_FLAG_RETIRE 0x1
+@@ -29,6 +30,8 @@ struct vhost_iotlb {
+ 	unsigned int flags;
+ };
+ 
++int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb, u64 start, u64 last,
++			      u64 addr, unsigned int perm, void *opaque);
+ int vhost_iotlb_add_range(struct vhost_iotlb *iotlb, u64 start, u64 last,
+ 			  u64 addr, unsigned int perm);
+ void vhost_iotlb_del_range(struct vhost_iotlb *iotlb, u64 start, u64 last);
 -- 
 2.11.0
 
