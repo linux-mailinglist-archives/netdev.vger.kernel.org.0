@@ -2,123 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FA693A7DAB
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 13:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 990DF3A7DDD
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 14:07:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230130AbhFOL46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 07:56:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40419 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229869AbhFOL46 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 07:56:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623758093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r9ZcD21ZX/ou29BDDRauVXqm9CpSppybq1/8AzdM/BE=;
-        b=gG6V+WFX8+0Hrii7fxCmUn2gb58wWJMswXbgbRlDjF3gh+C4vJh5Ik++7mJyyUTlH4rKSo
-        6MuO7SZXL+lJt4Kww/4BYuFOQk2LfEWhd07NiU+A8v2K3jgTwsmH3G7e3v9u/sTnZ8k41z
-        yKJxSt/hYkwD9FsUtobVGgZUUCurhrw=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-253-4a4qhcq_NQ-ZfcQOfifJig-1; Tue, 15 Jun 2021 07:54:52 -0400
-X-MC-Unique: 4a4qhcq_NQ-ZfcQOfifJig-1
-Received: by mail-ed1-f71.google.com with SMTP id y16-20020a0564024410b0290394293f6816so4688638eda.20
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 04:54:52 -0700 (PDT)
+        id S230392AbhFOMJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 08:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229983AbhFOMJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 08:09:42 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CBBC061574;
+        Tue, 15 Jun 2021 05:07:38 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id g8so22182534ejx.1;
+        Tue, 15 Jun 2021 05:07:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=F2WOp7laceuxMILuVpXWmQIN4CP/UaKDpQrNGuoiets=;
+        b=bpIE1xt9f4WHxc1LIBkz+TxemnxivXcZLk3PGwB9kZY3wEhtdoaHdaNGjkp0jFD8k1
+         N1iud+3xq0b+kGQuusZcT2CSyTBCurvuJk3iQ1PecywAzsAAnwEzpDHqQfYUln9+Zoi0
+         6RqzEA8NfkaBoMoOC+vPlk37DoBwqMlk/1m888jTNKYAB1au9ay8aouvG2bYtURbnkZI
+         XCnW5XJDnlQaL4QXdOvH9KsYWG/mwwG3mMRi5kTARQfWRBO8a25rUlvHJAoa3CI6Y+yF
+         8mfFFIGh05/+67prKlVF/nksi253pKlnzlwVxYW5cOG3tQ5G7u5SLvfq73fukSLKP2tP
+         LGMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=r9ZcD21ZX/ou29BDDRauVXqm9CpSppybq1/8AzdM/BE=;
-        b=fsFCwlmgAHQt4C4w0u9PQWqwnUHkmNJatR4jSvZVCUePhvdJC1o7pVv0R+p+AL9ta6
-         srNIWyvpQgwSaKoq61OLYGLvXy+6nP2GzjJ5Yv0aSVs/U4n0jyPvuHBnBP8iwU0FLj/V
-         bgxxNjPWS59+bhV1GKqwXAYHv3+MRfuAJZVFv7Nw7ONYzptVIsrxa+BQZCtPuUCxgsyw
-         OHModnqI8b0m+JfD8V653p//bLB3alUlVHIJX+NN/crElxkhdaafJEcpbZ+5nbdjzfck
-         YG8HdGwpzIchKA4p71s859f04trFl8VtF9nFZOkQKomcbDXt1JfybOLc2Ie6UuyuOqWX
-         wcWQ==
-X-Gm-Message-State: AOAM530DfzBD6KvNJOpyS6Zk684o1dfjVlOu0Ytub8+r/akW2LlV7TJ4
-        1G8K2Ga4vO7oHRCLso4teQIWHDMvOXL90Jm6QuMohpJoypkuFvAv7pmbEODFcpW4Gw/FgivHilS
-        NBXOsKS7qLeaaiaWH
-X-Received: by 2002:a05:6402:6c8:: with SMTP id n8mr22504752edy.180.1623758091271;
-        Tue, 15 Jun 2021 04:54:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx6VRfui25Fk7gETjn32Em0zrvcKKVgDXu79Wc1czwESYsDkvGpci2Q171qwd/tpWzV0WpyJA==
-X-Received: by 2002:a05:6402:6c8:: with SMTP id n8mr22504720edy.180.1623758090925;
-        Tue, 15 Jun 2021 04:54:50 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id m18sm9988254ejx.56.2021.06.15.04.54.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Jun 2021 04:54:50 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 6089A180734; Tue, 15 Jun 2021 13:54:49 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vlad Buslov <vladbu@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
-In-Reply-To: <CAM_iQpW7ZAz5rLAanMRg7R52Pn55N=puVkvoHcHF618wq8uA1g@mail.gmail.com>
-References: <20210528195946.2375109-1-memxor@gmail.com>
- <CAM_iQpVqVKhK+09Sj_At226mdWpVXfVbhy89As2dai7ip8Nmtw@mail.gmail.com>
- <20210607033724.wn6qn4v42dlm4j4o@apollo>
- <CAM_iQpVCnG8pSci2sMbJ1B5YE-y=reAUp82itgrguecyNBCUVQ@mail.gmail.com>
- <20210607060724.4nidap5eywb23l3d@apollo>
- <CAM_iQpWA=SXNR3Ya8_L2aoVJGP_uaRP8EYCpDrnq3y8Uf6qu=g@mail.gmail.com>
- <20210608071908.sos275adj3gunewo@apollo>
- <CAM_iQpXFmsWhMA-RO2j5Ph5Ak8yJgUVBppGj2_5NS3BuyjkvzQ@mail.gmail.com>
- <20210613025308.75uia7rnt4ue2k7q@apollo>
- <CAM_iQpW7ZAz5rLAanMRg7R52Pn55N=puVkvoHcHF618wq8uA1g@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 15 Jun 2021 13:54:49 +0200
-Message-ID: <877divs5py.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=F2WOp7laceuxMILuVpXWmQIN4CP/UaKDpQrNGuoiets=;
+        b=mgdkzI93KEinQ3qkKM6oUwjO5VJJtysgAA8J8u5VSMhES2fQIjDrgqGXky11cmcP0C
+         /cGm52QwjCZj7WgsEt+U8q4Psza/YD7z4P2A4BRselRqcCMcjsO3SG5Ug0bZWTPVl5zA
+         C56T8WNkWAQ7nhhttAtMoOtHM7uaV1wZt3ucqf47qqgWyIFDiDQpo9G2cOJ1VOPbIYyy
+         FmbwHuJzI57fKsem7uaLiww98d4NXY92lhMJDxYdZMwiA5f0SCMWDLSh+bY/GA7AbHhU
+         Pdq7kW5ve/SR2fzE6NKGoUXqmuHwWPedDwuXLTKyZT5ugOYWfMf8N+oZt/dLwGqhlp4z
+         PUPg==
+X-Gm-Message-State: AOAM531Dti6SR9C8W104FFkno90Vs5HAjDmnzJISH9vHntrw+1RklMJZ
+        zEc0Q3gUJjl7dD9SH2oGCgxNwRWcxTcewYrGdBE=
+X-Google-Smtp-Source: ABdhPJw1witA7P6CqSUgKjswjF/s/f7Lze23dP/muWUzifZszk/k00kEmbKiYr6L65YTPHEo+Jeuo+Kad6fWwCCm+QI=
+X-Received: by 2002:a17:906:7f0e:: with SMTP id d14mr20030316ejr.103.1623758856683;
+ Tue, 15 Jun 2021 05:07:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
+ <YMhY9NHf1itQyup7@kroah.com> <CAD-N9QVfDQQo0rRiaa6Cx-xO80yox9hNzK91_UVj0KNgkhpvnQ@mail.gmail.com>
+ <YMh2b0LvT9H7SuNC@kroah.com> <CAD-N9QV+GMURatPx4qJT2nMsKHQhj+BXC9C-ZyQed3pN8a9YUA@mail.gmail.com>
+ <CAD-N9QW6LhRO+D-rr4xCCuq+m=jtD7LS_+GDVs9DkHe5paeSOg@mail.gmail.com> <YMiLFFRfXfBHpfAF@kroah.com>
+In-Reply-To: <YMiLFFRfXfBHpfAF@kroah.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Tue, 15 Jun 2021 20:07:10 +0800
+Message-ID: <CAD-N9QUVCc8Gaw0pTqCCHMby2R4_8VNcVy+QcndoXpYe7vbt0Q@mail.gmail.com>
+Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
+To:     Greg KH <greg@kroah.com>
+Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang <xiyou.wangcong@gmail.com> writes:
-
->> > I offer two different views here:
->> >
->> > 1. If you view a TC filter as an instance as a netdev/qdisc/action, they
->> > are no different from this perspective. Maybe the fact that a TC filter
->> > resides in a qdisc makes a slight difference here, but like I mentioned, it
->> > actually makes sense to let TC filters be standalone, qdisc's just have to
->> > bind with them, like how we bind TC filters with standalone TC actions.
->>
->> You propose something different below IIUC, but I explained why I'm wary of
->> these unbound filters. They seem to add a step to classifier setup for no real
->> benefit to the user (except keeping track of one more object and cleaning it
->> up with the link when done).
+On Tue, Jun 15, 2021 at 7:12 PM Greg KH <greg@kroah.com> wrote:
 >
-> I am not even sure if unbound filters help your case at all, making
-> them unbound merely changes their residence, not ownership.
-> You are trying to pass the ownership from TC to bpf_link, which
-> is what I am against.
+> On Tue, Jun 15, 2021 at 06:24:17PM +0800, Dongliang Mu wrote:
+> > On Tue, Jun 15, 2021 at 6:10 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+> > >
+> > > On Tue, Jun 15, 2021 at 5:44 PM Greg KH <greg@kroah.com> wrote:
+> > > >
+> > > > On Tue, Jun 15, 2021 at 03:56:32PM +0800, Dongliang Mu wrote:
+> > > > > On Tue, Jun 15, 2021 at 3:38 PM Greg KH <greg@kroah.com> wrote:
+> > > > > >
+> > > > > > On Mon, Jun 14, 2021 at 11:37:12PM +0800, Dongliang Mu wrote:
+> > > > > > > The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+> > > > > > > fails to clean up the work scheduled in smsc75xx_reset->
+> > > > > > > smsc75xx_set_multicast, which leads to use-after-free if the work is
+> > > > > > > scheduled to start after the deallocation. In addition, this patch also
+> > > > > > > removes one dangling pointer - dev->data[0].
+> > > > > > >
+> > > > > > > This patch calls cancel_work_sync to cancel the schedule work and set
+> > > > > > > the dangling pointer to NULL.
+> > > > > > >
+> > > > > > > Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+> > > > > > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > > > > > ---
+> > > > > > >  drivers/net/usb/smsc75xx.c | 3 +++
+> > > > > > >  1 file changed, 3 insertions(+)
+> > > > > > >
+> > > > > > > diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
+> > > > > > > index b286993da67c..f81740fcc8d5 100644
+> > > > > > > --- a/drivers/net/usb/smsc75xx.c
+> > > > > > > +++ b/drivers/net/usb/smsc75xx.c
+> > > > > > > @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
+> > > > > > >       return 0;
+> > > > > > >
+> > > > > > >  err:
+> > > > > > > +     cancel_work_sync(&pdata->set_multicast);
+> > > > > > >       kfree(pdata);
+> > > > > > > +     pdata = NULL;
+> > > > > >
+> > > > > > Why do you have to set pdata to NULL afterward?
+> > > > > >
+> > > > >
+> > > > > It does not have to. pdata will be useless when the function exits. I
+> > > > > just referred to the implementation of smsc75xx_unbind.
+> > > >
+> > > > It's wrong there too :)
+> > >
+> > > /: I will fix such two sites in the v2 patch.
+> >
+> > Hi gregkh,
+> >
+> > If the schedule_work is not invoked, can I call
+> > ``cancel_work_sync(&pdata->set_multicast)''?
+>
+> Why can you not call this then?
 
-So what do you propose instead?
+I don't know the internal of schedule_work and cancel_work_sync, so I
+ask this question to confirm my patch does not introduce any new
+issues.
 
-bpf_link is solving a specific problem: ensuring automatic cleanup of
-kernel resources held by a userspace application with a BPF component.
-Not all applications work this way, but for the ones that do it's very
-useful. But if the TC filter stays around after bpf_link detaches, that
-kinda defeats the point of the automatic cleanup.
+>
+> Did you try it and see?
 
-So I don't really see any way around transferring ownership somehow.
-Unless you have some other idea that I'm missing?
+Yes, I thought up a method and tested it in my local workspace.
 
--Toke
+First, I reproduced the memory leak in smsc75xx_bind [1] since the PoC
+triggered an error before schedule_work.
+Then, I merged two patches, and run the PoC. The result showed that my
+patch does not trigger any new issues even the schedule_work is not
+called.
 
+[1] https://syzkaller.appspot.com/bug?id=c978ec308a1b89089a17ff48183d70b4c840dfb0
+
+>
+> thanks,
+>
+> greg k-h
