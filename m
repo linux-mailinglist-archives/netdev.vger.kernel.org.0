@@ -2,138 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B39713A7CED
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 13:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AAF63A7CF0
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 13:12:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbhFOLOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 07:14:35 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:60045 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229601AbhFOLO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 07:14:28 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 2909B5808D9;
-        Tue, 15 Jun 2021 07:12:23 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 15 Jun 2021 07:12:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=9Q6KDp2HWna3rxZivpNB7NpzF6d
-        wHBZaHCxz9AOstAo=; b=VO1TcpCOxfXH3sxQowoQcl75VH48aPea2qp+QAdYfyN
-        /YH7qGFT+GA1PsFaIbHL7xLq+M/t8KGQinALWSK3ocGOq3mRg6PFtGY6WXIdpXCK
-        XYcx82cKdjEB2OKfrMfglX7zpcQk+M6Yu02RBEFA3pBVVd6rplPtRyLo81WlXVeb
-        5Z5jf/BmyYxiCGw20t+o1P/j9IIz34aMOrOXDdDwFUHdRNnO2fB2+63ACXg4ckhh
-        LdM33XMDpmcI4Qvhc/cJhTg1bR/B/ykLQ5buUUHdMCBZSPXPGuA0aq/zqxONI2yl
-        Qs4VEiSKSmzs168xEtVNJ+yum1vDfvPVHr2rTak1X7g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=9Q6KDp
-        2HWna3rxZivpNB7NpzF6dwHBZaHCxz9AOstAo=; b=W1FCPA7R8Q4QZWMjtIOYbO
-        3essXw18DAQP9FvCgS6bIY37SDq3hNKzEpbuyM8etfT0SjPDoMbh+c0goBNMguWp
-        TcEahIFdsLbm68tksyY+anScdXDmiAygPrjGQxoaAQHetdW78vEgQhmfk+qSxilQ
-        5oPu+z+8zGj5BmleSskJxNuO8PMCWF1kLgqD2prfFNdax09KiI4nQ+eiw7veW/iA
-        Zcd3NEWWeSydTW+qwDXQmaaz5n02y64eZaOZEHdrextyWRJCeyIuU1jmV+uLznKt
-        SSPcj/0yBkyfptjxOfW49U5XRQprEO58o2J3Moo6RQC9ubBl4fqpG1dX5NP/AAZA
-        ==
-X-ME-Sender: <xms:FovIYHI6FQPs744CBPhrLBt-6huMUL7aRIELsQkO21C97HdZ8M5MHA>
-    <xme:FovIYLJqmmf85oR2-hMw4NnOIvhESVlxgrQ-Z6OI6y5oZrHu-fBUAt-6YhQVA_E3J
-    rkEwDzkrvfO9A>
-X-ME-Received: <xmr:FovIYPuxE4jvdI8WJ0sTboB4yOYGp4V7F51QjwPcQS2gJGngZflDsrij7Rrv_FcDG39wuOjR7ay-HsqzkAuOzhBLUOBpOHMS>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedvjedgfeejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdortddttddvnecuhfhrohhmpefirhgvghcu
-    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevhefgje
-    eitdfffefhvdegleeigeejgeeiffekieffjeeflefhieegtefhudejueenucevlhhushht
-    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
-    drtghomh
-X-ME-Proxy: <xmx:FovIYAa2kaTzgW2gzRSBSbUWKxLRIRfIznpZ6-8HIYmpidSXLOsq2A>
-    <xmx:FovIYOaoXznIKP-7V9MIKnAN_aC7b25sE_J-lROsW-2DbSZcfdcSaw>
-    <xmx:FovIYEAqaAh1O_dViNm1InHclTGi435Ccz5D-ZTOyiE3lKMZdhnNtg>
-    <xmx:F4vIYEy7A4CXP1uTvGbOR77Cbd5zElVCN-w1Y6xZFanI44lm-V0aiA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 15 Jun 2021 07:12:22 -0400 (EDT)
-Date:   Tue, 15 Jun 2021 13:12:20 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pavel Skripkin <paskripkin@gmail.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
-Message-ID: <YMiLFFRfXfBHpfAF@kroah.com>
-References: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
- <YMhY9NHf1itQyup7@kroah.com>
- <CAD-N9QVfDQQo0rRiaa6Cx-xO80yox9hNzK91_UVj0KNgkhpvnQ@mail.gmail.com>
- <YMh2b0LvT9H7SuNC@kroah.com>
- <CAD-N9QV+GMURatPx4qJT2nMsKHQhj+BXC9C-ZyQed3pN8a9YUA@mail.gmail.com>
- <CAD-N9QW6LhRO+D-rr4xCCuq+m=jtD7LS_+GDVs9DkHe5paeSOg@mail.gmail.com>
+        id S230444AbhFOLOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 07:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230283AbhFOLOg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 07:14:36 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6579CC061574;
+        Tue, 15 Jun 2021 04:12:31 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G45JF0vBQz9sRK;
+        Tue, 15 Jun 2021 21:12:28 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1623755549;
+        bh=YFJ3U4Cngjq499MyEt86iJ9OObreMpZMft2dQ2wS75E=;
+        h=Date:From:To:Cc:Subject:From;
+        b=rBPK4kv+lyprU2Or5W3g2hzVA5TggSJ2760v2dwAZjxqNXpa8XBKr86xcxTRIyGxn
+         /cdGgfnj9iROEYELPr5lk90Gd61LOi6BtaCA5Ts/k0kLswdkaUCb0rzGf7DbX53sQm
+         KNGgYuVmyA31YTJIw4qHyH+ZnYn0/o15eJjxdac1V/wzHjF9A0wefqxWltD6AruOZh
+         wA1cEcSD5KQXXvGxNnJoq2gLCJUt4LxjSkHXUh9YJnqw7TvEnB7bgLc0U8J39qcB6j
+         U/GqXGFLzd6UyF8V+DiArVIcp1fp13sCaQNaPIjMnvwhrYCpauWgxBhqmPWGXcSY5R
+         2voFv5FcY5Gkw==
+Date:   Tue, 15 Jun 2021 21:12:27 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warnings after merge of the net-next tree
+Message-ID: <20210615211227.4c2ef3e3@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAD-N9QW6LhRO+D-rr4xCCuq+m=jtD7LS_+GDVs9DkHe5paeSOg@mail.gmail.com>
+Content-Type: multipart/signed; boundary="Sig_/OMoN/uDR87LL4dZBNP30X8s";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 06:24:17PM +0800, Dongliang Mu wrote:
-> On Tue, Jun 15, 2021 at 6:10 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> >
-> > On Tue, Jun 15, 2021 at 5:44 PM Greg KH <greg@kroah.com> wrote:
-> > >
-> > > On Tue, Jun 15, 2021 at 03:56:32PM +0800, Dongliang Mu wrote:
-> > > > On Tue, Jun 15, 2021 at 3:38 PM Greg KH <greg@kroah.com> wrote:
-> > > > >
-> > > > > On Mon, Jun 14, 2021 at 11:37:12PM +0800, Dongliang Mu wrote:
-> > > > > > The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> > > > > > fails to clean up the work scheduled in smsc75xx_reset->
-> > > > > > smsc75xx_set_multicast, which leads to use-after-free if the work is
-> > > > > > scheduled to start after the deallocation. In addition, this patch also
-> > > > > > removes one dangling pointer - dev->data[0].
-> > > > > >
-> > > > > > This patch calls cancel_work_sync to cancel the schedule work and set
-> > > > > > the dangling pointer to NULL.
-> > > > > >
-> > > > > > Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> > > > > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > > > > ---
-> > > > > >  drivers/net/usb/smsc75xx.c | 3 +++
-> > > > > >  1 file changed, 3 insertions(+)
-> > > > > >
-> > > > > > diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-> > > > > > index b286993da67c..f81740fcc8d5 100644
-> > > > > > --- a/drivers/net/usb/smsc75xx.c
-> > > > > > +++ b/drivers/net/usb/smsc75xx.c
-> > > > > > @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
-> > > > > >       return 0;
-> > > > > >
-> > > > > >  err:
-> > > > > > +     cancel_work_sync(&pdata->set_multicast);
-> > > > > >       kfree(pdata);
-> > > > > > +     pdata = NULL;
-> > > > >
-> > > > > Why do you have to set pdata to NULL afterward?
-> > > > >
-> > > >
-> > > > It does not have to. pdata will be useless when the function exits. I
-> > > > just referred to the implementation of smsc75xx_unbind.
-> > >
-> > > It's wrong there too :)
-> >
-> > /: I will fix such two sites in the v2 patch.
-> 
-> Hi gregkh,
-> 
-> If the schedule_work is not invoked, can I call
-> ``cancel_work_sync(&pdata->set_multicast)''?
+--Sig_/OMoN/uDR87LL4dZBNP30X8s
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Why can you not call this then?
+Hi all,
 
-Did you try it and see?
+After merging the net-next tree, today's linux-next build (htmldocs)
+produced these warnings:
 
-thanks,
+Documentation/firmware-guide/acpi/dsd/phy.rst:33: WARNING: Unexpected inden=
+tation.
+Documentation/firmware-guide/acpi/dsd/phy.rst:35: WARNING: Definition list =
+ends without a blank line; unexpected unindent.
+Documentation/firmware-guide/acpi/dsd/phy.rst:39: WARNING: Definition list =
+ends without a blank line; unexpected unindent.
+Documentation/firmware-guide/acpi/dsd/phy.rst:40: WARNING: Block quote ends=
+ without a blank line; unexpected unindent.
+Documentation/firmware-guide/acpi/dsd/phy.rst:64: WARNING: Unexpected inden=
+tation.
+Documentation/firmware-guide/acpi/dsd/phy.rst:84: WARNING: Unexpected inden=
+tation.
+Documentation/firmware-guide/acpi/dsd/phy.rst:102: WARNING: Unexpected inde=
+ntation.
+Documentation/firmware-guide/acpi/dsd/phy.rst: WARNING: document isn't incl=
+uded in any toctree
 
-greg k-h
+Introduced by commit
+
+  e71305acd81c ("Documentation: ACPI: DSD: Document MDIO PHY")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/OMoN/uDR87LL4dZBNP30X8s
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDIixsACgkQAVBC80lX
+0GzGgQf/SfzKqZP5EcCNVK2dmoJYGQWbTGwgdDebydhapE7Qg32vQ1VuAw6vkbsP
+N1WF8/MPuMKESbw0y8bRop19IRPypDPzyWUzcQvM3tzIUVqq8p0UXMTrGWgldmOJ
+fcLVh3CNz43G2srCOtHJCo17hdDZ61sX04TfT/NLlMwFvRXSsPX75pkvD+7el4HF
+CTlkH5BFJ+K/5d/NwWiWPGEzQw7OffrxTT8jdUrC9sXFXGUFlZp4VnKaSFGct3Eg
+2MDTRZOql1rZeuuwqjRkrL8mCaCspT/BuO7ETV1GWo0GpJwwpJ4M+gsfrV/xt2lB
+HNdnNPX3+Ep0lSTsXUnpCiD/wg6mig==
+=S65Z
+-----END PGP SIGNATURE-----
+
+--Sig_/OMoN/uDR87LL4dZBNP30X8s--
