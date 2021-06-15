@@ -2,156 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F32A3A77A6
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 09:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 294FB3A77D1
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 09:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbhFOHKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 03:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbhFOHKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 03:10:34 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14636C061574
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 00:08:31 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id e20so10705316pgg.0
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 00:08:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M4ylQlHxq0e8DoMlnrGycIgsscKhdmHM+gpqPKakZpA=;
-        b=FIHohuh1lg5ZOwgCH5N2yDyDwukyPuxlxBCSY3ainalp+0hdVl0/T+yWuNQeHJmklt
-         bgMZ0uponPlNhc2ndQMUho81B5kvD9QuaZmspK3pRAnMpjW6FfJeKovN75MopiQ5bwtR
-         BGoi4fo/D1ypaUFIDI9tI3rFreM+TQqXbuFACzSOE8V4kk0ssvLI0p3y3jBbpG/g7qgv
-         aWpjsQeY1z2d0ufdc3WhK1Kxizm1izsd1TGSqRVvq3ft0yKokgd6qOoH+L46TY4nFrCn
-         HxReojQodAvcvVOicXLqbU/CE2jkq6SXQ2MoMu5Sz5MvtnWFtOcTIx0sOLUIHPVJsXdE
-         Qk3Q==
+        id S230144AbhFOHTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 03:19:47 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:48926 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229488AbhFOHTm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 03:19:42 -0400
+Received: from mail-ej1-f70.google.com ([209.85.218.70])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lt3KL-0004Mh-MQ
+        for netdev@vger.kernel.org; Tue, 15 Jun 2021 07:17:37 +0000
+Received: by mail-ej1-f70.google.com with SMTP id n19-20020a1709067253b029043b446e4a03so4101612ejk.23
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 00:17:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M4ylQlHxq0e8DoMlnrGycIgsscKhdmHM+gpqPKakZpA=;
-        b=fK2LTDM9KgKFmfKOA4U6+ToIncfg8gTcnMGYKRdk+dHCYqKgdK410RNi90DqdW+S7X
-         Nlg+K6d5hs2m7vZe21sBpKnJSPpMeqVHSqtrSQ8MJ8xFcLQQ4V4+12VpWosvEvneuQxi
-         NGPikQ8gWyC+4O/wr647S0VQRCpN7X4pDoJ+WVPFWxvoYGkrHGvi2cKWQk7+o1e+hmMw
-         auc2YsKg6rVqFj2DevUcyso1WKzOjqdy6E+oayXB/VaCEELvCAt1qN+YZq6Q7uonuDjm
-         r/ckvUI3Di9CNyymav6uZh3c5Rvxkbr1jcKAFd/EBMFlKYaFye57sIH8MRMGxd6XBEY1
-         uSBw==
-X-Gm-Message-State: AOAM530nSgRh15a9VopCSQOXTVKhnKXl+ObtZ2X9S3jmucQqp6DdNdm1
-        iprpw3fdSSdhCKJahwWtT51dkucK4vmpEli8Pb1ZJw==
-X-Google-Smtp-Source: ABdhPJxP3RsU/m3n5n5S6vtrfSyGwQf3pZhjt1Y+o0okYbeib/FmV60M5Lpwt3dFxjqHPXYky7d0Zd4WclnpAgm8SFw=
-X-Received: by 2002:a63:bf0d:: with SMTP id v13mr20601063pgf.303.1623740910475;
- Tue, 15 Jun 2021 00:08:30 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=e/PGUSSpRwJWtOH4gYs4F2atjkd8/9rJ+b2AcY5oXpY=;
+        b=FO7CadB3ZlzuC7oVVHg/9K1qfEf1dt+JHXHDg1nwBlIEYscn6bThOuQvqE0L5xIk4w
+         WQ5yknexPiyJjNDEo6+4znIdKsp0hb+h3RKLGeixgaxrG71OyZModVVkaNEcKhFql96W
+         aoM6h0fXNJuoe92wut5dkLlnvMzG3406CjvPi1fBqumZBk9uFbX7TyFgKhIkzeKv6Reh
+         ybRiTqXTIPtn/BfIYs5dnyd9eiusEopj6oaNQVw4f6jlAfKFd6IiuCBugbooBGOJW9AN
+         Z/rjJhArvx15F1fFY4mZaTzq/fAFyzc9q0fUCVr8RjbrRvwnoXAm4BznTpP7SAumv3FT
+         r+zg==
+X-Gm-Message-State: AOAM532hy6VsQFwL2peYFRqJ9Q6NO7oyhX6rQk+9U9eSdKIZ4RlI2C2Z
+        iFle4eQ49V9P2q7sVikx+c5D9D8RCFaUTuKtrpPbo/09D2k9Mm9fpnfQ5PTunvG//McNWku3V4H
+        odVOkT5RSsC1Lr4Y/rkGQ1UwU2F2VfYTjdA==
+X-Received: by 2002:aa7:c983:: with SMTP id c3mr21129857edt.58.1623741457510;
+        Tue, 15 Jun 2021 00:17:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy0PXWMekssI+Wot2EYeDEnefKlmFz9PWFpU7VvbROKRhq9a7DccSGxXH8ArVcWKBS7xmM1lQ==
+X-Received: by 2002:aa7:c983:: with SMTP id c3mr21129853edt.58.1623741457398;
+        Tue, 15 Jun 2021 00:17:37 -0700 (PDT)
+Received: from [192.168.1.115] (xdsl-188-155-177-222.adslplus.ch. [188.155.177.222])
+        by smtp.gmail.com with ESMTPSA id f23sm9279588ejb.101.2021.06.15.00.17.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Jun 2021 00:17:37 -0700 (PDT)
+Subject: Re: [PATCH] NFC: nxp-nci: remove unnecessary labels
+To:     samirweng1979 <samirweng1979@163.com>, charles.gorand@effinnov.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+References: <20210615015256.13944-1-samirweng1979@163.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <6129efc3-fe4f-8b09-22cd-3d17354e1c7a@canonical.com>
+Date:   Tue, 15 Jun 2021 09:17:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20210615003016.477-1-ryazanov.s.a@gmail.com> <20210615003016.477-10-ryazanov.s.a@gmail.com>
-In-Reply-To: <20210615003016.477-10-ryazanov.s.a@gmail.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 15 Jun 2021 09:17:32 +0200
-Message-ID: <CAMZdPi-C+Yhf27+-7Ct-1pkp0htrr6Qbt=Om2KQk+5aVVFPRMQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/10] net: mhi_net: create default link via WWAN core
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210615015256.13944-1-samirweng1979@163.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sergey,
-
-On Tue, 15 Jun 2021 at 02:30, Sergey Ryazanov <ryazanov.s.a@gmail.com> wrote:
->
-> Utilize the just introduced WWAN core feature to create a default netdev
-> for the default data channel. Since the netdev is now created via the
-> WWAN core, rely on it ability to destroy all child netdevs on ops
-> unregistering.
->
-> While at it, remove the RTNL lock acquiring hacks that were earlier used
-> to call addlink/dellink without holding the RTNL lock. Also make the
-> WWAN netdev ops structure static to make sparse happy.
->
-> Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+On 15/06/2021 03:52, samirweng1979 wrote:
+> From: wengjianfeng <wengjianfeng@yulong.com>
+> 
+> Some labels are meaningless, so we delete them and use the
+> return statement instead of the goto statement.
+> 
+> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
 > ---
->  drivers/net/mhi/net.c | 54 +++++--------------------------------------
->  1 file changed, 6 insertions(+), 48 deletions(-)
->
-> diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
-> index b003003cbd42..06253acecaa2 100644
-> --- a/drivers/net/mhi/net.c
-> +++ b/drivers/net/mhi/net.c
-> @@ -342,10 +342,7 @@ static int mhi_net_newlink(void *ctxt, struct net_device *ndev, u32 if_id,
->         /* Number of transfer descriptors determines size of the queue */
->         mhi_netdev->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
->
-> -       if (extack)
-> -               err = register_netdevice(ndev);
-> -       else
-> -               err = register_netdev(ndev);
-> +       err = register_netdevice(ndev);
->         if (err)
->                 goto out_err;
->
-> @@ -370,10 +367,7 @@ static void mhi_net_dellink(void *ctxt, struct net_device *ndev,
->         struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
->         struct mhi_device *mhi_dev = ctxt;
->
-> -       if (head)
-> -               unregister_netdevice_queue(ndev, head);
-> -       else
-> -               unregister_netdev(ndev);
-> +       unregister_netdevice_queue(ndev, head);
->
->         mhi_unprepare_from_transfer(mhi_dev);
->
-> @@ -382,7 +376,7 @@ static void mhi_net_dellink(void *ctxt, struct net_device *ndev,
->         dev_set_drvdata(&mhi_dev->dev, NULL);
->  }
->
-> -const struct wwan_ops mhi_wwan_ops = {
-> +static const struct wwan_ops mhi_wwan_ops = {
->         .priv_size = sizeof(struct mhi_net_dev),
->         .setup = mhi_net_setup,
->         .newlink = mhi_net_newlink,
-> @@ -392,55 +386,19 @@ const struct wwan_ops mhi_wwan_ops = {
->  static int mhi_net_probe(struct mhi_device *mhi_dev,
->                          const struct mhi_device_id *id)
->  {
-> -       const struct mhi_device_info *info = (struct mhi_device_info *)id->driver_data;
->         struct mhi_controller *cntrl = mhi_dev->mhi_cntrl;
-> -       struct net_device *ndev;
-> -       int err;
-> -
-> -       err = wwan_register_ops(&cntrl->mhi_dev->dev, &mhi_wwan_ops, mhi_dev,
-> -                               WWAN_NO_DEFAULT_LINK);
-> -       if (err)
-> -               return err;
-> -
-> -       if (!create_default_iface)
-> -               return 0;
-> -
-> -       /* Create a default interface which is used as either RMNET real-dev,
-> -        * MBIM link 0 or ip link 0)
-> -        */
-> -       ndev = alloc_netdev(sizeof(struct mhi_net_dev), info->netname,
-> -                           NET_NAME_PREDICTABLE, mhi_net_setup);
+>  drivers/nfc/nxp-nci/core.c | 39 +++++++++++++--------------------------
+>  1 file changed, 13 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/nfc/nxp-nci/core.c b/drivers/nfc/nxp-nci/core.c
+> index a0ce95a..2b0c723 100644
+> --- a/drivers/nfc/nxp-nci/core.c
+> +++ b/drivers/nfc/nxp-nci/core.c
+> @@ -70,21 +70,16 @@ static int nxp_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
+>  	struct nxp_nci_info *info = nci_get_drvdata(ndev);
+>  	int r;
+>  
+> -	if (!info->phy_ops->write) {
+> -		r = -ENOTSUPP;
+> -		goto send_exit;
+> -	}
+> +	if (!info->phy_ops->write)
+> +		return -EOPNOTSUPP;
 
-I like the idea of the default link, but here we need to create the
-netdev manually for several reasons:
-- In case of QMAP/rmnet, this link is the lower netdev (transport
-layer) and is not associated with any link id.
-- In case of MBIM, it changes the netdev parent device from the MHI
-dev to the WWAN dev, which (currently) breaks how ModemManager groups
-ports/netdevs (based on bus).
+You changed ENOTSUPP into EOPNOTSUPP, which unrelated to the patch. Make
+it a separate patch with its own explanation.
 
-For the last one, I don't think device hierarchy is considered as
-UAPI, so we probably just need to add this new wwan link support to
-user tools like MM. For the first one, I plan to split the mhi_net
-driver into two different ones (mhi_net_qmap, mhi_net_mbim), and in
-the case of qmap(rmnet) forward newlink/dellink call to rmnet
-rtnetlink ops.
 
-Regards,
-Loic
+Best regards,
+Krzysztof
