@@ -2,127 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 407613A76C3
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 07:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13B013A76EB
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 08:11:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230421AbhFOFyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 01:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33556 "EHLO
+        id S229734AbhFOGNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 02:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230079AbhFOFxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 01:53:44 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06DCC061767
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 22:51:37 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id l3so14735997qvl.0
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 22:51:37 -0700 (PDT)
+        with ESMTP id S229493AbhFOGNC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 02:13:02 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD9CC061574;
+        Mon, 14 Jun 2021 23:10:58 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id h12-20020a17090aa88cb029016400fd8ad8so1552736pjq.3;
+        Mon, 14 Jun 2021 23:10:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=uurbqWGujms+eM8JjaOpUapUD5h6wnD/q/UNp8oKl/0=;
-        b=KMnP3cU+UZcfuVAa70h5h4J59Tw7wMGEV/XJzlxQEe4gi1xU4yErHIp7f4syUQ/GAm
-         ew9DmxJHOiCQGZQH/8mzD+blLUobDi0ORbJubvIqQs9SyNP6NXgRiWaKGU59PMskZQcy
-         DZIzOPWMUiwPmVctMq7Yv0LcoOaGmp09jnJQR1Tgoddw7odW2FBLOcnZiLCpfya++vre
-         2ZecCASMGkyaPk78lfWjI39tfslVTCTQEWup2wd0XsoFsJR5OAWy1cc4nGjHUwk2I11I
-         pbvpPN8spFGsYAtW+O8nsIerU3VDfssegfuHf+Fo7fRaYhP1y73NLNu1iR/RdUKD+FB8
-         bqGw==
+        bh=DBHEmS4g0Ps/56IJBsEic1dXCRjW+WMYMVD7IZgxAsY=;
+        b=Ip5LGGIS/e4lktZgEbgLWY+9qLgo8Ojp3ieP5zjE9Y8Z1m5PKdyzEsGT+11Ixo5+X6
+         JZVYb2yfZEEgPLUtLtwq1iDmXWyYk6IPpuBbUwS//q/yIY9gb4NS3X5kPqEJWLAE5cTX
+         K63irwPoTD2x40rpJDZ1zMyb8q85YHxQ/f7UaZdXdpMFIYKbtMwa0kjxi3Oyc5AOM5tE
+         CbjW4ZZ+Osis4lv7SHZ82djZjd7sbpun5ugtxaELiuexVv4mwA0zv+2PkC7mSJzKy4s6
+         qKFvmsEHi8OP+xfo7rgchexnspeYVr59zBeSWAX3Q1N7FBxbM9Uxyt7ZGV/dpkwbReY9
+         9Y/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uurbqWGujms+eM8JjaOpUapUD5h6wnD/q/UNp8oKl/0=;
-        b=FRfuGT4js05cgjkJ4jcx2s0g06sM//xJveXZdJ3dcBsc3RzOrSn9S4a4xO/Eth7Wev
-         JPIOpmNvSseG0CrQK32wsyb89vkWioWoVSnXNpJ7y2A1RTGDzEgy/zl+YyRUEgE43WIV
-         lfc6u+xEZpzaj9PM1zRpnJdNTjf5PoqQdxNZIytTTv2Y/fyGIlRHScgTdxvXBnkMLt//
-         KwI5ver/S8MFJiNwIFuNLpaHt0q8kxfxJZJtsC8EQxIVAzdZdsWUP4r4tE6+aayTwXbq
-         iHVVOACqyYbTsV5/d839CEvbNL1yqDAP+PSDW1bVeTmrgZ1CwTnSxtTxx0OM3ngXBDY9
-         WwLw==
-X-Gm-Message-State: AOAM530LQxkTCqXrk5U1A7kjMrxLHBczv9wLwDJCctk6IVw2Z17w6spl
-        1TW5qMgQ3GBB23pel71+KXHRjdc6SlBTY+ErKKEa0w==
-X-Google-Smtp-Source: ABdhPJwhRw/kAGedkBG+GyFU4tJnyB7sLBulrfz7RgYLWi9/K81O4TYSNRbFgMwjHwX9Rs/Wk6PAGzwDSbK2agtyRcQ=
-X-Received: by 2002:a0c:f652:: with SMTP id s18mr3342726qvm.18.1623736296550;
- Mon, 14 Jun 2021 22:51:36 -0700 (PDT)
+        bh=DBHEmS4g0Ps/56IJBsEic1dXCRjW+WMYMVD7IZgxAsY=;
+        b=e2OZDozf6qEhjJ8T7peE6lAj9mSxPlGl+m6SNPwKM8/f8sXnAuVpqkecgi3XU5tNdD
+         VCOdOX6+9fdiyE8jf8d5j9/Wb1lOlh0ncQUxO+fDx57vCszw4bnFAvdEdSYSp8WO3Fxy
+         sDm60r6vzBap6b3RVba5hqioFL2USn8WhFWYxWcphgefHnXm3UjZhAV+c5anJvr5wgmZ
+         Zvc9D2gu0dJY6rWMoG+Ys7wyFX1h3obQ2jBWsB0Sgl9AdO149PSWRKRkUoEhFiIDyNQU
+         /s79qyeYDEoJecBRiWGm57WMFVWpxrD7dQpyDtvSbmfnP00wGL0AuOoEj8rBAdthFIyM
+         9olQ==
+X-Gm-Message-State: AOAM532y08MNjBWsX7bjjEP44KqKFBiW0F88Yy60xy3/QF1dk56FE9TH
+        G+98fIEqGbuzW8n16CJIM6GLi41QgMkmD8YoSXw=
+X-Google-Smtp-Source: ABdhPJxA/h5peHLM3DmuaPS23lS63xfnY/uYWMofDEs0liPBBNtYnPtekZJp3wMcjdopE2bLUsly5vLGn2vmFCyn2og=
+X-Received: by 2002:a17:90b:190a:: with SMTP id mp10mr3312003pjb.145.1623737457967;
+ Mon, 14 Jun 2021 23:10:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <000000000000008a6c05c46e45a4@google.com> <20210615053159.GA5412@gondor.apana.org.au>
-In-Reply-To: <20210615053159.GA5412@gondor.apana.org.au>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 15 Jun 2021 07:51:25 +0200
-Message-ID: <CACT4Y+YZVgJiRkQdmw-Oc407u9xg2nzeYstv0QVe40xrDimtUQ@mail.gmail.com>
-Subject: Re: [syzbot] UBSAN: shift-out-of-bounds in xfrm_selector_match
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     syzbot <syzbot+e4c1dd36fc6b98c50859@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <20210611042442.65444-1-alexei.starovoitov@gmail.com>
+ <20210611042442.65444-2-alexei.starovoitov@gmail.com> <CAM_iQpW=a_ukO574qtZ6m4rqo2FrQifoGC1jcrd7yWK=6WWg1w@mail.gmail.com>
+ <20210611184516.tpjvlaxjc4zdeqe6@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210611184516.tpjvlaxjc4zdeqe6@ast-mbp.dhcp.thefacebook.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 14 Jun 2021 23:10:46 -0700
+Message-ID: <CAM_iQpV2fv=MMhf3w+YpGDXCYaMKVO_hoACL0=oXmn_pDUVexg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Introduce bpf_timer
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 7:32 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+On Fri, Jun 11, 2021 at 11:45 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On Thu, Jun 10, 2021 at 12:19:26PM -0700, syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    13c62f53 net/sched: act_ct: handle DNAT tuple collision
-> > git tree:       net
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=16635470300000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=770708ea7cfd4916
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=e4c1dd36fc6b98c50859
-> >
-> > Unfortunately, I don't have any reproducer for this issue yet.
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+e4c1dd36fc6b98c50859@syzkaller.appspotmail.com
-> >
-> > UBSAN: shift-out-of-bounds in ./include/net/xfrm.h:838:23
-> > shift exponent -64 is negative
-> > CPU: 0 PID: 12625 Comm: syz-executor.1 Not tainted 5.13.0-rc3-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > Call Trace:
-> >  __dump_stack lib/dump_stack.c:79 [inline]
-> >  dump_stack+0x141/0x1d7 lib/dump_stack.c:120
-> >  ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
-> >  __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:327
-> >  addr4_match include/net/xfrm.h:838 [inline]
-> >  __xfrm4_selector_match net/xfrm/xfrm_policy.c:201 [inline]
-> >  xfrm_selector_match.cold+0x35/0x3a net/xfrm/xfrm_policy.c:227
-> >  xfrm_state_look_at+0x16d/0x440 net/xfrm/xfrm_state.c:1022
+> On Thu, Jun 10, 2021 at 11:42:24PM -0700, Cong Wang wrote:
+> > On Thu, Jun 10, 2021 at 9:27 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > From: Alexei Starovoitov <ast@kernel.org>
 >
-> This appears to be an xfrm_state object with an IPv4 selector
-> that somehow has a prefixlen (d or s) of 96.
+> Please stick to one email thread in the future, ok?
 >
-> AFAICS this is not possible through xfrm_user.  OTOH it is not
-> obvious that af_key is entirely consistent in how it verifies
-> the prefix length, in particular, it seems to be possible for
-> two addresses with conflicting families to be provided as src/dst.
+> I'll consolidate them here:
 >
-> Can you confirm that this is indeed using af_key (a quick read
-> of the syzbot log seems to indicate that this is the case)?
+> > What is your use case to justify your own code? Asking because
+> > you deny mine, so clearly my use case is not yours.
+>
+> I mentioned several use cases in the prior threads.
+> tldr: any periodic event in tracing, networking, security.
+> Garbage collection falls into this category as well, but please internalize
+> that implementing conntrack as it is today in the kernel is an explicit non-goal.
 
-Hi Herbert,
+You need to read my use case again, it is for the conntrack
+in Cilium, not the kernel one.
 
-This was triggered by this program and, yes, it creates an AF_KEY socket:
+>
+> > And more importantly, why not just use BPF_TEST_RUN with
+> > a user-space timer? Asking because you offer no API to read or
+> > modify timer expiration, so literally the same with BPF_TEST_RUN
+> > approach.
+>
+> a wrapper on top of hrtimer_get_remaining() like bpf_timer_get_remaining()
+> is trivial to add, but what is the use case?
+
+If you do not have any use case, then stick to BPF_TEST_RUN
+with user-space timers? And of course your patches are not needed
+at all.
+
+>
+> > >
+> > > Introduce 'struct bpf_timer { __u64 :64; __u64 :64; };' that can be embedded
+> > > in hash/array/lru maps as regular field and helpers to operate on it:
+> >
+> > Can be or has to be? Huge difference here.
+>
+> map elements don't have to use timers.
+
+You interpret this in a wrong way, what I asked is whether a bpf timer has
+to be embedded in a map. IOW, can a bpf timer be a standalone global
+data?
+
+>
+> > In the other thread, you said it is global data, which implies that it does
+> > not have to be in a map.
+>
+> global data is a map. That was explained in the prior thread as well.
+>
+
+I think you implied bpf timer can exist without a map, hence I am asking.
 
 
-18:01:48 executing program 1:
-r0 = socket$inet_udp(0x2, 0x2, 0x0)
-socket$key(0xf, 0x3, 0x2)
-bind$inet(r0, &(0x7f00000001c0)={0x2, 0x0, @local}, 0x10)
-socketpair$tipc(0x1e, 0x5, 0x0, &(0x7f00000000c0)={0xffffffffffffffff,
-<r1=>0xffffffffffffffff})
-ioctl$TUNSETLINK(r1, 0x8912, 0x400308)
-connect$inet(r0, &(0x7f0000000480)={0x2, 0x0, @multicast2}, 0x10)
-setsockopt$inet_IP_XFRM_POLICY(r0, 0x0, 0x11,
-&(0x7f0000000080)={{{@in6=@ipv4={'\x00', '\xff\xff', @dev},
-@in6=@private0, 0x0, 0xfffc, 0x0, 0x0, 0x2, 0x0, 0x0, 0x0, 0x0,
-0xee01}, {0x2}, {}, 0x0, 0x0, 0x1}, {{@in, 0x0, 0x32}, 0x0,
-@in6=@loopback, 0x0, 0x0, 0x0, 0xb7}}, 0xe8)
-socket$key(0xf, 0x3, 0x2)
-sendmmsg(r0, &(0x7f0000007fc0), 0x800001d, 0x0)
+> >
+> > In your test case or your example, all timers are still in a map. So what has
+> > changed since then? Looks nothing to me.
+>
+> look again?
+
+Yes, I just looked at it again, only more confusing, not less.
+
+>
+> > Hmm, finally you begin refcounting it, which you were strongly against. ;)
+>
+> That was already answered in the prior thread.
+> tldr: there were two options. This is one of them. Another can be added
+> in the future as well.
+>
+> > Three questions:
+> >
+> > 1. Can t->prog be freed between bpf_timer_init() and bpf_timer_start()?
+>
+> yes.
+
+Good. So if a program which only initializes the timer and then exits,
+the other program which shares this timer will crash when it calls
+bpf_timer_start(), right?
+
+>
+> > If the timer subprog is always in the same prog which installs it, then
+>
+> installs it? I'm not following the quesiton.
+>
+> > this is fine. But then how do multiple programs share a timer?
+>
+> there is only one callback function.
+
+That's exactly my question. How is one callback function shared
+by multiple eBPF programs which want to share the timer?
+
+
+>
+> > In the
+> > case of conntrack, either ingress or egress could install the timer,
+> > it only depends which one gets traffic first. Do they have to copy
+> > the same subprog for the same timer?
+>
+> conntrack is an explicit non-goal.
+
+I interpret this as you do not want timers to be shared by multiple
+eBPF programs, correct? Weirdly, maps are shared, timers are
+placed in a map, so timers should be shared naturally too.
+
+>
+> >
+> > 2. Can t->prog be freed between a timer expiration and bpf_timer_start()
+> > again?
+>
+> If it's already armed with the first bpf_timer_start() it won't be freed.
+
+Why? I see t->prog is released in your timer callback:
+
++       bpf_prog_put(prog);
++       this_cpu_write(hrtimer_running, NULL);
++       return HRTIMER_NORESTART;
+
+>
+> > It gets a refcnt when starting a timer and puts it when cancelling
+> > or expired, so t->prog can be freed right after cancelling or expired. What
+> > if another program which shares this timer wants to restart this timer?
+>
+> There is only one callback_fn per timer. Another program can share
+> the struct bpf_timer and the map. It might have subprog callback_fn code
+> that looks exactly the same as callback_fn in the first prog.
+> For example when libbpf loads progs/timer.c (after it was compiled into .o)
+> it might share a subprog in the future (when kernel has support for
+> dynamic linking). From bpf user pov it's a single .c file.
+> The split into programs and subprograms is an implemenation detail
+> that C programmer doesn't need to worry about.
+
+Not exactly, they share a same C file but still can be loaded/unloaded
+separately. And logically, whether a timer has been initialized once or
+twice makes a huge difference for programers.
+
+>
+> > 3. Since you offer no API to read the expiration time, why not just use
+> > BPF_TEST_RUN with a user-space timer? This is preferred by Andrii.
+>
+> Andrii point was that there should be no syscall cmds that replicate
+> bpf_timer_init/start/cancel helpers. I agree with this.
+
+Actually there is no strong reason to bother a bpf timer unless you
+want to access the timer itself, which mostly contains expiration.
+User-space timers work just fine for your cases, even if not, extending
+BPF_TEST_RUN should too.
+
+>
+>
+> > Thanks.
+> >
+> > Another unpopular point of view:
+> >
+> > This init() is not suitable for bpf programs, because unlike kernel modules,
+> > there is no init or exit functions for a bpf program. And timer init
+> > is typically
+> > called during module init.
+>
+> Already answerd this in the prior thread. There will be __init and __fini like
+> subprograms in bpf progs.
+
+I interpret this as init does not make sense until we have __init and __fini?
+
+>
+> Please apply the patches to your local tree and do few experiments based
+> on selftests/bpf/progs/timer.c. I think experimenting with the code
+> will answer all of your questions.
+
+Sounds like you find a great excuse for a failure of documentation.
+What I asked are just fundamental design questions you should have
+covered in your cover letter, which is literally empty.
+
+Thanks.
