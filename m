@@ -2,91 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B27CE3A8416
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 17:35:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74D563A8442
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 17:44:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231629AbhFOPha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 11:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
+        id S231664AbhFOPqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 11:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231623AbhFOPh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 11:37:28 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E836FC061767
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 08:35:22 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id c8so19422500ybq.1
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 08:35:22 -0700 (PDT)
+        with ESMTP id S230493AbhFOPq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 11:46:27 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFD7C061574
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 08:44:23 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id ce15so23298477ejb.4
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 08:44:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/TW++UaYH676wBlxAmC5epOAFhyC7J56lUkKh39lO7w=;
-        b=i9s9QuGtGYUZIpHX1mDsmvAli3APV1bnEClSUAQuQkTp6lMS5FBJ3rNm6CHo/TmTky
-         cCSQllfsfxI0Otq8jBh0LSthABYKt5wtuPiiV94lS9FfZfv4r1lfLRoVhAb7GhxdccOq
-         G+3zUsMBML7/+CbFx0w6DlyLp7QCEhjfDX9USfwbFNXfrvhhT9Ph6kuW73CclrBFekDG
-         6BI5skkWF91+i2He/zCobWaFuTzJi/4OTiOzg3WVcbBR4RUUJAl3+6IuctcpyAph+NoL
-         xQkAhb5ENwOuhvhLnBxRTUtcEhe9pcpXPudD9XW/yYFi4NZO7+c3CxcpzDQrKKgMYm/k
-         Bscg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qyaBQFr19p/UgK4A32K8o8j5nham1TGRriUztxZwBHw=;
+        b=uRZ2ZoEPd/1Ehappo8YXBSjfFohQMxoFh514UnGNvOCZSrX7zg8z7Os0miSwM9Jnc5
+         IdbiVG3H25vGqiFcTndx5Ozj/vYzXF8yWrg+wdJ5JG1Bb6BXFqG032aj0BkWWm3ydgGc
+         0Wgxrc2sIobHcIbeL37W/+orDmuatJ9OV31CmKAAzOXwI2Ipyv0N/VxsliBZEmOxCl1d
+         LOGYVQ5f20Fv+PRpYxoEIE+d2gj6WfeawuGfbX8dzAoY1kGcZdvXXBQ++Cn3SISlT/da
+         jJSBllfffc3uKmCxLgaeH1FWhOFJOOUprJPeWBarDEA/03FcNBWxcCZsohQtSB/AjVHP
+         diFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/TW++UaYH676wBlxAmC5epOAFhyC7J56lUkKh39lO7w=;
-        b=T02+nycez8uQpYo01NSBin/iROW7DIcJH5uKMTCTBkXWAzOd9BA6hjg1n9xJs53Urp
-         g1k73PYHG4cFg9XjJfN5VQDih+TRErwLRIDFSEmA3eoheDQgIRFlSMwvOqM14HpHOBOg
-         lfecrlyhYrekucKkjS8ZbZtzRRUU0vFYR2Kp4QGfoXixTULLQ18helfyyVaAik6Z1WrU
-         KB6ES1KrBAC5mXXAF8iD60SRWOlAVE3123i+HCMp0qFvSQttq6qPQenY6RFlPW9vd/zV
-         xrQzmPbaDLqZSWxaBn2YdFajoIU0ocm5kqL4Z4sgKzICDBM5cPg1Ica+7Sx24l1LMEFR
-         M+iQ==
-X-Gm-Message-State: AOAM530vfwG1ZIQk3wgUvyJJSZKrJ3L3Ofy/tSPQvD095cw3m9BOpioy
-        dsT1Gop18NE0Kc1gfnjQEwYy1jGMcRfzMHXNfR/fEw==
-X-Google-Smtp-Source: ABdhPJyU4VoPOerwCdHdI/jGGLIbnbwrAkYWkiCKScaeblfZCVDF0S0kXo5eZbi0qJoHTNMn0naDL9ROsuN4+BIxc08=
-X-Received: by 2002:a25:1fc6:: with SMTP id f189mr33298185ybf.452.1623771321743;
- Tue, 15 Jun 2021 08:35:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qyaBQFr19p/UgK4A32K8o8j5nham1TGRriUztxZwBHw=;
+        b=tV3vAIvInpGAVbiOJD5GQjIRMFViH9m/uxxlyCVuWNNOBu7CTCpX1IEPJzuaxbIKIs
+         0KGaOLbXlr6d3G6nMhtfXBKeQdPRY+Cudj4DSpKNatlIEkBOC3cVD9hu0XtS281mXl42
+         +ALh6m3AGo16ahu2eceX/wZdHJ0J8OaMtuKYz82YQQsOoOH4shSwA1iNx3kPtsB62zdl
+         RrZ3PhkUFklpxFl4v6LMZzxZA0WD1QJqkfxZHjIlxHnEURpZnc9cJkhEqhdkLm7ggNF4
+         E9iDvGmgU7JJ9g8wtla4xczyocEfBozIGE7fSvdS6BsUwF4/8f0vu9e4xxmizglDCJBP
+         Msnw==
+X-Gm-Message-State: AOAM531YhLcA7LawEopmQXF98QHu5s/JhmwU0v5WUnjeyFG6SWIu0m7o
+        BkdGxIiVDoZuI7pRvemHmjQ=
+X-Google-Smtp-Source: ABdhPJzS7tibbgWii+oeZ9UjhqmbJaSWNfA3+H4qh1887kOueEw/CoqIy4uIo4mtEc1Y8rOtQiHIBw==
+X-Received: by 2002:a17:907:9620:: with SMTP id gb32mr152072ejc.127.1623771861899;
+        Tue, 15 Jun 2021 08:44:21 -0700 (PDT)
+Received: from yoga-910.localhost ([188.26.224.68])
+        by smtp.gmail.com with ESMTPSA id a3sm2765547edu.61.2021.06.15.08.44.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Jun 2021 08:44:21 -0700 (PDT)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     calvin.johnson@oss.nxp.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next] mdio: mdiobus: setup of_node for the MDIO device
+Date:   Tue, 15 Jun 2021 18:44:01 +0300
+Message-Id: <20210615154401.1274322-1-ciorneiioana@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210612123224.12525-1-kuniyu@amazon.co.jp>
-In-Reply-To: <20210612123224.12525-1-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 15 Jun 2021 17:35:10 +0200
-Message-ID: <CANn89iLxZxGXaVxLkxTkmNPF7XZdb8DKGMBFuMJLBdtrJRbrsA@mail.gmail.com>
-Subject: Re: [PATCH v8 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 12, 2021 at 2:32 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
->
->
-> Changelog:
->  v8:
->   * Make reuse const in reuseport_sock_index()
->   * Don't use __reuseport_add_sock() in reuseport_alloc()
->   * Change the arg of the second memcpy() in reuseport_grow()
->   * Fix coding style to use goto in reuseport_alloc()
->   * Keep sk_refcnt uninitialized in inet_reqsk_clone()
->   * Initialize ireq_opt and ipv6_opt separately in reqsk_migrate_reset()
->
->   [ This series does not include a stats patch suggested by Yuchung Cheng
->     not to drop Acked-by/Reviewed-by tags and save reviewer's time. I will
->     post the patch as a follow up after this series is merged. ]
->
+By mistake, the of_node of the MDIO device was not setup in the patch
+linked below. As a consequence, any PHY driver that depends on the
+of_node in its probe callback was not be able to successfully finish its
+probe on a PHY, thus the Generic PHY driver was used instead.
 
-For the whole series.
+Fix this by actually setting up the of_node.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Fixes: bc1bee3b87ee ("net: mdiobus: Introduce fwnode_mdiobus_register_phy()")
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ drivers/net/mdio/fwnode_mdio.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index e96766da8de4..283ddb1185bd 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -65,6 +65,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+ 	 * can be looked up later
+ 	 */
+ 	fwnode_handle_get(child);
++	phy->mdio.dev.of_node = to_of_node(child);
+ 	phy->mdio.dev.fwnode = child;
+ 
+ 	/* All data is now stored in the phy struct;
+-- 
+2.31.1
+
