@@ -2,104 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A29B53A7813
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 09:38:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED2323A7818
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 09:40:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbhFOHkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 03:40:37 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:34671 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229488AbhFOHkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 03:40:37 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 44FD658076A;
-        Tue, 15 Jun 2021 03:38:32 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 15 Jun 2021 03:38:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=ric6YdDEXdz8WBuoGrKfe35LOR5
-        WAM61KVVhVs/q73k=; b=LFaeHKxx6ml2cAopsamh5pbpK0US75LJ+BJKi5ap7QA
-        YYlQ153qPfMiUvbtaxzZlu0/yEk4okApSse1Rdds+tomHdvTfC+o2PnvZeGaL1M+
-        l5TayE3DxkYWYkKs+3bRECcLu1lrWNO7rxSoWTvJtjo0dq+A4vKP4Y+PJLIfY4bu
-        5o9LqSh+ndG5Zt1h/h9gUwZ7veC28aEhhIUTYq1rKiS79vcUEA/S06p2dt9ZD0fW
-        q9HhP5oZjwGdZJFyVdU3oLUupj1ls3t9ytRYd+HZTlY9rupWwnc9Bu7Jzu647Jxb
-        6W84bWbNqRcdSflvZlPPigsanCFvFxp7XkEq2t40+xA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ric6Yd
-        DEXdz8WBuoGrKfe35LOR5WAM61KVVhVs/q73k=; b=WieSnIROYYNJLnYd7mBMLs
-        DWiU3p0oYKe35vJ30B0Z257ggz7AyApT/+I3CZEdblancA8UZ8ILHlbyvT7ueWsV
-        QXw58fGfTLk/mVf3wZ71VtreKoofpaSdQjomzci2Tj1fnb6+a5+5RKS3l3GYaaWG
-        NbDdxIa7N7jfyf5jhhfp1oLguH0B0HejZ5KYw48t2AEgL+UlMl1YG9uRzjDqxeu7
-        Pl/u+mSrd0HZmb8SJXeHfB71mX3CssZuweSW6XDpO8icgUYCF/0NfTUPPUdEXfhw
-        n2xoGGzu3denuEcIVfeKt5NfNmMeEJXpbJvQyoFdkiF0DVXGzan7r75BCTd5YNXQ
-        ==
-X-ME-Sender: <xms:91jIYDX_nrKU4NS1bPeSvVbL9vmM50Oi_OUUn2Gaf96TtWZJZC9OsQ>
-    <xme:91jIYLljzmn8Yt5JV0W2wrICpmZ57TjukvrFR4zzB9GoeNUHllQ6w-NoFxQptP_rv
-    n4ifVX1ektvMQ>
-X-ME-Received: <xmr:91jIYPYDZc4e0Eekczk0RLySWfn-apSAzIu5fRK76aXUUoNDhYx4_q3RWGbx221yj_MPRsIP1cPDPr9HDty6zhsuKX6LllPe>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedviedguddvgecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttd
-    ertddttddvnecuhfhrohhmpefirhgvghcumffjuceoghhrvghgsehkrhhorghhrdgtohhm
-    qeenucggtffrrghtthgvrhhnpeevueehjefgfffgiedvudekvdektdelleelgefhleejie
-    eugeegveeuuddukedvteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgr
-    ihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
-X-ME-Proxy: <xmx:91jIYOUfPeLbHvRxkQFglnVWgZEM9-Rd8RDLINs5lffBxbL_2lapPw>
-    <xmx:91jIYNkWDng012_RcE8LH3KdwaMkb83u2jiLLDSM7B2U4vW-kX1h5A>
-    <xmx:91jIYLdMeYVCwFJHQHCxOUdvdAhZpFTivOwhGuCugUFweyfo0oG9KQ>
-    <xmx:-FjIYC8Emc1txAz24Nl9LBYnzr3wT4fVgj-o8bmBj_cW03CNg2EJyw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 15 Jun 2021 03:38:31 -0400 (EDT)
-Date:   Tue, 15 Jun 2021 09:38:28 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     steve.glendinning@shawell.net, davem@davemloft.net,
-        kuba@kernel.org, paskripkin@gmail.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
-Message-ID: <YMhY9NHf1itQyup7@kroah.com>
-References: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
+        id S230376AbhFOHmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 03:42:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230351AbhFOHmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 03:42:04 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614FDC061767
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 00:40:00 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lt3ft-0002gp-Fa; Tue, 15 Jun 2021 09:39:53 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:8a21:1526:9696:549])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 6258D63BCCA;
+        Tue, 15 Jun 2021 07:39:48 +0000 (UTC)
+Date:   Tue, 15 Jun 2021 09:39:47 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org
+Subject: Re: [PATCH v2] can: bcm/raw/isotp: use per module netdevice notifier
+Message-ID: <20210615073947.jyznw75esoetjg7x@pengutronix.de>
+References: <20210602151733.3630-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <265c1129-96f1-7bb1-1d01-b2b8cc5b1a42@hartkopp.net>
+ <51ed3352-b5b0-03a1-ec25-faa368adcc46@i-love.sakura.ne.jp>
+ <5e4693cf-4691-e7da-9a04-3e70cc449bf5@i-love.sakura.ne.jp>
+ <e5a53bed-4333-bd99-ca3d-0e25dfb546e5@virtuozzo.com>
+ <54a5f451-05ed-f977-8534-79e7aa2bcc8f@i-love.sakura.ne.jp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="knf33wvbzsd6nlhj"
 Content-Disposition: inline
-In-Reply-To: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
+In-Reply-To: <54a5f451-05ed-f977-8534-79e7aa2bcc8f@i-love.sakura.ne.jp>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 11:37:12PM +0800, Dongliang Mu wrote:
-> The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> fails to clean up the work scheduled in smsc75xx_reset->
-> smsc75xx_set_multicast, which leads to use-after-free if the work is
-> scheduled to start after the deallocation. In addition, this patch also
-> removes one dangling pointer - dev->data[0].
-> 
-> This patch calls cancel_work_sync to cancel the schedule work and set
-> the dangling pointer to NULL.
-> 
-> Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> ---
->  drivers/net/usb/smsc75xx.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-> index b286993da67c..f81740fcc8d5 100644
-> --- a/drivers/net/usb/smsc75xx.c
-> +++ b/drivers/net/usb/smsc75xx.c
-> @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
->  	return 0;
->  
->  err:
-> +	cancel_work_sync(&pdata->set_multicast);
->  	kfree(pdata);
-> +	pdata = NULL;
 
-Why do you have to set pdata to NULL afterward?
+--knf33wvbzsd6nlhj
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-thanks,
+On 05.06.2021 19:26:35, Tetsuo Handa wrote:
+> From 12c61ae3d06889c9bbc414f0230c05dc630f6409 Mon Sep 17 00:00:00 2001
+> From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Date: Sat, 5 Jun 2021 19:18:21 +0900
+> Subject: [PATCH v2] can: bcm/raw/isotp: use per module netdevice notifier
+>=20
+> syzbot is reporting hung task at register_netdevice_notifier() [1] and
+> unregister_netdevice_notifier() [2], for cleanup_net() might perform
+> time consuming operations while CAN driver's raw/bcm/isotp modules are
+> calling {register,unregister}_netdevice_notifier() on each socket.
+>=20
+> Change raw/bcm/isotp modules to call register_netdevice_notifier() from
+> module's __init function and call unregister_netdevice_notifier() from
+> module's __exit function, as with gw/j1939 modules are doing.
+>=20
+> Link: https://syzkaller.appspot.com/bug?id=3D391b9498827788b3cc6830226d4f=
+f5be87107c30 [1]
+> Link: https://syzkaller.appspot.com/bug?id=3D1724d278c83ca6e6df100a2e320c=
+10d991cf2bce [2]
+> Reported-by: syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.co=
+m>
+> Reported-by: syzbot <syzbot+0f1827363a305f74996f@syzkaller.appspotmail.co=
+m>
+> Tested-by: syzbot <syzbot+355f8edb2ff45d5f95fa@syzkaller.appspotmail.com>
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-greg k-h
+Applied to linux-can/testing.
+
+Tnx,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--knf33wvbzsd6nlhj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDIWUEACgkQqclaivrt
+76kQHwgAqF7nAU6Rtezb1ileRu23thA493XpOLsold1ZIO1m0KmngEa2YtYvREZq
+ArRCDTbIcu4s3AyTYsLVKQS6gKu+gz96mU4GnEStMRELytHUSRDIfqRVIx9Lljwh
+LoRS6rTX2Lu3xHVn7bdTumdajZjjVIhRP0SlXC+6R1zqOMcBORzB2fUY1ESNlUqr
+zR7xt1TU1lGqvHxJHPErhrkqpI/r8NkRoZIGiC5kwl/blLNsC/tNWyzOV+Qv0L/7
+kR5Q4XLzSSsGCjIGB6YxGP70tBNsS8czD8I0sFo7uSpRivuIbQUjjAENwKOfc+kw
+SarW4hsee9gWAOvKpUvInflNLrc4zA==
+=qZIz
+-----END PGP SIGNATURE-----
+
+--knf33wvbzsd6nlhj--
