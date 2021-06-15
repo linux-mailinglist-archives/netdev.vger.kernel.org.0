@@ -2,79 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 253E83A8170
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02C633A8187
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:57:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231372AbhFONzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 09:55:02 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:32906 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbhFONzB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:55:01 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <colin.king@canonical.com>)
-        id 1lt9Ur-00015i-JP; Tue, 15 Jun 2021 13:52:53 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next][V2] net: pcs: xpcs: Fix a less than zero u16 comparison error
-Date:   Tue, 15 Jun 2021 14:52:53 +0100
-Message-Id: <20210615135253.59159-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.31.1
+        id S230527AbhFON7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 09:59:46 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:7276 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230120AbhFON7l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:59:41 -0400
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4G48rz1ql2z1BMWN;
+        Tue, 15 Jun 2021 21:52:35 +0800 (CST)
+Received: from localhost.localdomain (10.67.165.24) by
+ dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 15 Jun 2021 21:57:35 +0800
+From:   Peng Li <lipeng321@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
+        <ms@dev.tdt.de>, <willemb@google.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <huangguangbin2@huawei.com>
+Subject: [PATCH net-next 0/6] net: pci200syn: clean up some code style issues
+Date:   Tue, 15 Jun 2021 21:54:17 +0800
+Message-ID: <1623765263-36775-1-git-send-email-lipeng321@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+This patchset clean up some code style issues.
 
-Currently the check for the u16 variable val being less than zero is
-always false because val is unsigned. Fix this by using the int
-variable for the assignment and less than zero check.
+Peng Li (6):
+  net: pci200syn: remove redundant blank lines
+  net: pci200syn: add blank line after declarations
+  net: pci200syn: replace comparison to NULL with "!card"
+  net: pci200syn: add some required spaces
+  net: pci200syn: add necessary () to macro argument
+  net: pci200syn: fix the comments style issue
 
-Addresses-Coverity: ("Unsigned compared against 0")
-Fixes: f7380bba42fd ("net: pcs: xpcs: add support for NXP SJA1110")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
-V2: Fix typo in subject and align the following 2 lines after the 
-    val = ret & ... assignment.  Thanks to Vladimir Oltean for spotting
-    these.
----
- drivers/net/pcs/pcs-xpcs-nxp.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/wan/pci200syn.c | 51 +++++++++++++--------------------------------
+ 1 file changed, 15 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/net/pcs/pcs-xpcs-nxp.c b/drivers/net/pcs/pcs-xpcs-nxp.c
-index de99c37cf2ae..984c9f7f16a8 100644
---- a/drivers/net/pcs/pcs-xpcs-nxp.c
-+++ b/drivers/net/pcs/pcs-xpcs-nxp.c
-@@ -152,13 +152,13 @@ static int nxp_sja1110_pma_config(struct dw_xpcs *xpcs,
- 	/* Enable TX and RX PLLs and circuits.
- 	 * Release reset of PMA to enable data flow to/from PCS.
- 	 */
--	val = xpcs_read(xpcs, MDIO_MMD_VEND2, SJA1110_POWERDOWN_ENABLE);
--	if (val < 0)
--		return val;
-+	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, SJA1110_POWERDOWN_ENABLE);
-+	if (ret < 0)
-+		return ret;
- 
--	val &= ~(SJA1110_TXPLL_PD | SJA1110_TXPD | SJA1110_RXCH_PD |
--		 SJA1110_RXBIAS_PD | SJA1110_RESET_SER_EN |
--		 SJA1110_RESET_SER | SJA1110_RESET_DES);
-+	val = ret & ~(SJA1110_TXPLL_PD | SJA1110_TXPD | SJA1110_RXCH_PD |
-+		      SJA1110_RXBIAS_PD | SJA1110_RESET_SER_EN |
-+		      SJA1110_RESET_SER | SJA1110_RESET_DES);
- 	val |= SJA1110_RXPKDETEN | SJA1110_RCVEN;
- 
- 	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, SJA1110_POWERDOWN_ENABLE, val);
 -- 
-2.31.1
+2.8.1
 
