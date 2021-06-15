@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EBBA3A7583
+	by mail.lfdr.de (Postfix) with ESMTP id 8A42C3A7584
 	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 06:02:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231147AbhFOEDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 00:03:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37462 "EHLO mail.kernel.org"
+        id S230457AbhFOEDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 00:03:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37452 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229463AbhFOEDe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229520AbhFOEDe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 15 Jun 2021 00:03:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 68B6E6141B;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D2EE061421;
         Tue, 15 Jun 2021 04:01:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623729690;
-        bh=8nkBbtYj5bWEaMgdCurg50WRbD0s8YnYVtlBUvZwdCg=;
+        s=k20201202; t=1623729691;
+        bh=Y1ADodKao4F4CW8Iv6/wX6cYD9CRKhYE1iSkIlFpO1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fCGUZqlsmaVPwJpd9hpSghEObGgjiLPzU5s+q2J52XBHFI2FPeDe7STFCjAdmfFJB
-         Vw8fbMzzlVkMalzRpmliuCUOTFhmL1lXYyq3dhRFufGI4jLllUXvc5Saim8nbWJYfA
-         yYTV1q61euAAzOE4Pt8ayMaf83qHEBlbycbLVhWuSM6CNQ5VTa3DQFRZExHKExFzzv
-         Aj9ZQBaAhMI+llAcA+2aEZuL5G68d4NrcVSS5iFxL95cmdTXvQiW3SoYr2htbW8gnw
-         +7tOiTT1EI38+Wga5084pRkQASsfKzzOvnvRob9ODZ7fj+3jvnWmU+QauuC1ntSch+
-         wC+iV/64CgFcg==
+        b=K2C9PzMJHdnheg905SiP4PM/oakie69MFD0QQ4nMLO7kagSt1x7l4FBSr8CrdfpTK
+         Xav90bBWGUjBeUgFxVs4m9o+16M7TRhEhL4Oyp58lI/kynwZj99W0+90ttA7yZ9XRc
+         kLZLBbaJs6+WTLxPJydKWYRSc7SqvcSl8juWTRnB02rp5Vqe8FceCdrJGJZ9YWeJpu
+         sWsHGG9OCqfMY7MJbbbvOF0b6HZ1jkTHQuhaAD7ngAE5E7/4u7lAVSAxOTn8YzpfbA
+         AsVSI656mWNC0RDVwb+PE7mwAl+AmIQET53ilpgJwkKHMPT7ysX8bFsblV9A+RDUBn
+         0l4mcOTT86XAA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
         Shay Drory <shayd@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 05/15] net/mlx5: Introduce API for request and release IRQs
-Date:   Mon, 14 Jun 2021 21:01:13 -0700
-Message-Id: <20210615040123.287101-6-saeed@kernel.org>
+Subject: [net-next 06/15] net/mlx5: Provide cpumask at EQ creation phase
+Date:   Mon, 14 Jun 2021 21:01:14 -0700
+Message-Id: <20210615040123.287101-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210615040123.287101-1-saeed@kernel.org>
 References: <20210615040123.287101-1-saeed@kernel.org>
@@ -41,277 +41,310 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shay Drory <shayd@nvidia.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Introduce new API that will allow IRQs users to hold a pointer to
-mlx5_irq.
-In the end of this series, IRQs will be allocated on demand. Hence,
-this will allow us to properly manage and use IRQs.
+The users of EQ are running their code on different CPUs and with
+various affinity patterns. Move the cpumask setting close to their
+actual usage.
 
-Signed-off-by: Shay Drory <shayd@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  | 22 +++++++------
- .../net/ethernet/mellanox/mlx5/core/lib/eq.h  |  1 +
- .../net/ethernet/mellanox/mlx5/core/main.c    |  1 +
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   | 19 ------------
- .../ethernet/mellanox/mlx5/core/mlx5_irq.h    | 30 ++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 31 +++++++++++++------
- .../net/ethernet/mellanox/mlx5/core/sriov.c   |  1 +
- 7 files changed, 68 insertions(+), 37 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
+ drivers/infiniband/hw/mlx5/odp.c              |   5 +
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  27 +++--
+ .../ethernet/mellanox/mlx5/core/mlx5_irq.h    |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 103 ++++--------------
+ include/linux/mlx5/eq.h                       |   1 +
+ 5 files changed, 49 insertions(+), 90 deletions(-)
 
+diff --git a/drivers/infiniband/hw/mlx5/odp.c b/drivers/infiniband/hw/mlx5/odp.c
+index 782b2af8f211..8f88b044ccbc 100644
+--- a/drivers/infiniband/hw/mlx5/odp.c
++++ b/drivers/infiniband/hw/mlx5/odp.c
+@@ -1564,7 +1564,12 @@ int mlx5r_odp_create_eq(struct mlx5_ib_dev *dev, struct mlx5_ib_pf_eq *eq)
+ 		.nent = MLX5_IB_NUM_PF_EQE,
+ 	};
+ 	param.mask[0] = 1ull << MLX5_EVENT_TYPE_PAGE_FAULT;
++	if (!zalloc_cpumask_var(&param.affinity, GFP_KERNEL)) {
++		err = -ENOMEM;
++		goto err_wq;
++	}
+ 	eq->core = mlx5_eq_create_generic(dev->mdev, &param);
++	free_cpumask_var(param.affinity);
+ 	if (IS_ERR(eq->core)) {
+ 		err = PTR_ERR(eq->core);
+ 		goto err_wq;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 77c0ca655975..7e7bbed3763d 100644
+index 7e7bbed3763d..5a88887c1a58 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -45,6 +45,7 @@
- #include "eswitch.h"
- #include "lib/clock.h"
- #include "diag/fw_tracer.h"
-+#include "mlx5_irq.h"
- 
- enum {
- 	MLX5_EQE_OWNER_INIT_VAL	= 0x1,
-@@ -309,13 +310,19 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
+@@ -310,7 +310,7 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
  	mlx5_init_fbc(eq->frag_buf.frags, log_eq_stride, log_eq_size, &eq->fbc);
  	init_eq_buf(eq);
  
-+	eq->irq = mlx5_irq_request(dev, vecidx);
-+	if (IS_ERR(eq->irq)) {
-+		err = PTR_ERR(eq->irq);
-+		goto err_buf;
-+	}
-+
- 	inlen = MLX5_ST_SZ_BYTES(create_eq_in) +
- 		MLX5_FLD_SZ_BYTES(create_eq_in, pas[0]) * eq->frag_buf.npages;
+-	eq->irq = mlx5_irq_request(dev, vecidx);
++	eq->irq = mlx5_irq_request(dev, vecidx, param->affinity);
+ 	if (IS_ERR(eq->irq)) {
+ 		err = PTR_ERR(eq->irq);
+ 		goto err_buf;
+@@ -621,8 +621,11 @@ setup_async_eq(struct mlx5_core_dev *dev, struct mlx5_eq_async *eq,
  
- 	in = kvzalloc(inlen, GFP_KERNEL);
- 	if (!in) {
- 		err = -ENOMEM;
--		goto err_buf;
-+		goto err_irq;
- 	}
+ 	eq->irq_nb.notifier_call = mlx5_eq_async_int;
+ 	spin_lock_init(&eq->lock);
++	if (!zalloc_cpumask_var(&param->affinity, GFP_KERNEL))
++		return -ENOMEM;
  
- 	pas = (__be64 *)MLX5_ADDR_OF(create_eq_in, in, pas);
-@@ -359,6 +366,8 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
- err_in:
- 	kvfree(in);
- 
-+err_irq:
-+	mlx5_irq_release(eq->irq);
- err_buf:
- 	mlx5_frag_buf_free(dev, &eq->frag_buf);
- 	return err;
-@@ -377,10 +386,9 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
- int mlx5_eq_enable(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
- 		   struct notifier_block *nb)
- {
--	struct mlx5_eq_table *eq_table = dev->priv.eq_table;
+ 	err = create_async_eq(dev, &eq->core, param);
++	free_cpumask_var(param->affinity);
+ 	if (err) {
+ 		mlx5_core_warn(dev, "failed to create %s EQ %d\n", name, err);
+ 		return err;
+@@ -740,6 +743,9 @@ mlx5_eq_create_generic(struct mlx5_core_dev *dev,
+ 	struct mlx5_eq *eq = kvzalloc(sizeof(*eq), GFP_KERNEL);
  	int err;
  
--	err = mlx5_irq_attach_nb(eq_table->irq_table, eq->vecidx, nb);
-+	err = mlx5_irq_attach_nb(eq->irq, nb);
- 	if (!err)
- 		eq_update_ci(eq, 1);
++	if (!param->affinity)
++		return ERR_PTR(-EINVAL);
++
+ 	if (!eq)
+ 		return ERR_PTR(-ENOMEM);
  
-@@ -399,9 +407,7 @@ EXPORT_SYMBOL(mlx5_eq_enable);
- void mlx5_eq_disable(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
- 		     struct notifier_block *nb)
- {
--	struct mlx5_eq_table *eq_table = dev->priv.eq_table;
--
--	mlx5_irq_detach_nb(eq_table->irq_table, eq->vecidx, nb);
-+	mlx5_irq_detach_nb(eq->irq, nb);
- }
- EXPORT_SYMBOL(mlx5_eq_disable);
+@@ -850,16 +856,21 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
+ 			.irq_index = vecidx,
+ 			.nent = nent,
+ 		};
+-		err = create_map_eq(dev, &eq->core, &param);
+-		if (err) {
+-			kfree(eq);
+-			goto clean;
++
++		if (!zalloc_cpumask_var(&param.affinity, GFP_KERNEL)) {
++			err = -ENOMEM;
++			goto clean_eq;
+ 		}
++		cpumask_set_cpu(cpumask_local_spread(i, dev->priv.numa_node),
++				param.affinity);
++		err = create_map_eq(dev, &eq->core, &param);
++		free_cpumask_var(param.affinity);
++		if (err)
++			goto clean_eq;
+ 		err = mlx5_eq_enable(dev, &eq->core, &eq->irq_nb);
+ 		if (err) {
+ 			destroy_unmap_eq(dev, &eq->core);
+-			kfree(eq);
+-			goto clean;
++			goto clean_eq;
+ 		}
  
-@@ -415,10 +421,9 @@ static int destroy_unmap_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq)
- 	if (err)
- 		mlx5_core_warn(dev, "failed to destroy a previously created eq: eqn %d\n",
- 			       eq->eqn);
--	synchronize_irq(eq->irqn);
-+	mlx5_irq_release(eq->irq);
- 
- 	mlx5_frag_buf_free(dev, &eq->frag_buf);
--
- 	return err;
- }
- 
-@@ -863,7 +868,6 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
+ 		mlx5_core_dbg(dev, "allocated completion EQN %d\n", eq->core.eqn);
+@@ -868,6 +879,8 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
  	}
  
  	return 0;
--
++clean_eq:
++	kfree(eq);
  clean:
  	destroy_comp_eqs(dev);
  	return err;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h
-index f607a3858ef5..f618cf95e030 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h
-@@ -32,6 +32,7 @@ struct mlx5_eq {
- 	unsigned int            irqn;
- 	u8                      eqn;
- 	struct mlx5_rsc_debug   *dbg;
-+	struct mlx5_irq         *irq;
- };
- 
- struct mlx5_eq_async {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 310518fabf77..390b1d3a6fde 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -76,6 +76,7 @@
- #include "sf/vhca_event.h"
- #include "sf/dev/dev.h"
- #include "sf/sf.h"
-+#include "mlx5_irq.h"
- 
- MODULE_AUTHOR("Eli Cohen <eli@mellanox.com>");
- MODULE_DESCRIPTION("Mellanox 5th generation network adapters (ConnectX series) core driver");
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index dd95aa6eb2f8..343807ac2036 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -169,25 +169,6 @@ void mlx5_lag_remove_netdev(struct mlx5_core_dev *dev, struct net_device *netdev
- void mlx5_lag_add_mdev(struct mlx5_core_dev *dev);
- void mlx5_lag_remove_mdev(struct mlx5_core_dev *dev);
- 
--int mlx5_irq_table_init(struct mlx5_core_dev *dev);
--void mlx5_irq_table_cleanup(struct mlx5_core_dev *dev);
--int mlx5_irq_table_create(struct mlx5_core_dev *dev);
--void mlx5_irq_table_destroy(struct mlx5_core_dev *dev);
--int mlx5_irq_attach_nb(struct mlx5_irq_table *irq_table, int vecidx,
--		       struct notifier_block *nb);
--int mlx5_irq_detach_nb(struct mlx5_irq_table *irq_table, int vecidx,
--		       struct notifier_block *nb);
--
--int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int devfn,
--			    int msix_vec_count);
--int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs);
--
--struct cpumask *
--mlx5_irq_get_affinity_mask(struct mlx5_irq_table *irq_table, int vecidx);
--struct cpu_rmap *mlx5_irq_get_rmap(struct mlx5_irq_table *table);
--int mlx5_irq_get_num_comp(struct mlx5_irq_table *table);
--struct mlx5_irq_table *mlx5_irq_table_get(struct mlx5_core_dev *dev);
--
- int mlx5_events_init(struct mlx5_core_dev *dev);
- void mlx5_events_cleanup(struct mlx5_core_dev *dev);
- void mlx5_events_start(struct mlx5_core_dev *dev);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-new file mode 100644
-index 000000000000..dd138b38bf36
---- /dev/null
+index dd138b38bf36..81bfb5f0d332 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+#ifndef __MLX5_IRQ_H__
-+#define __MLX5_IRQ_H__
-+
-+#include <linux/mlx5/driver.h>
-+
-+struct mlx5_irq;
-+
-+int mlx5_irq_table_init(struct mlx5_core_dev *dev);
-+void mlx5_irq_table_cleanup(struct mlx5_core_dev *dev);
-+int mlx5_irq_table_create(struct mlx5_core_dev *dev);
-+void mlx5_irq_table_destroy(struct mlx5_core_dev *dev);
-+struct cpu_rmap *mlx5_irq_get_rmap(struct mlx5_irq_table *table);
-+int mlx5_irq_get_num_comp(struct mlx5_irq_table *table);
-+struct mlx5_irq_table *mlx5_irq_table_get(struct mlx5_core_dev *dev);
-+
-+int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int devfn,
-+			    int msix_vec_count);
-+int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs);
-+
-+struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, int vecidx);
-+void mlx5_irq_release(struct mlx5_irq *irq);
-+int mlx5_irq_attach_nb(struct mlx5_irq *irq, struct notifier_block *nb);
-+int mlx5_irq_detach_nb(struct mlx5_irq *irq, struct notifier_block *nb);
-+struct cpumask *
-+mlx5_irq_get_affinity_mask(struct mlx5_irq_table *irq_table, int vecidx);
-+
-+#endif /* __MLX5_IRQ_H__ */
+@@ -20,7 +20,8 @@ int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int devfn,
+ 			    int msix_vec_count);
+ int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs);
+ 
+-struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, int vecidx);
++struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, int vecidx,
++				  struct cpumask *affinity);
+ void mlx5_irq_release(struct mlx5_irq *irq);
+ int mlx5_irq_attach_nb(struct mlx5_irq *irq, struct notifier_block *nb);
+ int mlx5_irq_detach_nb(struct mlx5_irq *irq, struct notifier_block *nb);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index 0e65ac3301c5..ecace7ca4a01 100644
+index ecace7ca4a01..81b06b5693cd 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -6,6 +6,7 @@
- #include <linux/module.h>
- #include <linux/mlx5/driver.h>
- #include "mlx5_core.h"
-+#include "mlx5_irq.h"
- #ifdef CONFIG_RFS_ACCEL
- #include <linux/cpu_rmap.h>
- #endif
-@@ -160,13 +161,10 @@ static void irq_put(struct mlx5_irq *irq)
- 	kref_put(&irq->kref, irq_release);
+@@ -17,6 +17,7 @@ struct mlx5_irq {
+ 	struct atomic_notifier_head nh;
+ 	cpumask_var_t mask;
+ 	char name[MLX5_MAX_IRQ_NAME];
++	spinlock_t lock; /* protects affinity assignment */
+ 	struct kref kref;
+ 	int irqn;
+ };
+@@ -153,6 +154,8 @@ static void irq_release(struct kref *kref)
+ {
+ 	struct mlx5_irq *irq = container_of(kref, struct mlx5_irq, kref);
+ 
++	irq_set_affinity_hint(irq->irqn, NULL);
++	free_cpumask_var(irq->mask);
+ 	free_irq(irq->irqn, &irq->nh);
  }
  
--int mlx5_irq_attach_nb(struct mlx5_irq_table *irq_table, int vecidx,
--		       struct notifier_block *nb)
-+int mlx5_irq_attach_nb(struct mlx5_irq *irq, struct notifier_block *nb)
- {
--	struct mlx5_irq *irq;
- 	int err;
+@@ -189,7 +192,8 @@ void mlx5_irq_release(struct mlx5_irq *irq)
+ 	irq_put(irq);
+ }
  
--	irq = &irq_table->irq[vecidx];
- 	err = kref_get_unless_zero(&irq->kref);
- 	if (WARN_ON_ONCE(!err))
- 		/* Something very bad happens here, we are enabling EQ
-@@ -179,16 +177,31 @@ int mlx5_irq_attach_nb(struct mlx5_irq_table *irq_table, int vecidx,
+-struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, int vecidx)
++struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, int vecidx,
++				  struct cpumask *affinity)
+ {
+ 	struct mlx5_irq_table *table = mlx5_irq_table_get(dev);
+ 	struct mlx5_irq *irq = &table->irq[vecidx];
+@@ -199,6 +203,16 @@ struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, int vecidx)
+ 	if (!err)
+ 		return ERR_PTR(-ENOENT);
+ 
++	spin_lock(&irq->lock);
++	if (!cpumask_empty(irq->mask)) {
++		/* already configured */
++		spin_unlock(&irq->lock);
++		return irq;
++	}
++
++	cpumask_copy(irq->mask, affinity);
++	irq_set_affinity_hint(irq->irqn, irq->mask);
++	spin_unlock(&irq->lock);
+ 	return irq;
+ }
+ 
+@@ -239,6 +253,12 @@ static int request_irqs(struct mlx5_core_dev *dev, int nvec)
+ 			mlx5_core_err(dev, "Failed to request irq\n");
+ 			goto err_request_irq;
+ 		}
++		if (!zalloc_cpumask_var(&irq->mask, GFP_KERNEL)) {
++			mlx5_core_warn(dev, "zalloc_cpumask_var failed\n");
++			err = -ENOMEM;
++			goto err_request_irq;
++		}
++		spin_lock_init(&irq->lock);
+ 		kref_init(&irq->kref);
+ 	}
+ 	return 0;
+@@ -294,69 +314,6 @@ static int irq_set_rmap(struct mlx5_core_dev *mdev)
  	return err;
  }
  
--int mlx5_irq_detach_nb(struct mlx5_irq_table *irq_table, int vecidx,
--		       struct notifier_block *nb)
-+int mlx5_irq_detach_nb(struct mlx5_irq *irq, struct notifier_block *nb)
- {
+-/* Completion IRQ vectors */
+-
+-static int set_comp_irq_affinity_hint(struct mlx5_core_dev *mdev, int i)
+-{
+-	int vecidx = MLX5_IRQ_VEC_COMP_BASE + i;
 -	struct mlx5_irq *irq;
 -
--	irq = &irq_table->irq[vecidx];
- 	irq_put(irq);
- 	return atomic_notifier_chain_unregister(&irq->nh, nb);
- }
- 
-+void mlx5_irq_release(struct mlx5_irq *irq)
-+{
-+	synchronize_irq(irq->irqn);
-+	irq_put(irq);
-+}
-+
-+struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, int vecidx)
-+{
-+	struct mlx5_irq_table *table = mlx5_irq_table_get(dev);
-+	struct mlx5_irq *irq = &table->irq[vecidx];
-+	int err;
-+
-+	err = kref_get_unless_zero(&irq->kref);
-+	if (!err)
-+		return ERR_PTR(-ENOENT);
-+
-+	return irq;
-+}
-+
- static irqreturn_t mlx5_irq_int_handler(int irq, void *nh)
+-	irq = mlx5_irq_get(mdev, vecidx);
+-	if (!zalloc_cpumask_var(&irq->mask, GFP_KERNEL)) {
+-		mlx5_core_warn(mdev, "zalloc_cpumask_var failed");
+-		return -ENOMEM;
+-	}
+-
+-	cpumask_set_cpu(cpumask_local_spread(i, mdev->priv.numa_node),
+-			irq->mask);
+-	if (IS_ENABLED(CONFIG_SMP) &&
+-	    irq_set_affinity_hint(irq->irqn, irq->mask))
+-		mlx5_core_warn(mdev, "irq_set_affinity_hint failed, irq 0x%.4x",
+-			       irq->irqn);
+-
+-	return 0;
+-}
+-
+-static void clear_comp_irq_affinity_hint(struct mlx5_core_dev *mdev, int i)
+-{
+-	int vecidx = MLX5_IRQ_VEC_COMP_BASE + i;
+-	struct mlx5_irq *irq;
+-
+-	irq = mlx5_irq_get(mdev, vecidx);
+-	irq_set_affinity_hint(irq->irqn, NULL);
+-	free_cpumask_var(irq->mask);
+-}
+-
+-static int set_comp_irq_affinity_hints(struct mlx5_core_dev *mdev)
+-{
+-	int nvec = mlx5_irq_get_num_comp(mdev->priv.irq_table);
+-	int err;
+-	int i;
+-
+-	for (i = 0; i < nvec; i++) {
+-		err = set_comp_irq_affinity_hint(mdev, i);
+-		if (err)
+-			goto err_out;
+-	}
+-
+-	return 0;
+-
+-err_out:
+-	for (i--; i >= 0; i--)
+-		clear_comp_irq_affinity_hint(mdev, i);
+-
+-	return err;
+-}
+-
+-static void clear_comp_irqs_affinity_hints(struct mlx5_core_dev *mdev)
+-{
+-	int nvec = mlx5_irq_get_num_comp(mdev->priv.irq_table);
+-	int i;
+-
+-	for (i = 0; i < nvec; i++)
+-		clear_comp_irq_affinity_hint(mdev, i);
+-}
+-
+ struct cpumask *
+ mlx5_irq_get_affinity_mask(struct mlx5_irq_table *irq_table, int vecidx)
  {
- 	atomic_notifier_call_chain(nh, 0, NULL);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-index 2338989d4403..e8185b69ac6c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-@@ -34,6 +34,7 @@
- #include <linux/mlx5/driver.h>
- #include <linux/mlx5/vport.h>
- #include "mlx5_core.h"
-+#include "mlx5_irq.h"
- #include "eswitch.h"
+@@ -370,15 +327,6 @@ struct cpu_rmap *mlx5_irq_get_rmap(struct mlx5_irq_table *irq_table)
+ }
+ #endif
  
- static int sriov_restore_guids(struct mlx5_core_dev *dev, int vf)
+-static void unrequest_irqs(struct mlx5_core_dev *dev)
+-{
+-	struct mlx5_irq_table *table = dev->priv.irq_table;
+-	int i;
+-
+-	for (i = 0; i < table->nvec; i++)
+-		irq_put(mlx5_irq_get(dev, i));
+-}
+-
+ int mlx5_irq_table_create(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_priv *priv = &dev->priv;
+@@ -419,16 +367,8 @@ int mlx5_irq_table_create(struct mlx5_core_dev *dev)
+ 	if (err)
+ 		goto err_request_irqs;
+ 
+-	err = set_comp_irq_affinity_hints(dev);
+-	if (err) {
+-		mlx5_core_err(dev, "Failed to alloc affinity hint cpumask\n");
+-		goto err_set_affinity;
+-	}
+-
+ 	return 0;
+ 
+-err_set_affinity:
+-	unrequest_irqs(dev);
+ err_request_irqs:
+ 	irq_clear_rmap(dev);
+ err_set_rmap:
+@@ -451,7 +391,6 @@ void mlx5_irq_table_destroy(struct mlx5_core_dev *dev)
+ 	 * which should be called after alloc_irq but before request_irq.
+ 	 */
+ 	irq_clear_rmap(dev);
+-	clear_comp_irqs_affinity_hints(dev);
+ 	for (i = 0; i < table->nvec; i++)
+ 		irq_release(&mlx5_irq_get(dev, i)->kref);
+ 	pci_free_irq_vectors(dev->pdev);
+diff --git a/include/linux/mlx5/eq.h b/include/linux/mlx5/eq.h
+index e49d8c0d4f26..cea6ecb4b73e 100644
+--- a/include/linux/mlx5/eq.h
++++ b/include/linux/mlx5/eq.h
+@@ -16,6 +16,7 @@ struct mlx5_eq_param {
+ 	u8             irq_index;
+ 	int            nent;
+ 	u64            mask[4];
++	cpumask_var_t  affinity;
+ };
+ 
+ struct mlx5_eq *
 -- 
 2.31.1
 
