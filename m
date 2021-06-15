@@ -2,76 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4215F3A7455
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 04:48:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DF123A747E
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 04:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230082AbhFOCtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 22:49:25 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:7261 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230376AbhFOCtF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 22:49:05 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4G3szF3PxDz1BMbF;
-        Tue, 15 Jun 2021 10:42:01 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 15 Jun 2021 10:46:58 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 15 Jun 2021 10:46:58 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
-        <ms@dev.tdt.de>, <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH V2 net-next 10/10] net: z85230: remove unnecessary out of memory message
-Date:   Tue, 15 Jun 2021 10:43:45 +0800
-Message-ID: <1623725025-50976-11-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1623725025-50976-1-git-send-email-huangguangbin2@huawei.com>
-References: <1623725025-50976-1-git-send-email-huangguangbin2@huawei.com>
+        id S230332AbhFOC7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 22:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229809AbhFOC7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 22:59:07 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E712C061574
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 19:57:04 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id i34so10245216pgl.9
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 19:57:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PIBUs0+8txOAViHScEthowcrmgSwaqzgJkOT6RfdKGw=;
+        b=lW2YyQNvvP+Y6w5f3ew4gpH5w/M2rt13HqarsH5MXKipW0/gHNQVArIoicMJIcBgZl
+         J/PIHG+QjnYhXEmVrrFqW90hN/MgMekJOwpmSNdQU42DkzL5nn7P39DmXyYvG9C2gOkX
+         jEO9XfpHPWxf9mSq4GAIFKrGArCBjMi27Pe5sxmJxAxOBsU118iznuyHz+Ux2rXAbDeP
+         6t1zdNetdu/+RpQ/dLQnZt6PWW+Arn8mKb8rtEMdC2BOOuvCHWN8IOful4+Cp0XrBaXh
+         Eo1WMzcaT2ILLLD6f31CkjYjsj5R1cp580LPyPAB6K/k6VH+ROFUHLq07B7W1kczHEBl
+         nfwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PIBUs0+8txOAViHScEthowcrmgSwaqzgJkOT6RfdKGw=;
+        b=qmCUmvoRrLDZ5jdlyaTrXDfg57a2Tw4FFnjTv3BzjvZMfBAgafD0kZB3C/BXcaNJ4A
+         fzDP/IyX1Bcgd+Nk6RCN/iVrGlFYHzFMebb2In5jIPIEqMhdiyaVhRmaWeJHSwMqJEyD
+         rzstxRhtCL4v0QDWjp8t+n6RY03M6KFJQnq6EpT3koRxdrkPcJHbdo3W8jCuXYTtzSRH
+         n2MGsfN+ExdaBcN4wLPzG76aE43gj3MIZIOZzVsa2Abpd1SdoRr2RWAXHRl0IjEBcyC7
+         QXXZkxsmrl7JwuAHyCVRbr821+BqscmWyY2jiIyFfao68DPyr1yBAps72Do3aq4n6TUj
+         xwWA==
+X-Gm-Message-State: AOAM532/4R62+UMgk+WwWK6IDPGLpM06oX3jEOTyVPr6nAjVQq3EOrWO
+        nqgE6NeP/A56VsrwKXxGjDoBQw==
+X-Google-Smtp-Source: ABdhPJz+s2GT5CohFVvio9AOPNYYUtvbBctu6YAcX6EUGm3bPmbnSEiIXOPEWjYWSPkN+gOQ3ASVOg==
+X-Received: by 2002:a63:2f05:: with SMTP id v5mr19844929pgv.449.1623725823694;
+        Mon, 14 Jun 2021 19:57:03 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id u2sm13375338pfg.67.2021.06.14.19.57.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Jun 2021 19:57:03 -0700 (PDT)
+Date:   Mon, 14 Jun 2021 19:57:00 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Anton Danilov <littlesmilingcloud@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [RFC 2/3] [RFC iproute2-next] tc: f_u32: Fix the ipv6 pretty
+ printing.
+Message-ID: <20210614195700.260c8933@hermes.local>
+In-Reply-To: <20210608153309.4019-2-littlesmilingcloud@gmail.com>
+References: <20210608153309.4019-1-littlesmilingcloud@gmail.com>
+        <20210608153309.4019-2-littlesmilingcloud@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+On Tue,  8 Jun 2021 18:33:08 +0300
+Anton Danilov <littlesmilingcloud@gmail.com> wrote:
 
-This patch removes unnecessary out of memory message,
-to fix the following checkpatch.pl warning:
-"WARNING: Possible unnecessary 'out of memory' message"
+> -			fprintf(f, "\n  match IP protocol %d",
+> +			return fprintf(f, "\n  match IP protocol %d",
+>  				ntohl(key->val) >> 16);
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/wan/z85230.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Ok, but better yet, upgrade f_u32 to do proper JSON output.
 
-diff --git a/drivers/net/wan/z85230.c b/drivers/net/wan/z85230.c
-index 621f730..982a034 100644
---- a/drivers/net/wan/z85230.c
-+++ b/drivers/net/wan/z85230.c
-@@ -1531,10 +1531,9 @@ static void z8530_rx_done(struct z8530_channel *c)
- 		RT_UNLOCK;
- 
- 		c->skb2 = dev_alloc_skb(c->mtu);
--		if (!c->skb2)
--			netdev_warn(c->netdevice, "memory squeeze\n");
--		else
-+		if (c->skb2)
- 			skb_put(c->skb2, c->mtu);
-+
- 		c->netdevice->stats.rx_packets++;
- 		c->netdevice->stats.rx_bytes += ct;
- 	}
--- 
-2.8.1
+> +			// The ipv6 pretty printing requires an additional call at the end.
+> +			// Call the show_keys with the NULL value after call with last key.
+> +			for (i = 0; i <= sel->nkeys; i++) {
 
+iproute2 uses kernel style C so no C++ style comments please
