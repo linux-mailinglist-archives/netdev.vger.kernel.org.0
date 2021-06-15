@@ -2,154 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC6E53A7500
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 05:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43BC63A7526
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 05:29:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230017AbhFOD1J convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Jun 2021 23:27:09 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:6499 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229870AbhFOD1H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 23:27:07 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G3tsW4b0DzZdwX;
-        Tue, 15 Jun 2021 11:22:07 +0800 (CST)
-Received: from dggpemm100021.china.huawei.com (7.185.36.105) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 15 Jun 2021 11:25:02 +0800
-Received: from dggpemm500021.china.huawei.com (7.185.36.109) by
- dggpemm100021.china.huawei.com (7.185.36.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 15 Jun 2021 11:25:01 +0800
-Received: from dggpemm500021.china.huawei.com ([7.185.36.109]) by
- dggpemm500021.china.huawei.com ([7.185.36.109]) with mapi id 15.01.2176.012;
- Tue, 15 Jun 2021 11:25:01 +0800
-From:   "zhudi (J)" <zhudi21@huawei.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: use-after-free in i40e_sync_vsi_filters
-Thread-Topic: use-after-free in i40e_sync_vsi_filters
-Thread-Index: Addhk6+18AK5wpDhTAOw8dGLx5Y4sA==
-Date:   Tue, 15 Jun 2021 03:25:01 +0000
-Message-ID: <bce7022aba1a48fa9fd2454bd56d66b7@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.136.114.155]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S230239AbhFODbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 23:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58830 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229809AbhFODbt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 23:31:49 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1651C061574;
+        Mon, 14 Jun 2021 20:29:44 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id d2so22897465ljj.11;
+        Mon, 14 Jun 2021 20:29:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IXQWaYly8JM4VmslPhoY/L6f5WRG/3PghUxhYVVe4TQ=;
+        b=owNKoxVx9EzVp8r8fXJSCNE2CGbITHw7vfEKqZkwWV+BU8v7gZq+GjDrVwQ/iU3ICj
+         NFFZMJa7kTW8nHw7PpR4nWLNoDu/C8n8ZH4Fq43ra/cQdJH1CkRa8d/RA4TyWxMDLqZX
+         S85Uxba535Z6aY0X6H+2C+QEEDKmFb4wpSbumOfYwT1luH302JNFe6sd+uUiNZj5sEz+
+         s3bg/krQO/ORC0yOJc12FcKBBdR1CULG8oLpTQomPi/2UzWHxysOIHRKdxAUw4gNeFZT
+         QnMUN7jEQ9rpUq68UpiCjTee4hjR82xGIEtKgqx3qggKbps+5XFe60INonFfFW1QrjXM
+         S1Bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IXQWaYly8JM4VmslPhoY/L6f5WRG/3PghUxhYVVe4TQ=;
+        b=fXuqLVf1SIJBVSJZ7rAja3sDDugkl3+qoWT/okdgrF+lhrLBH2IzLL89jMparD36YM
+         OGrCdG6FviLYmX9Qn6aN1aMo8Xjb4avvpChpwXnZsZCG2ticAjy51fHrdbosRISAP1Eo
+         kF34s7Gw0A6581u5/xpgP0hdgqXmGZeVxu9pwa2dO5nrS3n2WkuAuEjO6JPQ0DnTogq3
+         /uWMGPzfKlYoBFUVYwptuuAmgm6G4WxwjynX30jNrorKmjzSDFBnMHWaJ8Ch3eZlqxvy
+         +Z06Z6yfAerAHZ/7wsNviwaBHd8/QSu/N1XY1Sm0GlMLqQLIIMUnjUSoplXd+d7zccWz
+         abbA==
+X-Gm-Message-State: AOAM530qR1jaRqfNsSV2vAFR8JYTIbr0E0yuXHPQVKOCzlQ25CHZnbhQ
+        ls7w5GDzJOPEujYQxzm8X1VpwtUDJIWvVly/LR4=
+X-Google-Smtp-Source: ABdhPJyoP8EIaBnGrO30rKf+pq5dHlcP6NxDCPJUC8K2vlIeK8JBCl5+3w3SkMtIzMEbbiRNqh3QXvuUqWOJuBCb2ho=
+X-Received: by 2002:a2e:a4a5:: with SMTP id g5mr15353735ljm.32.1623727783201;
+ Mon, 14 Jun 2021 20:29:43 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20210611042442.65444-1-alexei.starovoitov@gmail.com>
+ <20210611042442.65444-2-alexei.starovoitov@gmail.com> <9b23b2c6-28b2-3ab3-4e8b-1fa0c926c4d2@fb.com>
+In-Reply-To: <9b23b2c6-28b2-3ab3-4e8b-1fa0c926c4d2@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 14 Jun 2021 20:29:31 -0700
+Message-ID: <CAADnVQLS=Jx9=znx6XAtrRoY08bTQHTipXQwvnPNo0SRSJsK0Q@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Introduce bpf_timer
+To:     Yonghong Song <yhs@fb.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jun 11 21:32:45 euleros-pxe kernel: [17883.745427] BUG: KASAN: use-after-free in i40e_sync_vsi_filters+0x4f0/0x1850 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.745826] Read of size 4 at addr ffff88897b8fd518 by task kworker/0:3/1078495
+On Mon, Jun 14, 2021 at 9:51 AM Yonghong Song <yhs@fb.com> wrote:
+> > +     ret = BPF_CAST_CALL(t->callback_fn)((u64)(long)map,
+> > +                                         (u64)(long)key,
+> > +                                         (u64)(long)t->value, 0, 0);
+> > +     WARN_ON(ret != 0); /* Next patch disallows 1 in the verifier */
+>
+> I didn't find that next patch disallows callback return value 1 in the
+> verifier. If we indeed disallows return value 1 in the verifier. We
+> don't need WARN_ON here. Did I miss anything?
 
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746184]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746410] CPU: 0 PID: 1078495 Comm: kworker/0:3 Kdump: loaded Tainted: G
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746414] Hardware name: Huawei 1288H V5/BC11SPSCC0, BIOS 0.59 02/24/2018
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746449] Workqueue: i40e i40e_service_task [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746453] Call Trace:
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746466]  dump_stack+0xc2/0x12e
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746481]  print_address_description+0x70/0x360
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746491]  ? vprintk_func+0x5e/0xf0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746502]  kasan_report+0x1b2/0x330
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746604]  i40e_sync_vsi_filters+0x4f0/0x1850 [i40e]
+Ohh. I forgot to address this bit in the verifier. Will fix.
 
- 2492                 /* Now move all of the filters from the temp add list back to
- 2493                  * the VSI's list.
- 2494                  */
- 2495                 spin_lock_bh(&vsi->mac_filter_hash_lock);
- 2496                 hlist_for_each_entry_safe(new, h, &tmp_add_list, hlist) {
- 2497                         /* Only update the state if we're still NEW */
- 2498                         if (new->f->state == I40E_FILTER_NEW)   <------------------------------------------------------------------------------------
- 2499                                 new->f->state = new->state;
- 2500                         hlist_del(&new->hlist);
- 2501                         kfree(new);
- 2502                 }
- 2503                 spin_unlock_bh(&vsi->mac_filter_hash_lock);
- 2504                 kfree(add_list);
- 2505                 add_list = NULL;
- 2506         }
+> > +     if (!hrtimer_active(&t->timer) || hrtimer_callback_running(&t->timer))
+> > +             /* If the timer wasn't active or callback already executing
+> > +              * bump the prog refcnt to keep it alive until
+> > +              * callback is invoked (again).
+> > +              */
+> > +             bpf_prog_inc(t->prog);
+>
+> I am not 100% sure. But could we have race condition here?
+>     cpu 1: running bpf_timer_start() helper call
+>     cpu 2: doing hrtimer work (calling callback etc.)
+>
+> Is it possible that
+>    !hrtimer_active(&t->timer) || hrtimer_callback_running(&t->timer)
+> may be true and then right before bpf_prog_inc(t->prog), it becomes
+> true? If hrtimer_callback_running() is called, it is possible that
+> callback function could have dropped the reference count for t->prog,
+> so we could already go into the body of the function
+> __bpf_prog_put()?
 
+you're correct. Indeed there is a race.
+Circular dependency is a never ending headache.
+That's the same design mistake as with tail_calls.
+It felt that this case would be simpler than tail_calls and a bpf program
+pinning itself with bpf_prog_inc can be made to work... nope.
+I'll get rid of this and switch to something 'obviously correct'.
+Probably a link list with a lock to keep a set of init-ed timers and
+auto-cancel them on prog refcnt going to zero.
+To do 'bpf daemon' the prog would need to be pinned.
 
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746756]  i40e_sync_filters_subtask+0xe3/0x130 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.746790]  i40e_service_task+0x195/0x24c0 [i40e]
+> > +     if (val) {
+> > +             /* This restriction will be removed in the next patch */
+> > +             verbose(env, "bpf_timer field can only be first in the map value element\n");
+> > +             return -EINVAL;
+> > +     }
+> > +     WARN_ON(meta->map_ptr);
+>
+> Could you explain when this could happen?
 
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747296] Allocated by task 2279810:
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747539]  kasan_kmalloc+0xa0/0xd0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747546]  kmem_cache_alloc_trace+0xf3/0x1e0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747578]  i40e_add_filter+0x127/0x2b0 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747617]  i40e_add_mac_filter+0x156/0x190 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747653]  i40e_addr_sync+0x2d/0x40 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747661]  __hw_addr_sync_dev+0x154/0x210
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747691]  i40e_set_rx_mode+0x6d/0xf0 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747699]  __dev_set_rx_mode+0xfb/0x1f0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747706]  __dev_mc_add+0x6c/0x90
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747720]  igmp6_group_added+0x214/0x230
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747727]  __ipv6_dev_mc_inc+0x338/0x4f0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747736]  addrconf_join_solict.part.7+0xa2/0xd0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747742]  addrconf_dad_work+0x500/0x980
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747749]  process_one_work+0x3f5/0x7d0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747755]  worker_thread+0x61/0x6c0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747766]  kthread+0x1c3/0x1f0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.747773]  ret_from_fork+0x35/0x40
-
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748016] Freed by task 2547073:
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748262]  __kasan_slab_free+0x130/0x180
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748268]  kfree+0x90/0x1b0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748299]  __i40e_del_filter+0xa3/0xf0 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748330]  i40e_del_mac_filter+0xf3/0x130 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748366]  i40e_addr_unsync+0x85/0xa0 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748373]  __hw_addr_sync_dev+0x9d/0x210
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748403]  i40e_set_rx_mode+0x6d/0xf0 [i40e]
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748414]  __dev_set_rx_mode+0xfb/0x1f0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748421]  __dev_mc_del+0x69/0x80
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748433]  igmp6_group_dropped+0x279/0x510
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748440]  __ipv6_dev_mc_dec+0x174/0x220
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748449]  addrconf_leave_solict.part.8+0xa2/0xd0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748457]  __ipv6_ifa_notify+0x4cd/0x570
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748465]  ipv6_ifa_notify+0x58/0x80
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748474]  ipv6_del_addr+0x259/0x4a0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748480]  inet6_addr_del+0x188/0x260
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748486]  addrconf_del_ifaddr+0xcc/0x130
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748493]  inet6_ioctl+0x152/0x190
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748501]  sock_do_ioctl+0xd8/0x2b0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748509]  sock_ioctl+0x2e5/0x4c0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748516]  do_vfs_ioctl+0x14e/0xa80
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748528]  ksys_ioctl+0x7c/0xa0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748535]  __x64_sys_ioctl+0x42/0x50
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748543]  do_syscall_64+0x98/0x2c0
-Jun 11 21:32:45 euleros-pxe kernel: [17883.748552]  entry_SYSCALL_64_after_hwframe+0x65/0xca
-
-The problem is obvious:
-CPU0:									CPU1
-i40e_sync_vsi_filters()
-	spin_lock_bh(&vsi->mac_filter_hash_lock);
-		new->f = f;
-		new->state = f->state;
-	spin_unlock_bh(&vsi->mac_filter_hash_lock);
-
-									 __i40e_del_filter()
-										kfree(f)
-
-	spin_lock_bh(&vsi->mac_filter_hash_lock);
-		hlist_for_each_entry_safe(new, h, &tmp_add_list, hlist) {
-		
-			if (new->f->state == I40E_FILTER_NEW)
-				new->f->state = new->state;
-	}
-	spin_unlock_bh(&vsi->mac_filter_hash_lock);
-
-
-Do you have a way to fix it? 
-
-Thanks
-
+Only if there is a verifier bug or new helper is added with arg to timer
+and arg to map. I'll switch to verbose() + efault instead.
