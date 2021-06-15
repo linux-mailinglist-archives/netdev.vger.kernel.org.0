@@ -2,69 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB4E13A8899
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19EEF3A88A1
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231681AbhFOScM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 14:32:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41382 "EHLO mail.kernel.org"
+        id S231608AbhFOSdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 14:33:16 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38404 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231202AbhFOScI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Jun 2021 14:32:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 09A6661241;
-        Tue, 15 Jun 2021 18:30:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623781804;
-        bh=v5h7MPUXi06R05KquUDYydTT6Ws84glO6Sqno5wx7dY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tF2cAxVE5fOCVnpbvAqkqrqgAhwdj7vDTU7m/s6fB6pzAcNBVeC+4cCU6KR0ilmY3
-         05mE7+kPAIIqGiZ7tfb/kmXdV+botLXFKCFQYDd8G4FpdDpVdKlmNKXiT5fvoJPMSI
-         CMUz5tp6BxymDSsrlJFmFQ6whmFMhXucWcBDWrLRusiCtPowjcaRqLQz6I3wj5nb86
-         WmUG928PIjzYVo3Tcn0N7wx3tpMNJa8LeQsq2savZPUFyaklkyS6ZR2G8fl0YQ3FgL
-         9mxYNtc+/73WkSkYa8NGYxxsB83Hlxt3xyAbzzaHUzzx1rym7M0ffQs5V1K9UktSwb
-         JKAsq8IkG1woA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 014A0609E4;
-        Tue, 15 Jun 2021 18:30:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229613AbhFOSdP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 14:33:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=yIkDKcAiuUGTNDzOd0+ynNUGACa6fo1Rn0W0JLTlqSI=; b=nypU3yGojFccGLSdVs/5UrPF0p
+        s3sJVNZjwl7wD+aInNte6WH3rKFApTG7WV5JcLe4FfJht1Nq79mJqUdjUI3iL6FcF/5vmpIIgbdd0
+        BvmnTuHNwz/YHvmSmkifocTvJIrWTS8H46CrPomfdzxyjbq7NixSUxIkdbt9DCp0C++U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ltDq6-009ZCb-9m; Tue, 15 Jun 2021 20:31:06 +0200
+Date:   Tue, 15 Jun 2021 20:31:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Ioana Ciornei <ciorneiioana@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        calvin.johnson@oss.nxp.com, hkallweit1@gmail.com,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next] mdio: mdiobus: setup of_node for the MDIO device
+Message-ID: <YMjx6iBD88+xdODZ@lunn.ch>
+References: <20210615154401.1274322-1-ciorneiioana@gmail.com>
+ <20210615171330.GW22278@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH][V2] net: dsa: b53: remove redundant null check on dev
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162378180400.31286.14718530027815032783.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Jun 2021 18:30:04 +0000
-References: <20210615090516.5906-1-colin.king@canonical.com>
-In-Reply-To: <20210615090516.5906-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210615171330.GW22278@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue, 15 Jun 2021 10:05:16 +0100 you wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Tue, Jun 15, 2021 at 06:13:31PM +0100, Russell King (Oracle) wrote:
+> On Tue, Jun 15, 2021 at 06:44:01PM +0300, Ioana Ciornei wrote:
+> > From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > 
+> > By mistake, the of_node of the MDIO device was not setup in the patch
+> > linked below. As a consequence, any PHY driver that depends on the
+> > of_node in its probe callback was not be able to successfully finish its
+> > probe on a PHY, thus the Generic PHY driver was used instead.
+> > 
+> > Fix this by actually setting up the of_node.
+> > 
+> > Fixes: bc1bee3b87ee ("net: mdiobus: Introduce fwnode_mdiobus_register_phy()")
+> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > ---
+> >  drivers/net/mdio/fwnode_mdio.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+> > index e96766da8de4..283ddb1185bd 100644
+> > --- a/drivers/net/mdio/fwnode_mdio.c
+> > +++ b/drivers/net/mdio/fwnode_mdio.c
+> > @@ -65,6 +65,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+> >  	 * can be looked up later
+> >  	 */
+> >  	fwnode_handle_get(child);
+> > +	phy->mdio.dev.of_node = to_of_node(child);
+> >  	phy->mdio.dev.fwnode = child;
 > 
-> The pointer dev can never be null, the null check is redundant
-> and can be removed. Cleans up a static analysis warning that
-> pointer priv is dereferencing dev before dev is being null
-> checked.
+> Yes, this is something that was missed, but let's first look at what
+> other places to when setting up a device:
 > 
-> [...]
+>         pdev->dev.fwnode = pdevinfo->fwnode;
+>         pdev->dev.of_node = of_node_get(to_of_node(pdev->dev.fwnode));
+>         pdev->dev.of_node_reused = pdevinfo->of_node_reused;
+> 
+>         dev->dev.of_node = of_node_get(np);
+>         dev->dev.fwnode = &np->fwnode;
+> 
+>         dev->dev.of_node = of_node_get(node);
+>         dev->dev.fwnode = &node->fwnode;
+> 
+> That seems to be pretty clear that an of_node_get() is also needed.
 
-Here is the summary with links:
-  - [V2] net: dsa: b53: remove redundant null check on dev
-    https://git.kernel.org/netdev/net-next/c/11b57faf951c
+I think it also shows we have very little consistency, and the recent
+patchset needs a bit of cleanup. Maybe yet another helper which when
+passed a struct device * and a node pointer, it sets both values?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+	 Andrew
