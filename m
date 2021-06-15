@@ -2,96 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0963A86D7
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 18:49:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 809623A86DC
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 18:50:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbhFOQvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 12:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbhFOQvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 12:51:12 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374C1C061574
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 09:49:08 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id r7so37607797edv.12
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 09:49:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VDbzDI8/q6ogKmJfHmV3WG2/cjubuHWxq+EPbNOcDXQ=;
-        b=VXLECvGLDq5XD+mYxYwvcvw4a0KgEDfGlbnj5t4bCg0+4r/uXO5sg+hz0INtzHNQeV
-         x86j+nCNfuF2AJKDNDKbm4QpmB/8e0vmisQT5isQwAn+HROMSSoir24+p2wpnPgHBdHI
-         OwS3ft0LkQap7RxsHZU6lsWjaJR7KAA/j0xaUu7TGtihU97d36L/KzCzMKn2SvAuCMFT
-         MbWye+LhxrjCnN4u07qGeNspf8ZnCTsqOj8leCtwoKmd7N75hn/yd6KwG52gPO/OdWpM
-         HESZ1BVfPuIMNxfhbdqAGXy25PUNs4ewicCs74edpgq4ywxHsbPX7SZiDf1Elc8Xwo7u
-         mbAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VDbzDI8/q6ogKmJfHmV3WG2/cjubuHWxq+EPbNOcDXQ=;
-        b=FIwXuJXJx445o7jYacPllXmOYLZfTUBFA9Uz08NOt6wf3FFi0LVMKTbQnPtVGqnlJG
-         WNK7Lytw2YMAvZ/mWv6rz2ZpV9EQdBWhH+Uqtv0wAAOTJBRSZNv7kVyDDh2b19bQNYzP
-         LNoFWPhtcYbUf7Ja1LE+7vA1y/RvXvPwObk4tKsByOp5PEnTKxyOEx9IFW8CItf/S/A/
-         htVuYMrOlf4n95crtae5K5qxdDh+ijC09/AbUYIZdpS6eJk6Yy3p94X4x8cOc6+aB6AZ
-         9PRf4AyAgYyQCQC1V59S3+z5svAZ07wLIqABXvN7GG/HzFAIeMGjZTjxPGGy89uGI9A4
-         Do0w==
-X-Gm-Message-State: AOAM531v98YYebMpczfETcqfii+2kyd9MhwZoJ1nDNbEeDk/trR6HnmW
-        wcX6XHg35cFZrLNHCSv+VCw=
-X-Google-Smtp-Source: ABdhPJyAvbxpMLYrmv/8nV8ZWrrsYom8iugZQ6CKzX6epzhoWaxXByr6Evy2oJ4KCv9BOG+jqJyc1w==
-X-Received: by 2002:a05:6402:5256:: with SMTP id t22mr546509edd.54.1623775746755;
-        Tue, 15 Jun 2021 09:49:06 -0700 (PDT)
-Received: from skbuf ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id u15sm12775796edy.29.2021.06.15.09.49.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Jun 2021 09:49:06 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Tue, 15 Jun 2021 19:49:05 +0300
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ioana Ciornei <ciorneiioana@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        calvin.johnson@oss.nxp.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: [PATCH net-next] mdio: mdiobus: setup of_node for the MDIO device
-Message-ID: <20210615164905.62f7m4k5ezpm7vhm@skbuf>
-References: <20210615154401.1274322-1-ciorneiioana@gmail.com>
- <YMjTDkJU58E3ITCJ@lunn.ch>
+        id S230084AbhFOQwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 12:52:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41514 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229528AbhFOQwG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 12:52:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E14FB6191C;
+        Tue, 15 Jun 2021 16:50:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623775801;
+        bh=VM1U0u+TWCNs6rr3AWIbcRK6P6q6JzW5E3iJdzlDDlE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Jlr7nfaPM4OETwVu0dM49jvAP1GSkttj4O5pJzov/F/H+a1LrQ6p4dyHzmEfLb6K0
+         6ifF7u9O87KZ04qNEVihFJAsy0haZFF+rbt7CU8Ralzup25e+KHBCdw31GwYOeN9h/
+         dVni5lSr9yWXFbM+8Lx3IBNuazZ3/Ns29mvpsJrHkNuGhnTd9KeVVH5K+rZ8fdpTCL
+         BfnPU1Xtj+n4LZUN89ThTRlOqlqU9hH+ExHyBrJB3ix7HTGrjC2OEfTVC78aUwEHWY
+         vhMzUyl0yjS4bBJU1uRGBC4me8xYMoUobPEoGmEKinca++aaEFpdGC3TK30D8upQfm
+         yJ0ekKA3doGXg==
+Date:   Tue, 15 Jun 2021 19:49:57 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Andrea Righi <andrea.righi@canonical.com>,
+        stable <stable@vger.kernel.org>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: NetworkManager fails to start
+Message-ID: <YMjaNQGAHhh9Zpg8@unreal>
+References: <YMjTlp2FSJYvoyFa@unreal>
+ <CAHk-=wiucGtZQHpyfm5bK1xp9vepu9dA_OBE-A1-Gr=Neo8b2Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YMjTDkJU58E3ITCJ@lunn.ch>
+In-Reply-To: <CAHk-=wiucGtZQHpyfm5bK1xp9vepu9dA_OBE-A1-Gr=Neo8b2Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 06:19:26PM +0200, Andrew Lunn wrote:
-> On Tue, Jun 15, 2021 at 06:44:01PM +0300, Ioana Ciornei wrote:
-> > From: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > 
-> > By mistake, the of_node of the MDIO device was not setup in the patch
-> > linked below. As a consequence, any PHY driver that depends on the
-> > of_node in its probe callback was not be able to successfully finish its
-> > probe on a PHY
+On Tue, Jun 15, 2021 at 09:26:19AM -0700, Linus Torvalds wrote:
+> On Tue, Jun 15, 2021 at 9:21 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > The commit 591a22c14d3f ("proc: Track /proc/$pid/attr/ opener mm_struct")
+> > that we got in v5.13-rc6 broke our regression to pieces. The NIC interfaces
+> > fail to start when using NetworkManager.
 > 
-> Do you mean the PHY driver was looking for things like RGMII delays,
-> skew values etc?
+> Does the attached patch fix it?
 
-In my case, the VSC8514 PHY driver was looking for the led modes
-(vsc8531,led-%d-mode").
+I pushed it for testing, will update shortly.
+
+Thanks
 
 > 
-> If the PHY driver fails to load because of missing OF properties, i
-> guess this means the PHY driver will also fail in an ACPI system?
+> It just makes the open always succeed, and then the private_data that
+> the open did (that may or may not then have been filled in) is only
+> used on write.
 > 
+>                Linus
 
-Yes, it will.
+>  fs/proc/base.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/fs/proc/base.c b/fs/proc/base.c
+> index 7118ebe38fa6..9cbd915025ad 100644
+> --- a/fs/proc/base.c
+> +++ b/fs/proc/base.c
+> @@ -2676,7 +2676,9 @@ static int proc_pident_readdir(struct file *file, struct dir_context *ctx,
+>  #ifdef CONFIG_SECURITY
+>  static int proc_pid_attr_open(struct inode *inode, struct file *file)
+>  {
+> -	return __mem_open(inode, file, PTRACE_MODE_READ_FSCREDS);
+> +	file->private_data = NULL;
+> +	__mem_open(inode, file, PTRACE_MODE_READ_FSCREDS);
+> +	return 0;
+>  }
+>  
+>  static ssize_t proc_pid_attr_read(struct file * file, char __user * buf,
 
-The PHY drivers were not changed to use the fwnode_* calls
-instead of the of_* ones. Unfortunately, I cannot test this with ACPI
-since the boards that have this PHY (that I have access to) do not
-support ACPI yet.
-
-Ioana
