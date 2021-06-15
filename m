@@ -2,52 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AAF63A7CF0
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 13:12:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A1D93A7D0E
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 13:24:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230444AbhFOLOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 07:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230283AbhFOLOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 07:14:36 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6579CC061574;
-        Tue, 15 Jun 2021 04:12:31 -0700 (PDT)
+        id S229976AbhFOL0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 07:26:08 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:42969 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229689AbhFOL0H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 07:26:07 -0400
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G45JF0vBQz9sRK;
-        Tue, 15 Jun 2021 21:12:28 +1000 (AEST)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G45YY5vFSz9sSn;
+        Tue, 15 Jun 2021 21:24:01 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1623755549;
-        bh=YFJ3U4Cngjq499MyEt86iJ9OObreMpZMft2dQ2wS75E=;
+        s=201702; t=1623756242;
+        bh=1+9cA8R9uIOwUv3pbbF+xQE5AFU1V8U2So9SbYncYMQ=;
         h=Date:From:To:Cc:Subject:From;
-        b=rBPK4kv+lyprU2Or5W3g2hzVA5TggSJ2760v2dwAZjxqNXpa8XBKr86xcxTRIyGxn
-         /cdGgfnj9iROEYELPr5lk90Gd61LOi6BtaCA5Ts/k0kLswdkaUCb0rzGf7DbX53sQm
-         KNGgYuVmyA31YTJIw4qHyH+ZnYn0/o15eJjxdac1V/wzHjF9A0wefqxWltD6AruOZh
-         wA1cEcSD5KQXXvGxNnJoq2gLCJUt4LxjSkHXUh9YJnqw7TvEnB7bgLc0U8J39qcB6j
-         U/GqXGFLzd6UyF8V+DiArVIcp1fp13sCaQNaPIjMnvwhrYCpauWgxBhqmPWGXcSY5R
-         2voFv5FcY5Gkw==
-Date:   Tue, 15 Jun 2021 21:12:27 +1000
+        b=K5IP0+DBQhGS56TLLZGRtD6pvpGEkkOWFGNnXjuuzQfkDAepWeNSv9VUP+TFmT65z
+         vengwEr9PcgYHTuLP8zUTTcQlRITYFd3wEVgo8hZQ3XIqf89Pj6GwHkRaWtuRZ7SuK
+         B4CPp8Ncj6rbZX0bYWVm0Xso++lrounerL0952pMqm3l7+EffzaU7njwzXB8uazaO8
+         eKvXvaS4UE6uf1U6s02x09fn6NvSKBsV+BRP2HIlwN5iVqI1h5sLOEo7QXF0YCqJ2v
+         YzwHqCvElQd1usqv8tywcmGDLIpCZE2fIX3S84PEdzU/8L2mKxSkhmq1SH65G+kMXy
+         TSihlK4RpzSlw==
+Date:   Tue, 15 Jun 2021 21:23:59 +1000
 From:   Stephen Rothwell <sfr@canb.auug.org.au>
 To:     David Miller <davem@davemloft.net>,
         Networking <netdev@vger.kernel.org>
-Cc:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
+Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Linux Next Mailing List <linux-next@vger.kernel.org>
 Subject: linux-next: build warnings after merge of the net-next tree
-Message-ID: <20210615211227.4c2ef3e3@canb.auug.org.au>
+Message-ID: <20210615212359.727e0fbb@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/OMoN/uDR87LL4dZBNP30X8s";
+Content-Type: multipart/signed; boundary="Sig_/l2TAUQjyyfVcx.B1xOZBbyF";
  protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/OMoN/uDR87LL4dZBNP30X8s
+--Sig_/l2TAUQjyyfVcx.B1xOZBbyF
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 
@@ -56,45 +52,59 @@ Hi all,
 After merging the net-next tree, today's linux-next build (htmldocs)
 produced these warnings:
 
-Documentation/firmware-guide/acpi/dsd/phy.rst:33: WARNING: Unexpected inden=
-tation.
-Documentation/firmware-guide/acpi/dsd/phy.rst:35: WARNING: Definition list =
-ends without a blank line; unexpected unindent.
-Documentation/firmware-guide/acpi/dsd/phy.rst:39: WARNING: Definition list =
-ends without a blank line; unexpected unindent.
-Documentation/firmware-guide/acpi/dsd/phy.rst:40: WARNING: Block quote ends=
- without a blank line; unexpected unindent.
-Documentation/firmware-guide/acpi/dsd/phy.rst:64: WARNING: Unexpected inden=
-tation.
-Documentation/firmware-guide/acpi/dsd/phy.rst:84: WARNING: Unexpected inden=
-tation.
-Documentation/firmware-guide/acpi/dsd/phy.rst:102: WARNING: Unexpected inde=
-ntation.
-Documentation/firmware-guide/acpi/dsd/phy.rst: WARNING: document isn't incl=
-uded in any toctree
+Documentation/networking/device_drivers/wwan/iosm.rst:43: WARNING: Title un=
+derline too short.
 
-Introduced by commit
+/dev/wwan0mbim0 character device
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Documentation/networking/device_drivers/wwan/iosm.rst:55: WARNING: Title un=
+derline too short.
 
-  e71305acd81c ("Documentation: ACPI: DSD: Document MDIO PHY")
+/dev/wwan0mbim0 write()
+~~~~~~~~~~~~~~~~~~~~~
+Documentation/networking/device_drivers/wwan/iosm.rst:55: WARNING: Title un=
+derline too short.
+
+/dev/wwan0mbim0 write()
+~~~~~~~~~~~~~~~~~~~~~
+Documentation/networking/device_drivers/wwan/iosm.rst:60: WARNING: Title un=
+derline too short.
+
+/dev/wwan0mbim0 read()
+~~~~~~~~~~~~~~~~~~~~
+Documentation/networking/device_drivers/wwan/iosm.rst:60: WARNING: Title un=
+derline too short.
+
+/dev/wwan0mbim0 read()
+~~~~~~~~~~~~~~~~~~~~
+Documentation/networking/device_drivers/wwan/iosm.rst:68: WARNING: Title un=
+derline too short.
+
+wwan0-X network device
+~~~~~~~~~~~~~~~~~~~~
+
+Caused by commit
+
+  f7af616c632e ("net: iosm: infrastructure")
 
 --=20
 Cheers,
 Stephen Rothwell
 
---Sig_/OMoN/uDR87LL4dZBNP30X8s
+--Sig_/l2TAUQjyyfVcx.B1xOZBbyF
 Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDIixsACgkQAVBC80lX
-0GzGgQf/SfzKqZP5EcCNVK2dmoJYGQWbTGwgdDebydhapE7Qg32vQ1VuAw6vkbsP
-N1WF8/MPuMKESbw0y8bRop19IRPypDPzyWUzcQvM3tzIUVqq8p0UXMTrGWgldmOJ
-fcLVh3CNz43G2srCOtHJCo17hdDZ61sX04TfT/NLlMwFvRXSsPX75pkvD+7el4HF
-CTlkH5BFJ+K/5d/NwWiWPGEzQw7OffrxTT8jdUrC9sXFXGUFlZp4VnKaSFGct3Eg
-2MDTRZOql1rZeuuwqjRkrL8mCaCspT/BuO7ETV1GWo0GpJwwpJ4M+gsfrV/xt2lB
-HNdnNPX3+Ep0lSTsXUnpCiD/wg6mig==
-=S65Z
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDIjc8ACgkQAVBC80lX
+0GzXRggAnb0q+Ir1r5U7KxNnm05DbQVlf9G34WCRAy5bpjT8AtJ2H2XhLfasu2Q/
+4Xl4AmVMtjGof0z32uNPZk/eoulo+Ue5cp4JLlRFJQP22o/zqxx9KDaJVbmkKcT4
+yMhLoDxIkUfOXXFPFhL70cwg2+AVVMyHqxOi3SLk8Poc9xnf09OT0oNd7oMgil3A
+ZGGdaxwkzXlWTjuaegKj85Oa2SUr11A5JEfZZfP0xOTkos/LhiZuJTapTEA8p1fN
+biFp5n1Ym0BMlmnpD13g9zCg7eGV1CyUf30ciW4M9SRAXfKz5gWFwjsuk6l6Cn0r
+9O1UhJdrUxHQLMd8L3LMl9coVqT4Ug==
+=8Asp
 -----END PGP SIGNATURE-----
 
---Sig_/OMoN/uDR87LL4dZBNP30X8s--
+--Sig_/l2TAUQjyyfVcx.B1xOZBbyF--
