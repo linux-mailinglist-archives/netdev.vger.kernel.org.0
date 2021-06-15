@@ -2,155 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F50A3A7CE6
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 13:11:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B39713A7CED
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 13:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231185AbhFOLNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 07:13:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43658 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230503AbhFOLNC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 07:13:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623755458;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yfwZAQGhQdXwfX3oT2mUiJayaEQa98Eh2nRD6ZuGQbA=;
-        b=PVnpK4iXawddO//OgeAUEvsmkw4+i7A6b4+rMAJzf+xRZXJFk/lVSf+lXzPNH3lClt+QRV
-        TRggUQ3sUc7DGaadaW7BXvXmGP0cPu9TiSc9c6dl5qaRJbLvVMl1jLiXf7+0Sxx+YC/Nci
-        w/jRw5WCR7y3EYF0Nf5VejLYbZ/mGiM=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-16-zfGOg3tAMd2K9B98KwXIHg-1; Tue, 15 Jun 2021 07:10:57 -0400
-X-MC-Unique: zfGOg3tAMd2K9B98KwXIHg-1
-Received: by mail-ej1-f70.google.com with SMTP id n8-20020a1709067b48b02904171dc68f87so4333012ejo.21
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 04:10:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yfwZAQGhQdXwfX3oT2mUiJayaEQa98Eh2nRD6ZuGQbA=;
-        b=pyzjSrQs6UOup5pFKooR2Wg/gc8GTUTl6qKoVDvlUcQ+JmD3eOFlC7xjrwWwebXZNh
-         f2K4pGp0OWGf9J5rNd+vhK5MI47jwyRE/cig34yOAF2Zezirf2ptrWpBzPAfQik04nbZ
-         jWexxBiDIibj875sOhzG5PM2S0uVYQxVmzismnP5p+N0scEeQts7gbqsq7p0MUM5LkXF
-         7JKhZIW+LqpDgzRE++wWTut6SN2WBiojH7UQcWm9vip2AkjUpH4Lyoxj8q9UZg4YcMIm
-         NCPTkp+snz9xQ1KeitLEQhXB6DQDMUfJv7/Tk9muZ8JpZ+b/7EhF6NdWYZWdyNtKzWAr
-         Cvug==
-X-Gm-Message-State: AOAM532ImyLKcZcYlvATH2GOk4PqMXFi8LuxKOG0Mmmx3yHFj54+n6QX
-        1idoWGbfM5Vjz49m97PvTqE26EUpEJE3H56H96Wm9NZBPHzBO+yzcr9qe5iKPpzyQMBVbP1x1fW
-        FBhSvd6oSyWH4mbY3
-X-Received: by 2002:a50:ff0a:: with SMTP id a10mr22633435edu.273.1623755455587;
-        Tue, 15 Jun 2021 04:10:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzx+GN5UoDMvpBsijA2qLMF16C6A2fBNACgijRUUB64pRziA/m7AfsQutXfG+ylJqZZ2NUvZQ==
-X-Received: by 2002:a50:ff0a:: with SMTP id a10mr22633395edu.273.1623755455218;
-        Tue, 15 Jun 2021 04:10:55 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id s2sm7775884edt.53.2021.06.15.04.10.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Jun 2021 04:10:54 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id CD0731802FF; Tue, 15 Jun 2021 13:10:52 +0200 (CEST)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        Juliusz Chroboczek <jch@irif.fr>
-Subject: [PATCH net] icmp: don't send out ICMP messages with a source address of 0.0.0.0
-Date:   Tue, 15 Jun 2021 13:07:09 +0200
-Message-Id: <20210615110709.541499-1-toke@redhat.com>
-X-Mailer: git-send-email 2.31.1
+        id S230188AbhFOLOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 07:14:35 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:60045 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229601AbhFOLO2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 07:14:28 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 2909B5808D9;
+        Tue, 15 Jun 2021 07:12:23 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 15 Jun 2021 07:12:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=9Q6KDp2HWna3rxZivpNB7NpzF6d
+        wHBZaHCxz9AOstAo=; b=VO1TcpCOxfXH3sxQowoQcl75VH48aPea2qp+QAdYfyN
+        /YH7qGFT+GA1PsFaIbHL7xLq+M/t8KGQinALWSK3ocGOq3mRg6PFtGY6WXIdpXCK
+        XYcx82cKdjEB2OKfrMfglX7zpcQk+M6Yu02RBEFA3pBVVd6rplPtRyLo81WlXVeb
+        5Z5jf/BmyYxiCGw20t+o1P/j9IIz34aMOrOXDdDwFUHdRNnO2fB2+63ACXg4ckhh
+        LdM33XMDpmcI4Qvhc/cJhTg1bR/B/ykLQ5buUUHdMCBZSPXPGuA0aq/zqxONI2yl
+        Qs4VEiSKSmzs168xEtVNJ+yum1vDfvPVHr2rTak1X7g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=9Q6KDp
+        2HWna3rxZivpNB7NpzF6dwHBZaHCxz9AOstAo=; b=W1FCPA7R8Q4QZWMjtIOYbO
+        3essXw18DAQP9FvCgS6bIY37SDq3hNKzEpbuyM8etfT0SjPDoMbh+c0goBNMguWp
+        TcEahIFdsLbm68tksyY+anScdXDmiAygPrjGQxoaAQHetdW78vEgQhmfk+qSxilQ
+        5oPu+z+8zGj5BmleSskJxNuO8PMCWF1kLgqD2prfFNdax09KiI4nQ+eiw7veW/iA
+        Zcd3NEWWeSydTW+qwDXQmaaz5n02y64eZaOZEHdrextyWRJCeyIuU1jmV+uLznKt
+        SSPcj/0yBkyfptjxOfW49U5XRQprEO58o2J3Moo6RQC9ubBl4fqpG1dX5NP/AAZA
+        ==
+X-ME-Sender: <xms:FovIYHI6FQPs744CBPhrLBt-6huMUL7aRIELsQkO21C97HdZ8M5MHA>
+    <xme:FovIYLJqmmf85oR2-hMw4NnOIvhESVlxgrQ-Z6OI6y5oZrHu-fBUAt-6YhQVA_E3J
+    rkEwDzkrvfO9A>
+X-ME-Received: <xmr:FovIYPuxE4jvdI8WJ0sTboB4yOYGp4V7F51QjwPcQS2gJGngZflDsrij7Rrv_FcDG39wuOjR7ay-HsqzkAuOzhBLUOBpOHMS>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedvjedgfeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdortddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevhefgje
+    eitdfffefhvdegleeigeejgeeiffekieffjeeflefhieegtefhudejueenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:FovIYAa2kaTzgW2gzRSBSbUWKxLRIRfIznpZ6-8HIYmpidSXLOsq2A>
+    <xmx:FovIYOaoXznIKP-7V9MIKnAN_aC7b25sE_J-lROsW-2DbSZcfdcSaw>
+    <xmx:FovIYEAqaAh1O_dViNm1InHclTGi435Ccz5D-ZTOyiE3lKMZdhnNtg>
+    <xmx:F4vIYEy7A4CXP1uTvGbOR77Cbd5zElVCN-w1Y6xZFanI44lm-V0aiA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 15 Jun 2021 07:12:22 -0400 (EDT)
+Date:   Tue, 15 Jun 2021 13:12:20 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
+Message-ID: <YMiLFFRfXfBHpfAF@kroah.com>
+References: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
+ <YMhY9NHf1itQyup7@kroah.com>
+ <CAD-N9QVfDQQo0rRiaa6Cx-xO80yox9hNzK91_UVj0KNgkhpvnQ@mail.gmail.com>
+ <YMh2b0LvT9H7SuNC@kroah.com>
+ <CAD-N9QV+GMURatPx4qJT2nMsKHQhj+BXC9C-ZyQed3pN8a9YUA@mail.gmail.com>
+ <CAD-N9QW6LhRO+D-rr4xCCuq+m=jtD7LS_+GDVs9DkHe5paeSOg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAD-N9QW6LhRO+D-rr4xCCuq+m=jtD7LS_+GDVs9DkHe5paeSOg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When constructing ICMP response messages, the kernel will try to pick a
-suitable source address for the outgoing packet. However, if no IPv4
-addresses are configured on the system at all, this will fail and we end up
-producing an ICMP message with a source address of 0.0.0.0. This can happen
-on a box routing IPv4 traffic via v6 nexthops, for instance.
+On Tue, Jun 15, 2021 at 06:24:17PM +0800, Dongliang Mu wrote:
+> On Tue, Jun 15, 2021 at 6:10 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+> >
+> > On Tue, Jun 15, 2021 at 5:44 PM Greg KH <greg@kroah.com> wrote:
+> > >
+> > > On Tue, Jun 15, 2021 at 03:56:32PM +0800, Dongliang Mu wrote:
+> > > > On Tue, Jun 15, 2021 at 3:38 PM Greg KH <greg@kroah.com> wrote:
+> > > > >
+> > > > > On Mon, Jun 14, 2021 at 11:37:12PM +0800, Dongliang Mu wrote:
+> > > > > > The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+> > > > > > fails to clean up the work scheduled in smsc75xx_reset->
+> > > > > > smsc75xx_set_multicast, which leads to use-after-free if the work is
+> > > > > > scheduled to start after the deallocation. In addition, this patch also
+> > > > > > removes one dangling pointer - dev->data[0].
+> > > > > >
+> > > > > > This patch calls cancel_work_sync to cancel the schedule work and set
+> > > > > > the dangling pointer to NULL.
+> > > > > >
+> > > > > > Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+> > > > > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > > > > ---
+> > > > > >  drivers/net/usb/smsc75xx.c | 3 +++
+> > > > > >  1 file changed, 3 insertions(+)
+> > > > > >
+> > > > > > diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
+> > > > > > index b286993da67c..f81740fcc8d5 100644
+> > > > > > --- a/drivers/net/usb/smsc75xx.c
+> > > > > > +++ b/drivers/net/usb/smsc75xx.c
+> > > > > > @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
+> > > > > >       return 0;
+> > > > > >
+> > > > > >  err:
+> > > > > > +     cancel_work_sync(&pdata->set_multicast);
+> > > > > >       kfree(pdata);
+> > > > > > +     pdata = NULL;
+> > > > >
+> > > > > Why do you have to set pdata to NULL afterward?
+> > > > >
+> > > >
+> > > > It does not have to. pdata will be useless when the function exits. I
+> > > > just referred to the implementation of smsc75xx_unbind.
+> > >
+> > > It's wrong there too :)
+> >
+> > /: I will fix such two sites in the v2 patch.
+> 
+> Hi gregkh,
+> 
+> If the schedule_work is not invoked, can I call
+> ``cancel_work_sync(&pdata->set_multicast)''?
 
-Since 0.0.0.0 is not generally routable on the internet, there's a good
-chance that such ICMP messages will never make it back to the sender of the
-original packet that the ICMP message was sent in response to. This, in
-turn, can create connectivity and PMTUd problems for senders. Fortunately,
-RFC7600 reserves a dummy address to be used as a source for ICMP
-messages (192.0.0.8/32), so let's teach the kernel to substitute that
-address as a last resort if the regular source address selection procedure
-fails.
+Why can you not call this then?
 
-Below is a quick example reproducing this issue with network namespaces:
+Did you try it and see?
 
-ip netns add ns0
-ip l add type veth peer netns ns0
-ip l set dev veth0 up
-ip a add 10.0.0.1/24 dev veth0
-ip a add fc00:dead:cafe:42::1/64 dev veth0
-ip r add 10.1.0.0/24 via inet6 fc00:dead:cafe:42::2
-ip -n ns0 l set dev veth0 up
-ip -n ns0 a add fc00:dead:cafe:42::2/64 dev veth0
-ip -n ns0 r add 10.0.0.0/24 via inet6 fc00:dead:cafe:42::1
-ip netns exec ns0 sysctl -w net.ipv4.icmp_ratelimit=0
-ip netns exec ns0 sysctl -w net.ipv4.ip_forward=1
-tcpdump -tpni veth0 -c 2 icmp &
-ping -w 1 10.1.0.1 > /dev/null
-tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
-listening on veth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
-IP 10.0.0.1 > 10.1.0.1: ICMP echo request, id 29, seq 1, length 64
-IP 0.0.0.0 > 10.0.0.1: ICMP net 10.1.0.1 unreachable, length 92
-2 packets captured
-2 packets received by filter
-0 packets dropped by kernel
+thanks,
 
-With this patch the above capture changes to:
-IP 10.0.0.1 > 10.1.0.1: ICMP echo request, id 31127, seq 1, length 64
-IP 192.0.0.8 > 10.0.0.1: ICMP net 10.1.0.1 unreachable, length 92
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Juliusz Chroboczek <jch@irif.fr>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- include/uapi/linux/in.h | 3 +++
- net/ipv4/icmp.c         | 7 +++++++
- 2 files changed, 10 insertions(+)
-
-diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
-index 7d6687618d80..d1b327036ae4 100644
---- a/include/uapi/linux/in.h
-+++ b/include/uapi/linux/in.h
-@@ -289,6 +289,9 @@ struct sockaddr_in {
- /* Address indicating an error return. */
- #define	INADDR_NONE		((unsigned long int) 0xffffffff)
- 
-+/* Dummy address for src of ICMP replies if no real address is set (RFC7600). */
-+#define	INADDR_DUMMY		((unsigned long int) 0xc0000008)
-+
- /* Network number for local host loopback. */
- #define	IN_LOOPBACKNET		127
- 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 7b6931a4d775..752e392083e6 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -759,6 +759,13 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
- 		icmp_param.data_len = room;
- 	icmp_param.head_len = sizeof(struct icmphdr);
- 
-+	/* if we don't have a source address at this point, fall back to the
-+	 * dummy address instead of sending out a packet with a source address
-+	 * of 0.0.0.0
-+	 */
-+	if (!fl4.saddr)
-+		fl4.saddr = htonl(INADDR_DUMMY);
-+
- 	icmp_push_reply(&icmp_param, &fl4, &ipc, &rt);
- ende:
- 	ip_rt_put(rt);
--- 
-2.31.1
-
+greg k-h
