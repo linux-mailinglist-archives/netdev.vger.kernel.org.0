@@ -2,108 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0927A3A8C75
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 01:27:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C15F3A8C81
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 01:29:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231420AbhFOX3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 19:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
+        id S231579AbhFOXcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 19:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231164AbhFOX3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 19:29:15 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E0EC061574
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 16:27:09 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id 6-20020a9d07860000b02903e83bf8f8fcso602791oto.12
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 16:27:08 -0700 (PDT)
+        with ESMTP id S229966AbhFOXb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 19:31:59 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD957C061574;
+        Tue, 15 Jun 2021 16:29:53 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id d7so219966edx.0;
+        Tue, 15 Jun 2021 16:29:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5BxCx4oYVoVQnmCG+AUeVFZ5uMxoQG7o5BoWKZiHpDM=;
-        b=FIfz3Y+gcmLkxkp0J511fi/2vZATq207eg5N+rpcpZpim3PzFIbfaWTDx+qG7YTO1z
-         KJrOGb+j+W+riqK4GlvW7TyfMrjYk1jTUrO4UFyodp2+jbGnMC9Ly5XHX9QiXMYaQzek
-         61a1q//DLamZInN2Rg2Oi4S23ed2TFHRVbwod6b78fUhoHExMHNrvzcLGlRYxanzkL7R
-         x4s0aKGdA8CN596T1xVZiTRwvhe/zXjDDOSreeyue+T0typrQHjumQj+6yiUjaeMbZam
-         oZKMMyTUddCXRsTvPRWX4drF7taBzRHq8PHLYEa5dbc/QhKE7C6CICMELxqPM5Rzjg/p
-         Jxew==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dMu6Ebpu3T3ImGY3emMLa/ibwH7Jz5A6ZlvdLonFw94=;
+        b=JQbC59Bt9iZ2ofmMkX7Kl9HL7wZA/xVTJDwwp0xpvuMwo3pba02UrjnNg9d0zCKfaD
+         4JHyjgm+fvkt0QAozm0OGqxqsBPAGJoSnlb0bIQz6uj7Z72RNQMiPbdy4MfmqnmL38Aj
+         Ou986wZdevoaPTBs4B//uhLDseLwl1c6b6gZY3zloQsCd13iAANAM4/dG8lO4whN3fGu
+         NlR4704c85iQ3g17AcdaSdqFJN1NK2k1NI1c3xmTCPPdqhOu44itOnKwBlvaScfLYepe
+         3rhHqQqlMbSbSL+BKlzLolRqG6uTd/1idpXMkHRjbDL9LeQPt4EZXzoz/2vB7Q+IWvf1
+         GSvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5BxCx4oYVoVQnmCG+AUeVFZ5uMxoQG7o5BoWKZiHpDM=;
-        b=cY2EWUCiLmce84L3lO+dnMnMlFnW3bqNX27lXLORj9W/eRcoT7L2HUneVqMLmgyQFn
-         17pBg/YfsB2ZAkjTQ3pU/BFhxRjqvPtrzTPHz8wHIuyiSTCHZx1vOjODdJIWTnM3DI1z
-         0/exBD7onsj5XWQGLTdmDNZOk9daedJUuR5OYcCuAvegBao4lLsHYJrfkTXOPvMV4IaY
-         6BH2sXPA71H7ozfpCLEyzPJmSFZIfeXzn8aZsZ2jYWbIWwVqJYeSGsch6SKWHJ91qR6C
-         kzfOPPsEtwFfKaTY/FvaHT+AezjJEscwz2CMej6kXMCGZlsGuGvFwcsCnKmcMBinrZ4J
-         ZYwg==
-X-Gm-Message-State: AOAM5311xww7RRNbYNsTrRgG977aez+qZGm36nZCV630iQLIXDU2JYu2
-        TNIciE+AxKNhfECf1ylKA4/lSA==
-X-Google-Smtp-Source: ABdhPJzgpyD7sHOuZrD3iMyiX4hXHsL5Z8m86PS01uKPkw9aNGtRYpGDTfhpgujcrT1Wqpj26fUtBw==
-X-Received: by 2002:a9d:6f88:: with SMTP id h8mr1297762otq.73.1623799628214;
-        Tue, 15 Jun 2021 16:27:08 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id w20sm105997otl.51.2021.06.15.16.27.07
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dMu6Ebpu3T3ImGY3emMLa/ibwH7Jz5A6ZlvdLonFw94=;
+        b=CQ68oiAatZjpOyxArxpXtU3WGljyxGdn0VN0pSSEdE+s2mJEpc2Hju3RW0JtIaftXh
+         oK1wcdysDTVY0emR9OJAMZjbJ08TMtcvhnT/gACBZTPz2gymyitatimTvF8FnQzpahUj
+         UzmlbHh+WTzmdqBN8Z/P6bTT5ZrmZs5Ca8nfA5kmcfRhf1qc3RcAI17oEP67oH+ME+ls
+         Un7HCliy6Lh34WaNNqf1TDGHuwuGcbqWnMHzXMtkjbiVQdB4gBzfLvLCL05M6qs/tPCv
+         CAfTRUq5d9e3UWCCqFfYSwPhnqzmajlqv8S/t6rRjhA0ml7KzCEA+k/88P9/4o8pZv5k
+         86fg==
+X-Gm-Message-State: AOAM531IKMWEtirigwA2tOYFoiKWZm1RW7I9T7c3yOiYlkT24nHCgiql
+        gU1ALuuywnI8VHF2UtJ62sQ=
+X-Google-Smtp-Source: ABdhPJyr9pJPFLX4drWnvJMzUHLNg4ImgihZ1B8LGDBTk8opezpzsSyrD4Z2oro8ZkFoOcKUrN15wQ==
+X-Received: by 2002:aa7:d344:: with SMTP id m4mr667424edr.281.1623799792558;
+        Tue, 15 Jun 2021 16:29:52 -0700 (PDT)
+Received: from skbuf ([188.26.224.68])
+        by smtp.gmail.com with ESMTPSA id dh18sm313170edb.92.2021.06.15.16.29.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Jun 2021 16:27:07 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Alex Elder <elder@linaro.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2] net: qualcomm: rmnet: Allow partial updates of IFLA_FLAGS
-Date:   Tue, 15 Jun 2021 18:27:07 -0500
-Message-Id: <20210615232707.835258-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.31.0
+        Tue, 15 Jun 2021 16:29:52 -0700 (PDT)
+Date:   Wed, 16 Jun 2021 02:29:49 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, andriin@fb.com,
+        edumazet@google.com, weiwan@google.com, cong.wang@bytedance.com,
+        ap420073@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        mkl@pengutronix.de, linux-can@vger.kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
+        jonas.bonn@netrounds.com, pabeni@redhat.com, mzhivich@akamai.com,
+        johunt@akamai.com, albcamus@gmail.com, kehuan.feng@gmail.com,
+        a.fatoum@pengutronix.de, atenart@kernel.org,
+        alexander.duyck@gmail.com, hdanton@sina.com, jgross@suse.com,
+        JKosina@suse.com, mkubecek@suse.cz, bjorn@kernel.org,
+        alobakin@pm.me
+Subject: Re: [PATCH net-next v2 0/3] Some optimization for lockless qdisc
+Message-ID: <20210615232949.2ntjv5kh3g7z2ua2@skbuf>
+References: <1622684880-39895-1-git-send-email-linyunsheng@huawei.com>
+ <20210603113548.2d71b4d3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20210608125349.7azp7zeae3oq3izc@skbuf>
+ <64aaa011-41a3-1e06-af02-909ff329ef7a@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <64aaa011-41a3-1e06-af02-909ff329ef7a@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The idiomatic way to handle the changelink flags/mask pair seems to be
-allow partial updates of the driver's link flags. In contrast the rmnet
-driver masks the incoming flags and then use that as the new flags.
+On Wed, Jun 09, 2021 at 09:31:39AM +0800, Yunsheng Lin wrote:
+> By the way, I did not pick up your "Tested-by" from previous
+> RFC version because there is some change between those version
+> that deserves a retesting. So it would be good to have a
+> "Tested-by" from you after confirming no out of order happening
+> for this version, thanks.
 
-Change the rmnet driver to follow the common scheme, before the
-introduction of IFLA_RMNET_FLAGS handling in iproute2 et al.
-
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
-
-Changes since v1:
-- Also do the masking dance on newlink, per Subash request
-- Add "net-next" to subject prefix
-
- drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-index 8d51b0cb545c..27b1663c476e 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-@@ -163,7 +163,8 @@ static int rmnet_newlink(struct net *src_net, struct net_device *dev,
- 		struct ifla_rmnet_flags *flags;
- 
- 		flags = nla_data(data[IFLA_RMNET_FLAGS]);
--		data_format = flags->flags & flags->mask;
-+		data_format &= ~flags->mask;
-+		data_format |= flags->flags & flags->mask;
- 	}
- 
- 	netdev_dbg(dev, "data format [0x%08X]\n", data_format);
-@@ -336,7 +337,8 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
- 
- 		old_data_format = port->data_format;
- 		flags = nla_data(data[IFLA_RMNET_FLAGS]);
--		port->data_format = flags->flags & flags->mask;
-+		port->data_format &= ~flags->mask;
-+		port->data_format |= flags->flags & flags->mask;
- 
- 		if (rmnet_vnd_update_dev_mtu(port, real_dev)) {
- 			port->data_format = old_data_format;
--- 
-2.31.0
-
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com> # flexcan
