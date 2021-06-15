@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFD643A7AC8
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 11:36:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 084BC3A7ACC
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 11:36:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231551AbhFOJil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 05:38:41 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:41828 "EHLO inva021.nxp.com"
+        id S231591AbhFOJiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 05:38:46 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:56468 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231288AbhFOJij (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Jun 2021 05:38:39 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id C661B2015F5;
-        Tue, 15 Jun 2021 11:36:33 +0200 (CEST)
+        id S231543AbhFOJil (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 05:38:41 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6B9F01A29D4;
+        Tue, 15 Jun 2021 11:36:35 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 82CF62015FA;
-        Tue, 15 Jun 2021 11:36:27 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 299DB1A16D4;
+        Tue, 15 Jun 2021 11:36:29 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id E3FEB40326;
-        Tue, 15 Jun 2021 17:36:19 +0800 (+08)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 865B240327;
+        Tue, 15 Jun 2021 17:36:21 +0800 (+08)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
@@ -34,9 +34,9 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
         Sebastien Laveze <sebastien.laveze@nxp.com>
-Subject: [net-next, v3, 01/10] ptp: add ptp virtual clock driver framework
-Date:   Tue, 15 Jun 2021 17:45:08 +0800
-Message-Id: <20210615094517.48752-2-yangbo.lu@nxp.com>
+Subject: [net-next, v3, 02/10] ptp: support ptp physical/virtual clocks conversion
+Date:   Tue, 15 Jun 2021 17:45:09 +0800
+Message-Id: <20210615094517.48752-3-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210615094517.48752-1-yangbo.lu@nxp.com>
 References: <20210615094517.48752-1-yangbo.lu@nxp.com>
@@ -45,258 +45,306 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add ptp virtual clock driver framework
-utilizing timecounter/cyclecounter.
+Support ptp physical/virtual clocks conversion via sysfs.
+There will be a new attribute n_vclocks under ptp physical
+clock sysfs.
 
-The patch just exports two essential APIs for PTP driver.
-
-- ptp_vclock_register()
-- ptp_vclock_unregister()
+- In default, the value is 0 meaning only ptp physical clock
+  is in use.
+- Setting the value can create corresponding number of ptp
+  virtual clocks to use. But current physical clock is guaranteed
+  to stay free running.
+- Setting the value back to 0 can delete virtual clocks and back
+  use physical clock again.
 
 Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 ---
 Changes for v2:
-	- Split from v1 patch #1.
+	- Split from v1 patch #2.
+	- Converted to num_vclocks for creating virtual clocks.
+	- Guranteed physical clock free running when using virtual
+	  clocks.
 	- Fixed build warning.
 	- Updated copyright.
 Changes for v3:
-	- Supported PTP virtual clock in default in PTP driver.
+	- Protected concurrency of ptp->num_vclocks accessing.
 ---
- drivers/ptp/Makefile             |   2 +-
- drivers/ptp/ptp_private.h        |  16 ++++
- drivers/ptp/ptp_vclock.c         | 154 +++++++++++++++++++++++++++++++
- include/linux/ptp_clock_kernel.h |   4 +-
- 4 files changed, 174 insertions(+), 2 deletions(-)
- create mode 100644 drivers/ptp/ptp_vclock.c
+ Documentation/ABI/testing/sysfs-ptp | 13 +++++
+ drivers/ptp/ptp_clock.c             | 22 +++++++
+ drivers/ptp/ptp_private.h           | 15 +++++
+ drivers/ptp/ptp_sysfs.c             | 89 +++++++++++++++++++++++++++++
+ include/uapi/linux/ptp_clock.h      |  5 ++
+ 5 files changed, 144 insertions(+)
 
-diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
-index 8673d1743faa..3c6a905760e2 100644
---- a/drivers/ptp/Makefile
-+++ b/drivers/ptp/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for PTP 1588 clock support.
- #
+diff --git a/Documentation/ABI/testing/sysfs-ptp b/Documentation/ABI/testing/sysfs-ptp
+index 2363ad810ddb..2ef11b775f47 100644
+--- a/Documentation/ABI/testing/sysfs-ptp
++++ b/Documentation/ABI/testing/sysfs-ptp
+@@ -61,6 +61,19 @@ Description:
+ 		This file contains the number of programmable pins
+ 		offered by the PTP hardware clock.
  
--ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o
-+ptp-y					:= ptp_clock.o ptp_vclock.o ptp_chardev.o ptp_sysfs.o
- ptp_kvm-$(CONFIG_X86)			:= ptp_kvm_x86.o ptp_kvm_common.o
- ptp_kvm-$(CONFIG_HAVE_ARM_SMCCC)	:= ptp_kvm_arm.o ptp_kvm_common.o
- obj-$(CONFIG_PTP_1588_CLOCK)		+= ptp.o
-diff --git a/drivers/ptp/ptp_private.h b/drivers/ptp/ptp_private.h
-index 6b97155148f1..3f388d63904c 100644
---- a/drivers/ptp/ptp_private.h
-+++ b/drivers/ptp/ptp_private.h
-@@ -48,6 +48,20 @@ struct ptp_clock {
- 	struct kthread_delayed_work aux_work;
- };
++What:		/sys/class/ptp/ptpN/n_vclocks
++Date:		May 2021
++Contact:	Yangbo Lu <yangbo.lu@nxp.com>
++Description:
++		This file contains the ptp virtual clocks number in use,
++		based on current ptp physical clock. In default, the
++		value is 0 meaning only ptp physical clock is in use.
++		Setting the value can create corresponding number of ptp
++		virtual clocks to use. But current ptp physical clock is
++		guaranteed to stay free running. Setting the value back
++		to 0 can delete ptp virtual clocks and back use ptp
++		physical clock again.
++
+ What:		/sys/class/ptp/ptpN/pins
+ Date:		March 2014
+ Contact:	Richard Cochran <richardcochran@gmail.com>
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index a780435331c8..78414b3e16dd 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -76,6 +76,11 @@ static int ptp_clock_settime(struct posix_clock *pc, const struct timespec64 *tp
+ {
+ 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
  
-+#define info_to_vclock(d) container_of((d), struct ptp_vclock, info)
-+#define cc_to_vclock(d) container_of((d), struct ptp_vclock, cc)
-+#define dw_to_vclock(d) container_of((d), struct ptp_vclock, refresh_work)
-+
-+struct ptp_vclock {
-+	struct ptp_clock *pclock;
-+	struct ptp_clock_info info;
-+	struct ptp_clock *clock;
-+	struct cyclecounter cc;
-+	struct timecounter tc;
-+	spinlock_t lock;	/* protects tc/cc */
-+	struct delayed_work refresh_work;
-+};
-+
- /*
-  * The function queue_cnt() is safe for readers to call without
-  * holding q->lock. Readers use this function to verify that the queue
-@@ -89,4 +103,6 @@ extern const struct attribute_group *ptp_groups[];
- int ptp_populate_pin_groups(struct ptp_clock *ptp);
- void ptp_cleanup_pin_groups(struct ptp_clock *ptp);
- 
-+struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock);
-+void ptp_vclock_unregister(struct ptp_vclock *vclock);
- #endif
-diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
-new file mode 100644
-index 000000000000..b8f500677314
---- /dev/null
-+++ b/drivers/ptp/ptp_vclock.c
-@@ -0,0 +1,154 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * PTP virtual clock driver
-+ *
-+ * Copyright 2021 NXP
-+ */
-+#include <linux/slab.h>
-+#include "ptp_private.h"
-+
-+#define PTP_VCLOCK_CC_MULT		(1 << 31)
-+#define PTP_VCLOCK_CC_SHIFT		31
-+#define PTP_VCLOCK_CC_MULT_NUM		(1 << 9)
-+#define PTP_VCLOCK_CC_MULT_DEM		15625ULL
-+#define PTP_VCLOCK_CC_REFRESH_INTERVAL	(HZ * 2)
-+
-+static int ptp_vclock_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
-+{
-+	struct ptp_vclock *vclock = info_to_vclock(ptp);
-+	unsigned long flags;
-+	s64 adj;
-+
-+	adj = (s64)scaled_ppm * PTP_VCLOCK_CC_MULT_NUM;
-+	adj = div_s64(adj, PTP_VCLOCK_CC_MULT_DEM);
-+
-+	spin_lock_irqsave(&vclock->lock, flags);
-+	timecounter_read(&vclock->tc);
-+	vclock->cc.mult = PTP_VCLOCK_CC_MULT + adj;
-+	spin_unlock_irqrestore(&vclock->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int ptp_vclock_adjtime(struct ptp_clock_info *ptp, s64 delta)
-+{
-+	struct ptp_vclock *vclock = info_to_vclock(ptp);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&vclock->lock, flags);
-+	timecounter_adjtime(&vclock->tc, delta);
-+	spin_unlock_irqrestore(&vclock->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int ptp_vclock_gettime(struct ptp_clock_info *ptp,
-+			      struct timespec64 *ts)
-+{
-+	struct ptp_vclock *vclock = info_to_vclock(ptp);
-+	unsigned long flags;
-+	u64 ns;
-+
-+	spin_lock_irqsave(&vclock->lock, flags);
-+	ns = timecounter_read(&vclock->tc);
-+	spin_unlock_irqrestore(&vclock->lock, flags);
-+	*ts = ns_to_timespec64(ns);
-+
-+	return 0;
-+}
-+
-+static int ptp_vclock_settime(struct ptp_clock_info *ptp,
-+			      const struct timespec64 *ts)
-+{
-+	struct ptp_vclock *vclock = info_to_vclock(ptp);
-+	u64 ns = timespec64_to_ns(ts);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&vclock->lock, flags);
-+	timecounter_init(&vclock->tc, &vclock->cc, ns);
-+	spin_unlock_irqrestore(&vclock->lock, flags);
-+
-+	return 0;
-+}
-+
-+static const struct ptp_clock_info ptp_vclock_info = {
-+	.owner		= THIS_MODULE,
-+	.name		= "ptp virtual clock",
-+	/* The maximum ppb value that long scaled_ppm can support */
-+	.max_adj	= 32767999,
-+	.adjfine	= ptp_vclock_adjfine,
-+	.adjtime	= ptp_vclock_adjtime,
-+	.gettime64	= ptp_vclock_gettime,
-+	.settime64	= ptp_vclock_settime,
-+};
-+
-+static void ptp_vclock_refresh(struct work_struct *work)
-+{
-+	struct delayed_work *dw = to_delayed_work(work);
-+	struct ptp_vclock *vclock = dw_to_vclock(dw);
-+	struct timespec64 ts;
-+
-+	ptp_vclock_gettime(&vclock->info, &ts);
-+	schedule_delayed_work(&vclock->refresh_work,
-+			      PTP_VCLOCK_CC_REFRESH_INTERVAL);
-+}
-+
-+static u64 ptp_vclock_read(const struct cyclecounter *cc)
-+{
-+	struct ptp_vclock *vclock = cc_to_vclock(cc);
-+	struct ptp_clock *ptp = vclock->pclock;
-+	struct timespec64 ts = {};
-+
-+	if (ptp->info->gettimex64)
-+		ptp->info->gettimex64(ptp->info, &ts, NULL);
-+	else
-+		ptp->info->gettime64(ptp->info, &ts);
-+
-+	return timespec64_to_ns(&ts);
-+}
-+
-+static const struct cyclecounter ptp_vclock_cc = {
-+	.read	= ptp_vclock_read,
-+	.mask	= CYCLECOUNTER_MASK(32),
-+	.mult	= PTP_VCLOCK_CC_MULT,
-+	.shift	= PTP_VCLOCK_CC_SHIFT,
-+};
-+
-+struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock)
-+{
-+	struct ptp_vclock *vclock;
-+
-+	vclock = kzalloc(sizeof(*vclock), GFP_KERNEL);
-+	if (!vclock)
-+		return NULL;
-+
-+	vclock->pclock = pclock;
-+	vclock->info = ptp_vclock_info;
-+	vclock->cc = ptp_vclock_cc;
-+
-+	snprintf(vclock->info.name, PTP_CLOCK_NAME_LEN, "ptp%d_virt",
-+		 pclock->index);
-+
-+	spin_lock_init(&vclock->lock);
-+
-+	vclock->clock = ptp_clock_register(&vclock->info, &pclock->dev);
-+	if (IS_ERR_OR_NULL(vclock->clock)) {
-+		kfree(vclock);
-+		return NULL;
++	if (ptp_guaranteed_pclock(ptp)) {
++		pr_err("ptp: virtual clock in use, guarantee physical clock free running\n");
++		return -EBUSY;
 +	}
 +
-+	timecounter_init(&vclock->tc, &vclock->cc, 0);
+ 	return  ptp->info->settime64(ptp->info, tp);
+ }
+ 
+@@ -97,6 +102,11 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
+ 	struct ptp_clock_info *ops;
+ 	int err = -EOPNOTSUPP;
+ 
++	if (ptp_guaranteed_pclock(ptp)) {
++		pr_err("ptp: virtual clock in use, guarantee physical clock free running\n");
++		return -EBUSY;
++	}
 +
-+	INIT_DELAYED_WORK(&vclock->refresh_work, ptp_vclock_refresh);
-+	schedule_delayed_work(&vclock->refresh_work,
-+			      PTP_VCLOCK_CC_REFRESH_INTERVAL);
+ 	ops = ptp->info;
+ 
+ 	if (tx->modes & ADJ_SETOFFSET) {
+@@ -161,6 +171,7 @@ static void ptp_clock_release(struct device *dev)
+ 	ptp_cleanup_pin_groups(ptp);
+ 	mutex_destroy(&ptp->tsevq_mux);
+ 	mutex_destroy(&ptp->pincfg_mux);
++	mutex_destroy(&ptp->n_vclocks_mux);
+ 	ida_simple_remove(&ptp_clocks_map, ptp->index);
+ 	kfree(ptp);
+ }
+@@ -208,6 +219,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+ 	spin_lock_init(&ptp->tsevq.lock);
+ 	mutex_init(&ptp->tsevq_mux);
+ 	mutex_init(&ptp->pincfg_mux);
++	mutex_init(&ptp->n_vclocks_mux);
+ 	init_waitqueue_head(&ptp->tsev_wq);
+ 
+ 	if (ptp->info->do_aux_work) {
+@@ -220,6 +232,10 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+ 		}
+ 	}
+ 
++	/* PTP virtual clock is being registered under physical clock */
++	if (parent->class && strcmp(parent->class->name, "ptp") == 0)
++		ptp->vclock_flag = true;
 +
-+	return vclock;
-+}
+ 	err = ptp_populate_pin_groups(ptp);
+ 	if (err)
+ 		goto no_pin_groups;
+@@ -269,6 +285,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+ kworker_err:
+ 	mutex_destroy(&ptp->tsevq_mux);
+ 	mutex_destroy(&ptp->pincfg_mux);
++	mutex_destroy(&ptp->n_vclocks_mux);
+ 	ida_simple_remove(&ptp_clocks_map, index);
+ no_slot:
+ 	kfree(ptp);
+@@ -279,6 +296,11 @@ EXPORT_SYMBOL(ptp_clock_register);
+ 
+ int ptp_clock_unregister(struct ptp_clock *ptp)
+ {
++	if (ptp_guaranteed_pclock(ptp)) {
++		pr_err("ptp: virtual clock in use, guarantee physical clock free running\n");
++		return -EBUSY;
++	}
 +
-+void ptp_vclock_unregister(struct ptp_vclock *vclock)
+ 	ptp->defunct = 1;
+ 	wake_up_interruptible(&ptp->tsev_wq);
+ 
+diff --git a/drivers/ptp/ptp_private.h b/drivers/ptp/ptp_private.h
+index 3f388d63904c..6949afc9d733 100644
+--- a/drivers/ptp/ptp_private.h
++++ b/drivers/ptp/ptp_private.h
+@@ -46,6 +46,9 @@ struct ptp_clock {
+ 	const struct attribute_group *pin_attr_groups[2];
+ 	struct kthread_worker *kworker;
+ 	struct kthread_delayed_work aux_work;
++	u8 n_vclocks;
++	struct mutex n_vclocks_mux; /* protect concurrent n_vclocks access */
++	bool vclock_flag;
+ };
+ 
+ #define info_to_vclock(d) container_of((d), struct ptp_vclock, info)
+@@ -75,6 +78,18 @@ static inline int queue_cnt(struct timestamp_event_queue *q)
+ 	return cnt < 0 ? PTP_MAX_TIMESTAMPS + cnt : cnt;
+ }
+ 
++/*
++ * Guarantee physical clock to stay free running, if ptp virtual clocks
++ * on it are in use.
++ */
++static inline bool ptp_guaranteed_pclock(struct ptp_clock *ptp)
 +{
-+	cancel_delayed_work_sync(&vclock->refresh_work);
-+	ptp_clock_unregister(vclock->clock);
-+	kfree(vclock);
++	if (!ptp->vclock_flag && ptp->n_vclocks)
++		return true;
++
++	return false;
 +}
-diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
-index a311bddd9e85..af12cc1e76d7 100644
---- a/include/linux/ptp_clock_kernel.h
-+++ b/include/linux/ptp_clock_kernel.h
-@@ -11,7 +11,9 @@
- #include <linux/device.h>
- #include <linux/pps_kernel.h>
- #include <linux/ptp_clock.h>
-+#include <linux/timecounter.h>
- 
-+#define PTP_CLOCK_NAME_LEN	32
- /**
-  * struct ptp_clock_request - request PTP clock event
++
+ /*
+  * see ptp_chardev.c
+  */
+diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
+index be076a91e20e..600edd7a90af 100644
+--- a/drivers/ptp/ptp_sysfs.c
++++ b/drivers/ptp/ptp_sysfs.c
+@@ -3,6 +3,7 @@
+  * PTP 1588 clock support - sysfs interface.
   *
-@@ -134,7 +136,7 @@ struct ptp_system_timestamp {
+  * Copyright (C) 2010 OMICRON electronics GmbH
++ * Copyright 2021 NXP
+  */
+ #include <linux/capability.h>
+ #include <linux/slab.h>
+@@ -148,6 +149,90 @@ static ssize_t pps_enable_store(struct device *dev,
+ }
+ static DEVICE_ATTR(pps_enable, 0220, NULL, pps_enable_store);
  
- struct ptp_clock_info {
- 	struct module *owner;
--	char name[16];
-+	char name[PTP_CLOCK_NAME_LEN];
- 	s32 max_adj;
- 	int n_alarm;
- 	int n_ext_ts;
++static int unregister_vclock(struct device *dev, void *data)
++{
++	struct ptp_clock *ptp = dev_get_drvdata(dev);
++	struct ptp_clock_info *info = ptp->info;
++	struct ptp_vclock *vclock;
++	u8 *num = data;
++
++	vclock = info_to_vclock(info);
++	dev_info(dev->parent, "delete virtual clock ptp%d\n",
++		 vclock->clock->index);
++
++	ptp_vclock_unregister(vclock);
++	(*num)--;
++
++	/* For break. Not error. */
++	if (*num == 0)
++		return -EINVAL;
++
++	return 0;
++}
++
++static ssize_t n_vclocks_show(struct device *dev,
++			      struct device_attribute *attr, char *page)
++{
++	struct ptp_clock *ptp = dev_get_drvdata(dev);
++
++	return snprintf(page, PAGE_SIZE-1, "%d\n", ptp->n_vclocks);
++}
++
++static ssize_t n_vclocks_store(struct device *dev,
++			       struct device_attribute *attr,
++			       const char *buf, size_t count)
++{
++	struct ptp_clock *ptp = dev_get_drvdata(dev);
++	struct ptp_vclock *vclock;
++	int err = -EINVAL;
++	u8 num, i;
++
++	if (kstrtou8(buf, 0, &num))
++		goto out;
++
++	if (num > PTP_MAX_VCLOCKS) {
++		dev_err(dev, "max value is %d\n", PTP_MAX_VCLOCKS);
++		goto out;
++	}
++
++	if (mutex_lock_interruptible(&ptp->n_vclocks_mux))
++		return -ERESTARTSYS;
++
++	/* Need to create more vclocks */
++	if (num > ptp->n_vclocks) {
++		for (i = 0; i < num - ptp->n_vclocks; i++) {
++			vclock = ptp_vclock_register(ptp);
++			if (!vclock) {
++				mutex_unlock(&ptp->n_vclocks_mux);
++				goto out;
++			}
++
++			dev_info(dev, "new virtual clock ptp%d\n",
++				 vclock->clock->index);
++		}
++	}
++
++	/* Need to delete vclocks */
++	if (num < ptp->n_vclocks) {
++		i = ptp->n_vclocks - num;
++		device_for_each_child_reverse(dev, &i,
++					      unregister_vclock);
++	}
++
++	if (num == 0)
++		dev_info(dev, "only physical clock in use now\n");
++	else
++		dev_info(dev, "guarantee physical clock free running\n");
++
++	ptp->n_vclocks = num;
++	mutex_unlock(&ptp->n_vclocks_mux);
++
++	return count;
++out:
++	return err;
++}
++static DEVICE_ATTR_RW(n_vclocks);
++
+ static struct attribute *ptp_attrs[] = {
+ 	&dev_attr_clock_name.attr,
+ 
+@@ -162,6 +247,7 @@ static struct attribute *ptp_attrs[] = {
+ 	&dev_attr_fifo.attr,
+ 	&dev_attr_period.attr,
+ 	&dev_attr_pps_enable.attr,
++	&dev_attr_n_vclocks.attr,
+ 	NULL
+ };
+ 
+@@ -183,6 +269,9 @@ static umode_t ptp_is_attribute_visible(struct kobject *kobj,
+ 	} else if (attr == &dev_attr_pps_enable.attr) {
+ 		if (!info->pps)
+ 			mode = 0;
++	} else if (attr == &dev_attr_n_vclocks.attr) {
++		if (ptp->vclock_flag)
++			mode = 0;
+ 	}
+ 
+ 	return mode;
+diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+index 1d108d597f66..4b933dc1b81b 100644
+--- a/include/uapi/linux/ptp_clock.h
++++ b/include/uapi/linux/ptp_clock.h
+@@ -69,6 +69,11 @@
+  */
+ #define PTP_PEROUT_V1_VALID_FLAGS	(0)
+ 
++/*
++ * Max number of PTP virtual clocks per PTP physical clock
++ */
++#define PTP_MAX_VCLOCKS			20
++
+ /*
+  * struct ptp_clock_time - represents a time value
+  *
 -- 
 2.25.1
 
