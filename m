@@ -2,144 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00B0D3A7AFD
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 11:44:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63FEA3A7AC5
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 11:36:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231384AbhFOJq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 05:46:29 -0400
-Received: from mail-vi1eur05on2070.outbound.protection.outlook.com ([40.107.21.70]:25376
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231187AbhFOJq0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Jun 2021 05:46:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k1RRct21LlV5pK2SmykrqDILrliC9BhqycfV/l4xuJMwPwtpV170CQVEvcApAN6YUOpAvuYCXKZKnOksqg2HxSiisrBPJNRkew3zzx+4ND61B8p6dj8G+w1wGFWd5zLlRU7X/M+jUotclP96YGWMvfdvBrsREWc5GB08xtMeX1woAw0pzsUdRtb+SSaqUlD65y4TBw0TL3AYXvS3AdhgpAx6Z3ckfng24LRr84FLZ240EXxPSJkH73wteqyz2tPiKPCeH1FC+GOHLOKUMfze8OjCv24TekKEenKm9RlQfQWtAlBbTrNUyURcr5BM8P5H6eOZ1rhwp9HwKrMnQx6FFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DCWjFyxqUrLIsvR8UxOZfR0MZmWoEauRe6P70QlbyW8=;
- b=dnXXSSXMnEe/wJIoa81HPofxSeLPcE6bvwD0/3E0gKwCVnWbFcqL17kbNwYTB9sRLuefDzQSNFlIG+S4rLSVGN1yNts8tBhBqN2DNXfUmR8lWkCpKXlBWRntk3AhnhePrR/d2lc+ENClLx4SCfqiQgjCkEkwkt3KKXohxrqGdHDUGhPJ8PVJk5lfGhXgOMHxkBaGeQv3Dz5gXvpwbN1gnQC6vWJsSDEPjKHD5w0+Nj399v8A50eCz03PFr3jelg780j3ZVPHFKUpm+YxK9itzU2iOZkck9CehlmmH1v8FUWu3cnOZ9cvb/pHrqApHz0Omnz2/WLNJGFrh0UmCF+1yA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DCWjFyxqUrLIsvR8UxOZfR0MZmWoEauRe6P70QlbyW8=;
- b=MCJMeB/PFm/5zGoEQOQZv5eqCYlPOwsGDwEhmfY5c3tadTPAAztLyfRNID0PR6A+xJCqhoJ/QsAWZ7Bce1gnxmmeR+yUPtfF5tcGbt0A3tIDKTZmT6EiDIRO2xirmEp3/k2o/BvltaGbcaOSQPUL6qhLN39zpR2q8lVH7V2/YBQ=
-Received: from DB7PR04MB5017.eurprd04.prod.outlook.com (2603:10a6:10:1b::21)
- by DB7PR04MB4011.eurprd04.prod.outlook.com (2603:10a6:5:1d::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.22; Tue, 15 Jun
- 2021 09:44:19 +0000
-Received: from DB7PR04MB5017.eurprd04.prod.outlook.com
- ([fe80::605f:7d36:5e2d:ebdd]) by DB7PR04MB5017.eurprd04.prod.outlook.com
- ([fe80::605f:7d36:5e2d:ebdd%7]) with mapi id 15.20.4219.025; Tue, 15 Jun 2021
- 09:44:19 +0000
-From:   "Y.b. Lu" <yangbo.lu@nxp.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S231422AbhFOJij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 05:38:39 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:56350 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231187AbhFOJii (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 05:38:38 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7FF6B1A049D;
+        Tue, 15 Jun 2021 11:36:32 +0200 (CEST)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 37EBC1A0466;
+        Tue, 15 Jun 2021 11:36:26 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id AC0D040338;
+        Tue, 15 Jun 2021 17:36:17 +0800 (+08)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, mptcp@lists.linux.dev,
+        Richard Cochran <richardcochran@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: RE: [net-next, v2, 7/7] enetc: support PTP domain timestamp
- conversion
-Thread-Topic: [net-next, v2, 7/7] enetc: support PTP domain timestamp
- conversion
-Thread-Index: AQHXTfl8MjjmUYWreESzJP4N6mmsJar0KWqAgAADPwCACU1i0IAAMYOAgBdM6FA=
-Date:   Tue, 15 Jun 2021 09:44:19 +0000
-Message-ID: <DB7PR04MB5017DDA1D4A01D4629CEB670F8309@DB7PR04MB5017.eurprd04.prod.outlook.com>
-References: <20210521043619.44694-1-yangbo.lu@nxp.com>
- <20210521043619.44694-8-yangbo.lu@nxp.com>
- <20210525123711.GB27498@hoboy.vegasvil.org>
- <20210525124848.GC27498@hoboy.vegasvil.org>
- <DB7PR04MB5017E8CEA0DA148A4EB1EAF9F83F9@DB7PR04MB5017.eurprd04.prod.outlook.com>
- <20210531134919.GA7888@hoboy.vegasvil.org>
-In-Reply-To: <20210531134919.GA7888@hoboy.vegasvil.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5b635153-71f6-40ce-e28e-08d92fe225d1
-x-ms-traffictypediagnostic: DB7PR04MB4011:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB4011CF4499BF74634B02ECF3F8309@DB7PR04MB4011.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uMh6fPW3eVc+rJBnF0MEAdHSnEVWRXUfpm7iH38EfeU0vaBoQgZMwIYU2xni4Uu1mf5X4JPPbGdJkHUSvOWi7etQ9i+RPv8SZ2wOXpn4rui3DeO9DXw6f+YKI7XsAJg0VqCi1PvLj1pcAdeWJWXGCg2ugPJy3ROshnJRH3Wpjp3+lTLqvNGUnAZUN7YSUbR6RLP5acpYMrcZaYsJ8tmBEWNZD9un8URiAd/d/rMEwzKpyotGEi2OBNUv7Cd9UC7Z50v2SwG7yJAGHCxDmmxlKxyRlRyfonDl/jk8SFKYvM6nqDh7IdvvG2Yva35kiKfsNlbXgKuNX3zpaT88EGJrdGXBt+aM662bn00sqNIewABJcKoaQaUF10Y6pud0v5MAVQK9SjQKBW79xk00cvBEkUBx3ifOGExFKJKprdhlZk/ZQwnJjH6J8wLVS+qpkEoyAQyi2uH7UOUetUGd7zjAi3TMLD5aNnaLg13oeApZdwC5Ua4RwRGgiFcc/NsPuJEz7KA7rAAyjBwTNzHh6MaRnEIQl+aSrwW+MPnnZI6y70YLIfFq5Mfu3xoYX4OoJ4VnG+paSUm9A6BG3kMmlOQLyRdSQse8dZYE+2EkWRYOP3g=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5017.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(346002)(136003)(366004)(396003)(8936002)(316002)(478600001)(64756008)(186003)(52536014)(55016002)(122000001)(2906002)(4326008)(38100700002)(7696005)(83380400001)(86362001)(76116006)(66556008)(6916009)(8676002)(53546011)(71200400001)(6506007)(54906003)(66446008)(66476007)(66946007)(33656002)(9686003)(5660300002)(26005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?Yjl2Mll5S0FIUU5NRnBEbTJIQVpnT1BkblBkNS9RUTcxbXlraFFIKzF2OUJO?=
- =?gb2312?B?Y2hPN1k5TTlqRTQzdE9YbDVMdXZZUVE1d3d6MFlGeTFiamQyQmxYbzFQSnlj?=
- =?gb2312?B?YzlJUkpvbGFtbG9Qak1zVVFuM3VuM001UjVjQ3F0elQxOUJqWUhEZGNyWHZ6?=
- =?gb2312?B?SHZFZmFaNFNGb3VSNW0zZWpYTHpWSVhXSktJUktrV1FtUkdhTVhhb0NYMUVh?=
- =?gb2312?B?bWF5VnNMUTZscG9CSk9PMEcwWUtZK2FzMHFlMWZ4WFdWd01wVkEvcE9UNHo5?=
- =?gb2312?B?WEg5dDVnRXV6WVduZmp1amsvUUY1ZEtZSXROaEx3STlHWXhKS3FXWmhhU3hK?=
- =?gb2312?B?clVPcENnN21EWURWa1lQQjJaZjU2OVFZOU5FL0pRN3JxcUp6ODZ0a2ZFVnhw?=
- =?gb2312?B?cFIwbm1MZmJnQlJ5RHVHdG16bmFLMTdwNmpwV2dHY3hiQVRHbGVEdk1xKzBM?=
- =?gb2312?B?Q09kYXdzTG1wQ1pqbUhkalUrYktPNmtIN1k5VDVNVWZaN1REVFpqQWVyc0ph?=
- =?gb2312?B?N0xmYjFzb2FaWmF4NUxmM3pjQTF5d2VIdUd2TzRuaGlGVHBwNWc4Q2lraldS?=
- =?gb2312?B?dEVKb0NpdDdpbzY3aURLTy9vWU5kMjVaeWJ2dE45dDZuQVZNcUdPZ1puT20y?=
- =?gb2312?B?MHA1NVJsVGhGTGVSalVlaGFsc0xwRmhPYTAzWVFnSUdFQVc0WVpUc05Bc0Jy?=
- =?gb2312?B?YlV4cWJRZEZLVTBDUEoxanplanEyT3gwLzkvTWxaS3BQRER4K01mVjBNay9O?=
- =?gb2312?B?Z1dxRzg2Wkd6RjdjLy9jZ1JONW1zVXY2V2RPNFBxcDFQYWFCeGV6eG1zanZU?=
- =?gb2312?B?K2ZYQmJiVkU5WmtvZHZJT2VNa1JtakhoY3dUS284UU1OWGIvdFVFZ0RVVGp5?=
- =?gb2312?B?RnMyZzZNUExTV1ZFNlV3U0VVUUppMC80TG9yMGp6WFNiS0p3ay9EYllRM3F3?=
- =?gb2312?B?dDdObW82MmZxUEZudGo5VTJXbW1tdktDVzFabnU4S0syb2g2dlFIa2tWaWJ0?=
- =?gb2312?B?QTdQb2UyTzBYTVRNNmIwTUErcXhsOVhJNTVhS1NiNWhWcjRrOEp3NUwvNlR2?=
- =?gb2312?B?WEFPdUJzMzh6eTZoSlhhQ010c1N4Tmg4RHNtdjJYZ3pKUUc5K2RSaGNiVnIz?=
- =?gb2312?B?UEIwR01pTVhxZmhQRm8rVnd1RldhbkVBSzdSWUZIR1BITUNHa1J5OXgvMUpu?=
- =?gb2312?B?VzROR2NEdkhDb2Y5eUc5NWtNM0dlT2kvVG9ySnVOVGpEekdqd2tMZDdwRGFI?=
- =?gb2312?B?eHU3OElaUk5RR0xRM2lqZEJvbTZEMzc5b05WMEJCSHJ1NEVKL2IrZUJHd3Ax?=
- =?gb2312?B?T0hxYmxyRmgyb0Q3b1RiZHRQTGxEQzBDSndsa0xzYUhlUm95SVZ3czREbjgv?=
- =?gb2312?B?ekxUVHp5bUtmb3FKcnpTY1lpSmlpSXpkcld5QlNEQlhiR2NDTjdtNkdKRGZE?=
- =?gb2312?B?TnRvdC90NG1jNkpzL1dvYWFsdHFPSTdVOFZlK01sYW9PQXhYVkVLZEZCWGdj?=
- =?gb2312?B?RjFaTGt0Ukg0dHovVDdmZjMwdW9TUUNWVW1XMlo2ZzFIYm1FNkZEcjlIbGFZ?=
- =?gb2312?B?dFllV3A1a2M3Wmp1OGNTU0RWMDYxZ2x3ejhuMTBIb3RjZXlxRXJVL2s1Yzlo?=
- =?gb2312?B?Q2JzV29IUnB6VW9qaVdxR2xvUlgvd1lZWlBiNUpCcUFoUlBwbENxcDNuSXc3?=
- =?gb2312?B?d2xRemJWdVBnNG8wUHEyMjdmZDUybUNoZVk5ZnN6eHlGNlkvQ0t0MmlCM01B?=
- =?gb2312?Q?0Lhx3n6kOoHCKBs/KxkEV0Y+ZS37VZIIE6yx9FB?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5017.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b635153-71f6-40ce-e28e-08d92fe225d1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2021 09:44:19.2182
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 08xuBzlQfWaW1/MVMBPwIPQ5qH/KDDBLkHljV/lU11cZNfVrB1g0f7DPu4qPaKJHNT0nTGGnhKeYtnV3Fuej8Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4011
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
+        Sebastien Laveze <sebastien.laveze@nxp.com>
+Subject: [net-next, v3, 00/10] ptp: support virtual clocks and timestamping
+Date:   Tue, 15 Jun 2021 17:45:07 +0800
+Message-Id: <20210615094517.48752-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgUmljaGFyZCwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBSaWNo
-YXJkIENvY2hyYW4gPHJpY2hhcmRjb2NocmFuQGdtYWlsLmNvbT4NCj4gU2VudDogMjAyMcTqNdTC
-MzHI1SAyMTo0OQ0KPiBUbzogWS5iLiBMdSA8eWFuZ2JvLmx1QG54cC5jb20+DQo+IENjOiBuZXRk
-ZXZAdmdlci5rZXJuZWwub3JnOyBEYXZpZCBTIC4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0
-PjsgQ2xhdWRpdQ0KPiBNYW5vaWwgPGNsYXVkaXUubWFub2lsQG54cC5jb20+OyBKYWt1YiBLaWNp
-bnNraSA8a3ViYUBrZXJuZWwub3JnPg0KPiBTdWJqZWN0OiBSZTogW25ldC1uZXh0LCB2MiwgNy83
-XSBlbmV0Yzogc3VwcG9ydCBQVFAgZG9tYWluIHRpbWVzdGFtcA0KPiBjb252ZXJzaW9uDQo+IA0K
-PiBPbiBNb24sIE1heSAzMSwgMjAyMSBhdCAxMToyNjoxOEFNICswMDAwLCBZLmIuIEx1IHdyb3Rl
-Og0KPiA+IFNvLCB0aGUgdGltZXN0YW1wIGNvbnZlcnNpb24gY291bGQgYmUgaW4gc2tidWZmLmMu
-DQo+ID4gVGhhdCdzIGdvb2QgdG8gZG8gdGhpcy4gQnV0IHRoZXJlIGFyZSBxdWl0ZSBhIGxvdCBv
-ZiBkcml2ZXJzIHVzaW5nDQo+IHRpbWVzdGFtcGluZy4NCj4gPiBTaG91bGQgd2UgY29udmVydCBh
-bGwgZHJpdmVycyB0byB1c2UgdGhlIGhlbHBlciwgb3IgbGV0IG90aGVycyBkbyB0aGlzIHdoZW4N
-Cj4gdGhleSBuZWVkPw0KPiANCj4gSSB0aGluayB3ZSBzaG91bGQgY29udmVydCB0aGVtIGFsbC4g
-IFllcywgaXQgaXMgd29yaywgYnV0IEkgd2lsbCBoZWxwLg0KPiBJIHJlYWxseSBsaWtlIHRoZSB2
-Y2xvY2sgaWRlYSwgZXNwZWNpYWxseSBiZWNhdXNlIGl0IHdpbGwgd29yayB3aXRoIGV2ZXJ5IGNs
-b2NrLg0KPiBBbHNvLCBhZGRpbmcgdGhlIGhlbHBlciB3aWxsIGJlIGEgbmljZSByZWZhY3Rvcmlu
-ZyBhbGwgYnkgaXRzZWxmLg0KDQpJdCBzZWVtcyBzb2NrZXQuYyBfX3NvY2tfcmVjdl90aW1lc3Rh
-bXAgbWF5IGJlIHRoZSBiZXR0ZXIgcGxhY2UuDQpIVyB0aW1lc3RhbXBzIGFyZSBoYW5kbGVkIGlu
-IGl0IGJlZm9yZSBnb2luZyB0byB1c2VyIHNwYWNlLg0KSSBzZW50IG91dCBhIHYzIHBhdGNoIGZv
-ciB5b3VyIHJldmlld2luZy4gTWF5YmUgd2UgZG9uoa90IGhhdmUgdG8gY29udmVydCBhbGwgZHJp
-dmVycyB0byBhIGhlbHBlci4NClRoYW5rIHlvdSB2ZXJ5IG11Y2guDQoNCj4gDQo+IFRoYW5rcywN
-Cj4gUmljaGFyZA0K
+Current PTP driver exposes one PTP device to user which binds network
+interface/interfaces to provide timestamping. Actually we have a way
+utilizing timecounter/cyclecounter to virtualize any number of PTP
+clocks based on a same free running physical clock for using.
+The purpose of having multiple PTP virtual clocks is for user space
+to directly/easily use them for multiple domains synchronization.
+
+user
+space:     ^                                  ^
+           | SO_TIMESTAMPING new flag:        | Packets with
+           | SOF_TIMESTAMPING_BIND_PHC        | TX/RX HW timestamps
+           v                                  v
+         +--------------------------------------------+
+sock:    |     sock (new member sk_bind_phc)          |
+         +--------------------------------------------+
+           ^                                  ^
+           | ethtool_op_get_phc_vclocks       | Convert HW timestamps
+           |                                  | to sk_bind_phc
+           v                                  v
+         +--------------+--------------+--------------+
+vclock:  | ptp1         | ptp2         | ptpN         |
+         +--------------+--------------+--------------+
+pclock:  |             ptp0 free running              |
+         +--------------------------------------------+
+
+The block diagram may explain how it works. Besides the PTP virtual
+clocks, the packet HW timestamp converting to the bound PHC is also
+done in sock driver. For user space, PTP virtual clocks can be
+created via sysfs, and extended SO_TIMESTAMPING API (new flag
+SOF_TIMESTAMPING_BIND_PHC) can be used to bind one PTP virtual clock
+for timestamping.
+
+The test tool timestamping.c (together with linuxptp phc_ctl tool) can
+be used to verify:
+
+  # echo 4 > /sys/class/ptp/ptp0/n_vclocks
+  [  129.399472] ptp ptp0: new virtual clock ptp2
+  [  129.404234] ptp ptp0: new virtual clock ptp3
+  [  129.409532] ptp ptp0: new virtual clock ptp4
+  [  129.413942] ptp ptp0: new virtual clock ptp5
+  [  129.418257] ptp ptp0: guarantee physical clock free running
+  #
+  # phc_ctl /dev/ptp2 set 10000
+  # phc_ctl /dev/ptp3 set 20000
+  #
+  # timestamping eno0 2 SOF_TIMESTAMPING_TX_HARDWARE SOF_TIMESTAMPING_RAW_HARDWARE SOF_TIMESTAMPING_BIND_PHC
+  # timestamping eno0 2 SOF_TIMESTAMPING_RX_HARDWARE SOF_TIMESTAMPING_RAW_HARDWARE SOF_TIMESTAMPING_BIND_PHC
+  # timestamping eno0 3 SOF_TIMESTAMPING_TX_HARDWARE SOF_TIMESTAMPING_RAW_HARDWARE SOF_TIMESTAMPING_BIND_PHC
+  # timestamping eno0 3 SOF_TIMESTAMPING_RX_HARDWARE SOF_TIMESTAMPING_RAW_HARDWARE SOF_TIMESTAMPING_BIND_PHC
+
+Changes for v2:
+	- Converted to num_vclocks for creating virtual clocks.
+	- Guranteed physical clock free running when using virtual
+	  clocks.
+	- Fixed build warning.
+	- Updated copyright.
+Changes for v3:
+	- Supported PTP virtual clock in default in PTP driver.
+	- Protected concurrency of ptp->num_vclocks accessing.
+	- Supported PHC vclocks query via ethtool.
+	- Extended SO_TIMESTAMPING API for PHC binding.
+	- Converted HW timestamps to PHC bound, instead of previous
+	  binding domain value to PHC idea.
+	- Other minor fixes.
+
+Yangbo Lu (10):
+  ptp: add ptp virtual clock driver framework
+  ptp: support ptp physical/virtual clocks conversion
+  ptp: track available ptp vclocks information
+  ptp: add kernel API ptp_get_vclocks_index()
+  ethtool: add a new command for getting PHC virtual clocks
+  ptp: add kernel API ptp_convert_timestamp()
+  net: sock: extend SO_TIMESTAMPING for PHC binding
+  net: socket: support hardware timestamp conversion to PHC bound
+  selftests/net: timestamping: support binding PHC
+  MAINTAINERS: add entry for PTP virtual clock driver
+
+ Documentation/ABI/testing/sysfs-ptp        |  13 ++
+ MAINTAINERS                                |   7 +
+ drivers/ptp/Makefile                       |   2 +-
+ drivers/ptp/ptp_clock.c                    |  27 ++-
+ drivers/ptp/ptp_private.h                  |  34 ++++
+ drivers/ptp/ptp_sysfs.c                    |  95 +++++++++
+ drivers/ptp/ptp_vclock.c                   | 212 +++++++++++++++++++++
+ include/linux/ethtool.h                    |   2 +
+ include/linux/ptp_clock_kernel.h           |  29 ++-
+ include/net/sock.h                         |   8 +-
+ include/uapi/linux/ethtool.h               |  14 ++
+ include/uapi/linux/ethtool_netlink.h       |  15 ++
+ include/uapi/linux/net_tstamp.h            |  17 +-
+ include/uapi/linux/ptp_clock.h             |   5 +
+ net/core/sock.c                            |  65 ++++++-
+ net/ethtool/Makefile                       |   2 +-
+ net/ethtool/common.c                       |  24 +++
+ net/ethtool/common.h                       |   2 +
+ net/ethtool/ioctl.c                        |  27 +++
+ net/ethtool/netlink.c                      |  10 +
+ net/ethtool/netlink.h                      |   2 +
+ net/ethtool/phc_vclocks.c                  |  86 +++++++++
+ net/mptcp/sockopt.c                        |  10 +-
+ net/socket.c                               |  19 +-
+ tools/testing/selftests/net/timestamping.c |  62 ++++--
+ 25 files changed, 750 insertions(+), 39 deletions(-)
+ create mode 100644 drivers/ptp/ptp_vclock.c
+ create mode 100644 net/ethtool/phc_vclocks.c
+
+
+base-commit: 89212e160b81e778f829b89743570665810e3b13
+-- 
+2.25.1
+
