@@ -2,118 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 218743A7BB4
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 12:24:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFE833A7C08
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 12:34:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231522AbhFOK0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 06:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231220AbhFOK0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 06:26:49 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5615C061574;
-        Tue, 15 Jun 2021 03:24:44 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id r7so35944615edv.12;
-        Tue, 15 Jun 2021 03:24:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TjaB6i8KcUeUiC7lYhVxV/Olnmn95eEJM+cZhPD4C0Y=;
-        b=cbnPlPiC0Rx83GFLUflqeNHgYzJEAm3xXMUb9Wz7NhfX7rwqEx4EEDIvtGaC3m3Hv0
-         UNqsJP+LBT+8gm2Uq3aUB/Pfstb0PpO0i0NR7uI9cUIYMFsj30DPnFsm3sIhcQ4Guc4e
-         H/T5WOaS/3tyL3daOxiCTLvL2A8Ujd6wp7p9YSXoIo5PIqKL/QpSiOUG8t7D+THq0eKp
-         j14HXAzqEchVot/+2x0Eyj9WFhZIzyweTJkm8KCdSYX0L+Uc9CibfmdOQNYDWn50fHzg
-         tD4QSWEFpOE3iKzwWIVVuTrgEpNtg6bDnmTt/09AI96/244D6dzx8kEsHn7ZU+m4NKhC
-         Fy4w==
+        id S231705AbhFOKgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 06:36:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49510 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231422AbhFOKgR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 06:36:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623753252;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PM/+4yLdlWLHqPG09fjdGm9pa7Y05Js4VwOnFs9aPQ4=;
+        b=YxgCSLn5cQL0bTNQTZlFWtgZwigcxr1rpbEcquYDYbtRV5QIjGPDo4u+8tLvekc4sOawi6
+        v6NsEedvPVuUfWGUm9hGQVrMEH66Wsv/aoVxs3Nxw+PoK65ngOhXu27pJ5JHU9Ww2ykrHT
+        fhpWE3MkHavnuQH6KzeWaVZLz0OG3iE=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-539-wr7bgct-NNyI9yvnZlLIvA-1; Tue, 15 Jun 2021 06:34:11 -0400
+X-MC-Unique: wr7bgct-NNyI9yvnZlLIvA-1
+Received: by mail-io1-f70.google.com with SMTP id e23-20020a6bf1170000b02904d7ff72e203so1054921iog.0
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 03:34:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TjaB6i8KcUeUiC7lYhVxV/Olnmn95eEJM+cZhPD4C0Y=;
-        b=ie3Oo16/J+x/YlKUTpT2cx1d94us+xY7RbMT3+Alj6jWdIJR9qZ5nsgsFFa4vnU3uX
-         jYApaLvwA9D5ScM+7fRClwtkCRATaJu7mgSeUhoiOguK2UMpeBsIFWkfUi6qbXSuPZTW
-         JKmWBDjdAidelYOKEeovQczW7CMR2ym9vPOniu3EiEG3s5lgSe5Yp9HtVebYUyCgjdeW
-         pSnHPR+NHYU11AOWGfLQWM6HXvQUZXDCaDVLbAShVbwUuByt4Gd6BwdOXDSUYazQjMSO
-         nEqW482CkpYE/gqlzS+myA2GCfRfCUmTGqgqcw2y8W6Jqr35VhL150IqELTH6CagYBq4
-         /qAw==
-X-Gm-Message-State: AOAM533CuUFW3x9XI/3DGqX43KIhnBTJd5CeE1yuVvAee+q8rZhhXgGH
-        pU1YG1DFJsxJYdMxnxeHCs+dFy/oyOfbP8eQhnQ=
-X-Google-Smtp-Source: ABdhPJzC5dkoL0r1Ed2pK8uwvcgbsL7Ji/Wrjdq+kwtKyvNu3acf7xF77SLRv8n4lhbeiD0Wey0OcT8+DmobYBCsd3I=
-X-Received: by 2002:aa7:ce86:: with SMTP id y6mr22324805edv.309.1623752683473;
- Tue, 15 Jun 2021 03:24:43 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=PM/+4yLdlWLHqPG09fjdGm9pa7Y05Js4VwOnFs9aPQ4=;
+        b=HoHtlijgcl47mdrhd3WehKVpj9LPy79NQwBESAdoc7GRPdH/c2nHSQMSRMUBPPKz0D
+         voWsGUjTYCXgJtms9TNdHZjLqNwq3Z03n/uoCy1gCOyBpNIeY4OQCMezR7y7bb1j11yn
+         cv09d9DlOTdT6YC48eCAXZBW3QzJv2aN+PppsKodlxaZi32gn4SE8kv24HS41x2g3Qvz
+         QUK4UwlQH6Rt7t3C8JC9j09+rgoi81lGEUaT8l1mpiO/rUFaL7nPDxdkbdhNMFtGV4OO
+         dKNxyND+SX/2rsAkQXSdFutQOau2Tp91X1LKub2dBK0HpWK6yjhg5fvKBuYmyyqFir+d
+         lvLA==
+X-Gm-Message-State: AOAM530N9Bfk/OcbqebDlOXCwS8bl7lbU/gV/zXbrT33ET99shxa+1m9
+        Y8YX/pD+8wnRS50QRTIQoo9RncAhJVSon4AmyaqZd93jHwNwGzRyVd8+R/z2v02H6D8Vnj0+iGp
+        ioH7hxit7ei+cPu3u1vJJz4Ej+QREIBbm
+X-Received: by 2002:a05:6e02:1d03:: with SMTP id i3mr17490034ila.35.1623753250811;
+        Tue, 15 Jun 2021 03:34:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzIbZZMZvLhVoy6oqXLmcIkSFM1/uIJE1lXkLsBOdrMFKWD8fcyLODkbNBhf1jxUjS1tpxDf1h9lzfvpzvmxN0=
+X-Received: by 2002:a05:6e02:1d03:: with SMTP id i3mr17490025ila.35.1623753250658;
+ Tue, 15 Jun 2021 03:34:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
- <YMhY9NHf1itQyup7@kroah.com> <CAD-N9QVfDQQo0rRiaa6Cx-xO80yox9hNzK91_UVj0KNgkhpvnQ@mail.gmail.com>
- <YMh2b0LvT9H7SuNC@kroah.com> <CAD-N9QV+GMURatPx4qJT2nMsKHQhj+BXC9C-ZyQed3pN8a9YUA@mail.gmail.com>
-In-Reply-To: <CAD-N9QV+GMURatPx4qJT2nMsKHQhj+BXC9C-ZyQed3pN8a9YUA@mail.gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Tue, 15 Jun 2021 18:24:17 +0800
-Message-ID: <CAD-N9QW6LhRO+D-rr4xCCuq+m=jtD7LS_+GDVs9DkHe5paeSOg@mail.gmail.com>
-Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
-To:     Greg KH <greg@kroah.com>
-Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pavel Skripkin <paskripkin@gmail.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Tue, 15 Jun 2021 12:34:00 +0200
+Message-ID: <CACT4oueyNoQAVW1FDcS_aus9sUqNvJhj87e_kUEkzz3azm2+pQ@mail.gmail.com>
+Subject: Correct interpretation of VF link-state=auto
+To:     netdev@vger.kernel.org
+Cc:     Ivan Vecera <ivecera@redhat.com>,
+        Edward Harold Cree <ecree@xilinx.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Pablo Cascon <pabloc@xilinx.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 6:10 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
-> On Tue, Jun 15, 2021 at 5:44 PM Greg KH <greg@kroah.com> wrote:
-> >
-> > On Tue, Jun 15, 2021 at 03:56:32PM +0800, Dongliang Mu wrote:
-> > > On Tue, Jun 15, 2021 at 3:38 PM Greg KH <greg@kroah.com> wrote:
-> > > >
-> > > > On Mon, Jun 14, 2021 at 11:37:12PM +0800, Dongliang Mu wrote:
-> > > > > The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> > > > > fails to clean up the work scheduled in smsc75xx_reset->
-> > > > > smsc75xx_set_multicast, which leads to use-after-free if the work is
-> > > > > scheduled to start after the deallocation. In addition, this patch also
-> > > > > removes one dangling pointer - dev->data[0].
-> > > > >
-> > > > > This patch calls cancel_work_sync to cancel the schedule work and set
-> > > > > the dangling pointer to NULL.
-> > > > >
-> > > > > Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> > > > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > > > ---
-> > > > >  drivers/net/usb/smsc75xx.c | 3 +++
-> > > > >  1 file changed, 3 insertions(+)
-> > > > >
-> > > > > diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-> > > > > index b286993da67c..f81740fcc8d5 100644
-> > > > > --- a/drivers/net/usb/smsc75xx.c
-> > > > > +++ b/drivers/net/usb/smsc75xx.c
-> > > > > @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
-> > > > >       return 0;
-> > > > >
-> > > > >  err:
-> > > > > +     cancel_work_sync(&pdata->set_multicast);
-> > > > >       kfree(pdata);
-> > > > > +     pdata = NULL;
-> > > >
-> > > > Why do you have to set pdata to NULL afterward?
-> > > >
-> > >
-> > > It does not have to. pdata will be useless when the function exits. I
-> > > just referred to the implementation of smsc75xx_unbind.
-> >
-> > It's wrong there too :)
->
-> /: I will fix such two sites in the v2 patch.
+Hi,
 
-Hi gregkh,
+Regarding link-state attribute for a VF, 'man ip-link' says:
+state auto|enable|disable - set the virtual link state as seen by the
+specified VF. Setting to auto means a reflection of the PF link state,
+enable lets the VF to communicate with other VFs on this host even if
+the PF link state is down, disable causes the HW to drop any packets
+sent by the VF.
 
-If the schedule_work is not invoked, can I call
-``cancel_work_sync(&pdata->set_multicast)''? If not, is there any
-method to verify if the schedule_work is already called?
+However, I've seen that different interpretations are made about that
+explanation, especially about "auto" configuration. It is not clear if
+it should follow PF "physical link status" or PF "administrative link
+status". With the latter, `ip set PF down` would put the VF down too,
+but with the former you'd have to disconnect the physical port.
 
-Best regards,
-Dongliang Mu
+Thanks
+--=20
+=C3=8D=C3=B1igo Huguet
+
