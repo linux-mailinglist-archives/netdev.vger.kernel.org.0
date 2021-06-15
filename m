@@ -2,63 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C44B3A7B5B
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 12:03:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 247633A7B61
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 12:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231403AbhFOKFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 06:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
+        id S231424AbhFOKGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 06:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231289AbhFOKFf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 06:05:35 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26E8C061574
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 03:03:30 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id 66-20020a9d02c80000b02903615edf7c1aso13692782otl.13
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 03:03:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=2Gi/ft3KIkQADJ60aMFtPnho1zv2gKbmW3IR7CzFBZ4=;
-        b=WhCy09dgkGTrQl6Ds/m38iqOy0PB/jipg16Z54fm5JhtksiL9voE947dX1AHFQYrz1
-         Ihe5CVUcJZY4ah+DeOyTmcPCV0Y6blvxmiJamyrugX0CR/xX1eJWC++k/bKgmumTaX7l
-         ROEfHaFkn10lUFst74pX0E7R4qGz4Hd8YSLT1J/agkcKnvnXnUqxrToaL4aBsbF8Wcey
-         nUnsi1ggWDMMLy7pxlH2sryFOR7hqrPZZYgwpE+yl+UdZ+I5lF4/3k2x2xMKDPyKBSp1
-         VhPuLpb5uCfk5m/RhjaOB49goymiYEG3VBI41XIHPGhwsWMzgRpyvZFmA2j0EpVRLJ35
-         4iuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=2Gi/ft3KIkQADJ60aMFtPnho1zv2gKbmW3IR7CzFBZ4=;
-        b=qQ1SPX7FBM1L33AnIqh5npdKPTk4Inm7oM0dLOuDr7ACvfubxAguMhvWZuK77cZ5We
-         4MPWQun3HPgt5QdE/fX50fSlIB5TjUb2ST+86FqBMzX2OPTtQp0gHgiQfRQkPJRsw2Ni
-         qnHtnRXBwr0asg3JwrwGyjxZRPo94i6hNw5sKRX7fMjc5IuibjLD4IvQ15nX59EN2xZG
-         H4mCaL6DOowDa/wp0lCk/fO9AztB5wktQChiEINH9AujANpZ4lvSPPa+ePIiQFKp/oVI
-         +48jnAx2uJvbkdfweBFj/abbY1AnB3BFe/PjrU36z1kiGfFCv5xzoUS/1i/WQ52oBb6B
-         BvIA==
-X-Gm-Message-State: AOAM530iTSFFRx/p3yVwxdOCr1Jwd7CYeNhY0MsvFNFfbbDtw0BbeG+1
-        1g22u/FohDEgCmEDwCSPQo8uPhWLBwtOnpn6eThJjzpQ
-X-Google-Smtp-Source: ABdhPJwFGX/lUGnDe9PfLuueG8Hh2v/Pt7flTRLx7N9FrApfq6Y6GsIeXBz/UNzyxF1hqeZ/CbJIzm/dtn5oBhuUmls=
-X-Received: by 2002:a05:6830:154b:: with SMTP id l11mr17560954otp.66.1623751409991;
- Tue, 15 Jun 2021 03:03:29 -0700 (PDT)
+        with ESMTP id S231308AbhFOKGj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 06:06:39 -0400
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB5FC061574
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 03:04:34 -0700 (PDT)
+Received: from miraculix.mork.no ([IPv6:2a02:2121:346:c551:fc26:65ff:feae:d816])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 15FA4Mct021729
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Tue, 15 Jun 2021 12:04:23 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1623751463; bh=Q4K+AYa9BL6Q7woN2FCseiWtJUiKj/PFCm8APfPBwQo=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=HIaWC4VdA2GvQwLZ4Z9fiC2iWSKYzw9ZAwzA0JSOyLC8vnEcvCEZ80eqC/ckrFxzP
+         bb8Yt6oQ5YAz/Afs+w1mphiSdwGjQ/CXd7cjGk+VTE/N4rP93Ya8jsZiumjmR2uSlj
+         4ygHnmlfi7XyvijhpZ4nbfkuN+XHVGKnPDTW4DRc=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
+        (envelope-from <bjorn@mork.no>)
+        id 1lt5vi-000YwU-4T; Tue, 15 Jun 2021 12:04:22 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Kristian Evensen <kristian.evensen@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        subashab@codeaurora.org
+Subject: Re: [PATCH net] qmi_wwan: Clone the skb when in pass-through mode
+Organization: m
+References: <20210614141849.3587683-1-kristian.evensen@gmail.com>
+        <8735tky064.fsf@miraculix.mork.no>
+        <20210614130530.7a422f27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAKfDRXgQLvTpeowOe=17xLqYbVRcem9N2anJRSjMcQm6=OnH1A@mail.gmail.com>
+Date:   Tue, 15 Jun 2021 12:04:21 +0200
+In-Reply-To: <CAKfDRXgQLvTpeowOe=17xLqYbVRcem9N2anJRSjMcQm6=OnH1A@mail.gmail.com>
+        (Kristian Evensen's message of "Tue, 15 Jun 2021 11:03:24 +0200")
+Message-ID: <877divwije.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20210615100151.317004-1-kristian.evensen@gmail.com>
-In-Reply-To: <20210615100151.317004-1-kristian.evensen@gmail.com>
-From:   Kristian Evensen <kristian.evensen@gmail.com>
-Date:   Tue, 15 Jun 2021 12:03:18 +0200
-Message-ID: <CAKfDRXg-zy5Qnm1khRAWe00W=9-QmzVb+c2R7P1LCrp-hXvfFw@mail.gmail.com>
-Subject: Re: [PATCH] qmi_wwan: Do not call netif_rx from rx_fixup
-To:     Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.4 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+Kristian Evensen <kristian.evensen@gmail.com> writes:
 
-I forgot to set the correct subject prefix. I intended for this patch
-to target "net". Sorry about that.
+>> It does look pretty strange that qmimux_rx_fixup() copies out all
+>> packets and receives them, and then let's usbnet to process the
+>> multi-frame skb without even fulling off the qmimux_hdr. I'm probably
+>> missing something.. otherwise sth like FLAG_MULTI_PACKET may be in
+>> order?
+>
+> qmimux_rx_fixup() is different from what we are discussing here.
+> qmimux_rx_fixup() is used when the de-aggregation is performed by the
+> qmi_wwan driver, while the passthrough flag is set when the
+> de-aggregation is done by the rmnet driver. The logic in
+> qmimux_rx_fixup() is very similar to how the other usbnet mini-drivers
+> handles de-aggregation and also how de-aggregation is handled by for
+> example rmnet. I have no opinion on if the logic makes sens or not,
+> but at least the origin can be traced :)
 
-Kristian
+Yes, FLAG_MULTI_PACKET is only applicable to the qmimux case. But I
+think Jakub is right that we should set it anyway. There is no way to
+return from rx_fixup without an error or further processing of the skb,
+unless we set FLAG_MULTI_PACKET.  Or invent something else.  But setting
+that flag and then add the necessary usnet_sb_return call doesn't look
+too bad?
+
+
+
+Bj=C3=B8rn
