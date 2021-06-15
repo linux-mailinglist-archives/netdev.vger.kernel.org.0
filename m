@@ -2,95 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 294FB3A77D1
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 09:17:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EB583A77DC
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 09:20:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230144AbhFOHTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 03:19:47 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:48926 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbhFOHTm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 03:19:42 -0400
-Received: from mail-ej1-f70.google.com ([209.85.218.70])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lt3KL-0004Mh-MQ
-        for netdev@vger.kernel.org; Tue, 15 Jun 2021 07:17:37 +0000
-Received: by mail-ej1-f70.google.com with SMTP id n19-20020a1709067253b029043b446e4a03so4101612ejk.23
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 00:17:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=e/PGUSSpRwJWtOH4gYs4F2atjkd8/9rJ+b2AcY5oXpY=;
-        b=FO7CadB3ZlzuC7oVVHg/9K1qfEf1dt+JHXHDg1nwBlIEYscn6bThOuQvqE0L5xIk4w
-         WQ5yknexPiyJjNDEo6+4znIdKsp0hb+h3RKLGeixgaxrG71OyZModVVkaNEcKhFql96W
-         aoM6h0fXNJuoe92wut5dkLlnvMzG3406CjvPi1fBqumZBk9uFbX7TyFgKhIkzeKv6Reh
-         ybRiTqXTIPtn/BfIYs5dnyd9eiusEopj6oaNQVw4f6jlAfKFd6IiuCBugbooBGOJW9AN
-         Z/rjJhArvx15F1fFY4mZaTzq/fAFyzc9q0fUCVr8RjbrRvwnoXAm4BznTpP7SAumv3FT
-         r+zg==
-X-Gm-Message-State: AOAM532hy6VsQFwL2peYFRqJ9Q6NO7oyhX6rQk+9U9eSdKIZ4RlI2C2Z
-        iFle4eQ49V9P2q7sVikx+c5D9D8RCFaUTuKtrpPbo/09D2k9Mm9fpnfQ5PTunvG//McNWku3V4H
-        odVOkT5RSsC1Lr4Y/rkGQ1UwU2F2VfYTjdA==
-X-Received: by 2002:aa7:c983:: with SMTP id c3mr21129857edt.58.1623741457510;
-        Tue, 15 Jun 2021 00:17:37 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy0PXWMekssI+Wot2EYeDEnefKlmFz9PWFpU7VvbROKRhq9a7DccSGxXH8ArVcWKBS7xmM1lQ==
-X-Received: by 2002:aa7:c983:: with SMTP id c3mr21129853edt.58.1623741457398;
-        Tue, 15 Jun 2021 00:17:37 -0700 (PDT)
-Received: from [192.168.1.115] (xdsl-188-155-177-222.adslplus.ch. [188.155.177.222])
-        by smtp.gmail.com with ESMTPSA id f23sm9279588ejb.101.2021.06.15.00.17.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Jun 2021 00:17:37 -0700 (PDT)
-Subject: Re: [PATCH] NFC: nxp-nci: remove unnecessary labels
-To:     samirweng1979 <samirweng1979@163.com>, charles.gorand@effinnov.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-References: <20210615015256.13944-1-samirweng1979@163.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <6129efc3-fe4f-8b09-22cd-3d17354e1c7a@canonical.com>
-Date:   Tue, 15 Jun 2021 09:17:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S230184AbhFOHWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 03:22:31 -0400
+Received: from mailout2.secunet.com ([62.96.220.49]:44790 "EHLO
+        mailout2.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229488AbhFOHW0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 03:22:26 -0400
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout2.secunet.com (Postfix) with ESMTP id 247BF80004A;
+        Tue, 15 Jun 2021 09:20:19 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 15 Jun 2021 09:20:18 +0200
+Received: from moon.secunet.de (172.18.26.122) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 15 Jun
+ 2021 09:20:18 +0200
+Date:   Tue, 15 Jun 2021 09:20:08 +0200
+From:   Antony Antony <antony.antony@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Antony Antony <antony.antony@secunet.com>
+Subject: [PATCH v2] xfrm: delete xfrm4_output_finish xfrm6_output_finish
+ declarations
+Message-ID: <ff67f5acbb4060a3c89953687488e96cb40fa862.1623741174.git.antony.antony@secunet.com>
+Reply-To: <antony.antony@secunet.com>
+References: <d65237e307458f84e33687bff5be9fd93d6b375b.1623332566.git.antony.antony@secunet.com>
 MIME-Version: 1.0
-In-Reply-To: <20210615015256.13944-1-samirweng1979@163.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <d65237e307458f84e33687bff5be9fd93d6b375b.1623332566.git.antony.antony@secunet.com>
+Organization: secunet
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/06/2021 03:52, samirweng1979 wrote:
-> From: wengjianfeng <wengjianfeng@yulong.com>
-> 
-> Some labels are meaningless, so we delete them and use the
-> return statement instead of the goto statement.
-> 
-> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
-> ---
->  drivers/nfc/nxp-nci/core.c | 39 +++++++++++++--------------------------
->  1 file changed, 13 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/nfc/nxp-nci/core.c b/drivers/nfc/nxp-nci/core.c
-> index a0ce95a..2b0c723 100644
-> --- a/drivers/nfc/nxp-nci/core.c
-> +++ b/drivers/nfc/nxp-nci/core.c
-> @@ -70,21 +70,16 @@ static int nxp_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
->  	struct nxp_nci_info *info = nci_get_drvdata(ndev);
->  	int r;
->  
-> -	if (!info->phy_ops->write) {
-> -		r = -ENOTSUPP;
-> -		goto send_exit;
-> -	}
-> +	if (!info->phy_ops->write)
-> +		return -EOPNOTSUPP;
+These function declarations are not needed any more.
+The definitions were deleted.
 
-You changed ENOTSUPP into EOPNOTSUPP, which unrelated to the patch. Make
-it a separate patch with its own explanation.
+Fixes: 2ab6096db2f1 ("xfrm: remove output_finish indirection from xfrm_state_afinfo")
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
+---
+ v1->v2 rebase to ipsec-next
 
+ include/net/xfrm.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index c8890da00b8a..3a01570410ab 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1579,7 +1579,6 @@ static inline int xfrm4_rcv_spi(struct sk_buff *skb, int nexthdr, __be32 spi)
+ }
+
+ int xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb);
+-int xfrm4_output_finish(struct sock *sk, struct sk_buff *skb);
+ int xfrm4_protocol_register(struct xfrm4_protocol *handler, unsigned char protocol);
+ int xfrm4_protocol_deregister(struct xfrm4_protocol *handler, unsigned char protocol);
+ int xfrm4_tunnel_register(struct xfrm_tunnel *handler, unsigned short family);
+@@ -1603,7 +1602,6 @@ int xfrm6_tunnel_deregister(struct xfrm6_tunnel *handler, unsigned short family)
+ __be32 xfrm6_tunnel_alloc_spi(struct net *net, xfrm_address_t *saddr);
+ __be32 xfrm6_tunnel_spi_lookup(struct net *net, const xfrm_address_t *saddr);
+ int xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb);
+-int xfrm6_output_finish(struct sock *sk, struct sk_buff *skb);
+
+ #ifdef CONFIG_XFRM
+ void xfrm6_local_rxpmtu(struct sk_buff *skb, u32 mtu);
+--
+2.20.1
+
