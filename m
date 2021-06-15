@@ -2,152 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8FF43A767F
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 07:31:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFF8C3A7682
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 07:32:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbhFOFdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 01:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbhFOFdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 01:33:42 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8412C061574;
-        Mon, 14 Jun 2021 22:31:38 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id p184so18711589yba.11;
-        Mon, 14 Jun 2021 22:31:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vCAAD8dFLhLIw0l9zI/dZbevKEGS7pIIm9uUJPvGPk0=;
-        b=dBlpxsDlLDJjLMrqPUHF93B4x6QQQ/oX0EifiAvaSaxDAJTIV9eZcD4oggWbKt6UC7
-         Z4ISz1rDqxdKRv42dgMJyM1QYHSeZfHPyCNOqFQFWGam8P4v3TzjLN1Mz06pjEfFm69q
-         4nTXYt+ifp1XuTLdd4+Qtn9OLX89MRQeP0utiwJSy5Abmr7nnnOpVWHTS6dazoWqYR00
-         p+bAWScvgatePOXIv+WARuxiZQP3oFj3smzkSNb8GwAg1TIZnrCJQbwYmGTOrWUqQo8w
-         3GF68vX+KW3YDoCcRJNN4xt5o2WC0HkRoNztg5qRpbC92TVCMLDNxvgIBPodkvLoHLk3
-         eJ9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vCAAD8dFLhLIw0l9zI/dZbevKEGS7pIIm9uUJPvGPk0=;
-        b=Qx+d1syqJKQyOS9dpdr5B0znU5oKshOpXJfkU2P4yaJ7UXmrUH8QjVvse2lKL/YzyL
-         PxOfkGVWc3gswpY+pyzVaIoMw9eInlEiRafrKAyMltMzZhNov4/txba/gw/trvGgI+WA
-         CyELRhtbOy+PFviEXcRGUrI+eBmG7ym8z7ZVGlGk9oG53Fufv+OoPrnTFt9+zoC/6b3m
-         LxgpmEa/2klnUnf7lA3oLOqweQF/Ewb4deU5HJk5kFPz8goEEJ3H+8c//Ua2vJKiMOfS
-         Nv/eGyD/7vb5bkU2Zk0ghx8C9wCNDej7LfVYXm2LTTmkJI0DmsB/eyNuDmtW2T+gjk9w
-         GgaQ==
-X-Gm-Message-State: AOAM533eHgOKgiEmypGwNBkEkv82j+upgdrCwP8Co5zYdghUhX9Kbbr2
-        JkD1UdgjmewjwNjZX8W2t6D09eDHVPsDzztTyt4=
-X-Google-Smtp-Source: ABdhPJyPWMS+S8pvf6KmyTWiR82iqihph/NUiB49mxdV++ZfRhiZonizCqYfOmHfsTXra0TpQUAIz4IPxs16LzSeCMQ=
-X-Received: by 2002:a25:6612:: with SMTP id a18mr30457260ybc.347.1623735098122;
- Mon, 14 Jun 2021 22:31:38 -0700 (PDT)
+        id S230181AbhFOFeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 01:34:13 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:50658 "EHLO deadmen.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230038AbhFOFeN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 01:34:13 -0400
+Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
+        by deadmen.hmeau.com with esmtp (Exim 4.92 #5 (Debian))
+        id 1lt1gD-0006u3-8A; Tue, 15 Jun 2021 13:32:05 +0800
+Received: from herbert by gondobar with local (Exim 4.92)
+        (envelope-from <herbert@gondor.apana.org.au>)
+        id 1lt1g7-0001R0-Bs; Tue, 15 Jun 2021 13:31:59 +0800
+Date:   Tue, 15 Jun 2021 13:31:59 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     syzbot <syzbot+e4c1dd36fc6b98c50859@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, steffen.klassert@secunet.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] UBSAN: shift-out-of-bounds in xfrm_selector_match
+Message-ID: <20210615053159.GA5412@gondor.apana.org.au>
+References: <000000000000008a6c05c46e45a4@google.com>
 MIME-Version: 1.0
-References: <20210611042442.65444-1-alexei.starovoitov@gmail.com>
- <20210611042442.65444-2-alexei.starovoitov@gmail.com> <9b23b2c6-28b2-3ab3-4e8b-1fa0c926c4d2@fb.com>
- <CAADnVQLS=Jx9=znx6XAtrRoY08bTQHTipXQwvnPNo0SRSJsK0Q@mail.gmail.com>
-In-Reply-To: <CAADnVQLS=Jx9=znx6XAtrRoY08bTQHTipXQwvnPNo0SRSJsK0Q@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 14 Jun 2021 22:31:27 -0700
-Message-ID: <CAEf4BzZ159NfuGJo0ig9i=7eGNgvQkq8TnZi09XHSZST17A0zQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Introduce bpf_timer
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000008a6c05c46e45a4@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 14, 2021 at 8:29 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Mon, Jun 14, 2021 at 9:51 AM Yonghong Song <yhs@fb.com> wrote:
-> > > +     ret = BPF_CAST_CALL(t->callback_fn)((u64)(long)map,
-> > > +                                         (u64)(long)key,
-> > > +                                         (u64)(long)t->value, 0, 0);
-> > > +     WARN_ON(ret != 0); /* Next patch disallows 1 in the verifier */
-> >
-> > I didn't find that next patch disallows callback return value 1 in the
-> > verifier. If we indeed disallows return value 1 in the verifier. We
-> > don't need WARN_ON here. Did I miss anything?
->
-> Ohh. I forgot to address this bit in the verifier. Will fix.
->
-> > > +     if (!hrtimer_active(&t->timer) || hrtimer_callback_running(&t->timer))
-> > > +             /* If the timer wasn't active or callback already executing
-> > > +              * bump the prog refcnt to keep it alive until
-> > > +              * callback is invoked (again).
-> > > +              */
-> > > +             bpf_prog_inc(t->prog);
-> >
-> > I am not 100% sure. But could we have race condition here?
-> >     cpu 1: running bpf_timer_start() helper call
-> >     cpu 2: doing hrtimer work (calling callback etc.)
-> >
-> > Is it possible that
-> >    !hrtimer_active(&t->timer) || hrtimer_callback_running(&t->timer)
-> > may be true and then right before bpf_prog_inc(t->prog), it becomes
-> > true? If hrtimer_callback_running() is called, it is possible that
-> > callback function could have dropped the reference count for t->prog,
-> > so we could already go into the body of the function
-> > __bpf_prog_put()?
->
-> you're correct. Indeed there is a race.
-> Circular dependency is a never ending headache.
-> That's the same design mistake as with tail_calls.
-> It felt that this case would be simpler than tail_calls and a bpf program
-> pinning itself with bpf_prog_inc can be made to work... nope.
-> I'll get rid of this and switch to something 'obviously correct'.
-> Probably a link list with a lock to keep a set of init-ed timers and
-> auto-cancel them on prog refcnt going to zero.
-> To do 'bpf daemon' the prog would need to be pinned.
+On Thu, Jun 10, 2021 at 12:19:26PM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    13c62f53 net/sched: act_ct: handle DNAT tuple collision
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=16635470300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=770708ea7cfd4916
+> dashboard link: https://syzkaller.appspot.com/bug?extid=e4c1dd36fc6b98c50859
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+e4c1dd36fc6b98c50859@syzkaller.appspotmail.com
+> 
+> UBSAN: shift-out-of-bounds in ./include/net/xfrm.h:838:23
+> shift exponent -64 is negative
+> CPU: 0 PID: 12625 Comm: syz-executor.1 Not tainted 5.13.0-rc3-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:79 [inline]
+>  dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+>  ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+>  __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:327
+>  addr4_match include/net/xfrm.h:838 [inline]
+>  __xfrm4_selector_match net/xfrm/xfrm_policy.c:201 [inline]
+>  xfrm_selector_match.cold+0x35/0x3a net/xfrm/xfrm_policy.c:227
+>  xfrm_state_look_at+0x16d/0x440 net/xfrm/xfrm_state.c:1022
 
-Hm.. wouldn't this eliminate that race:
+This appears to be an xfrm_state object with an IPv4 selector
+that somehow has a prefixlen (d or s) of 96.
 
-switch (hrtimer_try_to_cancel(&t->timer))
-{
-case 0:
-    /* nothing was queued */
-    bpf_prog_inc(t->prog);
-    break;
-case 1:
-    /* already have refcnt and it won't be bpf_prog_put by callback */
-    break;
-case -1:
-    /* callback is running and will bpf_prog_put, so we need to take
-another refcnt */
-    bpf_prog_inc(t->prog);
-    break;
-}
-hrtimer_start(&t->timer, ns_to_ktime(nsecs), HRTIMER_MODE_REL_SOFT);
+AFAICS this is not possible through xfrm_user.  OTOH it is not
+obvious that af_key is entirely consistent in how it verifies
+the prefix length, in particular, it seems to be possible for
+two addresses with conflicting families to be provided as src/dst.
 
-So instead of guessing (racily) whether there is a queued callback or
-not, try to cancel just in case there is. Then rely on the nice
-guarantees that hrtimer cancellation API provides.
+Can you confirm that this is indeed using af_key (a quick read
+of the syzbot log seems to indicate that this is the case)?
 
-Reading a bit more of hrtimer API, I'm more concerned now with the
-per-cpu variable (hrtimer_running). Seems like the timer can get
-migrated from one CPU to another, so all the auxiliary per-CPU state
-might get invalidated without us knowing about that.
-
-But it's getting late, I'll think about all this a bit more tomorrow
-with a fresh head.
-
->
-> > > +     if (val) {
-> > > +             /* This restriction will be removed in the next patch */
-> > > +             verbose(env, "bpf_timer field can only be first in the map value element\n");
-> > > +             return -EINVAL;
-> > > +     }
-> > > +     WARN_ON(meta->map_ptr);
-> >
-> > Could you explain when this could happen?
->
-> Only if there is a verifier bug or new helper is added with arg to timer
-> and arg to map. I'll switch to verbose() + efault instead.
+Thanks,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
