@@ -2,80 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF393A80D8
+	by mail.lfdr.de (Postfix) with ESMTP id E4CC93A80DA
 	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231852AbhFONmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 09:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231731AbhFONly (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:41:54 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC43C0613A4
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 06:39:29 -0700 (PDT)
-Received: from miraculix.mork.no (fwa219.mork.no [192.168.9.219])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 15FDdFNe019424
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Tue, 15 Jun 2021 15:39:15 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1623764355; bh=My55Lzw4OBw6bjlSvJWeLszsGJQBBGn/dwPvPUTOFu8=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=RQVyxXWjV41lm7FudE8LgmuWPqvvjBs/Nqnr54zDSmX7Repz+s/gqm69GZtUVJO4n
-         EcToysIyyR1hc1Cosrys0USmUkbCee3lWpIsPlX3I5hSrRr85Yb4kPd9rcKeKdCzCV
-         5IaQ52oS8988wOSJRg+oaTY2aOmOwX3JYSh+pu8Q=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
-        (envelope-from <bjorn@mork.no>)
-        id 1lt9He-000aYB-GN; Tue, 15 Jun 2021 15:39:14 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Kristian Evensen <kristian.evensen@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        subashab@codeaurora.org
-Subject: Re: [PATCH net] qmi_wwan: Clone the skb when in pass-through mode
-Organization: m
-References: <20210614141849.3587683-1-kristian.evensen@gmail.com>
-        <8735tky064.fsf@miraculix.mork.no>
-        <20210614130530.7a422f27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAKfDRXgQLvTpeowOe=17xLqYbVRcem9N2anJRSjMcQm6=OnH1A@mail.gmail.com>
-        <877divwije.fsf@miraculix.mork.no>
-        <CAKfDRXivs063y2sq0p8C1s1ayyt3b5DgxKH6smcvXucrGq=KHA@mail.gmail.com>
-        <CAKfDRXhraBRXwaDb6T3XMtGpwK=X2hd8+ONWLSmJhQjGurBMmw@mail.gmail.com>
-Date:   Tue, 15 Jun 2021 15:39:14 +0200
-In-Reply-To: <CAKfDRXhraBRXwaDb6T3XMtGpwK=X2hd8+ONWLSmJhQjGurBMmw@mail.gmail.com>
-        (Kristian Evensen's message of "Tue, 15 Jun 2021 13:04:02 +0200")
-Message-ID: <871r93w8l9.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S231788AbhFONm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 09:42:28 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:60337 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231742AbhFONmE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 09:42:04 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1623764400; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=vEqpCBelT4IUf0JN1mGrJD39mXW1ad8pQdp6OTcpw8U=;
+ b=VWSHtXxls1XHknnj9QdfeRP4QckcjXFljRgVbitObvEs20CN8GZB+g/TsyPC1gnyOyMbc9RO
+ L9/C0VWPVJkbx0ZbwzjMSYuOebMR5VtF+QTs4c56934ZDyytWbDuLcGnICOXCvqosxnqUnmn
+ iXYYaOfeQQgidtZ/JgYWwPGY8Z4=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 60c8ada3b6ccaab753293ceb (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 15 Jun 2021 13:39:47
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 6C78CC43460; Tue, 15 Jun 2021 13:39:47 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C5012C4338A;
+        Tue, 15 Jun 2021 13:39:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C5012C4338A
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.4 at canardo
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] rtlwifi: rtl8723ae: remove redundant initialization of
+ variable rtstatus
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210513122410.59204-1-colin.king@canonical.com>
+References: <20210513122410.59204-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210615133947.6C78CC43460@smtp.codeaurora.org>
+Date:   Tue, 15 Jun 2021 13:39:47 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kristian Evensen <kristian.evensen@gmail.com> writes:
-> On Tue, Jun 15, 2021 at 12:51 PM Kristian Evensen
-> <kristian.evensen@gmail.com> wrote:
->> I think this would be a really nice solution. The same (at least
->> FLAG_MULTI_PACKET + usbnet_skb_return) could be applied to pass
->> through as well, giving us consistent handling of aggregated packets.
->> While we might not save a huge number of lines, I believe the
->> resulting code will be easier to understand.
->
-> Apologies for the noise. When I check the code again, I see that as
-> long as FLAG_MULTI_PACKET is set, then we end up with usbnet freeing
-> the skb (we will always jump to done in rx_process()). So for the
-> pass-through case, I believe your initial suggestion of having
-> rx_fixup return 1 is the way to go.
+Colin King <colin.king@canonical.com> wrote:
 
-Yes, if we are to use FLAG_MULTI_PACKET then we must call
-usbnet_skb_return() for all the non-muxed cases.  There is no clean way
-to enable FLAG_MULTI_PACKET on-demand.
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The variable rtstatus is being initialized with a value that is never
+> read, it is being updated later on. The assignment is redundant and
+> can be removed.
+> 
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-I am fine with either solution.  Whatever Jakub wants :-)
+Patch applied to wireless-drivers-next.git, thanks.
 
+03a1b938cf39 rtlwifi: rtl8723ae: remove redundant initialization of variable rtstatus
 
-Bj=C3=B8rn
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210513122410.59204-1-colin.king@canonical.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
