@@ -2,91 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6113A881E
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 19:53:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F17D3A8826
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 19:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231586AbhFORx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 13:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58034 "EHLO
+        id S231289AbhFOR5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 13:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbhFORx0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 13:53:26 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEE4C061574;
-        Tue, 15 Jun 2021 10:51:20 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id 7-20020a9d0d070000b0290439abcef697so9684810oti.2;
-        Tue, 15 Jun 2021 10:51:20 -0700 (PDT)
+        with ESMTP id S229981AbhFOR5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 13:57:44 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C446C061574;
+        Tue, 15 Jun 2021 10:55:39 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id 6-20020a9d07860000b02903e83bf8f8fcso15118180oto.12;
+        Tue, 15 Jun 2021 10:55:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=JjUN7QIyrElerNYioXdpATYpC1N6H4aJXPGt5T0SivQ=;
-        b=Y1HMknLPxmw9DR3dfsXtHzmA2RtNGaTlMwo5oIsCDvq7bY9t6STA1uQbEqY5eEWgQu
-         q3G12XRrpc11fGcRjk5FXFUgosbyXRuXE3LXBxr52nE54ODErvYUGPmFh9j0DhkrGJAb
-         1E+Bxy8ribIUNhOui/bbT27DQViEnf6Sj+44TxSa/qAhVjoJJudYMgfB6skSDqW8g/nJ
-         TdNAtDFyqb5i+elzKoxfqgLxcu1y4jg5wj2weba8qulbk6fdKKinxHQH4jq+Trn+URM3
-         q22n5foFLS2ukVxmnQkWA/E5SXyI7m2OZzQKDAhfL/a0cEXz79l6DvRDg+BzwWWaqN0e
-         qcOQ==
+        bh=CRI05j+5T2aqXEW9ArA8iI3525TNmhlSCKGX7OS+rXQ=;
+        b=W8B5sNgOR6tXolvHuxTawhXRruFzBrahFDKBjKzfRvideKowSB+Z61I4QY7LkB3d7V
+         FU0EaB2Aknq/VMZFh7f4ODKbVyW3hjFQLmFdic5ITHZ9sWMb9/l4g/ikBYozr/3XMR+C
+         NIggVvVAxlZlQpe3XnoGO82vBxaiXukrQ0tZ0yllEH5MrkFxN5nm79rFOPye/yeydcsn
+         xL7mBXyA5Sn3HosG9gXcO09zOrZqCwiBrZKPToBJoimpe8ZKIS+keImLI0FJERBQ+JNr
+         RLLTFqpsq+w8R/PvinQ/SeruFz904N9f3rma2ph1PIwaNtcZ+VcXC7kvYFTBnsEcKY1h
+         zGnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=JjUN7QIyrElerNYioXdpATYpC1N6H4aJXPGt5T0SivQ=;
-        b=AZKcbmRG9BqqBoxDMEjKgpUfz21xboasnosd8eb9MPdwvdbuhrFJcT5pbR/L6tHF4s
-         Lad7Bdeh4mAqZ1zG1sq689+ZCRNFf1BgxxaDRTNPuGdNvBjbG1b4KTVh1PyEVenbZCZZ
-         8C32mxvLqH9MdRetZ2fr5xGUauUwAY8qmc7cwOhh31VJf0SxTQb6OUOw0xNsPsxSEZpQ
-         unlTBCzfd65LCwbI4iIUBkW3RrBL8vGv74KB/2+YBliA3JZtWFUQx0T/cvyJTEMAw5et
-         YI/V0AikC6h9aSwmTxOC4rcQzC9Gw9IvV2kuQ0k7i+VDUDEiTy+2i4Hv3NMqgxNHbTJo
-         ydrg==
-X-Gm-Message-State: AOAM531uDgwR5m6QsF4ySQjVPTgGv2a8tdtqUBRpzjPfjtiOrwPrG6+M
-        4ZmexacnWdTTc3euakqCyZwUESbYWXok
-X-Google-Smtp-Source: ABdhPJw+6BkTi0AEvbpcnMoUidUtaAjPsdONpoBqG3DgqXyeaWn+QSX5d1UUj/Ij939Nj1UswEcCyQ==
-X-Received: by 2002:a9d:7682:: with SMTP id j2mr332666otl.299.1623779479713;
-        Tue, 15 Jun 2021 10:51:19 -0700 (PDT)
+        bh=CRI05j+5T2aqXEW9ArA8iI3525TNmhlSCKGX7OS+rXQ=;
+        b=biaksoBzF6WVNbcCLRMD/al2DLLWyYgDfyWd02uX0K5zONg9PJA2YQ5A31/kvu4AJy
+         28XjOtS4khe8aIXUqHPLccqY7ibJKjkzkdGJ646vVUlGf8b9QX57lXnWctEHAA9ubx9Q
+         a7UqRXb81lW70y5dmm+gEhOERk94AG7XGM+3aNJ6fEnp1BGGD9Kh5MkclaP/6PHCCcCb
+         D0JRb7cIvchombsAIgJPRbWddb/eUAlhYdcTrsa/jd7NQpD4RNigJ8PlGFIgbf9qaCQd
+         eOxLKBrx5aXr5ZgNIUczfnFAc1JftvZvzRYKG0qhOyvKL7H/T0pSEGErfHR6j2QDRel5
+         S+ZQ==
+X-Gm-Message-State: AOAM532wAUOZQUyFOlW44UEwJziieIIdP+Mlx1Le6v0ErVFAb/XOsOda
+        hWrZjIEYtQxtWH4RZKHVh1+fR1xPM03u
+X-Google-Smtp-Source: ABdhPJzDbqs4NXHsM7buoHD+Hib0P1dnwGqEWUqRrqrTeHpkfAQJK1jg2gPAePNDUfXLvPB/qw6izw==
+X-Received: by 2002:a9d:945:: with SMTP id 63mr382284otp.47.1623779737814;
+        Tue, 15 Jun 2021 10:55:37 -0700 (PDT)
 Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id m6sm4120656ots.74.2021.06.15.10.51.18
+        by smtp.gmail.com with ESMTPSA id d136sm3810592oib.4.2021.06.15.10.55.36
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 15 Jun 2021 10:51:18 -0700 (PDT)
+        Tue, 15 Jun 2021 10:55:37 -0700 (PDT)
 From:   George McCollister <george.mccollister@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Marco Wenzel <marco.wenzel@a-eberle.de>,
-        linux-kernel@vger.kernel.org,
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH net-next] net: hsr: don't check sequence number if tag removal is offloaded
-Date:   Tue, 15 Jun 2021 12:50:37 -0500
-Message-Id: <20210615175037.19730-1-george.mccollister@gmail.com>
+Subject: [PATCH net-next] net: dsa: xrs700x: forward HSR supervision frames
+Date:   Tue, 15 Jun 2021 12:55:26 -0500
+Message-Id: <20210615175526.19829-1-george.mccollister@gmail.com>
 X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't check the sequence number when deciding when to update time_in in
-the node table if tag removal is offloaded since the sequence number is
-part of the tag. This fixes a problem where the times in the node table
-wouldn't update when 0 appeared to be before or equal to seq_out when
-tag removal was offloaded.
+Forward supervision frames between redunant HSR ports. This was broken
+in the last commit.
 
+Fixes: 1a42624aecba ("net: dsa: xrs700x: allow HSR/PRP supervision dupes
+for node_table")
 Signed-off-by: George McCollister <george.mccollister@gmail.com>
 ---
- net/hsr/hsr_framereg.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/xrs700x/xrs700x.c | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index bb1351c38397..e31949479305 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -397,7 +397,8 @@ void hsr_register_frame_in(struct hsr_node *node, struct hsr_port *port,
- 	 * ensures entries of restarted nodes gets pruned so that they can
- 	 * re-register and resume communications.
- 	 */
--	if (seq_nr_before(sequence_nr, node->seq_out[port->type]))
-+	if (!(port->dev->features & NETIF_F_HW_HSR_TAG_RM) &&
-+	    seq_nr_before(sequence_nr, node->seq_out[port->type]))
- 		return;
+diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
+index a79066174a77..130abb0f1438 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x.c
++++ b/drivers/net/dsa/xrs700x/xrs700x.c
+@@ -337,7 +337,8 @@ static int xrs700x_port_add_bpdu_ipf(struct dsa_switch *ds, int port)
+  * This is required to correctly populate the HSR/PRP node_table.
+  * Leave the policy disabled, it will be enabled as needed.
+  */
+-static int xrs700x_port_add_hsrsup_ipf(struct dsa_switch *ds, int port)
++static int xrs700x_port_add_hsrsup_ipf(struct dsa_switch *ds, int port,
++				       int fwdport)
+ {
+ 	struct xrs700x *priv = ds->priv;
+ 	unsigned int val = 0;
+@@ -368,6 +369,9 @@ static int xrs700x_port_add_hsrsup_ipf(struct dsa_switch *ds, int port)
+ 	if (ret)
+ 		return ret;
  
- 	node->time_in[port->type] = jiffies;
++	if (fwdport >= 0)
++		val |= BIT(fwdport);
++
+ 	/* Allow must be set prevent duplicate discard */
+ 	ret = regmap_write(priv->regmap, XRS_ETH_ADDR_FWD_ALLOW(port, 1), val);
+ 	if (ret)
+@@ -405,10 +409,6 @@ static int xrs700x_port_setup(struct dsa_switch *ds, int port)
+ 		ret = xrs700x_port_add_bpdu_ipf(ds, port);
+ 		if (ret)
+ 			return ret;
+-
+-		ret = xrs700x_port_add_hsrsup_ipf(ds, port);
+-		if (ret)
+-			return ret;
+ 	}
+ 
+ 	return 0;
+@@ -562,6 +562,7 @@ static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
+ 	struct net_device *slave;
+ 	int ret, i, hsr_pair[2];
+ 	enum hsr_version ver;
++	bool fwd = false;
+ 
+ 	ret = hsr_get_version(hsr, &ver);
+ 	if (ret)
+@@ -607,6 +608,7 @@ static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
+ 	if (ver == HSR_V1) {
+ 		val &= ~BIT(partner->index);
+ 		val &= ~BIT(port);
++		fwd = true;
+ 	}
+ 	val &= ~BIT(dsa_upstream_port(ds, port));
+ 	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
+@@ -616,10 +618,19 @@ static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
+ 			    XRS_PORT_FORWARDING);
+ 	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
+ 
+-	/* Enable inbound policy added by xrs700x_port_add_hsrsup_ipf()
+-	 * which allows HSR/PRP supervision forwarding to the CPU port without
+-	 * discarding duplicates.
++	/* Enable inbound policy which allows HSR/PRP supervision forwarding
++	 * to the CPU port without discarding duplicates. Continue to
++	 * forward to redundant ports when in HSR mode while discarding
++	 * duplicates.
+ 	 */
++	ret = xrs700x_port_add_hsrsup_ipf(ds, partner->index, fwd ? port : -1);
++	if (ret)
++		return ret;
++
++	ret = xrs700x_port_add_hsrsup_ipf(ds, port, fwd ? partner->index : -1);
++	if (ret)
++		return ret;
++
+ 	regmap_update_bits(priv->regmap,
+ 			   XRS_ETH_ADDR_CFG(partner->index, 1), 1, 1);
+ 	regmap_update_bits(priv->regmap, XRS_ETH_ADDR_CFG(port, 1), 1, 1);
 -- 
 2.11.0
 
