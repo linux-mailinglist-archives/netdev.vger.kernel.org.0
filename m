@@ -2,66 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26F7F3A825F
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:15:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57FDD3A82A7
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231228AbhFOORa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 10:17:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44564 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231535AbhFOOQV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Jun 2021 10:16:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 493926140B;
-        Tue, 15 Jun 2021 14:14:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623766457;
-        bh=DU7+2tE+20fTRy5uTfgHapES/QrTudbXvjgI8inUDDA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=oV3kgriqXLz8QZrqlxY1hSQ2QoOamREkuHF8BN+LZ7YjWChUqTzfEafWPZQj87y1p
-         DWpMZgv0ymi9yvhCgvFFuKxt9Nh50bqhytigSytlIFM7vbtuXLakH//ceiFwUSPtpb
-         DihLcz0CProKHz+qEhkk4t6QdpcmOcIeiNR1GMfcCDAnDGtgVDQZuQoHJ0fbkbP1hh
-         Q7OrNRNHF1Yu2jVbcfOL1FBAl1jVi0XcSH1GYfj7WopjJiuY72qucPqB24XG8C3ntC
-         7oDur62Q887D/KF8LkO24+kfwE4S4vzX4yW9yH9cpo+nM1CwV/OQLafgwPYDwNFtvY
-         cAUFRXcX2jY/Q==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, jacob.e.keller@intel.com
-Subject: [PATCH net-next] net: ice: ptp: fix compilation warning if PTP_1588_CLOCK is disabled
-Date:   Tue, 15 Jun 2021 16:14:12 +0200
-Message-Id: <a4d2c3cd609708de38ca59b75e4eb7468750af47.1623766418.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S231499AbhFOOYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 10:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231786AbhFOOWy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:22:54 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365DDC061145;
+        Tue, 15 Jun 2021 07:16:10 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 03970734;
+        Tue, 15 Jun 2021 14:16:09 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 03970734
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1623766570; bh=9jVLOrXePqCK4mSCuMv8GHJ8fp2BhHDIGx1d1jJxisA=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=sEG/k5gS8MR0zT7N48MxNxI3aG3JzjPFtFzU4I/iMJaEsfXXhEtr+OO2VxdaS3tQR
+         Ez6OzWlnrEnRKMRMbbP6YBflNkcwYcmRjF/qhcj8O2pl9sVe9TxQtgdfb+6m/cYLTg
+         BRyp5mwNVlbRv45jyqSm6d6Ehb5Zj966EK3f//ehsCgq5MfcKSHsv2rHthvZlY5EWg
+         D/LvBhgvFwBlfgHB83adVw6MffhSr4CLg7RgQa/dTee8AV8/+uH870nkuJUQGST7Er
+         ZkWGbRhrzJ9CKcvkcNAqRzD93VdNVVW+isLVwKzIb6GXWRBV5VF0TIEFrPWz1uIqhH
+         UlYA9T8tW4SoQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        oleksandr.mazur@plvision.eu, jiri@nvidia.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vadym Kochan <vadym.kochan@plvision.eu>, andrew@lunn.ch,
+        nikolay@nvidia.com, idosch@idosch.org, sfr@canb.auug.org.au,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH] documentation: networking: devlink: fix prestera.rst
+ formatting that causes build errors
+In-Reply-To: <20210615134847.22107-1-oleksandr.mazur@plvision.eu>
+References: <20210615134847.22107-1-oleksandr.mazur@plvision.eu>
+Date:   Tue, 15 Jun 2021 08:16:09 -0600
+Message-ID: <87sg1jz00m.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following compilation warning if PTP_1588_CLOCK is not enabled
+Oleksandr Mazur <oleksandr.mazur@plvision.eu> writes:
 
-drivers/net/ethernet/intel/ice/ice_ptp.h:149:1:
-   error: return type defaults to ‘int’ [-Werror=return-type]
-   ice_ptp_request_ts(struct ice_ptp_tx *tx, struct sk_buff *skb)
+> Fixes: a5aee17deb88 ("documentation: networking: devlink: add prestera switched driver Documentation")
+>
+> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+> ---
+>  Documentation/networking/devlink/devlink-trap.rst | 1 +
+>  Documentation/networking/devlink/index.rst        | 1 +
+>  Documentation/networking/devlink/prestera.rst     | 4 ++--
+>  3 files changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/Documentation/networking/devlink/devlink-trap.rst b/Documentation/networking/devlink/devlink-trap.rst
+> index 935b6397e8cf..ef8928c355df 100644
+> --- a/Documentation/networking/devlink/devlink-trap.rst
+> +++ b/Documentation/networking/devlink/devlink-trap.rst
+> @@ -497,6 +497,7 @@ drivers:
+>  
+>    * :doc:`netdevsim`
+>    * :doc:`mlxsw`
+> +  * :doc:`prestera`
 
-Fixes: ea9b847cda647 ("ice: enable transmit timestamps for E810 devices")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/intel/ice/ice_ptp.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Please, rather than using :doc: tags, just give the file name:
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
-index 41e14f98f0e6..d01507eba036 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
-@@ -145,7 +145,7 @@ static inline int ice_get_ptp_clock_index(struct ice_pf *pf)
- 	return -1;
- }
- 
--static inline
-+static inline s8
- ice_ptp_request_ts(struct ice_ptp_tx *tx, struct sk_buff *skb)
- {
- 	return -1;
--- 
-2.31.1
+  * Documentation/networking/dev-link/prestera
 
+(and fix the others while you're in the neighborhood).  Our automarkup
+magic will make the links work in the HTML docs, and the result is more
+readable for people reading the plain text.
+
+Thanks,
+
+jon
