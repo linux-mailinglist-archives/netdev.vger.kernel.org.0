@@ -2,93 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A09543A8885
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 785DB3A8889
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:25:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231582AbhFOS0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 14:26:41 -0400
-Received: from mout.kundenserver.de ([217.72.192.74]:50967 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231176AbhFOS0k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 14:26:40 -0400
-Received: from [192.168.1.155] ([95.115.9.120]) by mrelayeu.kundenserver.de
- (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MS4WT-1lixGP0g7H-00TTUD; Tue, 15 Jun 2021 20:23:58 +0200
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-To:     David Howells <dhowells@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>
-Cc:     James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
-References: <YLEIKk7IuWu6W4Sy@casper.infradead.org> <YH2hs6EsPTpDAqXc@mit.edu>
- <nycvar.YFH.7.76.2104281228350.18270@cbobk.fhfr.pm>
- <YIx7R6tmcRRCl/az@mit.edu>
- <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
- <YK+esqGjKaPb+b/Q@kroah.com>
- <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
- <1745326.1623409807@warthog.procyon.org.uk>
-From:   "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Message-ID: <e47706ee-3e4b-8f15-963f-292b5e47cb1d@metux.net>
-Date:   Tue, 15 Jun 2021 20:23:55 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S231618AbhFOS1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 14:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37364 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230000AbhFOS1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 14:27:11 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1188BC061574
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 11:25:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=HEvQuIGyM/+fSUtSn0O/v1u//7ms+qcTs0QGEQAyClU=; b=VDsDbes24cb9nwcKtfvovGCJq
+        JdE6roRnnAH9Oi/xH2sJRJHe4/os4WNhi81jw2R0YG/nefvQ46L32PWqofnQurxdfYU/I54FHh1Yj
+        kwW3QbxAr3yx5RO12reGsItA8B8INJhy49/irnzPNz8xGdSu/Wxh6TdH5zA8KEKOffKKjsk5DJRib
+        c28UL3Lp+bqNoaaocqyc7DWZvTi5htOZ9XXJ5WTMznywbQ2hfZ+B5jWfUGYgO/A4u4DPc/NVJYv32
+        h+x3+uZvI8SYQ50pifjMF1jjlPBN0mBr2nlX3Ehu8qIl75h3mAVIpAbcfo2TGoL6msAX32MdzQCBl
+        E6qgFs68w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45038)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ltDkE-0005w1-Sp; Tue, 15 Jun 2021 19:25:02 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ltDkD-0005G7-DP; Tue, 15 Jun 2021 19:25:01 +0100
+Date:   Tue, 15 Jun 2021 19:25:01 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        calvin.johnson@oss.nxp.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next] mdio: mdiobus: setup of_node for the MDIO device
+Message-ID: <20210615182501.GX22278@shell.armlinux.org.uk>
+References: <20210615154401.1274322-1-ciorneiioana@gmail.com>
+ <20210615171330.GW22278@shell.armlinux.org.uk>
+ <20210615172444.dirudehe3vzis2kw@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <1745326.1623409807@warthog.procyon.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: tl
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:l1dWw5GINi5d9D6KdR/MfM5/FegWRbfl0vjxnR2yUdW9Vwv9oLT
- MEAHr8PyP8YcC6o+Yqn4LF4f1dF2zEYvYGt60YROchUahACz9shvV58vHwPsKWuLb8rGm3P
- IR2CxVWI5mN7CFH8hcq3ue3m5Nn8F7oX0u8tjkhXfP1fB4XQ+9VueDbHjcVaZZ82YsvanSM
- rftvqMwBTus20ymBQFk4Q==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Ic+UfAApxeg=:xMi+C1LWXRsimoNEKsnwKG
- 5mxcU0vHtj9Zm5HEjCy9h9sUq5qPtpjfzWgy0mhHsk86qbr9dJQfN7QAj9Quv1JbUcrcCRzdl
- bUfQvSEb0KC+9hi+WwMlV38TArCl/DAouSqiCQNao7pvtjN1M9CC8E86nLAHtrAMf6E9XI1dc
- tCA5UBAou1Z1Dm02ZUCUDV1JdZcL91ADBpOOiJ64NaVXgv2BB42jpmTg8pubJ2MJSkM4dDY1G
- wrLS0oWdW9mIun9Og6RY3Bg0NUo09Wl5QXxyzpWw8WVYkbSpnHxhumPCGcbJMAJyLToVBeWwi
- AC8dECaRBRfRBTG4medz4Eow5RSIuY6dBBIXI+dkdb/zBvt60HeWrL9FU76+szy+iBNrtxLYd
- Du0Z+O4kxMoxbR+xZ9b3KnABes+BV82fRKnWKuHb9E3I6whEmhwV3KVhx3wDjdJwqTyaMePQi
- zx08rCWC2amopXPxWcwFxvphs2Mox2d2bgIaZWix19xu5b2A6NEeZ9Y/RDvnpxnGWOKM5t0td
- cE2C39N+fJT2AJRCXYwZLE=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210615172444.dirudehe3vzis2kw@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11.06.21 13:10, David Howells wrote:
-
-> One thing that concerns me about flying to the US is going through multiple
-> busy international airports - take Heathrow which didn't separate incoming
-> travellers from red-listed countries from those of amber- or green- until like
-> a week ago.
+On Tue, Jun 15, 2021 at 08:24:44PM +0300, Ioana Ciornei wrote:
+> On Tue, Jun 15, 2021 at 06:13:31PM +0100, Russell King (Oracle) wrote:
+> > On Tue, Jun 15, 2021 at 06:44:01PM +0300, Ioana Ciornei wrote:
+> > > From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > > 
+> > > By mistake, the of_node of the MDIO device was not setup in the patch
+> > > linked below. As a consequence, any PHY driver that depends on the
+> > > of_node in its probe callback was not be able to successfully finish its
+> > > probe on a PHY, thus the Generic PHY driver was used instead.
+> > > 
+> > > Fix this by actually setting up the of_node.
+> > > 
+> > > Fixes: bc1bee3b87ee ("net: mdiobus: Introduce fwnode_mdiobus_register_phy()")
+> > > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > > ---
+> > >  drivers/net/mdio/fwnode_mdio.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > > 
+> > > diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+> > > index e96766da8de4..283ddb1185bd 100644
+> > > --- a/drivers/net/mdio/fwnode_mdio.c
+> > > +++ b/drivers/net/mdio/fwnode_mdio.c
+> > > @@ -65,6 +65,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+> > >  	 * can be looked up later
+> > >  	 */
+> > >  	fwnode_handle_get(child);
+> > > +	phy->mdio.dev.of_node = to_of_node(child);
+> > >  	phy->mdio.dev.fwnode = child;
+> > 
+> > Yes, this is something that was missed, but let's first look at what
+> > other places to when setting up a device:
+> > 
+> >         pdev->dev.fwnode = pdevinfo->fwnode;
+> >         pdev->dev.of_node = of_node_get(to_of_node(pdev->dev.fwnode));
+> >         pdev->dev.of_node_reused = pdevinfo->of_node_reused;
+> > 
+> >         dev->dev.of_node = of_node_get(np);
+> >         dev->dev.fwnode = &np->fwnode;
+> > 
+> >         dev->dev.of_node = of_node_get(node);
+> >         dev->dev.fwnode = &node->fwnode;
+> > 
+> > That seems to be pretty clear that an of_node_get() is also needed.
+> > 
 > 
-> Would it be practical/economical to charter a plane to fly, say, from a less
-> busy airport in Europe to a less busy airport in the US and back again if we
-> could get enough delegates together to make it worthwhile?
+> I'm not convinced that an of_node_get() is needed besides the
+> fwnode_handle_get() call that's already there.
+> 
+> The fwnode_handle_get() will call the get callback for that particular
+> fwnode_handle. When we are in the OF case, the of_fwnode_get() will be
+> invoked which in turn does of_node_get().
+> 
+> Am I missing something here?
 
-Wouldn't just taking prophylatic meds like CDS or HCQ and/or hi-dose
-vitamins (C, D3+K2) be way more cost effective and flexible than to
-charter a whole plane ?
+Hmm, I think you're actually correct - the other places increase the
+OF node's refcount and then assign the fwnode, which is effectively
+what will be happening here (since fwnode_handle_get() will do that
+for us.)
 
-Don't have personal experience w/ HCQ yet, but CDS is pretty cheap and
-easy to use (prescription free). Of course, one should dig a bit into
-the specialist literature, before playing around - and take a few days
-for finding the right personal dose. especially when one's cumbered w/ 
-parasites (herxheimer)
+However, there's definitely horrid stuff going on in this file with
+refcounting:
 
+fwnode_mdiobus_register_phy():
 
---mtx
+			phy_device_free(phy);
+			fwnode_handle_put(phy->mdio.dev.fwnode);
+
+phy_device_free() drops the refcount on the embedded struct device - it
+_could_ free it, so we should be assuming that "phy" is dead at that
+point - we should not be dereferencing it after the call.
+
+fwnode_mdiobus_phy_device_register():
+
+	fwnode_handle_get(child);
+	phy->mdio.dev.fwnode = child;
+
+	rc = phy_device_register(phy);
+	if (rc) {
+		fwnode_handle_put(child);
+		return rc;
+
+Here, we leave this function having dropped the fwnode refcount, but
+we have left a dangling pointer to the fwnode in place. Hopefully,
+no one will use that dangling pointer, but this is sloppy.
 
 -- 
----
-Hinweis: unverschlüsselte E-Mails können leicht abgehört und manipuliert
-werden ! Für eine vertrauliche Kommunikation senden Sie bitte ihren
-GPG/PGP-Schlüssel zu.
----
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
