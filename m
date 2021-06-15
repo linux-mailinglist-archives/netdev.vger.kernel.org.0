@@ -2,40 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FB9B3A792D
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 10:39:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E2C43A7918
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 10:33:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbhFOIlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 04:41:06 -0400
-Received: from oxu.publicvm.com ([138.118.173.150]:42128 "EHLO
-        oxu.publicvm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbhFOIlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 04:41:04 -0400
-X-Greylist: delayed 855 seconds by postgrey-1.27 at vger.kernel.org; Tue, 15 Jun 2021 04:41:03 EDT
-Received: from WIN-ESO77BSQU73 (localhost [127.0.0.1])
-        by oxu.publicvm.com (Postfix) with ESMTP id 6987B42439
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 08:20:50 +0000 (UTC)
-Message-ID: <038514e3-44362-a6d30561315046@win-eso77bsqu73>
-Reply-To: "Michael Abert" <michael.abert@pfl-kredit.com>
-From:   "Michael Abert" <admin@oxu.publicvm.com>
-To:     netdev@vger.kernel.org
-Subject: Hallo 6/15/2021  1:20:49 AM
-Date:   Tue, 15 Jun 2021 01:19:50 -0700
+        id S231298AbhFOIf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 04:35:57 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:50875 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231241AbhFOIfo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 04:35:44 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lt4Vs-00013n-RL; Tue, 15 Jun 2021 08:33:36 +0000
+Subject: Re: [PATCH] net: dsa: b53: Fix dereference of null dev
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210612144407.60259-1-colin.king@canonical.com>
+ <20210614112812.GL1955@kadam>
+From:   Colin Ian King <colin.king@canonical.com>
+Message-ID: <60c9a7c8-95f1-2673-abd0-73853483acb0@canonical.com>
+Date:   Tue, 15 Jun 2021 09:33:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Priority: 3
+In-Reply-To: <20210614112812.GL1955@kadam>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo netdev@vger.kernel.org
+On 14/06/2021 12:28, Dan Carpenter wrote:
+> On Sat, Jun 12, 2021 at 03:44:07PM +0100, Colin King wrote:
+>> From: Colin Ian King <colin.king@canonical.com>
+>>
+>> Currently pointer priv is dereferencing dev before dev is being null
+>> checked so a potential null pointer dereference can occur. Fix this
+>> by only assigning and using priv if dev is not-null.
+>>
+>> Addresses-Coverity: ("Dereference before null check")
+>> Fixes: 16994374a6fc ("net: dsa: b53: Make SRAB driver manage port interrupts")
+>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>> ---
+>>  drivers/net/dsa/b53/b53_srab.c | 8 +++++---
+>>  1 file changed, 5 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/dsa/b53/b53_srab.c b/drivers/net/dsa/b53/b53_srab.c
+>> index aaa12d73784e..e77ac598f859 100644
+>> --- a/drivers/net/dsa/b53/b53_srab.c
+>> +++ b/drivers/net/dsa/b53/b53_srab.c
+>> @@ -629,11 +629,13 @@ static int b53_srab_probe(struct platform_device *pdev)
+>>  static int b53_srab_remove(struct platform_device *pdev)
+>>  {
+>>  	struct b53_device *dev = platform_get_drvdata(pdev);
+>> -	struct b53_srab_priv *priv = dev->priv;
+>>  
+>> -	b53_srab_intr_set(priv, false);
+>> -	if (dev)
+>> +	if (dev) {
+> 
+> This is the remove function and "dev" can't be NULL at this point.
+> Better to just remove the NULL check.
 
-Sehr geehrte Damen und Herren
+Will do.
 
-Wir gewähren Darlehen in Höhe von 10.000,00 € bis 5 Mio. € mit einem Zinssatz von 2%
-
-Die Zinsen und die Laufzeiten sind sehr attraktiv (2%) und in punkto Sicherheit beschränken wir uns auf das absolute Minimum. Interessiert? Dann kontaktieren Sie uns doch für weitere Informationen per e-mail.
-
-Michael Abert.
+> 
+> regards,
+> dan carpenter
+> 
 
