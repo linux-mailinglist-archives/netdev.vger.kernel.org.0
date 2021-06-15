@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D2BC3A838C
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 17:04:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0312B3A838D
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 17:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231409AbhFOPGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 11:06:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59557 "EHLO
+        id S231495AbhFOPGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 11:06:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37950 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231311AbhFOPGc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 11:06:32 -0400
+        by vger.kernel.org with ESMTP id S231401AbhFOPGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 11:06:33 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623769467;
+        s=mimecast20190719; t=1623769468;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nZyBRJPoB1j5/g6EWUWSPPNl7ozTkFFFt8p6irUhI/M=;
-        b=DuKb4ZAv55LI5PWv3k3xbZMN3oEaVoTx6K2D7R56EcdkIIAyW8uWtZp6TmEBENBkCy4mcf
-        5xryy5tloNrs7ct6lwj+uIOsT8EX3DuiIq/kYVV8YmXJsssKWFiu8qwQZGC4/wVvY9icfw
-        bYI6nsjTT7MjTj2oyuEHOx4EX5VbWXo=
+        bh=YfPOjpqs+xPPviaak2ogNv+B986oj5TZMO/NC3oJo44=;
+        b=fduab+WxX+D8d0k6z/Mxc4/GxuftIzkKOareUkN4iWcpD1lJPbQWiK2Sn27XzZj39gbrkz
+        41EcJTnTYKmP0KQj/6HfOhLYQeg6rtZIqgJBIGHwfeyDCTWU38tRXWFsJJcA6czJWl9bL2
+        j55TZwPaPuUCEomKBSdFCALHj9nJm3M=
 Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
  [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-356-oBOgQghXNAGwGqR8PYz-oQ-1; Tue, 15 Jun 2021 11:04:25 -0400
-X-MC-Unique: oBOgQghXNAGwGqR8PYz-oQ-1
-Received: by mail-ed1-f70.google.com with SMTP id q7-20020aa7cc070000b029038f59dab1c5so22543642edt.23
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 08:04:25 -0700 (PDT)
+ us-mta-561-pdlO72V7OpeoG5U3U8XeIQ-1; Tue, 15 Jun 2021 11:04:26 -0400
+X-MC-Unique: pdlO72V7OpeoG5U3U8XeIQ-1
+Received: by mail-ed1-f70.google.com with SMTP id df3-20020a05640230a3b029039179c0f290so20716694edb.13
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 08:04:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nZyBRJPoB1j5/g6EWUWSPPNl7ozTkFFFt8p6irUhI/M=;
-        b=b0Tl58LAQCaiPln2kI/p4TPxZRcnZ6+F/xqQtd4UMvm9qXqqnETQxUqsqip8Uhiq1s
-         fAK5qfBx4hI6xSs6iaofwIYCHMOheJ+O0K87IYC4BgiI4UjXrgBIGxgU+UUJZ88xg9JL
-         nAPL7eeu5Lu6V6R3j7P/+H71SJoaVPqHp9fVx/jpCYb4Cn7Kk9I0SYMkS4WUvRaK7bii
-         oA+pqvJ60BudFM9/15xm8C/MFKdDvv+q/yBO9LKbMDryP5JWqF5FCV0GtBhk+UO5iLuB
-         cbSdhwoRG6PMrY6VcxyrCCqju3pu3UdLmyQr5mTUiOG14w/W0O/0W7VFGKU/uqrwSPFi
-         RyDg==
-X-Gm-Message-State: AOAM5330rnhCGyiFVTBMALDC/mkaH3vPbA1E6lCwfDOZaEWk9sCXCYbB
-        4Wol5Wb1mOt5xTBEkhm56sXsCNb3YCEc66RGLWgLjC39OwYqxb7NqNHsEx+HkgyMp3iYKCSG4d8
-        MhhIhehfwxKt9MZA5
-X-Received: by 2002:a50:fb8f:: with SMTP id e15mr23315229edq.46.1623769464512;
-        Tue, 15 Jun 2021 08:04:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJytWmHoc5NSv2Ml6IB/zXKszT4ABcEjPhTM0+V3qJGdbm2cn7dpYji1+8/ONPwzQWZqoX25Dg==
-X-Received: by 2002:a50:fb8f:: with SMTP id e15mr23315193edq.46.1623769464293;
-        Tue, 15 Jun 2021 08:04:24 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id u21sm7514919eja.59.2021.06.15.08.04.22
+        bh=YfPOjpqs+xPPviaak2ogNv+B986oj5TZMO/NC3oJo44=;
+        b=PraAz4ZOyJg3Z6131PGw3hH3axVo9dyANbPgKk6zF9eV3EDbjQ1Y27xEuAYFe5n2+9
+         wrF9JaIOOHlmPGGkFXYFkFf0iCjHiO0lUusGllI9jPgJ9dccu08CHcZVJxfVCyDhBlHB
+         sZWYGbGM643ndmc7uIefEDCNCwOIvDcqdvmp4H+QQTJdMncW48WShQlWZNbWgemfR/uM
+         tqBE/HIfOuKoKcpdp1ypF8SmNUMaAtl+yXwUYVhhVsGOxlvSWKSKgOCmCs8ZGObLaBog
+         6rAffM+nMqokFXo2eCMFwZaua9JKh3MOrH5VrLSxBA9/KnCEs42DnK/RXGqaVXM2JCoH
+         jS3Q==
+X-Gm-Message-State: AOAM531IHYxbpRPkx15RT7GU7G/3bq1F5p/ZbQ3A7HV/qch7I1qvndyw
+        lnICBQumBbIndGmTMQkWv0n00mnI5MuwLmfKCl8FYO180UfxNZMGNNI0yz3ZoI/SJvFe1DaxXNS
+        f/tkpd2Lw0bA8cDsE
+X-Received: by 2002:a50:fc9a:: with SMTP id f26mr23484747edq.216.1623769465616;
+        Tue, 15 Jun 2021 08:04:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyy8TVWB3Ab3G+Ed06XwW3QccJKn8HJhXMLG8fARccSuyWGMMDysWF3YtrcYvvSs+y6ZDLVcw==
+X-Received: by 2002:a50:fc9a:: with SMTP id f26mr23484707edq.216.1623769465281;
+        Tue, 15 Jun 2021 08:04:25 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id k21sm12184299edo.41.2021.06.15.08.04.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 15 Jun 2021 08:04:23 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1744F180736; Tue, 15 Jun 2021 16:54:59 +0200 (CEST)
+        id 21558180737; Tue, 15 Jun 2021 16:54:59 +0200 (CEST)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Martin KaFai Lau <kafai@fb.com>,
@@ -61,11 +61,11 @@ Cc:     Martin KaFai Lau <kafai@fb.com>,
         "Paul E . McKenney" <paulmck@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>
-Subject: [PATCH bpf-next v2 13/16] sfc: remove rcu_read_lock() around XDP program invocation
-Date:   Tue, 15 Jun 2021 16:54:52 +0200
-Message-Id: <20210615145455.564037-14-toke@redhat.com>
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: [PATCH bpf-next v2 14/16] netsec: remove rcu_read_lock() around XDP program invocation
+Date:   Tue, 15 Jun 2021 16:54:53 +0200
+Message-Id: <20210615145455.564037-15-toke@redhat.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210615145455.564037-1-toke@redhat.com>
 References: <20210615145455.564037-1-toke@redhat.com>
@@ -76,63 +76,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sfc driver has rcu_read_lock()/rcu_read_unlock() pairs around XDP
-program invocations. However, the actual lifetime of the objects referred
-by the XDP program invocation is longer, all the way through to the call to
-xdp_do_flush(), making the scope of the rcu_read_lock() too small. This
-turns out to be harmless because it all happens in a single NAPI poll
-cycle (and thus under local_bh_disable()), but it makes the rcu_read_lock()
-misleading.
+The netsec driver has a rcu_read_lock()/rcu_read_unlock() pair around the
+full RX loop, covering everything up to and including xdp_do_flush(). This
+is actually the correct behaviour, but because it all happens in a single
+NAPI poll cycle (and thus under local_bh_disable()), it is also technically
+redundant.
 
-Rather than extend the scope of the rcu_read_lock(), just get rid of it
-entirely. With the addition of RCU annotations to the XDP_REDIRECT map
-types that take bh execution into account, lockdep even understands this to
-be safe, so there's really no reason to keep it around.
+With the addition of RCU annotations to the XDP_REDIRECT map types that
+take bh execution into account, lockdep even understands this to be safe,
+so there's really no reason to keep the rcu_read_lock() around anymore, so
+let's just remove it.
 
-Cc: Edward Cree <ecree.xilinx@gmail.com>
-Cc: Martin Habets <habetsm.xilinx@gmail.com>
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Cc: Jassi Brar <jaswinder.singh@linaro.org>
+Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/ethernet/sfc/rx.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/socionext/netsec.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
-index 17b8119c48e5..3e5b88ab42db 100644
---- a/drivers/net/ethernet/sfc/rx.c
-+++ b/drivers/net/ethernet/sfc/rx.c
-@@ -260,18 +260,14 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 	s16 offset;
- 	int err;
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index dfc85cc68173..e07b7c870046 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -958,7 +958,6 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+ 
+ 	xdp_init_buff(&xdp, PAGE_SIZE, &dring->xdp_rxq);
  
 -	rcu_read_lock();
--	xdp_prog = rcu_dereference(efx->xdp_prog);
--	if (!xdp_prog) {
--		rcu_read_unlock();
-+	xdp_prog = rcu_dereference_bh(efx->xdp_prog);
-+	if (!xdp_prog)
- 		return true;
--	}
+ 	xdp_prog = READ_ONCE(priv->xdp_prog);
+ 	dma_dir = page_pool_get_dma_dir(dring->page_pool);
  
- 	rx_queue = efx_channel_get_rx_queue(channel);
+@@ -1019,6 +1018,10 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+ 				 pkt_len, false);
  
- 	if (unlikely(channel->rx_pkt_n_frags > 1)) {
- 		/* We can't do XDP on fragmented packets - drop. */
--		rcu_read_unlock();
- 		efx_free_rx_buffers(rx_queue, rx_buf,
- 				    channel->rx_pkt_n_frags);
- 		if (net_ratelimit())
-@@ -295,8 +291,10 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 	xdp_prepare_buff(&xdp, *ehp - EFX_XDP_HEADROOM, EFX_XDP_HEADROOM,
- 			 rx_buf->len, false);
+ 		if (xdp_prog) {
++			/* This code is invoked within a single NAPI poll cycle
++			 * and thus under local_bh_disable(), which provides the
++			 * needed RCU protection.
++			 */
+ 			xdp_result = netsec_run_xdp(priv, xdp_prog, &xdp);
+ 			if (xdp_result != NETSEC_XDP_PASS) {
+ 				xdp_act |= xdp_result;
+@@ -1069,8 +1072,6 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+ 	}
+ 	netsec_finalize_xdp_rx(priv, xdp_act, xdp_xmit);
  
-+	/* This code is invoked within a single NAPI poll cycle and thus under
-+	 * local_bh_disable(), which provides the needed RCU protection.
-+	 */
- 	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
 -	rcu_read_unlock();
- 
- 	offset = (u8 *)xdp.data - *ehp;
+-
+ 	return done;
+ }
  
 -- 
 2.31.1
