@@ -2,94 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 914AB3A8C3D
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 01:07:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B032E3A8C43
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 01:10:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230244AbhFOXJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 19:09:33 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39142 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbhFOXJc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 19:09:32 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ltI9U-000G8g-Sg; Wed, 16 Jun 2021 01:07:24 +0200
-Received: from [85.7.101.30] (helo=linux-3.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ltI9U-000Eeg-Fg; Wed, 16 Jun 2021 01:07:24 +0200
-Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Vlad Buslov <vladbu@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>
-References: <20210528195946.2375109-1-memxor@gmail.com>
- <CAM_iQpVqVKhK+09Sj_At226mdWpVXfVbhy89As2dai7ip8Nmtw@mail.gmail.com>
- <20210607033724.wn6qn4v42dlm4j4o@apollo>
- <CAM_iQpVCnG8pSci2sMbJ1B5YE-y=reAUp82itgrguecyNBCUVQ@mail.gmail.com>
- <20210607060724.4nidap5eywb23l3d@apollo>
- <CAM_iQpWA=SXNR3Ya8_L2aoVJGP_uaRP8EYCpDrnq3y8Uf6qu=g@mail.gmail.com>
- <20210608071908.sos275adj3gunewo@apollo>
- <CAM_iQpXFmsWhMA-RO2j5Ph5Ak8yJgUVBppGj2_5NS3BuyjkvzQ@mail.gmail.com>
- <20210613025308.75uia7rnt4ue2k7q@apollo>
- <30ab29b9-c8b0-3b0f-af5f-78421b27b49c@mojatatu.com>
- <20210613203438.d376porvf5zycatn@apollo>
- <4b1046ef-ba16-f8d8-c02e-d69648ab510b@mojatatu.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <bd18943b-8a0e-be8c-6a99-17f7dfdd3bc4@iogearbox.net>
-Date:   Wed, 16 Jun 2021 01:07:23 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S231243AbhFOXMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 19:12:40 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:39508 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229898AbhFOXMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 19:12:39 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id C02D521A57;
+        Tue, 15 Jun 2021 23:10:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1623798633; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DW8AwZzTEcaEbwwzzx2Rih1SOND5HpnSHZDHpKtVpBE=;
+        b=ru4Y1rH8p2ZF2joKPyqGQecZaxCTLSt6Tcu92GpabpoIx0dH+CisF0pIAy7Xxxu242p2hq
+        5nElocF+8NJeR3u1z5d1XZdM6nP0CRQZ9AtsbhbOj1JAB5MbRr7EYdsMIK8zSuEoqgX9T3
+        OX5eeW36Cn6CgA/l9Gl+Eg2j5HUY7mk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1623798633;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DW8AwZzTEcaEbwwzzx2Rih1SOND5HpnSHZDHpKtVpBE=;
+        b=BPsMy3vqnstthzeIwVWnlC9mge3HSnoxW9uUSSVyyWHVvgM514ezikuLnxdGgKOhkGboYC
+        QtVVLPxd+k4AIgBA==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B3D2CA3BA8;
+        Tue, 15 Jun 2021 23:10:33 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 6B562607D8; Wed, 16 Jun 2021 01:10:33 +0200 (CEST)
+Date:   Wed, 16 Jun 2021 01:10:33 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [RFC net-next] ethtool: add a stricter length check
+Message-ID: <20210615231033.32opvfjz7hhha7zs@lion.mk-sys.cz>
+References: <20210612031135.225292-1-kuba@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <4b1046ef-ba16-f8d8-c02e-d69648ab510b@mojatatu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26202/Tue Jun 15 13:21:24 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210612031135.225292-1-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/13/21 11:10 PM, Jamal Hadi Salim wrote:
-> On 2021-06-13 4:34 p.m., Kumar Kartikeya Dwivedi wrote:
->> On Mon, Jun 14, 2021 at 01:57:16AM IST, Jamal Hadi Salim wrote:
-[...]
->> Right, also I'm just posting so that the use cases I care about are clear, and
->> why they are not being fulifilled in some other way. How to do it is ofcourse up
->> to TC and BPF maintainers, which is why I'm still waiting on feedback from you,
->> Cong and others before posting the next version.
+On Fri, Jun 11, 2021 at 08:11:35PM -0700, Jakub Kicinski wrote:
+> There has been a few errors in the ethtool reply size calculations,
+> most of those are hard to trigger during basic testing because of
+> skb size rounding up and netdev names being shorter than max.
+> Add a more precise check.
 > 
-> I look at it from the perspective that if i can run something with
-> existing tc loading mechanism then i should be able to do the same
-> with the new (libbpf) scheme.
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> Michal, WDYT?
 
-The intention is not to provide a full-blown tc library (that could be subject to a
-libtc or such), but rather to only have libbpf abstract the tc related API that is
-most /relevant/ for BPF program development and /efficient/ in terms of execution in
-fast-path while at the same time providing a good user experience from the API itself.
+It's definitely an improvement and I agree with it. I only have two
+minor comments below.
 
-That is, simple to use and straight forward to explain to folks with otherwise zero
-experience of tc. The current implementation does all that, and from experience with
-large BPF programs managed via cls_bpf that is all that is actually needed from tc
-layer perspective. The ability to have multi programs (incl. priorities) is in the
-existing libbpf API as well.
+> 
+>  net/ethtool/netlink.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+> index 88d8a0243f35..3f9a1a96b4df 100644
+> --- a/net/ethtool/netlink.c
+> +++ b/net/ethtool/netlink.c
+> @@ -315,9 +315,9 @@ static int ethnl_default_doit(struct sk_buff *skb, struct genl_info *info)
+>  	struct ethnl_req_info *req_info = NULL;
+>  	const u8 cmd = info->genlhdr->cmd;
+>  	const struct ethnl_request_ops *ops;
+> +	int hdr_len, reply_len;
+>  	struct sk_buff *rskb;
+>  	void *reply_payload;
+> -	int reply_len;
+>  	int ret;
+>  
+>  	ops = ethnl_default_requests[cmd];
+> @@ -346,15 +346,20 @@ static int ethnl_default_doit(struct sk_buff *skb, struct genl_info *info)
+>  	ret = ops->reply_size(req_info, reply_data);
+>  	if (ret < 0)
+>  		goto err_cleanup;
+> -	reply_len = ret + ethnl_reply_header_size();
+> +	reply_len = ret;
+>  	ret = -ENOMEM;
+> -	rskb = ethnl_reply_init(reply_len, req_info->dev, ops->reply_cmd,
+> +	rskb = ethnl_reply_init(reply_len + ethnl_reply_header_size(),
+> +				req_info->dev, ops->reply_cmd,
+>  				ops->hdr_attr, info, &reply_payload);
+>  	if (!rskb)
+>  		goto err_cleanup;
+> +	hdr_len = rskb->len;
+>  	ret = ops->fill_reply(rskb, req_info, reply_data);
+>  	if (ret < 0)
+>  		goto err_msg;
+> +	WARN(rskb->len - hdr_len > reply_len,
+> +	     "ethnl cmd %d: calculated reply length %d, but consumed %d\n",
+> +	     cmd, reply_len, rskb->len - hdr_len);
+>  	if (ops->cleanup_data)
+>  		ops->cleanup_data(reply_data);
 
-Best,
-Daniel
+We may want WARN_ONCE or ratelimited here, if there is bug in reply
+length estimate for a request not requiring admin privileges, the
+warning might be invoked by a regular user at will.
+
+Also the patch changes the meaning of reply_len which is also used in
+the original warning after err_msg label. But it's probably not a big
+deal, it's not obvious what exactly "payload" means there so that anyone
+trying to investigate the problem has to start by checking what exactly
+the value reported means.
+
+Michal
