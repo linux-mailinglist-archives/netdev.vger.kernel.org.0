@@ -2,82 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 804393A79D5
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 11:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 007D13A7AFC
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 11:44:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231216AbhFOJLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 05:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231169AbhFOJLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 05:11:16 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38CC7C061574
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 02:09:11 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id a11so17444260wrt.13
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 02:09:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=zGk/ZhZWEg56YKF9pnwKft4+fj3bPtgDY5IUehTT0YA=;
-        b=mZTsRGnaY4Ds2/1B3krA07XI4Uhk3Jy6byQjqJe1frpjNvZeGMgPxMBcyoYAVZ6Dov
-         FkfrBYHYMXw1grfmiOQrGzXM/4ISlU7pPJQIIKy+656b6pGYxHYY02GZf7ru0SWFzus7
-         FWcbsYg9DRioLIOBwdAVpor6j+MHe3AzuafjKKFF02hNoANu8lzktFgyYa4vjw7SAnPp
-         weEC0UXCmJELKzCRtkt7mm0mX06hVR4k0O7Yj0YzY+Hhabs6pCiJBc2uj+OI5muciP4R
-         Oj/cNBFvsT9s4RkxouvLgbavNwx+MT4gSfpTaDeJuxWF9K1LPRsvj3vhcqbq+MbREuhu
-         hbLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=zGk/ZhZWEg56YKF9pnwKft4+fj3bPtgDY5IUehTT0YA=;
-        b=KjUMLKl+4SjdGu+QLr5lYK9cNwyC3/gFuXctYbY3Zw28nkME/L9fK+nkWmxfaySGx5
-         N2FZVJkBTB53geiwBpCz4fGHLasHafWoLilFYCJdBAWwM8kV5L64c4oY0HoOJGVlrEqE
-         1gLHHjHFqFJOkVGV8j4h2/MDkjnG/AZjevGWXg6ojCIsNoXMuj6X5SpTGe5j6S4yyBoY
-         yrGcmJq2RgRRwUdoUn6zDzkluiUgYF4dd6Ih7p6lmaNyTHgSB7CQtJjtvGVoEYwwPA9t
-         6vzkfHg02To4bAgjNuvIrvgmAqkRSvTvq57fIhB1WVP/dKa5Z910ei1ce7KnNeYBmSQa
-         v9PQ==
-X-Gm-Message-State: AOAM532o/pBB7IqlGszVFq5EeuTps9HAOt8u4nX/rLAEjGd5KoBxv0Pe
-        lOKwfEHKoVy1JZigSZTeIMb1qpY9TeJFbGyVtRU=
-X-Google-Smtp-Source: ABdhPJz6gNzA93Z4hFwFAOY0ol8Sc5M5j91RHXzgI6iDKrVNrWWJ4cmM/gT2oFwjFkZc/1JeR5N9dmBo2gMMWMfr/TA=
-X-Received: by 2002:adf:a489:: with SMTP id g9mr23677280wrb.103.1623748149732;
- Tue, 15 Jun 2021 02:09:09 -0700 (PDT)
+        id S231343AbhFOJqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 05:46:25 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:41207 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231214AbhFOJqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 05:46:24 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id BC6F15806F5;
+        Tue, 15 Jun 2021 05:44:19 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Tue, 15 Jun 2021 05:44:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=uPRVNROLX/rJzi54lhE5A5sUE5N
+        81CrRfRMujXEzKCI=; b=YIj48d/M0xtnFPhKoReFlLF2MgTT2wIjG3dCUw0POkS
+        78qjGB7YTQ+QaIgDYrBR9fUM520Frbx6/6oIageDNFmAC0EU3nf1gFlOLgy5oTSr
+        QGA0JSvnIFRwaaIszPRXkaVxCMYEOzpsBlKmqlCICDzSHhr53KT0rW935jFTw7hH
+        PomCPG5vE9clDp+4XSumnRz+oswwZpeE8xXcBmYym7Qedt7Mk9f8KA8VGIBcyZh6
+        tnrxBmiOL2xv3xM9m7DGv+Zl+VusEM0FBVHTs39CQhMT+fcP9JuYHELWTk9FvdDP
+        l2h59pq6+/DyyyFpiOAsgZnFcKqdBlrR5GtpmBVyrQQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=uPRVNR
+        OLX/rJzi54lhE5A5sUE5N81CrRfRMujXEzKCI=; b=bulS1Y6BZFhLrSkfsOFFLi
+        TeJ9+8VKGHf6lca+3/cbsIzdY9d/sTK9Bt4xMOVdKLCirWrnzzbPNE1AtI0V/XSH
+        qiQ9nWX+kL/uLRxg0F61aw4Yr0qVvwEYBsGN0rJhSEcCNcpLYAFr66kHlR1OqBok
+        kZhnsTNzwauj0GaLB5XS2tMqxdJ9AZIsOz/9JTazAIUiBogCCsn6r5kWxms0+0Z9
+        oegcsu/Vq7rjVP//ENmbG/kCvq2VppGSBNtuxSjHWw3dWuqnuWtd8WUtDnKhtuU4
+        ZZa4mA1etS+STeebJbZ6kEso/ADVAyH/YDXT5zJMXT+Jp8ab+JYX6Mreglaw5lTg
+        ==
+X-ME-Sender: <xms:c3bIYFTqrHQwspj04gDRqSjAyWj_oQR6r9vny6dmVAdBAnsWOmFFHQ>
+    <xme:c3bIYOxZjS1yrHkQx0iou-su2V9XtjRE7b2p-ZfeEXbaq2iOjXnCrdh9U4RYgLgAB
+    v_bxyeMV7S15w>
+X-ME-Received: <xmr:c3bIYK2p6ejWeEP5NTgSSkNG3peMXahwVstfUoDy6Aj9muMNyTeY8UhbJctfya0KHnpc5vF5VnkTeo3PfqyEc-FTsYXpn3WP>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedvjedgudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:c3bIYNAYTtAcvQJSXttGiu6dVqLKrhtvt3gP5VIDs80pUzvUCIUDvQ>
+    <xmx:c3bIYOg0j1fC0EEOhfHXmuSU4Y_vJPpCunkFa4zItYx75TgZ_C49Gw>
+    <xmx:c3bIYBqTSGjDin_gTjlmkeqIBDze3Ha0Mz9OsfznTNz_FmybwU0CCw>
+    <xmx:c3bIYO6RN4PhSIFNLSjwZWeHo5xKXA0ryV5BDva6FJwm9QzbShJTtw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 15 Jun 2021 05:44:18 -0400 (EDT)
+Date:   Tue, 15 Jun 2021 11:44:15 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
+Message-ID: <YMh2b0LvT9H7SuNC@kroah.com>
+References: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
+ <YMhY9NHf1itQyup7@kroah.com>
+ <CAD-N9QVfDQQo0rRiaa6Cx-xO80yox9hNzK91_UVj0KNgkhpvnQ@mail.gmail.com>
 MIME-Version: 1.0
-Reply-To: mrscarolinemanon9@gmail.com
-Sender: benjaminfusa@gmail.com
-Received: by 2002:a1c:4089:0:0:0:0:0 with HTTP; Tue, 15 Jun 2021 02:09:09
- -0700 (PDT)
-From:   "Mrs. Caroline Manon" <mrscarolinemanonn@gmail.com>
-Date:   Tue, 15 Jun 2021 10:09:09 +0100
-X-Google-Sender-Auth: uwvOKwcOGarDgZf1qlrlqugtmXQ
-Message-ID: <CAJ+brRoH3+-Kz+cXQocW6W4UhAab2FZ8d5g5xqbUmOfe4SuyBA@mail.gmail.com>
-Subject: Greetings from Mrs. Caroline Manon.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAD-N9QVfDQQo0rRiaa6Cx-xO80yox9hNzK91_UVj0KNgkhpvnQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On Tue, Jun 15, 2021 at 03:56:32PM +0800, Dongliang Mu wrote:
+> On Tue, Jun 15, 2021 at 3:38 PM Greg KH <greg@kroah.com> wrote:
+> >
+> > On Mon, Jun 14, 2021 at 11:37:12PM +0800, Dongliang Mu wrote:
+> > > The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+> > > fails to clean up the work scheduled in smsc75xx_reset->
+> > > smsc75xx_set_multicast, which leads to use-after-free if the work is
+> > > scheduled to start after the deallocation. In addition, this patch also
+> > > removes one dangling pointer - dev->data[0].
+> > >
+> > > This patch calls cancel_work_sync to cancel the schedule work and set
+> > > the dangling pointer to NULL.
+> > >
+> > > Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > ---
+> > >  drivers/net/usb/smsc75xx.c | 3 +++
+> > >  1 file changed, 3 insertions(+)
+> > >
+> > > diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
+> > > index b286993da67c..f81740fcc8d5 100644
+> > > --- a/drivers/net/usb/smsc75xx.c
+> > > +++ b/drivers/net/usb/smsc75xx.c
+> > > @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
+> > >       return 0;
+> > >
+> > >  err:
+> > > +     cancel_work_sync(&pdata->set_multicast);
+> > >       kfree(pdata);
+> > > +     pdata = NULL;
+> >
+> > Why do you have to set pdata to NULL afterward?
+> >
+> 
+> It does not have to. pdata will be useless when the function exits. I
+> just referred to the implementation of smsc75xx_unbind.
 
-I know that this mail will come to you as a surprise as we have never
-met before, but need not to worry as I am contacting you independently
-of my investigation and no one is informed of this communication. I
-need your urgent assistance in transferring the sum of U$10.5 million
-immediately to your private account, The money has been here in our
-Bank lying dormant for years now without anybody coming for the claim
-of it.
-
-I want the money to be release to you as the relative to our deceased
-customer (the account owner) who died a long with his supposed Next Of
-Kin since 16th October 2005. The Banking laws here does not allow such
-money to stay more than 16 years, because the money will be recalled
-to the Bank treasury account as unclaimed fund.
-
-By indicating your interest I will send you the full details on how
-the business will be executed.
-
-Please respond urgently and delete if you are not interested.
-
-Best Regards,
-Mrs. Caroline Manon.
+It's wrong there too :)
