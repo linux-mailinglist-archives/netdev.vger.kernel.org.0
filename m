@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C603A73AA
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 04:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE413A73A0
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 04:23:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbhFOCZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 22:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231532AbhFOCZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 22:25:27 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ACD0C061574;
-        Mon, 14 Jun 2021 19:23:23 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id g12so10165108qtb.2;
-        Mon, 14 Jun 2021 19:23:23 -0700 (PDT)
+        id S231332AbhFOCZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 22:25:23 -0400
+Received: from mail-qk1-f179.google.com ([209.85.222.179]:36698 "EHLO
+        mail-qk1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229689AbhFOCZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 22:25:22 -0400
+Received: by mail-qk1-f179.google.com with SMTP id i68so36960365qke.3;
+        Mon, 14 Jun 2021 19:23:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eN4jLDO5ZyjqYLbpt/gFWZcY5yGAo59kBcRM9OErJwo=;
-        b=d7YB4179DjPirCANDqeGzyc6MZHJ/65nBoRHl77NvSByKmVk4xerbbil1ajiODX+/j
-         HLWlD30eRLywnGp7u8x2Aq0XESnxAbtBDwO8VUjIozabHJgI5AvqaWxke0tm8Ig6KWUO
-         +3knEQDx88GLh/JhV22exhNJtfpD5virR/c33i5Uwf7sVGl/T3a8zfiS+1pRSk2jC0lE
-         W6t2yBEu8F19IKHxWWLMJiUd/tWxhv9cV1BYz8NDWuZBAomJV+J88C6gY0XT+iUQ3sWg
-         iIlIMB7ARt1CLsn8VPZlKaGEWTryuFWtyw8hzFXmUI0cLQ6XmTzWJdX3nEYBR2azMTDk
-         cu7w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=utSDi74JoxgeFkn6+VzF9KRMzUGip+skVUxRXuPWjX0=;
+        b=I5MKGwIiqyzjIfqJa0sA7eJ9/pLktaqzVsh5G6k6BX/pJGIJKjyy05IFd8TpJLa5MA
+         pXVcT1zjFGmXQ/m4EcTpgsuOy4uwuIX7pHde7HQEmAmTdvKogrOGmcpWh9gWK4zb7f5S
+         xvAqt94OQqYWg9jdo14jKMlgcwJ8vs355aYUVHFSGqQ/FOPSdXZOc7XBT4znoCd97s93
+         oRGejrt0m4i/9UedHt9CnpmZWYJhGzCSTKP80WTSDzZcdYCPKfgNsTAw8VimNyvY5pxm
+         nl+vfR7rsrII0EvWhyCzwh/LMsAcYd71pzKfMUTHHOhrsRnnBcv2bWIqM7MdMDe20Lsr
+         GUUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eN4jLDO5ZyjqYLbpt/gFWZcY5yGAo59kBcRM9OErJwo=;
-        b=H4Y7yLXHtZ5zFt7uVB/p7SAaMJQNyozgm8IpoVwuWJlWJ/d6T2NTNXLxkXWyqxNqdC
-         slnve2SCuq3Ek6xZMtIWsVOD4XGUBGkKQtMnfU1P3urroHY7pVEeWwsQoVMQHS2b1hlk
-         qoU+GOzZ/UefiMG9qni8RpYCwVzms6+Xuq99KzFKtYYVEv7sw4TP0Vxsbwzv9gll82uQ
-         Th0uNdc8CrPNCm24vsoBuvc4OPgY4gEU2UAJYS8zzTv5JWsj4xvUipP0CoiHpvbqEPYo
-         i5yhbXoDjgLZOsFhSNDTSDhkUhwgz4qGrjrfWcInHjhW2GELz024KYWFgtsWQndwvizm
-         5ElQ==
-X-Gm-Message-State: AOAM532+GlwNQtG5LwN4UDX6mED9tuHnLtwWGluveLzsGPZ9sMRLMOmM
-        p2CXHRZbWuFoLCvrLbwvT4ZnfF3m5PgcGw==
-X-Google-Smtp-Source: ABdhPJzYC0/49AofL9k7eso6yPXhOa80WdN6e6H0bNtvrtxbrI9xhZzOPrHUUXJQFA2jGakqsnhAYQ==
-X-Received: by 2002:a37:a1d5:: with SMTP id k204mr19816231qke.300.1623723235086;
-        Mon, 14 Jun 2021 19:13:55 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=utSDi74JoxgeFkn6+VzF9KRMzUGip+skVUxRXuPWjX0=;
+        b=p+sZPti+0p3OS9SiE7csyIyefutOhNmKwk1E9U4H3spJVVEqwelmwgHdvYn2m3ahVW
+         xqUJyQV+kYV34iYS1VjaH+jau0Wfg7OYygoYUGwNwSiA/pFdxC0TXd5MHqtTY0VJqXKe
+         1wceWw0H4fTgjIymgP2pES/CknYC/D6djdswjIL6znRQjQbd3sjhG6zHu9oBU4sFIzqT
+         b75KVaq0y2szYCH0dXCF02301SFG4WIpIEAut4nj4uN8dLCPSATmOPVxaV75eHonglPW
+         7daL0PjBfijARzh9xiakIgKGVgv2qe1JCeNxKbbbZF/qShyPOg2goW47MVlDO+PbKI4u
+         g1Bg==
+X-Gm-Message-State: AOAM531nkUFz56LuyLMDnGe0lKi+qC87vPoAwBGqLQp3k5XKlUfMwtqk
+        fd0FbgLOFVTB0/bQYrRF/GjYHfEinsBOzg==
+X-Google-Smtp-Source: ABdhPJxAYSngxxAksyB+vc/nTlMLwXTToT29novZ9PebuWBhrwfpN8fee14VyMKUkrqEqqDe9gAn+g==
+X-Received: by 2002:a37:8345:: with SMTP id f66mr19165442qkd.396.1623723236367;
+        Mon, 14 Jun 2021 19:13:56 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:e9a1:5f1d:df88:4f3c])
-        by smtp.gmail.com with ESMTPSA id t15sm10774497qtr.35.2021.06.14.19.13.54
+        by smtp.gmail.com with ESMTPSA id t15sm10774497qtr.35.2021.06.14.19.13.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 19:13:54 -0700 (PDT)
+        Mon, 14 Jun 2021 19:13:55 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH RESEND bpf v3 0/8] sock_map: some bug fixes and improvements
-Date:   Mon, 14 Jun 2021 19:13:34 -0700
-Message-Id: <20210615021342.7416-1-xiyou.wangcong@gmail.com>
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: [PATCH RESEND bpf v3 1/8] skmsg: improve udp_bpf_recvmsg() accuracy
+Date:   Mon, 14 Jun 2021 19:13:35 -0700
+Message-Id: <20210615021342.7416-2-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210615021342.7416-1-xiyou.wangcong@gmail.com>
+References: <20210615021342.7416-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -63,48 +65,201 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-This patchset contains a few bug fixes and improvements for sock_map.
+I tried to reuse sk_msg_wait_data() for different protocols,
+but it turns out it can not be simply reused. For example,
+UDP actually uses two queues to receive skb:
+udp_sk(sk)->reader_queue and sk->sk_receive_queue. So we have
+to check both of them to know whether we have received any
+packet.
 
-Patch 1 improves recvmsg() accuracy for UDP, patch 2 improves UDP
-non-blocking read() by retrying on EAGAIN. With both of them, the
-failure rate of the UDP test case goes down from 10% to 1%.
+Also, UDP does not lock the sock during BH Rx path, it makes
+no sense for its ->recvmsg() to lock the sock. It is always
+possible for ->recvmsg() to be called before packets actually
+arrive in the receive queue, we just use best effort to make
+it accurate here.
 
-Patch 3 is memory leak fix I posted, no change since v1. The rest
-patches address similar memory leaks or improve error handling,
-including one increases sk_drops counter for error cases. Please
-check each patch description for more details.
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-
+Fixes: 1f5be6b3b063 ("udp: Implement udp_bpf_recvmsg() for sockmap")
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jakub Sitnicki <jakub@cloudflare.com>
+Cc: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
-Resend this patchset as it is lost after John's review.
+ include/linux/skmsg.h |  2 --
+ net/core/skmsg.c      | 23 ---------------------
+ net/ipv4/tcp_bpf.c    | 24 +++++++++++++++++++++-
+ net/ipv4/udp_bpf.c    | 47 ++++++++++++++++++++++++++++++++++++++-----
+ 4 files changed, 65 insertions(+), 31 deletions(-)
 
-v3: add another bug fix as patch 4
-    update patch 5 accordingly
-    address John's review on the last patch
-    fix a few typos in patch descriptions
-
-v2: group all patches together
-    set max for retries of EAGAIN
-
-Cong Wang (8):
-  skmsg: improve udp_bpf_recvmsg() accuracy
-  selftests/bpf: Retry for EAGAIN in udp_redir_to_connected()
-  udp: fix a memory leak in udp_read_sock()
-  skmsg: clear skb redirect pointer before dropping it
-  skmsg: fix a memory leak in sk_psock_verdict_apply()
-  skmsg: teach sk_psock_verdict_apply() to return errors
-  skmsg: pass source psock to sk_psock_skb_redirect()
-  skmsg: increase sk->sk_drops when dropping packets
-
- include/linux/skmsg.h                         |  2 -
- net/core/skmsg.c                              | 82 +++++++++----------
- net/ipv4/tcp_bpf.c                            | 24 +++++-
- net/ipv4/udp.c                                |  2 +
- net/ipv4/udp_bpf.c                            | 47 +++++++++--
- .../selftests/bpf/prog_tests/sockmap_listen.c |  7 +-
- 6 files changed, 112 insertions(+), 52 deletions(-)
-
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index aba0f0f429be..e3d080c299f6 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -126,8 +126,6 @@ int sk_msg_zerocopy_from_iter(struct sock *sk, struct iov_iter *from,
+ 			      struct sk_msg *msg, u32 bytes);
+ int sk_msg_memcopy_from_iter(struct sock *sk, struct iov_iter *from,
+ 			     struct sk_msg *msg, u32 bytes);
+-int sk_msg_wait_data(struct sock *sk, struct sk_psock *psock, int flags,
+-		     long timeo, int *err);
+ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
+ 		   int len, int flags);
+ 
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 43ce17a6a585..f9a81b314e4c 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -399,29 +399,6 @@ int sk_msg_memcopy_from_iter(struct sock *sk, struct iov_iter *from,
+ }
+ EXPORT_SYMBOL_GPL(sk_msg_memcopy_from_iter);
+ 
+-int sk_msg_wait_data(struct sock *sk, struct sk_psock *psock, int flags,
+-		     long timeo, int *err)
+-{
+-	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+-	int ret = 0;
+-
+-	if (sk->sk_shutdown & RCV_SHUTDOWN)
+-		return 1;
+-
+-	if (!timeo)
+-		return ret;
+-
+-	add_wait_queue(sk_sleep(sk), &wait);
+-	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+-	ret = sk_wait_event(sk, &timeo,
+-			    !list_empty(&psock->ingress_msg) ||
+-			    !skb_queue_empty(&sk->sk_receive_queue), &wait);
+-	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+-	remove_wait_queue(sk_sleep(sk), &wait);
+-	return ret;
+-}
+-EXPORT_SYMBOL_GPL(sk_msg_wait_data);
+-
+ /* Receive sk_msg from psock->ingress_msg to @msg. */
+ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
+ 		   int len, int flags)
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index ad9d17923fc5..bb49b52d7be8 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -163,6 +163,28 @@ static bool tcp_bpf_stream_read(const struct sock *sk)
+ 	return !empty;
+ }
+ 
++static int tcp_msg_wait_data(struct sock *sk, struct sk_psock *psock, int flags,
++			     long timeo, int *err)
++{
++	DEFINE_WAIT_FUNC(wait, woken_wake_function);
++	int ret = 0;
++
++	if (sk->sk_shutdown & RCV_SHUTDOWN)
++		return 1;
++
++	if (!timeo)
++		return ret;
++
++	add_wait_queue(sk_sleep(sk), &wait);
++	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
++	ret = sk_wait_event(sk, &timeo,
++			    !list_empty(&psock->ingress_msg) ||
++			    !skb_queue_empty(&sk->sk_receive_queue), &wait);
++	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
++	remove_wait_queue(sk_sleep(sk), &wait);
++	return ret;
++}
++
+ static int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 		    int nonblock, int flags, int *addr_len)
+ {
+@@ -188,7 +210,7 @@ static int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 		long timeo;
+ 
+ 		timeo = sock_rcvtimeo(sk, nonblock);
+-		data = sk_msg_wait_data(sk, psock, flags, timeo, &err);
++		data = tcp_msg_wait_data(sk, psock, flags, timeo, &err);
+ 		if (data) {
+ 			if (!sk_psock_queue_empty(psock))
+ 				goto msg_bytes_ready;
+diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
+index 954c4591a6fd..565a70040c57 100644
+--- a/net/ipv4/udp_bpf.c
++++ b/net/ipv4/udp_bpf.c
+@@ -21,6 +21,45 @@ static int sk_udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	return udp_prot.recvmsg(sk, msg, len, noblock, flags, addr_len);
+ }
+ 
++static bool udp_sk_has_data(struct sock *sk)
++{
++	return !skb_queue_empty(&udp_sk(sk)->reader_queue) ||
++	       !skb_queue_empty(&sk->sk_receive_queue);
++}
++
++static bool psock_has_data(struct sk_psock *psock)
++{
++	return !skb_queue_empty(&psock->ingress_skb) ||
++	       !sk_psock_queue_empty(psock);
++}
++
++#define udp_msg_has_data(__sk, __psock)	\
++		({ udp_sk_has_data(__sk) || psock_has_data(__psock); })
++
++static int udp_msg_wait_data(struct sock *sk, struct sk_psock *psock, int flags,
++			     long timeo, int *err)
++{
++	DEFINE_WAIT_FUNC(wait, woken_wake_function);
++	int ret = 0;
++
++	if (sk->sk_shutdown & RCV_SHUTDOWN)
++		return 1;
++
++	if (!timeo)
++		return ret;
++
++	add_wait_queue(sk_sleep(sk), &wait);
++	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
++	ret = udp_msg_has_data(sk, psock);
++	if (!ret) {
++		wait_woken(&wait, TASK_INTERRUPTIBLE, timeo);
++		ret = udp_msg_has_data(sk, psock);
++	}
++	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
++	remove_wait_queue(sk_sleep(sk), &wait);
++	return ret;
++}
++
+ static int udp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 			   int nonblock, int flags, int *addr_len)
+ {
+@@ -34,8 +73,7 @@ static int udp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	if (unlikely(!psock))
+ 		return sk_udp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+ 
+-	lock_sock(sk);
+-	if (sk_psock_queue_empty(psock)) {
++	if (!psock_has_data(psock)) {
+ 		ret = sk_udp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+ 		goto out;
+ 	}
+@@ -47,9 +85,9 @@ static int udp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 		long timeo;
+ 
+ 		timeo = sock_rcvtimeo(sk, nonblock);
+-		data = sk_msg_wait_data(sk, psock, flags, timeo, &err);
++		data = udp_msg_wait_data(sk, psock, flags, timeo, &err);
+ 		if (data) {
+-			if (!sk_psock_queue_empty(psock))
++			if (psock_has_data(psock))
+ 				goto msg_bytes_ready;
+ 			ret = sk_udp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+ 			goto out;
+@@ -62,7 +100,6 @@ static int udp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	}
+ 	ret = copied;
+ out:
+-	release_sock(sk);
+ 	sk_psock_put(sk, psock);
+ 	return ret;
+ }
 -- 
 2.25.1
 
