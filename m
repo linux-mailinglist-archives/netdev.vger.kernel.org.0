@@ -2,485 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32EE93A758D
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 06:02:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2E513A75BA
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 06:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231218AbhFOEEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 00:04:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37560 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230076AbhFOEDi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Jun 2021 00:03:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DE1EE61416;
-        Tue, 15 Jun 2021 04:01:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623729695;
-        bh=KWr/Ivt5kiCZy1zCL6lMwm7cAvpLgdsreK9UpLtZFWo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N6Zny4vZe9mhMt98qLzw6o6bRH9XFu4kTAQ9RMCINOgYbn3s55D2c3RHLLCfCINKh
-         0Y3XqygGy5FxdZDkNqn/+B4XkGcw02ubrvWtSU7e6FucGyjHM17hXmZN5eTy9wUD9/
-         88tznxTmFXzafA6XbwhbQMXiuPvAjZ+7TbUSPVjoiD2d8liCuWOKPPaYImzrC4DszH
-         dvwzML0fxz8YKMP7NaJl6qKqbepLYQzwACYYbj7oaWwk9NEzSCzgwCXI/uLcUTo8Y0
-         IjMRvsxKthaOaKbobYbFLN6uas6qWwrTEehq6xbsJipBM5ixlQ3psNL3dmfc1EeWxO
-         2Srzrddugfh1Q==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 15/15] net/mlx5: Round-Robin EQs over IRQs
-Date:   Mon, 14 Jun 2021 21:01:23 -0700
-Message-Id: <20210615040123.287101-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210615040123.287101-1-saeed@kernel.org>
-References: <20210615040123.287101-1-saeed@kernel.org>
+        id S229557AbhFOEX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 00:23:57 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:55956 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229463AbhFOEX4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 00:23:56 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15F4KIHS020050;
+        Mon, 14 Jun 2021 21:21:37 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=aPewMbt1AdRl34nTgLc0dq+tKH1iKJP/ksOqyx1Ixl4=;
+ b=QG5mWis8lbuXwOjHNDV5SHI3fqGhMAAEq8W5VnRnJl+c0nF9AKpGqNKGoFvikk/T/JJF
+ 6KY17YbzR6o9tglH4rmEUfV3OQ+sHE4H63v3nFzwouCymFvG5cfwAFEbi7NSVtxMHtGK
+ hWk3xMwCaGcn0TSFZ8FR5BHEBm2op2HILXc= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 395d0x1q1x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 14 Jun 2021 21:21:37 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 14 Jun 2021 21:21:36 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=N0jW5QkAnEELTLAemE2BqPvCWj1ZUq5w60JUICJjOSmUgbxaoet8APh861KUVkyF5vJX6BgJsflR/Hf4nzIJZ9FX+a3h0zmStFkmgX+2jSRLUnT7YYrdKDUPhZVH++qUkVh3dyeNyVpBtYrhZHQTAlqb7rFUhpgwQ2ve171AVxBo/AKpuFwIL7tXZu8z+B9S0LpefeKOWMp9rm4iLa8pkGsgfNwawQDJoxn+FieHHUujnCkB9jAyC0NVF8yivpiVErtBwOCiGLP7ooYIXki8nztkNw8JhOhL2vAkcN+S6edRaFi1mKOQTOVG85DpmATl5iVlKaTUgvU6oZjx2s6V+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aPewMbt1AdRl34nTgLc0dq+tKH1iKJP/ksOqyx1Ixl4=;
+ b=iCYV7ziGlDeo1aAMe8q66kSTpvN52CKyfmA8iSMu419gEdlJL96Tp3vj+Y+z24HtWoLps2BN31KsP65FJt2soQ2zO1SNi/sstvWUmp6Ko8bJm9jBSxDMLEJ8TSeq7BcGz2Qn6sCdcjMr/AR8SKcL6wJ9srMNeJ4lwe+aZs3lbDkt9Hx09WhOKszC9Kchi3xixKT0TPHr3p0K+wutyFqEcoX9/aNLZWvCfUW29OHbtY86aAoLbhx+Wor9rAyFNL5i5VxMcssgWZSXTB7vCUowAKZYy13G/75KEkJ8tHete+OaqDrl4Sxkdp9Z+RnWRlYHJLLrmFZ4EkcTTCNMy1mTsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SA1PR15MB4418.namprd15.prod.outlook.com (2603:10b6:806:195::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21; Tue, 15 Jun
+ 2021 04:21:36 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::d886:b658:e2eb:a906]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::d886:b658:e2eb:a906%5]) with mapi id 15.20.4219.025; Tue, 15 Jun 2021
+ 04:21:36 +0000
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Introduce bpf_timer
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+References: <20210611042442.65444-1-alexei.starovoitov@gmail.com>
+ <20210611042442.65444-2-alexei.starovoitov@gmail.com>
+ <f36d19e7-cc6f-730b-cf13-d77e1ce88d2f@fb.com>
+ <CAADnVQKKrb1kz_C-v7RcgYgEe_JPhhpL4W6ySM28HcE_g=ncVw@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <09936db4-c94a-98f9-0b2b-01d398676db8@fb.com>
+Date:   Mon, 14 Jun 2021 21:21:32 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
+In-Reply-To: <CAADnVQKKrb1kz_C-v7RcgYgEe_JPhhpL4W6ySM28HcE_g=ncVw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [2620:10d:c090:400::5:1623]
+X-ClientProxiedBy: BY5PR17CA0052.namprd17.prod.outlook.com
+ (2603:10b6:a03:167::29) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21e8::1139] (2620:10d:c090:400::5:1623) by BY5PR17CA0052.namprd17.prod.outlook.com (2603:10b6:a03:167::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.15 via Frontend Transport; Tue, 15 Jun 2021 04:21:34 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 80fa4375-71bf-416d-2a00-08d92fb51052
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4418:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SA1PR15MB4418A792048681ACF4E98AD0D3309@SA1PR15MB4418.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fQ0YvHE/cLafpOWkHvsPT+ME/Xg11fPB53MnOU1fu0bda1BcMzqyTVuMLq1x/hUE4ZqRsTBilwavmMY6c8L2g4SuQESgF4pZNTLa7lVY7SZgUKrIRsPKq6WY68BlCN6S8NCwwcYcnZLfJSkAY36O7bfXzDCTtbqh1EmU2/8RLrKrPICuNoERlhzXiyEAhj+TYoQdBwz/4/2LJw3GRSAfUtcjoReXrF341/yvZKAuTRIYWXJYZr3a3Zu2AmzfFospxYcSXh0qn+XtLSWdFWK5P1CIH7Y6nZ8lGUTF2KJDcKuFZWxtbLB+xN1moRyEVYnEUWxhU8Ey9SRaK4nQkZIVNmeZt2+8fkfBoiLVIqxwLHUyhWTbqV5TVXbjh8r67UPaRRgriP5VI6No2Rjy3Ou1kl1Bwnav4lhSAAiVE3qRtlmI5ByU1XZsxrbjo2lRTqsX6/x2k/nZV8JrdzZSHktxncUrYVAw/nq8p7ehBMFAQLGimXe2d05+Ri90PWuCTDqPJ1tsL1Jirfc9WgJNubm6zMQ7Xd+pFmS0YRctWGQKKUCCENtVhxNyN1dgQLFN3iDW6AME2KhOp3eszT2cEb5Gt6l5CxWj4APOCXS+b2NUuUjeAuKSkhpXdMdeUlhMcagm7cBFl3r6FVUGDnC2RMayYna26tYk+Z+l3dg0fEj4few=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(136003)(39860400002)(346002)(376002)(8936002)(316002)(54906003)(31696002)(53546011)(86362001)(38100700002)(2616005)(83380400001)(2906002)(5660300002)(52116002)(4326008)(8676002)(6486002)(66476007)(66556008)(16526019)(186003)(6916009)(66946007)(31686004)(478600001)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZjBoaXg0QTVEV05kYW51UFJlSHI0bVovRWVPdkV2cUJjSEkxaEJXaUZYV0NT?=
+ =?utf-8?B?KzdRWmszUUJla2oxRU9DNWN3NW1wYlZyNmVKTUFrb3Y2bDUzMzN6c1ZXZjRR?=
+ =?utf-8?B?V3VPNGc2NHgrYVlMektMWW1FTkV1bTQwZ0NIMGJVeDJlbEY5bGNmaHVBbTU3?=
+ =?utf-8?B?OUJ4aCtvMVZCUU1sQUk3TkFTdFdPUjRseG02eWlFd2xsTlRrRCtpV1dyRFd6?=
+ =?utf-8?B?RVkzV0FTT2VZSkdFei9BTzJhWHFZbmVadzNvbkZMY1ZUb1ZNbnJ6NkZHejNT?=
+ =?utf-8?B?RnpndzhldUYyQkNDOVJrdWZqSjV5V3V2UjBJU3didEUvUVlDS3cvNWIxV2Ux?=
+ =?utf-8?B?Sm0vdVVwc2ZVTHNadjlTNzR5WGs2ZVJTUHZFbG56NmdTalh4L29mRGF5T2Vv?=
+ =?utf-8?B?Z3pWUk1CcFF6U1RDWjZuR0E3Lys4SWx3cWpMYytRSTVPM3Qza3ZPOHBXWWd5?=
+ =?utf-8?B?TURidEN1Ync3ZGM2bEdqZ2NOejNhdXJDcGM5eVF4Q2p1WXp0SWlSV2w4eUNS?=
+ =?utf-8?B?T3c1WjR2MStpR1lwVFBxd2FnRFo4Sm12MDJoYnVITWtKQ0lGZUMwaElRcnJN?=
+ =?utf-8?B?Ky9UT3hKQS9hUVVQVHMzK2FMSllPOXBRSlI3OXJ3UjlFemFWaVErb0FjN2hT?=
+ =?utf-8?B?UDJmUkZwWVo0QklRL0VqM0pCM1FpY2JxSUdjZmova09xb29xdDVJc084dTVL?=
+ =?utf-8?B?eFY2dkRhV3VWN0xVaGNjR0V4dm41aTZ5OU1sK0lTbURTTmxVVS92aUs2ZEVp?=
+ =?utf-8?B?QWN2aVhMR3kycnM3NHRrUS9iQ3RxTlBBZUFvdXAwZkNUQnpZN1dQSFQxeXRz?=
+ =?utf-8?B?UFhyTFo3RmdOZm9sWkE4bHl1WTJTSm5UT1I4ajBOZWJ6ZExqaGdDQmtJb0li?=
+ =?utf-8?B?RDFNUE9yQWx4bjQ4bDdLeFN4ZTBJMTdpNkthSEJxQ082UzBkZnRqcEdKREJT?=
+ =?utf-8?B?NXJCTkhtWm5xUE9COHRZZndmUjVmQXlrWnc4d3VDajJ6NEhsR1pjd1dYWUh3?=
+ =?utf-8?B?QkJWUmFYaHZIcDdqblJibXo1d3BQMVRrdWdZSk5XY3YwOTM2RldkQWtHVUtB?=
+ =?utf-8?B?OUs1RXZ2S25RbnVMdm9iSVFRNzdvK252VjlqTk94UHZ4VWdpcjdPWXkybWda?=
+ =?utf-8?B?L04reWFoV3kxSTJHRFE3VWVXVHJpU1UzMGFDR05UVUs4UjZsUXYvZkUxNFVZ?=
+ =?utf-8?B?RGtZWkVkWlBrVUxma1JBUVVEMkFXUlNKQWtraUtxWkttNVVCdFBwS3NST1Fk?=
+ =?utf-8?B?QTR0U0dMZ0o1c1JIRTVtYWhoR0E0WjlkYkRmMlRtMVhpYXRuV1pHb1F6SGY5?=
+ =?utf-8?B?L1FnS3NreUNtcjZtQ1Iwbmx3ZkQxck5jeDIrbWM1TFN5d3NESTNaNFhoRXJp?=
+ =?utf-8?B?bGJ4Yyt2S0dVRTFkaHRZY0RCc1B5Q2YrYnRaWVF4MlAwazNGT2JSTlAwVXd2?=
+ =?utf-8?B?WXpVZXdpSjE0aGJBWkM4QmFtNnlwVFdFOEYxZ3FUNVkyN2gwUTRDOXg2R0Vv?=
+ =?utf-8?B?SzZ2Nzc2WGhMN2gwM2tBV2FyNWxFNHUwVERrQmRDK2lRaEo1bTBVZEwrSS9T?=
+ =?utf-8?B?SjluK0xCb1Bsb3JjZ0RIZXNld0lVb0VnbWdlMVNkdkdaMVBkWEJhd1BiaWRO?=
+ =?utf-8?B?NnY4M0hYd2R2d0xGWFZWNTltZW5EOWNHdzFJUGZiQU8xWEpqNlQ1cVdjcnN6?=
+ =?utf-8?B?dXpGS0lWYXdkYlZBeU0vOWRSSG8vWU9zd05BN1BZQTZUemhIMm95WTlKUEF5?=
+ =?utf-8?B?SjZqeDNBN0pQYzQ5MmF3YkhhQ0ZlZlhneEJOZ0VDQy9zZGZXMldjdTFFaGRx?=
+ =?utf-8?B?T1RzK2EveU9vOU8wdFhxQT09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80fa4375-71bf-416d-2a00-08d92fb51052
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2021 04:21:36.0841
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PohRbuVQQ6VBbMtDzWKO4aifBJ7DaZeum+Q5szmAhpsRF6ndAzDtM7kDkY+51K9p
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4418
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: vF92IO_dF5KjVI2mIJaEkiigtZetKwG9
+X-Proofpoint-ORIG-GUID: vF92IO_dF5KjVI2mIJaEkiigtZetKwG9
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-06-15_03:2021-06-14,2021-06-15 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ mlxlogscore=999 mlxscore=0 bulkscore=0 priorityscore=1501 impostorscore=0
+ suspectscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0 clxscore=1015
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106150025
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shay Drory <shayd@nvidia.com>
 
-Whenever users provided affinity for an EQ creation request, map the
-EQ to a matching IRQ.
-Matching IRQ=IRQ with the same affinity and type (completion/control) of
-the EQ created.
 
-This mapping is being done in agressive dedicated IRQ allocation scheme,
-which described bellow.
+On 6/14/21 8:33 PM, Alexei Starovoitov wrote:
+> On Fri, Jun 11, 2021 at 3:12 PM Yonghong Song <yhs@fb.com> wrote:
+>>> +struct bpf_hrtimer {
+>>> +     struct hrtimer timer;
+>>> +     struct bpf_map *map;
+>>> +     struct bpf_prog *prog;
+>>> +     void *callback_fn;
+>>> +     void *value;
+>>> +};
+>>> +
+>>> +/* the actual struct hidden inside uapi struct bpf_timer */
+>>> +struct bpf_timer_kern {
+>>> +     struct bpf_hrtimer *timer;
+>>> +     struct bpf_spin_lock lock;
+>>> +};
+>>
+>> Looks like in 32bit system, sizeof(struct bpf_timer_kern) is 64
+>> and sizeof(struct bpf_timer) is 128.
+>>
+>> struct bpf_spin_lock {
+>>           __u32   val;
+>> };
+>>
+>> struct bpf_timer {
+>>          __u64 :64;
+>>          __u64 :64;
+>> };
+>>
+>> Checking the code, we may not have issues as structure
+>> "bpf_timer" is only used to reserve spaces and
+>> map copy value routine handles that properly.
+>>
+>> Maybe we can still make it consistent with
+>> two fields in bpf_timer_kern mapping to
+>> two fields in bpf_timer?
+>>
+>> struct bpf_timer_kern {
+>>          __bpf_md_ptr(struct bpf_hrtimer *, timer);
+>>          struct bpf_spin_lock lock;
+>> };
+> 
+> Such alignment of fields is not necessary,
+> since the fields are not accessible directly from bpf prog.
+> struct bpf_timer_kern needs to fit into struct bpf_timer and
+> alignof these two structs needs to be the same.
+> That's all. I'll add build_bug_on to make sure.
 
-First, we check whether there is a matching IRQ that his min threshold
-is not exhausted.
-   - min_eqs_threshold = 3 for control EQ.
-   - min_eqs_threshold = 1 for completion EQ.
-In case no matching IRQ was found, try to request a new IRQ.
-In case we can't request a new IRQ, reuse least-used matching IRQ.
-
-Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/infiniband/hw/mlx5/odp.c              |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  14 +-
- .../ethernet/mellanox/mlx5/core/mlx5_irq.h    |   4 +-
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 197 ++++++++++++++++--
- 4 files changed, 189 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/infiniband/hw/mlx5/odp.c b/drivers/infiniband/hw/mlx5/odp.c
-index 8f88b044ccbc..1338c11fd121 100644
---- a/drivers/infiniband/hw/mlx5/odp.c
-+++ b/drivers/infiniband/hw/mlx5/odp.c
-@@ -1559,8 +1559,7 @@ int mlx5r_odp_create_eq(struct mlx5_ib_dev *dev, struct mlx5_ib_pf_eq *eq)
- 	}
- 
- 	eq->irq_nb.notifier_call = mlx5_ib_eq_pf_int;
--	param = (struct mlx5_eq_param){
--		.irq_index = 0,
-+	param = (struct mlx5_eq_param) {
- 		.nent = MLX5_IB_NUM_PF_EQE,
- 	};
- 	param.mask[0] = 1ull << MLX5_EVENT_TYPE_PAGE_FAULT;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index b8ac9f58d2b5..7e5b3826eae5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -263,7 +263,7 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
- 	u32 out[MLX5_ST_SZ_DW(create_eq_out)] = {0};
- 	u8 log_eq_stride = ilog2(MLX5_EQE_SIZE);
- 	struct mlx5_priv *priv = &dev->priv;
--	u8 vecidx = param->irq_index;
-+	u16 vecidx = param->irq_index;
- 	__be64 *pas;
- 	void *eqc;
- 	int inlen;
-@@ -292,6 +292,7 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
- 		goto err_buf;
- 	}
- 
-+	vecidx = mlx5_irq_get_index(eq->irq);
- 	inlen = MLX5_ST_SZ_BYTES(create_eq_in) +
- 		MLX5_FLD_SZ_BYTES(create_eq_in, pas[0]) * eq->frag_buf.npages;
- 
-@@ -629,7 +630,6 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
- 	mlx5_eq_notifier_register(dev, &table->cq_err_nb);
- 
- 	param = (struct mlx5_eq_param) {
--		.irq_index = 0,
- 		.nent = MLX5_NUM_CMD_EQE,
- 		.mask[0] = 1ull << MLX5_EVENT_TYPE_CMD,
- 	};
-@@ -642,7 +642,6 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
- 	mlx5_cmd_allowed_opcode(dev, CMD_ALLOWED_OPCODE_ALL);
- 
- 	param = (struct mlx5_eq_param) {
--		.irq_index = 0,
- 		.nent = MLX5_NUM_ASYNC_EQE,
- 	};
- 
-@@ -652,7 +651,6 @@ static int create_async_eqs(struct mlx5_core_dev *dev)
- 		goto err2;
- 
- 	param = (struct mlx5_eq_param) {
--		.irq_index = 0,
- 		.nent = /* TODO: sriov max_vf + */ 1,
- 		.mask[0] = 1ull << MLX5_EVENT_TYPE_PAGE_REQUEST,
- 	};
-@@ -985,15 +983,19 @@ int mlx5_eq_table_create(struct mlx5_core_dev *dev)
- 	int num_eqs = MLX5_CAP_GEN(dev, max_num_eqs) ?
- 		      MLX5_CAP_GEN(dev, max_num_eqs) :
- 		      1 << MLX5_CAP_GEN(dev, log_max_eq);
-+	int max_eqs_sf;
- 	int err;
- 
- 	eq_table->num_comp_eqs =
- 		min_t(int,
- 		      mlx5_irq_table_get_num_comp(eq_table->irq_table),
- 		      num_eqs - MLX5_MAX_ASYNC_EQS);
--	if (mlx5_core_is_sf(dev))
-+	if (mlx5_core_is_sf(dev)) {
-+		max_eqs_sf = min_t(int, MLX5_COMP_EQS_PER_SF,
-+				   mlx5_irq_table_get_sfs_vec(eq_table->irq_table));
- 		eq_table->num_comp_eqs = min_t(int, eq_table->num_comp_eqs,
--					       MLX5_COMP_EQS_PER_SF);
-+					       max_eqs_sf);
-+	}
- 
- 	err = create_async_eqs(dev);
- 	if (err) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-index 48656e8624a9..abd024173c42 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-@@ -17,17 +17,19 @@ void mlx5_irq_table_cleanup(struct mlx5_core_dev *dev);
- int mlx5_irq_table_create(struct mlx5_core_dev *dev);
- void mlx5_irq_table_destroy(struct mlx5_core_dev *dev);
- int mlx5_irq_table_get_num_comp(struct mlx5_irq_table *table);
-+int mlx5_irq_table_get_sfs_vec(struct mlx5_irq_table *table);
- struct mlx5_irq_table *mlx5_irq_table_get(struct mlx5_core_dev *dev);
- 
- int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int devfn,
- 			    int msix_vec_count);
- int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs);
- 
--struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, int vecidx,
-+struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
- 				  struct cpumask *affinity);
- void mlx5_irq_release(struct mlx5_irq *irq);
- int mlx5_irq_attach_nb(struct mlx5_irq *irq, struct notifier_block *nb);
- int mlx5_irq_detach_nb(struct mlx5_irq *irq, struct notifier_block *nb);
- struct cpumask *mlx5_irq_get_affinity_mask(struct mlx5_irq *irq);
-+int mlx5_irq_get_index(struct mlx5_irq *irq);
- 
- #endif /* __MLX5_IRQ_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index 4f18fbcf7ccd..27de8da8edf7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -7,7 +7,7 @@
- #include <linux/mlx5/driver.h>
- #include "mlx5_core.h"
- #include "mlx5_irq.h"
--#include "sf/sf.h"
-+#include "lib/sf.h"
- #ifdef CONFIG_RFS_ACCEL
- #include <linux/cpu_rmap.h>
- #endif
-@@ -21,6 +21,12 @@
- /* min num of vectores for SFs to be enabled */
- #define MLX5_IRQ_VEC_COMP_BASE_SF 2
- 
-+#define MLX5_EQ_SHARE_IRQ_MAX_COMP (8)
-+#define MLX5_EQ_SHARE_IRQ_MAX_CTRL (UINT_MAX)
-+#define MLX5_EQ_SHARE_IRQ_MIN_COMP (1)
-+#define MLX5_EQ_SHARE_IRQ_MIN_CTRL (4)
-+#define MLX5_EQ_REFS_PER_IRQ (2)
-+
- struct mlx5_irq {
- 	u32 index;
- 	struct atomic_notifier_head nh;
-@@ -34,7 +40,10 @@ struct mlx5_irq {
- struct mlx5_irq_pool {
- 	char name[MLX5_MAX_IRQ_NAME - MLX5_MAX_IRQ_IDX_CHARS];
- 	struct xa_limit xa_num_irqs;
-+	struct mutex lock; /* sync IRQs creations */
- 	struct xarray irqs;
-+	u32 max_threshold;
-+	u32 min_threshold;
- 	struct mlx5_core_dev *dev;
- };
- 
-@@ -147,7 +156,11 @@ static void irq_release(struct kref *kref)
- 
- static void irq_put(struct mlx5_irq *irq)
- {
-+	struct mlx5_irq_pool *pool = irq->pool;
-+
-+	mutex_lock(&pool->lock);
- 	kref_put(&irq->kref, irq_release);
-+	mutex_unlock(&pool->lock);
- }
- 
- static irqreturn_t irq_int_handler(int irq, void *nh)
-@@ -201,15 +214,15 @@ static struct mlx5_irq *irq_request(struct mlx5_irq_pool *pool, int i)
- 		err = -ENOMEM;
- 		goto err_cpumask;
- 	}
--	err = xa_alloc(&pool->irqs, &irq->index, irq, pool->xa_num_irqs,
--		       GFP_KERNEL);
-+	kref_init(&irq->kref);
-+	irq->index = i;
-+	err = xa_err(xa_store(&pool->irqs, irq->index, irq, GFP_KERNEL));
- 	if (err) {
- 		mlx5_core_err(dev, "Failed to alloc xa entry for irq(%u). err = %d\n",
- 			      irq->index, err);
- 		goto err_xa;
- 	}
- 	irq->pool = pool;
--	kref_init(&irq->kref);
- 	return irq;
- err_xa:
- 	free_cpumask_var(irq->mask);
-@@ -247,6 +260,124 @@ struct cpumask *mlx5_irq_get_affinity_mask(struct mlx5_irq *irq)
- 	return irq->mask;
- }
- 
-+int mlx5_irq_get_index(struct mlx5_irq *irq)
-+{
-+	return irq->index;
-+}
-+
-+/* irq_pool API */
-+
-+/* creating an irq from irq_pool */
-+static struct mlx5_irq *irq_pool_create_irq(struct mlx5_irq_pool *pool,
-+					    struct cpumask *affinity)
-+{
-+	struct mlx5_irq *irq;
-+	u32 irq_index;
-+	int err;
-+
-+	err = xa_alloc(&pool->irqs, &irq_index, NULL, pool->xa_num_irqs,
-+		       GFP_KERNEL);
-+	if (err)
-+		return ERR_PTR(err);
-+	irq = irq_request(pool, irq_index);
-+	if (IS_ERR(irq))
-+		return irq;
-+	cpumask_copy(irq->mask, affinity);
-+	irq_set_affinity_hint(irq->irqn, irq->mask);
-+	return irq;
-+}
-+
-+/* looking for the irq with the smallest refcount and the same affinity */
-+static struct mlx5_irq *irq_pool_find_least_loaded(struct mlx5_irq_pool *pool,
-+						   struct cpumask *affinity)
-+{
-+	int start = pool->xa_num_irqs.min;
-+	int end = pool->xa_num_irqs.max;
-+	struct mlx5_irq *irq = NULL;
-+	struct mlx5_irq *iter;
-+	unsigned long index;
-+
-+	lockdep_assert_held(&pool->lock);
-+	xa_for_each_range(&pool->irqs, index, iter, start, end) {
-+		if (!cpumask_equal(iter->mask, affinity))
-+			continue;
-+		if (kref_read(&iter->kref) < pool->min_threshold)
-+			return iter;
-+		if (!irq || kref_read(&iter->kref) <
-+		    kref_read(&irq->kref))
-+			irq = iter;
-+	}
-+	return irq;
-+}
-+
-+/* requesting an irq from a given pool according to given affinity */
-+static struct mlx5_irq *irq_pool_request_affinity(struct mlx5_irq_pool *pool,
-+						  struct cpumask *affinity)
-+{
-+	struct mlx5_irq *least_loaded_irq, *new_irq;
-+
-+	mutex_lock(&pool->lock);
-+	least_loaded_irq = irq_pool_find_least_loaded(pool, affinity);
-+	if (least_loaded_irq &&
-+	    kref_read(&least_loaded_irq->kref) < pool->min_threshold)
-+		goto out;
-+	new_irq = irq_pool_create_irq(pool, affinity);
-+	if (IS_ERR(new_irq)) {
-+		if (!least_loaded_irq) {
-+			mlx5_core_err(pool->dev, "Didn't find IRQ for cpu = %u\n",
-+				      cpumask_first(affinity));
-+			mutex_unlock(&pool->lock);
-+			return new_irq;
-+		}
-+		/* We failed to create a new IRQ for the requested affinity,
-+		 * sharing existing IRQ.
-+		 */
-+		goto out;
-+	}
-+	least_loaded_irq = new_irq;
-+	goto unlock;
-+out:
-+	kref_get(&least_loaded_irq->kref);
-+	if (kref_read(&least_loaded_irq->kref) > pool->max_threshold)
-+		mlx5_core_dbg(pool->dev, "IRQ %u overloaded, pool_name: %s, %u EQs on this irq\n",
-+			      least_loaded_irq->irqn, pool->name,
-+			      kref_read(&least_loaded_irq->kref) / MLX5_EQ_REFS_PER_IRQ);
-+unlock:
-+	mutex_unlock(&pool->lock);
-+	return least_loaded_irq;
-+}
-+
-+/* requesting an irq from a given pool according to given index */
-+static struct mlx5_irq *
-+irq_pool_request_vector(struct mlx5_irq_pool *pool, int vecidx,
-+			struct cpumask *affinity)
-+{
-+	struct mlx5_irq *irq;
-+
-+	mutex_lock(&pool->lock);
-+	irq = xa_load(&pool->irqs, vecidx);
-+	if (irq) {
-+		kref_get(&irq->kref);
-+		goto unlock;
-+	}
-+	irq = irq_request(pool, vecidx);
-+	if (IS_ERR(irq) || !affinity)
-+		goto unlock;
-+	cpumask_copy(irq->mask, affinity);
-+	irq_set_affinity_hint(irq->irqn, irq->mask);
-+unlock:
-+	mutex_unlock(&pool->lock);
-+	return irq;
-+}
-+
-+static struct mlx5_irq_pool *find_sf_irq_pool(struct mlx5_irq_table *irq_table,
-+					      int i, struct cpumask *affinity)
-+{
-+	if (cpumask_empty(affinity) && i == MLX5_IRQ_EQ_CTRL)
-+		return irq_table->sf_ctrl_pool;
-+	return irq_table->sf_comp_pool;
-+}
-+
- /**
-  * mlx5_irq_release - release an IRQ back to the system.
-  * @irq: irq to be released.
-@@ -266,32 +397,40 @@ void mlx5_irq_release(struct mlx5_irq *irq)
-  *
-  * This function returns a pointer to IRQ, or ERR_PTR in case of error.
-  */
--struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, int vecidx,
-+struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
- 				  struct cpumask *affinity)
- {
- 	struct mlx5_irq_table *irq_table = mlx5_irq_table_get(dev);
- 	struct mlx5_irq_pool *pool;
- 	struct mlx5_irq *irq;
- 
--	pool = irq_table->pf_pool;
--
--	irq = xa_load(&pool->irqs, vecidx);
--	if (irq) {
--		kref_get(&irq->kref);
--		return irq;
-+	if (mlx5_core_is_sf(dev)) {
-+		pool = find_sf_irq_pool(irq_table, vecidx, affinity);
-+		if (!pool)
-+			/* we don't have IRQs for SFs, using the PF IRQs */
-+			goto pf_irq;
-+		if (cpumask_empty(affinity) && !strcmp(pool->name, "mlx5_sf_comp"))
-+			/* In case an SF user request IRQ with vecidx */
-+			irq = irq_pool_request_vector(pool, vecidx, NULL);
-+		else
-+			irq = irq_pool_request_affinity(pool, affinity);
-+		goto out;
- 	}
--	irq = irq_request(pool, vecidx);
-+pf_irq:
-+	pool = irq_table->pf_pool;
-+	irq = irq_pool_request_vector(pool, vecidx, affinity);
-+out:
- 	if (IS_ERR(irq))
- 		return irq;
--	cpumask_copy(irq->mask, affinity);
--	irq_set_affinity_hint(irq->irqn, irq->mask);
-+	mlx5_core_dbg(dev, "irq %u mapped to cpu %*pbl, %u EQs on this irq\n",
-+		      irq->irqn, cpumask_pr_args(affinity),
-+		      kref_read(&irq->kref) / MLX5_EQ_REFS_PER_IRQ);
- 	return irq;
- }
- 
--/* irq_pool API */
--
- static struct mlx5_irq_pool *
--irq_pool_alloc(struct mlx5_core_dev *dev, int start, int size, char *name)
-+irq_pool_alloc(struct mlx5_core_dev *dev, int start, int size, char *name,
-+	       u32 min_threshold, u32 max_threshold)
- {
- 	struct mlx5_irq_pool *pool = kvzalloc(sizeof(*pool), GFP_KERNEL);
- 
-@@ -304,6 +443,9 @@ irq_pool_alloc(struct mlx5_core_dev *dev, int start, int size, char *name)
- 	if (name)
- 		snprintf(pool->name, MLX5_MAX_IRQ_NAME - MLX5_MAX_IRQ_IDX_CHARS,
- 			 name);
-+	pool->min_threshold = min_threshold * MLX5_EQ_REFS_PER_IRQ;
-+	pool->max_threshold = max_threshold * MLX5_EQ_REFS_PER_IRQ;
-+	mutex_init(&pool->lock);
- 	mlx5_core_dbg(dev, "pool->name = %s, pool->size = %d, pool->start = %d",
- 		      name, size, start);
- 	return pool;
-@@ -329,7 +471,9 @@ static int irq_pools_init(struct mlx5_core_dev *dev, int sf_vec, int pf_vec)
- 	int err;
- 
- 	/* init pf_pool */
--	table->pf_pool = irq_pool_alloc(dev, 0, pf_vec, NULL);
-+	table->pf_pool = irq_pool_alloc(dev, 0, pf_vec, NULL,
-+					MLX5_EQ_SHARE_IRQ_MIN_COMP,
-+					MLX5_EQ_SHARE_IRQ_MAX_COMP);
- 	if (IS_ERR(table->pf_pool))
- 		return PTR_ERR(table->pf_pool);
- 	if (!mlx5_sf_max_functions(dev))
-@@ -346,14 +490,18 @@ static int irq_pools_init(struct mlx5_core_dev *dev, int sf_vec, int pf_vec)
- 	num_sf_ctrl = min_t(int, num_sf_ctrl_by_msix, num_sf_ctrl_by_sfs);
- 	num_sf_ctrl = min_t(int, MLX5_IRQ_CTRL_SF_MAX, num_sf_ctrl);
- 	table->sf_ctrl_pool = irq_pool_alloc(dev, pf_vec, num_sf_ctrl,
--					     "mlx5_sf_ctrl");
-+					     "mlx5_sf_ctrl",
-+					     MLX5_EQ_SHARE_IRQ_MIN_CTRL,
-+					     MLX5_EQ_SHARE_IRQ_MAX_CTRL);
- 	if (IS_ERR(table->sf_ctrl_pool)) {
- 		err = PTR_ERR(table->sf_ctrl_pool);
- 		goto err_pf;
- 	}
- 	/* init sf_comp_pool */
- 	table->sf_comp_pool = irq_pool_alloc(dev, pf_vec + num_sf_ctrl,
--					     sf_vec - num_sf_ctrl, "mlx5_sf_comp");
-+					     sf_vec - num_sf_ctrl, "mlx5_sf_comp",
-+					     MLX5_EQ_SHARE_IRQ_MIN_COMP,
-+					     MLX5_EQ_SHARE_IRQ_MAX_COMP);
- 	if (IS_ERR(table->sf_comp_pool)) {
- 		err = PTR_ERR(table->sf_comp_pool);
- 		goto err_sf_ctrl;
-@@ -455,6 +603,15 @@ void mlx5_irq_table_destroy(struct mlx5_core_dev *dev)
- 	pci_free_irq_vectors(dev->pdev);
- }
- 
-+int mlx5_irq_table_get_sfs_vec(struct mlx5_irq_table *table)
-+{
-+	if (table->sf_comp_pool)
-+		return table->sf_comp_pool->xa_num_irqs.max -
-+			table->sf_comp_pool->xa_num_irqs.min + 1;
-+	else
-+		return mlx5_irq_table_get_num_comp(table);
-+}
-+
- struct mlx5_irq_table *mlx5_irq_table_get(struct mlx5_core_dev *dev)
- {
- #ifdef CONFIG_MLX5_SF
--- 
-2.31.1
-
+Sounds good to me. Thanks!
