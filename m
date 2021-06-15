@@ -2,113 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E09E3A82E4
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:31:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C62A53A82F2
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:33:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230391AbhFOOdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 10:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbhFOOdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:33:50 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0C5C061574;
-        Tue, 15 Jun 2021 07:31:45 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id a127so7581321pfa.10;
-        Tue, 15 Jun 2021 07:31:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=09f7flVgvhf5eQwpZCIbvOGTARFj7yeM2HilMpzlWLk=;
-        b=jk2oxSkqx62fHfzZ2Td3CQMKVDfVLX5soiM/JukpALSNJHJr6bPDtlz3KWKAxXo94O
-         s/hllSh2es9DhRUKAKUitklZDcf/EnVOKXhkOj9PYfOCpVShjA/ALCwL9qmhEU6/Uawa
-         XK557NRD7ifNeZzvRQOvgq1OjZVLzX0tIkT8t770jqHE0cKYFvqhPHbZNRgnhaDUZKFF
-         qX9q9wmOAxzVgsgD1wpLoriKUlqy7RCPkNZ1jG4aLxQucHRt8DEitzL0SOUV96Pc1UDE
-         2mXJY2Jw/0wFzqk5I0o9iVdLMmeZJJ8WeATZpVLS5cPgmlZCB/DeT8DlSYdBw+t/FiNV
-         Ts4Q==
+        id S230487AbhFOOfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 10:35:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23522 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230292AbhFOOfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:35:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623767613;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=C+PEwO1vuzVKwcAXZ/qn4zNQsNTC2ftksP1m6DzEJUg=;
+        b=cElc4r9+UgvlhIDZZIzZ9719vJIABT9PKMNXCw/1RS8oNdwFatKo3Xh+WVzFehF5XVoByi
+        olk9xZXlL0Li21+XJc6RU4sxm2WJrAgnBCpSKE6qfulyQQgR/WIhjc7e0niXSeB1+s7ZEQ
+        MBiN/CZUvOmvYWlun3CLn5OwvzwN+g8=
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
+ [209.85.215.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-276-z0XZ3I7EM0-Z5AIVWPnAwQ-1; Tue, 15 Jun 2021 10:33:31 -0400
+X-MC-Unique: z0XZ3I7EM0-Z5AIVWPnAwQ-1
+Received: by mail-pg1-f199.google.com with SMTP id z71-20020a63334a0000b029022250d765d3so4635345pgz.12
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 07:33:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=09f7flVgvhf5eQwpZCIbvOGTARFj7yeM2HilMpzlWLk=;
-        b=LwuxIzy9pg+zHfZXKOoMDDHdPL4iwbga1lkeOmj8z4a79H6tthZ6VmA1omj3bvfPYk
-         5ibSpIwbNCIwENqu+YVo/qllWVn4NhlHHJgYxq4ryoM2eSdwSBjlg1Sx+OrMNq7NdojQ
-         4afvgvbx27WSSvpTJ+o8A4gtoyMR+rBpedb4qNAa62n6I2QLnhisGLW3W3/VB79tpzUM
-         iv8lV/ReZRwuGM31Tkxw04qTCMJM8YgcZIkb0jBA7hc/DKPJXfYEYWTJgkoIMtKbXOr9
-         uHCHHFuYVIXNkskgWrp4D5ACeEyXLXkR1V16t7/ndKa038mxFM4lkuthDRk6g02mid8L
-         gKoQ==
-X-Gm-Message-State: AOAM530h9mUzaqcVFQgJjN/YMhjBL3L9+NqQb84sdq35JVWwm1ozNr4X
-        2qmv7sTBnjoEo9c3hTmoqyY=
-X-Google-Smtp-Source: ABdhPJyHvlYi58GrVtZOOV1UUSDfdDdKTtRA2DlWTeNf7j5KzC+iOROVnZire7W4JyUnDsrG1dvTzA==
-X-Received: by 2002:a65:550e:: with SMTP id f14mr22678348pgr.160.1623767504841;
-        Tue, 15 Jun 2021 07:31:44 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
-        by smtp.gmail.com with ESMTPSA id fy16sm2711030pjb.49.2021.06.15.07.31.32
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=C+PEwO1vuzVKwcAXZ/qn4zNQsNTC2ftksP1m6DzEJUg=;
+        b=BiIrnfkbpJMiIMFF9Obr1cs5JIt3FGplu/k9ut8bNZKv66H4YBMG64iDzkuEhYhArY
+         Y1hObutxplIn5YDJ9R12/s64zLX4hu0WhqLCwX89K2sidrD5MYDO7Z07ifn6onB7Eac3
+         aRbEjdPWitEWB1byrqaeNc4BcoGuxVa+0n7E4/Q9b4RZ4aTnuYGxE4gflPlIeoh0I+q7
+         ZnneSxRaDXMYLPoCe/JNMfqQCK5hHGC0mZdJlJ8tB9YaW4VmvaXf12ncDBKxf9xjyIMy
+         TTlIvsku5nQIaQYKtze5NIJGpmVVK7Sehxm+RRT3LVP8Gd1TjRNVhj2RfMizTPVvLu8o
+         XuOg==
+X-Gm-Message-State: AOAM532Wr9kFWxAGgSSO9fqIruLbvRKSVoYmKMQs3Irxh8YhlnYkBLoF
+        FDGlNGEQ4d9csPFBPWd5tFSJJaZKwybwTapDeUNggOg0XYtFlqChpTNN4+ED2XY+cDN+XjBk109
+        OBQDcpIuGyzWwGXbP
+X-Received: by 2002:a17:90a:6b42:: with SMTP id x2mr10714893pjl.16.1623767610587;
+        Tue, 15 Jun 2021 07:33:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzoLgAmk1b7+hVi09blQTTsivWllOjkeEFAcRwAwvRRMpCJnIURaBSkCjKYxfrUksdkBYUPgA==
+X-Received: by 2002:a17:90a:6b42:: with SMTP id x2mr10714866pjl.16.1623767610322;
+        Tue, 15 Jun 2021 07:33:30 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o16sm13419988pfk.129.2021.06.15.07.33.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Jun 2021 07:31:44 -0700 (PDT)
-Subject: Re: [RFC PATCH V3 10/11] HV/Netvsc: Add Isolation VM support for
- netvsc driver
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        arnd@arndb.de, dave.hansen@linux.intel.com, luto@kernel.org,
-        peterz@infradead.org, akpm@linux-foundation.org,
-        kirill.shutemov@linux.intel.com, rppt@kernel.org,
-        hannes@cmpxchg.org, cai@lca.pw, krish.sadhukhan@oracle.com,
-        saravanand@fb.com, Tianyu.Lan@microsoft.com,
-        konrad.wilk@oracle.com, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, boris.ostrovsky@oracle.com, jgross@suse.com,
-        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
-        xen-devel@lists.xenproject.org, davem@davemloft.net,
-        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, thomas.lendacky@amd.com,
-        brijesh.singh@amd.com, sunilmut@microsoft.com
-References: <20210530150628.2063957-1-ltykernel@gmail.com>
- <20210530150628.2063957-11-ltykernel@gmail.com>
- <20210607065007.GE24478@lst.de>
- <279cb4bf-c5b6-6db9-0f1e-9238e902c8f2@gmail.com>
- <20210614070903.GA29976@lst.de>
- <e10c2696-23c3-befe-4f4d-25e18918132f@gmail.com>
- <20210614153339.GB1741@lst.de>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <7d86307f-83ff-03ad-c6e9-87b455c559b8@gmail.com>
-Date:   Tue, 15 Jun 2021 22:31:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Tue, 15 Jun 2021 07:33:29 -0700 (PDT)
+Subject: Re: [PATCH] vhost-vdpa: log warning message if vhost_vdpa_remove gets
+ blocked
+To:     Gautam Dawar <gdawar.xilinx@gmail.com>
+Cc:     martinh@xilinx.com, hanand@xilinx.com, gdawar@xilinx.com,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210606132909.177640-1-gdawar.xilinx@gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <aa866c72-c3d9-9022-aa5b-b5a9fc9e946a@redhat.com>
+Date:   Tue, 15 Jun 2021 22:33:22 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210614153339.GB1741@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210606132909.177640-1-gdawar.xilinx@gmail.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/14/2021 11:33 PM, Christoph Hellwig wrote:
-> On Mon, Jun 14, 2021 at 10:04:06PM +0800, Tianyu Lan wrote:
->> The pages in the hv_page_buffer array here are in the kernel linear
->> mapping. The packet sent to host will contain an array which contains
->> transaction data. In the isolation VM, data in the these pages needs to be
->> copied to bounce buffer and so call dma_map_single() here to map these data
->> pages with bounce buffer. The vmbus has ring buffer where the send/receive
->> packets are copied to/from. The ring buffer has been remapped to the extra
->> space above shared gpa boundary/vTom during probing Netvsc driver and so
->> not call dma map function for vmbus ring
->> buffer.
-> 
-> So why do we have all that PFN magic instead of using struct page or
-> the usual kernel I/O buffers that contain a page pointer?
-> 
 
-These PFNs originally is part of Hyper-V protocol data and will be sent
-to host. Host accepts these GFN and copy data from/to guest memory. The 
-translation from va to pa is done by caller that populates the 
-hv_page_buffer array. I will try calling dma map function before 
-populating struct hv_page_buffer and this can avoid redundant 
-translation between PA and VA.
+ÔÚ 2021/6/6 ÏÂÎç9:29, Gautam Dawar Ð´µÀ:
+> From: Gautam Dawar <gdawar@xilinx.com>
+>
+> If some module invokes vdpa_device_unregister (usually in the module
+> unload function) when the userspace app (eg. QEMU) which had opened
+> the vhost-vdpa character device is still running, vhost_vdpa_remove()
+> function will block indefinitely in call to wait_for_completion().
+>
+> This causes the vdpa_device_unregister caller to hang and with a
+> usual side-effect of rmmod command not returning when this call
+> is in the module_exit function.
+>
+> This patch converts the wait_for_completion call to its timeout based
+> counterpart (wait_for_completion_timeout) and also adds a warning
+> message to alert the user/administrator about this hang situation.
+>
+> To eventually fix this problem, a mechanism will be required to let
+> vhost-vdpa module inform the userspace of this situation and
+> userspace will close the descriptor of vhost-vdpa char device.
+> This will enable vhost-vdpa to continue with graceful clean-up.
+>
+> Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+> ---
+>   drivers/vhost/vdpa.c | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index bfa4c6ef554e..572b64d09b06 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -1091,7 +1091,11 @@ static void vhost_vdpa_remove(struct vdpa_device *vdpa)
+>   		opened = atomic_cmpxchg(&v->opened, 0, 1);
+>   		if (!opened)
+>   			break;
+> -		wait_for_completion(&v->completion);
+> +		wait_for_completion_timeout(&v->completion,
+> +					    msecs_to_jiffies(1000));
+> +		dev_warn_ratelimited(&v->dev,
+> +				     "%s waiting for /dev/%s to be closed\n",
+> +				     __func__, dev_name(&v->dev));
+>   	} while (1);
+>   
+>   	put_device(&v->dev);
+
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+
