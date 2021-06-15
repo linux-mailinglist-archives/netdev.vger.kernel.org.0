@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D6D3A8185
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:57:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 268D43A8189
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:57:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbhFON7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 09:59:43 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:4919 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230225AbhFON7l (ORCPT
+        id S231298AbhFON7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 09:59:48 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:6381 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230254AbhFON7l (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:59:41 -0400
 Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G48v64CNyz704R;
-        Tue, 15 Jun 2021 21:54:26 +0800 (CST)
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4G48t93jCMz63cB;
+        Tue, 15 Jun 2021 21:53:37 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
@@ -23,9 +23,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 2/6] net: pci200syn: add blank line after declarations
-Date:   Tue, 15 Jun 2021 21:54:19 +0800
-Message-ID: <1623765263-36775-3-git-send-email-lipeng321@huawei.com>
+Subject: [PATCH net-next 3/6] net: pci200syn: replace comparison to NULL with "!card"
+Date:   Tue, 15 Jun 2021 21:54:20 +0800
+Message-ID: <1623765263-36775-4-git-send-email-lipeng321@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1623765263-36775-1-git-send-email-lipeng321@huawei.com>
 References: <1623765263-36775-1-git-send-email-lipeng321@huawei.com>
@@ -39,44 +39,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the checkpatch error about missing a blank line
-after declarations.
+According to the chackpatch.pl, comparison to NULL could
+be written "!card".
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 ---
- drivers/net/wan/pci200syn.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wan/pci200syn.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/wan/pci200syn.c b/drivers/net/wan/pci200syn.c
-index 1667dfd..a7eac90 100644
+index a7eac90..cee3d65 100644
 --- a/drivers/net/wan/pci200syn.c
 +++ b/drivers/net/wan/pci200syn.c
-@@ -92,6 +92,7 @@ typedef struct card_s {
- static inline void new_memcpy_toio(char __iomem *dest, char *src, int length)
- {
- 	int len;
-+
- 	do {
- 		len = length > 256 ? 256 : length;
- 		memcpy_toio(dest, src, len);
-@@ -148,8 +149,8 @@ static void pci200_set_iface(port_t *port)
- static int pci200_open(struct net_device *dev)
- {
- 	port_t *port = dev_to_port(dev);
--
- 	int result = hdlc_open(dev);
-+
- 	if (result)
- 		return result;
+@@ -279,7 +279,7 @@ static int pci200_pci_init_one(struct pci_dev *pdev,
+ 	}
  
-@@ -366,6 +367,7 @@ static int pci200_pci_init_one(struct pci_dev *pdev,
- 		port_t *port = &card->ports[i];
- 		struct net_device *dev = port->netdev;
- 		hdlc_device *hdlc = dev_to_hdlc(dev);
-+
- 		port->chan = i;
+ 	card = kzalloc(sizeof(card_t), GFP_KERNEL);
+-	if (card == NULL) {
++	if (!card) {
+ 		pci_release_regions(pdev);
+ 		pci_disable_device(pdev);
+ 		return -ENOBUFS;
+@@ -310,9 +310,7 @@ static int pci200_pci_init_one(struct pci_dev *pdev,
+ 	ramphys = pci_resource_start(pdev,3) & PCI_BASE_ADDRESS_MEM_MASK;
+ 	card->rambase = pci_ioremap_bar(pdev, 3);
  
- 		spin_lock_init(&port->lock);
+-	if (card->plxbase == NULL ||
+-	    card->scabase == NULL ||
+-	    card->rambase == NULL) {
++	if (!card->plxbase || !card->scabase || !card->rambase) {
+ 		pr_err("ioremap() failed\n");
+ 		pci200_pci_remove_one(pdev);
+ 		return -EFAULT;
 -- 
 2.8.1
 
