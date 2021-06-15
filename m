@@ -2,74 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE7CA3A8990
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 21:33:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20CFD3A89AE
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 21:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230422AbhFOTfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 15:35:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58736 "EHLO mail.kernel.org"
+        id S229965AbhFOTm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 15:42:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60084 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230012AbhFOTfH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Jun 2021 15:35:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9A28D60E0C;
-        Tue, 15 Jun 2021 19:33:01 +0000 (UTC)
+        id S229898AbhFOTmz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 15:42:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DE7446137D;
+        Tue, 15 Jun 2021 19:40:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623785582;
-        bh=Mx6wAAXn/soRKwq/hg+UAA/IhWBECd+G+9shpZSj+rQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=s+556g9OCPnVI5+ewcio9gs7JtTbSK0kEbBTFHukMPNcwVXk/K9XkoxpQMEG9V6K2
-         xa7MYmQCNdKpw4GjteIkhU1bajY7WA4K0tSqER20sHf2BJpuximXtWZA7BFDUdwfLy
-         a5CIp1f9C6JpdMC6UvfG9TSdjdreYAsPIzLDQGYzG9j+S+L0yGoxfuVIsmkBgxZmPW
-         85cxV357Znr2898TTvgeZfNb/gKhd7CFqztKshOTQcdBnUTuOZcFjMUVol8KFq65e3
-         XxzEiKTfJkSj37kH19RlKg6u6y34o8SKF79C76tq/0GsVeRKw3WjjSmf3c1aI0cTSq
-         71lkPV5tl5n2w==
-Date:   Tue, 15 Jun 2021 12:33:00 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     Kurt Manucredo <fuzzybritches0@gmail.com>,
-        syzbot+bed360704c521841c85d@syzkaller.appspotmail.com,
-        keescook@chromium.org, yhs@fb.com, dvyukov@google.com,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, nathan@kernel.org,
-        ndesaulniers@google.com, clang-built-linux@googlegroups.com,
-        kernel-hardening@lists.openwall.com, kasan-dev@googlegroups.com
-Subject: Re: [PATCH v5] bpf: core: fix shift-out-of-bounds in ___bpf_prog_run
-Message-ID: <YMkAbNQiIBbhD7+P@gmail.com>
-References: <CAADnVQKexxZQw0yK_7rmFOdaYabaFpi2EmF6RGs5bXvFHtUQaA@mail.gmail.com>
- <CACT4Y+b=si6NCx=nRHKm_pziXnVMmLo-eSuRajsxmx5+Hy_ycg@mail.gmail.com>
- <202106091119.84A88B6FE7@keescook>
- <752cb1ad-a0b1-92b7-4c49-bbb42fdecdbe@fb.com>
- <CACT4Y+a592rxFmNgJgk2zwqBE8EqW1ey9SjF_-U3z6gt3Yc=oA@mail.gmail.com>
- <1aaa2408-94b9-a1e6-beff-7523b66fe73d@fb.com>
- <202106101002.DF8C7EF@keescook>
- <CAADnVQKMwKYgthoQV4RmGpZm9Hm-=wH3DoaNqs=UZRmJKefwGw@mail.gmail.com>
- <85536-177443-curtm@phaethon>
- <bac16d8d-c174-bdc4-91bd-bfa62b410190@gmail.com>
+        s=k20201202; t=1623786051;
+        bh=Sob5rqGDvOdFc70UjzO1ySt1WBSdHvnfT5TsuZKq5j0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ezmz5xyFXNX6XsxJkUhoUljvIhTonaypjyet8y55fugd92LDItEKIkVFD1d0Q7xND
+         IQ49CoblONFyA875wGP81766ldE5kHFWw0rPnZlvxcrd5jQ4X72WfbaqysfEBXs8rN
+         hKVVAC9+bIrzjVTF53MhR34USwMRYaPE/N2X8QB2dT3KLM9k7RcElCm8OqpG2oY+yb
+         /VsJVKeTzd3gyidOEjOb9/iQ/944k3/j3+/vk8siVmYC2gz/UMySatTd3E69toeeXb
+         mhOvNXi9rTH2e64ZlKIZzP7fASPGJmyy4eXGNOZm8+mGhbo+3Fq76k+m4rYP63cJnZ
+         SQp2w5mVto52w==
+Date:   Tue, 15 Jun 2021 12:40:50 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kev Jackson <foamdino@gmail.com>
+Cc:     mkubecek@suse.cz, netdev@vger.kernel.org
+Subject: Re: ethtool discrepancy between observed behaviour and comments
+Message-ID: <20210615124050.50138c05@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YMhJDzNrRNNeObly@linux-dev>
+References: <YMhJDzNrRNNeObly@linux-dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bac16d8d-c174-bdc4-91bd-bfa62b410190@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 07:51:07PM +0100, Edward Cree wrote:
+On Tue, 15 Jun 2021 07:30:39 +0100 Kev Jackson wrote:
+> Hi,
 > 
-> As I understand it, the UBSAN report is coming from the eBPF interpreter,
->  which is the *slow path* and indeed on many production systems is
->  compiled out for hardening reasons (CONFIG_BPF_JIT_ALWAYS_ON).
-> Perhaps a better approach to the fix would be to change the interpreter
->  to compute "DST = DST << (SRC & 63);" (and similar for other shifts and
->  bitnesses), thus matching the behaviour of most chips' shift opcodes.
-> This would shut up UBSAN, without affecting JIT code generation.
+> I have been working with ethtool, ioctl and Mellanox multi-queue NICs and I think
+> I have discovered an issue with either the code or the comments that describe
+> the code or recent changes.
 > 
+> My focus here is simply the ethtool -L command to set the channels for a
+> multi-queue nic.  Running this command with the following params on a host with
+> a Mellanox NIC works fine:
+> 
+> ethtool -L eth0 combined 4
 
-Yes, I suggested that last week
-(https://lkml.kernel.org/netdev/YMJvbGEz0xu9JU9D@gmail.com).  The AND will even
-get optimized out when compiling for most CPUs.
+> From putting all of this together, I have come to the conclusion that:
+> * ioctl / ETHTOOL_SCHANNELS is a legacy method of setting channels
+> * nl_schannels is the new / preferred method of setting channels
+> * ethtool has fallback code to run ioctl functions for commands which don't yet
+> * have a netlink equivalent
+> 
+> Our user experience is that ethtool -L currently does support (and should continue to
+> support) just setting combined_count rather than having to set combined_count +
+> one of rx_count/tx_count, which would mean removing the check in the ioctl.c,
+> ethtool_set_channels code to make the netlink.c and ioctl.c commands consistent.
+> 
+> Obviously the other approach is to add the check for setting one of rx_count /
+> tx_count into the nl_schannels function.
+> 
+> We're happy to provide a patch for either approach, but would like to raise this
+> as potentially a bug in the current code.
 
-- Eric
+I'm not sure I grasped what the problem is. Could you perhaps share
+what you're trying to do that works with netlink vs IOCTL? Best if
+it's in form of:
+
+$ ethtool -l $ifc
+$ ./ethtool-ioctl -L $ifc ...
+# presumably fails IIUC?
+$ ./ethtool-nl -L $ifc ...
+# and this one succeeds?
+
+where ethtool-ioctl and ethtool-nl would be hacked up ethtool binaries
+which only use one mechanism instead of trying to autoselect.
