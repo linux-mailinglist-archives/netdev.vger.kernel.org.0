@@ -2,75 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E43F3A889E
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:31:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC553A8894
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 20:30:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231679AbhFOSdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 14:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbhFOSdE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 14:33:04 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0FFDC061574;
-        Tue, 15 Jun 2021 11:30:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=LdNeCQqk9KCm4jhNoZuBIHJ86WosU4CQPfm1SU3padI=; b=KO1IdRXvN+FrSa4LuXBQM5beAj
-        p6M9jwGEipbsxZZ5ZhfG9ektCNttJlPZgj6rtVgRjI/2oNQtEhx1T7e5aJRHb0UdT7hhuNdpaU4Ue
-        lxyuh0pw2Y0wQnnEYiINPswBwZMvCgXM9QardUkii8XsOpypMJgS/y8ScYyE/aiwlGoaT5xLL9EE4
-        0BA+1HHt2bvvTThMm/UPmFFtB30VWws5gH7o/Mfpfwf83ZdotS8ftqSlXphUO1EBACUqSENSntgUl
-        7Tzee91mKhcO1T9mh6mF1mFW3mSZ4rWu7YHp3rKbAH5tmME6OcBqzCW8zNIiP1y0QaOjwJBde3/NS
-        59ZrMfCg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ltDp2-0077zr-Mq; Tue, 15 Jun 2021 18:30:05 +0000
-Date:   Tue, 15 Jun 2021 19:30:00 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Cc:     David Howells <dhowells@redhat.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-Message-ID: <YMjxqEY25A6bm47s@casper.infradead.org>
-References: <YLEIKk7IuWu6W4Sy@casper.infradead.org>
- <YH2hs6EsPTpDAqXc@mit.edu>
- <nycvar.YFH.7.76.2104281228350.18270@cbobk.fhfr.pm>
- <YIx7R6tmcRRCl/az@mit.edu>
- <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
- <YK+esqGjKaPb+b/Q@kroah.com>
- <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
- <1745326.1623409807@warthog.procyon.org.uk>
- <e47706ee-3e4b-8f15-963f-292b5e47cb1d@metux.net>
+        id S231328AbhFOScJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 14:32:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41352 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229613AbhFOScI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 14:32:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 85B30610F7;
+        Tue, 15 Jun 2021 18:30:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623781803;
+        bh=7iXMp3/7MskyuJtO5fgwPKxPSeCCil795wxwNE+PgCs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=n2I+hk5kEuHnM9zhscUDQqnsbbtDGDT4OLaGNaBOuA9NhJBVbALKQZoPXVh3xi5Jt
+         0v1m/hBr9FLTQsoHsCdoykYyf41n7tBfYjCOCtWs526eB/hEv96EGgKk8+VjyokqxI
+         qmLSkX13/8gGlX6IksXZ88dmUpXc+cOrBvAfqzJ7jJdfmOGhwFTArGoCdbpLdoAsAh
+         PYzf5HeYWlr6qK1RugZBN0F9etK+b3w7Byq6XyH/THJkPTKmosd0nyPNYHjfKOPsk+
+         Z/6IoJ2cyHN1C7VF1Mw+dpYvBh9H7EaWGl+TvQsfMagY2ajE4+IOYxAPJABlERWovP
+         Gu3l1lO/98QPg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 76B60609E4;
+        Tue, 15 Jun 2021 18:30:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e47706ee-3e4b-8f15-963f-292b5e47cb1d@metux.net>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: cdc_ncm: switch to eth%d interface naming
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162378180348.31286.4984081071906700248.git-patchwork-notify@kernel.org>
+Date:   Tue, 15 Jun 2021 18:30:03 +0000
+References: <20210615080549.3362337-1-zenczykowski@gmail.com>
+In-Reply-To: <20210615080549.3362337-1-zenczykowski@gmail.com>
+To:     =?utf-8?q?Maciej_=C5=BBenczykowski_=3Czenczykowski=40gmail=2Ecom=3E?=@ci.codeaurora.org
+Cc:     maze@google.com, netdev@vger.kernel.org, lorenzo@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 08:23:55PM +0200, Enrico Weigelt, metux IT consult wrote:
-> On 11.06.21 13:10, David Howells wrote:
-> 
-> > One thing that concerns me about flying to the US is going through multiple
-> > busy international airports - take Heathrow which didn't separate incoming
-> > travellers from red-listed countries from those of amber- or green- until like
-> > a week ago.
-> > 
-> > Would it be practical/economical to charter a plane to fly, say, from a less
-> > busy airport in Europe to a less busy airport in the US and back again if we
-> > could get enough delegates together to make it worthwhile?
-> 
-> Wouldn't just taking prophylatic meds like CDS or HCQ and/or hi-dose
-> vitamins (C, D3+K2) be way more cost effective and flexible than to
-> charter a whole plane ?
+Hello:
 
-Why don't you just shine a bright light up your arse?  It'll have the
-same effect.
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Tue, 15 Jun 2021 01:05:49 -0700 you wrote:
+> From: Maciej Żenczykowski <maze@google.com>
+> 
+> This is meant to make the host side cdc_ncm interface consistently
+> named just like the older CDC protocols: cdc_ether & cdc_ecm
+> (and even rndis_host), which all use 'FLAG_ETHER | FLAG_POINTTOPOINT'.
+> 
+> include/linux/usb/usbnet.h:
+>   #define FLAG_ETHER	0x0020		/* maybe use "eth%d" names */
+>   #define FLAG_WLAN	0x0080		/* use "wlan%d" names */
+>   #define FLAG_WWAN	0x0400		/* use "wwan%d" names */
+>   #define FLAG_POINTTOPOINT 0x1000	/* possibly use "usb%d" names */
+> 
+> [...]
+
+Here is the summary with links:
+  - net: cdc_ncm: switch to eth%d interface naming
+    https://git.kernel.org/netdev/net/c/c1a3d4067309
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
