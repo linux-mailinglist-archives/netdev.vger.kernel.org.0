@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 270E03A8191
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:58:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D83043A8182
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231537AbhFON76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 09:59:58 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:4790 "EHLO
+        id S230306AbhFON7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 09:59:01 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:4789 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbhFON7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:59:42 -0400
-Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G48s00YhCzXfvx;
-        Tue, 15 Jun 2021 21:52:36 +0800 (CST)
-Received: from localhost.localdomain (10.67.165.24) by
- dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 15 Jun 2021 21:57:36 +0800
-From:   Peng Li <lipeng321@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
-        <ms@dev.tdt.de>, <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 6/6] net: pci200syn: fix the comments style issue
-Date:   Tue, 15 Jun 2021 21:54:23 +0800
-Message-ID: <1623765263-36775-7-git-send-email-lipeng321@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1623765263-36775-1-git-send-email-lipeng321@huawei.com>
-References: <1623765263-36775-1-git-send-email-lipeng321@huawei.com>
+        with ESMTP id S229937AbhFON66 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:58:58 -0400
+Received: from dggeme766-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G48r614jdzXfym;
+        Tue, 15 Jun 2021 21:51:50 +0800 (CST)
+Received: from huawei.com (10.175.104.82) by dggeme766-chm.china.huawei.com
+ (10.3.19.112) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 15
+ Jun 2021 21:56:47 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <hawk@kernel.org>,
+        <john.fastabend@gmail.com>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <kpsingh@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH bpf-next] samples/bpf: Add missing option to xdp_fwd usage
+Date:   Tue, 15 Jun 2021 21:55:54 +0800
+Message-ID: <20210615135554.29158-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggeme756-chm.china.huawei.com (10.3.19.102)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggeme766-chm.china.huawei.com (10.3.19.112)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Networking block comments don't use an empty /* line,
-use /* Comment...
+xdp_fwd usage() is missing the introduction of the "-S"
+and "-F" options, this patch adds it.
 
-This patch fixes the comments style issues.
-
-Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
 ---
- drivers/net/wan/pci200syn.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ samples/bpf/xdp_fwd_user.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wan/pci200syn.c b/drivers/net/wan/pci200syn.c
-index abca13b..dee9c4e 100644
---- a/drivers/net/wan/pci200syn.c
-+++ b/drivers/net/wan/pci200syn.c
-@@ -42,8 +42,7 @@
- static int pci_clock_freq = 33000000;
- #define CLOCK_BASE pci_clock_freq
- 
--/*
-- *      PLX PCI9052 local configuration and shared runtime registers.
-+/*      PLX PCI9052 local configuration and shared runtime registers.
-  *      This structure can be used to access 9052 registers (memory mapped).
-  */
- typedef struct {
+diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+index 74a4583d0d86..00061261a8da 100644
+--- a/samples/bpf/xdp_fwd_user.c
++++ b/samples/bpf/xdp_fwd_user.c
+@@ -67,6 +67,8 @@ static void usage(const char *prog)
+ 		"usage: %s [OPTS] interface-list\n"
+ 		"\nOPTS:\n"
+ 		"    -d    detach program\n"
++		"    -S    use skb-mode\n"
++		"    -F    force loading prog\n"
+ 		"    -D    direct table lookups (skip fib rules)\n",
+ 		prog);
+ }
 -- 
-2.8.1
+2.17.1
 
