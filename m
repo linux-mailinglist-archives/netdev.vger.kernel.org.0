@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E993A8368
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:55:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C62523A8363
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:55:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231535AbhFOO5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 10:57:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37186 "EHLO
+        id S231623AbhFOO51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 10:57:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42767 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231421AbhFOO5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:57:17 -0400
+        by vger.kernel.org with ESMTP id S231486AbhFOO5Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:57:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623768912;
+        s=mimecast20190719; t=1623768911;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=g/1dUDyNZZrs33xk0mFJ4m/UiP5685UlgffhChjEESM=;
-        b=DOEJnelVpruc384QI/NHgh8z/aFuVM7UIsdirE1T2JeKTowfD1uhDLqwuNYd/Uh3cMUSXl
-        4EZbqfYaE5W5DY5Mi181iRC0rV+GBllMaUXFn2gOZJnPACb5OoTVzo9f68lAkwYGb1Z8rk
-        F8LQD1AXy7p2okwCP08XDSqdYxv1yiE=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-604-N2tt06V-P6-pj6dmtn30hQ-1; Tue, 15 Jun 2021 10:55:11 -0400
-X-MC-Unique: N2tt06V-P6-pj6dmtn30hQ-1
-Received: by mail-ed1-f71.google.com with SMTP id z16-20020aa7d4100000b029038feb83da57so22348413edq.4
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 07:55:11 -0700 (PDT)
+        bh=rY2VfBWw6NJ0/51nfkfzpQbN8Kg/IiRrFOK+qEg2pA4=;
+        b=fJGgf0fmYBJ/yu0/oXh4QqvwosS682jmUbvzFLAYILs+04z/ZSo+vIWOx3rQRiOnxmQiHj
+        CVePXs21ZwsBkDr+QwU1sRz+RlvDxV8gv0kGFi65fwRtybe/n/qr34v4Mwz7yX8WadHDHb
+        GtryHSWYT6U9TJ8tzaEaDSsBnZqB6lQ=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-526-49Q8_mNDMYCUBCAY2mZF5A-1; Tue, 15 Jun 2021 10:55:09 -0400
+X-MC-Unique: 49Q8_mNDMYCUBCAY2mZF5A-1
+Received: by mail-ed1-f69.google.com with SMTP id s25-20020aa7c5590000b0290392e051b029so17410110edr.11
+        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 07:55:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=g/1dUDyNZZrs33xk0mFJ4m/UiP5685UlgffhChjEESM=;
-        b=M+GC/aP3565lmX/3TOOzUMVIlyJh9d+21ClrG7uWfwYdqAxRUt+7mnkQA8OYozQPai
-         UizzunUUKAl8QS7ZCPcEtOyHh4USSzdiv9kE0K9iW/FmJerwQUw0Smcy2djucvBW7002
-         OZVV181iqtmzKgo6TNlu6SoIcl1I3g0O6rSsDF0SY5kt1X8HgyYVzeBA87HsR9Ovx69P
-         oJl2/b33c30TvjCIXEqYQ3+gdElH61501PW5z9pwKhfIodsAGtEjJ8x0fz9gVhS3u4Bo
-         2fTfvbiW7bY851YUlWzcJjUsXpDYB6lEZBPj3Qf1faG1N7y1i4ubwdwd3oiBJS8zt0aT
-         SQjw==
-X-Gm-Message-State: AOAM531A1iw0uPOlJWTzasYVfMIUlFJCIx4ThFK7dQAri3+NYU+lW2xq
-        M/U2RcM3s6LU8Rwu/nb4HmdRpRZXs/GRVim9XwtnmzVrjujqbmMAY1vgqu30W9CkuT24IEq8V0k
-        DR9HnREE4eyRfcmxa
-X-Received: by 2002:a05:6402:128d:: with SMTP id w13mr24062077edv.38.1623768910450;
-        Tue, 15 Jun 2021 07:55:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzCDxZA5428OnKpa9GZb7yrE5vaWiO0ZAS3v/w0w55ygu8BMKcn1QLYrEOPu83LXEhSAk3gSw==
-X-Received: by 2002:a05:6402:128d:: with SMTP id w13mr24062041edv.38.1623768910200;
-        Tue, 15 Jun 2021 07:55:10 -0700 (PDT)
+        bh=rY2VfBWw6NJ0/51nfkfzpQbN8Kg/IiRrFOK+qEg2pA4=;
+        b=nw+cegES9CuYA4wIjVZpreTY0+6IavH6unmtR10qHJfOpHwdNsrtZLHIgBBmYR6+gF
+         rzoFLAJ3cyAE1ntACGYIf720SqBAnFqvjIgA0hQ8fMHm+zO15RNPthFIe6EDRW8YPLzr
+         EZCQE8/7Is5kMNe31KjxKx3nRexWMISR2Wi4XDoNs1AVA2QWi5g1vruMlaN1iqXUzYgB
+         4LuTSjVkEVRUJlugSUpX07y1FtCRhTUwNyWG04ZmCqzfxN3KL6+c2Ee7Cqn5Mm7uj5+v
+         l8ot0fPh1NLN/1CD+tqHBKXVPChz8hDlu/GfCkO/s54BGWpN0od7hBt3dAxnQI1nGAUY
+         FKaQ==
+X-Gm-Message-State: AOAM530FhDK5On1m8WAOwz3Jusng9fUlnsySHO0HqQt9YfKDidQFMmtc
+        rjq+8UhhIF4V12Q0x4nTIL1NDi2y0A1+R55895HQi/J4cc8pqHUpwE0itJCyHLRb9gJd7PNCY04
+        GxsW37cSV0MDCOSwD
+X-Received: by 2002:a17:906:dfd1:: with SMTP id jt17mr21253047ejc.486.1623768908510;
+        Tue, 15 Jun 2021 07:55:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxUc77COnG0WIdO1tAjDrhLpnKaKhnq5sFxyuzHGltCcw1hnUBlYA0poEo+mX++Ywz8VM61xg==
+X-Received: by 2002:a17:906:dfd1:: with SMTP id jt17mr21253020ejc.486.1623768908212;
+        Tue, 15 Jun 2021 07:55:08 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id w24sm8609477eju.73.2021.06.15.07.55.04
+        by smtp.gmail.com with ESMTPSA id cf26sm10281358ejb.38.2021.06.15.07.55.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 15 Jun 2021 07:55:06 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E1C88180731; Tue, 15 Jun 2021 16:54:58 +0200 (CEST)
+        id E6CA1180732; Tue, 15 Jun 2021 16:54:58 +0200 (CEST)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Martin KaFai Lau <kafai@fb.com>,
@@ -61,12 +61,12 @@ Cc:     Martin KaFai Lau <kafai@fb.com>,
         "Paul E . McKenney" <paulmck@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Subject: [PATCH bpf-next v2 08/16] net: intel: remove rcu_read_lock() around XDP program invocation
-Date:   Tue, 15 Jun 2021 16:54:47 +0200
-Message-Id: <20210615145455.564037-9-toke@redhat.com>
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH bpf-next v2 09/16] marvell: remove rcu_read_lock() around XDP program invocation
+Date:   Tue, 15 Jun 2021 16:54:48 +0200
+Message-Id: <20210615145455.564037-10-toke@redhat.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210615145455.564037-1-toke@redhat.com>
 References: <20210615145455.564037-1-toke@redhat.com>
@@ -77,8 +77,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Intel drivers all have rcu_read_lock()/rcu_read_unlock() pairs around
-XDP program invocations. However, the actual lifetime of the objects
+The mvneta and mvpp2 drivers have rcu_read_lock()/rcu_read_unlock() pairs
+around XDP program invocations. However, the actual lifetime of the objects
 referred by the XDP program invocation is longer, all the way through to
 the call to xdp_do_flush(), making the scope of the rcu_read_lock() too
 small. This turns out to be harmless because it all happens in a single
@@ -90,288 +90,78 @@ entirely. With the addition of RCU annotations to the XDP_REDIRECT map
 types that take bh execution into account, lockdep even understands this to
 be safe, so there's really no reason to keep it around.
 
-Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: intel-wired-lan@lists.osuosl.org
-Tested-by: Jesper Dangaard Brouer <brouer@redhat.com> # i40e
+Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Cc: Marcin Wojtas <mw@semihalf.com>
+Cc: Russell King <linux@armlinux.org.uk>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_txrx.c       |  5 +++--
- drivers/net/ethernet/intel/i40e/i40e_xsk.c        | 11 +++++------
- drivers/net/ethernet/intel/ice/ice_txrx.c         |  6 +-----
- drivers/net/ethernet/intel/ice/ice_xsk.c          |  6 +-----
- drivers/net/ethernet/intel/igb/igb_main.c         |  5 +++--
- drivers/net/ethernet/intel/igc/igc_main.c         | 10 +++++-----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c     |  5 +++--
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c      |  9 ++++-----
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c |  5 +++--
- 9 files changed, 28 insertions(+), 34 deletions(-)
+ drivers/net/ethernet/marvell/mvneta.c           | 6 ++++--
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 8 ++++----
+ 2 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index de70c16ef619..7fc5bdb5cd9e 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -2298,7 +2298,6 @@ static int i40e_run_xdp(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 	struct bpf_prog *xdp_prog;
- 	u32 act;
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 7d5cd9bc6c99..c2e9cbebc8d1 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -2370,7 +2370,6 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 	/* Get number of received packets */
+ 	rx_todo = mvneta_rxq_busy_desc_num_get(pp, rxq);
  
 -	rcu_read_lock();
- 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
+ 	xdp_prog = READ_ONCE(pp->xdp_prog);
  
- 	if (!xdp_prog)
-@@ -2306,6 +2305,9 @@ static int i40e_run_xdp(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+ 	/* Fairness NAPI loop */
+@@ -2421,6 +2420,10 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 			goto next;
+ 		}
  
- 	prefetchw(xdp->data_hard_start); /* xdp_frame write */
- 
-+	/* This code is invoked within a single NAPI poll cycle and thus under
-+	 * local_bh_disable(), which provides the needed RCU protection.
-+	 */
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
- 	switch (act) {
- 	case XDP_PASS:
-@@ -2329,7 +2331,6 @@ static int i40e_run_xdp(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 		break;
- 	}
- xdp_out:
--	rcu_read_unlock();
- 	return result;
- }
- 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 46d884417c63..a5982cd112be 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -153,8 +153,10 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 	struct bpf_prog *xdp_prog;
- 	u32 act;
- 
--	rcu_read_lock();
--	/* NB! xdp_prog will always be !NULL, due to the fact that
-+	/* This code is invoked within a single NAPI poll cycle and thus under
-+	 * local_bh_disable(), which provides the needed RCU protection.
-+	 *
-+	 * NB! xdp_prog will always be !NULL, due to the fact that
- 	 * this path is enabled by setting an XDP program.
- 	 */
- 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
-@@ -162,9 +164,7 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 
- 	if (likely(act == XDP_REDIRECT)) {
- 		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
--		result = !err ? I40E_XDP_REDIR : I40E_XDP_CONSUMED;
--		rcu_read_unlock();
--		return result;
-+		return !err ? I40E_XDP_REDIR : I40E_XDP_CONSUMED;
- 	}
- 
- 	switch (act) {
-@@ -184,7 +184,6 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 		result = I40E_XDP_CONSUMED;
- 		break;
++		/* This code is invoked within a single NAPI poll cycle and thus
++		 * under local_bh_disable(), which provides the needed RCU
++		 * protection.
++		 */
+ 		if (xdp_prog &&
+ 		    mvneta_run_xdp(pp, rxq, xdp_prog, &xdp_buf, frame_sz, &ps))
+ 			goto next;
+@@ -2448,7 +2451,6 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 		xdp_buf.data_hard_start = NULL;
+ 		sinfo.nr_frags = 0;
  	}
 -	rcu_read_unlock();
- 	return result;
- }
  
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index e2b4b29ea207..1a311e91fb6d 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -1129,15 +1129,11 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 		xdp.frame_sz = ice_rx_frame_truesize(rx_ring, size);
- #endif
- 
--		rcu_read_lock();
- 		xdp_prog = READ_ONCE(rx_ring->xdp_prog);
--		if (!xdp_prog) {
--			rcu_read_unlock();
-+		if (!xdp_prog)
- 			goto construct_skb;
--		}
- 
- 		xdp_res = ice_run_xdp(rx_ring, &xdp, xdp_prog);
--		rcu_read_unlock();
- 		if (!xdp_res)
- 			goto construct_skb;
- 		if (xdp_res & (ICE_XDP_TX | ICE_XDP_REDIR)) {
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index faa7b8d96adb..d6da377f5ac3 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -463,7 +463,6 @@ ice_run_xdp_zc(struct ice_ring *rx_ring, struct xdp_buff *xdp)
- 	struct ice_ring *xdp_ring;
- 	u32 act;
- 
--	rcu_read_lock();
- 	/* ZC patch is enabled only when XDP program is set,
- 	 * so here it can not be NULL
- 	 */
-@@ -473,9 +472,7 @@ ice_run_xdp_zc(struct ice_ring *rx_ring, struct xdp_buff *xdp)
- 
- 	if (likely(act == XDP_REDIRECT)) {
- 		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
--		result = !err ? ICE_XDP_REDIR : ICE_XDP_CONSUMED;
--		rcu_read_unlock();
--		return result;
-+		return !err ? ICE_XDP_REDIR : ICE_XDP_CONSUMED;
- 	}
- 
- 	switch (act) {
-@@ -496,7 +493,6 @@ ice_run_xdp_zc(struct ice_ring *rx_ring, struct xdp_buff *xdp)
- 		break;
- 	}
- 
--	rcu_read_unlock();
- 	return result;
- }
- 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 038a9fd1af44..0b68d589218a 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -8387,7 +8387,6 @@ static struct sk_buff *igb_run_xdp(struct igb_adapter *adapter,
- 	struct bpf_prog *xdp_prog;
- 	u32 act;
- 
--	rcu_read_lock();
- 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
- 
- 	if (!xdp_prog)
-@@ -8395,6 +8394,9 @@ static struct sk_buff *igb_run_xdp(struct igb_adapter *adapter,
- 
- 	prefetchw(xdp->data_hard_start); /* xdp_frame write */
- 
-+	/* This code is invoked within a single NAPI poll cycle and thus under
-+	 * local_bh_disable(), which provides the needed RCU protection.
-+	 */
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
- 	switch (act) {
- 	case XDP_PASS:
-@@ -8420,7 +8422,6 @@ static struct sk_buff *igb_run_xdp(struct igb_adapter *adapter,
- 		break;
- 	}
- xdp_out:
--	rcu_read_unlock();
- 	return ERR_PTR(-result);
- }
- 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index ea998d2defa4..333057ce60c7 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -2175,18 +2175,18 @@ static struct sk_buff *igc_xdp_run_prog(struct igc_adapter *adapter,
- 	struct bpf_prog *prog;
- 	int res;
+ 	if (xdp_buf.data_hard_start)
+ 		mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &sinfo, -1);
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index b2259bf1d299..658db1720826 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -3852,8 +3852,6 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 	int rx_done = 0;
+ 	u32 xdp_ret = 0;
  
 -	rcu_read_lock();
 -
- 	prog = READ_ONCE(adapter->xdp_prog);
- 	if (!prog) {
- 		res = IGC_XDP_PASS;
--		goto unlock;
-+		goto out;
+ 	xdp_prog = READ_ONCE(port->xdp_prog);
+ 
+ 	/* Get number of received packets and clamp the to-do */
+@@ -3925,6 +3923,10 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 					 MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM,
+ 					 rx_bytes, false);
+ 
++			/* This code is invoked within a single NAPI poll cycle
++			 * and thus under local_bh_disable(), which provides the
++			 * needed RCU protection.
++			 */
+ 			ret = mvpp2_run_xdp(port, xdp_prog, &xdp, pp, &ps);
+ 
+ 			if (ret) {
+@@ -3988,8 +3990,6 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 		mvpp2_bm_pool_put(port, pool, dma_addr, phys_addr);
  	}
  
-+	/* This code is invoked within a single NAPI poll cycle and thus under
-+	 * local_bh_disable(), which provides the needed RCU protection.
-+	 */
- 	res = __igc_xdp_run_prog(adapter, prog, xdp);
- 
--unlock:
 -	rcu_read_unlock();
-+out:
- 	return ERR_PTR(-res);
- }
- 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index c5ec17d19c59..9cebe7894111 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -2199,7 +2199,6 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
- 	struct xdp_frame *xdpf;
- 	u32 act;
- 
--	rcu_read_lock();
- 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
- 
- 	if (!xdp_prog)
-@@ -2207,6 +2206,9 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
- 
- 	prefetchw(xdp->data_hard_start); /* xdp_frame write */
- 
-+	/* This code is invoked within a single NAPI poll cycle and thus under
-+	 * local_bh_disable(), which provides the needed RCU protection.
-+	 */
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
- 	switch (act) {
- 	case XDP_PASS:
-@@ -2237,7 +2239,6 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
- 		break;
- 	}
- xdp_out:
--	rcu_read_unlock();
- 	return ERR_PTR(-result);
- }
- 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 91ad5b902673..4a075e667082 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -100,15 +100,15 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
- 	struct xdp_frame *xdpf;
- 	u32 act;
- 
--	rcu_read_lock();
-+	/* This code is invoked within a single NAPI poll cycle and thus under
-+	 * local_bh_disable(), which provides the needed RCU protection.
-+	 */
- 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
- 
- 	if (likely(act == XDP_REDIRECT)) {
- 		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
--		result = !err ? IXGBE_XDP_REDIR : IXGBE_XDP_CONSUMED;
--		rcu_read_unlock();
--		return result;
-+		return !err ? IXGBE_XDP_REDIR : IXGBE_XDP_CONSUMED;
- 	}
- 
- 	switch (act) {
-@@ -132,7 +132,6 @@ static int ixgbe_run_xdp_zc(struct ixgbe_adapter *adapter,
- 		result = IXGBE_XDP_CONSUMED;
- 		break;
- 	}
--	rcu_read_unlock();
- 	return result;
- }
- 
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index ba2ed8a43d2d..ab05ebc3d350 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -1054,12 +1054,14 @@ static struct sk_buff *ixgbevf_run_xdp(struct ixgbevf_adapter *adapter,
- 	struct bpf_prog *xdp_prog;
- 	u32 act;
- 
--	rcu_read_lock();
- 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
- 
- 	if (!xdp_prog)
- 		goto xdp_out;
- 
-+	/* This code is invoked within a single NAPI poll cycle and thus under
-+	 * local_bh_disable(), which provides the needed RCU protection.
-+	 */
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
- 	switch (act) {
- 	case XDP_PASS:
-@@ -1079,7 +1081,6 @@ static struct sk_buff *ixgbevf_run_xdp(struct ixgbevf_adapter *adapter,
- 		break;
- 	}
- xdp_out:
--	rcu_read_unlock();
- 	return ERR_PTR(-result);
- }
+-
+ 	if (xdp_ret & MVPP2_XDP_REDIR)
+ 		xdp_do_flush_map();
  
 -- 
 2.31.1
