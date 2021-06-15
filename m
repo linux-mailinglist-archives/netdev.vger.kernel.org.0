@@ -2,63 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66D8F3A82D6
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:28:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59C773A82DC
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 16:29:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231409AbhFOOaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 10:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230493AbhFOOaH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:30:07 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D121C0613A3
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 07:27:30 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1ltA2J-0000fF-Ut; Tue, 15 Jun 2021 16:27:27 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     steffen.klassert@secunet.com, Florian Westphal <fw@strlen.de>
-Subject: [PATCH ipsec-next] xfrm: avoid compiler warning when ipv6 is disabled
-Date:   Tue, 15 Jun 2021 16:27:20 +0200
-Message-Id: <20210615142720.2749-1-fw@strlen.de>
+        id S230519AbhFOOa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 10:30:59 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:34093 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230322AbhFOOa5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 10:30:57 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <colin.king@canonical.com>)
+        id 1ltA3b-00045E-Fl; Tue, 15 Jun 2021 14:28:47 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] ice: remove redundant continue statement in a for-loop
+Date:   Tue, 15 Jun 2021 15:28:47 +0100
+Message-Id: <20210615142847.60161-1-colin.king@canonical.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-with CONFIG_IPV6=n:
-xfrm_output.c:140:12: warning: 'xfrm6_hdr_offset' defined but not used
+From: Colin Ian King <colin.king@canonical.com>
 
-Fixes: 9acf4d3b9ec1 ("xfrm: ipv6: add xfrm6_hdr_offset helper")
-Signed-off-by: Florian Westphal <fw@strlen.de>
+The continue statement in the for-loop is redundant. Re-work the hw_lock
+check to remove it.
+
+Addresses-Coverity: ("Continue has no effect")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- net/xfrm/xfrm_output.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index 3709d3f7c5ce..527da58464f3 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -137,6 +137,7 @@ static int mip6_rthdr_offset(struct sk_buff *skb, u8 **nexthdr, int type)
- }
- #endif
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+index 267312fad59a..3eca0e4eab0b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+@@ -410,13 +410,11 @@ bool ice_ptp_lock(struct ice_hw *hw)
+ 	for (i = 0; i < MAX_TRIES; i++) {
+ 		hw_lock = rd32(hw, PFTSYN_SEM + (PFTSYN_SEM_BYTES * hw->pf_id));
+ 		hw_lock = hw_lock & PFTSYN_SEM_BUSY_M;
+-		if (hw_lock) {
+-			/* Somebody is holding the lock */
+-			usleep_range(10000, 20000);
+-			continue;
+-		} else {
++		if (!hw_lock)
+ 			break;
+-		}
++
++		/* Somebody is holding the lock */
++		usleep_range(10000, 20000);
+ 	}
  
-+#if IS_ENABLED(CONFIG_IPV6)
- static int xfrm6_hdr_offset(struct xfrm_state *x, struct sk_buff *skb, u8 **prevhdr)
- {
- 	switch (x->type->proto) {
-@@ -151,6 +152,7 @@ static int xfrm6_hdr_offset(struct xfrm_state *x, struct sk_buff *skb, u8 **prev
- 
- 	return ip6_find_1stfragopt(skb, prevhdr);
- }
-+#endif
- 
- /* Add encapsulation header.
-  *
+ 	return !hw_lock;
 -- 
 2.31.1
 
