@@ -2,132 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2D33A73C0
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 04:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9923A73EA
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 04:27:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231835AbhFOC0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 22:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231753AbhFOC0A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 22:26:00 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AEBC061574;
-        Mon, 14 Jun 2021 19:23:56 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id h5so5068022iok.5;
-        Mon, 14 Jun 2021 19:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Li7iIK9O8bheMw2lclanyfnMSKgSW79Xj968UPC+rYs=;
-        b=fZki6ssOlB+VxyfcAnV58alC1PcfzefwADuEnz6mbAO92jBi8Kcx7hMrNR+qCzArt2
-         L87xwldgoJqlFDoRElkm8PpClfMIoqVsJyfzfXXE8NPl7OSN5MNT28Zh3YFs8ldW1XWs
-         5QPetvSCQvO+6mvoQbm0GbALj4ZigR4xCEnR5rh9N4B2fzeDbUItLZl+yGFy39Yx22md
-         Dqz0yjzmbu3oFi8fotj4lP/xMFxDnAlgZQajKjDDsuoGSQtGHoyQnUTU+kLX0SxSlCyq
-         XmNoPYLeNhmhnuRFIQBpbZJT7qfCoyZpo2MjIhdIrUzAoIuVM20RTeSI3nXtkSdxd4jU
-         MRIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Li7iIK9O8bheMw2lclanyfnMSKgSW79Xj968UPC+rYs=;
-        b=lZSwCdlOQOwvWBgbD3W7MHjK6CZkQuIOymoGZmJ/DHW6MsXCSLx2TVTqzhEkcj8L81
-         uHBt7wJiQRniTXQV2DxIew52ieK2peH0L1Lm44fhpQo42r7xxVlmJS1kvk72sse6c7lY
-         abPM/D33BzRVqefPoxIqxmThl2NmxrHnTrm5GW1jnqPzSFlqxISGI0BsTLn+KJS/42r2
-         +UFXDkAJ45J3Itwsg2Kc45rM4BubXYccCZMwE0HrJINbEbwAk6mYg1V3RbVJI9sae39p
-         zPt0fYaF36fHZco+zE/UkjSNh5rz07d1JPhXdCT1XO8bBlS8QKgz+P30eWoU755lZm74
-         nxcw==
-X-Gm-Message-State: AOAM533kHZZkGd+ca1S03m+n04xrD90924kDxZDwNM7KA4JxF5hieVKP
-        ZHZOWwVVqh+p9FI5too3a0X2yGVr8F7tVw==
-X-Google-Smtp-Source: ABdhPJyBDpKGYzy1QdSgYN1+LUQ2WQjOJBtCkZBYaLxqGUQo4yOcWw+TKPfPbOI2t/fKEN7Q6EmLkw==
-X-Received: by 2002:a05:620a:29d4:: with SMTP id s20mr19323986qkp.287.1623723244147;
-        Mon, 14 Jun 2021 19:14:04 -0700 (PDT)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:e9a1:5f1d:df88:4f3c])
-        by smtp.gmail.com with ESMTPSA id t15sm10774497qtr.35.2021.06.14.19.14.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 19:14:03 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH RESEND bpf v3 7/8] skmsg: pass source psock to sk_psock_skb_redirect()
-Date:   Mon, 14 Jun 2021 19:13:41 -0700
-Message-Id: <20210615021342.7416-8-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210615021342.7416-1-xiyou.wangcong@gmail.com>
-References: <20210615021342.7416-1-xiyou.wangcong@gmail.com>
+        id S230428AbhFOC2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 22:28:53 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:6364 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230181AbhFOC2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 22:28:52 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4G3rZS16pFz62Gt;
+        Tue, 15 Jun 2021 09:38:56 +0800 (CST)
+Received: from dggpemm500009.china.huawei.com (7.185.36.225) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 15 Jun 2021 09:42:53 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm500009.china.huawei.com
+ (7.185.36.225) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 15 Jun
+ 2021 09:42:53 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Paul Moore <paul@paul-moore.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-security-module@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH -next v3] netlabel: Fix memory leak in netlbl_mgmt_add_common
+Date:   Tue, 15 Jun 2021 10:14:44 +0800
+Message-ID: <20210615021444.2306687-1-liushixin2@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500009.china.huawei.com (7.185.36.225)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+Hulk Robot reported memory leak in netlbl_mgmt_add_common.
+The problem is non-freed map in case of netlbl_domhsh_add() failed.
 
-sk_psock_skb_redirect() only takes skb as a parameter, we
-will need to know where this skb is from, so just pass
-the source psock to this function as a new parameter.
-This patch prepares for the next one.
+BUG: memory leak
+unreferenced object 0xffff888100ab7080 (size 96):
+  comm "syz-executor537", pid 360, jiffies 4294862456 (age 22.678s)
+  hex dump (first 32 bytes):
+    05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    fe 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01  ................
+  backtrace:
+    [<0000000008b40026>] netlbl_mgmt_add_common.isra.0+0xb2a/0x1b40
+    [<000000003be10950>] netlbl_mgmt_add+0x271/0x3c0
+    [<00000000c70487ed>] genl_family_rcv_msg_doit.isra.0+0x20e/0x320
+    [<000000001f2ff614>] genl_rcv_msg+0x2bf/0x4f0
+    [<0000000089045792>] netlink_rcv_skb+0x134/0x3d0
+    [<0000000020e96fdd>] genl_rcv+0x24/0x40
+    [<0000000042810c66>] netlink_unicast+0x4a0/0x6a0
+    [<000000002e1659f0>] netlink_sendmsg+0x789/0xc70
+    [<000000006e43415f>] sock_sendmsg+0x139/0x170
+    [<00000000680a73d7>] ____sys_sendmsg+0x658/0x7d0
+    [<0000000065cbb8af>] ___sys_sendmsg+0xf8/0x170
+    [<0000000019932b6c>] __sys_sendmsg+0xd3/0x190
+    [<00000000643ac172>] do_syscall_64+0x37/0x90
+    [<000000009b79d6dc>] entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jakub Sitnicki <jakub@cloudflare.com>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Fixes: 63c416887437 ("netlabel: Add network address selectors to the NetLabel/LSM domain mapping")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
 ---
- net/core/skmsg.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+v1->v2: According to Dongliang's and Paul's advices, simplify the code.
+v2->v3: Fix the style error.
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index e3d210811db4..3aa9065811ad 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -824,7 +824,7 @@ int sk_psock_msg_verdict(struct sock *sk, struct sk_psock *psock,
- }
- EXPORT_SYMBOL_GPL(sk_psock_msg_verdict);
- 
--static int sk_psock_skb_redirect(struct sk_buff *skb)
-+static int sk_psock_skb_redirect(struct sk_psock *from, struct sk_buff *skb)
+ net/netlabel/netlabel_mgmt.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/net/netlabel/netlabel_mgmt.c b/net/netlabel/netlabel_mgmt.c
+index e664ab990941..032b7d7b32c7 100644
+--- a/net/netlabel/netlabel_mgmt.c
++++ b/net/netlabel/netlabel_mgmt.c
+@@ -76,6 +76,7 @@ static const struct nla_policy netlbl_mgmt_genl_policy[NLBL_MGMT_A_MAX + 1] = {
+ static int netlbl_mgmt_add_common(struct genl_info *info,
+ 				  struct netlbl_audit *audit_info)
  {
- 	struct sk_psock *psock_other;
- 	struct sock *sk_other;
-@@ -861,11 +861,12 @@ static int sk_psock_skb_redirect(struct sk_buff *skb)
- 	return 0;
- }
- 
--static void sk_psock_tls_verdict_apply(struct sk_buff *skb, struct sock *sk, int verdict)
-+static void sk_psock_tls_verdict_apply(struct sk_buff *skb,
-+				       struct sk_psock *from, int verdict)
- {
- 	switch (verdict) {
- 	case __SK_REDIRECT:
--		sk_psock_skb_redirect(skb);
-+		sk_psock_skb_redirect(from, skb);
- 		break;
- 	case __SK_PASS:
- 	case __SK_DROP:
-@@ -889,7 +890,7 @@ int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb)
- 		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
- 		skb->sk = NULL;
- 	}
--	sk_psock_tls_verdict_apply(skb, psock->sk, ret);
-+	sk_psock_tls_verdict_apply(skb, psock, ret);
- 	rcu_read_unlock();
- 	return ret;
- }
-@@ -936,7 +937,7 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
++	void *pmap = NULL;
+ 	int ret_val = -EINVAL;
+ 	struct netlbl_domaddr_map *addrmap = NULL;
+ 	struct cipso_v4_doi *cipsov4 = NULL;
+@@ -175,6 +176,7 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+ 			ret_val = -ENOMEM;
+ 			goto add_free_addrmap;
  		}
- 		break;
- 	case __SK_REDIRECT:
--		err = sk_psock_skb_redirect(skb);
-+		err = sk_psock_skb_redirect(psock, skb);
- 		break;
- 	case __SK_DROP:
- 	default:
++		pmap = map;
+ 		map->list.addr = addr->s_addr & mask->s_addr;
+ 		map->list.mask = mask->s_addr;
+ 		map->list.valid = 1;
+@@ -183,10 +185,8 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+ 			map->def.cipso = cipsov4;
+ 
+ 		ret_val = netlbl_af4list_add(&map->list, &addrmap->list4);
+-		if (ret_val != 0) {
+-			kfree(map);
+-			goto add_free_addrmap;
+-		}
++		if (ret_val != 0)
++			goto add_free_map;
+ 
+ 		entry->family = AF_INET;
+ 		entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
+@@ -223,6 +223,7 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+ 			ret_val = -ENOMEM;
+ 			goto add_free_addrmap;
+ 		}
++		pmap = map;
+ 		map->list.addr = *addr;
+ 		map->list.addr.s6_addr32[0] &= mask->s6_addr32[0];
+ 		map->list.addr.s6_addr32[1] &= mask->s6_addr32[1];
+@@ -235,10 +236,8 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+ 			map->def.calipso = calipso;
+ 
+ 		ret_val = netlbl_af6list_add(&map->list, &addrmap->list6);
+-		if (ret_val != 0) {
+-			kfree(map);
+-			goto add_free_addrmap;
+-		}
++		if (ret_val != 0)
++			goto add_free_map;
+ 
+ 		entry->family = AF_INET6;
+ 		entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
+@@ -248,10 +247,12 @@ static int netlbl_mgmt_add_common(struct genl_info *info,
+ 
+ 	ret_val = netlbl_domhsh_add(entry, audit_info);
+ 	if (ret_val != 0)
+-		goto add_free_addrmap;
++		goto add_free_map;
+ 
+ 	return 0;
+ 
++add_free_map:
++	kfree(pmap);
+ add_free_addrmap:
+ 	kfree(addrmap);
+ add_doi_put_def:
 -- 
-2.25.1
+2.18.0.huawei.25
 
