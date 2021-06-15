@@ -2,71 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 840313A863F
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 18:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F96E3A8643
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 18:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230352AbhFOQVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 12:21:22 -0400
-Received: from www62.your-server.de ([213.133.104.62]:33444 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230305AbhFOQVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 12:21:20 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ltBmO-0000nN-J5; Tue, 15 Jun 2021 18:19:08 +0200
-Received: from [85.7.101.30] (helo=linux-3.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ltBmO-000637-9d; Tue, 15 Jun 2021 18:19:08 +0200
-Subject: Re: [PATCH v8 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>, edumazet@google.com
-Cc:     andrii@kernel.org, ast@kernel.org, benh@amazon.com,
-        bpf@vger.kernel.org, davem@davemloft.net, kafai@fb.com,
-        kuba@kernel.org, kuni1840@gmail.com, linux-kernel@vger.kernel.org,
-        ncardwell@google.com, netdev@vger.kernel.org, ycheng@google.com
-References: <CANn89iLxZxGXaVxLkxTkmNPF7XZdb8DKGMBFuMJLBdtrJRbrsA@mail.gmail.com>
- <20210615160330.19729-1-kuniyu@amazon.co.jp>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f28c2bda-e37d-7119-210e-80ee63369003@iogearbox.net>
-Date:   Tue, 15 Jun 2021 18:19:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S229937AbhFOQVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 12:21:39 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38092 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229493AbhFOQVh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 12:21:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=hfcnk72xFqtUl9Z41mbQpf9TF4mim3SVDeULJYikBbw=; b=kNW2fHPsiDklsGwGz/VRvxWNBE
+        0Ot4zUlzsGGELl2dM08o09GWX4+1WqUYiX49jK0Jjxhs9kjkMvVdUols1MCXR6uMvR96+icH2Yc4S
+        tHziaII4vTTOUD70zkoawy4+IGLS9HMI2IeZdcVRwHF4nmHDJGAOAm5WDP5glCaLdpeY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ltBmg-009Y43-CX; Tue, 15 Jun 2021 18:19:26 +0200
+Date:   Tue, 15 Jun 2021 18:19:26 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        calvin.johnson@oss.nxp.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next] mdio: mdiobus: setup of_node for the MDIO device
+Message-ID: <YMjTDkJU58E3ITCJ@lunn.ch>
+References: <20210615154401.1274322-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210615160330.19729-1-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26202/Tue Jun 15 13:21:24 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210615154401.1274322-1-ciorneiioana@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/15/21 6:03 PM, Kuniyuki Iwashima wrote:
-> From:   Eric Dumazet <edumazet@google.com>
-> Date:   Tue, 15 Jun 2021 17:35:10 +0200
->> On Sat, Jun 12, 2021 at 2:32 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->>>
->>> Changelog:
->>>   v8:
->>>    * Make reuse const in reuseport_sock_index()
->>>    * Don't use __reuseport_add_sock() in reuseport_alloc()
->>>    * Change the arg of the second memcpy() in reuseport_grow()
->>>    * Fix coding style to use goto in reuseport_alloc()
->>>    * Keep sk_refcnt uninitialized in inet_reqsk_clone()
->>>    * Initialize ireq_opt and ipv6_opt separately in reqsk_migrate_reset()
->>>
->>>    [ This series does not include a stats patch suggested by Yuchung Cheng
->>>      not to drop Acked-by/Reviewed-by tags and save reviewer's time. I will
->>>      post the patch as a follow up after this series is merged. ]
->>
->> For the whole series.
->>
->> Reviewed-by: Eric Dumazet <edumazet@google.com>
+On Tue, Jun 15, 2021 at 06:44:01PM +0300, Ioana Ciornei wrote:
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
 > 
-> I greatly appreciate your review.
+> By mistake, the of_node of the MDIO device was not setup in the patch
+> linked below. As a consequence, any PHY driver that depends on the
+> of_node in its probe callback was not be able to successfully finish its
+> probe on a PHY
 
-+1, applied, thanks everyone!
+Do you mean the PHY driver was looking for things like RGMII delays,
+skew values etc?
+
+If the PHY driver fails to load because of missing OF properties, i
+guess this means the PHY driver will also fail in an ACPI system?
+
+      Andrew
