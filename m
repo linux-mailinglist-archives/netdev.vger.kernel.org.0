@@ -2,81 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 247633A7B61
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 12:04:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2303A7B80
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 12:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231424AbhFOKGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 06:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
+        id S231460AbhFOKMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 06:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231308AbhFOKGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 06:06:39 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB5FC061574
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 03:04:34 -0700 (PDT)
-Received: from miraculix.mork.no ([IPv6:2a02:2121:346:c551:fc26:65ff:feae:d816])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 15FA4Mct021729
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Tue, 15 Jun 2021 12:04:23 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1623751463; bh=Q4K+AYa9BL6Q7woN2FCseiWtJUiKj/PFCm8APfPBwQo=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=HIaWC4VdA2GvQwLZ4Z9fiC2iWSKYzw9ZAwzA0JSOyLC8vnEcvCEZ80eqC/ckrFxzP
-         bb8Yt6oQ5YAz/Afs+w1mphiSdwGjQ/CXd7cjGk+VTE/N4rP93Ya8jsZiumjmR2uSlj
-         4ygHnmlfi7XyvijhpZ4nbfkuN+XHVGKnPDTW4DRc=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
-        (envelope-from <bjorn@mork.no>)
-        id 1lt5vi-000YwU-4T; Tue, 15 Jun 2021 12:04:22 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Kristian Evensen <kristian.evensen@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        subashab@codeaurora.org
-Subject: Re: [PATCH net] qmi_wwan: Clone the skb when in pass-through mode
-Organization: m
-References: <20210614141849.3587683-1-kristian.evensen@gmail.com>
-        <8735tky064.fsf@miraculix.mork.no>
-        <20210614130530.7a422f27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAKfDRXgQLvTpeowOe=17xLqYbVRcem9N2anJRSjMcQm6=OnH1A@mail.gmail.com>
-Date:   Tue, 15 Jun 2021 12:04:21 +0200
-In-Reply-To: <CAKfDRXgQLvTpeowOe=17xLqYbVRcem9N2anJRSjMcQm6=OnH1A@mail.gmail.com>
-        (Kristian Evensen's message of "Tue, 15 Jun 2021 11:03:24 +0200")
-Message-ID: <877divwije.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S231494AbhFOKMs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 06:12:48 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D404C061574;
+        Tue, 15 Jun 2021 03:10:44 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id u24so50304783edy.11;
+        Tue, 15 Jun 2021 03:10:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oCpcZf2UhB1kUI420Fd2Oz53E4JiY49ICmqCxOkWky8=;
+        b=dJUfgN+8aIX6uooBjZrDuUG21Okd7E9dQDRGfypdUfviFuP/OMdcJ1vDmE84Hoqt+M
+         mwjEs/3Om84dIJp8ClqjoLQUJo40S7iocXGQlxmtx334ZrcWlroUfGO58XmwF8bLTaI/
+         DJsNd6KH8P46m2r+HINUg8CvgMKRFZaDWS/+IjSLCxNNyHOpHFSV+eE0YZdf5JUGO9vK
+         3DlK436iC5HZcJNmhVcFQgkEkM8m+jxjM8DKGSx47tlFc4QV1mVWHltSBJRzIAmI9W4T
+         MtZh+jIOj9xZklgmArRbu0s1dMbV/MygT0QRliJ4BEWtcLYfn1HqJIX/xiGebDfMftsf
+         Ud3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oCpcZf2UhB1kUI420Fd2Oz53E4JiY49ICmqCxOkWky8=;
+        b=IE7m+uuf+V3OD6y3Onokd8uded8+jwlLeqQ52ETwQTb7l8IRgHxp71mUQOu/xUa0je
+         2G8etHry1i8A+L+sXhS1NIi7fPTB1ybhH2JCRXSctT02zMDIxd8RBDKrLzSWoS8LQ9dI
+         EwaGhY7uqRQaRYLVmvKdY1iZh5UtZ+lw9VuSpr6OKHRYcwunaCHFzdeRGDToieFQjTB4
+         A0SM3HwmC0UA48zezGa/gqRfkvKjiuqs641xs16w9eP6bsCq/MoWR+cr9rfBUpcn/++m
+         y28umqJeUoggGJR0rrTGjji4rqse0URNutLLND9BWpjfeKZjJq50oqUEO2giAhsH9KXr
+         MjNg==
+X-Gm-Message-State: AOAM532L1vVkJInlBXTCYQbDpR2yJbnv5FLFuXlXf9+TrUR/+EHILGYx
+        1AJPYJ7oMJxMwF008nHtsIlSmZdP+tXPCxuxM9w=
+X-Google-Smtp-Source: ABdhPJzbrBMJeWPE/dIGJn1IjaQLtUMTyyBT+ZAAB7UoAAAB2vZaDUlUW4xjpic9aPnw+wGMsgsXJ/PmAXy+9dZawsw=
+X-Received: by 2002:a05:6402:54f:: with SMTP id i15mr21915437edx.339.1623751842851;
+ Tue, 15 Jun 2021 03:10:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.4 at canardo
-X-Virus-Status: Clean
+References: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
+ <YMhY9NHf1itQyup7@kroah.com> <CAD-N9QVfDQQo0rRiaa6Cx-xO80yox9hNzK91_UVj0KNgkhpvnQ@mail.gmail.com>
+ <YMh2b0LvT9H7SuNC@kroah.com>
+In-Reply-To: <YMh2b0LvT9H7SuNC@kroah.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Tue, 15 Jun 2021 18:10:16 +0800
+Message-ID: <CAD-N9QV+GMURatPx4qJT2nMsKHQhj+BXC9C-ZyQed3pN8a9YUA@mail.gmail.com>
+Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
+To:     Greg KH <greg@kroah.com>
+Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kristian Evensen <kristian.evensen@gmail.com> writes:
-
->> It does look pretty strange that qmimux_rx_fixup() copies out all
->> packets and receives them, and then let's usbnet to process the
->> multi-frame skb without even fulling off the qmimux_hdr. I'm probably
->> missing something.. otherwise sth like FLAG_MULTI_PACKET may be in
->> order?
+On Tue, Jun 15, 2021 at 5:44 PM Greg KH <greg@kroah.com> wrote:
 >
-> qmimux_rx_fixup() is different from what we are discussing here.
-> qmimux_rx_fixup() is used when the de-aggregation is performed by the
-> qmi_wwan driver, while the passthrough flag is set when the
-> de-aggregation is done by the rmnet driver. The logic in
-> qmimux_rx_fixup() is very similar to how the other usbnet mini-drivers
-> handles de-aggregation and also how de-aggregation is handled by for
-> example rmnet. I have no opinion on if the logic makes sens or not,
-> but at least the origin can be traced :)
+> On Tue, Jun 15, 2021 at 03:56:32PM +0800, Dongliang Mu wrote:
+> > On Tue, Jun 15, 2021 at 3:38 PM Greg KH <greg@kroah.com> wrote:
+> > >
+> > > On Mon, Jun 14, 2021 at 11:37:12PM +0800, Dongliang Mu wrote:
+> > > > The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+> > > > fails to clean up the work scheduled in smsc75xx_reset->
+> > > > smsc75xx_set_multicast, which leads to use-after-free if the work is
+> > > > scheduled to start after the deallocation. In addition, this patch also
+> > > > removes one dangling pointer - dev->data[0].
+> > > >
+> > > > This patch calls cancel_work_sync to cancel the schedule work and set
+> > > > the dangling pointer to NULL.
+> > > >
+> > > > Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
+> > > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > > ---
+> > > >  drivers/net/usb/smsc75xx.c | 3 +++
+> > > >  1 file changed, 3 insertions(+)
+> > > >
+> > > > diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
+> > > > index b286993da67c..f81740fcc8d5 100644
+> > > > --- a/drivers/net/usb/smsc75xx.c
+> > > > +++ b/drivers/net/usb/smsc75xx.c
+> > > > @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
+> > > >       return 0;
+> > > >
+> > > >  err:
+> > > > +     cancel_work_sync(&pdata->set_multicast);
+> > > >       kfree(pdata);
+> > > > +     pdata = NULL;
+> > >
+> > > Why do you have to set pdata to NULL afterward?
+> > >
+> >
+> > It does not have to. pdata will be useless when the function exits. I
+> > just referred to the implementation of smsc75xx_unbind.
+>
+> It's wrong there too :)
 
-Yes, FLAG_MULTI_PACKET is only applicable to the qmimux case. But I
-think Jakub is right that we should set it anyway. There is no way to
-return from rx_fixup without an error or further processing of the skb,
-unless we set FLAG_MULTI_PACKET.  Or invent something else.  But setting
-that flag and then add the necessary usnet_sb_return call doesn't look
-too bad?
-
-
-
-Bj=C3=B8rn
+/: I will fix such two sites in the v2 patch.
