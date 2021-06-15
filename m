@@ -2,83 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 531CD3A7705
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 08:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3A863A7707
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 08:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbhFOG0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 02:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
+        id S229989AbhFOG06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 02:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbhFOG0l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 02:26:41 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2138C061574;
-        Mon, 14 Jun 2021 23:24:37 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id g38so18886189ybi.12;
-        Mon, 14 Jun 2021 23:24:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R6CiRT39KoHnr4CfQvne5IWTcKQuw3ay+vt7NMCzJeM=;
-        b=ar81s3ispK7Vqv3nWZANhPSHhOa1FenU5+qicdGEJA7WiYqZ1dWzJ0zl5yJ+9PQc3B
-         wJLgI/xG6fWXIrbUWZFRDyUtiw045XJjV3qOntXmW8fTwbNUJ7wrGLEVaOIPHSnVzRIb
-         MEk3FEo/9UcPH/dFoW7mIpFgxUE+z4umQMW3X/Y2dLMyq/fFqmHgMMiRXdZAnTiBAYt/
-         DZ3behnClMuFnOLAtSSwubTjxZ0+1gakzQDGgE8kYfX49LLMqtUcEN4Ek8Vzq3lDX4hd
-         Ftjo/SWR4Q5ZT5GHcbHRN0PsIZxODBZ6INrxFe2owJyWFQS2tfXCD4u2azT8DSLbdnQ2
-         pjsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R6CiRT39KoHnr4CfQvne5IWTcKQuw3ay+vt7NMCzJeM=;
-        b=uiPIEmuiW7DuDchFfAbDM1GrUkiVZpD3wuU2IgPUo0JqRMUWKE5j3TXptl500jikrr
-         4/GrU7WbDIqCfIsYfDi9DSwYDKE7ywW3HeKA77KS1ABxf2Gq/i0OQo3FlzRuzJ9jUNu0
-         pEEYznbm8cABwiJ0fXxiLG6JcqQ/8lvwdIEkLE54IVhWixee+TjiP+UhOns1L+OLHWU6
-         lgF0A6qxty+GRmOH4IXx8ECBws2/Qmz07sgy1WvO8riMTBRPcScuNcuuG+Y7yS9+zx34
-         rtWzRpXOj/aeAJk4g7WjTrqgFu3+2siXKULs/zWodn/UlpOhyFBu2pzVjRzxMsTId1wU
-         Ukyw==
-X-Gm-Message-State: AOAM531Sv2A1hXrkyuw2BPaaN1XBYBUaSw1I0aRmMuUR0ZSLyhkVga5y
-        EF0LMwlt4PHDb6YmUHpuBD8DNUk5q4gPJJkJRzI=
-X-Google-Smtp-Source: ABdhPJw8oOAylhLqTP3LzbyzqE9zfDHDTMEt8wm8nddNSJDY2X+SQRcfJoPmoRjAm/vcMKurABZhqEz3pgHQWNcwaNU=
-X-Received: by 2002:a25:6612:: with SMTP id a18mr30701018ybc.347.1623738277016;
- Mon, 14 Jun 2021 23:24:37 -0700 (PDT)
+        with ESMTP id S229493AbhFOG04 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 02:26:56 -0400
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E35C061767
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 23:24:52 -0700 (PDT)
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9e:6708:7fba:f3d4:906e:68a0])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 15F6Oe6E021592
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Tue, 15 Jun 2021 08:24:40 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1623738280; bh=DVgq/n1Crmn/UYfbmIP90K2MOKwUX5XevoiyrSOUQb0=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=LAluiTF+QHQowPaqTkFacdZZ2HygmHYvT8ZaJBPgIIul7l/Gb9/3SLF9jfhcqlx3i
+         8twIiQsEq8ydrUwpDq6sZ8UtvdA+3nz1LKfNSw2vsklGZy4RomlLQQvc7puxXw5k9O
+         KxeGLCJ1su/ieU+h6D4Lb6s9/4/es1VgMIKQS2UA=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
+        (envelope-from <bjorn@mork.no>)
+        id 1lt2V5-000Y6s-Pc; Tue, 15 Jun 2021 08:24:39 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Kristian Evensen <kristian.evensen@gmail.com>,
+        netdev@vger.kernel.org, subashab@codeaurora.org
+Subject: Re: [PATCH net] qmi_wwan: Clone the skb when in pass-through mode
+Organization: m
+References: <20210614141849.3587683-1-kristian.evensen@gmail.com>
+        <8735tky064.fsf@miraculix.mork.no>
+        <20210614130530.7a422f27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Tue, 15 Jun 2021 08:24:39 +0200
+In-Reply-To: <20210614130530.7a422f27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        (Jakub Kicinski's message of "Mon, 14 Jun 2021 13:05:30 -0700")
+Message-ID: <87pmwnwspk.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20210609115651.3392580-1-wanghai38@huawei.com> <34bd6047-2b4c-1218-7822-57aea059deb1@fb.com>
-In-Reply-To: <34bd6047-2b4c-1218-7822-57aea059deb1@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 14 Jun 2021 23:24:26 -0700
-Message-ID: <CAEf4BzaxW-ZfOUvs--s1zt1YzTLrPWcvwG8W5FRejj1pNHWw5Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: simplify the return expression of
- bpf_object__init_maps function
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Wang Hai <wanghai38@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.4 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 9, 2021 at 8:21 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 6/9/21 4:56 AM, Wang Hai wrote:
-> > There is no need for special treatment of the 'ret == 0' case.
-> > This patch simplifies the return expression.
-> >
-> > Signed-off-by: Wang Hai <wanghai38@huawei.com>
->
-> Acked-by: Yonghong Song <yhs@fb.com>
+Jakub Kicinski <kuba@kernel.org> writes:
 
-Applied to bpf-next a few days ago. Seems like patchbot was off duty
-at that time.
+> It does look pretty strange that qmimux_rx_fixup() copies out all
+> packets and receives them, and then let's usbnet to process the
+> multi-frame skb without even fulling off the qmimux_hdr. I'm probably
+> missing something.. otherwise sth like FLAG_MULTI_PACKET may be in
+> order?
+
+Yes, maybe it is?  We'd have to call usbnet_skb_return() for the plain
+IP frames then, but that might come out cleaner?
+
+
+Bj=C3=B8rn
