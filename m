@@ -2,142 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 990DF3A7DDD
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 14:07:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D9CB3A7E1A
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 14:21:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230392AbhFOMJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 08:09:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
+        id S230254AbhFOMX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 08:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbhFOMJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 08:09:42 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CBBC061574;
-        Tue, 15 Jun 2021 05:07:38 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id g8so22182534ejx.1;
-        Tue, 15 Jun 2021 05:07:38 -0700 (PDT)
+        with ESMTP id S229946AbhFOMXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 08:23:25 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4ED2C061574;
+        Tue, 15 Jun 2021 05:21:20 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id m137so18006579oig.6;
+        Tue, 15 Jun 2021 05:21:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=F2WOp7laceuxMILuVpXWmQIN4CP/UaKDpQrNGuoiets=;
-        b=bpIE1xt9f4WHxc1LIBkz+TxemnxivXcZLk3PGwB9kZY3wEhtdoaHdaNGjkp0jFD8k1
-         N1iud+3xq0b+kGQuusZcT2CSyTBCurvuJk3iQ1PecywAzsAAnwEzpDHqQfYUln9+Zoi0
-         6RqzEA8NfkaBoMoOC+vPlk37DoBwqMlk/1m888jTNKYAB1au9ay8aouvG2bYtURbnkZI
-         XCnW5XJDnlQaL4QXdOvH9KsYWG/mwwG3mMRi5kTARQfWRBO8a25rUlvHJAoa3CI6Y+yF
-         8mfFFIGh05/+67prKlVF/nksi253pKlnzlwVxYW5cOG3tQ5G7u5SLvfq73fukSLKP2tP
-         LGMQ==
+        bh=hzZxd2nn6fBPdLTgIg79BhOLZB+W6bqdrusiXTazCDo=;
+        b=ef2Ff3K8Gyb4OQO1tX7bmyYzrgTQ7vKGnHF5k5N+KW9cDLSwOSDOk2DqZUJioP0NZw
+         xfnla+rkAg6coKGhOnwd3UuR01J8ATY4quuU4y3GVAsUWg6V9ch4qrhQkNxzjj7s86Ly
+         WdPzAI46/HyCklgmeJaI2RO0xWdHPIkfSckZOpSxm8A73A5UFQICLvgthV+b6F9WXNe7
+         r+f8t/tVuJscZ6+DjKwyo+eLP1ntf76/xCa37OtGQaSXJp40Z64v5opEB6OmP5GDjINq
+         MPIG+jZuDtFNzvLtEUT2TC2fvQq0tryJYWp5bimnhR9DcbrWVyLYaB0C2pzPzlG3KOoi
+         zyCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=F2WOp7laceuxMILuVpXWmQIN4CP/UaKDpQrNGuoiets=;
-        b=mgdkzI93KEinQ3qkKM6oUwjO5VJJtysgAA8J8u5VSMhES2fQIjDrgqGXky11cmcP0C
-         /cGm52QwjCZj7WgsEt+U8q4Psza/YD7z4P2A4BRselRqcCMcjsO3SG5Ug0bZWTPVl5zA
-         C56T8WNkWAQ7nhhttAtMoOtHM7uaV1wZt3ucqf47qqgWyIFDiDQpo9G2cOJ1VOPbIYyy
-         FmbwHuJzI57fKsem7uaLiww98d4NXY92lhMJDxYdZMwiA5f0SCMWDLSh+bY/GA7AbHhU
-         Pdq7kW5ve/SR2fzE6NKGoUXqmuHwWPedDwuXLTKyZT5ugOYWfMf8N+oZt/dLwGqhlp4z
-         PUPg==
-X-Gm-Message-State: AOAM531Dti6SR9C8W104FFkno90Vs5HAjDmnzJISH9vHntrw+1RklMJZ
-        zEc0Q3gUJjl7dD9SH2oGCgxNwRWcxTcewYrGdBE=
-X-Google-Smtp-Source: ABdhPJw1witA7P6CqSUgKjswjF/s/f7Lze23dP/muWUzifZszk/k00kEmbKiYr6L65YTPHEo+Jeuo+Kad6fWwCCm+QI=
-X-Received: by 2002:a17:906:7f0e:: with SMTP id d14mr20030316ejr.103.1623758856683;
- Tue, 15 Jun 2021 05:07:36 -0700 (PDT)
+        bh=hzZxd2nn6fBPdLTgIg79BhOLZB+W6bqdrusiXTazCDo=;
+        b=k5/ORU++utxkVxzzddbp/c1BUDijIB0G1t/9AX8A0FjnlSpTMQjHP5D8gqubM/zzPL
+         Wer8HBvYi98Z9Ufb6/ezOrjj8os1gRjvxQ2F1bjvVN3cuV9+Rm6Vx/GSbkXiDeu7E+4T
+         IUnP9E/eA5hdu5RrJ2EC1ay5z+T/QKHWDZ9Fd3vBzu9qnopMR8uXVOPTD9v8yRdW7iEz
+         Vf71vijtTLx8qdbpCCwBkGX+JG8UXupDIlpvZciEJbF44d+A15MeKtOv5/cAR/kY+hV6
+         74UTnhzxa4MLRc1Jk9BpuTEYsEimwyRuQJQx4uLjtOiiRfc79Qe+E4zZ6Q1emuisjfA/
+         D1Xw==
+X-Gm-Message-State: AOAM533xw2ml3JhjgWG4f5I0yWuqU8l4ALbmTkucbMXpD3H5ewUQ8pok
+        eP9GU807WPg1kQjPlkD812+tz8akplQHbQ7TpOCweNrAOQ==
+X-Google-Smtp-Source: ABdhPJw4wL6K5x8A1Buxjqc3v1FPKG59w9YZ5j/vZcHZMZRi9y3lGNa3dwLbUIwu7YPoj8S3bTteY57WYFi1plOMK54=
+X-Received: by 2002:a05:6808:610:: with SMTP id y16mr14165219oih.96.1623759680192;
+ Tue, 15 Jun 2021 05:21:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210614153712.2172662-1-mudongliangabcd@gmail.com>
- <YMhY9NHf1itQyup7@kroah.com> <CAD-N9QVfDQQo0rRiaa6Cx-xO80yox9hNzK91_UVj0KNgkhpvnQ@mail.gmail.com>
- <YMh2b0LvT9H7SuNC@kroah.com> <CAD-N9QV+GMURatPx4qJT2nMsKHQhj+BXC9C-ZyQed3pN8a9YUA@mail.gmail.com>
- <CAD-N9QW6LhRO+D-rr4xCCuq+m=jtD7LS_+GDVs9DkHe5paeSOg@mail.gmail.com> <YMiLFFRfXfBHpfAF@kroah.com>
-In-Reply-To: <YMiLFFRfXfBHpfAF@kroah.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Tue, 15 Jun 2021 20:07:10 +0800
-Message-ID: <CAD-N9QUVCc8Gaw0pTqCCHMby2R4_8VNcVy+QcndoXpYe7vbt0Q@mail.gmail.com>
-Subject: Re: [PATCH] net: usb: fix possible use-after-free in smsc75xx_bind
-To:     Greg KH <greg@kroah.com>
-Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pavel Skripkin <paskripkin@gmail.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <1623498978-30759-1-git-send-email-zheyuma97@gmail.com> <7ca72971-e072-2489-99cc-3b25e111d333@pensando.io>
+In-Reply-To: <7ca72971-e072-2489-99cc-3b25e111d333@pensando.io>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Tue, 15 Jun 2021 20:21:08 +0800
+Message-ID: <CAMhUBjnmeS5G4CNFhsV7EVFSfLspNNotd5qP-g8o8OsBx7xd5A@mail.gmail.com>
+Subject: Re: [PATCH] net: 3com: 3c59x: add a check against null pointer dereference
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     klassert@kernel.org, David Miller <davem@davemloft.net>,
+        kuba@kernel.org, jeffrey.t.kirsher@intel.com,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 7:12 PM Greg KH <greg@kroah.com> wrote:
+On Tue, Jun 15, 2021 at 12:48 AM Shannon Nelson <snelson@pensando.io> wrote:
 >
-> On Tue, Jun 15, 2021 at 06:24:17PM +0800, Dongliang Mu wrote:
-> > On Tue, Jun 15, 2021 at 6:10 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> > >
-> > > On Tue, Jun 15, 2021 at 5:44 PM Greg KH <greg@kroah.com> wrote:
-> > > >
-> > > > On Tue, Jun 15, 2021 at 03:56:32PM +0800, Dongliang Mu wrote:
-> > > > > On Tue, Jun 15, 2021 at 3:38 PM Greg KH <greg@kroah.com> wrote:
-> > > > > >
-> > > > > > On Mon, Jun 14, 2021 at 11:37:12PM +0800, Dongliang Mu wrote:
-> > > > > > > The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> > > > > > > fails to clean up the work scheduled in smsc75xx_reset->
-> > > > > > > smsc75xx_set_multicast, which leads to use-after-free if the work is
-> > > > > > > scheduled to start after the deallocation. In addition, this patch also
-> > > > > > > removes one dangling pointer - dev->data[0].
-> > > > > > >
-> > > > > > > This patch calls cancel_work_sync to cancel the schedule work and set
-> > > > > > > the dangling pointer to NULL.
-> > > > > > >
-> > > > > > > Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-> > > > > > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > > > > > ---
-> > > > > > >  drivers/net/usb/smsc75xx.c | 3 +++
-> > > > > > >  1 file changed, 3 insertions(+)
-> > > > > > >
-> > > > > > > diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-> > > > > > > index b286993da67c..f81740fcc8d5 100644
-> > > > > > > --- a/drivers/net/usb/smsc75xx.c
-> > > > > > > +++ b/drivers/net/usb/smsc75xx.c
-> > > > > > > @@ -1504,7 +1504,10 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
-> > > > > > >       return 0;
-> > > > > > >
-> > > > > > >  err:
-> > > > > > > +     cancel_work_sync(&pdata->set_multicast);
-> > > > > > >       kfree(pdata);
-> > > > > > > +     pdata = NULL;
-> > > > > >
-> > > > > > Why do you have to set pdata to NULL afterward?
-> > > > > >
-> > > > >
-> > > > > It does not have to. pdata will be useless when the function exits. I
-> > > > > just referred to the implementation of smsc75xx_unbind.
-> > > >
-> > > > It's wrong there too :)
-> > >
-> > > /: I will fix such two sites in the v2 patch.
+> On 6/12/21 4:56 AM, Zheyu Ma wrote:
+> > When the driver is processing the interrupt, it will read the value of
+> > the register to determine the status of the device. If the device is in
+> > an incorrect state, the driver may mistakenly enter this branch. At this
+> > time, the dma buffer has not been allocated, which will result in a null
+> > pointer dereference.
 > >
-> > Hi gregkh,
+> > Fix this by checking whether the buffer is allocated.
 > >
-> > If the schedule_work is not invoked, can I call
-> > ``cancel_work_sync(&pdata->set_multicast)''?
+> > This log reveals it:
+> >
+> > BUG: kernel NULL pointer dereference, address: 0000000000000070
+> > PGD 0 P4D 0
+> > Oops: 0000 [#1] PREEMPT SMP PTI
+> > CPU: 5 PID: 0 Comm: swapper/5 Not tainted 5.12.4-g70e7f0549188-dirty #88
+> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+> > RIP: 0010:_vortex_interrupt+0x323/0x670
+> > Code: 84 d4 00 00 00 e8 bd e9 60 fe 48 8b 45 d8 48 83 c0 0c 48 89 c6 bf 00 10 00 00 e8 98 d0 f0 fe 48 8b 45 d0 48 8b 80 d8 01 00 00 <8b> 40 70 83 c0 03 89 c0 83 e0 fc 48 89 c2 48 8b 45 d0 48 8b b0 e0
+> > RSP: 0018:ffffc900001a4dd0 EFLAGS: 00010046
+> > RAX: 0000000000000000 RBX: ffff888115da0580 RCX: 0000000000000000
+> > RDX: 0000000000000000 RSI: ffffffff81bf710e RDI: 0000000000001000
+> > RBP: ffffc900001a4e30 R08: ffff8881008edbc0 R09: 00000000fffffffe
+> > R10: 0000000000000001 R11: 00000000a5c81234 R12: ffff8881049530a8
+> > R13: 0000000000000000 R14: ffffffff87313288 R15: ffff888108c92000
+> > FS:  0000000000000000(0000) GS:ffff88817b200000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 0000000000000070 CR3: 00000001198c2000 CR4: 00000000000006e0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >   <IRQ>
+> >   ? _raw_spin_lock_irqsave+0x81/0xa0
+> >   vortex_boomerang_interrupt+0x56/0xc10
+> >   ? __this_cpu_preempt_check+0x1c/0x20
+> >   __handle_irq_event_percpu+0x58/0x3e0
+> >   handle_irq_event_percpu+0x3a/0x90
+> >   handle_irq_event+0x3e/0x60
+> >   handle_fasteoi_irq+0xc7/0x1d0
+> >   __common_interrupt+0x84/0x150
+> >   common_interrupt+0xb4/0xd0
+> >   </IRQ>
+> >   asm_common_interrupt+0x1e/0x40
+> > RIP: 0010:native_safe_halt+0x17/0x20
+> > Code: 07 0f 00 2d 3b 3e 4b 00 f4 5d c3 0f 1f 84 00 00 00 00 00 8b 05 42 a9 72 02 55 48 89 e5 85 c0 7e 07 0f 00 2d 1b 3e 4b 00 fb f4 <5d> c3 cc cc cc cc cc cc cc 0f 1f 44 00 00 55 48 89 e5 e8 92 4a ff
+> > RSP: 0018:ffffc900000afe90 EFLAGS: 00000246
+> > RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+> > RDX: 0000000000000000 RSI: ffffffff8666cafb RDI: ffffffff865058de
+> > RBP: ffffc900000afe90 R08: 0000000000000001 R09: 0000000000000001
+> > R10: 0000000000000001 R11: 0000000000000000 R12: ffffffff87313288
+> > R13: 0000000000000000 R14: 0000000000000000 R15: ffff8881008ed1c0
+> >   default_idle+0xe/0x20
+> >   arch_cpu_idle+0xf/0x20
+> >   default_idle_call+0x73/0x250
+> >   do_idle+0x1f5/0x2d0
+> >   cpu_startup_entry+0x1d/0x20
+> >   start_secondary+0x11f/0x160
+> >   secondary_startup_64_no_verify+0xb0/0xbb
+> > Modules linked in:
+> > Dumping ftrace buffer:
+> >     (ftrace buffer empty)
+> > CR2: 0000000000000070
+> > ---[ end trace 0735407a540147e1 ]---
+> > RIP: 0010:_vortex_interrupt+0x323/0x670
+> > Code: 84 d4 00 00 00 e8 bd e9 60 fe 48 8b 45 d8 48 83 c0 0c 48 89 c6 bf 00 10 00 00 e8 98 d0 f0 fe 48 8b 45 d0 48 8b 80 d8 01 00 00 <8b> 40 70 83 c0 03 89 c0 83 e0 fc 48 89 c2 48 8b 45 d0 48 8b b0 e0
+> > RSP: 0018:ffffc900001a4dd0 EFLAGS: 00010046
+> > RAX: 0000000000000000 RBX: ffff888115da0580 RCX: 0000000000000000
+> > RDX: 0000000000000000 RSI: ffffffff81bf710e RDI: 0000000000001000
+> > RBP: ffffc900001a4e30 R08: ffff8881008edbc0 R09: 00000000fffffffe
+> > R10: 0000000000000001 R11: 00000000a5c81234 R12: ffff8881049530a8
+> > R13: 0000000000000000 R14: ffffffff87313288 R15: ffff888108c92000
+> > FS:  0000000000000000(0000) GS:ffff88817b200000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 0000000000000070 CR3: 00000001198c2000 CR4: 00000000000006e0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Kernel panic - not syncing: Fatal exception in interrupt
+> > Dumping ftrace buffer:
+> >     (ftrace buffer empty)
+> > Kernel Offset: disabled
+> > Rebooting in 1 seconds..
+> >
+> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> > ---
+> >   drivers/net/ethernet/3com/3c59x.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
+> > index 741c67e546d4..e27901ded7a0 100644
+> > --- a/drivers/net/ethernet/3com/3c59x.c
+> > +++ b/drivers/net/ethernet/3com/3c59x.c
+> > @@ -2300,7 +2300,7 @@ _vortex_interrupt(int irq, struct net_device *dev)
+> >               }
+> >
+> >               if (status & DMADone) {
+> > -                     if (ioread16(ioaddr + Wn7_MasterStatus) & 0x1000) {
+> > +                     if ((ioread16(ioaddr + Wn7_MasterStatus) & 0x1000) && vp->tx_skb_dma) {
+> >                               iowrite16(0x1000, ioaddr + Wn7_MasterStatus); /* Ack the event. */
+> >                               dma_unmap_single(vp->gendev, vp->tx_skb_dma, (vp->tx_skb->len + 3) & ~3, DMA_TO_DEVICE);
+> >                               pkts_compl++;
 >
-> Why can you not call this then?
-
-I don't know the internal of schedule_work and cancel_work_sync, so I
-ask this question to confirm my patch does not introduce any new
-issues.
-
+> This means you won't be ack'ing the event - is this unacknowledged event
+> going to cause an issue later?
 >
-> Did you try it and see?
 
-Yes, I thought up a method and tested it in my local workspace.
+First, I'm not an expert in networking, but from my perspective, I
+don't think this will cause a problem. Because when the driver enters
+this branch, It means that it thinks that the hardware has already
+performed a DMA operation, and the driver only needs to do some
+follow-up work, but this is not the case. At this time,
+'vp->tx_skb_dma' is still a null pointer, so there is no need for
+follow-up work at this time, it is meaningless, and it is appropriate
+not to perform any operations at this time.
 
-First, I reproduced the memory leak in smsc75xx_bind [1] since the PoC
-triggered an error before schedule_work.
-Then, I merged two patches, and run the PoC. The result showed that my
-patch does not trigger any new issues even the schedule_work is not
-called.
+> If the error is because the buffer doesn't exist, then can you simply
+> put the buffer check on the dma_unmap_single() and allow the rest of the
+> handling to happen?
 
-[1] https://syzkaller.appspot.com/bug?id=c978ec308a1b89089a17ff48183d70b4c840dfb0
+The error is not only because the buffer is empty. In fact,
+'vp->tx_skb' is also empty at this time, because these two buffers are
+allocated in the 'vortex_start_xmit' function at the same time, so
+only check in 'dma_unmap_single' is not enough.
 
->
-> thanks,
->
-> greg k-h
+Thanks,
+Zheyu Ma
