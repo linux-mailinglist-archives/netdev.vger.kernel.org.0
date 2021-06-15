@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E40EE3A72FC
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 02:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15DAD3A7302
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 02:30:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230222AbhFOAcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 20:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
+        id S230457AbhFOAcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 20:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbhFOAcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 20:32:32 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D32C061280
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 17:30:28 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id f30so24011696lfj.1
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 17:30:28 -0700 (PDT)
+        with ESMTP id S230414AbhFOAcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 20:32:48 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF28BC0613A4
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 17:30:30 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id p17so23930319lfc.6
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 17:30:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cdp9YxzUFC9kGIUU/5fRFVyTA0S6VIcnorPRw1B//34=;
-        b=qGHoBAdd5afRP+ysBAcia5MeML2sTR9FjF1VBYx9rGSnqqeBFDbgHugCZ3r+AyYNCY
-         gGHs7K+n6MHIbLoh8W1PDEGFz4boCMdBn6AXAhIqryksQJsE4JCPrFh0V77CuMl1spnu
-         zzPzVkOtFTKgnqqti7i7HWRmVFbg3HjDJ/S2ObBOwOSlKx5xH2EMg2UfQo3lwZ0etPtI
-         EZD0tDnW+09aXv4knMm7XCU3dRkWI0YlDs72F8iVore+6pO4468PMoC9N1nGKv6B40Dq
-         2UFw2mzxMX2n02fB/outCqBM4vrHwyBYmGs7ncUbmFffTNCWvjJGqh18SdnwWK2oWw7i
-         qulA==
+        bh=XmeWAbPsSaBx+nU+8yJYFKGc/MDEqnOyHS9fhBTh5DI=;
+        b=pCDKEo6hVU/EbsWnloeduAMgDTgpkbEU9IgTzxZXP+gzZNuJW/y0sUggNlIia30VLL
+         aZZVUz24p4mHfhyUTsszpf8X5fSvVdCFBx0FS9YnuDY6Dlfbjo0enkxsj7fhjbhdj5zc
+         WrF3ydnMv/WhRxlSDZsIS50AgrwwoXxPA5RCLEzmC4bBeb62p46jtNVjut2WBEzUcFXY
+         HaPM6uRAtwH47836MYhX0aRNM/3zU8YIsMkuUw9bYb/RDWGZvfZ3XEFltGWD5YXfTrSv
+         QAXF53Rqugt1i24z46iBgPKqAcBXE5pLjt+Q1SkVZPYM32R6pmina+QA1H9th0aOTy9k
+         YEsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cdp9YxzUFC9kGIUU/5fRFVyTA0S6VIcnorPRw1B//34=;
-        b=ewxO3Gs4rllnq7IhL3TZSYyMXExdIJ6POIU5/OR15MRUj7nA+hsNwuy4lgUjO2/xKn
-         2Skif6n6z6Qaxzxm/gaHoVUkI1rTqOmXlw6dBq01NmL3MlrgaaWapk6ErpjytuDMqWVX
-         jejkcKPZN9aPf1f67P1bCY2b14R9xepLC9DoL9iHE90EjKJGetn47kR45ahMffNUDKdc
-         xUdEewgmdDtg3nnNGCIpSOD6D+dv15+c88bFfLosBM6Tx4vxFOaxl2NZrPoxwymFWw7t
-         rPdL6rWJQVmrTIg4q5j+IoSkfw+XNG76YkRsWo0ThAAe4pUjzvycBx24djkzMp/jeU+B
-         Gh2w==
-X-Gm-Message-State: AOAM53385Muv4ULQLjdfUA0AJc0PQ5bUMfOBJgI8XFkW56gzXTvv42oZ
-        HO5sh+0vued5JSyIdTqQ6gg=
-X-Google-Smtp-Source: ABdhPJy4GzfjWbsXKuniuP01DeLz0Pk9huyLF7+ziiDOg4a7q3Kp7FtWFlS6QwXK45U7fdLIZhN1tA==
-X-Received: by 2002:a19:e008:: with SMTP id x8mr14115788lfg.439.1623717027286;
-        Mon, 14 Jun 2021 17:30:27 -0700 (PDT)
+        bh=XmeWAbPsSaBx+nU+8yJYFKGc/MDEqnOyHS9fhBTh5DI=;
+        b=rJmTU2YNseKYqCtfkqDybUh4gWSDkrD0S7IbtpE2ndazhjQHR5SNraE6lftv3DN7Wx
+         hwFQpiDspbM8yEmcPwAbwGxZcd9meCAv9/P7YPZImN8T2fOYOanHByzYaQM2RurULuyn
+         vEMWwd/FOXr9TJmS3RdhWAXSBiBu2/UTvLZivRzfdWVLAYDBnZhIzj1FxqMAhRxz6CU1
+         DP4004Pk4AM0B+nQeMsFwpHl5Y0IE66uzbAMbxg9qO0M+8NaKelnepjrs8wWh05q/P7T
+         YAurgt0lQAV+LA2Kd0cVn70cak3ulpdXQFjDnEeMpWjdNMOobNlGVQ4Ry4dboDLpylgk
+         Tluw==
+X-Gm-Message-State: AOAM532eV9wRkPACKyy2qhiHjPwCox/a4xh37npiVleAl6qSo6uRhFgS
+        w4FjJQmqKOE93ti348x8EwY=
+X-Google-Smtp-Source: ABdhPJxKzGKsQQHJRq6T+y7qW+i/Fbh7cDdDgQL1g756thAxl7m1j007UyowwSo/PHLxh2WWDCH6wA==
+X-Received: by 2002:ac2:4888:: with SMTP id x8mr13738167lfc.489.1623717029392;
+        Mon, 14 Jun 2021 17:30:29 -0700 (PDT)
 Received: from rsa-laptop.internal.lan ([217.25.229.52])
-        by smtp.gmail.com with ESMTPSA id 9sm1635522lfy.41.2021.06.14.17.30.26
+        by smtp.gmail.com with ESMTPSA id 9sm1635522lfy.41.2021.06.14.17.30.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 17:30:26 -0700 (PDT)
+        Mon, 14 Jun 2021 17:30:28 -0700 (PDT)
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
 To:     Loic Poulain <loic.poulain@linaro.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next 07/10] wwan: core: no more hold netdev ops owning module
-Date:   Tue, 15 Jun 2021 03:30:13 +0300
-Message-Id: <20210615003016.477-8-ryazanov.s.a@gmail.com>
+Subject: [PATCH net-next 09/10] net: mhi_net: create default link via WWAN core
+Date:   Tue, 15 Jun 2021 03:30:15 +0300
+Message-Id: <20210615003016.477-10-ryazanov.s.a@gmail.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210615003016.477-1-ryazanov.s.a@gmail.com>
 References: <20210615003016.477-1-ryazanov.s.a@gmail.com>
@@ -65,128 +65,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The WWAN netdev ops owner holding was used to protect from the
-unexpected memory disappear. This approach causes a dependency cycle
-(driver -> core -> driver) and effectively prevents a WWAN driver
-unloading. E.g. WWAN hwsim could not be unloaded until all simulated
-devices are removed:
+Utilize the just introduced WWAN core feature to create a default netdev
+for the default data channel. Since the netdev is now created via the
+WWAN core, rely on it ability to destroy all child netdevs on ops
+unregistering.
 
-~# modprobe wwan_hwsim devices=2
-~# lsmod | grep wwan
-wwan_hwsim             16384  2
-wwan                   20480  1 wwan_hwsim
-~# rmmod wwan_hwsim
-rmmod: ERROR: Module wwan_hwsim is in use
-~# echo > /sys/kernel/debug/wwan_hwsim/hwsim0/destroy
-~# echo > /sys/kernel/debug/wwan_hwsim/hwsim1/destroy
-~# lsmod | grep wwan
-wwan_hwsim             16384  0
-wwan                   20480  1 wwan_hwsim
-~# rmmod wwan_hwsim
-
-For a real device driver this will cause an inability to unload module
-until a served device is physically detached.
-
-Since the last commit we are removing all child netdev(s) when a driver
-unregister the netdev ops. This allows us to permit the driver
-unloading, since any sane driver will call ops unregistering on a device
-deinitialization. So, remove the holding of an ops owner to make it
-easier to unload a driver module. The owner field has also beed removed
-from the ops structure as there are no more users of this field.
+While at it, remove the RTNL lock acquiring hacks that were earlier used
+to call addlink/dellink without holding the RTNL lock. Also make the
+WWAN netdev ops structure static to make sparse happy.
 
 Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 ---
- drivers/net/mhi/net.c         |  1 -
- drivers/net/wwan/wwan_core.c  | 10 ----------
- drivers/net/wwan/wwan_hwsim.c |  1 -
- include/linux/wwan.h          |  2 --
- 4 files changed, 14 deletions(-)
+ drivers/net/mhi/net.c | 54 +++++--------------------------------------
+ 1 file changed, 6 insertions(+), 48 deletions(-)
 
 diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
-index 64af1e518484..ebd1dbf0a536 100644
+index b003003cbd42..06253acecaa2 100644
 --- a/drivers/net/mhi/net.c
 +++ b/drivers/net/mhi/net.c
-@@ -383,7 +383,6 @@ static void mhi_net_dellink(void *ctxt, struct net_device *ndev,
+@@ -342,10 +342,7 @@ static int mhi_net_newlink(void *ctxt, struct net_device *ndev, u32 if_id,
+ 	/* Number of transfer descriptors determines size of the queue */
+ 	mhi_netdev->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
+ 
+-	if (extack)
+-		err = register_netdevice(ndev);
+-	else
+-		err = register_netdev(ndev);
++	err = register_netdevice(ndev);
+ 	if (err)
+ 		goto out_err;
+ 
+@@ -370,10 +367,7 @@ static void mhi_net_dellink(void *ctxt, struct net_device *ndev,
+ 	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+ 	struct mhi_device *mhi_dev = ctxt;
+ 
+-	if (head)
+-		unregister_netdevice_queue(ndev, head);
+-	else
+-		unregister_netdev(ndev);
++	unregister_netdevice_queue(ndev, head);
+ 
+ 	mhi_unprepare_from_transfer(mhi_dev);
+ 
+@@ -382,7 +376,7 @@ static void mhi_net_dellink(void *ctxt, struct net_device *ndev,
+ 	dev_set_drvdata(&mhi_dev->dev, NULL);
  }
  
- const struct wwan_ops mhi_wwan_ops = {
--	.owner = THIS_MODULE,
+-const struct wwan_ops mhi_wwan_ops = {
++static const struct wwan_ops mhi_wwan_ops = {
  	.priv_size = sizeof(struct mhi_net_dev),
  	.setup = mhi_net_setup,
  	.newlink = mhi_net_newlink,
-diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-index 3f04e674cdaa..28590405172c 100644
---- a/drivers/net/wwan/wwan_core.c
-+++ b/drivers/net/wwan/wwan_core.c
-@@ -921,11 +921,6 @@ int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
- 		return -EBUSY;
- 	}
- 
--	if (!try_module_get(ops->owner)) {
--		wwan_remove_dev(wwandev);
--		return -ENODEV;
+@@ -392,55 +386,19 @@ const struct wwan_ops mhi_wwan_ops = {
+ static int mhi_net_probe(struct mhi_device *mhi_dev,
+ 			 const struct mhi_device_id *id)
+ {
+-	const struct mhi_device_info *info = (struct mhi_device_info *)id->driver_data;
+ 	struct mhi_controller *cntrl = mhi_dev->mhi_cntrl;
+-	struct net_device *ndev;
+-	int err;
+-
+-	err = wwan_register_ops(&cntrl->mhi_dev->dev, &mhi_wwan_ops, mhi_dev,
+-				WWAN_NO_DEFAULT_LINK);
+-	if (err)
+-		return err;
+-
+-	if (!create_default_iface)
+-		return 0;
+-
+-	/* Create a default interface which is used as either RMNET real-dev,
+-	 * MBIM link 0 or ip link 0)
+-	 */
+-	ndev = alloc_netdev(sizeof(struct mhi_net_dev), info->netname,
+-			    NET_NAME_PREDICTABLE, mhi_net_setup);
+-	if (!ndev) {
+-		err = -ENOMEM;
+-		goto err_unregister;
 -	}
 -
- 	wwandev->ops = ops;
- 	wwandev->ops_ctxt = ctxt;
+-	SET_NETDEV_DEV(ndev, &mhi_dev->dev);
  
-@@ -952,7 +947,6 @@ static int wwan_child_dellink(struct device *dev, void *data)
- void wwan_unregister_ops(struct device *parent)
+-	err = mhi_net_newlink(mhi_dev, ndev, 0, NULL);
+-	if (err)
+-		goto err_release;
+-
+-	return 0;
+-
+-err_release:
+-	free_netdev(ndev);
+-err_unregister:
+-	wwan_unregister_ops(&cntrl->mhi_dev->dev);
+-
+-	return err;
++	return wwan_register_ops(&cntrl->mhi_dev->dev, &mhi_wwan_ops, mhi_dev,
++				 create_default_iface ? 0 :
++				 WWAN_NO_DEFAULT_LINK);
+ }
+ 
+ static void mhi_net_remove(struct mhi_device *mhi_dev)
  {
- 	struct wwan_device *wwandev = wwan_dev_get_by_parent(parent);
--	struct module *owner;
- 	LIST_HEAD(kill_list);
+-	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
+ 	struct mhi_controller *cntrl = mhi_dev->mhi_cntrl;
  
- 	if (WARN_ON(IS_ERR(wwandev)))
-@@ -968,8 +962,6 @@ void wwan_unregister_ops(struct device *parent)
- 	 */
- 	put_device(&wwandev->dev);
- 
--	owner = wwandev->ops->owner;	/* Preserve ops owner */
+ 	/* rtnetlink takes care of removing remaining links */
+ 	wwan_unregister_ops(&cntrl->mhi_dev->dev);
 -
- 	rtnl_lock();	/* Prevent concurent netdev(s) creation/destroying */
- 
- 	/* Remove all child netdev(s), using batch removing */
-@@ -981,8 +973,6 @@ void wwan_unregister_ops(struct device *parent)
- 
- 	rtnl_unlock();
- 
--	module_put(owner);
--
- 	wwandev->ops_ctxt = NULL;
- 	wwan_remove_dev(wwandev);
- }
-diff --git a/drivers/net/wwan/wwan_hwsim.c b/drivers/net/wwan/wwan_hwsim.c
-index c1e850b9c087..a8582a58a385 100644
---- a/drivers/net/wwan/wwan_hwsim.c
-+++ b/drivers/net/wwan/wwan_hwsim.c
-@@ -94,7 +94,6 @@ static void wwan_hwsim_netdev_setup(struct net_device *ndev)
+-	if (create_default_iface)
+-		mhi_net_dellink(mhi_dev, mhi_netdev->ndev, NULL);
  }
  
- static const struct wwan_ops wwan_hwsim_wwan_rtnl_ops = {
--	.owner = THIS_MODULE,
- 	.priv_size = 0,			/* No private data */
- 	.setup = wwan_hwsim_netdev_setup,
- };
-diff --git a/include/linux/wwan.h b/include/linux/wwan.h
-index 430a3a0817de..656a571b52ed 100644
---- a/include/linux/wwan.h
-+++ b/include/linux/wwan.h
-@@ -119,14 +119,12 @@ void *wwan_port_get_drvdata(struct wwan_port *port);
- 
- /**
-  * struct wwan_ops - WWAN device ops
-- * @owner: module owner of the WWAN ops
-  * @priv_size: size of private netdev data area
-  * @setup: set up a new netdev
-  * @newlink: register the new netdev
-  * @dellink: remove the given netdev
-  */
- struct wwan_ops {
--	struct module *owner;
- 	unsigned int priv_size;
- 	void (*setup)(struct net_device *dev);
- 	int (*newlink)(void *ctxt, struct net_device *dev,
+ static const struct mhi_device_info mhi_hwip0 = {
 -- 
 2.26.3
 
