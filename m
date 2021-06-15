@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B6203A8026
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B3F3A8032
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 15:34:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbhFONgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 09:36:39 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:18906 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231245AbhFONgT (ORCPT
+        id S231228AbhFONgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 09:36:46 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.81]:18826 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231246AbhFONgT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 09:36:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1623764032; cv=none;
+ARC-Seal: i=1; a=rsa-sha256; t=1623764033; cv=none;
     d=strato.com; s=strato-dkim-0002;
-    b=UqZj6ncVwqbNWU1TATskOVce7fe8wck3w5h3gR2puRTbXZ+nWfxrQKjeZaqUUvl5kX
-    D1ZPSkn3qQznNuMk4POCY//MNRZ2stERRwuORs3X9lueUb2nmHpQJc+IUO+Z+iZTo7nz
-    66FtkKPVk6MYpm3mYxx4eKMhH99ZOxzJ5Rv9HJhrWK2sW/X54nQ1xGU2uiorw4g93SDa
-    HIBSM85rWyVBd3kHySpS3eV3kSK/mEgAQXpkaFxSUthQ7V9fonB7ZQaJAoRMM6Z7BcxG
-    Gwm+rAQiHiF/vxPzKUIYutzvu1PTV2wtXQJu8Zcn4IYvA8mUkqNHAyHFtXkFUYbXR4iN
-    D4bQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623764032;
+    b=bIqp0AJnjs3EN1lBoq0EnBfT5OYxVkJiYgGjYhQo4uRow1+nDjiXjjUFKxs1bTikB2
+    UN1nk/Cmv63z+ywiXyRApZRPZvt04nWauxHjk5XVIdlsdw89tdBWlYR4zaoaMQ7sDOcP
+    uLi4uCSaMB7Jo2+EwDZ9fztUpX3WgEVFb2TNfjg8EzOzgSX7/uVSPZqh3a6UUcEIPPsw
+    gpjUbGNpJOaORxDIFHoonAK1y69ijcnZvuulfm5atimH2w/OlkyWgsk1BbOmxSYewKIb
+    US2zv4PvbQTwp79G8Gm/ujANTJ7tTEzgcHMe/iOFx2XxyEvksSdjGxV1Ke1vmNfT/OD9
+    sKsw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623764033;
     s=strato-dkim-0002; d=strato.com;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=mQRhCw99t46xvu5Um+luLEXQFeXQ4w3N+7RCHyZz/KU=;
-    b=m5eH9bt3+q6eDbQ8EcSxeNBIP+/hILKfT4cpG2uRzFs+xwaBrqjOoGdEklhTvd/RO9
-    OTZ8lxJUfxND7B+nKjkEKVof10w5iMIZxi7hBl+tcorbiQR3kB5/uppXfSaftkOFIDdw
-    5EqP6/AKKOPT3FhvLMG72Z1alSwNi4qxIEWTCtD6/3RVf8aLXCZvQmQr6dv8JAYCm2RA
-    6awcxa8WcnDuecSaay/AMYTfdB9CnlCKav6hgEO6y/RDGOccbUVzLmDaGtLSmVVnIqmd
-    dQnKngo9IVoggOiU3JitXwkE7M9gDXJviMGapO5TDPS9TKaQ+pTw+xvAuJjGuM710i9U
-    uY0A==
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=3TdVNRSVdWVw+TLJWZU/FaKUgvTAWh+NLNbOyH7Egqo=;
+    b=NkJvkf2r6HRpRVFDtP5GrqbunOrmKKcbWqE+h2jGGuEY0OXDgd8AN7rc/uR8ZXXN6y
+    o6PBYLMPrqqUgk51zFRN17bpluRKilY1lkJhpb9Rrfgb9LKri3OcZm89vRwRWAzm7Gq8
+    ZI4OrNJATonX+th/t9kKy3MUfiCDsrMMBCGMEyOligRNXc8RyoLvN5qwGzWYXtaUpoqt
+    sRCOhuy4Yt0ntZjlTWJnytw4gBXh7IY19Km+/tjaSSn+Dd18rprQrzIsg0XzL26K98D5
+    uOT27avskD+mnfG/47bLscMp+LnyK+W/ppyl186e/8SPkNJhy8rKLEenxUplFAu9jpQ5
+    xCQg==
 ARC-Authentication-Results: i=1; strato.com;
     dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623764032;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623764033;
     s=strato-dkim-0002; d=gerhold.net;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=mQRhCw99t46xvu5Um+luLEXQFeXQ4w3N+7RCHyZz/KU=;
-    b=q+QVM9xC4W/uQmucYyxt3nVC54G3iImd89NhNwnkQ2viz+NjmpOqCMsqF4q9yF95xT
-    n5p/kWOptl6JtIPEjTYGFVKeyuruMVbHTNMfzbjIKIsSOTcyUGw7SDubWnqJ28+p+dm3
-    E/8QHwvA1gmivoq5EOYuEobTWak2xlqBBNNvidtyGTl3QLcJZcku6PlJTBvt50g8JaCY
-    tiUMIdunkjGal9qKy+Oe2F5ivno/2hJCad9ekE0SFt8MyU1neYFUfZ49hXE0cwflbOiG
-    n1qo00WMQ1Zjz67TfdN/4f8dtctCmeJ7wzEPyn1FQwBX8nJLTc1sNtFAAhCV3jlzp3jd
-    NXiA==
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=3TdVNRSVdWVw+TLJWZU/FaKUgvTAWh+NLNbOyH7Egqo=;
+    b=rU/M87SIQ2fP0OgGR1bWk2BKe8E4Bwg9oPzVfiiP5LseRl+PsC5NpJr2s5mqxG+/3c
+    hXhZpL+R+ULkNTgKpVJlN/r9XqlE9YqFRW37CCPr0nauCN2lliPYY54ORlTl/GOpmEVj
+    LdLwPaQC78uRkejcPF4Ekq/xhMH0VbvuyLCE/EaVt3vjk7HKDZgIiZ89N1PVK0FjXw80
+    NW7ChYouJjFH+J/2lXRZ0p12DaNedBmYGECCP7Y2Xf43xKOdtEQYHyU1AiMYuTQtpuBw
+    xK6WVFfuJIgfwOowbYTV07mk3FetgS33A75OKMW5tWzuw39HcejBFLKLWvCxi6fThQtA
+    JwJg==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxA6m6NutzT"
 X-RZG-CLASS-ID: mo00
 Received: from droid..
     by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
-    with ESMTPSA id y01375x5FDXpOsl
+    with ESMTPSA id y01375x5FDXqOsm
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Tue, 15 Jun 2021 15:33:51 +0200 (CEST)
+    Tue, 15 Jun 2021 15:33:52 +0200 (CEST)
 From:   Stephan Gerhold <stephan@gerhold.net>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -67,51 +69,56 @@ Cc:     Loic Poulain <loic.poulain@linaro.org>,
         linux-kernel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht,
         Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH net-next 0/3] net: wwan: Add RPMSG WWAN CTRL driver
-Date:   Tue, 15 Jun 2021 15:32:26 +0200
-Message-Id: <20210615133229.213064-1-stephan@gerhold.net>
+Subject: [PATCH net-next 1/3] rpmsg: core: Add driver_data for rpmsg_device_id
+Date:   Tue, 15 Jun 2021 15:32:27 +0200
+Message-Id: <20210615133229.213064-2-stephan@gerhold.net>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210615133229.213064-1-stephan@gerhold.net>
+References: <20210615133229.213064-1-stephan@gerhold.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series adds a WWAN "control" driver for the remote processor
-messaging (rpmsg) subsystem. This subsystem allows communicating with
-an integrated modem DSP on many Qualcomm SoCs, e.g. MSM8916 or MSM8974.
+Most device_id structs provide a driver_data field that can be used
+by drivers to associate data more easily for a particular device ID.
+Add the same for the rpmsg_device_id.
 
-The driver is a fairly simple glue layer between WWAN and RPMSG
-and is mostly based on the existing mhi_wwan_ctrl.c and rpmsg_char.c.
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+---
+ drivers/rpmsg/rpmsg_core.c      | 4 +++-
+ include/linux/mod_devicetable.h | 1 +
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-For more information, see commit message in PATCH 2/3.
-
-I already posted a RFC for this a while ago:
-https://lore.kernel.org/linux-arm-msm/YLfL9Q+4860uqS8f@gerhold.net/
-and now I'm looking for some feedback for the actual changes. :)
-
-Especially patch 3/3 is still up for discussion, perhaps there is a cleaner
-way to implement the blocking/non-blocking writes for rpmsg_wwan_ctrl?
-
-Stephan Gerhold (3):
-  rpmsg: core: Add driver_data for rpmsg_device_id
-  net: wwan: Add RPMSG WWAN CTRL driver
-  net: wwan: Allow WWAN drivers to provide blocking tx and poll function
-
- MAINTAINERS                           |   7 ++
- drivers/net/wwan/Kconfig              |  18 +++
- drivers/net/wwan/Makefile             |   1 +
- drivers/net/wwan/iosm/iosm_ipc_port.c |   3 +-
- drivers/net/wwan/mhi_wwan_ctrl.c      |   3 +-
- drivers/net/wwan/rpmsg_wwan_ctrl.c    | 156 ++++++++++++++++++++++++++
- drivers/net/wwan/wwan_core.c          |   9 +-
- drivers/net/wwan/wwan_hwsim.c         |   3 +-
- drivers/rpmsg/rpmsg_core.c            |   4 +-
- include/linux/mod_devicetable.h       |   1 +
- include/linux/wwan.h                  |  13 ++-
- 11 files changed, 207 insertions(+), 11 deletions(-)
- create mode 100644 drivers/net/wwan/rpmsg_wwan_ctrl.c
-
+diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
+index e5daee4f9373..c1404d3dae2c 100644
+--- a/drivers/rpmsg/rpmsg_core.c
++++ b/drivers/rpmsg/rpmsg_core.c
+@@ -459,8 +459,10 @@ static int rpmsg_dev_match(struct device *dev, struct device_driver *drv)
+ 
+ 	if (ids)
+ 		for (i = 0; ids[i].name[0]; i++)
+-			if (rpmsg_id_match(rpdev, &ids[i]))
++			if (rpmsg_id_match(rpdev, &ids[i])) {
++				rpdev->id.driver_data = ids[i].driver_data;
+ 				return 1;
++			}
+ 
+ 	return of_driver_match_device(dev, drv);
+ }
+diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+index 7d45b5f989b0..8e291cfdaf06 100644
+--- a/include/linux/mod_devicetable.h
++++ b/include/linux/mod_devicetable.h
+@@ -447,6 +447,7 @@ struct hv_vmbus_device_id {
+ 
+ struct rpmsg_device_id {
+ 	char name[RPMSG_NAME_SIZE];
++	kernel_ulong_t driver_data;
+ };
+ 
+ /* i2c */
 -- 
 2.32.0
 
