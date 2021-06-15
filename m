@@ -2,341 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A4843A7E75
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 14:55:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3FA63A7E77
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 14:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbhFOM5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 08:57:10 -0400
-Received: from smtp.lucas.inf.br ([177.190.248.62]:36452 "EHLO
-        smtp.lucas.inf.br" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230079AbhFOM5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 08:57:09 -0400
-X-Greylist: delayed 306 seconds by postgrey-1.27 at vger.kernel.org; Tue, 15 Jun 2021 08:57:08 EDT
-Received: from [192.168.5.2] (unknown [177.101.131.138])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: lucas)
-        by smtp.lucas.inf.br (Postfix) with ESMTPSA id 2914410C858C
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 09:49:57 -0300 (-03)
-Authentication-Results: lucas.inf.br; dmarc=fail (p=reject dis=none) header.from=lucas.inf.br
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lucas.inf.br; s=mail;
-        t=1623761397; bh=XyiYAFJ+ImyovCfIcLx3ZaeT/42wDFOVmiacatZLoIE=;
-        h=To:From:Subject:Date:From;
-        b=tdEIDRxKIdCEt8kpLHU9RtTwTTKbcR4ToHJXT8+5mBwfQkwGG5WdsLBWaUPM3IGh0
-         BsAgmH9H7eL87sHdUS0TPb3zeEkLec1m+ljRg52h2ipvn1PuL2JgH6A4vu9P6piWUT
-         CZYdlopwYYh7y06JIC/GqCDIV5G4EKsDm73HodzmBgHz2pXUZdf6qzGf+b3qAbQplT
-         lGH5NCEfnikhRBEeGelbWUza0BPK4ArkO+Nl7GbRvX16hVHSjfJ8IL0+XhSDWxUveE
-         Zl42P77ZZjOIGUO74dIlVz9sjke3d+g5Ji/3BM5l8r7vK/MBBqKtJgf6Wm+YQVdMMV
-         d7oyFT3MxK8qw==
-To:     netdev@vger.kernel.org
-From:   Lucas Bocchi <lucas@lucas.inf.br>
-Subject: Strange dropped packets results in TC
-Message-ID: <aee69c28-2cd1-1b0c-05db-88697db2dbd2@lucas.inf.br>
-Date:   Tue, 15 Jun 2021 09:49:56 -0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S230380AbhFOM5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 08:57:16 -0400
+Received: from mail-eopbgr60122.outbound.protection.outlook.com ([40.107.6.122]:62803
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230079AbhFOM5P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 08:57:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Fs7JFNXGbtlW+AknVFLYcNBoRsKRaH5aHz6tkenRe7gVmpYq6Y46unj+zRdeA8blgjCy24jdnyllHveYiZToFUmzcbxZuHNz7uG6pP4P61LOH0GzmiZ/OZVM2IDpxrO1km76fXD/JT7lfxgP5XBRuhtvBRr4IaW7fZJXFf6RAI16CI8M+qTBGZrE1sPlCntOoX9HFKnwdgOCu+zi3GX/6b6V5pR+h+HeTN16vUTC9YPSdPyKfkvM/NaTy24ngdWsD1cLjT34vCBAE4EvG+PHg9n3h5853kUaA7l7rhZSEEd/YzdScm9A2QnbYyvblnLycgohJVQCJR4bJdT+62UJrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rM2RgKar/nTrRxRKoJSYrXqcPrpzEAnWArRiVlgehY0=;
+ b=nCxzep/6EfQj/0ASMpPVE+oBvtdz+iRnVgJm6IAoE9t1sZk5l1JVpG6YbKT+DX3HW9Znlv2yUK9UaMBvjPVy0A+SYwVFxdr7PgeE0D0LI2n7mCztzJnVSf6VRV2ErezH6haO8kQ22Vn4nTQfFGfJuMF2LLvPLMPRpx+f8JE5mzS+p4p00A9VIh7W3dQzD8SNYocT5ZFzt2CRYYkewW4NfNe0rWnKaPAtDBRWaPJylYodVgGtJ7Jsc11WF3AIUX/GcU1ris7mNVD4GuIo+7gwm7xmNllRzDKYWVUqWIEoBWWKJJxmgbV3UhzX/pD2Car7bchFr4P9Yb+6ywQxuV/m+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rM2RgKar/nTrRxRKoJSYrXqcPrpzEAnWArRiVlgehY0=;
+ b=KqLurN2if+y4FLVm78MvLtFOteo8pjlqXCk0HWegsz4QCGAM03HXx/3KnIUMVRH97fTRISXDChRPtwiAVi3BYenRVlGZAh0GAT63HfjPqAVfwGBmxiIR1kQIU4b9oOMPOQUH3Y2+XDbs4iYWlM3OElFEguz15q1HRSBcrx8IC2o=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
+ HE1P190MB0124.EURP190.PROD.OUTLOOK.COM (2603:10a6:3:cc::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4219.23; Tue, 15 Jun 2021 12:55:07 +0000
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a%6]) with mapi id 15.20.4219.025; Tue, 15 Jun 2021
+ 12:55:07 +0000
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        linux-kernel@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Vadym Kochan <vkochan@marvell.com>
+Subject: [PATCH net-next 0/2] Marvell Prestera add flower and match all support
+Date:   Tue, 15 Jun 2021 15:54:42 +0300
+Message-Id: <20210615125444.31538-1-vadym.kochan@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [217.20.186.93]
+X-ClientProxiedBy: AM0PR10CA0036.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::16) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:7:56::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: pt-BR
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM0PR10CA0036.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend Transport; Tue, 15 Jun 2021 12:55:06 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 85bfdb7f-5a33-402e-5027-08d92ffccd75
+X-MS-TrafficTypeDiagnostic: HE1P190MB0124:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1P190MB01247B871EA1F418018FF24395309@HE1P190MB0124.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +zsvGc4OHFQ3yU+TFh9r9zaBvA5tHgu0WP1rI0z7+U/XTiVzNSkMQNtJniETiO807+DLGn1ug4jSbpYfCG84wE7KENjmlgceOyaM43FOTN0ZIxnRK53zrriW8pfx72qA0C5UuCuXHS8UxrY982EvrGVjRBOjNV1CJUudvgIGhpghfyaWUKCZDQldAEmjI5EX6SOd9gdGeuXZP9vfbw4knE/CdWmaRniqYF3PJpyjp1dLD0tJY58Ju04QPERzU+5bDurBZfsRwVKy+2mb+EWQnmB8lYNQqdaVpO1qsVnoRly7iczTc4IzujK+nrmsE0BoGiwNSGH55neQFbH/Aa7aRzux/qvdpwm8RbztU2lexT4pn8ETzOb+u1BegUUFA0+5gPttUzC4caZDh/+plmeBGQ/iEIJ7GezPHfsC/lGl/FC2AwXeiey1CD/YmUI6uXoyOgoiiuZcPKkoJ7hJnRVaFpC607WJV8OVyDwsyK5ABV9PpmAzxhlEjoCeK1X8z6ZVmlmgVZE9+nctxKuesY0noEY1l6x+Wnc1LJa0DqG85Addc6Z9olRYILdW8O1yitkPJRwptOESfGQL5PYmF29dkXJtKXyaqLbQQ0XdO4zBZDcUznmQg6PriNlwMUsSxDzhMyaDwPlPQu3yVX+d+3jMvw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(396003)(136003)(39830400003)(376002)(346002)(186003)(316002)(86362001)(6666004)(36756003)(2616005)(6506007)(956004)(44832011)(8936002)(8676002)(6512007)(4326008)(52116002)(6486002)(478600001)(110136005)(38350700002)(26005)(38100700002)(54906003)(1076003)(83380400001)(2906002)(5660300002)(66946007)(66556008)(16526019)(66476007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ibJbHO5lWhIVZnkc0BBcZpzOlMko/ENUVpnIc6MDUwXYOJHLRmuiEsdHRosp?=
+ =?us-ascii?Q?88Tyc7TwcvKbyjhXvuAuxNJs1wWFPeX/fJYUXW6YDJ0gdyegNG5qUHzYsI9A?=
+ =?us-ascii?Q?a7AMPVY0NzQz57pzvvWPPFLq20YyOhV25xK38GgyvMuHVwfTqVmLAIlsFfqT?=
+ =?us-ascii?Q?rIhE+q4FwcndUiJ/UzK+PR3bjGFolSwvsjMA1XuFIsB1+8nfNCPjgPiF0eV9?=
+ =?us-ascii?Q?5yWK6zB4aGRN+j+lm0I7Qekg8PB8wSUv9iCOQt+DIZstUj0pvBamPFWM1gPt?=
+ =?us-ascii?Q?mqmUxci+mIO15eLX9+Dmo+avtXFuVCYq0X/WcUjGFhIzTcvC5FAk0kshgJ81?=
+ =?us-ascii?Q?iiWonFX0awNVIfxnGdlyqmOTwlfs2uVikSDzvEV6Vz1r42/yPeZDnGfe3QYS?=
+ =?us-ascii?Q?IkZGLSgA6tOARXN6/uehVTdyp3vwpbUfOM7OkcZI5C6xmrCqRuwMI4xlMtrD?=
+ =?us-ascii?Q?UUSL3HnvNZZK+642GuLE0Ei505e78DxbAOy1wOrlqG+3dSR1Y4ybBRzYJSGu?=
+ =?us-ascii?Q?yRQFf2xGswzFpyW4Y2zDhsEJ4mDXINiUuAGO2v+/rGMuabZDfQftnqkSyIpa?=
+ =?us-ascii?Q?+HQC4mT/p/zrAIaUi2pu9O68qIujwCFQIcjmi/2qJSeB4U6w6+4v4gUv3VaB?=
+ =?us-ascii?Q?9nh2xTnco+Nls5WqlCCVQWjttZ5GKh0uzSDq1J+02DSZEP8S91c/nvCXvh+w?=
+ =?us-ascii?Q?9+snzw8BwWcsJlY5ty+3xSgdV+wJ98EvD+NXxCdNVFWj+QhMdx1jcQMWq2AX?=
+ =?us-ascii?Q?Sc6Qb1ZtZba9wYiKciPuf8At3TkLWC3mdEC3abSaz49bTvQntmTLgtfeVwKw?=
+ =?us-ascii?Q?kVyFPElRD+kVSmiFH7JqlG2d8k8pWWfUkw+8dsf4+Dn8jlGXKN5VGatk3GH4?=
+ =?us-ascii?Q?majX3PjciwRaJj65zQkyZNx0GTnsI4DJ4ACd58rTu/XQZGquJ8aIZePPSmVH?=
+ =?us-ascii?Q?MWhqVfZPV5aC761FnmLFohLnJJONdjV+790qlKxVg+BOfMjIt7G2jA+oeKHL?=
+ =?us-ascii?Q?E5D3cLNqdDqILyzVzZlRN7dColWPLAO6sLzjWD9HedXeakBWC0eQOIf2rlvT?=
+ =?us-ascii?Q?Za+JxTV44VrV5mIQZ0TruZK/2aeikPdOW8/ZJIPsb4UFY5/hMDz+V+4Lqjj0?=
+ =?us-ascii?Q?s8ag2U1GQ2p0xlhdKxSsnUtvKPTSe7cHmdl8z1BEe4iLWheNRcg05H8+px/e?=
+ =?us-ascii?Q?YU/K1bRBaXjjayxvQEyCtzLC4mOsjyePmSCOLeIN6AOSWoNvrSJTbF42gZDr?=
+ =?us-ascii?Q?rljIQULUPsVuIE9EGSVK5/hfqiID53JH2NR+3q7xy6kPeczYxppW6kUAoqm8?=
+ =?us-ascii?Q?SicDNkoIzAqL7Zm/1Ev1Hdjg?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 85bfdb7f-5a33-402e-5027-08d92ffccd75
+X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2021 12:55:07.7186
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yc7cYdLDCyeEyFgsNJPP+7CsX7NfxOSBsR4HavIAIrIoJPQNaN9ZIxa1owoibN90j/k3+ZWDrRLseXTVuKmtNDt91Swj0EpwqRmvUUZaC90=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0124
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Folks
+From: Vadym Kochan <vkochan@marvell.com>
 
-We have a little doubt about dropped packets in tc util. As you see, my 
-interface doesn't show any dropped packets in ethtool or in kernel 
-statistics, but in tc is showed dropped packets. And that ocurrs in two 
-different servers, with two different network interface / queue disciplines.
+Add ACL infrastructure for Prestera Switch ASICs family devices to
+offload cls_flower rules to be processed in the HW.
 
-The kernel
+ACL implementation is based on tc filter api. The flower classifier
+is supported to configure ACL rules/matches/action.
 
-Server 1 - Intel IXGBE Driver with Intel Corporation 82599ES 10-Gigabit 
-SFI/SFP+ Network Card and TP-LINK TL-SM321B Transceiver
+Supported actions:
 
-Transceiver Statistics:
+    - drop
+    - trap
+    - pass
 
-  ethtool -m enp1s0f0
-         Identifier                                : 0x03 (SFP)
-         Extended identifier                       : 0x04 (GBIC/SFP 
-defined by 2-wire interface ID)
-         Connector                                 : 0x07 (LC)
-         Transceiver codes                         : 0x00 0x00 0x00 0x02 
-0x82 0x00 0x01 0x01 0x00
-         Transceiver type                          : Ethernet: 1000BASE-LX
-         Transceiver type                          : FC: very long 
-distance (V)
-         Transceiver type                          : FC: Longwave laser (LC)
-         Transceiver type                          : FC: Single Mode (SM)
-         Transceiver type                          : FC: 100 MBytes/sec
-         Encoding                                  : 0x01 (8B/10B)
-         BR, Nominal                               : 1300MBd
-         Rate identifier                           : 0x00 (unspecified)
-         Length (SMF,km)                           : 20km
-         Length (SMF)                              : 20000m
-         Length (50um)                             : 0m
-         Length (62.5um)                           : 0m
-         Length (Copper)                           : 0m
-         Length (OM3)                              : 0m
-         Laser wavelength                          : 1310nm
-         Vendor name                               : TP-LINK
-         Vendor OUI                                : 00:00:00
-         Vendor PN                                 : TL-SM321B
-         Vendor rev                                : 1.1
-         Option values                             : 0x00 0x1a
-         Option                                    : RX_LOS implemented
-         Option                                    : TX_FAULT implemented
-         Option                                    : TX_DISABLE implemented
-         BR margin, max                            : 0%
-         BR margin, min                            : 0%
-         Vendor SN                                 : 35704205710058
-         Date code                                 : 170517
+Supported dissector keys:
 
+    - indev
+    - src_mac
+    - dst_mac
+    - src_ip
+    - dst_ip
+    - ip_proto
+    - src_port
+    - dst_port
+    - vlan_id
+    - vlan_ethtype
+    - icmp type/code
 
-Ethtool Statistic
+- Introduce matchall filter support
+- Add SPAN API to configure port mirroring.
+- Add tc mirror action.
 
-NIC statistics:
-      rx_packets: 1830508376
-      tx_packets: 2095191306
-      rx_bytes: 1559661300658
-      tx_bytes: 1796376456250
-      rx_pkts_nic: 1830508375
-      tx_pkts_nic: 2095191306
-      rx_bytes_nic: 1566983334162
-      tx_bytes_nic: 1806513286636
-      lsc_int: 1
-      tx_busy: 0
-      non_eop_descs: 0
-      rx_errors: 0
-      tx_errors: 0 // No TX Error
-      rx_dropped: 55706
-      tx_dropped: 0 // No dropped Packets
-      multicast: 55706
-      broadcast: 45
-      rx_no_buffer_count: 0
-      collisions: 0
-      rx_over_errors: 0
-      rx_crc_errors: 0
-      rx_frame_errors: 0
-      hw_rsc_aggregated: 0
-      hw_rsc_flushed: 0
-      fdir_match: 1335933692
-      fdir_miss: 548533583
-      fdir_overflow: 888
-      rx_fifo_errors: 0
-      rx_missed_errors: 0
-      tx_aborted_errors: 0
-      tx_carrier_errors: 0
-      tx_fifo_errors: 0
-      tx_heartbeat_errors: 0
-      tx_timeout_count: 0
-      tx_restart_queue: 0
-      rx_length_errors: 0
-      rx_long_length_errors: 0
-      rx_short_length_errors: 0
-      tx_flow_control_xon: 0
-      rx_flow_control_xon: 0
-      tx_flow_control_xoff: 0
-      rx_flow_control_xoff: 0
-      rx_csum_offload_errors: 87755
-      alloc_rx_page: 184014
-      alloc_rx_page_failed: 0
-      alloc_rx_buff_failed: 0
-      rx_no_dma_resources: 0
-      os2bmc_rx_by_bmc: 0
-      os2bmc_tx_by_bmc: 0
-      os2bmc_tx_by_host: 0
-      os2bmc_rx_by_host: 0
-      tx_hwtstamp_timeouts: 0
-      tx_hwtstamp_skipped: 0
-      rx_hwtstamp_cleared: 0
-      tx_ipsec: 0
-      rx_ipsec: 0
-      fcoe_bad_fccrc: 0
-      rx_fcoe_dropped: 0
-      rx_fcoe_packets: 0
-      rx_fcoe_dwords: 0
-      fcoe_noddp: 0
-      fcoe_noddp_ext_buff: 0
-      tx_fcoe_packets: 0
-      tx_fcoe_dwords: 0
-      tx_queue_0_packets: 293242265
-      tx_queue_0_bytes: 247153468767
-      tx_queue_1_packets: 288898419
-      tx_queue_1_bytes: 245035641991
-      tx_queue_2_packets: 291236572
-      tx_queue_2_bytes: 249561212685
-      tx_queue_3_packets: 39837597
-      tx_queue_3_bytes: 2358074882
-      tx_queue_4_packets: 307730121
-      tx_queue_4_bytes: 264761824523
-      tx_queue_5_packets: 317352090
-      tx_queue_5_bytes: 277380973829
-      tx_queue_6_packets: 300122596
-      tx_queue_6_bytes: 258114228358
-      tx_queue_7_packets: 256771646
-      tx_queue_7_bytes: 252011031215
-...
-      rx_queue_0_packets: 251550997
-      rx_queue_0_bytes: 212000117060
-      rx_queue_1_packets: 253297759
-      rx_queue_1_bytes: 210961040647
-      rx_queue_2_packets: 254114246
-      rx_queue_2_bytes: 218970216150
-      rx_queue_3_packets: 71013743
-      rx_queue_3_bytes: 23381820239
-      rx_queue_4_packets: 267448221
-      rx_queue_4_bytes: 236201977962
-      rx_queue_5_packets: 281248119
-      rx_queue_5_bytes: 232497403664
-      rx_queue_6_packets: 262045046
-      rx_queue_6_bytes: 223232203577
-      rx_queue_7_packets: 189790245
-      rx_queue_7_bytes: 202416521359
-...
+At this moment, only mirror (egress) action is supported.
 
-ip statistics
+Example:
+    tc filter ... action mirred egress mirror dev DEV
 
-  ip -s -s addr show dev enp1s0f0
-4: enp1s0f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc multiq 
-state UP group default qlen 1000
-     link/ether 90:e2:ba:89:11:70 brd ff:ff:ff:ff:ff:ff
-     inet 187.60.215.230/30 brd 187.60.215.231 scope global enp1s0f0
-        valid_lft forever preferred_lft forever
-     inet6 2804:6fc:1:10::66/126 scope global
-        valid_lft forever preferred_lft forever
-     inet6 fe80::92e2:baff:fe89:1170/64 scope link
-        valid_lft forever preferred_lft forever
-     RX: bytes  packets  errors  dropped missed  mcast
-     1563726136109 1835102960 0       55846   0       55845
-     RX errors: length   crc     frame   fifo    overrun
-                0        0       0       0       0
-     TX: bytes  packets  errors  dropped carrier collsns
-     1799499580192 2099722447 0       0       0       0  // No packet 
-dropped
-     TX errors: aborted  fifo   window heartbeat transns
-                0        0       0       0       2
+Serhiy Boiko (2):
+  net: marvell: Implement TC flower offload
+  net: marvell: prestera: Add matchall support
 
+ .../net/ethernet/marvell/prestera/Makefile    |   3 +-
+ .../net/ethernet/marvell/prestera/prestera.h  |   7 +
+ .../ethernet/marvell/prestera/prestera_acl.c  | 400 ++++++++++++++++++
+ .../ethernet/marvell/prestera/prestera_acl.h  | 130 ++++++
+ .../ethernet/marvell/prestera/prestera_flow.c | 215 ++++++++++
+ .../ethernet/marvell/prestera/prestera_flow.h |  14 +
+ .../marvell/prestera/prestera_flower.c        | 359 ++++++++++++++++
+ .../marvell/prestera/prestera_flower.h        |  18 +
+ .../ethernet/marvell/prestera/prestera_hw.c   | 361 ++++++++++++++++
+ .../ethernet/marvell/prestera/prestera_hw.h   |  23 +
+ .../ethernet/marvell/prestera/prestera_main.c |  98 ++++-
+ .../ethernet/marvell/prestera/prestera_span.c | 245 +++++++++++
+ .../ethernet/marvell/prestera/prestera_span.h |  20 +
+ 13 files changed, 1891 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_acl.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_acl.h
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_flow.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_flow.h
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_flower.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_flower.h
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_span.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_span.h
 
-tc qdisc
-
-tc -s qdisc ls dev enp1s0f0
-qdisc multiq 8003: root refcnt 65 bands 8/64
-  Sent 1760376270449 bytes 2048050689 pkt (dropped 69, overlimits 0 
-requeues 477)
-  backlog 0b 0p requeues 477
-
-tc -s class ls dev enp1s0f0
-class multiq 8003:1 parent 8003:
-  Sent 242641753495 bytes 286672005 pkt (dropped 15, overlimits 0 
-requeues 0)
-  backlog 0b 0p requeues 0
-class multiq 8003:2 parent 8003:
-  Sent 241001820689 bytes 282960042 pkt (dropped 0, overlimits 0 requeues 0)
-  backlog 0b 0p requeues 0
-class multiq 8003:3 parent 8003:
-  Sent 244006535406 bytes 284363659 pkt (dropped 0, overlimits 0 requeues 0)
-  backlog 0b 0p requeues 0
-class multiq 8003:4 parent 8003:
-  Sent 2290044667 bytes 39029076 pkt (dropped 0, overlimits 0 requeues 0)
-  backlog 0b 0p requeues 0
-class multiq 8003:5 parent 8003:
-  Sent 260775212492 bytes 301997242 pkt (dropped 0, overlimits 0 requeues 0)
-  backlog 0b 0p requeues 0
-class multiq 8003:6 parent 8003:
-  Sent 271403512839 bytes 309429699 pkt (dropped 54, overlimits 0 
-requeues 0)
-  backlog 0b 0p requeues 0
-class multiq 8003:7 parent 8003:
-  Sent 252190559164 bytes 292911989 pkt (dropped 0, overlimits 0 requeues 0)
-  backlog 0b 0p requeues 0
-class multiq 8003:8 parent 8003:
-  Sent 245887513841 bytes 250404773 pkt (dropped 0, overlimits 0 requeues 0)
-  backlog 0b 0p requeues 0
-
-
-Server 2 - Intel Corporation Ethernet Connection (12) I219-V
-
-ethtool -S eno1
-NIC statistics:
-      rx_packets: 16327063
-      tx_packets: 8024473
-      rx_bytes: 22725903298
-      tx_bytes: 3014818845
-      rx_broadcast: 2598
-      tx_broadcast: 1
-      rx_multicast: 0
-      tx_multicast: 7
-      rx_errors: 0
-      tx_errors: 0
-      tx_dropped: 0 // No Dropped or error in TX
-      multicast: 0
-      collisions: 0
-      rx_length_errors: 0
-      rx_over_errors: 0
-      rx_crc_errors: 0
-      rx_frame_errors: 0
-      rx_no_buffer_count: 0
-      rx_missed_errors: 0
-      tx_aborted_errors: 0
-      tx_carrier_errors: 0
-      tx_fifo_errors: 0
-      tx_heartbeat_errors: 0
-      tx_window_errors: 0
-      tx_abort_late_coll: 0
-      tx_deferred_ok: 0
-      tx_single_coll_ok: 0
-      tx_multi_coll_ok: 0
-      tx_timeout_count: 0
-      tx_restart_queue: 0
-      rx_long_length_errors: 0
-      rx_short_length_errors: 0
-      rx_align_errors: 0
-      tx_tcp_seg_good: 0
-      tx_tcp_seg_failed: 0
-      rx_flow_control_xon: 0
-      rx_flow_control_xoff: 0
-      tx_flow_control_xon: 0
-      tx_flow_control_xoff: 0
-      rx_csum_offload_good: 0
-      rx_csum_offload_errors: 0
-      rx_header_split: 0
-      alloc_rx_buff_failed: 0
-      tx_smbus: 0
-      rx_smbus: 0
-      dropped_smbus: 0
-      rx_dma_failed: 0
-      tx_dma_failed: 0
-      rx_hwtstamp_cleared: 0
-      uncorr_ecc_errors: 0
-      corr_ecc_errors: 0
-      tx_hwtstamp_timeouts: 0
-      tx_hwtstamp_skipped: 0
-
-ip statistics
-
-2: eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo state UP 
-mode DEFAULT group default qlen 1000
-     link/ether a8:a1:59:5a:56:e7 brd ff:ff:ff:ff:ff:ff
-     RX: bytes  packets  errors  dropped missed  mcast
-     22738286184 16335559 0       2600    0       0
-     RX errors: length   crc     frame   fifo    overrun
-                0        0       0       0       0
-     TX: bytes  packets  errors  dropped carrier collsns
-     3015100201 8026007  0       0       0       0
-     TX errors: aborted  fifo   window heartbeat transns
-                0        0       0       0       2
-     altname enp0s31f6
-
-tc statistic
-
-  tc -s qdisc ls dev eno1
-qdisc pfifo 8002: root refcnt 2 limit 1000p
-  Sent 2982635243 bytes 8027086 pkt (dropped 247, overlimits 0 requeues 
-4254)
-  backlog 0b 0p requeues 4254
-
-Any tip to try to identify that problem?
+-- 
+2.17.1
 
