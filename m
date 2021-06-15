@@ -2,60 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15DAD3A7302
-	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 02:30:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5E0A3A7304
+	for <lists+netdev@lfdr.de>; Tue, 15 Jun 2021 02:31:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbhFOAcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Jun 2021 20:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230414AbhFOAcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 20:32:48 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF28BC0613A4
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 17:30:30 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id p17so23930319lfc.6
-        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 17:30:30 -0700 (PDT)
+        id S230467AbhFOAdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Jun 2021 20:33:46 -0400
+Received: from mail-lj1-f172.google.com ([209.85.208.172]:34529 "EHLO
+        mail-lj1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229829AbhFOAdp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Jun 2021 20:33:45 -0400
+Received: by mail-lj1-f172.google.com with SMTP id e25so1363904ljj.1
+        for <netdev@vger.kernel.org>; Mon, 14 Jun 2021 17:31:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XmeWAbPsSaBx+nU+8yJYFKGc/MDEqnOyHS9fhBTh5DI=;
-        b=pCDKEo6hVU/EbsWnloeduAMgDTgpkbEU9IgTzxZXP+gzZNuJW/y0sUggNlIia30VLL
-         aZZVUz24p4mHfhyUTsszpf8X5fSvVdCFBx0FS9YnuDY6Dlfbjo0enkxsj7fhjbhdj5zc
-         WrF3ydnMv/WhRxlSDZsIS50AgrwwoXxPA5RCLEzmC4bBeb62p46jtNVjut2WBEzUcFXY
-         HaPM6uRAtwH47836MYhX0aRNM/3zU8YIsMkuUw9bYb/RDWGZvfZ3XEFltGWD5YXfTrSv
-         QAXF53Rqugt1i24z46iBgPKqAcBXE5pLjt+Q1SkVZPYM32R6pmina+QA1H9th0aOTy9k
-         YEsQ==
+        bh=8SNH56xDgFaJVGhuv5FEXCpqYqAJ/EXSXsZGOQBgUwQ=;
+        b=Rxos9mueYH3IVB/3P3IIMTFmTCDJKJK007OBHHZaUHnxUJBjuOaLzVY4w2qjT8Ua3g
+         5yKmimGv3DSam8JMYxoueikEbmX3l477uX8FbFXmoo4rDpuZVLENpCKC/Yd/H7Q1sQP5
+         zUlxwKA0qX3HyX8Gm3vlALYAZzY7ATx5vrdrA8/2yu+z0H6quLdRCEaPNTZXD9ugF9/c
+         v1VS3N5hVkPJY2YudaBicBDWQyNqkJPcFt5JqyuRTuf2GSFisCPSR+hMaGR6kIZyox5V
+         R+QHlbrkedrk8K8AYmVIrQsypD2AnM3KRC8vabHPk10wUlg7IZEK37oG1C4fkBb3c9PC
+         f99A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XmeWAbPsSaBx+nU+8yJYFKGc/MDEqnOyHS9fhBTh5DI=;
-        b=rJmTU2YNseKYqCtfkqDybUh4gWSDkrD0S7IbtpE2ndazhjQHR5SNraE6lftv3DN7Wx
-         hwFQpiDspbM8yEmcPwAbwGxZcd9meCAv9/P7YPZImN8T2fOYOanHByzYaQM2RurULuyn
-         vEMWwd/FOXr9TJmS3RdhWAXSBiBu2/UTvLZivRzfdWVLAYDBnZhIzj1FxqMAhRxz6CU1
-         DP4004Pk4AM0B+nQeMsFwpHl5Y0IE66uzbAMbxg9qO0M+8NaKelnepjrs8wWh05q/P7T
-         YAurgt0lQAV+LA2Kd0cVn70cak3ulpdXQFjDnEeMpWjdNMOobNlGVQ4Ry4dboDLpylgk
-         Tluw==
-X-Gm-Message-State: AOAM532eV9wRkPACKyy2qhiHjPwCox/a4xh37npiVleAl6qSo6uRhFgS
-        w4FjJQmqKOE93ti348x8EwY=
-X-Google-Smtp-Source: ABdhPJxKzGKsQQHJRq6T+y7qW+i/Fbh7cDdDgQL1g756thAxl7m1j007UyowwSo/PHLxh2WWDCH6wA==
-X-Received: by 2002:ac2:4888:: with SMTP id x8mr13738167lfc.489.1623717029392;
-        Mon, 14 Jun 2021 17:30:29 -0700 (PDT)
+        bh=8SNH56xDgFaJVGhuv5FEXCpqYqAJ/EXSXsZGOQBgUwQ=;
+        b=HCbkQL8Z9TumKmlGMy63BoWy5spwG+VR8f3dOfqBWHE9sIM4AedufDWBR912zXiHgB
+         txN7F5GJTVyQs8v9OOmCfLpHPt16flvUT5io5airlapxWK9O50i8BQ6of5zuo6/wD5BU
+         BvmhRLlykJCjYtg9oDKPPY2PR1UHhS/uRfOnj3iAPiaDvu7wsjKDpYVdYD6VDsRSNbKd
+         i+320yLOQ6yP656TM8N5ainVL4XE/+MVXdKN6Jljih2d2XEqcXdgrp9LLzvf8Z7X0ya8
+         v6/rV0AZl7AA4J/D4E+QFNwTgRapVkXMgSlMcIQSMb+pymG4T6GSop3dvkb+eDsQx9rn
+         PFlQ==
+X-Gm-Message-State: AOAM532EFGFLOtJQLQearHd3C1MyN48CmLS2ClJoW1duaXVpKUHcJfLq
+        IxLKPaf2S0lWTCsnir2MqCk=
+X-Google-Smtp-Source: ABdhPJxIjMHxZqXhpBIEQJVMxDibQLRYHDPkvrKi1PVira2bLjjgGe9YGxl9nar0P7eEGy0Lyj2fzg==
+X-Received: by 2002:a05:651c:50c:: with SMTP id o12mr15947895ljp.364.1623717025109;
+        Mon, 14 Jun 2021 17:30:25 -0700 (PDT)
 Received: from rsa-laptop.internal.lan ([217.25.229.52])
-        by smtp.gmail.com with ESMTPSA id 9sm1635522lfy.41.2021.06.14.17.30.28
+        by smtp.gmail.com with ESMTPSA id 9sm1635522lfy.41.2021.06.14.17.30.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 17:30:28 -0700 (PDT)
+        Mon, 14 Jun 2021 17:30:24 -0700 (PDT)
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
 To:     Loic Poulain <loic.poulain@linaro.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next 09/10] net: mhi_net: create default link via WWAN core
-Date:   Tue, 15 Jun 2021 03:30:15 +0300
-Message-Id: <20210615003016.477-10-ryazanov.s.a@gmail.com>
+Subject: [PATCH net-next 05/10] wwan: core: remove all netdevs on ops unregistering
+Date:   Tue, 15 Jun 2021 03:30:11 +0300
+Message-Id: <20210615003016.477-6-ryazanov.s.a@gmail.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210615003016.477-1-ryazanov.s.a@gmail.com>
 References: <20210615003016.477-1-ryazanov.s.a@gmail.com>
@@ -65,116 +62,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Utilize the just introduced WWAN core feature to create a default netdev
-for the default data channel. Since the netdev is now created via the
-WWAN core, rely on it ability to destroy all child netdevs on ops
-unregistering.
+We use the ops owner module hold to protect against ops memory
+disappearing. But this approach does not protect us from a driver that
+unregisters ops but forgets to remove netdev(s) that were created using
+this ops. In such case, we are left with netdev(s), which can not be
+removed since ops is gone. Moreover, batch netdevs removing on
+deinitialization is a desireable option for WWAN drivers as it is a
+quite common task.
 
-While at it, remove the RTNL lock acquiring hacks that were earlier used
-to call addlink/dellink without holding the RTNL lock. Also make the
-WWAN netdev ops structure static to make sparse happy.
+Implement deletion of all created links on WWAN netdev ops unregistering
+in the same way that RTNL removes all links on RTNL ops unregistering.
+Simply remove all child netdevs of a device whose WWAN netdev ops is
+unregistering. This way we protecting the kernel from buggy drivers and
+make it easier to write a driver deinitialization code.
 
 Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 ---
- drivers/net/mhi/net.c | 54 +++++--------------------------------------
- 1 file changed, 6 insertions(+), 48 deletions(-)
+ drivers/net/wwan/wwan_core.c | 40 ++++++++++++++++++++++++++++--------
+ 1 file changed, 31 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
-index b003003cbd42..06253acecaa2 100644
---- a/drivers/net/mhi/net.c
-+++ b/drivers/net/mhi/net.c
-@@ -342,10 +342,7 @@ static int mhi_net_newlink(void *ctxt, struct net_device *ndev, u32 if_id,
- 	/* Number of transfer descriptors determines size of the queue */
- 	mhi_netdev->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
- 
--	if (extack)
--		err = register_netdevice(ndev);
--	else
--		err = register_netdev(ndev);
-+	err = register_netdevice(ndev);
- 	if (err)
- 		goto out_err;
- 
-@@ -370,10 +367,7 @@ static void mhi_net_dellink(void *ctxt, struct net_device *ndev,
- 	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
- 	struct mhi_device *mhi_dev = ctxt;
- 
--	if (head)
--		unregister_netdevice_queue(ndev, head);
--	else
--		unregister_netdev(ndev);
-+	unregister_netdevice_queue(ndev, head);
- 
- 	mhi_unprepare_from_transfer(mhi_dev);
- 
-@@ -382,7 +376,7 @@ static void mhi_net_dellink(void *ctxt, struct net_device *ndev,
- 	dev_set_drvdata(&mhi_dev->dev, NULL);
+diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+index 634f0a7a2dc6..3f04e674cdaa 100644
+--- a/drivers/net/wwan/wwan_core.c
++++ b/drivers/net/wwan/wwan_core.c
+@@ -933,6 +933,17 @@ int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
  }
+ EXPORT_SYMBOL_GPL(wwan_register_ops);
  
--const struct wwan_ops mhi_wwan_ops = {
-+static const struct wwan_ops mhi_wwan_ops = {
- 	.priv_size = sizeof(struct mhi_net_dev),
- 	.setup = mhi_net_setup,
- 	.newlink = mhi_net_newlink,
-@@ -392,55 +386,19 @@ const struct wwan_ops mhi_wwan_ops = {
- static int mhi_net_probe(struct mhi_device *mhi_dev,
- 			 const struct mhi_device_id *id)
++/* Enqueue child netdev deletion */
++static int wwan_child_dellink(struct device *dev, void *data)
++{
++	struct list_head *kill_list = data;
++
++	if (dev->type == &wwan_type)
++		wwan_rtnl_dellink(to_net_dev(dev), kill_list);
++
++	return 0;
++}
++
+ /**
+  * wwan_unregister_ops - remove WWAN device ops
+  * @parent: Device to use as parent and shared by all WWAN ports and
+@@ -941,26 +952,37 @@ EXPORT_SYMBOL_GPL(wwan_register_ops);
+ void wwan_unregister_ops(struct device *parent)
  {
--	const struct mhi_device_info *info = (struct mhi_device_info *)id->driver_data;
- 	struct mhi_controller *cntrl = mhi_dev->mhi_cntrl;
--	struct net_device *ndev;
--	int err;
--
--	err = wwan_register_ops(&cntrl->mhi_dev->dev, &mhi_wwan_ops, mhi_dev,
--				WWAN_NO_DEFAULT_LINK);
--	if (err)
--		return err;
--
--	if (!create_default_iface)
--		return 0;
--
--	/* Create a default interface which is used as either RMNET real-dev,
--	 * MBIM link 0 or ip link 0)
--	 */
--	ndev = alloc_netdev(sizeof(struct mhi_net_dev), info->netname,
--			    NET_NAME_PREDICTABLE, mhi_net_setup);
--	if (!ndev) {
--		err = -ENOMEM;
--		goto err_unregister;
--	}
--
--	SET_NETDEV_DEV(ndev, &mhi_dev->dev);
+ 	struct wwan_device *wwandev = wwan_dev_get_by_parent(parent);
+-	bool has_ops;
++	struct module *owner;
++	LIST_HEAD(kill_list);
  
--	err = mhi_net_newlink(mhi_dev, ndev, 0, NULL);
--	if (err)
--		goto err_release;
+ 	if (WARN_ON(IS_ERR(wwandev)))
+ 		return;
 -
--	return 0;
--
--err_release:
--	free_netdev(ndev);
--err_unregister:
--	wwan_unregister_ops(&cntrl->mhi_dev->dev);
--
--	return err;
-+	return wwan_register_ops(&cntrl->mhi_dev->dev, &mhi_wwan_ops, mhi_dev,
-+				 create_default_iface ? 0 :
-+				 WWAN_NO_DEFAULT_LINK);
+-	has_ops = wwandev->ops;
++	if (WARN_ON(!wwandev->ops)) {
++		put_device(&wwandev->dev);
++		return;
++	}
+ 
+ 	/* put the reference obtained by wwan_dev_get_by_parent(),
+ 	 * we should still have one (that the owner is giving back
+-	 * now) due to the ops being assigned, check that below
+-	 * and return if not.
++	 * now) due to the ops being assigned.
+ 	 */
+ 	put_device(&wwandev->dev);
+ 
+-	if (WARN_ON(!has_ops))
+-		return;
++	owner = wwandev->ops->owner;	/* Preserve ops owner */
++
++	rtnl_lock();	/* Prevent concurent netdev(s) creation/destroying */
++
++	/* Remove all child netdev(s), using batch removing */
++	device_for_each_child(&wwandev->dev, &kill_list,
++			      wwan_child_dellink);
++	unregister_netdevice_many(&kill_list);
++
++	wwandev->ops = NULL;	/* Finally remove ops */
++
++	rtnl_unlock();
+ 
+-	module_put(wwandev->ops->owner);
++	module_put(owner);
+ 
+-	wwandev->ops = NULL;
+ 	wwandev->ops_ctxt = NULL;
+ 	wwan_remove_dev(wwandev);
  }
- 
- static void mhi_net_remove(struct mhi_device *mhi_dev)
- {
--	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
- 	struct mhi_controller *cntrl = mhi_dev->mhi_cntrl;
- 
- 	/* rtnetlink takes care of removing remaining links */
- 	wwan_unregister_ops(&cntrl->mhi_dev->dev);
--
--	if (create_default_iface)
--		mhi_net_dellink(mhi_dev, mhi_netdev->ndev, NULL);
- }
- 
- static const struct mhi_device_info mhi_hwip0 = {
 -- 
 2.26.3
 
