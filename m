@@ -2,92 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C633AA772
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E3D63AA785
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:33:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234584AbhFPXaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 19:30:03 -0400
-Received: from mga06.intel.com ([134.134.136.31]:30915 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234508AbhFPXaD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 19:30:03 -0400
-IronPort-SDR: 9Fl8ijXuZvj1oEDZcUZ+JKxEr5QmhhgIVu9MjzrjBWBbzjTQDlIvmAr0lSZmZrgUCXgNgD0Jh5
- XB9iCLay9VcA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10017"; a="267420483"
-X-IronPort-AV: E=Sophos;i="5.83,278,1616482800"; 
-   d="scan'208";a="267420483"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2021 16:27:53 -0700
-IronPort-SDR: c/uhERQyM+sCgOUqZHbGxAylMWWwjSLqhn+8dqVDprMkHlPe6u7GA6VFA4cVP64YtyRNR/QyBq
- +DtCdxpl9d1A==
-X-IronPort-AV: E=Sophos;i="5.83,278,1616482800"; 
-   d="scan'208";a="479269628"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.42.204]) ([10.209.42.204])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2021 16:27:52 -0700
-Subject: Re: [PATCH][next] ice: remove redundant continue statement in a
- for-loop
-To:     Colin King <colin.king@canonical.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        id S234530AbhFPXfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 19:35:39 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:34668 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234633AbhFPXff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:35:35 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1623886408; h=Content-Transfer-Encoding: MIME-Version:
+ Message-Id: Date: Subject: Cc: To: From: Sender;
+ bh=fLfryfp35i1oOAe40HSpJ35HKGxrhO8MsCZS16Y/a7Y=; b=SQ/zn3UC+iKoYKLp/7IrfNiE5tkKv3Nx2v5vfob/7J0Jd12vxIwZp7P373X+4WR6E9EdJ1qC
+ 8RKVGHXWfipCU1NgYPgdGkiZ19WQDv+qKEXKBlYsLP+KN+JzcA/LoDvqJQTqwCyfogp6zCSb
+ gBo3r+nZnFIrt+kea/HQvtVy+FQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 60ca8a2de27c0cc77faea7e4 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 16 Jun 2021 23:33:01
+ GMT
+Sender: linyyuan=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 1B562C43217; Wed, 16 Jun 2021 23:33:01 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from localhost.localdomain (unknown [101.87.142.17])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: linyyuan)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id CC3AFC433D3;
+        Wed, 16 Jun 2021 23:32:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CC3AFC433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=linyyuan@codeaurora.org
+From:   Linyu Yuan <linyyuan@codeaurora.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oliver Neukum <oliver@neukum.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210615142847.60161-1-colin.king@canonical.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <2a347503-9879-0a13-555b-a007acfdec3c@intel.com>
-Date:   Wed, 16 Jun 2021 16:27:50 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        Linyu Yuan <linyyuan@codeaurora.org>
+Subject: [PATCH v2] net: cdc_eem: fix tx fixup skb leak
+Date:   Thu, 17 Jun 2021 07:32:32 +0800
+Message-Id: <20210616233232.4561-1-linyyuan@codeaurora.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210615142847.60161-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+when usbnet transmit a skb, eem fixup it in eem_tx_fixup(),
+if skb_copy_expand() failed, it return NULL,
+usbnet_start_xmit() will have no chance to free original skb.
 
+fix it by free orginal skb in eem_tx_fixup() first,
+then check skb clone status, if failed, return NULL to usbnet.
 
-On 6/15/2021 7:28 AM, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The continue statement in the for-loop is redundant. Re-work the hw_lock
-> check to remove it.
-> 
-> Addresses-Coverity: ("Continue has no effect")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
+Fixes: 9f722c0978b0 ("usbnet: CDC EEM support (v5)")
+Signed-off-by: Linyu Yuan <linyyuan@codeaurora.org>
+---
 
-Yep, that logic makes more sense.
+v2: add Fixes tag
 
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+ drivers/net/usb/cdc_eem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  drivers/net/ethernet/intel/ice/ice_ptp_hw.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-> index 267312fad59a..3eca0e4eab0b 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-> @@ -410,13 +410,11 @@ bool ice_ptp_lock(struct ice_hw *hw)
->  	for (i = 0; i < MAX_TRIES; i++) {
->  		hw_lock = rd32(hw, PFTSYN_SEM + (PFTSYN_SEM_BYTES * hw->pf_id));
->  		hw_lock = hw_lock & PFTSYN_SEM_BUSY_M;
-> -		if (hw_lock) {
-> -			/* Somebody is holding the lock */
-> -			usleep_range(10000, 20000);
-> -			continue;
-> -		} else {
-> +		if (!hw_lock)
->  			break;
-> -		}
-> +
-> +		/* Somebody is holding the lock */
-> +		usleep_range(10000, 20000);
->  	}
->  
->  	return !hw_lock;
-> 
+diff --git a/drivers/net/usb/cdc_eem.c b/drivers/net/usb/cdc_eem.c
+index 2e60bc1b9a6b..359ea0d10e59 100644
+--- a/drivers/net/usb/cdc_eem.c
++++ b/drivers/net/usb/cdc_eem.c
+@@ -123,10 +123,10 @@ static struct sk_buff *eem_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
+ 	}
+ 
+ 	skb2 = skb_copy_expand(skb, EEM_HEAD, ETH_FCS_LEN + padlen, flags);
++	dev_kfree_skb_any(skb);
+ 	if (!skb2)
+ 		return NULL;
+ 
+-	dev_kfree_skb_any(skb);
+ 	skb = skb2;
+ 
+ done:
+-- 
+2.25.1
+
