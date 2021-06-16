@@ -2,51 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 690A93A911E
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 07:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6746F3A912B
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 07:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231228AbhFPFXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 01:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbhFPFXm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 01:23:42 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D988FC061574;
-        Tue, 15 Jun 2021 22:21:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=sxjUz+Ejc/4WE2gmhLls9n4YZud0RJdZK2yLZKH0tfA=; b=LD/VLC3tt3aYNEJgkGSKANrdPa
-        lz7Sygw1Ey2XeJE7btenkXSNDq53fYgI1YWW1iKJd3QuIzq7cGhZl3jLhI50kPN3t1946kE8Tn/ZX
-        2jmGhsgqLIgzisFsnvOmfcCXr/QBVMfwyRFKDvm9PZztVmMD5WgnJFeSd3f2gNHW/1O4Csl0iiLGU
-        29EIEynnAOD78vWrOsbRaZF/pDp20B4QtzEYm+KAg2Sg2H5zS0QTd+nIb/Xgpc6kSmssruI2qKTD9
-        ddobAcPgPZqn0WXGYMuVqL366v2EryD/D/1llivLUtnzn02jeje2GDuJLNm3kQTS4xLg937RvVyHm
-        VwU6Epnw==;
-Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ltNz2-007d0P-4y; Wed, 16 Jun 2021 05:21:05 +0000
-Date:   Wed, 16 Jun 2021 06:21:00 +0100
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+        id S231256AbhFPFfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 01:35:42 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:16427 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230217AbhFPFfg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 01:35:36 -0400
+Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
+        by localhost (Postfix) with ESMTP id 4G4Ykd6FZQzBDfJ;
+        Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id QiGHvvZE9cj6; Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4G4Ykd5KtRzBDck;
+        Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id B88498B7CA;
+        Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id 13HZ1Y_Q6pCI; Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
+Received: from [192.168.4.90] (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 353858B765;
+        Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
+Subject: Re: [PATCH] vmxnet3: prevent building with 256K pages
+To:     Christoph Hellwig <hch@infradead.org>
 Cc:     Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
         pv-drivers@vmware.com, doshir@vmware.com
-Subject: Re: [PATCH] vmxnet3: prevent building with 256K pages
-Message-ID: <YMmKPIEk6XQsXq9T@infradead.org>
 References: <20210615123504.547106-1-mpe@ellerman.id.au>
  <76ccb9fc-dc43-46e1-6465-637b72253385@csgroup.eu>
+ <YMmKPIEk6XQsXq9T@infradead.org>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Message-ID: <4d153452-8d83-248e-886c-bac7aed5a90d@csgroup.eu>
+Date:   Wed, 16 Jun 2021 07:33:14 +0200
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <76ccb9fc-dc43-46e1-6465-637b72253385@csgroup.eu>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <YMmKPIEk6XQsXq9T@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 02:41:34PM +0200, Christophe Leroy wrote:
-> Maybe we should also exclude hexagon, same as my patch on BTRFS https://patchwork.ozlabs.org/project/linuxppc-dev/patch/a16c31f3caf448dda5d9315e056585b6fafc22c5.1623302442.git.christophe.leroy@csgroup.eu/
 
-Maybe we really need common config symbols for the page size instead of
-all these hacks..
+
+Le 16/06/2021 à 07:21, Christoph Hellwig a écrit :
+> On Tue, Jun 15, 2021 at 02:41:34PM +0200, Christophe Leroy wrote:
+>> Maybe we should also exclude hexagon, same as my patch on BTRFS https://patchwork.ozlabs.org/project/linuxppc-dev/patch/a16c31f3caf448dda5d9315e056585b6fafc22c5.1623302442.git.christophe.leroy@csgroup.eu/
+> 
+> Maybe we really need common config symbols for the page size instead of
+> all these hacks..
+> 
+
+I agree.
+
+Today we have:
+
+arch/hexagon/Kconfig:config PAGE_SIZE_4KB
+arch/hexagon/Kconfig:config PAGE_SIZE_16KB
+arch/hexagon/Kconfig:config PAGE_SIZE_64KB
+arch/hexagon/Kconfig:config PAGE_SIZE_256KB
+arch/mips/Kconfig:config PAGE_SIZE_4KB
+arch/mips/Kconfig:config PAGE_SIZE_8KB
+arch/mips/Kconfig:config PAGE_SIZE_16KB
+arch/mips/Kconfig:config PAGE_SIZE_32KB
+arch/mips/Kconfig:config PAGE_SIZE_64KB
+arch/sh/mm/Kconfig:config PAGE_SIZE_4KB
+arch/sh/mm/Kconfig:config PAGE_SIZE_8KB
+arch/sh/mm/Kconfig:config PAGE_SIZE_16KB
+arch/sh/mm/Kconfig:config PAGE_SIZE_64KB
+
+
+I think we should convert all other architectures to that syntax.
+
+Christophe
