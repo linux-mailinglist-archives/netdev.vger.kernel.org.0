@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F70B3AA3EE
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:08:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EC1A3AA3F0
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:08:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232601AbhFPTKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
+        id S232624AbhFPTKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232411AbhFPTKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:10:37 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A45C0617AF
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:29 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id r5so6060871lfr.5
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:29 -0700 (PDT)
+        with ESMTP id S232459AbhFPTKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:10:42 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5B9C061283
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:30 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id v22so6057904lfa.3
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bJlskXXqPukoUIiMaWjgnuEmfc7b1Qye4aSSYHDeJ90=;
-        b=j6UvX9zq/sPizWvzFQ1T0u4GCMD2XjPHC82VcPSaJaKiBAcneookTY3Ed1d02CaGrd
-         7dIFeO4QpfuK14mdUlK5ACdVgDNO9Tads/4fiOTUp46WubLTThwTtqyJBpaTw2ozwf98
-         kVFXdNqARq0/KzDDbnsPyhO0Q7kFR4z1uUouFCjO81jhMnN4JHGkltf4iYJKs91ZKtOU
-         hlTKE9Zsm8ug4xTDHHQ4nfSgj+8RoDlwMSJe8nYjgWDGqHLoWKka/mazzDVT82VfNJrM
-         Dl8fVLHuAA6racPJi0+YyHoW9cZDPQJ9s1juS5QqLvoLpul8e1h35NX0FvuZHqTV23UX
-         KVIw==
+        bh=KY/iJP5CpxPVy4NzVmmnCVBH1UfAm8gIg54ojzdUXD8=;
+        b=P1zT9Gu1LSZ88LeRKP6sRzDnzJUqE5PCo4PtMgVSVkaDHigpx0KZ5fGaxLLvB4ZWAX
+         hTJdsLlfYECLzRvrBREQIyPyWiFo1usLu6xk+S0jc67GN3MCK8qT2B9YpiWaQ6Y/hBBn
+         M7U47b+7UAcXsUqTJE3xniO2I9svC7YmleXKMHSTJcparSA0h/KEtm5UvH+QUsflOhRR
+         lKlvhRNccFjr4hpFo/mQ9NTTG/WQZaj/HMIR9DKYoKTapJyyuJcWgkUzWkFI58AuCTbG
+         HM7yJcR5Va/X5ft3JFw9l0xE49HxFcAN9aVMyATiqCtlm2eTHQpY3SI1GzEYBDikNoXl
+         SagA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bJlskXXqPukoUIiMaWjgnuEmfc7b1Qye4aSSYHDeJ90=;
-        b=L29Ke9thBkeKxOelyLhKij2Ot5S3IjvpG+zzq1QMj7OkTyLotbP0G1Yud82jPBEHOh
-         OWAFAjeTTj4DhfCRJb21DQeIIB1zji1HrXbfkK2FvmKh8zyjHdqfk5Yt5NiazY649TzZ
-         vF2e1/keF3ZqRVijHdmWJ5FUhHQzkPAxk+rvVPuOrvg1gXIZprh9pyoErV0w4jrZiDN9
-         1XjFaYv3J4H906oA0Tx+ZCwsQrMRWptEHImmrw2OOGTSn3seHYNexEy57zQUi8taSHF3
-         4icD4uXABJ80OX0pMduzwgFAN+BPISq+EfSpe5fGTWBWUphXXmEbQhkcVeqSvxXz68yH
-         R8IA==
-X-Gm-Message-State: AOAM530mQGlDBk49EJkf2U1/5UY52IUL7O1EXCNnuSg3+HJil14NZwtu
-        d9TQ+KNeEAVpbP5wstsN9igb1w==
-X-Google-Smtp-Source: ABdhPJwdwrSxllmvf4YfPOQkJpoCeiA8FUGeCt7NkwLbEr7swjLDXq2ri/thhPsM39fORUQAZYi3dw==
-X-Received: by 2002:ac2:51b3:: with SMTP id f19mr937764lfk.218.1623870507506;
-        Wed, 16 Jun 2021 12:08:27 -0700 (PDT)
+        bh=KY/iJP5CpxPVy4NzVmmnCVBH1UfAm8gIg54ojzdUXD8=;
+        b=PYaPDVqACrJhvv4W8q/jSxh4mD5kwCfXMb5iiMmK1mvioRSXwLcxBLxkZ3D1e48Lg2
+         v8J+6zPf+86364OFeiiM8Rr2wZy3Y9/Y2JTcFR2iHweHRFh5DdDdHg+jKWI126yxYneZ
+         G1j+7SPHm3ZuouKDr70O1JPLsQY8+53Syd2bsInSpJxj+Ni3RSXlJhAEepy6i3q+2rUh
+         cCAvHoVEEdShkwtliBvEWvMbEeuTKlDeGOIiIsOCJ6KJhUDW6yR071faoAJFtx20LlpT
+         htuHgVawJRZfEkrRgQALUcGfNCpKagx7KHZIw5Pwt03RonGEC7KbyHbS/uD+AOIBbI89
+         sUBQ==
+X-Gm-Message-State: AOAM530ToinvgNrLPAm2aThzNYLMv8PopGF/SkA2SkmqzYBQ6FD8ca7H
+        yIQvWDr1Rl6pnDMkb8RRzWjF2Q==
+X-Google-Smtp-Source: ABdhPJwdyFEnshUh4uD/8NdkmK2PPYtFF7gDca2r/PyVsV0Qo6ITET4o9SleM/cDqpeQjnHB9ryxaw==
+X-Received: by 2002:ac2:4ec1:: with SMTP id p1mr906995lfr.584.1623870508714;
+        Wed, 16 Jun 2021 12:08:28 -0700 (PDT)
 Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id h22sm406939ljl.126.2021.06.16.12.08.26
+        by smtp.gmail.com with ESMTPSA id h22sm406939ljl.126.2021.06.16.12.08.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 12:08:26 -0700 (PDT)
+        Wed, 16 Jun 2021 12:08:28 -0700 (PDT)
 From:   Marcin Wojtas <mw@semihalf.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
         jaz@semihalf.com, gjb@semihalf.com, upstream@semihalf.com,
         Samer.El-Haj-Mahmoud@arm.com, jon@solid-run.com, tn@semihalf.com,
         rjw@rjwysocki.net, lenb@kernel.org, Marcin Wojtas <mw@semihalf.com>
-Subject: [net-next: PATCH v2 6/7] net: mvpp2: enable using phylink with ACPI
-Date:   Wed, 16 Jun 2021 21:07:58 +0200
-Message-Id: <20210616190759.2832033-7-mw@semihalf.com>
+Subject: [net-next: PATCH v2 7/7] net: mvpp2: remove unused 'has_phy' field
+Date:   Wed, 16 Jun 2021 21:07:59 +0200
+Message-Id: <20210616190759.2832033-8-mw@semihalf.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210616190759.2832033-1-mw@semihalf.com>
 References: <20210616190759.2832033-1-mw@semihalf.com>
@@ -65,71 +65,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that the MDIO and phylink are supported in the ACPI
-world, enable to use them in the mvpp2 driver. Ensure a backward
-compatibility with the firmware whose ACPI description does
-not contain the necessary elements for the proper phy handling
-and fall back to relying on the link interrupts instead.
+The 'has_phy' field from struct mvpp2_port is no longer used.
+Remove it.
 
 Signed-off-by: Marcin Wojtas <mw@semihalf.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 22 +++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 3 ---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 1 -
+ 2 files changed, 4 deletions(-)
 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index 4a61c90003b5..b9fbc9f000f2 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -1197,9 +1197,6 @@ struct mvpp2_port {
+ 	/* Firmware node associated to the port */
+ 	struct fwnode_handle *fwnode;
+ 
+-	/* Is a PHY always connected to the port */
+-	bool has_phy;
+-
+ 	/* Per-port registers' base address */
+ 	void __iomem *base;
+ 	void __iomem *stats_base;
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 9bca8c8f9f8d..a66ed3194015 100644
+index a66ed3194015..8362e64a3b28 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -4793,9 +4793,8 @@ static int mvpp2_open(struct net_device *dev)
- 		goto err_cleanup_txqs;
- 	}
- 
--	/* Phylink isn't supported yet in ACPI mode */
--	if (port->of_node) {
--		err = phylink_of_phy_connect(port->phylink, port->of_node, 0);
-+	if (port->phylink) {
-+		err = phylink_fwnode_phy_connect(port->phylink, port->fwnode, 0);
- 		if (err) {
- 			netdev_err(port->dev, "could not attach PHY (%d)\n",
- 				   err);
-@@ -6703,6 +6702,19 @@ static void mvpp2_acpi_start(struct mvpp2_port *port)
- 			  SPEED_UNKNOWN, DUPLEX_UNKNOWN, false, false);
- }
- 
-+/* In order to ensure backward compatibility for ACPI, check if the port
-+ * firmware node comprises the necessary description allowing to use phylink.
-+ */
-+static bool mvpp2_use_acpi_compat_mode(struct fwnode_handle *port_fwnode)
-+{
-+	if (!is_acpi_node(port_fwnode))
-+		return false;
-+
-+	return (!fwnode_property_present(port_fwnode, "phy-handle") &&
-+		!fwnode_property_present(port_fwnode, "managed") &&
-+		!fwnode_get_named_child_node(port_fwnode, "fixed-link"));
-+}
-+
- /* Ports initialization */
- static int mvpp2_port_probe(struct platform_device *pdev,
- 			    struct fwnode_handle *port_fwnode,
-@@ -6921,8 +6933,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 	dev->max_mtu = MVPP2_BM_JUMBO_PKT_SIZE;
- 	dev->dev.of_node = port_node;
- 
--	/* Phylink isn't used w/ ACPI as of now */
--	if (port_node) {
-+	if (!mvpp2_use_acpi_compat_mode(port_fwnode)) {
- 		port->phylink_config.dev = &dev->dev;
- 		port->phylink_config.type = PHYLINK_NETDEV;
- 
-@@ -6934,6 +6945,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 		}
- 		port->phylink = phylink;
- 	} else {
-+		dev_warn(&pdev->dev, "Use link irqs for port#%d. FW update required\n", port->id);
- 		port->phylink = NULL;
- 	}
- 
+@@ -6790,7 +6790,6 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+ 	port = netdev_priv(dev);
+ 	port->dev = dev;
+ 	port->fwnode = port_fwnode;
+-	port->has_phy = !!of_find_property(port_node, "phy", NULL);
+ 	port->ntxqs = ntxqs;
+ 	port->nrxqs = nrxqs;
+ 	port->priv = priv;
 -- 
 2.29.0
 
