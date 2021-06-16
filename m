@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 469CF3A93BF
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 09:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1F93A93C2
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 09:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbhFPH3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 03:29:04 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:10092 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231382AbhFPH3A (ORCPT
+        id S231923AbhFPH3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 03:29:09 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:7294 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231453AbhFPH3A (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 03:29:00 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G4cB61XBRzZfPT;
-        Wed, 16 Jun 2021 15:23:58 +0800 (CST)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4G4c7h4dDRz1BN7F;
+        Wed, 16 Jun 2021 15:21:52 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Wed, 16 Jun 2021 15:26:53 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 03/15] net: cosa: fix the code style issue about "foo* bar"
-Date:   Wed, 16 Jun 2021 15:23:29 +0800
-Message-ID: <1623828221-48349-4-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 04/15] net: cosa: replace comparison to NULL with "!chan->rx_skb"
+Date:   Wed, 16 Jun 2021 15:23:30 +0800
+Message-ID: <1623828221-48349-5-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1623828221-48349-1-git-send-email-huangguangbin2@huawei.com>
 References: <1623828221-48349-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,27 +45,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peng Li <lipeng321@huawei.com>
 
-Fix the checkpatch error as "foo* bar" should be "foo *bar".
+According to the chackpatch.pl, comparison to NULL could
+be written "!chan->rx_skb".
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/wan/cosa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wan/cosa.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/wan/cosa.c b/drivers/net/wan/cosa.c
-index 372dffc..c051c61 100644
+index c051c61..7b57233 100644
 --- a/drivers/net/wan/cosa.c
 +++ b/drivers/net/wan/cosa.c
-@@ -337,7 +337,7 @@ static void debug_status_in(struct cosa_data *cosa, int status);
- static void debug_status_out(struct cosa_data *cosa, int status);
- #endif
- 
--static inline struct channel_data* dev_to_chan(struct net_device *dev)
-+static inline struct channel_data *dev_to_chan(struct net_device *dev)
- {
- 	return (struct channel_data *)dev_to_hdlc(dev)->priv;
- }
+@@ -719,7 +719,7 @@ static char *cosa_net_setup_rx(struct channel_data *chan, int size)
+ 	 */
+ 	kfree_skb(chan->rx_skb);
+ 	chan->rx_skb = dev_alloc_skb(size);
+-	if (chan->rx_skb == NULL) {
++	if (!chan->rx_skb) {
+ 		pr_notice("%s: Memory squeeze, dropping packet\n", chan->name);
+ 		chan->netdev->stats.rx_dropped++;
+ 		return NULL;
+@@ -783,7 +783,7 @@ static ssize_t cosa_read(struct file *file,
+ 		return -ERESTARTSYS;
+ 	
+ 	chan->rxdata = kmalloc(COSA_MTU, GFP_DMA|GFP_KERNEL);
+-	if (chan->rxdata == NULL) {
++	if (!chan->rxdata) {
+ 		mutex_unlock(&chan->rlock);
+ 		return -ENOMEM;
+ 	}
+@@ -861,7 +861,7 @@ static ssize_t cosa_write(struct file *file,
+ 	
+ 	/* Allocate the buffer */
+ 	kbuf = kmalloc(count, GFP_KERNEL|GFP_DMA);
+-	if (kbuf == NULL) {
++	if (!kbuf) {
+ 		up(&chan->wsem);
+ 		return -ENOMEM;
+ 	}
 -- 
 2.8.1
 
