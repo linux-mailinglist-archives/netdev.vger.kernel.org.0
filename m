@@ -2,178 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B29E3A9968
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 13:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDCA3A999A
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 13:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232526AbhFPLmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 07:42:40 -0400
-Received: from mail-eopbgr30056.outbound.protection.outlook.com ([40.107.3.56]:63062
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230330AbhFPLmj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 07:42:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KVMQuCh0EYJuy9IE+oSkC355R5qTDZd89xIxwSMqSKw2ERTswQrKSGztEEjr5U5mn6R89o4gpWhOat4XEHv2kKK6Yk7ZgsZupEdsf9XEhT1EIqWb+EMaG2TyIuWN5Owl2n00PR187+GLqRuO7SABj54BfYj8+cYpJhhE/J3UMcqMA04AsYVIEG8lnpyyz0Vy+hi7UimhqX+8jR5vfeUmD2hg65EO2AVcZVYBCjo58MWhFTaNtEFxWzr2xlySkPzj25u7NaWCcEn1DYiHjwWXi5lzveHDNK07zPDTKmUwBJvlqpBq6+e50xlJP5F9Oa20H8REzQVZVkJI+6g3HuIfBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=72Afy+qxNEQokGWLLXgL+mJlPCmeKKL+0/QyzaZOgBA=;
- b=NjS88Pn2G82G10hHZret1t0E9rKDI9iQH6Y+2XEfz7La88PIKkwClACMITXgfG+mFNPQ+dhUpQYQ8Uj7V0+JKxNFEeknmpeBQJn8rKMd0MZsQv+pTLSj+yC+15J8Sgd5XjF/bUIZ5rHgxFAY9HcbM8ziHNgSEErDFMWh7euzUUXyA1Mg2X0DM/08GPdsi0hzxP0I0Yc/tTLGOR0KyDJBomNr/gadNyJ1TgtZRYGp2klgb/PvjJkf3f1LkmlpJXE0C4voZmq1wBqK6zR25XaEpHZcuM8lxYB+AoqQu0cCxYXEqVSWoP+XQfqGxkuWV0oPVoawY4ACut+rZLFtO10Wxw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=72Afy+qxNEQokGWLLXgL+mJlPCmeKKL+0/QyzaZOgBA=;
- b=ZHNsQ8TJt7bSvjajjOFUoWVqiSPZNzYhYdDUcdRYGCf+6UtTOY5Pr4A4T/VdAl31Aj20wPYADxRnxQ4PifMxk0Gn3Gwq2Y2+XKmmnqR9Kz8q6HX2bEUvgCuweCrNAv3sLqm15L9ZP5iSBxvyf8/r23bqaUdj5WWG9midvgqPra4=
-Received: from VI1PR04MB6800.eurprd04.prod.outlook.com (2603:10a6:803:133::16)
- by VE1PR04MB7405.eurprd04.prod.outlook.com (2603:10a6:800:1a4::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.22; Wed, 16 Jun
- 2021 11:40:29 +0000
-Received: from VI1PR04MB6800.eurprd04.prod.outlook.com
- ([fe80::d48b:48ed:c060:78de]) by VI1PR04MB6800.eurprd04.prod.outlook.com
- ([fe80::d48b:48ed:c060:78de%7]) with mapi id 15.20.4242.016; Wed, 16 Jun 2021
- 11:40:29 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Russell King <linux@armlinux.org.uk>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH net 1/2] net: fec_ptp: add clock rate zero check
-Thread-Topic: [PATCH net 1/2] net: fec_ptp: add clock rate zero check
-Thread-Index: AQHXYpAjjCpH7eZ3WUe24Kl2XrZ2sqsWbWAAgAAUiNA=
-Date:   Wed, 16 Jun 2021 11:40:29 +0000
-Message-ID: <VI1PR04MB68004D29895652864B4C1D20E60F9@VI1PR04MB6800.eurprd04.prod.outlook.com>
-References: <20210616091426.13694-1-qiangqing.zhang@nxp.com>
- <20210616091426.13694-2-qiangqing.zhang@nxp.com>
- <20210616102038.GB22278@shell.armlinux.org.uk>
-In-Reply-To: <20210616102038.GB22278@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7c22bff3-4353-42ba-c118-08d930bb8a9f
-x-ms-traffictypediagnostic: VE1PR04MB7405:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB7405571351368401745E8E5AE60F9@VE1PR04MB7405.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LuETjRPY1dIUcIJhuE5KVtfJLm65w5MOc42VV/DYsepvVN6hzekm4kBqD8kC4TPxZB7OZXnlNfqgJS5VUJEK2lYJbs8ncQr8oMK1w6+jJCOWp0YK36qCz1enQ6CBUkMyJRi1vKZVtfj4it05PlBxn/TtsS3MwGga7eRip2RRFCFCoCuhFfEew768lNjV/C4EC1W1ZhNppGf790ihgcQ8rK8plEAfWvBMrAnoIpFJmVt0QNTKKAX85JEe6I5RUPLnv/6X1V4q7Eha5I9q9XXqckLYqQc10rnZdp7HcuQjAvCGU5MAMZ/nwArbwyA5TzdlLCkpa0DhulT9+0gf2F8UzLi3z6zrjfA3B4xShiEd/HuxbysOfE7VXEe5HNR29H9v9Gbj+9bVFcGQU9q+I3XTxjr42dJoDr6c0l41WdchccY2h468sh71OBkRjqFFxG2KBrKCiIWC2nFRZUrVYen9/TRTsDky3RT+Zp0Rgqc0u8DdGEK2QZPDEajdoaEIqKTMfy1mAUuz4581TNbxxIRicT8Ikyb94anqjSnpHPLPEFRZZT+KGj9ETjG8zo4Bo0kSoan7qnACH4oF9O7yj/pMujgMP04Pwx+nH7wghysgztJcOmrotRf148SnoT2TbyDyYvxXof6hYdhQWvAzzTGxDMoOFXpxw491CTByizNfAmpSTczUxeu1ELpLe0/JHpfA9ZdSLknhkgOEPylgD+16fQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB6800.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39850400004)(366004)(376002)(396003)(136003)(966005)(2906002)(45080400002)(9686003)(4326008)(7696005)(71200400001)(186003)(6506007)(5660300002)(53546011)(55016002)(76116006)(122000001)(86362001)(8676002)(26005)(38100700002)(83380400001)(316002)(6916009)(7416002)(64756008)(66476007)(33656002)(52536014)(8936002)(66946007)(54906003)(66556008)(478600001)(66446008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?akpzbWppRUFlWlVDZEFXRk1HRHMvYkd5dk5Edm1uVE03Mmk4Q01sNzZlNWJm?=
- =?gb2312?B?cE1nSmZheDFaTUttQ1R3MUVxcjl3ekg1eDZzaW5mQk5pcmZTWEI2Z0Vwd2tU?=
- =?gb2312?B?ajFNOWZuZU9aZDdaUWNHVi9OeXRXZjZjKy8xZHFqWnlWd1djaU1qckpVN3lK?=
- =?gb2312?B?RlF0NG5BZXpQTU9sbytiUlROMWZZOFA4SmxYN21vTDZ5SmgxSmRjOU5qNXds?=
- =?gb2312?B?eXJXb1cvR1MxT1VIcVVKWU5JRDcweE01Nmcya3MvaDlGWmQ2eXVxeEMvY01T?=
- =?gb2312?B?dVZ2V0xIM25oVjRteFU5QmcrV2RCMXVQUmR4dTZLU3pxdFdoK0k1VUdQLzd5?=
- =?gb2312?B?QUd1NjBqY0xLaWRaVnpOUTNTdDNIVzgxODQ2WDFLRHhNSzB0MGxhOEMrb1lx?=
- =?gb2312?B?cGt0QjIxeWhMYWxpWTZHZzc3c1B5THZjaEV0OHRMVzlxK2VhY2c2b01FTnd6?=
- =?gb2312?B?dHdMYkg3MUxHTnRLQ2M0UmdYOWVnRnFzQzVhaVFRS01vaXhLWDZsWjVXamxY?=
- =?gb2312?B?ZjFmVlJjbU9IVVU0cXJuTTErRjdkTkxRemtTNTR5VCt3WUUrMUNIOW1GWUY0?=
- =?gb2312?B?d3ZhcWx1RnpYbVMrZkxEK2oxTUFEejk5N1BScHo1U241eXNvdDBUL1lKS052?=
- =?gb2312?B?c1ZQUGE5MGUzdnI1WVVWRmM3WFlvemY0anlXa2syOFRLaXBiUFh3ZFZuZG1C?=
- =?gb2312?B?RlNlUjI2L2JmMEpTS2ZrdWk1cWs5TGV4ajVKTEdmcUR2TFZWbnpUWW52K1BT?=
- =?gb2312?B?eER3WjNnaWJNRHBaeHU5SzBqWXpSSUNnRnB4cFdBTTBmNmdjMVVjVU1VY2Rr?=
- =?gb2312?B?MENIeVpvOStFMmx3Tlovbk9XM21wQ0ZuUENQeUhmMkQ2cHBDaW16Y0luTEk4?=
- =?gb2312?B?THhneG95dnFuSmFsV2tSK21DL1RuQm9ZNkVuYzB2SDN1SC9Wb0g0OXpySC9X?=
- =?gb2312?B?WUY3SjI3Um9qV3B6Y3VRY1lWY0NFdWVwS0RodmpwMHpuRjZzMHloTkdUNkJC?=
- =?gb2312?B?NVYxdlozWFQ1S0p2d0RrOUEzRlVxS3dsVUV4RHZBV2IwNDVtQmdpd1ZKbUE4?=
- =?gb2312?B?S1FJSnN2YThMSWxMZ2NsMzlNWlhCY2NMVEQwMStCaUxETDQ4VmZKOWYvRmpT?=
- =?gb2312?B?M0xLUk9BYm9SMTFRREpiYytsN2w3MWc4RzBIRzNrdGZ4WmJRQWxCM0xPZTR2?=
- =?gb2312?B?SDljZllsUnZ3bDl4WjRrdWxCQmlwbXd6dERyelVlMnlUS01BdHhWZjh2STN4?=
- =?gb2312?B?VGhCMVZJLzJYT1ZZUkYyOFU5STlSQ2d2eUhzZUlSSzdTcUtEbWdWaFZPdkt4?=
- =?gb2312?B?Z1kvMFR5eXVOblBwQlJWWVNvaU9qeThPUTl1aitGYmNONTZyekhjNU10UE43?=
- =?gb2312?B?V1BzMFlvTWhJNmJqeE52RVVrVURJTWF6c0FDUzlyREw3SjBQeGRVSkdRZHJa?=
- =?gb2312?B?UnNTV1JSNXlIMlQwOFlPdWdkUmVUNW5oQitvcEZHYkNxZHdML2x1Z3Njb1Z3?=
- =?gb2312?B?dzlqbmFSb0c2VzBRMWtoTmpZQ1dGYzhsNW9xcWJhYnE4WDJ3UDk0czM4VkpV?=
- =?gb2312?B?T3lZWEZUc1prWGJmUmE2WHRZZWRtZXpCM1lHUW9tcUo0bm9QbkRyMkhKRXk3?=
- =?gb2312?B?SXZjZ2hxR1p6R0tzTEs1Q1RGN1FDOFhRNTk2alFMdDNtcnkvTm9SR3lDaE84?=
- =?gb2312?B?YXBFUUpMNWtidFh2L3AvV3dLbG9WNjBmNjhFdnFWQ2JyalpOK2FNZGllbHRs?=
- =?gb2312?Q?hR0MPS682FmtN8jdE4=3D?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S232559AbhFPLyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 07:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230262AbhFPLyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 07:54:17 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC9EC061574;
+        Wed, 16 Jun 2021 04:52:11 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id e33so1769365pgm.3;
+        Wed, 16 Jun 2021 04:52:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Zi4349ytEsYpxEnkJFAQeeIv2zTZD4tj8+PmWF7nGW0=;
+        b=Be7KycS09MBuq+l7OABg5896QJrhC+VUbDS82seDG7loqyvEg+BuryvDiz1sFkPXZT
+         Kmo8bwleZJ7HzkxOf6vivBevRuVhciSiHBHlNwLt7pZWXDa5B83G28rNKZBrhhfOv8Xg
+         pPrn4aBL6SMeqSFZK8W1fa0iDXKBRE7aDaMHLmhAGonifSURRVbDUjfw2cm7z9BHvPTm
+         DkYBXw35YJtwo6VnU8dYP80Sl93GSQ1Dx9KHVkKnB3zOcwphbgl+KLuwvrJPI8N+3SBJ
+         hAkQD+D9H49nBve9kfViv2EwcQTHpBdojT0MXX8uIGbBd/5g/HU/N5LY4XWdeg3vXgRu
+         DEtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Zi4349ytEsYpxEnkJFAQeeIv2zTZD4tj8+PmWF7nGW0=;
+        b=qlw3l/ttcEeXj80dMrzocMshd161upNyaIuq0T0IL5//y90oZl3E0BYBlWOGHmBHoj
+         EfSJzPRioy6tIj13RuYbm1ot/rsvkRFbHUcEx1eIWVrtG102FMg3+2Q8XpNoK+Pvfbrw
+         NeWvC11VPdkhUsG9K8vjHGpZcILW/04EFG+KY7n5MnPbjRFJ2pQzv2eoULJLDjESThJx
+         +TOOpXdRNjcTAeDwoaP4hEwx8cmJ6CIxgK0UuUtyeS7ICHciC6Z4j5rn0rhE0w+qXhPl
+         qPP7t2+TDQN6ENAWSHIS0yR6e3GRwk6PekVyJ4nkfoXqn0RTZgqiX1xOPEX3SlXS/F6b
+         jzYA==
+X-Gm-Message-State: AOAM533J6fNjvCx4suMTXh9sShB3WkQo6xrFb2tuTvKNoBqIUPv6dcqf
+        otxUuin9d5/D1xD7WZQU4nE=
+X-Google-Smtp-Source: ABdhPJzqkUaZQ4vxPO2mBmT6tLw168sF+R0e0dVbvCsXpHhGE4H5TlvL0QzE7K15nwsnno9bd4XlmA==
+X-Received: by 2002:a05:6a00:a17:b029:2f9:a2bb:e126 with SMTP id p23-20020a056a000a17b02902f9a2bbe126mr9612244pfh.30.1623844330672;
+        Wed, 16 Jun 2021 04:52:10 -0700 (PDT)
+Received: from fedora ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id ca6sm2201348pjb.21.2021.06.16.04.52.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Jun 2021 04:52:10 -0700 (PDT)
+Date:   Wed, 16 Jun 2021 19:52:04 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Chengyang Fan <cy.fan@huawei.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ipv4: fix memory leak in ip_mc_add1_src
+Message-ID: <YMnl5C/jhqpQSmvQ@fedora>
+References: <20210616095925.1571600-1-cy.fan@huawei.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB6800.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c22bff3-4353-42ba-c118-08d930bb8a9f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jun 2021 11:40:29.1144
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Wz4eAefGh5q1n0kIORZZuWo1UGY9Q0zUJ26OsYeVNitMjnsXw74q7NsP4sGeQYdIlRoInGRszvuWzD3ufi9RMA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7405
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210616095925.1571600-1-cy.fan@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpIaSBSdXNzZWxsLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFJ1
-c3NlbGwgS2luZyA8bGludXhAYXJtbGludXgub3JnLnVrPg0KPiBTZW50OiAyMDIxxOo21MIxNsjV
-IDE4OjIxDQo+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiBD
-YzogZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3JnOyBwZXBwZS5jYXZhbGxhcm9A
-c3QuY29tOw0KPiBhbGV4YW5kcmUudG9yZ3VlQGZvc3Muc3QuY29tOyBqb2FicmV1QHN5bm9wc3lz
-LmNvbTsNCj4gbWNvcXVlbGluLnN0bTMyQGdtYWlsLmNvbTsgbmV0ZGV2QHZnZXIua2VybmVsLm9y
-ZzsNCj4gbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbGludXgtc3RtMzJAc3QtbWQtbWFp
-bG1hbi5zdG9ybXJlcGx5LmNvbTsNCj4gbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQu
-b3JnOyBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BB
-VENIIG5ldCAxLzJdIG5ldDogZmVjX3B0cDogYWRkIGNsb2NrIHJhdGUgemVybyBjaGVjaw0KPiAN
-Cj4gT24gV2VkLCBKdW4gMTYsIDIwMjEgYXQgMDU6MTQ6MjVQTSArMDgwMCwgSm9ha2ltIFpoYW5n
-IHdyb3RlOg0KPiA+IEZyb206IEZ1Z2FuZyBEdWFuIDxmdWdhbmcuZHVhbkBueHAuY29tPg0KPiA+
-DQo+ID4gQWRkIGNsb2NrIHJhdGUgemVybyBjaGVjayB0byBmaXggY292ZXJpdHkgaXNzdWUgb2Yg
-ImRpdmlkZSBieSAwIi4NCj4gPg0KPiA+IEZpeGVzOiBjb21taXQgODViZDE3OThiMjRhICgibmV0
-OiBmZWM6IGZpeCBzcGluX2xvY2sgZGVhZCBsb2NrIikNCj4gPiBTaWduZWQtb2ZmLWJ5OiBGdWdh
-bmcgRHVhbiA8ZnVnYW5nLmR1YW5AbnhwLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBKb2FraW0g
-WmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL25l
-dC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX3B0cC5jIHwgNCArKysrDQo+ID4gIDEgZmlsZSBjaGFu
-Z2VkLCA0IGluc2VydGlvbnMoKykNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9mcmVlc2NhbGUvZmVjX3B0cC5jDQo+ID4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9m
-cmVlc2NhbGUvZmVjX3B0cC5jDQo+ID4gaW5kZXggMTc1MzgwN2NiZjk3Li43MzI2YTA2MTI4MjMg
-MTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2ZlY19wdHAu
-Yw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfcHRwLmMNCj4g
-PiBAQCAtNjA0LDYgKzYwNCwxMCBAQCB2b2lkIGZlY19wdHBfaW5pdChzdHJ1Y3QgcGxhdGZvcm1f
-ZGV2aWNlICpwZGV2LCBpbnQNCj4gaXJxX2lkeCkNCj4gPiAgCWZlcC0+cHRwX2NhcHMuZW5hYmxl
-ID0gZmVjX3B0cF9lbmFibGU7DQo+ID4NCj4gPiAgCWZlcC0+Y3ljbGVfc3BlZWQgPSBjbGtfZ2V0
-X3JhdGUoZmVwLT5jbGtfcHRwKTsNCj4gPiArCWlmICghZmVwLT5jeWNsZV9zcGVlZCkgew0KPiA+
-ICsJCWZlcC0+Y3ljbGVfc3BlZWQgPSBOU0VDX1BFUl9TRUM7DQo+ID4gKwkJZGV2X2VycigmZmVw
-LT5wZGV2LT5kZXYsICJjbGtfcHRwIGNsb2NrIHJhdGUgaXMgemVyb1xuIik7DQo+IA0KPiBJZiB0
-aGlzIGlzIHN1cHBvc2VkIHRvIGJlIGFuIGVycm9yIG1lc3NhZ2UsIGl0IGRvZXNuJ3QgY29udmV5
-IHRoYXQgc29tZXRoaW5nIGlzDQo+IHJlYWxseSB3cm9uZyB0byB0aGUgdXNlci4gTWF5YmUgc29t
-ZXRoaW5nIGxpa2UgdGhpcyB3b3VsZCBiZSBtb3JlIG1lYW5pbmdmdWwNCj4gdG8gdGhlIHVzZXI6
-DQo+IA0KPiAJIlBUUCBjbG9jayByYXRlIHNob3VsZCBub3QgYmUgemVybywgdXNpbmcgMUdIeiBp
-bnN0ZWFkLiBQVFANCj4gCWNsb2NrIG1heSBiZSB1bnJlbGlhYmxlLlxuIg0KTWFrZSBTZW5zZS4N
-Cg0KPiBJdCBtYXkgYmUgYXBwcm9wcmlhdGUgbm90IHRvIHB1Ymxpc2ggUFRQIHN1cHBvcnQgZm9y
-IHRoZSBpbnRlcmZhY2UgaWYgd2UgZG9uJ3QNCj4gaGF2ZSBhIHZhbGlkIGNsb2NrIHJhdGUsIHdo
-aWNoIGlzIHByb2JhYmx5IHRoZSBzYWZlciBhcHByb2FjaCBhbmQgd291bGQNCj4gcHJvYmFibHkg
-bWFrZSB0aGUgcHJvYmxlbSBtb3JlIG5vdGljYWJsZSB0byB0aGUgZW5kIHVzZXIgc28gaXQgZ2V0
-cyBmaXhlZC4NCg0KRG8geW91IG1lYW4gdGhhdCBwcmludCBhbiBlcnJvciBtZXNzYWdlIHRoZW4g
-cmV0dXJuIGRpcmVjdGx5PyBJdCBzZWVtcyBiZXR0ZXIuDQoNCmlmICghZmVwLT5jeWNsZV9zcGVl
-ZCkgew0KCWRldl9lcnIoJmZlcC0+cGRldi0+ZGV2LCAiUFRQIGNsb2NrIHJhdGUgc2hvdWxkIG5v
-dCBiZSB6ZXJvIVxuIik7DQoJcmV0dXJuOw0KfQ0KDQpCZXN0IFJlZ2FyZHMsDQpKb2FraW0gWmhh
-bmcNCj4gLS0NCj4gUk1LJ3MgUGF0Y2ggc3lzdGVtOg0KPiBodHRwczovL2V1cjAxLnNhZmVsaW5r
-cy5wcm90ZWN0aW9uLm91dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZ3d3cuYXINCj4gbWxp
-bnV4Lm9yZy51ayUyRmRldmVsb3BlciUyRnBhdGNoZXMlMkYmYW1wO2RhdGE9MDQlN0MwMSU3Q3Fp
-YW5ncWluDQo+IGcuemhhbmclNDBueHAuY29tJTdDYjNjODUzMjJlMzU5NDQ2ZTRlZWUwOGQ5MzBi
-MDY3MDElN0M2ODZlYTFkMw0KPiBiYzJiNGM2ZmE5MmNkOTljNWMzMDE2MzUlN0MwJTdDMCU3QzYz
-NzU5NDM1NjQ3NjkwMzY0NCU3Q1Vua25vdw0KPiBuJTdDVFdGcGJHWnNiM2Q4ZXlKV0lqb2lNQzR3
-TGpBd01EQWlMQ0pRSWpvaVYybHVNeklpTENKQlRpSTZJazFoYQ0KPiBXd2lMQ0pYVkNJNk1uMCUz
-RCU3QzEwMDAmYW1wO3NkYXRhPVRINGZaSlJ1OElpNnc3eTA1TjhDSFdvUVINCj4gUjlPZWdzWUI3
-VkF3Z1NwVGNVJTNEJmFtcDtyZXNlcnZlZD0wDQo+IEZUVFAgaXMgaGVyZSEgNDBNYnBzIGRvd24g
-MTBNYnBzIHVwLiBEZWNlbnQgY29ubmVjdGl2aXR5IGF0IGxhc3QhDQo=
+On Wed, Jun 16, 2021 at 05:59:25PM +0800, Chengyang Fan wrote:
+> BUG: memory leak
+> unreferenced object 0xffff888101bc4c00 (size 32):
+>   comm "syz-executor527", pid 360, jiffies 4294807421 (age 19.329s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+>     01 00 00 00 00 00 00 00 ac 14 14 bb 00 00 02 00 ................
+>   backtrace:
+>     [<00000000f17c5244>] kmalloc include/linux/slab.h:558 [inline]
+>     [<00000000f17c5244>] kzalloc include/linux/slab.h:688 [inline]
+>     [<00000000f17c5244>] ip_mc_add1_src net/ipv4/igmp.c:1971 [inline]
+>     [<00000000f17c5244>] ip_mc_add_src+0x95f/0xdb0 net/ipv4/igmp.c:2095
+>     [<000000001cb99709>] ip_mc_source+0x84c/0xea0 net/ipv4/igmp.c:2416
+>     [<0000000052cf19ed>] do_ip_setsockopt net/ipv4/ip_sockglue.c:1294 [inline]
+>     [<0000000052cf19ed>] ip_setsockopt+0x114b/0x30c0 net/ipv4/ip_sockglue.c:1423
+>     [<00000000477edfbc>] raw_setsockopt+0x13d/0x170 net/ipv4/raw.c:857
+>     [<00000000e75ca9bb>] __sys_setsockopt+0x158/0x270 net/socket.c:2117
+>     [<00000000bdb993a8>] __do_sys_setsockopt net/socket.c:2128 [inline]
+>     [<00000000bdb993a8>] __se_sys_setsockopt net/socket.c:2125 [inline]
+>     [<00000000bdb993a8>] __x64_sys_setsockopt+0xba/0x150 net/socket.c:2125
+>     [<000000006a1ffdbd>] do_syscall_64+0x40/0x80 arch/x86/entry/common.c:47
+>     [<00000000b11467c4>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> In commit 24803f38a5c0 ("igmp: do not remove igmp souce list info when set
+> link down"), the ip_mc_clear_src() in ip_mc_destroy_dev() was removed,
+> because it was also called in igmpv3_clear_delrec().
+> 
+> Rough callgraph:
+> 
+> inetdev_destroy
+> -> ip_mc_destroy_dev
+>      -> igmpv3_clear_delrec
+>         -> ip_mc_clear_src
+> -> RCU_INIT_POINTER(dev->ip_ptr, NULL)
+> 
+> However, ip_mc_clear_src() called in igmpv3_clear_delrec() doesn't
+> release in_dev->mc_list->sources. And RCU_INIT_POINTER() assigns the
+> NULL to dev->ip_ptr. As a result, in_dev cannot be obtained through
+> inetdev_by_index() and then in_dev->mc_list->sources cannot be released
+> by ip_mc_del1_src() in the sock_close. Rough call sequence goes like:
+> 
+> sock_close
+> -> __sock_release
+>    -> inet_release
+>       -> ip_mc_drop_socket
+>          -> inetdev_by_index
+>          -> ip_mc_leave_src
+>             -> ip_mc_del_src
+>                -> ip_mc_del1_src
+> 
+> So we still need to call ip_mc_clear_src() in ip_mc_destroy_dev() to free
+> in_dev->mc_list->sources.
+> 
+> Fixes: 24803f38a5c0 ("igmp: do not remove igmp souce list info ...")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Chengyang Fan <cy.fan@huawei.com>
+> ---
+>  net/ipv4/igmp.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+> index 7b272bbed2b4..6b3c558a4f23 100644
+> --- a/net/ipv4/igmp.c
+> +++ b/net/ipv4/igmp.c
+> @@ -1801,6 +1801,7 @@ void ip_mc_destroy_dev(struct in_device *in_dev)
+>  	while ((i = rtnl_dereference(in_dev->mc_list)) != NULL) {
+>  		in_dev->mc_list = i->next_rcu;
+>  		in_dev->mc_count--;
+> +		ip_mc_clear_src(i);
+>  		ip_ma_put(i);
+>  	}
+>  }
+> -- 
+> 2.18.0.huawei.25
+> 
+
+Acked-by: Hangbin Liu <liuhangbin@gmail.com>
