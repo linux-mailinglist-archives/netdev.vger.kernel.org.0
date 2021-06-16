@@ -2,85 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 525D53AA49E
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:50:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 158883AA4A2
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:51:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233070AbhFPTwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:52:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55174 "EHLO mail.kernel.org"
+        id S232419AbhFPTxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:53:12 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41214 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232967AbhFPTwN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 15:52:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B8EDC613B9;
-        Wed, 16 Jun 2021 19:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623873006;
-        bh=39fzyq5UfFDbP8jh9ZQFXYlBn+yRG0GxzR5hLE8kbqo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JsdoXyqQQWapW9ZCG84CSWDMxBWRubh/J0VLVvIUFzyAf5jaPkf0l2TR5JsTUbc6g
-         nQSf+Y1xg+u3pHrFoLfdSG33PjWBeA+wXZ0Fy5KuQc6ZcWCG4r8ZmfUwD+P79EVxvq
-         HKOO/k/cGZ0aTN0PMZTD6u01piIh9sEX4H1d76k6EFoUVkuuAhx+Pwmh+zpJqaSr8u
-         Es2CdyU/tHMTzMfpO9Re9CQfbS4tnij6h8lk/jiZZViHB4OyHQkWMYXwpDbaF1juFv
-         ZRhulaBAa8ar0sWFSh2yf0ibi96WtlRCmxCGNXJMzGjGhswnQ+GV5br5Rfkza97xuE
-         Yh2dm3abwnZww==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B304060A54;
-        Wed, 16 Jun 2021 19:50:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232808AbhFPTxK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 15:53:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=am0d0pk3jVy5OgKLNWHj2eNHd2bP49FJfF7PWRTv824=; b=FCCQNxZt/TF2vWt/xvxoq/bmqf
+        RfptqKJtdguKsusQsWiDTSqJ05iQKq/2dat3cU5MzR6zoKBejU5g1y7Fa9oZZjDC+JjrkZfRY1ADI
+        sZVrsSLjbdvUXcfByW93eg+5AJxjpNdj95ZeNAYFWwn+Y8I+rPGRNVJnUR2GxUi+9qtI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ltbZ1-009lrg-9W; Wed, 16 Jun 2021 21:51:03 +0200
+Date:   Wed, 16 Jun 2021 21:51:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
+        jaz@semihalf.com, gjb@semihalf.com, upstream@semihalf.com,
+        Samer.El-Haj-Mahmoud@arm.com, jon@solid-run.com, tn@semihalf.com,
+        rjw@rjwysocki.net, lenb@kernel.org
+Subject: Re: [net-next: PATCH v2 5/7] net: mvmdio: add ACPI support
+Message-ID: <YMpWJ79VF7HmjumQ@lunn.ch>
+References: <20210616190759.2832033-1-mw@semihalf.com>
+ <20210616190759.2832033-6-mw@semihalf.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/9] Next set of conntrack patches for the nfp driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162387300672.13042.6785100233637782028.git-patchwork-notify@kernel.org>
-Date:   Wed, 16 Jun 2021 19:50:06 +0000
-References: <20210616100207.14415-1-simon.horman@corigine.com>
-In-Reply-To: <20210616100207.14415-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, louis.peens@corigine.com,
-        yinjun.zhang@corigine.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210616190759.2832033-6-mw@semihalf.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed, 16 Jun 2021 12:01:58 +0200 you wrote:
-> Louis Peens says:
+On Wed, Jun 16, 2021 at 09:07:57PM +0200, Marcin Wojtas wrote:
+> This patch introducing ACPI support for the mvmdio driver by adding
+> acpi_match_table with two entries:
 > 
-> This follows on from the previous series of a similar nature.
-> Looking at the diagram as explained in the previous series
-> this implements changes up to the point where the merged
-> nft entries are saved. There are still bits of stubbed
-> out code where offloading of the flows will be implemented.
+> * "MRVL0100" for the SMI operation
+> * "MRVL0101" for the XSMI mode
 > 
-> [...]
+> Also clk enabling is skipped, because the tables do not contain
+> such data and clock maintenance relies on the firmware.
 
-Here is the summary with links:
-  - [net-next,1/9] nfp: flower-ct: add delete flow handling for ct
-    https://git.kernel.org/netdev/net-next/c/d33d24a7b450
-  - [net-next,2/9] nfp: flower-ct: add nft callback stubs
-    https://git.kernel.org/netdev/net-next/c/62268e78145f
-  - [net-next,3/9] nfp: flower-ct: add nft flows to nft list
-    https://git.kernel.org/netdev/net-next/c/95255017e0a8
-  - [net-next,4/9] nfp: flower-ct: make a full copy of the rule when it is a NFT flow
-    https://git.kernel.org/netdev/net-next/c/4772ad3f58d2
-  - [net-next,5/9] nfp: flower-ct: add nft_merge table
-    https://git.kernel.org/netdev/net-next/c/b5e30c61d8cb
-  - [net-next,6/9] nfp: flower-ct: implement code to save merge of tc and nft flows
-    https://git.kernel.org/netdev/net-next/c/a6ffdd3a0e47
-  - [net-next,7/9] nfp: flower-ct: fill in ct merge check function
-    https://git.kernel.org/netdev/net-next/c/c698e2adcc63
-  - [net-next,8/9] nfp: flower-ct: fill ct metadata check function
-    https://git.kernel.org/netdev/net-next/c/5e5f08168db4
-  - [net-next,9/9] nfp: flower-ct: implement action_merge check
-    https://git.kernel.org/netdev/net-next/c/30c4a9f4fe3f
+This last part seems to be no longer true.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+     Andrew
