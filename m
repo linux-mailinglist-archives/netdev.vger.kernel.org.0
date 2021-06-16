@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA8D93AA428
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E90C3AA42B
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232647AbhFPTWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:22:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50168 "EHLO mail.kernel.org"
+        id S232686AbhFPTWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:22:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50156 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232626AbhFPTWK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232624AbhFPTWK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 16 Jun 2021 15:22:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4B55461246;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3A78460FEA;
         Wed, 16 Jun 2021 19:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623871204;
-        bh=ZhJ6tGBWX3G9f9vOG1ff5pPXMgjnmdRUCgE8GT436Lg=;
+        bh=AMvrHDA9umeoyZrjscAOqXsQEvXt/E8Zj0MXDqUonIo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aeWm7W/BAfR8MRrkt8J/uBusvfNM9U/Rgr4lqUgIAqUDaMVHLi+tWnLhtulkh+pM3
-         gZ8RfNma2fnCGGHYP6YJ30LOCbxDChYSmH94rjq2u9o2YLUTpmZBWgbwN/3+pihzCF
-         +K5pQX4vYj7eKMOBhc13r5tGf0HX7PuERdRy0vbqB2tSj6B+GSoQNKbUCo087Y7zeH
-         sGT31kWqnrhtk4r0PSW8BZcihuSmUO7JtXVv+zgbmNC3vrmfzu5MiqVo+fGetJvCgt
-         1tFXRtfyF+MndczjtUpMt49CLMdPcjLMkavaDm9+lueW37OHTWW0atBateKhL58XLN
-         gGbgyUN1VhIVA==
+        b=RRulelyaDr4I+jZqrLFoEYlVP4SODTueYmcJyeg91Y3iM7mKde+8UH/fNtc2khAHF
+         lb1fC0YOcGneDn+7x0uJ0owFOZfyMHXJGZyc6GbhNXrnpL8ltQrF3s/bEo7mRWSEI6
+         iTiF6eh4MB5gR83DDQw+usq948sCCOvOryHhCleqS66NESciuCagHdqJstiPT+v/tE
+         dcPQ+zPEW2n8y7ge/ZCWRYjRKsLOnHeo2uhMyx+VhA5QxI/GMBg92Fdud7EZqFquwp
+         Mefmzq8w/wWf+usvBnwgec9o/sgL4lKU86QmTrP5theM7/PIcBkzK1v4InjOng5gb/
+         PSAjHVKdElZEg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3AEBD60953;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2E37E60A54;
         Wed, 16 Jun 2021 19:20:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: hsr: don't check sequence number if tag removal
- is offloaded
+Subject: Re: [PATCH net-next v2] net: qualcomm: rmnet: Allow partial updates of
+ IFLA_FLAGS
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162387120423.29488.741420966415811568.git-patchwork-notify@kernel.org>
+Message-Id: <162387120418.29488.15765073920197282616.git-patchwork-notify@kernel.org>
 Date:   Wed, 16 Jun 2021 19:20:04 +0000
-References: <20210615175037.19730-1-george.mccollister@gmail.com>
-In-Reply-To: <20210615175037.19730-1-george.mccollister@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        m-karicheri2@ti.com, andrew@lunn.ch, marco.wenzel@a-eberle.de,
-        linux-kernel@vger.kernel.org
+References: <20210615232707.835258-1-bjorn.andersson@linaro.org>
+In-Reply-To: <20210615232707.835258-1-bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     subashab@codeaurora.org, stranche@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, elder@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,20 +48,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 15 Jun 2021 12:50:37 -0500 you wrote:
-> Don't check the sequence number when deciding when to update time_in in
-> the node table if tag removal is offloaded since the sequence number is
-> part of the tag. This fixes a problem where the times in the node table
-> wouldn't update when 0 appeared to be before or equal to seq_out when
-> tag removal was offloaded.
+On Tue, 15 Jun 2021 18:27:07 -0500 you wrote:
+> The idiomatic way to handle the changelink flags/mask pair seems to be
+> allow partial updates of the driver's link flags. In contrast the rmnet
+> driver masks the incoming flags and then use that as the new flags.
 > 
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
+> Change the rmnet driver to follow the common scheme, before the
+> introduction of IFLA_RMNET_FLAGS handling in iproute2 et al.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: hsr: don't check sequence number if tag removal is offloaded
-    https://git.kernel.org/netdev/net-next/c/c2ae34a7deaf
+  - [net-next,v2] net: qualcomm: rmnet: Allow partial updates of IFLA_FLAGS
+    https://git.kernel.org/netdev/net-next/c/d917c35a451e
 
 You are awesome, thank you!
 --
