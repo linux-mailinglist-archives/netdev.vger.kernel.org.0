@@ -2,91 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D4463A9681
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 11:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A233A96D5
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 12:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231971AbhFPJwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 05:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbhFPJwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 05:52:49 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43C3C061574
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 02:50:42 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id a11so1902455wrt.13
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 02:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TWCV/GOgTiT+5v4mB6bkQ62Ynk/a4vKkccEaBlfJiHc=;
-        b=OgfOA2yt/AUpyDyn/LDR7A8GX3noZcpvhwMIflQkPWRE/cuGEWKqG8N4KIHfiqnyDU
-         eyJVFvUX0gO1vxRYNa8IZoLvHIjtfkfHiLkkrXJt6w94QWSSWTC6pS4gF2MJAWVS5ABD
-         EZgLDPGutoigG7hjeVsb3hadKpOgPIlnZyUeVBdmH58UkdSrjsC5ViLacKQ29lbsWN2U
-         Lh5taizfrgaNGFLN8tY8/d7I+cibXfcP/e9ishgFFnZYgAC7fzx34eg9eNDZJ5xZ3vUT
-         ijDg7dWGhqSso6VxeRf4EBtPosqokIvqiGX+NIGd1/DPrasgHONliENno6ITDrpIzI6Z
-         HNsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TWCV/GOgTiT+5v4mB6bkQ62Ynk/a4vKkccEaBlfJiHc=;
-        b=dtvZOcgDxpj+NvRY8hwAg3/dr0SfduNOzs31fUp7wjWCSIoe4EjtfNsr3lrtOpsbng
-         Enb2gTeOrH/uC8FrmgyC+IrZET65XzRIOwnVl3JzT86Wo0FnnsPSCVv4Kp/AEe/XdURR
-         1tyYiQtet9o7TtJbxEreVh6VMIN2foq12E2ZprYCBplS3HrZfKYXqhau1FQbrq7hbxzg
-         3C2WWFDuKn1mveCHT+hlmxwh2fSY+sPzII+E4QPmT8DzmDTp1GYSubwX+GA4hJ8SWvFs
-         4Kn50ijcBRwl4Y3nUOU4uMIa3LP8wrxpvJf7agqWEUe5dQeSa+T+Op1Sv+eG1QMWN0QO
-         zefQ==
-X-Gm-Message-State: AOAM533Y32dfloxSN495pjFTn4yJ8D4r3x9KL+qYcEeexQ/XMV6eB74Y
-        P9VMYz23Uauw8pgJ4JbSSU4=
-X-Google-Smtp-Source: ABdhPJyIAQwbkIUoyI2MoC/QDtc2T5m813Pb9pVrw7WG/DX2oqRL1ISyCjHe4KtdIsmgMBpYrxdV9Q==
-X-Received: by 2002:a5d:5986:: with SMTP id n6mr4277881wri.60.1623837041154;
-        Wed, 16 Jun 2021 02:50:41 -0700 (PDT)
-Received: from linux-dev (host81-153-178-248.range81-153.btcentralplus.com. [81.153.178.248])
-        by smtp.gmail.com with ESMTPSA id v15sm4512110wmj.39.2021.06.16.02.50.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 02:50:40 -0700 (PDT)
-Date:   Wed, 16 Jun 2021 10:50:38 +0100
-From:   Kev Jackson <foamdino@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     mkubecek@suse.cz, netdev@vger.kernel.org
-Subject: Re: ethtool discrepancy between observed behaviour and comments
-Message-ID: <YMnJbl1KiB4EaPVP@linux-dev>
-References: <YMhJDzNrRNNeObly@linux-dev>
- <20210615124050.50138c05@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S232238AbhFPKGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 06:06:49 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:10105 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231354AbhFPKGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 06:06:48 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G4gh91L1ZzZdgG;
+        Wed, 16 Jun 2021 18:01:45 +0800 (CST)
+Received: from dggema753-chm.china.huawei.com (10.1.198.195) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Wed, 16 Jun 2021 18:04:40 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggema753-chm.china.huawei.com (10.1.198.195) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Wed, 16 Jun 2021 18:04:40 +0800
+From:   Weihang Li <liweihang@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linuxarm@huawei.com>,
+        Weihang Li <liweihang@huawei.com>
+Subject: [PATCH v2 net-next 0/8] net: phy: fix some coding-style issues
+Date:   Wed, 16 Jun 2021 18:01:18 +0800
+Message-ID: <1623837686-22569-1-git-send-email-liweihang@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210615124050.50138c05@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggema753-chm.china.huawei.com (10.1.198.195)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Make some cleanups according to the coding style of kernel.
 
-On Tue, Jun 15, 2021 at 12:40:50PM -0700, Jakub Kicinski wrote:
-> I'm not sure I grasped what the problem is. Could you perhaps share
-> what you're trying to do that works with netlink vs IOCTL? Best if
-> it's in form of:
-> 
-> $ ethtool -l $ifc
-> $ ./ethtool-ioctl -L $ifc ...
-> # presumably fails IIUC?
-> $ ./ethtool-nl -L $ifc ...
-> # and this one succeeds?
-> 
-> where ethtool-ioctl and ethtool-nl would be hacked up ethtool binaries
-> which only use one mechanism instead of trying to autoselect.
+Changes since v1:
+- Update commit description of #1 and #3.
+- Avoid changing the indentation in #2.
+- Change a group of if-else statement into switch from #4 and put it into
+  a single patch.
+- Put '|' at the end of line in #5 and #7.
+- Avoid deleting spaces in definition of 'settings' in #5.
+- Drop #8 from the series which needs more discussion with David.
 
-I have rechecked my assumptions that the EINVAL was propogating from the check
-on the rx_count/tx_count and discovered that it wasn't.  After I realised this,
-I found that the interface I was trying to call ETHTOOL_SCHANNEL with doesn't
-support that operation - there are 2 NICs in this test machine.
+Weihang Li (1):
+  net: phy: replace if-else statements with switch
 
-Apologies for the noise on the mailing list/your inboxes, I now have a fully
-working ETHTOOL_GCHANNEL/ETHTOOL_SCHANNEL test harness (so long as I point my
-code at the correct interface!)
+Wenpeng Liang (7):
+  net: phy: change format of some declarations
+  net: phy: correct format of block comments
+  net: phy: delete repeated words of comments
+  net: phy: fix space alignment issues
+  net: phy: fix formatting issues with braces
+  net: phy: print the function name by __func__ instead of an fixed
+    string
+  net: phy: remove unnecessary line continuation
 
-Thanks,
-Kev
+ drivers/net/phy/bcm87xx.c     |  4 ++--
+ drivers/net/phy/davicom.c     |  6 +++---
+ drivers/net/phy/dp83640.c     |  5 +++--
+ drivers/net/phy/et1011c.c     | 15 ++++++++-------
+ drivers/net/phy/fixed_phy.c   |  4 ++--
+ drivers/net/phy/lxt.c         |  4 ++--
+ drivers/net/phy/marvell.c     | 13 +++++++++----
+ drivers/net/phy/mdio_bus.c    |  1 +
+ drivers/net/phy/mdio_device.c |  4 ++--
+ drivers/net/phy/national.c    |  6 ++++--
+ drivers/net/phy/phy-c45.c     |  2 +-
+ drivers/net/phy/phy-core.c    |  3 ++-
+ drivers/net/phy/phy.c         |  3 +--
+ drivers/net/phy/phy_device.c  |  9 ++++-----
+ drivers/net/phy/phylink.c     | 14 ++++++++------
+ drivers/net/phy/qsemi.c       |  1 +
+ drivers/net/phy/sfp-bus.c     | 28 ++++++++++++++--------------
+ drivers/net/phy/sfp.c         |  2 +-
+ drivers/net/phy/spi_ks8995.c  | 10 +++++-----
+ drivers/net/phy/ste10Xp.c     |  6 +++---
+ drivers/net/phy/vitesse.c     |  3 ++-
+ 21 files changed, 78 insertions(+), 65 deletions(-)
+
+-- 
+2.8.1
+
