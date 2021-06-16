@@ -2,86 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6746F3A912B
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 07:33:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E1D53A915E
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 07:45:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231256AbhFPFfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 01:35:42 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:16427 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230217AbhFPFfg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 01:35:36 -0400
-Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
-        by localhost (Postfix) with ESMTP id 4G4Ykd6FZQzBDfJ;
-        Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id QiGHvvZE9cj6; Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4G4Ykd5KtRzBDck;
-        Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id B88498B7CA;
-        Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 13HZ1Y_Q6pCI; Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
-Received: from [192.168.4.90] (unknown [192.168.4.90])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 353858B765;
-        Wed, 16 Jun 2021 07:33:29 +0200 (CEST)
-Subject: Re: [PATCH] vmxnet3: prevent building with 256K pages
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        pv-drivers@vmware.com, doshir@vmware.com
-References: <20210615123504.547106-1-mpe@ellerman.id.au>
- <76ccb9fc-dc43-46e1-6465-637b72253385@csgroup.eu>
- <YMmKPIEk6XQsXq9T@infradead.org>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <4d153452-8d83-248e-886c-bac7aed5a90d@csgroup.eu>
-Date:   Wed, 16 Jun 2021 07:33:14 +0200
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S229698AbhFPFrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 01:47:02 -0400
+Received: from mailout1.secunet.com ([62.96.220.44]:51734 "EHLO
+        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229543AbhFPFrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 01:47:02 -0400
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout1.secunet.com (Postfix) with ESMTP id 963B680004A;
+        Wed, 16 Jun 2021 07:44:51 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 16 Jun 2021 07:44:51 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 16 Jun
+ 2021 07:44:51 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id CC3BF3180248; Wed, 16 Jun 2021 07:44:50 +0200 (CEST)
+Date:   Wed, 16 Jun 2021 07:44:50 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Huy Nguyen <huyn@nvidia.com>
+CC:     <netdev@vger.kernel.org>, <saeedm@nvidia.com>, <borisp@nvidia.com>,
+        <raeds@nvidia.com>, <danielj@nvidia.com>, <yossiku@nvidia.com>,
+        <kuba@kernel.org>
+Subject: Re: [PATCH net-next v5 2/3] net/xfrm: Add inner_ipproto into sec_path
+Message-ID: <20210616054450.GE40979@gauss3.secunet.de>
+References: <20210614143349.74866-1-huyn@nvidia.com>
+ <20210614143349.74866-3-huyn@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <YMmKPIEk6XQsXq9T@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210614143349.74866-3-huyn@nvidia.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-Le 16/06/2021 à 07:21, Christoph Hellwig a écrit :
-> On Tue, Jun 15, 2021 at 02:41:34PM +0200, Christophe Leroy wrote:
->> Maybe we should also exclude hexagon, same as my patch on BTRFS https://patchwork.ozlabs.org/project/linuxppc-dev/patch/a16c31f3caf448dda5d9315e056585b6fafc22c5.1623302442.git.christophe.leroy@csgroup.eu/
+On Mon, Jun 14, 2021 at 05:33:48PM +0300, Huy Nguyen wrote:
+> The inner_ipproto saves the inner IP protocol of the plain
+> text packet. This allows vendor's IPsec feature making offload
+> decision at skb's features_check and configuring hardware at
+> ndo_start_xmit.
 > 
-> Maybe we really need common config symbols for the page size instead of
-> all these hacks..
+> For example, ConnectX6-DX IPsec device needs the plaintext's
+> IP protocol to support partial checksum offload on
+> VXLAN/GENEVE packet over IPsec transport mode tunnel.
 > 
+> Signed-off-by: Raed Salem <raeds@nvidia.com>
+> Signed-off-by: Huy Nguyen <huyn@nvidia.com>
+> Cc: Steffen Klassert <steffen.klassert@secunet.com>
 
-I agree.
+In case you want to route this through the mlx5 tree:
 
-Today we have:
-
-arch/hexagon/Kconfig:config PAGE_SIZE_4KB
-arch/hexagon/Kconfig:config PAGE_SIZE_16KB
-arch/hexagon/Kconfig:config PAGE_SIZE_64KB
-arch/hexagon/Kconfig:config PAGE_SIZE_256KB
-arch/mips/Kconfig:config PAGE_SIZE_4KB
-arch/mips/Kconfig:config PAGE_SIZE_8KB
-arch/mips/Kconfig:config PAGE_SIZE_16KB
-arch/mips/Kconfig:config PAGE_SIZE_32KB
-arch/mips/Kconfig:config PAGE_SIZE_64KB
-arch/sh/mm/Kconfig:config PAGE_SIZE_4KB
-arch/sh/mm/Kconfig:config PAGE_SIZE_8KB
-arch/sh/mm/Kconfig:config PAGE_SIZE_16KB
-arch/sh/mm/Kconfig:config PAGE_SIZE_64KB
-
-
-I think we should convert all other architectures to that syntax.
-
-Christophe
+Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
