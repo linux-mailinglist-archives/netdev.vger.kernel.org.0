@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 137F53A8F85
+	by mail.lfdr.de (Postfix) with ESMTP id 5F76B3A8F86
 	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 05:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbhFPDmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 23:42:46 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:7318 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230262AbhFPDmg (ORCPT
+        id S230515AbhFPDmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 23:42:47 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:10081 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230284AbhFPDmg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 23:42:36 -0400
 Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4G4W7d5p4kz6y6s;
-        Wed, 16 Jun 2021 11:36:29 +0800 (CST)
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G4W8s4lLLzZfNf;
+        Wed, 16 Jun 2021 11:37:33 +0800 (CST)
 Received: from SZX1000464847.huawei.com (10.21.59.169) by
  dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
@@ -23,9 +23,9 @@ To:     <helgaas@kernel.org>, <hch@infradead.org>, <kw@linux.com>,
         <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
         <hverkuil-cisco@xs4all.nl>
 CC:     <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH V4 3/6] PCI: Add 10-Bit Tag register definitions
-Date:   Wed, 16 Jun 2021 11:39:23 +0800
-Message-ID: <1623814766-91906-4-git-send-email-liudongdong3@huawei.com>
+Subject: [PATCH V4 4/6] PCI: Enable 10-Bit tag support for PCIe Endpoint devices
+Date:   Wed, 16 Jun 2021 11:39:24 +0800
+Message-ID: <1623814766-91906-5-git-send-email-liudongdong3@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1623814766-91906-1-git-send-email-liudongdong3@huawei.com>
 References: <1623814766-91906-1-git-send-email-liudongdong3@huawei.com>
@@ -39,52 +39,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add 10-Bit Tag register definitions for use in subsequen patches.
-See the PCIe 5.0 spec section 7.5.3.15 and 9.3.3.2.
+10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
+field size from 8 bits to 10 bits.
+
+For platforms where the RC supports 10-Bit Tag Completer capability,
+it is highly recommended for platform firmware or operating software
+that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
+bit automatically in Endpoints with 10-Bit Tag Requester capability. This
+enables the important class of 10-Bit Tag capable adapters that send
+Memory Read Requests only to host memory.
 
 Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- include/uapi/linux/pci_regs.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/pci/probe.c | 33 +++++++++++++++++++++++++++++++++
+ include/linux/pci.h |  2 ++
+ 2 files changed, 35 insertions(+)
 
-diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
-index e709ae8..cf1ddb8 100644
---- a/include/uapi/linux/pci_regs.h
-+++ b/include/uapi/linux/pci_regs.h
-@@ -648,6 +648,8 @@
- #define  PCI_EXP_DEVCAP2_ATOMIC_COMP64	0x00000100 /* 64b AtomicOp completion */
- #define  PCI_EXP_DEVCAP2_ATOMIC_COMP128	0x00000200 /* 128b AtomicOp completion */
- #define  PCI_EXP_DEVCAP2_LTR		0x00000800 /* Latency tolerance reporting */
-+#define  PCI_EXP_DEVCAP2_10BIT_TAG_COMP 0x00010000 /* 10-Bit Tag Completer Supported */
-+#define  PCI_EXP_DEVCAP2_10BIT_TAG_REQ  0x00020000 /* 10-Bit Tag Requester Supported */
- #define  PCI_EXP_DEVCAP2_OBFF_MASK	0x000c0000 /* OBFF support mechanism */
- #define  PCI_EXP_DEVCAP2_OBFF_MSG	0x00040000 /* New message signaling */
- #define  PCI_EXP_DEVCAP2_OBFF_WAKE	0x00080000 /* Re-use WAKE# for OBFF */
-@@ -661,6 +663,7 @@
- #define  PCI_EXP_DEVCTL2_IDO_REQ_EN	0x0100	/* Allow IDO for requests */
- #define  PCI_EXP_DEVCTL2_IDO_CMP_EN	0x0200	/* Allow IDO for completions */
- #define  PCI_EXP_DEVCTL2_LTR_EN		0x0400	/* Enable LTR mechanism */
-+#define  PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN 0x1000 /* 10-Bit Tag Requester Enable */
- #define  PCI_EXP_DEVCTL2_OBFF_MSGA_EN	0x2000	/* Enable OBFF Message type A */
- #define  PCI_EXP_DEVCTL2_OBFF_MSGB_EN	0x4000	/* Enable OBFF Message type B */
- #define  PCI_EXP_DEVCTL2_OBFF_WAKE_EN	0x6000	/* OBFF using WAKE# signaling */
-@@ -931,6 +934,7 @@
- /* Single Root I/O Virtualization */
- #define PCI_SRIOV_CAP		0x04	/* SR-IOV Capabilities */
- #define  PCI_SRIOV_CAP_VFM	0x00000001  /* VF Migration Capable */
-+#define  PCI_SRIOV_CAP_VF_10BIT_TAG_REQ	0x00000004 /* VF 10-Bit Tag Requester Supported */
- #define  PCI_SRIOV_CAP_INTR(x)	((x) >> 21) /* Interrupt Message Number */
- #define PCI_SRIOV_CTRL		0x08	/* SR-IOV Control */
- #define  PCI_SRIOV_CTRL_VFE	0x0001	/* VF Enable */
-@@ -938,6 +942,7 @@
- #define  PCI_SRIOV_CTRL_INTR	0x0004	/* VF Migration Interrupt Enable */
- #define  PCI_SRIOV_CTRL_MSE	0x0008	/* VF Memory Space Enable */
- #define  PCI_SRIOV_CTRL_ARI	0x0010	/* ARI Capable Hierarchy */
-+#define  PCI_SRIOV_CTRL_VF_10BIT_TAG_REQ_EN 0x0020 /* VF 10-Bit Tag Requester Enable */
- #define PCI_SRIOV_STATUS	0x0a	/* SR-IOV Status */
- #define  PCI_SRIOV_STATUS_VFM	0x0001	/* VF Migration Status */
- #define PCI_SRIOV_INITIAL_VF	0x0c	/* Initial VFs */
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 0208865..33241fb 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -2048,6 +2048,38 @@ int pci_configure_extended_tags(struct pci_dev *dev, void *ign)
+ 	return 0;
+ }
+ 
++static void pci_configure_10bit_tags(struct pci_dev *dev)
++{
++	struct pci_dev *bridge;
++
++	if (!(dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP))
++		return;
++
++	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT) {
++		dev->ext_10bit_tag = 1;
++		return;
++	}
++
++	bridge = pci_upstream_bridge(dev);
++	if (bridge && bridge->ext_10bit_tag)
++		dev->ext_10bit_tag = 1;
++
++	/*
++	 * 10-Bit Tag Requester Enable in Device Control 2 Register is RsvdP
++	 * for VF.
++	 */
++	if (dev->is_virtfn)
++		return;
++
++	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ENDPOINT &&
++	    dev->ext_10bit_tag == 1 &&
++	    (dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_REQ)) {
++		pci_dbg(dev, "enabling 10-Bit Tag Requester\n");
++		pcie_capability_set_word(dev, PCI_EXP_DEVCTL2,
++					PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
++	}
++}
++
+ /**
+  * pcie_relaxed_ordering_enabled - Probe for PCIe relaxed ordering enable
+  * @dev: PCI device to query
+@@ -2184,6 +2216,7 @@ static void pci_configure_device(struct pci_dev *dev)
+ {
+ 	pci_configure_mps(dev);
+ 	pci_configure_extended_tags(dev, NULL);
++	pci_configure_10bit_tags(dev);
+ 	pci_configure_relaxed_ordering(dev);
+ 	pci_configure_ltr(dev);
+ 	pci_configure_eetlp_prefix(dev);
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index de1fc24..445d102 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -393,6 +393,8 @@ struct pci_dev {
+ #endif
+ 	unsigned int	eetlp_prefix_path:1;	/* End-to-End TLP Prefix */
+ 
++	unsigned int	ext_10bit_tag:1; /* 10-Bit Tag Completer Supported
++					    from root to here */
+ 	pci_channel_state_t error_state;	/* Current connectivity state */
+ 	struct device	dev;			/* Generic device interface */
+ 
 -- 
 2.7.4
 
