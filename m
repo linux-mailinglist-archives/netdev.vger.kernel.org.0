@@ -2,62 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C9B43AA3EB
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 359D53AA3ED
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:08:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232491AbhFPTKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59798 "EHLO
+        id S232577AbhFPTKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbhFPTKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:10:33 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBD8C06175F
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:26 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id c11so5320620ljd.6
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:26 -0700 (PDT)
+        with ESMTP id S232400AbhFPTKf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:10:35 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022CCC0617AE
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:28 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id d13so5263659ljg.12
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WL54/R6Mme6e3RQT9i1sJP4MFsLSEpzvFVEMxWrfS1Y=;
-        b=tbmWa/rcLp74wYJ2LayWqB9C/YypLZPStvdVzJ/UAd+40ntYpGBMsCAfD0jSrSCYr7
-         FMnm9KnjfVCFTJaI+w6oqs4oFFgawx1lhwpG5Rn5AVnyEeq2wXdl0XzQNBsIX/2KJ7MK
-         BOeEr/Pg93zkYoY4+KleOv4p7wO7fVp5RTKTFFNpGZaxUrZhpH0cWAK0pMMDOqCV5x1k
-         iLT8b81irzStdKrDCEF59SxeC82npcORapcQSLJx/yqzMD88O607gmk59JuQsAm6dJkk
-         +U3UAkdTvh4AGsVgI9t+56IULqmmOJacXetSR0uOeAQmtog/X4MCzd7YGKO0WJZAeow1
-         ND7A==
+        bh=qO81kkLWUD7HwK1vfV7d3yspAdGdM3JErj+7upPHV+g=;
+        b=QmAbiCMHeMzya8lnZc4yAdb2woDbST083wyuKhVvDyuBi2RSGgE1JYVF+wFuiZN/B0
+         wUS7K8FLF6cshXEQohL+9eFigt7Hs5w55fe9iby0O3GLyM55FO+Hei/JdGIEo4qsB+OW
+         2gE/P1DVJW6+I6LTiMD6d+JXAPQ516HWoDSXHE7unlIxIXacOIUBNmkslic2ywHhjdRj
+         YPcCkLa0LG5x/POsA5/Wl/EqYIuJ9oz0lRHHZE91xmGzlMYhxQFPjWacVM8a2YLiSfZL
+         MaSeO1jkPZyfq7SphxmlRawbC+gRSF/tUiw2e3fVq/PLrydRuWfEmf/tUjyhD4DihsRX
+         qyqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WL54/R6Mme6e3RQT9i1sJP4MFsLSEpzvFVEMxWrfS1Y=;
-        b=U40k+paiZbYhrJkgZr4RhEnt91FPDukJR2HdJoIpNEVfwyNYvZwBxm4JXCAdcakiNG
-         hyvEVvewQil2pTJxEuqRBWtwi4GvPvFUpjTzthYsywxjrSJGZN/mu4fpUi/eMIbuUrPv
-         ilNR8J6V+WSLvEZrpthHWtIWZBxNmfqIiRqMtpj2ZxsyF6wEYMJFowwgZ3sMpweFK12H
-         73RBNTL5WqZMhRmZPMrllQ0xiyW7bLl7BfuNbfevRGpGKHfpcGVOB/fFm21euSoBOExo
-         96fvdWpstfIk9FBVfcJ8xJ7VgGrvhkD++/AxU3wocptvYhfDqnpBKx+565T+FwnmXc1F
-         kb9Q==
-X-Gm-Message-State: AOAM5339SrYwW/pRoI3nfukcSwHU+11F4enVqP+NaghlJCuqEKBgBIpJ
-        iLcPkTxI/Ruig4PNVl0jcKHD9w==
-X-Google-Smtp-Source: ABdhPJzhcgr4TbHdIux4JkqfddLLFxs6eN1FhDDktz3wer1niJQitqpxkEHLQGrkr8JY7nseCtxUrQ==
-X-Received: by 2002:a2e:9156:: with SMTP id q22mr1169001ljg.237.1623870505054;
-        Wed, 16 Jun 2021 12:08:25 -0700 (PDT)
+        bh=qO81kkLWUD7HwK1vfV7d3yspAdGdM3JErj+7upPHV+g=;
+        b=FPBa68zDkSe6SPo9NFSVw/uoalxbYzhd/wnesLBCm/iHr2SSxwOiNYwmI0TQby1COU
+         oxSFumVtRJ3cTisheDXCjVSnL3nw1S+OOmHjJK2VjTB/j+hedGW7nkJGFHPzPNpUuJ0f
+         8d8oLMWlWuz2tcLnpLYaJy+sgVM2wedXIUhIj1A0sfz/Qc1W2lgesgnpoR0C199iWxWu
+         pHcrHUfkJS7Qci78a6dNrxJQieOdF6wHRabV+R4Lsaw2xOfCXPF1pnz9Kn+oJCsHIzt4
+         Ln5AeibuZoOiEb4IxMhpF/n232A6VYziHE7LJUROHz1KpfhfaYjNnWKggIAiTNNeCOkU
+         +iHA==
+X-Gm-Message-State: AOAM533PshsaeIMQUGToTgN147Fyh6sZecS4eHu6UAIeTiAyKdiO6qHc
+        Hf3Zifua5PDh8DTAXY7BpkgNGA==
+X-Google-Smtp-Source: ABdhPJzKBQ3Du28z3i8T73CJT5Zh+7yMzCUomkZ/Un/m3Bp62Ul3Vcx6bIJQmRiYTAOspHCHD4wCKw==
+X-Received: by 2002:a2e:8e7c:: with SMTP id t28mr1195277ljk.246.1623870506327;
+        Wed, 16 Jun 2021 12:08:26 -0700 (PDT)
 Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id h22sm406939ljl.126.2021.06.16.12.08.23
+        by smtp.gmail.com with ESMTPSA id h22sm406939ljl.126.2021.06.16.12.08.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 12:08:24 -0700 (PDT)
+        Wed, 16 Jun 2021 12:08:25 -0700 (PDT)
 From:   Marcin Wojtas <mw@semihalf.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
         jaz@semihalf.com, gjb@semihalf.com, upstream@semihalf.com,
         Samer.El-Haj-Mahmoud@arm.com, jon@solid-run.com, tn@semihalf.com,
-        rjw@rjwysocki.net, lenb@kernel.org,
-        Marcin Wojtas <mw@semihalf.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [net-next: PATCH v2 4/7] net: mvmdio: simplify clock handling
-Date:   Wed, 16 Jun 2021 21:07:56 +0200
-Message-Id: <20210616190759.2832033-5-mw@semihalf.com>
+        rjw@rjwysocki.net, lenb@kernel.org, Marcin Wojtas <mw@semihalf.com>
+Subject: [net-next: PATCH v2 5/7] net: mvmdio: add ACPI support
+Date:   Wed, 16 Jun 2021 21:07:57 +0200
+Message-Id: <20210616190759.2832033-6-mw@semihalf.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210616190759.2832033-1-mw@semihalf.com>
 References: <20210616190759.2832033-1-mw@semihalf.com>
@@ -67,129 +65,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Because the mvmdio driver supports a wide range of Marvell
-SoC families it must support multiple types of the
-HW description and required resources.
+This patch introducing ACPI support for the mvmdio driver by adding
+acpi_match_table with two entries:
 
-Thanks to the devm_clk_bulk_get_optional() helper routine
-the clock handling could be significantly simplified,
-as it is compatible with all possible variants within
-a single call.
+* "MRVL0100" for the SMI operation
+* "MRVL0101" for the XSMI mode
 
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Also clk enabling is skipped, because the tables do not contain
+such data and clock maintenance relies on the firmware.
+
 Signed-off-by: Marcin Wojtas <mw@semihalf.com>
 ---
- drivers/net/ethernet/marvell/mvmdio.c | 61 ++++++--------------
- 1 file changed, 18 insertions(+), 43 deletions(-)
+ drivers/net/ethernet/marvell/mvmdio.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet/marvell/mvmdio.c
-index d14762d93640..ce3ddc867898 100644
+index ce3ddc867898..4fe6428b8119 100644
 --- a/drivers/net/ethernet/marvell/mvmdio.c
 +++ b/drivers/net/ethernet/marvell/mvmdio.c
-@@ -62,9 +62,11 @@
- #define MVMDIO_XSMI_POLL_INTERVAL_MIN	150
- #define MVMDIO_XSMI_POLL_INTERVAL_MAX	160
+@@ -17,8 +17,10 @@
+  * warranty of any kind, whether express or implied.
+  */
  
-+#define MVMDIO_CLOCK_COUNT		4
-+
- struct orion_mdio_dev {
- 	void __iomem *regs;
--	struct clk *clk[4];
-+	struct clk_bulk_data clks[MVMDIO_CLOCK_COUNT];
- 	/*
- 	 * If we have access to the error interrupt pin (which is
- 	 * somewhat misnamed as it not only reflects internal errors
-@@ -279,7 +281,7 @@ static int orion_mdio_probe(struct platform_device *pdev)
- 	struct resource *r;
- 	struct mii_bus *bus;
++#include <linux/acpi.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
++#include <linux/fwnode_mdio.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
+@@ -283,7 +285,7 @@ static int orion_mdio_probe(struct platform_device *pdev)
  	struct orion_mdio_dev *dev;
--	int i, ret;
-+	int ret;
+ 	int ret;
  
- 	type = (enum orion_mdio_bus_type)of_device_get_match_data(&pdev->dev);
+-	type = (enum orion_mdio_bus_type)of_device_get_match_data(&pdev->dev);
++	type = (enum orion_mdio_bus_type)device_get_match_data(&pdev->dev);
  
-@@ -319,33 +321,20 @@ static int orion_mdio_probe(struct platform_device *pdev)
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!r) {
+@@ -358,7 +360,7 @@ static int orion_mdio_probe(struct platform_device *pdev)
+ 		goto out_mdio;
+ 	}
  
- 	init_waitqueue_head(&dev->smi_busy_wait);
+-	ret = of_mdiobus_register(bus, pdev->dev.of_node);
++	ret = fwnode_mdiobus_register(bus, pdev->dev.fwnode);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
+ 		goto out_mdio;
+@@ -396,12 +398,20 @@ static const struct of_device_id orion_mdio_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, orion_mdio_match);
  
--	if (pdev->dev.of_node) {
--		for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
--			dev->clk[i] = of_clk_get(pdev->dev.of_node, i);
--			if (PTR_ERR(dev->clk[i]) == -EPROBE_DEFER) {
--				ret = -EPROBE_DEFER;
--				goto out_clk;
--			}
--			if (IS_ERR(dev->clk[i]))
--				break;
--			clk_prepare_enable(dev->clk[i]);
--		}
--
--		if (!IS_ERR(of_clk_get(pdev->dev.of_node,
--				       ARRAY_SIZE(dev->clk))))
--			dev_warn(&pdev->dev,
--				 "unsupported number of clocks, limiting to the first "
--				 __stringify(ARRAY_SIZE(dev->clk)) "\n");
--	} else {
--		dev->clk[0] = clk_get(&pdev->dev, NULL);
--		if (PTR_ERR(dev->clk[0]) == -EPROBE_DEFER) {
--			ret = -EPROBE_DEFER;
--			goto out_clk;
--		}
--		if (!IS_ERR(dev->clk[0]))
--			clk_prepare_enable(dev->clk[0]);
--	}
-+	dev->clks[0].id = "core";
-+	dev->clks[1].id = "mg";
-+	dev->clks[2].id = "mg_core";
-+	dev->clks[3].id = "axi";
-+	ret = devm_clk_bulk_get_optional(&pdev->dev, MVMDIO_CLOCK_COUNT,
-+					 dev->clks);
-+	if (ret)
-+		return ret;
++static const struct acpi_device_id orion_mdio_acpi_match[] = {
++	{ "MRVL0100", BUS_TYPE_SMI },
++	{ "MRVL0101", BUS_TYPE_XSMI },
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, orion_mdio_acpi_match);
++
+ static struct platform_driver orion_mdio_driver = {
+ 	.probe = orion_mdio_probe,
+ 	.remove = orion_mdio_remove,
+ 	.driver = {
+ 		.name = "orion-mdio",
+ 		.of_match_table = orion_mdio_match,
++		.acpi_match_table = ACPI_PTR(orion_mdio_acpi_match),
+ 	},
+ };
  
-+	ret = clk_bulk_prepare_enable(MVMDIO_CLOCK_COUNT, dev->clks);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Cannot enable clocks\n");
-+		return ret;
-+	}
- 
- 	dev->err_interrupt = platform_get_irq_optional(pdev, 0);
- 	if (dev->err_interrupt > 0 &&
-@@ -383,14 +372,6 @@ static int orion_mdio_probe(struct platform_device *pdev)
- 	if (dev->err_interrupt > 0)
- 		writel(0, dev->regs + MVMDIO_ERR_INT_MASK);
- 
--out_clk:
--	for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
--		if (IS_ERR(dev->clk[i]))
--			break;
--		clk_disable_unprepare(dev->clk[i]);
--		clk_put(dev->clk[i]);
--	}
--
- 	return ret;
- }
- 
-@@ -398,18 +379,12 @@ static int orion_mdio_remove(struct platform_device *pdev)
- {
- 	struct mii_bus *bus = platform_get_drvdata(pdev);
- 	struct orion_mdio_dev *dev = bus->priv;
--	int i;
- 
- 	if (dev->err_interrupt > 0)
- 		writel(0, dev->regs + MVMDIO_ERR_INT_MASK);
- 	mdiobus_unregister(bus);
- 
--	for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
--		if (IS_ERR(dev->clk[i]))
--			break;
--		clk_disable_unprepare(dev->clk[i]);
--		clk_put(dev->clk[i]);
--	}
-+	clk_bulk_disable_unprepare(MVMDIO_CLOCK_COUNT, dev->clks);
- 
- 	return 0;
- }
 -- 
 2.29.0
 
