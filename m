@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63DE33A96C8
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 12:03:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34CAA3A96CA
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 12:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232031AbhFPKFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 06:05:01 -0400
-Received: from mail-mw2nam10on2094.outbound.protection.outlook.com ([40.107.94.94]:30432
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        id S232154AbhFPKFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 06:05:05 -0400
+Received: from mail-dm6nam12on2135.outbound.protection.outlook.com ([40.107.243.135]:37984
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232223AbhFPKEr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 06:04:47 -0400
+        id S231931AbhFPKEx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 06:04:53 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FDRQ738bSD57fO5REYbW6sJHIvJ6FIJhpTeRRThyxrjvqO53nPuOfP3KmicaLrp/WhMQAofV6KmH8ljvdJbMuPa8giCh++khgr6KU0FvP3+3o6oUHbSnxkAUZEXQoezjNfnYvgWHR5wymcAPZhIBJ0as7QlaeJO+e9T1hJdURPLHEgDcZ3mEjMI8scVRH3xk/tqdSd2WgAoZZCN6ZXKvxlRAoTuBSxjo49RvIOM0Me+4WNIpvCseqXrAygUuOsIgOM3FkQIe13TwhlrRbFUvtXySO0DDA10BZk3+O8dmwRW80oc2N1gAqevW5bi4M9VFqS+iNo2vULAz+lbQRvRqfQ==
+ b=n0XClGCTSAbuO3oo48+dWFtmW8wxR012caGFxRrZaMnahE/9LxMRhQmDRWAZ+pXqIOnqgfyV6daO8DJPGP+v3pqVM6fUms0OsEJ2PoCCNiXZU14wBJ97Zjhg5G0FJndNjX5wTOHdIRaw58bMzZLVADQi2PYx8GRc6qQVFt+RGBCfG87miHHyWkIy68DbPG4wHgj7x4Jdi4zo/vFHscnwSnwYfWoik/YRUlBfsnYIc/YdHJQ9BlrRIpoLMBx8RwUeLmCn6Mrm//VJPPJvAUR1S4Otwh4Psuds4LAJS8Jov+euZzQaflXSTsjgmmHVrpumUnVkN/N5NvJPJ0uU4dcg+A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SYMYoYCHUGr1nNeM7orHEPc7JMHLQ0fMYA7u/ktE9MY=;
- b=XOAg+aTafHkmNQ0g2bZWufIQkgr9WAHGMrgkwm3YsBA1OHSgvioGSL1WvJhQruxzc7wBX5PrIe1udDxapqIJExF1ZGe4t+HJgWE9YG/grmzk62b9jm5G/FWFqjjy+Xw7ziweySCf4P8GJW5e6Ca7uoyPxFndtcco9H7XWZzA5KambbE57/jFA2hLVwBFxqXSiAQ2V3/Wm1kUNjy1gvlLTtNibK+wkr8i+mhOL3oNv84zExdMmaiu2uvK3px5VYAxdpcGKLdYlVWB1x6XJguRnyoizp2+jaVfObFD7eLsxbH0+sUZUJ8b5eumg9Smib90Cb2MvLxkR6r+98qRURwIoQ==
+ bh=Bc91i0xtuHqREnaM/aV4kk6GdZxHUp2FJJ7EM/j6CD4=;
+ b=ZcwmwXUk9Ucs0NgaILj9yk0ZfyAiXSjERLuhekJxle1oZweR2zLQV5I241q181/bWygXZINcFkg3gr2v4qn8QMNYlcLxKjQ2B9ezX1JC6CVqb1gCHRWPM7UMCb5GbzkPdKuIVwp6PZ6izc1FwNIpWbopXIZ0gND4RsFXT51otU+qUAcqqs1IDjd8OPxiSgMZJkEWnJ3++FtVA//R68PlW2ahfZHBSuGshjaqWrkPsynxdxmWx4DTIG1jMoev45EaQb1b6aCwKgZMyp+pmbrdhvcB1ue0Iink6D6d1MTUhD+ThP7h9k7kMaYTStsDWzRCsl2pg1/KUa5aH1e31fIv5g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SYMYoYCHUGr1nNeM7orHEPc7JMHLQ0fMYA7u/ktE9MY=;
- b=cvbn7s8jkAHtEf2gEWGXWA99sjwdHy1vKKjJh95D4aCxv+DKO0rR4xk4Aoe2PMYKlzheiPEnvADybOF5qVFuPA0rYhWr9DVqt5yh5hWjUwA4ik9TXsjWHg1wbEWouZgfXpntcDg93GXOivw6k/ghum6YOl1aK5dF7oFli0YDRxQ=
+ bh=Bc91i0xtuHqREnaM/aV4kk6GdZxHUp2FJJ7EM/j6CD4=;
+ b=jgLu1VOmuOUIRfVwJrgMzcICv50SqEvS890PfGKceUk1ydlWu1sw6XVUNg/VA89Bv9AZT2KP8EGvtvXtHtG6uFFxIBh+sCvYsjngblLw0lm/QudlXOdvwQSe80TjMTJAaVGmJutgsYeMpNFDhd7HoRBUCYCAZXFtPW5EX/lcYPg=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH0PR13MB4971.namprd13.prod.outlook.com (2603:10b6:510:98::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.7; Wed, 16 Jun
- 2021 10:02:33 +0000
+ 2021 10:02:35 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a%7]) with mapi id 15.20.4242.016; Wed, 16 Jun 2021
- 10:02:33 +0000
+ 10:02:35 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -45,9 +45,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Louis Peens <louis.peens@corigine.com>,
         Yinjun Zhang <yinjun.zhang@corigine.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next 5/9] nfp: flower-ct: add nft_merge table
-Date:   Wed, 16 Jun 2021 12:02:03 +0200
-Message-Id: <20210616100207.14415-6-simon.horman@corigine.com>
+Subject: [PATCH net-next 6/9] nfp: flower-ct: implement code to save merge of tc and nft flows
+Date:   Wed, 16 Jun 2021 12:02:04 +0200
+Message-Id: <20210616100207.14415-7-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210616100207.14415-1-simon.horman@corigine.com>
 References: <20210616100207.14415-1-simon.horman@corigine.com>
@@ -59,52 +59,52 @@ X-ClientProxiedBy: AM0PR10CA0022.EURPRD10.PROD.OUTLOOK.COM
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from momiji.horms.nl (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM0PR10CA0022.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.18 via Frontend Transport; Wed, 16 Jun 2021 10:02:32 +0000
+Received: from momiji.horms.nl (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM0PR10CA0022.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.18 via Frontend Transport; Wed, 16 Jun 2021 10:02:33 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 72228aa2-17bf-4be4-ac3b-08d930addc5f
+X-MS-Office365-Filtering-Correlation-Id: 5d7501c9-c03a-45fd-1a16-08d930addd5b
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4971:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB49715588575E67D9D5C66BD0E80F9@PH0PR13MB4971.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB497119AC9D3C870CFC409273E80F9@PH0PR13MB4971.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /83iLAbZuuYp0bWTrlCdCeh92Pg/vYmP/IDju5UeC3vguIE+gDiTlspSbJz3ShaH7+9vvW+z9RNYlevzhgskB2J4TuoRh3/07uEaIHUql6EwtQLpyZ/XCFIf4LYwujqvzpLp8OgCReFkW8ncGdyzjpaAmh7HilgNplbKtoixJ0HvaHfCRZ7AlfI1V6CbxX4BZ8CG2AnsxdR0dd0CcaVtgQA2u6sfyYvLVbtmPEuXPWQYoqiRxO43MXYshWnk/RwtwiKre3llD86lHIpA80ZywrQLzzGIxx30P/2xYuzj/6K5KXrcQuw/jRwK2caP+kxKs4bpfTTxzHCbqWTLu9FAgjT8YiC35w3V5TRRIpTGQb7oO3x54XgIkaurOX9MN7vwVRaGvok9CIc0zkorxyRjDKLiK0Mhx3Pqjc11XG1lfK5IPBQvSdBEdQaBGAN8nrc4Ol2Ouvpwx/W7LpYCCiYZC7qBaZREwhd+rOj+LTOiL4ozgRsA+Ib8B/R104NJovXD7SJObns7W9FWY/yCZssfFPbgSOTlIbEAUPc8wIrh3/EwMm4qDd9u2joM/pECszxnUUPPQUfFHo6StNEvqXgmDsZBq+g/iulPva6WECio++0pU6GAPehI3xd7Q/ijVAA8wGeCYrpIstrycyXU9S2lqg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(396003)(136003)(366004)(346002)(39830400003)(66476007)(6512007)(8936002)(66556008)(66946007)(38100700002)(4326008)(86362001)(2616005)(6666004)(6506007)(5660300002)(8676002)(478600001)(1076003)(110136005)(2906002)(316002)(54906003)(16526019)(186003)(107886003)(52116002)(6486002)(36756003)(44832011);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: FDA16UFyfn40u+W16deDjnxpinkp6FPHEFQpOpvepS67X5be7PSvX/oJGbXGDqAhPXuE4E9xQmarGbkXbIOn/QkYySXtYSNi8P09EAOKWXSBCzvj4HdmVEYoB1dj4itIc1egSaLKItnUniS5jMi2TIGo1vkCFkE3K0YFkXll0L2wzzSWXWj1u8/Cb9Y8xd3Vhw85MBpBvurzJl+yDCGIL2vFjmn1OE1Tmz6U3reJkd9GWNTaOo0vtEwJm8tpPYj9KojTimhbNgd42Iyy7bVyO4ajRCy1KKVh4HiwK0su/IhNizh9VsHCsj5AiV0PKrUZns3C+IX6tOtv9kaL01eZl/4wmUw4bpSoSn9VFSGGXQgrI7rSgw1QU3E4gqHX9HC2lgadBK9Xb6jAO2CtwkTsZc/BL9O+yiTxP4tw6EfAiP4PjgMQG1Eu1SooSwFnyrNQr4ytcJqoHPZkKBaTJ77JK5ToFxzCtz+vnX6QCUEASvlWGgqj4FsyQ6WxUYcz4K5IXSSy+2HXFrL8teawXkX/fsLCBMCRxuPR1+wALT0x17SPBtv6tJbQ869Q/J9Xc0UNctDJLls4i4/Xfn1OimjR7muE/XXYOTXzy3YrL3mcEbbimGNZ4QNz2gEgJZ2k7bg4Bq755VVYoMXkUhSJKs9ayg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(396003)(136003)(366004)(346002)(39830400003)(66476007)(6512007)(8936002)(66556008)(66946007)(38100700002)(4326008)(86362001)(2616005)(6666004)(6506007)(5660300002)(8676002)(478600001)(1076003)(110136005)(2906002)(316002)(54906003)(16526019)(186003)(107886003)(83380400001)(52116002)(6486002)(36756003)(44832011);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HBP1xhCbSCkw73aFRuI4WK/klK/EfRqJlWVV63rkNgvn7nbvIiRUH9thPoF4?=
- =?us-ascii?Q?BwEj0p7lKzrSEph6s9eOzx5CFuan/YIjwJIuFMbMs6YfmQZ4JU4crGMsQ2mB?=
- =?us-ascii?Q?mjjNblhLHjEpjewJYt0XlJuyaiG1EJic9RUwUJgu3swaZVUsJN498lwgBHu0?=
- =?us-ascii?Q?UJmGwj/epFh8Vei/9jfmPxPCSjBPIKEgcEDmjIvthK/nrwlvcz20nfsEMzFd?=
- =?us-ascii?Q?jSoPLzdPxaeIMyyyI2JO/kOH788gBCVewnpQD4jT0cT2VAvb6FO6Peam7k41?=
- =?us-ascii?Q?/hXKezeJorK/uto6rvJHLNCV6m2JznVQzJi9bsXgZWjPBk5Eq9qfBUmzv9Su?=
- =?us-ascii?Q?eFPl7EkZo/r4ukPkB4KbIqn9KonwbG5997l7tPfCgEflg63EKEaKEFpIN6vC?=
- =?us-ascii?Q?u+P5vCiV1/jXT2meFtl3wOgeFFmNS9u0tocGMIdOt8PXkdgD237W9EU7w88l?=
- =?us-ascii?Q?YHLJCtciVazxJxWtn058+U3NCpvCnFFMoaOa4u9oBoRXrurnDT5HmbOWmK1j?=
- =?us-ascii?Q?FjPvgxwiqzzBe2MoSy1qaVce7g7S3ksBkoebqbANH7bkiukzQsvws24CloYz?=
- =?us-ascii?Q?SsFwtr2YWI8qhUZARWUeBNva52ltGNz0ndMIcrJNsWPXhf3DbgB6Sc+Undx8?=
- =?us-ascii?Q?GNe5f4mO1Qkmw4XdRle2W/aYF6r4OGU6JXrj6UTm5wk5ZUixd5lM/pSUJwVE?=
- =?us-ascii?Q?phRK9j45JU5ELikbcjkKhvfHAiTgkaf+ydYWF6HHUPZqKLMrsRQMaEi+Y/nz?=
- =?us-ascii?Q?ZkEOtDwsV3RIyH+nAPUxWT/k6LNMeobxFX9RZ/OZaK+O215qKME3Qll/s5DG?=
- =?us-ascii?Q?gpu3AULaA0xZvk6Hls8SiLVpmuohxLEwcCo253+bPjixkNET3YTdwKLRdQNA?=
- =?us-ascii?Q?/tu1Jpnlw9iQR7uhTG2Xlp8hcDom+xuI/u5Z2Ern9RwGCO1cOv9suWSYqKEU?=
- =?us-ascii?Q?p/aPo/ouLhHh+C6b05cQJeEDlJcRf0n1uwX8MMxzXs7JXNAk9eufW/XBU+Tj?=
- =?us-ascii?Q?WLlOYqpHcT4RaOfZ/wgdFhhfcQ3PcfZEYM3n2jQW4FvRKMhpp5L1pMZlWAKc?=
- =?us-ascii?Q?FDFUjvaJ7v3M9nAuQEM8c+yyym+HJuFQ9oGpLIGPugeIEOyBii5Tyk1kZRy5?=
- =?us-ascii?Q?pw387IUbZtnH36t8KBtsTsZ11MP4XLSY4DWlVZUWbLGFp04mo2P3fZIDP2NE?=
- =?us-ascii?Q?Ku5fV3vaAU9SHDlWJqQIXSNHbbgykbozqbpvdZhmCI6AERMTLBQ/75eM8voi?=
- =?us-ascii?Q?rTgQkgLJel876fOq9BeWAJg1Y9pYCV8VQRtbWkX2ZMt/1tw1ePjKTlyIY0Ao?=
- =?us-ascii?Q?rjAUk71/FJBa6ARG9jpqUcyQGzY6r/lZK0SDvHk7+bS5gWjluk6m4CUNPcM8?=
- =?us-ascii?Q?i5ctl6GsURmw33W36bPB6MnTumzc?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qicpwqeHxjg45Pat+x4kPPpVVNbOexHBMIBTUL76uozvaaUtNw7D46gGjO/N?=
+ =?us-ascii?Q?CGcoFPMjyPwAEOE/R3lzz4amaoNHSYrBoEYT14fTIc1m6PiOTBSY3RV45SuO?=
+ =?us-ascii?Q?m6JX75xSLAj4uVl/89x1NvpRHFsvt3YOD4qNNR0Zx5GiGPeUqgxfdZx6f6rm?=
+ =?us-ascii?Q?h2waYoKAXD8dWhpCTb3m4Re3XXWhk7svkuJZJMR6myTeNX5i6NeiaROTfqN3?=
+ =?us-ascii?Q?HzLc6ocKUjZh7KDb1UqSIGwygeuTPrY/6GqPUN5RQBLKIKPGbROqzK4JyRsV?=
+ =?us-ascii?Q?gCK9tC8/tCPCMSExiI2AbRA+q6HscFzNYDLO+U5DafVk8ZC5zw5BmQct65TG?=
+ =?us-ascii?Q?Vx2SpiFHzpW5x8LOkYpZ/rWBFyrxZoLhu9Yxm3hJ/GyW3OA0xMlFBtey188D?=
+ =?us-ascii?Q?6EyKRxx5LBqJzS3agFnuT/T7tGfyFYZe2UI1UsxEA5FRwEgrhomXWcXVWNKN?=
+ =?us-ascii?Q?Vyas6kXfFSyKGERrds8t5eBiGi9e3VY6MlOkVM+oMch2tlhVQsN6nQKxp/MT?=
+ =?us-ascii?Q?KdDT+qvbeGPOevcXsYgc8Iedoxsnvq5GhCKShUsSf87dEo2kkBDsuId8sCXg?=
+ =?us-ascii?Q?aAB5xVBE31K/UKGdcV7ZqjHbjf00NIxMjb6Zrj6LkIryYnf1CWlal2vB7Aur?=
+ =?us-ascii?Q?J7qWT1HjWnA9DM8uoi9upc2EtamxKdcsOoi1CqmPyroLQEgsvpAmy2otHA0k?=
+ =?us-ascii?Q?XDWeO3ew2hh+5cPpQPuyPkUDYq5lcFcwb1+AyI8XZHPbzpwiPNGjsO6C7uv7?=
+ =?us-ascii?Q?R0aqfLtsmzuuHsLCNNdbHyJidy9BLFG9GbOBQqvsVzaF3BT37ZTki4GVNdiU?=
+ =?us-ascii?Q?L4MeyenNUzfrTU70Ci7ZjlFG1iTfbxXlzRB/BU0mAy1I22SyI2ZqMokDqzlO?=
+ =?us-ascii?Q?JH92dfbJq3UntUIKYaB4r8vUI60EQ2+p53EcQunnRngBDSJKiQFvhlJ6B15a?=
+ =?us-ascii?Q?80QQ3yeXLj1feNyDUs2MoNAG26ZGPxhRqlz2ph2v5H/BLyylf6xwPyS7GJbA?=
+ =?us-ascii?Q?AhybDj70a3c3TmM8ijBlerToFS96N9cIkvB/6+0uQBrgqsxGx7fRLgYhNmen?=
+ =?us-ascii?Q?eNZAQQXEdBHBixIKmlrHd9CY7tA6aZ2LLibvo6k/eea+gLHWQUF9wUYtiUmF?=
+ =?us-ascii?Q?zrIDmDCr8r6bgsW766Hx9QZGkHOV4+i/rhgh1KQUvPJFvl2vWlE9Bo4LjSgs?=
+ =?us-ascii?Q?ge5s+TdU7XUb5f72c5q1KzSq21i9AHvwUJjDAmvNPTWFEefM3mrv3tpDaEvQ?=
+ =?us-ascii?Q?qW4iFZFWZUVk+/s4VSU6Tg9vHnb1yxVIicQbyiYOCfoDvGYxoVOM/a7mH5JM?=
+ =?us-ascii?Q?Rsp9QQwOGEJxhMqiHm0Pkmi1xRX4OazS86A79//tWx2zH7Qvf2e0OJuy/EGJ?=
+ =?us-ascii?Q?VpZG1HLjsLR0OTPjGxwudI7MEbmD?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72228aa2-17bf-4be4-ac3b-08d930addc5f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d7501c9-c03a-45fd-1a16-08d930addd5b
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2021 10:02:33.5663
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2021 10:02:35.2041
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VEwOqvGfMOrXBMAEw4U0Q5NMAniFVPmGwe+M0jaT28DmBEuZnYtUQgRmvo8jNzo8XX6VKbpkf12qWfZCLhlCYEbh5bDgT5xRlMY6Gu8Bu1g=
+X-MS-Exchange-CrossTenant-UserPrincipalName: zBwbHzsm8Mla5fWbmzKqOWrVD1bklEvjxp11Iz+pFxIP76x7VcNeXDBfBj3X5p3QwTR0yalBfe78Z+HH0FlPXFPRm6dC2YA9CY4ZdTdkM9U=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4971
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -112,136 +112,251 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Louis Peens <louis.peens@corigine.com>
 
-Add table and struct to save the result of the three-way merge
-between pre_ct,post_ct, and nft flows. Merging code is to be
-added in follow-up patches.
+Add in the code to merge the tc_merge objects with the flows
+received from nft. At the moment flows are just merged blindly
+as the validity check functions are stubbed out, this will
+be populated in follow-up patches.
 
 Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../ethernet/netronome/nfp/flower/conntrack.c | 14 ++++++++
- .../ethernet/netronome/nfp/flower/conntrack.h | 33 +++++++++++++++++++
- .../ethernet/netronome/nfp/flower/metadata.c  |  2 ++
- 3 files changed, 49 insertions(+)
+ .../ethernet/netronome/nfp/flower/conntrack.c | 187 ++++++++++++++++++
+ 1 file changed, 187 insertions(+)
 
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-index 2c636f8490e1..3ab09d040d4c 100644
+index 3ab09d040d4c..e5d5ce7f0ead 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
 +++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -11,6 +11,14 @@ const struct rhashtable_params nfp_tc_ct_merge_params = {
- 	.automatic_shrinking	= true,
- };
- 
-+const struct rhashtable_params nfp_nft_ct_merge_params = {
-+	.head_offset		= offsetof(struct nfp_fl_nft_tc_merge,
-+					   hash_node),
-+	.key_len		= sizeof(unsigned long) * 3,
-+	.key_offset		= offsetof(struct nfp_fl_nft_tc_merge, cookie),
-+	.automatic_shrinking	= true,
-+};
-+
- /**
-  * get_hashentry() - Wrapper around hashtable lookup.
-  * @ht:		hashtable where entry could be found
-@@ -171,6 +179,10 @@ nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
- 	if (err)
- 		goto err_tc_merge_tb_init;
- 
-+	err = rhashtable_init(&zt->nft_merge_tb, &nfp_nft_ct_merge_params);
-+	if (err)
-+		goto err_nft_merge_tb_init;
-+
- 	if (wildcarded) {
- 		priv->ct_zone_wc = zt;
- 	} else {
-@@ -184,6 +196,8 @@ nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
- 	return zt;
- 
- err_zone_insert:
-+	rhashtable_destroy(&zt->nft_merge_tb);
-+err_nft_merge_tb_init:
- 	rhashtable_destroy(&zt->tc_merge_tb);
- err_tc_merge_tb_init:
- 	kfree(zt);
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.h b/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
-index def95c3e8bb7..753a9eea5952 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
-+++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
-@@ -12,6 +12,7 @@
- extern const struct rhashtable_params nfp_zone_table_params;
- extern const struct rhashtable_params nfp_ct_map_params;
- extern const struct rhashtable_params nfp_tc_ct_merge_params;
-+extern const struct rhashtable_params nfp_nft_ct_merge_params;
- 
- /**
-  * struct nfp_fl_ct_zone_entry - Zone entry containing conntrack flow information
-@@ -31,6 +32,9 @@ extern const struct rhashtable_params nfp_tc_ct_merge_params;
-  *
-  * @nft_flows_list:	The list of nft relatednfp_fl_ct_flow_entry entries
-  * @nft_flows_count:	Keep count of the number of nft_flow entries
-+ *
-+ * @nft_merge_tb:	The table of merged tc+nft flows
-+ * @nft_merge_count:	Keep count of the number of merged tc+nft entries
-  */
- struct nfp_fl_ct_zone_entry {
- 	u16 zone;
-@@ -50,6 +54,9 @@ struct nfp_fl_ct_zone_entry {
- 
- 	struct list_head nft_flows_list;
- 	unsigned int nft_flows_count;
-+
-+	struct rhashtable nft_merge_tb;
-+	unsigned int nft_merge_count;
- };
- 
- enum ct_entry_type {
-@@ -106,6 +113,32 @@ struct nfp_fl_ct_tc_merge {
- 	struct list_head children;
- };
- 
-+/**
-+ * struct nfp_fl_nft_tc_merge - Merge of tc_merge flows with nft flow
-+ * @netdev:		Ingress netdev name
-+ * @cookie:		Flow cookie, combination of tc_merge and nft cookies
-+ * @hash_node:		Used by the hashtable
-+ * @zt:	Reference to the zone table this belongs to
-+ * @nft_flow_list:	This entry is part of a nft_flows_list
-+ * @tc_merge_list:	This entry is part of a ct_merge_list
-+ * @tc_m_parent:	The tc_merge parent
-+ * @nft_parent:	The nft_entry parent
-+ * @tc_flower_cookie:	The cookie of the flow offloaded to the nfp
-+ * @flow_pay:	Reference to the offloaded flow struct
-+ */
-+struct nfp_fl_nft_tc_merge {
-+	struct net_device *netdev;
-+	unsigned long cookie[3];
-+	struct rhash_head hash_node;
-+	struct nfp_fl_ct_zone_entry *zt;
-+	struct list_head nft_flow_list;
-+	struct list_head tc_merge_list;
-+	struct nfp_fl_ct_tc_merge *tc_m_parent;
-+	struct nfp_fl_ct_flow_entry *nft_parent;
-+	unsigned long tc_flower_cookie;
-+	struct nfp_fl_payload *flow_pay;
-+};
-+
- /**
-  * struct nfp_fl_ct_map_entry - Map between flow cookie and specific ct_flow
-  * @cookie:	Flow cookie, same as original TC flow, used as key
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/metadata.c b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-index a0a0242567a6..621113650a9b 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-@@ -667,6 +667,8 @@ static void nfp_zone_table_entry_destroy(struct nfp_fl_ct_zone_entry *zt)
- 
- 	rhashtable_free_and_destroy(&zt->tc_merge_tb,
- 				    nfp_check_rhashtable_empty, NULL);
-+	rhashtable_free_and_destroy(&zt->nft_merge_tb,
-+				    nfp_check_rhashtable_empty, NULL);
- 
- 	kfree(zt);
+@@ -78,11 +78,122 @@ static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
+ 	return 0;
  }
+ 
++static int nfp_ct_merge_act_check(struct nfp_fl_ct_flow_entry *pre_ct_entry,
++				  struct nfp_fl_ct_flow_entry *post_ct_entry,
++				  struct nfp_fl_ct_flow_entry *nft_entry)
++{
++	return 0;
++}
++
++static int nfp_ct_check_meta(struct nfp_fl_ct_flow_entry *post_ct_entry,
++			     struct nfp_fl_ct_flow_entry *nft_entry)
++{
++	return 0;
++}
++
++static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
++{
++	return 0;
++}
++
++static int nfp_fl_ct_del_offload(struct nfp_app *app, unsigned long cookie,
++				 struct net_device *netdev)
++{
++	return 0;
++}
++
++static int nfp_ct_do_nft_merge(struct nfp_fl_ct_zone_entry *zt,
++			       struct nfp_fl_ct_flow_entry *nft_entry,
++			       struct nfp_fl_ct_tc_merge *tc_m_entry)
++{
++	struct nfp_fl_ct_flow_entry *post_ct_entry, *pre_ct_entry;
++	struct nfp_fl_nft_tc_merge *nft_m_entry;
++	unsigned long new_cookie[3];
++	int err;
++
++	pre_ct_entry = tc_m_entry->pre_ct_parent;
++	post_ct_entry = tc_m_entry->post_ct_parent;
++
++	err = nfp_ct_merge_act_check(pre_ct_entry, post_ct_entry, nft_entry);
++	if (err)
++		return err;
++
++	/* Check that the two tc flows are also compatible with
++	 * the nft entry. No need to check the pre_ct and post_ct
++	 * entries as that was already done during pre_merge.
++	 * The nft entry does not have a netdev or chain populated, so
++	 * skip this check.
++	 */
++	err = nfp_ct_merge_check(pre_ct_entry, nft_entry);
++	if (err)
++		return err;
++	err = nfp_ct_merge_check(post_ct_entry, nft_entry);
++	if (err)
++		return err;
++	err = nfp_ct_check_meta(post_ct_entry, nft_entry);
++	if (err)
++		return err;
++
++	/* Combine tc_merge and nft cookies for this cookie. */
++	new_cookie[0] = tc_m_entry->cookie[0];
++	new_cookie[1] = tc_m_entry->cookie[1];
++	new_cookie[2] = nft_entry->cookie;
++	nft_m_entry = get_hashentry(&zt->nft_merge_tb,
++				    &new_cookie,
++				    nfp_nft_ct_merge_params,
++				    sizeof(*nft_m_entry));
++
++	if (IS_ERR(nft_m_entry))
++		return PTR_ERR(nft_m_entry);
++
++	/* nft_m_entry already present, not merging again */
++	if (!memcmp(&new_cookie, nft_m_entry->cookie, sizeof(new_cookie)))
++		return 0;
++
++	memcpy(&nft_m_entry->cookie, &new_cookie, sizeof(new_cookie));
++	nft_m_entry->zt = zt;
++	nft_m_entry->tc_m_parent = tc_m_entry;
++	nft_m_entry->nft_parent = nft_entry;
++	nft_m_entry->tc_flower_cookie = 0;
++	/* Copy the netdev from one the pre_ct entry. When the tc_m_entry was created
++	 * it only combined them if the netdevs were the same, so can use any of them.
++	 */
++	nft_m_entry->netdev = pre_ct_entry->netdev;
++
++	/* Add this entry to the tc_m_list and nft_flow lists */
++	list_add(&nft_m_entry->tc_merge_list, &tc_m_entry->children);
++	list_add(&nft_m_entry->nft_flow_list, &nft_entry->children);
++
++	/* Generate offload structure and send to nfp */
++	err = nfp_fl_ct_add_offload(nft_m_entry);
++	if (err)
++		goto err_nft_ct_offload;
++
++	err = rhashtable_insert_fast(&zt->nft_merge_tb, &nft_m_entry->hash_node,
++				     nfp_nft_ct_merge_params);
++	if (err)
++		goto err_nft_ct_merge_insert;
++
++	zt->nft_merge_count++;
++
++	return err;
++
++err_nft_ct_merge_insert:
++	nfp_fl_ct_del_offload(zt->priv->app, nft_m_entry->tc_flower_cookie,
++			      nft_m_entry->netdev);
++err_nft_ct_offload:
++	list_del(&nft_m_entry->tc_merge_list);
++	list_del(&nft_m_entry->nft_flow_list);
++	kfree(nft_m_entry);
++	return err;
++}
++
+ static int nfp_ct_do_tc_merge(struct nfp_fl_ct_zone_entry *zt,
+ 			      struct nfp_fl_ct_flow_entry *ct_entry1,
+ 			      struct nfp_fl_ct_flow_entry *ct_entry2)
+ {
+ 	struct nfp_fl_ct_flow_entry *post_ct_entry, *pre_ct_entry;
++	struct nfp_fl_ct_flow_entry *nft_entry, *nft_tmp;
+ 	struct nfp_fl_ct_tc_merge *m_entry;
+ 	unsigned long new_cookie[2];
+ 	int err;
+@@ -134,6 +245,12 @@ static int nfp_ct_do_tc_merge(struct nfp_fl_ct_zone_entry *zt,
+ 		goto err_ct_tc_merge_insert;
+ 	zt->tc_merge_count++;
+ 
++	/* Merge with existing nft flows */
++	list_for_each_entry_safe(nft_entry, nft_tmp, &zt->nft_flows_list,
++				 list_node) {
++		nfp_ct_do_nft_merge(zt, nft_entry, m_entry);
++	}
++
+ 	return 0;
+ 
+ err_ct_tc_merge_insert:
+@@ -321,8 +438,57 @@ nfp_fl_ct_flow_entry *nfp_fl_ct_add_flow(struct nfp_fl_ct_zone_entry *zt,
+ 	return ERR_PTR(err);
+ }
+ 
++static void cleanup_nft_merge_entry(struct nfp_fl_nft_tc_merge *m_entry)
++{
++	struct nfp_fl_ct_zone_entry *zt;
++	int err;
++
++	zt = m_entry->zt;
++
++	/* Flow is in HW, need to delete */
++	if (m_entry->tc_flower_cookie) {
++		err = nfp_fl_ct_del_offload(zt->priv->app, m_entry->tc_flower_cookie,
++					    m_entry->netdev);
++		if (err)
++			return;
++	}
++
++	WARN_ON_ONCE(rhashtable_remove_fast(&zt->nft_merge_tb,
++					    &m_entry->hash_node,
++					    nfp_nft_ct_merge_params));
++	zt->nft_merge_count--;
++	list_del(&m_entry->tc_merge_list);
++	list_del(&m_entry->nft_flow_list);
++
++	kfree(m_entry);
++}
++
+ static void nfp_free_nft_merge_children(void *entry, bool is_nft_flow)
+ {
++	struct nfp_fl_nft_tc_merge *m_entry, *tmp;
++
++	/* These post entries are parts of two lists, one is a list of nft_entries
++	 * and the other is of from a list of tc_merge structures. Iterate
++	 * through the relevant list and cleanup the entries.
++	 */
++
++	if (is_nft_flow) {
++		/* Need to iterate through list of nft_flow entries*/
++		struct nfp_fl_ct_flow_entry *ct_entry = entry;
++
++		list_for_each_entry_safe(m_entry, tmp, &ct_entry->children,
++					 nft_flow_list) {
++			cleanup_nft_merge_entry(m_entry);
++		}
++	} else {
++		/* Need to iterate through list of tc_merged_flow entries*/
++		struct nfp_fl_ct_tc_merge *ct_entry = entry;
++
++		list_for_each_entry_safe(m_entry, tmp, &ct_entry->children,
++					 tc_merge_list) {
++			cleanup_nft_merge_entry(m_entry);
++		}
++	}
+ }
+ 
+ static void nfp_del_tc_merge_entry(struct nfp_fl_ct_tc_merge *m_ent)
+@@ -425,6 +591,26 @@ nfp_ct_merge_tc_entries(struct nfp_fl_ct_flow_entry *ct_entry1,
+ 	}
+ }
+ 
++static void
++nfp_ct_merge_nft_with_tc(struct nfp_fl_ct_flow_entry *nft_entry,
++			 struct nfp_fl_ct_zone_entry *zt)
++{
++	struct nfp_fl_ct_tc_merge *tc_merge_entry;
++	struct rhashtable_iter iter;
++
++	rhashtable_walk_enter(&zt->tc_merge_tb, &iter);
++	rhashtable_walk_start(&iter);
++	while ((tc_merge_entry = rhashtable_walk_next(&iter)) != NULL) {
++		if (IS_ERR(tc_merge_entry))
++			continue;
++		rhashtable_walk_stop(&iter);
++		nfp_ct_do_nft_merge(zt, nft_entry, tc_merge_entry);
++		rhashtable_walk_start(&iter);
++	}
++	rhashtable_walk_stop(&iter);
++	rhashtable_walk_exit(&iter);
++}
++
+ int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
+ 			    struct net_device *netdev,
+ 			    struct flow_cls_offload *flow,
+@@ -568,6 +754,7 @@ nfp_fl_ct_offload_nft_flow(struct nfp_fl_ct_zone_entry *zt, struct flow_cls_offl
+ 			ct_entry->type = CT_TYPE_NFT;
+ 			list_add(&ct_entry->list_node, &zt->nft_flows_list);
+ 			zt->nft_flows_count++;
++			nfp_ct_merge_nft_with_tc(ct_entry, zt);
+ 		}
+ 		return 0;
+ 	case FLOW_CLS_DESTROY:
 -- 
 2.20.1
 
