@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D333AA55D
+	by mail.lfdr.de (Postfix) with ESMTP id F03433AA55E
 	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 22:35:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233546AbhFPUhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 16:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
+        id S233550AbhFPUhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 16:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233536AbhFPUhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 16:37:01 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8F6C061574
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 13:34:53 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id q16so830837qkm.9
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 13:34:53 -0700 (PDT)
+        with ESMTP id S233541AbhFPUhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 16:37:02 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE54C061574
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 13:34:55 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id d196so815765qkg.12
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 13:34:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ka4XRY15upnxXHngUs5IkdMkzfNExklyfsAoNXNv2tE=;
-        b=OQv3+nniYPQcebil0iolMnv9xp3TLj9WsRTR+GAV/t8xdIw0fI4ShEdgDQgTvMsdtW
-         TnI7lksyKm5zRAWQ3SB4CmubYcX33rLoLq8L8gva7ImovXudjqY8tem7Wouli9z2WU2h
-         e1QNRq9C8HovZcGEeDO9yeJZGcbE2t/mBbm7d7AU00PcHNoeMn7Cn7VL+sSQCviZ6DAo
-         NrCgTw+Ibm97xWkrmN1nXbYjVbAOOkHQ/d6p9pilA7dfpJJwH88LNTt4T78cCsuHIB+n
-         sLI7Fc+xKHLl1YhFigdUdTU6NDy79dODdLTqtPtenneRCIjvVg9XkOjuncyMGp5UFfrI
-         uZrg==
+        bh=5CxP69GesUIRvQhAS8Cw/aeYis1mWl7Fp03mWpmDu18=;
+        b=IPCla6b2qVXoz+Wwie8OrZ030Op+HL5+h94bKKfX5tQqjsAvqIQKj12EXYGT9jnecX
+         QKBbilN3U84mLZd3OTxzb9FvNmyhwBHjiK1J849fUVeCRsm/HoEPwh73uOPJJDN14K34
+         JkoS7ddKJPnX5hXqqaRj2wZiF8WwFfQid4adLN2eJBzuQXlsmf7TzGcAPQrmCTtI17YA
+         xy30XK/iAZR3YLkmdMWzTU/d97+8HFMXe6dACykR1tHJMtg+vR02wKIxR/IWNvu7lWii
+         5lDNQ5IYeQMS1psVEH0MzkTNQd7+hM5rLORg+CCjMiMvLPfTymBSLmrxKo9ffQazuZIF
+         lViA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ka4XRY15upnxXHngUs5IkdMkzfNExklyfsAoNXNv2tE=;
-        b=WT5xaftNBqq/nbBvvWOlLIzNyJwBXmct6jy7by2jlOcnXy7jaGnxoD8IUNUwfGgKF8
-         YRL3uwH2u5MnQN09fp4jpW+I++RmBZbuEH7cV7qM/6kdQU0O10Md0OK0bb7iDL6PHyIR
-         vLSQl6cB2LPwxFk8iEOjooVc/BxuPtMMJtvrOhVCsZ7f4QDV2NMrnBdYisbnooHTYuXC
-         hNFba/rP7LsV6KNd1K/klnIUzzzufeqlvZuddivax4SPs2YyqGROOSCfb68bYBVdcPkV
-         MoObHMo+Cry3aUlNmWWSKnKuiqzojDISp71DMZCzqlcIaVnGt3CZgqpSgRcDI23516Zr
-         M0vw==
-X-Gm-Message-State: AOAM5339rumD4NE6zW/KRj6U6WkNKVWokavtLy8+qE8uXPQwxp3Ft3Cf
-        ToSc5pFV63ViT/kTKj1rLUXK3Cle4hw=
-X-Google-Smtp-Source: ABdhPJxaLK7QeFlNdZIp7ZKaY02Efjrz9gc6tk6b807Lmmow33j1887wRre1h97Iq+XAXp/ID4ShcQ==
-X-Received: by 2002:a37:aac8:: with SMTP id t191mr217878qke.184.1623875692680;
-        Wed, 16 Jun 2021 13:34:52 -0700 (PDT)
+        bh=5CxP69GesUIRvQhAS8Cw/aeYis1mWl7Fp03mWpmDu18=;
+        b=qK6YsbsEJ7+kOqqS1x7ZMKe6Ipq1EUwQ8n5ieGTtYHlLDejR3+w8cgqRG2YASbwfIQ
+         xyQV8/xIVzNYgECp3O3V643yiafAIHMruBUJTwx+YTKAjtpAqCEFUiP6lUmL/PIgMtHp
+         JUPtscNnjIpQabrxASes+dpArBNg7pinYWepLCj9mfd2zt9+DhrtEiHDdqPXywFd0DB6
+         km/pLdLG4bqxQwnNUEr8QcaSSurnRMFtTO0M2KwfKiwqilQEk5FoIIPUnEj1CnTQJR3c
+         qTH006MsgKJL8IQF5DiC5Z1MbtCFwX6PusxnS8MKSUx5RbnE5K+MjDFX5WErHmajssqc
+         qDUw==
+X-Gm-Message-State: AOAM530gC7l4uov/n08nxP++WoXHexLqgJC6zkk1rNvAebbZnCPS4SVU
+        9h65aN6odWrHJVOsVvR61rABeKo8JEg=
+X-Google-Smtp-Source: ABdhPJwwscyQiUalGpSzVMjWyvgcj9BxeTRkeXoerNTLJUxtEaXtJBXla7GlG4SC+LhkYNy2ZMqUrA==
+X-Received: by 2002:a37:7d7:: with SMTP id 206mr192665qkh.3.1623875694732;
+        Wed, 16 Jun 2021 13:34:54 -0700 (PDT)
 Received: from tannerlove.nyc.corp.google.com ([2620:0:1003:1000:3395:f164:4389:255f])
-        by smtp.gmail.com with ESMTPSA id p2sm267308qkf.76.2021.06.16.13.34.52
+        by smtp.gmail.com with ESMTPSA id p2sm267308qkf.76.2021.06.16.13.34.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 13:34:52 -0700 (PDT)
+        Wed, 16 Jun 2021 13:34:54 -0700 (PDT)
 From:   Tanner Love <tannerlove.kernel@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
@@ -59,11 +59,10 @@ Cc:     davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
         "Michael S . Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         Martin KaFai Lau <kafai@fb.com>,
-        Tanner Love <tannerlove@google.com>,
-        Stanislav Fomichev <sdf@google.com>
-Subject: [PATCH net-next v7 1/3] net: flow_dissector: extend bpf flow dissector support with vnet hdr
-Date:   Wed, 16 Jun 2021 16:34:46 -0400
-Message-Id: <20210616203448.995314-2-tannerlove.kernel@gmail.com>
+        Tanner Love <tannerlove@google.com>
+Subject: [PATCH net-next v7 2/3] virtio_net: add optional flow dissection in virtio_net_hdr_to_skb
+Date:   Wed, 16 Jun 2021 16:34:47 -0400
+Message-Id: <20210616203448.995314-3-tannerlove.kernel@gmail.com>
 X-Mailer: git-send-email 2.32.0.272.g935e593368-goog
 In-Reply-To: <20210616203448.995314-1-tannerlove.kernel@gmail.com>
 References: <20210616203448.995314-1-tannerlove.kernel@gmail.com>
@@ -75,440 +74,150 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tanner Love <tannerlove@google.com>
 
-Amend the bpf flow dissector program type to be able to process
-virtio-net headers. Do this to enable bpf flow dissector programs to
-perform virtio-net header validation. The next patch in this series
-will add a flow dissection hook in virtio_net_hdr_to_skb and make use
-of this extended functionality. That commit message has more
-background on the use case.
+Syzkaller bugs have resulted from loose specification of
+virtio_net_hdr[1]. Enable execution of a BPF flow dissector program
+in virtio_net_hdr_to_skb to validate the vnet header and drop bad
+input.
 
-Add a pointer to struct virtio_net_hdr as a new member in struct
-bpf_flow_keys. When machine is big and vnet hdr is little endian, the
-kernel converts the vnet hdr endianness before passing the vnet hdr
-pointer to the bpf program; otherwise, the kernel just passes along
-the pointer to the unaltered vnet header to the bpf program. This
-handles the case of a v1+ header on a big endian machine.
+Introduce a new sysctl net.core.flow_dissect_vnet_hdr controlling a
+static key to decide whether to perform flow dissection. When the key
+is false, virtio_net_hdr_to_skb computes as before.
+
+A permissive specification of vnet headers is part of the ABI. Some
+applications now depend on it. Still, many of these packets are bogus.
+Give admins the option to interpret behavior more strictly. For
+instance, verifying that a VIRTIO_NET_HDR_GSO_TCPV6 header matches a
+packet with unencapsulated IPv6/TCP without extension headers, with
+payload length exceeding gso_size and hdr_len exactly at TCP payload
+offset.
+
+BPF flow dissection implements protocol parsing in an safe way. And is
+configurable, so can be as pedantic as the workload allows (e.g.,
+dropping UFO altogether).
+
+Vnet_header flow dissection is *not* a substitute for fixing bugs when
+reported. But even if not enabled continuously, offers a quick path to
+mitigating vulnerabilities.
+
+[1] https://syzkaller.appspot.com/bug?id=b419a5ca95062664fe1a60b764621eb4526e2cd0
 
 Changes
-v7:
-  - Remove vhdr_is_little_endian, instead copy vhdr fields only in
-    case where machine is big and vhdr is little endian
-  - Rename check_flow_keys_access bpf_flow_dissector_is_valid_access
-  - Move bpf_flow_dissector_is_valid_access() under CONFIG_NET
-  - Make bpf_flow_dissector_is_valid_access() populate info.btf and
-    info.reg_type in addition to info.btf_id
-v6:
-  - Move bpf_flow_dissector_btf_ids, check_flow_keys_access() to
-    filter.c
-  - Verify (off % size == 0) in check_flow_keys_access()
-  - Check bpf_flow_dissector_btf_ids[0] is nonzero in
-    check_flow_keys_access()
-v5:
-  - Use PTR_TO_BTF_ID_OR_NULL instead of defining new
-    PTR_TO_VNET_HDR_OR_NULL
-  - Make check_flow_keys_access() disallow writes to keys->vhdr
-  - Make check_flow_keys_access() check loading keys->vhdr is in
-    sizeof(__u64)
-  - Use BPF_REG_AX instead of BPF_REG_TMP as scratch reg
-  - Describe parameter vhdr_is_little_endian in __skb_flow_dissect
-    documentation
 v4:
-  - Add virtio_net_hdr pointer to struct bpf_flow_keys
-  - Add vhdr_is_little_endian to struct bpf_flow_keys
-v2:
-  - Describe parameter vhdr in __skb_flow_dissect documentation
+  - Expand commit message with rationale for bpf flow dissector based
+    implementation
+v3:
+  - Move sysctl_flow_dissect_vnet_hdr_key definition to
+    flow_dissector.c to fix CONFIG_SYSCTL warning when building UML
 
+Suggested-by: Willem de Bruijn <willemb@google.com>
 Signed-off-by: Tanner Love <tannerlove@google.com>
 Reviewed-by: Willem de Bruijn <willemb@google.com>
-Reviewed-by: Petar Penkov <ppenkov@google.com>
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
 ---
- drivers/net/bonding/bond_main.c |  2 +-
- include/linux/bpf.h             |  8 +++++
- include/linux/skbuff.h          | 35 +++++++++++++++++-----
- include/uapi/linux/bpf.h        |  1 +
- kernel/bpf/verifier.c           | 33 ++++++++++----------
- net/bpf/test_run.c              |  2 +-
- net/core/filter.c               | 53 +++++++++++++++++++++++++++++++++
- net/core/flow_dissector.c       | 36 +++++++++++++++++++---
- tools/include/uapi/linux/bpf.h  |  1 +
- 9 files changed, 143 insertions(+), 28 deletions(-)
+ include/linux/virtio_net.h | 25 +++++++++++++++++++++----
+ net/core/flow_dissector.c  |  3 +++
+ net/core/sysctl_net_core.c |  9 +++++++++
+ 3 files changed, 33 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index eb79a9f05914..36993636d56d 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3554,7 +3554,7 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb,
- 	case BOND_XMIT_POLICY_ENCAP34:
- 		memset(fk, 0, sizeof(*fk));
- 		return __skb_flow_dissect(NULL, skb, &flow_keys_bonding,
--					  fk, NULL, 0, 0, 0, 0);
-+					  fk, NULL, 0, 0, 0, 0, NULL, false);
- 	default:
- 		break;
- 	}
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 9dc44ba97584..e6980da0b469 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1998,6 +1998,8 @@ u32 bpf_sock_convert_ctx_access(enum bpf_access_type type,
- 				struct bpf_insn *insn_buf,
- 				struct bpf_prog *prog,
- 				u32 *target_size);
-+int bpf_flow_keys_is_valid_access(int off, int size, enum bpf_access_type t,
-+				  struct bpf_insn_access_aux *info);
- #else
- static inline bool bpf_sock_common_is_valid_access(int off, int size,
- 						   enum bpf_access_type type,
-@@ -2019,6 +2021,12 @@ static inline u32 bpf_sock_convert_ctx_access(enum bpf_access_type type,
- {
+diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+index b465f8f3e554..b67b5413f2ce 100644
+--- a/include/linux/virtio_net.h
++++ b/include/linux/virtio_net.h
+@@ -25,10 +25,13 @@ static inline int virtio_net_hdr_set_proto(struct sk_buff *skb,
  	return 0;
  }
-+static inline int bpf_flow_keys_is_valid_access(int off, int size,
-+						enum bpf_access_type t,
-+						struct bpf_insn_access_aux *info)
-+{
-+	return -EINVAL;
-+}
- #endif
  
- #ifdef CONFIG_INET
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index b2db9cd9a73f..4e390cd8f72a 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1314,21 +1314,27 @@ void skb_flow_dissector_init(struct flow_dissector *flow_dissector,
- 			     unsigned int key_count);
- 
- struct bpf_flow_dissector;
-+struct virtio_net_hdr;
- bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
--		      __be16 proto, int nhoff, int hlen, unsigned int flags);
-+		      __be16 proto, int nhoff, int hlen, unsigned int flags,
-+		      const struct virtio_net_hdr *vhdr,
-+		      bool vhdr_is_little_endian);
- 
- bool __skb_flow_dissect(const struct net *net,
- 			const struct sk_buff *skb,
- 			struct flow_dissector *flow_dissector,
- 			void *target_container, const void *data,
--			__be16 proto, int nhoff, int hlen, unsigned int flags);
-+			__be16 proto, int nhoff, int hlen, unsigned int flags,
-+			const struct virtio_net_hdr *vhdr,
-+			bool vhdr_is_little_endian);
- 
- static inline bool skb_flow_dissect(const struct sk_buff *skb,
- 				    struct flow_dissector *flow_dissector,
- 				    void *target_container, unsigned int flags)
++DECLARE_STATIC_KEY_FALSE(sysctl_flow_dissect_vnet_hdr_key);
++
+ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
+ 					const struct virtio_net_hdr *hdr,
+ 					bool little_endian)
  {
- 	return __skb_flow_dissect(NULL, skb, flow_dissector,
--				  target_container, NULL, 0, 0, 0, flags);
-+				  target_container, NULL, 0, 0, 0, flags, NULL,
-+				  false);
- }
- 
- static inline bool skb_flow_dissect_flow_keys(const struct sk_buff *skb,
-@@ -1337,7 +1343,22 @@ static inline bool skb_flow_dissect_flow_keys(const struct sk_buff *skb,
- {
- 	memset(flow, 0, sizeof(*flow));
- 	return __skb_flow_dissect(NULL, skb, &flow_keys_dissector,
--				  flow, NULL, 0, 0, 0, flags);
-+				  flow, NULL, 0, 0, 0, flags, NULL, false);
-+}
-+
-+static inline bool
-+__skb_flow_dissect_flow_keys_basic(const struct net *net,
-+				   const struct sk_buff *skb,
-+				   struct flow_keys_basic *flow,
-+				   const void *data, __be16 proto,
-+				   int nhoff, int hlen, unsigned int flags,
-+				   const struct virtio_net_hdr *vhdr,
-+				   bool vhdr_is_little_endian)
-+{
-+	memset(flow, 0, sizeof(*flow));
-+	return __skb_flow_dissect(net, skb, &flow_keys_basic_dissector, flow,
-+				  data, proto, nhoff, hlen, flags, vhdr,
-+				  vhdr_is_little_endian);
- }
- 
- static inline bool
-@@ -1347,9 +1368,9 @@ skb_flow_dissect_flow_keys_basic(const struct net *net,
- 				 const void *data, __be16 proto,
- 				 int nhoff, int hlen, unsigned int flags)
- {
--	memset(flow, 0, sizeof(*flow));
--	return __skb_flow_dissect(net, skb, &flow_keys_basic_dissector, flow,
--				  data, proto, nhoff, hlen, flags);
-+	return __skb_flow_dissect_flow_keys_basic(net, skb, flow, data, proto,
-+						  nhoff, hlen, flags, NULL,
-+						  false);
- }
- 
- void skb_flow_dissect_meta(const struct sk_buff *skb,
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 418b9b813d65..0524dec15c6d 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -6017,6 +6017,7 @@ struct bpf_flow_keys {
- 	};
- 	__u32	flags;
- 	__be32	flow_label;
-+	__bpf_md_ptr(const struct virtio_net_hdr *, vhdr);
- };
- 
- struct bpf_func_info {
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 331b170d9fcc..d4876d5e8959 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3372,18 +3372,6 @@ static int check_ctx_access(struct bpf_verifier_env *env, int insn_idx, int off,
- 	return -EACCES;
- }
- 
--static int check_flow_keys_access(struct bpf_verifier_env *env, int off,
--				  int size)
--{
--	if (size < 0 || off < 0 ||
--	    (u64)off + size > sizeof(struct bpf_flow_keys)) {
--		verbose(env, "invalid access to flow keys off=%d size=%d\n",
--			off, size);
--		return -EACCES;
--	}
--	return 0;
--}
--
- static int check_sock_access(struct bpf_verifier_env *env, int insn_idx,
- 			     u32 regno, int off, int size,
- 			     enum bpf_access_type t)
-@@ -4210,6 +4198,8 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
- 		if (!err && t == BPF_READ && value_regno >= 0)
- 			mark_reg_unknown(env, regs, value_regno);
- 	} else if (reg->type == PTR_TO_FLOW_KEYS) {
-+		struct bpf_insn_access_aux info = {};
-+
- 		if (t == BPF_WRITE && value_regno >= 0 &&
- 		    is_pointer_value(env, value_regno)) {
- 			verbose(env, "R%d leaks addr into flow keys\n",
-@@ -4217,9 +4207,22 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
- 			return -EACCES;
- 		}
- 
--		err = check_flow_keys_access(env, off, size);
--		if (!err && t == BPF_READ && value_regno >= 0)
--			mark_reg_unknown(env, regs, value_regno);
-+		err = bpf_flow_keys_is_valid_access(off, size, t, &info);
-+		if (err) {
-+			verbose(env,
-+				"invalid access to flow keys off=%d size=%d\n",
-+				off, size);
-+		} else if (t == BPF_READ && value_regno >= 0) {
-+			if (info.reg_type == PTR_TO_BTF_ID_OR_NULL) {
-+				mark_reg_known_zero(env, regs, value_regno);
-+				regs[value_regno].type = info.reg_type;
-+				regs[value_regno].btf = info.btf;
-+				regs[value_regno].btf_id = info.btf_id;
-+				regs[value_regno].id = ++env->id_gen;
-+			} else {
-+				mark_reg_unknown(env, regs, value_regno);
-+			}
-+		}
- 	} else if (type_is_sk_pointer(reg->type)) {
- 		if (t == BPF_WRITE) {
- 			verbose(env, "R%d cannot write into %s\n",
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index aa47af349ba8..a11c5ce99ccb 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -797,7 +797,7 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
- 	bpf_test_timer_enter(&t);
- 	do {
- 		retval = bpf_flow_dissect(prog, &ctx, eth->h_proto, ETH_HLEN,
--					  size, flags);
-+					  size, flags, NULL, false);
- 	} while (bpf_test_timer_continue(&t, repeat, &ret, &duration));
- 	bpf_test_timer_leave(&t);
- 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 239de1306de9..c3964ef8f387 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7880,6 +7880,33 @@ static bool sock_filter_is_valid_access(int off, int size,
- 					       prog->expected_attach_type);
- }
- 
-+BTF_ID_LIST_SINGLE(bpf_flow_dissector_btf_ids, struct, virtio_net_hdr);
-+
-+int bpf_flow_keys_is_valid_access(int off, int size, enum bpf_access_type t,
-+				  struct bpf_insn_access_aux *info)
-+{
-+	if (off < 0 ||
-+	    (u64)off + size > offsetofend(struct bpf_flow_keys, vhdr))
-+		return -EACCES;
-+
-+	switch (off) {
-+	case bpf_ctx_range_ptr(struct bpf_flow_keys, vhdr):
-+		if (t == BPF_WRITE || off % size != 0 || size != sizeof(__u64))
-+			return -EACCES;
-+
-+		if (!bpf_flow_dissector_btf_ids[0])
-+			return -EINVAL;
-+
-+		info->btf = bpf_get_btf_vmlinux();
-+		info->reg_type = PTR_TO_BTF_ID_OR_NULL;
-+		info->btf_id = bpf_flow_dissector_btf_ids[0];
-+
-+		break;
++	struct flow_keys_basic keys;
+ 	unsigned int gso_type = 0;
+ 	unsigned int thlen = 0;
+ 	unsigned int p_off = 0;
+@@ -78,13 +81,24 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
+ 		p_off = skb_transport_offset(skb) + thlen;
+ 		if (!pskb_may_pull(skb, p_off))
+ 			return -EINVAL;
+-	} else {
 +	}
 +
-+	return 0;
-+}
++	/* BPF flow dissection for optional strict validation.
++	 *
++	 * Admins can define permitted packets more strictly, such as dropping
++	 * deprecated UDP_UFO packets and requiring skb->protocol to be non-zero
++	 * and matching packet headers.
++	 */
++	if (static_branch_unlikely(&sysctl_flow_dissect_vnet_hdr_key) &&
++	    !__skb_flow_dissect_flow_keys_basic(NULL, skb, &keys, NULL, 0, 0, 0,
++						0, hdr, little_endian))
++		return -EINVAL;
 +
- static int bpf_noop_prologue(struct bpf_insn *insn_buf, bool direct_write,
- 			     const struct bpf_prog *prog)
- {
-@@ -8358,6 +8385,8 @@ static bool flow_dissector_is_valid_access(int off, int size,
- 			return false;
- 		info->reg_type = PTR_TO_FLOW_KEYS;
- 		return true;
-+	case bpf_ctx_range(struct __sk_buff, len):
-+		return size == size_default;
- 	default:
- 		return false;
- 	}
-@@ -8390,6 +8419,30 @@ static u32 flow_dissector_convert_ctx_access(enum bpf_access_type type,
- 				      si->dst_reg, si->src_reg,
- 				      offsetof(struct bpf_flow_dissector, flow_keys));
- 		break;
-+
-+	case offsetof(struct __sk_buff, len):
-+		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_flow_dissector, skb),
-+				      si->dst_reg, si->src_reg,
-+				      offsetof(struct bpf_flow_dissector, skb));
-+		*insn++ = BPF_JMP_IMM(BPF_JNE, si->dst_reg, 0, 4);
-+		/* bpf_flow_dissector->skb == NULL */
-+		/* dst_reg = bpf_flow_dissector->data_end */
-+		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_flow_dissector, data_end),
-+				      si->dst_reg, si->src_reg,
-+				      offsetof(struct bpf_flow_dissector, data_end));
-+		/* AX = bpf_flow_dissector->data */
-+		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_flow_dissector, data),
-+				      BPF_REG_AX, si->src_reg,
-+				      offsetof(struct bpf_flow_dissector, data));
-+		/* dst_reg -= bpf_flow_dissector->data */
-+		*insn++ = BPF_ALU64_REG(BPF_SUB, si->dst_reg, BPF_REG_AX);
-+		*insn++ = BPF_JMP_A(1);
-+		/* bpf_flow_dissector->skb != NULL */
-+		/* bpf_flow_dissector->skb->len */
-+		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, len),
-+				      si->dst_reg, si->dst_reg,
-+				      offsetof(struct sk_buff, len));
-+		break;
- 	}
++	if (!(hdr->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM)) {
+ 		/* gso packets without NEEDS_CSUM do not set transport_offset.
+ 		 * probe and drop if does not match one of the above types.
+ 		 */
+ 		if (gso_type && skb->network_header) {
+-			struct flow_keys_basic keys;
+-
+ 			if (!skb->protocol) {
+ 				__be16 protocol = dev_parse_header_protocol(skb);
  
- 	return insn - insn_buf;
+@@ -92,8 +106,11 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
+ 				if (protocol && protocol != skb->protocol)
+ 					return -EINVAL;
+ 			}
++
+ retry:
+-			if (!skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
++			/* only if flow dissection not already done */
++			if (!static_branch_unlikely(&sysctl_flow_dissect_vnet_hdr_key) &&
++			    !skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
+ 							      NULL, 0, 0, 0,
+ 							      0)) {
+ 				/* UFO does not specify ipv4 or 6: try both */
 diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 2aadbfc5193b..609e24ba98ea 100644
+index 609e24ba98ea..046aa2a8c39d 100644
 --- a/net/core/flow_dissector.c
 +++ b/net/core/flow_dissector.c
-@@ -28,6 +28,7 @@
- #include <scsi/fc/fc_fcoe.h>
- #include <uapi/linux/batadv_packet.h>
- #include <linux/bpf.h>
-+#include <linux/virtio_net.h>
- #if IS_ENABLED(CONFIG_NF_CONNTRACK)
- #include <net/netfilter/nf_conntrack_core.h>
- #include <net/netfilter/nf_conntrack_labels.h>
-@@ -864,16 +865,38 @@ static void __skb_flow_bpf_to_target(const struct bpf_flow_keys *flow_keys,
- }
+@@ -35,6 +35,9 @@
+ #endif
+ #include <linux/bpf-netns.h>
  
- bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
--		      __be16 proto, int nhoff, int hlen, unsigned int flags)
-+		      __be16 proto, int nhoff, int hlen, unsigned int flags,
-+		      const struct virtio_net_hdr *vhdr,
-+		      bool vhdr_is_little_endian)
- {
- 	struct bpf_flow_keys *flow_keys = ctx->flow_keys;
- 	u32 result;
- 
-+/* vnet hdr is either machine endian (virtio spec < v1) or le (>= v1) */
-+#if defined(__BIG_ENDIAN_BITFIELD)
-+	struct virtio_net_hdr vnet_hdr_local;
++DEFINE_STATIC_KEY_FALSE(sysctl_flow_dissect_vnet_hdr_key);
++EXPORT_SYMBOL(sysctl_flow_dissect_vnet_hdr_key);
 +
-+	if (vhdr && vhdr_is_little_endian) {
-+		vnet_hdr_local.flags = vhdr->flags;
-+		vnet_hdr_local.gso_type = vhdr->gso_type;
-+		vnet_hdr_local.hdr_len = __virtio16_to_cpu(false,
-+							   vhdr->hdr_len);
-+		vnet_hdr_local.gso_size = __virtio16_to_cpu(false,
-+							    vhdr->gso_size);
-+		vnet_hdr_local.csum_start = __virtio16_to_cpu(false,
-+							      vhdr->csum_start);
-+		vnet_hdr_local.csum_offset = __virtio16_to_cpu(false,
-+							       vhdr->csum_offset);
-+		vhdr = &vnet_hdr_local;
-+	}
-+#endif
-+
- 	/* Pass parameters to the BPF program */
- 	memset(flow_keys, 0, sizeof(*flow_keys));
- 	flow_keys->n_proto = proto;
- 	flow_keys->nhoff = nhoff;
- 	flow_keys->thoff = flow_keys->nhoff;
-+	flow_keys->vhdr = vhdr;
- 
- 	BUILD_BUG_ON((int)BPF_FLOW_DISSECTOR_F_PARSE_1ST_FRAG !=
- 		     (int)FLOW_DISSECTOR_F_PARSE_1ST_FRAG);
-@@ -904,6 +927,8 @@ bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
-  * @hlen: packet header length, if @data is NULL use skb_headlen(skb)
-  * @flags: flags that control the dissection process, e.g.
-  *         FLOW_DISSECTOR_F_STOP_AT_ENCAP.
-+ * @vhdr: virtio_net_header to include in kernel context for BPF flow dissector
-+ * @vhdr_is_little_endian: whether virtio_net_hdr fields are little endian
-  *
-  * The function will try to retrieve individual keys into target specified
-  * by flow_dissector from either the skbuff or a raw buffer specified by the
-@@ -915,7 +940,9 @@ bool __skb_flow_dissect(const struct net *net,
- 			const struct sk_buff *skb,
- 			struct flow_dissector *flow_dissector,
- 			void *target_container, const void *data,
--			__be16 proto, int nhoff, int hlen, unsigned int flags)
-+			__be16 proto, int nhoff, int hlen, unsigned int flags,
-+			const struct virtio_net_hdr *vhdr,
-+			bool vhdr_is_little_endian)
+ static void dissector_set_key(struct flow_dissector *flow_dissector,
+ 			      enum flow_dissector_key_id key_id)
  {
- 	struct flow_dissector_key_control *key_control;
- 	struct flow_dissector_key_basic *key_basic;
-@@ -1012,7 +1039,8 @@ bool __skb_flow_dissect(const struct net *net,
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index c8496c1142c9..c01b9366bb75 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -36,6 +36,8 @@ static int net_msg_warn;	/* Unused, but still a sysctl */
+ int sysctl_fb_tunnels_only_for_init_net __read_mostly = 0;
+ EXPORT_SYMBOL(sysctl_fb_tunnels_only_for_init_net);
  
- 			prog = READ_ONCE(run_array->items[0].prog);
- 			ret = bpf_flow_dissect(prog, &ctx, n_proto, nhoff,
--					       hlen, flags);
-+					       hlen, flags, vhdr,
-+					       vhdr_is_little_endian);
- 			__skb_flow_bpf_to_target(&flow_keys, flow_dissector,
- 						 target_container);
- 			rcu_read_unlock();
-@@ -1610,7 +1638,7 @@ u32 __skb_get_hash_symmetric(const struct sk_buff *skb)
- 	memset(&keys, 0, sizeof(keys));
- 	__skb_flow_dissect(NULL, skb, &flow_keys_dissector_symmetric,
- 			   &keys, NULL, 0, 0, 0,
--			   FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL);
-+			   FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL, NULL, false);
- 
- 	return __flow_hash_from_keys(&keys, &hashrnd);
- }
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 418b9b813d65..0524dec15c6d 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -6017,6 +6017,7 @@ struct bpf_flow_keys {
- 	};
- 	__u32	flags;
- 	__be32	flow_label;
-+	__bpf_md_ptr(const struct virtio_net_hdr *, vhdr);
++DECLARE_STATIC_KEY_FALSE(sysctl_flow_dissect_vnet_hdr_key);
++
+ /* 0 - Keep current behavior:
+  *     IPv4: inherit all current settings from init_net
+  *     IPv6: reset all settings to default
+@@ -580,6 +582,13 @@ static struct ctl_table net_core_table[] = {
+ 		.extra1		= SYSCTL_ONE,
+ 		.extra2		= &int_3600,
+ 	},
++	{
++		.procname       = "flow_dissect_vnet_hdr",
++		.data           = &sysctl_flow_dissect_vnet_hdr_key.key,
++		.maxlen         = sizeof(sysctl_flow_dissect_vnet_hdr_key),
++		.mode           = 0644,
++		.proc_handler   = proc_do_static_key,
++	},
+ 	{ }
  };
  
- struct bpf_func_info {
 -- 
 2.32.0.272.g935e593368-goog
 
