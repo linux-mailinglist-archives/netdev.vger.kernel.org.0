@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BABE3AA719
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 00:55:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2C873AA71A
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 00:56:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbhFPW6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 18:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53748 "EHLO
+        id S231511AbhFPW6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 18:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbhFPW57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 18:57:59 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9453C061574
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 15:55:52 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id j14so3749156ila.6
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 15:55:52 -0700 (PDT)
+        with ESMTP id S231419AbhFPW6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 18:58:20 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67697C061574
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 15:56:11 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id 5so997172ioe.1
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 15:56:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=T8qbS7NbckTl+8pauuGnPZDRe2QMX0EMkKMWVI6/vyc=;
-        b=piByfiAVktCUeODPguQVOgLWA9WD+W0MbMOxU4n8H5mviLVsEGs+9+IJdy+97kvgbY
-         HZE5t0I19EsuZ/K5d+EficyShv9lz8X8BjEpOS7NMC8m9/KNavkNFwqkXyyAdy3tX0LU
-         +1lI5wPVVYYMZyBPJJcxQ50T9vkHOxlcQuAa3h7Cwsd0jdpucOip00zvTR0qzuqlGqc7
-         6D5UHJ1MsHiKyZQBULa+Y15pK+YU5A4IbBr67JOxOGtxnHPP+OS9R3mQ8oScZ+CMBslS
-         EVEePBHUcbIXfOd8e+4CkBp/zBzAX6tg6hf7DftSJ597WE6suBY6HlMYUYk+4r0ornH6
-         NOqw==
+        bh=3DLASFQ15Z81rloOq6n84/zQvsm6YmqeDbgPpYmXx0A=;
+        b=p1wQF/DPc15yWjfECOkMCxK5ue6n1s4xTNEUohTbIgU7wHjjfk0rnvsCAOTsNa33tg
+         +0/KFTiwv7HeYU9FGPUyzNgZcDJV8nnp4IIxmv7uloSIbdNlb/GsENI7mA4IUS2JrkvW
+         kiu+5zaTJoFM/qYk2Bwua3yvFYp6zHewknSGo8Adf0kaCxPp+5X9HYUNgNYSlVqYgPKg
+         wOO+lZLOzPExHWxubDDJgp2dmKPIu7iU5gpk5HaVK7SuauTKtuKmNMjCBci/W8kjitns
+         s2u3Y77cC30WBk5n4ZpNOL8YUhlktqBlh85NMeFBOVVccbAtlUd4loSxCspSmXqIK1q/
+         SaSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=T8qbS7NbckTl+8pauuGnPZDRe2QMX0EMkKMWVI6/vyc=;
-        b=ldDK2J+uOxodiiyOEGbNkCKY7sBlt9RHp9Lk8KYbo9OYkjaycjgae3O4rxW0wbdjIE
-         sFBSRj8uQuZZiHgVyWMkEBPqPbjrOpQda20Cuusgf1G3BeZpoN7HTpTMhj/psAHbHyos
-         AgCn7waJot1SY/EKG5GfbxJ7+I+vezr7LrChmzpYhLlUAPbd9dD4OdEqLCFS4vzf9YqI
-         Ksk5ahcuDzZIxs3eAIdh2B4xlrVMyyH4P6mcy4qIkfn16xIJlRo92YJu7EoVBStJUy8V
-         nIC+lIcO5S/qFUipIVp405G0yZI2nXTl+2KFIObYDde7OuFR1DJd1o8uVvX+Ge6RiGfL
-         r+jw==
-X-Gm-Message-State: AOAM530TsABh98XVNvWKdvz7C3ryj5DCH6I4oIuBhzuYzoUHA30hs4nW
-        3vEFYqsYFY07I0KtrFFHCsg=
-X-Google-Smtp-Source: ABdhPJxdrQvGGht9Z9qO+NZeMsxVm7h7v57xtwzmnrKCS34jLknRwSd4FhQoyIE8n8DQAvBTc621UQ==
-X-Received: by 2002:a92:c0c9:: with SMTP id t9mr1321269ilf.195.1623884151593;
-        Wed, 16 Jun 2021 15:55:51 -0700 (PDT)
+        bh=3DLASFQ15Z81rloOq6n84/zQvsm6YmqeDbgPpYmXx0A=;
+        b=F7X/S5oletRuqRXB7HaE3Q4BnpJ6ve9f7euGIiNJtKhSrP1McsQxR/0fRO59W9XsVg
+         qCjsw/ZWIZmzSn1fwmhxlKaXTLm05r9V0kjdMSlpuKVP7r+V7hqM+gMQaxU0enVjfZH+
+         UbnBYdpg34D8AbutMalln2bsKvHvVF8VZCQZUF4XmGWy2NHlkQ3SUO2Ik2CPq3B037dW
+         Q0RfQ9NwIHoOyi91qLfdN08K2grcNz+Lr4X7KVEuTeEhDXyFCAGqu3aTsXfwj8Nt8ilm
+         4FIXEVXhdH6YQj0jYBEbqwUJnRWme65FPZO/r0klC+d/WPQ8YqfoO0MUb8+8WmpL8cqd
+         uaFg==
+X-Gm-Message-State: AOAM531nMq3z+ZZkuhGzz7RAivYC8MOrFlibZK/uD99h5d9/2JJNUAyK
+        XmyBZo4fv9OfryWN/t3UcuM=
+X-Google-Smtp-Source: ABdhPJyCVBdgBagf/DYUJEryH3KtpkoowCnB39rkVTChGwAaMpZuF5JE40FUYwysgY37xhoLFjbv/A==
+X-Received: by 2002:a05:6602:2a43:: with SMTP id k3mr1314309iov.47.1623884170683;
+        Wed, 16 Jun 2021 15:56:10 -0700 (PDT)
 Received: from [127.0.1.1] ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id 6sm2105581ioe.43.2021.06.16.15.55.44
+        by smtp.gmail.com with ESMTPSA id n2sm1908745iod.54.2021.06.16.15.56.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 15:55:51 -0700 (PDT)
-Subject: [PATCH bpf v2 3/4] bpf: track subprog poke correctly
+        Wed, 16 Jun 2021 15:56:10 -0700 (PDT)
+Subject: [PATCH bpf v2 4/4] bpf: selftest to verify mixing bpf2bpf calls and
+ tailcalls with insn patch
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     maciej.fijalkowski@intel.com, ast@kernel.org, daniel@iogearbox.net,
         andriin@fb.com
 Cc:     john.fastabend@gmail.com, netdev@vger.kernel.org,
         netdev@vger.kernel.org
-Date:   Wed, 16 Jun 2021 15:55:39 -0700
-Message-ID: <162388413965.151936.16775592753297385087.stgit@john-XPS-13-9370>
+Date:   Wed, 16 Jun 2021 15:55:57 -0700
+Message-ID: <162388415754.151936.11542697725599301296.stgit@john-XPS-13-9370>
 In-Reply-To: <162388400488.151936.1658153981415911010.stgit@john-XPS-13-9370>
 References: <162388400488.151936.1658153981415911010.stgit@john-XPS-13-9370>
 User-Agent: StGit/0.23-85-g6af9
@@ -65,162 +66,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Subprograms are calling map_poke_track but on program release there is no
-hook to call map_poke_untrack. But on prog release the aux memory is freed
-even though we still have a reference to it in the element list of the
-map aux data.
+This adds some extra noise to the tailcall_bpf2bpf4 tests that will cause
+verify to patch insns. This then moves around subprog start/end insn
+index and poke descriptor insn index to ensure that verify and JIT will
+continue to track these correctly.
 
-So when we run map_poke_run() we end up accessing free'd memory. This
-triggers with KASAN in prog_array_map_poke_run() shown here.
+If done correctly verifier should pass this program same as before and
+JIT should emit tail call logic.
 
-[  402.824686] ==================================================================
-[  402.824689] BUG: KASAN: use-after-free in prog_array_map_poke_run+0xc2/0x34e
-[  402.824698] Read of size 4 at addr ffff8881905a7940 by task hubble-fgs/4337
-
-[  402.824705] CPU: 1 PID: 4337 Comm: hubble-fgs Tainted: G          I       5.12.0+ #399
-[  402.824715] Call Trace:
-[  402.824719]  dump_stack+0x93/0xc2
-[  402.824727]  print_address_description.constprop.0+0x1a/0x140
-[  402.824736]  ? prog_array_map_poke_run+0xc2/0x34e
-[  402.824740]  ? prog_array_map_poke_run+0xc2/0x34e
-[  402.824744]  kasan_report.cold+0x7c/0xd8
-[  402.824752]  ? prog_array_map_poke_run+0xc2/0x34e
-[  402.824757]  prog_array_map_poke_run+0xc2/0x34e
-[  402.824765]  bpf_fd_array_map_update_elem+0x124/0x1a0
-
-The elements concerned are walked like this,
-
-                for (i = 0; i < elem->aux->size_poke_tab; i++) {
-                        poke = &elem->aux->poke_tab[i];
-
-So the access to size_poke_tab is the 4B read, verified by checking offsets
-in the KASAN dump,
-
-[  402.825004] The buggy address belongs to the object at ffff8881905a7800
-                which belongs to the cache kmalloc-1k of size 1024
-[  402.825008] The buggy address is located 320 bytes inside of
-                1024-byte region [ffff8881905a7800, ffff8881905a7c00)
-
-With pahol output,
-
- struct bpf_prog_aux {
- ...
-        /* --- cacheline 5 boundary (320 bytes) --- */
-        u32                        size_poke_tab;        /*   320     4 */
- ...
-
-To fix track the map references by using a per subprogram used_maps array
-and used_map_cnt values to hold references into the maps so when the
-subprogram is released we can then untrack from the correct map using
-the correct aux field.
-
-Here we a slightly less than optimal because we insert all poke entries
-into the used_map array, even duplicates. In theory we could get by
-with only unique entries. This would require an extra collect the maps
-stage though and seems unnecessary when this is simply an extra 8B
-per duplicate. It also makes the logic simpler and the untrack hook
-is happy to ignore entries previously removed.
-
-Reported-by: Jussi Maki <joamaki@gmail.com>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- include/linux/bpf.h   |    1 +
- kernel/bpf/core.c     |    6 ++++--
- kernel/bpf/verifier.c |   36 +++++++++++++++++++++++++-----------
- 3 files changed, 30 insertions(+), 13 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/tailcalls.c |   36 ++++++++++++++------
+ .../selftests/bpf/progs/tailcall_bpf2bpf4.c        |   20 +++++++++++
+ 2 files changed, 45 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 02b02cb29ce2..c037c67347c0 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1780,6 +1780,7 @@ static inline struct bpf_prog *bpf_prog_get_type(u32 ufd,
- 	return bpf_prog_get_type_dev(ufd, type, false);
+diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+index ee27d68d2a1c..b5940e6ca67c 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
++++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+@@ -715,6 +715,8 @@ static void test_tailcall_bpf2bpf_3(void)
+ 	bpf_object__close(obj);
  }
  
-+void bpf_free_used_maps(struct bpf_prog_aux *aux);
- void __bpf_free_used_maps(struct bpf_prog_aux *aux,
- 			  struct bpf_map **used_maps, u32 len);
- 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 5e31ee9f7512..ce5bb8932958 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2167,7 +2167,7 @@ void __bpf_free_used_maps(struct bpf_prog_aux *aux,
- 	}
- }
- 
--static void bpf_free_used_maps(struct bpf_prog_aux *aux)
-+void bpf_free_used_maps(struct bpf_prog_aux *aux)
++#include "tailcall_bpf2bpf4.skel.h"
++
+ /* test_tailcall_bpf2bpf_4 checks that tailcall counter is correctly preserved
+  * across tailcalls combined with bpf2bpf calls. for making sure that tailcall
+  * counter behaves correctly, bpf program will go through following flow:
+@@ -727,10 +729,15 @@ static void test_tailcall_bpf2bpf_3(void)
+  * the loop begins. At the end of the test make sure that the global counter is
+  * equal to 31, because tailcall counter includes the first two tailcalls
+  * whereas global counter is incremented only on loop presented on flow above.
++ *
++ * The noise parameter is used to insert bpf_map_update calls into the logic
++ * to force verifier to patch instructions. This allows us to ensure jump
++ * logic remains correct with instruction movement.
+  */
+-static void test_tailcall_bpf2bpf_4(void)
++static void test_tailcall_bpf2bpf_4(bool noise)
  {
- 	__bpf_free_used_maps(aux, aux->used_maps, aux->used_map_cnt);
- 	kfree(aux->used_maps);
-@@ -2211,8 +2211,10 @@ static void bpf_prog_free_deferred(struct work_struct *work)
- #endif
- 	if (aux->dst_trampoline)
- 		bpf_trampoline_put(aux->dst_trampoline);
--	for (i = 0; i < aux->func_cnt; i++)
-+	for (i = 0; i < aux->func_cnt; i++) {
-+		bpf_free_used_maps(aux->func[i]->aux);
- 		bpf_jit_free(aux->func[i]);
-+	}
- 	if (aux->func_cnt) {
- 		kfree(aux->func);
- 		bpf_prog_unlock_free(aux->prog);
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 066fac9b5460..31c0f3ad9626 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -12128,14 +12128,32 @@ static int jit_subprogs(struct bpf_verifier_env *env)
- 			func[i]->insnsi[insn_idx - subprog_start].imm = ret + 1;
- 		}
- 
--		for (j = 0; j < func[i]->aux->size_poke_tab; j++) {
--			int ret;
-+		/* overapproximate the number of map slots. Untrack will just skip
-+		 * the lookup anyways and we avoid an extra layer of accounting.
-+		 */
-+		if (func[i]->aux->size_poke_tab) {
-+			struct bpf_map **used_maps;
- 
--			map_ptr = func[i]->aux->poke_tab[j].tail_call.map;
--			ret = map_ptr->ops->map_poke_track(map_ptr, func[i]->aux);
--			if (ret < 0) {
--				verbose(env, "tracking tail call prog failed\n");
-+			used_maps = kmalloc_array(func[i]->aux->size_poke_tab,
-+						  sizeof(struct bpf_map *),
-+						  GFP_KERNEL);
-+			if (!used_maps)
- 				goto out_free;
-+
-+			func[i]->aux->used_maps = used_maps;
-+
-+			for (j = 0; j < func[i]->aux->size_poke_tab; j++) {
-+				int ret;
-+
-+				map_ptr = func[i]->aux->poke_tab[j].tail_call.map;
-+				ret = map_ptr->ops->map_poke_track(map_ptr, func[i]->aux);
-+				if (ret < 0) {
-+					verbose(env, "tracking tail call prog failed\n");
-+					goto out_free;
-+				}
-+				bpf_map_inc(map_ptr);
-+				func[i]->aux->used_map_cnt++;
-+				func[i]->aux->used_maps[j] = map_ptr;
- 			}
- 		}
- 
-@@ -12259,11 +12277,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
- 	for (i = 0; i < env->subprog_cnt; i++) {
- 		if (!func[i])
- 			continue;
--
--		for (j = 0; j < func[i]->aux->size_poke_tab; j++) {
--			map_ptr = func[i]->aux->poke_tab[j].tail_call.map;
--			map_ptr->ops->map_poke_untrack(map_ptr, func[i]->aux);
--		}
-+		bpf_free_used_maps(func[i]->aux);
- 		bpf_jit_free(func[i]);
+-	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
++	int err, map_fd, prog_fd, main_fd, data_fd, i;
++	struct tailcall_bpf2bpf4__bss val;
+ 	struct bpf_map *prog_array, *data_map;
+ 	struct bpf_program *prog;
+ 	struct bpf_object *obj;
+@@ -774,11 +781,6 @@ static void test_tailcall_bpf2bpf_4(void)
+ 			goto out;
  	}
- 	kfree(func);
+ 
+-	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
+-				&duration, &retval, NULL);
+-	CHECK(err || retval != sizeof(pkt_v4) * 3, "tailcall", "err %d errno %d retval %d\n",
+-	      err, errno, retval);
+-
+ 	data_map = bpf_object__find_map_by_name(obj, "tailcall.bss");
+ 	if (CHECK_FAIL(!data_map || !bpf_map__is_internal(data_map)))
+ 		return;
+@@ -787,10 +789,22 @@ static void test_tailcall_bpf2bpf_4(void)
+ 	if (CHECK_FAIL(map_fd < 0))
+ 		return;
+ 
++	i = 0;
++	val.noise = noise;
++	val.count = 0;
++	err = bpf_map_update_elem(data_fd, &i, &val, BPF_ANY);
++	if (CHECK_FAIL(err))
++		goto out;
++
++	err = bpf_prog_test_run(main_fd, 1, &pkt_v4, sizeof(pkt_v4), 0,
++				&duration, &retval, NULL);
++	CHECK(err || retval != sizeof(pkt_v4) * 3, "tailcall", "err %d errno %d retval %d\n",
++	      err, errno, retval);
++
+ 	i = 0;
+ 	err = bpf_map_lookup_elem(data_fd, &i, &val);
+-	CHECK(err || val != 31, "tailcall count", "err %d errno %d count %d\n",
+-	      err, errno, val);
++	CHECK(err || val.count != 31, "tailcall count", "err %d errno %d count %d\n",
++	      err, errno, val.count);
+ 
+ out:
+ 	bpf_object__close(obj);
+@@ -815,5 +829,7 @@ void test_tailcalls(void)
+ 	if (test__start_subtest("tailcall_bpf2bpf_3"))
+ 		test_tailcall_bpf2bpf_3();
+ 	if (test__start_subtest("tailcall_bpf2bpf_4"))
+-		test_tailcall_bpf2bpf_4();
++		test_tailcall_bpf2bpf_4(false);
++	if (test__start_subtest("tailcall_bpf2bpf_5"))
++		test_tailcall_bpf2bpf_4(true);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf4.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf4.c
+index 9a1b166b7fbe..e89368a50b97 100644
+--- a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf4.c
++++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf4.c
+@@ -2,6 +2,13 @@
+ #include <linux/bpf.h>
+ #include <bpf/bpf_helpers.h>
+ 
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 1);
++	__uint(key_size, sizeof(__u32));
++	__uint(value_size, sizeof(__u32));
++} nop_table SEC(".maps");
++
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
+ 	__uint(max_entries, 3);
+@@ -9,11 +16,22 @@ struct {
+ 	__uint(value_size, sizeof(__u32));
+ } jmp_table SEC(".maps");
+ 
+-static volatile int count;
++int count = 0;
++int noise = 0;
++
++__always_inline int subprog_noise(void)
++{
++	__u32 key = 0;
++
++	bpf_map_lookup_elem(&nop_table, &key);
++	return 0;
++}
+ 
+ __noinline
+ int subprog_tail_2(struct __sk_buff *skb)
+ {
++	if (noise)
++		subprog_noise();
+ 	bpf_tail_call_static(skb, &jmp_table, 2);
+ 	return skb->len * 3;
+ }
 
 
