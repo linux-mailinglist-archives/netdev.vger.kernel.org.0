@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C0EF3A916B
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 07:53:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E161D3A916D
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 07:53:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbhFPFzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 01:55:11 -0400
-Received: from smtp01.smtpout.orange.fr ([80.12.242.123]:36264 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbhFPFzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 01:55:10 -0400
-Received: from localhost.localdomain ([86.243.172.93])
-        by mwinf5d01 with ME
-        id Hht32500521Fzsu03ht3JF; Wed, 16 Jun 2021 07:53:03 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 16 Jun 2021 07:53:03 +0200
-X-ME-IP: 86.243.172.93
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, mitch.a.williams@intel.com,
-        gregory.v.rose@intel.com, jeffrey.t.kirsher@intel.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] iavf: Fix an error handling path in 'iavf_probe()'
-Date:   Wed, 16 Jun 2021 07:53:02 +0200
-Message-Id: <bbfe41f97c6e9de1a3768b7e6237aebcd4a6f93c.1623822715.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S229698AbhFPFzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 01:55:31 -0400
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:51777 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229543AbhFPFzZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 01:55:25 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0Uca.DB._1623822795;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0Uca.DB._1623822795)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 16 Jun 2021 13:53:18 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] net: mhi_net: make mhi_wwan_ops static
+Date:   Wed, 16 Jun 2021 13:53:09 +0800
+Message-Id: <1623822790-1404-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If an error occurs after a 'pci_enable_pcie_error_reporting()' call, it
-must be undone by a corresponding 'pci_disable_pcie_error_reporting()'
-call, as already done in the remove function.
+This symbol is not used outside of net.c, so marks it static.
 
-Fixes: 5eae00c57f5e ("i40evf: main driver core")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Fix the following sparse warning:
+
+drivers/net/mhi/net.c:385:23: warning: symbol 'mhi_wwan_ops' was not
+declared. Should it be static?
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/mhi/net.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index e612c24fa384..44bafedd09f2 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3798,6 +3798,7 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- err_ioremap:
- 	free_netdev(netdev);
- err_alloc_etherdev:
-+	pci_disable_pcie_error_reporting(pdev);
- 	pci_release_regions(pdev);
- err_pci_reg:
- err_dma:
+diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
+index 78d4a06..e5ec0d7 100644
+--- a/drivers/net/mhi/net.c
++++ b/drivers/net/mhi/net.c
+@@ -382,7 +382,7 @@ static void mhi_net_dellink(void *ctxt, struct net_device *ndev,
+ 	dev_set_drvdata(&mhi_dev->dev, NULL);
+ }
+ 
+-const struct wwan_ops mhi_wwan_ops = {
++static const struct wwan_ops mhi_wwan_ops = {
+ 	.owner = THIS_MODULE,
+ 	.priv_size = sizeof(struct mhi_net_dev),
+ 	.setup = mhi_net_setup,
 -- 
-2.30.2
+1.8.3.1
 
