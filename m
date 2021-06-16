@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D45303AA6B5
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 00:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D043AA6B6
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 00:40:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234171AbhFPWmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 18:42:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39854 "EHLO mail.kernel.org"
+        id S234194AbhFPWmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 18:42:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39862 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233959AbhFPWmd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 18:42:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E4D89613F8;
-        Wed, 16 Jun 2021 22:40:26 +0000 (UTC)
+        id S233964AbhFPWme (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 18:42:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 737E6613F9;
+        Wed, 16 Jun 2021 22:40:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623883227;
-        bh=0SvqrEGHzJ/0EHyeKx5y8gagbahS2K/e6KTe9kiClPA=;
+        bh=LfWmKml357oCFPH0cyRm99TziQixqSbrqrHzOhPqLL4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HCFXBFRsvpXHDILUmQh8EWBvw49jSjrS7vE/4tKZ1nq4cblTswCbLgww5FQmc9CRd
-         HvsNEJAHjo9qsXDBt+TgfZKclG1iYwr2woWvtFsC7NTVwt1HTzRtJmVvJnOhM3fx5N
-         7OoTovLqY8FCp/aHmjQ3bRQTqCbDXYyfbO6DhwHZzF9dkwOCCoIbDz7ntoq20vfOXx
-         ymmj+7G30kyjAMe4Xx1QVtI9EU5wzed3ZJ+b40XnIHLKhWOr616+KsxAKZQX7pFAja
-         Nj6ktYFxobEe67OZ08pNDyDe0eWY/Xsd/GDtfgwYwKCJM+XjKsDi+Ajc6mSz6g7Hez
-         braIUO5GI/KgA==
+        b=Zweuh2itakbuz2yxnfU6c5HDjVtVmOuoGVWYbZCV7tIdwDon+ki6l+ITKPgYIlHhp
+         WxQXni/68dMHiwNgMfyhyR5W0tH5fP7p6SkxzUrZjcp1nCuUhgpyP1kSJCtO1BMHo9
+         FvRakAkPyc+0CI6EklpIf0Tgv/FbhXo98XJVvAE0XqzReemh2OvL67k9cIXu8BwqXa
+         QpNIx4DPzyVODLauTJXbHIt4I696/HpUOpyT2o3P1BMypZ7H6W56PiWSidBLa6ST9F
+         /pFFunDgZocxZAI1UMLG9VOv1A5AYK6smHqkPMngmyfvgtmiNVjqDIfGpngP0u+WX7
+         jsR6Y3wd+SgpA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
         Parav Pandit <parav@nvidia.com>,
+        Bodong Wang <bodong@nvidia.com>,
+        Alaa Hleihel <alaa@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 2/8] net/mlx5: Check that driver was probed prior attaching the device
-Date:   Wed, 16 Jun 2021 15:40:09 -0700
-Message-Id: <20210616224015.14393-3-saeed@kernel.org>
+Subject: [net 3/8] net/mlx5: E-Switch, Read PF mac address
+Date:   Wed, 16 Jun 2021 15:40:10 -0700
+Message-Id: <20210616224015.14393-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210616224015.14393-1-saeed@kernel.org>
 References: <20210616224015.14393-1-saeed@kernel.org>
@@ -42,134 +43,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Parav Pandit <parav@nvidia.com>
 
-The device can be requested to be attached despite being not probed.
-This situation is possible if devlink reload races with module removal,
-and the following kernel panic is an outcome of such race.
+External controller PF's MAC address is not read from the device during
+vport setup. Fail to read this results in showing all zeros to user
+while the factory programmed MAC is a valid value.
 
- mlx5_core 0000:00:09.0: firmware version: 4.7.9999
- mlx5_core 0000:00:09.0: 0.000 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x255 link)
- BUG: unable to handle page fault for address: fffffffffffffff0
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 3218067 P4D 3218067 PUD 321a067 PMD 0
- Oops: 0000 [#1] SMP KASAN NOPTI
- CPU: 7 PID: 250 Comm: devlink Not tainted 5.12.0-rc2+ #2836
- Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
- RIP: 0010:mlx5_attach_device+0x80/0x280 [mlx5_core]
- Code: f8 48 c1 e8 03 42 80 3c 38 00 0f 85 80 01 00 00 48 8b 45 68 48 8d 78 f0 48 89 fe 48 c1 ee 03 42 80 3c 3e 00 0f 85 70 01 00 00 <48> 8b 40 f0 48 85 c0 74 0d 48 89 ef ff d0 85 c0 0f 85 84 05 0e 00
- RSP: 0018:ffff8880129675f0 EFLAGS: 00010246
- RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffffffff827407f1
- RDX: 1ffff110011336cf RSI: 1ffffffffffffffe RDI: fffffffffffffff0
- RBP: ffff888008e0c000 R08: 0000000000000008 R09: ffffffffa0662ee7
- R10: fffffbfff40cc5dc R11: 0000000000000000 R12: ffff88800ea002e0
- R13: ffffed1001d459f7 R14: ffffffffa05ef4f8 R15: dffffc0000000000
- FS:  00007f51dfeaf740(0000) GS:ffff88806d5c0000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: fffffffffffffff0 CR3: 000000000bc82006 CR4: 0000000000370ea0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- Call Trace:
-  mlx5_load_one+0x117/0x1d0 [mlx5_core]
-  devlink_reload+0x2d5/0x520
-  ? devlink_remote_reload_actions_performed+0x30/0x30
-  ? mutex_trylock+0x24b/0x2d0
-  ? devlink_nl_cmd_reload+0x62b/0x1070
-  devlink_nl_cmd_reload+0x66d/0x1070
-  ? devlink_reload+0x520/0x520
-  ? devlink_nl_pre_doit+0x64/0x4d0
-  genl_family_rcv_msg_doit+0x1e9/0x2f0
-  ? mutex_lock_io_nested+0x1130/0x1130
-  ? genl_family_rcv_msg_attrs_parse.constprop.0+0x240/0x240
-  ? security_capable+0x51/0x90
-  genl_rcv_msg+0x27f/0x4a0
-  ? genl_get_cmd+0x3c0/0x3c0
-  ? lock_acquire+0x1a9/0x6d0
-  ? devlink_reload+0x520/0x520
-  ? lock_release+0x6c0/0x6c0
-  netlink_rcv_skb+0x11d/0x340
-  ? genl_get_cmd+0x3c0/0x3c0
-  ? netlink_ack+0x9f0/0x9f0
-  ? lock_release+0x1f9/0x6c0
-  genl_rcv+0x24/0x40
-  netlink_unicast+0x433/0x700
-  ? netlink_attachskb+0x730/0x730
-  ? _copy_from_iter_full+0x178/0x650
-  ? __alloc_skb+0x113/0x2b0
-  netlink_sendmsg+0x6f1/0xbd0
-  ? netlink_unicast+0x700/0x700
-  ? netlink_unicast+0x700/0x700
-  sock_sendmsg+0xb0/0xe0
-  __sys_sendto+0x193/0x240
-  ? __x64_sys_getpeername+0xb0/0xb0
-  ? copy_page_range+0x2300/0x2300
-  ? __up_read+0x1a1/0x7b0
-  ? do_user_addr_fault+0x219/0xdc0
-  __x64_sys_sendto+0xdd/0x1b0
-  ? syscall_enter_from_user_mode+0x1d/0x50
-  do_syscall_64+0x2d/0x40
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7f51dffb514a
- Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 f3 0f 1e fa 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 15 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 76 c3 0f 1f 44 00 00 55 48 83 ec 30 44 89 4c
- RSP: 002b:00007ffcaef22e78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
- RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f51dffb514a
- RDX: 0000000000000030 RSI: 000055750daf2440 RDI: 0000000000000003
- RBP: 000055750daf2410 R08: 00007f51e0081200 R09: 000000000000000c
- R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
- R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- Modules linked in: mlx5_core(-) ptp pps_core ib_ipoib rdma_ucm rdma_cm iw_cm ib_cm ib_umad ib_uverbs ib_core [last unloaded: mlx5_ib]
- CR2: fffffffffffffff0
- ---[ end trace 7789831bfe74fa42 ]---
+$ devlink port show eth1 -jp
+{
+    "port": {
+        "pci/0000:03:00.0/196608": {
+            "type": "eth",
+            "netdev": "eth1",
+            "flavour": "pcipf",
+            "controller": 1,
+            "pfnum": 0,
+            "splittable": false,
+            "function": {
+                "hw_addr": "00:00:00:00:00:00"
+            }
+        }
+    }
+}
 
-Fixes: a925b5e309c9 ("net/mlx5: Register mlx5 devices to auxiliary virtual bus")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
+Hence, read it when enabling a vport.
+
+After the fix,
+
+$ devlink port show eth1 -jp
+{
+    "port": {
+        "pci/0000:03:00.0/196608": {
+            "type": "eth",
+            "netdev": "eth1",
+            "flavour": "pcipf",
+            "controller": 1,
+            "pfnum": 0,
+            "splittable": false,
+            "function": {
+                "hw_addr": "98:03:9b:a0:60:11"
+            }
+        }
+    }
+}
+
+Fixes: f099fde16db3 ("net/mlx5: E-switch, Support querying port function mac address")
+Signed-off-by: Bodong Wang <bodong@nvidia.com>
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Alaa Hleihel <alaa@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/dev.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-index a9166cd85013..8de118adfb54 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-@@ -320,6 +320,16 @@ int mlx5_attach_device(struct mlx5_core_dev *dev)
- 			}
- 		} else {
- 			adev = &priv->adev[i]->adev;
-+
-+			/* Pay attention that this is not PCI driver that
-+			 * mlx5_core_dev is connected, but auxiliary driver.
-+			 *
-+			 * Here we can race of module unload with devlink
-+			 * reload, but we don't need to take extra lock because
-+			 * we are holding global mlx5_intf_mutex.
-+			 */
-+			if (!adev->dev.driver)
-+				continue;
- 			adrv = to_auxiliary_drv(adev->dev.driver);
- 
- 			if (adrv->resume)
-@@ -350,6 +360,10 @@ void mlx5_detach_device(struct mlx5_core_dev *dev)
- 			continue;
- 
- 		adev = &priv->adev[i]->adev;
-+		/* Auxiliary driver was unbind manually through sysfs */
-+		if (!adev->dev.driver)
-+			goto skip_suspend;
-+
- 		adrv = to_auxiliary_drv(adev->dev.driver);
- 
- 		if (adrv->suspend) {
-@@ -357,6 +371,7 @@ void mlx5_detach_device(struct mlx5_core_dev *dev)
- 			continue;
- 		}
- 
-+skip_suspend:
- 		del_adev(&priv->adev[i]->adev);
- 		priv->adev[i] = NULL;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index b88705a3a1a8..97e6cb6f13c1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1054,6 +1054,12 @@ int mlx5_esw_vport_enable(struct mlx5_eswitch *esw, u16 vport_num,
+ 			goto err_vhca_mapping;
  	}
+ 
++	/* External controller host PF has factory programmed MAC.
++	 * Read it from the device.
++	 */
++	if (mlx5_core_is_ecpf(esw->dev) && vport_num == MLX5_VPORT_PF)
++		mlx5_query_nic_vport_mac_address(esw->dev, vport_num, true, vport->info.mac);
++
+ 	esw_vport_change_handle_locked(vport);
+ 
+ 	esw->enabled_vports++;
 -- 
 2.31.1
 
