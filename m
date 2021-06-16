@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E4213A965A
+	by mail.lfdr.de (Postfix) with ESMTP id 9721A3A965B
 	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 11:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232391AbhFPJjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 05:39:20 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:4809 "EHLO
+        id S232409AbhFPJjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 05:39:21 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:10100 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232311AbhFPJjR (ORCPT
+        with ESMTP id S232332AbhFPJjR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 05:39:17 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G4g2056SNzWlWV;
-        Wed, 16 Jun 2021 17:32:08 +0800 (CST)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G4g4Q5PYZzZdxM;
+        Wed, 16 Jun 2021 17:34:14 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Wed, 16 Jun 2021 17:37:09 +0800
+ 15.1.2176.2; Wed, 16 Jun 2021 17:37:10 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 3/8] net: hdlc_ppp: fix the code style issue about "foo* bar"
-Date:   Wed, 16 Jun 2021 17:33:52 +0800
-Message-ID: <1623836037-26812-4-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 4/8] net: hdlc_ppp: move out assignment in if condition
+Date:   Wed, 16 Jun 2021 17:33:53 +0800
+Message-ID: <1623836037-26812-5-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1623836037-26812-1-git-send-email-huangguangbin2@huawei.com>
 References: <1623836037-26812-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,78 +45,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peng Li <lipeng321@huawei.com>
 
-Fix the checkpatch error as "foo* bar" or "foo*bar" should be "foo *bar".
+Should not use assignment in if condition.
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/wan/hdlc_ppp.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/wan/hdlc_ppp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/wan/hdlc_ppp.c b/drivers/net/wan/hdlc_ppp.c
-index 32f01d7..8614912 100644
+index 8614912..fb5102c 100644
 --- a/drivers/net/wan/hdlc_ppp.c
 +++ b/drivers/net/wan/hdlc_ppp.c
-@@ -102,12 +102,12 @@ static struct sk_buff_head tx_queue; /* used when holding the spin lock */
+@@ -375,7 +375,8 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
+ 	u8 *out;
+ 	unsigned int len = req_len, nak_len = 0, rej_len = 0;
  
- static int ppp_ioctl(struct net_device *dev, struct ifreq *ifr);
- 
--static inline struct ppp* get_ppp(struct net_device *dev)
-+static inline struct ppp *get_ppp(struct net_device *dev)
- {
- 	return (struct ppp *)dev_to_hdlc(dev)->state;
- }
- 
--static inline struct proto* get_proto(struct net_device *dev, u16 pid)
-+static inline struct proto *get_proto(struct net_device *dev, u16 pid)
- {
- 	struct ppp *ppp = get_ppp(dev);
- 
-@@ -123,7 +123,7 @@ static inline struct proto* get_proto(struct net_device *dev, u16 pid)
+-	if (!(out = kmalloc(len, GFP_ATOMIC))) {
++	out = kmalloc(len, GFP_ATOMIC);
++	if (!out) {
+ 		dev->stats.rx_dropped++;
+ 		return;	/* out of memory, ignore CR packet */
  	}
- }
- 
--static inline const char* proto_name(u16 pid)
-+static inline const char *proto_name(u16 pid)
- {
- 	switch (pid) {
- 	case PID_LCP:
-@@ -139,7 +139,7 @@ static inline const char* proto_name(u16 pid)
- 
- static __be16 ppp_type_trans(struct sk_buff *skb, struct net_device *dev)
- {
--	struct hdlc_header *data = (struct hdlc_header*)skb->data;
-+	struct hdlc_header *data = (struct hdlc_header *)skb->data;
- 
- 	if (skb->len < sizeof(struct hdlc_header))
- 		return htons(ETH_P_HDLC);
-@@ -171,7 +171,7 @@ static int ppp_hard_header(struct sk_buff *skb, struct net_device *dev,
- #endif
- 
- 	skb_push(skb, sizeof(struct hdlc_header));
--	data = (struct hdlc_header*)skb->data;
-+	data = (struct hdlc_header *)skb->data;
- 
- 	data->address = HDLC_ADDR_ALLSTATIONS;
- 	data->control = HDLC_CTRL_UI;
-@@ -432,7 +432,7 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
- 
- static int ppp_rx(struct sk_buff *skb)
- {
--	struct hdlc_header *hdr = (struct hdlc_header*)skb->data;
-+	struct hdlc_header *hdr = (struct hdlc_header *)skb->data;
- 	struct net_device *dev = skb->dev;
- 	struct ppp *ppp = get_ppp(dev);
- 	struct proto *proto;
-@@ -490,7 +490,7 @@ static int ppp_rx(struct sk_buff *skb)
- 	if (pid == PID_LCP)
- 		switch (cp->code) {
- 		case LCP_PROTO_REJ:
--			pid = ntohs(*(__be16*)skb->data);
-+			pid = ntohs(*(__be16 *)skb->data);
- 			if (pid == PID_LCP || pid == PID_IPCP ||
- 			    pid == PID_IPV6CP)
- 				ppp_cp_event(dev, pid, RXJ_BAD, 0, 0,
 -- 
 2.8.1
 
