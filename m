@@ -2,63 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03D263AA4B8
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:53:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9C93AA4BB
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:53:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233096AbhFPTzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41674 "EHLO
+        id S233102AbhFPTzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232978AbhFPTz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:55:28 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DAF1C06175F
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:53:22 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id o10-20020a17090aac0ab029016e92770073so2406770pjq.5
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:53:22 -0700 (PDT)
+        with ESMTP id S232978AbhFPTzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:55:42 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CA0C061760
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:53:36 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id x10so1679394plg.3
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:53:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=XgFaDgHxLA9EExjjiit960bbSMsHOuuAVtNPxuyfwdc=;
-        b=VJ17cvu7qPDG1WK4ovVTB49QXegtO6/LKg7uPK5B9ll+1f+xrPu44t3v47LPVMfcv2
-         0KmItzik4m+x2VTmTlVSnOpinxV24ZTm8aCjXa3H9S4bT/klp3hDewcjcatfRpsLCgZe
-         sc+9OyzRK5D4I7H5C3pjWnE13Allb25xq+4Lc=
+        bh=VGS4DzWR8/G2dPikMD/719Suy2uxIyHybaCloDjZXNM=;
+        b=FY2zPuUxgGyti3J3Cjg8d9LP42JfHxCr85FlG5pk2oECa6W+6WTvoKYEMRZ39wgEWR
+         tCa1C3ThsNgFTb7bHC6zOJrtCRNoUTVopx84rlUnPDCKeLzWKAeDxXNEpHxa3JlsmFy9
+         P+e/UmyfAKEp3tPObxtTSMBuRStnOvCbwkEP0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=XgFaDgHxLA9EExjjiit960bbSMsHOuuAVtNPxuyfwdc=;
-        b=eSg+Vlv75DVh3T4ZKMITQsFneT+egMmjyQrG7PRBMcNG6gjnrmZyG6gTf9FW2g4IU/
-         Tk2suImdDbaICSi+hSS28dJkJ+W7cMaFP5TiX345l8p7UYuWdfBLeTd9HMsIN+9wIqHD
-         Ndr/qxlhC9VkfPpx03XERWxB2EargC0rxM8/a+srMkO1EaM9X7xCb0nTx/mlCRP5ycU1
-         FXl9nKVNz8tNlv9WJVJ7Cyplwndd5KC0pdOhzeIdCFboS3rgfDI7CtPtKQvBvnqBK9mW
-         lJWaRMnHnQpnIRj2wdim/ERuKrhCZDX+kJgsPgPdc5lWq12TatkuWtj/sOymzaEE2/hE
-         AHFg==
-X-Gm-Message-State: AOAM532l7EiVj4k/lJGztM19wRWRLgmjJ5VdZmUGsFKDOQEzJdGfTMTV
-        pMNd0Md4R5pnWxjNgr9TpFNKlQ==
-X-Google-Smtp-Source: ABdhPJw6aKAned0HD+bPhbj4vTM78zjpxifXigeJgyJTC/meWWhO/mIZDtYOVcOs6j3nTwZw/ql6Tw==
-X-Received: by 2002:a17:90a:7025:: with SMTP id f34mr11406884pjk.95.1623873201649;
-        Wed, 16 Jun 2021 12:53:21 -0700 (PDT)
+        bh=VGS4DzWR8/G2dPikMD/719Suy2uxIyHybaCloDjZXNM=;
+        b=K5rwaRkCfYf2LeB/RzlXJ6kBjvA6LBpRIVXBIc/w/IogbY2Q/bsC2mDkW18VHSu1nX
+         xd/QB9GlOYRmaEkRVDsIyH/UnHFZdSMRySnkXVSY/DeJHhkW531P/a3Z0kk2iU5iqk+5
+         NwwDvnBUvW3h0jpWL0uBVmOnyS0EpAu1liRP6vo4zmtFbOutvZfgdyAZ3lf+u5Enjzhm
+         YAaDSJhY6yYEAb2DjVrWToyggmlxBzUtz4kf+MtIXylcnq+ZflTmaRn+2qGfoPM3S3ba
+         o6zJ11URDk0BPYEwn0UoJeZnbE66KHyqkjxjKKOh0Nc5abSQythL+lLCAotQl8ApSPwn
+         sYnw==
+X-Gm-Message-State: AOAM530ZERmH4ba4wOoswiObBKBEjBLX5rvvoZp+w4HYQQRKXNtFE0yg
+        B87Spvpz3ID9VYPs1HlezCcnAA==
+X-Google-Smtp-Source: ABdhPJy+by1ofBJSIyv5K8zGIpLui6xamup+J+dw2gDc7SAji+TsxylmDIAVWnfE1HkTnxyUQy25ww==
+X-Received: by 2002:a17:90a:2ac7:: with SMTP id i7mr1555152pjg.139.1623873216022;
+        Wed, 16 Jun 2021 12:53:36 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q21sm3044465pfn.81.2021.06.16.12.53.20
+        by smtp.gmail.com with ESMTPSA id e6sm6322325pjl.3.2021.06.16.12.53.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 12:53:21 -0700 (PDT)
+        Wed, 16 Jun 2021 12:53:35 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     netdev@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, linux-hardening@vger.kernel.org
-Subject: [PATCH] igb: Avoid memcpy() over-reading of ETH_SS_STATS
-Date:   Wed, 16 Jun 2021 12:53:19 -0700
-Message-Id: <20210616195319.1231564-1-keescook@chromium.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Michael Walle <michael@walle.cc>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH] sh_eth: Avoid memcpy() over-reading of ETH_SS_STATS
+Date:   Wed, 16 Jun 2021 12:53:33 -0700
+Message-Id: <20210616195333.1231715-1-keescook@chromium.org>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Patch-Hashes: v=1; h=sha256; g=18e7700f86d329d66c5e9ddd31188ce7bbdbf71f; i=GQ68Ss1LnWXsMUWpKq38qzZWmC3gw7+5/MXnZQpVpd8=; m=CF57NG64wUjRAJMr07rJpYR31VG7hNQuEGsWk+kxwfo=; p=t+sk7BBpXQAg1WlzpO1YLmSqLjWrBlygJr4SlvC/hrM=
-X-Patch-Sig: m=pgp; i=keescook@chromium.org; s=0x0x8972F4DFDC6DC026; b=iQIzBAABCgAdFiEEpcP2jyKd1g9yPm4TiXL039xtwCYFAmDKVq4ACgkQiXL039xtwCYEQA/9Gnt HvtC1Xc6/V8ZXiMORBlOP/vHXePkr+giLtNGghose0IbOmt1tRgziOFj/BM5p0WyMREw3boDhgE2+ dQTmESd8sW84S6xrM71LLoa3+4hVxrkiOMLJGkcR72doje8x7sjajebb/l8NEn8qarfAmiey9j/TH npvW6TrQ7jcrNe5AvG+BM+vbsshvn57W54HeJJRh7JNrQRzChdgUMUBd/4eHVA9j7XpW3iwIN3v4r 9ze5JVtk2jlE7A11KLDVqmuXFVykB+EB4sqA80BBMZHUY8oixvlUw8JM6b10RZk+hiKTt6j3jsaXD aQCemzWurwF2nSPcut6l4yslqqp8yFBwFXLClRsRw1BS3Iq8Ks3m+yujsiCHP/JC2FJilbNSJgLAH oqVSaMQ3wH35GUenp1ZF4FhWnRtA/9q48LacfjL3hixikR/UE0DE1NNFm6cs1oNJ/KvbzcOEdmaWL U5Su1psqlgrxdlRa/Piz7izFEWwqRLZFYkP9huCKPZvzlWsqnmUSGrjJgV0lJjULBwBEwGXtjml8j ZBsaQ04jSjL3y1DnM6+IFE5HEPjY013NzEHgkF0xXRmcuFrQTyBSCTIeOvaacJVtoTrkOPXqrhpd9 BAiWrTMmCJy7uxy0zoauO7oF0TINargIQibSU8SkFoq5b0V7Y3F/kFk91DVOs6Ts=
+X-Patch-Hashes: v=1; h=sha256; g=94b952556ff3e4a0b78f53f634316c190806865b; i=fo3kines9vFWo/lbOt9RxqMMwqaQ4LUWnKe29pSLIO0=; m=CF57NG64wUjRAJMr07rJpYR31VG7hNQuEGsWk+kxwfo=; p=UD+V99vZhCuYKzsPC7EN++Bmc+jlsHFMHh9vpLTU4Z0=
+X-Patch-Sig: m=pgp; i=keescook@chromium.org; s=0x0x8972F4DFDC6DC026; b=iQIzBAABCgAdFiEEpcP2jyKd1g9yPm4TiXL039xtwCYFAmDKVr0ACgkQiXL039xtwCa4PQ//e8z 6HxLhqSxcJTAD3VsDmYS1m+HPV/hnp/XmeHbH7f9S2pjzHNDG8HovNOzLkVkzcLSynVHxGwK41WhB /wH2Zzkjsp414jtWi2O//hUaH8quqdyHcKX/yE0J1qAbuDgAeUsttpUTHj2hCvJ33EYfmYP4r9ib+ idqCAcvFfR+1mNU5xtALNMwASrxxSjd8/QbcW7MYXqHJzOTrWbmrpVVaVPRSTma+UMEpiDtmUJj0e h2XDdDxItwlTVTOb5V1eFf5aV26GX/eSagIyx3zMTbqbYleEmFaU1NFWtDz3RkEDddKKCXPe5+LVv wL0tEOtFlc/Mju76htEQ26EIMXLumy8b3ZeQbrmfr6isJ1X4SaxZ+uXmGA4rDAzWbGUFm1hnw3Ks6 MgF4AyQsuifkvhc050730qySeGLCW6vsL9n3GA+3lqxCEhZckYcgYdXpXRH7wKUsY4nZqAK0OtfFj 8ry+10kUIeybmEAwQCS3OT06Kp/YveXMPJZDBDPdKSKUoJlWH6ljlPeLEer02JaCXCWWhgFH4trNm iDnddfmjBuj/dp86l/fUBvFvdYEpf16Axih3YQr6/wtpKte7jjvhIycAZZ243YRJqgZvYYANELvsi FeC8tTs2g1obVAxSjnYl1Wplgw90EqQ+1/gIZuEtmRvfOUO0qaziQddLUXy8eLtg=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -74,23 +82,22 @@ checking.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/ethernet/intel/igb/igb_ethtool.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/renesas/sh_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index 636a1b1fb7e1..17f5c003c3df 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -2343,8 +2343,7 @@ static void igb_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
- 
+diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
+index 177523be4fb6..840478692a37 100644
+--- a/drivers/net/ethernet/renesas/sh_eth.c
++++ b/drivers/net/ethernet/renesas/sh_eth.c
+@@ -2287,7 +2287,7 @@ static void sh_eth_get_strings(struct net_device *ndev, u32 stringset, u8 *data)
+ {
  	switch (stringset) {
- 	case ETH_SS_TEST:
--		memcpy(data, *igb_gstrings_test,
--			IGB_TEST_LEN*ETH_GSTRING_LEN);
-+		memcpy(data, igb_gstrings_test, sizeof(igb_gstrings_test));
- 		break;
  	case ETH_SS_STATS:
- 		for (i = 0; i < IGB_GLOBAL_STATS_LEN; i++)
+-		memcpy(data, *sh_eth_gstrings_stats,
++		memcpy(data, sh_eth_gstrings_stats,
+ 		       sizeof(sh_eth_gstrings_stats));
+ 		break;
+ 	}
 -- 
 2.25.1
 
