@@ -2,106 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EACD33A9472
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 09:51:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6A93A9489
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 09:57:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231716AbhFPHxi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Jun 2021 03:53:38 -0400
-Received: from mga07.intel.com ([134.134.136.100]:10615 "EHLO mga07.intel.com"
+        id S232023AbhFPH7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 03:59:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57632 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231345AbhFPHxh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 03:53:37 -0400
-IronPort-SDR: +i8LJ4yxk6YSr9DzVEPbtftXdeQr+fyOsoWIZi0yW+iU67OPiAbSm+Twh9tlpdJPx1lje3WpVS
- 0SXTZO5dLOKg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10016"; a="269982912"
-X-IronPort-AV: E=Sophos;i="5.83,277,1616482800"; 
-   d="scan'208";a="269982912"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2021 00:51:27 -0700
-IronPort-SDR: uer3ogkESCcjboK7tiGLYgPxiNTLS6jHn+0HE74cNSKSLO34RccsJLGV/niup/Y1c8TdnLSkRo
- vUB6c6pz3Dfg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,277,1616482800"; 
-   d="scan'208";a="450547047"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by orsmga008.jf.intel.com with ESMTP; 16 Jun 2021 00:51:27 -0700
-Received: from bgsmsx604.gar.corp.intel.com (10.67.234.6) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Wed, 16 Jun 2021 00:51:26 -0700
-Received: from bgsmsx606.gar.corp.intel.com (10.67.234.8) by
- BGSMSX604.gar.corp.intel.com (10.67.234.6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Wed, 16 Jun 2021 13:21:23 +0530
-Received: from bgsmsx606.gar.corp.intel.com ([10.67.234.8]) by
- BGSMSX606.gar.corp.intel.com ([10.67.234.8]) with mapi id 15.01.2242.008;
- Wed, 16 Jun 2021 13:21:23 +0530
-From:   "Kumar, M Chetan" <m.chetan.kumar@intel.com>
-To:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     linuxwwan <linuxwwan@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: RE: [PATCH] net: iosm: remove the repeated declaration and comment
-Thread-Topic: [PATCH] net: iosm: remove the repeated declaration and comment
-Thread-Index: AQHXYoDmPLcwpusAXUKXi9SOvT1Ku6sWQsUw
-Date:   Wed, 16 Jun 2021 07:51:23 +0000
-Message-ID: <2735788e3a224cb0b50fc015a76f4f82@intel.com>
-References: <1623828340-2019-1-git-send-email-zhangshaokun@hisilicon.com>
-In-Reply-To: <1623828340-2019-1-git-send-email-zhangshaokun@hisilicon.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-reaction: no-action
-dlp-product: dlpe-windows
-x-originating-ip: [10.223.10.1]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S231645AbhFPH7u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 03:59:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6BEA6611BE;
+        Wed, 16 Jun 2021 07:57:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623830265;
+        bh=OxVsmrCHtykrZQjFCj85NdY0/Jh2cm6EQb5bJJSRVY8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sjPmT/7EaroZ+wfhvfLxm1Il9F7bzQPFQNLry7okjhswSJEtc5FKS5wyz3TN/02I9
+         pXsqYGXKMZBd9hPDqLi1FGu5CcgQzWC1oq9ex2oODwv+NafsqI22p/J2z/CDR17vFJ
+         NIp8qUjO4Fm9wFt4PNO2KNRyB5p7peyxyHROQ6wYRJEe7vC50BRBYaxjslL5pD2qDY
+         HWzjTXLsOXnJOnipx925lSGpgINUZwYNDUHH6UQGqwnM01BX82lmQLQUtoTWhqNtRi
+         uD7gdoIls3P/otXu7sdmsZZT+9JkgnJo74fakirO57zMHYUgVyJphNRb+FD2YA51pw
+         u9Z+hc38/ozAA==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Aharon Landau <aharonl@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
+        Maor Gottlieb <maorg@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH rdma-next 0/2] Provide already supported real-time timestamp
+Date:   Wed, 16 Jun 2021 10:57:37 +0300
+Message-Id: <cover.1623829775.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Function 'ipc_mmio_get_cp_version' is declared twice, so remove the
-> repeated declaration and wrong comments.
-> 
-> Cc: M Chetan Kumar <m.chetan.kumar@intel.com>
-> Cc: Intel Corporation <linuxwwan@intel.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
-> ---
->  drivers/net/wwan/iosm/iosm_ipc_mmio.h | 10 ----------
->  1 file changed, 10 deletions(-)
-> 
-> diff --git a/drivers/net/wwan/iosm/iosm_ipc_mmio.h
-> b/drivers/net/wwan/iosm/iosm_ipc_mmio.h
-> index bcf77aea06e7..45e6923da78f 100644
-> --- a/drivers/net/wwan/iosm/iosm_ipc_mmio.h
-> +++ b/drivers/net/wwan/iosm/iosm_ipc_mmio.h
-> @@ -121,16 +121,6 @@ void ipc_mmio_set_contex_info_addr(struct
-> iosm_mmio *ipc_mmio,
->  				   phys_addr_t addr);
-> 
->  /**
-> - * ipc_mmio_get_cp_version - Write context info and AP memory range
-> addresses.
-> - *			     This needs to be called when CP is in
-> - *			     IPC_MEM_DEVICE_IPC_INIT state
-> - * @ipc_mmio:	Pointer to mmio instance
-> - *
-> - * Returns: cp version else failure value on error
-> - */
-> -int ipc_mmio_get_cp_version(struct iosm_mmio *ipc_mmio);
-> -
-> -/**
->   * ipc_mmio_get_cp_version - Get the CP IPC version
->   * @ipc_mmio:	Pointer to mmio instance
->   *
-> --
-> 2.7.4
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Thanks,
-Reviewed-by: M Chetan Kumar <m.chetan.kumar@intel.com>
+In case device supports only real-time timestamp, the kernel will
+fail to create QP despite rdma-core requested such timestamp type.
+
+It is because device returns free-running timestamp, and the conversion
+from free-running to real-time is performed in the user space.
+
+This series fixes it, by returning real-time timestamp.
+
+Thanks
+
+Aharon Landau (2):
+  RDMA/mlx5: Refactor get_ts_format functions to simplify code
+  RDMA/mlx5: Support real-time timestamp directly from the device
+
+ drivers/infiniband/hw/mlx5/cq.c               |   6 +-
+ drivers/infiniband/hw/mlx5/main.c             |   6 ++
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |   7 ++
+ drivers/infiniband/hw/mlx5/qp.c               | 102 ++++++++++--------
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   8 +-
+ .../ethernet/mellanox/mlx5/core/lib/clock.h   |  10 +-
+ include/linux/mlx5/mlx5_ifc.h                 |  36 ++-----
+ include/linux/mlx5/qp.h                       |   4 +-
+ include/uapi/rdma/mlx5-abi.h                  |   2 +
+ 9 files changed, 94 insertions(+), 87 deletions(-)
+
+-- 
+2.31.1
+
