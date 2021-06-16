@@ -2,146 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2583A97E6
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 12:42:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56A503A981E
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 12:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232452AbhFPKoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 06:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
+        id S232223AbhFPKwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 06:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232455AbhFPKoH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 06:44:07 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B773C061768
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 03:42:01 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ltSzN-0004RX-MH; Wed, 16 Jun 2021 12:41:41 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:27:4a54:dbae:b593])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 9048463D23F;
-        Wed, 16 Jun 2021 10:41:36 +0000 (UTC)
-Date:   Wed, 16 Jun 2021 12:41:35 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, dmaengine@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
-        alsa-devel@alsa-project.org, iommu@lists.linux-foundation.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>, Stephen Boyd <sboyd@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Vinod Koul <vkoul@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] dt-bindings: Drop redundant minItems/maxItems
-Message-ID: <20210616104135.z5bjalhan4ui2ibz@pengutronix.de>
-References: <20210615191543.1043414-1-robh@kernel.org>
+        with ESMTP id S231769AbhFPKwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 06:52:32 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11E1C061574
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 03:50:25 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id x24so3551139lfr.10
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 03:50:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Goo5PYRM5K9l0HtKc4Pi5tcnXNaGZfrwehALF98shRs=;
+        b=MinDoi+4KQqD3bxrxrZwzeGPrtD1LqYvDcp2V8lWroeSQ84aG8Zl7I56b2zRtLAmlR
+         HvJkIqByCpHPGJgw80/Wio7FdCsw+4UnTXmd28zS9wVjSvGQQ3o7GmsRNt9Z1rHjcALv
+         w6d5XD+ffwC87A8yKvPS4mFwjzEE0cHKeY8lgs+lggswHmI1EsT54VVYWWnrdpSFrb9C
+         HHR1StjoVsFXgqLl2VNDbjVIuS4eddqKbrf/+HlEaBVCoegup5PEku4Dl8CB8rNh5L7v
+         pZh+nzzyqnvL1Q7m5frG0oSHlZhPr3IX2BT1txXpSZGEiNHIvpXeFB0nONDZrn+e7dGf
+         Uv5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Goo5PYRM5K9l0HtKc4Pi5tcnXNaGZfrwehALF98shRs=;
+        b=pLNpbfs8S414VAwtQHYsDbFLBtX8WUAnlh/MsOxYnpnm4SYYQ56QTJO9rMID68l60H
+         25pTfBPCKE+YA+Db3KWKx6KdnQ5qnCryK7m+C+AsRPUX1IXxukGHjo18e8nyvfoh/bol
+         MT8ynGFUZ46iFvsLGlE7tva3pwT51PQHQeN34DcN/RamacIF9XVCx+iKUXH0EcGDkjq6
+         zo1N4wq0GSrTLTVTg6MWIbcWIUiJTzToQaltcZCPHssk8YDbxJnmOH/oyEulUlWk5jzS
+         4wJETa0BJbR2xbrPtIhy9a0OfY3PoRMb3tKof8qiW2GnnxBj+8VAu60OJFZcX+OK0TN0
+         3x8A==
+X-Gm-Message-State: AOAM530VB/hav9WPwgeVjs5uh8OWIrXdamz/D9xCA7NlBbZxA/z3erEs
+        sl4Lxp752Fue6nDCQw89Tm7hSL4SjJLThxA/fgBFA6s+fi8=
+X-Google-Smtp-Source: ABdhPJyjqL/qq4IM4uuW0kxTf2eyKdJPoeoy6EM2BhLly4swBVbyXaRfKNZPpG1srsgWLwe3cfiRO0spYaRi0Ru6S/Y=
+X-Received: by 2002:ac2:5e64:: with SMTP id a4mr3258735lfr.657.1623840624230;
+ Wed, 16 Jun 2021 03:50:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="agvztsrh6izyn335"
-Content-Disposition: inline
-In-Reply-To: <20210615191543.1043414-1-robh@kernel.org>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210608153309.4019-1-littlesmilingcloud@gmail.com>
+ <20210608153309.4019-2-littlesmilingcloud@gmail.com> <20210614195700.260c8933@hermes.local>
+In-Reply-To: <20210614195700.260c8933@hermes.local>
+From:   Anton Danilov <littlesmilingcloud@gmail.com>
+Date:   Wed, 16 Jun 2021 13:49:48 +0300
+Message-ID: <CAEzD07KJOp9q0RfQMhjLuc2MH2-toMCECKxS594=pYJqaUNLMg@mail.gmail.com>
+Subject: Re: [RFC 2/3] [RFC iproute2-next] tc: f_u32: Fix the ipv6 pretty printing.
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 15 Jun 2021 at 05:57, Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+> Ok, but better yet, upgrade f_u32 to do proper JSON output.
 
---agvztsrh6izyn335
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Yep, I'll send the JSON output patch soon.
 
-On 15.06.2021 13:15:43, Rob Herring wrote:
-> If a property has an 'items' list, then a 'minItems' or 'maxItems' with t=
-he
-> same size as the list is redundant and can be dropped. Note that is DT
-> schema specific behavior and not standard json-schema behavior. The tooli=
-ng
-> will fixup the final schema adding any unspecified minItems/maxItems.
->=20
-> This condition is partially checked with the meta-schema already, but
-> only if both 'minItems' and 'maxItems' are equal to the 'items' length.
-> An improved meta-schema is pending.
-[...]
->  Documentation/devicetree/bindings/net/can/bosch,m_can.yaml  | 2 --
 
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---agvztsrh6izyn335
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDJ1V0ACgkQqclaivrt
-76nTUAf+NueTtFpURzEcaqcVzU9on1r9+EA8Cl4Mxhgg3Nw3TGp6enDeBSGPVR5B
-MaJtsub8PAEbECezUQxWPaNPa5uvS7dCW5eygZ2z3lDMGZGhYjtv67LVAJgCDq3q
-BWNuKMkKu25Ccsxl33ItHRrAmrlcwBcZMfzN+E9OgZ60GySlRv+AxcLR2XiwST9t
-kWlEW417Mj0P+cvwFo/3Ms4zRddEiw92YruesAK73pkxrB2u2xqaSy9BqNHZCG/J
-F9Q0VsjhTwLAI/7VQohXgcrL2yHsMRJt0M1+XMaxNncf1amrPNo8eWjyNDNbbIIi
-s6uvO8FoLgDLRqbX7Q14cLQ+uQmadw==
-=ZOig
------END PGP SIGNATURE-----
-
---agvztsrh6izyn335--
+--
+Anton Danilov.
