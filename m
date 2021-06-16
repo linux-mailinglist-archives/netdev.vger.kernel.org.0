@@ -2,135 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6245A3AA757
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:18:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 107CE3AA76D
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:25:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234487AbhFPXU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 19:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58632 "EHLO
+        id S234557AbhFPX17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 19:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234476AbhFPXU1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:20:27 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9457C061574;
-        Wed, 16 Jun 2021 16:18:20 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id c14so5444092ybk.3;
-        Wed, 16 Jun 2021 16:18:20 -0700 (PDT)
+        with ESMTP id S234508AbhFPX15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:27:57 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32356C06175F
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:25:50 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id c18so1260210qkc.11
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:25:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IjPZycaBxgq5vO65AfgtqkV7cRF6YSSfceLCcOugeoI=;
-        b=SDT98NwoiapsXDfIB3M3AxGQWpJjhvzOjlyp61uazOimeZXpOZfc/0p8HUjLKMqZxS
-         RjzUuvza847L0LdU9Gvz3ocjHVVUZdtZHEc3t219I+ey0G4fzlqgqx3ChUuZ5CgWr7Ck
-         tAsDnOnOp6CLwZykDgneC2OsXdWbPiUthJ6/GhN1+ELQO5l35CxuvFT9hcdcY7KPJCi8
-         GGf5zsLKsNNolGkUVoitcJFgE/PMETosMDqLSjwwDKautQxW3vKlKeCBNy68J8XDa0lf
-         ljtKhpUDVmKUWq+0bFuLcnM4KScmV3Cemsu7DOEayTbDgBIVx5LMhWxBy/zykSKtWv5V
-         D3Hg==
+         :cc:content-transfer-encoding;
+        bh=RGJwIcw/q576ovQRK45c7NVrN5akX6pFlIi1oJ6UC88=;
+        b=yjHZdxA08MjiNwf3szPMWYI5SnU3h4eq7AuZyqyZ4L8dFPhdE534qLX8N+JLsJUs7w
+         7hCAlcZpbuZY9G5bdPZcN+4xvOfUCUxWsy7gVpqj7nX18fh1ZBUZiTqiBTbdtdGQt76T
+         itcYc29QtJbbpxc6Cqd8CrBkpEZqfUp0D/04uEy0t3Q+Jxe03DPSgCQdENuhbwEMlaQg
+         Cp1Ry0k4skrj+gmZKCRmhjj7bJBvnB+dY0l022ApSjZap6Wh6zwnly9lfi5IeEJy1gty
+         esyzofFT/9tmSIfqydJqPzOnDZsTfT++Yl1b10PnHc0w3yRohyCwZ9NGD0wx4evWx65X
+         anXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IjPZycaBxgq5vO65AfgtqkV7cRF6YSSfceLCcOugeoI=;
-        b=gen7aVb3fY/RIXZ0JwHFd+taO/xVO9tDipmGQ7hEvO0mHOLILEVoCGsiBjp5QRyA5P
-         jMoyQxXOMXba7tZ66KXe/DiD/QkFeuXv2NUqVeh2bz1XFEvwdh454C/HmwzwfK8l6Ebu
-         /2qcgweyWGqcxYpdQg2TubEiEwxZq/mQNsaWQauZc3J52baTAhkflrbFPXGW6+V/3Xw6
-         zAwzpEGBx6cqMAdEq0qHs0bZ28CE0eu0s0c92LQmqWND+ak3dbNMDc2crKtxwIfw1V9O
-         31mMw9Wdc7Mvn1YMPJ4Npa7NG5E/FSIxhe5Uj1KgddE2OEaAXHd7XlxO3oYpFDj+Oq5X
-         3RuA==
-X-Gm-Message-State: AOAM532V2OKynMJlBGIC1IKSzSchq4eRzAMZSiqmpdHu9W/LfIPYtVeJ
-        +UqR+dobapSx4DJ65DfJv9msTj8UBH/c5NEqNQo=
-X-Google-Smtp-Source: ABdhPJxV17d2g8AIQQA990WRsq5Z1Q9r9vlrTSjfMQajjqtmD4QX/YLZ+3SRgIbY89taO47Xkqmmf/VT7AkID2A15cU=
-X-Received: by 2002:a25:df82:: with SMTP id w124mr1970165ybg.425.1623885499929;
- Wed, 16 Jun 2021 16:18:19 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RGJwIcw/q576ovQRK45c7NVrN5akX6pFlIi1oJ6UC88=;
+        b=eeLAMrQ3TJkQtNddeO4hJNw0a7tGeZElpOPgY4h6SCmOK37iDUy4ZnRlth3dYl/4sO
+         djt4mn/fD8MwKcXvvjk6efJVmYBGzw2RDDJ0nEja/Fna16LKVOys072mVGQ417vpPaQE
+         GC32KX3Y043eP0qJYXOz5cAORjyu6RnPNqpABZjLfBdTAV9Fa/eDBTDQ+tfydgfNVCPk
+         2pwrw24f8yYaC5/kmjj1VSeqgLdsE88K5Pk8vzRrpw8mtgZqV4i3o1l5Qpi/yKhuRjoE
+         DH8nVWV9W1Bhcy8RG+zUUpwcBXc5PxdTSCmLZBdslZSQ3kF0Y+XKOHFbAqD+2EIV9y5p
+         tUaw==
+X-Gm-Message-State: AOAM532dFF+DfYH23xHpaWZpfVCzdXm/0WKKz8Ug/FIM72BM7qJlfhkY
+        Pu118gSKqd5Wya//UcYah02w/Z5ia56r1SHw5uYKvp9bYlUyXQ==
+X-Google-Smtp-Source: ABdhPJxGQ1/XO8SoqXVyvmyDnP28vr9eEwL7k3SCLhbXZsEofN9Hot475ONHXu3cj4L4OmUvpTx6WZlSOo012aKCc04=
+X-Received: by 2002:a37:a041:: with SMTP id j62mr831796qke.155.1623885949130;
+ Wed, 16 Jun 2021 16:25:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210616170231.2194285-1-memxor@gmail.com>
-In-Reply-To: <20210616170231.2194285-1-memxor@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Jun 2021 16:18:08 -0700
-Message-ID: <CAEf4BzZTgMHVd2kEQ5vakgNSJYFB7uiY0j_NBGdG_xzmjKQTAA@mail.gmail.com>
-Subject: Re: [PATCH v2] libbpf: add request buffer type for netlink messages
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
+References: <20210616190759.2832033-1-mw@semihalf.com> <20210616190759.2832033-5-mw@semihalf.com>
+ <YMpVhxxPxB/HKOn2@lunn.ch>
+In-Reply-To: <YMpVhxxPxB/HKOn2@lunn.ch>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Thu, 17 Jun 2021 01:25:38 +0200
+Message-ID: <CAPv3WKdo_JeMRL-GtkYv7G3MUnXmyG_oJtA+=WY72-J_0jokRA@mail.gmail.com>
+Subject: Re: [net-next: PATCH v2 4/7] net: mvmdio: simplify clock handling
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        Jon Nettleton <jon@solid-run.com>,
+        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
+        lenb@kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 16, 2021 at 10:04 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
+=C5=9Br., 16 cze 2021 o 21:48 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
 >
-> Coverity complains about OOB writes to nlmsghdr. There is no OOB as we
-> write to the trailing buffer, but static analyzers and compilers may
-> rightfully be confused as the nlmsghdr pointer has subobject provenance
-> (and hence subobject bounds).
+> > +     dev->clks[0].id =3D "core";
+> > +     dev->clks[1].id =3D "mg";
+> > +     dev->clks[2].id =3D "mg_core";
+> > +     dev->clks[3].id =3D "axi";
+> > +     ret =3D devm_clk_bulk_get_optional(&pdev->dev, MVMDIO_CLOCK_COUNT=
+,
+> > +                                      dev->clks);
 >
-> Remedy this by using an explicit request structure, but we also need to
-> start the buffer in case of ifinfomsg without any padding. The alignment
-> on netlink wire protocol is 4 byte boundary, so we just insert explicit
-
-struct ifinfomsg has unsigned field in it, which makes it
-automatically 4-byte aligned because the struct is not packed. Do we
-really need that _pad[4] thing?.. Even if we do, I'm still not sure
-how it helps with alignment... If anything, explicit
-__attribute__((aligned(4))) would be better.
-
-> 4 byte buffer to avoid compilers throwing off on read and write from/to
-> padding.
+> Kirkwood:
 >
-> Also switch nh_tail (renamed to req_tail) to cast req * to char * so
-
-it probably should use (void *) everywhere, instead of (char *), but I
-see that existing code is using char * exclusively, so it's probably
-for another patch
-
-> that it can be understood as arithmetic on pointer to the representation
-> array (hence having same bound as request structure), which should
-> further appease analyzers.
+>                 mdio: mdio-bus@72004 {
+>                         compatible =3D "marvell,orion-mdio";
+>                         #address-cells =3D <1>;
+>                         #size-cells =3D <0>;
+>                         reg =3D <0x72004 0x84>;
+>                         interrupts =3D <46>;
+>                         clocks =3D <&gate_clk 0>;
+>                         status =3D "disabled";
 >
-> As a bonus, callers don't have to pass sizeof(req) all the time now, as
-> size is implicitly obtained using the pointer. While at it, also reduce
-> the size of attribute buffer to 128 bytes (132 for ifinfomsg using
-> functions due to the need to align buffer after it).
-
-Sorry if it's a stupid question, but why it's safe to reduce the
-buffer size from 128 to 256?
-
->
-> Summary of problem:
->   Even though C standard allows interconveritility of pointer to first
-
-s/interconveritility/interconvertibility/ ?
-
->   member and pointer to struct, for the purposes of alias analysis it
->   would still consider the first as having pointer value "pointer to T"
->   where T is type of first member hence having subobject bounds,
->   allowing analyzers within reason to complain when object is accessed
->   beyond the size of pointed to object.
->
->   The only exception to this rule may be when a char * is formed to a
->   member subobject. It is not possible for the compiler to be able to
->   tell the intent of the programmer that it is a pointer to member
->   object or the underlying representation array of the containing
->   object, so such diagnosis is supressed.
-
-typo: suppressed
-
->
-> Fixes: 715c5ce454a6 ("libbpf: Add low level TC-BPF management API")
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
-> Changelog:
-> v1 -> v2:
->  * Add short summary instead of links about the underlying issue (Daniel)
-> ---
->  tools/lib/bpf/netlink.c | 107 +++++++++++++++-------------------------
->  tools/lib/bpf/nlattr.h  |  37 +++++++++-----
->  2 files changed, 65 insertions(+), 79 deletions(-)
+> Does this work? There is no clock-names in DT.
 >
 
-[...]
+Neither are the clocks in Armada 7k8k / CN913x:
+
+                CP11X_LABEL(mdio): mdio@12a200 {
+                        #address-cells =3D <1>;
+                        #size-cells =3D <0>;
+                        compatible =3D "marvell,orion-mdio";
+                        reg =3D <0x12a200 0x10>;
+                        clocks =3D <&CP11X_LABEL(clk) 1 9>,
+<&CP11X_LABEL(clk) 1 5>,
+                                 <&CP11X_LABEL(clk) 1 6>,
+<&CP11X_LABEL(clk) 1 18>;
+                        status =3D "disabled";
+                };
+
+Apparently I misread the code and got convinced that contrary to
+devm_clk_get_optional(), the devm_clk_get_bulk_optional() obtains the
+clocks directly by index, not name (on the tested boards, the same
+clocks are enabled by the other interfaces, so the problems
+
+I will drop this patch. Thank you for spotting the issue.
+
+Best regards,
+Marcin
