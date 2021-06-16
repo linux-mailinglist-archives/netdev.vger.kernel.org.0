@@ -2,71 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BA003A9662
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 11:37:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C94C13A966C
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 11:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232489AbhFPJjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 05:39:39 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:4947 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232341AbhFPJjR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 05:39:17 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G4g490fKlz70Sm;
-        Wed, 16 Jun 2021 17:34:01 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Wed, 16 Jun 2021 17:37:10 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 16 Jun 2021 17:37:10 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
-        <ms@dev.tdt.de>, <willemb@google.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 8/8] net: hdlc_ppp: add required space
-Date:   Wed, 16 Jun 2021 17:33:57 +0800
-Message-ID: <1623836037-26812-9-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1623836037-26812-1-git-send-email-huangguangbin2@huawei.com>
-References: <1623836037-26812-1-git-send-email-huangguangbin2@huawei.com>
+        id S232079AbhFPJmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 05:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231491AbhFPJmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 05:42:22 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11677C061574
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 02:40:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=xeaQuGZxJj8mR5i/Hcz8vi+8KzvggIOfSY02wQBou8s=; b=tcxs6gNcO7HLEvfbO4hoD38hw
+        q++tMKDM87/GvoaAX/YQdZgF1xiCCkwNUktmUnloMC1LAsA3UWq19f8qIxBA2ZSIhY1YA4YjGhCt5
+        YAMQOkVFaJ5O8dmfMAfimAF2o9xldzr/tJ+Ra245KT/O/S4YeRpoMtTpREIU5+nC04HXaI2Buf2Rn
+        Hksi+cChUwtwd3UQlX7VIOSI05uJWS0KFN+evazPlNWCVKpBttttNOhcMiRMlwqBEmtL3tXhlq8zK
+        Hq4j47x70VXS1SIE5sTYLL6r5gXbIuK7mrNzToE43YSzLYgM+GkBURxQkl0v98kTwctF0agqu4iar
+        qVYRDOYHA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45056)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ltS1t-0006ze-Od; Wed, 16 Jun 2021 10:40:13 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ltS1s-0005uy-4u; Wed, 16 Jun 2021 10:40:12 +0100
+Date:   Wed, 16 Jun 2021 10:40:12 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, calvin.johnson@oss.nxp.com,
+        hkallweit1@gmail.com, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next] mdio: mdiobus: setup of_node for the MDIO device
+Message-ID: <20210616094012.GA22278@shell.armlinux.org.uk>
+References: <20210615154401.1274322-1-ciorneiioana@gmail.com>
+ <20210615171330.GW22278@shell.armlinux.org.uk>
+ <YMjx6iBD88+xdODZ@lunn.ch>
+ <20210615210907.GY22278@shell.armlinux.org.uk>
+ <20210615212153.fvfenkyqabyqp7dk@skbuf>
+ <YMkcQ6F2FXWvpeKu@lunn.ch>
+ <20210616082052.s56l54vycxilv5is@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210616082052.s56l54vycxilv5is@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+On Wed, Jun 16, 2021 at 11:20:52AM +0300, Ioana Ciornei wrote:
+> On Tue, Jun 15, 2021 at 11:31:47PM +0200, Andrew Lunn wrote:
+> > > The fwnode_operations declared in drivers/acpi/property.c also suggest
+> > > the ACPI fwnodes are not refcounted.
+> > 
+> > Is this because ACPI is not dynamic, unlike DT, where you can
+> > add/remove overlays at runtime?
+> > 
+> 
+> I am really not an expert here but the git history suggests so, yes.
+> 
+> Without the CONFIG_OF_DYNAMIC enabled, the fwnode_handle_get() call is
+> actually a no-op even in the OF case.
 
-Add space required after that ','.
+More accurately, of_node_get() is a no-op if CONFIG_OF_DYNAMIC is
+disabled, which in turn makes fwnode_handle_get() also a no-op.
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/wan/hdlc_ppp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I'm wondering whether we would need two helpers to assign these, or
+just a single helper that takes a fwnode and assigns both pointers.
+to_of_node() returns NULL if the fwnode is not a DT node, so would
+be safe to use even with ACPI.
 
-diff --git a/drivers/net/wan/hdlc_ppp.c b/drivers/net/wan/hdlc_ppp.c
-index 53c668e..bef7373 100644
---- a/drivers/net/wan/hdlc_ppp.c
-+++ b/drivers/net/wan/hdlc_ppp.c
-@@ -676,7 +676,8 @@ static int ppp_ioctl(struct net_device *dev, struct ifreq *ifr)
- 
- 		/* no settable parameters */
- 
--		result = hdlc->attach(dev, ENCODING_NRZ,PARITY_CRC16_PR1_CCITT);
-+		result = hdlc->attach(dev, ENCODING_NRZ,
-+				      PARITY_CRC16_PR1_CCITT);
- 		if (result)
- 			return result;
- 
+Then there's the cleanup side when the device is released. I haven't
+yet found where we release the reference to the fwnode/of_node when
+we release the phy_device. I would have expected it in
+phy_device_release() but that does nothing. We could only add that
+when we are certain that all users who assign the firmware node to
+the phy device has properly refcounted it in the DT case.
+
 -- 
-2.8.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
