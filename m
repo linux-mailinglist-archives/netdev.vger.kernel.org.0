@@ -2,146 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11BD03A9B0C
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 14:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 688DF3A9B15
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 14:52:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233058AbhFPMxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 08:53:46 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:17080 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233065AbhFPMxk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 08:53:40 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15GCkGCA009765;
-        Wed, 16 Jun 2021 05:51:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=ht6NUbClPoYToQ+eOLOkoGv/Ugfew8ZjdTNfLSNODP4=;
- b=gTxV9sdmhD8+kDOxHPpKmmfL1p7RfnmcGbHqV/W6lUmuh461FWt/PfW/hbenZLP7htU6
- JL4qJX95mFss4Md/LL2RAp04XPbImdXQGIwallN8uWydRDj/ecal9EWmJRu/jgoIRPcD
- X/+gmBLQyn1kxq7KCfFiTfFHvOqzWPJPDI0x45XkZk7UZpS83TrKhP80eMBmcj9iXoh5
- iE7oLphMW/fQkY90pvhwjJ6UjZ/XtyxRkcU03VNu8Xr8RnPtIFbvxjDy/ds8EdzbyVDH
- ex8wj+TuPXmVhnKhuBhkMn6vMnHOSyBEr/bTY0SRXPEmCjoNxFTRV5wQh5q8JwmPlHnu BA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 397auvhkkf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 16 Jun 2021 05:51:33 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Jun
- 2021 05:51:32 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Jun 2021 05:51:32 -0700
-Received: from machine421.marvell.com (unknown [10.29.37.2])
-        by maili.marvell.com (Postfix) with ESMTP id C09803F704B;
-        Wed, 16 Jun 2021 05:51:30 -0700 (PDT)
-From:   <sgoutham@marvell.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH net-next 2/2] octeontx2-pf: Support setting ntuple rule count
-Date:   Wed, 16 Jun 2021 18:21:22 +0530
-Message-ID: <1623847882-16744-3-git-send-email-sgoutham@marvell.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1623847882-16744-1-git-send-email-sgoutham@marvell.com>
-References: <1623847882-16744-1-git-send-email-sgoutham@marvell.com>
+        id S233007AbhFPMyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 08:54:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21308 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232870AbhFPMyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 08:54:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623847915;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/RFxE6z1dzCcFZAdTltB4JFa0p4EHIH2iYLpgasa9Ms=;
+        b=UXB+XGEblsBxQAE7v893bAKnD9pDT9EATswjxV8Eenie6hFdaayPeFa0bteOtjwzuQVCSB
+        0kViPpHb0ygaGkG/I4Ezzhwoe9p52gecnqlWBS1Y43Ka3FUfK13ZS+Zzzki22gJCvg4YDh
+        ju9Ho2XhmhUwotgdlLJz7aQwi+7bTTU=
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
+ [209.85.214.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-575-ogC4RsW7Phyu0N8hNseW9A-1; Wed, 16 Jun 2021 08:51:54 -0400
+X-MC-Unique: ogC4RsW7Phyu0N8hNseW9A-1
+Received: by mail-pl1-f199.google.com with SMTP id x15-20020a170902e04fb02900f5295925dbso503071plx.9
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 05:51:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=/RFxE6z1dzCcFZAdTltB4JFa0p4EHIH2iYLpgasa9Ms=;
+        b=PeXw0qPUgr1ggVgeyBXz4d/ru5OgmSd947MbsdQa2Elz1ER7ihMAoGsrNygHxG/qSs
+         UwKjQEjYPVrLSj94eVaHtU/NOKBs7PhlLf+PpUxCbK2kctV3uAb820Aq0FneptVEHpbF
+         Z3wm2/WnedmWPTk5V8a/IbwKmwLDYmbhyeGLW4+gk4DGAUCudiF7mxPI7V7/8VuZQljB
+         Juiy59eq0A4KbpEpJ6GL21TNuzn9OHN4AY5qUXAWoumPa9eK9xAxctb77wzQfKujO0hA
+         eUBqPUPdZvOsphjK8HX2RIO4TsCP/VkRlrdwLnHbrb2tOtFCtL7dFPHoqE9LAqyQ4W76
+         bOKw==
+X-Gm-Message-State: AOAM532ebkIsgbznn+pax8Mz+maD4v/DGrJsANrfdt3gladCWHi4NCYO
+        19xcVrIacjqrarOESySUcMtsdTdvH+9DM5Ylutwnv1A4Ibf0z/ssxlRyuxpiaoEVJxtCj0jpW+7
+        JnX6t7zv+7GfReTCbrValiXVXX/hCHV6hUPa6SpaBBKtMdmZBh6sQ28r2u0/0K+h6pGEI
+X-Received: by 2002:a17:90a:a43:: with SMTP id o61mr4841194pjo.233.1623847913152;
+        Wed, 16 Jun 2021 05:51:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxEtQw3VHh/1raIr4efqQ1l6TQ6mc8FlgoD9W6nl440ZvzySLwZ0gwqXUUn2hGSN0wmzQnz5Q==
+X-Received: by 2002:a17:90a:a43:: with SMTP id o61mr4841149pjo.233.1623847912829;
+        Wed, 16 Jun 2021 05:51:52 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id ca6sm2345017pjb.21.2021.06.16.05.51.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Jun 2021 05:51:52 -0700 (PDT)
+Subject: Re: [PATCH net-next v5 12/15] virtio-net: support AF_XDP zc tx
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        "dust.li" <dust.li@linux.alibaba.com>, netdev@vger.kernel.org
+References: <1623838784.446967-1-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <f81775f8-7df9-5ca0-0bd2-99c86786fe78@redhat.com>
+Date:   Wed, 16 Jun 2021 20:51:41 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: ezARarr-4vhRHwopheetFMlDKk0cFPdZ
-X-Proofpoint-GUID: ezARarr-4vhRHwopheetFMlDKk0cFPdZ
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-06-16_07:2021-06-15,2021-06-16 signatures=0
+In-Reply-To: <1623838784.446967-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
 
-Added support for changing ethtool ntuple filter count.
-Rule count change is supported only when there are no
-ntuple filters installed.
+在 2021/6/16 下午6:19, Xuan Zhuo 写道:
+>>> + * In this way, even if xsk has been unbundled with rq/sq, or a new xsk and
+>>> + * rq/sq  are bound, and a new virtnet_xsk_ctx_head is created. It will not
+>>> + * affect the old virtnet_xsk_ctx to be recycled. And free all head and ctx when
+>>> + * ref is 0.
+>> This looks complicated and it will increase the footprint. Consider the
+>> performance penalty and the complexity, I would suggest to use reset
+>> instead.
+>>
+>> Then we don't need to introduce such context.
+> I don't like this either. It is best if we can reset the queue, but then,
+> according to my understanding, the backend should also be supported
+> synchronously, so if you don't update the backend synchronously, you can't use
+> xsk.
 
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  1 +
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  3 +++
- .../ethernet/marvell/octeontx2/nic/otx2_flows.c    | 27 ++++++++++++++++++++--
- 3 files changed, 29 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 234b330..5420aca 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -820,6 +820,7 @@ int otx2_get_all_flows(struct otx2_nic *pfvf,
- int otx2_add_flow(struct otx2_nic *pfvf,
- 		  struct ethtool_rxnfc *nfc);
- int otx2_remove_flow(struct otx2_nic *pfvf, u32 location);
-+int otx2_set_flow_rule_count(struct otx2_nic *pfvf, int count);
- int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
- 			      struct npc_install_flow_req *req);
- void otx2_rss_ctx_flow_del(struct otx2_nic *pfvf, int ctx_id);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 8df748e..753a8cf 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -690,6 +690,9 @@ static int otx2_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *nfc)
- 		if (netif_running(dev) && ntuple)
- 			ret = otx2_remove_flow(pfvf, nfc->fs.location);
- 		break;
-+	case ETHTOOL_SRXCLSRLCNT:
-+		ret = otx2_set_flow_rule_count(pfvf, nfc->rule_cnt);
-+		break;
- 	default:
- 		break;
- 	}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index 8c97106..61530c8 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -117,12 +117,29 @@ static int otx2_alloc_ntuple_mcam_entries(struct otx2_nic *pfvf, u16 count)
- 
- 	if (allocated != count)
- 		netdev_info(pfvf->netdev,
--			    "Unable to allocate %d MCAM entries for ntuple, got %d\n",
--			    count, allocated);
-+			    "Unable to allocate %d MCAM entries above default rules "
-+			    "start index %d, got only %d\n",
-+			    count, flow_cfg->def_ent[0], allocated);
- 
- 	return allocated;
- }
- 
-+int otx2_set_flow_rule_count(struct otx2_nic *pfvf, int count)
-+{
-+	struct otx2_flow_config *flow_cfg = pfvf->flow_cfg;
-+
-+	if (!flow_cfg)
-+		return 0;
-+
-+	if (flow_cfg->nr_flows) {
-+		netdev_err(pfvf->netdev,
-+			   "Cannot change count when there are active rules\n");
-+		return 0;
-+	}
-+
-+	return otx2_alloc_ntuple_mcam_entries(pfvf, count);
-+}
-+
- int otx2_alloc_mcam_entries(struct otx2_nic *pfvf)
- {
- 	struct otx2_flow_config *flow_cfg = pfvf->flow_cfg;
-@@ -827,6 +844,12 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- 	u32 ring;
- 	int err;
- 
-+	if (!flow_cfg->ntuple_max_flows) {
-+		netdev_err(pfvf->netdev,
-+			   "Ntuple rule count is 0, allocate and retry\n");
-+		return -EINVAL;
-+	}
-+
- 	ring = ethtool_get_flow_spec_ring(fsp->ring_cookie);
- 	if (!(pfvf->flags & OTX2_FLAG_NTUPLE_SUPPORT))
- 		return -ENOMEM;
--- 
-2.7.4
+Yes, actually, vhost-net support per vq suspending. The problem is that 
+we're lacking a proper API at virtio level.
+
+Virtio-pci has queue_enable but it forbids writing zero to that.
+
+
+>
+> I don’t think resetting the entire dev is a good solution. If you want to bind
+> xsk to 10 queues, you may have to reset the entire device 10 times. I don’t
+> think this is a good way. But the current spec does not support reset single
+> queue, so I chose the current solution.
+>
+> Jason, what do you think we are going to do? Realize the reset function of a
+> single queue?
+
+
+Yes, it's the best way. Do you want to work on that?
+
+We can start from the spec patch, and introduce it as basic facility and 
+implement it in the PCI transport first.
+
+Thanks
+
+
+>
+> Looking forward to your reply!!!
+>
+> Thanks
+>
 
