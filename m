@@ -2,95 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3D63AA785
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:33:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 658F63AA794
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:39:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234530AbhFPXfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 19:35:39 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:34668 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234633AbhFPXff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:35:35 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1623886408; h=Content-Transfer-Encoding: MIME-Version:
- Message-Id: Date: Subject: Cc: To: From: Sender;
- bh=fLfryfp35i1oOAe40HSpJ35HKGxrhO8MsCZS16Y/a7Y=; b=SQ/zn3UC+iKoYKLp/7IrfNiE5tkKv3Nx2v5vfob/7J0Jd12vxIwZp7P373X+4WR6E9EdJ1qC
- 8RKVGHXWfipCU1NgYPgdGkiZ19WQDv+qKEXKBlYsLP+KN+JzcA/LoDvqJQTqwCyfogp6zCSb
- gBo3r+nZnFIrt+kea/HQvtVy+FQ=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 60ca8a2de27c0cc77faea7e4 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 16 Jun 2021 23:33:01
- GMT
-Sender: linyyuan=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 1B562C43217; Wed, 16 Jun 2021 23:33:01 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from localhost.localdomain (unknown [101.87.142.17])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: linyyuan)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id CC3AFC433D3;
-        Wed, 16 Jun 2021 23:32:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CC3AFC433D3
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=linyyuan@codeaurora.org
-From:   Linyu Yuan <linyyuan@codeaurora.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oliver@neukum.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        Linyu Yuan <linyyuan@codeaurora.org>
-Subject: [PATCH v2] net: cdc_eem: fix tx fixup skb leak
-Date:   Thu, 17 Jun 2021 07:32:32 +0800
-Message-Id: <20210616233232.4561-1-linyyuan@codeaurora.org>
-X-Mailer: git-send-email 2.25.1
+        id S234681AbhFPXmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 19:42:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234597AbhFPXl7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:41:59 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457CFC06175F
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:39:52 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id g19so1331196qkk.2
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:39:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=GZ8Uwa036gpNLbWnfaBzspVA5CRluDlqQqEct0C37As=;
+        b=kshY+ojjwAXK3pIhmxDE0VeTVJfmns8FASuchPW9vaayL5PkSHnddwPEF9UdgL0AhX
+         cyZgGsKHE9Sd3FSdb6G2Q+vFBJ6O8CrHW1at/8a5AvNErf0kvKHZCwDv7siXwqRsYKOI
+         9rePAjFvXqt6aZK8kQO4kbVCRmAWFY/zXtkDazo2V81MI/wJ/fqeNAogpoaO8ProQNG2
+         7UU+l9uOW5KweJetqGyNu6XKmv3pRgdzpmcJdqQCjbCC2pFcwNQmbOmNu3FHtLl5OEu7
+         GBisdHRuJZsCH1LcAWDE3i8KaDOtQ+Nh4V3oy1Mi/eDlJAP8NiJwq1LWAYEAgR0wXoAJ
+         KVkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=GZ8Uwa036gpNLbWnfaBzspVA5CRluDlqQqEct0C37As=;
+        b=rIazox2MP8nCtP6iQGIzVC3pVGq9zN9JBZpdFkoevemvOZVWtMLzekgDL/+aXBIDVa
+         Q+NzUGcNJwlKDH6ipyMpHTr2rb0TPJYbitXsE/C6ALWKrRKvkLIXokgr/a6EJAW0T8Xi
+         GRonnn+EjMGUKohI0dub63O7NeRnb66U6sQvV1X4MrGsOTMw2d6krA1vmvFQC+IUZ+YB
+         Hk/8kS1RTpkSPXWrNwapTKzU2z0v+5OPWxMolcpFrHYxPZr4dNa+XpsbF6hpcrOyaL+E
+         3j+OhH0wmsyhBjX22lhT8e4VMNL+ku4qFq40ng01NglcgsylByz6Xzcv4/0TFfeEbetH
+         8PPA==
+X-Gm-Message-State: AOAM531vPcwQJtdSzoW5lxzgt3h+ARBoMVxVopxNGp9aghADBu02s6eh
+        3ZIwdNCLf5cekwIvgGZcyXblz/7FMFoqBsS02xN05g==
+X-Google-Smtp-Source: ABdhPJyaBR6uwbvnXk7V1aA9uldwi5ixDr/g7IQB3vX383R9Ezb0ebsCYcz5SzXZCRq+ysp+Tauc/N8qa1cEvW9QoUc=
+X-Received: by 2002:a37:a1d5:: with SMTP id k204mr932037qke.300.1623886791313;
+ Wed, 16 Jun 2021 16:39:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20210616190759.2832033-1-mw@semihalf.com> <20210616190759.2832033-4-mw@semihalf.com>
+ <YMpShczKt1TNAqsV@lunn.ch>
+In-Reply-To: <YMpShczKt1TNAqsV@lunn.ch>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Thu, 17 Jun 2021 01:39:40 +0200
+Message-ID: <CAPv3WKde+LCmxxr6UuA7X=XShF6d4io49baxsjw1kMqR=T7XrA@mail.gmail.com>
+Subject: Re: [net-next: PATCH v2 3/7] net/fsl: switch to fwnode_mdiobus_register
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        Jon Nettleton <jon@solid-run.com>,
+        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
+        lenb@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-when usbnet transmit a skb, eem fixup it in eem_tx_fixup(),
-if skb_copy_expand() failed, it return NULL,
-usbnet_start_xmit() will have no chance to free original skb.
+=C5=9Br., 16 cze 2021 o 21:35 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
+>
+> On Wed, Jun 16, 2021 at 09:07:55PM +0200, Marcin Wojtas wrote:
+> > Utilize the newly added helper routine
+> > for registering the MDIO bus via fwnode_
+> > interface.
+>
+> You need to add depends on FWNODE_MDIO
+>
 
-fix it by free orginal skb in eem_tx_fixup() first,
-then check skb clone status, if failed, return NULL to usbnet.
+Do you mean something like this?
 
-Fixes: 9f722c0978b0 ("usbnet: CDC EEM support (v5)")
-Signed-off-by: Linyu Yuan <linyyuan@codeaurora.org>
----
+--- a/drivers/net/ethernet/freescale/Kconfig
++++ b/drivers/net/ethernet/freescale/Kconfig
+@@ -68,8 +68,8 @@ config FSL_PQ_MDIO
+ config FSL_XGMAC_MDIO
+        tristate "Freescale XGMAC MDIO"
+        select PHYLIB
+-       depends on OF
+-       select OF_MDIO
++       depends on ACPI || OF
++       select FWNODE_MDIO
+        help
 
-v2: add Fixes tag
-
- drivers/net/usb/cdc_eem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/usb/cdc_eem.c b/drivers/net/usb/cdc_eem.c
-index 2e60bc1b9a6b..359ea0d10e59 100644
---- a/drivers/net/usb/cdc_eem.c
-+++ b/drivers/net/usb/cdc_eem.c
-@@ -123,10 +123,10 @@ static struct sk_buff *eem_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
- 	}
- 
- 	skb2 = skb_copy_expand(skb, EEM_HEAD, ETH_FCS_LEN + padlen, flags);
-+	dev_kfree_skb_any(skb);
- 	if (!skb2)
- 		return NULL;
- 
--	dev_kfree_skb_any(skb);
- 	skb = skb2;
- 
- done:
--- 
-2.25.1
-
+Best regards,
+Marcin
