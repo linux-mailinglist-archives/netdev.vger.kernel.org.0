@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F64F3A96C6
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 12:02:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71D763A96C7
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 12:02:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232202AbhFPKEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 06:04:53 -0400
+        id S232349AbhFPKE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 06:04:57 -0400
 Received: from mail-dm6nam12on2135.outbound.protection.outlook.com ([40.107.243.135]:37984
         "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232031AbhFPKEm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 06:04:42 -0400
+        id S232110AbhFPKEo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 06:04:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LdFzlohdjaA7qiVviwJet7j/z+5y6keXUlgprzcrsI5OzM5OIUXuw6b4XwsIQFHUV6qMAx6Fo/nkF+AhLpkH0lkxzPjks5VzxTGzbnKoL9jwCMHhY9NbGxUKGWa+capHLciVDtWif0+NNMuuQG16EKZ0GFKKSUwSf3wt8JchxopqgyXq21F/N3/fXnOu43Y1AuvY8wwcCJnVm6XyAzAHHyL2/FG2bxU6LUIjLEJjRZ9NNdmIryfMwJrHIK8sAdmK1IFzmD/P1xrjBJpcNYXrHeuWnt2T+YV4IlVzMfw9E4+oxJkDxphmHJhUjiu0n/J32JKZOFR0k+h/4YDP3kfyaw==
+ b=Ef3OBl5Qr2vshSmE1CANRL94/vXttNU9YylgJtQ3GnzeaVB39PPkDsInMJ+PlEV+3KlnfMSe4Jlvfx2KO514golh6sHr8yXxMDVHDYvzqxN5oqBBz3grCI+p4ZPyXjtL4mUqy8O/q5nNTJl9gJbWMAYfKs9F3mErWN68LRFvMHjra4DeD5RN4xVr+xj/3mHlzhFCgGXnA15YBE4CdXdwpmIWCd+NqI2PcwsCk+dclt/GWMbM76hnUHomORM5+h/8QcWt+MX1BFguXP/8fye0R0Q7tlNqbPgnq07DeUjd25FO+WMtvvLAN1RDl8ofp7eQzPXeTElVG+7sG4oOVmMGHA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+rswEvOa2EoElM3NwVAtb5NVpaNA/NZ7/n8D1ajlThU=;
- b=kRhgjPVaRSCwOfcofsW5bBQ8AAG9SP9B25zCzdeCv/du3zcBmHYsswwbSbdtDkjmhCxiRxKsyOee6iiL/vStmDNfbDp3uRi0gmKRSWALGuxxO3OicxU119o1bLB5CTFxDqQ1/7e9fZKqnqE3cHWiWHGlEWWUxXPr4n1+0X61UsBoWPOewfca4GUb/Fht0H44uWvznoHkAqxfhDaMuyzHBOBQCG3xG0QxELyPa2HSrqnD/refNsowfZLkMrqQGzn1Ai73DBvyfZYLlk/7+kBjFNbJwzG7ivEmq5ZZZ8vX1vLy18tE0qj4O3fLhHYdVXFurdvtjY5b7QsKxHfwIHuJ0w==
+ bh=6WWEvIETZASNikfojdEylJxGQ6jzCteaeYiYnJliRqY=;
+ b=CGh7/PHh7RDSkvvlgJ/Ea+P7brSOXwzWaf5DZqwSQ0XICbBJGjhTZStqnlCfURa3J1n0lIPrDNuYloTLUNJrqXSeE2U1lV9K9QpY6XkaMru9fsoFYSVij2mHyCJtQnQzjgdiMHCMX6/9g6xvFk3YTvoJ6j2pF+TKYBJaauzp9g2B0RXNZBVBYHreLK35lkcsPidclhN1lkc/bmFEtnzOTq9U1wCFTzVF9vk9Buj4lSxTH0gEmVSteKZjw1CXdvAQiLQaLJwv2rnXcSq5ovC8r5kN/EfBYh4/NnvdpSrPJBYgRTFyX3SF9qmddIyyaNDVFYfOi2uM3YHdF8UpobviPw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+rswEvOa2EoElM3NwVAtb5NVpaNA/NZ7/n8D1ajlThU=;
- b=RrRyoY495gYk5diGNmOASLbh35bzmHS/V3XAkWJzRf4iOzsmoQ50DVUbxDqosWMHOxdybiQ16k6kVgpCFvZMuKHL6Suww70CFnhMhThVu7V0UWssXqW5BTDq05aCQAUe4m4zNQnPm2HNGTvNjSpFHMP8KKR+jJmgJPODeefB5/Q=
+ bh=6WWEvIETZASNikfojdEylJxGQ6jzCteaeYiYnJliRqY=;
+ b=L3o73i2ryH55Yh2DGC4jkGcJ8DPo4IRORMEYDL7T0N2JM5pSL04lusuDtLyeEEksFdsg7DYm5Lh1M8mu1U4rRU3P/DSL2HB1VMyJOgbHFKa5y2NSVIctaLWle484VjgMHnsusS+a6bpDMKa03GmYTV5BsStZQYCJp4+8YoFt3GI=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH0PR13MB4971.namprd13.prod.outlook.com (2603:10b6:510:98::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.7; Wed, 16 Jun
- 2021 10:02:30 +0000
+ 2021 10:02:32 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a%7]) with mapi id 15.20.4242.016; Wed, 16 Jun 2021
- 10:02:30 +0000
+ 10:02:32 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -45,9 +45,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Louis Peens <louis.peens@corigine.com>,
         Yinjun Zhang <yinjun.zhang@corigine.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next 3/9] nfp: flower-ct: add nft flows to nft list
-Date:   Wed, 16 Jun 2021 12:02:01 +0200
-Message-Id: <20210616100207.14415-4-simon.horman@corigine.com>
+Subject: [PATCH net-next 4/9] nfp: flower-ct: make a full copy of the rule when it is a NFT flow
+Date:   Wed, 16 Jun 2021 12:02:02 +0200
+Message-Id: <20210616100207.14415-5-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210616100207.14415-1-simon.horman@corigine.com>
 References: <20210616100207.14415-1-simon.horman@corigine.com>
@@ -59,243 +59,189 @@ X-ClientProxiedBy: AM0PR10CA0022.EURPRD10.PROD.OUTLOOK.COM
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from momiji.horms.nl (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM0PR10CA0022.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.18 via Frontend Transport; Wed, 16 Jun 2021 10:02:28 +0000
+Received: from momiji.horms.nl (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM0PR10CA0022.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.18 via Frontend Transport; Wed, 16 Jun 2021 10:02:30 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9b87b713-c927-4773-2b90-08d930adda71
+X-MS-Office365-Filtering-Correlation-Id: 66772efb-3540-4d91-8f99-08d930addb69
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4971:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB4971327DFF0D0FEC87C9D06DE80F9@PH0PR13MB4971.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB49710055E4835FFD74AC8F53E80F9@PH0PR13MB4971.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6RROcBnt7PyOEJ62WyvY/ve1PMxYGcV5NcuRMMjGA34qC9w5i9hnWTfUjqLDtj3WDQ3q+yG5cDv6qhQZ9yNfgnCEfT6vX2k/pDbEecTCMugY4vgDo7HGsPCRBkev/o/yv6YCobSflcd7MOUCSRK8crVjSXwU8O63EI1/jSCDic/J/OHCe5STzmi2ZUubZpsF7J84Hq7G/caHf73BBBqVaDOg2ZpCiRfEAyKa3L+NfTYvgnIx84b/BCfrNgmRRBRTvB0bg2kRr8a/cirS3wybagIEmKyAqpk8JaA4heEXSilVmxgOzcfu+COGKZ2W2j+9w5wKS6lNkuc4I5jeG4Idi0TQtUCJOKWHV3EadWpwJUUg6uyxYAXJ5t9h0EvZCSKSQOeCIL4e9ObHDLboEy5oujt7lN/3XoaSZXkz0Z4YnL+sY1lpd1U/QHnH+9o8CSw7VKZxQGucsPr2ZifXA/+UYE2lSPpQv4uQLTHox4O1JXsx2S+kOfxj9U2n2LxXRMTe5QN9xGP2dNnW9U6Kaz23DD923Vk0CB4wrIBRLH65FZdsfXd9fXpQNJuIsVunnMzkr/7h9Hd9kprlcIV+LVcCmSItJxV2hxQz9qw1b+DoAUSp5c67TZ3OnGc4D+YCZ0LFM2AWKeQ88NP/i3529V/sKQ==
+X-Microsoft-Antispam-Message-Info: Y9GVUtnKgx3f/zG8OjXweJERD336xBYR2s5h7XJwalTznVwyI49COReUzzGqryM9ByypOaYrqEXTvVOISYaPwZmy9T+CYSwGzt5+J5Mdxi5CS+/o2D9LS+DP0foxybQfKHzKKEJIIudQvHmeqcTZHmQH6mfolwbmJ/7umY0rym3UNzOHLMYdMIcBRZgYstNIRO2acXhrgdcbRR46zE9hDQJHI9L9tO0vP9/yGJMtNmeKABU5giAm2tLaeU4Fcf3B0S2AIFmswPHLwceRT1106cigyKboGaKbwJqGYTBXi2XOl26UtrqFEU1n3kGOAnotWkgoFgumatzviREmef5smbeKwPkT8nLC6+pMAZJTuq+U0ehF+30TRJ2fJ85ruodcFqbG4Rucp4AZ02pPPhg91p9kWq2Hq2E+vm3WVhU8RMCB5aTb3/EO6DjKXWqKsArMvyWoYKjwFWkxUAVtJhu8dgFnBD1SGOSIyLvwDC8GU9JmQX73O6O+yeps6b00waVcnJ0ovhPfAvdpIMgrPP1OYBD6Ld5RRSqmORrXsnjOf8Sv4pJrHB9O0fkXDFulT/Y90wIjOdb7q1UGtE2ONbX6lgFaI/AI7ji/tpfFG9RMzebltVA5JyBrBnaMOmaJx7wZ1//ITxT8s1WFKJsTceiRYw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(396003)(136003)(366004)(346002)(39830400003)(66476007)(6512007)(8936002)(66556008)(66946007)(38100700002)(4326008)(86362001)(2616005)(6666004)(6506007)(5660300002)(8676002)(478600001)(1076003)(110136005)(2906002)(316002)(54906003)(16526019)(186003)(107886003)(83380400001)(52116002)(6486002)(36756003)(44832011);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nThvSlFpF3yVBK2q0pzP7X/UH+k2UDmOHOxK/BB3CJrgykpYB2o+YxhANKKE?=
- =?us-ascii?Q?4fPys0DD+lDPrkzuN9cu/BNLw9hJ1m3QkJugXoNFP5Qt2Yfz5PUOcloqDIc5?=
- =?us-ascii?Q?0bUdvg4hXWjPb4lBtGxmqjYTxNL0NzPy0j3nR8OdLHNBhiYdIlLHYxmoKEdN?=
- =?us-ascii?Q?0Kex8F/ve7YK/8FH9skbT6/uGlztof/1/RPvEq0c+T31Asv4a2tVDsvKndVg?=
- =?us-ascii?Q?SlpFitD5GLQnqoYN55cT0FC3Oj/ZeSGYGXaDtut6io/MsJRSZzYZUrnWQORu?=
- =?us-ascii?Q?ze5Wr1KAXl7jBIy+h06Wz8OJXmExkG7qSiaS/ea34IC5basqvHyomDe59LxB?=
- =?us-ascii?Q?i3QViHn33QIsrzjebbaj+ZIJtmYXi+Hf+w1E9sQpceVxXOiu4IMngFO9EdUc?=
- =?us-ascii?Q?2LNvUEM1DJAi9/RES2ZKYahc6a8qOczbXqsorjlSkpD/khjYvrxOZ8bl6n99?=
- =?us-ascii?Q?IyMeDu5YQai4sF6+3RBQx21c3CXHxok7EIaCRFr0bmUCBAGsPodNIKIYCPAe?=
- =?us-ascii?Q?NZo1o3aqIihaZUGGqmOjSCwWc9mEjc1EqOWfstS/QMktjiTPfOvk6Rc/BAd5?=
- =?us-ascii?Q?rxxb6SKmgTzlTugiVVCWGPrKTFDowZZyzjwQ045D1Bv5eldmccnPrRhwcn1b?=
- =?us-ascii?Q?BOlBe8GYr37QhTUKwcdErlnd/gIxABp7FpwrvYYoscMekfidsblZ3ZCyn736?=
- =?us-ascii?Q?JS5NYTEpmse6/aOcbCWUQdeA17e32aIBWuMMZM22WOc/YHj7RhkDfkO9W/VC?=
- =?us-ascii?Q?DLw6i5VQxQkSHWn8gGsEZgXKjLbjfeJCHtuPWrCRaKUZ3AJxlqbgcHtG+F3a?=
- =?us-ascii?Q?nP2PNmn0oBqDPaE35OfuVh4OfKRkBT2KT3riq8kLf2P6XWY5PFu1xkfqN7Mi?=
- =?us-ascii?Q?i3NvI0+jBv+xzO4LZnTuuTnB6vNkCTfV5JKhc5GKNXd6ZJWOcew9uFZ8EHNU?=
- =?us-ascii?Q?8Ad2S6ax9GENGhUNrvEBc3xuSc4ERhCcAwMm0kAVClJhKtHV8X8byG1XI3jC?=
- =?us-ascii?Q?oAoS6QDeqyBL0NlHtUS9XITP5D9pCwoeqlvtta2cx1GobVPvvvT005Kysl0R?=
- =?us-ascii?Q?YzblRxqiNeIeyskbDJ+a0/fLV4ioA9WA9ss87MW6ouVPKI2LZdINAXxVLQkG?=
- =?us-ascii?Q?wQwuHMOVsfHIdqwIzYMKt2bTdYpeFCAvLW3nHsyCqtt005vsPHCmv7UitA5f?=
- =?us-ascii?Q?1IRgFg2eM+O7EV5KFUuDbMHw08P/em0LC0k4IYTcZaON701W32DZ7tBEjBWB?=
- =?us-ascii?Q?yCZQjuX8cA93wd/GdnyAte7sWWnbzhM3EflMSXApsSQEQff9ShtcYPgBQVQH?=
- =?us-ascii?Q?nOlNxaTrx6Zb4HC1dia2PfCtkTirpCfzg+emzDbNlrCez88/nArW+BhQ2p0e?=
- =?us-ascii?Q?7n9n5GBUp4vtyY8vOKjc4MCoTHqR?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KuEHRHMn3ujUbSHybDgvCZkb5zC2nYczGlQgepf2U7ljFnN77EUMbwnPcfcx?=
+ =?us-ascii?Q?zlxuVX++bqlzUw+9sGb5YEU7uRjWiNwPrudhhvbW31FseQTk778VGsrEGAIN?=
+ =?us-ascii?Q?49TFaQvRr7+Vft4EqC4tlv6tp1ig6oUHulouAVuYkLieOc4cWTFHC9VsANxC?=
+ =?us-ascii?Q?4q3yS58+i1rT1pIsFDfNJS+VXedZHws8gpY82K9qsIhXc4yOSE00+xZT1b6T?=
+ =?us-ascii?Q?L9YucQyuI4+sWfNdV+F5r5MlCuftyCl34bLM0ojn8eIu8P7Ro/hUmKK/O+4b?=
+ =?us-ascii?Q?ZHv7d6kKzJbackrXC2i7YyRqM84p1KtZZ1FdtDDClGj8GBqRQWArynZHlm3F?=
+ =?us-ascii?Q?tF+vEbHd1m9fe0WH7FI1J+QNTfrrOyGrBa+LAfwER4fCZxEloP1X5v0Gm3hK?=
+ =?us-ascii?Q?kgmWNhbFg1fvMtvt0Xr1RyMF9oYmzj13PypSJV2tmjLrirvUKkXOLOxAfy8w?=
+ =?us-ascii?Q?h6JYGvkaQesUK3NSrjLaWeDc9zqrl5jaJyUycTV0s5iLDlKsGTTAbwoQCuQo?=
+ =?us-ascii?Q?L9ndxbO5mDoozMlBX6DnMRscG3bRbsQnFSHE5RvAYzZlH/13d8B2EvehrFTD?=
+ =?us-ascii?Q?+w9JSDWqag6K856rCISV2BU2U5wmxSKBsI9H0Gd0dCl0uWDq5VNvfL8zmjCq?=
+ =?us-ascii?Q?AtAjR9Dq65cixDjg10sgQb9yinF/IQkc0BJb5dbAngoPcjXCgVH1EHFQjRkb?=
+ =?us-ascii?Q?qB/jU2+CoaOQDwmvObsrJZUslxYIFDoZEgoPnwKGQNiF3lwwOJytNVGJRStm?=
+ =?us-ascii?Q?mtlL9ZU/pbci/rixtl5CZSebhYX+limpef/YBEdIHdKFTc92WgqOb/E93hJ6?=
+ =?us-ascii?Q?7Z8qyyiZ2cbVYssWiB62IH6j8mmZj5XSD8dPgqH+h050wHwtdfynAEFhcCUv?=
+ =?us-ascii?Q?OK/67dvPlS+OxBw+ZvVYh4A1jb3jWpEHNfmWSr3rOKKjp1CqNB/PbBnjDpi/?=
+ =?us-ascii?Q?8Yhv57aGgwXD9Bxw9DVf3Co/Lr/7RWDFewgauE4US4RieJuCA3nGVHanyMvs?=
+ =?us-ascii?Q?/VJgUFx3TgcGb3ZeD95LLT025FjL/KVel36oB1Zj2TU6NZmokCbQarnnJHgr?=
+ =?us-ascii?Q?5WLjWjDMbdgaR8UKkBWj97whATjmcZW/Jew5zoJSQTlGwYVuVP8LmWoMop+w?=
+ =?us-ascii?Q?iQl3hHe3SXcbNF4R3wgEUAa/Hk1GMG8pWq9HfgMhUfrlr7Bg73Mcj6ys8hVS?=
+ =?us-ascii?Q?jTXOkLUFEcB+JaqW2OCFKnaILuX2m4GvWpeqcBeKQJx6TLB1D1h9Avo27bKK?=
+ =?us-ascii?Q?2jSPdUxFN7IHnqOzZZ8CwcmwACdrFO8taM15GjhBom/U/72HCe/C3qCQhOD9?=
+ =?us-ascii?Q?5Uqfd7vNvUrz6gQiSh9BK3D8Pkii3M+jWbDeRO6H33y0+86+SEYOqgQRi4sc?=
+ =?us-ascii?Q?7G40od+MVEHEHYjJAeBSwjFhIXxh?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b87b713-c927-4773-2b90-08d930adda71
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66772efb-3540-4d91-8f99-08d930addb69
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2021 10:02:30.3165
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2021 10:02:31.9295
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NEdG+7ECMOt+gAvCcr+vnHK6uX3tGZ1H5t2k1UT0oPlKt9D5gLzCuON5hlt58pgMCweN/Q1CtjK/b9VBN4YFd81GY/79pL8RkJv1rwO32wI=
+X-MS-Exchange-CrossTenant-UserPrincipalName: Y8l0AxWNOBpZfAQzF71S8Ch4WHNGnphQcm5um0fvrrIOAG81bDMAZ/8w3cc+L730dWhyZbKI1G6PWn4spJtgBB076f2TUgikaKCgmYYcM8M=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4971
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Louis Peens <louis.peens@corigine.com>
+From: Yinjun Zhang <yinjun.zhang@corigine.com>
 
-Implement code to add and remove nft flows to the relevant list.
-Registering and deregistering the callback function for the nft
-table is quite complicated. The safest is to delete the callback
-on the removal of the last pre_ct flow. This is because if this
-is also the latest pre_ct flow in software it means that this
-specific nft table will be freed, so there will not be a later
-opportunity to do this. Another place where it looks possible
-to delete the callback is when the last nft_flow is deleted,
-but this happens under the flow_table lock, which is also taken
-when deregistering the callback, leading to a deadlock situation.
+The nft flow will be destroyed after offload cb returns. This means
+we need save a full copy of it since it can be referenced through
+other paths other than just the offload cb, for example when a new
+pre_ct or post_ct entry is added, and it needs to be merged with
+an existing nft entry.
 
-This means the final solution here is to delete the callback
-when removing the last pre_ct flow, and then clean up any
-remaining nft_flow entries which may still be present, since
-there will never be a callback now to do this, leaving them
-orphaned if not cleaned up here as well.
-
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../ethernet/netronome/nfp/flower/conntrack.c | 46 ++++++++++++++++++-
- .../ethernet/netronome/nfp/flower/conntrack.h |  6 +++
- .../ethernet/netronome/nfp/flower/metadata.c  | 26 +++++++++++
- 3 files changed, 77 insertions(+), 1 deletion(-)
+ .../ethernet/netronome/nfp/flower/conntrack.c | 58 +++++++++++++++----
+ 1 file changed, 46 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-index 7fb51e13faea..1b527f0660a7 100644
+index 1b527f0660a7..2c636f8490e1 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
 +++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -165,6 +165,7 @@ nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
- 	/* init the various hash tables and lists*/
- 	INIT_LIST_HEAD(&zt->pre_ct_list);
- 	INIT_LIST_HEAD(&zt->post_ct_list);
-+	INIT_LIST_HEAD(&zt->nft_flows_list);
- 
- 	err = rhashtable_init(&zt->tc_merge_tb, &nfp_tc_ct_merge_params);
- 	if (err)
-@@ -500,13 +501,31 @@ int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
- static int
- nfp_fl_ct_offload_nft_flow(struct nfp_fl_ct_zone_entry *zt, struct flow_cls_offload *flow)
+@@ -194,8 +194,9 @@ static struct
+ nfp_fl_ct_flow_entry *nfp_fl_ct_add_flow(struct nfp_fl_ct_zone_entry *zt,
+ 					 struct net_device *netdev,
+ 					 struct flow_cls_offload *flow,
+-					 struct netlink_ext_ack *extack)
++					 bool is_nft, struct netlink_ext_ack *extack)
  {
-+	struct nfp_fl_ct_map_entry *ct_map_ent;
-+	struct nfp_fl_ct_flow_entry *ct_entry;
-+	struct netlink_ext_ack *extack = NULL;
-+
- 	ASSERT_RTNL();
++	struct nf_flow_match *nft_match = NULL;
+ 	struct nfp_fl_ct_flow_entry *entry;
+ 	struct nfp_fl_ct_map_entry *map;
+ 	struct flow_action_entry *act;
+@@ -205,17 +206,39 @@ nfp_fl_ct_flow_entry *nfp_fl_ct_add_flow(struct nfp_fl_ct_zone_entry *zt,
+ 	if (!entry)
+ 		return ERR_PTR(-ENOMEM);
  
-+	extack = flow->common.extack;
- 	switch (flow->command) {
- 	case FLOW_CLS_REPLACE:
-+		/* Netfilter can request offload multiple times for the same
-+		 * flow - protect against adding duplicates.
-+		 */
-+		ct_map_ent = rhashtable_lookup_fast(&zt->priv->ct_map_table, &flow->cookie,
-+						    nfp_ct_map_params);
-+		if (!ct_map_ent) {
-+			ct_entry = nfp_fl_ct_add_flow(zt, NULL, flow, extack);
-+			ct_entry->type = CT_TYPE_NFT;
-+			list_add(&ct_entry->list_node, &zt->nft_flows_list);
-+			zt->nft_flows_count++;
+-	entry->zt = zt;
+-	entry->netdev = netdev;
+-	entry->cookie = flow->cookie;
+ 	entry->rule = flow_rule_alloc(flow->rule->action.num_entries);
+ 	if (!entry->rule) {
+ 		err = -ENOMEM;
+-		goto err_pre_ct_act;
++		goto err_pre_ct_rule;
+ 	}
+-	entry->rule->match.dissector = flow->rule->match.dissector;
+-	entry->rule->match.mask = flow->rule->match.mask;
+-	entry->rule->match.key = flow->rule->match.key;
++
++	/* nft flows gets destroyed after callback return, so need
++	 * to do a full copy instead of just a reference.
++	 */
++	if (is_nft) {
++		nft_match = kzalloc(sizeof(*nft_match), GFP_KERNEL);
++		if (!nft_match) {
++			err = -ENOMEM;
++			goto err_pre_ct_act;
 +		}
- 		return 0;
- 	case FLOW_CLS_DESTROY:
--		return 0;
-+		ct_map_ent = rhashtable_lookup_fast(&zt->priv->ct_map_table, &flow->cookie,
-+						    nfp_ct_map_params);
-+		return nfp_fl_ct_del_flow(ct_map_ent);
- 	case FLOW_CLS_STATS:
- 		return 0;
- 	default:
-@@ -533,12 +552,30 @@ int nfp_fl_ct_handle_nft_flow(enum tc_setup_type type, void *type_data, void *cb
- 	return err;
++		memcpy(&nft_match->dissector, flow->rule->match.dissector,
++		       sizeof(nft_match->dissector));
++		memcpy(&nft_match->mask, flow->rule->match.mask,
++		       sizeof(nft_match->mask));
++		memcpy(&nft_match->key, flow->rule->match.key,
++		       sizeof(nft_match->key));
++		entry->rule->match.dissector = &nft_match->dissector;
++		entry->rule->match.mask = &nft_match->mask;
++		entry->rule->match.key = &nft_match->key;
++	} else {
++		entry->rule->match.dissector = flow->rule->match.dissector;
++		entry->rule->match.mask = flow->rule->match.mask;
++		entry->rule->match.key = flow->rule->match.key;
++	}
++
++	entry->zt = zt;
++	entry->netdev = netdev;
++	entry->cookie = flow->cookie;
+ 	entry->chain_index = flow->common.chain_index;
+ 	entry->tun_offset = NFP_FL_CT_NO_TUN;
+ 
+@@ -276,8 +299,10 @@ nfp_fl_ct_flow_entry *nfp_fl_ct_add_flow(struct nfp_fl_ct_zone_entry *zt,
+ 	if (entry->tun_offset != NFP_FL_CT_NO_TUN)
+ 		kfree(entry->rule->action.entries[entry->tun_offset].tunnel);
+ err_pre_ct_tun_cp:
+-	kfree(entry->rule);
++	kfree(nft_match);
+ err_pre_ct_act:
++	kfree(entry->rule);
++err_pre_ct_rule:
+ 	kfree(entry);
+ 	return ERR_PTR(err);
  }
+@@ -339,6 +364,15 @@ void nfp_fl_ct_clean_flow_entry(struct nfp_fl_ct_flow_entry *entry)
  
-+static void
-+nfp_fl_ct_clean_nft_entries(struct nfp_fl_ct_zone_entry *zt)
-+{
-+	struct nfp_fl_ct_flow_entry *nft_entry, *ct_tmp;
-+	struct nfp_fl_ct_map_entry *ct_map_ent;
+ 	if (entry->tun_offset != NFP_FL_CT_NO_TUN)
+ 		kfree(entry->rule->action.entries[entry->tun_offset].tunnel);
 +
-+	list_for_each_entry_safe(nft_entry, ct_tmp, &zt->nft_flows_list,
-+				 list_node) {
-+		ct_map_ent = rhashtable_lookup_fast(&zt->priv->ct_map_table,
-+						    &nft_entry->cookie,
-+						    nfp_ct_map_params);
-+		nfp_fl_ct_del_flow(ct_map_ent);
++	if (entry->type == CT_TYPE_NFT) {
++		struct nf_flow_match *nft_match;
++
++		nft_match = container_of(entry->rule->match.dissector,
++					 struct nf_flow_match, dissector);
++		kfree(nft_match);
 +	}
-+}
 +
- int nfp_fl_ct_del_flow(struct nfp_fl_ct_map_entry *ct_map_ent)
- {
- 	struct nfp_fl_ct_flow_entry *ct_entry;
- 	struct nfp_fl_ct_zone_entry *zt;
- 	struct rhashtable *m_table;
- 
-+	if (!ct_map_ent)
-+		return -ENOENT;
-+
- 	zt = ct_map_ent->ct_entry->zt;
- 	ct_entry = ct_map_ent->ct_entry;
- 	m_table = &zt->priv->ct_map_table;
-@@ -566,6 +603,7 @@ int nfp_fl_ct_del_flow(struct nfp_fl_ct_map_entry *ct_map_ent)
- 						     nfp_fl_ct_handle_nft_flow,
- 						     zt);
- 			zt->nft = NULL;
-+			nfp_fl_ct_clean_nft_entries(zt);
- 		}
- 		break;
- 	case CT_TYPE_POST_CT:
-@@ -575,6 +613,12 @@ int nfp_fl_ct_del_flow(struct nfp_fl_ct_map_entry *ct_map_ent)
- 		nfp_fl_ct_clean_flow_entry(ct_entry);
- 		kfree(ct_map_ent);
- 		break;
-+	case CT_TYPE_NFT:
-+		zt->nft_flows_count--;
-+		rhashtable_remove_fast(m_table, &ct_map_ent->hash_node,
-+				       nfp_ct_map_params);
-+		nfp_fl_ct_clean_flow_entry(ct_map_ent->ct_entry);
-+		kfree(ct_map_ent);
- 	default:
- 		break;
- 	}
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.h b/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
-index b6e750dad929..def95c3e8bb7 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
-+++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.h
-@@ -28,6 +28,9 @@ extern const struct rhashtable_params nfp_tc_ct_merge_params;
-  *
-  * @tc_merge_tb:	The table of merged tc flows
-  * @tc_merge_count:	Keep count of the number of merged tc entries
-+ *
-+ * @nft_flows_list:	The list of nft relatednfp_fl_ct_flow_entry entries
-+ * @nft_flows_count:	Keep count of the number of nft_flow entries
-  */
- struct nfp_fl_ct_zone_entry {
- 	u16 zone;
-@@ -44,6 +47,9 @@ struct nfp_fl_ct_zone_entry {
- 
- 	struct rhashtable tc_merge_tb;
- 	unsigned int tc_merge_count;
-+
-+	struct list_head nft_flows_list;
-+	unsigned int nft_flows_count;
- };
- 
- enum ct_entry_type {
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/metadata.c b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-index 8658c5cedf91..a0a0242567a6 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-@@ -639,6 +639,32 @@ static void nfp_zone_table_entry_destroy(struct nfp_fl_ct_zone_entry *zt)
- 		}
+ 	kfree(entry->rule);
+ 	kfree(entry);
+ }
+@@ -419,7 +453,7 @@ int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
  	}
  
-+	if (zt->nft) {
-+		nf_flow_table_offload_del_cb(zt->nft,
-+					     nfp_fl_ct_handle_nft_flow,
-+					     zt);
-+		zt->nft = NULL;
-+	}
-+
-+	if (!list_empty(&zt->nft_flows_list)) {
-+		struct rhashtable *m_table = &zt->priv->ct_map_table;
-+		struct nfp_fl_ct_flow_entry *entry, *tmp;
-+		struct nfp_fl_ct_map_entry *map;
-+
-+		WARN_ONCE(1, "nft_flows_list not empty as expected, cleaning up\n");
-+		list_for_each_entry_safe(entry, tmp, &zt->nft_flows_list,
-+					 list_node) {
-+			map = rhashtable_lookup_fast(m_table,
-+						     &entry->cookie,
-+						     nfp_ct_map_params);
-+			WARN_ON_ONCE(rhashtable_remove_fast(m_table,
-+							    &map->hash_node,
-+							    nfp_ct_map_params));
-+			nfp_fl_ct_clean_flow_entry(entry);
-+			kfree(map);
-+		}
-+	}
-+
- 	rhashtable_free_and_destroy(&zt->tc_merge_tb,
- 				    nfp_check_rhashtable_empty, NULL);
+ 	/* Add entry to pre_ct_list */
+-	ct_entry = nfp_fl_ct_add_flow(zt, netdev, flow, extack);
++	ct_entry = nfp_fl_ct_add_flow(zt, netdev, flow, false, extack);
+ 	if (IS_ERR(ct_entry))
+ 		return PTR_ERR(ct_entry);
+ 	ct_entry->type = CT_TYPE_PRE_CT;
+@@ -464,7 +498,7 @@ int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
+ 	}
  
+ 	/* Add entry to post_ct_list */
+-	ct_entry = nfp_fl_ct_add_flow(zt, netdev, flow, extack);
++	ct_entry = nfp_fl_ct_add_flow(zt, netdev, flow, false, extack);
+ 	if (IS_ERR(ct_entry))
+ 		return PTR_ERR(ct_entry);
+ 
+@@ -516,7 +550,7 @@ nfp_fl_ct_offload_nft_flow(struct nfp_fl_ct_zone_entry *zt, struct flow_cls_offl
+ 		ct_map_ent = rhashtable_lookup_fast(&zt->priv->ct_map_table, &flow->cookie,
+ 						    nfp_ct_map_params);
+ 		if (!ct_map_ent) {
+-			ct_entry = nfp_fl_ct_add_flow(zt, NULL, flow, extack);
++			ct_entry = nfp_fl_ct_add_flow(zt, NULL, flow, true, extack);
+ 			ct_entry->type = CT_TYPE_NFT;
+ 			list_add(&ct_entry->list_node, &zt->nft_flows_list);
+ 			zt->nft_flows_count++;
 -- 
 2.20.1
 
