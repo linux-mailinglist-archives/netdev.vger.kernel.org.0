@@ -2,117 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 107CE3AA76D
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:25:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C633AA772
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:27:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234557AbhFPX17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 19:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234508AbhFPX15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:27:57 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32356C06175F
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:25:50 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id c18so1260210qkc.11
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:25:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=RGJwIcw/q576ovQRK45c7NVrN5akX6pFlIi1oJ6UC88=;
-        b=yjHZdxA08MjiNwf3szPMWYI5SnU3h4eq7AuZyqyZ4L8dFPhdE534qLX8N+JLsJUs7w
-         7hCAlcZpbuZY9G5bdPZcN+4xvOfUCUxWsy7gVpqj7nX18fh1ZBUZiTqiBTbdtdGQt76T
-         itcYc29QtJbbpxc6Cqd8CrBkpEZqfUp0D/04uEy0t3Q+Jxe03DPSgCQdENuhbwEMlaQg
-         Cp1Ry0k4skrj+gmZKCRmhjj7bJBvnB+dY0l022ApSjZap6Wh6zwnly9lfi5IeEJy1gty
-         esyzofFT/9tmSIfqydJqPzOnDZsTfT++Yl1b10PnHc0w3yRohyCwZ9NGD0wx4evWx65X
-         anXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RGJwIcw/q576ovQRK45c7NVrN5akX6pFlIi1oJ6UC88=;
-        b=eeLAMrQ3TJkQtNddeO4hJNw0a7tGeZElpOPgY4h6SCmOK37iDUy4ZnRlth3dYl/4sO
-         djt4mn/fD8MwKcXvvjk6efJVmYBGzw2RDDJ0nEja/Fna16LKVOys072mVGQ417vpPaQE
-         GC32KX3Y043eP0qJYXOz5cAORjyu6RnPNqpABZjLfBdTAV9Fa/eDBTDQ+tfydgfNVCPk
-         2pwrw24f8yYaC5/kmjj1VSeqgLdsE88K5Pk8vzRrpw8mtgZqV4i3o1l5Qpi/yKhuRjoE
-         DH8nVWV9W1Bhcy8RG+zUUpwcBXc5PxdTSCmLZBdslZSQ3kF0Y+XKOHFbAqD+2EIV9y5p
-         tUaw==
-X-Gm-Message-State: AOAM532dFF+DfYH23xHpaWZpfVCzdXm/0WKKz8Ug/FIM72BM7qJlfhkY
-        Pu118gSKqd5Wya//UcYah02w/Z5ia56r1SHw5uYKvp9bYlUyXQ==
-X-Google-Smtp-Source: ABdhPJxGQ1/XO8SoqXVyvmyDnP28vr9eEwL7k3SCLhbXZsEofN9Hot475ONHXu3cj4L4OmUvpTx6WZlSOo012aKCc04=
-X-Received: by 2002:a37:a041:: with SMTP id j62mr831796qke.155.1623885949130;
- Wed, 16 Jun 2021 16:25:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210616190759.2832033-1-mw@semihalf.com> <20210616190759.2832033-5-mw@semihalf.com>
- <YMpVhxxPxB/HKOn2@lunn.ch>
-In-Reply-To: <YMpVhxxPxB/HKOn2@lunn.ch>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 17 Jun 2021 01:25:38 +0200
-Message-ID: <CAPv3WKdo_JeMRL-GtkYv7G3MUnXmyG_oJtA+=WY72-J_0jokRA@mail.gmail.com>
-Subject: Re: [net-next: PATCH v2 4/7] net: mvmdio: simplify clock handling
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S234584AbhFPXaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 19:30:03 -0400
+Received: from mga06.intel.com ([134.134.136.31]:30915 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234508AbhFPXaD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 19:30:03 -0400
+IronPort-SDR: 9Fl8ijXuZvj1oEDZcUZ+JKxEr5QmhhgIVu9MjzrjBWBbzjTQDlIvmAr0lSZmZrgUCXgNgD0Jh5
+ XB9iCLay9VcA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10017"; a="267420483"
+X-IronPort-AV: E=Sophos;i="5.83,278,1616482800"; 
+   d="scan'208";a="267420483"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2021 16:27:53 -0700
+IronPort-SDR: c/uhERQyM+sCgOUqZHbGxAylMWWwjSLqhn+8dqVDprMkHlPe6u7GA6VFA4cVP64YtyRNR/QyBq
+ +DtCdxpl9d1A==
+X-IronPort-AV: E=Sophos;i="5.83,278,1616482800"; 
+   d="scan'208";a="479269628"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.42.204]) ([10.209.42.204])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2021 16:27:52 -0700
+Subject: Re: [PATCH][next] ice: remove redundant continue statement in a
+ for-loop
+To:     Colin King <colin.king@canonical.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>,
-        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
-        lenb@kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210615142847.60161-1-colin.king@canonical.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <2a347503-9879-0a13-555b-a007acfdec3c@intel.com>
+Date:   Wed, 16 Jun 2021 16:27:50 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <20210615142847.60161-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=C5=9Br., 16 cze 2021 o 21:48 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
->
-> > +     dev->clks[0].id =3D "core";
-> > +     dev->clks[1].id =3D "mg";
-> > +     dev->clks[2].id =3D "mg_core";
-> > +     dev->clks[3].id =3D "axi";
-> > +     ret =3D devm_clk_bulk_get_optional(&pdev->dev, MVMDIO_CLOCK_COUNT=
-,
-> > +                                      dev->clks);
->
-> Kirkwood:
->
->                 mdio: mdio-bus@72004 {
->                         compatible =3D "marvell,orion-mdio";
->                         #address-cells =3D <1>;
->                         #size-cells =3D <0>;
->                         reg =3D <0x72004 0x84>;
->                         interrupts =3D <46>;
->                         clocks =3D <&gate_clk 0>;
->                         status =3D "disabled";
->
-> Does this work? There is no clock-names in DT.
->
 
-Neither are the clocks in Armada 7k8k / CN913x:
 
-                CP11X_LABEL(mdio): mdio@12a200 {
-                        #address-cells =3D <1>;
-                        #size-cells =3D <0>;
-                        compatible =3D "marvell,orion-mdio";
-                        reg =3D <0x12a200 0x10>;
-                        clocks =3D <&CP11X_LABEL(clk) 1 9>,
-<&CP11X_LABEL(clk) 1 5>,
-                                 <&CP11X_LABEL(clk) 1 6>,
-<&CP11X_LABEL(clk) 1 18>;
-                        status =3D "disabled";
-                };
+On 6/15/2021 7:28 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The continue statement in the for-loop is redundant. Re-work the hw_lock
+> check to remove it.
+> 
+> Addresses-Coverity: ("Continue has no effect")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
 
-Apparently I misread the code and got convinced that contrary to
-devm_clk_get_optional(), the devm_clk_get_bulk_optional() obtains the
-clocks directly by index, not name (on the tested boards, the same
-clocks are enabled by the other interfaces, so the problems
+Yep, that logic makes more sense.
 
-I will drop this patch. Thank you for spotting the issue.
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 
-Best regards,
-Marcin
+>  drivers/net/ethernet/intel/ice/ice_ptp_hw.c | 10 ++++------
+>  1 file changed, 4 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+> index 267312fad59a..3eca0e4eab0b 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+> @@ -410,13 +410,11 @@ bool ice_ptp_lock(struct ice_hw *hw)
+>  	for (i = 0; i < MAX_TRIES; i++) {
+>  		hw_lock = rd32(hw, PFTSYN_SEM + (PFTSYN_SEM_BYTES * hw->pf_id));
+>  		hw_lock = hw_lock & PFTSYN_SEM_BUSY_M;
+> -		if (hw_lock) {
+> -			/* Somebody is holding the lock */
+> -			usleep_range(10000, 20000);
+> -			continue;
+> -		} else {
+> +		if (!hw_lock)
+>  			break;
+> -		}
+> +
+> +		/* Somebody is holding the lock */
+> +		usleep_range(10000, 20000);
+>  	}
+>  
+>  	return !hw_lock;
+> 
