@@ -2,580 +2,489 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D61ED3AA1D9
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 18:52:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E29B3AA215
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 19:04:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbhFPQzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 12:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
+        id S231280AbhFPRGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 13:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbhFPQzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 12:55:02 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C181C061574;
-        Wed, 16 Jun 2021 09:52:56 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id mj8-20020a17090b3688b029016ee34fc1b3so2145894pjb.0;
-        Wed, 16 Jun 2021 09:52:56 -0700 (PDT)
+        with ESMTP id S231315AbhFPRGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 13:06:09 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2745CC061768;
+        Wed, 16 Jun 2021 10:04:02 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id x10so1441823plg.3;
+        Wed, 16 Jun 2021 10:04:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iEVChFbDFCmGN1dMH8S/MzuZpIpTIysMe0k+9GMBk4M=;
-        b=e8MuuvfSQj5GaTDjsgRKpZy9VAUr9BQowvYfyNgAzuNEPJF2bGNf5WfVgngKrDCLi+
-         HlwpPGAt15B8bOKl8gVwgJvYzQgI5VQet0RpmWqimtX3Zpk19OdvNpHm47lTd9oVyqG9
-         97r6HvCbFsFOBo3VIa7yB3ZOFN46foLap4tx8hPtrqm/NyPq5Y5jvhonvXU6sn+6e3Z8
-         K0nvUAkR+05E1gDsejffgHPgxj7uwj7BvLIr9r3RZsHa+5EO8fadh27zaaTTB7qRFw6y
-         JMVooDtGeelj4iiW9Jipm0nBb+MKnwnqn5og3j7K7ZTSS/w2w7g+UMk8Vbp5dPUVDq6W
-         2Ihw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EZQBdvi4WvCwhdSByzyu/id5SNc4SjGQzwDalRqCKfw=;
+        b=XeNzbxAqEJczJOLBeEUjaSl6ZKARNMLNNhccmgR6TO6zJmd0D3S2nXfaJZuiX+nsml
+         SqR5oBBB6HWDqcB7cnNcFFsYGwcrM0F3ZFZsFzHAoNo/xJGx1rZ9dc+ibPJumqn1AXZa
+         QpWtAj4G14bZCT1y2izIFdEALvqSGERxIwHs2Nv5IwAD+2UjlwkwttcQMYb1UNH9ZTfe
+         OLMhC69UWolx8WxJNb9562kVmUSt9e/PTksTrdX8viv/h+e6/IozmUwq1U7SPyNKNZyT
+         1vLUkeu/p+uw8IEYCAl8wTrnlBNW8HAWdvhKAjRe/mmc8+4Kiv1vtT8ncX018f5rebPp
+         On4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iEVChFbDFCmGN1dMH8S/MzuZpIpTIysMe0k+9GMBk4M=;
-        b=nxnMMvSmdgvWcerXS2twLll875nVM0nd/UPLIKZ1Kc0dgwuj3wodG9Z2LEii8N0K4F
-         KGsW9CY+eo0vPc6eK3RDHrlyq/AbdfW8yhPGvYYn8SWevNl/eon5WkEadCd2DhGedkVV
-         TLvrWHZrXHB9BbQphQM0NySL1Q+S5zUeF1Ef/DuNf0WvLH0lA9zM7DrBdGkWtNThV0Z0
-         RYQeWmN+722ASAJ8QXWE047K42ekK1iUbpiRzI0wZRKPVxjswfc3bQShXk1b/ON+2AlH
-         A/yQDoR46sMlRUpT6Xoo84WLTFkfWBVUrKex0pJHH+D4TPJqbZCvTUG4QlFXclKReGOJ
-         cNIQ==
-X-Gm-Message-State: AOAM532IncnGmHg3AhMiPURWtXSXIp3ikbJue3QY6XeX5fmA/48s1A8Z
-        KgV+Iunt9fNx3V73XuHrNs4=
-X-Google-Smtp-Source: ABdhPJx6N41qAHAo35IzvHNW7n7ocG2jvq1AhGfix8r85Cf50CmIhTU+PLlnSjm4XP69VAuKBnqN4Q==
-X-Received: by 2002:a17:90b:19d4:: with SMTP id nm20mr4133255pjb.134.1623862375898;
-        Wed, 16 Jun 2021 09:52:55 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:b564])
-        by smtp.gmail.com with ESMTPSA id r6sm5791216pjm.12.2021.06.16.09.52.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EZQBdvi4WvCwhdSByzyu/id5SNc4SjGQzwDalRqCKfw=;
+        b=fUm8rX1MiWsz2rSIJ551nc4s4mFtbkbGfxfsu+JMbcsxrgMVz9vAUuF7megiIsqcN7
+         xOXW+uc8cKH2WnyLWen0xdv7v7/zv9qPtZQhycAC2Ew5VXOLfY+nConwOkbN53j8k1If
+         V6uf3K1o2yA98k/JvQtETNnfuuPOOjDgCZyPNPqcLlVGUP0v7pgmUEquB9macd6Remfk
+         Omo+EB2N0mIPAhjlOSmq62NvFBmgG1dodkNTsckhLsNoxzPsXzol0U1aqZv2Pi3wqktH
+         IenXrvowAw+lWtZm9CVqJASNC2p9SXDjXcmN0DN6Q8DjCslhI9DRiomx2TqCzoECJEke
+         JHcA==
+X-Gm-Message-State: AOAM532WO6avJ65Pj48KX7ezGqh4xcNegcEjML9WP7EGlv2Ea5n90KlX
+        pub/mPlAaFG2RJVg50tV3qPNjV5eD/k=
+X-Google-Smtp-Source: ABdhPJw7BaodzL2oj1TC75th1Lx4YBk0Jybtlhf/gEZ9f24kvSsB2lWQA/R2+NPPrT49QNDE1SFAnw==
+X-Received: by 2002:a17:902:b609:b029:118:8a66:6963 with SMTP id b9-20020a170902b609b02901188a666963mr513925pls.65.1623863041361;
+        Wed, 16 Jun 2021 10:04:01 -0700 (PDT)
+Received: from localhost ([2402:3a80:11db:39d5:aefe:1e71:33ef:30fb])
+        by smtp.gmail.com with ESMTPSA id t136sm2890915pfc.70.2021.06.16.10.04.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 09:52:54 -0700 (PDT)
-Date:   Wed, 16 Jun 2021 09:52:50 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Wed, 16 Jun 2021 10:04:00 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Introduce bpf_timer
-Message-ID: <20210616165250.ejtcvgip5q5hbacy@ast-mbp.dhcp.thefacebook.com>
-References: <20210611042442.65444-1-alexei.starovoitov@gmail.com>
- <20210611042442.65444-2-alexei.starovoitov@gmail.com>
- <9b23b2c6-28b2-3ab3-4e8b-1fa0c926c4d2@fb.com>
- <CAADnVQLS=Jx9=znx6XAtrRoY08bTQHTipXQwvnPNo0SRSJsK0Q@mail.gmail.com>
- <CAEf4BzZ159NfuGJo0ig9i=7eGNgvQkq8TnZi09XHSZST17A0zQ@mail.gmail.com>
- <CAADnVQJ3CQ=WnsantyEy6GB58rdsd7q=aJv93WPsZZJmXdJGzQ@mail.gmail.com>
- <CAEf4BzZWr7HhKn3opxHeaZqkgo4gsYYhDQ4d4HuNhx-i8XgjCg@mail.gmail.com>
- <20210616042622.22nzdrrnlndogn5w@ast-mbp>
- <CAEf4BzZ_=tJGqGS9FKxxQqGfRqAoF_m9r8FW29n9ZqC_u-10DA@mail.gmail.com>
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH v2] libbpf: add request buffer type for netlink messages
+Date:   Wed, 16 Jun 2021 22:32:31 +0530
+Message-Id: <20210616170231.2194285-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="uw7m3mfu5sptiiin"
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZ_=tJGqGS9FKxxQqGfRqAoF_m9r8FW29n9ZqC_u-10DA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Coverity complains about OOB writes to nlmsghdr. There is no OOB as we
+write to the trailing buffer, but static analyzers and compilers may
+rightfully be confused as the nlmsghdr pointer has subobject provenance
+(and hence subobject bounds).
 
---uw7m3mfu5sptiiin
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Remedy this by using an explicit request structure, but we also need to
+start the buffer in case of ifinfomsg without any padding. The alignment
+on netlink wire protocol is 4 byte boundary, so we just insert explicit
+4 byte buffer to avoid compilers throwing off on read and write from/to
+padding.
 
-On Tue, Jun 15, 2021 at 10:54:40PM -0700, Andrii Nakryiko wrote:
-> 
-> It could be the case, of course. But let's try to think this through
-> to the end before giving up. I think it's mostly because we are trying
-> to be too clever with lockless synchronization.
+Also switch nh_tail (renamed to req_tail) to cast req * to char * so
+that it can be understood as arithmetic on pointer to the representation
+array (hence having same bound as request structure), which should
+further appease analyzers.
 
-imo your proposed code fits "too clever" too ;)
-Just a reminder that few emails ago you've argued 
-about "obviously correct" approach, but now...
+As a bonus, callers don't have to pass sizeof(req) all the time now, as
+size is implicitly obtained using the pointer. While at it, also reduce
+the size of attribute buffer to 128 bytes (132 for ifinfomsg using
+functions due to the need to align buffer after it).
 
-> I had a feeling that bpf_timer_cb needs to take lock as well. But once
-> we add that, refcounting becomes simpler and more deterministic, IMO.
-> Here's what I have in mind. I keep only important parts of the code,
-> so it's not a complete implementation. Please take a look below, I
-> left a few comments here and there.
-> 
-> 
-> struct bpf_hrtimer {
->        struct hrtimer timer;
->        struct bpf_map *map;
->        void *value;
-> 
->        struct bpf_prog *prog;
->        void *callback_fn;
-> 
->        /* pointer to that lock in struct bpf_timer_kern
->         * so that we can access it from bpf_timer_cb()
->         */
->        struct bpf_spin_lock *lock;
-> };
-> 
-> BPF_CALL_5(bpf_timer_init, struct bpf_timer_kern *, timer, int, flags,
->            struct bpf_map *, map)
-> {
->        struct bpf_hrtimer *t;
->        int ret = 0;
-> 
->        ____bpf_spin_lock(&timer->lock);
->        t = timer->timer;
->        if (t) {
->                ret = -EBUSY;
->                goto out;
->        }
->        /* allocate hrtimer via map_kmalloc to use memcg accounting */
->        t = bpf_map_kmalloc_node(map, sizeof(*t), GFP_ATOMIC, NUMA_NO_NODE);
->        if (!t) {
->                ret = -ENOMEM;
->                goto out;
->        }
->        t->value = (void *)timer /* - offset of bpf_timer inside elem */;
->        t->map = map;
->        t->timer.function = bpf_timer_cb;
-> 
->        /* we'll init them in bpf_timer_start */
->        t->prog = NULL;
->        t->callback_fn = NULL;
-> 
->        hrtimer_init(&t->timer, clockid, HRTIMER_MODE_REL_SOFT);
->        timer->timer = t;
-> out:
->        ____bpf_spin_unlock(&timer->lock);
->        return ret;
-> }
-> 
-> 
-> BPF_CALL_2(bpf_timer_start, struct bpf_timer_kern *, timer, u64, nsecs,
->            void *, cb, struct bpf_prog *, prog)
-> {
->        struct bpf_hrtimer *t;
->        int ret = 0;
-> 
->        ____bpf_spin_lock(&timer->lock);
->        t = timer->timer;
->        if (!t) {
->                ret = -EINVAL;
->                goto out;
->        }
-> 
->        /* doesn't matter what it returns, we just request cancellation */
->        hrtimer_try_to_cancel(&t->timer);
-> 
->        /* t->prog might not be the same as prog (!) */
->        if (prog != t->prog) {
->             /* callback hasn't yet dropped refcnt */
->            if (t->prog) /* if it's null bpf_timer_cb() is running and
-> will put it later */
->                bpf_prog_put(t->prog);
-> 
->            if (IS_ERR(bpf_prog_inc_not_zero(prog))) {
->                /* this will only happen if prog is still running (and
-> it's actually us),
->                 * but it was already put to zero, e.g., by closing last FD,
->                 * so there is no point in scheduling a new run
->                 */
+Summary of problem:
+  Even though C standard allows interconveritility of pointer to first
+  member and pointer to struct, for the purposes of alias analysis it
+  would still consider the first as having pointer value "pointer to T"
+  where T is type of first member hence having subobject bounds,
+  allowing analyzers within reason to complain when object is accessed
+  beyond the size of pointed to object.
 
-I have a bit of mind explosion here... everything will be alright.
+  The only exception to this rule may be when a char * is formed to a
+  member subobject. It is not possible for the compiler to be able to
+  tell the intent of the programmer that it is a pointer to member
+  object or the underlying representation array of the containing
+  object, so such diagnosis is supressed.
 
->                t->prog = NULL;
->                t->callback_fn = NULL;
->                ret = -E_WE_ARE_SHUTTING_DOWN;
->                goto out;
->            }
->        } /* otherwise we keep existing refcnt on t->prog == prog */
-> 
->        /* potentially new combination of prog and cb */
->        t->prog = prog;
->        t->callback_fn = cb;
-> 
->        hrtimer_start(&t->timer, ns_to_ktime(nsecs), HRTIMER_MODE_REL_SOFT);
-> out:
->        ____bpf_spin_unlock(&timer->lock);
->        return ret;
-> }
-> 
-> BPF_CALL_1(bpf_timer_cancel, struct bpf_timer_kern *, timer)
-> {
->        struct bpf_hrtimer *t;
->        int ret = 0;
-> 
->        ____bpf_spin_lock(&timer->lock);
->        t = timer->timer;
->        if (!t) {
->                ret = -EINVAL;
->                goto out;
->        }
-> 
->        /* this part I still worry about due to possibility of cpu migration,
->         * we need to think if we should migrate_disable() in bpf_timer_cb()
->         * and bpf_timer_* helpers(), but that's a separate topic
->         */
->        if (this_cpu_read(hrtimer_running) == t) {
->                ret = -EDEADLK;
->                goto out;
->        }
-> 
->        ret = hrtimer_cancel(&t->timer);
-> 
->        if (t->prog) {
->             /* bpf_timer_cb hasn't put it yet (and now won't) */
->             bpf_prog_put(t->prog);
->             t->prog = NULL;
->             t->callback_fn = NULL;
->        }
-> out:
->        ____bpf_spin_unlock(&timer->lock);
->        return ret;
-> }
-> 
-> static enum hrtimer_restart bpf_timer_cb(struct hrtimer *timer)
-> {
->        struct bpf_hrtimer *t = container_of(timer, struct bpf_hrtimer, timer);
->        struct bpf_map *map = t->map;
->        struct bpf_prog *prog;
->        void *key, *callback_fn;
->        u32 idx;
->        int ret;
-> 
->        /* this is very IMPORTANT  */
->        ____bpf_spin_lock(t->lock);
-> 
->        prog = t->prog;
->        if (!prog) {
->            /* we were cancelled, prog is put already, exit early */
->            ____bpf_spin_unlock(&timer->lock);
->            return HRTIMER_NORESTART;
->        }
->        callback_fn = t->callback_fn;
-> 
->        /* make sure bpf_timer_cancel/bpf_timer_start won't
-> bpf_prog_put our prog */
->        t->prog = NULL;
->        t->callback_fn = NULL;
-> 
->        ____bpf_spin_unlock(t->lock);
-> 
->        /* at this point we "own" prog's refcnt decrement */
-> 
->        this_cpu_write(hrtimer_running, t);
-> 
->        ...
-> 
->        ret = BPF_CAST_CALL(t->callback_fn)((u64)(long)map,
->                                            (u64)(long)key,
->                                            (u64)(long)value, 0, 0);
->        WARN_ON(ret != 0); /* Next patch disallows 1 in the verifier */
-> 
->        bpf_prog_put(prog); /* always correct and non-racy */
-> 
->        this_cpu_write(hrtimer_running, NULL);
-> 
->        return HRTIMER_NORESTART;
-> }
-> 
-> bpf_timer_cancel_and_free() is mostly the same with t->prog NULL check
-> as everywhere else
-
-I haven't started detailed analysis of above proposal, but looks overly
-complicated on the first glance. Not saying it's bad or good.
-Just complexity and races are striking.
-
-> 
-> > There is no need to complicate bpf_timer with crazy refcnting schemes.
-> > The user space can simply pin the program in bpffs. In the future we might
-> > introduce a self-pinning helper that would pin the program and create a file.
-> > Sort-of like syscall prog type would pin self.
-> > That would be explicit and clean api instead of obscure hacks inside bpf_timer*().
-> 
-> Do I understand correctly that the alternative that you are proposing
-> is to keep some linked list of all map_values across all maps in the
-> system that have initialized bpf_hrtimer with that particular bpf_prog
-> in them? And when bpf_prog is put to zero you'll go and destruct them
-> all in a race-free way?
-> 
-> I have a bit of a hard time imagining how that will be implemented
-> exactly, so I might be overcomplicating that in my mind. Will be happy
-> to see the working code.
-
-Here is working code...
-Note how patch 1 is so much simpler without complicated refcnting.
-And how patch 2 removes for_each_map_element that was necessary earlier.
-Also note that link list approach is an optimization.
-Instead of keeping a link list the bpf_free_used_timers() could call
-a map specific op to iterate all elems and free timers with
-timer->prog == prog_going_away.
-That was my initial proposal couple month ago.
-link_list is purely an optimization instead of for_each_map_elem.
-
---uw7m3mfu5sptiiin
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0001-bpf-Cancel-and-free-timers-when-prog-is-going-away.patch"
-
-From c11bf0aa23f1df25682056f2c581c9bc9bd8df31 Mon Sep 17 00:00:00 2001
-From: Alexei Starovoitov <ast@kernel.org>
-Date: Wed, 16 Jun 2021 09:19:36 -0700
-Subject: [PATCH bpf-next 1/2] bpf: Cancel and free timers when prog is going
- away.
-
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: 715c5ce454a6 ("libbpf: Add low level TC-BPF management API")
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/bpf.h  |  3 ++
- kernel/bpf/core.c    |  3 ++
- kernel/bpf/helpers.c | 70 +++++++++++++++++++++++++-------------------
- 3 files changed, 46 insertions(+), 30 deletions(-)
+Changelog:
+v1 -> v2:
+ * Add short summary instead of links about the underlying issue (Daniel)
+---
+ tools/lib/bpf/netlink.c | 107 +++++++++++++++-------------------------
+ tools/lib/bpf/nlattr.h  |  37 +++++++++-----
+ 2 files changed, 65 insertions(+), 79 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 7c403235c7e8..f67ea2512844 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -245,6 +245,7 @@ static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
- void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
- 			   bool lock_src);
- void bpf_timer_cancel_and_free(void *timer);
-+void bpf_free_used_timers(struct bpf_prog_aux *aux);
- int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size);
- 
- struct bpf_offload_dev;
-@@ -871,6 +872,8 @@ struct bpf_prog_aux {
- 	u32 size_poke_tab;
- 	struct bpf_ksym ksym;
- 	const struct bpf_prog_ops *ops;
-+	spinlock_t timers_lock;
-+	struct hlist_head used_timers;
- 	struct bpf_map **used_maps;
- 	struct mutex used_maps_mutex; /* mutex for used_maps and used_map_cnt */
- 	struct btf_mod_pair *used_btfs;
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 5e31ee9f7512..aa7960986a75 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -104,6 +104,8 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
- 	fp->jit_requested = ebpf_jit_enabled();
- 
- 	INIT_LIST_HEAD_RCU(&fp->aux->ksym.lnode);
-+	INIT_HLIST_HEAD(&fp->aux->used_timers);
-+	spin_lock_init(&fp->aux->timers_lock);
- 	mutex_init(&fp->aux->used_maps_mutex);
- 	mutex_init(&fp->aux->dst_mutex);
- 
-@@ -2201,6 +2203,7 @@ static void bpf_prog_free_deferred(struct work_struct *work)
- 	int i;
- 
- 	aux = container_of(work, struct bpf_prog_aux, work);
-+	bpf_free_used_timers(aux);
- 	bpf_free_used_maps(aux);
- 	bpf_free_used_btfs(aux);
- 	if (bpf_prog_is_dev_bound(aux))
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index b8df592c33cc..08f5d0f73f68 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -987,6 +987,7 @@ const struct bpf_func_proto bpf_snprintf_proto = {
- 
- struct bpf_hrtimer {
- 	struct hrtimer timer;
-+	struct hlist_node hlist;
- 	struct bpf_map *map;
- 	struct bpf_prog *prog;
- 	void *callback_fn;
-@@ -1004,7 +1005,6 @@ static DEFINE_PER_CPU(struct bpf_hrtimer *, hrtimer_running);
- static enum hrtimer_restart bpf_timer_cb(struct hrtimer *timer)
- {
- 	struct bpf_hrtimer *t = container_of(timer, struct bpf_hrtimer, timer);
--	struct bpf_prog *prog = t->prog;
- 	struct bpf_map *map = t->map;
- 	void *key;
- 	u32 idx;
-@@ -1031,16 +1031,6 @@ static enum hrtimer_restart bpf_timer_cb(struct hrtimer *timer)
- 					    (u64)(long)t->value, 0, 0);
- 	WARN_ON(ret != 0); /* Next patch disallows 1 in the verifier */
- 
--	/* The bpf function finished executed. Drop the prog refcnt.
--	 * It could reach zero here and trigger free of bpf_prog
--	 * and subsequent free of the maps that were holding timers.
--	 * If callback_fn called bpf_timer_start on this timer
--	 * the prog refcnt will be > 0.
--	 *
--	 * If callback_fn deleted map element the 't' could have been freed,
--	 * hence t->prog deref is done earlier.
--	 */
--	bpf_prog_put(prog);
- 	this_cpu_write(hrtimer_running, NULL);
- 	return HRTIMER_NORESTART;
- }
-@@ -1077,6 +1067,10 @@ BPF_CALL_5(bpf_timer_init, struct bpf_timer_kern *, timer, void *, cb, int, flag
- 	t->prog = prog;
- 	hrtimer_init(&t->timer, clockid, HRTIMER_MODE_REL_SOFT);
- 	t->timer.function = bpf_timer_cb;
-+	INIT_HLIST_NODE(&t->hlist);
-+	spin_lock(&prog->aux->timers_lock);
-+	hlist_add_head_rcu(&t->hlist, &prog->aux->used_timers);
-+	spin_unlock(&prog->aux->timers_lock);
- 	timer->timer = t;
- out:
- 	____bpf_spin_unlock(&timer->lock);
-@@ -1103,12 +1097,6 @@ BPF_CALL_2(bpf_timer_start, struct bpf_timer_kern *, timer, u64, nsecs)
- 		ret = -EINVAL;
- 		goto out;
- 	}
--	if (!hrtimer_active(&t->timer) || hrtimer_callback_running(&t->timer))
--		/* If the timer wasn't active or callback already executing
--		 * bump the prog refcnt to keep it alive until
--		 * callback is invoked (again).
--		 */
--		bpf_prog_inc(t->prog);
- 	hrtimer_start(&t->timer, ns_to_ktime(nsecs), HRTIMER_MODE_REL_SOFT);
- out:
- 	____bpf_spin_unlock(&timer->lock);
-@@ -1145,13 +1133,7 @@ BPF_CALL_1(bpf_timer_cancel, struct bpf_timer_kern *, timer)
- 	/* Cancel the timer and wait for associated callback to finish
- 	 * if it was running.
- 	 */
--	if (hrtimer_cancel(&t->timer) == 1) {
--		/* If the timer was active then drop the prog refcnt,
--		 * since callback will not be invoked.
--		 */
--		bpf_prog_put(t->prog);
--		ret = 1;
--	}
-+	ret = hrtimer_cancel(&t->timer);
- out:
- 	____bpf_spin_unlock(&timer->lock);
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index cf9381f03b16..a17470045455 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -154,7 +154,7 @@ static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
  	return ret;
-@@ -1164,8 +1146,10 @@ static const struct bpf_func_proto bpf_timer_cancel_proto = {
- 	.arg1_type	= ARG_PTR_TO_TIMER,
- };
- 
--/* This function is called by delete_element in htab and lru maps
-- * and by map_free for array, lru, htab maps.
-+/* This function is called by map_delete/update_elem for individual
-+ * element and by bpf_free_used_timers when prog is going away.
-+ * When map is destroyed by ops->map_free all bpf_timers in there
-+ * are freed.
-  */
- void bpf_timer_cancel_and_free(void *val)
- {
-@@ -1177,7 +1161,7 @@ void bpf_timer_cancel_and_free(void *val)
- 	if (!t)
+ }
+
+-static int libbpf_netlink_send_recv(struct nlmsghdr *nh,
++static int libbpf_netlink_send_recv(struct libbpf_nla_req *req,
+ 				    __dump_nlmsg_t parse_msg,
+ 				    libbpf_dump_nlmsg_t parse_attr,
+ 				    void *cookie)
+@@ -166,15 +166,15 @@ static int libbpf_netlink_send_recv(struct nlmsghdr *nh,
+ 	if (sock < 0)
+ 		return sock;
+
+-	nh->nlmsg_pid = 0;
+-	nh->nlmsg_seq = time(NULL);
++	req->nh.nlmsg_pid = 0;
++	req->nh.nlmsg_seq = time(NULL);
+
+-	if (send(sock, nh, nh->nlmsg_len, 0) < 0) {
++	if (send(sock, req, req->nh.nlmsg_len, 0) < 0) {
+ 		ret = -errno;
  		goto out;
- 	/* Cancel the timer and wait for callback to complete if it was
--	 * running. Only individual delete_element in htab or lru maps can
-+	 * running. Only delete/update of individual element can
- 	 * return 1 from hrtimer_cancel.
- 	 * The whole map is destroyed when its refcnt reaches zero.
- 	 * That happens after bpf prog refcnt reaches zero.
-@@ -1197,15 +1181,41 @@ void bpf_timer_cancel_and_free(void *val)
- 	 * In non-preallocated maps timer->timer = NULL will happen after
- 	 * callback completes, since prog execution is an RCU critical section.
- 	 */
--	if (this_cpu_read(hrtimer_running) != t &&
--	    hrtimer_cancel(&t->timer) == 1)
--		bpf_prog_put(t->prog);
-+	if (this_cpu_read(hrtimer_running) != t)
-+		hrtimer_cancel(&t->timer);
-+
-+	spin_lock(&t->prog->aux->timers_lock);
-+	hlist_del_rcu(&t->hlist);
-+	spin_unlock(&t->prog->aux->timers_lock);
-+	t->prog = LIST_POISON1;
- 	kfree(t);
- 	timer->timer = NULL;
- out:
- 	____bpf_spin_unlock(&timer->lock);
- }
- 
-+/* This function is called after prog->refcnt reaches zero.
-+ * It's called before bpf_free_used_maps to clean up timers in maps
-+ * if going away prog had callback_fn-s for them.
-+ */
-+void bpf_free_used_timers(struct bpf_prog_aux *aux)
-+{
-+	struct bpf_timer_kern *timer;
-+	struct bpf_hrtimer *t;
-+	struct hlist_node *n;
-+
-+	rcu_read_lock();
-+	hlist_for_each_entry_safe(t, n, &aux->used_timers, hlist) {
-+		timer = t->value + t->map->timer_off;
-+		/* The map isn't going away. The 'timer' points into map
-+		 * element that isn't going away either, but cancel_and_free
-+		 * could be racing with parallel map_delete_elem.
-+		 */
-+		bpf_timer_cancel_and_free(timer);
-+	}
-+	rcu_read_unlock();
-+}
-+
- const struct bpf_func_proto bpf_get_current_task_proto __weak;
- const struct bpf_func_proto bpf_probe_read_user_proto __weak;
- const struct bpf_func_proto bpf_probe_read_user_str_proto __weak;
--- 
-2.30.2
-
-
---uw7m3mfu5sptiiin
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0002-bpf-Don-t-iterate-all-map-elements-anymore.patch"
-
-From 62d9bd33aac388c34e7fd3b411e0d40084d07f4b Mon Sep 17 00:00:00 2001
-From: Alexei Starovoitov <ast@kernel.org>
-Date: Wed, 16 Jun 2021 09:40:32 -0700
-Subject: [PATCH bpf-next 2/2] bpf: Don't iterate all map elements anymore.
-
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- kernel/bpf/arraymap.c |  7 -------
- kernel/bpf/hashtab.c  | 11 -----------
- 2 files changed, 18 deletions(-)
-
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index 5c84ab7f8872..d82a6de65273 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -385,17 +385,10 @@ static void *array_map_vmalloc_addr(struct bpf_array *array)
- static void array_map_free(struct bpf_map *map)
- {
- 	struct bpf_array *array = container_of(map, struct bpf_array, map);
--	int i;
- 
- 	if (array->map.map_type == BPF_MAP_TYPE_PERCPU_ARRAY)
- 		bpf_array_free_percpu(array);
- 
--	if (unlikely(map_value_has_timer(map)))
--		for (i = 0; i < array->map.max_entries; i++)
--			bpf_timer_cancel_and_free(array->value +
--						  array->elem_size * i +
--						  map->timer_off);
--
- 	if (array->map.map_flags & BPF_F_MMAPABLE)
- 		bpf_map_area_free(array_map_vmalloc_addr(array));
- 	else
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index c885492d0a76..5e2736c46185 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -244,17 +244,6 @@ static void htab_free_elems(struct bpf_htab *htab)
- 		cond_resched();
  	}
- free_elems:
--	if (unlikely(map_value_has_timer(&htab->map)))
--		for (i = 0; i < htab->map.max_entries; i++) {
--			struct htab_elem *elem;
--
--			elem = get_htab_elem(htab, i);
--			bpf_timer_cancel_and_free(elem->key +
--						  round_up(htab->map.key_size, 8) +
--						  htab->map.timer_off);
--			cond_resched();
--		}
--
- 	bpf_map_area_free(htab->elems);
+
+-	ret = libbpf_netlink_recv(sock, nl_pid, nh->nlmsg_seq,
++	ret = libbpf_netlink_recv(sock, nl_pid, req->nh.nlmsg_seq,
+ 				  parse_msg, parse_attr, cookie);
+ out:
+ 	libbpf_netlink_close(sock);
+@@ -186,11 +186,7 @@ static int __bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
+ {
+ 	struct nlattr *nla;
+ 	int ret;
+-	struct {
+-		struct nlmsghdr  nh;
+-		struct ifinfomsg ifinfo;
+-		char             attrbuf[64];
+-	} req;
++	struct libbpf_nla_req req;
+
+ 	memset(&req, 0, sizeof(req));
+ 	req.nh.nlmsg_len      = NLMSG_LENGTH(sizeof(struct ifinfomsg));
+@@ -199,27 +195,26 @@ static int __bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
+ 	req.ifinfo.ifi_family = AF_UNSPEC;
+ 	req.ifinfo.ifi_index  = ifindex;
+
+-	nla = nlattr_begin_nested(&req.nh, sizeof(req), IFLA_XDP);
++	nla = nlattr_begin_nested(&req, IFLA_XDP);
+ 	if (!nla)
+ 		return -EMSGSIZE;
+-	ret = nlattr_add(&req.nh, sizeof(req), IFLA_XDP_FD, &fd, sizeof(fd));
++	ret = nlattr_add(&req, IFLA_XDP_FD, &fd, sizeof(fd));
+ 	if (ret < 0)
+ 		return ret;
+ 	if (flags) {
+-		ret = nlattr_add(&req.nh, sizeof(req), IFLA_XDP_FLAGS, &flags,
+-				 sizeof(flags));
++		ret = nlattr_add(&req, IFLA_XDP_FLAGS, &flags, sizeof(flags));
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+ 	if (flags & XDP_FLAGS_REPLACE) {
+-		ret = nlattr_add(&req.nh, sizeof(req), IFLA_XDP_EXPECTED_FD,
+-				 &old_fd, sizeof(old_fd));
++		ret = nlattr_add(&req, IFLA_XDP_EXPECTED_FD, &old_fd,
++				 sizeof(old_fd));
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+-	nlattr_end_nested(&req.nh, nla);
++	nlattr_end_nested(&req, nla);
+
+-	return libbpf_netlink_send_recv(&req.nh, NULL, NULL, NULL);
++	return libbpf_netlink_send_recv(&req, NULL, NULL, NULL);
  }
- 
--- 
-2.30.2
 
+ int bpf_set_link_xdp_fd_opts(int ifindex, int fd, __u32 flags,
+@@ -314,14 +309,11 @@ int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+ 	struct xdp_id_md xdp_id = {};
+ 	__u32 mask;
+ 	int ret;
+-	struct {
+-		struct nlmsghdr  nh;
+-		struct ifinfomsg ifm;
+-	} req = {
++	struct libbpf_nla_req req = {
+ 		.nh.nlmsg_len   = NLMSG_LENGTH(sizeof(struct ifinfomsg)),
+ 		.nh.nlmsg_type  = RTM_GETLINK,
+ 		.nh.nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST,
+-		.ifm.ifi_family = AF_PACKET,
++		.ifinfo.ifi_family = AF_PACKET,
+ 	};
 
---uw7m3mfu5sptiiin--
+ 	if (flags & ~XDP_FLAGS_MASK || !info_size)
+@@ -336,7 +328,7 @@ int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+ 	xdp_id.ifindex = ifindex;
+ 	xdp_id.flags = flags;
+
+-	ret = libbpf_netlink_send_recv(&req.nh, __dump_link_nlmsg,
++	ret = libbpf_netlink_send_recv(&req, __dump_link_nlmsg,
+ 				       get_xdp_info, &xdp_id);
+ 	if (!ret) {
+ 		size_t sz = min(info_size, sizeof(xdp_id.info));
+@@ -376,15 +368,14 @@ int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
+ 	return libbpf_err(ret);
+ }
+
+-typedef int (*qdisc_config_t)(struct nlmsghdr *nh, struct tcmsg *t,
+-			      size_t maxsz);
++typedef int (*qdisc_config_t)(struct libbpf_nla_req *req);
+
+-static int clsact_config(struct nlmsghdr *nh, struct tcmsg *t, size_t maxsz)
++static int clsact_config(struct libbpf_nla_req *req)
+ {
+-	t->tcm_parent = TC_H_CLSACT;
+-	t->tcm_handle = TC_H_MAKE(TC_H_CLSACT, 0);
++	req->tc.tcm_parent = TC_H_CLSACT;
++	req->tc.tcm_handle = TC_H_MAKE(TC_H_CLSACT, 0);
+
+-	return nlattr_add(nh, maxsz, TCA_KIND, "clsact", sizeof("clsact"));
++	return nlattr_add(req, TCA_KIND, "clsact", sizeof("clsact"));
+ }
+
+ static int attach_point_to_config(struct bpf_tc_hook *hook,
+@@ -431,11 +422,7 @@ static int tc_qdisc_modify(struct bpf_tc_hook *hook, int cmd, int flags)
+ {
+ 	qdisc_config_t config;
+ 	int ret;
+-	struct {
+-		struct nlmsghdr nh;
+-		struct tcmsg tc;
+-		char buf[256];
+-	} req;
++	struct libbpf_nla_req req;
+
+ 	ret = attach_point_to_config(hook, &config);
+ 	if (ret < 0)
+@@ -448,11 +435,11 @@ static int tc_qdisc_modify(struct bpf_tc_hook *hook, int cmd, int flags)
+ 	req.tc.tcm_family  = AF_UNSPEC;
+ 	req.tc.tcm_ifindex = OPTS_GET(hook, ifindex, 0);
+
+-	ret = config(&req.nh, &req.tc, sizeof(req));
++	ret = config(&req);
+ 	if (ret < 0)
+ 		return ret;
+
+-	return libbpf_netlink_send_recv(&req.nh, NULL, NULL, NULL);
++	return libbpf_netlink_send_recv(&req, NULL, NULL, NULL);
+ }
+
+ static int tc_qdisc_create_excl(struct bpf_tc_hook *hook)
+@@ -544,7 +531,7 @@ static int get_tc_info(struct nlmsghdr *nh, libbpf_dump_nlmsg_t fn,
+ 	return __get_tc_info(cookie, tc, tb, nh->nlmsg_flags & NLM_F_ECHO);
+ }
+
+-static int tc_add_fd_and_name(struct nlmsghdr *nh, size_t maxsz, int fd)
++static int tc_add_fd_and_name(struct libbpf_nla_req *req, int fd)
+ {
+ 	struct bpf_prog_info info = {};
+ 	__u32 info_len = sizeof(info);
+@@ -555,7 +542,7 @@ static int tc_add_fd_and_name(struct nlmsghdr *nh, size_t maxsz, int fd)
+ 	if (ret < 0)
+ 		return ret;
+
+-	ret = nlattr_add(nh, maxsz, TCA_BPF_FD, &fd, sizeof(fd));
++	ret = nlattr_add(req, TCA_BPF_FD, &fd, sizeof(fd));
+ 	if (ret < 0)
+ 		return ret;
+ 	len = snprintf(name, sizeof(name), "%s:[%u]", info.name, info.id);
+@@ -563,7 +550,7 @@ static int tc_add_fd_and_name(struct nlmsghdr *nh, size_t maxsz, int fd)
+ 		return -errno;
+ 	if (len >= sizeof(name))
+ 		return -ENAMETOOLONG;
+-	return nlattr_add(nh, maxsz, TCA_BPF_NAME, name, len + 1);
++	return nlattr_add(req, TCA_BPF_NAME, name, len + 1);
+ }
+
+ int bpf_tc_attach(const struct bpf_tc_hook *hook, struct bpf_tc_opts *opts)
+@@ -571,12 +558,8 @@ int bpf_tc_attach(const struct bpf_tc_hook *hook, struct bpf_tc_opts *opts)
+ 	__u32 protocol, bpf_flags, handle, priority, parent, prog_id, flags;
+ 	int ret, ifindex, attach_point, prog_fd;
+ 	struct bpf_cb_ctx info = {};
++	struct libbpf_nla_req req;
+ 	struct nlattr *nla;
+-	struct {
+-		struct nlmsghdr nh;
+-		struct tcmsg tc;
+-		char buf[256];
+-	} req;
+
+ 	if (!hook || !opts ||
+ 	    !OPTS_VALID(hook, bpf_tc_hook) ||
+@@ -618,25 +601,24 @@ int bpf_tc_attach(const struct bpf_tc_hook *hook, struct bpf_tc_opts *opts)
+ 		return libbpf_err(ret);
+ 	req.tc.tcm_parent = parent;
+
+-	ret = nlattr_add(&req.nh, sizeof(req), TCA_KIND, "bpf", sizeof("bpf"));
++	ret = nlattr_add(&req, TCA_KIND, "bpf", sizeof("bpf"));
+ 	if (ret < 0)
+ 		return libbpf_err(ret);
+-	nla = nlattr_begin_nested(&req.nh, sizeof(req), TCA_OPTIONS);
++	nla = nlattr_begin_nested(&req, TCA_OPTIONS);
+ 	if (!nla)
+ 		return libbpf_err(-EMSGSIZE);
+-	ret = tc_add_fd_and_name(&req.nh, sizeof(req), prog_fd);
++	ret = tc_add_fd_and_name(&req, prog_fd);
+ 	if (ret < 0)
+ 		return libbpf_err(ret);
+ 	bpf_flags = TCA_BPF_FLAG_ACT_DIRECT;
+-	ret = nlattr_add(&req.nh, sizeof(req), TCA_BPF_FLAGS, &bpf_flags,
+-			 sizeof(bpf_flags));
++	ret = nlattr_add(&req, TCA_BPF_FLAGS, &bpf_flags, sizeof(bpf_flags));
+ 	if (ret < 0)
+ 		return libbpf_err(ret);
+-	nlattr_end_nested(&req.nh, nla);
++	nlattr_end_nested(&req, nla);
+
+ 	info.opts = opts;
+
+-	ret = libbpf_netlink_send_recv(&req.nh, get_tc_info, NULL, &info);
++	ret = libbpf_netlink_send_recv(&req, get_tc_info, NULL, &info);
+ 	if (ret < 0)
+ 		return libbpf_err(ret);
+ 	if (!info.processed)
+@@ -650,11 +632,7 @@ static int __bpf_tc_detach(const struct bpf_tc_hook *hook,
+ {
+ 	__u32 protocol = 0, handle, priority, parent, prog_id, flags;
+ 	int ret, ifindex, attach_point, prog_fd;
+-	struct {
+-		struct nlmsghdr nh;
+-		struct tcmsg tc;
+-		char buf[256];
+-	} req;
++	struct libbpf_nla_req req;
+
+ 	if (!hook ||
+ 	    !OPTS_VALID(hook, bpf_tc_hook) ||
+@@ -701,13 +679,12 @@ static int __bpf_tc_detach(const struct bpf_tc_hook *hook,
+ 	req.tc.tcm_parent = parent;
+
+ 	if (!flush) {
+-		ret = nlattr_add(&req.nh, sizeof(req), TCA_KIND,
+-				 "bpf", sizeof("bpf"));
++		ret = nlattr_add(&req, TCA_KIND, "bpf", sizeof("bpf"));
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+
+-	return libbpf_netlink_send_recv(&req.nh, NULL, NULL, NULL);
++	return libbpf_netlink_send_recv(&req, NULL, NULL, NULL);
+ }
+
+ int bpf_tc_detach(const struct bpf_tc_hook *hook,
+@@ -727,11 +704,7 @@ int bpf_tc_query(const struct bpf_tc_hook *hook, struct bpf_tc_opts *opts)
+ 	__u32 protocol, handle, priority, parent, prog_id, flags;
+ 	int ret, ifindex, attach_point, prog_fd;
+ 	struct bpf_cb_ctx info = {};
+-	struct {
+-		struct nlmsghdr nh;
+-		struct tcmsg tc;
+-		char buf[256];
+-	} req;
++	struct libbpf_nla_req req;
+
+ 	if (!hook || !opts ||
+ 	    !OPTS_VALID(hook, bpf_tc_hook) ||
+@@ -770,13 +743,13 @@ int bpf_tc_query(const struct bpf_tc_hook *hook, struct bpf_tc_opts *opts)
+ 		return libbpf_err(ret);
+ 	req.tc.tcm_parent = parent;
+
+-	ret = nlattr_add(&req.nh, sizeof(req), TCA_KIND, "bpf", sizeof("bpf"));
++	ret = nlattr_add(&req, TCA_KIND, "bpf", sizeof("bpf"));
+ 	if (ret < 0)
+ 		return libbpf_err(ret);
+
+ 	info.opts = opts;
+
+-	ret = libbpf_netlink_send_recv(&req.nh, get_tc_info, NULL, &info);
++	ret = libbpf_netlink_send_recv(&req, get_tc_info, NULL, &info);
+ 	if (ret < 0)
+ 		return libbpf_err(ret);
+ 	if (!info.processed)
+diff --git a/tools/lib/bpf/nlattr.h b/tools/lib/bpf/nlattr.h
+index 3c780ab6d022..219747e135f2 100644
+--- a/tools/lib/bpf/nlattr.h
++++ b/tools/lib/bpf/nlattr.h
+@@ -13,6 +13,7 @@
+ #include <string.h>
+ #include <errno.h>
+ #include <linux/netlink.h>
++#include <linux/rtnetlink.h>
+
+ /* avoid multiple definition of netlink features */
+ #define __LINUX_NETLINK_H
+@@ -52,6 +53,18 @@ struct libbpf_nla_policy {
+ 	uint16_t	maxlen;
+ };
+
++struct libbpf_nla_req {
++	struct nlmsghdr nh;
++	union {
++		struct {
++			struct ifinfomsg ifinfo;
++			char _pad[4];
++		};
++		struct tcmsg tc;
++	};
++	char buf[128];
++};
++
+ /**
+  * @ingroup attr
+  * Iterate over a stream of attributes
+@@ -111,44 +124,44 @@ static inline struct nlattr *nla_data(struct nlattr *nla)
+ 	return (struct nlattr *)((char *)nla + NLA_HDRLEN);
+ }
+
+-static inline struct nlattr *nh_tail(struct nlmsghdr *nh)
++static inline struct nlattr *req_tail(struct libbpf_nla_req *req)
+ {
+-	return (struct nlattr *)((char *)nh + NLMSG_ALIGN(nh->nlmsg_len));
++	return (struct nlattr *)((char *)req + NLMSG_ALIGN(req->nh.nlmsg_len));
+ }
+
+-static inline int nlattr_add(struct nlmsghdr *nh, size_t maxsz, int type,
++static inline int nlattr_add(struct libbpf_nla_req *req, int type,
+ 			     const void *data, int len)
+ {
+ 	struct nlattr *nla;
+
+-	if (NLMSG_ALIGN(nh->nlmsg_len) + NLA_ALIGN(NLA_HDRLEN + len) > maxsz)
++	if (NLMSG_ALIGN(req->nh.nlmsg_len) + NLA_ALIGN(NLA_HDRLEN + len) > sizeof(*req))
+ 		return -EMSGSIZE;
+ 	if (!!data != !!len)
+ 		return -EINVAL;
+
+-	nla = nh_tail(nh);
++	nla = req_tail(req);
+ 	nla->nla_type = type;
+ 	nla->nla_len = NLA_HDRLEN + len;
+ 	if (data)
+ 		memcpy(nla_data(nla), data, len);
+-	nh->nlmsg_len = NLMSG_ALIGN(nh->nlmsg_len) + NLA_ALIGN(nla->nla_len);
++	req->nh.nlmsg_len = NLMSG_ALIGN(req->nh.nlmsg_len) + NLA_ALIGN(nla->nla_len);
+ 	return 0;
+ }
+
+-static inline struct nlattr *nlattr_begin_nested(struct nlmsghdr *nh,
+-						 size_t maxsz, int type)
++static inline struct nlattr *nlattr_begin_nested(struct libbpf_nla_req *req, int type)
+ {
+ 	struct nlattr *tail;
+
+-	tail = nh_tail(nh);
+-	if (nlattr_add(nh, maxsz, type | NLA_F_NESTED, NULL, 0))
++	tail = req_tail(req);
++	if (nlattr_add(req, type | NLA_F_NESTED, NULL, 0))
+ 		return NULL;
+ 	return tail;
+ }
+
+-static inline void nlattr_end_nested(struct nlmsghdr *nh, struct nlattr *tail)
++static inline void nlattr_end_nested(struct libbpf_nla_req *req,
++				     struct nlattr *tail)
+ {
+-	tail->nla_len = (char *)nh_tail(nh) - (char *)tail;
++	tail->nla_len = (char *)req_tail(req) - (char *)tail;
+ }
+
+ #endif /* __LIBBPF_NLATTR_H */
+--
+2.31.1
+
