@@ -2,104 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EC1A3AA3F0
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:08:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C53A3AA3F6
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:09:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232624AbhFPTKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59796 "EHLO
+        id S232389AbhFPTLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:11:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232459AbhFPTKm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:10:42 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5B9C061283
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:30 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id v22so6057904lfa.3
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:08:30 -0700 (PDT)
+        with ESMTP id S232296AbhFPTLc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:11:32 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786CCC061574;
+        Wed, 16 Jun 2021 12:09:25 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id q20so6070905lfo.2;
+        Wed, 16 Jun 2021 12:09:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KY/iJP5CpxPVy4NzVmmnCVBH1UfAm8gIg54ojzdUXD8=;
-        b=P1zT9Gu1LSZ88LeRKP6sRzDnzJUqE5PCo4PtMgVSVkaDHigpx0KZ5fGaxLLvB4ZWAX
-         hTJdsLlfYECLzRvrBREQIyPyWiFo1usLu6xk+S0jc67GN3MCK8qT2B9YpiWaQ6Y/hBBn
-         M7U47b+7UAcXsUqTJE3xniO2I9svC7YmleXKMHSTJcparSA0h/KEtm5UvH+QUsflOhRR
-         lKlvhRNccFjr4hpFo/mQ9NTTG/WQZaj/HMIR9DKYoKTapJyyuJcWgkUzWkFI58AuCTbG
-         HM7yJcR5Va/X5ft3JFw9l0xE49HxFcAN9aVMyATiqCtlm2eTHQpY3SI1GzEYBDikNoXl
-         SagA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9WqEGt61k6A3IwzqwlBQ0hdHIKhxg1G/G83ZdCJ8kmg=;
+        b=kVm93IpS2H/1KIVfmEBsz6Ad1Pazer249USI8YMama4UGaP11erHtVE3EDyJwRV7qG
+         g1V5zTN/ZPaZ9idMBb0KamL2nrhsyeZzyiwvjx3wVaHP6xYPbHVl1mgvb/kynNYZ932r
+         aFuv4cSOBpM7Op6ogT0hdHR8aiojkuC+MOtTfufpio1e1qazb7T333mKeiM/6Jn2CJQl
+         QVM8Q2ePJowEkWg1WxrBwQMYMso4pyQHLegCiiRwqbZvhjPCGgSRQurt3NWry1XyCUJQ
+         UpaCuZGrFpyERib0h7fReS7ZvY92sK/GoH4a/tj5ghtwWmQSi7wo6ixXptpvPzozbAGn
+         jBHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KY/iJP5CpxPVy4NzVmmnCVBH1UfAm8gIg54ojzdUXD8=;
-        b=PYaPDVqACrJhvv4W8q/jSxh4mD5kwCfXMb5iiMmK1mvioRSXwLcxBLxkZ3D1e48Lg2
-         v8J+6zPf+86364OFeiiM8Rr2wZy3Y9/Y2JTcFR2iHweHRFh5DdDdHg+jKWI126yxYneZ
-         G1j+7SPHm3ZuouKDr70O1JPLsQY8+53Syd2bsInSpJxj+Ni3RSXlJhAEepy6i3q+2rUh
-         cCAvHoVEEdShkwtliBvEWvMbEeuTKlDeGOIiIsOCJ6KJhUDW6yR071faoAJFtx20LlpT
-         htuHgVawJRZfEkrRgQALUcGfNCpKagx7KHZIw5Pwt03RonGEC7KbyHbS/uD+AOIBbI89
-         sUBQ==
-X-Gm-Message-State: AOAM530ToinvgNrLPAm2aThzNYLMv8PopGF/SkA2SkmqzYBQ6FD8ca7H
-        yIQvWDr1Rl6pnDMkb8RRzWjF2Q==
-X-Google-Smtp-Source: ABdhPJwdyFEnshUh4uD/8NdkmK2PPYtFF7gDca2r/PyVsV0Qo6ITET4o9SleM/cDqpeQjnHB9ryxaw==
-X-Received: by 2002:ac2:4ec1:: with SMTP id p1mr906995lfr.584.1623870508714;
-        Wed, 16 Jun 2021 12:08:28 -0700 (PDT)
-Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id h22sm406939ljl.126.2021.06.16.12.08.27
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9WqEGt61k6A3IwzqwlBQ0hdHIKhxg1G/G83ZdCJ8kmg=;
+        b=TGYpBHXSILa6FX96PZRqgKwwSD0mYQENaWGO923rF62OedT3UnKNaNMWQoI4Swty+r
+         /u51F2O/QwlRU+0js1Gjq46t7sxD8FkqAwEXzdNYJ+Ta6rwge9URuK8NNmv/ZEac19WR
+         cLyxfnBtLkYrA16Zhgnu0iIeGkPWX5MiumXlDFKYI+CzZGecs5IPjUFHS9fSPLKoL8mL
+         s66T4PvjZb9+qEIILWy+rPlHSToz/+1pDVQGOYomcjm6k9dBPEhbabH9IYuQYEjDvVf1
+         XYY01l1k4fHELivJummOzG2xIFDxjNRpHSm5bUU4mE93ZbcSBGKAHGIjKq2j1tAZZ0W3
+         2ayg==
+X-Gm-Message-State: AOAM532KBIwFB8NTgP7SdSg2fJjANvTgt++F9S8Bxw85e+5kUBhg0AP9
+        KvuiJTZKs2HACPuh9zDPVaE=
+X-Google-Smtp-Source: ABdhPJwK/mlgoTvdRXW48rAEDmAXhBty+Iq5Jsj943l4J8tgWUL8RfLOj+ojeNxWMIGS7i9jgJmaKw==
+X-Received: by 2002:a05:6512:2105:: with SMTP id q5mr830203lfr.649.1623870563731;
+        Wed, 16 Jun 2021 12:09:23 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.229.24])
+        by smtp.gmail.com with ESMTPSA id p16sm331753lfu.16.2021.06.16.12.09.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 12:08:28 -0700 (PDT)
-From:   Marcin Wojtas <mw@semihalf.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
-        jaz@semihalf.com, gjb@semihalf.com, upstream@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, jon@solid-run.com, tn@semihalf.com,
-        rjw@rjwysocki.net, lenb@kernel.org, Marcin Wojtas <mw@semihalf.com>
-Subject: [net-next: PATCH v2 7/7] net: mvpp2: remove unused 'has_phy' field
-Date:   Wed, 16 Jun 2021 21:07:59 +0200
-Message-Id: <20210616190759.2832033-8-mw@semihalf.com>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20210616190759.2832033-1-mw@semihalf.com>
-References: <20210616190759.2832033-1-mw@semihalf.com>
+        Wed, 16 Jun 2021 12:09:23 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH] net: hamradio: fix memory leak in mkiss_close
+Date:   Wed, 16 Jun 2021 22:09:06 +0300
+Message-Id: <20210616190906.12394-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'has_phy' field from struct mvpp2_port is no longer used.
-Remove it.
+My local syzbot instance hit memory leak in
+mkiss_open()[1]. The problem was in missing
+free_netdev() in mkiss_close().
 
-Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+In mkiss_open() netdevice is allocated and then
+registered, but in mkiss_close() netdevice was
+only unregistered, but not freed.
+
+Fail log:
+
+BUG: memory leak
+unreferenced object 0xffff8880281ba000 (size 4096):
+  comm "syz-executor.1", pid 11443, jiffies 4295046091 (age 17.660s)
+  hex dump (first 32 bytes):
+    61 78 30 00 00 00 00 00 00 00 00 00 00 00 00 00  ax0.............
+    00 27 fa 2a 80 88 ff ff 00 00 00 00 00 00 00 00  .'.*............
+  backtrace:
+    [<ffffffff81a27201>] kvmalloc_node+0x61/0xf0
+    [<ffffffff8706e7e8>] alloc_netdev_mqs+0x98/0xe80
+    [<ffffffff84e64192>] mkiss_open+0xb2/0x6f0 [1]
+    [<ffffffff842355db>] tty_ldisc_open+0x9b/0x110
+    [<ffffffff84236488>] tty_set_ldisc+0x2e8/0x670
+    [<ffffffff8421f7f3>] tty_ioctl+0xda3/0x1440
+    [<ffffffff81c9f273>] __x64_sys_ioctl+0x193/0x200
+    [<ffffffff8911263a>] do_syscall_64+0x3a/0xb0
+    [<ffffffff89200068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+BUG: memory leak
+unreferenced object 0xffff8880141a9a00 (size 96):
+  comm "syz-executor.1", pid 11443, jiffies 4295046091 (age 17.660s)
+  hex dump (first 32 bytes):
+    e8 a2 1b 28 80 88 ff ff e8 a2 1b 28 80 88 ff ff  ...(.......(....
+    98 92 9c aa b0 40 02 00 00 00 00 00 00 00 00 00  .....@..........
+  backtrace:
+    [<ffffffff8709f68b>] __hw_addr_create_ex+0x5b/0x310
+    [<ffffffff8709fb38>] __hw_addr_add_ex+0x1f8/0x2b0
+    [<ffffffff870a0c7b>] dev_addr_init+0x10b/0x1f0
+    [<ffffffff8706e88b>] alloc_netdev_mqs+0x13b/0xe80
+    [<ffffffff84e64192>] mkiss_open+0xb2/0x6f0 [1]
+    [<ffffffff842355db>] tty_ldisc_open+0x9b/0x110
+    [<ffffffff84236488>] tty_set_ldisc+0x2e8/0x670
+    [<ffffffff8421f7f3>] tty_ioctl+0xda3/0x1440
+    [<ffffffff81c9f273>] __x64_sys_ioctl+0x193/0x200
+    [<ffffffff8911263a>] do_syscall_64+0x3a/0xb0
+    [<ffffffff89200068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+BUG: memory leak
+unreferenced object 0xffff8880219bfc00 (size 512):
+  comm "syz-executor.1", pid 11443, jiffies 4295046091 (age 17.660s)
+  hex dump (first 32 bytes):
+    00 a0 1b 28 80 88 ff ff 80 8f b1 8d ff ff ff ff  ...(............
+    80 8f b1 8d ff ff ff ff 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff81a27201>] kvmalloc_node+0x61/0xf0
+    [<ffffffff8706eec7>] alloc_netdev_mqs+0x777/0xe80
+    [<ffffffff84e64192>] mkiss_open+0xb2/0x6f0 [1]
+    [<ffffffff842355db>] tty_ldisc_open+0x9b/0x110
+    [<ffffffff84236488>] tty_set_ldisc+0x2e8/0x670
+    [<ffffffff8421f7f3>] tty_ioctl+0xda3/0x1440
+    [<ffffffff81c9f273>] __x64_sys_ioctl+0x193/0x200
+    [<ffffffff8911263a>] do_syscall_64+0x3a/0xb0
+    [<ffffffff89200068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+BUG: memory leak
+unreferenced object 0xffff888029b2b200 (size 256):
+  comm "syz-executor.1", pid 11443, jiffies 4295046091 (age 17.660s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff81a27201>] kvmalloc_node+0x61/0xf0
+    [<ffffffff8706f062>] alloc_netdev_mqs+0x912/0xe80
+    [<ffffffff84e64192>] mkiss_open+0xb2/0x6f0 [1]
+    [<ffffffff842355db>] tty_ldisc_open+0x9b/0x110
+    [<ffffffff84236488>] tty_set_ldisc+0x2e8/0x670
+    [<ffffffff8421f7f3>] tty_ioctl+0xda3/0x1440
+    [<ffffffff81c9f273>] __x64_sys_ioctl+0x193/0x200
+    [<ffffffff8911263a>] do_syscall_64+0x3a/0xb0
+    [<ffffffff89200068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 815f62bf7427 ("[PATCH] SMP rewrite of mkiss")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 3 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 1 -
- 2 files changed, 4 deletions(-)
+ drivers/net/hamradio/mkiss.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 4a61c90003b5..b9fbc9f000f2 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -1197,9 +1197,6 @@ struct mvpp2_port {
- 	/* Firmware node associated to the port */
- 	struct fwnode_handle *fwnode;
+diff --git a/drivers/net/hamradio/mkiss.c b/drivers/net/hamradio/mkiss.c
+index 65154224d5b8..7685a1721597 100644
+--- a/drivers/net/hamradio/mkiss.c
++++ b/drivers/net/hamradio/mkiss.c
+@@ -799,6 +799,7 @@ static void mkiss_close(struct tty_struct *tty)
+ 	ax->tty = NULL;
  
--	/* Is a PHY always connected to the port */
--	bool has_phy;
--
- 	/* Per-port registers' base address */
- 	void __iomem *base;
- 	void __iomem *stats_base;
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index a66ed3194015..8362e64a3b28 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -6790,7 +6790,6 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 	port = netdev_priv(dev);
- 	port->dev = dev;
- 	port->fwnode = port_fwnode;
--	port->has_phy = !!of_find_property(port_node, "phy", NULL);
- 	port->ntxqs = ntxqs;
- 	port->nrxqs = nrxqs;
- 	port->priv = priv;
+ 	unregister_netdev(ax->dev);
++	free_netdev(ax->dev);
+ }
+ 
+ /* Perform I/O control on an active ax25 channel. */
 -- 
-2.29.0
+2.32.0
 
