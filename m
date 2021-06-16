@@ -2,369 +2,580 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 932103AA1CB
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 18:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D61ED3AA1D9
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 18:52:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbhFPQvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 12:51:20 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:22442 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230146AbhFPQvT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 12:51:19 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1623862153; h=Date: Message-Id: Cc: To: Subject: From:
- Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
- bh=pMiGwZTqk2LbtvGnnjhsY3xi28z/R4WHJXxCsaqtNpU=; b=mBpAt8wfnLQ4MXM1Y/D15nGITCkRF0PMFzquESwnkeb+RMa8gvKrRkg0NDD74uYVZ9idgUtR
- 1ckOykd3M8j3SVKO5jw3perVLUcZQOTf+XlXagG9TFznZELvRdC2KH+2ah7W2MUd+sPVgo0F
- +5TTMIQ4kFBLWkiInI6gYbNLVr0=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 60ca2b75abfd22a3dc5fa319 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 16 Jun 2021 16:48:53
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 33988C433F1; Wed, 16 Jun 2021 16:48:52 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C12BDC433D3;
-        Wed, 16 Jun 2021 16:48:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C12BDC433D3
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S230411AbhFPQzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 12:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230083AbhFPQzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 12:55:02 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C181C061574;
+        Wed, 16 Jun 2021 09:52:56 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id mj8-20020a17090b3688b029016ee34fc1b3so2145894pjb.0;
+        Wed, 16 Jun 2021 09:52:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iEVChFbDFCmGN1dMH8S/MzuZpIpTIysMe0k+9GMBk4M=;
+        b=e8MuuvfSQj5GaTDjsgRKpZy9VAUr9BQowvYfyNgAzuNEPJF2bGNf5WfVgngKrDCLi+
+         HlwpPGAt15B8bOKl8gVwgJvYzQgI5VQet0RpmWqimtX3Zpk19OdvNpHm47lTd9oVyqG9
+         97r6HvCbFsFOBo3VIa7yB3ZOFN46foLap4tx8hPtrqm/NyPq5Y5jvhonvXU6sn+6e3Z8
+         K0nvUAkR+05E1gDsejffgHPgxj7uwj7BvLIr9r3RZsHa+5EO8fadh27zaaTTB7qRFw6y
+         JMVooDtGeelj4iiW9Jipm0nBb+MKnwnqn5og3j7K7ZTSS/w2w7g+UMk8Vbp5dPUVDq6W
+         2Ihw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iEVChFbDFCmGN1dMH8S/MzuZpIpTIysMe0k+9GMBk4M=;
+        b=nxnMMvSmdgvWcerXS2twLll875nVM0nd/UPLIKZ1Kc0dgwuj3wodG9Z2LEii8N0K4F
+         KGsW9CY+eo0vPc6eK3RDHrlyq/AbdfW8yhPGvYYn8SWevNl/eon5WkEadCd2DhGedkVV
+         TLvrWHZrXHB9BbQphQM0NySL1Q+S5zUeF1Ef/DuNf0WvLH0lA9zM7DrBdGkWtNThV0Z0
+         RYQeWmN+722ASAJ8QXWE047K42ekK1iUbpiRzI0wZRKPVxjswfc3bQShXk1b/ON+2AlH
+         A/yQDoR46sMlRUpT6Xoo84WLTFkfWBVUrKex0pJHH+D4TPJqbZCvTUG4QlFXclKReGOJ
+         cNIQ==
+X-Gm-Message-State: AOAM532IncnGmHg3AhMiPURWtXSXIp3ikbJue3QY6XeX5fmA/48s1A8Z
+        KgV+Iunt9fNx3V73XuHrNs4=
+X-Google-Smtp-Source: ABdhPJx6N41qAHAo35IzvHNW7n7ocG2jvq1AhGfix8r85Cf50CmIhTU+PLlnSjm4XP69VAuKBnqN4Q==
+X-Received: by 2002:a17:90b:19d4:: with SMTP id nm20mr4133255pjb.134.1623862375898;
+        Wed, 16 Jun 2021 09:52:55 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:b564])
+        by smtp.gmail.com with ESMTPSA id r6sm5791216pjm.12.2021.06.16.09.52.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Jun 2021 09:52:54 -0700 (PDT)
+Date:   Wed, 16 Jun 2021 09:52:50 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Introduce bpf_timer
+Message-ID: <20210616165250.ejtcvgip5q5hbacy@ast-mbp.dhcp.thefacebook.com>
+References: <20210611042442.65444-1-alexei.starovoitov@gmail.com>
+ <20210611042442.65444-2-alexei.starovoitov@gmail.com>
+ <9b23b2c6-28b2-3ab3-4e8b-1fa0c926c4d2@fb.com>
+ <CAADnVQLS=Jx9=znx6XAtrRoY08bTQHTipXQwvnPNo0SRSJsK0Q@mail.gmail.com>
+ <CAEf4BzZ159NfuGJo0ig9i=7eGNgvQkq8TnZi09XHSZST17A0zQ@mail.gmail.com>
+ <CAADnVQJ3CQ=WnsantyEy6GB58rdsd7q=aJv93WPsZZJmXdJGzQ@mail.gmail.com>
+ <CAEf4BzZWr7HhKn3opxHeaZqkgo4gsYYhDQ4d4HuNhx-i8XgjCg@mail.gmail.com>
+ <20210616042622.22nzdrrnlndogn5w@ast-mbp>
+ <CAEf4BzZ_=tJGqGS9FKxxQqGfRqAoF_m9r8FW29n9ZqC_u-10DA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-From:   Kalle Valo <kvalo@codeaurora.org>
-Subject: pull-request: wireless-drivers-next-2021-06-16
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20210616164852.33988C433F1@smtp.codeaurora.org>
-Date:   Wed, 16 Jun 2021 16:48:52 +0000 (UTC)
+Content-Type: multipart/mixed; boundary="uw7m3mfu5sptiiin"
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZ_=tJGqGS9FKxxQqGfRqAoF_m9r8FW29n9ZqC_u-10DA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-here's a pull request to net-next tree, more info below. Please let me know if
-there are any problems.
+--uw7m3mfu5sptiiin
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Kalle
+On Tue, Jun 15, 2021 at 10:54:40PM -0700, Andrii Nakryiko wrote:
+> 
+> It could be the case, of course. But let's try to think this through
+> to the end before giving up. I think it's mostly because we are trying
+> to be too clever with lockless synchronization.
 
-The following changes since commit 5ada57a9a6b0be0e6dfcbd4afa519b0347fd5649:
+imo your proposed code fits "too clever" too ;)
+Just a reminder that few emails ago you've argued 
+about "obviously correct" approach, but now...
 
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-05-27 09:55:10 -0700)
+> I had a feeling that bpf_timer_cb needs to take lock as well. But once
+> we add that, refcounting becomes simpler and more deterministic, IMO.
+> Here's what I have in mind. I keep only important parts of the code,
+> so it's not a complete implementation. Please take a look below, I
+> left a few comments here and there.
+> 
+> 
+> struct bpf_hrtimer {
+>        struct hrtimer timer;
+>        struct bpf_map *map;
+>        void *value;
+> 
+>        struct bpf_prog *prog;
+>        void *callback_fn;
+> 
+>        /* pointer to that lock in struct bpf_timer_kern
+>         * so that we can access it from bpf_timer_cb()
+>         */
+>        struct bpf_spin_lock *lock;
+> };
+> 
+> BPF_CALL_5(bpf_timer_init, struct bpf_timer_kern *, timer, int, flags,
+>            struct bpf_map *, map)
+> {
+>        struct bpf_hrtimer *t;
+>        int ret = 0;
+> 
+>        ____bpf_spin_lock(&timer->lock);
+>        t = timer->timer;
+>        if (t) {
+>                ret = -EBUSY;
+>                goto out;
+>        }
+>        /* allocate hrtimer via map_kmalloc to use memcg accounting */
+>        t = bpf_map_kmalloc_node(map, sizeof(*t), GFP_ATOMIC, NUMA_NO_NODE);
+>        if (!t) {
+>                ret = -ENOMEM;
+>                goto out;
+>        }
+>        t->value = (void *)timer /* - offset of bpf_timer inside elem */;
+>        t->map = map;
+>        t->timer.function = bpf_timer_cb;
+> 
+>        /* we'll init them in bpf_timer_start */
+>        t->prog = NULL;
+>        t->callback_fn = NULL;
+> 
+>        hrtimer_init(&t->timer, clockid, HRTIMER_MODE_REL_SOFT);
+>        timer->timer = t;
+> out:
+>        ____bpf_spin_unlock(&timer->lock);
+>        return ret;
+> }
+> 
+> 
+> BPF_CALL_2(bpf_timer_start, struct bpf_timer_kern *, timer, u64, nsecs,
+>            void *, cb, struct bpf_prog *, prog)
+> {
+>        struct bpf_hrtimer *t;
+>        int ret = 0;
+> 
+>        ____bpf_spin_lock(&timer->lock);
+>        t = timer->timer;
+>        if (!t) {
+>                ret = -EINVAL;
+>                goto out;
+>        }
+> 
+>        /* doesn't matter what it returns, we just request cancellation */
+>        hrtimer_try_to_cancel(&t->timer);
+> 
+>        /* t->prog might not be the same as prog (!) */
+>        if (prog != t->prog) {
+>             /* callback hasn't yet dropped refcnt */
+>            if (t->prog) /* if it's null bpf_timer_cb() is running and
+> will put it later */
+>                bpf_prog_put(t->prog);
+> 
+>            if (IS_ERR(bpf_prog_inc_not_zero(prog))) {
+>                /* this will only happen if prog is still running (and
+> it's actually us),
+>                 * but it was already put to zero, e.g., by closing last FD,
+>                 * so there is no point in scheduling a new run
+>                 */
 
-are available in the Git repository at:
+I have a bit of mind explosion here... everything will be alright.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git tags/wireless-drivers-next-2021-06-16
+>                t->prog = NULL;
+>                t->callback_fn = NULL;
+>                ret = -E_WE_ARE_SHUTTING_DOWN;
+>                goto out;
+>            }
+>        } /* otherwise we keep existing refcnt on t->prog == prog */
+> 
+>        /* potentially new combination of prog and cb */
+>        t->prog = prog;
+>        t->callback_fn = cb;
+> 
+>        hrtimer_start(&t->timer, ns_to_ktime(nsecs), HRTIMER_MODE_REL_SOFT);
+> out:
+>        ____bpf_spin_unlock(&timer->lock);
+>        return ret;
+> }
+> 
+> BPF_CALL_1(bpf_timer_cancel, struct bpf_timer_kern *, timer)
+> {
+>        struct bpf_hrtimer *t;
+>        int ret = 0;
+> 
+>        ____bpf_spin_lock(&timer->lock);
+>        t = timer->timer;
+>        if (!t) {
+>                ret = -EINVAL;
+>                goto out;
+>        }
+> 
+>        /* this part I still worry about due to possibility of cpu migration,
+>         * we need to think if we should migrate_disable() in bpf_timer_cb()
+>         * and bpf_timer_* helpers(), but that's a separate topic
+>         */
+>        if (this_cpu_read(hrtimer_running) == t) {
+>                ret = -EDEADLK;
+>                goto out;
+>        }
+> 
+>        ret = hrtimer_cancel(&t->timer);
+> 
+>        if (t->prog) {
+>             /* bpf_timer_cb hasn't put it yet (and now won't) */
+>             bpf_prog_put(t->prog);
+>             t->prog = NULL;
+>             t->callback_fn = NULL;
+>        }
+> out:
+>        ____bpf_spin_unlock(&timer->lock);
+>        return ret;
+> }
+> 
+> static enum hrtimer_restart bpf_timer_cb(struct hrtimer *timer)
+> {
+>        struct bpf_hrtimer *t = container_of(timer, struct bpf_hrtimer, timer);
+>        struct bpf_map *map = t->map;
+>        struct bpf_prog *prog;
+>        void *key, *callback_fn;
+>        u32 idx;
+>        int ret;
+> 
+>        /* this is very IMPORTANT  */
+>        ____bpf_spin_lock(t->lock);
+> 
+>        prog = t->prog;
+>        if (!prog) {
+>            /* we were cancelled, prog is put already, exit early */
+>            ____bpf_spin_unlock(&timer->lock);
+>            return HRTIMER_NORESTART;
+>        }
+>        callback_fn = t->callback_fn;
+> 
+>        /* make sure bpf_timer_cancel/bpf_timer_start won't
+> bpf_prog_put our prog */
+>        t->prog = NULL;
+>        t->callback_fn = NULL;
+> 
+>        ____bpf_spin_unlock(t->lock);
+> 
+>        /* at this point we "own" prog's refcnt decrement */
+> 
+>        this_cpu_write(hrtimer_running, t);
+> 
+>        ...
+> 
+>        ret = BPF_CAST_CALL(t->callback_fn)((u64)(long)map,
+>                                            (u64)(long)key,
+>                                            (u64)(long)value, 0, 0);
+>        WARN_ON(ret != 0); /* Next patch disallows 1 in the verifier */
+> 
+>        bpf_prog_put(prog); /* always correct and non-racy */
+> 
+>        this_cpu_write(hrtimer_running, NULL);
+> 
+>        return HRTIMER_NORESTART;
+> }
+> 
+> bpf_timer_cancel_and_free() is mostly the same with t->prog NULL check
+> as everywhere else
 
-for you to fetch changes up to f39c2d1a188de8884d93229bbf1378ea1947a9c8:
+I haven't started detailed analysis of above proposal, but looks overly
+complicated on the first glance. Not saying it's bad or good.
+Just complexity and races are striking.
 
-  Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git (2021-06-15 18:47:30 +0300)
+> 
+> > There is no need to complicate bpf_timer with crazy refcnting schemes.
+> > The user space can simply pin the program in bpffs. In the future we might
+> > introduce a self-pinning helper that would pin the program and create a file.
+> > Sort-of like syscall prog type would pin self.
+> > That would be explicit and clean api instead of obscure hacks inside bpf_timer*().
+> 
+> Do I understand correctly that the alternative that you are proposing
+> is to keep some linked list of all map_values across all maps in the
+> system that have initialized bpf_hrtimer with that particular bpf_prog
+> in them? And when bpf_prog is put to zero you'll go and destruct them
+> all in a race-free way?
+> 
+> I have a bit of a hard time imagining how that will be implemented
+> exactly, so I might be overcomplicating that in my mind. Will be happy
+> to see the working code.
 
-----------------------------------------------------------------
-wireless-drivers-next patches for v5.14
+Here is working code...
+Note how patch 1 is so much simpler without complicated refcnting.
+And how patch 2 removes for_each_map_element that was necessary earlier.
+Also note that link list approach is an optimization.
+Instead of keeping a link list the bpf_free_used_timers() could call
+a map specific op to iterate all elems and free timers with
+timer->prog == prog_going_away.
+That was my initial proposal couple month ago.
+link_list is purely an optimization instead of for_each_map_elem.
 
-First set of patches for v5.14. Major new features are here support
-WCN6855 PCI in ath11k and WoWLAN support for wcn36xx. Also smaller
-fixes and cleanups all over.
+--uw7m3mfu5sptiiin
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-bpf-Cancel-and-free-timers-when-prog-is-going-away.patch"
 
-ath9k
+From c11bf0aa23f1df25682056f2c581c9bc9bd8df31 Mon Sep 17 00:00:00 2001
+From: Alexei Starovoitov <ast@kernel.org>
+Date: Wed, 16 Jun 2021 09:19:36 -0700
+Subject: [PATCH bpf-next 1/2] bpf: Cancel and free timers when prog is going
+ away.
 
-* provide STBC info in the received frames
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ include/linux/bpf.h  |  3 ++
+ kernel/bpf/core.c    |  3 ++
+ kernel/bpf/helpers.c | 70 +++++++++++++++++++++++++-------------------
+ 3 files changed, 46 insertions(+), 30 deletions(-)
 
-brcmfmac
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 7c403235c7e8..f67ea2512844 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -245,6 +245,7 @@ static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
+ void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
+ 			   bool lock_src);
+ void bpf_timer_cancel_and_free(void *timer);
++void bpf_free_used_timers(struct bpf_prog_aux *aux);
+ int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size);
+ 
+ struct bpf_offload_dev;
+@@ -871,6 +872,8 @@ struct bpf_prog_aux {
+ 	u32 size_poke_tab;
+ 	struct bpf_ksym ksym;
+ 	const struct bpf_prog_ops *ops;
++	spinlock_t timers_lock;
++	struct hlist_head used_timers;
+ 	struct bpf_map **used_maps;
+ 	struct mutex used_maps_mutex; /* mutex for used_maps and used_map_cnt */
+ 	struct btf_mod_pair *used_btfs;
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 5e31ee9f7512..aa7960986a75 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -104,6 +104,8 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
+ 	fp->jit_requested = ebpf_jit_enabled();
+ 
+ 	INIT_LIST_HEAD_RCU(&fp->aux->ksym.lnode);
++	INIT_HLIST_HEAD(&fp->aux->used_timers);
++	spin_lock_init(&fp->aux->timers_lock);
+ 	mutex_init(&fp->aux->used_maps_mutex);
+ 	mutex_init(&fp->aux->dst_mutex);
+ 
+@@ -2201,6 +2203,7 @@ static void bpf_prog_free_deferred(struct work_struct *work)
+ 	int i;
+ 
+ 	aux = container_of(work, struct bpf_prog_aux, work);
++	bpf_free_used_timers(aux);
+ 	bpf_free_used_maps(aux);
+ 	bpf_free_used_btfs(aux);
+ 	if (bpf_prog_is_dev_bound(aux))
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index b8df592c33cc..08f5d0f73f68 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -987,6 +987,7 @@ const struct bpf_func_proto bpf_snprintf_proto = {
+ 
+ struct bpf_hrtimer {
+ 	struct hrtimer timer;
++	struct hlist_node hlist;
+ 	struct bpf_map *map;
+ 	struct bpf_prog *prog;
+ 	void *callback_fn;
+@@ -1004,7 +1005,6 @@ static DEFINE_PER_CPU(struct bpf_hrtimer *, hrtimer_running);
+ static enum hrtimer_restart bpf_timer_cb(struct hrtimer *timer)
+ {
+ 	struct bpf_hrtimer *t = container_of(timer, struct bpf_hrtimer, timer);
+-	struct bpf_prog *prog = t->prog;
+ 	struct bpf_map *map = t->map;
+ 	void *key;
+ 	u32 idx;
+@@ -1031,16 +1031,6 @@ static enum hrtimer_restart bpf_timer_cb(struct hrtimer *timer)
+ 					    (u64)(long)t->value, 0, 0);
+ 	WARN_ON(ret != 0); /* Next patch disallows 1 in the verifier */
+ 
+-	/* The bpf function finished executed. Drop the prog refcnt.
+-	 * It could reach zero here and trigger free of bpf_prog
+-	 * and subsequent free of the maps that were holding timers.
+-	 * If callback_fn called bpf_timer_start on this timer
+-	 * the prog refcnt will be > 0.
+-	 *
+-	 * If callback_fn deleted map element the 't' could have been freed,
+-	 * hence t->prog deref is done earlier.
+-	 */
+-	bpf_prog_put(prog);
+ 	this_cpu_write(hrtimer_running, NULL);
+ 	return HRTIMER_NORESTART;
+ }
+@@ -1077,6 +1067,10 @@ BPF_CALL_5(bpf_timer_init, struct bpf_timer_kern *, timer, void *, cb, int, flag
+ 	t->prog = prog;
+ 	hrtimer_init(&t->timer, clockid, HRTIMER_MODE_REL_SOFT);
+ 	t->timer.function = bpf_timer_cb;
++	INIT_HLIST_NODE(&t->hlist);
++	spin_lock(&prog->aux->timers_lock);
++	hlist_add_head_rcu(&t->hlist, &prog->aux->used_timers);
++	spin_unlock(&prog->aux->timers_lock);
+ 	timer->timer = t;
+ out:
+ 	____bpf_spin_unlock(&timer->lock);
+@@ -1103,12 +1097,6 @@ BPF_CALL_2(bpf_timer_start, struct bpf_timer_kern *, timer, u64, nsecs)
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+-	if (!hrtimer_active(&t->timer) || hrtimer_callback_running(&t->timer))
+-		/* If the timer wasn't active or callback already executing
+-		 * bump the prog refcnt to keep it alive until
+-		 * callback is invoked (again).
+-		 */
+-		bpf_prog_inc(t->prog);
+ 	hrtimer_start(&t->timer, ns_to_ktime(nsecs), HRTIMER_MODE_REL_SOFT);
+ out:
+ 	____bpf_spin_unlock(&timer->lock);
+@@ -1145,13 +1133,7 @@ BPF_CALL_1(bpf_timer_cancel, struct bpf_timer_kern *, timer)
+ 	/* Cancel the timer and wait for associated callback to finish
+ 	 * if it was running.
+ 	 */
+-	if (hrtimer_cancel(&t->timer) == 1) {
+-		/* If the timer was active then drop the prog refcnt,
+-		 * since callback will not be invoked.
+-		 */
+-		bpf_prog_put(t->prog);
+-		ret = 1;
+-	}
++	ret = hrtimer_cancel(&t->timer);
+ out:
+ 	____bpf_spin_unlock(&timer->lock);
+ 	return ret;
+@@ -1164,8 +1146,10 @@ static const struct bpf_func_proto bpf_timer_cancel_proto = {
+ 	.arg1_type	= ARG_PTR_TO_TIMER,
+ };
+ 
+-/* This function is called by delete_element in htab and lru maps
+- * and by map_free for array, lru, htab maps.
++/* This function is called by map_delete/update_elem for individual
++ * element and by bpf_free_used_timers when prog is going away.
++ * When map is destroyed by ops->map_free all bpf_timers in there
++ * are freed.
+  */
+ void bpf_timer_cancel_and_free(void *val)
+ {
+@@ -1177,7 +1161,7 @@ void bpf_timer_cancel_and_free(void *val)
+ 	if (!t)
+ 		goto out;
+ 	/* Cancel the timer and wait for callback to complete if it was
+-	 * running. Only individual delete_element in htab or lru maps can
++	 * running. Only delete/update of individual element can
+ 	 * return 1 from hrtimer_cancel.
+ 	 * The whole map is destroyed when its refcnt reaches zero.
+ 	 * That happens after bpf prog refcnt reaches zero.
+@@ -1197,15 +1181,41 @@ void bpf_timer_cancel_and_free(void *val)
+ 	 * In non-preallocated maps timer->timer = NULL will happen after
+ 	 * callback completes, since prog execution is an RCU critical section.
+ 	 */
+-	if (this_cpu_read(hrtimer_running) != t &&
+-	    hrtimer_cancel(&t->timer) == 1)
+-		bpf_prog_put(t->prog);
++	if (this_cpu_read(hrtimer_running) != t)
++		hrtimer_cancel(&t->timer);
++
++	spin_lock(&t->prog->aux->timers_lock);
++	hlist_del_rcu(&t->hlist);
++	spin_unlock(&t->prog->aux->timers_lock);
++	t->prog = LIST_POISON1;
+ 	kfree(t);
+ 	timer->timer = NULL;
+ out:
+ 	____bpf_spin_unlock(&timer->lock);
+ }
+ 
++/* This function is called after prog->refcnt reaches zero.
++ * It's called before bpf_free_used_maps to clean up timers in maps
++ * if going away prog had callback_fn-s for them.
++ */
++void bpf_free_used_timers(struct bpf_prog_aux *aux)
++{
++	struct bpf_timer_kern *timer;
++	struct bpf_hrtimer *t;
++	struct hlist_node *n;
++
++	rcu_read_lock();
++	hlist_for_each_entry_safe(t, n, &aux->used_timers, hlist) {
++		timer = t->value + t->map->timer_off;
++		/* The map isn't going away. The 'timer' points into map
++		 * element that isn't going away either, but cancel_and_free
++		 * could be racing with parallel map_delete_elem.
++		 */
++		bpf_timer_cancel_and_free(timer);
++	}
++	rcu_read_unlock();
++}
++
+ const struct bpf_func_proto bpf_get_current_task_proto __weak;
+ const struct bpf_func_proto bpf_probe_read_user_proto __weak;
+ const struct bpf_func_proto bpf_probe_read_user_str_proto __weak;
+-- 
+2.30.2
 
-* fix setting of station info chains bitmask
 
-* correctly report average RSSI in station info
+--uw7m3mfu5sptiiin
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0002-bpf-Don-t-iterate-all-map-elements-anymore.patch"
 
-rsi
+From 62d9bd33aac388c34e7fd3b411e0d40084d07f4b Mon Sep 17 00:00:00 2001
+From: Alexei Starovoitov <ast@kernel.org>
+Date: Wed, 16 Jun 2021 09:40:32 -0700
+Subject: [PATCH bpf-next 2/2] bpf: Don't iterate all map elements anymore.
 
-* support for changing beacon interval in AP mode
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ kernel/bpf/arraymap.c |  7 -------
+ kernel/bpf/hashtab.c  | 11 -----------
+ 2 files changed, 18 deletions(-)
 
-ath11k
+diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+index 5c84ab7f8872..d82a6de65273 100644
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -385,17 +385,10 @@ static void *array_map_vmalloc_addr(struct bpf_array *array)
+ static void array_map_free(struct bpf_map *map)
+ {
+ 	struct bpf_array *array = container_of(map, struct bpf_array, map);
+-	int i;
+ 
+ 	if (array->map.map_type == BPF_MAP_TYPE_PERCPU_ARRAY)
+ 		bpf_array_free_percpu(array);
+ 
+-	if (unlikely(map_value_has_timer(map)))
+-		for (i = 0; i < array->map.max_entries; i++)
+-			bpf_timer_cancel_and_free(array->value +
+-						  array->elem_size * i +
+-						  map->timer_off);
+-
+ 	if (array->map.map_flags & BPF_F_MMAPABLE)
+ 		bpf_map_area_free(array_map_vmalloc_addr(array));
+ 	else
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index c885492d0a76..5e2736c46185 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -244,17 +244,6 @@ static void htab_free_elems(struct bpf_htab *htab)
+ 		cond_resched();
+ 	}
+ free_elems:
+-	if (unlikely(map_value_has_timer(&htab->map)))
+-		for (i = 0; i < htab->map.max_entries; i++) {
+-			struct htab_elem *elem;
+-
+-			elem = get_htab_elem(htab, i);
+-			bpf_timer_cancel_and_free(elem->key +
+-						  round_up(htab->map.key_size, 8) +
+-						  htab->map.timer_off);
+-			cond_resched();
+-		}
+-
+ 	bpf_map_area_free(htab->elems);
+ }
+ 
+-- 
+2.30.2
 
-* support for WCN6855 PCI hardware
 
-wcn36xx
-
-* WoWLAN support with magic packets and GTK rekeying
-
-----------------------------------------------------------------
-Alvin Šipraga (2):
-      brcmfmac: fix setting of station info chains bitmask
-      brcmfmac: correctly report average RSSI in station info
-
-Baochen Qiang (7):
-      ath11k: add hw reg support for WCN6855
-      ath11k: add dp support for WCN6855
-      ath11k: setup REO for WCN6855
-      ath11k: setup WBM_IDLE_LINK ring once again
-      ath11k: add support to get peer id for WCN6855
-      ath11k: add support for WCN6855
-      ath11k: don't call ath11k_pci_set_l1ss for WCN6855
-
-Bryan O'Donoghue (13):
-      wcn36xx: Return result of set_power_params in suspend
-      wcn36xx: Run suspend for the first ieee80211_vif
-      wcn36xx: Add ipv4 ARP offload support in suspend
-      wcn36xx: Do not flush indication queue on suspend/resume
-      wcn36xx: Add ipv6 address tracking
-      wcn36xx: Add ipv6 namespace offload in suspend
-      wcn36xx: Add set_rekey_data callback
-      wcn36xx: Add GTK offload to WoWLAN path
-      wcn36xx: Add GTK offload info to WoWLAN resume
-      wcn36xx: Add Host suspend indication support
-      wcn36xx: Add host resume request support
-      wcn36xx: Enable WOWLAN flags
-      wcn36xx: Move hal_buf allocation to devm_kmalloc in probe
-
-Christophe JAILLET (2):
-      brcmsmac: mac80211_if: Fix a resource leak in an error handling path
-      ath11k: Fix an error handling path in ath11k_core_fetch_board_data_api_n()
-
-Colin Ian King (3):
-      ath10k/ath11k: fix spelling mistake "requed" -> "requeued"
-      b43legacy: Fix spelling mistake "overflew" -> "overflowed"
-      rtlwifi: rtl8723ae: remove redundant initialization of variable rtstatus
-
-Ding Senjie (1):
-      rtlwifi: Fix spelling of 'download'
-
-Guenter Roeck (1):
-      brcmsmac: Drop unnecessary NULL check after container_of
-
-Hang Zhang (1):
-      cw1200: Revert unnecessary patches that fix unreal use-after-free bugs
-
-Hui Tang (3):
-      libertas: remove leading spaces before tabs
-      rt2x00: remove leading spaces before tabs
-      wlcore: remove leading spaces before tabs
-
-Jiapeng Chong (2):
-      wcn36xx: Fix inconsistent indenting
-      ath6kl: Fix inconsistent indenting
-
-Johannes Berg (1):
-      wil6210: remove erroneous wiphy locking
-
-Kalle Valo (2):
-      Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git
-      Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git
-
-Lee Gibson (1):
-      wl1251: Fix possible buffer overflow in wl1251_cmd_scan
-
-Marek Vasut (2):
-      rsi: Assign beacon rate settings to the correct rate_info descriptor field
-      rsi: Add support for changing beacon interval
-
-Martin Fuzzey (1):
-      rsi: fix AP mode with WPA failure due to encrypted EAPOL
-
-Matthias Brugger (2):
-      brcmfmac: Delete second brcm folder hierarchy
-      brcmfmac: Add clm_blob firmware files to modinfo
-
-Michael Buesch (1):
-      ssb: sdio: Don't overwrite const buffer if block_write fails
-
-Pali Rohár (1):
-      ath9k: Fix kernel NULL pointer dereference during ath_reset_internal()
-
-Philipp Borgers (1):
-      ath9k: ar9003_mac: read STBC indicator from rx descriptor
-
-Ping-Ke Shih (1):
-      rtlwifi: 8821a: btcoexist: add comments to explain why if-else branches are identical
-
-Randy Dunlap (1):
-      wireless: carl9170: fix LEDS build errors & warnings
-
-Russell King (4):
-      wlcore: tidy up use of fw_log.actual_buff_size
-      wlcore: make some of the fwlog calculations more obvious
-      wlcore: fix bug reading fwlog
-      wlcore: fix read pointer update
-
-Saurav Girepunje (1):
-      zd1211rw: Prefer pr_err over printk error msg
-
-Seevalamuthu Mariappan (1):
-      ath11k: send beacon template after vdev_start/restart during csa
-
-Shaokun Zhang (2):
-      brcmsmac: Remove the repeated declaration
-      ath10k: remove the repeated declaration
-
-Shawn Guo (1):
-      brcmfmac: use ISO3166 country code and 0 rev as fallback
-
-Shubhankar Kuranagatti (3):
-      ssb: gpio: Fix alignment of comment
-      ssb: pcicore: Fix indentation of comment
-      ssb: Fix indentation of comment
-
-Souptick Joarder (1):
-      ipw2x00: Minor documentation update
-
-Stanislaw Gruszka (1):
-      rt2x00: do not set timestamp for injected frames
-
-Tian Tao (1):
-      ssb: remove unreachable code
-
-Tong Tiangen (1):
-      brcmfmac: Fix a double-free in brcmf_sdio_bus_reset
-
-Tony Lindgren (1):
-      wlcore/wl12xx: Fix wl12xx get_mac error if device is in ELP
-
-Tudor Ambarus (1):
-      wilc1000: Fix clock name binding
-
-Yang Li (3):
-      ssb: Remove redundant assignment to err
-      rtlwifi: Remove redundant assignments to ul_enc_algo
-      ath10k: Fix an error code in ath10k_add_interface()
-
-Yang Shen (9):
-      brcmfmac: Demote non-compliant kernel-doc headers
-      libertas_tf: Fix wrong function name in comments
-      rtlwifi: Fix wrong function name in comments
-      rsi: Fix missing function name in comments
-      wlcore: Fix missing function name in comments
-      wl1251: Fix missing function name in comments
-      ath5k: Fix wrong function name in comments
-      ath: Fix wrong function name in comments
-      wil6210: Fix wrong function name in comments
-
-Yang Yingliang (4):
-      ath10k: go to path err_unsupported when chip id is not supported
-      ath10k: add missing error return code in ath10k_pci_probe()
-      ath10k: remove unused more_frags variable
-      ath10k: Use devm_platform_get_and_ioremap_resource()
-
-YueHaibing (3):
-      b43legacy: Remove unused inline function txring_to_priority()
-      wlcore: use DEVICE_ATTR_<RW|RO> macro
-      libertas: use DEVICE_ATTR_RW macro
-
-Zhen Lei (4):
-      b43: phy_n: Delete some useless TODO code
-      ssb: Fix error return code in ssb_bus_scan()
-      ssb: use DEVICE_ATTR_ADMIN_RW() helper macro
-      rtlwifi: btcoex: 21a 2ant: Delete several duplicate condition branch codes
-
-Zou Wei (1):
-      cw1200: add missing MODULE_DEVICE_TABLE
-
-zuoqilin (1):
-      rndis_wlan: simplify is_associated()
-
-Íñigo Huguet (1):
-      brcmsmac: improve readability on addresses copy
-
- drivers/net/wireless/ath/ath10k/ahb.c              |   9 +-
- drivers/net/wireless/ath/ath10k/core.h             |   2 +-
- drivers/net/wireless/ath/ath10k/debug.c            |   4 +-
- drivers/net/wireless/ath/ath10k/htt.h              |   4 +-
- drivers/net/wireless/ath/ath10k/htt_rx.c           |   2 -
- drivers/net/wireless/ath/ath10k/mac.c              |   1 +
- drivers/net/wireless/ath/ath10k/pci.c              |  14 +-
- drivers/net/wireless/ath/ath10k/pci.h              |   1 -
- drivers/net/wireless/ath/ath10k/wmi.c              |   6 +-
- drivers/net/wireless/ath/ath10k/wmi.h              |   9 +-
- drivers/net/wireless/ath/ath11k/core.c             |  47 ++-
- drivers/net/wireless/ath/ath11k/core.h             |   5 +-
- .../net/wireless/ath/ath11k/debugfs_htt_stats.c    |   2 +-
- .../net/wireless/ath/ath11k/debugfs_htt_stats.h    |   2 +-
- drivers/net/wireless/ath/ath11k/dp.c               |  16 +-
- drivers/net/wireless/ath/ath11k/hal.c              |  10 +
- drivers/net/wireless/ath/ath11k/hal.h              |   3 +-
- drivers/net/wireless/ath/ath11k/hal_rx.c           |  42 +--
- drivers/net/wireless/ath/ath11k/hal_rx.h           |   8 +
- drivers/net/wireless/ath/ath11k/hw.c               | 391 +++++++++++++++++++++
- drivers/net/wireless/ath/ath11k/hw.h               |   5 +
- drivers/net/wireless/ath/ath11k/mac.c              |  10 +-
- drivers/net/wireless/ath/ath11k/mhi.c              |   1 +
- drivers/net/wireless/ath/ath11k/pci.c              |  47 ++-
- drivers/net/wireless/ath/ath11k/rx_desc.h          |  87 +++++
- drivers/net/wireless/ath/ath11k/wmi.c              |   4 +-
- drivers/net/wireless/ath/ath11k/wmi.h              |   4 +-
- drivers/net/wireless/ath/ath5k/pcu.c               |   2 +-
- drivers/net/wireless/ath/ath6kl/cfg80211.c         |   4 +-
- drivers/net/wireless/ath/ath9k/ar9003_mac.c        |   2 +
- drivers/net/wireless/ath/ath9k/main.c              |   5 +
- drivers/net/wireless/ath/carl9170/Kconfig          |   8 +-
- drivers/net/wireless/ath/hw.c                      |   2 +-
- drivers/net/wireless/ath/wcn36xx/dxe.c             |   2 +-
- drivers/net/wireless/ath/wcn36xx/hal.h             |  20 +-
- drivers/net/wireless/ath/wcn36xx/main.c            | 131 ++++++-
- drivers/net/wireless/ath/wcn36xx/smd.c             | 267 ++++++++++++++
- drivers/net/wireless/ath/wcn36xx/smd.h             |  17 +
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h         |  14 +
- drivers/net/wireless/ath/wil6210/cfg80211.c        |   2 -
- drivers/net/wireless/ath/wil6210/interrupt.c       |   2 +-
- drivers/net/wireless/ath/wil6210/wmi.c             |   6 +-
- drivers/net/wireless/broadcom/b43/phy_n.c          |  47 ---
- drivers/net/wireless/broadcom/b43legacy/dma.c      |  13 -
- drivers/net/wireless/broadcom/b43legacy/main.c     |   2 +-
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         |  54 +--
- .../broadcom/brcm80211/brcmfmac/firmware.h         |   7 +
- .../net/wireless/broadcom/brcm80211/brcmfmac/p2p.c |   2 +-
- .../wireless/broadcom/brcm80211/brcmfmac/pcie.c    |   4 +-
- .../wireless/broadcom/brcm80211/brcmfmac/sdio.c    |  19 +-
- .../wireless/broadcom/brcm80211/brcmsmac/aiutils.c |   3 -
- .../broadcom/brcm80211/brcmsmac/mac80211_if.c      |   8 +-
- .../wireless/broadcom/brcm80211/brcmsmac/main.c    |   3 +-
- .../net/wireless/broadcom/brcm80211/brcmsmac/stf.h |   1 -
- drivers/net/wireless/intel/ipw2x00/ipw2100.c       |   2 +-
- drivers/net/wireless/marvell/libertas/main.c       |   2 +-
- drivers/net/wireless/marvell/libertas/mesh.c       | 149 ++++----
- drivers/net/wireless/marvell/libertas_tf/if_usb.c  |   2 +-
- drivers/net/wireless/microchip/wilc1000/spi.c      |   2 +-
- drivers/net/wireless/ralink/rt2x00/rt2800lib.c     |   2 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00queue.c   |   5 +-
- .../realtek/rtlwifi/btcoexist/halbtc8821a2ant.c    |  20 +-
- drivers/net/wireless/realtek/rtlwifi/cam.c         |   2 +-
- .../net/wireless/realtek/rtlwifi/rtl8192cu/mac.c   |   4 +-
- .../net/wireless/realtek/rtlwifi/rtl8192se/trx.c   |   2 +-
- .../net/wireless/realtek/rtlwifi/rtl8723ae/hw.c    |   2 +-
- drivers/net/wireless/rndis_wlan.c                  |   5 +-
- drivers/net/wireless/rsi/rsi_91x_hal.c             |   6 +-
- drivers/net/wireless/rsi/rsi_91x_mac80211.c        |  20 +-
- drivers/net/wireless/rsi/rsi_91x_mgmt.c            |   7 +-
- drivers/net/wireless/rsi/rsi_main.h                |   1 -
- drivers/net/wireless/st/cw1200/cw1200_sdio.c       |   1 +
- drivers/net/wireless/st/cw1200/scan.c              |  17 +-
- drivers/net/wireless/ti/wl1251/cmd.c               |  17 +-
- drivers/net/wireless/ti/wl12xx/main.c              |   7 +
- drivers/net/wireless/ti/wlcore/cmd.c               |   6 +-
- drivers/net/wireless/ti/wlcore/event.c             |  67 ++--
- drivers/net/wireless/ti/wlcore/main.c              |   4 +-
- drivers/net/wireless/ti/wlcore/sysfs.c             |  24 +-
- drivers/net/wireless/zydas/zd1211rw/zd_usb.c       |   4 +-
- drivers/ssb/driver_gpio.c                          |   6 +-
- drivers/ssb/driver_pcicore.c                       |  18 +-
- drivers/ssb/main.c                                 |  36 +-
- drivers/ssb/pci.c                                  |  16 +-
- drivers/ssb/pcmcia.c                               |  16 +-
- drivers/ssb/scan.c                                 |   1 +
- drivers/ssb/sdio.c                                 |   1 -
- 87 files changed, 1380 insertions(+), 477 deletions(-)
+--uw7m3mfu5sptiiin--
