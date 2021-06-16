@@ -2,289 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 754103AA22B
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 19:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E4423AA23D
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 19:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbhFPROV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 13:14:21 -0400
-Received: from mail-eopbgr60073.outbound.protection.outlook.com ([40.107.6.73]:16257
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230083AbhFPROU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 13:14:20 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mn2MwcGKWko3olNzqYzRP1vzQWoTwgp8pqhFMMghsMIa5RhGP2gR0lw7ELs/qeE0j+r/esDpniR1udvg+4JL0aiBzrq9eLKs9bYmCUHTWW6g61TXpFxqrLy2YQi1wDpQAvJ0G+I4lp79Zq93ZeMdm23WPrjz6A8qqM0bM3t280frCFmUVUzrkHUxUmCOtU/xdXCIikVEj1YXxAwga8CZ7yzXWOKqaKn3/fWMBBA0+tqgp/vPw8m8bNzPdydiz48I0biyU3pDC9ZKfHvKHVF/x98HUIavCh0N49eWinLN+hTEp7zhQs6zCahXKo3itK7JV1Maqaj328NdwkRCxqLBOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Admmg5eUVdaS0UI9zhs+Xap9sIVkCINJROFvudfIFp0=;
- b=nuLSskziK6Yd4vzI+Nnhasn/0Gx+9tOXaHQTNGFSlSEtZ1bhfhZjPJ2oc6+CygLrocf70pyPXK2MiGmQAs8V+zyvHDqBmW/ROsY2dzD7V46qlhD6wafhm8MgM6Eb4ywQE8yEVBICXkFoTymkQNOtBdJtkHshSqgvmELvJzRjQzMudovmtwc0CYg6VESUDhqjbBWqzsEQhfWYcck+Qw9AoAyaKyOBc+9rhHhgrfGhd1DRaw89pivTFAHAQ8tT4vy0NUb/e54V9TOv3ia1K0DDxK7ICLbx30b00UKEGp1oSGGYyh6x3IUyVnPbl6tF6Ohuis5BeNuM+EX+tgSnuXmUKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Admmg5eUVdaS0UI9zhs+Xap9sIVkCINJROFvudfIFp0=;
- b=OP3ko2H3eKdZkMYfMwymfNnVUQwqtMzJ4Lu7MLeN9ek07nfwrsOG3lg0ZsOID8BTxEui4FAYpblfmAfQ8rOGj8mPoNxIC5NUMTUEv4R5nhI8EC3F3Cwju0bbNW4axu4uB36YXsYFemBcj6ubJRXc78qZ/94eVHbUmDbs+ECLNio=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-Received: from PA4PR04MB7934.eurprd04.prod.outlook.com (2603:10a6:102:ca::23)
- by PAXPR04MB8143.eurprd04.prod.outlook.com (2603:10a6:102:1c4::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.19; Wed, 16 Jun
- 2021 17:12:10 +0000
-Received: from PA4PR04MB7934.eurprd04.prod.outlook.com
- ([fe80::cd49:b79:2a9d:3b7c]) by PA4PR04MB7934.eurprd04.prod.outlook.com
- ([fe80::cd49:b79:2a9d:3b7c%6]) with mapi id 15.20.4242.019; Wed, 16 Jun 2021
- 17:12:10 +0000
-Subject: Re: [PATCH v1 net-next 3/3] net: stmmac: ptp: update tas basetime
- after ptp adjust
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "boon.leong.ong@intel.com" <boon.leong.ong@intel.com>,
-        "weifeng.voon@intel.com" <weifeng.voon@intel.com>,
-        "vee.khee.wong@intel.com" <vee.khee.wong@intel.com>,
-        "tee.min.tan@intel.com" <tee.min.tan@intel.com>,
-        "mohammad.athari.ismail@intel.com" <mohammad.athari.ismail@intel.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Mingkai Hu <mingkai.hu@nxp.com>, "Y.b. Lu" <yangbo.lu@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>
-References: <20210601083813.1078-1-xiaoliang.yang_1@nxp.com>
- <20210601083813.1078-4-xiaoliang.yang_1@nxp.com>
- <5d81bf51-6355-6b52-4653-412f9ce0c83a@nxp.com>
- <DB8PR04MB5785F472AC4F8ED66B9E128CF0369@DB8PR04MB5785.eurprd04.prod.outlook.com>
-From:   Rui Sousa <rui.sousa@nxp.com>
-Message-ID: <358c70d1-f472-8eb1-c07c-823ba1074c60@nxp.com>
-Date:   Wed, 16 Jun 2021 19:12:07 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-In-Reply-To: <DB8PR04MB5785F472AC4F8ED66B9E128CF0369@DB8PR04MB5785.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [88.168.142.79]
-X-ClientProxiedBy: AM3PR03CA0072.eurprd03.prod.outlook.com
- (2603:10a6:207:5::30) To PA4PR04MB7934.eurprd04.prod.outlook.com
- (2603:10a6:102:ca::23)
+        id S231411AbhFPRQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 13:16:01 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.164]:32887 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230083AbhFPRQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 13:16:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1623863626; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=tFAoIyJpluUM1HCZZzgLY5TY44fZU3rqhoyEReXlUfT6U/ZZ00+cIju4Rpnvc48fGc
+    H8P27Kft1pxKFD1FZJD0UojlhV/3GZmjA9JvkbihdauxFGOqnM0evZ8vgG7SiV5mdnQE
+    CIsogcSiqn1Ok02ZBSb4qWbhjYNtzFCVRJFl6M6vvXSZbTnPv203pwz2Kyc7JQhEiLaC
+    2SQd0EIeHhDRRbC0aoaS/9xgKilAMKr+gYfEoeSGWjXSoet8dagoiJBq7n8LzvBC8KoC
+    l2x364+oAAhFmiUB09qdMF4b8JHA0sa3VzobFXahMx2+6r7lXa0K0DBqBCTQpVONbAFT
+    XaZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623863626;
+    s=strato-dkim-0002; d=strato.com;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=RDg1xSQ6mX0ylsSTt2fF3oHZQADxjAmoO8Kg/tTJSiY=;
+    b=ObmqocqlpKqFqf/ry4MMzME9NYN2lkXgBDm30X2cJ+/EwncafhgyDSLUfQmbX46/+B
+    x6O8POCgwf7xvb7hxiRSwGyZnaWGVU7YOUMPtcN0FeP23CJlZ0asmhB3T3/hT6v3bHDQ
+    fCB47JJoMXqhNGEU46mV3j+rU2vSoUB42pitYeP1AtkCqtggd4x2gtt6AvcpmjDF6dez
+    60tOcv+wcWOhLWmb/fIvBt/jf5Xrb0b+wwqxLMhR51f7uA+ra1+bT+3om4zQ+FRDdCkR
+    r0CYZmmHQy8VnUz8rfLs2f0wkrRhPaFwP+rweUq/b8J3TL1n+VHh8oNEfl6I2fM1jfH9
+    Qq7A==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623863626;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=RDg1xSQ6mX0ylsSTt2fF3oHZQADxjAmoO8Kg/tTJSiY=;
+    b=kRnCmt3lQ955BKBXGoZQkjftJ0ColV+KUz38afNjzoZGjYeQ49qTmDY3f431c/oz+C
+    kTuMAdcZZac+kdFXBAlXEedt2r3NEh/u1yGu8RVZ+Ue9qOV8aT0le4VDi+JsH9QLE7Gt
+    1D7LQoN9fZF/3J8hZnzPSGEoyQqGTGTHF1gLhH9AljW4rS6MQOIN+pemoFNEUx0YV64I
+    6lZy+0ybYjCxTkAcrgeOVTnyh9TNQoR+K4c2lbtIHm/coQrZAO3zEBpsXeXivbGNVCMH
+    tYU3PgScx+RKtQmKsN9lvHMB5dlNX4CTXOTHrPA1LAGWJiUlCTvLYKYz7IiYdkLyu4Rr
+    3y2g==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u26zEodhPgRDZ8nxIc3GBg=="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
+    with ESMTPSA id y01375x5GHDjZg5
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 16 Jun 2021 19:13:45 +0200 (CEST)
+Date:   Wed, 16 Jun 2021 19:13:41 +0200
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        phone-devel@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: [PATCH net-next 3/3] net: wwan: Allow WWAN drivers to provide
+ blocking tx and poll function
+Message-ID: <YMoxRRNXLNPRBdhy@gerhold.net>
+References: <20210615133229.213064-1-stephan@gerhold.net>
+ <20210615133229.213064-4-stephan@gerhold.net>
+ <CAMZdPi8JuyqoF3GwJHcdXhdn0e7ks_f2WiUFpmn3E8HH7T_Gng@mail.gmail.com>
+ <YMkkUM3fHcWhYhmV@gerhold.net>
+ <CAMZdPi877Qu5F+mYqD0tAm5-gewpHHwpa2Xp7DAn8OM8rxVLMA@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.0.28] (88.168.142.79) by AM3PR03CA0072.eurprd03.prod.outlook.com (2603:10a6:207:5::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.18 via Frontend Transport; Wed, 16 Jun 2021 17:12:08 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 71811e0c-7ec2-466f-fd28-08d930e9e071
-X-MS-TrafficTypeDiagnostic: PAXPR04MB8143:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PAXPR04MB814385ADAF6BA77D71313DEDE80F9@PAXPR04MB8143.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PIODT06EyOyd+jWMtjw6l506izYrThgybl6jV6uROo2hU1hUD4byyEcAKEhHuV8OVeC8wfJnTEHfM3+8elCRVdtqd+DI8Dq2ViuaezAi+1EPKl8s9rldLg4xzRmeCc5EvxG02Cq7smCXH9+RvzCnRMVJsBSPkQKSDwv97Rja1TtpWWaemjIGyJxRFRzjW5fcLGFwYq9qucRbW67sLZjcNYMXfaCXXRlDBJqNlXfLamxeGc15rXfYxlDM0ZqNJqBRZ6Cy1ciKdMfwgzLk05bu5B3HEDh3R7g9AfRduWPYPJDgMOz8ee3RhkZDm1bk8EdZ+faf5nYjZlJI21fBexZOXBmwojJpwhjTVQQlIrtndoF0OPHKfnJb77Rq8dNNdRPy3c4MAn2UP0UH8uPgex/uqTIajjCvkHGlfUBo3QS3dbVgJDDiG9nc+hNmHLkFJsxDQGJL7AokfvdG9wYHzH8IEiLtwV9qNNghprxnMh8KjjgqUohgbQ9bgoM+u5L7INzw0vxAr3ccOfOqc3o39dL7iYB3xIKMgP0QuZTRP/kET28EnMfvizs2VhKf09j1yCRg4nzi9ejR7Fo7+sEhnWzIYdET5eHbIpGaA0ALhGuJnqhmz+tPsclwI7lTSK7IPHhVKcoDg4lm0KTLqKyZ8lbKxfOspRkVkiA0mSZlm2tZUm9zLG7HgeucM4SmjtYYaCAUsecxtTH9VHp/B9UAup/KPA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR04MB7934.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(36756003)(5660300002)(15650500001)(66946007)(4326008)(6862004)(16576012)(6486002)(37006003)(2616005)(7416002)(66476007)(956004)(83380400001)(52116002)(498600001)(38100700002)(86362001)(54906003)(53546011)(38350700002)(66556008)(8676002)(44832011)(6636002)(2906002)(31696002)(31686004)(186003)(26005)(8936002)(16526019)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?M2N4ZFBJK3lMQWQreFRRcFNONTJ2cjFnK1ZQSENyVUd0bHF5cm84SUdmd0M0?=
- =?utf-8?B?dTUxT1ltUEE0RmlKVUhSR0liL3V6NHhqL3RrT1cvUHRVcDdQK2xrOFZZeDdv?=
- =?utf-8?B?bVQ4YkF0OGNLcW8zRVAxSnJiTHdBZ1RvUG5qWXNOUGxzTWpmL2FhNkcvZ3Rq?=
- =?utf-8?B?ZUVsSnp5d3dpem9IK1luL3oyUyt4cEFFcUlNWStUTS9XdjF6M2JyZkttUnMr?=
- =?utf-8?B?cFgyRVVBalF3eE56VmRSTEk2cURIVGFGZEkzN0ZnTkVpRjV4a1kxVjg3WVVq?=
- =?utf-8?B?NXEySFRQK0hIZ0tOWWtSV2EvdHBsSW02TVdKdUVGK1Y5OWVOTWJBQkM2WGZT?=
- =?utf-8?B?a3BRSUhwL28vUkY2MkRDL3lVNE40aTNENGdtWnVSVUdxbmRjelBVNVg0b1V5?=
- =?utf-8?B?aXFBbGI0MTZPeGI1UXU3dllpemVUMyt1Z0FIZDVrd29ubHRYZllOclJTN0hy?=
- =?utf-8?B?WXhnK3BqcXcrKzcrYlFqa2d5TmQreFVjRFBYaG1VN1MrR0JPdHgvTXZJYjRn?=
- =?utf-8?B?T2dFRGd6alYxUlRYUTBHL29tN1NpeWJEWGhneVl1MTljTUxVWUVza0lmWWZZ?=
- =?utf-8?B?QWEyMGlSdnBKSzQ3aWhnaFBsbFFrUGRkck5wZmZETVhPQWRRb1VDaEQvZWVa?=
- =?utf-8?B?RWhpb2tzemYzaU1wTDRhZjNUdThZRVVKRG1OUUZZclhwWlJmN2JLYklXak5Z?=
- =?utf-8?B?dWtvZ3g2d2h5bmEzUGFYU29EMGZTT0ZwZUZIMEk3VS9heGowcyszbVV5NnpR?=
- =?utf-8?B?bnViYzZQWG9hRkRxa1VFdDhsS0NIS0JQWUo0MjRGaGMzakNHaVFWSklLVVp6?=
- =?utf-8?B?VTJDMkVIdEplRm95RHY5WlZ0Q0dhUFFNdTBiMDhMcVh3RzNDMHFtRHVFRjd4?=
- =?utf-8?B?NVR5TlhDbUxIQ3hQcDNHeHA1NUxrTVJpVEplalNxaUZyakZWZUhVWDJiRXJ4?=
- =?utf-8?B?SVJFODRrWDEvQW9aR2tNVUoyNDVnWi8rYmpGQlNCRmR1ek0xMytsUTNjRUJZ?=
- =?utf-8?B?YWYwZGdlaEVEYU5wV3ZaQy9XS0YrOHV5S0ZvVnlZUklJdWpjMEQxUHhMaGZ5?=
- =?utf-8?B?VXlYRWVNS2FhOGFWSExqcEtZUWFtWjhYa0t4MFJqR3VxOURFQmsyeitWaGl3?=
- =?utf-8?B?cXYveGhNdGVIZlJTa3lKcmZOdVNOMUVlS3hiak11TGRtYi9OZGZZSGlienBp?=
- =?utf-8?B?MzBtRExBb242TFRQQkJtbVV2QmZUOG5FK2dpNTBRRS85QjY4WUppT3J1cVVQ?=
- =?utf-8?B?aitYaXFBTTJldDFuM1lJbDFXY3dFd01USHNBcUM2aC9qR1ZDdHplbHR5TURo?=
- =?utf-8?B?MFZjZkRObWw0SDdJR1hHTWx3amQzSUlTWldBQ2NMYU1FcmtjbWRJVHdRbmdO?=
- =?utf-8?B?R0taeDVXajNTSzBVSzVEYjQxbGR4aWhLWjNBRjVXbmlRa1pBOU1PWkZPV0NW?=
- =?utf-8?B?VHNBb0JPUXQ5QUJOcUdBN2FFdjUvbCtTVGFZM3N0UVpOeTQrbldXRzgwbzRl?=
- =?utf-8?B?RUhNcnhYcTUwNkhNM2pFVjJESkQrYVZTeURyeFhOR2JCRlFVa3hkRHBOYXJS?=
- =?utf-8?B?OTg5d3FoMnNVbWZQQk0yc2tncFFDdU1GbFhyUGg5d3Q5bXhUZmR5QVJSb1ph?=
- =?utf-8?B?dnRUZm5VVmtpbFp3bVVYY2pjQWZHT1VsYTVSbXBOREdVOGZyM0dOUkJjZFB2?=
- =?utf-8?B?UlpvVHJXS1dFVlFEMU5MelhGeUZNUk1ka0kvNURJcVBwaDJYc2V2OUR4QzVW?=
- =?utf-8?Q?rO66lN3gpMi8n2kaKjjUdAiX/c5/25uN2B3e4fE?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71811e0c-7ec2-466f-fd28-08d930e9e071
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR04MB7934.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2021 17:12:10.3115
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h29e9UPsnIBdjcid9Yp/Gaf+/VyHktZC4tX7jMHuqGUpZJ8sQHSPHGpoFUsXlwQT9qX9hmJJx+aE29jcVP1B7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8143
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMZdPi877Qu5F+mYqD0tAm5-gewpHHwpa2Xp7DAn8OM8rxVLMA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/9/2021 11:03 AM, Xiaoliang Yang wrote:
-> Hi Rui,
->
-
-Hi,
-
-> On 2021-06-02 18:18, Rui Sousa wrote:
->>> After adjusting the ptp time, the Qbv base time may be the past time
->>> of the new current time. dwmac5 hardware limited the base time cannot
->>> be set as past time. This patch calculate the base time and reset the
->>> Qbv configuration after ptp time adjust.
->>>
->>> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
->>> ---
->>> .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 41
->> ++++++++++++++++++-
->>> 1 file changed, 40 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
->>> b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
->>> index 4e86cdf2bc9f..c573bc8b2595 100644
->>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
->>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
->>> @@ -62,7 +62,8 @@ static int stmmac_adjust_time(struct ptp_clock_info
->>> *ptp, s64 delta)
->>>       u32 sec, nsec;
->>>       u32 quotient, reminder;
->>>       int neg_adj = 0;
->>> -    bool xmac;
->>> +    bool xmac, est_rst = false;
->>> +    int ret;
->>>
->>>       xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
->>>
->>> @@ -75,10 +76,48 @@ static int stmmac_adjust_time(struct
->>> ptp_clock_info *ptp, s64 delta)
->>>       sec = quotient;
->>>       nsec = reminder;
->>>
->>> +    /* If EST is enabled, disabled it before adjust ptp time. */
->>> +    if (priv->plat->est && priv->plat->est->enable) {
->>> +        est_rst = true;
->>> +        mutex_lock(&priv->plat->est->lock);
->>> +        priv->plat->est->enable = false;
->>> +        stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
->>> +                     priv->plat->clk_ptp_rate);
->>> +        mutex_unlock(&priv->plat->est->lock);
->>> +    }
->>> +
->>>       spin_lock_irqsave(&priv->ptp_lock, flags);
->>>       stmmac_adjust_systime(priv, priv->ptpaddr, sec, nsec, neg_adj,
->>> xmac);
->>>       spin_unlock_irqrestore(&priv->ptp_lock, flags);
->>>
->>> +    /* Caculate new basetime and re-configured EST after PTP time
->>> adjust. */
->>> +    if (est_rst) {
->>> +        struct timespec64 current_time, time;
->>> +        ktime_t current_time_ns, basetime;
->>> +        u64 cycle_time;
->>> +
->>> +        priv->ptp_clock_ops.gettime64(&priv->ptp_clock_ops,
->>> &current_time);
->>> +        current_time_ns = timespec64_to_ktime(current_time);
->>> +        time.tv_nsec = priv->plat->est->btr[0];
->>> +        time.tv_sec = priv->plat->est->btr[1];
->>
->> This time may no longer be what the user specified originally, it was adjusted
->> based on the gptp time when the configuration was first made.
->> IMHO, if we want to respect the user configuration then we need to do the
->> calculation here based on the original time.
->> Typically (using arbitrary units):
->> a) User configures basetime of 0, at gptp time 1000
->> b) btr is update to 1000, schedule starts
->> c) later, gptp time is updated to 500
->> d-1) with current patch, schedule will restart at 1000 (i.e remains disabled for
->> 500)
->> d-2) with my suggestion, schedule will restart at 500 (which matches the user
->> request, "start as soon as possible".
->>
-> It is not the correct operation sequence for the user to configure Qbv before ptp clock synchronization.
-
-The way I see it, a ptp clock discontinuity may happen at any time 
-(change of grand master, grand master discontinuity, ...) outside of the 
-user control. So having the driver handle all corner cases looked like a 
-good solution to me.
-
-> After adjusting the ptp clock time, it is no longer possible to determine whether the previously set basetime is what the user wants.
-
-I may be assuming too much, but usually a Qbv schedule is determined by 
-some central identity based on an absolute time (not related to the 
-current time in the endpoint). So with this assumption I was considering 
-the time specified by the user as "correct", independently of the 
-current local ptp time.
-
-> I think our driver only needs to ensure that the set basetime meets the hardware regulations, and the hardware can work normally. So I only updated the past basetime.
-
-Understood, but from the point of view of the user I think the case you 
-are already handling and the one I mentioned are very similar. Qbv 
-schedule doesn't work as intended after the clock jump. Also, my 
-suggestion simplifies a bit the code (no conversion from hardware to 
-ktime), at the cost of adding extra data (software backup of the 
-original user ktime).
-
-> I am not sure if it is appropriate to reset EST configure in the PTP driver,
-
-I'm not 100% sure either and I was hoping to see other people comments 
-(and I haven't checked yet how other drivers are handling this).
-That said, to handle this properly in userspace, IMHO you would need:
-- some process monitoring the ptp clock and detecting jumps
-- the process would need to be aware of the current Qbv schedule
-- when a jump is detected, re-do the Qbv configuration
-
-Overall, handling the issue transparently in the driver, seems like a 
-better solution.
-
-> but this case will cause the hardware to not work.
+On Wed, Jun 16, 2021 at 11:28:46AM +0200, Loic Poulain wrote:
+> On Wed, 16 Jun 2021 at 00:06, Stephan Gerhold <stephan@gerhold.net> wrote:
+> >
+> > On Tue, Jun 15, 2021 at 11:24:41PM +0200, Loic Poulain wrote:
+> > > On Tue, 15 Jun 2021 at 15:34, Stephan Gerhold <stephan@gerhold.net> wrote:
+> > > >
+> > > > At the moment, the WWAN core provides wwan_port_txon/off() to implement
+> > > > blocking writes. The tx() port operation should not block, instead
+> > > > wwan_port_txon/off() should be called when the TX queue is full or has
+> > > > free space again.
+> > > >
+> > > > However, in some cases it is not straightforward to make use of that
+> > > > functionality. For example, the RPMSG API used by rpmsg_wwan_ctrl.c
+> > > > does not provide any way to be notified when the TX queue has space
+> > > > again. Instead, it only provides the following operations:
+> > > >
+> > > >   - rpmsg_send(): blocking write (wait until there is space)
+> > > >   - rpmsg_trysend(): non-blocking write (return error if no space)
+> > > >   - rpmsg_poll(): set poll flags depending on TX queue state
+> > > >
+> > > > Generally that's totally sufficient for implementing a char device,
+> > > > but it does not fit well to the currently provided WWAN port ops.
+> > > >
+> > > > Most of the time, using the non-blocking rpmsg_trysend() in the
+> > > > WWAN tx() port operation works just fine. However, with high-frequent
+> > > > writes to the char device it is possible to trigger a situation
+> > > > where this causes issues. For example, consider the following
+> > > > (somewhat unrealistic) example:
+> > > >
+> > > >  # dd if=/dev/zero bs=1000 of=/dev/wwan0p2QMI
+> > > >  dd: error writing '/dev/wwan0p2QMI': Resource temporarily unavailable
+> > > >  1+0 records out
+> > > >
+> > > > This fails immediately after writing the first record. It's likely
+> > > > only a matter of time until this triggers issues for some real application
+> > > > (e.g. ModemManager sending a lot of large QMI packets).
+> > > >
+> > > > The rpmsg_char device does not have this problem, because it uses
+> > > > rpmsg_trysend() and rpmsg_poll() to support non-blocking operations.
+> > > > Make it possible to use the same in the RPMSG WWAN driver by extending
+> > > > the tx() operation with a "nonblock" parameter and adding an optional
+> > > > poll() callback. This integrates nicely with the RPMSG API and does
+> > > > not break other WWAN drivers.
+> > > >
+> > > > With these changes, the dd example above blocks instead of exiting
+> > > > with an error.
+> > > >
+> > > > Cc: Loic Poulain <loic.poulain@linaro.org>
+> > > > Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+> > > > ---
+> > > > Note that rpmsg_poll() is an optional callback currently only implemented
+> > > > by the qcom_smd RPMSG provider. However, it should be easy to implement
+> > > > this for other RPMSG providers when needed.
+> > > >
+> > > > Another potential solution suggested by Loic Poulain in [1] is to always
+> > > > use the blocking rpmsg_send() from a workqueue/kthread and disable TX
+> > > > until it is done. I think this could also work (perhaps a bit more
+> > > > difficult to implement) but the main disadvantage is that I don't see
+> > > > a way to return any kind of error to the client with this approach.
+> > > > I assume we return immediately from the write() to the char device
+> > > > after scheduling the rpmsg_send(), so we already reported success
+> > > > when rpmsg_send() returns.
+> > > >
+> > > > At the end all that matters to me is that it works properly, so I'm
+> > > > open for any other suggestions. :)
+> > > >
+> > > > [1]: https://lore.kernel.org/linux-arm-msm/CAMZdPi_-Qa=JnThHs_h-144dAfSAjF5s+QdBawdXZ3kk8Mx8ng@mail.gmail.com/
+> > > > ---
+> > > >  drivers/net/wwan/iosm/iosm_ipc_port.c |  3 ++-
+> > > >  drivers/net/wwan/mhi_wwan_ctrl.c      |  3 ++-
+> > > >  drivers/net/wwan/rpmsg_wwan_ctrl.c    | 17 +++++++++++++++--
+> > > >  drivers/net/wwan/wwan_core.c          |  9 ++++++---
+> > > >  drivers/net/wwan/wwan_hwsim.c         |  3 ++-
+> > > >  include/linux/wwan.h                  | 13 +++++++++----
+> > > >  6 files changed, 36 insertions(+), 12 deletions(-)
+> > > >
+> > > > diff --git a/drivers/net/wwan/iosm/iosm_ipc_port.c b/drivers/net/wwan/iosm/iosm_ipc_port.c
+> > > > index beb944847398..2f874e41ceff 100644
+> > > > --- a/drivers/net/wwan/iosm/iosm_ipc_port.c
+> > > > +++ b/drivers/net/wwan/iosm/iosm_ipc_port.c
+> > > > @@ -31,7 +31,8 @@ static void ipc_port_ctrl_stop(struct wwan_port *port)
+> > > >  }
+> > > >
+> > > >  /* transfer control data to modem */
+> > > > -static int ipc_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
+> > > > +static int ipc_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb,
+> > > > +                           bool nonblock)
+> > > >  {
+> > > >         struct iosm_cdev *ipc_port = wwan_port_get_drvdata(port);
+> > > >
+> > > > diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
+> > > > index 1bc6b69aa530..9754f014d348 100644
+> > > > --- a/drivers/net/wwan/mhi_wwan_ctrl.c
+> > > > +++ b/drivers/net/wwan/mhi_wwan_ctrl.c
+> > > > @@ -139,7 +139,8 @@ static void mhi_wwan_ctrl_stop(struct wwan_port *port)
+> > > >         mhi_unprepare_from_transfer(mhiwwan->mhi_dev);
+> > > >  }
+> > > >
+> > > > -static int mhi_wwan_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
+> > > > +static int mhi_wwan_ctrl_tx(struct wwan_port *port, struct sk_buff *skb,
+> > > > +                           bool nonblock)
+> > > >  {
+> > > >         struct mhi_wwan_dev *mhiwwan = wwan_port_get_drvdata(port);
+> > > >         int ret;
+> > > > diff --git a/drivers/net/wwan/rpmsg_wwan_ctrl.c b/drivers/net/wwan/rpmsg_wwan_ctrl.c
+> > > > index de226cdb69fd..63f431eada39 100644
+> > > > --- a/drivers/net/wwan/rpmsg_wwan_ctrl.c
+> > > > +++ b/drivers/net/wwan/rpmsg_wwan_ctrl.c
+> > > > @@ -54,12 +54,16 @@ static void rpmsg_wwan_ctrl_stop(struct wwan_port *port)
+> > > >         rpwwan->ept = NULL;
+> > > >  }
+> > > >
+> > > > -static int rpmsg_wwan_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
+> > > > +static int rpmsg_wwan_ctrl_tx(struct wwan_port *port, struct sk_buff *skb,
+> > > > +                             bool nonblock)
+> > > >  {
+> > > >         struct rpmsg_wwan_dev *rpwwan = wwan_port_get_drvdata(port);
+> > > >         int ret;
+> > > >
+> > > > -       ret = rpmsg_trysend(rpwwan->ept, skb->data, skb->len);
+> > > > +       if (nonblock)
+> > > > +               ret = rpmsg_trysend(rpwwan->ept, skb->data, skb->len);
+> > > > +       else
+> > > > +               ret = rpmsg_send(rpwwan->ept, skb->data, skb->len);
+> > > >         if (ret)
+> > > >                 return ret;
+> > > >
+> > > > @@ -67,10 +71,19 @@ static int rpmsg_wwan_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
+> > > >         return 0;
+> > > >  }
+> > > >
+> > > > +static __poll_t rpmsg_wwan_ctrl_poll(struct wwan_port *port, struct file *filp,
+> > > > +                                    poll_table *wait)
+> > > > +{
+> > > > +       struct rpmsg_wwan_dev *rpwwan = wwan_port_get_drvdata(port);
+> > > > +
+> > > > +       return rpmsg_poll(rpwwan->ept, filp, wait);
+> > > > +}
+> > > > +
+> > > >  static const struct wwan_port_ops rpmsg_wwan_pops = {
+> > > >         .start = rpmsg_wwan_ctrl_start,
+> > > >         .stop = rpmsg_wwan_ctrl_stop,
+> > > >         .tx = rpmsg_wwan_ctrl_tx,
+> > > > +       .poll = rpmsg_wwan_ctrl_poll,
+> > > >  };
+> > > >
+> > > >  static struct device *rpmsg_wwan_find_parent(struct device *dev)
+> > > > diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+> > > > index 7e728042fc41..c7fd0b897f87 100644
+> > > > --- a/drivers/net/wwan/wwan_core.c
+> > > > +++ b/drivers/net/wwan/wwan_core.c
+> > > > @@ -500,7 +500,8 @@ static void wwan_port_op_stop(struct wwan_port *port)
+> > > >         mutex_unlock(&port->ops_lock);
+> > > >  }
+> > > >
+> > > > -static int wwan_port_op_tx(struct wwan_port *port, struct sk_buff *skb)
+> > > > +static int wwan_port_op_tx(struct wwan_port *port, struct sk_buff *skb,
+> > > > +                          bool nonblock)
+> > > >  {
+> > > >         int ret;
+> > > >
+> > > > @@ -510,7 +511,7 @@ static int wwan_port_op_tx(struct wwan_port *port, struct sk_buff *skb)
+> > > >                 goto out_unlock;
+> > > >         }
+> > > >
+> > > > -       ret = port->ops->tx(port, skb);
+> > > > +       ret = port->ops->tx(port, skb, nonblock);
+> > > >
+> > > >  out_unlock:
+> > > >         mutex_unlock(&port->ops_lock);
+> > > > @@ -637,7 +638,7 @@ static ssize_t wwan_port_fops_write(struct file *filp, const char __user *buf,
+> > > >                 return -EFAULT;
+> > > >         }
+> > > >
+> > > > -       ret = wwan_port_op_tx(port, skb);
+> > > > +       ret = wwan_port_op_tx(port, skb, !!(filp->f_flags & O_NONBLOCK));
+> > > >         if (ret) {
+> > > >                 kfree_skb(skb);
+> > > >                 return ret;
+> > > > @@ -659,6 +660,8 @@ static __poll_t wwan_port_fops_poll(struct file *filp, poll_table *wait)
+> > > >                 mask |= EPOLLIN | EPOLLRDNORM;
+> > > >         if (!port->ops)
+> > > >                 mask |= EPOLLHUP | EPOLLERR;
+> > > > +       else if (port->ops->poll)
+> > > > +               mask |= port->ops->poll(port, filp, wait);
+> > >
+> > > I'm not sure it useful here because EPOLLOUT flag is already set above, right?
+> > >
+> >
+> > Oops, you're right - sorry! I thought the flags are inverted (only set
+> > if (is_write_blocked())), then it would have worked fine. :)
+> >
+> > I think this should be easy to fix though, I can just make the
+> >
+> >         if (!is_write_blocked(port))
+> >                 mask |= EPOLLOUT | EPOLLWRNORM;
+> >
+> > if statement conditional to (port->ops->poll == NULL). It only makes
+> > sense to supply the poll() op if the built-in write-blocking cannot be
+> > used easily (like in my case).
 > 
->>> +        basetime = timespec64_to_ktime(time);
->>> +        cycle_time = priv->plat->est->ctr[1] * NSEC_PER_SEC +
->>> +                 priv->plat->est->ctr[0];
->>> +        time = stmmac_calc_tas_basetime(basetime,
->>> +                        current_time_ns,
->>> +                        cycle_time);
->>> +
->>> +        mutex_lock(&priv->plat->est->lock);
->>
->> Hmm... the locking needs to move up. Reading + writting btr/ctr should be
->> atomic.
-> I will modify this.
->>
->>> +        priv->plat->est->btr[0] = (u32)time.tv_nsec;
->>> +        priv->plat->est->btr[1] = (u32)time.tv_sec;
->>> +        priv->plat->est->enable = true;
->>> +        ret = stmmac_est_configure(priv, priv->ioaddr,
->>> +priv->plat->est,
->>> +                       priv->plat->clk_ptp_rate);
->>> +        mutex_unlock(&priv->plat->est->lock);
->>> +        if (ret)
->>> +            netdev_err(priv->dev, "failed to configure EST\n");
->>> +    }
->>> +
->>>       return 0;
->>> }
-> 
-> Thanks,
-> xiaoliang
+> Yes, so maybe in that case poll ops should be renamed to something like tx_poll?
 > 
 
-Br,
-Rui
+Sounds good! I will rename it to tx_poll() in v2. :)
+
+Thanks!
+Stephan
