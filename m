@@ -2,79 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FBE03AA495
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A90EB3AA497
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232954AbhFPTwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:52:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55106 "EHLO mail.kernel.org"
+        id S232978AbhFPTwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:52:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55112 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229709AbhFPTwL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230402AbhFPTwL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 16 Jun 2021 15:52:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E2C8F61351;
+Received: by mail.kernel.org (Postfix) with ESMTPS id EB7D26135C;
         Wed, 16 Jun 2021 19:50:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623873004;
-        bh=kuEA/+ER84jE0UKU4LppXGc2qArbUble506oDWAm+Iw=;
+        s=k20201202; t=1623873005;
+        bh=bJtVT2M+B8DHVvYnVFiIXqrsqMmkxLclKXa/WLigXXQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lTa9bKzV6c+3XHwwA6ML87/1h4wCI41vjnfwnyXDr7+UAaobx4kwXdW+HFAVeU/Bg
-         4ckCqdbcTB6+ClIvwjB4yUMpIaQOEqhhxAstyzWUgKRcKZpELKAI/GCdDABVix37qY
-         5vGrrmK7GMDyZCmLX1ckKz68tqEeio0FDDIimw6fyYNDiU3RbIgk0Hletk51ja0rkJ
-         gJ9dMByiOcbfA2DkqBqcTgwUEr4GhI9JaBMAdLBmyM7OzqNM+t7GUqcqT9xpxPX9rY
-         RtL27KIJWZHudWBvMQWFxK9zlhZfnxBWyXBiqT/WMfYXhgj3p3D41RJYH8HfdG+liY
-         24wI2fPP7V1jQ==
+        b=Sg29COUURaEIn+O/hIZvxZ5/iHfIZREV1fxuBz/lwuVSJztpgdS64B79YB6IQmUp7
+         N//Cf5OXhSODUtMcTnO03p8K1wZp63tOQQ6vICE/yE+f/O9HdhlWu1aX8mIImfhuZl
+         AFm662K7YCBaO8yPE9XDYuBe90Vaq2eCddki6WcVQCokaG/7RuC+/gFxHvwWLVGtE7
+         rlC+H/vlo8tTFLqDZvalrkoEcpopygpv8LeQ/svHTz1J+HhAUqtjUc/irLLR6ZHVGp
+         zcdu+tSe1TnJzBxCtp6hA8Ky5DeImvt5n30x9/oMNH8B9HG2SU+CUjZwuSZr7IlemA
+         f/E7AxOFSfKDQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D950C609D8;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E28EB60C29;
         Wed, 16 Jun 2021 19:50:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: ipv4: fix memory leak in ip_mc_add1_src
+Subject: Re: pull-request: can 2021-06-16
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162387300488.13042.4367542088797700653.git-patchwork-notify@kernel.org>
+Message-Id: <162387300492.13042.9681987049571047223.git-patchwork-notify@kernel.org>
 Date:   Wed, 16 Jun 2021 19:50:04 +0000
-References: <20210616095925.1571600-1-cy.fan@huawei.com>
-In-Reply-To: <20210616095925.1571600-1-cy.fan@huawei.com>
-To:     Chengyang Fan <cy.fan@huawei.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, liuhangbin@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20210616110152.2456765-1-mkl@pengutronix.de>
+In-Reply-To: <20210616110152.2456765-1-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This pull request was applied to netdev/net.git (refs/heads/master):
 
-On Wed, 16 Jun 2021 17:59:25 +0800 you wrote:
-> BUG: memory leak
-> unreferenced object 0xffff888101bc4c00 (size 32):
->   comm "syz-executor527", pid 360, jiffies 4294807421 (age 19.329s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
->     01 00 00 00 00 00 00 00 ac 14 14 bb 00 00 02 00 ................
->   backtrace:
->     [<00000000f17c5244>] kmalloc include/linux/slab.h:558 [inline]
->     [<00000000f17c5244>] kzalloc include/linux/slab.h:688 [inline]
->     [<00000000f17c5244>] ip_mc_add1_src net/ipv4/igmp.c:1971 [inline]
->     [<00000000f17c5244>] ip_mc_add_src+0x95f/0xdb0 net/ipv4/igmp.c:2095
->     [<000000001cb99709>] ip_mc_source+0x84c/0xea0 net/ipv4/igmp.c:2416
->     [<0000000052cf19ed>] do_ip_setsockopt net/ipv4/ip_sockglue.c:1294 [inline]
->     [<0000000052cf19ed>] ip_setsockopt+0x114b/0x30c0 net/ipv4/ip_sockglue.c:1423
->     [<00000000477edfbc>] raw_setsockopt+0x13d/0x170 net/ipv4/raw.c:857
->     [<00000000e75ca9bb>] __sys_setsockopt+0x158/0x270 net/socket.c:2117
->     [<00000000bdb993a8>] __do_sys_setsockopt net/socket.c:2128 [inline]
->     [<00000000bdb993a8>] __se_sys_setsockopt net/socket.c:2125 [inline]
->     [<00000000bdb993a8>] __x64_sys_setsockopt+0xba/0x150 net/socket.c:2125
->     [<000000006a1ffdbd>] do_syscall_64+0x40/0x80 arch/x86/entry/common.c:47
->     [<00000000b11467c4>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+On Wed, 16 Jun 2021 13:01:48 +0200 you wrote:
+> Hello Jakub, hello David,
+> 
+> this is a pull request of 4 patches for net/master.
+> 
+> The first patch is by Oleksij Rempel and fixes a Use-after-Free found
+> by syzbot in the j1939 stack.
 > 
 > [...]
 
 Here is the summary with links:
-  - net: ipv4: fix memory leak in ip_mc_add1_src
-    https://git.kernel.org/netdev/net/c/d8e2973029b8
+  - pull-request: can 2021-06-16
+    https://git.kernel.org/netdev/net/c/e82a35aead2f
+  - [net,2/4] can: bcm/raw/isotp: use per module netdevice notifier
+    https://git.kernel.org/netdev/net/c/8d0caedb7596
+  - [net,3/4] can: bcm: fix infoleak in struct bcm_msg_head
+    https://git.kernel.org/netdev/net/c/5e87ddbe3942
+  - [net,4/4] can: mcba_usb: fix memory leak in mcba_usb
+    https://git.kernel.org/netdev/net/c/91c02557174b
 
 You are awesome, thank you!
 --
