@@ -2,102 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4563A9B91
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 15:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DF1C3A9BE6
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 15:24:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233233AbhFPNJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 09:09:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34792 "EHLO
+        id S233233AbhFPN0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 09:26:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbhFPNJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 09:09:11 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0596C06175F;
-        Wed, 16 Jun 2021 06:07:04 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id ba2so2626296edb.2;
-        Wed, 16 Jun 2021 06:07:04 -0700 (PDT)
+        with ESMTP id S233223AbhFPN0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 09:26:37 -0400
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E990BC061574
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 06:24:30 -0700 (PDT)
+Received: by mail-oi1-x243.google.com with SMTP id u11so2530684oiv.1
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 06:24:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8b/okOVnhsmC8WOydmuYGzKaGTkrkLvWV3Zt6yVl/cU=;
-        b=Ems3Z3Wy4snMpUrp8UAukFpyWqZQ0pcxSa8V7C/OJuxQkMFvihA8spkzlKwoqQptit
-         fao5ZPLzxEjQOJqyRqaZb/zdZKOkubHt6s95lUHtA1q7SKGfo1Lyf8aS5LOMhcytxf82
-         MbYDOB0xSaZbOdhz12E+ltKWAMCAYJ3Or4IB0MEVZYxiqQHFx1FG2mjNUomNgvtDvQ3E
-         RDI43w/LTEWPlK4/HYJfxI1bDimcsvNaWeoU3yz2lBIH6xBOqLO0owznKx/qmke4ZdzR
-         Gln82sQMEshK1Zm14NgIQvJYMwg8Ix3i6qtKNZhsrY+3sMHCBPcb/EEtrqVxpyNVXR95
-         yO6Q==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=irvAfDqJe1hQB3fJxlaJ3x9w9qp/XEy9b8ACpfP/PLU=;
+        b=maCzjr8GycQYwalUmFqAJjV5E70XrqBRfegXfX/SebkSuriY9zJUeGuEQjTlDhFYuw
+         IlmMGv/tQeuygH+fKtz9RIT2fN2PujEKVo7M+J21/TFbAI9Hl3QqERjF58BUBKDmGfDr
+         kTeolOSOAPaZF2FZ+aJ2YbcCCjIodZskdSCShjIIffmbGO25Dz9wqO6Q+82NvXbrGMJ9
+         HBi3YGh6WVXEDqYzVeorP4Xaylrjt8t5HltvUm3kSJCmE0wcRDtRlO5SSbhRc3PtibZe
+         062BGXBvAnnpSwXhmQKnmVDNIEwZZJmj4VkcELXcnxJBkm+S9H31MMjHx0v0iTL/eZF0
+         ojuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8b/okOVnhsmC8WOydmuYGzKaGTkrkLvWV3Zt6yVl/cU=;
-        b=laOJMyBxKNFr+2ZEQuevKjmIHm5NdCpJe9nEOD0JA/wOb4U3m/5m1KRbaAV1WTbk7W
-         NUVK91rC5F2WoLeXhHjXzp1adKU3BNkmAhhiEB/0vZV2wZH9W+EG6VU5IdVbdSxhUwzL
-         p3daExBSODqXPSHcxqyAa8BdvMmjruDDRH0crb53VvsF1U8uz3jdDz8QNn8ii0ZV778K
-         F3btcOvfbegX7s5GafQIdVduRtHG8tEs55yt3DzKZDkVL5+QshueqNK8T3RZYEMmsolm
-         qHEjRmeYSJfefMkdF25TNlanZdHaJ0Pk7nwJlWvwsC66wjnsSVRu+mPNNy5zt8W97iAx
-         o0rQ==
-X-Gm-Message-State: AOAM532B7zbgVolxseq5YpdulqVQG63h1mBe9dnPFYGJzQpVeovprUhX
-        Qu/v6564zanvcgutxralwkY=
-X-Google-Smtp-Source: ABdhPJx2HOuYDcPiSLJADs9bN4VN7WBNFjqgA71Hh99Ixd/1LHWIvCnQZ5kKYyzErotDxYud+D7TBA==
-X-Received: by 2002:a05:6402:b76:: with SMTP id cb22mr4092635edb.112.1623848823499;
-        Wed, 16 Jun 2021 06:07:03 -0700 (PDT)
-Received: from skbuf ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id qq26sm1555929ejb.6.2021.06.16.06.07.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 06:07:03 -0700 (PDT)
-Date:   Wed, 16 Jun 2021 16:07:01 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Vadym Kochan <vkochan@marvell.com>
-Subject: Re: [PATCH net-next 1/2] net: marvell: Implement TC flower offload
-Message-ID: <20210616130701.e4k2izlthmj5j6yc@skbuf>
-References: <20210615125444.31538-1-vadym.kochan@plvision.eu>
- <20210615125444.31538-2-vadym.kochan@plvision.eu>
- <20210616005453.cuu3ocedgfcafa7o@skbuf>
- <20210616130424.GB9951@plvision.eu>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=irvAfDqJe1hQB3fJxlaJ3x9w9qp/XEy9b8ACpfP/PLU=;
+        b=QaAGNqLfbGzjbQra51m8zhzmG2Eednb5/C9GVQ/9RHjPjIAT16YhB6WZ6CaAonK3iC
+         1HscgDSws6yKl2B28uzehOu6RdBOlKPeqqxsIIyrZUppt8TXE+dj8UA03Kuny0/RMqOx
+         /tDabiThFZAE9zVLxqYDvG+gk931+gSwPN/U4UI//iJ3UXccZQZ4G/VeoVqkwjRHUJIH
+         obfS6OikHyYEOTYNunezrIxO3/kPTaVU3TxisXNeQzv1iF67WIs8DGmJNZyGyG/OtoDa
+         0zL21ASq8krLbrDVoPLcLufH3KSKEMEKIrWTNpwxBHBhOD5xzDACruy5s6gIKsaWn2Ov
+         uAdA==
+X-Gm-Message-State: AOAM532x0IQhaw+kXs0HN0YDwHSw+FL+7h6BXzakFU5kPh3vdEdbhexH
+        pyWxxCCG2khe0l1Ux/rdBF9z2kJDnT25tSla5X0=
+X-Google-Smtp-Source: ABdhPJy6us5msSx2bDpwBPEZNi/iyqauRUmTNbZYnmskobyxn6lvlGRPgH8QHnGCBFzwEF+3NAnLw/lKzFnpRPx0sys=
+X-Received: by 2002:aca:e156:: with SMTP id y83mr3122333oig.155.1623849870145;
+ Wed, 16 Jun 2021 06:24:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210616130424.GB9951@plvision.eu>
+Received: by 2002:a4a:c205:0:0:0:0:0 with HTTP; Wed, 16 Jun 2021 06:24:29
+ -0700 (PDT)
+Reply-To: LishaHaman225@gmail.com
+From:   Miss Lisha Haman <alikanto679@gmail.com>
+Date:   Wed, 16 Jun 2021 06:24:29 -0700
+Message-ID: <CAL29UNB756cSbbQyM5xMO4MOPmZso8u-sme6eW6YPBSDbfT=uw@mail.gmail.com>
+Subject: Hello Deares
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 16, 2021 at 04:04:24PM +0300, Vadym Kochan wrote:
-> Hi Vladimir,
-> 
-> On Wed, Jun 16, 2021 at 03:54:53AM +0300, Vladimir Oltean wrote:
-> > On Tue, Jun 15, 2021 at 03:54:43PM +0300, Vadym Kochan wrote:
-> > > +static int prestera_port_set_features(struct net_device *dev,
-> > > +				      netdev_features_t features)
-> > > +{
-> > > +	netdev_features_t oper_features = dev->features;
-> > > +	int err;
-> > > +
-> > > +	err = prestera_port_handle_feature(dev, features, NETIF_F_HW_TC,
-> > > +					   prestera_port_feature_hw_tc);
-> > 
-> > Why do you even make NETIF_F_HW_TC able to be toggled and not just fixed
-> > to "on" in dev->features? If I understand correctly, you could then delete
-> > a bunch of refcounting code whose only purpose is to allow that feature
-> > to be disabled per port.
-> > 
-> 
-> The only case where it can be used is when user want to disable TC
-> offloading and apply set of rules w/o skip_hw.
-> 
-> So you think it is OK to not having an ability to disable offloading at
-> all ?
+My dear I am Miss Lisha Haman 23 years of age , I am the only daughter
+to Dr Abdul Haman from France-Paris who work with (SEMAFO) the biggest
+Canadian gold producer here in West Africa Burkina Faso,
 
-Because adding "skip_hw" is already possible per filter in the first
-place, I don't think that this feature justifies the added complexity, no.
+Unfortunately my father was a victim on the deadliest attack by the
+jihadist On the 6 November 2019 when gunmen ambushed a convoy
+transporting workers of the Canadian mining firm Semafo, it is my sad
+moment each time I think about this, but the reason why I contacted
+you is that I have my late father receipt of deposit he made with a
+bank in abroad with my name as next of kin, The total amount deposited
+was 3.7 million United Stated dollars,
+
+Now I decided to travel for the money but embassy here deny me visa
+due to the Corona virus outbreak,
+
+I talk to the bank regarding my visa problem and they advise me to
+look for my relative trusted bank account so that they will transfer
+the total fund in there, But I am the only daughter of my father and
+have no relative to present, that is why I want to present you to the
+bank as my relative who will receive the total fund on my behalf and
+also take care of me as well,
+
+I attached my picture  with this mail please send me your complete
+full details such as, Your Full Name:
+
+Home and Office Addresses:
+
+Telephone Number:
+
+Occupation:
+
+Country of Residence:
+
+Your Bank account number where the bank will remit the fund
+
+Once I received your details, I will give you the bank contact so that
+you can contact them directly to discuss how they can transfer the
+total fund in your bank account so that you can relocate me to join
+you over there in your country,
+
+Sincerely
+
+Lisha Haman
