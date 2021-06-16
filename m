@@ -2,127 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2A3A3A8F02
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 04:48:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E8B73A8F63
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 05:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbhFPCux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 22:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231494AbhFPCuw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 22:50:52 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF5FC061574;
-        Tue, 15 Jun 2021 19:48:46 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id e1so356190plh.8;
-        Tue, 15 Jun 2021 19:48:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TXQCx1XJ6HTlKo6IRHScBGNPtU7ppfeIer1vG2PDblA=;
-        b=GEY5fy/xzue7i2BElLiShQ3zpmiM80vgunSBErXtUv3IPjQOJSB4SMXXSMoHcfP5rL
-         RIbu3GEBFdK5HIEBW8xvFcQvdPNNegnPJbEWM7exoblo4VtaGLIB7GhOMqi9YHYdukc9
-         Zi/vm5dZqJkjnOClgfmboZufRDnBPTTiqkEHZ6mxuhrLj2C4g+eclYclpYRhRdcGqGAj
-         V7/0sB0HI1fM7glXxADJr12A65/hj7LFHautOzWzG04yIr0KBbiCR2ouIK+nyhWbG8cA
-         ZXzdeVQa4kOaYfpzUy5GclGqd97MwVUxgJQgnBhVvPt6sFX176PohOfIAscoEuRLTqYb
-         y9tA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TXQCx1XJ6HTlKo6IRHScBGNPtU7ppfeIer1vG2PDblA=;
-        b=OF5YF6xlQ/JkiSU9hsOLj2OCNnYksO74YQMoc7ysJxYhBp26DXaD6CK+Y0mGPvawkn
-         8OeJrIy8/C28mDen3ijTPhRGNnkThJUf5CTs3dowGrQREJbOFXsezfSRmIoMwcyA28bR
-         aezBCmMT8h9fmBF6wBCcvjYGkq1WpRqTW6Qi13AkVhe7vBVJ8uaLc3tJe1JELhuaf5lz
-         ZAPX4u5EC//Tbf6KBn/75dEBUUtamTsqx9YU8jx9e29NVx3bCzRiGH3PU9ORmbby9zkx
-         7WTtt3wERrsW7TzIdiI5DovHaEgF93OkqMsEr02BWhk/Y2y3PpRxj0NMJM/0a40+I0mG
-         w85Q==
-X-Gm-Message-State: AOAM531h9jexyk5ioRY8T9nvuzLfLvKDmevDa/mC3tlPcsKaF1a+2K8M
-        ILlhh2apeDTZWKwI3sB2OC4=
-X-Google-Smtp-Source: ABdhPJxf8cLqkAXkVDyPTTl2+mm3ZzhdrMWLZ4TGezrZJivej+B64Ut5e0xyGLKwGN9I8HD+zq7eDw==
-X-Received: by 2002:a17:90a:3d47:: with SMTP id o7mr8347818pjf.68.1623811725958;
-        Tue, 15 Jun 2021 19:48:45 -0700 (PDT)
-Received: from localhost.localdomain ([45.135.186.27])
-        by smtp.gmail.com with ESMTPSA id d6sm441731pgq.88.2021.06.15.19.48.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Jun 2021 19:48:45 -0700 (PDT)
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     steve.glendinning@shawell.net, davem@davemloft.net,
-        kuba@kernel.org, paskripkin@gmail.com
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-Subject: [PATCH v2] net: usb: fix possible use-after-free in smsc75xx_bind
-Date:   Wed, 16 Jun 2021 10:48:33 +0800
-Message-Id: <20210616024833.2761919-1-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S230052AbhFPDaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 23:30:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45258 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229931AbhFPDaQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Jun 2021 23:30:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 02B5561209;
+        Wed, 16 Jun 2021 03:28:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623814091;
+        bh=DElUYX+Vqhg5mZNbADXHK9olpxoWCOQxXtjgskUK90k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=reS/HXrikfUlLj7ksFHdFF5DeAua13Wf4K038zAROOLOtxIqGJoRCIfBIC0DljNB9
+         RTohZ1r2lkZen1r4Uj6htnNujAWK4So5zDw6/2JQh0pVZKapfFX2WXMcNYNcMSo4La
+         K/+fxAg00pqcQiO9kS4wntWezNr00RqTWiay2ImEwM6UZUZoHlKHD2h0k7+66GMK0A
+         K7lff5j6Mevfxbsepun3Cc6KbCX2ruIP2FE0jHeygrTl44LOfSdfFvEG1tynD6anh4
+         bU7gulnp24hyAqH2DWnqHd1A9ckcHTX/wDUGHiqSLR3j0PbnnbL/+jIec9T970E/Oi
+         5A/R3casIqROg==
+Date:   Tue, 15 Jun 2021 20:28:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [RFC net-next] ethtool: add a stricter length check
+Message-ID: <20210615202810.37c680b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210615231033.32opvfjz7hhha7zs@lion.mk-sys.cz>
+References: <20210612031135.225292-1-kuba@kernel.org>
+        <20210615231033.32opvfjz7hhha7zs@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-fails to clean up the work scheduled in smsc75xx_reset->
-smsc75xx_set_multicast, which leads to use-after-free if the work is
-scheduled to start after the deallocation. In addition, this patch
-also removes a dangling pointer - dev->data[0].
+On Wed, 16 Jun 2021 01:10:33 +0200 Michal Kubecek wrote:
+> > @@ -346,15 +346,20 @@ static int ethnl_default_doit(struct sk_buff *skb, struct genl_info *info)
+> >  	ret = ops->reply_size(req_info, reply_data);
+> >  	if (ret < 0)
+> >  		goto err_cleanup;
+> > -	reply_len = ret + ethnl_reply_header_size();
+> > +	reply_len = ret;
+> >  	ret = -ENOMEM;
+> > -	rskb = ethnl_reply_init(reply_len, req_info->dev, ops->reply_cmd,
+> > +	rskb = ethnl_reply_init(reply_len + ethnl_reply_header_size(),
+> > +				req_info->dev, ops->reply_cmd,
+> >  				ops->hdr_attr, info, &reply_payload);
+> >  	if (!rskb)
+> >  		goto err_cleanup;
+> > +	hdr_len = rskb->len;
+> >  	ret = ops->fill_reply(rskb, req_info, reply_data);
+> >  	if (ret < 0)
+> >  		goto err_msg;
+> > +	WARN(rskb->len - hdr_len > reply_len,
+> > +	     "ethnl cmd %d: calculated reply length %d, but consumed %d\n",
+> > +	     cmd, reply_len, rskb->len - hdr_len);
+> >  	if (ops->cleanup_data)
+> >  		ops->cleanup_data(reply_data);  
+> 
+> We may want WARN_ONCE or ratelimited here, if there is bug in reply
+> length estimate for a request not requiring admin privileges, the
+> warning might be invoked by a regular user at will.
 
-This patch calls cancel_work_sync to cancel the scheduled work and set
-the dangling pointer to NULL.
+Ah, good point!
 
-Fixes: 46a8b29c6306 ("net: usb: fix memory leak in smsc75xx_bind")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
-v1->v2: split the err label into two labels - cancel_work and free_data
-according to Pavel Skripkin; remove "pdata = NULL" according to gregkh
- drivers/net/usb/smsc75xx.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+> Also the patch changes the meaning of reply_len which is also used in
+> the original warning after err_msg label. But it's probably not a big
+> deal, it's not obvious what exactly "payload" means there so that anyone
+> trying to investigate the problem has to start by checking what exactly
+> the value reported means.
 
-diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-index b286993da67c..13141dbfa3a8 100644
---- a/drivers/net/usb/smsc75xx.c
-+++ b/drivers/net/usb/smsc75xx.c
-@@ -1483,7 +1483,7 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
- 	ret = smsc75xx_wait_ready(dev, 0);
- 	if (ret < 0) {
- 		netdev_warn(dev->net, "device not ready in smsc75xx_bind\n");
--		goto err;
-+		goto free_pdata;
- 	}
- 
- 	smsc75xx_init_mac_address(dev);
-@@ -1492,7 +1492,7 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
- 	ret = smsc75xx_reset(dev);
- 	if (ret < 0) {
- 		netdev_warn(dev->net, "smsc75xx_reset error %d\n", ret);
--		goto err;
-+		goto cancel_work;
- 	}
- 
- 	dev->net->netdev_ops = &smsc75xx_netdev_ops;
-@@ -1503,8 +1503,11 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
- 	dev->net->max_mtu = MAX_SINGLE_PACKET_SIZE;
- 	return 0;
- 
--err:
-+cancel_work:
-+	cancel_work_sync(&pdata->set_multicast);
-+free_pdata:
- 	kfree(pdata);
-+	dev->data[0] = 0;
- 	return ret;
- }
- 
-@@ -1515,7 +1518,6 @@ static void smsc75xx_unbind(struct usbnet *dev, struct usb_interface *intf)
- 		cancel_work_sync(&pdata->set_multicast);
- 		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
- 		kfree(pdata);
--		pdata = NULL;
- 		dev->data[0] = 0;
- 	}
- }
--- 
-2.25.1
+I'll add a note to this effect to the commit message.
 
+Thanks!
