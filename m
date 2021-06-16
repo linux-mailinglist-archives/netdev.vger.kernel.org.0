@@ -2,64 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 554283AA42A
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBF683AA45A
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:30:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232664AbhFPTWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:22:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50178 "EHLO mail.kernel.org"
+        id S232833AbhFPTcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:32:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52184 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232628AbhFPTWK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 15:22:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 584AD613C2;
-        Wed, 16 Jun 2021 19:20:04 +0000 (UTC)
+        id S230332AbhFPTcJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 15:32:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 877EA61246;
+        Wed, 16 Jun 2021 19:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623871204;
-        bh=Cutqgtq1nDFUbNZhrjjIuilBC8+Pyq/0E0b3v0M4HkA=;
+        s=k20201202; t=1623871803;
+        bh=f9H14eCfhOjvGvGE7xKVI0N3PyCwuQDCxqlmu4asqo0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=R6UZZsWeGaruZngi80q86c2gYHIE5RO7y+FAzbmEpQJ5UhLHcXAIylkDRL6JcQ1Gl
-         KvxNZfLFl0CIeMhMC7frsycUmclv4HgyDr8y+gnmZEXL3kOqGRBvIdIa3e+0Wlpa7Q
-         b+8bDA72ybbvzEuAmEvZvWldQaYzsqFwPl7Sla5z8BAM6triXr+rEWPHjtdGyRA9r2
-         ipB+XdPufIVA7uq3nJv1eoG2qyHiXDD/7amesXq73evQbs1W1zBf187+djcBSHPkSB
-         zB5PeZ6utvOWs2IFlqTyrmDghBpy8NcSPnTl5+MP5mNSzFJuV4IDCRYepk4iUQ4onj
-         QUYW4YIGVwDUQ==
+        b=BqdBAE2TFTBgmA+TcCJvVRAPxQ352ku5ISlA1NipNhTIvt2TlDFARtlh1ViuFWgAP
+         4rQljHMoazXSpr7dt9/G4KRaw4BvPVYZDF8K836Ewun/jERwF6ZaRr0jepn9CFYjKR
+         OcG6jEgkixEO33hK7qJZ96S0v43vsI/wt+8To/9j9qxFRmEOVfytsOaMZ77s5/q3/n
+         qopJILBhq+8Yt2BnWoBknrFbhlA5soPPtTzLfSQVUDtSFUwQntMFmKKBlA5bcygfp8
+         2BrVwOgG1iY2SCQuMQ8SCAX6sajdXDORxZJXwifIIROrSmGE7/xkWSsnvLC/cq4wbv
+         YoOoAdMkqHZKA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 450D060CAA;
-        Wed, 16 Jun 2021 19:20:04 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7B86060A54;
+        Wed, 16 Jun 2021 19:30:03 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] net: dsa: xrs700x: forward HSR supervision frames
+Subject: Re: [PATCH net] net: stmmac: disable clocks in stmmac_remove_config_dt()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162387120427.29488.8583760405715339736.git-patchwork-notify@kernel.org>
-Date:   Wed, 16 Jun 2021 19:20:04 +0000
-References: <20210616013903.41564-1-george.mccollister@gmail.com>
-In-Reply-To: <20210616013903.41564-1-george.mccollister@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <162387180350.2076.2488923511178824990.git-patchwork-notify@kernel.org>
+Date:   Wed, 16 Jun 2021 19:30:03 +0000
+References: <20210616091024.13412-1-qiangqing.zhang@nxp.com>
+In-Reply-To: <20210616091024.13412-1-qiangqing.zhang@nxp.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 15 Jun 2021 20:39:03 -0500 you wrote:
-> Forward supervision frames between redunant HSR ports. This was broken
-> in the last commit.
+On Wed, 16 Jun 2021 17:10:24 +0800 you wrote:
+> Platform drivers may call stmmac_probe_config_dt() to parse dt, could
+> call stmmac_remove_config_dt() in error handing after dt parsed, so need
+> disable clocks in stmmac_remove_config_dt().
 > 
-> Fixes: 1a42624aecba ("net: dsa: xrs700x: allow HSR/PRP supervision dupes for node_table")
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+> Go through all platforms drivers which use stmmac_probe_config_dt(),
+> none of them disable clocks manually, so it's safe to disable them in
+> stmmac_remove_config_dt().
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2] net: dsa: xrs700x: forward HSR supervision frames
-    https://git.kernel.org/netdev/net-next/c/a4fc566543c0
+  - [net] net: stmmac: disable clocks in stmmac_remove_config_dt()
+    https://git.kernel.org/netdev/net/c/8f269102baf7
 
 You are awesome, thank you!
 --
