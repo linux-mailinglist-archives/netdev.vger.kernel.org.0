@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD8DE3AA6B7
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 00:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 152CF3AA6B9
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 00:40:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234206AbhFPWmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 18:42:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39868 "EHLO mail.kernel.org"
+        id S234207AbhFPWmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 18:42:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39876 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233982AbhFPWmf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234004AbhFPWmf (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 16 Jun 2021 18:42:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 10075613FE;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AA9606008E;
         Wed, 16 Jun 2021 22:40:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623883228;
-        bh=d6Nvp8CFbtJlZVKyUDorqHMbcgYl6GLqU1KYxPIyaoI=;
+        s=k20201202; t=1623883229;
+        bh=zgXRJIhDMOKNhal8b4+HYhzgHPYYTsWiyKlldA9NKMQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4rf70ewoc7ww+S1botaOEC/NVeQLpM0CtBd2W/MNzF1vRlzJj+UWIKz3SqjsIXa7
-         97ReFDqvRof3asZ6o7irGrOyxjKQcSoG2nfqvlh9oOq281VBJuJRUOWvZO2MA2zW/A
-         ekoMb0QHAX4Yyg5pGL8iZ8Rq10T7clTpy5KonzVqFcGcYmc+/kbnosOmUuUBJOpzoM
-         nWSyL3BTTZ2OnE5cWpOZ7cmbmV5eP7gIbFz0oVnH4466aS4qOqNKmbffxA+ZZAd5QW
-         /fWJm4V8Az39NGuhkjuzm06wjCvMXyijTeUwoeEmPZ3LItg30Q+m52bOP0YNcbuaR9
-         VdSPyy0sBpAsA==
+        b=PEV79fbBThKMSbRC20HU25FroHlivFDezBRVC3sR70UW6cBTFBNx6j9KEQp0G+3LQ
+         PSvox/Y1DEgjwD+WssUYY24LIORzJ7T2iWOKkeyI6WrsZzCS/urqOuO3d5+2pd9fa7
+         elI3EcJfdGRGsUmlj1b+7xoQOtyM0QF8JO8FXgGCfIWtthgZLUWX+OvbV6CH/IRVVH
+         jH4XkV29Xhp+sBzKnqZdseMvoLlYJaMhuWxp8bUSEDIT4cJhsmzww9ElMbT6ISAHoT
+         OhWpzpTTGVEsgDdpB99x/pLKJPu/Q4M19/FxqQJExDpMBRKNwGVGgzk5Qbei4Bh8fF
+         c6xeHHIwXO6pg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Yuval Avnery <yuvalav@nvidia.com>,
-        Bodong Wang <bodong@nvidia.com>,
-        Alaa Hleihel <alaa@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 4/8] net/mlx5: E-Switch, Allow setting GUID for host PF vport
-Date:   Wed, 16 Jun 2021 15:40:11 -0700
-Message-Id: <20210616224015.14393-5-saeed@kernel.org>
+Subject: [net 5/8] net/mlx5: SF_DEV, remove SF device on invalid state
+Date:   Wed, 16 Jun 2021 15:40:12 -0700
+Message-Id: <20210616224015.14393-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210616224015.14393-1-saeed@kernel.org>
 References: <20210616224015.14393-1-saeed@kernel.org>
@@ -46,43 +43,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-E-switch should be able to set the GUID of host PF vport.
-Currently it returns an error. This results in below error
-when user attempts to configure MAC address of the PF of an
-external controller.
+When auxiliary bus autoprobe is disabled and SF is in ACTIVE state,
+on SF port deletion it transitions from ACTIVE->ALLOCATED->INVALID.
 
-$ devlink port function set pci/0000:03:00.0/196608 \
-   hw_addr 00:00:00:11:22:33
+When VHCA event handler queries the state, it is already transition
+to INVALID state.
 
-mlx5_core 0000:03:00.0: mlx5_esw_set_vport_mac_locked:1876:(pid 6715):\
-"Failed to set vport 0 node guid, err = -22.
-RDMA_CM will not function properly for this VF."
+In this scenario, event handler missed to delete the SF device.
 
-Check for zero vport is no longer needed.
+Fix it by deleting the SF when SF state is INVALID.
 
-Fixes: 330077d14de1 ("net/mlx5: E-switch, Supporting setting devlink port function mac address")
-Signed-off-by: Yuval Avnery <yuvalav@nvidia.com>
+Fixes: 90d010b8634b ("net/mlx5: SF, Add auxiliary device support")
 Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Bodong Wang <bodong@nvidia.com>
-Reviewed-by: Alaa Hleihel <alaa@nvidia.com>
+Reviewed-by: Vu Pham <vuhuong@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/vport.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/vport.c b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-index 457ad42eaa2a..4c1440a95ad7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-@@ -465,8 +465,6 @@ int mlx5_modify_nic_vport_node_guid(struct mlx5_core_dev *mdev,
- 	void *in;
- 	int err;
- 
--	if (!vport)
--		return -EINVAL;
- 	if (!MLX5_CAP_GEN(mdev, vport_group_manager))
- 		return -EACCES;
- 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+index 6a0c6f965ad1..fa0288afc0dd 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+@@ -163,6 +163,7 @@ mlx5_sf_dev_state_change_handler(struct notifier_block *nb, unsigned long event_
+ 	sf_index = event->function_id - base_id;
+ 	sf_dev = xa_load(&table->devices, sf_index);
+ 	switch (event->new_vhca_state) {
++	case MLX5_VHCA_STATE_INVALID:
+ 	case MLX5_VHCA_STATE_ALLOCATED:
+ 		if (sf_dev)
+ 			mlx5_sf_dev_del(table->dev, sf_dev, sf_index);
 -- 
 2.31.1
 
