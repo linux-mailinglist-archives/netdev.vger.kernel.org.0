@@ -2,111 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D7073A9241
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 08:27:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0AC83A9259
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 08:27:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbhFPG3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 02:29:31 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:31356 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231465AbhFPG3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 02:29:30 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1623824844; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=tfQcGeVIJlbVK4n5GuCdAaFYDeWtfPMofUGELoT/fCA=;
- b=GIZMPifIRbDrq9WaJxRgrRlxVGWKATjFxrasyrSaud00mLidwKzU7H1+Aw6R6JTGApFezbsB
- QyRuw1fL4Yl6FzGP5aX3ZP8ixmQSpZN84tTHS6iXciZ9FPG2T2uz0FDhA7UDD+HI3qHhyNGx
- g5i6g/FYq/LunnIZsycxYL20hb4=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 60c999b9ed59bf69ccbeff7d (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 16 Jun 2021 06:27:05
- GMT
-Sender: subashab=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 2B986C43460; Wed, 16 Jun 2021 06:27:05 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 635DFC433D3;
-        Wed, 16 Jun 2021 06:27:04 +0000 (UTC)
+        id S231774AbhFPG37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 02:29:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59684 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231391AbhFPG3x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 02:29:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AE9C5613BF;
+        Wed, 16 Jun 2021 06:27:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623824867;
+        bh=HFXY5XjspzH1kzu2GrbFUWzI5z4ecY6jF7OZRuh585A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=i8M85VxHQbZ50V8fMJseWf0vWBO55h7qx/5DDF1AEmTSMWhUjzMvzzmjKrtF8AKcR
+         jwPUkMGj6skaSwKc3Nb/ClX/mf9rqCBl4EoOzg6hiQVc5LWnY4qtyfrSEJ7VphRRWH
+         KduL0CAw/YrDU6ESOYozK0J7Mwh6gXRMtkihQq/zF3LS+B2iz9xXROxs8p6G/3birc
+         rMWLHc4+eJCtsbE9xfUQ8QL3jC1cqZQSUtH6lpM1ZAmA6n8MNE4ItYkhgEns7gOcfF
+         tDqXX7qE2sdpEWYSQWyUHfCyD8Rd8Zrw4MW3EN7CUxyupE2Yrivwa8Z0A4F/HN3xgi
+         IJ4MvA1+etqjg==
+Received: by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1ltP1d-004kIJ-Rv; Wed, 16 Jun 2021 08:27:45 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        coresight@lists.linaro.org, devicetree@vger.kernel.org,
+        kunit-dev@googlegroups.com, kvm@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-security-module@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org
+Subject: [PATCH v2 00/29] docs: avoid using ReST :doc:`foo` tag
+Date:   Wed, 16 Jun 2021 08:27:15 +0200
+Message-Id: <cover.1623824363.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 16 Jun 2021 00:27:04 -0600
-From:   subashab@codeaurora.org
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Sean Tranchetti <stranche@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alex Elder <elder@linaro.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: qualcomm: rmnet: Allow partial updates
- of IFLA_FLAGS
-In-Reply-To: <20210615232707.835258-1-bjorn.andersson@linaro.org>
-References: <20210615232707.835258-1-bjorn.andersson@linaro.org>
-Message-ID: <ad250914bbb332d408f0b42935d11149@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-06-15 17:27, Bjorn Andersson wrote:
-> The idiomatic way to handle the changelink flags/mask pair seems to be
-> allow partial updates of the driver's link flags. In contrast the rmnet
-> driver masks the incoming flags and then use that as the new flags.
-> 
-> Change the rmnet driver to follow the common scheme, before the
-> introduction of IFLA_RMNET_FLAGS handling in iproute2 et al.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
-> 
-> Changes since v1:
-> - Also do the masking dance on newlink, per Subash request
-> - Add "net-next" to subject prefix
-> 
->  drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> index 8d51b0cb545c..27b1663c476e 100644
-> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> @@ -163,7 +163,8 @@ static int rmnet_newlink(struct net *src_net,
-> struct net_device *dev,
->  		struct ifla_rmnet_flags *flags;
-> 
->  		flags = nla_data(data[IFLA_RMNET_FLAGS]);
-> -		data_format = flags->flags & flags->mask;
-> +		data_format &= ~flags->mask;
-> +		data_format |= flags->flags & flags->mask;
->  	}
-> 
->  	netdev_dbg(dev, "data format [0x%08X]\n", data_format);
-> @@ -336,7 +337,8 @@ static int rmnet_changelink(struct net_device
-> *dev, struct nlattr *tb[],
-> 
->  		old_data_format = port->data_format;
->  		flags = nla_data(data[IFLA_RMNET_FLAGS]);
-> -		port->data_format = flags->flags & flags->mask;
-> +		port->data_format &= ~flags->mask;
-> +		port->data_format |= flags->flags & flags->mask;
-> 
->  		if (rmnet_vnd_update_dev_mtu(port, real_dev)) {
->  			port->data_format = old_data_format;
+(Maintainers bcc, to avoid too many recipient troubles)
 
-Reviewed-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+As discussed at:
+	https://lore.kernel.org/linux-doc/871r9k6rmy.fsf@meer.lwn.net/
+
+It is better to avoid using :doc:`foo` to refer to Documentation/foo.rst, as the
+automarkup.py extension should handle it automatically, on most cases.
+
+There are a couple of exceptions to this rule:
+
+1. when :doc:  tag is used to point to a kernel-doc DOC: markup;
+2. when it is used with a named tag, e. g. :doc:`some name <foo>`;
+
+On this series:
+
+Patch 1 manually adjust the references inside driver-api/pm/devices.rst,
+as there it uses :file:`foo` to refer to some Documentation/ files;
+
+Patch 2 converts a table at Documentation/dev-tools/kunit/api/index.rst
+into a list, carefully avoiding the 
+
+The remaining patches convert the other occurrences via a replace script.
+They were manually edited, in order to honour 80-columns where possible.
+
+This series based on docs-next branch. In order to avoid merge conflicts,
+I rebased it internally against yesterday's linux-next, dropping a patch
+and a hunk that would have caused conflicts there.
+
+I'll re-send the remaining patch (plus another patch) with conflicting
+changes, together with any other doc:`filename` reference that might
+still be upstream by 5.14-rc1.
+
+---
+
+v2:
+   - dropped media patches (as I merged via my own tree);
+   - removed one patch that would conflict at linux-next (adm1177.rst);
+   - removed one hunk fron kunit patch that would also conflict at
+     linux-next.
+
+Mauro Carvalho Chehab (29):
+  docs: devices.rst: better reference documentation docs
+  docs: dev-tools: kunit: don't use a table for docs name
+  docs: admin-guide: pm: avoid using ReST :doc:`foo` markup
+  docs: admin-guide: hw-vuln: avoid using ReST :doc:`foo` markup
+  docs: admin-guide: sysctl: avoid using ReST :doc:`foo` markup
+  docs: block: biodoc.rst: avoid using ReST :doc:`foo` markup
+  docs: bpf: bpf_lsm.rst: avoid using ReST :doc:`foo` markup
+  docs: core-api: avoid using ReST :doc:`foo` markup
+  docs: dev-tools: testing-overview.rst: avoid using ReST :doc:`foo`
+    markup
+  docs: dev-tools: kunit: avoid using ReST :doc:`foo` markup
+  docs: devicetree: bindings: submitting-patches.rst: avoid using ReST
+    :doc:`foo` markup
+  docs: doc-guide: avoid using ReST :doc:`foo` markup
+  docs: driver-api: avoid using ReST :doc:`foo` markup
+  docs: driver-api: gpio: using-gpio.rst: avoid using ReST :doc:`foo`
+    markup
+  docs: driver-api: surface_aggregator: avoid using ReST :doc:`foo`
+    markup
+  docs: driver-api: usb: avoid using ReST :doc:`foo` markup
+  docs: firmware-guide: acpi: avoid using ReST :doc:`foo` markup
+  docs: i2c: avoid using ReST :doc:`foo` markup
+  docs: kernel-hacking: hacking.rst: avoid using ReST :doc:`foo` markup
+  docs: networking: devlink: avoid using ReST :doc:`foo` markup
+  docs: PCI: endpoint: pci-endpoint-cfs.rst: avoid using ReST :doc:`foo`
+    markup
+  docs: PCI: pci.rst: avoid using ReST :doc:`foo` markup
+  docs: process: submitting-patches.rst: avoid using ReST :doc:`foo`
+    markup
+  docs: security: landlock.rst: avoid using ReST :doc:`foo` markup
+  docs: trace: coresight: coresight.rst: avoid using ReST :doc:`foo`
+    markup
+  docs: trace: ftrace.rst: avoid using ReST :doc:`foo` markup
+  docs: userspace-api: landlock.rst: avoid using ReST :doc:`foo` markup
+  docs: virt: kvm: s390-pv-boot.rst: avoid using ReST :doc:`foo` markup
+  docs: x86: avoid using ReST :doc:`foo` markup
+
+ .../PCI/endpoint/pci-endpoint-cfs.rst         |  2 +-
+ Documentation/PCI/pci.rst                     |  6 +--
+ .../special-register-buffer-data-sampling.rst |  3 +-
+ Documentation/admin-guide/pm/intel_idle.rst   | 16 +++++---
+ Documentation/admin-guide/pm/intel_pstate.rst |  9 +++--
+ Documentation/admin-guide/sysctl/abi.rst      |  2 +-
+ Documentation/admin-guide/sysctl/kernel.rst   | 37 ++++++++++---------
+ Documentation/block/biodoc.rst                |  2 +-
+ Documentation/bpf/bpf_lsm.rst                 | 13 ++++---
+ .../core-api/bus-virt-phys-mapping.rst        |  2 +-
+ Documentation/core-api/dma-api.rst            |  5 ++-
+ Documentation/core-api/dma-isa-lpc.rst        |  2 +-
+ Documentation/core-api/index.rst              |  4 +-
+ Documentation/dev-tools/kunit/api/index.rst   |  8 ++--
+ Documentation/dev-tools/kunit/faq.rst         |  2 +-
+ Documentation/dev-tools/kunit/index.rst       | 14 +++----
+ Documentation/dev-tools/kunit/start.rst       |  4 +-
+ Documentation/dev-tools/kunit/tips.rst        |  5 ++-
+ Documentation/dev-tools/kunit/usage.rst       |  8 ++--
+ Documentation/dev-tools/testing-overview.rst  | 16 ++++----
+ .../bindings/submitting-patches.rst           | 11 +++---
+ Documentation/doc-guide/contributing.rst      |  8 ++--
+ Documentation/driver-api/gpio/using-gpio.rst  |  4 +-
+ Documentation/driver-api/ioctl.rst            |  2 +-
+ Documentation/driver-api/pm/devices.rst       |  8 ++--
+ .../surface_aggregator/clients/index.rst      |  3 +-
+ .../surface_aggregator/internal.rst           | 15 ++++----
+ .../surface_aggregator/overview.rst           |  6 ++-
+ Documentation/driver-api/usb/dma.rst          |  6 +--
+ .../acpi/dsd/data-node-references.rst         |  3 +-
+ .../firmware-guide/acpi/dsd/graph.rst         |  2 +-
+ .../firmware-guide/acpi/enumeration.rst       |  7 ++--
+ Documentation/i2c/instantiating-devices.rst   |  2 +-
+ Documentation/i2c/old-module-parameters.rst   |  3 +-
+ Documentation/i2c/smbus-protocol.rst          |  4 +-
+ Documentation/kernel-hacking/hacking.rst      |  4 +-
+ .../networking/devlink/devlink-region.rst     |  2 +-
+ .../networking/devlink/devlink-trap.rst       |  4 +-
+ Documentation/process/submitting-patches.rst  | 32 ++++++++--------
+ Documentation/security/landlock.rst           |  3 +-
+ Documentation/trace/coresight/coresight.rst   |  8 ++--
+ Documentation/trace/ftrace.rst                |  2 +-
+ Documentation/userspace-api/landlock.rst      | 11 +++---
+ Documentation/virt/kvm/s390-pv-boot.rst       |  2 +-
+ Documentation/x86/boot.rst                    |  4 +-
+ Documentation/x86/mtrr.rst                    |  2 +-
+ 46 files changed, 171 insertions(+), 147 deletions(-)
+
+-- 
+2.31.1
+
+
