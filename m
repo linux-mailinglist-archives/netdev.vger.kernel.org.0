@@ -2,69 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A503A981E
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 12:50:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3B23A9828
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 12:53:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232223AbhFPKwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 06:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231769AbhFPKwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 06:52:32 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11E1C061574
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 03:50:25 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id x24so3551139lfr.10
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 03:50:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Goo5PYRM5K9l0HtKc4Pi5tcnXNaGZfrwehALF98shRs=;
-        b=MinDoi+4KQqD3bxrxrZwzeGPrtD1LqYvDcp2V8lWroeSQ84aG8Zl7I56b2zRtLAmlR
-         HvJkIqByCpHPGJgw80/Wio7FdCsw+4UnTXmd28zS9wVjSvGQQ3o7GmsRNt9Z1rHjcALv
-         w6d5XD+ffwC87A8yKvPS4mFwjzEE0cHKeY8lgs+lggswHmI1EsT54VVYWWnrdpSFrb9C
-         HHR1StjoVsFXgqLl2VNDbjVIuS4eddqKbrf/+HlEaBVCoegup5PEku4Dl8CB8rNh5L7v
-         pZh+nzzyqnvL1Q7m5frG0oSHlZhPr3IX2BT1txXpSZGEiNHIvpXeFB0nONDZrn+e7dGf
-         Uv5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Goo5PYRM5K9l0HtKc4Pi5tcnXNaGZfrwehALF98shRs=;
-        b=pLNpbfs8S414VAwtQHYsDbFLBtX8WUAnlh/MsOxYnpnm4SYYQ56QTJO9rMID68l60H
-         25pTfBPCKE+YA+Db3KWKx6KdnQ5qnCryK7m+C+AsRPUX1IXxukGHjo18e8nyvfoh/bol
-         MT8ynGFUZ46iFvsLGlE7tva3pwT51PQHQeN34DcN/RamacIF9XVCx+iKUXH0EcGDkjq6
-         zo1N4wq0GSrTLTVTg6MWIbcWIUiJTzToQaltcZCPHssk8YDbxJnmOH/oyEulUlWk5jzS
-         4wJETa0BJbR2xbrPtIhy9a0OfY3PoRMb3tKof8qiW2GnnxBj+8VAu60OJFZcX+OK0TN0
-         3x8A==
-X-Gm-Message-State: AOAM530VB/hav9WPwgeVjs5uh8OWIrXdamz/D9xCA7NlBbZxA/z3erEs
-        sl4Lxp752Fue6nDCQw89Tm7hSL4SjJLThxA/fgBFA6s+fi8=
-X-Google-Smtp-Source: ABdhPJyjqL/qq4IM4uuW0kxTf2eyKdJPoeoy6EM2BhLly4swBVbyXaRfKNZPpG1srsgWLwe3cfiRO0spYaRi0Ru6S/Y=
-X-Received: by 2002:ac2:5e64:: with SMTP id a4mr3258735lfr.657.1623840624230;
- Wed, 16 Jun 2021 03:50:24 -0700 (PDT)
+        id S232237AbhFPKzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 06:55:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44592 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231698AbhFPKzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 06:55:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623840779;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=c9F48oU5+bFnmZpTSygnLXDKFJhTTaB0FdhvJwlUGVo=;
+        b=AbBK2i9Rr3sZouFhn+IuaBSBD1IFjl+yQeGWO5j9e8vIWPkECr4gzKCFgCv7gBiT0KpIKW
+        90qH8b8DtMxIOXADN7DcX5iNao/NjUXd+vi7dPoOUMS/YlcP4RIErjkGCqSbUZU0hoHiOJ
+        QTdHXn8Cefhp8PEh1c21UAoGfj9Q8JM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-554-w5p6DPP5MjemYnMUCAnBnA-1; Wed, 16 Jun 2021 06:52:56 -0400
+X-MC-Unique: w5p6DPP5MjemYnMUCAnBnA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 91BB6107ACF6;
+        Wed, 16 Jun 2021 10:52:54 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A4F25D703;
+        Wed, 16 Jun 2021 10:52:47 +0000 (UTC)
+Date:   Wed, 16 Jun 2021 12:52:46 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Wang Hai <wanghai38@huawei.com>
+Cc:     brouer@redhat.com, <davem@davemloft.net>, <kuba@kernel.org>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <hawk@kernel.org>,
+        <john.fastabend@gmail.com>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] samples/bpf: Add missing option to xdp_fwd
+ usage
+Message-ID: <20210616125246.2a74c069@carbon>
+In-Reply-To: <20210615135554.29158-1-wanghai38@huawei.com>
+References: <20210615135554.29158-1-wanghai38@huawei.com>
 MIME-Version: 1.0
-References: <20210608153309.4019-1-littlesmilingcloud@gmail.com>
- <20210608153309.4019-2-littlesmilingcloud@gmail.com> <20210614195700.260c8933@hermes.local>
-In-Reply-To: <20210614195700.260c8933@hermes.local>
-From:   Anton Danilov <littlesmilingcloud@gmail.com>
-Date:   Wed, 16 Jun 2021 13:49:48 +0300
-Message-ID: <CAEzD07KJOp9q0RfQMhjLuc2MH2-toMCECKxS594=pYJqaUNLMg@mail.gmail.com>
-Subject: Re: [RFC 2/3] [RFC iproute2-next] tc: f_u32: Fix the ipv6 pretty printing.
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Jun 2021 at 05:57, Stephen Hemminger
-<stephen@networkplumber.org> wrote:
-> Ok, but better yet, upgrade f_u32 to do proper JSON output.
+On Tue, 15 Jun 2021 21:55:54 +0800
+Wang Hai <wanghai38@huawei.com> wrote:
 
-Yep, I'll send the JSON output patch soon.
+> xdp_fwd usage() is missing the introduction of the "-S"
+> and "-F" options, this patch adds it.
+> 
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> ---
+>  samples/bpf/xdp_fwd_user.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
 
+Fixes: d50ecc46d18f ("samples/bpf: Attach XDP programs in driver mode by default")
 
---
-Anton Danilov.
+LGTM but please add "Fixes:" tag next time, I think patchwork will pick
+this up via this reply.
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+
+> diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+> index 74a4583d0d86..00061261a8da 100644
+> --- a/samples/bpf/xdp_fwd_user.c
+> +++ b/samples/bpf/xdp_fwd_user.c
+> @@ -67,6 +67,8 @@ static void usage(const char *prog)
+>  		"usage: %s [OPTS] interface-list\n"
+>  		"\nOPTS:\n"
+>  		"    -d    detach program\n"
+> +		"    -S    use skb-mode\n"
+> +		"    -F    force loading prog\n"
+>  		"    -D    direct table lookups (skip fib rules)\n",
+>  		prog);
+>  }
+    -
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
