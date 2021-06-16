@@ -2,56 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 158883AA4A2
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:51:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF9AF3AA4B3
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232419AbhFPTxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:53:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41214 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232808AbhFPTxK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Jun 2021 15:53:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=am0d0pk3jVy5OgKLNWHj2eNHd2bP49FJfF7PWRTv824=; b=FCCQNxZt/TF2vWt/xvxoq/bmqf
-        RfptqKJtdguKsusQsWiDTSqJ05iQKq/2dat3cU5MzR6zoKBejU5g1y7Fa9oZZjDC+JjrkZfRY1ADI
-        sZVrsSLjbdvUXcfByW93eg+5AJxjpNdj95ZeNAYFWwn+Y8I+rPGRNVJnUR2GxUi+9qtI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ltbZ1-009lrg-9W; Wed, 16 Jun 2021 21:51:03 +0200
-Date:   Wed, 16 Jun 2021 21:51:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
-        jaz@semihalf.com, gjb@semihalf.com, upstream@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, jon@solid-run.com, tn@semihalf.com,
-        rjw@rjwysocki.net, lenb@kernel.org
-Subject: Re: [net-next: PATCH v2 5/7] net: mvmdio: add ACPI support
-Message-ID: <YMpWJ79VF7HmjumQ@lunn.ch>
-References: <20210616190759.2832033-1-mw@semihalf.com>
- <20210616190759.2832033-6-mw@semihalf.com>
+        id S233065AbhFPTy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41524 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233034AbhFPTy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:54:57 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B452BC061767
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:52:50 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id a127so3045176pfa.10
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:52:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iu3sTRI4Ga1ervnK5tO7EMOoHzHR4xBz1C8JdNaGCVA=;
+        b=HKyp4hdkNn98jyZjO/itFbTsAjuWDCJ9LdrFsnrFjPIE9O4IcaTsxVXtZQlIo0dLQ/
+         cnYhJ5liNvDhcDw++oRT6Ryh/xwhamlDfmw0KAuUbL99m94k7DFRvP3qF0ipaNmMCUeD
+         Bk17lIf7tMXZtYDe+4DTcsoZ6VQUi7LPkD6UM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iu3sTRI4Ga1ervnK5tO7EMOoHzHR4xBz1C8JdNaGCVA=;
+        b=gIFuw5BYEB1um4rLUNCtgP9MJP6zR0TaHizNphBSBSbJliqhBenRFoDqRDMEtXaUCg
+         S3igxoqM6qGGF2qMdKOdUhr/IbJB8FnWIbKXnlYaWgcgZV2pBTN3uxfJ2lzp8Za0CAKy
+         +NdojSmABgujqMw4MK0Vnweoh5/avQ3GHC5W5Q7FMSFlu9Oj4KG6rkJ0bU0RRByXu/kl
+         SQmyycTtX5/ev+mXtlBUH51ErsVwrXNb7teunewYI1oIqjU9tFnoHzoFClH7r9Sgf3Qn
+         ZgYnorOknjZr9SaI2OLFdbycNen28JbIL8x93iRVpq5l43h8NKMAbqM2yolvuTSkuRLI
+         x6uA==
+X-Gm-Message-State: AOAM532iQYOCKW7875iuYD+uYRfs+TwMf5Q5WrRbMp/kjxzXibla4ciW
+        IgJtHA28MKB3T9Zn0K5DrVE7UA==
+X-Google-Smtp-Source: ABdhPJyadA6K+Ch6Os/HN+T0haAfJUcovLTu6Izm91kzA5n2FE4i73pC6hOVv0wKBr8z4HI9aM1eKQ==
+X-Received: by 2002:a05:6a00:b4f:b029:2e9:f6a8:46db with SMTP id p15-20020a056a000b4fb02902e9f6a846dbmr1423427pfo.26.1623873170165;
+        Wed, 16 Jun 2021 12:52:50 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id p17sm6355426pjg.54.2021.06.16.12.52.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Jun 2021 12:52:49 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     netdev@vger.kernel.org
+Cc:     Kees Cook <keescook@chromium.org>,
+        Lennert Buytenhek <buytenh@wantstofly.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Romain Perier <romain.perier@gmail.com>,
+        Allen Pais <allen.lkml@gmail.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        wengjianfeng <wengjianfeng@yulong.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH] mwl8k: Avoid memcpy() over-reading of ETH_SS_STATS
+Date:   Wed, 16 Jun 2021 12:52:42 -0700
+Message-Id: <20210616195242.1231287-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210616190759.2832033-6-mw@semihalf.com>
+X-Patch-Hashes: v=1; h=sha256; g=b6df66ea320e2dd2f60b6aa198c92d8bf5668fd0; i=fgwr8Ir/RkDxDn1oBpfFAI0X5hxNqb8r0Q6WOlTVTWU=; m=oovpy32QOGm7F0CxLPSpC3hYkeAu+GX5CeuC6rbYRG0=; p=rNzffPVViPPasgNsA9kftAkj+3z+yfBDZn11q5PzClA=
+X-Patch-Sig: m=pgp; i=keescook@chromium.org; s=0x0x8972F4DFDC6DC026; b=iQIzBAABCgAdFiEEpcP2jyKd1g9yPm4TiXL039xtwCYFAmDKVokACgkQiXL039xtwCYNRQ//Xds gObSVssEMFebWQY591nCjSvczCvbAxMhxFeUowBL+EmYCR4DnyKWS8Krfdiu251zp3xD+JDcwgC/Z 9vttzBL2ENgbAlPYgR0O1UuwWJ4z9Fl0VZGmRLlBbby/rg2mgfTJWTpp2zkrfxPL6q/YPwcgnUc0j q13dtiAcgzFC4iKqwEdKH/Jx5QFtXrSY3cefkWQyOa7vPYOfWXowV6Q67Ft6bf0LjKFSKZ/9Xje7R Cs7MALDWp5dF4OsJBiWI2KTF1azyN6HE14WW89jqBmxXHvRB8e1n7xqZvb6RwLuVnjVkwWau3LJHZ xzOIfpAd80Wk7qL46BF1szFIUO7igL8BCFU6wluUlio7hDxIzqifpbey0ZUukj30Rj8/dGSIGBiLf RAbM9LQr00fg30YQEnkMiFhV2ZFd+oVbutFX+7ANK5ZsMARomhQagbImPsFMBMe84yrVboiilW4+E qKo0mIJJCnFw+AGiDKb1pcNl4gjdUgreLkIBUpXz9kUJSdnNpNOlwQ0oSuUjy/ld+A2r5ZH251Jjo uGg7zdSPCWgCXVLadKFO/cdYympUc++xzZIPM6aH1+ZblzxJ+stFKqiyEwEy5tUuo2O0PfWeWf180 wPO4kMuZN1gvZq4oeEH8lsx80PlXSrXVnTeNmHxIzhM0XnWE0jOVxOITfmRL1UeY=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 16, 2021 at 09:07:57PM +0200, Marcin Wojtas wrote:
-> This patch introducing ACPI support for the mvmdio driver by adding
-> acpi_match_table with two entries:
-> 
-> * "MRVL0100" for the SMI operation
-> * "MRVL0101" for the XSMI mode
-> 
-> Also clk enabling is skipped, because the tables do not contain
-> such data and clock maintenance relies on the firmware.
+In preparation for FORTIFY_SOURCE performing compile-time and run-time
+field bounds checking for memcpy(), memmove(), and memset(), avoid
+intentionally reading across neighboring array fields. Use the
+sub-structure address directly.
 
-This last part seems to be no longer true.
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ drivers/net/wireless/marvell/mwl8k.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-     Andrew
+diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
+index 84b32a5f01ee..3bf6571f4149 100644
+--- a/drivers/net/wireless/marvell/mwl8k.c
++++ b/drivers/net/wireless/marvell/mwl8k.c
+@@ -4552,7 +4552,7 @@ static int mwl8k_cmd_update_stadb_add(struct ieee80211_hw *hw,
+ 	else
+ 		rates = sta->supp_rates[NL80211_BAND_5GHZ] << 5;
+ 	legacy_rate_mask_to_array(p->legacy_rates, rates);
+-	memcpy(p->ht_rates, sta->ht_cap.mcs.rx_mask, 16);
++	memcpy(p->ht_rates, &sta->ht_cap.mcs, 16);
+ 	p->interop = 1;
+ 	p->amsdu_enabled = 0;
+ 
+@@ -5034,7 +5034,7 @@ mwl8k_bss_info_changed_sta(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+ 			ap_legacy_rates =
+ 				ap->supp_rates[NL80211_BAND_5GHZ] << 5;
+ 		}
+-		memcpy(ap_mcs_rates, ap->ht_cap.mcs.rx_mask, 16);
++		memcpy(ap_mcs_rates, &ap->ht_cap.mcs, 16);
+ 
+ 		rcu_read_unlock();
+ 
+-- 
+2.25.1
+
