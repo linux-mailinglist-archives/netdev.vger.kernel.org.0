@@ -2,92 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C94C13A966C
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 11:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C90753A967B
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 11:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbhFPJmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 05:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
+        id S232218AbhFPJsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 05:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbhFPJmW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 05:42:22 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11677C061574
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 02:40:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=xeaQuGZxJj8mR5i/Hcz8vi+8KzvggIOfSY02wQBou8s=; b=tcxs6gNcO7HLEvfbO4hoD38hw
-        q++tMKDM87/GvoaAX/YQdZgF1xiCCkwNUktmUnloMC1LAsA3UWq19f8qIxBA2ZSIhY1YA4YjGhCt5
-        YAMQOkVFaJ5O8dmfMAfimAF2o9xldzr/tJ+Ra245KT/O/S4YeRpoMtTpREIU5+nC04HXaI2Buf2Rn
-        Hksi+cChUwtwd3UQlX7VIOSI05uJWS0KFN+evazPlNWCVKpBttttNOhcMiRMlwqBEmtL3tXhlq8zK
-        Hq4j47x70VXS1SIE5sTYLL6r5gXbIuK7mrNzToE43YSzLYgM+GkBURxQkl0v98kTwctF0agqu4iar
-        qVYRDOYHA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45056)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        with ESMTP id S232178AbhFPJsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 05:48:45 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C72C061574
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 02:46:39 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ltS1t-0006ze-Od; Wed, 16 Jun 2021 10:40:13 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ltS1s-0005uy-4u; Wed, 16 Jun 2021 10:40:12 +0100
-Date:   Wed, 16 Jun 2021 10:40:12 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, calvin.johnson@oss.nxp.com,
-        hkallweit1@gmail.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: [PATCH net-next] mdio: mdiobus: setup of_node for the MDIO device
-Message-ID: <20210616094012.GA22278@shell.armlinux.org.uk>
-References: <20210615154401.1274322-1-ciorneiioana@gmail.com>
- <20210615171330.GW22278@shell.armlinux.org.uk>
- <YMjx6iBD88+xdODZ@lunn.ch>
- <20210615210907.GY22278@shell.armlinux.org.uk>
- <20210615212153.fvfenkyqabyqp7dk@skbuf>
- <YMkcQ6F2FXWvpeKu@lunn.ch>
- <20210616082052.s56l54vycxilv5is@skbuf>
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ltS83-0007Ch-S3; Wed, 16 Jun 2021 11:46:35 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:27:4a54:dbae:b593])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 4ADB263D01E;
+        Wed, 16 Jun 2021 09:46:34 +0000 (UTC)
+Date:   Wed, 16 Jun 2021 11:46:33 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Subject: Re: [PATCH v2 2/2] can: netlink: add interface for CAN-FD
+ Transmitter Delay Compensation (TDC)
+Message-ID: <20210616094633.fwg6rsyxyvm2zc6d@pengutronix.de>
+References: <20210603151550.140727-1-mailhol.vincent@wanadoo.fr>
+ <20210603151550.140727-3-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="z3ft7oxhu7toexlx"
 Content-Disposition: inline
-In-Reply-To: <20210616082052.s56l54vycxilv5is@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20210603151550.140727-3-mailhol.vincent@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 16, 2021 at 11:20:52AM +0300, Ioana Ciornei wrote:
-> On Tue, Jun 15, 2021 at 11:31:47PM +0200, Andrew Lunn wrote:
-> > > The fwnode_operations declared in drivers/acpi/property.c also suggest
-> > > the ACPI fwnodes are not refcounted.
-> > 
-> > Is this because ACPI is not dynamic, unlike DT, where you can
-> > add/remove overlays at runtime?
-> > 
-> 
-> I am really not an expert here but the git history suggests so, yes.
-> 
-> Without the CONFIG_OF_DYNAMIC enabled, the fwnode_handle_get() call is
-> actually a no-op even in the OF case.
 
-More accurately, of_node_get() is a no-op if CONFIG_OF_DYNAMIC is
-disabled, which in turn makes fwnode_handle_get() also a no-op.
+--z3ft7oxhu7toexlx
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I'm wondering whether we would need two helpers to assign these, or
-just a single helper that takes a fwnode and assigns both pointers.
-to_of_node() returns NULL if the fwnode is not a DT node, so would
-be safe to use even with ACPI.
+On 04.06.2021 00:15:50, Vincent Mailhol wrote:
+[...]
 
-Then there's the cleanup side when the device is released. I haven't
-yet found where we release the reference to the fwnode/of_node when
-we release the phy_device. I would have expected it in
-phy_device_release() but that does nothing. We could only add that
-when we are certain that all users who assign the firmware node to
-the phy device has properly refcounted it in the DT case.
+> +static size_t can_tdc_get_size(const struct net_device *dev)
+> +{
+> +	struct can_priv *priv =3D netdev_priv(dev);
+> +	size_t size;
+> +
+> +	if (!priv->tdc_const)
+> +		return 0;
+> +
+> +	size =3D nla_total_size(0);			/* nest IFLA_CAN_TDC */
+> +	size +=3D nla_total_size(sizeof(u32));		/* IFLA_CAN_TDCV_MAX */
+> +	size +=3D nla_total_size(sizeof(u32));		/* IFLA_CAN_TDCO_MAX */
+> +	size +=3D nla_total_size(sizeof(u32));		/* IFLA_CAN_TDCF_MAX */
+> +
+> +	if (priv->tdc.tdco) {
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Naively I'd say, iff the device has tdc_const give the user space the
+tdc parameters, regardless if some value is 0 or not.
+
+What do you think?
+
+Marc
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--z3ft7oxhu7toexlx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDJyHYACgkQqclaivrt
+76lNngf/S0HVNuyUJm2+Aooh1rzOnUEieq36RoeSYqtT3jrt+LTP1S6Wii8w2IPU
+GSXUv8Kzu7SN0D26DLptrwJYj6VN6kV67iSIeQ4mvTPUUheqY2izjvWgfy2kmScc
+f19PdkHYwE2QJbqAsR04He2L7K4gQoBMd24mxHeRHygrh07In/Jj/D0eB19wyCFD
+Vd9obvdcboCBKcPhDjiekZq3dcsWbvFdZ0HpfHJaLoku9NeGgZ9JWwGrF1UgSqB5
+ykZdVR7fGNaYBt/K96jAloiiRXHb8JVgZWrIpCPZv7HMsp9/IOWT60BZ4vf7Wj2X
+ZkqVUwnkxb9NjMoO4lPlwcMV5UwpiA==
+=6ogY
+-----END PGP SIGNATURE-----
+
+--z3ft7oxhu7toexlx--
