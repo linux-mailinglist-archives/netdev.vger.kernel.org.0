@@ -2,357 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 331383A8D03
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 01:56:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99A0C3A8D42
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 02:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231701AbhFOX6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Jun 2021 19:58:38 -0400
-Received: from smtp.lucas.inf.br ([177.190.248.62]:36476 "EHLO
-        smtp.lucas.inf.br" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231617AbhFOX6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 19:58:37 -0400
-Received: from [192.168.5.2] (unknown [177.101.131.138])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: lucas)
-        by smtp.lucas.inf.br (Postfix) with ESMTPSA id D3C7010C9778
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 20:56:30 -0300 (-03)
-Authentication-Results: lucas.inf.br; dmarc=fail (p=reject dis=none) header.from=lucas.inf.br
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lucas.inf.br; s=mail;
-        t=1623801390; bh=oeOZzcsOVWJJ6Vesk3d8u/D5DE8aqYTuH6z7Y1yW3EA=;
-        h=Subject:From:To:References:Date:In-Reply-To:From;
-        b=b9P4J0mle52vkmkai634JlHBZatkgkG4gGGyJa1dxmC88oZN8vr2KpjpcY7hZ1tp2
-         kaOhfTqSYSDWSCF1929odz/yrN5RXoxPzMX330kJyycr1rPOXh4N0WaPutIoeBd4XU
-         SI6C+YXR7OIWm+q9BqsQ0bcmKGp+fEKAIjq2jcer64V4fFIPtIb30xOI9GsKAXbkKv
-         r55mlYblxwk6m4viD4P20YaRTAWBfRpR0lzW0Cfs+mJy+u8HVG3FafxC0LH/Ba16E0
-         1tmKm939C2SpIleWtEzfYCTdg+kh70vvIrxDII8irwlPsvdSoFq/LAj2+nKi87Bhui
-         LVLS9n/IfJkAg==
-Subject: Re: Strange dropped packets results in TC
-From:   Lucas Bocchi <lucas@lucas.inf.br>
-To:     netdev@vger.kernel.org
-References: <aee69c28-2cd1-1b0c-05db-88697db2dbd2@lucas.inf.br>
-Message-ID: <8d52ffbb-eb21-2d74-071b-4a29c4d851e3@lucas.inf.br>
-Date:   Tue, 15 Jun 2021 20:56:31 -0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S231656AbhFPAM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Jun 2021 20:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230265AbhFPAM1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Jun 2021 20:12:27 -0400
+Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC82AC061574;
+        Tue, 15 Jun 2021 17:10:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
+        Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
+        Content-Transfer-Encoding; bh=xrXSnNViAas93oJJQqhck+SAOKfnt7nUQ7
+        BJjV5e790=; b=OuO33ODIaN0YB4D/lIa2vpsVVA4xRuT//ILI9OOmpqT5WMcC8s
+        RLr3TPw3Ioi5n7p2l5CazNU+47RqNJsdfcRohTwI5VjRAH2/6krByjQ0FW+G4hMk
+        3QoQXazJVKKhax597HJP5qImN/r/hN01uPC4iQ0Di5cdtDoQsrFE/D3Nk=
+Received: from xhacker (unknown [101.86.20.15])
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygD3+YEhQclgYtzmAA--.64455S2;
+        Wed, 16 Jun 2021 08:09:05 +0800 (CST)
+Date:   Wed, 16 Jun 2021 08:03:28 +0800
+From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
+To:     Alex Ghiti <alex@ghiti.fr>
+Cc:     Andreas Schwab <schwab@linux-m68k.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] riscv: Ensure BPF_JIT_REGION_START aligned with PMD
+ size
+Message-ID: <20210616080328.6548e762@xhacker>
+In-Reply-To: <ab536c78-ba1c-c65c-325a-8f9fba6e9d46@ghiti.fr>
+References: <20210330022144.150edc6e@xhacker>
+        <20210330022521.2a904a8c@xhacker>
+        <87o8ccqypw.fsf@igel.home>
+        <20210612002334.6af72545@xhacker>
+        <87bl8cqrpv.fsf@igel.home>
+        <20210614010546.7a0d5584@xhacker>
+        <87im2hsfvm.fsf@igel.home>
+        <20210615004928.2d27d2ac@xhacker>
+        <ab536c78-ba1c-c65c-325a-8f9fba6e9d46@ghiti.fr>
 MIME-Version: 1.0
-In-Reply-To: <aee69c28-2cd1-1b0c-05db-88697db2dbd2@lucas.inf.br>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: pt-BR
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-CM-TRANSID: LkAmygD3+YEhQclgYtzmAA--.64455S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3AFyfWF4Dtry5uw15Aw45GFg_yoW7KF4xpF
+        15Jr43GrW8Jryxu340vr90vF1UJa1UAa47JrnrJry8ZF13K3WUZw1FqF13Zr1qqFWxt3Wx
+        Kr4qvr4vg3y5CaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkGb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwV
+        C2z280aVCY1x0267AKxVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVAC
+        Y4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJV
+        W8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkI
+        wI1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
+        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI
+        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
+        4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4U
+        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07b5sjbUUU
+        UU=
+X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-P.S: The kernel is two machines is 5.12.10
+On Tue, 15 Jun 2021 20:54:19 +0200
+Alex Ghiti <alex@ghiti.fr> wrote:
 
-Please, if it's the wrong list, advise me.
+> Hi Jisheng,
 
-Thanks for the patience
+Hi Alex,
+
+>=20
+> Le 14/06/2021 =C3=A0 18:49, Jisheng Zhang a =C3=A9crit=C2=A0:
+> > From: Jisheng Zhang <jszhang@kernel.org>
+> >=20
+> > Andreas reported commit fc8504765ec5 ("riscv: bpf: Avoid breaking W^X")
+> > breaks booting with one kind of config file, I reproduced a kernel panic
+> > with the config:
+> >=20
+> > [    0.138553] Unable to handle kernel paging request at virtual addres=
+s ffffffff81201220
+> > [    0.139159] Oops [#1]
+> > [    0.139303] Modules linked in:
+> > [    0.139601] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-rc5-def=
+ault+ #1
+> > [    0.139934] Hardware name: riscv-virtio,qemu (DT)
+> > [    0.140193] epc : __memset+0xc4/0xfc
+> > [    0.140416]  ra : skb_flow_dissector_init+0x1e/0x82
+> > [    0.140609] epc : ffffffff8029806c ra : ffffffff8033be78 sp : ffffff=
+e001647da0
+> > [    0.140878]  gp : ffffffff81134b08 tp : ffffffe001654380 t0 : ffffff=
+ff81201158
+> > [    0.141156]  t1 : 0000000000000002 t2 : 0000000000000154 s0 : ffffff=
+e001647dd0
+> > [    0.141424]  s1 : ffffffff80a43250 a0 : ffffffff81201220 a1 : 000000=
+0000000000
+> > [    0.141654]  a2 : 000000000000003c a3 : ffffffff81201258 a4 : 000000=
+0000000064
+> > [    0.141893]  a5 : ffffffff8029806c a6 : 0000000000000040 a7 : ffffff=
+ffffffffff
+> > [    0.142126]  s2 : ffffffff81201220 s3 : 0000000000000009 s4 : ffffff=
+ff81135088
+> > [    0.142353]  s5 : ffffffff81135038 s6 : ffffffff8080ce80 s7 : ffffff=
+ff80800438
+> > [    0.142584]  s8 : ffffffff80bc6578 s9 : 0000000000000008 s10: ffffff=
+ff806000ac
+> > [    0.142810]  s11: 0000000000000000 t3 : fffffffffffffffc t4 : 000000=
+0000000000
+> > [    0.143042]  t5 : 0000000000000155 t6 : 00000000000003ff
+> > [    0.143220] status: 0000000000000120 badaddr: ffffffff81201220 cause=
+: 000000000000000f
+> > [    0.143560] [<ffffffff8029806c>] __memset+0xc4/0xfc
+> > [    0.143859] [<ffffffff8061e984>] init_default_flow_dissectors+0x22/0=
+x60
+> > [    0.144092] [<ffffffff800010fc>] do_one_initcall+0x3e/0x168
+> > [    0.144278] [<ffffffff80600df0>] kernel_init_freeable+0x1c8/0x224
+> > [    0.144479] [<ffffffff804868a8>] kernel_init+0x12/0x110
+> > [    0.144658] [<ffffffff800022de>] ret_from_exception+0x0/0xc
+> > [    0.145124] ---[ end trace f1e9643daa46d591 ]---
+> >=20
+> > After some investigation, I think I found the root cause: commit
+> > 2bfc6cd81bd ("move kernel mapping outside of linear mapping") moves
+> > BPF JIT region after the kernel:
+> >=20
+> > The &_end is unlikely aligned with PMD size, so the front bpf jit
+> > region sits with part of kernel .data section in one PMD size mapping.
+> > But kernel is mapped in PMD SIZE, when bpf_jit_binary_lock_ro() is
+> > called to make the first bpf jit prog ROX, we will make part of kernel
+> > .data section RO too, so when we write to, for example memset the
+> > .data section, MMU will trigger a store page fault. =20
+>=20
+> Good catch, we make sure no physical allocation happens between _end and=
+=20
+> the next PMD aligned address, but I missed this one.
+>=20
+> >=20
+> > To fix the issue, we need to ensure the BPF JIT region is PMD size
+> > aligned. This patch acchieve this goal by restoring the BPF JIT region
+> > to original position, I.E the 128MB before kernel .text section. =20
+>=20
+> But I disagree with your solution: I made sure modules and BPF programs=20
+> get their own virtual regions to avoid worst case scenario where one=20
+> could allocate all the space and leave nothing to the other (we are=20
+> limited to +- 2GB offset). Why don't just align BPF_JIT_REGION_START to=20
+> the next PMD aligned address?
+
+Originally, I planed to fix the issue by aligning BPF_JIT_REGION_START, but
+IIRC, BPF experts are adding (or have added) "Calling kernel functions from=
+ BPF"
+feature, there's a risk that BPF JIT region is beyond the 2GB of module reg=
+ion:
+
+------
+module
+------
+kernel
+------
+BPF_JIT
+
+So I made this patch finally. In this patch, we let BPF JIT region sit
+between module and kernel.
+
+To address "make sure modules and BPF programs get their own virtual region=
+s",
+what about something as below (applied against this patch)?
+
+diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgta=
+ble.h
+index 380cd3a7e548..da1158f10b09 100644
+--- a/arch/riscv/include/asm/pgtable.h
++++ b/arch/riscv/include/asm/pgtable.h
+@@ -31,7 +31,7 @@
+ #define BPF_JIT_REGION_SIZE	(SZ_128M)
+ #ifdef CONFIG_64BIT
+ #define BPF_JIT_REGION_START	(BPF_JIT_REGION_END - BPF_JIT_REGION_SIZE)
+-#define BPF_JIT_REGION_END	(MODULES_END)
++#define BPF_JIT_REGION_END	(PFN_ALIGN((unsigned long)&_start))
+ #else
+ #define BPF_JIT_REGION_START	(PAGE_OFFSET - BPF_JIT_REGION_SIZE)
+ #define BPF_JIT_REGION_END	(VMALLOC_END)
+@@ -40,7 +40,7 @@
+ /* Modules always live before the kernel */
+ #ifdef CONFIG_64BIT
+ #define MODULES_VADDR	(PFN_ALIGN((unsigned long)&_end) - SZ_2G)
+-#define MODULES_END	(PFN_ALIGN((unsigned long)&_start))
++#define MODULES_END	(BPF_JIT_REGION_END)
+ #endif
+=20
 
 
-Em 15/06/2021 09:49, Lucas Bocchi escreveu:
-> Hello Folks
->
-> We have a little doubt about dropped packets in tc util. As you see, 
-> my interface doesn't show any dropped packets in ethtool or in kernel 
-> statistics, but in tc is showed dropped packets. And that ocurrs in 
-> two different servers, with two different network interface / queue 
-> disciplines.
->
-> The kernel
->
-> Server 1 - Intel IXGBE Driver with Intel Corporation 82599ES 
-> 10-Gigabit SFI/SFP+ Network Card and TP-LINK TL-SM321B Transceiver
->
-> Transceiver Statistics:
->
->  ethtool -m enp1s0f0
->         Identifier                                : 0x03 (SFP)
->         Extended identifier                       : 0x04 (GBIC/SFP 
-> defined by 2-wire interface ID)
->         Connector                                 : 0x07 (LC)
->         Transceiver codes                         : 0x00 0x00 0x00 
-> 0x02 0x82 0x00 0x01 0x01 0x00
->         Transceiver type                          : Ethernet: 1000BASE-LX
->         Transceiver type                          : FC: very long 
-> distance (V)
->         Transceiver type                          : FC: Longwave laser 
-> (LC)
->         Transceiver type                          : FC: Single Mode (SM)
->         Transceiver type                          : FC: 100 MBytes/sec
->         Encoding                                  : 0x01 (8B/10B)
->         BR, Nominal                               : 1300MBd
->         Rate identifier                           : 0x00 (unspecified)
->         Length (SMF,km)                           : 20km
->         Length (SMF)                              : 20000m
->         Length (50um)                             : 0m
->         Length (62.5um)                           : 0m
->         Length (Copper)                           : 0m
->         Length (OM3)                              : 0m
->         Laser wavelength                          : 1310nm
->         Vendor name                               : TP-LINK
->         Vendor OUI                                : 00:00:00
->         Vendor PN                                 : TL-SM321B
->         Vendor rev                                : 1.1
->         Option values                             : 0x00 0x1a
->         Option                                    : RX_LOS implemented
->         Option                                    : TX_FAULT implemented
->         Option                                    : TX_DISABLE 
-> implemented
->         BR margin, max                            : 0%
->         BR margin, min                            : 0%
->         Vendor SN                                 : 35704205710058
->         Date code                                 : 170517
->
->
-> Ethtool Statistic
->
-> NIC statistics:
->      rx_packets: 1830508376
->      tx_packets: 2095191306
->      rx_bytes: 1559661300658
->      tx_bytes: 1796376456250
->      rx_pkts_nic: 1830508375
->      tx_pkts_nic: 2095191306
->      rx_bytes_nic: 1566983334162
->      tx_bytes_nic: 1806513286636
->      lsc_int: 1
->      tx_busy: 0
->      non_eop_descs: 0
->      rx_errors: 0
->      tx_errors: 0 // No TX Error
->      rx_dropped: 55706
->      tx_dropped: 0 // No dropped Packets
->      multicast: 55706
->      broadcast: 45
->      rx_no_buffer_count: 0
->      collisions: 0
->      rx_over_errors: 0
->      rx_crc_errors: 0
->      rx_frame_errors: 0
->      hw_rsc_aggregated: 0
->      hw_rsc_flushed: 0
->      fdir_match: 1335933692
->      fdir_miss: 548533583
->      fdir_overflow: 888
->      rx_fifo_errors: 0
->      rx_missed_errors: 0
->      tx_aborted_errors: 0
->      tx_carrier_errors: 0
->      tx_fifo_errors: 0
->      tx_heartbeat_errors: 0
->      tx_timeout_count: 0
->      tx_restart_queue: 0
->      rx_length_errors: 0
->      rx_long_length_errors: 0
->      rx_short_length_errors: 0
->      tx_flow_control_xon: 0
->      rx_flow_control_xon: 0
->      tx_flow_control_xoff: 0
->      rx_flow_control_xoff: 0
->      rx_csum_offload_errors: 87755
->      alloc_rx_page: 184014
->      alloc_rx_page_failed: 0
->      alloc_rx_buff_failed: 0
->      rx_no_dma_resources: 0
->      os2bmc_rx_by_bmc: 0
->      os2bmc_tx_by_bmc: 0
->      os2bmc_tx_by_host: 0
->      os2bmc_rx_by_host: 0
->      tx_hwtstamp_timeouts: 0
->      tx_hwtstamp_skipped: 0
->      rx_hwtstamp_cleared: 0
->      tx_ipsec: 0
->      rx_ipsec: 0
->      fcoe_bad_fccrc: 0
->      rx_fcoe_dropped: 0
->      rx_fcoe_packets: 0
->      rx_fcoe_dwords: 0
->      fcoe_noddp: 0
->      fcoe_noddp_ext_buff: 0
->      tx_fcoe_packets: 0
->      tx_fcoe_dwords: 0
->      tx_queue_0_packets: 293242265
->      tx_queue_0_bytes: 247153468767
->      tx_queue_1_packets: 288898419
->      tx_queue_1_bytes: 245035641991
->      tx_queue_2_packets: 291236572
->      tx_queue_2_bytes: 249561212685
->      tx_queue_3_packets: 39837597
->      tx_queue_3_bytes: 2358074882
->      tx_queue_4_packets: 307730121
->      tx_queue_4_bytes: 264761824523
->      tx_queue_5_packets: 317352090
->      tx_queue_5_bytes: 277380973829
->      tx_queue_6_packets: 300122596
->      tx_queue_6_bytes: 258114228358
->      tx_queue_7_packets: 256771646
->      tx_queue_7_bytes: 252011031215
-> ...
->      rx_queue_0_packets: 251550997
->      rx_queue_0_bytes: 212000117060
->      rx_queue_1_packets: 253297759
->      rx_queue_1_bytes: 210961040647
->      rx_queue_2_packets: 254114246
->      rx_queue_2_bytes: 218970216150
->      rx_queue_3_packets: 71013743
->      rx_queue_3_bytes: 23381820239
->      rx_queue_4_packets: 267448221
->      rx_queue_4_bytes: 236201977962
->      rx_queue_5_packets: 281248119
->      rx_queue_5_bytes: 232497403664
->      rx_queue_6_packets: 262045046
->      rx_queue_6_bytes: 223232203577
->      rx_queue_7_packets: 189790245
->      rx_queue_7_bytes: 202416521359
-> ...
->
-> ip statistics
->
->  ip -s -s addr show dev enp1s0f0
-> 4: enp1s0f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc multiq 
-> state UP group default qlen 1000
->     link/ether 90:e2:ba:89:11:70 brd ff:ff:ff:ff:ff:ff
->     inet 187.60.215.230/30 brd 187.60.215.231 scope global enp1s0f0
->        valid_lft forever preferred_lft forever
->     inet6 2804:6fc:1:10::66/126 scope global
->        valid_lft forever preferred_lft forever
->     inet6 fe80::92e2:baff:fe89:1170/64 scope link
->        valid_lft forever preferred_lft forever
->     RX: bytes  packets  errors  dropped missed  mcast
->     1563726136109 1835102960 0       55846   0       55845
->     RX errors: length   crc     frame   fifo    overrun
->                0        0       0       0       0
->     TX: bytes  packets  errors  dropped carrier collsns
->     1799499580192 2099722447 0       0       0       0  // No packet 
-> dropped
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       2
->
->
-> tc qdisc
->
-> tc -s qdisc ls dev enp1s0f0
-> qdisc multiq 8003: root refcnt 65 bands 8/64
->  Sent 1760376270449 bytes 2048050689 pkt (dropped 69, overlimits 0 
-> requeues 477)
->  backlog 0b 0p requeues 477
->
-> tc -s class ls dev enp1s0f0
-> class multiq 8003:1 parent 8003:
->  Sent 242641753495 bytes 286672005 pkt (dropped 15, overlimits 0 
-> requeues 0)
->  backlog 0b 0p requeues 0
-> class multiq 8003:2 parent 8003:
->  Sent 241001820689 bytes 282960042 pkt (dropped 0, overlimits 0 
-> requeues 0)
->  backlog 0b 0p requeues 0
-> class multiq 8003:3 parent 8003:
->  Sent 244006535406 bytes 284363659 pkt (dropped 0, overlimits 0 
-> requeues 0)
->  backlog 0b 0p requeues 0
-> class multiq 8003:4 parent 8003:
->  Sent 2290044667 bytes 39029076 pkt (dropped 0, overlimits 0 requeues 0)
->  backlog 0b 0p requeues 0
-> class multiq 8003:5 parent 8003:
->  Sent 260775212492 bytes 301997242 pkt (dropped 0, overlimits 0 
-> requeues 0)
->  backlog 0b 0p requeues 0
-> class multiq 8003:6 parent 8003:
->  Sent 271403512839 bytes 309429699 pkt (dropped 54, overlimits 0 
-> requeues 0)
->  backlog 0b 0p requeues 0
-> class multiq 8003:7 parent 8003:
->  Sent 252190559164 bytes 292911989 pkt (dropped 0, overlimits 0 
-> requeues 0)
->  backlog 0b 0p requeues 0
-> class multiq 8003:8 parent 8003:
->  Sent 245887513841 bytes 250404773 pkt (dropped 0, overlimits 0 
-> requeues 0)
->  backlog 0b 0p requeues 0
->
->
-> Server 2 - Intel Corporation Ethernet Connection (12) I219-V
->
-> ethtool -S eno1
-> NIC statistics:
->      rx_packets: 16327063
->      tx_packets: 8024473
->      rx_bytes: 22725903298
->      tx_bytes: 3014818845
->      rx_broadcast: 2598
->      tx_broadcast: 1
->      rx_multicast: 0
->      tx_multicast: 7
->      rx_errors: 0
->      tx_errors: 0
->      tx_dropped: 0 // No Dropped or error in TX
->      multicast: 0
->      collisions: 0
->      rx_length_errors: 0
->      rx_over_errors: 0
->      rx_crc_errors: 0
->      rx_frame_errors: 0
->      rx_no_buffer_count: 0
->      rx_missed_errors: 0
->      tx_aborted_errors: 0
->      tx_carrier_errors: 0
->      tx_fifo_errors: 0
->      tx_heartbeat_errors: 0
->      tx_window_errors: 0
->      tx_abort_late_coll: 0
->      tx_deferred_ok: 0
->      tx_single_coll_ok: 0
->      tx_multi_coll_ok: 0
->      tx_timeout_count: 0
->      tx_restart_queue: 0
->      rx_long_length_errors: 0
->      rx_short_length_errors: 0
->      rx_align_errors: 0
->      tx_tcp_seg_good: 0
->      tx_tcp_seg_failed: 0
->      rx_flow_control_xon: 0
->      rx_flow_control_xoff: 0
->      tx_flow_control_xon: 0
->      tx_flow_control_xoff: 0
->      rx_csum_offload_good: 0
->      rx_csum_offload_errors: 0
->      rx_header_split: 0
->      alloc_rx_buff_failed: 0
->      tx_smbus: 0
->      rx_smbus: 0
->      dropped_smbus: 0
->      rx_dma_failed: 0
->      tx_dma_failed: 0
->      rx_hwtstamp_cleared: 0
->      uncorr_ecc_errors: 0
->      corr_ecc_errors: 0
->      tx_hwtstamp_timeouts: 0
->      tx_hwtstamp_skipped: 0
->
-> ip statistics
->
-> 2: eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo state 
-> UP mode DEFAULT group default qlen 1000
->     link/ether a8:a1:59:5a:56:e7 brd ff:ff:ff:ff:ff:ff
->     RX: bytes  packets  errors  dropped missed  mcast
->     22738286184 16335559 0       2600    0       0
->     RX errors: length   crc     frame   fifo    overrun
->                0        0       0       0       0
->     TX: bytes  packets  errors  dropped carrier collsns
->     3015100201 8026007  0       0       0       0
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       2
->     altname enp0s31f6
->
-> tc statistic
->
->  tc -s qdisc ls dev eno1
-> qdisc pfifo 8002: root refcnt 2 limit 1000p
->  Sent 2982635243 bytes 8027086 pkt (dropped 247, overlimits 0 requeues 
-> 4254)
->  backlog 0b 0p requeues 4254
->
-> Any tip to try to identify that problem?
+>=20
+> Again, good catch, thanks,
+>=20
+> Alex
+>=20
+> >=20
+> > Reported-by: Andreas Schwab <schwab@linux-m68k.org>
+> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> > ---
+> >   arch/riscv/include/asm/pgtable.h | 5 ++---
+> >   1 file changed, 2 insertions(+), 3 deletions(-)
+> >=20
+> > diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/=
+pgtable.h
+> > index 9469f464e71a..380cd3a7e548 100644
+> > --- a/arch/riscv/include/asm/pgtable.h
+> > +++ b/arch/riscv/include/asm/pgtable.h
+> > @@ -30,9 +30,8 @@
+> >  =20
+> >   #define BPF_JIT_REGION_SIZE	(SZ_128M)
+> >   #ifdef CONFIG_64BIT
+> > -/* KASLR should leave at least 128MB for BPF after the kernel */
+> > -#define BPF_JIT_REGION_START	PFN_ALIGN((unsigned long)&_end)
+> > -#define BPF_JIT_REGION_END	(BPF_JIT_REGION_START + BPF_JIT_REGION_SIZE)
+> > +#define BPF_JIT_REGION_START	(BPF_JIT_REGION_END - BPF_JIT_REGION_SIZE)
+> > +#define BPF_JIT_REGION_END	(MODULES_END)
+> >   #else
+> >   #define BPF_JIT_REGION_START	(PAGE_OFFSET - BPF_JIT_REGION_SIZE)
+> >   #define BPF_JIT_REGION_END	(VMALLOC_END)
+> >  =20
+
+
