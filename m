@@ -2,134 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55CA33AA7BE
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:51:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D41EE3AA7C4
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:55:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234830AbhFPXxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 19:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37810 "EHLO
+        id S234125AbhFPX53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 19:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234829AbhFPXxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:53:18 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F6EC061574
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:51:07 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id if15so714417qvb.2
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:51:07 -0700 (PDT)
+        with ESMTP id S229503AbhFPX53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:57:29 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21A1C061574;
+        Wed, 16 Jun 2021 16:55:21 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id d62so1533519pfd.3;
+        Wed, 16 Jun 2021 16:55:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=+xxjClQX2Ln4rMUIu3nYcCllQ0vQo3Bff596QN80lzw=;
-        b=x9ojLAXLOsklJd/OZ4pyLbRHZk0A2n0VWcNUAwluM8llF+TVqy6aRzXywflgbpQV4A
-         Ue+/rFqexSb/i02pUJ1VYBqGbcPkpzRe7v/c5SBPk3MfJMcG+6W/QkzSHiOpw1TpCY4O
-         eptqV1HMP5IHiHCavjKmTQY+N5NZls1goODOAgXm2HPvnKJpCYGij5oDsfnbhsqkY02e
-         800yTJp0NIrpYAxNbwoGh8fe7U72e3SVMtN1qW+BOeUZ4KNwi3z4ixQyuD2YCDalwSbc
-         H3DWE9BxXSBrLIUJFQ/wXsmky4xB6VTZrp3NFtRWl6MkJ/VbXIfkIDmjQTMLCNRfXICs
-         m6qQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BYLH5NSOEjhPQlUl+Vzmbtv2wlt8Io26g6BkI1Bxjrg=;
+        b=Z/B+UzO/k3PiRqkIA2uet62yovpTStsRh1v96aKuGVT5S49r2J341TUFtPNm+iJ89U
+         664fJILeQ3r4A43KQEbAylRWF0JVY4ZT7v9CT+VRUt8y8xlUyQ6EIwZ/SGYXXAQrGyLg
+         y4BBR506NRZUvXarm7fm7nFdxmnodXsPXxb9pc4qzv6YNFbDcnrzrw4PXJx+y7ooi1oZ
+         XQnJmSLfeX5N/NyY+4sRbxO8BTfH/UNLCfxb95ku0+3OglMrR91mEtP5oRhsrAstnh8t
+         QFDKVnzSabHSUXA17XH5S94roudFv5gsYx/O3CUKFMdhyhYIFnDZie4n3FG5q9brtdvs
+         ELQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=+xxjClQX2Ln4rMUIu3nYcCllQ0vQo3Bff596QN80lzw=;
-        b=otLNnep+3la+w/Ue8DdVR6tmJPAHprFP6RW+QVtnVwAXFXDuct0/LRegGA5hWX1E3Z
-         zx8iN2wIa9Ev9Pf13RyIu6jY0XbmdHX/8Vl1JV0jXuMDajV4YTYayIw4sBYNiSRp7cBu
-         tcYX3vSW9lctObK/KDmm/5gie9DqmCCuD/PAisq5eJcgL4Ge7dlvRrDpliXmvY0cEDi8
-         CqoPiUpLlX1x5jekCn1Gtgv6UTJH+ZcoLQo1uCJNtN7xRBPSr/kIrHT4kyCuYcVmeRXM
-         pnE1f+K8pvUJxCDTwVpAsQ6D5e4D0bwFpEr+cf4ArB9GLPQwHutVbPrrWjp3bVHWezuC
-         Uwvw==
-X-Gm-Message-State: AOAM533zAFpzEQmvXp1kAHYgv8/D2tQIE2iV8dmzHPxhTU5Be+vtPpxf
-        Y4+D9TiCQQkTOzb9P6Q8YVznvKS59ChF/c+Hf1jqhQ==
-X-Google-Smtp-Source: ABdhPJwp+Bz+m79mmaF/d4WYXZvilQIXkSEONK+MxAQMA/PIjyEws+gn3jzWrXVgV7V0/fhk4xsxhRcINJoUOhru3+Q=
-X-Received: by 2002:a0c:e88b:: with SMTP id b11mr2743208qvo.59.1623887467103;
- Wed, 16 Jun 2021 16:51:07 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BYLH5NSOEjhPQlUl+Vzmbtv2wlt8Io26g6BkI1Bxjrg=;
+        b=hytcU7ufKPK3E6NIm4GpKAvy0eYplHgpLbw4jj17eKxIWd4X03qaLuigIbteNcrAbi
+         hyOq8SsgKjfYS8a7iWcq5V068UX9BxZXiFtivmL9sYKv/4Dt3W0r+aq6IhJuwmHhgCV1
+         +nA++QNPdw5dEMWVfPa/gR2chofFOUSZsgNILLznU/I8NODcGfpi8KFIGy1jQXJJCh7p
+         pG9zl5qor0KMHkcS7Joz/kdfd0Vavarvq6U2Vn2aDEaP4A4eO+KVW0uVhSldYwrRDfUf
+         JairIi/DVIv+OFNQmVEBUSkAeSrhC7gHqftfjYj6TinSknEnVCvZuCCoN9GeatiwPYyQ
+         2Xfw==
+X-Gm-Message-State: AOAM5307Y2odNBb5XGrY46jXwycvEg37bvg1EgWsAc6WXXdcQQ09JME/
+        9rMv7ykRVw31eRyjByvbUMw=
+X-Google-Smtp-Source: ABdhPJyxYdMF/Rlw54j7sHL8H7vQQTDXQ0icZQzsdQKSQS+65woevZGx/SkICyzb2t+mnNq4pOfIYw==
+X-Received: by 2002:a63:db01:: with SMTP id e1mr2213081pgg.38.1623887721254;
+        Wed, 16 Jun 2021 16:55:21 -0700 (PDT)
+Received: from localhost ([2402:3a80:11db:39d5:aefe:1e71:33ef:30fb])
+        by smtp.gmail.com with ESMTPSA id j9sm3003773pjy.25.2021.06.16.16.55.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Jun 2021 16:55:21 -0700 (PDT)
+Date:   Thu, 17 Jun 2021 05:23:55 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2] libbpf: add request buffer type for netlink messages
+Message-ID: <20210616235351.ay3vj6gk36bpatgy@apollo>
+References: <20210616170231.2194285-1-memxor@gmail.com>
+ <CAEf4BzZTgMHVd2kEQ5vakgNSJYFB7uiY0j_NBGdG_xzmjKQTAA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210616190759.2832033-1-mw@semihalf.com> <20210616190759.2832033-3-mw@semihalf.com>
- <YMpR+lJqcgQU2DMO@lunn.ch>
-In-Reply-To: <YMpR+lJqcgQU2DMO@lunn.ch>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 17 Jun 2021 01:50:55 +0200
-Message-ID: <CAPv3WKdOkxV695DbhhYr+wf1rnphtj-pyERZ-74RrdZyQJGt=g@mail.gmail.com>
-Subject: Re: [net-next: PATCH v2 2/7] net: mdiobus: Introduce fwnode_mdbiobus_register()
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>,
-        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
-        lenb@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZTgMHVd2kEQ5vakgNSJYFB7uiY0j_NBGdG_xzmjKQTAA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=C5=9Br., 16 cze 2021 o 21:33 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
->
-> On Wed, Jun 16, 2021 at 09:07:54PM +0200, Marcin Wojtas wrote:
-> > This patch introduces a new helper function that
-> > wraps acpi_/of_ mdiobus_register() and allows its
-> > usage via common fwnode_ interface.
+On Thu, Jun 17, 2021 at 04:48:08AM IST, Andrii Nakryiko wrote:
+> On Wed, Jun 16, 2021 at 10:04 AM Kumar Kartikeya Dwivedi
+> <memxor@gmail.com> wrote:
 > >
-> > Fall back to raw mdiobus_register() in case CONFIG_FWNODE_MDIO
-> > is not enabled, in order to satisfy compatibility
-> > in all future user drivers.
+> > Coverity complains about OOB writes to nlmsghdr. There is no OOB as we
+> > write to the trailing buffer, but static analyzers and compilers may
+> > rightfully be confused as the nlmsghdr pointer has subobject provenance
+> > (and hence subobject bounds).
+> >
+> > Remedy this by using an explicit request structure, but we also need to
+> > start the buffer in case of ifinfomsg without any padding. The alignment
+> > on netlink wire protocol is 4 byte boundary, so we just insert explicit
 >
-> > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> struct ifinfomsg has unsigned field in it, which makes it
+> automatically 4-byte aligned because the struct is not packed. Do we
+> really need that _pad[4] thing?.. Even if we do, I'm still not sure
+> how it helps with alignment... If anything, explicit
+> __attribute__((aligned(4))) would be better.
+>
+
+What I meant was that reusing the same struct for both means that the trailing
+buffer where attributes are added starts right after struct tcmsg/struct
+ifinfomsg. Since tcmsg is 20 bytes, ifinfomsg is 16. I didn't want it to trigger
+if it ends up tracking the active member of the union (or effective type). Poor
+wording I guess. Everything is aligned properly, just wanted to explain why
+_pad[4] is there.
+
+> > 4 byte buffer to avoid compilers throwing off on read and write from/to
+> > padding.
+> >
+> > Also switch nh_tail (renamed to req_tail) to cast req * to char * so
+>
+> it probably should use (void *) everywhere, instead of (char *), but I
+> see that existing code is using char * exclusively, so it's probably
+> for another patch
+>
+
+I'll fix it in the resend.
+
+> > that it can be understood as arithmetic on pointer to the representation
+> > array (hence having same bound as request structure), which should
+> > further appease analyzers.
+> >
+> > As a bonus, callers don't have to pass sizeof(req) all the time now, as
+> > size is implicitly obtained using the pointer. While at it, also reduce
+> > the size of attribute buffer to 128 bytes (132 for ifinfomsg using
+> > functions due to the need to align buffer after it).
+>
+> Sorry if it's a stupid question, but why it's safe to reduce the
+> buffer size from 128 to 256?
+>
+
+We just need something big enough, we already check the size everytime we add an
+attribute to make sure we don't run out of space. It was a remnant from previous
+versions where a lot of attributes were added. They're pretty limited now so I
+just changed to a small safe value that works fine for both.
+
+> >
+> > Summary of problem:
+> >   Even though C standard allows interconveritility of pointer to first
+>
+> s/interconveritility/interconvertibility/ ?
+>
+> >   member and pointer to struct, for the purposes of alias analysis it
+> >   would still consider the first as having pointer value "pointer to T"
+> >   where T is type of first member hence having subobject bounds,
+> >   allowing analyzers within reason to complain when object is accessed
+> >   beyond the size of pointed to object.
+> >
+> >   The only exception to this rule may be when a char * is formed to a
+> >   member subobject. It is not possible for the compiler to be able to
+> >   tell the intent of the programmer that it is a pointer to member
+> >   object or the underlying representation array of the containing
+> >   object, so such diagnosis is supressed.
+>
+> typo: suppressed
+>
+
+Thanks.
+
+> >
+> > Fixes: 715c5ce454a6 ("libbpf: Add low level TC-BPF management API")
+> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 > > ---
-> >  include/linux/fwnode_mdio.h    | 12 +++++++++++
-> >  drivers/net/mdio/fwnode_mdio.c | 22 ++++++++++++++++++++
-> >  2 files changed, 34 insertions(+)
+> > Changelog:
+> > v1 -> v2:
+> >  * Add short summary instead of links about the underlying issue (Daniel)
+> > ---
+> >  tools/lib/bpf/netlink.c | 107 +++++++++++++++-------------------------
+> >  tools/lib/bpf/nlattr.h  |  37 +++++++++-----
+> >  2 files changed, 65 insertions(+), 79 deletions(-)
 > >
-> > diff --git a/include/linux/fwnode_mdio.h b/include/linux/fwnode_mdio.h
-> > index faf603c48c86..13d4ae8fee0a 100644
-> > --- a/include/linux/fwnode_mdio.h
-> > +++ b/include/linux/fwnode_mdio.h
-> > @@ -16,6 +16,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus=
- *mdio,
-> >  int fwnode_mdiobus_register_phy(struct mii_bus *bus,
-> >                               struct fwnode_handle *child, u32 addr);
-> >
-> > +int fwnode_mdiobus_register(struct mii_bus *bus, struct fwnode_handle =
-*fwnode);
-> >  #else /* CONFIG_FWNODE_MDIO */
-> >  int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
-> >                                      struct phy_device *phy,
-> > @@ -30,6 +31,17 @@ static inline int fwnode_mdiobus_register_phy(struct=
- mii_bus *bus,
-> >  {
-> >       return -EINVAL;
-> >  }
-> > +
-> > +static inline int fwnode_mdiobus_register(struct mii_bus *bus,
-> > +                                       struct fwnode_handle *fwnode)
-> > +{
-> > +     /*
-> > +      * Fall back to mdiobus_register() function to register a bus.
-> > +      * This way, we don't have to keep compat bits around in drivers.
-> > +      */
-> > +
-> > +     return mdiobus_register(mdio);
-> > +}
 >
-> I'm not sure this fallback is correct.
->
-> Any driver which decides to use fwmode is going to select it. If it is
-> not selected, you want a link time error, or a compiler time error to
-> tell you, you are missing FWNODE_MDIO. Calling mdiobus_register() is
-> unlikely to work, or the driver would of done that directly.
->
+> [...]
 
-This kind of fallback is done in of_mdiobus_register and acpi_mdiobus_regis=
-ter.
-
-Actually mvmdio driver is using this fallback for non-dt platforms
-(e.g. Orion). Therefore I would prefer to keep the current behavior.
-
-Best regards,
-Marcin
+--
+Kartikeya
