@@ -2,181 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D93E3A9CB8
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 15:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 743913A9CE1
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 16:03:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233560AbhFPN4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 09:56:22 -0400
-Received: from mail-lj1-f175.google.com ([209.85.208.175]:42865 "EHLO
-        mail-lj1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233697AbhFPNzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 09:55:22 -0400
-Received: by mail-lj1-f175.google.com with SMTP id r16so3927987ljk.9;
-        Wed, 16 Jun 2021 06:53:14 -0700 (PDT)
+        id S233581AbhFPOFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 10:05:39 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:41761 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233721AbhFPOFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 10:05:30 -0400
+Received: from mail-ed1-f69.google.com ([209.85.208.69])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <andrea.righi@canonical.com>)
+        id 1ltW8a-0007ly-4E
+        for netdev@vger.kernel.org; Wed, 16 Jun 2021 14:03:24 +0000
+Received: by mail-ed1-f69.google.com with SMTP id j3-20020aa7c3430000b0290393f7aad447so1083968edr.18
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 07:03:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Yak0Jw5qtLSF6XuLp21VlMysIAiLyA6w6CP8nitLvQk=;
-        b=mEfyXChHnSHaCrGszybE5zi+Y5Q52iSpBk2fEZ+qYpEDlTE3eYnKoHB4hdc5ScNCm1
-         GyZl/a7GbkFK6zaAISQ0EOF+JcI9aj2N24fsVDDSGZ7A4/QKI2neA8IvlGdhXyLPeHLW
-         5U6c4CBETcf1zv16Yse7ZJuxvyJ3gYhHvUyy5oqCQ6uodcthYOKmiEgB1mgPdz4cNPj9
-         w439Q5blXZAhwG0R7xHA+cAGZ+YtsZA4cA2+gxN0KXs2CWi+4vlDt5pxyEJ5s0f0dbRI
-         eq7LsmwrgdG7O0U+jVGmlYdEznTKvUFKgtZqrT4uILxDaNHtixOcmaZ92VxIYB8jTosy
-         aEXw==
-X-Gm-Message-State: AOAM530Lkxbozny+eTZTw58Pjndsvpra/7V1OxBd3qWFMeMxgB98tCRd
-        PPi6Ox/RRtIySu1/6L9A+lgz532hETy3baxFRfg=
-X-Google-Smtp-Source: ABdhPJztjS7vGrTuoCmVUMZtJGuQRKly2mHe+80maPnLjPtU4tmHy4EeVuU3+loy+xoAWDpQCjIOm2Ro0fGrZJYK60E=
-X-Received: by 2002:a2e:bf14:: with SMTP id c20mr4534138ljr.57.1623851594153;
- Wed, 16 Jun 2021 06:53:14 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=ulcePntEXh1DjVcMEcGKERN3uSnkzIPzKbXFTzr4xjw=;
+        b=FcY/oYf9mVKeHtWPppKqEh3DgBUvShP3UCHEuzJ+bB69ls9ILqUKeU6OZZ1Hw40zZ0
+         weNRUtt/x1zcslYFnrGjUOk7F42wXHIoSBi1qw5pUgu/xdz6rHd/dfc0ulGYtirioW3E
+         JA3GicETxAJu1LVrP0RKhEWGF9xNdCyeYTSSpv7nJ8jw01ryfEw4dxfqQNxCaBxn0Nn/
+         ualYjXJiyH4HioVgsNvxb0TlfAln4fipL1BIZnGgy/jnCDEyNACJlc7AWGBXtSnW3M7p
+         4t5NBuJyYOI0R8Cll5LPB0eQYX6/VcBH/mkP+P2FpNt/0zG5zZHe2mgf92EhBS9EdpvN
+         feDA==
+X-Gm-Message-State: AOAM532GVbLa65XW/zNBoKH3jzJj1eDzef5Z3ppQSZ8OisGxgvbvxA6I
+        Mj8YaVAMedbd6T23IOL06TMVB7l5j/DK2zJzGVKHAPPZI+Za/2sjInZ8kUzA2b5A56Kv84ZvbXw
+        ITcN/l0UyiR+ibShbstFTGr5QJMVcF8n78A==
+X-Received: by 2002:a17:906:d0c9:: with SMTP id bq9mr5443087ejb.313.1623852202722;
+        Wed, 16 Jun 2021 07:03:22 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyhX/RfqULeqHuPnnvjuwgwmZQdILELg9ddA5TshSiRZRkWbfA+NJUX+hu9SaXOMBkG/zJ19Q==
+X-Received: by 2002:a17:906:d0c9:: with SMTP id bq9mr5443065ejb.313.1623852202511;
+        Wed, 16 Jun 2021 07:03:22 -0700 (PDT)
+Received: from localhost (host-79-46-128-215.retail.telecomitalia.it. [79.46.128.215])
+        by smtp.gmail.com with ESMTPSA id u21sm1604314ejm.89.2021.06.16.07.03.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Jun 2021 07:03:22 -0700 (PDT)
+Date:   Wed, 16 Jun 2021 16:03:21 +0200
+From:   Andrea Righi <andrea.righi@canonical.com>
+To:     Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] selftests: net: veth: make test compatible with dash
+Message-ID: <YMoEqdpCIQN209ty@xps-13-7390>
 MIME-Version: 1.0
-References: <20210603151550.140727-1-mailhol.vincent@wanadoo.fr>
- <20210603151550.140727-3-mailhol.vincent@wanadoo.fr> <20210616094633.fwg6rsyxyvm2zc6d@pengutronix.de>
-In-Reply-To: <20210616094633.fwg6rsyxyvm2zc6d@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 16 Jun 2021 22:53:02 +0900
-Message-ID: <CAMZ6RqLj59+3PrQwTCfK_bVebRBHE=HqCfRb31MU9pRDBPxG8w@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] can: netlink: add interface for CAN-FD Transmitter
- Delay Compensation (TDC)
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed. 16 Jun 2021 at 18:46, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 04.06.2021 00:15:50, Vincent Mailhol wrote:
-> [...]
->
-> > +static size_t can_tdc_get_size(const struct net_device *dev)
-> > +{
-> > +     struct can_priv *priv = netdev_priv(dev);
-> > +     size_t size;
-> > +
-> > +     if (!priv->tdc_const)
-> > +             return 0;
-> > +
-> > +     size = nla_total_size(0);                       /* nest IFLA_CAN_TDC */
-> > +     size += nla_total_size(sizeof(u32));            /* IFLA_CAN_TDCV_MAX */
-> > +     size += nla_total_size(sizeof(u32));            /* IFLA_CAN_TDCO_MAX */
-> > +     size += nla_total_size(sizeof(u32));            /* IFLA_CAN_TDCF_MAX */
-> > +
-> > +     if (priv->tdc.tdco) {
->
-> Naively I'd say, iff the device has tdc_const give the user space the
-> tdc parameters, regardless if some value is 0 or not.
->
-> What do you think?
+veth.sh is a shell script that uses /bin/sh; some distro (Ubuntu for
+example) use dash as /bin/sh and in this case the test reports the
+following error:
 
-I thought about that.
-The first important remark is that if tdc.tdco is zero, then TDC
-is off (c.f. documentation of struct can_tdc::tdco).
+ # ./veth.sh: 21: local: -r: bad variable name
+ # ./veth.sh: 21: local: -r: bad variable name
 
-Let me illustrate my vision through examples.
+This happens because dash doesn't support the option "-r" with local.
 
+Moreover, in case of missing bpf object, the script is exiting -1, that
+is an illegal number for dash:
 
-** Case 1: link is not configured at all. **
-Here, only the constant values are displayed.
+ exit: Illegal number: -1
 
-# ip --details link show can0
-1:  can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group
-default qlen 10
-    link/can  promiscuity 0 minmtu 0 maxmtu 0
-    can state STOPPED (berr-counter tx 0 rx 0) restart-ms 0
-      ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp_inc 1
-      ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 brp_inc 1
-      tdcv_max 0 tdco_max 127 tdcf_max 127
-      clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536
-gso_max_segs 65535
+Change the script to be compatible both with bash and dash and prevent
+the errors above.
 
+Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
+---
+ tools/testing/selftests/net/veth.sh | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-** Case 2: only the nominal bitrate is configured. **
-The data bittiming variables (including TDC) are not shown.
+diff --git a/tools/testing/selftests/net/veth.sh b/tools/testing/selftests/net/veth.sh
+index 2fedc0781ce8..11d7cdb898c0 100755
+--- a/tools/testing/selftests/net/veth.sh
++++ b/tools/testing/selftests/net/veth.sh
+@@ -18,7 +18,8 @@ ret=0
+ 
+ cleanup() {
+ 	local ns
+-	local -r jobs="$(jobs -p)"
++	local jobs
++	readonly jobs="$(jobs -p)"
+ 	[ -n "${jobs}" ] && kill -1 ${jobs} 2>/dev/null
+ 	rm -f $STATS
+ 
+@@ -108,7 +109,7 @@ chk_gro() {
+ 
+ if [ ! -f ../bpf/xdp_dummy.o ]; then
+ 	echo "Missing xdp_dummy helper. Build bpf selftest first"
+-	exit -1
++	exit 1
+ fi
+ 
+ create_ns
+-- 
+2.31.1
 
-# ip --details link show can0
-1:  can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group
-default qlen 10
-    link/can  promiscuity 0 minmtu 0 maxmtu 0
-    can state STOPPED (berr-counter tx 0 rx 0) restart-ms 0
-      bitrate 500000 sample-point 0.875
-      tq 12 prop-seg 69 phase-seg1 70phase-seg2 20  sjw 1
-      ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp_inc 1
-      ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 brp_inc 1
-      tdcv_max 0 tdco_max 127 tdcf_max 127
-      clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536
-gso_max_segs 65535
-
-
-** Case 3: both nominal and data bitrates are configured (but not TDC). **
-Only the TDC variables are not shown.
-
-# ip --details link show can0
-1:  can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group
-default qlen 10
-    link/can  promiscuity 0 minmtu 0 maxmtu 0
-    can <FD> state STOPPED (berr-counter tx 0 rx 0) restart-ms 0
-      bitrate 500000 sample-point 0.875
-      tq 12 prop-seg 69 phase-seg1 70phase-seg2 20  sjw 1
-      ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp_inc 1
-      dbitrate 2000000 dsample-point 0.750
-      dtq 12 dprop-seg 14 dphase-seg1 15 dphase-seg2 10 dsjw 1
-      ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 brp_inc 1
-      tdcv_max 0 tdco_max 127 tdcf_max 127
-      clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536
-gso_max_segs 65535
-
-
-** Case 4: nominal and data bitrates and TDC are configured. **
-Everything is shown.
-
-# ip --details link show can0
-1:  can0: <NOARP,ECHO> mtu 72 qdisc noop state DOWN mode DEFAULT group
-default qlen 10
-    link/can  promiscuity 0 minmtu 0 maxmtu 0
-    can <FD> state STOPPED (berr-counter tx 0 rx 0) restart-ms 0
-      bitrate 1000000 sample-point 0.750
-      tq 12 prop-seg 29 phase-seg1 30phase-seg2 20  sjw 1
-      ES582.1/ES584.1: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp_inc 1
-      dbitrate 5000000 dsample-point 0.750
-      dtq 12 dprop-seg 5 dphase-seg1 6 dphase-seg2 4 dsjw 1
-      tdcv 0 tdco 12 tdcf 0
-      ES582.1/ES584.1: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 brp_inc 1
-      tdcv_max 0 tdco_max 127 tdcf_max 127
-      clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536
-gso_max_segs 65535
-
-
-I think that we can agree on Cases 1, 2 (it would not make sense
-to display TDC without the data bittiming variables) and 4.
-
-The edge case is Case 3. It depends if we consider the TDC as a
-separate set or not. It is not silly to display the TDC whenever
-fd is on. I prefer to keep it the way I did it. But I would not
-object to changing this if you insist. That would mean:
--     if (priv->tdc.tdco) {
-+     if (priv->data_bittiming.bitrate) {
-
-
-Finally, I have one side comment. It seems to me that you did not
-understand that the intent of
-|     if (priv->tdc.tdco)
-was to actually check whether TDC was on or off. In other words, my
-code was unclear.
-
-I am now thinking to introduce an helper macro:
-static bool can_tdc_is_enabled(const struct can_priv *priv)
-|{
-|    return !!priv->tdc.tdco;
-|}
-
-The code would look more clear like that.
--     if (priv->tdc.tdco) {
-+     if (can_tdc_is_enabled(priv) {
-
-
-Yours sincerely,
-Vincent
