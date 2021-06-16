@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF0283AA4C2
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:54:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3A973AA4C5
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 21:54:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233143AbhFPT4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 15:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
+        id S233146AbhFPT42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 15:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233135AbhFPT4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:56:08 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306E6C061574
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:54:02 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id mj8-20020a17090b3688b029016ee34fc1b3so2454141pjb.0
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:54:02 -0700 (PDT)
+        with ESMTP id S233117AbhFPT4X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 15:56:23 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E22C061767
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:54:13 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id w31so2890086pga.6
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 12:54:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=hP/vb4dAk3glgAbj1Pm59eiznyXf3U0FYK4B0w4C71c=;
-        b=NdyGmlMzaud06mmPzqPXI3RVbM8g+LwzrH3k/Vqru0sGy4iHBjHAYUa2mLAefyV3Vm
-         Y1u+XxlJGUCezQOghv3YGrvm/gb90Ukjxq/HMUCdJ7PxiqeQlbc7OuCXryqJ7PkeC5qs
-         mEEnmVWfsCLePCemE7UPDV59YKmCSPzH6H1vA=
+        bh=ta3RbqOIn8BZORbiR4sH2Jl3iefLLCl3kYqOTHV1WDg=;
+        b=QrkdJQqzr0NXGF3lxt9ugTPrUAhMSlDlW2SJ9fsA+KH7cm92Li7mXBFD4Wkcsn+sBO
+         h8sV1XrNnlfzD0rRV96WfNd0eu5gQQ49QyP9rH5ggr4oiClHxuS+xESkSA1cO4kpL2IZ
+         KTEQwm3qKh8NbOrUh0BV80kglJ0Di9sVT+K1o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=hP/vb4dAk3glgAbj1Pm59eiznyXf3U0FYK4B0w4C71c=;
-        b=TLY4uhvdPx3TU6P1C1LzBP+wjEXOQRlI5A2MCxa4J0OX1gzsfnTw9Yr+WbhPF3Uq5F
-         yHtVhARd0yC+kg3OiTmTuSGWopzYofpKGhaivYKHAlSuBLrjMevKJuC5b3W7DfKt7oUY
-         RF5ZaACgfNrOmf8gCFyTTuI2AzOe86Hx7/jUIFjBsHYWcOlMj005qshH9p6ngd47V//7
-         7N1DXOL5YevdwqO5egnZFSMY6VDpsBliwJpb5bEIBk5Zhw50CSH3IB4725KBdam8ai9t
-         tFz+cJN0a2BqlY1LeoM0UmzObX7UH5d/bIr62RSknflu/h8LDu+45KURw8KUYwInF1X+
-         0qCA==
-X-Gm-Message-State: AOAM532w6ZzR9FBEDxvGDJZFwJ+keN5cfdYlF6i4tRk3WUxJlu+UkYwM
-        vy08bq8AyJS5+cowpVQdUhe4Jg==
-X-Google-Smtp-Source: ABdhPJw4tvFdhPLQS0CoV6XfSBGx69vCybkZgIYZxyTce9BsB9lDFb+RzPPFvmiwW0LFrb68AcuVeA==
-X-Received: by 2002:a17:903:188:b029:114:a132:1e9 with SMTP id z8-20020a1709030188b0290114a13201e9mr1143258plg.24.1623873241793;
-        Wed, 16 Jun 2021 12:54:01 -0700 (PDT)
+        bh=ta3RbqOIn8BZORbiR4sH2Jl3iefLLCl3kYqOTHV1WDg=;
+        b=SqTAS8tdU82HzpWh08jVEzZ6xfgRBVJtTWPyvTKALqn6IDWQ3E9X64ys8cohQZyG+b
+         ws9/87Wz13ssCrSd3t0EhtnAv44fDVhwlSLqo+lLXuOLD5kP8jRzDISntfCYxScqw07n
+         qoB6BlrinPM41Ki6S7sRtl+4woRlC3T8jo/dmwVR+Ms3k05J3i6XrsgQW8JvZ2HN9NhA
+         l+aYynhErMwGsyC9v9sgatpM+7Nu9KDJSizfputxBhBe3/Tqpcj8hbtkB6QBpPRSWxRf
+         Kw2WRU0iC65gjCIT1jCWmBqTbuWPHgNtiSxv7UNspcSBH8/Da5vFH1ZDYsLuhY+bIPxc
+         66Ag==
+X-Gm-Message-State: AOAM533pfHH8DXyb29lslsUdPg8yJFC+jn+GaAqwNnHY7xHvDKFYeJ3A
+        afpYwdQiQW74nGQllG+0/GMu9Q==
+X-Google-Smtp-Source: ABdhPJyV+Ew0riI0HXcKYe6MIMC6k+k3ndOX4eMCoUivqhy2b7e4mAVzoRSDmJfa0dGNcFL/NH1rSg==
+X-Received: by 2002:a63:e043:: with SMTP id n3mr1310592pgj.106.1623873252926;
+        Wed, 16 Jun 2021 12:54:12 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id n11sm2859900pfu.29.2021.06.16.12.54.01
+        by smtp.gmail.com with ESMTPSA id c184sm2794609pfa.38.2021.06.16.12.54.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 12:54:01 -0700 (PDT)
+        Wed, 16 Jun 2021 12:54:12 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     netdev@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        nic_swsd@realtek.com, linux-hardening@vger.kernel.org
-Subject: [PATCH] r8169: Avoid memcpy() over-reading of ETH_SS_STATS
-Date:   Wed, 16 Jun 2021 12:53:59 -0700
-Message-Id: <20210616195359.1231984-1-keescook@chromium.org>
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH] ath11k: Avoid memcpy() over-reading of he_cap
+Date:   Wed, 16 Jun 2021 12:54:10 -0700
+Message-Id: <20210616195410.1232119-1-keescook@chromium.org>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Patch-Hashes: v=1; h=sha256; g=964eb9cbe3c11a824a079aa4553a4148d7aeefe1; i=mWTdhlIN8EOPk+kK5Tlt/6ol6tz4t5mr8WWbljTVla8=; m=CF57NG64wUjRAJMr07rJpYR31VG7hNQuEGsWk+kxwfo=; p=1/xDugcsE8T7YfRxtZt3HYiYLkq/IwuFbyCBAyie+BU=
-X-Patch-Sig: m=pgp; i=keescook@chromium.org; s=0x0x8972F4DFDC6DC026; b=iQIzBAABCgAdFiEEpcP2jyKd1g9yPm4TiXL039xtwCYFAmDKVtcACgkQiXL039xtwCb27w//WX3 CnyN1NEOmoN9HpXNcLmaKEPweAE0/oOmpHHpuYzwBNWNcJ7ZAJezPMlIq5c1eN3TDu+yTWGGaVP87 M7JvVnUsMqa6MQG93iys5CqKjsxaKLwOpovgTPQDax9W8FbczXbSn4RADAPIabFQbORu96BcPNRLr WVd6NuAPDppO9O1zTHAcBDSqJWvSAYvJio/TxBEeANU7Uki8IbVaxJxXaiht9US99pLCRYCi5Br+w /4U4F2pvg4J1MMRMzbtRO6yaBR22RaKsqBqqq465PKzQzrvnheuJPwsIVTruqHG6JRidtqZmzfBSC YLFGucm8qPJrczMGTOWIgW7jqSpDNV5Tm4B/+JIRonxtngbhJNrnnXRZ37x264IhQTITRvti1V0lN +5/obO+nRHOBcaXG2j+drCjV1SVeqgky+P3TOIsGPj0jP5Q0hhbBHfVTlBN/F6E4SaF0tq4mmOrXi t3sa2XVCvoW/aIUEGHHpJbDfC2ScIeTOz4lMcqu+831R1t7tqNxuCXKU7yAtjQ20ekwQq461oDlzO +IQEse4XhLl+SSBsjHA2LHpp0PNBsH1oPfOiVNlobxzpUICrCKr2K4eLbEQCgShMkHy05r7IrGAYG RcH98VhPy+Xc0wqnLQZCPxY4CCTucQoS8f/Av/xofkutsOdWQoF+po3BB1yZYh8M=
+X-Patch-Hashes: v=1; h=sha256; g=a0cab8be0bd22cb947a89c25d20b00b86ac2fb47; i=eJo4iKawiWzp/TGJDTmVIE2lOKR+PQjNu4KYQ5F00YM=; m=+6EB5srPoGi1D7Om5kP3HXtskB0VIFJiBD3X5t+nWWw=; p=fNBF6uun0+FYmLLA4u44niS95J1JvHuPRqCzmoIK3D4=
+X-Patch-Sig: m=pgp; i=keescook@chromium.org; s=0x0x8972F4DFDC6DC026; b=iQIzBAABCgAdFiEEpcP2jyKd1g9yPm4TiXL039xtwCYFAmDKVuIACgkQiXL039xtwCbTbRAAj9W ByUby95Dh+bLBWJHMugD4XSE2xrtVClsmeigQTMJnmvAxy08rlzrjqIoG+amV8BauQFvk6jc/zFZX 0u4vjIF7f9p65oQ4fBw9YlvkbHTVPqDgO8952UQ1F7Q9gVB1L1Fyz3lIFUkEl3raJljKDCOaEnPee CMZ9iDO61/WRyFCY/iXQ2ofLoOIevL+Fc/TqZPLX7dKZjSwpLrLzw6BrGPNdvc2GyBQqmy5qIHJt9 kT2K2w2QmATu1iZvTmsxAykWfJeoGhIK9yydYRgXatZDNBEI0Ad1XQ0YKllOVCHZWEyaXekZi7iWk VpyL1Z2mLn2zto3be8ZZLOUrKk5xI60KFnmhv1aPWu6YxL/4y6ELEK0qfIl2VZ518wt/jw3uY3nul 4kvV/wG7UFBhRhwt/A7Wi0yV0C6IXgswZga/1vHxfIGHl82M54CyCGEIWtYoC8J0raeshqamo1bbI R7SKkItM6CdhAB5PTlBjy+2XTAYs5SwqCf8SLdwU8pujY/0zvFmrL8P2vbFcrVyAgaZ4R3GBP8vci SyUAlI2nAP3Qy3y/MeVF+n6mLNY7vY28SI9ethoHlKWaZ9cGfLB3bHo2QLSfbEYeilPEM1L9RhDQH m2EL6AmnX8+pqOSu0Pqyd6RHXXtB6rxa4Z35r3ed+A0kQ/L1XchTO6mEVFXyTw0w=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -65,30 +66,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memcpy(), memmove(), and memset(), avoid
-intentionally reading across neighboring array fields.
+intentionally writing across neighboring array fields.
 
-The memcpy() is copying the entire structure, not just the first array.
-Adjust the source argument so the compiler can do appropriate bounds
-checking.
+Since peer_he_cap_{mac,phy}info and he_cap_elem.{mac,phy}_cap_info are not
+the same sizes, memcpy() was reading beyond field boundaries. Instead,
+correctly cap the copy length and pad out any difference in size
+(peer_he_cap_macinfo is 8 bytes whereas mac_cap_info is 6, and
+peer_he_cap_phyinfo is 12 bytes whereas phy_cap_info is 11).
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 6a9fe9f7e0be..f744557c33a3 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1669,7 +1669,7 @@ static void rtl8169_get_strings(struct net_device *dev, u32 stringset, u8 *data)
- {
- 	switch(stringset) {
- 	case ETH_SS_STATS:
--		memcpy(data, *rtl8169_gstrings, sizeof(rtl8169_gstrings));
-+		memcpy(data, rtl8169_gstrings, sizeof(rtl8169_gstrings));
- 		break;
- 	}
- }
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 9d0ff150ec30..b1178a0b7fc3 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -1314,10 +1314,16 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
+ 
+ 	arg->he_flag = true;
+ 
+-	memcpy(&arg->peer_he_cap_macinfo, he_cap->he_cap_elem.mac_cap_info,
+-	       sizeof(arg->peer_he_cap_macinfo));
+-	memcpy(&arg->peer_he_cap_phyinfo, he_cap->he_cap_elem.phy_cap_info,
+-	       sizeof(arg->peer_he_cap_phyinfo));
++	memcpy_and_pad(&arg->peer_he_cap_macinfo,
++		       sizeof(arg->peer_he_cap_macinfo),
++		       he_cap->he_cap_elem.mac_cap_info,
++		       sizeof(he_cap->he_cap_elem.mac_cap_info),
++		       0);
++	memcpy_and_pad(&arg->peer_he_cap_phyinfo,
++		       sizeof(arg->peer_he_cap_phyinfo),
++		       he_cap->he_cap_elem.phy_cap_info,
++		       sizeof(he_cap->he_cap_elem.phy_cap_info),
++		       0);
+ 	arg->peer_he_ops = vif->bss_conf.he_oper.params;
+ 
+ 	/* the top most byte is used to indicate BSS color info */
 -- 
 2.25.1
 
