@@ -2,60 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80D9F3A90F5
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 07:06:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 690A93A911E
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 07:21:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230455AbhFPFID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 01:08:03 -0400
-Received: from smtp01.smtpout.orange.fr ([80.12.242.123]:23500 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbhFPFIC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 01:08:02 -0400
-Received: from localhost.localdomain ([86.243.172.93])
-        by mwinf5d01 with ME
-        id Hh5v2500321Fzsu03h5vLM; Wed, 16 Jun 2021 07:05:56 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 16 Jun 2021 07:05:56 +0200
-X-ME-IP: 86.243.172.93
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, jeffrey.t.kirsher@intel.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] e1000e: Fix an error handling path in 'e1000_probe()'
-Date:   Wed, 16 Jun 2021 07:05:53 +0200
-Message-Id: <2651bb1778490c45d963122619fe3403fdf6b9de.1623819901.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
+        id S231228AbhFPFXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 01:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229476AbhFPFXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 01:23:42 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D988FC061574;
+        Tue, 15 Jun 2021 22:21:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=sxjUz+Ejc/4WE2gmhLls9n4YZud0RJdZK2yLZKH0tfA=; b=LD/VLC3tt3aYNEJgkGSKANrdPa
+        lz7Sygw1Ey2XeJE7btenkXSNDq53fYgI1YWW1iKJd3QuIzq7cGhZl3jLhI50kPN3t1946kE8Tn/ZX
+        2jmGhsgqLIgzisFsnvOmfcCXr/QBVMfwyRFKDvm9PZztVmMD5WgnJFeSd3f2gNHW/1O4Csl0iiLGU
+        29EIEynnAOD78vWrOsbRaZF/pDp20B4QtzEYm+KAg2Sg2H5zS0QTd+nIb/Xgpc6kSmssruI2qKTD9
+        ddobAcPgPZqn0WXGYMuVqL366v2EryD/D/1llivLUtnzn02jeje2GDuJLNm3kQTS4xLg937RvVyHm
+        VwU6Epnw==;
+Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ltNz2-007d0P-4y; Wed, 16 Jun 2021 05:21:05 +0000
+Date:   Wed, 16 Jun 2021 06:21:00 +0100
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        pv-drivers@vmware.com, doshir@vmware.com
+Subject: Re: [PATCH] vmxnet3: prevent building with 256K pages
+Message-ID: <YMmKPIEk6XQsXq9T@infradead.org>
+References: <20210615123504.547106-1-mpe@ellerman.id.au>
+ <76ccb9fc-dc43-46e1-6465-637b72253385@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <76ccb9fc-dc43-46e1-6465-637b72253385@csgroup.eu>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If an error occurs after a 'pci_enable_pcie_error_reporting()' call, it
-must be undone by a corresponding 'pci_disable_pcie_error_reporting()'
-call, as already done in the remove function.
+On Tue, Jun 15, 2021 at 02:41:34PM +0200, Christophe Leroy wrote:
+> Maybe we should also exclude hexagon, same as my patch on BTRFS https://patchwork.ozlabs.org/project/linuxppc-dev/patch/a16c31f3caf448dda5d9315e056585b6fafc22c5.1623302442.git.christophe.leroy@csgroup.eu/
 
-Fixes: 111b9dc5c981 ("e1000e: add aer support")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/intel/e1000e/netdev.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 5435606149b0..c8aa69fd0405 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -7662,6 +7662,7 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- err_ioremap:
- 	free_netdev(netdev);
- err_alloc_etherdev:
-+	pci_disable_pcie_error_reporting(pdev);
- 	pci_release_mem_regions(pdev);
- err_pci_reg:
- err_dma:
--- 
-2.30.2
-
+Maybe we really need common config symbols for the page size instead of
+all these hacks..
