@@ -2,96 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 658F63AA794
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:39:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 503443AA7A0
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234681AbhFPXmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 19:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
+        id S234748AbhFPXpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 19:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234597AbhFPXl7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:41:59 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457CFC06175F
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:39:52 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id g19so1331196qkk.2
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:39:52 -0700 (PDT)
+        with ESMTP id S231744AbhFPXpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:45:13 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4ADC061574
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:43:05 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id f10so1076962iok.6
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 16:43:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GZ8Uwa036gpNLbWnfaBzspVA5CRluDlqQqEct0C37As=;
-        b=kshY+ojjwAXK3pIhmxDE0VeTVJfmns8FASuchPW9vaayL5PkSHnddwPEF9UdgL0AhX
-         cyZgGsKHE9Sd3FSdb6G2Q+vFBJ6O8CrHW1at/8a5AvNErf0kvKHZCwDv7siXwqRsYKOI
-         9rePAjFvXqt6aZK8kQO4kbVCRmAWFY/zXtkDazo2V81MI/wJ/fqeNAogpoaO8ProQNG2
-         7UU+l9uOW5KweJetqGyNu6XKmv3pRgdzpmcJdqQCjbCC2pFcwNQmbOmNu3FHtLl5OEu7
-         GBisdHRuJZsCH1LcAWDE3i8KaDOtQ+Nh4V3oy1Mi/eDlJAP8NiJwq1LWAYEAgR0wXoAJ
-         KVkw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=4LU80oMEiWGdL7h3hxPHgBx1jGQmejRdGmgCBlERjqI=;
+        b=Qz4PogTpyWF4qSeykyyhbgCCi/Fc/OI1d9iGgMfz3epvfKEYnsaQQNeH17d18Adrrr
+         6sfU1Pds8ZCXVY177aLywULZ9DZQ3ogI8c3UaGS3cO6WwiWc3ivgFAdN2sE4dakWlva6
+         bYGv1Zmv0jmkMdnJj71kGd8LQn75E9A2+/CyA1S6heNc38B726gQ/X54rq1C59/Qp/HG
+         ehWLL6oUmgL7EAflnfODZake0Zow0/A6DCccTJHT56JPk3z2h0KEyRq2Z6U27VjOKNnf
+         Lt+XH4woQhSG8dM9CBOWVUA+CLlz2o0cl3KwKL1OdwhiaXt7nUrwePQTDZmWt5vhm/yD
+         g2uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GZ8Uwa036gpNLbWnfaBzspVA5CRluDlqQqEct0C37As=;
-        b=rIazox2MP8nCtP6iQGIzVC3pVGq9zN9JBZpdFkoevemvOZVWtMLzekgDL/+aXBIDVa
-         Q+NzUGcNJwlKDH6ipyMpHTr2rb0TPJYbitXsE/C6ALWKrRKvkLIXokgr/a6EJAW0T8Xi
-         GRonnn+EjMGUKohI0dub63O7NeRnb66U6sQvV1X4MrGsOTMw2d6krA1vmvFQC+IUZ+YB
-         Hk/8kS1RTpkSPXWrNwapTKzU2z0v+5OPWxMolcpFrHYxPZr4dNa+XpsbF6hpcrOyaL+E
-         3j+OhH0wmsyhBjX22lhT8e4VMNL+ku4qFq40ng01NglcgsylByz6Xzcv4/0TFfeEbetH
-         8PPA==
-X-Gm-Message-State: AOAM531vPcwQJtdSzoW5lxzgt3h+ARBoMVxVopxNGp9aghADBu02s6eh
-        3ZIwdNCLf5cekwIvgGZcyXblz/7FMFoqBsS02xN05g==
-X-Google-Smtp-Source: ABdhPJyaBR6uwbvnXk7V1aA9uldwi5ixDr/g7IQB3vX383R9Ezb0ebsCYcz5SzXZCRq+ysp+Tauc/N8qa1cEvW9QoUc=
-X-Received: by 2002:a37:a1d5:: with SMTP id k204mr932037qke.300.1623886791313;
- Wed, 16 Jun 2021 16:39:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210616190759.2832033-1-mw@semihalf.com> <20210616190759.2832033-4-mw@semihalf.com>
- <YMpShczKt1TNAqsV@lunn.ch>
-In-Reply-To: <YMpShczKt1TNAqsV@lunn.ch>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 17 Jun 2021 01:39:40 +0200
-Message-ID: <CAPv3WKde+LCmxxr6UuA7X=XShF6d4io49baxsjw1kMqR=T7XrA@mail.gmail.com>
-Subject: Re: [net-next: PATCH v2 3/7] net/fsl: switch to fwnode_mdiobus_register
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>,
-        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
-        lenb@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=4LU80oMEiWGdL7h3hxPHgBx1jGQmejRdGmgCBlERjqI=;
+        b=En6lPyEzjJyTKBh458Jo9iTwLmOAKupE4nk/ExyprSc1wJVWbbEqCu8/kuvlJ20qpr
+         6NAviiMelvr68MmdaOPFdx2KVTkjoo6mhfPUbVNP4kx4YzFgvOxl00Z6SATf0qmI+MSu
+         +GE+T+LLuBoMvoiaprZoCjckvzCnc0ugRzulNUxUzKV2v9HOhnivm4SHqLFqVdWF4SYD
+         fz7gMnFiNWsuSYjnzxUTvEd/NfldddPnhe9jrGBWCeUHkk74rhcCnaXzUsRDCaiDQ5gG
+         zIJ+qcMSPrs1lx79u42lN32n7LlOagRwK76miUD0lVLrwCHPClBhyuHJvRpL/JCryg0w
+         F4/A==
+X-Gm-Message-State: AOAM531Dkhc5oA1kmh0Mm3I7O2NPxWzWveaqIN3BFBug1tJmLw9mmGP4
+        Saq1iokVe3IyfX8yfFhCc0Q=
+X-Google-Smtp-Source: ABdhPJx0oewxSkAXbSBUfumwPtlaLgVEptgKQSacdnLvdoLBdqLUYj8jsdDoz08maxBuY5RZU/m2BA==
+X-Received: by 2002:a02:3318:: with SMTP id c24mr1655649jae.112.1623886985327;
+        Wed, 16 Jun 2021 16:43:05 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id r14sm2100320iod.41.2021.06.16.16.43.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Jun 2021 16:43:04 -0700 (PDT)
+Date:   Wed, 16 Jun 2021 16:42:57 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        maciej.fijalkowski@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        andriin@fb.com
+Cc:     john.fastabend@gmail.com, netdev@vger.kernel.org,
+        netdev@vger.kernel.org
+Message-ID: <60ca8c81708a9_26dfd2081e@john-XPS-13-9370.notmuch>
+In-Reply-To: <162388411986.151936.3914295553899556046.stgit@john-XPS-13-9370>
+References: <162388400488.151936.1658153981415911010.stgit@john-XPS-13-9370>
+ <162388411986.151936.3914295553899556046.stgit@john-XPS-13-9370>
+Subject: RE: [PATCH bpf v2 2/4] bpf: map_poke_descriptor is being called with
+ an unstable poke_tab[]
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=C5=9Br., 16 cze 2021 o 21:35 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
->
-> On Wed, Jun 16, 2021 at 09:07:55PM +0200, Marcin Wojtas wrote:
-> > Utilize the newly added helper routine
-> > for registering the MDIO bus via fwnode_
-> > interface.
->
-> You need to add depends on FWNODE_MDIO
->
+John Fastabend wrote:
+> When populating poke_tab[] of a subprog we call map_poke_track() after
+> doing bpf_jit_add_poke_descriptor(). But, bpf_jit_add_poke_descriptor()
+> may, likely will, realloc the poke_tab[] structure and free the old
+> one. So that prog->aux->poke_tab is not stable. However, the aux pointer
+> is referenced from bpf_array_aux and poke_tab[] is used to 'track'
+> prog<->map link. This way when progs are released the entry in the
+> map is dropped and vice versa when the map is released we don't drop
+> it too soon if a prog is in the process of calling it.
+> 
+> I wasn't able to trigger any errors here, for example having map_poke_run
+> run with a poke_tab[] pointer that was free'd from
+> bpf_jit_add_poke_descriptor(), but it looks possible and at very least
+> is very fragile.
+> 
+> This patch moves poke_track call out of loop that is calling add_poke
+> so that we only ever add stable aux->poke_tab pointers to the map's
+> bpf_array_aux struct. Further, we need this in the next patch to fix
+> a real bug where progs are not 'untracked'.
+> 
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
 
-Do you mean something like this?
+Needs a fixes tag,
 
---- a/drivers/net/ethernet/freescale/Kconfig
-+++ b/drivers/net/ethernet/freescale/Kconfig
-@@ -68,8 +68,8 @@ config FSL_PQ_MDIO
- config FSL_XGMAC_MDIO
-        tristate "Freescale XGMAC MDIO"
-        select PHYLIB
--       depends on OF
--       select OF_MDIO
-+       depends on ACPI || OF
-+       select FWNODE_MDIO
-        help
-
-Best regards,
-Marcin
+Fixes: a748c6975dea3 ("bpf: propagate poke descriptors to subprograms")
