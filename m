@@ -2,44 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EE4C3A9895
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 13:02:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE40A3A989D
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 13:02:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232459AbhFPLEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 07:04:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34522 "EHLO
+        id S232530AbhFPLEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 07:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232306AbhFPLEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 07:04:06 -0400
+        with ESMTP id S232615AbhFPLER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 07:04:17 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E8CC06124A
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 04:02:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CF1C0611C6
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 04:02:03 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1ltTJ0-0007lc-UM
-        for netdev@vger.kernel.org; Wed, 16 Jun 2021 13:01:58 +0200
+        id 1ltTJ3-0007pz-Ur
+        for netdev@vger.kernel.org; Wed, 16 Jun 2021 13:02:02 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 5DC3C63D29D
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 11:01:56 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 0947D63D2B7
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 11:02:00 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 75DF763D28C;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 8B5CA63D28D;
         Wed, 16 Jun 2021 11:01:54 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id b4297ccf;
-        Wed, 16 Jun 2021 11:01:53 +0000 (UTC)
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 88f2d04a;
+        Wed, 16 Jun 2021 11:01:54 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: pull-request: can 2021-06-16
-Date:   Wed, 16 Jun 2021 13:01:48 +0200
-Message-Id: <20210616110152.2456765-1-mkl@pengutronix.de>
+        kernel@pengutronix.de, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Hillf Danton <hdanton@sina.com>,
+        linux-stable <stable@vger.kernel.org>,
+        syzbot+220c1a29987a9a490903@syzkaller.appspotmail.com,
+        syzbot+45199c1b73b4013525cf@syzkaller.appspotmail.com,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [net 1/4] can: j1939: fix Use-after-Free, hold skb ref while in use
+Date:   Wed, 16 Jun 2021 13:01:49 +0200
+Message-Id: <20210616110152.2456765-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210616110152.2456765-1-mkl@pengutronix.de>
+References: <20210616110152.2456765-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
@@ -50,60 +57,204 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, hello David,
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-this is a pull request of 4 patches for net/master.
+This patch fixes a Use-after-Free found by the syzbot.
 
-The first patch is by Oleksij Rempel and fixes a Use-after-Free found
-by syzbot in the j1939 stack.
+The problem is that a skb is taken from the per-session skb queue,
+without incrementing the ref count. This leads to a Use-after-Free if
+the skb is taken concurrently from the session queue due to a CTS.
 
-The next patch is by Tetsuo Handa and fixes hung task detected by
-syzbot in the bcm, raw and isotp protocols.
-
-Norbert Slusarek's patch fixes a infoleak in bcm's struct
-bcm_msg_head.
-
-Pavel Skripkin's patch fixes a memory leak in the mcba_usb driver.
-
-regards,
-Marc
-
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Link: https://lore.kernel.org/r/20210521115720.7533-1-o.rempel@pengutronix.de
+Cc: Hillf Danton <hdanton@sina.com>
+Cc: linux-stable <stable@vger.kernel.org>
+Reported-by: syzbot+220c1a29987a9a490903@syzkaller.appspotmail.com
+Reported-by: syzbot+45199c1b73b4013525cf@syzkaller.appspotmail.com
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
+ net/can/j1939/transport.c | 54 +++++++++++++++++++++++++++++----------
+ 1 file changed, 40 insertions(+), 14 deletions(-)
 
-The following changes since commit a4f0377db1254373513b992ff31a351a7111f0fd:
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index e09d087ba240..c3946c355882 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -330,6 +330,9 @@ static void j1939_session_skb_drop_old(struct j1939_session *session)
+ 
+ 	if ((do_skcb->offset + do_skb->len) < offset_start) {
+ 		__skb_unlink(do_skb, &session->skb_queue);
++		/* drop ref taken in j1939_session_skb_queue() */
++		skb_unref(do_skb);
++
+ 		kfree_skb(do_skb);
+ 	}
+ 	spin_unlock_irqrestore(&session->skb_queue.lock, flags);
+@@ -349,12 +352,13 @@ void j1939_session_skb_queue(struct j1939_session *session,
+ 
+ 	skcb->flags |= J1939_ECU_LOCAL_SRC;
+ 
++	skb_get(skb);
+ 	skb_queue_tail(&session->skb_queue, skb);
+ }
+ 
+ static struct
+-sk_buff *j1939_session_skb_find_by_offset(struct j1939_session *session,
+-					  unsigned int offset_start)
++sk_buff *j1939_session_skb_get_by_offset(struct j1939_session *session,
++					 unsigned int offset_start)
+ {
+ 	struct j1939_priv *priv = session->priv;
+ 	struct j1939_sk_buff_cb *do_skcb;
+@@ -371,6 +375,10 @@ sk_buff *j1939_session_skb_find_by_offset(struct j1939_session *session,
+ 			skb = do_skb;
+ 		}
+ 	}
++
++	if (skb)
++		skb_get(skb);
++
+ 	spin_unlock_irqrestore(&session->skb_queue.lock, flags);
+ 
+ 	if (!skb)
+@@ -381,12 +389,12 @@ sk_buff *j1939_session_skb_find_by_offset(struct j1939_session *session,
+ 	return skb;
+ }
+ 
+-static struct sk_buff *j1939_session_skb_find(struct j1939_session *session)
++static struct sk_buff *j1939_session_skb_get(struct j1939_session *session)
+ {
+ 	unsigned int offset_start;
+ 
+ 	offset_start = session->pkt.dpo * 7;
+-	return j1939_session_skb_find_by_offset(session, offset_start);
++	return j1939_session_skb_get_by_offset(session, offset_start);
+ }
+ 
+ /* see if we are receiver
+@@ -776,7 +784,7 @@ static int j1939_session_tx_dat(struct j1939_session *session)
+ 	int ret = 0;
+ 	u8 dat[8];
+ 
+-	se_skb = j1939_session_skb_find_by_offset(session, session->pkt.tx * 7);
++	se_skb = j1939_session_skb_get_by_offset(session, session->pkt.tx * 7);
+ 	if (!se_skb)
+ 		return -ENOBUFS;
+ 
+@@ -801,7 +809,8 @@ static int j1939_session_tx_dat(struct j1939_session *session)
+ 			netdev_err_once(priv->ndev,
+ 					"%s: 0x%p: requested data outside of queued buffer: offset %i, len %i, pkt.tx: %i\n",
+ 					__func__, session, skcb->offset, se_skb->len , session->pkt.tx);
+-			return -EOVERFLOW;
++			ret = -EOVERFLOW;
++			goto out_free;
+ 		}
+ 
+ 		if (!len) {
+@@ -835,6 +844,12 @@ static int j1939_session_tx_dat(struct j1939_session *session)
+ 	if (pkt_done)
+ 		j1939_tp_set_rxtimeout(session, 250);
+ 
++ out_free:
++	if (ret)
++		kfree_skb(se_skb);
++	else
++		consume_skb(se_skb);
++
+ 	return ret;
+ }
+ 
+@@ -1007,7 +1022,7 @@ static int j1939_xtp_txnext_receiver(struct j1939_session *session)
+ static int j1939_simple_txnext(struct j1939_session *session)
+ {
+ 	struct j1939_priv *priv = session->priv;
+-	struct sk_buff *se_skb = j1939_session_skb_find(session);
++	struct sk_buff *se_skb = j1939_session_skb_get(session);
+ 	struct sk_buff *skb;
+ 	int ret;
+ 
+@@ -1015,8 +1030,10 @@ static int j1939_simple_txnext(struct j1939_session *session)
+ 		return 0;
+ 
+ 	skb = skb_clone(se_skb, GFP_ATOMIC);
+-	if (!skb)
+-		return -ENOMEM;
++	if (!skb) {
++		ret = -ENOMEM;
++		goto out_free;
++	}
+ 
+ 	can_skb_set_owner(skb, se_skb->sk);
+ 
+@@ -1024,12 +1041,18 @@ static int j1939_simple_txnext(struct j1939_session *session)
+ 
+ 	ret = j1939_send_one(priv, skb);
+ 	if (ret)
+-		return ret;
++		goto out_free;
+ 
+ 	j1939_sk_errqueue(session, J1939_ERRQUEUE_SCHED);
+ 	j1939_sk_queue_activate_next(session);
+ 
+-	return 0;
++ out_free:
++	if (ret)
++		kfree_skb(se_skb);
++	else
++		consume_skb(se_skb);
++
++	return ret;
+ }
+ 
+ static bool j1939_session_deactivate_locked(struct j1939_session *session)
+@@ -1170,9 +1193,10 @@ static void j1939_session_completed(struct j1939_session *session)
+ 	struct sk_buff *skb;
+ 
+ 	if (!session->transmission) {
+-		skb = j1939_session_skb_find(session);
++		skb = j1939_session_skb_get(session);
+ 		/* distribute among j1939 receivers */
+ 		j1939_sk_recv(session->priv, skb);
++		consume_skb(skb);
+ 	}
+ 
+ 	j1939_session_deactivate_activate_next(session);
+@@ -1744,7 +1768,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+ {
+ 	struct j1939_priv *priv = session->priv;
+ 	struct j1939_sk_buff_cb *skcb;
+-	struct sk_buff *se_skb;
++	struct sk_buff *se_skb = NULL;
+ 	const u8 *dat;
+ 	u8 *tpdat;
+ 	int offset;
+@@ -1786,7 +1810,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+ 		goto out_session_cancel;
+ 	}
+ 
+-	se_skb = j1939_session_skb_find_by_offset(session, packet * 7);
++	se_skb = j1939_session_skb_get_by_offset(session, packet * 7);
+ 	if (!se_skb) {
+ 		netdev_warn(priv->ndev, "%s: 0x%p: no skb found\n", __func__,
+ 			    session);
+@@ -1848,11 +1872,13 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+ 		j1939_tp_set_rxtimeout(session, 250);
+ 	}
+ 	session->last_cmd = 0xff;
++	consume_skb(se_skb);
+ 	j1939_session_put(session);
+ 
+ 	return;
+ 
+  out_session_cancel:
++	kfree_skb(se_skb);
+ 	j1939_session_timers_cancel(session);
+ 	j1939_session_cancel(session, J1939_XTP_ABORT_FAULT);
+ 	j1939_session_put(session);
 
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2021-06-15 15:26:07 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.13-20210616
-
-for you to fetch changes up to 91c02557174be7f72e46ed7311e3bea1939840b0:
-
-  can: mcba_usb: fix memory leak in mcba_usb (2021-06-16 12:52:18 +0200)
-
-----------------------------------------------------------------
-linux-can-fixes-for-5.13-20210616
-
-----------------------------------------------------------------
-Norbert Slusarek (1):
-      can: bcm: fix infoleak in struct bcm_msg_head
-
-Oleksij Rempel (1):
-      can: j1939: fix Use-after-Free, hold skb ref while in use
-
-Pavel Skripkin (1):
-      can: mcba_usb: fix memory leak in mcba_usb
-
-Tetsuo Handa (1):
-      can: bcm/raw/isotp: use per module netdevice notifier
-
- drivers/net/can/usb/mcba_usb.c | 17 ++++++++++--
- net/can/bcm.c                  | 62 +++++++++++++++++++++++++++++++++---------
- net/can/isotp.c                | 61 ++++++++++++++++++++++++++++++++---------
- net/can/j1939/transport.c      | 54 ++++++++++++++++++++++++++----------
- net/can/raw.c                  | 62 ++++++++++++++++++++++++++++++++----------
- 5 files changed, 200 insertions(+), 56 deletions(-)
-
+base-commit: a4f0377db1254373513b992ff31a351a7111f0fd
+-- 
+2.30.2
 
 
