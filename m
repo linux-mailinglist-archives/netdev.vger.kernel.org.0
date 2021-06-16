@@ -2,127 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA403A91B2
-	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 08:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BFEF3A91C2
+	for <lists+netdev@lfdr.de>; Wed, 16 Jun 2021 08:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231328AbhFPGIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 02:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbhFPGIX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 02:08:23 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3F9C06175F
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 23:06:16 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id o21so568815pll.6
-        for <netdev@vger.kernel.org>; Tue, 15 Jun 2021 23:06:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C+5mGngji0N9N8b5lRIJDDKg882pt9u4nyoigNZv7nA=;
-        b=c65inbWJ3nxQidfCSdX05U+vLzkqdrNP6vPGfPlNDut8aXqj5/1YDIXKWyG1nDkXNY
-         xDbxy66nY+eq1VBMJTfy+9kUFtG69BOFjjv50zVh9cVdZRhTL9xp/L/+xHdRHYfY5PmC
-         O7J7/bqudOS+rqfDSMgTuyXCkz2N2q1lrYwDeXLmSfx9w8kyRZQXaAPGLBUE4YivIVYh
-         n3+qIIbL5+Z4nSVgTAgTv6R4bbUhaR/PhKeNbbedy2sj9sLcerxjDzbVgBvUMxuNF5f4
-         5wH7yKsQ1YP8wZyJg4doT3zJCYcrkup2GUZB04mB1vWVY7TU3HH/QcCZcOwn4v9TtWmW
-         ovmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C+5mGngji0N9N8b5lRIJDDKg882pt9u4nyoigNZv7nA=;
-        b=FkbLwhnul+q1cpy9yLVjQx/sGaihdH9HfIGD0FEThsbO77yJb74PYQdyRaILbfarEQ
-         ecJR3RbWWdxDnZpszQYlb7aeNYMdHmq7tSpSNWAApIlzusAFyXC8B7IzHnX8jNgzvfD6
-         q+QqeVJLUlk71QQsLBiWwbVeEeYAMiK6J6qQxM5j08fU5syRePHRGur3O9PZHteZZuB6
-         076iaxIBXjOKqjSilvC09bZFvBz5p9gY49tRQOd02RELRvlGzf6g9szU7qbaN1IGyOp2
-         8r0syTDIWNbX0cnOQn88reJS0eJqhC5+XdsnfrEBXQf6C+BO5RiEEJJupML8Z+LtY1Ib
-         8rTg==
-X-Gm-Message-State: AOAM5325n329k09Z0QxtMObhf/RCAdC5ndEd9W0v+twHi+fhb5kizcoZ
-        jsQv3eeaVYnHhHaPuVaF4DM=
-X-Google-Smtp-Source: ABdhPJwGobKGzmn8iGy5iruWGAa00D1ntpsLasjigOwqips3F9Znr2tMVHsLlf5/ik3JcLepjRubJg==
-X-Received: by 2002:a17:90a:f16:: with SMTP id 22mr8930657pjy.38.1623823576236;
-        Tue, 15 Jun 2021 23:06:16 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:26ac:32c5:5579:7d13])
-        by smtp.gmail.com with ESMTPSA id s24sm895974pfh.104.2021.06.15.23.06.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Jun 2021 23:06:15 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        "David S . Miller " <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jon Maxwell <jmaxwell37@gmail.com>
-Subject: [PATCH] inet_diag: add support for tw_mark
-Date:   Tue, 15 Jun 2021 23:06:04 -0700
-Message-Id: <20210616060604.3639340-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.32.0.272.g935e593368-goog
+        id S231220AbhFPGT2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Jun 2021 02:19:28 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:7451 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229543AbhFPGT0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 02:19:26 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G4Zdq2jVYzZhqL;
+        Wed, 16 Jun 2021 14:14:23 +0800 (CST)
+Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 16 Jun 2021 14:17:18 +0800
+Received: from dggema753-chm.china.huawei.com (10.1.198.195) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Wed, 16 Jun 2021 14:17:18 +0800
+Received: from dggema753-chm.china.huawei.com ([10.9.48.84]) by
+ dggema753-chm.china.huawei.com ([10.9.48.84]) with mapi id 15.01.2176.012;
+ Wed, 16 Jun 2021 14:17:18 +0800
+From:   liweihang <liweihang@huawei.com>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linuxarm <linuxarm@huawei.com>,
+        liangwenpeng <liangwenpeng@huawei.com>,
+        "quentin.schulz@bootlin.com" <quentin.schulz@bootlin.com>,
+        "antoine.tenart@bootlin.com" <antoine.tenart@bootlin.com>
+Subject: Re: [PATCH net-next 8/8] net: phy: use '__packed' instead of
+ '__attribute__((__packed__))'
+Thread-Topic: [PATCH net-next 8/8] net: phy: use '__packed' instead of
+ '__attribute__((__packed__))'
+Thread-Index: AQHXXoyj+/PMfnJFTUeRrSlQbtB9Kw==
+Date:   Wed, 16 Jun 2021 06:17:18 +0000
+Message-ID: <fae9811cf0404034b0da9d14fb088df1@huawei.com>
+References: <1623393419-2521-1-git-send-email-liweihang@huawei.com>
+ <1623393419-2521-9-git-send-email-liweihang@huawei.com>
+ <7c07e865cfeb467c8f6a9eca218c5fdf@AcuMS.aculab.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.67.100.165]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+On 2021/6/14 22:28, David Laight wrote:
+> From: Weihang Li
+>> Sent: 11 June 2021 07:37
+>>
+>> Prefer __packed over __attribute__((__packed__)).
+>>
+>> Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
+>> Signed-off-by: Weihang Li <liweihang@huawei.com>
+>> ---
+>>  drivers/net/phy/mscc/mscc_ptp.h | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/phy/mscc/mscc_ptp.h b/drivers/net/phy/mscc/mscc_ptp.h
+>> index da34653..01f78b4 100644
+> ...
+>>  /* Represents an entry in the timestamping FIFO */
+>>  struct vsc85xx_ts_fifo {
+>>  	u32 ns;
+>>  	u64 secs:48;
+>>  	u8 sig[16];
+>> -} __attribute__((__packed__));
+>> +} __packed;
+> 
+> Hmmmm I'd take some convincing that 'u64 secs:48' is anything
+> other than 'implementation defined'.
+> So using it to map a hardware structure seems wrong.
+> 
+> If this does map a hardware structure it ought to have
+> 'endianness' annotations.
+> If it doesn't then why the bitfield and why packed?
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
+> 
 
-Timewait sockets have included mark since approx 4.18.
+Hi David,
 
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jon Maxwell <jmaxwell37@gmail.com>
-Fixes: 00483690552c ("tcp: Add mark for TIMEWAIT sockets")
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
----
- net/ipv4/inet_diag.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+Thank you for your attention. You are right, I found the contents of structure
+vsc85xx_ts_fifo is got from hardware. But I'm not sure if any issues or warnings
+will be introduced into this driver after just changing 'u64 secs:48' to '__be64
+secs:48'.
 
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index 93474b1bea4e..e65f4ef024a4 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -416,7 +416,7 @@ EXPORT_SYMBOL_GPL(inet_sk_diag_fill);
- static int inet_twsk_diag_fill(struct sock *sk,
- 			       struct sk_buff *skb,
- 			       struct netlink_callback *cb,
--			       u16 nlmsg_flags)
-+			       u16 nlmsg_flags, bool net_admin)
- {
- 	struct inet_timewait_sock *tw = inet_twsk(sk);
- 	struct inet_diag_msg *r;
-@@ -444,6 +444,12 @@ static int inet_twsk_diag_fill(struct sock *sk,
- 	r->idiag_uid	      = 0;
- 	r->idiag_inode	      = 0;
- 
-+	if (net_admin && nla_put_u32(skb, INET_DIAG_MARK,
-+				     tw->tw_mark)) {
-+		nlmsg_cancel(skb, nlh);
-+		return -EMSGSIZE;
-+	}
-+
- 	nlmsg_end(skb, nlh);
- 	return 0;
- }
-@@ -494,7 +500,7 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb,
- 			u16 nlmsg_flags, bool net_admin)
- {
- 	if (sk->sk_state == TCP_TIME_WAIT)
--		return inet_twsk_diag_fill(sk, skb, cb, nlmsg_flags);
-+		return inet_twsk_diag_fill(sk, skb, cb, nlmsg_flags, net_admin);
- 
- 	if (sk->sk_state == TCP_NEW_SYN_RECV)
- 		return inet_req_diag_fill(sk, skb, cb, nlmsg_flags, net_admin);
-@@ -801,6 +807,8 @@ int inet_diag_bc_sk(const struct nlattr *bc, struct sock *sk)
- 		entry.mark = sk->sk_mark;
- 	else if (sk->sk_state == TCP_NEW_SYN_RECV)
- 		entry.mark = inet_rsk(inet_reqsk(sk))->ir_mark;
-+	else if (sk->sk_state == TCP_TIME_WAIT)
-+		entry.mark = inet_twsk(sk)->tw_mark;
- 	else
- 		entry.mark = 0;
- #ifdef CONFIG_SOCK_CGROUP_DATA
--- 
-2.32.0.272.g935e593368-goog
+Let's keep this patch as it is. I cc the developers of the code, maybe they
+didn't realize it or had some reasons to define it like that.
 
+Thanks
+Weihang
