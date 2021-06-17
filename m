@@ -2,146 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70DC43AB100
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 12:09:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1D173AB128
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 12:17:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbhFQKLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 06:11:52 -0400
-Received: from www62.your-server.de ([213.133.104.62]:41760 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231346AbhFQKLv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 06:11:51 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ltoxu-000BTK-0B; Thu, 17 Jun 2021 12:09:38 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ltoxt-000DB3-IW; Thu, 17 Jun 2021 12:09:37 +0200
-Subject: Re: [PATCH v5] bpf: core: fix shift-out-of-bounds in ___bpf_prog_run
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>,
-        Kurt Manucredo <fuzzybritches0@gmail.com>,
-        syzbot+bed360704c521841c85d@syzkaller.appspotmail.com,
-        keescook@chromium.org, yhs@fb.com, dvyukov@google.com,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        nathan@kernel.org, ndesaulniers@google.com,
-        clang-built-linux@googlegroups.com,
-        kernel-hardening@lists.openwall.com, kasan-dev@googlegroups.com
-References: <1aaa2408-94b9-a1e6-beff-7523b66fe73d@fb.com>
- <202106101002.DF8C7EF@keescook>
- <CAADnVQKMwKYgthoQV4RmGpZm9Hm-=wH3DoaNqs=UZRmJKefwGw@mail.gmail.com>
- <85536-177443-curtm@phaethon>
- <bac16d8d-c174-bdc4-91bd-bfa62b410190@gmail.com> <YMkAbNQiIBbhD7+P@gmail.com>
- <dbcfb2d3-0054-3ee6-6e76-5bd78023a4f2@iogearbox.net>
- <YMkcYn4dyZBY/ze+@gmail.com> <YMkdx1VB0i+fhjAY@gmail.com>
- <4713f6e9-2cfb-e2a6-c42d-b2a62f035bf2@iogearbox.net>
- <YMkkr5G6E8lcFymG@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <845ad31f-ca3f-0326-e64b-423a09ea4bea@iogearbox.net>
-Date:   Thu, 17 Jun 2021 12:09:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S231567AbhFQKTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 06:19:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229887AbhFQKTd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 06:19:33 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCB9C061574
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 03:17:25 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id w14so4944263ilv.1
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 03:17:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TgPllGimVmcNN4ah98danBO0E/RhAz5y3uGjSnBg5Bc=;
+        b=PXgXAzeg2+TFQw/5cu/tUjYhxtgHMrg6wM9mTZ/2DUYOajPAZuwkcnT3BA3Vl1uMwJ
+         z4AuUF5RRXZKCLYUpFoOruA4jtT6Ej0anJhopRkQcoBSuVzsWXee54XbXWYhRwG79RTt
+         TBkG7fMwJoLkYro4pHZQW3dtYgjPtxkyMFwSg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TgPllGimVmcNN4ah98danBO0E/RhAz5y3uGjSnBg5Bc=;
+        b=WpZ/Uv/IsLaQ+OZdC6GdKm7r9VG1v69cgluha2awDxVrdHI6iu+OP4gTSo6o4fSWR7
+         ptXCnBjUd6fMkBY+5AYqMHkU9Fv1cRGcufS6QOGFacKXAB1/JQdqedbZCB4vIZoBTkRf
+         MfF7OKRuBO6J3s2Vo4gA+OCr26lbGqRSwlOavx49o+KlVsdifpMGzwvvIVxuao6J1oEW
+         gU6B0ydwfADvInQV9PL0aG1jSmPhGB5LyuDJvY+UmkdvaCAd4uTD1oersrk1BkHacuSR
+         7HShGlc1njTjsbxRM0jyb6Als5ITsRgNrA564tUUQZueDHTCBq9G0WZtOMddCF8q0u1n
+         kqWw==
+X-Gm-Message-State: AOAM531vuRxh4fcP2jvefBr/A0AzMHPgyE+HCsyENQlwoHEFSZ+5kKRM
+        PsZgzKNXyjm/l0Iv6fgvADmZ4A==
+X-Google-Smtp-Source: ABdhPJz2LAw4NBLhpIqLHyfUazN/hOQHG2W76Bos6afm67s91rmSwPdAKQDg2dDZUAmHkyvazNdM+g==
+X-Received: by 2002:a92:3302:: with SMTP id a2mr2993017ilf.62.1623925044956;
+        Thu, 17 Jun 2021 03:17:24 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id r8sm2488194iln.35.2021.06.17.03.17.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Jun 2021 03:17:24 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: ipa: Add missing of_node_put() in
+ ipa_firmware_load()
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     elder@kernel.org, davem@davemloft.net, kuba@kernel.org
+References: <20210617051119.1153120-1-yangyingliang@huawei.com>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <dc64b44a-12a7-e5e0-1532-577d6479d7c0@ieee.org>
+Date:   Thu, 17 Jun 2021 05:17:23 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <YMkkr5G6E8lcFymG@gmail.com>
+In-Reply-To: <20210617051119.1153120-1-yangyingliang@huawei.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26203/Wed Jun 16 13:07:58 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/16/21 12:07 AM, Eric Biggers wrote:
-> On Tue, Jun 15, 2021 at 11:54:41PM +0200, Daniel Borkmann wrote:
->> On 6/15/21 11:38 PM, Eric Biggers wrote:
->>> On Tue, Jun 15, 2021 at 02:32:18PM -0700, Eric Biggers wrote:
->>>> On Tue, Jun 15, 2021 at 11:08:18PM +0200, Daniel Borkmann wrote:
->>>>> On 6/15/21 9:33 PM, Eric Biggers wrote:
->>>>>> On Tue, Jun 15, 2021 at 07:51:07PM +0100, Edward Cree wrote:
->>>>>>>
->>>>>>> As I understand it, the UBSAN report is coming from the eBPF interpreter,
->>>>>>>     which is the *slow path* and indeed on many production systems is
->>>>>>>     compiled out for hardening reasons (CONFIG_BPF_JIT_ALWAYS_ON).
->>>>>>> Perhaps a better approach to the fix would be to change the interpreter
->>>>>>>     to compute "DST = DST << (SRC & 63);" (and similar for other shifts and
->>>>>>>     bitnesses), thus matching the behaviour of most chips' shift opcodes.
->>>>>>> This would shut up UBSAN, without affecting JIT code generation.
->>>>>>
->>>>>> Yes, I suggested that last week
->>>>>> (https://lkml.kernel.org/netdev/YMJvbGEz0xu9JU9D@gmail.com).  The AND will even
->>>>>> get optimized out when compiling for most CPUs.
->>>>>
->>>>> Did you check if the generated interpreter code for e.g. x86 is the same
->>>>> before/after with that?
->>>>
->>>> Yes, on x86_64 with gcc 10.2.1, the disassembly of ___bpf_prog_run() is the same
->>>> both before and after (with UBSAN disabled).  Here is the patch I used:
->>>>
->>>> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
->>>> index 5e31ee9f7512..996db8a1bbfb 100644
->>>> --- a/kernel/bpf/core.c
->>>> +++ b/kernel/bpf/core.c
->>>> @@ -1407,12 +1407,30 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
->>>>    		DST = (u32) DST OP (u32) IMM;	\
->>>>    		CONT;
->>>> +	/*
->>>> +	 * Explicitly mask the shift amounts with 63 or 31 to avoid undefined
->>>> +	 * behavior.  Normally this won't affect the generated code.
->>
->> The last one should probably be more specific in terms of 'normally', e.g. that
->> it is expected that the compiler is optimizing this away for archs like x86. Is
->> arm64 also covered by this ... do you happen to know on which archs this won't
->> be the case?
->>
->> Additionally, I think such comment should probably be more clear in that it also
->> needs to give proper guidance to JIT authors that look at the interpreter code to
->> see what they need to implement, in other words, that they don't end up copying
->> an explicit AND instruction emission if not needed there.
+On 6/17/21 12:11 AM, Yang Yingliang wrote:
+> This node pointer is returned by of_parse_phandle() with refcount
+> incremented in this function. of_node_put() on it before exiting
+> this function.
 > 
-> Same result on arm64 with gcc 10.2.0.
-> 
-> On arm32 it is different, probably because the 64-bit shifts aren't native in
-> that case.  I don't know about other architectures.  But there aren't many ways
-> to implement shifts, and using just the low bits of the shift amount is the most
-> logical way.
-> 
-> Please feel free to send out a patch with whatever comment you want.  The diff I
-> gave was just an example and I am not an expert in BPF.
-> 
->>
->>>> +	 */
->>>> +#define ALU_SHIFT(OPCODE, OP)		\
->>>> +	ALU64_##OPCODE##_X:		\
->>>> +		DST = DST OP (SRC & 63);\
->>>> +		CONT;			\
->>>> +	ALU_##OPCODE##_X:		\
->>>> +		DST = (u32) DST OP ((u32)SRC & 31);	\
->>>> +		CONT;			\
->>>> +	ALU64_##OPCODE##_K:		\
->>>> +		DST = DST OP (IMM & 63);	\
->>>> +		CONT;			\
->>>> +	ALU_##OPCODE##_K:		\
->>>> +		DST = (u32) DST OP ((u32)IMM & 31);	\
->>>> +		CONT;
->>
->> For the *_K cases these are explicitly rejected by the verifier already. Is this
->> required here nevertheless to suppress UBSAN false positive?
-> 
-> No, I just didn't know that these constants are never out of range.  Please feel
-> free to send out a patch that does this properly.
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-Summarized and fixed via:
+Acked-by: Alex Elder <elder@linaro.org>
 
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=28131e9d933339a92f78e7ab6429f4aaaa07061c
+> ---
+>   drivers/net/ipa/ipa_main.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+> index 2243e3e5b7ea..f82130db32f6 100644
+> --- a/drivers/net/ipa/ipa_main.c
+> +++ b/drivers/net/ipa/ipa_main.c
+> @@ -530,6 +530,7 @@ static int ipa_firmware_load(struct device *dev)
+>   	}
+>   
+>   	ret = of_address_to_resource(node, 0, &res);
+> +	of_node_put(node);
+>   	if (ret) {
+>   		dev_err(dev, "error %d getting \"memory-region\" resource\n",
+>   			ret);
+> 
 
-Thanks everyone,
-Daniel
