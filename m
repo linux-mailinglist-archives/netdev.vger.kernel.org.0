@@ -2,53 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AC4E3AB408
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 14:50:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 130E73AB427
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 14:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231967AbhFQMxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 08:53:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47840 "EHLO mail.kernel.org"
+        id S232062AbhFQNBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 09:01:16 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42580 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231757AbhFQMxA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 08:53:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 561A661209;
-        Thu, 17 Jun 2021 12:50:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1623934251;
-        bh=k4q7NzRZSiwdbbAWtQLvpe237U6i/9kMgcR/koBL1RY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DARwNKlE21Pt2vFuI9IbpKY/YTepvjYj2nxb9Z+Iez0iUD1/sAYyyPt+lXyYD5fD+
-         1zoaEcvXn1+i6V08NyY5V0brqdfdA/yk2UZ3pgKU4RucObWWGxsYv0kTN4Qb6TKWmB
-         6E1xi+YbkhbBvY0SBV5JB0UFDPBTOY0oOk8nVgN4=
-Date:   Thu, 17 Jun 2021 14:50:49 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        rafael@kernel.org, grant.likely@arm.com,
-        calvin.johnson@oss.nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: [PATCH net-next v2 2/3] driver core: add a helper to setup both
- the of_node and fwnode of a device
-Message-ID: <YMtFKaQVWzjissYr@kroah.com>
-References: <20210617122905.1735330-1-ciorneiioana@gmail.com>
- <20210617122905.1735330-3-ciorneiioana@gmail.com>
+        id S230137AbhFQNBP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Jun 2021 09:01:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=hHXkwgKnNfp9L6OW35d26XLF9j9waBFBIWrHzICzUiA=; b=2jrxKMoVFqfxXdyWvZ5FM9OnW/
+        7OssGebI5yQ27lLxmuqijnmLicIFZoQ/xbeDezh7OeDMum/zxlJlPDMFk53Z3+JBkxFWb74NmM46v
+        QFNqnErKV4bez28i7VyL3LjN7I2lrMP7lRUyQ3yXjKKx9XLQYUduLHgdMiCHr4bZDW2s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ltrbt-009u8e-CN; Thu, 17 Jun 2021 14:59:05 +0200
+Date:   Thu, 17 Jun 2021 14:59:05 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        Jon Nettleton <jon@solid-run.com>,
+        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
+        lenb@kernel.org
+Subject: Re: [net-next: PATCH v2 2/7] net: mdiobus: Introduce
+ fwnode_mdbiobus_register()
+Message-ID: <YMtHGV/Yr6h3TKKI@lunn.ch>
+References: <20210616190759.2832033-1-mw@semihalf.com>
+ <20210616190759.2832033-3-mw@semihalf.com>
+ <YMpR+lJqcgQU2DMO@lunn.ch>
+ <CAPv3WKdOkxV695DbhhYr+wf1rnphtj-pyERZ-74RrdZyQJGt=g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210617122905.1735330-3-ciorneiioana@gmail.com>
+In-Reply-To: <CAPv3WKdOkxV695DbhhYr+wf1rnphtj-pyERZ-74RrdZyQJGt=g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 17, 2021 at 03:29:04PM +0300, Ioana Ciornei wrote:
-> From: Ioana Ciornei <ioana.ciornei@nxp.com>
-> 
-> There are many places where both the fwnode_handle and the of_node of a
-> device need to be populated. Add a function which does both so that we
-> have consistency.
-> 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> Actually mvmdio driver is using this fallback for non-dt platforms
+> (e.g. Orion). Therefore I would prefer to keep the current behavior.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+A quick look at Orion5x, it is now a multi arch MACH. It selects
+ARCH_MULTI_V5. Which seems to imply ARCH_MULTIPLATFORM which selects
+USE_OF which selects OF.
 
+At least for ARM, i'm not sure you can realistically disable OF.
+
+Having said that acpi_mdiobus_register() also falls back to
+mdiobus_register(mdio). So it is symmetric. And
+fwmode_mdiobus_register() falling back would keep with the
+symmetry. So, O.K.
+
+	  Andrew
