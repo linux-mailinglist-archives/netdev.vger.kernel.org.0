@@ -2,64 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22C383ABC95
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:21:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 652B73ABC8A
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233544AbhFQTWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 15:22:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39582 "EHLO mail.kernel.org"
+        id S233248AbhFQTW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 15:22:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39548 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233264AbhFQTWV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233253AbhFQTWV (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 17 Jun 2021 15:22:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9A2F5613FB;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6F324613EE;
         Thu, 17 Jun 2021 19:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623957613;
-        bh=KyQZr1dUm8eihf9rmFcrwtoIVDpukIaGJ+V4Czydxz4=;
+        bh=PsJWAkyXgW4WiW2hDScun0vO/mPUHwpob19D9DS+/Jo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nqFdhN43f5Bn5i225GM4fZOYZMVpwB+ylEtFnzGtUhUi06bK24N0xCzxa2VUSsy51
-         gs8dDGdJM2K+wbuT9dHAWbvsIqmPTfQdBGOxPD0iB4pyaTL0qAHo253RjiCXmYzvuW
-         f0YviklOjkxRho0SMkueLqMPQHhczK3iM6MAe8l+h/LDo0TkLparrHoRVpOUvkGIxc
-         eWLrDgqmnxW7cywaCBqUseeRHha78OE+I9z/n1y2qe6FOCyKdB6UGrpamCgbcd7Ias
-         UTtKr47S3pgwmLFVY+cDGMupI4YVQb7mDovIooiQulBbeEK3IT6GU8l0vS5YFyST3m
-         ukpzmSTAaaI9w==
+        b=HAFvvcKiRdEpUtnUFZm7PN2hLjW1pTvBv+CTLFKpaVJWt1A+IepTBwD5XhB/hUU4F
+         nwuWhiweRWdwUtBRmYxi0Hev3qvAbaPQiybp+NPPg2g8YVumMl9G8x5rorVsPcI9yS
+         tAg/sA6ymdCgHEDYPNBM7YSG3nqJJKGtCMVEL/JULR7c2il0ktVlmPRn7oyTCz+q/9
+         OtCiDNdEtPLmGkgee1bMQLWkVJ2UhSwKUyBY5krb5hSvLUU498boYR6A1cvO19zbGM
+         El+i7QFzj14a08IXHy/avgrK1se0HhLi1zd9rx5r4WVmbICeXFU7lLFS8XnYq6K2zp
+         Z9SRV64dCSnuw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 92E8960A0A;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5EEDD60A54;
         Thu, 17 Jun 2021 19:20:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] r8152: store the information of the pipes
+Subject: Re: [PATCH net-next v2 0/3] net: mdio: setup both fwnode and of_node
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162395761359.22568.8846076007661203766.git-patchwork-notify@kernel.org>
+Message-Id: <162395761338.22568.4198014578041173710.git-patchwork-notify@kernel.org>
 Date:   Thu, 17 Jun 2021 19:20:13 +0000
-References: <1394712342-15778-367-Taiwan-albertk@realtek.com>
-In-Reply-To: <1394712342-15778-367-Taiwan-albertk@realtek.com>
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        nic_swsd@realtek.com, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
+References: <20210617122905.1735330-1-ciorneiioana@gmail.com>
+In-Reply-To: <20210617122905.1735330-1-ciorneiioana@gmail.com>
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        grant.likely@arm.com, calvin.johnson@oss.nxp.com,
+        ioana.ciornei@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 17 Jun 2021 18:00:15 +0800 you wrote:
-> Store the information of the pipes to avoid calling usb_rcvctrlpipe(),
-> usb_sndctrlpipe(), usb_rcvbulkpipe(), usb_sndbulkpipe(), and
-> usb_rcvintpipe() frequently.
+On Thu, 17 Jun 2021 15:29:02 +0300 you wrote:
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
 > 
-> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
-> ---
->  drivers/net/usb/r8152.c | 18 +++++++++++++-----
->  1 file changed, 13 insertions(+), 5 deletions(-)
+> The first patch in this series fixes a bug introduced by mistake in the
+> previous ACPI MDIO patch set.
+> 
+> The next two patches are adding a new helper which takes a device and a
+> fwnode_handle and populates both the of_node and fwnode so that we make
+> sure that a bug like this does not happen anymore.
+> Also, the new helper is used in the MDIO area.
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] r8152: store the information of the pipes
-    https://git.kernel.org/netdev/net-next/c/b67fda9a8280
+  - [net-next,v2,1/3] net: mdio: setup of_node for the MDIO device
+    https://git.kernel.org/netdev/net-next/c/70ef608c224a
+  - [net-next,v2,2/3] driver core: add a helper to setup both the of_node and fwnode of a device
+    https://git.kernel.org/netdev/net-next/c/43e76d463c09
+  - [net-next,v2,3/3] net: mdio: use device_set_node() to setup both fwnode and of
+    https://git.kernel.org/netdev/net-next/c/7e33d84db1a8
 
 You are awesome, thank you!
 --
