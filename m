@@ -2,70 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 730593ABA3A
+	by mail.lfdr.de (Postfix) with ESMTP id DF91A3ABA3B
 	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 19:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbhFQRHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 13:07:32 -0400
-Received: from mail-mw2nam12on2067.outbound.protection.outlook.com ([40.107.244.67]:64609
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S231683AbhFQRHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 13:07:33 -0400
+Received: from mail-bn8nam11on2083.outbound.protection.outlook.com ([40.107.236.83]:4032
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231181AbhFQRHa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231630AbhFQRHa (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 17 Jun 2021 13:07:30 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JmFIduj0ORIcGPYdfFWbEwpgkoACtxaM4fBHTBwML0Nf5sIT/4tPwMoDVhWG1rNKpu5oYENAS2HIOvKlIm+eBovlAxRM1ALB10vJUk2+fkNWIum1J2WJf3yQZTiYzBR0n3jz7l6n2WZ76MpFs0OAGrZlDjy/jL4XRaG7OZQW2JMA2G8EqslGBj8Wz183c5f0UbhzqEUQvLrgsu+aB4rwjrVfoRwEX1JzCPJy/zkJEppL1hdERw07h8VOFi8khBrfhytNH+mGZDb38P88OraqMEmW4KHBWQtBAB42cs89CQg7F9xvn5mKyWHGdzJYEv5taQaw9me7OFiY+d7cnQ8M9A==
+ b=Ei+Lj377H23JAvTFOoe7qakUfdZsit2jxAqyH2oUsFHq3U/P/CY99k2bPA3sBapWeMjhWgNUuj6PYbeNpc0ue8KDl7O2inAhCML8BbMh6qU7mepnmLB6c9MjJyMebMkZPGompMysYdF3J+Xhgm2rZTEl8n9vX8QW34cMsjeAj30/jHKXjN+zEPdK+4bD1JzOHH6QcwLXhQadkpp6RoOHE2qs8/++dQ1mUkRbSe5lcetCEtJajX7qKlrOxhvZX0tgA/3bPpn6GP6haebqH9WS1u5YVVDCP3RJG1C6UmDkRYiiWtxsYLa4V2p57LjEFC9spDz9OgEUA5DCWQ+4/HbFLA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LaNa4f+Tk6r7Rlq5o/NGIcd3iN8kRuD+/wY2yqR38x4=;
- b=KQ5AlyLXny8SgK1TydXUI7xDR3GhRLKWCv9KWaYwRoo24I9FNksxbF5CnX1QOQ+N2k33f9owBb6sW+ByokxGABYKlS0SgDGQCP2f0g6xchpa1OhNaBCbb8QfRe8RSxLYlYvdFk6MhgjKjJfJCdWaIXE2YVsEgyYYaYcwppVuzSZCh8bm8JwzcFGXhzbwGh8rzKFfe87dkDfJzz7bt/gix4rCDyRePNjb8lW0EIT6RtQL7YtMmp3PcO6GqKzbq+ZfUIIRt1kKLomT6dbM+zeafE1tva6TvMAipDAexH5+pdPC9YXbObE0QzBmViVNNQq8t9X0pBvYJtRKctbLAmRznw==
+ bh=0QBuh/VF6pcXFmWvP6wE9P10a4P/WnUm0rTOktyj+iQ=;
+ b=gajV9qrAhK25rRxnUDvYUSWuVjRy1kO+NesMurwPWc1ZVvfMm3wqyzZPEi9xpG2CJGEXEwn4oj2A9RVTCsskyl6Q1DYyyvpfJZSeDWJ3vfpktFZeuNPL9CJaeyjMpVmx9iqioBhmLeGGw7GNvjdWEezDAHRzUVOtHQ/7L7eyp09oJKI0YZEW4cSnKeYubkV3nu3z3DudoBAIE4nYGkvKmG5ljNhAi7pnF/IQkIEP7Rx2SltiMT/uEn1/w/LAvRxC+kIxp5BLz1jntjcGiv73qZKNoq1bv9ZKDDX4rfNJjUA0u0ZIli0zZEEnSphcRnbG+G+ZNHB2Wl5xSUHWtu/huA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=lunn.ch smtp.mailfrom=nvidia.com;
+ 216.228.112.34) smtp.rcpttodomain=thebollingers.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LaNa4f+Tk6r7Rlq5o/NGIcd3iN8kRuD+/wY2yqR38x4=;
- b=C8dZghA2oxtvhdRtw952UygCa0HErmeD/xvGv6cCXuYhJsVlbpFnfPcK/xCTE67c9z0OPz9+l4B/wVCI24wVVtQ7hctpfXynYutxhM7HPlGILHv5eWjH1tfp5O10pxw0YM+NE/zPFZ+RR2zpUawE9a4/uR2xbYdj9lrIWqm4362bXust8hD32Si89NRgDCBOx8e/dMXI8ROKgJAzYZp2ooa0XuVnnUvKBRvbrtr67XbBTLU/EjMQB59nvQZPKPHAkCBOxiuJNHsiqMORdz5Z1Opshe2AtCkbaaKqWfcbDhej95QO2mTZ2iyNh5xt8siPbp8eHs5R5ZP93K0vsyoAdw==
-Received: from MW4P220CA0014.NAMP220.PROD.OUTLOOK.COM (2603:10b6:303:115::19)
- by DM6PR12MB3836.namprd12.prod.outlook.com (2603:10b6:5:1c3::33) with
+ bh=0QBuh/VF6pcXFmWvP6wE9P10a4P/WnUm0rTOktyj+iQ=;
+ b=lO7SMkAfvJK5WQl5Xc6XOIalhh7YSD6XZEyMh4/K+843WZQUDUQ8Bx4mzxYqkJRCIVSp41Nnb9TJiFvk1h2Z1SFdTPBEzdIBeS26ek5sqUgkiEW4bZjsnZpl09R9u6IXpvtUYjCRmQ+Fm6k+ucQScTSa8P8Xgsxuq+ACCUsXAz996p8ltjYNWUfgTCpB6SCuHiIq8UG7pJIosEhiyS1bCb0Z2MW2IiG8dPyX3q1IOj4SgeE64OC1KWvixpOTLSQyRLdT1t/BqbRjjXCfWj8bEG657kPN0RKZkyHYfzkremFz4krYfFQONspcTNvmtjeRLuhlW7SGdbCpiX2mfLlCZQ==
+Received: from BN6PR13CA0012.namprd13.prod.outlook.com (2603:10b6:404:10a::22)
+ by DM4PR12MB5054.namprd12.prod.outlook.com (2603:10b6:5:389::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.19; Thu, 17 Jun
- 2021 17:05:19 +0000
-Received: from CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:115:cafe::fe) by MW4P220CA0014.outlook.office365.com
- (2603:10b6:303:115::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.15 via Frontend
- Transport; Thu, 17 Jun 2021 17:05:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
- smtp.mailfrom=nvidia.com; lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=pass action=none header.from=nvidia.com;
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.18; Thu, 17 Jun
+ 2021 17:05:21 +0000
+Received: from BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:10a:cafe::b5) by BN6PR13CA0012.outlook.office365.com
+ (2603:10b6:404:10a::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.7 via Frontend
+ Transport; Thu, 17 Jun 2021 17:05:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; thebollingers.org; dkim=none (message not signed)
+ header.d=none;thebollingers.org; dmarc=pass action=none
+ header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- CO1NAM11FT037.mail.protection.outlook.com (10.13.174.91) with Microsoft SMTP
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT042.mail.protection.outlook.com (10.13.177.85) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4242.16 via Frontend Transport; Thu, 17 Jun 2021 17:05:19 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Jun
- 2021 10:05:18 -0700
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Jun
- 2021 17:05:18 +0000
+ 15.20.4242.16 via Frontend Transport; Thu, 17 Jun 2021 17:05:21 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Jun
+ 2021 17:05:20 +0000
 Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Jun 2021 10:05:16 -0700
+ Transport; Thu, 17 Jun 2021 10:05:18 -0700
 From:   Moshe Shemesh <moshe@nvidia.com>
 To:     Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>,
         "Jakub Kicinski" <kuba@kernel.org>,
         Don Bollinger <don@thebollingers.org>, <netdev@vger.kernel.org>
 CC:     Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH ethtool v4 1/4] ethtool: Add netlink handler for getmodule (-m)
-Date:   Thu, 17 Jun 2021 20:05:01 +0300
-Message-ID: <1623949504-51291-2-git-send-email-moshe@nvidia.com>
+Subject: [PATCH ethtool v4 2/4] ethtool: Refactor human-readable module EEPROM output for new API
+Date:   Thu, 17 Jun 2021 20:05:02 +0300
+Message-ID: <1623949504-51291-3-git-send-email-moshe@nvidia.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1623949504-51291-1-git-send-email-moshe@nvidia.com>
 References: <1623949504-51291-1-git-send-email-moshe@nvidia.com>
@@ -73,624 +71,483 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: eaa1fcec-8683-46aa-0855-08d931b21619
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3836:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3836B2BDE1DFB39A20241616D40E9@DM6PR12MB3836.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Office365-Filtering-Correlation-Id: ccbcf2f0-3dd6-4885-e77b-08d931b2174e
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5054:
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5054173BF460F867B5B8119AD40E9@DM4PR12MB5054.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 33ZQuvzjxmW4/n/aUsq0rK6cqcmtM1N3nykqAxXbTNFz8gXT2e0RttapUa3oWLnoLQXD7LWFgkFmRT81PtRsRhgiPkrL2P9fGFgy/F7skFxKbPRdo4lK7bRobOMfImULrtx2BevOjQjVdWf8ESbYAkprpAfgTOW1LbHpq5l/Jd3fdV4R86upUS/csFIH+99gYud+UJKHvafGHyE7942IdgPLSeULouHuZxp2FJV0O0uxmt4MPfpJgv6LWlo37EtYZLZYKGGHlDWUYaIziG/BZ27Z3k7IwhxZdICeuBZr1vEJfdIhtpI/2pjRYZAxz1WzLJ+epC9f38wbabXDu/CeJ3i7iuvW/6cLDxXwmuiug3Z1G0s/3PsY6Jpr50ft0aSK2HARNcMpbpOBWbr0UmdKGbJrx2PExjzcWrW8HtY8FIk7tffK6OplT5rrkBbbTHlstHygqTPo6EWg8UT+B9Plth4qu9HBZcKgu01LmZeBtyYlesXMgRv+WTSiTJS3RGgTjgZdaM1tgGzxruQi1dbYngCp0Pi/a77nUqy1rOoROO5tjUPaUYE2nvkAxpjAEfN1ems+QKKvaEY4ojlOn1vs4h/YqofA6yHgOcZKjpKGsGJmEWcQ3AGnXn+S8s4HVXsanvVTgTwgSrN1tTblDBTUFsGnTSiV5khEbvCQABlVizI=
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(110136005)(498600001)(426003)(2906002)(336012)(54906003)(186003)(7636003)(26005)(356005)(70586007)(8676002)(6666004)(5660300002)(70206006)(8936002)(82310400003)(36860700001)(2616005)(30864003)(107886003)(83380400001)(86362001)(7696005)(36756003)(47076005)(4326008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: yL82DSkQZyF8CL38aQKVY80FPByDUoY41A2ybVk6hqSHQ9p6YbXO16XgQ6TMGfqt5jNWedmG5hawq/b5F0HfDRLF+EmC4Ac6CcAN/gIftM30/xHbKyCzj8VDWDAlmEcTZsDpBPcM/H+BOjKY9YdCPee+FpYE8Uq5X7KzX/nShZ7avZ6wx3OrWZpUwszqEdBvMgJKh+md7F0vBlR7T53HOg8Fs21vCZT4Z/MZbMgfEK6kxVMxOBid4S4BPYy38taWDaYVt7gmu/O+czQ6DnqDJDWUnZrw3ZI7CG1euYDWUt7Vdi4piftGNbRGHvYLw3fYsEjpq6C8bH2J/I+QzcWpgWAi66JE+SNp+s8MuMa6aSDWJ2vSzPPVn1mo3vNuuIadTCGLF6ArHYOqewgebJ8VoU8V6CtWpkG5+iycEimxqu5i3W1ajy6fIDzfT9Il1D9ys+seRXZxevj+9EqjgXIepSOu9vRLX3Y2QXGnN9Frl5oBxAaEboBejYGpfiQPQKxGfImjVkdWkVSSByNnJEXZ6H8ESAqkDUqkG1oS7bXxUnp08rv8/88O6PoZmHeQge/gBZe9jn4Ph8pP/iXIdiU1uLqYHXPk3OxDDuJSof8ON0o+5Pr4J8WTuSlaQ9u39S1C3xl99l1wpSKy/YxtJbsi5yvtU33lFYUS/nxVunWm2KE=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(136003)(376002)(346002)(36840700001)(46966006)(7636003)(8936002)(82740400003)(36756003)(36860700001)(478600001)(107886003)(4326008)(82310400003)(30864003)(2906002)(426003)(336012)(6666004)(47076005)(356005)(316002)(54906003)(83380400001)(36906005)(110136005)(5660300002)(26005)(8676002)(70586007)(70206006)(186003)(86362001)(7696005)(2616005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2021 17:05:19.3245
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2021 17:05:21.2803
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: eaa1fcec-8683-46aa-0855-08d931b21619
+X-MS-Exchange-CrossTenant-Network-Message-Id: ccbcf2f0-3dd6-4885-e77b-08d931b2174e
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3836
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5054
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 
-Implement "ethtool -m <dev>" subcommand using netlink and extend the
-interface for new module EEPROM standards. Currently, ethtool supports
-module EEPROM dumps of continuous memory regions, which are specified
-using a pair of parameters - offset and length. But due to emergence of
-new standards such as CMIS 4.0, which further extends possible
-addressed memory, this approach shows its limitations.
-
-Extend command line interface in order to support dumps of arbitrary
-pages including CMIS specific banked pages:
- ethtool -m <dev> [page N] [bank N] [i2c N]
-
-Command example:
- # ethtool -m eth2 page 1 offset 0x80 length 0x20
-
- Offset          Values
- ------          ------
- 0x0080:         11 00 23 80 00 00 00 00 00 00 00 08 ff 00 00 00
- 0x0090:         00 00 01 a0 4d 65 6c 6c 61 6e 6f 78 20 20 20 20
+Reuse existing SFF8636 and QSFP-DD infrastructures to implement
+EEPROM decoders, which work with paged memory. Add support for
+human-readable output for QSFP, QSFP28, QSFP Plus, QSFP-DD and DSFP
+transreceivers from netlink 'ethtool -m' handler.
 
 Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 ---
- Makefile.am             |   1 +
- ethtool.c               |   4 +
- internal.h              |  10 ++
- list.h                  |  34 ++++
- netlink/desc-ethtool.c  |  13 ++
- netlink/extapi.h        |   2 +
- netlink/module-eeprom.c | 404 ++++++++++++++++++++++++++++++++++++++++++++++++
- 7 files changed, 468 insertions(+)
- create mode 100644 list.h
- create mode 100644 netlink/module-eeprom.c
+ internal.h              |   2 +
+ netlink/module-eeprom.c |  12 +++++
+ qsfp-dd.c               |  44 +++++++++++++----
+ qsfp-dd.h               |  29 ++++++-----
+ qsfp.c                  | 128 +++++++++++++++++++++++++++---------------------
+ qsfp.h                  |  51 ++++++++++---------
+ sff-common.c            |   3 ++
+ sff-common.h            |   3 +-
+ 8 files changed, 170 insertions(+), 102 deletions(-)
 
-diff --git a/Makefile.am b/Makefile.am
-index 75c2456..6abd2b7 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -38,6 +38,7 @@ ethtool_SOURCES += \
- 		  netlink/eee.c netlink/tsinfo.c netlink/fec.c \
- 		  netlink/stats.c \
- 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
-+		  netlink/module-eeprom.c \
- 		  netlink/desc-rtnl.c netlink/cable_test.c netlink/tunnels.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
-diff --git a/ethtool.c b/ethtool.c
-index 8ed5a33..33a0a49 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5897,11 +5897,15 @@ static const struct option args[] = {
- 	{
- 		.opts	= "-m|--dump-module-eeprom|--module-info",
- 		.func	= do_getmodule,
-+		.nlfunc = nl_getmodule,
- 		.help	= "Query/Decode Module EEPROM information and optical diagnostics if available",
- 		.xhelp	= "		[ raw on|off ]\n"
- 			  "		[ hex on|off ]\n"
- 			  "		[ offset N ]\n"
- 			  "		[ length N ]\n"
-+			  "		[ page N ]\n"
-+			  "		[ bank N ]\n"
-+			  "		[ i2c N ]\n"
- 	},
- 	{
- 		.opts	= "--show-eee",
 diff --git a/internal.h b/internal.h
-index 27da8ea..2affebe 100644
+index 2affebe..33e619b 100644
 --- a/internal.h
 +++ b/internal.h
-@@ -216,6 +216,16 @@ static inline int ethtool_link_mode_set_bit(unsigned int nr, u32 *mask)
- 	return 0;
- }
+@@ -391,6 +391,8 @@ void sff8472_show_all(const __u8 *id);
  
-+/* Struct for managing module EEPROM pages */
-+struct ethtool_module_eeprom {
-+	u32	offset;
-+	u32	length;
-+	u8	page;
-+	u8	bank;
-+	u8	i2c_address;
-+	u8	*data;
-+};
-+
- /* Context for sub-commands */
- struct cmd_context {
- 	const char *devname;	/* net device name */
-diff --git a/list.h b/list.h
-new file mode 100644
-index 0000000..aa97fdd
---- /dev/null
-+++ b/list.h
-@@ -0,0 +1,34 @@
-+#ifndef ETHTOOL_LIST_H__
-+#define ETHTOOL_LIST_H__
-+
-+#include <unistd.h>
-+
-+/* Generic list utilities */
-+
-+struct list_head {
-+	struct list_head *next, *prev;
-+};
-+
-+#define LIST_HEAD_INIT(name) { &(name), &(name) }
-+
-+static inline void list_add(struct list_head *new, struct list_head *head)
-+{
-+	head->next->prev = new;
-+	new->next = head->next;
-+	new->prev = head;
-+	head->next = new;
-+}
-+
-+static inline void list_del(struct list_head *entry)
-+{
-+	entry->next->prev = entry->prev;
-+	entry->prev->next = entry->next;
-+	entry->next = NULL;
-+	entry->prev = NULL;
-+}
-+
-+#define list_for_each_safe(pos, n, head) \
-+	for (pos = (head)->next, n = pos->next; pos != (head); \
-+		pos = n, n = pos->next)
-+
-+#endif
-diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-index 8ea7c53..d6fc4e2 100644
---- a/netlink/desc-ethtool.c
-+++ b/netlink/desc-ethtool.c
-@@ -363,6 +363,17 @@ static const struct pretty_nla_desc __stats_desc[] = {
- 	NLATTR_DESC_NESTED(ETHTOOL_A_STATS_GRP, stats_grp),
- };
+ /* QSFP Optics diagnostics */
+ void sff8636_show_all(const __u8 *id, __u32 eeprom_len);
++void sff8636_show_all_paged(const struct ethtool_module_eeprom *page_zero,
++			    const struct ethtool_module_eeprom *page_three);
  
-+const struct pretty_nla_desc __module_eeprom_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_MODULE_EEPROM_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_MODULE_EEPROM_HEADER, header),
-+	NLATTR_DESC_U32(ETHTOOL_A_MODULE_EEPROM_OFFSET),
-+	NLATTR_DESC_U32(ETHTOOL_A_MODULE_EEPROM_LENGTH),
-+	NLATTR_DESC_U8(ETHTOOL_A_MODULE_EEPROM_PAGE),
-+	NLATTR_DESC_U8(ETHTOOL_A_MODULE_EEPROM_BANK),
-+	NLATTR_DESC_U8(ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS),
-+	NLATTR_DESC_BINARY(ETHTOOL_A_MODULE_EEPROM_DATA)
-+};
-+
- const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC_INVALID(ETHTOOL_MSG_USER_NONE),
- 	NLMSG_DESC(ETHTOOL_MSG_STRSET_GET, strset),
-@@ -396,6 +407,7 @@ const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC(ETHTOOL_MSG_FEC_GET, fec),
- 	NLMSG_DESC(ETHTOOL_MSG_FEC_SET, fec),
- 	NLMSG_DESC(ETHTOOL_MSG_STATS_GET, stats),
-+	NLMSG_DESC(ETHTOOL_MSG_MODULE_EEPROM_GET, module_eeprom),
- };
- 
- const unsigned int ethnl_umsg_n_desc = ARRAY_SIZE(ethnl_umsg_desc);
-@@ -434,6 +446,7 @@ const struct pretty_nlmsg_desc ethnl_kmsg_desc[] = {
- 	NLMSG_DESC(ETHTOOL_MSG_FEC_GET_REPLY, fec),
- 	NLMSG_DESC(ETHTOOL_MSG_FEC_NTF, fec),
- 	NLMSG_DESC(ETHTOOL_MSG_STATS_GET_REPLY, stats),
-+	NLMSG_DESC(ETHTOOL_MSG_MODULE_EEPROM_GET_REPLY, module_eeprom),
- };
- 
- const unsigned int ethnl_kmsg_n_desc = ARRAY_SIZE(ethnl_kmsg_desc);
-diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 7015907..91bf02b 100644
---- a/netlink/extapi.h
-+++ b/netlink/extapi.h
-@@ -44,6 +44,7 @@ int nl_sfec(struct cmd_context *ctx);
- bool nl_gstats_chk(struct cmd_context *ctx);
- int nl_gstats(struct cmd_context *ctx);
- int nl_monitor(struct cmd_context *ctx);
-+int nl_getmodule(struct cmd_context *ctx);
- 
- void nl_monitor_usage(void);
- 
-@@ -97,6 +98,7 @@ static inline void nl_monitor_usage(void)
- #define nl_sfec			NULL
- #define nl_gstats_chk		NULL
- #define nl_gstats		NULL
-+#define nl_getmodule		NULL
- 
- #endif /* ETHTOOL_ENABLE_NETLINK */
- 
+ /* FUJITSU Extended Socket network device */
+ int fjes_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs);
 diff --git a/netlink/module-eeprom.c b/netlink/module-eeprom.c
-new file mode 100644
-index 0000000..16fe09e
---- /dev/null
+index 16fe09e..664f5c6 100644
+--- a/netlink/module-eeprom.c
 +++ b/netlink/module-eeprom.c
-@@ -0,0 +1,404 @@
-+/*
-+ * module-eeprom.c - netlink implementation of module eeprom get command
-+ *
-+ * ethtool -m <dev>
-+ */
-+
-+#include <errno.h>
-+#include <string.h>
-+#include <stdio.h>
-+#include <stddef.h>
-+
-+#include "../sff-common.h"
-+#include "../qsfp.h"
-+#include "../qsfp-dd.h"
-+#include "../internal.h"
-+#include "../common.h"
-+#include "../list.h"
-+#include "netlink.h"
-+#include "parser.h"
-+
-+#define ETH_I2C_ADDRESS_LOW	0x50
-+#define ETH_I2C_ADDRESS_HIGH	0x51
-+#define ETH_I2C_MAX_ADDRESS	0x7F
-+
-+static struct cmd_params
-+{
-+	u8 dump_hex;
-+	u8 dump_raw;
-+	u32 offset;
-+	u32 length;
-+	u32 page;
-+	u32 bank;
-+	u32 i2c_address;
-+} getmodule_cmd_params;
-+
-+static const struct param_parser getmodule_params[] = {
-+	{
-+		.arg		= "hex",
-+		.handler	= nl_parse_u8bool,
-+		.dest_offset	= offsetof(struct cmd_params, dump_hex),
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "raw",
-+		.handler	= nl_parse_u8bool,
-+		.dest_offset	= offsetof(struct cmd_params, dump_raw),
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "offset",
-+		.handler	= nl_parse_direct_u32,
-+		.dest_offset	= offsetof(struct cmd_params, offset),
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "length",
-+		.handler	= nl_parse_direct_u32,
-+		.dest_offset	= offsetof(struct cmd_params, length),
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "page",
-+		.handler	= nl_parse_direct_u32,
-+		.dest_offset	= offsetof(struct cmd_params, page),
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "bank",
-+		.handler	= nl_parse_direct_u32,
-+		.dest_offset	= offsetof(struct cmd_params, bank),
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "i2c",
-+		.handler	= nl_parse_direct_u32,
-+		.dest_offset	= offsetof(struct cmd_params, i2c_address),
-+		.min_argc	= 1,
-+	},
-+	{}
-+};
-+
-+struct page_entry {
-+	struct list_head link;
-+	struct ethtool_module_eeprom *page;
-+};
-+
-+static struct list_head page_list = LIST_HEAD_INIT(page_list);
-+
-+static int cache_add(struct ethtool_module_eeprom *page)
-+{
-+	struct page_entry *list_element;
-+
-+	if (!page)
-+		return -1;
-+	list_element = malloc(sizeof(*list_element));
-+	if (!list_element)
-+		return -ENOMEM;
-+	list_element->page = page;
-+
-+	list_add(&list_element->link, &page_list);
-+	return 0;
-+}
-+
-+static void page_free(struct ethtool_module_eeprom *page)
-+{
-+	free(page->data);
-+	free(page);
-+}
-+
-+static void cache_del(struct ethtool_module_eeprom *page)
-+{
-+	struct ethtool_module_eeprom *entry;
-+	struct list_head *head, *next;
-+
-+	list_for_each_safe(head, next, &page_list) {
-+		entry = ((struct page_entry *)head)->page;
-+		if (entry == page) {
-+			list_del(head);
-+			free(head);
-+			page_free(entry);
-+			break;
-+		}
-+	}
-+}
-+
-+static void cache_free(void)
-+{
-+	struct ethtool_module_eeprom *entry;
-+	struct list_head *head, *next;
-+
-+	list_for_each_safe(head, next, &page_list) {
-+		entry = ((struct page_entry *)head)->page;
-+		list_del(head);
-+		free(head);
-+		page_free(entry);
-+	}
-+}
-+
-+static struct ethtool_module_eeprom *page_join(struct ethtool_module_eeprom *page_a,
-+					       struct ethtool_module_eeprom *page_b)
-+{
-+	struct ethtool_module_eeprom *joined_page;
-+	u32 total_length;
-+
-+	if (!page_a || !page_b ||
-+	    page_a->page != page_b->page ||
-+	    page_a->bank != page_b->bank ||
-+	    page_a->i2c_address != page_b->i2c_address)
-+		return NULL;
-+
-+	total_length = page_a->length + page_b->length;
-+	joined_page = calloc(1, sizeof(*joined_page));
-+	joined_page->data = calloc(1, total_length);
-+	joined_page->page = page_a->page;
-+	joined_page->bank = page_a->bank;
-+	joined_page->length = total_length;
-+	joined_page->i2c_address = page_a->i2c_address;
-+
-+	if (page_a->offset < page_b->offset) {
-+		memcpy(joined_page->data, page_a->data, page_a->length);
-+		memcpy(joined_page->data + page_a->length, page_b->data, page_b->length);
-+		joined_page->offset = page_a->offset;
-+	} else {
-+		memcpy(joined_page->data, page_b->data, page_b->length);
-+		memcpy(joined_page->data + page_b->length, page_a->data, page_a->length);
-+		joined_page->offset = page_b->offset;
-+	}
-+
-+	return joined_page;
-+}
-+
-+static struct ethtool_module_eeprom *cache_get(u32 page, u32 bank, u8 i2c_address)
-+{
-+	struct ethtool_module_eeprom *entry;
-+	struct list_head *head, *next;
-+
-+	list_for_each_safe(head, next, &page_list) {
-+		entry = ((struct page_entry *)head)->page;
-+		if (entry->page == page && entry->bank == bank &&
-+		    entry->i2c_address == i2c_address)
-+			return entry;
-+	}
-+
-+	return NULL;
-+}
-+
-+static int getmodule_page_fetch_reply_cb(const struct nlmsghdr *nlhdr,
-+					 void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_MODULE_EEPROM_DATA + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct ethtool_module_eeprom *lower_page;
-+	struct ethtool_module_eeprom *response;
-+	struct ethtool_module_eeprom *request;
-+	struct ethtool_module_eeprom *joined;
-+	u8 *eeprom_data;
-+	int ret;
-+
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!tb[ETHTOOL_A_MODULE_EEPROM_DATA]) {
-+		fprintf(stderr, "Malformed netlink message (getmodule)\n");
-+		return MNL_CB_ERROR;
-+	}
-+
-+	response = calloc(1, sizeof(*response));
-+	if (!response)
-+		return -ENOMEM;
-+
-+	request = (struct ethtool_module_eeprom *)data;
-+	response->offset = request->offset;
-+	response->page = request->page;
-+	response->bank = request->bank;
-+	response->i2c_address = request->i2c_address;
-+	response->length = mnl_attr_get_payload_len(tb[ETHTOOL_A_MODULE_EEPROM_DATA]);
-+	eeprom_data = mnl_attr_get_payload(tb[ETHTOOL_A_MODULE_EEPROM_DATA]);
-+
-+	response->data = malloc(response->length);
-+	if (!response->data) {
-+		free(response);
-+		return -ENOMEM;
-+	}
-+	memcpy(response->data, eeprom_data, response->length);
-+
-+	if (!request->page) {
-+		lower_page = cache_get(request->page, request->bank, response->i2c_address);
-+		if (lower_page) {
-+			joined = page_join(lower_page, response);
-+			page_free(response);
-+			cache_del(lower_page);
-+			return cache_add(joined);
-+		}
-+	}
-+
-+	return cache_add(response);
-+}
-+
-+static int page_fetch(struct nl_context *nlctx, const struct ethtool_module_eeprom *request)
-+{
-+	struct nl_socket *nlsock = nlctx->ethnl_socket;
-+	struct nl_msg_buff *msg = &nlsock->msgbuff;
-+	struct ethtool_module_eeprom *page;
-+	int ret;
-+
-+	if (!request || request->i2c_address > ETH_I2C_MAX_ADDRESS)
-+		return -EINVAL;
-+
-+	/* Satisfy request right away, if region is already in cache */
-+	page = cache_get(request->page, request->bank, request->i2c_address);
-+	if (page && page->offset <= request->offset &&
-+	    page->offset + page->length >= request->offset + request->length) {
-+		return 0;
-+	}
-+
-+	ret = nlsock_prep_get_request(nlsock, ETHTOOL_MSG_MODULE_EEPROM_GET,
-+				      ETHTOOL_A_MODULE_EEPROM_HEADER, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ethnla_put_u32(msg, ETHTOOL_A_MODULE_EEPROM_LENGTH, request->length) ||
-+	    ethnla_put_u32(msg, ETHTOOL_A_MODULE_EEPROM_OFFSET, request->offset) ||
-+	    ethnla_put_u8(msg, ETHTOOL_A_MODULE_EEPROM_PAGE, request->page) ||
-+	    ethnla_put_u8(msg, ETHTOOL_A_MODULE_EEPROM_BANK, request->bank) ||
-+	    ethnla_put_u8(msg, ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS, request->i2c_address))
-+		return -EMSGSIZE;
-+
-+	ret = nlsock_sendmsg(nlsock, NULL);
-+	if (ret < 0)
-+		return ret;
-+	ret = nlsock_process_reply(nlsock, getmodule_page_fetch_reply_cb, (void *)request);
-+	if (ret < 0)
-+		return ret;
-+
-+	return nlsock_process_reply(nlsock, nomsg_reply_cb, NULL);
-+}
-+
-+static int decoder_prefetch(struct nl_context *nlctx)
-+{
-+	struct ethtool_module_eeprom *page_zero_lower = cache_get(0, 0, ETH_I2C_ADDRESS_LOW);
-+	struct ethtool_module_eeprom request = {0};
-+	u8 module_id = page_zero_lower->data[0];
-+	int err = 0;
-+
-+	/* Fetch rest of page 00 */
-+	request.i2c_address = ETH_I2C_ADDRESS_LOW;
-+	request.offset = 128;
-+	request.length = 128;
-+	err = page_fetch(nlctx, &request);
-+	if (err)
-+		return err;
-+
-+	switch (module_id) {
+@@ -302,6 +302,7 @@ static int decoder_prefetch(struct nl_context *nlctx)
+ 		request.page = 3;
+ 		break;
+ 	case SFF8024_ID_QSFP_DD:
++	case SFF8024_ID_DSFP:
+ 		memset(&request, 0, sizeof(request));
+ 		request.i2c_address = ETH_I2C_ADDRESS_LOW;
+ 		request.offset = 128;
+@@ -315,13 +316,24 @@ static int decoder_prefetch(struct nl_context *nlctx)
+ 
+ static void decoder_print(void)
+ {
++	struct ethtool_module_eeprom *page_three = cache_get(3, 0, ETH_I2C_ADDRESS_LOW);
+ 	struct ethtool_module_eeprom *page_zero = cache_get(0, 0, ETH_I2C_ADDRESS_LOW);
++	struct ethtool_module_eeprom *page_one = cache_get(1, 0, ETH_I2C_ADDRESS_LOW);
+ 	u8 module_id = page_zero->data[SFF8636_ID_OFFSET];
+ 
+ 	switch (module_id) {
+ 	case SFF8024_ID_SFP:
+ 		sff8079_show_all(page_zero->data);
+ 		break;
 +	case SFF8024_ID_QSFP:
 +	case SFF8024_ID_QSFP28:
 +	case SFF8024_ID_QSFP_PLUS:
-+		memset(&request, 0, sizeof(request));
-+		request.i2c_address = ETH_I2C_ADDRESS_LOW;
-+		request.offset = 128;
-+		request.length = 128;
-+		request.page = 3;
++		sff8636_show_all_paged(page_zero, page_three);
 +		break;
 +	case SFF8024_ID_QSFP_DD:
-+		memset(&request, 0, sizeof(request));
-+		request.i2c_address = ETH_I2C_ADDRESS_LOW;
-+		request.offset = 128;
-+		request.length = 128;
-+		request.page = 1;
++	case SFF8024_ID_DSFP:
++		cmis_show_all(page_zero, page_one);
 +		break;
-+	}
-+
-+	return page_fetch(nlctx, &request);
-+}
-+
-+static void decoder_print(void)
+ 	default:
+ 		dump_hex(stdout, page_zero->data, page_zero->length, page_zero->offset);
+ 		break;
+diff --git a/qsfp-dd.c b/qsfp-dd.c
+index 900bbb5..55adbcb 100644
+--- a/qsfp-dd.c
++++ b/qsfp-dd.c
+@@ -274,6 +274,20 @@ static void qsfp_dd_show_mod_lvl_monitors(const __u8 *id)
+ 		  OFFSET_TO_U16(QSFP_DD_CURR_CURR_OFFSET));
+ }
+ 
++static void qsfp_dd_show_link_len_from_page(const __u8 *page_one_data)
 +{
-+	struct ethtool_module_eeprom *page_zero = cache_get(0, 0, ETH_I2C_ADDRESS_LOW);
-+	u8 module_id = page_zero->data[SFF8636_ID_OFFSET];
-+
-+	switch (module_id) {
-+	case SFF8024_ID_SFP:
-+		sff8079_show_all(page_zero->data);
-+		break;
-+	default:
-+		dump_hex(stdout, page_zero->data, page_zero->length, page_zero->offset);
-+		break;
-+	}
++	qsfp_dd_print_smf_cbl_len(page_one_data);
++	sff_show_value_with_unit(page_one_data, QSFP_DD_OM5_LEN_OFFSET,
++				 "Length (OM5)", 2, "m");
++	sff_show_value_with_unit(page_one_data, QSFP_DD_OM4_LEN_OFFSET,
++				 "Length (OM4)", 2, "m");
++	sff_show_value_with_unit(page_one_data, QSFP_DD_OM3_LEN_OFFSET,
++				 "Length (OM3 50/125um)", 2, "m");
++	sff_show_value_with_unit(page_one_data, QSFP_DD_OM2_LEN_OFFSET,
++				 "Length (OM2 50/125um)", 1, "m");
 +}
 +
-+int nl_getmodule(struct cmd_context *ctx)
++
+ /**
+  * Print relevant info about the maximum supported fiber media length
+  * for each type of fiber media at the maximum module-supported bit rate.
+@@ -283,15 +297,7 @@ static void qsfp_dd_show_mod_lvl_monitors(const __u8 *id)
+  */
+ static void qsfp_dd_show_link_len(const __u8 *id)
+ {
+-	qsfp_dd_print_smf_cbl_len(id);
+-	sff_show_value_with_unit(id, QSFP_DD_OM5_LEN_OFFSET,
+-				 "Length (OM5)", 2, "m");
+-	sff_show_value_with_unit(id, QSFP_DD_OM4_LEN_OFFSET,
+-				 "Length (OM4)", 2, "m");
+-	sff_show_value_with_unit(id, QSFP_DD_OM3_LEN_OFFSET,
+-				 "Length (OM3 50/125um)", 2, "m");
+-	sff_show_value_with_unit(id, QSFP_DD_OM2_LEN_OFFSET,
+-				 "Length (OM2 50/125um)", 1, "m");
++	qsfp_dd_show_link_len_from_page(id + PAG01H_UPPER_OFFSET);
+ }
+ 
+ /**
+@@ -331,3 +337,23 @@ void qsfp_dd_show_all(const __u8 *id)
+ 	qsfp_dd_show_vendor_info(id);
+ 	qsfp_dd_show_rev_compliance(id);
+ }
++
++void cmis_show_all(const struct ethtool_module_eeprom *page_zero,
++		   const struct ethtool_module_eeprom *page_one)
 +{
-+	struct ethtool_module_eeprom request = {0};
-+	struct ethtool_module_eeprom *reply_page;
-+	struct nl_context *nlctx = ctx->nlctx;
-+	u32 dump_length;
-+	u8 *eeprom_data;
-+	int ret;
++	const __u8 *page_zero_data = page_zero->data;
 +
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_MODULE_EEPROM_GET, false))
-+		return -EOPNOTSUPP;
++	qsfp_dd_show_identifier(page_zero_data);
++	qsfp_dd_show_power_info(page_zero_data);
++	qsfp_dd_show_connector(page_zero_data);
++	qsfp_dd_show_cbl_asm_len(page_zero_data);
++	qsfp_dd_show_sig_integrity(page_zero_data);
++	qsfp_dd_show_mit_compliance(page_zero_data);
++	qsfp_dd_show_mod_lvl_monitors(page_zero_data);
 +
-+	nlctx->cmd = "-m";
-+	nlctx->argp = ctx->argp;
-+	nlctx->argc = ctx->argc;
-+	nlctx->devname = ctx->devname;
-+	ret = nl_parser(nlctx, getmodule_params, &getmodule_cmd_params, PARSER_GROUP_NONE, NULL);
-+	if (ret < 0)
-+		return ret;
++	if (page_one)
++		qsfp_dd_show_link_len_from_page(page_one->data);
 +
-+	if (getmodule_cmd_params.dump_hex && getmodule_cmd_params.dump_raw) {
-+		fprintf(stderr, "Hex and raw dump cannot be specified together\n");
-+		return -EINVAL;
-+	}
-+
-+	request.i2c_address = ETH_I2C_ADDRESS_LOW;
-+	request.length = 128;
-+	ret = page_fetch(nlctx, &request);
-+	if (ret)
-+		goto cleanup;
-+
-+#ifdef ETHTOOL_ENABLE_PRETTY_DUMP
-+	if (getmodule_cmd_params.page || getmodule_cmd_params.bank ||
-+	    getmodule_cmd_params.offset || getmodule_cmd_params.length)
-+#endif
-+		getmodule_cmd_params.dump_hex = true;
-+
-+	request.offset = getmodule_cmd_params.offset;
-+	request.length = getmodule_cmd_params.length ?: 128;
-+	request.page = getmodule_cmd_params.page;
-+	request.bank = getmodule_cmd_params.bank;
-+	request.i2c_address = getmodule_cmd_params.i2c_address ?: ETH_I2C_ADDRESS_LOW;
-+
-+	if (request.page && !request.offset)
-+		request.offset = 128;
-+
-+	if (getmodule_cmd_params.dump_hex || getmodule_cmd_params.dump_raw) {
-+		ret = page_fetch(nlctx, &request);
-+		if (ret < 0)
-+			goto cleanup;
-+		reply_page = cache_get(request.page, request.bank, request.i2c_address);
-+		if (!reply_page) {
-+			ret = -EINVAL;
-+			goto cleanup;
-+		}
-+
-+		eeprom_data = reply_page->data + (request.offset - reply_page->offset);
-+		dump_length = reply_page->length < request.length ? reply_page->length
-+								  : request.length;
-+		if (getmodule_cmd_params.dump_raw)
-+			fwrite(eeprom_data, 1, request.length, stdout);
-+		else
-+			dump_hex(stdout, eeprom_data, dump_length, request.offset);
-+	} else {
-+		ret = decoder_prefetch(nlctx);
-+		if (ret)
-+			goto cleanup;
-+		decoder_print();
-+	}
-+
-+cleanup:
-+	cache_free();
-+	return ret;
++	qsfp_dd_show_vendor_info(page_zero_data);
++	qsfp_dd_show_rev_compliance(page_zero_data);
 +}
+diff --git a/qsfp-dd.h b/qsfp-dd.h
+index f589c4e..51f92fa 100644
+--- a/qsfp-dd.h
++++ b/qsfp-dd.h
+@@ -96,30 +96,33 @@
+ /*-----------------------------------------------------------------------
+  * Upper Memory Page 0x01: contains advertising fields that define properties
+  * that are unique to active modules and cable assemblies.
+- * RealOffset = 1 * 0x80 + LocalOffset
++ * GlobalOffset = 2 * 0x80 + LocalOffset
+  */
+-#define PAG01H_UPPER_OFFSET			(0x01 * 0x80)
++#define PAG01H_UPPER_OFFSET			(0x02 * 0x80)
+ 
+ /* Supported Link Length (Page 1) */
+-#define QSFP_DD_SMF_LEN_OFFSET			(PAG01H_UPPER_OFFSET + 0x84)
+-#define QSFP_DD_OM5_LEN_OFFSET			(PAG01H_UPPER_OFFSET + 0x85)
+-#define QSFP_DD_OM4_LEN_OFFSET			(PAG01H_UPPER_OFFSET + 0x86)
+-#define QSFP_DD_OM3_LEN_OFFSET			(PAG01H_UPPER_OFFSET + 0x87)
+-#define QSFP_DD_OM2_LEN_OFFSET			(PAG01H_UPPER_OFFSET + 0x88)
++#define QSFP_DD_SMF_LEN_OFFSET			0x84
++#define QSFP_DD_OM5_LEN_OFFSET			0x85
++#define QSFP_DD_OM4_LEN_OFFSET			0x86
++#define QSFP_DD_OM3_LEN_OFFSET			0x87
++#define QSFP_DD_OM2_LEN_OFFSET			0x88
+ 
+ /* Wavelength (Page 1) */
+-#define QSFP_DD_NOM_WAVELENGTH_MSB		(PAG01H_UPPER_OFFSET + 0x8A)
+-#define QSFP_DD_NOM_WAVELENGTH_LSB		(PAG01H_UPPER_OFFSET + 0x8B)
+-#define QSFP_DD_WAVELENGTH_TOL_MSB		(PAG01H_UPPER_OFFSET + 0x8C)
+-#define QSFP_DD_WAVELENGTH_TOL_LSB		(PAG01H_UPPER_OFFSET + 0x8D)
++#define QSFP_DD_NOM_WAVELENGTH_MSB		0x8A
++#define QSFP_DD_NOM_WAVELENGTH_LSB		0x8B
++#define QSFP_DD_WAVELENGTH_TOL_MSB		0x8C
++#define QSFP_DD_WAVELENGTH_TOL_LSB		0x8D
+ 
+ /* Signal integrity controls */
+-#define QSFP_DD_SIG_INTEG_TX_OFFSET		(PAG01H_UPPER_OFFSET + 0xA1)
+-#define QSFP_DD_SIG_INTEG_RX_OFFSET		(PAG01H_UPPER_OFFSET + 0xA2)
++#define QSFP_DD_SIG_INTEG_TX_OFFSET		0xA1
++#define QSFP_DD_SIG_INTEG_RX_OFFSET		0xA2
+ 
+ #define YESNO(x) (((x) != 0) ? "Yes" : "No")
+ #define ONOFF(x) (((x) != 0) ? "On" : "Off")
+ 
+ void qsfp_dd_show_all(const __u8 *id);
+ 
++void cmis_show_all(const struct ethtool_module_eeprom *page_zero,
++		   const struct ethtool_module_eeprom *page_one);
++
+ #endif /* QSFP_DD_H__ */
+diff --git a/qsfp.c b/qsfp.c
+index 3c1a300..211c2df 100644
+--- a/qsfp.c
++++ b/qsfp.c
+@@ -672,38 +672,39 @@ static void sff8636_show_revision_compliance(const __u8 *id)
+  * Second byte are 1/256th of degree, which are added to the dec part.
+  */
+ #define SFF8636_OFFSET_TO_TEMP(offset) ((__s16)OFFSET_TO_U16(offset))
++#define OFFSET_TO_U16_PTR(ptr, offset) (ptr[offset] << 8 | ptr[(offset) + 1])
+ 
+-static void sff8636_dom_parse(const __u8 *id, struct sff_diags *sd)
++static void sff8636_dom_parse(const __u8 *id, const __u8 *page_three, struct sff_diags *sd)
+ {
+ 	int i = 0;
+ 
+ 	/* Monitoring Thresholds for Alarms and Warnings */
+-	sd->sfp_voltage[MCURR] = OFFSET_TO_U16(SFF8636_VCC_CURR);
+-	sd->sfp_voltage[HALRM] = OFFSET_TO_U16(SFF8636_VCC_HALRM);
+-	sd->sfp_voltage[LALRM] = OFFSET_TO_U16(SFF8636_VCC_LALRM);
+-	sd->sfp_voltage[HWARN] = OFFSET_TO_U16(SFF8636_VCC_HWARN);
+-	sd->sfp_voltage[LWARN] = OFFSET_TO_U16(SFF8636_VCC_LWARN);
++	sd->sfp_voltage[MCURR] = OFFSET_TO_U16_PTR(id, SFF8636_VCC_CURR);
++	sd->sfp_voltage[HALRM] = OFFSET_TO_U16_PTR(page_three, SFF8636_VCC_HALRM);
++	sd->sfp_voltage[LALRM] = OFFSET_TO_U16_PTR(page_three, SFF8636_VCC_LALRM);
++	sd->sfp_voltage[HWARN] = OFFSET_TO_U16_PTR(page_three, SFF8636_VCC_HWARN);
++	sd->sfp_voltage[LWARN] = OFFSET_TO_U16_PTR(page_three, SFF8636_VCC_LWARN);
+ 
+ 	sd->sfp_temp[MCURR] = SFF8636_OFFSET_TO_TEMP(SFF8636_TEMP_CURR);
+-	sd->sfp_temp[HALRM] = SFF8636_OFFSET_TO_TEMP(SFF8636_TEMP_HALRM);
+-	sd->sfp_temp[LALRM] = SFF8636_OFFSET_TO_TEMP(SFF8636_TEMP_LALRM);
+-	sd->sfp_temp[HWARN] = SFF8636_OFFSET_TO_TEMP(SFF8636_TEMP_HWARN);
+-	sd->sfp_temp[LWARN] = SFF8636_OFFSET_TO_TEMP(SFF8636_TEMP_LWARN);
++	sd->sfp_temp[HALRM] = (__s16)OFFSET_TO_U16_PTR(page_three, SFF8636_TEMP_HALRM);
++	sd->sfp_temp[LALRM] = (__s16)OFFSET_TO_U16_PTR(page_three, SFF8636_TEMP_LALRM);
++	sd->sfp_temp[HWARN] = (__s16)OFFSET_TO_U16_PTR(page_three, SFF8636_TEMP_HWARN);
++	sd->sfp_temp[LWARN] = (__s16)OFFSET_TO_U16_PTR(page_three, SFF8636_TEMP_LWARN);
+ 
+-	sd->bias_cur[HALRM] = OFFSET_TO_U16(SFF8636_TX_BIAS_HALRM);
+-	sd->bias_cur[LALRM] = OFFSET_TO_U16(SFF8636_TX_BIAS_LALRM);
+-	sd->bias_cur[HWARN] = OFFSET_TO_U16(SFF8636_TX_BIAS_HWARN);
+-	sd->bias_cur[LWARN] = OFFSET_TO_U16(SFF8636_TX_BIAS_LWARN);
++	sd->bias_cur[HALRM] = OFFSET_TO_U16_PTR(page_three, SFF8636_TX_BIAS_HALRM);
++	sd->bias_cur[LALRM] = OFFSET_TO_U16_PTR(page_three, SFF8636_TX_BIAS_LALRM);
++	sd->bias_cur[HWARN] = OFFSET_TO_U16_PTR(page_three, SFF8636_TX_BIAS_HWARN);
++	sd->bias_cur[LWARN] = OFFSET_TO_U16_PTR(page_three, SFF8636_TX_BIAS_LWARN);
+ 
+-	sd->tx_power[HALRM] = OFFSET_TO_U16(SFF8636_TX_PWR_HALRM);
+-	sd->tx_power[LALRM] = OFFSET_TO_U16(SFF8636_TX_PWR_LALRM);
+-	sd->tx_power[HWARN] = OFFSET_TO_U16(SFF8636_TX_PWR_HWARN);
+-	sd->tx_power[LWARN] = OFFSET_TO_U16(SFF8636_TX_PWR_LWARN);
++	sd->tx_power[HALRM] = OFFSET_TO_U16_PTR(page_three, SFF8636_TX_PWR_HALRM);
++	sd->tx_power[LALRM] = OFFSET_TO_U16_PTR(page_three, SFF8636_TX_PWR_LALRM);
++	sd->tx_power[HWARN] = OFFSET_TO_U16_PTR(page_three, SFF8636_TX_PWR_HWARN);
++	sd->tx_power[LWARN] = OFFSET_TO_U16_PTR(page_three, SFF8636_TX_PWR_LWARN);
+ 
+-	sd->rx_power[HALRM] = OFFSET_TO_U16(SFF8636_RX_PWR_HALRM);
+-	sd->rx_power[LALRM] = OFFSET_TO_U16(SFF8636_RX_PWR_LALRM);
+-	sd->rx_power[HWARN] = OFFSET_TO_U16(SFF8636_RX_PWR_HWARN);
+-	sd->rx_power[LWARN] = OFFSET_TO_U16(SFF8636_RX_PWR_LWARN);
++	sd->rx_power[HALRM] = OFFSET_TO_U16_PTR(page_three, SFF8636_RX_PWR_HALRM);
++	sd->rx_power[LALRM] = OFFSET_TO_U16_PTR(page_three, SFF8636_RX_PWR_LALRM);
++	sd->rx_power[HWARN] = OFFSET_TO_U16_PTR(page_three, SFF8636_RX_PWR_HWARN);
++	sd->rx_power[LWARN] = OFFSET_TO_U16_PTR(page_three, SFF8636_RX_PWR_LWARN);
+ 
+ 
+ 	/* Channel Specific Data */
+@@ -740,7 +741,7 @@ static void sff8636_dom_parse(const __u8 *id, struct sff_diags *sd)
+ 
+ }
+ 
+-static void sff8636_show_dom(const __u8 *id, __u32 eeprom_len)
++static void sff8636_show_dom(const __u8 *id, const __u8 *page_three, __u32 eeprom_len)
+ {
+ 	struct sff_diags sd = {0};
+ 	char *rx_power_string = NULL;
+@@ -767,7 +768,7 @@ static void sff8636_show_dom(const __u8 *id, __u32 eeprom_len)
+ 	sd.tx_power_type = id[SFF8636_DIAG_TYPE_OFFSET] &
+ 						SFF8636_RX_PWR_TYPE_MASK;
+ 
+-	sff8636_dom_parse(id, &sd);
++	sff8636_dom_parse(id, page_three, &sd);
+ 
+ 	PRINT_TEMP("Module temperature", sd.sfp_temp[MCURR]);
+ 	PRINT_VCC("Module voltage", sd.sfp_voltage[MCURR]);
+@@ -818,6 +819,42 @@ static void sff8636_show_dom(const __u8 *id, __u32 eeprom_len)
+ 	}
+ }
+ 
++
++static void sff6836_show_page_zero(const __u8 *id)
++{
++	sff8636_show_ext_identifier(id);
++	sff8636_show_connector(id);
++	sff8636_show_transceiver(id);
++	sff8636_show_encoding(id);
++	sff_show_value_with_unit(id, SFF8636_BR_NOMINAL_OFFSET,
++			"BR, Nominal", 100, "Mbps");
++	sff8636_show_rate_identifier(id);
++	sff_show_value_with_unit(id, SFF8636_SM_LEN_OFFSET,
++		     "Length (SMF,km)", 1, "km");
++	sff_show_value_with_unit(id, SFF8636_OM3_LEN_OFFSET,
++			"Length (OM3 50um)", 2, "m");
++	sff_show_value_with_unit(id, SFF8636_OM2_LEN_OFFSET,
++			"Length (OM2 50um)", 1, "m");
++	sff_show_value_with_unit(id, SFF8636_OM1_LEN_OFFSET,
++		     "Length (OM1 62.5um)", 1, "m");
++	sff_show_value_with_unit(id, SFF8636_CBL_LEN_OFFSET,
++		     "Length (Copper or Active cable)", 1, "m");
++	sff8636_show_wavelength_or_copper_compliance(id);
++	sff_show_ascii(id, SFF8636_VENDOR_NAME_START_OFFSET,
++		       SFF8636_VENDOR_NAME_END_OFFSET, "Vendor name");
++	sff8636_show_oui(id, SFF8636_VENDOR_OUI_OFFSET);
++	sff_show_ascii(id, SFF8636_VENDOR_PN_START_OFFSET,
++		       SFF8636_VENDOR_PN_END_OFFSET, "Vendor PN");
++	sff_show_ascii(id, SFF8636_VENDOR_REV_START_OFFSET,
++		       SFF8636_VENDOR_REV_END_OFFSET, "Vendor rev");
++	sff_show_ascii(id, SFF8636_VENDOR_SN_START_OFFSET,
++		       SFF8636_VENDOR_SN_END_OFFSET, "Vendor SN");
++	sff_show_ascii(id, SFF8636_DATE_YEAR_OFFSET,
++		       SFF8636_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
++	sff8636_show_revision_compliance(id);
++
++}
++
+ void sff8636_show_all(const __u8 *id, __u32 eeprom_len)
+ {
+ 	if (id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP_DD) {
+@@ -829,36 +866,17 @@ void sff8636_show_all(const __u8 *id, __u32 eeprom_len)
+ 	if ((id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP) ||
+ 		(id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP_PLUS) ||
+ 		(id[SFF8636_ID_OFFSET] == SFF8024_ID_QSFP28)) {
+-		sff8636_show_ext_identifier(id);
+-		sff8636_show_connector(id);
+-		sff8636_show_transceiver(id);
+-		sff8636_show_encoding(id);
+-		sff_show_value_with_unit(id, SFF8636_BR_NOMINAL_OFFSET,
+-				"BR, Nominal", 100, "Mbps");
+-		sff8636_show_rate_identifier(id);
+-		sff_show_value_with_unit(id, SFF8636_SM_LEN_OFFSET,
+-			     "Length (SMF,km)", 1, "km");
+-		sff_show_value_with_unit(id, SFF8636_OM3_LEN_OFFSET,
+-				"Length (OM3 50um)", 2, "m");
+-		sff_show_value_with_unit(id, SFF8636_OM2_LEN_OFFSET,
+-				"Length (OM2 50um)", 1, "m");
+-		sff_show_value_with_unit(id, SFF8636_OM1_LEN_OFFSET,
+-			     "Length (OM1 62.5um)", 1, "m");
+-		sff_show_value_with_unit(id, SFF8636_CBL_LEN_OFFSET,
+-			     "Length (Copper or Active cable)", 1, "m");
+-		sff8636_show_wavelength_or_copper_compliance(id);
+-		sff_show_ascii(id, SFF8636_VENDOR_NAME_START_OFFSET,
+-			       SFF8636_VENDOR_NAME_END_OFFSET, "Vendor name");
+-		sff8636_show_oui(id, SFF8636_VENDOR_OUI_OFFSET);
+-		sff_show_ascii(id, SFF8636_VENDOR_PN_START_OFFSET,
+-			       SFF8636_VENDOR_PN_END_OFFSET, "Vendor PN");
+-		sff_show_ascii(id, SFF8636_VENDOR_REV_START_OFFSET,
+-			       SFF8636_VENDOR_REV_END_OFFSET, "Vendor rev");
+-		sff_show_ascii(id, SFF8636_VENDOR_SN_START_OFFSET,
+-			       SFF8636_VENDOR_SN_END_OFFSET, "Vendor SN");
+-		sff_show_ascii(id, SFF8636_DATE_YEAR_OFFSET,
+-			       SFF8636_DATE_VENDOR_LOT_OFFSET + 1, "Date code");
+-		sff8636_show_revision_compliance(id);
+-		sff8636_show_dom(id, eeprom_len);
++		sff6836_show_page_zero(id);
++		sff8636_show_dom(id, id + SFF8636_PAGE03H_OFFSET, eeprom_len);
+ 	}
+ }
++
++void sff8636_show_all_paged(const struct ethtool_module_eeprom *page_zero,
++			    const struct ethtool_module_eeprom *page_three)
++{
++	sff8636_show_identifier(page_zero->data);
++	sff6836_show_page_zero(page_zero->data);
++	if (page_three)
++		sff8636_show_dom(page_zero->data, page_three->data - 0x80,
++				 ETH_MODULE_SFF_8636_MAX_LEN);
++}
+diff --git a/qsfp.h b/qsfp.h
+index 9636b0c..1d8f24b 100644
+--- a/qsfp.h
++++ b/qsfp.h
+@@ -592,32 +592,35 @@
+  * Offset - Page Num(3) * PageSize(0x80) + Page offset
+  */
+ 
++/* 3 * 128 + Lower page 00h(128) */
++#define SFF8636_PAGE03H_OFFSET (128 * 4)
++
+ /* Module Thresholds (48 Bytes) 128-175 */
+ /* MSB at low address, LSB at high address */
+-#define	SFF8636_TEMP_HALRM		0x200
+-#define	SFF8636_TEMP_LALRM		0x202
+-#define	SFF8636_TEMP_HWARN		0x204
+-#define	SFF8636_TEMP_LWARN		0x206
+-
+-#define	SFF8636_VCC_HALRM		0x210
+-#define	SFF8636_VCC_LALRM		0x212
+-#define	SFF8636_VCC_HWARN		0x214
+-#define	SFF8636_VCC_LWARN		0x216
+-
+-#define	SFF8636_RX_PWR_HALRM		0x230
+-#define	SFF8636_RX_PWR_LALRM		0x232
+-#define	SFF8636_RX_PWR_HWARN		0x234
+-#define	SFF8636_RX_PWR_LWARN		0x236
+-
+-#define	SFF8636_TX_BIAS_HALRM		0x238
+-#define	SFF8636_TX_BIAS_LALRM		0x23A
+-#define	SFF8636_TX_BIAS_HWARN		0x23C
+-#define	SFF8636_TX_BIAS_LWARN		0x23E
+-
+-#define	SFF8636_TX_PWR_HALRM		0x240
+-#define	SFF8636_TX_PWR_LALRM		0x242
+-#define	SFF8636_TX_PWR_HWARN		0x244
+-#define	SFF8636_TX_PWR_LWARN		0x246
++#define	SFF8636_TEMP_HALRM	0x80
++#define	SFF8636_TEMP_LALRM	0x82
++#define	SFF8636_TEMP_HWARN	0x84
++#define	SFF8636_TEMP_LWARN	0x86
++
++#define	SFF8636_VCC_HALRM	0x90
++#define	SFF8636_VCC_LALRM	0x92
++#define	SFF8636_VCC_HWARN	0x94
++#define	SFF8636_VCC_LWARN	0x96
++
++#define	SFF8636_RX_PWR_HALRM	0xB0
++#define	SFF8636_RX_PWR_LALRM	0xB2
++#define	SFF8636_RX_PWR_HWARN	0xB4
++#define	SFF8636_RX_PWR_LWARN	0xB6
++
++#define	SFF8636_TX_BIAS_HALRM	0xB8
++#define	SFF8636_TX_BIAS_LALRM	0xBA
++#define	SFF8636_TX_BIAS_HWARN	0xBC
++#define	SFF8636_TX_BIAS_LWARN	0xBE
++
++#define	SFF8636_TX_PWR_HALRM	0xC0
++#define	SFF8636_TX_PWR_LALRM	0xC2
++#define	SFF8636_TX_PWR_HWARN	0xC4
++#define	SFF8636_TX_PWR_LWARN	0xC6
+ 
+ #define	ETH_MODULE_SFF_8636_MAX_LEN	640
+ #define	ETH_MODULE_SFF_8436_MAX_LEN	640
+diff --git a/sff-common.c b/sff-common.c
+index 5285645..2815951 100644
+--- a/sff-common.c
++++ b/sff-common.c
+@@ -139,6 +139,9 @@ void sff8024_show_identifier(const __u8 *id, int id_offset)
+ 	case SFF8024_ID_QSFP_DD:
+ 		printf(" (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))\n");
+ 		break;
++	case SFF8024_ID_DSFP:
++		printf(" (DSFP Dual Small Form Factor Pluggable Transceiver)\n");
++		break;
+ 	default:
+ 		printf(" (reserved or unknown)\n");
+ 		break;
+diff --git a/sff-common.h b/sff-common.h
+index cfb5d0e..2183f41 100644
+--- a/sff-common.h
++++ b/sff-common.h
+@@ -62,7 +62,8 @@
+ #define  SFF8024_ID_CDFP_S3				0x16
+ #define  SFF8024_ID_MICRO_QSFP			0x17
+ #define  SFF8024_ID_QSFP_DD				0x18
+-#define  SFF8024_ID_LAST				SFF8024_ID_QSFP_DD
++#define  SFF8024_ID_DSFP				0x1B
++#define  SFF8024_ID_LAST				SFF8024_ID_DSFP
+ #define  SFF8024_ID_UNALLOCATED_LAST	0x7F
+ #define  SFF8024_ID_VENDOR_START		0x80
+ #define  SFF8024_ID_VENDOR_LAST			0xFF
 -- 
 1.8.2.3
 
