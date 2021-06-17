@@ -2,56 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E09A53AB9AD
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 18:29:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D54083AB9B3
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 18:29:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbhFQQbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 12:31:23 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:38775 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230269AbhFQQbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 12:31:22 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4C7435C0060;
-        Thu, 17 Jun 2021 12:29:13 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 17 Jun 2021 12:29:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=BDqBQk
-        /MVOeXZH/Qio6RZGLnf+wK9Jub3rb9LLGOjUI=; b=DBxsWH5aOxiKLA1CwNh53I
-        bGSxiPlNZrODvg7+hqYbmr8H5T5pFUjMtMyy44vV0uu3WVlA2N7Jk2NXxJ5UpjPM
-        13ZdsrSW7gZ4rHXAmP2vaawR/n0CXFCLTPlvunqNCBT6OL60VJU/UdsEai9exMSB
-        p+rDcmUiu7dEAUL6ASGd2wQk+dQ7z7hr540Fx1ePXJ9auWRri4Cs73MnIN5gMwEx
-        gOVynCGIWN3clvvwtb2PCWUuHgeZZ6/bKPRb4FysvNOcVBou20bKO+XIld7NFNIq
-        WwTXQi0rhaecXLlAHGhqAZtivManwO9ceX82ywTWocRA6fu1HLBzuQQU9n+p53Nw
-        ==
-X-ME-Sender: <xms:WHjLYC9p8wzyis6qSuUHYk_1yi9ecdzk5CbnkpciFR2AOgVNcfzN7A>
-    <xme:WHjLYCsfbjV998LTttRcgVytd3FOF8xuDNW8bv3kXiwxGkvrOE6sB5L63jszVn5Eu
-    fjynped95xKm4A>
-X-ME-Received: <xmr:WHjLYIA_6Kzke4tHlZi0kRvscXm24Tr-v7ojny45Kt4fAVaLXNgR4WKV6GUH6qQbiO0NrfYJmisgzP0hRLimh72uX_p_uw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeefuddguddttdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:WHjLYKd10xbzO8r9D0zvm-COiJeLdKt1fjxSbo_IbEp9ubT8dHc2bA>
-    <xmx:WHjLYHPm9Dee4Zcb0eONgWOwH_X_bhLYd0cnAIRu9UfpG1W-6yncAg>
-    <xmx:WHjLYEkNPIfSJ-U1qI4McHJ7mKLUMQvx3jpEqlyt3uEZrqSiPqAYXw>
-    <xmx:WXjLYMqWDohI5ExIO4wDEsHNTssJcmlTvRN7arFa3pA7qp0HNxUVWw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 17 Jun 2021 12:29:12 -0400 (EDT)
-Date:   Thu, 17 Jun 2021 19:29:09 +0300
-From:   Ido Schimmel <idosch@idosch.org>
+        id S232654AbhFQQbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 12:31:36 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:36356 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230269AbhFQQbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 12:31:32 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id ADEA221B20;
+        Thu, 17 Jun 2021 16:29:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1623947363; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XZks9EZeXdiubtp+Uta4AWHCILofE+TIAfWkdZPWiDM=;
+        b=Nipm1EaPLe1np7amg0VCR9fVDTWvvqTiFEj1mnBYDvBAiDOBk8DC17RxzDJBo1kWex2+qx
+        yuhUEJWCB13qzpNpNwWSik0b4liQUUaPxQJJ0l6uKjV5wRSTMJlI2f5w0BqDMUiZwlxJzF
+        wseB+nQLwoAPopU7DstOyE1kZ8KqbGI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1623947363;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XZks9EZeXdiubtp+Uta4AWHCILofE+TIAfWkdZPWiDM=;
+        b=EbetPO5T0l1YJCLQojw8jzBE7q1d7hsB86kUBy0pebrwFDuq7uXSEj1VAUY7yvSzWID/E8
+        kbIVhAo3PeUC/RDw==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A4945A3BDA;
+        Thu, 17 Jun 2021 16:29:23 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 75D5C603CD; Thu, 17 Jun 2021 18:29:23 +0200 (CEST)
+Date:   Thu, 17 Jun 2021 18:29:23 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
 To:     Amit Cohen <amcohen@nvidia.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mkubecek@suse.cz, idosch@nvidia.com, Jiri Pirko <jiri@nvidia.com>
+        idosch@nvidia.com, Jiri Pirko <jiri@nvidia.com>
 Subject: Re: [PATCH net] ethtool: strset: Fix reply_size value
-Message-ID: <YMt4VaNZOcRZ8xRP@shredder>
+Message-ID: <20210617162923.i7cvvxszntf7mvvl@lion.mk-sys.cz>
 References: <20210617154252.688724-1-amcohen@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -77,12 +69,27 @@ On Thu, Jun 17, 2021 at 06:42:52PM +0300, Amit Cohen wrote:
 > Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 > Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 > Tested-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/ethtool/strset.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
+> index b3029fff715d..86dcb6b099b3 100644
+> --- a/net/ethtool/strset.c
+> +++ b/net/ethtool/strset.c
+> @@ -365,7 +365,7 @@ static int strset_reply_size(const struct ethnl_req_info *req_base,
+>  		len += ret;
+>  	}
+>  
+> -	return len;
+> +	return nla_total_size(len);
+>  }
+>  
+>  /* fill one string into reply */
 
-Ha, seems this is addressed by commit e175aef90269 ("ethtool: strset:
-fix message length calculation") in net.git which actually motivated
-commit 4d1fb7cde0cc ("ethtool: add a stricter length check").
+I believe this issue has been already fixed in net tree by commit
+e175aef90269 ("ethtool: strset: fix message length calculation") but as
+this commit has not been merged into net-next yet, you could hit it with
+the stricter check.
 
-The former is still not in net-next.git, which is why the warning is
-triggered there.
-
-The patch can be dropped.
+Michal
