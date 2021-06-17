@@ -2,318 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E90F3ABEB5
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 00:17:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43AB43ABF08
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 00:38:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232160AbhFQWT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 18:19:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56494 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232088AbhFQWTM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 18:19:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F0DD6613B4;
-        Thu, 17 Jun 2021 22:17:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623968224;
-        bh=8lLNvAQJFBYHcwyHgNEpUKH4liF//tJL8IXh/++g2VQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=huvrHHpH2Av8vejTexiFgCIX8gaey/rp/0fjLnRAt1uHvre0POa9FMvPn6CSKF4vP
-         c1dyDYSMYo16eAP+y8b7jCtqCSK/GxM08QdxX1G394l3E8JBesdgSfezsVwCObf+XY
-         7aWLgTlzsBBO6TKNEHxE7nsZ/+OgD85yLW8ohdjh7wOtV4YkqobaNmS5taze+KHWCO
-         fK6lrJ8I7DNEWJB2YicAQ/PLhU6Y66Is1uaJonoeXzDn/9t9wK0lIH/tQqckcXFuET
-         u5Swl2hwja6dodRo6iE7Vpv+Vl8JR6ZLXVJxbLuKQjO/HsCiolAUliP6AHbf478B1T
-         ZnwiO+IrhijxQ==
-Received: by mail-ej1-f42.google.com with SMTP id g8so12572868ejx.1;
-        Thu, 17 Jun 2021 15:17:03 -0700 (PDT)
-X-Gm-Message-State: AOAM533H3WTBiNxJM6fB2cmYC7GQaa7pmWFlsaU47n2KIwiQ92m1Lq8f
-        UK4pz+k6qhTXDxkxwrDizAPdZXHPBGMyCwOnhw==
-X-Google-Smtp-Source: ABdhPJxzgkf6C07sPN7yjl1phyvHCv9pAxXmIQ1iuWsb7n6aw/LK46UKCpGaWvweVtQco41YaA9gmDx268LBgSxFl4o=
-X-Received: by 2002:a17:907:264b:: with SMTP id ar11mr7391845ejc.525.1623968222450;
- Thu, 17 Jun 2021 15:17:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210615191543.1043414-1-robh@kernel.org> <bb8c18f6-139d-76be-87e7-0c93e03cc92c@ti.com>
-In-Reply-To: <bb8c18f6-139d-76be-87e7-0c93e03cc92c@ti.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 17 Jun 2021 16:16:50 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+-ggeBMT_507HN+mM1KirM+w2ZnhZNe+Q7tRsFRJxDOw@mail.gmail.com>
-Message-ID: <CAL_Jsq+-ggeBMT_507HN+mM1KirM+w2ZnhZNe+Q7tRsFRJxDOw@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: Drop redundant minItems/maxItems
-To:     Suman Anna <s-anna@ti.com>
-Cc:     devicetree@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        PCI <linux-pci@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
-        <linux-remoteproc@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>, Linux I2C <linux-i2c@vger.kernel.org>,
-        linux-phy@lists.infradead.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
-        <linux-rtc@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        David Airlie <airlied@linux.ie>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        linux-can@vger.kernel.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        iommu@lists.linux-foundation.org,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        linux-crypto@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        dmaengine@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S232691AbhFQWkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 18:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231617AbhFQWkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 18:40:15 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD0AC061760;
+        Thu, 17 Jun 2021 15:38:07 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id h12so6185565pfe.2;
+        Thu, 17 Jun 2021 15:38:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=9p230PT0VwRcEwxqxQuqXJx7HHDnXHNrxCP/OPwqSbo=;
+        b=ryDam/OKuPPVjk5EBuA+gOuxhPWRKZBPC2bcm0FuipR4ulI4evXJmTEqLhbeG2Cu47
+         Y9pW6WGWzqbmM/yDHTzvVvOjaUwOj0XxxgymQC/U+1utzCBUc69bZQKmBDIGrvExcHhH
+         8NR+KA9mg7hP1pvmGEFW0UV4ifRX/NA9PL09Gb/T7/xF0RnzD1UaNSnk0AvIlPqvHDbC
+         mePO7lT4om/NCqAcoL4KVTKfO7hXMdgaXazw3uXRHHiUNI+gyBIkfJVSwRIvdzZ9zDPw
+         g/Uz4lGV97Qd5tlMAGiNpaCa9XXNt1Iuv4Bwx3xBi47gXa4XFvRYiPIFR23BEtm3KR6v
+         +DlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=9p230PT0VwRcEwxqxQuqXJx7HHDnXHNrxCP/OPwqSbo=;
+        b=Lpz+DdS+IPgWdaD5lGA207C0bR4opYpSUNvCjb4xvkR7gFa9dEty8L1xhU2dtXiTer
+         htRzioKG8vlv7CuLE75aW7ryyxwA/hQuWH8W0m6XzobjUF5KVisNYKQYob6jbBp8D6bJ
+         ZdHF1ldGqLnRXa74aovcyZcWC64DRyv9z8YbIRdQYvOkMxu0RITTdv1+Ir9TvQW9gfkt
+         JZPzDJe8uogXoABw/Kvw/8mWuFd2kB3YZu0taT3rzpJ0ghkXwFQMpptyosbrxGEteF4T
+         4ctUVVMPoUplNx0+l6/c85L/g8Dj2G0FAKGbEkAA7Sis8k9+UiUFG7naxzJ7m9uVwacb
+         fkwQ==
+X-Gm-Message-State: AOAM531VQLxviTeF/BfRedc77Ny+93eUQZrYSdWeVW26dDcX/hodNRdo
+        0Ur0iQab+4IWxHDpvfO54FE6tanMQfE=
+X-Google-Smtp-Source: ABdhPJwtWmvUBo/UQrqi9t+Q877nHOxIZ4MDUex9T06VWUx13yCRhzYKcTYoCYnqqDx1h9h7QGLB1w==
+X-Received: by 2002:a63:5442:: with SMTP id e2mr7006717pgm.365.1623969486835;
+        Thu, 17 Jun 2021 15:38:06 -0700 (PDT)
+Received: from xplor.waratah.dyndns.org (222-152-189-137-fibre.sparkbb.co.nz. [222.152.189.137])
+        by smtp.gmail.com with ESMTPSA id z6sm6406421pgs.24.2021.06.17.15.38.05
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 17 Jun 2021 15:38:06 -0700 (PDT)
+Received: by xplor.waratah.dyndns.org (Postfix, from userid 1000)
+        id F0B953603E0; Fri, 18 Jun 2021 10:38:02 +1200 (NZST)
+From:   Michael Schmitz <schmitzmic@gmail.com>
+To:     linux-m68k@vger.kernel.org, geert@linux-m68k.org
+Cc:     alex@kazik.de, Michael Schmitz <schmitzmic@gmail.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v4 2/2] net/8390: apne.c - add 100 Mbit support to apne.c driver
+Date:   Fri, 18 Jun 2021 10:37:59 +1200
+Message-Id: <1623969479-29657-3-git-send-email-schmitzmic@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1623969479-29657-1-git-send-email-schmitzmic@gmail.com>
+References: <1623969479-29657-1-git-send-email-schmitzmic@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 17, 2021 at 10:06 AM Suman Anna <s-anna@ti.com> wrote:
->
-> Hi Rob,
->
-> On 6/15/21 2:15 PM, Rob Herring wrote:
-> > If a property has an 'items' list, then a 'minItems' or 'maxItems' with=
- the
-> > same size as the list is redundant and can be dropped. Note that is DT
-> > schema specific behavior and not standard json-schema behavior. The too=
-ling
-> > will fixup the final schema adding any unspecified minItems/maxItems.
-> >
-> > This condition is partially checked with the meta-schema already, but
-> > only if both 'minItems' and 'maxItems' are equal to the 'items' length.
-> > An improved meta-schema is pending.
-> >
-> > Cc: Jens Axboe <axboe@kernel.dk>
-> > Cc: Stephen Boyd <sboyd@kernel.org>
-> > Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: David Airlie <airlied@linux.ie>
-> > Cc: Daniel Vetter <daniel@ffwll.ch>
-> > Cc: Vinod Koul <vkoul@kernel.org>
-> > Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > Cc: Kamal Dasu <kdasu.kdev@gmail.com>
-> > Cc: Jonathan Cameron <jic23@kernel.org>
-> > Cc: Lars-Peter Clausen <lars@metafoo.de>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Marc Zyngier <maz@kernel.org>
-> > Cc: Joerg Roedel <joro@8bytes.org>
-> > Cc: Jassi Brar <jassisinghbrar@gmail.com>
-> > Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> > Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Wolfgang Grandegger <wg@grandegger.com>
-> > Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> > Cc: Andrew Lunn <andrew@lunn.ch>
-> > Cc: Vivien Didelot <vivien.didelot@gmail.com>
-> > Cc: Vladimir Oltean <olteanv@gmail.com>
-> > Cc: Bjorn Helgaas <bhelgaas@google.com>
-> > Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > Cc: "Uwe Kleine-K=C3=B6nig" <u.kleine-koenig@pengutronix.de>
-> > Cc: Lee Jones <lee.jones@linaro.org>
-> > Cc: Ohad Ben-Cohen <ohad@wizery.com>
-> > Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> > Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> > Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> > Cc: Albert Ou <aou@eecs.berkeley.edu>
-> > Cc: Alessandro Zummo <a.zummo@towertech.it>
-> > Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Mark Brown <broonie@kernel.org>
-> > Cc: Zhang Rui <rui.zhang@intel.com>
-> > Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> > Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-> > Cc: Guenter Roeck <linux@roeck-us.net>
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  .../devicetree/bindings/ata/nvidia,tegra-ahci.yaml          | 1 -
-> >  .../devicetree/bindings/clock/allwinner,sun4i-a10-ccu.yaml  | 2 --
-> >  .../devicetree/bindings/clock/qcom,gcc-apq8064.yaml         | 1 -
-> >  Documentation/devicetree/bindings/clock/qcom,gcc-sdx55.yaml | 2 --
-> >  .../devicetree/bindings/clock/qcom,gcc-sm8350.yaml          | 2 --
-> >  .../devicetree/bindings/clock/sprd,sc9863a-clk.yaml         | 1 -
-> >  .../devicetree/bindings/crypto/allwinner,sun8i-ce.yaml      | 2 --
-> >  Documentation/devicetree/bindings/crypto/fsl-dcp.yaml       | 1 -
-> >  .../display/allwinner,sun4i-a10-display-backend.yaml        | 6 ------
-> >  .../bindings/display/allwinner,sun6i-a31-mipi-dsi.yaml      | 1 -
-> >  .../bindings/display/allwinner,sun8i-a83t-dw-hdmi.yaml      | 4 ----
-> >  .../bindings/display/allwinner,sun8i-a83t-hdmi-phy.yaml     | 2 --
-> >  .../bindings/display/allwinner,sun8i-r40-tcon-top.yaml      | 2 --
-> >  .../devicetree/bindings/display/bridge/cdns,mhdp8546.yaml   | 2 --
-> >  .../bindings/display/rockchip/rockchip,dw-hdmi.yaml         | 2 --
-> >  Documentation/devicetree/bindings/display/st,stm32-dsi.yaml | 2 --
-> >  .../devicetree/bindings/display/st,stm32-ltdc.yaml          | 1 -
-> >  .../devicetree/bindings/display/xlnx/xlnx,zynqmp-dpsub.yaml | 4 ----
-> >  .../devicetree/bindings/dma/renesas,rcar-dmac.yaml          | 1 -
-> >  .../devicetree/bindings/edac/amazon,al-mc-edac.yaml         | 2 --
-> >  Documentation/devicetree/bindings/eeprom/at24.yaml          | 1 -
-> >  Documentation/devicetree/bindings/example-schema.yaml       | 2 --
-> >  Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml     | 1 -
-> >  Documentation/devicetree/bindings/gpu/vivante,gc.yaml       | 1 -
-> >  Documentation/devicetree/bindings/i2c/brcm,brcmstb-i2c.yaml | 1 -
-> >  .../devicetree/bindings/i2c/marvell,mv64xxx-i2c.yaml        | 2 --
-> >  .../devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml         | 1 -
-> >  .../devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml   | 1 -
-> >  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml     | 2 --
-> >  .../bindings/interrupt-controller/fsl,irqsteer.yaml         | 1 -
-> >  .../bindings/interrupt-controller/loongson,liointc.yaml     | 1 -
-> >  Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml    | 1 -
-> >  .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml       | 1 -
-> >  .../devicetree/bindings/mailbox/st,stm32-ipcc.yaml          | 2 --
-> >  .../devicetree/bindings/media/amlogic,gx-vdec.yaml          | 1 -
-> >  Documentation/devicetree/bindings/media/i2c/adv7604.yaml    | 1 -
-> >  .../devicetree/bindings/media/marvell,mmp2-ccic.yaml        | 1 -
-> >  .../devicetree/bindings/media/qcom,sc7180-venus.yaml        | 1 -
-> >  .../devicetree/bindings/media/qcom,sdm845-venus-v2.yaml     | 1 -
-> >  .../devicetree/bindings/media/qcom,sm8250-venus.yaml        | 1 -
-> >  Documentation/devicetree/bindings/media/renesas,drif.yaml   | 1 -
-> >  .../bindings/memory-controllers/mediatek,smi-common.yaml    | 6 ++----
-> >  .../bindings/memory-controllers/mediatek,smi-larb.yaml      | 1 -
-> >  .../devicetree/bindings/mmc/allwinner,sun4i-a10-mmc.yaml    | 2 --
-> >  Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml    | 1 -
-> >  Documentation/devicetree/bindings/mmc/mtk-sd.yaml           | 2 --
-> >  Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml     | 2 --
-> >  Documentation/devicetree/bindings/mmc/sdhci-am654.yaml      | 1 -
-> >  Documentation/devicetree/bindings/mmc/sdhci-pxa.yaml        | 1 -
-> >  .../devicetree/bindings/net/amlogic,meson-dwmac.yaml        | 2 --
-> >  .../devicetree/bindings/net/brcm,bcm4908-enet.yaml          | 2 --
-> >  Documentation/devicetree/bindings/net/can/bosch,m_can.yaml  | 2 --
-> >  Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml     | 2 --
-> >  Documentation/devicetree/bindings/net/snps,dwmac.yaml       | 2 --
-> >  Documentation/devicetree/bindings/net/stm32-dwmac.yaml      | 1 -
-> >  Documentation/devicetree/bindings/pci/brcm,stb-pcie.yaml    | 2 --
-> >  Documentation/devicetree/bindings/pci/loongson.yaml         | 1 -
-> >  .../devicetree/bindings/pci/mediatek-pcie-gen3.yaml         | 1 -
-> >  .../devicetree/bindings/pci/microchip,pcie-host.yaml        | 2 --
-> >  Documentation/devicetree/bindings/perf/arm,cmn.yaml         | 1 -
-> >  .../devicetree/bindings/phy/brcm,bcm63xx-usbh-phy.yaml      | 1 -
-> >  .../devicetree/bindings/phy/brcm,brcmstb-usb-phy.yaml       | 3 ---
-> >  Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml    | 1 -
-> >  Documentation/devicetree/bindings/phy/mediatek,tphy.yaml    | 2 --
-> >  .../devicetree/bindings/phy/phy-cadence-sierra.yaml         | 2 --
-> >  .../devicetree/bindings/phy/phy-cadence-torrent.yaml        | 4 ----
-> >  .../devicetree/bindings/phy/qcom,ipq806x-usb-phy-hs.yaml    | 1 -
-> >  .../devicetree/bindings/phy/qcom,ipq806x-usb-phy-ss.yaml    | 1 -
-> >  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml     | 1 -
-> >  Documentation/devicetree/bindings/phy/qcom,qusb2-phy.yaml   | 2 --
-> >  Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml | 2 --
-> >  Documentation/devicetree/bindings/phy/renesas,usb3-phy.yaml | 1 -
-> >  .../devicetree/bindings/pinctrl/actions,s500-pinctrl.yaml   | 1 -
-> >  .../devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml    | 1 -
-> >  .../devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml    | 1 -
-> >  .../devicetree/bindings/remoteproc/st,stm32-rproc.yaml      | 2 --
-> >  .../devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml     | 1 -
-> >  .../devicetree/bindings/remoteproc/ti,omap-remoteproc.yaml  | 1 -
-> >  Documentation/devicetree/bindings/reset/fsl,imx-src.yaml    | 1 -
-> >  .../devicetree/bindings/riscv/sifive-l2-cache.yaml          | 1 -
-> >  .../devicetree/bindings/rtc/allwinner,sun6i-a31-rtc.yaml    | 1 -
-> >  Documentation/devicetree/bindings/rtc/imxdi-rtc.yaml        | 1 -
-> >  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml    | 2 --
-> >  Documentation/devicetree/bindings/serial/samsung_uart.yaml  | 1 -
-> >  .../devicetree/bindings/soc/qcom/qcom,geni-se.yaml          | 1 -
-> >  Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml      | 2 --
-> >  .../bindings/sound/nvidia,tegra-audio-graph-card.yaml       | 1 -
-> >  .../devicetree/bindings/sound/nvidia,tegra210-i2s.yaml      | 2 --
-> >  Documentation/devicetree/bindings/sound/st,stm32-sai.yaml   | 3 ---
-> >  .../devicetree/bindings/spi/amlogic,meson-gx-spicc.yaml     | 1 -
-> >  .../devicetree/bindings/spi/brcm,spi-bcm-qspi.yaml          | 2 --
-> >  .../bindings/thermal/allwinner,sun8i-a83t-ths.yaml          | 2 --
-> >  Documentation/devicetree/bindings/thermal/qcom-tsens.yaml   | 1 -
-> >  .../bindings/timer/allwinner,sun5i-a13-hstimer.yaml         | 1 -
-> >  Documentation/devicetree/bindings/timer/arm,arch_timer.yaml | 1 -
-> >  .../devicetree/bindings/timer/arm,arch_timer_mmio.yaml      | 2 --
-> >  .../devicetree/bindings/timer/intel,ixp4xx-timer.yaml       | 1 -
-> >  .../devicetree/bindings/usb/maxim,max3420-udc.yaml          | 2 --
-> >  .../devicetree/bindings/usb/nvidia,tegra-xudc.yaml          | 4 ----
-> >  Documentation/devicetree/bindings/usb/renesas,usbhs.yaml    | 3 ---
-> >  .../devicetree/bindings/watchdog/st,stm32-iwdg.yaml         | 1 -
-> >  101 files changed, 2 insertions(+), 163 deletions(-)
-> >
->
-> [snip]
->
-> > diff --git a/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rpr=
-oc.yaml b/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml
-> > index 6070456a7b67..f399743b631b 100644
-> > --- a/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml
-> > +++ b/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml
-> > @@ -57,7 +57,6 @@ properties:
-> >
-> >    memory-region:
-> >      minItems: 2
-> > -    maxItems: 8
-> >      description: |
-> >        phandle to the reserved memory nodes to be associated with the r=
-emoteproc
-> >        device. There should be at least two reserved memory nodes defin=
-ed. The
->
-> Does this enforce the maxItems to be 2 only now? Or should this be droppi=
-ng the
-> minItems here which matches the length of items instead of maxItems?
->
-> I have originally listed the individual item list only for the mandatory =
-items
-> and rest are scalable. I provided this through "additionalItems: true" un=
-der
-> this property.
+Add Kconfig option, module parameter and PCMCIA reset code
+required to support 100 Mbit PCMCIA ethernet cards on Amiga.
 
-Good catch. This should be dropped. The meta-schema doesn't enforce
-this if "additionalItems: true" which is rarely used.
+10 Mbit and 100 Mbit mode are supported by the same module.
+A module parameter switches Amiga ISA IO accessors to word
+access by changing isa_type at runtime. Additional code to
+reset the PCMCIA hardware is also added to the driver probe.
 
-> Also, have the exact same usage in
-> Documentation/devicetree/bindings/remoteproc/ti,k3-r5f-rproc.yaml as well=
- which
-> is not included in this patch.
+Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
+100 MBit card support" submitted to netdev 2018/09/16 by Alex
+Kazik <alex@kazik.de>.
 
-Yeah, I just missed this one. I've double checked and there aren't any more=
-.
+CC: netdev@vger.kernel.org
+Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
+Tested-by: Alex Kazik <alex@kazik.de>
+Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
 
-Rob
+--
+Changes from v3:
+
+- change module parameter name to match Kconfig help
+
+Finn Thain:
+- fix coding style in new card reset code block
+- allow reset of isa_type by module parameter
+
+Changes from v1:
+
+- fix module parameter name in Kconfig help text
+
+Alex Kazik:
+- change module parameter type to bool, fix module parameter
+  permission
+
+Changes from RFC:
+
+Geert Uytterhoeven:
+- change APNE_100MBIT to depend on APNE
+- change '---help---' to 'help' (former no longer supported)
+- fix whitespace errors
+- fix module_param_named() arg count
+- protect all added code by #ifdef CONFIG_APNE_100MBIT
+---
+ drivers/net/ethernet/8390/Kconfig | 12 ++++++++++++
+ drivers/net/ethernet/8390/apne.c  | 25 +++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
+
+diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
+index 9f4b302..6e4db63 100644
+--- a/drivers/net/ethernet/8390/Kconfig
++++ b/drivers/net/ethernet/8390/Kconfig
+@@ -143,6 +143,18 @@ config APNE
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called apne.
+ 
++config APNE100MBIT
++	bool "PCMCIA NE2000 100MBit support"
++	depends on APNE
++	default n
++	help
++	  This changes the driver to support 10/100Mbit cards (e.g. Netgear
++	  FA411, CNet Singlepoint). 10 MBit cards and 100 MBit cards are
++	  supported by the same driver.
++
++	  To activate 100 Mbit support at runtime or from the kernel
++	  command line, use the apne.100mbit module parameter.
++
+ config PCMCIA_PCNET
+ 	tristate "NE2000 compatible PCMCIA support"
+ 	depends on PCMCIA
+diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
+index fe6c834..d294f0c 100644
+--- a/drivers/net/ethernet/8390/apne.c
++++ b/drivers/net/ethernet/8390/apne.c
+@@ -120,6 +120,12 @@ static u32 apne_msg_enable;
+ module_param_named(msg_enable, apne_msg_enable, uint, 0444);
+ MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+ 
++#ifdef CONFIG_APNE100MBIT
++static bool apne_100_mbit;
++module_param_named(100_mbit, apne_100_mbit, bool, 0444);
++MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
++#endif
++
+ struct net_device * __init apne_probe(int unit)
+ {
+ 	struct net_device *dev;
+@@ -139,6 +145,13 @@ struct net_device * __init apne_probe(int unit)
+ 	if ( !(AMIGAHW_PRESENT(PCMCIA)) )
+ 		return ERR_PTR(-ENODEV);
+ 
++#ifdef CONFIG_APNE100MBIT
++	if (apne_100_mbit)
++		isa_type = ISA_TYPE_AG16;
++	else
++		isa_type = ISA_TYPE_AG;
++#endif
++
+ 	pr_info("Looking for PCMCIA ethernet card : ");
+ 
+ 	/* check if a card is inserted */
+@@ -590,6 +603,18 @@ static int init_pcmcia(void)
+ #endif
+ 	u_long offset;
+ 
++#ifdef CONFIG_APNE100MBIT
++	/* reset card (idea taken from CardReset by Artur Pogoda) */
++	{
++		u_char  tmp = gayle.intreq;
++
++		gayle.intreq = 0xff;
++		mdelay(1);
++		gayle.intreq = tmp;
++		mdelay(300);
++	}
++#endif
++
+ 	pcmcia_reset();
+ 	pcmcia_program_voltage(PCMCIA_0V);
+ 	pcmcia_access_speed(PCMCIA_SPEED_250NS);
+-- 
+2.7.4
+
