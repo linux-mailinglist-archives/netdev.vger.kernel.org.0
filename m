@@ -2,64 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBF8C3ABBF3
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 20:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CEBB3ABBF0
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 20:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232992AbhFQSmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 14:42:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51768 "EHLO mail.kernel.org"
+        id S232417AbhFQSmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 14:42:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51714 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232198AbhFQSmN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231547AbhFQSmN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 17 Jun 2021 14:42:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id DC567613F3;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 35173613E1;
         Thu, 17 Jun 2021 18:40:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623955205;
-        bh=kPjp/fAV8kta/X0hv3+VJZc0w2uQUMMvoWVgT6LcENo=;
+        bh=lUprftC0qd3m/AegXi0FTw+/yFwuDXYDD1+M/LVu9a8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FJYGPURvOUJnYnf1YbfRDmc6X81Tv+W3uPJ0k8H6BLtf4uAD9QUAWjxOuDHT6ClRe
-         kOHbc1/mtZ7CCZSaiELpALTmYptbPGj4xgnqLQyb2pWvv2VdcnPllR2Vtlmv/IbMrf
-         B2vC2NIcwpvqcYCUqVnwHcmwlr4kNJRbVM7vgCh0O15qvU6uV67dh/nmQEK15ZvPJ3
-         SIHn09n+IKQoXcfVIQstbzyR62f6Zyi7mb20r63kjaO7vwPQU5BHLorp5ZCxi7ZDpo
-         i9+JC+X4YS4jR5a2eI1ZIsf4dBCKjdsItAXg5AJoXw9JNs24NMQKwccnKrHKh2QQml
-         vePPDniWJ4rCA==
+        b=iXKJAA/Oof0ZN7SO0bbAGXGALjkWT07zuDCwH4PQtWb/UFJNvO4mA7g+M36M3eFGC
+         tvrilJdNZHjbeaW+ZmShjeFFjaZqEIFMCdv9QOa9eN71Mbwq9JktFEZC+6J12ePo91
+         FWKvlrOMuRP9LS0WkRbY9byHs8iQS58SRwciV+si7YHUwPAvgx1M+hb1SdZPvfNvQe
+         gxJCbZEoJwJ6OGy4DxUoaDNzaqypmKh1okkRhZFTFxm2EAdKUT/nmHjWjqO7VpsDow
+         XZ8tmF8emEgb8uoeZ+W72GrViPaszJqonoymeMY/nDVnWc6fhtEyPyCtnubSRkSqPU
+         3i9N3rqAqNHlw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D6E3260CD0;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2900C60A6C;
         Thu, 17 Jun 2021 18:40:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: ipa: Add missing of_node_put() in
- ipa_firmware_load()
+Subject: Re: [net 1/8] net/mlx5: Fix error path for set HCA defaults
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162395520587.2276.15652604965329237162.git-patchwork-notify@kernel.org>
+Message-Id: <162395520516.2276.71617321171522091.git-patchwork-notify@kernel.org>
 Date:   Thu, 17 Jun 2021 18:40:05 +0000
-References: <20210617051119.1153120-1-yangyingliang@huawei.com>
-In-Reply-To: <20210617051119.1153120-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        elder@kernel.org, davem@davemloft.net, kuba@kernel.org
+References: <20210616224015.14393-2-saeed@kernel.org>
+In-Reply-To: <20210616224015.14393-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        tariqt@nvidia.com, leonro@nvidia.com, saeedm@nvidia.com,
+        moshe@nvidia.com, parav@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 17 Jun 2021 13:11:19 +0800 you wrote:
-> This node pointer is returned by of_parse_phandle() with refcount
-> incremented in this function. of_node_put() on it before exiting
-> this function.
+On Wed, 16 Jun 2021 15:40:08 -0700 you wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> In the case of the failure to execute mlx5_core_set_hca_defaults(),
+> we used wrong goto label to execute error unwind flow.
+> 
+> Fixes: 5bef709d76a2 ("net/mlx5: Enable host PF HCA after eswitch is initialized")
+> Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+> Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: ipa: Add missing of_node_put() in ipa_firmware_load()
-    https://git.kernel.org/netdev/net-next/c/b244163f2c45
+  - [net,1/8] net/mlx5: Fix error path for set HCA defaults
+    https://git.kernel.org/netdev/net/c/94a4b8414d3e
+  - [net,2/8] net/mlx5: Check that driver was probed prior attaching the device
+    https://git.kernel.org/netdev/net/c/2058cc9c8041
+  - [net,3/8] net/mlx5: E-Switch, Read PF mac address
+    https://git.kernel.org/netdev/net/c/bbc8222dc49d
+  - [net,4/8] net/mlx5: E-Switch, Allow setting GUID for host PF vport
+    https://git.kernel.org/netdev/net/c/ca36fc4d77b3
+  - [net,5/8] net/mlx5: SF_DEV, remove SF device on invalid state
+    https://git.kernel.org/netdev/net/c/c7d6c19b3bde
+  - [net,6/8] net/mlx5: DR, Fix STEv1 incorrect L3 decapsulation padding
+    https://git.kernel.org/netdev/net/c/65fb7d109abe
+  - [net,7/8] net/mlx5e: Don't create devices during unload flow
+    https://git.kernel.org/netdev/net/c/a5ae8fc9058e
+  - [net,8/8] net/mlx5: Reset mkey index on creation
+    https://git.kernel.org/netdev/net/c/0232fc2ddcf4
 
 You are awesome, thank you!
 --
