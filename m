@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A38C13AB034
+	by mail.lfdr.de (Postfix) with ESMTP id EDCEF3AB035
 	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 11:49:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231976AbhFQJvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 05:51:43 -0400
-Received: from first.geanix.com ([116.203.34.67]:41950 "EHLO first.geanix.com"
+        id S232008AbhFQJvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 05:51:49 -0400
+Received: from first.geanix.com ([116.203.34.67]:41964 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231926AbhFQJvf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 05:51:35 -0400
+        id S231945AbhFQJvj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Jun 2021 05:51:39 -0400
 Received: from localhost (unknown [185.17.218.86])
-        by first.geanix.com (Postfix) with ESMTPSA id A0E214C329E;
-        Thu, 17 Jun 2021 09:49:26 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id 7C79F4C329F;
+        Thu, 17 Jun 2021 09:49:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1623923366; bh=TsS7BAMz2l0iG7vhnR5TeopRChL28In0UoMCZn1qkw0=;
+        t=1623923369; bh=feNRlUYMtFeRKEObT62vVB8ErOgRqSori+/2ECKwuUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=QGwXIf1uXAkOYFZlTSJnJFCQGKXNOfQYSVeyrAxePSlzmknUftDpJd0V1TrOBtzmp
-         tuqfXyCrfkFgULgOyBfP3i0vUN0HT6y4hzld+lZBpNbybCwNfkyUEzvnUcvhKLwBTJ
-         Wobi9zywUN3bgPJkNzIYP8p3O6cO4hyLSE9sbXqvVVL5EPH8vjeH7vIEvFKZlpzC8K
-         mdEZZlUV/POqI1GSP4IUA3DGJmKZLMSClU4tIspNP5u1/E4Ff/YscAkak1dX/KqUxA
-         vQ+34eKsixFELWPlzT2wywNRyODSvLICpFFfgZsm+Sp4jJcMK0kQp4LJDpv5O+JhNr
-         8T3q3Pd7EeDpw==
+        b=F4gY/oqMXIkpltdc8EckPCqLjHXZdafUjLweVqy2phE2PidsqCBeqaeZj5KBn7Qdl
+         vRZL48V+IlkLUWz4TIL9tPzhlupmNWa4yqG00ji0baSUdfqOYw1n7i28YkrmH3w9hU
+         cdj3+UkeMvOSOhJTz8aRGR/ndoDn5iLZfjocLMC7RB6OVksFXhf3+oddVArgLpM0Rs
+         PeBflBvD8MBW6SngntdM6unsSE+ZS6vY8AJA7/oj0cncAqaj1FcEn61Eg7IDoVJto7
+         86fFK2gfFMeq2z9xIWhv1207Cf5tiQIDJrMi8ZXqQZKzSnntAG8Rkk4s5tsFE7C2ps
+         vYGxcsZYCPRTQ==
 From:   Esben Haabendal <esben@geanix.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -30,9 +30,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5/6] net: gianfar: Add definitions for CAR1 and CAM1 register bits
-Date:   Thu, 17 Jun 2021 11:49:26 +0200
-Message-Id: <dcc317a8868b473eff26a8fea44c234db1c11e85.1623922686.git.esben@geanix.com>
+Subject: [PATCH 6/6] net: gianfar: Implement rx_missed_errors counter
+Date:   Thu, 17 Jun 2021 11:49:28 +0200
+Message-Id: <6786b85ee59f57f64cfe60683fc7be498ad8cf47.1623922686.git.esben@geanix.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1623922686.git.esben@geanix.com>
 References: <cover.1623922686.git.esben@geanix.com>
@@ -46,78 +46,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These are for carry status and interrupt mask bits of statistics registers.
+Devices with RMON support has a 16-bit RDRP counter.  It provides: "Receive
+dropped packets counter. Increments for frames received which are streamed
+to system but are later dropped due to lack of system resources."
+
+To handle more than 2^16 dropped packets, a carry bit in CAR1 register is
+set on overflow, so we enable irq when this is set, extending the counter
+to 2^64 for handling situations where lots of packets are missed (e.g.
+during heavy network storms).
 
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/net/ethernet/freescale/gianfar.h | 54 ++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
+ drivers/net/ethernet/freescale/gianfar.c | 50 ++++++++++++++++++++++--
+ drivers/net/ethernet/freescale/gianfar.h | 10 +++++
+ 2 files changed, 57 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index 4608c0c337bc..9646483137c4 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -289,6 +289,29 @@ static void gfar_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *s
+ 		stats->tx_bytes += priv->tx_queue[i]->stats.tx_bytes;
+ 		stats->tx_packets += priv->tx_queue[i]->stats.tx_packets;
+ 	}
++
++	if (priv->device_flags & FSL_GIANFAR_DEV_HAS_RMON) {
++		struct rmon_mib __iomem *rmon = &priv->gfargrp[0].regs->rmon;
++		unsigned long flags;
++		u32 rdrp, car, car_before;
++		u64 rdrp_offset;
++
++		spin_lock_irqsave(&priv->rmon_overflow.lock, flags);
++		car = gfar_read(&rmon->car1) & CAR1_C1RDR;
++		do {
++			car_before = car;
++			rdrp = gfar_read(&rmon->rdrp);
++			car = gfar_read(&rmon->car1) & CAR1_C1RDR;
++		} while (car != car_before);
++		if (car) {
++			priv->rmon_overflow.rdrp++;
++			gfar_write(&rmon->car1, car);
++		}
++		rdrp_offset = priv->rmon_overflow.rdrp;
++		spin_unlock_irqrestore(&priv->rmon_overflow.lock, flags);
++
++		stats->rx_missed_errors = rdrp + (rdrp_offset << 16);
++	}
+ }
+ 
+ /* Set the appropriate hash bit for the given addr */
+@@ -379,7 +402,8 @@ static void gfar_ints_enable(struct gfar_private *priv)
+ 	for (i = 0; i < priv->num_grps; i++) {
+ 		struct gfar __iomem *regs = priv->gfargrp[i].regs;
+ 		/* Unmask the interrupts we look for */
+-		gfar_write(&regs->imask, IMASK_DEFAULT);
++		gfar_write(&regs->imask,
++			   IMASK_DEFAULT | priv->rmon_overflow.imask);
+ 	}
+ }
+ 
+@@ -2287,7 +2311,7 @@ static irqreturn_t gfar_receive(int irq, void *grp_id)
+ 	if (likely(napi_schedule_prep(&grp->napi_rx))) {
+ 		spin_lock_irqsave(&grp->grplock, flags);
+ 		imask = gfar_read(&grp->regs->imask);
+-		imask &= IMASK_RX_DISABLED;
++		imask &= IMASK_RX_DISABLED | grp->priv->rmon_overflow.imask;
+ 		gfar_write(&grp->regs->imask, imask);
+ 		spin_unlock_irqrestore(&grp->grplock, flags);
+ 		__napi_schedule(&grp->napi_rx);
+@@ -2311,7 +2335,7 @@ static irqreturn_t gfar_transmit(int irq, void *grp_id)
+ 	if (likely(napi_schedule_prep(&grp->napi_tx))) {
+ 		spin_lock_irqsave(&grp->grplock, flags);
+ 		imask = gfar_read(&grp->regs->imask);
+-		imask &= IMASK_TX_DISABLED;
++		imask &= IMASK_TX_DISABLED | grp->priv->rmon_overflow.imask;
+ 		gfar_write(&grp->regs->imask, imask);
+ 		spin_unlock_irqrestore(&grp->grplock, flags);
+ 		__napi_schedule(&grp->napi_tx);
+@@ -2682,6 +2706,18 @@ static irqreturn_t gfar_error(int irq, void *grp_id)
+ 		}
+ 		netif_dbg(priv, tx_err, dev, "Transmit Error\n");
+ 	}
++	if (events & IEVENT_MSRO) {
++		struct rmon_mib __iomem *rmon = &regs->rmon;
++		u32 car;
++
++		spin_lock(&priv->rmon_overflow.lock);
++		car = gfar_read(&rmon->car1) & CAR1_C1RDR;
++		if (car) {
++			priv->rmon_overflow.rdrp++;
++			gfar_write(&rmon->car1, car);
++		}
++		spin_unlock(&priv->rmon_overflow.lock);
++	}
+ 	if (events & IEVENT_BSY) {
+ 		dev->stats.rx_over_errors++;
+ 		atomic64_inc(&priv->extra_stats.rx_bsy);
+@@ -3259,6 +3295,14 @@ static int gfar_probe(struct platform_device *ofdev)
+ 
+ 	gfar_hw_init(priv);
+ 
++	if (priv->device_flags & FSL_GIANFAR_DEV_HAS_RMON) {
++		struct rmon_mib __iomem *rmon = &priv->gfargrp[0].regs->rmon;
++
++		spin_lock_init(&priv->rmon_overflow.lock);
++		priv->rmon_overflow.imask = IMASK_MSRO;
++		gfar_write(&rmon->cam1, gfar_read(&rmon->cam1) & ~CAM1_M1RDR);
++	}
++
+ 	/* Carrier starts down, phylib will bring it up */
+ 	netif_carrier_off(dev);
+ 
 diff --git a/drivers/net/ethernet/freescale/gianfar.h b/drivers/net/ethernet/freescale/gianfar.h
-index d8ae5353e881..c8aa140a910f 100644
+index c8aa140a910f..ca5e14f908fe 100644
 --- a/drivers/net/ethernet/freescale/gianfar.h
 +++ b/drivers/net/ethernet/freescale/gianfar.h
-@@ -445,6 +445,60 @@ struct ethtool_rx_list {
- #define RQFPR_PER		0x00000002
- #define RQFPR_EER		0x00000001
+@@ -663,6 +663,15 @@ struct rmon_mib
+ 	u32	cam2;	/* 0x.73c - Carry Mask Register Two */
+ };
  
-+/* CAR1 bits */
-+#define CAR1_C164		0x80000000
-+#define CAR1_C1127		0x40000000
-+#define CAR1_C1255		0x20000000
-+#define CAR1_C1511		0x10000000
-+#define CAR1_C11K		0x08000000
-+#define CAR1_C1MAX		0x04000000
-+#define CAR1_C1MGV		0x02000000
-+#define CAR1_C1REJ		0x00020000
-+#define CAR1_C1RBY		0x00010000
-+#define CAR1_C1RPK		0x00008000
-+#define CAR1_C1RFC		0x00004000
-+#define CAR1_C1RMC		0x00002000
-+#define CAR1_C1RBC		0x00001000
-+#define CAR1_C1RXC		0x00000800
-+#define CAR1_C1RXP		0x00000400
-+#define CAR1_C1RXU		0x00000200
-+#define CAR1_C1RAL		0x00000100
-+#define CAR1_C1RFL		0x00000080
-+#define CAR1_C1RCD		0x00000040
-+#define CAR1_C1RCS		0x00000020
-+#define CAR1_C1RUN		0x00000010
-+#define CAR1_C1ROV		0x00000008
-+#define CAR1_C1RFR		0x00000004
-+#define CAR1_C1RJB		0x00000002
-+#define CAR1_C1RDR		0x00000001
++struct rmon_overflow {
++	/* lock for synchronization of the rdrp field of this struct, and
++	 * CAR1/CAR2 registers
++	 */
++	spinlock_t lock;
++	u32	imask;
++	u64	rdrp;
++};
 +
-+/* CAM1 bits */
-+#define CAM1_M164		0x80000000
-+#define CAM1_M1127		0x40000000
-+#define CAM1_M1255		0x20000000
-+#define CAM1_M1511		0x10000000
-+#define CAM1_M11K		0x08000000
-+#define CAM1_M1MAX		0x04000000
-+#define CAM1_M1MGV		0x02000000
-+#define CAM1_M1REJ		0x00020000
-+#define CAM1_M1RBY		0x00010000
-+#define CAM1_M1RPK		0x00008000
-+#define CAM1_M1RFC		0x00004000
-+#define CAM1_M1RMC		0x00002000
-+#define CAM1_M1RBC		0x00001000
-+#define CAM1_M1RXC		0x00000800
-+#define CAM1_M1RXP		0x00000400
-+#define CAM1_M1RXU		0x00000200
-+#define CAM1_M1RAL		0x00000100
-+#define CAM1_M1RFL		0x00000080
-+#define CAM1_M1RCD		0x00000040
-+#define CAM1_M1RCS		0x00000020
-+#define CAM1_M1RUN		0x00000010
-+#define CAM1_M1ROV		0x00000008
-+#define CAM1_M1RFR		0x00000004
-+#define CAM1_M1RJB		0x00000002
-+#define CAM1_M1RDR		0x00000001
-+
- /* TxBD status field bits */
- #define TXBD_READY		0x8000
- #define TXBD_PADCRC		0x4000
+ struct gfar_extra_stats {
+ 	atomic64_t rx_alloc_err;
+ 	atomic64_t rx_large;
+@@ -1150,6 +1159,7 @@ struct gfar_private {
+ 
+ 	/* Network Statistics */
+ 	struct gfar_extra_stats extra_stats;
++	struct rmon_overflow rmon_overflow;
+ 
+ 	/* PHY stuff */
+ 	phy_interface_t interface;
 -- 
 2.32.0
 
