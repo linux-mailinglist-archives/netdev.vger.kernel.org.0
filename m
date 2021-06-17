@@ -2,198 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64CC93AB2C0
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 13:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D21E63AB2C7
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 13:38:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232381AbhFQLjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 07:39:04 -0400
-Received: from mail-eopbgr60110.outbound.protection.outlook.com ([40.107.6.110]:34908
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232592AbhFQLjD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 07:39:03 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LWX0zYoBMkh3un3k2o3a+qhSexgjyCU0GN7qoIoKMM2+gufzeZoIfF00YLHEUMnSdvOx+CviZ11ftYscKslBCxJ0Siqf0+/l2wRBw1CRqdE2iT6h0nSdcvyesewvQjxmI5nsliAL7iJYRe0nDCY79SaWUssq4uI98tY9C6xz2RqSNmnJxzSCMGXSxDYV9z8fdhkkjXQQJcH/IX9MzaxCBMLybAt1LR61kt+pwMjmxXVQU6mR0CSUuVj5ly+FM3iNpXj6QM2fLRjvaiZnORlp/iArVOid4nAnu2Is4sBF43hrWM1OX7iZRp+KiM9iZQ4nR2Kkw+wW6rGvz+oynfkCiw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mw/3ZeqO4X/b0pk8Cmi+w/JrjcEYKV8NQsh5lP8mjdo=;
- b=cNgXxRfYuHlfBkKyWEb8l0ttWZpJIiPDQJzNOYDxMr6yb+TDq4GO1P7t29QiQ6NDYfGdqeu1ihlxGkkNHpWTThs3+9TyR4QYQjvHjZMsV1nstBICFPZfPFQoWW4tmqIgrQahIv/U47u5TWDlrinZ8+xSZEMqXtv6E2uhtZOCRdxTuU54wG0+iF2qMsIhPYFTkyfDQZFccalLGMK4IzHp20xyeLXHy9Cp+viCzyJiLOrn4OOBPrHauNCx+P00WIVZ1Ss+Smj3t6IMcXVUuCICnMP0InwFVNO6DfsHRE5axB0I2zQe2V4OswnJSYMcRmtI/5PUfgOlAFsXlOjrjGNYQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mw/3ZeqO4X/b0pk8Cmi+w/JrjcEYKV8NQsh5lP8mjdo=;
- b=ZrfiVbP4fpuUE37OZB3sow6LP5jV3VWR6uEY8GBmNju32LrUiO+FbbFFuON29KjIaamheScWIjQ2R2ZSAz/SoUOi2KaBR0rZ0JVeEcTetzSsdfcR0UZ3HSlqOTlWDFrVJNnm6Vb7z7G2e+3j+qk6j0kco5lU3UgVMx9NtJsD5v4=
-Authentication-Results: plvision.eu; dkim=none (message not signed)
- header.d=none;plvision.eu; dmarc=none action=none header.from=plvision.eu;
-Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
- by AM8P190MB0836.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:1d2::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.18; Thu, 17 Jun
- 2021 11:36:53 +0000
-Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
- ([fe80::d018:6384:155:a2fe]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
- ([fe80::d018:6384:155:a2fe%9]) with mapi id 15.20.4219.025; Thu, 17 Jun 2021
- 11:36:53 +0000
-From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-To:     oleksandr.mazur@plvision.eu, jiri@nvidia.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vadym Kochan <vadym.kochan@plvision.eu>, idosch@idosch.org
-Subject: [PATCH net-next v2] drivers: net: netdevsim: fix devlink_trap selftests failing
-Date:   Thu, 17 Jun 2021 14:36:32 +0300
-Message-Id: <20210617113632.21665-1-oleksandr.mazur@plvision.eu>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-Originating-IP: [217.20.186.93]
-X-ClientProxiedBy: AM6P195CA0064.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:209:87::41) To AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:208:19b::9)
+        id S232511AbhFQLkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 07:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229584AbhFQLkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 07:40:36 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347E9C061574
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 04:38:28 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ltqLo-0004eZ-TD; Thu, 17 Jun 2021 13:38:25 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:653d:6f2f:e25e:5f2e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 85A0163E04B;
+        Thu, 17 Jun 2021 11:38:23 +0000 (UTC)
+Date:   Thu, 17 Jun 2021 13:38:22 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can <linux-can@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Subject: Re: [PATCH v2 2/2] can: netlink: add interface for CAN-FD
+ Transmitter Delay Compensation (TDC)
+Message-ID: <20210617113822.gdpesbumwnoixjqs@pengutronix.de>
+References: <20210603151550.140727-1-mailhol.vincent@wanadoo.fr>
+ <20210603151550.140727-3-mailhol.vincent@wanadoo.fr>
+ <20210616094633.fwg6rsyxyvm2zc6d@pengutronix.de>
+ <CAMZ6RqLj59+3PrQwTCfK_bVebRBHE=HqCfRb31MU9pRDBPxG8w@mail.gmail.com>
+ <20210616142940.wxllr3c55rk66rij@pengutronix.de>
+ <CAMZ6RqJWeexWTGVkEJWMvBs1f=HQOc4zjd-PqPsxKnCr_XDFZQ@mail.gmail.com>
+ <20210616144640.l4hjc6mc3ndw25hj@pengutronix.de>
+ <CAMZ6RqLZAO3UX=B8yVUse=4DAVG_zGPrdoYpd-7Cp_To58CChw@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from omazur.x.ow.s (217.20.186.93) by AM6P195CA0064.EURP195.PROD.OUTLOOK.COM (2603:10a6:209:87::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.16 via Frontend Transport; Thu, 17 Jun 2021 11:36:53 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0adbbd8e-0b8a-41bc-9892-08d93184346d
-X-MS-TrafficTypeDiagnostic: AM8P190MB0836:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM8P190MB083683E5095E0E7EACED7A6CE40E9@AM8P190MB0836.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 51+9NFqvV1qwd9AAQgpMbdALXeRB7yeGv70mWMo0aCBhgD7bwSreDv0E8wKmBSsPhqb4+lni0FiymIEjetLnqghaHYREYpLaa7X9XZUkgMpSizBUZTjv7HHjuQClwsYj1Kw9zX0KXv46w6ESnIZ1bz3B92KN4ZH6JBMC4LdRstQNdQR7SsFQ39ecUs9Xw/P5nHkOy7YHJ8e2BvaRVu/nR5p+HiOBP/iHf7CTJ8nUU/25wFtGjQhkCtCuIG71Vl+1xdMrjvohWTiTE3oDTwpywd/45hD0JBnWmp7w/0E3SbHTWnIvDJaJ9n27Evp3PqZtiejjrNVzKnpPcGkSMh3LQrkN5nBAHMprZA1xqOsqkq+s1S037S9GGZ9kPp2CTOti4f3beIhUlhBbmnr3sy8UkegYfX/piuBCMv6dvm4tWLTtDNmlPzHXBPcZ7fsfP2rw0YTbxOz74oDEJBt9DgZTIgSeaSSS1rQka6x7wGj5rztc7+Qi2DoCkRN5LgUPTgyu3rBge+TZr4mhFqcUtC3E1kHOEoCNwe+ipIxa5vkHPzOcBNQCErw9uxRW4tiQ2teIfMi0+y/5aLOq48+dyLZOd5p9mAn52hlJ8+HJes4/ohnhBHayJs6aQRY+c8vFh2t0VecWOAESOyCMIOgkcFFCfV/Y4ygD5q6xnDUATPGcKRc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(39830400003)(376002)(346002)(136003)(396003)(366004)(6506007)(52116002)(36756003)(316002)(956004)(8676002)(38350700002)(38100700002)(2616005)(6512007)(478600001)(26005)(8936002)(6666004)(5660300002)(1076003)(86362001)(6486002)(44832011)(83380400001)(4326008)(16526019)(186003)(2906002)(66476007)(66556008)(66946007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u4+GKhk08RJBGQG4VuXf1RpPMwtPRZMZkrkEcSAKKZ5Uuf6vWlxkA5boLyv+?=
- =?us-ascii?Q?r6JaD+aVLGFbU4CzjxG+xZrcHG4Ww63A7HmXgbrcsMqaJDZmotoYPLTJbmw9?=
- =?us-ascii?Q?yKT6jO3KQvK+fC3ESjJqRgSIMMDkmvnmb0FuKh3iJ0ZSceGKDC5ZX2SPafbm?=
- =?us-ascii?Q?aj+CP/1Rqwf5DD/LWv3CR1XjIeqU9tHkKaxXlJ/AwZLP0IaBcM4Oa8//sJ0T?=
- =?us-ascii?Q?EaJPwz7s8ob8t7Wo3wxznLL1BKoNBU7qhA43N7XlUSaRvi8pEw9MktaDaeJe?=
- =?us-ascii?Q?nCzAuS+us3eWyXlreoiHblGYR/SYO/Gq3lz4U46Ln2RxaMMaf9ji8H2LBs+r?=
- =?us-ascii?Q?JBwzsTRoRVeKLnxNJBK7aP6btjDD3QWq5/O4s1qfapHe/n20pbpJhVzeALv9?=
- =?us-ascii?Q?9HQfoIA7Vr6YeI4COh7vUhjwZybuq0oqcfTpCJxTp6HPBTeRNdSkHV9Ft+A7?=
- =?us-ascii?Q?8qMOnpTnvZQUi+0Tw4UldoqTuzgF8N92BsaA838VMyQCNr+0ruU9DxBfmVgR?=
- =?us-ascii?Q?W5Hn+GT08+AeyB1OFjpBBqBplt7MG3jBvPUPnJwaib5EoN2P+ZUwf0xiQ2GU?=
- =?us-ascii?Q?zxplWliKARYwW399xnBRKK4olIeqnLRWUUijqQ+fQ+N24QRcPC/RLrXKuDsg?=
- =?us-ascii?Q?mukcnwFmNQuYZra2geDukGzdRvsYLlNGFDwR42IFB2TxJ2aKqnZPJMvPjcR+?=
- =?us-ascii?Q?Vou46QRPNmm2CRuk34DGjwKVUYtRq6vkObo1l7Wd3yazosUtIwWrad9Io8RX?=
- =?us-ascii?Q?V5ZUpcHgs+4I2BVOYVQmwetlnR8LHfF3cQlbnFMlXaUs45fr6jYvwocePHWx?=
- =?us-ascii?Q?3yVm5A02AYNXavmjKdp4pfRmzXi6wGM2x9OXQkG1BG0OvE6u6noFoRRZhpLD?=
- =?us-ascii?Q?d/gvr7Q7KUSMEXWLlY4xUT5i4aGVi3kWSDLpARjxdnhRug7LEVToqt2xHPet?=
- =?us-ascii?Q?QulbAr2cHuHiNwqyiS18hB7egmu3ukYFiP2XzJnQIKKsc3ZFQfa+FbKzzdoo?=
- =?us-ascii?Q?2icbaPF5JUhrnTudUe8IMsDmWZ3zHYss4yBwCzD/ZZDQOXOsHh0UIT1n8Edx?=
- =?us-ascii?Q?VlHyLNFN8be7RHKtGFLKrzL4ukXrn2BVKkV3dizMGmNuM2EIgBj7UnPF1gLr?=
- =?us-ascii?Q?nYdKcDmuZFM8IRj4oJOTAkHWKlW1utiKElzhQqq4JL4w4C16CkOEtSW8wgZJ?=
- =?us-ascii?Q?UNsKl5Uf8URszL3YBl1IBMzm4MM8B+uKhi6nFBLNo9VVY/3sAhAregnI1KOE?=
- =?us-ascii?Q?u+AqjnRphCCyKW475KTYwIpvovOEMe2sbeZNSAPex0yLb2qK/6jEY3I5+QGm?=
- =?us-ascii?Q?hEOKWNWHtaLIRRuIamJdzQ7u?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0adbbd8e-0b8a-41bc-9892-08d93184346d
-X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2021 11:36:53.7694
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VDWTvWj9ZXfOgDiVx59okTCY8epVg7FWa8y1zI3ugzjP9ZvqJ8qjBPcqzUB3aR3SwztEn5mYUVFwp2MMtGUhVD1bOurW/XtxmVOUmCATX5I=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8P190MB0836
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wmbiwwgij6c7c54c"
+Content-Disposition: inline
+In-Reply-To: <CAMZ6RqLZAO3UX=B8yVUse=4DAVG_zGPrdoYpd-7Cp_To58CChw@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-devlink_trap tests for the netdevsim fail due to misspelled
-debugfs file name. Change this name, as well as name of callback
-function, to match the naming as in the devlink itself - 'trap_drop_counter'.
 
-Test-results:
-selftests: drivers/net/netdevsim: devlink_trap.sh
-TEST: Initialization                                                [ OK ]
-TEST: Trap action                                                   [ OK ]
-TEST: Trap metadata                                                 [ OK ]
-TEST: Non-existing trap                                             [ OK ]
-TEST: Non-existing trap action                                      [ OK ]
-TEST: Trap statistics                                               [ OK ]
-TEST: Trap group action                                             [ OK ]
-TEST: Non-existing trap group                                       [ OK ]
-TEST: Trap group statistics                                         [ OK ]
-TEST: Trap policer                                                  [ OK ]
-TEST: Trap policer binding                                          [ OK ]
-TEST: Port delete                                                   [ OK ]
-TEST: Device delete                                                 [ OK ]
+--wmbiwwgij6c7c54c
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: a7b3527a43fe ("drivers: net: netdevsim: add devlink trap_drop_counter_get implementation")
-Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
----
-V2:
- 1) change the name of the debugfs-entry variable inside nsim_dev to match the name of
-    the entry itself.
- 2) change name of the registered devlink callback-ops function to match the
-    'trap_drop_counter' naming convention.
----
- drivers/net/netdevsim/dev.c       | 14 +++++++-------
- drivers/net/netdevsim/netdevsim.h |  2 +-
- 2 files changed, 8 insertions(+), 8 deletions(-)
+On 17.06.2021 00:44:12, Vincent MAILHOL wrote:
+> > > Did you try to compile?
+> >
+> > Not before sending that mail :)
+> >
+> > > I am not sure if bittiming.h is able to see struct can_priv which is
+> > > defined in dev.h.
+> >
+> > Nope it doesn't, I moved the can_tdc_is_enabled() to
+> > include/linux/can/dev.h
+>=20
+> Ack. It seems to be the only solution=E2=80=A6
+>=20
+> Moving forward, I will do one more round of tests and send the
+> patch for iproute2-next (warning, the RFC I sent last month has
+> some issues, if you wish to test it on your side, please wait).
+>=20
+> I will also apply can_tdc_is_enabled() to the etas_es58x driver.
+>=20
+> Could you push the recent changes on the testing branch of linux-can-next=
+? It
+> would be really helpful for me!
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index d85521989753..6348307bfa84 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -269,9 +269,9 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
- 		err = PTR_ERR(nsim_dev->nodes_ddir);
- 		goto err_out;
- 	}
--	debugfs_create_bool("fail_trap_counter_get", 0600,
-+	debugfs_create_bool("fail_trap_drop_counter_get", 0600,
- 			    nsim_dev->ddir,
--			    &nsim_dev->fail_trap_counter_get);
-+			    &nsim_dev->fail_trap_drop_counter_get);
- 	nsim_udp_tunnels_debugfs_create(nsim_dev);
- 	return 0;
- 
-@@ -1208,14 +1208,14 @@ static int nsim_rate_node_parent_set(struct devlink_rate *child,
- }
- 
- static int
--nsim_dev_devlink_trap_hw_counter_get(struct devlink *devlink,
--				     const struct devlink_trap *trap,
--				     u64 *p_drops)
-+nsim_dev_devlink_trap_drop_counter_get(struct devlink *devlink,
-+				       const struct devlink_trap *trap,
-+				       u64 *p_drops)
- {
- 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
- 	u64 *cnt;
- 
--	if (nsim_dev->fail_trap_counter_get)
-+	if (nsim_dev->fail_trap_drop_counter_get)
- 		return -EINVAL;
- 
- 	cnt = &nsim_dev->trap_data->trap_pkt_cnt;
-@@ -1247,7 +1247,7 @@ static const struct devlink_ops nsim_dev_devlink_ops = {
- 	.rate_node_del = nsim_rate_node_del,
- 	.rate_leaf_parent_set = nsim_rate_leaf_parent_set,
- 	.rate_node_parent_set = nsim_rate_node_parent_set,
--	.trap_drop_counter_get = nsim_dev_devlink_trap_hw_counter_get,
-+	.trap_drop_counter_get = nsim_dev_devlink_trap_drop_counter_get,
- };
- 
- #define NSIM_DEV_MAX_MACS_DEFAULT 32
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index f2304e61919a..ae462957dcee 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -249,7 +249,7 @@ struct nsim_dev {
- 	bool fail_trap_group_set;
- 	bool fail_trap_policer_set;
- 	bool fail_trap_policer_counter_get;
--	bool fail_trap_counter_get;
-+	bool fail_trap_drop_counter_get;
- 	struct {
- 		struct udp_tunnel_nic_shared utn_shared;
- 		u32 __ports[2][NSIM_UDP_TUNNEL_N_PORTS];
--- 
-2.17.1
+done
 
+Marc.
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--wmbiwwgij6c7c54c
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDLNCwACgkQqclaivrt
+76m0agf/b+zqU+/7C7Jr48RNm7EXvLLK8LrH6QU5JhByWuozN3adqsbR3VkhwLg4
+vi/46MXTWQ3sZOffrPSwzWotpBp0dNRUXCmTlk1+aStany3ekVHhmQqeemo0SR25
+7Ef4mr1omagm19TGFAdGxQcj/bjIw/3pk2d1TFsEjj8OS7AHCAByWiPSGvhyEYev
+PLyAjqjMCzdxaraMNuBFcttH7wZrgdj4ew5R7WSOoSNm48JvieMef8Ar4WhzxID3
+4Y4DCHMrMEUPhThAYeR5pFlcRP7YISa62f865o/16IJVe0NnKyQugadk3lk9DdVM
+S2IpApA4V3JoQpZukzqo6i7tqT9/CA==
+=nuoX
+-----END PGP SIGNATURE-----
+
+--wmbiwwgij6c7c54c--
