@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 437F83ABB77
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 20:24:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 385663ABB83
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 20:24:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233448AbhFQS0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 14:26:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53703 "EHLO
+        id S233662AbhFQS0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 14:26:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55347 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233453AbhFQSZ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 14:25:59 -0400
+        by vger.kernel.org with ESMTP id S233570AbhFQS0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 14:26:07 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623954230;
+        s=mimecast20190719; t=1623954238;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bgx+Wd4CjmxKDJhnej4MvAUpn8O2pHaLYXMM+6os36Y=;
-        b=LMAuDbKVBw8b15MJt951a9IjUNqbryKuK0X5FqhHOzxFRmwpl9MUGRJWvuQpJUXF+g4adB
-        9C5QcsbGy3dT1Mzk1sD97hB2e3eLK1HDw6Q+8zs1kIPhrPDXuVSaliX6duTGLlwIldGXVt
-        JFKmhY3P+bWnKPS9T5uzKyguMy17FCg=
+        bh=yGtGwjM0HqOorIAs5Vljr+3B7rxAzLOFx0Bg3o4IjhM=;
+        b=Dyzz1t/Q/bqrnu03P074f5xJ1bIj3ePyLf5Ftg2U5LlkJEjIfKUnC/cRSNpQncX2lPaooq
+        QI3384J721LMlOm4IJi45FAc7eF048NMpUz7sMNQkSGssn6PBa5Wst1w5qYcZqKuy078c5
+        6LMS9FnNc7CUoFiZ9BPfYsbjRL+aI8s=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-579-D5Xm0RcAP7S56RXc_kNEWA-1; Thu, 17 Jun 2021 14:23:49 -0400
-X-MC-Unique: D5Xm0RcAP7S56RXc_kNEWA-1
+ us-mta-239-0R0f6V6_PCKTQDqRXIZhfQ-1; Thu, 17 Jun 2021 14:23:57 -0400
+X-MC-Unique: 0R0f6V6_PCKTQDqRXIZhfQ-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E86FF80ED8B;
-        Thu, 17 Jun 2021 18:23:43 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 43D54100C619;
+        Thu, 17 Jun 2021 18:23:51 +0000 (UTC)
 Received: from virtlab719.virt.lab.eng.bos.redhat.com (virtlab719.virt.lab.eng.bos.redhat.com [10.19.153.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9729760C05;
-        Thu, 17 Jun 2021 18:23:31 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0CFCF60C05;
+        Thu, 17 Jun 2021 18:23:43 +0000 (UTC)
 From:   Nitesh Narayan Lal <nitesh@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
@@ -57,90 +57,56 @@ To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
         luobin9@huawei.com, ajit.khaparde@broadcom.com,
         sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
         nilal@redhat.com
-Subject: [PATCH v1 05/14] scsi: mpt3sas: Use irq_set_affinity_and_hint
-Date:   Thu, 17 Jun 2021 14:22:33 -0400
-Message-Id: <20210617182242.8637-6-nitesh@redhat.com>
+Subject: [PATCH v1 06/14] RDMA/i40iw: Use irq_update_affinity_hint
+Date:   Thu, 17 Jun 2021 14:22:34 -0400
+Message-Id: <20210617182242.8637-7-nitesh@redhat.com>
 In-Reply-To: <20210617182242.8637-1-nitesh@redhat.com>
 References: <20210617182242.8637-1-nitesh@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver uses irq_set_affinity_hint() specifically for the high IOPS
-queue interrupts for two purposes:
-
-- To set the affinity_hint which is consumed by the userspace for
-  distributing the interrupts
-
-- To apply an affinity that it provides
-
-The driver enforces its own affinity to bind the high IOPS queue interrupts
-to the local NUMA node. However, irq_set_affinity_hint() applying the
-provided cpumask as an affinity (if not NULL) for the interrupt is an
+The driver uses irq_set_affinity_hint() to update the affinity_hint mask
+that is consumed by the userspace to distribute the interrupts. However,
+under the hood irq_set_affinity_hint() also applies the provided cpumask
+(if not NULL) as the affinity for the given interrupt which is an
 undocumented side effect.
 
 To remove this side effect irq_set_affinity_hint() has been marked
 as deprecated and new interfaces have been introduced. Hence, replace the
-irq_set_affinity_hint() with the new interface irq_set_affinity_and_hint()
-that clearly indicates the purpose of the usage and is meant to apply the
-affinity and set the affinity_hint pointer. Also, replace
-irq_set_affinity_hint() with irq_update_affinity_hint() when only
-affinity_hint needs to be updated.
+irq_set_affinity_hint() with the new interface irq_update_affinity_hint()
+that only updates the affinity_hint pointer.
 
 Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
 ---
- drivers/scsi/mpt3sas/mpt3sas_base.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/infiniband/hw/i40iw/i40iw_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index 5779f313f6f8..c112c30577bb 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -2998,8 +2998,8 @@ _base_free_irq(struct MPT3SAS_ADAPTER *ioc)
- 	list_for_each_entry_safe(reply_q, next, &ioc->reply_queue_list, list) {
- 		list_del(&reply_q->list);
- 		if (ioc->smp_affinity_enable)
--			irq_set_affinity_hint(pci_irq_vector(ioc->pdev,
--			    reply_q->msix_index), NULL);
-+			irq_update_affinity_hint(pci_irq_vector(ioc->pdev,
-+						reply_q->msix_index), NULL);
- 		free_irq(pci_irq_vector(ioc->pdev, reply_q->msix_index),
- 			 reply_q);
- 		kfree(reply_q);
-@@ -3055,15 +3055,13 @@ _base_request_irq(struct MPT3SAS_ADAPTER *ioc, u8 index)
-  * @ioc: per adapter object
-  *
-  * The enduser would need to set the affinity via /proc/irq/#/smp_affinity
-- *
-- * It would nice if we could call irq_set_affinity, however it is not
-- * an exported symbol
-  */
- static void
- _base_assign_reply_queues(struct MPT3SAS_ADAPTER *ioc)
- {
--	unsigned int cpu, nr_cpus, nr_msix, index = 0;
-+	unsigned int cpu, nr_cpus, nr_msix, index = 0, irq;
- 	struct adapter_reply_queue *reply_q;
-+	const struct cpumask *mask;
- 	int local_numa_node;
+diff --git a/drivers/infiniband/hw/i40iw/i40iw_main.c b/drivers/infiniband/hw/i40iw/i40iw_main.c
+index b496f30ce066..433d91c30cae 100644
+--- a/drivers/infiniband/hw/i40iw/i40iw_main.c
++++ b/drivers/infiniband/hw/i40iw/i40iw_main.c
+@@ -266,7 +266,7 @@ static void i40iw_disable_irq(struct i40iw_sc_dev *dev,
+ 		i40iw_wr32(dev->hw, I40E_PFINT_DYN_CTLN(msix_vec->idx - 1), 0);
+ 	else
+ 		i40iw_wr32(dev->hw, I40E_VFINT_DYN_CTLN1(msix_vec->idx - 1), 0);
+-	irq_set_affinity_hint(msix_vec->irq, NULL);
++	irq_update_affinity_hint(msix_vec->irq, NULL);
+ 	free_irq(msix_vec->irq, dev_id);
+ }
  
- 	if (!_base_is_controller_msix_enabled(ioc))
-@@ -3090,8 +3088,9 @@ _base_assign_reply_queues(struct MPT3SAS_ADAPTER *ioc)
- 			local_numa_node = dev_to_node(&ioc->pdev->dev);
- 			for (index = 0; index < ioc->high_iops_queues;
- 			    index++) {
--				irq_set_affinity_hint(pci_irq_vector(ioc->pdev,
--				    index), cpumask_of_node(local_numa_node));
-+				irq = pci_irq_vector(ioc->pdev, index);
-+				mask = cpumask_of_node(local_numa_node);
-+				irq_set_affinity_and_hint(irq, mask);
- 			}
- 		}
+@@ -696,7 +696,7 @@ static enum i40iw_status_code i40iw_configure_ceq_vector(struct i40iw_device *iw
  
+ 	cpumask_clear(&msix_vec->mask);
+ 	cpumask_set_cpu(msix_vec->cpu_affinity, &msix_vec->mask);
+-	irq_set_affinity_hint(msix_vec->irq, &msix_vec->mask);
++	irq_update_affinity_hint(msix_vec->irq, &msix_vec->mask);
+ 
+ 	if (status) {
+ 		i40iw_pr_err("ceq irq config fail\n");
 -- 
 2.27.0
 
