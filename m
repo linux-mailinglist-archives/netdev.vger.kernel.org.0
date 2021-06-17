@@ -2,117 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C366F3AAC89
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 08:39:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A41173AACBB
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 08:51:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229712AbhFQGl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 02:41:57 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:49281 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229551AbhFQGl4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 02:41:56 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id AAA3F5C013E;
-        Thu, 17 Jun 2021 02:39:48 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 17 Jun 2021 02:39:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=/DzQCe
-        zx4ySB6yO+xHiB8fElUQ69/Gax99EYsyjZLbc=; b=DntMJCOWRDqEesqmaPOHiy
-        a7Jux6Uw0HlgUcZ9tw04JsiHBUiyXpY5BfbB8kTt6m6qPkeuquN7uPa16Zn1gINB
-        +lP/sspwcsvvcWXzqhcciJPMd33Gi6wRYctCcHYmFP1Mi51RgrmkVLoCcWKzGtgL
-        FIKbyan2V1Stij809d/Eup6MIGyfyOKICM4aKqEKadaB9zMlgKfSSkpYp8jXEPTR
-        jDN8S1GOF0qPgTAAQHYLWft0nPpiKxpkIzxkV7/hkmr1GJ6gVUInRGKL8b0hdmBY
-        Ye87ucfuhJbQu92+zwBFDP3hh/qzywtKPTZvA92wQe+p7FenfAwcP0OKaVsIuF3w
-        ==
-X-ME-Sender: <xms:NO7KYOLB8lGY762oZBmjGKurjkjjkkkVu82sPOc0wSTvsv9NxCIUbQ>
-    <xme:NO7KYGK12_7DhC4Z-_J2xcWQkda0o2VC-NGEbSruscgvn4ur5NXX6pBVu92Kk3br5
-    raXa9oTFzNeUtM>
-X-ME-Received: <xmr:NO7KYOueOhKBbZf0lv0AdVptIH2Go5xnZplVMIr_BJBa6f8cxe6Vlwc89oz1CwRVx0S58RbJ_VJyIOCjK0wPJU270R6aVQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeftddguddtiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:NO7KYDY4RP0fevjDUjdYvc_f7CRglEgYBg2LKXkgvJuUkiVU9jNYNA>
-    <xmx:NO7KYFY3mAJFY-xa3ym5xjMLOl_4Hz5XJc9wVHYRsQCEWFjGBcxs_g>
-    <xmx:NO7KYPBvtfTnE63PztnfQLpcEKwsoLXcJjmjr0qPkXr0aPAUO9rpIA>
-    <xmx:NO7KYEXKwSHKIQuh2jPHswkZhkGvf2mDPFoO2MarUIsQ7XP7xe9CqA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 17 Jun 2021 02:39:47 -0400 (EDT)
-Date:   Thu, 17 Jun 2021 09:39:43 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Cc:     jiri@nvidia.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vadym Kochan <vadym.kochan@plvision.eu>
-Subject: Re: [PATCH net-next] drivers: net: netdevsim: fix devlink_trap
- selftests failing
-Message-ID: <YMruL84N3A3yq1qy@shredder>
-References: <20210616183405.3715-1-oleksandr.mazur@plvision.eu>
+        id S229842AbhFQGxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 02:53:54 -0400
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:33314 "EHLO
+        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229712AbhFQGxx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 02:53:53 -0400
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by kvm5.telegraphics.com.au (Postfix) with ESMTP id BED3E2BF26;
+        Thu, 17 Jun 2021 02:51:34 -0400 (EDT)
+Date:   Thu, 17 Jun 2021 16:51:33 +1000 (AEST)
+From:   Finn Thain <fthain@linux-m68k.org>
+To:     Michael Schmitz <schmitzmic@gmail.com>
+cc:     linux-m68k@vger.kernel.org, geert@linux-m68k.org, alex@kazik.de,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 2/2] net/8390: apne.c - add 100 Mbit support
+ to apne.c driver
+In-Reply-To: <1623907712-29366-3-git-send-email-schmitzmic@gmail.com>
+Message-ID: <d661fb8-274d-6731-75f4-685bb2311c41@linux-m68k.org>
+References: <1623907712-29366-1-git-send-email-schmitzmic@gmail.com> <1623907712-29366-3-git-send-email-schmitzmic@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210616183405.3715-1-oleksandr.mazur@plvision.eu>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 16, 2021 at 09:34:05PM +0300, Oleksandr Mazur wrote:
+On Thu, 17 Jun 2021, Michael Schmitz wrote:
 
-You need to add a proper commit message here
-
-> Fixes: a7b3527a43fe ("drivers: net: netdevsim: add devlink trap_drop_counter_get implementation")
+> Add Kconfig option, module parameter and PCMCIA reset code
+> required to support 100 Mbit PCMCIA ethernet cards on Amiga.
 > 
-
-No blank line between Fixes and SoB
-
-> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+> 10 Mbit and 100 Mbit mode are supported by the same module.
+> A module parameter switches Amiga ISA IO accessors to word
+> access by changing isa_type at runtime. Additional code to
+> reset the PCMCIA hardware is also added to the driver probe.
+> 
+> Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
+> 100 MBit card support" submitted to netdev 2018/09/16 by Alex
+> Kazik <alex@kazik.de>.
+> 
+> CC: netdev@vger.kernel.org
+> Tested-by: Alex Kazik <alex@kazik.de>
+> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+> 
+> --
+> Changes from v1:
+> 
+> - fix module parameter name in Kconfig help text
+> 
+> Alex Kazik:
+> - change module parameter type to bool, fix module parameter
+>   permission
+> 
+> Changes from RFC:
+> 
+> Geert Uytterhoeven:
+> - change APNE_100MBIT to depend on APNE
+> - change '---help---' to 'help' (former no longer supported)
+> - fix whitespace errors
+> - fix module_param_named() arg count
+> - protect all added code by #ifdef CONFIG_APNE_100MBIT
 > ---
-> Test-results:
-> selftests: drivers/net/netdevsim: devlink_trap.sh
-> TEST: Initialization                                                [ OK ]
-> TEST: Trap action                                                   [ OK ]
-> TEST: Trap metadata                                                 [ OK ]
-> TEST: Non-existing trap                                             [ OK ]
-> TEST: Non-existing trap action                                      [ OK ]
-> TEST: Trap statistics                                               [ OK ]
-> TEST: Trap group action                                             [ OK ]
-> TEST: Non-existing trap group                                       [ OK ]
-> TEST: Trap group statistics                                         [ OK ]
-> TEST: Trap policer                                                  [ OK ]
-> TEST: Trap policer binding                                          [ OK ]
-> TEST: Port delete                                                   [ OK ]
-> TEST: Device delete                                                 [ OK ]
-
-This can be in the commit message
-
-> ---
->  drivers/net/netdevsim/dev.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/net/ethernet/8390/Kconfig | 12 ++++++++++++
+>  drivers/net/ethernet/8390/apne.c  | 21 +++++++++++++++++++++
+>  2 files changed, 33 insertions(+)
 > 
-> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-> index d85521989753..aad5e3d4a2b6 100644
-> --- a/drivers/net/netdevsim/dev.c
-> +++ b/drivers/net/netdevsim/dev.c
-> @@ -269,7 +269,7 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
->  		err = PTR_ERR(nsim_dev->nodes_ddir);
->  		goto err_out;
->  	}
-> -	debugfs_create_bool("fail_trap_counter_get", 0600,
-> +	debugfs_create_bool("fail_trap_drop_counter_get", 0600,
->  			    nsim_dev->ddir,
->  			    &nsim_dev->fail_trap_counter_get);
+> diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
+> index 9f4b302..6e4db63 100644
+> --- a/drivers/net/ethernet/8390/Kconfig
+> +++ b/drivers/net/ethernet/8390/Kconfig
+> @@ -143,6 +143,18 @@ config APNE
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called apne.
+>  
+> +config APNE100MBIT
+> +	bool "PCMCIA NE2000 100MBit support"
+> +	depends on APNE
+> +	default n
+> +	help
+> +	  This changes the driver to support 10/100Mbit cards (e.g. Netgear
+> +	  FA411, CNet Singlepoint). 10 MBit cards and 100 MBit cards are
+> +	  supported by the same driver.
+> +
+> +	  To activate 100 Mbit support at runtime or from the kernel
+> +	  command line, use the apne.100mbit module parameter.
+> +
+>  config PCMCIA_PCNET
+>  	tristate "NE2000 compatible PCMCIA support"
+>  	depends on PCMCIA
+> diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
+> index fe6c834..59e41ad 100644
+> --- a/drivers/net/ethernet/8390/apne.c
+> +++ b/drivers/net/ethernet/8390/apne.c
+> @@ -120,6 +120,12 @@ static u32 apne_msg_enable;
+>  module_param_named(msg_enable, apne_msg_enable, uint, 0444);
+>  MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+>  
+> +#ifdef CONFIG_APNE100MBIT
+> +static bool apne_100_mbit;
+> +module_param_named(apne_100_mbit_msg, apne_100_mbit, bool, 0444);
+> +MODULE_PARM_DESC(apne_100_mbit_msg, "Enable 100 Mbit support");
+> +#endif
+> +
+>  struct net_device * __init apne_probe(int unit)
+>  {
+>  	struct net_device *dev;
+> @@ -139,6 +145,11 @@ struct net_device * __init apne_probe(int unit)
+>  	if ( !(AMIGAHW_PRESENT(PCMCIA)) )
+>  		return ERR_PTR(-ENODEV);
+>  
+> +#ifdef CONFIG_APNE100MBIT
+> +	if (apne_100_mbit)
+> +		isa_type = ISA_TYPE_AG16;
+> +#endif
+> +
 
-Please change the name of the variable to match the name of the
-corresponding debugfs file
+I think isa_type has to be assigned unconditionally otherwise it can't be 
+reset for 10 mbit cards. Therefore, the AMIGAHW_PRESENT(PCMCIA) logic in 
+arch/m68k/kernel/setup_mm.c probably should move here.
 
->  	nsim_udp_tunnels_debugfs_create(nsim_dev);
-> -- 
-> 2.17.1
-> 
+>  	pr_info("Looking for PCMCIA ethernet card : ");
+>  
+>  	/* check if a card is inserted */
+> @@ -590,6 +601,16 @@ static int init_pcmcia(void)
+>  #endif
+>  	u_long offset;
+>  
+> +#ifdef CONFIG_APNE100MBIT
+> +	/* reset card (idea taken from CardReset by Artur Pogoda) */
+> +	{
+> +		u_char  tmp = gayle.intreq;
+> +
+> +		gayle.intreq = 0xff;    mdelay(1);
+> +		gayle.intreq = tmp;     mdelay(300);
+> +	}
+> +#endif
+> +
+
+The indentation/alignment here doesn't conform to the kernel coding style. 
