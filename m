@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96F5F3AB031
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 11:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A38C13AB034
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 11:49:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231871AbhFQJvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 05:51:40 -0400
-Received: from first.geanix.com ([116.203.34.67]:41936 "EHLO first.geanix.com"
+        id S231976AbhFQJvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 05:51:43 -0400
+Received: from first.geanix.com ([116.203.34.67]:41950 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231845AbhFQJvd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 05:51:33 -0400
+        id S231926AbhFQJvf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Jun 2021 05:51:35 -0400
 Received: from localhost (unknown [185.17.218.86])
-        by first.geanix.com (Postfix) with ESMTPSA id B2E3D4C329C;
-        Thu, 17 Jun 2021 09:49:23 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id A0E214C329E;
+        Thu, 17 Jun 2021 09:49:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1623923363; bh=DU/8XgCmqOcU1c6ia7VRITPn2rmzotPkskeH7i2WLuE=;
+        t=1623923366; bh=TsS7BAMz2l0iG7vhnR5TeopRChL28In0UoMCZn1qkw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=RgrmVPT09wm4owgY4qqyp8/Cci0ulXlxBLzQH/V6PWyzfV0B+YZZoqHaAAYmrtzhw
-         fKIbQ+trbTrGvtF7YQJZTlJTLuHNFGtMDdeLOgEV1FiowJSmaJ3HVdNA6QQmcpmJrs
-         /CkWA61DVbjlYzWX+EA8sljVcnjTUx3nw/MvOsylX9fDerHOnBs5kpQv3eaRS/O4KN
-         H5qhRnMrIHBtlHZZswU+VcoPKc5jdnlVtSiVVqQHaLLin5Tu03eqOcSOfTGj0LQHgl
-         EiCbGbZ2j8/Yt7DjTBrdbiCdfeX7rk5D0268u3aNIXBXE8SU5iAX6OzsrDUqwpX+A3
-         eF3O0kvBnpE0A==
+        b=QGwXIf1uXAkOYFZlTSJnJFCQGKXNOfQYSVeyrAxePSlzmknUftDpJd0V1TrOBtzmp
+         tuqfXyCrfkFgULgOyBfP3i0vUN0HT6y4hzld+lZBpNbybCwNfkyUEzvnUcvhKLwBTJ
+         Wobi9zywUN3bgPJkNzIYP8p3O6cO4hyLSE9sbXqvVVL5EPH8vjeH7vIEvFKZlpzC8K
+         mdEZZlUV/POqI1GSP4IUA3DGJmKZLMSClU4tIspNP5u1/E4Ff/YscAkak1dX/KqUxA
+         vQ+34eKsixFELWPlzT2wywNRyODSvLICpFFfgZsm+Sp4jJcMK0kQp4LJDpv5O+JhNr
+         8T3q3Pd7EeDpw==
 From:   Esben Haabendal <esben@geanix.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -30,9 +30,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4/6] net: gianfar: Avoid 16 bytes of memset
-Date:   Thu, 17 Jun 2021 11:49:23 +0200
-Message-Id: <3550366c0e6eda798a36a6695e6b4736e41e40ab.1623922686.git.esben@geanix.com>
+Subject: [PATCH 5/6] net: gianfar: Add definitions for CAR1 and CAM1 register bits
+Date:   Thu, 17 Jun 2021 11:49:26 +0200
+Message-Id: <dcc317a8868b473eff26a8fea44c234db1c11e85.1623922686.git.esben@geanix.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1623922686.git.esben@geanix.com>
 References: <cover.1623922686.git.esben@geanix.com>
@@ -46,31 +46,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The memset on CAMx is wrong, as it actually unmasks all carry irq's,
-which we clearly are not interested in.
-
-The memset on CARx registers is just pointless, as they are W1C.
-
-So let's just stop the memset before CAR1.
+These are for carry status and interrupt mask bits of statistics registers.
 
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/net/ethernet/freescale/gianfar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/gianfar.h | 54 ++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index ebd1065f39fa..4608c0c337bc 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -3098,7 +3098,7 @@ static void gfar_hw_init(struct gfar_private *priv)
+diff --git a/drivers/net/ethernet/freescale/gianfar.h b/drivers/net/ethernet/freescale/gianfar.h
+index d8ae5353e881..c8aa140a910f 100644
+--- a/drivers/net/ethernet/freescale/gianfar.h
++++ b/drivers/net/ethernet/freescale/gianfar.h
+@@ -445,6 +445,60 @@ struct ethtool_rx_list {
+ #define RQFPR_PER		0x00000002
+ #define RQFPR_EER		0x00000001
  
- 	/* Zero out the rmon mib registers if it has them */
- 	if (priv->device_flags & FSL_GIANFAR_DEV_HAS_RMON) {
--		memset_io(&(regs->rmon), 0, sizeof(struct rmon_mib));
-+		memset_io(&regs->rmon, 0, offsetof(struct rmon_mib, car1));
- 
- 		/* Mask off the CAM interrupts */
- 		gfar_write(&regs->rmon.cam1, 0xffffffff);
++/* CAR1 bits */
++#define CAR1_C164		0x80000000
++#define CAR1_C1127		0x40000000
++#define CAR1_C1255		0x20000000
++#define CAR1_C1511		0x10000000
++#define CAR1_C11K		0x08000000
++#define CAR1_C1MAX		0x04000000
++#define CAR1_C1MGV		0x02000000
++#define CAR1_C1REJ		0x00020000
++#define CAR1_C1RBY		0x00010000
++#define CAR1_C1RPK		0x00008000
++#define CAR1_C1RFC		0x00004000
++#define CAR1_C1RMC		0x00002000
++#define CAR1_C1RBC		0x00001000
++#define CAR1_C1RXC		0x00000800
++#define CAR1_C1RXP		0x00000400
++#define CAR1_C1RXU		0x00000200
++#define CAR1_C1RAL		0x00000100
++#define CAR1_C1RFL		0x00000080
++#define CAR1_C1RCD		0x00000040
++#define CAR1_C1RCS		0x00000020
++#define CAR1_C1RUN		0x00000010
++#define CAR1_C1ROV		0x00000008
++#define CAR1_C1RFR		0x00000004
++#define CAR1_C1RJB		0x00000002
++#define CAR1_C1RDR		0x00000001
++
++/* CAM1 bits */
++#define CAM1_M164		0x80000000
++#define CAM1_M1127		0x40000000
++#define CAM1_M1255		0x20000000
++#define CAM1_M1511		0x10000000
++#define CAM1_M11K		0x08000000
++#define CAM1_M1MAX		0x04000000
++#define CAM1_M1MGV		0x02000000
++#define CAM1_M1REJ		0x00020000
++#define CAM1_M1RBY		0x00010000
++#define CAM1_M1RPK		0x00008000
++#define CAM1_M1RFC		0x00004000
++#define CAM1_M1RMC		0x00002000
++#define CAM1_M1RBC		0x00001000
++#define CAM1_M1RXC		0x00000800
++#define CAM1_M1RXP		0x00000400
++#define CAM1_M1RXU		0x00000200
++#define CAM1_M1RAL		0x00000100
++#define CAM1_M1RFL		0x00000080
++#define CAM1_M1RCD		0x00000040
++#define CAM1_M1RCS		0x00000020
++#define CAM1_M1RUN		0x00000010
++#define CAM1_M1ROV		0x00000008
++#define CAM1_M1RFR		0x00000004
++#define CAM1_M1RJB		0x00000002
++#define CAM1_M1RDR		0x00000001
++
+ /* TxBD status field bits */
+ #define TXBD_READY		0x8000
+ #define TXBD_PADCRC		0x4000
 -- 
 2.32.0
 
