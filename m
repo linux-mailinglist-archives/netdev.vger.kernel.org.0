@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C370E3ABA1D
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 18:59:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A79FE3ABA1E
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 18:59:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231600AbhFQRBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 13:01:19 -0400
-Received: from mga18.intel.com ([134.134.136.126]:63633 "EHLO mga18.intel.com"
+        id S231626AbhFQRBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 13:01:20 -0400
+Received: from mga18.intel.com ([134.134.136.126]:63638 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229816AbhFQRBR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230526AbhFQRBR (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 17 Jun 2021 13:01:17 -0400
-IronPort-SDR: 4bpHueM4vB0mqG0f+XDXmDs6XAkw1cERK5S3haBmrmrKoPiM3jUzBhXPi4pkgOIqQoa31Y4EUW
- 8umGvfvuSIMg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10018"; a="193723053"
+IronPort-SDR: v0NFRe8hZ6DHHlBk2Ldsnx3RPa4A+zX9Md6Z+O8cXvsnwdrGG4Dm+Bfr9YnCIOddcmQxeQ0/D4
+ Dr5KAC++XTFA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10018"; a="193723058"
 X-IronPort-AV: E=Sophos;i="5.83,281,1616482800"; 
-   d="scan'208";a="193723053"
+   d="scan'208";a="193723058"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2021 09:59:05 -0700
-IronPort-SDR: o3wTwErzWP9KMQENyjhcuXdxlrm9nQ5j6nFb4o+Csh7vzLuQo+LOLhKmL4T1miB85WMSmTkRPt
- I5UsCiiYzNqA==
+IronPort-SDR: 9JEAF+MzQ8/GelaM2wBKlDkefsQJlH7jlDLD97AG469jGxpTShqTN2l478oAJo9X/PKLGx627M
+ FLPqiF79TOnQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,281,1616482800"; 
-   d="scan'208";a="404706808"
+   d="scan'208";a="404706810"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 17 Jun 2021 09:59:04 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Shaokun Zhang <zhangshaokun@hisilicon.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: [PATCH net-next 5/8] ice: Remove the repeated declaration
-Date:   Thu, 17 Jun 2021 10:01:42 -0700
-Message-Id: <20210617170145.4092904-6-anthony.l.nguyen@intel.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com
+Subject: [PATCH net-next 6/8] ice: remove unnecessary NULL checks before ptp_read_system_*
+Date:   Thu, 17 Jun 2021 10:01:43 -0700
+Message-Id: <20210617170145.4092904-7-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210617170145.4092904-1-anthony.l.nguyen@intel.com>
 References: <20210617170145.4092904-1-anthony.l.nguyen@intel.com>
@@ -42,33 +41,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shaokun Zhang <zhangshaokun@hisilicon.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-Function 'ice_is_vsi_valid' is declared twice, remove the
-repeated declaration.
+The ptp_read_system_prets and ptp_read_system_postts functions already
+check for the NULL value of the ptp_system_timestamp structure pointer.
+There is no need to check this manually in the ice driver code. Remove
+the checks.
 
-Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_switch.h | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
-index 6bb7358ff67b..c5db8d56133f 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-@@ -247,7 +247,6 @@ ice_set_vlan_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index e14f81321768..609f433a4b96 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -219,14 +219,12 @@ ice_ptp_read_src_clk_reg(struct ice_pf *pf, struct ptp_system_timestamp *sts)
  
- enum ice_status ice_init_def_sw_recp(struct ice_hw *hw);
- u16 ice_get_hw_vsi_num(struct ice_hw *hw, u16 vsi_handle);
--bool ice_is_vsi_valid(struct ice_hw *hw, u16 vsi_handle);
+ 	tmr_idx = ice_get_ptp_src_clock_index(hw);
+ 	/* Read the system timestamp pre PHC read */
+-	if (sts)
+-		ptp_read_system_prets(sts);
++	ptp_read_system_prets(sts);
  
- enum ice_status ice_replay_vsi_all_fltr(struct ice_hw *hw, u16 vsi_handle);
- void ice_rm_all_sw_replay_rule_info(struct ice_hw *hw);
+ 	lo = rd32(hw, GLTSYN_TIME_L(tmr_idx));
+ 
+ 	/* Read the system timestamp post PHC read */
+-	if (sts)
+-		ptp_read_system_postts(sts);
++	ptp_read_system_postts(sts);
+ 
+ 	hi = rd32(hw, GLTSYN_TIME_H(tmr_idx));
+ 	lo2 = rd32(hw, GLTSYN_TIME_L(tmr_idx));
+@@ -235,11 +233,9 @@ ice_ptp_read_src_clk_reg(struct ice_pf *pf, struct ptp_system_timestamp *sts)
+ 		/* if TIME_L rolled over read TIME_L again and update
+ 		 * system timestamps
+ 		 */
+-		if (sts)
+-			ptp_read_system_prets(sts);
++		ptp_read_system_prets(sts);
+ 		lo = rd32(hw, GLTSYN_TIME_L(tmr_idx));
+-		if (sts)
+-			ptp_read_system_postts(sts);
++		ptp_read_system_postts(sts);
+ 		hi = rd32(hw, GLTSYN_TIME_H(tmr_idx));
+ 	}
+ 
 -- 
 2.26.2
 
