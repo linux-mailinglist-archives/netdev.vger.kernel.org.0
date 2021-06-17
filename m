@@ -2,116 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D5F3AA980
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 05:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D96E3AA986
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 05:24:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbhFQDZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 23:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbhFQDZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 23:25:01 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3B4C06175F
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 20:22:54 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id ei4so2954576pjb.3
-        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 20:22:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/r5ooZDhhLfZ1DxAdI7xi00/b7gD8uPD95BirZhzfSQ=;
-        b=AypfzAPR3T++kLN1GaQh9r4/38MyZkb9oatGyAOxCNc/26PN4VAYQdfqPB3KqOzuKH
-         2NG0EmfmIcx5anEsj/C4exw4GXZo+EdyfFFYa0ex7IL0EsQFkBIRFNuDNCAIWtLDFBh3
-         mQIxC8agWgwYY+SqQkrUJ/3QAwUGwlkmd9RQg=
+        id S230137AbhFQD0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 23:26:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44894 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229992AbhFQD0O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 23:26:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623900246;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P2YA3pPwX5KufYHZusNwV1Ms/tC5NgvQ2lY4eCYE9qw=;
+        b=DSCD6Depk82GdWEIyvmUobkMAaJaDhM7Qd/F7TAe4KoN2RHY9nEcIsiLY2kKOVDfMQ9l89
+        qDr64J2Vd7TuKOE9n8aJt7zZ2UnKIBqSF+Pxyb6q2KRQbgE7b/qnqM62wt9dOQtzzQ3EXV
+        JGHm5NSnK+dwMSRhaKdK1Yes+KFtPzo=
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
+ [209.85.210.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-19-10zSgNVEPd2SxtAI92P5bA-1; Wed, 16 Jun 2021 23:24:05 -0400
+X-MC-Unique: 10zSgNVEPd2SxtAI92P5bA-1
+Received: by mail-pf1-f197.google.com with SMTP id j206-20020a6280d70000b02902e9e02e1654so2899183pfd.6
+        for <netdev@vger.kernel.org>; Wed, 16 Jun 2021 20:24:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/r5ooZDhhLfZ1DxAdI7xi00/b7gD8uPD95BirZhzfSQ=;
-        b=EULutY/fYiG3HfI+FDalLwLihD6eWPqoxz+eLTEtGa0kWcs/RQXT9qvcYDf8vKIRc0
-         MEpXaGlbR/MmI8FgJ82UBb0OSIYsk5HoUgWLz56WWkbnmGjqpw6iwdyeOcN4dAV+JMrC
-         2+6by82pWA5e9BSyA9EqIRcLUPtax5SCy2CNSOp5vFOdFbESOl+Z97v4T7dK+LfwN8fc
-         CUjnZ7MlElrARPzfYkA/TZeH42b73z466UshKr+TftQA5EDLw5ahrzFfb0FNqb7F/uEm
-         1noGfCEunZdV1TO1M1xOtBDW2Gm3QY1yYHm83MtcDBJuM31ML3z/3QUAJKS+D3BChRJk
-         bKgg==
-X-Gm-Message-State: AOAM533/RInCqcF6n8/isA0Q+dStSL1fHCD5ShlB/0rLn92yqOXAztId
-        l5XF4hOMnofH1MMIJ2SbqS4j5A==
-X-Google-Smtp-Source: ABdhPJzftp1MjNvohc+8a9WaJdSvhhUhW1bNaRZeFamEiS7UH+ZEG0G5QwymN2cpVOI2wWfCn2ISMg==
-X-Received: by 2002:a17:90a:fa10:: with SMTP id cm16mr14664353pjb.175.1623900173863;
-        Wed, 16 Jun 2021 20:22:53 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d5sm3436533pfd.115.2021.06.16.20.22.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 20:22:53 -0700 (PDT)
-Date:   Wed, 16 Jun 2021 20:22:52 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Lennert Buytenhek <buytenh@wantstofly.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=P2YA3pPwX5KufYHZusNwV1Ms/tC5NgvQ2lY4eCYE9qw=;
+        b=pqoRhGkEN4UKQcvjvNf0D1XfRl25DM8AEatKHTvR4FYP66Aatdq3kJGg55t4/Yab2b
+         O4csZv6/V1W2fxnbom6M3XnfBEln0mPSWTAxPdtAKCsk2QjwsOpCi8QJRjAoTOO66ua4
+         xm2JSEN8Zl7CqOj8Zaew7VGclSFx11htkkaevWE9SVdIX8TqLzdFGG4D8R1YOehFAW2w
+         Ms/kRHJVIOJNHNVoEXq/KJSLXkTU9L3oizexM69i4J+ByNS3IV5v4j4lWt5EE5ShX7Yd
+         3j1fPBLzqspzDN3JwQT5f6K+aPJpirvQFRMQVhUC39eH/BRnO2vQoLq0tRioy2KvC/8m
+         h8eQ==
+X-Gm-Message-State: AOAM530Iv8U0xfpqCnaiIjgdEWEJcZlxHtAm00Lxda6AgzS2CMp7Fih8
+        xpIFnlXAgVxP9/1j9L/9YynVZCwJL0GGxH6gkceL+b43EQDmyYL+ewEe/kV+f3EvKETVAPBe5n6
+        SUhfXVwFVU6reCeXa
+X-Received: by 2002:a62:800d:0:b029:2f0:fe27:2935 with SMTP id j13-20020a62800d0000b02902f0fe272935mr3108394pfd.15.1623900244007;
+        Wed, 16 Jun 2021 20:24:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxLsgZLhkeGRgsw9sNEy2BSQC7XLsAdd6KI8S9BIqhLUelD+ESONzXLb6Bkzo6ZqDFo4Y+zFQ==
+X-Received: by 2002:a62:800d:0:b029:2f0:fe27:2935 with SMTP id j13-20020a62800d0000b02902f0fe272935mr3108370pfd.15.1623900243689;
+        Wed, 16 Jun 2021 20:24:03 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y20sm3880550pfb.207.2021.06.16.20.23.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Jun 2021 20:24:03 -0700 (PDT)
+Subject: Re: [PATCH net-next v5 13/15] virtio-net: support AF_XDP zc rx
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Romain Perier <romain.perier@gmail.com>,
-        Allen Pais <allen.lkml@gmail.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        wengjianfeng <wengjianfeng@yulong.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] mwl8k: Avoid memcpy() over-reading of ETH_SS_STATS
-Message-ID: <202106162022.F3DABCEDD@keescook>
-References: <20210616195242.1231287-1-keescook@chromium.org>
- <YMpX0S/Xeis0kKoP@lunn.ch>
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        "dust . li" <dust.li@linux.alibaba.com>
+References: <20210610082209.91487-1-xuanzhuo@linux.alibaba.com>
+ <20210610082209.91487-14-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <d036be55-6d85-f64c-21c5-926403e18ff4@redhat.com>
+Date:   Thu, 17 Jun 2021 11:23:52 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YMpX0S/Xeis0kKoP@lunn.ch>
+In-Reply-To: <20210610082209.91487-14-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 16, 2021 at 09:58:09PM +0200, Andrew Lunn wrote:
-> On Wed, Jun 16, 2021 at 12:52:42PM -0700, Kees Cook wrote:
-> > In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> > field bounds checking for memcpy(), memmove(), and memset(), avoid
-> > intentionally reading across neighboring array fields. Use the
-> > sub-structure address directly.
-> > 
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > ---
-> >  drivers/net/wireless/marvell/mwl8k.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
-> > index 84b32a5f01ee..3bf6571f4149 100644
-> > --- a/drivers/net/wireless/marvell/mwl8k.c
-> > +++ b/drivers/net/wireless/marvell/mwl8k.c
-> > @@ -4552,7 +4552,7 @@ static int mwl8k_cmd_update_stadb_add(struct ieee80211_hw *hw,
-> >  	else
-> >  		rates = sta->supp_rates[NL80211_BAND_5GHZ] << 5;
-> >  	legacy_rate_mask_to_array(p->legacy_rates, rates);
-> > -	memcpy(p->ht_rates, sta->ht_cap.mcs.rx_mask, 16);
-> > +	memcpy(p->ht_rates, &sta->ht_cap.mcs, 16);
-> >  	p->interop = 1;
-> >  	p->amsdu_enabled = 0;
-> >  
-> > @@ -5034,7 +5034,7 @@ mwl8k_bss_info_changed_sta(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-> >  			ap_legacy_rates =
-> >  				ap->supp_rates[NL80211_BAND_5GHZ] << 5;
-> >  		}
-> > -		memcpy(ap_mcs_rates, ap->ht_cap.mcs.rx_mask, 16);
-> > +		memcpy(ap_mcs_rates, &ap->ht_cap.mcs, 16);
-> >  
-> >  		rcu_read_unlock();
-> 
-> This does not appear to have anything to do with ETH_SS_STATS which is
-> what the Subject: says.
 
-Whoops! I was off-by-one in my Subject edits. I will respin.
+ÔÚ 2021/6/10 ÏÂÎç4:22, Xuan Zhuo Ð´µÀ:
+> Compared to the case of xsk tx, the case of xsk zc rx is more
+> complicated.
+>
+> When we process the buf received by vq, we may encounter ordinary
+> buffers, or xsk buffers. What makes the situation more complicated is
+> that in the case of mergeable, when num_buffer > 1, we may still
+> encounter the case where xsk buffer is mixed with ordinary buffer.
+>
+> Another thing that makes the situation more complicated is that when we
+> get an xsk buffer from vq, the xsk bound to this xsk buffer may have
+> been unbound.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
--Kees
 
--- 
-Kees Cook
+This is somehow similar to the case of tx where we don't have per vq reset.
+
+[...]
+
+>   
+> -	if (vi->mergeable_rx_bufs)
+> +	if (is_xsk_ctx(ctx))
+> +		skb = receive_xsk(dev, vi, rq, buf, len, xdp_xmit, stats);
+> +	else if (vi->mergeable_rx_bufs)
+>   		skb = receive_mergeable(dev, vi, rq, buf, ctx, len, xdp_xmit,
+>   					stats);
+>   	else if (vi->big_packets)
+> @@ -1175,6 +1296,14 @@ static bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq,
+>   	int err;
+>   	bool oom;
+>   
+> +	/* Because virtio-net does not yet support flow direct,
+
+
+Note that this is not the case any more. RSS has been supported by 
+virtio spec and qemu/vhost/tap now. We just need some work on the 
+virtio-net driver part (e.g the ethool interface).
+
+Thanks
+
+
