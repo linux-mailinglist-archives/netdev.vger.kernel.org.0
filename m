@@ -2,349 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 423A63ABAB0
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 19:33:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F8E3ABAAD
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 19:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232512AbhFQRfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 13:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
+        id S232447AbhFQRe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 13:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231382AbhFQRfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 13:35:40 -0400
-Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47287C061574;
-        Thu, 17 Jun 2021 10:33:31 -0700 (PDT)
+        with ESMTP id S231382AbhFQRez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 13:34:55 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C37C061574;
+        Thu, 17 Jun 2021 10:32:46 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id gt18so11083110ejc.11;
+        Thu, 17 Jun 2021 10:32:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
-        Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
-        Content-Transfer-Encoding; bh=2WqF3xlPdjlb7DNjB4HbqU0LlDMvIWnKuW
-        lsbQskrk8=; b=DEf7GGPw3c3zu5n5HzmKg3as3RSUDzFlCRmmqQRVKyQlhOP8ZI
-        4EuFN4UiyoT7PcRr924jrwO2PeoimMFqEKa77Snha5XUpnwIfNRMyNLkGDqfLDRA
-        a1xay2+5i3xzOAEDpnV2ACS//0uicAsNzlyIzGxBsn/Z2PyzmlKWPtF80=
-Received: from xhacker (unknown [101.86.20.15])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygC3vIhQh8tgAw73AA--.5293S2;
-        Fri, 18 Jun 2021 01:33:05 +0800 (CST)
-Date:   Fri, 18 Jun 2021 01:27:31 +0800
-From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
-To:     Alex Ghiti <alex@ghiti.fr>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, schwab@linux-m68k.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        aou@eecs.berkeley.edu, ryabinin.a.a@gmail.com, glider@google.com,
-        andreyknvl@gmail.com, dvyukov@google.com, bjorn@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        luke.r.nels@gmail.com, xi.wang@gmail.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] riscv: Ensure BPF_JIT_REGION_START aligned with PMD
- size
-Message-ID: <20210618012731.345657bf@xhacker>
-In-Reply-To: <50ebc99c-f0a2-b4ea-fc9b-cd93a8324697@ghiti.fr>
-References: <mhng-042979fe-75f0-4873-8afd-f8c07942f792@palmerdabbelt-glaptop>
-        <ae256a5d-70ac-3a5f-ca55-5e4210a0624c@ghiti.fr>
-        <50ebc99c-f0a2-b4ea-fc9b-cd93a8324697@ghiti.fr>
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=3i2scYylnSG4Z6Xt/QfleyGEEfWXFHNAywICtigK1cw=;
+        b=tniGSWpJZH+WdHXyBhV8MvePfO1Ws4QdjS9f2FgYpJrTpYlNvAJvDHJGD+gQJq7p5V
+         FTQRB35xGmjTph+Vs4BmhjhkVGwEW2r0D1NBa14cJoWO/+a/mPXGeviuuExP+AcOjUNk
+         3hvMC+mUMpzvN1LK9sOR4QId5R7LOIlutiSOeOv+9yeOgWRD+57/JVlQi9e4OcBkjOhQ
+         2zZ8ZJPNjY5QLbqqCjpnk0Q2nBGPEQtLWkPo9LbRkbrfPjB3L3v3+Di/JpmxalYC25xI
+         EJjZjaNxpHNeMkX/Gsaa31hEm15Jxo5ybpLxQR3GIhwZt0uYzvvqPnqSI7MdBsWxEj2Z
+         VLAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3i2scYylnSG4Z6Xt/QfleyGEEfWXFHNAywICtigK1cw=;
+        b=ClIHlAQryaYpio5VLdqWI6SzY7f1/LhV8XMQj4yw0YUPQYHA+B8q2kdv3+kkqY/3V1
+         M+iNbM9QcGCqCcQvdW67GRY76qm6ZQkhlN0NMz2nWZFW6d5/xALwgqw6yqJadyU/weuo
+         IDS7Qds3SlYpi9YITfVvtWR244QmbTyZUFikk9qxRRZv5NuMg5br0+65NtOk0+zxGq2p
+         5jApjefRgoNyzLvXS2hG/2tBYHuVfK31KAeAWiwQypoZ4hnMTl0oUAxrWX/kI3TBhV+R
+         XjoOmPhAXJTEhUkybh7WkZ+HThFYoLXf9OEXGCUpVqz7rLqqxps8GFMUFLxBlCaSt7ap
+         W8uQ==
+X-Gm-Message-State: AOAM531jd+QX93CofmFVN7dUsGobSYcoDU/cjMtzmfgrDvtLyESVSjbT
+        Gew4q7r8+hYh+fuKgxi/mO4=
+X-Google-Smtp-Source: ABdhPJx1+lax+LYVkXfY/djET+bMTKIUY+oPtfmMN3+W7WnRo7laNBtIDQAAmzELk38/ltYs3OXCsw==
+X-Received: by 2002:aa7:dd8d:: with SMTP id g13mr8394054edv.30.1623951163866;
+        Thu, 17 Jun 2021 10:32:43 -0700 (PDT)
+Received: from localhost ([185.246.22.209])
+        by smtp.gmail.com with ESMTPSA id s4sm4779099edu.49.2021.06.17.10.32.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Jun 2021 10:32:43 -0700 (PDT)
+Date:   Thu, 17 Jun 2021 19:32:38 +0200
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Yangbo Lu <yangbo.lu@nxp.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, mptcp@lists.linux.dev,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
+        Sebastien Laveze <sebastien.laveze@nxp.com>
+Subject: Re: [net-next, v3, 01/10] ptp: add ptp virtual clock driver framework
+Message-ID: <20210617173237.GA4770@localhost>
+References: <20210615094517.48752-1-yangbo.lu@nxp.com>
+ <20210615094517.48752-2-yangbo.lu@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-CM-TRANSID: LkAmygC3vIhQh8tgAw73AA--.5293S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxtFW7Wr13tr1fAryfGw15Jwb_yoWDJrWkpr
-        1kJFW3GrWrtr1kXry2qry5CryUtw1UAasFqr1DJa4rAFsrKF1jqr1jqFy29rnFqF4xA3W2
-        yr4DJrsIv345Aw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkKb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4
-        vEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40E
-        FcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr
-        0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY
-        04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
-        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y
-        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
-        W8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_
-        Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU5Vmh7
-        UUUUU==
-X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210615094517.48752-2-yangbo.lu@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Jun 2021 16:18:54 +0200
-Alex Ghiti <alex@ghiti.fr> wrote:
+On Tue, Jun 15, 2021 at 05:45:08PM +0800, Yangbo Lu wrote:
+> diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
+> index 8673d1743faa..3c6a905760e2 100644
+> --- a/drivers/ptp/Makefile
+> +++ b/drivers/ptp/Makefile
+> @@ -3,7 +3,7 @@
+>  # Makefile for PTP 1588 clock support.
+>  #
+>  
+> -ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o
+> +ptp-y					:= ptp_clock.o ptp_vclock.o ptp_chardev.o ptp_sysfs.o
 
-> Le 17/06/2021 =C3=A0 10:09, Alex Ghiti a =C3=A9crit=C2=A0:
-> > Le 17/06/2021 =C3=A0 09:30, Palmer Dabbelt a =C3=A9crit=C2=A0: =20
-> >> On Tue, 15 Jun 2021 17:03:28 PDT (-0700), jszhang3@mail.ustc.edu.cn=20
-> >> wrote: =20
-> >>> On Tue, 15 Jun 2021 20:54:19 +0200
-> >>> Alex Ghiti <alex@ghiti.fr> wrote:
-> >>> =20
-> >>>> Hi Jisheng, =20
-> >>>
-> >>> Hi Alex,
-> >>> =20
-> >>>>
-> >>>> Le 14/06/2021 =C3=A0 18:49, Jisheng Zhang a =C3=A9crit=C2=A0: =20
-> >>>> > From: Jisheng Zhang <jszhang@kernel.org> =20
-> >>>> > > Andreas reported commit fc8504765ec5 ("riscv: bpf: Avoid  =20
-> >>>> breaking W^X") =20
-> >>>> > breaks booting with one kind of config file, I reproduced a kernel=
-  =20
-> >>>> panic =20
-> >>>> > with the config: =20
-> >>>> > > [=C2=A0=C2=A0=C2=A0 0.138553] Unable to handle kernel paging req=
-uest at virtual  =20
-> >>>> address ffffffff81201220 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.139159] Oops [#1]
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.139303] Modules linked in:
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.139601] CPU: 0 PID: 1 Comm: swapper/0 Not ta=
-inted  =20
-> >>>> 5.13.0-rc5-default+ #1 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.139934] Hardware name: riscv-virtio,qemu (DT)
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.140193] epc : __memset+0xc4/0xfc
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.140416]=C2=A0 ra : skb_flow_dissector_init+0=
-x1e/0x82
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.140609] epc : ffffffff8029806c ra : ffffffff=
-8033be78 sp :  =20
-> >>>> ffffffe001647da0 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.140878]=C2=A0 gp : ffffffff81134b08 tp : fff=
-fffe001654380 t0 :  =20
-> >>>> ffffffff81201158 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.141156]=C2=A0 t1 : 0000000000000002 t2 : 000=
-0000000000154 s0 :  =20
-> >>>> ffffffe001647dd0 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.141424]=C2=A0 s1 : ffffffff80a43250 a0 : fff=
-fffff81201220 a1 :  =20
-> >>>> 0000000000000000 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.141654]=C2=A0 a2 : 000000000000003c a3 : fff=
-fffff81201258 a4 :  =20
-> >>>> 0000000000000064 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.141893]=C2=A0 a5 : ffffffff8029806c a6 : 000=
-0000000000040 a7 :  =20
-> >>>> ffffffffffffffff =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.142126]=C2=A0 s2 : ffffffff81201220 s3 : 000=
-0000000000009 s4 :  =20
-> >>>> ffffffff81135088 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.142353]=C2=A0 s5 : ffffffff81135038 s6 : fff=
-fffff8080ce80 s7 :  =20
-> >>>> ffffffff80800438 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.142584]=C2=A0 s8 : ffffffff80bc6578 s9 : 000=
-0000000000008 s10:  =20
-> >>>> ffffffff806000ac =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.142810]=C2=A0 s11: 0000000000000000 t3 : fff=
-ffffffffffffc t4 :  =20
-> >>>> 0000000000000000 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.143042]=C2=A0 t5 : 0000000000000155 t6 : 000=
-00000000003ff
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.143220] status: 0000000000000120 badaddr: ff=
-ffffff81201220  =20
-> >>>> cause: 000000000000000f =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.143560] [<ffffffff8029806c>] __memset+0xc4/0=
-xfc
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.143859] [<ffffffff8061e984>]  =20
-> >>>> init_default_flow_dissectors+0x22/0x60 =20
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.144092] [<ffffffff800010fc>] do_one_initcall=
-+0x3e/0x168
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.144278] [<ffffffff80600df0>] kernel_init_fre=
-eable+0x1c8/0x224
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.144479] [<ffffffff804868a8>] kernel_init+0x1=
-2/0x110
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.144658] [<ffffffff800022de>] ret_from_except=
-ion+0x0/0xc
-> >>>> > [=C2=A0=C2=A0=C2=A0 0.145124] ---[ end trace f1e9643daa46d591 ]---=
- =20
-> >>>> > > After some investigation, I think I found the root cause: commit=
- =20
-> >>>> > 2bfc6cd81bd ("move kernel mapping outside of linear mapping") moves
-> >>>> > BPF JIT region after the kernel: =20
-> >>>> > > The &_end is unlikely aligned with PMD size, so the front bpf ji=
-t =20
-> >>>> > region sits with part of kernel .data section in one PMD size  =20
-> >>>> mapping. =20
-> >>>> > But kernel is mapped in PMD SIZE, when bpf_jit_binary_lock_ro() is
-> >>>> > called to make the first bpf jit prog ROX, we will make part of  =
-=20
-> >>>> kernel =20
-> >>>> > .data section RO too, so when we write to, for example memset the
-> >>>> > .data section, MMU will trigger a store page fault. =20
-> >>>> Good catch, we make sure no physical allocation happens between _end=
-=20
-> >>>> and the next PMD aligned address, but I missed this one.
-> >>>> =20
-> >>>> > > To fix the issue, we need to ensure the BPF JIT region is PMD si=
-ze =20
-> >>>> > aligned. This patch acchieve this goal by restoring the BPF JIT  =
-=20
-> >>>> region =20
-> >>>> > to original position, I.E the 128MB before kernel .text section. =
-=20
-> >>>> But I disagree with your solution: I made sure modules and BPF=20
-> >>>> programs get their own virtual regions to avoid worst case scenario=
-=20
-> >>>> where one could allocate all the space and leave nothing to the=20
-> >>>> other (we are limited to +- 2GB offset). Why don't just align=20
-> >>>> BPF_JIT_REGION_START to the next PMD aligned address? =20
-> >>>
-> >>> Originally, I planed to fix the issue by aligning=20
-> >>> BPF_JIT_REGION_START, but
-> >>> IIRC, BPF experts are adding (or have added) "Calling kernel=20
-> >>> functions from BPF"
-> >>> feature, there's a risk that BPF JIT region is beyond the 2GB of=20
-> >>> module region:
-> >>>
-> >>> ------
-> >>> module
-> >>> ------
-> >>> kernel
-> >>> ------
-> >>> BPF_JIT
-> >>>
-> >>> So I made this patch finally. In this patch, we let BPF JIT region sit
-> >>> between module and kernel.
-> >>>
-> >>> To address "make sure modules and BPF programs get their own virtual=
-=20
-> >>> regions",
-> >>> what about something as below (applied against this patch)?
-> >>>
-> >>> diff --git a/arch/riscv/include/asm/pgtable.h=20
-> >>> b/arch/riscv/include/asm/pgtable.h
-> >>> index 380cd3a7e548..da1158f10b09 100644
-> >>> --- a/arch/riscv/include/asm/pgtable.h
-> >>> +++ b/arch/riscv/include/asm/pgtable.h
-> >>> @@ -31,7 +31,7 @@
-> >>> =C2=A0#define BPF_JIT_REGION_SIZE=C2=A0=C2=A0=C2=A0 (SZ_128M)
-> >>> =C2=A0#ifdef CONFIG_64BIT
-> >>> =C2=A0#define BPF_JIT_REGION_START=C2=A0=C2=A0=C2=A0 (BPF_JIT_REGION_=
-END -=20
-> >>> BPF_JIT_REGION_SIZE)
-> >>> -#define BPF_JIT_REGION_END=C2=A0=C2=A0=C2=A0 (MODULES_END)
-> >>> +#define BPF_JIT_REGION_END=C2=A0=C2=A0=C2=A0 (PFN_ALIGN((unsigned lo=
-ng)&_start))
-> >>> =C2=A0#else
-> >>> =C2=A0#define BPF_JIT_REGION_START=C2=A0=C2=A0=C2=A0 (PAGE_OFFSET - B=
-PF_JIT_REGION_SIZE)
-> >>> =C2=A0#define BPF_JIT_REGION_END=C2=A0=C2=A0=C2=A0 (VMALLOC_END)
-> >>> @@ -40,7 +40,7 @@
-> >>> =C2=A0/* Modules always live before the kernel */
-> >>> =C2=A0#ifdef CONFIG_64BIT
-> >>> =C2=A0#define MODULES_VADDR=C2=A0=C2=A0=C2=A0 (PFN_ALIGN((unsigned lo=
-ng)&_end) - SZ_2G)
-> >>> -#define MODULES_END=C2=A0=C2=A0=C2=A0 (PFN_ALIGN((unsigned long)&_st=
-art))
-> >>> +#define MODULES_END=C2=A0=C2=A0=C2=A0 (BPF_JIT_REGION_END)
-> >>> =C2=A0#endif
-> >>>
-> >>>
-> >>> =20
-> >>>>
-> >>>> Again, good catch, thanks,
-> >>>>
-> >>>> Alex
-> >>>> =20
-> >>>> > > Reported-by: Andreas Schwab <schwab@linux-m68k.org> =20
-> >>>> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> >>>> > ---
-> >>>> >=C2=A0=C2=A0 arch/riscv/include/asm/pgtable.h | 5 ++---
-> >>>> >=C2=A0=C2=A0 1 file changed, 2 insertions(+), 3 deletions(-) =20
-> >>>> > > diff --git a/arch/riscv/include/asm/pgtable.h  =20
-> >>>> b/arch/riscv/include/asm/pgtable.h =20
-> >>>> > index 9469f464e71a..380cd3a7e548 100644
-> >>>> > --- a/arch/riscv/include/asm/pgtable.h
-> >>>> > +++ b/arch/riscv/include/asm/pgtable.h
-> >>>> > @@ -30,9 +30,8 @@ =20
-> >>>> > >=C2=A0=C2=A0 #define BPF_JIT_REGION_SIZE=C2=A0=C2=A0=C2=A0 (SZ_12=
-8M) =20
-> >>>> >=C2=A0=C2=A0 #ifdef CONFIG_64BIT
-> >>>> > -/* KASLR should leave at least 128MB for BPF after the kernel */
-> >>>> > -#define BPF_JIT_REGION_START=C2=A0=C2=A0=C2=A0 PFN_ALIGN((unsigne=
-d long)&_end)
-> >>>> > -#define BPF_JIT_REGION_END=C2=A0=C2=A0=C2=A0 (BPF_JIT_REGION_STAR=
-T +  =20
-> >>>> BPF_JIT_REGION_SIZE) =20
-> >>>> > +#define BPF_JIT_REGION_START=C2=A0=C2=A0=C2=A0 (BPF_JIT_REGION_EN=
-D -  =20
-> >>>> BPF_JIT_REGION_SIZE) =20
-> >>>> > +#define BPF_JIT_REGION_END=C2=A0=C2=A0=C2=A0 (MODULES_END)
-> >>>> >=C2=A0=C2=A0 #else
-> >>>> >=C2=A0=C2=A0 #define BPF_JIT_REGION_START=C2=A0=C2=A0=C2=A0 (PAGE_O=
-FFSET - BPF_JIT_REGION_SIZE)
-> >>>> >=C2=A0=C2=A0 #define BPF_JIT_REGION_END=C2=A0=C2=A0=C2=A0 (VMALLOC_=
-END)
-> >>>> >  =20
-> >>
-> >> This, when applied onto fixes, is breaking early boot on KASAN=20
-> >> configurations for me. =20
+Nit: Please place ptp_vclock.o at the end of the list.
 
-I can reproduce this issue.
+>  ptp_kvm-$(CONFIG_X86)			:= ptp_kvm_x86.o ptp_kvm_common.o
+>  ptp_kvm-$(CONFIG_HAVE_ARM_SMCCC)	:= ptp_kvm_arm.o ptp_kvm_common.o
+>  obj-$(CONFIG_PTP_1588_CLOCK)		+= ptp.o
 
-> >=20
-> > Not surprising, I took a shortcut when initializing KASAN for modules,=
-=20
-> > kernel and BPF:
-> >=20
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kasan_populate(kasan_mem_to=
-_shadow((const void *)MODULES_VADDR),
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kasan_mem_t=
-o_shadow((const void=20
-> > *)BPF_JIT_REGION_END));
-> >=20
-> > The kernel is then not covered, I'm taking a look at how to fix that=20
-> > properly.
-> > =20
->=20
-> The following based on "riscv: Introduce structure that group all=20
-> variables regarding kernel mapping" fixes the issue:
->=20
-> diff --git a/arch/riscv/mm/kasan_init.c b/arch/riscv/mm/kasan_init.c
-> index 9daacae93e33..2a45ea909e7f 100644
-> --- a/arch/riscv/mm/kasan_init.c
-> +++ b/arch/riscv/mm/kasan_init.c
-> @@ -199,9 +199,12 @@ void __init kasan_init(void)
->                  kasan_populate(kasan_mem_to_shadow(start),=20
-> kasan_mem_to_shadow(end));
->          }
->=20
-> -       /* Populate kernel, BPF, modules mapping */
-> +       /* Populate BPF and modules mapping: modules mapping encompasses=
-=20
-> BPF mapping */
->          kasan_populate(kasan_mem_to_shadow((const void *)MODULES_VADDR),
-> -                      kasan_mem_to_shadow((const void=20
-> *)BPF_JIT_REGION_END));
-> +                      kasan_mem_to_shadow((const void *)MODULES_END));
-> +       /* Populate kernel mapping */
-> +       kasan_populate(kasan_mem_to_shadow((const void=20
-> *)kernel_map.virt_addr),
-> +                      kasan_mem_to_shadow((const void=20
-> *)kernel_map.virt_addr + kernel_map.size));
->
-If this patch works, maybe we can still use one kasan_populate() to cover
-kernel, bpf, and module:
+> diff --git a/drivers/ptp/ptp_private.h b/drivers/ptp/ptp_private.h
+> index 6b97155148f1..3f388d63904c 100644
+> --- a/drivers/ptp/ptp_private.h
+> +++ b/drivers/ptp/ptp_private.h
+> @@ -48,6 +48,20 @@ struct ptp_clock {
+>  	struct kthread_delayed_work aux_work;
+>  };
+>  
+> +#define info_to_vclock(d) container_of((d), struct ptp_vclock, info)
+> +#define cc_to_vclock(d) container_of((d), struct ptp_vclock, cc)
+> +#define dw_to_vclock(d) container_of((d), struct ptp_vclock, refresh_work)
+> +
+> +struct ptp_vclock {
+> +	struct ptp_clock *pclock;
+> +	struct ptp_clock_info info;
+> +	struct ptp_clock *clock;
+> +	struct cyclecounter cc;
+> +	struct timecounter tc;
+> +	spinlock_t lock;	/* protects tc/cc */
+> +	struct delayed_work refresh_work;
 
-        kasan_populate(kasan_mem_to_shadow((const void *)MODULES_VADDR),
--                      kasan_mem_to_shadow((const void *)BPF_JIT_REGION_END=
-));
-+                      kasan_mem_to_shadow((const void *)MODULES_VADDR + SZ=
-_2G));
+Can we please have a kthread worker here instead of work?
 
-However, both can't solve the early boot hang issue. I'm not sure what's mi=
-ssing.
+Experience shows that plain work can be delayed for a long, long time
+on busy systems.
 
-I applied your patch on rc6 + solution below "replace kernel_map.virt_addr =
-with kernel_virt_addr and
-kernel_map.size with load_sz"
+> +};
+> +
+>  /*
+>   * The function queue_cnt() is safe for readers to call without
+>   * holding q->lock. Readers use this function to verify that the queue
+> @@ -89,4 +103,6 @@ extern const struct attribute_group *ptp_groups[];
+>  int ptp_populate_pin_groups(struct ptp_clock *ptp);
+>  void ptp_cleanup_pin_groups(struct ptp_clock *ptp);
+>  
+> +struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock);
+> +void ptp_vclock_unregister(struct ptp_vclock *vclock);
+>  #endif
 
+> diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
+> new file mode 100644
+> index 000000000000..b8f500677314
+> --- /dev/null
+> +++ b/drivers/ptp/ptp_vclock.c
+> @@ -0,0 +1,154 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * PTP virtual clock driver
+> + *
+> + * Copyright 2021 NXP
+> + */
+> +#include <linux/slab.h>
+> +#include "ptp_private.h"
+> +
+> +#define PTP_VCLOCK_CC_MULT		(1 << 31)
+> +#define PTP_VCLOCK_CC_SHIFT		31
 
-Thanks
-=20
->=20
-> Without the mentioned patch, replace kernel_map.virt_addr with=20
-> kernel_virt_addr and kernel_map.size with load_sz. Note that load_sz was=
-=20
-> re-exposed in v6 of the patchset "Map the kernel with correct=20
-> permissions the first time".
->=20
+These two are okay, but ...
 
+> +#define PTP_VCLOCK_CC_MULT_NUM		(1 << 9)
+> +#define PTP_VCLOCK_CC_MULT_DEM		15625ULL
+
+the similarity of naming is confusing for these two.  They are only
+used in the .adjfine method.  How about this?
+
+  PTP_VCLOCK_FADJ_NUMERATOR, or even PTP_VCLOCK_FADJ_SHIFT (see below)
+  PTP_VCLOCK_FADJ_DENOMINATOR
+
+> +#define PTP_VCLOCK_CC_REFRESH_INTERVAL	(HZ * 2)
+
+Consider dropping CC from the name.
+PTP_VCLOCK_REFRESH_INTERVAL sounds good to me.
+
+> +static int ptp_vclock_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+> +{
+> +	struct ptp_vclock *vclock = info_to_vclock(ptp);
+> +	unsigned long flags;
+> +	s64 adj;
+> +
+> +	adj = (s64)scaled_ppm * PTP_VCLOCK_CC_MULT_NUM;
+
+Rather than
+
+    scaled_ppm * (1 << 9)
+
+I suggest
+
+    scaled_ppm << 9
+
+instead.  I suppose a good compiler would replace the multiplication
+with a bit shift, but it never hurts to spell it out.
+
+> +	adj = div_s64(adj, PTP_VCLOCK_CC_MULT_DEM);
+> +
+> +	spin_lock_irqsave(&vclock->lock, flags);
+> +	timecounter_read(&vclock->tc);
+> +	vclock->cc.mult = PTP_VCLOCK_CC_MULT + adj;
+> +	spin_unlock_irqrestore(&vclock->lock, flags);
+> +
+> +	return 0;
+> +}
+
+Thanks,
+Richard
