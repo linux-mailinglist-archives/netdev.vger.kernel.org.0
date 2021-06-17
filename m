@@ -2,146 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B1B43AB791
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 17:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBAD23AB7AE
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 17:39:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232251AbhFQPgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 11:36:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51396 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231661AbhFQPgU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 11:36:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D90A613E2;
-        Thu, 17 Jun 2021 15:34:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623944052;
-        bh=fID2dZi70tRGqL7aN4L2p5zaR3M6/uWbQdFE9XOMCN8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mTvM5MVAZhkFrBJxo3fn/3mHnDZyGTypKXuKydyu6eIxAjexA1iS2Zgu5b6qLEAOu
-         Yx7qgNfR17kMdFABwwErch5c5KKHpghap3hH0BCaCSVy5fK5fzP1iKET1p9851/Wl7
-         x/MLaMPdPfF6Een5D2tNdnk+92kDnBU3qtgxzLf+ZTPd7M/k1v1T0IXNzuh8E6SsAA
-         4LWbAuJWhLuFrMrv/PTT8c2q1apNNX/OA/cKG5APMe8nrJ7LnWzuOOf8/1NrFkFkcq
-         5k3OmDwZDNkhYvHU4rCv346cg8Fh75TbzkdBmbsgsxJIhplzDyKba1k9odTg0l2ODe
-         bJ3SnneUTOpNQ==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, mcroce@linux.microsoft.com,
-        davem@davemloft.net, kuba@kernel.org, sgoutham@marvell.com,
-        sbhatta@marvell.com, stefanc@marvell.com, brouer@redhat.com
-Subject: [PATCH net-next] net: marvell: return csum computation result from mvneta_rx_csum/mvpp2_rx_csum
-Date:   Thu, 17 Jun 2021 17:34:07 +0200
-Message-Id: <73619ca7d64b1dee91ed8ed2dcf0ddbbc57b4b0a.1623943981.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S232540AbhFQPlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 11:41:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52142 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231547AbhFQPlj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 11:41:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623944371;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xNvKLMG23dvwThJDYG7TwyaV7dhz4Izb5/V1BDRJuOQ=;
+        b=RfQ/XQFUuqbazbCowMSXVsdOf6nklILRR5AAbCJluSBimgE5BFJre8mZf/54QuLDC7fjYQ
+        Sc7+N958fdgqP965M3ABuqX/1qta0f+x3XnEHKlwTYigefVwB2Z/yyFPGTrXw00Q32OWN0
+        Pm8RCQ/r+s9xjwt2X+WUyA31LkYPEnA=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-405--dJUSHs2O0Ka-epXJuV-Wg-1; Thu, 17 Jun 2021 11:39:30 -0400
+X-MC-Unique: -dJUSHs2O0Ka-epXJuV-Wg-1
+Received: by mail-ej1-f70.google.com with SMTP id o6-20020a1709063586b0290454e77502aeso2434784ejb.12
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 08:39:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=xNvKLMG23dvwThJDYG7TwyaV7dhz4Izb5/V1BDRJuOQ=;
+        b=FSd+/UPCj0r2GWz49ZSBhRNc1MPK4v6c8Jk9DX8IbXbOr/2DFN72EbtQrRkLRdx3Ir
+         q7+9UdmTL8feigUt3EcRJsWzKOm9vbRrhyHZaf756ttuAS/IhOoefQymgsJzAfQeoZxQ
+         9HRo2Y8p658m+m0cFoD78wyfL/R3EV07rzb7Mrnj+xCGaocbSo1LvMSVKm/yTVCg+2gK
+         jkx/ekdJYRm30Hna7fPpsNNkRRUgCIWAKXrzPEQNaxGWI6WMyzgu42pwK0JN/hg6lOvE
+         zFjvzJSYXKpgW3LeLE4hw7b9W6aXV8evRlrczbrPA4hoiDnf7F53VrBcU29L3gFWg80L
+         Z1Ug==
+X-Gm-Message-State: AOAM531namT4LWevcF70mw1ktloyM9H/zhiAJLRba4iDG8HclLYyDmTh
+        NSPlpiCI4f5NpZpNGKDYwibv3W9DR74ZNB5PJ3xOyebxZhZwjywBpowqZt16MdZT+zSFepwLxXe
+        Mlpf25er7lsVijvsz
+X-Received: by 2002:a17:906:4f14:: with SMTP id t20mr5851051eju.398.1623944368844;
+        Thu, 17 Jun 2021 08:39:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwb78hCJPdeKI3UGp9ZLlPPiMHCh3AV9nIqODdWRwEXBJ0as5mZNSGeR6x5dbskkfEYEZ/1sg==
+X-Received: by 2002:a17:906:4f14:: with SMTP id t20mr5851029eju.398.1623944368604;
+        Thu, 17 Jun 2021 08:39:28 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id o5sm4412551edq.8.2021.06.17.08.39.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Jun 2021 08:39:28 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 3559A180350; Thu, 17 Jun 2021 17:39:26 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dsahern@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Juliusz Chroboczek <jch@irif.fr>
+Subject: Re: [PATCH net] icmp: don't send out ICMP messages with a source
+ address of 0.0.0.0
+In-Reply-To: <be61a82e-1a21-d302-dcdc-8409130e8fb7@gmail.com>
+References: <20210615110709.541499-1-toke@redhat.com>
+ <e4dc611e-2509-2e16-324b-87c574b708dc@gmail.com>
+ <be61a82e-1a21-d302-dcdc-8409130e8fb7@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 17 Jun 2021 17:39:26 +0200
+Message-ID: <87o8c4ec0h.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a preliminary patch to add hw csum hint support to
-mvneta/mvpp2 xdp implementation
+David Ahern <dsahern@gmail.com> writes:
 
-Tested-by: Matteo Croce <mcroce@linux.microsoft.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/marvell/mvneta.c         | 19 +++++++------------
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 14 +++++---------
- 2 files changed, 12 insertions(+), 21 deletions(-)
+> On 6/17/21 9:06 AM, David Ahern wrote:
+>>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+>> This should be the one that allows IPv6 nexthops with IPv4 routes.
+>> 
+>> Fixes: d15662682db2 ("ipv4: Allow ipv6 gateway with ipv4 routes")
+>> 
+>
+> on further thought, this is the receiving / transit path and not the
+> sending node, so my change to allow v6 gw with v4 routes is not relevant.
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index c15ce06427d0..88a755034c39 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1805,18 +1805,14 @@ static void mvneta_rx_error(struct mvneta_port *pp,
- }
- 
- /* Handle RX checksum offload based on the descriptor's status */
--static void mvneta_rx_csum(struct mvneta_port *pp, u32 status,
--			   struct sk_buff *skb)
-+static int mvneta_rx_csum(struct mvneta_port *pp, u32 status)
- {
- 	if ((pp->dev->features & NETIF_F_RXCSUM) &&
- 	    (status & MVNETA_RXD_L3_IP4) &&
--	    (status & MVNETA_RXD_L4_CSUM_OK)) {
--		skb->csum = 0;
--		skb->ip_summed = CHECKSUM_UNNECESSARY;
--		return;
--	}
-+	    (status & MVNETA_RXD_L4_CSUM_OK))
-+		return CHECKSUM_UNNECESSARY;
- 
--	skb->ip_summed = CHECKSUM_NONE;
-+	return CHECKSUM_NONE;
- }
- 
- /* Return tx queue pointer (find last set bit) according to <cause> returned
-@@ -2335,7 +2331,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 
- 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	skb_put(skb, xdp->data_end - xdp->data);
--	mvneta_rx_csum(pp, desc_status, skb);
-+	skb->ip_summed = mvneta_rx_csum(pp, desc_status);
- 
- 	for (i = 0; i < num_frags; i++) {
- 		skb_frag_t *frag = &sinfo->frags[i];
-@@ -2535,7 +2531,7 @@ static int mvneta_rx_hwbm(struct napi_struct *napi,
- 				     rx_bytes);
- 
- 			skb->protocol = eth_type_trans(skb, dev);
--			mvneta_rx_csum(pp, rx_status, skb);
-+			skb->ip_summed = mvneta_rx_csum(pp, rx_status);
- 			napi_gro_receive(napi, skb);
- 
- 			rcvd_pkts++;
-@@ -2584,8 +2580,7 @@ static int mvneta_rx_hwbm(struct napi_struct *napi,
- 		skb_put(skb, rx_bytes);
- 
- 		skb->protocol = eth_type_trans(skb, dev);
--
--		mvneta_rx_csum(pp, rx_status, skb);
-+		skb->ip_summed = mvneta_rx_csum(pp, rx_status);
- 
- 		napi_gro_receive(napi, skb);
- 	}
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 9bca8c8f9f8d..01f6078bc859 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3543,21 +3543,17 @@ static void mvpp2_rx_error(struct mvpp2_port *port,
- }
- 
- /* Handle RX checksum offload */
--static void mvpp2_rx_csum(struct mvpp2_port *port, u32 status,
--			  struct sk_buff *skb)
-+static int mvpp2_rx_csum(struct mvpp2_port *port, u32 status)
- {
- 	if (((status & MVPP2_RXD_L3_IP4) &&
- 	     !(status & MVPP2_RXD_IP4_HEADER_ERR)) ||
- 	    (status & MVPP2_RXD_L3_IP6))
- 		if (((status & MVPP2_RXD_L4_UDP) ||
- 		     (status & MVPP2_RXD_L4_TCP)) &&
--		     (status & MVPP2_RXD_L4_CSUM_OK)) {
--			skb->csum = 0;
--			skb->ip_summed = CHECKSUM_UNNECESSARY;
--			return;
--		}
-+		     (status & MVPP2_RXD_L4_CSUM_OK))
-+			return CHECKSUM_UNNECESSARY;
- 
--	skb->ip_summed = CHECKSUM_NONE;
-+	return CHECKSUM_NONE;
- }
- 
- /* Allocate a new skb and add it to BM pool */
-@@ -4012,7 +4008,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 
- 		skb_reserve(skb, MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM);
- 		skb_put(skb, rx_bytes);
--		mvpp2_rx_csum(port, rx_status, skb);
-+		skb->ip_summed = mvpp2_rx_csum(port, rx_status);
- 		skb->protocol = eth_type_trans(skb, dev);
- 
- 		napi_gro_receive(napi, skb);
--- 
-2.31.1
+Right, so you're OK with keeping the patch as-is, then? I can send a
+test-case as a follow-up...
+
+-Toke
 
