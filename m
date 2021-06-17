@@ -2,239 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 554B13AB693
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 16:55:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86E9C3AB6E4
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 17:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231690AbhFQO5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 10:57:47 -0400
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:47117 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230299AbhFQO5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 10:57:46 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0UcjwG.G_1623941735;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UcjwG.G_1623941735)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 17 Jun 2021 22:55:35 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        id S233059AbhFQPI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 11:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231712AbhFQPI0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 11:08:26 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31AABC061574
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 08:06:17 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id w22-20020a0568304116b02904060c6415c7so6468314ott.1
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 08:06:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=uoDRyjx9oDLOMuaBap9HedruKcV6wYqiEw8g8fMpMWg=;
+        b=LUfiHoutEJsgXelJLqbCnGjWYbJ2btEEWrac1iVUH2coVmzFr9xA903VxkMdfD1xxL
+         eJr9U+HI1c+PzzH5PJZ0sqd76BSVxdvVd7O7yudYTOappONMR2z+vik+zQZ9/3VZJVI1
+         DV4/xEty1MSNRLYTFvI1y3NqHVbkJtqoUZ2Nvtr0ZA44Sjhs3jlqTo0G6e6K4xTlfV/h
+         R1tENk8kxQEG5l9mHyJf2yLs9VJxoB2RZgCvneyoxF7+FPHrJbkbF3RZBO9Jwbj+vWUC
+         dAUKuQBb8k5TLzswLNvq7Ikzm+tXxpIX/gLyk6axH9kc6b/RDMS/0KviW/oZ7p88P3Sb
+         n0OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=uoDRyjx9oDLOMuaBap9HedruKcV6wYqiEw8g8fMpMWg=;
+        b=iIYDGIbhno0VlVj6FEkbo3KzfcDhB5Uwg7mdcpUytdnF4pX80SbGMkSsdQsX/w8YzY
+         UASwz71Rdw0nyP43uxqnIFQ7iLnIjUWJLnB+Zg0dfB/eokoZn7+iCjUETBN14iKmcXhl
+         oJTY3hLF0qlY6wSEIyH/MtJWB1tAXKeQlAJTtofHRzqmuWJnctWFcSfn44kPT0exSeP3
+         2IFFJmW5qdwuJM+/sjHzsYxTgpRncruOBjRCwve5G1pIAqYCg8pgLhU/4FXwKW7HAmst
+         yxba/qofBM0ixM+Sqw8X4zJhAdPtukyFCq0ngzqE1D6CHwjbg3fOArBxP7Hl1QuZwRzj
+         PvmQ==
+X-Gm-Message-State: AOAM530WEKq05B1AGPrcJvmYBxpodiDvZmtOQw5cBEwCbG7PRJASGara
+        hd3hAu1TfH1ZBK8w7MBNf+c=
+X-Google-Smtp-Source: ABdhPJw5Cqh24QqqzpLH6JzA87EpK1ywmyXwwHDy1FY1FmiNJCe82QV5gOT/qTeOhA7bMD3Avrok9w==
+X-Received: by 2002:a9d:6c89:: with SMTP id c9mr4897873otr.163.1623942376624;
+        Thu, 17 Jun 2021 08:06:16 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.44])
+        by smtp.googlemail.com with ESMTPSA id s187sm1165628oig.6.2021.06.17.08.06.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Jun 2021 08:06:15 -0700 (PDT)
+Subject: Re: [PATCH net] icmp: don't send out ICMP messages with a source
+ address of 0.0.0.0
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH net v2] xdp, net: fix for construct skb by xdp inside xsk zc rx
-Date:   Thu, 17 Jun 2021 22:55:34 +0800
-Message-Id: <20210617145534.101458-1-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.0
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Juliusz Chroboczek <jch@irif.fr>
+References: <20210615110709.541499-1-toke@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e4dc611e-2509-2e16-324b-87c574b708dc@gmail.com>
+Date:   Thu, 17 Jun 2021 09:06:14 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <20210615110709.541499-1-toke@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When each driver supports xsk rx, if the received buff returns XDP_PASS
-after run xdp prog, it must construct skb based on xdp. This patch
-extracts this logic into a public function xdp_construct_skb().
+On 6/15/21 5:07 AM, Toke Høiland-Jørgensen wrote:
+> When constructing ICMP response messages, the kernel will try to pick a
+> suitable source address for the outgoing packet. However, if no IPv4
+> addresses are configured on the system at all, this will fail and we end up
+> producing an ICMP message with a source address of 0.0.0.0. This can happen
+> on a box routing IPv4 traffic via v6 nexthops, for instance.
+> 
+> Since 0.0.0.0 is not generally routable on the internet, there's a good
+> chance that such ICMP messages will never make it back to the sender of the
+> original packet that the ICMP message was sent in response to. This, in
+> turn, can create connectivity and PMTUd problems for senders. Fortunately,
+> RFC7600 reserves a dummy address to be used as a source for ICMP
+> messages (192.0.0.8/32), so let's teach the kernel to substitute that
+> address as a last resort if the regular source address selection procedure
+> fails.
+> 
+> Below is a quick example reproducing this issue with network namespaces:
+> 
+> ip netns add ns0
+> ip l add type veth peer netns ns0
+> ip l set dev veth0 up
+> ip a add 10.0.0.1/24 dev veth0
+> ip a add fc00:dead:cafe:42::1/64 dev veth0
+> ip r add 10.1.0.0/24 via inet6 fc00:dead:cafe:42::2
+> ip -n ns0 l set dev veth0 up
+> ip -n ns0 a add fc00:dead:cafe:42::2/64 dev veth0
+> ip -n ns0 r add 10.0.0.0/24 via inet6 fc00:dead:cafe:42::1
+> ip netns exec ns0 sysctl -w net.ipv4.icmp_ratelimit=0
+> ip netns exec ns0 sysctl -w net.ipv4.ip_forward=1
+> tcpdump -tpni veth0 -c 2 icmp &
+> ping -w 1 10.1.0.1 > /dev/null
+> tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+> listening on veth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+> IP 10.0.0.1 > 10.1.0.1: ICMP echo request, id 29, seq 1, length 64
+> IP 0.0.0.0 > 10.0.0.1: ICMP net 10.1.0.1 unreachable, length 92
+> 2 packets captured
+> 2 packets received by filter
+> 0 packets dropped by kernel
+> 
+> With this patch the above capture changes to:
+> IP 10.0.0.1 > 10.1.0.1: ICMP echo request, id 31127, seq 1, length 64
+> IP 192.0.0.8 > 10.0.0.1: ICMP net 10.1.0.1 unreachable, length 92
 
-There is a bug in the original logic. When constructing skb, we should
-copy the meta information to skb and then use __skb_pull() to correct
-the data.
+We should capture this use case in a test script. There is already an
+icmp_redirect.sh; how about starting an icmp.sh script?
 
-Fixes: 0a714186d3c0f ("i40e: add AF_XDP zero-copy Rx support")
-Fixes: 2d4238f556972 ("ice: Add support for AF_XDP")
-Fixes: bba2556efad66 ("net: stmmac: Enable RX via AF_XDP zero-copy")
-Fixes: d0bcacd0a1309 ("ixgbe: add AF_XDP zero-copy Rx support")
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
----
- drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 16 +---------
- drivers/net/ethernet/intel/ice/ice_xsk.c      | 12 +-------
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 12 +-------
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 23 +-------------
- include/net/xdp.h                             | 30 +++++++++++++++++++
- 5 files changed, 34 insertions(+), 59 deletions(-)
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 68f177a86403..81b0f44eedda 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -246,23 +246,9 @@ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
- static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
- 					     struct xdp_buff *xdp)
- {
--	unsigned int metasize = xdp->data - xdp->data_meta;
--	unsigned int datasize = xdp->data_end - xdp->data;
- 	struct sk_buff *skb;
- 
--	/* allocate a skb to store the frags */
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
--			       xdp->data_end - xdp->data_hard_start,
--			       GFP_ATOMIC | __GFP_NOWARN);
--	if (unlikely(!skb))
--		goto out;
--
--	skb_reserve(skb, xdp->data - xdp->data_hard_start);
--	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
--	if (metasize)
--		skb_metadata_set(skb, metasize);
--
--out:
-+	skb = xdp_construct_skb(xdp, &rx_ring->q_vector->napi);
- 	xsk_buff_free(xdp);
- 	return skb;
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index a1f89ea3c2bd..f95e1adcebda 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -430,22 +430,12 @@ static void ice_bump_ntc(struct ice_ring *rx_ring)
- static struct sk_buff *
- ice_construct_skb_zc(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf)
- {
--	unsigned int metasize = rx_buf->xdp->data - rx_buf->xdp->data_meta;
--	unsigned int datasize = rx_buf->xdp->data_end - rx_buf->xdp->data;
--	unsigned int datasize_hard = rx_buf->xdp->data_end -
--				     rx_buf->xdp->data_hard_start;
- 	struct sk_buff *skb;
- 
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize_hard,
--			       GFP_ATOMIC | __GFP_NOWARN);
-+	skb = xdp_construct_skb(rx_buf->xdp, &rx_ring->q_vector->napi);
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	skb_reserve(skb, rx_buf->xdp->data - rx_buf->xdp->data_hard_start);
--	memcpy(__skb_put(skb, datasize), rx_buf->xdp->data, datasize);
--	if (metasize)
--		skb_metadata_set(skb, metasize);
--
- 	xsk_buff_free(rx_buf->xdp);
- 	rx_buf->xdp = NULL;
- 	return skb;
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index f72d2978263b..123945832c96 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -203,22 +203,12 @@ bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 count)
- static struct sk_buff *ixgbe_construct_skb_zc(struct ixgbe_ring *rx_ring,
- 					      struct ixgbe_rx_buffer *bi)
- {
--	unsigned int metasize = bi->xdp->data - bi->xdp->data_meta;
--	unsigned int datasize = bi->xdp->data_end - bi->xdp->data;
- 	struct sk_buff *skb;
- 
--	/* allocate a skb to store the frags */
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
--			       bi->xdp->data_end - bi->xdp->data_hard_start,
--			       GFP_ATOMIC | __GFP_NOWARN);
-+	skb = xdp_construct_skb(bi->xdp, &rx_ring->q_vector->napi);
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	skb_reserve(skb, bi->xdp->data - bi->xdp->data_hard_start);
--	memcpy(__skb_put(skb, datasize), bi->xdp->data, datasize);
--	if (metasize)
--		skb_metadata_set(skb, metasize);
--
- 	xsk_buff_free(bi->xdp);
- 	bi->xdp = NULL;
- 	return skb;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index c87202cbd3d6..143ac1edb876 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4729,27 +4729,6 @@ static void stmmac_finalize_xdp_rx(struct stmmac_priv *priv,
- 		xdp_do_flush();
- }
- 
--static struct sk_buff *stmmac_construct_skb_zc(struct stmmac_channel *ch,
--					       struct xdp_buff *xdp)
--{
--	unsigned int metasize = xdp->data - xdp->data_meta;
--	unsigned int datasize = xdp->data_end - xdp->data;
--	struct sk_buff *skb;
--
--	skb = __napi_alloc_skb(&ch->rxtx_napi,
--			       xdp->data_end - xdp->data_hard_start,
--			       GFP_ATOMIC | __GFP_NOWARN);
--	if (unlikely(!skb))
--		return NULL;
--
--	skb_reserve(skb, xdp->data - xdp->data_hard_start);
--	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
--	if (metasize)
--		skb_metadata_set(skb, metasize);
--
--	return skb;
--}
--
- static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
- 				   struct dma_desc *p, struct dma_desc *np,
- 				   struct xdp_buff *xdp)
-@@ -4761,7 +4740,7 @@ static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
- 	struct sk_buff *skb;
- 	u32 hash;
- 
--	skb = stmmac_construct_skb_zc(ch, xdp);
-+	skb = xdp_construct_skb(xdp, &ch->rxtx_napi);
- 	if (!skb) {
- 		priv->dev->stats.rx_dropped++;
- 		return;
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index a5bc214a49d9..561e21eaf718 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -95,6 +95,36 @@ xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
- 	xdp->data_meta = meta_valid ? data : data + 1;
- }
- 
-+static __always_inline struct sk_buff *
-+xdp_construct_skb(struct xdp_buff *xdp, struct napi_struct *napi)
-+{
-+	unsigned int metasize;
-+	unsigned int datasize;
-+	unsigned int headroom;
-+	struct sk_buff *skb;
-+	unsigned int len;
-+
-+	/* this include metasize */
-+	datasize = xdp->data_end  - xdp->data_meta;
-+	metasize = xdp->data      - xdp->data_meta;
-+	headroom = xdp->data_meta - xdp->data_hard_start;
-+	len      = xdp->data_end  - xdp->data_hard_start;
-+
-+	/* allocate a skb to store the frags */
-+	skb = __napi_alloc_skb(napi, len, GFP_ATOMIC | __GFP_NOWARN);
-+	if (unlikely(!skb))
-+		return NULL;
-+
-+	skb_reserve(skb, headroom);
-+	memcpy(__skb_put(skb, datasize), xdp->data_meta, datasize);
-+	if (metasize) {
-+		__skb_pull(skb, metasize);
-+		skb_metadata_set(skb, metasize);
-+	}
-+
-+	return skb;
-+}
-+
- /* Reserve memory area at end-of data area.
-  *
-  * This macro reserves tailroom in the XDP buffer by limiting the
--- 
-2.31.0
+This should be the one that allows IPv6 nexthops with IPv4 routes.
 
+Fixes: d15662682db2 ("ipv4: Allow ipv6 gateway with ipv4 routes")
+
+> Reported-by: Juliusz Chroboczek <jch@irif.fr>
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> ---
+>  include/uapi/linux/in.h | 3 +++
+>  net/ipv4/icmp.c         | 7 +++++++
+>  2 files changed, 10 insertions(+)
+> 
+> diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+> index 7d6687618d80..d1b327036ae4 100644
+> --- a/include/uapi/linux/in.h
+> +++ b/include/uapi/linux/in.h
+> @@ -289,6 +289,9 @@ struct sockaddr_in {
+>  /* Address indicating an error return. */
+>  #define	INADDR_NONE		((unsigned long int) 0xffffffff)
+>  
+> +/* Dummy address for src of ICMP replies if no real address is set (RFC7600). */
+> +#define	INADDR_DUMMY		((unsigned long int) 0xc0000008)
+> +
+>  /* Network number for local host loopback. */
+>  #define	IN_LOOPBACKNET		127
+>  
+> diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+> index 7b6931a4d775..752e392083e6 100644
+> --- a/net/ipv4/icmp.c
+> +++ b/net/ipv4/icmp.c
+> @@ -759,6 +759,13 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+>  		icmp_param.data_len = room;
+>  	icmp_param.head_len = sizeof(struct icmphdr);
+>  
+> +	/* if we don't have a source address at this point, fall back to the
+> +	 * dummy address instead of sending out a packet with a source address
+> +	 * of 0.0.0.0
+> +	 */
+> +	if (!fl4.saddr)
+> +		fl4.saddr = htonl(INADDR_DUMMY);
+> +
+>  	icmp_push_reply(&icmp_param, &fl4, &ipc, &rt);
+>  ende:
+>  	ip_rt_put(rt);
+> 
+
+Reviewed-by: David Ahern <dsahern@kernel.org>
