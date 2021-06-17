@@ -2,206 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F1D63ABA9A
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 19:24:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29A8A3ABAA3
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 19:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232155AbhFQR0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 13:26:21 -0400
-Received: from smtp.uniroma2.it ([160.80.6.16]:38930 "EHLO smtp.uniroma2.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232113AbhFQR0T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 13:26:19 -0400
-Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 15HHO2m7015392
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 17 Jun 2021 19:24:02 +0200
-From:   Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-Subject: [iproute2-next v1] seg6: add support for SRv6 End.DT46 Behavior
-Date:   Thu, 17 Jun 2021 19:23:54 +0200
-Message-Id: <20210617172354.10607-1-paolo.lungaroni@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
+        id S232314AbhFQRcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 13:32:19 -0400
+Received: from mail-am6eur05on2123.outbound.protection.outlook.com ([40.107.22.123]:61857
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231168AbhFQRcR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Jun 2021 13:32:17 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Year5GlAbLrfNqY5GX6VZIfWsx4WHZLKd49uALQY5aPHizEbuu/XMJvyjX36/U9TL5eIlJqyIekLVYeNlwIYzsK7WGl9j0m/hPAM037z7ZgsFCVITZxpORvhBbCPY+mNolhxexz3Xi3g/gKzmETcOF6ttm0ygrw/Nj27X1IC5eBmarzNBDAXAikQJQm7gPmGPl4IVcxl7xCOj3ltnsfVKceT7djBvRcMnE+V5ssGSyWOD21lY/QjMgrEP//quj/9z6c/mduSR4v/TxNnNzhJZJfJSaLRa06rOqz+9FPbhqJBHmAvlRk1zhRQcY3hqFRU1/oGhNOWufc9o3f2Zb6A/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jlrJSEtB7FoVNjIWm9OKlD1VDc4fhVhVh5+Q4tmFt10=;
+ b=KM1U8zp0ZOREKhb7s0FPPOdwCkrFpLYIvNFUJXJqwARmJGXxb5xEpLJyJLdCMzGeJwZXkEdxUjtgmozErzMFAANEfw9cptN2y1dj5WMxjran/BK/fQJzuIxVaZ8Ai0mJUL+L9PuwCfXu44tas+F861Ba1dPTe7R6UP2Kb2VLE/YCXkMaa8a4F8bUFzi/nx900sZU59mssggdKrKpUZlNuzf0fHyVtqRqW5UojkIOUEmNEW8/YAUNh+5+Lc3VlzUJovlaZb4iKH0ysdLzD4X1DMCf2zzoLq8QRGOPJoGplZmCIOAg0+8nUjOO1jpUuzRedg5WksfNr2sJWetymMXIoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jlrJSEtB7FoVNjIWm9OKlD1VDc4fhVhVh5+Q4tmFt10=;
+ b=o2UfJoi+ANsqz5w6HfaJgUYEPFWRDdYC5lNCDLJhJ5kzioVNgTM0rT10asLrcJcsVGPhVF64jlBEFTFfSpHht8cUmVXV2nRQvfevqA+T9S/50FeRtw6ssg2Q/CBvq1lKwtKHII4SnYGEEztYRFgX9ZBnzGQvSZB5va6uhu0BYn0=
+Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
+ by AM0P190MB0723.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.15; Thu, 17 Jun
+ 2021 17:30:07 +0000
+Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
+ ([fe80::d018:6384:155:a2fe]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
+ ([fe80::d018:6384:155:a2fe%9]) with mapi id 15.20.4219.025; Thu, 17 Jun 2021
+ 17:30:07 +0000
+From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+To:     "jiri@nvidia.com" <jiri@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 00/11] Marvell Prestera driver implementation of
+ devlink functionality.
+Thread-Topic: [PATCH net-next 00/11] Marvell Prestera driver implementation of
+ devlink functionality.
+Thread-Index: AQHXXUJjufes4y4eUEeZyWSkshehZ6sYf7W4
+Date:   Thu, 17 Jun 2021 17:30:07 +0000
+Message-ID: <AM0P190MB0738F58BF9FFE2ED8073FA84E40E9@AM0P190MB0738.EURP190.PROD.OUTLOOK.COM>
+References: <20210609151602.29004-1-oleksandr.mazur@plvision.eu>
+In-Reply-To: <20210609151602.29004-1-oleksandr.mazur@plvision.eu>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=plvision.eu;
+x-originating-ip: [185.145.183.53]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 62802885-d987-4f67-2800-08d931b58cd8
+x-ms-traffictypediagnostic: AM0P190MB0723:
+x-microsoft-antispam-prvs: <AM0P190MB0723EFA9B7501EAE70FC0A3CE40E9@AM0P190MB0723.EURP190.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xxinUb8gRrPo3JzJd993y/deQPnXxSL71pWcVKVYe8SX3ECIDPJxIGD+MTFGhDHRycYqnLGYyiZviolTagCezDaA3rNxVKKhYyrpFy7Y0k9iWbAHrsOka3Z7w+gZ1dAU+TJr93B7gsuoZhAEC2qzVOlZnKisyu96tA26Gw4dOtlBRwlQOQFvtwsvoFuwFM85p9+PwL8O/+XHHsA0+2uQzF1DqdMB+h5w35eFJemeFJUS9ti+1THyU/b5M4Unu23iQV5PCN+cSARg8xIT/beamztusuWIXVc2Uyokk70tXEx1AJpTpThSB/DEV/muUYBY0DwaACfvPJWTF90CWUhDXuVG9bqOFh6MIZ4CY68IWtJ+aCWKxVaueVOau/b4u7nII3hxFVxBHszypLokv4ALnL4wulfxfyYvuqZzcKfQVkmYUQUfP2PpdLGxyBuKwFmxusQrynMA3vy4LmmoBU4r0UACOIla2sHGnuvhuwI4DzFFFDOllAey4sZstuXrTjo0q7ITNw/m0gsGxBRrcyLR9SdR6vLkOaIvFjYwy/kGn/VYSnlVHW+m1HKIiVf5jaCGgDH+sT9+Mzw+0fNP/nZzuQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(39830400003)(376002)(346002)(136003)(396003)(83380400001)(8676002)(86362001)(71200400001)(478600001)(9686003)(55016002)(6506007)(122000001)(76116006)(38100700002)(4326008)(186003)(44832011)(66476007)(66556008)(64756008)(66446008)(66946007)(316002)(110136005)(33656002)(5660300002)(8936002)(54906003)(52536014)(7696005)(26005)(91956017)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?uvDzsn0xpRCST6TsYqfT5XVa90iV5ENsopDNvgw7Ui3rgWcajbMHd/uPZp?=
+ =?iso-8859-1?Q?liCFgJKYN+DUwLFXmiwhXk4kwAMzyTwBJrcplkD5Eot2LPlwP4Dq7lrsDl?=
+ =?iso-8859-1?Q?sUFp9bs5Uf3/4CKk2IoOTaOrYCT0+mYFSHdZtke+XauImhpBCF55pArN/O?=
+ =?iso-8859-1?Q?tma8SDSyuO23fOI3+T5ATQKigMnRNJMP5GsHo3vTwqRRdLHa22qumtwA34?=
+ =?iso-8859-1?Q?12Mt2LNAEeL1j6GwXv3LCWpbSe2/c65RqcT3PqhZhKZrkwwPTCt7GttAbo?=
+ =?iso-8859-1?Q?zu8LAnj3yIsHKOdOMc4JR7HW4D/boCnWFCGc4Ugunt1MrcHlsqdokFF6y+?=
+ =?iso-8859-1?Q?8VMJkt6rIK0jtqtytIXWU+KgOBpsNuxOWu4K1+yUzHytA2NUWFN2Hxk5aF?=
+ =?iso-8859-1?Q?kAcxdLzYi+66EbmJEPTrGv+7o+0LeDf0jByAT879/wvwAd7DTh8z9OEGlr?=
+ =?iso-8859-1?Q?tz5vMiQMDPvg/vhd/66PpQ4od6GYOuj+GP4ZhK/eGqJitka3/2FNM+jFyg?=
+ =?iso-8859-1?Q?looNhwVVjfBjDBM0pCCOIUfubusDqyVPDk4BonubOxfO5bPMCAaOrdKHe9?=
+ =?iso-8859-1?Q?sPmUDJ0IzfqQCmKPkT+u5LqWFku40XrjTB3K3YkwJ8MDL9vJNKCZhsICPt?=
+ =?iso-8859-1?Q?XKo+ruaTGvED9cgbkaqoLLon0jJwiLZpskhfotdxQjMyk+Q1kDnhitFg20?=
+ =?iso-8859-1?Q?WU99yvSAW6wlIzTUfwYWB1A6DqeM2gJOShmoV5sKAvVtK6+lnEttmoTpe1?=
+ =?iso-8859-1?Q?nBP/TVunb7Oqd8nKDdiArha6vx75nocXBv4t+8LEulkoyL5fwOp54/oqmr?=
+ =?iso-8859-1?Q?yuSnH7IpnG2gklQtsGUYTGIceJf1IPA8dfkE6ZtOW2pka2GmuqTrNhzN8t?=
+ =?iso-8859-1?Q?YvgXde84Oj6gfW37XrcprHMV/qgFpx3qMbQA7stgWXvo4h1X7JYUElO8UW?=
+ =?iso-8859-1?Q?zH11XPr9o8pd8MADz4Z4MohGyhu07pa72Vwm2gvEQDu34ZanB0dgM+vUOM?=
+ =?iso-8859-1?Q?/YmCey7pqcHfpmpVL/S4IQgrhNWNG9DqBlHzerC4rPqGsyL3fPI+GG7mpq?=
+ =?iso-8859-1?Q?jQCnCjsK06xz8bSTLraikWcmJKFcvLuSLb/YjQ0tgE4Do2Hk17nm2sb2KF?=
+ =?iso-8859-1?Q?6yzjbe7AKPrzpF1CXYa/Y7+nDAuvmQrCDx7F29gFX6AsBkTYKA3m9RFA6G?=
+ =?iso-8859-1?Q?PIzsrvfa3EhjDg+WeEKKH1RXNkI1e0kuCtecHckyA5TcXschC2dpB3yhYY?=
+ =?iso-8859-1?Q?WulsAGMYgz5ZrGWdXJICdJtJNQZaFDMI77os6PXA4hEOCfK9E47kFcKq1q?=
+ =?iso-8859-1?Q?JzJ1qOfUW/dgUaku3lRImrIMk9qbI8/GwD6u4CLj7/FgrWA=3D?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62802885-d987-4f67-2800-08d931b58cd8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2021 17:30:07.0199
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sxJ7U48zS1tGvBDMzp3W1x0BrnP4qc+IhIBg854wSzxuAG32dhnxebthy9UkxOwyJu4a7frJTcw/s8uvhYIvPOyN70VNLA53ngh4W8nuU+I=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0P190MB0723
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We introduce the new "End.DT46" action for supporting the SRv6 End.DT46
-Behavior in iproute2.
-The SRv6 End.DT46 Behavior, defined in RFC 8986 [1] section 4.8, can be
-used to implement L3 VPNs based on Segment Routing over IPv6 networks in
-multi-tenants environments and it is capable of handling both IPv4 and
-IPv6 tenant traffic at the same time.
-The SRv6 End.DT46 Behavior decapsulates the received packets and it
-performs the IPv4 or IPv6 routing lookup in the routing table of the
-tenant.
-
-As for the End.DT4 and for the End.DT6 in VRF mode, the SRv6 End.DT46
-Behavior leverages a VRF device in order to force the routing lookup into
-the associated routing table using the "vrftable" attribute.
-
-To make the End.DT46 work properly, it must be guaranteed that the
-routing table used for routing lookup operations is bound to one and
-only one VRF during the tunnel creation. Such constraint has to be
-enforced by enabling the VRF strict_mode sysctl parameter, i.e.:
-
- $ sysctl -wq net.vrf.strict_mode=1
-
-Note that the same approach is used for the End.DT4 Behavior and for the
-End.DT6 Behavior in VRF mode.
-
-An SRv6 End.DT46 Behavior instance can be created as follows:
-
- $ ip -6 route add 2001:db8::1 encap seg6local action End.DT46 vrftable 100 dev vrf100
-
-Standard Output:
- $ ip -6 route show 2001:db8::1
- 2001:db8::1  encap seg6local action End.DT46 vrftable 100 dev vrf100 metric 1024 pref medium
-
-JSON Output:
-$ ip -6 -j -p route show 2001:db8::1
-[ {
-        "dst": "2001:db8::1",
-        "encap": "seg6local",
-        "action": "End.DT46",
-        "vrftable": 100,
-        "dev": "vrf100",
-        "metric": 1024,
-        "flags": [ ],
-        "pref": "medium"
-} ]
-
-This patch updates the route.8 man page and the ip route help with the
-information related to End.DT46.
-Considering that the same information was missing for the SRv6 End.DT4 and
-the End.DT6 Behaviors, we have also added it.
-
-[1] https://www.rfc-editor.org/rfc/rfc8986.html#name-enddt46-decapsulation-and-s
-
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-Signed-off-by: Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
----
- include/uapi/linux/seg6_local.h |  2 ++
- ip/iproute.c                    |  4 +--
- ip/iproute_lwtunnel.c           |  1 +
- man/man8/ip-route.8.in          | 48 +++++++++++++++++++++++++++++++++
- 4 files changed, 53 insertions(+), 2 deletions(-)
-
-diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
-index 85955514..ab724498 100644
---- a/include/uapi/linux/seg6_local.h
-+++ b/include/uapi/linux/seg6_local.h
-@@ -64,6 +64,8 @@ enum {
- 	SEG6_LOCAL_ACTION_END_AM	= 14,
- 	/* custom BPF action */
- 	SEG6_LOCAL_ACTION_END_BPF	= 15,
-+	/* decap and lookup of DA in v4 or v6 table */
-+	SEG6_LOCAL_ACTION_END_DT46	= 16,
- 
- 	__SEG6_LOCAL_ACTION_MAX,
- };
-diff --git a/ip/iproute.c b/ip/iproute.c
-index c6d87e58..bdeb9644 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -107,8 +107,8 @@ static void usage(void)
- 		"SEGMODE := [ encap | inline ]\n"
- 		"SEG6LOCAL := action ACTION [ OPTIONS ] [ count ]\n"
- 		"ACTION := { End | End.X | End.T | End.DX2 | End.DX6 | End.DX4 |\n"
--		"            End.DT6 | End.DT4 | End.B6 | End.B6.Encaps | End.BM |\n"
--		"            End.S | End.AS | End.AM | End.BPF }\n"
-+		"            End.DT6 | End.DT4 | End.DT46 | End.B6 | End.B6.Encaps |\n"
-+		"            End.BM | End.S | End.AS | End.AM | End.BPF }\n"
- 		"OPTIONS := OPTION [ OPTIONS ]\n"
- 		"OPTION := { srh SEG6HDR | nh4 ADDR | nh6 ADDR | iif DEV | oif DEV |\n"
- 		"            table TABLEID | vrftable TABLEID | endpoint PROGNAME }\n"
-diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
-index ebc688e2..c4bae68d 100644
---- a/ip/iproute_lwtunnel.c
-+++ b/ip/iproute_lwtunnel.c
-@@ -220,6 +220,7 @@ static const char *seg6_action_names[SEG6_LOCAL_ACTION_MAX + 1] = {
- 	[SEG6_LOCAL_ACTION_END_AS]		= "End.AS",
- 	[SEG6_LOCAL_ACTION_END_AM]		= "End.AM",
- 	[SEG6_LOCAL_ACTION_END_BPF]		= "End.BPF",
-+	[SEG6_LOCAL_ACTION_END_DT46]		= "End.DT46",
- };
- 
- static const char *format_action_type(int action)
-diff --git a/man/man8/ip-route.8.in b/man/man8/ip-route.8.in
-index 2978bc0e..4b1947ab 100644
---- a/man/man8/ip-route.8.in
-+++ b/man/man8/ip-route.8.in
-@@ -834,6 +834,49 @@ rules. This action only accepts packets with either a zero Segments
- Left value or no SRH at all, and an inner IPv6 packet. Other
- matching packets are dropped.
- 
-+.BR End.DT6 " { " table " | " vrftable " } "
-+.I TABLEID
-+- Decapsulate the inner IPv6 packet and forward it according to the
-+specified lookup table.
-+.I TABLEID
-+is either a number or a string from the file
-+.BR "@SYSCONFDIR@/rt_tables" .
-+If
-+.B vrftable
-+is used, the argument must be a VRF device associated with
-+the table id. Moreover, the VRF table associated with the
-+table id must be configured with the VRF strict mode turned
-+on (net.vrf.strict_mode=1). This action only accepts packets
-+with either a zero Segments Left value or no SRH at all,
-+and an inner IPv6 packet. Other matching packets are dropped.
-+
-+.B End.DT4 vrftable
-+.I TABLEID
-+- Decapsulate the inner IPv4 packet and forward it according to the
-+specified lookup table.
-+.I TABLEID
-+is either a number or a string from the file
-+.BR "@SYSCONFDIR@/rt_tables" .
-+The argument must be a VRF device associated with the table id.
-+Moreover, the VRF table associated with the table id must be configured
-+with the VRF strict mode turned on (net.vrf.strict_mode=1). This action
-+only accepts packets with either a zero Segments Left value or no SRH
-+at all, and an inner IPv4 packet. Other matching packets are dropped.
-+
-+.B End.DT46 vrftable
-+.I TABLEID
-+- Decapsulate the inner IPv4 or IPv6 packet and forward it according
-+to the specified lookup table.
-+.I TABLEID
-+is either a number or a string from the file
-+.BR "@SYSCONFDIR@/rt_tables" .
-+The argument must be a VRF device associated with the table id.
-+Moreover, the VRF table associated with the table id must be configured
-+with the VRF strict mode turned on (net.vrf.strict_mode=1). This action
-+only accepts packets with either a zero Segments Left value or no SRH
-+at all, and an inner IPv4 or IPv6 packet. Other matching packets are
-+dropped.
-+
- .B End.B6 srh segs
- .IR SEGMENTS " [ "
- .B hmac
-@@ -1172,6 +1215,11 @@ ip -6 route add 2001:db8:1::/64 encap seg6 mode encap segs 2001:db8:42::1,2001:d
- Adds an IPv6 route with SRv6 encapsulation and two segments attached.
- .RE
- .PP
-+ip -6 route add 2001:db8:1::/64 encap seg6local action End.DT46 vrftable 100 dev vrf100
-+.RS 4
-+Adds an IPv6 route with SRv6 decapsulation and forward with lookup in VRF table.
-+.RE
-+.PP
- ip route add 10.1.1.0/30 nhid 10
- .RS 4
- Adds an ipv4 route using nexthop object with id 10.
--- 
-2.20.1
-
+> Prestera Switchdev driver implements a set of devlink-based features,=0A=
+> that include both debug functionality (traps with trap statistics), as we=
+ll=0A=
+> as functional rate limiter that is based on the devlink kernel API (inter=
+faces).=0A=
+=0A=
+> The core prestera-devlink functionality is implemented in the prestera_de=
+vlink.c.=0A=
+=0A=
+> The patch series also extends the existing devlink kernel API with a list=
+ of core=0A=
+> features:=0A=
+> =A0- devlink: add API for both publish/unpublish port parameters.=0A=
+> =A0- devlink: add port parameters-specific ops, as current design makes i=
+t impossible=0A=
+>  =A0 to register one parameter for multiple ports, and effectively distin=
+guish for=0A=
+> =A0 what port parameter_op is called.=0A=
+=0A=
+As we discussed the storm control (BUM) done via devlink port params topic,=
+ and agreed that it shouldn't be done using the devlink API itself, there's=
+ an open question i'd like to address: the patch series included, for what =
+i think, list of needed and benefitial changes, and those are the following=
+ patches:=0A=
+=0A=
+> Oleksandr Mazur (2):=0A=
+...=0A=
+>  net: core: devlink: add port_params_ops for devlink port parameters alte=
+ring=0A=
+>  drivers: net: netdevsim: add devlink port params usage=0A=
+ =0A=
+> Sudarsana Reddy Kalluru (1):=0A=
+>  net: core: devlink: add apis to publish/unpublish port params=0A=
+=0A=
+So, should i create a new patch series that would include all of them?=0A=
+=0A=
+Because in that case the series itself would lack an actual HW usage of it.=
+ The only usage would be limited to the netdevsim driver.=
