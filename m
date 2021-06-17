@@ -2,212 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A7F3ABCD5
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:33:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B533ABCD9
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233550AbhFQTfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 15:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbhFQTfr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 15:35:47 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646A8C061574;
-        Thu, 17 Jun 2021 12:33:37 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id g6-20020a17090adac6b029015d1a9a6f1aso5949745pjx.1;
-        Thu, 17 Jun 2021 12:33:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=MCJAcAU9VoN4JY0oEgPtECXuC31Vy2JvOEA1VBc9sDw=;
-        b=UPEsxovc2Y09xZYaBxnyeFtXo427iRLxnstW4aMwQc96vTTCjnbHq7CGo0qc3ucIEs
-         g/CUgZu4SYpD/e68uh98b/fHBLEofqNvBjWVixJhWn9ge5z96IoFi26BKqbIiabKBcJ7
-         esurzVlbAoIyIZqiFzUP8Po3+JYPLVV1Jt006Ioq3mMVznjHkU0b3twMSp3cSx9KZC73
-         N3Lqk42ZIbKIf2akV5uDxCGB5ybfUan1WK4bPVkk5k0sXGeTCLX0LL+3qYEr0hQ/3t6C
-         tBrNr30OjNUcMUIY5X2x24WrJcidycB5/z0MaYWbATMt9lnW15UmjNWWWlfNjJLuuMrl
-         cjtA==
+        id S233583AbhFQTgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 15:36:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29615 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233493AbhFQTgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 15:36:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623958473;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0QVbZGtUMKX0YcURF5RZf3wyVH9YC9/0j+v5ommj7wg=;
+        b=WiX+suhnsAGnaXGZTnC1JjpKjH+hTDHbXayiN13pFL3mtcjowmwQDbB9KiAxkCSbO04PLN
+        AlUIy/zswui5E1Vhh2Z1v7xOhic5tjODbCWv1WOYhEqof16LAgj6h9TLe6+zyXyOkTuJkY
+        CGnNnWXu/nY4LgX2iyyARJFjNUhBKBU=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-234-TX4V9Q2HPFOST4IFmExzCg-1; Thu, 17 Jun 2021 15:34:31 -0400
+X-MC-Unique: TX4V9Q2HPFOST4IFmExzCg-1
+Received: by mail-lf1-f71.google.com with SMTP id n4-20020a0565120ac4b02902fdd8d82fa6so3033294lfu.1
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 12:34:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=MCJAcAU9VoN4JY0oEgPtECXuC31Vy2JvOEA1VBc9sDw=;
-        b=rxOsQHicLVxvyk1zSKwjyzwUCJkEWVusF9PYu15/ZI+Av+PgZUIQHeFdwOP+Ph2exv
-         9SkAcKbkiR+LdBhlGrkCEjFMUCeCFmSJ9cdD+/gA8Un3c3N5npMAOdhezTwzAecuO2KE
-         e0/dGBGh9ILPw8RdpfOWIAdcM1+KjhoMfftepnfzH8km4okcrFrCX6nE1CFwAHB5m1PI
-         ykb4Y5pRdBc8qyfxMeepA8ZnLUgeaPoqOTeE4Mfm5T++xQuGWipv53IEKnVWNLPTo7pg
-         0E1qivLFEZkwcVkhPFAJGVZQr3QqWj+b2JNu0seTtUAj47Op4CH+k0J1v3hbMRfXGxlc
-         Vf0g==
-X-Gm-Message-State: AOAM533vwBInuRGFIQaluRq4MyLYmggFTgflibSCrrq1YpmkJZFT8sNk
-        ehcX59r+4Boo27tyRlHDexCsf/IumjZ10w==
-X-Google-Smtp-Source: ABdhPJxShRBdD1hYA4gHFNg4vtI6UYwLlOw79cNNq3C9hXnkz7MIkWY2f+jhrOxjL57HjlCbhxRXWg==
-X-Received: by 2002:a17:90a:420b:: with SMTP id o11mr6830776pjg.201.1623958416549;
-        Thu, 17 Jun 2021 12:33:36 -0700 (PDT)
-Received: from ?IPv6:2001:df0:0:200c:24ad:f001:d22a:9271? ([2001:df0:0:200c:24ad:f001:d22a:9271])
-        by smtp.gmail.com with ESMTPSA id c62sm5939886pfa.12.2021.06.17.12.33.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Jun 2021 12:33:36 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 2/2] net/8390: apne.c - add 100 Mbit support
- to apne.c driver
-To:     Finn Thain <fthain@linux-m68k.org>
-Cc:     linux-m68k@vger.kernel.org, geert@linux-m68k.org, alex@kazik.de,
-        netdev@vger.kernel.org
-References: <1623907712-29366-1-git-send-email-schmitzmic@gmail.com>
- <1623907712-29366-3-git-send-email-schmitzmic@gmail.com>
- <d661fb8-274d-6731-75f4-685bb2311c41@linux-m68k.org>
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <1fa288e2-3157-68f8-32c1-ffa1c63e4f85@gmail.com>
-Date:   Fri, 18 Jun 2021 07:33:31 +1200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0QVbZGtUMKX0YcURF5RZf3wyVH9YC9/0j+v5ommj7wg=;
+        b=mS45PZGrSfdNuZ7ESUXnysanN+dhMMYmcmZAk7gVVvkY3YIfTdTmbNs1aP+dADHl6S
+         2/E5od6ZCCQHrownXdmoDMg6PI9nkcy+P3owLJz5uyxZ/mV864uG7u3RlVjwlY5thQti
+         RetmFtEAG5yxfDgFvOu3OonwU1q3/xgCtwEGyuFx9FKAE60JpAJiJs+7ZicQ/wqCJshe
+         90nF4Vd6bAc1Bf4/NxDwRK3mIodGru1CIAgxc9flwKuVe8bnHIX16jAqL2RNXXvZSIrQ
+         Hz4c7rfEfUNUcMFN1+l44Oc03Bnwcq1hvc/P7/ITvHLS+iTZQlT0mYO2wmNh3z7VMaex
+         dP9A==
+X-Gm-Message-State: AOAM531MQCW3dMjLyNPrWWtso3+v3TvNXgCj0OBErMed1qYhZoN3UHjp
+        pJMIP17gdQA/DFUxl8V8ppzxzteDZDn+Vhno7/ozyTAqdMZebzX7Np5h0mbng/dL4VT00O/fyO8
+        aPhShwFJuxa5bUi6y4Ij9bsbkI4bURb6G
+X-Received: by 2002:a05:6512:3d15:: with SMTP id d21mr5249838lfv.252.1623958470485;
+        Thu, 17 Jun 2021 12:34:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxHcTsgvmvxoF61BXQGGx1dFhjz2R0T1Tg7FJZcTOE3TdflaZaCIihOhmtf7XN6SK1XYVxxcMtvKOgOo8AUTTw=
+X-Received: by 2002:a05:6512:3d15:: with SMTP id d21mr5249784lfv.252.1623958470194;
+ Thu, 17 Jun 2021 12:34:30 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <d661fb8-274d-6731-75f4-685bb2311c41@linux-m68k.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20210617182242.8637-1-nitesh@redhat.com> <20210617182242.8637-5-nitesh@redhat.com>
+ <ddee52a6-ac70-6e2d-b48e-e9bf38c94265@arm.com>
+In-Reply-To: <ddee52a6-ac70-6e2d-b48e-e9bf38c94265@arm.com>
+From:   Nitesh Lal <nilal@redhat.com>
+Date:   Thu, 17 Jun 2021 15:34:18 -0400
+Message-ID: <CAFki+LkTqThGZDGui4N6Ko-Z8PMPtX7m-KPm0BM4SvbAxrOqVw@mail.gmail.com>
+Subject: Re: [PATCH v1 04/14] scsi: megaraid_sas: Use irq_set_affinity_and_hint
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-pci@vger.kernel.org,
+        tglx@linutronix.de, jesse.brandeburg@intel.com,
+        mtosatti@redhat.com, mingo@kernel.org, jbrandeb@kernel.org,
+        frederic@kernel.org, juri.lelli@redhat.com, abelits@marvell.com,
+        bhelgaas@google.com, rostedt@goodmis.org, peterz@infradead.org,
+        davem@davemloft.net, akpm@linux-foundation.org,
+        sfr@canb.auug.org.au, stephen@networkplumber.org,
+        rppt@linux.vnet.ibm.com, chris.friesen@windriver.com,
+        maz@kernel.org, nhorman@tuxdriver.com, pjwaskiewicz@gmail.com,
+        sassmann@redhat.com, thenzl@redhat.com, kashyap.desai@broadcom.com,
+        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
+        suganath-prabu.subramani@broadcom.com, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jkc@redhat.com, faisal.latif@intel.com,
+        shiraz.saleem@intel.com, tariqt@nvidia.com, ahleihel@redhat.com,
+        kheib@redhat.com, borisp@nvidia.com, saeedm@nvidia.com,
+        benve@cisco.com, govind@gmx.com, jassisinghbrar@gmail.com,
+        luobin9@huawei.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Finn,
-
-thanks for your review!
-
-On 17/06/21 6:51 pm, Finn Thain wrote:
-> On Thu, 17 Jun 2021, Michael Schmitz wrote:
+On Thu, Jun 17, 2021 at 3:31 PM Robin Murphy <robin.murphy@arm.com> wrote:
 >
->> Add Kconfig option, module parameter and PCMCIA reset code
->> required to support 100 Mbit PCMCIA ethernet cards on Amiga.
->>
->> 10 Mbit and 100 Mbit mode are supported by the same module.
->> A module parameter switches Amiga ISA IO accessors to word
->> access by changing isa_type at runtime. Additional code to
->> reset the PCMCIA hardware is also added to the driver probe.
->>
->> Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
->> 100 MBit card support" submitted to netdev 2018/09/16 by Alex
->> Kazik <alex@kazik.de>.
->>
->> CC: netdev@vger.kernel.org
->> Tested-by: Alex Kazik <alex@kazik.de>
->> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
->>
->> --
->> Changes from v1:
->>
->> - fix module parameter name in Kconfig help text
->>
->> Alex Kazik:
->> - change module parameter type to bool, fix module parameter
->>    permission
->>
->> Changes from RFC:
->>
->> Geert Uytterhoeven:
->> - change APNE_100MBIT to depend on APNE
->> - change '---help---' to 'help' (former no longer supported)
->> - fix whitespace errors
->> - fix module_param_named() arg count
->> - protect all added code by #ifdef CONFIG_APNE_100MBIT
->> ---
->>   drivers/net/ethernet/8390/Kconfig | 12 ++++++++++++
->>   drivers/net/ethernet/8390/apne.c  | 21 +++++++++++++++++++++
->>   2 files changed, 33 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
->> index 9f4b302..6e4db63 100644
->> --- a/drivers/net/ethernet/8390/Kconfig
->> +++ b/drivers/net/ethernet/8390/Kconfig
->> @@ -143,6 +143,18 @@ config APNE
->>   	  To compile this driver as a module, choose M here: the module
->>   	  will be called apne.
->>   
->> +config APNE100MBIT
->> +	bool "PCMCIA NE2000 100MBit support"
->> +	depends on APNE
->> +	default n
->> +	help
->> +	  This changes the driver to support 10/100Mbit cards (e.g. Netgear
->> +	  FA411, CNet Singlepoint). 10 MBit cards and 100 MBit cards are
->> +	  supported by the same driver.
->> +
->> +	  To activate 100 Mbit support at runtime or from the kernel
->> +	  command line, use the apne.100mbit module parameter.
->> +
->>   config PCMCIA_PCNET
->>   	tristate "NE2000 compatible PCMCIA support"
->>   	depends on PCMCIA
->> diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
->> index fe6c834..59e41ad 100644
->> --- a/drivers/net/ethernet/8390/apne.c
->> +++ b/drivers/net/ethernet/8390/apne.c
->> @@ -120,6 +120,12 @@ static u32 apne_msg_enable;
->>   module_param_named(msg_enable, apne_msg_enable, uint, 0444);
->>   MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
->>   
->> +#ifdef CONFIG_APNE100MBIT
->> +static bool apne_100_mbit;
->> +module_param_named(apne_100_mbit_msg, apne_100_mbit, bool, 0444);
->> +MODULE_PARM_DESC(apne_100_mbit_msg, "Enable 100 Mbit support");
->> +#endif
->> +
->>   struct net_device * __init apne_probe(int unit)
->>   {
->>   	struct net_device *dev;
->> @@ -139,6 +145,11 @@ struct net_device * __init apne_probe(int unit)
->>   	if ( !(AMIGAHW_PRESENT(PCMCIA)) )
->>   		return ERR_PTR(-ENODEV);
->>   
->> +#ifdef CONFIG_APNE100MBIT
->> +	if (apne_100_mbit)
->> +		isa_type = ISA_TYPE_AG16;
->> +#endif
->> +
-> I think isa_type has to be assigned unconditionally otherwise it can't be
-> reset for 10 mbit cards. Therefore, the AMIGAHW_PRESENT(PCMCIA) logic in
-> arch/m68k/kernel/setup_mm.c probably should move here.
-
-Good catch! I am uncertain though as to whether replacing a 100 Mbit 
-card by a 10 Mbit one at run time is a common use case (or even 
-possible, given constraints of the Amiga PCMCIA interface?), but it 
-ought to work even if rarely used.
-
-The comment there says isa_type must be set as early as possible, so I'd 
-rather leave that alone, and add an 'else' clause here.
-
-This of course raise the question whether we ought to move the entire 
-isa_type handling into arch code instead - make it a generic 
-amiga_pcmcia_16bit option settable via sysfs. There may be other 16 bit 
-cards that require the same treatment, and duplicating PCMCIA mode 
-switching all over the place could be avoided. Opinions?
-
+> On 2021-06-17 19:22, Nitesh Narayan Lal wrote:
+> > The driver uses irq_set_affinity_hint() specifically for the high IOPS
+> > queue interrupts for two purposes:
+> >
+> > - To set the affinity_hint which is consumed by the userspace for
+> >    distributing the interrupts
+> >
+> > - To apply an affinity that it provides
+> >
+> > The driver enforces its own affinity to bind the high IOPS queue interrupts
+> > to the local NUMA node. However, irq_set_affinity_hint() applying the
+> > provided cpumask as an affinity for the interrupt is an undocumented side
+> > effect.
+> >
+> > To remove this side effect irq_set_affinity_hint() has been marked
+> > as deprecated and new interfaces have been introduced. Hence, replace the
+> > irq_set_affinity_hint() with the new interface irq_set_affinity_and_hint()
+> > that clearly indicates the purpose of the usage and is meant to apply the
+> > affinity and set the affinity_hint pointer. Also, replace
+> > irq_set_affinity_hint() with irq_update_affinity_hint() when only
+> > affinity_hint needs to be updated.
+> >
+> > Change the megasas_set_high_iops_queue_affinity_hint function name to
+> > megasas_set_high_iops_queue_affinity_and_hint to clearly indicate that the
+> > function is setting both affinity and affinity_hint.
+> >
+> > Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
+> > ---
+> >   drivers/scsi/megaraid/megaraid_sas_base.c | 25 ++++++++++++++---------
+> >   1 file changed, 15 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
+> > index 4d4e9dbe5193..54f4eac09589 100644
+> > --- a/drivers/scsi/megaraid/megaraid_sas_base.c
+> > +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
+> > @@ -5666,7 +5666,7 @@ megasas_setup_irqs_msix(struct megasas_instance *instance, u8 is_probe)
+> >                               "Failed to register IRQ for vector %d.\n", i);
+> >                       for (j = 0; j < i; j++) {
+> >                               if (j < instance->low_latency_index_start)
+> > -                                     irq_set_affinity_hint(
+> > +                                     irq_update_affinity_hint(
+> >                                               pci_irq_vector(pdev, j), NULL);
+> >                               free_irq(pci_irq_vector(pdev, j),
+> >                                        &instance->irq_context[j]);
+> > @@ -5709,7 +5709,7 @@ megasas_destroy_irqs(struct megasas_instance *instance) {
+> >       if (instance->msix_vectors)
+> >               for (i = 0; i < instance->msix_vectors; i++) {
+> >                       if (i < instance->low_latency_index_start)
+> > -                             irq_set_affinity_hint(
+> > +                             irq_update_affinity_hint(
+> >                                   pci_irq_vector(instance->pdev, i), NULL);
+> >                       free_irq(pci_irq_vector(instance->pdev, i),
+> >                                &instance->irq_context[i]);
+> > @@ -5840,22 +5840,27 @@ int megasas_get_device_list(struct megasas_instance *instance)
+> >   }
+> >
+> >   /**
+> > - * megasas_set_high_iops_queue_affinity_hint -       Set affinity hint for high IOPS queues
+> > - * @instance:                                        Adapter soft state
+> > - * return:                                   void
+> > + * megasas_set_high_iops_queue_affinity_and_hint -   Set affinity and hint
+> > + *                                                   for high IOPS queues
+> > + * @instance:                                                Adapter soft state
+> > + * return:                                           void
+> >    */
+> >   static inline void
+> > -megasas_set_high_iops_queue_affinity_hint(struct megasas_instance *instance)
+> > +megasas_set_high_iops_queue_affinity_and_hint(struct megasas_instance *instance)
+> >   {
+> >       int i;
+> > +     unsigned int irq;
+> >       int local_numa_node;
+> > +     const struct cpumask *mask;
+> >
+> >       if (instance->perf_mode == MR_BALANCED_PERF_MODE) {
+> >               local_numa_node = dev_to_node(&instance->pdev->dev);
 >
->>   	pr_info("Looking for PCMCIA ethernet card : ");
->>   
->>   	/* check if a card is inserted */
->> @@ -590,6 +601,16 @@ static int init_pcmcia(void)
->>   #endif
->>   	u_long offset;
->>   
->> +#ifdef CONFIG_APNE100MBIT
->> +	/* reset card (idea taken from CardReset by Artur Pogoda) */
->> +	{
->> +		u_char  tmp = gayle.intreq;
->> +
->> +		gayle.intreq = 0xff;    mdelay(1);
->> +		gayle.intreq = tmp;     mdelay(300);
->> +	}
->> +#endif
->> +
-> The indentation/alignment here doesn't conform to the kernel coding style.
+> Drive-by nit: you could assign mask in this scope.
+>
 
-Good one. Checkpatch missed that for some reason...
+Sure
 
-I'll respin ...
+> > -             for (i = 0; i < instance->low_latency_index_start; i++)
+> > -                     irq_set_affinity_hint(pci_irq_vector(instance->pdev, i),
+> > -                             cpumask_of_node(local_numa_node));
+> > +             for (i = 0; i < instance->low_latency_index_start; i++) {
+> > +                     irq = pci_irq_vector(instance->pdev, i);
+> > +                     mask = cpumask_of_node(local_numa_node);
+> > +                     irq_update_affinity_hint(irq, mask);
+>
+> And this doesn't seem to match what the commit message says?
+>
 
-Cheers,
+Clearly, thanks for catching it.
+This should be irq_set_affinity_and_hint().
 
-     Michael
+> Robin.
+>
+> > +             }
+> >       }
+> >   }
+> >
+> > @@ -5944,7 +5949,7 @@ megasas_alloc_irq_vectors(struct megasas_instance *instance)
+> >               instance->msix_vectors = 0;
+> >
+> >       if (instance->smp_affinity_enable)
+> > -             megasas_set_high_iops_queue_affinity_hint(instance);
+> > +             megasas_set_high_iops_queue_affinity_and_hint(instance);
+> >   }
+> >
+> >   /**
+> >
+>
 
+
+-- 
+Thanks
+Nitesh
 
