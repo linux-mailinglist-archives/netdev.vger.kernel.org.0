@@ -2,77 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7D83ABCC4
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:30:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE4DA3ABCC8
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:31:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231651AbhFQTcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 15:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231666AbhFQTcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 15:32:19 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92908C0617A6
-        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 12:30:10 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id h12so3471923plf.4
-        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 12:30:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Hrorq9wqViQmhGOFFkZLIlBQLP9XRCmNAgszGBG5cNM=;
-        b=UjhBFmj53egtMyJ00ZkClVrgAfvnWzTHeO08/1NVtWDVFp8yUJq6gbvTejf1cL8coa
-         ObV+c50VD3mJAHyHt3uHFnS5r9Zpd7tJaP8Te3HYKJ3f9URNkPVzJ2Uq6wIJFO3kCGKR
-         m4ob7/oHFin0TmKke8zNIXawcadc37nU0tdnQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Hrorq9wqViQmhGOFFkZLIlBQLP9XRCmNAgszGBG5cNM=;
-        b=ntvZ0R64BwD1VXv51UyIH820Znmx2Bi6w3cTHKschBkgX3SPHdNFIkgZdZVZzpEXYl
-         GyVT5P9nH3fNXXeJQLANrB0SiHM0jWOBJ166J3Pbo4ArxPLmswKMPKLgiwPjk0Zzj3z7
-         4cVHm8eoay0zrN1caFYcApL7aJ3BhcRot6mv1P7sCWNf5/3ypd0oRPveuowHnoHrLYBc
-         O2x+23wjssZWpqjtCb+WlMaJxJvEWG6P3MAarlZnHe6AQzcrfHw4kzAbJXY36bbhwJkX
-         OdVZ2xd1BAovaGcOLh38ORjIwUaEJI81MEYF94BPNRo3ikDdbLVjfyR3UVleNZycpXeb
-         lJfg==
-X-Gm-Message-State: AOAM533xfB6/51Z/26AGh1M8ZEXO/opmgVD0Vb0F+ni2WvIciMy/wP60
-        nDrN896J7ctFr6ThqrUgHbkCRA==
-X-Google-Smtp-Source: ABdhPJwtWc5aurHGuviL31BSdk7TdiEElg8wfkdeWP/DnCBN+SPkw5EaYw3o2oW7ePgTHEHPnG8XEg==
-X-Received: by 2002:a17:90a:9f81:: with SMTP id o1mr17428279pjp.96.1623958209933;
-        Thu, 17 Jun 2021 12:30:09 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id t12sm6112590pfc.133.2021.06.17.12.30.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Jun 2021 12:30:09 -0700 (PDT)
-Date:   Thu, 17 Jun 2021 12:30:08 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     netdev@vger.kernel.org
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] mac80211: Recast pointer for trailing memcpy()
-Message-ID: <202106171229.824139CA76@keescook>
-References: <20210617042709.2170111-1-keescook@chromium.org>
+        id S233352AbhFQTd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 15:33:28 -0400
+Received: from foss.arm.com ([217.140.110.172]:59242 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231666AbhFQTd0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Jun 2021 15:33:26 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 99B2F1424;
+        Thu, 17 Jun 2021 12:31:18 -0700 (PDT)
+Received: from [10.57.9.136] (unknown [10.57.9.136])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 98B2F3F694;
+        Thu, 17 Jun 2021 12:31:10 -0700 (PDT)
+Subject: Re: [PATCH v1 04/14] scsi: megaraid_sas: Use
+ irq_set_affinity_and_hint
+To:     Nitesh Narayan Lal <nitesh@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-pci@vger.kernel.org,
+        tglx@linutronix.de, jesse.brandeburg@intel.com,
+        mtosatti@redhat.com, mingo@kernel.org, jbrandeb@kernel.org,
+        frederic@kernel.org, juri.lelli@redhat.com, abelits@marvell.com,
+        bhelgaas@google.com, rostedt@goodmis.org, peterz@infradead.org,
+        davem@davemloft.net, akpm@linux-foundation.org,
+        sfr@canb.auug.org.au, stephen@networkplumber.org,
+        rppt@linux.vnet.ibm.com, chris.friesen@windriver.com,
+        maz@kernel.org, nhorman@tuxdriver.com, pjwaskiewicz@gmail.com,
+        sassmann@redhat.com, thenzl@redhat.com, kashyap.desai@broadcom.com,
+        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
+        suganath-prabu.subramani@broadcom.com, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jkc@redhat.com, faisal.latif@intel.com,
+        shiraz.saleem@intel.com, tariqt@nvidia.com, ahleihel@redhat.com,
+        kheib@redhat.com, borisp@nvidia.com, saeedm@nvidia.com,
+        benve@cisco.com, govind@gmx.com, jassisinghbrar@gmail.com,
+        luobin9@huawei.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        nilal@redhat.com
+References: <20210617182242.8637-1-nitesh@redhat.com>
+ <20210617182242.8637-5-nitesh@redhat.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <ddee52a6-ac70-6e2d-b48e-e9bf38c94265@arm.com>
+Date:   Thu, 17 Jun 2021 20:31:05 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210617042709.2170111-1-keescook@chromium.org>
+In-Reply-To: <20210617182242.8637-5-nitesh@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 16, 2021 at 09:27:09PM -0700, Kees Cook wrote:
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memcpy(), memmove(), and memset(), avoid
-> intentionally writing across neighboring array fields.
+On 2021-06-17 19:22, Nitesh Narayan Lal wrote:
+> The driver uses irq_set_affinity_hint() specifically for the high IOPS
+> queue interrupts for two purposes:
 > 
-> Give memcpy() a specific source pointer type so it can correctly
-> calculate the bounds of the copy.
+> - To set the affinity_hint which is consumed by the userspace for
+>    distributing the interrupts
+> 
+> - To apply an affinity that it provides
+> 
+> The driver enforces its own affinity to bind the high IOPS queue interrupts
+> to the local NUMA node. However, irq_set_affinity_hint() applying the
+> provided cpumask as an affinity for the interrupt is an undocumented side
+> effect.
+> 
+> To remove this side effect irq_set_affinity_hint() has been marked
+> as deprecated and new interfaces have been introduced. Hence, replace the
+> irq_set_affinity_hint() with the new interface irq_set_affinity_and_hint()
+> that clearly indicates the purpose of the usage and is meant to apply the
+> affinity and set the affinity_hint pointer. Also, replace
+> irq_set_affinity_hint() with irq_update_affinity_hint() when only
+> affinity_hint needs to be updated.
+> 
+> Change the megasas_set_high_iops_queue_affinity_hint function name to
+> megasas_set_high_iops_queue_affinity_and_hint to clearly indicate that the
+> function is setting both affinity and affinity_hint.
+> 
+> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
+> ---
+>   drivers/scsi/megaraid/megaraid_sas_base.c | 25 ++++++++++++++---------
+>   1 file changed, 15 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
+> index 4d4e9dbe5193..54f4eac09589 100644
+> --- a/drivers/scsi/megaraid/megaraid_sas_base.c
+> +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
+> @@ -5666,7 +5666,7 @@ megasas_setup_irqs_msix(struct megasas_instance *instance, u8 is_probe)
+>   				"Failed to register IRQ for vector %d.\n", i);
+>   			for (j = 0; j < i; j++) {
+>   				if (j < instance->low_latency_index_start)
+> -					irq_set_affinity_hint(
+> +					irq_update_affinity_hint(
+>   						pci_irq_vector(pdev, j), NULL);
+>   				free_irq(pci_irq_vector(pdev, j),
+>   					 &instance->irq_context[j]);
+> @@ -5709,7 +5709,7 @@ megasas_destroy_irqs(struct megasas_instance *instance) {
+>   	if (instance->msix_vectors)
+>   		for (i = 0; i < instance->msix_vectors; i++) {
+>   			if (i < instance->low_latency_index_start)
+> -				irq_set_affinity_hint(
+> +				irq_update_affinity_hint(
+>   				    pci_irq_vector(instance->pdev, i), NULL);
+>   			free_irq(pci_irq_vector(instance->pdev, i),
+>   				 &instance->irq_context[i]);
+> @@ -5840,22 +5840,27 @@ int megasas_get_device_list(struct megasas_instance *instance)
+>   }
+>   
+>   /**
+> - * megasas_set_high_iops_queue_affinity_hint -	Set affinity hint for high IOPS queues
+> - * @instance:					Adapter soft state
+> - * return:					void
+> + * megasas_set_high_iops_queue_affinity_and_hint -	Set affinity and hint
+> + *							for high IOPS queues
+> + * @instance:						Adapter soft state
+> + * return:						void
+>    */
+>   static inline void
+> -megasas_set_high_iops_queue_affinity_hint(struct megasas_instance *instance)
+> +megasas_set_high_iops_queue_affinity_and_hint(struct megasas_instance *instance)
+>   {
+>   	int i;
+> +	unsigned int irq;
+>   	int local_numa_node;
+> +	const struct cpumask *mask;
+>   
+>   	if (instance->perf_mode == MR_BALANCED_PERF_MODE) {
+>   		local_numa_node = dev_to_node(&instance->pdev->dev);
 
-Hmpf, please ignore this patch; sorry for the noise. This fix got
-mis-tested on my end and does not solve the problem I was trying to solve.
-I will return with a v2. :)
+Drive-by nit: you could assign mask in this scope.
 
--- 
-Kees Cook
+> -		for (i = 0; i < instance->low_latency_index_start; i++)
+> -			irq_set_affinity_hint(pci_irq_vector(instance->pdev, i),
+> -				cpumask_of_node(local_numa_node));
+> +		for (i = 0; i < instance->low_latency_index_start; i++) {
+> +			irq = pci_irq_vector(instance->pdev, i);
+> +			mask = cpumask_of_node(local_numa_node);
+> +			irq_update_affinity_hint(irq, mask);
+
+And this doesn't seem to match what the commit message says?
+
+Robin.
+
+> +		}
+>   	}
+>   }
+>   
+> @@ -5944,7 +5949,7 @@ megasas_alloc_irq_vectors(struct megasas_instance *instance)
+>   		instance->msix_vectors = 0;
+>   
+>   	if (instance->smp_affinity_enable)
+> -		megasas_set_high_iops_queue_affinity_hint(instance);
+> +		megasas_set_high_iops_queue_affinity_and_hint(instance);
+>   }
+>   
+>   /**
+> 
