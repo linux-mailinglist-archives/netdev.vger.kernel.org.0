@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61E453ABE0D
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 23:28:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 208503ABE11
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 23:28:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233158AbhFQVaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 17:30:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24174 "EHLO
+        id S233187AbhFQVaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 17:30:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30438 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233045AbhFQVaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 17:30:11 -0400
+        by vger.kernel.org with ESMTP id S233058AbhFQVaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 17:30:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1623965283;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=h2Vi9XceSPVZfLpkffqV3pCVibBmY0ByVpnQRv2lfdE=;
-        b=YS+1cSJxvroIY0LLcif7PJxPOT5xDNu+a1+KYWHTjA4lbIf9RJlCEXH6Ik5rzBa8aB4xL6
-        xtDtwo1a8kuT5kguHB3gAC6nzRs8xLREqI02OkwjHGLQ3sGnczXLHCVcIIgk6m/IvS7MLU
-        6ByvBVcrlQUiau+Ng7snyZ+hbTKsTP8=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-465-Wndln36GNJ25wPqYgM2_cA-1; Thu, 17 Jun 2021 17:28:02 -0400
-X-MC-Unique: Wndln36GNJ25wPqYgM2_cA-1
-Received: by mail-ej1-f72.google.com with SMTP id u4-20020a1709061244b02904648b302151so3021096eja.17
-        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 14:28:01 -0700 (PDT)
+        bh=URoBjUEpro9U64xROBMZeKvvFlHbDEw9khuYvYfphMY=;
+        b=ilHDuAFzMbIhywAp6t95lmFIuwojhSStLc1+R0vsjZdheEkaUz44dx8swOZnMMWMiX/sco
+        GTT9VRe/vyX8+vPio6ojbuSRI5KfstQpzT3/15zidpHVCCFauO4oD4Zv6GOcYXsHn82nUc
+        Hc+2hVX7gV/EAOSqxtUE+oTpGhWsIOg=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-367-EgzFr7ZhMjOAdpJYHmEwag-1; Thu, 17 Jun 2021 17:28:02 -0400
+X-MC-Unique: EgzFr7ZhMjOAdpJYHmEwag-1
+Received: by mail-ed1-f70.google.com with SMTP id v12-20020aa7dbcc0000b029038fc8e57037so2421106edt.0
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 14:28:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=h2Vi9XceSPVZfLpkffqV3pCVibBmY0ByVpnQRv2lfdE=;
-        b=sp6uiEzwGjlZsHxNtPobbQRtrl+3njOnBhOxPuVDhuRBNUvuOGt7j1UR6ymuITXcjN
-         7+z+u4U67fK8t3je0QW42VkTrjm6WqOXvchcgee9RJI+3VeNs9fuPl5jKSFTAz4niopf
-         zCXTccSKtwZCkkMrvKJPu3bjLykoSljDMjTsXQkT/OjNex0Gut2I5wI9PO/1FbRCtXJa
-         URbNtmUB2eZrAjvE0ILQ+PjTATd5a0nvqRsB+1HMBthEfcnnXh0TSY8DRFr7qCldQKBt
-         IJLpywTN7UGcq/9EU2nkPKGOHyAvVdkRdEs8W2Zw6oiWzb/ZGFhdt+OiAnWgTC6YLi78
-         iuSA==
-X-Gm-Message-State: AOAM533eZnv7ENNXY4Q/mCjocYzdc3DaH0f2bRLGHSVpu0BeeTDCCLib
-        u4zqY3jGQKlKJkFnhEGyHlOa249XK1WkNWLZbutw6eT6m6vi9VNJ0LPHD098jp6nHrNq7AGHXI2
-        CCdkpw9KKbW7QtmCG
-X-Received: by 2002:a05:6402:42cc:: with SMTP id i12mr418827edc.345.1623965280725;
-        Thu, 17 Jun 2021 14:28:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx7GdrC2OmFDGjTuzCjTi7XENVhneXkF+uyTA4qSW3+SnXwzyHh4ZUMgJUipj8lkd9TnOv6ZA==
-X-Received: by 2002:a05:6402:42cc:: with SMTP id i12mr418777edc.345.1623965280307;
-        Thu, 17 Jun 2021 14:28:00 -0700 (PDT)
+        bh=URoBjUEpro9U64xROBMZeKvvFlHbDEw9khuYvYfphMY=;
+        b=Cm7UOyQ7DCru6Rq2Bwn1N4w4nOWXo3yjtGUTZSqLBDsIGbNFB+WzaZdk2XNUWgIu4O
+         aWPPu+gEDZ8bCj5/6aXnRxdjh0m2Mo133p0ja5VV8v/0CuYNpxUiJVj/LTH/6etXNVQn
+         BlMWdWzLvF0ZwjBQS3wKZrOB1XeS6Bp0kSsEOH8rRbtQr4LCnxQL0YusGBy4VfMkaXTa
+         CrgOaGPhD5fMcVesOBG2tCC2D7PM65XGuoAE5+DljYe7RM6+rvxzaa5x7VN570Az7zER
+         +3gX6L5Xz0+NkHsvFkikA5c4PA9x1Bw0mXA8Cbaxw4a5C8i6O1Z02mYOq9u5dei0KQJq
+         mkEA==
+X-Gm-Message-State: AOAM530E9pEUmxIHQuwBars+hI8yNJ/hOnswTI/zGR6iHeVIwMTBh9NV
+        jylWX5VAdw5uk9tKMQGmHqjgwuqThu8xWlgJIMCU7/pZtD9pzVWXhWQ0zZHirVARN02gxjAsEfI
+        c/BN1M3aNyK9vkOO1
+X-Received: by 2002:a17:906:1c4e:: with SMTP id l14mr7493121ejg.172.1623965281349;
+        Thu, 17 Jun 2021 14:28:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxBED07LUChvl53lkxSTodZZSwtVeK7ggiDn0AD9irgpsF1jIRBNNK0HPoUFkO1vHM4IXH08A==
+X-Received: by 2002:a17:906:1c4e:: with SMTP id l14mr7493097ejg.172.1623965281090;
+        Thu, 17 Jun 2021 14:28:01 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id hg25sm108948ejc.51.2021.06.17.14.27.58
+        by smtp.gmail.com with ESMTPSA id og6sm94201ejc.108.2021.06.17.14.27.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 17 Jun 2021 14:27:59 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id DC3F4180738; Thu, 17 Jun 2021 23:27:54 +0200 (CEST)
+        id E3BD4180739; Thu, 17 Jun 2021 23:27:54 +0200 (CEST)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Martin KaFai Lau <kafai@fb.com>,
@@ -61,12 +61,11 @@ Cc:     Martin KaFai Lau <kafai@fb.com>,
         "Paul E . McKenney" <paulmck@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Subject: [PATCH bpf-next v3 15/16] stmmac: remove rcu_read_lock() around XDP program invocation
-Date:   Thu, 17 Jun 2021 23:27:47 +0200
-Message-Id: <20210617212748.32456-16-toke@redhat.com>
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        linux-omap@vger.kernel.org
+Subject: [PATCH bpf-next v3 16/16] net: ti: remove rcu_read_lock() around XDP program invocation
+Date:   Thu, 17 Jun 2021 23:27:48 +0200
+Message-Id: <20210617212748.32456-17-toke@redhat.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210617212748.32456-1-toke@redhat.com>
 References: <20210617212748.32456-1-toke@redhat.com>
@@ -77,7 +76,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The stmmac driver has rcu_read_lock()/rcu_read_unlock() pairs around XDP
+The cpsw driver has rcu_read_lock()/rcu_read_unlock() pairs around XDP
 program invocations. However, the actual lifetime of the objects referred
 by the XDP program invocation is longer, all the way through to the call to
 xdp_do_flush(), making the scope of the rcu_read_lock() too small. This
@@ -90,67 +89,50 @@ entirely. With the addition of RCU annotations to the XDP_REDIRECT map
 types that take bh execution into account, lockdep even understands this to
 be safe, so there's really no reason to keep it around.
 
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+Cc: linux-omap@vger.kernel.org
+Tested-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 13 +++++--------
+ drivers/net/ethernet/ti/cpsw_priv.c | 13 +++++--------
  1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index bf9fe25fed69..5dcc8a42abf9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4654,7 +4654,6 @@ static int stmmac_xdp_xmit_back(struct stmmac_priv *priv,
- 	return res;
- }
- 
--/* This function assumes rcu_read_lock() is held by the caller. */
- static int __stmmac_xdp_run_prog(struct stmmac_priv *priv,
- 				 struct bpf_prog *prog,
- 				 struct xdp_buff *xdp)
-@@ -4662,6 +4661,9 @@ static int __stmmac_xdp_run_prog(struct stmmac_priv *priv,
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index 5862f0a4a975..25fa7304a542 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -1328,14 +1328,13 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
+ 	struct bpf_prog *prog;
  	u32 act;
- 	int res;
+ 
+-	rcu_read_lock();
+-
+ 	prog = READ_ONCE(priv->xdp_prog);
+-	if (!prog) {
+-		ret = CPSW_XDP_PASS;
+-		goto out;
+-	}
++	if (!prog)
++		return CPSW_XDP_PASS;
  
 +	/* This code is invoked within a single NAPI poll cycle and thus under
 +	 * local_bh_disable(), which provides the needed RCU protection.
 +	 */
  	act = bpf_prog_run_xdp(prog, xdp);
- 	switch (act) {
- 	case XDP_PASS:
-@@ -4696,17 +4698,14 @@ static struct sk_buff *stmmac_xdp_run_prog(struct stmmac_priv *priv,
- 	struct bpf_prog *prog;
- 	int res;
- 
--	rcu_read_lock();
--
- 	prog = READ_ONCE(priv->xdp_prog);
- 	if (!prog) {
- 		res = STMMAC_XDP_PASS;
--		goto unlock;
-+		goto out;
- 	}
- 
- 	res = __stmmac_xdp_run_prog(priv, prog, xdp);
--unlock:
+ 	/* XDP prog might have changed packet data and boundaries */
+ 	*len = xdp->data_end - xdp->data;
+@@ -1378,10 +1377,8 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
+ 	ndev->stats.rx_bytes += *len;
+ 	ndev->stats.rx_packets++;
+ out:
 -	rcu_read_unlock();
-+out:
- 	return ERR_PTR(-res);
+ 	return ret;
+ drop:
+-	rcu_read_unlock();
+ 	page_pool_recycle_direct(cpsw->page_pool[ch], page);
+ 	return ret;
  }
- 
-@@ -4976,10 +4975,8 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 		buf->xdp->data_end = buf->xdp->data + buf1_len;
- 		xsk_buff_dma_sync_for_cpu(buf->xdp, rx_q->xsk_pool);
- 
--		rcu_read_lock();
- 		prog = READ_ONCE(priv->xdp_prog);
- 		res = __stmmac_xdp_run_prog(priv, prog, buf->xdp);
--		rcu_read_unlock();
- 
- 		switch (res) {
- 		case STMMAC_XDP_PASS:
 -- 
 2.32.0
 
