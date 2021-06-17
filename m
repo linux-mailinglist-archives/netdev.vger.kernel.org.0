@@ -2,119 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AC8D3AA864
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 03:04:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 997243AA860
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 03:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235087AbhFQBGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 21:06:47 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:7310 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231441AbhFQBGq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 21:06:46 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4G53c642QYz1BMmV;
-        Thu, 17 Jun 2021 08:59:34 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 17 Jun 2021 09:04:36 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 17 Jun 2021 09:04:36 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
-        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
-        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
-        <alobakin@pm.me>
-Subject: [PATCH net v2] net: sched: add barrier to ensure correct ordering for lockless qdisc
-Date:   Thu, 17 Jun 2021 09:04:14 +0800
-Message-ID: <1623891854-57416-1-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
+        id S231802AbhFQBGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 21:06:43 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:36943 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231441AbhFQBGm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Jun 2021 21:06:42 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G53jq3VJlz9sSs;
+        Thu, 17 Jun 2021 11:04:30 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1623891874;
+        bh=PGOqoYEJCty324bOdGDVnfPpYTv2WarAErgTfo8Si3U=;
+        h=Date:From:To:Cc:Subject:From;
+        b=f+QfLnPcYAss84a9Sw3DGkEq5HL9TCHjz2Q5Mdx0QOOFunePA5P530C5LmuqdMYGH
+         n9RkCzjn9u0bi0J7s2cbLk+LKTJjXLKjpEpI9I7EAJHY07EtAK+HQIuWhZpN8Aq6Kj
+         QGVCYDDsmoNep7hxz0Msn6AWQjiYpUqKn/Z2tLa5m39k/4+xQNnpxyCPCETcoJNOnb
+         AWlAfNM7vzliS9PdvjxXf+iNyUnCxyDTORDKHHvj1zOTcn5AmAaqSi4VFgJuUpvbT0
+         ie7k12Fc2KTYe0if5LLEEcxcl6zqb3XgjrlR6mSeb7WNZB91ITsUXQYwEoMRAqJieu
+         +mcqo1ymDfc8Q==
+Date:   Thu, 17 Jun 2021 11:04:29 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Patrick Menschel <menschel.p@posteo.de>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20210617110429.51a3812d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="Sig_/W+wJpQreJrpsAl/NSVshP3i";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The spin_trylock() was assumed to contain the implicit
-barrier needed to ensure the correct ordering between
-STATE_MISSED setting/clearing and STATE_MISSED checking
-in commit a90c57f2cedd ("net: sched: fix packet stuck
-problem for lockless qdisc").
+--Sig_/W+wJpQreJrpsAl/NSVshP3i
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-But it turns out that spin_trylock() only has load-acquire
-semantic, for strongly-ordered system(like x86), the compiler
-barrier implicitly contained in spin_trylock() seems enough
-to ensure the correct ordering. But for weakly-orderly system
-(like arm64), the store-release semantic is needed to ensure
-the correct ordering as clear_bit() and test_bit() is store
-operation, see queued_spin_lock().
+Hi all,
 
-So add the explicit barrier to ensure the correct ordering
-for the above case.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
----
-V2: add the missing Fixes tag.
+  net/can/isotp.c
 
-The above ordering issue can easily cause out of order packet
-problem when testing lockless qdisc bypass patchset [1] with
-two iperf threads and one netdev queue in arm64 system.
+between commit:
 
-1. https://lkml.org/lkml/2021/6/2/1417
----
- include/net/sch_generic.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+  8d0caedb7596 ("can: bcm/raw/isotp: use per module netdevice notifier")
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 1e62551..5771030 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -163,6 +163,12 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
- 		if (spin_trylock(&qdisc->seqlock))
- 			goto nolock_empty;
- 
-+		/* Paired with smp_mb__after_atomic() to make sure
-+		 * STATE_MISSED checking is synchronized with clearing
-+		 * in pfifo_fast_dequeue().
-+		 */
-+		smp_mb__before_atomic();
-+
- 		/* If the MISSED flag is set, it means other thread has
- 		 * set the MISSED flag before second spin_trylock(), so
- 		 * we can return false here to avoid multi cpus doing
-@@ -180,6 +186,12 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
- 		 */
- 		set_bit(__QDISC_STATE_MISSED, &qdisc->state);
- 
-+		/* spin_trylock() only has load-acquire semantic, so use
-+		 * smp_mb__after_atomic() to ensure STATE_MISSED is set
-+		 * before doing the second spin_trylock().
-+		 */
-+		smp_mb__after_atomic();
-+
- 		/* Retry again in case other CPU may not see the new flag
- 		 * after it releases the lock at the end of qdisc_run_end().
- 		 */
--- 
-2.7.4
+from the net tree and commit:
 
+  6a5ddae57884 ("can: isotp: add symbolic error message to isotp_module_ini=
+t()")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/can/isotp.c
+index be6183f8ca11,f995eaef5d7b..000000000000
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@@ -1482,9 -1452,7 +1484,9 @@@ static __init int isotp_module_init(voi
+ =20
+  	err =3D can_proto_register(&isotp_can_proto);
+  	if (err < 0)
+- 		pr_err("can: registration of isotp protocol failed\n");
++ 		pr_err("can: registration of isotp protocol failed %pe\n", ERR_PTR(err)=
+);
+ +	else
+ +		register_netdevice_notifier(&canisotp_notifier);
+ =20
+  	return err;
+  }
+
+--Sig_/W+wJpQreJrpsAl/NSVshP3i
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDKn50ACgkQAVBC80lX
+0Gy1cgf/SjjZKizmHvVdB8a5oYerWDreGdFhmfpmY2QRa2Vf7D79lJrx2ulU+OKz
+xJhATu/PkMw4U+Ow+/TUaoa44hrI19wzRLmn+pRkFPQqm3KZbIDYBsjigde8LDxD
+pygw/oBsdyB49cgB+VLYE3VoZ9hGmWcGNpkBoFvqxnsFgObRds0cFvHuXoPzx2ab
+qzdwvK4XJi8iLXWdOPL8BUyfvbTxeh3zt82ZB/2/8HGbZ8EL+SUNqrQxTd5iSrpl
+IqHyPvikTGD18S+0OIgRdtwUo57aaely6OOtXXfBBaQJlGjeA4mIbR+vauOn5jgZ
+ThJGWM8HothU2IQ8z05mHLf8JRm66Q==
+=jiqI
+-----END PGP SIGNATURE-----
+
+--Sig_/W+wJpQreJrpsAl/NSVshP3i--
