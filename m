@@ -2,80 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 442FF3ABA20
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 18:59:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD6773ABA2E
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 19:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231728AbhFQRBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 13:01:22 -0400
-Received: from mga18.intel.com ([134.134.136.126]:63638 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231518AbhFQRBR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 13:01:17 -0400
-IronPort-SDR: VeWMbYfY1FfzV8ALffvsk5O0OlipdtDrX86GM2caH8k7E1a5AJomL9jrkoUvKylFx32+maGNdl
- YucAKwR7z/VQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10018"; a="193723061"
-X-IronPort-AV: E=Sophos;i="5.83,281,1616482800"; 
-   d="scan'208";a="193723061"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2021 09:59:05 -0700
-IronPort-SDR: vkjvFEJRbBAoIzkNPTv0AB/+CGuHf4EDQaj54pOqeyyHbTGJav5zR78QnnUVIj2vfS7Tpkhe4j
- ZgeIdDbidgHg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,281,1616482800"; 
-   d="scan'208";a="404706816"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga006.jf.intel.com with ESMTP; 17 Jun 2021 09:59:04 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Colin Ian King <colin.king@canonical.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Jacob Keller <jacob.e.keller@intel.com>
-Subject: [PATCH net-next 8/8] ice: remove redundant continue statement in a for-loop
-Date:   Thu, 17 Jun 2021 10:01:45 -0700
-Message-Id: <20210617170145.4092904-9-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210617170145.4092904-1-anthony.l.nguyen@intel.com>
-References: <20210617170145.4092904-1-anthony.l.nguyen@intel.com>
+        id S229683AbhFQRFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 13:05:20 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:36481 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229714AbhFQRFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 13:05:19 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.nyi.internal (Postfix) with ESMTP id E65B65C00DA;
+        Thu, 17 Jun 2021 13:03:10 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 17 Jun 2021 13:03:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=SG/wjR
+        EXc8BaNicjIGxOchjI9PU6hMiLkZ1+/qLVuL0=; b=mdLcxJ4Xo/fbLgCPBZOQsv
+        kBSZwpNWG/xeRm9ScfQFLYYahI/amT1IkJo3PWId1pWP8HRoYkoMMS2oKEe7rzFt
+        yddV+ne6hi31cZxtrkw1G+hA2JI/R0BZW/BcXzVLctsbcK+jiI389empe+zniu4P
+        qvPQ3tZ/2jjjwFUroqT4dHf5qL15+qEfuGB8sKpQ+TplsdvS3ah3TtSlzWeRQyGF
+        D33sJSR5IePgpCEpfpDGlqpkFoXhOagmeRKa9UzyNgfUVQALQ23h9CGCUl21dQt1
+        sGXXXqZO+UWgVk5yH0wBzjQdt2GJVLCtv5qrvvgoHxegSq8CDy0Q6UfRpjegCLZg
+        ==
+X-ME-Sender: <xms:ToDLYO_dTOJf6Bnq0Liu3jHYywDbgc6uWEkIdqfNLI6Vs5MQP3m1Dw>
+    <xme:ToDLYOtUaYwVhSxdNf043nAUGwZsuCIKn0fAKp9dEPryseuVv_Rbrku6wVcGmQCY3
+    7s0DCRr9WY9mvg>
+X-ME-Received: <xmr:ToDLYECiKHWjHba3gLBm05KTzmRwltlqLiLkGtUI8MtdoHKoy7abKTOuL5QC021vvIYawUF9poVWOfgr8B_xjgvoeUaqvA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeefuddguddtiecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:ToDLYGcB9rvRxQV86tWSu5hwSLla0ehfwSdqwBwwz7VmDlha6gdF1Q>
+    <xmx:ToDLYDPnOOYqMKURz3BWbJ-NrIb48SnP6_wK2QJ3FPR2ffKGv_Z4gw>
+    <xmx:ToDLYAnf3APEs2Ei50z7Z5l3p8TaWEikPaDdsTnrzhDfH-l8FejPkg>
+    <xmx:ToDLYIp9ncbvUThPNcOjGUKNC9gVmZCarstdfSPBZx0J2JRmTib-jw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 17 Jun 2021 13:03:10 -0400 (EDT)
+Date:   Thu, 17 Jun 2021 20:03:07 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Cc:     jiri@nvidia.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vadym Kochan <vadym.kochan@plvision.eu>
+Subject: Re: [PATCH net-next v2] drivers: net: netdevsim: fix devlink_trap
+ selftests failing
+Message-ID: <YMuAS++AH6DknYPA@shredder>
+References: <20210617113632.21665-1-oleksandr.mazur@plvision.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210617113632.21665-1-oleksandr.mazur@plvision.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Thu, Jun 17, 2021 at 02:36:32PM +0300, Oleksandr Mazur wrote:
+> devlink_trap tests for the netdevsim fail due to misspelled
+> debugfs file name. Change this name, as well as name of callback
+> function, to match the naming as in the devlink itself - 'trap_drop_counter'.
+> 
+> Test-results:
+> selftests: drivers/net/netdevsim: devlink_trap.sh
+> TEST: Initialization                                                [ OK ]
+> TEST: Trap action                                                   [ OK ]
+> TEST: Trap metadata                                                 [ OK ]
+> TEST: Non-existing trap                                             [ OK ]
+> TEST: Non-existing trap action                                      [ OK ]
+> TEST: Trap statistics                                               [ OK ]
+> TEST: Trap group action                                             [ OK ]
+> TEST: Non-existing trap group                                       [ OK ]
+> TEST: Trap group statistics                                         [ OK ]
+> TEST: Trap policer                                                  [ OK ]
+> TEST: Trap policer binding                                          [ OK ]
+> TEST: Port delete                                                   [ OK ]
+> TEST: Device delete                                                 [ OK ]
+> 
+> Fixes: a7b3527a43fe ("drivers: net: netdevsim: add devlink trap_drop_counter_get implementation")
+> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 
-The continue statement in the for-loop is redundant. Re-work the hw_lock
-check to remove it.
-
-Addresses-Coverity: ("Continue has no effect")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_ptp_hw.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-index 267312fad59a..3eca0e4eab0b 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-@@ -410,13 +410,11 @@ bool ice_ptp_lock(struct ice_hw *hw)
- 	for (i = 0; i < MAX_TRIES; i++) {
- 		hw_lock = rd32(hw, PFTSYN_SEM + (PFTSYN_SEM_BYTES * hw->pf_id));
- 		hw_lock = hw_lock & PFTSYN_SEM_BUSY_M;
--		if (hw_lock) {
--			/* Somebody is holding the lock */
--			usleep_range(10000, 20000);
--			continue;
--		} else {
-+		if (!hw_lock)
- 			break;
--		}
-+
-+		/* Somebody is holding the lock */
-+		usleep_range(10000, 20000);
- 	}
- 
- 	return !hw_lock;
--- 
-2.26.2
-
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
