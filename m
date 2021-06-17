@@ -2,186 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43AB43ABF08
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 00:38:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C7663ABF27
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 01:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232691AbhFQWkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 18:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231617AbhFQWkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 18:40:15 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD0AC061760;
-        Thu, 17 Jun 2021 15:38:07 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id h12so6185565pfe.2;
-        Thu, 17 Jun 2021 15:38:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=9p230PT0VwRcEwxqxQuqXJx7HHDnXHNrxCP/OPwqSbo=;
-        b=ryDam/OKuPPVjk5EBuA+gOuxhPWRKZBPC2bcm0FuipR4ulI4evXJmTEqLhbeG2Cu47
-         Y9pW6WGWzqbmM/yDHTzvVvOjaUwOj0XxxgymQC/U+1utzCBUc69bZQKmBDIGrvExcHhH
-         8NR+KA9mg7hP1pvmGEFW0UV4ifRX/NA9PL09Gb/T7/xF0RnzD1UaNSnk0AvIlPqvHDbC
-         mePO7lT4om/NCqAcoL4KVTKfO7hXMdgaXazw3uXRHHiUNI+gyBIkfJVSwRIvdzZ9zDPw
-         g/Uz4lGV97Qd5tlMAGiNpaCa9XXNt1Iuv4Bwx3xBi47gXa4XFvRYiPIFR23BEtm3KR6v
-         +DlA==
+        id S232720AbhFQXFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 19:05:46 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:36359 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232710AbhFQXFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 19:05:43 -0400
+Received: from mail-oo1-f71.google.com ([209.85.161.71])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <seth.forshee@canonical.com>)
+        id 1lu12q-00076z-5Q
+        for netdev@vger.kernel.org; Thu, 17 Jun 2021 23:03:32 +0000
+Received: by mail-oo1-f71.google.com with SMTP id l13-20020a4aa78d0000b0290245c8f11ac2so4718724oom.11
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 16:03:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=9p230PT0VwRcEwxqxQuqXJx7HHDnXHNrxCP/OPwqSbo=;
-        b=Lpz+DdS+IPgWdaD5lGA207C0bR4opYpSUNvCjb4xvkR7gFa9dEty8L1xhU2dtXiTer
-         htRzioKG8vlv7CuLE75aW7ryyxwA/hQuWH8W0m6XzobjUF5KVisNYKQYob6jbBp8D6bJ
-         ZdHF1ldGqLnRXa74aovcyZcWC64DRyv9z8YbIRdQYvOkMxu0RITTdv1+Ir9TvQW9gfkt
-         JZPzDJe8uogXoABw/Kvw/8mWuFd2kB3YZu0taT3rzpJ0ghkXwFQMpptyosbrxGEteF4T
-         4ctUVVMPoUplNx0+l6/c85L/g8Dj2G0FAKGbEkAA7Sis8k9+UiUFG7naxzJ7m9uVwacb
-         fkwQ==
-X-Gm-Message-State: AOAM531VQLxviTeF/BfRedc77Ny+93eUQZrYSdWeVW26dDcX/hodNRdo
-        0Ur0iQab+4IWxHDpvfO54FE6tanMQfE=
-X-Google-Smtp-Source: ABdhPJwtWmvUBo/UQrqi9t+Q877nHOxIZ4MDUex9T06VWUx13yCRhzYKcTYoCYnqqDx1h9h7QGLB1w==
-X-Received: by 2002:a63:5442:: with SMTP id e2mr7006717pgm.365.1623969486835;
-        Thu, 17 Jun 2021 15:38:06 -0700 (PDT)
-Received: from xplor.waratah.dyndns.org (222-152-189-137-fibre.sparkbb.co.nz. [222.152.189.137])
-        by smtp.gmail.com with ESMTPSA id z6sm6406421pgs.24.2021.06.17.15.38.05
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 17 Jun 2021 15:38:06 -0700 (PDT)
-Received: by xplor.waratah.dyndns.org (Postfix, from userid 1000)
-        id F0B953603E0; Fri, 18 Jun 2021 10:38:02 +1200 (NZST)
-From:   Michael Schmitz <schmitzmic@gmail.com>
-To:     linux-m68k@vger.kernel.org, geert@linux-m68k.org
-Cc:     alex@kazik.de, Michael Schmitz <schmitzmic@gmail.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next v4 2/2] net/8390: apne.c - add 100 Mbit support to apne.c driver
-Date:   Fri, 18 Jun 2021 10:37:59 +1200
-Message-Id: <1623969479-29657-3-git-send-email-schmitzmic@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1623969479-29657-1-git-send-email-schmitzmic@gmail.com>
-References: <1623969479-29657-1-git-send-email-schmitzmic@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OkOjqJxD0z2koDXpHJI7UZUHHI+CEV8nA90EeoMOpKs=;
+        b=qyhLVGSEc+NMTmoJ0+vGdi93wh5WL7I2X5nV0hNTRl0UkBuPXrV1Lh/aglfAZ+FVd/
+         u1KjPzbwii24iK5bb9WV+mnjp0qZJOac8B/7kwbals8OMUIHH8bcfq4c3thlLOOstIXV
+         9LGe8ED+mTv6j1bvfj1R0E6vmV0O2sbxQ2Em/zdHscv1gbqQq8oQ/u5LjEWlvoznWXe7
+         iLOMbzs6pHPuII9dlurrdCV4w+tPtUW2NBrX6oExyJbc2/PLk329YWrIpKpdbHNy50/+
+         h6e64qGWhFn+dUX76Yxpta9V3eo6+/mVrWwN9Xb/AJNB6+RGPwF+ncuNlZ30JUEINoTB
+         Pd1w==
+X-Gm-Message-State: AOAM530Y5CKmnlqyto8JAkTr4WIjsU8OUW3hsSSCQcktxoQuy4GWZ8y2
+        OKKey5jOaLY3uWGJFraJWULlW3Ythx7SrZkeUBCR5mcRqA5apKBsF83P+RcSr1O7GNNEVUJaWdh
+        etbRaYsJHOOC0sqQM+Xwl0CWJXNfiywdRhA==
+X-Received: by 2002:aca:af42:: with SMTP id y63mr12370933oie.119.1623971011202;
+        Thu, 17 Jun 2021 16:03:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzDiTg+Y4j0hQ3bdU6IkDKIwKk8ZbqFkka3mLb3akP9nl6lPOsoFHzTgBPK77GK8cl7ZiURTQ==
+X-Received: by 2002:aca:af42:: with SMTP id y63mr12370920oie.119.1623971010978;
+        Thu, 17 Jun 2021 16:03:30 -0700 (PDT)
+Received: from localhost ([2605:a601:ac0f:820:8210:d9c3:c7eb:5ca4])
+        by smtp.gmail.com with ESMTPSA id w22sm1231956oou.36.2021.06.17.16.03.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Jun 2021 16:03:30 -0700 (PDT)
+Date:   Thu, 17 Jun 2021 18:03:29 -0500
+From:   Seth Forshee <seth.forshee@canonical.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Pooja Trivedi <pooja.trivedi@stackpath.com>,
+        Josh Tway <josh.tway@stackpath.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: Hangs during tls multi_chunk_sendfile selftest
+Message-ID: <YMvUwVcOSkuBDxdg@ubuntu-x1>
+References: <YMumgy19CXCk5rZD@ubuntu-x1>
+ <20210617142234.272cc686@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210617142234.272cc686@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Kconfig option, module parameter and PCMCIA reset code
-required to support 100 Mbit PCMCIA ethernet cards on Amiga.
+On Thu, Jun 17, 2021 at 02:22:34PM -0700, Jakub Kicinski wrote:
+> On Thu, 17 Jun 2021 14:46:11 -0500 Seth Forshee wrote:
+> > I've observed that the tls multi_chunk_sendfile selftest hangs during
+> > recv() and ultimately times out, and it seems to have done so even when
+> > the test was first introduced. 
+> 
+> It hangs yet it passes? I lost track of this issue because the test
+> does pass on my system:
+> 
+> # PASSED: 183 / 183 tests passed.
+> # Totals: pass:183 fail:0 xfail:0 xpass:0 skip:0 error:0
+> 
+> $ uname -r
+> 5.12.9-300.fc34.x86_64
 
-10 Mbit and 100 Mbit mode are supported by the same module.
-A module parameter switches Amiga ISA IO accessors to word
-access by changing isa_type at runtime. Additional code to
-reset the PCMCIA hardware is also added to the driver probe.
+It doesn't pass with Ubuntu kernels:
 
-Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
-100 MBit card support" submitted to netdev 2018/09/16 by Alex
-Kazik <alex@kazik.de>.
+ #  RUN           tls.12_gcm.multi_chunk_sendfile ...
+ # multi_chunk_sendfile: Test terminated by timeout
+ #          FAIL  tls.12_gcm.multi_chunk_sendfile
+ not ok 6 tls.12_gcm.multi_chunk_sendfile
+ ...
+ #  RUN           tls.13_gcm.multi_chunk_sendfile ...
+ # multi_chunk_sendfile: Test terminated by timeout
+ #          FAIL  tls.13_gcm.multi_chunk_sendfile
+ not ok 51 tls.13_gcm.multi_chunk_sendfile
+ ...
+ #  RUN           tls.12_chacha.multi_chunk_sendfile ...
+ # multi_chunk_sendfile: Test terminated by timeout
+ #          FAIL  tls.12_chacha.multi_chunk_sendfile
+ not ok 96 tls.12_chacha.multi_chunk_sendfile
+ ...
+ #  RUN           tls.13_chacha.multi_chunk_sendfile ...
+ # multi_chunk_sendfile: Test terminated by timeout
+ #          FAIL  tls.13_chacha.multi_chunk_sendfile
+ not ok 141 tls.13_chacha.multi_chunk_sendfile
+ ...
+ # FAILED: 177 / 183 tests passed.
+ # Totals: pass:177 fail:6 xfail:0 xpass:0 skip:0 error:0
 
-CC: netdev@vger.kernel.org
-Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
-Tested-by: Alex Kazik <alex@kazik.de>
-Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+ $ uname -r
+ 5.13.0-7-generic
 
---
-Changes from v3:
+The results are the same with 5.12, etc. Maybe some difference in
+configs.
 
-- change module parameter name to match Kconfig help
+> > Reading through the commit message when
+> > it was added (0e6fbe39bdf7 "net/tls(TLS_SW): Add selftest for 'chunked'
+> > sendfile test") I get the impression that the test is meant to
+> > demonstrate a problem with ktls, but there's no indication that the
+> > problem has been fixed.
+> 
+> Yeah, the fix was discussed here:
+> 
+> https://lore.kernel.org/netdev/1591392508-14592-1-git-send-email-pooja.trivedi@stackpath.com/
+> 
+> IDK why it stalled to be honest :S
 
-Finn Thain:
-- fix coding style in new card reset code block
-- allow reset of isa_type by module parameter
+Hopefully it can make some progress now.
 
-Changes from v1:
-
-- fix module parameter name in Kconfig help text
-
-Alex Kazik:
-- change module parameter type to bool, fix module parameter
-  permission
-
-Changes from RFC:
-
-Geert Uytterhoeven:
-- change APNE_100MBIT to depend on APNE
-- change '---help---' to 'help' (former no longer supported)
-- fix whitespace errors
-- fix module_param_named() arg count
-- protect all added code by #ifdef CONFIG_APNE_100MBIT
----
- drivers/net/ethernet/8390/Kconfig | 12 ++++++++++++
- drivers/net/ethernet/8390/apne.c  | 25 +++++++++++++++++++++++++
- 2 files changed, 37 insertions(+)
-
-diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
-index 9f4b302..6e4db63 100644
---- a/drivers/net/ethernet/8390/Kconfig
-+++ b/drivers/net/ethernet/8390/Kconfig
-@@ -143,6 +143,18 @@ config APNE
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called apne.
- 
-+config APNE100MBIT
-+	bool "PCMCIA NE2000 100MBit support"
-+	depends on APNE
-+	default n
-+	help
-+	  This changes the driver to support 10/100Mbit cards (e.g. Netgear
-+	  FA411, CNet Singlepoint). 10 MBit cards and 100 MBit cards are
-+	  supported by the same driver.
-+
-+	  To activate 100 Mbit support at runtime or from the kernel
-+	  command line, use the apne.100mbit module parameter.
-+
- config PCMCIA_PCNET
- 	tristate "NE2000 compatible PCMCIA support"
- 	depends on PCMCIA
-diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
-index fe6c834..d294f0c 100644
---- a/drivers/net/ethernet/8390/apne.c
-+++ b/drivers/net/ethernet/8390/apne.c
-@@ -120,6 +120,12 @@ static u32 apne_msg_enable;
- module_param_named(msg_enable, apne_msg_enable, uint, 0444);
- MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
- 
-+#ifdef CONFIG_APNE100MBIT
-+static bool apne_100_mbit;
-+module_param_named(100_mbit, apne_100_mbit, bool, 0444);
-+MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
-+#endif
-+
- struct net_device * __init apne_probe(int unit)
- {
- 	struct net_device *dev;
-@@ -139,6 +145,13 @@ struct net_device * __init apne_probe(int unit)
- 	if ( !(AMIGAHW_PRESENT(PCMCIA)) )
- 		return ERR_PTR(-ENODEV);
- 
-+#ifdef CONFIG_APNE100MBIT
-+	if (apne_100_mbit)
-+		isa_type = ISA_TYPE_AG16;
-+	else
-+		isa_type = ISA_TYPE_AG;
-+#endif
-+
- 	pr_info("Looking for PCMCIA ethernet card : ");
- 
- 	/* check if a card is inserted */
-@@ -590,6 +603,18 @@ static int init_pcmcia(void)
- #endif
- 	u_long offset;
- 
-+#ifdef CONFIG_APNE100MBIT
-+	/* reset card (idea taken from CardReset by Artur Pogoda) */
-+	{
-+		u_char  tmp = gayle.intreq;
-+
-+		gayle.intreq = 0xff;
-+		mdelay(1);
-+		gayle.intreq = tmp;
-+		mdelay(300);
-+	}
-+#endif
-+
- 	pcmcia_reset();
- 	pcmcia_program_voltage(PCMCIA_0V);
- 	pcmcia_access_speed(PCMCIA_SPEED_250NS);
--- 
-2.7.4
-
+Thanks,
+Seth
