@@ -2,77 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 652B73ABC8A
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 561D33ABCC0
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233248AbhFQTW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 15:22:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39548 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233253AbhFQTWV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 15:22:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6F324613EE;
-        Thu, 17 Jun 2021 19:20:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623957613;
-        bh=PsJWAkyXgW4WiW2hDScun0vO/mPUHwpob19D9DS+/Jo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HAFvvcKiRdEpUtnUFZm7PN2hLjW1pTvBv+CTLFKpaVJWt1A+IepTBwD5XhB/hUU4F
-         nwuWhiweRWdwUtBRmYxi0Hev3qvAbaPQiybp+NPPg2g8YVumMl9G8x5rorVsPcI9yS
-         tAg/sA6ymdCgHEDYPNBM7YSG3nqJJKGtCMVEL/JULR7c2il0ktVlmPRn7oyTCz+q/9
-         OtCiDNdEtPLmGkgee1bMQLWkVJ2UhSwKUyBY5krb5hSvLUU498boYR6A1cvO19zbGM
-         El+i7QFzj14a08IXHy/avgrK1se0HhLi1zd9rx5r4WVmbICeXFU7lLFS8XnYq6K2zp
-         Z9SRV64dCSnuw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5EEDD60A54;
-        Thu, 17 Jun 2021 19:20:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233186AbhFQTcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 15:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231756AbhFQTcM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 15:32:12 -0400
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC21FC061574
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 12:30:03 -0700 (PDT)
+Received: by mail-oo1-xc2c.google.com with SMTP id q20-20020a4a6c140000b029024915d1bd7cso1850009ooc.12
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 12:30:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=96aOqFV+Msept1aExEkb8x6Rqhfeyqwt0lWHBevMNvo=;
+        b=oIB+8RnNPZyuKWRqD2bU8tkh/BghW1F0ppi6t9hKA1zF5buiMYjTkXkIhwTvmKhdxm
+         IGq5N8xt3LwhgoEG6ydIYCuY/1sQwkMdTD8fQsrz0Be+jZIMtY+Vsq78m4XdWHmKznN1
+         1c/XxoKiFU7kyNBAhN8hjv+3S0KhkfFo5cNok=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=96aOqFV+Msept1aExEkb8x6Rqhfeyqwt0lWHBevMNvo=;
+        b=LIQ42S5GhNjZUn2KJpKRQ3snHAbiTkTzz5z5nZcmURPVfRH6zNjzM75Ginzbit+5/A
+         0smAC8kZcnt6ITM3fAFIEnAgM3ArGF1uXj1R+JGPBBdDjKSQEILnEj0RxdBa3f9Y4Zwv
+         +uQP4VD7U1O+1VxgQ8aR5CkISQzP+Lfie/Vp4tSQGvakPFlh1NwvUPbQTDRamz7V9KCO
+         439N9vSJCS4oCZGnLDPmcaQdV+cBbP8e9wpexyY3YL/LnDHBpw2EnXxCZGdHqdRlohPc
+         BmH+dhhculXLnmangtzaUj926iEteAtzP65Va53beqM1RXa78Gfv8C2GJguSv1vBtyEb
+         8nKw==
+X-Gm-Message-State: AOAM530/0F5zLrQbJxOsOyI6gF1bqulq1lTBsQXRHOB23l2apm4UChNg
+        y3lTlUgYlfIJo65v3TebsJlbus9K9ruEFQ==
+X-Google-Smtp-Source: ABdhPJzL+DNJaOeQrVaTCZuzilrAmvbhDUj7f6OOFMhQ2GULqkw+DiQvEsePU4zuMgfNpMbCovtb5w==
+X-Received: by 2002:a4a:e9b1:: with SMTP id t17mr5858577ood.0.1623958202732;
+        Thu, 17 Jun 2021 12:30:02 -0700 (PDT)
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com. [209.85.167.172])
+        by smtp.gmail.com with ESMTPSA id x199sm1272905oif.5.2021.06.17.12.30.01
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Jun 2021 12:30:02 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id x196so7710699oif.10
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 12:30:01 -0700 (PDT)
+X-Received: by 2002:a05:6808:60e:: with SMTP id y14mr11266904oih.105.1623958199878;
+ Thu, 17 Jun 2021 12:29:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/3] net: mdio: setup both fwnode and of_node
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162395761338.22568.4198014578041173710.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Jun 2021 19:20:13 +0000
-References: <20210617122905.1735330-1-ciorneiioana@gmail.com>
-In-Reply-To: <20210617122905.1735330-1-ciorneiioana@gmail.com>
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        grant.likely@arm.com, calvin.johnson@oss.nxp.com,
-        ioana.ciornei@nxp.com
+References: <20210617171522.3410951-1-keescook@chromium.org>
+In-Reply-To: <20210617171522.3410951-1-keescook@chromium.org>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Thu, 17 Jun 2021 12:29:47 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXOE2EgkiqyqkiXrUCMas+aVU1hJy4uDwafhWv6REjsefg@mail.gmail.com>
+Message-ID: <CA+ASDXOE2EgkiqyqkiXrUCMas+aVU1hJy4uDwafhWv6REjsefg@mail.gmail.com>
+Subject: Re: [PATCH] mwifiex: Avoid memset() over-write of WEP key_material
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Jun 17, 2021 at 10:15 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> field bounds checking for memset(), avoid intentionally writing across
+> neighboring array fields.
+>
+> When preparing to call mwifiex_set_keyparamset_wep(), key_material is
+> treated very differently from its structure layout (which has only a
+> single struct mwifiex_ie_type_key_param_set). Instead, add a new type to
+> the union so memset() can correctly reason about the size of the
+> structure.
+>
+> Note that the union ("params", 196 bytes) containing key_material was
+> not large enough to hold the target of this memset(): sizeof(struct
+> mwifiex_ie_type_key_param_set) == 60, NUM_WEP_KEYS = 4, so 240
+> bytes, or 44 bytes past the end of "params". The good news is that
+> it appears that the command buffer, as allocated, is 2048 bytes
+> (MWIFIEX_SIZE_OF_CMD_BUFFER), so no neighboring memory appears to be
+> getting clobbered.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Yeah, this union vs. the underlying buffer size always throws me for a
+loop on figuring out whether there's truly a buffer overflow on some
+of this stuff...
 
-On Thu, 17 Jun 2021 15:29:02 +0300 you wrote:
-> From: Ioana Ciornei <ioana.ciornei@nxp.com>
-> 
-> The first patch in this series fixes a bug introduced by mistake in the
-> previous ACPI MDIO patch set.
-> 
-> The next two patches are adding a new helper which takes a device and a
-> fwnode_handle and populates both the of_node and fwnode so that we make
-> sure that a bug like this does not happen anymore.
-> Also, the new helper is used in the MDIO area.
-> 
-> [...]
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Here is the summary with links:
-  - [net-next,v2,1/3] net: mdio: setup of_node for the MDIO device
-    https://git.kernel.org/netdev/net-next/c/70ef608c224a
-  - [net-next,v2,2/3] driver core: add a helper to setup both the of_node and fwnode of a device
-    https://git.kernel.org/netdev/net-next/c/43e76d463c09
-  - [net-next,v2,3/3] net: mdio: use device_set_node() to setup both fwnode and of
-    https://git.kernel.org/netdev/net-next/c/7e33d84db1a8
+Looks like a valid refactor to me:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Reviewed-by: Brian Norris <briannorris@chromium.org>
