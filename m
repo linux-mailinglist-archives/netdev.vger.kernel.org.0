@@ -2,81 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA52F3ABC87
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:20:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22C383ABC95
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 21:21:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232560AbhFQTW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 15:22:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39540 "EHLO mail.kernel.org"
+        id S233544AbhFQTWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 15:22:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39582 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233248AbhFQTWV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233264AbhFQTWV (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 17 Jun 2021 15:22:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 63486613E7;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9A2F5613FB;
         Thu, 17 Jun 2021 19:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1623957613;
-        bh=ejbi4RURQrGCoKI8yVzwJ+te8dAjfsRwIB4Fdp6jeBE=;
+        bh=KyQZr1dUm8eihf9rmFcrwtoIVDpukIaGJ+V4Czydxz4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VKulPuFyizmX8ss4sx1pZ0fK29eFt9rS1QBhL/jo2+b1dsrN2uI3BzvFnFasaaDmH
-         DywgHqT0c76Y55TtUXV/liRfY/ScN8+k+iYvVlp19gERiY6WFDZMXiKXPs425I7Tp7
-         MyvRt9wbmCaM+ay71vBaTCX6/UNLNS+KHvVPsceIWAT4+u+C2yJkCdfAJUet+1BwtS
-         iVQcYqlntUPUFIfL9q5BcG8gNMD61HW9gcKsMadp6UqZ8dS1lWgSALQK+0PSAxR+qU
-         eJgughKMNJHrYBwPAJA/zAWdz2URDIodX3A5khclbuFOkBk+U+916FaIHgNpX0ar5p
-         Qom5SoO4j+5ig==
+        b=nqFdhN43f5Bn5i225GM4fZOYZMVpwB+ylEtFnzGtUhUi06bK24N0xCzxa2VUSsy51
+         gs8dDGdJM2K+wbuT9dHAWbvsIqmPTfQdBGOxPD0iB4pyaTL0qAHo253RjiCXmYzvuW
+         f0YviklOjkxRho0SMkueLqMPQHhczK3iM6MAe8l+h/LDo0TkLparrHoRVpOUvkGIxc
+         eWLrDgqmnxW7cywaCBqUseeRHha78OE+I9z/n1y2qe6FOCyKdB6UGrpamCgbcd7Ias
+         UTtKr47S3pgwmLFVY+cDGMupI4YVQb7mDovIooiQulBbeEK3IT6GU8l0vS5YFyST3m
+         ukpzmSTAaaI9w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 54D2E60A6C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 92E8960A0A;
         Thu, 17 Jun 2021 19:20:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/6] net: gianfar: 64-bit statistics and rx_missed_errors
- counter
+Subject: Re: [PATCH net-next] r8152: store the information of the pipes
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162395761334.22568.1258823578567953392.git-patchwork-notify@kernel.org>
+Message-Id: <162395761359.22568.8846076007661203766.git-patchwork-notify@kernel.org>
 Date:   Thu, 17 Jun 2021 19:20:13 +0000
-References: <cover.1623922686.git.esben@geanix.com>
-In-Reply-To: <cover.1623922686.git.esben@geanix.com>
-To:     Esben Haabendal <esben@geanix.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@rasmusvillemoes.dk
+References: <1394712342-15778-367-Taiwan-albertk@realtek.com>
+In-Reply-To: <1394712342-15778-367-Taiwan-albertk@realtek.com>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        nic_swsd@realtek.com, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 17 Jun 2021 11:49:12 +0200 you wrote:
-> This series replaces the legacy 32-bit statistics to proper 64-bit ditto,
-> and implements rx_missed_errors counter on top of that.
+On Thu, 17 Jun 2021 18:00:15 +0800 you wrote:
+> Store the information of the pipes to avoid calling usb_rcvctrlpipe(),
+> usb_sndctrlpipe(), usb_rcvbulkpipe(), usb_sndbulkpipe(), and
+> usb_rcvintpipe() frequently.
 > 
-> The device supports a 16-bit RDRP counter, and a related carry bit and
-> interrupt, which allows implementation of a robust 64-bit counter.
-> 
-> Esben Haabendal (6):
->   net: gianfar: Convert to ndo_get_stats64 interface
->   net: gianfar: Extend statistics counters to 64-bit
->   net: gianfar: Clear CAR registers
->   net: gianfar: Avoid 16 bytes of memset
->   net: gianfar: Add definitions for CAR1 and CAM1 register bits
->   net: gianfar: Implement rx_missed_errors counter
-> 
-> [...]
+> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+> ---
+>  drivers/net/usb/r8152.c | 18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
 
 Here is the summary with links:
-  - [1/6] net: gianfar: Convert to ndo_get_stats64 interface
-    https://git.kernel.org/netdev/net-next/c/d59a24fd1bdb
-  - [2/6] net: gianfar: Extend statistics counters to 64-bit
-    https://git.kernel.org/netdev/net-next/c/2658530d797f
-  - [3/6] net: gianfar: Clear CAR registers
-    https://git.kernel.org/netdev/net-next/c/ef09487431a9
-  - [4/6] net: gianfar: Avoid 16 bytes of memset
-    https://git.kernel.org/netdev/net-next/c/e2dbbbe52c4a
-  - [5/6] net: gianfar: Add definitions for CAR1 and CAM1 register bits
-    https://git.kernel.org/netdev/net-next/c/8da32a1071af
-  - [6/6] net: gianfar: Implement rx_missed_errors counter
-    https://git.kernel.org/netdev/net-next/c/14870b75fe0b
+  - [net-next] r8152: store the information of the pipes
+    https://git.kernel.org/netdev/net-next/c/b67fda9a8280
 
 You are awesome, thank you!
 --
