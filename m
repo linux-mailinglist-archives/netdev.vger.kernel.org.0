@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A322F3ABA23
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 18:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C370E3ABA1D
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 18:59:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231876AbhFQRB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 13:01:29 -0400
+        id S231600AbhFQRBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 13:01:19 -0400
 Received: from mga18.intel.com ([134.134.136.126]:63633 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231511AbhFQRBS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 13:01:18 -0400
-IronPort-SDR: ywCf0RoIKzbBtNJ2ehQP9od2LfhFEQBI6TpGiesBzZcb+cPGDztwW3xTHRsgwXSGnVDx4A6clv
- 7OwyduTIdreQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10018"; a="193723054"
+        id S229816AbhFQRBR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Jun 2021 13:01:17 -0400
+IronPort-SDR: 4bpHueM4vB0mqG0f+XDXmDs6XAkw1cERK5S3haBmrmrKoPiM3jUzBhXPi4pkgOIqQoa31Y4EUW
+ 8umGvfvuSIMg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10018"; a="193723053"
 X-IronPort-AV: E=Sophos;i="5.83,281,1616482800"; 
-   d="scan'208";a="193723054"
+   d="scan'208";a="193723053"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2021 09:59:05 -0700
-IronPort-SDR: W48WtnjiiModTIlp775NZgofoTe+sQtTONXaKJ1bS9Y+Myj5fSeTPOaE+J5ZnVsxIzPoq8bmKq
- WCILpSV2EnOA==
+IronPort-SDR: o3wTwErzWP9KMQENyjhcuXdxlrm9nQ5j6nFb4o+Csh7vzLuQo+LOLhKmL4T1miB85WMSmTkRPt
+ I5UsCiiYzNqA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,281,1616482800"; 
-   d="scan'208";a="404706804"
+   d="scan'208";a="404706808"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 17 Jun 2021 09:59:04 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 4/8] ice: remove local variable
-Date:   Thu, 17 Jun 2021 10:01:41 -0700
-Message-Id: <20210617170145.4092904-5-anthony.l.nguyen@intel.com>
+Cc:     Shaokun Zhang <zhangshaokun@hisilicon.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: [PATCH net-next 5/8] ice: Remove the repeated declaration
+Date:   Thu, 17 Jun 2021 10:01:42 -0700
+Message-Id: <20210617170145.4092904-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210617170145.4092904-1-anthony.l.nguyen@intel.com>
 References: <20210617170145.4092904-1-anthony.l.nguyen@intel.com>
@@ -42,39 +42,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+From: Shaokun Zhang <zhangshaokun@hisilicon.com>
 
-Remove the local variable since it's only used once. Instead, use it
-directly.
+Function 'ice_is_vsi_valid' is declared twice, remove the
+repeated declaration.
 
-Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_switch.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index dbf4a5493ea7..5ca6c0356499 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3078,7 +3078,6 @@ static void ice_set_netdev_features(struct net_device *netdev)
-  */
- static int ice_cfg_netdev(struct ice_vsi *vsi)
- {
--	struct ice_pf *pf = vsi->back;
- 	struct ice_netdev_priv *np;
- 	struct net_device *netdev;
- 	u8 mac_addr[ETH_ALEN];
-@@ -3098,7 +3097,7 @@ static int ice_cfg_netdev(struct ice_vsi *vsi)
- 	ice_set_ops(netdev);
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
+index 6bb7358ff67b..c5db8d56133f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.h
++++ b/drivers/net/ethernet/intel/ice/ice_switch.h
+@@ -247,7 +247,6 @@ ice_set_vlan_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
  
- 	if (vsi->type == ICE_VSI_PF) {
--		SET_NETDEV_DEV(netdev, ice_pf_to_dev(pf));
-+		SET_NETDEV_DEV(netdev, ice_pf_to_dev(vsi->back));
- 		ether_addr_copy(mac_addr, vsi->port_info->mac.perm_addr);
- 		ether_addr_copy(netdev->dev_addr, mac_addr);
- 		ether_addr_copy(netdev->perm_addr, mac_addr);
+ enum ice_status ice_init_def_sw_recp(struct ice_hw *hw);
+ u16 ice_get_hw_vsi_num(struct ice_hw *hw, u16 vsi_handle);
+-bool ice_is_vsi_valid(struct ice_hw *hw, u16 vsi_handle);
+ 
+ enum ice_status ice_replay_vsi_all_fltr(struct ice_hw *hw, u16 vsi_handle);
+ void ice_rm_all_sw_replay_rule_info(struct ice_hw *hw);
 -- 
 2.26.2
 
