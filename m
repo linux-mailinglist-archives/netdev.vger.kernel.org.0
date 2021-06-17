@@ -2,109 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A21333AB43C
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 15:04:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A0983AB447
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 15:06:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232158AbhFQNGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 09:06:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42614 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230137AbhFQNGa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 09:06:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=UrQRVydZueRPn4YnzvsA9iA4X83PDZ9p8q4NE3A5rb8=; b=fB
-        T6sZdaWCgSTUcQjV56KfGjBHSrQygJ8bihOYTEFlBUMhK6bDQEIf/g0cO7SOgeigqzOuJZCzOnccO
-        cEe0EeTa0fPZ7cYqU66/8qArQygniqKGfpYNE1ItZ9kBbFbVyaQgeaBb5hYvhHjWl+ZXknU+MP2p/
-        RLq5kiV1V92EHLs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ltrgv-009uED-Sa; Thu, 17 Jun 2021 15:04:17 +0200
-Date:   Thu, 17 Jun 2021 15:04:17 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "frieder.schrempf@kontron.de" <frieder.schrempf@kontron.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2 net-next 0/2] net: fec: fix TX bandwidth fluctuations
-Message-ID: <YMtIUVSMxL0iMJLX@lunn.ch>
-References: <20210611095005.3909-1-qiangqing.zhang@nxp.com>
- <20210611.132514.1451796354248475314.davem@davemloft.net>
- <DB8PR04MB679518CF771FEBE118E395A3E6309@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <YMicuzWwAKz5ffWB@lunn.ch>
- <DB8PR04MB6795A2A1D51D95E996B7B75FE60F9@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <YMn3Sd65rzvKasEb@lunn.ch>
- <DB8PR04MB679584EA53A9842D10C33B1EE60E9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        id S231684AbhFQNIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 09:08:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230137AbhFQNIn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 09:08:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737C2C061574
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 06:06:35 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ltriz-0007KN-Sv; Thu, 17 Jun 2021 15:06:25 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ltriy-0003KK-8Y; Thu, 17 Jun 2021 15:06:24 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Robin van der Gracht <robin@protonic.nl>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        syzbot+bdf710cfc41c186fdff3@syzkaller.appspotmail.com,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1] can: j1939: j1939_sk_init(): set SOCK_RCU_FREE to call sk_destruct() after RCU is done
+Date:   Thu, 17 Jun 2021 15:06:23 +0200
+Message-Id: <20210617130623.12705-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <DB8PR04MB679584EA53A9842D10C33B1EE60E9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 17, 2021 at 11:40:58AM +0000, Joakim Zhang wrote:
-> 
-> Hi Andrew,
-> 
-> > -----Original Message-----
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > Sent: 2021年6月16日 21:06
-> > To: Joakim Zhang <qiangqing.zhang@nxp.com>
-> > Cc: David Miller <davem@davemloft.net>; kuba@kernel.org;
-> > frieder.schrempf@kontron.de; netdev@vger.kernel.org;
-> > linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH V2 net-next 0/2] net: fec: fix TX bandwidth fluctuations
-> > 
-> > > I try below build options, also can't reproduce this issue, so really don't know
-> > how to fix it.
-> > >
-> > > make ARCH=arm64 distclean
-> > > make ARCH=arm64 allmodconfig
-> > > make -j8 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- W=1 / make -j8
-> > ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- W=2 / make -j8
-> > ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- W=3
-> > >
-> > > I saw many unrelated warnings...
-> > 
-> > Then it could be sparse. Install sparse and use C=1.
-> 
-> After applying the patch #2, I tried to use C=1 yesterday, I double check it today, still no warnings. Anything I missing?
-> 
-> $ make -j8 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- W=1,C=1
->   CALL    scripts/atomic/check-atomics.sh
->   CALL    scripts/checksyscalls.sh
->   CHK     include/generated/compile.h
->   CHK     kernel/kheaders_data.tar.xz
->   CC [M]  drivers/net/ethernet/freescale/fec_main.o
->   LD [M]  drivers/net/ethernet/freescale/fec.o
->   MODPOST modules-only.symvers
->   GEN     Module.symvers
->   CC [M]  drivers/net/ethernet/freescale/fec.mod.o
->   LD [M]  drivers/net/ethernet/freescale/fec.ko
-> 
-> Best Regards,
-> Joakim Zhang
-> >      Andrew
+Set SOCK_RCU_FREE to let RCU to call sk_destruct() on completion.
+Without this patch, we will run in to j1939_can_recv() after priv was
+freed by j1939_sk_release()->j1939_sk_sock_destruct()
 
+Reported-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Reported-by: syzbot+bdf710cfc41c186fdff3@syzkaller.appspotmail.com
+Fixes: 25fe97cb7620 ("can: j1939: move j1939_priv_put() into sk_destruct callback")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ net/can/j1939/socket.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-If you look at
-https://patchwork.hopto.org/static/nipa/498729/12315211/build_32bit/stdout
+diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+index 56aa66147d5a..c7c1b4d4c0fb 100644
+--- a/net/can/j1939/socket.c
++++ b/net/can/j1939/socket.c
+@@ -398,6 +398,9 @@ static int j1939_sk_init(struct sock *sk)
+ 	atomic_set(&jsk->skb_pending, 0);
+ 	spin_lock_init(&jsk->sk_session_queue_lock);
+ 	INIT_LIST_HEAD(&jsk->sk_session_queue);
++
++	sock_set_flag(sk, SOCK_RCU_FREE);
++	/* j1939_sk_sock_destruct() depends on SOCK_RCU_FREE flag */
+ 	sk->sk_destruct = j1939_sk_sock_destruct;
+ 	sk->sk_protocol = CAN_J1939;
+ 
+-- 
+2.29.2
 
-you see:
-
-Kernel: arch/x86/boot/bzImage is ready  (#9396)
-
-So it is building for 32 bit x86. So try
-
-make -j8 ARCH=i386 W=1 C=1
-
-Assuming your host is an x86 machine.
-
-	 Andrew
