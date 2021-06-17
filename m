@@ -2,165 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D41EE3AA7C4
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 01:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F983AA7E8
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 02:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234125AbhFPX53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Jun 2021 19:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
+        id S234883AbhFQAMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Jun 2021 20:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbhFPX53 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 19:57:29 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21A1C061574;
-        Wed, 16 Jun 2021 16:55:21 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id d62so1533519pfd.3;
-        Wed, 16 Jun 2021 16:55:21 -0700 (PDT)
+        with ESMTP id S230481AbhFQAMP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Jun 2021 20:12:15 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A79C061574;
+        Wed, 16 Jun 2021 17:10:07 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id e7so1990202plj.7;
+        Wed, 16 Jun 2021 17:10:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BYLH5NSOEjhPQlUl+Vzmbtv2wlt8Io26g6BkI1Bxjrg=;
-        b=Z/B+UzO/k3PiRqkIA2uet62yovpTStsRh1v96aKuGVT5S49r2J341TUFtPNm+iJ89U
-         664fJILeQ3r4A43KQEbAylRWF0JVY4ZT7v9CT+VRUt8y8xlUyQ6EIwZ/SGYXXAQrGyLg
-         y4BBR506NRZUvXarm7fm7nFdxmnodXsPXxb9pc4qzv6YNFbDcnrzrw4PXJx+y7ooi1oZ
-         XQnJmSLfeX5N/NyY+4sRbxO8BTfH/UNLCfxb95ku0+3OglMrR91mEtP5oRhsrAstnh8t
-         QFDKVnzSabHSUXA17XH5S94roudFv5gsYx/O3CUKFMdhyhYIFnDZie4n3FG5q9brtdvs
-         ELQA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UHZ5YMekjSRT+s0xrshOz5js1a8Rx9jxwpgPSLh3c50=;
+        b=VcPw2lDwWr8gXttl6/n11H2bPuN7FSdlgQb0nNY2CZT4rrtr62H5uf0D3JNbyUYN9v
+         gsmSS0OHfQ7c9KUdEXSNfEfvkTZLtkX9+bN/rLrl0g+934gYyKR1svtXcU19qoQv3YNP
+         QhmI4XgFWin3PmmAv1BoROOMLi3vTtj8xwabXCwsmcZcaHFJSoMha5Z704wIlJR1T82H
+         JWw/XS6qbHWYDm6c+wGKPeT2XeEwFZkaYC0dNpu559fwAXBSIdlaTkBIZlcG+cRJ2LAt
+         YVu1rPMcbuNQmWcxTrv7+TylTGnhgw/9qhwqkFLpebAeSc/yMtR5gCin/ZUWjSVJcSus
+         84tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BYLH5NSOEjhPQlUl+Vzmbtv2wlt8Io26g6BkI1Bxjrg=;
-        b=hytcU7ufKPK3E6NIm4GpKAvy0eYplHgpLbw4jj17eKxIWd4X03qaLuigIbteNcrAbi
-         hyOq8SsgKjfYS8a7iWcq5V068UX9BxZXiFtivmL9sYKv/4Dt3W0r+aq6IhJuwmHhgCV1
-         +nA++QNPdw5dEMWVfPa/gR2chofFOUSZsgNILLznU/I8NODcGfpi8KFIGy1jQXJJCh7p
-         pG9zl5qor0KMHkcS7Joz/kdfd0Vavarvq6U2Vn2aDEaP4A4eO+KVW0uVhSldYwrRDfUf
-         JairIi/DVIv+OFNQmVEBUSkAeSrhC7gHqftfjYj6TinSknEnVCvZuCCoN9GeatiwPYyQ
-         2Xfw==
-X-Gm-Message-State: AOAM5307Y2odNBb5XGrY46jXwycvEg37bvg1EgWsAc6WXXdcQQ09JME/
-        9rMv7ykRVw31eRyjByvbUMw=
-X-Google-Smtp-Source: ABdhPJyxYdMF/Rlw54j7sHL8H7vQQTDXQ0icZQzsdQKSQS+65woevZGx/SkICyzb2t+mnNq4pOfIYw==
-X-Received: by 2002:a63:db01:: with SMTP id e1mr2213081pgg.38.1623887721254;
-        Wed, 16 Jun 2021 16:55:21 -0700 (PDT)
-Received: from localhost ([2402:3a80:11db:39d5:aefe:1e71:33ef:30fb])
-        by smtp.gmail.com with ESMTPSA id j9sm3003773pjy.25.2021.06.16.16.55.20
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UHZ5YMekjSRT+s0xrshOz5js1a8Rx9jxwpgPSLh3c50=;
+        b=FT4zKuljCvd7K69zFgH3d35DuTyi7xPL3SWOvCrO8oYIolGzzWj9RTEusGqVdCKedk
+         UNbHQ+QzzRg2TzFPvTu84010XK61uuggS+iuF2ydI5umkkweUjrXyG+W4IcwRA55iKG/
+         r1ZpmFXgtQtH5nnoNErI9FN1PqDXrtNqePsOW4ci6V498NCRMofP0FsB5tnxDoZVwR2R
+         gpw1QGwKvAB8XKffxmf7n4/fWrpyeh+vPgqgeBb0FciMPXd2/5YMgjthSuKXYvyN76a5
+         TLEr23lXExLZHV5osRrZJov5Om6mKr6Fy42o4sMCNofhmPnC5bIHaABOwc+3m+d279+R
+         kqoQ==
+X-Gm-Message-State: AOAM5314HPFU9two+Vhlv8YmrgbdvAUkO3B9wsY1638DViQGgtbOVamN
+        Cf0FpDr8cqIFu1Lm9gi9Gi0=
+X-Google-Smtp-Source: ABdhPJwzbbuVxuncCTkspM/BldbgMP+QMLtdFrOs8MgJF15b0MYiY/1TxZyqoEp1K+K6XFBYKVUnIA==
+X-Received: by 2002:a17:90a:5907:: with SMTP id k7mr2474463pji.46.1623888606695;
+        Wed, 16 Jun 2021 17:10:06 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:200:926a:e8dd:9095:3ddd])
+        by smtp.gmail.com with ESMTPSA id r92sm6599633pja.6.2021.06.16.17.10.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jun 2021 16:55:21 -0700 (PDT)
-Date:   Thu, 17 Jun 2021 05:23:55 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2] libbpf: add request buffer type for netlink messages
-Message-ID: <20210616235351.ay3vj6gk36bpatgy@apollo>
-References: <20210616170231.2194285-1-memxor@gmail.com>
- <CAEf4BzZTgMHVd2kEQ5vakgNSJYFB7uiY0j_NBGdG_xzmjKQTAA@mail.gmail.com>
+        Wed, 16 Jun 2021 17:10:06 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dongseok Yi <dseok.yi@samsung.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH bpf-next v2 1/4] Revert "bpf: Check for BPF_F_ADJ_ROOM_FIXED_GSO when bpf_skb_change_proto"
+Date:   Wed, 16 Jun 2021 17:09:50 -0700
+Message-Id: <20210617000953.2787453-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.32.0.272.g935e593368-goog
+In-Reply-To: <CANP3RGfjLikQ6dg=YpBU0OeHvyv7JOki7CyOUS9modaXAi-9vQ@mail.gmail.com>
+References: <CANP3RGfjLikQ6dg=YpBU0OeHvyv7JOki7CyOUS9modaXAi-9vQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZTgMHVd2kEQ5vakgNSJYFB7uiY0j_NBGdG_xzmjKQTAA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 17, 2021 at 04:48:08AM IST, Andrii Nakryiko wrote:
-> On Wed, Jun 16, 2021 at 10:04 AM Kumar Kartikeya Dwivedi
-> <memxor@gmail.com> wrote:
-> >
-> > Coverity complains about OOB writes to nlmsghdr. There is no OOB as we
-> > write to the trailing buffer, but static analyzers and compilers may
-> > rightfully be confused as the nlmsghdr pointer has subobject provenance
-> > (and hence subobject bounds).
-> >
-> > Remedy this by using an explicit request structure, but we also need to
-> > start the buffer in case of ifinfomsg without any padding. The alignment
-> > on netlink wire protocol is 4 byte boundary, so we just insert explicit
->
-> struct ifinfomsg has unsigned field in it, which makes it
-> automatically 4-byte aligned because the struct is not packed. Do we
-> really need that _pad[4] thing?.. Even if we do, I'm still not sure
-> how it helps with alignment... If anything, explicit
-> __attribute__((aligned(4))) would be better.
->
+From: Maciej Żenczykowski <maze@google.com>
 
-What I meant was that reusing the same struct for both means that the trailing
-buffer where attributes are added starts right after struct tcmsg/struct
-ifinfomsg. Since tcmsg is 20 bytes, ifinfomsg is 16. I didn't want it to trigger
-if it ends up tracking the active member of the union (or effective type). Poor
-wording I guess. Everything is aligned properly, just wanted to explain why
-_pad[4] is there.
+This reverts commit fa7b83bf3b156c767f3e4a25bbf3817b08f3ff8e.
 
-> > 4 byte buffer to avoid compilers throwing off on read and write from/to
-> > padding.
-> >
-> > Also switch nh_tail (renamed to req_tail) to cast req * to char * so
->
-> it probably should use (void *) everywhere, instead of (char *), but I
-> see that existing code is using char * exclusively, so it's probably
-> for another patch
->
+See the followup commit for the reasoning why I believe the appropriate
+approach is to simply make this change without a flag, but it can basically
+be summarized as using this helper without the flag is bug-prone or outright
+buggy, and thus the default should be this new behaviour.
 
-I'll fix it in the resend.
+As this commit has only made it into net-next/master, but not into
+any real release, such a backwards incompatible change is still ok.
 
-> > that it can be understood as arithmetic on pointer to the representation
-> > array (hence having same bound as request structure), which should
-> > further appease analyzers.
-> >
-> > As a bonus, callers don't have to pass sizeof(req) all the time now, as
-> > size is implicitly obtained using the pointer. While at it, also reduce
-> > the size of attribute buffer to 128 bytes (132 for ifinfomsg using
-> > functions due to the need to align buffer after it).
->
-> Sorry if it's a stupid question, but why it's safe to reduce the
-> buffer size from 128 to 256?
->
+Cc: Dongseok Yi <dseok.yi@samsung.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+---
+ net/core/filter.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-We just need something big enough, we already check the size everytime we add an
-attribute to make sure we don't run out of space. It was a remnant from previous
-versions where a lot of attributes were added. They're pretty limited now so I
-just changed to a small safe value that works fine for both.
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 239de1306de9..65ab4e21c087 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3235,7 +3235,7 @@ static int bpf_skb_net_hdr_pop(struct sk_buff *skb, u32 off, u32 len)
+ 	return ret;
+ }
+ 
+-static int bpf_skb_proto_4_to_6(struct sk_buff *skb, u64 flags)
++static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
+ {
+ 	const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
+ 	u32 off = skb_mac_header_len(skb);
+@@ -3264,9 +3264,7 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb, u64 flags)
+ 		}
+ 
+ 		/* Due to IPv6 header, MSS needs to be downgraded. */
+-		if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
+-			skb_decrease_gso_size(shinfo, len_diff);
+-
++		skb_decrease_gso_size(shinfo, len_diff);
+ 		/* Header must be checked, and gso_segs recomputed. */
+ 		shinfo->gso_type |= SKB_GSO_DODGY;
+ 		shinfo->gso_segs = 0;
+@@ -3278,7 +3276,7 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb, u64 flags)
+ 	return 0;
+ }
+ 
+-static int bpf_skb_proto_6_to_4(struct sk_buff *skb, u64 flags)
++static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+ {
+ 	const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
+ 	u32 off = skb_mac_header_len(skb);
+@@ -3307,9 +3305,7 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb, u64 flags)
+ 		}
+ 
+ 		/* Due to IPv4 header, MSS can be upgraded. */
+-		if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
+-			skb_increase_gso_size(shinfo, len_diff);
+-
++		skb_increase_gso_size(shinfo, len_diff);
+ 		/* Header must be checked, and gso_segs recomputed. */
+ 		shinfo->gso_type |= SKB_GSO_DODGY;
+ 		shinfo->gso_segs = 0;
+@@ -3321,17 +3317,17 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb, u64 flags)
+ 	return 0;
+ }
+ 
+-static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto, u64 flags)
++static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
+ {
+ 	__be16 from_proto = skb->protocol;
+ 
+ 	if (from_proto == htons(ETH_P_IP) &&
+ 	      to_proto == htons(ETH_P_IPV6))
+-		return bpf_skb_proto_4_to_6(skb, flags);
++		return bpf_skb_proto_4_to_6(skb);
+ 
+ 	if (from_proto == htons(ETH_P_IPV6) &&
+ 	      to_proto == htons(ETH_P_IP))
+-		return bpf_skb_proto_6_to_4(skb, flags);
++		return bpf_skb_proto_6_to_4(skb);
+ 
+ 	return -ENOTSUPP;
+ }
+@@ -3341,7 +3337,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+ {
+ 	int ret;
+ 
+-	if (unlikely(flags & ~(BPF_F_ADJ_ROOM_FIXED_GSO)))
++	if (unlikely(flags))
+ 		return -EINVAL;
+ 
+ 	/* General idea is that this helper does the basic groundwork
+@@ -3361,7 +3357,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+ 	 * that. For offloads, we mark packet as dodgy, so that headers
+ 	 * need to be verified first.
+ 	 */
+-	ret = bpf_skb_proto_xlat(skb, proto, flags);
++	ret = bpf_skb_proto_xlat(skb, proto);
+ 	bpf_compute_data_pointers(skb);
+ 	return ret;
+ }
+-- 
+2.32.0.272.g935e593368-goog
 
-> >
-> > Summary of problem:
-> >   Even though C standard allows interconveritility of pointer to first
->
-> s/interconveritility/interconvertibility/ ?
->
-> >   member and pointer to struct, for the purposes of alias analysis it
-> >   would still consider the first as having pointer value "pointer to T"
-> >   where T is type of first member hence having subobject bounds,
-> >   allowing analyzers within reason to complain when object is accessed
-> >   beyond the size of pointed to object.
-> >
-> >   The only exception to this rule may be when a char * is formed to a
-> >   member subobject. It is not possible for the compiler to be able to
-> >   tell the intent of the programmer that it is a pointer to member
-> >   object or the underlying representation array of the containing
-> >   object, so such diagnosis is supressed.
->
-> typo: suppressed
->
-
-Thanks.
-
-> >
-> > Fixes: 715c5ce454a6 ("libbpf: Add low level TC-BPF management API")
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > ---
-> > Changelog:
-> > v1 -> v2:
-> >  * Add short summary instead of links about the underlying issue (Daniel)
-> > ---
-> >  tools/lib/bpf/netlink.c | 107 +++++++++++++++-------------------------
-> >  tools/lib/bpf/nlattr.h  |  37 +++++++++-----
-> >  2 files changed, 65 insertions(+), 79 deletions(-)
-> >
->
-> [...]
-
---
-Kartikeya
