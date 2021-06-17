@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D6913AB02B
+	by mail.lfdr.de (Postfix) with ESMTP id D36023AB02D
 	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 11:49:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbhFQJv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 05:51:26 -0400
-Received: from first.geanix.com ([116.203.34.67]:41892 "EHLO first.geanix.com"
+        id S231893AbhFQJva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 05:51:30 -0400
+Received: from first.geanix.com ([116.203.34.67]:41912 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231845AbhFQJvZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 05:51:25 -0400
+        id S231847AbhFQJv1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Jun 2021 05:51:27 -0400
 Received: from localhost (unknown [185.17.218.86])
-        by first.geanix.com (Postfix) with ESMTPSA id A788A4C325D;
-        Thu, 17 Jun 2021 09:49:15 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id 648C64C3292;
+        Thu, 17 Jun 2021 09:49:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1623923355; bh=IoCXtXJsUbap8V+xD8LLq4yWJQOOPHd9bY+uNZyTmtI=;
+        t=1623923358; bh=aDM42wVtbFCJQul8ZRo2dGnWDMYAECSz7+N9SXJwEfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=h92R3X3MIoTX+PyZqVzLxvBcdkD9GKH6GJ7/sHPVE04LX2p90vqLAiUUgbpMqI2Yl
-         YrdTQVDr25wqG+xiaAVpB6tD28va4qsT2RQF3XKq1uAau3JOuCcem60SynoZc/dLse
-         mxXn2PDauo1QI30FVclAO7RkLgNuUBpKuY2Phr9M66a2/M/xRJjDy3eINUD6x1WuLi
-         znjGB5DCELW7KQNvDX/P0Fi1tWubgX/wXVpGYaZg/z8S6KJURSvE29/HAHQ2i1D9h1
-         qp7djyr0eawQLGYXQguaVs/iwuTd9OjkZE5P+Htj1GmJSJQuC4XR3Z7ZhbTy0r4eSi
-         JV0S4PNlBR2Wg==
+        b=lPIb+TbAyDUb9X+kTt6qJiqah6OFv1RQPCh2F5hIfntOwc47MbXRhhCAUoT5vVdyB
+         tiW2uMcB8lK544FeQpw1P+gLlQhlYMDoOO7sVCWwdaBL2zUqAnbdhFxoyhQHTrwwEp
+         pZLEiVDhYmPQMtOqbyI1XU1wDHEJ7f+RY0/KFic5OK4BvNjhfjKMXg4NfCKGPvXYLx
+         UfYcca/AfLRc/pm9cHjgn2c2rK+Byo5/G4bEI9hiEdgXtXCkVqWQnA7XqS/4eWTICn
+         dByDs3dH8bUWo6ocK8MrF2Imj92TIYy+6vOzxaOnNEqbZLVAUFqCnxc9ujjbCiOORQ
+         yj5hG63N7j73A==
 From:   Esben Haabendal <esben@geanix.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -30,9 +30,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 1/6] net: gianfar: Convert to ndo_get_stats64 interface
-Date:   Thu, 17 Jun 2021 11:49:15 +0200
-Message-Id: <f719751ac96a1b64c1d9cf5d3e5e40f91995e1df.1623922686.git.esben@geanix.com>
+Subject: [PATCH 2/6] net: gianfar: Extend statistics counters to 64-bit
+Date:   Thu, 17 Jun 2021 11:49:17 +0200
+Message-Id: <c4536afc2cef56eec435103dcb303021f1e6f557.1623922686.git.esben@geanix.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1623922686.git.esben@geanix.com>
 References: <cover.1623922686.git.esben@geanix.com>
@@ -46,67 +46,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No reason to produce the legacy net_device_stats struct, only to have it
-converted to rtnl_link_stats64.  And as a bonus, this allows for improving
-counter size to 64 bit.
+No reason to wrap counter values at 2^32.  Especially the bytes counters
+can wrap pretty fast on Gbit networks.
 
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/net/ethernet/freescale/gianfar.c | 25 +++++++-----------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/freescale/gianfar.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index f2945abdb041..a0277fe8cc60 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -274,32 +274,21 @@ static void gfar_configure_coalescing_all(struct gfar_private *priv)
- 	gfar_configure_coalescing(priv, 0xFF, 0xFF);
- }
+diff --git a/drivers/net/ethernet/freescale/gianfar.h b/drivers/net/ethernet/freescale/gianfar.h
+index 5ea47df93e5e..d8ae5353e881 100644
+--- a/drivers/net/ethernet/freescale/gianfar.h
++++ b/drivers/net/ethernet/freescale/gianfar.h
+@@ -913,8 +913,8 @@ enum {
+  * Per TX queue stats
+  */
+ struct tx_q_stats {
+-	unsigned long tx_packets;
+-	unsigned long tx_bytes;
++	u64 tx_packets;
++	u64 tx_bytes;
+ };
  
--static struct net_device_stats *gfar_get_stats(struct net_device *dev)
-+static void gfar_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
- {
- 	struct gfar_private *priv = netdev_priv(dev);
--	unsigned long rx_packets = 0, rx_bytes = 0, rx_dropped = 0;
--	unsigned long tx_packets = 0, tx_bytes = 0;
- 	int i;
+ /**
+@@ -963,9 +963,9 @@ struct gfar_priv_tx_q {
+  * Per RX queue stats
+  */
+ struct rx_q_stats {
+-	unsigned long rx_packets;
+-	unsigned long rx_bytes;
+-	unsigned long rx_dropped;
++	u64 rx_packets;
++	u64 rx_bytes;
++	u64 rx_dropped;
+ };
  
- 	for (i = 0; i < priv->num_rx_queues; i++) {
--		rx_packets += priv->rx_queue[i]->stats.rx_packets;
--		rx_bytes   += priv->rx_queue[i]->stats.rx_bytes;
--		rx_dropped += priv->rx_queue[i]->stats.rx_dropped;
-+		stats->rx_packets += priv->rx_queue[i]->stats.rx_packets;
-+		stats->rx_bytes   += priv->rx_queue[i]->stats.rx_bytes;
-+		stats->rx_dropped += priv->rx_queue[i]->stats.rx_dropped;
- 	}
- 
--	dev->stats.rx_packets = rx_packets;
--	dev->stats.rx_bytes   = rx_bytes;
--	dev->stats.rx_dropped = rx_dropped;
--
- 	for (i = 0; i < priv->num_tx_queues; i++) {
--		tx_bytes += priv->tx_queue[i]->stats.tx_bytes;
--		tx_packets += priv->tx_queue[i]->stats.tx_packets;
-+		stats->tx_bytes += priv->tx_queue[i]->stats.tx_bytes;
-+		stats->tx_packets += priv->tx_queue[i]->stats.tx_packets;
- 	}
--
--	dev->stats.tx_bytes   = tx_bytes;
--	dev->stats.tx_packets = tx_packets;
--
--	return &dev->stats;
- }
- 
- /* Set the appropriate hash bit for the given addr */
-@@ -3157,7 +3146,7 @@ static const struct net_device_ops gfar_netdev_ops = {
- 	.ndo_set_rx_mode = gfar_set_multi,
- 	.ndo_tx_timeout = gfar_timeout,
- 	.ndo_do_ioctl = gfar_ioctl,
--	.ndo_get_stats = gfar_get_stats,
-+	.ndo_get_stats64 = gfar_get_stats64,
- 	.ndo_change_carrier = fixed_phy_change_carrier,
- 	.ndo_set_mac_address = gfar_set_mac_addr,
- 	.ndo_validate_addr = eth_validate_addr,
+ struct gfar_rx_buff {
 -- 
 2.32.0
 
