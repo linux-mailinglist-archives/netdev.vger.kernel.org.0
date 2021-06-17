@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37BE23AB561
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 16:06:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 673813AB564
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 16:06:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232982AbhFQOIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 10:08:48 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:7476 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232932AbhFQOIo (ORCPT
+        id S233008AbhFQOIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 10:08:52 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:11054 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232946AbhFQOIo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 10:08:44 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G5P0l3g7ZzZjG8;
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G5P0l5wYGzZdmL;
         Thu, 17 Jun 2021 22:03:35 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Thu, 17 Jun 2021 22:06:32 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -27,13 +27,14 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
         <ms@dev.tdt.de>, <willemb@google.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH V2 net-next 0/6] net: hdlc_ppp: clean up some code style issues
-Date:   Thu, 17 Jun 2021 22:03:13 +0800
-Message-ID: <1623938599-25981-1-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 1/6] net: hdlc_ppp: remove redundant blank lines
+Date:   Thu, 17 Jun 2021 22:03:14 +0800
+Message-ID: <1623938599-25981-2-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1623938599-25981-1-git-send-email-huangguangbin2@huawei.com>
+References: <1623938599-25981-1-git-send-email-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="yes"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Originating-IP: [10.67.165.24]
 X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
  dggemi759-chm.china.huawei.com (10.1.198.145)
@@ -42,26 +43,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset clean up some code style issues.
+From: Peng Li <lipeng321@huawei.com>
 
+This patch removes some redundant blank lines.
+
+Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
-Change Log：
-V1 -> V2:
-1. remove patch "net: hdlc_ppp: fix the comments style issue" and
-patch "net: hdlc_ppp: remove redundant spaces" from this patchset.
----
+ drivers/net/wan/hdlc_ppp.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-Peng Li (6):
-  net: hdlc_ppp: remove redundant blank lines
-  net: hdlc_ppp: add blank line after declarations
-  net: hdlc_ppp: fix the code style issue about "foo* bar"
-  net: hdlc_ppp: move out assignment in if condition
-  net: hdlc_ppp: remove unnecessary out of memory message
-  net: hdlc_ppp: add required space
-
- drivers/net/wan/hdlc_ppp.c | 38 +++++++++++++++++---------------------
- 1 file changed, 17 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/net/wan/hdlc_ppp.c b/drivers/net/wan/hdlc_ppp.c
+index 261b53fc8e04..e25b2f058d8c 100644
+--- a/drivers/net/wan/hdlc_ppp.c
++++ b/drivers/net/wan/hdlc_ppp.c
+@@ -58,7 +58,6 @@ struct cp_header {
+ 	__be16 len;
+ };
+ 
+-
+ struct proto {
+ 	struct net_device *dev;
+ 	struct timer_list timer;
+@@ -160,7 +159,6 @@ static __be16 ppp_type_trans(struct sk_buff *skb, struct net_device *dev)
+ 	}
+ }
+ 
+-
+ static int ppp_hard_header(struct sk_buff *skb, struct net_device *dev,
+ 			   u16 type, const void *daddr, const void *saddr,
+ 			   unsigned int len)
+@@ -193,7 +191,6 @@ static int ppp_hard_header(struct sk_buff *skb, struct net_device *dev,
+ 	return sizeof(struct hdlc_header);
+ }
+ 
+-
+ static void ppp_tx_flush(void)
+ {
+ 	struct sk_buff *skb;
+@@ -256,7 +253,6 @@ static void ppp_tx_cp(struct net_device *dev, u16 pid, u8 code,
+ 	skb_queue_tail(&tx_queue, skb);
+ }
+ 
+-
+ /* State transition table (compare STD-51)
+    Events                                   Actions
+    TO+  = Timeout with counter > 0          irc = Initialize-Restart-Count
+@@ -294,7 +290,6 @@ static int cp_table[EVENTS][STATES] = {
+ 	{    0    ,      1      ,  1  ,    1    ,  1  ,    1    ,IRC|STR|2}, /* RXJ- */
+ };
+ 
+-
+ /* SCA: RCR+ must supply id, len and data
+    SCN: RCR- must supply code, id, len and data
+    STA: RTR must supply id
+@@ -369,7 +364,6 @@ static void ppp_cp_event(struct net_device *dev, u16 pid, u16 event, u8 code,
+ #endif
+ }
+ 
+-
+ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
+ 			    unsigned int req_len, const u8 *data)
+ {
+@@ -615,7 +609,6 @@ static void ppp_timer(struct timer_list *t)
+ 	ppp_tx_flush();
+ }
+ 
+-
+ static void ppp_start(struct net_device *dev)
+ {
+ 	struct ppp *ppp = get_ppp(dev);
+@@ -707,7 +700,6 @@ static int ppp_ioctl(struct net_device *dev, struct ifreq *ifr)
+ 	return -EINVAL;
+ }
+ 
+-
+ static int __init mod_init(void)
+ {
+ 	skb_queue_head_init(&tx_queue);
+@@ -720,7 +712,6 @@ static void __exit mod_exit(void)
+ 	unregister_hdlc_protocol(&proto);
+ }
+ 
+-
+ module_init(mod_init);
+ module_exit(mod_exit);
+ 
 -- 
 2.8.1
 
