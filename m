@@ -2,70 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 464D73AB200
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 13:10:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 245E93AB26A
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 13:22:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232375AbhFQLML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 07:12:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52716 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229901AbhFQLMK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 07:12:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1935C61369;
-        Thu, 17 Jun 2021 11:10:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623928203;
-        bh=gQvg9Q1AM9aT0v+HsBwsJ17VmOZXq4MeM7IYi1cTqxo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OH1LVyDZefgQzGSCRgALmaf0L4zt2RdAFOpbxJWBjQS1nfHLaI+fFl2N/bAb1MRlC
-         iFrtu3W27lkTUVm7+dELc9jOiqW4QlKiK/ff/X0bXiVOTKGJhA7TVFwEkGFONOsxTI
-         5oOLMjhmCqdVIHDCnt/h3lc/GAOuu3UFdWzMr4qAIRRsFc1iZTKQRjaMo2cBUg/+9C
-         ihXa5LZq8wawT3r9URo35itZ0L/sbKIT2eK/pSQ0FwagTAU2+dJCnj+ASN8CHcbJ7C
-         LG1lsNg3bhnkZwhCospblmj09/0OZVWlb/rlE63jDFeJYyO3Nklu7a4d/LKoU+e2gN
-         VRH1KJ4GQQ/iQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0766C609EA;
-        Thu, 17 Jun 2021 11:10:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232538AbhFQLYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 07:24:52 -0400
+Received: from www62.your-server.de ([213.133.104.62]:53624 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232540AbhFQLYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 07:24:51 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ltq6U-0001yQ-U2; Thu, 17 Jun 2021 13:22:34 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ltq6U-000Wjz-M3; Thu, 17 Jun 2021 13:22:34 +0200
+Subject: Re: [PATCH bpf v1] bpf: fix libelf endian handling in resolv_btfids
+To:     Jiri Olsa <jolsa@redhat.com>, Mark Wielaard <mark@klomp.org>
+Cc:     Yonghong Song <yhs@fb.com>,
+        Tony Ambardar <tony.ambardar@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        Jiri Olsa <jolsa@kernel.org>, Frank Eigler <fche@redhat.com>
+References: <20210616092521.800788-1-Tony.Ambardar@gmail.com>
+ <caf1dcbd-7a07-993c-e940-1b2689985c5a@fb.com> <YMopCb5CqOYsl6HR@krava>
+ <YMp68Dlqwu+wuHV9@wildebeest.org> <YMsPnaV798ICuMbv@krava>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <37f69a50-5b83-22e5-d54b-bea79ad3adec@iogearbox.net>
+Date:   Thu, 17 Jun 2021 13:22:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix selftests build with old
- system-wide headers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162392820302.26848.12293984613133603033.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Jun 2021 11:10:03 +0000
-References: <20210617041446.425283-1-andrii@kernel.org>
-In-Reply-To: <20210617041446.425283-1-andrii@kernel.org>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com, kuniyu@amazon.co.jp
+In-Reply-To: <YMsPnaV798ICuMbv@krava>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26203/Wed Jun 16 13:07:58 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Wed, 16 Jun 2021 21:14:46 -0700 you wrote:
-> migrate_reuseport.c selftest relies on having TCP_FASTOPEN_CONNECT defined in
-> system-wide netinet/tcp.h. Selftests can use up-to-date uapi/linux/tcp.h, but
-> that one doesn't have SOL_TCP. So instead of switching everything to uapi
-> header, add #define for TCP_FASTOPEN_CONNECT to fix the build.
+On 6/17/21 11:02 AM, Jiri Olsa wrote:
+> On Thu, Jun 17, 2021 at 12:28:00AM +0200, Mark Wielaard wrote:
+>> On Wed, Jun 16, 2021 at 06:38:33PM +0200, Jiri Olsa wrote:
+>>>>> diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
+>>>>> index d636643ddd35..f32c059fbfb4 100644
+>>>>> --- a/tools/bpf/resolve_btfids/main.c
+>>>>> +++ b/tools/bpf/resolve_btfids/main.c
+>>>>> @@ -649,6 +649,9 @@ static int symbols_patch(struct object *obj)
+>>>>>    	if (sets_patch(obj))
+>>>>>    		return -1;
+>>>>> +	/* Set type to ensure endian translation occurs. */
+>>>>> +	obj->efile.idlist->d_type = ELF_T_WORD;
+>>>>
+>>>> The change makes sense to me as .BTF_ids contains just a list of
+>>>> u32's.
+>>>>
+>>>> Jiri, could you double check on this?
+>>>
+>>> the comment in ELF_T_WORD declaration suggests the size depends on
+>>> elf's class?
+>>>
+>>>    ELF_T_WORD,                   /* Elf32_Word, Elf64_Word, ... */
+>>>
+>>> data in .BTF_ids section are allways u32
+>>>
+>>> I have no idea how is this handled in libelf (perhaps it's ok),
+>>> but just that comment above suggests it could be also 64 bits,
+>>> cc-ing Frank and Mark for more insight
+>>
+>> It is correct to use ELF_T_WORD, which means a 32bit unsigned word.
+>>
+>> The comment is meant to explain that, but is really confusing if you
+>> don't know that Elf32_Word and Elf64_Word are the same thing (a 32bit
+>> unsigned word). This comes from being "too consistent" in defining all
+>> data types for both 32bit and 64bit ELF, even if those types are the
+>> same in both formats...
+>>
+>> Only Elf32_Addr/Elf64_Addr and Elf32_Off/Elf64_Off are different
+>> sizes. But Elf32/Elf_64_Half (16 bit), Elf32/Elf64_Word (32 bit),
+>> Elf32/Elf64_Xword (64 bit) and their Sword/Sxword (signed) variants
+>> are all identical data types in both the Elf32 and Elf64 formats.
+>>
+>> I don't really know why. It seems the original ELF spec was 32bit only
+>> and when introducing the ELF64 format "they" simply duplicated all
+>> data types whether or not those data type were actually different
+>> between the 32 and 64 bit format.
 > 
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> Fixes: c9d0bdef89a6 ("bpf: Test BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.")
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> nice, thanks for details
 > 
-> [...]
+> Acked-by: Jiri Olsa <jolsa@redhat.com>
 
-Here is the summary with links:
-  - [bpf-next] selftests/bpf: fix selftests build with old system-wide headers
-    https://git.kernel.org/bpf/bpf-next/c/f20792d425d2
+Tony, could you do a v2 and summarize the remainder of the discussion in
+here for the commit message? Would be good to explicitly document the
+assumptions made and why they work.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks everyone,
+Daniel
