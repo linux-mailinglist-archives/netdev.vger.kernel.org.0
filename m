@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FC4B3AAF99
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 11:22:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C15383AAF9D
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 11:23:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231569AbhFQJYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 05:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51386 "EHLO
+        id S231598AbhFQJZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 05:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbhFQJYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 05:24:44 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BAAC061574;
-        Thu, 17 Jun 2021 02:22:37 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 3-20020a05600c0243b029019f2f9b2b8aso3267063wmj.2;
-        Thu, 17 Jun 2021 02:22:37 -0700 (PDT)
+        with ESMTP id S230162AbhFQJZV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 05:25:21 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06C9C061574;
+        Thu, 17 Jun 2021 02:23:12 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id m3so2946167wms.4;
+        Thu, 17 Jun 2021 02:23:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Hz2p89oeNBlAog0R62THQ2ZPT9jlZo0zwuN+lGU1qug=;
-        b=paBQK6TUBE5T3mZ43694fRe4UQX3yPmts230slaXuaMrabblrpN3EAq8Wag83J91wL
-         gdQosCafprCOLWYQKwYjTo3i5LUiIY+SHVhl54UpkZ12vb03SDPc4y/3F8bV73YMhkR+
-         ykyoBijiUav5XK/2qfrGGfJJLiNu0REk80c3wH6OpakR4IzcMPq4g2WbL6zY9o9knwsJ
-         AlgpVSyYptixzV24BrhGjKWtA0wNQccBUziGwIJGaDgakbhy08MGv7JYo/x+4peslN3G
-         FHMCM3++7fOpaWuZ+gDCGnYzmIZZ64sZ9FLsrtalKcsn36SObyZDtPJLIEp43qgY0MXW
-         Yj1Q==
+        bh=Jh2akKGSh7LAIPi3C0DLkYCaURaKcZYFmLApSTkQ1F8=;
+        b=WPdd6kMOfCu+NLkJSgNBB/n4X4u4ZCfG1/IMkwYQbwEd3lDufWM5Bn/X4a6j1lrbmR
+         yTsRALciGZy148WDSJfMNAaPo1RT41X+KFtq5qGYnaVO1RYtLF0Zrbiq8REIgZnbbuUM
+         bg6/07QbUxWcq96gckBOHnPxike6H/g1vAg0W8w5Qc7jkXEhPoGCwtMYy0krJv5obQSl
+         M3sJqEx12r3DuCCmB81sgbje7d9WN+4M2XlxHAYWx+N0Rey3EnZ9ZbTHxCJA1JIXhoDL
+         mTR01qlpPZX5FMJs0zyKGHCGgObUZNu1oIPO++rRkLaVMDyefnTkVPJtnl1q0r4GRlwv
+         diwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Hz2p89oeNBlAog0R62THQ2ZPT9jlZo0zwuN+lGU1qug=;
-        b=uU+0RRhwgzz0KJP9iuPnsstAdfefVLBLzmey6UTHT4e5RWM0COqUCq/i1G/Hod9D5g
-         Rs4iPGYB/ftrO5ureIrlXuoVKnLzP+vT2FnvQHOAvXyDzEB2Qltgq2r8Ov99EJGeisbF
-         YQrd2tLqmxneSL3EOnvO16GX8nFo+yfkY07zhbEVZ32l+6j+KT5hNF8IQo8nyGb8oj/F
-         tJ/4UnbmPV/yywxguDVakPTTXxLcLhkH4aVM0nki1f2UlAlHxxzx5QrXI3vrK6RQu2st
-         3upiC3exYz/EaX9mIUQZXBf/J/C9ztL7tco4o2xRikymDdxoejz8S4dl1EFLDfSRD2wD
-         6pgA==
-X-Gm-Message-State: AOAM53298HyM7vGsWbSAGUw9+r+brAydF8ZFswlJvk0J2cTT/YnAYHxd
-        m9pqnRjrU7JFEgbBrLFUXqo=
-X-Google-Smtp-Source: ABdhPJzVS9kPY3TWGtgwe1IkSjhjunnKg0DwJ4OE65sO3/0VKMkfjwJopoGJ3IJ5JE2Q4DQtDrDAEA==
-X-Received: by 2002:a1c:7402:: with SMTP id p2mr3922169wmc.88.1623921755947;
-        Thu, 17 Jun 2021 02:22:35 -0700 (PDT)
+        bh=Jh2akKGSh7LAIPi3C0DLkYCaURaKcZYFmLApSTkQ1F8=;
+        b=aC9pXwKTNMaKTYvqQmlWLYM7SmrYJ3tk1c7Ke5lE3a+aAItFMfyEfI0l31XDgrIdUp
+         BaVK2Khn3hx4zkTTCKD7wCFc/EM1FtgdEtzrAweeu9ifrp9PgRaygATDWuAIprH2i2+O
+         3hzFnANd+vhBHKMUgx+e8kIfhlavPWnaXAS793TxtfsHTgyqAUQ8wZBU/pc0cUdEQnAd
+         7M9MQrcqeeI7rO6uCr/ceBXhAUc8/65mquItdHrHw1ScLxdDgmyN8egcyk3vsQk92amh
+         wb0iCx9G+BSjKWwEvVHdkk6YMcqcxCUvHZnsT669jkc6LQdWWlVO73zq44Vvf4zWQmZc
+         BbKw==
+X-Gm-Message-State: AOAM5321PLZxLQU5ztQ5tIt070f/3xCpLITZ7rsgU6wDKgtw1DDu/vIm
+        alUVz46ahJgd/4Szb76wfCY=
+X-Google-Smtp-Source: ABdhPJy3ocaQ6c5SvqBD+t15FkdUZS44XNiGdGbN0Kj/kLJL94sNf6ZeRMxXhcOtHAEfDFn8p08wfg==
+X-Received: by 2002:a05:600c:4f4e:: with SMTP id m14mr3875175wmq.157.1623921789968;
+        Thu, 17 Jun 2021 02:23:09 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id i15sm4492604wmq.23.2021.06.17.02.22.34
+        by smtp.gmail.com with ESMTPSA id r2sm5021770wrv.39.2021.06.17.02.23.08
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 17 Jun 2021 02:22:35 -0700 (PDT)
+        Thu, 17 Jun 2021 02:23:09 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com
 Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
-Subject: [PATCH bpf] xsk: fix broken Tx ring validation
-Date:   Thu, 17 Jun 2021 11:22:08 +0200
-Message-Id: <20210617092208.3288-1-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf] xsk: fix missing validation for skb and unaligned mode
+Date:   Thu, 17 Jun 2021 11:22:55 +0200
+Message-Id: <20210617092255.3487-1-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,49 +64,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Fix broken Tx ring validation for AF_XDP. The commit under the Fixes
-tag, fixed an off-by-one error in the validation but introduced
-another error. Descriptors are now let through even if they straddle a
-chunk boundary which they are not allowed to do. Worse is that they
-are let through even if they straddle the end of the umem itself,
-tricking the kernel to read data outside the allowed umem region which
-might or might not be mapped at all.
+Fix a missing validation of a Tx descriptor when executing in skb mode
+and the umem is in unaligned mode. A descriptor could point to a
+buffer straddling the end of the umem, thus effectively tricking the
+kernel to read outside the allowed umem region. This could lead to a
+kernel crash if that part of memory is not mapped.
 
-Fix this by reintroducing the old code, but subtract the length by one
-to fix the off-by-one error that the original patch was
-addressing. Note that packets of zero length are allowed in the
-interface, therefore the test if the length is non-zero.
+In zero-copy mode, the descriptor validation code rejects such
+descriptors by checking a bit in the DMA address that tells us if the
+next page is physically contiguous or not. For the last page in the
+umem, this bit is not set, therefore any descriptor pointing to a
+packet straddling this last page boundary will be rejected. However,
+the skb path does not use this bit since it copies out data and can do
+so to two different pages. (It also does not have the array of DMA
+address, so it cannot even store this bit.) The code just returned
+that the packet is always physically contiguous. But this is
+unfortunately also returned for the last page in the umem, which means
+that packets that cross the end of the umem are being allowed, which
+they should not be.
 
-Fixes: ac31565c2193 ("xsk: Fix for xp_aligned_validate_desc() when len == chunk_size")
+Fix this by introducing a check for this in the SKB path only, not
+penalizing the zero-copy path.
+
+Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- net/xdp/xsk_queue.h | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ include/net/xsk_buff_pool.h | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index 9d2a89d793c0..9ae13cccfb28 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -128,12 +128,15 @@ static inline bool xskq_cons_read_addr_unchecked(struct xsk_queue *q, u64 *addr)
- static inline bool xp_aligned_validate_desc(struct xsk_buff_pool *pool,
- 					    struct xdp_desc *desc)
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index eaa8386dbc63..7a9a23e7a604 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -147,11 +147,16 @@ static inline bool xp_desc_crosses_non_contig_pg(struct xsk_buff_pool *pool,
  {
--	u64 chunk;
--
--	if (desc->len > pool->chunk_size)
--		return false;
-+	u64 chunk, chunk_end;
+ 	bool cross_pg = (addr & (PAGE_SIZE - 1)) + len > PAGE_SIZE;
  
- 	chunk = xp_aligned_extract_addr(pool, desc->addr);
-+	if (likely(desc->len)) {
-+		chunk_end = xp_aligned_extract_addr(pool, desc->addr + desc->len - 1);
-+		if (chunk != chunk_end)
-+			return false;
-+	}
+-	if (pool->dma_pages_cnt && cross_pg) {
++	if (likely(!cross_pg))
++		return false;
 +
- 	if (chunk >= pool->addrs_cnt)
- 		return false;
++	if (pool->dma_pages_cnt) {
+ 		return !(pool->dma_pages[addr >> PAGE_SHIFT] &
+ 			 XSK_NEXT_PG_CONTIG_MASK);
+ 	}
+-	return false;
++
++	/* skb path */
++	return addr + len > pool->addrs_cnt;
+ }
  
+ static inline u64 xp_aligned_extract_addr(struct xsk_buff_pool *pool, u64 addr)
 
 base-commit: da5ac772cfe2a03058b0accfac03fad60c46c24d
 -- 
