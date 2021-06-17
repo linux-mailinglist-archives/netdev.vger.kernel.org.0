@@ -2,336 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C47B3AB8EB
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 18:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 721863AB950
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 18:15:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233847AbhFQQLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 12:11:08 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:37854 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233682AbhFQQKB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 12:10:01 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 15HG62FL083373;
-        Thu, 17 Jun 2021 11:06:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1623945962;
-        bh=LVkWEpy5e6cRZkuXdEoUXgk9+WHo500mtyYaCdD+Lf0=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=jeALzHLk3n7+qQeuxED/H4L5B0pUGfd+IKm4cHUnNDcbGNi/N/vECD6HccgWs8Rdc
-         A79ZIeBKglC2uQcNptT6Rqq9rI3jaHqWmNvG1vKe80Rl9RF+rCyfhlpGUEyO1JBVae
-         q2yQKhqF9u2BVEw+7gi7jwzlSE7Jbm56DgmZH8PQ=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 15HG60jb058606
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 17 Jun 2021 11:06:01 -0500
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 17
- Jun 2021 11:06:00 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Thu, 17 Jun 2021 11:06:00 -0500
-Received: from [10.250.36.147] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 15HG5xDj116986;
-        Thu, 17 Jun 2021 11:05:59 -0500
-Subject: Re: [PATCH] dt-bindings: Drop redundant minItems/maxItems
-To:     Rob Herring <robh@kernel.org>, <devicetree@vger.kernel.org>
-CC:     Andrew Lunn <andrew@lunn.ch>, <alsa-devel@alsa-project.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        <linux-iio@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        <linux-remoteproc@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-ide@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-phy@lists.infradead.org>,
-        <linux-riscv@lists.infradead.org>,
-        Lee Jones <lee.jones@linaro.org>, <linux-clk@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        David Airlie <airlied@linux.ie>,
-        <linux-serial@vger.kernel.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        id S231246AbhFQQRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 12:17:11 -0400
+Received: from mail-eopbgr70114.outbound.protection.outlook.com ([40.107.7.114]:29326
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229599AbhFQQRI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Jun 2021 12:17:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nrlcfchH2jSBJFifC3/FI4oSfI1CRFgM+Gw2RYdVhN3B7OX0NQLTTaphDpoE6ZLCJnx3C7tw5+90QH0v6SYkJCPqddjFLPikPsR0p8XlChlgZ2rrse7rnwxOH9qgKA0jNoMpcmJWNCWahMC0RFrQH+YbtYpz3L9q1OVPmHxIMT4NGqmnzZpW9VVlJ74oCprb5uFgUuBdlS6e2a1Q0EPDavgkz9aRFkMDf5UC8GJehRN4z5FIiQkgIRI49HI0ma25l0Nbj/6p1gGHr8WtGhCFpDa2y7avFIhiKs3h8m4u6qQO8U6Ky1Vy5ULq+0Xz7zrpZIbrgGgcdgVtTR87XDDOsA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YbmGNlyEwrzEGuB92BBBc5WpdBbYTc04oenm+VmtGWc=;
+ b=f+o4BfrBGE3Dg7mcuSE0YXqcLY5K2b9OBxr2pg9/S2rTc3Gf6yRU4opJhQX17nqMDMTuGt5Z5wKDui6k364Av92NSw9aI09ItuFIteICML+Rhn9X8FIYGNa0SIGOWZM5BK+exBxOauAS+3hmMd5Z75hvr1ttSbcPk5jXleaG5P/LQ8FGHFWOUkI+dUnZdVPGaQsKuBqvFyaR1GA912DoxrUwyXg0e87djgdyXxcUN7fKLMFvjo4ERS9UE7rvHoD4jGRmV4OnxhNXHmW6u5gP1CiHE7qZH8fnGuyuO3SfgmVEMJZSs06Ba8/GJ8npKSD80tvVxnimNDkwgC8WZvdwXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YbmGNlyEwrzEGuB92BBBc5WpdBbYTc04oenm+VmtGWc=;
+ b=SGRFyrE2rQBsVjwMoNPHPU/D3Rf11U7RyUER4w+T23tbm6vhflpjsvIlgMo6eXWZRFHbpdsq6KNDQ9LHjcOOwFqAXFieEYjkxbQRdv+Ipq9L5dyMhp2QC9HarfINBnw7EAjypLDFT0GAy43AachUX3L6b7B9No8MxVQEBc9NxNs=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
+ HE1P190MB0508.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:5c::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4242.18; Thu, 17 Jun 2021 16:14:57 +0000
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a%6]) with mapi id 15.20.4219.025; Thu, 17 Jun 2021
+ 16:14:57 +0000
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        <linux-media@vger.kernel.org>, Ohad Ben-Cohen <ohad@wizery.com>,
-        <linux-pwm@vger.kernel.org>, Albert Ou <aou@eecs.berkeley.edu>,
-        <linux-watchdog@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, <netdev@vger.kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        <linux-usb@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        <linux-crypto@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <dmaengine@vger.kernel.org>, Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Cameron <jic23@kernel.org>
-References: <20210615191543.1043414-1-robh@kernel.org>
-From:   Suman Anna <s-anna@ti.com>
-Message-ID: <bb8c18f6-139d-76be-87e7-0c93e03cc92c@ti.com>
-Date:   Thu, 17 Jun 2021 11:05:59 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Boris Sukholitko <boris.sukholitko@broadcom.com>
+Subject: [PATCH net-next] net/sched: cls_flower: fix resetting of ether proto mask
+Date:   Thu, 17 Jun 2021 19:14:35 +0300
+Message-Id: <20210617161435.8853-1-vadym.kochan@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [217.20.186.93]
+X-ClientProxiedBy: BE0P281CA0020.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:14::7) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:7:56::28)
 MIME-Version: 1.0
-In-Reply-To: <20210615191543.1043414-1-robh@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by BE0P281CA0020.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:14::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.9 via Frontend Transport; Thu, 17 Jun 2021 16:14:56 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 53fd1780-dafa-4f66-e801-08d931ab0c84
+X-MS-TrafficTypeDiagnostic: HE1P190MB0508:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1P190MB05086B1BC55E2823EAC55424950E9@HE1P190MB0508.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zxoooxpWWLZ4GIVAVwerLsZ3Hgm4U3DCBz0XMVK6tcduiafdm+fQsqR7GoUWgJASpWrmCe57Yrd6A93Bv8nOS9U6AKYfQs2A9erlpbq3fRX9JsDNRW3HmL9zZb9HetCXzdxfua6PyILoj90Mz4XZhVI/JIBo4nY7EvHTdIdjFRyO+e3XXJt+b7sFy4UHG7BvujhO9ebstSMGqh+QydEmu5/j1HEQ/LjjTyTEduxQI+SeK1vYfe3nqgm2N5YFgIujurqQFGoZg1wLoUPeSYtBWUuTqjdXR1K5RNKnrfk4rBVUSaTUuIaSqNTL+4ZlTflWTj/Yk4a9C63yTrLsXqtEmm/m1RwttYlejSWrTAqRe9fm7jYh5g6lypeXFiIUwSGnjDS3dEp5HEeWROgJPspNBaSKHVe1h3B737MSPb683DN9qlDXtEgGIvOptGvHHrvGXIyEgLPq05dLWGCSJiWXZqjFmJOzdugLm9Aw+Qrlv3rjd4apkRYRhE6zMecuLVYmDbQwmmpIE/3tO0SgmXby84kTYTeHvCMMAXFzJ6kqoB6VfCyaWBlyFSdYFGbkBXFi6P8fBUHNKHAn9vLNycBvI5Xu5Q0DdNPbraX+5CN9Juo07XhmVlsVs8SARA0sFJvHzaLZ+gtmmth06Mx+miPNxA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(136003)(366004)(376002)(39830400003)(396003)(316002)(26005)(2906002)(6512007)(478600001)(4326008)(86362001)(44832011)(8936002)(186003)(6636002)(36756003)(6486002)(1076003)(38100700002)(2616005)(16526019)(66476007)(66946007)(66556008)(6506007)(54906003)(38350700002)(110136005)(956004)(8676002)(6666004)(52116002)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NePyKSk+E4uLdGrqJUX+acD2wI/Zzxw3y9Wimj2qL0vTB0eh35mKMPY7KSfM?=
+ =?us-ascii?Q?HpVNGUQsaI6xhRXnbOPE9+JAUxX1H1dM3hFflrg6HUunVswif0o3D7B+phOj?=
+ =?us-ascii?Q?9IpBseANUFOoKGjtTaOQ8akTW1gNQyZrjyiZQG820VWdco2SPHntBOQ7UhHF?=
+ =?us-ascii?Q?TK7Z2XD+/nj5F+PsAgmq7PWw2ogLobALWFaG/yWpw1hqk/qlYAoYOH6YR/f0?=
+ =?us-ascii?Q?5ct0j6TfatnTRyjqaB8WpsvGevU0+MSqtDUd4kts7pj3Y3OVtkwLp4KHZrdo?=
+ =?us-ascii?Q?uQQs0K7mQeomHS3tfjMzR5QkY3inOD2e+uKByNQPHCG0mKmP9prlyQnuMqPs?=
+ =?us-ascii?Q?wUniTgf6DbeIloMnuwFPoX6AEnDHfqdvBqzcekvPjKu11l2Sl4mZ64Kf+leB?=
+ =?us-ascii?Q?wim2w57EeTvL4RnrmhXrukNcJQd0WzBGQMheTd6xMJp8lCmBk7n+w33lU+y7?=
+ =?us-ascii?Q?5c4BxagC0DV3f33wW/XFvffoStoxa+YUWXfL2RW/fcqRG+QUXvL6chmjkb8x?=
+ =?us-ascii?Q?rj/NZYNay3nvra2ggeE7pXcBl9SgEF68ypTdfsktcW9FX5cjTkfbbf5f1Irj?=
+ =?us-ascii?Q?8D/EhdVmpXaIM+bfpkPdE8MXVENQZkRI4XqSHi7l0MrtnMvUrJs+QVl21bAX?=
+ =?us-ascii?Q?CkOfia/k86WLF9EsEuzDn9+IWYGM5HAGlz8c6XDiWiPh/2yb52OKxbNDp3pz?=
+ =?us-ascii?Q?PRyq+y+x58w0zv7ekrHr3o6eHAkCLSAPcnMKejUWNv2GeA7niZW9lJRleb2Z?=
+ =?us-ascii?Q?tTjT20JgfycFeqpEiAzkkBpQUVWVhNn/kf48z9DjMFU2Q5ZFpRvopdhURtaY?=
+ =?us-ascii?Q?QHg41rDU6q3LirNBci0Tf2ypgGs/ELtnJBrY/2MQwjOuDDViWEBd6J37ohw2?=
+ =?us-ascii?Q?tpYhjkzgnspExn5BAVjiTRHfZJt5Gz3u3m/jMOE6M0SSguzCYzdV2s8oZPT6?=
+ =?us-ascii?Q?vHvs0sCIwEnw7TA+eu8Se/YEH/Zn2sLGnzTZ5ayjDW4ffmrtOIquwlGoimpN?=
+ =?us-ascii?Q?S28yBfh+BsbrF04qAdMfMOsRtSPq6haBKuhFslakhsg380gbLlQzTBsuChDh?=
+ =?us-ascii?Q?d3cxNzxrC/K8zxLxcWHiQLRfTOtuG+Q/sQAfUW2E8oGiLT2PY6CQ8xlLEC0l?=
+ =?us-ascii?Q?WCvZv1Ytau5wttHH/vaywtAhyOvkh0LVV8aVqLxKJ2dFy/jH6dLLwGTwjbiA?=
+ =?us-ascii?Q?4CKhmrNpR5EFwXEIn8hfWNwp4LkH9BNtWBM3JRqYnFEdWyBYIGWvKeSfQ2Eu?=
+ =?us-ascii?Q?pIeRqG9HB/GKmv8QqPrQ8dF4j+f4odmugVePO8kB1Io6qXQZQjibqWpYWcZ8?=
+ =?us-ascii?Q?7cjhyR1Q+z0as2it5GCYa2en?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53fd1780-dafa-4f66-e801-08d931ab0c84
+X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2021 16:14:57.0460
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3aiDs91syV/5FGXKv2ziQsNUbXdBpfKPWOpQfQiD9tLjuZik6MNYJgdtS9kb5uC/+w3kW/V31tLLk+F6aS5foYIG9sFZwQSeEgerpizKJx0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0508
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
+In case of matching 'protocol' the rule does not work:
 
-On 6/15/21 2:15 PM, Rob Herring wrote:
-> If a property has an 'items' list, then a 'minItems' or 'maxItems' with the
-> same size as the list is redundant and can be dropped. Note that is DT
-> schema specific behavior and not standard json-schema behavior. The tooling
-> will fixup the final schema adding any unspecified minItems/maxItems.
-> 
-> This condition is partially checked with the meta-schema already, but
-> only if both 'minItems' and 'maxItems' are equal to the 'items' length.
-> An improved meta-schema is pending.
-> 
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Cc: Kamal Dasu <kdasu.kdev@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Jassi Brar <jassisinghbrar@gmail.com>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Wolfgang Grandegger <wg@grandegger.com>
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Vivien Didelot <vivien.didelot@gmail.com>
-> Cc: Vladimir Oltean <olteanv@gmail.com>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Ohad Ben-Cohen <ohad@wizery.com>
-> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Albert Ou <aou@eecs.berkeley.edu>
-> Cc: Alessandro Zummo <a.zummo@towertech.it>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Zhang Rui <rui.zhang@intel.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/ata/nvidia,tegra-ahci.yaml          | 1 -
->  .../devicetree/bindings/clock/allwinner,sun4i-a10-ccu.yaml  | 2 --
->  .../devicetree/bindings/clock/qcom,gcc-apq8064.yaml         | 1 -
->  Documentation/devicetree/bindings/clock/qcom,gcc-sdx55.yaml | 2 --
->  .../devicetree/bindings/clock/qcom,gcc-sm8350.yaml          | 2 --
->  .../devicetree/bindings/clock/sprd,sc9863a-clk.yaml         | 1 -
->  .../devicetree/bindings/crypto/allwinner,sun8i-ce.yaml      | 2 --
->  Documentation/devicetree/bindings/crypto/fsl-dcp.yaml       | 1 -
->  .../display/allwinner,sun4i-a10-display-backend.yaml        | 6 ------
->  .../bindings/display/allwinner,sun6i-a31-mipi-dsi.yaml      | 1 -
->  .../bindings/display/allwinner,sun8i-a83t-dw-hdmi.yaml      | 4 ----
->  .../bindings/display/allwinner,sun8i-a83t-hdmi-phy.yaml     | 2 --
->  .../bindings/display/allwinner,sun8i-r40-tcon-top.yaml      | 2 --
->  .../devicetree/bindings/display/bridge/cdns,mhdp8546.yaml   | 2 --
->  .../bindings/display/rockchip/rockchip,dw-hdmi.yaml         | 2 --
->  Documentation/devicetree/bindings/display/st,stm32-dsi.yaml | 2 --
->  .../devicetree/bindings/display/st,stm32-ltdc.yaml          | 1 -
->  .../devicetree/bindings/display/xlnx/xlnx,zynqmp-dpsub.yaml | 4 ----
->  .../devicetree/bindings/dma/renesas,rcar-dmac.yaml          | 1 -
->  .../devicetree/bindings/edac/amazon,al-mc-edac.yaml         | 2 --
->  Documentation/devicetree/bindings/eeprom/at24.yaml          | 1 -
->  Documentation/devicetree/bindings/example-schema.yaml       | 2 --
->  Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml     | 1 -
->  Documentation/devicetree/bindings/gpu/vivante,gc.yaml       | 1 -
->  Documentation/devicetree/bindings/i2c/brcm,brcmstb-i2c.yaml | 1 -
->  .../devicetree/bindings/i2c/marvell,mv64xxx-i2c.yaml        | 2 --
->  .../devicetree/bindings/i2c/mellanox,i2c-mlxbf.yaml         | 1 -
->  .../devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml   | 1 -
->  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml     | 2 --
->  .../bindings/interrupt-controller/fsl,irqsteer.yaml         | 1 -
->  .../bindings/interrupt-controller/loongson,liointc.yaml     | 1 -
->  Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml    | 1 -
->  .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml       | 1 -
->  .../devicetree/bindings/mailbox/st,stm32-ipcc.yaml          | 2 --
->  .../devicetree/bindings/media/amlogic,gx-vdec.yaml          | 1 -
->  Documentation/devicetree/bindings/media/i2c/adv7604.yaml    | 1 -
->  .../devicetree/bindings/media/marvell,mmp2-ccic.yaml        | 1 -
->  .../devicetree/bindings/media/qcom,sc7180-venus.yaml        | 1 -
->  .../devicetree/bindings/media/qcom,sdm845-venus-v2.yaml     | 1 -
->  .../devicetree/bindings/media/qcom,sm8250-venus.yaml        | 1 -
->  Documentation/devicetree/bindings/media/renesas,drif.yaml   | 1 -
->  .../bindings/memory-controllers/mediatek,smi-common.yaml    | 6 ++----
->  .../bindings/memory-controllers/mediatek,smi-larb.yaml      | 1 -
->  .../devicetree/bindings/mmc/allwinner,sun4i-a10-mmc.yaml    | 2 --
->  Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml    | 1 -
->  Documentation/devicetree/bindings/mmc/mtk-sd.yaml           | 2 --
->  Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml     | 2 --
->  Documentation/devicetree/bindings/mmc/sdhci-am654.yaml      | 1 -
->  Documentation/devicetree/bindings/mmc/sdhci-pxa.yaml        | 1 -
->  .../devicetree/bindings/net/amlogic,meson-dwmac.yaml        | 2 --
->  .../devicetree/bindings/net/brcm,bcm4908-enet.yaml          | 2 --
->  Documentation/devicetree/bindings/net/can/bosch,m_can.yaml  | 2 --
->  Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml     | 2 --
->  Documentation/devicetree/bindings/net/snps,dwmac.yaml       | 2 --
->  Documentation/devicetree/bindings/net/stm32-dwmac.yaml      | 1 -
->  Documentation/devicetree/bindings/pci/brcm,stb-pcie.yaml    | 2 --
->  Documentation/devicetree/bindings/pci/loongson.yaml         | 1 -
->  .../devicetree/bindings/pci/mediatek-pcie-gen3.yaml         | 1 -
->  .../devicetree/bindings/pci/microchip,pcie-host.yaml        | 2 --
->  Documentation/devicetree/bindings/perf/arm,cmn.yaml         | 1 -
->  .../devicetree/bindings/phy/brcm,bcm63xx-usbh-phy.yaml      | 1 -
->  .../devicetree/bindings/phy/brcm,brcmstb-usb-phy.yaml       | 3 ---
->  Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml    | 1 -
->  Documentation/devicetree/bindings/phy/mediatek,tphy.yaml    | 2 --
->  .../devicetree/bindings/phy/phy-cadence-sierra.yaml         | 2 --
->  .../devicetree/bindings/phy/phy-cadence-torrent.yaml        | 4 ----
->  .../devicetree/bindings/phy/qcom,ipq806x-usb-phy-hs.yaml    | 1 -
->  .../devicetree/bindings/phy/qcom,ipq806x-usb-phy-ss.yaml    | 1 -
->  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml     | 1 -
->  Documentation/devicetree/bindings/phy/qcom,qusb2-phy.yaml   | 2 --
->  Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml | 2 --
->  Documentation/devicetree/bindings/phy/renesas,usb3-phy.yaml | 1 -
->  .../devicetree/bindings/pinctrl/actions,s500-pinctrl.yaml   | 1 -
->  .../devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml    | 1 -
->  .../devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml    | 1 -
->  .../devicetree/bindings/remoteproc/st,stm32-rproc.yaml      | 2 --
->  .../devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml     | 1 -
->  .../devicetree/bindings/remoteproc/ti,omap-remoteproc.yaml  | 1 -
->  Documentation/devicetree/bindings/reset/fsl,imx-src.yaml    | 1 -
->  .../devicetree/bindings/riscv/sifive-l2-cache.yaml          | 1 -
->  .../devicetree/bindings/rtc/allwinner,sun6i-a31-rtc.yaml    | 1 -
->  Documentation/devicetree/bindings/rtc/imxdi-rtc.yaml        | 1 -
->  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml    | 2 --
->  Documentation/devicetree/bindings/serial/samsung_uart.yaml  | 1 -
->  .../devicetree/bindings/soc/qcom/qcom,geni-se.yaml          | 1 -
->  Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml      | 2 --
->  .../bindings/sound/nvidia,tegra-audio-graph-card.yaml       | 1 -
->  .../devicetree/bindings/sound/nvidia,tegra210-i2s.yaml      | 2 --
->  Documentation/devicetree/bindings/sound/st,stm32-sai.yaml   | 3 ---
->  .../devicetree/bindings/spi/amlogic,meson-gx-spicc.yaml     | 1 -
->  .../devicetree/bindings/spi/brcm,spi-bcm-qspi.yaml          | 2 --
->  .../bindings/thermal/allwinner,sun8i-a83t-ths.yaml          | 2 --
->  Documentation/devicetree/bindings/thermal/qcom-tsens.yaml   | 1 -
->  .../bindings/timer/allwinner,sun5i-a13-hstimer.yaml         | 1 -
->  Documentation/devicetree/bindings/timer/arm,arch_timer.yaml | 1 -
->  .../devicetree/bindings/timer/arm,arch_timer_mmio.yaml      | 2 --
->  .../devicetree/bindings/timer/intel,ixp4xx-timer.yaml       | 1 -
->  .../devicetree/bindings/usb/maxim,max3420-udc.yaml          | 2 --
->  .../devicetree/bindings/usb/nvidia,tegra-xudc.yaml          | 4 ----
->  Documentation/devicetree/bindings/usb/renesas,usbhs.yaml    | 3 ---
->  .../devicetree/bindings/watchdog/st,stm32-iwdg.yaml         | 1 -
->  101 files changed, 2 insertions(+), 163 deletions(-)
-> 
+    tc filter add dev $DEV ingress prio 1 protocol $PROTO flower skip_sw action drop
 
-[snip]
+so clear the ether proto mask only for CVLAN case.
 
-> diff --git a/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml
-> index 6070456a7b67..f399743b631b 100644
-> --- a/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml
-> +++ b/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml
-> @@ -57,7 +57,6 @@ properties:
->  
->    memory-region:
->      minItems: 2
-> -    maxItems: 8
->      description: |
->        phandle to the reserved memory nodes to be associated with the remoteproc
->        device. There should be at least two reserved memory nodes defined. The
+The issue was observed by testing on Marvell Prestera Switchdev driver
+with recent 'flower' offloading feature.
 
-Does this enforce the maxItems to be 2 only now? Or should this be dropping the
-minItems here which matches the length of items instead of maxItems?
+Fixes: 0dca2c7404a9 ("net/sched: cls_flower: Remove match on n_proto")
+CC: Boris Sukholitko <boris.sukholitko@broadcom.com>
+Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+---
+RFC -> PATCH:
+    Removed extra empty line.
+    
+ net/sched/cls_flower.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-I have originally listed the individual item list only for the mandatory items
-and rest are scalable. I provided this through "additionalItems: true" under
-this property.
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 2e704c7a105a..3e1b0012bce4 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -1534,10 +1534,12 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
+ 					mask->basic.n_proto = cpu_to_be16(0);
+ 				} else {
+ 					key->basic.n_proto = ethertype;
++					mask->basic.n_proto = cpu_to_be16(~0);
+ 				}
+ 			}
+ 		} else {
+ 			key->basic.n_proto = ethertype;
++			mask->basic.n_proto = cpu_to_be16(~0);
+ 		}
+ 	}
+ 
+-- 
+2.17.1
 
-Also, have the exact same usage in
-Documentation/devicetree/bindings/remoteproc/ti,k3-r5f-rproc.yaml as well which
-is not included in this patch.
-
-> diff --git a/Documentation/devicetree/bindings/remoteproc/ti,omap-remoteproc.yaml b/Documentation/devicetree/bindings/remoteproc/ti,omap-remoteproc.yaml
-> index 73400bc6e91d..75161f191ac3 100644
-> --- a/Documentation/devicetree/bindings/remoteproc/ti,omap-remoteproc.yaml
-> +++ b/Documentation/devicetree/bindings/remoteproc/ti,omap-remoteproc.yaml
-> @@ -116,7 +116,6 @@ properties:
->        list, in the specified order, each representing the corresponding
->        internal RAM memory region.
->      minItems: 1
-> -    maxItems: 3
->      items:
->        - const: l2ram
->        - const: l1pram
-
-
-[snip]
-
-> diff --git a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-> index dbc62821c60b..9790617af1bc 100644
-> --- a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-> +++ b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-> @@ -100,7 +100,6 @@ patternProperties:
->      properties:
->        reg:
->          minItems: 2 # On AM437x one of two PRUSS units don't contain Shared RAM.
-> -        maxItems: 3
->          items:
->            - description: Address and size of the Data RAM0.
->            - description: Address and size of the Data RAM1.
-> @@ -111,7 +110,6 @@ patternProperties:
->  
->        reg-names:
->          minItems: 2
-> -        maxItems: 3
->          items:
->            - const: dram0
->            - const: dram1
-
-
-regards
-Suman
