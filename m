@@ -2,91 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBAD23AB7AE
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 17:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0B303AB7C2
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 17:42:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232540AbhFQPlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 11:41:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52142 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231547AbhFQPlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 11:41:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1623944371;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xNvKLMG23dvwThJDYG7TwyaV7dhz4Izb5/V1BDRJuOQ=;
-        b=RfQ/XQFUuqbazbCowMSXVsdOf6nklILRR5AAbCJluSBimgE5BFJre8mZf/54QuLDC7fjYQ
-        Sc7+N958fdgqP965M3ABuqX/1qta0f+x3XnEHKlwTYigefVwB2Z/yyFPGTrXw00Q32OWN0
-        Pm8RCQ/r+s9xjwt2X+WUyA31LkYPEnA=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-405--dJUSHs2O0Ka-epXJuV-Wg-1; Thu, 17 Jun 2021 11:39:30 -0400
-X-MC-Unique: -dJUSHs2O0Ka-epXJuV-Wg-1
-Received: by mail-ej1-f70.google.com with SMTP id o6-20020a1709063586b0290454e77502aeso2434784ejb.12
-        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 08:39:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=xNvKLMG23dvwThJDYG7TwyaV7dhz4Izb5/V1BDRJuOQ=;
-        b=FSd+/UPCj0r2GWz49ZSBhRNc1MPK4v6c8Jk9DX8IbXbOr/2DFN72EbtQrRkLRdx3Ir
-         q7+9UdmTL8feigUt3EcRJsWzKOm9vbRrhyHZaf756ttuAS/IhOoefQymgsJzAfQeoZxQ
-         9HRo2Y8p658m+m0cFoD78wyfL/R3EV07rzb7Mrnj+xCGaocbSo1LvMSVKm/yTVCg+2gK
-         jkx/ekdJYRm30Hna7fPpsNNkRRUgCIWAKXrzPEQNaxGWI6WMyzgu42pwK0JN/hg6lOvE
-         zFjvzJSYXKpgW3LeLE4hw7b9W6aXV8evRlrczbrPA4hoiDnf7F53VrBcU29L3gFWg80L
-         Z1Ug==
-X-Gm-Message-State: AOAM531namT4LWevcF70mw1ktloyM9H/zhiAJLRba4iDG8HclLYyDmTh
-        NSPlpiCI4f5NpZpNGKDYwibv3W9DR74ZNB5PJ3xOyebxZhZwjywBpowqZt16MdZT+zSFepwLxXe
-        Mlpf25er7lsVijvsz
-X-Received: by 2002:a17:906:4f14:: with SMTP id t20mr5851051eju.398.1623944368844;
-        Thu, 17 Jun 2021 08:39:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwb78hCJPdeKI3UGp9ZLlPPiMHCh3AV9nIqODdWRwEXBJ0as5mZNSGeR6x5dbskkfEYEZ/1sg==
-X-Received: by 2002:a17:906:4f14:: with SMTP id t20mr5851029eju.398.1623944368604;
-        Thu, 17 Jun 2021 08:39:28 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id o5sm4412551edq.8.2021.06.17.08.39.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Jun 2021 08:39:28 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3559A180350; Thu, 17 Jun 2021 17:39:26 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        Juliusz Chroboczek <jch@irif.fr>
-Subject: Re: [PATCH net] icmp: don't send out ICMP messages with a source
- address of 0.0.0.0
-In-Reply-To: <be61a82e-1a21-d302-dcdc-8409130e8fb7@gmail.com>
-References: <20210615110709.541499-1-toke@redhat.com>
- <e4dc611e-2509-2e16-324b-87c574b708dc@gmail.com>
- <be61a82e-1a21-d302-dcdc-8409130e8fb7@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 17 Jun 2021 17:39:26 +0200
-Message-ID: <87o8c4ec0h.fsf@toke.dk>
+        id S233449AbhFQPo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 11:44:28 -0400
+Received: from mail-am6eur05on2128.outbound.protection.outlook.com ([40.107.22.128]:1313
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232521AbhFQPoT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Jun 2021 11:44:19 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MPXuiNJg1hpetEGZrKEitPEBwTcTV7aTTcHD9YqZRLlqwJgWVPSYqOeIp+1RIekEwQeQL73Es05Z2KeRUkK9T0TcgDK4sgRbSdjNGafHVazx3wS2c9ZtvTKJtmgun5xMrPUi3yyVKhWrkZmBghnffycHQAaYWxhZ2zQFIc8jJ7Q373mBE+Ke3gIXu2Ad0+LVDN7daIyxt4q1TeyS3HUOsUz39KsCpsb+kWwCWdLPWmqQo1Bl01FF5yjtU6JCd8BRwblfqliTjmV2y+h50XvQJET6PM4AYKzSbH1dugjTDMxBEUM6o9eRX2aNrSqSly7VBUQUKnrDjdAKwmTqABIEDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3LhcxKH4u2oqI6/naDC2NUenmJnRUZTMf1a/pGHOwks=;
+ b=TlqtqSZvztRBh0pZS7gniNAs7cKxhp6XEZBkU++VXmyHpjvUA1CBI1LfKmGS/z/sCKGRj/3aVMvwV+dUqV+xfb6w8Zg/aB9ipoL9/c9bL68zgitZGpuylE3fvtmUWpMKmtrlfZWeHhBNa7wg7CDoLk+fp5bBDYdpOQJoPNh21FwXyc/p6dHb+stvaQ64YDMNL4hazOGYMd0bucAsWfPXXDV7y9y5tjehks6HyIE9Su8JgaVBpO9ibNrDNWUAxESx/OQf0kKOnJFPkyqTp/MvgKZZ5X5G51a5TYkY3fSJ/uMu0CtCuDJNdwbVdkMW7ffqG914NlppLvXIW8njwQp3EA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3LhcxKH4u2oqI6/naDC2NUenmJnRUZTMf1a/pGHOwks=;
+ b=gWYkN/zTx/j6tM24U58RxDQV541MoCy1LrzYlveQ9+c0Wv9cIcysYbofKzyOWXyPyF5kXlw0uxHp4M/qx8U069UX+36I9AqR49Lqb2tByR2SqqISEkdh0HlatNEOhjF0vaQCLBgBRloOyTQMd1rNLek+eRsM20kkuwQcW3Q5RII=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=plvision.eu;
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
+ HE1P190MB0026.EURP190.PROD.OUTLOOK.COM (2603:10a6:3:c9::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4219.24; Thu, 17 Jun 2021 15:42:09 +0000
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e58c:4b87:f666:e53a%6]) with mapi id 15.20.4219.025; Thu, 17 Jun 2021
+ 15:42:09 +0000
+Date:   Thu, 17 Jun 2021 18:42:06 +0300
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     linux-firmware@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Vadym Kochan <vadym.kochan@plvision.eu>
+Subject: [GIT PULL] linux-firmware: mrvl: prestera: Update Marvell Prestera
+ Switchdev v3.0 with policer support
+Message-ID: <20210617154206.GA17555@plvision.eu>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Originating-IP: [217.20.186.93]
+X-ClientProxiedBy: AS8P251CA0002.EURP251.PROD.OUTLOOK.COM
+ (2603:10a6:20b:2f2::15) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:7:56::28)
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from plvision.eu (217.20.186.93) by AS8P251CA0002.EURP251.PROD.OUTLOOK.COM (2603:10a6:20b:2f2::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.15 via Frontend Transport; Thu, 17 Jun 2021 15:42:07 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c466dafe-8a4b-4a1f-9761-08d931a6775d
+X-MS-TrafficTypeDiagnostic: HE1P190MB0026:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1P190MB0026AA0ECFD49C1186B97344950E9@HE1P190MB0026.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:330;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kMKeYbp0FmAH2xDfiDDKvopBox4642uckCRjAVjdM4jWclvfEVb5KkGCAs9AAKaq11AVXn7AiIJPwq9Yj51vgYrLkgv6KJx8dchLhFaL1CwOnM7N+GENdEi8H74FS/IUqMpzRNm2V9sG3jQx7WsTOkD3o2qEi8Vuk5pS5/fDwrHYed0kEdZM1K+MFD2sthhRjJMC2XvZtJp6mmRsOiDSgtDnoq2tbDmc+0af/iw0WQD3uCagD5c3GMTi51fh95ZntdpH1XSZ3K8Sa6fSVA0PDupSTYm9qwZ2SpmaqFv2L8hCcD3TiCEqitmuLtqq0j1YwTI7GOsnvaXn10qM2RGyTEBtM1ieHGxjsksyFfrHVjwVdTX8im1DH6KDNH8IePMikRwPf6NrpNyIgBJG3hCpxYvbiGkjbibtXQPJOqpr5E7klS1YNEsQQYEmOPgGO/SlQILy9h26KI9zzj+rLoqx4bbC1LNQn1FdwR/pM8yKDfR78c1ESDi727Tqr9Q4cKPmyctDk4UMYDZoUR34EZBjhlN8M45sf5x4/JoNHtBaL6h7Za173jtETky1c3G6M0sADhEMH5tgJiV9UoPdff7rykWw3x/u8jJqazvQ/uZXTXDfY6MLMsbfgHlMZt95WO8UOaskpEj8bGcHsTQKDG93SmyoxXOHfokDV0Numcz8Ij6DIeosNHyMzuuvca/hpHq5jlhBAKgM7it1LuHOScjk9MD4SgkXoGF5eYJNDBA7RK+vcdnxlitQJ65lLzvAQmrb74/LuySUBTBGwPF7go/erA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(136003)(39830400003)(376002)(346002)(396003)(366004)(26005)(8886007)(8936002)(54906003)(1076003)(44832011)(956004)(316002)(86362001)(4326008)(6916009)(478600001)(2616005)(15650500001)(4744005)(966005)(8676002)(66556008)(5660300002)(107886003)(36756003)(52116002)(7696005)(2906002)(186003)(66476007)(55016002)(38350700002)(33656002)(38100700002)(83380400001)(16526019)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tWa90e8C0xuV5DioUD8HLNd27y3IcllSv3gLs/kYy5bMtqv92Hne4a42hJW2?=
+ =?us-ascii?Q?o9GOTYqy9U6B35YSAXGsQjyiXt6YXzb+XmajbJPsb1Qz+tmRuiByYn4o4ORJ?=
+ =?us-ascii?Q?5ga+gnKMTeTT64mCCFrW/SLcpYSblZ+KkVrhSwTa8lEqUQ7fnPZraD6ZZi9N?=
+ =?us-ascii?Q?Q5CJcItrWZBbJP0/3UVltN90gpP4S6XHS439mX80pkNU53nnBsatCVxibwqN?=
+ =?us-ascii?Q?K2fJ6CLfNUvYRpA73xNIy7LrYZoSjmll09389Mh2zlYgVGZgzes9q3oJnZy+?=
+ =?us-ascii?Q?qakeYp7a2omL/hmDXmPi+y9IKvwJCGwkJOuEDC5Qzk9OXW1oGavFv8dyoTr7?=
+ =?us-ascii?Q?Q63kY2k2+G+lvNAHdj7qKNXspc7Lh0g+arJxTXhgu6w7u9cJ6r1alOoCu7tD?=
+ =?us-ascii?Q?uQXJzwfffkkodPzFAOg8Aqs2ddlw2ejYJkflvqeppne78chHvOZcOCuMDlMk?=
+ =?us-ascii?Q?xvGX+vRgFPjj8/Eq+l4ugvE8FbwNRBHK7JRIiqHLjKK2POZ7rqaqOHtFEL2f?=
+ =?us-ascii?Q?MziMXoR1l8kzl/rQmggvHSWEYziBgHfpvrS7iouTjOdCSP6G8sE5/o5qrXB+?=
+ =?us-ascii?Q?4Wqz9poxYatgaZJR7QXHvEf8xeqouV3BMaE/0D3qjbgFDBnuoNSvAGlouFOt?=
+ =?us-ascii?Q?lniY4Btey7sVd1dtG9ATgNITXKLxnKpRVG1wY+p4b7j/6LZAaLOxqpzAQcgf?=
+ =?us-ascii?Q?8Sjji1GdLg9yagCxMBntGzmq5HMt70Kv1SR3mpWNMW1NYcMRbp1+youSftvz?=
+ =?us-ascii?Q?S8gMJh4yAUXi9uvWbxIo0Cf6eWSspRO4R/t7Df4iFVV7fqn7NqQdA9f7Pk46?=
+ =?us-ascii?Q?3We+N5EnnQluESKBJcFHJF+Vd+UEN1dcPy9gc7/z4i9zK93vHqreRgCmlCWQ?=
+ =?us-ascii?Q?DYTRLbeEKbNnwsrZpsdiKsppx0vY8o+Mbp3STujCpX+I9bNcJzeICsFLAHB0?=
+ =?us-ascii?Q?z5F4GthdkU09N1w798jdfb+pYjRbFOX3uXafmJW5A+EUSWyvFaPijLh1dVSp?=
+ =?us-ascii?Q?r5CqARwSBnLNIY1k8gDEmw9sNsfZp7QMy9KcG6Dcf4EsW10H6pM+oKOxOXzR?=
+ =?us-ascii?Q?E1SPtmkOeZWnLxIp+xyMxQepcUycmLk4YRreHiaFzgHMb2oDLsXwRmABDYhg?=
+ =?us-ascii?Q?TZI+ii7oiGwNCWj1Z3S0QlZvShGZBgcgcFy1VW9vu52ZO5XcY6UV2sfKASE5?=
+ =?us-ascii?Q?05H88o+Lto7+J5yn1k0VXq9j5KomUnS2qZYJ2kMzGZH9EZOJvfQdgH10qtBP?=
+ =?us-ascii?Q?jQQiT/bg1i1ZGJdellbhecx6VW+NJRgY6rjpB6vBiBqjUHX03gIJdVbgKFDu?=
+ =?us-ascii?Q?q265wU7aMSOOnBkcUShFqyiK?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: c466dafe-8a4b-4a1f-9761-08d931a6775d
+X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2021 15:42:08.8599
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EvF591WwSJONKZZQyK6964AS15hL1eD1kzyqgQ6b2UETrB1Q/cmJWOmW1KQGg9514xdkTGbHynA6JEUYmtKVtseTNRR93WuGlyY3X3tG684=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0026
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
+The following changes since commit 0f66b74b6267fce66395316308d88b0535aa3df2:
 
-> On 6/17/21 9:06 AM, David Ahern wrote:
->>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
->> This should be the one that allows IPv6 nexthops with IPv4 routes.
->> 
->> Fixes: d15662682db2 ("ipv4: Allow ipv6 gateway with ipv4 routes")
->> 
->
-> on further thought, this is the receiving / transit path and not the
-> sending node, so my change to allow v6 gw with v4 routes is not relevant.
+  cypress: update firmware for cyw54591 pcie (2021-06-09 07:12:02 -0400)
 
-Right, so you're OK with keeping the patch as-is, then? I can send a
-test-case as a follow-up...
+are available in the Git repository at:
 
--Toke
+  https://github.com/PLVision/linux-firmware.git mrvl-prestera
 
+for you to fetch changes up to a43d95a48b8e8167e21fb72429d860c7961c2e32:
+
+  mrvl: prestera: Update Marvell Prestera Switchdev v3.0 with policer support (2021-06-17 18:22:57 +0300)
+
+----------------------------------------------------------------
+Vadym Kochan (1):
+      mrvl: prestera: Update Marvell Prestera Switchdev v3.0 with policer support
+
+ mrvl/prestera/mvsw_prestera_fw-v3.0.img | Bin 13721584 -> 13721676 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
