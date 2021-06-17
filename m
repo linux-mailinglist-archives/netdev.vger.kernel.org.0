@@ -2,270 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24E953AB49F
-	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 15:23:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCBC53AB471
+	for <lists+netdev@lfdr.de>; Thu, 17 Jun 2021 15:16:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232591AbhFQNZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 09:25:32 -0400
-Received: from mga17.intel.com ([192.55.52.151]:53893 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229931AbhFQNZc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Jun 2021 09:25:32 -0400
-IronPort-SDR: aRFrMTI64fq9/z9WynmYNulEN4FEOzEF/etirDe5geWwAb7SpRwVpH3EcgWS5w4TS2KnlMDAbq
- hPXFjn300ibw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10017"; a="186744123"
-X-IronPort-AV: E=Sophos;i="5.83,280,1616482800"; 
-   d="scan'208";a="186744123"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2021 06:23:24 -0700
-IronPort-SDR: cGjORf0vy6UXUnvDarnwkqjtxzUqMxH10FkxwNyZtvPzojWIkpZMFp+WSjB+M1HVCYqdT4mnEH
- UUD3XQSTSJuA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,280,1616482800"; 
-   d="scan'208";a="421874926"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga002.jf.intel.com with ESMTP; 17 Jun 2021 06:23:18 -0700
-Date:   Thu, 17 Jun 2021 15:09:48 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, maximmi@nvidia.com
-Subject: Re: [PATCH net] xdp, net: fix for construct skb by xdp inside xsk zc
- rx
-Message-ID: <20210617130948.GA20486@ranger.igk.intel.com>
-References: <20210615033719.72294-1-xuanzhuo@linux.alibaba.com>
+        id S232180AbhFQNSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 09:18:18 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:18046 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231224AbhFQNSR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 09:18:17 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15HDBBZW013769;
+        Thu, 17 Jun 2021 06:16:06 -0700
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2176.outbound.protection.outlook.com [104.47.59.176])
+        by mx0b-0016f401.pphosted.com with ESMTP id 397udrtp9j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Jun 2021 06:16:06 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QNtt/25NLSx0ruvUTOgpyC10YGc/bbAgbZ0fbSq8xnIHElng0qau2FklSuVgWiUD9ErGXjTpHG1ucH6fPQe8vEDDUJGucQ99pgtZ5l7uvzqdu/ZiOKgil/c50OLmMc4thE4Ka9ojtzWRZBMDrU2XVyBH/wCayU0H4KOWU9YhyhIN5Yp49BNN5B//jekBHNhlcvPnEFKWTpJbzTSkxlZlIJecS/oEzKNMu10fI22q7cmGsOxAJHBoR2TjzAAMib76YAwqWqSL8E1O5+yXbkSCXDMonhc2HHwC0CyRO3O1PYq7cOfzxnbuA/rLnOnaU29PyuD3USytixeFX7Jci7DYJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sHPVKrl8ZgY2Jj77KByD5EG1Tj9P7jGuLAP2kShGQaY=;
+ b=UfogK+mjLeWX0xGrPPVw5yYJ9/kepRIFgzI3rJMNde2o3Gikb6ox1Vq7eDq+/ZW9CMRaIBmzdugy4zCRBhSr2PkIesyup0kMwl0l+qZojBBZiPkf51I/+Zg2fNkMSJGY7vq5Kea2qx27AOWzumGNEafZuqisAKKfagx67k/Ds8o8ba/PH9dvVtO2M9dmhvPo4tKDNqbamzWMpeCdHhYOQOubKpSnY+UHI9UQsyO9bF3KUBXlg5TGfSzdL9CMgyg8Hopn9L/uRnFtDzXtBDDo9Me8YDzUGnUKT8+vZ9cs4cIeJhcLyJcYWKINo/0ACSWmYVXx/ZlM3htaBR9gg8LhIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sHPVKrl8ZgY2Jj77KByD5EG1Tj9P7jGuLAP2kShGQaY=;
+ b=mPzkXiENm5meL5Z+2khhWgH/NNfmB2k7OwofRFwcYkaEFbsnPG6xzT5EzwuBHbdRjLvw0zv5UXXviXngxABDyK7ovJqteSaXrkH+E2WxuDXAAaq5KCKgizqnEqXKyPfV2ilN3yuilxybwSIEIYd5ln2V8mTfWuUsSwVqSh5I3EM=
+Received: from BY5PR18MB3298.namprd18.prod.outlook.com (2603:10b6:a03:1ae::32)
+ by SJ0PR18MB3882.namprd18.prod.outlook.com (2603:10b6:a03:2c8::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.22; Thu, 17 Jun
+ 2021 13:16:04 +0000
+Received: from BY5PR18MB3298.namprd18.prod.outlook.com
+ ([fe80::98ed:f663:3857:12a4]) by BY5PR18MB3298.namprd18.prod.outlook.com
+ ([fe80::98ed:f663:3857:12a4%5]) with mapi id 15.20.4219.026; Thu, 17 Jun 2021
+ 13:16:04 +0000
+From:   Sunil Kovvuri Goutham <sgoutham@marvell.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH net-next 1/2] net: ethtool: Support setting
+ ntuple rule count
+Thread-Topic: [EXT] Re: [PATCH net-next 1/2] net: ethtool: Support setting
+ ntuple rule count
+Thread-Index: AQHXYq5VUTtl8j6Y5EG/MQGN8HpAqqsW7MqAgAFC7iA=
+Date:   Thu, 17 Jun 2021 13:16:03 +0000
+Message-ID: <BY5PR18MB329854137536121BC345502BC60E9@BY5PR18MB3298.namprd18.prod.outlook.com>
+References: <1623847882-16744-1-git-send-email-sgoutham@marvell.com>
+        <1623847882-16744-2-git-send-email-sgoutham@marvell.com>
+ <20210616105731.05f1c98c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210616105731.05f1c98c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [49.205.243.210]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 93da16ef-ea46-4af7-178d-08d931920f5d
+x-ms-traffictypediagnostic: SJ0PR18MB3882:
+x-microsoft-antispam-prvs: <SJ0PR18MB3882FF522D3AF0E3CE23C043C60E9@SJ0PR18MB3882.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:849;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3zTSf6fqKcILuFakzNsXxugRx0lNO1AGtfxlUreEInyI9qrcdqJhk7FoR+pMOraxAidkQDbtobdpO+aXw4HzR5W2qbozCCKk4kBb85FQPhC4ZmTe/oK2uRi1aH27HmSPIvRavfQTrsdK0sx5drmUE2pmgalnns/EKFfmqPFpgG02LDhrLP2xOSdoEfONPl2kvZjcnp7M9X4E9+Kq3HxU/IW5VRZh+VMQXzf7PT5RCZfiUraHe3WQtFH6GyClEDHKzd25r64HYMXbaHxOUZ+n2hXckFlB0uEHsnY71BMPE39J3O153/ZM335hj69zN/JD5exLg5EVC9R2dSttfJilWmfUtvlNrJYTtkb4DjbMUv/Wg8rCDUtxl3GLaecNKl5QTJ3UFUXWzGyrUlerqWmydnQUG9utBfGVG7blpt6q+MPd0oLK9tnnEYysizRHt9k2+YmmrM8H7v3U1qFzdEcf0c87c0VpKmQvmaCmRzdgg/3blCH90aUkQW1oVZ8KzFj7TW0zpIcYP99ZxThHxFJukRY12RhyhqfuOB+dD91xExQtuEsTexK7Y61mG4dANFONh2KSKV4pNFOEmPT/3FIu8CnSdjF2PZ7vqdro65iCmU4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR18MB3298.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(346002)(136003)(396003)(366004)(186003)(55016002)(33656002)(2906002)(71200400001)(53546011)(26005)(83380400001)(7696005)(64756008)(54906003)(52536014)(6916009)(8676002)(66556008)(86362001)(76116006)(38100700002)(122000001)(478600001)(9686003)(8936002)(66446008)(66946007)(6506007)(4326008)(5660300002)(316002)(66476007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?yjZnkl6Wyb5F/5LuFpEc2VWz9zBlP/BxO5OXzCLxSWiGqDQvzdVwXgj9Zb/6?=
+ =?us-ascii?Q?M5dSMpCpVvuyMZ03cTQL7ZtLbX2DKGVd6LYavwH26DkaV46VkUP7ks6hfeLo?=
+ =?us-ascii?Q?tYLZNg+1j4/HaqWJIAfGXJka/OMpjhHBpalj8AQgis3JkTVXBl7Hb8BXOS13?=
+ =?us-ascii?Q?ibXp/ldOK+G7jv81d0xpDEzLxZGC181tK02wq9BzLAjlNRD6M62VW0AD8NvP?=
+ =?us-ascii?Q?mMTS9eLZtHYvAhZ4adg62i0V6BIMIu61PRxJnA7l51SHD+mofewDJgji+ibB?=
+ =?us-ascii?Q?L0wqgR4pqgaI5ssFh75vdwmVK09+TetJ+jqA++wMz2N1olSKT87B67P0wdj6?=
+ =?us-ascii?Q?t8TU0BPyjM90XJFBI85Vj1eZi0mrZBv+yRCvBfH5PZjk8XNB5WQuJ2RSFUF5?=
+ =?us-ascii?Q?hS5VAN27ilcuzAPVWVUh5ZglIvoB8Zyi24/9gVm6SkfD+eFR6yLJCEu8M/0p?=
+ =?us-ascii?Q?QJzDPAzQLol2Y+/bvJvFTaVTRXOGi1I+Myk5dwO5uIgcTxJsC9j0D3+U1rXf?=
+ =?us-ascii?Q?a8hNN9WIbybTPRFI7A6k3LiH6xhNjoVf5DQpWWmS0QaWvxRF+c5sxVLkwfcW?=
+ =?us-ascii?Q?5+sHMLAYLuLr+s2oMXGQSVFk+MbhZceixQedWrcmpuoC474pupxZFDEN2DDD?=
+ =?us-ascii?Q?sdnuSQg4UqevNX3eU/X/LJCklI+W4MDlOXBsYGtkE6ISRiFwA3Z8fSAaMpf9?=
+ =?us-ascii?Q?wWR4D4W2x149Ak26DZ73jRtmzOV6dqGsotpSzaFapBHUAysBTEINFuqJtdqj?=
+ =?us-ascii?Q?32x1E5CTccWKslAW9hWfogcxDtWdYk9MbB26kXR2TDJeHhSRFygD++62H1t9?=
+ =?us-ascii?Q?O38wULSkcBbOEoLpUni/JRIBLjwfyp6OO+lN8J6rboUmU030jcPUlsIy7dhe?=
+ =?us-ascii?Q?1WuaS0hej4LK79eXGia5BOVhlYsV6xLES7H3DckQ9MqHL9h6S8gSElr4W2Gr?=
+ =?us-ascii?Q?GpJplVErNuPoffhChCxYkP/FwmoRiY/D6BxhBQ6x0rZuMnCyht6i8fGsL+so?=
+ =?us-ascii?Q?JYvXZQn3B+cVUC7+UOFH/+Pkqzn9VcgaDPRJR6RZa8n/JVqXYTpbD+b2jJhV?=
+ =?us-ascii?Q?YyQ4zMTfZs0DGw+7B0qdJ7NTEyKgOYvspZegIoJSPUXC+T0yiWEaDyn69xpd?=
+ =?us-ascii?Q?+3I/ucQJ9x/wPqa/PjqO/XE/Is3bf8afWEYdgKf0Iq6ShHMUo076BOCucJ6y?=
+ =?us-ascii?Q?dyc3u8nrwjBTabuz5CeSpQXUIx5cUf929uzcfRhCZjSXggcQX5oX2q7Ghd6l?=
+ =?us-ascii?Q?suffhhySN97eFdVxsqzqLMD6jIrT7ehWTW0aTyTMlUcPMhnnDx3Nf96y+feu?=
+ =?us-ascii?Q?KsryMOC3SbtzA4HTmqDTwcQL?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210615033719.72294-1-xuanzhuo@linux.alibaba.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR18MB3298.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93da16ef-ea46-4af7-178d-08d931920f5d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2021 13:16:03.4435
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: K0B1dTnIWcOxlh4vvP2bPUuniMpUkz/LBpuw7gV6Zuxp6cyD6c5HGKl44+jiDfrFRooM5UWwFZ2tre4s9ZHJ5A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR18MB3882
+X-Proofpoint-ORIG-GUID: FoLSAilX3NpCAbWfw4xBHEQSEcSYSNu8
+X-Proofpoint-GUID: FoLSAilX3NpCAbWfw4xBHEQSEcSYSNu8
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-06-17_10:2021-06-15,2021-06-17 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 11:37:19AM +0800, Xuan Zhuo wrote:
-> When each driver supports xsk rx, if the received buff returns XDP_PASS
-> after run xdp prog, it must construct skb based on xdp. This patch
-> extracts this logic into a public function xdp_construct_skb().
-> 
-> There is a bug in the original logic. When constructing skb, we should
-> copy the meta information to skb and then use __skb_pull() to correct
-> the data.
-> 
-> Fixes: 0a714186d3c0f ("i40e: add AF_XDP zero-copy Rx support")
-> Fixes: 2d4238f556972 ("ice: Add support for AF_XDP")
-> Fixes: bba2556efad66 ("net: stmmac: Enable RX via AF_XDP zero-copy")
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> ---
-> 
-> This patch depends on the previous patch:
->     [PATCH net] ixgbe: xsk: fix for metasize when construct skb by xdp_buff
 
-That doesn't make much sense if you ask me, I'd rather squash the patch
-mentioned above to this one.
 
-Also, I wanted to introduce such function to the kernel for a long time
-but I always head in the back of my head mlx5's AF_XDP ZC implementation
-which I'm not sure if it can adjust to something like Intel drivers are
-doing.
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Wednesday, June 16, 2021 11:28 PM
+> To: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> Cc: davem@davemloft.net; netdev@vger.kernel.org
+> Subject: [EXT] Re: [PATCH net-next 1/2] net: ethtool: Support setting ntu=
+ple
+> rule count
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> On Wed, 16 Jun 2021 18:21:21 +0530 sgoutham@marvell.com wrote:
+> > From: Sunil Goutham <sgoutham@marvell.com>
+> >
+> > Some NICs share resources like packet filters across multiple
+> > interfaces they support. From HW point of view it is possible to use
+> > all filters for a single interface.
+> > Currently ethtool doesn't support modifying filter count so that user
+> > can allocate more filters to a interface and less to others. This
+> > patch adds ETHTOOL_SRXCLSRLCNT ioctl command for modifying filter
+> > count.
+> >
+> > example command:
+> > ./ethtool -U eth0 rule-count 256
+>=20
+> man devlink-resource ?
 
-Maxim? :)
+Since ntuple rule insert and delete are part of ethtool, I thought having t=
+his config also in
+ethtool will make user life easy ie all ntuple related stuff within one too=
+l.
 
-> 
->  drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 16 +---------
->  drivers/net/ethernet/intel/ice/ice_xsk.c      | 12 +-------
->  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 14 +--------
->  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 23 +-------------
->  include/net/xdp.h                             | 30 +++++++++++++++++++
->  5 files changed, 34 insertions(+), 61 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> index 68f177a86403..81b0f44eedda 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> @@ -246,23 +246,9 @@ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 count)
->  static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
->  					     struct xdp_buff *xdp)
->  {
-> -	unsigned int metasize = xdp->data - xdp->data_meta;
-> -	unsigned int datasize = xdp->data_end - xdp->data;
->  	struct sk_buff *skb;
-> 
-> -	/* allocate a skb to store the frags */
-> -	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
-> -			       xdp->data_end - xdp->data_hard_start,
-> -			       GFP_ATOMIC | __GFP_NOWARN);
-> -	if (unlikely(!skb))
-> -		goto out;
-> -
-> -	skb_reserve(skb, xdp->data - xdp->data_hard_start);
-> -	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
-> -	if (metasize)
-> -		skb_metadata_set(skb, metasize);
-> -
-> -out:
-> +	skb = xdp_construct_skb(xdp, &rx_ring->q_vector->napi);
->  	xsk_buff_free(xdp);
->  	return skb;
->  }
-> diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> index a1f89ea3c2bd..f95e1adcebda 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> @@ -430,22 +430,12 @@ static void ice_bump_ntc(struct ice_ring *rx_ring)
->  static struct sk_buff *
->  ice_construct_skb_zc(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf)
->  {
-> -	unsigned int metasize = rx_buf->xdp->data - rx_buf->xdp->data_meta;
-> -	unsigned int datasize = rx_buf->xdp->data_end - rx_buf->xdp->data;
-> -	unsigned int datasize_hard = rx_buf->xdp->data_end -
-> -				     rx_buf->xdp->data_hard_start;
->  	struct sk_buff *skb;
-> 
-> -	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize_hard,
-> -			       GFP_ATOMIC | __GFP_NOWARN);
-> +	skb = xdp_construct_skb(rx_buf->xdp, &rx_ring->q_vector->napi);
->  	if (unlikely(!skb))
->  		return NULL;
-> 
-> -	skb_reserve(skb, rx_buf->xdp->data - rx_buf->xdp->data_hard_start);
-> -	memcpy(__skb_put(skb, datasize), rx_buf->xdp->data, datasize);
-> -	if (metasize)
-> -		skb_metadata_set(skb, metasize);
-> -
->  	xsk_buff_free(rx_buf->xdp);
->  	rx_buf->xdp = NULL;
->  	return skb;
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> index ee88107fa57a..123945832c96 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> @@ -203,24 +203,12 @@ bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 count)
->  static struct sk_buff *ixgbe_construct_skb_zc(struct ixgbe_ring *rx_ring,
->  					      struct ixgbe_rx_buffer *bi)
->  {
-> -	unsigned int metasize = bi->xdp->data - bi->xdp->data_meta;
-> -	unsigned int datasize = bi->xdp->data_end - bi->xdp->data_meta;
->  	struct sk_buff *skb;
-> 
-> -	/* allocate a skb to store the frags */
-> -	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
-> -			       bi->xdp->data_end - bi->xdp->data_hard_start,
-> -			       GFP_ATOMIC | __GFP_NOWARN);
-> +	skb = xdp_construct_skb(bi->xdp, &rx_ring->q_vector->napi);
->  	if (unlikely(!skb))
->  		return NULL;
-> 
-> -	skb_reserve(skb, bi->xdp->data_meta - bi->xdp->data_hard_start);
-> -	memcpy(__skb_put(skb, datasize), bi->xdp->data_meta, datasize);
-> -	if (metasize) {
-> -		__skb_pull(skb, metasize);
-> -		skb_metadata_set(skb, metasize);
-> -	}
-> -
->  	xsk_buff_free(bi->xdp);
->  	bi->xdp = NULL;
->  	return skb;
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index c87202cbd3d6..143ac1edb876 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -4729,27 +4729,6 @@ static void stmmac_finalize_xdp_rx(struct stmmac_priv *priv,
->  		xdp_do_flush();
->  }
-> 
-> -static struct sk_buff *stmmac_construct_skb_zc(struct stmmac_channel *ch,
-> -					       struct xdp_buff *xdp)
-> -{
-> -	unsigned int metasize = xdp->data - xdp->data_meta;
-> -	unsigned int datasize = xdp->data_end - xdp->data;
-> -	struct sk_buff *skb;
-> -
-> -	skb = __napi_alloc_skb(&ch->rxtx_napi,
-> -			       xdp->data_end - xdp->data_hard_start,
-> -			       GFP_ATOMIC | __GFP_NOWARN);
-> -	if (unlikely(!skb))
-> -		return NULL;
-> -
-> -	skb_reserve(skb, xdp->data - xdp->data_hard_start);
-> -	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
-> -	if (metasize)
-> -		skb_metadata_set(skb, metasize);
-> -
-> -	return skb;
-> -}
-> -
->  static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
->  				   struct dma_desc *p, struct dma_desc *np,
->  				   struct xdp_buff *xdp)
-> @@ -4761,7 +4740,7 @@ static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
->  	struct sk_buff *skb;
->  	u32 hash;
-> 
-> -	skb = stmmac_construct_skb_zc(ch, xdp);
-> +	skb = xdp_construct_skb(xdp, &ch->rxtx_napi);
->  	if (!skb) {
->  		priv->dev->stats.rx_dropped++;
->  		return;
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index a5bc214a49d9..561e21eaf718 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -95,6 +95,36 @@ xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
->  	xdp->data_meta = meta_valid ? data : data + 1;
->  }
-> 
-> +static __always_inline struct sk_buff *
-> +xdp_construct_skb(struct xdp_buff *xdp, struct napi_struct *napi)
-> +{
-> +	unsigned int metasize;
-> +	unsigned int datasize;
-> +	unsigned int headroom;
-> +	struct sk_buff *skb;
-> +	unsigned int len;
-> +
-> +	/* this include metasize */
-> +	datasize = xdp->data_end  - xdp->data_meta;
-> +	metasize = xdp->data      - xdp->data_meta;
-> +	headroom = xdp->data_meta - xdp->data_hard_start;
-> +	len      = xdp->data_end  - xdp->data_hard_start;
-> +
-> +	/* allocate a skb to store the frags */
-> +	skb = __napi_alloc_skb(napi, len, GFP_ATOMIC | __GFP_NOWARN);
-> +	if (unlikely(!skb))
-> +		return NULL;
-> +
-> +	skb_reserve(skb, headroom);
-> +	memcpy(__skb_put(skb, datasize), xdp->data_meta, datasize);
-> +	if (metasize) {
-> +		__skb_pull(skb, metasize);
-> +		skb_metadata_set(skb, metasize);
-> +	}
-> +
-> +	return skb;
-> +}
-> +
->  /* Reserve memory area at end-of data area.
->   *
->   * This macro reserves tailroom in the XDP buffer by limiting the
-> --
-> 2.31.0
-> 
+Thanks,
+Sunil.
