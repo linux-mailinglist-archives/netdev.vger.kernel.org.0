@@ -2,220 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 430A73ACF85
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 17:55:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B3EB3ACF8B
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 17:56:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235630AbhFRP5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 11:57:19 -0400
-Received: from mail-am6eur05on2121.outbound.protection.outlook.com ([40.107.22.121]:60768
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233880AbhFRP5R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 11:57:17 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EhXFhapIM7jnW1fF7XEgSVxrvIuNaEgWa/sZCNVRbpOvK6b3cPnttSzOVHi7qKtQXQX1LuUAUs2tEv52uSycoUNkzeOnv9cxqlxc8p9BasLepa4JmlDl8qiB49NopfUBq4iiWya+vCeFEyHCTLNsfm8UwtPaNzEzypTzoHC3a4zqJYRSKevDcGAdcKnWeZp6Oqd7k9YxaKIoY5hL38tf/SepsL/SlAPM9fkgGJKG9Zn8OARYpqAN/RI0yj4wBuxqN4uAtXa0yfGjA0Cpiy4I5kpLYbn2CcqN7I0/UoicPt63kpklBERhnP/Ky+xChxr/UVl00WrL/EqfbjmOcpyXuA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v8Ka/0EGeRkeJhv3oIJA2qDAVhuUETLGrn4gUC/KU84=;
- b=I+dOz8NxvFAkz6i0jQSNJ6ZvSszEGJbVbZ56te09KzykSLl2vgb/DZpgYmIvDGyGxBjb2bOqOYMfDilVqeCTojR+dK7HU7NKEDsWmuOpbyiyBUbf6rogHDO7EH2jgYSvt760IzRJqWIvQG7GJbqfnCUtoHPYbrPgsILsCv2CCDYvpelDrnR2Dg8dy2gnUilYOD88XelZFzmIUGTjdc7qeZNrF5kPMGCkNHrtrBInh6kSY9yhR1xLETfYpxiP/5IfS5WAVW3P2WOFI660u1tMxip4ohT68WqkTcPCyPt36clcf++VviBVZWu2Bwwrhwar351B7rsupnLO93fv1W4SPQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=esd.eu; dmarc=pass action=none header.from=esd.eu; dkim=pass
- header.d=esd.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v8Ka/0EGeRkeJhv3oIJA2qDAVhuUETLGrn4gUC/KU84=;
- b=QfmliiZFR+UM3Fs+G7CxAKuHc0beZ6tXuqImRqUAa+0b/FFBmjHOedlt1Za0Ho4ubjzdBjIPIzO1RihiGkBsZtNTJP8jXmBJi0kaL4NAoMdX5hSkqlIQbTGbh6MvLRyU7xO68NfH24TacOBDFDOe7FwwPLCA9EvW4N51Wy/Nyd8=
-Received: from AM9PR03MB6929.eurprd03.prod.outlook.com (2603:10a6:20b:287::7)
- by AM0PR03MB4673.eurprd03.prod.outlook.com (2603:10a6:208:c1::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.25; Fri, 18 Jun
- 2021 15:55:04 +0000
-Received: from AM9PR03MB6929.eurprd03.prod.outlook.com
- ([fe80::c4c0:ee3a:ce51:d987]) by AM9PR03MB6929.eurprd03.prod.outlook.com
- ([fe80::c4c0:ee3a:ce51:d987%9]) with mapi id 15.20.4242.021; Fri, 18 Jun 2021
- 15:55:04 +0000
-From:   =?utf-8?B?U3RlZmFuIE3DpHRqZQ==?= <Stefan.Maetje@esd.eu>
-To:     "mailhol.vincent@wanadoo.fr" <mailhol.vincent@wanadoo.fr>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S235641AbhFRP6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 11:58:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47682 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232395AbhFRP6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 11:58:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624031763;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Awjn2v8qac0K7VClk6HbxoaGBdL5LeTfJlE9EQ+fOjk=;
+        b=OAACkEV23Oi9tlYJ9U6BKxTTlbDgCuADiI3NKHffgpkobmiW82yyTu/8q3N8yYbpn25lYO
+        nq0D3IsNHqkMs+XJxXZr4g3Hr23r4ngMGb8N0S0UYbqnXCQvomAYTXutfLQdbI6O+dhW4T
+        IAuC/ma+p4ISyUZCXqAIUlmO4Tssu70=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-91-Abx7cpOqMN6Xa43RjUlg2Q-1; Fri, 18 Jun 2021 11:56:01 -0400
+X-MC-Unique: Abx7cpOqMN6Xa43RjUlg2Q-1
+Received: by mail-wr1-f71.google.com with SMTP id b3-20020a05600018a3b029011a84f85e1cso414827wri.10
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 08:56:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Awjn2v8qac0K7VClk6HbxoaGBdL5LeTfJlE9EQ+fOjk=;
+        b=uas/Bxh95n7jF4Fmd5StxDjC8UZM/GZufWyUaI6p9MZUqQip2e1i6PWpbnJUc2xys2
+         vtnHFPxQWqsQB0LMsBIpFQPs8EPu4EBowuCyTQSvd0+Vou5QetZ7Y1ylHukrZqgtdHRR
+         blPZ1FyN5RqmwGvzXteav+xf/oQELi+wI5UZ8E2uBWsGl62YoE/LRd3UzdvWhUKJON+t
+         8BGQJoi4TfDyBDjDn+2eRMkM8SpZccQYPGeWFZwwTB+scWTkeIHL9Tr8VuECwhuGK2Tc
+         4CvUFBJK2AlMnX1VgxG/rI/8a0BAAlOWpUwf/nPcT6NHa02nmJzkwMyagplRTv056s9u
+         QDXA==
+X-Gm-Message-State: AOAM533iW5yry+uxk3MUOZtLExPiJhn3Dm4zpnzSDxfzkoZcdD8KjvHs
+        UqiHJGTusNzMOzHqwR6DJnqgry+6wrJihNAG8ali/r//Jt5yFUcMOmkH4Dc9K9WyqqGTKJ9gmo8
+        KlAVVaS/x4tepM5vc
+X-Received: by 2002:a5d:6d8a:: with SMTP id l10mr13665865wrs.63.1624031760678;
+        Fri, 18 Jun 2021 08:56:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyb8+5HIJLdutX7cENNNI1/ecBZD9YW9aCIcD5DoBeecwsxaAXgeOQAGd3lSOiR1Xdg+NTIjg==
+X-Received: by 2002:a5d:6d8a:: with SMTP id l10mr13665839wrs.63.1624031760459;
+        Fri, 18 Jun 2021 08:56:00 -0700 (PDT)
+Received: from steredhat.lan ([5.170.128.175])
+        by smtp.gmail.com with ESMTPSA id m18sm8968801wmq.45.2021.06.18.08.55.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Jun 2021 08:56:00 -0700 (PDT)
+Date:   Fri, 18 Jun 2021 17:55:55 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "socketcan@hartkopp.net" <socketcan@hartkopp.net>,
-        "thomas.kopp@microchip.com" <thomas.kopp@microchip.com>
-Subject: Re: CAN-FD Transmitter Delay Compensation (TDC) on mcp2518fd
-Thread-Topic: CAN-FD Transmitter Delay Compensation (TDC) on mcp2518fd
-Thread-Index: AQHXZD+/nQ0t8qi7EkO6mYlVLyUTP6sZ074AgAAYXIA=
-Date:   Fri, 18 Jun 2021 15:55:04 +0000
-Message-ID: <e90cbad2467e2ef42db1e4a14ecdfd8c512965ea.camel@esd.eu>
-References: <20210603151550.140727-1-mailhol.vincent@wanadoo.fr>
-         <20210603151550.140727-3-mailhol.vincent@wanadoo.fr>
-         <20210618093424.xohvsqaaq5qf2bjn@pengutronix.de>
-         <CAMZ6RqJn5z-9PfkcJdiS6aG+qCPnifXDwH26ZEwo8-=id=TXbw@mail.gmail.com>
-         <CAMZ6RqKrPQkPy-dAiQjAB4aKnqeaNx+L-cro8F_mc2VPgOD4Jw@mail.gmail.com>
-         <20210618124447.47cy7hyqp53d4tjh@pengutronix.de>
-         <CAMZ6RqJCZB6Q79JYfxD7PGboPwMndDQRKsuUEk5Q34fj2vOcYg@mail.gmail.com>
-In-Reply-To: <CAMZ6RqJCZB6Q79JYfxD7PGboPwMndDQRKsuUEk5Q34fj2vOcYg@mail.gmail.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.30.5-1.1 
-authentication-results: wanadoo.fr; dkim=none (message not signed)
- header.d=none;wanadoo.fr; dmarc=none action=none header.from=esd.eu;
-x-originating-ip: [2003:eb:9f14:1c01:fc7b:2448:5d72:e520]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: eb948677-7b43-4d5b-dee1-08d932717007
-x-ms-traffictypediagnostic: AM0PR03MB4673:
-x-microsoft-antispam-prvs: <AM0PR03MB4673F333F959C0EB85497B94810D9@AM0PR03MB4673.eurprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: TZOLdLnWjoGTVmeRYYJShDqhKCMEb3Ug/LJ31+piHlou84gi/ahq205F//LDzcEnArYNqKIG0Uufh/uoJl6U2oonDckCx+2S1yX/dDXISCUDzX1eDNIteBcC+KLE/BrVCQz71U99ei5+dnZx6jvEVoWOcp2qIiDv6ayXvbY/4fDrVvaxuZY1ioD8PsxHwY2U4ED+U0TBeDOIHCx8uPGkoQz9Z7llitPiRx6MaYXot0BmTNJcNIYLeAjPR2+TFMVbD5dha2XbxR1oyYXhvOsUmRf9K97ccBpstOlstZ6lZ18xopKKMcw0dfJQvViWD/acz+8+E3IeLi7YSsu2ZPumGPnf0X+vDPI2np4BdS6SOq0ORrku72x0yEwzwL2SAeCd6HTA/P3c8weEoKeMRcE/wfGBOSAOcsyMfu0XEn/5tQpOp8aKEyEO7Gpdm/7+ljc2CvZHB3Z+8o6Kd9LDS34a8LWblTsjNMZ9v75TOW4XG02bg6LcKAdD83Vo5GH7ImkNdXLMGq7CyGyXQG41vZzjV/zgDXZbEqFPxw8AFzcWPaVQfl3MxPM/GLQkae81m66FB9VZuOCm3LveqZ609gjMBdb26BfKqa3798jnwJrJS9QEIFvFXRF8ajeM2bs311f0vrPhrsWOUsyokKfJDuTT75FZd9mTV/KWv1HlYdVG8kOIsslu5NRhLLbwgjYlZqTKlDEHqWx2w2hT+eEDCKfGwZAk7PsNrLhuhVWXoiIU/94=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR03MB6929.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(366004)(396003)(346002)(39830400003)(136003)(54906003)(6486002)(91956017)(110136005)(85182001)(478600001)(76116006)(64756008)(83380400001)(66556008)(122000001)(316002)(66446008)(86362001)(53546011)(966005)(36756003)(66946007)(66476007)(4326008)(186003)(6506007)(6512007)(2616005)(8936002)(8676002)(2906002)(5660300002)(71200400001)(85202003)(38100700002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aVFiYmNhZHB6Y1F1V2VkZUVHdEkwdTZBUWZNeHIzaHF4SjIrYWdKZ2VEb01C?=
- =?utf-8?B?NFhsK2pBUGtLTHBhZk9WV2VXRzdKNmoyWVh0a0tVL3Zod1VrdkYwZDdUamow?=
- =?utf-8?B?MkJzMnpBYWxlcUtpcEJuTnlJNHgzR1hFK0NnbUpLaEZOeUtseUNXMm1idkdS?=
- =?utf-8?B?OW8xZ1lFREF4ZHNMMHhnOHhlVXhoekdrODUwQVM4U0RtUE16Z1BBWk1pNWNl?=
- =?utf-8?B?OWFyYmZrMkplenRuR0NmNlhLNnMyQ2ZKZFBvcXE1MWVBeTNRV3hwWmNZTW1U?=
- =?utf-8?B?Qmw2bnZpdlFLdzVzdnEyYUg2UGdkZDUwM05lOWtwMVl5WXp2VDZ1NkFqWTRK?=
- =?utf-8?B?MHhEVVphRmpYY3FiUEVUV09URnRyRFhzYWxId0tNQWhrU3dXTDdpTFpjcTlG?=
- =?utf-8?B?bk85YkRWS0xpZXp0Um5VUHlncE9lQ3VLeUtVNEcvZElYU2VIdHFiQjJtaXcw?=
- =?utf-8?B?SFFtSjVCYXY5RkVvbGRsaWhQZ2I3UGttbWJBeHV2WmE1Z1NpbDVQTVU5bUc1?=
- =?utf-8?B?Qnh5b0YreDI4RE9PTnhZOTkxY1FwRHcxem1JYWg2UTRlVlhlVm5QbjdnZURu?=
- =?utf-8?B?Qzc5RWJ6ekpJdGdHQVhYUVlDTkVDQU5EbWlqOGRMSHpDdlJnZmk0UmwzZFlm?=
- =?utf-8?B?b2RFcUVjYXBsaWhycDBHbDdBSGtvL21EUGZseGdSVFFSK0t2NzRYaytsVjNH?=
- =?utf-8?B?V2hwYUxUWFdRKzhEUXNRRDdUcEpVNzhrQmg3Mmw0NzZyTUxBMVY4d295Lysw?=
- =?utf-8?B?RDBVRFlBb09pb2kyK01wYnFZUHpOc3IvYlpsWWZoeVVUZG1GdWdZSE9rUFBu?=
- =?utf-8?B?OE9mMUV0YXlDcktjY2tDYWc1cmlFS0JUQTlrVnhmSWJVbWh4M1prdmkxbEY4?=
- =?utf-8?B?V3RHZ2NuVE1DU2wwSTNUNElvRk5SQjFtdTBLaUF6Z1FoTkpld0hNZ3JJaXRW?=
- =?utf-8?B?eG9MRS9rdDkxMXBNSEhXTzNtSTdDa2FjTzdrYW1VamsrbE0xT3ZRVzhkd0Fs?=
- =?utf-8?B?U2VaWjNiSCtrMy9ZU0pYRW1wRTRnM1Y0ZitzNFJScjhOL2dId0todkhwMnly?=
- =?utf-8?B?eEVJdFExQjA1Y01BRUloeFp1TXZBa3hsdW15ejJZT0QyN2NVN3NRM0NvT3pE?=
- =?utf-8?B?dWZwc0lRWVFGMXdXRUxMNll0ME5wM1FEQU9jbU5SY2xxczZ2aUdtTUx1SlUy?=
- =?utf-8?B?VUNZbzU0dkZpRTFEYW9PS2ZpUkxFckdjMmlKN290Y1ZJSk81QmlNY0hHQmhY?=
- =?utf-8?B?THRDUVJ3b0U5aHdTUWhCaWE4REpOTEhxK0JEK3NpbU1XMlVWWDBDaXIrVlhU?=
- =?utf-8?B?cWh6enVBb1phdHFESHFubEhxMUxnNEYzbW9rdlUycU9acUpFN0t1MXZZSzZL?=
- =?utf-8?B?eXB0WWl4U09uQ1ZHUEFKN0FhRi9vVG5KWURFNi9YNVRwQkhWeC9yYkxvZ2JR?=
- =?utf-8?B?cXRpMCs3akxKdlh4Vno5bHZFS0hqTjJSQUpNaWVVWk92T2sxRGpuUStLYi92?=
- =?utf-8?B?eDZ2ODkxQzVxVUNYdUZTOG5aSVNOa2xRckpDYUpRL1BqT2ZsSGdPTWttaytX?=
- =?utf-8?B?OTNCZTNFOWdnektuK3VTRkpDbURWSy8wblZWTmQyc2hjNUVwVWFDeXRzWDVi?=
- =?utf-8?B?UFYxNi85Q2FLNWJ2enVaV1dOY2Y0aEVZcEt4ZlA2YTBkaXZYbzA3NjdVZ3RP?=
- =?utf-8?B?djMvSjNCQ2dDNFdVWXMxRW1HdWliZ0VkbTYrdSt6MitOYm9XL2ozSndra1lU?=
- =?utf-8?B?WXFDNjdOL2YzVVdqaFBoNlY3TEN4R24rNmQzVzVFZ3NtNmxYSGdKSXJOenZv?=
- =?utf-8?B?cEk4cEhOc0c0NFdMc0REZTZFYjIwTHZrV1VZdnlUVk5VZFdYN1psWFVCVHAz?=
- =?utf-8?Q?U42Nqi3xzpiMb?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E12CD710F7C1A64286DEBB9A5A3DCFE2@eurprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+Subject: Re: [PATCH v11 11/18] virtio/vsock: dequeue callback for
+ SOCK_SEQPACKET
+Message-ID: <20210618155555.j5p4v6j5gk2dboj3@steredhat.lan>
+References: <20210611110744.3650456-1-arseny.krasnov@kaspersky.com>
+ <20210611111241.3652274-1-arseny.krasnov@kaspersky.com>
+ <20210618134423.mksgnbmchmow4sgh@steredhat.lan>
+ <bb323125-f802-1d16-7530-6e4f4abb00a6@kaspersky.com>
 MIME-Version: 1.0
-X-OriginatorOrg: esd.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR03MB6929.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eb948677-7b43-4d5b-dee1-08d932717007
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2021 15:55:04.1006
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dq2nC/7oevLFTPwJkEiPlzrpDgN2PtAZJyGTgrvxq73L4DpqhySyuSIxOd7MblRrN4xCQLx/uQrv3+ZgHvO14w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR03MB4673
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <bb323125-f802-1d16-7530-6e4f4abb00a6@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-QW0gRnJlaXRhZywgZGVuIDE4LjA2LjIwMjEsIDIzOjI3ICswOTAwIHNjaHJpZWIgVmluY2VudCBN
-QUlMSE9MOg0KPiBPbiBGcmkuIDE4IEp1biAyMDIxIGF0IDIxOjQ0LCBNYXJjIEtsZWluZS1CdWRk
-ZSA8bWtsQHBlbmd1dHJvbml4LmRlPiB3cm90ZToNCj4gPiBPbiAxOC4wNi4yMDIxIDIwOjE3OjUx
-LCBWaW5jZW50IE1BSUxIT0wgd3JvdGU6DQo+ID4gPiA+ID4gSSBqdXN0IG5vdGljZWQgaW4gdGhl
-IG1jcDI1MThmZCBkYXRhIHNoZWV0Og0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gYml0IDE0LTgg
-VERDT1s2OjBdOiBUcmFuc21pdHRlciBEZWxheSBDb21wZW5zYXRpb24gT2Zmc2V0IGJpdHM7DQo+
-ID4gPiA+ID4gPiBTZWNvbmRhcnkgU2FtcGxlIFBvaW50IChTU1ApIFR3b+KAmXMgY29tcGxlbWVu
-dDsgb2Zmc2V0IGNhbiBiZQ0KPiA+ID4gPiA+ID4gcG9zaXRpdmUsDQo+ID4gPiA+ID4gPiB6ZXJv
-LCBvciBuZWdhdGl2ZS4NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gMDExIDExMTEgPSA2MyB4
-IFRTWVNDTEsNCj4gPiA+ID4gPiA+IC4uLg0KPiA+ID4gPiA+ID4gMDAwIDAwMDAgPSAwIHggVFNZ
-U0NMSw0KPiA+ID4gPiA+ID4gLi4uDQo+ID4gPiA+ID4gPiAxMTEgMTExMSA9IOKAkzY0IHggVFNZ
-U0NMSw0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IEhhdmUgeW91IHRha2VzIHRoaXMgaW50byBhY2Nv
-dW50Pw0KPiA+ID4gPiANCj4gPiA+ID4gSSBoYXZlIG5vdC4gQW5kIEkgZmFpbCB0byB1bmRlcnN0
-YW5kIHdoYXQgd291bGQgYmUgdGhlIHBoeXNpY2FsDQo+ID4gPiA+IG1lYW5pbmcgaWYgVERDTyBp
-cyB6ZXJvIG9yIG5lZ2F0aXZlLg0KPiA+IA0KPiA+IFRoZSBtY3AyNXh4ZmQgZmFtaWx5IGRhdGEg
-c2hlZXQgc2F5czoNCj4gPiANCj4gPiA+IFNTUCA9IFREQ1YgKyBURENPDQo+ID4gPiA+IFREQ1Yg
-aW5kaWNhdGVzIHRoZSBwb3NpdGlvbiBvZiB0aGUgYml0IHN0YXJ0IG9uIHRoZSBSWCBwaW4uDQo+
-ID4gDQo+ID4gSWYgSSB1bmRlcnN0YW5kIGNvcnJlY3RseSBpbiBhdXRvbWF0aWMgbW9kZSBURENW
-IGlzIG1lYXN1cmVkIGJ5IHRoZSBDQU4NCj4gPiBjb250cm9sbGVyIGFuZCByZWZsZWN0cyB0aGUg
-dHJhbnNjZWl2ZXIgZGVsYXkuDQo+IA0KPiBZZXMuIEkgcGhyYXNlZCBpdCBwb29ybHkgYnV0IHRo
-aXMgaXMgd2hhdCBJIHdhbnRlZCB0byBzYXkuIEl0IGlzDQo+IHRoZSBkZWxheSB0byBwcm9wYWdh
-dGUgZnJvbSB0aGUgVFggcGluIHRvIHRoZSBSWCBwaW4uDQo+IA0KPiBJZiBURENPID0gMCB0aGVu
-IFNTUCA9IFREQ1YgKyAwID0gVERDViB0aHVzIHRoZSBtZWFzdXJlbWVudA0KPiBvY2N1cnMgYXQg
-dGhlIGJpdCBzdGFydCBvbiB0aGUgUlggcGluLg0KPiANCj4gPiBJIGRvbid0IGtub3cgd2h5IHlv
-dSB3YW50DQo+ID4gdG8gc3VidHJhY3QgYSB0aW1lIGZyb20gdGhhdC4uLi4NCj4gPiANCj4gPiBU
-aGUgcmVzdCBvZiB0aGUgcmVsZXZhbnQgcmVnaXN0ZXJzOg0KPiA+IA0KPiA+ID4gVERDTU9EWzE6
-MF06IFRyYW5zbWl0dGVyIERlbGF5IENvbXBlbnNhdGlvbiBNb2RlIGJpdHM7IFNlY29uZGFyeSBT
-YW1wbGUNCj4gPiA+IFBvaW50IChTU1ApDQo+ID4gPiAxMC0xMSA9IEF1dG87IG1lYXN1cmUgZGVs
-YXkgYW5kIGFkZCBURENPLg0KPiA+ID4gMDEgPSBNYW51YWw7IERvIG5vdCBtZWFzdXJlLCB1c2Ug
-VERDViArIFREQ08gZnJvbSByZWdpc3Rlcg0KPiA+ID4gMDAgPSBUREMgRGlzYWJsZWQNCj4gPiA+
-IA0KPiA+ID4gVERDT1s2OjBdOiBUcmFuc21pdHRlciBEZWxheSBDb21wZW5zYXRpb24gT2Zmc2V0
-IGJpdHM7IFNlY29uZGFyeSBTYW1wbGUNCj4gPiA+IFBvaW50IChTU1ApDQo+ID4gPiBUd2/igJlz
-IGNvbXBsZW1lbnQ7IG9mZnNldCBjYW4gYmUgcG9zaXRpdmUsIHplcm8sIG9yIG5lZ2F0aXZlLg0K
-PiA+ID4gMDExIDExMTEgPSA2MyB4IFRTWVNDTEsNCj4gPiA+IC4uLg0KPiA+ID4gMDAwIDAwMDAg
-PSAwIHggVFNZU0NMSw0KPiA+ID4gLi4uDQo+ID4gPiAxMTEgMTExMSA9IOKAkzY0IHggVFNZU0NM
-Sw0KPiA+ID4gDQo+ID4gPiBURENWWzU6MF06IFRyYW5zbWl0dGVyIERlbGF5IENvbXBlbnNhdGlv
-biBWYWx1ZSBiaXRzOyBTZWNvbmRhcnkgU2FtcGxlDQo+ID4gPiBQb2ludCAoU1NQKQ0KPiA+ID4g
-MTEgMTExMSA9IDYzIHggVFNZU0NMSw0KPiA+ID4gLi4uDQo+ID4gPiAwMCAwMDAwID0gMCB4IFRT
-WVNDTEsNCj4gDQo+IEFzaWRlIGZyb20gdGhlIG5lZ2F0aXZlIFREQ08sIHRoZSByZXN0IGlzIHN0
-YW5kYXJkIHN0dWZmLiBXZSBjYW4NCj4gbm90ZSB0aGUgYWJzZW5jZSBvZiB0aGUgVERDRiBidXQg
-dGhhdCdzIG5vdCBhIGJsb2NrZXIuDQo+IA0KPiA+ID4gPiBJZiBURENPIGlzIHplcm8sIHRoZSBt
-ZWFzdXJlbWVudCBvY2N1cnMgb24gdGhlIGJpdCBzdGFydCB3aGVuIGFsbA0KPiA+ID4gPiB0aGUg
-cmluZ2luZyBvY2N1cnMuIFRoYXQgaXMgYSByZWFsbHkgYmFkIGNob2ljZSB0byBkbyB0aGUNCj4g
-PiA+ID4gbWVhc3VyZW1lbnQuIElmIGl0IGlzIG5lZ2F0aXZlLCBpdCBtZWFucyB0aGF0IHlvdSBh
-cmUgbWVhc3VyaW5nIHRoZQ0KPiA+ID4gPiBwcmV2aW91cyBiaXQgb19PICE/DQo+ID4gDQo+ID4g
-SSBkb24ndCBrbm93Li4uDQo+ID4gDQo+ID4gPiA+IE1heWJlIEkgYW0gbWlzc2luZyBzb21ldGhp
-bmcgYnV0IEkganVzdCBkbyBub3QgZ2V0IGl0Lg0KPiA+ID4gPiANCj4gPiA+ID4gSSBiZWxpZXZl
-IHlvdSBzdGFydGVkIHRvIGltcGxlbWVudCB0aGUgbWNwMjUxOGZkLg0KPiA+IA0KPiA+IE5vIEkn
-dmUganVzdCBsb29rZWQgaW50byB0aGUgcmVnaXN0ZXIgZGVzY3JpcHRpb24uDQo+IA0KPiBPSy4g
-Rm9yIHlvdXIgaW5mb3JtYXRpb24sIHRoZSBFVEFTIEVTNTh4IEZEIGRldmljZXMgZG8gbm90IGFs
-bG93DQo+IHRoZSB1c2Ugb2YgbWFudWFsIG1vZGUgZm9yIFREQ1YuIFRoZSBtaWNyb2NvbnRyb2xs
-ZXIgZnJvbQ0KPiBNaWNyb2NoaXAgc3VwcG9ydHMgaXQgYnV0IEVUQVMgZmlybXdhcmUgb25seSBl
-eHBvc2VzIHRoZQ0KPiBhdXRvbWF0aWMgVERDViBtb2RlLiBTbyBpdCBjYW4gbm90IGJlIHVzZWQg
-dG8gdGVzdCB3aGF0IHdvdWxkDQo+IG9jY3VyIGlmIFNTUCA9IDAuDQo+IA0KPiBJIHdpbGwgcHJl
-cGFyZSBhIHBhdGNoIHRvIGFsbG93IHplcm8gdmFsdWUgZm9yIGJvdGggVERDViBhbmQNCj4gVERD
-TyAoSSBhbSBhIGJpdCBzYWQgYmVjYXVzZSBJIHByZWZlciB0aGUgY3VycmVudCBkZXNpZ24sIGJ1
-dCBpZg0KPiBJU08gYWxsb3dzIGl0LCBJIGZlZWwgbGlrZSBJIGhhdmUgbm8gY2hvaWNlKS4gIEhv
-d2V2ZXIsIEkgcmVmdXNlDQo+IHRvIGFsbG93IHRoZSBuZWdhdGl2ZSBURENPIHZhbHVlIHVubGVz
-cyBzb21lb25lIGlzIGFibGUgdG8NCj4gZXhwbGFpbiB0aGUgcmF0aW9uYWxlLg0KDQpIaSwNCg0K
-cGVyaGFwcyBJIGNhbiBzaGVkIHNvbWUgbGlnaHQgb24gdGhlIGlkZWEgd2h5IGl0IGlzIGEgZ29v
-ZCBpZGVhIHRvIGFsbG93DQpuZWdhdGl2ZSBUREMgb2Zmc2V0IHZhbHVlcy4gVGhlcmVmb3JlIEkg
-d291bGQgZGVzY3JpYmUgdGhlIFREQyByZWdpc3Rlcg0KaW50ZXJmYWNlIG9mIHRoZSBFU0RBQ0Mg
-Q0FOLUZEIGNvbnRyb2xsZXIgb2Ygb3VyIGNvbXBhbnkgKHNlZSANCmh0dHBzOi8vZXNkLmV1L2Vu
-L3Byb2R1Y3RzL2VzZGFjYykuDQoNClJlZ2lzdGVyIGRlc2NyaXB0aW9uIG9mIFREQy1DQU4tRkQg
-cmVnaXN0ZXIgKHJlc2VydmVkIGJpdHMgbm90IHNob3duKToNCg0KYml0cyBbNS4uMF0sIFJPOiBU
-REMgTWVhc3VyZWQgKFREQ21lYXMpDQoJQ3VycmVudGx5IG1lYXN1cmVkIFREQyB2YWx1ZSwgbmVl
-ZHMgYmF1ZHJhdGUgdG8gYmUgc2V0IGFuZCBDQU4gdHJhZmZpYw0KDQpiaXRzIFsyMS4uMTZdLCBS
-L1c6IFREQyBvZmZzZXQgKFREQ29mZnMpDQoJRGVwZW5kaW5nIG9uIHRoZSBzZWxlY3RlZCBtb2Rl
-IChzZWUgVERDIG1vZGUpDQoJLSBBdXRvIFREQywgYXV0b21hdGljIG1vZGUgKGRlZmF1bHQpDQoJ
-CXNpZ25lZCBvZmZzZXQgb250byBtZWFzdXJlZCBUREMgKFREQ2VmZiA9IFREQ21lYXMgKyBURENv
-ZmZzKSwNCgkJaW50ZXJwcmV0ZWQgYXMgNi1iaXQgdHdvJ3MgY29tcGxlbWVudCB2YWx1ZQ0KCS0g
-TWFudWFsIFREQw0KCQlhYnNvbHV0ZSB1bnNpZ25lZCBvZmZzZXQgKFREQ2VmZiA9IFREQ29mZnMp
-LA0KCQlpbnRlcnByZXRlZCBhcyA2LWJpdCB1bnNpZ25lZCB2YWx1ZQ0KCS0gT3RoZXIgbW9kZXMN
-CgkJaWdub3JlZA0KCUluIGVpdGhlciBjYXNlIFREQyBvZmZzZXQgaXMgYSBudW1iZXIgb2YgQ0FO
-IGNsb2NrIGN5Y2xlcy4NCg0KYml0cyBbMzEuLjMwXSwgUi9XOiBUREMgbW9kZQ0KCTAwID0gQXV0
-byBUREMNCgkwMSA9IE1hbnVhbCBUREMNCgkxMCA9IHJlc2VydmVkDQoJMTEgPSBUREMgb2ZmDQoN
-ClNvIGluIGF1dG9tYXRpYyBtb2RlIHRoZSBnb2FsIGlzIHRvIGJlIGFibGUgdG8gbW92ZSB0aGUg
-cmVhbCBzYW1wbGUgcG9pbnQNCmZvcndhcmQgYW5kKCEpIGJhY2t3YXJkIGZyb20gdGhlIG1lYXN1
-cmVkIHRyYW5zbWl0dGVyIGRlbGF5LiBUaGVyZWZvcmUgdGhlDQpURENvZmZzIGlzIGludGVycHJl
-dGVkIGFzIDYtYml0IHR3bydzIGNvbXBsZW1lbnQgdmFsdWUgdG8gbWFrZSBuZWdhdGl2ZSBvZmZz
-ZXRzDQpwb3NzaWJsZSBhbmQgdG8gZGVjcmVhc2UgdGhlIGVmZmVjdGl2ZSAodXNlZCkgVERDZWZm
-IGJlbG93IHRoZSBtZWFzdXJlZCB2YWx1ZQ0KVERDbWVhcy4NCg0KQXMgZmFyIGFzIEkgaGF2ZSB1
-bmRlcnN0b29kIG91ciBGUEdBIGd1eSB0aGUgVERDbWVhcyB2YWx1ZSBpcyB0aGUgbnVtYmVyIG9m
-DQpjbG9jayBjeWNsZXMgY291bnRlZCBmcm9tIHRoZSBzdGFydCBvZiB0cmFuc21pdHRpbmcgYSBk
-b21pbmFudCBiaXQgdW50aWwgdGhlDQpkb21pbmFudCBzdGF0ZSByZWFjaGVzIHRoZSBSWCBwaW4u
-DQoNCkR1cmluZyB0aGUgZGF0YSBwaGFzZSB0aGUgc2FtcGxlIHBvaW50IGlzIGNvbnRyb2xsZWQg
-YnkgdGhlIHRzZWcgdmFsdWVzIHNldCBmb3INCnRoZSBkYXRhIHBoYXNlIGJ1dCBpcyBtb3ZlZCBh
-ZGRpdGlvbmFsbHkgYnkgdGhlIG51bWJlciBvZiBjbG9ja3Mgc3BlY2lmaWVkIGJ5DQpURENlZmYg
-KG9yIFNTUCBpbiB0aGUgbWNwMjUxOGZkIGNhc2UpLg0KDQpCZXN0IHJlZ2FyZHMsDQogICAgU3Rl
-ZmFuDQoNClBTOiBJJ20gaW50ZXJlc3RlZCBpbiB0aGlzIHRvcGljIGJlY2F1c2UgSSdtIGluIHRo
-ZSBwcm9jZXNzIG9mIHByZXBhcmluZyBhDQpTb2NrZXRDQU4gZHJpdmVyIGZvciBvdXIgRVNEQUND
-IGJhc2UgUENJZS80MDIgQ0FOIGludGVyZmFjZSBmYW1pbHkuDQoNCg==
+On Fri, Jun 18, 2021 at 06:04:37PM +0300, Arseny Krasnov wrote:
+>
+>On 18.06.2021 16:44, Stefano Garzarella wrote:
+>> Hi Arseny,
+>> the series looks great, I have just a question below about
+>> seqpacket_dequeue.
+>>
+>> I also sent a couple a simple fixes, it would be great if you can review
+>> them:
+>> https://lore.kernel.org/netdev/20210618133526.300347-1-sgarzare@redhat.com/
+>>
+>>
+>> On Fri, Jun 11, 2021 at 02:12:38PM +0300, Arseny Krasnov wrote:
+>>> Callback fetches RW packets from rx queue of socket until whole record
+>>> is copied(if user's buffer is full, user is not woken up). This is done
+>>> to not stall sender, because if we wake up user and it leaves syscall,
+>>> nobody will send credit update for rest of record, and sender will wait
+>>> for next enter of read syscall at receiver's side. So if user buffer is
+>>> full, we just send credit update and drop data.
+>>>
+>>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>>> ---
+>>> v10 -> v11:
+>>> 1) 'msg_count' field added to count current number of EORs.
+>>> 2) 'msg_ready' argument removed from callback.
+>>> 3) If 'memcpy_to_msg()' failed during copy loop, there will be
+>>>    no next attempts to copy data, rest of record will be freed.
+>>>
+>>> include/linux/virtio_vsock.h            |  5 ++
+>>> net/vmw_vsock/virtio_transport_common.c | 84 +++++++++++++++++++++++++
+>>> 2 files changed, 89 insertions(+)
+>>>
+>>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>>> index dc636b727179..1d9a302cb91d 100644
+>>> --- a/include/linux/virtio_vsock.h
+>>> +++ b/include/linux/virtio_vsock.h
+>>> @@ -36,6 +36,7 @@ struct virtio_vsock_sock {
+>>> 	u32 rx_bytes;
+>>> 	u32 buf_alloc;
+>>> 	struct list_head rx_queue;
+>>> +	u32 msg_count;
+>>> };
+>>>
+>>> struct virtio_vsock_pkt {
+>>> @@ -80,6 +81,10 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+>>> 			       struct msghdr *msg,
+>>> 			       size_t len, int flags);
+>>>
+>>> +ssize_t
+>>> +virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
+>>> +				   struct msghdr *msg,
+>>> +				   int flags);
+>>> s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
+>>> s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
+>>>
+>>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>>> index ad0d34d41444..1e1df19ec164 100644
+>>> --- a/net/vmw_vsock/virtio_transport_common.c
+>>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>>> @@ -393,6 +393,78 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+>>> 	return err;
+>>> }
+>>>
+>>> +static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+>>> +						 struct msghdr *msg,
+>>> +						 int flags)
+>>> +{
+>>> +	struct virtio_vsock_sock *vvs = vsk->trans;
+>>> +	struct virtio_vsock_pkt *pkt;
+>>> +	int dequeued_len = 0;
+>>> +	size_t user_buf_len = msg_data_left(msg);
+>>> +	bool copy_failed = false;
+>>> +	bool msg_ready = false;
+>>> +
+>>> +	spin_lock_bh(&vvs->rx_lock);
+>>> +
+>>> +	if (vvs->msg_count == 0) {
+>>> +		spin_unlock_bh(&vvs->rx_lock);
+>>> +		return 0;
+>>> +	}
+>>> +
+>>> +	while (!msg_ready) {
+>>> +		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
+>>> +
+>>> +		if (!copy_failed) {
+>>> +			size_t pkt_len;
+>>> +			size_t bytes_to_copy;
+>>> +
+>>> +			pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
+>>> +			bytes_to_copy = min(user_buf_len, pkt_len);
+>>> +
+>>> +			if (bytes_to_copy) {
+>>> +				int err;
+>>> +
+>>> +				/* sk_lock is held by caller so no one else can dequeue.
+>>> +				 * Unlock rx_lock since memcpy_to_msg() may sleep.
+>>> +				 */
+>>> +				spin_unlock_bh(&vvs->rx_lock);
+>>> +
+>>> +				err = memcpy_to_msg(msg, pkt->buf, bytes_to_copy);
+>>> +				if (err) {
+>>> +					/* Copy of message failed, set flag to skip
+>>> +					 * copy path for rest of fragments. Rest of
+>>> +					 * fragments will be freed without copy.
+>>> +					 */
+>>> +					copy_failed = true;
+>>> +					dequeued_len = err;
+>> If we fail to copy the message we will discard the entire packet.
+>> Is it acceptable for the user point of view, or we should leave the
+>> packet in the queue and the user can retry, maybe with a different
+>> buffer?
+>>
+>> Then we can remove the packets only when we successfully copied all the
+>> fragments.
+>>
+>> I'm not sure make sense, maybe better to check also other
+>> implementations :-)
+>>
+>> Thanks,
+>> Stefano
+>
+>Understand, i'll check it on weekend, anyway I think it is
+>not critical for implementation.
+
+Yep, I agree.
+
+>
+>
+>I have another question: may be it is useful to research for
+>approach where packets are not queued until whole message
+>is received, but copied to user's buffer thus freeing memory.
+>(like previous implementation, of course with solution of problem
+>where part of message still in queue, while reader was woken
+>by timeout or signal).
+>
+>I think it is better, because  in current version, sender may set
+>'peer_alloc_buf' to  for example 1MB, so at receiver we get
+>1MB of 'kmalloc()' memory allocated, while having user's buffer
+>to copy data there or drop it(if user's buffer is full). This way
+>won't change spec(e.g. no message id or SEQ_BEGIN will be added).
+>
+>What do You think?
+
+Yep, I see your point and it would be great, but I think the main issues 
+to fix is how to handle a signal while we are waiting other fragments 
+since the other peer can take unspecified time to send them.
+
+Note that the 'peer_alloc_buf' in the sender, is the value get from the 
+receiver, so if the receiver doesn't want to allocate 1MB, can advertise 
+a small buffer size.
+
+Thanks,
+Stefano
+
