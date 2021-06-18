@@ -2,43 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5A583AD2AD
+	by mail.lfdr.de (Postfix) with ESMTP id C58A63AD2AE
 	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 21:21:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234848AbhFRTWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 15:22:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33834 "EHLO mail.kernel.org"
+        id S235437AbhFRTWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 15:22:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33838 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232433AbhFRTWO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234386AbhFRTWO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 18 Jun 2021 15:22:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id F25F260041;
-        Fri, 18 Jun 2021 19:20:04 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0887461264;
+        Fri, 18 Jun 2021 19:20:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1624044005;
-        bh=G/EcdgQ0DuLYd012QCvOQ/+ir3Ksi0uVhS5PI/eSs2c=;
+        bh=Xqb8RBZ0ASq4yOAuloDrF09hxGXS96TfbcRI+gmXw9Y=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IRX9kqWnqQ03tXChz6xsOSTwwQtMvNfyyVtvA3t1Bqwiv8gMYFfshRRJQn6Ah9tT4
-         7/0Wb6okHz0szVDcoZPT9Gq6AOS2hq1gDf2cKU8EniI/GY1tuUzKWJYxMMsdYZrjUl
-         mP3YY5vAvhNR1sWxYy2nYKs/6qWca7r5feyP0KJkzIefDEcLowaZXdfR7B1KSDlyYS
-         VciKkX+maVu8BjPNRlmiauu/KmnTFQYy0ipa5YY6SpLbPG8gf8iWM8K3vj7z5Ccn6f
-         kPERmWWMkkfUTQ3Y8o1J8BYJAXVfDQ7/usJJAds2WuJHgw+mCY5/rf48Oa9EFJfH4b
-         Ljd/yVxxyWFqg==
+        b=XeTf4A7zIRZ74HkMH85S1qmVpDNOdMZkU0YGDM23QMbEspRqCv5ggbFNBIAv7elqx
+         PUXwT2QHqI5sy+t8tXYFIctj9xjBStvQxfqxRXC+zN1c+TA/15yQRJhpn73NPoUu3J
+         X9liQa0S1gBA++irh5sFqHIV+2xyP8nbDb8gkdyEyhpSqGLV4RSQVsteg7IjaCJCLf
+         aHLUsOKmczJNQbFYBiLDf+rN4F1A7uS1LGCcAQAscliz2HiVE8Dqw4CHy7X7Fb4gaq
+         +mnHRekmAyTZfUyT6M+X5ubUxkmmdvZUnORzT4S1HBN6Aftt+M5d92z+v021T1qC/v
+         nGaTijIMPC9pw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E128060C29;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EAF8F609D8;
         Fri, 18 Jun 2021 19:20:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 1/2] icmp: don't send out ICMP messages with a source
- address of 0.0.0.0
+Subject: Re: [PATCH 1/4] net: ll_temac: Make sure to free skb when it is
+ completely used
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162404400491.12339.684843147892616211.git-patchwork-notify@kernel.org>
+Message-Id: <162404400495.12339.18313933113853867877.git-patchwork-notify@kernel.org>
 Date:   Fri, 18 Jun 2021 19:20:04 +0000
-References: <20210618110436.91700-1-toke@redhat.com>
-In-Reply-To: <20210618110436.91700-1-toke@redhat.com>
-To:     =?utf-8?b?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHJlZGhhdC5jb20+?=@ci.codeaurora.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, netdev@vger.kernel.org, jch@irif.fr
+References: <d9200a5023973fbe372a2d51dc4e500400450ecd.1624013456.git.esben@geanix.com>
+In-Reply-To: <d9200a5023973fbe372a2d51dc4e500400450ecd.1624013456.git.esben@geanix.com>
+To:     Esben Haabendal <esben@geanix.com>
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, michal.simek@xilinx.com,
+        jesse.brandeburg@intel.com, wanghai38@huawei.com, andrew@lunn.ch,
+        zhangchangzhong@huawei.com, michael@walle.cc,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,29 +50,28 @@ Hello:
 
 This series was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 18 Jun 2021 13:04:35 +0200 you wrote:
-> When constructing ICMP response messages, the kernel will try to pick a
-> suitable source address for the outgoing packet. However, if no IPv4
-> addresses are configured on the system at all, this will fail and we end up
-> producing an ICMP message with a source address of 0.0.0.0. This can happen
-> on a box routing IPv4 traffic via v6 nexthops, for instance.
+On Fri, 18 Jun 2021 12:52:23 +0200 you wrote:
+> With the skb pointer piggy-backed on the TX BD, we have a simple and
+> efficient way to free the skb buffer when the frame has been transmitted.
+> But in order to avoid freeing the skb while there are still fragments from
+> the skb in use, we need to piggy-back on the TX BD of the skb, not the
+> first.
 > 
-> Since 0.0.0.0 is not generally routable on the internet, there's a good
-> chance that such ICMP messages will never make it back to the sender of the
-> original packet that the ICMP message was sent in response to. This, in
-> turn, can create connectivity and PMTUd problems for senders. Fortunately,
-> RFC7600 reserves a dummy address to be used as a source for ICMP
-> messages (192.0.0.8/32), so let's teach the kernel to substitute that
-> address as a last resort if the regular source address selection procedure
-> fails.
+> Without this, we are doing use-after-free on the DMA side, when the first
+> BD of a multi TX BD packet is seen as completed in xmit_done, and the
+> remaining BDs are still being processed.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2,1/2] icmp: don't send out ICMP messages with a source address of 0.0.0.0
-    https://git.kernel.org/netdev/net/c/321827477360
-  - [net,v2,2/2] selftests/net: Add icmp.sh for testing ICMP dummy address responses
-    https://git.kernel.org/netdev/net/c/7e9838b7915e
+  - [1/4] net: ll_temac: Make sure to free skb when it is completely used
+    https://git.kernel.org/netdev/net/c/6aa32217a9a4
+  - [2/4] net: ll_temac: Add memory-barriers for TX BD access
+    https://git.kernel.org/netdev/net/c/28d9fab458b1
+  - [3/4] net: ll_temac: Fix TX BD buffer overwrite
+    https://git.kernel.org/netdev/net/c/c364df2489b8
+  - [4/4] net: ll_temac: Avoid ndo_start_xmit returning NETDEV_TX_BUSY
+    https://git.kernel.org/netdev/net/c/f63963411942
 
 You are awesome, thank you!
 --
