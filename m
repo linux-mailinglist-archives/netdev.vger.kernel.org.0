@@ -2,176 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 245413AD38D
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 22:25:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E1D83AD3A8
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 22:34:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232957AbhFRU1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 16:27:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47728 "EHLO mail.kernel.org"
+        id S233743AbhFRUgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 16:36:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48894 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230430AbhFRU1R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 16:27:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 700E5610CD;
-        Fri, 18 Jun 2021 20:25:07 +0000 (UTC)
+        id S232426AbhFRUgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 16:36:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E092D613C2;
+        Fri, 18 Jun 2021 20:34:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624047907;
-        bh=qWOaz0k+A/bVTWqocwPF3OR0T3dcDZ2Xe+Pt0p8BbGw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RGXT4ju7pBbmB4NABQAQKHCyHH6n4VT00/YRKwJYvZUr7Ow3VgktTGfAYbrB5QoaR
-         a9+LmMN+sv00o+67gpsMYHUAR9fg0nJo7ak2UA3fZM6G9Afu3tFUaYeMv/txJf0eFe
-         j8yiAdL7L5APQyw18UF2tCVrZaRwWMHqjErDOCaSy/VHE6dBR//ajb6PWVDNv17ydn
-         RYDNO4xlYL7A/d7lg8Lx6j6Ap5CJZYJPTYgrbo65sVSxf04PsbLn8yzcDKWFNpVs74
-         1IXx1sDA8whlkBNI+NBBXRhJprxEA/ieqtdR227TUloo51KfgAlh1kLFkVE4ogUJch
-         lUJC9WgCYqPBA==
+        s=k20201202; t=1624048455;
+        bh=5W8Yl37x/lKQbJKp3l0H4IzhQ+LD6ZAEqjkucLg9S9g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=m4u9sMOiQEZDlL5mQtfnM99lBTPwP6VPJxjke8jQEBDAd9eVsk+8JuDHmN867vvkj
+         MFYa73AEmK3czLhfOJPutNOs7o932h3hwQhXqW/Ar0FnQoXCKASJXr+hQITAiL2HgT
+         WxtlEHuLQ/LKWbdklWOVsYSSujg+EtCRciSl4rJ02JbFHGnDCZslBtyJmF/8R7d3qS
+         GEQ/HSDDAp/ldzmB1PhJ+vjqAiNSFphpDoFSIKrbhu4HEbT/r3QgbVgQLQ8WrqwGPV
+         ikqlNJQuhIcCaOEfhHoZ3zyiKY/2mVK8A3Uq7B1QuhVg92jzkdPgtLigqN9wK1fXKr
+         e3xvtEaex6PhA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        shuah@kernel.org, vfedorenko@novek.ru,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 2/2] selftests: tls: fix chacha+bidir tests
-Date:   Fri, 18 Jun 2021 13:25:04 -0700
-Message-Id: <20210618202504.1435179-2-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, borisp@nvidia.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net, davejwatson@fb.com,
+        ilyal@mellanox.com, aviadye@mellanox.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        Seth Forshee <seth.forshee@canonical.com>
+Subject: [PATCH net] tls: prevent oversized sendfile() hangs by ignoring MSG_MORE
+Date:   Fri, 18 Jun 2021 13:34:06 -0700
+Message-Id: <20210618203406.1437414-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210618202504.1435179-1-kuba@kernel.org>
-References: <20210618202504.1435179-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ChaCha support did not adjust the bidirectional test.
-We need to set up KTLS in reverse direction correctly,
-otherwise these two cases will fail:
+We got multiple reports that multi_chunk_sendfile test
+case from tls selftest fails. This was sort of expected,
+as the original fix was never applied (see it in the first
+Link:). The test in question uses sendfile() with count
+larger than the size of the underlying file. This will
+make splice set MSG_MORE on all sendpage calls, meaning
+TLS will never close and flush the last partial record.
 
-  tls.12_chacha.bidir
-  tls.13_chacha.bidir
+Eric seem to have addressed a similar problem in
+commit 35f9c09fe9c7 ("tcp: tcp_sendpages() should call tcp_push() once")
+by introducing MSG_SENDPAGE_NOTLAST. Unlike MSG_MORE
+MSG_SENDPAGE_NOTLAST is not set on the last call
+of a "pipefull" of data (PIPE_DEF_BUFFERS == 16,
+so every 16 pages or whenever we run out of data).
 
-Fixes: 4f336e88a870 ("selftests/tls: add CHACHA20-POLY1305 to tls selftests")
+Having a break every 16 pages should be fine, TLS
+can pack exactly 4 pages into a record, so for
+aligned reads there should be no difference,
+unaligned may see one extra record per sendpage().
+
+Sticking to TCP semantics seems preferable to modifying
+splice, but we can revisit it if real life scenarios
+show a regression.
+
+Reported-by: Vadim Fedorenko <vfedorenko@novek.ru>
+Reported-by: Seth Forshee <seth.forshee@canonical.com>
+Link: https://lore.kernel.org/netdev/1591392508-14592-1-git-send-email-pooja.trivedi@stackpath.com/
+Fixes: 3c4d7559159b ("tls: kernel TLS support")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/testing/selftests/net/tls.c | 67 ++++++++++++++++++-------------
- 1 file changed, 39 insertions(+), 28 deletions(-)
+ net/tls/tls_sw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-index 58fea6eb588d..112d41d01b12 100644
---- a/tools/testing/selftests/net/tls.c
-+++ b/tools/testing/selftests/net/tls.c
-@@ -25,6 +25,35 @@
- #define TLS_PAYLOAD_MAX_LEN 16384
- #define SOL_TLS 282
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 694de024d0ee..74e5701034aa 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -1153,7 +1153,7 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
+ 	int ret = 0;
+ 	bool eor;
  
-+struct tls_crypto_info_keys {
-+	union {
-+		struct tls12_crypto_info_aes_gcm_128 aes128;
-+		struct tls12_crypto_info_chacha20_poly1305 chacha20;
-+	};
-+	size_t len;
-+};
-+
-+static void tls_crypto_info_init(uint16_t tls_version, uint16_t cipher_type,
-+				 struct tls_crypto_info_keys *tls12)
-+{
-+	memset(tls12, 0, sizeof(*tls12));
-+
-+	switch (cipher_type) {
-+	case TLS_CIPHER_CHACHA20_POLY1305:
-+		tls12->len = sizeof(struct tls12_crypto_info_chacha20_poly1305);
-+		tls12->chacha20.info.version = tls_version;
-+		tls12->chacha20.info.cipher_type = cipher_type;
-+		break;
-+	case TLS_CIPHER_AES_GCM_128:
-+		tls12->len = sizeof(struct tls12_crypto_info_aes_gcm_128);
-+		tls12->aes128.info.version = tls_version;
-+		tls12->aes128.info.cipher_type = cipher_type;
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- static void memrnd(void *s, size_t n)
- {
- 	int *dword = s;
-@@ -145,33 +174,16 @@ FIXTURE_VARIANT_ADD(tls, 13_chacha)
+-	eor = !(flags & (MSG_MORE | MSG_SENDPAGE_NOTLAST));
++	eor = !(flags & MSG_SENDPAGE_NOTLAST);
+ 	sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
  
- FIXTURE_SETUP(tls)
- {
--	union {
--		struct tls12_crypto_info_aes_gcm_128 aes128;
--		struct tls12_crypto_info_chacha20_poly1305 chacha20;
--	} tls12;
-+	struct tls_crypto_info_keys tls12;
- 	struct sockaddr_in addr;
- 	socklen_t len;
- 	int sfd, ret;
--	size_t tls12_sz;
- 
- 	self->notls = false;
- 	len = sizeof(addr);
- 
--	memset(&tls12, 0, sizeof(tls12));
--	switch (variant->cipher_type) {
--	case TLS_CIPHER_CHACHA20_POLY1305:
--		tls12_sz = sizeof(struct tls12_crypto_info_chacha20_poly1305);
--		tls12.chacha20.info.version = variant->tls_version;
--		tls12.chacha20.info.cipher_type = variant->cipher_type;
--		break;
--	case TLS_CIPHER_AES_GCM_128:
--		tls12_sz = sizeof(struct tls12_crypto_info_aes_gcm_128);
--		tls12.aes128.info.version = variant->tls_version;
--		tls12.aes128.info.cipher_type = variant->cipher_type;
--		break;
--	default:
--		tls12_sz = 0;
--	}
-+	tls_crypto_info_init(variant->tls_version, variant->cipher_type,
-+			     &tls12);
- 
- 	addr.sin_family = AF_INET;
- 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-@@ -199,7 +211,7 @@ FIXTURE_SETUP(tls)
- 
- 	if (!self->notls) {
- 		ret = setsockopt(self->fd, SOL_TLS, TLS_TX, &tls12,
--				 tls12_sz);
-+				 tls12.len);
- 		ASSERT_EQ(ret, 0);
- 	}
- 
-@@ -212,7 +224,7 @@ FIXTURE_SETUP(tls)
- 		ASSERT_EQ(ret, 0);
- 
- 		ret = setsockopt(self->cfd, SOL_TLS, TLS_RX, &tls12,
--				 tls12_sz);
-+				 tls12.len);
- 		ASSERT_EQ(ret, 0);
- 	}
- 
-@@ -854,18 +866,17 @@ TEST_F(tls, bidir)
- 	int ret;
- 
- 	if (!self->notls) {
--		struct tls12_crypto_info_aes_gcm_128 tls12;
-+		struct tls_crypto_info_keys tls12;
- 
--		memset(&tls12, 0, sizeof(tls12));
--		tls12.info.version = variant->tls_version;
--		tls12.info.cipher_type = TLS_CIPHER_AES_GCM_128;
-+		tls_crypto_info_init(variant->tls_version, variant->cipher_type,
-+				     &tls12);
- 
- 		ret = setsockopt(self->fd, SOL_TLS, TLS_RX, &tls12,
--				 sizeof(tls12));
-+				 tls12.len);
- 		ASSERT_EQ(ret, 0);
- 
- 		ret = setsockopt(self->cfd, SOL_TLS, TLS_TX, &tls12,
--				 sizeof(tls12));
-+				 tls12.len);
- 		ASSERT_EQ(ret, 0);
- 	}
- 
+ 	/* Call the sk_stream functions to manage the sndbuf mem. */
 -- 
 2.31.1
 
