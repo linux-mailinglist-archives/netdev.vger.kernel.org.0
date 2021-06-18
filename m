@@ -2,163 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1B23AC154
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 05:30:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD453AC17A
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 05:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232059AbhFRDbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 23:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38950 "EHLO
+        id S232258AbhFRDmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 23:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230484AbhFRDbk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 23:31:40 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A86C061574
-        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 20:29:31 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id w21so6622098edv.3
-        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 20:29:31 -0700 (PDT)
+        with ESMTP id S232179AbhFRDmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 23:42:46 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C20CC0613A3
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 20:40:37 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id d7so6713621edx.0
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 20:40:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=RMJgBEdiibhwSUyvuLKFkBrL4/U8fE/jxx04irYLGbA=;
-        b=av/95B/MiI0xJSuNnIDSIou3GubtAy+v+Cj0IrEJ68VjpsLdRM7w3o1oORGPuxM9E9
-         WcXBTXk69tPR+JRT9pirwPl1i4rEmPN+ROSzO+PpYUb6DGevaUs4cQChuJ9gWp9jybLU
-         337xsWnlSDEFmVS8b9WCf45xojO+ucnKBtO3ThsQgErg6gNQGMsF1NJtWAQTA+IzuLEE
-         lYIbqpRQcPEBixvBPRcSDXBPAnVFOEE11AW5zQ6nXaMHXzougZshHL3HBZOa0i1hhh2b
-         I2Et2SNidVGS73kG8qlrW1IyTkcBNKTv++J6c5+xl/hwwNMONF8NwQMk+WXrJ33LwaNC
-         opBw==
+        bh=v3U6tSssyiyTmySewt2Ln0yQu0gc7Qdpf16AvD+Xaxk=;
+        b=2IcUlThUD9BpN0YyQAHGmGcQr5S6gOJpFAuAjkTFZTnpzRn9tzKgvjENS7ySkBTDUb
+         WVu8rDNnk4oMaPDWaYfJqGQq5hspjx3UAm8iGpqhN5Tm3s/4JNu9ecnP/aWmJefz9KgA
+         jyaF4PQvWKhcAMY06wY9zLmJ3F3grfHwVu/lTteAZll8NquJe5RM3crl0S/T9nJz4lga
+         qE6I+1oXf+z4XpHgtSakyooDjOifTHlFJYDjvZrRG53E21pvvJVkEQhe7yTOwfRW+SR3
+         lPE0DbuCzB2/MU+0Ln8LRSJFFCt8crMBcGon76/h7fb0x+sFtOdRmHlxhubL8TVLcdkW
+         w8MQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RMJgBEdiibhwSUyvuLKFkBrL4/U8fE/jxx04irYLGbA=;
-        b=kRQQ9WkOs46BQf0GvT+rp96tQrt6FwLYBkXNtdPIBRywEFYq3QHO0iE+AVuNmDEkTX
-         0AhpmOLuqVy+KiOShnpqBDehTEUt5DJR8LuGKSI9FY+FGoqvprOyQDIdnu4Lp+rwGg9F
-         fgFR2ZTrM3g3laYZpGLbedxs7AMFK8KtHX0RvDD6jegYabfmtwVMCnWyM771mMz7Ma58
-         Kgzj4UOJ1tRE0pWCRlktukrZhev7pZjouwSeED1DrUk5+1t7JNWPJeuGN+pKL8plkSx5
-         a/0UzlZTHgL1w4cpdJl/lZ9t3vuDbo74CT5ZsSDNTOTF7y+mNvOqt8z/LdXY1lynnUZ+
-         rsXA==
-X-Gm-Message-State: AOAM531xIOrbtAvd15v7PvCxYpULRzSceEVqNMBmAItQl+yNI5d/qUm0
-        +Mc8sVjeo8BEddsSQV7YXMIxEbODFmJx/YtYrM1F
-X-Google-Smtp-Source: ABdhPJykGigJ4CmNJwWRgh5x2T6MNjBJPAc2OA16hTcBQrCjxSZwuj53EmfZdOWUW2UcDeCGl7ONh7uq9+Uou058YZU=
-X-Received: by 2002:aa7:d9d3:: with SMTP id v19mr2042806eds.145.1623986969936;
- Thu, 17 Jun 2021 20:29:29 -0700 (PDT)
+        bh=v3U6tSssyiyTmySewt2Ln0yQu0gc7Qdpf16AvD+Xaxk=;
+        b=qESFLlI3ZIn0GuTlMenM6spHt2po2L/Vt+1Tx4EAC+lSwp9cTtLaCFNXJDgdxZkoRh
+         fZYPB0mbLhxKYj0xzylLZnesa8X6JpBN9qGXBhFD8LsMXzuUDM40BHWbBKJR2BVGTUFg
+         dqVHJaNDD523Hg5lY9XY/HcDdeVa/rB/Nx3MvlISJX7+kX5cEnTJztXENPXxf2F9zmXm
+         iHpOaPGZkb9qJ+RYgHhOqOnTCGWp7OL4GEH0twqvi8s6fWLHj+DJZFfxOX1z/LbzhoGJ
+         VeZfWQ0mA4LR1GCL9ri+Luytf4E1dsfbw9a9AF1mKd/ksJYrixcNf/6z0R4g+P2pI0Em
+         c7Qg==
+X-Gm-Message-State: AOAM5310zIjVaFdtsTwQ+vMX4OvhNKVDxhuWxJV3mr8bItY1A0uF+YlH
+        IpMaR8v3ECBMPe/P5NkRC5QyILrK6322NaliNv/Q
+X-Google-Smtp-Source: ABdhPJw5b/xZ/eb8rl7JdfhOxmPvL4XDmYW6VYxutA0Sjq6NM72bhKaQUg+rtX3S00r5obIGVrm+f+Zrvy0193ShGoE=
+X-Received: by 2002:a05:6402:1771:: with SMTP id da17mr2074259edb.31.1623987634898;
+ Thu, 17 Jun 2021 20:40:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210615141331.407-1-xieyongji@bytedance.com> <20210615141331.407-4-xieyongji@bytedance.com>
- <8aeac914-7602-7323-31bd-71015a26f74c@windriver.com>
-In-Reply-To: <8aeac914-7602-7323-31bd-71015a26f74c@windriver.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Fri, 18 Jun 2021 11:29:19 +0800
-Message-ID: <CACycT3t1Dgrzsr7LbBrDhRLDa3qZ85ZOgj9H7r1fqPi-kf7r6Q@mail.gmail.com>
-Subject: Re: Re: [PATCH v8 03/10] eventfd: Increase the recursion depth of eventfd_signal()
-To:     He Zhe <zhe.he@windriver.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        qiang.zhang@windriver.com
+References: <20210616085118.1141101-1-omosnace@redhat.com>
+In-Reply-To: <20210616085118.1141101-1-omosnace@redhat.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 17 Jun 2021 23:40:24 -0400
+Message-ID: <CAHC9VhSr2KpeBXuyoHR3_hs+qczFUaBx0oCSMfBBA5UNYU+0KA@mail.gmail.com>
+Subject: Re: [PATCH v3] lockdown,selinux: fix wrong subject in some SELinux
+ lockdown checks
+To:     Ondrej Mosnacek <omosnace@redhat.com>
+Cc:     linux-security-module@vger.kernel.org,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        selinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        x86@kernel.org, linux-acpi@vger.kernel.org,
+        linux-cxl@vger.kernel.org, linux-efi@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Casey Schaufler <casey@schaufler-ca.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 17, 2021 at 4:34 PM He Zhe <zhe.he@windriver.com> wrote:
+On Wed, Jun 16, 2021 at 4:51 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
 >
+> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
+> lockdown") added an implementation of the locked_down LSM hook to
+> SELinux, with the aim to restrict which domains are allowed to perform
+> operations that would breach lockdown.
 >
+> However, in several places the security_locked_down() hook is called in
+> situations where the current task isn't doing any action that would
+> directly breach lockdown, leading to SELinux checks that are basically
+> bogus.
 >
-> On 6/15/21 10:13 PM, Xie Yongji wrote:
-> > Increase the recursion depth of eventfd_signal() to 1. This
-> > is the maximum recursion depth we have found so far, which
-> > can be triggered with the following call chain:
-> >
-> >     kvm_io_bus_write                        [kvm]
-> >       --> ioeventfd_write                   [kvm]
-> >         --> eventfd_signal                  [eventfd]
-> >           --> vhost_poll_wakeup             [vhost]
-> >             --> vduse_vdpa_kick_vq          [vduse]
-> >               --> eventfd_signal            [eventfd]
-> >
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > Acked-by: Jason Wang <jasowang@redhat.com>
+> To fix this, add an explicit struct cred pointer argument to
+> security_lockdown() and define NULL as a special value to pass instead
+> of current_cred() in such situations. LSMs that take the subject
+> credentials into account can then fall back to some default or ignore
+> such calls altogether. In the SELinux lockdown hook implementation, use
+> SECINITSID_KERNEL in case the cred argument is NULL.
 >
-> The fix had been posted one year ago.
+> Most of the callers are updated to pass current_cred() as the cred
+> pointer, thus maintaining the same behavior. The following callers are
+> modified to pass NULL as the cred pointer instead:
+> 1. arch/powerpc/xmon/xmon.c
+>      Seems to be some interactive debugging facility. It appears that
+>      the lockdown hook is called from interrupt context here, so it
+>      should be more appropriate to request a global lockdown decision.
+> 2. fs/tracefs/inode.c:tracefs_create_file()
+>      Here the call is used to prevent creating new tracefs entries when
+>      the kernel is locked down. Assumes that locking down is one-way -
+>      i.e. if the hook returns non-zero once, it will never return zero
+>      again, thus no point in creating these files. Also, the hook is
+>      often called by a module's init function when it is loaded by
+>      userspace, where it doesn't make much sense to do a check against
+>      the current task's creds, since the task itself doesn't actually
+>      use the tracing functionality (i.e. doesn't breach lockdown), just
+>      indirectly makes some new tracepoints available to whoever is
+>      authorized to use them.
+> 3. net/xfrm/xfrm_user.c:copy_to_user_*()
+>      Here a cryptographic secret is redacted based on the value returned
+>      from the hook. There are two possible actions that may lead here:
+>      a) A netlink message XFRM_MSG_GETSA with NLM_F_DUMP set - here the
+>         task context is relevant, since the dumped data is sent back to
+>         the current task.
+>      b) When adding/deleting/updating an SA via XFRM_MSG_xxxSA, the
+>         dumped SA is broadcasted to tasks subscribed to XFRM events -
+>         here the current task context is not relevant as it doesn't
+>         represent the tasks that could potentially see the secret.
+>      It doesn't seem worth it to try to keep using the current task's
+>      context in the a) case, since the eventual data leak can be
+>      circumvented anyway via b), plus there is no way for the task to
+>      indicate that it doesn't care about the actual key value, so the
+>      check could generate a lot of "false alert" denials with SELinux.
+>      Thus, let's pass NULL instead of current_cred() here faute de
+>      mieux.
 >
-> https://lore.kernel.org/lkml/20200410114720.24838-1-zhe.he@windriver.com/
->
+> Improvements-suggested-by: Casey Schaufler <casey@schaufler-ca.com>
+> Improvements-suggested-by: Paul Moore <paul@paul-moore.com>
+> Fixes: 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
+> Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
 
-OK, so it seems to be a fix for the RT system if my understanding is
-correct? Any reason why it's not merged? I'm happy to rebase my series
-on your patch if you'd like to repost it.
+This seems reasonable to me, but before I merge it into the SELinux
+tree I think it would be good to get some ACKs from the relevant
+subsystem folks.  I don't believe we ever saw a response to the last
+question for the PPC folks, did we?
 
-BTW, I also notice another thread for this issue:
-
-https://lore.kernel.org/linux-fsdevel/DM6PR11MB420291B550A10853403C7592FF349@DM6PR11MB4202.namprd11.prod.outlook.com/T/
-
+> ---
 >
-> > ---
-> >  fs/eventfd.c            | 2 +-
-> >  include/linux/eventfd.h | 5 ++++-
-> >  2 files changed, 5 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/fs/eventfd.c b/fs/eventfd.c
-> > index e265b6dd4f34..cc7cd1dbedd3 100644
-> > --- a/fs/eventfd.c
-> > +++ b/fs/eventfd.c
-> > @@ -71,7 +71,7 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
-> >        * it returns true, the eventfd_signal() call should be deferred to a
-> >        * safe context.
-> >        */
-> > -     if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
-> > +     if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count) > EFD_WAKE_DEPTH))
-> >               return 0;
-> >
-> >       spin_lock_irqsave(&ctx->wqh.lock, flags);
-> > diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
-> > index fa0a524baed0..886d99cd38ef 100644
-> > --- a/include/linux/eventfd.h
-> > +++ b/include/linux/eventfd.h
-> > @@ -29,6 +29,9 @@
-> >  #define EFD_SHARED_FCNTL_FLAGS (O_CLOEXEC | O_NONBLOCK)
-> >  #define EFD_FLAGS_SET (EFD_SHARED_FCNTL_FLAGS | EFD_SEMAPHORE)
-> >
-> > +/* Maximum recursion depth */
-> > +#define EFD_WAKE_DEPTH 1
-> > +
-> >  struct eventfd_ctx;
-> >  struct file;
-> >
-> > @@ -47,7 +50,7 @@ DECLARE_PER_CPU(int, eventfd_wake_count);
-> >
-> >  static inline bool eventfd_signal_count(void)
-> >  {
-> > -     return this_cpu_read(eventfd_wake_count);
-> > +     return this_cpu_read(eventfd_wake_count) > EFD_WAKE_DEPTH;
+> v3:
+> - add the cred argument to security_locked_down() and adapt all callers
+> - keep using current_cred() in BPF, as the hook calls have been shifted
+>   to program load time (commit ff40e51043af ("bpf, lockdown, audit: Fix
+>   buggy SELinux lockdown permission checks"))
+> - in SELinux, don't ignore hook calls where cred == NULL, but use
+>   SECINITSID_KERNEL as the subject instead
+> - update explanations in the commit message
 >
-> count is just count. How deep is acceptable should be put
-> where eventfd_signal_count is called.
+> v2: https://lore.kernel.org/lkml/20210517092006.803332-1-omosnace@redhat.com/
+> - change to a single hook based on suggestions by Casey Schaufler
 >
+> v1: https://lore.kernel.org/lkml/20210507114048.138933-1-omosnace@redhat.com/
+>
+>  arch/powerpc/xmon/xmon.c             |  4 ++--
+>  arch/x86/kernel/ioport.c             |  4 ++--
+>  arch/x86/kernel/msr.c                |  4 ++--
+>  arch/x86/mm/testmmiotrace.c          |  2 +-
+>  drivers/acpi/acpi_configfs.c         |  2 +-
+>  drivers/acpi/custom_method.c         |  2 +-
+>  drivers/acpi/osl.c                   |  3 ++-
+>  drivers/acpi/tables.c                |  2 +-
+>  drivers/char/mem.c                   |  2 +-
+>  drivers/cxl/mem.c                    |  2 +-
+>  drivers/firmware/efi/efi.c           |  2 +-
+>  drivers/firmware/efi/test/efi_test.c |  2 +-
+>  drivers/pci/pci-sysfs.c              |  6 +++---
+>  drivers/pci/proc.c                   |  6 +++---
+>  drivers/pci/syscall.c                |  2 +-
+>  drivers/pcmcia/cistpl.c              |  2 +-
+>  drivers/tty/serial/serial_core.c     |  2 +-
+>  fs/debugfs/file.c                    |  2 +-
+>  fs/debugfs/inode.c                   |  2 +-
+>  fs/proc/kcore.c                      |  2 +-
+>  fs/tracefs/inode.c                   |  2 +-
+>  include/linux/lsm_hook_defs.h        |  2 +-
+>  include/linux/lsm_hooks.h            |  1 +
+>  include/linux/security.h             |  4 ++--
+>  kernel/bpf/helpers.c                 | 10 ++++++----
+>  kernel/events/core.c                 |  2 +-
+>  kernel/kexec.c                       |  2 +-
+>  kernel/kexec_file.c                  |  2 +-
+>  kernel/module.c                      |  2 +-
+>  kernel/params.c                      |  2 +-
+>  kernel/power/hibernate.c             |  3 ++-
+>  kernel/trace/bpf_trace.c             | 20 ++++++++++++--------
+>  kernel/trace/ftrace.c                |  4 ++--
+>  kernel/trace/ring_buffer.c           |  2 +-
+>  kernel/trace/trace.c                 | 10 +++++-----
+>  kernel/trace/trace_events.c          |  2 +-
+>  kernel/trace/trace_events_hist.c     |  4 ++--
+>  kernel/trace/trace_events_synth.c    |  2 +-
+>  kernel/trace/trace_events_trigger.c  |  2 +-
+>  kernel/trace/trace_kprobe.c          |  6 +++---
+>  kernel/trace/trace_printk.c          |  2 +-
+>  kernel/trace/trace_stack.c           |  2 +-
+>  kernel/trace/trace_stat.c            |  2 +-
+>  kernel/trace/trace_uprobe.c          |  4 ++--
+>  net/xfrm/xfrm_user.c                 | 11 +++++++++--
+>  security/lockdown/lockdown.c         |  3 ++-
+>  security/security.c                  |  4 ++--
+>  security/selinux/hooks.c             |  7 +++++--
+>  48 files changed, 97 insertions(+), 77 deletions(-)
 
-The return value of this function is boolean rather than integer.
-Please see the comments in eventfd_signal():
-
-"then it should check eventfd_signal_count() before calling this
-function. If it returns true, the eventfd_signal() call should be
-deferred to a safe context."
-
-Thanks,
-Yongji
+-- 
+paul moore
+www.paul-moore.com
