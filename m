@@ -2,65 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FF393AD276
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 21:00:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 283913AD27F
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 21:05:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235365AbhFRTCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 15:02:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231589AbhFRTCN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 15:02:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D610F611B0;
-        Fri, 18 Jun 2021 19:00:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624042803;
-        bh=A2Rlmp2CAn41txesR3WXlK2V201i9HjRH+7b5YHh1oI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GevRAvQPV5we6Vq8rxZwbM2uM2sQZLi+sNjkHXsx1dM9rUpMmZSOeKGp5rQjEdhRN
-         CP+cpdiCZN8YRuuqvLqMCyKedU7phdlKHIkBD3hZ1Q+Yu+GCk4A0tPNcZaBc77baa9
-         wQbHpj8H+UBmaW5GeyeKVTFMsA1Ey+2sD2d9Ir5+9jQAMyfj2CVOmSAuWczMusgxOD
-         nxvEPge1/YUclaVSJqCzg7Th/uyp5NRf9TU5bUDCZ/OeA6C3Ux2GeF6+oZHi9UiwZ3
-         yan9ScWEMnv+y7AnnzMvv9lyh6dp3YYdJhDhMN6PhhRdIz0n/44hWZJkxIL3gOOKeR
-         l1pZoynqji7TA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C8C6360CDF;
-        Fri, 18 Jun 2021 19:00:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234643AbhFRTHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 15:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229848AbhFRTHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 15:07:14 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ADAC061574
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 12:05:04 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id s15so9946203edt.13
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 12:05:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=InFDEGKC2QscmOhpxTDMf9HUFBmB/LgZPJnIwcKnPTQ=;
+        b=ahMENiKkmAR8uCnp8xipzJN4N7JXUgtH7/TQS+yk+R6rywi/hX9CJdat+U/xFmUk4r
+         hat5TYBzYc5X54RdltIGEGX6NfVBMsdMxfkUG9PgO1DxMw0qE0QWJAAfQ4PBKuLAulaJ
+         YhQaBz3dmSsJl3E5+BqXnPqEIFkB3xapzDr3DgoxxZkWC8+4Somn3WCfYwF5PQhCN+qU
+         6xI3ArYXtsT8C0cbOpoLwYpI0ovpefBeiSkGOuyL0diV45C/MNmowJ3mIasRpYbzxlaa
+         pO3NlLLaR9ODZTxvCgfMetoSWF1cqDUWCiZvcru2IW1kwDQ9PEedX60w51UsupezSY8H
+         JLgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=InFDEGKC2QscmOhpxTDMf9HUFBmB/LgZPJnIwcKnPTQ=;
+        b=aNQjrktOXriQ+zV13/Rywa2YgyEa66GY9Bx7y38TWGdJpaGuCPJrXGUcULRWcvWK3q
+         IQr4aVz5UKhx3KiFBHYWG20geSceB+/MlSOPLaTYaKGeeASLM2mtEYWDNtoexPH+Cm1y
+         qS7KLwXrSZV1pBGbztR6tXwY40cGkOvG+WQYyfH1myfys6Zs4QXmY25pqqL9RP9wrnCY
+         Vd2k9mX9vdhKTlpXt5uTpZc8Puet/sZrB8MulobleTM4DtdR4QGcBbOJoTOdNctDIY6I
+         pT/V0ssGvkw1Js2u29fB3CwdzsUBl0YFaBMyli0RqT7UvrEbsqg8AyXZ6N6J6ld9KLcC
+         3Zmw==
+X-Gm-Message-State: AOAM531G0o+FFNQHi+cp0xw4T1bB7HxLo6u2TtatsrZU6hCwtEuXn/vq
+        bVfJmyc+vjRvKiGrWaqSDDy9pxlEOJc=
+X-Google-Smtp-Source: ABdhPJzre7LL7imzb0dHpsABf90cgcu1A2O38B5bpZSpr8TeeFxw4t5we9Ji9ENd+lLIYyZn9ZO0dw==
+X-Received: by 2002:a50:d943:: with SMTP id u3mr7258744edj.175.1624043102821;
+        Fri, 18 Jun 2021 12:05:02 -0700 (PDT)
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
+        by smtp.gmail.com with ESMTPSA id z3sm6449508edb.58.2021.06.18.12.05.01
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Jun 2021 12:05:01 -0700 (PDT)
+Received: by mail-wm1-f51.google.com with SMTP id c84so6223939wme.5
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 12:05:01 -0700 (PDT)
+X-Received: by 2002:a05:600c:19ce:: with SMTP id u14mr13438640wmq.169.1624043100534;
+ Fri, 18 Jun 2021 12:05:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv2] cxgb4: fix wrong shift.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162404280381.1350.4674309237695129409.git-patchwork-notify@kernel.org>
-Date:   Fri, 18 Jun 2021 19:00:03 +0000
-References: <20210618092948.GA19615@duo.ucw.cz>
-In-Reply-To: <20210618092948.GA19615@duo.ucw.cz>
-To:     Pavel Machek <pavel@denx.de>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        colin.king@canonical.com, rajur@chelsio.com, kuba@kernel.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org
+References: <20210618045556.1260832-1-kuba@kernel.org>
+In-Reply-To: <20210618045556.1260832-1-kuba@kernel.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 18 Jun 2021 15:04:22 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSc+x+ePvvmLGWvau-XEye6fuN398aHsJiCCnfM6bPfDoA@mail.gmail.com>
+Message-ID: <CA+FuTSc+x+ePvvmLGWvau-XEye6fuN398aHsJiCCnfM6bPfDoA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: vlan: pass thru all GSO_SOFTWARE in hw_enc_features
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, dcaratti@redhat.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Jun 18, 2021 at 12:56 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Currently UDP tunnel devices on top of VLANs lose the ability
+> to offload UDP GSO. Widen the pass thru features from TSO
+> to all GSO_SOFTWARE.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri, 18 Jun 2021 11:29:48 +0200 you wrote:
-> While fixing coverity warning, commit dd2c79677375 introduced typo in
-> shift value. Fix that.
-> 
-> Signed-off-by: Pavel Machek (CIP) <pavel@denx.de>
-> Fixes: dd2c79677375 ("cxgb4: Fix unintentional sign extension issues")
-
-Here is the summary with links:
-  - [PATCHv2] cxgb4: fix wrong shift.
-    https://git.kernel.org/netdev/net/c/39eb028183bc
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Acked-by: Willem de Bruijn <willemb@google.com>
