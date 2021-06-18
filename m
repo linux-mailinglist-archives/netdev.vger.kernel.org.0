@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28FFF3AD22D
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:30:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E9CE3AD22E
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235173AbhFRSc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 14:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43820 "EHLO
+        id S235222AbhFRSdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 14:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234865AbhFRScq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:32:46 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4AAC0617A8
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:37 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id u24so9796046edy.11
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:36 -0700 (PDT)
+        with ESMTP id S233791AbhFRScs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:32:48 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291E4C061574
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:38 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id ho18so17247258ejc.8
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7OCEoq1hjGxlJE++ChuaWucYdz2CNykMHpgEYv142dg=;
-        b=KSbuZsd8AXX+KAQQJdd5xwvKPSPdQ0RQF8gAi8SmvyVlhpt0INmMWJ7lKyRhbuadSg
-         ZUYKjcQ99eLnJ8kBjvyqI5b3qotTulDGHD5kUgQRSxd9y3W9uAKtcJ+yQ+NLEGyOun0I
-         abgw9pVitpPnpng3DZ5jeGSEGMX57ZQVWeSJeF4yBZQJLkeii1eETqILnErO6uk+9jEE
-         Y56TjtQbl4NVL7H9jhZPjSGQdhggUOKCm0+SpAxKjHgjTXPzhkpKXlPf/9cFuAJRqZ0+
-         G8yGSnNkJhKOV2n7QryTxRcCXkJeWJJOu4Vw6D7JWKOvd5QEYq4jX8gqcuH8ncYbTGvu
-         Eieg==
+        bh=oDUgR9pnsaWBDFSwkrbZ0JZ9Qg981RAkrXovwQDOhgQ=;
+        b=pxbY3LYWKE/yaOMQj2SXrlTCm7Ksg/sctj0LRwj+LV557IddBJeCNrl+4PJAju3F+r
+         cxZYoKfHQ1evQrCfJcIMWq/tYdjDypFmwYL2nlBu6o0lS7/oWVd4KvJ349iZbJX0ncOu
+         AkmvcdHyhEaxEPNcxd4z3+Z9XB2gWW3L2UyQyFTUj2z66aewbLphYKb0i4DLy9OkHBRC
+         969NTYqjGFkjd11EW7MM2L07AjNjPk90hPZWSlCnThOj0wzai9O8yYbOU2KfV4Xn+nrP
+         oCoojP5Ei8zNLikqBLXhGSYSo0nK4zVsmp1ch6LSbBZjKNDsfLH9hej2F0mST6OFnDxJ
+         lLzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7OCEoq1hjGxlJE++ChuaWucYdz2CNykMHpgEYv142dg=;
-        b=eQwL8CzgHVlYYGuVh5p25g8HeT39Oix44YEwbrAfpRgphGtaGlqSAHitZ+TrkktxLT
-         yQzavKDl6D9a70q2f2PFG9CshgHgyq8OXT6AI4WIm4Z76kkEIzvjiKupIx/s3EuJN+4B
-         cVu2J4t06IG9IyhnIce55Gjmw0KsVI7AlG4v2hj4vTtObaY2yNdmBEJlSGsL6XRNaVkh
-         TsAqXR79iRmq3uvMyEiFMH/gBB4dYODs1Wx9mmmcfYcLgoYq3pqmC2KG7C89T6JM99Pf
-         RY4gMBp+WwQc5cnzyFzfzQlBHnGTKiJUulkb7pHdeNFvyr9naFoCOh0j5QrkX46+Tphz
-         7LbQ==
-X-Gm-Message-State: AOAM533hBvH/KSWIS2XvH5vFBB1hdUAxZmkHIviA5bloRv3e9c3rBA1T
-        3JtgEuHYbxI0Agw111wSz1U=
-X-Google-Smtp-Source: ABdhPJy9GtUl11A96o8ynfC/AdnDhfyL9w5CsRlCgsao0K+OGawXe9E7I2zclovUI3+fyhIsh9VnVw==
-X-Received: by 2002:a05:6402:10cc:: with SMTP id p12mr6980092edu.328.1624041035645;
-        Fri, 18 Jun 2021 11:30:35 -0700 (PDT)
+        bh=oDUgR9pnsaWBDFSwkrbZ0JZ9Qg981RAkrXovwQDOhgQ=;
+        b=SrQuCOyWMSNESNoz8s70MbWxJTC3JAZxxJ2ZOJHLJj8wGLKegCfLJsswRTK5276JQp
+         7i9c79dfqdh1gD4SVJNSbaEG/W+skWy1JTJM2Gcl45s0lyX/Tk8Lm9mXxfQEQ1ToDbue
+         EDc5qSM9+I09Mcqr2X2zWX3ATI13pUqBy65QbuWg+d9gB17BCYoSefofB/5p16NaA2If
+         4frdjVNKym3REPK0FqEzIzoKq+Vxfh2yNC87245h38E8bIHCqB+3mPPcjKtWOgMkctw1
+         WJ9qUUsJcUiwMSj6vi1V29kKR62uwSvP02LEJDDzZWK8INlZAqLf5hg0fxpL787E+yy1
+         z3vg==
+X-Gm-Message-State: AOAM532RgpuJpYvXTVpZ51HYlhxaJ0wcReKdofntKfuEjIUnyjZfv42S
+        OxtRpy+eJB/YqKQv5jRK8go=
+X-Google-Smtp-Source: ABdhPJz53sSkq0aq9h74vaoz7IZpjDq/JYeZNoWAnpUM9XJ7+6Kzn0ONEbhvKCdeFxgAWQPpoYNKFA==
+X-Received: by 2002:a17:906:dffc:: with SMTP id lc28mr12134785ejc.96.1624041036759;
+        Fri, 18 Jun 2021 11:30:36 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id s11sm6071988edd.65.2021.06.18.11.30.34
+        by smtp.gmail.com with ESMTPSA id s11sm6071988edd.65.2021.06.18.11.30.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 11:30:34 -0700 (PDT)
+        Fri, 18 Jun 2021 11:30:36 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 5/6] net: dsa: targeted MTU notifiers should only match on one port
-Date:   Fri, 18 Jun 2021 21:30:16 +0300
-Message-Id: <20210618183017.3340769-6-olteanv@gmail.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 6/6] net: dsa: remove cross-chip support from the MRP notifiers
+Date:   Fri, 18 Jun 2021 21:30:17 +0300
+Message-Id: <20210618183017.3340769-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210618183017.3340769-1-olteanv@gmail.com>
 References: <20210618183017.3340769-1-olteanv@gmail.com>
@@ -68,151 +69,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-dsa_slave_change_mtu() calls dsa_port_mtu_change() twice:
-- it sends a cross-chip notifier with the MTU of the CPU port which is
-  used to update the DSA links.
-- it sends one targeted MTU notifier which is supposed to only match the
-  user port on which we are changing the MTU. The "propagate_upstream"
-  variable is used here to bypass the cross-chip notifier system from
-  switch.c
+With MRP hardware assist being supported only by the ocelot switch
+family, which by design does not support cross-chip bridging, the
+current match functions are at best a guess and have not been confirmed
+in any way to do anything relevant in a multi-switch topology.
 
-But due to a mistake, the second, targeted notifier matches not only on
-the user port, but also on the DSA link which is a member of the same
-switch, if that exists.
+Drop the code and make the notifiers match only on the targeted switch
+port.
 
-And because the DSA links of the entire dst were programmed in a
-previous round to the largest_mtu via a "propagate_upstream == true"
-notification, then the dsa_port_mtu_change(propagate_upstream == false)
-call that is immediately upcoming will break the MTU on the one DSA link
-which is chip-wise local to the dp whose MTU is changing right now.
-
-Example given this daisy chain topology:
-
-   sw0p0     sw0p1     sw0p2     sw0p3     sw0p4
-[  cpu  ] [  user ] [  user ] [  dsa  ] [  user ]
-[   x   ] [       ] [       ] [   x   ] [       ]
-                                  |
-                                  +---------+
-                                            |
-   sw1p0     sw1p1     sw1p2     sw1p3     sw1p4
-[  user ] [  user ] [  user ] [  dsa  ] [  dsa  ]
-[       ] [       ] [       ] [       ] [   x   ]
-
-ip link set sw0p1 mtu 9000
-ip link set sw1p1 mtu 9000 # at this stage, sw0p1 and sw1p1 can talk
-                           # to one another using jumbo frames
-ip link set sw0p2 mtu 1500 # this programs the sw0p3 DSA link first to
-                           # the largest_mtu of 9000, then reprograms it to
-                           # 1500 with the "propagate_upstream == false"
-                           # notifier, breaking communication between
-                           # sw0p1 and sw1p1
-
-To escape from this situation, make the targeted match really match on a
-single port - the user port, and rename the "propagate_upstream"
-variable to "targeted_match" to clarify the intention and avoid future
-issues.
-
+Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/dsa_priv.h | 4 ++--
- net/dsa/port.c     | 4 ++--
- net/dsa/slave.c    | 9 +++++----
- net/dsa/switch.c   | 9 ++++++---
- 4 files changed, 15 insertions(+), 11 deletions(-)
+ net/dsa/switch.c | 53 +++++++-----------------------------------------
+ 1 file changed, 7 insertions(+), 46 deletions(-)
 
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index b8b17474b72b..b0811253d101 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -84,7 +84,7 @@ struct dsa_notifier_vlan_info {
- 
- /* DSA_NOTIFIER_MTU */
- struct dsa_notifier_mtu_info {
--	bool propagate_upstream;
-+	bool targeted_match;
- 	int sw_index;
- 	int port;
- 	int mtu;
-@@ -200,7 +200,7 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
- bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
- int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
- int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
--			bool propagate_upstream);
-+			bool targeted_match);
- int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 		     u16 vid);
- int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 6379d66a6bb3..5c93f1e1a03d 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -567,11 +567,11 @@ int dsa_port_mrouter(struct dsa_port *dp, bool mrouter,
- }
- 
- int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
--			bool propagate_upstream)
-+			bool targeted_match)
- {
- 	struct dsa_notifier_mtu_info info = {
- 		.sw_index = dp->ds->index,
--		.propagate_upstream = propagate_upstream,
-+		.targeted_match = targeted_match,
- 		.port = dp->index,
- 		.mtu = new_mtu,
- 	};
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index ac2ca5f75af3..5e668e529575 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1586,14 +1586,15 @@ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
- 			goto out_master_failed;
- 
- 		/* We only need to propagate the MTU of the CPU port to
--		 * upstream switches.
-+		 * upstream switches, so create a non-targeted notifier which
-+		 * updates all switches.
- 		 */
--		err = dsa_port_mtu_change(cpu_dp, cpu_mtu, true);
-+		err = dsa_port_mtu_change(cpu_dp, cpu_mtu, false);
- 		if (err)
- 			goto out_cpu_failed;
- 	}
- 
--	err = dsa_port_mtu_change(dp, new_mtu, false);
-+	err = dsa_port_mtu_change(dp, new_mtu, true);
- 	if (err)
- 		goto out_port_failed;
- 
-@@ -1607,7 +1608,7 @@ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
- 	if (new_master_mtu != old_master_mtu)
- 		dsa_port_mtu_change(cpu_dp, old_master_mtu -
- 				    dsa_tag_protocol_overhead(cpu_dp->tag_ops),
--				    true);
-+				    false);
- out_cpu_failed:
- 	if (new_master_mtu != old_master_mtu)
- 		dev_set_mtu(master, old_master_mtu);
 diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 8b601ced6b45..75f567390a6b 100644
+index 75f567390a6b..7e948bf15fe0 100644
 --- a/net/dsa/switch.c
 +++ b/net/dsa/switch.c
-@@ -52,10 +52,13 @@ static int dsa_switch_ageing_time(struct dsa_switch *ds,
- static bool dsa_switch_mtu_match(struct dsa_switch *ds, int port,
- 				 struct dsa_notifier_mtu_info *info)
+@@ -346,36 +346,16 @@ static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
+ 	return 0;
+ }
+ 
+-static bool dsa_switch_mrp_match(struct dsa_switch *ds, int port,
+-				 struct dsa_notifier_mrp_info *info)
+-{
+-	if (ds->index == info->sw_index && port == info->port)
+-		return true;
+-
+-	if (dsa_is_dsa_port(ds, port))
+-		return true;
+-
+-	return false;
+-}
+-
+ static int dsa_switch_mrp_add(struct dsa_switch *ds,
+ 			      struct dsa_notifier_mrp_info *info)
  {
--	if (ds->index == info->sw_index)
--		return (port == info->port) || dsa_is_dsa_port(ds, port);
-+	if (ds->index == info->sw_index && port == info->port)
-+		return true;
+-	int err = 0;
+-	int port;
+-
+ 	if (!ds->ops->port_mrp_add)
+ 		return -EOPNOTSUPP;
  
--	if (!info->propagate_upstream)
-+	/* Do not propagate to other switches in the tree if the notifier was
-+	 * targeted for a single switch.
-+	 */
-+	if (info->targeted_match)
- 		return false;
+-	for (port = 0; port < ds->num_ports; port++) {
+-		if (dsa_switch_mrp_match(ds, port, info)) {
+-			err = ds->ops->port_mrp_add(ds, port, info->mrp);
+-			if (err)
+-				break;
+-		}
+-	}
++	if (ds->index == info->sw_index)
++		return ds->ops->port_mrp_add(ds, info->port, info->mrp);
  
- 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
+-	return err;
++	return 0;
+ }
+ 
+ static int dsa_switch_mrp_del(struct dsa_switch *ds,
+@@ -390,39 +370,20 @@ static int dsa_switch_mrp_del(struct dsa_switch *ds,
+ 	return 0;
+ }
+ 
+-static bool
+-dsa_switch_mrp_ring_role_match(struct dsa_switch *ds, int port,
+-			       struct dsa_notifier_mrp_ring_role_info *info)
+-{
+-	if (ds->index == info->sw_index && port == info->port)
+-		return true;
+-
+-	if (dsa_is_dsa_port(ds, port))
+-		return true;
+-
+-	return false;
+-}
+-
+ static int
+ dsa_switch_mrp_add_ring_role(struct dsa_switch *ds,
+ 			     struct dsa_notifier_mrp_ring_role_info *info)
+ {
+ 	int err = 0;
+-	int port;
+ 
+ 	if (!ds->ops->port_mrp_add)
+ 		return -EOPNOTSUPP;
+ 
+-	for (port = 0; port < ds->num_ports; port++) {
+-		if (dsa_switch_mrp_ring_role_match(ds, port, info)) {
+-			err = ds->ops->port_mrp_add_ring_role(ds, port,
+-							      info->mrp);
+-			if (err)
+-				break;
+-		}
+-	}
++	if (ds->index == info->sw_index)
++		return ds->ops->port_mrp_add_ring_role(ds, info->port,
++						       info->mrp);
+ 
+-	return err;
++	return 0;
+ }
+ 
+ static int
 -- 
 2.25.1
 
