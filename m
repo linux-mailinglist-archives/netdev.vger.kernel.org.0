@@ -2,157 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AE383AD4F5
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 00:18:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F8B73AD4F8
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 00:19:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234927AbhFRWUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 18:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234911AbhFRWU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 18:20:26 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C422C0613A3
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 15:18:16 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id m17so2242147plx.7
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 15:18:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FE3ige4IUrzO4rZznPTG12clkaJsue7K7FUGlSBMAfs=;
-        b=Yf/hd/nvGltzFs93oV+O815gndRr0N0A4GD+hlEjUljs8fR/r42/5waH+foBbKS7WR
-         4ieWebjxoeI31qMYukpCCF4suivtuw0KIX1kY4xCHCyeA8Pd+qdR2kMIky/pA2j/9n1z
-         T5UtTANEkuiNSh3GT2iBd2oGjOT4PXXJ8YxOU/uBtqj1IiaNYwuRoT9AQFd4bB3iGSod
-         26qHtN9qmDpGolnh/MwXPQ8M2sR3UfA7xZml5iJWrbGghC/MI1rSVb3r8vzpAHp9WgHN
-         rQlO7Wfj93/2gQ031V5AE3UWSmVQEAXyZXRDPtXzUcgRjadraLTfDfG3fXk5uJ+V0D/n
-         TtDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FE3ige4IUrzO4rZznPTG12clkaJsue7K7FUGlSBMAfs=;
-        b=NObszI5XOeeVV2b6z/v3uggflIJ0eGg1dzS/2iqWrhzEwNudMuqSbJZiJsO4+smlzW
-         jWTXph03LnEdCUhNgPhzGz/ce3espOgrpCm9BAySMo2Uq5jgWBIT2Yi+UjwwLag4ob77
-         j8AhD8Z3ZiPR7I9fZ5giOvkSwb+BzdvgddtQ0TwV8Xp7RRueKOa8LyIXZAtQzghNC2fq
-         T51oLbMckiVBBEYJByOiOWa+tIwr7Ht+4jhDsTrMTuUEBefj2Cp4J4W7r+MFjdPghwfj
-         KmmdXrhQzNnEkrZ81T5YDhBxc45kKMtujdVrT4ulvMSnC8LsK2sQQZnXNbQl45ERuMX+
-         0vSg==
-X-Gm-Message-State: AOAM532qdGJjJphn6QmUk4fb0EPE3UYcZ7f5B54PjOjqBYhjl92GN+ps
-        Uajc3Nl3JoOZfhzgywqmF4AboaRcZDzRrwguqeUhlg==
-X-Google-Smtp-Source: ABdhPJw3BE/jkA8KN4GViEwVomKCDOYCAzb4JhqF7GBtQ+4ny9zul9rQENwJ5XFkX0U2csBd6emTDpwOakbDlUjAcRc=
-X-Received: by 2002:a17:90a:fc88:: with SMTP id ci8mr24404565pjb.13.1624054695229;
- Fri, 18 Jun 2021 15:18:15 -0700 (PDT)
+        id S234931AbhFRWVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 18:21:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38892 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234103AbhFRWVv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 18:21:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EE58D61264;
+        Fri, 18 Jun 2021 22:19:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624054782;
+        bh=sZaknYZj03Toh662gekYN0SKuf0YEXO8Ei3j33qtXWY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ORwWegHL/apTU4SOUnJ6b6XTUsgVwXzT29HUOJP/HM/X9mc5fYEqb3wEuiDtkWK5T
+         Odbr2+qlDJ1WDO87ff3vy4IofPRB/0ccPhiNFBg+A1OCYWLsssaBYR0MN/bx8BNxap
+         bQZl8N2egLssd87wlJ/Skyp55jb1XNvntjvZ3TY3DAWwucMgsDViBt3IdbdM5M7/Nd
+         PBugYFdXbDBFdfVJSw87k/mWjINIvzbDRiUexTn293XK23dgKTp9QYJJKmvvY6NGPD
+         GUXL/PA1P7HWyrLVaX++RaAuB7Dtn9psX9cJENQPw8LvBwOicAzREsgWLrlMZzAyun
+         CZdpNPDJBtrSg==
+Date:   Fri, 18 Jun 2021 15:19:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Arijit De <arijitde@marvell.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Ping frame drop
+Message-ID: <20210618151941.04a2494d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <SJ0PR18MB3994A5156DF9B144838A746ED40D9@SJ0PR18MB3994.namprd18.prod.outlook.com>
+References: <SJ0PR18MB3994A5156DF9B144838A746ED40D9@SJ0PR18MB3994.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-References: <20210616085118.1141101-1-omosnace@redhat.com>
-In-Reply-To: <20210616085118.1141101-1-omosnace@redhat.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Fri, 18 Jun 2021 15:18:04 -0700
-Message-ID: <CAPcyv4jvR8CT4rYODR5KUHNdiqMwQSwJZ+OkVf61kLT3JfjC_Q@mail.gmail.com>
-Subject: Re: [PATCH v3] lockdown,selinux: fix wrong subject in some SELinux
- lockdown checks
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     linux-security-module@vger.kernel.org,
-        James Morris <jmorris@namei.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        selinux@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        X86 ML <x86@kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        linux-cxl@vger.kernel.org, linux-efi <linux-efi@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux-pm mailing list <linux-pm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, bpf@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>,
-        Kexec Mailing List <kexec@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 16, 2021 at 1:51 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
->
-> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
-> lockdown") added an implementation of the locked_down LSM hook to
-> SELinux, with the aim to restrict which domains are allowed to perform
-> operations that would breach lockdown.
->
-> However, in several places the security_locked_down() hook is called in
-> situations where the current task isn't doing any action that would
-> directly breach lockdown, leading to SELinux checks that are basically
-> bogus.
->
-> To fix this, add an explicit struct cred pointer argument to
-> security_lockdown() and define NULL as a special value to pass instead
-> of current_cred() in such situations. LSMs that take the subject
-> credentials into account can then fall back to some default or ignore
-> such calls altogether. In the SELinux lockdown hook implementation, use
-> SECINITSID_KERNEL in case the cred argument is NULL.
->
-> Most of the callers are updated to pass current_cred() as the cred
-> pointer, thus maintaining the same behavior. The following callers are
-> modified to pass NULL as the cred pointer instead:
-> 1. arch/powerpc/xmon/xmon.c
->      Seems to be some interactive debugging facility. It appears that
->      the lockdown hook is called from interrupt context here, so it
->      should be more appropriate to request a global lockdown decision.
-> 2. fs/tracefs/inode.c:tracefs_create_file()
->      Here the call is used to prevent creating new tracefs entries when
->      the kernel is locked down. Assumes that locking down is one-way -
->      i.e. if the hook returns non-zero once, it will never return zero
->      again, thus no point in creating these files. Also, the hook is
->      often called by a module's init function when it is loaded by
->      userspace, where it doesn't make much sense to do a check against
->      the current task's creds, since the task itself doesn't actually
->      use the tracing functionality (i.e. doesn't breach lockdown), just
->      indirectly makes some new tracepoints available to whoever is
->      authorized to use them.
-> 3. net/xfrm/xfrm_user.c:copy_to_user_*()
->      Here a cryptographic secret is redacted based on the value returned
->      from the hook. There are two possible actions that may lead here:
->      a) A netlink message XFRM_MSG_GETSA with NLM_F_DUMP set - here the
->         task context is relevant, since the dumped data is sent back to
->         the current task.
->      b) When adding/deleting/updating an SA via XFRM_MSG_xxxSA, the
->         dumped SA is broadcasted to tasks subscribed to XFRM events -
->         here the current task context is not relevant as it doesn't
->         represent the tasks that could potentially see the secret.
->      It doesn't seem worth it to try to keep using the current task's
->      context in the a) case, since the eventual data leak can be
->      circumvented anyway via b), plus there is no way for the task to
->      indicate that it doesn't care about the actual key value, so the
->      check could generate a lot of "false alert" denials with SELinux.
->      Thus, let's pass NULL instead of current_cred() here faute de
->      mieux.
->
-> Improvements-suggested-by: Casey Schaufler <casey@schaufler-ca.com>
-> Improvements-suggested-by: Paul Moore <paul@paul-moore.com>
-> Fixes: 59438b46471a ("security,lockdown,selinux: implement SELinux lockdown")
-> Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-[..]
-> diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
-> index 2acc6173da36..c1747b6555c7 100644
-> --- a/drivers/cxl/mem.c
-> +++ b/drivers/cxl/mem.c
-> @@ -568,7 +568,7 @@ static bool cxl_mem_raw_command_allowed(u16 opcode)
->         if (!IS_ENABLED(CONFIG_CXL_MEM_RAW_COMMANDS))
->                 return false;
->
-> -       if (security_locked_down(LOCKDOWN_NONE))
-> +       if (security_locked_down(current_cred(), LOCKDOWN_NONE))
+On Fri, 18 Jun 2021 15:03:59 +0000 Arijit De wrote:
+> Hi,
+> 
+> In the latest linux kernel (i.e. 5.12.x) I am observing that for my
+> Ethernet driver ping test has stopped working, it was working in
+> 5.4.x and all the older kernels. I have debugged the issue and root
+> caused that it's because of the recent commit
+> https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=8f9a69a92fc63917c9bd921b28e3b2912980becf
+> 
+> In my Network card HW it supports checksum offload for IPv4 frame,
+> but it can't verify checksum for the ICMP frames, so I use
+> CHECKSUM_PARTIAL in the skb->ip_summed for this kind of scenario.
 
-Acked-by: Dan Williams <dan.j.williams@intel.com>
+Do you mean that your drivers sets up CHECKSUM_PARTIAL on Rx? If HW
+hasn't validated the checksum just leave the skb with CHECKSUM_NONE,
+the stack will validate.
 
-...however that usage looks wrong. The expectation is that if kernel
-integrity protections are enabled then raw command access should be
-disabled. So I think that should be equivalent to LOCKDOWN_PCI_ACCESS
-in terms of the command capabilities to filter.
+> But now because of this new logic what you have added ping frames are
+> getting dropped.
+> 
+> My Ping packets skb dump:
+> [112241.545219] skb len=88 headroom=78 headlen=0 tailroom=0
+> [112241.545219] mac=(64,-64) net=(0,-1) trans=-1
+> [112241.545219] shinfo(txflags=0 nr_frags=1 gso(size=0 type=0 segs=0))
+> [112241.545219] csum(0x0 ip_summed=3 complete_sw=0 valid=0 level=0)
+> [112241.545219] hash(0x0 sw=0 l4=0) proto=0x0800 pkttype=0 iif=0
+> [112241.572837] dev name=enp137s0 feat=0x0x0000010000004813
+> [112241.578141] skb headroom: 00000000: 4c 00 70 35 09 de b4 e4 00 11
+> 22 33 44 01 08 06 [112241.585876] skb headroom: 00000010: 00 01 08 00
+> 06 04 00 02 00 11 22 33 44 01 0a 1c [112241.593611] skb headroom:
+> 00000020: 28 13 70 35 09 de b4 e4 0a 1c 28 01 00 00 00 00
+> [112241.601345] skb headroom: 00000030: 50 04 00 00 55 50 00 00 14 00
+> 03 00 00 00 00 00 [112241.609080] skb headroom: 00000040: 00 11 22 33
+> 44 01 ac 1f 6b d2 c0 e5 08 00 [112241.616293] skb frag:     00000000:
+> 45 00 00 54 87 a2 40 00 40 01 4d e3 0a 1c 28 d9 [112241.624027] skb
+> frag:     00000010: 0a 1c 28 13 08 00 fd 50 0c a8 00 03 6a 94 cc 60
+> [112241.631762] skb frag:     00000020: 00 00 00 00 f5 3b 03 00 00 00
+> 00 00 10 11 12 13 [112241.639496] skb frag:     00000030: 14 15 16 17
+> 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 [112241.647230] skb frag:
+> 00000040: 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33
+> [112241.654965] skb frag:     00000050: 34 35 36 37 9c b0 19 b9
+> 
+> Its hitting the check for CHECKSUM_PARTIAL in pskb_trim_rcsum_slow()
+> and getting dropped there. Can you please let me know how can I
+> satisfy the requirement such that I can keep supporting the
+> CHECKSUM_PARTIAL cases for my network card ? I have checked
+> include/linux/skbuff.h For the documentation of CHECKSUM_PARTIAL, but
+> could not understand what change I have to do to make it working
+> again. My network driver is not up streamed yet in the linux kernel.
+> For any more information please do let me know.
+
