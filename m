@@ -2,110 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 494293AD23C
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:35:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C8483AD246
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:38:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233627AbhFRShS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 14:37:18 -0400
-Received: from mail-0201.mail-europe.com ([51.77.79.158]:46170 "EHLO
-        mail-0201.mail-europe.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233141AbhFRShO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:37:14 -0400
-Date:   Fri, 18 Jun 2021 18:34:50 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connolly.tech;
-        s=protonmail; t=1624041301;
-        bh=gPJStNIBkyU+EiKyKIcmWvO+oVN/hGtsoDaeZGrgtAM=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=Ccq/7+LgItQsJkh0Xxxpd8NbhZbrDXI7N1Xv3NWVjpArRTWpOqEKSmPKYNXjz1ZuJ
-         jn4T306aVgOByi+oKKxx8GE/hLOIEHqzl0C1EsmpEPJV3v7Eosw2QIfqlBDTNzjHjc
-         VJhJswathmzV+6z5Uz5oUuoKcnZePuKdaboC+rx8=
-To:     Kalle Valo <kvalo@codeaurora.org>
-From:   Caleb Connolly <caleb@connolly.tech>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Caleb Connolly <caleb@connolly.tech>
-Subject: Re: [PATCH] ath10k: demote chan info without scan request warning
-Message-ID: <f983af18-6a17-4cf1-a577-a86e4498b212@connolly.tech>
-In-Reply-To: <871r96yw6z.fsf@codeaurora.org>
-References: <20210522171609.299611-1-caleb@connolly.tech> <20210612103640.2FD93C433F1@smtp.codeaurora.org> <f39034ea-f4da-1564-e22f-398e4a1ae077@connolly.tech> <871r96yw6z.fsf@codeaurora.org>
+        id S233743AbhFRSk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 14:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231756AbhFRSkZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:40:25 -0400
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13DAC06175F
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:38:13 -0700 (PDT)
+Received: by mail-ua1-x931.google.com with SMTP id c17so3733160uao.1
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:38:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DB2KtV4huzDvhq/Zw0R+/LkrQSRw1LO05/D22qr6dbU=;
+        b=tIIgm2cZNItj/jycwMzyYp3p96yXQ4kK1YCraXyqsKQp3CntGE7q58d7awGidqAldZ
+         KTeDW7VMONgTvlomLboOwEJC+XNLpnBj83yWCpcZ3rwW7N/CpWGOrn56qf/N6ueEuKAv
+         Rs+0Cttg0oqOzeN65pYDcFq+0dnIPaOpbx6vu+ZntyURMYHTkyv2T6mng7/Te7XmxcA1
+         wd7+PIHBAbaHCGLqJ9bLZjTS4LdERnO4ChIcg/dSKQJwOYKNSJWv2SYWlRatAFIAt0oQ
+         n63V02/IPwj2PjgsWvNIYUhMMj68GAEpH9aoAA6a8oNAV5TAcwrOrVO/GeP4MsWv31xg
+         //Yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DB2KtV4huzDvhq/Zw0R+/LkrQSRw1LO05/D22qr6dbU=;
+        b=O+rMd9PIbwrZ+xXy4ESiaYTN06LNbk+6nK/q01LAX/9vWmmjgsG6d5xx3EQI4L2Z9j
+         D2xjJ+qfCBvHcBDH0Jd76D8s1phSRNTdTyAmQld3jA6Su1h+5IuoTnPmZitjgTzLr1Wn
+         lud8DM89IWET4SpySxnnmvGimAKS01t3EGOcuO1NGuR0ynTMZi4iIpKEqUgwyJSkqrev
+         8Lj+BwBRqRWsPwbRlN3h7x4/zvMyJAtWN01Q7YCEx1166FqYGQvYooQ0fW2p/3SR5RQc
+         3t9oMR7LIDYlWprJL+ADiqYDbSRAJrtwklnmyMD+hYiUyLzXMavmPa0PoW9wo1SLFLn/
+         jcgw==
+X-Gm-Message-State: AOAM53359BlgAafZQ9ACV6/33jLRamv4pXgpMq6PGG9hOfqUp0fWATau
+        wyRoA38dHE8SU0l9e45IfXa5R7c4gxNO1m9mmiD4e9iL6eXfog==
+X-Google-Smtp-Source: ABdhPJwz2ZJpfcsl04Unjheqw2xcmn3vHpAq9WrE/MNE1GmJYx0xXDii3HA6hXdDlYY9b3I3uvLTtIsMxZJggcn3Hlk=
+X-Received: by 2002:ab0:30d4:: with SMTP id c20mr9018989uam.60.1624041492697;
+ Fri, 18 Jun 2021 11:38:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <20210618105526.265003-1-zenczykowski@gmail.com> <CACAyw99k4ZhePBcRJzJn37rvGKnPHEgE3z8Y-47iYKQO2nqFpQ@mail.gmail.com>
+In-Reply-To: <CACAyw99k4ZhePBcRJzJn37rvGKnPHEgE3z8Y-47iYKQO2nqFpQ@mail.gmail.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Fri, 18 Jun 2021 11:38:01 -0700
+Message-ID: <CANP3RGcj_C-DorLcg58M2FYQMtz8wcX=qqVQmW6MH3uE-suh=w@mail.gmail.com>
+Subject: Re: [PATCH bpf] Revert "bpf: program: Refuse non-O_RDWR flags in BPF_OBJ_GET"
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Greg Kroah-Hartman <gregkh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 18, 2021 at 4:55 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> On Fri, 18 Jun 2021 at 11:55, Maciej =C5=BBenczykowski
+> <zenczykowski@gmail.com> wrote:
+> >
+> > This reverts commit d37300ed182131f1757895a62e556332857417e5.
+> >
+> > This breaks Android userspace which expects to be able to
+> > fetch programs with just read permissions.
+>
+> Sorry about this! I'll defer to the maintainers what to do here.
+> Reverting leaves us with a gaping hole for access control of pinned
+> programs.
 
 
-On 13/06/2021 10:01 am, Kalle Valo wrote:
-> Caleb Connolly <caleb@connolly.tech> writes:
->
->> Hi Kalle,
->>
->> On 12/06/2021 11:36 am, Kalle Valo wrote:
->>> Caleb Connolly <caleb@connolly.tech> wrote:
->>>
->>>> Some devices/firmwares cause this to be printed every 5-15 seconds,
->>>> though it has no impact on functionality. Demote this to a debug
->>>> message.
->>>>
->>>> Signed-off-by: Caleb Connolly <caleb@connolly.tech>
->>>> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
->>
->> Is this meant to be an Ack?
->
-> No, my patchwork script has few quirks and it actually takes the quoted
-> text from my pending branch, not from your actual email. That's why you
-> see my s-o-b there. I haven't bothered to fix that yet, but hopefully
-> one day.
->
->>> On what hardware and firmware version do you see this?
->>
->> I see this on SDM845 and MSM8998 platforms, specifically the OnePlus 6
->> devices, PocoPhone F1 and OnePlus 5.
->> On the OnePlus 6 (SDM845) we are stuck with the following signed vendor =
-fw:
->>
->> [    9.339873] ath10k_snoc 18800000.wifi: qmi chip_id 0x30214
->> chip_family 0x4001 board_id 0xff soc_id 0x40030001
->> [    9.339897] ath10k_snoc 18800000.wifi: qmi fw_version 0x20060029
->> fw_build_timestamp 2019-07-12 02:14 fw_build_id
->> QC_IMAGE_VERSION_STRING=3DWLAN.HL.2.0.c8-00041-QCAHLSWMTPLZ-1
->>
->> The OnePlus 5 (MSM8998) is using firmware:
->>
->> [ 6096.956799] ath10k_snoc 18800000.wifi: qmi chip_id 0x30214
->> chip_family 0x4001 board_id 0xff soc_id 0x40010002
->> [ 6096.956824] ath10k_snoc 18800000.wifi: qmi fw_version 0x1007007e
->> fw_build_timestamp 2020-04-14 22:45 fw_build_id
->> QC_IMAGE_VERSION_STRING=3DWLAN.HL.1.0.c6-00126-QCAHLSWMTPLZ-1.211883.1.2=
-78648.
->
-> Thanks, I'll include this information to the commit log and then apply
-> the patch. And I'll assume you have also tested this patch on those
-> platforms so that I can add a Tested-on tag?
-Yeah, go ahead. Sorry for the late reply!
->
-> BTW, ath10k should strip that ugly "QC_IMAGE_VERSION_STRING=3D" string in
-> the firmware version. Patches very welcome :)
->
-> --
-> https://patchwork.kernel.org/project/linux-wireless/list/
->
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
-tches
->
+Not sure what hole you're referring to.  Could you provide more
+details/explanation?
 
---
-Kind Regards,
-Caleb
+It seems perfectly reasonable to be able to get a program with just read pr=
+ivs.
+After all, you're not modifying it, just using it.
 
+AFAIK there is no way to modify a program after it was loaded, has this cha=
+nged?
+if so, the checks should be on the modifications not the fd fetch.
+
+I guess one could argue fetching with write only privs doesn't make sense?
+
+Anyway... userspace is broken... so revert is the answer.
+
+In Android the process loading/pinning bpf maps/programs is a different
+process (the 'bpfloader') to the users (which are far less privileged)
