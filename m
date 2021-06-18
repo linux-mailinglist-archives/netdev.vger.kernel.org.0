@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 097153AD023
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 18:14:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69D943AD027
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 18:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234093AbhFRQQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 12:16:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41050 "EHLO
+        id S235405AbhFRQQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 12:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231767AbhFRQQj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 12:16:39 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A54C061574;
-        Fri, 18 Jun 2021 09:14:28 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id r5so17565136lfr.5;
-        Fri, 18 Jun 2021 09:14:28 -0700 (PDT)
+        with ESMTP id S235429AbhFRQQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 12:16:46 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF0AC061760;
+        Fri, 18 Jun 2021 09:14:35 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id j2so17559551lfg.9;
+        Fri, 18 Jun 2021 09:14:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zcsXDvnwmdXXMs5g79zcf5bVX0T9W6JQcEu/YgdgQgQ=;
-        b=RgJK+1RJop5RiodRQKI4j9397y9b3QFrEN4y/Re5GPbcvT4iexwDSnBAQM6r62v3B2
-         BaV9+IbW9Xaz5G3IhoYVmEa0o4eZYQFSoLTrsyrzTXmEOf26LN/7n9EwkjPDQzft3x23
-         AxHXROqZBKqKTr0HbNljaoX5t1feCl/esnaXRRQp7q1BlP701tcx0t0TtaiH6bW+anK+
-         qkpPzaLzrDdCqANujNnj+lkuDvKjh9Eb7dv9/oDQvD9bR6Dm3H6IHDse/gJvPXo68u/T
-         oCKCZy9jVd1dLdHMtXL3d/eem9cD0YlJg4rbIG0RVs2q1IKxBJWHhsDNFtuNicU+Cq3y
-         RZwg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=iCNibqVduxNAGNvNvSGxKnoXkViyWCeY8Yq5EDWpyBo=;
+        b=MNcVghv8BjiS2ohbcW8P99fw9nhuAv1NUOyyqKLz0cICZVwHPc4iCXO7x0GEBZvbbT
+         fo/pGytutKhto+A11baqvyBa3LgnB+MK0Yl4ogyLoWQ5xgN9A22Un0fg1mYicz1txphA
+         6AR5oRl248U5IkPEOHeknPg0GV2dlX0Bx3Jgir+vy7+KJ+CBOlwQ82G6jfu6pdll+uJu
+         k5c28vlyiPtZbuPJtaT/dWrmk7IDxIQGigGmbKiQ+aDhFHw3PrIuolUFPY6mN0+HEKdu
+         nPDkCTiNTSMiIGgTpwTLXkw2uyuSo+J1OU6PSKO9PlGBEGLSFja1OKrJwTog9MyO2C3A
+         VRFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zcsXDvnwmdXXMs5g79zcf5bVX0T9W6JQcEu/YgdgQgQ=;
-        b=TxV/vb00O/lsFTkarmOUF4/PX3gtO3KlSqsDluzKr41M3r65HsSw13STBwbtW5JYuJ
-         nyW90E4gexwsodoC9TXu4iL2NOQr/AYs2HTMT+RncBZDQxELIHr17tHQZdkwcRBCoG99
-         pgsNMQu9wOynO4w2zWIRy63dv8epZLpOfWUzVpe4/tF8ERTq36zey+q1Z+SN8VbIqCP+
-         hak9hjCSj4sUyWYLLsvRRaq/BbbBKg7I+DWA/OFtlY2+uIzITKmTI04YszqPhk3SyM/v
-         Lwcz+Xy7i8zw4R4C102oiPpopCU2nB7SK4yBY2x5by/oj4CHqks11cEcpkYLjHZKS3u/
-         d8Kw==
-X-Gm-Message-State: AOAM532/zMOrw41PP2i3qZLmNO/e5Nvsxqud/2FYmcpoHLNYmavrPLVS
-        Sxv/pXtnx7Pt119of3dZyUE=
-X-Google-Smtp-Source: ABdhPJy+0sQDG8yeqqhjzMcbZcjHHcFPz9DZ0hCmOkYs4Gn7RU4h9fnurngAzj/Ekyd1/YZG/LtdAA==
-X-Received: by 2002:a05:6512:15a1:: with SMTP id bp33mr3679512lfb.623.1624032866923;
-        Fri, 18 Jun 2021 09:14:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=iCNibqVduxNAGNvNvSGxKnoXkViyWCeY8Yq5EDWpyBo=;
+        b=aUgRWyFRfpsf2ypG2zR21fL5lSDwJoj31WIpAVrQO8Ogn4dIF0YDEe3RILuAYI82M4
+         g/9WA0xcCAL299b94k4/7xto+Jysb4r7Wh2h89Y5rpJzxe+6dWOEY4CCAXshk6mRD/3E
+         Y6OE/Fax61DeNQTcI5K7yXBPidnliWKFdAUQjqkng8OEyaPiXxl1xLqA9HOrND1IEsjN
+         jUiTCHuFHMA+F7l4asL/SeDrmgt370o3Y9Tk4keCrkWV0n4SAJ7Rf5W9iPb7oTkG1LC0
+         zXWQhiFx4tS26q07hZeQNAD/a6G6EDguwdIpY7fU3WIDdC1kuibijCvTbA6PkXyGC8ik
+         KZ4A==
+X-Gm-Message-State: AOAM531zjiHksehrYe4eB6rfrxEiwLK+i6jWXrXEwtaTtxTQoLPVx3gu
+        zWP75IsTCCFJKNSQ0/Omff4=
+X-Google-Smtp-Source: ABdhPJwC9F7gO/yzdkBKWZXY3kEnos4KgIUY50ScQMqfTt5fgU7x6U7le62lri07CPV+9gLDkKgjBw==
+X-Received: by 2002:a05:6512:1184:: with SMTP id g4mr3678397lfr.567.1624032874041;
+        Fri, 18 Jun 2021 09:14:34 -0700 (PDT)
 Received: from localhost.localdomain ([94.103.229.24])
-        by smtp.gmail.com with ESMTPSA id w24sm947603lfa.143.2021.06.18.09.14.25
+        by smtp.gmail.com with ESMTPSA id z16sm951813lfs.24.2021.06.18.09.14.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 09:14:26 -0700 (PDT)
+        Fri, 18 Jun 2021 09:14:33 -0700 (PDT)
 From:   Pavel Skripkin <paskripkin@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         michael@walle.cc, abrodkin@synopsys.com, talz@ezchip.com,
@@ -54,35 +54,43 @@ To:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH 0/3] net: ethernat: ezchip: bug fixing and code improvments
-Date:   Fri, 18 Jun 2021 19:14:23 +0300
-Message-Id: <cover.1624032669.git.paskripkin@gmail.com>
+Subject: [PATCH 1/3] net: ethernet: ezchip: fix UAF in nps_enet_remove
+Date:   Fri, 18 Jun 2021 19:14:31 +0300
+Message-Id: <b04b3823c002aac127c16472b150466afe9b38a9.1624032669.git.paskripkin@gmail.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <cover.1624032669.git.paskripkin@gmail.com>
+References: <cover.1624032669.git.paskripkin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While manual code reviewing, I found some error in ezchip driver.
-Two of them looks very dangerous:
-  1. use-after-free in nps_enet_remove
-      Accessing netdev private data after free_netdev()
+priv is netdev private data, but it is used
+after free_netdev(). It can cause use-after-free when accessing priv
+pointer. So, fix it by moving free_netdev() after netif_napi_del()
+call.
 
-  2. wrong error handling of platform_get_irq()
-      It can cause passing negative irq to request_irq()
+Fixes: 0dd077093636 ("NET: Add ezchip ethernet driver")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ drivers/net/ethernet/ezchip/nps_enet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Also, in 2nd patch I removed redundant check to increase execution
-speed and make code more straightforward.
-
-Pavel Skripkin (3):
-  net: ethernet: ezchip: fix UAF in nps_enet_remove
-  net: ethernet: ezchip: remove redundant check
-  net: ethernet: ezchip: fix error handling
-
- drivers/net/ethernet/ezchip/nps_enet.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/net/ethernet/ezchip/nps_enet.c b/drivers/net/ethernet/ezchip/nps_enet.c
+index e3954d8835e7..20d2c2bb26e4 100644
+--- a/drivers/net/ethernet/ezchip/nps_enet.c
++++ b/drivers/net/ethernet/ezchip/nps_enet.c
+@@ -642,8 +642,8 @@ static s32 nps_enet_remove(struct platform_device *pdev)
+ 	struct nps_enet_priv *priv = netdev_priv(ndev);
+ 
+ 	unregister_netdev(ndev);
+-	free_netdev(ndev);
+ 	netif_napi_del(&priv->napi);
++	free_netdev(ndev);
+ 
+ 	return 0;
+ }
 -- 
 2.32.0
 
