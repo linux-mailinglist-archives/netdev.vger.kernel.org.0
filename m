@@ -2,64 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE0D3AC44C
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 08:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80EA23AC46B
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 09:01:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231270AbhFRGzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 02:55:31 -0400
-Received: from mx20.baidu.com ([111.202.115.85]:59418 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229580AbhFRGz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 02:55:28 -0400
-X-Greylist: delayed 153920 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Jun 2021 02:55:27 EDT
-Received: from BC-Mail-EX02.internal.baidu.com (unknown [172.31.51.42])
-        by Forcepoint Email with ESMTPS id B33C29B58FCA96F070F1;
-        Fri, 18 Jun 2021 14:53:14 +0800 (CST)
-Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-EX02.internal.baidu.com (172.31.51.42) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.10; Fri, 18 Jun 2021 14:53:14 +0800
-Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.4; Fri, 18 Jun 2021 14:53:14 +0800
-From:   Cai Huoqing <caihuoqing@baidu.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, Cai Huoqing <caihuoqing@baidu.com>
-Subject: [PATCH] vhost-vdpa: fix bug-"v->vqs" and "v" don't free
-Date:   Fri, 18 Jun 2021 14:53:07 +0800
-Message-ID: <20210618065307.183-1-caihuoqing@baidu.com>
-X-Mailer: git-send-email 2.17.1
+        id S231570AbhFRHDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 03:03:45 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:21908 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229816AbhFRHDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 03:03:44 -0400
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15I6Wkbb151864;
+        Fri, 18 Jun 2021 03:01:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=3Y/QAFCVp/tbF3uU+dnCZ4rNEFIIjcqp7i+8Q9YyBs4=;
+ b=WIGmNXfzXqmosz7e9Glp4B0CjWmM/37i7keO4PmnBTIXslq+Tz7Wriv23kssomU3QAj6
+ 2AfEkojp930BxgESR0sBugn1fC7UMNmAbF0t6nR3Ssq7zElH8kcn0P6wBNOUnivPq5Y0
+ 5q+JulALFCpD/J0DabFozrY/+P8AApvMrtf9JuMncICvQSl8XtsEFTn9KfKXB9R8lsjq
+ sxtci4wJYdq8HMD4Pp3V7hUj5R/NNcw8nkXgQZtMOvqrQjpTIOi9hx32f5jLQhpcWLqn
+ TDM1DiQ51RhXLsVInqUXrMM+LSq6foNgQIgLn26tr98UJvm7rO8kqs5v7XZTf+S7slBS TQ== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 398jmmen8b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Jun 2021 03:01:31 -0400
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 15I6uosA000371;
+        Fri, 18 Jun 2021 07:01:29 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06ams.nl.ibm.com with ESMTP id 394m6hu4qh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Jun 2021 07:01:29 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 15I71QjP33358212
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Jun 2021 07:01:26 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9214942042;
+        Fri, 18 Jun 2021 07:01:26 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 578C14204B;
+        Fri, 18 Jun 2021 07:01:26 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 18 Jun 2021 07:01:26 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Guvenc Gulce <guvenc@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net] MAINTAINERS: add Guvenc as SMC maintainer
+Date:   Fri, 18 Jun 2021 09:00:30 +0200
+Message-Id: <20210618070030.2326320-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: lesYsBQDwGiSUuoYYcFaOkJw88WXzxHp
+X-Proofpoint-GUID: lesYsBQDwGiSUuoYYcFaOkJw88WXzxHp
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.31.63.8]
-X-ClientProxiedBy: BC-Mail-EX02.internal.baidu.com (172.31.51.42) To
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-06-17_17:2021-06-15,2021-06-17 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 clxscore=1015 mlxlogscore=833 phishscore=0
+ lowpriorityscore=0 impostorscore=0 mlxscore=0 malwarescore=0 bulkscore=0
+ suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2104190000 definitions=main-2106180037
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"v->vqs" and "v" don't free when "cdev_device_add" returns error
+Add Guvenc as maintainer for Shared Memory Communications (SMC)
+Sockets.
 
-Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+Cc: Julian Wiedmann <jwi@linux.ibm.com>
+Acked-by: Guvenc Gulce <guvenc@linux.ibm.com>
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
 ---
- drivers/vhost/vdpa.c | 2 ++
- 1 file changed, 2 insertions(+)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index fb41db3da611..6e5d5df5ee70 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -1065,6 +1065,8 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 183cc61e2dc0..5046e55dc7f3 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16571,6 +16571,7 @@ F:	drivers/misc/sgi-xp/
  
- err:
-        put_device(&v->dev);
-+       kfree(v->vqs);
-+       kfree(v);
-        return r;
- }
- 
+ SHARED MEMORY COMMUNICATIONS (SMC) SOCKETS
+ M:	Karsten Graul <kgraul@linux.ibm.com>
++M:	Guvenc Gulce <guvenc@linux.ibm.com>
+ L:	linux-s390@vger.kernel.org
+ S:	Supported
+ W:	http://www.ibm.com/developerworks/linux/linux390/
 -- 
-2.22.0
+2.25.1
 
