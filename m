@@ -2,80 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 969EA3AC017
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 02:28:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 255213AC037
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 02:45:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233298AbhFRAao convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 17 Jun 2021 20:30:44 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:2908 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233263AbhFRAan (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 20:30:43 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15I0PLU4009093
-        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 17:28:35 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3980gge2ua-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 17:28:35 -0700
-Received: from intmgw002.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 17 Jun 2021 17:28:34 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id AF6D63D8012F; Thu, 17 Jun 2021 17:28:27 -0700 (PDT)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next] selftests/bpf: fix ringbuf test fetching map FD
-Date:   Thu, 17 Jun 2021 17:28:24 -0700
-Message-ID: <20210618002824.2081922-1-andrii@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        id S233351AbhFRArd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 20:47:33 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:7478 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233320AbhFRArc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 20:47:32 -0400
+Received: from dggeme755-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G5g9s5XV1zZhKb;
+        Fri, 18 Jun 2021 08:42:25 +0800 (CST)
+Received: from [10.67.100.138] (10.67.100.138) by
+ dggeme755-chm.china.huawei.com (10.3.19.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Fri, 18 Jun 2021 08:45:22 +0800
+Subject: Re: [PATCH net-next 5/6] net: hostess_sv11: fix the comments style
+ issue
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <xie.he.0141@gmail.com>,
+        <ms@dev.tdt.de>, <willemb@google.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <huangguangbin2@huawei.com>
+References: <1623941615-26966-1-git-send-email-lipeng321@huawei.com>
+ <1623941615-26966-6-git-send-email-lipeng321@huawei.com>
+ <YMt4ZMuPfjeesnRK@lunn.ch>
+From:   "lipeng (Y)" <lipeng321@huawei.com>
+Message-ID: <2ea3967f-b4e4-323b-bf65-aac108c6d27f@huawei.com>
+Date:   Fri, 18 Jun 2021 08:45:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: XSc4VmszpbVQfRRFp2hb5PmT7_hMRtCG
-X-Proofpoint-ORIG-GUID: XSc4VmszpbVQfRRFp2hb5PmT7_hMRtCG
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-06-17_16:2021-06-15,2021-06-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- impostorscore=0 spamscore=0 malwarescore=0 priorityscore=1501
- clxscore=1015 bulkscore=0 mlxlogscore=685 adultscore=0 suspectscore=0
- mlxscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104190000 definitions=main-2106180000
-X-FB-Internal: deliver
+In-Reply-To: <YMt4ZMuPfjeesnRK@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.100.138]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggeme755-chm.china.huawei.com (10.3.19.101)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Seems like 4d1b62986125 ("selftests/bpf: Convert few tests to light skeleton.")
-and 704e2beba23c ("selftests/bpf: Test ringbuf mmap read-only and read-write
-restrictions") were done independently on bpf and bpf-next trees and are in
-conflict with each other, despite a clean merge. Fix fetching of ringbuf's
-map_fd to use light skeleton properly.
 
-Fixes: 704e2beba23c ("selftests/bpf: Test ringbuf mmap read-only and read-write restrictions")
-Fixes: 4d1b62986125 ("selftests/bpf: Convert few tests to light skeleton.")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- tools/testing/selftests/bpf/prog_tests/ringbuf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+在 2021/6/18 0:29, Andrew Lunn 写道:
+>> @@ -152,12 +146,12 @@ static int hostess_close(struct net_device *d)
+>>   static int hostess_ioctl(struct net_device *d, struct ifreq *ifr, int cmd)
+>>   {
+>>   	/* struct z8530_dev *sv11=dev_to_sv(d);
+>> -	   z8530_ioctl(d,&sv11->chanA,ifr,cmd) */
+>> +	 * z8530_ioctl(d,&sv11->chanA,ifr,cmd)
+>> +	 */
+>>   	return hdlc_ioctl(d, ifr, cmd);
+>>   }
+> That looks more like dead code than anything else. I would suggest you
+> do a git blame to see if there is anything interesting about this, and
+> if not, remove it.
+>
+>     Andrew
+> .
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/ringbuf.c b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-index a01788090c31..4706cee84360 100644
---- a/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
-@@ -100,7 +100,7 @@ void test_ringbuf(void)
- 	if (CHECK(err != 0, "skel_load", "skeleton load failed\n"))
- 		goto cleanup;
- 
--	rb_fd = bpf_map__fd(skel->maps.ringbuf);
-+	rb_fd = skel->maps.ringbuf.map_fd;
- 	/* good read/write cons_pos */
- 	mmap_ptr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, rb_fd, 0);
- 	ASSERT_OK_PTR(mmap_ptr, "rw_cons_pos");
--- 
-2.30.2
+Hi,  Andrew
+
+It's  dead code,  will remove it.
+
+Thanks for your advice.
+
+         Peng Li
+
+
 
