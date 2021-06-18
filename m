@@ -2,69 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 492903AD202
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:20:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D10D3AD224
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:30:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236260AbhFRSWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 14:22:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49960 "EHLO mail.kernel.org"
+        id S233574AbhFRScQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 14:32:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51750 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234175AbhFRSWN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 14:22:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 601BE613C2;
-        Fri, 18 Jun 2021 18:20:03 +0000 (UTC)
+        id S231553AbhFRScP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 14:32:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 8BC9B613F3;
+        Fri, 18 Jun 2021 18:30:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624040403;
-        bh=6ywh9bHoVEBIVZNLwsBQgS4AZlK5lBo5UuyQGPd/S+s=;
+        s=k20201202; t=1624041005;
+        bh=guf8kqFOHewgiez6tyVEKwVw06CLOr6wrVb3FAInSGw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=X5VNP4/j3k9on+MC4+VD4GXL0oQ0WLG7Acwn0Bvnk9352nIxGcbO/fv95fYxuSRaF
-         2l3XrDZ4ZKXDd/KYP9jr/V6vesZBjaYD+kPVeiAVWDAfbi6lpfFl2egbu9qe08S1wi
-         +Kz8WTloB680NTwb4vFg7ZBoHG1aGVcoYpbTRSwldoCDrkbQAzXBFNXYRERskDGKSU
-         1W0rDk2HXy90AIWxV+s+rcwfi9a7xfuBvjmljgDjvBNQ2KXXDcaLun3Y+OQacrOq9N
-         5RXps4lV+hdsSGMKWpb4mx32IR6jWkIqTHVB/Ei1g9sZSz4kWuSrGKKqygSWphJ/Un
-         +aZARnmBdODKw==
+        b=BYaQl836pelcb2VSOJtj08JZ0Xm5LMNDV2UQ704xtruKfM2WVXTgGe1pf7wjqnsJn
+         7vaN+W8k3uiSbxBeNkJYczBy7sUZ98Myq6DKEbZ6lOTbc6k2bqqAEWq0d7aMk0ovuq
+         P7JIYXJ+smox2gYV9BO85HyrqBSfAe3+qRWixvR6rEegjiULZkU1yKy9N8WHFNxPpJ
+         8BwiCjTNSV4F0GYl9EyroJ1vf9svoFuf/nCA6Iq47icMASgRyO+GxLxVy4DQHbVMGq
+         AN7n+/vWZqe+OUF5pfHjrpztNt0URrQp89uIUTbyHQrEPp6vODZV9CpLLm6QB/AXQJ
+         fI9z1NtBbal+Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4D86E608B8;
-        Fri, 18 Jun 2021 18:20:03 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 85ECD60A17;
+        Fri, 18 Jun 2021 18:30:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] samples/bpf: Fix Segmentation fault for xdp_redirect
- command
+Subject: Re: [PATCH net-next v2] drivers: net: netdevsim: fix devlink_trap
+ selftests failing
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162404040331.13927.1341543990901719711.git-patchwork-notify@kernel.org>
-Date:   Fri, 18 Jun 2021 18:20:03 +0000
-References: <20210616042324.314832-1-wanghai38@huawei.com>
-In-Reply-To: <20210616042324.314832-1-wanghai38@huawei.com>
-To:     Wang Hai <wanghai38@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <162404100554.18542.3041947228503755195.git-patchwork-notify@kernel.org>
+Date:   Fri, 18 Jun 2021 18:30:05 +0000
+References: <20210617113632.21665-1-oleksandr.mazur@plvision.eu>
+In-Reply-To: <20210617113632.21665-1-oleksandr.mazur@plvision.eu>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Cc:     jiri@nvidia.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        vadym.kochan@plvision.eu, idosch@idosch.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 16 Jun 2021 12:23:24 +0800 you wrote:
-> A Segmentation fault error is caused when the following command
-> is executed.
+On Thu, 17 Jun 2021 14:36:32 +0300 you wrote:
+> devlink_trap tests for the netdevsim fail due to misspelled
+> debugfs file name. Change this name, as well as name of callback
+> function, to match the naming as in the devlink itself - 'trap_drop_counter'.
 > 
-> $ sudo ./samples/bpf/xdp_redirect lo
-> Segmentation fault
-> 
-> This command is missing a device <IFNAME|IFINDEX> as an argument, resulting
-> in out-of-bounds access from argv.
+> Test-results:
+> selftests: drivers/net/netdevsim: devlink_trap.sh
+> TEST: Initialization                                                [ OK ]
+> TEST: Trap action                                                   [ OK ]
+> TEST: Trap metadata                                                 [ OK ]
+> TEST: Non-existing trap                                             [ OK ]
+> TEST: Non-existing trap action                                      [ OK ]
+> TEST: Trap statistics                                               [ OK ]
+> TEST: Trap group action                                             [ OK ]
+> TEST: Non-existing trap group                                       [ OK ]
+> TEST: Trap group statistics                                         [ OK ]
+> TEST: Trap policer                                                  [ OK ]
+> TEST: Trap policer binding                                          [ OK ]
+> TEST: Port delete                                                   [ OK ]
+> TEST: Device delete                                                 [ OK ]
 > 
 > [...]
 
 Here is the summary with links:
-  - [bpf] samples/bpf: Fix Segmentation fault for xdp_redirect command
-    https://git.kernel.org/bpf/bpf-next/c/85102ba58b41
+  - [net-next,v2] drivers: net: netdevsim: fix devlink_trap selftests failing
+    https://git.kernel.org/netdev/net-next/c/275b51c27cc3
 
 You are awesome, thank you!
 --
