@@ -2,68 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 119BC3AD28D
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 21:10:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43EAB3AD28F
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 21:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234820AbhFRTMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 15:12:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60218 "EHLO mail.kernel.org"
+        id S234806AbhFRTMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 15:12:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60242 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234711AbhFRTMN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234712AbhFRTMN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 18 Jun 2021 15:12:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D3E1C61264;
-        Fri, 18 Jun 2021 19:10:03 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2C416613E2;
+        Fri, 18 Jun 2021 19:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624043403;
-        bh=SgZUkPiXwqdXTFfbo0ipEASettsiAdzw/azMpSAJ/tY=;
+        s=k20201202; t=1624043404;
+        bh=2kYRmnCZirTS5bNIUYF6JeR5W0FElc+MGyXAqXzAg1M=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HDmP0bqDryf/VHA/rDaqclZXXST3k4pIcmC4b3Ar6uhIlGi7te0CeJ7mDC88EFwz4
-         yBGbaOdawOzOS1eHnyL53EvCcdiRDFJP6y4UpaY9y3mfPFC04YkFUjECJtwy+ke070
-         RxqiluPUmsbHrtO0NJnrw680DlmekuEsVTXWBiJs/cteNY8/FADmi7ACvals5J9IxM
-         5ezOVB3TkrRMg8eT7jhmlnj8tdk06xJ4Pj7kZLEGpeaFARXs+SXP5OO4evfTGs+H5T
-         UB2WSiKG5QqAOw9xUb/sbnWeEIP5LgMhldLV8sIsNJFq7bl2bFkCgIot++XIyV/CHB
-         Gdr0xbtJoL6ng==
+        b=IKFufWP4+U8ZezAlscDxZxsCujJikPa6tgEYGRX1i6EaNhOkeCpXW/Z3xlL0dqAgC
+         vgtTH3S9Yje00VMDQ7XvkR93iwkiI3xPf/uib5eN1v16nhhusXpo0T14CGe9fdqZXV
+         ujwrVoM4k0CzLQ+gImX5wJcg5R/gQVRgrTeihK92qUb+DK1nOUD9PUTtVdhIgEMeH+
+         wTUDg76GBTyjKxvMR1LSqwYM6hQibbWuQfRYKvFaZXEwlmvgH4coO85Exn5RDHudAX
+         R7zXsIfFAiX02+zM6jwC4UQMq0MexjOA9UGQUK8NfsKo3xoaIMqDqyYAiKX4t92mNQ
+         abH88eSDyOh4Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C257460C29;
-        Fri, 18 Jun 2021 19:10:03 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2729760A17;
+        Fri, 18 Jun 2021 19:10:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/3] bnxt_en: Bug fixes
+Subject: Re: [PATCH net-next] net: vlan: pass thru all GSO_SOFTWARE in
+ hw_enc_features
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162404340379.6189.8018755889955505608.git-patchwork-notify@kernel.org>
-Date:   Fri, 18 Jun 2021 19:10:03 +0000
-References: <1623996447-28958-1-git-send-email-michael.chan@broadcom.com>
-In-Reply-To: <1623996447-28958-1-git-send-email-michael.chan@broadcom.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        gospo@broadcom.com
+Message-Id: <162404340415.6189.18241591626926985919.git-patchwork-notify@kernel.org>
+Date:   Fri, 18 Jun 2021 19:10:04 +0000
+References: <20210618045556.1260832-1-kuba@kernel.org>
+In-Reply-To: <20210618045556.1260832-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, dcaratti@redhat.com, netdev@vger.kernel.org,
+        willemb@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 18 Jun 2021 02:07:24 -0400 you wrote:
-> This patchset includes 3 small bug fixes to reinitialize PHY capabilities
-> after firmware reset, setup the chip's internal TQM fastpath ring
-> backing memory properly for RoCE traffic, and to free ethtool related
-> memory if driver probe fails.
+On Thu, 17 Jun 2021 21:55:56 -0700 you wrote:
+> Currently UDP tunnel devices on top of VLANs lose the ability
+> to offload UDP GSO. Widen the pass thru features from TSO
+> to all GSO_SOFTWARE.
 > 
-> Michael Chan (1):
->   bnxt_en: Rediscover PHY capabilities after firmware reset
-> 
-> [...]
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/8021q/vlan.h | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
 Here is the summary with links:
-  - [net,1/3] bnxt_en: Rediscover PHY capabilities after firmware reset
-    https://git.kernel.org/netdev/net/c/0afd6a4e8028
-  - [net,2/3] bnxt_en: Fix TQM fastpath ring backing store computation
-    https://git.kernel.org/netdev/net/c/c12e1643d273
-  - [net,3/3] bnxt_en: Call bnxt_ethtool_free() in bnxt_init_one() error path
-    https://git.kernel.org/netdev/net/c/03400aaa69f9
+  - [net-next] net: vlan: pass thru all GSO_SOFTWARE in hw_enc_features
+    https://git.kernel.org/netdev/net-next/c/9d72b8da9f13
 
 You are awesome, thank you!
 --
