@@ -2,78 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D77C53AC65A
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:42:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBE023AC688
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233850AbhFRIob convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Jun 2021 04:44:31 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:55790 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233749AbhFRIoa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:44:30 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mtapsc-8-S_lREQziMlqph1PADEonZw-1; Fri, 18 Jun 2021 09:42:17 +0100
-X-MC-Unique: S_lREQziMlqph1PADEonZw-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 18 Jun
- 2021 09:42:16 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.018; Fri, 18 Jun 2021 09:42:16 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Kees Cook' <keescook@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
-Subject: RE: [PATCH] mac80211: Recast pointer for trailing memcpy()
-Thread-Topic: [PATCH] mac80211: Recast pointer for trailing memcpy()
-Thread-Index: AQHXYzENJy6TjXiKVkqMQny50fQUFqsZdDaA
-Date:   Fri, 18 Jun 2021 08:42:16 +0000
-Message-ID: <1bd7df33fd484d1da656238f792bd6f7@AcuMS.aculab.com>
-References: <20210617042709.2170111-1-keescook@chromium.org>
-In-Reply-To: <20210617042709.2170111-1-keescook@chromium.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S231708AbhFRIzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 04:55:48 -0400
+Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:47269 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231417AbhFRIzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:55:47 -0400
+Received: from localhost.localdomain ([114.149.34.46])
+        by mwinf5d28 with ME
+        id JYtR2500E0zjR6y03Ytabz; Fri, 18 Jun 2021 10:53:37 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Fri, 18 Jun 2021 10:53:37 +0200
+X-ME-IP: 114.149.34.46
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-can@vger.kernel.org
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v3 0/4] iplink_can: cleaning, fixes and adding TDC support.
+Date:   Fri, 18 Jun 2021 17:53:18 +0900
+Message-Id: <20210618085322.147462-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kees Cook
-> Sent: 17 June 2021 05:27
-> 
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memcpy(), memmove(), and memset(), avoid
-> intentionally writing across neighboring array fields.
-> 
-> Give memcpy() a specific source pointer type so it can correctly
-> calculate the bounds of the copy.
+The main purpose is to add commandline support for Transmitter Delay
+Compensation (TDC) in iproute. Other issues found during the
+development of this feature also get addressed.
 
-Doesn't the necessity of this sort of patch just sidestep the
-run-time checking and really indicate that it is just a complete
-waste of cpu resources?
+This patch series contains four patches which respectively:
+  1. Correct the bittiming ranges in the print_usage function.
+  2. factorize the many print_*(PRINT_JSON, ...) and fprintf
+  occurrences in a single print_*(PRINT_ANY, ...) call and fix the
+  signedness while doing that.
+  3. report the value of the bitrate prescalers (brp and dbrp).
+  4. adds command line support for the TDC in iproute and goes together
+  with below series in the kernel:
+  https://lore.kernel.org/r/20210603151550.140727-3-mailhol.vincent@wanadoo.fr
 
-I bet code changes to avoid/fix the reported errors will
-introduce more bugs than the test itself will really find.
 
-	David
+** Changelog **
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+From RFC v1 to RFC v2:
+  * Add an additional patch to the series to fix the issues reported
+    by Stephen Hemminger
+    Ref: https://lore.kernel.org/linux-can/20210506112007.1666738-1-mailhol.vincent@wanadoo.fr/T/#t
+
+From RFC v2 to v3:
+  * Dropped the RFC tag. Now that the kernel patch reach the testing
+    branch, I am finaly ready.
+  * Regression fix: configuring a link with only nominal bittiming
+    returned -EOPNOTSUPP
+  * Added two more patches to the series:
+      - iplink_can: fix configuration ranges in print_usage()
+      - iplink_can: print brp and dbrp bittiming variables
+  * Other small fixes on formatting.
+
+Vincent Mailhol (4):
+  iplink_can: fix configuration ranges in print_usage()
+  iplink_can: use PRINT_ANY to factorize code and fix signedness
+  iplink_can: print brp and dbrp bittiming variables
+  iplink_can: add new CAN FD bittiming parameters: Transmitter Delay
+    Compensation (TDC)
+
+ include/uapi/linux/can/netlink.h |  25 +-
+ ip/iplink_can.c                  | 430 ++++++++++++++++---------------
+ 2 files changed, 247 insertions(+), 208 deletions(-)
+
+-- 
+2.31.1
 
