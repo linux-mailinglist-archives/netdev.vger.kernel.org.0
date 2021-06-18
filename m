@@ -2,130 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 763983AC013
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 02:21:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 969EA3AC017
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 02:28:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233288AbhFRAXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 20:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231431AbhFRAXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 20:23:13 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2E4C061574;
-        Thu, 17 Jun 2021 17:21:03 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id s19so251739ilj.1;
-        Thu, 17 Jun 2021 17:21:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rwBUHPn/nUswAacAb8l0k4vEO1b585QgUKlF1XS0z4E=;
-        b=VOsoZyvUte64GBeqs6fU8Na/chZEVaeJt4neq1Z8kpQULdHUNTU6F/cRYUTRTOOkQi
-         VDeJoARqjKjPvgnc7U5WT/7Og0mSkcBjc7mPqwsK5xiPKTabSt+y+LyxqkjDIA4C+UUK
-         uF67rZj9o6NNHZtxsq2CV+12IhbgKXc/+SCgplZZ7ntlRR0wmBlAI+jpU7mtgUbo4cZC
-         ibk0w4LgPwsIoMPtEHGXpl9tdQeNT359tIrZSvhaE0YmStZ2xvo2WSAJtmEC9kkRXbzD
-         PmXrpj/Zx4AAJYAMNppBw9yK3uMpZm1QfPVDzWFMWlybAb9/xoQ/DG8Pivn0mGK8Gnrz
-         PNAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rwBUHPn/nUswAacAb8l0k4vEO1b585QgUKlF1XS0z4E=;
-        b=crqF+cyCliBGUCQJVrC1C1radgFsRr5wj4c52KwaJ8yxWxNnV/pK1rv/NpjgShpyRQ
-         S1GrbVXoVDZjlBAE9DmQyILM8Yfu+gsAn9fNZPnOTqBg7/RXnTLXi+zgCxl8+A13/ZH3
-         fxiEt/coreCdQYS/fs3pmpcoAEFTQpzCme0kIrno495qr4+iqrYR4ISJzq0yo+QOckIY
-         AUtX72auwyWuAs5I8ngUdZh5aj9BOr0N0jAuUUTJy/qAOCQ9hAuz1VP3t9OfamiO1+mf
-         M9QQXo5EHNt5dVlfhhZoKMO+Skp/7R0Yr+z7EfIHhOb6g6MDce3xnR3ktmnUppZow6WM
-         ODGQ==
-X-Gm-Message-State: AOAM531yA6iEneYouMy+alVVl9uM+DI4rBqvGCeziO5rwkezwkRxHP/8
-        fGjzmDST2e63lt5+h4j9BLRTpGqujgyKhnUX+B4=
-X-Google-Smtp-Source: ABdhPJwSzi/LEIO5Z3FwRtpscS2uHs7ZQ+MojHzel6FS0HeYMn4eDyfYPuL2qIIMRU49mbxdEg9sqNL+YNE3ARpDMXQ=
-X-Received: by 2002:a92:b0c:: with SMTP id b12mr5144308ilf.123.1623975663391;
- Thu, 17 Jun 2021 17:21:03 -0700 (PDT)
+        id S233298AbhFRAao convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 17 Jun 2021 20:30:44 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:2908 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233263AbhFRAan (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 20:30:43 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15I0PLU4009093
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 17:28:35 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3980gge2ua-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 17:28:35 -0700
+Received: from intmgw002.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 17 Jun 2021 17:28:34 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id AF6D63D8012F; Thu, 17 Jun 2021 17:28:27 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH bpf-next] selftests/bpf: fix ringbuf test fetching map FD
+Date:   Thu, 17 Jun 2021 17:28:24 -0700
+Message-ID: <20210618002824.2081922-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20210616092521.800788-1-Tony.Ambardar@gmail.com>
- <caf1dcbd-7a07-993c-e940-1b2689985c5a@fb.com> <YMopCb5CqOYsl6HR@krava>
- <YMp68Dlqwu+wuHV9@wildebeest.org> <YMsPnaV798ICuMbv@krava> <37f69a50-5b83-22e5-d54b-bea79ad3adec@iogearbox.net>
-In-Reply-To: <37f69a50-5b83-22e5-d54b-bea79ad3adec@iogearbox.net>
-From:   Tony Ambardar <tony.ambardar@gmail.com>
-Date:   Thu, 17 Jun 2021 17:20:53 -0700
-Message-ID: <CAPGftE88-AszN=ftJGxcYWpS2VLq4ErpJOTemBWeBgzE8-bbZQ@mail.gmail.com>
-Subject: Re: [PATCH bpf v1] bpf: fix libelf endian handling in resolv_btfids
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Mark Wielaard <mark@klomp.org>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        Frank Eigler <fche@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: XSc4VmszpbVQfRRFp2hb5PmT7_hMRtCG
+X-Proofpoint-ORIG-GUID: XSc4VmszpbVQfRRFp2hb5PmT7_hMRtCG
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-06-17_16:2021-06-15,2021-06-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ impostorscore=0 spamscore=0 malwarescore=0 priorityscore=1501
+ clxscore=1015 bulkscore=0 mlxlogscore=685 adultscore=0 suspectscore=0
+ mlxscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2104190000 definitions=main-2106180000
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Jun 2021 at 04:22, Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 6/17/21 11:02 AM, Jiri Olsa wrote:
-> > On Thu, Jun 17, 2021 at 12:28:00AM +0200, Mark Wielaard wrote:
-> >> On Wed, Jun 16, 2021 at 06:38:33PM +0200, Jiri Olsa wrote:
-> >>>>> diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
-> >>>>> index d636643ddd35..f32c059fbfb4 100644
-> >>>>> --- a/tools/bpf/resolve_btfids/main.c
-> >>>>> +++ b/tools/bpf/resolve_btfids/main.c
-> >>>>> @@ -649,6 +649,9 @@ static int symbols_patch(struct object *obj)
-> >>>>>           if (sets_patch(obj))
-> >>>>>                   return -1;
-> >>>>> + /* Set type to ensure endian translation occurs. */
-> >>>>> + obj->efile.idlist->d_type = ELF_T_WORD;
-> >>>>
-> >>>> The change makes sense to me as .BTF_ids contains just a list of
-> >>>> u32's.
-> >>>>
-> >>>> Jiri, could you double check on this?
-> >>>
-> >>> the comment in ELF_T_WORD declaration suggests the size depends on
-> >>> elf's class?
-> >>>
-> >>>    ELF_T_WORD,                   /* Elf32_Word, Elf64_Word, ... */
-> >>>
-> >>> data in .BTF_ids section are allways u32
-> >>>
-> >>> I have no idea how is this handled in libelf (perhaps it's ok),
-> >>> but just that comment above suggests it could be also 64 bits,
-> >>> cc-ing Frank and Mark for more insight
-> >>
-> >> It is correct to use ELF_T_WORD, which means a 32bit unsigned word.
-> >>
-> >> The comment is meant to explain that, but is really confusing if you
-> >> don't know that Elf32_Word and Elf64_Word are the same thing (a 32bit
-> >> unsigned word). This comes from being "too consistent" in defining all
-> >> data types for both 32bit and 64bit ELF, even if those types are the
-> >> same in both formats...
-> >>
-> >> Only Elf32_Addr/Elf64_Addr and Elf32_Off/Elf64_Off are different
-> >> sizes. But Elf32/Elf_64_Half (16 bit), Elf32/Elf64_Word (32 bit),
-> >> Elf32/Elf64_Xword (64 bit) and their Sword/Sxword (signed) variants
-> >> are all identical data types in both the Elf32 and Elf64 formats.
-> >>
-> >> I don't really know why. It seems the original ELF spec was 32bit only
-> >> and when introducing the ELF64 format "they" simply duplicated all
-> >> data types whether or not those data type were actually different
-> >> between the 32 and 64 bit format.
-> >
-> > nice, thanks for details
-> >
-> > Acked-by: Jiri Olsa <jolsa@redhat.com>
->
-> Tony, could you do a v2 and summarize the remainder of the discussion in
-> here for the commit message? Would be good to explicitly document the
-> assumptions made and why they work.
+Seems like 4d1b62986125 ("selftests/bpf: Convert few tests to light skeleton.")
+and 704e2beba23c ("selftests/bpf: Test ringbuf mmap read-only and read-write
+restrictions") were done independently on bpf and bpf-next trees and are in
+conflict with each other, despite a clean merge. Fix fetching of ringbuf's
+map_fd to use light skeleton properly.
 
-Sure, Daniel, I'll update the commit details and resend.
+Fixes: 704e2beba23c ("selftests/bpf: Test ringbuf mmap read-only and read-write restrictions")
+Fixes: 4d1b62986125 ("selftests/bpf: Convert few tests to light skeleton.")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/testing/selftests/bpf/prog_tests/ringbuf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Tony
+diff --git a/tools/testing/selftests/bpf/prog_tests/ringbuf.c b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
+index a01788090c31..4706cee84360 100644
+--- a/tools/testing/selftests/bpf/prog_tests/ringbuf.c
++++ b/tools/testing/selftests/bpf/prog_tests/ringbuf.c
+@@ -100,7 +100,7 @@ void test_ringbuf(void)
+ 	if (CHECK(err != 0, "skel_load", "skeleton load failed\n"))
+ 		goto cleanup;
+ 
+-	rb_fd = bpf_map__fd(skel->maps.ringbuf);
++	rb_fd = skel->maps.ringbuf.map_fd;
+ 	/* good read/write cons_pos */
+ 	mmap_ptr = mmap(NULL, page_size, PROT_READ | PROT_WRITE, MAP_SHARED, rb_fd, 0);
+ 	ASSERT_OK_PTR(mmap_ptr, "rw_cons_pos");
+-- 
+2.30.2
 
-> Thanks everyone,
-> Daniel
