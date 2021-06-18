@@ -2,126 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58FB83ACCB2
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:48:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D143ACCBA
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231855AbhFRNue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 09:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
+        id S234059AbhFRNwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 09:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233615AbhFRNue (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:50:34 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8273C061574
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 06:48:23 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id nb6so15932403ejc.10
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 06:48:23 -0700 (PDT)
+        with ESMTP id S233444AbhFRNwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:52:35 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6BFC061574;
+        Fri, 18 Jun 2021 06:50:26 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id b37so14087357ljr.13;
+        Fri, 18 Jun 2021 06:50:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=4khq88CoLvnES4xhsAW2Lr0qZSOmbfj72MOUjXDthuY=;
-        b=dT3IhPGAgER/ia7lS4IU9E8WCRjArnuYnJqCS5zhNJWDKKpxs/JZJM9OSPREAKZkEI
-         W+xqLYFUSxjAX+7tOvx7ddL5OD9utXhlzy40jk97k7AkbtFfbixGyknXxCUc1SXDVHrP
-         mbOawmtenFwKixiOSZJ6iM9Oa2X6zLKrCzjQ+IH7nm0y/rOmtJgG1LrUPEAEdZrIwzth
-         Q0JetHnLNY8Rd2GTrvQYqi5dDLinAz5Zi9QtijSTRkx7MzyarRwH/aVR/aiWC7f3cHfp
-         P0jCirPwtGBMG5tzLJEcVFYzQkTBY0LvhAQ/5Oqur+cwEP1tb/yViTplUkZ8Z6118WdZ
-         6f4w==
+        bh=PF1lwVLZjO0TaZRIPSE+RYDa9z8BPF1tUWPYliWRKnc=;
+        b=HNXfeSlEg8BXH11sQ4vpGj1n8hXO2g66OnPe8iX33KoxwRFq3Xw2r4ZMhqDyQUNttq
+         55BcvKOnz8mw9DYDTCzab4t3h3LOi//dCYSbUst9nWsRkVxGIaPdV+7sLC4j/n+vXovo
+         B4oa9Rq34Q/FqSz/S9AtSl2rlUj8CTkk87aULV5oZ+p8j0CgkhP7ZQ5LDFQ8GbazkpxT
+         Hjx/U0d6o3tDfH6RsitHSwfIUaocAZrSCijVmUmNXvzkXOxiW6tmQiwPfjKgyLbM0YST
+         +nN0JMwjrHlCaDBg3j8YhqR3Ti2KDaddq1o+Wmo8ZVwbieTCtlnSetjOzF1McbrbnAzg
+         TIgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=4khq88CoLvnES4xhsAW2Lr0qZSOmbfj72MOUjXDthuY=;
-        b=nabB+lzfsMd1IABsN7Rumg4qHKX96TZWX0H5fBDAdBHW8ektv/2ujPJ50avEOoDd13
-         qXfYsalYvYgGsqWE+TfVGVbA3VgpIZY9m5v5612bd1pD5k6S3DZccyGOkhx0eWkuTQ/J
-         VY7IayN/Q/0N2rdTjUIfpUUbBfvSgfyS6RYwa2k59A7KeqRWK9cQBNMJx4U7+hTGMmB9
-         KJ0Zx5SKEflJ4eXSvVSIcFYIB4OIpUxzU9ezCpisS5BDJYdd1O4IORMSPfEibp4bahzw
-         5us4g/lB1RB+VqkcQRKRRvhZrlIwTvC02uQBwXidk9g4zY5nf0wJInvA3+1F3Hjat2yG
-         WYFg==
-X-Gm-Message-State: AOAM531gAiFFEcGuasCMnytEupnSBz8AqomHFf2oWspswYbOhoKZxo3U
-        xXgockJ4EM51SAS1wRI43RpdkowZ85g=
-X-Google-Smtp-Source: ABdhPJzELOqjBrLHgXrr69J6Qf3eemHerGVuTfYorkGVGnR1Z6osUK+E9TBqFI5xYLr+pvcz0maBFg==
-X-Received: by 2002:a17:906:15d5:: with SMTP id l21mr9458655ejd.429.1624024102309;
-        Fri, 18 Jun 2021 06:48:22 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id q16sm6374410edt.26.2021.06.18.06.48.21
+        bh=PF1lwVLZjO0TaZRIPSE+RYDa9z8BPF1tUWPYliWRKnc=;
+        b=sLJKmsIXmsNsSnLhCvG4BxTIDHgrvb+kzYh/AsT/S+fEt/iQrOddTyWE8UxJNrTiPx
+         k/U8N8vgc+v/FwVsN3A12SCFYhpjOMKUUSXjpFTKpEoztzCoBIA6BEb/vfmWBEy1wXzD
+         cjD1J3tho4t7nZmt2s7XcGjSo8rj32S8Qi2mcWMb4JCRdZR/mFhNiRVuHr0GD3iyVjht
+         GlEXenQoGUAMMfduU0EDao0HawZjVddHUNw/EOoyiEjEndpAVkWRbxJHgvgTCbOPVtB1
+         5pLRydToeywTcoq49lC0UjnKZHOElotRxliAsTL4rTeb3aqtsYEqii98fQM93mUHKKS2
+         l3Vw==
+X-Gm-Message-State: AOAM533+92PPalG8p4sxsZlCKHmFs7GVk2zNPiCm2wRcxHqqrcOlmvtU
+        Fo/IS/YGvC2xoBvequn40KY=
+X-Google-Smtp-Source: ABdhPJxrJ9TDOw/Wl4DcvgjPxkQjBduGj9Lc2qQ214ODXqD3Tm33ax8AK4edkHfd/5Z3WlnEQR+5Ig==
+X-Received: by 2002:a2e:580e:: with SMTP id m14mr9599947ljb.197.1624024224596;
+        Fri, 18 Jun 2021 06:50:24 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.229.24])
+        by smtp.gmail.com with ESMTPSA id r9sm918112lfm.158.2021.06.18.06.50.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 06:48:21 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next] net: dsa: sja1105: completely error out in sja1105_static_config_reload if something fails
-Date:   Fri, 18 Jun 2021 16:48:12 +0300
-Message-Id: <20210618134812.2973050-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 18 Jun 2021 06:50:23 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     reksio@newterm.pl, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH] net: ethernet: fix potential use-after-free in ec_bhf_remove
+Date:   Fri, 18 Jun 2021 16:49:02 +0300
+Message-Id: <20210618134902.9793-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+static void ec_bhf_remove(struct pci_dev *dev)
+{
+...
+	struct ec_bhf_priv *priv = netdev_priv(net_dev);
 
-If reloading the static config fails for whatever reason, for example if
-sja1105_static_config_check_valid() fails, then we "goto out_unlock_ptp"
-but we print anyway that "Reset switch and programmed static config.",
-which is confusing because we didn't. We also do a bunch of other stuff
-like reprogram the XPCS and reload the credit-based shapers, as if a
-switch reset took place, which didn't.
+	unregister_netdev(net_dev);
+	free_netdev(net_dev);
 
-So just unlock the PTP lock and goto out, skipping all of that.
+	pci_iounmap(dev, priv->dma_io);
+	pci_iounmap(dev, priv->io);
+...
+}
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+priv is netdev private data, but it is used
+after free_netdev(). It can cause use-after-free when accessing priv
+pointer. So, fix it by moving free_netdev() after pci_iounmap()
+calls.
+
+Fixes: 6af55ff52b02 ("Driver for Beckhoff CX5020 EtherCAT master module.")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/ec_bhf.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 57ccd4548911..a9777eb564c6 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1886,17 +1886,23 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 	mutex_lock(&priv->ptp_data.lock);
+diff --git a/drivers/net/ethernet/ec_bhf.c b/drivers/net/ethernet/ec_bhf.c
+index 46b0dbab8aad..7c992172933b 100644
+--- a/drivers/net/ethernet/ec_bhf.c
++++ b/drivers/net/ethernet/ec_bhf.c
+@@ -576,10 +576,12 @@ static void ec_bhf_remove(struct pci_dev *dev)
+ 	struct ec_bhf_priv *priv = netdev_priv(net_dev);
  
- 	rc = __sja1105_ptp_gettimex(ds, &now, &ptp_sts_before);
--	if (rc < 0)
--		goto out_unlock_ptp;
-+	if (rc < 0) {
-+		mutex_unlock(&priv->ptp_data.lock);
-+		goto out;
-+	}
+ 	unregister_netdev(net_dev);
+-	free_netdev(net_dev);
  
- 	/* Reset switch and send updated static configuration */
- 	rc = sja1105_static_config_upload(priv);
--	if (rc < 0)
--		goto out_unlock_ptp;
-+	if (rc < 0) {
-+		mutex_unlock(&priv->ptp_data.lock);
-+		goto out;
-+	}
- 
- 	rc = __sja1105_ptp_settime(ds, 0, &ptp_sts_after);
--	if (rc < 0)
--		goto out_unlock_ptp;
-+	if (rc < 0) {
-+		mutex_unlock(&priv->ptp_data.lock);
-+		goto out;
-+	}
- 
- 	t1 = timespec64_to_ns(&ptp_sts_before.pre_ts);
- 	t2 = timespec64_to_ns(&ptp_sts_before.post_ts);
-@@ -1911,7 +1917,6 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 
- 	__sja1105_ptp_adjtime(ds, now);
- 
--out_unlock_ptp:
- 	mutex_unlock(&priv->ptp_data.lock);
- 
- 	dev_info(priv->ds->dev,
+ 	pci_iounmap(dev, priv->dma_io);
+ 	pci_iounmap(dev, priv->io);
++
++	free_netdev(net_dev);
++
+ 	pci_release_regions(dev);
+ 	pci_clear_master(dev);
+ 	pci_disable_device(dev);
 -- 
-2.25.1
+2.32.0
 
