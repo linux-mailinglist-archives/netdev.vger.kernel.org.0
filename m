@@ -2,88 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A2D3ACC77
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:41:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A293ACC87
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233927AbhFRNnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 09:43:53 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44546 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233904AbhFRNnv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 09:43:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=78qpKeNOzP/NAiEhB003K9aO28jOhCI8hGIf6ql5ius=; b=NzC8w6hiC2xjfYYW9YbyuUHhXq
-        zVLU0VY8iMe3blpC9TTcef5XD5TdYf/gBOYyVgS/hRWlKlud97SvoZnR4uePoO6t67cO1NhbjVk6g
-        JuuBeRME8DpU/cD0Z8eDTbdmoWxOLUov6rwmvU9uP2o9cgvTGaOjd8t3t1F8mpaWkgKA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1luEkd-00A4hL-T6; Fri, 18 Jun 2021 15:41:39 +0200
-Date:   Fri, 18 Jun 2021 15:41:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     linux-firmware@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>
-Subject: Re: [GIT PULL] linux-firmware: mrvl: prestera: Update Marvell
- Prestera Switchdev v3.0 with policer support
-Message-ID: <YMyikxsdqNi8V5zG@lunn.ch>
-References: <20210617154206.GA17555@plvision.eu>
- <YMt8GvxSen6gB7y+@lunn.ch>
- <20210617165824.GA5220@plvision.eu>
- <YMv0WEchRT25GC0Q@lunn.ch>
- <20210618095824.GA21805@plvision.eu>
+        id S233430AbhFRNqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 09:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231855AbhFRNqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:46:14 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 431C7C061574;
+        Fri, 18 Jun 2021 06:44:04 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id b3so587998wrm.6;
+        Fri, 18 Jun 2021 06:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1KZhL4TvWHdLfflpYli1LmfRJGpIKZAtvn+Dbu/3l0s=;
+        b=MGyPV4on7GsD51BQYcCQ1fZrYP8m8nAmdE+bzB6Y30bmY5GgO1akMScO+nlLoC5BiN
+         pgtu1dptoKZhtPZ9ofkZNtYzl7xrRALx6BheM0R9caM0eVeaTbeSEz4CZzHsEQHczxys
+         tQY5OgxxSktZ/MTRHwkD5l//mbKmSdslSZDgEU6gJFn0G0RXBCP2Fo/gwGPKlc0pJzcT
+         EJerTELPQlBHy6+vuYSzuk6Q/vsGEpEKg0EaH3I85SBD3gYHeZV963+1LckpKiiOmnCT
+         I3L99CSUX1WfjdmRRC5Vp5tDsoYYVCikzyDuvzGC0+H5E/7QbugXXsXeK9/N4biHcEeZ
+         phTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1KZhL4TvWHdLfflpYli1LmfRJGpIKZAtvn+Dbu/3l0s=;
+        b=tb8W2jvZOevedJBw0cJuGi41XflKIq1RZb4+0pxsCvRpv9jKYBBXti4ui1Ld4V8tyH
+         63AiEKBS3Hzsu+FUJh+rJTKylOYXLDH10yQQxhICZftOIJQ8KMwlGzH3lwJZe9ByS1GM
+         +AT7Sce6v6GJiZ3XqyyDjzVjSpGa5VQFh8WYdodoLtqTlB/iBZeLlQgfC+hQ8yDyqRHX
+         VqrjOf+CnJ8h30WVrRya+Ut7+ag2ggGd2JYUUND4iwcPxnzQDMUU4160/eSoUXKNL3rC
+         iRyLOlxStT7TUjPjIjLT0SGXgxtFjE8NRzSOC2SISblQREPLyDMlzSlmNrRCFitrm4tU
+         2fXQ==
+X-Gm-Message-State: AOAM530JdIq2NJGRp7jMSDOg2eVbXip7PKYKIP9gtri2OPlTliQZAhXV
+        O6E5wiTNZbtR1aA5CpgT9QckWtD1m7kacATV4fQ=
+X-Google-Smtp-Source: ABdhPJxFHfoQkx3BVfylZ5cw/ObUFz+PFEmvGBjHnKIEdcnV/CxsN+HtFZd0h4mmELSNYu7n9I+FNoXtbZJXF+6NUtE=
+X-Received: by 2002:adf:f842:: with SMTP id d2mr12557882wrq.52.1624023842935;
+ Fri, 18 Jun 2021 06:44:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210618095824.GA21805@plvision.eu>
+References: <20210617092255.3487-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20210617092255.3487-1-magnus.karlsson@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 18 Jun 2021 15:43:49 +0200
+Message-ID: <CAJ+HfNgRFgfk5oVROquSaAw2F34A42xfGGMf_PXwVKYHXs80uQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] xsk: fix missing validation for skb and unaligned mode
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Netdev <netdev@vger.kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I just picked some from the git log:
-> 
->     48237834129d ("QCA: Update Bluetooth firmware for QCA6174")
-> 
-> this just updates the binary and description says that it updates
-> to v26.
-> 
-> Not sure if it is good example.
+On Thu, 17 Jun 2021 at 11:23, Magnus Karlsson <magnus.karlsson@gmail.com> w=
+rote:
+>
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+>
+> Fix a missing validation of a Tx descriptor when executing in skb mode
+> and the umem is in unaligned mode. A descriptor could point to a
+> buffer straddling the end of the umem, thus effectively tricking the
+> kernel to read outside the allowed umem region. This could lead to a
+> kernel crash if that part of memory is not mapped.
+>
+> In zero-copy mode, the descriptor validation code rejects such
+> descriptors by checking a bit in the DMA address that tells us if the
+> next page is physically contiguous or not. For the last page in the
+> umem, this bit is not set, therefore any descriptor pointing to a
+> packet straddling this last page boundary will be rejected. However,
+> the skb path does not use this bit since it copies out data and can do
+> so to two different pages. (It also does not have the array of DMA
+> address, so it cannot even store this bit.) The code just returned
+> that the packet is always physically contiguous. But this is
+> unfortunately also returned for the last page in the umem, which means
+> that packets that cross the end of the umem are being allowed, which
+> they should not be.
+>
+> Fix this by introducing a check for this in the SKB path only, not
+> penalizing the zero-copy path.
+>
+> Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-The filename is qca/rampatch_usb_00000302.bin. If you look at
-drivers/bluetooth/btusb.c you can see that 00000302 is the version of
-the ROM in the device which is being patched. So there is no
-expectation of knowing the firmware version from the firmware
-filename.
+Nice catch!
 
-> But anyway, I agree with you that better if new changes also reflects
-> the FW binary name (version) so it will be easy to find out which FW binary
-> have or not particular features.
-> 
-> So I think better to add new FW 3.1 binary ?
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
 
-Probably. But please consider your whole upgrade story. You are
-changing the firmware version quite frequently. How do end users cope
-with this? Is the driver going to support 3.1, 3.0 and 2.0? Or just
-3.1 and 2.0?
-
-Do you have more features in firmware 3.1 you need to add driver
-support for? Or can we expect a 3.2 in a few weeks time? What are your
-users expectations at the moment? It could be, you don't consider the
-driver has enough features at the moment that anybody other than early
-adopters playing with it would consider using it. That you don't
-expect real use of it for another six months, or a year. If that is
-true, you probably can be a bit more disruptive at the moment. But
-when you have a production ready driver, you really do need to
-consider how your users deal with upgrades, keeping the firmware
-version stable for a longer period of time.
-
-	Andrew
+> ---
+>  include/net/xsk_buff_pool.h | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+> index eaa8386dbc63..7a9a23e7a604 100644
+> --- a/include/net/xsk_buff_pool.h
+> +++ b/include/net/xsk_buff_pool.h
+> @@ -147,11 +147,16 @@ static inline bool xp_desc_crosses_non_contig_pg(st=
+ruct xsk_buff_pool *pool,
+>  {
+>         bool cross_pg =3D (addr & (PAGE_SIZE - 1)) + len > PAGE_SIZE;
+>
+> -       if (pool->dma_pages_cnt && cross_pg) {
+> +       if (likely(!cross_pg))
+> +               return false;
+> +
+> +       if (pool->dma_pages_cnt) {
+>                 return !(pool->dma_pages[addr >> PAGE_SHIFT] &
+>                          XSK_NEXT_PG_CONTIG_MASK);
+>         }
+> -       return false;
+> +
+> +       /* skb path */
+> +       return addr + len > pool->addrs_cnt;
+>  }
+>
+>  static inline u64 xp_aligned_extract_addr(struct xsk_buff_pool *pool, u6=
+4 addr)
+>
+> base-commit: da5ac772cfe2a03058b0accfac03fad60c46c24d
+> --
+> 2.29.0
+>
