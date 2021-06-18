@@ -2,189 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE2C13ACCCB
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:52:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF1753ACCFE
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:01:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234195AbhFRNyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 09:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234198AbhFRNyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:54:43 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3778FC061767
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 06:52:34 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1luEvA-0006wU-Ot; Fri, 18 Jun 2021 15:52:32 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     steffen.klassert@secunet.com, sd@queasysnail.net,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH ipsec-next v2 5/5] xfrm: replay: remove last replay indirection
-Date:   Fri, 18 Jun 2021 15:52:00 +0200
-Message-Id: <20210618135200.14420-6-fw@strlen.de>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210618135200.14420-1-fw@strlen.de>
-References: <20210618135200.14420-1-fw@strlen.de>
+        id S232152AbhFRODe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 10:03:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44614 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230387AbhFRODd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 10:03:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=OtMNx+STOoasIPfFddFNRvJQfssIcbHuOaMq8kAdsmY=; b=xH
+        GbmlxwwZx9Xpd50r5NU6O+Ue9FpIpc/lHYUidhWj0EZ9pX1rPiaFfQ5e4Z9z7XS6cVbhD5U9jSpwe
+        vvHxUQ9TCXIf6xAThqVo5tO87fSmv5LL/jwF3EvtjWFAd3A3RD725wf419da5hELeN/sfo/ejQCxU
+        UpR4fayJnvADVYs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1luF3f-00A4t5-O0; Fri, 18 Jun 2021 16:01:19 +0200
+Date:   Fri, 18 Jun 2021 16:01:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Liang Xu <lxu@maxlinear.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        Thomas Mohren <tmohren@maxlinear.com>
+Subject: Re: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
+Message-ID: <YMynL9c9MpfdC7Se@lunn.ch>
+References: <20210604161250.49749-1-lxu@maxlinear.com>
+ <f56aa414-3002-ef85-51a9-bb36017270e6@gmail.com>
+ <7834258b-5826-1c00-2754-b0b7e76b5910@maxlinear.com>
+ <YLqIvGIzBIULI2Gm@lunn.ch>
+ <2b9945f9-16a4-bda5-40df-d79089be3c12@maxlinear.com>
+ <YLuPZTXFrJ9KjNpl@lunn.ch>
+ <9a838afe-83e7-b575-db49-f210022966d5@maxlinear.com>
+ <334b52a6-30e8-0869-6ffb-52e9955235ff@maxlinear.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <334b52a6-30e8-0869-6ffb-52e9955235ff@maxlinear.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This replaces the overflow indirection with the new xfrm_replay_overflow
-helper.  After this, the 'repl' pointer in xfrm_state is no longer
-needed and can be removed as well.
+> Net-next:
+> 
+> int genphy_loopback(struct phy_device *phydev, bool enable)
+> {
+>      if (enable) {
+>          u16 val, ctl = BMCR_LOOPBACK;
+>          int ret;
+> 
+>          if (phydev->speed == SPEED_1000)
+>              ctl |= BMCR_SPEED1000;
+>          else if (phydev->speed == SPEED_100)
+>              ctl |= BMCR_SPEED100;
+> 
+>          if (phydev->duplex == DUPLEX_FULL)
+>              ctl |= BMCR_FULLDPLX;
+> 
+>          phy_modify(phydev, MII_BMCR, ~0, ctl);
+> 
+>          ret = phy_read_poll_timeout(phydev, MII_BMSR, val,
+>                          val & BMSR_LSTATUS,
+>                      5000, 500000, true);
+>          if (ret)
+>              return ret;
+>      } else {
+>          phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
+> 
+>          phy_config_aneg(phydev);
+>      }
+> 
+>      return 0;
+> }
+> 
+> v5.12.11:
+> 
+> int genphy_loopback(struct phy_device *phydev, bool enable)
+> {
+>      return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
+>                enable ? BMCR_LOOPBACK : 0);
+> }
+> 
+> 
+> Not sure whether anyone else reported similar issue.
 
-xfrm_replay_overflow() is added in two incarnations, one is used
-when the kernel is compiled with xfrm hardware offload support enabled,
-the other when its disabled.
+The commit message says:
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- include/net/xfrm.h     |  8 +------
- net/xfrm/xfrm_output.c |  2 +-
- net/xfrm/xfrm_replay.c | 51 +++++++++++++++++++++---------------------
- 3 files changed, 28 insertions(+), 33 deletions(-)
+    net: phy: genphy_loopback: add link speed configuration
+    
+    In case of loopback, in most cases we need to disable autoneg support
+    and force some speed configuration. Otherwise, depending on currently
+    active auto negotiated link speed, the loopback may or may not work.
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 0206d80ec291..d2a0559c255f 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -221,9 +221,6 @@ struct xfrm_state {
- 	struct xfrm_replay_state preplay;
- 	struct xfrm_replay_state_esn *preplay_esn;
- 
--	/* The functions for replay detection. */
--	const struct xfrm_replay *repl;
--
- 	/* replay detection mode */
- 	enum xfrm_replay_mode    repl_mode;
- 	/* internal flag that only holds state for delayed aevent at the
-@@ -305,10 +302,6 @@ struct km_event {
- 	struct net *net;
- };
- 
--struct xfrm_replay {
--	int	(*overflow)(struct xfrm_state *x, struct sk_buff *skb);
--};
--
- struct xfrm_if_cb {
- 	struct xfrm_if	*(*decode_session)(struct sk_buff *skb,
- 					   unsigned short family);
-@@ -1718,6 +1711,7 @@ static inline int xfrm_policy_id2dir(u32 index)
- void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq);
- int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
- void xfrm_replay_notify(struct xfrm_state *x, int event);
-+int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb);
- int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
- 
- static inline int xfrm_aevent_is_on(struct net *net)
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index 0b2975ef0668..527da58464f3 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -525,7 +525,7 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
- 			goto error;
- 		}
- 
--		err = x->repl->overflow(x, skb);
-+		err = xfrm_replay_overflow(x, skb);
- 		if (err) {
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATESEQERROR);
- 			goto error;
-diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-index e8703aa8d06a..9277d81b344c 100644
---- a/net/xfrm/xfrm_replay.c
-+++ b/net/xfrm/xfrm_replay.c
-@@ -95,7 +95,7 @@ void xfrm_replay_notify(struct xfrm_state *x, int event)
- 		x->xflags &= ~XFRM_TIME_DEFER;
- }
- 
--static int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
-+static int __xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
- {
- 	int err = 0;
- 	struct net *net = xs_net(x);
-@@ -617,7 +617,7 @@ static int xfrm_replay_overflow_offload(struct xfrm_state *x, struct sk_buff *sk
- 	__u32 oseq = x->replay.oseq;
- 
- 	if (!xo)
--		return xfrm_replay_overflow(x, skb);
-+		return __xfrm_replay_overflow(x, skb);
- 
- 	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
- 		if (!skb_is_gso(skb)) {
-@@ -737,29 +737,33 @@ static int xfrm_replay_overflow_offload_esn(struct xfrm_state *x, struct sk_buff
- 	return err;
- }
- 
--static const struct xfrm_replay xfrm_replay_legacy = {
--	.overflow	= xfrm_replay_overflow_offload,
--};
--
--static const struct xfrm_replay xfrm_replay_bmp = {
--	.overflow	= xfrm_replay_overflow_offload_bmp,
--};
-+int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	switch (x->repl_mode) {
-+	case XFRM_REPLAY_MODE_LEGACY:
-+		break;
-+	case XFRM_REPLAY_MODE_BMP:
-+		return xfrm_replay_overflow_offload_bmp(x, skb);
-+	case XFRM_REPLAY_MODE_ESN:
-+		return xfrm_replay_overflow_offload_esn(x, skb);
-+	}
- 
--static const struct xfrm_replay xfrm_replay_esn = {
--	.overflow	= xfrm_replay_overflow_offload_esn,
--};
-+	return xfrm_replay_overflow_offload(x, skb);
-+}
- #else
--static const struct xfrm_replay xfrm_replay_legacy = {
--	.overflow	= xfrm_replay_overflow,
--};
--
--static const struct xfrm_replay xfrm_replay_bmp = {
--	.overflow	= xfrm_replay_overflow_bmp,
--};
-+int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	switch (x->repl_mode) {
-+	case XFRM_REPLAY_MODE_LEGACY:
-+		break;
-+	case XFRM_REPLAY_MODE_BMP:
-+		return xfrm_replay_overflow_bmp(x, skb);
-+	case XFRM_REPLAY_MODE_ESN:
-+		return xfrm_replay_overflow_esn(x, skb);
-+	}
- 
--static const struct xfrm_replay xfrm_replay_esn = {
--	.overflow	= xfrm_replay_overflow_esn,
--};
-+	return __xfrm_replay_overflow(x, skb);
-+}
- #endif
- 
- int xfrm_init_replay(struct xfrm_state *x)
-@@ -774,14 +778,11 @@ int xfrm_init_replay(struct xfrm_state *x)
- 		if (x->props.flags & XFRM_STATE_ESN) {
- 			if (replay_esn->replay_window == 0)
- 				return -EINVAL;
--			x->repl = &xfrm_replay_esn;
- 			x->repl_mode = XFRM_REPLAY_MODE_ESN;
- 		} else {
--			x->repl = &xfrm_replay_bmp;
- 			x->repl_mode = XFRM_REPLAY_MODE_BMP;
- 		}
- 	} else {
--		x->repl = &xfrm_replay_legacy;
- 		x->repl_mode = XFRM_REPLAY_MODE_LEGACY;
- 	}
- 
--- 
-2.31.1
+> Should I use phy_modify to set the LOOPBACK bit only in my driver 
+> implementation as force speed with loopback enable does not work in our 
+> device?
 
+So you appear to have the exact opposite problem, you need to use
+auto-neg, with yourself, in order to have link. So there are two
+solutions:
+
+1) As you say, implement it in your driver
+
+2) Add a second generic implementation, which enables autoneg, if it
+is not enabled, sets the loopback bit, and waits for the link to come
+up.
+
+Does your PHY driver error out when asked to do a forced mode? It
+probably should, if your silicon does not support that part of C22.
+
+	 Andrew
