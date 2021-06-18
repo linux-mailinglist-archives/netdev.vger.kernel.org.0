@@ -2,112 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB8C3AC5E1
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:21:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BCE83AC5E4
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:21:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233009AbhFRIXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 04:23:08 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:47088 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232250AbhFRIXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:23:05 -0400
-Received: from mail-ej1-f70.google.com ([209.85.218.70])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lu9kF-000675-QI
-        for netdev@vger.kernel.org; Fri, 18 Jun 2021 08:20:55 +0000
-Received: by mail-ej1-f70.google.com with SMTP id de48-20020a1709069bf0b029048ae3ebecabso22103ejc.16
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 01:20:55 -0700 (PDT)
+        id S233482AbhFRIXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 04:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46786 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233070AbhFRIXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:23:42 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC79C061574
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 01:21:31 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id s23so9690594oiw.9
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 01:21:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Aeo2Ll9Dh+vhj7IwqV3SFri2k03IhO5HyXeMDR5L224=;
+        b=Cioz9S5vInxiqGTxkEkxgvXLvpJ3UCmEuqyKPxf8214RFrevgzdy/RiM8hTaf5TSiW
+         RHqlrU1YsVyvCyBoIjPA1+drIaPqLEI4dLOqiwvyvlsXdguIzIQQKf2xA6sJu0jqT0RB
+         898N3SGQtWtNfSmIaWvxNChaeGCBeHNCrTihl1fBBU9G02I2UyX1gYRRm+BOacb578Qm
+         A0UeWbAVBMwaECf6s+wW5RqXqvQbLjuVn8cU/Rp9W6y3Jd3V25tuU3CN0AS8krEa56fn
+         Fjq7s6TXCR/oFVCTh+ZUeVDo7s4O768HGJ57KbGAoUZ25YX6JKlLf5wdshnjDpW2wSVY
+         WRKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=d/K0H906YUUKfdepwlReDstttzt/rZTiSrnXu1rsGl4=;
-        b=PAOmb8GMB9Pdk8e5m8GHHCykz+GWLFdwVaMPGKHOT9FsQlgM7tBNqYRLk+7Ge8aQ5t
-         nGEQViMFOsCtL94O8xy+9ffAMdUlSUTU2mYng9cIkuZi3z/U8bW0NYviyI2oNuQ8aR8R
-         vZK3R/bsO8gN1LhYN8KM63Og99x0Xxtun7WawDqseB8fbi4NkwhqHst67HVAiSWZnxj4
-         PEhxABm7Y3G158Cguvvq48r4zt9VJfkPq6ok1BtC8/sRJ1Po85qeMomN3ZDTZflZptbR
-         1Y5z5rfpiwYCckhu1NUEAExqkz8RmSrcOfj6HzOjhptsj4YeywwMuO9MGZhqdIAAdRXv
-         JwgQ==
-X-Gm-Message-State: AOAM533UXQAVNxL5h+CEesNO7zFKWqJRND4w15rkUdCqggY71WinwEG9
-        XQlbJUef6MpzDuYfaaHppWwizu8JFrahtQYJt/JrWrnfGVTNi3zVIEImL65MT7gicdpojZWeRAc
-        kaHTL3mpR4+0o4bjHaNsjhO7C67UuijiXng==
-X-Received: by 2002:aa7:d799:: with SMTP id s25mr2326478edq.161.1624004455076;
-        Fri, 18 Jun 2021 01:20:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx/I7P0xXP0OFvYW9YaIccS4kemIdCdzd2LI7F/6hxbx946RKljIW2c8ALFC5WoxW7v5BggJw==
-X-Received: by 2002:aa7:d799:: with SMTP id s25mr2326465edq.161.1624004454904;
-        Fri, 18 Jun 2021 01:20:54 -0700 (PDT)
-Received: from [192.168.1.115] (xdsl-188-155-177-222.adslplus.ch. [188.155.177.222])
-        by smtp.gmail.com with ESMTPSA id ci4sm704168ejc.110.2021.06.18.01.20.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Jun 2021 01:20:54 -0700 (PDT)
-Subject: Re: [PATCH] NFC: nxp-nci: remove unnecessary label
-To:     samirweng1979 <samirweng1979@163.com>, charles.gorand@effinnov.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-References: <20210618074456.17544-1-samirweng1979@163.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <99c12036-5444-b41b-165b-9f6a1812810e@canonical.com>
-Date:   Fri, 18 Jun 2021 10:20:53 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Aeo2Ll9Dh+vhj7IwqV3SFri2k03IhO5HyXeMDR5L224=;
+        b=pBlcKCpEkC/2+BkVerakHiAYnj1EmQkEg7PSyeSmRuhWzkULlCYd92ozHgmaCFlqOg
+         WL581TKRRf0Cg3+PzFWZCNmUKJ8t9Pn3tI5NVg1ZEhge/qN7KdKpEQ34AD5CRwKYzGsN
+         FJabPjr+eZaX4X5xcOtGN6TvCIjUBiGBQLUjosH8EUprzlc8eDvgi/lSiwwUG3BFQGxM
+         LX6foKPLnV4M8YAeBV/qKtr+0C7orH0xtskIpo2M3GS7bcoFhCTP+NHjDGT27c6JCsdK
+         RxjThvrjRJSP9RI4tasbgoBS1pE5aevdDu53a+eubwhDB/zNA6etj9MbZb3VViuUq8Cg
+         DWfQ==
+X-Gm-Message-State: AOAM533XQ0mKr+jrstuay4B+a35BCGQ6JmkpsFdhYVbXAjSHmhOaOSQ4
+        eAmu9SccJN6InLRCqg1Lt1fKJIhxvSLp0COltqyR+A==
+X-Google-Smtp-Source: ABdhPJyDZlMUREB65qkU6XQ7bycrAzlPqlpeC2tU0I1MqjBXUhZUqKARGbo5s5dURngukXGGW4gwXFSct7ToGKP+h14=
+X-Received: by 2002:a05:6808:13d5:: with SMTP id d21mr14018585oiw.114.1624004489130;
+ Fri, 18 Jun 2021 01:21:29 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210618074456.17544-1-samirweng1979@163.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210618075243.42046-1-stephan@gerhold.net> <20210618075243.42046-3-stephan@gerhold.net>
+In-Reply-To: <20210618075243.42046-3-stephan@gerhold.net>
+From:   Aleksander Morgado <aleksander@aleksander.es>
+Date:   Fri, 18 Jun 2021 10:21:18 +0200
+Message-ID: <CAAP7ucKHXv_Wu7dpSmPpy1utMZV5iXGOjGg87AbcR4j+Xcz=WA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/3] net: wwan: Add RPMSG WWAN CTRL driver
+To:     Stephan Gerhold <stephan@gerhold.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        linuxwwan@intel.com, Ohad Ben-Cohen <ohad@wizery.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        phone-devel@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/06/2021 09:44, samirweng1979 wrote:
-> From: wengjianfeng <wengjianfeng@yulong.com>
-> 
-> Label chunk_exit is unnecessary, so we delete it and
-> directly return -ENOMEM.
+Hey Stephan,
 
-There is no plural here, no collective "we". Please, use simple statements:
-"Remove unnecessary label chunk_exit and return directly."
+> +static const struct rpmsg_device_id rpmsg_wwan_ctrl_id_table[] = {
+> +       /* RPMSG channels for Qualcomm SoCs with integrated modem */
+> +       { .name = "DATA5_CNTL", .driver_data = WWAN_PORT_QMI },
+> +       { .name = "DATA4", .driver_data = WWAN_PORT_AT },
+> +       {},
+> +};
 
-You could add here the explanation for question "why doing this?", e.g.
-"Simplify the code by removing unnecessary label chunk_exit and
-returning directly."
+If I understand this properly, now these rpmsg backed control ports
+would be automatically exposed without the need of a userspace CLI
+tool to do that (rpmsgexport).
 
-> 
-> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
-> ---
->  drivers/nfc/nxp-nci/firmware.c | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/nfc/nxp-nci/firmware.c b/drivers/nfc/nxp-nci/firmware.c
-> index dae0c80..119bf30 100644
-> --- a/drivers/nfc/nxp-nci/firmware.c
-> +++ b/drivers/nfc/nxp-nci/firmware.c
-> @@ -95,10 +95,8 @@ static int nxp_nci_fw_send_chunk(struct nxp_nci_info *info)
->  	int r;
->  
->  	skb = nci_skb_alloc(info->ndev, info->max_payload, GFP_KERNEL);
-> -	if (!skb) {
-> -		r = -ENOMEM;
-> -		goto chunk_exit;
-> -	}
-> +	if (!skb)
-> +		return -ENOMEM;
->  
->  	chunk_len = info->max_payload - NXP_NCI_FW_HDR_LEN - NXP_NCI_FW_CRC_LEN;
->  	remaining_len = fw_info->frame_size - fw_info->written;
-> @@ -124,7 +122,6 @@ static int nxp_nci_fw_send_chunk(struct nxp_nci_info *info)
->  
->  	kfree_skb(skb);
->  
-> -chunk_exit:
->  	return r;
->  }
->  
-> 
+And if I recall correctly, DATA5_CNTL and DATA4 were the only channels
+actively exported with udev actions using rpmsgexport in postmarketos,
+but that didn't mean someone could add additional rules to export
+other channels (i.e. as per the ModemManager port type hint rules,
+DATA[0-9]*_CNTL as QMI and DATA[0-9]* as AT, except for DATA40_CNTL
+and DATA_40 which are the USB tethering related ones).
 
+So, does this mean we're limiting the amount of channels exported to
+only one QMI control port and one AT control port? Not saying that's
+wrong, but maybe it makes sense to add a comment somewhere specifying
+that explicitly.
 
-Best regards,
-Krzysztof
+Also, would it make sense to have some way to trigger the export of
+additional channels somehow via userspace? e.g. something like
+rpmsgexport but using the wwan subsystem. I'm not sure if that's a
+true need anywhere or just over-engineering the solution, truth be
+told.
+
+-- 
+Aleksander
+https://aleksander.es
