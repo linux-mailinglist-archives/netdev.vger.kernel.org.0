@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E37D3AC92E
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 12:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAFF03AC931
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 12:53:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233878AbhFRKyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 06:54:39 -0400
-Received: from first.geanix.com ([116.203.34.67]:53864 "EHLO first.geanix.com"
+        id S232345AbhFRKzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 06:55:14 -0400
+Received: from first.geanix.com ([116.203.34.67]:53890 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233846AbhFRKyi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 06:54:38 -0400
+        id S230437AbhFRKym (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 06:54:42 -0400
 Received: from localhost (80-62-117-165-mobile.dk.customer.tdc.net [80.62.117.165])
-        by first.geanix.com (Postfix) with ESMTPSA id 83127C7E;
-        Fri, 18 Jun 2021 10:52:25 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id E13034C3657;
+        Fri, 18 Jun 2021 10:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1624013545; bh=q1b5bexcq1vlomibUUd2NWw4q2kj339YQtJG09H39VU=;
-        h=From:To:Cc:Subject:Date;
-        b=HeMztwFs+X1USFI5ZxW5uim5+GUirflBTScWidkBQiyZTPd/hni4X5UMrAybMrgwf
-         4RDZtH4mfxImXHD7rVhta2VS6VgONNoeaNSgJtY8BEAkFjy5A1b7KEeOjE8Fo3HaqA
-         5fXVJoy5WJzFHpvZ4XGeTw8tGgk2uHdNjw0xXP8D7KygA0+pQ/dN8jN5xtnJvIz8UP
-         JnMGeR3FTQju3J5QMBZW4aSkNMh2OdUK0UpO7OR4w28Y8/dGvtrPhGEWYV7rA01rYU
-         72fsuOeMlEIPaMRgx2Hv6gWcPzkUthBFgy+Fjob6htZOO8R0vJwpmI4pj2XCRmZ1qr
-         snoEGnIsZjwPg==
+        t=1624013551; bh=AhyE6isg6VavideXUV32Ga9HpCHHdtL8iBqEJ8xAQ6Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=IBx7ezM/tE3xoRjX27fCXGRC6JiArooX8DWHvrAmbc5gsTw9UGnifXZ/PUnf17VS8
+         LL45QuuEQM7jgugfFVuGNSrYphhFALh2z5m+CUNW9dS7fFFxiMADwNq7cjdBwtYOcO
+         vA3b7VqQ9snsOZ3nqWo9OlpWBB1lGf5E4AELnxbM/BCbXNADpTv+Hh/fFF9BK86O1K
+         a8Nkr4kN6tRAVoQtpRFsP+16OnqOn4rui7XFCfn7EQ0D66cDSGvaEeqJEeB0O2x/LV
+         pFOl/ajZfNBseSyssqyr0/XyzyYTD4MEQpRz09wOximhLXBRZMsEID4e9ZYxOyqdA6
+         wzhGIdKwl7ANg==
 From:   Esben Haabendal <esben@geanix.com>
 To:     netdev@vger.kernel.org
-Cc:     stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Michal Simek <michal.simek@xilinx.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Wang Hai <wanghai38@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
-        Zhang Changzhong <zhangchangzhong@huawei.com>,
         Michael Walle <michael@walle.cc>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>, Wang Hai <wanghai38@huawei.com>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] net: ll_temac: Make sure to free skb when it is completely used
-Date:   Fri, 18 Jun 2021 12:52:23 +0200
-Message-Id: <d9200a5023973fbe372a2d51dc4e500400450ecd.1624013456.git.esben@geanix.com>
+Subject: [PATCH 2/4] net: ll_temac: Add memory-barriers for TX BD access
+Date:   Fri, 18 Jun 2021 12:52:28 +0200
+Message-Id: <ac97150d7ba16b2145edfe77e377bd5e467735ff.1624013456.git.esben@geanix.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <d9200a5023973fbe372a2d51dc4e500400450ecd.1624013456.git.esben@geanix.com>
+References: <d9200a5023973fbe372a2d51dc4e500400450ecd.1624013456.git.esben@geanix.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
@@ -47,46 +49,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the skb pointer piggy-backed on the TX BD, we have a simple and
-efficient way to free the skb buffer when the frame has been transmitted.
-But in order to avoid freeing the skb while there are still fragments from
-the skb in use, we need to piggy-back on the TX BD of the skb, not the
-first.
+Add a couple of memory-barriers to ensure correct ordering of read/write
+access to TX BDs.
 
-Without this, we are doing use-after-free on the DMA side, when the first
-BD of a multi TX BD packet is seen as completed in xmit_done, and the
-remaining BDs are still being processed.
+In xmit_done, we should ensure that reading the additional BD fields are
+only done after STS_CTRL_APP0_CMPLT bit is set.
 
-Cc: stable@vger.kernel.org # v5.4+
+When xmit_done marks the BD as free by setting APP0=0, we need to ensure
+that the other BD fields are reset first, so we avoid racing with the xmit
+path, which writes to the same fields.
+
+Finally, making sure to read APP0 of next BD after the current BD, ensures
+that we see all available buffers.
+
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/net/ethernet/xilinx/ll_temac_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index a1f5f07f4ca9..e82f162cd80c 100644
+index e82f162cd80c..9797aa3221d1 100644
 --- a/drivers/net/ethernet/xilinx/ll_temac_main.c
 +++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -876,7 +876,6 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 		return NETDEV_TX_OK;
- 	}
- 	cur_p->phys = cpu_to_be32(skb_dma_addr);
--	ptr_to_txbd((void *)skb, cur_p);
+@@ -774,12 +774,15 @@ static void temac_start_xmit_done(struct net_device *ndev)
+ 	stat = be32_to_cpu(cur_p->app0);
  
- 	for (ii = 0; ii < num_frag; ii++) {
- 		if (++lp->tx_bd_tail >= lp->tx_bd_num)
-@@ -915,6 +914,11 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 	}
- 	cur_p->app0 |= cpu_to_be32(STS_CTRL_APP0_EOP);
+ 	while (stat & STS_CTRL_APP0_CMPLT) {
++		/* Make sure that the other fields are read after bd is
++		 * released by dma
++		 */
++		rmb();
+ 		dma_unmap_single(ndev->dev.parent, be32_to_cpu(cur_p->phys),
+ 				 be32_to_cpu(cur_p->len), DMA_TO_DEVICE);
+ 		skb = (struct sk_buff *)ptr_from_txbd(cur_p);
+ 		if (skb)
+ 			dev_consume_skb_irq(skb);
+-		cur_p->app0 = 0;
+ 		cur_p->app1 = 0;
+ 		cur_p->app2 = 0;
+ 		cur_p->app3 = 0;
+@@ -788,6 +791,12 @@ static void temac_start_xmit_done(struct net_device *ndev)
+ 		ndev->stats.tx_packets++;
+ 		ndev->stats.tx_bytes += be32_to_cpu(cur_p->len);
  
-+	/* Mark last fragment with skb address, so it can be consumed
-+	 * in temac_start_xmit_done()
-+	 */
-+	ptr_to_txbd((void *)skb, cur_p);
++		/* app0 must be visible last, as it is used to flag
++		 * availability of the bd
++		 */
++		smp_mb();
++		cur_p->app0 = 0;
 +
- 	tail_p = lp->tx_bd_p + sizeof(*lp->tx_bd_v) * lp->tx_bd_tail;
- 	lp->tx_bd_tail++;
- 	if (lp->tx_bd_tail >= lp->tx_bd_num)
+ 		lp->tx_bd_ci++;
+ 		if (lp->tx_bd_ci >= lp->tx_bd_num)
+ 			lp->tx_bd_ci = 0;
+@@ -814,6 +823,9 @@ static inline int temac_check_tx_bd_space(struct temac_local *lp, int num_frag)
+ 		if (cur_p->app0)
+ 			return NETDEV_TX_BUSY;
+ 
++		/* Make sure to read next bd app0 after this one */
++		rmb();
++
+ 		tail++;
+ 		if (tail >= lp->tx_bd_num)
+ 			tail = 0;
 -- 
 2.32.0
 
