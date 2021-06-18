@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3264A3AC933
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 12:53:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 774FC3AC934
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 12:53:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232837AbhFRKzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 06:55:17 -0400
-Received: from first.geanix.com ([116.203.34.67]:53910 "EHLO first.geanix.com"
+        id S233908AbhFRKzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 06:55:23 -0400
+Received: from first.geanix.com ([116.203.34.67]:53926 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232723AbhFRKyr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 06:54:47 -0400
+        id S233014AbhFRKyv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 06:54:51 -0400
 Received: from localhost (80-62-117-165-mobile.dk.customer.tdc.net [80.62.117.165])
-        by first.geanix.com (Postfix) with ESMTPSA id D0211C7E;
-        Fri, 18 Jun 2021 10:52:35 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id 96BCB4C36E0;
+        Fri, 18 Jun 2021 10:52:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1624013555; bh=WHjjMsx6IxEstOT3uD0IXWYEPbXsz31jeGej/RXoWTU=;
+        t=1624013560; bh=ZxZg/ybmf0dZDYjJCDKl8z7xwrG15DvFCOiKFYT8Emg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=QTkZesMk+VQJ/TaLOlvwsOqRex89lIIwouZEMP09F7AHOMUGQhl4C0mzkW3pLpUtt
-         q2IMxe5iILEwaD6XxAJQ+1n3wbelxPfnbVWjXjXVhaCAR7kpgRm4t2RqOtVC9OiJmH
-         nR8vDtMYb7kmibBFvJ45o96LGzb+edzEleyi5hfCJABUQPriAKp8B8BdFx1ezQOOxx
-         G9U3S7ZFcp+C7/kyyhwGcD2P5qwap31fb2dvQmLHFgan16OhlbUjZ0aqSd8mSBIY7n
-         zDYpRSthHu7NF8QIWO0I3zurTKJXBWQfpOsqICettfTCdu3+FGj1L6lBHEIuL/45jB
-         Hs08rC0+4lWIA==
+        b=JMbFP/ewH8KSoz8S07Vt0P7YRLnwiDSZeuhNglezIxCi6xetcRHC8znkPUs78aGa/
+         MYHH/zw1Q17TtC6myWWPsuqG86tuFXKD3RDUuk5O5gEPGhXswq5pq34Ycr/tvLGL2H
+         tMHKTiVVu/ioETu+vBYTyqbt8OW844ITdE4HuulSIFSsOI4XfzigdfQnjf8/Eh1Uap
+         G7XU6OPYVb7OifbPG/uU9VEcdy5MaGKsk27qoZDD1kcZ+Zqt4uZNHdlm6FdS5wbDdf
+         SZ5qaJAC6/3AWiyhEvl45+85pv2Vvl9iwGvej+XqLrPIYlRIrWVnucbahyWH7XyIx4
+         gTHzINRodCK/Q==
 From:   Esben Haabendal <esben@geanix.com>
 To:     netdev@vger.kernel.org
-Cc:     stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Michal Simek <michal.simek@xilinx.com>,
         Zhang Changzhong <zhangchangzhong@huawei.com>,
+        Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>,
+        Wang Hai <wanghai38@huawei.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>, Wang Hai <wanghai38@huawei.com>,
-        Michael Walle <michael@walle.cc>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] net: ll_temac: Fix TX BD buffer overwrite
-Date:   Fri, 18 Jun 2021 12:52:33 +0200
-Message-Id: <af756a6fda027c300f38f73cad133450f7dd1636.1624013456.git.esben@geanix.com>
+Subject: [PATCH 4/4] net: ll_temac: Avoid ndo_start_xmit returning NETDEV_TX_BUSY
+Date:   Fri, 18 Jun 2021 12:52:38 +0200
+Message-Id: <4c927f4c3da854dc60145d170008a2a09ab25027.1624013456.git.esben@geanix.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <d9200a5023973fbe372a2d51dc4e500400450ecd.1624013456.git.esben@geanix.com>
 References: <d9200a5023973fbe372a2d51dc4e500400450ecd.1624013456.git.esben@geanix.com>
@@ -49,33 +49,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just as the initial check, we need to ensure num_frag+1 buffers available,
-as that is the number of buffers we are going to use.
+As documented in Documentation/networking/driver.rst, the ndo_start_xmit
+method must not return NETDEV_TX_BUSY under any normal circumstances, and
+as recommended, we simply stop the tx queue in advance, when there is a
+risk that the next xmit would cause a NETDEV_TX_BUSY return.
 
-This fixes a buffer overflow, which might be seen during heavy network
-load. Complete lockup of TEMAC was reproducible within about 10 minutes of
-a particular load.
-
-Fixes: 84823ff80f74 ("net: ll_temac: Fix race condition causing TX hang")
-Cc: stable@vger.kernel.org # v5.4+
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/net/ethernet/xilinx/ll_temac_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 9797aa3221d1..cc482ee36501 100644
+index cc482ee36501..9a13953ea70f 100644
 --- a/drivers/net/ethernet/xilinx/ll_temac_main.c
 +++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -861,7 +861,7 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 		smp_mb();
+@@ -942,6 +942,11 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	wmb();
+ 	lp->dma_out(lp, TX_TAILDESC_PTR, tail_p); /* DMA start */
  
- 		/* Space might have just been freed - check again */
--		if (temac_check_tx_bd_space(lp, num_frag))
-+		if (temac_check_tx_bd_space(lp, num_frag + 1))
- 			return NETDEV_TX_BUSY;
++	if (temac_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1)) {
++		netdev_info(ndev, "%s -> netif_stop_queue\n", __func__);
++		netif_stop_queue(ndev);
++	}
++
+ 	return NETDEV_TX_OK;
+ }
  
- 		netif_wake_queue(ndev);
 -- 
 2.32.0
 
