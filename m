@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A41FB3AD4BE
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 00:02:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFEA63AD4C1
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 00:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234714AbhFRWE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 18:04:57 -0400
-Received: from novek.ru ([213.148.174.62]:34888 "EHLO novek.ru"
+        id S234760AbhFRWFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 18:05:23 -0400
+Received: from novek.ru ([213.148.174.62]:34914 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234699AbhFRWE5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 18:04:57 -0400
+        id S234710AbhFRWFV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 18:05:21 -0400
 Received: from [192.168.0.18] (unknown [37.228.234.253])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id C11FA50053A;
-        Sat, 19 Jun 2021 01:00:52 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru C11FA50053A
+        by novek.ru (Postfix) with ESMTPSA id 8AABE503BBB;
+        Sat, 19 Jun 2021 01:01:14 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 8AABE503BBB
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1624053655; bh=2BM+IBth0i+23PTMvcaWDgFd2UbCMYzB7VDJhYUIhHM=;
+        t=1624053676; bh=Or5GERcBLdJFGD7tDZ2zg/P5FsNM2mzNL1Ozt3PriIA=;
         h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Pa1QSBTnn9y9qOSG64thdt91pCkxAMv+iyVO9lF2+nHfB8aDDLXYnxuMOCmYY5GTH
-         o/AvNyyVaW2Y95eU4ap0ankGNvCzoauVfnnb4RdrosppSL7w5XBwda3TAEdA/aYIka
-         +v0jOJDFopjoQeK06nnY6tae30oJXPcIXcdkvt3w=
-Subject: Re: [PATCH net 1/2] selftests: tls: clean up uninitialized warnings
+        b=biCGIiz6vz7PDRSKjt8amwyM2+n/iYJ6p//P4UNuQmtNQ6eDTN4uti+RFru0JAzQu
+         GkRULpXZyKSyYOHfHMRXxS56LRD9zRR27TxVQX/FrYpFEYY9kBfNQbBWuzIUFzzr5Z
+         oci+376Si08YIFOljsDWYZHkORgvHxg4Ae7Q9/hE=
+Subject: Re: [PATCH net 2/2] selftests: tls: fix chacha+bidir tests
 To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
         shuah@kernel.org
 References: <20210618202504.1435179-1-kuba@kernel.org>
+ <20210618202504.1435179-2-kuba@kernel.org>
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <b92c5196-2a8d-e2ea-2739-73f623d6af9b@novek.ru>
-Date:   Fri, 18 Jun 2021 23:02:42 +0100
+Message-ID: <2ab110a6-a2a0-c5c7-29e5-ed38fb438176@novek.ru>
+Date:   Fri, 18 Jun 2021 23:03:04 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210618202504.1435179-1-kuba@kernel.org>
+In-Reply-To: <20210618202504.1435179-2-kuba@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -46,73 +47,137 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 18.06.2021 21:25, Jakub Kicinski wrote:
-> A bunch of tests uses uninitialized stack memory as random
-> data to send. This is harmless but generates compiler warnings.
-> Explicitly init the buffers with random data.
+> ChaCha support did not adjust the bidirectional test.
+> We need to set up KTLS in reverse direction correctly,
+> otherwise these two cases will fail:
 > 
+>    tls.12_chacha.bidir
+>    tls.13_chacha.bidir
+> 
+> Fixes: 4f336e88a870 ("selftests/tls: add CHACHA20-POLY1305 to tls selftests")
 > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > ---
->   tools/testing/selftests/net/tls.c | 20 ++++++++++++++++++++
->   1 file changed, 20 insertions(+)
+>   tools/testing/selftests/net/tls.c | 67 ++++++++++++++++++-------------
+>   1 file changed, 39 insertions(+), 28 deletions(-)
 > 
 > diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-> index 426d07875a48..58fea6eb588d 100644
+> index 58fea6eb588d..112d41d01b12 100644
 > --- a/tools/testing/selftests/net/tls.c
 > +++ b/tools/testing/selftests/net/tls.c
-> @@ -25,6 +25,18 @@
+> @@ -25,6 +25,35 @@
 >   #define TLS_PAYLOAD_MAX_LEN 16384
 >   #define SOL_TLS 282
 >   
-> +static void memrnd(void *s, size_t n)
-> +{
-> +	int *dword = s;
-> +	char *byte;
+> +struct tls_crypto_info_keys {
+> +	union {
+> +		struct tls12_crypto_info_aes_gcm_128 aes128;
+> +		struct tls12_crypto_info_chacha20_poly1305 chacha20;
+> +	};
+> +	size_t len;
+> +};
 > +
-> +	for (; n >= 4; n -= 4)
-> +		*dword++ = rand();
-> +	byte = (void *)dword;
-> +	while (n--)
-> +		*byte++ = rand();
+> +static void tls_crypto_info_init(uint16_t tls_version, uint16_t cipher_type,
+> +				 struct tls_crypto_info_keys *tls12)
+> +{
+> +	memset(tls12, 0, sizeof(*tls12));
+> +
+> +	switch (cipher_type) {
+> +	case TLS_CIPHER_CHACHA20_POLY1305:
+> +		tls12->len = sizeof(struct tls12_crypto_info_chacha20_poly1305);
+> +		tls12->chacha20.info.version = tls_version;
+> +		tls12->chacha20.info.cipher_type = cipher_type;
+> +		break;
+> +	case TLS_CIPHER_AES_GCM_128:
+> +		tls12->len = sizeof(struct tls12_crypto_info_aes_gcm_128);
+> +		tls12->aes128.info.version = tls_version;
+> +		tls12->aes128.info.cipher_type = cipher_type;
+> +		break;
+> +	default:
+> +		break;
+> +	}
 > +}
 > +
->   FIXTURE(tls_basic)
+>   static void memrnd(void *s, size_t n)
 >   {
->   	int fd, cfd;
-> @@ -308,6 +320,8 @@ TEST_F(tls, recv_max)
->   	char recv_mem[TLS_PAYLOAD_MAX_LEN];
->   	char buf[TLS_PAYLOAD_MAX_LEN];
+>   	int *dword = s;
+> @@ -145,33 +174,16 @@ FIXTURE_VARIANT_ADD(tls, 13_chacha)
 >   
-> +	memrnd(buf, sizeof(buf));
-> +
->   	EXPECT_GE(send(self->fd, buf, send_len, 0), 0);
->   	EXPECT_NE(recv(self->cfd, recv_mem, send_len, 0), -1);
->   	EXPECT_EQ(memcmp(buf, recv_mem, send_len), 0);
-> @@ -588,6 +602,8 @@ TEST_F(tls, recvmsg_single_max)
->   	struct iovec vec;
->   	struct msghdr hdr;
+>   FIXTURE_SETUP(tls)
+>   {
+> -	union {
+> -		struct tls12_crypto_info_aes_gcm_128 aes128;
+> -		struct tls12_crypto_info_chacha20_poly1305 chacha20;
+> -	} tls12;
+> +	struct tls_crypto_info_keys tls12;
+>   	struct sockaddr_in addr;
+>   	socklen_t len;
+>   	int sfd, ret;
+> -	size_t tls12_sz;
 >   
-> +	memrnd(send_mem, sizeof(send_mem));
-> +
->   	EXPECT_EQ(send(self->fd, send_mem, send_len, 0), send_len);
->   	vec.iov_base = (char *)recv_mem;
->   	vec.iov_len = TLS_PAYLOAD_MAX_LEN;
-> @@ -610,6 +626,8 @@ TEST_F(tls, recvmsg_multiple)
->   	struct msghdr hdr;
->   	int i;
+>   	self->notls = false;
+>   	len = sizeof(addr);
 >   
-> +	memrnd(buf, sizeof(buf));
-> +
->   	EXPECT_EQ(send(self->fd, buf, send_len, 0), send_len);
->   	for (i = 0; i < msg_iovlen; i++) {
->   		iov_base[i] = (char *)malloc(iov_len);
-> @@ -634,6 +652,8 @@ TEST_F(tls, single_send_multiple_recv)
->   	char send_mem[TLS_PAYLOAD_MAX_LEN * 2];
->   	char recv_mem[TLS_PAYLOAD_MAX_LEN * 2];
+> -	memset(&tls12, 0, sizeof(tls12));
+> -	switch (variant->cipher_type) {
+> -	case TLS_CIPHER_CHACHA20_POLY1305:
+> -		tls12_sz = sizeof(struct tls12_crypto_info_chacha20_poly1305);
+> -		tls12.chacha20.info.version = variant->tls_version;
+> -		tls12.chacha20.info.cipher_type = variant->cipher_type;
+> -		break;
+> -	case TLS_CIPHER_AES_GCM_128:
+> -		tls12_sz = sizeof(struct tls12_crypto_info_aes_gcm_128);
+> -		tls12.aes128.info.version = variant->tls_version;
+> -		tls12.aes128.info.cipher_type = variant->cipher_type;
+> -		break;
+> -	default:
+> -		tls12_sz = 0;
+> -	}
+> +	tls_crypto_info_init(variant->tls_version, variant->cipher_type,
+> +			     &tls12);
 >   
-> +	memrnd(send_mem, sizeof(send_mem));
-> +
->   	EXPECT_GE(send(self->fd, send_mem, total_len, 0), 0);
->   	memset(recv_mem, 0, total_len);
+>   	addr.sin_family = AF_INET;
+>   	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+> @@ -199,7 +211,7 @@ FIXTURE_SETUP(tls)
+>   
+>   	if (!self->notls) {
+>   		ret = setsockopt(self->fd, SOL_TLS, TLS_TX, &tls12,
+> -				 tls12_sz);
+> +				 tls12.len);
+>   		ASSERT_EQ(ret, 0);
+>   	}
+>   
+> @@ -212,7 +224,7 @@ FIXTURE_SETUP(tls)
+>   		ASSERT_EQ(ret, 0);
+>   
+>   		ret = setsockopt(self->cfd, SOL_TLS, TLS_RX, &tls12,
+> -				 tls12_sz);
+> +				 tls12.len);
+>   		ASSERT_EQ(ret, 0);
+>   	}
+>   
+> @@ -854,18 +866,17 @@ TEST_F(tls, bidir)
+>   	int ret;
+>   
+>   	if (!self->notls) {
+> -		struct tls12_crypto_info_aes_gcm_128 tls12;
+> +		struct tls_crypto_info_keys tls12;
+>   
+> -		memset(&tls12, 0, sizeof(tls12));
+> -		tls12.info.version = variant->tls_version;
+> -		tls12.info.cipher_type = TLS_CIPHER_AES_GCM_128;
+> +		tls_crypto_info_init(variant->tls_version, variant->cipher_type,
+> +				     &tls12);
+>   
+>   		ret = setsockopt(self->fd, SOL_TLS, TLS_RX, &tls12,
+> -				 sizeof(tls12));
+> +				 tls12.len);
+>   		ASSERT_EQ(ret, 0);
+>   
+>   		ret = setsockopt(self->cfd, SOL_TLS, TLS_TX, &tls12,
+> -				 sizeof(tls12));
+> +				 tls12.len);
+>   		ASSERT_EQ(ret, 0);
+>   	}
 >   
 > 
 
