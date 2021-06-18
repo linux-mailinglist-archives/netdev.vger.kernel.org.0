@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B85943AD4BC
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 00:02:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C2D13AD4BD
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 00:02:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234698AbhFRWEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 18:04:39 -0400
+        id S234730AbhFRWEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 18:04:42 -0400
 Received: from mga05.intel.com ([192.55.52.43]:53160 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233033AbhFRWEh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 18:04:37 -0400
-IronPort-SDR: bVOy+9raFoF69cz8KCvzRxXPEg9Lr2ctvYvpT43VDdMceql47PntiK6UWPROfXAXLwIAaA4sC5
- T26MW0iouluA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10019"; a="292256527"
+        id S233684AbhFRWEi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 18:04:38 -0400
+IronPort-SDR: fzZeEVHKrkx5QbdCifqPeCWZs7vpCstPzygn63BbG208PKtsBkP7r7tsibBMukTF845/zb09fn
+ Cg8YqsG2Ws3A==
+X-IronPort-AV: E=McAfee;i="6200,9189,10019"; a="292256528"
 X-IronPort-AV: E=Sophos;i="5.83,284,1616482800"; 
-   d="scan'208";a="292256527"
+   d="scan'208";a="292256528"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2021 15:02:27 -0700
-IronPort-SDR: E7BgKZAdnyEmq+vwF0de9WcEquueXC4EPviy63J01W9mT+p/xKCguUPFTcjU5LbTmomMXMPI3Y
- F3Wq2Cq3FE1g==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2021 15:02:28 -0700
+IronPort-SDR: tVjFpKOpZ/pHAiifudGovryrd8N7G9OkPnTsjG9KcPzhCT7xY9JQiecW3MnePRWq+TbRHb2tMO
+ D3f/rMiz4eaw==
 X-IronPort-AV: E=Sophos;i="5.83,284,1616482800"; 
-   d="scan'208";a="443703682"
+   d="scan'208";a="443703683"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.26.218])
   by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2021 15:02:27 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -30,9 +30,9 @@ Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev, fw@strlen.de,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 1/2] mptcp: fix bad handling of 32 bit ack wrap-around
-Date:   Fri, 18 Jun 2021 15:02:20 -0700
-Message-Id: <20210618220221.99172-2-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net 2/2] mptcp: fix 32 bit DSN expansion
+Date:   Fri, 18 Jun 2021 15:02:21 -0700
+Message-Id: <20210618220221.99172-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210618220221.99172-1-mathew.j.martineau@linux.intel.com>
 References: <20210618220221.99172-1-mathew.j.martineau@linux.intel.com>
@@ -44,98 +44,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-When receiving 32 bits DSS ack from the peer, the MPTCP need
-to expand them to 64 bits value. The current code is buggy
-WRT detecting 32 bits ack wrap-around: when the wrap-around
-happens the current unsigned 32 bit ack value is lower than
-the previous one.
+The current implementation of 32 bit DSN expansion is buggy.
+After the previous patch, we can simply reuse the newly
+introduced helper to do the expansion safely.
 
-Additionally check for possible reverse wrap and make the helper
-visible, so that we could re-use it for the next patch.
-
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/204
-Fixes: cc9d25669866 ("mptcp: update per unacked sequence on pkt reception")
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/120
+Fixes: 648ef4b88673 ("mptcp: Implement MPTCP receive path")
 Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/mptcp/options.c  | 29 +++++++++++++++--------------
- net/mptcp/protocol.h |  8 ++++++++
- 2 files changed, 23 insertions(+), 14 deletions(-)
+ net/mptcp/subflow.c | 17 +----------------
+ 1 file changed, 1 insertion(+), 16 deletions(-)
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 9b263f27ce9b..b87e46f515fb 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -896,19 +896,20 @@ static bool check_fully_established(struct mptcp_sock *msk, struct sock *ssk,
- 	return false;
- }
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index be1de4084196..037fba41e170 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -775,15 +775,6 @@ enum mapping_status {
+ 	MAPPING_DUMMY
+ };
  
--static u64 expand_ack(u64 old_ack, u64 cur_ack, bool use_64bit)
-+u64 __mptcp_expand_seq(u64 old_seq, u64 cur_seq)
+-static u64 expand_seq(u64 old_seq, u16 old_data_len, u64 seq)
+-{
+-	if ((u32)seq == (u32)old_seq)
+-		return old_seq;
+-
+-	/* Assume map covers data not mapped yet. */
+-	return seq | ((old_seq + old_data_len + 1) & GENMASK_ULL(63, 32));
+-}
+-
+ static void dbg_bad_map(struct mptcp_subflow_context *subflow, u32 ssn)
  {
--	u32 old_ack32, cur_ack32;
--
--	if (use_64bit)
--		return cur_ack;
--
--	old_ack32 = (u32)old_ack;
--	cur_ack32 = (u32)cur_ack;
--	cur_ack = (old_ack & GENMASK_ULL(63, 32)) + cur_ack32;
--	if (unlikely(before(cur_ack32, old_ack32)))
--		return cur_ack + (1LL << 32);
--	return cur_ack;
-+	u32 old_seq32, cur_seq32;
-+
-+	old_seq32 = (u32)old_seq;
-+	cur_seq32 = (u32)cur_seq;
-+	cur_seq = (old_seq & GENMASK_ULL(63, 32)) + cur_seq32;
-+	if (unlikely(cur_seq32 < old_seq32 && before(old_seq32, cur_seq32)))
-+		return cur_seq + (1LL << 32);
-+
-+	/* reverse wrap could happen, too */
-+	if (unlikely(cur_seq32 > old_seq32 && after(old_seq32, cur_seq32)))
-+		return cur_seq - (1LL << 32);
-+	return cur_seq;
- }
+ 	pr_debug("Bad mapping: ssn=%d map_seq=%d map_data_len=%d",
+@@ -907,13 +898,7 @@ static enum mapping_status get_mapping_status(struct sock *ssk,
+ 		data_len--;
+ 	}
  
- static void ack_update_msk(struct mptcp_sock *msk,
-@@ -926,7 +927,7 @@ static void ack_update_msk(struct mptcp_sock *msk,
- 	 * more dangerous than missing an ack
- 	 */
- 	old_snd_una = msk->snd_una;
--	new_snd_una = expand_ack(old_snd_una, mp_opt->data_ack, mp_opt->ack64);
-+	new_snd_una = mptcp_expand_seq(old_snd_una, mp_opt->data_ack, mp_opt->ack64);
+-	if (!mpext->dsn64) {
+-		map_seq = expand_seq(subflow->map_seq, subflow->map_data_len,
+-				     mpext->data_seq);
+-		pr_debug("expanded seq=%llu", subflow->map_seq);
+-	} else {
+-		map_seq = mpext->data_seq;
+-	}
++	map_seq = mptcp_expand_seq(READ_ONCE(msk->ack_seq), mpext->data_seq, mpext->dsn64);
+ 	WRITE_ONCE(mptcp_sk(subflow->conn)->use_64bit_ack, !!mpext->dsn64);
  
- 	/* ACK for data not even sent yet? Ignore. */
- 	if (after64(new_snd_una, snd_nxt))
-@@ -963,7 +964,7 @@ bool mptcp_update_rcv_data_fin(struct mptcp_sock *msk, u64 data_fin_seq, bool us
- 		return false;
- 
- 	WRITE_ONCE(msk->rcv_data_fin_seq,
--		   expand_ack(READ_ONCE(msk->ack_seq), data_fin_seq, use_64bit));
-+		   mptcp_expand_seq(READ_ONCE(msk->ack_seq), data_fin_seq, use_64bit));
- 	WRITE_ONCE(msk->rcv_data_fin, 1);
- 
- 	return true;
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 385796f0ef19..5d7c44028e47 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -593,6 +593,14 @@ int mptcp_setsockopt(struct sock *sk, int level, int optname,
- int mptcp_getsockopt(struct sock *sk, int level, int optname,
- 		     char __user *optval, int __user *option);
- 
-+u64 __mptcp_expand_seq(u64 old_seq, u64 cur_seq);
-+static inline u64 mptcp_expand_seq(u64 old_seq, u64 cur_seq, bool use_64bit)
-+{
-+	if (use_64bit)
-+		return cur_seq;
-+
-+	return __mptcp_expand_seq(old_seq, cur_seq);
-+}
- void __mptcp_check_push(struct sock *sk, struct sock *ssk);
- void __mptcp_data_acked(struct sock *sk);
- void __mptcp_error_report(struct sock *sk);
+ 	if (subflow->map_valid) {
 -- 
 2.32.0
 
