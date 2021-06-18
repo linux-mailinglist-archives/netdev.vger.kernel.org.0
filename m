@@ -2,85 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 740A13ACE6F
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 17:16:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2658B3ACE68
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 17:15:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234886AbhFRPSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 11:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56184 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbhFRPSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 11:18:46 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32F9C061574;
-        Fri, 18 Jun 2021 08:16:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=RgVJs2i8tjM9Pp4R41S3t73s45Mwafddh6w7ln+ElM8=; b=R2PFR6jNbhLZQlpmxq/JWMwAr/
-        6/+buuKy5tLGwbjl1+xqZ6b5Z6ZvR8fhu2Z7ZdJqlU7AvMh+P1AXqVDr46MFZvjqPoc7o0lqL5IHK
-        gL69zR2N10yHqOnnBMUfcdqqoIID5L3vUHJBBTZ72+cTTRAl2PV6a+F2jCnS7JxPydBkhq4S5dNwe
-        Cfb6I/g6AncVgs1hDvitkH7bI06nS8CuNX592/uIlTlkm+J6ZTBzY3AL3ImuabxIfasxZoeaU6yNU
-        yFcMrQ/7GT6xdlU35a/Lk9UM6Hq7hjJ8e+RL5PMHITV2nXJuN/4Zwo3Q0ceWQy2EsH8jMKE2pzKun
-        Dbt0dPBA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1luGCQ-00AOje-B9; Fri, 18 Jun 2021 15:14:38 +0000
-Date:   Fri, 18 Jun 2021 16:14:26 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>, Greg KH <greg@kroah.com>,
-        Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-block@vger.kernel.org,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>, netdev <netdev@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-Message-ID: <YMy4UjWH565ElFtZ@casper.infradead.org>
-References: <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
- <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
- <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
- <20210610152633.7e4a7304@oasis.local.home>
- <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
- <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
- <cd7ffbe516255c30faab7a3ee3ee48f32e9aa797.camel@HansenPartnership.com>
- <CAMuHMdVcNfDvpPXHSkdL3VuLXCX5m=M_AQF-P8ZajSdXt8NdQg@mail.gmail.com>
- <20210618103214.0df292ec@oasis.local.home>
- <CAMuHMdWK4NPzanF68TMVuihLFdRzxhs0EkbZdaA=BUkZo-k6QQ@mail.gmail.com>
+        id S232783AbhFRPSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 11:18:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52208 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230399AbhFRPSF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 11:18:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BE3A76127C;
+        Fri, 18 Jun 2021 15:15:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624029356;
+        bh=PYFFcI/UJL7LHsxUc4/EJ9Svbgt9L2slws6LkcdA7PU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KSPrXArhY4I3sezClpFdjOD86ENtqpW5f7IGDV3em/CKR4ADZ6FNN1yQ9tECFDgYK
+         B87zjCizzjsAZqzhuKMM9CmcTqmXbz6MtHVrcRZ9UezNsx+p+b2Upk8g9d1ZYLMhIk
+         VX+jWfsvH6LKh47wqgEcdhYJzL3z8Vf74t94j8KSflIHxqC9jGEUQ3K3YinsnnlK2K
+         ln1FoCUL8r3aiFMXDrdOEQ46zj/F+o5VTS7LaBVcnlO5rG/9J+giXFwuQkj+fuzAEK
+         GSY/jb5V6oztdKODMBed6UTsRwUObFEgJtySUkNM1qxW4xcialWalFTMY7TvenKVZ6
+         I9Mc5Ak+yi99A==
+From:   Antoine Tenart <atenart@kernel.org>
+To:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org
+Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net] vrf: do not push non-ND strict packets with a source LLA through packet taps again
+Date:   Fri, 18 Jun 2021 17:15:53 +0200
+Message-Id: <20210618151553.59456-1-atenart@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWK4NPzanF68TMVuihLFdRzxhs0EkbZdaA=BUkZo-k6QQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 18, 2021 at 04:58:08PM +0200, Geert Uytterhoeven wrote:
-> Hi Steven,
-> 
-> On Fri, Jun 18, 2021 at 4:32 PM Steven Rostedt <rostedt@goodmis.org> wrote:
-> > On Fri, 18 Jun 2021 16:28:02 +0200
-> > Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> >
-> > > What about letting people use the personal mic they're already
-> > > carrying, i.e. a phone?
-> >
-> > Interesting idea.
-> >
-> > I wonder how well that would work in practice. Are all phones good
-> > enough to prevent echo?
-> 
-> I deliberately didn't say anything about a speaker ;-)
+Non-ND strict packets with a source LLA go through the packet taps
+again, while non-ND strict packets with other source addresses do not,
+and we can see a clone of those packets on the vrf interface (we should
+not). This is due to a series of changes:
 
-There's usually a speaker in the room so everyone can hear the question
-...
+Commit 6f12fa775530[1] made non-ND strict packets not being pushed again
+in the packet taps. This changed with commit 205704c618af[2] for those
+packets having a source LLA, as they need a lookup with the orig_iif.
+
+The issue now is those packets do not skip the 'vrf_ip6_rcv' function to
+the end (as the ones without a source LLA) and go through the check to
+call packet taps again. This check was changed by commit 6f12fa775530[1]
+and do not exclude non-strict packets anymore. Packets matching
+'need_strict && !is_ndisc && is_ll_src' are now being sent through the
+packet taps again. This can be seen by dumping packets on the vrf
+interface.
+
+Fix this by having the same code path for all non-ND strict packets and
+selectively lookup with the orig_iif for those with a source LLA. This
+has the effect to revert to the pre-205704c618af[2] condition, which
+should also be easier to maintain.
+
+[1] 6f12fa775530 ("vrf: mark skb for multicast or link-local as enslaved to VRF")
+[2] 205704c618af ("vrf: packets with lladdr src needs dst at input with orig_iif when needs strict")
+
+Fixes: 205704c618af ("vrf: packets with lladdr src needs dst at input with orig_iif when needs strict")
+Cc: Stephen Suryaputra <ssuryaextr@gmail.com>
+Reported-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+---
+ drivers/net/vrf.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index 28a6c4cfe9b8..414afcb0a23f 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -1366,22 +1366,22 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+ 	int orig_iif = skb->skb_iif;
+ 	bool need_strict = rt6_need_strict(&ipv6_hdr(skb)->daddr);
+ 	bool is_ndisc = ipv6_ndisc_frame(skb);
+-	bool is_ll_src;
+ 
+ 	/* loopback, multicast & non-ND link-local traffic; do not push through
+ 	 * packet taps again. Reset pkt_type for upper layers to process skb.
+-	 * for packets with lladdr src, however, skip so that the dst can be
+-	 * determine at input using original ifindex in the case that daddr
+-	 * needs strict
++	 * For strict packets with a source LLA, determine the dst using the
++	 * original ifindex.
+ 	 */
+-	is_ll_src = ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADDR_LINKLOCAL;
+-	if (skb->pkt_type == PACKET_LOOPBACK ||
+-	    (need_strict && !is_ndisc && !is_ll_src)) {
++	if (skb->pkt_type == PACKET_LOOPBACK || (need_strict && !is_ndisc)) {
+ 		skb->dev = vrf_dev;
+ 		skb->skb_iif = vrf_dev->ifindex;
+ 		IP6CB(skb)->flags |= IP6SKB_L3SLAVE;
++
+ 		if (skb->pkt_type == PACKET_LOOPBACK)
+ 			skb->pkt_type = PACKET_HOST;
++		else if (ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADDR_LINKLOCAL)
++			vrf_ip6_input_dst(skb, vrf_dev, orig_iif);
++
+ 		goto out;
+ 	}
+ 
+-- 
+2.31.1
+
