@@ -2,92 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B8C43ACE1F
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:58:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F7D3ACE32
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 17:00:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234810AbhFRPAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 11:00:31 -0400
-Received: from mail-vs1-f43.google.com ([209.85.217.43]:45715 "EHLO
-        mail-vs1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234183AbhFRPAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 11:00:30 -0400
-Received: by mail-vs1-f43.google.com with SMTP id k8so2653719vsg.12;
-        Fri, 18 Jun 2021 07:58:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sK1e1fPt0zMaEq6+4wMfGpXVrEHblA3IAhRYoTeadpQ=;
-        b=Om495HxaqidnSHxaS6vEj4rVluKt5OUKVCzjfG69FJxQxcGxvYGk3CyeEdbK6VN7yk
-         V1rEKGWCfuBYfcGrBRRVoYtKXleP21K2FxTWinvajwsvyle2YzqN3It9toTJjUuONSeN
-         Mjr0dU13rKTvY4MUAGeHpqJv64ruEsHN8U7G8OFwgE36YggFt+NwHZCkY6RBipE77jKv
-         WxNMTTKTfc/WldKK6jpA7KVibPm3lQyIX1diBnDe/pqyLfZCZa6D/KAMHParfgvxNS1L
-         5nsJGMNklcVBlBUGGWjrQGom/MWaNbkFFSbI3iYCKDlsSEqOIwpYm/E18zRA5VSls2EU
-         oa7Q==
-X-Gm-Message-State: AOAM530+HrIKr9bAPi+6gl/oYDkt3JQ7yUfPQUG4DSH+zG6GN3XKgN4i
-        26p2JGUNxw4HMK0BUaUaL4wcaJ1obwePWh2DDKc=
-X-Google-Smtp-Source: ABdhPJzg/YZ6W6Is0ERxgmyVpS1tDEBVcgjBpDhPONT5Qk7oJfA8+VdLNRMVYyTep7yhmxjZzTnU3vP2PEwuB0o2fxE=
-X-Received: by 2002:a67:3c2:: with SMTP id 185mr7549799vsd.42.1624028299731;
- Fri, 18 Jun 2021 07:58:19 -0700 (PDT)
+        id S234823AbhFRPCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 11:02:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48654 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234780AbhFRPCN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 11:02:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6DAF461260;
+        Fri, 18 Jun 2021 15:00:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624028404;
+        bh=9jZ2mXvTw/RWuE316jNx14yMB+zLHBQuldybPoxUN64=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ElnNkh4Wwc/IOhU9hGwm7cAmpFvMkgS4oOVm4KZQIzGoBhF18LfozsiQpFpR8z1tQ
+         +lvyuyfQ0G2eKT7IBKoOKefyBW1hn+fq+D8amLts5IAerceO0l1+4Ird32LnkrkcP7
+         LnmmcePmsyGxmaxA5K83jL7UQCY7Exny4RaygUXLlR9Gwp2F/4QfDDHMme/EL+hKi3
+         qf82QKqQscaxovtIg8tvMcN1woS90hGJtpd6gscRwaq9vm75tDkeJNwGxOVqYVBS6X
+         zeOLhgcudBsPMAyGBC6Oh9disFJPlPnLogPlrYgM9+31dcX12KFRye/qrqMgO3oJrQ
+         QKjFWRjbLjXNQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 64A63608B8;
+        Fri, 18 Jun 2021 15:00:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <YIx7R6tmcRRCl/az@mit.edu> <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
- <YK+esqGjKaPb+b/Q@kroah.com> <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
- <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com> <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
- <20210610182318.jrxe3avfhkqq7xqn@nitro.local> <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
- <20210610152633.7e4a7304@oasis.local.home> <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
- <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com> <cd7ffbe516255c30faab7a3ee3ee48f32e9aa797.camel@HansenPartnership.com>
- <CAMuHMdVcNfDvpPXHSkdL3VuLXCX5m=M_AQF-P8ZajSdXt8NdQg@mail.gmail.com> <20210618103214.0df292ec@oasis.local.home>
-In-Reply-To: <20210618103214.0df292ec@oasis.local.home>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 18 Jun 2021 16:58:08 +0200
-Message-ID: <CAMuHMdWK4NPzanF68TMVuihLFdRzxhs0EkbZdaA=BUkZo-k6QQ@mail.gmail.com>
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>, Greg KH <greg@kroah.com>,
-        Christoph Lameter <cl@gentwo.de>,
-        "Theodore Ts'o" <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-block@vger.kernel.org,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>, netdev <netdev@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf] xsk: fix missing validation for skb and unaligned mode
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162402840440.8973.13278193576359189223.git-patchwork-notify@kernel.org>
+Date:   Fri, 18 Jun 2021 15:00:04 +0000
+References: <20210617092255.3487-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20210617092255.3487-1-magnus.karlsson@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
+        bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Steven,
+Hello:
 
-On Fri, Jun 18, 2021 at 4:32 PM Steven Rostedt <rostedt@goodmis.org> wrote:
-> On Fri, 18 Jun 2021 16:28:02 +0200
-> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> > What about letting people use the personal mic they're already
-> > carrying, i.e. a phone?
->
-> Interesting idea.
->
-> I wonder how well that would work in practice. Are all phones good
-> enough to prevent echo?
+This patch was applied to bpf/bpf.git (refs/heads/master):
 
-I deliberately didn't say anything about a speaker ;-)
+On Thu, 17 Jun 2021 11:22:55 +0200 you wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Fix a missing validation of a Tx descriptor when executing in skb mode
+> and the umem is in unaligned mode. A descriptor could point to a
+> buffer straddling the end of the umem, thus effectively tricking the
+> kernel to read outside the allowed umem region. This could lead to a
+> kernel crash if that part of memory is not mapped.
+> 
+> [...]
 
-Just use the mic, with a simple (web) app only doing audio input?
+Here is the summary with links:
+  - [bpf] xsk: fix missing validation for skb and unaligned mode
+    https://git.kernel.org/bpf/bpf/c/2f99619820c2
 
-Gr{oetje,eeting}s,
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-                        Geert
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
