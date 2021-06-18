@@ -2,100 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A82B83AD02E
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 18:15:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B088E3AD048
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 18:23:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235836AbhFRQRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 12:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S235852AbhFRQZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 12:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235837AbhFRQRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 12:17:03 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F12C0617AF;
-        Fri, 18 Jun 2021 09:14:52 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id d2so14744155ljj.11;
-        Fri, 18 Jun 2021 09:14:52 -0700 (PDT)
+        with ESMTP id S232638AbhFRQZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 12:25:36 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0291C061574;
+        Fri, 18 Jun 2021 09:23:24 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id p7so17505490lfg.4;
+        Fri, 18 Jun 2021 09:23:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pmmBYlRHWMosP77C0Ii9Ste9VmkpwQxWPopXChKoX8U=;
-        b=MiWyikh06egv+CM+dP0DpbAtt8nVnjcXBSwZfudsgaHkFKpVWZdO1XgMC8Vfqv87yF
-         kXEDIHkcjUwTI3NI9TFzFxLPuqWp0a0Zizi60a09ip1Fse/VqAclrZd685Gtc+gFfEMh
-         gd8XYo8ZB+Wq7C4e1mB0k53cCnvLWXZHV/hTYCuhPj+j674yehtwuJah9zH3TYCqY/21
-         jMDkvaf6/wOEd+3cFQRNJsTDAXgeg++xj+y6mj+uzQwo0UttB/pAaStzyqKAgWHYcLHu
-         hZp1buRIco2EGghQKo4zLSdT4HQhOVOxrbCgqGkZ9pcVs6sBUZbQVSlQ0Ys8t5paX6tb
-         JvdQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JS/DhvlmnghjWYQG91pr5+kEoD0bUOvxAqSq4F29+Lg=;
+        b=pyKjX0PgwfXlQ+p4oBdM/x/M/QZx0v8sOAQPz8HvLTtHol2PvrB1OLsw2EY5AwsqRB
+         wTwMKH4ulCjR+4NlFAn05mz2+5St/KPzYSNCyYqsHbvIUJ/zYpyqijuyzP6T4UB4btMv
+         Sn3wJDBYXuGEb9uu9XNq9VZhnburmx+o2p8zaOURRGuJNDobA/AjgA0p0TYhjXfMqSq2
+         hwW2DS55P7hBaqACSjajYG4jq4iHHX0N2gBRdVi3rC9y2bk/jnuWMq867I8nwFYGLOMu
+         aFp2fCtCeH4NHLfT5Jf9rPWlVYjvJHIfiPrE9NLddEEEQpiD5moP1/0xb73pnNJsYk5e
+         jmEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pmmBYlRHWMosP77C0Ii9Ste9VmkpwQxWPopXChKoX8U=;
-        b=poCW0ESlWt7tdrWLKmf2rvlExD7SlWa02po/Qi8kXQXzWM7lHjvXj02KaP3qrSD45M
-         ozSK8SfiFCyJ3dOyhErroT9Z3ZKNQWuHdU5JqET63aqMuvmxEObbNCGuyhtUESEz8P4a
-         Uwm2IVMSXeJDAfsnkeoYXGq7yQzVfGBxaYiiWQVYw9MziABOO0Q4PawHZinG0d8yHa25
-         nuPwPAq3G7xnwnn9HJ1v8V9LuN4BFLAG/bUdanlKgBVQlwK9thAhDIYSuBJcpiAs9sdQ
-         jkJb367HEAn34NEi4erOMPDDrqWjQOfm/jkQdWyvdgjobVKj4Vf9SPvrYERmaH0vzVLF
-         Nhdg==
-X-Gm-Message-State: AOAM532Gmq55VOITAND5yekRpe0HEKFs/fQUikSzth/h57Tpf5uG7WI3
-        PP4YfgnH26a7j5g0R/uBo2k=
-X-Google-Smtp-Source: ABdhPJxfdpCMQB64fi+Tq38fP/1PEKy84mwF7jCmbBdPM+AUz90aStt4Wp6ix1eYPrqW3yEixSjXqg==
-X-Received: by 2002:a05:651c:201d:: with SMTP id s29mr10262196ljo.258.1624032890195;
-        Fri, 18 Jun 2021 09:14:50 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.229.24])
-        by smtp.gmail.com with ESMTPSA id h19sm951025lfc.225.2021.06.18.09.14.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 09:14:49 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        michael@walle.cc, abrodkin@synopsys.com, talz@ezchip.com,
-        noamc@ezchip.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH 3/3] net: ethernet: ezchip: fix error handling
-Date:   Fri, 18 Jun 2021 19:14:47 +0300
-Message-Id: <422b1921ce3ff8f29da93d9a2c99e1d34cf66c77.1624032669.git.paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1624032669.git.paskripkin@gmail.com>
-References: <cover.1624032669.git.paskripkin@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JS/DhvlmnghjWYQG91pr5+kEoD0bUOvxAqSq4F29+Lg=;
+        b=fOkttrIgrFQXYmR6/gKa73D67/h4tnMm2YTIFzVQX24JC6Vu/8MLCzQeTPqBIN0smq
+         oYvHyhEk9al6S+Aidz4zCHwW1tz/vPEgM/QUjEe8kSiAX3CTU2jOw4S4zDA7jEnz8SNF
+         kHN35Sh+oxR3L5LW+Mg3YLdy59FvXpA2zP/DKB7pXixJOzGxS/2ajHrxKAjnBBiEsL4X
+         WAjUaheYxLasg8hhTrGQOhd2adNSzQIRkHrP/fRFxB0axT+RYszi8QFjlAuxx1lXD1CF
+         yN+0v4e2vX/RLqmKvWz8JhKWwcqr0mZIH296O2GicrbthXyYhPUmqN8fPQPuPY1YuNXc
+         z22w==
+X-Gm-Message-State: AOAM530YsQuLftRGFlJsII9A/unOTyF7Y+Fo/eCax0JotvIKkEz/aV5Y
+        9fyoB0O//xZK3t0mOECnn/USZ1G4ID/npzrnA9Ji6Lxq
+X-Google-Smtp-Source: ABdhPJx8JeK/QwlwM3IgwplZbFKMKEpgdTwHaGApuuYztnSHWkJAQBTy1Jfre0GOG2Am6sc07F64OMXo5HYDSoZnYl0=
+X-Received: by 2002:a05:6512:3c91:: with SMTP id h17mr4040834lfv.214.1624033402477;
+ Fri, 18 Jun 2021 09:23:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210607060724.4nidap5eywb23l3d@apollo> <CAM_iQpWA=SXNR3Ya8_L2aoVJGP_uaRP8EYCpDrnq3y8Uf6qu=g@mail.gmail.com>
+ <20210608071908.sos275adj3gunewo@apollo> <CAM_iQpXFmsWhMA-RO2j5Ph5Ak8yJgUVBppGj2_5NS3BuyjkvzQ@mail.gmail.com>
+ <20210613025308.75uia7rnt4ue2k7q@apollo> <30ab29b9-c8b0-3b0f-af5f-78421b27b49c@mojatatu.com>
+ <20210613203438.d376porvf5zycatn@apollo> <4b1046ef-ba16-f8d8-c02e-d69648ab510b@mojatatu.com>
+ <bd18943b-8a0e-be8c-6a99-17f7dfdd3bc4@iogearbox.net> <7248dc4e-8c07-a25d-5ac3-c4c106b7a266@mojatatu.com>
+ <20210616153209.pejkgb3iieu6idqq@apollo> <05ec2836-7f0d-0393-e916-fd578d8f14ac@iogearbox.net>
+ <f038645a-cb8a-dc59-e57e-2544a259bab1@mojatatu.com> <CAADnVQLO-r88OZEj93Bp_eOLi1zFu3Gfm7To+XtEN7Sj0ZpOMg@mail.gmail.com>
+ <ec3a9381-7b15-e60f-86b6-87135393461d@mojatatu.com>
+In-Reply-To: <ec3a9381-7b15-e60f-86b6-87135393461d@mojatatu.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 18 Jun 2021 09:23:10 -0700
+Message-ID: <CAADnVQKi_3i6bOrYiDTLXwxhQnHDBJvHankqndzNP7eCJr27pQ@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Vlad Buslov <vladbu@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As documented at drivers/base/platform.c for platform_get_irq:
+On Fri, Jun 18, 2021 at 7:50 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>
+> On 2021-06-18 10:38 a.m., Alexei Starovoitov wrote:
+> > On Fri, Jun 18, 2021 at 4:40 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> >>
+> >> We are going to present some of the challenges we faced in a subset
+> >> of our work in an approach to replace iptables at netdev 0x15
+> >> (hopefully we get accepted).
+> >
+> > Jamal,
+> > please stop using netdev@vger mailing list to promote a conference
+> > that does NOT represent the netdev kernel community.
+>  >
+> > Slides shown at that conference is a non-event as far as this discussion goes.
+>
+> Alexei,
+> Tame the aggression, would you please?
+> You have no right to make claims as to who represents the community.
+> Absolutely none. So get off that high horse.
+>
+> I only mentioned the slides because it will be a good spot when
+> done which captures the issues. As i mentioned in i actually did
+> send some email (some Cced to you) but got no response.
+> I dont mind having a discussion but you have to be willing to
+> listen as well.
 
- * Gets an IRQ for a platform device and prints an error message if finding the
- * IRQ fails. Device drivers should check the return value for errors so as to
- * not pass a negative integer value to the request_irq() APIs.
-
-So, the driver should check that platform_get_irq() return value
-is _negative_, not that it's equal to zero, because -ENXIO (return
-value from request_irq() if irq was not found) will
-pass this check and it leads to passing negative irq to request_irq()
-
-Fixes: 0dd077093636 ("NET: Add ezchip ethernet driver")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- drivers/net/ethernet/ezchip/nps_enet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/ezchip/nps_enet.c b/drivers/net/ethernet/ezchip/nps_enet.c
-index c562a1e83913..f9a288a6ec8c 100644
---- a/drivers/net/ethernet/ezchip/nps_enet.c
-+++ b/drivers/net/ethernet/ezchip/nps_enet.c
-@@ -607,7 +607,7 @@ static s32 nps_enet_probe(struct platform_device *pdev)
- 
- 	/* Get IRQ number */
- 	priv->irq = platform_get_irq(pdev, 0);
--	if (!priv->irq) {
-+	if (priv->irq < 0) {
- 		dev_err(dev, "failed to retrieve <irq Rx-Tx> value from device tree\n");
- 		err = -ENODEV;
- 		goto out_netdev;
--- 
-2.32.0
-
+You've side tracked technical discussion to promote your own conference.
+That's not acceptable. Please use other forums for marketing.
+This mailing list is for technical discussions.
