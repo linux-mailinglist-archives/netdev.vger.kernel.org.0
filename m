@@ -2,103 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8306A3AC4FC
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 09:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB7C33AC509
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 09:32:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233236AbhFRH2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 03:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34544 "EHLO
+        id S232844AbhFRHe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 03:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232323AbhFRH2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 03:28:42 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E4DC061574
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 00:26:33 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id bb10-20020a17090b008ab029016eef083425so7188940pjb.5
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 00:26:33 -0700 (PDT)
+        with ESMTP id S229475AbhFRHe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 03:34:26 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2D5C061574;
+        Fri, 18 Jun 2021 00:32:16 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id c15so4159167pls.13;
+        Fri, 18 Jun 2021 00:32:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=NaPLJv2BzEhUsPaQAxy+48N9VrDocNOsqp86ck4l+9g=;
-        b=kl+eAGY0bop1gtMFvXFFw7wgabA5Jjlg8lyakABqaX4uB9chpzr/uypn6MMmG5S1r4
-         elH5N8rBNLKlXp8EELQ84Rs5/4bZXnZkAGNYSLj3PTzs/iQYl0Sn9L79U44NH921ltup
-         4gjtaAsKTKijnc3Stm730QKRJJb90f/kQXBxo=
+        bh=ouXRST2uuN1MN3jv2GbJUfCSAjNeJqySOQmdiaj/CsI=;
+        b=oTJVtnlKfLtFIzbXUk1jKp9ZOsLoWqoTwNUdq97gps/nuvkxIeb2FeQb225o9QXeJr
+         HRC04baoezwZFK1JmDYPCkkHhQzQ76ShQmQABMQ7DNti6YNKFJDtDzGNB/TeBsdX35bi
+         ev1Pt0o8dpTNG9mvcMiaUig7O0MjEUxddWSWNXNswNzOtshcHh9O80hNRzIuHq/L6yBq
+         lBVTDeXOToLkXngT4K2KWJlQu5bL+ozgQ2wTdWwdGXZa1wh2e6IaZRW/ZHOXoc7FRcp7
+         4YqJryPxRj/tHcaLe3G5gb6PGc1fCVorjJ5e1uRK8/0nBVzja1nXEjQ89W7h0QnKJrWd
+         4k1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=NaPLJv2BzEhUsPaQAxy+48N9VrDocNOsqp86ck4l+9g=;
-        b=l7KFCFkni/FH8ORaB7Kmk5NlClN2OPNi7XmLawMxOG1nzwN/VUt4htbE7HuxVmnZnf
-         Lx4KaK9L4kS0MBFQPDlBtiPfOfZieazDRI53WJoLandarHPCwMoRqJba2+q948DUpndP
-         WdmC7q+3f30oEoFwWHal2OyIHzFoF4cZFX4QqoXECrGvGxBof3UxXumlX2+501onkMVT
-         /fGaL4vP9oEAKo7I1wcCnw/be5SRPcdSnMhPmV5uPjiOmSKN/rHAZph1AlmyC4IZNJ8u
-         bCaMHD9ksL3lpIOyWrh5S0Y1NH0MPAkJ5/Kw58OzFMWbg//IjWb2mz6sxKlLQcXlZhSg
-         RlVA==
-X-Gm-Message-State: AOAM5317YskwWR2uyrHT5Vqpe4zcFLwviitBDVgEpXkA1OpgzbTeGJof
-        BJKAlgc5/MmC+yzEbUz5lb1BlJEkmiZ5LQ==
-X-Google-Smtp-Source: ABdhPJy1Gu/L82SBitygYFdu94e/0KikikH2dMJHjLkia1iRelC4nycssz+PMsEZNGz+rnswbaFFGA==
-X-Received: by 2002:a17:90a:3c8d:: with SMTP id g13mr2795447pjc.229.1624001192365;
-        Fri, 18 Jun 2021 00:26:32 -0700 (PDT)
-Received: from keiichiw1.tok.corp.google.com ([2401:fa00:8f:203:4a7c:6717:f2ac:491e])
-        by smtp.gmail.com with ESMTPSA id v15sm8249986pgf.26.2021.06.18.00.26.29
+        bh=ouXRST2uuN1MN3jv2GbJUfCSAjNeJqySOQmdiaj/CsI=;
+        b=l8bbBmkCe5uSO1N+s+zRcY9oU88+ovfIZiICVwyqMMmfEdbr1rctpkaKqFBzm8YLsS
+         EuKgI+YsuNDxGJiO1t9T6u9WQzOFsU6/YKPEgistpkuNnligN58xKBPdLvKqww26LOBq
+         H0XYD1Bzj1zn73pkoH3EQZqRtrWnBYcQy+kZK/6J8emalG5idAZViCo8PycWqw7DXFFn
+         xa0x6Z/30LdlOSlClUabF6mgs29F0P2puGROzDG3R3Jv5KFHlV/AARDq+SDJ2hBELijM
+         jFVv3tr4SA7AHK9Wc9E36+BV2/EDAspAI6+U8PyIykCb6BDIL939bOLgMqv4OwJwlrF6
+         rwxQ==
+X-Gm-Message-State: AOAM530NJTPus+Hhf7VrBMfqeqrgZwBkerGTrKQztD50/MIZxaj8I1MK
+        P+kqCxXFZkTfuo6q2Mzd/wA=
+X-Google-Smtp-Source: ABdhPJwdBtTD8VqGkPlCQS15+55Y5B0F5zgSQ+RSu00QETmSJV5T3cY+2OYH30Up204rLLatVuANbg==
+X-Received: by 2002:a17:902:fe0a:b029:11d:81c9:3adf with SMTP id g10-20020a170902fe0ab029011d81c93adfmr3488573plj.0.1624001535634;
+        Fri, 18 Jun 2021 00:32:15 -0700 (PDT)
+Received: from localhost.localdomain ([45.135.186.42])
+        by smtp.gmail.com with ESMTPSA id p1sm6938295pfn.212.2021.06.18.00.32.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 00:26:31 -0700 (PDT)
-From:   Keiichi Watanabe <keiichiw@chromium.org>
-To:     netdev@vger.kernel.org
-Cc:     chirantan@chromium.org, "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org,
-        Keiichi Watanabe <keiichiw@chromium.org>
-Subject: [PATCH] virtio_net: Enable MSI-X vector for ctrl queue
-Date:   Fri, 18 Jun 2021 16:26:25 +0900
-Message-Id: <20210618072625.957837-1-keiichiw@chromium.org>
-X-Mailer: git-send-email 2.32.0.288.g62a8d224e6-goog
+        Fri, 18 Jun 2021 00:32:15 -0700 (PDT)
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: caif: modify the label out_err to out
+Date:   Fri, 18 Jun 2021 15:32:04 +0800
+Message-Id: <20210618073205.3318788-1-mudongliangabcd@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we use vhost-user backend on the host, MSI-X vector should be set
-so that the vmm can get an irq FD and send it to the backend device
-process with vhost-user protocol.
-Since whether the vector is set for a queue is determined depending on
-the queue has a callback, this commit sets an empty callback for
-virtio-net's control queue.
+Modify the label out_err to out to avoid the meanless kfree.
 
-Signed-off-by: Keiichi Watanabe <keiichiw@chromium.org>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 ---
- drivers/net/virtio_net.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/caif/cfcnfg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 11f722460513..002e3695d4b3 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2696,6 +2696,11 @@ static void virtnet_del_vqs(struct virtnet_info *vi)
- 	virtnet_free_queues(vi);
- }
- 
-+static void virtnet_ctrlq_done(struct virtqueue *rvq)
-+{
-+	/* Do nothing */
-+}
-+
- /* How large should a single buffer be so a queue full of these can fit at
-  * least one full packet?
-  * Logic below assumes the mergeable buffer header is used.
-@@ -2748,7 +2753,7 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
- 
- 	/* Parameters for control virtqueue, if any */
- 	if (vi->has_cvq) {
--		callbacks[total_vqs - 1] = NULL;
-+		callbacks[total_vqs - 1] = virtnet_ctrlq_done;
- 		names[total_vqs - 1] = "control";
+diff --git a/net/caif/cfcnfg.c b/net/caif/cfcnfg.c
+index cac30e676ac9..23267c8db7c4 100644
+--- a/net/caif/cfcnfg.c
++++ b/net/caif/cfcnfg.c
+@@ -480,7 +480,7 @@ cfcnfg_add_phy_layer(struct cfcnfg *cnfg,
+ 	phyinfo = kzalloc(sizeof(struct cfcnfg_phyinfo), GFP_ATOMIC);
+ 	if (!phyinfo) {
+ 		res = -ENOMEM;
+-		goto out_err;
++		goto out;
  	}
  
+ 	phy_layer->id = phyid;
 -- 
-2.32.0.288.g62a8d224e6-goog
+2.25.1
 
