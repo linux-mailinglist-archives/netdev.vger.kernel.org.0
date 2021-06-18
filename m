@@ -2,125 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F67F3ACDE2
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:50:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 740033ACDE8
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:50:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234690AbhFROwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 10:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234383AbhFROwP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 10:52:15 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CF3C06175F
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 07:50:04 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id r19so3668456qvw.5
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 07:50:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xugROgai1hDRqrla6F1TMCpSa/EBaupT4G6tJbJ5feA=;
-        b=KP5Hnjf2Z2Hsaa9wSsGpRGlA7nf0EXHywcHY2h7boPODHyDvB+ZaKL5GkQ9hFyRzr+
-         pWqIYdiLt1pN6OXG+2J8jFS5QO4RJJbJzHLkjQ4ATTQteHZWmnLXYS+n4uSdxjDdhaWt
-         9/kXtGotrSEUUyt2bsSkwrZok7LxvNbf4ovKLEcwNfAUjyvaP1YuG9d5YmO69migLCc+
-         iz7rZN+8utNxRulUGpVGuPk/zJ7dyIIky0+c7OHyF7QOT7Qc4+M6St5gVKXGQMuHZKAK
-         xiBRi1A3253LPY15CPrXms26N+PxNawpcC6DUZaIEFba01TW01BbIumE5savHAD8bHMS
-         pNcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xugROgai1hDRqrla6F1TMCpSa/EBaupT4G6tJbJ5feA=;
-        b=hGK3pixUKO87RSuGnNpWZdeSY5ylZDbRRJNZxg9F5WRnjwKc1HEmeeykw4517py3Me
-         /1JN7ft99uTOTuWXwdoGouWMZD/pPk6MI/j5GD3unqX56zBuOtJwydRc1oOktTYVZRf8
-         0F6doGFSdMkYaec2lKglEzpwz2evoW7XQuVp7h5vTwvwDFx73rp/JLp3d14EH/J/dv2h
-         Y1bbiBP+hDeVQRq3Q+9D3XgnNQaEJdd70SAS/va92hyi57SqNq5YZgm8NtSXBdpdLWbM
-         urrJ+cPcMOjWpaEtrLfq6iWDrPlJwdg8FNl/LTFxYKREcAUYCtK6RAwjV9I7zGWd6/jB
-         f+Og==
-X-Gm-Message-State: AOAM530qUymUrOqARFJvafCxvn9D4cMr5bHT863XmIUOUZjprrB0rUs+
-        6GgkoKCmICQe6fUEeBXSfrQmzg==
-X-Google-Smtp-Source: ABdhPJxCm0L+Ug2xyNCYEau2Lv5uFkEpis64reBWiuncwGgYVPAop/EUlY+yE0SEWJlNIDJzVIhvLg==
-X-Received: by 2002:a0c:e8cd:: with SMTP id m13mr6084488qvo.52.1624027804075;
-        Fri, 18 Jun 2021 07:50:04 -0700 (PDT)
-Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-211.dsl.bell.ca. [184.148.47.211])
-        by smtp.googlemail.com with ESMTPSA id i67sm4203656qkd.90.2021.06.18.07.50.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Jun 2021 07:50:03 -0700 (PDT)
-Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Vlad Buslov <vladbu@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        id S234720AbhFROwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 10:52:44 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:55083 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234710AbhFROwn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 10:52:43 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 0330F762AF;
+        Fri, 18 Jun 2021 17:50:31 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1624027831;
+        bh=mioIxcKn1dUte/rgRLgYR39/5M/DokLmC2JiaDqlwUM=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=rW1+7mq38xP+IdNDdBJgMHmo+K1nIdgK0vSkPb52gBLuBHd+m89rZrxtvN7K0iJY2
+         Vq6MIS1/9VpQ/EVwjm/GBjr1w2HjUkCZpYM1GDv11GdX5JUGkD64bjAqv2AQT5k1qJ
+         Yhg50PVZ9Tn0ca76vHPiiJ9+TH+f4VFBi7GM5o/25W2H7XwHDvi9PuJ4AaGGMaHw24
+         JAHf9X37yOohX7UMmk4MSfr45TAqHaqkr0I+5IMWaCkJEY1JbbiXBZXECGJmDrd5X2
+         cPlZjmBcS69o1dyHPAV+tO8+/SIUuML/TreUhfESF169wXoo+1Hn1nGRd0semLpRt5
+         qkid4ukbeUEMA==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 6413B762A9;
+        Fri, 18 Jun 2021 17:50:30 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Fri, 18
+ Jun 2021 17:50:29 +0300
+Subject: Re: [PATCH net-next 1/3] vsock: rename vsock_has_data()
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>
-References: <20210607060724.4nidap5eywb23l3d@apollo>
- <CAM_iQpWA=SXNR3Ya8_L2aoVJGP_uaRP8EYCpDrnq3y8Uf6qu=g@mail.gmail.com>
- <20210608071908.sos275adj3gunewo@apollo>
- <CAM_iQpXFmsWhMA-RO2j5Ph5Ak8yJgUVBppGj2_5NS3BuyjkvzQ@mail.gmail.com>
- <20210613025308.75uia7rnt4ue2k7q@apollo>
- <30ab29b9-c8b0-3b0f-af5f-78421b27b49c@mojatatu.com>
- <20210613203438.d376porvf5zycatn@apollo>
- <4b1046ef-ba16-f8d8-c02e-d69648ab510b@mojatatu.com>
- <bd18943b-8a0e-be8c-6a99-17f7dfdd3bc4@iogearbox.net>
- <7248dc4e-8c07-a25d-5ac3-c4c106b7a266@mojatatu.com>
- <20210616153209.pejkgb3iieu6idqq@apollo>
- <05ec2836-7f0d-0393-e916-fd578d8f14ac@iogearbox.net>
- <f038645a-cb8a-dc59-e57e-2544a259bab1@mojatatu.com>
- <CAADnVQLO-r88OZEj93Bp_eOLi1zFu3Gfm7To+XtEN7Sj0ZpOMg@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <ec3a9381-7b15-e60f-86b6-87135393461d@mojatatu.com>
-Date:   Fri, 18 Jun 2021 10:50:02 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210618133526.300347-1-sgarzare@redhat.com>
+ <20210618133526.300347-2-sgarzare@redhat.com>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <74271c7b-fb61-2f54-0ca6-6ea315cb758f@kaspersky.com>
+Date:   Fri, 18 Jun 2021 17:50:29 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQLO-r88OZEj93Bp_eOLi1zFu3Gfm7To+XtEN7Sj0ZpOMg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+In-Reply-To: <20210618133526.300347-2-sgarzare@redhat.com>
+Content-Type: text/plain; charset="koi8-r"
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/18/2021 14:29:51
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 164482 [Jun 18 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;kaspersky.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/18/2021 14:32:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 18.06.2021 12:17:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/06/18 13:10:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/06/18 12:17:00 #16756757
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-06-18 10:38 a.m., Alexei Starovoitov wrote:
-> On Fri, Jun 18, 2021 at 4:40 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->>
->> We are going to present some of the challenges we faced in a subset
->> of our work in an approach to replace iptables at netdev 0x15
->> (hopefully we get accepted).
-> 
-> Jamal,
-> please stop using netdev@vger mailing list to promote a conference
-> that does NOT represent the netdev kernel community.
- >
-> Slides shown at that conference is a non-event as far as this discussion goes.
 
-Alexei,
-Tame the aggression, would you please?
-You have no right to make claims as to who represents the community.
-Absolutely none. So get off that high horse.
-
-I only mentioned the slides because it will be a good spot when
-done which captures the issues. As i mentioned in i actually did
-send some email (some Cced to you) but got no response.
-I dont mind having a discussion but you have to be willing to
-listen as well.
-
-
-cheers,
-jamal
-
-
+On 18.06.2021 16:35, Stefano Garzarella wrote:
+> vsock_has_data() is used only by STREAM and SEQPACKET sockets,
+> so let's rename it to vsock_connectible_has_data(), using the same
+> nomenclature (connectible) used in other functions after the
+> introduction of SEQPACKET.
+>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  net/vmw_vsock/af_vsock.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+> index 67954afef4e1..de8249483081 100644
+> --- a/net/vmw_vsock/af_vsock.c
+> +++ b/net/vmw_vsock/af_vsock.c
+> @@ -860,7 +860,7 @@ s64 vsock_stream_has_data(struct vsock_sock *vsk)
+>  }
+>  EXPORT_SYMBOL_GPL(vsock_stream_has_data);
+>  
+> -static s64 vsock_has_data(struct vsock_sock *vsk)
+> +static s64 vsock_connectible_has_data(struct vsock_sock *vsk)
+>  {
+>  	struct sock *sk = sk_vsock(vsk);
+>  
+> @@ -1880,7 +1880,7 @@ static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
+>  	err = 0;
+>  	transport = vsk->transport;
+>  
+> -	while ((data = vsock_has_data(vsk)) == 0) {
+> +	while ((data = vsock_connectible_has_data(vsk)) == 0) {
+>  		prepare_to_wait(sk_sleep(sk), wait, TASK_INTERRUPTIBLE);
+>  
+>  		if (sk->sk_err != 0 ||
+LGTM
