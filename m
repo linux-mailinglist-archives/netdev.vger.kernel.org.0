@@ -2,142 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9053D3AC5C9
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:13:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEB8C3AC5E1
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:21:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232031AbhFRIPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 04:15:45 -0400
-Received: from mail-ua1-f53.google.com ([209.85.222.53]:43525 "EHLO
-        mail-ua1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbhFRIPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:15:43 -0400
-Received: by mail-ua1-f53.google.com with SMTP id f1so3091864uaj.10;
-        Fri, 18 Jun 2021 01:13:34 -0700 (PDT)
+        id S233009AbhFRIXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 04:23:08 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:47088 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232250AbhFRIXF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:23:05 -0400
+Received: from mail-ej1-f70.google.com ([209.85.218.70])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lu9kF-000675-QI
+        for netdev@vger.kernel.org; Fri, 18 Jun 2021 08:20:55 +0000
+Received: by mail-ej1-f70.google.com with SMTP id de48-20020a1709069bf0b029048ae3ebecabso22103ejc.16
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 01:20:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YFG6ui45ec1aqERrwvUlS0SaM1oxVchZMu0Q8Ruu9ow=;
-        b=WST+7EnIcLbJP51aLGyyaSYwOHB8sOnEeO9ZrlhIXF5J5U2U6RpgMXzZb8DyQHS9Ud
-         hOrBzd+q7sumYwqnLB9y6paepfkeOHitK46tr6WaOaf6Au8tAQQ8DEklRO1MhUwMh8Xh
-         watJp4O6CsuYSmweqvyFJI4ETWI+gxXGMd2uL5LTzL2TIsDRs9FDOH61slwWHBx7kzCe
-         P1ct+woaSRl8R61TMatU0qFlWFeufx3/mf4QZR/yaRILBXPeiwwWFsxVjyxQEmvm8tAG
-         Zg6Mr8SZ+doUO6FTUK30mwvn09FhIWgyDQ56uy6bCg3tlC/E4EbZ3PKP8NKFbid9lsmB
-         4m3A==
-X-Gm-Message-State: AOAM5335Xm1KkmVl2vquE/k83gcrNjwS2UvGgcPtzpUYnuz28Ajd+Ym7
-        zy7WWtfgBdqNXpfUJUGGfII7IQa40pfMQEvrbn4=
-X-Google-Smtp-Source: ABdhPJxlxJs4tGfM1myEe3dgzKSBPf8xtsDqhPT1cXgOHCA4vggy/XpbopAH19yktfLomMqcije6FqeDYK0ohAa3eg0=
-X-Received: by 2002:ab0:484b:: with SMTP id c11mr10813000uad.100.1624004013827;
- Fri, 18 Jun 2021 01:13:33 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=d/K0H906YUUKfdepwlReDstttzt/rZTiSrnXu1rsGl4=;
+        b=PAOmb8GMB9Pdk8e5m8GHHCykz+GWLFdwVaMPGKHOT9FsQlgM7tBNqYRLk+7Ge8aQ5t
+         nGEQViMFOsCtL94O8xy+9ffAMdUlSUTU2mYng9cIkuZi3z/U8bW0NYviyI2oNuQ8aR8R
+         vZK3R/bsO8gN1LhYN8KM63Og99x0Xxtun7WawDqseB8fbi4NkwhqHst67HVAiSWZnxj4
+         PEhxABm7Y3G158Cguvvq48r4zt9VJfkPq6ok1BtC8/sRJ1Po85qeMomN3ZDTZflZptbR
+         1Y5z5rfpiwYCckhu1NUEAExqkz8RmSrcOfj6HzOjhptsj4YeywwMuO9MGZhqdIAAdRXv
+         JwgQ==
+X-Gm-Message-State: AOAM533UXQAVNxL5h+CEesNO7zFKWqJRND4w15rkUdCqggY71WinwEG9
+        XQlbJUef6MpzDuYfaaHppWwizu8JFrahtQYJt/JrWrnfGVTNi3zVIEImL65MT7gicdpojZWeRAc
+        kaHTL3mpR4+0o4bjHaNsjhO7C67UuijiXng==
+X-Received: by 2002:aa7:d799:: with SMTP id s25mr2326478edq.161.1624004455076;
+        Fri, 18 Jun 2021 01:20:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx/I7P0xXP0OFvYW9YaIccS4kemIdCdzd2LI7F/6hxbx946RKljIW2c8ALFC5WoxW7v5BggJw==
+X-Received: by 2002:aa7:d799:: with SMTP id s25mr2326465edq.161.1624004454904;
+        Fri, 18 Jun 2021 01:20:54 -0700 (PDT)
+Received: from [192.168.1.115] (xdsl-188-155-177-222.adslplus.ch. [188.155.177.222])
+        by smtp.gmail.com with ESMTPSA id ci4sm704168ejc.110.2021.06.18.01.20.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Jun 2021 01:20:54 -0700 (PDT)
+Subject: Re: [PATCH] NFC: nxp-nci: remove unnecessary label
+To:     samirweng1979 <samirweng1979@163.com>, charles.gorand@effinnov.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+References: <20210618074456.17544-1-samirweng1979@163.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <99c12036-5444-b41b-165b-9f6a1812810e@canonical.com>
+Date:   Fri, 18 Jun 2021 10:20:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <1623907712-29366-1-git-send-email-schmitzmic@gmail.com>
- <1623907712-29366-3-git-send-email-schmitzmic@gmail.com> <d661fb8-274d-6731-75f4-685bb2311c41@linux-m68k.org>
- <1fa288e2-3157-68f8-32c1-ffa1c63e4f85@gmail.com> <CAMuHMdVGe1EutOVpw3-R=25xG0p2rWd65cB2mqM-imXWYjLtXw@mail.gmail.com>
- <da54e915-c142-a69b-757f-6a6419f173fa@gmail.com>
-In-Reply-To: <da54e915-c142-a69b-757f-6a6419f173fa@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 18 Jun 2021 10:13:22 +0200
-Message-ID: <CAMuHMdV5Yd2w+maSn-dQ=NOrVyVc8JjV38miKRc-pvnzBcKSig@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 2/2] net/8390: apne.c - add 100 Mbit support
- to apne.c driver
-To:     Michael Schmitz <schmitzmic@gmail.com>
-Cc:     Finn Thain <fthain@linux-m68k.org>,
-        "Linux/m68k" <linux-m68k@vger.kernel.org>,
-        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210618074456.17544-1-samirweng1979@163.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+On 18/06/2021 09:44, samirweng1979 wrote:
+> From: wengjianfeng <wengjianfeng@yulong.com>
+> 
+> Label chunk_exit is unnecessary, so we delete it and
+> directly return -ENOMEM.
 
-On Fri, Jun 18, 2021 at 10:06 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> Am 18.06.2021 um 19:16 schrieb Geert Uytterhoeven:
-> >>>> +#ifdef CONFIG_APNE100MBIT
-> >>>> +    if (apne_100_mbit)
-> >>>> +            isa_type = ISA_TYPE_AG16;
-> >>>> +#endif
-> >>>> +
-> >>> I think isa_type has to be assigned unconditionally otherwise it can't be
-> >>> reset for 10 mbit cards. Therefore, the AMIGAHW_PRESENT(PCMCIA) logic in
-> >>> arch/m68k/kernel/setup_mm.c probably should move here.
-> >>
-> >> Good catch! I am uncertain though as to whether replacing a 100 Mbit
-> >> card by a 10 Mbit one at run time is a common use case (or even
-> >> possible, given constraints of the Amiga PCMCIA interface?), but it
-> >> ought to work even if rarely used.
-> >
-> > Given it's PCMCIA, I guess that's a possibility.
-> > Furthermore, always setting isa_type means the user can recover from
-> > a mistake by unloading the module, and modprobe'ing again with the
-> > correct parameter.
-> > For the builtin-case, that needs a s/0444/0644/ change, though.
->
-> How does re-probing after a card change for a builtin driver work?
-> Changing the permission bits is a minor issue.
+There is no plural here, no collective "we". Please, use simple statements:
+"Remove unnecessary label chunk_exit and return directly."
 
-Oh right, this driver predates the driver framework, and doesn't support
-PCMCIA hotplug.  So auto-unregister on removal doesn't work.
-Even using unbind/bind in sysfs won't work.
+You could add here the explanation for question "why doing this?", e.g.
+"Simplify the code by removing unnecessary label chunk_exit and
+returning directly."
 
-So rmmod/modprobe is the only thing that has a chance to work...
+> 
+> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+> ---
+>  drivers/nfc/nxp-nci/firmware.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/nfc/nxp-nci/firmware.c b/drivers/nfc/nxp-nci/firmware.c
+> index dae0c80..119bf30 100644
+> --- a/drivers/nfc/nxp-nci/firmware.c
+> +++ b/drivers/nfc/nxp-nci/firmware.c
+> @@ -95,10 +95,8 @@ static int nxp_nci_fw_send_chunk(struct nxp_nci_info *info)
+>  	int r;
+>  
+>  	skb = nci_skb_alloc(info->ndev, info->max_payload, GFP_KERNEL);
+> -	if (!skb) {
+> -		r = -ENOMEM;
+> -		goto chunk_exit;
+> -	}
+> +	if (!skb)
+> +		return -ENOMEM;
+>  
+>  	chunk_len = info->max_payload - NXP_NCI_FW_HDR_LEN - NXP_NCI_FW_CRC_LEN;
+>  	remaining_len = fw_info->frame_size - fw_info->written;
+> @@ -124,7 +122,6 @@ static int nxp_nci_fw_send_chunk(struct nxp_nci_info *info)
+>  
+>  	kfree_skb(skb);
+>  
+> -chunk_exit:
+>  	return r;
+>  }
+>  
+> 
 
-> >> The comment there says isa_type must be set as early as possible, so I'd
-> >> rather leave that alone, and add an 'else' clause here.
-> >>
-> >> This of course raise the question whether we ought to move the entire
-> >> isa_type handling into arch code instead - make it a generic
-> >> amiga_pcmcia_16bit option settable via sysfs. There may be other 16 bit
-> >> cards that require the same treatment, and duplicating PCMCIA mode
-> >> switching all over the place could be avoided. Opinions?
-> >
-> > Indeed.
->
-> The only downside I can see is that setting isa_type needs to be done
-> ahead of modprobe, through sysfs. That might be a little error prone.
->
-> > Still, can we autodetect in the driver?
->
-> Guess we'll have to find out how the 16 bit cards behave if first poked
-> in 8 bit mode, attempting to force a reset of the 8390 chip, and
-> switching to 16 bit mode if this fails. That's normally done in
-> apne_probe1() which runs after init_pcmcia(), so we can't rely on the
-> result of a 8390 reset autoprobe to do the PCMCIA software reset there.
->
-> The 8390 reset part does not rely on anything else in apne_probe1(), so
-> that code can be lifted out of apne_probe1() and run early in
-> apne_probe() (after the check for an inserted PCMCIA card). I'll try and
-> prepare a patch for Alex to test that method.
->
-> > I'm wondering how this is handled on PCs with PCMCIA, or if there
-> > really is something special about Amiga PCMCIA hardware...
->
-> What's special about Amiga PCMCIA hardware is that the card reset isn't
-> connected for those 16 bit cards, so pcmcia_reset() does not work.
 
-I was mostly thinking about the difference between 8-bit and 16-bit
-accesses.
-
-> Whether the software reset workaround hurts for 8 bit cards is something
-> I don't know and cannot test. But
->
-> > And I'd really like to get rid of the CONFIG_APNE100MBIT option,
-> > i.e. always include the support, if possible.
->
-> I can't see why that wouldn't be possible - the only downside is that we
-> force MULTI_ISA=1 always for Amiga, and lose the optimizations done for
-> MUTLI_ISA=0 in io_mm.h. Unless we autoprobe, we can use isa_type to
-> guard against running a software reset on 8 bit cards ...
-
-The latter sounds like a neat trick...
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Best regards,
+Krzysztof
