@@ -2,107 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FC2D3ACE18
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:58:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B8C43ACE1F
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234748AbhFRPAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 11:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234183AbhFRPAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 11:00:21 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E02BC061574;
-        Fri, 18 Jun 2021 07:58:07 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id d13so14371400ljg.12;
-        Fri, 18 Jun 2021 07:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/qj/DCC40E5M+kCTzyQzmzT+i3lfMX82yvvAMuTPy2U=;
-        b=cFQE0qieACEbE3MXNtJXVtJVIphvFTDMgjWLhBis+vgXG8x+Y/vg4nO6n3EwvTDbdR
-         4Fwv9v+8wdFgt6+AxGYaUqdOQ3R9OVVVrSNOmrVOX0UZUFvdARQKN7iNEnjhmulBOlni
-         XrwHdjkEwUQEceZdgzKr0PX+adT6Dk9GHXw4T0dN6WRWy4q1Zs2g5klt1JzAYq+g5XQa
-         jz2PbbN34JJDr3k0Kphhh6oG4WPl27bMQbqdg6xxuPR89grUFzs9UF44USt7Z2Q5ltpi
-         C1xc9MHMk36XQmF6atHscxja8Wqm7ZCTbNYlPKrhrdtkraG9RTueD1dyLyEnOFcn2bWb
-         yB1w==
+        id S234810AbhFRPAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 11:00:31 -0400
+Received: from mail-vs1-f43.google.com ([209.85.217.43]:45715 "EHLO
+        mail-vs1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234183AbhFRPAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 11:00:30 -0400
+Received: by mail-vs1-f43.google.com with SMTP id k8so2653719vsg.12;
+        Fri, 18 Jun 2021 07:58:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/qj/DCC40E5M+kCTzyQzmzT+i3lfMX82yvvAMuTPy2U=;
-        b=GzvT8GcWDJpinien+FPt9c5UZeLyYsVKrfkp39Q3hCK1bzSakkUYER7MDJes2Mu2iq
-         UqmXgstNRnkKfW+pidzFEdM+Eclw8NrUCixSRnwSI8sbuMuEyq4bUCzm4RMmnjuvTbiH
-         UNWGyXbw1gXpDfpu9mpEQHhrstgkZByw1SPVNBeiDyr+OavQRGYEc5ywZ0ICphYpwrZ8
-         Y7S+ctCOeEPzNHLh6lSzegxlzlqwFcqdIT7/evE51XbXIw3Bi10oxTymJDXR0zVR489P
-         xGKe+2pqyY25nG88ltV7PfBNcFN7B7r+dBLUSxkuUDgQ+oWZMbPXpom8/OFFWHltYVuS
-         O3vQ==
-X-Gm-Message-State: AOAM5307ViAmb0estaDBiMDZmMfggRAeXUTpRZYTdiyYJDFwJ2E0jjP1
-        ea3fucwGW+vgqL/6UjNQ2rSASwrUa1ZHAg==
-X-Google-Smtp-Source: ABdhPJw7f+3Y9SP91OWBd+PShL4pBiEpOayUISaL5/8ItN1P8uUmgIFeUG4tv7ywNIQjXVfXdSWK3w==
-X-Received: by 2002:a2e:a7c9:: with SMTP id x9mr10076282ljp.333.1624028284877;
-        Fri, 18 Jun 2021 07:58:04 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.229.24])
-        by smtp.gmail.com with ESMTPSA id b16sm1020471lff.210.2021.06.18.07.58.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 07:58:04 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     andreas@gaisler.com, davem@davemloft.net, kuba@kernel.org,
-        kristoffer@gaisler.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH] net: ethernet: aeroflex: fix UAF in greth_of_remove
-Date:   Fri, 18 Jun 2021 17:57:31 +0300
-Message-Id: <20210618145731.32194-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sK1e1fPt0zMaEq6+4wMfGpXVrEHblA3IAhRYoTeadpQ=;
+        b=Om495HxaqidnSHxaS6vEj4rVluKt5OUKVCzjfG69FJxQxcGxvYGk3CyeEdbK6VN7yk
+         V1rEKGWCfuBYfcGrBRRVoYtKXleP21K2FxTWinvajwsvyle2YzqN3It9toTJjUuONSeN
+         Mjr0dU13rKTvY4MUAGeHpqJv64ruEsHN8U7G8OFwgE36YggFt+NwHZCkY6RBipE77jKv
+         WxNMTTKTfc/WldKK6jpA7KVibPm3lQyIX1diBnDe/pqyLfZCZa6D/KAMHParfgvxNS1L
+         5nsJGMNklcVBlBUGGWjrQGom/MWaNbkFFSbI3iYCKDlsSEqOIwpYm/E18zRA5VSls2EU
+         oa7Q==
+X-Gm-Message-State: AOAM530+HrIKr9bAPi+6gl/oYDkt3JQ7yUfPQUG4DSH+zG6GN3XKgN4i
+        26p2JGUNxw4HMK0BUaUaL4wcaJ1obwePWh2DDKc=
+X-Google-Smtp-Source: ABdhPJzg/YZ6W6Is0ERxgmyVpS1tDEBVcgjBpDhPONT5Qk7oJfA8+VdLNRMVYyTep7yhmxjZzTnU3vP2PEwuB0o2fxE=
+X-Received: by 2002:a67:3c2:: with SMTP id 185mr7549799vsd.42.1624028299731;
+ Fri, 18 Jun 2021 07:58:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YIx7R6tmcRRCl/az@mit.edu> <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
+ <YK+esqGjKaPb+b/Q@kroah.com> <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
+ <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com> <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
+ <20210610182318.jrxe3avfhkqq7xqn@nitro.local> <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
+ <20210610152633.7e4a7304@oasis.local.home> <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
+ <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com> <cd7ffbe516255c30faab7a3ee3ee48f32e9aa797.camel@HansenPartnership.com>
+ <CAMuHMdVcNfDvpPXHSkdL3VuLXCX5m=M_AQF-P8ZajSdXt8NdQg@mail.gmail.com> <20210618103214.0df292ec@oasis.local.home>
+In-Reply-To: <20210618103214.0df292ec@oasis.local.home>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 18 Jun 2021 16:58:08 +0200
+Message-ID: <CAMuHMdWK4NPzanF68TMVuihLFdRzxhs0EkbZdaA=BUkZo-k6QQ@mail.gmail.com>
+Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+        David Hildenbrand <david@redhat.com>, Greg KH <greg@kroah.com>,
+        Christoph Lameter <cl@gentwo.de>,
+        "Theodore Ts'o" <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
+        ksummit@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-block@vger.kernel.org,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>, netdev <netdev@vger.kernel.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-static int greth_of_remove(struct platform_device *of_dev)
-{
-...
-	struct greth_private *greth = netdev_priv(ndev);
-...
-	unregister_netdev(ndev);
-	free_netdev(ndev);
+Hi Steven,
 
-	of_iounmap(&of_dev->resource[0], greth->regs, resource_size(&of_dev->resource[0]));
-...
-}
+On Fri, Jun 18, 2021 at 4:32 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+> On Fri, 18 Jun 2021 16:28:02 +0200
+> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> > What about letting people use the personal mic they're already
+> > carrying, i.e. a phone?
+>
+> Interesting idea.
+>
+> I wonder how well that would work in practice. Are all phones good
+> enough to prevent echo?
 
-greth is netdev private data, but it is used
-after free_netdev(). It can cause use-after-free when accessing greth
-pointer. So, fix it by moving free_netdev() after of_iounmap()
-call.
+I deliberately didn't say anything about a speaker ;-)
 
-Fixes: d4c41139df6e ("net: Add Aeroflex Gaisler 10/100/1G Ethernet MAC driver")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- drivers/net/ethernet/aeroflex/greth.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Just use the mic, with a simple (web) app only doing audio input?
 
-diff --git a/drivers/net/ethernet/aeroflex/greth.c b/drivers/net/ethernet/aeroflex/greth.c
-index d77fafbc1530..c560ad06f0be 100644
---- a/drivers/net/ethernet/aeroflex/greth.c
-+++ b/drivers/net/ethernet/aeroflex/greth.c
-@@ -1539,10 +1539,11 @@ static int greth_of_remove(struct platform_device *of_dev)
- 	mdiobus_unregister(greth->mdio);
- 
- 	unregister_netdev(ndev);
--	free_netdev(ndev);
- 
- 	of_iounmap(&of_dev->resource[0], greth->regs, resource_size(&of_dev->resource[0]));
- 
-+	free_netdev(ndev);
-+
- 	return 0;
- }
- 
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.32.0
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
