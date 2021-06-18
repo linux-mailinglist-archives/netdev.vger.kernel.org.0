@@ -2,100 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3012F3ACC88
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:44:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 430993ACC8C
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:44:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233705AbhFRNqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 09:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
+        id S233873AbhFRNq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 09:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbhFRNqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:46:18 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6A9C061574
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 06:44:07 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id d7so8804446edx.0
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 06:44:07 -0700 (PDT)
+        with ESMTP id S231855AbhFRNq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:46:27 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96290C061574
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 06:44:17 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id o17-20020a9d76510000b02903eabfc221a9so9773806otl.0
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 06:44:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s4QXOg/Oqg6wQFgoGzdfA2mVDfGvYnpoYb80SOtk3Iw=;
-        b=jyWWyKe7ohhDOW3qhtVKhMQqd2jYi+Lcnlt4B5XmapC9MXZ7Xq/cgjV+0LZ+nLG7mY
-         HNnZs1Ya4mqZUEPDxD/RmAtW0lwLC3UfFpvzomuHeXqz+jAzdvdYKlxVObhYt4v2DY3t
-         A+kIr/9os58NduDJbIHMBOehIhWRZDPjPSwe9pdMaTUdBCIq65J9WCasg+LyDiJDsJ6o
-         OvlLICUfbPFknex4NzNJtLls+8PJ3HXEygaDC0VBuHoiEn/Mzb1T6VipfKIorU+rKFCR
-         0DghqvBUAfP1qIAteuXqN/trBs226whxxl6kGbDv2dDx4f2dSUYuFGEc5Dz3pzBomIJC
-         YF3Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=s3nExGaa123+HTz/XBu/9Xe1ZsS9cU/LEw42UZzjURU=;
+        b=Q6WApYjBuGpB5Jf+fGYgI9zI+wZx7eJVbenT3jAX5GGTJhJZ3W68PVk1R7J9lZHBFA
+         C0uNpPJxMuBhvJI2XrZda9sINX1kxNtNfmdGA1c8oy7FIB6eWy3id0VknyWsKr5P1rrL
+         q0FBVBd3dXSYNRRf6oWOCFj9BJtq2CJ0X7YqebceQ8doQCnwpGis14gJKX6iYXdoYn2h
+         5RkqZZGZPbR6NB9kGYF0A2Q60I4VQ/5zkQo0zzso7z/hR6+VmowPI+NHmvTYHgdG071M
+         FivnWeDRy/EBZoXGJSaQ/9wCS5xY0XHu3kA/5I16ue6eSWB753dydZzLwsYVVeJRadTK
+         ryag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=s4QXOg/Oqg6wQFgoGzdfA2mVDfGvYnpoYb80SOtk3Iw=;
-        b=bw2ArH0ZoBhAmU8ZswbpvV7yNsItL07IguyiBslxzpUa6XW2QVbopPCIHyGHka7s7i
-         8sC12RwV0opTkrleV+9N4hfmbR35z/b2hq5LLePZ7kQCYAXfY5crWUDLmjDbwTesrHUO
-         DtOr3meOtXLGq9N5bldNXSEmQZGXMmC0a1vaqSxcIANV270Ye9n/0GLodx/+4eQZht59
-         O9rOA+0llZzdWu2NCUkiNG5CDdSzhfiN9gcZENm9+FRvHIxV+AGGn3Gd2PwULjmQWv3/
-         UQaN/aw6ERXeQFefOx++D+JjoaPJ7w9O7b3efRO5hxqp4c1p/j4esIyWcxgesNvNH2cs
-         bC6g==
-X-Gm-Message-State: AOAM532H0yyJ/WLQbWiQ0QKeWobkxRf9RErs5Xs++OqXM17mUP+QNcja
-        W1NWf4NiHTHbL3RE63d0G0c=
-X-Google-Smtp-Source: ABdhPJzhd3PD4ZWTxZ60H/By/sRJv8+aGoq/FvDmXZCTlDNiM0B1/mJA1eockmNn5jFnS5LFjlvcQw==
-X-Received: by 2002:aa7:dc4c:: with SMTP id g12mr5219515edu.258.1624023846019;
-        Fri, 18 Jun 2021 06:44:06 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id n2sm6334347edi.32.2021.06.18.06.44.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 06:44:05 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next] net: dsa: sja1105: allow the TTEthernet configuration in the static config for SJA1110
-Date:   Fri, 18 Jun 2021 16:44:00 +0300
-Message-Id: <20210618134400.2970928-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=s3nExGaa123+HTz/XBu/9Xe1ZsS9cU/LEw42UZzjURU=;
+        b=fBFuph+sgQtAexmL0JO5fI8oFLL2G5N8vZ26tyNVp5NVyYUG4/3K86+nv4Sw5u4jWK
+         JRT9DQ/JQdky9Sl8DS/nAhPsmpRfhUH0XBYekuc9R27UnilhpLBFyrh8opcgVTdvY4Ql
+         HN8DHYtOQc9DGrWMw0nBhEiy4SlmiNHRN1J04sfe78xKotp1yHheP/FhA63wCthX2J1R
+         M7yqNqNO+nx5m3UOEVeIKgg+0fTbf8KAXW6ZxgR0sdu5YVy/UfBcGMS5Qd5RxxaXrOYW
+         eP6UDgmd/7SHyCpqBDk5RFhIZ+SgpWkrp4l5DLleSqjDNWY4IsVSDW62WIVGi3rbc6++
+         iNUw==
+X-Gm-Message-State: AOAM532HGsln9L3j807Hb9LeGQIHRAMdLkakg7ww28P8PqkYSoslbz96
+        JVPMF5VIR84h/zQZeZ8m+Gw=
+X-Google-Smtp-Source: ABdhPJyW/SXJOSJ1m+/t7zl+65FbenpSGs2JLVdKXlLUA92J5YIty3QPWT2O9X+zHMSuzHaYa9tntQ==
+X-Received: by 2002:a9d:a78:: with SMTP id 111mr9709976otg.93.1624023856956;
+        Fri, 18 Jun 2021 06:44:16 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id e29sm1826945oiy.53.2021.06.18.06.44.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Jun 2021 06:44:16 -0700 (PDT)
+Subject: Re: [PATCH net v2 2/2] selftests/net: Add icmp.sh for testing ICMP
+ dummy address responses
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Juliusz Chroboczek <jch@irif.fr>
+References: <20210618110436.91700-1-toke@redhat.com>
+ <20210618110436.91700-2-toke@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <91915a59-2e69-112d-6fcc-5ba07ad6d313@gmail.com>
+Date:   Fri, 18 Jun 2021 07:44:14 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <20210618110436.91700-2-toke@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 6/18/21 5:04 AM, Toke Høiland-Jørgensen wrote:
+> This adds a new icmp.sh selftest for testing that the kernel will respond
+> correctly with an ICMP unreachable message with the dummy (192.0.0.8)
+> source address when there are no IPv4 addresses configured to use as source
+> addresses.
+> 
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> ---
+>  tools/testing/selftests/net/icmp.sh | 74 +++++++++++++++++++++++++++++
+>  1 file changed, 74 insertions(+)
+>  create mode 100755 tools/testing/selftests/net/icmp.sh
+> 
 
-Currently sja1105_static_config_check_valid() is coded up to detect
-whether TTEthernet is supported based on device ID, and this check was
-not updated to cover SJA1110.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-However, it is desirable to have as few checks for the device ID as
-possible, so the driver core is more generic. So what we can do is look
-at the static config table operations implemented by that specific
-switch family (populated by sja1105_static_config_init) whether the
-schedule table has a non-zero maximum entry count (meaning that it is
-supported) or not.
+Thanks, Toke.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105_static_config.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_static_config.c b/drivers/net/dsa/sja1105/sja1105_static_config.c
-index 1491b72008f3..7a422ef4deb6 100644
---- a/drivers/net/dsa/sja1105/sja1105_static_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_static_config.c
-@@ -1052,8 +1052,7 @@ sja1105_static_config_check_valid(const struct sja1105_static_config *config,
- 	(tables[blk_idx].entry_count == tables[blk_idx].ops->max_entry_count)
- 
- 	if (tables[BLK_IDX_SCHEDULE].entry_count) {
--		if (config->device_id != SJA1105T_DEVICE_ID &&
--		    config->device_id != SJA1105QS_DEVICE_ID)
-+		if (!tables[BLK_IDX_SCHEDULE].ops->max_entry_count)
- 			return SJA1105_TTETHERNET_NOT_SUPPORTED;
- 
- 		if (tables[BLK_IDX_SCHEDULE_ENTRY_POINTS].entry_count == 0)
--- 
-2.25.1
 
