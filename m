@@ -2,128 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 453BB3ABFFA
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 02:09:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 763983AC013
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 02:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233172AbhFRAMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Jun 2021 20:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
+        id S233288AbhFRAXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Jun 2021 20:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232479AbhFRAMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 20:12:01 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15717C06175F
-        for <netdev@vger.kernel.org>; Thu, 17 Jun 2021 17:09:52 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 9A99783640;
-        Fri, 18 Jun 2021 12:09:49 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1623974989;
-        bh=AHBtbXwm2xMmYb4uxx88KQ1fnNAj1rBtjk3rabAXtrQ=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=KBjb4e7NGGlHi/FYiPsjftrv67LhziiNGr406pVO2qowfQawMfquHiUsuLZ6aLQAE
-         Wr7ABnywBQSZs2mTvOWIMy8Ce+pRDqsMmRc57ZWdQoa/LGJk5Vkvr9om5Y8A+OhpEB
-         kYUAQHLklD+2riV27YX4cn/+yp+trWeGJqhct13aZTu83KLZx9WkGkAjAcTfoQetXs
-         vONkgKLC/NsEjyW1ub0oQ1f8IvKF/1Zqce7NgFcqSfO3O9L+DZpMd8B4rbsSUKfhOa
-         EuPsYNudnYdm7BMfgRGj6Kt06vNzBCSGY9vhQ0e/ddUH9ohQWTJXnK4PSOu54ixmKe
-         Q3S9dLO37Mo+Q==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B60cbe44d0001>; Fri, 18 Jun 2021 12:09:49 +1200
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
- svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
- (TLS) id 15.0.1497.18; Fri, 18 Jun 2021 12:09:49 +1200
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.018; Fri, 18 Jun 2021 12:09:49 +1200
-From:   Callum Sinclair <Callum.Sinclair@alliedtelesis.co.nz>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "dsahern@kernel.org" <dsahern@kernel.org>,
-        "nikolay@nvidia.com" <nikolay@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linus.luessing@c0d3.blue" <linus.luessing@c0d3.blue>
-Subject: Re: [PATCH 1/1] net: Allow all multicast packets to be received on a
- interface.
-Thread-Topic: [PATCH 1/1] net: Allow all multicast packets to be received on a
- interface.
-Thread-Index: AQHXY15AjPZKD1gBPUW680Mm+Pg7t6sXd18AgAFtyb4=
-Date:   Fri, 18 Jun 2021 00:09:48 +0000
-Message-ID: <1623974988948.39187@alliedtelesis.co.nz>
-References: <20210617095020.28628-1-callum.sinclair@alliedtelesis.co.nz>
- <20210617095020.28628-2-callum.sinclair@alliedtelesis.co.nz>,<YMtZspsYH0wd9SVf@lunn.ch>
-In-Reply-To: <YMtZspsYH0wd9SVf@lunn.ch>
-Accept-Language: en-US, en-NZ
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.32.1.11]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S231431AbhFRAXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Jun 2021 20:23:13 -0400
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2E4C061574;
+        Thu, 17 Jun 2021 17:21:03 -0700 (PDT)
+Received: by mail-il1-x12d.google.com with SMTP id s19so251739ilj.1;
+        Thu, 17 Jun 2021 17:21:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rwBUHPn/nUswAacAb8l0k4vEO1b585QgUKlF1XS0z4E=;
+        b=VOsoZyvUte64GBeqs6fU8Na/chZEVaeJt4neq1Z8kpQULdHUNTU6F/cRYUTRTOOkQi
+         VDeJoARqjKjPvgnc7U5WT/7Og0mSkcBjc7mPqwsK5xiPKTabSt+y+LyxqkjDIA4C+UUK
+         uF67rZj9o6NNHZtxsq2CV+12IhbgKXc/+SCgplZZ7ntlRR0wmBlAI+jpU7mtgUbo4cZC
+         ibk0w4LgPwsIoMPtEHGXpl9tdQeNT359tIrZSvhaE0YmStZ2xvo2WSAJtmEC9kkRXbzD
+         PmXrpj/Zx4AAJYAMNppBw9yK3uMpZm1QfPVDzWFMWlybAb9/xoQ/DG8Pivn0mGK8Gnrz
+         PNAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rwBUHPn/nUswAacAb8l0k4vEO1b585QgUKlF1XS0z4E=;
+        b=crqF+cyCliBGUCQJVrC1C1radgFsRr5wj4c52KwaJ8yxWxNnV/pK1rv/NpjgShpyRQ
+         S1GrbVXoVDZjlBAE9DmQyILM8Yfu+gsAn9fNZPnOTqBg7/RXnTLXi+zgCxl8+A13/ZH3
+         fxiEt/coreCdQYS/fs3pmpcoAEFTQpzCme0kIrno495qr4+iqrYR4ISJzq0yo+QOckIY
+         AUtX72auwyWuAs5I8ngUdZh5aj9BOr0N0jAuUUTJy/qAOCQ9hAuz1VP3t9OfamiO1+mf
+         M9QQXo5EHNt5dVlfhhZoKMO+Skp/7R0Yr+z7EfIHhOb6g6MDce3xnR3ktmnUppZow6WM
+         ODGQ==
+X-Gm-Message-State: AOAM531yA6iEneYouMy+alVVl9uM+DI4rBqvGCeziO5rwkezwkRxHP/8
+        fGjzmDST2e63lt5+h4j9BLRTpGqujgyKhnUX+B4=
+X-Google-Smtp-Source: ABdhPJwSzi/LEIO5Z3FwRtpscS2uHs7ZQ+MojHzel6FS0HeYMn4eDyfYPuL2qIIMRU49mbxdEg9sqNL+YNE3ARpDMXQ=
+X-Received: by 2002:a92:b0c:: with SMTP id b12mr5144308ilf.123.1623975663391;
+ Thu, 17 Jun 2021 17:21:03 -0700 (PDT)
 MIME-Version: 1.0
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=IOh89TnG c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=oKJsc7D3gJEA:10 a=8nJEP1OIZ-IA:10 a=r6YtysWOX24A:10 a=VwQbUJbxAAAA:8 a=Ikd4Dj_1AAAA:8 a=62ntRvTiAAAA:8 a=BjvkRneYAAAA:8 a=TQE1fwpsvIluFpPGKlQA:9 a=wPNLvfGTeEIA:10 a=AjGcO6oz07-iQ99wixmX:22 a=pToNdpNmrtiFLRE6bQ9Z:22 a=RwQB74oxMe2pVKaOgktC:22
-X-SEG-SpamProfiler-Score: 0
+References: <20210616092521.800788-1-Tony.Ambardar@gmail.com>
+ <caf1dcbd-7a07-993c-e940-1b2689985c5a@fb.com> <YMopCb5CqOYsl6HR@krava>
+ <YMp68Dlqwu+wuHV9@wildebeest.org> <YMsPnaV798ICuMbv@krava> <37f69a50-5b83-22e5-d54b-bea79ad3adec@iogearbox.net>
+In-Reply-To: <37f69a50-5b83-22e5-d54b-bea79ad3adec@iogearbox.net>
+From:   Tony Ambardar <tony.ambardar@gmail.com>
+Date:   Thu, 17 Jun 2021 17:20:53 -0700
+Message-ID: <CAPGftE88-AszN=ftJGxcYWpS2VLq4ErpJOTemBWeBgzE8-bbZQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v1] bpf: fix libelf endian handling in resolv_btfids
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Mark Wielaard <mark@klomp.org>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Frank Eigler <fche@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew=0A=
-=0A=
-> What is the big picture here? Are you trying to move the snooping=0A=
-> algorithm into user space? User space will then add/remove Multicast=0A=
-> FIB entries to the bridge to control where mulitcast frames are sent?=0A=
-=0A=
-Yes I want to run a IGMP, MLD and PIM implementation in userspace and=0A=
-just use the kernel to send multicast frames to addresses that have been=0A=
-installed into the multicast forwarding cache.=0A=
-=0A=
-> In the past i have written a multicast routing daemon. It is a similar=0A=
-> problem. You need access to all the join/leaves. But the stack does=0A=
-> provide them, if you bind to the multicast routing socket. Why not use=0A=
-> that mechanism? Look in the mrouted sources for an example.=0A=
-=0A=
-Ah I can see that I get the IGMP and MLD packets now. I was just creating=
-=0A=
-the socket as a IP socket without multicast routing. Thanks for your help.=
-=0A=
-=0A=
-Cheers=0A=
-Callum=0A=
-________________________________________=0A=
-From: Andrew Lunn <andrew@lunn.ch>=0A=
-Sent: Friday, June 18, 2021 2:18 AM=0A=
-To: Callum Sinclair=0A=
-Cc: dsahern@kernel.org; nikolay@nvidia.com; netdev@vger.kernel.org; linux-k=
-ernel@vger.kernel.org; linus.luessing@c0d3.blue=0A=
-Subject: Re: [PATCH 1/1] net: Allow all multicast packets to be received on=
- a interface.=0A=
-=0A=
-On Thu, Jun 17, 2021 at 09:50:20PM +1200, Callum Sinclair wrote:=0A=
-> To receive IGMP or MLD packets on a IP socket on any interface the=0A=
-> multicast group needs to be explicitly joined. This works well for when=
-=0A=
-> the multicast group the user is interested in is known, but does not=0A=
-> provide an easy way to snoop all packets in the http://scanmail.trustwave=
-.com/?c=3D20988&d=3DwNnL4EU-bOXOuxnfu9BLng8ncWxDIw3ACrur9S2N4w&u=3Dhttp%3a%=
-2f%2f224%2e0%2e0%2e0%2f8 or the=0A=
-> FF00::/8 range.=0A=
->=0A=
-> Define a new sysctl to allow a given interface to become a IGMP or MLD=0A=
-> snooper. When set the interface will allow any IGMP or MLD packet to be=
-=0A=
-> received on sockets bound to these devices.=0A=
-=0A=
-Hi Callum=0A=
-=0A=
-What is the big picture here? Are you trying to move the snooping=0A=
-algorithm into user space? User space will then add/remove Multicast=0A=
-FIB entries to the bridge to control where mulitcast frames are sent?=0A=
-=0A=
-In the past i have written a multicast routing daemon. It is a similar=0A=
-problem. You need access to all the join/leaves. But the stack does=0A=
-provide them, if you bind to the multicast routing socket. Why not use=0A=
-that mechanism? Look in the mrouted sources for an example.=0A=
-=0A=
-     Andrew=0A=
+On Thu, 17 Jun 2021 at 04:22, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 6/17/21 11:02 AM, Jiri Olsa wrote:
+> > On Thu, Jun 17, 2021 at 12:28:00AM +0200, Mark Wielaard wrote:
+> >> On Wed, Jun 16, 2021 at 06:38:33PM +0200, Jiri Olsa wrote:
+> >>>>> diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
+> >>>>> index d636643ddd35..f32c059fbfb4 100644
+> >>>>> --- a/tools/bpf/resolve_btfids/main.c
+> >>>>> +++ b/tools/bpf/resolve_btfids/main.c
+> >>>>> @@ -649,6 +649,9 @@ static int symbols_patch(struct object *obj)
+> >>>>>           if (sets_patch(obj))
+> >>>>>                   return -1;
+> >>>>> + /* Set type to ensure endian translation occurs. */
+> >>>>> + obj->efile.idlist->d_type = ELF_T_WORD;
+> >>>>
+> >>>> The change makes sense to me as .BTF_ids contains just a list of
+> >>>> u32's.
+> >>>>
+> >>>> Jiri, could you double check on this?
+> >>>
+> >>> the comment in ELF_T_WORD declaration suggests the size depends on
+> >>> elf's class?
+> >>>
+> >>>    ELF_T_WORD,                   /* Elf32_Word, Elf64_Word, ... */
+> >>>
+> >>> data in .BTF_ids section are allways u32
+> >>>
+> >>> I have no idea how is this handled in libelf (perhaps it's ok),
+> >>> but just that comment above suggests it could be also 64 bits,
+> >>> cc-ing Frank and Mark for more insight
+> >>
+> >> It is correct to use ELF_T_WORD, which means a 32bit unsigned word.
+> >>
+> >> The comment is meant to explain that, but is really confusing if you
+> >> don't know that Elf32_Word and Elf64_Word are the same thing (a 32bit
+> >> unsigned word). This comes from being "too consistent" in defining all
+> >> data types for both 32bit and 64bit ELF, even if those types are the
+> >> same in both formats...
+> >>
+> >> Only Elf32_Addr/Elf64_Addr and Elf32_Off/Elf64_Off are different
+> >> sizes. But Elf32/Elf_64_Half (16 bit), Elf32/Elf64_Word (32 bit),
+> >> Elf32/Elf64_Xword (64 bit) and their Sword/Sxword (signed) variants
+> >> are all identical data types in both the Elf32 and Elf64 formats.
+> >>
+> >> I don't really know why. It seems the original ELF spec was 32bit only
+> >> and when introducing the ELF64 format "they" simply duplicated all
+> >> data types whether or not those data type were actually different
+> >> between the 32 and 64 bit format.
+> >
+> > nice, thanks for details
+> >
+> > Acked-by: Jiri Olsa <jolsa@redhat.com>
+>
+> Tony, could you do a v2 and summarize the remainder of the discussion in
+> here for the commit message? Would be good to explicitly document the
+> assumptions made and why they work.
+
+Sure, Daniel, I'll update the commit details and resend.
+
+Thanks,
+Tony
+
+> Thanks everyone,
+> Daniel
