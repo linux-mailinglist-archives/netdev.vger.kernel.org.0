@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B69093AC566
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 09:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EED73AC569
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 09:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbhFRH4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 03:56:32 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:32847 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231946AbhFRH4Y (ORCPT
+        id S233592AbhFRH4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 03:56:34 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.168]:20285 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232149AbhFRH4Y (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 03:56:24 -0400
+X-Greylist: delayed 139224 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Jun 2021 03:56:23 EDT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1624002848;
     s=strato-dkim-0002; d=gerhold.net;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=yjHKQ8lMulbXx+wnwSOLruB/LKdAZkXQEDoNCCRjt0o=;
-    b=Drh/vG8ejiCnZkjMWjt3ncXd2ZT20/rX0Q4tKNnOcCaEllhEXpDSBkbLGBmtSbclKn
-    Bh7cOk2QxiyPiWsVdYbmJF/5cJyVGIKBKZBm8SUVIRpcTG6H/UUl1TL0m6FwQuOHTUvY
-    GNoNb+NCVCQY75BzOdjUnlR8GL9TuzkzBfWNan4JN4bWvjWuWsJ+uiigziVXeoTrlUz8
-    Tr6io/iRZBaRzDKvutQdA3ua11N42I6gs+b7Z0BUzGula9IO2MvkUaImDH4lBljTuG3a
-    62seHldEkW0xRJGmter1RqBtuqm3AxC6PnyH6/BlDvN4tvUDZ0UZk7LmDkYzrRjzVtX6
-    LN1A==
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=pV6Ft6oOUmVeMb8nCyE2JYFkklCXcfcgJq0yra9LYEY=;
+    b=DxfQpkjdcTIzj87SuWLOgl5gGJmfxZyANWKOGGw0b+MqcLrduwzz/B8d2GPLqBLAMm
+    MHhnbg/i+BdzAgR+UlXFT/mh5m69xjX7jOBobF3UJqFw8DtDX1n54ua6bS7pc/1XgcUr
+    dykazttpxmILq1fsZgBzttTdXbP/tv41sK5w+dznt2TmGwMneISTltH4Yo79ecEg5hbt
+    pKJW3nNUXwM9yAiBSnJLk1iu2lckjMl3uGGiN+TjbdOAH3iT7k8P3PCn2LuKQZaJi1fL
+    GxcNUf5r7z2+JDcGvHVroKP7YYXTpo42/ISmT/nQERqlTZ79hSqTAnA+MvkoDd806PEF
+    +97Q==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxA626EOg=="
 X-RZG-CLASS-ID: mo00
 Received: from droid..
     by smtp.strato.de (RZmta 47.27.3 DYNA|AUTH)
-    with ESMTPSA id 000885x5I7s64DB
+    with ESMTPSA id 000885x5I7s84DC
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Fri, 18 Jun 2021 09:54:06 +0200 (CEST)
+    Fri, 18 Jun 2021 09:54:08 +0200 (CEST)
 From:   Stephan Gerhold <stephan@gerhold.net>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -48,53 +50,59 @@ Cc:     Loic Poulain <loic.poulain@linaro.org>,
         linux-kernel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht,
         Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH net-next v2 0/3] net: wwan: Add RPMSG WWAN CTRL driver
-Date:   Fri, 18 Jun 2021 09:52:40 +0200
-Message-Id: <20210618075243.42046-1-stephan@gerhold.net>
+Subject: [PATCH net-next v2 1/3] rpmsg: core: Add driver_data for rpmsg_device_id
+Date:   Fri, 18 Jun 2021 09:52:41 +0200
+Message-Id: <20210618075243.42046-2-stephan@gerhold.net>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210618075243.42046-1-stephan@gerhold.net>
+References: <20210618075243.42046-1-stephan@gerhold.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series adds a WWAN "control" driver for the remote processor
-messaging (rpmsg) subsystem. This subsystem allows communicating with
-an integrated modem DSP on many Qualcomm SoCs, e.g. MSM8916 or MSM8974.
+Most device_id structs provide a driver_data field that can be used
+by drivers to associate data more easily for a particular device ID.
+Add the same for the rpmsg_device_id.
 
-The driver is a fairly simple glue layer between WWAN and RPMSG
-and is mostly based on the existing mhi_wwan_ctrl.c and rpmsg_char.c.
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+---
+Changes in v2: None
+---
+ drivers/rpmsg/rpmsg_core.c      | 4 +++-
+ include/linux/mod_devicetable.h | 1 +
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-For more information, see commit message in PATCH 2/3.
-
-I already posted a RFC for this a while ago:
-https://lore.kernel.org/linux-arm-msm/YLfL9Q+4860uqS8f@gerhold.net/
-and now I'm looking for some feedback for the actual changes. :)
-
-Changes in v2: Only in PATCH 3/3
-  - Fix EPOLLOUT being always set even if poll op is defined
-  - Rename poll() op -> tx_poll() since it should be only used for TX
-v1: https://lore.kernel.org/netdev/20210615133229.213064-1-stephan@gerhold.net/
-
-Stephan Gerhold (3):
-  rpmsg: core: Add driver_data for rpmsg_device_id
-  net: wwan: Add RPMSG WWAN CTRL driver
-  net: wwan: Allow WWAN drivers to provide blocking tx and poll function
-
- MAINTAINERS                           |   7 ++
- drivers/net/wwan/Kconfig              |  18 +++
- drivers/net/wwan/Makefile             |   1 +
- drivers/net/wwan/iosm/iosm_ipc_port.c |   3 +-
- drivers/net/wwan/mhi_wwan_ctrl.c      |   3 +-
- drivers/net/wwan/rpmsg_wwan_ctrl.c    | 156 ++++++++++++++++++++++++++
- drivers/net/wwan/wwan_core.c          |  11 +-
- drivers/net/wwan/wwan_hwsim.c         |   3 +-
- drivers/rpmsg/rpmsg_core.c            |   4 +-
- include/linux/mod_devicetable.h       |   1 +
- include/linux/wwan.h                  |  13 ++-
- 11 files changed, 208 insertions(+), 12 deletions(-)
- create mode 100644 drivers/net/wwan/rpmsg_wwan_ctrl.c
-
+diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
+index e5daee4f9373..c1404d3dae2c 100644
+--- a/drivers/rpmsg/rpmsg_core.c
++++ b/drivers/rpmsg/rpmsg_core.c
+@@ -459,8 +459,10 @@ static int rpmsg_dev_match(struct device *dev, struct device_driver *drv)
+ 
+ 	if (ids)
+ 		for (i = 0; ids[i].name[0]; i++)
+-			if (rpmsg_id_match(rpdev, &ids[i]))
++			if (rpmsg_id_match(rpdev, &ids[i])) {
++				rpdev->id.driver_data = ids[i].driver_data;
+ 				return 1;
++			}
+ 
+ 	return of_driver_match_device(dev, drv);
+ }
+diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+index 7d45b5f989b0..8e291cfdaf06 100644
+--- a/include/linux/mod_devicetable.h
++++ b/include/linux/mod_devicetable.h
+@@ -447,6 +447,7 @@ struct hv_vmbus_device_id {
+ 
+ struct rpmsg_device_id {
+ 	char name[RPMSG_NAME_SIZE];
++	kernel_ulong_t driver_data;
+ };
+ 
+ /* i2c */
 -- 
 2.32.0
 
