@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D972D3AC968
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 13:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C141D3AC96A
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 13:04:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233929AbhFRLGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 07:06:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40628 "EHLO
+        id S233957AbhFRLG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 07:06:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42657 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232990AbhFRLGv (ORCPT
+        by vger.kernel.org with ESMTP id S233006AbhFRLGv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 07:06:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624014281;
+        s=mimecast20190719; t=1624014282;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=GGf77+z4foP5zgaAzqu7BulkbwGCf2vt7+IfQ/uVejE=;
-        b=fG8Il6+QUtrNH8Withtwzd1Z8GR2ucQWz5LDXepiQlu4W1BiC+vYtzrIDYjuNrTyH11bjM
-        MC9fSukj+FLd6x6CGRIgnqaNJd2hb7NEnu9dSg5ROGZQT3hf6Zf1e+gWJ4Akqm99J/fOCd
-        UNzG0TY9gG7A/Gz86tSq7Iy+elE/vTM=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-121-txzWZ2W8NJWlzzlCrTmnLg-1; Fri, 18 Jun 2021 07:04:40 -0400
-X-MC-Unique: txzWZ2W8NJWlzzlCrTmnLg-1
-Received: by mail-ej1-f69.google.com with SMTP id w13-20020a170906384db02903d9ad6b26d8so3766204ejc.0
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0JdavfqLFco3B5XZUP7kTR8q2t6Rf/JfUmb//Btv9sk=;
+        b=GUkYwez6ZEAUrrQ/2jnCtUaTtaL8sByBjmnoR18MV+ZlxBogaT8SbfDzmYzUVZQAlpBu4Q
+        d9eBIap0kb/fmRO+DW0U0RmxnEnkzg2+FC+XPzYr75uBdt8g1DHXWBrDxZfOIM8URwHErV
+        z9nJWT5F7pmIXNIZKtoCfICACuXjgEY=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-364-5J7NKTdcPDO1ULZoZxwgcA-1; Fri, 18 Jun 2021 07:04:41 -0400
+X-MC-Unique: 5J7NKTdcPDO1ULZoZxwgcA-1
+Received: by mail-ed1-f72.google.com with SMTP id p24-20020aa7c8980000b0290393c37fdcb8so3333385eds.6
         for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 04:04:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GGf77+z4foP5zgaAzqu7BulkbwGCf2vt7+IfQ/uVejE=;
-        b=b0uWJXxP+HImOaUwMf0NzewNQDuKBM+DJFNIBnt2zp/F4z9Ivfe4qC04zrpr+63hND
-         Gq1FWDSqGrzhSj0dAvM6sNTTw3YPL8dz4CQWh+8md969+ulTHJLy/LZyVzgncKtUkucf
-         NfUfSBQOHVxa4zxAf0yKYi6skwPmU6fj0/T1Bx9LlShcrNbv4ZXcl4y0CHsWGzopP4Eo
-         0Q/faikQdZgoMrn+Qsm5hemaycvYy3623Zd8Vo+haD6c91lseffEA5/gsCIPwmwSyfth
-         9TZvV0NhOlEOp0BuK6/AAko3aK4Wy3DfRvBt0XYgwS2ntaiuyKm/hin1pQL5l/9SENVN
-         jNBA==
-X-Gm-Message-State: AOAM533e2G4x8qH5Cg5RnCTwjCu6em1y5zF6Ch0vsoTzzn8l4F4dskaC
-        8A4ttK3sYRKGXCXMclNyuH3wueChr1WHGG6kbmYpSkJo/2J3p7jrxTD3qTDwpycy5Wao4CJgxTq
-        hhrGPNiJgziDXQKMD
-X-Received: by 2002:a17:906:b2cb:: with SMTP id cf11mr10417597ejb.448.1624014279696;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0JdavfqLFco3B5XZUP7kTR8q2t6Rf/JfUmb//Btv9sk=;
+        b=Ri+zu8NVIVZ7neGZ01kWHDlSRPYpvZnM+KkQId8PszKEDgKbdxnUGcTRbQClw+GNwf
+         Ha6GJCrDsyFPJ4k1zCW+0IIlzTBwQzdhvA4j0Y1HQ0f4v8LmMDfsja7QCuzOvXyETr9/
+         wUBefftmxkiQXOtluU8x9HHy2HIwZMWEGg7By2rQDVHbkcUaNWWgKKWKQ0+LVwswO93C
+         SlixvT3soCfjMEiBSMFsDOC+5CLWze8394ImpZHdtnfgCHIV4NNATFy9n1sRemJaOi5j
+         o/lfLpuwXknvM5DOtwzl2AhgkM7WC/9nwd6jzjIel5zS2KPDHmIqCdv4fJvSqYZVt18L
+         xnag==
+X-Gm-Message-State: AOAM5320YVE5sHACy+jltxu7rmsjIkoeiyhjtG/CldSWcw5pylLFL2pU
+        qhvUGAIlffexlVjXNfr7ZJAA85oiPZzckIw8swRGjFGrt4A2gdYTvvEWCjNP1Rsl4kVzZsYDmHc
+        7nrjmnPA7m/g/QL2L
+X-Received: by 2002:a17:906:6d43:: with SMTP id a3mr10564363ejt.142.1624014279859;
         Fri, 18 Jun 2021 04:04:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxCO9CiHrcP1613TX3dK+MQcImrL+YMS3eXD90LTrYbyFXyeb39bkLZhjjJh4R3JNAmngenOQ==
-X-Received: by 2002:a17:906:b2cb:: with SMTP id cf11mr10417577ejb.448.1624014279500;
+X-Google-Smtp-Source: ABdhPJxnmvcfkf++Dy3zOhLghRrJ4EKnv1Z/2ScWPglJKxnI9VTBzwGZ4TDpflF4qcwnex4hUscoOg==
+X-Received: by 2002:a17:906:6d43:: with SMTP id a3mr10564342ejt.142.1624014279688;
         Fri, 18 Jun 2021 04:04:39 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id m17sm878062ejg.96.2021.06.18.04.04.38
+        by smtp.gmail.com with ESMTPSA id de10sm904118ejc.65.2021.06.18.04.04.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 18 Jun 2021 04:04:38 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id F232518071E; Fri, 18 Jun 2021 13:04:37 +0200 (CEST)
+        id 012F718071D; Fri, 18 Jun 2021 13:04:37 +0200 (CEST)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -58,10 +59,12 @@ Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
         Juliusz Chroboczek <jch@irif.fr>
-Subject: [PATCH net v2 1/2] icmp: don't send out ICMP messages with a source address of 0.0.0.0
-Date:   Fri, 18 Jun 2021 13:04:35 +0200
-Message-Id: <20210618110436.91700-1-toke@redhat.com>
+Subject: [PATCH net v2 2/2] selftests/net: Add icmp.sh for testing ICMP dummy address responses
+Date:   Fri, 18 Jun 2021 13:04:36 +0200
+Message-Id: <20210618110436.91700-2-toke@redhat.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210618110436.91700-1-toke@redhat.com>
+References: <20210618110436.91700-1-toke@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -69,89 +72,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When constructing ICMP response messages, the kernel will try to pick a
-suitable source address for the outgoing packet. However, if no IPv4
-addresses are configured on the system at all, this will fail and we end up
-producing an ICMP message with a source address of 0.0.0.0. This can happen
-on a box routing IPv4 traffic via v6 nexthops, for instance.
+This adds a new icmp.sh selftest for testing that the kernel will respond
+correctly with an ICMP unreachable message with the dummy (192.0.0.8)
+source address when there are no IPv4 addresses configured to use as source
+addresses.
 
-Since 0.0.0.0 is not generally routable on the internet, there's a good
-chance that such ICMP messages will never make it back to the sender of the
-original packet that the ICMP message was sent in response to. This, in
-turn, can create connectivity and PMTUd problems for senders. Fortunately,
-RFC7600 reserves a dummy address to be used as a source for ICMP
-messages (192.0.0.8/32), so let's teach the kernel to substitute that
-address as a last resort if the regular source address selection procedure
-fails.
-
-Below is a quick example reproducing this issue with network namespaces:
-
-ip netns add ns0
-ip l add type veth peer netns ns0
-ip l set dev veth0 up
-ip a add 10.0.0.1/24 dev veth0
-ip a add fc00:dead:cafe:42::1/64 dev veth0
-ip r add 10.1.0.0/24 via inet6 fc00:dead:cafe:42::2
-ip -n ns0 l set dev veth0 up
-ip -n ns0 a add fc00:dead:cafe:42::2/64 dev veth0
-ip -n ns0 r add 10.0.0.0/24 via inet6 fc00:dead:cafe:42::1
-ip netns exec ns0 sysctl -w net.ipv4.icmp_ratelimit=0
-ip netns exec ns0 sysctl -w net.ipv4.ip_forward=1
-tcpdump -tpni veth0 -c 2 icmp &
-ping -w 1 10.1.0.1 > /dev/null
-tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
-listening on veth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
-IP 10.0.0.1 > 10.1.0.1: ICMP echo request, id 29, seq 1, length 64
-IP 0.0.0.0 > 10.0.0.1: ICMP net 10.1.0.1 unreachable, length 92
-2 packets captured
-2 packets received by filter
-0 packets dropped by kernel
-
-With this patch the above capture changes to:
-IP 10.0.0.1 > 10.1.0.1: ICMP echo request, id 31127, seq 1, length 64
-IP 192.0.0.8 > 10.0.0.1: ICMP net 10.1.0.1 unreachable, length 92
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Juliusz Chroboczek <jch@irif.fr>
-Reviewed-by: David Ahern <dsahern@kernel.org>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- include/uapi/linux/in.h | 3 +++
- net/ipv4/icmp.c         | 7 +++++++
- 2 files changed, 10 insertions(+)
+ tools/testing/selftests/net/icmp.sh | 74 +++++++++++++++++++++++++++++
+ 1 file changed, 74 insertions(+)
+ create mode 100755 tools/testing/selftests/net/icmp.sh
 
-diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
-index 7d6687618d80..d1b327036ae4 100644
---- a/include/uapi/linux/in.h
-+++ b/include/uapi/linux/in.h
-@@ -289,6 +289,9 @@ struct sockaddr_in {
- /* Address indicating an error return. */
- #define	INADDR_NONE		((unsigned long int) 0xffffffff)
- 
-+/* Dummy address for src of ICMP replies if no real address is set (RFC7600). */
-+#define	INADDR_DUMMY		((unsigned long int) 0xc0000008)
+diff --git a/tools/testing/selftests/net/icmp.sh b/tools/testing/selftests/net/icmp.sh
+new file mode 100755
+index 000000000000..e4b04cd1644a
+--- /dev/null
++++ b/tools/testing/selftests/net/icmp.sh
+@@ -0,0 +1,74 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
- /* Network number for local host loopback. */
- #define	IN_LOOPBACKNET		127
- 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 7b6931a4d775..752e392083e6 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -759,6 +759,13 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
- 		icmp_param.data_len = room;
- 	icmp_param.head_len = sizeof(struct icmphdr);
- 
-+	/* if we don't have a source address at this point, fall back to the
-+	 * dummy address instead of sending out a packet with a source address
-+	 * of 0.0.0.0
-+	 */
-+	if (!fl4.saddr)
-+		fl4.saddr = htonl(INADDR_DUMMY);
++# Test for checking ICMP response with dummy address instead of 0.0.0.0.
++# Sets up two namespaces like:
++# +----------------------+                          +--------------------+
++# | ns1                  |    v4-via-v6 routes:     | ns2                |
++# |                      |                  '       |                    |
++# |             +--------+   -> 172.16.1.0/24 ->    +--------+           |
++# |             | veth0  +--------------------------+  veth0 |           |
++# |             +--------+   <- 172.16.0.0/24 <-    +--------+           |
++# |           172.16.0.1 |                          | 2001:db8:1::2/64   |
++# |     2001:db8:1::2/64 |                          |                    |
++# +----------------------+                          +--------------------+
++#
++# And then tries to ping 172.16.1.1 from ns1. This results in a "net
++# unreachable" message being sent from ns2, but there is no IPv4 address set in
++# that address space, so the kernel should substitute the dummy address
++# 192.0.0.8 defined in RFC7600.
 +
- 	icmp_push_reply(&icmp_param, &fl4, &ipc, &rt);
- ende:
- 	ip_rt_put(rt);
++NS1=ns1
++NS2=ns2
++H1_IP=172.16.0.1/32
++H1_IP6=2001:db8:1::1
++RT1=172.16.1.0/24
++PINGADDR=172.16.1.1
++RT2=172.16.0.0/24
++H2_IP6=2001:db8:1::2
++
++TMPFILE=$(mktemp)
++
++cleanup()
++{
++    rm -f "$TMPFILE"
++    ip netns del $NS1
++    ip netns del $NS2
++}
++
++trap cleanup EXIT
++
++# Namespaces
++ip netns add $NS1
++ip netns add $NS2
++
++# Connectivity
++ip -netns $NS1 link add veth0 type veth peer name veth0 netns $NS2
++ip -netns $NS1 link set dev veth0 up
++ip -netns $NS2 link set dev veth0 up
++ip -netns $NS1 addr add $H1_IP dev veth0
++ip -netns $NS1 addr add $H1_IP6/64 dev veth0 nodad
++ip -netns $NS2 addr add $H2_IP6/64 dev veth0 nodad
++ip -netns $NS1 route add $RT1 via inet6 $H2_IP6
++ip -netns $NS2 route add $RT2 via inet6 $H1_IP6
++
++# Make sure ns2 will respond with ICMP unreachable
++ip netns exec $NS2 sysctl -qw net.ipv4.icmp_ratelimit=0 net.ipv4.ip_forward=1
++
++# Run the test - a ping runs in the background, and we capture ICMP responses
++# with tcpdump; -c 1 means it should exit on the first ping, but add a timeout
++# in case something goes wrong
++ip netns exec $NS1 ping -w 3 -i 0.5 $PINGADDR >/dev/null &
++ip netns exec $NS1 timeout 10 tcpdump -tpni veth0 -c 1 'icmp and icmp[icmptype] != icmp-echo' > $TMPFILE 2>/dev/null
++
++# Parse response and check for dummy address
++# tcpdump output looks like:
++# IP 192.0.0.8 > 172.16.0.1: ICMP net 172.16.1.1 unreachable, length 92
++RESP_IP=$(awk '{print $2}' < $TMPFILE)
++if [[ "$RESP_IP" != "192.0.0.8" ]]; then
++    echo "FAIL - got ICMP response from $RESP_IP, should be 192.0.0.8"
++    exit 1
++else
++    echo "OK"
++    exit 0
++fi
 -- 
 2.32.0
 
