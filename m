@@ -2,146 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFE613AD556
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 00:42:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD32F3AD57D
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 00:55:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233144AbhFRWor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 18:44:47 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52446 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbhFRWop (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 18:44:45 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1luNC2-0003Ln-Uh; Sat, 19 Jun 2021 00:42:31 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1luNC2-000J0n-Ii; Sat, 19 Jun 2021 00:42:30 +0200
-Subject: Re: [PATCH RFC bpf-next 0/7] Add bpf_link based TC-BPF API
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Vlad Buslov <vladbu@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>
-References: <20210607060724.4nidap5eywb23l3d@apollo>
- <CAM_iQpWA=SXNR3Ya8_L2aoVJGP_uaRP8EYCpDrnq3y8Uf6qu=g@mail.gmail.com>
- <20210608071908.sos275adj3gunewo@apollo>
- <CAM_iQpXFmsWhMA-RO2j5Ph5Ak8yJgUVBppGj2_5NS3BuyjkvzQ@mail.gmail.com>
- <20210613025308.75uia7rnt4ue2k7q@apollo>
- <30ab29b9-c8b0-3b0f-af5f-78421b27b49c@mojatatu.com>
- <20210613203438.d376porvf5zycatn@apollo>
- <4b1046ef-ba16-f8d8-c02e-d69648ab510b@mojatatu.com>
- <bd18943b-8a0e-be8c-6a99-17f7dfdd3bc4@iogearbox.net>
- <7248dc4e-8c07-a25d-5ac3-c4c106b7a266@mojatatu.com>
- <20210616153209.pejkgb3iieu6idqq@apollo>
- <05ec2836-7f0d-0393-e916-fd578d8f14ac@iogearbox.net>
- <f038645a-cb8a-dc59-e57e-2544a259bab1@mojatatu.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3e9bf85b-60a4-d5d2-0267-85bb76974339@iogearbox.net>
-Date:   Sat, 19 Jun 2021 00:42:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S235093AbhFRW5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 18:57:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43014 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231270AbhFRW5i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 18:57:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B24D60D07;
+        Fri, 18 Jun 2021 22:55:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624056928;
+        bh=OiRKeXuzYXGJiKhzPK0PM/6hxSUtzLCk4VoP8Q7/46k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=g9N5yaK7pIkZT4CbtN6BiuQY9VedhKl/LJOWXjQc9xLKlBBnw/ga0VjaKSCdyblhW
+         G3Zah0/9yrrQnl5f3TGKn5I+kKPsUc0x7qdFNvHlblLU0c+9OzEnox8g1GOZPkiNCa
+         KG4g1akddD9sGyeli2dYdP6XYOBYv+epvk3A6pip90kWmr0ouI2C66OyPlG1SulZ6e
+         Lvzhwj37SpCJoYTwjyJpaGFJh+ePBwayKItX3uQ7HyYbA+WihsDHdYwE+0lnyJtVKW
+         RCsiUfWcPqQdsYtwUNk2X/om5mHXv1AcoecQ3HSXYeYANxLfpq8YdDlwgHyQepPZ17
+         IFdzPs2BkoBFA==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH net-next] ethtool: strset: account for nesting in reply size
+Date:   Fri, 18 Jun 2021 15:55:02 -0700
+Message-Id: <20210618225502.170644-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <f038645a-cb8a-dc59-e57e-2544a259bab1@mojatatu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26205/Fri Jun 18 13:18:00 2021)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/18/21 1:40 PM, Jamal Hadi Salim wrote:
-> On 2021-06-16 12:00 p.m., Daniel Borkmann wrote:
->> On 6/16/21 5:32 PM, Kumar Kartikeya Dwivedi wrote:
->>> On Wed, Jun 16, 2021 at 08:10:55PM IST, Jamal Hadi Salim wrote:
->>>> On 2021-06-15 7:07 p.m., Daniel Borkmann wrote:
->>>>> On 6/13/21 11:10 PM, Jamal Hadi Salim wrote:
-> 
-> [..]
-> 
->>>> In particular, here's a list from Kartikeya's implementation:
->>>>
->>>> 1) Direct action mode only
->>
->> (More below.)
->>
->>>> 2) Protocol ETH_P_ALL only
->>
->> The issue I see with this one is that it's not very valuable or useful from a BPF
->> point of view. Meaning, this kind of check can and typically is implemented from
->> BPF program anyway. For example, when you have direct packet access initially
->> parsing the eth header anyway (and from there having logic for the various eth
->> protos).
-> 
-> In that case make it optional to specify proto and default it to
-> ETH_P_ALL. As far as i can see this flexibility doesnt
-> complicate usability or add code complexity to the interfaces.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
- From a user interface PoV it's odd since you need to go and parse that anyway, at
-least the programs typically start out with a switch/case on either reading the
-skb->protocol or getting it via eth->h_proto. But then once you extend that same
-program to also cover IPv6, you don't need to do anything with the ETH_P_ALL
-from the loader application, but now you'd also need to additionally remember to
-downgrade ETH_P_IP to ETH_P_ALL and rebuild the loader to get v6 traffic. But even
-if you were to split things in the main/entry program to separate v4/v6 processing
-into two different ones, I expect this to be faster via tail calls (given direct
-absolute jump) instead of walking a list of tcf_proto objects, comparing the
-tp->protocol and going into a different cls_bpf instance.
+The cited patch revealed a bug in strset reply size where the
+calculation didn't include the 1st nla_nest_start(), a size of 4 Bytes in
+strset_fill_reply().
 
-[...]>> Could you elaborate on that or provide code examples? Since introduction of the
->> direct action mode I've never used anything else again, and we do have complex
->> BPF code blocks that we need to handle as well. Would be good if you could provide
->> more details on things you ran into, maybe they can be solved?
-> 
-> Main issue is code complexity in ebpf and not so much instruction
-> count (which is complicated once you have bounded loops).
-> Earlier, I tried to post on the ebpf list but i got no response.
-> I moved on since. I would like to engage you at some point - and
-> you are right there may be some clever tricks to achieve the goals
-> we had. The challenge is in keeping up with the bag of tricks to make
-> the verifier happy.
-> Being able to run non-da mode and for example attach an action such
-> as the policer (and others) has pragmatic uses. It would be quiet complex to implement the policer within an all-in-one-appliance
-> da-mode ebpf code.
+To fix the issue we account for the missing nla_nest 4Bytes by reporting
+them in strset_reply_size()
 
-It may be more tricky but not impossible either, in recent years some (imho) very
-interesting and exciting use cases have been implemented and talked about e.g. [0-2],
-and with the recent linker work there could also be a [e.g. in-kernel] collection with
-library code that can be pulled in by others aside from using them as BPF selftests
-as one option. The gain you have with the flexibility [as you know] is that it allows
-easy integration/orchestration into user space applications and thus suitable for
-more dynamic envs as with old-style actions. The issue I have with the latter is
-that they're not scalable enough from a SW datapath / tc fast-path perspective given
-you then need to fallback to old-style list processing of cls+act combinations which
-is also not covered / in scope for the libbpf API in terms of their setup, and
-additionally not all of the BPF features can be used this way either, so it'll be very
-hard for users to debug why their BPF programs don't work as they're expected to.
+Before this patch issuing "ethtool -k" command will produce the
+following call trace:
 
-But also aside from those blockers, the case with this clean slate tc BPF API is that
-we have a unique chance to overcome the cmdline usability struggles, and make it as
-straight forward as possible for new generation of users.
+ [  918.829930] ------------[ cut here ]------------
+ [  918.830948] ethnl cmd 1: calculated reply length 2236, but consumed 2240
+ [  918.832259] WARNING: CPU: 4 PID: 33733 at net/ethtool/netlink.c:360 ethnl_default_doit+0x309/0x3b0
+...
+ [  918.842656] CPU: 4 PID: 33733 Comm: ethtool Tainted: G        W         5.13.0-rc3_net_next_615461e #1
+ [  918.844539] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+ [  918.846779] RIP: 0010:ethnl_default_doit+0x309/0x3b0
+ [  918.847807] Code: 85 7d fe ff ff 41 8b 48 70 44 89 fa 44 89 f6 4c 89 04 24 2b 4c 24 0c 48 c7 c7 20 7b 5b 82 c6 05 86 47 17 01 01 e8 4c 03 26 00 <0f> 0b 4c 8b 04 24 e9 4d fe ff ff be 04 00 00 00 4c 89 04 24 e8 be
+ [  918.851370] RSP: 0018:ffff88812e64fb58 EFLAGS: 00010282
+ [  918.852424] RAX: 0000000000000000 RBX: ffffffff822e30a0 RCX: ffff8882f5c278b8
+ [  918.853799] RDX: 00000000ffffffd8 RSI: 0000000000000027 RDI: ffff8882f5c278b0
+ [  918.855190] RBP: ffff88812ba829c0 R08: 0000000000000000 R09: 0000000000000000
+ [  918.856572] R10: 0000000000000730 R11: 6d63206c6e687465 R12: ffff88812e64fbc0
+ [  918.857962] R13: ffff888130cd8000 R14: 0000000000000001 R15: 00000000000008bc
+ [  918.859343] FS:  00007f41f3e1c740(0000) GS:ffff8882f5c00000(0000) knlGS:0000000000000000
+ [  918.860941] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ [  918.862097] CR2: 00000000013984a8 CR3: 00000001049e0001 CR4: 0000000000170ea0
+ [  918.863486] Call Trace:
+ [  918.864072]  genl_family_rcv_msg_doit+0xe2/0x140
+ [  918.865020]  genl_rcv_msg+0xde/0x1e0
+ [  918.865801]  ? ethnl_reply_init+0xd0/0xd0
+ [  918.866656]  ? ethnl_default_parse+0x60/0x60
+ [  918.867543]  ? ethnl_fill_reply_header.part.0+0x100/0x100
+ [  918.868617]  ? __ethtool_get_ts_info+0x70/0x70
+ [  918.869542]  ? genl_get_cmd+0xd0/0xd0
+ [  918.881174]  netlink_rcv_skb+0x4e/0xf0
+ [  918.882002]  genl_rcv+0x24/0x40
+ [  918.882703]  netlink_unicast+0x18b/0x240
+ [  918.883526]  netlink_sendmsg+0x25a/0x4a0
+ [  918.884353]  sock_sendmsg+0x33/0x40
+ [  918.885117]  __sys_sendto+0xd7/0x120
+ [  918.885904]  ? lock_release+0x1a5/0x2e0
+ [  918.886718]  ? trace_hardirqs_off+0xd/0xc0
+ [  918.887580]  ? exc_page_fault+0x2d7/0x8e0
+ [  918.888426]  __x64_sys_sendto+0x25/0x30
+ [  918.889248]  do_syscall_64+0x3f/0x80
+ [  918.890032]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ [  918.891081] RIP: 0033:0x7f41f3f21cba
 
-   [0] https://linuxplumbersconf.org/event/7/contributions/677/
-   [1] https://linuxplumbersconf.org/event/2/contributions/121/
-   [2] https://netdevconf.info/0x14/session.html?talk-replacing-HTB-with-EDT-and-BPF
+Fixes: 4d1fb7cde0cc ("ethtool: add a stricter length check")
+Fixes: 7c87e32d2e38 ("ethtool: count header size in reply size estimate")
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Michal Kubecek <mkubecek@suse.cz>
 
-Thanks,
-Daniel
+---
+
+Note: I used nla_total_size(0); to report the missing bytes, i see in
+other places they use nla_total_size(sizeof(u32)). Since nla_nest uses a
+payload of 0, I prefer my version of nla_total_size(0); since it
+resembles what the nla_nest is actually doing. I might be wrong though
+:), comments ?
+---
+ net/ethtool/strset.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
+index b3029fff715d..23d517a61e08 100644
+--- a/net/ethtool/strset.c
++++ b/net/ethtool/strset.c
+@@ -349,8 +349,8 @@ static int strset_reply_size(const struct ethnl_req_info *req_base,
+ {
+ 	const struct strset_req_info *req_info = STRSET_REQINFO(req_base);
+ 	const struct strset_reply_data *data = STRSET_REPDATA(reply_base);
++	int len = nla_total_size(0); /* account for nesting */
+ 	unsigned int i;
+-	int len = 0;
+ 	int ret;
+ 
+ 	for (i = 0; i < ETH_SS_COUNT; i++) {
+-- 
+2.31.1
+
