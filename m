@@ -2,135 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 996E23ACCEB
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE4E73ACC4A
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:34:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234243AbhFRN7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 09:59:38 -0400
-Received: from m12-12.163.com ([220.181.12.12]:33534 "EHLO m12-12.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233754AbhFRN7i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 09:59:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=eCW+C4iVQPGpJOG3QE
-        vEPn+ptIsdgDaQpBCpWgq1I7U=; b=oGKw+ZW1F4gDVFYwsejb3kCgoCgj6u14Cj
-        41a7G8GWwgaRCbzBza0MdFY4RKtUBguYNbot4HjT7sfqmsLdRHVOQY7dtw2gLrWI
-        +81Vww1I7MI4L9X9XjXrMCSa5fwlWlIOMcTbLuYiAcQ96IfYJRyCjzHOMF3RFM/T
-        cbwKdGtQk=
-Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
-        by smtp8 (Coremail) with SMTP id DMCowACnqtbvYsxgV+ZQKg--.33014S2;
-        Fri, 18 Jun 2021 17:10:08 +0800 (CST)
-From:   samirweng1979 <samirweng1979@163.com>
-To:     charles.gorand@effinnov.com, krzysztof.kozlowski@canonical.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-Subject: [PATCH v2] NFC: nxp-nci: remove unnecessary labels
-Date:   Fri, 18 Jun 2021 17:10:16 +0800
-Message-Id: <20210618091016.19500-1-samirweng1979@163.com>
-X-Mailer: git-send-email 2.15.0.windows.1
-X-CM-TRANSID: DMCowACnqtbvYsxgV+ZQKg--.33014S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uw4kuFW8WFWDWw43Xr48Xrb_yoW8uFWDpF
-        13WFyayryrtr97WFn5Ar12vFZ5tw18J39rWr9rt393X3WYyryjqr4kCFW0vFWrJrZakFya
-        yr4IvFyDWF17JaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07bUUDXUUUUU=
-X-Originating-IP: [218.17.89.92]
-X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiERC1sV7+3wZmMQAAsr
+        id S233832AbhFRNgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 09:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232253AbhFRNgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:36:23 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A35C061574;
+        Fri, 18 Jun 2021 06:34:13 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id e22so7226774wrc.1;
+        Fri, 18 Jun 2021 06:34:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uhR3Q/lpS2AFK+I3SN0ClOhvE4Lw7GtrMAtUB+dc6tk=;
+        b=Hul4qQjBl1N89PIdc175BHvCmYNeQxkePLeSt9OSflGDOvGFcW+XNbESzS43d49weR
+         BeVfMR27gB52BMwMiTCRSumyt3eaDC+GLxuf30K2BXrnUFUgLKis5PLXx8v0G0pLQlUt
+         b1I3tDKqkNWQ5ie45te1jlCFtrFS/6BrZg3St1uFTTe9Ipuyb42M6UcrbUNQo2t5SJ/x
+         SMUvNSWHJssr24M3h72QZiYa1U48E9jz77oOUkXQGadi1P6rT0btldsew5Sc96RrlmZj
+         WQsQ2LZL30w+JTTzQ9Nrv4lD3I3Trrw/qggPky0+rg6+4+gxfxmYy6WY83CGL9O9IOsZ
+         ZhhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uhR3Q/lpS2AFK+I3SN0ClOhvE4Lw7GtrMAtUB+dc6tk=;
+        b=jJVso0OdNtnCBDLosHyQ/RW757pXhowibumukUvnexMUDuvzI2dot1DfEq+VWUWV27
+         CmlVKQjSEw8QLn01E6esR0oHhCwdn2tX5UtYjp+OjYhCfEZNZJHFzBGFK4sl+NmJ+IhD
+         3nHleGevyGUVa9lfBmcTjWL6fAnghwA8H0veZdAVqKp2/rZBZfHETMt3XUBYM+UGd3Ss
+         JKvzadFMN/h5hbqu9mfOyHRNRlQALCvtk9ey0twSgWq+UXsA0x2D6a4t48P2rm4xMrfi
+         myV0bVgmxX9ICC1Qrt3N5a/MIsPywzC4YWrUWtylNcdY3kBk7reYyeauAXmmiG8E1a34
+         47OA==
+X-Gm-Message-State: AOAM5313/uf/3JRqzUyKiHCqEpxO9LPghdR/M4UffE0QfjacFQb93Oer
+        efYED3gDASEppr2AvBMAxwXrrUDe7xBBvxDNtFY=
+X-Google-Smtp-Source: ABdhPJzYCV83/GN7MQdS0/ddWZP+M6sYDMTiIR21IotEGijWpNtVHNIJX18GQfvUtH2GnjGbx/0TAJ56Aod/r1PI6F4=
+X-Received: by 2002:adf:ba07:: with SMTP id o7mr12411429wrg.160.1624023251740;
+ Fri, 18 Jun 2021 06:34:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210618075805.14412-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20210618075805.14412-1-magnus.karlsson@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 18 Jun 2021 15:33:58 +0200
+Message-ID: <CAJ+HfNhP48y=zpzjr60hbp4iJzBFTWG9-JaBf0bQcSsAW71xTQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v2] xsk: fix broken Tx ring validation
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Netdev <netdev@vger.kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wengjianfeng <wengjianfeng@yulong.com>
+On Fri, 18 Jun 2021 at 09:58, Magnus Karlsson <magnus.karlsson@gmail.com> w=
+rote:
+>
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+>
+> Fix broken Tx ring validation for AF_XDP. The commit under the Fixes
+> tag, fixed an off-by-one error in the validation but introduced
+> another error. Descriptors are now let through even if they straddle a
+> chunk boundary which they are not allowed to do in aligned mode. Worse
+> is that they are let through even if they straddle the end of the umem
+> itself, tricking the kernel to read data outside the allowed umem
+> region which might or might not be mapped at all.
+>
+> Fix this by reintroducing the old code, but subtract the length by one
+> to fix the off-by-one error that the original patch was
+> addressing. The test chunk !=3D chunk_end makes sure packets do not
+> straddle chunk boundraries. Note that packets of zero length are
+> allowed in the interface, therefore the test if the length is
+> non-zero.
+>
+> v1 -> v2:
+> * Improved commit message
+>
+> Fixes: ac31565c2193 ("xsk: Fix for xp_aligned_validate_desc() when len =
+=3D=3D chunk_size")
+> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Simplify the code by removing unnecessary labels and returning directly.
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
 
-Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
----
- drivers/nfc/nxp-nci/core.c | 39 +++++++++++++--------------------------
- 1 file changed, 13 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/nfc/nxp-nci/core.c b/drivers/nfc/nxp-nci/core.c
-index a0ce95a..2b0c723 100644
---- a/drivers/nfc/nxp-nci/core.c
-+++ b/drivers/nfc/nxp-nci/core.c
-@@ -70,21 +70,16 @@ static int nxp_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
- 	struct nxp_nci_info *info = nci_get_drvdata(ndev);
- 	int r;
- 
--	if (!info->phy_ops->write) {
--		r = -ENOTSUPP;
--		goto send_exit;
--	}
-+	if (!info->phy_ops->write)
-+		return -EOPNOTSUPP;
- 
--	if (info->mode != NXP_NCI_MODE_NCI) {
--		r = -EINVAL;
--		goto send_exit;
--	}
-+	if (info->mode != NXP_NCI_MODE_NCI)
-+		return -EINVAL;
- 
- 	r = info->phy_ops->write(info->phy_id, skb);
- 	if (r < 0)
- 		kfree_skb(skb);
- 
--send_exit:
- 	return r;
- }
- 
-@@ -104,10 +99,8 @@ int nxp_nci_probe(void *phy_id, struct device *pdev,
- 	int r;
- 
- 	info = devm_kzalloc(pdev, sizeof(struct nxp_nci_info), GFP_KERNEL);
--	if (!info) {
--		r = -ENOMEM;
--		goto probe_exit;
--	}
-+	if (!info)
-+		return -ENOMEM;
- 
- 	info->phy_id = phy_id;
- 	info->pdev = pdev;
-@@ -120,31 +113,25 @@ int nxp_nci_probe(void *phy_id, struct device *pdev,
- 	if (info->phy_ops->set_mode) {
- 		r = info->phy_ops->set_mode(info->phy_id, NXP_NCI_MODE_COLD);
- 		if (r < 0)
--			goto probe_exit;
-+			return r;
- 	}
- 
- 	info->mode = NXP_NCI_MODE_COLD;
- 
- 	info->ndev = nci_allocate_device(&nxp_nci_ops, NXP_NCI_NFC_PROTOCOLS,
- 					 NXP_NCI_HDR_LEN, 0);
--	if (!info->ndev) {
--		r = -ENOMEM;
--		goto probe_exit;
--	}
-+	if (!info->ndev)
-+		return -ENOMEM;
- 
- 	nci_set_parent_dev(info->ndev, pdev);
- 	nci_set_drvdata(info->ndev, info);
- 	r = nci_register_device(info->ndev);
--	if (r < 0)
--		goto probe_exit_free_nci;
-+	if (r < 0) {
-+		nci_free_device(info->ndev);
-+		return r;
-+	}
- 
- 	*ndev = info->ndev;
--
--	goto probe_exit;
--
--probe_exit_free_nci:
--	nci_free_device(info->ndev);
--probe_exit:
- 	return r;
- }
- EXPORT_SYMBOL(nxp_nci_probe);
--- 
-1.9.1
-
-
+> ---
+>  net/xdp/xsk_queue.h | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+>
+> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> index 9d2a89d793c0..9ae13cccfb28 100644
+> --- a/net/xdp/xsk_queue.h
+> +++ b/net/xdp/xsk_queue.h
+> @@ -128,12 +128,15 @@ static inline bool xskq_cons_read_addr_unchecked(st=
+ruct xsk_queue *q, u64 *addr)
+>  static inline bool xp_aligned_validate_desc(struct xsk_buff_pool *pool,
+>                                             struct xdp_desc *desc)
+>  {
+> -       u64 chunk;
+> -
+> -       if (desc->len > pool->chunk_size)
+> -               return false;
+> +       u64 chunk, chunk_end;
+>
+>         chunk =3D xp_aligned_extract_addr(pool, desc->addr);
+> +       if (likely(desc->len)) {
+> +               chunk_end =3D xp_aligned_extract_addr(pool, desc->addr + =
+desc->len - 1);
+> +               if (chunk !=3D chunk_end)
+> +                       return false;
+> +       }
+> +
+>         if (chunk >=3D pool->addrs_cnt)
+>                 return false;
+>
+>
+> base-commit: da5ac772cfe2a03058b0accfac03fad60c46c24d
+> --
+> 2.29.0
+>
