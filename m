@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C2A3AD228
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:30:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F0CC3AD229
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234943AbhFRScs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 14:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43790 "EHLO
+        id S234998AbhFRScu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 14:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231497AbhFRScm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:32:42 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587DCC061574
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:31 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id dm5so4862876ejc.9
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:31 -0700 (PDT)
+        with ESMTP id S233577AbhFRSco (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:32:44 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F6AC06175F
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:32 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id t3so9853832edc.7
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NP39N2p1sOG3pP25GYklTOuIg8pyw1VNbgSyH17kW/g=;
-        b=bXpcgua0SAm8D1MGVN5OXfbBE0e71dxW92LcCxi6BJpsnA0vM/933cziUI4gUWpHbw
-         Kqs3IEAWHq9yRM5QZT8cjFNven/5tAP8RrV+DVxnuvisZf8nbhavuXC1nXQ0I/s8Wnkm
-         s6BauyVhdavnxiLLTcVs+H2insvJrc9EAa7BYM5B5Rq1SZXsALc60iYTUxuj3HScjMnL
-         AFC1N7W0nRBH4Y4n4uYHK9q8NJ0Dw0qrbgv2uIsp8yXthBAK5a6LxYPiiTT+0IZLXwxG
-         q3jvi0EaSkySAHq31Ay8zGWET+tceZMOqM3N1dTEpKuvMMl7+LW1w8q6v7FXitnT0mbi
-         nAZQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mdGI9KdhxE1M65wlF6EhJcVpZobBKGasuvbTwE7j2TM=;
+        b=Z2KLDrEOrNyPy4fVcDgr6FK1ZZoHu5MwWeesaGQrlWAM8cQSErjucWWlEWrxUnsLkO
+         0owQ9htX1Ds46X+XEo+QPIg5lLA/Kq51cDxmXr0oylRteNgrjF2oYpKwresCZDcxVQxW
+         LDHnWhbhYx2kT4w09Z8+1F+WHwd8qkuyje2RYzek58Y/+kSzPa9EvURH3ssDWwcbJKoD
+         enmuOhkcOrwQozvGgId7Mz9I7Bb8XrMKNb0QrM/r2JSndjm3HYmKbzCJ9YVFImXf+YZU
+         ibuqdZEYHjQuhP5znOxRCeU/UgyyvXrAEFitwt2FpO5cTCAvUwfjOf6vftgrf5cbclLm
+         AqmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NP39N2p1sOG3pP25GYklTOuIg8pyw1VNbgSyH17kW/g=;
-        b=JthaOTZB8WHVHnjqhw5zhmvTaenyYyBLaK0GhMBpH/AiapBE8X9EG5+GPHLrRuaWnm
-         j5ym6mTqB3WkU6d4jBe+qUdBzGdmQl3J8Q7Ly0ARf01pWRHgKzkLwWTa5d+I4u50A3tG
-         AWooDmgxH7vUVQgJln7ZQ8Dz2lgmsgYtF8iUL0TbCFhETp7lcw4vZd7uXNzy8JpIJ6a/
-         intNrWvpPxMFUx3lE26Bv5DPt7sGOY6TxOgnSujrZgziY0+bqSEaKIHWVpT0g+tXRi8i
-         RxzGBby6W5ftYWoXGRhmZFJtUZvkQCUGiatXsXXq8QuA/Pd23zSWi7nGP+sX8KevHTFP
-         Xqlg==
-X-Gm-Message-State: AOAM533tQQUarWdVQs49zpu9uddps28+pu1cD3USUDV0oRkq7Zg67PVs
-        QwFSqajNDMybs4fUKq77mTI=
-X-Google-Smtp-Source: ABdhPJzxtQ91LmZItgvJrzivGpHKiyYyY2rxoTiJ0QLHtwA3XOvwLwrlUgzfdNo8IyggrDUzYoXxCQ==
-X-Received: by 2002:a17:907:990f:: with SMTP id ka15mr12494279ejc.132.1624041029873;
-        Fri, 18 Jun 2021 11:30:29 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mdGI9KdhxE1M65wlF6EhJcVpZobBKGasuvbTwE7j2TM=;
+        b=ite05xi0plGRMHowsAaQmNt8tvU/u5aRGBV96kGSG9BU0vxRVWi7Ui/LVR3kO9JQLw
+         V23AMf9v+vax+tswGeDTR0y4QIlI/sxU2+SNqsnb4+4fdnzSHJ+MszR4GpBRQ1PPpQYa
+         t6M0Qq5/+X+rOTUP+FPFCG+7DNhQ/jbOCwm5LG9gy9lYtz2drUFccQAST3vT/9A8RNJs
+         fFwkecYQgvXwl4nCsyvhOCG5TnVQlGgz2vm02F63xe/TcnXkNnqHL17rYdLskS6GEWrQ
+         oJmAtRS67fx/FzGOhC4N0pYTc0ApseO+6WNCsbsFhsMoYEVQ2R+D6+s4+Hd2aSMdFMG1
+         74TA==
+X-Gm-Message-State: AOAM531Ui8SjkMmLPGDmYXdhCXLe1SjkANtBf4LudvdsrqEcqLH+06KJ
+        9iVpHs8gEmX3IYPv5vyAh9Y=
+X-Google-Smtp-Source: ABdhPJxm6aEJ3GXnGHpJyHmSWQCk+EVqzPsb6T04MhlByWNXdV6XQIqLPQRNyoSQNdMLhrYOErK/9g==
+X-Received: by 2002:a05:6402:51d0:: with SMTP id r16mr7201541edd.138.1624041030945;
+        Fri, 18 Jun 2021 11:30:30 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id s11sm6071988edd.65.2021.06.18.11.30.28
+        by smtp.gmail.com with ESMTPSA id s11sm6071988edd.65.2021.06.18.11.30.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 11:30:29 -0700 (PDT)
+        Fri, 18 Jun 2021 11:30:30 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -54,10 +54,12 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 0/6] Improvement for DSA cross-chip setups
-Date:   Fri, 18 Jun 2021 21:30:11 +0300
-Message-Id: <20210618183017.3340769-1-olteanv@gmail.com>
+Subject: [PATCH net-next 1/6] net: dsa: assert uniqueness of dsa,member properties
+Date:   Fri, 18 Jun 2021 21:30:12 +0300
+Message-Id: <20210618183017.3340769-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210618183017.3340769-1-olteanv@gmail.com>
+References: <20210618183017.3340769-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -66,29 +68,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This series improves some aspects in multi-switch DSA tree topologies:
-- better device tree validation
-- better handling of MTU changes
-- better handling of multicast addresses
-- removal of some unused code
+The cross-chip notifiers work by comparing each ds->index against the
+info->sw_index value from the notifier. The ds->index is retrieved from
+the device tree dsa,member property.
 
-Vladimir Oltean (6):
-  net: dsa: assert uniqueness of dsa,member properties
-  net: dsa: export the dsa_port_is_{user,cpu,dsa} helpers
-  net: dsa: execute dsa_switch_mdb_add only for routing port in
-    cross-chip topologies
-  net: dsa: calculate the largest_mtu across all ports in the tree
-  net: dsa: targeted MTU notifiers should only match on one port
-  net: dsa: remove cross-chip support from the MRP notifiers
+If a single tree cross-chip topology does not declare unique switch IDs,
+this will result in hard-to-debug issues/voodoo effects such as the
+cross-chip notifier for one switch port also matching the port with the
+same number from another switch.
 
- include/net/dsa.h  | 15 ++++++++
- net/dsa/dsa2.c     | 22 ++++--------
- net/dsa/dsa_priv.h |  4 +--
- net/dsa/port.c     |  4 +--
- net/dsa/slave.c    | 22 ++++++------
- net/dsa/switch.c   | 87 ++++++++--------------------------------------
- 6 files changed, 53 insertions(+), 101 deletions(-)
+Check in dsa_switch_parse_member_of() whether the DSA switch tree
+contains a DSA switch with the index we're preparing to add, before
+actually adding it.
 
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/dsa/dsa2.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index b71e87909f0e..ba244fbd9646 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -1259,6 +1259,13 @@ static int dsa_switch_parse_member_of(struct dsa_switch *ds,
+ 	if (!ds->dst)
+ 		return -ENOMEM;
+ 
++	if (dsa_switch_find(ds->dst->index, ds->index)) {
++		dev_err(ds->dev,
++			"A DSA switch with index %d already exists in tree %d\n",
++			ds->index, ds->dst->index);
++		return -EEXIST;
++	}
++
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
