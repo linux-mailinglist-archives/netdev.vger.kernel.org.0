@@ -2,105 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D983ACDC0
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AFD53ACDC8
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234633AbhFROrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 10:47:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29676 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234548AbhFROrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 10:47:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624027499;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=V/WnAvrrvHUpmCgAw99j9Kec2UebwacAruxQ8zG2B7M=;
-        b=HT/1qc79JJhwxg1eyPIDD8eAEH4x9FW/mGHmz1SMLECqj33avFExyGg7kGRifrERlwP9mo
-        0n0xoz+5JU+e5LdFdXi3zpNyQzYHuy0lMtycLO00V2StWH/yxbm7jCIyJ3nTwoceJGymNe
-        aYfQjiJWtSbOVY6w5gQzgDVRFxanuPs=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-243-wpzoaTCcOrGfKMxAvalj3Q-1; Fri, 18 Jun 2021 10:44:57 -0400
-X-MC-Unique: wpzoaTCcOrGfKMxAvalj3Q-1
-Received: by mail-ej1-f71.google.com with SMTP id w13-20020a170906384db02903d9ad6b26d8so4092967ejc.0
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 07:44:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=V/WnAvrrvHUpmCgAw99j9Kec2UebwacAruxQ8zG2B7M=;
-        b=VdXfavao7m5xOy81kKpevmUK0yQsA/c1bH5ZsVpBNDgKMPhYYdZbfDUHYcPxNnRtwa
-         LFZ+JsO+C5AHmZMqePp/A59zn9/ELmvAiCHzdNUSd4t72SmQhfdYBLsq9op9lJRK1XaV
-         w40mx9QozYfPH5jPDJiKowJ1gzMe7T0XoGj75P90L8lBcL6mfP4MSDGw4wHAH4n/WE6P
-         v4xgRyac8a37jyFxLHLCW8wV2q/lmEl/Vw9B2GR03WaUEwZRY6cQZ3AxOTI6HQCd4/ZG
-         +N/uuAVBcXx13HV+krbEjbZL3Js8W1T9EQ7q31Kr9Yj+l0oGmR/aFT4oHtMy0NsMpDtw
-         cGUA==
-X-Gm-Message-State: AOAM530jARmTnUVoPkrY0aqyD79tYnkS3+xVJ2CHt7u7YXtw7m4iuWKP
-        yRwTJS1Av6NqhvlBF8HGgQlbiKDd/umuNG05Lpfuf32XpSh/Thx0V6G0V+hPPJ3Fw9+fysGWp7F
-        pubnEMEM4T6FNcsAB
-X-Received: by 2002:a50:fe84:: with SMTP id d4mr3407527edt.204.1624027496833;
-        Fri, 18 Jun 2021 07:44:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzK4Z8Hr0HyQjHs6Puo8AmSdgMXl6TuIWEB1lOjBOybncOitI6nTXoOqO4csz4fz/xLxynwbg==
-X-Received: by 2002:a50:fe84:: with SMTP id d4mr3407501edt.204.1624027496686;
-        Fri, 18 Jun 2021 07:44:56 -0700 (PDT)
-Received: from steredhat.lan ([5.170.128.175])
-        by smtp.gmail.com with ESMTPSA id c18sm6178818edt.97.2021.06.18.07.44.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 07:44:56 -0700 (PDT)
-Date:   Fri, 18 Jun 2021 16:44:51 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        oxffffaa@gmail.com
-Subject: Re: [PATCH v11 11/18] virtio/vsock: dequeue callback for
- SOCK_SEQPACKET
-Message-ID: <20210618144451.6gmeqtfawdjpvgkv@steredhat.lan>
-References: <20210611110744.3650456-1-arseny.krasnov@kaspersky.com>
- <20210611111241.3652274-1-arseny.krasnov@kaspersky.com>
- <20210618134423.mksgnbmchmow4sgh@steredhat.lan>
- <20210618095006-mutt-send-email-mst@kernel.org>
+        id S234651AbhFROrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 10:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234485AbhFROrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 10:47:45 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2CBC061574;
+        Fri, 18 Jun 2021 07:45:36 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 4ED9A3F0;
+        Fri, 18 Jun 2021 16:45:34 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1624027534;
+        bh=FKW8njs2kRxwujOeLiKCOtR02ayGsBBQd4ozlsxBPgM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=e6LGAjCwsJEBTVeYtXVlga8VEXmBged5TLW/vxGPoRKpVwz339fBFl580b5Bh8ouV
+         NZDKaY0xeGXBAYf3ZZo1x3Z2tZKgxgQJqVGNWp63kcVfBteGp4xGprqgC2NoqmyF2U
+         K3D+hIZBNWW2IWUDa+qxLwsB6JMn/rSrOFJXG0FU=
+Date:   Fri, 18 Jun 2021 17:45:10 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+        David Hildenbrand <david@redhat.com>, Greg KH <greg@kroah.com>,
+        Christoph Lameter <cl@gentwo.de>,
+        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
+        ksummit@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-block@vger.kernel.org,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>, netdev <netdev@vger.kernel.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>
+Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
+Message-ID: <YMyxdnz0Ol/wMF/e@pendragon.ideasonboard.com>
+References: <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
+ <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
+ <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
+ <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
+ <20210610152633.7e4a7304@oasis.local.home>
+ <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
+ <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
+ <cd7ffbe516255c30faab7a3ee3ee48f32e9aa797.camel@HansenPartnership.com>
+ <CAMuHMdVcNfDvpPXHSkdL3VuLXCX5m=M_AQF-P8ZajSdXt8NdQg@mail.gmail.com>
+ <20210618103214.0df292ec@oasis.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210618095006-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20210618103214.0df292ec@oasis.local.home>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 18, 2021 at 09:51:44AM -0400, Michael S. Tsirkin wrote:
->On Fri, Jun 18, 2021 at 03:44:23PM +0200, Stefano Garzarella wrote:
->> Hi Arseny,
->> the series looks great, I have just a question below about
->> seqpacket_dequeue.
->>
->> I also sent a couple a simple fixes, it would be great if you can review
->> them:
->> https://lore.kernel.org/netdev/20210618133526.300347-1-sgarzare@redhat.com/
->
->So given this was picked into net next, what's the plan? Just make spec
->follow code? We can wait and see, if there are issues with the spec just
->remember to mask the feature before release.
+On Fri, Jun 18, 2021 at 10:32:14AM -0400, Steven Rostedt wrote:
+> On Fri, 18 Jun 2021 16:28:02 +0200 Geert Uytterhoeven wrote:
+> 
+> > What about letting people use the personal mic they're already
+> > carrying, i.e. a phone?
+> 
+> Interesting idea.
+> 
+> I wonder how well that would work in practice. Are all phones good
+> enough to prevent echo?
 
-Yep, the spec patches was already posted, but not merged yet: 
-https://lists.oasis-open.org/archives/virtio-comment/202105/msg00017.html
+That could be solved by isolating attendees in different rooms. That way
+people could even attend remotely. Oh, wait... :-)
 
-The changes are quite small and they are aligned with the current 
-implementation.
+> It is something that needs to be tested out first before making it
+> officially used.
 
-Anyway, I perfectly agree with you about waiting and mask it before 
-v5.14 release if there are any issue.
+-- 
+Regards,
 
-Thanks,
-Stefano
-
+Laurent Pinchart
