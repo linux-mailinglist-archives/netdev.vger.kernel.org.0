@@ -2,124 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD32F3AD57D
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 00:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94EF73AD5DA
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 01:27:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235093AbhFRW5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 18:57:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43014 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231270AbhFRW5i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 18:57:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B24D60D07;
-        Fri, 18 Jun 2021 22:55:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624056928;
-        bh=OiRKeXuzYXGJiKhzPK0PM/6hxSUtzLCk4VoP8Q7/46k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=g9N5yaK7pIkZT4CbtN6BiuQY9VedhKl/LJOWXjQc9xLKlBBnw/ga0VjaKSCdyblhW
-         G3Zah0/9yrrQnl5f3TGKn5I+kKPsUc0x7qdFNvHlblLU0c+9OzEnox8g1GOZPkiNCa
-         KG4g1akddD9sGyeli2dYdP6XYOBYv+epvk3A6pip90kWmr0ouI2C66OyPlG1SulZ6e
-         Lvzhwj37SpCJoYTwjyJpaGFJh+ePBwayKItX3uQ7HyYbA+WihsDHdYwE+0lnyJtVKW
-         RCsiUfWcPqQdsYtwUNk2X/om5mHXv1AcoecQ3HSXYeYANxLfpq8YdDlwgHyQepPZ17
-         IFdzPs2BkoBFA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next] ethtool: strset: account for nesting in reply size
-Date:   Fri, 18 Jun 2021 15:55:02 -0700
-Message-Id: <20210618225502.170644-1-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S234317AbhFRX3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 19:29:42 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58866 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230024AbhFRX3j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 19:29:39 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1luNtY-0006gO-BZ; Sat, 19 Jun 2021 01:27:28 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1luNtY-00037V-4T; Sat, 19 Jun 2021 01:27:28 +0200
+Subject: Re: [PATCH bpf-next v3 03/16] xdp: add proper __rcu annotations to
+ redirect map entries
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Martin KaFai Lau <kafai@fb.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210617212748.32456-1-toke@redhat.com>
+ <20210617212748.32456-4-toke@redhat.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1881ecbe-06ec-6b0a-836c-033c31fabef4@iogearbox.net>
+Date:   Sat, 19 Jun 2021 01:27:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <20210617212748.32456-4-toke@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26205/Fri Jun 18 13:18:00 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+On 6/17/21 11:27 PM, Toke Høiland-Jørgensen wrote:
+> XDP_REDIRECT works by a three-step process: the bpf_redirect() and
+> bpf_redirect_map() helpers will lookup the target of the redirect and store
+> it (along with some other metadata) in a per-CPU struct bpf_redirect_info.
+> Next, when the program returns the XDP_REDIRECT return code, the driver
+> will call xdp_do_redirect() which will use the information thus stored to
+> actually enqueue the frame into a bulk queue structure (that differs
+> slightly by map type, but shares the same principle). Finally, before
+> exiting its NAPI poll loop, the driver will call xdp_do_flush(), which will
+> flush all the different bulk queues, thus completing the redirect.
+> 
+> Pointers to the map entries will be kept around for this whole sequence of
+> steps, protected by RCU. However, there is no top-level rcu_read_lock() in
+> the core code; instead drivers add their own rcu_read_lock() around the XDP
+> portions of the code, but somewhat inconsistently as Martin discovered[0].
+> However, things still work because everything happens inside a single NAPI
+> poll sequence, which means it's between a pair of calls to
+> local_bh_disable()/local_bh_enable(). So Paul suggested[1] that we could
+> document this intention by using rcu_dereference_check() with
+> rcu_read_lock_bh_held() as a second parameter, thus allowing sparse and
+> lockdep to verify that everything is done correctly.
+> 
+> This patch does just that: we add an __rcu annotation to the map entry
+> pointers and remove the various comments explaining the NAPI poll assurance
+> strewn through devmap.c in favour of a longer explanation in filter.c. The
+> goal is to have one coherent documentation of the entire flow, and rely on
+> the RCU annotations as a "standard" way of communicating the flow in the
+> map code (which can additionally be understood by sparse and lockdep).
+> 
+> The RCU annotation replacements result in a fairly straight-forward
+> replacement where READ_ONCE() becomes rcu_dereference_check(), WRITE_ONCE()
+> becomes rcu_assign_pointer() and xchg() and cmpxchg() gets wrapped in the
+> proper constructs to cast the pointer back and forth between __rcu and
+> __kernel address space (for the benefit of sparse). The one complication is
+> that xskmap has a few constructions where double-pointers are passed back
+> and forth; these simply all gain __rcu annotations, and only the final
+> reference/dereference to the inner-most pointer gets changed.
+> 
+> With this, everything can be run through sparse without eliciting
+> complaints, and lockdep can verify correctness even without the use of
+> rcu_read_lock() in the drivers. Subsequent patches will clean these up from
+> the drivers.
+> 
+> [0] https://lore.kernel.org/bpf/20210415173551.7ma4slcbqeyiba2r@kafai-mbp.dhcp.thefacebook.com/
+> [1] https://lore.kernel.org/bpf/20210419165837.GA975577@paulmck-ThinkPad-P17-Gen-1/
+> 
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> ---
+>   include/net/xdp_sock.h |  2 +-
+>   kernel/bpf/cpumap.c    | 13 +++++++----
+>   kernel/bpf/devmap.c    | 49 ++++++++++++++++++------------------------
+>   net/core/filter.c      | 28 ++++++++++++++++++++++++
+>   net/xdp/xsk.c          |  4 ++--
+>   net/xdp/xsk.h          |  4 ++--
+>   net/xdp/xskmap.c       | 29 ++++++++++++++-----------
+>   7 files changed, 80 insertions(+), 49 deletions(-)
+[...]
+>   						 __dev_map_entry_free);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index caa88955562e..0b7db5c70385 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3922,6 +3922,34 @@ static const struct bpf_func_proto bpf_xdp_adjust_meta_proto = {
+>   	.arg2_type	= ARG_ANYTHING,
+>   };
+>   
+> +/* XDP_REDIRECT works by a three-step process, implemented in the functions
+> + * below:
+> + *
+> + * 1. The bpf_redirect() and bpf_redirect_map() helpers will lookup the target
+> + *    of the redirect and store it (along with some other metadata) in a per-CPU
+> + *    struct bpf_redirect_info.
+> + *
+> + * 2. When the program returns the XDP_REDIRECT return code, the driver will
+> + *    call xdp_do_redirect() which will use the information in struct
+> + *    bpf_redirect_info to actually enqueue the frame into a map type-specific
+> + *    bulk queue structure.
+> + *
+> + * 3. Before exiting its NAPI poll loop, the driver will call xdp_do_flush(),
+> + *    which will flush all the different bulk queues, thus completing the
+> + *    redirect.
+> + *
+> + * Pointers to the map entries will be kept around for this whole sequence of
+> + * steps, protected by RCU. However, there is no top-level rcu_read_lock() in
+> + * the core code; instead, the RCU protection relies on everything happening
+> + * inside a single NAPI poll sequence, which means it's between a pair of calls
+> + * to local_bh_disable()/local_bh_enable().
+> + *
+> + * The map entries are marked as __rcu and the map code makes sure to
+> + * dereference those pointers with rcu_dereference_check() in a way that works
+> + * for both sections that to hold an rcu_read_lock() and sections that are
+> + * called from NAPI without a separate rcu_read_lock(). The code below does not
+> + * use RCU annotations, but relies on those in the map code.
 
-The cited patch revealed a bug in strset reply size where the
-calculation didn't include the 1st nla_nest_start(), a size of 4 Bytes in
-strset_fill_reply().
+One more follow-up question related to tc BPF: given we do use rcu_read_lock_bh()
+in case of sch_handle_egress(), could we also remove the rcu_read_lock() pair
+from cls_bpf_classify() then?
 
-To fix the issue we account for the missing nla_nest 4Bytes by reporting
-them in strset_reply_size()
+It would also be great if this scenario in general could be placed under the
+Documentation/RCU/whatisRCU.rst as an example, so we could refer to the official
+doc on this, too, if Paul is good with this.
 
-Before this patch issuing "ethtool -k" command will produce the
-following call trace:
+Could you also update the RCU comment in bpf_prog_run_xdp()? Or alternatively move all
+the below driver comments in there as a single location?
 
- [  918.829930] ------------[ cut here ]------------
- [  918.830948] ethnl cmd 1: calculated reply length 2236, but consumed 2240
- [  918.832259] WARNING: CPU: 4 PID: 33733 at net/ethtool/netlink.c:360 ethnl_default_doit+0x309/0x3b0
-...
- [  918.842656] CPU: 4 PID: 33733 Comm: ethtool Tainted: G        W         5.13.0-rc3_net_next_615461e #1
- [  918.844539] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
- [  918.846779] RIP: 0010:ethnl_default_doit+0x309/0x3b0
- [  918.847807] Code: 85 7d fe ff ff 41 8b 48 70 44 89 fa 44 89 f6 4c 89 04 24 2b 4c 24 0c 48 c7 c7 20 7b 5b 82 c6 05 86 47 17 01 01 e8 4c 03 26 00 <0f> 0b 4c 8b 04 24 e9 4d fe ff ff be 04 00 00 00 4c 89 04 24 e8 be
- [  918.851370] RSP: 0018:ffff88812e64fb58 EFLAGS: 00010282
- [  918.852424] RAX: 0000000000000000 RBX: ffffffff822e30a0 RCX: ffff8882f5c278b8
- [  918.853799] RDX: 00000000ffffffd8 RSI: 0000000000000027 RDI: ffff8882f5c278b0
- [  918.855190] RBP: ffff88812ba829c0 R08: 0000000000000000 R09: 0000000000000000
- [  918.856572] R10: 0000000000000730 R11: 6d63206c6e687465 R12: ffff88812e64fbc0
- [  918.857962] R13: ffff888130cd8000 R14: 0000000000000001 R15: 00000000000008bc
- [  918.859343] FS:  00007f41f3e1c740(0000) GS:ffff8882f5c00000(0000) knlGS:0000000000000000
- [  918.860941] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- [  918.862097] CR2: 00000000013984a8 CR3: 00000001049e0001 CR4: 0000000000170ea0
- [  918.863486] Call Trace:
- [  918.864072]  genl_family_rcv_msg_doit+0xe2/0x140
- [  918.865020]  genl_rcv_msg+0xde/0x1e0
- [  918.865801]  ? ethnl_reply_init+0xd0/0xd0
- [  918.866656]  ? ethnl_default_parse+0x60/0x60
- [  918.867543]  ? ethnl_fill_reply_header.part.0+0x100/0x100
- [  918.868617]  ? __ethtool_get_ts_info+0x70/0x70
- [  918.869542]  ? genl_get_cmd+0xd0/0xd0
- [  918.881174]  netlink_rcv_skb+0x4e/0xf0
- [  918.882002]  genl_rcv+0x24/0x40
- [  918.882703]  netlink_unicast+0x18b/0x240
- [  918.883526]  netlink_sendmsg+0x25a/0x4a0
- [  918.884353]  sock_sendmsg+0x33/0x40
- [  918.885117]  __sys_sendto+0xd7/0x120
- [  918.885904]  ? lock_release+0x1a5/0x2e0
- [  918.886718]  ? trace_hardirqs_off+0xd/0xc0
- [  918.887580]  ? exc_page_fault+0x2d7/0x8e0
- [  918.888426]  __x64_sys_sendto+0x25/0x30
- [  918.889248]  do_syscall_64+0x3f/0x80
- [  918.890032]  entry_SYSCALL_64_after_hwframe+0x44/0xae
- [  918.891081] RIP: 0033:0x7f41f3f21cba
+   /* This code is invoked within a single NAPI poll cycle and thus under
+    * local_bh_disable(), which provides the needed RCU protection.
+    */
 
-Fixes: 4d1fb7cde0cc ("ethtool: add a stricter length check")
-Fixes: 7c87e32d2e38 ("ethtool: count header size in reply size estimate")
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-CC: Jakub Kicinski <kuba@kernel.org>
-CC: Michal Kubecek <mkubecek@suse.cz>
-
----
-
-Note: I used nla_total_size(0); to report the missing bytes, i see in
-other places they use nla_total_size(sizeof(u32)). Since nla_nest uses a
-payload of 0, I prefer my version of nla_total_size(0); since it
-resembles what the nla_nest is actually doing. I might be wrong though
-:), comments ?
----
- net/ethtool/strset.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
-index b3029fff715d..23d517a61e08 100644
---- a/net/ethtool/strset.c
-+++ b/net/ethtool/strset.c
-@@ -349,8 +349,8 @@ static int strset_reply_size(const struct ethnl_req_info *req_base,
- {
- 	const struct strset_req_info *req_info = STRSET_REQINFO(req_base);
- 	const struct strset_reply_data *data = STRSET_REPDATA(reply_base);
-+	int len = nla_total_size(0); /* account for nesting */
- 	unsigned int i;
--	int len = 0;
- 	int ret;
- 
- 	for (i = 0; i < ETH_SS_COUNT; i++) {
--- 
-2.31.1
-
+Thanks,
+Daniel
