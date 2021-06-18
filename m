@@ -2,140 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58A3E3AD2F4
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 21:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B0523AD325
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 21:50:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233774AbhFRTiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 15:38:55 -0400
-Received: from mail-dm6nam08on2109.outbound.protection.outlook.com ([40.107.102.109]:49025
-        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229816AbhFRTiz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 15:38:55 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UO0daRD9QWhg5xY8BJuSZDVd2N7tUuiimsDNXbVTCXk9ElsOsxSP/v6NkpHQS4MoGLIpsv6LJ/QmaY/qoRYA5NO8gRE9psvg+h5T1T0p/pLphazYxJhenXc4L7QUYM+niwf/RljS7yMWqf453oxdLFI4VSnwZpRNxpHeuVIBKuFcvyPoG9JWRhrYePzIGzy7xsJ5AfbiRVh45oA/i+aUMGmztglxBDXoM/7zeO5r7a1zxXRhbOX8iuXRN1U/vrv3JS4P3iOr7QdMcmGbM+KaxxwLUBLVVLDn9y6TSYd3QAf2a92C4dKCjkuL/cJb2cVt5tGK3HCfspXoF/OGkUrhug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z6YNd3gONZFC6t/EqrsnxL5SrAPFYOipQ8VNM6MJMUw=;
- b=J1JOUcZJgFg63jkm5purJel+6QJsp5xzfw3/1jrRC/T6n/3QNj9bTGTMpuU+4ELptXExN0VHNcoRIoenjyCep9VpWMSFYzrMjKhQboN3KNxR5/CwjqPPx6pM12wPlj+i0ZO3eaOFb160pL9Dnc64x5cevwXfnmzIjnyw+rjWP1ZRm4wrd7dbFADVvFZSfTSPVkjg+a5/n3QqTPnGEH18VWBlo97/ZzZWzY6HwSuFYpVqGfrXthVrWlmySWLJaeMeiD9ndhMjPzDn1z0eUYwCnqdQP8Ugm+hnt2im7H0BmVj23nlpqiDtsW+GSFaxRe/lirH7e8a3w5Aw5LEelPHzeQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z6YNd3gONZFC6t/EqrsnxL5SrAPFYOipQ8VNM6MJMUw=;
- b=TE4yfUiGqG5R5+kTXTjuciWkKO8YKqKoqyQwzviG1w6fL9v0NHzopB2QAphlviu59RHhGA7DYEhYOLaUbIf1ezE8Zuw4ZADz4yxK635m6hCAeEqJZ5JUliqlk76uiOWBLm7cYEZkb8Nlx+Rmcpfdp0n9Z2GPJf4pq9wA5i6+y2U=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=microsoft.com;
-Received: from DM6PR21MB1340.namprd21.prod.outlook.com (20.179.53.83) by
- DM6PR21MB1211.namprd21.prod.outlook.com (20.179.49.152) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4264.3; Fri, 18 Jun 2021 19:36:42 +0000
-Received: from DM6PR21MB1340.namprd21.prod.outlook.com
- ([fe80::98cc:17a:2e9:34ff]) by DM6PR21MB1340.namprd21.prod.outlook.com
- ([fe80::98cc:17a:2e9:34ff%8]) with mapi id 15.20.4264.011; Fri, 18 Jun 2021
- 19:36:42 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
-Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] hv_netvsc: Set needed_headroom according to VF
-Date:   Fri, 18 Jun 2021 12:35:39 -0700
-Message-Id: <1624044939-10310-1-git-send-email-haiyangz@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR04CA0238.namprd04.prod.outlook.com
- (2603:10b6:303:87::33) To DM6PR21MB1340.namprd21.prod.outlook.com
- (2603:10b6:5:175::19)
+        id S232657AbhFRTwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 15:52:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42526 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229591AbhFRTwr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 15:52:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 463F6613E9;
+        Fri, 18 Jun 2021 19:50:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624045838;
+        bh=Olzy7g261M2VzBHP3yNFLi2kVn+AxxWpUNxI0dmBqcc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=dcP4F/onnC+AOTwEh+lLoHTFig1Ba3jo+I4fjjCvYFbLZbVPvhtCidPPAwY/NkJIT
+         jS8iPQktgF4ztiwk8UTas962qqssLW0P29WJX2/lUIOrJGsb6gc7DjFb3lBxz2itjF
+         0mszurdnDaFarK1TslyM/1ieSnyBbG79y5AU1JZD4EcUXHViPgj5OuQu/g2xAkPwdk
+         FEuJlWIMIKRZSEfkLA17KhLw6b4Jv4AzZ6FdFtt8MN2EkoUl15Sj/adadfGjgiVF1O
+         pj58nvIs4hSfj8TmN+B/CfujaHHguA1jxkuZj/rM/t5sJUq5snviGXyQ6epvkVogp1
+         wVRYM/P5WJeyw==
+Received: by mail-ej1-f52.google.com with SMTP id og14so17559407ejc.5;
+        Fri, 18 Jun 2021 12:50:38 -0700 (PDT)
+X-Gm-Message-State: AOAM532epyVM+6mSLy7yYtAcW36EMldqHdBUUc0On0EtyUvv1CgDC9NG
+        nGt2AbvGVoASdljnUGpdRXKb005xmWqOOQNPyQ==
+X-Google-Smtp-Source: ABdhPJwKAurPVIO13QjaLe6oUgNoXTxDg/+T34lz/ida9mpMP6fVsLehR3G6dZmNY0InmWB6h6ecN/5xS0kNaklg6CQ=
+X-Received: by 2002:a17:907:2059:: with SMTP id pg25mr12140038ejb.130.1624045836720;
+ Fri, 18 Jun 2021 12:50:36 -0700 (PDT)
 MIME-Version: 1.0
-Sender: LKML haiyangz <lkmlhyz@microsoft.com>
-X-MS-Exchange-MessageSentRepresentingType: 2
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by MW4PR04CA0238.namprd04.prod.outlook.com (2603:10b6:303:87::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.21 via Frontend Transport; Fri, 18 Jun 2021 19:36:41 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9b2b0b30-7215-44ee-abb9-08d93290662b
-X-MS-TrafficTypeDiagnostic: DM6PR21MB1211:
-X-MS-Exchange-Transport-Forked: True
-X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-X-Microsoft-Antispam-PRVS: <DM6PR21MB12114601C12A948BE4442404AC0D9@DM6PR21MB1211.namprd21.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:191;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jOL+Liodl3OQYVD0H0qgWa0dNp2JQw0t3WX0DWzZJtOcygW+PZESD4R4kXxDhhAQdogsRdNsC6EOMs2duuBl+6WTQU9/WQ78ZpeBXlVuMXsuA88FU633A4DQjxV98oAyG69aNKmkptyNjZcCHhINq7PRrVvlkNIcKhjJNTHXA5xIs4RFxhkUu76N20vv+UYI/q5FbqhTYLI5966o6brIUWyv0xEBADgqWLiAZ0CW/9qE5MF5TjAS7CMtnLluw/NVLTrPYpn/MUbu6Ukf5C9njHqtdf4lUswx7PW2/NV8Jtgi1WI8wK6y5oqr63gtjcCgwInHCNpMI7QglMBnrV57Rwmk7YnO5uyoAzPSkcU+ogv0K8nyOEsNsaO9eQM7d6wrdRk85EsMMjH8FUtlKI3K55/PKiYxstSY9Ayh5AYi4HmFOVXUaTS4KI75xr76i0rt6ko+SZkXHZlYEEnby35t2FTlx020I3EwicHvf9GoWpHtfnDkqjxfYnyO3SmL7vKvmTN6hUN51LBqqSdthxH+P87mgh3ivNyqU5iaUBmI97G3fvQjHnEF5th4airvIul+9VYwc26bZgX92w9R1SgztTRhl+YrtoaAGbxWT76gLyjHJHItJ3GnZfWMryQCGofzc7JnhmTYatHsnD4JMMEk6vlLzWvHYwaizHtCKmG43zO2vDboJHfE8ehKrIXqC7JEpQlzU+wayTeq8Ij+T1VXIA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1340.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38100700002)(6506007)(83380400001)(38350700002)(7846003)(82950400001)(316002)(66476007)(8936002)(186003)(4744005)(10290500003)(82960400001)(26005)(66556008)(8676002)(6486002)(478600001)(2906002)(52116002)(6512007)(956004)(4326008)(36756003)(5660300002)(2616005)(66946007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nwzQ3aD031WHovdqvVthkglnGrS9ADJvCjJWFRbXQkrT6Mr11NU4n2csaPJt?=
- =?us-ascii?Q?ar6w9A1hzA1Dv7Pb9pT/CKlMHObul2bgOtaiUJHnFjcs5WoVbRXHWp/jjaxT?=
- =?us-ascii?Q?umEZ0SxT8W+OyTH5OfIiDCVKnE9H1+8c8rrwbpnkde0+xpl1Hi0N7o2z5KzX?=
- =?us-ascii?Q?zQdbTt0unZwigB1+hOhwswKnDAsQMjWbtNct41X2sALTAx2MPIeDbyMFohdN?=
- =?us-ascii?Q?A/+B/EIeqTmy1Vng4moohjxyWsOjBv8P2qDxWz1HuJiR9+QBQxsHxDfflZs1?=
- =?us-ascii?Q?RnJ4cuLGL78p50v6IwsG5b1XIL0rCkFYFfTJiM8e0aPhiSy9+fKqjwYM8kY6?=
- =?us-ascii?Q?U16PYQkDsJufh/2RD7gOw/xWmD50M6107Apjb7l1WaEGcgKzB7WsXXiukW/+?=
- =?us-ascii?Q?Afin+4NUIaq6IekB45B6G5c69MqjvESJooGnZkiqVeJuEN0eNsRBJuUJk7WB?=
- =?us-ascii?Q?BhFSGXPyNg6wo85CMcal0lZ/vrBL0KJUIoUJxOKrAYggdUFzaWShZLoR1b/E?=
- =?us-ascii?Q?HDPP/wRUyoe0pYHfRdRO88rtFfUkNDeJC4Pi0d7kJpwfeBN7I4KvJSkw/JOb?=
- =?us-ascii?Q?Qro4eEFcbbLrDSDzt/vEojV2jp8F/Gew+cn6Po0qp3MtMIdwxBJOc6EnNjpI?=
- =?us-ascii?Q?bP1OmcRJ2Rcfcrb0UBzJXtioJqazEpsT8/2Q1qgdGT2JOaPrLTJ8E8oqP/RE?=
- =?us-ascii?Q?6Ue5bp4cEI3zDvGTFrNt82WKaX0Hq8v6OhB5pYkvEXboELl6esNRZDsVKKlF?=
- =?us-ascii?Q?8nNnWjACQCpss1pt4136x118sKhAeQ6/DKAQny5U4AY5G7VZMrp0PRXbnwLS?=
- =?us-ascii?Q?b+qmQnG2MQ2A5OiADMQ8USK3j7ySo68cjLXJ1wcg7wXZtaAC0J7npZwrPaqd?=
- =?us-ascii?Q?8gF31A7PGTBkQ8pGOaAnGBmH5uxQMI0Ro2s9zgYVM7O4iA30AW1B1ThAGtbb?=
- =?us-ascii?Q?Uoq5/d5IplkODzfWD7bGn6yyVoEIPTxRaohgXBU8CKCaGz0LGCPjDv3/Ko+7?=
- =?us-ascii?Q?QAR4GHGyLW1ey92RlHmIgWrR0IjbxqKKhN6tWg1bJDsU1pg8WhFTqw4epEMz?=
- =?us-ascii?Q?scyEaxGgLxmRdgjNyq5OSAJE6xIXfYkrRM26RlU1Gz0JogoUZBbTTrB1gerF?=
- =?us-ascii?Q?/k9HEd37tExuWgxIhP11wFFCSFq4lgWlnEeFDE0TtTOq0EZrrblbQyM2gz/q?=
- =?us-ascii?Q?JCcmJW5SZicMF+p/XLvVCAe0zfBohc37CksUC1eieP4KtpuGpnYGaHgDT2dP?=
- =?us-ascii?Q?aXhuXPVxwTa2mYONdjDISWNXsOUwLMqTAa1zCVoEvZG539uzh3bBP6tdzx6A?=
- =?us-ascii?Q?VQnPNxfaB2KEDeHiVsziTSKe?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b2b0b30-7215-44ee-abb9-08d93290662b
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1340.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2021 19:36:42.5988
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5cUI2CT7al7CU8VtwLNAAzjUGRKw7d8PS1pCCYcHnrG9XV1zue/nHAKKyZomolSFy/rrOK8n0eNWvZIWlPlz4w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1211
+References: <1623690937-52389-1-git-send-email-zhouyanjie@wanyeetech.com>
+ <1623690937-52389-2-git-send-email-zhouyanjie@wanyeetech.com>
+ <CAL_Jsq+7v6GRMfxWhA6g2r0GaZSO_AztgSz7rheJsE9jKYd8uQ@mail.gmail.com>
+ <20210616154526.54481912@zhouyanjie-virtual-machine> <20210617112400.5e68c172@zhouyanjie-virtual-machine>
+In-Reply-To: <20210617112400.5e68c172@zhouyanjie-virtual-machine>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 18 Jun 2021 13:50:25 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJW_L3TXTy89Y6YOyQzGzOeN3g1D7pwbuGmSW6TFaO4nA@mail.gmail.com>
+Message-ID: <CAL_JsqJW_L3TXTy89Y6YOyQzGzOeN3g1D7pwbuGmSW6TFaO4nA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: dwmac: Add bindings for new Ingenic SoCs.
+To:     =?UTF-8?B?5ZGo55Cw5p2w?= <zhouyanjie@wanyeetech.com>
+Cc:     sihui.liu@ingenic.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe CAVALLARO <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        jun.jiang@ingenic.com, sernia.zhou@foxmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set needed_headroom according to VF if VF needs a bigger
-headroom.
+On Wed, Jun 16, 2021 at 9:24 PM =E5=91=A8=E7=90=B0=E6=9D=B0 <zhouyanjie@wan=
+yeetech.com> wrote:
+>
+> Hi Rob,
+>
+> =E4=BA=8E Wed, 16 Jun 2021 15:45:26 +0800
+> =E5=91=A8=E7=90=B0=E6=9D=B0 <zhouyanjie@wanyeetech.com> =E5=86=99=E9=81=
+=93:
+>
+> > Hi Rob,
+> >
+> > =E4=BA=8E Tue, 15 Jun 2021 17:05:45 -0600
+> > Rob Herring <robh+dt@kernel.org> =E5=86=99=E9=81=93:
+> >
+> > > On Mon, Jun 14, 2021 at 11:18 AM =E5=91=A8=E7=90=B0=E6=9D=B0 (Zhou Ya=
+njie)
+> > > <zhouyanjie@wanyeetech.com> wrote:
+> > > >
+> > > > Add the dwmac bindings for the JZ4775 SoC, the X1000 SoC,
+> > > > the X1600 SoC, the X1830 SoC and the X2000 SoC from Ingenic.
+> > > >
+> > > > Signed-off-by: =E5=91=A8=E7=90=B0=E6=9D=B0 (Zhou Yanjie) <zhouyanji=
+e@wanyeetech.com>
+> > > > ---
+> > > >
+> > > > Notes:
+> > > >     v1->v2:
+> > > >     No change.
+> > > >
+> > > >     v2->v3:
+> > > >     Add "ingenic,mac.yaml" for Ingenic SoCs.
+> > > >
+> > > >  .../devicetree/bindings/net/ingenic,mac.yaml       | 76
+> > > > ++++++++++++++++++++++ .../devicetree/bindings/net/snps,dwmac.yaml
+> > > > | 15 +++++ 2 files changed, 91 insertions(+)
+> > > >  create mode 100644
+> > > > Documentation/devicetree/bindings/net/ingenic,mac.yaml
+> > > >
+> > > > diff --git
+> > > > a/Documentation/devicetree/bindings/net/ingenic,mac.yaml
+> > > > b/Documentation/devicetree/bindings/net/ingenic,mac.yaml new file
+> > > > mode 100644 index 00000000..5fe2e81 --- /dev/null
+> > > > +++ b/Documentation/devicetree/bindings/net/ingenic,mac.yaml
+> > > > @@ -0,0 +1,76 @@
+> > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > > +%YAML 1.2
+> > > > +---
+> > > > +$id: http://devicetree.org/schemas/net/ingenic,mac.yaml#
+> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > +
+> > > > +title: Bindings for MAC in Ingenic SoCs
+> > > > +
+> > > > +maintainers:
+> > > > +  - =E5=91=A8=E7=90=B0=E6=9D=B0 (Zhou Yanjie) <zhouyanjie@wanyeete=
+ch.com>
+> > > > +
+> > > > +description:
+> > > > +  The Ethernet Media Access Controller in Ingenic SoCs.
+> > > > +
+> > > > +properties:
+> > > > +  compatible:
+> > > > +    enum:
+> > > > +      - ingenic,jz4775-mac
+> > > > +      - ingenic,x1000-mac
+> > > > +      - ingenic,x1600-mac
+> > > > +      - ingenic,x1830-mac
+> > > > +      - ingenic,x2000-mac
+> > > > +
+> > > > +  reg:
+> > > > +    maxItems: 1
+> > > > +
+> > > > +  interrupts:
+> > > > +    maxItems: 1
+> > > > +
+> > > > +  interrupt-names:
+> > > > +    const: macirq
+> > > > +
+> > > > +  clocks:
+> > > > +    maxItems: 1
+> > > > +
+> > > > +  clock-names:
+> > > > +    const: stmmaceth
+> > > > +
+> > > > +  mode-reg:
+> > > > +    description: An extra syscon register that control ethernet
+> > > > interface and timing delay
+> > >
+> > > Needs a vendor prefix and type.
+> > >
+> > > > +
+> > > > +  rx-clk-delay-ps:
+> > > > +    description: RGMII receive clock delay defined in pico
+> > > > seconds +
+> > > > +  tx-clk-delay-ps:
+> > > > +    description: RGMII transmit clock delay defined in pico
+> > > > seconds +
+> > > > +required:
+> > > > +  - compatible
+> > > > +  - reg
+> > > > +  - interrupts
+> > > > +  - interrupt-names
+> > > > +  - clocks
+> > > > +  - clock-names
+> > > > +  - mode-reg
+> > > > +
+> > > > +additionalProperties: false
+> > > > +
+> > > > +examples:
+> > > > +  - |
+> > > > +    #include <dt-bindings/clock/x1000-cgu.h>
+> > > > +
+> > > > +    mac: ethernet@134b0000 {
+> > > > +        compatible =3D "ingenic,x1000-mac", "snps,dwmac";
+> > >
+> > > Doesn't match the schema.
+> >
+> > Sorry for that, somehow when I run "make dt_bindings_check", there is
+> > no warrning or error message about this file. I am sure that yamllint
+> > is installed and dtschema has been upgraded to 2021.6.
+>
+> I found that it seems to be because 5.13 newly introduced
+> "DT_CHECKER_FLAGS=3D-m", and I am still using the old
+> "make dt_binding_check" command, so this error is not prompted. Now I
+> can see this error message after using the
+> "make DT_CHECKER_FLAGS=3D-m dt_binding_check" command, and I will send a
+> fix soon.
 
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
----
- drivers/net/hyperv/netvsc_drv.c | 5 +++++
- 1 file changed, 5 insertions(+)
+No, this error has nothing to do with the '-m' option.
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index f682a5572d84..382bebc2420d 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2384,6 +2384,9 @@ static int netvsc_register_vf(struct net_device *vf_netdev)
- 	dev_hold(vf_netdev);
- 	rcu_assign_pointer(net_device_ctx->vf_netdev, vf_netdev);
- 
-+	if (ndev->needed_headroom < vf_netdev->needed_headroom)
-+		ndev->needed_headroom = vf_netdev->needed_headroom;
-+
- 	vf_netdev->wanted_features = ndev->features;
- 	netdev_update_features(vf_netdev);
- 
-@@ -2462,6 +2465,8 @@ static int netvsc_unregister_vf(struct net_device *vf_netdev)
- 	RCU_INIT_POINTER(net_device_ctx->vf_netdev, NULL);
- 	dev_put(vf_netdev);
- 
-+	ndev->needed_headroom = RNDIS_AND_PPI_SIZE;
-+
- 	return NOTIFY_OK;
- }
- 
--- 
-2.25.1
-
+Rob
