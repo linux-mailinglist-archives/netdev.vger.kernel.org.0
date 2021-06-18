@@ -2,531 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C3C43AC650
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 603EA3AC664
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:43:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233558AbhFRIld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 04:41:33 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:54208 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231377AbhFRIlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:41:31 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20210618083915euoutp0113c71302608dc1dc5aca1e8dabc974f2~JoHLGZNLq0911109111euoutp01B
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 08:39:15 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20210618083915euoutp0113c71302608dc1dc5aca1e8dabc974f2~JoHLGZNLq0911109111euoutp01B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1624005555;
-        bh=bQH/rySBRfjkbrAHug4e4+/Yc/s63zosIz7bIr475g0=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=i9k376kMeD47gfomkeF31doiWJal6nEUoHUwhYiRXOvOOHUFz6KQlEMIqk/aEXeR9
-         SOzTBVCEfoTIIWSrLbG4YJhKYRATEhklVsOLAE/WjKfNs7WLnbKH//yDRdcBY0/dzs
-         8rJCTINmxvFjrykeqfshJC+mDVdZ1QIo127SLY9w=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20210618083914eucas1p1c055d56f34ceeb6156541608c418feea~JoHKnqI1t2978929789eucas1p1Q;
-        Fri, 18 Jun 2021 08:39:14 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 59.BF.56448.2BB5CC06; Fri, 18
-        Jun 2021 09:39:14 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20210618083914eucas1p240f88e7064a7bf15b68370b7506d24a9~JoHKQ6MI10595605956eucas1p2i;
-        Fri, 18 Jun 2021 08:39:14 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210618083914eusmtrp189b4ae3088c1823a35ee891f13ca8f81~JoHKQJ4Dg1328513285eusmtrp1i;
-        Fri, 18 Jun 2021 08:39:14 +0000 (GMT)
-X-AuditID: cbfec7f5-d53ff7000002dc80-57-60cc5bb25ba9
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id B7.CA.31287.2BB5CC06; Fri, 18
-        Jun 2021 09:39:14 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20210618083913eusmtip268f2606c4b5f2b8a766cf374852202b0~JoHJi1zNi1850418504eusmtip2H;
-        Fri, 18 Jun 2021 08:39:13 +0000 (GMT)
-Subject: Re: [PATCH net-next v2 4/8] net: usb: asix: ax88772: add phylib
- support
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <15e1bb24-7d67-9d45-54c1-c1c1a0fe444a@samsung.com>
-Date:   Fri, 18 Jun 2021 10:39:12 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
-        Gecko/20100101 Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <20210607082727.26045-5-o.rempel@pengutronix.de>
-Content-Transfer-Encoding: 8bit
+        id S233792AbhFRIpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 04:45:09 -0400
+Received: from mx0a-0064b401.pphosted.com ([205.220.166.238]:44690 "EHLO
+        mx0a-0064b401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233855AbhFRIpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:45:01 -0400
+Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15I8ZDmM021252;
+        Fri, 18 Jun 2021 01:41:52 -0700
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2170.outbound.protection.outlook.com [104.47.59.170])
+        by mx0a-0064b401.pphosted.com with ESMTP id 398e300aym-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Jun 2021 01:41:52 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BI5XEID5bv5wrCFFEL/VEUAsjek1Xkzx0cIMsP7FXtcobj5mXHqJmg98+7+GeKRWJTuZVuFnhPqDiDrHh8PORPjxsqSpBezKqlgwsWxwva0On2jnl70K+Lw01AM4aol9xH852+dQuQnbz27We06LhrybVxv+6VOYjVvMEo3dTjalES4ckYdxwJet//7VQki4LhPj9XlBCR3dcxYYYjtJeb+9oCvdfvEl/yYSMvVjZ/m6D6MyRgT76E5jBKpKPRGIX+ct7cI4in0VS/VS7jIASF+1quziR3TXizTu3+k47gLdYieeAnII7OBgqU+7O1faLrMAcT3Ja/WJzRbpXZXalg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=brOESHofmL3/lB9KRztoWeau+H2o2QOmVtk5nTHkimM=;
+ b=Y3851/M6VJH7Y077X1FAHSug5t8o/HEYYtE7Tli/6o53hhf8NfzgD0nhqj83dK4mOQpJpLnbi38bVI23TFKrzX7cekRJJe8CvZAKG8A6IOO6tr1+ujZYXUv2G7uB96vhEv5Z93jTq6D/TptcvHYvGIiv1AueJ1etajXaqceQeoT3RlmNaZklyhI7ONw8VvGjRgbfAxzGcW+qLs4tfSw2AJppTMGG20oqKw/lbAP2ZbwSjw0Xa6EbP1v6dnnaYwb5raNajuSAa3OkVxMmOBx7B70+D6iiSCkZKCtr3jAXOUutR4VCZcozuYZrKEK23Uatx1Pt3EoyCBvh/rqtk9oTzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=brOESHofmL3/lB9KRztoWeau+H2o2QOmVtk5nTHkimM=;
+ b=ZNYlKJAYkafstpymecSR/qa7Njt0cf8TXhmS88djIr3v+7AdZTGj/bDXNft86lpp7KKs4qhnNC1iqS3FRG9NYUC5//gEhUgkU9sFl8uPQzSbOnJRAPtrbu3kryZHdHDvWw50DVWcdbR9tv0CVS1RP87u0jtqf/gmuVBhxPoDYHw=
+Authentication-Results: windriver.com; dkim=none (message not signed)
+ header.d=none;windriver.com; dmarc=none action=none
+ header.from=windriver.com;
+Received: from MWHPR1101MB2351.namprd11.prod.outlook.com
+ (2603:10b6:300:74::18) by MW3PR11MB4762.namprd11.prod.outlook.com
+ (2603:10b6:303:5d::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.21; Fri, 18 Jun
+ 2021 08:41:50 +0000
+Received: from MWHPR1101MB2351.namprd11.prod.outlook.com
+ ([fe80::c5c:9f78:ea96:40e2]) by MWHPR1101MB2351.namprd11.prod.outlook.com
+ ([fe80::c5c:9f78:ea96:40e2%10]) with mapi id 15.20.4242.021; Fri, 18 Jun 2021
+ 08:41:50 +0000
+Subject: Re: [PATCH v8 03/10] eventfd: Increase the recursion depth of
+ eventfd_signal()
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        qiang.zhang@windriver.com
+References: <20210615141331.407-1-xieyongji@bytedance.com>
+ <20210615141331.407-4-xieyongji@bytedance.com>
+ <8aeac914-7602-7323-31bd-71015a26f74c@windriver.com>
+ <CACycT3t1Dgrzsr7LbBrDhRLDa3qZ85ZOgj9H7r1fqPi-kf7r6Q@mail.gmail.com>
+From:   He Zhe <zhe.he@windriver.com>
+Message-ID: <4ff258e8-d319-c2d4-cb70-0edc9a54fd03@windriver.com>
+Date:   Fri, 18 Jun 2021 16:41:40 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <CACycT3t1Dgrzsr7LbBrDhRLDa3qZ85ZOgj9H7r1fqPi-kf7r6Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA01Sa0hTYRjmO+dsO65mx2nuU1fGokBJZyzrdFGMStYIMYMCpXLpQccu2qZ2
-        o9S0smFa6lLnaOYPM7Mky3khJUe4bN7KrpaVqYSWiczKC1Yej5X/nud93+d93ufjw1H+PZYn
-        rtAkUVqNXCViczFL61SXX01Ue3TAA4eE7OqzoqSpKxMjy8aKWGSloQEjuy05LLKn0cQmy8rP
-        oaTV0ATI1lJ3cvA9COFKe14+RaX3b75BpA3GPo60pvIiW9pQ70CkubMBUkfNynBOJHdbLKVS
-        pFBacXA0N9509QEnsVl7/EVlH5oGvkXpAY5DYgMseBGmB1ycT1QA2HHxA4shEwDWVswChjjm
-        OqUDHD1wmlfkmLIXGjcAbKxNxxgyDmDflZ8IvdeViIA3WiJogRsxDOCta0oao4QKznZnITRm
-        E+uhflTPpjGPCIY331ahNMaINTD3bt282XIiBo5dK2IxMy6wrXgQo7ETEQSvl4wBZqc3zKgt
-        QRksgL2DZoS+BxK/cfj1+VfAXL0TOiY6UQa7whHb/YU0QmjPz8YYQQaA/Z23OQzJBrDnbNGC
-        eit81znNppOhhA+sbhQz5e2wqCITYx7SGb4edWGOcIZ5lkKUKfNg1nk+M70WGm13/tm2dD9D
-        LwORcVE046I4xkVxjP99SwFWCQRUsk4dR+kkGuqYv06u1iVr4vxjEtQ1YO5f2X/ZvteDipFx
-        fytAcGAFEEdFbjw/3eNoPi9WfuIkpU04rE1WUTor8MIxkYDXWFt1mE/EyZMoJUUlUtq/XQR3
-        8kxDUvOE9m/NiLur8Y1ceamZ97nDy60cHf2YbpYl+ZrZ5T+WHOh+KPi0Kcuw8UrHjHK136vd
-        dpemCZdDuwPjzBd6n7Rkpky3hsgurbZN5+YNYR0iSfu+YO64a8HJIaPlUHqEbEvUdaH5QEy4
-        x9KR0+2pshwy76hVQdQ5DXE3Z3G4isBUu36XULAqE4/MrwuJDLBICqntj4rzQ50tYecSLogl
-        B1W9QkehLN3Ap9pN1MveyWG1TTwWoPJIXCZWasIQVYH3iXXm04FIOLG52n0/r18x4Os1nVRv
-        2RNUmrBDEPqluOrIpPvOU1/6WVNnUoY1M62Te7HRsh2nVnwvafNRizBdvHy9L6rVyf8AmADg
-        vMYDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrGIsWRmVeSWpSXmKPExsVy+t/xe7qbos8kGPR8FLc4f/cQs8Wc8y0s
-        Fovez2C1WDV1J4vFhW19rBaXd81hs1i0rJXZ4tDUvYwWxxaIWTy5x+jA5XH52kVmjy0rbzJ5
-        7Jx1l91j06pONo+dOz4zefT/NfD4vEkugD1Kz6Yov7QkVSEjv7jEVina0MJIz9DSQs/IxFLP
-        0Ng81srIVEnfziYlNSezLLVI3y5BL2POtD3sBfuKKq6uusvcwPguuouRk0NCwESib04PYxcj
-        F4eQwFJGiR/t81ghEjISJ6c1QNnCEn+udbFBFL1nlGh9vw/I4eAQFgiSWH4wCCQuIvCSUeLX
-        1idsIA3MAjkSOzZcZgGxhQTyJc4/mwVmswkYSnS97QKr4RWwk1h5ew0ziM0ioCrRv3E7O4gt
-        KpAs8XN9O1SNoMTJmU/AejkFbCUWzn7PCDHfTGLe5ofMELa8RPPW2VC2uMStJ/OZJjAKzULS
-        PgtJyywkLbOQtCxgZFnFKJJaWpybnltsqFecmFtcmpeul5yfu4kRGKHbjv3cvINx3quPeocY
-        mTgYDzFKcDArifDqFp9IEOJNSaysSi3Kjy8qzUktPsRoCvTPRGYp0eR8YIrIK4k3NDMwNTQx
-        szQwtTQzVhLn3Tp3TbyQQHpiSWp2ampBahFMHxMHp1QD0+K/D1QmXY+Z+NjUZfmUbd5Bdx5X
-        lJx+07D3+aP8d6vuNsS0rDewXqI4Ky141q6gilk/mzvOVVv/mcbxzOc/x9HsFcvFwgMrRM8z
-        Nste+lf38vICm2Nbw5af9Dj5amq9yZmGVU1BPlu3T3v0foYOW4aFjLiuUPaxUxaPCrOO5v7i
-        VG6a/tpi97Ufn3rfGslO37WhLK9VZrnpgxO5n9Z9a/Jy1nm+9H3N1eUiczg8J315ZZEfHrOQ
-        zWXZ4t5qxVdCVlwdH65vZ5zn3qNh2aroelbpmJSMdYXwjcLnrZ47lngWJnNJLWSekhPWsmvf
-        bjkmYZekA66rv4nN3yfNPj905mTRK+4ZbRn5AheZv5y3Oq7EUpyRaKjFXFScCABPNvHQWQMA
-        AA==
-X-CMS-MailID: 20210618083914eucas1p240f88e7064a7bf15b68370b7506d24a9
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20210618083914eucas1p240f88e7064a7bf15b68370b7506d24a9
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20210618083914eucas1p240f88e7064a7bf15b68370b7506d24a9
-References: <20210607082727.26045-1-o.rempel@pengutronix.de>
-        <20210607082727.26045-5-o.rempel@pengutronix.de>
-        <CGME20210618083914eucas1p240f88e7064a7bf15b68370b7506d24a9@eucas1p2.samsung.com>
+X-Originating-IP: [60.247.85.82]
+X-ClientProxiedBy: BYAPR11CA0078.namprd11.prod.outlook.com
+ (2603:10b6:a03:f4::19) To MWHPR1101MB2351.namprd11.prod.outlook.com
+ (2603:10b6:300:74::18)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [128.224.162.175] (60.247.85.82) by BYAPR11CA0078.namprd11.prod.outlook.com (2603:10b6:a03:f4::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.19 via Frontend Transport; Fri, 18 Jun 2021 08:41:44 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9a5a9290-24a7-4946-a96c-08d93234ea6b
+X-MS-TrafficTypeDiagnostic: MW3PR11MB4762:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MW3PR11MB4762CA0263044357C4D668248F0D9@MW3PR11MB4762.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VU3pOzHmzZym4AC5zKP3p56MwtHdaXK21keUcxMGMYk86pREuPPhee3ZrHxbTd2P29qfhJkOYN88F7u536Q8ayhMjDKh3StME3/F7SKWQ96p6/PhyYO8wi/CjXBvTCGSSfsSPkpzAyEGs89Jx2Qutvasa2lswwhOxnpexvD+KLRtDxO9mogFxHX9QVnlpY/nxSjrnYy228HL6UlWZIZCeR2uconMP3b5Gm8mRiVMzzmzXu7HNCulqe6H+K0bpdRQ8uyoc4du235n5tjXoh6FIAXLJim23iXGwolrusKpt5JqsspXc9nZ6KQ/R1ZrWtb6T+P8KxsL9ctM4M5X8bEZslPPczqWpbQP+Hat0SqWzGd6jCQbAQ5CvkOggYoLxl/aNJ/oWzqwFSo1xQDY+Q6Vb81qcpAmrY9M2qZJrRaI32SCk+OW1FE/q5jfYidlNSWKSp7kqI4Ebu3Lecl5knynR1Ikp0U2benOv9LomRxmjRVPixsMJcMl32v73uMDz4OL8FPtshtMDZZWOqv8gClHBzDEsrKe7ksLcdAwgNMkezVz6M4xcMnYoE55I0ChH4weIu3cpc0nY157U+d+ANo7f6mDJ/NhVcyS3rVG8w5HBMtVAPuwGHwtfbgQ57FWxrrwn8cN0e2PiA5zYGvqYcfyMSTKj+QvWytR+OgKgC/UrYSKMGMfK7mTlwnZFybWyyFw5f5OJUyVEUFYBoX6xzFb43z5ArE0OgN69bHGWzGl832YxFqBlq9BJ0+rwyyqR6DHb31FL+Ao1W4+4iOk1Q9smTyj7Ux7FODPCRbtesbyIZRZaGh7PIbGftxyvDR2/Y9BnjXrz10U9QY0IlKM13wW6d6OffuhyG6o37Ao68CHBHdHZzqktg6q9WxVY262RVz9Hmsk8mfx9EHKvjpGVibShA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1101MB2351.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39840400004)(396003)(346002)(136003)(366004)(376002)(5660300002)(86362001)(6666004)(38350700002)(52116002)(31696002)(6706004)(31686004)(16576012)(6486002)(54906003)(53546011)(316002)(6916009)(38100700002)(2906002)(478600001)(8676002)(45080400002)(26005)(107886003)(36756003)(8936002)(966005)(4326008)(66946007)(66476007)(66556008)(186003)(16526019)(956004)(2616005)(83380400001)(7416002)(78286007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S1RRdXBuS1lHd3FLQ256ZjVHV21wdXRYc0s1MCttckV5Y0F0OWVtSzhnaGxj?=
+ =?utf-8?B?RVg3STE2dVd3aUdrdUxibDJiZHBPa2paVHRoVEFmRkhocE43Z0dVVVUwVXJi?=
+ =?utf-8?B?ejUwVXRCQUR4WjdKR3BpblliNDcxR0RYNWpaT0ZHVVNCN2M5QVJXakxZSklh?=
+ =?utf-8?B?VWE3RGhmd2RpdnpkRmJDd2tvVXdWMytiRGt6TkdXWjY1WURnVk1kZWgyamRp?=
+ =?utf-8?B?MlNVeEhlM1lSWnpNZDNxWmk0c0lOUjJiRDNUdmEreFRWN2JDRjRwRVZHYjBk?=
+ =?utf-8?B?aE44SC9WcDFaa1kxaGlJL3pzZHpDa1AxTTVRaDVtM0RRMjRSUjUydHk2M0ZW?=
+ =?utf-8?B?NVh6eTFqTXJQc1EzTW9oVzg0ZU1XZWxwclpXUklPWEI4dzNGVm5hQ0I1R0Zs?=
+ =?utf-8?B?UEwwQ3FxQ1dWRDRuNjZoelpjRlk1aVkxeWwvNkovbUtRZklaYmZqUXJ0Tjly?=
+ =?utf-8?B?c1g2YXdlMW9SUjdLSHg1SjdpRll0ZlByaXRLbVFTQXVGdnVLbnZleUNpR1l5?=
+ =?utf-8?B?L0JnbjA3S0xhQXNzcjY4N2VBWjRDSjFEbEx0cDFDUmhUdDhUaWNZSW9uVzZk?=
+ =?utf-8?B?TnE0VDRIbEphRUUvY0kySUFXd1U0SlZrS2YzTGpEMUtkcm02ZE5BdGp5TGRh?=
+ =?utf-8?B?Mmx6US9ENFBjU2dYWFRqL09BSFVwTmZmU0l3Uk5neld6T2VBRGhycUpGWUlB?=
+ =?utf-8?B?UkIycFlPeXAwZjk1a0JsNG5YcTdFTWNISkpES0NzS3ZDd2I2TXd6dEE1Y2Yy?=
+ =?utf-8?B?dHZFOUIwOXZJWGtvMlg2dzF5cnpZLzBGQ1lGR2RPVFRKWDVLOEkySkpQUnZF?=
+ =?utf-8?B?UEp6K213MXQreW41d21nQklpNERzVmRhblBqTVBIZ2FwMiswZ3RHbFhIS0x0?=
+ =?utf-8?B?NWFKQ2Y2OHpmWTVjL0J6TmdYanFzNThpV3RsUHRSeUJFeG5KalRSM1RHNnVp?=
+ =?utf-8?B?OVJKTTVEMm5vQ2pVblU0alp5WEJWZlZCUklQcTd0WXhzcUlUQmxsK1U4STcx?=
+ =?utf-8?B?WUFLaE9jdmVxTjQxUUJqcUVNSkh0dmduRyttVTVac3l1NE5FWUNsWjdaUVFE?=
+ =?utf-8?B?TEpyNTV4cnhrSUxMOThhalNQRmxkM1N4Z29NMXY1a1NIcHkzZlBiZXVNTFY3?=
+ =?utf-8?B?WGx6WlR1RVl4T1NpQlkwWmxZaVBWWnlTWW1NOHY1RVpiNlBSNlBtV3RVcEJa?=
+ =?utf-8?B?bmtWQTNONEJaeS85bmpncHA1VVVSWWdGTy9rYUs5NnZ4eGpqYTFrL3lxYzZs?=
+ =?utf-8?B?bHpmK3NSZHc2a1pBb0JCZ1g3eXVnNktscnY1cTU0QW9OeXNPejBIbUJyY2FP?=
+ =?utf-8?B?aGhMOVJ4dEVzYUFKK3Z6c2VGdkswejBzZkVPbG0rdU9XbStIemZCL29JU0ZJ?=
+ =?utf-8?B?czBOT0xzTmFlQ1dRWlJTWjlRTVRsdzNHcHhUTndMenRQWlorN0JKTDZxQzF5?=
+ =?utf-8?B?WTJDZmNySUhEdTB1bmNXNDg1c0loNlRpQWduOFd3OGF5cHVJTXora29uSk4w?=
+ =?utf-8?B?MjVyZVJ5WTlZc2xyL1dhemFJWGpyK2Rrb1N6SUNJbDV0U2VDRHhiaGhjVFZa?=
+ =?utf-8?B?eFhXbThxZXNMVDFFcXhiZHNDU3hWTTVFZVQyQXhrMjM0aVJRYXB5Z0s0L2dO?=
+ =?utf-8?B?UGJmOTh2M1EwQVFnT2dYNmlZUnV1eGNPQkUzbWtTWk96Mlhjbk5BUDA2Nm9H?=
+ =?utf-8?B?VnpJSDdjYzVjTzRnZkRINFdjNmFPTURNcHp5OUkveTJVQ3JzTUVoNjVyNDFW?=
+ =?utf-8?Q?QZjUOJKipGfdcGSfvDnNuSNNm7RXWgh3B6xu2LT?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a5a9290-24a7-4946-a96c-08d93234ea6b
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1101MB2351.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2021 08:41:50.4237
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zjHZYXif1gkxDQeFAQD+vbsUa3GFsqujrfjUz0AAIQy7s/t+YAEDEGRGJ9kt3j/CV/k+ZynTO96Dxv8XKR0fQg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4762
+X-Proofpoint-GUID: 7sV4fNZJvaptb77gsNElCDByhnusJDUE
+X-Proofpoint-ORIG-GUID: 7sV4fNZJvaptb77gsNElCDByhnusJDUE
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-06-18_04:2021-06-15,2021-06-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 bulkscore=0 phishscore=0
+ mlxlogscore=999 adultscore=0 suspectscore=0 malwarescore=0 mlxscore=0
+ spamscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2104190000 definitions=main-2106180048
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
 
-On 07.06.2021 10:27, Oleksij Rempel wrote:
-> To be able to use ax88772 with external PHYs and use advantage of
-> existing PHY drivers, we need to port at least ax88772 part of asix
-> driver to the phylib framework.
+
+On 6/18/21 11:29 AM, Yongji Xie wrote:
+> On Thu, Jun 17, 2021 at 4:34 PM He Zhe <zhe.he@windriver.com> wrote:
+>>
+>>
+>> On 6/15/21 10:13 PM, Xie Yongji wrote:
+>>> Increase the recursion depth of eventfd_signal() to 1. This
+>>> is the maximum recursion depth we have found so far, which
+>>> can be triggered with the following call chain:
+>>>
+>>>     kvm_io_bus_write                        [kvm]
+>>>       --> ioeventfd_write                   [kvm]
+>>>         --> eventfd_signal                  [eventfd]
+>>>           --> vhost_poll_wakeup             [vhost]
+>>>             --> vduse_vdpa_kick_vq          [vduse]
+>>>               --> eventfd_signal            [eventfd]
+>>>
+>>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+>>> Acked-by: Jason Wang <jasowang@redhat.com>
+>> The fix had been posted one year ago.
+>>
+>> https://lore.kernel.org/lkml/20200410114720.24838-1-zhe.he@windriver.com/
+>>
+> OK, so it seems to be a fix for the RT system if my understanding is
+> correct? Any reason why it's not merged? I'm happy to rebase my series
+> on your patch if you'd like to repost it.
+
+It works for both mainline and RT kernel. The folks just reproduced in their RT
+environments.
+
+This patch somehow hasn't got maintainer's reply, so not merged yet.
+
+And OK, I'll resend the patch.
+
 >
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-
-I found one more issue with this patch. On one of my test boards 
-(Samsung Exynos5250 SoC based Arndale) system fails to establish network 
-connection just after starting the kernel when the driver is build-in.
-
---->8---
-# dmesg | grep asix
-[    2.761928] usbcore: registered new interface driver asix
-[    5.003110] asix 1-3.2.4:1.0 (unnamed net_device) (uninitialized): 
-invalid hw address, using random
-[    6.065400] asix 1-3.2.4:1.0 eth0: register 'asix' at 
-usb-12110000.usb-3.2.4, ASIX AX88772 USB 2.0 Ethernet, 7a:9b:9a:f2:94:8e
-[   14.043868] asix 1-3.2.4:1.0 eth0: Link is Up - 100Mbps/Full - flow 
-control off
-# ping -c2  host
-PING host (192.168.100.1) 56(84) bytes of data.
- From 192.168.100.20 icmp_seq=1 Destination Host Unreachable
- From 192.168.100.20 icmp_seq=2 Destination Host Unreachable
-
---- host ping statistics ---
-2 packets transmitted, 0 received, +2 errors, 100% packet loss, time 59ms
---->8---
-
-Calling ifup eth0 && ifdown eth0 fixes the network status:
-
---->8---
-# ifdown eth0 && ifup eth0
-[   60.474929] asix 1-3.2.4:1.0 eth0: Link is Down
-[   60.623516] asix 1-3.2.4:1.0 eth0: Link is Down
-[   62.774304] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-[   62.786354] asix 1-3.2.4:1.0 eth0: Link is Up - 100Mbps/Full - flow 
-control off
-# ping -c2 host
-PING host (192.168.100.1) 56(84) bytes of data.
-64 bytes from host (192.168.100.1): icmp_seq=1 ttl=64 time=1.25 ms
-64 bytes from host (192.168.100.1): icmp_seq=2 ttl=64 time=0.853 ms
-
---- host ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 3ms
-rtt min/avg/max/mdev = 0.853/1.053/1.254/0.203 ms
---->8---
-
-When driver is loaded as a module (and without any other modules, so 
-this is not a dependency issue), the connection is established properly 
-just after the boot:
-
---->8---
-# dmesg | grep asix
-[   13.633284] asix 1-3.2.4:1.0 (unnamed net_device) (uninitialized): 
-invalid hw address, using random
-[   15.390350] asix 1-3.2.4:1.0 eth0: register 'asix' at 
-usb-12110000.usb-3.2.4, ASIX AX88772 USB 2.0 Ethernet, 3a:51:11:08:aa:ea
-[   15.414052] usbcore: registered new interface driver asix
-[   15.832564] asix 1-3.2.4:1.0 eth0: Link is Down
-[   18.053747] asix 1-3.2.4:1.0 eth0: Link is Up - 100Mbps/Full - flow 
-control off
-# ping -c2 host
-PING host (192.168.100.1) 56(84) bytes of data.
-64 bytes from host (192.168.100.1): icmp_seq=1 ttl=64 time=0.545 ms
-64 bytes from host (192.168.100.1): icmp_seq=2 ttl=64 time=0.742 ms
-
---- host ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 3ms
-rtt min/avg/max/mdev = 0.545/0.643/0.742/0.101 ms
-
---->8---
-
-Let me know if I can make any other tests that would help fixing this issue.
-
-> ---
->   drivers/net/usb/asix.h         |   9 +++
->   drivers/net/usb/asix_common.c  |  37 ++++++++++
->   drivers/net/usb/asix_devices.c | 120 +++++++++++++++++++++------------
->   drivers/net/usb/ax88172a.c     |  14 ----
->   4 files changed, 122 insertions(+), 58 deletions(-)
+> BTW, I also notice another thread for this issue:
 >
-> diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
-> index edb94efd265e..2122d302e643 100644
-> --- a/drivers/net/usb/asix.h
-> +++ b/drivers/net/usb/asix.h
-> @@ -25,6 +25,7 @@
->   #include <linux/usb/usbnet.h>
->   #include <linux/slab.h>
->   #include <linux/if_vlan.h>
-> +#include <linux/phy.h>
->   
->   #define DRIVER_VERSION "22-Dec-2011"
->   #define DRIVER_NAME "asix"
-> @@ -178,6 +179,10 @@ struct asix_common_private {
->   	u16 presvd_phy_advertise;
->   	u16 presvd_phy_bmcr;
->   	struct asix_rx_fixup_info rx_fixup_info;
-> +	struct mii_bus *mdio;
-> +	struct phy_device *phydev;
-> +	u16 phy_addr;
-> +	char phy_name[20];
->   };
->   
->   extern const struct driver_info ax88172a_info;
-> @@ -214,6 +219,7 @@ int asix_write_rx_ctl(struct usbnet *dev, u16 mode, int in_pm);
->   
->   u16 asix_read_medium_status(struct usbnet *dev, int in_pm);
->   int asix_write_medium_mode(struct usbnet *dev, u16 mode, int in_pm);
-> +void asix_adjust_link(struct net_device *netdev);
->   
->   int asix_write_gpio(struct usbnet *dev, u16 value, int sleep, int in_pm);
->   
-> @@ -222,6 +228,9 @@ void asix_set_multicast(struct net_device *net);
->   int asix_mdio_read(struct net_device *netdev, int phy_id, int loc);
->   void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val);
->   
-> +int asix_mdio_bus_read(struct mii_bus *bus, int phy_id, int regnum);
-> +int asix_mdio_bus_write(struct mii_bus *bus, int phy_id, int regnum, u16 val);
-> +
->   int asix_mdio_read_nopm(struct net_device *netdev, int phy_id, int loc);
->   void asix_mdio_write_nopm(struct net_device *netdev, int phy_id, int loc,
->   			  int val);
-> diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-> index e1109f1a8dd5..085bc8281082 100644
-> --- a/drivers/net/usb/asix_common.c
-> +++ b/drivers/net/usb/asix_common.c
-> @@ -384,6 +384,27 @@ int asix_write_medium_mode(struct usbnet *dev, u16 mode, int in_pm)
->   	return ret;
->   }
->   
-> +/* set MAC link settings according to information from phylib */
-> +void asix_adjust_link(struct net_device *netdev)
-> +{
-> +	struct phy_device *phydev = netdev->phydev;
-> +	struct usbnet *dev = netdev_priv(netdev);
-> +	u16 mode = 0;
-> +
-> +	if (phydev->link) {
-> +		mode = AX88772_MEDIUM_DEFAULT;
-> +
-> +		if (phydev->duplex == DUPLEX_HALF)
-> +			mode &= ~AX_MEDIUM_FD;
-> +
-> +		if (phydev->speed != SPEED_100)
-> +			mode &= ~AX_MEDIUM_PS;
-> +	}
-> +
-> +	asix_write_medium_mode(dev, mode, 0);
-> +	phy_print_status(phydev);
-> +}
-> +
->   int asix_write_gpio(struct usbnet *dev, u16 value, int sleep, int in_pm)
->   {
->   	int ret;
-> @@ -506,6 +527,22 @@ void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val)
->   	mutex_unlock(&dev->phy_mutex);
->   }
->   
-> +/* MDIO read and write wrappers for phylib */
-> +int asix_mdio_bus_read(struct mii_bus *bus, int phy_id, int regnum)
-> +{
-> +	struct usbnet *priv = bus->priv;
-> +
-> +	return asix_mdio_read(priv->net, phy_id, regnum);
-> +}
-> +
-> +int asix_mdio_bus_write(struct mii_bus *bus, int phy_id, int regnum, u16 val)
-> +{
-> +	struct usbnet *priv = bus->priv;
-> +
-> +	asix_mdio_write(priv->net, phy_id, regnum, val);
-> +	return 0;
-> +}
-> +
->   int asix_mdio_read_nopm(struct net_device *netdev, int phy_id, int loc)
->   {
->   	struct usbnet *dev = netdev_priv(netdev);
-> diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-> index 00b6ac0570eb..e4cd85e38edd 100644
-> --- a/drivers/net/usb/asix_devices.c
-> +++ b/drivers/net/usb/asix_devices.c
-> @@ -285,7 +285,7 @@ static int ax88172_bind(struct usbnet *dev, struct usb_interface *intf)
->   
->   static const struct ethtool_ops ax88772_ethtool_ops = {
->   	.get_drvinfo		= asix_get_drvinfo,
-> -	.get_link		= asix_get_link,
-> +	.get_link		= usbnet_get_link,
->   	.get_msglevel		= usbnet_get_msglevel,
->   	.set_msglevel		= usbnet_set_msglevel,
->   	.get_wol		= asix_get_wol,
-> @@ -293,37 +293,15 @@ static const struct ethtool_ops ax88772_ethtool_ops = {
->   	.get_eeprom_len		= asix_get_eeprom_len,
->   	.get_eeprom		= asix_get_eeprom,
->   	.set_eeprom		= asix_set_eeprom,
-> -	.nway_reset		= usbnet_nway_reset,
-> -	.get_link_ksettings	= usbnet_get_link_ksettings_mii,
-> -	.set_link_ksettings	= usbnet_set_link_ksettings_mii,
-> +	.nway_reset		= phy_ethtool_nway_reset,
-> +	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
-> +	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
->   };
->   
-> -static int ax88772_link_reset(struct usbnet *dev)
-> -{
-> -	u16 mode;
-> -	struct ethtool_cmd ecmd = { .cmd = ETHTOOL_GSET };
-> -
-> -	mii_check_media(&dev->mii, 1, 1);
-> -	mii_ethtool_gset(&dev->mii, &ecmd);
-> -	mode = AX88772_MEDIUM_DEFAULT;
-> -
-> -	if (ethtool_cmd_speed(&ecmd) != SPEED_100)
-> -		mode &= ~AX_MEDIUM_PS;
-> -
-> -	if (ecmd.duplex != DUPLEX_FULL)
-> -		mode &= ~AX_MEDIUM_FD;
-> -
-> -	netdev_dbg(dev->net, "ax88772_link_reset() speed: %u duplex: %d setting mode to 0x%04x\n",
-> -		   ethtool_cmd_speed(&ecmd), ecmd.duplex, mode);
-> -
-> -	asix_write_medium_mode(dev, mode, 0);
-> -
-> -	return 0;
-> -}
-> -
->   static int ax88772_reset(struct usbnet *dev)
->   {
->   	struct asix_data *data = (struct asix_data *)&dev->data;
-> +	struct asix_common_private *priv = dev->driver_priv;
->   	int ret;
->   
->   	/* Rewrite MAC address */
-> @@ -342,6 +320,8 @@ static int ax88772_reset(struct usbnet *dev)
->   	if (ret < 0)
->   		goto out;
->   
-> +	phy_start(priv->phydev);
-> +
->   	return 0;
->   
->   out:
-> @@ -586,7 +566,7 @@ static const struct net_device_ops ax88772_netdev_ops = {
->   	.ndo_get_stats64	= dev_get_tstats64,
->   	.ndo_set_mac_address 	= asix_set_mac_address,
->   	.ndo_validate_addr	= eth_validate_addr,
-> -	.ndo_do_ioctl		= asix_ioctl,
-> +	.ndo_do_ioctl		= phy_do_ioctl_running,
->   	.ndo_set_rx_mode        = asix_set_multicast,
->   };
->   
-> @@ -677,12 +657,57 @@ static int asix_resume(struct usb_interface *intf)
->   	return usbnet_resume(intf);
->   }
->   
-> +static int ax88772_init_mdio(struct usbnet *dev)
-> +{
-> +	struct asix_common_private *priv = dev->driver_priv;
-> +
-> +	priv->mdio = devm_mdiobus_alloc(&dev->udev->dev);
-> +	if (!priv->mdio)
-> +		return -ENOMEM;
-> +
-> +	priv->mdio->priv = dev;
-> +	priv->mdio->read = &asix_mdio_bus_read;
-> +	priv->mdio->write = &asix_mdio_bus_write;
-> +	priv->mdio->name = "Asix MDIO Bus";
-> +	/* mii bus name is usb-<usb bus number>-<usb device number> */
-> +	snprintf(priv->mdio->id, MII_BUS_ID_SIZE, "usb-%03d:%03d",
-> +		 dev->udev->bus->busnum, dev->udev->devnum);
-> +
-> +	return devm_mdiobus_register(&dev->udev->dev, priv->mdio);
-> +}
-> +
-> +static int ax88772_init_phy(struct usbnet *dev)
-> +{
-> +	struct asix_common_private *priv = dev->driver_priv;
-> +	int ret;
-> +
-> +	priv->phy_addr = asix_read_phy_addr(dev, true);
-> +	if (priv->phy_addr < 0)
-> +		return priv->phy_addr;
-> +
-> +	snprintf(priv->phy_name, sizeof(priv->phy_name), PHY_ID_FMT,
-> +		 priv->mdio->id, priv->phy_addr);
-> +
-> +	priv->phydev = phy_connect(dev->net, priv->phy_name, &asix_adjust_link,
-> +				   PHY_INTERFACE_MODE_INTERNAL);
-> +	if (IS_ERR(priv->phydev)) {
-> +		netdev_err(dev->net, "Could not connect to PHY device %s\n",
-> +			   priv->phy_name);
-> +		ret = PTR_ERR(priv->phydev);
-> +		return ret;
-> +	}
-> +
-> +	phy_attached_info(priv->phydev);
-> +
-> +	return 0;
-> +}
-> +
->   static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
->   {
-> -	int ret, i;
->   	u8 buf[ETH_ALEN] = {0}, chipcode = 0;
-> -	u32 phyid;
->   	struct asix_common_private *priv;
-> +	int ret, i;
-> +	u32 phyid;
->   
->   	usbnet_get_endpoints(dev, intf);
->   
-> @@ -714,17 +739,6 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
->   
->   	asix_set_netdev_dev_addr(dev, buf);
->   
-> -	/* Initialize MII structure */
-> -	dev->mii.dev = dev->net;
-> -	dev->mii.mdio_read = asix_mdio_read;
-> -	dev->mii.mdio_write = asix_mdio_write;
-> -	dev->mii.phy_id_mask = 0x1f;
-> -	dev->mii.reg_num_mask = 0x1f;
-> -
-> -	dev->mii.phy_id = asix_read_phy_addr(dev, true);
-> -	if (dev->mii.phy_id < 0)
-> -		return dev->mii.phy_id;
-> -
->   	dev->net->netdev_ops = &ax88772_netdev_ops;
->   	dev->net->ethtool_ops = &ax88772_ethtool_ops;
->   	dev->net->needed_headroom = 4; /* cf asix_tx_fixup() */
-> @@ -768,11 +782,31 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
->   		priv->suspend = ax88772_suspend;
->   	}
->   
-> +	ret = ax88772_init_mdio(dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ax88772_init_phy(dev);
-> +}
-> +
-> +static int ax88772_stop(struct usbnet *dev)
-> +{
-> +	struct asix_common_private *priv = dev->driver_priv;
-> +
-> +	/* On unplugged USB, we will get MDIO communication errors and the
-> +	 * PHY will be set in to PHY_HALTED state.
-> +	 */
-> +	if (priv->phydev->state != PHY_HALTED)
-> +		phy_stop(priv->phydev);
-> +
->   	return 0;
->   }
->   
->   static void ax88772_unbind(struct usbnet *dev, struct usb_interface *intf)
->   {
-> +	struct asix_common_private *priv = dev->driver_priv;
-> +
-> +	phy_disconnect(priv->phydev);
->   	asix_rx_fixup_common_free(dev->driver_priv);
->   }
->   
-> @@ -1161,8 +1195,8 @@ static const struct driver_info ax88772_info = {
->   	.bind = ax88772_bind,
->   	.unbind = ax88772_unbind,
->   	.status = asix_status,
-> -	.link_reset = ax88772_link_reset,
->   	.reset = ax88772_reset,
-> +	.stop = ax88772_stop,
->   	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_LINK_INTR | FLAG_MULTI_PACKET,
->   	.rx_fixup = asix_rx_fixup_common,
->   	.tx_fixup = asix_tx_fixup,
-> @@ -1173,7 +1207,6 @@ static const struct driver_info ax88772b_info = {
->   	.bind = ax88772_bind,
->   	.unbind = ax88772_unbind,
->   	.status = asix_status,
-> -	.link_reset = ax88772_link_reset,
->   	.reset = ax88772_reset,
->   	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_LINK_INTR |
->   	         FLAG_MULTI_PACKET,
-> @@ -1209,7 +1242,6 @@ static const struct driver_info hg20f9_info = {
->   	.bind = ax88772_bind,
->   	.unbind = ax88772_unbind,
->   	.status = asix_status,
-> -	.link_reset = ax88772_link_reset,
->   	.reset = ax88772_reset,
->   	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_LINK_INTR |
->   	         FLAG_MULTI_PACKET,
-> diff --git a/drivers/net/usb/ax88172a.c b/drivers/net/usb/ax88172a.c
-> index c8ca5187eece..2e2081346740 100644
-> --- a/drivers/net/usb/ax88172a.c
-> +++ b/drivers/net/usb/ax88172a.c
-> @@ -25,20 +25,6 @@ struct ax88172a_private {
->   	struct asix_rx_fixup_info rx_fixup_info;
->   };
->   
-> -/* MDIO read and write wrappers for phylib */
-> -static int asix_mdio_bus_read(struct mii_bus *bus, int phy_id, int regnum)
-> -{
-> -	return asix_mdio_read(((struct usbnet *)bus->priv)->net, phy_id,
-> -			      regnum);
-> -}
-> -
-> -static int asix_mdio_bus_write(struct mii_bus *bus, int phy_id, int regnum,
-> -			       u16 val)
-> -{
-> -	asix_mdio_write(((struct usbnet *)bus->priv)->net, phy_id, regnum, val);
-> -	return 0;
-> -}
-> -
->   /* set MAC link settings according to information from phylib */
->   static void ax88172a_adjust_link(struct net_device *netdev)
->   {
+> https://lore.kernel.org/linux-fsdevel/DM6PR11MB420291B550A10853403C7592FF349@DM6PR11MB4202.namprd11.prod.outlook.com/T/
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+This is the same way as my v1
+
+https://lore.kernel.org/lkml/3b4aa4cb-0e76-89c2-c48a-cf24e1a36bc2@kernel.dk/
+
+which was not what the maintainer wanted.
+
+
+>
+>>> ---
+>>>  fs/eventfd.c            | 2 +-
+>>>  include/linux/eventfd.h | 5 ++++-
+>>>  2 files changed, 5 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/fs/eventfd.c b/fs/eventfd.c
+>>> index e265b6dd4f34..cc7cd1dbedd3 100644
+>>> --- a/fs/eventfd.c
+>>> +++ b/fs/eventfd.c
+>>> @@ -71,7 +71,7 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
+>>>        * it returns true, the eventfd_signal() call should be deferred to a
+>>>        * safe context.
+>>>        */
+>>> -     if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
+>>> +     if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count) > EFD_WAKE_DEPTH))
+>>>               return 0;
+>>>
+>>>       spin_lock_irqsave(&ctx->wqh.lock, flags);
+>>> diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
+>>> index fa0a524baed0..886d99cd38ef 100644
+>>> --- a/include/linux/eventfd.h
+>>> +++ b/include/linux/eventfd.h
+>>> @@ -29,6 +29,9 @@
+>>>  #define EFD_SHARED_FCNTL_FLAGS (O_CLOEXEC | O_NONBLOCK)
+>>>  #define EFD_FLAGS_SET (EFD_SHARED_FCNTL_FLAGS | EFD_SEMAPHORE)
+>>>
+>>> +/* Maximum recursion depth */
+>>> +#define EFD_WAKE_DEPTH 1
+>>> +
+>>>  struct eventfd_ctx;
+>>>  struct file;
+>>>
+>>> @@ -47,7 +50,7 @@ DECLARE_PER_CPU(int, eventfd_wake_count);
+>>>
+>>>  static inline bool eventfd_signal_count(void)
+>>>  {
+>>> -     return this_cpu_read(eventfd_wake_count);
+>>> +     return this_cpu_read(eventfd_wake_count) > EFD_WAKE_DEPTH;
+>> count is just count. How deep is acceptable should be put
+>> where eventfd_signal_count is called.
+>>
+> The return value of this function is boolean rather than integer.
+> Please see the comments in eventfd_signal():
+>
+> "then it should check eventfd_signal_count() before calling this
+> function. If it returns true, the eventfd_signal() call should be
+> deferred to a safe context."
+
+OK. Now that the maintainer comments as such we can use it accordingly,
+though I still got the feeling that the function name and the type of the return
+value don't match.
+
+
+Thanks,
+Zhe
+
+>
+> Thanks,
+> Yongji
 
