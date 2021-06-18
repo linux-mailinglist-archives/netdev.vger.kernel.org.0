@@ -2,175 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9CE3AD22E
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 494293AD23C
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235222AbhFRSdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 14:33:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233791AbhFRScs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:32:48 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291E4C061574
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:38 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ho18so17247258ejc.8
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oDUgR9pnsaWBDFSwkrbZ0JZ9Qg981RAkrXovwQDOhgQ=;
-        b=pxbY3LYWKE/yaOMQj2SXrlTCm7Ksg/sctj0LRwj+LV557IddBJeCNrl+4PJAju3F+r
-         cxZYoKfHQ1evQrCfJcIMWq/tYdjDypFmwYL2nlBu6o0lS7/oWVd4KvJ349iZbJX0ncOu
-         AkmvcdHyhEaxEPNcxd4z3+Z9XB2gWW3L2UyQyFTUj2z66aewbLphYKb0i4DLy9OkHBRC
-         969NTYqjGFkjd11EW7MM2L07AjNjPk90hPZWSlCnThOj0wzai9O8yYbOU2KfV4Xn+nrP
-         oCoojP5Ei8zNLikqBLXhGSYSo0nK4zVsmp1ch6LSbBZjKNDsfLH9hej2F0mST6OFnDxJ
-         lLzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oDUgR9pnsaWBDFSwkrbZ0JZ9Qg981RAkrXovwQDOhgQ=;
-        b=SrQuCOyWMSNESNoz8s70MbWxJTC3JAZxxJ2ZOJHLJj8wGLKegCfLJsswRTK5276JQp
-         7i9c79dfqdh1gD4SVJNSbaEG/W+skWy1JTJM2Gcl45s0lyX/Tk8Lm9mXxfQEQ1ToDbue
-         EDc5qSM9+I09Mcqr2X2zWX3ATI13pUqBy65QbuWg+d9gB17BCYoSefofB/5p16NaA2If
-         4frdjVNKym3REPK0FqEzIzoKq+Vxfh2yNC87245h38E8bIHCqB+3mPPcjKtWOgMkctw1
-         WJ9qUUsJcUiwMSj6vi1V29kKR62uwSvP02LEJDDzZWK8INlZAqLf5hg0fxpL787E+yy1
-         z3vg==
-X-Gm-Message-State: AOAM532RgpuJpYvXTVpZ51HYlhxaJ0wcReKdofntKfuEjIUnyjZfv42S
-        OxtRpy+eJB/YqKQv5jRK8go=
-X-Google-Smtp-Source: ABdhPJz53sSkq0aq9h74vaoz7IZpjDq/JYeZNoWAnpUM9XJ7+6Kzn0ONEbhvKCdeFxgAWQPpoYNKFA==
-X-Received: by 2002:a17:906:dffc:: with SMTP id lc28mr12134785ejc.96.1624041036759;
-        Fri, 18 Jun 2021 11:30:36 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id s11sm6071988edd.65.2021.06.18.11.30.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 11:30:36 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 6/6] net: dsa: remove cross-chip support from the MRP notifiers
-Date:   Fri, 18 Jun 2021 21:30:17 +0300
-Message-Id: <20210618183017.3340769-7-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210618183017.3340769-1-olteanv@gmail.com>
-References: <20210618183017.3340769-1-olteanv@gmail.com>
+        id S233627AbhFRShS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 14:37:18 -0400
+Received: from mail-0201.mail-europe.com ([51.77.79.158]:46170 "EHLO
+        mail-0201.mail-europe.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233141AbhFRShO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:37:14 -0400
+Date:   Fri, 18 Jun 2021 18:34:50 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connolly.tech;
+        s=protonmail; t=1624041301;
+        bh=gPJStNIBkyU+EiKyKIcmWvO+oVN/hGtsoDaeZGrgtAM=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=Ccq/7+LgItQsJkh0Xxxpd8NbhZbrDXI7N1Xv3NWVjpArRTWpOqEKSmPKYNXjz1ZuJ
+         jn4T306aVgOByi+oKKxx8GE/hLOIEHqzl0C1EsmpEPJV3v7Eosw2QIfqlBDTNzjHjc
+         VJhJswathmzV+6z5Uz5oUuoKcnZePuKdaboC+rx8=
+To:     Kalle Valo <kvalo@codeaurora.org>
+From:   Caleb Connolly <caleb@connolly.tech>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Reply-To: Caleb Connolly <caleb@connolly.tech>
+Subject: Re: [PATCH] ath10k: demote chan info without scan request warning
+Message-ID: <f983af18-6a17-4cf1-a577-a86e4498b212@connolly.tech>
+In-Reply-To: <871r96yw6z.fsf@codeaurora.org>
+References: <20210522171609.299611-1-caleb@connolly.tech> <20210612103640.2FD93C433F1@smtp.codeaurora.org> <f39034ea-f4da-1564-e22f-398e4a1ae077@connolly.tech> <871r96yw6z.fsf@codeaurora.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-With MRP hardware assist being supported only by the ocelot switch
-family, which by design does not support cross-chip bridging, the
-current match functions are at best a guess and have not been confirmed
-in any way to do anything relevant in a multi-switch topology.
 
-Drop the code and make the notifiers match only on the targeted switch
-port.
+On 13/06/2021 10:01 am, Kalle Valo wrote:
+> Caleb Connolly <caleb@connolly.tech> writes:
+>
+>> Hi Kalle,
+>>
+>> On 12/06/2021 11:36 am, Kalle Valo wrote:
+>>> Caleb Connolly <caleb@connolly.tech> wrote:
+>>>
+>>>> Some devices/firmwares cause this to be printed every 5-15 seconds,
+>>>> though it has no impact on functionality. Demote this to a debug
+>>>> message.
+>>>>
+>>>> Signed-off-by: Caleb Connolly <caleb@connolly.tech>
+>>>> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+>>
+>> Is this meant to be an Ack?
+>
+> No, my patchwork script has few quirks and it actually takes the quoted
+> text from my pending branch, not from your actual email. That's why you
+> see my s-o-b there. I haven't bothered to fix that yet, but hopefully
+> one day.
+>
+>>> On what hardware and firmware version do you see this?
+>>
+>> I see this on SDM845 and MSM8998 platforms, specifically the OnePlus 6
+>> devices, PocoPhone F1 and OnePlus 5.
+>> On the OnePlus 6 (SDM845) we are stuck with the following signed vendor =
+fw:
+>>
+>> [    9.339873] ath10k_snoc 18800000.wifi: qmi chip_id 0x30214
+>> chip_family 0x4001 board_id 0xff soc_id 0x40030001
+>> [    9.339897] ath10k_snoc 18800000.wifi: qmi fw_version 0x20060029
+>> fw_build_timestamp 2019-07-12 02:14 fw_build_id
+>> QC_IMAGE_VERSION_STRING=3DWLAN.HL.2.0.c8-00041-QCAHLSWMTPLZ-1
+>>
+>> The OnePlus 5 (MSM8998) is using firmware:
+>>
+>> [ 6096.956799] ath10k_snoc 18800000.wifi: qmi chip_id 0x30214
+>> chip_family 0x4001 board_id 0xff soc_id 0x40010002
+>> [ 6096.956824] ath10k_snoc 18800000.wifi: qmi fw_version 0x1007007e
+>> fw_build_timestamp 2020-04-14 22:45 fw_build_id
+>> QC_IMAGE_VERSION_STRING=3DWLAN.HL.1.0.c6-00126-QCAHLSWMTPLZ-1.211883.1.2=
+78648.
+>
+> Thanks, I'll include this information to the commit log and then apply
+> the patch. And I'll assume you have also tested this patch on those
+> platforms so that I can add a Tested-on tag?
+Yeah, go ahead. Sorry for the late reply!
+>
+> BTW, ath10k should strip that ugly "QC_IMAGE_VERSION_STRING=3D" string in
+> the firmware version. Patches very welcome :)
+>
+> --
+> https://patchwork.kernel.org/project/linux-wireless/list/
+>
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
+tches
+>
 
-Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/switch.c | 53 +++++++-----------------------------------------
- 1 file changed, 7 insertions(+), 46 deletions(-)
-
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 75f567390a6b..7e948bf15fe0 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -346,36 +346,16 @@ static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
- 	return 0;
- }
- 
--static bool dsa_switch_mrp_match(struct dsa_switch *ds, int port,
--				 struct dsa_notifier_mrp_info *info)
--{
--	if (ds->index == info->sw_index && port == info->port)
--		return true;
--
--	if (dsa_is_dsa_port(ds, port))
--		return true;
--
--	return false;
--}
--
- static int dsa_switch_mrp_add(struct dsa_switch *ds,
- 			      struct dsa_notifier_mrp_info *info)
- {
--	int err = 0;
--	int port;
--
- 	if (!ds->ops->port_mrp_add)
- 		return -EOPNOTSUPP;
- 
--	for (port = 0; port < ds->num_ports; port++) {
--		if (dsa_switch_mrp_match(ds, port, info)) {
--			err = ds->ops->port_mrp_add(ds, port, info->mrp);
--			if (err)
--				break;
--		}
--	}
-+	if (ds->index == info->sw_index)
-+		return ds->ops->port_mrp_add(ds, info->port, info->mrp);
- 
--	return err;
-+	return 0;
- }
- 
- static int dsa_switch_mrp_del(struct dsa_switch *ds,
-@@ -390,39 +370,20 @@ static int dsa_switch_mrp_del(struct dsa_switch *ds,
- 	return 0;
- }
- 
--static bool
--dsa_switch_mrp_ring_role_match(struct dsa_switch *ds, int port,
--			       struct dsa_notifier_mrp_ring_role_info *info)
--{
--	if (ds->index == info->sw_index && port == info->port)
--		return true;
--
--	if (dsa_is_dsa_port(ds, port))
--		return true;
--
--	return false;
--}
--
- static int
- dsa_switch_mrp_add_ring_role(struct dsa_switch *ds,
- 			     struct dsa_notifier_mrp_ring_role_info *info)
- {
- 	int err = 0;
--	int port;
- 
- 	if (!ds->ops->port_mrp_add)
- 		return -EOPNOTSUPP;
- 
--	for (port = 0; port < ds->num_ports; port++) {
--		if (dsa_switch_mrp_ring_role_match(ds, port, info)) {
--			err = ds->ops->port_mrp_add_ring_role(ds, port,
--							      info->mrp);
--			if (err)
--				break;
--		}
--	}
-+	if (ds->index == info->sw_index)
-+		return ds->ops->port_mrp_add_ring_role(ds, info->port,
-+						       info->mrp);
- 
--	return err;
-+	return 0;
- }
- 
- static int
--- 
-2.25.1
+--
+Kind Regards,
+Caleb
 
