@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53C653AD22B
+	by mail.lfdr.de (Postfix) with ESMTP id A00BE3AD22C
 	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 20:30:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235170AbhFRScy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 14:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
+        id S235193AbhFRScz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 14:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234467AbhFRScp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:32:45 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5440CC061768
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:34 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id my49so17213689ejc.7
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:34 -0700 (PDT)
+        with ESMTP id S234474AbhFRScq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 14:32:46 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D26EC0617A6
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:35 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id s15so9831183edt.13
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 11:30:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6mIj7KiO52SrARAQx2Qhs8X77ZprGkslo3wS6baXgus=;
-        b=RBUF7C3Y+t/GNQQgE5cGHj6DXg64WbelSYLtt6WbkwWpVzsqfOV13B/ljnET9ldPBr
-         CdbS9ZfupJBM2vWEOjW8InWK666nWUKK/K6WN38L/gzi0OOWgVggkbZZzxHn72lkCfEO
-         tEBqCLFvn+86V1hPUqIiAkrvmxkQdqCrRT5ChFIkKQqK6urWAkfUtIehzyBArn04bCuP
-         lHU5ckfC46iGB8FtEo/kwwF3PkmjSgxA0OX1q+LDM99k76vTu8H8pbWqB50X7pw0i92Q
-         3dlgc2c94X2k9xb3PhzVrvFs8P+8KstcRAo2H3oUD0x5NdiV/Bvf9r+cV3wWwzDRXxCb
-         u/Ww==
+        bh=bxCxdl7smdQEJi6TjESjk98pk/y1jol/SJVHGSD71tc=;
+        b=KnRXkRcJ0HgUM/eqxNfc9XFczN8tNYZhxP8bCq1dipg+6PAl0OIArabqfwBtAMqNFC
+         45Ge2H6L/tbNe/qI5wx56lzwpTe6NwZWaDDQf6gQW3ii+qHLrQBIdkzQCQ/4ItJFT9e8
+         zWgIyB9Zeu8COAXJPWRbmay6IYxpJVejOR69tK84ToB7CmiB03LEZdgVBcXB7XWj2S7x
+         SV6je155QwdHaWaCroIhOlcyG/P3uVisRjir0QbrXOBaAuFYXlzc1TYBcRxFvWSuS1a3
+         yi8432yYA8uyBDFgms7yUOV50LmmXBTwySPTKNBY2jhGESqfw90eWNZg/2lUtTWixU6C
+         /9DA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6mIj7KiO52SrARAQx2Qhs8X77ZprGkslo3wS6baXgus=;
-        b=SYpQE9uVQCNHdygE5Vt6rTZ9rLpH4L6Ka+BF+bP1+GPt7OTVQ1p9YNUVGlrZU8/FIM
-         oxlURulE7QIHFG1i2T7zlNvd/N/t+hjObzEJ38MxjjNw0LIch+ZBWMhKzLIn2/cQ0ikR
-         dBjiJa9dkTkU5CwSnexAnDR8tNPtGPHDCfGPoV6D6sY8njm8ttq+D8+/1+oUN+dE2Z25
-         tfw5/O+lUa4KikVb0pTmtO3l1s43faUXU263RytalX1yvsh77vD80Q60E0WgxN8SK9I5
-         x61pGwKSMY341homw7rSRQL+zhfz4CJHXRZV/5oqBQMj00t6z2BYQmzlcsB63YcLhVRs
-         bQrA==
-X-Gm-Message-State: AOAM530x2QrnBHmiVlD+EIqFqbtGGKjyWeF5YpA7+7r0nADFQqpt7SUP
-        6QN4uvjRl6+iEQrH1yalLmIAp4OCCZA=
-X-Google-Smtp-Source: ABdhPJxi1fqy8BiyUKOKEX/DzZc70BtEn1G3bQUnFX2uCSIX4+JHbRD51YLbY1uPOH0Vm0yGjPKO1Q==
-X-Received: by 2002:a17:906:19cc:: with SMTP id h12mr12208563ejd.306.1624041032951;
-        Fri, 18 Jun 2021 11:30:32 -0700 (PDT)
+        bh=bxCxdl7smdQEJi6TjESjk98pk/y1jol/SJVHGSD71tc=;
+        b=V6QLnuTy4DCUvVcCLRlLoxyknibBk2sReBBDTpFTf8w5DlF3Rq4mCLz5yFvYCfig97
+         qkDeVQwNsFl+dgPKjI8H3Lis3Cqx3Nw8oz/6WBKFraplKBSC64UD0CbJP0aHg/Ua2/Sr
+         B1KeZyy8rYpZPiDdOCAh11LFs6K7enXmJseeo3xdMkE0zMGsoYwloo7u6O+fl4NUGx8u
+         fg+jU1YPkUzNYKil7aocP6APrnfNlgS9zZz/E+rgYkOXR2AtH5XfTFQas3EoTC1hm2HR
+         lmOJzWhIGXiKItGUiFuM2f12x3CPw+B5aPFfsMThNucZYhgTMY9NTGLnz0E507vBcmXa
+         FutA==
+X-Gm-Message-State: AOAM532NtUxWsjVnsiUvFUN0D8ife6v37VK2YQd2OXlUhs+Ly4v/b7eu
+        vofpxhK19CWsDi84ThQMTWo=
+X-Google-Smtp-Source: ABdhPJz1vwiul8f4ywvp7KV6+iCn46A9kzJJDy0X+/lGF8jViySe8pQj51hCWoOmdl4Bq+9VVxy6ag==
+X-Received: by 2002:a05:6402:d06:: with SMTP id eb6mr6784441edb.337.1624041033963;
+        Fri, 18 Jun 2021 11:30:33 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id s11sm6071988edd.65.2021.06.18.11.30.32
+        by smtp.gmail.com with ESMTPSA id s11sm6071988edd.65.2021.06.18.11.30.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 11:30:32 -0700 (PDT)
+        Fri, 18 Jun 2021 11:30:33 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 3/6] net: dsa: execute dsa_switch_mdb_add only for routing port in cross-chip topologies
-Date:   Fri, 18 Jun 2021 21:30:14 +0300
-Message-Id: <20210618183017.3340769-4-olteanv@gmail.com>
+Subject: [PATCH net-next 4/6] net: dsa: calculate the largest_mtu across all ports in the tree
+Date:   Fri, 18 Jun 2021 21:30:15 +0300
+Message-Id: <20210618183017.3340769-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210618183017.3340769-1-olteanv@gmail.com>
 References: <20210618183017.3340769-1-olteanv@gmail.com>
@@ -68,110 +68,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Currently, the notifier for adding a multicast MAC address matches on
-the targeted port and on all DSA links in the system, be they upstream
-or downstream links.
-
-This leads to a considerable amount of useless traffic.
-
-Consider this daisy chain topology, and a MDB add notifier emitted on
-sw0p0. It matches on sw0p0, sw0p3, sw1p3 and sw2p4.
+If we have a cross-chip topology like this:
 
    sw0p0     sw0p1     sw0p2     sw0p3     sw0p4
-[  user ] [  user ] [  user ] [  dsa  ] [  cpu  ]
-[   x   ] [       ] [       ] [   x   ] [       ]
+[  cpu  ] [  user ] [  user ] [  dsa  ] [  user ]
                                   |
                                   +---------+
                                             |
    sw1p0     sw1p1     sw1p2     sw1p3     sw1p4
 [  user ] [  user ] [  user ] [  dsa  ] [  dsa  ]
-[       ] [       ] [       ] [   x   ] [   x   ]
-                                  |
-                                  +---------+
-                                            |
-   sw2p0     sw2p1     sw2p2     sw2p3     sw2p4
-[  user ] [  user ] [  user ] [  user ] [  dsa  ]
-[       ] [       ] [       ] [       ] [   x   ]
 
-But switch 0 has no reason to send the multicast traffic for that MAC
-address on sw0p3, which is how it reaches switches 1 and 2. Those
-switches don't expect, according to the user configuration, to receive
-this multicast address from switch 1, and they will drop it anyway,
-because the only valid destination is the port they received it on.
-They only need to configure themselves to deliver that multicast address
-_towards_ switch 1, where the MDB entry is installed.
+and we issue the following commands:
 
-Similarly, switch 1 should not send this multicast traffic towards
-sw1p3, because that is how it reaches switch 2.
+1. ip link set sw0p1 mtu 1700
+2. ip link set sw1p1 mtu 1600
 
-With this change, the heat map for this MDB notifier changes as follows:
+we notice the following happening:
 
-   sw0p0     sw0p1     sw0p2     sw0p3     sw0p4
-[  user ] [  user ] [  user ] [  dsa  ] [  cpu  ]
-[   x   ] [       ] [       ] [       ] [       ]
-                                  |
-                                  +---------+
-                                            |
-   sw1p0     sw1p1     sw1p2     sw1p3     sw1p4
-[  user ] [  user ] [  user ] [  dsa  ] [  dsa  ]
-[       ] [       ] [       ] [       ] [   x   ]
-                                  |
-                                  +---------+
-                                            |
-   sw2p0     sw2p1     sw2p2     sw2p3     sw2p4
-[  user ] [  user ] [  user ] [  user ] [  dsa  ]
-[       ] [       ] [       ] [       ] [   x   ]
+Command 1. emits a non-targeted MTU notifier for the CPU port (sw0p0)
+with the largest_mtu calculated across switch 0, of 1700. This matches
+sw0p0, sw0p3 and sw1p4 (all CPU ports and DSA links).
+Then, it emits a targeted MTU notifier for the user port (sw0p1), again
+with MTU 1700 (this doesn't matter).
 
-Now the mdb notifier behaves the same as the fdb notifier.
+Command 2. emits a non-targeted MTU notifier for the CPU port (sw0p0)
+with the largest_mtu calculated across switch 1, of 1600. This matches
+the same group of ports as above, and decreases the MTU for the CPU port
+and the DSA links from 1700 to 1600.
+
+As a result, the sw0p1 user port can no longer communicate with its CPU
+port at MTU 1700.
+
+To address this, we should calculate the largest_mtu across all switches
+that may share a CPU port, and only emit MTU notifiers with that value.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/switch.c | 25 ++-----------------------
- 1 file changed, 2 insertions(+), 23 deletions(-)
+ net/dsa/slave.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 9bf8e20ecdf3..8b601ced6b45 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -232,36 +232,15 @@ static int dsa_switch_lag_leave(struct dsa_switch *ds,
- 	return 0;
- }
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 798944aa847a..ac2ca5f75af3 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1528,6 +1528,7 @@ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	struct dsa_slave_priv *p = netdev_priv(dev);
+ 	struct dsa_switch *ds = p->dp->ds;
++	struct dsa_port *dp_iter;
+ 	struct dsa_port *cpu_dp;
+ 	int port = p->dp->index;
+ 	int largest_mtu = 0;
+@@ -1535,31 +1536,31 @@ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
+ 	int old_master_mtu;
+ 	int mtu_limit;
+ 	int cpu_mtu;
+-	int err, i;
++	int err;
  
--static bool dsa_switch_mdb_match(struct dsa_switch *ds, int port,
--				 struct dsa_notifier_mdb_info *info)
--{
--	if (ds->index == info->sw_index && port == info->port)
--		return true;
--
--	if (dsa_is_dsa_port(ds, port))
--		return true;
--
--	return false;
--}
--
- static int dsa_switch_mdb_add(struct dsa_switch *ds,
- 			      struct dsa_notifier_mdb_info *info)
- {
--	int err = 0;
--	int port;
-+	int port = dsa_towards_port(ds, info->sw_index, info->port);
- 
- 	if (!ds->ops->port_mdb_add)
+ 	if (!ds->ops->port_change_mtu)
  		return -EOPNOTSUPP;
  
--	for (port = 0; port < ds->num_ports; port++) {
--		if (dsa_switch_mdb_match(ds, port, info)) {
--			err = ds->ops->port_mdb_add(ds, port, info->mdb);
--			if (err)
--				break;
--		}
--	}
--
--	return err;
-+	return ds->ops->port_mdb_add(ds, port, info->mdb);
- }
+-	for (i = 0; i < ds->num_ports; i++) {
++	list_for_each_entry(dp_iter, &ds->dst->ports, list) {
+ 		int slave_mtu;
  
- static int dsa_switch_mdb_del(struct dsa_switch *ds,
+-		if (!dsa_is_user_port(ds, i))
++		if (!dsa_port_is_user(dp_iter))
+ 			continue;
+ 
+ 		/* During probe, this function will be called for each slave
+ 		 * device, while not all of them have been allocated. That's
+ 		 * ok, it doesn't change what the maximum is, so ignore it.
+ 		 */
+-		if (!dsa_to_port(ds, i)->slave)
++		if (!dp_iter->slave)
+ 			continue;
+ 
+ 		/* Pretend that we already applied the setting, which we
+ 		 * actually haven't (still haven't done all integrity checks)
+ 		 */
+-		if (i == port)
++		if (dp_iter == dp)
+ 			slave_mtu = new_mtu;
+ 		else
+-			slave_mtu = dsa_to_port(ds, i)->slave->mtu;
++			slave_mtu = dp_iter->slave->mtu;
+ 
+ 		if (largest_mtu < slave_mtu)
+ 			largest_mtu = slave_mtu;
 -- 
 2.25.1
 
