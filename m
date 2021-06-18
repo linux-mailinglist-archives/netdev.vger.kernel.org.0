@@ -2,180 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C926E3ACD3D
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:12:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A18F93ACD39
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 16:11:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234364AbhFROPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 10:15:01 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:58014 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbhFROPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 10:15:00 -0400
-Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
+        id S234359AbhFRON7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 10:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229782AbhFRON6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 10:13:58 -0400
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80566C061574;
+        Fri, 18 Jun 2021 07:11:48 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 1B3951280241;
+        Fri, 18 Jun 2021 07:11:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1624025506;
+        bh=4LBN5ONxoCRCcmkd/3TRY+Leu8+Z6eiVOBBAW6jThCc=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=ZOOaW8e7cDpvpBw4NDkdSQvvjKr3Tv3PpC3/84PPPXnDUohCTNaNIapIEV+QfwMMm
+         MZ+qtKH6hkBXEtHHI9vrWTnL23mrzQhufRG7QTGP+P/f0yKe9SdYAMliHBYKYNy+lW
+         0XkClXMLWyc+4x0i+eb5prohIqKqCYPH/QRUBqdU=
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Ef-HQXDtiAdB; Fri, 18 Jun 2021 07:11:46 -0700 (PDT)
+Received: from jarvis.int.hansenpartnership.com (unknown [IPv6:2601:600:8280:66d1::c447])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 7FEAC1FDAE;
-        Fri, 18 Jun 2021 14:12:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1624025570; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=YLYUcYH4EymR8fg+XBBx0/tAMx1/Y8L5K0AR9FA20o0=;
-        b=qZGU20QjQgJ2NY+NfGve2ebX4xILPoUNiy003XC3uTMRMf7hSfVwiQUi0ZyZeFdwkXVqNL
-        rSgvN1zwBWcvPq1UOV9FE//ftlDiKDPoVknovxp/946UzFns0yuATsSUxw3d4d+Gy/39M3
-        XflziI8KVvBpNgHoveLiYIrIRnQEpD8=
-Received: from imap3-int (imap-alt.suse-dmz.suse.de [192.168.254.47])
-        by imap.suse.de (Postfix) with ESMTP id 1D642118DD;
-        Fri, 18 Jun 2021 14:12:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1624025570; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=YLYUcYH4EymR8fg+XBBx0/tAMx1/Y8L5K0AR9FA20o0=;
-        b=qZGU20QjQgJ2NY+NfGve2ebX4xILPoUNiy003XC3uTMRMf7hSfVwiQUi0ZyZeFdwkXVqNL
-        rSgvN1zwBWcvPq1UOV9FE//ftlDiKDPoVknovxp/946UzFns0yuATsSUxw3d4d+Gy/39M3
-        XflziI8KVvBpNgHoveLiYIrIRnQEpD8=
-Received: from director2.suse.de ([192.168.254.72])
-        by imap3-int with ESMTPSA
-        id S/ieBeKpzGBgSgAALh3uQQ
-        (envelope-from <varad.gautam@suse.com>); Fri, 18 Jun 2021 14:12:50 +0000
-From:   Varad Gautam <varad.gautam@suse.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Varad Gautam <varad.gautam@suse.com>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        stable@vger.kernel.org
-Subject: [PATCH] xfrm: policy: Restructure RCU-read locking in xfrm_sk_policy_lookup
-Date:   Fri, 18 Jun 2021 16:11:01 +0200
-Message-Id: <20210618141101.18168-1-varad.gautam@suse.com>
-X-Mailer: git-send-email 2.30.2
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 2D3291280021;
+        Fri, 18 Jun 2021 07:11:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1624025505;
+        bh=4LBN5ONxoCRCcmkd/3TRY+Leu8+Z6eiVOBBAW6jThCc=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=v5gjcRptKODpU0+TvxfBTk18Wz6cYOSQVqInEBg1CDw6wSl8BJsxg+4zb6b6L20t5
+         Lf8hlOhryE6RTc778UvZDG1QLVK7TdwD1HsZ151o8S3/idPjYz1589NX7jhpLKl6ND
+         PThgRTXDcqRWz6DK7IMwg9PXztNLVgRtFstqTJCE=
+Message-ID: <cd7ffbe516255c30faab7a3ee3ee48f32e9aa797.camel@HansenPartnership.com>
+Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+        David Hildenbrand <david@redhat.com>, Greg KH <greg@kroah.com>,
+        Christoph Lameter <cl@gentwo.de>,
+        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
+        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+Date:   Fri, 18 Jun 2021 07:11:44 -0700
+In-Reply-To: <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
+References: <YIx7R6tmcRRCl/az@mit.edu>
+         <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
+         <YK+esqGjKaPb+b/Q@kroah.com>
+         <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
+         <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
+         <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
+         <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
+         <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
+         <20210610152633.7e4a7304@oasis.local.home>
+         <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
+         <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit "xfrm: policy: Read seqcount outside of rcu-read side in
-xfrm_policy_lookup_bytype" [Linked] resolved a locking bug in
-xfrm_policy_lookup_bytype that causes an RCU reader-writer deadlock on
-the mutex wrapped by xfrm_policy_hash_generation on PREEMPT_RT since
-77cc278f7b20 ("xfrm: policy: Use sequence counters with associated
-lock").
+On Fri, 2021-06-18 at 16:46 +0300, Laurent Pinchart wrote:
+> For workshop or brainstorming types of sessions, the highest barrier
+> to participation for remote attendees is local attendees not speaking
+> in microphones. That's the number one rule that moderators would need
+> to enforce, I think all the rest depends on it. This may require a
+> larger number of microphones in the room than usual.
 
-However, xfrm_sk_policy_lookup can still reach xfrm_policy_lookup_bytype
-while holding rcu_read_lock(), as:
-xfrm_sk_policy_lookup()
-  rcu_read_lock()
-  security_xfrm_policy_lookup()
-    xfrm_policy_lookup()
-      xfrm_policy_lookup_bytype()
-        read_seqcount_begin()
-          mutex_lock(&hash_resize_mutex)
+Plumbers has been pretty good at that.  Even before remote
+participation, if people don't speak into the mic, it's not captured on
+the recording, so we've spent ages developing protocols for this. 
+Mostly centred around having someone in the room to remind everyone to
+speak into the mic and easily throwable padded mic boxes.  Ironically,
+this is the detail that meant we couldn't hold Plumbers in person under
+the current hotel protocols ... the mic needs sanitizing after each
+throw.
 
-This results in the same deadlock on hash_resize_mutex, where xfrm_hash_resize
-is holding the mutex and sleeping inside synchronize_rcu, and
-xfrm_policy_lookup_bytype blocks on the mutex inside the RCU read side
-critical section.
+James
 
-To resolve this, shorten the RCU read side critical section within
-xfrm_sk_policy_lookup by taking a reference on the associated xfrm_policy,
-and avoid calling xfrm_policy_lookup_bytype with the rcu_read_lock() held.
-
-Fixes: 77cc278f7b20 ("xfrm: policy: Use sequence counters with associated lock")
-Link: https://lore.kernel.org/r/20210528160407.32127-1-varad.gautam@suse.com/
-Signed-off-by: Varad Gautam <varad.gautam@suse.com>
-Cc: stable@vger.kernel.org # v5.9
----
- net/xfrm/xfrm_policy.c | 65 +++++++++++++++++++++++-------------------
- 1 file changed, 35 insertions(+), 30 deletions(-)
-
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 0b7409f19ecb1..28e072007c72d 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -2152,42 +2152,47 @@ static struct xfrm_policy *xfrm_sk_policy_lookup(const struct sock *sk, int dir,
- 						 u16 family, u32 if_id)
- {
- 	struct xfrm_policy *pol;
-+	bool match;
-+	int err = 0;
- 
--	rcu_read_lock();
-  again:
-+	rcu_read_lock();
- 	pol = rcu_dereference(sk->sk_policy[dir]);
--	if (pol != NULL) {
--		bool match;
--		int err = 0;
--
--		if (pol->family != family) {
--			pol = NULL;
--			goto out;
--		}
-+	if (pol == NULL) {
-+		rcu_read_unlock();
-+		goto out;
-+	}
- 
--		match = xfrm_selector_match(&pol->selector, fl, family);
--		if (match) {
--			if ((sk->sk_mark & pol->mark.m) != pol->mark.v ||
--			    pol->if_id != if_id) {
--				pol = NULL;
--				goto out;
--			}
--			err = security_xfrm_policy_lookup(pol->security,
--						      fl->flowi_secid,
--						      dir);
--			if (!err) {
--				if (!xfrm_pol_hold_rcu(pol))
--					goto again;
--			} else if (err == -ESRCH) {
--				pol = NULL;
--			} else {
--				pol = ERR_PTR(err);
--			}
--		} else
--			pol = NULL;
-+	/* Take a reference on this pol and call rcu_read_unlock(). */
-+	if (!xfrm_pol_hold_rcu(pol)) {
-+		rcu_read_unlock();
-+		goto again;
- 	}
--out:
- 	rcu_read_unlock();
-+
-+	if (pol->family != family)
-+		goto out_put;
-+
-+	match = xfrm_selector_match(&pol->selector, fl, family);
-+	if (!match)
-+		goto out_put;
-+
-+	if ((sk->sk_mark & pol->mark.m) != pol->mark.v ||
-+	    pol->if_id != if_id)
-+		goto out_put;
-+
-+	err = security_xfrm_policy_lookup(pol->security,
-+					fl->flowi_secid,
-+					dir);
-+	if (!err) {
-+		/* Safe to return, we have a ref on pol. */
-+		goto out;
-+	}
-+
-+ out_put:
-+	xfrm_pol_put(pol);
-+	pol = (err && err != -ESRCH) ? ERR_PTR(err) : NULL;
-+ out:
- 	return pol;
- }
- 
--- 
-2.30.2
 
