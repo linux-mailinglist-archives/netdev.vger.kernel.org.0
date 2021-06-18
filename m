@@ -2,100 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80EA23AC46B
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 09:01:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9938B3AC4C7
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 09:17:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbhFRHDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 03:03:45 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:21908 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229816AbhFRHDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 03:03:44 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15I6Wkbb151864;
-        Fri, 18 Jun 2021 03:01:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=3Y/QAFCVp/tbF3uU+dnCZ4rNEFIIjcqp7i+8Q9YyBs4=;
- b=WIGmNXfzXqmosz7e9Glp4B0CjWmM/37i7keO4PmnBTIXslq+Tz7Wriv23kssomU3QAj6
- 2AfEkojp930BxgESR0sBugn1fC7UMNmAbF0t6nR3Ssq7zElH8kcn0P6wBNOUnivPq5Y0
- 5q+JulALFCpD/J0DabFozrY/+P8AApvMrtf9JuMncICvQSl8XtsEFTn9KfKXB9R8lsjq
- sxtci4wJYdq8HMD4Pp3V7hUj5R/NNcw8nkXgQZtMOvqrQjpTIOi9hx32f5jLQhpcWLqn
- TDM1DiQ51RhXLsVInqUXrMM+LSq6foNgQIgLn26tr98UJvm7rO8kqs5v7XZTf+S7slBS TQ== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 398jmmen8b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Jun 2021 03:01:31 -0400
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 15I6uosA000371;
-        Fri, 18 Jun 2021 07:01:29 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 394m6hu4qh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Jun 2021 07:01:29 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 15I71QjP33358212
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Jun 2021 07:01:26 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9214942042;
-        Fri, 18 Jun 2021 07:01:26 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 578C14204B;
-        Fri, 18 Jun 2021 07:01:26 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 18 Jun 2021 07:01:26 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Guvenc Gulce <guvenc@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net] MAINTAINERS: add Guvenc as SMC maintainer
-Date:   Fri, 18 Jun 2021 09:00:30 +0200
-Message-Id: <20210618070030.2326320-1-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: lesYsBQDwGiSUuoYYcFaOkJw88WXzxHp
-X-Proofpoint-GUID: lesYsBQDwGiSUuoYYcFaOkJw88WXzxHp
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S233127AbhFRHTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 03:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233096AbhFRHTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 03:19:38 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16D3C061760
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 00:17:29 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lu8km-0003gp-5p; Fri, 18 Jun 2021 09:17:24 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:e7d0:b47e:7728:2b24])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id A8CA463EA3C;
+        Fri, 18 Jun 2021 07:04:52 +0000 (UTC)
+Date:   Fri, 18 Jun 2021 09:04:52 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     wg@grandegger.com, davem@davemloft.net, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH] net: can: fix use-after-free in ems_usb_disconnect
+Message-ID: <20210618070452.cjt7f5hzlfikztwz@pengutronix.de>
+References: <20210617185130.5834-1-paskripkin@gmail.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-06-17_17:2021-06-15,2021-06-17 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 clxscore=1015 mlxlogscore=833 phishscore=0
- lowpriorityscore=0 impostorscore=0 mlxscore=0 malwarescore=0 bulkscore=0
- suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104190000 definitions=main-2106180037
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="6tq7svrpdp6b2uth"
+Content-Disposition: inline
+In-Reply-To: <20210617185130.5834-1-paskripkin@gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Guvenc as maintainer for Shared Memory Communications (SMC)
-Sockets.
 
-Cc: Julian Wiedmann <jwi@linux.ibm.com>
-Acked-by: Guvenc Gulce <guvenc@linux.ibm.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+--6tq7svrpdp6b2uth
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 183cc61e2dc0..5046e55dc7f3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16571,6 +16571,7 @@ F:	drivers/misc/sgi-xp/
- 
- SHARED MEMORY COMMUNICATIONS (SMC) SOCKETS
- M:	Karsten Graul <kgraul@linux.ibm.com>
-+M:	Guvenc Gulce <guvenc@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
- S:	Supported
- W:	http://www.ibm.com/developerworks/linux/linux390/
--- 
-2.25.1
+On 17.06.2021 21:51:30, Pavel Skripkin wrote:
+> In ems_usb_disconnect() dev pointer, which is
+> netdev private data, is used after free_candev() call:
+>=20
+> 	if (dev) {
+> 		unregister_netdev(dev->netdev);
+> 		free_candev(dev->netdev);
+>=20
+> 		unlink_all_urbs(dev);
+>=20
+> 		usb_free_urb(dev->intr_urb);
+>=20
+> 		kfree(dev->intr_in_buffer);
+> 		kfree(dev->tx_msg_buffer);
+> 	}
+>=20
+> Fix it by simply moving free_candev() at the end of
+> the block.
+>=20
+> Fail log:
+>  BUG: KASAN: use-after-free in ems_usb_disconnect
+>  Read of size 8 at addr ffff88804e041008 by task kworker/1:2/2895
+>=20
+>  CPU: 1 PID: 2895 Comm: kworker/1:2 Not tainted 5.13.0-rc5+ #164
+>  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0=
+-g155821a-rebuilt.opensuse.4
+>  Workqueue: usb_hub_wq hub_event
+>  Call Trace:
+>      dump_stack (lib/dump_stack.c:122)
+>      print_address_description.constprop.0.cold (mm/kasan/report.c:234)
+>      kasan_report.cold (mm/kasan/report.c:420 mm/kasan/report.c:436)
+>      ems_usb_disconnect (drivers/net/can/usb/ems_usb.c:683 drivers/net/ca=
+n/usb/ems_usb.c:1058)
+>=20
+> Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB=
+ interface")
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 
+Applied to linux-can/testing and added stable on Cc.
+
+Thanks,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--6tq7svrpdp6b2uth
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDMRZEACgkQqclaivrt
+76mnqgf/aSKQviylfEMXNmblnBD4eGq3CMjiugvH+K4jof1OJ72ztvdUzP2DAfd/
+9CA0EE0UWEVpqhcUteGMMgM7F0+AqJF4PvgqiR5YT2qqnWg40xDcC2+NtdRYNBqt
+fQt+mzbXNj5J39v8l8FJGPo5Ip7E561khpGG9jA5BFgIT70jegTdNPho+uUV+CKV
+1co2LUuDCPtnN/GZHOI3bLflWqr2p1V60RimGZK9QbOLYuf5ZynHkB4+GrwVO+MV
+Sryao3eO/JR06Ty6vo4RVh0SqWOFx549SGsl+O9pn7W5U4Sw+5eklu5UVW6OyL52
+pWNIVhvfae9qHdITE3ZftnG0OPd1gQ==
+=n50B
+-----END PGP SIGNATURE-----
+
+--6tq7svrpdp6b2uth--
