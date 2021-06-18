@@ -2,82 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 775303ACA7C
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 13:55:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A57963ACAAA
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 14:13:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234274AbhFRL5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 07:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231437AbhFRL5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 07:57:37 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3FDC061760
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 04:55:27 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id bp38so16357932lfb.0
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 04:55:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=fg1RaSfJDnm+oFtJenKoerkLiZFE4+FFve2MWRbIPq8=;
-        b=bGQXWrnHAw1dakSzFzG5w7YPvMRPK9n8R/oUJRdledAo8ktrfduPjgMISVi3LoBaeG
-         +EueV/nflnH1P+4IwWVq9+ujSipihpmCmo0KDG21JEepFJEnobIaM6mx6BFrpSdlO41l
-         jxhrvk8kcf+9SZMZ8H6gLUdi8XZxJnZXs8ajg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=fg1RaSfJDnm+oFtJenKoerkLiZFE4+FFve2MWRbIPq8=;
-        b=Xo3Qs4aB/5ETHDsO7qdrtQisVIzgKlFk8+xC9NNjNjf+mhJVyNuSVu6pAg4Id8wbFa
-         lky7yPPw+UL9tJKGOCUCKIDsncvKIkHPl/0lCQXsvQVz9RD+KMqqRRZ/DcRtwlr1LWcw
-         cpvx2+swcIQ671DSqztGREK/ag9VMSrrL2EoRfwjdZ4p1QFOQlqESfxVFxQqgLRQsE5X
-         DwOdG2Am3VODZuPRDN2qA2lUL5Sh2wBbOpshHSorlX6W9fXdqoHtVObmiZhd+FBUs/Ij
-         QvhTZsz9AICejmCjzQRk+WL8ACbr5JASyBxYTg0w+JQGBKiOGLp0yahH5L2aTigWBQft
-         RdOA==
-X-Gm-Message-State: AOAM531bQu4KiasQ1ES4R6/o5zb0lWEshNjC26eRZlv+CiYaUzj03dcZ
-        0XkWxNSwBflXbUmN6VF1wCiDbbb5eei2E8MQUIhBog==
-X-Google-Smtp-Source: ABdhPJw4CWOVaHmFZ3AuD2s4gaNo5WYGPUvf+kj85rPKZB69FqZZP+Sals7L7eZVEX8geQssux/6sONgBJay+iD3YsM=
-X-Received: by 2002:a05:6512:a84:: with SMTP id m4mr2849723lfu.451.1624017326050;
- Fri, 18 Jun 2021 04:55:26 -0700 (PDT)
+        id S232143AbhFRMPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 08:15:11 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:7489 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231250AbhFRMPL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 08:15:11 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G5yRG4hrzzZjjq;
+        Fri, 18 Jun 2021 20:10:02 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Fri, 18 Jun 2021 20:12:58 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Fri, 18 Jun 2021 20:12:58 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <lipeng321@huawei.com>,
+        <huangguangbin2@huawei.com>
+Subject: [PATCH net-next] net: hns3: fix reuse conflict of the rx page
+Date:   Fri, 18 Jun 2021 20:09:45 +0800
+Message-ID: <1624018185-38469-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-References: <20210618105526.265003-1-zenczykowski@gmail.com>
-In-Reply-To: <20210618105526.265003-1-zenczykowski@gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Fri, 18 Jun 2021 12:55:15 +0100
-Message-ID: <CACAyw99k4ZhePBcRJzJn37rvGKnPHEgE3z8Y-47iYKQO2nqFpQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] Revert "bpf: program: Refuse non-O_RDWR flags in BPF_OBJ_GET"
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Greg Kroah-Hartman <gregkh@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Jun 2021 at 11:55, Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
->
-> This reverts commit d37300ed182131f1757895a62e556332857417e5.
->
-> This breaks Android userspace which expects to be able to
-> fetch programs with just read permissions.
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-Sorry about this! I'll defer to the maintainers what to do here.
-Reverting leaves us with a gaping hole for access control of pinned
-programs.
+In the current rx page reuse handling process, the rx page buffer may
+have conflict between driver and stack in high-pressure scenario.
 
---=20
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+To fix this problem, we need to check whether the page is only owned
+by driver at the begin and at the end of a page to make sure there is
+no reuse conflict between driver and stack when desc_cb->page_offset
+is rollbacked to zero or increased.
 
-www.cloudflare.com
+Fixes: fa7711b888f2 ("net: hns3: optimize the rx page reuse handling process")
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 26 ++++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 51bbf5f760c5..cdb5f14fb6bc 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -3537,21 +3537,33 @@ static void hns3_nic_reuse_page(struct sk_buff *skb, int i,
+ 	int size = le16_to_cpu(desc->rx.size);
+ 	u32 truesize = hns3_buf_size(ring);
+ 	u32 frag_size = size - pull_len;
++	bool reused;
+ 
+ 	/* Avoid re-using remote or pfmem page */
+ 	if (unlikely(!dev_page_is_reusable(desc_cb->priv)))
+ 		goto out;
+ 
+-	/* Stack is not using and current page_offset is non-zero, we can
+-	 * reuse from the zero offset.
++	reused = hns3_can_reuse_page(desc_cb);
++
++	/* Rx page can be reused when:
++	 * 1. Rx page is only owned by the driver when page_offset
++	 *    is zero, which means 0 @ truesize will be used by
++	 *    stack after skb_add_rx_frag() is called, and the rest
++	 *    of rx page can be reused by driver.
++	 * Or
++	 * 2. Rx page is only owned by the driver when page_offset
++	 *    is non-zero, which means page_offset @ truesize will
++	 *    be used by stack after skb_add_rx_frag() is called,
++	 *    and 0 @ truesize can be reused by driver.
+ 	 */
+-	if (desc_cb->page_offset && hns3_can_reuse_page(desc_cb)) {
+-		desc_cb->page_offset = 0;
+-		desc_cb->reuse_flag = 1;
+-	} else if (desc_cb->page_offset + truesize * 2 <=
+-		   hns3_page_size(ring)) {
++	if ((!desc_cb->page_offset && reused) ||
++	    ((desc_cb->page_offset + truesize + truesize) <=
++	     hns3_page_size(ring) && desc_cb->page_offset)) {
+ 		desc_cb->page_offset += truesize;
+ 		desc_cb->reuse_flag = 1;
++	} else if (desc_cb->page_offset && reused) {
++		desc_cb->page_offset = 0;
++		desc_cb->reuse_flag = 1;
+ 	} else if (frag_size <= ring->rx_copybreak) {
+ 		void *frag = napi_alloc_frag(frag_size);
+ 
+-- 
+2.8.1
+
