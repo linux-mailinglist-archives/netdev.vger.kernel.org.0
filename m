@@ -2,77 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 283913AD27F
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 21:05:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C18B3AD28B
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 21:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234643AbhFRTHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 15:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbhFRTHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 15:07:14 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ADAC061574
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 12:05:04 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id s15so9946203edt.13
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 12:05:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=InFDEGKC2QscmOhpxTDMf9HUFBmB/LgZPJnIwcKnPTQ=;
-        b=ahMENiKkmAR8uCnp8xipzJN4N7JXUgtH7/TQS+yk+R6rywi/hX9CJdat+U/xFmUk4r
-         hat5TYBzYc5X54RdltIGEGX6NfVBMsdMxfkUG9PgO1DxMw0qE0QWJAAfQ4PBKuLAulaJ
-         YhQaBz3dmSsJl3E5+BqXnPqEIFkB3xapzDr3DgoxxZkWC8+4Somn3WCfYwF5PQhCN+qU
-         6xI3ArYXtsT8C0cbOpoLwYpI0ovpefBeiSkGOuyL0diV45C/MNmowJ3mIasRpYbzxlaa
-         pO3NlLLaR9ODZTxvCgfMetoSWF1cqDUWCiZvcru2IW1kwDQ9PEedX60w51UsupezSY8H
-         JLgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=InFDEGKC2QscmOhpxTDMf9HUFBmB/LgZPJnIwcKnPTQ=;
-        b=aNQjrktOXriQ+zV13/Rywa2YgyEa66GY9Bx7y38TWGdJpaGuCPJrXGUcULRWcvWK3q
-         IQr4aVz5UKhx3KiFBHYWG20geSceB+/MlSOPLaTYaKGeeASLM2mtEYWDNtoexPH+Cm1y
-         qS7KLwXrSZV1pBGbztR6tXwY40cGkOvG+WQYyfH1myfys6Zs4QXmY25pqqL9RP9wrnCY
-         Vd2k9mX9vdhKTlpXt5uTpZc8Puet/sZrB8MulobleTM4DtdR4QGcBbOJoTOdNctDIY6I
-         pT/V0ssGvkw1Js2u29fB3CwdzsUBl0YFaBMyli0RqT7UvrEbsqg8AyXZ6N6J6ld9KLcC
-         3Zmw==
-X-Gm-Message-State: AOAM531G0o+FFNQHi+cp0xw4T1bB7HxLo6u2TtatsrZU6hCwtEuXn/vq
-        bVfJmyc+vjRvKiGrWaqSDDy9pxlEOJc=
-X-Google-Smtp-Source: ABdhPJzre7LL7imzb0dHpsABf90cgcu1A2O38B5bpZSpr8TeeFxw4t5we9Ji9ENd+lLIYyZn9ZO0dw==
-X-Received: by 2002:a50:d943:: with SMTP id u3mr7258744edj.175.1624043102821;
-        Fri, 18 Jun 2021 12:05:02 -0700 (PDT)
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
-        by smtp.gmail.com with ESMTPSA id z3sm6449508edb.58.2021.06.18.12.05.01
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Jun 2021 12:05:01 -0700 (PDT)
-Received: by mail-wm1-f51.google.com with SMTP id c84so6223939wme.5
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 12:05:01 -0700 (PDT)
-X-Received: by 2002:a05:600c:19ce:: with SMTP id u14mr13438640wmq.169.1624043100534;
- Fri, 18 Jun 2021 12:05:00 -0700 (PDT)
+        id S234703AbhFRTMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 15:12:12 -0400
+Received: from mga09.intel.com ([134.134.136.24]:9107 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234004AbhFRTML (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 15:12:11 -0400
+IronPort-SDR: DTHzcpPNea34cN//grxhvhiUZDHhuLIRfhO04MSD8t8/zRdM6kyjfFgqVEydEgOa6rKrXh5Cre
+ UClFHVT5Sg+A==
+X-IronPort-AV: E=McAfee;i="6200,9189,10019"; a="206558140"
+X-IronPort-AV: E=Sophos;i="5.83,284,1616482800"; 
+   d="scan'208";a="206558140"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2021 12:10:01 -0700
+IronPort-SDR: x0kcwiBUVhLhtwOITWrSC5urJzsQAJW3Qz47P4YZ/dkPlv6bmZ2K05DnQngjWz7jnxyLw0KH43
+ HcQojfmuIZWA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,284,1616482800"; 
+   d="scan'208";a="485791039"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by orsmga001.jf.intel.com with ESMTP; 18 Jun 2021 12:10:01 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Fri, 18 Jun 2021 12:10:00 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Fri, 18 Jun 2021 12:10:00 -0700
+Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
+ ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.2242.008;
+ Fri, 18 Jun 2021 12:10:00 -0700
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        =?utf-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Edward Harold Cree <ecree@xilinx.com>,
+        "Dinan Gunawardena" <dinang@xilinx.com>,
+        Pablo Cascon <pabloc@xilinx.com>
+Subject: RE: Correct interpretation of VF link-state=auto
+Thread-Topic: Correct interpretation of VF link-state=auto
+Thread-Index: AQHXYdH/Wsv1Rjp0ckS+3imFUbY9K6sacX8A//+1hOA=
+Date:   Fri, 18 Jun 2021 19:10:00 +0000
+Message-ID: <9a0836b2f5ed487bb7d9c03a4b17222f@intel.com>
+References: <CACT4oueyNoQAVW1FDcS_aus9sUqNvJhj87e_kUEkzz3azm2+pQ@mail.gmail.com>
+ <20210618093506.245a4186@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210618093506.245a4186@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20210618045556.1260832-1-kuba@kernel.org>
-In-Reply-To: <20210618045556.1260832-1-kuba@kernel.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 18 Jun 2021 15:04:22 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSc+x+ePvvmLGWvau-XEye6fuN398aHsJiCCnfM6bPfDoA@mail.gmail.com>
-Message-ID: <CA+FuTSc+x+ePvvmLGWvau-XEye6fuN398aHsJiCCnfM6bPfDoA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: vlan: pass thru all GSO_SOFTWARE in hw_enc_features
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, dcaratti@redhat.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 18, 2021 at 12:56 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Currently UDP tunnel devices on top of VLANs lose the ability
-> to offload UDP GSO. Widen the pass thru features from TSO
-> to all GSO_SOFTWARE.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-Acked-by: Willem de Bruijn <willemb@google.com>
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFrdWIgS2ljaW5za2kg
+PGt1YmFAa2VybmVsLm9yZz4NCj4gU2VudDogRnJpZGF5LCBKdW5lIDE4LCAyMDIxIDk6MzUgQU0N
+Cj4gVG86IMONw7FpZ28gSHVndWV0IDxpaHVndWV0QHJlZGhhdC5jb20+DQo+IENjOiBuZXRkZXZA
+dmdlci5rZXJuZWwub3JnOyBJdmFuIFZlY2VyYSA8aXZlY2VyYUByZWRoYXQuY29tPjsgRWR3YXJk
+IEhhcm9sZA0KPiBDcmVlIDxlY3JlZUB4aWxpbnguY29tPjsgRGluYW4gR3VuYXdhcmRlbmEgPGRp
+bmFuZ0B4aWxpbnguY29tPjsgUGFibG8NCj4gQ2FzY29uIDxwYWJsb2NAeGlsaW54LmNvbT4NCj4g
+U3ViamVjdDogUmU6IENvcnJlY3QgaW50ZXJwcmV0YXRpb24gb2YgVkYgbGluay1zdGF0ZT1hdXRv
+DQo+IA0KPiBPbiBUdWUsIDE1IEp1biAyMDIxIDEyOjM0OjAwICswMjAwIMONw7FpZ28gSHVndWV0
+IHdyb3RlOg0KPiA+IEhpLA0KPiA+DQo+ID4gUmVnYXJkaW5nIGxpbmstc3RhdGUgYXR0cmlidXRl
+IGZvciBhIFZGLCAnbWFuIGlwLWxpbmsnIHNheXM6DQo+ID4gc3RhdGUgYXV0b3xlbmFibGV8ZGlz
+YWJsZSAtIHNldCB0aGUgdmlydHVhbCBsaW5rIHN0YXRlIGFzIHNlZW4gYnkgdGhlDQo+ID4gc3Bl
+Y2lmaWVkIFZGLiBTZXR0aW5nIHRvIGF1dG8gbWVhbnMgYSByZWZsZWN0aW9uIG9mIHRoZSBQRiBs
+aW5rIHN0YXRlLA0KPiA+IGVuYWJsZSBsZXRzIHRoZSBWRiB0byBjb21tdW5pY2F0ZSB3aXRoIG90
+aGVyIFZGcyBvbiB0aGlzIGhvc3QgZXZlbiBpZg0KPiA+IHRoZSBQRiBsaW5rIHN0YXRlIGlzIGRv
+d24sIGRpc2FibGUgY2F1c2VzIHRoZSBIVyB0byBkcm9wIGFueSBwYWNrZXRzDQo+ID4gc2VudCBi
+eSB0aGUgVkYuDQo+ID4NCj4gPiBIb3dldmVyLCBJJ3ZlIHNlZW4gdGhhdCBkaWZmZXJlbnQgaW50
+ZXJwcmV0YXRpb25zIGFyZSBtYWRlIGFib3V0IHRoYXQNCj4gPiBleHBsYW5hdGlvbiwgZXNwZWNp
+YWxseSBhYm91dCAiYXV0byIgY29uZmlndXJhdGlvbi4gSXQgaXMgbm90IGNsZWFyIGlmDQo+ID4g
+aXQgc2hvdWxkIGZvbGxvdyBQRiAicGh5c2ljYWwgbGluayBzdGF0dXMiIG9yIFBGICJhZG1pbmlz
+dHJhdGl2ZSBsaW5rDQo+ID4gc3RhdHVzIi4gV2l0aCB0aGUgbGF0dGVyLCBgaXAgc2V0IFBGIGRv
+d25gIHdvdWxkIHB1dCB0aGUgVkYgZG93biB0b28sDQo+ID4gYnV0IHdpdGggdGhlIGZvcm1lciB5
+b3UnZCBoYXZlIHRvIGRpc2Nvbm5lY3QgdGhlIHBoeXNpY2FsIHBvcnQuDQo+IA0KPiBMaWtlIGFs
+bCBsZWdhY3kgU1ItSU9WIG5ldHdvcmtpbmcgdGhlIGNvcnJlY3QgdGhpbmcgdG8gZG8gaGVyZSBp
+cyBjbGVhcg0KPiBhcyBtdWQuIEknZCBnbyBmb3IgdGhlIGxpbmsgc3RhdHVzIG9mIHRoZSBQRiBu
+ZXRkZXYuIElmIHRoZSBuZXRkZXYNCj4gY2Fubm90IHBhc3MgdHJhZmZpYyAoZWl0aGVyIGZvciBh
+ZG1pbmlzdHJhdGl2ZSBvciBwaHlzaWNhbCBsaW5rIHJlYXNvbnMpDQo+IHRoZW4gVkZzIHNob3Vs
+ZG4ndCB0YWxrIGVpdGhlci4gQnV0IGFzIEkgc2FpZCwgZXZlcnkgdmVuZG9yIHdpbGwgaGF2ZSB0
+aGVpcg0KPiBvd24gaW50ZXJwcmV0YXRpb24sIGFuZCBkaWZmZXJlbnQgdXNlcnMgbWF5IGV4cGVj
+dCBkaWZmZXJlbnQgdGhpbmdzLi4uDQoNCkkgbGlrZSB0aGlzIGludGVycHJldGF0aW9uIHRvby4u
+IGJ1dCBJIGFncmVlIHRoYXQgaXQncyB1bmZvcnR1bmF0ZWx5IGNvbmZ1c2luZyBhbmQgZWFjaCB2
+ZW5kb3IgaGFzIGRvbmUgc29tZXRoaW5nIGRpZmZlcmVudC4uIDooDQo=
