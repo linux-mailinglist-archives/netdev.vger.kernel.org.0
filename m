@@ -2,123 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EE653ACCA8
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:46:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58FB83ACCB2
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233942AbhFRNtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 09:49:01 -0400
-Received: from perceval.ideasonboard.com ([213.167.242.64]:44192 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbhFRNs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:48:58 -0400
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 5244B3F0;
-        Fri, 18 Jun 2021 15:46:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1624024007;
-        bh=cjgy0YmI5JAdyKuANvJ+TssuRnMgzRk5Q7NIsLwYWWk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tx57mkgNHFv6d3FeiSUt8xE1/yVBTvCL4VS67xaDuQl/c1RwfsCXJ9q7o+KBjt+Nt
-         u9J0NCrM5jVwPknKzctQXqaG6fIX7PJ3XZEydx7KT6UvCQF20lCgZtH1u6I6Bvr8+Q
-         Kea3fe7mOtrkryycL+OGWkQoYi27BwgtLqbGwHAE=
-Date:   Fri, 18 Jun 2021 16:46:23 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-Message-ID: <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
-References: <YIx7R6tmcRRCl/az@mit.edu>
- <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
- <YK+esqGjKaPb+b/Q@kroah.com>
- <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
- <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
- <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
- <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
- <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
- <20210610152633.7e4a7304@oasis.local.home>
- <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
+        id S231855AbhFRNue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 09:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233615AbhFRNue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:50:34 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8273C061574
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 06:48:23 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id nb6so15932403ejc.10
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 06:48:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4khq88CoLvnES4xhsAW2Lr0qZSOmbfj72MOUjXDthuY=;
+        b=dT3IhPGAgER/ia7lS4IU9E8WCRjArnuYnJqCS5zhNJWDKKpxs/JZJM9OSPREAKZkEI
+         W+xqLYFUSxjAX+7tOvx7ddL5OD9utXhlzy40jk97k7AkbtFfbixGyknXxCUc1SXDVHrP
+         mbOawmtenFwKixiOSZJ6iM9Oa2X6zLKrCzjQ+IH7nm0y/rOmtJgG1LrUPEAEdZrIwzth
+         Q0JetHnLNY8Rd2GTrvQYqi5dDLinAz5Zi9QtijSTRkx7MzyarRwH/aVR/aiWC7f3cHfp
+         P0jCirPwtGBMG5tzLJEcVFYzQkTBY0LvhAQ/5Oqur+cwEP1tb/yViTplUkZ8Z6118WdZ
+         6f4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4khq88CoLvnES4xhsAW2Lr0qZSOmbfj72MOUjXDthuY=;
+        b=nabB+lzfsMd1IABsN7Rumg4qHKX96TZWX0H5fBDAdBHW8ektv/2ujPJ50avEOoDd13
+         qXfYsalYvYgGsqWE+TfVGVbA3VgpIZY9m5v5612bd1pD5k6S3DZccyGOkhx0eWkuTQ/J
+         VY7IayN/Q/0N2rdTjUIfpUUbBfvSgfyS6RYwa2k59A7KeqRWK9cQBNMJx4U7+hTGMmB9
+         KJ0Zx5SKEflJ4eXSvVSIcFYIB4OIpUxzU9ezCpisS5BDJYdd1O4IORMSPfEibp4bahzw
+         5us4g/lB1RB+VqkcQRKRRvhZrlIwTvC02uQBwXidk9g4zY5nf0wJInvA3+1F3Hjat2yG
+         WYFg==
+X-Gm-Message-State: AOAM531gAiFFEcGuasCMnytEupnSBz8AqomHFf2oWspswYbOhoKZxo3U
+        xXgockJ4EM51SAS1wRI43RpdkowZ85g=
+X-Google-Smtp-Source: ABdhPJzELOqjBrLHgXrr69J6Qf3eemHerGVuTfYorkGVGnR1Z6osUK+E9TBqFI5xYLr+pvcz0maBFg==
+X-Received: by 2002:a17:906:15d5:: with SMTP id l21mr9458655ejd.429.1624024102309;
+        Fri, 18 Jun 2021 06:48:22 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.224.68])
+        by smtp.gmail.com with ESMTPSA id q16sm6374410edt.26.2021.06.18.06.48.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Jun 2021 06:48:21 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next] net: dsa: sja1105: completely error out in sja1105_static_config_reload if something fails
+Date:   Fri, 18 Jun 2021 16:48:12 +0300
+Message-Id: <20210618134812.2973050-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shuah,
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-On Thu, Jun 10, 2021 at 01:55:23PM -0600, Shuah Khan wrote:
-> On 6/10/21 1:26 PM, Steven Rostedt wrote:
-> > On Thu, 10 Jun 2021 21:39:49 +0300 Laurent Pinchart wrote:
-> > 
-> >> There will always be more informal discussions between on-site
-> >> participants. After all, this is one of the benefits of conferences, by
-> >> being all together we can easily organize ad-hoc discussions. This is
-> >> traditionally done by finding a not too noisy corner in the conference
-> >> center, would it be useful to have more break-out rooms with A/V
-> >> equipment than usual ?
-> > 
-> > I've been giving this quite some thought too, and I've come to the
-> > understanding (and sure I can be wrong, but I don't think that I am),
-> > is that when doing a hybrid event, the remote people will always be
-> > "second class citizens" with respect to the communication that is going
-> > on. Saying that we can make it the same is not going to happen unless
-> > you start restricting what people can do that are present, and that
-> > will just destroy the conference IMO.
-> > 
-> > That said, I think we should add more to make the communication better
-> > for those that are not present. Maybe an idea is to have break outs
-> > followed by the presentation and evening events that include remote
-> > attendees to discuss with those that are there about what they might
-> > have missed. Have incentives at these break outs (free stacks and
-> > beer?) to encourage the live attendees to attend and have a discussion
-> > with the remote attendees.
-> > 
-> > The presentations would have remote access, where remote attendees can
-> > at the very least write in some chat their questions or comments. If
-> > video and connectivity is good enough, perhaps have a screen where they
-> > can show up and talk, but that may have logistical limitations.
-> > 
-> 
-> You are absolutely right that the remote people will have a hard time
-> participating and keeping up with in-person participants. I have a
-> couple of ideas on how we might be able to improve remote experience
-> without restricting in-person experience.
-> 
-> - Have one or two moderators per session to watch chat and Q&A to enable
->    remote participants to chime in and participate.
-> - Moderators can make sure remote participation doesn't go unnoticed and
->    enable taking turns for remote vs. people participating in person.
-> 
-> It will be change in the way we interact in all in-person sessions for
-> sure, however it might enhance the experience for remote attendees.
+If reloading the static config fails for whatever reason, for example if
+sja1105_static_config_check_valid() fails, then we "goto out_unlock_ptp"
+but we print anyway that "Reset switch and programmed static config.",
+which is confusing because we didn't. We also do a bunch of other stuff
+like reprogram the XPCS and reload the credit-based shapers, as if a
+switch reset took place, which didn't.
 
-A moderator to watch online chat and relay questions is I believe very
-good for presentations, it's hard for a presenter to keep an eye on a
-screen while having to manage the interaction with the audience in the
-room (there's the usual joke of the difference between an introvert and
-an extrovert open-source developer is that the extrovert looks at *your*
-shoes when talking to you, but in many presentations the speaker
-nowadays does a fairly good job as watching the audience, at least from
-time to time :-)).
+So just unlock the PTP lock and goto out, skipping all of that.
 
-For workshop or brainstorming types of sessions, the highest barrier to
-participation for remote attendees is local attendees not speaking in
-microphones. That's the number one rule that moderators would need to
-enforce, I think all the rest depends on it. This may require a larger
-number of microphones in the room than usual.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/sja1105/sja1105_main.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 57ccd4548911..a9777eb564c6 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1886,17 +1886,23 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 	mutex_lock(&priv->ptp_data.lock);
+ 
+ 	rc = __sja1105_ptp_gettimex(ds, &now, &ptp_sts_before);
+-	if (rc < 0)
+-		goto out_unlock_ptp;
++	if (rc < 0) {
++		mutex_unlock(&priv->ptp_data.lock);
++		goto out;
++	}
+ 
+ 	/* Reset switch and send updated static configuration */
+ 	rc = sja1105_static_config_upload(priv);
+-	if (rc < 0)
+-		goto out_unlock_ptp;
++	if (rc < 0) {
++		mutex_unlock(&priv->ptp_data.lock);
++		goto out;
++	}
+ 
+ 	rc = __sja1105_ptp_settime(ds, 0, &ptp_sts_after);
+-	if (rc < 0)
+-		goto out_unlock_ptp;
++	if (rc < 0) {
++		mutex_unlock(&priv->ptp_data.lock);
++		goto out;
++	}
+ 
+ 	t1 = timespec64_to_ns(&ptp_sts_before.pre_ts);
+ 	t2 = timespec64_to_ns(&ptp_sts_before.post_ts);
+@@ -1911,7 +1917,6 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 
+ 	__sja1105_ptp_adjtime(ds, now);
+ 
+-out_unlock_ptp:
+ 	mutex_unlock(&priv->ptp_data.lock);
+ 
+ 	dev_info(priv->ds->dev,
 -- 
-Regards,
+2.25.1
 
-Laurent Pinchart
