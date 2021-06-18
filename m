@@ -2,86 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC093AD0F8
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 19:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6E333AD120
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 19:25:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235517AbhFRRLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 13:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
+        id S236001AbhFRR14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 13:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbhFRRLs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 13:11:48 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE33C061574
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 10:09:38 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id i13so9554527edb.9
-        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 10:09:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=E7P78j7rstURnUKAI+vldnGqkPJngimUYQX4gyOrFVk=;
-        b=ADFYa14yhoIqNddqd9np9kRsQmssnsYGeLphSqME6DYnQFr1s1m4B6UVLX8GviBRB5
-         2ReMUGMJm7yFh8Pb18aGH/jLQAC9zbfVm2ysjl9acGN5EGN/VOYI2NshHjJMljVAf9kY
-         cAfNfee69LMlB4qRqjYEobN/p1CTKXgwDfYEqIk0EjCQk3WCEA/YetJmE/wYomovpR1l
-         NMzkGzJohz/QmbQdzuAaUoBfy5QqEMtCqznKw0467gfSG4ek+j5oHRodsWdWI2L0HWEV
-         gAOcABPQIEXYHOZ2rowZlmtUTeNCPcEpuexu+oiN65bznpahnK+UrcnIT0JsVbZl6/ll
-         6Y5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=E7P78j7rstURnUKAI+vldnGqkPJngimUYQX4gyOrFVk=;
-        b=mlTRuYVI6ayCtgRwMLRjOauCEtg3HCEZfun6Fffi4waA4P+DkBtqaxWuFNbpJ+JP5s
-         r6oHMvOlsz6Ft+oOzSZAHLdAGlg88BSABAnZsjQNi5KBrDbD7dIPxjucCKbsoFHuBggY
-         3PkmzKpS3JXKa0g+ONeQpqMi8jfiMpGbhCv/RqakMs7z69GEaA9x/VlIL1KhONlOtAPn
-         iuOnrV32wKDXNcz0Dte3Z8gmJYtYUNbR/4TLfuyNis8MfBaYd04/9+BlEMRh3BJv69mP
-         30OKAtZv2I1EyR774g4UEDXJTs+hdmr9y/xN/NWnqfsitBB9WMuONtP8Hf32PgrLDyb/
-         +3Wg==
-X-Gm-Message-State: AOAM533kynuaLyrD3iQKOxY4AwWNKdRoY2cFgFb+0KVLFpn6iXTVLP8u
-        KtIk8KpY43f3iVUcDFPPFEQ9wXKJ2u6vBYcOEHQ=
-X-Google-Smtp-Source: ABdhPJz8Z2wRxvAoXZZeixDLBenDBy+o1IMJFbxJAEUPndFRovDf0Yytaofy1eSuxM0fo4QvaVogI9BVwH4vcisv3JQ=
-X-Received: by 2002:a05:6402:51cf:: with SMTP id r15mr6367317edd.263.1624036177016;
- Fri, 18 Jun 2021 10:09:37 -0700 (PDT)
+        with ESMTP id S233617AbhFRR1z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 13:27:55 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB221C061574;
+        Fri, 18 Jun 2021 10:25:45 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id D7E7D9A2;
+        Fri, 18 Jun 2021 17:25:44 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net D7E7D9A2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1624037145; bh=VWmAA0YzzpNvxcoFBtGHf43nmNUWhu3CK8g3vdxbsRE=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=b01VgQRUzhEO5ndT69988RRG7Ev9fbKU5L28nWrpKNKt5OdisyW4eyn2ulpFyGIOv
+         gXXfDjDvkvsOt9eDIWtOXhJQKLUGsiKa05hhZPMYF44dVJxwT4IvUHh6Kynh+kkHDU
+         D9UUQ4ALmlVEJGt0Dq2t12XkhF0slNOjEUejb8ZjPAWObLs6SYTtHJOQ9qENWcPNji
+         KxLmlcO17k83mlWjiWRFP8DtbWCoW8ZoGib0arLJ09yxiXArzwyd4AOyzb+yc8xvBQ
+         9iCRsurkJwvXKAR+ENbp0XeIhB1uFMrMSJ0DavligyWb2Wpm4S3jgddzduwIyLLjWU
+         mdenQMhW1oK0Q==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Subject: Re: linux-next: manual merge of the net-next tree with the jc_docs
+ tree
+In-Reply-To: <20210618115533.0b48bf39@canb.auug.org.au>
+References: <20210618115533.0b48bf39@canb.auug.org.au>
+Date:   Fri, 18 Jun 2021 11:25:44 -0600
+Message-ID: <871r8zrso7.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Received: by 2002:a05:6402:4396:0:0:0:0 with HTTP; Fri, 18 Jun 2021 10:09:36
- -0700 (PDT)
-Reply-To: altairkim254@gmail.com
-From:   philip james <pj875047@gmail.com>
-Date:   Fri, 18 Jun 2021 10:09:36 -0700
-Message-ID: <CAMLGCOPD2xhTYec+LVZ2Wnifr3+mpFo3WgmLX8K_LZswzQ5mTw@mail.gmail.com>
-Subject: Dear Friend,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+Stephen Rothwell <sfr@canb.auug.org.au> writes:
 
+> Hi all,
+>
+> Today's linux-next merge of the net-next tree got a conflict in:
+>
+>   Documentation/networking/devlink/devlink-trap.rst
+>
+> between commit:
+>
+>   8d4a0adc9cab ("docs: networking: devlink: avoid using ReST :doc:`foo` markup")
+>
+> from the jc_docs tree and commit:
+>
+>   01f1b6ed2b84 ("documentation: networking: devlink: fix prestera.rst formatting that causes build warnings")
+>
+> from the net-next tree.
+>
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>
+> -- 
+> Cheers,
+> Stephen Rothwell
+>
+> diff --cc Documentation/networking/devlink/devlink-trap.rst
+> index efa5f7f42c88,ef8928c355df..000000000000
+> --- a/Documentation/networking/devlink/devlink-trap.rst
+> +++ b/Documentation/networking/devlink/devlink-trap.rst
+> @@@ -495,8 -495,9 +495,9 @@@ help debug packet drops caused by thes
+>   links to the description of driver-specific traps registered by various device
+>   drivers:
+>   
+>  -  * :doc:`netdevsim`
+>  -  * :doc:`mlxsw`
+>  -  * :doc:`prestera`
+>  +  * Documentation/networking/devlink/netdevsim.rst
+>  +  * Documentation/networking/devlink/mlxsw.rst
+> ++  * Documentation/networking/devlink/prestera.rst
 
--- 
-Dear Friend,
+This is the right fix, thanks.  I got that :doc: directive taken out
+even if everybody chose to ignore my request to that end...:)
 
-I am Mr.Altair Kim , I need your urgent assistance in transferring
-the sum of 15.5 million dollars, to your account for investment in
-
-your
-country if you are ready get back to me i will give you full details
-
-1.) Your full name..............................
-2.) Country.....................................
-3.) Your private number.........................
-4.).Your age:...................................
-5)Your Photo....................................
-6)Your profession...............................
-
-As soonthe bank ,Do not be angry that I request all that information
-
-from
-you, I do not want to fall Victim as this is the only hope I have in
-life to make it.E-mail: altairkim254@gmail.com
-as I receive it from you I will send you information on how to
-contact
-
-Best Regards
-Mr. Altair Kim
+jon
