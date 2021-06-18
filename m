@@ -2,260 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DEBB3ACC1C
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:25:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 996E23ACCEB
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:57:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233050AbhFRN1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 09:27:30 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:11071 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbhFRN13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:27:29 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G602h714XzZgHR;
-        Fri, 18 Jun 2021 21:22:20 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 18 Jun 2021 21:25:18 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 18 Jun 2021 21:25:17 +0800
-Subject: Re: [BUG] Crash after module unload if it use DO_ONCE mechanism
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-References: <eaa6c371-465e-57eb-6be9-f4b16b9d7cbf@huawei.com>
-CC:     <wangkefeng.wang@huawei.com>
-Message-ID: <5ba30137-bf50-759a-48fd-9ab03be0ff81@huawei.com>
-Date:   Fri, 18 Jun 2021 21:25:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <eaa6c371-465e-57eb-6be9-f4b16b9d7cbf@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+        id S234243AbhFRN7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 09:59:38 -0400
+Received: from m12-12.163.com ([220.181.12.12]:33534 "EHLO m12-12.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233754AbhFRN7i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 09:59:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=eCW+C4iVQPGpJOG3QE
+        vEPn+ptIsdgDaQpBCpWgq1I7U=; b=oGKw+ZW1F4gDVFYwsejb3kCgoCgj6u14Cj
+        41a7G8GWwgaRCbzBza0MdFY4RKtUBguYNbot4HjT7sfqmsLdRHVOQY7dtw2gLrWI
+        +81Vww1I7MI4L9X9XjXrMCSa5fwlWlIOMcTbLuYiAcQ96IfYJRyCjzHOMF3RFM/T
+        cbwKdGtQk=
+Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
+        by smtp8 (Coremail) with SMTP id DMCowACnqtbvYsxgV+ZQKg--.33014S2;
+        Fri, 18 Jun 2021 17:10:08 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     charles.gorand@effinnov.com, krzysztof.kozlowski@canonical.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH v2] NFC: nxp-nci: remove unnecessary labels
+Date:   Fri, 18 Jun 2021 17:10:16 +0800
+Message-Id: <20210618091016.19500-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: DMCowACnqtbvYsxgV+ZQKg--.33014S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7uw4kuFW8WFWDWw43Xr48Xrb_yoW8uFWDpF
+        13WFyayryrtr97WFn5Ar12vFZ5tw18J39rWr9rt393X3WYyryjqr4kCFW0vFWrJrZakFya
+        yr4IvFyDWF17JaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07bUUDXUUUUU=
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiERC1sV7+3wZmMQAAsr
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: wengjianfeng <wengjianfeng@yulong.com>
 
+Simplify the code by removing unnecessary labels and returning directly.
 
-On 2021/6/17 15:51, Kefeng Wang wrote:
-> Hi all,
-> 
-> We met a crash[3] after module unload if it uses DO_ONCE mechanism,
-> also we could reproduce by the demo module[1] and the hack patch[2].
-> 
-> The DO_ONCE mechanism could be use directly(eg, testmgr.c), and there 
-> are some macro which is used by lots of net drivers,
-> "prandom_init_once"
-> "get_random_once/get_random_once_wait"
-> "net_get_random_once/net_get_random_once_wait"
-> 
-> The analysis of crash is as follows,
-> 
-> init_module
->   get_random_once
->    DO_ONCE
->    DEFINE_STATIC_KEY_TRUE(___once_key);
->    __do_once_done
->      once_disable_jump(once_key);
->        INIT_WORK(&w->work, once_deferred);
->        struct once_work *w;
->        w->key = key;
->        schedule_work(&w->work);                    cleanup_module
->                                                     *the key is destroy*
-> process_one_work
->   once_deferred
->     BUG_ON(!static_key_enabled(work->key));
->        static_key_count((struct static_key *)x)   //*access key, crash*
-> 
-> I can't find a good way to fix the issue, any suggestion?
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+---
+ drivers/nfc/nxp-nci/core.c | 39 +++++++++++++--------------------------
+ 1 file changed, 13 insertions(+), 26 deletions(-)
 
-Here is one solution to avoid the issue, but maybe this is too hack to 
-add module into once, is there any better solution, thanks.
-
-diff --git a/include/linux/once.h b/include/linux/once.h
-index 9225ee6d96c7..052af082e369 100644
---- a/include/linux/once.h
-+++ b/include/linux/once.h
-@@ -4,10 +4,11 @@
-
-  #include <linux/types.h>
-  #include <linux/jump_label.h>
-+#include <linux/export.h>
-
-  bool __do_once_start(bool *done, unsigned long *flags);
-  void __do_once_done(bool *done, struct static_key_true *once_key,
--		    unsigned long *flags);
-+		    unsigned long *flags, struct module *mod);
-
-  /* Call a function exactly once. The idea of DO_ONCE() is to perform
-   * a function call such as initialization of random seeds, etc, only
-@@ -46,7 +47,7 @@ void __do_once_done(bool *done, struct static_key_true 
-*once_key,
-  			if (unlikely(___ret)) {				     \
-  				func(__VA_ARGS__);			     \
-  				__do_once_done(&___done, &___once_key,	     \
--					       &___flags);		     \
-+					       &___flags, THIS_MODULE);		\
-  			}						     \
-  		}							     \
-  		___ret;							     \
-diff --git a/lib/once.c b/lib/once.c
-index 8b7d6235217e..57c6fcf9f694 100644
---- a/lib/once.c
-+++ b/lib/once.c
-@@ -3,10 +3,12 @@
-  #include <linux/spinlock.h>
-  #include <linux/once.h>
-  #include <linux/random.h>
-+#include <linux/module.h>
-
-  struct once_work {
-  	struct work_struct work;
-  	struct static_key_true *key;
-+	struct module *module;
-  };
-
-  static void once_deferred(struct work_struct *w)
-@@ -16,19 +18,25 @@ static void once_deferred(struct work_struct *w)
-  	work = container_of(w, struct once_work, work);
-  	BUG_ON(!static_key_enabled(work->key));
-  	static_branch_disable(work->key);
-+	module_put(work->module);
-  	kfree(work);
-  }
-
--static void once_disable_jump(struct static_key_true *key)
-+static void once_disable_jump(struct static_key_true *key, struct 
-module *mod)
-  {
-  	struct once_work *w;
-
-+	__module_get(mod);
-+
-  	w = kmalloc(sizeof(*w), GFP_ATOMIC);
--	if (!w)
-+	if (!w) {
-+		module_put(mod);
-  		return;
+diff --git a/drivers/nfc/nxp-nci/core.c b/drivers/nfc/nxp-nci/core.c
+index a0ce95a..2b0c723 100644
+--- a/drivers/nfc/nxp-nci/core.c
++++ b/drivers/nfc/nxp-nci/core.c
+@@ -70,21 +70,16 @@ static int nxp_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
+ 	struct nxp_nci_info *info = nci_get_drvdata(ndev);
+ 	int r;
+ 
+-	if (!info->phy_ops->write) {
+-		r = -ENOTSUPP;
+-		goto send_exit;
+-	}
++	if (!info->phy_ops->write)
++		return -EOPNOTSUPP;
+ 
+-	if (info->mode != NXP_NCI_MODE_NCI) {
+-		r = -EINVAL;
+-		goto send_exit;
+-	}
++	if (info->mode != NXP_NCI_MODE_NCI)
++		return -EINVAL;
+ 
+ 	r = info->phy_ops->write(info->phy_id, skb);
+ 	if (r < 0)
+ 		kfree_skb(skb);
+ 
+-send_exit:
+ 	return r;
+ }
+ 
+@@ -104,10 +99,8 @@ int nxp_nci_probe(void *phy_id, struct device *pdev,
+ 	int r;
+ 
+ 	info = devm_kzalloc(pdev, sizeof(struct nxp_nci_info), GFP_KERNEL);
+-	if (!info) {
+-		r = -ENOMEM;
+-		goto probe_exit;
+-	}
++	if (!info)
++		return -ENOMEM;
+ 
+ 	info->phy_id = phy_id;
+ 	info->pdev = pdev;
+@@ -120,31 +113,25 @@ int nxp_nci_probe(void *phy_id, struct device *pdev,
+ 	if (info->phy_ops->set_mode) {
+ 		r = info->phy_ops->set_mode(info->phy_id, NXP_NCI_MODE_COLD);
+ 		if (r < 0)
+-			goto probe_exit;
++			return r;
+ 	}
+ 
+ 	info->mode = NXP_NCI_MODE_COLD;
+ 
+ 	info->ndev = nci_allocate_device(&nxp_nci_ops, NXP_NCI_NFC_PROTOCOLS,
+ 					 NXP_NCI_HDR_LEN, 0);
+-	if (!info->ndev) {
+-		r = -ENOMEM;
+-		goto probe_exit;
+-	}
++	if (!info->ndev)
++		return -ENOMEM;
+ 
+ 	nci_set_parent_dev(info->ndev, pdev);
+ 	nci_set_drvdata(info->ndev, info);
+ 	r = nci_register_device(info->ndev);
+-	if (r < 0)
+-		goto probe_exit_free_nci;
++	if (r < 0) {
++		nci_free_device(info->ndev);
++		return r;
 +	}
-
-  	INIT_WORK(&w->work, once_deferred);
-  	w->key = key;
-+	w->module = mod;
-  	schedule_work(&w->work);
-  }
-
-@@ -53,11 +61,11 @@ bool __do_once_start(bool *done, unsigned long *flags)
-  EXPORT_SYMBOL(__do_once_start);
-
-  void __do_once_done(bool *done, struct static_key_true *once_key,
--		    unsigned long *flags)
-+		    unsigned long *flags, struct module *mod)
-  	__releases(once_lock)
-  {
-  	*done = true;
-  	spin_unlock_irqrestore(&once_lock, *flags);
--	once_disable_jump(once_key);
-+	once_disable_jump(once_key, mod);
-  }
-  EXPORT_SYMBOL(__do_once_done);
+ 
+ 	*ndev = info->ndev;
+-
+-	goto probe_exit;
+-
+-probe_exit_free_nci:
+-	nci_free_device(info->ndev);
+-probe_exit:
+ 	return r;
+ }
+ EXPORT_SYMBOL(nxp_nci_probe);
+-- 
+1.9.1
 
 
-
-> 
-> Thanks.
-> 
-> 
-> 
-> [1] test module
-> static int test;
-> int init_module(void) {
->      pr_info("Hello\n");
->      get_random_once(&test, sizeof(int));
->      return 0;
-> }
-> void cleanup_module(void) {
->      pr_info("Bye %x!\n", test);
-> }
-> [2] hack to add some delay
-> diff --git a/lib/once.c b/lib/once.c
-> index 8b7d6235217e..b56b8ced4bab 100644
-> --- a/lib/once.c
-> +++ b/lib/once.c
-> @@ -14,6 +14,7 @@ static void once_deferred(struct work_struct *w)
->          struct once_work *work;
-> 
->          work = container_of(w, struct once_work, work);
-> +       msleep(8000);
->          BUG_ON(!static_key_enabled(work->key));
->          static_branch_disable(work->key);
->          kfree(work);
-> 
-> [3] crash log
-> [  253.560859] Hello
-> [  253.562851] Bye 92bbb335!
-> [  261.585813] Unable to handle kernel paging request at virtual address 
-> ffff000001293018
-> [  261.585815] Mem abort info:
-> [  261.585816]   ESR = 0x96000007
-> [  261.585817]   Exception class = DABT (current EL), IL = 32 bits
-> [  261.585818]   SET = 0, FnV = 0
-> [  261.585818]   EA = 0, S1PTW = 0
-> [  261.585819] Data abort info:
-> [  261.585820]   ISV = 0, ISS = 0x00000007
-> [  261.585821]   CM = 0, WnR = 0
-> [  261.585822] swapper pgtable: 4k pages, 48-bit VAs, pgdp = 
-> 00000000e45c016c
-> [  261.585823] [ffff000001293018] pgd=000000023fffe003, 
-> pud=000000023354b003, pmd=00000001d4099003, pte=0000000000000000
-> [  261.585827] Internal error: Oops: 96000007 [#1] SMP
-> [  261.586458] Process kworker/25:1 (pid: 291, stack limit = 
-> 0xffff0000841b0000)
-> [  261.586880] CPU: 25 PID: 291 Comm: kworker/25:1 Kdump: loaded 
-> Tainted: P        W  OE     4.19.90+ #14
-> [  261.587415] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 
-> 02/06/2015
-> [  261.587819] Workqueue: events once_deferred
-> [  261.588062] pstate: 60c00005 (nZCv daif +PAN +UAO)
-> [  261.588341] pc : static_key_count+0x18/0x30
-> [  261.588584] lr : once_deferred+0x30/0x80
-> [  261.588810] sp : ffff0000841b3d70
-> [  261.589000] x29: ffff0000841b3d70 x28: 0000000000000000
-> [  261.589308] x27: 0000000000000000 x26: ffff00008131f330
-> [  261.589615] x25: 0000000000000000 x24: ffff8001defd1c08
-> [  261.590025] x23: 0000000000000000 x22: ffff8001ff4d3000
-> [  261.590414] x21: ffff8001ff4cee80 x20: ffff8001f3bbd100
-> [  261.590868] x19: ffff000001293018 x18: ffffffffffffffff
-> [  261.591254] x17: 0000000000000000 x16: 0000000000000000
-> [  261.591638] x15: ffff0000812fa748 x14: ffff0000814f1d50
-> [  261.592026] x13: ffff0000814f1996 x12: ffffffffffffffac
-> [  261.592409] x11: 0000000000000000 x10: 0000000000000b80
-> [  261.592794] x9 : ffff0000841b3bf0 x8 : 3535303030303030
-> [  261.593179] x7 : 303078302079656b x6 : ffff0000814f0f80
-> [  261.593564] x5 : 00ffffffffffffff x4 : 0000000000000000
-> [  261.593978] x3 : 0000000000000000 x2 : 173087582665d800
-> [  261.594362] x1 : 0000000000000000 x0 : ffff00008055a888
-> [  261.594748] Call trace:
-> [  261.594928]  static_key_count+0x18/0x30
-> [  261.595207]  once_deferred+0x30/0x80
-> [  261.595469]  process_one_work+0x1b8/0x458
-> [  261.595762]  worker_thread+0x158/0x498
-> [  261.596034]  kthread+0x134/0x138
-> [  261.596271]  ret_from_fork+0x10/0x18
-> [  261.596531] Code: f9000bf3 aa0003f3 aa1e03e0 d503201f (b9400260)
-> 
