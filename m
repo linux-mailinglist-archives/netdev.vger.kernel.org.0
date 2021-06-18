@@ -2,137 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B18B3AC4C0
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 09:16:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 890523AC4DE
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 09:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232981AbhFRHSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 03:18:43 -0400
-Received: from mail-ua1-f50.google.com ([209.85.222.50]:43715 "EHLO
-        mail-ua1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230447AbhFRHSm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 03:18:42 -0400
-Received: by mail-ua1-f50.google.com with SMTP id f1so3042012uaj.10;
-        Fri, 18 Jun 2021 00:16:33 -0700 (PDT)
+        id S231923AbhFRHWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 03:22:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27259 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233092AbhFRHWj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 03:22:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624000828;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=08bKtYLw8+WJMSJXFwmWg9TmqP7htBCNATjR/bZl300=;
+        b=DV3saigLbsI8fdeBhP/NRgFbSEpD84JUeRHA4rNeQ9nfVItpnOtCCX0hCosJmEo8maLtCH
+        jbMYp2T0/aP85rq9SePyrXX4wIFvMaYVGiEfAuO5V3VnglFnO1Hmw08ptQtI21nSwo3ysq
+        hM4R9p0DvM3AwEJlQgkZy+SS/T+xXHk=
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
+ [209.85.215.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-267-l8SWlCi5OeW5eXlBnTv1sg-1; Fri, 18 Jun 2021 03:20:27 -0400
+X-MC-Unique: l8SWlCi5OeW5eXlBnTv1sg-1
+Received: by mail-pg1-f199.google.com with SMTP id d8-20020a6558880000b02902225e17c66bso5403546pgu.23
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 00:20:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c1qjp3LSqiWe30R+Xguwq2AymeWV15Ne0QLP1Md9aAA=;
-        b=eydW0LtYkqWWYeVc3e4QIxbtIud7g6MjyixJUeZ0eYBWNs+Suh9mgK4D/ieBPZz1qy
-         KAFbTUDWTLrl/YGOTbaqxEgpUnVLnAzYlBxSI3PvXQ+isug1Zdf6UZ9TzJec9O8+A9sk
-         7exOKNeWnxYO37LIiU/X4zXu4Cq7vvU3yXsh8qz+mBAbtwTqx9QvWWunC0msoMZx1l5C
-         1q9gHfqrr6UnmoxIe9R1pGCwfWc9+TyObXpnXCR8z3ara2R92YOvj94cTi/4hluPI2Ka
-         XScWFrx6OmTPVtgFrf4+VcVwxEoqgqPLIStA/qgF2/e+3k+RLHQTk0AvExAdc3eMhEAV
-         1n1Q==
-X-Gm-Message-State: AOAM531wkjhX+87ULbUBOWMtpl0w/r/6BAfYYZSAALzpbXOkUqXRrrq8
-        Osv78kvnoZuaeueH0pRjMwrSDvMzJVU/DUJJ/No=
-X-Google-Smtp-Source: ABdhPJxG7V8iKYTWute1ru1376/EX/H8waoz1J/qmrsYwZZxFCqjGi6H8s6qBjbQtv6x2Wk1/JRq2irv2Zl0u43wIIA=
-X-Received: by 2002:ab0:647:: with SMTP id f65mr10459435uaf.4.1624000593113;
- Fri, 18 Jun 2021 00:16:33 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=08bKtYLw8+WJMSJXFwmWg9TmqP7htBCNATjR/bZl300=;
+        b=ZgyDui+GmOAcSA8i+k3tE74xs7Lz9XMi9Qo0oedpTFNvtOlkzyNwxxkfIVH8P1PpV/
+         du2ICoZS0Ctm+zJPAyJPVxGT98Yby1maCzSeqnOA4nr3rjWTjRuza7p0aVMQpN+9zA6c
+         hZ5fOzkEEC1HDWC9+vinMoslnq1qjDW+tKRCybovGPRKXim2GaC94R6+/ZOzBmhSRyiM
+         +P7DZf+yaAmEVPRDW8C/K9S5IW73F9xp0IoFkgcB/MfBsQDEWOJ5ZEMtFb0UCBI57Ho6
+         pG1/GszS9rux445HEDFOTUerYcSVPmZhyrbWySQCR2vMIXVj1q2Dv7OzkTUQadRgy4s2
+         oUcQ==
+X-Gm-Message-State: AOAM531qMRj3dPjETbnoh1MrgDM2ZuOKKh7BjMrLpZROH9CVmP5TPqGU
+        zR9HH57rBAZ+yypwWGHvlaKfeTl27QC+8a6Kf4juMp7DL7Ip7NqluIiIgNQjbWYI+sMvRFXSsga
+        qIo8qXdZX7b4PuYSFTjBVKCjqROqDKf9HWunj4gpuKwIKjBfHO+SCZgrjzz1qxPvHfmGG
+X-Received: by 2002:a63:5d5:: with SMTP id 204mr8666311pgf.72.1624000826300;
+        Fri, 18 Jun 2021 00:20:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzEQkh9qhMUesoxoT0WlU7iHzOuiibkI62nhu2NHrn8HyNbptwaeYz6rc1kpnZvt7mx+SI2wg==
+X-Received: by 2002:a63:5d5:: with SMTP id 204mr8666288pgf.72.1624000826020;
+        Fri, 18 Jun 2021 00:20:26 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d92sm7246815pjk.38.2021.06.18.00.20.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Jun 2021 00:20:25 -0700 (PDT)
+Subject: Re: [PATCH] vhost-vdpa: fix bug-"v->vqs" and "v" don't free
+To:     Cai Huoqing <caihuoqing@baidu.com>, mst@redhat.com
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+References: <20210618065307.183-1-caihuoqing@baidu.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <5f046ae5-2a1a-e843-bcae-f16ac0167c0e@redhat.com>
+Date:   Fri, 18 Jun 2021 15:20:11 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <1623907712-29366-1-git-send-email-schmitzmic@gmail.com>
- <1623907712-29366-3-git-send-email-schmitzmic@gmail.com> <d661fb8-274d-6731-75f4-685bb2311c41@linux-m68k.org>
- <1fa288e2-3157-68f8-32c1-ffa1c63e4f85@gmail.com>
-In-Reply-To: <1fa288e2-3157-68f8-32c1-ffa1c63e4f85@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 18 Jun 2021 09:16:21 +0200
-Message-ID: <CAMuHMdVGe1EutOVpw3-R=25xG0p2rWd65cB2mqM-imXWYjLtXw@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 2/2] net/8390: apne.c - add 100 Mbit support
- to apne.c driver
-To:     Michael Schmitz <schmitzmic@gmail.com>
-Cc:     Finn Thain <fthain@linux-m68k.org>,
-        "Linux/m68k" <linux-m68k@vger.kernel.org>,
-        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210618065307.183-1-caihuoqing@baidu.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
 
-On Thu, Jun 17, 2021 at 9:33 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> On 17/06/21 6:51 pm, Finn Thain wrote:
-> > On Thu, 17 Jun 2021, Michael Schmitz wrote:
-> >> Add Kconfig option, module parameter and PCMCIA reset code
-> >> required to support 100 Mbit PCMCIA ethernet cards on Amiga.
-> >>
-> >> 10 Mbit and 100 Mbit mode are supported by the same module.
-> >> A module parameter switches Amiga ISA IO accessors to word
-> >> access by changing isa_type at runtime. Additional code to
-> >> reset the PCMCIA hardware is also added to the driver probe.
-> >>
-> >> Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
-> >> 100 MBit card support" submitted to netdev 2018/09/16 by Alex
-> >> Kazik <alex@kazik.de>.
-> >>
-> >> CC: netdev@vger.kernel.org
-> >> Tested-by: Alex Kazik <alex@kazik.de>
-> >> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
-> >> --- a/drivers/net/ethernet/8390/apne.c
-> >> +++ b/drivers/net/ethernet/8390/apne.c
-> >> @@ -120,6 +120,12 @@ static u32 apne_msg_enable;
-> >>   module_param_named(msg_enable, apne_msg_enable, uint, 0444);
-> >>   MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
-> >>
-> >> +#ifdef CONFIG_APNE100MBIT
-> >> +static bool apne_100_mbit;
-> >> +module_param_named(apne_100_mbit_msg, apne_100_mbit, bool, 0444);
-> >> +MODULE_PARM_DESC(apne_100_mbit_msg, "Enable 100 Mbit support");
-> >> +#endif
-> >> +
-> >>   struct net_device * __init apne_probe(int unit)
-> >>   {
-> >>      struct net_device *dev;
-> >> @@ -139,6 +145,11 @@ struct net_device * __init apne_probe(int unit)
-> >>      if ( !(AMIGAHW_PRESENT(PCMCIA)) )
-> >>              return ERR_PTR(-ENODEV);
-> >>
-> >> +#ifdef CONFIG_APNE100MBIT
-> >> +    if (apne_100_mbit)
-> >> +            isa_type = ISA_TYPE_AG16;
-> >> +#endif
-> >> +
-> > I think isa_type has to be assigned unconditionally otherwise it can't be
-> > reset for 10 mbit cards. Therefore, the AMIGAHW_PRESENT(PCMCIA) logic in
-> > arch/m68k/kernel/setup_mm.c probably should move here.
+ÔÚ 2021/6/18 ÏÂÎç2:53, Cai Huoqing Ð´µÀ:
+> "v->vqs" and "v" don't free when "cdev_device_add" returns error
 >
-> Good catch! I am uncertain though as to whether replacing a 100 Mbit
-> card by a 10 Mbit one at run time is a common use case (or even
-> possible, given constraints of the Amiga PCMCIA interface?), but it
-> ought to work even if rarely used.
-
-Given it's PCMCIA, I guess that's a possibility.
-Furthermore, always setting isa_type means the user can recover from
-a mistake by unloading the module, and modprobe'ing again with the
-correct parameter.
-For the builtin-case, that needs a s/0444/0644/ change, though.
-
-> The comment there says isa_type must be set as early as possible, so I'd
-> rather leave that alone, and add an 'else' clause here.
+> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+> ---
+>   drivers/vhost/vdpa.c | 2 ++
+>   1 file changed, 2 insertions(+)
 >
-> This of course raise the question whether we ought to move the entire
-> isa_type handling into arch code instead - make it a generic
-> amiga_pcmcia_16bit option settable via sysfs. There may be other 16 bit
-> cards that require the same treatment, and duplicating PCMCIA mode
-> switching all over the place could be avoided. Opinions?
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index fb41db3da611..6e5d5df5ee70 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -1065,6 +1065,8 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+>   
+>   err:
+>          put_device(&v->dev);
+> +       kfree(v->vqs);
+> +       kfree(v);
 
-Indeed.
 
-Still, can we autodetect in the driver?
+Isn't this the charge of vhost_vdpa_release_dev()?
 
-I'm wondering how this is handled on PCs with PCMCIA, or if there
-really is something special about Amiga PCMCIA hardware...
+Thanks
 
-And I'd really like to get rid of the CONFIG_APNE100MBIT option,
-i.e. always include the support, if possible.
 
-Gr{oetje,eeting}s,
+>          return r;
+>   }
+>   
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
