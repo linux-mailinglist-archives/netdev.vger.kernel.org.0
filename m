@@ -2,100 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E9373AD0B2
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 18:46:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCC093AD0F8
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 19:09:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235981AbhFRQsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 12:48:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50164 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235740AbhFRQsD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 12:48:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E4FB96127C;
-        Fri, 18 Jun 2021 16:45:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624034753;
-        bh=ZTtwHmqh0rQ3M2ho9c60I0q0eOzXiN2NKnpGl1n9jAs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=R/HYr50FfFMgL8AT6+8hLyRxD/ZSJ4S2xb12SBGX3bFOa3uWO/saYDhlnVh86HZZi
-         OPDTpRuYv/2ZQouGk4fRnlCJgkL18zxi+4aIaD64YAzf49WelDhz2fEAbY0JRP/RbJ
-         VR1FI2PTAT6TbjogpFjK/WPi7QxmCYgwALtjhSbyhztW+Tjo7JUPS5dSdcGLjDT5A1
-         w5OHX7Fe1IquhO1WW9ds+tBjdvFYugD7ejgElqSQwxbbOUSkwwTVmZzxfTyxYEvOV8
-         s/Hgm/YM5MQ5/pN9z0oud2vd0ZPIKafP7cIaWCVfDbFVRZCpOjBzgT0HD4Wi/v2DQ0
-         4WeLullrbJTJg==
-Date:   Fri, 18 Jun 2021 18:45:45 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>, Greg KH <greg@kroah.com>,
-        Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-block@vger.kernel.org,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>, netdev <netdev@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-Message-ID: <20210618184545.33ea3d47@coco.lan>
-In-Reply-To: <20210618155829.GD4920@sirena.org.uk>
-References: <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
-        <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
-        <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
-        <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
-        <20210610152633.7e4a7304@oasis.local.home>
-        <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
-        <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
-        <cd7ffbe516255c30faab7a3ee3ee48f32e9aa797.camel@HansenPartnership.com>
-        <CAMuHMdVcNfDvpPXHSkdL3VuLXCX5m=M_AQF-P8ZajSdXt8NdQg@mail.gmail.com>
-        <20210618103214.0df292ec@oasis.local.home>
-        <20210618155829.GD4920@sirena.org.uk>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S235517AbhFRRLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 13:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231478AbhFRRLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 13:11:48 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE33C061574
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 10:09:38 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id i13so9554527edb.9
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 10:09:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=E7P78j7rstURnUKAI+vldnGqkPJngimUYQX4gyOrFVk=;
+        b=ADFYa14yhoIqNddqd9np9kRsQmssnsYGeLphSqME6DYnQFr1s1m4B6UVLX8GviBRB5
+         2ReMUGMJm7yFh8Pb18aGH/jLQAC9zbfVm2ysjl9acGN5EGN/VOYI2NshHjJMljVAf9kY
+         cAfNfee69LMlB4qRqjYEobN/p1CTKXgwDfYEqIk0EjCQk3WCEA/YetJmE/wYomovpR1l
+         NMzkGzJohz/QmbQdzuAaUoBfy5QqEMtCqznKw0467gfSG4ek+j5oHRodsWdWI2L0HWEV
+         gAOcABPQIEXYHOZ2rowZlmtUTeNCPcEpuexu+oiN65bznpahnK+UrcnIT0JsVbZl6/ll
+         6Y5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=E7P78j7rstURnUKAI+vldnGqkPJngimUYQX4gyOrFVk=;
+        b=mlTRuYVI6ayCtgRwMLRjOauCEtg3HCEZfun6Fffi4waA4P+DkBtqaxWuFNbpJ+JP5s
+         r6oHMvOlsz6Ft+oOzSZAHLdAGlg88BSABAnZsjQNi5KBrDbD7dIPxjucCKbsoFHuBggY
+         3PkmzKpS3JXKa0g+ONeQpqMi8jfiMpGbhCv/RqakMs7z69GEaA9x/VlIL1KhONlOtAPn
+         iuOnrV32wKDXNcz0Dte3Z8gmJYtYUNbR/4TLfuyNis8MfBaYd04/9+BlEMRh3BJv69mP
+         30OKAtZv2I1EyR774g4UEDXJTs+hdmr9y/xN/NWnqfsitBB9WMuONtP8Hf32PgrLDyb/
+         +3Wg==
+X-Gm-Message-State: AOAM533kynuaLyrD3iQKOxY4AwWNKdRoY2cFgFb+0KVLFpn6iXTVLP8u
+        KtIk8KpY43f3iVUcDFPPFEQ9wXKJ2u6vBYcOEHQ=
+X-Google-Smtp-Source: ABdhPJz8Z2wRxvAoXZZeixDLBenDBy+o1IMJFbxJAEUPndFRovDf0Yytaofy1eSuxM0fo4QvaVogI9BVwH4vcisv3JQ=
+X-Received: by 2002:a05:6402:51cf:: with SMTP id r15mr6367317edd.263.1624036177016;
+ Fri, 18 Jun 2021 10:09:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6402:4396:0:0:0:0 with HTTP; Fri, 18 Jun 2021 10:09:36
+ -0700 (PDT)
+Reply-To: altairkim254@gmail.com
+From:   philip james <pj875047@gmail.com>
+Date:   Fri, 18 Jun 2021 10:09:36 -0700
+Message-ID: <CAMLGCOPD2xhTYec+LVZ2Wnifr3+mpFo3WgmLX8K_LZswzQ5mTw@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Fri, 18 Jun 2021 16:58:29 +0100
-Mark Brown <broonie@kernel.org> escreveu:
-
-> On Fri, Jun 18, 2021 at 10:32:14AM -0400, Steven Rostedt wrote:
-> > On Fri, 18 Jun 2021 16:28:02 +0200
-> > Geert Uytterhoeven <geert@linux-m68k.org> wrote:  
-> 
-> > > What about letting people use the personal mic they're already
-> > > carrying, i.e. a phone?  
-> 
-> > Interesting idea.  
-> 
-> > I wonder how well that would work in practice. Are all phones good
-> > enough to prevent echo?  
-> 
-> Unless you get the latency for the WebRTC<->in room speaker down lower
-> than I'd expect it to be I'd expect echo cancellation to have fun,
-> though beam forming might reject a lot of in room noise including that -
-> higher end modern phones are astonishingly good at this stuff.  I'd not
-> trust it to work reliably for all attendees though, it's the sort of
-> thing where you'll get lots of per device variation.
-
-The local audience should be listening to the in-room audio, in order
-to avoid echo. Also, all local mics should be muted, if someone is 
-speaking from a remote location. 
-
-Yet, echo is unavoidable if a remote participant is speaking while 
-listening to the audio without headphones. If this ever happens, I
-guess the moderator should cut the remote audio and ask the remote
-participant to lower their speakers or use a headphone.
+-- 
 
 
-Thanks,
-Mauro
+-- 
+Dear Friend,
+
+I am Mr.Altair Kim , I need your urgent assistance in transferring
+the sum of 15.5 million dollars, to your account for investment in
+
+your
+country if you are ready get back to me i will give you full details
+
+1.) Your full name..............................
+2.) Country.....................................
+3.) Your private number.........................
+4.).Your age:...................................
+5)Your Photo....................................
+6)Your profession...............................
+
+As soonthe bank ,Do not be angry that I request all that information
+
+from
+you, I do not want to fall Victim as this is the only hope I have in
+life to make it.E-mail: altairkim254@gmail.com
+as I receive it from you I will send you information on how to
+contact
+
+Best Regards
+Mr. Altair Kim
