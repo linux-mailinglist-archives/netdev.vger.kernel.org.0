@@ -2,153 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAD493AC614
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:28:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D603AC63F
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 10:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233722AbhFRIa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 04:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232853AbhFRIa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:30:57 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55DDC061574;
-        Fri, 18 Jun 2021 01:28:48 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id w31so7204939pga.6;
-        Fri, 18 Jun 2021 01:28:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=L8E9iQlqVEJ+gzCXld3siwY+dzmNVX0LaD06zHF/0RQ=;
-        b=h5Vw5aFu9zGEkuOEorRUs/MpAEYMCPPaB70hiYJznDPXZ1gGMPxEr2CIYO2LdrAGVy
-         YK3LQL1OMH+tuMfWQfhvbuavcJEBFubTDRtGI6+TCaIuWp2EKhIwPQZJozFUuiTenhMK
-         ww8i4vtrmKKCNXQWRiCG7H17O3PHoMxfJV91ed7VT2lkMljRS6s2wuiHP4DvyklERJNl
-         T47BULDGlhBJZqT48XKBqrV1pKTNC8s3DraeNkeojph7V/O2Yqj0+LJ4R0psHawbQiSy
-         TKuyHZ4VoxO5jYOgkAuxzSny+lB8+612x0cm4jDF+1X0vuFeof3TNubVk/ZUljKTvgXy
-         qJzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=L8E9iQlqVEJ+gzCXld3siwY+dzmNVX0LaD06zHF/0RQ=;
-        b=Oy8HEEhNBaaEv4mRQCstdmSrnx8sEBza05BZsv948MsvMjqQIS1i1vvYFQwy33Wij+
-         d4+IIlMBZ+JBF76ydUeoOJdqitObzitjh1ZpQOvjCZsxcaET8s4Mjd+ErEEi4I/dOury
-         FCMQms/pz/zW5NgbDs/hTkHyBYJVURbsfGZVLn92oAE/AQmfZws31dvSF89WKvbrzkNV
-         eC79V2cIOSEdyG74Qn9feGreqzR1MlRTJl4dcq3FMJlQN9ICuFilg4WzsVtSUK8Q1fTu
-         +ag3Fgy5lFNSWr6Q/4Rx387vWn3ZbCsr2JbBs4vxtv7PfFmaajiYnnS4h8s+TZ58hh8k
-         Q4SA==
-X-Gm-Message-State: AOAM530JeiMZMN41EJjpyROwHMjcx5j2NPRgMT9DEl16UDe4G908GltA
-        mCDlWWr3LkZLknmmJuBu8bixPJwhLmY=
-X-Google-Smtp-Source: ABdhPJyBJCfAM2WelwdCsSVYQ7SryUKZ62EQis5tWdW7ajbykm/ean1iA8t+/FlOEIDyfteizWQgKg==
-X-Received: by 2002:a63:81c3:: with SMTP id t186mr9082057pgd.123.1624004928119;
-        Fri, 18 Jun 2021 01:28:48 -0700 (PDT)
-Received: from [10.1.1.25] (222-152-189-137-fibre.sparkbb.co.nz. [222.152.189.137])
-        by smtp.gmail.com with ESMTPSA id q21sm7815537pfn.81.2021.06.18.01.28.44
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Jun 2021 01:28:47 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 2/2] net/8390: apne.c - add 100 Mbit support
- to apne.c driver
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-References: <1623907712-29366-1-git-send-email-schmitzmic@gmail.com>
- <1623907712-29366-3-git-send-email-schmitzmic@gmail.com>
- <d661fb8-274d-6731-75f4-685bb2311c41@linux-m68k.org>
- <1fa288e2-3157-68f8-32c1-ffa1c63e4f85@gmail.com>
- <CAMuHMdVGe1EutOVpw3-R=25xG0p2rWd65cB2mqM-imXWYjLtXw@mail.gmail.com>
- <da54e915-c142-a69b-757f-6a6419f173fa@gmail.com>
- <CAMuHMdV5Yd2w+maSn-dQ=NOrVyVc8JjV38miKRc-pvnzBcKSig@mail.gmail.com>
-Cc:     Finn Thain <fthain@linux-m68k.org>,
-        Linux/m68k <linux-m68k@vger.kernel.org>,
-        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <9faae8bf-74c2-52e8-ce3d-9abef34412e4@gmail.com>
-Date:   Fri, 18 Jun 2021 20:28:42 +1200
-User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
- Icedove/45.4.0
+        id S233876AbhFRIe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 04:34:59 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:10130 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S233809AbhFRIew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 04:34:52 -0400
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15I8Cjxt029418;
+        Fri, 18 Jun 2021 10:32:39 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=tobkvdP0XEB3rizTcrRI77boeUhPqCNPjzbxlCZFFxA=;
+ b=X5X8I/QkX33NRBreeXhB2ivJwbQuY5nuHgNW56Uf80eHr1kpxFzJX/wxy30SZc3yHrRO
+ gxoRyWbYCAvnGgSb8aL8RUYEo+Lnc2jiUKv9J3aqrgQvmbAepjonsNVPl4jb5fZwrxQS
+ WRaNuhHVAs8RVOMDVNmyvf3h5FnSW9OUwOn94pr5kQC/EUAJ0ZiFwOfJLOLLnrCAYFUs
+ BZIaGP163AH9zXouCLD1bZlXEQSjs+vGTyV3+iVAhFNuSFJte2f9xJJLgimn2EW1nPti
+ xLNiTJugAuzBGR39U+LRrbT90wL6HdH/11sqQflFkResdNC8fu2/znIYJiJtvorF2b9Q Kw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 3984bm6b7h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Jun 2021 10:32:39 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 668DE10002A;
+        Fri, 18 Jun 2021 10:32:38 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id F05B921B501;
+        Fri, 18 Jun 2021 10:32:37 +0200 (CEST)
+Received: from lmecxl0889.lme.st.com (10.75.127.50) by SFHDAG2NODE3.st.com
+ (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 18 Jun
+ 2021 10:32:35 +0200
+Subject: Re: [PATCH] dt-bindings: Drop redundant minItems/maxItems
+To:     Rob Herring <robh@kernel.org>, <devicetree@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-crypto@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <dmaengine@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <iommu@lists.linux-foundation.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-gpio@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-rtc@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Vinod Koul <vkoul@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>
+References: <20210615191543.1043414-1-robh@kernel.org>
+From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
+Message-ID: <e61633b9-48d1-81bf-9ab2-59a7b64987f3@foss.st.com>
+Date:   Fri, 18 Jun 2021 10:32:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdV5Yd2w+maSn-dQ=NOrVyVc8JjV38miKRc-pvnzBcKSig@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210615191543.1043414-1-robh@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE3.st.com
+ (10.75.127.6)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-06-17_17:2021-06-15,2021-06-17 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert,
+Hello ROb,
 
-Am 18.06.2021 um 20:13 schrieb Geert Uytterhoeven:
->>
->> How does re-probing after a card change for a builtin driver work?
->> Changing the permission bits is a minor issue.
->
-> Oh right, this driver predates the driver framework, and doesn't support
-> PCMCIA hotplug.  So auto-unregister on removal doesn't work.
-> Even using unbind/bind in sysfs won't work.
->
-> So rmmod/modprobe is the only thing that has a chance to work...
->
->>>> The comment there says isa_type must be set as early as possible, so I'd
->>>> rather leave that alone, and add an 'else' clause here.
->>>>
->>>> This of course raise the question whether we ought to move the entire
->>>> isa_type handling into arch code instead - make it a generic
->>>> amiga_pcmcia_16bit option settable via sysfs. There may be other 16 bit
->>>> cards that require the same treatment, and duplicating PCMCIA mode
->>>> switching all over the place could be avoided. Opinions?
->>>
->>> Indeed.
->>
->> The only downside I can see is that setting isa_type needs to be done
->> ahead of modprobe, through sysfs. That might be a little error prone.
->>
->>> Still, can we autodetect in the driver?
->>
->> Guess we'll have to find out how the 16 bit cards behave if first poked
->> in 8 bit mode, attempting to force a reset of the 8390 chip, and
->> switching to 16 bit mode if this fails. That's normally done in
->> apne_probe1() which runs after init_pcmcia(), so we can't rely on the
->> result of a 8390 reset autoprobe to do the PCMCIA software reset there.
->>
->> The 8390 reset part does not rely on anything else in apne_probe1(), so
->> that code can be lifted out of apne_probe1() and run early in
->> apne_probe() (after the check for an inserted PCMCIA card). I'll try and
->> prepare a patch for Alex to test that method.
+On 6/15/21 9:15 PM, Rob Herring wrote:
+> If a property has an 'items' list, then a 'minItems' or 'maxItems' with the
+> same size as the list is redundant and can be dropped. Note that is DT
+> schema specific behavior and not standard json-schema behavior. The tooling
+> will fixup the final schema adding any unspecified minItems/maxItems.
+> 
+> This condition is partially checked with the meta-schema already, but
+> only if both 'minItems' and 'maxItems' are equal to the 'items' length.
+> An improved meta-schema is pending.
+> 
+[...]
+>  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml     | 2 --
+[...]
+>  .../devicetree/bindings/mailbox/st,stm32-ipcc.yaml          | 2 --
+[...]
+>  .../devicetree/bindings/remoteproc/st,stm32-rproc.yaml      | 2 --
+[...]
+>  Documentation/devicetree/bindings/sound/st,stm32-sai.yaml   | 3 ---
+Reviewed-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
 
-I just realized that might not work - ínit_pcmcia() enables the PCMCIA 
-interface for us, so the early 8390 reset may not go through at all... 
-The module parameter may have to stay as a fallback option at least.
-
->>
->>> I'm wondering how this is handled on PCs with PCMCIA, or if there
->>> really is something special about Amiga PCMCIA hardware...
->>
->> What's special about Amiga PCMCIA hardware is that the card reset isn't
->> connected for those 16 bit cards, so pcmcia_reset() does not work.
->
-> I was mostly thinking about the difference between 8-bit and 16-bit
-> accesses.
-
-No idea. I've never even seen an 8 bit PCMCIA card - I have a few old 
-16/32 bit ones around that were great for crashing my PowerBook, nothing 
-else...
-
->>> And I'd really like to get rid of the CONFIG_APNE100MBIT option,
->>> i.e. always include the support, if possible.
->>
->> I can't see why that wouldn't be possible - the only downside is that we
->> force MULTI_ISA=1 always for Amiga, and lose the optimizations done for
->> MUTLI_ISA=0 in io_mm.h. Unless we autoprobe, we can use isa_type to
->> guard against running a software reset on 8 bit cards ...
->
-> The latter sounds like a neat trick...
-
-Yes, we can at least get rid of the APNE100MBIT option that way. I'll 
-have to think about the autoprobe a bit more.
-
-Cheers,
-
-	Michael
-
-> Gr{oetje,eeting}s,
->
->                         Geert
->
+Thanks,
+Arnaud
