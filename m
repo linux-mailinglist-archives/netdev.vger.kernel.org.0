@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A793D3ACC64
-	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A2D3ACC77
+	for <lists+netdev@lfdr.de>; Fri, 18 Jun 2021 15:41:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233993AbhFRNiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 09:38:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48778 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233974AbhFRNiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 09:38:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624023356;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KFwIb7IPOZRbP1IQ9mV70O4nT0A/GjnYdmBaTej5bMs=;
-        b=OtXPGHi93k4blZndryJDUl/FOCz+P2EaC/6Zcx+IYAmim04WcfRnqlk28ITz19vPDhB5/h
-        flrE7PV3Z/DiBeCCOoUOqJafa9eMB5yGupguA/N2ptaYJpimlIKVDpyPZN7hyVTeHKaF+i
-        LTLFDW6BUdRtdnQ0CzqzYX6NeCkDBl8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-283-12QN6s9jMYqyi6bKQyOXnw-1; Fri, 18 Jun 2021 09:35:55 -0400
-X-MC-Unique: 12QN6s9jMYqyi6bKQyOXnw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B98A8100C666;
-        Fri, 18 Jun 2021 13:35:53 +0000 (UTC)
-Received: from steredhat.lan (ovpn-115-127.ams2.redhat.com [10.36.115.127])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B17261000324;
-        Fri, 18 Jun 2021 13:35:47 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Arseny Krasnov <arseny.krasnov@kaspersky.com>, kvm@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/3] vsock/virtio: remove redundant `copy_failed` variable
-Date:   Fri, 18 Jun 2021 15:35:26 +0200
-Message-Id: <20210618133526.300347-4-sgarzare@redhat.com>
-In-Reply-To: <20210618133526.300347-1-sgarzare@redhat.com>
-References: <20210618133526.300347-1-sgarzare@redhat.com>
+        id S233927AbhFRNnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 09:43:53 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44546 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233904AbhFRNnv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 09:43:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=78qpKeNOzP/NAiEhB003K9aO28jOhCI8hGIf6ql5ius=; b=NzC8w6hiC2xjfYYW9YbyuUHhXq
+        zVLU0VY8iMe3blpC9TTcef5XD5TdYf/gBOYyVgS/hRWlKlud97SvoZnR4uePoO6t67cO1NhbjVk6g
+        JuuBeRME8DpU/cD0Z8eDTbdmoWxOLUov6rwmvU9uP2o9cgvTGaOjd8t3t1F8mpaWkgKA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1luEkd-00A4hL-T6; Fri, 18 Jun 2021 15:41:39 +0200
+Date:   Fri, 18 Jun 2021 15:41:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     linux-firmware@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>
+Subject: Re: [GIT PULL] linux-firmware: mrvl: prestera: Update Marvell
+ Prestera Switchdev v3.0 with policer support
+Message-ID: <YMyikxsdqNi8V5zG@lunn.ch>
+References: <20210617154206.GA17555@plvision.eu>
+ <YMt8GvxSen6gB7y+@lunn.ch>
+ <20210617165824.GA5220@plvision.eu>
+ <YMv0WEchRT25GC0Q@lunn.ch>
+ <20210618095824.GA21805@plvision.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210618095824.GA21805@plvision.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When memcpy_to_msg() fails in virtio_transport_seqpacket_do_dequeue(),
-we already set `dequeued_len` with the negative error value returned
-by memcpy_to_msg().
+> I just picked some from the git log:
+> 
+>     48237834129d ("QCA: Update Bluetooth firmware for QCA6174")
+> 
+> this just updates the binary and description says that it updates
+> to v26.
+> 
+> Not sure if it is good example.
 
-So we can directly check `dequeued_len` value instead of using a
-dedicated flag variable to skip the copy path for the rest of
-fragments.
+The filename is qca/rampatch_usb_00000302.bin. If you look at
+drivers/bluetooth/btusb.c you can see that 00000302 is the version of
+the ROM in the device which is being patched. So there is no
+expectation of knowing the firmware version from the firmware
+filename.
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/virtio_transport_common.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+> But anyway, I agree with you that better if new changes also reflects
+> the FW binary name (version) so it will be easy to find out which FW binary
+> have or not particular features.
+> 
+> So I think better to add new FW 3.1 binary ?
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 23704a6bc437..f014ccfdd9c2 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -413,7 +413,6 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
- 	struct virtio_vsock_pkt *pkt;
- 	int dequeued_len = 0;
- 	size_t user_buf_len = msg_data_left(msg);
--	bool copy_failed = false;
- 	bool msg_ready = false;
- 
- 	spin_lock_bh(&vvs->rx_lock);
-@@ -426,7 +425,7 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
- 	while (!msg_ready) {
- 		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
- 
--		if (!copy_failed) {
-+		if (dequeued_len >= 0) {
- 			size_t pkt_len;
- 			size_t bytes_to_copy;
- 
-@@ -443,11 +442,9 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
- 
- 				err = memcpy_to_msg(msg, pkt->buf, bytes_to_copy);
- 				if (err) {
--					/* Copy of message failed, set flag to skip
--					 * copy path for rest of fragments. Rest of
-+					/* Copy of message failed. Rest of
- 					 * fragments will be freed without copy.
- 					 */
--					copy_failed = true;
- 					dequeued_len = err;
- 				} else {
- 					user_buf_len -= bytes_to_copy;
--- 
-2.31.1
+Probably. But please consider your whole upgrade story. You are
+changing the firmware version quite frequently. How do end users cope
+with this? Is the driver going to support 3.1, 3.0 and 2.0? Or just
+3.1 and 2.0?
 
+Do you have more features in firmware 3.1 you need to add driver
+support for? Or can we expect a 3.2 in a few weeks time? What are your
+users expectations at the moment? It could be, you don't consider the
+driver has enough features at the moment that anybody other than early
+adopters playing with it would consider using it. That you don't
+expect real use of it for another six months, or a year. If that is
+true, you probably can be a bit more disruptive at the moment. But
+when you have a production ready driver, you really do need to
+consider how your users deal with upgrades, keeping the firmware
+version stable for a longer period of time.
+
+	Andrew
