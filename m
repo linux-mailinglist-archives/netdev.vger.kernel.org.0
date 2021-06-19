@@ -2,117 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 870A43AD603
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 01:37:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A82773AD64B
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 02:36:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235128AbhFRXje (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 19:39:34 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:44486 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234082AbhFRXjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 19:39:31 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A3FF01FD40;
-        Fri, 18 Jun 2021 23:37:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1624059440; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yIqhvW+0A/1RsRRhSqYVJGV3WsoA/CaWbqPie/1pbDY=;
-        b=vgznTV1PDAzv/utWtkZuCIj26nRAY6Rx8VUNcF53vRaFR/lzXw3PW7ta6zKc4CeKEgU9GZ
-        VfEqnx1CLrUZ6gjl15AW/DL9F17TMFiCPGhcp3LwHngxalgyCGw8KP8s+KKTX2+xAgruVG
-        bYl85CV3gNmhZEJT+gWHxljxTAe2TdU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1624059440;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yIqhvW+0A/1RsRRhSqYVJGV3WsoA/CaWbqPie/1pbDY=;
-        b=VWUg63xbRDlzMxoGQn1CrsCN6Aft2D0kLH8PUabV6uiVeQGCNITvB7bStUPIVO95Vj9vD1
-        gXu2CVFXhKCvzuDQ==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 97DABA3B85;
-        Fri, 18 Jun 2021 23:37:20 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 52121607E1; Sat, 19 Jun 2021 01:37:20 +0200 (CEST)
-Date:   Sat, 19 Jun 2021 01:37:20 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH net-next] ethtool: strset: account for nesting in reply
- size
-Message-ID: <20210618233720.js4sk2xtgvf4ssn2@lion.mk-sys.cz>
-References: <20210618225502.170644-1-saeed@kernel.org>
+        id S235287AbhFSAiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 20:38:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54594 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232609AbhFSAiN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Jun 2021 20:38:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 982936108D;
+        Sat, 19 Jun 2021 00:30:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624062650;
+        bh=fb7gOglTIgwVS2He785TzxOkWPXogDzT/XZ8kGkPjME=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LtD1QQETPMXaQkcDrvVldrSyDDQkp4a7YGx2LuGrMEG7jF1YDtNDlgZtiJ0m0j0uE
+         rs86SfWfHy137XA3V8rmedtBpHYTpjwVuzMZGaDyAMQQL2e6gYqP1273DsEVvC/w66
+         mK1zfSf1mmK0S6chAyPU6+MA5ZsFdaM32zHlExSJLjrDtLkJsshrZLMTOAyemqe3vl
+         nHHdbBvAe/MQHTLFQoDJBKBRbWY7ypwgGBogOyXrVwmAQsS+/K5BmWw9YQN2NEFHKZ
+         d4o2/zAOMqR7Rv73OSfmGn5vtQWVPo5jngHjbIWKrTXYYyl+6AwsIbVDaxFtv4y6Ro
+         PRZa87k5Sc0zw==
+Date:   Fri, 18 Jun 2021 17:30:47 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     <davem@davemloft.net>, <olteanv@gmail.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andriin@fb.com>, <edumazet@google.com>,
+        <weiwan@google.com>, <cong.wang@bytedance.com>,
+        <ap420073@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
+        <mkl@pengutronix.de>, <linux-can@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
+        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
+        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
+        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
+        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
+        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
+        <alobakin@pm.me>
+Subject: Re: [PATCH net v2] net: sched: add barrier to ensure correct
+ ordering for lockless qdisc
+Message-ID: <20210618173047.68db0b81@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1623891854-57416-1-git-send-email-linyunsheng@huawei.com>
+References: <1623891854-57416-1-git-send-email-linyunsheng@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210618225502.170644-1-saeed@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 18, 2021 at 03:55:02PM -0700, Saeed Mahameed wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
+On Thu, 17 Jun 2021 09:04:14 +0800 Yunsheng Lin wrote:
+> The spin_trylock() was assumed to contain the implicit
+> barrier needed to ensure the correct ordering between
+> STATE_MISSED setting/clearing and STATE_MISSED checking
+> in commit a90c57f2cedd ("net: sched: fix packet stuck
+> problem for lockless qdisc").
 > 
-> The cited patch revealed a bug in strset reply size where the
-> calculation didn't include the 1st nla_nest_start(), a size of 4 Bytes in
-> strset_fill_reply().
+> But it turns out that spin_trylock() only has load-acquire
+> semantic, for strongly-ordered system(like x86), the compiler
+> barrier implicitly contained in spin_trylock() seems enough
+> to ensure the correct ordering. But for weakly-orderly system
+> (like arm64), the store-release semantic is needed to ensure
+> the correct ordering as clear_bit() and test_bit() is store
+> operation, see queued_spin_lock().
 > 
-> To fix the issue we account for the missing nla_nest 4Bytes by reporting
-> them in strset_reply_size()
+> So add the explicit barrier to ensure the correct ordering
+> for the above case.
 > 
-> Before this patch issuing "ethtool -k" command will produce the
-> following call trace:
-[...]
-> Fixes: 4d1fb7cde0cc ("ethtool: add a stricter length check")
-> Fixes: 7c87e32d2e38 ("ethtool: count header size in reply size estimate")
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> CC: Jakub Kicinski <kuba@kernel.org>
-> CC: Michal Kubecek <mkubecek@suse.cz>
+> Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 
-Actually, the history was the other way around: Jakub first fixed this
-bug discovered by sysbot with commit e175aef90269 ("ethtool: strset: fix
-message length calculation") in net tree and it inspired him to refine
-the length check to catch such issues more likely. Unfortunately the fix
-hasn't been merged into net-next yet which is why you saw the warning.
-At least we know for sure now that the new version of the check works
-much better than the old one.
-
-> Note: I used nla_total_size(0); to report the missing bytes, i see in
-> other places they use nla_total_size(sizeof(u32)). Since nla_nest uses a
-> payload of 0, I prefer my version of nla_total_size(0); since it
-> resembles what the nla_nest is actually doing. I might be wrong though
-> :), comments ?
-
-Out of the three fixes, personally I liked most the one which applied
-nla_total_len() to calculated length of the nest contents as it IMHO
-reflects the message structure best; but adding nla_total_size(0) also
-provides the same result so either does the trick.
-
-Michal
-
-> ---
->  net/ethtool/strset.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
-> index b3029fff715d..23d517a61e08 100644
-> --- a/net/ethtool/strset.c
-> +++ b/net/ethtool/strset.c
-> @@ -349,8 +349,8 @@ static int strset_reply_size(const struct ethnl_req_info *req_base,
->  {
->  	const struct strset_req_info *req_info = STRSET_REQINFO(req_base);
->  	const struct strset_reply_data *data = STRSET_REPDATA(reply_base);
-> +	int len = nla_total_size(0); /* account for nesting */
->  	unsigned int i;
-> -	int len = 0;
->  	int ret;
->  
->  	for (i = 0; i < ETH_SS_COUNT; i++) {
-> -- 
-> 2.31.1
-> 
+Acked-by: Jakub Kicinski <kuba@kernel.org>
