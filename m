@@ -2,134 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6713A3ADBB3
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 22:35:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 422293ADBE3
+	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 00:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230174AbhFSUhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Jun 2021 16:37:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47988 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229475AbhFSUhp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Jun 2021 16:37:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 98E22610A7;
-        Sat, 19 Jun 2021 20:35:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624134933;
-        bh=lER0y7Z4cnY2Oauv/bbe+khn3ZDuybDepS871EY7/oc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KLrc/oEyPql2ZMfLtdBlF89tQMTs0USOuhYcZkJLVQIRRmLHE0Ne4GWx2mVgmZFYv
-         STnESKfAwfC3jQCOjw+SO6dN7RhAGtKtJZ7WxiCSMkUMYWkmqi/bIuRepJobtc17o5
-         kmHKnFum0+UQQDUiKqFVjLy2KPlf1igSOVC/gbzEnDX6QxHgi8wlWQjbGq9xj9ahpL
-         Tun6uy82t2YjFMhnrdfBHHIpdbsNo0Lkww5ZUP3+TIW4Ss1LAFRG4l5OTcmDBUdybU
-         MGrT3sv9XAzkMJpSxl0GPzh1lglrwoSHUu2OO95MyBS6Y3KijWxUaXe0KsdPjY30kN
-         IKtKFh07orfKg==
-Received: by pali.im (Postfix)
-        id 41EA71404; Sat, 19 Jun 2021 22:35:31 +0200 (CEST)
-Date:   Sat, 19 Jun 2021 22:35:31 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Madalin Bucur <madalin.bucur@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
-        Igal Liberman <Igal.Liberman@freescale.com>,
-        Shruti Kanetkar <Shruti@freescale.com>,
-        Emil Medve <Emilian.Medve@freescale.com>,
-        Scott Wood <oss@buserror.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>
-Subject: Re: Unsupported phy-connection-type sgmii-2500 in
- arch/powerpc/boot/dts/fsl/t1023rdb.dts
-Message-ID: <20210619203531.nmhpcux5hwwve47e@pali>
-References: <20210603143453.if7hgifupx5k433b@pali>
- <YLjxX/XPDoRRIvYf@lunn.ch>
- <20210603194853.ngz4jdso3kfncnj4@pali>
- <AM6PR04MB3976B62084EC462BA02F0C4CEC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
- <20210604192732.GW30436@shell.armlinux.org.uk>
- <AM6PR04MB39768A569CE3CC4EC61A8769EC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
- <YLqLzOltcb6jan+B@lunn.ch>
- <AM6PR04MB39760B986E86BA9169DEECC5EC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
- <20210604233455.fwcu2chlsed2gwmu@pali>
+        id S230103AbhFSWDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Jun 2021 18:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230047AbhFSWDg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 18:03:36 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316BCC061756
+        for <netdev@vger.kernel.org>; Sat, 19 Jun 2021 15:01:25 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1luj1n-0005VX-KT
+        for netdev@vger.kernel.org; Sun, 20 Jun 2021 00:01:23 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 7231863F7FA
+        for <netdev@vger.kernel.org>; Sat, 19 Jun 2021 22:01:20 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id C1AA563F7E2;
+        Sat, 19 Jun 2021 22:01:18 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id f1e7984f;
+        Sat, 19 Jun 2021 22:01:18 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2021-06-19
+Date:   Sun, 20 Jun 2021 00:01:10 +0200
+Message-Id: <20210619220115.2830761-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210604233455.fwcu2chlsed2gwmu@pali>
-User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Saturday 05 June 2021 01:34:55 Pali Rohár wrote:
-> On Friday 04 June 2021 21:47:26 Madalin Bucur wrote:
-> > > -----Original Message-----
-> > > From: Andrew Lunn <andrew@lunn.ch>
-> > > Sent: 04 June 2021 23:24
-> > > To: Madalin Bucur <madalin.bucur@nxp.com>
-> > > Cc: Russell King <linux@armlinux.org.uk>; Pali Rohár <pali@kernel.org>;
-> > > Igal Liberman <Igal.Liberman@freescale.com>; Shruti Kanetkar
-> > > <Shruti@freescale.com>; Emil Medve <Emilian.Medve@freescale.com>; Scott
-> > > Wood <oss@buserror.net>; Rob Herring <robh+dt@kernel.org>; Michael
-> > > Ellerman <mpe@ellerman.id.au>; Benjamin Herrenschmidt
-> > > <benh@kernel.crashing.org>; netdev@vger.kernel.org;
-> > > devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; Camelia
-> > > Alexandra Groza (OSS) <camelia.groza@oss.nxp.com>
-> > > Subject: Re: Unsupported phy-connection-type sgmii-2500 in
-> > > arch/powerpc/boot/dts/fsl/t1023rdb.dts
-> > > 
-> > > > The "sgmii-2500" compatible in that device tree describes an SGMII HW
-> > > > block, overclocked at 2.5G. Without that overclocking, it's a plain
-> > > > Cisco (like) SGMII HW block. That's the reason you need to disable it's
-> > > > AN setting when overclocked. With the proper Reset Configuration Word,
-> > > > you could remove the overclocking and transform that into a plain
-> > > "sgmii".
-> > > > Thus, the dts compatible describes the HW, as it is.
-> > > 
-> > > It sounds like the hardware is capable of swapping between SGMII and
-> > > 2500BaseX.
-> > > 
-> > > What we have in DT in this case is not describing the hardware, but
-> > > how we configure the hardware. It is one of the few places we abuse DT
-> > > for configuration.
-> > > 
-> > >     Andrew
-> > 
-> > The actual selection of this mode of operation is performed by the so called
-> > Reset Configuration Word from the boot media, that aligned with the HW and
-> > board design. The need to name it something other than plain "sgmii" comes
-> > from the HW special need for AN to be disabled to operate.
-> > 
-> > Actually, the weird/non-standard hardware is described by the device tree
-> > with a value that puts it in a class of its own. Instead of the overclocked
-> > SGMII denomination "sgmii-2500" it could have been named just as well
-> > "overclocked-nonstandard-2.5G-ethernet-no-autoneg-SGMII-hw-ip".
-> > 
-> > One could try to change device trees to slip configuration details, but the
-> > backwards compatibility aspect renders this futile. Is there any option to
-> > say "sgmii" then "autoneg disabled"?
-> > 
-> > Madalin
-> 
-> Madalin, my understanding is that "sgmii-2500" mode is unknown and
-> unsupported by kernel.
-> 
-> List of known modes which can be specified in DTS file are defined in
-> YAML schema for 'phy-connection-type' in file:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/net/ethernet-controller.yaml?h=v5.12#n55
-> 
-> And there is none "sgmii-2500", so some DTS schema validator could throw
-> validation error for that DTS file. I'm not sure if somebody has written
-> DTS schema validator with all those things (like there are JSON schema
-> or OpenAPI validators in JavaScript / HTTP world).
-> 
-> Plus also in linux/phy.h header file contains list of known Linux modes:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/phy.h?h=v5.12#n169
-> 
-> And based on all information in this email discussion, in my opinion the
-> mode which HW supports matches Linux meaning of "2500base-x" key/string.
-> So I would suggest to rename "sgmii-2500" in that DTS file to
-> "2500base-x". Does it make sense?
+Hello Jakub, hello David,
 
-Any opinion? Or should I send a patch?
+this is a pull request of 5 patches for net/master.
+
+The first patch is by Thadeu Lima de Souza Cascardo and fixes a
+potential use-after-free in the CAN broadcast manager socket, by
+delaying the release of struct bcm_op after synchronize_rcu().
+
+Oliver Hartkopp's patch fixes a similar potential user-after-free in
+the CAN gateway socket by synchronizing RCU operations before removing
+gw job entry.
+
+Another patch by Oliver Hartkopp fixes a potential use-after-free in
+the ISOTP socket by omitting unintended hrtimer restarts on socket
+release.
+
+Oleksij Rempel's patch for the j1939 socket fixes a potential
+use-after-free by setting the SOCK_RCU_FREE flag on the socket.
+
+The last patch is by Pavel Skripkin and fixes a use-after-free in the
+ems_usb CAN driver.
+
+All patches are intended for stable and have stable@v.k.o on Cc.
+
+regards,
+Marc
+
+---
+
+The following changes since commit dda2626b86c2c1813b7bfdd10d2fdd849611fc97:
+
+  Merge branch 'ezchip-fixes' (2021-06-19 11:46:24 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.13-20210619
+
+for you to fetch changes up to ab4a0b8fcb9a95c02909b62049811bd2e586aaa4:
+
+  net: can: ems_usb: fix use-after-free in ems_usb_disconnect() (2021-06-19 23:54:00 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.13-20210619
+
+----------------------------------------------------------------
+Oleksij Rempel (1):
+      can: j1939: j1939_sk_init(): set SOCK_RCU_FREE to call sk_destruct() after RCU is done
+
+Oliver Hartkopp (2):
+      can: gw: synchronize rcu operations before removing gw job entry
+      can: isotp: isotp_release(): omit unintended hrtimer restart on socket release
+
+Pavel Skripkin (1):
+      net: can: ems_usb: fix use-after-free in ems_usb_disconnect()
+
+Thadeu Lima de Souza Cascardo (1):
+      can: bcm: delay release of struct bcm_op after synchronize_rcu()
+
+ drivers/net/can/usb/ems_usb.c | 3 ++-
+ net/can/bcm.c                 | 7 ++++++-
+ net/can/gw.c                  | 3 +++
+ net/can/isotp.c               | 7 ++++---
+ net/can/j1939/main.c          | 4 ++++
+ net/can/j1939/socket.c        | 3 +++
+ 6 files changed, 22 insertions(+), 5 deletions(-)
+
+
+
