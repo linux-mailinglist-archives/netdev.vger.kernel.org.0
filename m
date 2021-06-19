@@ -2,117 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1CE33AD816
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 08:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 665AB3AD852
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 08:59:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233118AbhFSG3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Jun 2021 02:29:55 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:28703 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232206AbhFSG3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 02:29:53 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1624084059; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=ReeHdDtZ1CGVXKaLf4XclDol0SUyu66O157eCXFCbig=; b=EqXe0fnU8UOq8QafoXMtwhVDPo+jhXzycMY+W8eiNKmjEr4Ivq8RQOGpgFxa7MMIP2VR5IBV
- 2n4SE9sp8nDk4Kk3jADDYSVMo9NEcsT/Bnf73uF6odKrHrpiV9rKOV1KK9DKb/1V0Rbdqvo1
- uFw528SqEJqpCie+70Eov6GmPFU=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 60cd8e42e27c0cc77fa6dbc5 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 19 Jun 2021 06:27:14
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9E741C43460; Sat, 19 Jun 2021 06:27:13 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B6D88C433F1;
-        Sat, 19 Jun 2021 06:27:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B6D88C433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Franky Lin <franky.lin@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH v2 1/2] cfg80211: Add wiphy_info_once()
-References: <20210511211549.30571-1-digetx@gmail.com>
-        <e7495304-d62c-fd20-fab3-3930735f2076@gmail.com>
-Date:   Sat, 19 Jun 2021 09:27:06 +0300
-In-Reply-To: <e7495304-d62c-fd20-fab3-3930735f2076@gmail.com> (Dmitry
-        Osipenko's message of "Fri, 18 Jun 2021 23:44:50 +0300")
-Message-ID: <87r1gyid39.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S233743AbhFSHBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Jun 2021 03:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232949AbhFSHBd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 03:01:33 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55530C061767
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 23:58:46 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id e33so9723954pgm.3
+        for <netdev@vger.kernel.org>; Fri, 18 Jun 2021 23:58:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y5Tj5VBfCDbHRxlPn8EtoNBakme15m1U4y437Ov6/kw=;
+        b=Zmz0Z57zzTZN7vi+XP62G9zO+kHJ3UaMg5mFKyYQdIyu+26sNfCxPtP67wwyyQRXah
+         NFvcbF7aNBAOkwI0T5s9T0LcoblIGAggFwTJBU7O9SztNvJ9ijCzw/c6JzEVUFo7b4lX
+         iQ8AkJOcNXj+Pi2vhepIP2cFpbD077ujcNJtgkcfsL7FrGpVxXtdRdPmwCDdh72tuLZ3
+         /10HhOoPOO1LzYgcK/hJEYxo8QE+F7VqeiKzRVQ6N/PW2A9OusIcNGgAkZxFLtS1hn/M
+         E09LD3JEpUbfE3IlMCZcP7GTpVuqC4QUBd2EYXsSKqh8Kv29EkicGMIEwuumYqRddBhP
+         Fgqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Y5Tj5VBfCDbHRxlPn8EtoNBakme15m1U4y437Ov6/kw=;
+        b=RfcwiFEAVjH6gflMi8e6K8qiyDsof2jK5k88+yDNz6oZ1gF38CXeccErNyEfxkGPtv
+         d0VRA3a85/Dsi4x4+Etcb0n0hNmThHE/rSiIv0QFibxrNGc5X+SuxZpJ46fUxJ36TPjv
+         kbYGRj7ReS0MLq/IZcj4XLsvCcmgdgTksfEyq/y06uoiapZYNILDuOTbKCblx7dS1Z51
+         25TR24zNzbgP0LHojIzsvNlcQ9jsx5P0BPr7aUvoeGQa/V0+yy9nBdusJXx8Gy+5dJWT
+         k8nXTqDZdeQRuV3sWhXcLI7Rh5viz5/aDm1f8mc0LXp9NUWw5BwQhDH9+MtShjWJHkDw
+         Sc4g==
+X-Gm-Message-State: AOAM533H8TKxZBReyLpteIXr4+DhxVgW5R8ZT3q+FwQG4x5DFzS0YTZ5
+        HknGpJa8YmJexD3KWDbEF3tf+g==
+X-Google-Smtp-Source: ABdhPJzPs85UcA/yDB5qZB1bEIJzU2KAQlxMsL2vm1BBiNkWPW/rGjtp8QleDURaiSUBQCMWz6jMDA==
+X-Received: by 2002:aa7:83c3:0:b029:2e8:f2ba:3979 with SMTP id j3-20020aa783c30000b02902e8f2ba3979mr8852013pfn.8.1624085925610;
+        Fri, 18 Jun 2021 23:58:45 -0700 (PDT)
+Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
+        by smtp.gmail.com with ESMTPSA id b21sm10769551pgj.74.2021.06.18.23.58.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Jun 2021 23:58:45 -0700 (PDT)
+Date:   Fri, 18 Jun 2021 23:58:45 -0700 (PDT)
+X-Google-Original-Date: Fri, 18 Jun 2021 23:58:32 PDT (-0700)
+Subject:     Re: [PATCH v3] riscv: Ensure BPF_JIT_REGION_START aligned with PMD size
+In-Reply-To: <20210618220913.6fde1957@xhacker>
+CC:     corbet@lwn.net, Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, ryabinin.a.a@gmail.com, glider@google.com,
+        andreyknvl@gmail.com, dvyukov@google.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, alex@ghiti.fr, linux-doc@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     jszhang3@mail.ustc.edu.cn, schwab@linux-m68k.org
+Message-ID: <mhng-3008635e-9a78-413a-8b99-d20a14c5494b@palmerdabbelt-glaptop>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dmitry Osipenko <digetx@gmail.com> writes:
-
-> 12.05.2021 00:15, Dmitry Osipenko =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
->> Add wiphy_info_once() helper that prints info message only once.
->>=20
->> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
->> ---
->>=20
->> Changelog:
->>=20
->> v2: - New patch added in v2.
->>=20
->>  include/net/cfg80211.h | 2 ++
->>  1 file changed, 2 insertions(+)
->>=20
->> diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
->> index 5224f885a99a..3b19e03509b3 100644
->> --- a/include/net/cfg80211.h
->> +++ b/include/net/cfg80211.h
->> @@ -8154,6 +8154,8 @@ bool cfg80211_iftype_allowed(struct wiphy *wiphy, =
-enum nl80211_iftype iftype,
->>  	dev_notice(&(wiphy)->dev, format, ##args)
->>  #define wiphy_info(wiphy, format, args...)			\
->>  	dev_info(&(wiphy)->dev, format, ##args)
->> +#define wiphy_info_once(wiphy, format, args...)			\
->> +	dev_info_once(&(wiphy)->dev, format, ##args)
->>=20=20
->>  #define wiphy_err_ratelimited(wiphy, format, args...)		\
->>  	dev_err_ratelimited(&(wiphy)->dev, format, ##args)
->>=20
+On Fri, 18 Jun 2021 07:09:13 PDT (-0700), jszhang3@mail.ustc.edu.cn wrote:
+> From: Jisheng Zhang <jszhang@kernel.org>
 >
-> Ping?
+> Andreas reported commit fc8504765ec5 ("riscv: bpf: Avoid breaking W^X")
+> breaks booting with one kind of defconfig, I reproduced a kernel panic
+> with the defconfig:
 >
-> Arend, is this series good to you? I assume Kalle could pick it up if
-> you'll give ack. Thanks in advance.
+> [    0.138553] Unable to handle kernel paging request at virtual address ffffffff81201220
+> [    0.139159] Oops [#1]
+> [    0.139303] Modules linked in:
+> [    0.139601] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-rc5-default+ #1
+> [    0.139934] Hardware name: riscv-virtio,qemu (DT)
+> [    0.140193] epc : __memset+0xc4/0xfc
+> [    0.140416]  ra : skb_flow_dissector_init+0x1e/0x82
+> [    0.140609] epc : ffffffff8029806c ra : ffffffff8033be78 sp : ffffffe001647da0
+> [    0.140878]  gp : ffffffff81134b08 tp : ffffffe001654380 t0 : ffffffff81201158
+> [    0.141156]  t1 : 0000000000000002 t2 : 0000000000000154 s0 : ffffffe001647dd0
+> [    0.141424]  s1 : ffffffff80a43250 a0 : ffffffff81201220 a1 : 0000000000000000
+> [    0.141654]  a2 : 000000000000003c a3 : ffffffff81201258 a4 : 0000000000000064
+> [    0.141893]  a5 : ffffffff8029806c a6 : 0000000000000040 a7 : ffffffffffffffff
+> [    0.142126]  s2 : ffffffff81201220 s3 : 0000000000000009 s4 : ffffffff81135088
+> [    0.142353]  s5 : ffffffff81135038 s6 : ffffffff8080ce80 s7 : ffffffff80800438
+> [    0.142584]  s8 : ffffffff80bc6578 s9 : 0000000000000008 s10: ffffffff806000ac
+> [    0.142810]  s11: 0000000000000000 t3 : fffffffffffffffc t4 : 0000000000000000
+> [    0.143042]  t5 : 0000000000000155 t6 : 00000000000003ff
+> [    0.143220] status: 0000000000000120 badaddr: ffffffff81201220 cause: 000000000000000f
+> [    0.143560] [<ffffffff8029806c>] __memset+0xc4/0xfc
+> [    0.143859] [<ffffffff8061e984>] init_default_flow_dissectors+0x22/0x60
+> [    0.144092] [<ffffffff800010fc>] do_one_initcall+0x3e/0x168
+> [    0.144278] [<ffffffff80600df0>] kernel_init_freeable+0x1c8/0x224
+> [    0.144479] [<ffffffff804868a8>] kernel_init+0x12/0x110
+> [    0.144658] [<ffffffff800022de>] ret_from_exception+0x0/0xc
+> [    0.145124] ---[ end trace f1e9643daa46d591 ]---
+>
+> After some investigation, I think I found the root cause: commit
+> 2bfc6cd81bd ("move kernel mapping outside of linear mapping") moves
+> BPF JIT region after the kernel:
+>
+> | #define BPF_JIT_REGION_START	PFN_ALIGN((unsigned long)&_end)
+>
+> The &_end is unlikely aligned with PMD size, so the front bpf jit
+> region sits with part of kernel .data section in one PMD size mapping.
+> But kernel is mapped in PMD SIZE, when bpf_jit_binary_lock_ro() is
+> called to make the first bpf jit prog ROX, we will make part of kernel
+> .data section RO too, so when we write to, for example memset the
+> .data section, MMU will trigger a store page fault.
+>
+> To fix the issue, we need to ensure the BPF JIT region is PMD size
+> aligned. This patch acchieve this goal by restoring the BPF JIT region
+> to original position, I.E the 128MB before kernel .text section. The
+> modification to kasan_init.c is inspired by Alexandre.
+>
+> Fixes: fc8504765ec5 ("riscv: bpf: Avoid breaking W^X")
+> Reported-by: Andreas Schwab <schwab@linux-m68k.org>
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+> Since v2:
+>  - Split the local vars rename modification into another patch per Alexandre
+>    suggestion
+>  - Add Fixes tag
+>
+> Since v1:
+>  - Fix early boot hang when kasan is enabled
+>  - Update Documentation/riscv/vm-layout.rst
+>
+>  Documentation/riscv/vm-layout.rst | 4 ++--
+>  arch/riscv/include/asm/pgtable.h  | 5 ++---
+>  arch/riscv/mm/kasan_init.c        | 2 +-
+>  3 files changed, 5 insertions(+), 6 deletions(-)
+>
+> diff --git a/Documentation/riscv/vm-layout.rst b/Documentation/riscv/vm-layout.rst
+> index 329d32098af4..b7f98930d38d 100644
+> --- a/Documentation/riscv/vm-layout.rst
+> +++ b/Documentation/riscv/vm-layout.rst
+> @@ -58,6 +58,6 @@ RISC-V Linux Kernel SV39
+>                                                                |
+>    ____________________________________________________________|____________________________________________________________
+>                      |            |                  |         |
+> -   ffffffff00000000 |   -4    GB | ffffffff7fffffff |    2 GB | modules
+> -   ffffffff80000000 |   -2    GB | ffffffffffffffff |    2 GB | kernel, BPF
+> +   ffffffff00000000 |   -4    GB | ffffffff7fffffff |    2 GB | modules, BPF
+> +   ffffffff80000000 |   -2    GB | ffffffffffffffff |    2 GB | kernel
+>    __________________|____________|__________________|_________|____________________________________________________________
+> diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
+> index 9469f464e71a..380cd3a7e548 100644
+> --- a/arch/riscv/include/asm/pgtable.h
+> +++ b/arch/riscv/include/asm/pgtable.h
+> @@ -30,9 +30,8 @@
+>
+>  #define BPF_JIT_REGION_SIZE	(SZ_128M)
+>  #ifdef CONFIG_64BIT
+> -/* KASLR should leave at least 128MB for BPF after the kernel */
+> -#define BPF_JIT_REGION_START	PFN_ALIGN((unsigned long)&_end)
+> -#define BPF_JIT_REGION_END	(BPF_JIT_REGION_START + BPF_JIT_REGION_SIZE)
+> +#define BPF_JIT_REGION_START	(BPF_JIT_REGION_END - BPF_JIT_REGION_SIZE)
+> +#define BPF_JIT_REGION_END	(MODULES_END)
+>  #else
+>  #define BPF_JIT_REGION_START	(PAGE_OFFSET - BPF_JIT_REGION_SIZE)
+>  #define BPF_JIT_REGION_END	(VMALLOC_END)
+> diff --git a/arch/riscv/mm/kasan_init.c b/arch/riscv/mm/kasan_init.c
+> index 9daacae93e33..55c113345460 100644
+> --- a/arch/riscv/mm/kasan_init.c
+> +++ b/arch/riscv/mm/kasan_init.c
+> @@ -201,7 +201,7 @@ void __init kasan_init(void)
+>
+>  	/* Populate kernel, BPF, modules mapping */
+>  	kasan_populate(kasan_mem_to_shadow((const void *)MODULES_VADDR),
+> -		       kasan_mem_to_shadow((const void *)BPF_JIT_REGION_END));
+> +		       kasan_mem_to_shadow((const void *)MODULES_VADDR + SZ_2G));
+>
+>  	for (i = 0; i < PTRS_PER_PTE; i++)
+>  		set_pte(&kasan_early_shadow_pte[i],
 
-Normally cfg80211 changes go via Johannes' tree though I guess small
-changes I could take it via my tree, but then I need an ack from
-Johannes.
+Thanks, this is on fixes.  With the previous fix also applied it still 
+boots for me.
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+Andreas: I saw you indicate that a subset of this (without the kasan 
+chunk, which was breaking for me) fixed your boot issue, but I don't see 
+a direct confirmation of that.  LMK if there's still an issue on your 
+end, otherwise I'm going to assume this is solved.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+Thanks for sorting this out!
