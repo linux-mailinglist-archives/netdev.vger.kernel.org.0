@@ -2,100 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 208623ADBA6
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 22:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6713A3ADBB3
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 22:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbhFSUXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Jun 2021 16:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbhFSUXo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 16:23:44 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9324EC061574
-        for <netdev@vger.kernel.org>; Sat, 19 Jun 2021 13:21:33 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1luhT0-0005PM-Pt; Sat, 19 Jun 2021 22:21:22 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:8352:71b5:153f:5f88])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id DD39363F796;
-        Sat, 19 Jun 2021 20:21:19 +0000 (UTC)
-Date:   Sat, 19 Jun 2021 22:21:19 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com
-Subject: Re: [PATCH net-next 0/8] net: at91_can: clean up some code style
- issues
-Message-ID: <20210619202119.4xkssewsebtg76rn@pengutronix.de>
-References: <1624096589-13452-1-git-send-email-huangguangbin2@huawei.com>
+        id S230174AbhFSUhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Jun 2021 16:37:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47988 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229475AbhFSUhp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Jun 2021 16:37:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 98E22610A7;
+        Sat, 19 Jun 2021 20:35:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624134933;
+        bh=lER0y7Z4cnY2Oauv/bbe+khn3ZDuybDepS871EY7/oc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KLrc/oEyPql2ZMfLtdBlF89tQMTs0USOuhYcZkJLVQIRRmLHE0Ne4GWx2mVgmZFYv
+         STnESKfAwfC3jQCOjw+SO6dN7RhAGtKtJZ7WxiCSMkUMYWkmqi/bIuRepJobtc17o5
+         kmHKnFum0+UQQDUiKqFVjLy2KPlf1igSOVC/gbzEnDX6QxHgi8wlWQjbGq9xj9ahpL
+         Tun6uy82t2YjFMhnrdfBHHIpdbsNo0Lkww5ZUP3+TIW4Ss1LAFRG4l5OTcmDBUdybU
+         MGrT3sv9XAzkMJpSxl0GPzh1lglrwoSHUu2OO95MyBS6Y3KijWxUaXe0KsdPjY30kN
+         IKtKFh07orfKg==
+Received: by pali.im (Postfix)
+        id 41EA71404; Sat, 19 Jun 2021 22:35:31 +0200 (CEST)
+Date:   Sat, 19 Jun 2021 22:35:31 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Madalin Bucur <madalin.bucur@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
+        Igal Liberman <Igal.Liberman@freescale.com>,
+        Shruti Kanetkar <Shruti@freescale.com>,
+        Emil Medve <Emilian.Medve@freescale.com>,
+        Scott Wood <oss@buserror.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>
+Subject: Re: Unsupported phy-connection-type sgmii-2500 in
+ arch/powerpc/boot/dts/fsl/t1023rdb.dts
+Message-ID: <20210619203531.nmhpcux5hwwve47e@pali>
+References: <20210603143453.if7hgifupx5k433b@pali>
+ <YLjxX/XPDoRRIvYf@lunn.ch>
+ <20210603194853.ngz4jdso3kfncnj4@pali>
+ <AM6PR04MB3976B62084EC462BA02F0C4CEC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <20210604192732.GW30436@shell.armlinux.org.uk>
+ <AM6PR04MB39768A569CE3CC4EC61A8769EC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <YLqLzOltcb6jan+B@lunn.ch>
+ <AM6PR04MB39760B986E86BA9169DEECC5EC3B9@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <20210604233455.fwcu2chlsed2gwmu@pali>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="bwh3gyhihsre2tqm"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1624096589-13452-1-git-send-email-huangguangbin2@huawei.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210604233455.fwcu2chlsed2gwmu@pali>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Saturday 05 June 2021 01:34:55 Pali Rohár wrote:
+> On Friday 04 June 2021 21:47:26 Madalin Bucur wrote:
+> > > -----Original Message-----
+> > > From: Andrew Lunn <andrew@lunn.ch>
+> > > Sent: 04 June 2021 23:24
+> > > To: Madalin Bucur <madalin.bucur@nxp.com>
+> > > Cc: Russell King <linux@armlinux.org.uk>; Pali Rohár <pali@kernel.org>;
+> > > Igal Liberman <Igal.Liberman@freescale.com>; Shruti Kanetkar
+> > > <Shruti@freescale.com>; Emil Medve <Emilian.Medve@freescale.com>; Scott
+> > > Wood <oss@buserror.net>; Rob Herring <robh+dt@kernel.org>; Michael
+> > > Ellerman <mpe@ellerman.id.au>; Benjamin Herrenschmidt
+> > > <benh@kernel.crashing.org>; netdev@vger.kernel.org;
+> > > devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; Camelia
+> > > Alexandra Groza (OSS) <camelia.groza@oss.nxp.com>
+> > > Subject: Re: Unsupported phy-connection-type sgmii-2500 in
+> > > arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> > > 
+> > > > The "sgmii-2500" compatible in that device tree describes an SGMII HW
+> > > > block, overclocked at 2.5G. Without that overclocking, it's a plain
+> > > > Cisco (like) SGMII HW block. That's the reason you need to disable it's
+> > > > AN setting when overclocked. With the proper Reset Configuration Word,
+> > > > you could remove the overclocking and transform that into a plain
+> > > "sgmii".
+> > > > Thus, the dts compatible describes the HW, as it is.
+> > > 
+> > > It sounds like the hardware is capable of swapping between SGMII and
+> > > 2500BaseX.
+> > > 
+> > > What we have in DT in this case is not describing the hardware, but
+> > > how we configure the hardware. It is one of the few places we abuse DT
+> > > for configuration.
+> > > 
+> > >     Andrew
+> > 
+> > The actual selection of this mode of operation is performed by the so called
+> > Reset Configuration Word from the boot media, that aligned with the HW and
+> > board design. The need to name it something other than plain "sgmii" comes
+> > from the HW special need for AN to be disabled to operate.
+> > 
+> > Actually, the weird/non-standard hardware is described by the device tree
+> > with a value that puts it in a class of its own. Instead of the overclocked
+> > SGMII denomination "sgmii-2500" it could have been named just as well
+> > "overclocked-nonstandard-2.5G-ethernet-no-autoneg-SGMII-hw-ip".
+> > 
+> > One could try to change device trees to slip configuration details, but the
+> > backwards compatibility aspect renders this futile. Is there any option to
+> > say "sgmii" then "autoneg disabled"?
+> > 
+> > Madalin
+> 
+> Madalin, my understanding is that "sgmii-2500" mode is unknown and
+> unsupported by kernel.
+> 
+> List of known modes which can be specified in DTS file are defined in
+> YAML schema for 'phy-connection-type' in file:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/net/ethernet-controller.yaml?h=v5.12#n55
+> 
+> And there is none "sgmii-2500", so some DTS schema validator could throw
+> validation error for that DTS file. I'm not sure if somebody has written
+> DTS schema validator with all those things (like there are JSON schema
+> or OpenAPI validators in JavaScript / HTTP world).
+> 
+> Plus also in linux/phy.h header file contains list of known Linux modes:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/phy.h?h=v5.12#n169
+> 
+> And based on all information in this email discussion, in my opinion the
+> mode which HW supports matches Linux meaning of "2500base-x" key/string.
+> So I would suggest to rename "sgmii-2500" in that DTS file to
+> "2500base-x". Does it make sense?
 
---bwh3gyhihsre2tqm
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 19.06.2021 17:56:21, Guangbin Huang wrote:
-> This patchset clean up some code style issues.
->=20
-> Peng Li (8):
->   net: at91_can: remove redundant blank lines
->   net: at91_can: add blank line after declarations
->   net: at91_can: fix the code style issue about macro
->   net: at91_can: use BIT macro
->   net: at91_can: fix the alignment issue
->   net: at91_can: add braces {} to all arms of the statement
->   net: at91_can: remove redundant space
->   net: at91_can: fix the comments style issue
->=20
->  drivers/net/can/at91_can.c | 131 +++++++++++++++++++++------------------=
-------
->  1 file changed, 60 insertions(+), 71 deletions(-)
-
-Applied whole series to linux-can-net/testing.
-
-Thanks,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---bwh3gyhihsre2tqm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDOUbwACgkQqclaivrt
-76mu+Qf/dhaGIXcctaGvvJT3V7K6THcZgPMDatr4LWFwKVBTz/yO6pDRmYy8Cd4Z
-HmLRJzcSOTZHK4CHv7IDLJ4GHwYQi1yPszSEfV0Dbaqfwe7SNaNAvtaUNPXM9YQA
-NA0k0bBOQFtOxAl4mYegtIkR3c3im9zli2hnc3RDDtfuRLmd4u4zxJDdIPITE0Ok
-Is9qJZ0vaB3Eoyc1A74dwsRqq/83v+ioRoEHPTAYDUf3qYw0/qBgsZ9Ui+cxvR1+
-3s8aAaJWZ0h251B7qb8Wx6IBn3QM/q1O1Ai+t/PGbKvC4NfAaEvuFnMRmFUszLhJ
-RRpfXU5iVTvt1sx6D2tDVUb09MK6sg==
-=QhqL
------END PGP SIGNATURE-----
-
---bwh3gyhihsre2tqm--
+Any opinion? Or should I send a patch?
