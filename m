@@ -2,105 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D011B3AD8CD
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 11:06:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF10A3AD8D0
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 11:08:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbhFSJIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Jun 2021 05:08:36 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:20333 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229591AbhFSJId (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Jun 2021 05:08:33 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1624093582; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=JExdWib+2vNvSJ1ZeWNdFikcr81uBm3qt2YwfkU3z68=;
- b=pEqqmxqLZXL3KxxzeKAup8xqxjNN/sxwdM6huv0HMddJThfsNh0/QayPS0Q94s8+p4+SX6q8
- a5YmMd4ZQi+wmq0xHRbeeu1KNPhiqN912/w6GZbZZcafIzS11bBa4Ynk5nWBAWsnKpm8N5OC
- xqtPT3Lv1RNNbBQ0+lXYVfz0WOs=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 60cdb38ce570c056194f6451 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 19 Jun 2021 09:06:20
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D786BC43460; Sat, 19 Jun 2021 09:06:19 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9C290C433D3;
-        Sat, 19 Jun 2021 09:06:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9C290C433D3
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S231449AbhFSJK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Jun 2021 05:10:26 -0400
+Received: from mail-vs1-f46.google.com ([209.85.217.46]:35398 "EHLO
+        mail-vs1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229768AbhFSJKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 05:10:24 -0400
+Received: by mail-vs1-f46.google.com with SMTP id j15so6306968vsf.2;
+        Sat, 19 Jun 2021 02:08:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4po9uVd+8EhQG+1BQVzj+tYi7bOBxTAfPfI2c38dNBo=;
+        b=SVdEuJKtHvHNjDJPdru1LKWX3ocfktQygc1BEAdF+4hzE/WierL69l2yniD5vf3Wmi
+         psls9rmat09Mx0sqbnyzHY4LAwz0n5R1lE9w9zD+f/j49IFpD5nTL96dtvs+B2xiplZE
+         W1rOCzhn+pZeAYWCRBkIbChAkzso6jHZ92mW18HMWWlGeLDsfbJJj4jVg2JMGfydLION
+         ZEWP2plBEYrak2P3oYls/kUijcEMWxp9EYwsotzFwPdr5YaMfM+Jzamj1DQ3BWtsD37b
+         KHJTVsaoy7XOn89YL9XJGZPkR/mLwLzPsJhf4SI7ejdyBsBL3EF7TVyT+yvo1KqtdG4/
+         Q7DQ==
+X-Gm-Message-State: AOAM530IglSefeuAA+51jNswU2tusoELdQilaHdVmGET9fdZhkcJUH7o
+        jvQW0tniuyEgasSOWbhZ8LIknHfclBMFATzypm0=
+X-Google-Smtp-Source: ABdhPJwPRDLSQD7EpiWB3zmebrBujgW1yOOldYA6bKB/FNuuC7HYtwaxaxIRej3Yw3X1q7vkVtvsEpTpcb0AVRiha58=
+X-Received: by 2002:a67:3c2:: with SMTP id 185mr10302283vsd.42.1624093693732;
+ Sat, 19 Jun 2021 02:08:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] rtl8xxxu: avoid parsing short RX packet
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210511071926.8951-1-ihuguet@redhat.com>
-References: <20210511071926.8951-1-ihuguet@redhat.com>
-To:     =?utf-8?b?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        ihuguet@redhat.com
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210619090619.D786BC43460@smtp.codeaurora.org>
-Date:   Sat, 19 Jun 2021 09:06:19 +0000 (UTC)
+References: <1624062891-22762-1-git-send-email-schmitzmic@gmail.com> <1624062891-22762-3-git-send-email-schmitzmic@gmail.com>
+In-Reply-To: <1624062891-22762-3-git-send-email-schmitzmic@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Sat, 19 Jun 2021 11:08:02 +0200
+Message-ID: <CAMuHMdUSGWGMs6_wqy-CkfuKsdk=EBpEVBf3UugxCuo3qZQCKg@mail.gmail.com>
+Subject: Re: [PATCH net-next v5 2/2] net/8390: apne.c - add 100 Mbit support
+ to apne.c driver
+To:     Michael Schmitz <schmitzmic@gmail.com>
+Cc:     "Linux/m68k" <linux-m68k@vger.kernel.org>,
+        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Íñigo Huguet <ihuguet@redhat.com> wrote:
+Hi Michael,
 
-> One USB data buffer can contain multiple received network
-> packets. If that's the case, they're processed this way:
-> 1. Original buffer is cloned
-> 2. Original buffer is trimmed to contain only the first
->    network packet
-> 3. This first network packet is passed to network stack
-> 4. Cloned buffer is trimmed to eliminate the first network
->    packet
-> 5. Repeat with the cloned buffer until there are no more
->    network packets inside
-> 
-> However, if the space remaining in original buffer after
-> the first network packet is not enough to contain at least
-> another network packet descriptor, it is not cloned.
-> 
-> The loop parsing this packets ended if remaining space == 0.
-> But if the remaining space was > 0 but < packet descriptor
-> size, another iteration of the loop was done, processing again
-> the previous packet because cloning didn't happen. Moreover,
-> the ownership of this packet had been passed to network
-> stack in the previous iteration.
-> 
-> This patch ensures that no extra iteration is done if the
-> remaining size is not enough for one packet, and also avoid
-> the first iteration for the same reason.
-> 
-> Probably this doesn't happen in practice, but can happen
-> theoretically.
-> 
-> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+On Sat, Jun 19, 2021 at 2:35 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
+> Add Kconfig option, module parameter and PCMCIA reset code
+> required to support 100 Mbit PCMCIA ethernet cards on Amiga.
+>
+> 10 Mbit and 100 Mbit mode are supported by the same module.
+> A module parameter switches Amiga ISA IO accessors to word
+> access by changing isa_type at runtime. Additional code to
+> reset the PCMCIA hardware is also added to the driver probe.
+>
+> Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
+> 100 MBit card support" submitted to netdev 2018/09/16 by Alex
+> Kazik <alex@kazik.de>.
+>
+> CC: netdev@vger.kernel.org
+> Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
+> Tested-by: Alex Kazik <alex@kazik.de>
+> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
 
-Patch applied to wireless-drivers-next.git, thanks.
+Thanks for your patch!
 
-adf6a0f8c0a6 rtl8xxxu: avoid parsing short RX packet
+Note that this patch has a hard dependency on "[PATCH v5 1/2] m68k:
+io_mm.h - add APNE 100 MBit support" in the series, so it must not
+be applied to the netdev tree yet.
+
+> --- a/drivers/net/ethernet/8390/Kconfig
+> +++ b/drivers/net/ethernet/8390/Kconfig
+> @@ -143,6 +143,10 @@ config APNE
+>           To compile this driver as a module, choose M here: the module
+>           will be called apne.
+>
+> +         The driver also supports 10/100Mbit cards (e.g. Netgear FA411,
+> +         CNet Singlepoint). To activate 100 Mbit support at runtime or
+> +         from the kernel command line, use the apne.100mbit module parameter.
+
+According to the recent discussion about that, "at runtime" is not
+really possible?  So that limits it to kernel command line (for the
+builtin case)
+or module parameter (for the modular case).
+
+> +
+>  config PCMCIA_PCNET
+>         tristate "NE2000 compatible PCMCIA support"
+>         depends on PCMCIA
+> diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
+> index fe6c834..8223e15 100644
+> --- a/drivers/net/ethernet/8390/apne.c
+> +++ b/drivers/net/ethernet/8390/apne.c
+> @@ -120,6 +120,10 @@ static u32 apne_msg_enable;
+>  module_param_named(msg_enable, apne_msg_enable, uint, 0444);
+>  MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+>
+> +static bool apne_100_mbit;
+> +module_param_named(100_mbit, apne_100_mbit, bool, 0644);
+> +MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210511071926.8951-1-ihuguet@redhat.com/
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
