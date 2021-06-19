@@ -2,77 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A82773AD64B
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 02:36:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA8FF3AD647
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 02:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235287AbhFSAiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 20:38:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54594 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232609AbhFSAiN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Jun 2021 20:38:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 982936108D;
-        Sat, 19 Jun 2021 00:30:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624062650;
-        bh=fb7gOglTIgwVS2He785TzxOkWPXogDzT/XZ8kGkPjME=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LtD1QQETPMXaQkcDrvVldrSyDDQkp4a7YGx2LuGrMEG7jF1YDtNDlgZtiJ0m0j0uE
-         rs86SfWfHy137XA3V8rmedtBpHYTpjwVuzMZGaDyAMQQL2e6gYqP1273DsEVvC/w66
-         mK1zfSf1mmK0S6chAyPU6+MA5ZsFdaM32zHlExSJLjrDtLkJsshrZLMTOAyemqe3vl
-         nHHdbBvAe/MQHTLFQoDJBKBRbWY7ypwgGBogOyXrVwmAQsS+/K5BmWw9YQN2NEFHKZ
-         d4o2/zAOMqR7Rv73OSfmGn5vtQWVPo5jngHjbIWKrTXYYyl+6AwsIbVDaxFtv4y6Ro
-         PRZa87k5Sc0zw==
-Date:   Fri, 18 Jun 2021 17:30:47 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     <davem@davemloft.net>, <olteanv@gmail.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andriin@fb.com>, <edumazet@google.com>,
-        <weiwan@google.com>, <cong.wang@bytedance.com>,
-        <ap420073@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <mkl@pengutronix.de>, <linux-can@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
-        <alobakin@pm.me>
-Subject: Re: [PATCH net v2] net: sched: add barrier to ensure correct
- ordering for lockless qdisc
-Message-ID: <20210618173047.68db0b81@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1623891854-57416-1-git-send-email-linyunsheng@huawei.com>
-References: <1623891854-57416-1-git-send-email-linyunsheng@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S234621AbhFSAhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 20:37:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233796AbhFSAhK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 20:37:10 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7BFC06175F;
+        Fri, 18 Jun 2021 17:34:59 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id x19so5550861pln.2;
+        Fri, 18 Jun 2021 17:34:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=tuSev6rXr3H43kdgvL2brbL342a/0ogOzgR1/5B17C4=;
+        b=E/Gbei5dWYjFMVrO9dnt0YXEsn7OAMfqJXjRXvklYByfLHnNrNND05bZ9pUQ4yQnZD
+         vcAKBnCr14rvYo7dvxeEp8AGIhr1jqqow6HvntjmDOUx9IidE6gz8QzfiU5fR5VcEYT0
+         pAKhriqNRmZGfwln9OjuheXazsYb7ux8glinQJQgyrhC8RO0jH6CPQgS/MN1s16QYOBa
+         LOZ2PB0A1F0BiBYynU0+IVnwahspT0BqP0q6wbDUF5+DIgZ7nvOVls6UoFVxWC5jspT5
+         T78jvha7La2i4MCrnxAVVE8F4X67dK1AcXCXzEDyH60Azyye9tnw0mJRTIVpttyxn3hR
+         A9UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=tuSev6rXr3H43kdgvL2brbL342a/0ogOzgR1/5B17C4=;
+        b=tNv1xX3GjdiL/IjkGATXWnjIBbx93P7OPS1/kytgWE5ZFevbkfb/nPYHfPoy3KWGhz
+         Ag8rtxp99aHWLPfOxL6KZp6IBTer/La05zwqndtNRkOC+wUPS6NLkDAJAPZya1rypJ8u
+         Ge/8C+3+6dL3ZIZkYV1JzVqQmPTPBAD1MDYE0w4dznEjFleqO/Pg2Aoo7AzpzvdMnXE2
+         zRpUQ2EQmBCUPqIUx8S4l25zRhf/WOzCfTaDF/Ytl/qJ68aPefmQbsg3Ra245wbSKvc9
+         Bbp921IltuVXCOnzUOyZ4FhYyq19AkJ0Sl6tbFG/CfC7meBABN1T7I9KVtigj7Pehomm
+         n6zA==
+X-Gm-Message-State: AOAM530KjLjp0+8eMm+sXx186o4T/3Z9Cv5G+rWluWNhbrvSb8su0KK2
+        uLe47Q6V88yhpaMhzoaxPps=
+X-Google-Smtp-Source: ABdhPJw0h1XV2oLsM2VLJhJ/dV1kbF9l+3XRHBo3+ZQ6S4MdjBRX71fmv6KK4x69rVYuoewjvq0Pww==
+X-Received: by 2002:a17:90a:b795:: with SMTP id m21mr13789145pjr.143.1624062899108;
+        Fri, 18 Jun 2021 17:34:59 -0700 (PDT)
+Received: from xplor.waratah.dyndns.org (222-152-189-137-fibre.sparkbb.co.nz. [222.152.189.137])
+        by smtp.gmail.com with ESMTPSA id z3sm8850365pfb.127.2021.06.18.17.34.58
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Jun 2021 17:34:58 -0700 (PDT)
+Received: by xplor.waratah.dyndns.org (Postfix, from userid 1000)
+        id 3B0EB3603E0; Sat, 19 Jun 2021 12:34:55 +1200 (NZST)
+From:   Michael Schmitz <schmitzmic@gmail.com>
+To:     linux-m68k@vger.kernel.org, geert@linux-m68k.org
+Cc:     alex@kazik.de, Michael Schmitz <schmitzmic@gmail.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v5 2/2] net/8390: apne.c - add 100 Mbit support to apne.c driver
+Date:   Sat, 19 Jun 2021 12:34:51 +1200
+Message-Id: <1624062891-22762-3-git-send-email-schmitzmic@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1624062891-22762-1-git-send-email-schmitzmic@gmail.com>
+References: <1624062891-22762-1-git-send-email-schmitzmic@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Jun 2021 09:04:14 +0800 Yunsheng Lin wrote:
-> The spin_trylock() was assumed to contain the implicit
-> barrier needed to ensure the correct ordering between
-> STATE_MISSED setting/clearing and STATE_MISSED checking
-> in commit a90c57f2cedd ("net: sched: fix packet stuck
-> problem for lockless qdisc").
-> 
-> But it turns out that spin_trylock() only has load-acquire
-> semantic, for strongly-ordered system(like x86), the compiler
-> barrier implicitly contained in spin_trylock() seems enough
-> to ensure the correct ordering. But for weakly-orderly system
-> (like arm64), the store-release semantic is needed to ensure
-> the correct ordering as clear_bit() and test_bit() is store
-> operation, see queued_spin_lock().
-> 
-> So add the explicit barrier to ensure the correct ordering
-> for the above case.
-> 
-> Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Add Kconfig option, module parameter and PCMCIA reset code
+required to support 100 Mbit PCMCIA ethernet cards on Amiga.
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+10 Mbit and 100 Mbit mode are supported by the same module.
+A module parameter switches Amiga ISA IO accessors to word
+access by changing isa_type at runtime. Additional code to
+reset the PCMCIA hardware is also added to the driver probe.
+
+Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
+100 MBit card support" submitted to netdev 2018/09/16 by Alex
+Kazik <alex@kazik.de>.
+
+CC: netdev@vger.kernel.org
+Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
+Tested-by: Alex Kazik <alex@kazik.de>
+Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+
+--
+Changes from v4:
+
+Geert Uytterhoeven:
+- remove APNE100MBIT config option, always include 16 bit support
+- change module parameter permissions
+- try autoprobing for 16 bit mode early on in device probe
+
+Changes from v3:
+
+- change module parameter name to match Kconfig help
+
+Finn Thain:
+- fix coding style in new card reset code block
+- allow reset of isa_type by module parameter
+
+Changes from v1:
+
+- fix module parameter name in Kconfig help text
+
+Alex Kazik:
+- change module parameter type to bool, fix module parameter
+  permission
+
+Changes from RFC:
+
+Geert Uytterhoeven:
+- change APNE_100MBIT to depend on APNE
+- change '---help---' to 'help' (former no longer supported)
+- fix whitespace errors
+- fix module_param_named() arg count
+- protect all added code by #ifdef CONFIG_APNE_100MBIT
+---
+ drivers/net/ethernet/8390/Kconfig |  4 ++++
+ drivers/net/ethernet/8390/apne.c  | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
+
+diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
+index 9f4b302..cf0d8b3 100644
+--- a/drivers/net/ethernet/8390/Kconfig
++++ b/drivers/net/ethernet/8390/Kconfig
+@@ -143,6 +143,10 @@ config APNE
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called apne.
+ 
++	  The driver also supports 10/100Mbit cards (e.g. Netgear FA411,
++	  CNet Singlepoint). To activate 100 Mbit support at runtime or
++	  from the kernel command line, use the apne.100mbit module parameter.
++
+ config PCMCIA_PCNET
+ 	tristate "NE2000 compatible PCMCIA support"
+ 	depends on PCMCIA
+diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
+index fe6c834..8223e15 100644
+--- a/drivers/net/ethernet/8390/apne.c
++++ b/drivers/net/ethernet/8390/apne.c
+@@ -120,6 +120,10 @@ static u32 apne_msg_enable;
+ module_param_named(msg_enable, apne_msg_enable, uint, 0444);
+ MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+ 
++static bool apne_100_mbit;
++module_param_named(100_mbit, apne_100_mbit, bool, 0644);
++MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
++
+ struct net_device * __init apne_probe(int unit)
+ {
+ 	struct net_device *dev;
+@@ -139,6 +143,11 @@ struct net_device * __init apne_probe(int unit)
+ 	if ( !(AMIGAHW_PRESENT(PCMCIA)) )
+ 		return ERR_PTR(-ENODEV);
+ 
++	if (apne_100_mbit)
++		isa_type = ISA_TYPE_AG16;
++	else
++		isa_type = ISA_TYPE_AG;
++
+ 	pr_info("Looking for PCMCIA ethernet card : ");
+ 
+ 	/* check if a card is inserted */
+@@ -147,6 +156,20 @@ struct net_device * __init apne_probe(int unit)
+ 		return ERR_PTR(-ENODEV);
+ 	}
+ 
++	/* Reset card. Who knows what dain-bramaged state it was left in. */
++	{	unsigned long reset_start_time = jiffies;
++
++		outb(inb(IOBASE + NE_RESET), IOBASE + NE_RESET);
++
++		while ((inb(IOBASE + NE_EN0_ISR) & ENISR_RESET) == 0)
++			if (time_after(jiffies, reset_start_time + 2*HZ/100)) {
++				pr_info("Card not found (no reset ack).\n");
++				isa_type=ISA_TYPE_AG16;
++			}
++
++		outb(0xff, IOBASE + NE_EN0_ISR);		/* Ack all intr. */
++	}
++
+ 	dev = alloc_ei_netdev();
+ 	if (!dev)
+ 		return ERR_PTR(-ENOMEM);
+@@ -590,6 +613,16 @@ static int init_pcmcia(void)
+ #endif
+ 	u_long offset;
+ 
++	/* reset card (idea taken from CardReset by Artur Pogoda) */
++	if (isa_type == ISA_TYPE_AG16) {
++		u_char  tmp = gayle.intreq;
++
++		gayle.intreq = 0xff;
++		mdelay(1);
++		gayle.intreq = tmp;
++		mdelay(300);
++	}
++
+ 	pcmcia_reset();
+ 	pcmcia_program_voltage(PCMCIA_0V);
+ 	pcmcia_access_speed(PCMCIA_SPEED_250NS);
+-- 
+2.7.4
+
