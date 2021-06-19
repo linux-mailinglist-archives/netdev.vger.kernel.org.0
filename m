@@ -2,149 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCFB53AD7A6
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 06:16:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1CE33AD816
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 08:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231313AbhFSESm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Jun 2021 00:18:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbhFSESl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 00:18:41 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2840C061574;
-        Fri, 18 Jun 2021 21:16:30 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id h12so5695333plf.4;
-        Fri, 18 Jun 2021 21:16:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WmdWVzUm/J9xuwe+NGxrSPuLF8TCRL8+mXZhaNlPwOs=;
-        b=NuCh6EMgDKDJnOXm3thkw4Pgv6aVu2rGuqs9NVUOZ4Fj2CP8jTFcWmPe0tRomYLL8l
-         gowbPB1dyvVANgAt5lmnjyOBigdCpmrpxZZ+k3Tsvpc8iJdBNhXITa+J0bud9iZ+fWeX
-         rPv+dF6Ec/44s5xgU1WJs1R8jmp5JAJKsFrdHqfI76Kx0vcJ08I7kIUldkIUaAA1wOJD
-         Om2axzkh5n2kMcSFiahNjrhZeQ+5Vz9EdbzYSbVqVPXK2HZi84yPGXj27D/Gq+z3Yify
-         vel+RKVQVpTW237u7vySRSHhV2cYZAj34SedyXjEhMDYPWO0JQOd/Vr16ZMfvSrQjIXA
-         f7iQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WmdWVzUm/J9xuwe+NGxrSPuLF8TCRL8+mXZhaNlPwOs=;
-        b=PyrfMOXfiGVp2J55+3CvNp3EEI0e1KtLUWklIIjCPGzLO0McmHYMi8RLN5CMiQqLEB
-         vyB0so7OP8H4OX7P3IkVapvQx4WzE6jYK2Vo1vdQ+J4yB+aQ5B3cB6AnokbB3nMEgq8Q
-         dliCxt/He3FG4RX83e7ebKie2pfXrud0om9r8EtXUoGGRHbfnkGIuSJoEv3GkmrjDI6M
-         BI58eU1pEsEdPmeoEt4YWn6cmhY+2FJ6k/4eP2ILJb9SQM7+pZblNp/ub5dy+3cYP3z+
-         /tCreMoaOflYSauXBX6Oo3lLclADa1as9sXtts3gDp1zNH1rxEgf4Guc0m6SRp/kO8HL
-         B7uw==
-X-Gm-Message-State: AOAM530aAyBjtbHI8N7XxYpae9aZ9BoQCnxkAyW6VOqn/Qhl71ln5GJO
-        kdecz1zVADBpfJL2Ci9MUnPxvlIqDlY=
-X-Google-Smtp-Source: ABdhPJyD7xKTHuxXx38tPfBKRJRC9X8cqBkikkL7gkm6UdFx7eL6NW+xqZhWpf5o0YTR46VmIsBMcA==
-X-Received: by 2002:a17:903:228e:b029:112:5e2f:bbf5 with SMTP id b14-20020a170903228eb02901125e2fbbf5mr7836638plh.30.1624076190353;
-        Fri, 18 Jun 2021 21:16:30 -0700 (PDT)
-Received: from localhost ([2402:3a80:11d2:e222:9de7:3308:6c84:b170])
-        by smtp.gmail.com with ESMTPSA id p45sm2708742pfw.19.2021.06.18.21.16.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Jun 2021 21:16:30 -0700 (PDT)
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf-next v3 2/2] libbpf: netlink: switch to void * casting
-Date:   Sat, 19 Jun 2021 09:44:54 +0530
-Message-Id: <20210619041454.417577-2-memxor@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210619041454.417577-1-memxor@gmail.com>
-References: <20210619041454.417577-1-memxor@gmail.com>
+        id S233118AbhFSG3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Jun 2021 02:29:55 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:28703 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232206AbhFSG3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 02:29:53 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1624084059; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=ReeHdDtZ1CGVXKaLf4XclDol0SUyu66O157eCXFCbig=; b=EqXe0fnU8UOq8QafoXMtwhVDPo+jhXzycMY+W8eiNKmjEr4Ivq8RQOGpgFxa7MMIP2VR5IBV
+ 2n4SE9sp8nDk4Kk3jADDYSVMo9NEcsT/Bnf73uF6odKrHrpiV9rKOV1KK9DKb/1V0Rbdqvo1
+ uFw528SqEJqpCie+70Eov6GmPFU=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 60cd8e42e27c0cc77fa6dbc5 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 19 Jun 2021 06:27:14
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 9E741C43460; Sat, 19 Jun 2021 06:27:13 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id B6D88C433F1;
+        Sat, 19 Jun 2021 06:27:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B6D88C433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Franky Lin <franky.lin@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>
+Subject: Re: [PATCH v2 1/2] cfg80211: Add wiphy_info_once()
+References: <20210511211549.30571-1-digetx@gmail.com>
+        <e7495304-d62c-fd20-fab3-3930735f2076@gmail.com>
+Date:   Sat, 19 Jun 2021 09:27:06 +0300
+In-Reply-To: <e7495304-d62c-fd20-fab3-3930735f2076@gmail.com> (Dmitry
+        Osipenko's message of "Fri, 18 Jun 2021 23:44:50 +0300")
+Message-ID: <87r1gyid39.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Netlink helpers I added in 8bbb77b7c7a2 ("libbpf: Add various netlink
-helpers") used char * casts everywhere, and there were a few more that
-existed from before.
+Dmitry Osipenko <digetx@gmail.com> writes:
 
-Convert all of them to void * cast, as it is treated equivalently by
-clang/gcc for the purposes of pointer arithmetic and to follow the
-convention elsewhere in the kernel/libbpf.
+> 12.05.2021 00:15, Dmitry Osipenko =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+>> Add wiphy_info_once() helper that prints info message only once.
+>>=20
+>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+>> ---
+>>=20
+>> Changelog:
+>>=20
+>> v2: - New patch added in v2.
+>>=20
+>>  include/net/cfg80211.h | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>=20
+>> diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+>> index 5224f885a99a..3b19e03509b3 100644
+>> --- a/include/net/cfg80211.h
+>> +++ b/include/net/cfg80211.h
+>> @@ -8154,6 +8154,8 @@ bool cfg80211_iftype_allowed(struct wiphy *wiphy, =
+enum nl80211_iftype iftype,
+>>  	dev_notice(&(wiphy)->dev, format, ##args)
+>>  #define wiphy_info(wiphy, format, args...)			\
+>>  	dev_info(&(wiphy)->dev, format, ##args)
+>> +#define wiphy_info_once(wiphy, format, args...)			\
+>> +	dev_info_once(&(wiphy)->dev, format, ##args)
+>>=20=20
+>>  #define wiphy_err_ratelimited(wiphy, format, args...)		\
+>>  	dev_err_ratelimited(&(wiphy)->dev, format, ##args)
+>>=20
+>
+> Ping?
+>
+> Arend, is this series good to you? I assume Kalle could pick it up if
+> you'll give ack. Thanks in advance.
 
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
----
- tools/lib/bpf/netlink.c | 2 +-
- tools/lib/bpf/nlattr.c  | 2 +-
- tools/lib/bpf/nlattr.h  | 8 ++++----
- 3 files changed, 6 insertions(+), 6 deletions(-)
+Normally cfg80211 changes go via Johannes' tree though I guess small
+changes I could take it via my tree, but then I need an ack from
+Johannes.
 
-diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
-index a17470045455..7b9821d0d70a 100644
---- a/tools/lib/bpf/netlink.c
-+++ b/tools/lib/bpf/netlink.c
-@@ -524,7 +524,7 @@ static int get_tc_info(struct nlmsghdr *nh, libbpf_dump_nlmsg_t fn,
- 	struct nlattr *tb[TCA_MAX + 1];
- 
- 	libbpf_nla_parse(tb, TCA_MAX,
--			 (struct nlattr *)((char *)tc + NLMSG_ALIGN(sizeof(*tc))),
-+			 (struct nlattr *)((void *)tc + NLMSG_ALIGN(sizeof(*tc))),
- 			 NLMSG_PAYLOAD(nh, sizeof(*tc)), NULL);
- 	if (!tb[TCA_KIND])
- 		return NL_CONT;
-diff --git a/tools/lib/bpf/nlattr.c b/tools/lib/bpf/nlattr.c
-index b607fa9852b1..f57e77a6e40f 100644
---- a/tools/lib/bpf/nlattr.c
-+++ b/tools/lib/bpf/nlattr.c
-@@ -27,7 +27,7 @@ static struct nlattr *nla_next(const struct nlattr *nla, int *remaining)
- 	int totlen = NLA_ALIGN(nla->nla_len);
- 
- 	*remaining -= totlen;
--	return (struct nlattr *) ((char *) nla + totlen);
-+	return (struct nlattr *)((void *)nla + totlen);
- }
- 
- static int nla_ok(const struct nlattr *nla, int remaining)
-diff --git a/tools/lib/bpf/nlattr.h b/tools/lib/bpf/nlattr.h
-index 76cbfeb21955..4d15ae2ff812 100644
---- a/tools/lib/bpf/nlattr.h
-+++ b/tools/lib/bpf/nlattr.h
-@@ -81,7 +81,7 @@ struct libbpf_nla_req {
-  */
- static inline void *libbpf_nla_data(const struct nlattr *nla)
- {
--	return (char *) nla + NLA_HDRLEN;
-+	return (void *)nla + NLA_HDRLEN;
- }
- 
- static inline uint8_t libbpf_nla_getattr_u8(const struct nlattr *nla)
-@@ -118,12 +118,12 @@ int libbpf_nla_dump_errormsg(struct nlmsghdr *nlh);
- 
- static inline struct nlattr *nla_data(struct nlattr *nla)
- {
--	return (struct nlattr *)((char *)nla + NLA_HDRLEN);
-+	return (struct nlattr *)((void *)nla + NLA_HDRLEN);
- }
- 
- static inline struct nlattr *req_tail(struct libbpf_nla_req *req)
- {
--	return (struct nlattr *)((char *)req + NLMSG_ALIGN(req->nh.nlmsg_len));
-+	return (struct nlattr *)((void *)req + NLMSG_ALIGN(req->nh.nlmsg_len));
- }
- 
- static inline int nlattr_add(struct libbpf_nla_req *req, int type,
-@@ -158,7 +158,7 @@ static inline struct nlattr *nlattr_begin_nested(struct libbpf_nla_req *req, int
- static inline void nlattr_end_nested(struct libbpf_nla_req *req,
- 				     struct nlattr *tail)
- {
--	tail->nla_len = (char *)req_tail(req) - (char *)tail;
-+	tail->nla_len = (void *)req_tail(req) - (void *)tail;
- }
- 
- #endif /* __LIBBPF_NLATTR_H */
--- 
-2.31.1
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
