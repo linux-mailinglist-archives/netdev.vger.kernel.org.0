@@ -2,139 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F35933AD6F0
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 05:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B70F3AD6F8
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 05:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235625AbhFSDPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Jun 2021 23:15:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235603AbhFSDPx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 23:15:53 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2ACC061574;
-        Fri, 18 Jun 2021 20:13:42 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id bb20so2633592pjb.3;
-        Fri, 18 Jun 2021 20:13:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=YTkc1RGIlMZsUFqvUXJXtnV5G900KAQ2a7/NWvfX1D8=;
-        b=FyYsT2eKopXeUG8aK6Gtl28svK/w0q5m6MkBrm44l5RvOxMkrtmO7APYDccksw8/fw
-         EZZwMqNDLH2ZduM4NrcCTIL7jgiytM5khk9Cs2YXbW9rdB+njhYjASnwVOoeahDBsdAC
-         0Xb68F2nt1hT9P2ePqIwhpr7flTWAEGGwXUouf7Pn2HVR0DQTEEZ0vX/taG4yjoNLs1I
-         uLPMpEE07wqjlLFb4QggoNC8qRf8IodAnn4G9etxVV9HxDkn9cIkJbjKZpxcI639Zib0
-         gZDpQ0rJJMXlAi4Ij8FlJCQKX5I1XxvcrJoBHKysq9gFt99Q/IG+4lu9Lu7zYeeRAG2S
-         3p1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=YTkc1RGIlMZsUFqvUXJXtnV5G900KAQ2a7/NWvfX1D8=;
-        b=Hq1cg0kHRYA0BApmU1U+JEgTDJV+zsL+ZfARp2omQVaKHc0qh0JJQBIY6xZxDgWQpl
-         4JrC7CWmxNNouJ5Jhj9XI6EVHWqwb0++4OS814wBDFQ6vRJwxkYpmNLUXSgg4HBfIdgu
-         p5ECChfnjV8sQzDy8jPc0BfnehRLtLeH8tiCVohGbKxPh3BxGtdYsx4ssXyQUWcQOH3k
-         +anfrjzVDVgK5jfU2we27VcpKyA5cxxx160e6GGmsHMvx18etPJVuZehLRQlmsBnguVs
-         /iDWzvB19E/aLfZW1f9zvRJd9w6tbP6GxAdPtdjrJ8TdZvekxKavZPRxdqPghm8KJWFA
-         Y8Xw==
-X-Gm-Message-State: AOAM531blov84IZPGzQitJjA7dLy17hWhftY92ZApuOE6+6cCsJo098Z
-        W+0ofMVEG7FMCEjqeK6OeEYCjNC9drA=
-X-Google-Smtp-Source: ABdhPJx+gTI1pbNmlB1j9qN3WcS/02uTsTeCElWrrcNrG0Ktp0yakDMVzkxxIztDehUp8Aq645mbWw==
-X-Received: by 2002:a17:90a:bb89:: with SMTP id v9mr978420pjr.0.1624072421726;
-        Fri, 18 Jun 2021 20:13:41 -0700 (PDT)
-Received: from [10.1.1.25] (222-152-189-137-fibre.sparkbb.co.nz. [222.152.189.137])
-        by smtp.gmail.com with ESMTPSA id z22sm9709871pfa.157.2021.06.18.20.13.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Jun 2021 20:13:41 -0700 (PDT)
-Subject: Re: [PATCH net-next v5 2/2] net/8390: apne.c - add 100 Mbit support
- to apne.c driver
-To:     Finn Thain <fthain@linux-m68k.org>
-References: <1624062891-22762-1-git-send-email-schmitzmic@gmail.com>
- <1624062891-22762-3-git-send-email-schmitzmic@gmail.com>
- <83b0640-459c-6f46-e070-1fc9559bd0be@linux-m68k.org>
-Cc:     linux-m68k@vger.kernel.org, geert@linux-m68k.org, alex@kazik.de,
-        netdev@vger.kernel.org
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <458fe9a3-9a34-d35e-3559-7de498d8f28b@gmail.com>
-Date:   Sat, 19 Jun 2021 15:13:35 +1200
-User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
- Icedove/45.4.0
+        id S235641AbhFSDW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Jun 2021 23:22:58 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:5044 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235603AbhFSDW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Jun 2021 23:22:57 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G6LXD0CxwzXhRq;
+        Sat, 19 Jun 2021 11:15:40 +0800 (CST)
+Received: from dggpeml500022.china.huawei.com (7.185.36.66) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Sat, 19 Jun 2021 11:20:44 +0800
+Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
+ (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Sat, 19 Jun
+ 2021 11:20:44 +0800
+Subject: Re: [PATCH net-next 8/9] net: hns3: add support for queue bonding
+ mode of flow director
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Huazhong Tan <tanhuazhong@huawei.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>
+References: <1615811031-55209-1-git-send-email-tanhuazhong@huawei.com>
+ <1615811031-55209-9-git-send-email-tanhuazhong@huawei.com>
+ <20210315130448.2582a0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b7b23988-ecba-1ce4-6226-291938c92c08@huawei.com>
+ <20210317182828.70fcc61d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <9107b490-d74c-7ff2-de40-eb77770f0a64@huawei.com>
+ <20210618150156.0ffc88a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "shenjian (K)" <shenjian15@huawei.com>
+Message-ID: <d276b445-ae19-cdf3-f2fc-cd32b91da02f@huawei.com>
+Date:   Sat, 19 Jun 2021 11:20:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-In-Reply-To: <83b0640-459c-6f46-e070-1fc9559bd0be@linux-m68k.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210618150156.0ffc88a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.103.87]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500022.china.huawei.com (7.185.36.66)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Finn,
 
-thanks for reviewing again!
 
-Am 19.06.2021 um 12:56 schrieb Finn Thain:
+在 2021/6/19 6:01, Jakub Kicinski 写道:
+> On Fri, 18 Jun 2021 09:18:21 +0800 shenjian (K) wrote:
+>> Hi  Jakub，
 >>
->> +	/* Reset card. Who knows what dain-bramaged state it was left in. */
->> +	{	unsigned long reset_start_time = jiffies;
->
-> There's a missing line break here.
-
-Straight copy from apne_probe1() below, but you're right about style of 
-course.
-
->
->> +
->> +		outb(inb(IOBASE + NE_RESET), IOBASE + NE_RESET);
->> +
->> +		while ((inb(IOBASE + NE_EN0_ISR) & ENISR_RESET) == 0)
->> +			if (time_after(jiffies, reset_start_time + 2*HZ/100)) {
->
-> You could use msecs_to_jiffies(20) here.
->
->> +				pr_info("Card not found (no reset ack).\n");
->> +				isa_type=ISA_TYPE_AG16;
->
-> Whitespace is needed around the '='.
->
->> +			}
->
-> Missing a break statement?
-
-Ouch.
-
->
->> +
->> +		outb(0xff, IOBASE + NE_EN0_ISR);		/* Ack all intr. */
->> +	}
->> +
->>  	dev = alloc_ei_netdev();
->>  	if (!dev)
->>  		return ERR_PTR(-ENOMEM);
->> @@ -590,6 +613,16 @@ static int init_pcmcia(void)
->>  #endif
->>  	u_long offset;
 >>
->> +	/* reset card (idea taken from CardReset by Artur Pogoda) */
->> +	if (isa_type == ISA_TYPE_AG16) {
->> +		u_char  tmp = gayle.intreq;
->> +
->
-> Extra whitespace.
->
->> +		gayle.intreq = 0xff;
->> +		mdelay(1);
->> +		gayle.intreq = tmp;
->> +		mdelay(300);
->> +	}
->> +
->>  	pcmcia_reset();
->>  	pcmcia_program_voltage(PCMCIA_0V);
->>  	pcmcia_access_speed(PCMCIA_SPEED_250NS);
+>> 在 2021/3/18 9:28, Jakub Kicinski 写道:
+>>> On Thu, 18 Mar 2021 09:02:54 +0800 Huazhong Tan wrote:
+>>>> On 2021/3/16 4:04, Jakub Kicinski wrote:
+>>>>> On Mon, 15 Mar 2021 20:23:50 +0800 Huazhong Tan wrote:
+>>>>>> From: Jian Shen <shenjian15@huawei.com>
+>>>>>>
+>>>>>> For device version V3, it supports queue bonding, which can
+>>>>>> identify the tuple information of TCP stream, and create flow
+>>>>>> director rules automatically, in order to keep the tx and rx
+>>>>>> packets are in the same queue pair. The driver set FD_ADD
+>>>>>> field of TX BD for TCP SYN packet, and set FD_DEL filed for
+>>>>>> TCP FIN or RST packet. The hardware create or remove a fd rule
+>>>>>> according to the TX BD, and it also support to age-out a rule
+>>>>>> if not hit for a long time.
+>>>>>>
+>>>>>> The queue bonding mode is default to be disabled, and can be
+>>>>>> enabled/disabled with ethtool priv-flags command.
+>>>>> This seems like fairly well defined behavior, IMHO we should have a full
+>>>>> device feature for it, rather than a private flag.
+>>>> Should we add a NETIF_F_NTUPLE_HW feature for it?
+>>> It'd be better to keep the configuration close to the existing RFS
+>>> config, no? Perhaps a new file under
+>>>
+>>>     /sys/class/net/$dev/queues/rx-$id/
+>>>
+>>> to enable the feature would be more appropriate?
+>>>
+>>> Otherwise I'd call it something like NETIF_F_RFS_AUTO ?
+>> I noticed that the enum NETIF_F_XXX_BIT has already used 64 bits since
 >>
+>> NETIF_F_HW_HSR_DUP_BIT being added, while the prototype of
+>> netdev_features_t
+>>
+>> is u64.   So there is no useable bit for new feature if I understand
+>> correct.
+>>
+>> Is there any solution or plan for it ?
+> I think you'll need to start a new word.
+> .
+>
+what about define a netdev feature bitmap
 
-Thanks, will fix in v6 (and correct the commit message). Might split off 
-the autoprobe bit so that can be easily dropped if need be.
+#define __DECLARE_NETDEV_FEATURE_T(name)        \
+     DECLARE_BITMAP(name, NETDEV_FEATURE_COUNT)
 
-Cheers,
+like __ETHTOOL_DECLARE_LINK_MODE_MASK does
 
-	Michael
+
