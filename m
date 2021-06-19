@@ -2,113 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF10A3AD8D0
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 11:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CC5C3AD8D3
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 11:13:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231449AbhFSJK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Jun 2021 05:10:26 -0400
-Received: from mail-vs1-f46.google.com ([209.85.217.46]:35398 "EHLO
-        mail-vs1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbhFSJKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 05:10:24 -0400
-Received: by mail-vs1-f46.google.com with SMTP id j15so6306968vsf.2;
-        Sat, 19 Jun 2021 02:08:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4po9uVd+8EhQG+1BQVzj+tYi7bOBxTAfPfI2c38dNBo=;
-        b=SVdEuJKtHvHNjDJPdru1LKWX3ocfktQygc1BEAdF+4hzE/WierL69l2yniD5vf3Wmi
-         psls9rmat09Mx0sqbnyzHY4LAwz0n5R1lE9w9zD+f/j49IFpD5nTL96dtvs+B2xiplZE
-         W1rOCzhn+pZeAYWCRBkIbChAkzso6jHZ92mW18HMWWlGeLDsfbJJj4jVg2JMGfydLION
-         ZEWP2plBEYrak2P3oYls/kUijcEMWxp9EYwsotzFwPdr5YaMfM+Jzamj1DQ3BWtsD37b
-         KHJTVsaoy7XOn89YL9XJGZPkR/mLwLzPsJhf4SI7ejdyBsBL3EF7TVyT+yvo1KqtdG4/
-         Q7DQ==
-X-Gm-Message-State: AOAM530IglSefeuAA+51jNswU2tusoELdQilaHdVmGET9fdZhkcJUH7o
-        jvQW0tniuyEgasSOWbhZ8LIknHfclBMFATzypm0=
-X-Google-Smtp-Source: ABdhPJwPRDLSQD7EpiWB3zmebrBujgW1yOOldYA6bKB/FNuuC7HYtwaxaxIRej3Yw3X1q7vkVtvsEpTpcb0AVRiha58=
-X-Received: by 2002:a67:3c2:: with SMTP id 185mr10302283vsd.42.1624093693732;
- Sat, 19 Jun 2021 02:08:13 -0700 (PDT)
+        id S231940AbhFSJPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Jun 2021 05:15:37 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:64467 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230471AbhFSJPh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Jun 2021 05:15:37 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1624094006; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=H0sbWODlKoSLIOSfRR0sPPZJCVLCPWUz5A6uE/iTadY=;
+ b=LTmPwYykkzATrXY7i3mziZHMk+Vf+tUsPvZA7krsI627g88ryaDP6FmJ77/LHhJjBfCqMZEm
+ Mrle6CyZTA5136kycTsizvOKHWulwAiJY5XUGIxAQKDCCp3OOyANhed+VzwsFaTqfEp/d5Mm
+ WN+MmJ2orKw/DCTD73Yf3n509tE=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 60cdb5202eaeb98b5e8cc93d (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 19 Jun 2021 09:13:04
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 24FCBC4338A; Sat, 19 Jun 2021 09:13:04 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 83CA3C433F1;
+        Sat, 19 Jun 2021 09:13:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 83CA3C433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1624062891-22762-1-git-send-email-schmitzmic@gmail.com> <1624062891-22762-3-git-send-email-schmitzmic@gmail.com>
-In-Reply-To: <1624062891-22762-3-git-send-email-schmitzmic@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Sat, 19 Jun 2021 11:08:02 +0200
-Message-ID: <CAMuHMdUSGWGMs6_wqy-CkfuKsdk=EBpEVBf3UugxCuo3qZQCKg@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 2/2] net/8390: apne.c - add 100 Mbit support
- to apne.c driver
-To:     Michael Schmitz <schmitzmic@gmail.com>
-Cc:     "Linux/m68k" <linux-m68k@vger.kernel.org>,
-        ALeX Kazik <alex@kazik.de>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath10k: demote chan info without scan request warning
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210522171609.299611-1-caleb@connolly.tech>
+References: <20210522171609.299611-1-caleb@connolly.tech>
+To:     Caleb Connolly <caleb@connolly.tech>
+Cc:     caleb@connolly.tech, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210619091304.24FCBC4338A@smtp.codeaurora.org>
+Date:   Sat, 19 Jun 2021 09:13:04 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+Caleb Connolly <caleb@connolly.tech> wrote:
 
-On Sat, Jun 19, 2021 at 2:35 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> Add Kconfig option, module parameter and PCMCIA reset code
-> required to support 100 Mbit PCMCIA ethernet cards on Amiga.
->
-> 10 Mbit and 100 Mbit mode are supported by the same module.
-> A module parameter switches Amiga ISA IO accessors to word
-> access by changing isa_type at runtime. Additional code to
-> reset the PCMCIA hardware is also added to the driver probe.
->
-> Patch modified after patch "[PATCH RFC net-next] Amiga PCMCIA
-> 100 MBit card support" submitted to netdev 2018/09/16 by Alex
-> Kazik <alex@kazik.de>.
->
-> CC: netdev@vger.kernel.org
-> Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
-> Tested-by: Alex Kazik <alex@kazik.de>
-> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+> Some devices/firmwares cause this to be printed every 5-15 seconds,
+> though it has no impact on functionality. Demote this to a debug
+> message.
+> 
+> I see this on SDM845 and MSM8998 platforms, specifically the OnePlus 6 devices,
+> PocoPhone F1 and OnePlus 5.  On the OnePlus 6 (SDM845) we are stuck with the
+> following signed vendor fw:
+> 
+> [    9.339873] ath10k_snoc 18800000.wifi: qmi chip_id 0x30214 chip_family 0x4001 board_id 0xff soc_id 0x40030001
+> [    9.339897] ath10k_snoc 18800000.wifi: qmi fw_version 0x20060029 fw_build_timestamp 2019-07-12 02:14 fw_build_id QC_IMAGE_VERSION_STRING=WLAN.HL.2.0.c8-00041-QCAHLSWMTPLZ-1
+> 
+> The OnePlus 5 (MSM8998) is using firmware:
+> 
+> [ 6096.956799] ath10k_snoc 18800000.wifi: qmi chip_id 0x30214 chip_family 0x4001 board_id 0xff soc_id 0x40010002
+> [ 6096.956824] ath10k_snoc 18800000.wifi: qmi fw_version 0x1007007e fw_build_timestamp 2020-04-14 22:45 fw_build_id QC_IMAGE_VERSION_STRING=WLAN.HL.1.0.c6-00126-QCAHLSWMTPLZ-1.211883.1.278648.
+> 
+> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.2.0.c8-00041-QCAHLSWMTPLZ-1
+> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.1.0.c6-00126-QCAHLSWMTPLZ-1.211883.1.278648
+> 
+> Signed-off-by: Caleb Connolly <caleb@connolly.tech>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Thanks for your patch!
+Patch applied to ath-next branch of ath.git, thanks.
 
-Note that this patch has a hard dependency on "[PATCH v5 1/2] m68k:
-io_mm.h - add APNE 100 MBit support" in the series, so it must not
-be applied to the netdev tree yet.
-
-> --- a/drivers/net/ethernet/8390/Kconfig
-> +++ b/drivers/net/ethernet/8390/Kconfig
-> @@ -143,6 +143,10 @@ config APNE
->           To compile this driver as a module, choose M here: the module
->           will be called apne.
->
-> +         The driver also supports 10/100Mbit cards (e.g. Netgear FA411,
-> +         CNet Singlepoint). To activate 100 Mbit support at runtime or
-> +         from the kernel command line, use the apne.100mbit module parameter.
-
-According to the recent discussion about that, "at runtime" is not
-really possible?  So that limits it to kernel command line (for the
-builtin case)
-or module parameter (for the modular case).
-
-> +
->  config PCMCIA_PCNET
->         tristate "NE2000 compatible PCMCIA support"
->         depends on PCMCIA
-> diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
-> index fe6c834..8223e15 100644
-> --- a/drivers/net/ethernet/8390/apne.c
-> +++ b/drivers/net/ethernet/8390/apne.c
-> @@ -120,6 +120,10 @@ static u32 apne_msg_enable;
->  module_param_named(msg_enable, apne_msg_enable, uint, 0444);
->  MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
->
-> +static bool apne_100_mbit;
-> +module_param_named(100_mbit, apne_100_mbit, bool, 0644);
-> +MODULE_PARM_DESC(100_mbit, "Enable 100 Mbit support");
-
-Gr{oetje,eeting}s,
-
-                        Geert
+8a952a955de7 ath10k: demote chan info without scan request warning
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+https://patchwork.kernel.org/project/linux-wireless/patch/20210522171609.299611-1-caleb@connolly.tech/
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
