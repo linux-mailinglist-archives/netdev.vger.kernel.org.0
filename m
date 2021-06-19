@@ -2,142 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 319883AD966
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 12:30:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56DB53AD9B9
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 13:02:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbhFSKc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Jun 2021 06:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57006 "EHLO
+        id S233119AbhFSLFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Jun 2021 07:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230430AbhFSKc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 06:32:26 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A190C061574;
-        Sat, 19 Jun 2021 03:30:15 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id p14so4090318ilg.8;
-        Sat, 19 Jun 2021 03:30:15 -0700 (PDT)
+        with ESMTP id S232892AbhFSLFA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 07:05:00 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6820C061574;
+        Sat, 19 Jun 2021 04:02:48 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id u13so1937867lfk.2;
+        Sat, 19 Jun 2021 04:02:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=btyhMs4BkaLRs/VMcp+enV+QTHYcvlAoTR3AvLbdS/U=;
-        b=jtsTLOo/2Og5PavjWiBWWetfdiOD6O3MtdQCnm67cZpkXC+khgTySN4toBchSCCkN8
-         z96E/8suqcqpzGNMa7lscwSNRzJRgu3PCQV6F7pScTurBGWQueCoIzDfTaaJMauer4G6
-         C9vfYEEDeb89jdtlfzvcWwPIXOnHlXI4zdClj9rZlqoemMtFoKrHsFYgqrkAhylIpYZV
-         O4q8C+6FYIcDpzEKthEg7gSWsJJciIaQ9KGnTY6hE0+kwo9YwhUTNak973UWLUrSA1yC
-         iZtBbo3N+uQ12BPSRVwO84vYhvlPS8InCXzSDypzHEJGNu2LP/mb31cpGIi4TuGRkGrH
-         2k0A==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Gh/qA823gv0wUZBQ9vSTS2qs/t2ngMR2CfJ3i7Nee+k=;
+        b=qGvvmgl5w1yrnYggtooVweWGrVW8lInIgwxMc2pBs5cNptgsXJDQ+MMT+AklBGwtR+
+         wsXZtarIjYAGh+qUcPNFgLDssnOPvxYKZrJgBtBFQ8ebO/c/97pzyQyQQve59K47AaKn
+         hfL5GAseR7cNQESzteo0FrbJl60jAudILSAPJekKpU/gCyin3sa96dzU8sZV4ZkcVwL5
+         KhjkMt7BVAwLAVtwpNxDsggR1X5Y9BW8K9d2+WhJjGJC/sGyvCdakA8bBarqcQAiKxJp
+         vm69pBpsWW5dchkpxdevrVewxxkET3WGfhAAirLwUK+eYy347A/X6JyEO0kuIH61zbt8
+         wEbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=btyhMs4BkaLRs/VMcp+enV+QTHYcvlAoTR3AvLbdS/U=;
-        b=jPUMOpQFGs6/QYAi1Jl8K6hod5exASFFJG6K60OasfvvamPWUYeJbmAm4R/jp5M1fg
-         KkWQAAzLnsCaFia94rcwXsuyMAMU2Ud/1hF6E+udZ/iayEgvWynuBsPN+PpCKhmLc3Pa
-         otnOcg41ImvaxHM/z0R7SDNJL0qBMswHOsRGk4JCeUeC3fjWe3fndLo5p+ZqnHi771jd
-         wOnPpHd9qUiw10YrYP7bdFmBZp5pm6rRx6wqLNitxFBFYj3tlpnxM6f3nm16LTf+v9pl
-         YYhyUufa9hr+iowyVA8VIIRG2JTvpGBVzjvp5gFizRbp3JMP/jN1HsjFCU54CyIUK6oJ
-         u71Q==
-X-Gm-Message-State: AOAM531MBwcINKxJtw1RPkxruBJFc+QTvt094WUjoVzu9Q7NZd2tUK1i
-        IMFSg5U1YNWTqT1pN5dqPvg=
-X-Google-Smtp-Source: ABdhPJyvmJv4uXJsxkLlkbrO1wG4kwi3D99EUsIl+tbuYjBX1Gk1oJ3fY9NR2Acv3pMVeRzs92rZng==
-X-Received: by 2002:a92:d2ce:: with SMTP id w14mr5111289ilg.217.1624098614544;
-        Sat, 19 Jun 2021 03:30:14 -0700 (PDT)
-Received: from ip-172-31-30-86.us-east-2.compute.internal (ec2-18-118-82-35.us-east-2.compute.amazonaws.com. [18.118.82.35])
-        by smtp.gmail.com with ESMTPSA id l5sm6141996ion.44.2021.06.19.03.30.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 19 Jun 2021 03:30:13 -0700 (PDT)
-Date:   Sat, 19 Jun 2021 10:30:09 +0000
-From:   Yunsheng Lin <yunshenglin0825@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        olteanv@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        andriin@fb.com, edumazet@google.com, weiwan@google.com,
-        cong.wang@bytedance.com, ap420073@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@openeuler.org, mkl@pengutronix.de,
-        linux-can@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
-        jonas.bonn@netrounds.com, pabeni@redhat.com, mzhivich@akamai.com,
-        johunt@akamai.com, albcamus@gmail.com, kehuan.feng@gmail.com,
-        a.fatoum@pengutronix.de, atenart@kernel.org,
-        alexander.duyck@gmail.com, hdanton@sina.com, jgross@suse.com,
-        JKosina@suse.com, mkubecek@suse.cz, bjorn@kernel.org,
-        alobakin@pm.me
-Subject: Re: [PATCH net v2] net: sched: add barrier to ensure correct
- ordering for lockless qdisc
-Message-ID: <20210619103009.GA1530@ip-172-31-30-86.us-east-2.compute.internal>
-References: <1623891854-57416-1-git-send-email-linyunsheng@huawei.com>
- <20210618173047.68db0b81@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210618173837.0131edc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Gh/qA823gv0wUZBQ9vSTS2qs/t2ngMR2CfJ3i7Nee+k=;
+        b=k2dmGLEFRbBucaDqlLs+McOYtIYCzEqtdC4+w1iS2jsn3zESAesWq6TbC3EeycXcE5
+         WAQsdpgzAhbwcqdj+8NH6M+JtyxkfxF3a6UBOyr5Krecsmfy8H28ZTU01wxxtp8Yrqzo
+         t2Fn9ezVEkJqwR0oMcfQ8e5IqoprELIm6LTdOj+/UPfDDUPzyQRMFtu9rIKoq5rtQd9r
+         phQo5d9MZZx9b2PrlxeaSqxVKijT9ThILldc3D89xXfhbYwxC+tLWHOJpIMhlGVk9/6y
+         IbMOkRM7YAMUMLSLBvpb6Awz93BKxJUE0zQQn2rMsNiFEzIrgPqQoR+CQA3wqT9zt9JB
+         aYtg==
+X-Gm-Message-State: AOAM531QBfhqo2YEvfLxAq037+U96HTG5hdED6iy4OzlgPfThFKzYdQv
+        6q5EPpVWavqHewbp5QC1l7E=
+X-Google-Smtp-Source: ABdhPJxYj+ZMaQFtctcc7+90N+CUnJOs0pnsPQZIqjJkIQb5K50AFerTOXUCVJuhEpMPxxj+vmbGqg==
+X-Received: by 2002:a05:6512:239d:: with SMTP id c29mr6683514lfv.248.1624100567125;
+        Sat, 19 Jun 2021 04:02:47 -0700 (PDT)
+Received: from [192.168.2.145] (94-29-29-31.dynamic.spd-mgts.ru. [94.29.29.31])
+        by smtp.googlemail.com with ESMTPSA id l5sm1306915lfc.250.2021.06.19.04.02.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Jun 2021 04:02:46 -0700 (PDT)
+Subject: Re: [PATCH v2 1/2] cfg80211: Add wiphy_info_once()
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Franky Lin <franky.lin@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210511211549.30571-1-digetx@gmail.com>
+ <e7495304-d62c-fd20-fab3-3930735f2076@gmail.com>
+ <87r1gyid39.fsf@codeaurora.org>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <46a3cb5a-2ce3-997b-154d-dd4e1b7333d1@gmail.com>
+Date:   Sat, 19 Jun 2021 14:02:45 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210618173837.0131edc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <87r1gyid39.fsf@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 18, 2021 at 05:38:37PM -0700, Jakub Kicinski wrote:
-> On Fri, 18 Jun 2021 17:30:47 -0700 Jakub Kicinski wrote:
-> > On Thu, 17 Jun 2021 09:04:14 +0800 Yunsheng Lin wrote:
-> > > The spin_trylock() was assumed to contain the implicit
-> > > barrier needed to ensure the correct ordering between
-> > > STATE_MISSED setting/clearing and STATE_MISSED checking
-> > > in commit a90c57f2cedd ("net: sched: fix packet stuck
-> > > problem for lockless qdisc").
-> > > 
-> > > But it turns out that spin_trylock() only has load-acquire
-> > > semantic, for strongly-ordered system(like x86), the compiler
-> > > barrier implicitly contained in spin_trylock() seems enough
-> > > to ensure the correct ordering. But for weakly-orderly system
-> > > (like arm64), the store-release semantic is needed to ensure
-> > > the correct ordering as clear_bit() and test_bit() is store
-> > > operation, see queued_spin_lock().
-> > > 
-> > > So add the explicit barrier to ensure the correct ordering
-> > > for the above case.
-> > > 
-> > > Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
-> > > Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>  
-> > 
-> > Acked-by: Jakub Kicinski <kuba@kernel.org>
+19.06.2021 09:27, Kalle Valo пишет:
+> Dmitry Osipenko <digetx@gmail.com> writes:
 > 
-> Actually.. do we really need the _before_atomic() barrier?
-> I'd think we only need to make sure we re-check the lock 
-> after we set the bit, ordering of the first check doesn't 
-> matter.
+>> 12.05.2021 00:15, Dmitry Osipenko пишет:
+>>> Add wiphy_info_once() helper that prints info message only once.
+>>>
+>>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+>>> ---
+>>>
+>>> Changelog:
+>>>
+>>> v2: - New patch added in v2.
+>>>
+>>>  include/net/cfg80211.h | 2 ++
+>>>  1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+>>> index 5224f885a99a..3b19e03509b3 100644
+>>> --- a/include/net/cfg80211.h
+>>> +++ b/include/net/cfg80211.h
+>>> @@ -8154,6 +8154,8 @@ bool cfg80211_iftype_allowed(struct wiphy *wiphy, enum nl80211_iftype iftype,
+>>>  	dev_notice(&(wiphy)->dev, format, ##args)
+>>>  #define wiphy_info(wiphy, format, args...)			\
+>>>  	dev_info(&(wiphy)->dev, format, ##args)
+>>> +#define wiphy_info_once(wiphy, format, args...)			\
+>>> +	dev_info_once(&(wiphy)->dev, format, ##args)
+>>>  
+>>>  #define wiphy_err_ratelimited(wiphy, format, args...)		\
+>>>  	dev_err_ratelimited(&(wiphy)->dev, format, ##args)
+>>>
+>>
+>> Ping?
+>>
+>> Arend, is this series good to you? I assume Kalle could pick it up if
+>> you'll give ack. Thanks in advance.
+> 
+> Normally cfg80211 changes go via Johannes' tree though I guess small
+> changes I could take it via my tree, but then I need an ack from
+> Johannes.
+> 
 
-When debugging pointed to the misordering between STATE_MISSED
-setting/clearing and STATE_MISSED checking, only _after_atomic()
-was added first, and it did not fix the misordering problem,
-when both _before_atomic() and _after_atomic() were added, the
-misordering problem disappeared.
+Thank you for the clarification.
 
-I suppose _before_atomic() matters because the STATE_MISSED
-setting and the lock rechecking is only done when first check of
-STATE_MISSED returns false. _before_atomic() is used to make sure
-the first check returns correct result, if it does not return the
-correct result, then we may have misordering problem too.
-
-     cpu0                        cpu1
-                              clear MISSED
-                             _after_atomic()
-                                dequeue
-    enqueue
- first trylock() #false
-  MISSED check #*true* ?
-
-As above, even cpu1 has a _after_atomic() between clearing
-STATE_MISSED and dequeuing, we might stiil need a barrier to
-prevent cpu0 doing speculative MISSED checking before cpu1
-clearing MISSED?
-
-And the implicit load-acquire barrier contained in the first
-trylock() does not seems to prevent the above case too.
-
-And there is no load-acquire barrier in pfifo_fast_dequeue()
-too, which possibly make the above case more likely to happen.
+Johannes, are these patches good to you?
