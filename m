@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C9E3AD946
-	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 12:00:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34BCC3AD949
+	for <lists+netdev@lfdr.de>; Sat, 19 Jun 2021 12:00:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233669AbhFSKCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Jun 2021 06:02:10 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:5050 "EHLO
+        id S232871AbhFSKCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Jun 2021 06:02:15 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:5053 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231313AbhFSKB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 06:01:57 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G6WNb4B2TzXh5g;
-        Sat, 19 Jun 2021 17:54:39 +0800 (CST)
+        with ESMTP id S229899AbhFSKCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 06:02:01 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4G6WNg46gmzXgZd;
+        Sat, 19 Jun 2021 17:54:43 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Sat, 19 Jun 2021 17:59:44 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -28,9 +28,9 @@ To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
 CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <lipeng321@huawei.com>,
         <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 2/8] net: at91_can: add blank line after declarations
-Date:   Sat, 19 Jun 2021 17:56:23 +0800
-Message-ID: <1624096589-13452-3-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 3/8] net: at91_can: fix the code style issue about macro
+Date:   Sat, 19 Jun 2021 17:56:24 +0800
+Message-ID: <1624096589-13452-4-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1624096589-13452-1-git-send-email-huangguangbin2@huawei.com>
 References: <1624096589-13452-1-git-send-email-huangguangbin2@huawei.com>
@@ -46,43 +46,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peng Li <lipeng321@huawei.com>
 
-This patch fixes the checkpatch error about missing a blank line
-after declarations.
+Macros with complex values should be enclosed in parentheses
 
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/can/at91_can.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/can/at91_can.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/can/at91_can.c b/drivers/net/can/at91_can.c
-index a2da76796b57..058c18fac167 100644
+index 058c18fac167..8ea638d04cc7 100644
 --- a/drivers/net/can/at91_can.c
 +++ b/drivers/net/can/at91_can.c
-@@ -515,6 +515,7 @@ static netdev_tx_t at91_start_xmit(struct sk_buff *skb, struct net_device *dev)
- static inline void at91_activate_rx_low(const struct at91_priv *priv)
- {
- 	u32 mask = get_mb_rx_low_mask(priv);
-+
- 	at91_write(priv, AT91_TCR, mask);
- }
+@@ -43,14 +43,14 @@ enum at91_reg {
+ };
  
-@@ -529,6 +530,7 @@ static inline void at91_activate_rx_mb(const struct at91_priv *priv,
- 		unsigned int mb)
- {
- 	u32 mask = 1 << mb;
-+
- 	at91_write(priv, AT91_TCR, mask);
- }
+ /* Mailbox registers (0 <= i <= 15) */
+-#define AT91_MMR(i)		(enum at91_reg)(0x200 + ((i) * 0x20))
+-#define AT91_MAM(i)		(enum at91_reg)(0x204 + ((i) * 0x20))
+-#define AT91_MID(i)		(enum at91_reg)(0x208 + ((i) * 0x20))
+-#define AT91_MFID(i)		(enum at91_reg)(0x20C + ((i) * 0x20))
+-#define AT91_MSR(i)		(enum at91_reg)(0x210 + ((i) * 0x20))
+-#define AT91_MDL(i)		(enum at91_reg)(0x214 + ((i) * 0x20))
+-#define AT91_MDH(i)		(enum at91_reg)(0x218 + ((i) * 0x20))
+-#define AT91_MCR(i)		(enum at91_reg)(0x21C + ((i) * 0x20))
++#define AT91_MMR(i)		((enum at91_reg)(0x200 + ((i) * 0x20)))
++#define AT91_MAM(i)		((enum at91_reg)(0x204 + ((i) * 0x20)))
++#define AT91_MID(i)		((enum at91_reg)(0x208 + ((i) * 0x20)))
++#define AT91_MFID(i)		((enum at91_reg)(0x20C + ((i) * 0x20)))
++#define AT91_MSR(i)		((enum at91_reg)(0x210 + ((i) * 0x20)))
++#define AT91_MDL(i)		((enum at91_reg)(0x214 + ((i) * 0x20)))
++#define AT91_MDH(i)		((enum at91_reg)(0x218 + ((i) * 0x20)))
++#define AT91_MCR(i)		((enum at91_reg)(0x21C + ((i) * 0x20)))
  
-@@ -807,6 +809,7 @@ static int at91_poll(struct napi_struct *napi, int quota)
- 	if (work_done < quota) {
- 		/* enable IRQs for frame errors and all mailboxes >= rx_next */
- 		u32 reg_ier = AT91_IRQ_ERR_FRAME;
-+
- 		reg_ier |= get_irq_mb_rx(priv) & ~AT91_MB_MASK(priv->rx_next);
- 
- 		napi_complete_done(napi, work_done);
+ /* Register bits */
+ #define AT91_MR_CANEN		BIT(0)
 -- 
 2.8.1
 
