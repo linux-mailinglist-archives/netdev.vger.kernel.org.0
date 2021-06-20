@@ -2,110 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B5A3ADC12
-	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 01:24:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C363ADC2D
+	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 02:34:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbhFSX1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Jun 2021 19:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54980 "EHLO
+        id S230137AbhFTAgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Jun 2021 20:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230043AbhFSX0z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 19:26:55 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128B4C061760;
-        Sat, 19 Jun 2021 16:24:42 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id o88-20020a17090a0a61b029016eeb2adf66so10095302pjo.4;
-        Sat, 19 Jun 2021 16:24:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=aUiuab4URXt7mOaGUaiOzcVBQQH+x06S+qB6OtAcYzM=;
-        b=tQomCpTSA8sohrggrR83XnSJyFfahJwMbYCRorAHoFscfqRDBjRnQ0OF/4yBuFGHMS
-         nKkdk6ogPkr63n6fZxkd1VSHwfi3krYVnRUNgItUfCvFOLV/eeNmDwB6z7N/hKfLUY/p
-         iFYNX+dthgQoAVWOkwpMBoCph3WCnKVEQKbyG6NnlBFIgQWaN20+RHdgX5hb95lV6Pwy
-         d9290EnaHtMvgKTsr5avGU24hcRmE2S5VNOZ8L3Bl7s5KnAhvdAqOD5lFthL141704nD
-         FUkSvl5gm0Po1z+4AKDynKNIirtxdr7pYwuWLNIzjUN2OvRQ5PhB2GRP9Ux3hbzevG/K
-         iSuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=aUiuab4URXt7mOaGUaiOzcVBQQH+x06S+qB6OtAcYzM=;
-        b=o/H0UeR/jKpDsz0OW0WlOT0fw98z2B3uGIPqiA6UU0bsKpw5+ksnqv7VWBsHXvn7/7
-         vz0dpRxKKzLakTRZsnxkINR2miF14FY0QgomFTzfBiCCvQkVlqwOnHSHyySlEd+GKutX
-         c/QZbWOueOs/Wz+Vk0cM62ZPCSDiYETAQZdJUQFUGC6NqN2IuYuT7MVoUjsPjDswmcnx
-         8lfGT9sKcrYOOTZU6jFDsU3vNfMP+mtyZDniid/B2aWK9vsTD/sKFYcXRm1xn3VWcSCo
-         ktTU+BYGplKGA3fr8yzhorp20GvgxcdvyazeAgzDXRbIFiWp/412yd0MRL3zgTEUupPS
-         UYgA==
-X-Gm-Message-State: AOAM533Pt1vwL4GfF030Xpp7mWu3MC+EulIJZpNOJvVHMuwniBKSYZOT
-        KlQZgxG67R2U1R8ef2dq1OA=
-X-Google-Smtp-Source: ABdhPJxuGWCTGU8ZV/mjRUxLaySOLhuVkqeIc45o8gFc105KC1eGwB9oGMjDD8qRkcbKTNVdYSteNw==
-X-Received: by 2002:a17:902:b110:b029:121:74a8:25e5 with SMTP id q16-20020a170902b110b029012174a825e5mr9243211plr.44.1624145081647;
-        Sat, 19 Jun 2021 16:24:41 -0700 (PDT)
-Received: from xplor.waratah.dyndns.org (222-152-189-137-fibre.sparkbb.co.nz. [222.152.189.137])
-        by smtp.gmail.com with ESMTPSA id w123sm4398194pff.186.2021.06.19.16.24.40
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 19 Jun 2021 16:24:41 -0700 (PDT)
-Received: by xplor.waratah.dyndns.org (Postfix, from userid 1000)
-        id D73C83603E5; Sun, 20 Jun 2021 11:24:37 +1200 (NZST)
-From:   Michael Schmitz <schmitzmic@gmail.com>
-To:     linux-m68k@vger.kernel.org, geert@linux-m68k.org
-Cc:     alex@kazik.de, Michael Schmitz <schmitzmic@gmail.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH netdev v6 3/3] net/8390: apne.c - autoprobe 100 Mbit mode in apne.c driver
-Date:   Sun, 20 Jun 2021 11:24:33 +1200
-Message-Id: <1624145073-12674-4-git-send-email-schmitzmic@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1624145073-12674-1-git-send-email-schmitzmic@gmail.com>
-References: <1624145073-12674-1-git-send-email-schmitzmic@gmail.com>
+        with ESMTP id S230052AbhFTAgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Jun 2021 20:36:32 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A164AC061574
+        for <netdev@vger.kernel.org>; Sat, 19 Jun 2021 17:34:20 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1624149256;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yrCYpZdPkrpesNdf9BdrAll3FMyRyNsb57YTMWcV7BM=;
+        b=bz9EZ9TgkKK+D3ai8H4edF0r3QKiLNO4JrdFGUkL+8dNNH21XG5b7jo0O7x7gUma/Q6JSi
+        j7anOhb3LDkl8ZSVOiX+mgvmP14DWd4D+TkXon6gJ9T6r8WBIhFOMa9k9sJJvX3WomI30y
+        4VAnrWHz0aBlJ1oDmfwrJbsmuJ5UwUEQW5CyT5up09iI9r6Gym+FN2j5Nq+S+vjCp8WqRQ
+        3l3ykWJOq5SzGRQkjwKyBgUtFp14iPisHjDmhu5BW4oLJ0l/21F8jCUz5zqrPbegI53nbb
+        robnSYYrev5mgZd87ixaU1IhT5rTRnzL1MCVTb5ROv5s3ct5HqCvemLhHzdI2w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1624149256;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yrCYpZdPkrpesNdf9BdrAll3FMyRyNsb57YTMWcV7BM=;
+        b=4V6ltbvskMCvhR/Hl/3DfzffjffeHXOY5y5X7S+1TQaeum/5Q4PORK9vGtX0GGfvBrmOZU
+        RYTh5JfbCXyhqNDw==
+To:     Arnd Bergmann <arnd@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Nikolai Zhubr <zhubr.2@gmail.com>,
+        netdev <netdev@vger.kernel.org>, Jeff Garzik <jgarzik@pobox.com>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: Realtek 8139 problem on 486.
+In-Reply-To: <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com>
+References: <60B24AC2.9050505@gmail.com> <ca333156-f839-9850-6e3d-696d7b725b09@gmail.com> <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com> <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com> <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com> <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com> <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com> <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com> <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com> <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com> <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk> <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com>
+Date:   Sun, 20 Jun 2021 02:34:16 +0200
+Message-ID: <877dipgyrb.ffs@nanos.tec.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add experimental autoprobe code to detect 16 bit/100 MBit
-cards to the APNE driver. Autoprobe uses the same code utilized
-in apne_probe1 to identify the 8390 chip - failure to identify
-the chip in 8 bit mode will switch the PCMCIA interface to 16
-bit mode. This code is still untested!
+On Fri, Jun 04 2021 at 09:36, Arnd Bergmann wrote:
+> On Thu, Jun 3, 2021 at 8:32 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+>>  It's an issue in x86 platform code, not the 8139too driver.  Any option
+>> card wired to PCI in this system somehow could suffer from it.  Depending
+>> on how you look at it you may or may not qualify it as a bug though, and
+>> any solution can be considered a workaround (for a BIOS misfeature) rather
+>> than a bug fix.
+>
+> I think it would be good though to reinstate the driver workaround in some way,
+> regardless of whether the x86 platform code gets changed or not.
 
-This patch depends on patch "m68k: io_mm.h - add APNE 100
-MBit support" sent to linux-m68k, and must not be applied
-before that one!
+Why?
 
-CC: netdev@vger.kernel.org
-Link: https://lore.kernel.org/r/1622958877-2026-1-git-send-email-schmitzmic@gmail.com
-Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
----
- drivers/net/ethernet/8390/apne.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+> From the old linux-2.6.2 code it appears that someone had intentionally
+> added the loop as a hack to make it work on a broken or misconfigured
+> BIOS.
 
-diff --git a/drivers/net/ethernet/8390/apne.c b/drivers/net/ethernet/8390/apne.c
-index 4dd721e..ec165f8 100644
---- a/drivers/net/ethernet/8390/apne.c
-+++ b/drivers/net/ethernet/8390/apne.c
-@@ -156,6 +156,22 @@ struct net_device * __init apne_probe(int unit)
- 		return ERR_PTR(-ENODEV);
- 	}
- 
-+	/* Reset card. Who knows what dain-bramaged state it was left in. */
-+	{
-+		unsigned long reset_end_time = jiffies + msecs_to_jiffies(20);
-+
-+		outb(inb(IOBASE + NE_RESET), IOBASE + NE_RESET);
-+
-+		while ((inb(IOBASE + NE_EN0_ISR) & ENISR_RESET) == 0)
-+			if (time_after(jiffies, reset_end_time)) {
-+				pr_info("Card not found (no reset ack).\n");
-+				isa_type = ISA_TYPE_AG16;
-+				break;
-+			}
-+
-+		outb(0xff, IOBASE + NE_EN0_ISR);		/* Ack all intr. */
-+	}
-+
- 	dev = alloc_ei_netdev();
- 	if (!dev)
- 		return ERR_PTR(-ENOMEM);
--- 
-2.7.4
+The usual fix the symptom not the root cause approach. So, no.
+
+> It's hard to know if that was indeed the intention, but it's clear that the
+> driver change in 2.6.3 broke something that worked (most of the time)
+> without fixing it in a better way.
+>
+>>  The question is IMHO legitimate, and I can't speak for x86 platform
+>> maintainers.  If I were one, I'd accept a reasonable workaround and it
+>> does not appear to me it would be a very complex one to address this case:
+>> basically a PCI quirk to set "this southbridge has ELCR at the usual
+>> location" (if indeed it does; you don't want to blindly poke at random
+>> port I/O locations in generic code), and then a tweak to `pirq_enable_irq'
+>> or `pcibios_lookup_irq' as Arnd has suggested.
+
+Correct. Any legacy PCI interrupt #A..#D must be level triggered. Edge
+is simply wrong for those. But of course that's wishful thinking. See
+below.
+
+Vs. ELCR: it's documented to be 0x4d0, 0x4d1 and the kernel has it hard
+coded. So that's really the least of my worries.
+
+> (adding the x86 maintainers to Cc, the thread is archived at
+>  https://lore.kernel.org/netdev/60B24AC2.9050505@gmail.com/)
+>
+> Changing the x86 platform code as well would clearly help avoid similar
+> issues with other PCI cards on these broken platforms, but doing it
+> correctly  seems hard for a couple of reasons.
+>
+> It sounds like it would have been a good idea 20 years ago when the
+> broken i486 platforms were still fairly common, but now we don't even
+> know whether the code was intentional or not. I don't remember a lot of
+> the specifics of pre-APIC x86, but I do remember IRQ configuration
+> as a common problem without a single good solution.
+
+Yes. It still is because even today BIOS tinkerers get it wrong.
+
+> There is a realistic chance that other combinations of broken hardware
+> and drivers rely on the x86 PCI code doing exactly what it does today.
+
+Legacy PCI interrupts are specified as being level triggered because
+legacy PCI requires to share interrupts and you cannot share edge
+triggered interrupts reliably. PCI got a lot of things wrong, but this
+part is completely correct.
+
+From experience I know that 8139 depends on that and I debugged that
+myself many years ago on an ARM system which had the trigger type
+configuration wrong.
+
+Let me clarify why this breaks first. The interesting things to look at
+are:
+
+  - the device internal interrupt condition which in this case are
+    package received or transmitted and status change
+
+  - the interrupt line
+
+Let's look at the timing diagram of simple RX events:
+
+           ___________________               _____...
+RX     ___|                   |_____________|
+
+            ___________________               ____...
+INTA   ____|                   |_____________|
+
+              _ INT handler _____ RETI _        __...
+Kernel ______|                          |______|
+
+Trivial case which works with both edge and level. Now let me add TX
+complete for the level triggered case:
+
+           ___________________              
+RX     ___|                   |_____________
+
+                             _______________
+TX     _____________________|                   
+
+            ________________________________
+INTA   ____|                
+
+              _ INT handle RX ___ RETI_   __ INT handle TX
+Kernel ______|                         |_|
+
+Works as expected. Now the same with edge mode on the i8259 side:
+
+           ___________________              
+RX     ___|                   |_____________
+
+                             _______________
+TX     _____________________|                   
+
+            ________________________________
+INTA   ____|                
+
+              _ INT handle RX ___ RETI_   
+Kernel ______|                         |_____ <- FAIL
+
+
+Edge mode loses the TX interrupt when it arrives before the RX condition
+is cleared because INTA will not go low.
+
+The driver cannot do anything about it reliably because all of this is
+asynchronous. The loop approach is a bandaid and kinda works, but can it
+work reliably? No. Aside of that it's curing the symptom which is the
+wrong approach.
+
+The only reasonable solution to this is to enforce level even if that
+BIOS switch says otherwise.
+
+> If overriding the BIOS setting breaks something that works today, nothing
+> is gained, because the next person running into an i486 PCI specific bug
+> is unlikely to be as persistent and competent as Nikolai in tracking down
+> the root cause.
+
+Yes, sigh. The reason why this BIOS switch exists, which should have
+never existed, is that during the transition from EISA which was edge
+triggered to PCI some card manufacturers just changed the bus interface
+of their cards but completely missed the edge -> level change in
+hardware either by stupidity or intentionally so they did not have to
+make any changes to the rest of the hardware and to drivers.
+
+The predominant OS'es at that time of course did not have an easy way to
+add a quirk to fix this, so the way out was to add the chicken bit
+option to the BIOS which then either tells the OS the trigger mode for
+INTA..INTD and just sets up ELCR before booting the OS. I have faint
+memories that I had to use such a BIOS switch long time ago to get some
+add-on PCI card working.
+
+So the right thing to do is to leave 8139 as is and add a PCI quirk
+which enforces level trigger type for 8139 in legacy PCI interrupt mode.
+
+Alternatively we can just emit a noisy warning when a legacy PCI
+interrupt is configured as edge by the BIOS and tell people to toggle
+that switch if stuff does not work. Though that might be futile because
+not all BIOSes have these toggle options.
+
+Thanks,
+
+        tglx
+
 
