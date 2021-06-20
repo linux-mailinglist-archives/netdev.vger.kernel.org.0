@@ -2,56 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 075B53AE10B
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 00:58:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 881033AE118
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 01:22:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbhFTXBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Jun 2021 19:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229901AbhFTXBC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 19:01:02 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06F1C061574
-        for <netdev@vger.kernel.org>; Sun, 20 Jun 2021 15:58:48 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id my49so25428246ejc.7
-        for <netdev@vger.kernel.org>; Sun, 20 Jun 2021 15:58:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iJBOiArEiJxpe4IgehQUCa3fhEo/xjSXPUDM1UGtCiE=;
-        b=taEhq0lScfJYAGiNL0+6yaJORtZUqs/+JlWBZRT1EdGP1J/XPNhLtjfqcui7OuYfwf
-         LlXE8d9jhWTEO2njb7Aaj1xsG8Z4/7CHWt5s9MHWpnpuDDI4dutacHaKI8jpsFCsfNux
-         68bPDkhWJOl2i/qmCFSC44wKTAaMJhhogJlosMo5Sr5TLYvRKF/WXMKjbLSXtmBAgdH5
-         rB5dJIwKMDCDRl74OfR3E0eeD4OBGSJzlIC1pPYnwi5iNq+J2oCpXGTOcs73gEDXzJ9A
-         v1MGrx2hB+8Y1zqdpmpvpo/CagAw+bdBZepykO8ZRNgoW7Xfh16+0caQNNWW5u7NVnGV
-         2wiw==
+        id S230006AbhFTXYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Jun 2021 19:24:32 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:57126 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229904AbhFTXYa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 19:24:30 -0400
+Received: by mail-io1-f72.google.com with SMTP id p19-20020a5d8b930000b02904a03acf5d82so8963645iol.23
+        for <netdev@vger.kernel.org>; Sun, 20 Jun 2021 16:22:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iJBOiArEiJxpe4IgehQUCa3fhEo/xjSXPUDM1UGtCiE=;
-        b=MB/9upTLBh98fp/cIVz06slJognxiunymiJ5XHGRL4/P7xSkIIbe3JhwU/vAtz556t
-         UQ+wfLG88H7Q16a2nBPdjBEvy5YaeTYudKaE2D0ZxlrRFjyIAC06B+qedkwjmtWaQVwX
-         n8RV3WUMORej3Z9gtavVbccrn11BMGlOV2zP3TC+kTsEXWpTTtMZeWUZrvtnW9UHk4lJ
-         4SbTDQ7PkK21xmL9TSlgGFwA+M88OQA33YqqtwOgyRlMmW7eh3ouvXR/cl8KmHRsBjt8
-         fVwkgvutQuBYeQ34V1uKpE/E4A4svV1QrBE5wN1cML+WS1Lcy6ufVCn/Fm8b/y1lUBjd
-         h7Ng==
-X-Gm-Message-State: AOAM533s8dNtcSG6mlfnmjQXjDb6fUPtdViEkXk9fAHySkLFxoC8LKTI
-        15qvH6pJuPp1B8A9OB+95CmKxIYZpIwgIiTRkBc=
-X-Google-Smtp-Source: ABdhPJzCiVMSVfr2lKSSUcR6K8o3RJSR+e8V5wfRJD7j7piIQP2HDH9Kua9S0rfvk5T3wngYl3wU2eT+HODuHXltEQo=
-X-Received: by 2002:a17:906:474e:: with SMTP id j14mr7608227ejs.9.1624229927169;
- Sun, 20 Jun 2021 15:58:47 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=BqnKWzwtAQvEzSaBToMPLDFYUsWkoHiliy61h2x+ZUA=;
+        b=bCUifmpr74z1PyxZNG3eZ+suBPS8Uqi40U7AE4Ldg2YHhIRceBU0l+9QGnuw3ETeQ/
+         mGGFq241KZRKQJl4C6KqZrQcD0T6wnfJRVcHJoqB5qsRTtKViwhz1VFAeWdzbfVxgfjJ
+         Gzchz3jd5igZsvdKIl5PmOQdatfvIQ9+jdZ78BtmE08iI4FUO+mXjronoeCNVJwPW/36
+         g59QHfXOmK08bJhaCXq4qJumLZ238p0l7PRK1jLrg9rFb2ojOUppevkx6iIBfKizExeC
+         9AGSXowebi/3ys4NpTSSXXsUwBVXMPISOVe9AXEeZWruXWfpxEebKp9z/oRm9RlwDjoP
+         lUbg==
+X-Gm-Message-State: AOAM532F9iLv1PKycUy+ptPTNejkGB1jD2Nvtq5buM22BTGNcHQg1nhI
+        mcw9yjmd3Jbew98UJ0kHTR41W05Mad5ooAlu5FMYAQDx1oii
+X-Google-Smtp-Source: ABdhPJyWiEMVZPD/h2RokK4V7o73QVWvvWVi7Idtwt3lT6GGw5JlKqF3+/47RIQpKsRVunqRvAKgkoohdAJANQTmcMaP3Y/372q0
 MIME-Version: 1.0
-References: <CAGvuCg_iLtzHr_rF0291oKAtYFCespoJ=dszFWjDftZd8EN6JA@mail.gmail.com>
-In-Reply-To: <CAGvuCg_iLtzHr_rF0291oKAtYFCespoJ=dszFWjDftZd8EN6JA@mail.gmail.com>
-From:   Juan Manuel Santos <godlike64@gmail.com>
-Date:   Sun, 20 Jun 2021 19:58:36 -0300
-Message-ID: <CAGvuCg-FJM7LLcb5i6gfZLRWJBUyDrGyCyZ4xPVqek58-kAVbQ@mail.gmail.com>
-Subject: Fwd: WebRTC protocols broken when forwarding after a change to ip_dst_mtu_maybe_forward()
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org
-Cc:     netdev@vger.kernel.org
+X-Received: by 2002:a5d:9051:: with SMTP id v17mr565354ioq.81.1624231336038;
+ Sun, 20 Jun 2021 16:22:16 -0700 (PDT)
+Date:   Sun, 20 Jun 2021 16:22:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d154d905c53ad34d@google.com>
+Subject: [syzbot] general protection fault in smc_tx_sendmsg
+From:   syzbot <syzbot+5dda108b672b54141857@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, dsahern@kernel.org,
+        fw@strlen.de, kadlec@netfilter.org, kgraul@linux.ibm.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -59,46 +48,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello,
 
-Apologies if somebody receives this email twice. My first email was
-filtered by the mailing list because gmail defaults to HTML. me--
+syzbot found the following issue on:
 
-I am writing to this mailing list because I believe based on the
-maintainer list[1] that this is the correct place to report issues
-like these, especially when unsure. I am a Gentoo user and I already
-reported this downstream[2] but in my troubleshooting I was able to
-confirm that linux-stable is affected, and possibly others.
+HEAD commit:    0c337952 Merge tag 'wireless-drivers-next-2021-06-16' of g..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1621de10300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a6380da8984033f1
+dashboard link: https://syzkaller.appspot.com/bug?extid=5dda108b672b54141857
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=121d2d20300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=100bd768300000
 
-The issue happens whenever a kernel version with a certain patch is
-used in a gateway device doing IP forwarding for a LAN, such as a
-Linux box running iptables / firewalld+iptables / firewalld+nftables.
-It does not seem to matter which of the three methods is used, all are
-affected. Applications inside the LAN using WebRTC (such as Google
-Meet, Discord, etc) are affected. In the case of Meet, no video of any
-participant can be seen, although audio works. In the case of Discord,
-neither audio nor video works. It does not matter whether the
-conference is started or joined from a device within the LAN, it won't
-work properly.
+The issue was bisected to:
 
-I was able to git-bisect this using linux-stable and found the
-offending upstream commit[3]. In linux-stable this was backported
-right after 5.4.72 so >=5.4.73 are affected, up to 5.4.126. I can
-confirm that reverting the commit (even if it is just commenting those
-4 lines that the commit adds) fixes the issue at least on 5.4.109. No
-other protocol/connection type seems to be affected, and this only
-seems to affect webrtc in the context of forwarding (i.e. when
-started/joined from a device in the LAN, not the gateway itself).
+commit f9006acc8dfe59e25aa75729728ac57a8d84fc32
+Author: Florian Westphal <fw@strlen.de>
+Date:   Wed Apr 21 07:51:08 2021 +0000
 
-I am unsure how to proceed, whether this requires an upstream bugzilla
-to be opened (which I can gladly do) or not. I searched the archives
-first but I could find no mention relating webrtc and the change to
-this function (I only found the relationship when git-bisecting).
+    netfilter: arp_tables: pass table pointer via nf_hook_ops
 
-Thanks in advance.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12600fffd00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11600fffd00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16600fffd00000
 
-Regards,
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5dda108b672b54141857@syzkaller.appspotmail.com
+Fixes: f9006acc8dfe ("netfilter: arp_tables: pass table pointer via nf_hook_ops")
+
+general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+CPU: 1 PID: 8455 Comm: syz-executor893 Not tainted 5.13.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:smc_tx_sendmsg+0x204/0x1ba0 net/smc/smc_tx.c:157
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 8b 17 00 00 49 8b 9d 08 05 00 00 48 b8 00 00 00 00 00 fc ff df 48 8d 7b 20 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 8f 17 00 00 48 63 5b 20 4c 8b
+RSP: 0018:ffffc9000164f800 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000004 RSI: ffffffff889cd6ae RDI: 0000000000000020
+RBP: ffff88801cf58000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff889cd6a1 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff88801cf58000 R14: ffffc9000164fd90 R15: ffff88801cf58060
+FS:  0000000000ebf300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd43ca1328 CR3: 000000002acf2000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ smc_sendmsg+0x274/0x5b0 net/smc/af_smc.c:2037
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x331/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmmsg+0x195/0x470 net/socket.c:2490
+ __do_sys_sendmmsg net/socket.c:2519 [inline]
+ __se_sys_sendmmsg net/socket.c:2516 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2516
+ do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43ee89
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc82b20a58 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043ee89
+RDX: 0000000000000001 RSI: 0000000020003d80 RDI: 0000000000000003
+RBP: 0000000000402e70 R08: 0000000000000000 R09: 0000000000400488
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000402f00
+R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
+Modules linked in:
+---[ end trace 459b28282ae53115 ]---
+RIP: 0010:smc_tx_sendmsg+0x204/0x1ba0 net/smc/smc_tx.c:157
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 8b 17 00 00 49 8b 9d 08 05 00 00 48 b8 00 00 00 00 00 fc ff df 48 8d 7b 20 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 8f 17 00 00 48 63 5b 20 4c 8b
+RSP: 0018:ffffc9000164f800 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000004 RSI: ffffffff889cd6ae RDI: 0000000000000020
+RBP: ffff88801cf58000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff889cd6a1 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff88801cf58000 R14: ffffc9000164fd90 R15: ffff88801cf58060
+FS:  0000000000ebf300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055b7501be298 CR3: 000000002acf2000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-[1] https://www.kernel.org/doc/html/latest/process/maintainers.html#maintainers
-[2] https://bugs.gentoo.org/797211
-[3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=02a1b175b0e92d9e0fa5df3957ade8d733ceb6a0
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
