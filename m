@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F6913ADF18
-	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 16:49:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CBE13ADF27
+	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 17:07:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbhFTOvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Jun 2021 10:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
+        id S229899AbhFTPJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Jun 2021 11:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbhFTOvd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 10:51:33 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D19C061574
-        for <netdev@vger.kernel.org>; Sun, 20 Jun 2021 07:49:20 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id 7-20020a9d0d070000b0290439abcef697so15021943oti.2
-        for <netdev@vger.kernel.org>; Sun, 20 Jun 2021 07:49:20 -0700 (PDT)
+        with ESMTP id S229650AbhFTPJM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 11:09:12 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BA9C061574;
+        Sun, 20 Jun 2021 08:06:58 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id g20so24374191ejt.0;
+        Sun, 20 Jun 2021 08:06:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YJbKMhaiLsLGWhXR6RrDop8J/vC4lrxLIz0FyapQUhM=;
-        b=nOTuTyIMocsOjxwkLQjU817rcUSltpGgUnnpjHixAcK6hC0NLCdyjMMJN8gmsMVilt
-         ep6B3D0JFq2+2QOVrbtrJx9yadrtZx6M1/u7BY4zpbSBRJ2WNJnJp4u8dAG1qSB93HYN
-         PT/epDptjl7cMyZ0kYFUdkiNOaC5HTkuLpvQriQzoTICCwyL0rCm+55QLWn1o6fOMXwS
-         vwF1IIrYc+l7xamX28wZJyN0h/x6bMgttJStfiDMeIpkT2o9r6S0Y8OFX+i8TXe29xXv
-         SSNkeEJBamyGytOgGy+8IreYYU4kAibWEbVg5g4L44JdhftBzkzYjNhRCKk8/8GVa+Kr
-         m7+w==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=P2AK+78NOmAotKycIJqTLWlqFD+iRxStrWhoKZNh9bY=;
+        b=KeVgAeKq3q1+NgGkb/Za1+JWcdVPPRDZN2FtTSDe5ELF6z1RybxbtZ+/a+6ilJe4Nt
+         X1+kDnfj7TkfXBXZgmKAUkeTHKL5/UF6azuchUQKnDp++1BYOarRlrMOYInvqtL36lVX
+         OEIZ344FPWdiq2KAaqmFZbSd/B81axIKNU94ENyQG7xJQQn1v9BbTNprUpKDZlUZAwoI
+         LZfjSkkUZNuywmV4tx5OLxXb0d+0cO5ONDPoEPuc/EvUeFKUy8BPBhUbaBnnw+cWvlvg
+         rfPkjOfxZoSMdhQF5KPOzp31DczJ159VECSOq2buOQJK+rsp4b4p8ZEEVAlZgqhFPApD
+         y9UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YJbKMhaiLsLGWhXR6RrDop8J/vC4lrxLIz0FyapQUhM=;
-        b=UB8DIXrgKxb69xYrHYxvOBYABAg4aV6a5qK5h49b8jEytvk+kbnGZDrHq+q0wJJEY3
-         71srq96ntC7CRP2FzmfQVyVJMgVT3j2Odv0vSC2iaxaJYi2Z2ZL1ricPdj/kjGFoQenT
-         B5rAr0KyJGvX307Pq12g9Yt4af7jwKKOvmSYvNoiwGh9q6jAHLejXzHdF2KLQ24tf+KX
-         ecRNWNjwhPSkvLVEtO6aZs85he1e9zhiwbOwieeM5raRW0d3DQ9wamK9HOgpQpC5n/AK
-         w4ZWth8ddysvyIDErVYkaBZA80KXAO+8KxSLn5yHHE4SscvpNn+xxA6triMFsn6Y4wpK
-         sWWQ==
-X-Gm-Message-State: AOAM53283GW/bUqw5d6KQGqzKdAVBauI7JKtAt/N3dJ1sr1bdbnybdtg
-        4W6jbYZwJKrzcQTNMi1uchbtB1ALsxyPoR3E4ZU=
-X-Google-Smtp-Source: ABdhPJx1BO7K3QlU3lzqZb+VtV6wbjKXX5rCK3qzPq6QxzLrtnFNBH7qiKZL9VHAJQQUayHiq/9uI0S+4z28zdVt1O4=
-X-Received: by 2002:a9d:7748:: with SMTP id t8mr16642669otl.110.1624200559430;
- Sun, 20 Jun 2021 07:49:19 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=P2AK+78NOmAotKycIJqTLWlqFD+iRxStrWhoKZNh9bY=;
+        b=DhVw11P6Zdz1ANRFelIsDtLIppa7YSWKhMQkXHyN7ErN6jS+NoLq7WI2wj0deFCioJ
+         K4z+fmV0aYVafF8dsyP+D3rko47NNCa6S2nD1hP0e0XeTAzgIMKTGlT80MuONqte+y/j
+         XdMgXq39UQdnBFmq4qfCU6JwSNy9ACimeeY9SXWRMyOUEpXfEhm6WDhDYEQLC+nRVXdj
+         o0jjmtwWbSCnxPUrY+pnp/5Cfv8pSSWEQ+BFQoIciieQ1IMOuPARihzlriOJJDb/XXKJ
+         BFlSrWRNhIr5F7RaX3c9EpvpbEHb8fAubV673jGK5yY2BaY1fJYpi4hwwrnSQO/0C/b7
+         /OQg==
+X-Gm-Message-State: AOAM5335crmBSEnmQtGeAr7nJi+6PmGDTvRwfMMd2yqUzjfSQogOdE8M
+        4OXOENU6ZwZ36FD/W6R8ELNbf99oSrI=
+X-Google-Smtp-Source: ABdhPJxp3uFNpsjVvAw4XpbdE1vTRryQ9LxxWksCBl4cma1MUSk+IzG7mBZPWMhUI/9pPNMObe2ruw==
+X-Received: by 2002:a17:906:6b8a:: with SMTP id l10mr20092802ejr.125.1624201616468;
+        Sun, 20 Jun 2021 08:06:56 -0700 (PDT)
+Received: from [10.21.182.79] ([212.23.236.67])
+        by smtp.gmail.com with ESMTPSA id de24sm3688869ejc.78.2021.06.20.08.06.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 20 Jun 2021 08:06:56 -0700 (PDT)
+Subject: Re: [PATCH] mlx4_core: Remove trailing semicolon in macros
+To:     Huilong Deng <denghuilong@cdjrlc.com>, yishaih@nvidia.com
+Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210620143624.51150-1-denghuilong@cdjrlc.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+Message-ID: <9bdb1fd3-8a48-a9aa-8775-7e07dac8d56c@gmail.com>
+Date:   Sun, 20 Jun 2021 18:06:53 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210615003016.477-1-ryazanov.s.a@gmail.com> <20210615003016.477-11-ryazanov.s.a@gmail.com>
- <badd96aa7c475819ed3b9ca48743e10e756b2820.camel@sipsolutions.net>
-In-Reply-To: <badd96aa7c475819ed3b9ca48743e10e756b2820.camel@sipsolutions.net>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Sun, 20 Jun 2021 17:49:11 +0300
-Message-ID: <CAHNKnsR3O1-x1_NossR+02bqg6QfJEo1VkkVMYPFZfnX3x3-xw@mail.gmail.com>
-Subject: Re: [PATCH net-next 10/10] wwan: core: add WWAN common private data
- for netdev
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210620143624.51150-1-denghuilong@cdjrlc.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Johannes,
 
-On Tue, Jun 15, 2021 at 10:31 AM Johannes Berg
-<johannes@sipsolutions.net> wrote:
-> On Tue, 2021-06-15 at 03:30 +0300, Sergey Ryazanov wrote:
->> The WWAN core not only multiplex the netdev configuration data, but
->> process it too, and needs some space to store its private data
->> associated with the netdev. Add a structure to keep common WWAN core
->> data. The structure will be stored inside the netdev private data before
->> WWAN driver private data and have a field to make it easier to access
->> the driver data. Also add a helper function that simplifies drivers
->> access to their data.
->>
->> At the moment we use the common WWAN private data to store the WWAN data
->> link (channel) id at the time the link is created, and report it back to
->> user using the .fill_info() RTNL callback. This should help the user to
->> be aware which network interface is binded to which WWAN device data
->
-> Nit: "binded" -> "bound".
 
-Oh. Will fix it in V2.
+On 6/20/2021 5:36 PM, Huilong Deng wrote:
+> Macros should not use a trailing semicolon.
+> 
+> Signed-off-by: Huilong Deng <denghuilong@cdjrlc.com>
+> ---
+>   include/linux/mlx4/doorbell.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/mlx4/doorbell.h b/include/linux/mlx4/doorbell.h
+> index f31bba270aa2..e3ecaa4f00fa 100644
+> --- a/include/linux/mlx4/doorbell.h
+> +++ b/include/linux/mlx4/doorbell.h
+> @@ -66,7 +66,7 @@ static inline void mlx4_write64(__be32 val[2], void __iomem *dest,
+>    * MMIO writes.
+>    */
+>   
+> -#define MLX4_DECLARE_DOORBELL_LOCK(name) spinlock_t name;
+> +#define MLX4_DECLARE_DOORBELL_LOCK(name) spinlock_t name
+>   #define MLX4_INIT_DOORBELL_LOCK(ptr)     spin_lock_init(ptr)
+>   #define MLX4_GET_DOORBELL_LOCK(ptr)      (ptr)
+>   
+> 
 
->> +static size_t wwan_rtnl_get_size(const struct net_device *dev)
->> +{
->> +     return
->> +             nla_total_size(4) +     /* IFLA_WWAN_LINK_ID */
->> +             0;
->> +}
->>
->
-> Not sure I like that code style, but I guess I don't care much either :)
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 
-Yeah. I am not happy with that code style either. But this is the only
-git-blame friendly style known to me that allows us to add new lines
-without touching existing ones :(
-
--- 
-Sergey
+Thanks,
+Tariq
