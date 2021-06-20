@@ -2,289 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EEFE3ADF86
-	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 18:57:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7431F3ADF89
+	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 18:58:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbhFTQ70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Jun 2021 12:59:26 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:3556 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229600AbhFTQ7Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 12:59:25 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15KGt8bE024489;
-        Sun, 20 Jun 2021 09:56:27 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=/5ZROsOLQMJ95uvpMBVVuzkI+36wy3g+v27XET0jh+g=;
- b=RkWQrA2zjIX5hbIEQm8PAQNo+q5IPiiHAaD/8rOVOtK8T2n9qBR2aCG6HQkGm4Sh+5O4
- rhRQ6RjGTUdRdSRoHNICpyz+F+Cq9bdxWEBRqBTJTOnPRK4rME5O6dl0H50IGVgaJdI/
- HU2XxXewFwi6z2zzJ9hHeq7M8vsbRhnKnHY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 399e9qmr32-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sun, 20 Jun 2021 09:56:27 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Sun, 20 Jun 2021 09:56:25 -0700
+        id S229899AbhFTRAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Jun 2021 13:00:53 -0400
+Received: from mail-mw2nam12on2097.outbound.protection.outlook.com ([40.107.244.97]:44641
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229605AbhFTRAs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Jun 2021 13:00:48 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ecFz2cRvd/G5KW/fuIVBzPGF194cVkgmvPU1ka+Xry4de6Zu/5ryd4i0T5GRqsZQrZWa3eIvmbX2TASVCSmKHEzoZzqv9kvgC52RueBu6T+w0uJ4Ms75vuD573WuCkytnJuJaFk1tprzn7AJVUZ684/0AQCPBze3RqwZ7XSlQ8P/BAO1qjiYA9pCIDrXd8hfQFExHQPAJ9mlGb1mL1eLuuP4KOs7hC939f/9CfyIDo/7pnY5dRxT5mqo/8xpqODjBrGrp1VCuNOKrIGl0JlONYZm8Q1mZGUACt4sgD8NDP1X9SoOA5mmQFzXmVZ36qU08b3GdAxhm7CiaAJm5eX7bg==
+ b=B3T1HwMvd1fb3zytdFZDwhGjyhpjRuWN98OMCodzxxmVCduUwl+Hsu23TU5WJfo5DkWezE3uBla1B6l5XzSFJUHMN5Bes8wP/y4QPn3lkmZDXK+NIupHfO08gCySgdVSGMeTAGISKZI7QieCPkKJeBUGJMrTXI0uY+9czKfYzmVpNKA0v8C0Jc98MOJZwFhA9vQdV13bcTiHPYhYILegZ52V/MafnJgloRJHKSxD46aIC/7tKOhmM1P7lxNgPxSr0NbSxr5hgEUg1GNRD9P/EiTBHp6fjZ2zA5/gs16qkgk1lILPzztNT1WbgqWUzszBGlz1tNL5eq+t1FBLAT0HoA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/5ZROsOLQMJ95uvpMBVVuzkI+36wy3g+v27XET0jh+g=;
- b=KZqU3QyVHIJ681PYFXihtBHLyo8hcq59xz942+PTu8z0X71jOiNo2oOfO7oKaH13dTAufycRIH7JFtL1UsMa08PECbi7aGkWCQAMGzd0FX1kn/9bGzhciPd/lgUKms+gpezA3eeVsxHNHPhZrlBKtu+2EJHBKtz2lGZ+eYLVj/iNr4OYznDnoj0huKk3/Svg278yCDLN4bexx6yimJYnOHJIczgGe+oKm1Qhr5RbXjaFHSEGzs4lAIIQuf+46C2l/VWEpLhaV5b6MHI3y523YhqSlFoVDoA4QUcU0WBrXAfekO8EgyN0qgtOc9Wj+JxTYj8Jy0E9IBWIF4+yWKt30w==
+ bh=H/eUANXmbBI03iPAFtFMbTXL3Lmsqk9K4ydlQTOgVJQ=;
+ b=YPYhJrsxeK1W0xWF7Afas2F50AJEdgAf8M2/rzP5jPC2vZ5AuiaNn0wl17gWq1WPHnWuJbeOOImllmdqPSEEwfz+e6B9xHLBS2jY21KsuWpFLj1zYubWNU3wmUs4/u7upNJyk1h1cljTpHNA+V5XO75TnhAGserlm7HaYw/tWiJZ1j9k0IY2LVrLrz8kHstkFO7TMSluYZ/jlzJlM2qkGWI95zj15QfvwMaJocUN+KJoWaKNCdOwbRgsDIha/4c7dF44mBun6bE5t3+SDnCOY2et5dz91+x08uV3rHtms5lA1iwnTcjg3am9wK7wMMaZ57tnuRV3tScHTQ/dEQMvZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA1PR15MB4338.namprd15.prod.outlook.com (2603:10b6:806:1ad::5) with
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H/eUANXmbBI03iPAFtFMbTXL3Lmsqk9K4ydlQTOgVJQ=;
+ b=PolmI/S1uJsVz4CIOQcZAK3XZCULPGTuLj+dLqzXga63Id2xgl/skjBCcvWfoFkkbkSw8BjW2pNrXaUkBQ6iYXPRqzP8uNNfE+Mc66ChhXizee6JGA2RSoG5GUBc5mYGXoL67vCqzmKn6RKguM/boaSdenw8ukQKJBmntjHiNLQ=
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com (2603:10b6:a03:105::15)
+ by BY5PR21MB1442.namprd21.prod.outlook.com (2603:10b6:a03:236::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.21; Sun, 20 Jun
- 2021 16:56:23 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::d886:b658:e2eb:a906]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::d886:b658:e2eb:a906%5]) with mapi id 15.20.4242.023; Sun, 20 Jun 2021
- 16:56:23 +0000
-Subject: Re: [RFCv3 00/19] x86/ftrace/bpf: Add batch support for
- direct/tracing attach
-To:     Jiri Olsa <jolsa@redhat.com>
-CC:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
-References: <20210605111034.1810858-1-jolsa@kernel.org>
- <CAEf4BzaK+t7zom6JHWf6XSPGDxjwhG4Wj3+CHKVshdmP3=FgnA@mail.gmail.com>
- <YM2r139rHuXialVG@krava> <4af931a5-3c43-9571-22ac-63e5d299fa42@fb.com>
- <YM4kxcCMHpIJeKum@krava>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <e8f7ab9f-545a-2f43-82a6-91332a301a77@fb.com>
-Date:   Sun, 20 Jun 2021 09:56:20 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
-In-Reply-To: <YM4kxcCMHpIJeKum@krava>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.3; Sun, 20 Jun
+ 2021 16:58:33 +0000
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::7ded:3b9f:50cf:d38c]) by BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::7ded:3b9f:50cf:d38c%5]) with mapi id 15.20.4264.011; Sun, 20 Jun 2021
+ 16:58:33 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Shachar Raindel <shacharr@microsoft.com>,
+        "gustavoars@kernel.org" <gustavoars@kernel.org>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+Subject: RE: [PATCH] net: mana: Fix a memory leak in an error handling path in
+ 'mana_create_txq()'
+Thread-Topic: [PATCH] net: mana: Fix a memory leak in an error handling path
+ in 'mana_create_txq()'
+Thread-Index: AQHXZdpHPvfj1IU9lk+ONqlh/jEYFqsdHvpQ
+Date:   Sun, 20 Jun 2021 16:58:32 +0000
+Message-ID: <BYAPR21MB12709AFD3F2B771400667055BF0B9@BYAPR21MB1270.namprd21.prod.outlook.com>
+References: <578bcaa1a9d6916c86aaecf65f205492affb6fc8.1624196430.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <578bcaa1a9d6916c86aaecf65f205492affb6fc8.1624196430.git.christophe.jaillet@wanadoo.fr>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:7bdd]
-X-ClientProxiedBy: SJ0PR05CA0026.namprd05.prod.outlook.com
- (2603:10b6:a03:33b::31) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4359f670-00bf-40a7-afe1-5f71514ba75a;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-06-20T16:57:23Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: wanadoo.fr; dkim=none (message not signed)
+ header.d=none;wanadoo.fr; dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 075d5b95-82e0-4d81-fae2-08d9340ca36d
+x-ms-traffictypediagnostic: BY5PR21MB1442:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR21MB1442D94CA9DBAFC8A1A1CBABBF0B9@BY5PR21MB1442.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1443;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ic0bSVZdPBQ6ZQ/4tkhgDB1aIhVoz2yB6EopYCNCtPQalIHmSJFdeLhmGCl2eXJM74n/rMauWLxJuIex3pmzzt7u+N0Aqm3Ss7H66sYmsFtvNOlgMWJqgGbErvOHlljmeVVkYFcg613rmgGXnttn9/Dw430kM9U4G5FPVUUdN7taWebiPNr7M+WKIACQtEkPTvog92Ix5D9Lff8wGTJW5J8XwnbQ2y/wNTSuI7z2fxn7WZnogDQWWec6i82otqIX+LG3KR7JXdVyTzvpNuq8l2gKSOF7eWPrOQMHQ44qezpIxDMVdufgrG09S5k7bq1PUe9zyexei7RqyOX+Qudgy7f6s6B6FzzXLYB7C/uWh59iNWnjSVTXT8/pV9eCTZA4i/tYWSrGU5v0O5TeMHZFdvWmLvIJQ6Ymuv5/bVdlrUhOyhTEB46qZ7XpUg+Pv6BU76Xven1Qps91Ay5Bnpjr1LUtXgOVACe6FNXKd43GaSnwgM5GcXVW/cbJf0VQfiQAIawGSB7dLLTpRhyQNRqQK1qkraXWTURyTO+x/nFDY2a3CalM80H55aL+kXclx1qktZH8ryEkvi+WRxoN+8sCZFhEN890dckpxgkvJySWeKkO+6exFkgn/qBW3wILm8M3xNVtym9qIIllo80IgW0oXw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1270.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(55016002)(86362001)(64756008)(82960400001)(4326008)(66946007)(66446008)(54906003)(2906002)(4744005)(66476007)(122000001)(66556008)(52536014)(110136005)(316002)(8676002)(82950400001)(9686003)(478600001)(76116006)(7696005)(33656002)(186003)(71200400001)(8990500004)(10290500003)(8936002)(6506007)(5660300002)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?cU8ZlQKhWgaZl9Paqgbg4L9u4Lf+ZEAIswzufL6+T1NnSMjVnVBkcMgkD9cW?=
+ =?us-ascii?Q?f5MbmwHr8KK0YDcxQGTrmmlhJ1hKn/GBHWpdoHq1XlNcJQxwEw7NW+NBEnFX?=
+ =?us-ascii?Q?fVzXxcOc2roFqkZtl1NmUVkfGSBGVraxnD6sNa0KPeHdS9SylXCuz3E4gAbS?=
+ =?us-ascii?Q?5iVIxdOMr68tkS+Q8nVIShzbeK2qnRIAWIuIam7rUgCJGwGsgOqshoz3CdHy?=
+ =?us-ascii?Q?K9sa03RnMqRcWqEKBsiiieem5D/Txuk+kKZyc2mIdx0RtJpxRZeA7PVW7fia?=
+ =?us-ascii?Q?kJAJO4EPvcYibxsR+xy/ndHUoEXm9zelvEQUlS8Agjyk990tfcKQrEmjCy17?=
+ =?us-ascii?Q?FdSRoHKzL1rYPxy7vtT3Et3Al6Vjc/WJSQqBh1HWgP7yqCNBh6YXDONro/Qj?=
+ =?us-ascii?Q?WZMqHXniJM7pUS4A0RhDhv5sdzjw9cg977f7omPbfestV8/hAqtqy8H9gfpv?=
+ =?us-ascii?Q?7S23LDIf9kORjjRl/beQXaVv38Y9YYwq4l8x4+Py+Aqf67z/xWNofzPII1yz?=
+ =?us-ascii?Q?Uqyz3CqkUOaD+GqBxRRCPM/hDKD371aaxXAaCR2WJJYSBzLo4KnmwtV2lZqp?=
+ =?us-ascii?Q?1avgGvzsbl1tzF1lJmOHHkYZuCIrZpMxFdcxDTkdNp92Hbqgxa0/NRbbP9+9?=
+ =?us-ascii?Q?s4nnAVSaHt/fF8QMM9x2PWDigxXAUOjJu7/q4JcK25aJOKzPMNXw6YrMZ3fY?=
+ =?us-ascii?Q?PYWVt91ql+gB5mgYph+/I2Kn2DLN8FHInijapsQ1exiQuET2nZBivDn6Fnvw?=
+ =?us-ascii?Q?M5+AIoS0OU4fkkVQKsrX1v/AbhgIbuFxts2fNDLKprSLjcw5l4mpxhkXdwgU?=
+ =?us-ascii?Q?krewsbqwUkuM5gIu49tijBv/VUkGQ7/sC1pJFJ8y4tsZtlou4aNg+sbooO3a?=
+ =?us-ascii?Q?nijSiK/wY02MZcheVio3c5wjfRpCGU/XKLkW4kU6iIk8CRS5GhoW/E8tTrgZ?=
+ =?us-ascii?Q?83DTEQxQOPwdWqxixxEau9GhOWzKJJJoMerhRxlh+4gtyjco3QS8yvgpWlkF?=
+ =?us-ascii?Q?hSoRFzxi4Tv9hAHXz4mOu9sdixRfH38cZpYm/9cV/fPmHp++9cYdC+B8zSvf?=
+ =?us-ascii?Q?6I4At2QtPyQrx36Jl/60bo9ouTTEAkk5YGcukTjDslqzGYX/26L6/Nz29HMJ?=
+ =?us-ascii?Q?J5NRYeBW4agYeY8T47mqbkKqFAtK9LF3WyB9Ku72PeXn58IdEamq7SBcFNCx?=
+ =?us-ascii?Q?AaNi5udeAAE3oQyPpAHKJ5OUE+42Zl80QWKKeRv3o574diYVzMKLrisBE0gi?=
+ =?us-ascii?Q?wPPXSEtpA8jfIM8q02yhOxwaIPfYd3gyRpKtvzAhLKkuYpWRsazI4tQCAazN?=
+ =?us-ascii?Q?bly2k1JUqMwHwshYLHxKBtXqbG4h8zKbcJtNX61krpi9KTS/jgedBCHUwsvh?=
+ =?us-ascii?Q?YRzgCupFQiYF9/kNCdDREg+Ve6Kx?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c8::1349] (2620:10d:c090:400::5:7bdd) by SJ0PR05CA0026.namprd05.prod.outlook.com (2603:10b6:a03:33b::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.7 via Frontend Transport; Sun, 20 Jun 2021 16:56:22 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a8337e42-39d4-4800-cd9e-08d9340c55ad
-X-MS-TrafficTypeDiagnostic: SA1PR15MB4338:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA1PR15MB43387A555EC6389CFCFAE7EAD30B9@SA1PR15MB4338.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lVum0d8t6W6gQsxzIugaWQtiRk0N1TQYEUNR7WnRWiVc0WqUuhYlu+jzd/qOq+TtPkoDrJoliw6DmgHNfwuNMhM02BbpGdSnuufjAtErYRPzbYXz5UzPiCnVr4FiipWHMiQHixPQxWIMQFm6tCaotmghDmgp/e2qCQ3//ZB+mUHtce3lwnsqNBiF9aLwmajUTRdU7VeATp7X09eGTmfMG4fCOzYQba2NeCi6HQSA2G6vPP9foK4AYnSEKrTIyLZJmh1hDNBhWrVvi14yiVaSONcGBPAXoi7eoYsXc4B/XA8+1uWESCl6zIsQQHrUVde74ohO0auRYH88pHYVFUWB4ovpsC6ubwj4E/hQB7kxv4n2Pr/rKxZQ9GhshPWgHsgaj1JWdxHfo2VVB6vEbfctCVzANuspfnLwQtqFmXuyb4obMK0ELzYooPjOYjfgJ77YqOxyIeGeA3P/U2MiRo8ezjeocmwFGXeFcTdn+QxVRqg6ETxKAsNZZD4oThtgtMyNH3aSeUE/TBvisnx1+hfofi0RBDLfEPuaFpidC7vrJYmaQEm58cvI0aWsiYL9nvVQ8tMb3RKDi9U9gTKz0yRl3aNkRrc2YNe473IXXBG+i3Bc/hX0TN+zj4sCmhhChQzVV5FVPTSujdMPFIBVrOJtuxDI5TD2l6SOwWMZ68wQgA0GFYwI/+7KD31WrNoJr2yd
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(39860400002)(346002)(366004)(376002)(38100700002)(31686004)(7416002)(83380400001)(31696002)(316002)(186003)(16526019)(478600001)(52116002)(66556008)(4326008)(53546011)(2906002)(6916009)(86362001)(6486002)(5660300002)(8676002)(36756003)(66476007)(8936002)(54906003)(66946007)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?akRpZjhwTGlOM1JrSG1TN21vQ0JkRXVwSDRBWWgyUklGVTViYWNuakZBR0Rl?=
- =?utf-8?B?Y1V2Ri9CelQ0amNraTlJRUtOZXdiS3BxUFE5TWtTaDhLWEV4NE9kS0dWeWxP?=
- =?utf-8?B?aU5wL2w1TkRCRmMrRG9PS2dmT3F2Q2VHbjNMeXRQampOQVFRbXZ2STEvVmp6?=
- =?utf-8?B?QTQ4VG5vYVc2R212MWJGZU10eEVGR0I1ZFRhQnNVUGJNdmtyUXRyMnpLZklh?=
- =?utf-8?B?emFrRU1Yak1OYnlkeTFWVEE2M1ZyRGRDbUFlQWg1ODczdkhnUm1vRytqeUdW?=
- =?utf-8?B?N1ZkSzJJYkRhcVdVNUhUUVhEMUdqUWsxR0FnZVJ5NzhsVlBtRGdZYWY4UzFN?=
- =?utf-8?B?cjFQS3Y0cVZBZldrcERkS041c2JWWFpud0VuK0xEVytncSsyRzVSWUZoRjYv?=
- =?utf-8?B?VVR4Vzg2OVQ4T2RIbzY3Zmp1VGpyWk9LVUMxK0VuREJLM05iYThoTUROa0xD?=
- =?utf-8?B?bVFNQkRLSmowNktNcTNHRm5nUURpbEZqZ1J4bUtkN0VxZ2FoM3JXeHpzclpz?=
- =?utf-8?B?OU1UQjlEUHlQcU4rTVdqR055YWNBd3R6dEJHc2JaNG16TzJEYVBndE1ncVpN?=
- =?utf-8?B?SWNRTm9uREZkVXErb3pGay8wdk1YVTJ1YjRMSTk4dUQwM3prajV5L3VNa0U2?=
- =?utf-8?B?K0Y3MFhOSllqS20rbVJrZEptMlJJbk44RWwzNEV3aU9JN3lBMjZualdyWms5?=
- =?utf-8?B?d0NvQmRyb3dmNEVXTG13NitsYlExK3pNb2oyL0N1dXcxalVIc0lhWW1OdENI?=
- =?utf-8?B?WTkzUmpMVGxqTk9Fdi9mc1VxaGVyWXNSQURHMWJ3Z0laQzUvZWVsYlVOckxa?=
- =?utf-8?B?SkIyaXRxMGFCN2ttZVFXdTdKNExXNDBRbTVlRHB0SkorTnRwalNlMG9zWFhE?=
- =?utf-8?B?U083dTZxaXppMkRrQVl5MjVVVUFnLzN4d1Vhc3FYdWdQRHFHS0JjYlJmT3Bs?=
- =?utf-8?B?YzZJNk1zdUt3aEpXSHpyL2lPY29pNHBJdmZYb3p6c1pIZlRjajFKNDUvcThZ?=
- =?utf-8?B?M0Z6eWZjWkVoaUkyV0xDTUUxM0NMVzA1eng5NE1oQXA4N1NMUmEwY3N2QXZG?=
- =?utf-8?B?SkdIU0l2K1llY0lrQlZiMVpFZVlCS3dRRWVqL2NwU0ZtaVhibDNFRUVtNEVY?=
- =?utf-8?B?d1FCMVZSVGZMb21COXlVcHFwK1pTWWdDNkpNd0FMQ25GK0E0YUtsVVpLMWp5?=
- =?utf-8?B?T2Y0OVJKcC81Z0JYak1GYTkyTEYweVdMMUVzVFhGMGtWWSt2UzZRVTFaT3lq?=
- =?utf-8?B?M3orWW16Ym1rVDJFZkV2Q1FjTkJ5Y3JQOTUrOFpHYnRBNE9pK3dkam1RUUFu?=
- =?utf-8?B?MVJZaThwS0RjZnRRWE1NSFJETlNZZ1FlYjJFeXZmbCtQclR4UjBjejVjdTFm?=
- =?utf-8?B?Ym1NNXNTR3dpSk9Wd3lrVVMwdG9rTUhRSDNLWlFrU2lUYW1kZzloM3orNE9m?=
- =?utf-8?B?aXhMOEJwNFlwcmE0c2Z2bXp2T2FVcEpwT1Azc2FxYnVNdWNsWllDalptTHhy?=
- =?utf-8?B?QXlySDlxQndoZU9oTkVYd0N3bGc5U1NYQVp1QkVaWXFQb1FZYlBwWGdpQ2VG?=
- =?utf-8?B?bVFJT00yNDR4dmZpUDBCbmhEdXowVk9iOWRPZGZrc0NVU1I0T08yOUtxSDdE?=
- =?utf-8?B?OTBVcjRZWWViTjJLRzdIWDV2MVhrbjUzNUl4WlBodXBBMThHNndPTnlRc3NR?=
- =?utf-8?B?d3FCUVlCa0pCYzNSTzE4SVJJWW55UE5LYlgvWjk0VmJiK2tPSmZ0bTQwQWgr?=
- =?utf-8?B?ZDZSMjQ3UTZHUTNnV2w1WkxhbjJhQ3RoWmVDRHdjVVlWbnd6QVBmbHk5MDJ3?=
- =?utf-8?B?RUQ1NCs5N1ptRkM5d0hLZz09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a8337e42-39d4-4800-cd9e-08d9340c55ad
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2021 16:56:23.4189
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1270.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 075d5b95-82e0-4d81-fae2-08d9340ca36d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jun 2021 16:58:33.0714
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8OLlo+oSge5BSZUm/PCTtyCHQu0gkXFEX4t6/E85B08qI/cnvNIhqjJ7Z75r9gsT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4338
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: GwLIOLTeZLYQdFLYv6iC-qPEKdiSAucA
-X-Proofpoint-GUID: GwLIOLTeZLYQdFLYv6iC-qPEKdiSAucA
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-06-20_08:2021-06-20,2021-06-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- impostorscore=0 bulkscore=0 malwarescore=0 priorityscore=1501
- lowpriorityscore=0 adultscore=0 phishscore=0 mlxlogscore=999
- suspectscore=0 mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104190000 definitions=main-2106200123
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hI30++tNeWlFaexNMBsWiiZZuQbI9tzOac0KKWW8dzC2hQXxiTLkSo0n1kTNWXv1ysimiDvWzjS3uhu8YVfweA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR21MB1442
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Sent: Sunday, June 20, 2021 6:43 AM
+>=20
+> If this test fails we must free some resources as in all the other error
+> handling paths of this function.
+>=20
+> Fixes: ca9c54d2d6a5 ("net: mana: Add a driver for Microsoft Azure Network
+> Adapter (MANA)")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
 
-
-On 6/19/21 10:09 AM, Jiri Olsa wrote:
-> On Sat, Jun 19, 2021 at 09:19:57AM -0700, Yonghong Song wrote:
->>
->>
->> On 6/19/21 1:33 AM, Jiri Olsa wrote:
->>> On Thu, Jun 17, 2021 at 01:29:45PM -0700, Andrii Nakryiko wrote:
->>>> On Sat, Jun 5, 2021 at 4:12 AM Jiri Olsa <jolsa@kernel.org> wrote:
->>>>>
->>>>> hi,
->>>>> saga continues.. ;-) previous post is in here [1]
->>>>>
->>>>> After another discussion with Steven, he mentioned that if we fix
->>>>> the ftrace graph problem with direct functions, he'd be open to
->>>>> add batch interface for direct ftrace functions.
->>>>>
->>>>> He already had prove of concept fix for that, which I took and broke
->>>>> up into several changes. I added the ftrace direct batch interface
->>>>> and bpf new interface on top of that.
->>>>>
->>>>> It's not so many patches after all, so I thought having them all
->>>>> together will help the review, because they are all connected.
->>>>> However I can break this up into separate patchsets if necessary.
->>>>>
->>>>> This patchset contains:
->>>>>
->>>>>     1) patches (1-4) that fix the ftrace graph tracing over the function
->>>>>        with direct trampolines attached
->>>>>     2) patches (5-8) that add batch interface for ftrace direct function
->>>>>        register/unregister/modify
->>>>>     3) patches (9-19) that add support to attach BPF program to multiple
->>>>>        functions
->>>>>
->>>>> In nutshell:
->>>>>
->>>>> Ad 1) moves the graph tracing setup before the direct trampoline
->>>>> prepares the stack, so they don't clash
->>>>>
->>>>> Ad 2) uses ftrace_ops interface to register direct function with
->>>>> all functions in ftrace_ops filter.
->>>>>
->>>>> Ad 3) creates special program and trampoline type to allow attachment
->>>>> of multiple functions to single program.
->>>>>
->>>>> There're more detailed desriptions in related changelogs.
->>>>>
->>>>> I have working bpftrace multi attachment code on top this. I briefly
->>>>> checked retsnoop and I think it could use the new API as well.
->>>>
->>>> Ok, so I had a bit of time and enthusiasm to try that with retsnoop.
->>>> The ugly code is at [0] if you'd like to see what kind of changes I
->>>> needed to make to use this (it won't work if you check it out because
->>>> it needs your libbpf changes synced into submodule, which I only did
->>>> locally). But here are some learnings from that experiment both to
->>>> emphasize how important it is to make this work and how restrictive
->>>> are some of the current limitations.
->>>>
->>>> First, good news. Using this mass-attach API to attach to almost 1000
->>>> kernel functions goes from
->>>>
->>>> Plain fentry/fexit:
->>>> ===================
->>>> real    0m27.321s
->>>> user    0m0.352s
->>>> sys     0m20.919s
->>>>
->>>> to
->>>>
->>>> Mass-attach fentry/fexit:
->>>> =========================
->>>> real    0m2.728s
->>>> user    0m0.329s
->>>> sys     0m2.380s
->>>
->>> I did not meassured the bpftrace speedup, because the new code
->>> attached instantly ;-)
->>>
->>>>
->>>> It's a 10x speed up. And a good chunk of those 2.7 seconds is in some
->>>> preparatory steps not related to fentry/fexit stuff.
->>>>
->>>> It's not exactly apples-to-apples, though, because the limitations you
->>>> have right now prevents attaching both fentry and fexit programs to
->>>> the same set of kernel functions. This makes it pretty useless for a
->>>
->>> hum, you could do link_update with fexit program on the link fd,
->>> like in the selftest, right?
->>>
->>>> lot of cases, in particular for retsnoop. So I haven't really tested
->>>> retsnoop end-to-end, I only verified that I do see fentries triggered,
->>>> but can't have matching fexits. So the speed-up might be smaller due
->>>> to additional fexit mass-attach (once that is allowed), but it's still
->>>> a massive difference. So we absolutely need to get this optimization
->>>> in.
->>>>
->>>> Few more thoughts, if you'd like to plan some more work ahead ;)
->>>>
->>>> 1. We need similar mass-attach functionality for kprobe/kretprobe, as
->>>> there are use cases where kprobe are more useful than fentry (e.g., >6
->>>> args funcs, or funcs with input arguments that are not supported by
->>>> BPF verifier, like struct-by-value). It's not clear how to best
->>>> represent this, given currently we attach kprobe through perf_event,
->>>> but we'll need to think about this for sure.
->>>
->>> I'm fighting with the '2 trampolines concept' at the moment, but the
->>> mass attach for kprobes seems interesting ;-) will check
->>>
->>>>
->>>> 2. To make mass-attach fentry/fexit useful for practical purposes, it
->>>> would be really great to have an ability to fetch traced function's
->>>> IP. I.e., if we fentry/fexit func kern_func_abc, bpf_get_func_ip()
->>>> would return IP of that functions that matches the one in
->>>> /proc/kallsyms. Right now I do very brittle hacks to do that.
->>>
->>> so I hoped that we could store ip always in ctx-8 and have
->>> the bpf_get_func_ip helper to access that, but the BPF_PROG
->>> macro does not pass ctx value to the program, just args
->>
->> ctx does pass to the bpf program. You can check BPF_PROG
->> macro definition.
-> 
-> ah right, should have checked it.. so how about we change
-> trampoline code to store ip in ctx-8 and make bpf_get_func_ip(ctx)
-> to return [ctx-8]
-
-This should work. Thanks!
-
-> 
-> I'll need to check if it's ok for the tracing helper to take
-> ctx as argument
-> 
-> thanks,
-> jirka
-> 
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
