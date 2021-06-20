@@ -2,201 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0068B3AE08C
-	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 23:07:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 075B53AE10B
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 00:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbhFTVKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Jun 2021 17:10:00 -0400
-Received: from phobos.denx.de ([85.214.62.61]:39232 "EHLO phobos.denx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230051AbhFTVKA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Jun 2021 17:10:00 -0400
-Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 246A7800B2;
-        Sun, 20 Jun 2021 23:07:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1624223265;
-        bh=ZNUN7SzjM1tvOh5JWGNk0MaBKe/RjNUyY/rlFYKjXXM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=j5GpeAQSeWOEVms/tw39mULNYThSWsAqU3qm9RYCbZ7iZBfkSCTS+8Qp7pVXZk8oh
-         7RhEImPBexw3iOXGFC2J/M+qheKiuWEUWS2UffqNtlQFJCzxpuugAaSIVgsaKBjczF
-         MsqcD9ZQmcGMB0ATcdCYlFI7NnOW7lZ4gvbce3NzIGy4s0B6YhvzYvpxa1f2LTwhyG
-         cCj698pk4P2Ie2FtkceZsD6edfXQ7fMd9qOjiDt7qURw6LhyJxCgPvdyXSBHc+xGyb
-         uEEo3w+FyINpY3WhBVjQ7SZePK9mDhl4Pqzt/tG0e3bRqnngH0nkC7jmqLKFqWd+E/
-         P8jC48XhMuuXg==
-From:   Marek Vasut <marex@denx.de>
-To:     devicetree@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        Rob Herring <robh+dt@kernel.org>, linux@dh-electronics.com,
-        netdev@vger.kernel.org
-Subject: [PATCH v3] dt-bindings: net: ks8851: Convert to YAML schema
-Date:   Sun, 20 Jun 2021 23:07:41 +0200
-Message-Id: <20210620210741.100206-1-marex@denx.de>
-X-Mailer: git-send-email 2.30.2
+        id S229940AbhFTXBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Jun 2021 19:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229901AbhFTXBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 19:01:02 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06F1C061574
+        for <netdev@vger.kernel.org>; Sun, 20 Jun 2021 15:58:48 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id my49so25428246ejc.7
+        for <netdev@vger.kernel.org>; Sun, 20 Jun 2021 15:58:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iJBOiArEiJxpe4IgehQUCa3fhEo/xjSXPUDM1UGtCiE=;
+        b=taEhq0lScfJYAGiNL0+6yaJORtZUqs/+JlWBZRT1EdGP1J/XPNhLtjfqcui7OuYfwf
+         LlXE8d9jhWTEO2njb7Aaj1xsG8Z4/7CHWt5s9MHWpnpuDDI4dutacHaKI8jpsFCsfNux
+         68bPDkhWJOl2i/qmCFSC44wKTAaMJhhogJlosMo5Sr5TLYvRKF/WXMKjbLSXtmBAgdH5
+         rB5dJIwKMDCDRl74OfR3E0eeD4OBGSJzlIC1pPYnwi5iNq+J2oCpXGTOcs73gEDXzJ9A
+         v1MGrx2hB+8Y1zqdpmpvpo/CagAw+bdBZepykO8ZRNgoW7Xfh16+0caQNNWW5u7NVnGV
+         2wiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iJBOiArEiJxpe4IgehQUCa3fhEo/xjSXPUDM1UGtCiE=;
+        b=MB/9upTLBh98fp/cIVz06slJognxiunymiJ5XHGRL4/P7xSkIIbe3JhwU/vAtz556t
+         UQ+wfLG88H7Q16a2nBPdjBEvy5YaeTYudKaE2D0ZxlrRFjyIAC06B+qedkwjmtWaQVwX
+         n8RV3WUMORej3Z9gtavVbccrn11BMGlOV2zP3TC+kTsEXWpTTtMZeWUZrvtnW9UHk4lJ
+         4SbTDQ7PkK21xmL9TSlgGFwA+M88OQA33YqqtwOgyRlMmW7eh3ouvXR/cl8KmHRsBjt8
+         fVwkgvutQuBYeQ34V1uKpE/E4A4svV1QrBE5wN1cML+WS1Lcy6ufVCn/Fm8b/y1lUBjd
+         h7Ng==
+X-Gm-Message-State: AOAM533s8dNtcSG6mlfnmjQXjDb6fUPtdViEkXk9fAHySkLFxoC8LKTI
+        15qvH6pJuPp1B8A9OB+95CmKxIYZpIwgIiTRkBc=
+X-Google-Smtp-Source: ABdhPJzCiVMSVfr2lKSSUcR6K8o3RJSR+e8V5wfRJD7j7piIQP2HDH9Kua9S0rfvk5T3wngYl3wU2eT+HODuHXltEQo=
+X-Received: by 2002:a17:906:474e:: with SMTP id j14mr7608227ejs.9.1624229927169;
+ Sun, 20 Jun 2021 15:58:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
-X-Virus-Status: Clean
+References: <CAGvuCg_iLtzHr_rF0291oKAtYFCespoJ=dszFWjDftZd8EN6JA@mail.gmail.com>
+In-Reply-To: <CAGvuCg_iLtzHr_rF0291oKAtYFCespoJ=dszFWjDftZd8EN6JA@mail.gmail.com>
+From:   Juan Manuel Santos <godlike64@gmail.com>
+Date:   Sun, 20 Jun 2021 19:58:36 -0300
+Message-ID: <CAGvuCg-FJM7LLcb5i6gfZLRWJBUyDrGyCyZ4xPVqek58-kAVbQ@mail.gmail.com>
+Subject: Fwd: WebRTC protocols broken when forwarding after a change to ip_dst_mtu_maybe_forward()
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Micrel KSZ8851 DT bindings to YAML schema.
+Hello,
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Petr Stetiar <ynezz@true.cz>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: linux@dh-electronics.com
-Cc: netdev@vger.kernel.org
-To: devicetree@vger.kernel.org
----
-V2: - Explicitly state the bindings are for both SPI and parallel bus options
-    - Switch the license to (GPL-2.0-only OR BSD-2-Clause)
-V3: - Drop quotes, use enum: instead of oneOf+const
-    - Add reg: items list describing what each reg entry is
-    - Drop regulator.yaml reference
----
- .../bindings/net/micrel,ks8851.yaml           | 97 +++++++++++++++++++
- .../devicetree/bindings/net/micrel-ks8851.txt | 18 ----
- 2 files changed, 97 insertions(+), 18 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/micrel,ks8851.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/micrel-ks8851.txt
+Apologies if somebody receives this email twice. My first email was
+filtered by the mailing list because gmail defaults to HTML. me--
 
-diff --git a/Documentation/devicetree/bindings/net/micrel,ks8851.yaml b/Documentation/devicetree/bindings/net/micrel,ks8851.yaml
-new file mode 100644
-index 000000000000..98f022cdd44d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/micrel,ks8851.yaml
-@@ -0,0 +1,97 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/micrel,ks8851.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Micrel KS8851 Ethernet MAC (SPI and Parallel bus options)
-+
-+maintainers:
-+  - Marek Vasut <marex@denx.de>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - micrel,ks8851      # SPI bus option
-+      - micrel,ks8851-mll  # Parallel bus option
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  reg:
-+    minItems: 1
-+    maxItems: 2
-+    items:
-+      - description: SPI or Parallel bus hardware address
-+      - description: Parallel bus command mode address
-+
-+  reset-gpios:
-+    maxItems: 1
-+    description:
-+      The reset_n input pin
-+
-+  vdd-supply:
-+    description: |
-+      Analog 3.3V supply for Ethernet MAC
-+
-+  vdd-io-supply:
-+    description: |
-+      Digital 1.8V IO supply for Ethernet MAC
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+allOf:
-+  - $ref: ethernet-controller.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: micrel,ks8851
-+    then:
-+      properties:
-+        reg:
-+          maxItems: 1
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: micrel,ks8851-mll
-+    then:
-+      properties:
-+        reg:
-+          minItems: 2
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    /* SPI bus option */
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        ethernet@0 {
-+            compatible = "micrel,ks8851";
-+            reg = <0>;
-+            interrupt-parent = <&msmgpio>;
-+            interrupts = <90 8>;
-+            vdd-supply = <&ext_l2>;
-+            vdd-io-supply = <&pm8921_lvs6>;
-+            reset-gpios = <&msmgpio 89 0>;
-+        };
-+    };
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    /* Parallel bus option */
-+    memory-controller {
-+        #address-cells = <2>;
-+        #size-cells = <1>;
-+        ethernet@1,0 {
-+            compatible = "micrel,ks8851-mll";
-+            reg = <1 0x0 0x2>, <1 0x2 0x20000>;
-+            interrupt-parent = <&gpioc>;
-+            interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/micrel-ks8851.txt b/Documentation/devicetree/bindings/net/micrel-ks8851.txt
-deleted file mode 100644
-index bbdf9a7359a2..000000000000
---- a/Documentation/devicetree/bindings/net/micrel-ks8851.txt
-+++ /dev/null
-@@ -1,18 +0,0 @@
--Micrel KS8851 Ethernet mac (MLL)
--
--Required properties:
--- compatible = "micrel,ks8851-mll" of parallel interface
--- reg : 2 physical address and size of registers for data and command
--- interrupts : interrupt connection
--
--Micrel KS8851 Ethernet mac (SPI)
--
--Required properties:
--- compatible = "micrel,ks8851" or the deprecated "ks8851"
--- reg : chip select number
--- interrupts : interrupt connection
--
--Optional properties:
--- vdd-supply: analog 3.3V supply for Ethernet mac
--- vdd-io-supply: digital 1.8V IO supply for Ethernet mac
--- reset-gpios: reset_n input pin
--- 
-2.30.2
+I am writing to this mailing list because I believe based on the
+maintainer list[1] that this is the correct place to report issues
+like these, especially when unsure. I am a Gentoo user and I already
+reported this downstream[2] but in my troubleshooting I was able to
+confirm that linux-stable is affected, and possibly others.
 
+The issue happens whenever a kernel version with a certain patch is
+used in a gateway device doing IP forwarding for a LAN, such as a
+Linux box running iptables / firewalld+iptables / firewalld+nftables.
+It does not seem to matter which of the three methods is used, all are
+affected. Applications inside the LAN using WebRTC (such as Google
+Meet, Discord, etc) are affected. In the case of Meet, no video of any
+participant can be seen, although audio works. In the case of Discord,
+neither audio nor video works. It does not matter whether the
+conference is started or joined from a device within the LAN, it won't
+work properly.
+
+I was able to git-bisect this using linux-stable and found the
+offending upstream commit[3]. In linux-stable this was backported
+right after 5.4.72 so >=5.4.73 are affected, up to 5.4.126. I can
+confirm that reverting the commit (even if it is just commenting those
+4 lines that the commit adds) fixes the issue at least on 5.4.109. No
+other protocol/connection type seems to be affected, and this only
+seems to affect webrtc in the context of forwarding (i.e. when
+started/joined from a device in the LAN, not the gateway itself).
+
+I am unsure how to proceed, whether this requires an upstream bugzilla
+to be opened (which I can gladly do) or not. I searched the archives
+first but I could find no mention relating webrtc and the change to
+this function (I only found the relationship when git-bisecting).
+
+Thanks in advance.
+
+Regards,
+
+
+
+[1] https://www.kernel.org/doc/html/latest/process/maintainers.html#maintainers
+[2] https://bugs.gentoo.org/797211
+[3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=02a1b175b0e92d9e0fa5df3957ade8d733ceb6a0
