@@ -2,94 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEDEC3ADE43
-	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 14:13:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7DDA3ADE5C
+	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 14:39:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbhFTMOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Jun 2021 08:14:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36576 "EHLO mail.kernel.org"
+        id S229756AbhFTMl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Jun 2021 08:41:58 -0400
+Received: from mout.gmx.net ([212.227.17.20]:58347 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229593AbhFTMOo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Jun 2021 08:14:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 25C0C610CD;
-        Sun, 20 Jun 2021 12:12:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624191151;
-        bh=fCHAeuY62HCyEnFWTFBLLX9Leqdy/+cyRrnEWu4P/6w=;
-        h=In-Reply-To:References:From:Subject:To:Cc:Date:From;
-        b=ohQ7jMFZFgm91sJnzQnwitbUT2ewkpfn8r+mxBoIDGEfKv6nEoR6XgQBpZ6TMCQqu
-         pOo74nDVapzzRdupi3t54SpT3D4KwTnBf3aSDlKlO2T/xWXnWXK+Cdkczd2XWNRNd9
-         YB108fnQfVwvWVCUUqLl2CoPLQfMa8pMEjDEh+rCYrSAfVahM37Z3ug4G5WZncfIPf
-         jrui53nptMXM3Q+sJDEZ/jYg+IJqy3FLsM78UsVxNPiT+6EIM4SR748LuDh36/axrZ
-         BuU38+XYlAbjTLdCsO0WxyPwE1fxsHwSRTZcnYX2XzcDRADQahULKVT60X6oxNh3OL
-         rWz7VnCg6ISLw==
-Content-Type: text/plain; charset="utf-8"
+        id S229594AbhFTMlz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Jun 2021 08:41:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1624192767;
+        bh=P2Oa1kEoUnZ9uZBpomj9L2/Kaf6nQv+HA6VnBNPmyS4=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=BiqN0galNEZ3DUbxYKqmjCEmHeUqorBKCr4mjQPwTKfKeW+jN42qml5+TogrZMti/
+         4g47vAH+QynSYcd2TmCdPOCOlm7sgex7ICBaMaKIckwyXMSi86lUXPHKRod9FlSidN
+         8oJvtqQlCQ7fW4qG0cuLXw4/PjSpf7ZcMHfsCB68=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from ubuntu.fritz.box ([89.247.255.164]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MVvPJ-1lknpS1z65-00RmSI; Sun, 20
+ Jun 2021 14:39:27 +0200
+From:   Norbert Slusarek <nslusarek@gmx.net>
+To:     netdev@vger.kernel.org
+Cc:     ore@pengutronix.de, mkl@pengutronix.de, socketcan@hartkopp.net,
+        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        nslusarek@gmx.net, kernel@pengutronix.de
+Subject: [PATCH] can: j1939: prevent allocation of j1939 filter for optlen = 0
+Date:   Sun, 20 Jun 2021 14:38:42 +0200
+Message-Id: <20210620123842.117975-1-nslusarek@gmx.net>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <16920ba3-57b7-3431-4667-9aaf0d7380af@gmail.com>
-References: <20210618151553.59456-1-atenart@kernel.org> <16920ba3-57b7-3431-4667-9aaf0d7380af@gmail.com>
-From:   Antoine Tenart <atenart@kernel.org>
-Subject: Re: [PATCH net] vrf: do not push non-ND strict packets with a source LLA through packet taps again
-To:     David Ahern <dsahern@gmail.com>, davem@davemloft.net,
-        dsahern@kernel.org, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Stephen Suryaputra <ssuryaextr@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, atenart@kernel.org
-Message-ID: <162419114873.131954.7165131880961444756@kwain>
-Date:   Sun, 20 Jun 2021 14:12:28 +0200
+X-Provags-ID: V03:K1:6KD94nw0dBWNm24DNAnE6hLXHzV9kqsHJCPAfVN2ryg41alYIyZ
+ itPA9wOqD16xvHHHhVQ4qqJictavtGLf06NSBLOMMzVgAYUHZtbTIBhjXkVP+IObrz55GXc
+ Gy40mo/cE3jZ6mtjhH96f+uyiSc9ByaJz2aI1VoA/CtB//iiAkB412h+52hC28gBU295gjy
+ ly4kPJDpM/tq5lxZMIhhg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:n86gtVvcqUU=:wZHh/wVq4L7RQDRaobRqOI
+ VxpDHNBS92gtzU1b8TvSl9e+18upgs+sykab3LgvYvQbAWYL/T5UxmumSrmYM+xiNuumYg1LA
+ fSejN65l80BImgjWPOYLTM0TG9kt/cx5AcHepoFALEk8lAoJpKrEBgZ8+N7L7wGh9i2QLanex
+ DqGDRJukzBSCEECfgbPVlsrvy1vgi5ukRAGnACQ0HknNgoVLdkSD9mft//Ii/1rMK2s2572tE
+ M/v+PqsFZlrJg7GcsiPjThSrhlCQYJ9WAuCL6yrpe1BZR0p/dqkmUTHGFIy8XZ+7ltk0xyhlT
+ 4yNhj2EhEFu1ZviKxO8tRRVvWC8WBDpOXHTKm4e7MiDePoBl+RpwMV4clEnLY1Ym9NQj/lNaf
+ qzdSw8WGZxmvH3Mm7oNCpL4JdM/vwfMohAOMSbERSr/z1LYMuzecFKV/yJOQ+G6DoGKAt1NOS
+ vEeiBtDCWiYmxDd/bI8D2L6VIjKCTC+FWJYAcJ93T/XfEurWmGgKtvX0/B9UWcbPkncU/70Wj
+ C+QmQmLnwLPD5cbUDYvEUqBLjmnT0Z067dG1zcqUxmsvzWtIm06aONf0CYDvu08aYylK4t80E
+ JuGnPLARncyR6njEvf3xbYjcB9rz8yOoki2tgjjyf3LyN0oCGAyNXkfuTBUMhdCtZyc6XFSb3
+ mIqyuyV/1ow1Ge8O6PXfC7EwLEaM2Im7e09kzH2LA1Q0ZR25/97Mp3eZaoBmfti93BmK+/rzv
+ A+B9Tc2bwnlrtZ2789oXFsgzu21pv8DDQhUsSIzV2WV1JAGdEcvI1JYrtzcvFEDcx1G3eARDp
+ Pde5CRQZPuqO5nBqCZMCZEG/bl3cTy+e4f62Ghuc/vHBBmV0R3U8WhIKSmsNdaThFE7wg8yQJ
+ AjdadVrGwOaZzQfQcYVNzIXuE3yRzi2ccmOl+TnhsxahrJC5bAkn5Nz1qN2IlD8wPc/VJ+RRy
+ kfTeLkFxpNowKDZYDbVVdYJdDLQ4AVRyDk4X/7klUdKciR+pD06sdlscPKFTuOWoKeYy8SG8f
+ 47Z7qy42hzFxdHaRE24Faw+5HUQzS4D4J/YsVPFDIscm3QGnGGSSn+TEqgbesUWQgJbSiYkw3
+ dOl8sh5VIQRQ7UgYf4XYL4/RVbBlg7hgCSP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting David Ahern (2021-06-19 03:18:50)
-> On 6/18/21 9:15 AM, Antoine Tenart wrote:
-> > --- a/drivers/net/vrf.c
-> > +++ b/drivers/net/vrf.c
-> > @@ -1366,22 +1366,22 @@ static struct sk_buff *vrf_ip6_rcv(struct net_d=
-evice *vrf_dev,
-> >       int orig_iif =3D skb->skb_iif;
-> >       bool need_strict =3D rt6_need_strict(&ipv6_hdr(skb)->daddr);
-> >       bool is_ndisc =3D ipv6_ndisc_frame(skb);
-> > -     bool is_ll_src;
-> > =20
-> >       /* loopback, multicast & non-ND link-local traffic; do not push t=
-hrough
-> >        * packet taps again. Reset pkt_type for upper layers to process =
-skb.
-> > -      * for packets with lladdr src, however, skip so that the dst can=
- be
-> > -      * determine at input using original ifindex in the case that dad=
-dr
-> > -      * needs strict
-> > +      * For strict packets with a source LLA, determine the dst using =
-the
-> > +      * original ifindex.
-> >        */
-> > -     is_ll_src =3D ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADDR_L=
-INKLOCAL;
-> > -     if (skb->pkt_type =3D=3D PACKET_LOOPBACK ||
-> > -         (need_strict && !is_ndisc && !is_ll_src)) {
-> > +     if (skb->pkt_type =3D=3D PACKET_LOOPBACK || (need_strict && !is_n=
-disc)) {
-> >               skb->dev =3D vrf_dev;
-> >               skb->skb_iif =3D vrf_dev->ifindex;
-> >               IP6CB(skb)->flags |=3D IP6SKB_L3SLAVE;
-> > +
-> >               if (skb->pkt_type =3D=3D PACKET_LOOPBACK)
-> >                       skb->pkt_type =3D PACKET_HOST;
-> > +             else if (ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADD=
-R_LINKLOCAL)
-> > +                     vrf_ip6_input_dst(skb, vrf_dev, orig_iif);
-> > +
-> >               goto out;
-> >       }
->=20
-> you are basically moving Stephen's is_ll_src within the need_strict and
-> not ND.
+If optval !=3D NULL and optlen =3D 0 are specified for SO_J1939_FILTER in
+j1939_sk_setsockopt(), memdup_sockptr() will return ZERO_PTR for 0 size
+allocation. The new filter will be mistakenly assigned ZERO_PTR.
+This patch checks for optlen !=3D 0 and filter will be assigned NULL
+in case of optlen =3D 0.
 
-That's right.
+Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
+Signed-off-by: Norbert Slusarek <nslusarek@gmx.net>
 
-> Did you run the fcnal-test script and verify no change in test results?
+=2D--
+ net/can/j1939/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yes, I saw no regression, and the tests Stephen added were still OK.
+diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+index 56aa66147d5a..ff20cb629200 100644
+=2D-- a/net/can/j1939/socket.c
++++ b/net/can/j1939/socket.c
+@@ -673,7 +673,7 @@ static int j1939_sk_setsockopt(struct socket *sock, in=
+t level, int optname,
 
-Antoine
+ 	switch (optname) {
+ 	case SO_J1939_FILTER:
+-		if (!sockptr_is_null(optval)) {
++		if (!sockptr_is_null(optval) && optlen !=3D 0) {
+ 			struct j1939_filter *f;
+ 			int c;
+
+=2D-
+2.30.2
