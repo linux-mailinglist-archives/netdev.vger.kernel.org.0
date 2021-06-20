@@ -2,76 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 919AF3ADE56
-	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 14:39:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B694F3ADE7A
+	for <lists+netdev@lfdr.de>; Sun, 20 Jun 2021 15:28:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbhFTMlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Jun 2021 08:41:21 -0400
-Received: from out28-4.mail.aliyun.com ([115.124.28.4]:53201 "EHLO
-        out28-4.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbhFTMlP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 08:41:15 -0400
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.09709191|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0132484-0.00553607-0.981215;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047213;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=18;RT=18;SR=0;TI=SMTPD_---.KVAnlIH_1624192730;
-Received: from localhost.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.KVAnlIH_1624192730)
-          by smtp.aliyun-inc.com(10.147.44.129);
-          Sun, 20 Jun 2021 20:38:58 +0800
-From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
-        <zhouyanjie@wanyeetech.com>
-To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, dongsheng.qiu@ingenic.com,
-        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
-        sihui.liu@ingenic.com, jun.jiang@ingenic.com,
-        sernia.zhou@foxmail.com
-Subject: [PATCH 2/2] net: stmmac: Ingenic: Remove unused variables.
-Date:   Sun, 20 Jun 2021 20:38:50 +0800
-Message-Id: <1624192730-43276-3-git-send-email-zhouyanjie@wanyeetech.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1624192730-43276-1-git-send-email-zhouyanjie@wanyeetech.com>
-References: <1624192730-43276-1-git-send-email-zhouyanjie@wanyeetech.com>
+        id S229687AbhFTNab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Jun 2021 09:30:31 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:41818 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229658AbhFTNa0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 09:30:26 -0400
+Received: from localhost.localdomain ([86.243.172.93])
+        by mwinf5d33 with ME
+        id KRU82500G21Fzsu03RU97r; Sun, 20 Jun 2021 15:28:13 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 20 Jun 2021 15:28:13 +0200
+X-ME-IP: 86.243.172.93
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, david.m.ertman@intel.com,
+        shiraz.saleem@intel.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] ice: Fix a memory leak in an error handling path in 'ice_pf_dcb_cfg()'
+Date:   Sun, 20 Jun 2021 15:28:06 +0200
+Message-Id: <0302ff0ced7f38b0076c08ce351477d338bbe548.1624195601.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unused variables in ingenic_mac_suspend() and
-ingenic_mac_resume().
+If this 'kzalloc()' fails we must free some resources as in all the other
+error handling paths of this function.
 
-Fixes: 2bb4b98b60d7 ("net: stmmac: Add Ingenic SoCs MAC support.")
-
-Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+Fixes: 348048e724a0 ("ice: Implement iidc operations")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c | 4 ----
- 1 file changed, 4 deletions(-)
+'event' is allocated and freed just a few lines below. It looks like a
+small structure, so maybe a better fix would be to avoid the
+kzalloc/kfree and use a local variable instead.
+Another solution
+---
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
-index 667ed46..9a6d819 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
-@@ -311,9 +311,6 @@ static int ingenic_mac_probe(struct platform_device *pdev)
- #ifdef CONFIG_PM_SLEEP
- static int ingenic_mac_suspend(struct device *dev)
- {
--	struct net_device *ndev = dev_get_drvdata(dev);
--	struct stmmac_priv *priv = netdev_priv(ndev);
--	struct ingenic_mac *mac = priv->plat->bsp_priv;
- 	int ret;
+diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+index 857dc62da7a8..926cf748c5ec 100644
+--- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+@@ -316,8 +316,10 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
  
- 	ret = stmmac_suspend(dev);
-@@ -325,7 +322,6 @@ static int ingenic_mac_resume(struct device *dev)
- {
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct stmmac_priv *priv = netdev_priv(ndev);
--	struct ingenic_mac *mac = priv->plat->bsp_priv;
- 	int ret;
+ 	/* Notify AUX drivers about impending change to TCs */
+ 	event = kzalloc(sizeof(*event), GFP_KERNEL);
+-	if (!event)
+-		return -ENOMEM;
++	if (!event) {
++		ret = -ENOMEM;
++		goto free_cfg;
++	}
  
- 	ret = ingenic_mac_init(priv->plat);
+ 	set_bit(IIDC_EVENT_BEFORE_TC_CHANGE, event->type);
+ 	ice_send_event_to_aux(pf, event);
 -- 
-2.7.4
+2.30.2
 
