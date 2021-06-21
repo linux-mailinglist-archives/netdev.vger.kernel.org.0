@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 279AA3AF389
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C184E3AF38D
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 20:01:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233830AbhFUSCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 14:02:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39596 "EHLO mail.kernel.org"
+        id S233252AbhFUSCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 14:02:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39598 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232064AbhFUSAF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232759AbhFUSAF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 21 Jun 2021 14:00:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 42DFC6137D;
-        Mon, 21 Jun 2021 17:54:23 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C2B460698;
+        Mon, 21 Jun 2021 17:54:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624298064;
-        bh=nVcg9KpDetKdIwCLpjQNOQqeestfcqBo/bZqwkmON2M=;
+        s=k20201202; t=1624298065;
+        bh=eFC8b5XC/EPZQcbaZi9DnD2eoiADfWr+e4VZWow7xhc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bQFfzS5BuHbhU24ea9CzVOAtjEJGz42IaRbHvtSlBwXXGFHFEWRwZ16ZJeV63F3Z3
-         ZdMfXv7EIwmi3MHhwTmUcYnxrtVbae+SVsnI9t5tMdEu6f5ekkjnR8E3J1Qx49K0ca
-         bytW/6DHjfupkFDRb9l8thZznNScwvM+n2uvKvh2RcJXsv4FhkrL2+WBsMQVbqe7BV
-         JQhxfJLydz0vuyBGzjQrfAECjLMcxhj0MsSl4ZxZfOOSEShS0TuSux5OSe07MK9ygC
-         AjMPV2M0fgXwCG4qyIkKWrAbc7G+yksDjO9SxV0WiDIgJY6wd+toGJULKwRpYY04iA
-         j1kfpyz2xUDQA==
+        b=nrQwQGjsGJZ4hEqRblIZbTkjPh2iO6vtJyGTpsWaPuHt1u+2E2QCtxsrS8mRQtq/r
+         WZ/RmA4PIWjHp+NF2a+N6msAleS72slLPewv7PrvpVI87Ypil8nyBYp2UCnsKCoi8E
+         rjpPnjZ71IJGK3R7EJx0GEbbo16b0wgASeQAvbflTaO3LGmqmknszcIJWfzzE4UZ2e
+         cCxxWbtcgf9pA8FJJr1qkF1BFuXpdy/US8USrOYLUYaeLoZKCYXsHuO7dxMHX/0KRz
+         T39sd7bicKqpjS/VOT2q4YGPE4WUMA1cLQDiSR8xe357gEBFfepGHSYn+NDS8t5It7
+         TgFK0VvseZ7cQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
+Cc:     Praneeth Bajjuri <praneeth@ti.com>, Geet Modi <geet.modi@ti.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 13/26] inet: annotate date races around sk->sk_txhash
-Date:   Mon, 21 Jun 2021 13:53:46 -0400
-Message-Id: <20210621175400.735800-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 14/26] net: phy: dp83867: perform soft reset and retain established link
+Date:   Mon, 21 Jun 2021 13:53:47 -0400
+Message-Id: <20210621175400.735800-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175400.735800-1-sashal@kernel.org>
 References: <20210621175400.735800-1-sashal@kernel.org>
@@ -43,95 +43,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Praneeth Bajjuri <praneeth@ti.com>
 
-[ Upstream commit b71eaed8c04f72a919a9c44e83e4ee254e69e7f3 ]
+[ Upstream commit da9ef50f545f86ffe6ff786174d26500c4db737a ]
 
-UDP sendmsg() path can be lockless, it is possible for another
-thread to re-connect an change sk->sk_txhash under us.
+Current logic is performing hard reset and causing the programmed
+registers to be wiped out.
 
-There is no serious impact, but we can use READ_ONCE()/WRITE_ONCE()
-pair to document the race.
+as per datasheet: https://www.ti.com/lit/ds/symlink/dp83867cr.pdf
+8.6.26 Control Register (CTRL)
 
-BUG: KCSAN: data-race in __ip4_datagram_connect / skb_set_owner_w
+do SW_RESTART to perform a reset not including the registers,
+If performed when link is already present,
+it will drop the link and trigger re-auto negotiation.
 
-write to 0xffff88813397920c of 4 bytes by task 30997 on cpu 1:
- sk_set_txhash include/net/sock.h:1937 [inline]
- __ip4_datagram_connect+0x69e/0x710 net/ipv4/datagram.c:75
- __ip6_datagram_connect+0x551/0x840 net/ipv6/datagram.c:189
- ip6_datagram_connect+0x2a/0x40 net/ipv6/datagram.c:272
- inet_dgram_connect+0xfd/0x180 net/ipv4/af_inet.c:580
- __sys_connect_file net/socket.c:1837 [inline]
- __sys_connect+0x245/0x280 net/socket.c:1854
- __do_sys_connect net/socket.c:1864 [inline]
- __se_sys_connect net/socket.c:1861 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1861
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff88813397920c of 4 bytes by task 31039 on cpu 0:
- skb_set_hash_from_sk include/net/sock.h:2211 [inline]
- skb_set_owner_w+0x118/0x220 net/core/sock.c:2101
- sock_alloc_send_pskb+0x452/0x4e0 net/core/sock.c:2359
- sock_alloc_send_skb+0x2d/0x40 net/core/sock.c:2373
- __ip6_append_data+0x1743/0x21a0 net/ipv6/ip6_output.c:1621
- ip6_make_skb+0x258/0x420 net/ipv6/ip6_output.c:1983
- udpv6_sendmsg+0x160a/0x16b0 net/ipv6/udp.c:1527
- inet6_sendmsg+0x5f/0x80 net/ipv6/af_inet6.c:642
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0x360/0x4d0 net/socket.c:2350
- ___sys_sendmsg net/socket.c:2404 [inline]
- __sys_sendmmsg+0x315/0x4b0 net/socket.c:2490
- __do_sys_sendmmsg net/socket.c:2519 [inline]
- __se_sys_sendmmsg net/socket.c:2516 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2516
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0xbca3c43d -> 0xfdb309e0
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 31039 Comm: syz-executor.2 Not tainted 5.13.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Praneeth Bajjuri <praneeth@ti.com>
+Signed-off-by: Geet Modi <geet.modi@ti.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sock.h | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/phy/dp83867.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index a0728f24ecc5..d3dd89b6e2cb 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1860,7 +1860,8 @@ static inline u32 net_tx_rndhash(void)
- 
- static inline void sk_set_txhash(struct sock *sk)
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 31a559513362..87c0cdbf262a 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -468,16 +468,12 @@ static int dp83867_phy_reset(struct phy_device *phydev)
  {
--	sk->sk_txhash = net_tx_rndhash();
-+	/* This pairs with READ_ONCE() in skb_set_hash_from_sk() */
-+	WRITE_ONCE(sk->sk_txhash, net_tx_rndhash());
+ 	int err;
+ 
+-	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESET);
++	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESTART);
+ 	if (err < 0)
+ 		return err;
+ 
+ 	usleep_range(10, 20);
+ 
+-	/* After reset FORCE_LINK_GOOD bit is set. Although the
+-	 * default value should be unset. Disable FORCE_LINK_GOOD
+-	 * for the phy to work properly.
+-	 */
+ 	return phy_modify(phydev, MII_DP83867_PHYCTRL,
+ 			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
  }
- 
- static inline void sk_rethink_txhash(struct sock *sk)
-@@ -2125,9 +2126,12 @@ static inline void sock_poll_wait(struct file *filp, struct socket *sock,
- 
- static inline void skb_set_hash_from_sk(struct sk_buff *skb, struct sock *sk)
- {
--	if (sk->sk_txhash) {
-+	/* This pairs with WRITE_ONCE() in sk_set_txhash() */
-+	u32 txhash = READ_ONCE(sk->sk_txhash);
-+
-+	if (txhash) {
- 		skb->l4_hash = 1;
--		skb->hash = sk->sk_txhash;
-+		skb->hash = txhash;
- 	}
- }
- 
 -- 
 2.30.2
 
