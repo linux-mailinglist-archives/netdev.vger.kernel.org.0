@@ -2,64 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A93813AF5F6
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 21:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E7583AF5FC
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 21:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231429AbhFUTWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 15:22:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50208 "EHLO mail.kernel.org"
+        id S231705AbhFUTW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 15:22:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50248 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230170AbhFUTWS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 15:22:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E0A2A6124B;
-        Mon, 21 Jun 2021 19:20:03 +0000 (UTC)
+        id S231481AbhFUTWT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 15:22:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id EF7D461351;
+        Mon, 21 Jun 2021 19:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624303203;
-        bh=rbIAIkh5Z2rgwm5eiA/O4v7S9czd026nZP+YQn3l7do=;
+        s=k20201202; t=1624303205;
+        bh=r+ZdvtoFNtsAffyGlL8zVimZ7LoCVJMtdCcgQNyKqzA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Y7eT8lcTkf3giSoLd2tNH+wLQ8GrUxXGnTpftHgOrLKHlKMIn7wHAiVC5dERwzUoI
-         kdUjNe0z/3srBT5dioex2rMSmgJQKt3VnvfwL6undypJyoYKG7CkRLw+VIjbjeUgd5
-         az/jukbDdlpk6tYWWPgW/I8bCUQ33akOKIeE49xN2EKoaIn0Ayv+0f4cTMrvdbqybl
-         LT2S+YZ4+9LqDpkP+l/BlbwSXXr+Auv/s7XXJOii5a844IdBC0/MOz9md4gejpkj2P
-         Pc+9B4KcCJtyu+TCCWAcMNFeSh5FjIgl9n2JthGZUTA5PvHC0ykPD+yiHehoh8/evc
-         emfWPI9a0l/Ow==
+        b=Kdx+LCDlw3JusP5FoPCSfkN2mBkb7kaI15ualiKjamTvnO34MDZLEP2xsA1CVHSoZ
+         vxon2D2cqjeBIPF4LKD2HFqNeQHJaek2ld8U8dbiZgeqz9bEOPAEwl9tqlfONkZcaY
+         DThf09MhTgXA/mgrQ696O9VsJOLy6vh7i/j69PgGTi7DykQn+/Alx4Uwt2Q7Klc9l6
+         W2wuJrqsDvzdkEPSl2t6KAZg6fCv3NivX5bAxLpD0368i9n2SwOT9+0fmQS97hR+eL
+         DfG6Y4TPkW8b5WqASX4j9Emm4J/tUrXeTIFAtzDi4XbPhtPdWqpmoVe6+uzUGUzOXB
+         XqqMTdQW+jDuQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D47166094F;
-        Mon, 21 Jun 2021 19:20:03 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E8F806094F;
+        Mon, 21 Jun 2021 19:20:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] hv_netvsc: Set needed_headroom according to VF
+Subject: Re: [PATCH net-next 1/2] net: hns3: fix different snprintf() limit
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162430320386.6988.2279267883191096562.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Jun 2021 19:20:03 +0000
-References: <1624044939-10310-1-git-send-email-haiyangz@microsoft.com>
-In-Reply-To: <1624044939-10310-1-git-send-email-haiyangz@microsoft.com>
-To:     Haiyang Zhang <haiyangz@microsoft.com>
-Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        kys@microsoft.com, sthemmin@microsoft.com, olaf@aepfle.de,
-        vkuznets@redhat.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org
+Message-Id: <162430320494.6988.10698969626781207552.git-patchwork-notify@kernel.org>
+Date:   Mon, 21 Jun 2021 19:20:04 +0000
+References: <YM31etbBvDRf+bgS@mwanda>
+In-Reply-To: <YM31etbBvDRf+bgS@mwanda>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, kuba@kernel.org, huangguangbin2@huawei.com,
+        moyufeng@huawei.com, tanhuazhong@huawei.com,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 18 Jun 2021 12:35:39 -0700 you wrote:
-> Set needed_headroom according to VF if VF needs a bigger
-> headroom.
+On Sat, 19 Jun 2021 16:47:38 +0300 you wrote:
+> This patch doesn't affect runtime at all, it's just a correctness issue.
 > 
-> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
-> ---
->  drivers/net/hyperv/netvsc_drv.c | 5 +++++
->  1 file changed, 5 insertions(+)
+> The ptp->info.name[] buffer has 16 characters but the snprintf() limit
+> was capped at 32 characters.  Fortunately, HCLGE_DRIVER_NAME is "hclge"
+> which isn't close to 16 characters so we're fine.
+> 
+> Fixes: 0bf5eb788512 ("net: hns3: add support for PTP")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] hv_netvsc: Set needed_headroom according to VF
-    https://git.kernel.org/netdev/net/c/536ba2e06d1a
+  - [net-next,1/2] net: hns3: fix different snprintf() limit
+    https://git.kernel.org/netdev/net-next/c/faebad853455
+  - [net-next,2/2] net: hns3: fix a double shift bug
+    https://git.kernel.org/netdev/net-next/c/956c3ae411b2
 
 You are awesome, thank you!
 --
