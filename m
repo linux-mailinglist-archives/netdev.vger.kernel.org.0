@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 988B13AF429
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 20:05:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 551A23AF42C
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 20:05:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233799AbhFUSG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 14:06:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45462 "EHLO mail.kernel.org"
+        id S233860AbhFUSHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 14:07:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45490 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233659AbhFUSEM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233775AbhFUSEM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 21 Jun 2021 14:04:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9DF116134F;
-        Mon, 21 Jun 2021 17:55:51 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3600C61351;
+        Mon, 21 Jun 2021 17:55:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624298152;
-        bh=LGKoQAFHYquSjF1r7xIhXKbJSQh+dIVjs06fQFY5kW0=;
+        s=k20201202; t=1624298154;
+        bh=I+GWBZ/4lDqFfHc3Y8W5fLceRDT6D7V3Ua+AYQ2cNYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prlL9yRZ4BrZ9awnwNHWuO6a6WJv6O1eNzkD+cFojivUODwhrpVUhANIVWHYfxiYw
-         kqbab1P7OU9YwzQBKZ/8/eEfc8SZfTv9pNEOY/2p3tgIhZn6kuZqX+C+DPvNu8sq3n
-         GcJ67rJ3/8qHeTzErWWs04fy7dVI1BjkdfZlfbYCgv2cX+o6x6bmBh1T6cHpFGDi7J
-         eTk/FRbW7grX50Lbgve4ccLHIsF0E6VvpmI0YIcywrqgeAJMySYPan1uPqJktPpKR0
-         aqCnP+5oN7dLBl6Oi37soFIompGaK7FZlbAR23TH2AS+3Xwp5RhNtl2Nl2Qdl9uJh4
-         7vUm3niLl9rUw==
+        b=rfC1oHjSuCoglmg9Hk9Z+Wb4ZQ9Do5qNbEW7fdEY4vn93LN6hzhqFxztjaF+IIC0s
+         iJ1xTdtO/NrEr/QEPEgHHJvbIIter+moPZBZfGifSGeGn8pH2FoVbj1gaI6XptKW8P
+         Le8+yhy9Mh28Wtpz/ODH7wVe1yRt4azUltsee9bidxJH1FFn/yYZYrUnPvkYdcxMG9
+         SgPpvFpa9S5qU1uTk3YjPvMMviBwOKJJHJ7szl3k02KDL6xkw+ImFpO2qIwu9RIxgn
+         HWzTpQfH++ezTVyUB/u/6UlsQs/uMOAy+EMqvV/9EhYuKN4p4UrDTldFk/fo6JJs5W
+         Pi8/hp8QK+kGg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
+Cc:     Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+f303e045423e617d2cad@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 05/13] inet: annotate date races around sk->sk_txhash
-Date:   Mon, 21 Jun 2021 13:55:35 -0400
-Message-Id: <20210621175544.736421-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 06/13] net: caif: fix memory leak in ldisc_open
+Date:   Mon, 21 Jun 2021 13:55:36 -0400
+Message-Id: <20210621175544.736421-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175544.736421-1-sashal@kernel.org>
 References: <20210621175544.736421-1-sashal@kernel.org>
@@ -43,95 +43,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit b71eaed8c04f72a919a9c44e83e4ee254e69e7f3 ]
+[ Upstream commit 58af3d3d54e87bfc1f936e16c04ade3369d34011 ]
 
-UDP sendmsg() path can be lockless, it is possible for another
-thread to re-connect an change sk->sk_txhash under us.
+Syzbot reported memory leak in tty_init_dev().
+The problem was in unputted tty in ldisc_open()
 
-There is no serious impact, but we can use READ_ONCE()/WRITE_ONCE()
-pair to document the race.
+static int ldisc_open(struct tty_struct *tty)
+{
+...
+	ser->tty = tty_kref_get(tty);
+...
+	result = register_netdevice(dev);
+	if (result) {
+		rtnl_unlock();
+		free_netdev(dev);
+		return -ENODEV;
+	}
+...
+}
 
-BUG: KCSAN: data-race in __ip4_datagram_connect / skb_set_owner_w
+Ser pointer is netdev private_data, so after free_netdev()
+this pointer goes away with unputted tty reference. So, fix
+it by adding tty_kref_put() before freeing netdev.
 
-write to 0xffff88813397920c of 4 bytes by task 30997 on cpu 1:
- sk_set_txhash include/net/sock.h:1937 [inline]
- __ip4_datagram_connect+0x69e/0x710 net/ipv4/datagram.c:75
- __ip6_datagram_connect+0x551/0x840 net/ipv6/datagram.c:189
- ip6_datagram_connect+0x2a/0x40 net/ipv6/datagram.c:272
- inet_dgram_connect+0xfd/0x180 net/ipv4/af_inet.c:580
- __sys_connect_file net/socket.c:1837 [inline]
- __sys_connect+0x245/0x280 net/socket.c:1854
- __do_sys_connect net/socket.c:1864 [inline]
- __se_sys_connect net/socket.c:1861 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1861
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff88813397920c of 4 bytes by task 31039 on cpu 0:
- skb_set_hash_from_sk include/net/sock.h:2211 [inline]
- skb_set_owner_w+0x118/0x220 net/core/sock.c:2101
- sock_alloc_send_pskb+0x452/0x4e0 net/core/sock.c:2359
- sock_alloc_send_skb+0x2d/0x40 net/core/sock.c:2373
- __ip6_append_data+0x1743/0x21a0 net/ipv6/ip6_output.c:1621
- ip6_make_skb+0x258/0x420 net/ipv6/ip6_output.c:1983
- udpv6_sendmsg+0x160a/0x16b0 net/ipv6/udp.c:1527
- inet6_sendmsg+0x5f/0x80 net/ipv6/af_inet6.c:642
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0x360/0x4d0 net/socket.c:2350
- ___sys_sendmsg net/socket.c:2404 [inline]
- __sys_sendmmsg+0x315/0x4b0 net/socket.c:2490
- __do_sys_sendmmsg net/socket.c:2519 [inline]
- __se_sys_sendmmsg net/socket.c:2516 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2516
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0xbca3c43d -> 0xfdb309e0
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 31039 Comm: syz-executor.2 Not tainted 5.13.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Reported-and-tested-by: syzbot+f303e045423e617d2cad@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sock.h | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/caif/caif_serial.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index d0e18917d8be..cf27f3688c39 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1681,7 +1681,8 @@ static inline u32 net_tx_rndhash(void)
- 
- static inline void sk_set_txhash(struct sock *sk)
- {
--	sk->sk_txhash = net_tx_rndhash();
-+	/* This pairs with READ_ONCE() in skb_set_hash_from_sk() */
-+	WRITE_ONCE(sk->sk_txhash, net_tx_rndhash());
- }
- 
- static inline void sk_rethink_txhash(struct sock *sk)
-@@ -1936,9 +1937,12 @@ static inline void sock_poll_wait(struct file *filp,
- 
- static inline void skb_set_hash_from_sk(struct sk_buff *skb, struct sock *sk)
- {
--	if (sk->sk_txhash) {
-+	/* This pairs with WRITE_ONCE() in sk_set_txhash() */
-+	u32 txhash = READ_ONCE(sk->sk_txhash);
-+
-+	if (txhash) {
- 		skb->l4_hash = 1;
--		skb->hash = sk->sk_txhash;
-+		skb->hash = txhash;
- 	}
- }
- 
+diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
+index 32834dad0b83..1243c2e5a86a 100644
+--- a/drivers/net/caif/caif_serial.c
++++ b/drivers/net/caif/caif_serial.c
+@@ -362,6 +362,7 @@ static int ldisc_open(struct tty_struct *tty)
+ 	rtnl_lock();
+ 	result = register_netdevice(dev);
+ 	if (result) {
++		tty_kref_put(tty);
+ 		rtnl_unlock();
+ 		free_netdev(dev);
+ 		return -ENODEV;
 -- 
 2.30.2
 
