@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C9673AF8D6
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 00:54:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 412913AF8D9
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 00:54:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232308AbhFUW5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 18:57:04 -0400
+        id S232392AbhFUW5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 18:57:06 -0400
 Received: from mga14.intel.com ([192.55.52.115]:11255 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232064AbhFUW5B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 18:57:01 -0400
-IronPort-SDR: BkzTuHcDtExoM/fw73//2fp8J9xVWdzJtGQoBxDfBSyC+jZK6xDMQ9ZzPjkOssGfrAkHHY1Wux
- 4WEBsEutEzvQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10022"; a="206768519"
+        id S232335AbhFUW5C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 18:57:02 -0400
+IronPort-SDR: pb4EHOYIn0febxNMA9fvbh/arvtNT86y6R3joCzYtDLy++C9cpYCplulme7V5CvjA8kx0yug4H
+ TDzo0A/ixfKg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10022"; a="206768520"
 X-IronPort-AV: E=Sophos;i="5.83,290,1616482800"; 
-   d="scan'208";a="206768519"
+   d="scan'208";a="206768520"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2021 15:54:42 -0700
-IronPort-SDR: JETIo+o+XHnaU103DvAb4XUSHtFklFsORi+3HR5U9Li7VRDX9P3WRDLS/syn810Pq6Tb0P22ts
- tczt537G6fyg==
+IronPort-SDR: vh6VkRll+EEvDaoq/BV8IyDWVvvmtWb61/eEhojz5txu0RhzkaOmRCv0wZtERcG7bylqTLRKhK
+ rues0IfIp6dg==
 X-IronPort-AV: E=Sophos;i="5.83,290,1616482800"; 
-   d="scan'208";a="486673971"
+   d="scan'208";a="486673972"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.74.136])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2021 15:54:42 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -30,9 +30,9 @@ Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 3/6] mptcp: don't clear MPTCP_DATA_READY in sk_wait_event()
-Date:   Mon, 21 Jun 2021 15:54:35 -0700
-Message-Id: <20210621225438.10777-4-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 4/6] mptcp: drop redundant test in move_skbs_to_msk()
+Date:   Mon, 21 Jun 2021 15:54:36 -0700
+Message-Id: <20210621225438.10777-5-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210621225438.10777-1-mathew.j.martineau@linux.intel.com>
 References: <20210621225438.10777-1-mathew.j.martineau@linux.intel.com>
@@ -44,40 +44,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-If we don't flush entirely the receive queue, we need set
-again such bit later. We can simply avoid clearing it.
+Currently we check the msk state to avoid enqueuing new
+skbs at msk shutdown time.
+
+Such test is racy - as we can't acquire the msk socket lock -
+and useless, as the caller already checked the subflow
+field 'disposable', covering the same scenario in a race
+free manner - read and updated under the ssk socket lock.
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/protocol.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ net/mptcp/protocol.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index c47ce074737d..3e088e9d20fd 100644
+index 3e088e9d20fd..cf75be02eb00 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -1715,7 +1715,7 @@ static void mptcp_wait_data(struct sock *sk, long *timeo)
- 	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+@@ -686,9 +686,6 @@ static bool move_skbs_to_msk(struct mptcp_sock *msk, struct sock *ssk)
+ 	struct sock *sk = (struct sock *)msk;
+ 	unsigned int moved = 0;
  
- 	sk_wait_event(sk, timeo,
--		      test_and_clear_bit(MPTCP_DATA_READY, &msk->flags), &wait);
-+		      test_bit(MPTCP_DATA_READY, &msk->flags), &wait);
- 
- 	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
- 	remove_wait_queue(sk_sleep(sk), &wait);
-@@ -2039,10 +2039,8 @@ static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		 */
- 		if (unlikely(__mptcp_move_skbs(msk)))
- 			set_bit(MPTCP_DATA_READY, &msk->flags);
--	} else if (unlikely(!test_bit(MPTCP_DATA_READY, &msk->flags))) {
--		/* data to read but mptcp_wait_data() cleared DATA_READY */
--		set_bit(MPTCP_DATA_READY, &msk->flags);
- 	}
-+
- out_err:
- 	if (cmsg_flags && copied >= 0) {
- 		if (cmsg_flags & MPTCP_CMSG_TS)
+-	if (inet_sk_state_load(sk) == TCP_CLOSE)
+-		return false;
+-
+ 	__mptcp_move_skbs_from_subflow(msk, ssk, &moved);
+ 	__mptcp_ofo_queue(msk);
+ 	if (unlikely(ssk->sk_err)) {
 -- 
 2.32.0
 
