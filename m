@@ -2,98 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B496B3AF06D
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 18:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09B423AF106
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 18:54:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232966AbhFUQtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 12:49:06 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:30675 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231815AbhFUQrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 12:47:09 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1624293894; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=LU0zPN4GX3XCm4hKXqrE80vqb5CPyJoAnWvr33F6kow=;
- b=NORIKWTKvQel3SUxBwaL6OdNAmyFXGCAcmAopsYzpeh0R3joO4q2RNALY0d+lTE0oMNRYJCL
- OL9O3Xm4o3lW3wvmGPC9oepTMDdJPb9dMXUlLKoLCdSxIX9xtkWpSbEL+afoq/az2UkeYKHQ
- vYFbAUbKq/67b0LrowvqwvEuL+M=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 60d0c2058491191eb3153170 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Jun 2021 16:44:53
- GMT
-Sender: subashab=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 5B9BAC072A5; Mon, 21 Jun 2021 16:44:53 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A910BC072A5;
-        Mon, 21 Jun 2021 16:44:51 +0000 (UTC)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 21 Jun 2021 10:44:51 -0600
-From:   subashab@codeaurora.org
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Sean Tranchetti <stranche@codeaurora.org>,
+        id S233295AbhFUQ41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 12:56:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47952 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233483AbhFUQy3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 12:54:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=jaDryQKrGcLdUuIlHGlcHnVBpuzpZlL3j5CmdvJL+k4=; b=aWUR+/R5EO1aRCxQCNGCMZoRE4
+        T4sp0dVTbrRIowJsEUvMopr0XmqD5ScuH7jZxGhfUmUCCRvmxHLyGtZFlxa4XmziuKEEnW6XW5+xb
+        zYjin4yF5NkBvAO/63hV/d/mFfqVtThkyAkVvbIiveJ54BoxUN1YehSTCAmKebiDCBEQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lvN9R-00AXl6-E3; Mon, 21 Jun 2021 18:51:57 +0200
+Date:   Mon, 21 Jun 2021 18:51:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Colin Ian King <colin.king@canonical.com>
+Cc:     Qing Zhang <zhangqing@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] net: qualcomm: rmnet: fix two pointer math bugs
-In-Reply-To: <20210621071831.GB1901@kadam>
-References: <YM32lkJIJdSgpR87@mwanda>
- <027ae9e2ddc18f0ed30c5d9c7075c8b9@codeaurora.org>
- <20210621071158.GA1901@kadam> <20210621071831.GB1901@kadam>
-Message-ID: <d03a69ce5a06f50230700b0e94e50193@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: stmmac: pci: Add dwmac support for Loongson
+Message-ID: <YNDDrQVuCjlWTEou@lunn.ch>
+References: <37057fe8-f7d1-7ee0-01c7-916577526b5b@canonical.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <37057fe8-f7d1-7ee0-01c7-916577526b5b@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-06-21 01:18, Dan Carpenter wrote:
-> On Mon, Jun 21, 2021 at 10:11:58AM +0300, Dan Carpenter wrote:
->> On Sat, Jun 19, 2021 at 01:12:09PM -0600, subashab@codeaurora.org 
->> wrote:
->> > On 2021-06-19 07:52, Dan Carpenter wrote:
->> >
->> > Hi Dan
->> >
->> > Thanks for fixing this. Could you cast the ip4h to char* instead of void*.
->> > Looks like gcc might raise issues if -Wpointer-arith is used.
->> >
->> > https://gcc.gnu.org/onlinedocs/gcc-4.5.0/gcc/Pointer-Arith.html#Pointer-Arith
->> 
->> The fix for that is to not enable -Wpointer-arith.  The warning is 
->> dumb.
+On Mon, Jun 21, 2021 at 04:51:28PM +0100, Colin Ian King wrote:
+> Hi,
 > 
-> Sorry, that was uncalled for and not correct.  The GCC warning would be
-> useful if we were trying to write portable userspace code.  But in the
-> kernel the kernel uses GCC extensions a lot.
+> Static analysis by Coverity on today's linux-next has found an issue in
+> function loongson_dwmac_probe with the following commit:
 > 
-> The Clang compiler can also compile the kernel these days.  But it had
-> to add support for a bunch of GCC extensions to make that work.  Really
-> most of linux userspace is written with GCC in mind so Clang had to do
-> this anyway.
+> commit 30bba69d7db40e732d6c0aa6d4890c60d717e314
+> Author: Qing Zhang <zhangqing@loongson.cn>
+> Date:   Fri Jun 18 10:53:34 2021 +0800
 > 
-> So we will never enable -Wpointer-arith in the kernel because there is
-> no need.
+>     stmmac: pci: Add dwmac support for Loongson
 > 
-> regards,
-> dan carpenter
+> The analysis is as follows:
+> 
+> 110        plat->phy_interface = device_get_phy_mode(&pdev->dev);
+> 
+> Enum compared against 0
+> (NO_EFFECT)
+> unsigned_compare: This less-than-zero comparison of an
+> unsigned value is never true. plat->phy_interface < 0U.
+> 
+> 111        if (plat->phy_interface < 0)
+> 112                dev_err(&pdev->dev, "phy_mode not found\n");
+> 
+> Enum plat->phy_interface is unsigned, so can't be negative and so the
+> comparison will always be false.
+> 
+> A possible fix is to use int variable ret for the assignment and check:
+> 
+> 
+>         ret = device_get_phy_mode(&pdev->dev);
+>         if (ret < 0)
+>                 dev_err(&pdev->dev, "phy_mode not found\n");
+>         plat->phy_interface = ret;
+> 
+> ..however, I think the dev_err may need handling too, e.g.
+> 
+>         ret = device_get_phy_mode(&pdev->dev);
+>         if (ret < 0) {
+>                 dev_err(&pdev->dev, "phy_mode not found\n");
+> 		ret = -ENODEV;
+> 		goto cleanup;		/* needs to be written */
+> 	}
+>         plat->phy_interface = ret;
 
-Thanks for the clarification.
+Potentially a cleaner fix is to use of_get_phy_mode(), which separates
+the success/error value from the phy_interface_t.
 
-Reviewed-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+    Andrew
