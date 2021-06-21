@@ -2,173 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89EAF3AF8DA
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 00:54:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D45773AF90A
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 01:13:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232421AbhFUW5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 18:57:08 -0400
-Received: from mga14.intel.com ([192.55.52.115]:11257 "EHLO mga14.intel.com"
+        id S231486AbhFUXPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 19:15:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33364 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232350AbhFUW5D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 18:57:03 -0400
-IronPort-SDR: jLe/N0mBfA7IiCKz1C5/8KSj93VbLMgn71bPIfW9zswjvJGNl9enp98N5PyciMlXU5qBTDolJ/
- L4znAVFZYwkA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10022"; a="206768522"
-X-IronPort-AV: E=Sophos;i="5.83,290,1616482800"; 
-   d="scan'208";a="206768522"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2021 15:54:43 -0700
-IronPort-SDR: +petn45s7pg9jt+ljh7bRvmDKQgGq5/eGwZf97Tl49SwN2T94ia1+S98kXfxZDoRvhqVGKp659
- O90AffoXb7ng==
-X-IronPort-AV: E=Sophos;i="5.83,290,1616482800"; 
-   d="scan'208";a="486673974"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.74.136])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2021 15:54:42 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        davem@davemloft.net, kuba@kernel.org, mptcp@lists.linux.dev,
-        pabeni@redhat.com,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 6/6] selftests: mptcp: display proper reason to abort tests
-Date:   Mon, 21 Jun 2021 15:54:38 -0700
-Message-Id: <20210621225438.10777-7-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210621225438.10777-1-mathew.j.martineau@linux.intel.com>
-References: <20210621225438.10777-1-mathew.j.martineau@linux.intel.com>
+        id S230433AbhFUXPY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 19:15:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BE1E861042;
+        Mon, 21 Jun 2021 23:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624317190;
+        bh=btuPMqoKcrDBB8Ce8USSEHHKtXEzB+bsKREajriCGIE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WWoiXRoer/9OTk301LQxM7vURKbIZZP8zQOpBkY+GBEw8PBubYgjMcUWRTVXAK9H0
+         cvK+yLIygKmK/IIZKCeesvzO4u5Alot0MoyazAnBaziThOymSoyjc22T71N6KHUF5X
+         IdgMRLMfUawZKmswlR0VmG4wfb2M2IDA9UiXL5O65w834jWCalMp719NTjhdW9biIl
+         vYAOOiT02MO8SugZAA8HmACjxfCFVORVW4BNv7SjPD+q6zOvO6AljfxeGbEAnTUEpX
+         SL3i9ZON/LEP4qeiRwIYcdM93ow1FyNuFuFHG8eQNpwwDZx6bgozxhWVOknILdRriI
+         tzxL2S7P+B3Ww==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, willemb@google.com, eric.dumazet@gmail.com,
+        dsahern@gmail.com, yoshfuji@linux-ipv6.org,
+        Jakub Kicinski <kuba@kernel.org>, Dave Jones <dsj@fb.com>
+Subject: [PATCH net-next] ip: avoid OOM kills with large UDP sends over loopback
+Date:   Mon, 21 Jun 2021 16:13:07 -0700
+Message-Id: <20210621231307.1917413-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
+Dave observed number of machines hitting OOM on the UDP send
+path. The workload seems to be sending large UDP packets over
+loopback. Since loopback has MTU of 64k kernel will try to
+allocate an skb with up to 64k of head space. This has a good
+chance of failing under memory pressure. What's worse if
+the message length is <32k the allocation may trigger an
+OOM killer.
 
-Without this modification, we were often displaying this error messages:
+This is entirely avoidable, we can use an skb with frags.
 
-  FAIL: Could not even run loopback test
+The scenario is unlikely and always using frags requires
+an extra allocation so opt for using fallback, rather
+then always using frag'ed/paged skb when payload is large.
 
-But $ret could have been set to a non 0 value in many different cases:
+Note that the size heuristic (header_len > PAGE_SIZE)
+is not entirely accurate, __alloc_skb() will add ~400B
+to size. Occasional order-1 allocation should be fine,
+though, we are primarily concerned with order-3.
 
-- net.mptcp.enabled=0 is not working as expected
-- setsockopt(..., TCP_ULP, "mptcp", ...) is allowed
-- ping between each netns are failing
-- tests between ns1 as a receiver and ns>1 are failing
-- other tests not involving ns1 as a receiver are failing
-
-So not only for the loopback test.
-
-Now a clearer message, including the time it took to run all tests, is
-displayed.
-
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Reported-by: Dave Jones <dsj@fb.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- .../selftests/net/mptcp/mptcp_connect.sh      | 52 +++++++++++++------
- 1 file changed, 36 insertions(+), 16 deletions(-)
+ include/net/sock.h    | 11 +++++++++++
+ net/ipv4/ip_output.c  | 19 +++++++++++++++++--
+ net/ipv6/ip6_output.c | 19 +++++++++++++++++--
+ 3 files changed, 45 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-index 2484fb6a9a8d..559173a8e387 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-@@ -680,6 +680,25 @@ run_tests_peekmode()
- 	run_tests_lo "$ns1" "$ns1" dead:beef:1::1 1 "-P ${peekmode}"
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 7a7058f4f265..4134fb718b97 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -924,6 +924,17 @@ static inline gfp_t sk_gfp_mask(const struct sock *sk, gfp_t gfp_mask)
+ 	return gfp_mask | (sk->sk_allocation & __GFP_MEMALLOC);
  }
  
-+display_time()
++static inline void sk_allocation_push(struct sock *sk, gfp_t flag, gfp_t *old)
 +{
-+	time_end=$(date +%s)
-+	time_run=$((time_end-time_start))
-+
-+	echo "Time: ${time_run} seconds"
++	*old = sk->sk_allocation;
++	sk->sk_allocation |= flag;
 +}
 +
-+stop_if_error()
++static inline void sk_allocation_pop(struct sock *sk, gfp_t old)
 +{
-+	local msg="$1"
-+
-+	if [ ${ret} -ne 0 ]; then
-+		echo "FAIL: ${msg}" 1>&2
-+		display_time
-+		exit ${ret}
-+	fi
++	sk->sk_allocation = old;
 +}
 +
- make_file "$cin" "client"
- make_file "$sin" "server"
+ static inline void sk_acceptq_removed(struct sock *sk)
+ {
+ 	WRITE_ONCE(sk->sk_ack_backlog, sk->sk_ack_backlog - 1);
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index c3efc7d658f6..a300c2c65d57 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1095,9 +1095,24 @@ static int __ip_append_data(struct sock *sk,
+ 				alloclen += rt->dst.trailer_len;
  
-@@ -687,6 +706,8 @@ check_mptcp_disabled
- 
- check_mptcp_ulp_setsockopt
- 
-+stop_if_error "The kernel configuration is not valid for MPTCP"
+ 			if (transhdrlen) {
+-				skb = sock_alloc_send_skb(sk,
+-						alloclen + hh_len + 15,
++				size_t header_len = alloclen + hh_len + 15;
++				gfp_t sk_allocation;
 +
- echo "INFO: validating network environment with pings"
- for sender in "$ns1" "$ns2" "$ns3" "$ns4";do
- 	do_ping "$ns1" $sender 10.0.1.1
-@@ -706,6 +727,8 @@ for sender in "$ns1" "$ns2" "$ns3" "$ns4";do
- 	do_ping "$ns4" $sender dead:beef:3::1
- done
- 
-+stop_if_error "Could not even run ping tests"
++				if (header_len > PAGE_SIZE)
++					sk_allocation_push(sk, __GFP_NORETRY,
++							   &sk_allocation);
++				skb = sock_alloc_send_skb(sk, header_len,
+ 						(flags & MSG_DONTWAIT), &err);
++				if (header_len > PAGE_SIZE) {
++					BUILD_BUG_ON(MAX_HEADER >= PAGE_SIZE);
 +
- [ -n "$tc_loss" ] && tc -net "$ns2" qdisc add dev ns2eth3 root netem loss random $tc_loss delay ${tc_delay}ms
- echo -n "INFO: Using loss of $tc_loss "
- test "$tc_delay" -gt 0 && echo -n "delay $tc_delay ms "
-@@ -733,18 +756,13 @@ echo "on ns3eth4"
- 
- tc -net "$ns3" qdisc add dev ns3eth4 root netem delay ${reorder_delay}ms $tc_reorder
- 
--for sender in $ns1 $ns2 $ns3 $ns4;do
--	run_tests_lo "$ns1" "$sender" 10.0.1.1 1
--	if [ $ret -ne 0 ] ;then
--		echo "FAIL: Could not even run loopback test" 1>&2
--		exit $ret
--	fi
--	run_tests_lo "$ns1" $sender dead:beef:1::1 1
--	if [ $ret -ne 0 ] ;then
--		echo "FAIL: Could not even run loopback v6 test" 2>&1
--		exit $ret
--	fi
-+run_tests_lo "$ns1" "$ns1" 10.0.1.1 1
-+stop_if_error "Could not even run loopback test"
++					sk_allocation_pop(sk, sk_allocation);
++					if (unlikely(!skb) && !paged &&
++					    rt->dst.dev->features & NETIF_F_SG) {
++						paged = true;
++						goto alloc_new_skb;
++					}
++				}
+ 			} else {
+ 				skb = NULL;
+ 				if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index ff4f9ebcf7f6..9fd167db07e4 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1618,9 +1618,24 @@ static int __ip6_append_data(struct sock *sk,
+ 				goto error;
+ 			}
+ 			if (transhdrlen) {
+-				skb = sock_alloc_send_skb(sk,
+-						alloclen + hh_len,
++				size_t header_len = alloclen + hh_len;
++				gfp_t sk_allocation;
 +
-+run_tests_lo "$ns1" "$ns1" dead:beef:1::1 1
-+stop_if_error "Could not even run loopback v6 test"
- 
-+for sender in $ns1 $ns2 $ns3 $ns4;do
- 	# ns1<->ns2 is not subject to reordering/tc delays. Use it to test
- 	# mptcp syncookie support.
- 	if [ $sender = $ns1 ]; then
-@@ -753,6 +771,9 @@ for sender in $ns1 $ns2 $ns3 $ns4;do
- 		ip netns exec "$ns2" sysctl -q net.ipv4.tcp_syncookies=1
- 	fi
- 
-+	run_tests "$ns1" $sender 10.0.1.1
-+	run_tests "$ns1" $sender dead:beef:1::1
++				if (header_len > PAGE_SIZE)
++					sk_allocation_push(sk, __GFP_NORETRY,
++							   &sk_allocation);
++				skb = sock_alloc_send_skb(sk, header_len,
+ 						(flags & MSG_DONTWAIT), &err);
++				if (header_len > PAGE_SIZE) {
++					BUILD_BUG_ON(MAX_HEADER >= PAGE_SIZE);
 +
- 	run_tests "$ns2" $sender 10.0.1.2
- 	run_tests "$ns2" $sender dead:beef:1::2
- 	run_tests "$ns2" $sender 10.0.2.1
-@@ -765,14 +786,13 @@ for sender in $ns1 $ns2 $ns3 $ns4;do
- 
- 	run_tests "$ns4" $sender 10.0.3.1
- 	run_tests "$ns4" $sender dead:beef:3::1
-+
-+	stop_if_error "Tests with $sender as a sender have failed"
- done
- 
- run_tests_peekmode "saveWithPeek"
- run_tests_peekmode "saveAfterPeek"
-+stop_if_error "Tests with peek mode have failed"
- 
--time_end=$(date +%s)
--time_run=$((time_end-time_start))
--
--echo "Time: ${time_run} seconds"
--
-+display_time
- exit $ret
++					sk_allocation_pop(sk, sk_allocation);
++					if (unlikely(!skb) && !paged &&
++					    rt->dst.dev->features & NETIF_F_SG) {
++						paged = true;
++						goto alloc_new_skb;
++					}
++				}
+ 			} else {
+ 				skb = NULL;
+ 				if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
 -- 
-2.32.0
+2.31.1
 
