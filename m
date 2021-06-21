@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD7943AF291
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:53:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 133B53AF295
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:53:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232476AbhFURzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:55:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39098 "EHLO mail.kernel.org"
+        id S231704AbhFURza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:55:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39160 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232123AbhFURys (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 13:54:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B0B3D61026;
-        Mon, 21 Jun 2021 17:52:31 +0000 (UTC)
+        id S232152AbhFURyu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 13:54:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EB73E61206;
+        Mon, 21 Jun 2021 17:52:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624297952;
-        bh=v/nOJmQQ08mnD/U/0+K6FWc6VBo1nCPFpakS1BX+18o=;
+        s=k20201202; t=1624297955;
+        bh=BaNvhATeEufCxlq19nIJTaVOVFK2DRAYVIjsRxIn9Hw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aM3/A5EkRd+Px39/EIxXBKt1B1s4XFL273frVlxRmhulqmfovytoeUbqhDMLvTysA
-         vLUeLNY1zkO1bjtErTrTb+vKsNOhO4U7pQ6jGbUHS0PEG+xN1ujiFaKIY8llkNK3sZ
-         GDw5XAGWHRCyPfVg+JeoEAECH8ZlmVcs8y3sAzo2GyHpUqDWm9HSZvd50b69/2D/WC
-         zXff+ApW2vO6045aCYNfjr/miCnkG0BeEZYicLndZgLBYXZF7/qyXOWkgbJta4jKZ5
-         BV4+XFw1rOhnX3JEogyeZOMe5GI/eC3udaz5shtFNAKMm7YPEtUcfZW2xy625RZ/X8
-         SKqW/qZJhzwbw==
+        b=Fd+hvYBr+0b3ffb91YDQmZBoigYaI92Jby2vB5s91efGf8bch/wexAehmMLJlVqZC
+         tc3t+/JTC0a8Mp0Pmj4pClOpJvaXb3ZVDQDlEWcvz/dAXWweIxfWSr76ajpyrijfob
+         us5pvffeODJnaz7ZoZnMiqsQvb5qCl5RN1Wnws9a+Jd8acS9mZtMeudT1A2Z0+IQZe
+         frLewLubvql9fiO1htEJe3jBREKcNI0xuTAHVBcZxG9nzYRy+hOnlMZQ/0MHlDGRo7
+         lJtogKOq92hGucv6xy0q9FqABTV2rwBq8emSrGoaCP94yqpFN6HhPFoQ1sN+yVa0bt
+         ZIA+a7H1AgOUw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Praneeth Bajjuri <praneeth@ti.com>, Geet Modi <geet.modi@ti.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+Cc:     Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+f303e045423e617d2cad@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 21/39] net: phy: dp83867: perform soft reset and retain established link
-Date:   Mon, 21 Jun 2021 13:51:37 -0400
-Message-Id: <20210621175156.735062-21-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 23/39] net: caif: fix memory leak in ldisc_open
+Date:   Mon, 21 Jun 2021 13:51:39 -0400
+Message-Id: <20210621175156.735062-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175156.735062-1-sashal@kernel.org>
 References: <20210621175156.735062-1-sashal@kernel.org>
@@ -43,51 +43,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Praneeth Bajjuri <praneeth@ti.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit da9ef50f545f86ffe6ff786174d26500c4db737a ]
+[ Upstream commit 58af3d3d54e87bfc1f936e16c04ade3369d34011 ]
 
-Current logic is performing hard reset and causing the programmed
-registers to be wiped out.
+Syzbot reported memory leak in tty_init_dev().
+The problem was in unputted tty in ldisc_open()
 
-as per datasheet: https://www.ti.com/lit/ds/symlink/dp83867cr.pdf
-8.6.26 Control Register (CTRL)
+static int ldisc_open(struct tty_struct *tty)
+{
+...
+	ser->tty = tty_kref_get(tty);
+...
+	result = register_netdevice(dev);
+	if (result) {
+		rtnl_unlock();
+		free_netdev(dev);
+		return -ENODEV;
+	}
+...
+}
 
-do SW_RESTART to perform a reset not including the registers,
-If performed when link is already present,
-it will drop the link and trigger re-auto negotiation.
+Ser pointer is netdev private_data, so after free_netdev()
+this pointer goes away with unputted tty reference. So, fix
+it by adding tty_kref_put() before freeing netdev.
 
-Signed-off-by: Praneeth Bajjuri <praneeth@ti.com>
-Signed-off-by: Geet Modi <geet.modi@ti.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reported-and-tested-by: syzbot+f303e045423e617d2cad@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/dp83867.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/net/caif/caif_serial.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 9bd9a5c0b1db..6bbc81ad295f 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -826,16 +826,12 @@ static int dp83867_phy_reset(struct phy_device *phydev)
- {
- 	int err;
- 
--	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESET);
-+	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESTART);
- 	if (err < 0)
- 		return err;
- 
- 	usleep_range(10, 20);
- 
--	/* After reset FORCE_LINK_GOOD bit is set. Although the
--	 * default value should be unset. Disable FORCE_LINK_GOOD
--	 * for the phy to work properly.
--	 */
- 	return phy_modify(phydev, MII_DP83867_PHYCTRL,
- 			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
- }
+diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
+index 9f30748da4ab..8c38f224becb 100644
+--- a/drivers/net/caif/caif_serial.c
++++ b/drivers/net/caif/caif_serial.c
+@@ -350,6 +350,7 @@ static int ldisc_open(struct tty_struct *tty)
+ 	rtnl_lock();
+ 	result = register_netdevice(dev);
+ 	if (result) {
++		tty_kref_put(tty);
+ 		rtnl_unlock();
+ 		free_netdev(dev);
+ 		return -ENODEV;
 -- 
 2.30.2
 
