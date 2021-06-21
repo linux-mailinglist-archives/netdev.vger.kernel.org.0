@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08A8C3AF2C0
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:54:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4BE53AF2E4
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:56:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231705AbhFUR4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:56:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39690 "EHLO mail.kernel.org"
+        id S232972AbhFUR5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:57:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40210 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232362AbhFURzN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 13:55:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 788F36115B;
-        Mon, 21 Jun 2021 17:52:55 +0000 (UTC)
+        id S232704AbhFURzd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 13:55:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0763161352;
+        Mon, 21 Jun 2021 17:53:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624297976;
-        bh=xWGsgCXd7OEaijrEvpsTLlP6MXTD0C9RJegrSoeQg78=;
+        s=k20201202; t=1624297988;
+        bh=sB2btyZogi/Gqa1re073DeHahW7b5+RIXm+Wclmq4b0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BEwhlBILWI2IYFlJkbHxvFjHqQA6KzoKbI7JuWZRd4jKjaznIGBXENPEYHOHJyyyo
-         h2+FT71Bx6KK3fttrzhbif56iCkPGwvYeimC/e0aYGWqSWXWuSYE4mIraBlrg0saJY
-         x4NqUUikPSut78Sjwm9Cv1Ni3fns5ZCvl/6w5enY1kwGppb1RVEXrNcd0rdXRQ34zD
-         Xk0Ziyzy+eld4heQQhA/tHYwWX+hKompOLItjVFKdpg5B9PTJBGuodJAiQEmfPdP2d
-         WMH5XdoJ9HFRER7Lb7Mb2/EXbJjjdJgZFsKsPEWGjJ9OpE6RS1QSanrzqpSMd1UimV
-         n0KOCYYtTlDcA==
+        b=t7W+iJam5tydSbqpPvCs4iD7WhnHBNWKO1Yj2SSI2+2w+r367L0AlzpfzRRZU1EVY
+         hxukcdM2V+bpY6q9CtneuTKxOTxxpAw2TiX3NuvgVqGhwbBJIkEpcf9f05oV8XfuxI
+         Kg5aHX4U5xbDKr2Qk/Al+byN+nH6Pwaipz+VMOiwJID0MPe7sDqQU1cgF1jsM9lYrt
+         iOZusDc73DNSVIHJBdtrXq1L3aBIpi0ExFD2TXns+f+d4cYAK4MGnm1r4IFMbwukt8
+         097cXiLqd4FjGIwgqr+7CjMjE8C8W+yC5YGKxWw78CTInLkJHIj/O/2z3ujR8cqPOQ
+         nRI7eSItr2Gvg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Esben Haabendal <esben@geanix.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.12 38/39] net: ll_temac: Avoid ndo_start_xmit returning NETDEV_TX_BUSY
-Date:   Mon, 21 Jun 2021 13:51:54 -0400
-Message-Id: <20210621175156.735062-38-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        syzbot+7716dbc401d9a437890d@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 05/35] mac80211: remove warning in ieee80211_get_sband()
+Date:   Mon, 21 Jun 2021 13:52:30 -0400
+Message-Id: <20210621175300.735437-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210621175156.735062-1-sashal@kernel.org>
-References: <20210621175156.735062-1-sashal@kernel.org>
+In-Reply-To: <20210621175300.735437-1-sashal@kernel.org>
+References: <20210621175300.735437-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,38 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Esben Haabendal <esben@geanix.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit f6396341194234e9b01cd7538bc2c6ac4501ab14 ]
+[ Upstream commit 0ee4d55534f82a0624701d0bb9fc2304d4529086 ]
 
-As documented in Documentation/networking/driver.rst, the ndo_start_xmit
-method must not return NETDEV_TX_BUSY under any normal circumstances, and
-as recommended, we simply stop the tx queue in advance, when there is a
-risk that the next xmit would cause a NETDEV_TX_BUSY return.
+Syzbot reports that it's possible to hit this from userspace,
+by trying to add a station before any other connection setup
+has been done. Instead of trying to catch this in some other
+way simply remove the warning, that will appropriately reject
+the call from userspace.
 
-Signed-off-by: Esben Haabendal <esben@geanix.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: syzbot+7716dbc401d9a437890d@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20210517164715.f537da276d17.Id05f40ec8761d6a8cc2df87f1aa09c651988a586@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/ll_temac_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/mac80211/ieee80211_i.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index fb977bc4d838..b1caf56b2584 100644
---- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-+++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -938,6 +938,11 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 	wmb();
- 	lp->dma_out(lp, TX_TAILDESC_PTR, tail_p); /* DMA start */
+diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
+index be40f6b16199..a83f0c2fcdf7 100644
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -1445,7 +1445,7 @@ ieee80211_get_sband(struct ieee80211_sub_if_data *sdata)
+ 	rcu_read_lock();
+ 	chanctx_conf = rcu_dereference(sdata->vif.chanctx_conf);
  
-+	if (temac_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1)) {
-+		netdev_info(ndev, "%s -> netif_stop_queue\n", __func__);
-+		netif_stop_queue(ndev);
-+	}
-+
- 	return NETDEV_TX_OK;
- }
- 
+-	if (WARN_ON_ONCE(!chanctx_conf)) {
++	if (!chanctx_conf) {
+ 		rcu_read_unlock();
+ 		return NULL;
+ 	}
 -- 
 2.30.2
 
