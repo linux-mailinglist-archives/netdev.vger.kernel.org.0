@@ -2,62 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AACE3AE737
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 12:35:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF6EA3AE743
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 12:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229807AbhFUKiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 06:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33624 "EHLO
+        id S230071AbhFUKlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 06:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbhFUKiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 06:38:07 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07930C061574
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 03:35:51 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id s17-20020a17090a8811b029016e89654f93so12340691pjn.1
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 03:35:51 -0700 (PDT)
+        with ESMTP id S229804AbhFUKlD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 06:41:03 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163F6C061574;
+        Mon, 21 Jun 2021 03:38:48 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id q64so22784285qke.7;
+        Mon, 21 Jun 2021 03:38:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessos.org; s=google;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=qACWu+bnbyPKnWsJHtA+hAZdpnvZk5bHIEy1Pug1Wwg=;
-        b=AgvtY9XFqTFRZZMKYLON5qKVKzGP/iBwCiNh2pmuTSvbMRH6lrQt7MwjVsStzRgDh6
-         40lvAhPLLEJQ174u7dpwDasEbgJbSVrCy10X4Dyw70FG5vwWiMZJi8CM9H3A/g3Y4Q9l
-         1bW3hcQVsOS/xN4MGlUfO2tc1jKpdYv+89m1dmk3ZgqnYHvUOqvVqR/la5SjNs0ELTXb
-         dKESFFgD4IaKZ3V9c0mwpIm7v66ECYTc/pR9Ce3ThbQmMSywCBbuxt88w+qgjey3npho
-         j0+WEMpRTo/IdF+j6EOC0CX5Ao450J3k93rfEi6nMg4c+wAUWubaXRwiur9rgAeFAOje
-         6nXg==
+        bh=wqPsiTjn3y34NIB0txQqm3bYJeUD7nTZah6VlYwyDvw=;
+        b=fRNs9Zi/uOSEbURx7ABqOmbwARWVSC+180v2trvI2kOex9/oQ27tA0DkbHuk3l/EHt
+         r//uDv/OPjfvnvcl8/dFZ3QfK6gEN0y0nLKvZLKZ8hS8PphiXnrBifC3jcKEbJN9dOrX
+         Hm4tNTwPjkywwVmCYRVRGOureCrWwDxE7WqELo2Cdm5S0AthAAw8ECaC9hhJBbhhLmLI
+         DqnCS3chMhsJtkV7RWtdhL7Y0+UKX+K3nrI+VR52LJ0+Xf3Cjl0mWp9pa0/FuSGhBmDN
+         OyVyZSHLKKrjdrEmf91VX+aSa2i30vuP2SK+miGkxHbn7G4pRazjjgPrxRKlBF7cvc8m
+         fLyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=qACWu+bnbyPKnWsJHtA+hAZdpnvZk5bHIEy1Pug1Wwg=;
-        b=gzZi0nG3SEBEb9nbpq9Qi4E0dmUjViqKLbNyW1qDrwIxgay/7MyDhejWyly5xNpY8X
-         lA0jVg/9FRM/fjLppxKbY/SWNYBS5gYLsmE7bF6ULPtS+hfBP1dxmVo/v5FOs8/gq7Wx
-         f90mT9cEugjEtBU8npPDNedyyQqf1uILSXfUEdlXkfghnWb/jWhjGMJe94cXAX8O+W7d
-         t2vXkZf/D4VNFmyeWSlxF5uMdmSF2Yy06+vGjXr7p/pMRCod0SmrB347WSvW0SCL173e
-         Jn02x5rfonDq8A/LsO/zoYnzt2LuSnuKm+hyVyIpDgtzk5K41r/9S8NPtLLiOUdR0+K+
-         20cQ==
-X-Gm-Message-State: AOAM530jsU3snCkQrqmEpAsAEhNm1c/FpDaFwpasAsiGLddWHSyKKut5
-        24SN5Rk9RWIhFm/7ng4A9WWpEw==
-X-Google-Smtp-Source: ABdhPJy27XwELFM11vFHrYq2LlRolxIXcisWCpcDRW+HzajDIMyFYbCd/wcPAeJ7UNsVnqQN59lsuA==
-X-Received: by 2002:a17:90a:7381:: with SMTP id j1mr14004550pjg.29.1624271751494;
-        Mon, 21 Jun 2021 03:35:51 -0700 (PDT)
-Received: from starnight.local ([150.116.242.79])
-        by smtp.googlemail.com with ESMTPSA id ml5sm1124159pjb.3.2021.06.21.03.35.49
+        bh=wqPsiTjn3y34NIB0txQqm3bYJeUD7nTZah6VlYwyDvw=;
+        b=SUpBHuVSOxtJMKPLHNOgDXg/KV6s7b+lmmtsX0Fb3jPib6stDExrO1zmtGlVM3QKfj
+         xaoNUXBe7Z5cm5kL7SqYbf7DU0+y8QcB40xiqVaEE/LA+Do5We/n9hC+8Kv3bAgwzAW4
+         LfubmTMdpEmuXQhITMOnuKTVGlL8NSBIjxmeKCB42akGhFuSk2azh0rFKEkPdIlV2/0o
+         p1yb72Kk676Xtkhgox1UpRmTsbcynLwtVsE2VSKdxtVdvWPkRq8B9JgrKdgKNKnTKwOI
+         q4GxNN3t+TOTtmHzgtIkDK+ThMSGd0p2Jsp7kDLUukqM0g6AQfrV1dC8EUv4kbFtzy2L
+         tHYg==
+X-Gm-Message-State: AOAM530RKyjEMCTitGCwdbl4S16TX0Lv2pyjwopZ61+ZkK+KXVaKI3qC
+        NBfAbYwYy/YUV3GE9VpcMeM=
+X-Google-Smtp-Source: ABdhPJzEHDMzYkCX84hBARARNxsv87s7p5D0N2hRoR9/criB4+J8tMwOUsEUpQgnAGCQc4MHl9Unog==
+X-Received: by 2002:a37:46c2:: with SMTP id t185mr20561684qka.466.1624271927300;
+        Mon, 21 Jun 2021 03:38:47 -0700 (PDT)
+Received: from localhost.localdomain (email.nillco.net. [139.177.202.100])
+        by smtp.gmail.com with ESMTPSA id q25sm2149031qkm.33.2021.06.21.03.38.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Jun 2021 03:35:51 -0700 (PDT)
-From:   Jian-Hong Pan <jhp@endlessos.org>
-To:     Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessos.org,
-        linux-rpi-kernel@lists.infradead.org,
-        Jian-Hong Pan <jhp@endlessos.org>
-Subject: [PATCH] net: bcmgenet: Fix attaching to PYH failed on RPi 4B
-Date:   Mon, 21 Jun 2021 18:33:11 +0800
-Message-Id: <20210621103310.186334-1-jhp@endlessos.org>
+        Mon, 21 Jun 2021 03:38:46 -0700 (PDT)
+From:   Rong Zhang <ulin0208@gmail.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, jmorris@namei.org,
+        yoshfuji@linux-ipv6.org, kaber@trash.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rong Zhang <ulin0208@gmail.com>
+Subject: [PATCH] tcp: fix ipv6 tproxy doesn't work on kernel 4.4.x
+Date:   Mon, 21 Jun 2021 18:38:29 +0800
+Message-Id: <20210621103829.506112-1-ulin0208@gmail.com>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -65,66 +62,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Broadcom UniMAC MDIO bus comes too late. So, GENET cannot find the
-ethernet PHY on UniMAC MDIO bus. This leads GENET fail to attach the
-PHY.
+Not only in tcp_v4_init_req() but also in tcp_v6_init_req()
+need to initialize no_srccheck, otherwise ipv6 tproxy doesn't work.
+So move it before init_req().
 
-bcmgenet fd580000.ethernet: GENET 5.0 EPHY: 0x0000
-...
-could not attach to PHY
-bcmgenet fd580000.ethernet eth0: failed to connect to PHY
-uart-pl011 fe201000.serial: no DMA platform data
-libphy: bcmgenet MII bus: probed
-...
-unimac-mdio unimac-mdio.-19: Broadcom UniMAC MDIO bus
-
-This patch makes GENET try to connect the PHY up to 3 times. Also, waits
-a while between each time for mdio-bcm-unimac module's loading and
-probing.
-
-Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=213485
-Signed-off-by: Jian-Hong Pan <jhp@endlessos.org>
+Signed-off-by: Rong Zhang <ulin0208@gmail.com>
 ---
- drivers/net/ethernet/broadcom/genet/bcmmii.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_input.c | 1 +
+ net/ipv4/tcp_ipv4.c  | 1 -
+ 2 files changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-index 5335244e4577..64f244471fd3 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-@@ -289,6 +289,7 @@ int bcmgenet_mii_probe(struct net_device *dev)
- 	struct phy_device *phydev;
- 	u32 phy_flags = 0;
- 	int ret;
-+	int i;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 0919183b003f..e2bfcb30564d 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6360,6 +6360,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
  
- 	/* Communicate the integrated PHY revision */
- 	if (priv->internal_phy)
-@@ -301,8 +302,22 @@ int bcmgenet_mii_probe(struct net_device *dev)
- 	priv->old_pause = -1;
+ 	tmp_opt.tstamp_ok = tmp_opt.saw_tstamp;
+ 	tcp_openreq_init(req, &tmp_opt, skb, sk);
++	inet_rsk(req)->no_srccheck = inet_sk(sk)->transparent;
  
- 	if (dn) {
--		phydev = of_phy_connect(dev, priv->phy_dn, bcmgenet_mii_setup,
--					phy_flags, priv->phy_interface);
-+		/* Try to connect the PHY on UniMAC DMIO bus up to 3 times.
-+		 * Wait a while between each time for mdio-bcm-unimac module's
-+		 * loading and probing.
-+		 */
-+		phydev = NULL;
-+		for (i = 1; i < 4 && !phydev; i++) {
-+			netdev_info(dev,
-+				    "connect %s on UniMAC MDIO bus %d time",
-+				    priv->phy_dn->full_name, i);
-+			phydev = of_phy_connect(dev, priv->phy_dn,
-+						bcmgenet_mii_setup,
-+						phy_flags, priv->phy_interface);
-+			if (!phydev && i < 3)
-+				msleep(500);
-+		}
-+
- 		if (!phydev) {
- 			pr_err("could not attach to PHY\n");
- 			return -ENODEV;
+ 	/* Note: tcp_v6_init_req() might override ir_iif for link locals */
+ 	inet_rsk(req)->ir_iif = sk->sk_bound_dev_if;
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 3826745a160e..91c7a76f3bb3 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1206,7 +1206,6 @@ static void tcp_v4_init_req(struct request_sock *req,
+ 
+ 	sk_rcv_saddr_set(req_to_sk(req), ip_hdr(skb)->daddr);
+ 	sk_daddr_set(req_to_sk(req), ip_hdr(skb)->saddr);
+-	ireq->no_srccheck = inet_sk(sk_listener)->transparent;
+ 	RCU_INIT_POINTER(ireq->ireq_opt, tcp_v4_save_options(skb));
+ }
+ 
 -- 
 2.32.0
 
