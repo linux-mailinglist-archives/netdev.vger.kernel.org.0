@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC1383AF297
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:53:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4FCD3AF28E
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:53:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232678AbhFURzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:55:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39060 "EHLO mail.kernel.org"
+        id S232437AbhFURzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:55:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39084 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232097AbhFURyq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 13:54:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BC36761261;
-        Mon, 21 Jun 2021 17:52:26 +0000 (UTC)
+        id S232108AbhFURyr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 13:54:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6037F61358;
+        Mon, 21 Jun 2021 17:52:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624297947;
-        bh=/VEwk1FCiQhVoRBY20nOy8KNe5G6/lo3CVZLcM1PF5c=;
+        s=k20201202; t=1624297949;
+        bh=TFsLptV+Gk/46Iv+9WR3cQkcgg/VYlaSV+xb4rG/ulE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=elV1XE2bikRrU4Ta3WwsCMI484PbyhpKmvdWJvzFo1RtQgDs9w66m65XMZTYAkolE
-         mJCnOHgQlRrqA0L1s5zXv5QsbljV8RMFCI5tfgK7AL15Ly+MPgHouUqFbccYCv/vRl
-         ykM1sWGlRssz2sL3sIxZiQSgYOU4A+THq9ONwf0knjC/RkhUWPHsNdAMaP8ddF+30I
-         Rkndr6gYE3cokEM/VI1uE1BD0xQsmhPlpxtzinso4USViZpSY4lJ/kxuTmQzPB0Rts
-         dQYEEN9kVzaLPcMqjxMqpjIkvtADrWTZ4dvkfb67iheO5Yk4QInQ3c46jaM/o2dfbq
-         1a1AaE4TnfzTA==
+        b=ufRTYx0DAOz5h/lcVF84YGwYiPGgPfjjZedttU2otCnt/UlUHCFLROAcbsMnI3r6F
+         I8d1B0/jjQ9+ixFFDs3R6s7tBsQwugrSTshNMPzhoDVbCxz/Uuv4p62NK//LIVYQIg
+         nYr+qZ4O1woA1O0Qnjm0HalvYHwfnDabvOmVV4i4qhrC7p9J/3N+i+LAFpFOfdaCiH
+         +xbZaECPkze1JY/SfWEcKDtamriuVUN9xyV3fkvYAYcZB1NB3imdSEc43KRp4opOCz
+         wBerbo3AL+FKM3L7MQN1o6Vz6D/r3ryd2Mp3llWwT9cVnYf9TlQ0oYI/YEUCoZm+Os
+         yPjDYNsyFLt4w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>,
         syzbot <syzkaller@googlegroups.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 18/39] net: annotate data race in sock_error()
-Date:   Mon, 21 Jun 2021 13:51:34 -0400
-Message-Id: <20210621175156.735062-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 19/39] inet: annotate date races around sk->sk_txhash
+Date:   Mon, 21 Jun 2021 13:51:35 -0400
+Message-Id: <20210621175156.735062-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175156.735062-1-sashal@kernel.org>
 References: <20210621175156.735062-1-sashal@kernel.org>
@@ -45,62 +45,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit f13ef10059ccf5f4ed201cd050176df62ec25bb8 ]
+[ Upstream commit b71eaed8c04f72a919a9c44e83e4ee254e69e7f3 ]
 
-sock_error() is known to be racy. The code avoids
-an atomic operation is sk_err is zero, and this field
-could be changed under us, this is fine.
+UDP sendmsg() path can be lockless, it is possible for another
+thread to re-connect an change sk->sk_txhash under us.
 
-Sysbot reported:
+There is no serious impact, but we can use READ_ONCE()/WRITE_ONCE()
+pair to document the race.
 
-BUG: KCSAN: data-race in sock_alloc_send_pskb / unix_release_sock
+BUG: KCSAN: data-race in __ip4_datagram_connect / skb_set_owner_w
 
-write to 0xffff888131855630 of 4 bytes by task 9365 on cpu 1:
- unix_release_sock+0x2e9/0x6e0 net/unix/af_unix.c:550
- unix_release+0x2f/0x50 net/unix/af_unix.c:859
- __sock_release net/socket.c:599 [inline]
- sock_close+0x6c/0x150 net/socket.c:1258
- __fput+0x25b/0x4e0 fs/file_table.c:280
- ____fput+0x11/0x20 fs/file_table.c:313
- task_work_run+0xae/0x130 kernel/task_work.c:164
- tracehook_notify_resume include/linux/tracehook.h:189 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:174 [inline]
- exit_to_user_mode_prepare+0x156/0x190 kernel/entry/common.c:208
- __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
- syscall_exit_to_user_mode+0x20/0x40 kernel/entry/common.c:301
- do_syscall_64+0x56/0x90 arch/x86/entry/common.c:57
+write to 0xffff88813397920c of 4 bytes by task 30997 on cpu 1:
+ sk_set_txhash include/net/sock.h:1937 [inline]
+ __ip4_datagram_connect+0x69e/0x710 net/ipv4/datagram.c:75
+ __ip6_datagram_connect+0x551/0x840 net/ipv6/datagram.c:189
+ ip6_datagram_connect+0x2a/0x40 net/ipv6/datagram.c:272
+ inet_dgram_connect+0xfd/0x180 net/ipv4/af_inet.c:580
+ __sys_connect_file net/socket.c:1837 [inline]
+ __sys_connect+0x245/0x280 net/socket.c:1854
+ __do_sys_connect net/socket.c:1864 [inline]
+ __se_sys_connect net/socket.c:1861 [inline]
+ __x64_sys_connect+0x3d/0x50 net/socket.c:1861
+ do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-read to 0xffff888131855630 of 4 bytes by task 9385 on cpu 0:
- sock_error include/net/sock.h:2269 [inline]
- sock_alloc_send_pskb+0xe4/0x4e0 net/core/sock.c:2336
- unix_dgram_sendmsg+0x478/0x1610 net/unix/af_unix.c:1671
- unix_seqpacket_sendmsg+0xc2/0x100 net/unix/af_unix.c:2055
+read to 0xffff88813397920c of 4 bytes by task 31039 on cpu 0:
+ skb_set_hash_from_sk include/net/sock.h:2211 [inline]
+ skb_set_owner_w+0x118/0x220 net/core/sock.c:2101
+ sock_alloc_send_pskb+0x452/0x4e0 net/core/sock.c:2359
+ sock_alloc_send_skb+0x2d/0x40 net/core/sock.c:2373
+ __ip6_append_data+0x1743/0x21a0 net/ipv6/ip6_output.c:1621
+ ip6_make_skb+0x258/0x420 net/ipv6/ip6_output.c:1983
+ udpv6_sendmsg+0x160a/0x16b0 net/ipv6/udp.c:1527
+ inet6_sendmsg+0x5f/0x80 net/ipv6/af_inet6.c:642
  sock_sendmsg_nosec net/socket.c:654 [inline]
  sock_sendmsg net/socket.c:674 [inline]
  ____sys_sendmsg+0x360/0x4d0 net/socket.c:2350
- __sys_sendmsg_sock+0x25/0x30 net/socket.c:2416
- io_sendmsg fs/io_uring.c:4367 [inline]
- io_issue_sqe+0x231a/0x6750 fs/io_uring.c:6135
- __io_queue_sqe+0xe9/0x360 fs/io_uring.c:6414
- __io_req_task_submit fs/io_uring.c:2039 [inline]
- io_async_task_func+0x312/0x590 fs/io_uring.c:5074
- __tctx_task_work fs/io_uring.c:1910 [inline]
- tctx_task_work+0x1d4/0x3d0 fs/io_uring.c:1924
- task_work_run+0xae/0x130 kernel/task_work.c:164
- tracehook_notify_signal include/linux/tracehook.h:212 [inline]
- handle_signal_work kernel/entry/common.c:145 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:171 [inline]
- exit_to_user_mode_prepare+0xf8/0x190 kernel/entry/common.c:208
- __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
- syscall_exit_to_user_mode+0x20/0x40 kernel/entry/common.c:301
- do_syscall_64+0x56/0x90 arch/x86/entry/common.c:57
+ ___sys_sendmsg net/socket.c:2404 [inline]
+ __sys_sendmmsg+0x315/0x4b0 net/socket.c:2490
+ __do_sys_sendmmsg net/socket.c:2519 [inline]
+ __se_sys_sendmmsg net/socket.c:2516 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2516
+ do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-value changed: 0x00000000 -> 0x00000068
+value changed: 0xbca3c43d -> 0xfdb309e0
 
 Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 9385 Comm: syz-executor.3 Not tainted 5.13.0-rc4-syzkaller #0
+CPU: 0 PID: 31039 Comm: syz-executor.2 Not tainted 5.13.0-rc3-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
@@ -108,28 +100,38 @@ Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sock.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ include/net/sock.h | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/include/net/sock.h b/include/net/sock.h
-index 62e3811e95a7..b98c80a7c7ae 100644
+index b98c80a7c7ae..b9bdeca1d784 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -2260,8 +2260,13 @@ struct sk_buff *sock_dequeue_err_skb(struct sock *sk);
- static inline int sock_error(struct sock *sk)
+@@ -1928,7 +1928,8 @@ static inline u32 net_tx_rndhash(void)
+ 
+ static inline void sk_set_txhash(struct sock *sk)
  {
- 	int err;
--	if (likely(!sk->sk_err))
-+
-+	/* Avoid an atomic operation for the common case.
-+	 * This is racy since another cpu/thread can change sk_err under us.
-+	 */
-+	if (likely(data_race(!sk->sk_err)))
- 		return 0;
-+
- 	err = xchg(&sk->sk_err, 0);
- 	return -err;
+-	sk->sk_txhash = net_tx_rndhash();
++	/* This pairs with READ_ONCE() in skb_set_hash_from_sk() */
++	WRITE_ONCE(sk->sk_txhash, net_tx_rndhash());
  }
+ 
+ static inline bool sk_rethink_txhash(struct sock *sk)
+@@ -2200,9 +2201,12 @@ static inline void sock_poll_wait(struct file *filp, struct socket *sock,
+ 
+ static inline void skb_set_hash_from_sk(struct sk_buff *skb, struct sock *sk)
+ {
+-	if (sk->sk_txhash) {
++	/* This pairs with WRITE_ONCE() in sk_set_txhash() */
++	u32 txhash = READ_ONCE(sk->sk_txhash);
++
++	if (txhash) {
+ 		skb->l4_hash = 1;
+-		skb->hash = sk->sk_txhash;
++		skb->hash = txhash;
+ 	}
+ }
+ 
 -- 
 2.30.2
 
