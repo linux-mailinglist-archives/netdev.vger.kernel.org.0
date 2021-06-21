@@ -2,139 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA8853AE6AF
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 12:02:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53E623AE6B2
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 12:04:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbhFUKEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 06:04:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53828 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229765AbhFUKEm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 06:04:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624269748;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PZIO5NpgIVUNv0kj+r82DXgHE7L65dog7HHDBqbMgHI=;
-        b=gGQtjQiqmP7SeoT9S9Dj4EGKiTFohwj6gvv0i+RsTHR2Yz5SUa1pm+pKiHEoA3AihAbTdn
-        wRqXOQJSeINZVfQLCMfXeaTkkODgJb6PC15yTexz/gm+F7eK3c9Uh7uq+qy2I+EkGIJDL3
-        PwGvuTy3xpgrlLaox/sgyHdQu/aMJqY=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-485-LEfZYvmuMMiBY7SCODdjEw-1; Mon, 21 Jun 2021 06:02:27 -0400
-X-MC-Unique: LEfZYvmuMMiBY7SCODdjEw-1
-Received: by mail-ed1-f69.google.com with SMTP id v8-20020a0564023488b0290393873961f6so7495082edc.17
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 03:02:26 -0700 (PDT)
+        id S229765AbhFUKG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 06:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229621AbhFUKGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 06:06:55 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93588C061574
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 03:04:40 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id t7so18076325edd.5
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 03:04:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6/oxryNKmKsCYcCoqAs46IyaujD6fOxf7sV8IZsZxnc=;
+        b=vFxyHfxidydu3SUnvfFi3I3dFkd5wsl/O45qUrFcpBLKurOOaTeKWHeEa80NZglV8S
+         lzOGptqsVD0WRAe2t7dCXzPnDflDXgw6pu/xUDHMTrV8//490S5Cs3q27Mq5vP/0vQly
+         sgOhaDLPElCvHHx6tHVsYjitIqwqFiAvyA0EkrPCYkb6jcn1uCcFhJUbqrPEcM2Ssjxh
+         XswD5zK2nPupMTfAvZibRb5D8gZMT4D/ImZeQOaRrRLUrRgSgPNdrlvo1IyaBwLJ5tt/
+         ZLz4kqn9tH5ox6yothLZA2wiyiTX/rmCxEsCuo3UrvwssmAq7sqo3skH6BD9rM9xgNOr
+         FtUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=PZIO5NpgIVUNv0kj+r82DXgHE7L65dog7HHDBqbMgHI=;
-        b=LACmg6d2vmXe6pFMi/DnUAkaAT4femXjr4BDDN2HW5r7v970w6u1/+iVBq0pcwxmpS
-         qE6tXKEOQEd7NTFG+68BevB3KQ6sgV/THYA8KnD/UYtFaZOHAv1L1PI33D3MJN2KM9Jv
-         BAfd0HGrLJB6Krpx+Elmf5FA/0kxRNjWu+k8FwXogCyuXGG3XaB/ZNT3J2hfjzt7sZAt
-         t2VlC0lnPfeLx+8Rx5bbt/2n8+DRO9I7uvCLrrjWOu3ozbql2YdJiyvi81SJ4ZyQxSoN
-         g0nS7JT8GMqRlIhm1G12kgn1hCULRJ2gXtvIGDg+uUj1x9HDFrDq26AsHuI2qCB2g/zS
-         KHgQ==
-X-Gm-Message-State: AOAM5302wVJA9h9qsSf5QVouNVA7VC4TU6Ax9RsGjKQijoCgbXLwSpMZ
-        F4nl335sf/2pvbYs0wVUqnUyRtsRfV4PNH/GUUl5JRra38l3ki2qXPf/WeFbSICEMB4RRmkKjWp
-        tTg6cDfKLfNagJVgF
-X-Received: by 2002:a17:907:2165:: with SMTP id rl5mr23532505ejb.98.1624269745870;
-        Mon, 21 Jun 2021 03:02:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyI/DlaZvtpyAu2Ncemo1+R+rxYzgmP6CvYztVMEJT254YGs7mVm/LkwCtPDgJX2tnwmfaVSQ==
-X-Received: by 2002:a17:907:2165:: with SMTP id rl5mr23532477ejb.98.1624269745555;
-        Mon, 21 Jun 2021 03:02:25 -0700 (PDT)
-Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
-        by smtp.gmail.com with ESMTPSA id o14sm5130578edw.36.2021.06.21.03.02.24
+        bh=6/oxryNKmKsCYcCoqAs46IyaujD6fOxf7sV8IZsZxnc=;
+        b=RJIAoc76BrfF+gOweDxFwDAmqJRrglVR7oj/IG042kAcV4peJacYGdjfDUe5G0kqk8
+         3DIRA8pXqkKLgMM6fG0vWK46bhpRxDbZh77KlJ6ZgIvcTGAZf/jR49FgU328yWLrGr9j
+         97a27vwB/ZfzU4KFZ/2ak9rJTtGOdnwyxsRUSqoejzM9CGL91eLXrN52VJFq8eI4azmu
+         mxb49qBVy+vjU+dHsBVrRCWn6AW2RdJRoGWFfjB8YdiJMgybAdnVy+RO+doYR8rcO0bb
+         A/SRSRvcrtrYXRSQNER24ch2MRqW7VCaTyXJnTXvuOt/5Jbg0CjLo/k/Z8NBZjNn1amU
+         f8cA==
+X-Gm-Message-State: AOAM530/JLFPL7r/FaPQswSk8KOxOxJJF2CUy80CPXvhIUvrr5WAEDeY
+        AKeNpvOWxDgljS1/khaRD3c=
+X-Google-Smtp-Source: ABdhPJz0FkKmFDq90XsU/pLr8pCPTCmTZk1gG63M799Tully+v0sL7hV2P+V7fCU9W0FxVSxX3PaQQ==
+X-Received: by 2002:a05:6402:2789:: with SMTP id b9mr20316015ede.142.1624269879213;
+        Mon, 21 Jun 2021 03:04:39 -0700 (PDT)
+Received: from skbuf ([188.26.224.68])
+        by smtp.gmail.com with ESMTPSA id hx18sm3065289ejc.82.2021.06.21.03.04.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Jun 2021 03:02:25 -0700 (PDT)
-Date:   Mon, 21 Jun 2021 12:02:22 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Longpeng(Mike)" <longpeng2@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        arei.gonglei@huawei.com, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        David Brazdil <dbrazdil@google.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        lixianming <lixianming5@huawei.com>
-Subject: Re: [PATCH v2] vsock: notify server to shutdown when client has
- pending signal
-Message-ID: <20210621100222.jg7rajkjyzuao5h5@steredhat>
-References: <20210621062601.1473-1-longpeng2@huawei.com>
+        Mon, 21 Jun 2021 03:04:38 -0700 (PDT)
+Date:   Mon, 21 Jun 2021 13:04:37 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Eldar Gasanov <eldargasanov2@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH] mv88e6xxx: fixed adding vlan 0
+Message-ID: <20210621100437.gmnxnnycjpg4nimm@skbuf>
+References: <20210621085437.25777-1-eldargasanov2@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210621062601.1473-1-longpeng2@huawei.com>
+In-Reply-To: <20210621085437.25777-1-eldargasanov2@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 21, 2021 at 02:26:01PM +0800, Longpeng(Mike) wrote:
->The client's sk_state will be set to TCP_ESTABLISHED if the server
->replay the client's connect request.
->
->However, if the client has pending signal, its sk_state will be set
->to TCP_CLOSE without notify the server, so the server will hold the
->corrupt connection.
->
->            client                        server
->
->1. sk_state=TCP_SYN_SENT         |
->2. call ->connect()              |
->3. wait reply                    |
->                                 | 4. sk_state=TCP_ESTABLISHED
->                                 | 5. insert to connected list
->                                 | 6. reply to the client
->7. sk_state=TCP_ESTABLISHED      |
->8. insert to connected list      |
->9. *signal pending* <--------------------- the user kill client
->10. sk_state=TCP_CLOSE           |
->client is exiting...             |
->11. call ->release()             |
->     virtio_transport_close
->      if (!(sk->sk_state == TCP_ESTABLISHED ||
->	      sk->sk_state == TCP_CLOSING))
->		return true; *return at here, the server cannot notice the connection is corrupt*
->
->So the client should notify the peer in this case.
->
->Cc: David S. Miller <davem@davemloft.net>
->Cc: Jakub Kicinski <kuba@kernel.org>
->Cc: Jorgen Hansen <jhansen@vmware.com>
->Cc: Norbert Slusarek <nslusarek@gmx.net>
->Cc: Andra Paraschiv <andraprs@amazon.com>
->Cc: Colin Ian King <colin.king@canonical.com>
->Cc: David Brazdil <dbrazdil@google.com>
->Cc: Alexander Popov <alex.popov@linux.com>
->Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
->Link: https://lkml.org/lkml/2021/5/17/418
->Signed-off-by: lixianming <lixianming5@huawei.com>
->Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
->---
-> net/vmw_vsock/af_vsock.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index 92a72f0..ae11311 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -1369,7 +1369,7 @@ static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
->
-> 		if (signal_pending(current)) {
-> 			err = sock_intr_errno(timeout);
->-			sk->sk_state = TCP_CLOSE;
->+			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
-> 			sock->state = SS_UNCONNECTED;
-> 			vsock_transport_cancel_pkt(vsk);
-> 			goto out_wait;
->-- 
->1.8.3.1
->
+On Mon, Jun 21, 2021 at 11:54:38AM +0300, Eldar Gasanov wrote:
+> 8021q module adds vlan 0 to all interfaces when it starts.
+> When 8021q module is loaded it isn't possible to create bond
+> with mv88e6xxx interfaces, bonding module dipslay error
+> "Couldn't add bond vlan ids", because it tries to add vlan 0
+> to slave interfaces.
+> 
+> There is unexpected behavior in the switch. When a PVID
+> is assigned to a port the switch changes VID to PVID
+> in ingress frames with VID 0 on the port. Expected
+> that the switch doesn't assign PVID to tagged frames
+> with VID 0. But there isn't a way to change this behavior
+> in the switch.
+> 
+> Signed-off-by: Eldar Gasanov <eldargasanov2@gmail.com>
+> ---
+>  drivers/net/dsa/mv88e6xxx/chip.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index eca285aaf72f..961fa6b75cad 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -1618,9 +1618,6 @@ static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
+>  	struct mv88e6xxx_vtu_entry vlan;
+>  	int i, err;
+>  
+> -	if (!vid)
+> -		return -EOPNOTSUPP;
+> -
+>  	/* DSA and CPU ports have to be members of multiple vlans */
+>  	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
+>  		return 0;
+> @@ -2109,6 +2106,9 @@ static int mv88e6xxx_port_vlan_add(struct dsa_switch *ds, int port,
+>  	u8 member;
+>  	int err;
+>  
+> +	if (!vlan->vid)
+> +		return 0;
+> +
+>  	err = mv88e6xxx_port_vlan_prepare(ds, port, vlan);
+>  	if (err)
+>  		return err;
+> -- 
+> 2.25.1
+> 
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Fixes: 57e661aae6a8 ("net: dsa: mv88e6xxx: Link aggregation support")
 
+because that's when this started becoming a problem.
+
+and the patch should go to "net".
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
