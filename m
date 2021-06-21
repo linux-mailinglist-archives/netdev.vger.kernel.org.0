@@ -2,116 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAD4E3AEA52
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 15:47:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 216E73AEA54
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 15:49:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbhFUNuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 09:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48846 "EHLO
+        id S230028AbhFUNv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 09:51:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229887AbhFUNuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 09:50:09 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4372FC061574
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 06:47:54 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id a21so133227ljj.1
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 06:47:54 -0700 (PDT)
+        with ESMTP id S229887AbhFUNv1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 09:51:27 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18215C061574
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 06:49:13 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id n12so5469116pgs.13
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 06:49:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=SASi1YpFpMUkJ64Le8/IeFITdE8GbmoDrnszDTrRUTI=;
-        b=aBc54gnr5XtmaWmVkd4hlWEkZ+4fhLfJtwGg3IeYBRd5YtULORrA7vKI/F1fbmKIm3
-         5u5ys6cowunQGbGkMru2OIpHQa399dusgkO64u20iptSLnRba9/zEOwO/9gYfSolqO6l
-         C9bWITX1qQq6PYEKe+EHaKN3f4veLbd33lV+UrxQvUhOxzpRTYFTO8eLx/t4FePtJ/OE
-         r3oWW9ZKqgy3VJcKKyUcs90PP7kaPWnRiZ0VJtJ0uDS97vueceB/SrjyKVJB5/41qDt4
-         fNd5ULhz3nxtXcUTjBY9NdxJhVONQa5uHo0rjx5KeFuYju1LV5e40VKEC3b4ULaxdvo/
-         dp2Q==
+        bh=/Oy/mbpvFy0BleeKa4Nb1n/BvqZ7v/6FbRfaIVQGsQk=;
+        b=eOuNkl/R6zkjI9JhhKuta0t+BKjBhYkh9NAmYVmxTEXANlgWKPYdRwGwt3F+usY+tb
+         6fMbtriMU1R+jaUOFIOJIr9WZSfiJB7f5IMfxVFLrtmuz1nSkvoQjKBX6xgudySWSWf/
+         0QZZPWPpmKe8Bg4uI99FT7wItxdK2bLsa3EmdSqS7FCkpKCSNIx3PLbizvlHWWVmJIAQ
+         jLvgEA5YpsZeLLeiMFlheEscsuaDUdpN+xhNUvv35zOAbLGRgK4vJ9/jk64QU+BsuFEN
+         RSmvhZ88DOP55MH/A+KncIlHyGkBeJ/NfUmZ/Bvw4XYdiA+8tc8HzuQOG7/blhE2NZ6U
+         CtSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=SASi1YpFpMUkJ64Le8/IeFITdE8GbmoDrnszDTrRUTI=;
-        b=WvAO6O+lhNkFYCWtbeYyQJ36VwUF4hS/1ja59YqnMHY+O7E7KHEf0sPNcxMAsjP85j
-         aeF70tHpxxL+MydPqUjJKJfz6csE+WtrgGRcs9HT5hiLAc6ZEbuh+fEMIoH5W8ReVtUz
-         PjTa89Dnkhl951idk4QUDVSMb+CD5lC3JB0nhGKVDcbesv1LXE0D9eKtRfka19O0iEt2
-         Jf6tScaJc2y3cpTx0XKC+jOVaYlNnHza8ovIxZLJW2siGNDXV0q39HgISBWwAMl+Q4tR
-         c4QwX2hsFme7DLiUQg4HdlRpX8mb7U0XmyiQyfvOgOfHS8qJ/uAI8+CVObmdg70i1qHr
-         iJ1Q==
-X-Gm-Message-State: AOAM530OvHTEjTHaeFJHoHUqugLK5XSDg2jxL+zfQnqCPM1SPcvFOEef
-        SrL1AhCBr1472vZtt4cvfiqoKwrUnfJ8PA==
-X-Google-Smtp-Source: ABdhPJyQEqrL0DF0IbYQuL+V91Sfnjp29S09tbhqm+z6Hi9EJSRxf61Uc9/f+R+VZHgJlg33kBrlYw==
-X-Received: by 2002:a05:651c:a0a:: with SMTP id k10mr21469922ljq.22.1624283272352;
-        Mon, 21 Jun 2021 06:47:52 -0700 (PDT)
-Received: from localhost.localdomain ([185.6.236.169])
-        by smtp.googlemail.com with ESMTPSA id e21sm2192283ljl.26.2021.06.21.06.47.50
+        bh=/Oy/mbpvFy0BleeKa4Nb1n/BvqZ7v/6FbRfaIVQGsQk=;
+        b=OtZDH11ABoexJVeL0iUv01i6R9GkMz2B+mOJMU4muFTQEUE9ATpYTIAISpLCjtuzfI
+         psLeHp9N+8gNbcmKIpV4XkraEQa0BNiAuFGzVbbVrFol4nmSnCQ7lF0cjC6UK2e5rWXr
+         c17p6bTWRNhm/ZAx0iVHc5RAfpSPJhcUAPM/2Vg5cM8rPk/9W00S/SGbQvyhZAtwcyyq
+         S9fLaIf51vR9audZy13XPMa+ZdAcpARMgRVQr89a38foFwuz2i/glKDpT5bBSXYpuVWf
+         bRnE8aYz3RYM7+T2/EycyFl54qS1evPMzANJOdsvz+mWnmrB2S9FYNjENTjX30sfQ2jc
+         +mdw==
+X-Gm-Message-State: AOAM531Bj1E8H8reCerwtgaqBP2/opdWWBRj3MBunz/LxRE1DubjpnaC
+        0KptA3D/9WOSfi1Bkqy3GUk=
+X-Google-Smtp-Source: ABdhPJzFljhHvYo7LHTs8ee5cJdVvaRo3nS8pldLtlUt6V2HwO5eo1KbADdnMtwX8QTxiAxnBaluDw==
+X-Received: by 2002:a05:6a00:797:b029:2f9:6ddb:9d5e with SMTP id g23-20020a056a000797b02902f96ddb9d5emr19255184pfu.35.1624283352562;
+        Mon, 21 Jun 2021 06:49:12 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id k25sm15252008pfa.213.2021.06.21.06.49.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Jun 2021 06:47:51 -0700 (PDT)
-From:   Eldar Gasanov <eldargasanov2@gmail.com>
-Cc:     netdev@vger.kernel.org, Eldar Gasanov <eldargasanov2@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: [PATCH v4 net] net: dsa: mv88e6xxx: Fix adding VLAN 0
-Date:   Mon, 21 Jun 2021 16:47:03 +0300
-Message-Id: <20210621134703.33933-1-eldargasanov2@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 21 Jun 2021 06:49:11 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+To:     linux-staging@lists.linux.dev
+Cc:     netdev@vger.kernel.org,
+        Benjamin Poirier <benjamin.poirier@gmail.com>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>
+Subject: [RFC 00/19] Improve the qlge driver based on drivers/staging/qlge/TODO
+Date:   Mon, 21 Jun 2021 21:48:43 +0800
+Message-Id: <20210621134902.83587-1-coiby.xu@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-8021q module adds vlan 0 to all interfaces when it starts.
-When 8021q module is loaded it isn't possible to create bond
-with mv88e6xxx interfaces, bonding module dipslay error
-"Couldn't add bond vlan ids", because it tries to add vlan 0
-to slave interfaces.
+This patch set improves qlge driver based on drivers/staging/qlge/TODO
+written by Benjamin.
 
-There is unexpected behavior in the switch. When a PVID
-is assigned to a port the switch changes VID to PVID
-in ingress frames with VID 0 on the port. Expected
-that the switch doesn't assign PVID to tagged frames
-with VID 0. But there isn't a way to change this behavior
-in the switch.
+For the testing, the kernel was build with KASAN, UBSAN, 
+DEBUG_ATOMIC_SLEEP, PROVE_LOCKING and DEBUG_KMEMLEAK enabled on a
+machine from Red Hat. The machine happened to have two NICs managed by 
+this qlge driver. I put these two NICs into separate network namespaces
+and no errors occurred for the following tests,
+    - with default MTU
+        - non TCP packet
+          - ping the other NIC from one NIC with different packet size, e.g.
+            200, 300, 2200
+        - TCP packets
+          - start a http server on one NIC
+            $ ip netns exec ns1 python -m http.server 8000 --bind 192.168.1.209
+          - download a file from the http server using the other NIC
+            curl -X GET --interface enp94s0f0 http://192.168.1.209:8000/kernel-5.11.3-300.fc34.src.rpm  -L -O
+    - do the same tests with jumbo frame enabled (ip link set enp94s0f0 mtu 9000)
 
-Signed-off-by: Eldar Gasanov <eldargasanov2@gmail.com>
-Fixes: 57e661aae6a8 ("net: dsa: mv88e6xxx: Link aggregation support")
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index eca285aaf72f..961fa6b75cad 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1618,9 +1618,6 @@ static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
- 	struct mv88e6xxx_vtu_entry vlan;
- 	int i, err;
- 
--	if (!vid)
--		return -EOPNOTSUPP;
--
- 	/* DSA and CPU ports have to be members of multiple vlans */
- 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
- 		return 0;
-@@ -2109,6 +2106,9 @@ static int mv88e6xxx_port_vlan_add(struct dsa_switch *ds, int port,
- 	u8 member;
- 	int err;
- 
-+	if (!vlan->vid)
-+		return 0;
-+
- 	err = mv88e6xxx_port_vlan_prepare(ds, port, vlan);
- 	if (err)
- 		return err;
+[1] https://lore.kernel.org/netdev/20200816025717.GA28176@f3/T/
+
+
+Coiby Xu (19):
+  staging: qlge: fix incorrect truesize accounting
+  staging: qlge: change LARGE_BUFFER_MAX_SIZE to 4096
+  staging: qlge: alloc skb with only enough room for header when data is
+    put in the fragments
+  staging: qlge: add qlge_* prefix to avoid namespace clashes
+  staging: qlge: rename rx to completion queue and seperate rx_ring from
+    completion queue
+  staging: qlge: disable flow control by default
+  staging: qlge: remove the TODO item of unnecessary memset 0
+  staging: qlge: reorder members of qlge_adapter for optimization
+  staging: qlge: remove the TODO item of reorder struct
+  staging: qlge: remove the TODO item of avoid legacy/deprecated apis
+  staging: qlge: the number of pages to contain a buffer queue is
+    constant
+  staging: qlge: rewrite do while loops as for loops in
+    qlge_start_rx_ring
+  staging: qlge: rewrite do while loop as for loop in qlge_sem_spinlock
+  staging: qlge: rewrite do while loop as for loop in qlge_refill_bq
+  staging: qlge: remove the TODO item about rewriting while loops as
+    simple for loops
+  staging: qlge: remove deadcode in qlge_build_rx_skb
+  staging: qlge: fix weird line wrapping
+  staging: qlge: fix two indentation issues
+  staging: qlge: remove TODO item of unnecessary runtime checks
+
+ drivers/staging/qlge/TODO           |  31 --
+ drivers/staging/qlge/qlge.h         |  88 +++--
+ drivers/staging/qlge/qlge_dbg.c     |  36 +-
+ drivers/staging/qlge/qlge_ethtool.c |  26 +-
+ drivers/staging/qlge/qlge_main.c    | 586 ++++++++++++++--------------
+ drivers/staging/qlge/qlge_mpi.c     |  11 +-
+ 6 files changed, 373 insertions(+), 405 deletions(-)
+
 -- 
-2.25.1
+2.32.0
 
