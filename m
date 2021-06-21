@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E25553AF262
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:52:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 500C93AF27A
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:52:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231837AbhFURy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:54:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38456 "EHLO mail.kernel.org"
+        id S231944AbhFURyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:54:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38722 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230330AbhFURyY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 13:54:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2571F611C1;
-        Mon, 21 Jun 2021 17:52:09 +0000 (UTC)
+        id S231801AbhFURye (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 13:54:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 39FA561245;
+        Mon, 21 Jun 2021 17:52:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624297930;
-        bh=EKWFR62OC53Ool/73TihiUZRikghbx9/5caVVvFCek4=;
+        s=k20201202; t=1624297939;
+        bh=z8eva5ncGyArZ1Cou+EQgQVkiY6HiDJ2aUxVhQNwkss=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fWqCbK+4qSkJh6e5DrAzi/s6SKkLwgq+89HBcDLLhpkq55xGpCxZJR1ddtaVIgKNg
-         Oj9yRnPA0hLpEw8zXYcUwnmTRNJBK98WQ48UM8+cuPwzsAuCzKZv1Pn9nVnUsCbjRn
-         TkZrHhSuLHm79WD6MpMy1acXsqvHfn0bZp8QQiQERr7389gKqfEloTDUz0XGwcdb+q
-         fZ7tkzN3ZNfsnQwYIvaE6plZ6Nal1vvb4XYhMXJiF3BVG2T3/+bi8AaR1oENSLx6N6
-         mFl8v7Vr1g80eaDhFSh52uxRUopDYA+MIaWMHKYK/8UsipiXPwuBv3WyWihg9G7Txn
-         dTdMudwf5YCyw==
+        b=bZIe2o49WBdx7Ohu15WbGol+HwW8Dlt80cFfUZaDXU1HWz/ginanRNdAlvlORSSDv
+         9WpF0G0yTEfkF8J29xjH9O85toUsBUL+tS37w7YrN6JgYVXHx7aieMBmuFJP5FPd+/
+         hXWAYuh9Yz9j3Lb5rGjRzjx2iD9bozbHw1FpDF0OhY0gu+FVdTZ8TAwNGsJ2GlTo17
+         p3+fZLHPF5ojq0yVxlcpqQKOKhaT+e+1fGUKt/9e4gIFZ/H68PxAZjsRducsTIMD1G
+         KPzKa9s/aIlaw6+InseWMDbJ8g1Lry75Yu13yAZUhrfv+X4tlBc4BsrJDU70Bm1Z9Q
+         RfQ8MS7rBxr6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Du Cheng <ducheng2@gmail.com>,
-        syzbot+105896fac213f26056f9@syzkaller.appspotmail.com,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 07/39] cfg80211: call cfg80211_leave_ocb when switching away from OCB
-Date:   Mon, 21 Jun 2021 13:51:23 -0400
-Message-Id: <20210621175156.735062-7-sashal@kernel.org>
+Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 13/39] net: ipv4: Remove unneed BUG() function
+Date:   Mon, 21 Jun 2021 13:51:29 -0400
+Message-Id: <20210621175156.735062-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175156.735062-1-sashal@kernel.org>
 References: <20210621175156.735062-1-sashal@kernel.org>
@@ -44,60 +42,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Du Cheng <ducheng2@gmail.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit a64b6a25dd9f984ed05fade603a00e2eae787d2f ]
+[ Upstream commit 5ac6b198d7e312bd10ebe7d58c64690dc59cc49a ]
 
-If the userland switches back-and-forth between NL80211_IFTYPE_OCB and
-NL80211_IFTYPE_ADHOC via send_msg(NL80211_CMD_SET_INTERFACE), there is a
-chance where the cleanup cfg80211_leave_ocb() is not called. This leads
-to initialization of in-use memory (e.g. init u.ibss while in-use by
-u.ocb) due to a shared struct/union within ieee80211_sub_if_data:
+When 'nla_parse_nested_deprecated' failed, it's no need to
+BUG() here, return -EINVAL is ok.
 
-struct ieee80211_sub_if_data {
-    ...
-    union {
-        struct ieee80211_if_ap ap;
-        struct ieee80211_if_vlan vlan;
-        struct ieee80211_if_managed mgd;
-        struct ieee80211_if_ibss ibss; // <- shares address
-        struct ieee80211_if_mesh mesh;
-        struct ieee80211_if_ocb ocb; // <- shares address
-        struct ieee80211_if_mntr mntr;
-        struct ieee80211_if_nan nan;
-    } u;
-    ...
-}
-
-Therefore add handling of otype == NL80211_IFTYPE_OCB, during
-cfg80211_change_iface() to perform cleanup when leaving OCB mode.
-
-link to syzkaller bug:
-https://syzkaller.appspot.com/bug?id=0612dbfa595bf4b9b680ff7b4948257b8e3732d5
-
-Reported-by: syzbot+105896fac213f26056f9@syzkaller.appspotmail.com
-Signed-off-by: Du Cheng <ducheng2@gmail.com>
-Link: https://lore.kernel.org/r/20210428063941.105161-1-ducheng2@gmail.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/util.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/ipv4/devinet.c  | 2 +-
+ net/ipv6/addrconf.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/wireless/util.c b/net/wireless/util.c
-index f342b6147675..726e7d2342bd 100644
---- a/net/wireless/util.c
-+++ b/net/wireless/util.c
-@@ -1059,6 +1059,9 @@ int cfg80211_change_iface(struct cfg80211_registered_device *rdev,
- 		case NL80211_IFTYPE_MESH_POINT:
- 			/* mesh should be handled? */
- 			break;
-+		case NL80211_IFTYPE_OCB:
-+			cfg80211_leave_ocb(rdev, dev);
-+			break;
- 		default:
- 			break;
- 		}
+diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+index 2e35f68da40a..1c6429c353a9 100644
+--- a/net/ipv4/devinet.c
++++ b/net/ipv4/devinet.c
+@@ -1989,7 +1989,7 @@ static int inet_set_link_af(struct net_device *dev, const struct nlattr *nla,
+ 		return -EAFNOSUPPORT;
+ 
+ 	if (nla_parse_nested_deprecated(tb, IFLA_INET_MAX, nla, NULL, NULL) < 0)
+-		BUG();
++		return -EINVAL;
+ 
+ 	if (tb[IFLA_INET_CONF]) {
+ 		nla_for_each_nested(a, tb[IFLA_INET_CONF], rem)
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index a9e53f5942fa..eab0a46983c0 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -5822,7 +5822,7 @@ static int inet6_set_link_af(struct net_device *dev, const struct nlattr *nla,
+ 		return -EAFNOSUPPORT;
+ 
+ 	if (nla_parse_nested_deprecated(tb, IFLA_INET6_MAX, nla, NULL, NULL) < 0)
+-		BUG();
++		return -EINVAL;
+ 
+ 	if (tb[IFLA_INET6_TOKEN]) {
+ 		err = inet6_set_iftoken(idev, nla_data(tb[IFLA_INET6_TOKEN]),
 -- 
 2.30.2
 
