@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3B03AEA67
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 15:50:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 526423AEA69
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 15:50:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbhFUNwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 09:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49512 "EHLO
+        id S230357AbhFUNwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 09:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbhFUNwo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 09:52:44 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9622BC061574;
-        Mon, 21 Jun 2021 06:50:29 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id i4so4884728plt.12;
-        Mon, 21 Jun 2021 06:50:29 -0700 (PDT)
+        with ESMTP id S230075AbhFUNwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 09:52:53 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55D0C061574;
+        Mon, 21 Jun 2021 06:50:38 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id t32so2342770pfg.2;
+        Mon, 21 Jun 2021 06:50:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/Vevo7ejaXcssHHgQzGNwjoQOcpQ59e4oftezJZAjPA=;
-        b=DF7TJVGQac5fB/7fndmVtAxkhZw0fe30wtM/heScSiU0oQ4TWzckN7FY2znSYD8t+v
-         u1rx2N06N1Fa7EMzSVa7y4uJFW36yt/r+I6NkXWdB0uy2Z5H979fa7dhxBaTXUWSVwsn
-         TVWWPrEnhBB1Kxbab7eyoSagGbP76cjaPMMAFVYoS+r8K26q+0dr5388IKUWmFx4J83b
-         Xwa29Hy9mAJlx8OIdGvSsFFouiwXFQ9OaQy4RKFBHXVjG0M3mvOmrE/JVB9rW79xojZx
-         nAIqQmADurAap0myndKnvCQG3hTSdkkWNqyEaw+7X7W+IVREEoBpjQ+T1g3Xs12R2uqz
-         tDYw==
+        bh=dsT/DFkU4ugOnwiedTB/H/+aCFKE/gHvtAJo8gJ/4xU=;
+        b=K3dPJFNfKnJZ9ImpJZQhUeZnOL6fNuVlMCtBJDlCFZ5UoW/3i6WdJeQdLzp11OK2P6
+         5xHgQK/vQCIClkykiMXyXqCP3sESForvaOgw/drcxGFmXvrWVfXlclE7wHDoD9lhwqod
+         w+0qART18gMaYAiYQ8NQHhVLOmPkhe20a3w0/MhVwqXKigSpR97C1Qfc2mD8YBLt8jPR
+         6w7E4FOrt7D1gQ9kEXeBKCw0/Ah+kufyCDyaVkap4RPcE9YJHvYWknRsVIN67rwtDs4X
+         kFxnCIiLOlYHOCWLLmgA21LMpHLphQ0zoOI2aECsqUJ3ViF4uXg7b5aMbdjr4arqZxw9
+         bclw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/Vevo7ejaXcssHHgQzGNwjoQOcpQ59e4oftezJZAjPA=;
-        b=BSA6RlVPl0TXOZ2fjsN0aldOPwbotN5+QQ0YWQVhHAjLGMPB+PDTWrtZtfj2iSZFrh
-         dPWVUJcFTCJoIUc+UUvahB+dVhwE3nTStHTKNYW8x19oQePSzZ/l4t5PHJFEKJaDqWqb
-         JKUeW76I4CNgU5QaJXpVgit3SdtaPYHanGSu7MSKEva13jgKxbhXJQxOCa/fhqmT4AGk
-         lvOUFJ8NhnQG2xdSBKadVOX0VUU0CkMSM3WT2mOoGEClVZJSBNpDtscIsiDLm89nldLp
-         5vGcbv4SVA7yeAL/Yyv0VKj5+YjdC4jlJA/AZat9HeBQ9oZF5u76ZMuSd7ZRiwlB8CwV
-         dNPw==
-X-Gm-Message-State: AOAM530t5mspsMmpBcm0iKVNtdrMUZqSuXWnf8kH8qHvpj7O4xJ3Idzs
-        OD4UYE/SOwbq5R67EgSqIL8=
-X-Google-Smtp-Source: ABdhPJz1CHl2x+3Mv02b7BoUpsfSsssHxHoLH0khC5l65hvcSPpsJpHMbYHYXTFMj0TSl4Dngg51cw==
-X-Received: by 2002:a17:90b:3142:: with SMTP id ip2mr37487283pjb.63.1624283429175;
-        Mon, 21 Jun 2021 06:50:29 -0700 (PDT)
+        bh=dsT/DFkU4ugOnwiedTB/H/+aCFKE/gHvtAJo8gJ/4xU=;
+        b=mc92tw8FX12Ut9C1X09CEJu2a/AbpKViq8pDn2Izv1iEYIiUKUAT2W9OpHkN+Owfuk
+         3RXRHllSO9CfXac1y6vaWlDEOdmIkqL/nZisxrbg+1cQxAh6ZU2WhDokFeN0kFG9G9QZ
+         nIwDXT+NogcuExu7vhVTdJaymSGdpF5yQOjReDhqQBH8TKK/ApbDUEa7ho/MnGE8ry7c
+         o8DAar2Z/RMyZXh1NiJMyP/sSKsa/+VfWynHXnt/Qyh+8Zk6LZet2nBIS8J0rpAezANP
+         d0ZfouM0NlS2KjrgBLu1LL8fECQmdFShw8TLdz+bfl1tGY/Y9BPkRcPnw2In/CmdvXXx
+         7Uww==
+X-Gm-Message-State: AOAM531RxrG6y5V/NCvSMaPztK7FT13Msv8ZqhaLtAiQdCgNCH/4nQAO
+        t6ZsDRtlLD6l3fUXAV73XJg=
+X-Google-Smtp-Source: ABdhPJw6Tgz/lB1hCgsHP0sq40v5fxcqZ5xkjpB/b36/FOB5gK+DiNaLs7bScNm/q8BVczc7ZhZF2A==
+X-Received: by 2002:a62:f947:0:b029:2e9:c502:7939 with SMTP id g7-20020a62f9470000b02902e9c5027939mr19696390pfm.34.1624283438541;
+        Mon, 21 Jun 2021 06:50:38 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id s42sm6678504pfw.184.2021.06.21.06.50.28
+        by smtp.gmail.com with ESMTPSA id f13sm1147160pfe.149.2021.06.21.06.50.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Jun 2021 06:50:28 -0700 (PDT)
+        Mon, 21 Jun 2021 06:50:38 -0700 (PDT)
 From:   Coiby Xu <coiby.xu@gmail.com>
 To:     linux-staging@lists.linux.dev
 Cc:     netdev@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc:     netdev@vger.kernel.org,
         GR-Linux-NIC-Dev@marvell.com (supporter:QLOGIC QLGE 10Gb ETHERNET
         DRIVER), Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [RFC 08/19] staging: qlge: reorder members of qlge_adapter for optimization
-Date:   Mon, 21 Jun 2021 21:48:51 +0800
-Message-Id: <20210621134902.83587-9-coiby.xu@gmail.com>
+Subject: [RFC 09/19] staging: qlge: remove the TODO item of reorder struct
+Date:   Mon, 21 Jun 2021 21:48:52 +0800
+Message-Id: <20210621134902.83587-10-coiby.xu@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210621134902.83587-1-coiby.xu@gmail.com>
 References: <20210621134902.83587-1-coiby.xu@gmail.com>
@@ -68,74 +68,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before reordering, pahole shows,
-    /* size: 21168, cachelines: 331, members: 69 */
-    /* sum members: 21144, holes: 4, sum holes: 18 */
-    /* padding: 6 */
-    /* paddings: 6, sum paddings: 24 */
-    /* forced alignments: 1 */
-    /* last cacheline: 48 bytes */
-
-After reordering following pahole's suggestion,
-    /* size: 21152, cachelines: 331, members: 69 */
-    /* sum members: 21144, holes: 1, sum holes: 2 */
-    /* padding: 6 */
-    /* paddings: 6, sum paddings: 24 */
-    /* forced alignments: 1 */
-    /* last cacheline: 32 bytes */
+struct qlge_cq has one hole, but for the sake of readability (irq is one
+of the Misc. handler elements, don't move it from after 'irq' to after
+'cnsmr_idx' ), keep it untouched. Then, there is no struct that need
+reordering according to pahole.
 
 Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
 ---
- drivers/staging/qlge/qlge.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/staging/qlge/TODO | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
-index 926af25b14fa..9177baa9f022 100644
---- a/drivers/staging/qlge/qlge.h
-+++ b/drivers/staging/qlge/qlge.h
-@@ -2081,8 +2081,8 @@ struct qlge_adapter *netdev_to_qdev(struct net_device *ndev)
-  */
- struct qlge_adapter {
- 	struct ricb ricb;
--	unsigned long flags;
- 	u32 wol;
-+	unsigned long flags;
- 
- 	struct nic_stats nic_stats;
- 
-@@ -2103,6 +2103,8 @@ struct qlge_adapter {
- 	spinlock_t adapter_lock;
- 	spinlock_t stats_lock;
- 
-+	u32 intr_count;
-+
- 	/* PCI Bus Relative Register Addresses */
- 	void __iomem *reg_base;
- 	void __iomem *doorbell_area;
-@@ -2123,7 +2125,6 @@ struct qlge_adapter {
- 
- 	int tx_ring_size;
- 	int rx_ring_size;
--	u32 intr_count;
- 	struct msix_entry *msi_x_entry;
- 	struct intr_context intr_context[MAX_RX_RINGS];
- 
-@@ -2162,6 +2163,7 @@ struct qlge_adapter {
- 	u32 max_frame_size;
- 
- 	union flash_params flash;
-+	u16 device_id;
- 
- 	struct workqueue_struct *workqueue;
- 	struct delayed_work asic_reset_work;
-@@ -2171,7 +2173,6 @@ struct qlge_adapter {
- 	struct delayed_work mpi_idc_work;
- 	struct completion ide_completion;
- 	const struct nic_operations *nic_ops;
--	u16 device_id;
- 	struct timer_list timer;
- 	atomic_t lb_count;
- 	/* Keep local copy of current mac address. */
+diff --git a/drivers/staging/qlge/TODO b/drivers/staging/qlge/TODO
+index cc5f8cf7608d..2c4cc586a4bf 100644
+--- a/drivers/staging/qlge/TODO
++++ b/drivers/staging/qlge/TODO
+@@ -6,7 +6,6 @@
+   split cases.
+ * the driver has a habit of using runtime checks where compile time checks are
+   possible (ex. ql_free_rx_buffers(), ql_alloc_rx_buffers())
+-* reorder struct members to avoid holes if it doesn't impact performance
+ * avoid legacy/deprecated apis (ex. replace pci_dma_*, replace pci_enable_msi,
+   use pci_iomap)
+ * some "while" loops could be rewritten with simple "for", ex.
 -- 
 2.32.0
 
