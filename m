@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9743AF339
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:58:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBA73AF34A
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:58:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232681AbhFUSAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 14:00:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39598 "EHLO mail.kernel.org"
+        id S233657AbhFUSAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 14:00:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39620 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232392AbhFUR6F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 13:58:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B4167613B1;
-        Mon, 21 Jun 2021 17:53:44 +0000 (UTC)
+        id S232417AbhFUR6G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 13:58:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4522B613C9;
+        Mon, 21 Jun 2021 17:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624298025;
-        bh=yGIMFfXBv351FkDVH59jFGEwcYsPTos591RKcHoH8NU=;
+        s=k20201202; t=1624298027;
+        bh=S8lnhKoDzKnQkrex/x7jAw10+QDYKi5xrVPjpAJ0z30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vF1S26I5OF+OpzDvYklrog1xlLc0meZz8wEHwOu/n1xyLpjICuktw/o5m0S40nUdH
-         OuS2VOWWZtqyIdodfMyfZsQHSn+57nUrt9Et+BGTV0Ashsc86A0TOiYk+ipsEmB7gA
-         K3pHrgIekXoe0Ey5qaDIFAivnxDn0AbwqXsZn4JVpqfmZk4wUv1XuXZgd1WjvhfKGg
-         M23lshl+d1NjCif+4fC5X+XFo2ZFg8qmBq/oWpUbV9BqLu2yQgd+YmvmUxxie9vhvs
-         dY50LbGaSzovIDg1fr+F4pYqGYFY2fKGIzQo7hkcSehMkK43irbnx6YOvFjB1xEX8O
-         +ceGBT83+rbsA==
+        b=uu6oR3jpoC6PH2PanD4PhpapsBDj9viJRLNUTt4oYA2tQzUgmjFw7UvhZ8rqHlCtj
+         FG8N6tkV3Th4HlFbjh8N3x+R/k8uGzITElmx3qydllFMYeV7CR19BmfiDQbYjEmQ+S
+         0p7T5gXlPcvnSl+YzePUAu2gJv4H5M/204iirgI/0jQU008nIuSEGRt/xbjJpmOYPM
+         PYIRoqF+wbJwqCRNPk+7RZKFwFG+m9z1XeDazUhL8HBH1cBF8dbPFp/EHgewP9Q+If
+         yWmlUcxeo3BIv/iIEaxY6VAuzRrMjPyinVsaC0TzPGMS3tiBzdhJesqhqjsJmfM/Xp
+         +Yci+CCf2T0ig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 29/35] net: qed: Fix memcpy() overflow of qed_dcbx_params()
-Date:   Mon, 21 Jun 2021 13:52:54 -0400
-Message-Id: <20210621175300.735437-29-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 30/35] mac80211: reset profile_periodicity/ema_ap
+Date:   Mon, 21 Jun 2021 13:52:55 -0400
+Message-Id: <20210621175300.735437-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175300.735437-1-sashal@kernel.org>
 References: <20210621175300.735437-1-sashal@kernel.org>
@@ -42,48 +43,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 1c200f832e14420fa770193f9871f4ce2df00d07 ]
+[ Upstream commit bbc6f03ff26e7b71d6135a7b78ce40e7dee3d86a ]
 
-The source (&dcbx_info->operational.params) and dest
-(&p_hwfn->p_dcbx_info->set.config.params) are both struct qed_dcbx_params
-(560 bytes), not struct qed_dcbx_admin_params (564 bytes), which is used
-as the memcpy() size.
+Apparently we never clear these values, so they'll remain set
+since the setting of them is conditional. Clear the values in
+the relevant other cases.
 
-However it seems that struct qed_dcbx_operational_params
-(dcbx_info->operational)'s layout matches struct qed_dcbx_admin_params
-(p_hwfn->p_dcbx_info->set.config)'s 4 byte difference (3 padding, 1 byte
-for "valid").
-
-On the assumption that the size is wrong (rather than the source structure
-type), adjust the memcpy() size argument to be 4 bytes smaller and add
-a BUILD_BUG_ON() to validate any changes to the structure sizes.
-
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20210618133832.316e32d136a9.I2a12e51814258e1e1b526103894f4b9f19a91c8d@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_dcbx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/mac80211/mlme.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dcbx.c b/drivers/net/ethernet/qlogic/qed/qed_dcbx.c
-index 17d5b649eb36..e81dd34a3cac 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dcbx.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dcbx.c
-@@ -1266,9 +1266,11 @@ int qed_dcbx_get_config_params(struct qed_hwfn *p_hwfn,
- 		p_hwfn->p_dcbx_info->set.ver_num |= DCBX_CONFIG_VERSION_STATIC;
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index 6d3220c66931..fbe26e912300 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -4019,10 +4019,14 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_sub_if_data *sdata,
+ 		if (elems.mbssid_config_ie)
+ 			bss_conf->profile_periodicity =
+ 				elems.mbssid_config_ie->profile_periodicity;
++		else
++			bss_conf->profile_periodicity = 0;
  
- 	p_hwfn->p_dcbx_info->set.enabled = dcbx_info->operational.enabled;
-+	BUILD_BUG_ON(sizeof(dcbx_info->operational.params) !=
-+		     sizeof(p_hwfn->p_dcbx_info->set.config.params));
- 	memcpy(&p_hwfn->p_dcbx_info->set.config.params,
- 	       &dcbx_info->operational.params,
--	       sizeof(struct qed_dcbx_admin_params));
-+	       sizeof(p_hwfn->p_dcbx_info->set.config.params));
- 	p_hwfn->p_dcbx_info->set.config.valid = true;
+ 		if (elems.ext_capab_len >= 11 &&
+ 		    (elems.ext_capab[10] & WLAN_EXT_CAPA11_EMA_SUPPORT))
+ 			bss_conf->ema_ap = true;
++		else
++			bss_conf->ema_ap = false;
  
- 	memcpy(params, &p_hwfn->p_dcbx_info->set, sizeof(struct qed_dcbx_set));
+ 		/* continue assoc process */
+ 		ifmgd->assoc_data->timeout = jiffies;
+@@ -5749,12 +5753,16 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
+ 					      beacon_ies->data, beacon_ies->len);
+ 		if (elem && elem->datalen >= 3)
+ 			sdata->vif.bss_conf.profile_periodicity = elem->data[2];
++		else
++			sdata->vif.bss_conf.profile_periodicity = 0;
+ 
+ 		elem = cfg80211_find_elem(WLAN_EID_EXT_CAPABILITY,
+ 					  beacon_ies->data, beacon_ies->len);
+ 		if (elem && elem->datalen >= 11 &&
+ 		    (elem->data[10] & WLAN_EXT_CAPA11_EMA_SUPPORT))
+ 			sdata->vif.bss_conf.ema_ap = true;
++		else
++			sdata->vif.bss_conf.ema_ap = false;
+ 	} else {
+ 		assoc_data->timeout = jiffies;
+ 		assoc_data->timeout_started = true;
 -- 
 2.30.2
 
