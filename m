@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2385C3AF462
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 20:06:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DF933AF45F
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 20:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232879AbhFUSJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 14:09:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45160 "EHLO mail.kernel.org"
+        id S233375AbhFUSJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 14:09:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45148 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234286AbhFUSFD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234289AbhFUSFD (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 21 Jun 2021 14:05:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 013D26135D;
-        Mon, 21 Jun 2021 17:56:10 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 50E0661408;
+        Mon, 21 Jun 2021 17:56:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624298171;
-        bh=bptRCqEJ8bWyjVb1m8aqTTm0rNWtT6SP2b/8nDtdCHI=;
+        s=k20201202; t=1624298173;
+        bh=CbFnlNy/IEuBD0otczRC5A76VfyeGiM+rihMQ6Kad1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fl22s5WKlG6wKTqbAcp3wgZbhXPFdDN2s/WUsEyeMncRbnucVw9fCHq6rohdoh7hx
-         TnsUaslALgdQ1DIdd5No8CLGzqyd7qNKGHRz5dUzgbyMqeDUnA3crvPcFNHgPVa6/o
-         Dr8JP5ZUvh7kWaApMmsVd4sAYeEt7tvXetH2wk5ZO90H9sOs/ouGFxoXxOSOExBVoH
-         OaUu7WD9Hf3hEB6khIGBJh/GGLzFkltuV0kiSt1A7QS8ocW/JIk14NLX/CJtjTabee
-         QvKO6VEDd62Qc1w7QJ87x8xPT22i0E+nczCDHHk/xrRBnmpCwaAI4VXSSGUsiqAKrX
-         kSO0C1JKw9XRg==
+        b=h9sPiPEPjUkjASNFgwwWe0O+/PqlZpweC80PDlZmD3VRIluOninH5lfms5K6q+mfK
+         5ACNepLpYQPCSincCv3cueFPloqeiyjs4+F+E2CWPGtk4MW0TyvSI0X7utKov3dqxG
+         6rjRRbSJsfm8ZPyZeJx7BGirCE4ieZwe8+wjeeufJZILXMBw0/7H5tERer8ZH1Gtyv
+         qhzfE4ZWT2wjSqjFfGvvVNqI09c2+u8+XLAPFwSrRMDhAVYHK10Cx/zvN6UpzxBQ6I
+         5kHWTCnr3jx4B3rt3sRXzHHd0NqAKogyS8CR5lRAumlaCEJBoepYapWgQEJdct9DFf
+         vEdRvkqslxsyQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 2/9] mac80211: drop multicast fragments
-Date:   Mon, 21 Jun 2021 13:56:00 -0400
-Message-Id: <20210621175608.736581-2-sashal@kernel.org>
+Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 3/9] ping: Check return value of function 'ping_queue_rcv_skb'
+Date:   Mon, 21 Jun 2021 13:56:01 -0400
+Message-Id: <20210621175608.736581-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175608.736581-1-sashal@kernel.org>
 References: <20210621175608.736581-1-sashal@kernel.org>
@@ -42,52 +42,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit a9799541ca34652d9996e45f80e8e03144c12949 ]
+[ Upstream commit 9d44fa3e50cc91691896934d106c86e4027e61ca ]
 
-These are not permitted by the spec, just drop them.
+Function 'ping_queue_rcv_skb' not always return success, which will
+also return fail. If not check the wrong return value of it, lead to function
+`ping_rcv` return success.
 
-Link: https://lore.kernel.org/r/20210609161305.23def022b750.Ibd6dd3cdce573dae262fcdc47f8ac52b883a9c50@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ net/ipv4/ping.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index ae0fba044cd0..bde924968cd2 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -1853,17 +1853,15 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
- 	sc = le16_to_cpu(hdr->seq_ctrl);
- 	frag = sc & IEEE80211_SCTL_FRAG;
+diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+index a3abd136b8e7..56d89dfd8831 100644
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -978,6 +978,7 @@ bool ping_rcv(struct sk_buff *skb)
+ 	struct sock *sk;
+ 	struct net *net = dev_net(skb->dev);
+ 	struct icmphdr *icmph = icmp_hdr(skb);
++	bool rc = false;
  
--	if (is_multicast_ether_addr(hdr->addr1)) {
--		I802_DEBUG_INC(rx->local->dot11MulticastReceivedFrameCount);
--		goto out_no_led;
--	}
--
- 	if (rx->sta)
- 		cache = &rx->sta->frags;
+ 	/* We assume the packet has already been checked by icmp_rcv */
  
- 	if (likely(!ieee80211_has_morefrags(fc) && frag == 0))
- 		goto out;
+@@ -992,14 +993,15 @@ bool ping_rcv(struct sk_buff *skb)
+ 		struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
  
-+	if (is_multicast_ether_addr(hdr->addr1))
-+		return RX_DROP_MONITOR;
+ 		pr_debug("rcv on socket %p\n", sk);
+-		if (skb2)
+-			ping_queue_rcv_skb(sk, skb2);
++		if (skb2 && !ping_queue_rcv_skb(sk, skb2))
++			rc = true;
+ 		sock_put(sk);
+-		return true;
+ 	}
+-	pr_debug("no socket, dropping\n");
+ 
+-	return false;
++	if (!rc)
++		pr_debug("no socket, dropping\n");
 +
- 	I802_DEBUG_INC(rx->local->rx_handlers_fragments);
++	return rc;
+ }
+ EXPORT_SYMBOL_GPL(ping_rcv);
  
- 	if (skb_linearize(rx->skb))
-@@ -1992,7 +1990,6 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
- 
-  out:
- 	ieee80211_led_rx(rx->local);
-- out_no_led:
- 	if (rx->sta)
- 		rx->sta->rx_stats.packets++;
- 	return RX_CONTINUE;
 -- 
 2.30.2
 
