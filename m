@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02C703AE172
+	by mail.lfdr.de (Postfix) with ESMTP id BED403AE174
 	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 03:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230325AbhFUBl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Jun 2021 21:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55478 "EHLO
+        id S230338AbhFUBl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Jun 2021 21:41:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230288AbhFUBlQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 21:41:16 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7622C061756;
-        Sun, 20 Jun 2021 18:39:02 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id r7so12247745qta.12;
-        Sun, 20 Jun 2021 18:39:02 -0700 (PDT)
+        with ESMTP id S230343AbhFUBlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 21:41:20 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0BB6C0617AD;
+        Sun, 20 Jun 2021 18:39:03 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id r20so12306988qtp.3;
+        Sun, 20 Jun 2021 18:39:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=52C1D8Mi7vrn3Fr5v+AnDQW3rLlj6O4hVJCDN9ikfoM=;
-        b=cmSRkCVbqFlzqbMoIgRED841XLSlcXQImnq6EiCqFVFET8nJRYBWUBEPiHfsB7pCaO
-         +k07Cse1m/ehFI2/Mil5hmMNxmI5X1CBBN96kbF5nvbtxidHHWm8QhbDTBxJcDCwcTo9
-         e/Qy3MwVoBtHA80GfhEozKfGhlvYBSMLKfzFlJqwDvQWJr8EMtq+v0Cn7IRNER6NFrJ8
-         ZW0tn9Dc6Cdlo8B4lcg2nk9d4rT3Tg0yCQ1ni9G89EDe00bI6DTo1F3tcejZinmYDPNX
-         uTfjX56C938vvrdsdb2IFbhdPpTAVQzSD0DSlUzx2ntQUB+mLEdJG8RTIC9hgYWvzhAH
-         jMHA==
+        bh=EsLFUQkwoY2X1cIK9k/Du8AhRVxEvbbwUfgHGtcJi3M=;
+        b=oVKCAyQmJtAdBwDd7pY+03eCLxDwGKZ2TFpOL4QJKXPC72EqLm00Z4NWXG32QhOzWg
+         k7Q5yOxUQPHHZN3Rr2tj2r1yzewqBbJh6VJ4srlHa/7Z2WtZGlzMfoylkOgcxg5iW7nR
+         76t0Xnnwm8so41KowF97WEP9ZQR0GKtrw7TKwehR+KnSlV+JiUHfnC+PsPn+aMHr+Zwx
+         I6z/2voTu6Q38Ge4jnPJ9yVnC2Mr+Bbu7DJNmG85VSQ0S8zNmO9x60nZhy3UAAazfLka
+         H0HDKu4ZaXD41F3wpjiiEoqs5GM0HIboCCZd5i2OQwjq8fDktmKTI7nd4QOzVT1TWpic
+         NnNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=52C1D8Mi7vrn3Fr5v+AnDQW3rLlj6O4hVJCDN9ikfoM=;
-        b=ZTWdWB0mtEC3SxBBllENX5PmTNiE41Dz02yxEvr3WeBjAgkBe64DNqBMvy2HBOPhWP
-         dIvhk4PzHOs9hv6SwkZy3HYAElkrLDNOC009BvMM0EQTA7m3NjzQ6z9d3iZxD0wJ/HvD
-         Yqj7siskSifZJS4INFW7Ff6Mszr2fimCnYOSnmNoyXpgPLqCk7cznH/g4cl0aOuW++il
-         pABbBUlY0UVhqRoNdnquBoqhvuAjyf66Ych79VzyhOAj6VWbbfvE1bMM9xxWy3yTPMv/
-         1jstA67qTBDaC3napjQDVGBIibQXWoCIuzocHiOoNeMQmD8nQK8Us+qhHdE7Sw72mqWV
-         fnHw==
-X-Gm-Message-State: AOAM530mjOxxHN79qwxopqYUopx4SlQZ6F5r2b5adNk9JBf21vhDAdcl
-        YT5N+dFWu3AfPgMr7CNXbWyvuxK+1806cA==
-X-Google-Smtp-Source: ABdhPJzNLxefkYqSZV+HkAAqU8/7xOIeYGUQ+kjmftWlB+acD1kEPBz/dvYrRUMlLrEI8VPOOiAYlA==
-X-Received: by 2002:ac8:12c7:: with SMTP id b7mr20993602qtj.243.1624239541910;
-        Sun, 20 Jun 2021 18:39:01 -0700 (PDT)
+        bh=EsLFUQkwoY2X1cIK9k/Du8AhRVxEvbbwUfgHGtcJi3M=;
+        b=nWpO078EPWi5RuSoZRvHbrVllPkwYRZlWgC/IuOHLVBGaaBcAXPKKZojCRwABwgTfo
+         lukpl/oj8ueUGIlJVAAQv6iksvNzzfx4IOJGIjsc7rj8iAXXNFymotR5IxkjCcaeHSxv
+         pGzgtgtXR6yEzaNBcq9VV1C3QWR3q4bbcQqIdY6JnZw2jrB7lR3GVajrhYa5nRqkBPfD
+         xGmw8kI0NUPY8Kfl6IRSTJS4J73bZXpxQTIyaWlsEsSvpNBgdUP9D0CfixNP2WuGtkKj
+         CCprMOl6Rvl7zERQjuQY5ABbeBZ8a9Vcg3uXu1g/m/RTdj/a7oqauNTKoU8XbYzaBPEG
+         ybNQ==
+X-Gm-Message-State: AOAM531Vg+b4e43xOFV7VcunzBaC7CfioDUI+as1KyfONnyoAioDip9n
+        l9A1v1DoXpIDuCJ7rIkXjxWtMRDkYND8vg==
+X-Google-Smtp-Source: ABdhPJzKUfeMx286z+N5z78FLYGTWtNTxykMgh0qc4f6byDn1l5dAE1EPiv2P4ccoIumhmIlsAjjGg==
+X-Received: by 2002:ac8:60ce:: with SMTP id i14mr22043755qtm.262.1624239542982;
+        Sun, 20 Jun 2021 18:39:02 -0700 (PDT)
 Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id bm15sm8429875qkb.76.2021.06.20.18.39.01
+        by smtp.gmail.com with ESMTPSA id t4sm9219108qke.7.2021.06.20.18.39.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Jun 2021 18:39:01 -0700 (PDT)
+        Sun, 20 Jun 2021 18:39:02 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
         kuba@kernel.org,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         linux-sctp@vger.kernel.org
-Subject: [PATCH net-next 10/14] sctp: enable PLPMTUD when the transport is ready
-Date:   Sun, 20 Jun 2021 21:38:45 -0400
-Message-Id: <9b0baa8879804160bb1bb623d4dea5de201fbd7f.1624239422.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 11/14] sctp: remove the unessessary hold for idev in sctp_v6_err
+Date:   Sun, 20 Jun 2021 21:38:46 -0400
+Message-Id: <156f251cbf9f0d94d3c0ecc44f027f54f889e033.1624239422.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1624239422.git.lucien.xin@gmail.com>
 References: <cover.1624239422.git.lucien.xin@gmail.com>
@@ -64,124 +64,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sctp_transport_pl_reset() is called whenever any of these 3 members in
-transport is changed:
-
-  - probe_interval
-  - param_flags & SPP_PMTUD_ENABLE
-  - state == ACTIVE
-
-If all are true, start the PLPMTUD when it's not yet started. If any of
-these is false, stop the PLPMTUD when it's already running.
-
-sctp_transport_pl_update() is called when the transport dst has changed.
-It will restart the PLPMTUD probe. Again, the pathmtu won't change but
-use the dst's mtu until the Search phase is done.
-
-Note that after using PLPMTUD, the pathmtu is only initialized with the
-dst mtu when the transport dst changes. At other time it is updated by
-pl.pmtu. So sctp_transport_pmtu_check() will be called only when PLPMTUD
-is disabled in sctp_packet_config().
-
-After this patch, the PLPMTUD feature from RFC8899 will be activated
-and can be used by users.
+Same as in tcp_v6_err() and __udp6_lib_err(), there's no need to
+hold idev in sctp_v6_err(), so just call __in6_dev_get() instead.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/sctp/associola.c | 4 ++++
- net/sctp/output.c    | 3 ++-
- net/sctp/socket.c    | 6 +++++-
- net/sctp/transport.c | 2 ++
- 4 files changed, 13 insertions(+), 2 deletions(-)
+ net/sctp/ipv6.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index e01895edd3a4..be29da09cc7a 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -716,6 +716,8 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
- 		return NULL;
+diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
+index bd08807c9e44..50ed4de18069 100644
+--- a/net/sctp/ipv6.c
++++ b/net/sctp/ipv6.c
+@@ -126,7 +126,6 @@ static struct notifier_block sctp_inet6addr_notifier = {
+ static int sctp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+ 			u8 type, u8 code, int offset, __be32 info)
+ {
+-	struct inet6_dev *idev;
+ 	struct sock *sk;
+ 	struct sctp_association *asoc;
+ 	struct sctp_transport *transport;
+@@ -135,8 +134,6 @@ static int sctp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+ 	int err, ret = 0;
+ 	struct net *net = dev_net(skb->dev);
+ 
+-	idev = in6_dev_get(skb->dev);
+-
+ 	/* Fix up skb to look at the embedded net header. */
+ 	saveip	 = skb->network_header;
+ 	savesctp = skb->transport_header;
+@@ -147,9 +144,8 @@ static int sctp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+ 	skb->network_header   = saveip;
+ 	skb->transport_header = savesctp;
+ 	if (!sk) {
+-		__ICMP6_INC_STATS(net, idev, ICMP6_MIB_INERRORS);
+-		ret = -ENOENT;
+-		goto out;
++		__ICMP6_INC_STATS(net, __in6_dev_get(skb->dev), ICMP6_MIB_INERRORS);
++		return -ENOENT;
  	}
  
-+	sctp_transport_pl_reset(peer);
-+
- 	/* Attach the remote transport to our asoc.  */
- 	list_add_tail_rcu(&peer->transports, &asoc->peer.transport_addr_list);
- 	asoc->peer.transport_count++;
-@@ -814,6 +816,7 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
- 			spc_state = SCTP_ADDR_CONFIRMED;
+ 	/* Warning:  The sock lock is held.  Remember to call
+@@ -185,10 +181,6 @@ static int sctp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
  
- 		transport->state = SCTP_ACTIVE;
-+		sctp_transport_pl_reset(transport);
- 		break;
- 
- 	case SCTP_TRANSPORT_DOWN:
-@@ -823,6 +826,7 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
- 		 */
- 		if (transport->state != SCTP_UNCONFIRMED) {
- 			transport->state = SCTP_INACTIVE;
-+			sctp_transport_pl_reset(transport);
- 			spc_state = SCTP_ADDR_UNREACHABLE;
- 		} else {
- 			sctp_transport_dst_release(transport);
-diff --git a/net/sctp/output.c b/net/sctp/output.c
-index b78d978de0e5..79a14f74aedc 100644
---- a/net/sctp/output.c
-+++ b/net/sctp/output.c
-@@ -103,7 +103,8 @@ void sctp_packet_config(struct sctp_packet *packet, __u32 vtag,
- 		sctp_transport_route(tp, NULL, sp);
- 		if (asoc->param_flags & SPP_PMTUD_ENABLE)
- 			sctp_assoc_sync_pmtu(asoc);
--	} else if (!sctp_transport_pmtu_check(tp)) {
-+	} else if (!sctp_transport_pl_enabled(tp) &&
-+		   !sctp_transport_pmtu_check(tp)) {
- 		if (asoc->param_flags & SPP_PMTUD_ENABLE)
- 			sctp_assoc_sync_pmtu(asoc);
- 	}
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index aba576f53458..e64e01f61b11 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -2496,6 +2496,7 @@ static int sctp_apply_peer_addr_params(struct sctp_paddrparams *params,
- 				sctp_transport_pmtu(trans, sctp_opt2sk(sp));
- 				sctp_assoc_sync_pmtu(asoc);
- 			}
-+			sctp_transport_pl_reset(trans);
- 		} else if (asoc) {
- 			asoc->param_flags =
- 				(asoc->param_flags & ~SPP_PMTUD) | pmtud_change;
-@@ -4506,6 +4507,7 @@ static int sctp_setsockopt_probe_interval(struct sock *sk,
- 			return -EINVAL;
- 
- 		t->probe_interval = msecs_to_jiffies(probe_interval);
-+		sctp_transport_pl_reset(t);
- 		return 0;
- 	}
- 
-@@ -4522,8 +4524,10 @@ static int sctp_setsockopt_probe_interval(struct sock *sk,
- 	 * each transport.
- 	 */
- 	if (asoc) {
--		list_for_each_entry(t, &asoc->peer.transport_addr_list, transports)
-+		list_for_each_entry(t, &asoc->peer.transport_addr_list, transports) {
- 			t->probe_interval = msecs_to_jiffies(probe_interval);
-+			sctp_transport_pl_reset(t);
-+		}
- 
- 		asoc->probe_interval = msecs_to_jiffies(probe_interval);
- 		return 0;
-diff --git a/net/sctp/transport.c b/net/sctp/transport.c
-index 5cefb4eab8a0..f27b856ea8ce 100644
---- a/net/sctp/transport.c
-+++ b/net/sctp/transport.c
-@@ -259,6 +259,8 @@ void sctp_transport_pmtu(struct sctp_transport *transport, struct sock *sk)
- 		transport->pathmtu = sctp_dst_mtu(transport->dst);
- 	else
- 		transport->pathmtu = SCTP_DEFAULT_MAXSEGMENT;
-+
-+	sctp_transport_pl_update(transport);
+ out_unlock:
+ 	sctp_err_finish(sk, transport);
+-out:
+-	if (likely(idev != NULL))
+-		in6_dev_put(idev);
+-
+ 	return ret;
  }
  
- void sctp_transport_pl_send(struct sctp_transport *t)
 -- 
 2.27.0
 
