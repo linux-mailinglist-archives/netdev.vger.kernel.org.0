@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 514003AF306
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:57:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF8013AF310
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232818AbhFUR6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:58:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39690 "EHLO mail.kernel.org"
+        id S231878AbhFUR6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:58:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39108 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233104AbhFUR40 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 13:56:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 441FB613AB;
-        Mon, 21 Jun 2021 17:53:28 +0000 (UTC)
+        id S232226AbhFUR4d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 13:56:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B9B4561370;
+        Mon, 21 Jun 2021 17:53:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624298008;
-        bh=xMbFFv5Ocj+okRzMU7IVyFe9akyULqkzGAexCMXgzLc=;
+        s=k20201202; t=1624298010;
+        bh=DGjB/1/Rh5eaQuAf30az0AE47WvO2UDmbVpcFSO+vNI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gnv7n3L703utLyEhhNcNg97kkN6TPsvX92F/VCvUMtDleEw5X0gImXs+ADnzIWFoi
-         fkiCdvsOV17ZOFIImd5gejrigxdbQ9mF/Ywqdf81RkCWQZ6dFWagG4djltsnH37cp5
-         lNPrDzwqt7Cpoe05iULiicZUqdJ9bpkFaUXArOcQA7UqQIZTC5lg70akflP6sBlDNA
-         ooxRJBvVoVZWv712tbEFlquA4bRLor2cutvMQEy4fRklnVuQpxDU9SLsarDb89oYMZ
-         2bcRbjHU3DUpK42x8+gSG8sDX6lBQvPKTjB0RdwdwdDsHh6uY2J2j6Iv6+5imuIbV5
-         Aqh0jQBMi4zkg==
+        b=e18Cr6Bw+YFoelwu2eqGG+XZpVkfe7UhWnk2M4xFfRFMsng4dVH6cXWraDaseeogo
+         +TBI9LocRfwOB+G7GEyYU6bqYamjqf3y//eDzsj3jTdnYlwHRUJzFBwUwKr00E19oc
+         2oNEfxqh4TJNYGElK5ZrfqsapH+u0wkfj3HNBDZDGKZ3y/G1fjBe9y8em5UjIgGK77
+         ATFzSX4dk3XNK9H3l6lLsjyco27eNINTk9lRD5wX1kOcKQpH4wm4YJp9fbxQ5WdFky
+         oCgJ8yC4PU4T6JLCTnl83/lTibW7+t0zqmOXoT1U6lpkZ3Wk/OGTJwEi3mbKrUpNt1
+         HiMIawh+VvuLg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
+Cc:     Praneeth Bajjuri <praneeth@ti.com>, Geet Modi <geet.modi@ti.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 19/35] net/packet: annotate data race in packet_sendmsg()
-Date:   Mon, 21 Jun 2021 13:52:44 -0400
-Message-Id: <20210621175300.735437-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 20/35] net: phy: dp83867: perform soft reset and retain established link
+Date:   Mon, 21 Jun 2021 13:52:45 -0400
+Message-Id: <20210621175300.735437-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175300.735437-1-sashal@kernel.org>
 References: <20210621175300.735437-1-sashal@kernel.org>
@@ -42,44 +43,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Praneeth Bajjuri <praneeth@ti.com>
 
-[ Upstream commit d1b5bee4c8be01585033be9b3a8878789285285f ]
+[ Upstream commit da9ef50f545f86ffe6ff786174d26500c4db737a ]
 
-There is a known race in packet_sendmsg(), addressed
-in commit 32d3182cd2cd ("net/packet: fix race in tpacket_snd()")
+Current logic is performing hard reset and causing the programmed
+registers to be wiped out.
 
-Now we have data_race(), we can use it to avoid a future KCSAN warning,
-as syzbot loves stressing af_packet sockets :)
+as per datasheet: https://www.ti.com/lit/ds/symlink/dp83867cr.pdf
+8.6.26 Control Register (CTRL)
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+do SW_RESTART to perform a reset not including the registers,
+If performed when link is already present,
+it will drop the link and trigger re-auto negotiation.
+
+Signed-off-by: Praneeth Bajjuri <praneeth@ti.com>
+Signed-off-by: Geet Modi <geet.modi@ti.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/packet/af_packet.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/phy/dp83867.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index ddb68aa836f7..7892d7074847 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -3033,10 +3033,13 @@ static int packet_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	struct sock *sk = sock->sk;
- 	struct packet_sock *po = pkt_sk(sk);
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 69d3eacc2b96..c716074fdef0 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -792,16 +792,12 @@ static int dp83867_phy_reset(struct phy_device *phydev)
+ {
+ 	int err;
  
--	if (po->tx_ring.pg_vec)
-+	/* Reading tx_ring.pg_vec without holding pg_vec_lock is racy.
-+	 * tpacket_snd() will redo the check safely.
-+	 */
-+	if (data_race(po->tx_ring.pg_vec))
- 		return tpacket_snd(po, msg);
--	else
--		return packet_snd(sock, msg, len);
-+
-+	return packet_snd(sock, msg, len);
+-	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESET);
++	err = phy_write(phydev, DP83867_CTRL, DP83867_SW_RESTART);
+ 	if (err < 0)
+ 		return err;
+ 
+ 	usleep_range(10, 20);
+ 
+-	/* After reset FORCE_LINK_GOOD bit is set. Although the
+-	 * default value should be unset. Disable FORCE_LINK_GOOD
+-	 * for the phy to work properly.
+-	 */
+ 	return phy_modify(phydev, MII_DP83867_PHYCTRL,
+ 			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
  }
- 
- /*
 -- 
 2.30.2
 
