@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C6673AF2B4
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:54:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF9073AF2B9
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:54:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231789AbhFUR4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:56:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39086 "EHLO mail.kernel.org"
+        id S233101AbhFUR4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:56:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39638 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232340AbhFURzM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232341AbhFURzM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 21 Jun 2021 13:55:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C54C961289;
-        Mon, 21 Jun 2021 17:52:48 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 27CF861374;
+        Mon, 21 Jun 2021 17:52:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624297969;
-        bh=5kiAwe2sKo+HYspEPVNuKP3QHogOO1UsdneSrcR1T+I=;
+        s=k20201202; t=1624297970;
+        bh=AITUTjLLUiwKxWCG0zkVTGC0b3FBPZ2goSXXBTpkhVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tPq0L0el3BOoRCQd6oI61+i5fnAdAsfggxu8R4Tr7EHZCLMbdy+IugITh+feWPuY4
-         QmvwXup9vD7u8jxPD1kH9CdvO6roikGIwz0dNYBLSFVYRPxKDu2cf2kTmrlnLNYWRT
-         F1+RGCjqtKUzIvs6ZLzq3mCoVB8HcC1PnvJlnROLhH867FSuAFkUTw+rckfy+Mso4E
-         mQF31aAmfnSkbp9EhwQa24NR+6ctaaMzGYwm8Ow1GWBI1J7cZegoN38x6ZRc+prr4s
-         CSA6F+UIByrHg3Fw3bmYN6L5v1TBEEllkxzdcnbvc+0ycd/pA9o58bq0yfAAk6N6h2
-         Y9juYGtrleFOA==
+        b=faCw9DquiMVDuSC5yqYx86ZZpMW3kcJDf0cE/+O3uPs2Z6IBesGqp8vr7EjpZtVkx
+         A8MyB1nvVgsI6qLsqjBo38x0SrcfRxMPT2DgjKIZRBLlxbuVUtDDRGg8gJVBFIXIIE
+         +2l5N1Rg2xEAM4oC93BipG7dRNXOBVenxn2ySQEdHUG655RPzmvaTEPAinU2ww73V/
+         NBaM8C6wpPFCkWk2knkxwbcr5NgNghNqwzObl8v5nNjhS7cqeCr3Xm/xlHHBBnSE8e
+         T/yitm+wUeF5r+Ixe05y3tgPcrShULEZe+xHvF7WYHxWRGDJoGa3v3WYny5Q7i/bta
+         3YBqZG5iNy69A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 33/39] mac80211: reset profile_periodicity/ema_ap
-Date:   Mon, 21 Jun 2021 13:51:49 -0400
-Message-Id: <20210621175156.735062-33-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 34/39] mac80211: handle various extensible elements correctly
+Date:   Mon, 21 Jun 2021 13:51:50 -0400
+Message-Id: <20210621175156.735062-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175156.735062-1-sashal@kernel.org>
 References: <20210621175156.735062-1-sashal@kernel.org>
@@ -45,57 +45,124 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit bbc6f03ff26e7b71d6135a7b78ce40e7dee3d86a ]
+[ Upstream commit 652e8363bbc7d149fa194a5cbf30b1001c0274b0 ]
 
-Apparently we never clear these values, so they'll remain set
-since the setting of them is conditional. Clear the values in
-the relevant other cases.
+Various elements are parsed with a requirement to have an
+exact size, when really we should only check that they have
+the minimum size that we need. Check only that and therefore
+ignore any additional data that they might carry.
 
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210618133832.316e32d136a9.I2a12e51814258e1e1b526103894f4b9f19a91c8d@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20210618133832.cd101f8040a4.Iadf0e9b37b100c6c6e79c7b298cc657c2be9151a@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mlme.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/mac80211/util.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 0fe91dc9817e..437d88822d8f 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -4062,10 +4062,14 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_sub_if_data *sdata,
- 		if (elems.mbssid_config_ie)
- 			bss_conf->profile_periodicity =
- 				elems.mbssid_config_ie->profile_periodicity;
-+		else
-+			bss_conf->profile_periodicity = 0;
+diff --git a/net/mac80211/util.c b/net/mac80211/util.c
+index c0fa526a45b4..b18150d36cb2 100644
+--- a/net/mac80211/util.c
++++ b/net/mac80211/util.c
+@@ -955,7 +955,7 @@ static void ieee80211_parse_extension_element(u32 *crc,
  
- 		if (elems.ext_capab_len >= 11 &&
- 		    (elems.ext_capab[10] & WLAN_EXT_CAPA11_EMA_SUPPORT))
- 			bss_conf->ema_ap = true;
-+		else
-+			bss_conf->ema_ap = false;
+ 	switch (elem->data[0]) {
+ 	case WLAN_EID_EXT_HE_MU_EDCA:
+-		if (len == sizeof(*elems->mu_edca_param_set)) {
++		if (len >= sizeof(*elems->mu_edca_param_set)) {
+ 			elems->mu_edca_param_set = data;
+ 			if (crc)
+ 				*crc = crc32_be(*crc, (void *)elem,
+@@ -976,7 +976,7 @@ static void ieee80211_parse_extension_element(u32 *crc,
+ 		}
+ 		break;
+ 	case WLAN_EID_EXT_UORA:
+-		if (len == 1)
++		if (len >= 1)
+ 			elems->uora_element = data;
+ 		break;
+ 	case WLAN_EID_EXT_MAX_CHANNEL_SWITCH_TIME:
+@@ -984,7 +984,7 @@ static void ieee80211_parse_extension_element(u32 *crc,
+ 			elems->max_channel_switch_time = data;
+ 		break;
+ 	case WLAN_EID_EXT_MULTIPLE_BSSID_CONFIGURATION:
+-		if (len == sizeof(*elems->mbssid_config_ie))
++		if (len >= sizeof(*elems->mbssid_config_ie))
+ 			elems->mbssid_config_ie = data;
+ 		break;
+ 	case WLAN_EID_EXT_HE_SPR:
+@@ -993,7 +993,7 @@ static void ieee80211_parse_extension_element(u32 *crc,
+ 			elems->he_spr = data;
+ 		break;
+ 	case WLAN_EID_EXT_HE_6GHZ_CAPA:
+-		if (len == sizeof(*elems->he_6ghz_capa))
++		if (len >= sizeof(*elems->he_6ghz_capa))
+ 			elems->he_6ghz_capa = data;
+ 		break;
+ 	}
+@@ -1082,14 +1082,14 @@ _ieee802_11_parse_elems_crc(const u8 *start, size_t len, bool action,
  
- 		/* continue assoc process */
- 		ifmgd->assoc_data->timeout = jiffies;
-@@ -5802,12 +5806,16 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
- 					      beacon_ies->data, beacon_ies->len);
- 		if (elem && elem->datalen >= 3)
- 			sdata->vif.bss_conf.profile_periodicity = elem->data[2];
-+		else
-+			sdata->vif.bss_conf.profile_periodicity = 0;
- 
- 		elem = cfg80211_find_elem(WLAN_EID_EXT_CAPABILITY,
- 					  beacon_ies->data, beacon_ies->len);
- 		if (elem && elem->datalen >= 11 &&
- 		    (elem->data[10] & WLAN_EXT_CAPA11_EMA_SUPPORT))
- 			sdata->vif.bss_conf.ema_ap = true;
-+		else
-+			sdata->vif.bss_conf.ema_ap = false;
- 	} else {
- 		assoc_data->timeout = jiffies;
- 		assoc_data->timeout_started = true;
+ 		switch (id) {
+ 		case WLAN_EID_LINK_ID:
+-			if (elen + 2 != sizeof(struct ieee80211_tdls_lnkie)) {
++			if (elen + 2 < sizeof(struct ieee80211_tdls_lnkie)) {
+ 				elem_parse_failed = true;
+ 				break;
+ 			}
+ 			elems->lnk_id = (void *)(pos - 2);
+ 			break;
+ 		case WLAN_EID_CHAN_SWITCH_TIMING:
+-			if (elen != sizeof(struct ieee80211_ch_switch_timing)) {
++			if (elen < sizeof(struct ieee80211_ch_switch_timing)) {
+ 				elem_parse_failed = true;
+ 				break;
+ 			}
+@@ -1252,7 +1252,7 @@ _ieee802_11_parse_elems_crc(const u8 *start, size_t len, bool action,
+ 			elems->sec_chan_offs = (void *)pos;
+ 			break;
+ 		case WLAN_EID_CHAN_SWITCH_PARAM:
+-			if (elen !=
++			if (elen <
+ 			    sizeof(*elems->mesh_chansw_params_ie)) {
+ 				elem_parse_failed = true;
+ 				break;
+@@ -1261,7 +1261,7 @@ _ieee802_11_parse_elems_crc(const u8 *start, size_t len, bool action,
+ 			break;
+ 		case WLAN_EID_WIDE_BW_CHANNEL_SWITCH:
+ 			if (!action ||
+-			    elen != sizeof(*elems->wide_bw_chansw_ie)) {
++			    elen < sizeof(*elems->wide_bw_chansw_ie)) {
+ 				elem_parse_failed = true;
+ 				break;
+ 			}
+@@ -1280,7 +1280,7 @@ _ieee802_11_parse_elems_crc(const u8 *start, size_t len, bool action,
+ 			ie = cfg80211_find_ie(WLAN_EID_WIDE_BW_CHANNEL_SWITCH,
+ 					      pos, elen);
+ 			if (ie) {
+-				if (ie[1] == sizeof(*elems->wide_bw_chansw_ie))
++				if (ie[1] >= sizeof(*elems->wide_bw_chansw_ie))
+ 					elems->wide_bw_chansw_ie =
+ 						(void *)(ie + 2);
+ 				else
+@@ -1324,7 +1324,7 @@ _ieee802_11_parse_elems_crc(const u8 *start, size_t len, bool action,
+ 			elems->cisco_dtpc_elem = pos;
+ 			break;
+ 		case WLAN_EID_ADDBA_EXT:
+-			if (elen != sizeof(struct ieee80211_addba_ext_ie)) {
++			if (elen < sizeof(struct ieee80211_addba_ext_ie)) {
+ 				elem_parse_failed = true;
+ 				break;
+ 			}
+@@ -1350,7 +1350,7 @@ _ieee802_11_parse_elems_crc(const u8 *start, size_t len, bool action,
+ 							  elem, elems);
+ 			break;
+ 		case WLAN_EID_S1G_CAPABILITIES:
+-			if (elen == sizeof(*elems->s1g_capab))
++			if (elen >= sizeof(*elems->s1g_capab))
+ 				elems->s1g_capab = (void *)pos;
+ 			else
+ 				elem_parse_failed = true;
 -- 
 2.30.2
 
