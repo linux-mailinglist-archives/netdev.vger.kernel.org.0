@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4FCD3AF28E
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:53:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B87EC3AF294
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:53:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232437AbhFURzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:55:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39084 "EHLO mail.kernel.org"
+        id S232507AbhFURzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:55:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39086 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232108AbhFURyr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232109AbhFURyr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 21 Jun 2021 13:54:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6037F61358;
-        Mon, 21 Jun 2021 17:52:28 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2D6426134F;
+        Mon, 21 Jun 2021 17:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624297949;
-        bh=TFsLptV+Gk/46Iv+9WR3cQkcgg/VYlaSV+xb4rG/ulE=;
+        s=k20201202; t=1624297950;
+        bh=gdwqziYej5UQV+KrdT1l+V7grfC5iPSlLrDqLs8FbAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ufRTYx0DAOz5h/lcVF84YGwYiPGgPfjjZedttU2otCnt/UlUHCFLROAcbsMnI3r6F
-         I8d1B0/jjQ9+ixFFDs3R6s7tBsQwugrSTshNMPzhoDVbCxz/Uuv4p62NK//LIVYQIg
-         nYr+qZ4O1woA1O0Qnjm0HalvYHwfnDabvOmVV4i4qhrC7p9J/3N+i+LAFpFOfdaCiH
-         +xbZaECPkze1JY/SfWEcKDtamriuVUN9xyV3fkvYAYcZB1NB3imdSEc43KRp4opOCz
-         wBerbo3AL+FKM3L7MQN1o6Vz6D/r3ryd2Mp3llWwT9cVnYf9TlQ0oYI/YEUCoZm+Os
-         yPjDYNsyFLt4w==
+        b=tgMH0AyxXw2MXGTQ4+VAOV/5JQn81co8jdg4fp7uAE6CK4JiJdwFPmP+7WaheEfaL
+         35QRQQ1bo1XAQtmOEGVxgJJ34DEKUe5R1t/cpjDU2LZt/M1rDZA/vOZpCOrNBqTSzm
+         NAUror4KdbODYbe0pzRUYEjaEsKONuv02BmiV3yggJhpIZgd7Efhr+cmnW4Hh6XivY
+         skUH9u7S7hmkEdI4e0Hy2M9M+gaVv2C7AZ8vC/H5PLzybHvsgMqykBbpQ6gskgpklX
+         AmrdtUaSNJKUFlIn29esLkr4v6Ns32ZMz3sX1MCnvbi49LQjZ0sTYFGEsaZzwFvdOF
+         zf9jMsHK49aRg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 19/39] inet: annotate date races around sk->sk_txhash
-Date:   Mon, 21 Jun 2021 13:51:35 -0400
-Message-Id: <20210621175156.735062-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 20/39] net/packet: annotate data race in packet_sendmsg()
+Date:   Mon, 21 Jun 2021 13:51:36 -0400
+Message-Id: <20210621175156.735062-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175156.735062-1-sashal@kernel.org>
 References: <20210621175156.735062-1-sashal@kernel.org>
@@ -45,93 +44,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit b71eaed8c04f72a919a9c44e83e4ee254e69e7f3 ]
+[ Upstream commit d1b5bee4c8be01585033be9b3a8878789285285f ]
 
-UDP sendmsg() path can be lockless, it is possible for another
-thread to re-connect an change sk->sk_txhash under us.
+There is a known race in packet_sendmsg(), addressed
+in commit 32d3182cd2cd ("net/packet: fix race in tpacket_snd()")
 
-There is no serious impact, but we can use READ_ONCE()/WRITE_ONCE()
-pair to document the race.
-
-BUG: KCSAN: data-race in __ip4_datagram_connect / skb_set_owner_w
-
-write to 0xffff88813397920c of 4 bytes by task 30997 on cpu 1:
- sk_set_txhash include/net/sock.h:1937 [inline]
- __ip4_datagram_connect+0x69e/0x710 net/ipv4/datagram.c:75
- __ip6_datagram_connect+0x551/0x840 net/ipv6/datagram.c:189
- ip6_datagram_connect+0x2a/0x40 net/ipv6/datagram.c:272
- inet_dgram_connect+0xfd/0x180 net/ipv4/af_inet.c:580
- __sys_connect_file net/socket.c:1837 [inline]
- __sys_connect+0x245/0x280 net/socket.c:1854
- __do_sys_connect net/socket.c:1864 [inline]
- __se_sys_connect net/socket.c:1861 [inline]
- __x64_sys_connect+0x3d/0x50 net/socket.c:1861
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff88813397920c of 4 bytes by task 31039 on cpu 0:
- skb_set_hash_from_sk include/net/sock.h:2211 [inline]
- skb_set_owner_w+0x118/0x220 net/core/sock.c:2101
- sock_alloc_send_pskb+0x452/0x4e0 net/core/sock.c:2359
- sock_alloc_send_skb+0x2d/0x40 net/core/sock.c:2373
- __ip6_append_data+0x1743/0x21a0 net/ipv6/ip6_output.c:1621
- ip6_make_skb+0x258/0x420 net/ipv6/ip6_output.c:1983
- udpv6_sendmsg+0x160a/0x16b0 net/ipv6/udp.c:1527
- inet6_sendmsg+0x5f/0x80 net/ipv6/af_inet6.c:642
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0x360/0x4d0 net/socket.c:2350
- ___sys_sendmsg net/socket.c:2404 [inline]
- __sys_sendmmsg+0x315/0x4b0 net/socket.c:2490
- __do_sys_sendmmsg net/socket.c:2519 [inline]
- __se_sys_sendmmsg net/socket.c:2516 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2516
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0xbca3c43d -> 0xfdb309e0
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 31039 Comm: syz-executor.2 Not tainted 5.13.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Now we have data_race(), we can use it to avoid a future KCSAN warning,
+as syzbot loves stressing af_packet sockets :)
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sock.h | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ net/packet/af_packet.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index b98c80a7c7ae..b9bdeca1d784 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1928,7 +1928,8 @@ static inline u32 net_tx_rndhash(void)
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index c52557ec7fb3..84d8921391c3 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -3034,10 +3034,13 @@ static int packet_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 	struct sock *sk = sock->sk;
+ 	struct packet_sock *po = pkt_sk(sk);
  
- static inline void sk_set_txhash(struct sock *sk)
- {
--	sk->sk_txhash = net_tx_rndhash();
-+	/* This pairs with READ_ONCE() in skb_set_hash_from_sk() */
-+	WRITE_ONCE(sk->sk_txhash, net_tx_rndhash());
- }
- 
- static inline bool sk_rethink_txhash(struct sock *sk)
-@@ -2200,9 +2201,12 @@ static inline void sock_poll_wait(struct file *filp, struct socket *sock,
- 
- static inline void skb_set_hash_from_sk(struct sk_buff *skb, struct sock *sk)
- {
--	if (sk->sk_txhash) {
-+	/* This pairs with WRITE_ONCE() in sk_set_txhash() */
-+	u32 txhash = READ_ONCE(sk->sk_txhash);
+-	if (po->tx_ring.pg_vec)
++	/* Reading tx_ring.pg_vec without holding pg_vec_lock is racy.
++	 * tpacket_snd() will redo the check safely.
++	 */
++	if (data_race(po->tx_ring.pg_vec))
+ 		return tpacket_snd(po, msg);
+-	else
+-		return packet_snd(sock, msg, len);
 +
-+	if (txhash) {
- 		skb->l4_hash = 1;
--		skb->hash = sk->sk_txhash;
-+		skb->hash = txhash;
- 	}
++	return packet_snd(sock, msg, len);
  }
  
+ /*
 -- 
 2.30.2
 
