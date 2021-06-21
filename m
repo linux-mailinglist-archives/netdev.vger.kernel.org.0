@@ -2,160 +2,327 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 071AC3AE6E5
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 12:19:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF9743AE6F2
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 12:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbhFUKVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 06:21:32 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:18566 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229707AbhFUKVb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 06:21:31 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15LACUIp030256;
-        Mon, 21 Jun 2021 03:19:14 -0700
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2172.outbound.protection.outlook.com [104.47.57.172])
-        by mx0b-0016f401.pphosted.com with ESMTP id 39ap170jac-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Jun 2021 03:19:14 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QDU5YwRPOaUH0jAcmgX3oXw2dKPengwVlHetVgWLoKt+1vSlq/dqP3A280BR+igLy0xHEBTmXoDOsK4JDNjr+FDyttzJhrCOT/4qVDUzdCP4KkKAUK6AMMnIfFCpGIFEcvNQKRFxO38S1R8EUDQc88yBmjW0II5GSbzHiXTpKQJtzsWlvcdJk+Zpib+GV58otF+0xAAMkw8AqQsir1h4RufACjuFo8Lzd8iINSOu3IjFeStFhft+iJfhB1q23Ve+l0utOlP/OD+gMF7TUZj7u77AMeTv61JhMdehnW8YWEs/hGTWjxaVOEGpFiLROIwzqweaKKG5ZsmncluBBphVPw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V/gb/yeWajARFxqTQT7nz6TUhWVBDVLjlfGocd4p24c=;
- b=XJHeJEsZrEY60/n9d0yJ0Kkp1RCLNs/2oBHHepq8mhjaO6xicsIqCULFZab6DUbNakSWkGsa3lhmOQ91qnB82+S4ivfRcMbv3A8mki0OlEylu+ci9FxT6Thjn7iM15LDigTrX67aNWVbIbwEYG6vchuosA79KT5cnPz6O1Z1HtQVxNdAbJh8DJdupyWZTSTlym/abZGVpJGLriZ/K5nDFeftu8YVpWfLVNm0Kcr9uoXcbsP1Sqj5yZihpaFXuQMs2wDNNcuUMdJjgRsRcRPvxzGYKd9KbSRKSFjsZStmTq3kXLFNsmDEelzOfeFqEIdaTXkmgqOIScIGzj9YfUV+LQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V/gb/yeWajARFxqTQT7nz6TUhWVBDVLjlfGocd4p24c=;
- b=BUos6O5nqkgkipCTylqN85aIIDSIeN3wqwEqqQahE+ntaI38HHPHxDa1G+QeSMayINc/6fBhrenZayMn47/g+dkFN1+H9cdsoaybQBIFt/2pxgrzRZntkelPT6Pk/UMidWu3mOEjTSLyF/MenE+zIhbhKsAET7NeJVfAKZ+W5p8=
-Received: from CO1PR18MB4666.namprd18.prod.outlook.com (2603:10b6:303:e5::24)
- by CO1PR18MB4698.namprd18.prod.outlook.com (2603:10b6:303:e5::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.23; Mon, 21 Jun
- 2021 10:19:11 +0000
-Received: from CO1PR18MB4666.namprd18.prod.outlook.com
- ([fe80::681a:e55b:2953:afe5]) by CO1PR18MB4666.namprd18.prod.outlook.com
- ([fe80::681a:e55b:2953:afe5%9]) with mapi id 15.20.4242.023; Mon, 21 Jun 2021
- 10:19:11 +0000
-From:   Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
-To:     Kees Cook <keescook@chromium.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>
-Subject: Re: [EXT] Re: [net-next PATCH 1/5] octeontx2-af: cn10k: Bandwidth
- profiles config support
-Thread-Topic: [EXT] Re: [net-next PATCH 1/5] octeontx2-af: cn10k: Bandwidth
- profiles config support
-Thread-Index: AQHXZFwbbdZx5wbeFki/50YI88FgR6seRLwY
-Date:   Mon, 21 Jun 2021 10:19:10 +0000
-Message-ID: <CO1PR18MB46661477EC162BF123B79FE0A10A9@CO1PR18MB4666.namprd18.prod.outlook.com>
-References: <1623756871-12524-1-git-send-email-sbhatta@marvell.com>
- <1623756871-12524-2-git-send-email-sbhatta@marvell.com>,<202106180903.E89363BB@keescook>
-In-Reply-To: <202106180903.E89363BB@keescook>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: chromium.org; dkim=none (message not signed)
- header.d=none;chromium.org; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [124.123.169.24]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7acc9e19-e88c-4c5e-72c2-08d9349e0311
-x-ms-traffictypediagnostic: CO1PR18MB4698:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CO1PR18MB46982D6659008351282DB25DA10A9@CO1PR18MB4698.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3276;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LpO6ky/1nIbRN1tt3P2U7g+4q8A05s2crYzPyya9Fquo6VvbeOko78AzDPybyuTBdjCn599IS8+3rEcPDsJ3dUd8AntTBwhQxz0m0cIF9RpRs8AeXoZPThhWnWvhvZhip6scB5/VsxtH7UhGKkIhIbZ1IH9XR0GfxtWLg2aQVF4xsfpkjmKlum7L1escq2FHZjk3ugOsToUC2O0ZYwz2bWN3FdIeohBbcb6B/YodQMmrrSsaf/3kRyr2iJwB/Uxl5pfbOnpKCfR15+KfY4DtT+F1ydLJHI2x/5lKGB5xzt2TOemSlHacGE1d9ex2QvP1VfcJS8PkQgVYiloGvdznG5EyJa/MkrwHO4XOCMc4kmtUsIkX0GhB0NaHh7e8tfPOFJs9P9g3U+JPFeOAyBxHFUofX/1sTIU1CK4XuozcgWr7u7mSsgQLBMWNy/mVK03jfyblgJXV/w38mfhOKdeoe8O0cqR4aDs5MFZ9WJUHlL7isQXrdDIuDdCOioDkqH2j2UPW26crsaRSk6kKsk8WVch+xV+LtIvLSN7pXEUqMekpBVzL0i5qZvO9gYqbRgftiy1Fq+s1bKOxpceFZRXdWw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR18MB4666.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(366004)(376002)(396003)(346002)(66476007)(66556008)(33656002)(76116006)(66946007)(4326008)(52536014)(66446008)(54906003)(7696005)(91956017)(64756008)(2906002)(107886003)(478600001)(53546011)(316002)(86362001)(122000001)(186003)(8936002)(9686003)(5660300002)(6916009)(55016002)(38100700002)(71200400001)(6506007)(26005)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?7n3Cy2WtpEJHh4W58M8p6l27cLkERebbyJBuXYERfLxPCCWvAAFXjMxozkOT?=
- =?us-ascii?Q?iZNrCnACPpaU8nK3WKoJavJsJIWHhokvhRmH3hWjYAS6mJT/2tuMiSLoKQhu?=
- =?us-ascii?Q?+qLRQDv+zX7WliyMsZm0v/wY0owyYk4PH1AW4hPoo2d/+DFYyBR1LvePv9UW?=
- =?us-ascii?Q?aj8D5riy/yTpiIGtsF/6YbVFxK+X/f3RrsRh5JyRvwUpySmg71V2SsdN2mXZ?=
- =?us-ascii?Q?YdWnJRfS9Wfv+2spjVr/yZwwd1I95+xb5W+sUVymcnzjhR/aAGI0XXfXrN7p?=
- =?us-ascii?Q?EiChurXy0nRWsnOlCTRe90L5R2k18Ql7RwmoqBgZq2+hqbF1BsUho1PchIj8?=
- =?us-ascii?Q?+bHwfQCbl47M2uQ6YHeMsvTeH12U4WFkp3D9Cus+olXDNzBZmXR/a2t2Vk/P?=
- =?us-ascii?Q?ZxBuy2KN4F2CZ8XQaMkrSKSpC7Mws7DhCAlicy7SrzXnCOBHhItJ4QfI2KNX?=
- =?us-ascii?Q?4rIMCm9ej8t9StROADfbOwmAFjuv4u4UZ7qdhYPh3mpIZCVjzfVgUDA9KzSX?=
- =?us-ascii?Q?69Va0pB6MrV1b0t64VCAHgT2JpQO2rn+pVzVTs1A3vRP2B2GzzdQay6xsVid?=
- =?us-ascii?Q?fHjskwcbVkeKnfIIbFPHAJF5JdeQDErqUqZIY/WrvZpBA5hu4J9aIHiNU/Jh?=
- =?us-ascii?Q?hos2MjWFnYMuD2Qb8HZirtFWjmJSKo3Ld1GtxDAb9tPkmJRIZ8C9yy/ShWCz?=
- =?us-ascii?Q?lyjyf9DrMMNw24KBby9FLh5vIQMjBe8KWJyltdJRZgYbvvxC66zezgi5lK42?=
- =?us-ascii?Q?0Fny5Jc+KsgSQTNVP7E27lUjFIadskIBOleFrFzAylcSsVY+NWTFOJbYb8Nd?=
- =?us-ascii?Q?uK9HjklySmT2sMYGUwZGUJ5HXMfhP5zcM07y02wYOSOWhC93wngXBlZ8LtiQ?=
- =?us-ascii?Q?v8S+9SAQtJtifYXqMkUPgkihH9SvEkJcJoKzvShJNILP/EyeKuID4cOPN0Ft?=
- =?us-ascii?Q?RfjYgbwF1USJhozGvH2D88ECXWfXyP+sbWdfxK1bT5mSyQSRLtZUtKYBKrxJ?=
- =?us-ascii?Q?JtKGrYXzwRiXqUE8fMK+p+LucDVkIsQrGiu6E2suQrlTKSrGYT76+lxtttH9?=
- =?us-ascii?Q?6szd1TzvWte1PtEpC25MQNjdHzykHI7xaxyQqM63wMtdZbVlU8dz83UVMspj?=
- =?us-ascii?Q?lW8XC+rYVM263xjIZEpxgXYXmbd9vK2LWq1vTn+IquspFjxFVTHJUa4lrKtQ?=
- =?us-ascii?Q?8sm8XpIMEQ8aQxepyWYXZWlNJM//plFs63vHvrPOvouiczPhav0M0lsxPMGZ?=
- =?us-ascii?Q?iwMyDseX8CNDzEijhhfT9Eeshd8jaei4U3uawyNIEtskviBMFUpMn9KHHiG1?=
- =?us-ascii?Q?jhY=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S229908AbhFUKZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 06:25:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34767 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229621AbhFUKZk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 06:25:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624271006;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=17jrUzT4jshvnBr/GQQE2JZlgBMr8a3t05HmI0DNTg4=;
+        b=AJmnOAq+jmNmfyYJ72L0s8qgjDHwT7fxoD88WCbGIrcaLImbM84LHQa9rHWBs/y851XLRk
+        6Al0WIssDlH2a3ar5R5ZLSoRlcpGHPIwF+kjuYuPXGqfxGAZ/0E87asJT8Ov0xVJUu7tZE
+        u/kx/theVZWkp5PDYXWYAubhJcOfNTU=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-332-o4QlPwxZOZOBzF6XTFpbLw-1; Mon, 21 Jun 2021 06:23:24 -0400
+X-MC-Unique: o4QlPwxZOZOBzF6XTFpbLw-1
+Received: by mail-ej1-f70.google.com with SMTP id k1-20020a17090666c1b029041c273a883dso6181521ejp.3
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 03:23:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=17jrUzT4jshvnBr/GQQE2JZlgBMr8a3t05HmI0DNTg4=;
+        b=gbkXbWWJm81UXXK8D4+ZoPQTAXnughSZYDhtF8syf3lqznGa5bRD9jyVtftHF/fFYx
+         gQtpMzqL7h/ks+zhiF9F0vQ4cnD7yLMQsdvXZ2mrwZgKhOdUxoOruro5NNGsVwnoJFs8
+         uaq+T0igoohXNBccpiVUe/93mrCq1Fsg2DRLuHlOjiYEIGAiN/35NcJhkmpd64jjWz1R
+         J6yzr7t4gbrCbhxqbEGPDjCSObvIxH1Aw+emtm00bZZUmsZDrWP0ROQHZYS2fT9Lls/y
+         kKkHicEX/vDuu6shklNoarXMW6IcckeNeQSTHN0fbAPKNunUzyR5ANz+vfevNQAx/eVW
+         S5mA==
+X-Gm-Message-State: AOAM533SfFMzKaRzUo+ETuAISoxVpkZA3TxsxSjtuvyBxXid/Q8xEh8o
+        Mmea4KXapgfClIwtJAOJUBjlvHIhQDP5iaTzVt3cnRX9BiMSbECoj9/CeiyFuV3YoDWHw3xtfch
+        xRjbSK+5vqW5/f+Dn
+X-Received: by 2002:aa7:cd9a:: with SMTP id x26mr20286031edv.185.1624271003538;
+        Mon, 21 Jun 2021 03:23:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwCpoPvlmrYqsoTqeuc70ych3y5ZMPCLAOlDvljTKxKtpookqp3Z/KFfPo8f0D5bYXz/2+t4w==
+X-Received: by 2002:aa7:cd9a:: with SMTP id x26mr20286013edv.185.1624271003350;
+        Mon, 21 Jun 2021 03:23:23 -0700 (PDT)
+Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
+        by smtp.gmail.com with ESMTPSA id ch17sm10434983edb.42.2021.06.21.03.23.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Jun 2021 03:23:22 -0700 (PDT)
+Date:   Mon, 21 Jun 2021 12:23:20 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+Subject: Re: [MASSMAIL KLMS] Re: [PATCH v11 11/18] virtio/vsock: dequeue
+ callback for SOCK_SEQPACKET
+Message-ID: <20210621102320.4uaqaee74yynnn2q@steredhat>
+References: <20210611110744.3650456-1-arseny.krasnov@kaspersky.com>
+ <20210611111241.3652274-1-arseny.krasnov@kaspersky.com>
+ <20210618134423.mksgnbmchmow4sgh@steredhat.lan>
+ <bb323125-f802-1d16-7530-6e4f4abb00a6@kaspersky.com>
+ <20210618155555.j5p4v6j5gk2dboj3@steredhat.lan>
+ <650673dc-8b29-657e-5bbd-2cc974628ec9@kaspersky.com>
+ <20210618162509.yppkajmvcbzvidy4@steredhat.lan>
+ <31f58b17-02e6-4246-5ad8-7e8d7892ecb7@kaspersky.com>
+ <b27d3fd1-fa8a-97ff-9035-cf3f525d5866@kaspersky.com>
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR18MB4666.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7acc9e19-e88c-4c5e-72c2-08d9349e0311
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2021 10:19:10.9572
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YeEA8fYFOAXI3uTgKBx1InSWI+ghbT+RbeJGIjc4Lrv5q+Cj/uCxRi6vYYPvDbMp01l8dHgOmmNILxhjRHIkgA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR18MB4698
-X-Proofpoint-GUID: n9k0sBqunWhN9ZJ_QaEviCdFswWmYkAv
-X-Proofpoint-ORIG-GUID: n9k0sBqunWhN9ZJ_QaEviCdFswWmYkAv
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-06-21_03:2021-06-21,2021-06-21 signatures=0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b27d3fd1-fa8a-97ff-9035-cf3f525d5866@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kees Cook,
+On Mon, Jun 21, 2021 at 09:55:13AM +0300, Arseny Krasnov wrote:
+>
+>On 18.06.2021 19:26, Arseny Krasnov wrote:
+>> On 18.06.2021 19:25, Stefano Garzarella wrote:
+>>> On Fri, Jun 18, 2021 at 07:08:30PM +0300, Arseny Krasnov wrote:
+>>>> On 18.06.2021 18:55, Stefano Garzarella wrote:
+>>>>> On Fri, Jun 18, 2021 at 06:04:37PM +0300, Arseny Krasnov wrote:
+>>>>>> On 18.06.2021 16:44, Stefano Garzarella wrote:
+>>>>>>> Hi Arseny,
+>>>>>>> the series looks great, I have just a question below about
+>>>>>>> seqpacket_dequeue.
+>>>>>>>
+>>>>>>> I also sent a couple a simple fixes, it would be great if you can review
+>>>>>>> them:
+>>>>>>> https://lore.kernel.org/netdev/20210618133526.300347-1-sgarzare@redhat.com/
+>>>>>>>
+>>>>>>>
+>>>>>>> On Fri, Jun 11, 2021 at 02:12:38PM +0300, Arseny Krasnov wrote:
+>>>>>>>> Callback fetches RW packets from rx queue of socket until whole record
+>>>>>>>> is copied(if user's buffer is full, user is not woken up). This is done
+>>>>>>>> to not stall sender, because if we wake up user and it leaves syscall,
+>>>>>>>> nobody will send credit update for rest of record, and sender will wait
+>>>>>>>> for next enter of read syscall at receiver's side. So if user buffer is
+>>>>>>>> full, we just send credit update and drop data.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>>>>>>>> ---
+>>>>>>>> v10 -> v11:
+>>>>>>>> 1) 'msg_count' field added to count current number of EORs.
+>>>>>>>> 2) 'msg_ready' argument removed from callback.
+>>>>>>>> 3) If 'memcpy_to_msg()' failed during copy loop, there will be
+>>>>>>>>    no next attempts to copy data, rest of record will be freed.
+>>>>>>>>
+>>>>>>>> include/linux/virtio_vsock.h            |  5 ++
+>>>>>>>> net/vmw_vsock/virtio_transport_common.c | 84 +++++++++++++++++++++++++
+>>>>>>>> 2 files changed, 89 insertions(+)
+>>>>>>>>
+>>>>>>>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>>>>>>>> index dc636b727179..1d9a302cb91d 100644
+>>>>>>>> --- a/include/linux/virtio_vsock.h
+>>>>>>>> +++ b/include/linux/virtio_vsock.h
+>>>>>>>> @@ -36,6 +36,7 @@ struct virtio_vsock_sock {
+>>>>>>>> 	u32 rx_bytes;
+>>>>>>>> 	u32 buf_alloc;
+>>>>>>>> 	struct list_head rx_queue;
+>>>>>>>> +	u32 msg_count;
+>>>>>>>> };
+>>>>>>>>
+>>>>>>>> struct virtio_vsock_pkt {
+>>>>>>>> @@ -80,6 +81,10 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+>>>>>>>> 			       struct msghdr *msg,
+>>>>>>>> 			       size_t len, int flags);
+>>>>>>>>
+>>>>>>>> +ssize_t
+>>>>>>>> +virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
+>>>>>>>> +				   struct msghdr *msg,
+>>>>>>>> +				   int flags);
+>>>>>>>> s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
+>>>>>>>> s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
+>>>>>>>>
+>>>>>>>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>>>>>>>> index ad0d34d41444..1e1df19ec164 100644
+>>>>>>>> --- a/net/vmw_vsock/virtio_transport_common.c
+>>>>>>>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>>>>>>>> @@ -393,6 +393,78 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+>>>>>>>> 	return err;
+>>>>>>>> }
+>>>>>>>>
+>>>>>>>> +static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+>>>>>>>> +						 struct msghdr *msg,
+>>>>>>>> +						 int flags)
+>>>>>>>> +{
+>>>>>>>> +	struct virtio_vsock_sock *vvs = vsk->trans;
+>>>>>>>> +	struct virtio_vsock_pkt *pkt;
+>>>>>>>> +	int dequeued_len = 0;
+>>>>>>>> +	size_t user_buf_len = msg_data_left(msg);
+>>>>>>>> +	bool copy_failed = false;
+>>>>>>>> +	bool msg_ready = false;
+>>>>>>>> +
+>>>>>>>> +	spin_lock_bh(&vvs->rx_lock);
+>>>>>>>> +
+>>>>>>>> +	if (vvs->msg_count == 0) {
+>>>>>>>> +		spin_unlock_bh(&vvs->rx_lock);
+>>>>>>>> +		return 0;
+>>>>>>>> +	}
+>>>>>>>> +
+>>>>>>>> +	while (!msg_ready) {
+>>>>>>>> +		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
+>>>>>>>> +
+>>>>>>>> +		if (!copy_failed) {
+>>>>>>>> +			size_t pkt_len;
+>>>>>>>> +			size_t bytes_to_copy;
+>>>>>>>> +
+>>>>>>>> +			pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
+>>>>>>>> +			bytes_to_copy = min(user_buf_len, pkt_len);
+>>>>>>>> +
+>>>>>>>> +			if (bytes_to_copy) {
+>>>>>>>> +				int err;
+>>>>>>>> +
+>>>>>>>> +				/* sk_lock is held by caller so no one else can dequeue.
+>>>>>>>> +				 * Unlock rx_lock since memcpy_to_msg() may sleep.
+>>>>>>>> +				 */
+>>>>>>>> +				spin_unlock_bh(&vvs->rx_lock);
+>>>>>>>> +
+>>>>>>>> +				err = memcpy_to_msg(msg, pkt->buf, bytes_to_copy);
+>>>>>>>> +				if (err) {
+>>>>>>>> +					/* Copy of message failed, set flag to skip
+>>>>>>>> +					 * copy path for rest of fragments. Rest of
+>>>>>>>> +					 * fragments will be freed without copy.
+>>>>>>>> +					 */
+>>>>>>>> +					copy_failed = true;
+>>>>>>>> +					dequeued_len = err;
+>>>>>>> If we fail to copy the message we will discard the entire packet.
+>>>>>>> Is it acceptable for the user point of view, or we should leave the
+>>>>>>> packet in the queue and the user can retry, maybe with a different
+>>>>>>> buffer?
+>>>>>>>
+>>>>>>> Then we can remove the packets only when we successfully copied all the
+>>>>>>> fragments.
+>>>>>>>
+>>>>>>> I'm not sure make sense, maybe better to check also other
+>>>>>>> implementations :-)
+>>>>>>>
+>>>>>>> Thanks,
+>>>>>>> Stefano
+>>>>>> Understand, i'll check it on weekend, anyway I think it is
+>>>>>> not critical for implementation.
+>>>>> Yep, I agree.
+>>>>>
+>>>>>> I have another question: may be it is useful to research for
+>>>>>> approach where packets are not queued until whole message
+>>>>>> is received, but copied to user's buffer thus freeing memory.
+>>>>>> (like previous implementation, of course with solution of problem
+>>>>>> where part of message still in queue, while reader was woken
+>>>>>> by timeout or signal).
+>>>>>>
+>>>>>> I think it is better, because  in current version, sender may set
+>>>>>> 'peer_alloc_buf' to  for example 1MB, so at receiver we get
+>>>>>> 1MB of 'kmalloc()' memory allocated, while having user's buffer
+>>>>>> to copy data there or drop it(if user's buffer is full). This way
+>>>>>> won't change spec(e.g. no message id or SEQ_BEGIN will be added).
+>>>>>>
+>>>>>> What do You think?
+>>>>> Yep, I see your point and it would be great, but I think the main issues
+>>>>> to fix is how to handle a signal while we are waiting other fragments
+>>>>> since the other peer can take unspecified time to send them.
+>>>> What about transport callback, something like 'seqpacket_drain()' or
+>>>>
+>>>> 'seqpacket_drop_curr()' - when we got signal or timeout, notify transport
+>>>>
+>>>> to drop current message. In virtio case this will set special flag in transport,
+>>>>
+>>>> so on next dequeue, this flag is checked and if it is set - we drop all packets
+>>>>
+>>>> until EOR found. Then we can copy untouched new record.
+>>>>
+>>> But in this way, we will lose the entire message.
+>>>
+>>> Is it acceptable for seqpacket?
+>>>
+>>> Stefano
+>> Hm, i'll check it. At least for unix domain sockets - it supports SEQPACKET
+>
+>Hello, i've checked AF_UNIX and AF_AX25 SEQPACKET implementations,
 
-Thanks. I will send the fix to net.
+Great! Thanks for checking!
 
-Sundeep
+>
+>in both cases:
+>
+>1) Datagram is dequeued first, then copied to user's buffer.
+>
+>2) Datagram is also freed when copying to user's buffer fail
+>
+>(it is not reinserted back).
+>
+>
+>But, in case of virtio vsock, i've got the following concern in
 
-________________________________________
-From: Kees Cook <keescook@chromium.org>
-Sent: Friday, June 18, 2021 9:37 PM
-To: Subbaraya Sundeep Bhatta
-Cc: netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org; Sunil Kov=
-vuri Goutham; Hariprasad Kelam; Geethasowjanya Akula
-Subject: [EXT] Re: [net-next PATCH 1/5] octeontx2-af: cn10k: Bandwidth prof=
-iles config support
+>this approach: in cases of AF_UNIX or AF_AX25 there is maximum
+>
+>datagram size, strictly limited by spec, so no 'setsockopt()' call allows
+>
+>to exceed this. Also these limits are significantly smaller that current
+>
+>amounts of RAM. But, in our case, there is no such limit: peer could
+>
+>say 'i want to use 100MB datagram', and receiver just answer 'ok',
 
-External Email
+The receiver sets the limit of its receive buffer and tells the 
+transmitter that it should not exceed it. The default should be 256 KB, 
+so IIUC this scenario can happen only if the receiver do a 
+'setsockopt()' increasing the limit to 100MB. Right?
 
-----------------------------------------------------------------------
-On Tue, Jun 15, 2021 at 05:04:27PM +0530, Subbaraya Sundeep wrote:
-> [...]
-> @@ -885,6 +906,9 @@ static int rvu_nix_blk_aq_enq_inst(struct rvu *rvu, s=
-truct nix_hw *nix_hw,
->                       else if (req->ctype =3D=3D NIX_AQ_CTYPE_MCE)
->                               memcpy(&rsp->mce, ctx,
->                                      sizeof(struct nix_rx_mce_s));
-> +                     else if (req->ctype =3D=3D NIX_AQ_CTYPE_BANDPROF)
-> +                             memcpy(&rsp->prof, ctx,
-> +                                    sizeof(struct nix_bandprof_s));
+Maybe we should limit it.
 
-rsp->prof is u64 not struct nix_bandprof_s, so the compiler thinks this
-memcpy() is overflowing the "prof" field.
+>
+> as there is just variable assignment to setup new limit. Now, consider
+>
+>that there will be 10 peers, 100MB each(no one limit such request,
+>
+>because each socket doesn't know about each other). I think we get
+>
+>out-of-service in this case - all kmalloc() memory will be wasted for
+>
+>pending record.
+>
+>
+>I still think, that approach when we copy data from packet to user's
+>
+>buffer without waiting EOR is better.
 
-Can you please fix this up?
+Okay, in this way we can remove the receive buffer limit and maybe if we 
+receive a signal, we can set MSG_TRUNC, return the partially received 
+packet to the user, but we must free any next fragments.
 
---
-Kees Cook
+So, as you proposed, we need a `seqpacket_drop()` to tell to the 
+transport that if we were copying an uncompleted message, then it should 
+delete the queued fragments and any others until the next EOR.
+
+>
+>
+>Also i'll rebase QEMU patch today or tomorrow.
+
+Great, please CC me, this is something high priority to test 
+SOCK_SEQPACKET with a guest.
+
+>
+>
+>What do You Think?
+
+I'm fine with both, but I slightly prefer the approach we implemented 
+because it's easier to handle.
+
+Thanks,
+Stefano
+
