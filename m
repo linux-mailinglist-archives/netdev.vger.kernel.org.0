@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D27C83AF338
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:58:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A9743AF339
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:58:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbhFUSAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 14:00:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39048 "EHLO mail.kernel.org"
+        id S232681AbhFUSAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 14:00:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39598 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232017AbhFUR6E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 13:58:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8441D613C8;
-        Mon, 21 Jun 2021 17:53:41 +0000 (UTC)
+        id S232392AbhFUR6F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 13:58:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B4167613B1;
+        Mon, 21 Jun 2021 17:53:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624298022;
-        bh=iU6xzPa6JQVBHnxsg6oN/Htpg2TH7DcVkVfnLQl7mLE=;
+        s=k20201202; t=1624298025;
+        bh=yGIMFfXBv351FkDVH59jFGEwcYsPTos591RKcHoH8NU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EXFW0yRDee68sB++OFgNc6a7ej4lcMiqwRZrTJ3+syu7G5FxQWE2fzlKW27DPNq5g
-         nH26vpUz3ucqIxlR558x55D9E0fHnXC/tPpEZrZ5yAKPjAtUcr00XGGPo+Ny/d6Xi6
-         xyFqu47U2GRU1JLQ+V+p/fMDTVICQiiV7DEvgGego3xzgwnqbfEL1ZH/YB8n/ogkre
-         goXl1qCoKry1Amja8KkJvfql3iXX6ZeMkVA2LwC9F3pa4XLgbnn2RJCLFcY/oLNQVz
-         pXcxUbtJHsMKA3gsmxbAROMV/ty98cRW/urcKO96GO0t/QX8irEM7oJdZ940/N2RYd
-         8ZKWNMY3nRzXQ==
+        b=vF1S26I5OF+OpzDvYklrog1xlLc0meZz8wEHwOu/n1xyLpjICuktw/o5m0S40nUdH
+         OuS2VOWWZtqyIdodfMyfZsQHSn+57nUrt9Et+BGTV0Ashsc86A0TOiYk+ipsEmB7gA
+         K3pHrgIekXoe0Ey5qaDIFAivnxDn0AbwqXsZn4JVpqfmZk4wUv1XuXZgd1WjvhfKGg
+         M23lshl+d1NjCif+4fC5X+XFo2ZFg8qmBq/oWpUbV9BqLu2yQgd+YmvmUxxie9vhvs
+         dY50LbGaSzovIDg1fr+F4pYqGYFY2fKGIzQo7hkcSehMkK43irbnx6YOvFjB1xEX8O
+         +ceGBT83+rbsA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 27/35] r8169: Avoid memcpy() over-reading of ETH_SS_STATS
-Date:   Mon, 21 Jun 2021 13:52:52 -0400
-Message-Id: <20210621175300.735437-27-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 29/35] net: qed: Fix memcpy() overflow of qed_dcbx_params()
+Date:   Mon, 21 Jun 2021 13:52:54 -0400
+Message-Id: <20210621175300.735437-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175300.735437-1-sashal@kernel.org>
 References: <20210621175300.735437-1-sashal@kernel.org>
@@ -44,36 +44,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit da5ac772cfe2a03058b0accfac03fad60c46c24d ]
+[ Upstream commit 1c200f832e14420fa770193f9871f4ce2df00d07 ]
 
-In preparation for FORTIFY_SOURCE performing compile-time and run-time
-field bounds checking for memcpy(), memmove(), and memset(), avoid
-intentionally reading across neighboring array fields.
+The source (&dcbx_info->operational.params) and dest
+(&p_hwfn->p_dcbx_info->set.config.params) are both struct qed_dcbx_params
+(560 bytes), not struct qed_dcbx_admin_params (564 bytes), which is used
+as the memcpy() size.
 
-The memcpy() is copying the entire structure, not just the first array.
-Adjust the source argument so the compiler can do appropriate bounds
-checking.
+However it seems that struct qed_dcbx_operational_params
+(dcbx_info->operational)'s layout matches struct qed_dcbx_admin_params
+(p_hwfn->p_dcbx_info->set.config)'s 4 byte difference (3 padding, 1 byte
+for "valid").
+
+On the assumption that the size is wrong (rather than the source structure
+type), adjust the memcpy() size argument to be 4 bytes smaller and add
+a BUILD_BUG_ON() to validate any changes to the structure sizes.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_dcbx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 3bb36f4a984e..a6bf80b52967 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1673,7 +1673,7 @@ static void rtl8169_get_strings(struct net_device *dev, u32 stringset, u8 *data)
- {
- 	switch(stringset) {
- 	case ETH_SS_STATS:
--		memcpy(data, *rtl8169_gstrings, sizeof(rtl8169_gstrings));
-+		memcpy(data, rtl8169_gstrings, sizeof(rtl8169_gstrings));
- 		break;
- 	}
- }
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_dcbx.c b/drivers/net/ethernet/qlogic/qed/qed_dcbx.c
+index 17d5b649eb36..e81dd34a3cac 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_dcbx.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_dcbx.c
+@@ -1266,9 +1266,11 @@ int qed_dcbx_get_config_params(struct qed_hwfn *p_hwfn,
+ 		p_hwfn->p_dcbx_info->set.ver_num |= DCBX_CONFIG_VERSION_STATIC;
+ 
+ 	p_hwfn->p_dcbx_info->set.enabled = dcbx_info->operational.enabled;
++	BUILD_BUG_ON(sizeof(dcbx_info->operational.params) !=
++		     sizeof(p_hwfn->p_dcbx_info->set.config.params));
+ 	memcpy(&p_hwfn->p_dcbx_info->set.config.params,
+ 	       &dcbx_info->operational.params,
+-	       sizeof(struct qed_dcbx_admin_params));
++	       sizeof(p_hwfn->p_dcbx_info->set.config.params));
+ 	p_hwfn->p_dcbx_info->set.config.valid = true;
+ 
+ 	memcpy(params, &p_hwfn->p_dcbx_info->set, sizeof(struct qed_dcbx_set));
 -- 
 2.30.2
 
