@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA7883AF2A9
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:54:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D52523AF2AE
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:54:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbhFUR4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:56:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39596 "EHLO mail.kernel.org"
+        id S232986AbhFUR4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:56:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39048 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231869AbhFURzJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232042AbhFURzJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 21 Jun 2021 13:55:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C86C26124B;
-        Mon, 21 Jun 2021 17:52:39 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 32DE56128E;
+        Mon, 21 Jun 2021 17:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624297960;
-        bh=8VEI0ejrCVa7si6TupusvgMFukcSbB4dvHfJQl9uYMc=;
+        s=k20201202; t=1624297962;
+        bh=G3w76zXBRS5bIN1HrB9o5E0eB0A8194UriofBokWb48=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gIu+9XIfHdDh+YZS4XLqvDaKJbsKknYN4csu9H8MTZr1knNSd49KgDjz3MTuSLmJ7
-         ZupXnihwgG6G13yVeYrL4Ts+UnHXB+4TqP5/YYFpBQRSy++6WozPAxCK8Jsja64hWE
-         n99Dxh6ZwHKpUskk39XPdBBnid0tanHWQyibP2Bnv/pivtjhkKjiKIrqOLMDRzU6gL
-         hDbG09o9VmvUFkc5EAw5/ltjk7s82dmWbF3kxddb49RBPyUQOKhaXaaq5USVU8tooy
-         3g1dp/yNigN01bz66DvlVdPlWE708gEGppkdAtN4tY34V/NWzdaufYskPp77pjONlG
-         Ae/isyvELRDTA==
+        b=rkL9/jcSxtPFGO2Z4vhHoGvcn5tjJ0VJXeTavf1nGvVff40mTdSUGGGrDor7RXGNV
+         UGam3JJjaSpKmwONY4/rq2pNLINlaZw/2OFFRcz7yxyuhv7Z7G5rszTZccF7Y5xAxB
+         3ficR8ZH9XDr9olDMwrku1oBvZswgDnNxTKwrjZI92DqJhd1DjU3WF1Oh2QfIsyMD0
+         ucxla/YMJNgXx2XaTOPahq1+jvPvBW+5Y+hQ9vhUzehplKtsD/NASRwrbAfOAYi5mq
+         RdcUQnw9dNKNlYMhsOORMBJ78FCDDpti5W9jQrJiE9cUQ0catyjmd9WugCKLrtragE
+         WZFOUL1zkMBRg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>,
         syzbot <syzkaller@googlegroups.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 26/39] net/packet: annotate accesses to po->bind
-Date:   Mon, 21 Jun 2021 13:51:42 -0400
-Message-Id: <20210621175156.735062-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 27/39] net/packet: annotate accesses to po->ifindex
+Date:   Mon, 21 Jun 2021 13:51:43 -0400
+Message-Id: <20210621175156.735062-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175156.735062-1-sashal@kernel.org>
 References: <20210621175156.735062-1-sashal@kernel.org>
@@ -45,19 +45,18 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit c7d2ef5dd4b03ed0ee1d13bc0c55f9cf62d49bd6 ]
+[ Upstream commit e032f7c9c7cefffcfb79b9fc16c53011d2d9d11f ]
 
-tpacket_snd(), packet_snd(), packet_getname() and packet_seq_show()
-can read po->num without holding a lock. This means other threads
-can change po->num at the same time.
+Like prior patch, we need to annotate lockless accesses to po->ifindex
+For instance, packet_getname() is reading po->ifindex (twice) while
+another thread is able to change po->ifindex.
 
-KCSAN complained about this known fact [1]
-Add READ_ONCE()/WRITE_ONCE() to address the issue.
+KCSAN reported:
 
-[1] BUG: KCSAN: data-race in packet_do_bind / packet_sendmsg
+BUG: KCSAN: data-race in packet_do_bind / packet_getname
 
-write to 0xffff888131a0dcc0 of 2 bytes by task 24714 on cpu 0:
- packet_do_bind+0x3ab/0x7e0 net/packet/af_packet.c:3181
+write to 0xffff888143ce3cbc of 4 bytes by task 25573 on cpu 1:
+ packet_do_bind+0x420/0x7e0 net/packet/af_packet.c:3191
  packet_bind+0xc3/0xd0 net/packet/af_packet.c:3255
  __sys_bind+0x200/0x290 net/socket.c:1637
  __do_sys_bind net/socket.c:1648 [inline]
@@ -66,24 +65,19 @@ write to 0xffff888131a0dcc0 of 2 bytes by task 24714 on cpu 0:
  do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-read to 0xffff888131a0dcc0 of 2 bytes by task 24719 on cpu 1:
- packet_snd net/packet/af_packet.c:2899 [inline]
- packet_sendmsg+0x317/0x3570 net/packet/af_packet.c:3040
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg net/socket.c:674 [inline]
- ____sys_sendmsg+0x360/0x4d0 net/socket.c:2350
- ___sys_sendmsg net/socket.c:2404 [inline]
- __sys_sendmsg+0x1ed/0x270 net/socket.c:2433
- __do_sys_sendmsg net/socket.c:2442 [inline]
- __se_sys_sendmsg net/socket.c:2440 [inline]
- __x64_sys_sendmsg+0x42/0x50 net/socket.c:2440
+read to 0xffff888143ce3cbc of 4 bytes by task 25578 on cpu 0:
+ packet_getname+0x5b/0x1a0 net/packet/af_packet.c:3525
+ __sys_getsockname+0x10e/0x1a0 net/socket.c:1887
+ __do_sys_getsockname net/socket.c:1902 [inline]
+ __se_sys_getsockname net/socket.c:1899 [inline]
+ __x64_sys_getsockname+0x3e/0x50 net/socket.c:1899
  do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-value changed: 0x0000 -> 0x1200
+value changed: 0x00000000 -> 0x00000001
 
 Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 24719 Comm: syz-executor.5 Not tainted 5.13.0-rc4-syzkaller #0
+CPU: 0 PID: 25578 Comm: syz-executor.5 Not tainted 5.13.0-rc6-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
@@ -91,85 +85,75 @@ Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/packet/af_packet.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ net/packet/af_packet.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 84d8921391c3..8e07341a98af 100644
+index 8e07341a98af..68a4dd251242 100644
 --- a/net/packet/af_packet.c
 +++ b/net/packet/af_packet.c
-@@ -2683,7 +2683,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 	}
- 	if (likely(saddr == NULL)) {
- 		dev	= packet_cached_dev_get(po);
--		proto	= po->num;
-+		proto	= READ_ONCE(po->num);
- 	} else {
- 		err = -EINVAL;
- 		if (msg->msg_namelen < sizeof(struct sockaddr_ll))
-@@ -2896,7 +2896,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 
- 	if (likely(saddr == NULL)) {
- 		dev	= packet_cached_dev_get(po);
--		proto	= po->num;
-+		proto	= READ_ONCE(po->num);
- 	} else {
- 		err = -EINVAL;
- 		if (msg->msg_namelen < sizeof(struct sockaddr_ll))
-@@ -3171,7 +3171,7 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
- 			/* prevents packet_notifier() from calling
- 			 * register_prot_hook()
- 			 */
--			po->num = 0;
-+			WRITE_ONCE(po->num, 0);
- 			__unregister_prot_hook(sk, true);
- 			rcu_read_lock();
- 			dev_curr = po->prot_hook.dev;
-@@ -3181,7 +3181,7 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
- 		}
- 
- 		BUG_ON(po->running);
--		po->num = proto;
-+		WRITE_ONCE(po->num, proto);
- 		po->prot_hook.type = proto;
- 
+@@ -3187,11 +3187,11 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
  		if (unlikely(unlisted)) {
-@@ -3526,7 +3526,7 @@ static int packet_getname(struct socket *sock, struct sockaddr *uaddr,
+ 			dev_put(dev);
+ 			po->prot_hook.dev = NULL;
+-			po->ifindex = -1;
++			WRITE_ONCE(po->ifindex, -1);
+ 			packet_cached_dev_reset(po);
+ 		} else {
+ 			po->prot_hook.dev = dev;
+-			po->ifindex = dev ? dev->ifindex : 0;
++			WRITE_ONCE(po->ifindex, dev ? dev->ifindex : 0);
+ 			packet_cached_dev_assign(po, dev);
+ 		}
+ 	}
+@@ -3505,7 +3505,7 @@ static int packet_getname_spkt(struct socket *sock, struct sockaddr *uaddr,
+ 	uaddr->sa_family = AF_PACKET;
+ 	memset(uaddr->sa_data, 0, sizeof(uaddr->sa_data));
+ 	rcu_read_lock();
+-	dev = dev_get_by_index_rcu(sock_net(sk), pkt_sk(sk)->ifindex);
++	dev = dev_get_by_index_rcu(sock_net(sk), READ_ONCE(pkt_sk(sk)->ifindex));
+ 	if (dev)
+ 		strlcpy(uaddr->sa_data, dev->name, sizeof(uaddr->sa_data));
+ 	rcu_read_unlock();
+@@ -3520,16 +3520,18 @@ static int packet_getname(struct socket *sock, struct sockaddr *uaddr,
+ 	struct sock *sk = sock->sk;
+ 	struct packet_sock *po = pkt_sk(sk);
+ 	DECLARE_SOCKADDR(struct sockaddr_ll *, sll, uaddr);
++	int ifindex;
  
+ 	if (peer)
+ 		return -EOPNOTSUPP;
+ 
++	ifindex = READ_ONCE(po->ifindex);
  	sll->sll_family = AF_PACKET;
- 	sll->sll_ifindex = po->ifindex;
--	sll->sll_protocol = po->num;
-+	sll->sll_protocol = READ_ONCE(po->num);
+-	sll->sll_ifindex = po->ifindex;
++	sll->sll_ifindex = ifindex;
+ 	sll->sll_protocol = READ_ONCE(po->num);
  	sll->sll_pkttype = 0;
  	rcu_read_lock();
- 	dev = dev_get_by_index_rcu(sock_net(sk), po->ifindex);
-@@ -4414,7 +4414,7 @@ static int packet_set_ring(struct sock *sk, union tpacket_req_u *req_u,
- 	was_running = po->running;
- 	num = po->num;
- 	if (was_running) {
--		po->num = 0;
-+		WRITE_ONCE(po->num, 0);
- 		__unregister_prot_hook(sk, false);
- 	}
- 	spin_unlock(&po->bind_lock);
-@@ -4449,7 +4449,7 @@ static int packet_set_ring(struct sock *sk, union tpacket_req_u *req_u,
- 
- 	spin_lock(&po->bind_lock);
- 	if (was_running) {
--		po->num = num;
-+		WRITE_ONCE(po->num, num);
- 		register_prot_hook(sk);
- 	}
- 	spin_unlock(&po->bind_lock);
-@@ -4619,7 +4619,7 @@ static int packet_seq_show(struct seq_file *seq, void *v)
- 			   s,
+-	dev = dev_get_by_index_rcu(sock_net(sk), po->ifindex);
++	dev = dev_get_by_index_rcu(sock_net(sk), ifindex);
+ 	if (dev) {
+ 		sll->sll_hatype = dev->type;
+ 		sll->sll_halen = dev->addr_len;
+@@ -4108,7 +4110,7 @@ static int packet_notifier(struct notifier_block *this,
+ 				}
+ 				if (msg == NETDEV_UNREGISTER) {
+ 					packet_cached_dev_reset(po);
+-					po->ifindex = -1;
++					WRITE_ONCE(po->ifindex, -1);
+ 					if (po->prot_hook.dev)
+ 						dev_put(po->prot_hook.dev);
+ 					po->prot_hook.dev = NULL;
+@@ -4620,7 +4622,7 @@ static int packet_seq_show(struct seq_file *seq, void *v)
  			   refcount_read(&s->sk_refcnt),
  			   s->sk_type,
--			   ntohs(po->num),
-+			   ntohs(READ_ONCE(po->num)),
- 			   po->ifindex,
+ 			   ntohs(READ_ONCE(po->num)),
+-			   po->ifindex,
++			   READ_ONCE(po->ifindex),
  			   po->running,
  			   atomic_read(&s->sk_rmem_alloc),
+ 			   from_kuid_munged(seq_user_ns(seq), sock_i_uid(s)),
 -- 
 2.30.2
 
