@@ -2,190 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D547B3AF1C7
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96BAC3AF1CE
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:21:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbhFURVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:21:36 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:26802 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230354AbhFURVd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 13:21:33 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15LH3ScX030912;
-        Mon, 21 Jun 2021 13:19:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=e6h2FpKlxoU7qqe1zdHS8Jd/v5LFC72lgYo0nh9jI4k=;
- b=cnuZSHKzIW5ucrCIEUBeWJg0cTahBl0AgenyAobJait8GyqNXc7rnB7p6CUcGvNOcbHa
- ANeCTSNhUc36I+0jfmNNYsfCMe5uUI/SGbq/8VHXbrGe6P/lA1RTEVwisHJaoe7vYYAW
- BYqdZj8FZ2FtI5S4Mf2TYBHFcpcZfjGcLJDBazyYRh1VCdDtJPqG6HR8lTOR21iVxi0N
- XfAexVW+vKicN/DG7Kla37HI6OrRTlLDHjnljizQtrWNfxUzF5dJ4NuB4oLhDn7WXMJ0
- SFGEj0PCq0RjL4PuKsSpKaIJwqEgzS9VEyFGD+PIokpbDRs43WSGEXVMtIMSRm2UvpIi EA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 39aw7s3wg8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Jun 2021 13:19:03 -0400
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 15LH3Vw6031192;
-        Mon, 21 Jun 2021 13:19:02 -0400
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 39aw7s3wfx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Jun 2021 13:19:02 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 15LHCYmA031062;
-        Mon, 21 Jun 2021 17:19:01 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma01dal.us.ibm.com with ESMTP id 399879d4n5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Jun 2021 17:19:01 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 15LHJ0LM24772872
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Jun 2021 17:19:00 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A48AE2805C;
-        Mon, 21 Jun 2021 17:19:00 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DA8A52805A;
-        Mon, 21 Jun 2021 17:18:57 +0000 (GMT)
-Received: from [9.171.11.231] (unknown [9.171.11.231])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTPS;
-        Mon, 21 Jun 2021 17:18:57 +0000 (GMT)
-Subject: Re: [syzbot] general protection fault in smc_tx_sendmsg
-To:     Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot <syzbot+5dda108b672b54141857@syzkaller.appspotmail.com>
-Cc:     coreteam@netfilter.org, davem@davemloft.net, dsahern@kernel.org,
-        fw@strlen.de, kadlec@netfilter.org, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-References: <000000000000d154d905c53ad34d@google.com>
- <20210621175603.40ac6eaa@gmail.com>
-From:   Guvenc Gulce <guvenc@linux.ibm.com>
-Message-ID: <c8fd3740-8233-2b14-1fc9-57ecebc31ad8@linux.ibm.com>
-Date:   Mon, 21 Jun 2021 19:18:56 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-In-Reply-To: <20210621175603.40ac6eaa@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: WiqrJlTMgMYisZg0cvTXx7TxTv7-tS4s
-X-Proofpoint-GUID: BDKy6KJDKJUme5T2sWHrfKvMtF5SI7HV
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S231270AbhFURYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231179AbhFURYJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 13:24:09 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DDDDC061756
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 10:21:55 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id v22-20020a0568301416b029044e2d8e855eso9274161otp.8
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 10:21:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=paxY+fK5EQubdG5RnsC1ZjKOzBaYyvh9aKCTbSxMuIg=;
+        b=k9buZCcFK0A+YKxBKhQDRwPnvJ6wigsxT9C6bDyDXq8dj2ynEUKWmKZFsOsnuA18HC
+         rYtI+2h+b9ji7c8K5vFsn9QrHGveinDiGlw9eb0j4iN7qx8bALUWTTxIxQ1rHoDFZ4uO
+         aAKW0fK9+VH3MzQtTPWra2jMjzTu1BqwU60/khH00QVSvbionUl1Xl/Ez9IPysCHWFa2
+         z+7HAdoi/U4x1jiCsR2cBXpAnNqJI+kGww19eWWa6UlY02Vhvu3ht1dE6TpsJuyaom20
+         bSn6Zd5WBhn8AFmhK43lJ+HKOpUnqEkZAj/pzO/7JD2m3CpX0cJWEWMP9a9s9yBsk/AX
+         kG+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=paxY+fK5EQubdG5RnsC1ZjKOzBaYyvh9aKCTbSxMuIg=;
+        b=iLwycKFbWLCYBV5Q3O+kUhstRemutT8NE1nAygymuYwapMVvdnh5QwlKgoxqv1UBQm
+         rINnAaoYuWRghiMnVtLoAkuP8lpiyq3SqwkklWZ7nsaW6PbgCqc709H6JQZWTmIkaZ6z
+         zaDvqhte5FX3aZ5pzz7vBpK/adMXNbBTHszwyx0UY7/CJeeAFnAwsJt8j07SSB3iqzFh
+         TmLHgxAlINXnwlPbPzsoG2Dj7LMv+HtZcd38a6rkqqTtgDaANpSt8Czb0hwFPvBVsF1z
+         lmTqetghjK3dBvpkLVP1u+YTaOXjDijKxgdEEbEAR4F2yo3lhLlQ9DvS+TZJQburSYbw
+         5DLQ==
+X-Gm-Message-State: AOAM532yvFiZSqsIXWqc7wbIj2rTt/y3Ar4p00IGyI2FfCbQzN819f4v
+        JraJa7onFSLjuP6S9Zw0tc5GXOziTVg20FYJ+aSqCg==
+X-Google-Smtp-Source: ABdhPJxGojkpA2l7BCxHo9kpNZ9FXYKuDj+k3zc4HUOf31x6t7qgIV3GxRTh6g4MFvdh7h/NMtkZe6pExwiORl8Q9Jc=
+X-Received: by 2002:a05:6830:1e99:: with SMTP id n25mr21556467otr.279.1624296114776;
+ Mon, 21 Jun 2021 10:21:54 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-06-21_10:2021-06-21,2021-06-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 mlxscore=0
- phishscore=0 clxscore=1011 bulkscore=0 suspectscore=0 adultscore=0
- spamscore=0 lowpriorityscore=0 priorityscore=1501 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106210101
+References: <20210609232501.171257-1-jiang.wang@bytedance.com> <20210618093529.bxsv4qnryccivdsd@steredhat.lan>
+In-Reply-To: <20210618093529.bxsv4qnryccivdsd@steredhat.lan>
+From:   "Jiang Wang ." <jiang.wang@bytedance.com>
+Date:   Mon, 21 Jun 2021 10:21:44 -0700
+Message-ID: <CAP_N_Z-LmZYUMY+TyB2E9E00AisnZXcFyD_SM8SeZLB0G2u1ig@mail.gmail.com>
+Subject: Re: [External] Re: [RFC v1 0/6] virtio/vsock: introduce SOCK_DGRAM support
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        cong.wang@bytedance.com,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Yongji Xie <xieyongji@bytedance.com>,
+        =?UTF-8?B?5p+056iz?= <chaiwen.cc@bytedance.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Lu Wei <luwei32@huawei.com>,
+        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 18, 2021 at 2:35 AM Stefano Garzarella <sgarzare@redhat.com> wr=
+ote:
+>
+> On Wed, Jun 09, 2021 at 11:24:52PM +0000, Jiang Wang wrote:
+> >This patchset implements support of SOCK_DGRAM for virtio
+> >transport.
+> >
+> >Datagram sockets are connectionless and unreliable. To avoid unfair cont=
+ention
+> >with stream and other sockets, add two more virtqueues and
+> >a new feature bit to indicate if those two new queues exist or not.
+> >
+> >Dgram does not use the existing credit update mechanism for
+> >stream sockets. When sending from the guest/driver, sending packets
+> >synchronously, so the sender will get an error when the virtqueue is ful=
+l.
+> >When sending from the host/device, send packets asynchronously
+> >because the descriptor memory belongs to the corresponding QEMU
+> >process.
+> >
+> >The virtio spec patch is here:
+> >https://www.spinics.net/lists/linux-virtualization/msg50027.html
+> >
+> >For those who prefer git repo, here is the link for the linux kernel=EF=
+=BC=9A
+> >https://github.com/Jiang1155/linux/tree/vsock-dgram-v1
+> >
+> >qemu patch link:
+> >https://github.com/Jiang1155/qemu/tree/vsock-dgram-v1
+> >
+> >
+> >To do:
+> >1. use skb when receiving packets
+> >2. support multiple transport
+> >3. support mergeable rx buffer
+>
+> Jiang, I'll do a fast review, but I think is better to rebase on
+> net-next since SEQPACKET support is now merged.
+>
+> Please also run ./scripts/checkpatch.pl, there are a lot of issues.
+>
+> I'll leave some simple comments in the patches, but I prefer to do a
+> deep review after the rebase and the dynamic handling of DGRAM.
+
+Hi Stefano,
+
+Sure. I will rebase and add dynamic handling of DGRAM. I run checkpatch.pl
+at some point but I will make sure to run it again before submitting. Thank=
+s.
+
+Regards,
+
+Jiang
 
 
-On 21/06/2021 16:56, Pavel Skripkin wrote:
-> On Sun, 20 Jun 2021 16:22:16 -0700
-> syzbot <syzbot+5dda108b672b54141857@syzkaller.appspotmail.com> wrote:
+> Thanks,
+> Stefano
 >
->> Hello,
->>
->> syzbot found the following issue on:
->>
->> HEAD commit:    0c337952 Merge tag 'wireless-drivers-next-2021-06-16'
->> of g.. git tree:       net-next
->> console output:
->> https://syzkaller.appspot.com/x/log.txt?x=1621de10300000 kernel
->> config:  https://syzkaller.appspot.com/x/.config?x=a6380da8984033f1
->> dashboard link:
->> https://syzkaller.appspot.com/bug?extid=5dda108b672b54141857 syz
->> repro:
->> https://syzkaller.appspot.com/x/repro.syz?x=121d2d20300000 C
->> reproducer:   https://syzkaller.appspot.com/x/repro.c?x=100bd768300000
->>
->> The issue was bisected to:
->>
->> commit f9006acc8dfe59e25aa75729728ac57a8d84fc32
->> Author: Florian Westphal <fw@strlen.de>
->> Date:   Wed Apr 21 07:51:08 2021 +0000
->>
->>      netfilter: arp_tables: pass table pointer via nf_hook_ops
->>
-> I think, bisection is wrong this time :)
->
-> It should be e0e4b8fa533858532f1b9ea9c6a4660d09beb37a ("net/smc: Add SMC
-> statistics support")
->
->
-> Some debug results:
->
-> syzkaller repro just opens the socket and calls sendmsg. Ftrace log:
->
->
->   0)               |  smc_create() {
->   0)               |    smc_sock_alloc() {
->   0) + 88.493 us   |      smc_hash_sk();
->   0) ! 131.487 us  |    }
->   0) ! 189.912 us  |  }
->   0)               |  smc_sendmsg() {
->   0)   2.808 us    |    smc_tx_sendmsg();
->   0) ! 148.484 us  |  }
->
->
-> That means, that smc_buf_create() wasn't called at all, so we need to
-> check sndbuf_desc before dereferencing
->
-> Something like this should work
->
-> diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
-> index 075c4f4b4..e24071b12 100644
-> --- a/net/smc/smc_tx.c
-> +++ b/net/smc/smc_tx.c
-> @@ -154,7 +154,7 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
->   		goto out_err;
->   	}
->   
-> -	if (len > conn->sndbuf_desc->len)
-> +	if (conn->sndbuf_desc && len > conn->sndbuf_desc->len)
->   		SMC_STAT_RMB_TX_SIZE_SMALL(smc, !conn->lnk);
->   
->   	if (len > conn->peer_rmbe_size)
->
->
-> Thoughts?
->
->
-> +CC Guvenc Gulce
->
->
-> With regards,
-> Pavel Skripkin
-
-Thanks for analyzing the cause. Your approach would work but I would prefer that we
-check the state of the socket before doing the statistics relevant if check. This will ensure
-that smc_buf_create() was already called.
-I am testing the fix at the moment which would look like the following:
-
-diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
-index 075c4f4b41cf..289025cd545a 100644
---- a/net/smc/smc_tx.c
-+++ b/net/smc/smc_tx.c
-@@ -154,6 +154,9 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
-                 goto out_err;
-         }
-
-+       if (sk->sk_state == SMC_INIT)
-+               return -ENOTCONN;
-+
-         if (len > conn->sndbuf_desc->len)
-                 SMC_STAT_RMB_TX_SIZE_SMALL(smc, !conn->lnk);
-
-
