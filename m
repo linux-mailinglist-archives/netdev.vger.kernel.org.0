@@ -2,76 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 614323AE1C6
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 05:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 314883AE1DA
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 05:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbhFUDCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Jun 2021 23:02:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46866 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230040AbhFUDCT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Jun 2021 23:02:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=XABV+fu7WuBVU7Zls9QFXa3bbNJ3I+XWXwAfc4iCagM=; b=XbDrYm+k9lPNM9DBO1jazoZUY3
-        25ONFFIOVQqOCIShwwvslQogAmAk1mE6v5ZEDGV/m9HIYVHkVKZGWKopFLCycJAQeESERZrghSBF8
-        YLT0rayJyNbComtrUjsR+wl10Kxt5Z8YTyBNOAUXDw7RTaxOKdJHCCSveMZYVrkGZyVA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lvAA7-00ARav-E5; Mon, 21 Jun 2021 04:59:47 +0200
-Date:   Mon, 21 Jun 2021 04:59:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Qing Zhang <zhangqing@loongson.cn>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Huacai Chen <chenhc@lemote.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 2/4] MIPS: Loongson64: Add GMAC support for
- Loongson-2K1000
-Message-ID: <YNAAo+ABaMVmArcM@lunn.ch>
-References: <20210618025337.5705-1-zhangqing@loongson.cn>
- <20210618025337.5705-2-zhangqing@loongson.cn>
+        id S230040AbhFUDWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Jun 2021 23:22:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229901AbhFUDWT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Jun 2021 23:22:19 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B3DC061574
+        for <netdev@vger.kernel.org>; Sun, 20 Jun 2021 20:20:04 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id f3-20020a0568301c23b029044ce5da4794so9703357ote.11
+        for <netdev@vger.kernel.org>; Sun, 20 Jun 2021 20:20:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZJJLjcRf47PkBn+hTEvAsOyUR1nX+g7azGbAsPG0uaQ=;
+        b=WLVHclR8Cm3qQ+Xr3oW7QVncxGYTQGxn5SEP3d8mceP3TWnSE7f/txO30zTg/K9FWy
+         7ut23OSVcbBIcTEyinfzSd/8y68a5Ip5EGz0Out3hRwLkZnum5754iR2fDUqSj99ixVt
+         ZdCyWQ37nj72kf8tnjisk0I+A2wysuZjlDFmOnVHGKc5GInMS5PjBRoRDd5IrByjuwpR
+         L95+P7udm59wvzpjFVejnCw4NBAs8n/phOL0wDygxkJPltitp68KpTwQ6DeMTb+w3yrG
+         gqrhu/QjeCvkSrCLwJw3pgYaE1YB7ZKELvNvdNbJfEDNVie70//NFfAaCmUD78FbP7Lu
+         Uqxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZJJLjcRf47PkBn+hTEvAsOyUR1nX+g7azGbAsPG0uaQ=;
+        b=AmOMtfijE1ij1wGhA7CauD0TUkiNAEaEQ9od5vR18YrD1P2bovBnyNihI9vWKRNeZc
+         6KB/vkL1AIsYyucFVkAQyDp326uXcOFZDn2l7QN29qRfnkwtCysH0FA36ky01GkNsPX3
+         soSf7YCyI3nQq+G4RO5tjJR0Zxm7KgxU+jfcveeawmSUZSIkuQyvs9YRaTuShjFSnmHY
+         JgWRnsM5Em+lOL0N9YiMtE/uRuZKhq44SRzVDcuC7+UL7293Nx/64m2KzDvp6Zb8H1wf
+         0QeMWiMy8ZrzCp25u1zbs/g6UhdDX507MXvHHXR9aD0Ib3AkTENJvH9wF5IMc6KO5eI/
+         q2Dg==
+X-Gm-Message-State: AOAM530w6jWKxnQLgB8O6Llay2S5q/Mz+PToKzDNzXkZMlHW6a+ILAaE
+        Sciq3GqJvqOia2gMNysONRg=
+X-Google-Smtp-Source: ABdhPJxMo+erjiCDahTK7E21HDTj9pAywc3EZX7ZHkAjA/UW/7M8DMLwdLEzJLG8GdHO/KJx+Q5FXQ==
+X-Received: by 2002:a9d:674b:: with SMTP id w11mr11587795otm.260.1624245603817;
+        Sun, 20 Jun 2021 20:20:03 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id l2sm3850519otl.27.2021.06.20.20.20.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 20 Jun 2021 20:20:03 -0700 (PDT)
+Subject: Re: [PATCH net] vrf: do not push non-ND strict packets with a source
+ LLA through packet taps again
+To:     Antoine Tenart <atenart@kernel.org>, davem@davemloft.net,
+        dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Stephen Suryaputra <ssuryaextr@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20210618151553.59456-1-atenart@kernel.org>
+ <16920ba3-57b7-3431-4667-9aaf0d7380af@gmail.com>
+ <162419114873.131954.7165131880961444756@kwain>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <231434ea-9eb0-28c8-baab-cf979cdf7e47@gmail.com>
+Date:   Sun, 20 Jun 2021 21:20:01 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210618025337.5705-2-zhangqing@loongson.cn>
+In-Reply-To: <162419114873.131954.7165131880961444756@kwain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +			gmac@3,1 {
-> +				compatible = "pci0014,7a03.0",
-> +						   "pci0014,7a03",
-> +						   "pciclass0c0320",
-> +						   "pciclass0c03",
-> +						   "loongson, pci-gmac";
-> +
-> +				reg = <0x1900 0x0 0x0 0x0 0x0>;
-> +				interrupts = <14 IRQ_TYPE_LEVEL_LOW>,
-> +					     <15 IRQ_TYPE_LEVEL_LOW>;
-> +				interrupt-names = "macirq", "eth_lpi";
-> +				interrupt-parent = <&liointc0>;
-> +				phy-mode = "rgmii";
+On 6/20/21 6:12 AM, Antoine Tenart wrote:
+> Quoting David Ahern (2021-06-19 03:18:50)
+>> On 6/18/21 9:15 AM, Antoine Tenart wrote:
+>>> --- a/drivers/net/vrf.c
+>>> +++ b/drivers/net/vrf.c
+>>> @@ -1366,22 +1366,22 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+>>>       int orig_iif = skb->skb_iif;
+>>>       bool need_strict = rt6_need_strict(&ipv6_hdr(skb)->daddr);
+>>>       bool is_ndisc = ipv6_ndisc_frame(skb);
+>>> -     bool is_ll_src;
+>>>  
+>>>       /* loopback, multicast & non-ND link-local traffic; do not push through
+>>>        * packet taps again. Reset pkt_type for upper layers to process skb.
+>>> -      * for packets with lladdr src, however, skip so that the dst can be
+>>> -      * determine at input using original ifindex in the case that daddr
+>>> -      * needs strict
+>>> +      * For strict packets with a source LLA, determine the dst using the
+>>> +      * original ifindex.
+>>>        */
+>>> -     is_ll_src = ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADDR_LINKLOCAL;
+>>> -     if (skb->pkt_type == PACKET_LOOPBACK ||
+>>> -         (need_strict && !is_ndisc && !is_ll_src)) {
+>>> +     if (skb->pkt_type == PACKET_LOOPBACK || (need_strict && !is_ndisc)) {
+>>>               skb->dev = vrf_dev;
+>>>               skb->skb_iif = vrf_dev->ifindex;
+>>>               IP6CB(skb)->flags |= IP6SKB_L3SLAVE;
+>>> +
+>>>               if (skb->pkt_type == PACKET_LOOPBACK)
+>>>                       skb->pkt_type = PACKET_HOST;
+>>> +             else if (ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADDR_LINKLOCAL)
+>>> +                     vrf_ip6_input_dst(skb, vrf_dev, orig_iif);
+>>> +
+>>>               goto out;
+>>>       }
+>>
+>> you are basically moving Stephen's is_ll_src within the need_strict and
+>> not ND.
+> 
+> That's right.
+> 
+>> Did you run the fcnal-test script and verify no change in test results?
+> 
+> Yes, I saw no regression, and the tests Stephen added were still OK.
+> 
+> Antoine
+> 
 
-rgmii? But you set PHY_INTERFACE_MODE_GMII?
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-> +				mdio {
-> +					#address-cells = <1>;
-> +					#size-cells = <0>;
-> +					compatible = "snps,dwmac-mdio";
-> +					phy1: ethernet-phy@1 {
-> +						reg = <0>;
-
-The value after the @ should match the reg value.
-
-    Andrew
