@@ -2,98 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB213AE458
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 09:47:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FA393AE45F
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 09:51:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbhFUHt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 03:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51776 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbhFUHt6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 03:49:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF874C061756
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 00:47:44 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lvEeg-0003Qs-AE; Mon, 21 Jun 2021 09:47:38 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:3569:1fb5:40be:61fc])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 366D2640205;
-        Mon, 21 Jun 2021 07:47:36 +0000 (UTC)
-Date:   Mon, 21 Jun 2021 09:47:35 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Norbert Slusarek <nslusarek@gmx.net>
-Cc:     netdev@vger.kernel.org, ore@pengutronix.de, socketcan@hartkopp.net,
-        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH] can: j1939: prevent allocation of j1939 filter for
- optlen = 0
-Message-ID: <20210621074735.mnok4c3rr7qwparu@pengutronix.de>
-References: <20210620123842.117975-1-nslusarek@gmx.net>
+        id S230013AbhFUHxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 03:53:48 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:45135 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229618AbhFUHxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 03:53:47 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 904AD5C00D8;
+        Mon, 21 Jun 2021 03:51:33 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 21 Jun 2021 03:51:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=XltbRsrFCj2oWqGcR
+        ZvKzXwy1qC0uwFNLsIAVJOQ7do=; b=GujKx8KOuN4hZ01vIFkCJpTPSk3tHzNzT
+        ReLjL9xzcS2Ji05+7OGW51XQ0UzP99eJrAKsbSAND5WPBvInJVk++hTgYPqpLXnw
+        UDiKarkyjP3b0FL+3Na55OJtwn9U1LQIMKDNRGrgKRb79KFpXlmg8cow5/yLJ9Hc
+        2Jp/mI777tAiI4bKGObtLjMIQvKsb/QiOhQN2BF4nS9m5UAYtG588wchMZlmjXgD
+        ESYUf9y9zpoTCsJNNz0NLdLVKWfc3pAC6R1I85TJNb3bkyizfftOej8pVPMnPGSx
+        rlmVT10yrf4CJONvC00jVlAjMIg6mkRA/Eq/aITWqtwNBv24Uyh3g==
+X-ME-Sender: <xms:BUXQYH678s9pPR5HMirHYdtQLgu51FZno0yYpaCSBYKfe6avxlBInQ>
+    <xme:BUXQYM4k6wJKUYSiMB-OUB0cquEnPwonjhPQEe88zX5gSi1QGZjHOABTkH5WLiOkr
+    QVKW8eIz0lGvCU>
+X-ME-Received: <xmr:BUXQYOcXeArGoLNjXvDtgCaW8DZdZzGrMq1aK6UFeCCSUGpLHW4BXT_9LrysTMXizGIrnmzU0OfunQdeyW9ZZDKQZSJidjwAIfbcM41LD7hYWw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeefkedguddvudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
+    ehteffieekgeehveefvdegledvffduhfenucevlhhushhtvghrufhiiigvpedtnecurfgr
+    rhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:BUXQYIIjc_p1Ab-n3pS4IjiyDW0TQDnyAZYYYdvFfLwTHqetyCIuyw>
+    <xmx:BUXQYLKuCMkkiF6SD-9jsF75XUrHmLPXlzRJ_2nVVCa3QFzmzq-NbQ>
+    <xmx:BUXQYBzqpE5xDcO11MrsqJgiGAJwrjIyUHhyvFmOj9yD3DGH98z6BQ>
+    <xmx:BUXQYIGy8i4pTrFLlCSOFS-IBHyWPj6kYy_2txwwCPhOIm7hCFVSqw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 21 Jun 2021 03:51:31 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/3] mlxsw: Add support for module EEPROM read by page
+Date:   Mon, 21 Jun 2021 10:50:38 +0300
+Message-Id: <20210621075041.2502416-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6gcb3zubcmxn25nj"
-Content-Disposition: inline
-In-Reply-To: <20210620123842.117975-1-nslusarek@gmx.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Ido Schimmel <idosch@nvidia.com>
 
---6gcb3zubcmxn25nj
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add support for ethtool_ops::get_module_eeprom_by_page() operation.
 
-On 20.06.2021 14:38:42, Norbert Slusarek wrote:
-> If optval !=3D NULL and optlen =3D 0 are specified for SO_J1939_FILTER in
-> j1939_sk_setsockopt(), memdup_sockptr() will return ZERO_PTR for 0 size
-> allocation. The new filter will be mistakenly assigned ZERO_PTR.
-> This patch checks for optlen !=3D 0 and filter will be assigned NULL
-> in case of optlen =3D 0.
->=20
-> Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
-> Signed-off-by: Norbert Slusarek <nslusarek@gmx.net>
+Patch #1 adds necessary field in device register.
 
-The problem was in the initial commit, too. Changed Fixes tags
-accordingly to:
+Patch #2 documents possible MCIA status values so that more meaningful
+error messages could be returned to user space via extack.
 
-| Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Patch #3 adds the actual implementation.
 
-applied to linux-can/testing
+Ido Schimmel (3):
+  mlxsw: reg: Add bank number to MCIA register
+  mlxsw: reg: Document possible MCIA status values
+  mlxsw: core: Add support for module EEPROM read by page
 
-regards,
-Marc
+ .../net/ethernet/mellanox/mlxsw/core_env.c    | 74 +++++++++++++++++++
+ .../net/ethernet/mellanox/mlxsw/core_env.h    |  7 ++
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c | 13 ++++
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     | 20 +++++
+ .../mellanox/mlxsw/spectrum_ethtool.c         | 14 ++++
+ 5 files changed, 128 insertions(+)
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+-- 
+2.31.1
 
---6gcb3zubcmxn25nj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDQRBQACgkQqclaivrt
-76kxCgf/R8rJAam/ugLxow/pQHnX0ulmGuzx4sUFtKVteiR+0tH3loxS1kKb9pfB
-GtcftmNRiUUgsctb59YAdMyv34hisbXomrSmOp1sUPhhniLORpT07ss2kojJ4LPq
-rY2dqURUHAJ7pBu1tAaEYxyb/N75PcXVOIvEXUkNShl36icFnx5rbaFqAl+l7AnB
-30WhNiaW92lkBVfRb7B5rrHY2qcVhl8JI0LNbwFmNeyLTO8OQYJv9VZSPqj7eKlB
-nYEOdLmAaZycTl/0AMbA+A9WAbZu4btjqveW6LWgMuf86AZ8FZbjuK5O/qKdPf3e
-e5tvl1Fe/4EG7UeDdRxGgiM9Io3nnw==
-=SgG9
------END PGP SIGNATURE-----
-
---6gcb3zubcmxn25nj--
