@@ -2,98 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13EBD3AE3FA
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 09:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9859E3AE432
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 09:28:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230031AbhFUHU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 03:20:59 -0400
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:41532 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229597AbhFUHU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 03:20:58 -0400
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15L7BOdf016599;
-        Mon, 21 Jun 2021 07:18:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=5eb/oECVSzdI5E9j6u2cJRlEk2Z/x4pyxZIvvDsUMOw=;
- b=JsSmKgkVF/rVIcWTdSmJ3R9rAZqbRDgusXxhIvfBfiRlcxti1/V1kEhX5DFugVWfsJaB
- DwUaxV+bVuvzj+e1j/YEv5INhi2/UbEI3vWS2hdOgxRhhCkl0RaPPgwLF6SHxN2hHWCe
- 05iEWCEmZjgHUww2QzxmvkXTu4HPRvhtsMymaOh0ZuQsPHuA7atltlzuAQjRvLsnSL8D
- M9EkUK185OUtHNEJD1UNi0u1NSfQiYsdY7cO5atIs9hJGgY0HitVI8AecoRPKuhh6F3D
- Z8XkRk383zQyz5cXj1jpxxN57/gmiMZAPLm3ow/umvDxfwxYoBHlVku5eMXXQxcvpr/y Zw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 39994r2ay7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Jun 2021 07:18:41 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 15L7B7gb160859;
-        Mon, 21 Jun 2021 07:18:40 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 3995pu7dyk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Jun 2021 07:18:40 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15L7BucK162747;
-        Mon, 21 Jun 2021 07:18:39 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 3995pu7dy8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Jun 2021 07:18:39 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 15L7IcGA027293;
-        Mon, 21 Jun 2021 07:18:38 GMT
-Received: from kadam (/102.222.70.252)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 21 Jun 2021 07:18:37 +0000
-Date:   Mon, 21 Jun 2021 10:18:31 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     subashab@codeaurora.org
-Cc:     Sean Tranchetti <stranche@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] net: qualcomm: rmnet: fix two pointer math bugs
-Message-ID: <20210621071831.GB1901@kadam>
-References: <YM32lkJIJdSgpR87@mwanda>
- <027ae9e2ddc18f0ed30c5d9c7075c8b9@codeaurora.org>
- <20210621071158.GA1901@kadam>
+        id S229708AbhFUHa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 03:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229597AbhFUHa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 03:30:29 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3A7C061574
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 00:28:15 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id m17so4868263plx.7
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 00:28:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8a8ZCCoLVRdaeyYlzzPyOwLW9137LTiNLPvHHxRWOlQ=;
+        b=FdGevPpBA9mdBjStZuBy3+OtCIIvly0GAesJcrtc9tqXU/kB14MxySaJNgB+Jsa+dP
+         Rej/VWbEly12Cm1ANSy05gTF9O5OkY36wRwAXbQuIyUh0SZ3/ca0m1pMamKeRknSjsog
+         XKQMY1EuGbP8sRh5uzx5bdst7x/Rw3v+njtKK1QMc1//fBq4GhkENdqm0HgKoNWuN97M
+         pCi/P92PGiTly2Igoj1Uh9vVMSzfB6mqf9XfOju8G70x9K2inehhV7Kb1WTlATXT5B3z
+         H1H5x9wOLpXi6dopcYxmivzDv7h0+zKAW9H5qLSnkkHSGXxO1r5WPRurHv5q/YqPgIAc
+         sg1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8a8ZCCoLVRdaeyYlzzPyOwLW9137LTiNLPvHHxRWOlQ=;
+        b=a5WI4lu5mklUc0uk/ZcOpJiY0bc39q4wc28VcNspJv0WxymDiYCAcnPExBUyApcvai
+         L1niE0tyuh6Dq5BdWtzH79OEXKmrhcEW8WK2/4qYSl7ejhna4eUfhyMG9M+oaRrTfula
+         zRFjt9gqbpxOzeAzs++8Qg5mnQl1RwpO5fc+F5BqYrzj29mdCh6EhueUqoBcgUC/w9OU
+         nl1js9FwiQKFY8JdtlOVqaGlBUzLzTauwFvcqzClZbLpUxDEdia9HxjNHRj6+N+Q3wKZ
+         ZCe1n6NneAggyqab78w/N3zx9vZ6KYESwgzFinYzgSUQvk2S7mBYe3ctWv4AbPTpgtAX
+         mBAw==
+X-Gm-Message-State: AOAM531qtEqF4Ax2oCpzwGFFvYK1oij8bsLiCvhoN9gGHhw0AU4JtBZ2
+        YKCs1hlq+ABQOiGHRPLwRGoqG3CR9eJ0E2xld13zfQ==
+X-Google-Smtp-Source: ABdhPJx72L9PTHP65KYB+Chk1pVDM2i5pbrY1n3nD597lNiVlNRAWKhNmButZTKgYb+Zf2Njgnk0RRcnltXUadULGpY=
+X-Received: by 2002:a17:902:f54c:b029:124:109f:fd6e with SMTP id
+ h12-20020a170902f54cb0290124109ffd6emr5973610plf.67.1624260494480; Mon, 21
+ Jun 2021 00:28:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210621071158.GA1901@kadam>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-ORIG-GUID: NMMFNvMHdypto3gaDsxBITf0BEwpebZk
-X-Proofpoint-GUID: NMMFNvMHdypto3gaDsxBITf0BEwpebZk
+References: <20210615003016.477-1-ryazanov.s.a@gmail.com> <20210615003016.477-11-ryazanov.s.a@gmail.com>
+ <CAMZdPi9mSfaYFnAt5Qux7HtCMkE-4KkkGL8i8T3rtxNXekK+Eg@mail.gmail.com> <CAHNKnsQdWWJ1tAHt4LPS=3jWNSCDcUdQDSrkZ9aakYp-4iaKVw@mail.gmail.com>
+In-Reply-To: <CAHNKnsQdWWJ1tAHt4LPS=3jWNSCDcUdQDSrkZ9aakYp-4iaKVw@mail.gmail.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Mon, 21 Jun 2021 09:37:09 +0200
+Message-ID: <CAMZdPi_e+ibRQiytAYkjo1A9GzLm6Np6Tma-6KMHuWfFcaFsCg@mail.gmail.com>
+Subject: Re: [PATCH net-next 10/10] wwan: core: add WWAN common private data
+ for netdev
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 21, 2021 at 10:11:58AM +0300, Dan Carpenter wrote:
-> On Sat, Jun 19, 2021 at 01:12:09PM -0600, subashab@codeaurora.org wrote:
-> > On 2021-06-19 07:52, Dan Carpenter wrote:
-> > 
-> > Hi Dan
-> > 
-> > Thanks for fixing this. Could you cast the ip4h to char* instead of void*.
-> > Looks like gcc might raise issues if -Wpointer-arith is used.
-> > 
-> > https://gcc.gnu.org/onlinedocs/gcc-4.5.0/gcc/Pointer-Arith.html#Pointer-Arith
-> 
-> The fix for that is to not enable -Wpointer-arith.  The warning is dumb.
+Hi Sergey,
 
-Sorry, that was uncalled for and not correct.  The GCC warning would be
-useful if we were trying to write portable userspace code.  But in the
-kernel the kernel uses GCC extensions a lot.
+On Sun, 20 Jun 2021 at 16:39, Sergey Ryazanov <ryazanov.s.a@gmail.com> wrote:
+>
+> On Tue, Jun 15, 2021 at 10:24 AM Loic Poulain <loic.poulain@linaro.org> wrote:
+> > On Tue, 15 Jun 2021 at 02:30, Sergey Ryazanov <ryazanov.s.a@gmail.com> wrote:
+> >> The WWAN core not only multiplex the netdev configuration data, but
+> >> process it too, and needs some space to store its private data
+> >> associated with the netdev. Add a structure to keep common WWAN core
+> >> data. The structure will be stored inside the netdev private data before
+> >> WWAN driver private data and have a field to make it easier to access
+> >> the driver data. Also add a helper function that simplifies drivers
+> >> access to their data.
+> >
+> > Would it be possible to store wwan_netdev_priv at the end of priv data instead?
+> > That would allow drivers to use the standard netdev_priv without any change.
+> > And would also simplify forwarding to rmnet (in mhi_net) since rmnet
+> > uses netdev_priv.
+>
+> I do not think that mimicking something by one subsystem for another
+> is generally a good idea. This could look good in a short term, but
+> finally it will become a headache due to involvement of too many
+> entities.
+>
+> IMHO, a suitable approach to share the rmnet library and data
+> structures among drivers is to make the rmnet interface more generic.
+>
+> E.g. consider such netdev/rtnl specific function:
+>
+> static int rmnet_foo_action(struct net_device *dev, ...)
+> {
+>     struct rmnet_priv *rmdev = netdev_priv(dev);
+>     <do a foo action here>
+> }
+>
+> It could be split into a wrapper and an actual handler:
+>
+> int __rmnet_foo_action(struct rmnet_priv *rmdev, ...)
+> {
+>     <do a foo action here>
+> }
+> EXPORT_GPL(__rmnet_foo_action)
+>
+> static int rmnet_foo_action(struct net_device *dev, ...)
+> {
+>     struct rmnet_priv *rmdev = netdev_priv(dev);
+>     return __rmnet_foo_action(rmdev, ...)
+> }
+>
+> So a call from mhi_net to rmnet could looks like this:
+>
+> static int mhi_net_foo_action(struct net_device *dev, ...)
+> {
+>     struct rmnet_priv *rmdev = wwan_netdev_drvpriv(dev);
+>     return __rmnet_foo_action(rmdev, ...)
+> }
+>
+> In such a way, only the rmnet users know something special, while
+> other wwan core users and the core itself behave without any
+> surprises. E.g. any regular wwan core minidriver can access the
+> link_id field of the wwan common data by calling netdev_priv() without
+> further calculating the common data offset.
 
-The Clang compiler can also compile the kernel these days.  But it had
-to add support for a bunch of GCC extensions to make that work.  Really
-most of linux userspace is written with GCC in mind so Clang had to do
-this anyway.
+Yes, that would work, but it's an important refactoring since rmnet is
+all built around the idea that netdev_priv is rmnet_priv, including rx
+path (netdev_priv(skb->dev)).
+My initial tests were based on this 'simple' change:
+https://git.linaro.org/people/loic.poulain/linux.git/commit/?h=wwan_rmnet&id=6308d49790f10615bd33a38d56bc7f101646558f
 
-So we will never enable -Wpointer-arith in the kernel because there is
-no need.
+Moreover, a driver like mhi_net also supports non WWAN local link
+(called mhi_swip), which is a network link between the host and the
+modem cpu (for modem hosted services...). This link is not managed by
+the WWAN layer and is directly created by mhi_net. I could create a
+different driver or set of handlers for this netdev, but it's
+additional complexity.
 
-regards,
-dan carpenter
+> >> At the moment we use the common WWAN private data to store the WWAN data
+> >> link (channel) id at the time the link is created, and report it back to
+> >> user using the .fill_info() RTNL callback. This should help the user to
+> >> be aware which network interface is binded to which WWAN device data
+> >> channel.
+
+I wonder if it would not be simpler to store the link ID into
+netdev->dev_port, it's after all a kind of virtual/logical port.
+That would only postpone the introduction of a wwan_netdev_priv struct though.
+
+Regards,
+Loic
