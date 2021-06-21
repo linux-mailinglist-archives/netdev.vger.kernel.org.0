@@ -2,185 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7BC3AF857
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 00:15:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 764D83AF861
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 00:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231381AbhFUWRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 18:17:41 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52366 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229789AbhFUWRk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 18:17:40 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lvSCS-000ARV-FC; Tue, 22 Jun 2021 00:15:24 +0200
-Received: from [85.7.101.30] (helo=linux-3.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lvSCS-0001Zm-7Z; Tue, 22 Jun 2021 00:15:24 +0200
-Subject: Re: [PATCH bpf-next v3 03/16] xdp: add proper __rcu annotations to
- redirect map entries
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210617212748.32456-1-toke@redhat.com>
- <20210617212748.32456-4-toke@redhat.com>
- <1881ecbe-06ec-6b0a-836c-033c31fabef4@iogearbox.net> <87zgvirj6g.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <96117b3f-8041-b524-ef70-d5afc97e32f9@iogearbox.net>
-Date:   Tue, 22 Jun 2021 00:15:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S231923AbhFUWXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 18:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52658 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230438AbhFUWXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 18:23:31 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DACA9C061760
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 15:21:14 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id t19-20020a17090ae513b029016f66a73701so410958pjy.3
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 15:21:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k4IdIX/nvtQeyieT57jvq6pJDqXEf5OX6FjN268bVeg=;
+        b=nkVTSIbARbqWX9bwAlW18qOcFR8S/hkqL5a1OVaKjTFtwfRmIlcf1FB8IBt7484nNv
+         B/iwvYo5pXp4OAPYa9GF5uI+2nWwc25NjLHtB0z99es5AL03f+esGPsU08SB4Cb9Y+1W
+         vtykXOIbgR7n7kvpkf3/Wv4O7FOsStJDEaoIc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k4IdIX/nvtQeyieT57jvq6pJDqXEf5OX6FjN268bVeg=;
+        b=TNLz7ELQ6MC+tOREjCU29hzx/5JM4rdZEP1KlIMdPVfa9B7HAYKyzMZeyg1dLeMi+W
+         IauwjeewDFx1RYunxuAkA9uVAAbJR68he84qyNNbBXT0gu7vtCSSfajd0DLF+J843rri
+         H8yRVlOmXE4bZvXV6JRDO8YqwBK8rnxdlgg32nPAg//CA204obCWcveLmEp6GAp26dmD
+         Q/p1dGqRr7n2AapzrgcaxJNk8p5a97iAqn+DQ7NoxNvHGNaA9QPYJYJUIBZMAmAIY43L
+         POeGmEk9ZZ97ORbMbg3Rpfg9EAPQBsBz2tvsEraWT3n7GJT+7q+BY0e2D8OApVQASLLf
+         +/pQ==
+X-Gm-Message-State: AOAM531wAlBUCEfHB52q5nb8ZXqh7vf6o4qOLAWmpleePBhZEm6xboWv
+        I9QzbRm/Twsu7U8VkjzczZ38Lw==
+X-Google-Smtp-Source: ABdhPJy0UEQTxmiMj8p2NA6jXxmy5M54nD943ClM6WPkwJ+CKmoQhJbhjtM8O2hcOqIBwKLJXKwQiw==
+X-Received: by 2002:a17:90a:dac1:: with SMTP id g1mr427917pjx.199.1624314074326;
+        Mon, 21 Jun 2021 15:21:14 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 73sm4536385pfy.83.2021.06.21.15.21.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Jun 2021 15:21:13 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     "K. Y. Srinivasan" <kys@microsoft.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH] hv_netvsc: Avoid field-overflowing memcpy()
+Date:   Mon, 21 Jun 2021 15:21:12 -0700
+Message-Id: <20210621222112.1749650-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <87zgvirj6g.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+X-Patch-Hashes: v=1; h=sha256; g=52ca9d3ef6fdb378f4fb4390eb0f8bf4545fb2f0; i=KB/gBOM4hXq43bzNgE68y/CtxkQywhn1/IWky57D5OI=; m=5mFF/t04SK2neGS9/cim9EhIl8hHaSNFLWMm4iAy2p8=; p=viZ5h7L2XoQprZaaybqKRBXaA6Do0vJQSm4gKjZyktE=
+X-Patch-Sig: m=pgp; i=keescook@chromium.org; s=0x0x8972F4DFDC6DC026; b=iQIzBAABCgAdFiEEpcP2jyKd1g9yPm4TiXL039xtwCYFAmDRENcACgkQiXL039xtwCYneg/+O3l CHaMID0zQGdHzOpjdP/XRCBkbVhaJywyHQ8z6b7qmEv3f20zSEpANEIFxybZanrdt/CdTEEfq3rfp MnxIdOpQzllckLVio4CTSZVeSkhV5fW6cGgy6cGBfmmwo5L7lZPsQT99c7qkBCTuz/yX8s+yrRj5J JPoUt6IMHmYzT8V9qhdFBrY4Mj1yOWqTjTf5vrKQXkzRVEAIrAnmw6vQQqaNOQj8casITz+Bas2r9 1BnbHRha8kDtuvxErUrhSvElGt1QJBLTEbNJFaseHV1+hk/wYjf+IEDa7cTWDJv/MEzw14vLQ5lJ7 TpdODkKAEPK+ifpliTgNz5o0Z3WZvDkiS4mSCPmLfBxnZ4F2ckzR42tFpFT/6XUNWaba/O3Rdf96d YUzWdRdWnqrxJrZGAu1dgk/U76yd2ydcikd/yky9RmLEFMvosTJ2UUh344i3i6Jo3KrpJjLgYEmll N0SJ5HiAxLF8j052YiXUO/MNSDP8XVIScErnxTg/ah6x7Yq8PD5SPxkt1pGjJtC1MkMIcIw+XKK4H Prj0rfPvjCUvMXkjq82cEBgAMFwaMqO2wu0jaXbv6fZ+Ynxo3TZoYw53z2Eam0ohGAsszkNbZUdi6 4MvZ8f4iLqqz3cs5bnyFAomq2bEcQ2qM9HAd8Hk8LHIXIiQPe56MYO+diaNYmMDg=
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26208/Mon Jun 21 13:09:26 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/21/21 11:39 PM, Toke Høiland-Jørgensen wrote:
-> Daniel Borkmann <daniel@iogearbox.net> writes:
->> On 6/17/21 11:27 PM, Toke Høiland-Jørgensen wrote:
->>> XDP_REDIRECT works by a three-step process: the bpf_redirect() and
->>> bpf_redirect_map() helpers will lookup the target of the redirect and store
->>> it (along with some other metadata) in a per-CPU struct bpf_redirect_info.
->>> Next, when the program returns the XDP_REDIRECT return code, the driver
->>> will call xdp_do_redirect() which will use the information thus stored to
->>> actually enqueue the frame into a bulk queue structure (that differs
->>> slightly by map type, but shares the same principle). Finally, before
->>> exiting its NAPI poll loop, the driver will call xdp_do_flush(), which will
->>> flush all the different bulk queues, thus completing the redirect.
->>>
->>> Pointers to the map entries will be kept around for this whole sequence of
->>> steps, protected by RCU. However, there is no top-level rcu_read_lock() in
->>> the core code; instead drivers add their own rcu_read_lock() around the XDP
->>> portions of the code, but somewhat inconsistently as Martin discovered[0].
->>> However, things still work because everything happens inside a single NAPI
->>> poll sequence, which means it's between a pair of calls to
->>> local_bh_disable()/local_bh_enable(). So Paul suggested[1] that we could
->>> document this intention by using rcu_dereference_check() with
->>> rcu_read_lock_bh_held() as a second parameter, thus allowing sparse and
->>> lockdep to verify that everything is done correctly.
->>>
->>> This patch does just that: we add an __rcu annotation to the map entry
->>> pointers and remove the various comments explaining the NAPI poll assurance
->>> strewn through devmap.c in favour of a longer explanation in filter.c. The
->>> goal is to have one coherent documentation of the entire flow, and rely on
->>> the RCU annotations as a "standard" way of communicating the flow in the
->>> map code (which can additionally be understood by sparse and lockdep).
->>>
->>> The RCU annotation replacements result in a fairly straight-forward
->>> replacement where READ_ONCE() becomes rcu_dereference_check(), WRITE_ONCE()
->>> becomes rcu_assign_pointer() and xchg() and cmpxchg() gets wrapped in the
->>> proper constructs to cast the pointer back and forth between __rcu and
->>> __kernel address space (for the benefit of sparse). The one complication is
->>> that xskmap has a few constructions where double-pointers are passed back
->>> and forth; these simply all gain __rcu annotations, and only the final
->>> reference/dereference to the inner-most pointer gets changed.
->>>
->>> With this, everything can be run through sparse without eliciting
->>> complaints, and lockdep can verify correctness even without the use of
->>> rcu_read_lock() in the drivers. Subsequent patches will clean these up from
->>> the drivers.
->>>
->>> [0] https://lore.kernel.org/bpf/20210415173551.7ma4slcbqeyiba2r@kafai-mbp.dhcp.thefacebook.com/
->>> [1] https://lore.kernel.org/bpf/20210419165837.GA975577@paulmck-ThinkPad-P17-Gen-1/
->>>
->>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->>> ---
->>>    include/net/xdp_sock.h |  2 +-
->>>    kernel/bpf/cpumap.c    | 13 +++++++----
->>>    kernel/bpf/devmap.c    | 49 ++++++++++++++++++------------------------
->>>    net/core/filter.c      | 28 ++++++++++++++++++++++++
->>>    net/xdp/xsk.c          |  4 ++--
->>>    net/xdp/xsk.h          |  4 ++--
->>>    net/xdp/xskmap.c       | 29 ++++++++++++++-----------
->>>    7 files changed, 80 insertions(+), 49 deletions(-)
->> [...]
->>>    						 __dev_map_entry_free);
->>> diff --git a/net/core/filter.c b/net/core/filter.c
->>> index caa88955562e..0b7db5c70385 100644
->>> --- a/net/core/filter.c
->>> +++ b/net/core/filter.c
->>> @@ -3922,6 +3922,34 @@ static const struct bpf_func_proto bpf_xdp_adjust_meta_proto = {
->>>    	.arg2_type	= ARG_ANYTHING,
->>>    };
->>>    
->>> +/* XDP_REDIRECT works by a three-step process, implemented in the functions
->>> + * below:
->>> + *
->>> + * 1. The bpf_redirect() and bpf_redirect_map() helpers will lookup the target
->>> + *    of the redirect and store it (along with some other metadata) in a per-CPU
->>> + *    struct bpf_redirect_info.
->>> + *
->>> + * 2. When the program returns the XDP_REDIRECT return code, the driver will
->>> + *    call xdp_do_redirect() which will use the information in struct
->>> + *    bpf_redirect_info to actually enqueue the frame into a map type-specific
->>> + *    bulk queue structure.
->>> + *
->>> + * 3. Before exiting its NAPI poll loop, the driver will call xdp_do_flush(),
->>> + *    which will flush all the different bulk queues, thus completing the
->>> + *    redirect.
->>> + *
->>> + * Pointers to the map entries will be kept around for this whole sequence of
->>> + * steps, protected by RCU. However, there is no top-level rcu_read_lock() in
->>> + * the core code; instead, the RCU protection relies on everything happening
->>> + * inside a single NAPI poll sequence, which means it's between a pair of calls
->>> + * to local_bh_disable()/local_bh_enable().
->>> + *
->>> + * The map entries are marked as __rcu and the map code makes sure to
->>> + * dereference those pointers with rcu_dereference_check() in a way that works
->>> + * for both sections that to hold an rcu_read_lock() and sections that are
->>> + * called from NAPI without a separate rcu_read_lock(). The code below does not
->>> + * use RCU annotations, but relies on those in the map code.
->>
->> One more follow-up question related to tc BPF: given we do use rcu_read_lock_bh()
->> in case of sch_handle_egress(), could we also remove the rcu_read_lock() pair
->> from cls_bpf_classify() then?
-> 
-> I believe so, yeah. Patch 2 in this series should even make lockdep stop
-> complaining about it :)
+In preparation for FORTIFY_SOURCE performing compile-time and run-time
+field bounds checking for memcpy(), memmove(), and memset(), avoid
+intentionally writing across neighboring fields.
 
-Btw, I was wondering whether we should just get rid of all the WARN_ON_ONCE()s
-from those map helpers given in most situations these are not triggered anyway
-due to retpoline avoidance where verifier rewrites the calls to jump to the map
-backend implementation directly. One alternative could be to have an extension
-to the bpf prologue generation under CONFIG_DEBUG_LOCK_ALLOC and call the lockdep
-checks from there, but it's probably not worth the effort. (In the trampoline
-case we have those __bpf_prog_enter()/__bpf_prog_enter_sleepable() where the
-latter in particular has asserts like might_fault(), fwiw.)
+Add flexible array to represent start of buf_info, improving readability
+and avoid future warning where memcpy() thinks it is writing past the
+end of the structure.
 
-> I can add a patch removing the rcu_read_lock() from cls_bpf in the next
-> version.
-> 
->> It would also be great if this scenario in general could be placed
->> under the Documentation/RCU/whatisRCU.rst as an example, so we could
->> refer to the official doc on this, too, if Paul is good with this.
-> 
-> I'll take a look and see if I can find a way to fit it in there...
-> 
->> Could you also update the RCU comment in bpf_prog_run_xdp()? Or
->> alternatively move all the below driver comments in there as a single
->> location?
->>
->>     /* This code is invoked within a single NAPI poll cycle and thus under
->>      * local_bh_disable(), which provides the needed RCU protection.
->>      */
-> 
-> Sure, can do. And yeah, I do agree that moving the comment in there
-> makes more sense than scattering it over all the drivers, even if that
-> means I have to go back and edit all the drivers again :P
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ drivers/net/hyperv/hyperv_net.h   | 1 +
+ drivers/net/hyperv/rndis_filter.c | 6 ++----
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-Yeap, all of the above sounds good, thanks!
+diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+index b11aa68b44ec..bc48855dff10 100644
+--- a/drivers/net/hyperv/hyperv_net.h
++++ b/drivers/net/hyperv/hyperv_net.h
+@@ -1170,6 +1170,7 @@ struct rndis_set_request {
+ 	u32 info_buflen;
+ 	u32 info_buf_offset;
+ 	u32 dev_vc_handle;
++	u8  info_buf[];
+ };
+ 
+ /* Response to NdisSetRequest */
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index 983bf362466a..f6c9c2a670f9 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -1051,10 +1051,8 @@ static int rndis_filter_set_packet_filter(struct rndis_device *dev,
+ 	set = &request->request_msg.msg.set_req;
+ 	set->oid = RNDIS_OID_GEN_CURRENT_PACKET_FILTER;
+ 	set->info_buflen = sizeof(u32);
+-	set->info_buf_offset = sizeof(struct rndis_set_request);
+-
+-	memcpy((void *)(unsigned long)set + sizeof(struct rndis_set_request),
+-	       &new_filter, sizeof(u32));
++	set->info_buf_offset = offsetof(typeof(*set), info_buf);
++	memcpy(set->info_buf, &new_filter, sizeof(u32));
+ 
+ 	ret = rndis_filter_send_request(dev, request);
+ 	if (ret == 0) {
+-- 
+2.30.2
+
