@@ -2,100 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 073213AF162
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:06:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A00AD3AF13D
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231379AbhFURIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230347AbhFURIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 13:08:41 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67329C061767;
-        Mon, 21 Jun 2021 09:56:22 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id h17so9997667edw.11;
-        Mon, 21 Jun 2021 09:56:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=il3Apfe4nxzz64UdgTYkANA2nzVdT1n6YLDs+l6Yw9o=;
-        b=HrZxFU6c8rbnYiSloiVGdJaSEVGOXGW2MAYDUApkuw450OhyyFZ0Le/CKleBzu0FPC
-         7g08x+D5QIMmnGXQselFSzhikl8moQWjQ2qadi4xhH7c8DF3fRMnAVielfzm76Mm2Ai5
-         vtn6ZtJWOM6wcdf3f3rp/DgLSTCrd6xdnolUTNUqSf9iWoPKVhypBWcrcPs0BN9zSqd3
-         NVDZQtee5K5j57Ttq8hQdRRfuRXaKBj6Qzwq+KDuqa8LRX/PA6xn25ywnTz2Z2S4rQvD
-         vyu/BtUI6fB+94nGfkzGNyVlXvsI49Tw7ta5vJkNzd+h58tUf8WYkPR/PmV/oDwF7477
-         YZ2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=il3Apfe4nxzz64UdgTYkANA2nzVdT1n6YLDs+l6Yw9o=;
-        b=hYtRh2ptek5gdJS+Hngr6zV57Z6AlC7oyXW5xHi9doGBGeJwc8ijKJe33hHFBUTbcx
-         UXG6pqfomIhKq5s6tN3lRZ/NtgQk1MurYxy0b/WcJ6LgVwTEv8/QGwiheaH8zlIzbgBd
-         ugVvdeka9yNow5C4bVklFkH8/bIdxTRIS2QRXeeEssh02g9MkAEU88I9IDDygpCoG3Mk
-         TLYvh36nhh4utNECYrVxHS3cb1idir959UXm98ldmYsFkki24w7iN/v6YlFyM7Ca2l6J
-         vwsnYjawvcLmaX9FBu9KGE60eGXHFxj2OfTz4Xn8GvLku5IYVp3wM0IQ+6Tp/zieUiDA
-         DH/g==
-X-Gm-Message-State: AOAM5309vocFpE+BldK3abSlI0YLDulbAHYztr+7/JeC7+/040JJjMUt
-        vVw7y/JjZ2TWxi1pvk0kFjiA4Q9FynHugI5R+RM=
-X-Google-Smtp-Source: ABdhPJzDlHEzlMszUufU4mLUc8yxeJCsxxBXbiaS2yxHWkEKGXi2I6zEgpqlMCQwLljoVALhuZLk83Ta1Nr9MiAlzlY=
-X-Received: by 2002:a05:6402:5cc:: with SMTP id n12mr21540502edx.354.1624294581030;
- Mon, 21 Jun 2021 09:56:21 -0700 (PDT)
+        id S230290AbhFURFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:05:13 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:54150 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231182AbhFURFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 13:05:08 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15LGXdmU068889;
+        Mon, 21 Jun 2021 13:02:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Ck4zrruLN6Q+BRtf9tzSXqr9rmK0Z63cbgwIx55ZHMo=;
+ b=EnvEaTZn47OU9iO2JGhXrEhjlVH68fGraUezLiB51t6XBLOBD4DiawcZSXQyoKQMiVAR
+ O33EmiJOzNYLAH0IKyqekPrNop3iK8yQF+a70sJmvZ1YaafiTnCPKfgopSoF9g3oLMWr
+ nJhjPczCWNHHvZWdKjYCIH+nRFhgYa1tL7Wau0jLtFvJacM4WhTYxtWYNI8PACXfFzJl
+ O/jXS3MfpsgR0cfvqLydwFMLTB35EihT+3/h7bH5WLR40kzdDfJJ5QkoYdUuStkAxYY2
+ fit7Jtgwgi7eNJCh4qe8WGls6+7DrOByGkCq3BecAoX/Z+3+qePBV1is1xdcusKgfgy5 Lw== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 39avw740u7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Jun 2021 13:02:47 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 15LH2dU3006246;
+        Mon, 21 Jun 2021 17:02:47 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma04dal.us.ibm.com with ESMTP id 39987951ry-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Jun 2021 17:02:46 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 15LH2koo8192850
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 21 Jun 2021 17:02:46 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2B8A928058;
+        Mon, 21 Jun 2021 17:02:46 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5074C2805C;
+        Mon, 21 Jun 2021 17:02:45 +0000 (GMT)
+Received: from [9.171.11.231] (unknown [9.171.11.231])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTPS;
+        Mon, 21 Jun 2021 17:02:45 +0000 (GMT)
+Subject: Re: [PATCH net-next] net/smc: Fix ENODATA tests in
+ smc_nl_get_fback_stats()
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Karsten Graul <kgraul@linux.ibm.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <YM32HV7psa+PrmbV@mwanda>
+From:   Guvenc Gulce <guvenc@linux.ibm.com>
+Message-ID: <b3ba0dfa-6367-8e75-6348-f78e1cb7c7e1@linux.ibm.com>
+Date:   Mon, 21 Jun 2021 19:02:44 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210621103310.186334-1-jhp@endlessos.org> <YNCPcmEPuwdwoLto@lunn.ch>
- <35f4baae-a6e1-c87d-279c-74f8c18bb5d1@gmail.com>
-In-Reply-To: <35f4baae-a6e1-c87d-279c-74f8c18bb5d1@gmail.com>
-From:   Peter Robinson <pbrobinson@gmail.com>
-Date:   Mon, 21 Jun 2021 17:56:08 +0100
-Message-ID: <CALeDE9MjRLjTQ1R2nw_rnXsCXKHLMx8XqvG881xgqKz2aJRGfA@mail.gmail.com>
-Subject: Re: [PATCH] net: bcmgenet: Fix attaching to PYH failed on RPi 4B
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jian-Hong Pan <jhp@endlessos.org>,
-        Doug Berger <opendmb@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessos.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YM32HV7psa+PrmbV@mwanda>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: -dCY8FVOsiesYUhlt5CHYApnLmIcwxOd
+X-Proofpoint-GUID: -dCY8FVOsiesYUhlt5CHYApnLmIcwxOd
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-06-21_06:2021-06-21,2021-06-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
+ phishscore=0 mlxlogscore=999 suspectscore=0 impostorscore=0 spamscore=0
+ bulkscore=0 clxscore=1011 lowpriorityscore=0 adultscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
+ definitions=main-2106210097
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 21, 2021 at 5:39 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> On 6/21/21 6:09 AM, Andrew Lunn wrote:
-> > On Mon, Jun 21, 2021 at 06:33:11PM +0800, Jian-Hong Pan wrote:
-> >> The Broadcom UniMAC MDIO bus comes too late. So, GENET cannot find the
-> >> ethernet PHY on UniMAC MDIO bus. This leads GENET fail to attach the
-> >> PHY.
-> >>
-> >> bcmgenet fd580000.ethernet: GENET 5.0 EPHY: 0x0000
-> >> ...
-> >> could not attach to PHY
-> >> bcmgenet fd580000.ethernet eth0: failed to connect to PHY
-> >> uart-pl011 fe201000.serial: no DMA platform data
-> >> libphy: bcmgenet MII bus: probed
-> >> ...
-> >> unimac-mdio unimac-mdio.-19: Broadcom UniMAC MDIO bus
-> >>
-> >> This patch makes GENET try to connect the PHY up to 3 times. Also, waits
-> >> a while between each time for mdio-bcm-unimac module's loading and
-> >> probing.
-> >
-> > Don't loop. Return -EPROBE_DEFER. The driver core will then probed the
-> > driver again later, by which time, the MDIO bus driver should of
-> > probed.
->
-> This is unlikely to work because GENET register the mdio-bcm-unimac
-> platform device so we will likely run into a chicken and egg problem,
-> though surprisingly I have not seen this on STB platforms where GENET is
-> used, I will try building everything as a module like you do. Can you
-> see if the following helps:
 
-For reference we have mdio_bcm_unimac/genet both built as modules in
-Fedora and I've not seen this issue reported using vanilla upstream
-kernels if that's a useful reference point.
 
-Regards,
-Peter
+On 19/06/2021 15:50, Dan Carpenter wrote:
+> These functions return negative ENODATA but the minus sign was left out
+> in the tests.
+>
+> Fixes: f0dd7bf5e330 ("net/smc: Add netlink support for SMC fallback statistics")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>   net/smc/smc_stats.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/net/smc/smc_stats.c b/net/smc/smc_stats.c
+> index 614013e3b574..e80e34f7ac15 100644
+> --- a/net/smc/smc_stats.c
+> +++ b/net/smc/smc_stats.c
+> @@ -393,17 +393,17 @@ int smc_nl_get_fback_stats(struct sk_buff *skb, struct netlink_callback *cb)
+>   			continue;
+>   		if (!skip_serv) {
+>   			rc_srv = smc_nl_get_fback_details(skb, cb, k, is_srv);
+> -			if (rc_srv && rc_srv != ENODATA)
+> +			if (rc_srv && rc_srv != -ENODATA)
+>   				break;
+>   		} else {
+>   			skip_serv = 0;
+>   		}
+>   		rc_clnt = smc_nl_get_fback_details(skb, cb, k, !is_srv);
+> -		if (rc_clnt && rc_clnt != ENODATA) {
+> +		if (rc_clnt && rc_clnt != -ENODATA) {
+>   			skip_serv = 1;
+>   			break;
+>   		}
+> -		if (rc_clnt == ENODATA && rc_srv == ENODATA)
+> +		if (rc_clnt == -ENODATA && rc_srv == -ENODATA)
+>   			break;
+>   	}
+>   	mutex_unlock(&net->smc.mutex_fback_rsn);
+
+Acked-by: Guvenc Gulce <guvenc@linux.ibm.com>
+
+Thanks for preparing the fix.
