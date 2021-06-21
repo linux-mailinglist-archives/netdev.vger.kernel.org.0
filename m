@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0715C3AEA59
+	by mail.lfdr.de (Postfix) with ESMTP id 97A243AEA5B
 	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 15:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbhFUNvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 09:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49216 "EHLO
+        id S230222AbhFUNv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 09:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbhFUNvp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 09:51:45 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67A0C061574;
-        Mon, 21 Jun 2021 06:49:31 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id g6-20020a17090adac6b029015d1a9a6f1aso10214814pjx.1;
-        Mon, 21 Jun 2021 06:49:31 -0700 (PDT)
+        with ESMTP id S230161AbhFUNv4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 09:51:56 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A159DC061574;
+        Mon, 21 Jun 2021 06:49:41 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id h26so2594469pfo.5;
+        Mon, 21 Jun 2021 06:49:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xDbsgsugh71ao8Y6yea5NvWv35h64tsG9JYlXTC4X2E=;
-        b=Bs34u2IQVoPUuboSu29SwNzeeXtm41TgzrzBMk1bm8bSocn2Y0MNuyxoDV3o8HkX61
-         pDMjOMD5boamR/s/UdQ1oM1F3aSxLcoGN/rDvQvAQZ1VqRpfisZVO6a2dAsocARutAo3
-         /zPjeGy8AcSuOmzZZSIl4IYU6QLInkhyL1nJycxuKQm0d4UZzgEImftURaIFdA1PICHf
-         xApqK5dPA1YwAjDdJG1gD+iZZCyJ0g2EddTF96isJzlnSzX3brnwJEIZwneN1a9Cpmk5
-         erim2+jQ+fzIt8mlOEDbSes8ZuTi+TBYXky1PrwTKGSzkQftWXR/90v3I4hPeM+d308D
-         m6cg==
+        bh=L3aJmS+A5BgPt7scDAGNNWhO+vstoQ9bplelvtban/o=;
+        b=aOBfGhsGV/NRRTJeWDNv1z2nkwtvmYnwdFVVgldj0IhV9Q1geXvY7Z9nnZQlwK+Rbc
+         qk5YZ5aoOpdkwISZyz4dOCvaldF5KTmZ+mhIWZjtSASooLEyjZE00qBS/Om5znfIqsNV
+         JSTF6fEJRVqb2QuyMqjZY/bbeLfCQIvpIj1Jzs4wlyZdH730LJJksdmBL0YRHiDk9J1i
+         ekSpgge0OpCm2BLgSJXFpkTMITKLlOh6D8VDjcELFy19cdB8RaHskS9plLqXcWdDa5EJ
+         GUVjB7YybpgG43u/RJjRQPpovrMkoG9cXG7DtzBKimJSxcHpV7xIK5fKb9QkXxn5Pmt3
+         s0vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xDbsgsugh71ao8Y6yea5NvWv35h64tsG9JYlXTC4X2E=;
-        b=bOzb41u9UQBZVtqa6HqGBqFHTyw668zBGeI1m7YQLJNmLi9hBkuQse/L5KAtPru+EE
-         gqHC5y151W6E/NIWItDxK63HjaFwa3QFp9ZfTOU0kXm+prxtr7wwzR1LQSTyOj/RmNVC
-         zTUcyV9hue6OHryTu3kEBz8todVWSp2h4g/2xXq4AAE8JhXzqQPr1fB7SApruRAf7NnD
-         U2p2aYCXQ8DJY/UVNk20tX/3wKtFT00lq6sNHuCIcX5FKLrEhKVluD81K8MkAlXR6A3d
-         oRER0OlQ7dV9lj5cLJVaZHsUWjb1yXBBSkNdeI/Woqyl++j5fkvzUDfA6Dcrev7ZKMgt
-         pSqQ==
-X-Gm-Message-State: AOAM533v77QSLsDN0aZFV+G7DzxDxjpiiQLs5d9Jp+iJSQTKBmV+nMo6
-        OnpPary4Kyh+JSSPwsu4/f8=
-X-Google-Smtp-Source: ABdhPJxQfEFHZfiT7GkUBrNkZukPjstERXlXZ4ZyR9s8pLbDYwd8zlu+CFX157mIxWOY3suJ96ZXig==
-X-Received: by 2002:a17:902:ba8b:b029:120:1d2b:f94b with SMTP id k11-20020a170902ba8bb02901201d2bf94bmr18026289pls.44.1624283371550;
-        Mon, 21 Jun 2021 06:49:31 -0700 (PDT)
+        bh=L3aJmS+A5BgPt7scDAGNNWhO+vstoQ9bplelvtban/o=;
+        b=ba4IXb9F4j2o/nzejN85mVig8otlRhmeWOPZVHbR0o0ad+T/tWwPkByX0j4/wlDORU
+         DNx55NJrOm2alAUvSiL4fDmsj/Q/iW19gRhjA/oz4TcVRlBQQYSHSh4U2G9PhB0pVifN
+         XOmzDyLVTPyKm7J0A9vw/l7nI1x+X8CUJqjV5agzOSKRAbnjurG0HIZHEi9/va6djP2e
+         cNucesLdKY0YZ3mv8XvCE9tmsE+mryzTtPdbHp89dNES2GvBjywjmGsP+pIpMZMQAgHp
+         Rh3h+AKtXIoAFfIEPwPU3bpzoFW3t/AgNjow7nMwfK5o8klr1B9qmiIecaM2pryQ7xom
+         s5Sw==
+X-Gm-Message-State: AOAM533htqNxXUTW5Dt+WpnwsGNnQPldusyn4PhrJ1WvW1b/L5TE3AkA
+        Li0PH3lCYq3Zxd8vlWbQsUE=
+X-Google-Smtp-Source: ABdhPJx6GhFN8rBBIVU5c7BUKeFC5mwf3vsK+P3X25A5+EpaHo0zFKilXMuP9A16UB/t5FJOPr9V4g==
+X-Received: by 2002:a63:5705:: with SMTP id l5mr23575883pgb.227.1624283381216;
+        Mon, 21 Jun 2021 06:49:41 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id n6sm16957370pgt.7.2021.06.21.06.49.30
+        by smtp.gmail.com with ESMTPSA id y15sm15913517pji.47.2021.06.21.06.49.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Jun 2021 06:49:31 -0700 (PDT)
+        Mon, 21 Jun 2021 06:49:40 -0700 (PDT)
 From:   Coiby Xu <coiby.xu@gmail.com>
 To:     linux-staging@lists.linux.dev
 Cc:     netdev@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc:     netdev@vger.kernel.org,
         GR-Linux-NIC-Dev@marvell.com (supporter:QLOGIC QLGE 10Gb ETHERNET
         DRIVER), Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [RFC 02/19] staging: qlge: change LARGE_BUFFER_MAX_SIZE to 4096
-Date:   Mon, 21 Jun 2021 21:48:45 +0800
-Message-Id: <20210621134902.83587-3-coiby.xu@gmail.com>
+Subject: [RFC 03/19] staging: qlge: alloc skb with only enough room for header when data is put in the fragments
+Date:   Mon, 21 Jun 2021 21:48:46 +0800
+Message-Id: <20210621134902.83587-4-coiby.xu@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210621134902.83587-1-coiby.xu@gmail.com>
 References: <20210621134902.83587-1-coiby.xu@gmail.com>
@@ -68,43 +68,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LARGE_BUFFER_MAX_SIZE=4096 could make better use of memory. This choice
-is consist with ixgbe and e1000 ,
-   - ixgbe sets the rx buffer's page order to 0 unless FCoE is enabled
-   - e1000 allocs a page for a jumbo receive buffer
+Data is put in the fragments. No need to alloc a skb with unnecessarily
+large data buffer.
 
+Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
 Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
 ---
- drivers/staging/qlge/TODO   | 2 --
- drivers/staging/qlge/qlge.h | 2 +-
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/staging/qlge/TODO        | 2 --
+ drivers/staging/qlge/qlge_main.c | 4 ++--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/staging/qlge/TODO b/drivers/staging/qlge/TODO
-index 449d7dca478b..0e26fac1ddc5 100644
+index 0e26fac1ddc5..49cb09fc2be4 100644
 --- a/drivers/staging/qlge/TODO
 +++ b/drivers/staging/qlge/TODO
 @@ -4,8 +4,6 @@
    ql_build_rx_skb(). That function is now used exclusively to handle packets
    that underwent header splitting but it still contains code to handle non
    split cases.
--* while in that area, using two 8k buffers to store one 9k frame is a poor
--  choice of buffer size.
- * in the "chain of large buffers" case, the driver uses an skb allocated with
-   head room but only puts data in the frags.
+-* in the "chain of large buffers" case, the driver uses an skb allocated with
+-  head room but only puts data in the frags.
  * rename "rx" queues to "completion" queues. Calling tx completion queues "rx
-diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
-index 55e0ad759250..f54d38606b78 100644
---- a/drivers/staging/qlge/qlge.h
-+++ b/drivers/staging/qlge/qlge.h
-@@ -52,7 +52,7 @@
- #define RX_RING_SHADOW_SPACE	(sizeof(u64) + \
- 		MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN) * sizeof(u64) + \
- 		MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN) * sizeof(u64))
--#define LARGE_BUFFER_MAX_SIZE 8192
-+#define LARGE_BUFFER_MAX_SIZE 4096
- #define LARGE_BUFFER_MIN_SIZE 2048
+   queues" is confusing.
+ * struct rx_ring is used for rx and tx completions, with some members relevant
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 6dd69b689a58..c91969b01bd5 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -1471,7 +1471,7 @@ static void qlge_process_mac_rx_page(struct qlge_adapter *qdev,
+ 	struct napi_struct *napi = &rx_ring->napi;
+ 	size_t hlen = ETH_HLEN;
  
- #define MAX_CQ 128
+-	skb = netdev_alloc_skb(ndev, length);
++	skb = napi_alloc_skb(&rx_ring->napi, SMALL_BUFFER_SIZE);
+ 	if (!skb) {
+ 		rx_ring->rx_dropped++;
+ 		put_page(lbq_desc->p.pg_chunk.page);
+@@ -1765,7 +1765,7 @@ static struct sk_buff *qlge_build_rx_skb(struct qlge_adapter *qdev,
+ 			 * jumbo mtu on a non-TCP/UDP frame.
+ 			 */
+ 			lbq_desc = qlge_get_curr_lchunk(qdev, rx_ring);
+-			skb = netdev_alloc_skb(qdev->ndev, length);
++			skb = napi_alloc_skb(&rx_ring->napi, SMALL_BUFFER_SIZE);
+ 			if (!skb) {
+ 				netif_printk(qdev, probe, KERN_DEBUG, qdev->ndev,
+ 					     "No skb available, drop the packet.\n");
 -- 
 2.32.0
 
