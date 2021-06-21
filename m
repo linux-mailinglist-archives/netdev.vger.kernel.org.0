@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E2C13AF447
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 20:05:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AF893AF423
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 20:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234343AbhFUSHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 14:07:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47286 "EHLO mail.kernel.org"
+        id S232243AbhFUSGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 14:06:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45322 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232184AbhFUSEC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 14:04:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AB9D961419;
-        Mon, 21 Jun 2021 17:55:48 +0000 (UTC)
+        id S232478AbhFUSEG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 14:04:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C0996120D;
+        Mon, 21 Jun 2021 17:55:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624298149;
-        bh=q4Ch5aLwhkpOI3OBAmrvkqhgZqn6fNoRPF7U7SBdh5U=;
+        s=k20201202; t=1624298150;
+        bh=z9PiDDo3d78e7qT/+lcHSgMWPdALTe13TDpAblYVG2w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I1SO7zyy9Q5RI4NTOLMseStR4NZCzof6B0Tx0zitljMb5rPlcGYVVnl2Q6LXRBtN8
-         JL2PuC9dwp3Um3SI36qgNN0nITxHBKgpd6Rxt7JQHdP5xdKOy/Fd/0gzM6HIe4Ubil
-         qE3uRydZbcCIJ0j6H25w3z7a2YbhxFSj0AGVp5YqXpZ3P6XbfW3G5/lRD/fxs/9kTv
-         1yJS0EBclFcRl/g3GsoK9If3b1iRNoBZo6epdCzgj3PpJ8oy+w2Ng0+Xs+mFENxYEt
-         21/0r+dVDvK+or7JYZc9ydcI5snHZABJoBASgeGztZvfFCrBh8xzqFIgaB2ETNw6w1
-         Jvkq/R+b05/kQ==
+        b=MWgdVtlu+1oxTHPwY4kxW+Sq02AKlrz1ks2fNyhPULd4gqMC0zr/LA5Q0FBaBchyn
+         ry+icbrvp9+SNPMRNPrXSiJ/RxYYTxl2+c7DQJm8x7nTIhELLuuivyC+XMfGvyjBe+
+         TNDl726cK/7fh7MRZS5oIatFCRWut7hLprVoVGOdtwlJYaewEoYL33OZF57iMJjJBA
+         loxZVLSOCuD7OYeqRCwt+9nyVTmDmelXEcnbI+zJO5o6W6692v/Bl7jUSRAYlKX0vm
+         rZUbMP5TLYGUZ5AxdP2cLkX0RoTH1tr49gVXhUUpGDqcxXk8MewxuzItOoWRW302Rs
+         2X5WskKqIi16g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 03/13] mac80211: drop multicast fragments
-Date:   Mon, 21 Jun 2021 13:55:33 -0400
-Message-Id: <20210621175544.736421-3-sashal@kernel.org>
+Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 04/13] ping: Check return value of function 'ping_queue_rcv_skb'
+Date:   Mon, 21 Jun 2021 13:55:34 -0400
+Message-Id: <20210621175544.736421-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175544.736421-1-sashal@kernel.org>
 References: <20210621175544.736421-1-sashal@kernel.org>
@@ -42,52 +42,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit a9799541ca34652d9996e45f80e8e03144c12949 ]
+[ Upstream commit 9d44fa3e50cc91691896934d106c86e4027e61ca ]
 
-These are not permitted by the spec, just drop them.
+Function 'ping_queue_rcv_skb' not always return success, which will
+also return fail. If not check the wrong return value of it, lead to function
+`ping_rcv` return success.
 
-Link: https://lore.kernel.org/r/20210609161305.23def022b750.Ibd6dd3cdce573dae262fcdc47f8ac52b883a9c50@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ net/ipv4/ping.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 721caa5a5430..3a069cb188b7 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -1988,17 +1988,15 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
- 	sc = le16_to_cpu(hdr->seq_ctrl);
- 	frag = sc & IEEE80211_SCTL_FRAG;
+diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+index 4fda9abf38ee..dd4e46af1e53 100644
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -976,6 +976,7 @@ bool ping_rcv(struct sk_buff *skb)
+ 	struct sock *sk;
+ 	struct net *net = dev_net(skb->dev);
+ 	struct icmphdr *icmph = icmp_hdr(skb);
++	bool rc = false;
  
--	if (is_multicast_ether_addr(hdr->addr1)) {
--		I802_DEBUG_INC(rx->local->dot11MulticastReceivedFrameCount);
--		goto out_no_led;
--	}
--
- 	if (rx->sta)
- 		cache = &rx->sta->frags;
+ 	/* We assume the packet has already been checked by icmp_rcv */
  
- 	if (likely(!ieee80211_has_morefrags(fc) && frag == 0))
- 		goto out;
+@@ -990,14 +991,15 @@ bool ping_rcv(struct sk_buff *skb)
+ 		struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
  
-+	if (is_multicast_ether_addr(hdr->addr1))
-+		return RX_DROP_MONITOR;
+ 		pr_debug("rcv on socket %p\n", sk);
+-		if (skb2)
+-			ping_queue_rcv_skb(sk, skb2);
++		if (skb2 && !ping_queue_rcv_skb(sk, skb2))
++			rc = true;
+ 		sock_put(sk);
+-		return true;
+ 	}
+-	pr_debug("no socket, dropping\n");
+ 
+-	return false;
++	if (!rc)
++		pr_debug("no socket, dropping\n");
 +
- 	I802_DEBUG_INC(rx->local->rx_handlers_fragments);
++	return rc;
+ }
+ EXPORT_SYMBOL_GPL(ping_rcv);
  
- 	if (skb_linearize(rx->skb))
-@@ -2127,7 +2125,6 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
- 
-  out:
- 	ieee80211_led_rx(rx->local);
-- out_no_led:
- 	if (rx->sta)
- 		rx->sta->rx_stats.packets++;
- 	return RX_CONTINUE;
 -- 
 2.30.2
 
