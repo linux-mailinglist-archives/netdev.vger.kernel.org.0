@@ -2,271 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67EDC3AF89B
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 00:35:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1C63AF89F
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 00:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232073AbhFUWh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 18:37:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34983 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231669AbhFUWh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 18:37:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624314913;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ihXJi4HMh047x0hCl00Zj7QoD6DY53BRtvvAlN0erqU=;
-        b=guBnxwHMLaJcPJxmgwStPBhHwW5jSAqH46TPKWIJYTOUe8KCPwqlKUtpcA9uZgJuhW8oWf
-        bCiNI74qKS3tGKXN/x1g4VtxMeGoahulhzF4fKwrBkiQ6Kfe9QSuPTUdQ03TH3h31SYZCT
-        e2e+19rpUEmeASZOckprjnNjPLiVEpM=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-62-pEGthbIXMBOSinxbrkuTzg-1; Mon, 21 Jun 2021 18:35:11 -0400
-X-MC-Unique: pEGthbIXMBOSinxbrkuTzg-1
-Received: by mail-ed1-f70.google.com with SMTP id g13-20020a056402090db02903935a4cb74fso8507106edz.1
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 15:35:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=ihXJi4HMh047x0hCl00Zj7QoD6DY53BRtvvAlN0erqU=;
-        b=rtTr6IFYdL/odNlctfx8wGkCYXYAleGqgRh6h0Y830yctjo3CjbzLWmEsA4+TbTpJF
-         s6i/6F0dC84lYMbTXwHovrdn27XYsIFq4SNH3Q39Ud4suD3JuadzPFBilFQpw86AF/f1
-         m728H2MVdwniUxEfocNz18dNZM8wAt9FjfiPZQIT6eyEUgY61RoXoPIupiMsX6wvBrZv
-         mK+9Tuf0yx69CYZZnbPamZoxNYCmJRnYwrfZg3L2gi8XFp+qQNrtbMXqAG983Ji78H3+
-         gt/M+7tCjbQng5pO52I6Ciz55OiO/Equ0wtNKBWtcqEq1mk5j/uwl2Ez+TwmHlBzYtOO
-         lEbA==
-X-Gm-Message-State: AOAM532fZf3CFQhQk94svSGmoq4OgMp1MStIxw97Ke/9Z0Uoqpp/v2KU
-        NzmC134arGpIpDvHVjRaRSsEb46aK3wpAC8JeBQr6pZO3CtS3jv1LcYP9Mxt+KO7V6JL23o4u54
-        EU4RUjZiy07Xa3o0V
-X-Received: by 2002:aa7:c6d4:: with SMTP id b20mr782950eds.341.1624314909835;
-        Mon, 21 Jun 2021 15:35:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxDHghY5lWbI8jG3o/ItrVzoGyw4SFy2CF1QMklYlHDWdtXJy5T3BkzrrcrFun18Ddy76zWpQ==
-X-Received: by 2002:aa7:c6d4:: with SMTP id b20mr782910eds.341.1624314909461;
-        Mon, 21 Jun 2021 15:35:09 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id o4sm10897848edc.94.2021.06.21.15.35.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Jun 2021 15:35:08 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 4533E18071E; Tue, 22 Jun 2021 00:35:08 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH bpf-next v3 03/16] xdp: add proper __rcu annotations to
- redirect map entries
-In-Reply-To: <96117b3f-8041-b524-ef70-d5afc97e32f9@iogearbox.net>
-References: <20210617212748.32456-1-toke@redhat.com>
- <20210617212748.32456-4-toke@redhat.com>
- <1881ecbe-06ec-6b0a-836c-033c31fabef4@iogearbox.net>
- <87zgvirj6g.fsf@toke.dk>
- <96117b3f-8041-b524-ef70-d5afc97e32f9@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 22 Jun 2021 00:35:08 +0200
-Message-ID: <87r1gurgmb.fsf@toke.dk>
+        id S232200AbhFUWju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 18:39:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53626 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231446AbhFUWjt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 18:39:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E92736113E;
+        Mon, 21 Jun 2021 22:37:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624315055;
+        bh=x/0sgkn0wKEMEG5kTX8dj7wK/3UEWacXQit3uuR9AyY=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=WB8FiOoDjooEJzFQaRSRJHFjDjppQsef2BfHMkPpZvb36nE9bp3RXzXhW9hGeQiAq
+         PAAnul7AbmL94zXlnvgumHRHgTjXz06TjUoEpNIIN8EgvU2GebsoxZxY2MAm+Bt+DQ
+         Fg5ocitU5dT3fx066VqcTRgZKK/LD6AONdAf6vf5ZWVuvSMc+ZOeqzeA5P2wxiC4P6
+         8dhI0j6Bhi9J4PtLW/386nfmXo3J17dMwCvqQseSD3Ojk9u2HtxB9nv6OXTnMBygS4
+         VlsI3OtlguuJWazTysdBwM0YZPrGuKCrFJy9dgBO69ju7jVb06hmwLdgS4dQRxHoj0
+         rOfunRZkSykVg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id AD6F05C052D; Mon, 21 Jun 2021 15:37:34 -0700 (PDT)
+Date:   Mon, 21 Jun 2021 15:37:34 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     syzbot <syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com>
+Cc:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
+        axboe@kernel.dk, bpf@vger.kernel.org, christian@brauner.io,
+        daniel@iogearbox.net, dvyukov@google.com, jiangshanlai@gmail.com,
+        joel@joelfernandes.org, john.fastabend@gmail.com,
+        josh@joshtriplett.org, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, mathieu.desnoyers@efficios.com,
+        netdev@vger.kernel.org, peterz@infradead.org, rcu@vger.kernel.org,
+        rostedt@goodmis.org, shakeelb@google.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yanfei.xu@windriver.com,
+        yhs@fb.com
+Subject: Re: [syzbot] KASAN: use-after-free Read in
+ check_all_holdout_tasks_trace
+Message-ID: <20210621223734.GV4397@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <000000000000f034fc05c2da6617@google.com>
+ <00000000000022183205c5106739@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <00000000000022183205c5106739@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+On Fri, Jun 18, 2021 at 01:45:23PM -0700, syzbot wrote:
+> syzbot has found a reproducer for the following issue on:
+> 
+> HEAD commit:    0c38740c selftests/bpf: Fix ringbuf test fetching map FD
+> git tree:       bpf-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=128a7e34300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a6380da8984033f1
+> dashboard link: https://syzkaller.appspot.com/bug?extid=7b2b13f4943374609532
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1264c2d7d00000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com
 
-> On 6/21/21 11:39 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Daniel Borkmann <daniel@iogearbox.net> writes:
->>> On 6/17/21 11:27 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>>> XDP_REDIRECT works by a three-step process: the bpf_redirect() and
->>>> bpf_redirect_map() helpers will lookup the target of the redirect and =
-store
->>>> it (along with some other metadata) in a per-CPU struct bpf_redirect_i=
-nfo.
->>>> Next, when the program returns the XDP_REDIRECT return code, the driver
->>>> will call xdp_do_redirect() which will use the information thus stored=
- to
->>>> actually enqueue the frame into a bulk queue structure (that differs
->>>> slightly by map type, but shares the same principle). Finally, before
->>>> exiting its NAPI poll loop, the driver will call xdp_do_flush(), which=
- will
->>>> flush all the different bulk queues, thus completing the redirect.
->>>>
->>>> Pointers to the map entries will be kept around for this whole sequenc=
-e of
->>>> steps, protected by RCU. However, there is no top-level rcu_read_lock(=
-) in
->>>> the core code; instead drivers add their own rcu_read_lock() around th=
-e XDP
->>>> portions of the code, but somewhat inconsistently as Martin discovered=
-[0].
->>>> However, things still work because everything happens inside a single =
-NAPI
->>>> poll sequence, which means it's between a pair of calls to
->>>> local_bh_disable()/local_bh_enable(). So Paul suggested[1] that we cou=
-ld
->>>> document this intention by using rcu_dereference_check() with
->>>> rcu_read_lock_bh_held() as a second parameter, thus allowing sparse and
->>>> lockdep to verify that everything is done correctly.
->>>>
->>>> This patch does just that: we add an __rcu annotation to the map entry
->>>> pointers and remove the various comments explaining the NAPI poll assu=
-rance
->>>> strewn through devmap.c in favour of a longer explanation in filter.c.=
- The
->>>> goal is to have one coherent documentation of the entire flow, and rel=
-y on
->>>> the RCU annotations as a "standard" way of communicating the flow in t=
-he
->>>> map code (which can additionally be understood by sparse and lockdep).
->>>>
->>>> The RCU annotation replacements result in a fairly straight-forward
->>>> replacement where READ_ONCE() becomes rcu_dereference_check(), WRITE_O=
-NCE()
->>>> becomes rcu_assign_pointer() and xchg() and cmpxchg() gets wrapped in =
-the
->>>> proper constructs to cast the pointer back and forth between __rcu and
->>>> __kernel address space (for the benefit of sparse). The one complicati=
-on is
->>>> that xskmap has a few constructions where double-pointers are passed b=
-ack
->>>> and forth; these simply all gain __rcu annotations, and only the final
->>>> reference/dereference to the inner-most pointer gets changed.
->>>>
->>>> With this, everything can be run through sparse without eliciting
->>>> complaints, and lockdep can verify correctness even without the use of
->>>> rcu_read_lock() in the drivers. Subsequent patches will clean these up=
- from
->>>> the drivers.
->>>>
->>>> [0] https://lore.kernel.org/bpf/20210415173551.7ma4slcbqeyiba2r@kafai-=
-mbp.dhcp.thefacebook.com/
->>>> [1] https://lore.kernel.org/bpf/20210419165837.GA975577@paulmck-ThinkP=
-ad-P17-Gen-1/
->>>>
->>>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->>>> ---
->>>>    include/net/xdp_sock.h |  2 +-
->>>>    kernel/bpf/cpumap.c    | 13 +++++++----
->>>>    kernel/bpf/devmap.c    | 49 ++++++++++++++++++---------------------=
----
->>>>    net/core/filter.c      | 28 ++++++++++++++++++++++++
->>>>    net/xdp/xsk.c          |  4 ++--
->>>>    net/xdp/xsk.h          |  4 ++--
->>>>    net/xdp/xskmap.c       | 29 ++++++++++++++-----------
->>>>    7 files changed, 80 insertions(+), 49 deletions(-)
->>> [...]
->>>>    						 __dev_map_entry_free);
->>>> diff --git a/net/core/filter.c b/net/core/filter.c
->>>> index caa88955562e..0b7db5c70385 100644
->>>> --- a/net/core/filter.c
->>>> +++ b/net/core/filter.c
->>>> @@ -3922,6 +3922,34 @@ static const struct bpf_func_proto bpf_xdp_adju=
-st_meta_proto =3D {
->>>>    	.arg2_type	=3D ARG_ANYTHING,
->>>>    };
->>>>=20=20=20=20
->>>> +/* XDP_REDIRECT works by a three-step process, implemented in the fun=
-ctions
->>>> + * below:
->>>> + *
->>>> + * 1. The bpf_redirect() and bpf_redirect_map() helpers will lookup t=
-he target
->>>> + *    of the redirect and store it (along with some other metadata) i=
-n a per-CPU
->>>> + *    struct bpf_redirect_info.
->>>> + *
->>>> + * 2. When the program returns the XDP_REDIRECT return code, the driv=
-er will
->>>> + *    call xdp_do_redirect() which will use the information in struct
->>>> + *    bpf_redirect_info to actually enqueue the frame into a map type=
--specific
->>>> + *    bulk queue structure.
->>>> + *
->>>> + * 3. Before exiting its NAPI poll loop, the driver will call xdp_do_=
-flush(),
->>>> + *    which will flush all the different bulk queues, thus completing=
- the
->>>> + *    redirect.
->>>> + *
->>>> + * Pointers to the map entries will be kept around for this whole seq=
-uence of
->>>> + * steps, protected by RCU. However, there is no top-level rcu_read_l=
-ock() in
->>>> + * the core code; instead, the RCU protection relies on everything ha=
-ppening
->>>> + * inside a single NAPI poll sequence, which means it's between a pai=
-r of calls
->>>> + * to local_bh_disable()/local_bh_enable().
->>>> + *
->>>> + * The map entries are marked as __rcu and the map code makes sure to
->>>> + * dereference those pointers with rcu_dereference_check() in a way t=
-hat works
->>>> + * for both sections that to hold an rcu_read_lock() and sections tha=
-t are
->>>> + * called from NAPI without a separate rcu_read_lock(). The code belo=
-w does not
->>>> + * use RCU annotations, but relies on those in the map code.
->>>
->>> One more follow-up question related to tc BPF: given we do use rcu_read=
-_lock_bh()
->>> in case of sch_handle_egress(), could we also remove the rcu_read_lock(=
-) pair
->>> from cls_bpf_classify() then?
->>=20
->> I believe so, yeah. Patch 2 in this series should even make lockdep stop
->> complaining about it :)
->
-> Btw, I was wondering whether we should just get rid of all the WARN_ON_ON=
-CE()s
-> from those map helpers given in most situations these are not triggered a=
-nyway
-> due to retpoline avoidance where verifier rewrites the calls to jump to t=
-he map
-> backend implementation directly. One alternative could be to have an exte=
-nsion
-> to the bpf prologue generation under CONFIG_DEBUG_LOCK_ALLOC and call the=
- lockdep
-> checks from there, but it's probably not worth the effort. (In the trampo=
-line
-> case we have those __bpf_prog_enter()/__bpf_prog_enter_sleepable() where =
-the
-> latter in particular has asserts like might_fault(), fwiw.)
+This looks like a bug that Xu Yanfei located a few weeks back.
 
-I agree that it's probably overkill to amend the prologue. No strong
-opinion on whether removing the checks entirely is a good idea; I guess
-they at least serve as documentation even if they're not actually called
-that often?
+Do these commits from -rcu help?
 
->> I can add a patch removing the rcu_read_lock() from cls_bpf in the next
->> version.
->>=20
->>> It would also be great if this scenario in general could be placed
->>> under the Documentation/RCU/whatisRCU.rst as an example, so we could
->>> refer to the official doc on this, too, if Paul is good with this.
->>=20
->> I'll take a look and see if I can find a way to fit it in there...
->>=20
->>> Could you also update the RCU comment in bpf_prog_run_xdp()? Or
->>> alternatively move all the below driver comments in there as a single
->>> location?
->>>
->>>     /* This code is invoked within a single NAPI poll cycle and thus un=
-der
->>>      * local_bh_disable(), which provides the needed RCU protection.
->>>      */
->>=20
->> Sure, can do. And yeah, I do agree that moving the comment in there
->> makes more sense than scattering it over all the drivers, even if that
->> means I have to go back and edit all the drivers again :P
->
-> Yeap, all of the above sounds good, thanks!
+6a04a59eacbd ("rcu-tasks: Don't delete holdouts within trc_inspect_reader()"
+dd5da0a9140e ("rcu-tasks: Don't delete holdouts within trc_wait_for_one_reader()")
 
-Cool :)
+On any interaction with the HEAD commit above I must defer to Andrii.
 
+							Thanx, Paul
+
+> ==================================================================
+> BUG: KASAN: use-after-free in check_all_holdout_tasks_trace+0x302/0x420 kernel/rcu/tasks.h:1084
+> Read of size 1 at addr ffff8880294cbc9c by task rcu_tasks_trace/12
+> 
+> CPU: 0 PID: 12 Comm: rcu_tasks_trace Not tainted 5.13.0-rc3-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:79 [inline]
+>  dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+>  print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:233
+>  __kasan_report mm/kasan/report.c:419 [inline]
+>  kasan_report.cold+0x7c/0xd8 mm/kasan/report.c:436
+>  check_all_holdout_tasks_trace+0x302/0x420 kernel/rcu/tasks.h:1084
+>  rcu_tasks_wait_gp+0x594/0xa60 kernel/rcu/tasks.h:358
+>  rcu_tasks_kthread+0x31c/0x6a0 kernel/rcu/tasks.h:224
+>  kthread+0x3b1/0x4a0 kernel/kthread.c:313
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+> 
+> Allocated by task 8499:
+>  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+>  kasan_set_track mm/kasan/common.c:46 [inline]
+>  set_alloc_info mm/kasan/common.c:428 [inline]
+>  __kasan_slab_alloc+0x84/0xa0 mm/kasan/common.c:461
+>  kasan_slab_alloc include/linux/kasan.h:236 [inline]
+>  slab_post_alloc_hook mm/slab.h:524 [inline]
+>  slab_alloc_node mm/slub.c:2913 [inline]
+>  kmem_cache_alloc_node+0x269/0x3e0 mm/slub.c:2949
+>  alloc_task_struct_node kernel/fork.c:171 [inline]
+>  dup_task_struct kernel/fork.c:865 [inline]
+>  copy_process+0x5c8/0x7120 kernel/fork.c:1947
+>  kernel_clone+0xe7/0xab0 kernel/fork.c:2503
+>  __do_sys_clone+0xc8/0x110 kernel/fork.c:2620
+>  do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Freed by task 12:
+>  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+>  kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
+>  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:357
+>  ____kasan_slab_free mm/kasan/common.c:360 [inline]
+>  ____kasan_slab_free mm/kasan/common.c:325 [inline]
+>  __kasan_slab_free+0xfb/0x130 mm/kasan/common.c:368
+>  kasan_slab_free include/linux/kasan.h:212 [inline]
+>  slab_free_hook mm/slub.c:1582 [inline]
+>  slab_free_freelist_hook+0xdf/0x240 mm/slub.c:1607
+>  slab_free mm/slub.c:3167 [inline]
+>  kmem_cache_free+0x8a/0x740 mm/slub.c:3183
+>  __put_task_struct+0x26f/0x400 kernel/fork.c:747
+>  trc_wait_for_one_reader kernel/rcu/tasks.h:935 [inline]
+>  check_all_holdout_tasks_trace+0x179/0x420 kernel/rcu/tasks.h:1081
+>  rcu_tasks_wait_gp+0x594/0xa60 kernel/rcu/tasks.h:358
+>  rcu_tasks_kthread+0x31c/0x6a0 kernel/rcu/tasks.h:224
+>  kthread+0x3b1/0x4a0 kernel/kthread.c:313
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+> 
+> Last potentially related work creation:
+>  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+>  kasan_record_aux_stack+0xe5/0x110 mm/kasan/generic.c:345
+>  __call_rcu kernel/rcu/tree.c:3038 [inline]
+>  call_rcu+0xb1/0x750 kernel/rcu/tree.c:3113
+>  put_task_struct_rcu_user+0x7f/0xb0 kernel/exit.c:180
+>  release_task+0xca1/0x1690 kernel/exit.c:226
+>  wait_task_zombie kernel/exit.c:1108 [inline]
+>  wait_consider_task+0x2fb5/0x3b40 kernel/exit.c:1335
+>  do_wait_thread kernel/exit.c:1398 [inline]
+>  do_wait+0x724/0xd40 kernel/exit.c:1515
+>  kernel_wait4+0x14c/0x260 kernel/exit.c:1678
+>  __do_sys_wait4+0x13f/0x150 kernel/exit.c:1706
+>  do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Second to last potentially related work creation:
+>  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+>  kasan_record_aux_stack+0xe5/0x110 mm/kasan/generic.c:345
+>  __call_rcu kernel/rcu/tree.c:3038 [inline]
+>  call_rcu+0xb1/0x750 kernel/rcu/tree.c:3113
+>  put_task_struct_rcu_user+0x7f/0xb0 kernel/exit.c:180
+>  release_task+0xca1/0x1690 kernel/exit.c:226
+>  wait_task_zombie kernel/exit.c:1108 [inline]
+>  wait_consider_task+0x2fb5/0x3b40 kernel/exit.c:1335
+>  do_wait_thread kernel/exit.c:1398 [inline]
+>  do_wait+0x724/0xd40 kernel/exit.c:1515
+>  kernel_wait4+0x14c/0x260 kernel/exit.c:1678
+>  __do_sys_wait4+0x13f/0x150 kernel/exit.c:1706
+>  do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> The buggy address belongs to the object at ffff8880294cb880
+>  which belongs to the cache task_struct of size 6976
+> The buggy address is located 1052 bytes inside of
+>  6976-byte region [ffff8880294cb880, ffff8880294cd3c0)
+> The buggy address belongs to the page:
+> page:ffffea0000a53200 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x294c8
+> head:ffffea0000a53200 order:3 compound_mapcount:0 compound_pincount:0
+> flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+> raw: 00fff00000010200 ffffea00008d6400 0000000200000002 ffff888140005140
+> raw: 0000000000000000 0000000000040004 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 2, ts 15187628853, free_ts 0
+>  prep_new_page mm/page_alloc.c:2358 [inline]
+>  get_page_from_freelist+0x1034/0x2bf0 mm/page_alloc.c:3994
+>  __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5200
+>  alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2272
+>  alloc_slab_page mm/slub.c:1645 [inline]
+>  allocate_slab+0x32e/0x4c0 mm/slub.c:1785
+>  new_slab mm/slub.c:1848 [inline]
+>  new_slab_objects mm/slub.c:2594 [inline]
+>  ___slab_alloc+0x4a1/0x810 mm/slub.c:2757
+>  __slab_alloc.constprop.0+0xa7/0xf0 mm/slub.c:2797
+>  slab_alloc_node mm/slub.c:2879 [inline]
+>  kmem_cache_alloc_node+0x12f/0x3e0 mm/slub.c:2949
+>  alloc_task_struct_node kernel/fork.c:171 [inline]
+>  dup_task_struct kernel/fork.c:865 [inline]
+>  copy_process+0x5c8/0x7120 kernel/fork.c:1947
+>  kernel_clone+0xe7/0xab0 kernel/fork.c:2503
+>  kernel_thread+0xb5/0xf0 kernel/fork.c:2555
+>  create_kthread kernel/kthread.c:336 [inline]
+>  kthreadd+0x52a/0x790 kernel/kthread.c:679
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+> page_owner free stack trace missing
+> 
+> Memory state around the buggy address:
+>  ffff8880294cbb80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>  ffff8880294cbc00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >ffff8880294cbc80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>                             ^
+>  ffff8880294cbd00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>  ffff8880294cbd80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ==================================================================
+> 
