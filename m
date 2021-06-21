@@ -2,179 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C30603AF1F7
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:27:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBC723AF1FE
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231495AbhFURaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43058 "EHLO
+        id S231441AbhFURd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbhFURaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 13:30:06 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA0FC06175F
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 10:27:51 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id 5-20020a9d01050000b02903c700c45721so18500359otu.6
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 10:27:51 -0700 (PDT)
+        with ESMTP id S231182AbhFURd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 13:33:27 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92DAC061760
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 10:31:12 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id j2so31525008lfg.9
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 10:31:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WmGjGSnaoIjbfNbK6jg4Z58leTIpBSXXFk+GdaHK+O8=;
-        b=IkafJuMXU1dxFooFT/Z7CDiyPl66XkMYfmNHgkZ7Zr9ROZgxDLuuLCItaGKVG+g3ei
-         StPnLiq+x2oO47VLNdr3X8f2MNhdKMSBQivdUZebRFGoy+8PcRI5KnPzwKoGXDq0vAms
-         uOKTDF1aPZqzzgWio3fYUV04SFgYxLlLuiGV0yHop2Fdw9SW3u5n5BFTJBU3vnd9WFvD
-         Rimi7mod+IOXsJwod9l4B5e+z9QEueios+GMwLdNvEMPmTXIUsXGBP1I7DyrZPQQLIen
-         dV6MBOQTH1MFJyB6tKOmOFlqEnXysxtjprh6XkRv1/cGvUFGMFih52BaeUDAlxYnQOsP
-         I4yQ==
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zj3vnqr9bU4v5JK2hmhbbYu29x7zXchPcIMa64GKEwA=;
+        b=D9cJWnrXheK4OGnigfeIGBvVi303PUAb/1OB8+tIUd9Y9IkblBvYWwNW4Tvj6/rW8a
+         msn2NA0jnbcGjbT5gURom8lx9YfpN1KFg9fXdhWGvt2OHMGpyo3KDIx7C7rVt0KMtmR+
+         m3oNDW83Xe4f9Y7tEMipsRSXWOU53YchSOBg6wLx95LU472P0qh1FkqwBTy99hM1xjt6
+         3AQb2nqDv4qYzzWeTgwKk1T4lpyibhWKmRGRKacV5duEmeG51IZw+RgujiNwIwKb8BH1
+         hIJTdhmC5Hb2b1KqO+7HkzGYC5g/lZWYoL0DKRNs0SXlamQvqIoFKWDb7VsY4MfPv5vl
+         RPjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WmGjGSnaoIjbfNbK6jg4Z58leTIpBSXXFk+GdaHK+O8=;
-        b=FYlG5gKuoIbakz04InOhNOHRBQp53i469X556Y/rb9fJm+SBqkaFvMzIbwPFZLs8D6
-         Kykl85iEow2omUIpUlocgC0rzLA88mps7/ReaIXnYWbBrCeOeekPP6/8gkD/T71nGwTQ
-         eU/96Nkz4hVJzOYUPEpmiUMXdzfTLXDkszxBA3czpLRBiDZNZLDINnSwGsQSh0OetM0l
-         6y0YrFSS3fsCz1jWRxEc1etvF3ukpwQPl4kq16qvSlcA+Talxdjpz/scniJWinnpGJhF
-         SGbJeZcqUOvsiayjFjHbCUQDbEdhkIG4aZ7UZAX3vVXbDKjBXR1r0JyEDy/91ijwGRXD
-         SLHw==
-X-Gm-Message-State: AOAM532ssc3nwyYkOeTeZA978QwO1G8xCypGkA46GQEL6lmvfsUGsb/9
-        xFWXGGHlqg8dBmozMEU3xLgcY8H8oUky9ZQg0OUsUQ==
-X-Google-Smtp-Source: ABdhPJwi8uED1KtCHcgJosUou/U3YERsHdEZWa6Y4ITdxzqfoSrQyjLejdlRZ2O4PLdCBDaz+Bchb6q7YPN7hVIoEJI=
-X-Received: by 2002:a05:6830:1dd5:: with SMTP id a21mr21512580otj.180.1624296471321;
- Mon, 21 Jun 2021 10:27:51 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zj3vnqr9bU4v5JK2hmhbbYu29x7zXchPcIMa64GKEwA=;
+        b=ifli3WSszaKqmGISPv80JTEH/xKGFGzsu3ysUjEmbY0ZxUOciBglXtz3iZAgLEhMQ3
+         cOYqaahftz6gcPSZPpoQa4mAdLd97VIoRXJ9+kBD06YOEiepjPafq9u0Gekds/74HEgd
+         68FBswLVw/EEaAEcCQPlKKGBNGq4HBE/9FUAKFlgIs0yBhHMmrNnAU5UiJE1gtVp0nkL
+         +3Aea+Yh/HW3PD47StTpGN5P8a6zcn3nDJsqR3x9Q9jk7Te4P6FFQxnIQx+ihwhcmG6T
+         YUyAgYMVq/4lYULbymUudKglnVEZmrbAwHchTooGX9Pi2LhmIhmW516F2Ud8TYbJGyG7
+         GQfQ==
+X-Gm-Message-State: AOAM5336lhA5HXo95fO/61i6PSKa1CXmGGTIpBTEeSAMiwAvxmsrsJbc
+        oNoS5MZgNbsqQP2bVNu0WL26ig==
+X-Google-Smtp-Source: ABdhPJwxtsWwdPErFzAjuD+MmnYa/R6o/UjaJk2ScFQAPtJiENIo4chvrSFW0eFRJyU3VzmNwm/gHg==
+X-Received: by 2002:ac2:4d8e:: with SMTP id g14mr14901363lfe.502.1624296670863;
+        Mon, 21 Jun 2021 10:31:10 -0700 (PDT)
+Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
+        by smtp.gmail.com with ESMTPSA id u11sm1926380lfs.257.2021.06.21.10.31.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Jun 2021 10:31:10 -0700 (PDT)
+From:   Marcin Wojtas <mw@semihalf.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
+        jaz@semihalf.com, gjb@semihalf.com, upstream@semihalf.com,
+        Samer.El-Haj-Mahmoud@arm.com, jon@solid-run.com, tn@semihalf.com,
+        rjw@rjwysocki.net, lenb@kernel.org, Marcin Wojtas <mw@semihalf.com>
+Subject: [net-next: PATCH v3 0/6] ACPI MDIO support for Marvell controllers
+Date:   Mon, 21 Jun 2021 19:30:22 +0200
+Message-Id: <20210621173028.3541424-1-mw@semihalf.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-References: <20210609232501.171257-1-jiang.wang@bytedance.com>
- <20210609232501.171257-7-jiang.wang@bytedance.com> <20210618100424.wfljrnycxxguwt3d@steredhat.lan>
-In-Reply-To: <20210618100424.wfljrnycxxguwt3d@steredhat.lan>
-From:   "Jiang Wang ." <jiang.wang@bytedance.com>
-Date:   Mon, 21 Jun 2021 10:27:40 -0700
-Message-ID: <CAP_N_Z-U0_XP69iNLA1Ray9EEVWyXqb2f85bL-sG2oxjM5PaMA@mail.gmail.com>
-Subject: Re: [External] Re: [RFC v1 6/6] virtio/vsock: add sysfs for rx buf
- len for dgram
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        cong.wang@bytedance.com,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Yongji Xie <xieyongji@bytedance.com>,
-        =?UTF-8?B?5p+056iz?= <chaiwen.cc@bytedance.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Lu Wei <luwei32@huawei.com>,
-        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 18, 2021 at 3:04 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> On Wed, Jun 09, 2021 at 11:24:58PM +0000, Jiang Wang wrote:
-> >Make rx buf len configurable via sysfs
-> >
-> >Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
-> >---
-> > net/vmw_vsock/virtio_transport.c | 37 +++++++++++++++++++++++++++++++++++--
-> > 1 file changed, 35 insertions(+), 2 deletions(-)
-> >
-> >diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-> >index cf47aadb0c34..2e4dd9c48472 100644
-> >--- a/net/vmw_vsock/virtio_transport.c
-> >+++ b/net/vmw_vsock/virtio_transport.c
-> >@@ -29,6 +29,14 @@ static struct virtio_vsock __rcu *the_virtio_vsock;
-> > static struct virtio_vsock *the_virtio_vsock_dgram;
-> > static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
-> >
-> >+static int rx_buf_len = VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE;
-> >+static struct kobject *kobj_ref;
-> >+static ssize_t  sysfs_show(struct kobject *kobj,
-> >+                      struct kobj_attribute *attr, char *buf);
-> >+static ssize_t  sysfs_store(struct kobject *kobj,
-> >+                      struct kobj_attribute *attr, const char *buf, size_t count);
-> >+static struct kobj_attribute rxbuf_attr = __ATTR(rx_buf_value, 0660, sysfs_show, sysfs_store);
->
-> Maybe better to use a 'dgram' prefix.
+Hi,
 
-Sure.
+The third version of the patchset main change is
+dropping a clock handling optimisation patch
+for mvmdio driver. Other than that it sets
+explicit dependency on FWNODE_MDIO for CONFIG_FSL_XGMAC_MDIO
+and applies minor cosmetic improvements (please see the
+'Changelog' below).
 
-> >+
-> > struct virtio_vsock {
-> >       struct virtio_device *vdev;
-> >       struct virtqueue **vqs;
-> >@@ -360,7 +368,7 @@ virtio_transport_cancel_pkt(struct vsock_sock *vsk)
-> >
-> > static void virtio_vsock_rx_fill(struct virtio_vsock *vsock, bool is_dgram)
-> > {
-> >-      int buf_len = VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE;
-> >+      int buf_len = rx_buf_len;
-> >       struct virtio_vsock_pkt *pkt;
-> >       struct scatterlist hdr, buf, *sgs[2];
-> >       struct virtqueue *vq;
-> >@@ -1003,6 +1011,22 @@ static struct virtio_driver virtio_vsock_driver = {
-> >       .remove = virtio_vsock_remove,
-> > };
-> >
-> >+static ssize_t sysfs_show(struct kobject *kobj,
-> >+              struct kobj_attribute *attr, char *buf)
-> >+{
-> >+      return sprintf(buf, "%d", rx_buf_len);
-> >+}
-> >+
-> >+static ssize_t sysfs_store(struct kobject *kobj,
-> >+              struct kobj_attribute *attr, const char *buf, size_t count)
-> >+{
-> >+      if (kstrtou32(buf, 0, &rx_buf_len) < 0)
-> >+              return -EINVAL;
-> >+      if (rx_buf_len < 1024)
-> >+              rx_buf_len = 1024;
-> >+      return count;
-> >+}
-> >+
-> > static int __init virtio_vsock_init(void)
-> > {
-> >       int ret;
-> >@@ -1020,8 +1044,17 @@ static int __init virtio_vsock_init(void)
-> >       if (ret)
-> >               goto out_vci;
-> >
-> >-      return 0;
-> >+      kobj_ref = kobject_create_and_add("vsock", kernel_kobj);
->
-> So, IIUC, the path will be /sys/vsock/rx_buf_value?
->
-> I'm not sure if we need to add a `virtio` subdir (e.g.
-> /sys/vsock/virtio/dgram_rx_buf_size)
+The firmware ACPI description is exposed in the public github branch:
+https://github.com/semihalf-wojtas-marcin/edk2-platforms/commits/acpi-mdio-r20210613
+There is also MacchiatoBin firmware binary available for testing:
+https://drive.google.com/file/d/1eigP_aeM4wYQpEaLAlQzs3IN_w1-kQr0
 
-I agree adding a virtio is better in case vmware or hyperv will
-also have some settings.
+I'm looking forward to the comments or remarks.
 
-> Thanks,
-> Stefano
->
-> >
-> >+      /*Creating sysfs file for etx_value*/
-> >+      ret = sysfs_create_file(kobj_ref, &rxbuf_attr.attr);
-> >+      if (ret)
-> >+              goto out_sysfs;
-> >+
-> >+      return 0;
-> >+out_sysfs:
-> >+      kobject_put(kobj_ref);
-> >+      sysfs_remove_file(kernel_kobj, &rxbuf_attr.attr);
-> > out_vci:
-> >       vsock_core_unregister(&virtio_transport.transport);
-> > out_wq:
-> >--
-> >2.11.0
-> >
->
+Best regards,
+Marcin
+
+Changelog:
+v2->v3
+* Rebase on top of net-next/master.
+* Drop "net: mvmdio: simplify clock handling" patch.
+* 1/6 - fix code block comments.
+* 2/6 - unchanged
+* 3/6 - add "depends on FWNODE_MDIO" for CONFIG_FSL_XGMAC_MDIO
+* 4/6 - drop mention about the clocks from the commit message.
+* 5/6 - unchanged
+* 6/6 - add Andrew's RB.
+
+v1->v2
+* 1/7 - new patch
+* 2/7 - new patch
+* 3/7 - new patch
+* 4/7 - new patch
+* 5/7 - remove unnecessary `if (has_acpi_companion())` and rebase onto
+        the new clock handling
+* 6/7 - remove deprecated comment
+* 7/7 - no changes
+
+Marcin Wojtas (6):
+  Documentation: ACPI: DSD: describe additional MAC configuration
+  net: mdiobus: Introduce fwnode_mdbiobus_register()
+  net/fsl: switch to fwnode_mdiobus_register
+  net: mvmdio: add ACPI support
+  net: mvpp2: enable using phylink with ACPI
+  net: mvpp2: remove unused 'has_phy' field
+
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  3 -
+ include/linux/fwnode_mdio.h                     | 12 ++++
+ drivers/net/ethernet/freescale/xgmac_mdio.c     | 11 +---
+ drivers/net/ethernet/marvell/mvmdio.c           | 14 ++++-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 23 ++++++--
+ drivers/net/mdio/fwnode_mdio.c                  | 22 ++++++++
+ Documentation/firmware-guide/acpi/dsd/phy.rst   | 59 ++++++++++++++++++++
+ drivers/net/ethernet/freescale/Kconfig          |  4 +-
+ 8 files changed, 125 insertions(+), 23 deletions(-)
+
+-- 
+2.29.0
+
