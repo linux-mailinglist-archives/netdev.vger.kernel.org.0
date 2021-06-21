@@ -2,318 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 225703AE38E
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 08:55:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2C133AE39A
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 09:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbhFUG5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 02:57:33 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:39271 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbhFUG5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 02:57:32 -0400
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id B3FFA75BE8;
-        Mon, 21 Jun 2021 09:55:16 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1624258516;
-        bh=gQqYERlcjzRal/bJN/6CthI5JwsFfeBb4jYg5GsbTlI=;
-        h=Subject:From:To:Message-ID:Date:MIME-Version:Content-Type;
-        b=nkUz4A+hYiybb3qMlhr9WPidX5zbiTuit92liZ/jrjce5I/nFqiWvMMCH0jgA9YZf
-         4AOZ8byRXY0RZAO9BDIirJuDQHiHrgwNUqW4iCBOBdUdK/2n1ifGyynr9hAAwparM9
-         vVex4O1wUluSpSFDBaKEt/1rqdl5hTidkoQitLi/jXIvTGLd+/zCsGrQUNN+FpWUpP
-         W9SftWHQP23d9uWFDg3hLxkzjNJSgXBtlXdBW8LfdPPO4R8xdqEnS79lROx8Lm37u6
-         ztwszbPGU0GQ1wtHw0okTwzRNXBd+TcyvljuJ3wTfv+mGGkUf1kqCGBC4pb+j6WVAv
-         RD0dE2uJsSQQw==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id E6D8675BA6;
-        Mon, 21 Jun 2021 09:55:15 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.68.129) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Mon, 21
- Jun 2021 09:55:14 +0300
-Subject: Re: [MASSMAIL KLMS] Re: [PATCH v11 11/18] virtio/vsock: dequeue
- callback for SOCK_SEQPACKET
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-References: <20210611110744.3650456-1-arseny.krasnov@kaspersky.com>
- <20210611111241.3652274-1-arseny.krasnov@kaspersky.com>
- <20210618134423.mksgnbmchmow4sgh@steredhat.lan>
- <bb323125-f802-1d16-7530-6e4f4abb00a6@kaspersky.com>
- <20210618155555.j5p4v6j5gk2dboj3@steredhat.lan>
- <650673dc-8b29-657e-5bbd-2cc974628ec9@kaspersky.com>
- <20210618162509.yppkajmvcbzvidy4@steredhat.lan>
- <31f58b17-02e6-4246-5ad8-7e8d7892ecb7@kaspersky.com>
-Message-ID: <b27d3fd1-fa8a-97ff-9035-cf3f525d5866@kaspersky.com>
-Date:   Mon, 21 Jun 2021 09:55:13 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S229887AbhFUHDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 03:03:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48006 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229583AbhFUHDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 03:03:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624258858;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HQFRq3mpghTE6F5mipIBX+93ihd5txbY1/8rGs2ilY8=;
+        b=beYAllaJ7TAj+kKTObkQEJ3Mdi6jhejmX19NfWV62U1Z8ptu4gNvioc6PkeIyfsoXpqHBu
+        QAffmRds9hTM/JRe59GClUNnJxp3zDAAEOWnmhwnburQyMQawSbP41NJ9QN55FWEacjTNR
+        DhV4Roktz416oJ+GNCaLJxHD0MzQprk=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-602-uyhXQ2mhM4ayghLA35UIkQ-1; Mon, 21 Jun 2021 03:00:54 -0400
+X-MC-Unique: uyhXQ2mhM4ayghLA35UIkQ-1
+Received: by mail-pl1-f197.google.com with SMTP id o16-20020a170902d4d0b029012534a63229so599317plg.2
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 00:00:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=HQFRq3mpghTE6F5mipIBX+93ihd5txbY1/8rGs2ilY8=;
+        b=amd37L8FuwNHCYTJbHeoCTrloRiBaD0AP765SCYPIN495gU/uBTUylcd4bcEvNBZQc
+         imiv9L0HxJAuognC3Vz0u9tzPUsP8Kj1Nbaa/BJ1EPaa4LPKyKrSRxBt+GHs6DnCYqyk
+         YIr1e7bI+sOhti0Xf2gKMH45CNwSkriOT9mWLy7HrcQlxLEtBwQX2lLx7I5MdAOV6VVI
+         Ln+YS9+0+f6mNm5roH5/iEOluvikWC9pS+9OmkJjM046LbVlMjszio84kxbY+EHQfdHw
+         SUWyFLRAtnvXz3q0h5/YxJY1W9Ce/oyIwiAfMAv0x5ChpyGbpp4UG1zIT92LdXQjIBuK
+         DxMw==
+X-Gm-Message-State: AOAM5327o1QxIfyQh25DPw9xkfC07kSkrl5PBqIu77ZhrABsoPAtsc3L
+        M3AjeCecyKXrg7M+rBtkEL0cRXwqb1QCaacLskj9gal0QZSdZ/+mAh1rV0nZWXukIJ7+wG2BzJg
+        LnDiQpfo60gzfrnsqQjtjOimOEXxzkrQAjJlpVQkbUc2YgJCAT3hAfWYrVrRebbaWf+4I
+X-Received: by 2002:a63:c058:: with SMTP id z24mr1972330pgi.264.1624258853573;
+        Mon, 21 Jun 2021 00:00:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx124WnrWwO4301vtwjsrWt0ubMK7cnHdJ8/jeTqZtolXqXqAxuuMHd0HMW8cuLn+WG9SKscg==
+X-Received: by 2002:a63:c058:: with SMTP id z24mr1972307pgi.264.1624258853292;
+        Mon, 21 Jun 2021 00:00:53 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id oc10sm13604246pjb.44.2021.06.21.00.00.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Jun 2021 00:00:52 -0700 (PDT)
+Subject: Re: [PATCH] net: tun: fix tun_xdp_one() for IFF_TUN mode
+To:     David Woodhouse <dwmw2@infradead.org>,
+        netdev <netdev@vger.kernel.org>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <e832b356-ffc2-8bca-f5d9-75e8b98cfcf2@redhat.com>
+Date:   Mon, 21 Jun 2021 15:00:46 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <31f58b17-02e6-4246-5ad8-7e8d7892ecb7@kaspersky.com>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Originating-IP: [10.64.68.129]
-X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/21/2021 06:31:51
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 164494 [Jun 20 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;lore.kernel.org:7.1.1;kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 06/21/2021 06:35:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 21.06.2021 5:14:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/06/21 03:57:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/06/21 05:44:00 #16774393
-X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 18.06.2021 19:26, Arseny Krasnov wrote:
-> On 18.06.2021 19:25, Stefano Garzarella wrote:
->> On Fri, Jun 18, 2021 at 07:08:30PM +0300, Arseny Krasnov wrote:
->>> On 18.06.2021 18:55, Stefano Garzarella wrote:
->>>> On Fri, Jun 18, 2021 at 06:04:37PM +0300, Arseny Krasnov wrote:
->>>>> On 18.06.2021 16:44, Stefano Garzarella wrote:
->>>>>> Hi Arseny,
->>>>>> the series looks great, I have just a question below about
->>>>>> seqpacket_dequeue.
->>>>>>
->>>>>> I also sent a couple a simple fixes, it would be great if you can review
->>>>>> them:
->>>>>> https://lore.kernel.org/netdev/20210618133526.300347-1-sgarzare@redhat.com/
->>>>>>
->>>>>>
->>>>>> On Fri, Jun 11, 2021 at 02:12:38PM +0300, Arseny Krasnov wrote:
->>>>>>> Callback fetches RW packets from rx queue of socket until whole record
->>>>>>> is copied(if user's buffer is full, user is not woken up). This is done
->>>>>>> to not stall sender, because if we wake up user and it leaves syscall,
->>>>>>> nobody will send credit update for rest of record, and sender will wait
->>>>>>> for next enter of read syscall at receiver's side. So if user buffer is
->>>>>>> full, we just send credit update and drop data.
->>>>>>>
->>>>>>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->>>>>>> ---
->>>>>>> v10 -> v11:
->>>>>>> 1) 'msg_count' field added to count current number of EORs.
->>>>>>> 2) 'msg_ready' argument removed from callback.
->>>>>>> 3) If 'memcpy_to_msg()' failed during copy loop, there will be
->>>>>>>    no next attempts to copy data, rest of record will be freed.
->>>>>>>
->>>>>>> include/linux/virtio_vsock.h            |  5 ++
->>>>>>> net/vmw_vsock/virtio_transport_common.c | 84 +++++++++++++++++++++++++
->>>>>>> 2 files changed, 89 insertions(+)
->>>>>>>
->>>>>>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
->>>>>>> index dc636b727179..1d9a302cb91d 100644
->>>>>>> --- a/include/linux/virtio_vsock.h
->>>>>>> +++ b/include/linux/virtio_vsock.h
->>>>>>> @@ -36,6 +36,7 @@ struct virtio_vsock_sock {
->>>>>>> 	u32 rx_bytes;
->>>>>>> 	u32 buf_alloc;
->>>>>>> 	struct list_head rx_queue;
->>>>>>> +	u32 msg_count;
->>>>>>> };
->>>>>>>
->>>>>>> struct virtio_vsock_pkt {
->>>>>>> @@ -80,6 +81,10 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
->>>>>>> 			       struct msghdr *msg,
->>>>>>> 			       size_t len, int flags);
->>>>>>>
->>>>>>> +ssize_t
->>>>>>> +virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
->>>>>>> +				   struct msghdr *msg,
->>>>>>> +				   int flags);
->>>>>>> s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
->>>>>>> s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
->>>>>>>
->>>>>>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->>>>>>> index ad0d34d41444..1e1df19ec164 100644
->>>>>>> --- a/net/vmw_vsock/virtio_transport_common.c
->>>>>>> +++ b/net/vmw_vsock/virtio_transport_common.c
->>>>>>> @@ -393,6 +393,78 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
->>>>>>> 	return err;
->>>>>>> }
->>>>>>>
->>>>>>> +static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
->>>>>>> +						 struct msghdr *msg,
->>>>>>> +						 int flags)
->>>>>>> +{
->>>>>>> +	struct virtio_vsock_sock *vvs = vsk->trans;
->>>>>>> +	struct virtio_vsock_pkt *pkt;
->>>>>>> +	int dequeued_len = 0;
->>>>>>> +	size_t user_buf_len = msg_data_left(msg);
->>>>>>> +	bool copy_failed = false;
->>>>>>> +	bool msg_ready = false;
->>>>>>> +
->>>>>>> +	spin_lock_bh(&vvs->rx_lock);
->>>>>>> +
->>>>>>> +	if (vvs->msg_count == 0) {
->>>>>>> +		spin_unlock_bh(&vvs->rx_lock);
->>>>>>> +		return 0;
->>>>>>> +	}
->>>>>>> +
->>>>>>> +	while (!msg_ready) {
->>>>>>> +		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
->>>>>>> +
->>>>>>> +		if (!copy_failed) {
->>>>>>> +			size_t pkt_len;
->>>>>>> +			size_t bytes_to_copy;
->>>>>>> +
->>>>>>> +			pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
->>>>>>> +			bytes_to_copy = min(user_buf_len, pkt_len);
->>>>>>> +
->>>>>>> +			if (bytes_to_copy) {
->>>>>>> +				int err;
->>>>>>> +
->>>>>>> +				/* sk_lock is held by caller so no one else can dequeue.
->>>>>>> +				 * Unlock rx_lock since memcpy_to_msg() may sleep.
->>>>>>> +				 */
->>>>>>> +				spin_unlock_bh(&vvs->rx_lock);
->>>>>>> +
->>>>>>> +				err = memcpy_to_msg(msg, pkt->buf, bytes_to_copy);
->>>>>>> +				if (err) {
->>>>>>> +					/* Copy of message failed, set flag to skip
->>>>>>> +					 * copy path for rest of fragments. Rest of
->>>>>>> +					 * fragments will be freed without copy.
->>>>>>> +					 */
->>>>>>> +					copy_failed = true;
->>>>>>> +					dequeued_len = err;
->>>>>> If we fail to copy the message we will discard the entire packet.
->>>>>> Is it acceptable for the user point of view, or we should leave the
->>>>>> packet in the queue and the user can retry, maybe with a different
->>>>>> buffer?
->>>>>>
->>>>>> Then we can remove the packets only when we successfully copied all the
->>>>>> fragments.
->>>>>>
->>>>>> I'm not sure make sense, maybe better to check also other
->>>>>> implementations :-)
->>>>>>
->>>>>> Thanks,
->>>>>> Stefano
->>>>> Understand, i'll check it on weekend, anyway I think it is
->>>>> not critical for implementation.
->>>> Yep, I agree.
->>>>
->>>>> I have another question: may be it is useful to research for
->>>>> approach where packets are not queued until whole message
->>>>> is received, but copied to user's buffer thus freeing memory.
->>>>> (like previous implementation, of course with solution of problem
->>>>> where part of message still in queue, while reader was woken
->>>>> by timeout or signal).
->>>>>
->>>>> I think it is better, because  in current version, sender may set
->>>>> 'peer_alloc_buf' to  for example 1MB, so at receiver we get
->>>>> 1MB of 'kmalloc()' memory allocated, while having user's buffer
->>>>> to copy data there or drop it(if user's buffer is full). This way
->>>>> won't change spec(e.g. no message id or SEQ_BEGIN will be added).
->>>>>
->>>>> What do You think?
->>>> Yep, I see your point and it would be great, but I think the main issues
->>>> to fix is how to handle a signal while we are waiting other fragments
->>>> since the other peer can take unspecified time to send them.
->>> What about transport callback, something like 'seqpacket_drain()' or
->>>
->>> 'seqpacket_drop_curr()' - when we got signal or timeout, notify transport
->>>
->>> to drop current message. In virtio case this will set special flag in transport,
->>>
->>> so on next dequeue, this flag is checked and if it is set - we drop all packets
->>>
->>> until EOR found. Then we can copy untouched new record.
->>>
->> But in this way, we will lose the entire message.
->>
->> Is it acceptable for seqpacket?
->>
->> Stefano
-> Hm, i'll check it. At least for unix domain sockets - it supports SEQPACKET
-
-Hello, i've checked AF_UNIX and AF_AX25 SEQPACKET implementations,
-
-in both cases:
-
-1) Datagram is dequeued first, then copied to user's buffer.
-
-2) Datagram is also freed when copying to user's buffer fail
-
-(it is not reinserted back).
+åœ¨ 2021/6/19 ä¸‹åˆ9:33, David Woodhouse å†™é“:
+> From: David Woodhouse <dwmw@amazon.co.uk>
+>
+> In tun_get_user(), skb->protocol is either taken from the tun_pi header
+> or inferred from the first byte of the packet in IFF_TUN mode, while
+> eth_type_trans() is called only in the IFF_TAP mode where the payload
+> is expected to be an Ethernet frame.
+>
+> The alternative path in tun_xdp_one() was unconditionally using
+> eth_type_trans(), which corrupts packets in IFF_TUN mode. Fix it to
+> do the correct thing for IFF_TUN mode, as tun_get_user() does.
+>
+> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+> Fixes: 043d222f93ab ("tuntap: accept an array of XDP buffs through sendmsg()")
+> ---
+> How is my userspace application going to know that the kernel has this
+> fix? Should we add a flag to TUN_FEATURES to show that vhost-net in
+> *IFF_TUN* mode is supported?
 
 
-But, in case of virtio vsock, i've got the following concern in
+I think it's probably too late to fix? Since it should work before 
+043d222f93ab.
 
-this approach: in cases of AF_UNIX or AF_AX25 there is maximum
-
-datagram size, strictly limited by spec, so no 'setsockopt()' call allows
-
-to exceed this. Also these limits are significantly smaller that current
-
-amounts of RAM. But, in our case, there is no such limit: peer could
-
-say 'i want to use 100MB datagram', and receiver just answer 'ok',
-
- as there is just variable assignment to setup new limit. Now, consider
-
-that there will be 10 peers, 100MB each(no one limit such request,
-
-because each socket doesn't know about each other). I think we get
-
-out-of-service in this case - all kmalloc() memory will be wasted for
-
-pending record.
+The only way is to backport this fix to stable.
 
 
-I still think, that approach when we copy data from packet to user's
+>
+>   drivers/net/tun.c | 44 +++++++++++++++++++++++++++++++++++++++++++-
+>   1 file changed, 43 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 4cf38be26dc9..f812dcdc640e 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -2394,8 +2394,50 @@ static int tun_xdp_one(struct tun_struct *tun,
+>   		err = -EINVAL;
+>   		goto out;
+>   	}
+> +	switch (tun->flags & TUN_TYPE_MASK) {
+> +	case IFF_TUN:
+> +		if (tun->flags & IFF_NO_PI) {
+> +			u8 ip_version = skb->len ? (skb->data[0] >> 4) : 0;
+> +
+> +			switch (ip_version) {
+> +			case 4:
+> +				skb->protocol = htons(ETH_P_IP);
+> +				break;
+> +			case 6:
+> +				skb->protocol = htons(ETH_P_IPV6);
+> +				break;
+> +			default:
+> +				atomic_long_inc(&tun->dev->rx_dropped);
+> +				kfree_skb(skb);
+> +				err = -EINVAL;
+> +				goto out;
+> +			}
+> +		} else {
+> +			struct tun_pi *pi = (struct tun_pi *)skb->data;
+> +			if (!pskb_may_pull(skb, sizeof(*pi))) {
+> +				atomic_long_inc(&tun->dev->rx_dropped);
+> +				kfree_skb(skb);
+> +				err = -ENOMEM;
+> +				goto out;
+> +			}
+> +			skb_pull_inline(skb, sizeof(*pi));
+> +			skb->protocol = pi->proto;
+> +		}
+> +
+> +		skb_reset_mac_header(skb);
+> +		skb->dev = tun->dev;
+> +		break;
+> +	case IFF_TAP:
+> +		if (!pskb_may_pull(skb, ETH_HLEN)) {
+> +			atomic_long_inc(&tun->dev->rx_dropped);
+> +			kfree_skb(skb);
+> +			err = -ENOMEM;
+> +			goto out;
+> +		}
+> +		skb->protocol = eth_type_trans(skb, tun->dev);
+> +		break;
 
-buffer without waiting EOR is better.
+
+I wonder whether we can have some codes unification with tun_get_user().
+
+Thanks
 
 
-Also i'll rebase QEMU patch today or tomorrow.
+> +	}
+>   
+> -	skb->protocol = eth_type_trans(skb, tun->dev);
+>   	skb_reset_network_header(skb);
+>   	skb_probe_transport_header(skb);
+>   	skb_record_rx_queue(skb, tfile->queue_index);
 
-
-What do You Think?
-
->>
