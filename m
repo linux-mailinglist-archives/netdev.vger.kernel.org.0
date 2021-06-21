@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 384D03AF5F8
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 21:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F07E73AF5FE
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 21:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231710AbhFUTWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 15:22:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50262 "EHLO mail.kernel.org"
+        id S231878AbhFUTW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 15:22:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50278 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231490AbhFUTWT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231495AbhFUTWT (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 21 Jun 2021 15:22:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0981861356;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 186ED6135D;
         Mon, 21 Jun 2021 19:20:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1624303205;
-        bh=b44G8g9bppS0Gm+biXLIchdUB72Mnr2l2IiVtQxeM4c=;
+        bh=l9FBgRorjyY0WGNvcNv/KLuTbN+PP2BdonCV1ZyXiu0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=H9y6LGw86g+ozrHUZgBPcsHzqcC8NJHAQvgznIS0XT3SWOI1uKFlLRQ8AgRgxW3Ph
-         6dTSyWh0btyDDEfiFPMNOZ8oCqJana5wmaOR5t/IEF4KOZhreU+aygSzSjhwg1YYx0
-         1Hor3wlfKfkG0w8HV2PH5BKpImc40qUNajISRnRUb23CimNFfmopafaGIZowlOFYf+
-         71rc5BEzObMGqXcMDU8dXAq+EVZA1YtFSKCvCycFnA461OUEqrqk1+8nxIHO9EAf3y
-         xVr1Yu7RpX5LJJEjFzOu0c+yMaL7JFawUi1355bXxS+rgBQyEupIZ3iNfThP/Zp0xq
-         n5TuCxCG5YxsQ==
+        b=BnyRcUF5e+9KJFXDZuleziIYRlhNPC81SpT3MZT8xiScTJLYtP/pbDpYIgeHMwrsa
+         ypwPs6o42wH4wU0zmSd44PpkCExZNPzITRK1ciGLJwqgEHHmEBDBGKyCd/1kmpCfQ1
+         uvuXjHbGd90G734KcJwtVP+BDS1Cpf6BNgM93Gq/9ABWhBjbcyt5FXAAOlRoS3NnYu
+         7JWINqnDyEOMwkYfoWpom2UWKh0cEmngHvcRqsuGl17myKoWKeOf58w3uzQfwKzERT
+         b3sXeFUWNUSNC3TKT/elSFLmuu8JEjpYkTg+4Olx+OBTSTWp2h63H2G9ERdEdkxY2I
+         dQbFzZrUX2cSg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F336A60A37;
-        Mon, 21 Jun 2021 19:20:04 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 08FB0609E3;
+        Mon, 21 Jun 2021 19:20:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/2] selftests: tls: clean up uninitialized warnings
+Subject: Re: [PATCH net-next] net/smc: Fix ENODATA tests in
+ smc_nl_get_fback_stats()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162430320499.6988.9835964890406190142.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Jun 2021 19:20:04 +0000
-References: <20210618202504.1435179-1-kuba@kernel.org>
-In-Reply-To: <20210618202504.1435179-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, shuah@kernel.org,
-        vfedorenko@novek.ru
+Message-Id: <162430320503.6988.10664396793932851537.git-patchwork-notify@kernel.org>
+Date:   Mon, 21 Jun 2021 19:20:05 +0000
+References: <YM32HV7psa+PrmbV@mwanda>
+In-Reply-To: <YM32HV7psa+PrmbV@mwanda>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     kgraul@linux.ibm.com, guvenc@linux.ibm.com, davem@davemloft.net,
+        kuba@kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 18 Jun 2021 13:25:03 -0700 you wrote:
-> A bunch of tests uses uninitialized stack memory as random
-> data to send. This is harmless but generates compiler warnings.
-> Explicitly init the buffers with random data.
+On Sat, 19 Jun 2021 16:50:21 +0300 you wrote:
+> These functions return negative ENODATA but the minus sign was left out
+> in the tests.
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Fixes: f0dd7bf5e330 ("net/smc: Add netlink support for SMC fallback statistics")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 > ---
->  tools/testing/selftests/net/tls.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
+>  net/smc/smc_stats.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
 Here is the summary with links:
-  - [net,1/2] selftests: tls: clean up uninitialized warnings
-    https://git.kernel.org/netdev/net-next/c/baa00119d69e
-  - [net,2/2] selftests: tls: fix chacha+bidir tests
-    https://git.kernel.org/netdev/net-next/c/291c53e4dacd
+  - [net-next] net/smc: Fix ENODATA tests in smc_nl_get_fback_stats()
+    https://git.kernel.org/netdev/net-next/c/1a1100d53f12
 
 You are awesome, thank you!
 --
