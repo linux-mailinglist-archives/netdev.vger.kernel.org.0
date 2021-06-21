@@ -2,461 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8F5F3AEC80
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 17:33:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47FE03AEC75
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 17:33:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230351AbhFUPfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 11:35:51 -0400
-Received: from mga12.intel.com ([192.55.52.136]:32549 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230189AbhFUPfp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 11:35:45 -0400
-IronPort-SDR: 6gWmFC8IEbZNEDBPKaFfzhD8lfODSoqqnuyRXWdz6kq5xlSgrYePVaL035BIaD6iazfDAG4WKO
- qvKYvNMTeJZw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10022"; a="186562104"
-X-IronPort-AV: E=Sophos;i="5.83,289,1616482800"; 
-   d="scan'208";a="186562104"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2021 08:33:30 -0700
-IronPort-SDR: Xp+Tcn7HEyxPDN+n7bJR7xxUpZgSjUl4GRgp9n/cM4+cBQNrP3RJlIaLW/9axH0jBz4bf5zDWo
- OMwjzRb1x+1w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,289,1616482800"; 
-   d="scan'208";a="641355813"
-Received: from pl-dbox.sh.intel.com (HELO pl-dbox) ([10.239.159.39])
-  by fmsmga005.fm.intel.com with ESMTP; 21 Jun 2021 08:33:27 -0700
-Date:   Mon, 21 Jun 2021 23:25:59 +0800
-From:   Philip Li <philip.li@intel.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>, davem@davemloft.net,
-        kuba@kernel.org, frieder.schrempf@kontron.de, andrew@lunn.ch,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com
-Subject: Re: [kbuild-all] Re: [PATCH V3 2/2] net: fec: add ndo_select_queue
- to fix TX bandwidth fluctuations
-Message-ID: <20210621152559.GM158568@pl-dbox>
-References: <20210621062737.16896-3-qiangqing.zhang@nxp.com>
- <202106211735.0gzLcxYf-lkp@intel.com>
+        id S230032AbhFUPfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 11:35:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22211 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230052AbhFUPfK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 11:35:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624289576;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oltzUUgSfes6rdxhCcSehOIrX0vxzgmoXi/a9KypyPU=;
+        b=XfIPYc9mcsAtOOObwHg6mvG1673nIKNcCJ1Ia7DxkQhjn9VXTRiPrq69T4PyvTZt0EYXCj
+        q5mvM3uG/8ZGY7mdUzd0zJLJFH7AeggU+vhUwN3xvgwhVggfsPqOaOkhvnTvNYvYqQ1ge4
+        i6jOf26nTveemXgmmqcFhKDRZcgHBhA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-259-MN3Wuz4BOy6Fah9oJeyyZA-1; Mon, 21 Jun 2021 11:32:54 -0400
+X-MC-Unique: MN3Wuz4BOy6Fah9oJeyyZA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 606C75721E;
+        Mon, 21 Jun 2021 15:32:53 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-112-119.ams2.redhat.com [10.36.112.119])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7429419CBA;
+        Mon, 21 Jun 2021 15:32:51 +0000 (UTC)
+From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ihuguet@redhat.com, ivecera@redhat.com
+Subject: [PATCH 1/4] sfc: avoid double pci_remove of VFs
+Date:   Mon, 21 Jun 2021 17:32:35 +0200
+Message-Id: <20210621153238.13147-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202106211735.0gzLcxYf-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 21, 2021 at 05:49:28PM +0800, kernel test robot wrote:
-> Hi Joakim,
-> 
-> Thank you for the patch! Yet something to improve:
-> 
-> [auto build test ERROR on net-next/master]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Joakim-Zhang/net-fec-fix-TX-bandwidth-fluctuations/20210621-142927
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git adc2e56ebe6377f5c032d96aee0feac30a640453
-> config: h8300-randconfig-r013-20210621 (attached as .config)
-> compiler: h8300-linux-gcc (GCC) 9.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/fb03312f39a307318497986126e26a21e06f37c4
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Joakim-Zhang/net-fec-fix-TX-bandwidth-fluctuations/20210621-142927
->         git checkout fb03312f39a307318497986126e26a21e06f37c4
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=h8300 
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-Sorry for the broken report, kindly ignore this, we will fix
-this asap.
+If pci_remove was called for a PF with VFs, the removal of the VFs was
+called twice from efx_ef10_sriov_fini: one directly with pci_driver->remove
+and another implicit by calling pci_disable_sriov, which also perform
+the VFs remove. This was leading to crashing the kernel on the second
+attempt.
 
-> 
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/dac/vf610_dac.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/dummy/iio_dummy.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/dummy/iio_dummy_evgen.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/frequency/adf4350.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/gyro/adis16136.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/gyro/fxas21002c_core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/gyro/fxas21002c_i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/gyro/fxas21002c_spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/gyro/itg3200.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/gyro/st_gyro.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/gyro/st_gyro_i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/gyro/st_gyro_spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/health/max30102.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/humidity/dht11.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/humidity/hdc100x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/humidity/si7005.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/imu/adis16460.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/imu/bmi160/bmi160_core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/imu/bmi160/bmi160_i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/imu/fxos8700_i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/imu/inv_icm42600/inv-icm42600-spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/imu/inv_icm42600/inv-icm42600.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/imu/kmx61.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/adux1020.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/cm32181.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/cm36651.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/gp2ap020a00f.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/jsa1212.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/lv0104cs.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/noa1305.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/pa12203001.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/st_uvis25_core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/st_uvis25_i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/st_uvis25_spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/vcnl4000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/vl6180.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/light/zopt2201.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/ak8974.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/hmc5843_core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/hmc5843_spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/mag3110.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/mmc35240.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/rm3100-core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/rm3100-i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/st_magn.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/st_magn_i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/magnetometer/st_magn_spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/potentiometer/ad5272.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/potentiometer/max5432.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/potentiometer/max5487.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/potentiometer/mcp41010.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/potentiostat/lmp91000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/pressure/abp060mg.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/pressure/bmp280-i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/pressure/bmp280-spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/pressure/bmp280.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/pressure/hp206c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/pressure/icp10100.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/pressure/mpl3115.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/pressure/ms5611_core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/pressure/t5403.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/proximity/isl29501.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/proximity/ping.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/proximity/sx9310.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/proximity/vl53l0x-i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/temperature/max31856.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/temperature/tmp006.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/temperature/tsys01.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/iio/temperature/tsys02d.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/flash/leds-rt4505.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-as3645a.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-bd2802.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-el15203000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-is31fl319x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-ktd2692.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lm3530.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lm3532.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lm3533.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lm355x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lm36274.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lm3642.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lm3692x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lm3697.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lp5562.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-lt3593.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-max8997.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-sgm3140.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-spi-byte.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-ti-lmu-common.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-tps6105x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/leds-wm831x-status.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/leds/uleds.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mailbox/mailbox-altera.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mcb/mcb-lpc.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mcb/mcb.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/cec/core/cec.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/common/siano/smsdvb.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/common/siano/smsmdtv.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/common/v4l2-tpg/v4l2-tpg.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/common/videobuf2/videobuf2-common.ko.gz', needed by '__modinst'.
-> >> make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/common/videobuf2/videobuf2-dma-contig.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/common/videobuf2/videobuf2-memops.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/common/videobuf2/videobuf2-v4l2.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/common/videobuf2/videobuf2-vmalloc.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-core/dvb-core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/a8293.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/af9013.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/af9033.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/ascot2e.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cx22700.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cx24110.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cx24113.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cx24116.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cx24117.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cx24123.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cxd2099.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cxd2820r.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cxd2841er.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/cxd2880/cxd2880.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/dib3000mc.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/dib7000p.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/dib8000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/dib9000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/dibx000_common.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/drx39xyj/drx39xyj.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/drxd.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/drxk.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/ds3000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/dvb_dummy_fe.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/ec100.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/helene.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/horus3a.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/isl6405.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/isl6421.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/isl6423.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/itd1000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/ix2505v.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/lg2160.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/lgdt3306a.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/lgdt330x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/lgs8gxx.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/lnbh25.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/lnbh29.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/lnbp22.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/m88ds3103.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/m88rs2000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/mb86a16.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/mb86a20s.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/mn88443x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/mt312.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/mt352.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/nxt200x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/or51132.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/or51211.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/rtl2832.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/s5h1409.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/s5h1411.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/s5h1432.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/s921.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/si2165.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/si2168.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/sp8870.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/sp887x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/stb6000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/stb6100.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/stv0288.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/stv0299.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/stv090x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/stv0910.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/stv6110x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/tda10021.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/tda10048.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/tda1004x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/tda10071.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/tda18271c2dd.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/tda8083.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/tda826x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/tua6100.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/ves1820.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/ves1x93.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/zd1301_demod.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/zl10036.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/zl10039.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/dvb-frontends/zl10353.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ad5820.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ad9389b.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/adp1653.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/adv7170.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/adv7175.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/adv7180.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/adv7183.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/adv748x/adv748x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/adv7511-v4l2.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ak7375.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ak881x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/aptina-pll.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/bt819.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/cx25840/cx25840.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/dw9714.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/dw9807-vcm.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/hi556.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/imx219.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/imx258.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/imx274.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/imx290.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/imx319.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/imx334.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/imx355.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/lm3560.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/lm3646.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/m5mols/m5mols.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/max2175.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/max9286.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ml86v7667.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/msp3400.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/mt9m032.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/mt9t112.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/mt9v011.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/mt9v111.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/noon010pc30.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov02a10.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov13858.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov2640.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov2659.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov2680.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov2685.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov5645.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov5647.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov5670.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov5675.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov5695.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov7251.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov7640.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov7670.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov772x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov7740.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov8856.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ov9650.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/rj54n1cb0c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/s5c73m3/s5c73m3.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/s5k6aa.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/saa6588.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/saa7110.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/saa7115.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/saa7127.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/saa717x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/saa7185.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/sony-btf-mpx.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/sr030pc30.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/tea6415c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/tea6420.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/ths8200.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/tlv320aic23b.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/tvaudio.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/tvp514x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/tw2804.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/tw9903.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/tw9906.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/tw9910.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/upd64031a.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/upd64083.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/vp27smpx.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/i2c/vpx3220.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/mc/mc.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/mmc/siano/smssdio.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/platform/aspeed-video.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/platform/m2m-deinterlace.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/radio/radio-tea5764.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/radio/radio-wl1273.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/radio/si470x/radio-si470x-common.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/radio/si470x/radio-si470x-i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/radio/tef6862.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/spi/cxd2880-spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/spi/gs1662.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/test-drivers/vicodec/vicodec.ko.gz', needed by '__modinst'.
-> >> make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/test-drivers/vidtv/dvb-vidtv-bridge.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/test-drivers/vidtv/dvb-vidtv-demod.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/test-drivers/vidtv/dvb-vidtv-tuner.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/test-drivers/vimc/vimc.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/test-drivers/vivid/vivid.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/e4000.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/fc0013.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/fc2580.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/it913x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/mc44s803.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/msi001.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/mt2060.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/mt2063.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/mt20xx.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/mt2131.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/mt2266.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/mxl301rf.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/mxl5005s.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/qm1d1c0042.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/qt1010.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/tda18218.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/tda18250.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/tda18271.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/tda827x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/tda9887.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/tea5761.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/tuners/tuner-xc2028.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/v4l2-core/v4l2-dv-timings.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/v4l2-core/v4l2-flash-led-class.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/v4l2-core/v4l2-fwnode.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/v4l2-core/v4l2-mem2mem.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/media/v4l2-core/videodev.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/memory/dfl-emif.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/88pm800.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/88pm805.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/88pm80x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/act8945a.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/as3722.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/axp20x-i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/axp20x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/da9063.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/da9150-core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/gateworks-gsc.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/intel-m10-bmc.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/lm3533-core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/lm3533-ctrlbank.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/max77650.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/max77686.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/max77693.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/mp2629.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/retu-mfd.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/rohm-bd718x7.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/rt5033.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/sky81452.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/ti-lmu.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/tps6105x.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/tps65010.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/tps65086.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/wl1273-core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mfd/wm8994.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/misc/ad525x_dpot-i2c.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/misc/ad525x_dpot-spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/misc/ad525x_dpot.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/misc/c2port/core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/misc/dummy-irq.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/misc/echo/echo.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/misc/eeprom/at25.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/misc/hmc6352.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/misc/xilinx_sdfec.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/core/mmc_block.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/core/mmc_core.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/core/mmc_test.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/core/pwrseq_simple.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/host/cqhci.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/host/mmc_spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/host/mtk-sd.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/host/of_mmc_spi.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/host/sdhci.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mmc/host/usdhi6rol0.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/chips/cfi_cmdset_0001.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/chips/jedec_probe.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/chips/map_absent.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/chips/map_ram.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/devices/mchp23k256.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/devices/sst25l.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/mtdoops.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/mtdpstore.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/nand/raw/denali.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/nand/raw/denali_dt.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/nand/raw/diskonchip.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/nand/raw/gpio.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/nand/raw/mxic_nand.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/nand/raw/nand.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/parsers/cmdlinepart.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/parsers/ofpart.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/parsers/redboot.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/rfd_ftl.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/tests/mtd_nandbiterrs.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/tests/mtd_nandecctest.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/tests/mtd_oobtest.ko.gz', needed by '__modinst'.
->    make[2]: *** No rule to make target '/tmp/kernel/h8300-randconfig-r013-20210621/gcc-9.3.0/fb03312f39a307318497986126e26a21e06f37c4/lib/modules/5.13.0-rc6-01882-gfb03312f39a3/kernel/drivers/mtd/tests/mtd_pagetest.ko.gz', needed by '__modinst'.
-> 
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Given that pci_disable_sriov already calls to pci remove function, get
+rid of the direct call to pci_driver->remove from the driver.
 
+2 different ways to trigger the bug:
+- Create one or more VFs, then attach the PF to a virtual machine (at
+  least with qemu/KVM)
+- Create one or more VFs, then remove the PF with:
+  echo 1 > /sys/bus/pci/devices/PF_PCI_ID/remove
 
-> _______________________________________________
-> kbuild-all mailing list -- kbuild-all@lists.01.org
-> To unsubscribe send an email to kbuild-all-leave@lists.01.org
+Removing sfc module does not trigger the error, at least for me, because
+it removes the VF first, and then the PF.
+
+Example of a log with the error:
+    list_del corruption, ffff967fd20a8ad0->next is LIST_POISON1 (dead000000000100)
+    ------------[ cut here ]------------
+    kernel BUG at lib/list_debug.c:47!
+    [...trimmed...]
+    RIP: 0010:__list_del_entry_valid.cold.1+0x12/0x4c
+    [...trimmed...]
+    Call Trace:
+    efx_dissociate+0x1f/0x140 [sfc]
+    efx_pci_remove+0x27/0x150 [sfc]
+    pci_device_remove+0x3b/0xc0
+    device_release_driver_internal+0x103/0x1f0
+    pci_stop_bus_device+0x69/0x90
+    pci_stop_and_remove_bus_device+0xe/0x20
+    pci_iov_remove_virtfn+0xba/0x120
+    sriov_disable+0x2f/0xe0
+    efx_ef10_pci_sriov_disable+0x52/0x80 [sfc]
+    ? pcie_aer_is_native+0x12/0x40
+    efx_ef10_sriov_fini+0x72/0x110 [sfc]
+    efx_pci_remove+0x62/0x150 [sfc]
+    pci_device_remove+0x3b/0xc0
+    device_release_driver_internal+0x103/0x1f0
+    unbind_store+0xf6/0x130
+    kernfs_fop_write+0x116/0x190
+    vfs_write+0xa5/0x1a0
+    ksys_write+0x4f/0xb0
+    do_syscall_64+0x5b/0x1a0
+    entry_SYSCALL_64_after_hwframe+0x65/0xca
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/ethernet/sfc/ef10_sriov.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+index 21fa6c0e8873..a5d28b0f75ba 100644
+--- a/drivers/net/ethernet/sfc/ef10_sriov.c
++++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+@@ -439,7 +439,6 @@ int efx_ef10_sriov_init(struct efx_nic *efx)
+ void efx_ef10_sriov_fini(struct efx_nic *efx)
+ {
+ 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+-	unsigned int i;
+ 	int rc;
+ 
+ 	if (!nic_data->vf) {
+@@ -449,14 +448,7 @@ void efx_ef10_sriov_fini(struct efx_nic *efx)
+ 		return;
+ 	}
+ 
+-	/* Remove any VFs in the host */
+-	for (i = 0; i < efx->vf_count; ++i) {
+-		struct efx_nic *vf_efx = nic_data->vf[i].efx;
+-
+-		if (vf_efx)
+-			vf_efx->pci_dev->driver->remove(vf_efx->pci_dev);
+-	}
+-
++	/* Disable SRIOV and remove any VFs in the host */
+ 	rc = efx_ef10_pci_sriov_disable(efx, true);
+ 	if (rc)
+ 		netif_dbg(efx, drv, efx->net_dev,
+-- 
+2.31.1
 
