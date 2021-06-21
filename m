@@ -2,208 +2,361 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C77263AE7AE
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 12:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB8C93AE7D6
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 13:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbhFUKy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 06:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbhFUKyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 06:54:45 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9F4C061574
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 03:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
-        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ArqsqdtJsi+Av2RpahMb90Dw/82HEHNmcrpt43Fq8qo=; b=ckhgEGnXdxoyCaIm0tHonbZKzO
-        /R3L3nRBViny3WH/6///6zAdYH/r3FxeU+E4nL/vA4fD1GGA/8XD6O/LY0j+67ysOlLkBh1aU/09k
-        OsEDzpjUnD5RO10PMELOk3ORJMuWIsi7tfi1fwj9qiw4aTRRkBfuRBRw4znFhCAMLX2Ve98S3ELRl
-        +VB/k+xCuVyyRJjGt6ldo1h0UHclFcsqgHOuQg4PXMMdM66tDaLNIMXYe+Ev/CMWRDNJNpDq9ImwD
-        Rb0IQkto5fmOP5KY+lGCx/mSebtQMba0KgjuGgqiSw3quMZ0oCN06ZVmhk+UybnvBHRa3Zmi6bZR1
-        TJ7St8Sw==;
-Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lvHXa-003C28-K2; Mon, 21 Jun 2021 10:52:30 +0000
-Message-ID: <2cbe878845eb2a1e3803b3340263ea14436fe053.camel@infradead.org>
-Subject: Re: [PATCH] net: tun: fix tun_xdp_one() for IFF_TUN mode
-From:   David Woodhouse <dwmw2@infradead.org>
-To:     Jason Wang <jasowang@redhat.com>, netdev <netdev@vger.kernel.org>
-Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
-Date:   Mon, 21 Jun 2021 11:52:28 +0100
-In-Reply-To: <e832b356-ffc2-8bca-f5d9-75e8b98cfcf2@redhat.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
-         <e832b356-ffc2-8bca-f5d9-75e8b98cfcf2@redhat.com>
-Content-Type: multipart/signed; micalg="sha-256";
-        protocol="application/x-pkcs7-signature";
-        boundary="=-YLTXKaq0aWNt9JJ+5iVe"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        id S230292AbhFULFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 07:05:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53200 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229946AbhFULFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 07:05:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624273374;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=S/fs4NA9hBq3sv0aUCJZAVO4Uvbw06vcTspx/Tlar0M=;
+        b=eZwtvwM4oOUls5zPpftI+w5OUtSwPrwOlmSv5fOcMx/hegSGi7dV5fjDSX/yvHujb/Rrkm
+        DRkLqwTJJGwjJvIEqGvC/tIyV5qlyRuawrT8Kn+4O/FKFnD7nFA+ZvuyezjAxVedJHOjJv
+        eV7rINyY23JwnrA9QU9cB3VmEo0JTsA=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-378-XpKYcsYtOBCPZS8AjAgwPQ-1; Mon, 21 Jun 2021 07:02:53 -0400
+X-MC-Unique: XpKYcsYtOBCPZS8AjAgwPQ-1
+Received: by mail-wr1-f69.google.com with SMTP id x9-20020adfffc90000b02901178add5f60so8314513wrs.5
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 04:02:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=S/fs4NA9hBq3sv0aUCJZAVO4Uvbw06vcTspx/Tlar0M=;
+        b=BPHCydib/butXjkLzgrBJ0Bc6XADU9RBOd+/VHynpsc5k5OHdtOtgOepRq6RSkSOK2
+         Nt5m/ctIgEMUCB4+2wHWFzXyus3mFVojh4xAEVb4+jwu2BAKfpHqvosQ4ONa8X8isV+V
+         qkIuhsLtXZ3HLSRzWKEwEihRcXG0MWlsPnBuAxvpQOucDi8eCB5qSKmZOTjHIliNpzlU
+         t7dV7APXJgYlWLqqZSAvy9D39KD2ATmYRNheZnHvwZTSWiIGuhl2kgdbOC85IssDWkp2
+         blr1ouvECWehgx9s1iZed6ZbcbRiqQgoR8type3hX4hbWkSQN2mW4k0qK9u/DMd69N5C
+         2cfQ==
+X-Gm-Message-State: AOAM530dDjOa2L+K+Ak4/rUm+lZMbI6nQJ64OVLbCTIOcd3Iqyerjpfg
+        Ba1fNvhl1gd8BizybsNY7xvUcFcPQksyr4AupoS8PoaBLC0UJaoqys+SvCCk+tN6cv9Dxew02ZX
+        U3XTpFNbL1+AwoDiY
+X-Received: by 2002:a05:6000:18ad:: with SMTP id b13mr27345043wri.134.1624273371897;
+        Mon, 21 Jun 2021 04:02:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzzkVqV1viJi7Qrd4Z3DtrHmkj5u3JUuXlAZM6gozPQhwey6zLefsMKRWt4WkOYBeDbppkfeQ==
+X-Received: by 2002:a05:6000:18ad:: with SMTP id b13mr27345018wri.134.1624273371641;
+        Mon, 21 Jun 2021 04:02:51 -0700 (PDT)
+Received: from dceara.remote.csb (i87195.upc-i.chello.nl. [62.195.87.195])
+        by smtp.gmail.com with ESMTPSA id o203sm1844541wmo.36.2021.06.21.04.02.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Jun 2021 04:02:51 -0700 (PDT)
+Subject: Re: [RFC net-next] openvswitch: add trace points
+To:     Aaron Conole <aconole@redhat.com>, netdev@vger.kernel.org
+Cc:     dev@openvswitch.org, Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Ilya Maximets <i.maximets@ovn.org>
+References: <20210527191532.376414-1-aconole@redhat.com>
+From:   Dumitru Ceara <dceara@redhat.com>
+Message-ID: <dad5068f-4ea2-d442-0645-9f5c16245ab6@redhat.com>
+Date:   Mon, 21 Jun 2021 13:02:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
+MIME-Version: 1.0
+In-Reply-To: <20210527191532.376414-1-aconole@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 5/27/21 9:15 PM, Aaron Conole wrote:
+> This makes openvswitch module use the event tracing framework
+> to log the upcall interface and action execution pipeline.  When
+> using openvswitch as the packet forwarding engine, some types of
+> debugging are made possible simply by using the ovs-vswitchd's
+> ofproto/trace command.  However, such a command has some
+> limitations:
+> 
+>   1. When trying to trace packets that go through the CT action,
+>      the state of the packet can't be determined, and probably
+>      would be potentially wrong.
+> 
+>   2. Deducing problem packets can sometimes be difficult as well
+>      even if many of the flows are known
+> 
+>   3. It's possible to use the openvswitch module even without
+>      the ovs-vswitchd (although, not common use).
+> 
+> Introduce the event tracing points here to make it possible for
+> working through these problems in kernel space.  The style is
+> copied from the mac80211 driver-trace / trace code for
+> consistency.
+> 
+> Signed-off-by: Aaron Conole <aconole@redhat.com>
+> ---
 
---=-YLTXKaq0aWNt9JJ+5iVe
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi Aaron,
 
-On Mon, 2021-06-21 at 15:00 +0800, Jason Wang wrote:
-> I think it's probably too late to fix? Since it should work before=20
-> 043d222f93ab.
->=20
-> The only way is to backport this fix to stable.
+>  net/openvswitch/Makefile            |   3 +
+>  net/openvswitch/actions.c           |   4 +
+>  net/openvswitch/datapath.c          |   7 ++
+>  net/openvswitch/openvswitch_trace.c |  10 ++
+>  net/openvswitch/openvswitch_trace.h | 152 ++++++++++++++++++++++++++++
+>  5 files changed, 176 insertions(+)
+>  create mode 100644 net/openvswitch/openvswitch_trace.c
+>  create mode 100644 net/openvswitch/openvswitch_trace.h
+> 
+> diff --git a/net/openvswitch/Makefile b/net/openvswitch/Makefile
+> index 41109c326f3a..28982630bef3 100644
+> --- a/net/openvswitch/Makefile
+> +++ b/net/openvswitch/Makefile
+> @@ -13,6 +13,7 @@ openvswitch-y := \
+>  	flow_netlink.o \
+>  	flow_table.o \
+>  	meter.o \
+> +	openvswitch_trace.o \
+>  	vport.o \
+>  	vport-internal_dev.o \
+>  	vport-netdev.o
+> @@ -24,3 +25,5 @@ endif
+>  obj-$(CONFIG_OPENVSWITCH_VXLAN)+= vport-vxlan.o
+>  obj-$(CONFIG_OPENVSWITCH_GENEVE)+= vport-geneve.o
+>  obj-$(CONFIG_OPENVSWITCH_GRE)	+= vport-gre.o
+> +
+> +CFLAGS_openvswitch_trace.o = -I$(src)
+> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+> index d858ea580e43..62285453ca79 100644
+> --- a/net/openvswitch/actions.c
+> +++ b/net/openvswitch/actions.c
+> @@ -30,6 +30,7 @@
+>  #include "conntrack.h"
+>  #include "vport.h"
+>  #include "flow_netlink.h"
+> +#include "openvswitch_trace.h"
+>  
+>  struct deferred_action {
+>  	struct sk_buff *skb;
+> @@ -1242,6 +1243,9 @@ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
+>  	     a = nla_next(a, &rem)) {
+>  		int err = 0;
+>  
+> +		if (trace_openvswitch_probe_action_enabled())
+> +			trace_openvswitch_probe_action(dp, skb, key, a, rem);
+> +
+>  		switch (nla_type(a)) {
+>  		case OVS_ACTION_ATTR_OUTPUT: {
+>  			int port = nla_get_u32(a);
+> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> index 9d6ef6cb9b26..63f19a6ed472 100644
+> --- a/net/openvswitch/datapath.c
+> +++ b/net/openvswitch/datapath.c
+> @@ -43,6 +43,7 @@
+>  #include "flow_table.h"
+>  #include "flow_netlink.h"
+>  #include "meter.h"
+> +#include "openvswitch_trace.h"
+>  #include "vport-internal_dev.h"
+>  #include "vport-netdev.h"
+>  
+> @@ -275,6 +276,12 @@ int ovs_dp_upcall(struct datapath *dp, struct sk_buff *skb,
+>  	struct dp_stats_percpu *stats;
+>  	int err;
+>  
+> +	if (trace_openvswitch_probe_userspace_enabled()) {
+> +		struct sw_flow_key ukey = *key;
+> +
+> +		trace_openvswitch_probe_userspace(dp, skb, &ukey, upcall_info);
+> +	}
+> +
+>  	if (upcall_info->portid == 0) {
+>  		err = -ENOTCONN;
+>  		goto err;
+> diff --git a/net/openvswitch/openvswitch_trace.c b/net/openvswitch/openvswitch_trace.c
+> new file mode 100644
+> index 000000000000..62c5f7d6f023
+> --- /dev/null
+> +++ b/net/openvswitch/openvswitch_trace.c
+> @@ -0,0 +1,10 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* bug in tracepoint.h, it should include this */
+> +#include <linux/module.h>
+> +
+> +/* sparse isn't too happy with all macros... */
+> +#ifndef __CHECKER__
+> +#define CREATE_TRACE_POINTS
+> +#include "openvswitch_trace.h"
+> +
+> +#endif
+> diff --git a/net/openvswitch/openvswitch_trace.h b/net/openvswitch/openvswitch_trace.h
+> new file mode 100644
+> index 000000000000..1b350306f622
+> --- /dev/null
+> +++ b/net/openvswitch/openvswitch_trace.h
+> @@ -0,0 +1,152 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#undef TRACE_SYSTEM
+> +#define TRACE_SYSTEM openvswitch
+> +
+> +#if !defined(_TRACE_OPENVSWITCH_H) || defined(TRACE_HEADER_MULTI_READ)
+> +#define _TRACE_OPENVSWITCH_H
+> +
+> +#include <linux/tracepoint.h>
+> +
+> +#include "datapath.h"
+> +
+> +TRACE_EVENT(openvswitch_probe_action,
+> +
+> +	TP_PROTO(struct datapath *dp, struct sk_buff *skb,
+> +		 struct sw_flow_key *key, const struct nlattr *a, int rem),
+> +
+> +	TP_ARGS(dp, skb, key, a, rem),
+> +
+> +	TP_STRUCT__entry(
+> +		__field(	void *,		dpaddr			)
+> +		__string(	dp_name,	ovs_dp_name(dp)		)
+> +		__string(	dev_name,	skb->dev->name		)
+> +		__field(	void *,		skbaddr			)
+> +		__field(	unsigned int,	len			)
+> +		__field(	unsigned int,	data_len		)
+> +		__field(	unsigned int,	truesize		)
+> +		__field(	u8,		nr_frags		)
+> +		__field(	u16,		gso_size		)
+> +		__field(	u16,		gso_type		)
+> +		__field(	u32,		ovs_flow_hash		)
+> +		__field(	u32,		recirc_id		)
+> +		__field(	void *,		keyaddr			)
+> +		__field(	u16,		key_eth_type		)
+> +		__field(	u8,		key_ct_state		)
+> +		__field(	u8,		key_ct_orig_proto	)
 
-Yeah, I assumed the fix would be backported; if not then the "does the
-kernel have it" check is fairly trivial.
+I think tracing ct_zone would be useful too.
 
-I *can* avoid it for now by just using TUNSNDBUF to reduce the sndbuf
-and then we never take the XDP path at all.
+> +		__field(	unsigned int,	flow_key_valid		)
+> +		__field(	u8,		action_type		)
+> +		__field(	unsigned int,	action_len		)
+> +		__field(	void *,		action_data		)
+> +		__field(	u8,		is_last			)
+> +	),
+> +
+> +	TP_fast_assign(
+> +		__entry->dpaddr = dp;
+> +		__assign_str(dp_name, ovs_dp_name(dp));
+> +		__assign_str(dev_name, skb->dev->name);
+> +		__entry->skbaddr = skb;
+> +		__entry->len = skb->len;
+> +		__entry->data_len = skb->data_len;
+> +		__entry->truesize = skb->truesize;
+> +		__entry->nr_frags = skb_shinfo(skb)->nr_frags;
+> +		__entry->gso_size = skb_shinfo(skb)->gso_size;
+> +		__entry->gso_type = skb_shinfo(skb)->gso_type;
+> +		__entry->ovs_flow_hash = key->ovs_flow_hash;
+> +		__entry->recirc_id = key->recirc_id;
+> +		__entry->keyaddr = key;
+> +		__entry->key_eth_type = key->eth.type;
+> +		__entry->key_ct_state = key->ct_state;
+> +		__entry->key_ct_orig_proto = key->ct_orig_proto;
+> +		__entry->flow_key_valid = !(key->mac_proto & SW_FLOW_KEY_INVALID);
+> +		__entry->action_type = nla_type(a);
+> +		__entry->action_len = nla_len(a);
+> +		__entry->action_data = nla_data(a);
+> +		__entry->is_last = nla_is_last(a, rem);
+> +	),
+> +
+> +	TP_printk("dpaddr=%p dp_name=%s dev=%s skbaddr=%p len=%u data_len=%u truesize=%u nr_frags=%d gso_size=%d gso_type=%#x ovs_flow_hash=0x%08x recirc_id=0x%08x keyaddr=%p eth_type=0x%04x ct_state=%02x ct_orig_proto=%02x flow_key_valid=%d action_type=%u action_len=%u action_data=%p is_last=%d",
+> +		  __entry->dpaddr, __get_str(dp_name), __get_str(dev_name),
+> +		  __entry->skbaddr, __entry->len, __entry->data_len,
+> +		  __entry->truesize, __entry->nr_frags, __entry->gso_size,
+> +		  __entry->gso_type, __entry->ovs_flow_hash,
+> +		  __entry->recirc_id, __entry->keyaddr, __entry->key_eth_type,
+> +		  __entry->key_ct_state, __entry->key_ct_orig_proto,
+> +		  __entry->flow_key_valid,
+> +		  __entry->action_type, __entry->action_len,
+> +		  __entry->action_data, __entry->is_last)
+> +);
+> +
+> +TRACE_EVENT(openvswitch_probe_userspace,
+> +
+> +	TP_PROTO(struct datapath *dp, struct sk_buff *skb,
+> +		 struct sw_flow_key *key,
+> +		 const struct dp_upcall_info *upcall_info),
+> +
+> +	TP_ARGS(dp, skb, key, upcall_info),
+> +
+> +	TP_STRUCT__entry(
+> +		__field(	void *,		dpaddr			)
+> +		__string(	dp_name,	ovs_dp_name(dp)		)
+> +		__string(	dev_name,	skb->dev->name		)
+> +		__field(	void *,		skbaddr			)
+> +		__field(	unsigned int,	len			)
+> +		__field(	unsigned int,	data_len		)
+> +		__field(	unsigned int,	truesize		)
+> +		__field(	u8,		nr_frags		)
+> +		__field(	u16,		gso_size		)
+> +		__field(	u16,		gso_type		)
+> +		__field(	u32,		ovs_flow_hash		)
+> +		__field(	u32,		recirc_id		)
+> +		__field(	void *,		keyaddr			)
+> +		__field(	u16,		key_eth_type		)
+> +		__field(	u8,		key_ct_state		)
+> +		__field(	u8,		key_ct_orig_proto	)
 
-My initial crappy hacks are slowly turning into something that I might
-actually want to commit to mainline (once I've fixed endianness and
-memory ordering issues):
-https://gitlab.com/openconnect/openconnect/-/compare/master...vhost
+Same here.
 
-I have a couple of remaining problems using vhost-net directly from
-userspace though.
+Thanks,
+Dumitru
 
-Firstly, I don't think I can set IFF_VNET_HDR on the tun device after
-opening it. So my model of "open the tun device, then *see* if we can
-use vhost to accelerate it" doesn't work.
-
-I tried setting VHOST_NET_F_VIRTIO_NET_HDR in the vhost features
-instead, but that gives me a weird failure mode where it drops around
-half the incoming packets, and I haven't yet worked out why.
-
-Of course I don't *actually* want a vnet header at all but the vhost
-code really assumes that *someone* will add one; if I *don't* set
-VHOST_NET_F_VIRTIO_NET_HDR then it always *assumes* it can read ten
-bytes more from the tun socket than the 'peek' says, and barfs when it
-can't. (Or such was my initial half-thought-through diagnosis before I
-made it go away by setting IFF_VNET_HDR, at least).
-
-
-Secondly, I need to pull numbers out of my posterior for the
-VHOST_SET_MEM_TABLE call. This works for x86_64:
-
-	vmem->nregions =3D 1;
-	vmem->regions[0].guest_phys_addr =3D 4096;
-	vmem->regions[0].memory_size =3D 0x7fffffffe000;
-	vmem->regions[0].userspace_addr =3D 4096;
-	if (ioctl(vpninfo->vhost_fd, VHOST_SET_MEM_TABLE, vmem) < 0) {
-
-Is there a way to bypass that and just unconditionally set a 1:1
-mapping of *all* userspace address space?=20
-
-
-
-It's possible that one or the other of those problems will result in a
-new advertised "feature" which is so simple (like a 1:1 map) that we
-can call it a bugfix and backport it along with the tun fix I already
-posted, and the presence of *that* can indicate that the tun bug is
-fixed :)
-
---=-YLTXKaq0aWNt9JJ+5iVe
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
-ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
-OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
-RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
-cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
-uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
-Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
-Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
-xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
-BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
-dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
-LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
-Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
-Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
-YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
-nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
-PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
-7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
-Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
-MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
-NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
-/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
-0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
-vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
-ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
-ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
-CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
-BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
-aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
-bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
-LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
-W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
-vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
-gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
-RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
-jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
-AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
-BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
-+bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
-WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
-aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
-CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
-u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
-RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
-QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
-b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
-cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
-SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
-0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
-KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
-E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
-M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
-jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
-yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
-gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
-R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
-ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
-NjIxMTA1MjI4WjAvBgkqhkiG9w0BCQQxIgQggfs5t+PwwiJY0CCfpTLtczxPvPjCOHddN0oSwD2z
-rZEwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
-TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
-PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAKqrR7TWeX2IyBj1hsnY8u6Q4hqJpslWgNqXAKvJLjALCioDuyIibT3nm9gSwqn1
-CZLhicXIgoRFLA+peIqdKO7hLKVpLGfRwVA4kyTsqMklSrJ2ju+aO39g9uWCkDaudabvUYwyO/46
-2isW4BALF9nyEqyYuoDVwOIa3Bs93Gq7m3WDLAdzAQmykrdLXNE7Ew6a2pV23xku6eTPTK/l0t8G
-5VPs2mjIBMdmtbHlh1cWfcjMsaEBQLHP1VoLaz2YqxVAAyVGpVu/uaEyxOnG0nj3k6olOKzFh7Ea
-Jt3PMpUBCi5avpTrtEd8pg2yrFAbwqArVHIcVK1U1Syp6fJ2eT8AAAAAAAA=
-
-
---=-YLTXKaq0aWNt9JJ+5iVe--
+> +		__field(	unsigned int,	flow_key_valid		)
+> +		__field(	u8,		upcall_cmd		)
+> +		__field(	u32,		upcall_port		)
+> +		__field(	u16,		upcall_mru		)
+> +	),
+> +
+> +	TP_fast_assign(
+> +		__entry->dpaddr = dp;
+> +		__assign_str(dp_name, ovs_dp_name(dp));
+> +		__assign_str(dev_name, skb->dev->name);
+> +		__entry->skbaddr = skb;
+> +		__entry->len = skb->len;
+> +		__entry->data_len = skb->data_len;
+> +		__entry->truesize = skb->truesize;
+> +		__entry->nr_frags = skb_shinfo(skb)->nr_frags;
+> +		__entry->gso_size = skb_shinfo(skb)->gso_size;
+> +		__entry->gso_type = skb_shinfo(skb)->gso_type;
+> +		__entry->ovs_flow_hash = key->ovs_flow_hash;
+> +		__entry->recirc_id = key->recirc_id;
+> +		__entry->keyaddr = key;
+> +		__entry->key_eth_type = key->eth.type;
+> +		__entry->key_ct_state = key->ct_state;
+> +		__entry->key_ct_orig_proto = key->ct_orig_proto;
+> +		__entry->flow_key_valid =  !(key->mac_proto & SW_FLOW_KEY_INVALID);
+> +		__entry->upcall_cmd = upcall_info->cmd;
+> +		__entry->upcall_port = upcall_info->portid;
+> +		__entry->upcall_mru = upcall_info->mru;
+> +	),
+> +
+> +	TP_printk("dpaddr=%p dp_name=%s dev=%s skbaddr=%p len=%u data_len=%u truesize=%u nr_frags=%d gso_size=%d gso_type=%#x ovs_flow_hash=0x%08x recirc_id=0x%08x keyaddr=%p eth_type=0x%04x ct_state=%02x ct_orig_proto=%02x flow_key_valid=%d upcall_cmd=%u upcall_port=%u upcall_mru=%u",
+> +		  __entry->dpaddr, __get_str(dp_name), __get_str(dev_name),
+> +		  __entry->skbaddr, __entry->len, __entry->data_len,
+> +		  __entry->truesize, __entry->nr_frags, __entry->gso_size,
+> +		  __entry->gso_type, __entry->ovs_flow_hash,
+> +		  __entry->recirc_id, __entry->keyaddr, __entry->key_eth_type,
+> +		  __entry->key_ct_state, __entry->key_ct_orig_proto,
+> +		  __entry->flow_key_valid,
+> +		  __entry->upcall_cmd, __entry->upcall_port,
+> +		  __entry->upcall_mru)
+> +);
+> +
+> +#endif /* _TRACE_OPENVSWITCH_H */
+> +
+> +/* This part must be outside protection */
+> +#undef TRACE_INCLUDE_PATH
+> +#define TRACE_INCLUDE_PATH .
+> +#undef TRACE_INCLUDE_FILE
+> +#define TRACE_INCLUDE_FILE openvswitch_trace
+> +#include <trace/define_trace.h>
+> 
 
