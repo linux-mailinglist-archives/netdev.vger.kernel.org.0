@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 500C93AF27A
-	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:52:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E6ED3AF27D
+	for <lists+netdev@lfdr.de>; Mon, 21 Jun 2021 19:52:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231944AbhFURyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 13:54:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38722 "EHLO mail.kernel.org"
+        id S232058AbhFURy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 13:54:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38788 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231801AbhFURye (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 13:54:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 39FA561245;
-        Mon, 21 Jun 2021 17:52:19 +0000 (UTC)
+        id S231961AbhFURyf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 13:54:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A48F76128A;
+        Mon, 21 Jun 2021 17:52:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624297939;
-        bh=z8eva5ncGyArZ1Cou+EQgQVkiY6HiDJ2aUxVhQNwkss=;
+        s=k20201202; t=1624297941;
+        bh=ZKOlOQEc0Zv2X+bJq4CpdNmLnkZxsej9vDF0pPBnW4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bZIe2o49WBdx7Ohu15WbGol+HwW8Dlt80cFfUZaDXU1HWz/ginanRNdAlvlORSSDv
-         9WpF0G0yTEfkF8J29xjH9O85toUsBUL+tS37w7YrN6JgYVXHx7aieMBmuFJP5FPd+/
-         hXWAYuh9Yz9j3Lb5rGjRzjx2iD9bozbHw1FpDF0OhY0gu+FVdTZ8TAwNGsJ2GlTo17
-         p3+fZLHPF5ojq0yVxlcpqQKOKhaT+e+1fGUKt/9e4gIFZ/H68PxAZjsRducsTIMD1G
-         KPzKa9s/aIlaw6+InseWMDbJ8g1Lry75Yu13yAZUhrfv+X4tlBc4BsrJDU70Bm1Z9Q
-         RfQ8MS7rBxr6Q==
+        b=gPRyRiTTkkL/yKhTPhyj7vkwGpxs+x/mfNDWmofz9xDrxfTHasuPYtjtrHK5dPKNe
+         l0Vv7Ysys/fachIQ3vRJoHL7Ep9tsJ3ua8MApJ6H38FsXUzUQW67pd46orUqbrfEc5
+         HvLqdQpTQbKr+JSlU7ezx+sN6rKNG7b0oXMBGItyqB4R3J+9Bcw0S7sLG1JKWUt3Jm
+         82LveauQHAvg0CHZ1w32TA+3zyWHfZOsiiejxWD3LEmdy+TlOoLZwpDiMqRKA//i5E
+         VMTj2PCMm+92Iim8pRF0oe7pndurQ6yDXsa0hopzenc/38ir/CFmxh7RZ1esvUKWlM
+         xC1PjfggtZfig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 13/39] net: ipv4: Remove unneed BUG() function
-Date:   Mon, 21 Jun 2021 13:51:29 -0400
-Message-Id: <20210621175156.735062-13-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 14/39] mac80211: drop multicast fragments
+Date:   Mon, 21 Jun 2021 13:51:30 -0400
+Message-Id: <20210621175156.735062-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210621175156.735062-1-sashal@kernel.org>
 References: <20210621175156.735062-1-sashal@kernel.org>
@@ -42,47 +42,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 5ac6b198d7e312bd10ebe7d58c64690dc59cc49a ]
+[ Upstream commit a9799541ca34652d9996e45f80e8e03144c12949 ]
 
-When 'nla_parse_nested_deprecated' failed, it's no need to
-BUG() here, return -EINVAL is ok.
+These are not permitted by the spec, just drop them.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20210609161305.23def022b750.Ibd6dd3cdce573dae262fcdc47f8ac52b883a9c50@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/devinet.c  | 2 +-
- net/ipv6/addrconf.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/mac80211/rx.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 2e35f68da40a..1c6429c353a9 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -1989,7 +1989,7 @@ static int inet_set_link_af(struct net_device *dev, const struct nlattr *nla,
- 		return -EAFNOSUPPORT;
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 59de7a86599d..cb5cbf02dbac 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2239,17 +2239,15 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
+ 	sc = le16_to_cpu(hdr->seq_ctrl);
+ 	frag = sc & IEEE80211_SCTL_FRAG;
  
- 	if (nla_parse_nested_deprecated(tb, IFLA_INET_MAX, nla, NULL, NULL) < 0)
--		BUG();
-+		return -EINVAL;
+-	if (is_multicast_ether_addr(hdr->addr1)) {
+-		I802_DEBUG_INC(rx->local->dot11MulticastReceivedFrameCount);
+-		goto out_no_led;
+-	}
+-
+ 	if (rx->sta)
+ 		cache = &rx->sta->frags;
  
- 	if (tb[IFLA_INET_CONF]) {
- 		nla_for_each_nested(a, tb[IFLA_INET_CONF], rem)
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index a9e53f5942fa..eab0a46983c0 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5822,7 +5822,7 @@ static int inet6_set_link_af(struct net_device *dev, const struct nlattr *nla,
- 		return -EAFNOSUPPORT;
+ 	if (likely(!ieee80211_has_morefrags(fc) && frag == 0))
+ 		goto out;
  
- 	if (nla_parse_nested_deprecated(tb, IFLA_INET6_MAX, nla, NULL, NULL) < 0)
--		BUG();
-+		return -EINVAL;
++	if (is_multicast_ether_addr(hdr->addr1))
++		return RX_DROP_MONITOR;
++
+ 	I802_DEBUG_INC(rx->local->rx_handlers_fragments);
  
- 	if (tb[IFLA_INET6_TOKEN]) {
- 		err = inet6_set_iftoken(idev, nla_data(tb[IFLA_INET6_TOKEN]),
+ 	if (skb_linearize(rx->skb))
+@@ -2375,7 +2373,6 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
+ 
+  out:
+ 	ieee80211_led_rx(rx->local);
+- out_no_led:
+ 	if (rx->sta)
+ 		rx->sta->rx_stats.packets++;
+ 	return RX_CONTINUE;
 -- 
 2.30.2
 
