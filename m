@@ -2,112 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DCB43AFED0
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 10:10:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1601D3AFEE2
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 10:15:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230331AbhFVIMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 04:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
+        id S230291AbhFVIRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 04:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbhFVIMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 04:12:25 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1E6C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 01:10:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Message-ID:From:CC:To:Subject:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:
-        Date:Sender:Reply-To:Content-ID:Content-Description;
-        bh=Cc7LQ7jSAcxuYcgvWf6vgv5jBWzHgg6x8vcly+JmJwY=; b=h5Hjt9XMtX9eg55gw97m7f1rWo
-        ISPvNaZUyEY5YnfJC4Focuj4uRkEwr+npRIBHb/JQOMz9uyPQuHj9uEyq2efrSa37FCI/ZGKoWEjg
-        blH7DSBu5q8ekOiXwWDvD8WjxAgnKrq4m/VnfbkbKxadXTpYzmZnvs1sZbf5uyvy71C/+EeMQ5bcC
-        Jd1B4VT/kzoIvrNIdusf2OPFKTFdYqt2QOrdamhkWOwG+jQZpjZW30W70hScetN429BYMXNwC/OEz
-        zhz0KkuTMNDpCQF7n4Dc8M2OG4PTKNSvddRMrcAWHlqKWK7H1vOQUmjOAQAd+Wpf/G9Jwb4haeNFS
-        GmWGwImg==;
-Received: from [2a01:4c8:1076:65cf:7d30:f50d:492:ba62]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lvbTs-00AX5k-F1; Tue, 22 Jun 2021 08:10:07 +0000
-Date:   Tue, 22 Jun 2021 09:10:03 +0100
-User-Agent: K-9 Mail for Android
-In-Reply-To: <ca2e6445-2ac7-7de1-bf3c-af000cb1739a@redhat.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org> <e832b356-ffc2-8bca-f5d9-75e8b98cfcf2@redhat.com> <2cbe878845eb2a1e3803b3340263ea14436fe053.camel@infradead.org> <2433592d2b26deec33336dd3e83acfd273b0cf30.camel@infradead.org> <c93c7357e9fa8a6ce89c0fc53328eeb4f3eb68d5.camel@infradead.org> <d26bbeb7-d184-9bda-55c3-2273f743b139@redhat.com> <f35b7857cba18aa6d187723624b57c8bb9b533e8.camel@infradead.org> <ca2e6445-2ac7-7de1-bf3c-af000cb1739a@redhat.com>
+        with ESMTP id S229628AbhFVIRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 04:17:22 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA1AC061756
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 01:15:06 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id ho18so33129878ejc.8
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 01:15:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=YVCp8xiBvtUwUFNttbUN5nSyQGNG3BOtMHGI4CyjTHQ=;
+        b=o28htubtbLEiarTQcM4helMW63ggtrRYD6odB80RYrMKlzXBuBNkg6jqk7xSk51aaf
+         O28DIRNwUv88sKL7YBwXuvCLNoIBLB+qyueDzvX1XAPAF+lP7b6r00JG0ydO3mbfBvjj
+         MITBvN5IFEf9VgWqwbQ5cTBOQbN005m0gdSrZ4UFZ5PhJfMcLeyIImvlDYQppBZOLOIs
+         wivfY/Yy9LtygR+8wILj+pUcRikwSCVZB5LjievWPsu4MJMdYRsp3p46J9zcNoF3btSf
+         hqfnJys8BLX9k98ZfHt7+Ao5s4RN54hEJpzwW0KS+1cLQ67k5xAElsfeANuN+ySwxymS
+         gCeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YVCp8xiBvtUwUFNttbUN5nSyQGNG3BOtMHGI4CyjTHQ=;
+        b=m4S9H4swWQCkaue8/uhogc5M+2wkCIgvPIjS5QTyX2gypdQQZIZ8Lieo3uqAJT36Fe
+         SeUqFoYUJV7uLiuTpwqLP65swOCbYsqD6gu52BG8qr9fhchgk806G+xqv+bvQTzU3g2P
+         3se3AHJ0pzqVVygBCP8J+OZDiGum67AN4ghg0xnS568WTHqCLxFumWjb8G8ol5MBCOCb
+         WOnF+PGrHUENxfXAcrklAC9kIhRy7AKOGXo0KFDRj73N6TxidSR/3WQ4oTi72HCaN2Ix
+         RSbpEtXNTvrF6at75tgMTw8x2fiULr0lLaLM9cInj2ltJs4q5a6n3nAKZOuKkWBM4n2B
+         Ohxw==
+X-Gm-Message-State: AOAM532cr3xsX1tkoNIAdLz8JX/OcGKWIH5sUWiIQ9rFBBl3+xKaAAMv
+        ZH1fKsqtIv0jdtEetAekaq1ZG9aFSDjiogRVDT0R
+X-Google-Smtp-Source: ABdhPJypM7pjKQ3KkOxcIFLDNBXVrECsVU1ZZT8FKvu2e7Av799B1KikoicL0OhYmYSH0T8F/YyLCEgy2EG+tm9UOts=
+X-Received: by 2002:a17:907:1b11:: with SMTP id mp17mr2736493ejc.1.1624349704564;
+ Tue, 22 Jun 2021 01:15:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+References: <20210615141331.407-1-xieyongji@bytedance.com> <20210615141331.407-10-xieyongji@bytedance.com>
+ <adfb2be9-9ed9-ca37-ac37-4cd00bdff349@redhat.com> <CACycT3tAON+-qZev+9EqyL2XbgH5HDspOqNt3ohQLQ8GqVK=EA@mail.gmail.com>
+ <1bba439f-ffc8-c20e-e8a4-ac73e890c592@redhat.com> <CACycT3uzMJS7vw6MVMOgY4rb=SPfT2srV+8DPdwUVeELEiJgbA@mail.gmail.com>
+ <0aeb7cb7-58e5-1a95-d830-68edd7e8ec2e@redhat.com>
+In-Reply-To: <0aeb7cb7-58e5-1a95-d830-68edd7e8ec2e@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 22 Jun 2021 16:14:53 +0800
+Message-ID: <CACycT3uuooKLNnpPHewGZ=q46Fap2P4XCFirdxxn=FxK+X1ECg@mail.gmail.com>
+Subject: Re: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] net: tun: fix tun_xdp_one() for IFF_TUN mode
-To:     Jason Wang <jasowang@redhat.com>, netdev <netdev@vger.kernel.org>
-CC:     =?ISO-8859-1?Q?Eugenio_P=E9rez?= <eperezma@redhat.com>
-From:   David Woodhouse <dwmw2@infradead.org>
-Message-ID: <C196C9BC-7D51-4FE4-8E68-3C9958C5A858@infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by desiato.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 22 June 2021 08:51:43 BST, Jason Wang <jasowang@redhat=2Ecom> wrote:
->
->=E5=9C=A8 2021/6/22 =E4=B8=8B=E5=8D=883:24, David Woodhouse =E5=86=99=E9=
-=81=93:
->> On Tue, 2021-06-22 at 12:52 +0800, Jason Wang wrote:
->>>
->>> I cook two patches=2E Please see and check if they fix the problem=2E
->>> (compile test only for me)=2E
->> I did the second one slightly differently (below) but those are what
->I
->> came up with too, which seems to be working=2E
->>
->> @@ -2331,7 +2344,7 @@ static int tun_xdp_one(struct tun_struct *tun,
->>   {
->>          unsigned int datasize =3D xdp->data_end - xdp->data;
->>          struct tun_xdp_hdr *hdr =3D xdp->data_hard_start;
->> -       struct virtio_net_hdr *gso =3D &hdr->gso;
->> +       struct virtio_net_hdr *gso =3D NULL;
->>          struct bpf_prog *xdp_prog;
->>          struct sk_buff *skb =3D NULL;
->>          u32 rxhash =3D 0, act;
->> @@ -2340,9 +2353,12 @@ static int tun_xdp_one(struct tun_struct *tun,
->>          bool skb_xdp =3D false;
->>          struct page *page;
->>  =20
->> +       if (tun->flags & IFF_VNET_HDR)
->> +               gso =3D &hdr->gso;
->> +
->>          xdp_prog =3D rcu_dereference(tun->xdp_prog);
->>          if (xdp_prog) {
->> -               if (gso->gso_type) {
->> +               if (gso && gso->gso_type) {
->>                          skb_xdp =3D true;
->>                          goto build;
->>                  }
->> @@ -2388,14 +2406,18 @@ static int tun_xdp_one(struct tun_struct
->*tun,
->>          skb_reserve(skb, xdp->data - xdp->data_hard_start);
->>          skb_put(skb, xdp->data_end - xdp->data);
->>  =20
->> -       if (virtio_net_hdr_to_skb(skb, gso,
->tun_is_little_endian(tun))) {
->> +       if (!gso)
->> +               skb_reset_mac_header(skb);
->> +       else if (virtio_net_hdr_to_skb(skb, gso,
->tun_is_little_endian(tun))) {
->>                  atomic_long_inc(&tun->rx_frame_errors);
->>                  kfree_skb(skb);
+On Tue, Jun 22, 2021 at 3:50 PM Jason Wang <jasowang@redhat.com> wrote:
 >
 >
->This should work as well=2E
+> =E5=9C=A8 2021/6/22 =E4=B8=8B=E5=8D=883:22, Yongji Xie =E5=86=99=E9=81=93=
+:
+> >> We need fix a way to propagate the error to the userspace.
+> >>
+> >> E.g if we want to stop the deivce, we will delay the status reset unti=
+l
+> >> we get respose from the userspace?
+> >>
+> > I didn't get how to delay the status reset. And should it be a DoS
+> > that we want to fix if the userspace doesn't give a response forever?
+>
+>
+> You're right. So let's make set_status() can fail first, then propagate
+> its failure via VHOST_VDPA_SET_STATUS.
+>
 
-I'll rip out the rest of my debugging hacks and check that these two are s=
-ufficient, and that I hadn't accidentally papered over something else as I =
-debugged it=2E
+OK. So we only need to propagate the failure in the vhost-vdpa case, right?
 
-Then I'll look at the case of having no virtio_net_hdr on either side, and=
- also different sized headers on the tun device (why does it even support t=
-hat?)=2E
-
-And the test case, of course=2E=20
-
---=20
-Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
+Thanks,
+Yongji
