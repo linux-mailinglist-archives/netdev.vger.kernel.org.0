@@ -2,123 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75AE33B1044
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 01:00:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC7B53B1049
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 01:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbhFVXCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 19:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
+        id S230318AbhFVXCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 19:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbhFVXCN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 19:02:13 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94D7C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 15:59:56 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id f10so1095819iok.6
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 15:59:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=nQhqB+0FtMYdOJdZD96mS0hFNCVxXSUuzWiANLHgV9s=;
-        b=tCV6pvsMFbkAi4rSs7wV1bCNd8U8eurTNxvgimYrMSnHPSGDpW2DMA8Ppzs2AWOlIT
-         q0KWdRUOBlYl8Uq70xhyClvgoW8JEkPqp9tbpyWFcZFLb6C+xhhd4mn3Y3y7X4hBlK15
-         D/4NIPqVIl1IyDjXrY/A8YdQvlTADvJT398o8gMt+STxoYhI1NRfjqEYTB39KbSk3mHY
-         zc9xKA2FDp+GRlsQ88bQITCUvR8SiWz/eN4b9gxplU/Jyh6eNYMMfHxrd1AEpdQD7Wfx
-         SmQZvLoRYl5UCDCeHFtgy3saC1HVfH5by2M1r+3k392p53pW7YLQTUZqhxMF/sy8qXI6
-         C9jQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=nQhqB+0FtMYdOJdZD96mS0hFNCVxXSUuzWiANLHgV9s=;
-        b=R9Tv+tv4ZzpdaEYOkajMvJqU4y0UxR9PjeHMYDVpZ2yRpE/yogn7v5CGMo/45HVZC1
-         ToevvDZcEf/T297P285EFqTB3EUXlyMEnYaFlhT2+462aXHFLJS/F+YPnyIizb0+VbS0
-         KxeC1iyeLd68aHR4tGRjeOvWzrI6mK6AhxuN0gshAt4RgsQp7+6nqh/a/X1ze9sSZOrF
-         KJmFwk3I2WW88D0XmkyccWj0aqrORt/NzouAduklcrajKDC6qW6O47Jp68C7L/CYKqIB
-         saLEn+afFY/bJgf99UhVIfw7poSZ4NkvOvOnrDiFTI3SLjrp/jfG1RQkwXV1GpU13LPX
-         VJlA==
-X-Gm-Message-State: AOAM531Kvd98L5PAbIX4dN5pNfIku7JsHR4MCTMpl9+bhsvAord+ANt3
-        qQ4ndwyF9ZAI9sOqseEdaM0=
-X-Google-Smtp-Source: ABdhPJxQFolusZenGsjZQXMnzCKrxaZrGMGo11/ENe82OuyvHKFBpjTyympfuxwmy51bUwWQCEieHw==
-X-Received: by 2002:a5d:9051:: with SMTP id v17mr4692944ioq.81.1624402796234;
-        Tue, 22 Jun 2021 15:59:56 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id z12sm12273474iop.46.2021.06.22.15.59.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 15:59:55 -0700 (PDT)
-Date:   Tue, 22 Jun 2021 15:59:47 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     maciej.fijalkowski@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        andriin@fb.com, netdev@vger.kernel.org
-Message-ID: <60d26b639349c_1342e20896@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210622215439.wfi56kb77ewq2lx6@ast-mbp.dhcp.thefacebook.com>
-References: <162388400488.151936.1658153981415911010.stgit@john-XPS-13-9370>
- <162388411986.151936.3914295553899556046.stgit@john-XPS-13-9370>
- <20210622215439.wfi56kb77ewq2lx6@ast-mbp.dhcp.thefacebook.com>
-Subject: Re: [PATCH bpf v2 2/4] bpf: map_poke_descriptor is being called with
- an unstable poke_tab[]
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S230013AbhFVXCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 19:02:36 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A78C061574;
+        Tue, 22 Jun 2021 16:00:19 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 3B9CFA66;
+        Wed, 23 Jun 2021 01:00:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1624402817;
+        bh=w/QzkKUaHYeJ/+Ps0loj+gUMXSzLtU+Y9HLBsrb4p5g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eom4sFfDDvZdyK/+ts5AaFx0b9+SjY8nx8iMHRfRe017bzpWnPyRC8wxCF6C11dD3
+         VXoooMSgJ4DJzWCAoLAvTFgH7wznpE2C6KS0srHT2K0KZ1R7Tk3G5cSmJxSAyKyCaG
+         jIL8rSZaTLhYoLetG084Uq8U1fKN4/bzPuYc0kFc=
+Date:   Wed, 23 Jun 2021 01:59:48 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+        David Hildenbrand <david@redhat.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
+        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
+        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
+Message-ID: <YNJrZIMs7RvqRBSG@pendragon.ideasonboard.com>
+References: <YK+esqGjKaPb+b/Q@kroah.com>
+ <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
+ <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
+ <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
+ <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
+ <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
+ <20210610152633.7e4a7304@oasis.local.home>
+ <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
+ <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
+ <ae51f636-8fb5-20b7-bbc5-37e22edb9a02@linuxfoundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <ae51f636-8fb5-20b7-bbc5-37e22edb9a02@linuxfoundation.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov wrote:
-> On Wed, Jun 16, 2021 at 03:55:19PM -0700, John Fastabend wrote:
-> > When populating poke_tab[] of a subprog we call map_poke_track() after
-> > doing bpf_jit_add_poke_descriptor(). But, bpf_jit_add_poke_descriptor()
-> > may, likely will, realloc the poke_tab[] structure and free the old
-> > one. So that prog->aux->poke_tab is not stable. However, the aux pointer
-> > is referenced from bpf_array_aux and poke_tab[] is used to 'track'
-> > prog<->map link. This way when progs are released the entry in the
-> > map is dropped and vice versa when the map is released we don't drop
-> > it too soon if a prog is in the process of calling it.
-> > 
-> > I wasn't able to trigger any errors here, for example having map_poke_run
-> > run with a poke_tab[] pointer that was free'd from
-> > bpf_jit_add_poke_descriptor(), but it looks possible and at very least
-> > is very fragile.
-> > 
-> > This patch moves poke_track call out of loop that is calling add_poke
-> > so that we only ever add stable aux->poke_tab pointers to the map's
-> > bpf_array_aux struct. Further, we need this in the next patch to fix
-> > a real bug where progs are not 'untracked'.
-> > 
-> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> > ---
-> >  kernel/bpf/verifier.c |    6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 6e2ebcb0d66f..066fac9b5460 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -12126,8 +12126,12 @@ static int jit_subprogs(struct bpf_verifier_env *env)
-> >  			}
-> >  
-> >  			func[i]->insnsi[insn_idx - subprog_start].imm = ret + 1;
-> > +		}
-> >  
-> > -			map_ptr = func[i]->aux->poke_tab[ret].tail_call.map;
-> > +		for (j = 0; j < func[i]->aux->size_poke_tab; j++) {
-> > +			int ret;
-> > +
-> > +			map_ptr = func[i]->aux->poke_tab[j].tail_call.map;
-> 
-> I don't see why it's necessary.
+Hi Shuah,
 
-Agree its not necessary. Nothing else can get at poke_tab while we do
-the realloc so I agree its fine as is. It still seems odd to me to do the
-poke_track when we know we are about to do multiple reallocs in the
-next round of the loop. Either way I'll reply on the feedback in 3/4 and
-we can avoid this patch altogether I think.
-
-> poke_tab pointer will be re-read after bpf_jit_add_poke_descriptor().
-> The compiler is not allowed to cache it.
+On Tue, Jun 22, 2021 at 04:33:22PM -0600, Shuah Khan wrote:
+> On 6/18/21 7:46 AM, Laurent Pinchart wrote:
+> > On Thu, Jun 10, 2021 at 01:55:23PM -0600, Shuah Khan wrote:
+> >> On 6/10/21 1:26 PM, Steven Rostedt wrote:
+> >>> On Thu, 10 Jun 2021 21:39:49 +0300 Laurent Pinchart wrote:
+> >>>
+> >>>> There will always be more informal discussions between on-site
+> >>>> participants. After all, this is one of the benefits of conferences, by
+> >>>> being all together we can easily organize ad-hoc discussions. This is
+> >>>> traditionally done by finding a not too noisy corner in the conference
+> >>>> center, would it be useful to have more break-out rooms with A/V
+> >>>> equipment than usual ?
+> >>>
+> >>> I've been giving this quite some thought too, and I've come to the
+> >>> understanding (and sure I can be wrong, but I don't think that I am),
+> >>> is that when doing a hybrid event, the remote people will always be
+> >>> "second class citizens" with respect to the communication that is going
+> >>> on. Saying that we can make it the same is not going to happen unless
+> >>> you start restricting what people can do that are present, and that
+> >>> will just destroy the conference IMO.
+> >>>
+> >>> That said, I think we should add more to make the communication better
+> >>> for those that are not present. Maybe an idea is to have break outs
+> >>> followed by the presentation and evening events that include remote
+> >>> attendees to discuss with those that are there about what they might
+> >>> have missed. Have incentives at these break outs (free stacks and
+> >>> beer?) to encourage the live attendees to attend and have a discussion
+> >>> with the remote attendees.
+> >>>
+> >>> The presentations would have remote access, where remote attendees can
+> >>> at the very least write in some chat their questions or comments. If
+> >>> video and connectivity is good enough, perhaps have a screen where they
+> >>> can show up and talk, but that may have logistical limitations.
+> >>>
+> >>
+> >> You are absolutely right that the remote people will have a hard time
+> >> participating and keeping up with in-person participants. I have a
+> >> couple of ideas on how we might be able to improve remote experience
+> >> without restricting in-person experience.
+> >>
+> >> - Have one or two moderators per session to watch chat and Q&A to enable
+> >>     remote participants to chime in and participate.
+> >> - Moderators can make sure remote participation doesn't go unnoticed and
+> >>     enable taking turns for remote vs. people participating in person.
+> >>
+> >> It will be change in the way we interact in all in-person sessions for
+> >> sure, however it might enhance the experience for remote attendees.
+> > 
+> > A moderator to watch online chat and relay questions is I believe very
+> > good for presentations, it's hard for a presenter to keep an eye on a
+> > screen while having to manage the interaction with the audience in the
+> > room (there's the usual joke of the difference between an introvert and
+> > an extrovert open-source developer is that the extrovert looks at *your*
+> > shoes when talking to you, but in many presentations the speaker
+> > nowadays does a fairly good job as watching the audience, at least from
+> > time to time :-)).
+> > 
+> > For workshop or brainstorming types of sessions, the highest barrier to
+> > participation for remote attendees is local attendees not speaking in
+> > microphones. That's the number one rule that moderators would need to
+> > enforce, I think all the rest depends on it. This may require a larger
+> > number of microphones in the room than usual.
+> > 
 > 
-> I've applied the patch 1.
+> Absolutely. Moderator has to make sure the following things happen for
+> this to be effective:
+> 
+> - Watch chat and Q&A, Raise hand from remote participants
+> - Enforce some kind of taking turns to allow fairness in
+>    participation
+> - Have the speaker repeat questions asked in the room (we do that now
+>    in some talks - both remote and in-person - chat and Q&A needs
+>    reading out for recording)
+> - Explore live Transcription features available in the virtual conf.
+>    platform. You still need humans watching the transcription.
+> - Have a running session notes combined with transcription.
+> 
+> Any of these options aren't sustainable when large number of people
+> are participating remotely or in-person. In general a small number of
+> people participate either in person or remote in any case, based on
+> my observation in remote and in-person settings.
+> 
+> Maybe we can experiment with one or two workshops this time around
+> and see how it works out. If we can figure an effective way, it would
+> be beneficial for people that can't travel for one reason or the
+> other.
+
+Can we nominate moderators ahead of time ? For workshop-style
+discussions, they need to be a person who won't participate actively in
+the discussions, as it's impossible to both contribute and moderate at
+the same time.
+
+-- 
+Regards,
+
+Laurent Pinchart
