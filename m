@@ -2,69 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA0D13AFCD8
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 08:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A62243AFCE5
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 08:09:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbhFVGHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 02:07:55 -0400
-Received: from m12-18.163.com ([220.181.12.18]:57688 "EHLO m12-18.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229612AbhFVGHy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 02:07:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ilcOj
-        Hf4q07TTFRR9LGXtwmnIXI9EZlayKctXMKUjH8=; b=UqCiVuCwKF8jicdDfa4wu
-        6FCMVgTj3r+HaJ3ihCk5MjQANiIY0ZjS/rAR4oaZOPaSWxWoRwqNYNnnhiNNCjYQ
-        gZFtcG6DFQ608/roj76DOm9MYToLQj3dreV/GH98nXphpSQKM1uTcOTHR+F0V4eF
-        zhS+sIrzXVus66ueESvu8M=
-Received: from ubuntu.localdomain (unknown [218.17.89.92])
-        by smtp14 (Coremail) with SMTP id EsCowABXXOShfdFg3T6Kqw--.59927S2;
-        Tue, 22 Jun 2021 14:05:22 +0800 (CST)
-From:   13145886936@163.com
-To:     roopa@nvidia.com, nikolay@nvidia.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gushengxian <gushengxian@yulong.com>
-Subject: [PATCH] bridge: cfm: remove redundant return
-Date:   Mon, 21 Jun 2021 23:05:19 -0700
-Message-Id: <20210622060519.318930-1-13145886936@163.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowABXXOShfdFg3T6Kqw--.59927S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JrWUJFyrAw17tFWrAF1rtFb_yoW3JwbEkF
-        93Zas2g3y5tr92k3y5AFsFqF1xK3y8uryIk3WqqFZIy3y5Ar4a9a4kWF1fJr1Ygr48ur9r
-        Gw4qkrZIkw12kjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU54T5JUUUUU==
-X-Originating-IP: [218.17.89.92]
-X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/xtbBRw+5g1PADJXlnAAAsB
+        id S229663AbhFVGLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 02:11:51 -0400
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:40369 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229490AbhFVGLr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 02:11:47 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UdHolaH_1624342164;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UdHolaH_1624342164)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 22 Jun 2021 14:09:30 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     saeedm@nvidia.com
+Cc:     leon@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH v2] net/mlx5: Fix missing error code in mlx5_init_fs()
+Date:   Tue, 22 Jun 2021 14:09:21 +0800
+Message-Id: <1624342161-84389-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: gushengxian <gushengxian@yulong.com>
+The error code is missing in this code scenario, add the error code
+'-ENOMEM' to the return value 'err'.
 
-Return statements are not needed in Void function.
+Eliminate the follow smatch warning:
 
-Signed-off-by: gushengxian <gushengxian@yulong.com>
+drivers/net/ethernet/mellanox/mlx5/core/fs_core.c:2973 mlx5_init_fs()
+warn: missing error code 'err'.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Fixes: 4a98544d1827 ("net/mlx5: Move chains ft pool to be used by all firmware steering").
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- net/bridge/br_cfm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v2:
+  - For the follow advice: https://lore.kernel.org/patchwork/patch/1446816/
 
-diff --git a/net/bridge/br_cfm.c b/net/bridge/br_cfm.c
-index 001064f7583d..a3c755d0a09d 100644
---- a/net/bridge/br_cfm.c
-+++ b/net/bridge/br_cfm.c
-@@ -142,7 +142,7 @@ static void br_cfm_notify(int event, const struct net_bridge_port *port)
- {
- 	u32 filter = RTEXT_FILTER_CFM_STATUS;
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 2cd7aea..b861745 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -2969,8 +2969,11 @@ int mlx5_init_fs(struct mlx5_core_dev *dev)
+ 		return err;
  
--	return br_info_notify(event, port->br, NULL, filter);
-+	br_info_notify(event, port->br, NULL, filter);
- }
+ 	steering = kzalloc(sizeof(*steering), GFP_KERNEL);
+-	if (!steering)
++	if (!steering) {
++		err = -ENOMEM;
+ 		goto err;
++	}
++
+ 	steering->dev = dev;
+ 	dev->priv.steering = steering;
  
- static void cc_peer_enable(struct br_cfm_peer_mep *peer_mep)
 -- 
-2.25.1
-
+1.8.3.1
 
