@@ -2,67 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40D8F3AFF6E
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 10:41:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 281863AFF8F
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 10:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbhFVIoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 04:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbhFVIoD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 04:44:03 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37127C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 01:41:48 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id d11so20251137wrm.0
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 01:41:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=B0Ga10RhnBAPjB31GNS7pDbn/GfRYQLWjlbColehHzE=;
-        b=bYnT5E5Q21hi/cmcxQe3TXzH811aY07fq8WiWIOO794JagJ0KiMfpSboGzMvsyGyFr
-         x7IuXjGId2JdKYwp4fMEweZtjxxRwdmiJTAfTjTyRMwiDISSi4L5eoVt/nH6eZFeAOdA
-         ZND430Ymt+hEtksR2n9+m3mOR6xJn5Fv3ryuVGSzpyZihobJWIx7ey6xEPeI8v5dY0vW
-         LlWUIssvYaiS5M3BnUQ892me/Qfw6UWDbBXPylOs6PPD/ldnsapFiM0p417/1QD+8WDD
-         dmP98kATYi+Q8rHICC4/tVZiHPd+wGGGChKYlsVOFktS69wR65Sow9R8O6meRvjD8wTx
-         2U2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=B0Ga10RhnBAPjB31GNS7pDbn/GfRYQLWjlbColehHzE=;
-        b=tnVBvVqO5hxfdVesZ4Bk2+iCVGuFb9SMmHLXnOM/5Zt8FYuV6NqmO4QXBvZL5eD9Dg
-         YdAczaDdVBJOSpp+CrWRXOt0HkfCv0PjHzyL2939qDvQITxz22SxC658w/baHlpN4p+T
-         DFL0B3me6uqp02MrHBrxCNfWd3v4bzl+jSBUfQd1gIkdMpCRxa7/2nQJwWFIKztUXQWE
-         0/tfhtO/NSploSB3T7QzZTGgTncRDFsWre1BAfnm/dnrDGaIYN3cj3fzyQ2NR2w/oJSH
-         AkddA2su0tx0+KxLJSquwbmMUT2pOe+D+kXu4xOLsMcnBSYNvv/3kh6Y89R/ZAoI+qGF
-         MXCQ==
-X-Gm-Message-State: AOAM5315yFJv6yZ1VXewSWDcWhq3Hcu1I9KQU7JOunG4cgeyoa+qG4BO
-        MYfuyNm40XKL0oVkqOhHGxUzSYek78wWXlrh5z8=
-X-Google-Smtp-Source: ABdhPJxN6g76+XzsxtN9nY8/E6NlBYTjz7W4iG+JOsF3u39c24cSZmD8TaprOrVmi9mIZK/dpbh8E5CY0oaHeYDm250=
-X-Received: by 2002:a5d:648a:: with SMTP id o10mr3307863wri.274.1624351306846;
- Tue, 22 Jun 2021 01:41:46 -0700 (PDT)
+        id S229949AbhFVIsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 04:48:54 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:4666 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229490AbhFVIsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 04:48:53 -0400
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15M8gDjK013957;
+        Tue, 22 Jun 2021 08:46:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=A3r2KM1U5npDvFVZxZTNcLxjpBA75n/lIxXbDb5XcGM=;
+ b=dow6+rpm535alR9p/eAeZiaH8JTZQ/wGLthfsAkjM/Rg+YpFnAwPL7UUOOdpkhMoDrAR
+ V8xszi+4+EN8bZVG+x+gyGWn6WeADllasJu810MesCwgjME+UYVgTR83iqmex4AvR8Us
+ bRmFoek1ic+B60NkXPrve+74oJ67k4pBp/Om/wQ8REVDaAlaBhRRoHwFfNrOsdE1EJJn
+ IVZpcqzgLPMOx1mS3kS6fqp3skzLopZjDY1TMJu1tOBZFA4+qeSZ1/kbQjrAXbW0kEm4
+ swRDdO9lD/4Qdd0qBKBpDqJBoDVDpT7rpp1pyEpvUaVk0DtaK0gI9IoSvyf5gi2TXCw3 Bg== 
+Received: from oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 39acyqbc2r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 22 Jun 2021 08:46:22 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 15M8kMAu181288;
+        Tue, 22 Jun 2021 08:46:22 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 3998d729nw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 22 Jun 2021 08:46:22 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15M8kLWw181263;
+        Tue, 22 Jun 2021 08:46:21 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 3998d729nk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 22 Jun 2021 08:46:21 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 15M8kK1I009864;
+        Tue, 22 Jun 2021 08:46:20 GMT
+Received: from kadam (/102.222.70.252)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 22 Jun 2021 01:46:19 -0700
+Date:   Tue, 22 Jun 2021 11:46:11 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
+        Benjamin Poirier <benjamin.poirier@gmail.com>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:CLANG/LLVM BUILD SUPPORT" 
+        <clang-built-linux@googlegroups.com>
+Subject: Re: [RFC 17/19] staging: qlge: fix weird line wrapping
+Message-ID: <20210622084611.GM1861@kadam>
+References: <20210621134902.83587-1-coiby.xu@gmail.com>
+ <20210621134902.83587-18-coiby.xu@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a5d:61cd:0:0:0:0:0 with HTTP; Tue, 22 Jun 2021 01:41:46
- -0700 (PDT)
-Reply-To: martialakakpoesq1@gmail.com
-From:   Martial Akakpo <lucyjanice0@gmail.com>
-Date:   Tue, 22 Jun 2021 09:41:46 +0100
-Message-ID: <CANug2iS1KQY8uqUO4Eogi3rr1UW3h_sKFSCxpPFK0C8yE1w=Rw@mail.gmail.com>
-Subject: =?UTF-8?Q?Dobr=C3=BD_den?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210621134902.83587-18-coiby.xu@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-GUID: rWfi0exMPgDUX5UtGmlftWnwzClz0ePZ
+X-Proofpoint-ORIG-GUID: rWfi0exMPgDUX5UtGmlftWnwzClz0ePZ
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dobr=C3=BD den
+On Mon, Jun 21, 2021 at 09:49:00PM +0800, Coiby Xu wrote:
+> @@ -524,8 +523,8 @@ static int qlge_set_routing_reg(struct qlge_adapter *qdev, u32 index, u32 mask,
+>  		{
+>  			value = RT_IDX_DST_DFLT_Q | /* dest */
+>  				RT_IDX_TYPE_NICQ | /* type */
+> -				(RT_IDX_IP_CSUM_ERR_SLOT <<
+> -				RT_IDX_IDX_SHIFT); /* index */
+> +			(RT_IDX_IP_CSUM_ERR_SLOT
+> +			 << RT_IDX_IDX_SHIFT); /* index */
 
-Jmenuji se pan Martial Akakpo, m=C3=A1m pro v=C3=A1s obchodn=C3=AD n=C3=A1v=
-rh, pros=C3=ADm,
-obra=C5=A5te se na m=C4=9B ohledn=C4=9B v=C5=A1ech podrobnost=C3=AD.
+The original is not great but the new indenting is definitely worse.
+It might look nicer with the comments moved in the front?  Why does
+RT_IDX_IDX_SHIFT have two IDX strings?
 
-D=C4=9Bkuju
-Martial Akakpo
+			/* value = dest | type | index; */
+			value = RT_IDX_DST_DFLT_Q |
+				RT_IDX_TYPE_NICQ  |
+				(RT_IDX_IP_CSUM_ERR_SLOT << RT_IDX_IDX_SHIFT);
+
+
+>  			break;
+>  		}
+>  	case RT_IDX_TU_CSUM_ERR: /* Pass up TCP/UDP CSUM error frames. */
+> @@ -554,7 +553,8 @@ static int qlge_set_routing_reg(struct qlge_adapter *qdev, u32 index, u32 mask,
+>  		{
+>  			value = RT_IDX_DST_DFLT_Q |	/* dest */
+>  			    RT_IDX_TYPE_NICQ |	/* type */
+> -			    (RT_IDX_MCAST_MATCH_SLOT << RT_IDX_IDX_SHIFT);/* index */
+> +			(RT_IDX_MCAST_MATCH_SLOT
+> +			 << RT_IDX_IDX_SHIFT); /* index */
+
+Original is better.
+
+>  			break;
+>  		}
+>  	case RT_IDX_RSS_MATCH:	/* Pass up matched RSS frames. */
+> @@ -648,15 +648,15 @@ static int qlge_read_flash_word(struct qlge_adapter *qdev, int offset, __le32 *d
+>  {
+>  	int status = 0;
+>  	/* wait for reg to come ready */
+> -	status = qlge_wait_reg_rdy(qdev,
+> -				   FLASH_ADDR, FLASH_ADDR_RDY, FLASH_ADDR_ERR);
+> +	status = qlge_wait_reg_rdy(qdev, FLASH_ADDR, FLASH_ADDR_RDY,
+> +				   FLASH_ADDR_ERR);
+>  	if (status)
+>  		goto exit;
+>  	/* set up for reg read */
+>  	qlge_write32(qdev, FLASH_ADDR, FLASH_ADDR_R | offset);
+>  	/* wait for reg to come ready */
+> -	status = qlge_wait_reg_rdy(qdev,
+> -				   FLASH_ADDR, FLASH_ADDR_RDY, FLASH_ADDR_ERR);
+> +	status = qlge_wait_reg_rdy(qdev, FLASH_ADDR, FLASH_ADDR_RDY,
+> +				   FLASH_ADDR_ERR);
+>  	if (status)
+>  		goto exit;
+>  	/* This data is stored on flash as an array of
+> @@ -792,8 +792,8 @@ static int qlge_write_xgmac_reg(struct qlge_adapter *qdev, u32 reg, u32 data)
+>  {
+>  	int status;
+>  	/* wait for reg to come ready */
+> -	status = qlge_wait_reg_rdy(qdev,
+> -				   XGMAC_ADDR, XGMAC_ADDR_RDY, XGMAC_ADDR_XME);
+> +	status = qlge_wait_reg_rdy(qdev, XGMAC_ADDR, XGMAC_ADDR_RDY,
+> +				   XGMAC_ADDR_XME);
+>  	if (status)
+>  		return status;
+>  	/* write the data to the data reg */
+> @@ -811,15 +811,15 @@ int qlge_read_xgmac_reg(struct qlge_adapter *qdev, u32 reg, u32 *data)
+>  {
+>  	int status = 0;
+>  	/* wait for reg to come ready */
+> -	status = qlge_wait_reg_rdy(qdev,
+> -				   XGMAC_ADDR, XGMAC_ADDR_RDY, XGMAC_ADDR_XME);
+> +	status = qlge_wait_reg_rdy(qdev, XGMAC_ADDR, XGMAC_ADDR_RDY,
+> +				   XGMAC_ADDR_XME);
+
+Need a blank line after the declaration block.
+
+>  	if (status)
+>  		goto exit;
+>  	/* set up for reg read */
+>  	qlge_write32(qdev, XGMAC_ADDR, reg | XGMAC_ADDR_R);
+>  	/* wait for reg to come ready */
+> -	status = qlge_wait_reg_rdy(qdev,
+> -				   XGMAC_ADDR, XGMAC_ADDR_RDY, XGMAC_ADDR_XME);
+> +	status = qlge_wait_reg_rdy(qdev, XGMAC_ADDR, XGMAC_ADDR_RDY,
+> +				   XGMAC_ADDR_XME);
+>  	if (status)
+>  		goto exit;
+>  	/* get the data */
+
+regards,
+dan carpenter
