@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F2E3B0C7C
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:08:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 178753B0C77
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:08:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbhFVSLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 14:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
+        id S232592AbhFVSK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 14:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbhFVSK5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:10:57 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98562C02983F;
-        Tue, 22 Jun 2021 11:05:05 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id f5so9685843qvu.8;
-        Tue, 22 Jun 2021 11:05:05 -0700 (PDT)
+        with ESMTP id S232482AbhFVSK4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:10:56 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9A5C09B04C;
+        Tue, 22 Jun 2021 11:05:06 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id g4so40614245qkl.1;
+        Tue, 22 Jun 2021 11:05:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=monT7O5XkKOTw06/+T29Ym/fRQLLcLg82qRzI2A88QY=;
-        b=gy9Z0G8RCxSZT6YiJ9QUhHpYXozz1WlvpVIpZc5CohzFz71G8TL71Ls82dSVGBnidb
-         li28hWrG8//QcWuRB+M+F3q2+6Ag4Ty+qDnyyNUlnBhXnIR345e8Qcx5DNvZxKKBCeNC
-         rh3/YJkXwE62MDbP400z4Gt3nLqvYyJC0IngNP6G0X+Q0QGiAjybs5kua8OKksLD7JAO
-         jX+qqS5JyoxHu4akmBdGJ3KHw0MoIOepQoJ+JbIhVAgxLkqx6dfjUBt7ly88xdzT21Qy
-         rJAY9rAraYRSZ2iem0TkoLOH8aQ/o+1IN2Ycw5M56rOXhBHU7fJH4G5h1HwEZLnuod1R
-         CcMg==
+        bh=7qDMDjdLnVAw3SW8RntWwWg7To6cwW6aaie2zIIbJsg=;
+        b=RSFEEUexiPgF92aTI5REC/W/j1yhdkvwmUxZ73QCCRtd/y6l8qKurbVKMr66sUUOTD
+         AuECr0r1ajtEzwclRDsqRp1n6Sl5uKo6u51ee9BBgDRHSJlXhoZAkSOO+ha5QBNMKkEN
+         M3bve7oemMPSgjrOuSYvPjSmO3qjNFqdmYeAO35PNoM3S0R+scqY+nzbCPsPQVeHxuhV
+         CYM/K2EvIhJwuv+zoK5NmksoGlPExZEg79O8bIzq/1n8QvpBu1LsA3e9D8TAQdoLgxye
+         VGybJ6nw0TV89PwtHjug8BkFPND5f3MEJUoH8J5MGebpfsBzpwbddykOOLxEV9eL3QX8
+         AkJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=monT7O5XkKOTw06/+T29Ym/fRQLLcLg82qRzI2A88QY=;
-        b=e2nlGpk84XKlRrTi2ai/256p5NWz3LX5/kcE7mAAdYjcvQBXasiejez70coYHGM6Cb
-         9vnQH3L+aMf44QEI+X8Z2UeAvx1MnLyQO0rWq/xntFpRQb1dkpO6moFOV/eJ9sh4PW4E
-         IFnKDtWndxCgwwU3j7gEswBfaNeIxdy7NtGpxBN0YsgzdlIBGPATRgS7ZKmSwTHfDLYp
-         UP7/8oCG0+glR4VNhXF9PWYOuA7Qgbtiqm7fF/H5oqG9UCg9WZNfNjZ+5cREUuAmgYNM
-         8a1Jqrpb4jp5VhWnBIIow5dB6SH13ty29pRYfhjBfAFBDutd9RaCXczG5QiyNZMVGH+X
-         13qg==
-X-Gm-Message-State: AOAM531r0T399QRAZztmjIAVWW2GU95b1JlP9+i8tBuWsOMWSeA3otyf
-        JqfMdakXqnZR8XJCbbI2sag08rgluDdXqw==
-X-Google-Smtp-Source: ABdhPJxriIndd491B4+uZhFIzIUrBG92ZImkNQJimAQuY55z6gf1QPjPZEUq7vj1c4ofaPq0QRT46w==
-X-Received: by 2002:a0c:e481:: with SMTP id n1mr606qvl.49.1624385104532;
-        Tue, 22 Jun 2021 11:05:04 -0700 (PDT)
+        bh=7qDMDjdLnVAw3SW8RntWwWg7To6cwW6aaie2zIIbJsg=;
+        b=X4FGhe/wk7gPRXPas6xhRNbRif49Js60CU+WbogswmgBjwVkvoMA1NLUT6FnVbaAoW
+         qPk3tNuKllHzhRvnIir+iHnwFE8kdOXxnqp5OciqjBQgGmU2ulbX5hdSWtRWnt9qqYIk
+         5p2d+VHjR9wF6eB+uieK7p2VRBIhP4LTtS49Q6XtQM2zvKEuVNOJufAVTi+/GAEq+hcu
+         nY67pgHUFQ8sg5MDVzpUQUunDuYL82EfwzYqT4OfD30y+3SjLH9tT/qyqwNob2c0YgK0
+         e7QB3wS0qMiQDLfjEei1G17fAcXFmyzNSO7ippufF4UYSt2fKjflpitczhZGHN321jRF
+         Bfzw==
+X-Gm-Message-State: AOAM530oE+K8AXhB3rwGu/qp8M9v8uUHcLAopA0QiGpr1Nr26xh5DkTE
+        N+79jPwR+JQYv4J1Qt8i8RdBZKkmmMFh4Q==
+X-Google-Smtp-Source: ABdhPJybTu9RLDSPFVAwshAEkiD7MHNhn4lxNRJPPXKXa1YPZd9WCtAk995LSvdv9/xwDzMI97qyWg==
+X-Received: by 2002:a37:4392:: with SMTP id q140mr5831845qka.49.1624385105626;
+        Tue, 22 Jun 2021 11:05:05 -0700 (PDT)
 Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id s81sm13106628qka.82.2021.06.22.11.05.04
+        by smtp.gmail.com with ESMTPSA id m199sm13665097qke.71.2021.06.22.11.05.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 11:05:04 -0700 (PDT)
+        Tue, 22 Jun 2021 11:05:05 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
         kuba@kernel.org,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         linux-sctp@vger.kernel.org
-Subject: [PATCHv2 net-next 03/14] sctp: add SCTP_PLPMTUD_PROBE_INTERVAL sockopt for sock/asoc/transport
-Date:   Tue, 22 Jun 2021 14:04:49 -0400
-Message-Id: <74d245fa777e9ba97a83a1b4830132632324a574.1624384990.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 04/14] sctp: add the constants/variables and states and some APIs for transport
+Date:   Tue, 22 Jun 2021 14:04:50 -0400
+Message-Id: <35adbcfcbf2067f01a72dee42ea34a7293565b3d.1624384990.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1624384990.git.lucien.xin@gmail.com>
 References: <cover.1624384990.git.lucien.xin@gmail.com>
@@ -64,193 +64,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With this socket option, users can change probe_interval for
-a transport, asoc or sock after it's created.
+These are 4 constants described in rfc8899#section-5.1.2:
 
-Note that if the change is for an asoc, also apply the change
-to each transport in this asoc.
+  MAX_PROBES, MIN_PLPMTU, MAX_PLPMTU, BASE_PLPMTU;
+
+And 2 variables described in rfc8899#section-5.1.3:
+
+  PROBED_SIZE, PROBE_COUNT;
+
+And 5 states described in rfc8899#section-5.2:
+
+  DISABLED, BASE, SEARCH, SEARCH_COMPLETE, ERROR;
+
+And these 4 APIs are used to reset/update PLPMTUD, check if PLPMTUD is
+enabled, and calculate the additional headers length for a transport.
+
+Note the member 'probe_high' in transport will be set to the probe
+size when a probe fails with this probe size in the next patches.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 ---
- include/uapi/linux/sctp.h |   8 +++
- net/sctp/socket.c         | 118 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 126 insertions(+)
+ include/net/sctp/constants.h | 17 +++++++++++++
+ include/net/sctp/sctp.h      | 48 +++++++++++++++++++++++++++++++++---
+ include/net/sctp/structs.h   |  8 ++++++
+ 3 files changed, 70 insertions(+), 3 deletions(-)
 
-diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-index cb78e7a739da..c4ff1ebd8bcc 100644
---- a/include/uapi/linux/sctp.h
-+++ b/include/uapi/linux/sctp.h
-@@ -141,6 +141,7 @@ typedef __s32 sctp_assoc_t;
- #define SCTP_EXPOSE_POTENTIALLY_FAILED_STATE	131
- #define SCTP_EXPOSE_PF_STATE	SCTP_EXPOSE_POTENTIALLY_FAILED_STATE
- #define SCTP_REMOTE_UDP_ENCAPS_PORT	132
-+#define SCTP_PLPMTUD_PROBE_INTERVAL	133
- 
- /* PR-SCTP policies */
- #define SCTP_PR_SCTP_NONE	0x0000
-@@ -1213,4 +1214,11 @@ enum sctp_sched_type {
- 	SCTP_SS_MAX = SCTP_SS_RR
+diff --git a/include/net/sctp/constants.h b/include/net/sctp/constants.h
+index 449cf9cb428b..85f6a105c59d 100644
+--- a/include/net/sctp/constants.h
++++ b/include/net/sctp/constants.h
+@@ -200,6 +200,23 @@ enum sctp_sock_state {
+ 	SCTP_SS_CLOSING        = TCP_CLOSE_WAIT,
  };
  
-+/* Probe Interval socket option */
-+struct sctp_probeinterval {
-+	sctp_assoc_t spi_assoc_id;
-+	struct sockaddr_storage spi_address;
-+	__u32 spi_interval;
++enum sctp_plpmtud_state {
++	SCTP_PL_DISABLED,
++	SCTP_PL_BASE,
++	SCTP_PL_SEARCH,
++	SCTP_PL_COMPLETE,
++	SCTP_PL_ERROR,
 +};
 +
- #endif /* _UAPI_SCTP_H */
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index d2960ab665a5..aba576f53458 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -4481,6 +4481,58 @@ static int sctp_setsockopt_encap_port(struct sock *sk,
- 	return 0;
- }
- 
-+static int sctp_setsockopt_probe_interval(struct sock *sk,
-+					  struct sctp_probeinterval *params,
-+					  unsigned int optlen)
-+{
-+	struct sctp_association *asoc;
-+	struct sctp_transport *t;
-+	__u32 probe_interval;
++#define	SCTP_BASE_PLPMTU	1200
++#define	SCTP_MAX_PLPMTU		9000
++#define	SCTP_MIN_PLPMTU		512
 +
-+	if (optlen != sizeof(*params))
-+		return -EINVAL;
++#define	SCTP_MAX_PROBES		3
 +
-+	probe_interval = params->spi_interval;
-+	if (probe_interval && probe_interval < SCTP_PROBE_TIMER_MIN)
-+		return -EINVAL;
++#define SCTP_PL_BIG_STEP	32
++#define SCTP_PL_MIN_STEP	4
 +
-+	/* If an address other than INADDR_ANY is specified, and
-+	 * no transport is found, then the request is invalid.
-+	 */
-+	if (!sctp_is_any(sk, (union sctp_addr *)&params->spi_address)) {
-+		t = sctp_addr_id2transport(sk, &params->spi_address,
-+					   params->spi_assoc_id);
-+		if (!t)
-+			return -EINVAL;
-+
-+		t->probe_interval = msecs_to_jiffies(probe_interval);
-+		return 0;
-+	}
-+
-+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
-+	 * socket is a one to many style socket, and an association
-+	 * was not found, then the id was invalid.
-+	 */
-+	asoc = sctp_id2assoc(sk, params->spi_assoc_id);
-+	if (!asoc && params->spi_assoc_id != SCTP_FUTURE_ASSOC &&
-+	    sctp_style(sk, UDP))
-+		return -EINVAL;
-+
-+	/* If changes are for association, also apply probe_interval to
-+	 * each transport.
-+	 */
-+	if (asoc) {
-+		list_for_each_entry(t, &asoc->peer.transport_addr_list, transports)
-+			t->probe_interval = msecs_to_jiffies(probe_interval);
-+
-+		asoc->probe_interval = msecs_to_jiffies(probe_interval);
-+		return 0;
-+	}
-+
-+	sctp_sk(sk)->probe_interval = probe_interval;
-+	return 0;
-+}
-+
- /* API 6.2 setsockopt(), getsockopt()
-  *
-  * Applications use setsockopt() and getsockopt() to set or retrieve
-@@ -4703,6 +4755,9 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 	case SCTP_REMOTE_UDP_ENCAPS_PORT:
- 		retval = sctp_setsockopt_encap_port(sk, kopt, optlen);
- 		break;
-+	case SCTP_PLPMTUD_PROBE_INTERVAL:
-+		retval = sctp_setsockopt_probe_interval(sk, kopt, optlen);
-+		break;
- 	default:
- 		retval = -ENOPROTOOPT;
- 		break;
-@@ -7906,6 +7961,66 @@ static int sctp_getsockopt_encap_port(struct sock *sk, int len,
- 	return 0;
- }
- 
-+static int sctp_getsockopt_probe_interval(struct sock *sk, int len,
-+					  char __user *optval,
-+					  int __user *optlen)
-+{
-+	struct sctp_probeinterval params;
-+	struct sctp_association *asoc;
-+	struct sctp_transport *t;
-+	__u32 probe_interval;
-+
-+	if (len < sizeof(params))
-+		return -EINVAL;
-+
-+	len = sizeof(params);
-+	if (copy_from_user(&params, optval, len))
-+		return -EFAULT;
-+
-+	/* If an address other than INADDR_ANY is specified, and
-+	 * no transport is found, then the request is invalid.
-+	 */
-+	if (!sctp_is_any(sk, (union sctp_addr *)&params.spi_address)) {
-+		t = sctp_addr_id2transport(sk, &params.spi_address,
-+					   params.spi_assoc_id);
-+		if (!t) {
-+			pr_debug("%s: failed no transport\n", __func__);
-+			return -EINVAL;
-+		}
-+
-+		probe_interval = jiffies_to_msecs(t->probe_interval);
-+		goto out;
-+	}
-+
-+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
-+	 * socket is a one to many style socket, and an association
-+	 * was not found, then the id was invalid.
-+	 */
-+	asoc = sctp_id2assoc(sk, params.spi_assoc_id);
-+	if (!asoc && params.spi_assoc_id != SCTP_FUTURE_ASSOC &&
-+	    sctp_style(sk, UDP)) {
-+		pr_debug("%s: failed no association\n", __func__);
-+		return -EINVAL;
-+	}
-+
-+	if (asoc) {
-+		probe_interval = jiffies_to_msecs(asoc->probe_interval);
-+		goto out;
-+	}
-+
-+	probe_interval = sctp_sk(sk)->probe_interval;
-+
-+out:
-+	params.spi_interval = probe_interval;
-+	if (copy_to_user(optval, &params, len))
-+		return -EFAULT;
-+
-+	if (put_user(len, optlen))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
- static int sctp_getsockopt(struct sock *sk, int level, int optname,
- 			   char __user *optval, int __user *optlen)
+ /* These functions map various type to printable names.  */
+ const char *sctp_cname(const union sctp_subtype id);	/* chunk types */
+ const char *sctp_oname(const union sctp_subtype id);	/* other events */
+diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
+index 86f74f2fe6de..08347d3f004f 100644
+--- a/include/net/sctp/sctp.h
++++ b/include/net/sctp/sctp.h
+@@ -573,14 +573,15 @@ static inline struct dst_entry *sctp_transport_dst_check(struct sctp_transport *
+ /* Calculate max payload size given a MTU, or the total overhead if
+  * given MTU is zero
+  */
+-static inline __u32 sctp_mtu_payload(const struct sctp_sock *sp,
+-				     __u32 mtu, __u32 extra)
++static inline __u32 __sctp_mtu_payload(const struct sctp_sock *sp,
++				       const struct sctp_transport *t,
++				       __u32 mtu, __u32 extra)
  {
-@@ -8129,6 +8244,9 @@ static int sctp_getsockopt(struct sock *sk, int level, int optname,
- 	case SCTP_REMOTE_UDP_ENCAPS_PORT:
- 		retval = sctp_getsockopt_encap_port(sk, len, optval, optlen);
- 		break;
-+	case SCTP_PLPMTUD_PROBE_INTERVAL:
-+		retval = sctp_getsockopt_probe_interval(sk, len, optval, optlen);
-+		break;
- 	default:
- 		retval = -ENOPROTOOPT;
- 		break;
+ 	__u32 overhead = sizeof(struct sctphdr) + extra;
+ 
+ 	if (sp) {
+ 		overhead += sp->pf->af->net_header_len;
+-		if (sp->udp_port)
++		if (sp->udp_port && (!t || t->encap_port))
+ 			overhead += sizeof(struct udphdr);
+ 	} else {
+ 		overhead += sizeof(struct ipv6hdr);
+@@ -592,6 +593,12 @@ static inline __u32 sctp_mtu_payload(const struct sctp_sock *sp,
+ 	return mtu ? mtu - overhead : overhead;
+ }
+ 
++static inline __u32 sctp_mtu_payload(const struct sctp_sock *sp,
++				     __u32 mtu, __u32 extra)
++{
++	return __sctp_mtu_payload(sp, NULL, mtu, extra);
++}
++
+ static inline __u32 sctp_dst_mtu(const struct dst_entry *dst)
+ {
+ 	return SCTP_TRUNC4(max_t(__u32, dst_mtu(dst),
+@@ -615,6 +622,41 @@ static inline __u32 sctp_min_frag_point(struct sctp_sock *sp, __u16 datasize)
+ 	return sctp_mtu_payload(sp, SCTP_DEFAULT_MINSEGMENT, datasize);
+ }
+ 
++static inline int sctp_transport_pl_hlen(struct sctp_transport *t)
++{
++	return __sctp_mtu_payload(sctp_sk(t->asoc->base.sk), t, 0, 0);
++}
++
++static inline void sctp_transport_pl_reset(struct sctp_transport *t)
++{
++	if (t->probe_interval && (t->param_flags & SPP_PMTUD_ENABLE) &&
++	    (t->state == SCTP_ACTIVE || t->state == SCTP_UNKNOWN)) {
++		if (t->pl.state == SCTP_PL_DISABLED) {
++			t->pl.state = SCTP_PL_BASE;
++			t->pl.pmtu = SCTP_BASE_PLPMTU;
++			t->pl.probe_size = SCTP_BASE_PLPMTU;
++		}
++	} else {
++		if (t->pl.state != SCTP_PL_DISABLED)
++			t->pl.state = SCTP_PL_DISABLED;
++	}
++}
++
++static inline void sctp_transport_pl_update(struct sctp_transport *t)
++{
++	if (t->pl.state == SCTP_PL_DISABLED)
++		return;
++
++	t->pl.state = SCTP_PL_BASE;
++	t->pl.pmtu = SCTP_BASE_PLPMTU;
++	t->pl.probe_size = SCTP_BASE_PLPMTU;
++}
++
++static inline bool sctp_transport_pl_enabled(struct sctp_transport *t)
++{
++	return t->pl.state != SCTP_PL_DISABLED;
++}
++
+ static inline bool sctp_newsk_ready(const struct sock *sk)
+ {
+ 	return sock_flag(sk, SOCK_DEAD) || sk->sk_socket;
+diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
+index bf5d22deaefb..85d3566c2227 100644
+--- a/include/net/sctp/structs.h
++++ b/include/net/sctp/structs.h
+@@ -978,6 +978,14 @@ struct sctp_transport {
+ 		char cacc_saw_newack;
+ 	} cacc;
+ 
++	struct {
++		__u16 pmtu;
++		__u16 probe_size;
++		__u16 probe_high;
++		__u8 probe_count;
++		__u8 state;
++	} pl; /* plpmtud related */
++
+ 	/* 64-bit random number sent with heartbeat. */
+ 	__u64 hb_nonce;
+ 
 -- 
 2.27.0
 
