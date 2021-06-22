@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E8673B0B97
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 19:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F8423B0B95
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 19:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232425AbhFVRmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 13:42:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47370 "EHLO mail.kernel.org"
+        id S232413AbhFVRm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 13:42:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47338 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232225AbhFVRmU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231352AbhFVRmU (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 22 Jun 2021 13:42:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id ECDCE61374;
+Received: by mail.kernel.org (Postfix) with ESMTPS id CCB5060720;
         Tue, 22 Jun 2021 17:40:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624383605;
-        bh=plwqpg/QXXdSPFcC+0CbYi+uneL0RPA6nAf8cfRh1Mo=;
+        s=k20201202; t=1624383604;
+        bh=CavWTndz4Jp0tS/jAL9jEliiWUOR1kQIIQ+0vRqwPo0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=D5+cmP2Kj2h3TUJYkXzi26lJ90aXdyOTrUV13kI+Z9bFuDmwZOxaxuXTo/EUEJbhn
-         rDP5HOWWQehr26p6eBwbgxNdJa8O7TjPjCJzfmPZi1wyCXbaFHSF1WOlrI8lfG3iG1
-         DIjP1dln385Le5S2Bp6v5RwFcWWol+AVwoiD+Q4/4EIlUTsnO8rfyb8/Du9Twg8iti
-         SwhFTnwNUTmoCNfJmwD4W5xeFjCZJorj1+QtQ+nAsh3uY9QCP9dlbqRdrm0msUeFJW
-         dRhRvqzFc4E4Hx4cxDcy7WtHa3xNDGNt5N26AePFQUX1vty389oP8kEjnvsr4eINBx
-         qrOcj7b5+ILlA==
+        b=t5UVwjbzOhNoXHoRunKvU53VG0//W7RhC1vnnF+U9OW74NwUuwIHgxlhauOHfDjhK
+         PxkAJLnA2efexTA+ICJj36N425wEFl3GI//yuPs+JCFG7lHACSbNeWRs0lxZeffxXa
+         wZ8rAAqac4vomFy541+yk9BQzdd6NJOfUoL3EuZg/4hoDBU79l0QkzuE+TCBjVH8D4
+         CejIYMME5t107uot9ljE1rxfLaqV0rBva4DiH4NN/GzbfRpY6iK22BUTGAQQCUuEwi
+         9p9E6QhEiFEacIcl1mDxVera7rCbh5Hh91SdiQgyM4i54DBUV/sYEcc5C2g53AbAVM
+         Ns/rY9dRgILzQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DD033609FF;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BD6D260ACA;
         Tue, 22 Jun 2021 17:40:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net/ipv4: swap flow ports when validating source
+Subject: Re: [PATCH] bonding: avoid adding slave device with IFF_MASTER flag
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162438360490.26881.1083767963740683028.git-patchwork-notify@kernel.org>
+Message-Id: <162438360477.26881.9652190993547040264.git-patchwork-notify@kernel.org>
 Date:   Tue, 22 Jun 2021 17:40:04 +0000
-References: <04B365C6-F4FD-49AB-9C9E-35401BA309A9@gmail.com>
-In-Reply-To: <04B365C6-F4FD-49AB-9C9E-35401BA309A9@gmail.com>
-To:     Miao Wang <shankerwangmiao@gmail.com>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org,
-        roopa@cumulusnetworks.com
+References: <20210622030929.51295-1-zhudi21@huawei.com>
+In-Reply-To: <20210622030929.51295-1-zhudi21@huawei.com>
+To:     zhudi <zhudi21@huawei.com>
+Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org, rose.chen@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,21 +46,20 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 22 Jun 2021 12:24:50 +0800 you wrote:
-> When doing source address validation, the flowi4 struct used for
-> fib_lookup should be in the reverse direction to the given skb.
-> fl4_dport and fl4_sport returned by fib4_rules_early_flow_dissect
-> should thus be swapped.
+On Tue, 22 Jun 2021 11:09:29 +0800 you wrote:
+> From: Di Zhu <zhudi21@huawei.com>
 > 
-> Fixes: 5a847a6e1477 ("net/ipv4: Initialize proto and ports in flow struct")
-> Signed-off-by: Miao Wang <shankerwangmiao@gmail.com>
-> Reviewed-by: David Ahern <dsahern@kernel.org>
+> The following steps will definitely cause the kernel to crash:
+> 	ip link add vrf1 type vrf table 1
+> 	modprobe bonding.ko max_bonds=1
+> 	echo "+vrf1" >/sys/class/net/bond0/bonding/slaves
+> 	rmmod bonding
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] net/ipv4: swap flow ports when validating source
-    https://git.kernel.org/netdev/net/c/c69f114d0989
+  - bonding: avoid adding slave device with IFF_MASTER flag
+    https://git.kernel.org/netdev/net/c/3c9ef511b9fa
 
 You are awesome, thank you!
 --
