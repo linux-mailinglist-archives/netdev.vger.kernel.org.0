@@ -2,79 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A6E3AFFF5
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 11:10:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 431733B00BB
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 11:48:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229915AbhFVJMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 05:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
+        id S229837AbhFVJuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 05:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbhFVJMw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 05:12:52 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428FDC061574;
-        Tue, 22 Jun 2021 02:10:37 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id c7so21695179edn.6;
-        Tue, 22 Jun 2021 02:10:37 -0700 (PDT)
+        with ESMTP id S229663AbhFVJuu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 05:50:50 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2F7C061756
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 02:48:34 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id ho18so33541234ejc.8
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 02:48:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+VJZUPUQz88r9uBZtHaEykoyTdoX0rU4WajJbPzDto8=;
-        b=htCdfqf6WMu0K1wO2niZdTlgugniSnEEAR2KlkxfcLtT+NQkjtCi7DJXKi1FPKBW5l
-         QzgpLCS4ZhSgJQxPaVxdlSzV4bLf0rdvZclDamQToTPqEHtmifkz+sQGsAHH1epna+e8
-         yQHr3btvwIIApK/e86+V+e1beuFDAei6Hr2ia1MdKzxUgXpkKoQ8TDHFzWJGaIUzpqXm
-         q6sY2iY8CDBaIVJ6XMygEqk2CCWQTNQxb7yt3AJH9fEjTFmeWkAkrN4LBNStvtWeAFzS
-         9Dn9nlBjjXempWsylxeVS72rTSX6cErCVptL5Ti128wGHGByiVkosPY5CZcZtMRp+Fed
-         9Sog==
+        d=google.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8RElOEKvFjVDV6P4V4jZfTHZh2xq8goB+o7Uy2R9On8=;
+        b=PNXBWT02dfS8FqE1Q/wf5z9bqcxP+j2CyosODpK7IQNn+TElZpoF/HJw523KHpCwd5
+         CQEULM8QGFRDTrKLgG8Z6GEeN+0H0Zxf8S36C9EfX5/iEJELDOehZGGHcNT3zx4YMGCz
+         QtS0t1ba2e5lFd2A/t1uIEAGPE7sHHcX+6uswrkdjutpisbKoYQab1ctWGae/RGCQkfE
+         ympmhOfTUYJ6WMqyzh+TPrFvbRAX7F9ZUxO8MvBBjcxlxEtFK+yKVNR4s9XOyQC4rzrg
+         QwBri5bUUiyJArh9h9PbulPHlADaaK+k/Lio85lN1uJB0IhRePg2IXOjDQzcVBXzLf/6
+         Jhdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+VJZUPUQz88r9uBZtHaEykoyTdoX0rU4WajJbPzDto8=;
-        b=nDMkkZP/tQO+1p8r0CQEgWWXTlpSHYccf9Gal5zxFkLnWQDf4Lvis6ZoguyJ92JKb0
-         S+52+MuGGkqhV7tEj/3ZbWKrQJP7WKWikk8l2Q+iBAgNSB2k4l2G7VrwsABCOay6cMcu
-         bN8m7lCHS27e1K597EkwAJOUxU7tzz4EXLQ3Suxj1pYxGWLi+CgV8BhoRUU2D//mOghc
-         obDOF0Q9N09tzm6mnLU/qA62A/4ilpwFilEKFfAcz5dqANLIGoe4+rIs6QIEK52n5DxU
-         A6nD7flHSHufHRnQSMOXyEK7Xo7qE+bmHy56o1uh0rgX+Nrp8u6SBFXxPlrOvCsVgPKF
-         Kfjg==
-X-Gm-Message-State: AOAM530uCsKDX2wzmPp/RHtxL/bRx/+i2fV88OQPrU8R2ftT6tQvymDn
-        CFFnsjJ+jn3CojoC+ABDOgdI+JSRFsRr2Vhh1vc=
-X-Google-Smtp-Source: ABdhPJxSPQWOmNrW1JkuIl00eMsxzS7DPdnbALvUH5tX1L+65pon2hWT8qyEUKCQCmzd6uNzLt6ZfKNYM0eI2jqQOD4=
-X-Received: by 2002:a50:d943:: with SMTP id u3mr3646718edj.175.1624353035898;
- Tue, 22 Jun 2021 02:10:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <60cb0586.1c69fb81.8015b.37a1@mx.google.com> <YNCwJqtKKCskB2Au@kroah.com>
-In-Reply-To: <YNCwJqtKKCskB2Au@kroah.com>
-From:   Amit Klein <aksecurity@gmail.com>
-Date:   Tue, 22 Jun 2021 12:10:25 +0300
-Message-ID: <CANEQ_++HfmyfOzjqS2b_XPvAedzy=zCvDXP_=cfuowZUBJ8JjQ@mail.gmail.com>
-Subject: Re: [PATCH 4.19] inet: use bigger hash table for IP ID generation
- (backported to 4.19)
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8RElOEKvFjVDV6P4V4jZfTHZh2xq8goB+o7Uy2R9On8=;
+        b=Yag3BEW0ewg68T5Vb3fpz2UtbkmaR9TzOJreyeq7Ij9sUDCMnJ69midhbu4zRiihgI
+         ghAypOwbrIMT2oDQVZVcqJH+QC0H0WFtdvQHNVZD2H0uRXCAX01KCu4rLeNwiHhDcFUJ
+         fbrmMwxJrlY2ybzTGytR33aV0dCuIKWfcS4PJgsoqC16yPtUCU9ObZjPVSfndmTm8IZh
+         Fj2ZBULSRnrxoJB8G5FkUqRPl3mWnYGyS7JYuZ3DGal3Up23kcXtOef1TIjjw1erIDDN
+         J6wykFM4kOaXl0vZR0FfTcFiWSCQHhwVSj6LIC0gr63lGJhdypew9KvHlaCO0ORB2mmO
+         I63A==
+X-Gm-Message-State: AOAM532EAgLrSbLKEFrfWDx9/xeKM95kv/3Jea1Zp1VwLdthuV6B2MRU
+        Bs07XEe0WdtSi+Fb24vzoq997A==
+X-Google-Smtp-Source: ABdhPJwT54mMYJbx4XCwLZiMsO86QqUxLUC66X2nMx+DeIJVS1Tq/kYOALMd264S1WlQS4JrtC8DBg==
+X-Received: by 2002:a17:907:9c9:: with SMTP id bx9mr3035256ejc.144.1624355313123;
+        Tue, 22 Jun 2021 02:48:33 -0700 (PDT)
+Received: from [192.168.1.204] (83-86-74-64.cable.dynamic.v4.ziggo.nl. [83.86.74.64])
+        by smtp.gmail.com with ESMTPSA id gx4sm2213955ejc.34.2021.06.22.02.48.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Jun 2021 02:48:32 -0700 (PDT)
+Subject: Re: [PATCH bpf] Revert "bpf: program: Refuse non-O_RDWR flags in
+ BPF_OBJ_GET"
+To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Andrii Nakryiko <andrii@kernel.org>,
+        Lorenz Bauer <lmb@cloudflare.com>
+References: <20210618105526.265003-1-zenczykowski@gmail.com>
+From:   Greg Kroah-Hartman <gregkh@google.com>
+Message-ID: <f3133985-dcc0-89be-4cfa-8ba16456e1b9@google.com>
+Date:   Tue, 22 Jun 2021 11:48:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <20210618105526.265003-1-zenczykowski@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 21, 2021 at 6:28 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Jun 17, 2021 at 01:19:18AM -0700, Amit Klein wrote:
-> > Subject: inet: use bigger hash table for IP ID generation (backported to 4.19)
-> > From: Amit Klein <aksecurity@gmail.com>
-[...]
->
-> I've queued this, and the 4.14 version up.  Can you create a 4.4.y and
-> 4.9.y version as well?
->
+On 6/18/21 12:55 PM, Maciej Żenczykowski wrote:
+> From: Maciej Żenczykowski <maze@google.com>
+> 
+> This reverts commit d37300ed182131f1757895a62e556332857417e5.
+> 
+> This breaks Android userspace which expects to be able to
+> fetch programs with just read permissions.
+> 
+> See: https://cs.android.com/android/platform/superproject/+/master:frameworks/libs/net/common/native/bpf_syscall_wrappers/include/BpfSyscallWrappers.h;drc=7005c764be23d31fa1d69e826b4a2f6689a8c81e;l=124
+> 
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Andrii Nakryiko <andrii@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Greg Kroah-Hartman <gregkh@google.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Fixes: d37300ed1821 ("bpf: program: Refuse non-O_RDWR flags in BPF_OBJ_GET")
+> Signed-off-by: Maciej Żenczykowski <maze@google.com>
+> ---
 
-Done and submitted (a few minutes ago). Note the subject line has
-"[PATCH 4.9]" but it also fixes 4.4 (I didn't know what convention to
-use for this case).
-
-Best,
--Amit
+Acked-by: Greg Kroah-Hartman <gregkh@google.com>
