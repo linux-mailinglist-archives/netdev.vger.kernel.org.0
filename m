@@ -2,95 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A278A3B0D99
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 21:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF9273B0D9D
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 21:25:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232681AbhFVTY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 15:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232415AbhFVTYY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 15:24:24 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3FBBC061574;
-        Tue, 22 Jun 2021 12:21:49 -0700 (PDT)
-Received: from [IPv6:2003:e9:d741:e18f:a31e:1420:3e5f:861e] (p200300e9d741e18fa31e14203e5f861e.dip0.t-ipconnect.de [IPv6:2003:e9:d741:e18f:a31e:1420:3e5f:861e])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id F2572C0122;
-        Tue, 22 Jun 2021 21:21:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1624389704;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vDxaktJ+Hh7ra+obApcSLKVeXPUw+MBOxIRGYg22n6Q=;
-        b=KjxR93EbICpNf4PNGWI6LxiM2xhcvdkMSvvQD9y9Ix2uTV+0N1INV9R5R4DWN51d1U+/RB
-        NTxZgoOqzz9AMC8dTvO7cT5ss4HDDK3HgoRDRADi+Se/yQhGSO0aVAHqYK6/36tcP263Ux
-        syyDEqldP8rClxC3vFKtAZy/7eil1q79dfZquF76GcoaNglb7tA/03AVzblulxXdkPDxvy
-        pU9llNt/RUjtoMvM4IxTG9e6iFFh0hMntKHZanQr3DDNNyOafn14MuWnTdfup3fG1tB4J7
-        QYCnt8zZNYMmiBZk7dsFEPfEiA0wqsQfebdLLfgi+zMwODFXXZQT7O5md1jcSA==
-Subject: Re: [PATCH v2] ieee802154: hwsim: Fix memory leak in hwsim_add_one
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com
-References: <20210616020901.2759466-1-mudongliangabcd@gmail.com>
- <CAB_54W51MxDwN5oPxBqioaNhq-eB1QfXNMyUpmNZOWNDM3MmnA@mail.gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <4d08846a-118f-261b-9760-7953c1d4547f@datenfreihafen.org>
-Date:   Tue, 22 Jun 2021 21:21:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S232545AbhFVT1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 15:27:46 -0400
+Received: from mga12.intel.com ([192.55.52.136]:32268 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229786AbhFVT1p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 15:27:45 -0400
+IronPort-SDR: wPcuwl2LdZZj3TY137F0n50Ef4WUWQTxBVfOJAQW3HxZlYYDxLY2UQd7nL3wicfZyR6bLWSCV/
+ oyHnfmyTMsUQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10023"; a="186818192"
+X-IronPort-AV: E=Sophos;i="5.83,292,1616482800"; 
+   d="scan'208";a="186818192"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2021 12:25:28 -0700
+IronPort-SDR: GJ1zFwKTen67slpEWfukTeg+UiSH4HWJtQ4LNxltWHpybX1HuQljsfjsrny0ytBq3PL0RCN5Li
+ v9JoEvxdv3bg==
+X-IronPort-AV: E=Sophos;i="5.83,292,1616482800"; 
+   d="scan'208";a="480909712"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.237.182])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2021 12:25:28 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 0/6] mptcp: Connection-time 'C' flag and two fixes
+Date:   Tue, 22 Jun 2021 12:25:17 -0700
+Message-Id: <20210622192523.90117-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <CAB_54W51MxDwN5oPxBqioaNhq-eB1QfXNMyUpmNZOWNDM3MmnA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Here are six more patches from the MPTCP tree.
 
-On 22.06.21 20:29, Alexander Aring wrote:
-> Hi,
-> 
-> On Tue, 15 Jun 2021 at 22:09, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->>
->> No matter from hwsim_remove or hwsim_del_radio_nl, hwsim_del fails to
->> remove the entry in the edges list. Take the example below, phy0, phy1
->> and e0 will be deleted, resulting in e1 not freed and accessed in the
->> future.
->>
->>                hwsim_phys
->>                    |
->>      ------------------------------
->>      |                            |
->> phy0 (edges)                 phy1 (edges)
->>     ----> e1 (idx = 1)             ----> e0 (idx = 0)
->>
->> Fix this by deleting and freeing all the entries in the edges list
->> between hwsim_edge_unsubscribe_me and list_del(&phy->list).
->>
->> Reported-by: syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com
->> Fixes: 1c9f4a3fce77 ("ieee802154: hwsim: fix rcu handling")
->> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> 
-> Acked-by: Alexander Aring <aahringo@redhat.com>
-> 
-> Thanks!
+Most of them add support for the 'C' flag in the MPTCP connection-time
+option headers. This flag affects how the initial address and port are
+treated by each peer. Normally one peer may send MP_JOIN requests to the
+remote address and port that were used when initiating the MPTCP
+connection. The 'C' bit indicates that MP_JOINs should only be sent to
+remote addresses that have been advertised with ADD_ADDR.
+
+The other two patches are unrelated improvements.
+
+Patches 1-4: Add the 'C' flag feature, a sysctl to optionally enable it,
+and a selftest.
+
+Patch 5: Adjust rp_filter settings in a selftest.
+
+Patch 6: Improve rbuf cleanup for MPTCP sockets.
 
 
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
+Geliang Tang (4):
+  mptcp: add sysctl allow_join_initial_addr_port
+  mptcp: add allow_join_id0 in mptcp_out_options
+  mptcp: add deny_join_id0 in mptcp_options_received
+  selftests: mptcp: add deny_join_id0 testcases
 
-regards
-Stefan Schmidt
+Paolo Abeni (1):
+  mptcp: refine mptcp_cleanup_rbuf
+
+Yonglong Li (1):
+  selftests: mptcp: turn rp_filter off on each NIC
+
+ Documentation/networking/mptcp-sysctl.rst     | 13 ++++
+ include/net/mptcp.h                           |  3 +-
+ net/mptcp/ctrl.c                              | 16 ++++
+ net/mptcp/options.c                           | 13 ++++
+ net/mptcp/pm.c                                |  1 +
+ net/mptcp/pm_netlink.c                        |  3 +-
+ net/mptcp/protocol.c                          | 56 ++++++--------
+ net/mptcp/protocol.h                          | 12 ++-
+ net/mptcp/subflow.c                           |  3 +
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 75 ++++++++++++++++++-
+ .../selftests/net/mptcp/simult_flows.sh       |  3 +-
+ 11 files changed, 157 insertions(+), 41 deletions(-)
+
+
+base-commit: a432c771e2d9bc059ffe3028faf040c08b6a9f98
+-- 
+2.32.0
+
