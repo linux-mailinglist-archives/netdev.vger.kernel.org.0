@@ -2,120 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 624CF3AFE2F
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 09:45:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27C713AFE2E
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 09:45:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbhFVHrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 03:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbhFVHrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 03:47:45 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C8EC061574;
-        Tue, 22 Jun 2021 00:45:28 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id x21-20020a17090aa395b029016e25313bfcso1755495pjp.2;
-        Tue, 22 Jun 2021 00:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rTA9Ge9ztWJg6qu4WnRUxoLw0dKUZdpAeQoMLnN27LI=;
-        b=sO8Qr+cKOoS9FFMwhHMmBRROUFXOc4mYXbSrj3q4I9aa/7WgaygubUaATqWccoO4Ew
-         Szplz4/pkFp41LIoz//7GarOONmHu/e7bViZcLUdm6AzBVUw5baLNSA5pE5CjJ0ZAMSh
-         X1A5FhBV6WqY/wv1ySo16Rm0rt9ENiTXGyAFElVbZEsRyng3TNRLqmASUDypQSmBB7Uv
-         UNBA4SsU+L9w7HLzTJuOwLoH26y9YfMEqdJGXZOclR4x+nHw+p+sRh5JIA12fUJz68UQ
-         +BVEMymQMH5X6dGY1vZeoxCm90cVBdIgQhHtQOUsmGMpeepu+3g5hrcTOzq+MpptMEEO
-         MrQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rTA9Ge9ztWJg6qu4WnRUxoLw0dKUZdpAeQoMLnN27LI=;
-        b=MVREKz1Um0UvmMXUbjKjWOl6Yu2GGhUHk10WBJYCt6WhsIQ0IFwESN6d5BHXsX0Ili
-         ejzCS1t2IMFYFSXyGHNjvZFEacUCIKZdOKDFxIf1BTH+zFt/JGZfSZjZ7ra3tqQ4uN/c
-         WGwDMbSS6Cz2McjwHJQRn3c/iSvuUGDIcr6Tyhvz0wWNclm/+wY5pwaXud19i/K1RN+g
-         JyW1OTKLCK+TTBN+U2yEqLsVNP+xwnnbPNY9wRytS6ZEdwoIH+9RPH4fwgYMQdyKeM52
-         kUiCb/TpfL04c/PRyZNBG5WgBCWrhpWI5LgOfK2eYeGfNNv48wS0QzfPPPRy2BeKWvdJ
-         43ow==
-X-Gm-Message-State: AOAM530MhnvnloVSf2UPEpRUWrhv/8lSTUhvQpHfAu3LX2iu8GDmXPxl
-        hBMBW/OsQ5ZhFDAssewoOus=
-X-Google-Smtp-Source: ABdhPJzMBA5sJR+94E9iAB6vMokMhc1pEt84r+vNnG+VInBYxTlSEk+FfUe3ay+4zpdhxsDYnbUNWQ==
-X-Received: by 2002:a17:902:ce86:b029:125:8c21:2ab9 with SMTP id f6-20020a170902ce86b02901258c212ab9mr6136618plg.45.1624347928208;
-        Tue, 22 Jun 2021 00:45:28 -0700 (PDT)
-Received: from d3 ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
-        by smtp.gmail.com with ESMTPSA id f13sm3076941pfe.149.2021.06.22.00.45.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 00:45:27 -0700 (PDT)
-Date:   Tue, 22 Jun 2021 16:45:22 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC 12/19] staging: qlge: rewrite do while loops as for loops
- in qlge_start_rx_ring
-Message-ID: <YNGVEiS8mITXQ5sS@d3>
-References: <20210621134902.83587-1-coiby.xu@gmail.com>
- <20210621134902.83587-13-coiby.xu@gmail.com>
+        id S229970AbhFVHrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 03:47:43 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:60654 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229677AbhFVHrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 03:47:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1624347927; x=1655883927;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LipJUG01p62MmPAyDQSw5ZiD/Qw8f8iwXq0EJ9uUIpk=;
+  b=MUyg1gFvPiRzdZArsZEb0bvXhco/kI0P+jk+bTbGHFOP1HjzVuW8ILeO
+   Xsp9+HqHLPbnC5YsrwCqahTEmBJHGqNbWjE4vjopn71fqRPNITkEFKEoD
+   hfVsgvXDFjT0ByFTQy6swQBXkjXrKDik6DwZBQeWQrCn1wO5gu3uikoNk
+   xmzL3mow3yf7yPWUfDB94qXD5RWKLNTZ4CFQG97nZOOZaSPmghv0gJsA6
+   Gl3ei+f8gA4BHQZ2Nf0dfDQl3fam4/PmPYSc6XsbNGzl62H89ck8Udsp9
+   al/yBSyDOK8GgeXKl2At5SfCSwi13K7/s3fNdNbZW8ysD9m/cuR9Uny9A
+   A==;
+IronPort-SDR: +QjNz5TMOQVfX6iS+0l0gEAI9YKTF8B5F477P/JxKa6I9IG+0EAKjUNWWe8gLpvsbEE2/fidZd
+ DLdhmcUkwQFjr8uN3L9defc5PhjQ1WYtLyEZQUSednimmwZMSnhrIOeikjuE499IPkpxm0OlW/
+ UqdE+XfGtohmnfV1N6SYdXhO8CapBCOrZx8bv5NUTU0Y3q7Ozx15dWfcRuhacfLmMHTc2jDuxm
+ KgMVSu38ctpCES/hWZm+7eVuf5sCivhFq6vR3jOaf1X4PFJyj7liijuH+meoNE2ClrCbbqSrCN
+ aFA=
+X-IronPort-AV: E=Sophos;i="5.83,291,1616482800"; 
+   d="scan'208";a="132970151"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jun 2021 00:45:26 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 22 Jun 2021 00:45:26 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Tue, 22 Jun 2021 00:45:26 -0700
+Date:   Tue, 22 Jun 2021 09:46:17 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v2 net-next 6/6] net: dsa: remove cross-chip support from
+ the MRP notifiers
+Message-ID: <20210622074617.4ny3xovptxtq64ce@soft-dev3-1.localhost>
+References: <20210621164219.3780244-1-olteanv@gmail.com>
+ <20210621164219.3780244-7-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20210621134902.83587-13-coiby.xu@gmail.com>
+In-Reply-To: <20210621164219.3780244-7-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-06-21 21:48 +0800, Coiby Xu wrote:
-> Since MAX_DB_PAGES_PER_BQ > 0, the for loop is equivalent to do while
-> loop.
+The 06/21/2021 19:42, Vladimir Oltean wrote:
+
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > 
-> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> With MRP hardware assist being supported only by the ocelot switch
+> family, which by design does not support cross-chip bridging, the
+> current match functions are at best a guess and have not been confirmed
+> in any way to do anything relevant in a multi-switch topology.
+> 
+> Drop the code and make the notifiers match only on the targeted switch
+> port.
+> 
+> Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 > ---
->  drivers/staging/qlge/qlge_main.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
+> v1->v2: remove unused variable "err" in dsa_switch_mrp_add_ring_role()
 > 
-> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-> index 7aee9e904097..c5e161595b1f 100644
-> --- a/drivers/staging/qlge/qlge_main.c
-> +++ b/drivers/staging/qlge/qlge_main.c
-> @@ -3029,12 +3029,11 @@ static int qlge_start_cq(struct qlge_adapter *qdev, struct qlge_cq *cq)
->  		tmp = (u64)rx_ring->lbq.base_dma;
->  		base_indirect_ptr = rx_ring->lbq.base_indirect;
->  		page_entries = 0;
-
-This initialization can be removed now. Same thing below.
-
-> -		do {
-> +		for (page_entries = 0; page_entries < MAX_DB_PAGES_PER_BQ; page_entries++) {
->  			*base_indirect_ptr = cpu_to_le64(tmp);
->  			tmp += DB_PAGE_SIZE;
->  			base_indirect_ptr++;
-> -			page_entries++;
-> -		} while (page_entries < MAX_DB_PAGES_PER_BQ);
-> +		}
->  		cqicb->lbq_addr = cpu_to_le64(rx_ring->lbq.base_indirect_dma);
->  		cqicb->lbq_buf_size =
->  			cpu_to_le16(QLGE_FIT16(qdev->lbq_buf_size));
-> @@ -3046,12 +3045,11 @@ static int qlge_start_cq(struct qlge_adapter *qdev, struct qlge_cq *cq)
->  		tmp = (u64)rx_ring->sbq.base_dma;
->  		base_indirect_ptr = rx_ring->sbq.base_indirect;
->  		page_entries = 0;
-> -		do {
-> +		for (page_entries = 0; page_entries < MAX_DB_PAGES_PER_BQ; page_entries++) {
->  			*base_indirect_ptr = cpu_to_le64(tmp);
->  			tmp += DB_PAGE_SIZE;
->  			base_indirect_ptr++;
-> -			page_entries++;
-> -		} while (page_entries < MAX_DB_PAGES_PER_BQ);
-> +		}
->  		cqicb->sbq_addr = cpu_to_le64(rx_ring->sbq.base_indirect_dma);
->  		cqicb->sbq_buf_size = cpu_to_le16(QLGE_SMALL_BUFFER_SIZE);
->  		cqicb->sbq_len = cpu_to_le16(QLGE_FIT16(QLGE_BQ_LEN));
-> -- 
-> 2.32.0
+>  net/dsa/switch.c | 55 ++++++------------------------------------------
+>  1 file changed, 7 insertions(+), 48 deletions(-)
 > 
+> diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+> index 75f567390a6b..c1e5afafe633 100644
+> --- a/net/dsa/switch.c
+> +++ b/net/dsa/switch.c
+> @@ -346,36 +346,16 @@ static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
+>         return 0;
+>  }
+> 
+> -static bool dsa_switch_mrp_match(struct dsa_switch *ds, int port,
+> -                                struct dsa_notifier_mrp_info *info)
+> -{
+> -       if (ds->index == info->sw_index && port == info->port)
+> -               return true;
+> -
+> -       if (dsa_is_dsa_port(ds, port))
+> -               return true;
+> -
+> -       return false;
+> -}
+> -
+>  static int dsa_switch_mrp_add(struct dsa_switch *ds,
+>                               struct dsa_notifier_mrp_info *info)
+>  {
+> -       int err = 0;
+> -       int port;
+> -
+>         if (!ds->ops->port_mrp_add)
+>                 return -EOPNOTSUPP;
+> 
+> -       for (port = 0; port < ds->num_ports; port++) {
+> -               if (dsa_switch_mrp_match(ds, port, info)) {
+> -                       err = ds->ops->port_mrp_add(ds, port, info->mrp);
+> -                       if (err)
+> -                               break;
+> -               }
+> -       }
+> +       if (ds->index == info->sw_index)
+> +               return ds->ops->port_mrp_add(ds, info->port, info->mrp);
+> 
+> -       return err;
+> +       return 0;
+>  }
+> 
+>  static int dsa_switch_mrp_del(struct dsa_switch *ds,
+> @@ -390,39 +370,18 @@ static int dsa_switch_mrp_del(struct dsa_switch *ds,
+>         return 0;
+>  }
+> 
+> -static bool
+> -dsa_switch_mrp_ring_role_match(struct dsa_switch *ds, int port,
+> -                              struct dsa_notifier_mrp_ring_role_info *info)
+> -{
+> -       if (ds->index == info->sw_index && port == info->port)
+> -               return true;
+> -
+> -       if (dsa_is_dsa_port(ds, port))
+> -               return true;
+> -
+> -       return false;
+> -}
+> -
+>  static int
+>  dsa_switch_mrp_add_ring_role(struct dsa_switch *ds,
+>                              struct dsa_notifier_mrp_ring_role_info *info)
+>  {
+> -       int err = 0;
+> -       int port;
+> -
+>         if (!ds->ops->port_mrp_add)
+>                 return -EOPNOTSUPP;
+> 
+> -       for (port = 0; port < ds->num_ports; port++) {
+> -               if (dsa_switch_mrp_ring_role_match(ds, port, info)) {
+> -                       err = ds->ops->port_mrp_add_ring_role(ds, port,
+> -                                                             info->mrp);
+> -                       if (err)
+> -                               break;
+> -               }
+> -       }
+> +       if (ds->index == info->sw_index)
+> +               return ds->ops->port_mrp_add_ring_role(ds, info->port,
+> +                                                      info->mrp);
+> 
+> -       return err;
+> +       return 0;
+>  }
+> 
+>  static int
+> --
+> 2.25.1
+> 
+
+-- 
+/Horatiu
