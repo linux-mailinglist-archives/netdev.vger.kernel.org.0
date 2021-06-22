@@ -2,178 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8F2F3B0EAF
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:24:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD833B0EBF
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbhFVU1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 16:27:01 -0400
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:59965 "EHLO
-        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229667AbhFVU1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:27:01 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id A7C059B1;
-        Tue, 22 Jun 2021 16:24:44 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 22 Jun 2021 16:24:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=gUWzsfhi8Ky7FahDiCmtxCzmrxQlRChjZMzLJyOh0lY=; b=I06DSlLG
-        OJkbX73muBxCeFVojSuTaGIN+RUzwdBZG2jnfS9a9lzEd76+MounYhFCldT0iSGT
-        WORh1x9Z6kVsQrkubenLr+JF55tViKmjERLxYt7x4jlVX6W00lZIX1OKVOtj0QB6
-        VrFeNNp3pHryvlcb3RyqIjrNgjPnBo+gZzVb/6sLILFbih8tHZENEaeCWQrbH41e
-        pWNSx0oYQuxz00gkf+lUXFyeWKWKHKOZtjHssH9LOmGRB/2A9H0aL7kKIDov+HXv
-        02O3qug2I0BwOpQB5dx9m/4XZjvyM6VghBUPjVJWstrIXhpsEgJTohOKvmhNURvG
-        S5rceRHaT1i5xg==
-X-ME-Sender: <xms:C0fSYJvuw8H-ldqpFGA0npEipzqe2GtixjrrYnNW66slnzD8MQL2HA>
-    <xme:C0fSYCf2pTFslVdamblvIlpdrFGX2Rwc3RREbqxbQpR9tDU5Z5UPw3F9qeMpCxvg8
-    0MtHZOLJpCTKswiyws>
-X-ME-Received: <xmr:C0fSYMwwJfQ083z5Rt0UDYAvCFGMruFqrJM_gBiEr0VaoneKDZVV9C3_Bt60NCIF8m5v2Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeguddgudegjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpeforghrthihnhgrshcurfhumhhpuhhtihhsuceomheslhgr
-    mhgsuggrrdhltheqnecuggftrfgrthhtvghrnheptdffffegffejieehuedvhfekjeevhf
-    eiudefkeffkeeuuefhledvteejieetuddvnecuvehluhhsthgvrhfuihiivgeptdenucfr
-    rghrrghmpehmrghilhhfrhhomhepmheslhgrmhgsuggrrdhlth
-X-ME-Proxy: <xmx:C0fSYAN7oIY_zEHIzGJ4j-bwLnZ7hbfOqthThfkVy2keqqoif-twrw>
-    <xmx:C0fSYJ_W4L3_WNg9RDktQgR4D9gqNfh1bl99pmsCizSQfNlk1nytiw>
-    <xmx:C0fSYAXYCBeKBP4zUjcBZmn7g2uL7Bl8axSdaCI95gN7d3rp-5aGeQ>
-    <xmx:DEfSYLJ4DqI1-Gm5UxCUa5oXenxGGo3Xx9tCcS0DAdUmozb_e4heGg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 22 Jun 2021 16:24:42 -0400 (EDT)
-From:   Martynas Pumputis <m@lambda.lt>
+        id S229970AbhFVUdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 16:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229667AbhFVUdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:33:09 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61028C061574;
+        Tue, 22 Jun 2021 13:30:53 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id w71so492555pfd.4;
+        Tue, 22 Jun 2021 13:30:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gmOirJqOCVETUPV1FbZFByNJhYz+YUYcI9+VcLfRUoc=;
+        b=jUcGd8jnaoO2YIM2z1ipRLJKeDUK//EOVXBPejtVYqF4azm05uFodHEo6iF3Pif3JV
+         OK/jAKqcqLjLnjrhCWJ6fPPrwryY5sFdvRqsZBLIKe+Fc1PHnN8IrCioX1NCLirIL71O
+         mJKheywpcDGOgeJi1oyGE1NTB8WISrpacCWirFMzXLuc6R42MGLt3MN+I+rpoyUv5/A+
+         +iVr0p0MFdWrk8RPNiOHJAhEv1XM/YjVmXXx0HHmt9+upwohcZCyNgYPQIBmoXpQJ6Hc
+         vjx1dsBRlS5j26Z4DxHKO/h6DRpoGsoe5yOnx5T3Ee6gyWNk/lMTA7Mx9zYgXZlk0FuT
+         dCKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gmOirJqOCVETUPV1FbZFByNJhYz+YUYcI9+VcLfRUoc=;
+        b=HUZ2vKAvCt4IqzF0v4IxTlbgnwdacWSW1Iy59VV5T9UcGfVY65xzkjYZr3BvCp7a9g
+         rJNPAwERmGAQjTDB5UuDvtYuh7z0gwd1NykypeMrAwuWmK13LGh4DV13onYgVgs2u7fi
+         feL2Cwb1yr15A92TNPOoZ7maM34w3jjTYcE5GFFv4Bh3AIr1dwZThYXkuNtbIowtu7QV
+         DpfnBOKVdHqyi/NOIgW9XR8J23pJeKLmdCCGPhpOmRwjqnoyPlSZq1PjCxvjZTXuxvKf
+         hMZhnAMEHo40u5mwUBfZnmo+Qkuu6yEUk/tKOt1G1V8kYw5tOvFhxHtgKWS+jTIw/WZw
+         NSLQ==
+X-Gm-Message-State: AOAM532I0bLKm8v2l4T7wwFiPU6JozNUIU/4EKSVOwZYs1C6yauNG2wX
+        EaxwFxgyt/5ieXm5MtzoO9Aevgb4NXE=
+X-Google-Smtp-Source: ABdhPJwwlFT2XjRWwEHaPAG5p8BmNn+9fA9/kK419rjV4LLQzGHZKDtY+rzUVz+68KqZowDNLXHXVg==
+X-Received: by 2002:aa7:9729:0:b029:2ff:1e52:e284 with SMTP id k9-20020aa797290000b02902ff1e52e284mr5292021pfg.71.1624393852687;
+        Tue, 22 Jun 2021 13:30:52 -0700 (PDT)
+Received: from localhost ([2402:3a80:11bb:33b3:7f0c:3646:8bde:417e])
+        by smtp.gmail.com with ESMTPSA id k9sm20994029pgq.27.2021.06.22.13.30.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Jun 2021 13:30:52 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     edumazet@google.com, daniel@iogearbox.net, ast@kernel.org,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH net-next 2/2] tools/testing: add a selftest for SO_NETNS_COOKIE
-Date:   Tue, 22 Jun 2021 22:26:23 +0200
-Message-Id: <20210622202623.1311901-2-m@lambda.lt>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210622202623.1311901-1-m@lambda.lt>
-References: <20210622202623.1311901-1-m@lambda.lt>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+Subject: [PATCH net-next v3 0/5] Generic XDP improvements
+Date:   Wed, 23 Jun 2021 01:58:30 +0530
+Message-Id: <20210622202835.1151230-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenz Bauer <lmb@cloudflare.com>
+This small series makes some improvements to generic XDP mode and brings it
+closer to native XDP. Patch 1 splits out generic XDP processing into reusable
+parts, patch 2 adds pointer friendly wrappers for bitops (not have to cast back
+and forth the address of local pointer to unsigned long *), patch 3 implements
+generic cpumap support (details in commit) and patch 4 allows devmap bpf prog
+execution before generic_xdp_tx is called.
 
-Make sure that SO_NETNS_COOKIE returns a non-zero value, and
-that sockets from different namespaces have a distinct cookie
-value.
+Patch 5 just updates a couple of selftests to adapt to changes in behavior (in
+that specifying devmap/cpumap prog fd in generic mode is now allowed).
 
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
----
- tools/testing/selftests/net/.gitignore        |  1 +
- tools/testing/selftests/net/Makefile          |  2 +-
- tools/testing/selftests/net/config            |  1 +
- tools/testing/selftests/net/so_netns_cookie.c | 61 +++++++++++++++++++
- 4 files changed, 64 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/so_netns_cookie.c
+Changelog:
+----------
+v2 -> v3
+v2: https://lore.kernel.org/bpf/20210622195527.1110497-1-memxor@gmail.com
+ * list_for_each_entry -> list_for_each_entry_safe (due to deletion of skb)
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-index 61ae899cfc17..19deb9cdf72f 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -30,3 +30,4 @@ hwtstamp_config
- rxtimestamp
- timestamping
- txtimestamp
-+so_netns_cookie
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 3915bb7bfc39..79c9eb0034d5 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -30,7 +30,7 @@ TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
- TEST_GEN_FILES += tcp_mmap tcp_inq psock_snd txring_overwrite
- TEST_GEN_FILES += udpgso udpgso_bench_tx udpgso_bench_rx ip_defrag
--TEST_GEN_FILES += so_txtime ipv6_flowlabel ipv6_flowlabel_mgr
-+TEST_GEN_FILES += so_txtime ipv6_flowlabel ipv6_flowlabel_mgr so_netns_cookie
- TEST_GEN_FILES += tcp_fastopen_backup_key
- TEST_GEN_FILES += fin_ack_lat
- TEST_GEN_FILES += reuseaddr_ports_exhausted
-diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
-index 614d5477365a..6f905b53904f 100644
---- a/tools/testing/selftests/net/config
-+++ b/tools/testing/selftests/net/config
-@@ -1,4 +1,5 @@
- CONFIG_USER_NS=y
-+CONFIG_NET_NS=y
- CONFIG_BPF_SYSCALL=y
- CONFIG_TEST_BPF=m
- CONFIG_NUMA=y
-diff --git a/tools/testing/selftests/net/so_netns_cookie.c b/tools/testing/selftests/net/so_netns_cookie.c
-new file mode 100644
-index 000000000000..b39e87e967cd
---- /dev/null
-+++ b/tools/testing/selftests/net/so_netns_cookie.c
-@@ -0,0 +1,61 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define _GNU_SOURCE
-+#include <sched.h>
-+#include <unistd.h>
-+#include <stdio.h>
-+#include <errno.h>
-+#include <string.h>
-+#include <stdlib.h>
-+#include <stdint.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+
-+#ifndef SO_NETNS_COOKIE
-+#define SO_NETNS_COOKIE 71
-+#endif
-+
-+#define pr_err(fmt, ...) \
-+	({ \
-+		fprintf(stderr, "%s:%d:" fmt ": %m\n", \
-+			__func__, __LINE__, ##__VA_ARGS__); \
-+		1; \
-+	})
-+
-+int main(int argc, char *argvp[])
-+{
-+	uint64_t cookie1, cookie2;
-+	socklen_t vallen;
-+	int sock1, sock2;
-+
-+	sock1 = socket(AF_INET, SOCK_STREAM, 0);
-+	if (sock1 < 0)
-+		return pr_err("Unable to create TCP socket");
-+
-+	vallen = sizeof(cookie1);
-+	if (getsockopt(sock1, SOL_SOCKET, SO_NETNS_COOKIE, &cookie1, &vallen) != 0)
-+		return pr_err("getsockopt(SOL_SOCKET, SO_NETNS_COOKIE)");
-+
-+	if (!cookie1)
-+		return pr_err("SO_NETNS_COOKIE returned zero cookie");
-+
-+	if (unshare(CLONE_NEWNET))
-+		return pr_err("unshare");
-+
-+	sock2 = socket(AF_INET, SOCK_STREAM, 0);
-+	if (sock2 < 0)
-+		return pr_err("Unable to create TCP socket");
-+
-+	vallen = sizeof(cookie2);
-+	if (getsockopt(sock2, SOL_SOCKET, SO_NETNS_COOKIE, &cookie2, &vallen) != 0)
-+		return pr_err("getsockopt(SOL_SOCKET, SO_NETNS_COOKIE)");
-+
-+	if (!cookie2)
-+		return pr_err("SO_NETNS_COOKIE returned zero cookie");
-+
-+	if (cookie1 == cookie2)
-+		return pr_err("SO_NETNS_COOKIE returned identical cookies for distinct ns");
-+
-+	close(sock1);
-+	close(sock2);
-+	return 0;
-+}
+v1 -> v2
+v1: https://lore.kernel.org/bpf/20210620233200.855534-1-memxor@gmail.com
+ * Move __ptr_{set,clear,test}_bit to bitops.h (Toke)
+   Also changed argument order to match the bit op they wrap.
+ * Remove map value size checking functions for cpumap/devmap (Toke)
+ * Rework prog run for skb in cpu_map_kthread_run (Toke)
+ * Set skb->dev to dst->dev after devmap prog has run
+ * Don't set xdp rxq that will be overwritten in cpumap prog run
+
+Kumar Kartikeya Dwivedi (5):
+  net: core: split out code to run generic XDP prog
+  bitops: add non-atomic bitops for pointers
+  bpf: cpumap: implement generic cpumap
+  bpf: devmap: implement devmap prog execution for generic XDP
+  bpf: update XDP selftests to not fail with generic XDP
+
+ include/linux/bitops.h                        |  19 +++
+ include/linux/bpf.h                           |  10 +-
+ include/linux/netdevice.h                     |   2 +
+ include/linux/skbuff.h                        |  10 +-
+ include/linux/typecheck.h                     |  10 ++
+ kernel/bpf/cpumap.c                           | 115 +++++++++++++++---
+ kernel/bpf/devmap.c                           |  49 ++++++--
+ net/core/dev.c                                | 103 ++++++++--------
+ net/core/filter.c                             |   6 +-
+ .../bpf/prog_tests/xdp_cpumap_attach.c        |   4 +-
+ .../bpf/prog_tests/xdp_devmap_attach.c        |   4 +-
+ 11 files changed, 241 insertions(+), 91 deletions(-)
+
 -- 
-2.32.0
+2.31.1
 
