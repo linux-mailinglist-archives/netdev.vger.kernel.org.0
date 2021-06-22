@@ -2,156 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BB623B0B52
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 19:19:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 722753B0B55
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 19:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbhFVRWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 13:22:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40076 "EHLO mail.kernel.org"
+        id S232266AbhFVRW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 13:22:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40170 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230182AbhFVRWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 13:22:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D365361026;
-        Tue, 22 Jun 2021 17:19:52 +0000 (UTC)
+        id S232001AbhFVRWW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 13:22:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id A763361055;
+        Tue, 22 Jun 2021 17:20:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624382393;
-        bh=z5yOOT5esyKS8Dgsj2tlS/BuZXg2aa89V0SIURoMpXI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nRIPHj2WonsG66nmeP44NbnvzWTQ7rt+z1azjIKQuMynp+rrkVlKmQ56Mr+YFPO3T
-         XYR5p2FZlLlHspMkITsMpAwNnCXH4FjXCWuFDQ9Vu8LKp9dw55apD2M8pMjo+iI+/7
-         8KLWAzpshP42W7Hn8UFZjmKtNmyH2YJCMOVItr8UPjYQjwamLfg8+xSnKExuqYAJ/w
-         aHY45R5K/sI2astmFNEVdEiP9or3lnsXUK4ZFMy8aVW+w0ia+PUpwlqdleBYCi84Dt
-         BIILJ95XVvGN738zPZrb24RsBO29oephmUdozG99mzO4prGwLvj4PxV64iro+HgBAH
-         0g6mEEnqy7QZA==
-Date:   Tue, 22 Jun 2021 10:19:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, willemb@google.com,
-        dsahern@gmail.com, yoshfuji@linux-ipv6.org, Dave Jones <dsj@fb.com>
-Subject: Re: [PATCH net-next] ip: avoid OOM kills with large UDP sends over
- loopback
-Message-ID: <20210622101952.28839d7e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20210622095422.5e078bd4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <20210621231307.1917413-1-kuba@kernel.org>
-        <8fe00e04-3a79-6439-6ec7-5e40408529e2@gmail.com>
-        <20210622095422.5e078bd4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        s=k20201202; t=1624382406;
+        bh=kaIOMJMfpBlno7xuIPblma4VBSHdfTRBs+Y+WW4jsTA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=B1vE80XUHVPZfSCMor1Fpe9XqbS6EAxCAa9U6wOLz/K7szCnjBO6HHeoLcOjH6uN/
+         pWJUNM4lxCUdlC1c161qe/IB+0Idy2lHuuebgHeh/mMOMhXKTvFiYgug5X260hjCBQ
+         fKQy2Xf8ubLOGdLLXWe1F3eOmJJ4X5FZ7WN/DMdkYb6Tq1O76kM4Z7p7g37E7qgTLX
+         4N0jfz3kukOo32ih8vGOpLxE8AtE1qrB2JfPYWlQnEbhW9/bjJf94HodRjo8boPbSk
+         d3dFe9MPbLH0bPV195uMqLhh6RJOg+8IYLtIKOIwEkWGSrrCGcWKjHPNiq6RnqR0vh
+         MT9aq8ww4yPrA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9967F60A6C;
+        Tue, 22 Jun 2021 17:20:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] octeontx2-af: Avoid field-overflowing memcpy()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162438240662.16834.16023435112374895219.git-patchwork-notify@kernel.org>
+Date:   Tue, 22 Jun 2021 17:20:06 +0000
+References: <20210621215419.1407886-1-keescook@chromium.org>
+In-Reply-To: <20210621215419.1407886-1-keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     davem@davemloft.net, sgoutham@marvell.com, lcherian@marvell.com,
+        gakula@marvell.com, jerinj@marvell.com, hkelam@marvell.com,
+        sbhatta@marvell.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-hardening@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Jun 2021 09:54:22 -0700 Jakub Kicinski wrote:
-> > > +static inline void sk_allocation_push(struct sock *sk, gfp_t flag, gfp_t *old)
-> > > +{
-> > > +	*old = sk->sk_allocation;
-> > > +	sk->sk_allocation |= flag;
-> > > +}
-> > > +    
-> > 
-> > This is not thread safe.
-> > 
-> > Remember UDP sendmsg() does not lock the socket for non-corking sends.  
+Hello:
+
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Mon, 21 Jun 2021 14:54:19 -0700 you wrote:
+> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> field bounds checking for memcpy(), memmove(), and memset(), avoid
+> intentionally writing across neighboring fields.
 > 
-> Ugh, you're right :(
+> To avoid having memcpy() think a u64 "prof" is being written beyond,
+> adjust the prof member type by adding struct nix_bandprof_s to the union
+> to match the other structs. This silences the following future warning:
+> 
+> [...]
 
-Hm, isn't it buggy to call sock_alloc_send_[p]skb() without holding the
-lock in the first place, then? The knee jerk fix would be to add another 
-layer of specialization to the helpers:
+Here is the summary with links:
+  - octeontx2-af: Avoid field-overflowing memcpy()
+    https://git.kernel.org/netdev/net-next/c/ee8e7622e09a
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 7a7058f4f265..06f031705418 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1714,9 +1725,20 @@ int sock_gettstamp(struct socket *sock, void __user *userstamp,
- 		   bool timeval, bool time32);
- struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
- 				    int noblock, int *errcode);
--struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
--				     unsigned long data_len, int noblock,
--				     int *errcode, int max_page_order);
-+struct sk_buff *__sock_alloc_send_pskb(struct sock *sk,
-+				       unsigned long header_len,
-+				       unsigned long data_len, int noblock,
-+				       int *errcode, int max_page_order,
-+				       gfp_t gfp_flags);
-+
-+static inline sk_buff *
-+sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
-+		     unsigned long data_len, int noblock, int *errcode)
-+{
-+	return __sock_alloc_send_pskb(sk, header_len, data_len,
-+				      noblock, errcode, 0, sk->sk_allocation);
-+}
-+
- void *sock_kmalloc(struct sock *sk, int size, gfp_t priority);
- void sock_kfree_s(struct sock *sk, void *mem, int size);
- void sock_kzfree_s(struct sock *sk, void *mem, int size);
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 946888afef88..64b7271a7d21 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2331,9 +2331,11 @@ static long sock_wait_for_wmem(struct sock *sk, long timeo)
-  *	Generic send/receive buffer handlers
-  */
- 
--struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
--				     unsigned long data_len, int noblock,
--				     int *errcode, int max_page_order)
-+struct sk_buff *__sock_alloc_send_pskb(struct sock *sk,
-+				       unsigned long header_len,
-+				       unsigned long data_len, int noblock,
-+				       int *errcode, int max_page_order,
-+				       gfp_t gfp_flags)
- {
- 	struct sk_buff *skb;
- 	long timeo;
-@@ -2362,7 +2364,7 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
- 		timeo = sock_wait_for_wmem(sk, timeo);
- 	}
- 	skb = alloc_skb_with_frags(header_len, data_len, max_page_order,
--				   errcode, sk->sk_allocation);
-+				   errcode, gfp_flags);
- 	if (skb)
- 		skb_set_owner_w(skb, sk);
- 	return skb;
-@@ -2373,7 +2375,7 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
- 	*errcode = err;
- 	return NULL;
- }
--EXPORT_SYMBOL(sock_alloc_send_pskb);
-+EXPORT_SYMBOL(__sock_alloc_send_pskb);
- 
- struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
- 				    int noblock, int *errcode)
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index c3efc7d658f6..211f1ea6cf2a 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1095,9 +1095,22 @@ static int __ip_append_data(struct sock *sk,
- 				alloclen += rt->dst.trailer_len;
- 
- 			if (transhdrlen) {
--				skb = sock_alloc_send_skb(sk,
--						alloclen + hh_len + 15,
--						(flags & MSG_DONTWAIT), &err);
-+				bool sg = rt->dst.dev->features & NETIF_F_SG;
-+				size_t header_len = alloclen + hh_len + 15;
-+				gfp_t sk_allocation;
-+
-+				sk_allocation = sk->sk_allocation;
-+				if (header_len > PAGE_SIZE && sg)
-+					sk_allocation |= __GFP_NORETRY;
-+
-+				skb = __sock_alloc_send_pskb(sk, header_len, 0,
-+						(flags & MSG_DONTWAIT), &err,
-+							     0, sk_allocation);
-+				if (unlikely(!skb) && !paged && sg) {
-+					BUILD_BUG_ON(MAX_HEADER >= PAGE_SIZE);
-+					paged = true;
-+					goto alloc_new_skb;
-+				}
- 			} else {
- 				skb = NULL;
- 				if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
