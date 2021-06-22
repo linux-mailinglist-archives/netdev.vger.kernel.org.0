@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3AE73B0C7A
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:08:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F143B0C7B
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:08:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232600AbhFVSLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 14:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
+        id S232623AbhFVSLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 14:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232301AbhFVSK4 (ORCPT
+        with ESMTP id S232487AbhFVSK4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:10:56 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D9CC0611C2;
-        Tue, 22 Jun 2021 11:05:03 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id x21so87950qtq.9;
-        Tue, 22 Jun 2021 11:05:03 -0700 (PDT)
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2AEC09B040;
+        Tue, 22 Jun 2021 11:05:06 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id bj15so40003158qkb.11;
+        Tue, 22 Jun 2021 11:05:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=lOaIRsk7HP5oq5mdzuR9Qy1EOzmEMsYGwEFloyPsJkw=;
-        b=jGlPGve0y12rm7zM51XapUr/ACQW11lNKvUMjhbnvsGPKXA9D7dpuZcWcbSywzkocA
-         RMHQmS2b+f27iLX+oHmR3CbIST3roZEssAQMLjQ3qG28hvd0D6d6hwONxg8KxTCjtGOM
-         zpILRFJdz2PthgbyJZcQJFppM6VJWw5PaB2HynT6uLVbesS3DcV60+ri0hBLzh+C5oam
-         EGh2nKrcrakqGu3yq6TLQCF+NkoyzHTRANm5fvMpsUKz3vhL6z2set9PVlBwLngvonM8
-         gwT9nZwVwRdQyPy9IoM7BzQQRnWcmIW16OqMGe8V93j0IwBTRu22jLQf+br4+iGvavHD
-         elKQ==
+        bh=bkonEhF9Dq3Mjip06DwVmVRI4QWy6PqKhH0gbNgAnj0=;
+        b=Y2I+MQOvyvPVLPqicBPeniHIOy+LlOeKWIWa0uXzTOI5n2/ePkLkEQ1L5QubhD1pRF
+         nNC0r4nX/QWLcpyUgGlFZV2wCzuQswWSVfLVyhnI1B0lYmVGH+gaXKrF83601cbnV5w7
+         5gCsOkXUfWKiAeq9i6DsDMPUJuLTr6+sVVjXweqY/Gsn9RqlIWU8xb2R4mYan8CS0s28
+         jkUUh7i0rd9Au/eTD92r4vGquwcIcCpwtIrDbG5IWPzdQR5h4fs4Dvp1NdyUYBZ4BoAF
+         4d6JeBnrxyybmvfQpsZMg6z77MvpaelyMO2fTKzrnd2tdYgDeNn+CvMFTOdZzGEIM1PZ
+         4F1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lOaIRsk7HP5oq5mdzuR9Qy1EOzmEMsYGwEFloyPsJkw=;
-        b=ptiAg0yx06RU6mjH2ZceOKm3fwjMGTeZu5vtS7i64C/Kufw1VxbHvvQWS03UaZOHkk
-         br56TYURXyfwNrBTk1F7yIFRomKxsXKLT7NOq8aaVBOrgZSzjBfQw+41c9PUnsALOjT9
-         9JaYdJWUTdEwt7SyPGks7Da9vdIGJoo0w4qRYwNkdbT2zFvLFCb1OiClumlxgEfP7d9X
-         gTRu/MvLdB4Q+VlTfVTZhqAmeRT+teBLlkD25i4GtU3H+Ad6jUKhKiWY+7dIeK2/hTO4
-         hEam6AVeC7OfKZefdx1yYLEelIO/eqI5Q4QcE5z6V2CAXeN98zew48Qzi8VUKvPS8jrK
-         1BTw==
-X-Gm-Message-State: AOAM5326J1imWga1uJaPtavnVuYmOIv+tb1xlN7idnpG1vquze0vuMMc
-        9xfbI9FH3Lmw63suIauUDvdrU8TIik0=
-X-Google-Smtp-Source: ABdhPJwaYv450Erf1uUJ3goehHVoPaofqrg59D8poyoqfJhJAl/dIQve1JixmZGZQ2EVzqYwM7o3iA==
-X-Received: by 2002:ac8:444f:: with SMTP id m15mr34938qtn.340.1624385102360;
-        Tue, 22 Jun 2021 11:05:02 -0700 (PDT)
+        bh=bkonEhF9Dq3Mjip06DwVmVRI4QWy6PqKhH0gbNgAnj0=;
+        b=e2oPmb9MSH8ABMjMVKSX8DomeYqkHFdlkCqhvsjsAbDHtqZfyQN6YFn0VstV4CksmQ
+         HGr1tc8Zx5QQyldXnygvjplaesdj1N0l0PHFgsVYAChKEls0ScJ9O5EoBU5unDebPIuC
+         nRvA5XUk73CH8NoNabV4posFHNNYWV9T+USENINiwKdX5S2W3XSXxhdRJ7XDYsggWGlF
+         1Jw3Lk26QNFDNtyRsRpquPF1J5+jRtaEuRd19J8Y46XNjNrxaY5Vmvtm/mIIba3M0HC4
+         SS6nQF5XIJUTIIwbo4W9M1MLurhi/QAxv7R19fX+jQillwW1TqzVWYwAAX38Mth8mtjK
+         Rc5A==
+X-Gm-Message-State: AOAM533zZzmeewoD0IzpmCErA51n/IT4/nJ36snqoCYEunYXCbIrnKK8
+        tLywou6FOJlshlTAo+z4/jY7WzHaE81gWQ==
+X-Google-Smtp-Source: ABdhPJwS9mvJkQ4+aEKOrl4REajWg/p6JrmC5IazlkDjez63qCvYbP7PjYFaFpGYWboS+qnEdE50PQ==
+X-Received: by 2002:a37:a8ca:: with SMTP id r193mr2395749qke.455.1624385103453;
+        Tue, 22 Jun 2021 11:05:03 -0700 (PDT)
 Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id c80sm9349399qkg.120.2021.06.22.11.05.01
+        by smtp.gmail.com with ESMTPSA id x9sm2224184qtf.76.2021.06.22.11.05.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 11:05:02 -0700 (PDT)
+        Tue, 22 Jun 2021 11:05:03 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
         kuba@kernel.org,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         linux-sctp@vger.kernel.org
-Subject: [PATCHv2 net-next 01/14] sctp: add pad chunk and its make function and event table
-Date:   Tue, 22 Jun 2021 14:04:47 -0400
-Message-Id: <242246f380811284c371014fbde90b85cfea67de.1624384990.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 02/14] sctp: add probe_interval in sysctl and sock/asoc/transport
+Date:   Tue, 22 Jun 2021 14:04:48 -0400
+Message-Id: <55d8108c02e0fe4f3e31e2968123fef50be2a1c3.1624384990.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1624384990.git.lucien.xin@gmail.com>
 References: <cover.1624384990.git.lucien.xin@gmail.com>
@@ -64,137 +64,188 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This chunk is defined in rfc4820#section-3, and used to pad an
-SCTP packet. The receiver must discard this chunk and continue
-processing the rest of the chunks in the packet.
+PLPMTUD can be enabled by doing 'sysctl -w net.sctp.probe_interval=n'.
+'n' is the interval for PLPMTUD probe timer in milliseconds, and it
+can't be less than 5000 if it's not 0.
 
-Add it now, as it will be bundled with a heartbeat chunk to probe
-pmtu in the following patches.
+All asoc/transport's PLPMTUD in a new socket will be enabled by default.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 ---
- include/linux/sctp.h     |  7 +++++++
- include/net/sctp/sm.h    |  1 +
- net/sctp/sm_make_chunk.c | 26 ++++++++++++++++++++++++++
- net/sctp/sm_statetable.c | 23 +++++++++++++++++++++++
- 4 files changed, 57 insertions(+)
+ Documentation/networking/ip-sysctl.rst |  8 ++++++
+ include/net/netns/sctp.h               |  3 +++
+ include/net/sctp/constants.h           |  2 ++
+ include/net/sctp/structs.h             |  3 +++
+ net/sctp/associola.c                   |  2 ++
+ net/sctp/socket.c                      |  1 +
+ net/sctp/sysctl.c                      | 35 ++++++++++++++++++++++++++
+ 7 files changed, 54 insertions(+)
 
-diff --git a/include/linux/sctp.h b/include/linux/sctp.h
-index bb1926589693..a86e852507b3 100644
---- a/include/linux/sctp.h
-+++ b/include/linux/sctp.h
-@@ -98,6 +98,7 @@ enum sctp_cid {
- 	SCTP_CID_I_FWD_TSN		= 0xC2,
- 	SCTP_CID_ASCONF_ACK		= 0x80,
- 	SCTP_CID_RECONF			= 0x82,
-+	SCTP_CID_PAD			= 0x84,
- }; /* enum */
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index b0436d3a4f11..8bff728b3a1e 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -2834,6 +2834,14 @@ encap_port - INTEGER
  
+ 	Default: 0
  
-@@ -410,6 +411,12 @@ struct sctp_heartbeat_chunk {
- };
- 
- 
-+/* PAD chunk could be bundled with heartbeat chunk to probe pmtu */
-+struct sctp_pad_chunk {
-+	struct sctp_chunkhdr uh;
-+};
++plpmtud_probe_interval - INTEGER
++        The time interval (in milliseconds) for sending PLPMTUD probe chunks.
++        These chunks are sent at the specified interval with a variable size
++        to probe the mtu of a given path between 2 endpoints. PLPMTUD will
++        be disabled when 0 is set, and other values for it must be >= 5000.
 +
++	Default: 0
 +
- /* For the abort and shutdown ACK we must carry the init tag in the
-  * common header. Just the common header is all that is needed with a
-  * chunk descriptor.
-diff --git a/include/net/sctp/sm.h b/include/net/sctp/sm.h
-index fd223c94589a..09c59154634d 100644
---- a/include/net/sctp/sm.h
-+++ b/include/net/sctp/sm.h
-@@ -230,6 +230,7 @@ struct sctp_chunk *sctp_make_heartbeat_ack(const struct sctp_association *asoc,
- 					   const struct sctp_chunk *chunk,
- 					   const void *payload,
- 					   const size_t paylen);
-+struct sctp_chunk *sctp_make_pad(const struct sctp_association *asoc, int len);
- struct sctp_chunk *sctp_make_op_error(const struct sctp_association *asoc,
- 				      const struct sctp_chunk *chunk,
- 				      __be16 cause_code, const void *payload,
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index 5b44d228b6ca..e5d470cd7c40 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -1218,6 +1218,32 @@ struct sctp_chunk *sctp_make_heartbeat_ack(const struct sctp_association *asoc,
- 	return retval;
+ 
+ ``/proc/sys/net/core/*``
+ ========================
+diff --git a/include/net/netns/sctp.h b/include/net/netns/sctp.h
+index a0f315effa94..40240722cdca 100644
+--- a/include/net/netns/sctp.h
++++ b/include/net/netns/sctp.h
+@@ -84,6 +84,9 @@ struct netns_sctp {
+ 	/* HB.interval		    - 30 seconds  */
+ 	unsigned int hb_interval;
+ 
++	/* The interval for PLPMTUD probe timer */
++	unsigned int probe_interval;
++
+ 	/* Association.Max.Retrans  - 10 attempts
+ 	 * Path.Max.Retrans	    - 5	 attempts (per destination address)
+ 	 * Max.Init.Retransmits	    - 8	 attempts
+diff --git a/include/net/sctp/constants.h b/include/net/sctp/constants.h
+index 14a0d22c9113..449cf9cb428b 100644
+--- a/include/net/sctp/constants.h
++++ b/include/net/sctp/constants.h
+@@ -424,4 +424,6 @@ enum {
+  */
+ #define SCTP_AUTH_RANDOM_LENGTH 32
+ 
++#define SCTP_PROBE_TIMER_MIN	5000
++
+ #endif /* __sctp_constants_h__ */
+diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
+index 1aa585216f34..bf5d22deaefb 100644
+--- a/include/net/sctp/structs.h
++++ b/include/net/sctp/structs.h
+@@ -177,6 +177,7 @@ struct sctp_sock {
+ 	 * will be inherited by all new associations.
+ 	 */
+ 	__u32 hbinterval;
++	__u32 probe_interval;
+ 
+ 	__be16 udp_port;
+ 	__be16 encap_port;
+@@ -858,6 +859,7 @@ struct sctp_transport {
+ 	 * the destination address every heartbeat interval.
+ 	 */
+ 	unsigned long hbinterval;
++	unsigned long probe_interval;
+ 
+ 	/* SACK delay timeout */
+ 	unsigned long sackdelay;
+@@ -1795,6 +1797,7 @@ struct sctp_association {
+ 	 * will be inherited by all new transports.
+ 	 */
+ 	unsigned long hbinterval;
++	unsigned long probe_interval;
+ 
+ 	__be16 encap_port;
+ 
+diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+index 336df4b36655..e01895edd3a4 100644
+--- a/net/sctp/associola.c
++++ b/net/sctp/associola.c
+@@ -98,6 +98,7 @@ static struct sctp_association *sctp_association_init(
+ 	 * sock configured value.
+ 	 */
+ 	asoc->hbinterval = msecs_to_jiffies(sp->hbinterval);
++	asoc->probe_interval = msecs_to_jiffies(sp->probe_interval);
+ 
+ 	asoc->encap_port = sp->encap_port;
+ 
+@@ -625,6 +626,7 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
+ 	 * association configured value.
+ 	 */
+ 	peer->hbinterval = asoc->hbinterval;
++	peer->probe_interval = asoc->probe_interval;
+ 
+ 	peer->encap_port = asoc->encap_port;
+ 
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index a79d193ff872..d2960ab665a5 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -4989,6 +4989,7 @@ static int sctp_init_sock(struct sock *sk)
+ 	atomic_set(&sp->pd_mode, 0);
+ 	skb_queue_head_init(&sp->pd_lobby);
+ 	sp->frag_interleave = 0;
++	sp->probe_interval = net->sctp.probe_interval;
+ 
+ 	/* Create a per socket endpoint structure.  Even if we
+ 	 * change the data structure relationships, this may still
+diff --git a/net/sctp/sysctl.c b/net/sctp/sysctl.c
+index 55871b277f47..b46a416787ec 100644
+--- a/net/sctp/sysctl.c
++++ b/net/sctp/sysctl.c
+@@ -55,6 +55,8 @@ static int proc_sctp_do_alpha_beta(struct ctl_table *ctl, int write,
+ 				   void *buffer, size_t *lenp, loff_t *ppos);
+ static int proc_sctp_do_auth(struct ctl_table *ctl, int write,
+ 			     void *buffer, size_t *lenp, loff_t *ppos);
++static int proc_sctp_do_probe_interval(struct ctl_table *ctl, int write,
++				       void *buffer, size_t *lenp, loff_t *ppos);
+ 
+ static struct ctl_table sctp_table[] = {
+ 	{
+@@ -293,6 +295,13 @@ static struct ctl_table sctp_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
+ 	},
++	{
++		.procname	= "plpmtud_probe_interval",
++		.data		= &init_net.sctp.probe_interval,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_sctp_do_probe_interval,
++	},
+ 	{
+ 		.procname	= "udp_port",
+ 		.data		= &init_net.sctp.udp_port,
+@@ -539,6 +548,32 @@ static int proc_sctp_do_udp_port(struct ctl_table *ctl, int write,
+ 	return ret;
  }
  
-+/* RFC4820 3. Padding Chunk (PAD)
-+ *  0                   1                   2                   3
-+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * | Type = 0x84   |   Flags=0     |             Length            |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                                                               |
-+ * \                         Padding Data                          /
-+ * /                                                               \
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ */
-+struct sctp_chunk *sctp_make_pad(const struct sctp_association *asoc, int len)
++static int proc_sctp_do_probe_interval(struct ctl_table *ctl, int write,
++				       void *buffer, size_t *lenp, loff_t *ppos)
 +{
-+	struct sctp_chunk *retval;
++	struct net *net = current->nsproxy->net_ns;
++	struct ctl_table tbl;
++	int ret, new_value;
 +
-+	retval = sctp_make_control(asoc, SCTP_CID_PAD, 0, len, GFP_ATOMIC);
-+	if (!retval)
-+		return NULL;
++	memset(&tbl, 0, sizeof(struct ctl_table));
++	tbl.maxlen = sizeof(unsigned int);
 +
-+	skb_put_zero(retval->skb, len);
-+	retval->chunk_hdr->length = htons(ntohs(retval->chunk_hdr->length) + len);
-+	retval->chunk_end = skb_tail_pointer(retval->skb);
++	if (write)
++		tbl.data = &new_value;
++	else
++		tbl.data = &net->sctp.probe_interval;
 +
-+	return retval;
++	ret = proc_dointvec(&tbl, write, buffer, lenp, ppos);
++	if (write && ret == 0) {
++		if (new_value && new_value < SCTP_PROBE_TIMER_MIN)
++			return -EINVAL;
++
++		net->sctp.probe_interval = new_value;
++	}
++
++	return ret;
 +}
 +
- /* Create an Operation Error chunk with the specified space reserved.
-  * This routine can be used for containing multiple causes in the chunk.
-  */
-diff --git a/net/sctp/sm_statetable.c b/net/sctp/sm_statetable.c
-index 88ea87f4f0e7..c82c4233ec6b 100644
---- a/net/sctp/sm_statetable.c
-+++ b/net/sctp/sm_statetable.c
-@@ -526,6 +526,26 @@ auth_chunk_event_table[SCTP_NUM_AUTH_CHUNK_TYPES][SCTP_STATE_NUM_STATES] = {
- 	TYPE_SCTP_AUTH,
- }; /*state_fn_t auth_chunk_event_table[][] */
- 
-+static const struct sctp_sm_table_entry
-+pad_chunk_event_table[SCTP_STATE_NUM_STATES] = {
-+	/* SCTP_STATE_CLOSED */
-+	TYPE_SCTP_FUNC(sctp_sf_discard_chunk),
-+	/* SCTP_STATE_COOKIE_WAIT */
-+	TYPE_SCTP_FUNC(sctp_sf_discard_chunk),
-+	/* SCTP_STATE_COOKIE_ECHOED */
-+	TYPE_SCTP_FUNC(sctp_sf_discard_chunk),
-+	/* SCTP_STATE_ESTABLISHED */
-+	TYPE_SCTP_FUNC(sctp_sf_discard_chunk),
-+	/* SCTP_STATE_SHUTDOWN_PENDING */
-+	TYPE_SCTP_FUNC(sctp_sf_discard_chunk),
-+	/* SCTP_STATE_SHUTDOWN_SENT */
-+	TYPE_SCTP_FUNC(sctp_sf_discard_chunk),
-+	/* SCTP_STATE_SHUTDOWN_RECEIVED */
-+	TYPE_SCTP_FUNC(sctp_sf_discard_chunk),
-+	/* SCTP_STATE_SHUTDOWN_ACK_SENT */
-+	TYPE_SCTP_FUNC(sctp_sf_discard_chunk),
-+};	/* chunk pad */
-+
- static const struct sctp_sm_table_entry
- chunk_event_table_unknown[SCTP_STATE_NUM_STATES] = {
- 	/* SCTP_STATE_CLOSED */
-@@ -992,6 +1012,9 @@ static const struct sctp_sm_table_entry *sctp_chunk_event_lookup(
- 
- 	case SCTP_CID_AUTH:
- 		return &auth_chunk_event_table[0][state];
-+
-+	case SCTP_CID_PAD:
-+		return &pad_chunk_event_table[state];
- 	}
- 
- 	return &chunk_event_table_unknown[state];
+ int sctp_sysctl_net_register(struct net *net)
+ {
+ 	struct ctl_table *table;
 -- 
 2.27.0
 
