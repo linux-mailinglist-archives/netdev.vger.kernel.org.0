@@ -2,146 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B7D83B0D2D
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:46:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 125D93B0D30
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:48:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbhFVSsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 14:48:15 -0400
-Received: from mail-dm6nam12on2076.outbound.protection.outlook.com ([40.107.243.76]:17376
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232638AbhFVSsO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 14:48:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NKltZSoOeCB25y+hWd0GN/sJ93LEllqbqvWqV9ndnflBNNjlnyIOaXVIi5q9HoQDWvvA4LscJyrw17u584IMPOYhy+A3PgTI7fIX6WNc+P+mLf+WNNWRNOFc8w5PFZ/8g/Qe1Qi68lC6QFDwchuS9sqGpZkaHN1MopUyHe/otppFP6qkyLB6SY0oOPtYl1wM/Ni+q/UHO0odweep1DfPrsIM14IsE6opTRNM2peQSgkG3lK41Ff7hAhj/d0P0LZEr3X2c7beQvsArLLLKMsCktAexgNXdnqy438WGFfmYzAkm/nBi/MkGWDvdsipFbAmbc882+QxAn665kAL2Sf5fw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KMGZiI9byiiNt/jwj3RKb0biAafqOxsDIRUVTzOQItk=;
- b=G4c1S2lC2qtiFkgXwnglLk1OEU2Dwe1/DBeIpaxZaXx823H4ErobfxkkfaI3jJLkzIPeaxT/9W2MdMO45qzQ8tJZomcNbDmBenO2mXnW0NHvXSmX/eD2B0tKrv8eUrGw+djNIL3r7OLqFw6Q79/lVSc3yHO7rC6buFQqmokiakxjyr/Vg9o80NLiCp2tnw+6PzMTdWOxakgSywnT4zd/mBJ2yqQFugRfKKwJIoZQ+tnCIhU/6Mjy/udSLgZOJlJAPRmmxEt4/xqjJkvnR3Mdd2Lw0bv/sIZPAj+cVFnASzTk6wr/ukuJ+Hcolt9nC+SqcuERiveqFIWEOopC3NUUzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KMGZiI9byiiNt/jwj3RKb0biAafqOxsDIRUVTzOQItk=;
- b=k7qzBTibV1HC3byk9tbGSiF7bgwIokFMrAw1eOxfzBURSz51KVj4YCaF+K8CZB1Tt+gZum8smzg3kj6tDpsG333T4puY0uaXVCQ6/Ny7HCDhMI7Du7qaD+CgYjjoPB8MrjuSfb7rGsJ8TNf7Am3AUEvg/MZfVEpVfL7yMER50b2syp2WtkcSxpMsQ/3BpnJkhoMPScLJUZ4S+/lhvYOJYNqsRq9U1XBYP97zz3MZxOQXQ47pzsQjBAZXPITXjgFTN8QLqYVeg7KLXjQwEYw8akcGFosiTHDlxOaQ20hQXiYohwAcqhQFR02DnlxuIKf+Uh4JgMuf7LgwHDXIJoGZlA==
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5205.namprd12.prod.outlook.com (2603:10b6:208:308::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.18; Tue, 22 Jun
- 2021 18:45:57 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e%8]) with mapi id 15.20.4264.018; Tue, 22 Jun 2021
- 18:45:57 +0000
-Date:   Tue, 22 Jun 2021 15:45:56 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Lior Nahmanson <liorna@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH rdma-next v1 2/3] RDMA/mlx5: Separate DCI QP creation
- logic
-Message-ID: <20210622184556.GA2596427@nvidia.com>
-References: <cover.1624258894.git.leonro@nvidia.com>
- <b4530bdd999349c59691224f016ff1efb5dc3b92.1624258894.git.leonro@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b4530bdd999349c59691224f016ff1efb5dc3b92.1624258894.git.leonro@nvidia.com>
-X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: BL1PR13CA0268.namprd13.prod.outlook.com
- (2603:10b6:208:2ba::33) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+        id S232418AbhFVSuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 14:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230338AbhFVSuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:50:18 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA431C061574
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:48:00 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id d11so22456138wrm.0
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:48:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iAITes+Jo71idw2S0QBWHuXUwCSrq9cK57h7PnnnYf4=;
+        b=X1Dakbuapi5D3kXJdZpcon1q/b2GXOa8DDUAsXVbb2Ut95DB2yZ4cJ0JJ5qocsMniJ
+         Kd1LpbNb/dM8Hm6YHNsYF3bqkH7L+AJL+uEP8D5NS6Tr80pI6IKNDd7ebbCmHFkhS1lw
+         h1wAekphlEmpLRIU7SYoSL1kAoMh1zOxn6nKKAIuEVDqQ1QgQqYu1Nf/5zAAJJJ7TCTy
+         4EBRmXuZBZdBxbXw1hG6Pvw4lhLGADoh3ffUpjTV9qIjsr8TUS+uNwWrRvML0RPvchPA
+         8kbMgTtwUoir+X390DCHj2uhs9cz6LjnaiWyREh5ZLwQjxcnuTQqvh6WrtIJLXPmmcUE
+         kLSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iAITes+Jo71idw2S0QBWHuXUwCSrq9cK57h7PnnnYf4=;
+        b=J5+1ckz44i1i/JynyMk7ZkkgqKgqfgidCGWTyx3Qc24Wk49/cLJ7lRXUoENqxD7/Mx
+         ygLv1RDhYzIpOEssnAEGq9Z/y7dyswTjOXniMO2fT1/uuLBqLIA0ar+joxOPLOwCttSr
+         vmdrooVGbVC+wO0YJPreK13Tx+4nq7FM34b8OoTJdmxL5NkbffytI1+2punKx/YuvhBG
+         rK5/fUB6T8iJnFWRbn/1wB2Jgfjk3dKbCIlSaE9X5Tl4Xqi9JYHpfya2XiKZAl2cm5gJ
+         iq2ffZ3L9gvtEu9mDrDOdo8Pkk50l51v7+1a6TWWfUzCPWs7CrWI86gjCAebTQjKCCpY
+         u5ow==
+X-Gm-Message-State: AOAM530ZbfEpvH/kuL5V0weuaPJCzvkCfhO6v7xRaVZQF17cbS0n/SL5
+        Y7Z2UGIG70ecTLGh7jox1VM=
+X-Google-Smtp-Source: ABdhPJzB8JLxHK5LTxI1oNV3fZgIu7v4MgpuKu8NWDdCb+fqLbSCYFXyZ3URSytr7pfOCFc1/kJCCQ==
+X-Received: by 2002:adf:f1d0:: with SMTP id z16mr6761184wro.307.1624387679514;
+        Tue, 22 Jun 2021 11:47:59 -0700 (PDT)
+Received: from [10.0.0.15] ([37.164.53.25])
+        by smtp.gmail.com with ESMTPSA id m184sm3368013wmm.26.2021.06.22.11.47.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Jun 2021 11:47:59 -0700 (PDT)
+Subject: Re: [PATCH net-next] ip: avoid OOM kills with large UDP sends over
+ loopback
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, willemb@google.com,
+        dsahern@gmail.com, yoshfuji@linux-ipv6.org, Dave Jones <dsj@fb.com>
+References: <20210621231307.1917413-1-kuba@kernel.org>
+ <8fe00e04-3a79-6439-6ec7-5e40408529e2@gmail.com>
+ <20210622095422.5e078bd4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <462f87f4-cc90-1c0e-3a9f-c65c64781dc3@gmail.com>
+ <20210622110935.35318a30@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d4e2cf28-89f9-7c1f-91de-759de2c47fae@gmail.com>
+Date:   Tue, 22 Jun 2021 20:47:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (47.55.113.94) by BL1PR13CA0268.namprd13.prod.outlook.com (2603:10b6:208:2ba::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.9 via Frontend Transport; Tue, 22 Jun 2021 18:45:57 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lvlPI-00AtWJ-CR; Tue, 22 Jun 2021 15:45:56 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ae6b796f-3527-4576-e49b-08d935adf8f1
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5205:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB52059AE28AD1F483A8BF6818C2099@BL1PR12MB5205.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: P6K8mpFipdyQkibNGNyRFeJOyHcJ7gFPkGQkQY9SrAQWKHO5TZ0dbgcS6dfBDVKBzrmOK+SLHXNZbva8CGzjrKTQq+0WDl/xjXbQJVhGgpHHYKTsbftepG8/pyicxaoNjiET6MHH9iEVI7VWc6lSI9P04GvANBl6mi0ghjxf0e70Fvuo5Veuka9q1JWJDQFUWafECKSNhSniETujSUHVmN9CvHoLNuy7Gb+i9oeXUIpJ9Ano6bqyzBt2A05pFxlZJDqGPnTNPqcw40LG8gbHaz1aDjT5Pncr1gNYT/0ge0ROs4fkv7xVqtJiHdPupRaxmUx8b9etAUp5LrXhX7dFT9oR3QLQFyrdelYa3Ylvnw3WP3l9MG+E3rkcJISJ8RK/wc5oC4eOjWHO688RkdSORCNaDNjyLCafvbR9x/ODjNpG+nsvkHe4SBV8t+Fm7drLVfu9TdfRamv0UNsKUmAj0644zrilpVfK2th/z859PrblBU4u7RjGAbCbiaUaq4u6FL+sgRii2Q0nzENL4gMv4PgMHxjwbhCPa3MIJL6TlA9v4DxqABcFYL1nTHpy+lwU9Y7oX5WwV1AxLGWF5fcAVPTAhEteNDrmG7e0ZtkplFM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(366004)(346002)(396003)(136003)(36756003)(66946007)(2616005)(66476007)(66556008)(9786002)(9746002)(426003)(8936002)(2906002)(8676002)(316002)(54906003)(5660300002)(86362001)(186003)(33656002)(26005)(1076003)(38100700002)(107886003)(4326008)(478600001)(6916009);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QjHZjnZZNJ0wI7DF715He9r2YqCG7xRpRRPUlooA1lYvZDjLp3QbKAEKLcDK?=
- =?us-ascii?Q?RermJqFmUD5BrU5ifS+adIG0owZjudkJAbkUYG+f94gvaBtRZhXsCpRmBTmg?=
- =?us-ascii?Q?1D4snAZ5z/u1yN+g/HpihqshqUgHWKcvRBJ82f+JIzEYflLxKGshqRSeTd6O?=
- =?us-ascii?Q?ftrob6psfguvGfWk21/N/tnDPV/cnn1jhOS/+aEyq/qUvnXzt5QvVXUlj5JW?=
- =?us-ascii?Q?kriRZ+i/5Q/fbM4f3pwF8TSGtWUDvsxC/Ys2WCcoiKl7J5kyQ3+3EaTQyMT2?=
- =?us-ascii?Q?Ws9IRMB6rcJanf2ZPCoL+6g0dBlXLWFhD8XPg7LvbO+eucYK6MUkOQghWT60?=
- =?us-ascii?Q?w/EVnNRTqJAYyT4KDxx2GinAh56ncX18r26AS6lnvNqn+fIPiFibMtiYiZYZ?=
- =?us-ascii?Q?QouOiVK6xgTTHTQuHNoqJ1PuAx24kzCsYu4U/B/p5UCaO7gWz4yTgZPJnhOp?=
- =?us-ascii?Q?c5TpdzFm7PoJ8tRgy5esNiXNVj8PxC5xCJrXITEBdAacdEedndeflENRiid/?=
- =?us-ascii?Q?FxmufhErXJfBAg/OLH1YvTrnm30iOTrBiTcdoVEz0DekzlwuXcfbmGjJabe8?=
- =?us-ascii?Q?fnsqCcDeQh0soexMaBtHK79/VJM5LKZhHYlw/wYuz/OhorMbQCcoxurmGZqT?=
- =?us-ascii?Q?m6CWuEX7xo931hbaW/fzaSQ98mc4lb7GcolgXA0nUheHmtOz1Hn+Ec/zvO84?=
- =?us-ascii?Q?bcYFxTL/kipaSWzua4skCKJa5OleG/K4HaDJrXfd3ATP+9ZeoF0Dt70zYELB?=
- =?us-ascii?Q?Li6d8Na8yrbIX0sqpADDGEUQUOIe61kt+MBWazTIxxTRyW6bJjsEryMjjOnv?=
- =?us-ascii?Q?dg/DMB4Y/Mtxr4TBq/scxeGXISRAnPbiHZpI9NvDpy64Y3MMUGY2aPghcVPM?=
- =?us-ascii?Q?4/DWmr7L8ceKUxPrp61zvJD3YyuvIningV5iHKeQixdb2IOu+ofrs8VuQVVN?=
- =?us-ascii?Q?cJ21FhaEpbEAd1wma8rnnNORYVsu3ezR5jSpiXWrsmkMA7x54OaHJQmBEYie?=
- =?us-ascii?Q?zQNYCFR/CrDktheAfQMJrZnsBnkeHCrxjUSTvXmJGgDXHP5nCLRNqyCha/tF?=
- =?us-ascii?Q?/6e+u8N265icqtCNrCLuSPTyPULkA8dvbvoVXjKiGJFEYgrG6a5xAE60NPJT?=
- =?us-ascii?Q?X7rxmDqnIxjGC9prFWrO1qYvNt2YpBfDQ8me5iANuaxZs282nAJQv7nVLbFo?=
- =?us-ascii?Q?SwI5EJpx8OMZAGb+LPvnsRMkUoEomNg+VGhuznbGV0gngWviRni6Szxi9AKe?=
- =?us-ascii?Q?D6zPE52mRFPeoRyC1AvmNQLtg85Ykay/j9vCKZGOYpktoSnKSFEjr1duj3VF?=
- =?us-ascii?Q?cYZ0MfsIeu+35ALJTL/9pzi8?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ae6b796f-3527-4576-e49b-08d935adf8f1
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2021 18:45:57.3335
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sxLsGpByaApBFYANBkeaYOL8BNU7ZOLrtqPt7oMe8uqUxLU4FYyaoHFkk+9f6vNR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5205
+In-Reply-To: <20210622110935.35318a30@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 21, 2021 at 10:06:15AM +0300, Leon Romanovsky wrote:
-> From: Lior Nahmanson <liorna@nvidia.com>
-> 
-> This patch isolates DCI QP creation logic to separate function, so this
-> change will reduce complexity when adding new features to DCI QP without
-> interfering with other QP types.
-> 
-> The code was copied from create_user_qp() while taking only DCI relevant bits.
-> 
-> Reviewed-by: Meir Lichtinger <meirl@nvidia.com>
-> Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
->  drivers/infiniband/hw/mlx5/qp.c | 157 ++++++++++++++++++++++++++++++++
->  1 file changed, 157 insertions(+)
-> 
-> diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
-> index 7a5f1eba60e3..65a380543f5a 100644
-> +++ b/drivers/infiniband/hw/mlx5/qp.c
-> @@ -1974,6 +1974,160 @@ static int create_xrc_tgt_qp(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
->  	return 0;
->  }
->  
-> +static int create_dci(struct mlx5_ib_dev *dev, struct ib_pd *pd,
-> +		      struct mlx5_ib_qp *qp,
-> +		      struct mlx5_create_qp_params *params)
-> +{
 
-This is a huge amount of copying just to add 4 lines, why?
 
-There must be a better way to do this qp stuff.
+On 6/22/21 8:09 PM, Jakub Kicinski wrote:
+> On Tue, 22 Jun 2021 19:48:43 +0200 Eric Dumazet wrote:
+>>>> What about using 	sock_alloc_send_pskb(... PAGE_ALLOC_COSTLY_ORDER)
+>>>> (as we did in unix_dgram_sendmsg() for large packets), for SG enabled interfaces ?  
+>>>
+>>> PAGE_ALLOC_COSTLY_ORDER in itself is more of a problem than a solution.
+>>> AFAIU the app sends messages primarily above the ~60kB mark, which is
+>>> above COSTLY, and those do not trigger OOM kills. All OOM kills we see
+>>> have order=3. Checking with Rik and Johannes W that's expected, OOM
+>>> killer is only invoked for allocations <= COSTLY, larger ones will just
+>>> return NULL and let us deal with it (e.g. by falling back).  
+>>
+>> I  really thought alloc_skb_with_frags() was already handling low-memory-conditions.
+>>
+>> (alloc_skb_with_frags() is called from sock_alloc_send_pskb())
+>>
+>> If it is not, lets fix it, because af_unix sockets will have the same issue ?
+> 
+> af_unix seems to cap at SKB_MAX_ALLOC which is order 2, AFAICT.
 
-Why not put more stuff in _create_user_qp()?
+It does not cap to SKB_MAX_ALLOC.
 
-Jason
+It definitely attempt big allocations if you send 64KB datagrams.
+
+Please look at commit d14b56f508ad70eca3e659545aab3c45200f258c
+    net: cleanup gfp mask in alloc_skb_with_frags
+
+This explains why we do not have __GFP_NORETRY there.
+
+> 
+> Perhaps that's a good enough fix in practice given we see OOMs with
+> order=3 only?
+> 
+> I'll review callers of alloc_skb_with_frags() and see if they depend 
+> on the explicit geometry of the skb or we can safely fallback to pages.
+> 
