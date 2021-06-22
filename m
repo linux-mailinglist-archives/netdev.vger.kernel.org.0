@@ -2,189 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C20D23B10A4
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 01:33:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E84B3B10AA
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 01:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbhFVXgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 19:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbhFVXgI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 19:36:08 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBA5C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 16:33:51 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id v5so870694ilo.5
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 16:33:51 -0700 (PDT)
+        id S229800AbhFVXij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 19:38:39 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:6849 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229667AbhFVXii (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 19:38:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FDnxriAkAs3WYRO9xpOUrYS828idlFB2knO2vwsUSvg=;
-        b=QJp6/9lUz9fJ5U6y2HUgJa7Sj+zgXCAyP8rFy6A3tRUdsTNwtpE1lRwSa6HBQ7/PEW
-         qq+20ws1w6cBSxmeNaX9dlTkAwg0rEsCoPQRrZK1PeH+YbxrtCe0pMym/UgkM/2iJhoi
-         MZ+KedbRWDwjdkjJlhIPVWqN2VaoPXiZuOXM0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FDnxriAkAs3WYRO9xpOUrYS828idlFB2knO2vwsUSvg=;
-        b=F1C2V6vAR2LxesJJn2rRDHXfnUgxG9ZFzOxkoD/oLpLx7jY6N4OtMlolUQIhveL277
-         kfIgKJO1Dju6OWcN4C5Zlxk1fJDLUVGPrx+ge21uM9zSEM/fluLq4xzJ9z3sw2zoSNWj
-         MmC8EINBS4IYVK/r+449jgrTS23llCosE9wVDioNKhXH0SU1B6T0hDcikEYlSMDOlfnR
-         yOHE7NJrQBCFPXGf1Tb6nTydrePpFqOqqSyllfjpcwnqmthJSftikWjKGA9tcRi+Xs2t
-         fQ5/3dPoqhkuv0VPvlc4e5DzlZhvCdLLIuxOEWcMMPoJnodbpFJeLjmOEvE1Mb/woKVo
-         vt5A==
-X-Gm-Message-State: AOAM531OthSHnz0J7WSes88fi3AvsmsgPixtSk5A9qMgc5prOYSIQPGZ
-        McuGTEB6lsCclAHjO8V/hkBurA==
-X-Google-Smtp-Source: ABdhPJw7keBbdI2oGPoqc6E/70YMOq7h5FAYPCK0uMP9DTLguDw3tyBjdv2Nb3LVTbHrhG9kIVx6Fw==
-X-Received: by 2002:a92:a304:: with SMTP id a4mr798253ili.197.1624404830816;
-        Tue, 22 Jun 2021 16:33:50 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id s8sm3047598ilj.51.2021.06.22.16.33.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Jun 2021 16:33:50 -0700 (PDT)
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <YK+esqGjKaPb+b/Q@kroah.com>
- <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
- <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
- <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
- <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
- <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
- <20210610152633.7e4a7304@oasis.local.home>
- <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
- <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
- <ae51f636-8fb5-20b7-bbc5-37e22edb9a02@linuxfoundation.org>
- <YNJrZIMs7RvqRBSG@pendragon.ideasonboard.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <3bfbe45c-2356-6db0-e1b8-11b7e37ae858@linuxfoundation.org>
-Date:   Tue, 22 Jun 2021 17:33:49 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1624404983; x=1655940983;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KiWM31DEZ9fCZKAZ2n31GvpR84Di+uhdfpU02AmyVmI=;
+  b=ZwfKpftf1DQti99amxMNqCi658QX49PE8rcFCGQi7A+0McgZXfHqMNWc
+   b7tyAMtKiwdTGDPHl5ZEvAVOFW3aNBwQNQ0WES17LXNQZEyO5mqmyBfK+
+   eN72/3ExgQWHFOBQ1UL/cPRWHOmquNTw8K7QljQSqUZIpxQKBM1RiFHXf
+   4=;
+X-IronPort-AV: E=Sophos;i="5.83,292,1616457600"; 
+   d="scan'208";a="117694856"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-76e0922c.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 22 Jun 2021 23:36:21 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2c-76e0922c.us-west-2.amazon.com (Postfix) with ESMTPS id 0240FA3103;
+        Tue, 22 Jun 2021 23:36:18 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Tue, 22 Jun 2021 23:36:18 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.115) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Tue, 22 Jun 2021 23:36:14 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+CC:     Yuchung Cheng <ycheng@google.com>, Martin KaFai Lau <kafai@fb.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>
+Subject: [PATCH net-next] tcp: Add stats for socket migration.
+Date:   Wed, 23 Jun 2021 08:35:29 +0900
+Message-ID: <20210622233529.65158-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <YNJrZIMs7RvqRBSG@pendragon.ideasonboard.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.115]
+X-ClientProxiedBy: EX13D07UWB003.ant.amazon.com (10.43.161.66) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/22/21 4:59 PM, Laurent Pinchart wrote:
-> Hi Shuah,
-> 
-> On Tue, Jun 22, 2021 at 04:33:22PM -0600, Shuah Khan wrote:
->> On 6/18/21 7:46 AM, Laurent Pinchart wrote:
->>> On Thu, Jun 10, 2021 at 01:55:23PM -0600, Shuah Khan wrote:
->>>> On 6/10/21 1:26 PM, Steven Rostedt wrote:
->>>>> On Thu, 10 Jun 2021 21:39:49 +0300 Laurent Pinchart wrote:
->>>>>
->>>>>> There will always be more informal discussions between on-site
->>>>>> participants. After all, this is one of the benefits of conferences, by
->>>>>> being all together we can easily organize ad-hoc discussions. This is
->>>>>> traditionally done by finding a not too noisy corner in the conference
->>>>>> center, would it be useful to have more break-out rooms with A/V
->>>>>> equipment than usual ?
->>>>>
->>>>> I've been giving this quite some thought too, and I've come to the
->>>>> understanding (and sure I can be wrong, but I don't think that I am),
->>>>> is that when doing a hybrid event, the remote people will always be
->>>>> "second class citizens" with respect to the communication that is going
->>>>> on. Saying that we can make it the same is not going to happen unless
->>>>> you start restricting what people can do that are present, and that
->>>>> will just destroy the conference IMO.
->>>>>
->>>>> That said, I think we should add more to make the communication better
->>>>> for those that are not present. Maybe an idea is to have break outs
->>>>> followed by the presentation and evening events that include remote
->>>>> attendees to discuss with those that are there about what they might
->>>>> have missed. Have incentives at these break outs (free stacks and
->>>>> beer?) to encourage the live attendees to attend and have a discussion
->>>>> with the remote attendees.
->>>>>
->>>>> The presentations would have remote access, where remote attendees can
->>>>> at the very least write in some chat their questions or comments. If
->>>>> video and connectivity is good enough, perhaps have a screen where they
->>>>> can show up and talk, but that may have logistical limitations.
->>>>>
->>>>
->>>> You are absolutely right that the remote people will have a hard time
->>>> participating and keeping up with in-person participants. I have a
->>>> couple of ideas on how we might be able to improve remote experience
->>>> without restricting in-person experience.
->>>>
->>>> - Have one or two moderators per session to watch chat and Q&A to enable
->>>>      remote participants to chime in and participate.
->>>> - Moderators can make sure remote participation doesn't go unnoticed and
->>>>      enable taking turns for remote vs. people participating in person.
->>>>
->>>> It will be change in the way we interact in all in-person sessions for
->>>> sure, however it might enhance the experience for remote attendees.
->>>
->>> A moderator to watch online chat and relay questions is I believe very
->>> good for presentations, it's hard for a presenter to keep an eye on a
->>> screen while having to manage the interaction with the audience in the
->>> room (there's the usual joke of the difference between an introvert and
->>> an extrovert open-source developer is that the extrovert looks at *your*
->>> shoes when talking to you, but in many presentations the speaker
->>> nowadays does a fairly good job as watching the audience, at least from
->>> time to time :-)).
->>>
->>> For workshop or brainstorming types of sessions, the highest barrier to
->>> participation for remote attendees is local attendees not speaking in
->>> microphones. That's the number one rule that moderators would need to
->>> enforce, I think all the rest depends on it. This may require a larger
->>> number of microphones in the room than usual.
->>>
->>
->> Absolutely. Moderator has to make sure the following things happen for
->> this to be effective:
->>
->> - Watch chat and Q&A, Raise hand from remote participants
->> - Enforce some kind of taking turns to allow fairness in
->>     participation
->> - Have the speaker repeat questions asked in the room (we do that now
->>     in some talks - both remote and in-person - chat and Q&A needs
->>     reading out for recording)
->> - Explore live Transcription features available in the virtual conf.
->>     platform. You still need humans watching the transcription.
->> - Have a running session notes combined with transcription.
->>
->> Any of these options aren't sustainable when large number of people
->> are participating remotely or in-person. In general a small number of
->> people participate either in person or remote in any case, based on
->> my observation in remote and in-person settings.
->>
->> Maybe we can experiment with one or two workshops this time around
->> and see how it works out. If we can figure an effective way, it would
->> be beneficial for people that can't travel for one reason or the
->> other.
-> 
-> Can we nominate moderators ahead of time ? For workshop-style
-> discussions, they need to be a person who won't participate actively in
-> the discussions, as it's impossible to both contribute and moderate at
-> the same time.
-> 
+This commit adds two stats for the socket migration feature to evaluate the
+effectiveness: LINUX_MIB_TCPMIGRATEREQ(SUCCESS|FAILURE).
 
-Correct. It will be impossible to participate and moderate in workshop
-setting. We have to ask for volunteers and nominate moderators ahead of
-time.
+If the migration fails because of the own_req race in receiving ACK and
+sending SYN+ACK paths, we do not increment the failure stat. Then another
+CPU is responsible for the req.
 
-thanks,
--- Shuah
+Link: https://lore.kernel.org/bpf/CAK6E8=cgFKuGecTzSCSQ8z3YJ_163C0uwO9yRvfDSE7vOe9mJA@mail.gmail.com/
+Suggested-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+---
+ include/uapi/linux/snmp.h       |  2 ++
+ net/core/sock_reuseport.c       | 15 +++++++++++----
+ net/ipv4/inet_connection_sock.c | 15 +++++++++++++--
+ net/ipv4/proc.c                 |  2 ++
+ net/ipv4/tcp_minisocks.c        |  3 +++
+ 5 files changed, 31 insertions(+), 6 deletions(-)
 
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index 26fc60ce9298..904909d020e2 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -290,6 +290,8 @@ enum
+ 	LINUX_MIB_TCPDUPLICATEDATAREHASH,	/* TCPDuplicateDataRehash */
+ 	LINUX_MIB_TCPDSACKRECVSEGS,		/* TCPDSACKRecvSegs */
+ 	LINUX_MIB_TCPDSACKIGNOREDDUBIOUS,	/* TCPDSACKIgnoredDubious */
++	LINUX_MIB_TCPMIGRATEREQSUCCESS,		/* TCPMigrateReqSuccess */
++	LINUX_MIB_TCPMIGRATEREQFAILURE,		/* TCPMigrateReqFailure */
+ 	__LINUX_MIB_MAX
+ };
+ 
+diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+index de5ee3ae86d5..3f00a28fe762 100644
+--- a/net/core/sock_reuseport.c
++++ b/net/core/sock_reuseport.c
+@@ -6,6 +6,7 @@
+  * selecting the socket index from the array of available sockets.
+  */
+ 
++#include <net/ip.h>
+ #include <net/sock_reuseport.h>
+ #include <linux/bpf.h>
+ #include <linux/idr.h>
+@@ -536,7 +537,7 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
+ 
+ 	socks = READ_ONCE(reuse->num_socks);
+ 	if (unlikely(!socks))
+-		goto out;
++		goto failure;
+ 
+ 	/* paired with smp_wmb() in __reuseport_add_sock() */
+ 	smp_rmb();
+@@ -546,13 +547,13 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
+ 	if (!prog || prog->expected_attach_type != BPF_SK_REUSEPORT_SELECT_OR_MIGRATE) {
+ 		if (sock_net(sk)->ipv4.sysctl_tcp_migrate_req)
+ 			goto select_by_hash;
+-		goto out;
++		goto failure;
+ 	}
+ 
+ 	if (!skb) {
+ 		skb = alloc_skb(0, GFP_ATOMIC);
+ 		if (!skb)
+-			goto out;
++			goto failure;
+ 		allocated = true;
+ 	}
+ 
+@@ -565,12 +566,18 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
+ 	if (!nsk)
+ 		nsk = reuseport_select_sock_by_hash(reuse, hash, socks);
+ 
+-	if (IS_ERR_OR_NULL(nsk) || unlikely(!refcount_inc_not_zero(&nsk->sk_refcnt)))
++	if (IS_ERR_OR_NULL(nsk) || unlikely(!refcount_inc_not_zero(&nsk->sk_refcnt))) {
+ 		nsk = NULL;
++		goto failure;
++	}
+ 
+ out:
+ 	rcu_read_unlock();
+ 	return nsk;
++
++failure:
++	__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
++	goto out;
+ }
+ EXPORT_SYMBOL(reuseport_migrate_sock);
+ 
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 0eea878edc30..754013fa393b 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -703,6 +703,8 @@ static struct request_sock *inet_reqsk_clone(struct request_sock *req,
+ 
+ 	nreq = kmem_cache_alloc(req->rsk_ops->slab, GFP_ATOMIC | __GFP_NOWARN);
+ 	if (!nreq) {
++		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
++
+ 		/* paired with refcount_inc_not_zero() in reuseport_migrate_sock() */
+ 		sock_put(sk);
+ 		return NULL;
+@@ -876,9 +878,10 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 		if (!inet_ehash_insert(req_to_sk(nreq), req_to_sk(oreq), NULL)) {
+ 			/* delete timer */
+ 			inet_csk_reqsk_queue_drop(sk_listener, nreq);
+-			goto drop;
++			goto no_ownership;
+ 		}
+ 
++		__NET_INC_STATS(net, LINUX_MIB_TCPMIGRATEREQSUCCESS);
+ 		reqsk_migrate_reset(oreq);
+ 		reqsk_queue_removed(&inet_csk(oreq->rsk_listener)->icsk_accept_queue, oreq);
+ 		reqsk_put(oreq);
+@@ -887,17 +890,19 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 		return;
+ 	}
+ 
+-drop:
+ 	/* Even if we can clone the req, we may need not retransmit any more
+ 	 * SYN+ACKs (nreq->num_timeout > max_syn_ack_retries, etc), or another
+ 	 * CPU may win the "own_req" race so that inet_ehash_insert() fails.
+ 	 */
+ 	if (nreq) {
++		__NET_INC_STATS(net, LINUX_MIB_TCPMIGRATEREQFAILURE);
++no_ownership:
+ 		reqsk_migrate_reset(nreq);
+ 		reqsk_queue_removed(queue, nreq);
+ 		__reqsk_free(nreq);
+ 	}
+ 
++drop:
+ 	inet_csk_reqsk_queue_drop_and_put(oreq->rsk_listener, oreq);
+ }
+ 
+@@ -1135,11 +1140,13 @@ struct sock *inet_csk_complete_hashdance(struct sock *sk, struct sock *child,
+ 
+ 			refcount_set(&nreq->rsk_refcnt, 1);
+ 			if (inet_csk_reqsk_queue_add(sk, nreq, child)) {
++				__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQSUCCESS);
+ 				reqsk_migrate_reset(req);
+ 				reqsk_put(req);
+ 				return child;
+ 			}
+ 
++			__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
+ 			reqsk_migrate_reset(nreq);
+ 			__reqsk_free(nreq);
+ 		} else if (inet_csk_reqsk_queue_add(sk, req, child)) {
+@@ -1188,8 +1195,12 @@ void inet_csk_listen_stop(struct sock *sk)
+ 				refcount_set(&nreq->rsk_refcnt, 1);
+ 
+ 				if (inet_csk_reqsk_queue_add(nsk, nreq, child)) {
++					__NET_INC_STATS(sock_net(nsk),
++							LINUX_MIB_TCPMIGRATEREQSUCCESS);
+ 					reqsk_migrate_reset(req);
+ 				} else {
++					__NET_INC_STATS(sock_net(nsk),
++							LINUX_MIB_TCPMIGRATEREQFAILURE);
+ 					reqsk_migrate_reset(nreq);
+ 					__reqsk_free(nreq);
+ 				}
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index 6d46297a99f8..b0d3a09dc84e 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -295,6 +295,8 @@ static const struct snmp_mib snmp4_net_list[] = {
+ 	SNMP_MIB_ITEM("TcpDuplicateDataRehash", LINUX_MIB_TCPDUPLICATEDATAREHASH),
+ 	SNMP_MIB_ITEM("TCPDSACKRecvSegs", LINUX_MIB_TCPDSACKRECVSEGS),
+ 	SNMP_MIB_ITEM("TCPDSACKIgnoredDubious", LINUX_MIB_TCPDSACKIGNOREDDUBIOUS),
++	SNMP_MIB_ITEM("TCPMigrateReqSuccess", LINUX_MIB_TCPMIGRATEREQSUCCESS),
++	SNMP_MIB_ITEM("TCPMigrateReqFailure", LINUX_MIB_TCPMIGRATEREQFAILURE),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index f258a4c0da71..0a4f3f16140a 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -786,6 +786,9 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+ 	return inet_csk_complete_hashdance(sk, child, req, own_req);
+ 
+ listen_overflow:
++	if (sk != req->rsk_listener)
++		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
++
+ 	if (!sock_net(sk)->ipv4.sysctl_tcp_abort_on_overflow) {
+ 		inet_rsk(req)->acked = 1;
+ 		return NULL;
+-- 
+2.30.2
 
