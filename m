@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB1CB3B0600
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 15:41:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92EAF3B060A
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 15:42:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbhFVNny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 09:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34534 "EHLO
+        id S231269AbhFVNpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 09:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230102AbhFVNny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 09:43:54 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F507C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 06:41:37 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id b5-20020a17090a9905b029016fc06f6c5bso1811259pjp.5
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 06:41:37 -0700 (PDT)
+        with ESMTP id S231289AbhFVNpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 09:45:05 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2ECDC061756
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 06:42:48 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id m2so17113309pgk.7
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 06:42:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EhfwKeXUYq8ed7D9hwUno8W2/7pVvzq8AkJc0N5Fs6M=;
-        b=Yyb0/Hb/s18ORD4iurDRurK4pGkMqxX1Rx5Wy2N+1hqIvyW4MhKtH5NwHaJsSWceiE
-         EPwZdy/WPhSvwRuVivFlza/AQQUhQXzEmqrsQzis7CRsf8ldeii+26T14ZNgE91OiYzs
-         fJiJQoiqygZJo56ncqsTiEtRuhLzkSNW+f+dVQeI4fOj+d8XQautyUjyLfyI/ZGiKcin
-         s/AdLpywXFJIWxIFt8IbvTPHx7lBKJVh78dzETBGRwTymHM/RCa2j9quF02TWKWzTqiq
-         jMopAWkeh5r5jhabJkF4ZyEkcJ3fHdD/vRR96lG8tF6Zm9FMUyz+lyLpB/WnbbpGbbIr
-         ly4A==
+        bh=6rN+K++/vtavrDv2dzbgvxLGYnarSsv9ByjXTqrJ3Ws=;
+        b=z6msanFIFU0lmF0RY5nlmAAa1Mg4A+zLwPn6DdR9wzyYH+bqafttnyAJ0Lr6abEbkQ
+         MH8uQP+oPufhnDg0SlOLgZoS4Yc+UX4v8JEhltYLPWgKmIJKVEq53qT21LDO2cGdwxYe
+         a+qyWltHavtPPetuRL8s3gXJ+4P9SuBCXGnl0jwhwuMdVhBT9bo7Hnyy/iPjIP2/bRDn
+         JhJhdCvJDsCoF5GJXAIVaRIqYIaRQS8XZNMFoRvQtPX9thjR+kmrm0kZB7gXZ5PtyflH
+         l+do+o6/7u9LdFpmDAohL4aTu+ULbhKOLv1kO/n/Lo4uywKneKvygkFJ4g7a4cj1k0oy
+         eL4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EhfwKeXUYq8ed7D9hwUno8W2/7pVvzq8AkJc0N5Fs6M=;
-        b=Ujoso7UzyRUI8weHswASBcmjD12hck2hnFmWcYGnCVWwkrJ9ajzm4jvTKSogGk0hrG
-         EX1mn12kRwLnjIxOKeGxFyOxhd97z84yKqnbdrX1PaK7SXBP1xU85+QHV0UfSvTI+5Iz
-         Ag7K2WgQiW0YQZm3PCROj7BYraHPNEYdxd8vu2XmAz4zmQGw8jzX+p/w1uX65myG7Eh2
-         TfIAeM89rJ5VKWk5TncVU8+9IVp373+pvXpbeVruJox6D2ZH1X9Y9nCk4XBTav5fUqGk
-         F1xqpqcUW63tsnFDjKstIq+EIcZYXrsUzimAFOTKq/3Yp74GB+SE1raAUnmk7Z9z4xYz
-         iJ7g==
-X-Gm-Message-State: AOAM530mF6Ed9EgYwtT9Pnq9gVehh+Aw4MQ1CMqTelrn99xft5DO9gwF
-        lXcR1FuRVwdMwc0UrH34sn390tjp/LYSkE435x2dXw==
-X-Google-Smtp-Source: ABdhPJxVcMyKuMlIetuYBKMDFD2v5g7uQ3fJSYCJSwwRxbuFO14tb5Gl35vdyq21OHYZrj38S6eYBi+ex6NhffjnIbc=
-X-Received: by 2002:a17:902:d482:b029:127:37f7:e8ad with SMTP id
- c2-20020a170902d482b029012737f7e8admr1289643plg.49.1624369296945; Tue, 22 Jun
- 2021 06:41:36 -0700 (PDT)
+        bh=6rN+K++/vtavrDv2dzbgvxLGYnarSsv9ByjXTqrJ3Ws=;
+        b=sFicFRypn3DUQHYN0jD59Hc+VpLyYqNAJgnpkvnvgfTpuHFjMxB2LmVR55xne9CmoQ
+         xSfpukP1k8tRCQU/xPStt0Jaq0aSfJdfEFWjuyYe0AOXH3A/KRbOJQX3te6Y+Q5X1ACE
+         gRYzajE3rVjilPghcejGD+UOXg2kog9Uct3uXmkP8scnIq6VqqdxE31vw5kMwbemHhFq
+         1rMO1TVGD+lV7CGxj9vkh4/HG1Al4JUWN2SbosnH0165Ym0Kz5NlV0qaf++0ZUWroi+3
+         LxWaMTsrBJrGibXILcEwhOBpm2cb0jRgbCAo+sIMIMZBlTBNKmGdsiRUTf8m/VNNsi2W
+         xbEQ==
+X-Gm-Message-State: AOAM531Z4edHSsisTMwTZ0IWifF1E3BklQO0O2lsN6cEKyp//FrOAK8b
+        K5/DN+bABmUxtZKDiGwXGiAOMbmtU7AUc1jXu4gwuQ==
+X-Google-Smtp-Source: ABdhPJx8XDMcJc0oXhdxI2rV9wl1X9Cd6RobTja1/neX3rAhDSMmqtmqS1noFebhCX3KE0cSGMfynMo1H5XQqVrSluM=
+X-Received: by 2002:a63:4a18:: with SMTP id x24mr3798502pga.303.1624369368437;
+ Tue, 22 Jun 2021 06:42:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210621225100.21005-1-ryazanov.s.a@gmail.com> <20210621225100.21005-6-ryazanov.s.a@gmail.com>
-In-Reply-To: <20210621225100.21005-6-ryazanov.s.a@gmail.com>
+References: <20210621225100.21005-1-ryazanov.s.a@gmail.com> <20210621225100.21005-8-ryazanov.s.a@gmail.com>
+In-Reply-To: <20210621225100.21005-8-ryazanov.s.a@gmail.com>
 From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 22 Jun 2021 15:50:29 +0200
-Message-ID: <CAMZdPi8-26+qzwYFV5AErbTbFZ78ArF_omCOq450+WuV5Rx81g@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 05/10] wwan: core: remove all netdevs on ops unregistering
+Date:   Tue, 22 Jun 2021 15:51:41 +0200
+Message-ID: <CAMZdPi8W750LSFLNOCrgRqbS78kWTZEe5hsJenEWNVjA=Tw+Kg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 07/10] wwan: core: no more hold netdev ops
+ owning module
 To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
 Cc:     Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
@@ -63,19 +63,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, 22 Jun 2021 at 00:51, Sergey Ryazanov <ryazanov.s.a@gmail.com> wrote:
 >
-> We use the ops owner module hold to protect against ops memory
-> disappearing. But this approach does not protect us from a driver that
-> unregisters ops but forgets to remove netdev(s) that were created using
-> this ops. In such case, we are left with netdev(s), which can not be
-> removed since ops is gone. Moreover, batch netdevs removing on
-> deinitialization is a desireable option for WWAN drivers as it is a
-> quite common task.
+> The WWAN netdev ops owner holding was used to protect from the
+> unexpected memory disappear. This approach causes a dependency cycle
+> (driver -> core -> driver) and effectively prevents a WWAN driver
+> unloading. E.g. WWAN hwsim could not be unloaded until all simulated
+> devices are removed:
 >
-> Implement deletion of all created links on WWAN netdev ops unregistering
-> in the same way that RTNL removes all links on RTNL ops unregistering.
-> Simply remove all child netdevs of a device whose WWAN netdev ops is
-> unregistering. This way we protecting the kernel from buggy drivers and
-> make it easier to write a driver deinitialization code.
+> ~# modprobe wwan_hwsim devices=2
+> ~# lsmod | grep wwan
+> wwan_hwsim             16384  2
+> wwan                   20480  1 wwan_hwsim
+> ~# rmmod wwan_hwsim
+> rmmod: ERROR: Module wwan_hwsim is in use
+> ~# echo > /sys/kernel/debug/wwan_hwsim/hwsim0/destroy
+> ~# echo > /sys/kernel/debug/wwan_hwsim/hwsim1/destroy
+> ~# lsmod | grep wwan
+> wwan_hwsim             16384  0
+> wwan                   20480  1 wwan_hwsim
+> ~# rmmod wwan_hwsim
+>
+> For a real device driver this will cause an inability to unload module
+> until a served device is physically detached.
+>
+> Since the last commit we are removing all child netdev(s) when a driver
+> unregister the netdev ops. This allows us to permit the driver
+> unloading, since any sane driver will call ops unregistering on a device
+> deinitialization. So, remove the holding of an ops owner to make it
+> easier to unload a driver module. The owner field has also beed removed
+> from the ops structure as there are no more users of this field.
 >
 > Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 
