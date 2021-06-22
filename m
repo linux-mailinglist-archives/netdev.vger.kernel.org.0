@@ -2,198 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86E9C3B0DA3
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 21:25:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E37AC3B0DA5
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 21:29:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232754AbhFVT1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 15:27:55 -0400
-Received: from mga12.intel.com ([192.55.52.136]:32268 "EHLO mga12.intel.com"
+        id S232582AbhFVTb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 15:31:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52690 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230330AbhFVT1s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 15:27:48 -0400
-IronPort-SDR: uBvW7esIjfgTkiWRzB0mVSCp0sbNhbnzsbSkcx3X6Vm43DMJvx0DpUHkhvJ8FGzPS3CE1emom8
- 2H9xc0vcefiA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10023"; a="186818206"
-X-IronPort-AV: E=Sophos;i="5.83,292,1616482800"; 
-   d="scan'208";a="186818206"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2021 12:25:32 -0700
-IronPort-SDR: /GhKn+eunOi1y7K6YHr1MqOu1Pt9Y0eAPLCwkd3GpV8eSkCSbMWFz0ZI6KpQHTi9tSO0XQyFQO
- 52k7ZpIa/WMA==
-X-IronPort-AV: E=Sophos;i="5.83,292,1616482800"; 
-   d="scan'208";a="480909729"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.237.182])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2021 12:25:30 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 6/6] mptcp: refine mptcp_cleanup_rbuf
-Date:   Tue, 22 Jun 2021 12:25:23 -0700
-Message-Id: <20210622192523.90117-7-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210622192523.90117-1-mathew.j.martineau@linux.intel.com>
-References: <20210622192523.90117-1-mathew.j.martineau@linux.intel.com>
+        id S229786AbhFVTb1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 15:31:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AB31961353
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 19:29:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624390151;
+        bh=OkCFHf6y3PDoewX0r/FcG3EK3e4OSyfGXYGp4VKggyk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=uAlMLrhRGL74EOppuq20LfVjJA9s1BcaWynedauIqg+fPgtsx6ydb8orBPZTrUU0t
+         v7XAQnEh58bDhqPUHhQqo8p9Oje3poNQcnO+N9MTd4QZPLp2ADIA1Rp6TM7nw7i+NF
+         13W9OYP+qH/Y/2HShIgKIPDvr7yF7paMQ/Dqvcny0mTU0s0s0SdIPpZhSVYb7E80A5
+         nOOo+lDYyKfsT+kI5zwO5tPSUcCdzytrFat/ibjZaHKIZ8FxCD345D2MBJU39bmxr6
+         9XCj92RExHu7yteRaSh2F35ItinDpeh9xvh0aGrWiPa3iWNDW/2TNEVFi6lvbhxwao
+         npg4icoHGP3bw==
+Received: by mail-wr1-f54.google.com with SMTP id j2so14411575wrs.12
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 12:29:11 -0700 (PDT)
+X-Gm-Message-State: AOAM530Yn0Fx3tbEZOaTQK4k1Alrve6FuuXdjWh2H5a1O4w9kexZfCmk
+        XP+DzFsM0zFbi7FmNgdeBynI1XQHYDtgSL6t2ks=
+X-Google-Smtp-Source: ABdhPJyz1uD8VkBt/jj7W7KEcTNtEDXjXj9bjFWf/UJB9DT4rLZp68IWdOWtqoeZVbp+JCwLILM1OebQhL4jJbfMz/w=
+X-Received: by 2002:a5d:5650:: with SMTP id j16mr6819503wrw.99.1624390150286;
+ Tue, 22 Jun 2021 12:29:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <60B24AC2.9050505@gmail.com> <60B36A9A.4010806@gmail.com>
+ <60B3CAF8.90902@gmail.com> <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
+ <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com>
+ <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
+ <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
+ <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com>
+ <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com>
+ <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk> <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com>
+ <877dipgyrb.ffs@nanos.tec.linutronix.de> <alpine.DEB.2.21.2106200749300.61140@angie.orcam.me.uk>
+ <CAK8P3a0Z56XvLHJHjvsX3F76ZF0n-VXwPoWbvfQdTgfEBfOneg@mail.gmail.com>
+ <60D1DAC1.9060200@gmail.com> <CAK8P3a1XaTUgxM3YBa=iHGrLX_Wn66NhTTEXtV=vaNre7K3GOA@mail.gmail.com>
+ <60D22F1D.1000205@gmail.com>
+In-Reply-To: <60D22F1D.1000205@gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 22 Jun 2021 21:26:50 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3Jk+zNnQ5r9gb60deqCmJT+S07VvL3SipKRYXdxM2kPQ@mail.gmail.com>
+Message-ID: <CAK8P3a3Jk+zNnQ5r9gb60deqCmJT+S07VvL3SipKRYXdxM2kPQ@mail.gmail.com>
+Subject: Re: Realtek 8139 problem on 486.
+To:     Nikolai Zhubr <zhubr.2@gmail.com>
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+On Tue, Jun 22, 2021 at 8:32 PM Nikolai Zhubr <zhubr.2@gmail.com> wrote:
+> 22.06.2021 16:22, Arnd Bergmann:
 
-The current cleanup rbuf tries a bit too hard to avoid acquiring
-the subflow socket lock. We may end-up delaying the needed ack,
-or skip acking a blocked subflow.
+> irq 8: 02, edge
+> irq 9: 02, level
+> irq 10: 02, edge
+> irq 11: 02, edge
+> irq 12: 02, edge
+> irq 13: 02, edge
+> irq 14: 02, edge
+> irq 15: 02, edge
+>
+> Now connection also works fine with unmodified 8139too driver.
+> The percentage of low-level errors stays very small:
+>
+> RX packets:13953 errors:1 dropped:2 overruns:1 frame:0
+> TX packets:37346 errors:0 dropped:0 overruns:13 carrier:0
 
-Address the above extending the conditions used to trigger the cleanup
-to reflect more closely what TCP does and invoking tcp_cleanup_rbuf()
-on all the active subflows.
+Ok, nice!
 
-Note that we can't replicate the exact tests implemented in
-tcp_cleanup_rbuf(), as MPTCP lacks some of the required info - e.g.
-ping-pong mode.
+> This fix looks really nice. Maybe it is right thing to do.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/protocol.c | 56 ++++++++++++++++++--------------------------
- net/mptcp/protocol.h |  1 -
- 2 files changed, 23 insertions(+), 34 deletions(-)
+I'll leave that up to Thomas and Maciej to decide, they should have the
+best idea of why the x86 pci-irq code looks the way it does today and
+what the possible risk with my patch is.
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index cf75be02eb00..ce0c45dfb79e 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -442,49 +442,46 @@ static void mptcp_send_ack(struct mptcp_sock *msk)
- 	}
- }
- 
--static bool mptcp_subflow_cleanup_rbuf(struct sock *ssk)
-+static void mptcp_subflow_cleanup_rbuf(struct sock *ssk)
- {
- 	bool slow;
--	int ret;
- 
- 	slow = lock_sock_fast(ssk);
--	ret = tcp_can_send_ack(ssk);
--	if (ret)
-+	if (tcp_can_send_ack(ssk))
- 		tcp_cleanup_rbuf(ssk, 1);
- 	unlock_sock_fast(ssk, slow);
--	return ret;
-+}
-+
-+static bool mptcp_subflow_could_cleanup(const struct sock *ssk, bool rx_empty)
-+{
-+	const struct inet_connection_sock *icsk = inet_csk(ssk);
-+	bool ack_pending = READ_ONCE(icsk->icsk_ack.pending);
-+	const struct tcp_sock *tp = tcp_sk(ssk);
-+
-+	return (ack_pending & ICSK_ACK_SCHED) &&
-+		((READ_ONCE(tp->rcv_nxt) - READ_ONCE(tp->rcv_wup) >
-+		  READ_ONCE(icsk->icsk_ack.rcv_mss)) ||
-+		 (rx_empty && ack_pending &
-+			      (ICSK_ACK_PUSHED2 | ICSK_ACK_PUSHED)));
- }
- 
- static void mptcp_cleanup_rbuf(struct mptcp_sock *msk)
- {
--	struct sock *ack_hint = READ_ONCE(msk->ack_hint);
- 	int old_space = READ_ONCE(msk->old_wspace);
- 	struct mptcp_subflow_context *subflow;
- 	struct sock *sk = (struct sock *)msk;
--	bool cleanup;
-+	int space =  __mptcp_space(sk);
-+	bool cleanup, rx_empty;
- 
--	/* this is a simple superset of what tcp_cleanup_rbuf() implements
--	 * so that we don't have to acquire the ssk socket lock most of the time
--	 * to do actually nothing
--	 */
--	cleanup = __mptcp_space(sk) - old_space >= max(0, old_space);
--	if (!cleanup)
--		return;
-+	cleanup = (space > 0) && (space >= (old_space << 1));
-+	rx_empty = !atomic_read(&sk->sk_rmem_alloc);
- 
--	/* if the hinted ssk is still active, try to use it */
--	if (likely(ack_hint)) {
--		mptcp_for_each_subflow(msk, subflow) {
--			struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
-+	mptcp_for_each_subflow(msk, subflow) {
-+		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
- 
--			if (ack_hint == ssk && mptcp_subflow_cleanup_rbuf(ssk))
--				return;
--		}
-+		if (cleanup || mptcp_subflow_could_cleanup(ssk, rx_empty))
-+			mptcp_subflow_cleanup_rbuf(ssk);
- 	}
--
--	/* otherwise pick the first active subflow */
--	mptcp_for_each_subflow(msk, subflow)
--		if (mptcp_subflow_cleanup_rbuf(mptcp_subflow_tcp_sock(subflow)))
--			return;
- }
- 
- static bool mptcp_check_data_fin(struct sock *sk)
-@@ -629,7 +626,6 @@ static bool __mptcp_move_skbs_from_subflow(struct mptcp_sock *msk,
- 			break;
- 		}
- 	} while (more_data_avail);
--	WRITE_ONCE(msk->ack_hint, ssk);
- 
- 	*bytes += moved;
- 	return done;
-@@ -1910,7 +1906,6 @@ static bool __mptcp_move_skbs(struct mptcp_sock *msk)
- 		__mptcp_update_rmem(sk);
- 		done = __mptcp_move_skbs_from_subflow(msk, ssk, &moved);
- 		mptcp_data_unlock(sk);
--		tcp_cleanup_rbuf(ssk, moved);
- 
- 		if (unlikely(ssk->sk_err))
- 			__mptcp_error_report(sk);
-@@ -1926,7 +1921,6 @@ static bool __mptcp_move_skbs(struct mptcp_sock *msk)
- 		ret |= __mptcp_ofo_queue(msk);
- 		__mptcp_splice_receive_queue(sk);
- 		mptcp_data_unlock(sk);
--		mptcp_cleanup_rbuf(msk);
- 	}
- 	if (ret)
- 		mptcp_check_data_fin((struct sock *)msk);
-@@ -2175,9 +2169,6 @@ static void __mptcp_close_ssk(struct sock *sk, struct sock *ssk,
- 	if (ssk == msk->last_snd)
- 		msk->last_snd = NULL;
- 
--	if (ssk == msk->ack_hint)
--		msk->ack_hint = NULL;
--
- 	if (ssk == msk->first)
- 		msk->first = NULL;
- 
-@@ -2392,7 +2383,6 @@ static int __mptcp_init_sock(struct sock *sk)
- 	msk->rmem_released = 0;
- 	msk->tx_pending_data = 0;
- 
--	msk->ack_hint = NULL;
- 	msk->first = NULL;
- 	inet_csk(sk)->icsk_sync_mss = mptcp_sync_mss;
- 	WRITE_ONCE(msk->csum_enabled, mptcp_is_checksum_enabled(sock_net(sk)));
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index f4eaa5f57e3f..d8ad3270dfab 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -243,7 +243,6 @@ struct mptcp_sock {
- 	bool		use_64bit_ack; /* Set when we received a 64-bit DSN */
- 	bool		csum_enabled;
- 	spinlock_t	join_list_lock;
--	struct sock	*ack_hint;
- 	struct work_struct work;
- 	struct sk_buff  *ooo_last_skb;
- 	struct rb_root  out_of_order_queue;
--- 
-2.32.0
+As I said before, I still think we should also merge the 8139 driver patch,
+probably without that loop. It's not great, but I'm much more confident
+I understand what that does and that the patched version is better than
+the current code.
 
+      Arnd
