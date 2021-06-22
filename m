@@ -2,111 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB55F3B0EE0
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:33:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBF393B0EFE
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:51:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbhFVUfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 16:35:36 -0400
-Received: from mout.kundenserver.de ([212.227.126.133]:47049 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbhFVUff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:35:35 -0400
-Received: from mail-wr1-f46.google.com ([209.85.221.46]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mqrs9-1lRSM03R1V-00mrbw; Tue, 22 Jun 2021 22:33:17 +0200
-Received: by mail-wr1-f46.google.com with SMTP id m18so133528wrv.2;
-        Tue, 22 Jun 2021 13:33:17 -0700 (PDT)
-X-Gm-Message-State: AOAM532uPd44LJIKfFzGpLjTCnJEot8IKsQp2+R0J2No2wyfqRGCzWh4
-        V6IJVaLdllkpXYPF17LjcmRSVTNkD+/VNP36FqQ=
-X-Google-Smtp-Source: ABdhPJxIxO/xXDmBL9CuTqUfJPeIqUNEO8k6TjCUhFN3xY3HAWWytEGfglJh+8bqyJP/NPuAFwnum684HVLDv6sIonM=
-X-Received: by 2002:a5d:5905:: with SMTP id v5mr7302490wrd.361.1624393997509;
- Tue, 22 Jun 2021 13:33:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210622202345.795578-1-jernej.skrabec@gmail.com>
-In-Reply-To: <20210622202345.795578-1-jernej.skrabec@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 22 Jun 2021 22:30:58 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1mvRTTFHtxqREmcbgJS+e94BHajCtAU_fzBhNNKjJBcg@mail.gmail.com>
-Message-ID: <CAK8P3a1mvRTTFHtxqREmcbgJS+e94BHajCtAU_fzBhNNKjJBcg@mail.gmail.com>
-Subject: Re: [RFC PATCH] cw1200: use kmalloc() allocation instead of stack
-To:     Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     pizza@shaftnet.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        David Miller <davem@davemloft.net>,
+        id S230056AbhFVUyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 16:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229501AbhFVUyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:54:05 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EDDC061574;
+        Tue, 22 Jun 2021 13:51:49 -0700 (PDT)
+Received: from ktm (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 7A85B82958;
+        Tue, 22 Jun 2021 22:51:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1624395103;
+        bh=UGQSxDCJVHD985fZkE4LY5R1JFavM/jcz7y/vooACM4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZFcrtbwe+yoX0nGjX/keJJkQu3FpUawVBfyzVQRCyG/81ihDXTpLLz7aOgoi7lXVl
+         J676vdA9KnnwgvsGW6doZqXsHu7vNVoII61cGXOrORC5kin18MjkdOet0NPh70fmao
+         T3biEyn3WEmsYG6KQIlZttVSdlcWhD1cDd/cK4wxcG39+PtoR+dRX1JGUSXckzqTTU
+         Mo9EYg1/M6mowwy8wIbc71N7HPZoTJ6A4/a3PWM4U6sFGc600P3tnh2PKiMkZGyaPL
+         R1SX95SPDDBcZPEMN6CZ6zXBoVYmWtd21NCHVDUXzpVbtFUqAMlDyYIhkviVOOolyl
+         abyXvi9pmB/kg==
+Date:   Tue, 22 Jun 2021 22:51:34 +0200
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:UDwhB0AIeFYw8fWlG1HJDe/qGwXmYMz69G8vpsnra2CQVSh8lgt
- pbGHN8cMNCDDd8FKbV87kDqsN3VuEryRhvAAXrV2vSRBetLS//TQOipgc3YbZwzZOEIKSPW
- +9hJMSmXD1ehSw5HB2+0QQA92U8q0cDGjPrABSxJ4MeqT3Nxb0iGy87eADLY3+9IWOXHsaS
- XIfzjmWcJYg6w0r08gEKA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:mXPUlyWGewU=:qsP5JBu1opz816nEqKxwqX
- LgV2UsCLyCttOFmeWt98zf7GQmQUZLw/Nk91XuZkOiEWEu38PZWJ9mY4syOhYqR8egyoW15bC
- HtCt3cyRYhwUKDRFY73ADtY+Rb/A2Ysg0ymgQ4yhE2h/UeKrm84UzGUo9Q7N7DHwJVonxg+20
- YgSWhXW5mXA+B0nN5B72KoQxXUFLhbPbUkEcyToPsrd66Zh4AeN0BOoLaPjhC5Aap8Jo6S51C
- QOwKmGMgQ0MLbtrTaS7uGqFMXL8GkrC+wPFyxr+bmcI7Hsg0yUj1JNgysO2r/G5XL5J732SGU
- nRoP8H+20ZwwwRtwtpR+CRivE7Ew77kkdbzMURH11Ocxfz0ker+WATZkcCU8njFBRoX9FedYe
- bqf78CbgJhz2063dPV2aajScT6RGNgQM8Aw/C+N9y8qA5wdukMOEHpxBxXoA+5a0QEMSWW9Ru
- XtKC0eEqCZtpbyItnxwhLwNPk4QxTX8gZxjCh8TkoGjt2YCStniJxbIbaTLzDvzAdKupVYb21
- 1Ev1kTozJcz4ZgRYstm9xY=
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mark Einon <mark.einon@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC 1/3] ARM: dts: imx28: Add description for L2 switch on XEA
+ board
+Message-ID: <20210622225134.4811b88f@ktm>
+In-Reply-To: <YNH3mb9fyBjLf0fj@lunn.ch>
+References: <20210622144111.19647-1-lukma@denx.de>
+        <20210622144111.19647-2-lukma@denx.de>
+        <YNH3mb9fyBjLf0fj@lunn.ch>
+Organization: denx.de
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ boundary="Sig_/0ciD4Jn3iAhV8jMTp1q0XYL"; protocol="application/pgp-signature"
+X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 22, 2021 at 10:24 PM Jernej Skrabec
-<jernej.skrabec@gmail.com> wrote:
->
-> It turns out that if CONFIG_VMAP_STACK is enabled and src or dst is
-> memory allocated on stack, SDIO operations fail due to invalid memory
-> address conversion:
+--Sig_/0ciD4Jn3iAhV8jMTp1q0XYL
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for sending this!
+Hi Andrew,
 
-It's worth pointing out that even without CONFIG_VMAP_STACK, using
-dma_map_sg() on a stack variable is broken, though it will appear to
-work most of the time but rarely cause a stack data corruption when
-the cache management goes wrong.
+> On Tue, Jun 22, 2021 at 04:41:09PM +0200, Lukasz Majewski wrote:
+> > The 'eth_switch' node is now extendfed to enable support for L2
+> > switch.
+> >=20
+> > Moreover, the mac[01] nodes are defined as well and linked to the
+> > former with 'phy-handle' property. =20
+>=20
+> A phy-handle points to a phy, not a MAC! Don't abuse a well known DT
+> property like this.
 
-This clearly needs to be fixed somewhere, if not with your patch, then
-a similar one.
+Ach.... You are right. I will change it.
 
-> diff --git a/drivers/net/wireless/st/cw1200/hwio.c b/drivers/net/wireless/st/cw1200/hwio.c
-> index 3ba462de8e91..5521cb7f2233 100644
-> --- a/drivers/net/wireless/st/cw1200/hwio.c
-> +++ b/drivers/net/wireless/st/cw1200/hwio.c
-> @@ -66,33 +66,65 @@ static int __cw1200_reg_write(struct cw1200_common *priv, u16 addr,
->  static inline int __cw1200_reg_read_32(struct cw1200_common *priv,
->                                         u16 addr, u32 *val)
->  {
-> -       __le32 tmp;
-> -       int i = __cw1200_reg_read(priv, addr, &tmp, sizeof(tmp), 0);
-> -       *val = le32_to_cpu(tmp);
-> +       __le32 *tmp;
-> +       int i;
-> +
-> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
-> +       if (!tmp)
-> +               return -ENOMEM;
-> +
-> +       i = __cw1200_reg_read(priv, addr, tmp, sizeof(*tmp), 0);
-> +       *val = le32_to_cpu(*tmp);
-> +       kfree(tmp);
->         return i;
->  }
+Probably 'ethernet' property or 'link' will fit better?
 
-There is a possible problem here when the function gets called from
-atomic context, so it might need to use GFP_ATOMIC instead of
-GFP_KERNEL. If it's never called from atomic context, then this patch
-looks correct to me.
 
-The alternative would be to add a bounce buffer check based on
-is_vmalloc_or_module_addr() in sdio_io_rw_ext_helper(), which would
-add a small bit of complexity there but solve the problem for
-all drivers at once. In this case, it would probably have to use
-GFP_ATOMIC regardless of whether __cw1200_reg_read_32()
-is allowed to sleep, since other callers might not.
+>=20
+>   Andrew
+>=20
 
-      Arnd
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/0ciD4Jn3iAhV8jMTp1q0XYL
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmDSTVYACgkQAR8vZIA0
+zr3wEwf+OHIgqiJP60VV3awR0B5lu4awGcOFGqK5MEB+Zhddu4xs1J7Hp6FcYMxa
+m6hLxvWMgQW2c07AOFabjSwyAy6YsrZeWp4EejnlnyGAS79QQUYglCtmfq+Mkgwm
+4pXZIYQlSz2mxGlauZeD8TFEAQUNkqtyaEL2umFcxhOj31IRTaM3WMfo0w5p1zoJ
+c4ndU0zn3zJgQo5ohk3y3R/l5MfHu0SrexUSLfy0tGlv3ED4ZjsMn2zgBMuBe1Qh
+rXjQO84IW1XYLWZme+XCd9B0n9lPlw/uz48v4vVFHDgwAH5Z65qONfQ+LxQOBy/9
+KIjP6WqdJaV3eEQJhCq7B5IbJiSGeQ==
+=T/Td
+-----END PGP SIGNATURE-----
+
+--Sig_/0ciD4Jn3iAhV8jMTp1q0XYL--
