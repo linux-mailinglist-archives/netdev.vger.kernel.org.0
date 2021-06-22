@@ -2,68 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A62243AFCE5
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 08:09:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23E7E3AFCF8
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 08:18:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbhFVGLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 02:11:51 -0400
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:40369 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229490AbhFVGLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 02:11:47 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UdHolaH_1624342164;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UdHolaH_1624342164)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 22 Jun 2021 14:09:30 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     saeedm@nvidia.com
-Cc:     leon@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH v2] net/mlx5: Fix missing error code in mlx5_init_fs()
-Date:   Tue, 22 Jun 2021 14:09:21 +0800
-Message-Id: <1624342161-84389-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S229677AbhFVGUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 02:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229490AbhFVGUi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 02:20:38 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DF3C061574;
+        Mon, 21 Jun 2021 23:18:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=sGLIc9uWYsQD89kIatkVPtBNDc
+        s6KZXAzk6r1inIDiAIGVsfcoV3YTNDNypqU7w4dYfiypyZqmfRbFIRRpnFBpD1JZc2pzmT5xGoQty
+        /396i8UJobVRtjrEEUPByAG/R6Y1YOf5tWAiRDF8i/HUMthb1bXKvSz8+1hOMEVFdUxc7L6belnWa
+        20xLdNVvK50ObrTPBMNft4JOx5ldt8NoBl8Q2eF0B5Z9oTvoQfEX6Ox3wCDgBq09nfi+9wpcv9/V1
+        K9D+BD+sAPDGTU5l7awz8L7ZEKn3tNCmIxbK7TZ16N9EzbMT0ggZRXLSdqEKJGhuKg/S+j+eyo2Rd
+        UvtEg9Aw==;
+Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1lvZjD-00DxNN-Hp; Tue, 22 Jun 2021 06:17:48 +0000
+Date:   Tue, 22 Jun 2021 07:17:43 +0100
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Dongdong Liu <liudongdong3@huawei.com>
+Cc:     helgaas@kernel.org, hch@infradead.org, kw@linux.com,
+        linux-pci@vger.kernel.org, rajur@chelsio.com,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH V5 2/6] PCI: Use cached Device Capabilities 2 Register
+Message-ID: <YNGAhwsjYTdFL0/z@infradead.org>
+References: <1624271242-111890-1-git-send-email-liudongdong3@huawei.com>
+ <1624271242-111890-3-git-send-email-liudongdong3@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1624271242-111890-3-git-send-email-liudongdong3@huawei.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The error code is missing in this code scenario, add the error code
-'-ENOMEM' to the return value 'err'.
+Looks good,
 
-Eliminate the follow smatch warning:
-
-drivers/net/ethernet/mellanox/mlx5/core/fs_core.c:2973 mlx5_init_fs()
-warn: missing error code 'err'.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Fixes: 4a98544d1827 ("net/mlx5: Move chains ft pool to be used by all firmware steering").
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
-Changes in v2:
-  - For the follow advice: https://lore.kernel.org/patchwork/patch/1446816/
-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 2cd7aea..b861745 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -2969,8 +2969,11 @@ int mlx5_init_fs(struct mlx5_core_dev *dev)
- 		return err;
- 
- 	steering = kzalloc(sizeof(*steering), GFP_KERNEL);
--	if (!steering)
-+	if (!steering) {
-+		err = -ENOMEM;
- 		goto err;
-+	}
-+
- 	steering->dev = dev;
- 	dev->priv.steering = steering;
- 
--- 
-1.8.3.1
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
