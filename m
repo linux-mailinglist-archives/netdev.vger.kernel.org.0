@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D203B0A18
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 18:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C28343B0A16
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 18:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbhFVQSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 12:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42492 "EHLO
+        id S229769AbhFVQRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 12:17:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbhFVQSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 12:18:36 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2D0C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 09:16:20 -0700 (PDT)
+        with ESMTP id S229674AbhFVQRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 12:17:52 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D08C061574
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 09:15:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
+        d=infradead.org; s=desiato.20200630; h=Sender:Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=dtVe0AJXy7anZOT9IZ0v6o+FzPwJ6e2fZ1XMWeGMC1Y=; b=A+OfhcN7qrSL1WqLDZsZ8xzs/t
-        KrqrqkdmVcd+BMg+1zGi/kb0MHH9Pxd+wQcMOcHe4+quSlOjxWqFy2nHDnMVUQnaliK5ZHs5FgYk6
-        j2qqKEietAM6PnsbVKcExxbNPSif1LkyLIeB6giaYvt3GpDjuOLOobSdOIjILZbnqatPtaUMx72ue
-        xTN8XfJWzmvQdwKSN02x96/OIFCYaGxznA9K4d7+avYSs1zN8ULV8/TU9HCTstB3pu5I4Qjn9dv2l
-        VFvdz4L1sS7G+fZlFXHRfxWfC+oGLU2esiLYREju0iSvkCUZetV6nB1oveJHzeRFzbs0TW3V1LPmC
-        cyCKzKVA==;
+        bh=i+iKYtl26TpN7Y7yLSMPClkveH4h2WunnuTzfof6WvA=; b=pQbQagAlhWnpzAWwBFHv1tV7H4
+        laSlRA9176obTHs38xR8OI40PX0qLIWrfSXLsjr84IyDh4I6yX86WqZZpLMAmMgEOEh7gudnSr4hh
+        wTS4OfGTLlNDV39ba4NZ0jB+jUXV162ZsYTZAwAZTUNh4bGHHwJ40hMEb39SLz+ZBB8yjVuPuzD57
+        UwiliOkvVuGdCKaFqI/iytW8FEItEk7rXBZ4XgAnv/pr3J4//KMDRkCc8jnPm3L3MSFATx3dq9pnq
+        8sl6fRjRMY7sCEZaTMwYRGjbEyy1W4KX3fOs42TFU6Lx/tRrodsFvu3gWwRNInEH2LxyqTeVBS70P
+        gvsQy+dw==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lvj3m-00ETxf-5A; Tue, 22 Jun 2021 16:15:48 +0000
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1lvj3f-00Ae50-99; Tue, 22 Jun 2021 16:15:34 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lvj3l-00560B-Mf; Tue, 22 Jun 2021 17:15:33 +0100
+        id 1lvj3l-00560F-Ob; Tue, 22 Jun 2021 17:15:33 +0100
 From:   David Woodhouse <dwmw2@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     Jason Wang <jasowang@redhat.com>,
         =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
-Subject: [PATCH v2 2/4] net: tun: don't assume IFF_VNET_HDR in tun_xdp_one() tx path
-Date:   Tue, 22 Jun 2021 17:15:31 +0100
-Message-Id: <20210622161533.1214662-2-dwmw2@infradead.org>
+Subject: [PATCH v2 3/4] vhost_net: validate virtio_net_hdr only if it exists
+Date:   Tue, 22 Jun 2021 17:15:32 +0100
+Message-Id: <20210622161533.1214662-3-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210622161533.1214662-1-dwmw2@infradead.org>
 References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
@@ -43,58 +43,89 @@ References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: David Woodhouse <dwmw2@infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by desiato.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: David Woodhouse <dwmw@amazon.co.uk>
 
-Sometimes it's just a data packet. The virtio_net_hdr processing should be
-conditional on IFF_VNET_HDR, just as it is in tun_get_user().
+When the underlying socket doesn't handle the virtio_net_hdr, the
+existing code in vhost_net_build_xdp() would attempt to validate stack
+noise, by copying zero bytes into the local copy of the header and then
+validating that. Skip the whole pointless pointer arithmetic and partial
+copy (of zero bytes) in this case.
 
-Fixes: 043d222f93ab ("tuntap: accept an array of XDP buffs through sendmsg()")
+Fixes: 0a0be13b8fe2 ("vhost_net: batch submitting XDP buffers to underlayer sockets")
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- drivers/net/tun.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/vhost/net.c | 43 ++++++++++++++++++++++---------------------
+ 1 file changed, 22 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index f812dcdc640e..96933887d03d 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -2331,7 +2331,7 @@ static int tun_xdp_one(struct tun_struct *tun,
- {
- 	unsigned int datasize = xdp->data_end - xdp->data;
- 	struct tun_xdp_hdr *hdr = xdp->data_hard_start;
--	struct virtio_net_hdr *gso = &hdr->gso;
-+	struct virtio_net_hdr *gso = NULL;
- 	struct bpf_prog *xdp_prog;
- 	struct sk_buff *skb = NULL;
- 	u32 rxhash = 0, act;
-@@ -2340,9 +2340,12 @@ static int tun_xdp_one(struct tun_struct *tun,
- 	bool skb_xdp = false;
- 	struct page *page;
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index df82b124170e..1e3652eb53af 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -690,7 +690,6 @@ static int vhost_net_build_xdp(struct vhost_net_virtqueue *nvq,
+ 					     dev);
+ 	struct socket *sock = vhost_vq_get_backend(vq);
+ 	struct page_frag *alloc_frag = &net->page_frag;
+-	struct virtio_net_hdr *gso;
+ 	struct xdp_buff *xdp = &nvq->xdp[nvq->batched_xdp];
+ 	struct tun_xdp_hdr *hdr;
+ 	size_t len = iov_iter_count(from);
+@@ -715,29 +714,31 @@ static int vhost_net_build_xdp(struct vhost_net_virtqueue *nvq,
+ 		return -ENOMEM;
  
-+	if (tun->flags & IFF_VNET_HDR)
-+		gso = &hdr->gso;
+ 	buf = (char *)page_address(alloc_frag->page) + alloc_frag->offset;
+-	copied = copy_page_from_iter(alloc_frag->page,
+-				     alloc_frag->offset +
+-				     offsetof(struct tun_xdp_hdr, gso),
+-				     sock_hlen, from);
+-	if (copied != sock_hlen)
+-		return -EFAULT;
+-
+ 	hdr = buf;
+-	gso = &hdr->gso;
+-
+-	if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
+-	    vhost16_to_cpu(vq, gso->csum_start) +
+-	    vhost16_to_cpu(vq, gso->csum_offset) + 2 >
+-	    vhost16_to_cpu(vq, gso->hdr_len)) {
+-		gso->hdr_len = cpu_to_vhost16(vq,
+-			       vhost16_to_cpu(vq, gso->csum_start) +
+-			       vhost16_to_cpu(vq, gso->csum_offset) + 2);
+-
+-		if (vhost16_to_cpu(vq, gso->hdr_len) > len)
+-			return -EINVAL;
++	if (sock_hlen) {
++		struct virtio_net_hdr *gso = &hdr->gso;
 +
- 	xdp_prog = rcu_dereference(tun->xdp_prog);
- 	if (xdp_prog) {
--		if (gso->gso_type) {
-+		if (gso && gso->gso_type) {
- 			skb_xdp = true;
- 			goto build;
- 		}
-@@ -2388,7 +2391,7 @@ static int tun_xdp_one(struct tun_struct *tun,
- 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	skb_put(skb, xdp->data_end - xdp->data);
++		copied = copy_page_from_iter(alloc_frag->page,
++					     alloc_frag->offset +
++					     offsetof(struct tun_xdp_hdr, gso),
++					     sock_hlen, from);
++		if (copied != sock_hlen)
++			return -EFAULT;
++
++		if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
++		    vhost16_to_cpu(vq, gso->csum_start) +
++		    vhost16_to_cpu(vq, gso->csum_offset) + 2 >
++		    vhost16_to_cpu(vq, gso->hdr_len)) {
++			gso->hdr_len = cpu_to_vhost16(vq,
++						      vhost16_to_cpu(vq, gso->csum_start) +
++						      vhost16_to_cpu(vq, gso->csum_offset) + 2);
++
++			if (vhost16_to_cpu(vq, gso->hdr_len) > len)
++				return -EINVAL;
++		}
++		len -= sock_hlen;
+ 	}
  
--	if (virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
-+	if (gso && virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
- 		atomic_long_inc(&tun->rx_frame_errors);
- 		kfree_skb(skb);
- 		err = -EINVAL;
+-	len -= sock_hlen;
+ 	copied = copy_page_from_iter(alloc_frag->page,
+ 				     alloc_frag->offset + pad,
+ 				     len, from);
 -- 
 2.31.1
 
