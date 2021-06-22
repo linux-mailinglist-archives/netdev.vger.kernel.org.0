@@ -2,78 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1E183B0537
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 14:52:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D8A3B0570
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 15:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231408AbhFVMym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 08:54:42 -0400
-Received: from foss.arm.com ([217.140.110.172]:48762 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229675AbhFVMyl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 08:54:41 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ED46EED1;
-        Tue, 22 Jun 2021 05:52:25 -0700 (PDT)
-Received: from localhost.localdomain (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B086E3F694;
-        Tue, 22 Jun 2021 05:52:24 -0700 (PDT)
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>, nic_swsd@realtek.com
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sayanta Pattanayak <sayanta.pattanayak@arm.com>
-Subject: [PATCH] r8169: Avoid duplicate sysfs entry creation error
-Date:   Tue, 22 Jun 2021 13:52:06 +0100
-Message-Id: <20210622125206.1437-1-andre.przywara@arm.com>
-X-Mailer: git-send-email 2.14.1
+        id S231128AbhFVNGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 09:06:19 -0400
+Received: from www62.your-server.de ([213.133.104.62]:38362 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229844AbhFVNGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 09:06:18 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lvg4M-000CdI-QU; Tue, 22 Jun 2021 15:03:58 +0200
+Received: from [85.7.101.30] (helo=linux-3.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lvg4M-000Hly-Ib; Tue, 22 Jun 2021 15:03:58 +0200
+Subject: Re: [PATCH bpf] Revert "bpf: program: Refuse non-O_RDWR flags in
+ BPF_OBJ_GET"
+To:     Lorenz Bauer <lmb@cloudflare.com>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Greg Kroah-Hartman <gregkh@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Lorenzo Colitti <lorenzo@google.com>
+References: <20210618105526.265003-1-zenczykowski@gmail.com>
+ <CACAyw99k4ZhePBcRJzJn37rvGKnPHEgE3z8Y-47iYKQO2nqFpQ@mail.gmail.com>
+ <CANP3RGdrpb+KiD+a29zTSU3LKR8Qo6aFdo4QseRvPdNhZ_AOJw@mail.gmail.com>
+ <CACAyw9948drqRE=0tC=5OrdX=nOVR3JSPScXrkdAv+kGD_P3ZA@mail.gmail.com>
+ <CAHo-Oozra2ygb4qW6s8rsgZFmdr-gaQuGzREtXuZLwzzESCYNw@mail.gmail.com>
+ <CACAyw98B=uCnDY1tTw5STLUgNKvJeksJjaKiGqasJEEVv99GqA@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <a703516a-1566-d5fe-cf4c-f2bb004a4f4e@iogearbox.net>
+Date:   Tue, 22 Jun 2021 15:03:58 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <CACAyw98B=uCnDY1tTw5STLUgNKvJeksJjaKiGqasJEEVv99GqA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26209/Tue Jun 22 13:07:55 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sayanta Pattanayak <sayanta.pattanayak@arm.com>
+On 6/22/21 10:59 AM, Lorenz Bauer wrote:
+> On Mon, 21 Jun 2021 at 22:37, Maciej Żenczykowski
+> <zenczykowski@gmail.com> wrote:
+>>
+>> Please revert immediately.  I've got better things to do.  I shouldn't
+>> have to be thinking about this or arguing about this.
+>> It already took me significantly more than a day simply to track this
+>> down (arguably due to miscommunications with Greg, who'd earlier
+>> actually found this in 5.12, but misunderstood the problem, but
+>> still...).
+> 
+> You're barking up the wrong tree. I don't object to reverting the
+> patch, you asked me for context and I gave it to you.
 
-When registering the MDIO bus for a r8169 device, we use the PCI B/D/F
-specifier as a (seemingly) unique device identifier.
-However the very same BDF number can be used on another PCI segment,
-which makes the driver fail probing:
++1, this kind of barking was unnecessary and inappropriate.
 
-[ 27.544136] r8169 0002:07:00.0: enabling device (0000 -> 0003)
-[ 27.559734] sysfs: cannot create duplicate filename '/class/mdio_bus/r8169-700'
-....…
-[ 27.684858] libphy: mii_bus r8169-700 failed to register
-[ 27.695602] r8169: probe of 0002:07:00.0 failed with error -22
+I revamped the commit message a bit to have some more context for future
+reference when we need to get back on this.
 
-Add the segment number to the device name to make it more unique.
-
-This fixes operation on an ARM N1SDP board, where two boards might be
-connected together to form an SMP system, and all on-board devices show
-up twice, just on different PCI segments.
-
-Signed-off-by: Sayanta Pattanayak <sayanta.pattanayak@arm.com>
-[Andre: expand commit message]
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 2c89cde7da1e..209dee295ce2 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5086,7 +5086,8 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
- 	new_bus->priv = tp;
- 	new_bus->parent = &pdev->dev;
- 	new_bus->irq[0] = PHY_MAC_INTERRUPT;
--	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x", pci_dev_id(pdev));
-+	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x-%x",
-+		 pdev->bus->domain_nr, pci_dev_id(pdev));
- 
- 	new_bus->read = r8169_mdio_read_reg;
- 	new_bus->write = r8169_mdio_write_reg;
--- 
-2.17.5
-
+Anyway, applied.
