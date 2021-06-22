@@ -2,112 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE4213B0CB1
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:16:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2C9A3B0CE8
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:30:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232504AbhFVSTI convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Jun 2021 14:19:08 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:34604 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbhFVSTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:19:06 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1lvkx1-0007np-EH; Tue, 22 Jun 2021 18:16:43 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id BFBA05FBC1; Tue, 22 Jun 2021 11:16:41 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id B9947A0409;
-        Tue, 22 Jun 2021 11:16:41 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     zhudi <zhudi21@huawei.com>
-cc:     vfalico@gmail.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, rose.chen@huawei.com
-Subject: Re: [PATCH] bonding: avoid adding slave device with IFF_MASTER flag
-In-reply-to: <20210622030929.51295-1-zhudi21@huawei.com>
-References: <20210622030929.51295-1-zhudi21@huawei.com>
-Comments: In-reply-to zhudi <zhudi21@huawei.com>
-   message dated "Tue, 22 Jun 2021 11:09:29 +0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S232501AbhFVScP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 14:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231297AbhFVScO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:32:14 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2526C061574;
+        Tue, 22 Jun 2021 11:29:57 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id n7so24796054wri.3;
+        Tue, 22 Jun 2021 11:29:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6JFgiOQERZSIy0aWNl2Nl9CVI7uX5ANotzhjU2/vxGw=;
+        b=jIbmPpEhJU74qAsdco+GdmvRW7QJEL+iz1azILolEbS/x6/m088dbH2Nhzl5jhr/uv
+         etvI7XLpDyh+bk/6gXuIHY0qMATunpX6fjQ3NrttjO4u+HbNcinf7bkJCQxK8sTSc08K
+         EoD9Afn5HGSgn+Bsc3DifuEAeAh+2YmhjR3IlZwggW4YcAmA9YQCwSPGdwxp3nKxdqb0
+         AQpC8x/zK57rBdJwxzz/0ypiXYBTz0TsUo7L7khGcxjucRoKlrGGs87Kw19J6/FIvrnb
+         9tkX8QHrq7pPq5oeKCHiUkpSBUye9lJpHvG33iEiCVYT4O+Za7+fJOl62iM2ikc3EotX
+         D6bA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6JFgiOQERZSIy0aWNl2Nl9CVI7uX5ANotzhjU2/vxGw=;
+        b=paUN1JQgOkHGrH9gDnIUcxdCdJIaPHCWjHPN8cbpST/fJn+Pl3QXWs5JbHWfqw9Q4y
+         YJKdbm9XJRdYL9daGjL40gDjL0OKGCM7wy7WJxbQv8BRY3yP7jUDO1P5DZbZYebJwUtX
+         U7TdNhftsMtWUAwuQMIjxsjTOGzDgzUrzPsSuVa4AkEe4ABcatLyUfcq3aMIwr2Be7Oo
+         sNo4yEFPzxxM2BbvXHtaU7LoM16F2b1FdFbiBCCGHiX3RT53U9tha6+t2TxGNM55GNGk
+         ZD9TdOfR7LsZ6PKfvC/rH/ZVepJ9Al2mMTk8OE7D9uiikpmzzrks46aq7I903qqCbdxT
+         gQaA==
+X-Gm-Message-State: AOAM533ylD3ZWMDCcWKBXeRCfsj8tA+FLNxXA2+unrJypPuVJKcAu6ZP
+        CcVpOKNrcDBw4yI+YFYbt5Oil6kUQFTkCGkUXMY=
+X-Google-Smtp-Source: ABdhPJzLN9lgHu7OvRNCUQaRpxm70alEhzgPPZOlg1pCZqZyJEQ8nIDs/TQ1ghwGdgr8Y400beOlOs0T7GCv1ZBoo3g=
+X-Received: by 2002:a5d:5741:: with SMTP id q1mr2127032wrw.65.1624386596637;
+ Tue, 22 Jun 2021 11:29:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <21983.1624385801.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Tue, 22 Jun 2021 11:16:41 -0700
-Message-ID: <21984.1624385801@famine>
+References: <20210616020901.2759466-1-mudongliangabcd@gmail.com>
+In-Reply-To: <20210616020901.2759466-1-mudongliangabcd@gmail.com>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Tue, 22 Jun 2021 14:29:45 -0400
+Message-ID: <CAB_54W51MxDwN5oPxBqioaNhq-eB1QfXNMyUpmNZOWNDM3MmnA@mail.gmail.com>
+Subject: Re: [PATCH v2] ieee802154: hwsim: Fix memory leak in hwsim_add_one
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhudi <zhudi21@huawei.com> wrote:
+Hi,
 
->From: Di Zhu <zhudi21@huawei.com>
+On Tue, 15 Jun 2021 at 22:09, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
 >
->The following steps will definitely cause the kernel to crash:
->	ip link add vrf1 type vrf table 1
->	modprobe bonding.ko max_bonds=1
->	echo "+vrf1" >/sys/class/net/bond0/bonding/slaves
->	rmmod bonding
+> No matter from hwsim_remove or hwsim_del_radio_nl, hwsim_del fails to
+> remove the entry in the edges list. Take the example below, phy0, phy1
+> and e0 will be deleted, resulting in e1 not freed and accessed in the
+> future.
 >
->The root cause is that: When the VRF is added to the slave device,
->it will fail, and some cleaning work will be done. because VRF device
->has IFF_MASTER flag, cleanup process  will not clear the IFF_BONDING flag.
->Then, when we unload the bonding module, unregister_netdevice_notifier()
->will treat the VRF device as a bond master device and treat netdev_priv()
->as struct bonding{} which actually is struct net_vrf{}.
+>               hwsim_phys
+>                   |
+>     ------------------------------
+>     |                            |
+> phy0 (edges)                 phy1 (edges)
+>    ----> e1 (idx = 1)             ----> e0 (idx = 0)
 >
->By analyzing the processing logic of bond_enslave(), it seems that
->it is not allowed to add the slave device with the IFF_MASTER flag, so
->we need to add a code check for this situation.
-
-	I don't believe the statement just above is correct; nesting
-bonds has historically been permitted, even if it is of questionable
-value these days.  I've not tested nesting in a while, but last I recall
-it did function.
-
-	Leaving aside the question of whether it's really useful to nest
-bonds or not, my concern with disabling this is that it will break
-existing configurations that currently work fine.
-
-	However, it should be possible to use netif_is_bonding_master
-(which tests dev->flags & IFF_MASTER and dev->priv_flags & IFF_BONDING)
-to exclude IFF_MASTER devices that are not bonds (which seem to be vrf
-and eql), e.g.,
-
-	if ((slave_dev->flags & IFF_MASTER) &&
-		!netif_is_bond_master(slave_dev))
-
-	Or we can just go with this patch and see if anything breaks.
-
-	-J
-
->Signed-off-by: Di Zhu <zhudi21@huawei.com>
->---
-> drivers/net/bonding/bond_main.c | 6 ++++++
-> 1 file changed, 6 insertions(+)
+> Fix this by deleting and freeing all the entries in the edges list
+> between hwsim_edge_unsubscribe_me and list_del(&phy->list).
 >
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->index c5a646d06102..16840c9bc00d 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -1601,6 +1601,12 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
-> 	int link_reporting;
-> 	int res = 0, i;
-> 
->+	if (slave_dev->flags & IFF_MASTER) {
->+		netdev_err(bond_dev,
->+			   "Error: Device with IFF_MASTER cannot be enslaved\n");
->+		return -EPERM;
->+	}
->+
-> 	if (!bond->params.use_carrier &&
-> 	    slave_dev->ethtool_ops->get_link == NULL &&
-> 	    slave_ops->ndo_do_ioctl == NULL) {
->-- 
->2.23.0
->
+> Reported-by: syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com
+> Fixes: 1c9f4a3fce77 ("ieee802154: hwsim: fix rcu handling")
+> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Acked-by: Alexander Aring <aahringo@redhat.com>
+
+Thanks!
