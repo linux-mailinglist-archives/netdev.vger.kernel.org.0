@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B3F3AFD62
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 08:52:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A4293AFD63
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 08:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbhFVGyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 02:54:19 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:39955 "EHLO
+        id S230331AbhFVGyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 02:54:21 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:36225 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230130AbhFVGyP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 02:54:15 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id B835C5C00D8;
-        Tue, 22 Jun 2021 02:51:59 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S230290AbhFVGyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 02:54:17 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id D46E35C00AA;
+        Tue, 22 Jun 2021 02:52:01 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 22 Jun 2021 02:51:59 -0400
+  by compute1.internal (MEProxy); Tue, 22 Jun 2021 02:52:01 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=lhUE0Q0hNAJZAVofoMYrwd8GAGbuGnNi4m6DI0mM4Fc=; b=XEVWEY3a
-        oI0yVm7CKp+KLBuOwi4iwb2OgZY2z2lWueqKvOCMY3ThN2H1dnFTxPd7AGm/RhIm
-        3V2PMZq4s8sqEAYdUyZDvQ3nWq+r4PxYhYphXSio9Ttoo1zoPbVhJpxPRufqdsI7
-        jEl1YM6WiPp5socOUZ35uZm4KUSymKBrbbGzzwK+DZrUWJBOO0gDhgYV1v+VVxZn
-        8p41v+I1Ar8TjfhMbD/FaXnRm3RUUUAuDUidgxIIuwHoni2oVCrfPS+b+QOc5Fyg
-        KouscLPc03DgnDJzDzWJcSfSB6WfeHE6b0E0QWq/0+8YhrbO+AHaeEmWIsW+hgI6
-        8+4YlFVfY68etw==
-X-ME-Sender: <xms:j4jRYJE9-l4jZ3vmE1Wc6DGhJmAwZan0clpoxYRgXXwg2fnpXuBBBA>
-    <xme:j4jRYOWYfgshVzmaTX3EBG-hrKZBiCnKYgSRMDUi5_UtCNNqm-gZlt9EqIkk31sFu
-    mURG1aXfLWLAxY>
-X-ME-Received: <xmr:j4jRYLIvwSKV6d0OR9M9gvwek_c3S4e0XNpf7As1ZrYEjwSjo_EDvIauXXZMpWm49l_EAuyeHdZqzly2oSeNCUEWtMk8tMDMq77BDz0iF6-O4Q>
+        fm3; bh=B/8Jw1D9tsc6BagOi3t8zMHgiBpP6zzjghJ22Z+tMvc=; b=lHF1P40D
+        aRwSCrDTfs6BJwUh5ApwaL6nUIwa08eFmY9F+TdgLv0hwySRgaF96WgvyybuYOEz
+        EZ0qyyhcGDFG6eFvm9ex3MKidGscZA1wdMTx/7O1G4mRWWLrT+zhiT32yFotYsyL
+        X5eZOqv4FIaYmrzjPEg+UBFR/YzPkkiOxQw6nNgI1d3HXmL5SrIHwjwG2OM74bDP
+        IZzQF1koSZ7ZDAgRpxs/zfrfUOZ6briyFIHZLyqJ/FyxeTCYvJv9KIZUtlJ/zkOQ
+        qkdkSYCucYcwuTMYUCNSJsPUxpBRHLT59HseMr+zg3Cw0JbjfAGrGMO45v/xEeX7
+        oieBCuRIYDjGEQ==
+X-ME-Sender: <xms:kYjRYEaxqeVqarOqRfnFDAVvoTDBmX_WSR8zNiyCyKmWlHPGXj63XA>
+    <xme:kYjRYPZ6A6eIabR-ubqxBW2tVx_m0S-PeQd18QXqkvtp3xxm9JrRMP_6Wq6DQWY4c
+    aWVhCLbUzPs9Vw>
+X-ME-Received: <xmr:kYjRYO-2HOP83Iuyp2Lw-1N4u4iGQ881dQh2aPklmTAGEq71CN_d5K0c4wmvPBlVxAKU0NqpGUVMelMRvfgopekVj-8laVDaikYJ3miycx302w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegtddguddufecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegtddguddufecutefuodetgg
     ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
     ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedtnecu
     rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:j4jRYPGmFvbQpTh526DmzV9XqjS9othsZGyPOURKnl9rNUQKy3JOTg>
-    <xmx:j4jRYPVeEUL5OzTJKRb8m7WGpSmG1MGE_2HfBbursTW0Sx08K-y3zw>
-    <xmx:j4jRYKMoeD3hIdmqUl9dwCpLlwLZR8bVjeRdk68fko57c5cmcdrJvg>
-    <xmx:j4jRYBIpJgPsliWXK_eFC__sdD5gq4ZcssSegpctXDMfhT77EIyYDg>
+X-ME-Proxy: <xmx:kYjRYOoJzKrs1D4JI3Y6VQdLrYL50xz1gZAYUX-XQjIAdCPKKxFFWg>
+    <xmx:kYjRYPo4xFV-aI2vyk02x1OPfHw2TdB6ucAzA7r9jnPFQP91AJFqaQ>
+    <xmx:kYjRYMR6G6MJbdcj73nEjexjVvSgUF-9SfQYf_a2G7YBVFNcgdj_ZQ>
+    <xmx:kYjRYAf0neKCf49nWAWUNsyQUY9qrqMDUSvsQykg_BZ8nYwTyAvnhg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 22 Jun 2021 02:51:57 -0400 (EDT)
+ 22 Jun 2021 02:51:59 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         vladyslavt@nvidia.com, mkubecek@suse.cz, moshe@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 3/7] ethtool: Decrease size of module EEPROM get policy array
-Date:   Tue, 22 Jun 2021 09:50:48 +0300
-Message-Id: <20210622065052.2545107-4-idosch@idosch.org>
+Subject: [PATCH net-next 4/7] ethtool: Document behavior when module EEPROM bank attribute is omitted
+Date:   Tue, 22 Jun 2021 09:50:49 +0300
+Message-Id: <20210622065052.2545107-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210622065052.2545107-1-idosch@idosch.org>
 References: <20210622065052.2545107-1-idosch@idosch.org>
@@ -63,27 +63,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The 'ETHTOOL_A_MODULE_EEPROM_DATA' attribute is not part of the get
-request.
+The kernel assumes bank 0 when 'ETHTOOL_MSG_MODULE_EEPROM_GET' is sent
+without 'ETHTOOL_A_MODULE_EEPROM_BANK'.
+
+Document it as part of the interface documentation.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- net/ethtool/netlink.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/networking/ethtool-netlink.rst | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index 90b10966b16b..3e25a47fd482 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -380,7 +380,7 @@ extern const struct nla_policy ethnl_cable_test_tdr_act_policy[ETHTOOL_A_CABLE_T
- extern const struct nla_policy ethnl_tunnel_info_get_policy[ETHTOOL_A_TUNNEL_INFO_HEADER + 1];
- extern const struct nla_policy ethnl_fec_get_policy[ETHTOOL_A_FEC_HEADER + 1];
- extern const struct nla_policy ethnl_fec_set_policy[ETHTOOL_A_FEC_AUTO + 1];
--extern const struct nla_policy ethnl_module_eeprom_get_policy[ETHTOOL_A_MODULE_EEPROM_DATA + 1];
-+extern const struct nla_policy ethnl_module_eeprom_get_policy[ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS + 1];
- extern const struct nla_policy ethnl_stats_get_policy[ETHTOOL_A_STATS_GROUPS + 1];
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index 8ae644f800f0..6ea91e41593f 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -1383,6 +1383,8 @@ Request contents:
+   ``ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS``  u8      page I2C address
+   =======================================  ======  ==========================
  
- int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
++If ``ETHTOOL_A_MODULE_EEPROM_BANK`` is not specified, bank 0 is assumed.
++
+ Kernel response contents:
+ 
+  +---------------------------------------------+--------+---------------------+
 -- 
 2.31.1
 
