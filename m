@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0142F3B10AF
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 01:38:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 847843B10CC
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 01:49:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbhFVXkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 19:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
+        id S229948AbhFVXwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 19:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbhFVXkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 19:40:17 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5F5C061574;
-        Tue, 22 Jun 2021 16:38:00 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id d9so1197625ioo.2;
-        Tue, 22 Jun 2021 16:38:00 -0700 (PDT)
+        with ESMTP id S229747AbhFVXwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 19:52:09 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E7FC061756;
+        Tue, 22 Jun 2021 16:49:51 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id a11so914414ilf.2;
+        Tue, 22 Jun 2021 16:49:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=8fEzBbUVM6Br303r9wPjZ5cak2kYT/wYK8XH8paPOy8=;
-        b=t4WqQZS7JomsUMWmchBW1LwUmA1X1tjqycdE8/wv3Ty5DZO8pMT1wLrLEIlM1zEd8B
-         hGie5vpGis6A21O/bmh+ccFaLF13IBcoC8z3kNgYDCVS6pf6TzPlLD+CllvItGnTrpga
-         jaPeFlzbxOQq6c9zxgIYgrtn2F+sn2w093v3TAFcw2iE4TIH5S7Sg+hVTg0M3+TPPIN3
-         af60S17dcplncx8LXcAqMB3zFCO1LI6Zxfu2mdgkVWwkxZ0DZXPWwyuPQktnSYK2RcbQ
-         ASxGR4ovGROCCsttE4L18YvFO9hh/34hUVLsx8w++bSsC+EvS7LMxSb9F7rSIY2kozUs
-         TLcQ==
+        bh=yEin6NsZyITOBllQK+uSTWwo16L3MWUi4g+JR1qvUzI=;
+        b=P+pdu9Za/3zTisEXn8J+GOH4NxNd+8jVxyj+BfEz1x5kI6gdMgvZ+4GSCoZcOR16gh
+         Hflr7Ej+LezaBxMUVBUdEJmjYhzourZ5J7NZcjDcb8WWtZrWBBNwrlVVBUGF9Xl+Hkz3
+         lCrcU6Qux7XLdTe1xM/HU0vmxE/yohv8mzgxS7y/CoxzvPOaH8G7+p1LR6iTZzQnzbzD
+         sp4JPAzTCz0DpulCC4oIU+P8p13pFywhm2MaCviyb1Ip8iGCembMEVDanGaZ0f+RBfb0
+         W4Jj68yjWihuNGzqhzquxaP3TmqWg6cdEO8nnQjDsVP3QgrF9QPJjaqyPlEqM2170yVM
+         hGMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=8fEzBbUVM6Br303r9wPjZ5cak2kYT/wYK8XH8paPOy8=;
-        b=ERzVIMAioPBTp/7/iE8IXkcnE43ezvhN8pNEOsF9WzJt628Ywn6MzN2mQOb+569ynA
-         G037oa0uxaPmIw3GIV6K05zE5Y+oL5hTLXRQ1Ra0FmaYBR75CddF1cWtWAQ1ZYpAwCEb
-         CLYwHSGsASXhfF2RzcNI6dNHNtIf3R80LEurUGGMGVtul6PSyDY2hmM0sqIYhpYAJuCH
-         PEQM8NnhU4WY43mZgVA2HF4/oLvMd6npZqivyi8EhCm5/whAVjVbI3pYyxXJ1+UcsuNQ
-         OW6lHr1qL/LmgyYHsDrkVKfTawQ1UO5djRIR6X2lPzqo/DETAfO66lBHNikO1MWG5c9D
-         lPTA==
-X-Gm-Message-State: AOAM530UCGmhOWlfx7yQyfMtbv4/60OoUeLAtpo7TgGa53o9IouK8m/z
-        tTII9Na0SgUFx2gZB2bJInA=
-X-Google-Smtp-Source: ABdhPJzOpjusoTATNk78lE6l9ADCbWG7QsB5AbJP09T0NvBUROQ6qhwbsZy3kx0htbtTNqPEZ/vAIQ==
-X-Received: by 2002:a05:6602:2001:: with SMTP id y1mr4815280iod.181.1624405079751;
-        Tue, 22 Jun 2021 16:37:59 -0700 (PDT)
+        bh=yEin6NsZyITOBllQK+uSTWwo16L3MWUi4g+JR1qvUzI=;
+        b=fpu2MARk7K1CnaH15/p17Qry2ISEGYzfZPjdBFffzyccGnWkF1qCKtEKs85Y91aw8E
+         2n8zZIZAV6kIMn2JoTwrXgkVvaeVHQ7T2i8d5D+pkxF8ESg8mOO9Jai2XsXcOyiBD0Db
+         I4Vgjja4My19GaNlyDVePgoBkZmral8aTicHH2yPuZmppU3DzkpfOnYqX7VSLt9/yQt/
+         nl3UnfnMnEqU3n/7h1/7U6jyZIRZ5Cg1UkmRLlL9U17FSZEjkNpkz1V16WZllFVuyzTE
+         fvX3XKCNo9SokD/n1WTdHviYrSGepeOMyJYzfC0HFv72WvxyW6Yv1UKuwxR/zuuCdMlh
+         FkUQ==
+X-Gm-Message-State: AOAM530HC+4HTnl6Ak9o0zbBW78pvG51kYSxq4QlGM7pNCwjc7t6WQP7
+        EVfMLmXIdwrOetaUlw4ouQk=
+X-Google-Smtp-Source: ABdhPJy+u6bR2D0CXhdELPS1jDzhkIxRyee9kBwEZsU02Vtar/ANqT3x+wKSaiHK2vGNmY2Zvs4Kyw==
+X-Received: by 2002:a05:6e02:1c0d:: with SMTP id l13mr764086ilh.271.1624405791084;
+        Tue, 22 Jun 2021 16:49:51 -0700 (PDT)
 Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id z19sm12307486ioc.29.2021.06.22.16.37.57
+        by smtp.gmail.com with ESMTPSA id e2sm10666830iot.50.2021.06.22.16.49.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 16:37:59 -0700 (PDT)
-Date:   Tue, 22 Jun 2021 16:37:50 -0700
+        Tue, 22 Jun 2021 16:49:50 -0700 (PDT)
+Date:   Tue, 22 Jun 2021 16:49:42 -0700
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org
@@ -58,12 +58,12 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com
-Message-ID: <60d2744ee12c2_1342e208f7@john-XPS-13-9370.notmuch>
-In-Reply-To: <863f4934d251f44ad85a6be08b3737fac74f9b5a.1623674025.git.lorenzo@kernel.org>
+Message-ID: <60d27716b5a5a_1342e208d5@john-XPS-13-9370.notmuch>
+In-Reply-To: <4d2a74f7389eb51e2b43c63df76d9cd76f57384c.1623674025.git.lorenzo@kernel.org>
 References: <cover.1623674025.git.lorenzo@kernel.org>
- <863f4934d251f44ad85a6be08b3737fac74f9b5a.1623674025.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v9 bpf-next 08/14] bpf: add multi-buff support to the
- bpf_xdp_adjust_tail() API
+ <4d2a74f7389eb51e2b43c63df76d9cd76f57384c.1623674025.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v9 bpf-next 10/14] bpf: add multi-buffer support to xdp
+ copy helpers
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -75,80 +75,147 @@ X-Mailing-List: netdev@vger.kernel.org
 Lorenzo Bianconi wrote:
 > From: Eelco Chaudron <echaudro@redhat.com>
 > 
-> This change adds support for tail growing and shrinking for XDP multi-buff.
+> This patch adds support for multi-buffer for the following helpers:
+>   - bpf_xdp_output()
+>   - bpf_perf_event_output()
 > 
-
-It would be nice if the commit message gave us some details on how the
-growing/shrinking works in the multi-buff support.
-
 > Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > ---
->  include/net/xdp.h |  7 ++++++
->  net/core/filter.c | 62 +++++++++++++++++++++++++++++++++++++++++++++++
->  net/core/xdp.c    |  5 ++--
->  3 files changed, 72 insertions(+), 2 deletions(-)
+
+Ah ok so at least xdp_output will work with all bytes. But this is
+getting close to having access into the frags so I think doing
+the last bit shouldn't be too hard?
+
+>  kernel/trace/bpf_trace.c                      |   3 +
+>  net/core/filter.c                             |  72 +++++++++-
+>  .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 127 ++++++++++++------
+>  .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+>  4 files changed, 160 insertions(+), 44 deletions(-)
 > 
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index 935a6f83115f..3525801c6ed5 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -132,6 +132,11 @@ xdp_get_shared_info_from_buff(struct xdp_buff *xdp)
->  	return (struct skb_shared_info *)xdp_data_hard_end(xdp);
->  }
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index d2d7cf6cfe83..ee926ec64f78 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -1365,6 +1365,7 @@ static const struct bpf_func_proto bpf_perf_event_output_proto_raw_tp = {
 >  
-> +static inline unsigned int xdp_get_frag_tailroom(const skb_frag_t *frag)
-> +{
-> +	return PAGE_SIZE - skb_frag_size(frag) - skb_frag_off(frag);
-> +}
-> +
->  struct xdp_frame {
->  	void *data;
->  	u16 len;
-> @@ -259,6 +264,8 @@ struct xdp_frame *xdp_convert_buff_to_frame(struct xdp_buff *xdp)
->  	return xdp_frame;
->  }
+>  extern const struct bpf_func_proto bpf_skb_output_proto;
+>  extern const struct bpf_func_proto bpf_xdp_output_proto;
+> +extern const struct bpf_func_proto bpf_xdp_get_buff_len_trace_proto;
 >  
-> +void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
-> +		  struct xdp_buff *xdp);
->  void xdp_return_frame(struct xdp_frame *xdpf);
->  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf);
->  void xdp_return_buff(struct xdp_buff *xdp);
+>  BPF_CALL_3(bpf_get_stackid_raw_tp, struct bpf_raw_tracepoint_args *, args,
+>  	   struct bpf_map *, map, u64, flags)
+> @@ -1460,6 +1461,8 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  		return &bpf_sock_from_file_proto;
+>  	case BPF_FUNC_get_socket_cookie:
+>  		return &bpf_get_socket_ptr_cookie_proto;
+> +	case BPF_FUNC_xdp_get_buff_len:
+> +		return &bpf_xdp_get_buff_len_trace_proto;
+>  #endif
+>  	case BPF_FUNC_seq_printf:
+>  		return prog->expected_attach_type == BPF_TRACE_ITER ?
 > diff --git a/net/core/filter.c b/net/core/filter.c
-> index caa88955562e..05f574a3d690 100644
+> index b0855f2d4726..f7211b7908a9 100644
 > --- a/net/core/filter.c
 > +++ b/net/core/filter.c
-> @@ -3859,11 +3859,73 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
->  	.arg2_type	= ARG_ANYTHING,
+> @@ -3939,6 +3939,15 @@ const struct bpf_func_proto bpf_xdp_get_buff_len_proto = {
+>  	.arg1_type	= ARG_PTR_TO_CTX,
 >  };
 >  
-> +static int bpf_xdp_mb_adjust_tail(struct xdp_buff *xdp, int offset)
-> +{
+> +BTF_ID_LIST_SINGLE(bpf_xdp_get_buff_len_bpf_ids, struct, xdp_buff)
+> +
+> +const struct bpf_func_proto bpf_xdp_get_buff_len_trace_proto = {
+> +	.func		= bpf_xdp_get_buff_len,
+> +	.gpl_only	= false,
+> +	.arg1_type	= ARG_PTR_TO_BTF_ID,
+> +	.arg1_btf_id	= &bpf_xdp_get_buff_len_bpf_ids[0],
+> +};
+> +
+>  BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
+>  {
+>  	void *data_hard_end = xdp_data_hard_end(xdp); /* use xdp->frame_sz */
+> @@ -4606,10 +4615,56 @@ static const struct bpf_func_proto bpf_sk_ancestor_cgroup_id_proto = {
+>  };
+>  #endif
+>  
+> -static unsigned long bpf_xdp_copy(void *dst_buff, const void *src_buff,
+> +static unsigned long bpf_xdp_copy(void *dst_buff, const void *ctx,
+>  				  unsigned long off, unsigned long len)
+>  {
+> -	memcpy(dst_buff, src_buff + off, len);
+> +	struct xdp_buff *xdp = (struct xdp_buff *)ctx;
 > +	struct skb_shared_info *sinfo;
+> +	unsigned long base_len;
 > +
-> +	if (unlikely(!xdp_buff_is_mb(xdp)))
-> +		return -EINVAL;
+> +	if (likely(!xdp_buff_is_mb(xdp))) {
+> +		memcpy(dst_buff, xdp->data + off, len);
+> +		return 0;
+> +	}
 > +
+> +	base_len = xdp->data_end - xdp->data;
 > +	sinfo = xdp_get_shared_info_from_buff(xdp);
-> +	if (offset >= 0) {
-> +		skb_frag_t *frag = &sinfo->frags[sinfo->nr_frags - 1];
-> +		int size;
+> +	do {
+> +		const void *src_buff = NULL;
+> +		unsigned long copy_len = 0;
 > +
-> +		if (unlikely(offset > xdp_get_frag_tailroom(frag)))
-> +			return -EINVAL;
+> +		if (off < base_len) {
+> +			src_buff = xdp->data + off;
+> +			copy_len = min(len, base_len - off);
+> +		} else {
+> +			unsigned long frag_off_total = base_len;
+> +			int i;
 > +
-> +		size = skb_frag_size(frag);
-> +		memset(skb_frag_address(frag) + size, 0, offset);
-> +		skb_frag_size_set(frag, size + offset);
-> +		sinfo->data_len += offset;
+> +			for (i = 0; i < sinfo->nr_frags; i++) {
+> +				skb_frag_t *frag = &sinfo->frags[i];
+> +				unsigned long frag_len, frag_off;
+> +
+> +				frag_len = skb_frag_size(frag);
+> +				frag_off = off - frag_off_total;
+> +				if (frag_off < frag_len) {
+> +					src_buff = skb_frag_address(frag) +
+> +						   frag_off;
+> +					copy_len = min(len,
+> +						       frag_len - frag_off);
+> +					break;
+> +				}
+> +				frag_off_total += frag_len;
+> +			}
+> +		}
+> +		if (!src_buff)
+> +			break;
+> +
+> +		memcpy(dst_buff, src_buff, copy_len);
+> +		off += copy_len;
+> +		len -= copy_len;
+> +		dst_buff += copy_len;
 
-Can you add some comment on how this works? So today I call
-bpf_xdp_adjust_tail() to add some trailer to my packet.
-This looks like it adds tailroom to the last frag? But, then
-how do I insert my trailer? I don't think we can without the
-extra multi-buffer access support right.
+This block reads odd to be because it requires looping over the frags
+multiple times? Why not something like this,
 
-Also data_end will be unchanged yet it will return 0 so my
-current programs will likely be a bit confused by this.
+  if (off < base_len) {
+   src_buff = xdp->data + off
+   copy_len = min...
+   memcpy(dst_buff, src_buff, copy_len)
+   off += copylen
+   len -= copylen
+   dst_buff += copylen;
+  }
 
-> +	} else {
+  for (i = 0; i , nr_frags; i++) {
+     frag = ...
+     ...
+     if frag_off < fraglen
+        ...
+        memcpy()
+        update(off, len, dst_buff)
+  }
+
+
+Maybe use a helper to set off,len and dst_buff if worried about the
+duplication. Seems cleaner than walking through 0..n-1 frags for
+each copy.
+
+> +	} while (len);
+> +
+>  	return 0;
+>  }
