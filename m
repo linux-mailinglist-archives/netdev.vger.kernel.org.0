@@ -2,67 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E25B93AFABE
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 03:58:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 360633AFAEA
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 04:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbhFVCAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 22:00:40 -0400
-Received: from novek.ru ([213.148.174.62]:38250 "EHLO novek.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229663AbhFVCAg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 22:00:36 -0400
-Received: from [192.168.0.18] (unknown [37.228.234.253])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id BC6685006D2;
-        Tue, 22 Jun 2021 04:56:24 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru BC6685006D2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1624326986; bh=ngYBKqQHwva41GA1mYdUHQ+H9OGWQApvACV/JSk1gQg=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=D1TmovyTNK4N25ntl+FcBCYLhx0FsdvvpRlNQzok7nzYlwnQ+0UHJSadg2NivTEy4
-         VDiiReXQzUl8KJGczhhWqxIfpODRYzg8pS7wrL6DvS749uAf2bvVFVewSkj6eCBI3F
-         J/BvI3P4obQMW4m09i6dRkuZlALiNB/851UaiXqA=
-Subject: Re: [PATCH net] ip6_tunnel: fix GRE6 segmentation
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org
-References: <20210622015254.1967716-1-kuba@kernel.org>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <a3b17b07-2d7a-7bdc-b533-0f55a72f0b54@novek.ru>
-Date:   Tue, 22 Jun 2021 02:58:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S231176AbhFVCNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 22:13:23 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:46256 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229663AbhFVCNX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Jun 2021 22:13:23 -0400
+Received: from [10.130.0.191] (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxIOKSRtFgxZ4VAA--.3572S3;
+        Tue, 22 Jun 2021 10:10:40 +0800 (CST)
+Subject: Re: [PATCH 1/4] stmmac: pci: Add dwmac support for Loongson
+To:     Andrew Lunn <andrew@lunn.ch>
+References: <20210618025337.5705-1-zhangqing@loongson.cn>
+ <YM//kGGAp3vz8OYb@lunn.ch>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Huacai Chen <chenhc@lemote.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>
+From:   zhangqing <zhangqing@loongson.cn>
+Message-ID: <d66e6af7-7384-41aa-76a7-7017f27d43cb@loongson.cn>
+Date:   Tue, 22 Jun 2021 10:10:26 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-In-Reply-To: <20210622015254.1967716-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
-        autolearn=ham autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+In-Reply-To: <YM//kGGAp3vz8OYb@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9BxIOKSRtFgxZ4VAA--.3572S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7CF4ftw17JryxXw1xArykuFg_yoW8JF4fpa
+        srGa9xKFZFgFyxCr1FqFWkXFyvvr4Skay0k3y2yFnxK3ZYyrWfX34jgrWUCas3CFZ5Cw45
+        Zw1jgr48Wa4kKrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9Kb7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4
+        vEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVAC
+        Y4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJV
+        W8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkI
+        wI1lc7I2V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l4I
+        8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AK
+        xVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcV
+        AFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8I
+        cIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14
+        v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxU7NBMDUUUU
+X-CM-SenderInfo: x2kd0wptlqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22.06.2021 02:52, Jakub Kicinski wrote:
-> Commit 6c11fbf97e69 ("ip6_tunnel: add MPLS transmit support")
-> moved assiging inner_ipproto down from ipxip6_tnl_xmit() to
-> its callee ip6_tnl_xmit(). The latter is also used by GRE.
-> 
-> Since commit 38720352412a ("gre: Use inner_proto to obtain inner
-> header protocol") GRE had been depending on skb->inner_protocol
-> during segmentation. It sets it in gre_build_header() and reads
-> it in gre_gso_segment(). Changes to ip6_tnl_xmit() overwrite
-> the protocol, resulting in GSO skbs getting dropped.
-> 
-> Note that inner_protocol is a union with inner_ipproto,
-> GRE uses the former while the change switched it to the latter
-> (always setting it to just IPPROTO_GRE).
-> 
-> Restore the original location of skb_set_inner_ipproto(),
-> it is unclear why it was moved in the first place.
-> 
-> Fixes: 6c11fbf97e69 ("ip6_tunnel: add MPLS transmit support")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-Tested-by: Vadim Fedorenko <vfedorenko@novek.ru>
+
+
+On 06/21/2021 10:55 AM, Andrew Lunn wrote:
+>> +static int loongson_dwmac_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>> +{
+>> +	struct plat_stmmacenet_data *plat;
+>> +	struct stmmac_resources res;
+>> +	int ret, i, mdio;
+>> +	struct device_node *np;
+>> +
+>> +	np = dev_of_node(&pdev->dev);
+>> +
+>> +	if (!np) {
+>> +		pr_info("dwmac_loongson_pci: No OF node\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	if (!of_device_is_compatible(np, "loongson, pci-gmac")) {
+>> +		pr_info("dwmac_loongson_pci: Incompatible OF node\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	plat = devm_kzalloc(&pdev->dev, sizeof(*plat), GFP_KERNEL);
+>> +	if (!plat)
+>> +		return -ENOMEM;
+>> +
+>> +	if (plat->mdio_node) {
+>> +		dev_err(&pdev->dev, "Found MDIO subnode\n");
+> It is an error is an MDIO node is found?
+
+Hi，Andrew
+
+Thanks for your advice,
+
+Using dev_ DEG () is appropriate,
+
+and other issues I will fix in v2.
+
+Thanks,
+
+-Qing
+
+>
+>> +		mdio = true;
+>> +	}
+>> +
+> ...
+>
+>> +
+>> +	plat->phy_interface = device_get_phy_mode(&pdev->dev);
+>> +	if (plat->phy_interface < 0)
+>> +		dev_err(&pdev->dev, "phy_mode not found\n");
+>> +
+>> +	plat->interface = PHY_INTERFACE_MODE_GMII;
+> Seems odd you call device_get_phy_mode() but then have this hard coded
+> PHY_INTERFACE_MODE_GMII?
+>
+> 	Andrew
+
