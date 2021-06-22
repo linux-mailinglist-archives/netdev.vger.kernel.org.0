@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BB8D3AFD64
+	by mail.lfdr.de (Postfix) with ESMTP id 784193AFD65
 	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 08:52:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230422AbhFVGyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 02:54:22 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:49591 "EHLO
+        id S231411AbhFVGya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 02:54:30 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:32885 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230339AbhFVGyT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 02:54:19 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id EB6735C00D4;
-        Tue, 22 Jun 2021 02:52:03 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S230363AbhFVGyV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 02:54:21 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id E0C415C00D5;
+        Tue, 22 Jun 2021 02:52:05 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Tue, 22 Jun 2021 02:52:03 -0400
+  by compute6.internal (MEProxy); Tue, 22 Jun 2021 02:52:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=7w8L8HyL89jrL2sZ6u2F2y8nYukUlqI0tkLF5SH5wDg=; b=ohkeF3xR
-        Pw5DEIo9K1PocVnJDqrjlYZUetB83aazt3skhNCVt9QSXJARwuopj8zn/V4ap4Yh
-        you8IeNQjNBL6M33J6sqUA7aaKJY+Ske32eqHXYb4emswJdZeLqjvRq1xrZok5aR
-        hMc5Omh2Q45qpvzr1WXk8feIDg36Q0qqCljKUhTv+HXiCCcTEev5fHFhAxeerlOQ
-        7S/ePBVKyc0DsyOAqHFz5OPuKDbSkXEJn44Uq8/5J3C9LTkUOxNrEBaN8RTc4x8z
-        2dOPWWgvk3GWUMnOBnwy8tTtt7C30Lo64bBCBpN8J9/ZjzuNVl83V9iZaHwO4SM3
-        Th4DHR/cIRaXzg==
-X-ME-Sender: <xms:k4jRYE4FBQzJFVAW1oA2_KifECuZ3CnwSlQXH9HksfaakD4F6jXfcA>
-    <xme:k4jRYF5yxXB-gQE3QDuhKXV_Qui4KC60kfONu4MmF8mEkg8aIM9jnhZstNEWzqS7_
-    EZezc_BWw8Wn2Y>
-X-ME-Received: <xmr:k4jRYDd-2lJPzLWgUCZM_xBDbKLxoUjr0q1gvUYTNH8vRBYQ5wHKv4s2zCL1MI1zxSc2uebqX7Xqt26y2RMXsD9Vzt7rDvOTW8LAvyxzltCHYg>
+        fm3; bh=mMqNjTDPdW4oNzL8NkjlTgglCo7s/+5jjOlbm3dJ8lk=; b=gUc6YiEu
+        SuSW8wduyD8ar06ZxgelgdPcV/AVHszwW9nB9PbXZlf8rNbya6KoGpNlFibKP9V3
+        5/iCsplUQuYwaBFECUyOANs9ioc4uXVESGDS/4w0lV9Z/GunuHiqqmAfMJ42cLpN
+        j6cOd5CNKLx17pxfphkc6S02re3TJ367lbKn3UP9TSvG2uYNdW1RFIx2RDYowV2W
+        lTLohlGnjBFQOHLsgDd8hZaFPDjzwfOvqMzXX6DUVz6fKF/YcMGHbN65foVc5pSF
+        BpchCN8LH+mdipPcSmzefA7gO7CCvlq1tlF2rgyx0ZQ4TXSbtC/oXltibDHObLzL
+        kG1oGDrRjcRY+Q==
+X-ME-Sender: <xms:lYjRYPWoGFnbwtk6rJc2y3Y2qV-D-BBOicsrPrxnrsndaW0RJdj3ig>
+    <xme:lYjRYHkqHpfXZXINe_4U8SUOQwA7qmvT-v9bBBNO4RtSp_XyiNMxHcTxpFFCwdf-T
+    XBV7HEr7V6xx1Y>
+X-ME-Received: <xmr:lYjRYLYj7X57z55ytcydZBFV0ocxaBzGoGieIR3a8EQkU-GzNAMSH9xghFAQBMMy5wXstdAYOx7O5ve7AqxqtEz4ElMyYQFtdfbI0zQVxqlgAw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegtddguddufecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
     ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
     ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
-    ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedtnecu
+    ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedunecu
     rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:k4jRYJKTBOYgCgCo9vIAaWLoTAzQC2YbKLP11DdmoF8vX4hPDPPA1w>
-    <xmx:k4jRYILFY-9kJLr7K_raH-1LtdriyOmQwLW5w0Cb4uiutHoakRDwbQ>
-    <xmx:k4jRYKyArOGSc-YMWNL8DJ3B2tE6t5O_S1u79Zk4jk358BUYJqw9Dw>
-    <xmx:k4jRYA9aFmrU4K-z4EkwWsVnhe1e1PwMJt202dPaM8yQSCTakRMsMA>
+X-ME-Proxy: <xmx:lYjRYKUkuR0J4VsIQ-LejC4djOsCBqF_W7x5SulM1ZZGeduU50WgUQ>
+    <xmx:lYjRYJmcIBkyM8Nlrtd4HbtG82kArUiCKip-bMCCetY_mVMvWEfhGA>
+    <xmx:lYjRYHe_hosc5UkVNErle6ZCFfPhED6KB9I__tOL6X6EyqAjPWW79Q>
+    <xmx:lYjRYHY1BusaPYTcM8CTPJ4w9Q1upuc75FAS1B-j3ISxINkvpU0e4w>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 22 Jun 2021 02:52:02 -0400 (EDT)
+ 22 Jun 2021 02:52:04 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         vladyslavt@nvidia.com, mkubecek@suse.cz, moshe@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 5/7] ethtool: Use kernel data types for internal EEPROM struct
-Date:   Tue, 22 Jun 2021 09:50:50 +0300
-Message-Id: <20210622065052.2545107-6-idosch@idosch.org>
+Subject: [PATCH net-next 6/7] ethtool: Validate module EEPROM length as part of policy
+Date:   Tue, 22 Jun 2021 09:50:51 +0300
+Message-Id: <20210622065052.2545107-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210622065052.2545107-1-idosch@idosch.org>
 References: <20210622065052.2545107-1-idosch@idosch.org>
@@ -63,39 +63,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The struct is not visible to user space and therefore should not use the
-user visible data types.
+Validate the number of bytes to read from the module EEPROM as part of
+the netlink policy and remove the corresponding check from the code.
 
-Instead, use internal data types like other structures in the file.
+This also makes it possible to query the length range from user space:
+
+ $ genl ctrl policy name ethtool
+ ...
+ ID: 0x14  policy[32]:attr[3]: type=U32 range:[1,128]
+ ...
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- include/linux/ethtool.h | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ net/ethtool/eeprom.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index e030f7510cd3..29dbb603bc91 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -401,12 +401,12 @@ struct ethtool_rmon_stats {
-  * required information to the driver.
-  */
- struct ethtool_module_eeprom {
--	__u32	offset;
--	__u32	length;
--	__u8	page;
--	__u8	bank;
--	__u8	i2c_address;
--	__u8	*data;
-+	u32	offset;
-+	u32	length;
-+	u8	page;
-+	u8	bank;
-+	u8	i2c_address;
-+	u8	*data;
- };
+diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
+index 5d38e90895ac..1e75d9c1b154 100644
+--- a/net/ethtool/eeprom.c
++++ b/net/ethtool/eeprom.c
+@@ -159,9 +159,6 @@ static int eeprom_parse_request(struct ethnl_req_info *req_info, struct nlattr *
+ 	request->offset = nla_get_u32(tb[ETHTOOL_A_MODULE_EEPROM_OFFSET]);
+ 	request->length = nla_get_u32(tb[ETHTOOL_A_MODULE_EEPROM_LENGTH]);
  
- /**
+-	if (!request->length)
+-		return -EINVAL;
+-
+ 	/* The following set of conditions limit the API to only dump 1/2
+ 	 * EEPROM page without crossing low page boundary located at offset 128.
+ 	 * This means user may only request dumps of length limited to 128 from
+@@ -237,7 +234,8 @@ const struct ethnl_request_ops ethnl_module_eeprom_request_ops = {
+ const struct nla_policy ethnl_module_eeprom_get_policy[] = {
+ 	[ETHTOOL_A_MODULE_EEPROM_HEADER]	= NLA_POLICY_NESTED(ethnl_header_policy),
+ 	[ETHTOOL_A_MODULE_EEPROM_OFFSET]	= { .type = NLA_U32 },
+-	[ETHTOOL_A_MODULE_EEPROM_LENGTH]	= { .type = NLA_U32 },
++	[ETHTOOL_A_MODULE_EEPROM_LENGTH]	=
++		NLA_POLICY_RANGE(NLA_U32, 1, ETH_MODULE_EEPROM_PAGE_LEN),
+ 	[ETHTOOL_A_MODULE_EEPROM_PAGE]		= { .type = NLA_U8 },
+ 	[ETHTOOL_A_MODULE_EEPROM_BANK]		= { .type = NLA_U8 },
+ 	[ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS]	=
 -- 
 2.31.1
 
