@@ -2,80 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB3BD3B0D68
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 21:04:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 545CC3B0D73
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 21:07:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232706AbhFVTGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 15:06:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48336 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232662AbhFVTGo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 15:06:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5474B606A5;
-        Tue, 22 Jun 2021 19:04:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624388668;
-        bh=LUMG5XmvzeCr7rXnetTSokCsmQ+JNrsmHuq77crafBI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ruq0V+AIgYJ2Y28q4Q5GVOx8t7labR6q0Y7lL4uLqb+MEZTzCovVixsLAqnbeVCRM
-         g2YfAPVocbIOd9SATzRdrIJls6JMVAWZWWxqyAYZsMR6W4Vi/X50YqqqGZh9FmG8aF
-         4Xf1rUvmVmaEPVYRiEekNw/XiiHdkVgvCZYwHZKLolQOHxSJMrj/He54xBe26Su/40
-         +8jJrRE8/WiGKybFGdS6WYwzgqaTsCkeOThBaPAJkApwLiEc/dC/lfVEGwrcGsiWGt
-         6nxwZFONpAEmoWAQj+3U15DW5quBkpn13zb/QTTioLZR0W5qHtx92Pw26FaVMuf/WF
-         hSK7P+N4KOl5A==
-Date:   Tue, 22 Jun 2021 12:04:26 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, willemb@google.com,
-        dsahern@gmail.com, yoshfuji@linux-ipv6.org, Dave Jones <dsj@fb.com>
-Subject: Re: [PATCH net-next] ip: avoid OOM kills with large UDP sends over
- loopback
-Message-ID: <20210622120426.17ef1acc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <d4e2cf28-89f9-7c1f-91de-759de2c47fae@gmail.com>
-References: <20210621231307.1917413-1-kuba@kernel.org>
-        <8fe00e04-3a79-6439-6ec7-5e40408529e2@gmail.com>
-        <20210622095422.5e078bd4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <462f87f4-cc90-1c0e-3a9f-c65c64781dc3@gmail.com>
-        <20210622110935.35318a30@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <d4e2cf28-89f9-7c1f-91de-759de2c47fae@gmail.com>
+        id S232686AbhFVTKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 15:10:11 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:48239 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230146AbhFVTKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 15:10:11 -0400
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id C16ED200002;
+        Tue, 22 Jun 2021 19:07:51 +0000 (UTC)
+Subject: Re: [PATCH] docs: af_xdp: consistent indentation in examples
+To:     Ilya Maximets <i.maximets@ovn.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210622185647.3705104-1-i.maximets@ovn.org>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Message-ID: <b871fd9c-897c-26ca-f4fd-7d81b3489379@ovn.org>
+Date:   Tue, 22 Jun 2021 21:07:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210622185647.3705104-1-i.maximets@ovn.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Jun 2021 20:47:57 +0200 Eric Dumazet wrote:
-> On 6/22/21 8:09 PM, Jakub Kicinski wrote:
-> > On Tue, 22 Jun 2021 19:48:43 +0200 Eric Dumazet wrote:  
-> >> I  really thought alloc_skb_with_frags() was already handling low-memory-conditions.
-> >>
-> >> (alloc_skb_with_frags() is called from sock_alloc_send_pskb())
-> >>
-> >> If it is not, lets fix it, because af_unix sockets will have the same issue ?  
-> > 
-> > af_unix seems to cap at SKB_MAX_ALLOC which is order 2, AFAICT.  
+On 6/22/21 8:56 PM, Ilya Maximets wrote:
+> Examples in this document use all kinds of indentation from 3 to 5
+> spaces and even mixed with tabs.  Making them all even and equal to
+> 4 spaces.
 > 
-> It does not cap to SKB_MAX_ALLOC.
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
+
+Ugh.  Sorry, meant to send for bpf-next, but lost the subject prefix
+somewhere...  Can re-send if needed.
+
+>  Documentation/networking/af_xdp.rst | 32 ++++++++++++++---------------
+>  1 file changed, 16 insertions(+), 16 deletions(-)
 > 
-> It definitely attempt big allocations if you send 64KB datagrams.
+> diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networking/af_xdp.rst
+> index 2ccc5644cc98..42576880aa4a 100644
+> --- a/Documentation/networking/af_xdp.rst
+> +++ b/Documentation/networking/af_xdp.rst
+> @@ -290,19 +290,19 @@ round-robin example of distributing packets is shown below:
+>     #define MAX_SOCKS 16
+>  
+>     struct {
+> -        __uint(type, BPF_MAP_TYPE_XSKMAP);
+> -        __uint(max_entries, MAX_SOCKS);
+> -        __uint(key_size, sizeof(int));
+> -        __uint(value_size, sizeof(int));
+> +       __uint(type, BPF_MAP_TYPE_XSKMAP);
+> +       __uint(max_entries, MAX_SOCKS);
+> +       __uint(key_size, sizeof(int));
+> +       __uint(value_size, sizeof(int));
+>     } xsks_map SEC(".maps");
+>  
+>     static unsigned int rr;
+>  
+>     SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
+>     {
+> -	rr = (rr + 1) & (MAX_SOCKS - 1);
+> +       rr = (rr + 1) & (MAX_SOCKS - 1);
+>  
+> -	return bpf_redirect_map(&xsks_map, rr, XDP_DROP);
+> +       return bpf_redirect_map(&xsks_map, rr, XDP_DROP);
+>     }
+>  
+>  Note, that since there is only a single set of FILL and COMPLETION
+> @@ -379,7 +379,7 @@ would look like this for the TX path:
+>  .. code-block:: c
+>  
+>     if (xsk_ring_prod__needs_wakeup(&my_tx_ring))
+> -      sendto(xsk_socket__fd(xsk_handle), NULL, 0, MSG_DONTWAIT, NULL, 0);
+> +       sendto(xsk_socket__fd(xsk_handle), NULL, 0, MSG_DONTWAIT, NULL, 0);
+>  
+>  I.e., only use the syscall if the flag is set.
+>  
+> @@ -442,9 +442,9 @@ purposes. The supported statistics are shown below:
+>  .. code-block:: c
+>  
+>     struct xdp_statistics {
+> -	  __u64 rx_dropped; /* Dropped for reasons other than invalid desc */
+> -	  __u64 rx_invalid_descs; /* Dropped due to invalid descriptor */
+> -	  __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+> +       __u64 rx_dropped; /* Dropped for reasons other than invalid desc */
+> +       __u64 rx_invalid_descs; /* Dropped due to invalid descriptor */
+> +       __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+>     };
+>  
+>  XDP_OPTIONS getsockopt
+> @@ -483,15 +483,15 @@ like this:
+>  .. code-block:: c
+>  
+>      // struct xdp_rxtx_ring {
+> -    // 	__u32 *producer;
+> -    // 	__u32 *consumer;
+> -    // 	struct xdp_desc *desc;
+> +    //     __u32 *producer;
+> +    //     __u32 *consumer;
+> +    //     struct xdp_desc *desc;
+>      // };
+>  
+>      // struct xdp_umem_ring {
+> -    // 	__u32 *producer;
+> -    // 	__u32 *consumer;
+> -    // 	__u64 *desc;
+> +    //     __u32 *producer;
+> +    //     __u32 *consumer;
+> +    //     __u64 *desc;
+>      // };
+>  
+>      // typedef struct xdp_rxtx_ring RING;
 > 
-> Please look at commit d14b56f508ad70eca3e659545aab3c45200f258c
->     net: cleanup gfp mask in alloc_skb_with_frags
-> 
-> This explains why we do not have __GFP_NORETRY there.
 
-Ah, right, slight misunderstanding.
-
-Just to be 100% clear for UDP send we are allocating up to 64kB 
-in the _head_, AFAICT. Allocation of head does not clear GFP_WAIT. 
-
-Your memory was correct, alloc_skb_with_frags() does handle low-memory
-when it comes to allocating frags. And what I was saying is af_unix
-won't have the same problem as UDP as it caps head's size at
-SKB_MAX_ALLOC, and frags are allocated with fallback.
-
-For the UDP case we can either adapt the af_unix approach, and cap head
-size to SKB_MAX_ALLOC or try to allocate the full skb and fall back.
-Having alloc_skb_with_frags() itself re-balance head <> data
-automatically does not feel right, no?
