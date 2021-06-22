@@ -2,163 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8454D3B1041
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 00:55:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 567303B101F
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 00:33:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230288AbhFVW5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 18:57:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56121 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229955AbhFVW5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 18:57:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624402530;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gkdf7S21VnLiNI2hSPYpqilho1jT158l5Aks2PTMc+8=;
-        b=fQn444yimybY7VOXyaN42Bz0Ev+ZA3S0Ara2YvSbpDCiMn70Daa1OGIKYsuL1nbnsXTJGH
-        ppGt9oViaePKAdiVzCX6eJcvM/DhlYVQ1WZPaEOuVzhCdzoWC5087sSRD0kaoouK6yn1nX
-        UzNb2m2xEx+HmKdPx0dDClQy/WDtrzc=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-184-_KYXW3G7NkKIw8lDGnLYCQ-1; Tue, 22 Jun 2021 18:55:29 -0400
-X-MC-Unique: _KYXW3G7NkKIw8lDGnLYCQ-1
-Received: by mail-ed1-f72.google.com with SMTP id j19-20020aa7c4130000b029039497d5cdbeso326738edq.15
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 15:55:29 -0700 (PDT)
+        id S229675AbhFVWfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 18:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230185AbhFVWfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 18:35:40 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BFB3C061767
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 15:33:24 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id k5so753916ilv.8
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 15:33:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wnmRkYKboAH8zJCZrdHT+Gn/DKgpUQ6lVnKyPQDk2e0=;
+        b=AR49a0Vnv4dm3JSBho21CVzLTpAw6AKYpkMLlF0NkD583G7YZ5+wtgml5dypSZYMud
+         2hfVQyG1d5bTuI2+7TuzCftNECNvg3nMDkkcS0jnB8f2TmWBOjU2CGLh4fNOy9Ya+Pg/
+         2GtHu1wBydy6jnwS6C8nQCjyYL+cINkYFKqTM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=gkdf7S21VnLiNI2hSPYpqilho1jT158l5Aks2PTMc+8=;
-        b=eOo/JBJJX91PPLzGLS+Mh6xF68X4mrMIEjiZjcora2WFi5ihpNatQFgRE3CjO/T9y8
-         cM2x1S577y87DqNf6E8Ir2tDCp8KpunJeO4M59fQTaIn5QTVcOAD7gLU2d/m9gxzvtiI
-         Gn+ygMfF6cnqQNNO2S7liiprAJbqUVm1vlwpy+s3Llv4Bu9zLAngejInc0uoj69FbrHe
-         ZQEo3PBcs7ZYd4jmia88RR7PQlpYcyHDMuGK20XBEyHQr8Ti6W788A39L8/0gPEOVp5O
-         9hgOKZH5X/lmEyPBrBQMKHBrHJOLp3ddJKfPfRFig+ii9oofn9B5wNfTL3NcE7zmDpDr
-         kBZA==
-X-Gm-Message-State: AOAM5301DiL18i+vOJReOZdL8XlhffxaqJMkHW7FMi4BbFiFgrdyw98/
-        fbHX0C4rPxzi0LSopBmvoCCWcrM4a1tJ1enEFYZ9G5l5qbpL0bsl17GQqgajDYQOjLv2RlmJBnj
-        k33Mk2xJeW5BoPZm9
-X-Received: by 2002:a17:906:3057:: with SMTP id d23mr6367483ejd.131.1624401189508;
-        Tue, 22 Jun 2021 15:33:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzloo3phLmnqBeluVZUPr6bPCfoe/PWVRjC8errtEifQAVlZ/aBqsnGR8bFTh5W5SFYJukYkw==
-X-Received: by 2002:a17:906:3057:: with SMTP id d23mr6367463ejd.131.1624401189297;
-        Tue, 22 Jun 2021 15:33:09 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id cw10sm6493977ejb.62.2021.06.22.15.33.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 15:33:08 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1DA17180730; Wed, 23 Jun 2021 00:33:06 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next v3 2/5] bitops: add non-atomic bitops for pointers
-In-Reply-To: <20210622221023.gklikg5yib4ky35m@apollo>
-References: <20210622202835.1151230-1-memxor@gmail.com>
- <20210622202835.1151230-3-memxor@gmail.com> <871r8tpnws.fsf@toke.dk>
- <20210622221023.gklikg5yib4ky35m@apollo>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 23 Jun 2021 00:33:06 +0200
-Message-ID: <87y2b1o7h9.fsf@toke.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wnmRkYKboAH8zJCZrdHT+Gn/DKgpUQ6lVnKyPQDk2e0=;
+        b=r7ZALQxPcMlfrDmBddLbBWy9IkoYBt9rUpHlL3B++0RBet3tHAsOTTVaS93fXws9ev
+         LqL5DV+mMgi8DBa1cIo+mjJFfG+mXbPSlrQ1oaGATB+h0+xj7aIziBsgF96rhMaePD7/
+         pfBkzYvieu6NoE/tC1xX/FutBeFaieXLfXYMgWJjLBOmjB09zFnJ2z/MaVKp628Bjerp
+         miyauZHXrCYDAOGaNp5ATCkxvwyfyDxmsyuW9IRrd05U8ezZj0gf1VgXbeBBTPE1Z990
+         bAh64T1FsJ4B6QhY7gPCweqJOuTVmfM8bYopQdy6geP3vZRzRLuVzCmWj75WM33ZKav2
+         EFUw==
+X-Gm-Message-State: AOAM530IDGO7u4FR+1hSZTtCpQ30jFNxsT3UXsDPGrShAi1IrtcFfK8u
+        L1wX7Bt0TKIteWYcg8ZuFR3zrQ==
+X-Google-Smtp-Source: ABdhPJxN9TU0oJIL6ix/vNDlgeb3nGygOZZkb/SbcRaq0bOTovZyipADlOgJDT4QhLMrlnkFt38wbw==
+X-Received: by 2002:a92:1310:: with SMTP id 16mr672327ilt.60.1624401203750;
+        Tue, 22 Jun 2021 15:33:23 -0700 (PDT)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id j12sm8587753ilk.26.2021.06.22.15.33.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Jun 2021 15:33:23 -0700 (PDT)
+Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+        David Hildenbrand <david@redhat.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
+        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
+        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <YIx7R6tmcRRCl/az@mit.edu>
+ <alpine.DEB.2.22.394.2105271522320.172088@gentwo.de>
+ <YK+esqGjKaPb+b/Q@kroah.com>
+ <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
+ <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
+ <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
+ <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
+ <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
+ <20210610152633.7e4a7304@oasis.local.home>
+ <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
+ <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <ae51f636-8fb5-20b7-bbc5-37e22edb9a02@linuxfoundation.org>
+Date:   Tue, 22 Jun 2021 16:33:22 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
-
-> On Wed, Jun 23, 2021 at 03:22:51AM IST, Toke H=C3=B8iland-J=C3=B8rgensen =
-wrote:
->> Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
+On 6/18/21 7:46 AM, Laurent Pinchart wrote:
+> Hi Shuah,
+> 
+> On Thu, Jun 10, 2021 at 01:55:23PM -0600, Shuah Khan wrote:
+>> On 6/10/21 1:26 PM, Steven Rostedt wrote:
+>>> On Thu, 10 Jun 2021 21:39:49 +0300 Laurent Pinchart wrote:
+>>>
+>>>> There will always be more informal discussions between on-site
+>>>> participants. After all, this is one of the benefits of conferences, by
+>>>> being all together we can easily organize ad-hoc discussions. This is
+>>>> traditionally done by finding a not too noisy corner in the conference
+>>>> center, would it be useful to have more break-out rooms with A/V
+>>>> equipment than usual ?
+>>>
+>>> I've been giving this quite some thought too, and I've come to the
+>>> understanding (and sure I can be wrong, but I don't think that I am),
+>>> is that when doing a hybrid event, the remote people will always be
+>>> "second class citizens" with respect to the communication that is going
+>>> on. Saying that we can make it the same is not going to happen unless
+>>> you start restricting what people can do that are present, and that
+>>> will just destroy the conference IMO.
+>>>
+>>> That said, I think we should add more to make the communication better
+>>> for those that are not present. Maybe an idea is to have break outs
+>>> followed by the presentation and evening events that include remote
+>>> attendees to discuss with those that are there about what they might
+>>> have missed. Have incentives at these break outs (free stacks and
+>>> beer?) to encourage the live attendees to attend and have a discussion
+>>> with the remote attendees.
+>>>
+>>> The presentations would have remote access, where remote attendees can
+>>> at the very least write in some chat their questions or comments. If
+>>> video and connectivity is good enough, perhaps have a screen where they
+>>> can show up and talk, but that may have logistical limitations.
+>>>
 >>
->> > cpumap needs to set, clear, and test the lowest bit in skb pointer in
->> > various places. To make these checks less noisy, add pointer friendly
->> > bitop macros that also do some typechecking to sanitize the argument.
->> >
->> > These wrap the non-atomic bitops __set_bit, __clear_bit, and test_bit
->> > but for pointer arguments. Pointer's address has to be passed in and it
->> > is treated as an unsigned long *, since width and representation of
->> > pointer and unsigned long match on targets Linux supports. They are
->> > prefixed with double underscore to indicate lack of atomicity.
->> >
->> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
->> > ---
->> >  include/linux/bitops.h    | 19 +++++++++++++++++++
->> >  include/linux/typecheck.h | 10 ++++++++++
->> >  2 files changed, 29 insertions(+)
->> >
->> > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
->> > index 26bf15e6cd35..a9e336b9fa4d 100644
->> > --- a/include/linux/bitops.h
->> > +++ b/include/linux/bitops.h
->> > @@ -4,6 +4,7 @@
->> >
->> >  #include <asm/types.h>
->> >  #include <linux/bits.h>
->> > +#include <linux/typecheck.h>
->> >
->> >  #include <uapi/linux/kernel.h>
->> >
->> > @@ -253,6 +254,24 @@ static __always_inline void __assign_bit(long nr,=
- volatile unsigned long *addr,
->> >  		__clear_bit(nr, addr);
->> >  }
->> >
->> > +#define __ptr_set_bit(nr, addr)                         \
->> > +	({                                              \
->> > +		typecheck_pointer(*(addr));             \
->> > +		__set_bit(nr, (unsigned long *)(addr)); \
->> > +	})
->> > +
->> > +#define __ptr_clear_bit(nr, addr)                         \
->> > +	({                                                \
->> > +		typecheck_pointer(*(addr));               \
->> > +		__clear_bit(nr, (unsigned long *)(addr)); \
->> > +	})
->> > +
->> > +#define __ptr_test_bit(nr, addr)                       \
->> > +	({                                             \
->> > +		typecheck_pointer(*(addr));            \
->> > +		test_bit(nr, (unsigned long *)(addr)); \
->> > +	})
->> > +
+>> You are absolutely right that the remote people will have a hard time
+>> participating and keeping up with in-person participants. I have a
+>> couple of ideas on how we might be able to improve remote experience
+>> without restricting in-person experience.
 >>
->> Before these were functions that returned the modified values, now they
->> are macros that modify in-place. Why the change? :)
+>> - Have one or two moderators per session to watch chat and Q&A to enable
+>>     remote participants to chime in and participate.
+>> - Moderators can make sure remote participation doesn't go unnoticed and
+>>     enable taking turns for remote vs. people participating in person.
 >>
->
-> Given that we're exporting this to all kernel users now, it felt more
-> appropriate to follow the existing convention/argument order for the
-> functions/ops they are wrapping.
+>> It will be change in the way we interact in all in-person sessions for
+>> sure, however it might enhance the experience for remote attendees.
+> 
+> A moderator to watch online chat and relay questions is I believe very
+> good for presentations, it's hard for a presenter to keep an eye on a
+> screen while having to manage the interaction with the audience in the
+> room (there's the usual joke of the difference between an introvert and
+> an extrovert open-source developer is that the extrovert looks at *your*
+> shoes when talking to you, but in many presentations the speaker
+> nowadays does a fairly good job as watching the audience, at least from
+> time to time :-)).
+> 
+> For workshop or brainstorming types of sessions, the highest barrier to
+> participation for remote attendees is local attendees not speaking in
+> microphones. That's the number one rule that moderators would need to
+> enforce, I think all the rest depends on it. This may require a larger
+> number of microphones in the room than usual.
+> 
 
-I wasn't talking about the order of the arguments; swapping those is
-fine. But before, you had:
+Absolutely. Moderator has to make sure the following things happen for
+this to be effective:
 
-static void *__ptr_set_bit(void *ptr, int bit)
+- Watch chat and Q&A, Raise hand from remote participants
+- Enforce some kind of taking turns to allow fairness in
+   participation
+- Have the speaker repeat questions asked in the room (we do that now
+   in some talks - both remote and in-person - chat and Q&A needs
+   reading out for recording)
+- Explore live Transcription features available in the virtual conf.
+   platform. You still need humans watching the transcription.
+- Have a running session notes combined with transcription.
 
-with usage (function return is the modified value):
-ret =3D ptr_ring_produce(rcpu->queue, __ptr_set_bit(skb, 0));
+Any of these options aren't sustainable when large number of people
+are participating remotely or in-person. In general a small number of
+people participate either in person or remote in any case, based on
+my observation in remote and in-person settings.
 
-now you have:
-#define __ptr_set_bit(nr, addr)
+Maybe we can experiment with one or two workshops this time around
+and see how it works out. If we can figure an effective way, it would
+be beneficial for people that can't travel for one reason or the
+other.
 
-with usage (modifies argument in-place):
-__ptr_set_bit(0, &skb);
-ret =3D ptr_ring_produce(rcpu->queue, skb);
+thanks,
+-- Shuah
 
-why change from function to macro?
 
--Toke
+
+
 
