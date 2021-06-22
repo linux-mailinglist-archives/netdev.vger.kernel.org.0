@@ -2,127 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C30E3AFB1D
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 04:37:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C673AFB22
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 04:39:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231359AbhFVCkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 22:40:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41603 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230045AbhFVCj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 22:39:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624329463;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+6lEKuTpUZAqGKNGCK7fOpQQ6ukKT4PFrnQet1vlmFk=;
-        b=ReimVINSzhaOYuiXhXmTx8BYT5XY+o5Ak7+kGDONeoPFqey9fMqA9I5VCe7FQAbs3lK/Y/
-        psF6SWETACxkJ4cJBPVX233uOLqNolXUybXGBc4txfHCrCjAZCWgyZegTyDwnfqniSQn2n
-        mlLyqoAKMA3Rjlr7DiqvJ1wQ58xDwCs=
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
- [209.85.215.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-427-oHnzNoRNN9aak3rUI27DuA-1; Mon, 21 Jun 2021 22:37:41 -0400
-X-MC-Unique: oHnzNoRNN9aak3rUI27DuA-1
-Received: by mail-pg1-f197.google.com with SMTP id k14-20020a63d84e0000b029022216b0ebf2so6627691pgj.15
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 19:37:41 -0700 (PDT)
+        id S231521AbhFVClw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 22:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231196AbhFVClv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 22:41:51 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4167C061574
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 19:39:35 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id i4so5954154plt.12
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 19:39:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=LJbKeg2n4H5jp3xLrBvXI+G7xYyTAk/XOwWWy9MQiQE=;
+        b=imNm/r+UdMska8BmRASID1zV/0Iulk6pEY3yydD8qCG90dixkvFXxZBqXjH9yqe8MR
+         ouiV3fYEOYCyTKXmyITh/0+DUZoRGHl8RJCbZ2gdQV10jp89o2d2ue139TB+v5wvvXG6
+         UVkbJHA8tgjIRghQH6B2g1PjeBt+RbMLf5IwVEjIo9NlAq8nlYVEhe+v0HVLF0pVaO25
+         /pNX3PtpsMAy+1mPLWigCe3ZtIEyPeHGH25E0lkO/4vRMbYBVJKZewkQSD4IzagwXQ3R
+         Q6zmJnX8spBvh+aJN8WA7l4ZfYG2ts20CT10A3D64fTeYoQc5fxN/Z+Y63C+lrEjQPI5
+         18rQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=+6lEKuTpUZAqGKNGCK7fOpQQ6ukKT4PFrnQet1vlmFk=;
-        b=VPtoBAaAJtHgi59h5erGAEmi7l6LqAivjmKtcm25fii0AMNujdO/3CgQUO81gf9h57
-         4heJrX1WBkBCxI7ym1VnRGav7mBJ4p1AnHd4j4BVqGbX5/exNBYYxDoppsyGA+eBpMXA
-         0amgo/N46MofxOioh1wRsbvhh8h280QAik7SCvwqr9MPYZLhAoHQXzhz8MZOe/dBt5+j
-         xubBIqCmFQ8D23dcvuqt5Bw4hbyIQ8qTWVOTLbwSHJFZS2PJrQyQLZ0nBBDw0ul/4Cdm
-         qvfiEqNovoUAthgx9zpvddDrJ3HjR3Hd/3DLO68vITvZEPcQ7lBqq4x9rLOxHZ0Ii6HX
-         s+Mw==
-X-Gm-Message-State: AOAM533LpttcFmGdjMYuwUXDloMvhm9xabsMonJwYwhjnwdRCFPe2mrg
-        64/rZBlJZ439Sw0G/caDuVQ3ubokH0MwINIuycsZbJL/fS/n8lFcqVokx2MLIfwY369QZ24Lsbo
-        R1qITQtFXrLCKUxUL
-X-Received: by 2002:a63:4522:: with SMTP id s34mr1494983pga.251.1624329460730;
-        Mon, 21 Jun 2021 19:37:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyQyHTkmjJXsiXIT8UB4Np7LOvX/hXGIcFka90BqZgMMD+o09krmXbq6Zf1PX7sH4Np88WLWg==
-X-Received: by 2002:a63:4522:: with SMTP id s34mr1494953pga.251.1624329460324;
-        Mon, 21 Jun 2021 19:37:40 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id x22sm481781pjp.37.2021.06.21.19.37.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Jun 2021 19:37:39 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 2/3] virtio_net: add optional flow dissection
- in virtio_net_hdr_to_skb
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Tanner Love <tannerlove.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Tanner Love <tannerlove@google.com>
-References: <20210608170224.1138264-1-tannerlove.kernel@gmail.com>
- <CAADnVQKHpk5aXA-MiuHyvBC7ZCxDPmN_gKAVww8kQAjoZkkmjA@mail.gmail.com>
- <6ae4f189-a3be-075d-167c-2ad3f8d7d975@redhat.com>
- <CAADnVQL_+oKjH341ccC_--ing6dviAPwWRocgYrTKidkKo-NcA@mail.gmail.com>
- <2fd24801-bf77-02e3-03f5-b5e8fac595b6@redhat.com>
- <CA+FuTSeuq4K=nA_JPomyZv4SkQY0cGWdEf1jftx_1Znd+=tOZw@mail.gmail.com>
- <8f2fd333-1cc6-6bcc-3e7d-144bbd5e35a3@redhat.com>
- <CA+FuTSdhL+BsqzRJGJD9XH2CATK5-yDE1Uts8gk8Rf_WTsQAGw@mail.gmail.com>
- <4c80aacf-d61b-823f-71fe-68634a88eaa6@redhat.com>
- <CA+FuTSffghgcN5Prmas395eH+PAeKiHu0N6EKv5GwvSLZ+Jm8Q@mail.gmail.com>
- <d7e2feeb-b169-8ad6-56c5-f290cdc5b312@redhat.com>
- <CAF=yD-J7kcXSqrXM1AcctpdBPznWeORd=z+bge+cP9KO_f=_yQ@mail.gmail.com>
- <7a63ca2a-7814-5dce-ce8b-4954326bb661@redhat.com>
- <CA+FuTScJtyzx4nhoSp1fb2UZ3hPj6Ac_OeV4_4Tjfp8WvUpB1g@mail.gmail.com>
- <58202b1c-945d-fc9e-3f24-2f6314d86eaa@redhat.com>
- <CA+FuTSekbW9PG_QbA2T6tG6Go2-CGRn9gYyJWUY38Nqz6EqaoA@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <67aa8472-bb3d-8186-35f1-ec6682fa8602@redhat.com>
-Date:   Tue, 22 Jun 2021 10:37:33 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <CA+FuTSekbW9PG_QbA2T6tG6Go2-CGRn9gYyJWUY38Nqz6EqaoA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=LJbKeg2n4H5jp3xLrBvXI+G7xYyTAk/XOwWWy9MQiQE=;
+        b=FLxUML1UDgGJWkWeURoKhO/fsN0btRPtFeqBPVF7K2dPyR9d7/ljooWwDOmsgSFS8H
+         7ppOqyqmI207dX9InezEul+YIpipH24/aqXjwUGQ+JViRQ5qQSEyYUWYiq1v4ZPEGTcM
+         h4fwH5/IEV5wqRrwW3BP74RvD+Qh+1zjm8iKkF+kKy/xVDeso8u+Zj8FxoAvy0hbPaCc
+         ZSRBwSPrr0bpwhs9GGXrs//jWKLwYDae3OuWYafitHK169OjSDEku9t8k/JWmyt8Ckfw
+         tezFZuqxIwyr74FnL1z3hUqKgUqIXvKVimIDpMmZHWBMm188fQvuN5Bbj8TKsK5j36fZ
+         HVWg==
+X-Gm-Message-State: AOAM532TNjMtyLvZkSvFwuVfiESuFOwsoB9/5ap0gbAeBuBeEw5iHKPW
+        1//OiALQuBZYEyZ5LENhDAs=
+X-Google-Smtp-Source: ABdhPJxv7tUE0d7EEp2CzBisCh5TQk+uFAAf0cfA3q66HrSieWp2WWMQNtkvPNfFLN27bBAiXjMFZQ==
+X-Received: by 2002:a17:90a:af85:: with SMTP id w5mr1415019pjq.37.1624329575067;
+        Mon, 21 Jun 2021 19:39:35 -0700 (PDT)
+Received: from [10.7.3.1] ([133.130.111.179])
+        by smtp.gmail.com with ESMTPSA id a25sm16578649pff.54.2021.06.21.19.39.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 21 Jun 2021 19:39:34 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.6\))
+Subject: Re: [PATCH] net/ipv4: swap flow ports when validating source
+From:   Miao Wang <shankerwangmiao@gmail.com>
+In-Reply-To: <a08932fe-789d-3b38-3d92-e00225a8cf9f@gmail.com>
+Date:   Tue, 22 Jun 2021 10:39:30 +0800
+Cc:     netdev@vger.kernel.org, Roopa Prabhu <roopa@cumulusnetworks.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <69C9F0FE-055B-4B1E-8B4B-CE9006A798BE@gmail.com>
+References: <1B652E0A-2749-4B75-BC6D-2DAE2A4555A8@gmail.com>
+ <a08932fe-789d-3b38-3d92-e00225a8cf9f@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.6)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2021/6/21 下午9:18, Willem de Bruijn 写道:
->>>> 2) use some general fields instead of virtio-net specific fields, e.g
->>>> using device header instead of vnet header in the flow keys strcuture
->>> Can you give an example of what would be in the device header?
->>>
->>> Specific for GSO, we have two sets of constants: VIRTIO_NET_HDR_GSO_..
->>> and SKB_GSO_.. Is the suggestion to replace the current use of the
->>> first in field flow_keys->virtio_net_hdr.gso_type with the second in
->>> flow_keys->gso_type?
->>
->> No, I meant using a general fields like flow_keys->device_hdr. And use
->> bpf helpers to access the field.
-> What would be in this device_hdr field, and what would the bpf helpers
-> access? I don't fully follow what this is if not vnet_hdr.
+> 2021=E5=B9=B406=E6=9C=8822=E6=97=A5 09:23=EF=BC=8CDavid Ahern =
+<dsahern@gmail.com> =E5=86=99=E9=81=93=EF=BC=9A
+>=20
+> On 6/21/21 9:17 AM, Wang Shanker wrote:
+>> When doing source address validation, the flowi4 struct used for
+>> fib_lookup should be in the reverse direction to the given skb.
+>> fl4_dport and fl4_sport returned by fib4_rules_early_flow_dissect
+>> should thus be swapped.
+>>=20
+>> Fixes: 5a847a6 ("net/ipv4: Initialize proto and ports in flow =
+struct")
+>=20
+> I believe the hash should be 12 chars: 5a847a6e1477
+>=20
+>> Signed-off-by: Miao Wang <shankerwangmiao@gmail.com>
+>> ---
+>> net/ipv4/fib_frontend.c | 2 ++
+>> 1 file changed, 2 insertions(+)
+>>=20
+>> diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+>> index 84bb707bd88d..647bceab56c2 100644
+>> --- a/net/ipv4/fib_frontend.c
+>> +++ b/net/ipv4/fib_frontend.c
+>> @@ -371,6 +371,8 @@ static int __fib_validate_source(struct sk_buff =
+*skb, __be32 src, __be32 dst,
+>> 		fl4.flowi4_proto =3D 0;
+>> 		fl4.fl4_sport =3D 0;
+>> 		fl4.fl4_dport =3D 0;
+>> +	} else {
+>> +		swap(fl4.fl4_sport, fl4.fl4_dport);
+>> 	}
+>>=20
+>> 	if (fib_lookup(net, &fl4, &res, 0))
+>>=20
+>=20
+> Reviewed-by: David Ahern <dsahern@kernel.org>
 
-
-For virtio-net, it should be just vnet_hdr. Maybe "device_hdr" is not 
-accurate, "packet_hdr" should be better.
-
-This allows the field to be reused by other type of userspace injected 
-packet, like tun packet info.
-
-Bpf helpers could be used to access the packet header in this case.
-
-Thanks
-
-
->
+Thanks for your suggestion. I wonder if I also CC this to=20
+stable?
 
