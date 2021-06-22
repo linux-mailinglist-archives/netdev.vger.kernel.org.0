@@ -2,645 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0565E3B0A1A
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 18:16:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 944A13B0A33
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 18:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230082AbhFVQSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 12:18:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbhFVQSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 12:18:36 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3F3C061756
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 09:16:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:
-        To:From:Reply-To:Content-ID:Content-Description;
-        bh=hal1z9SxKv6Or5898ik2qokIUvxAcvlc++PcRsn8RAI=; b=d2gN0AuRkR2veDC0WCjLNvKZkV
-        a1gEgoAghuoCxR1C6ouCYp978bMB0LhOu7L0ilkxLDzj2ihePtbfS40+cfht6Fo2XHEOCmyTubIqP
-        e+fodIbhc4Ic7sIG0V/etGG0I0uvGMnGEHzdFuQeWqmVw9Ao5bDXETNd6uHGAdoq4HWGIw3vKsts3
-        4DOWnsM5yriwyjy/nEQM9oc34ajsVz1/jNtGm0bbGA2q68bNPVHkDXjEFDwG8DSUICLPKlHmr0PjE
-        p1EVyKKVrLVGG3wIUFNCY+Uwfj0+TYMwqb5Xrp8rW4lkkcy+58n5Vj/XFMfMm+9N5ue41nrJtU8KD
-        p0SGc/7Q==;
-Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lvj3m-00ETxg-9C; Tue, 22 Jun 2021 16:15:49 +0000
-Received: from dwoodhou by i7.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lvj3l-00560J-Qf; Tue, 22 Jun 2021 17:15:33 +0100
-From:   David Woodhouse <dwmw2@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Jason Wang <jasowang@redhat.com>,
-        =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
-Subject: [PATCH v2 4/4] vhost_net: Add self test with tun device
-Date:   Tue, 22 Jun 2021 17:15:33 +0100
-Message-Id: <20210622161533.1214662-4-dwmw2@infradead.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210622161533.1214662-1-dwmw2@infradead.org>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
- <20210622161533.1214662-1-dwmw2@infradead.org>
+        id S230291AbhFVQX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 12:23:27 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:51980 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229704AbhFVQX0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 12:23:26 -0400
+Received: by mail-io1-f70.google.com with SMTP id x21-20020a5d99150000b02904e00bb129f0so9418920iol.18
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 09:21:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=S0Tp5XpSZKTuxJJ0tsXd8pwi+RpOy4/AcJ5oSiTyOak=;
+        b=jlXRtHhR0elGv3QmBGpp7EuicE0ZSDs704rwjpj6NUmsfvzfa5elE5BVIe5WpJAx9e
+         T8e5tf3H53PNqtQtQmOZR+bl0J9exnw6MddVhASZvdYQDR08Vf8ODpMfQP1mCzfIW1kq
+         57W+CnUhArvw9tAOTOJguv3t7wv/G9QYb4aAdrnIchlr3Sx6oEFUkay07KXCd22sOn4/
+         v9OW/o+zFlChOLh4yRMX8P90Jpf22VkDq2by89SNe8Wz7LWg344fc9L+SGv6wZK3iQ0f
+         txfCCa1oUs68RTInpkG71pSERiFxdpLlTQDoViS8PTl+RXBWN0b9vMcmI8YZ9PPmKD+K
+         vZSg==
+X-Gm-Message-State: AOAM532bAFUXNTo2WiTp78+cSE+wGn+EiO2sw4vh9w8Mnw3NZ+kn5uNu
+        PKvgWk2/d633vEXwI57j1/JzROBk3d6JNwcXPlFa5QJWzrAo
+X-Google-Smtp-Source: ABdhPJwWxSGPNIzNCWkUmGwlT2fCur8b24ojEAV03WwffUjlKpl2FKkZ77Ch8nhAw1lRoGpmXNS7EG8HwLp5hoCDv5aKnwnLUpu1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Sender: David Woodhouse <dwmw2@infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+X-Received: by 2002:a5d:89d0:: with SMTP id a16mr3521165iot.76.1624378870348;
+ Tue, 22 Jun 2021 09:21:10 -0700 (PDT)
+Date:   Tue, 22 Jun 2021 09:21:10 -0700
+In-Reply-To: <20210622190701.653d94ca@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008c408b05c55d2d50@google.com>
+Subject: Re: [syzbot] INFO: task hung in port100_probe
+From:   syzbot <syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com>
+To:     krzysztof.kozlowski@canonical.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, paskripkin@gmail.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+Hello,
 
-This creates a tun device and brings it up, then finds out the link-local
-address the kernel automatically assigns to it.
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+WARNING: ODEBUG bug in release_nodes
 
-It sends a ping to that address, from a fake LL address of its own, and
-then waits for a response.
+------------[ cut here ]------------
+ODEBUG: free active (active state 0) object type: work_struct hint: port100_wq_cmd_complete+0x0/0x3b0 drivers/nfc/port100.c:1174
+WARNING: CPU: 1 PID: 10270 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Modules linked in:
+CPU: 1 PID: 10270 Comm: kworker/1:8 Not tainted 5.13.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: usb_hub_wq hub_event
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd a0 f6 c2 89 4c 89 ee 48 c7 c7 a0 ea c2 89 e8 2d ee 01 05 <0f> 0b 83 05 25 2d 76 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc9000af76fc8 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+RDX: ffff888017f11c40 RSI: ffffffff815ce3a5 RDI: fffff520015eedeb
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815c820e R11: 0000000000000000 R12: ffffffff896ae040
+R13: ffffffff89c2f0e0 R14: ffffffff814a7730 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fb6ceabf000 CR3: 000000001cbec000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ __debug_check_no_obj_freed lib/debugobjects.c:987 [inline]
+ debug_check_no_obj_freed+0x301/0x420 lib/debugobjects.c:1018
+ slab_free_hook mm/slub.c:1558 [inline]
+ slab_free_freelist_hook+0x174/0x240 mm/slub.c:1608
+ slab_free mm/slub.c:3168 [inline]
+ kfree+0xe5/0x7f0 mm/slub.c:4212
+ release_nodes+0x4a3/0x8f0 drivers/base/devres.c:524
+ devres_release_all+0x74/0xd0 drivers/base/devres.c:545
+ really_probe+0x557/0xf60 drivers/base/dd.c:644
+ driver_probe_device+0x298/0x410 drivers/base/dd.c:763
+ __device_attach_driver+0x203/0x2c0 drivers/base/dd.c:870
+ bus_for_each_drv+0x15f/0x1e0 drivers/base/bus.c:431
+ __device_attach+0x228/0x4b0 drivers/base/dd.c:938
+ bus_probe_device+0x1e4/0x290 drivers/base/bus.c:491
+ device_add+0xbe0/0x2100 drivers/base/core.c:3324
+ usb_set_configuration+0x113f/0x1910 drivers/usb/core/message.c:2164
+ usb_generic_driver_probe+0xba/0x100 drivers/usb/core/generic.c:238
+ usb_probe_device+0xd9/0x2c0 drivers/usb/core/driver.c:293
+ really_probe+0x291/0xf60 drivers/base/dd.c:576
+ driver_probe_device+0x298/0x410 drivers/base/dd.c:763
+ __device_attach_driver+0x203/0x2c0 drivers/base/dd.c:870
+ bus_for_each_drv+0x15f/0x1e0 drivers/base/bus.c:431
+ __device_attach+0x228/0x4b0 drivers/base/dd.c:938
+ bus_probe_device+0x1e4/0x290 drivers/base/bus.c:491
+ device_add+0xbe0/0x2100 drivers/base/core.c:3324
+ usb_new_device.cold+0x721/0x1058 drivers/usb/core/hub.c:2558
+ hub_port_connect drivers/usb/core/hub.c:5278 [inline]
+ hub_port_connect_change drivers/usb/core/hub.c:5418 [inline]
+ port_event drivers/usb/core/hub.c:5564 [inline]
+ hub_event+0x2357/0x4330 drivers/usb/core/hub.c:5646
+ process_one_work+0x98d/0x1600 kernel/workqueue.c:2276
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2422
+ kthread+0x3b1/0x4a0 kernel/kthread.c:313
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
 
-If the virtio_net_hdr stuff is all working correctly, it gets a response
-and manages to understand it.
 
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
----
- tools/testing/selftests/Makefile              |   1 +
- tools/testing/selftests/vhost/Makefile        |  16 +
- tools/testing/selftests/vhost/config          |   2 +
- .../testing/selftests/vhost/test_vhost_net.c  | 522 ++++++++++++++++++
- 4 files changed, 541 insertions(+)
- create mode 100644 tools/testing/selftests/vhost/Makefile
- create mode 100644 tools/testing/selftests/vhost/config
- create mode 100644 tools/testing/selftests/vhost/test_vhost_net.c
+Tested on:
 
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index 6c575cf34a71..300c03cfd0c7 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -71,6 +71,7 @@ TARGETS += user
- TARGETS += vDSO
- TARGETS += vm
- TARGETS += x86
-+TARGETS += vhost
- TARGETS += zram
- #Please keep the TARGETS list alphabetically sorted
- # Run "make quicktest=1 run_tests" or
-diff --git a/tools/testing/selftests/vhost/Makefile b/tools/testing/selftests/vhost/Makefile
-new file mode 100644
-index 000000000000..f5e565d80733
---- /dev/null
-+++ b/tools/testing/selftests/vhost/Makefile
-@@ -0,0 +1,16 @@
-+# SPDX-License-Identifier: GPL-2.0
-+all:
-+
-+include ../lib.mk
-+
-+.PHONY: all clean
-+
-+BINARIES := test_vhost_net
-+
-+test_vhost_net: test_vhost_net.c ../kselftest.h ../kselftest_harness.h
-+	$(CC) $(CFLAGS) -g $< -o $@
-+
-+TEST_PROGS += $(BINARIES)
-+EXTRA_CLEAN := $(BINARIES)
-+
-+all: $(BINARIES)
-diff --git a/tools/testing/selftests/vhost/config b/tools/testing/selftests/vhost/config
-new file mode 100644
-index 000000000000..6391c1f32c34
---- /dev/null
-+++ b/tools/testing/selftests/vhost/config
-@@ -0,0 +1,2 @@
-+CONFIG_VHOST_NET=y
-+CONFIG_TUN=y
-diff --git a/tools/testing/selftests/vhost/test_vhost_net.c b/tools/testing/selftests/vhost/test_vhost_net.c
-new file mode 100644
-index 000000000000..14acf2c0e049
---- /dev/null
-+++ b/tools/testing/selftests/vhost/test_vhost_net.c
-@@ -0,0 +1,522 @@
-+// SPDX-License-Identifier: LGPL-2.1
-+
-+#include "../kselftest_harness.h"
-+#include "../../../virtio/asm/barrier.h"
-+
-+#include <sys/eventfd.h>
-+
-+#include <sys/types.h>
-+#include <sys/stat.h>
-+
-+#include <fcntl.h>
-+#include <unistd.h>
-+#include <sys/wait.h>
-+#include <sys/ioctl.h>
-+#include <errno.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+
-+#include <net/if.h>
-+#include <sys/socket.h>
-+
-+#include <netinet/tcp.h>
-+#include <netinet/ip.h>
-+#include <netinet/ip_icmp.h>
-+#include <netinet/ip6.h>
-+#include <netinet/icmp6.h>
-+
-+#include <linux/if_tun.h>
-+#include <linux/virtio_net.h>
-+#include <linux/vhost.h>
-+
-+static unsigned char hexnybble(char hex)
-+{
-+	switch (hex) {
-+	case '0'...'9':
-+		return hex - '0';
-+	case 'a'...'f':
-+		return 10 + hex - 'a';
-+	case 'A'...'F':
-+		return 10 + hex - 'A';
-+	default:
-+		exit (KSFT_SKIP);
-+	}
-+}
-+
-+static unsigned char hexchar(char *hex)
-+{
-+	return (hexnybble(hex[0]) << 4) | hexnybble(hex[1]);
-+}
-+
-+int open_tun(int vnet_hdr_sz, struct in6_addr *addr)
-+{
-+	int tun_fd = open("/dev/net/tun", O_RDWR);
-+	if (tun_fd == -1)
-+		return -1;
-+
-+	struct ifreq ifr = { 0 };
-+
-+	ifr.ifr_flags = IFF_TUN | IFF_NO_PI;
-+	if (vnet_hdr_sz)
-+		ifr.ifr_flags |= IFF_VNET_HDR;
-+
-+	if (ioctl(tun_fd, TUNSETIFF, (void *)&ifr) < 0)
-+		goto out_tun;
-+
-+	if (vnet_hdr_sz &&
-+	    ioctl(tun_fd, TUNSETVNETHDRSZ, &vnet_hdr_sz) < 0)
-+		goto out_tun;
-+
-+	int sockfd = socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP);
-+	if (sockfd == -1)
-+		goto out_tun;
-+
-+	if (ioctl(sockfd, SIOCGIFFLAGS, (void *)&ifr) < 0)
-+		goto out_sock;
-+
-+	ifr.ifr_flags |= IFF_UP;
-+	if (ioctl(sockfd, SIOCSIFFLAGS, (void *)&ifr) < 0)
-+		goto out_sock;
-+
-+	close(sockfd);
-+
-+	FILE *inet6 = fopen("/proc/net/if_inet6", "r");
-+	if (!inet6)
-+		goto out_tun;
-+
-+	char buf[80];
-+	while (fgets(buf, sizeof(buf), inet6)) {
-+		size_t len = strlen(buf), namelen = strlen(ifr.ifr_name);
-+		if (!strncmp(buf, "fe80", 4) &&
-+		    buf[len - namelen - 2] == ' ' &&
-+		    !strncmp(buf + len - namelen - 1, ifr.ifr_name, namelen)) {
-+			for (int i = 0; i < 16; i++) {
-+				addr->s6_addr[i] = hexchar(buf + i*2);
-+			}
-+			fclose(inet6);
-+			return tun_fd;
-+		}
-+	}
-+	/* Not found */
-+	fclose(inet6);
-+ out_sock:
-+	close(sockfd);
-+ out_tun:
-+	close(tun_fd);
-+	return -1;
-+}
-+
-+#define RING_SIZE 32
-+#define RING_MASK(x) ((x) & (RING_SIZE-1))
-+
-+struct pkt_buf {
-+	unsigned char data[2048];
-+};
-+
-+struct test_vring {
-+	struct vring_desc desc[RING_SIZE];
-+	struct vring_avail avail;
-+	__virtio16 avail_ring[RING_SIZE];
-+	struct vring_used used;
-+	struct vring_used_elem used_ring[RING_SIZE];
-+	struct pkt_buf pkts[RING_SIZE];
-+} rings[2];
-+
-+static int setup_vring(int vhost_fd, int tun_fd, int call_fd, int kick_fd, int idx)
-+{
-+	struct test_vring *vring = &rings[idx];
-+	int ret;
-+
-+	memset(vring, 0, sizeof(vring));
-+
-+	struct vhost_vring_state vs = { };
-+	vs.index = idx;
-+	vs.num = RING_SIZE;
-+	if (ioctl(vhost_fd, VHOST_SET_VRING_NUM, &vs) < 0) {
-+		perror("VHOST_SET_VRING_NUM");
-+		return -1;
-+	}
-+
-+	vs.num = 0;
-+	if (ioctl(vhost_fd, VHOST_SET_VRING_BASE, &vs) < 0) {
-+		perror("VHOST_SET_VRING_BASE");
-+		return -1;
-+	}
-+
-+	struct vhost_vring_addr va = { };
-+	va.index = idx;
-+	va.desc_user_addr = (uint64_t)vring->desc;
-+	va.avail_user_addr = (uint64_t)&vring->avail;
-+	va.used_user_addr  = (uint64_t)&vring->used;
-+	if (ioctl(vhost_fd, VHOST_SET_VRING_ADDR, &va) < 0) {
-+		perror("VHOST_SET_VRING_ADDR");
-+		return -1;
-+	}
-+
-+	struct vhost_vring_file vf = { };
-+	vf.index = idx;
-+	vf.fd = tun_fd;
-+	if (ioctl(vhost_fd, VHOST_NET_SET_BACKEND, &vf) < 0) {
-+		perror("VHOST_NET_SET_BACKEND");
-+		return -1;
-+	}
-+
-+	vf.fd = call_fd;
-+	if (ioctl(vhost_fd, VHOST_SET_VRING_CALL, &vf) < 0) {
-+		perror("VHOST_SET_VRING_CALL");
-+		return -1;
-+	}
-+
-+	vf.fd = kick_fd;
-+	if (ioctl(vhost_fd, VHOST_SET_VRING_KICK, &vf) < 0) {
-+		perror("VHOST_SET_VRING_KICK");
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+int setup_vhost(int vhost_fd, int tun_fd, int call_fd, int kick_fd, uint64_t want_features)
-+{
-+	int ret;
-+
-+	if (ioctl(vhost_fd, VHOST_SET_OWNER, NULL) < 0) {
-+		perror("VHOST_SET_OWNER");
-+		return -1;
-+	}
-+
-+	uint64_t features;
-+	if (ioctl(vhost_fd, VHOST_GET_FEATURES, &features) < 0) {
-+		perror("VHOST_GET_FEATURES");
-+		return -1;
-+	}
-+
-+	if ((features & want_features) != want_features)
-+		return KSFT_SKIP;
-+
-+	if (ioctl(vhost_fd, VHOST_SET_FEATURES, &want_features) < 0) {
-+		perror("VHOST_SET_FEATURES");
-+		return -1;
-+	}
-+
-+	struct vhost_memory *vmem = alloca(sizeof(*vmem) + sizeof(vmem->regions[0]));
-+
-+	memset(vmem, 0, sizeof(*vmem) + sizeof(vmem->regions[0]));
-+	vmem->nregions = 1;
-+	/*
-+	 * I just want to map the *whole* of userspace address space. But
-+	 * from userspace I don't know what that is. On x86_64 it would be:
-+	 *
-+	 * vmem->regions[0].guest_phys_addr = 4096;
-+	 * vmem->regions[0].memory_size = 0x7fffffffe000;
-+	 * vmem->regions[0].userspace_addr = 4096;
-+	 *
-+	 * For now, just ensure we put everything inside a single BSS region.
-+	 */
-+	vmem->regions[0].guest_phys_addr = (uint64_t)&rings;
-+	vmem->regions[0].userspace_addr = (uint64_t)&rings;
-+	vmem->regions[0].memory_size = sizeof(rings);
-+
-+	if (ioctl(vhost_fd, VHOST_SET_MEM_TABLE, vmem) < 0) {
-+		perror("VHOST_SET_MEM_TABLE");
-+		return -1;
-+	}
-+
-+	if (setup_vring(vhost_fd, tun_fd, call_fd, kick_fd, 0))
-+		return -1;
-+
-+	if (setup_vring(vhost_fd, tun_fd, call_fd, kick_fd, 1))
-+		return -1;
-+
-+	return 0;
-+}
-+
-+
-+static char ping_payload[16] = "VHOST TEST PACKT";
-+
-+static inline uint32_t csum_partial(uint16_t *buf, int nwords)
-+{
-+	uint32_t sum = 0;
-+	for(sum=0; nwords>0; nwords--)
-+		sum += ntohs(*buf++);
-+	return sum;
-+}
-+
-+static inline uint16_t csum_finish(uint32_t sum)
-+{
-+	sum = (sum >> 16) + (sum &0xffff);
-+	sum += (sum >> 16);
-+	return htons((uint16_t)(~sum));
-+}
-+
-+static int create_icmp_echo(unsigned char *data, struct in6_addr *dst,
-+			    struct in6_addr *src, uint16_t id, uint16_t seq)
-+{
-+	const int icmplen = ICMP_MINLEN + sizeof(ping_payload);
-+	const int plen = sizeof(struct ip6_hdr) + icmplen;
-+
-+	struct ip6_hdr *iph = (void *)data;
-+	struct icmp6_hdr *icmph = (void *)(data + sizeof(*iph));
-+
-+	/* IPv6 Header */
-+	iph->ip6_flow = htonl((6 << 28) + /* version 6 */
-+			      (0 << 20) + /* traffic class */
-+			      (0 << 0));  /* flow ID  */
-+	iph->ip6_nxt = IPPROTO_ICMPV6;
-+	iph->ip6_plen = htons(icmplen);
-+	iph->ip6_hlim = 128;
-+	iph->ip6_src = *src;
-+	iph->ip6_dst = *dst;
-+
-+	/* ICMPv6 echo request */
-+	icmph->icmp6_type = ICMP6_ECHO_REQUEST;
-+	icmph->icmp6_code = 0;
-+	icmph->icmp6_data16[0] = htons(id);	/* ID */
-+	icmph->icmp6_data16[1] = htons(seq);	/* sequence */
-+
-+	/* Some arbitrary payload */
-+	memcpy(&icmph[1], ping_payload, sizeof(ping_payload));
-+
-+	/*
-+	 * IPv6 upper-layer checksums include a pseudo-header
-+	 * for IPv6 which contains the source address, the
-+	 * destination address, the upper-layer packet length
-+	 * and next-header field. See RFC8200 §8.1. The
-+	 * checksum is as follows:
-+	 *
-+	 *   checksum 32 bytes of real IPv6 header:
-+	 *     src addr (16 bytes)
-+	 *     dst addr (16 bytes)
-+	 *   8 bytes more:
-+	 *     length of ICMPv6 in bytes (be32)
-+	 *     3 bytes of 0
-+	 *     next header byte (IPPROTO_ICMPV6)
-+	 *   Then the actual ICMPv6 bytes
-+	 */
-+	uint32_t sum = csum_partial((uint16_t *)&iph->ip6_src, 8);      /* 8 uint16_t */
-+	sum += csum_partial((uint16_t *)&iph->ip6_dst, 8);              /* 8 uint16_t */
-+
-+	/* The easiest way to checksum the following 8-byte
-+	 * part of the pseudo-header without horridly violating
-+	 * C type aliasing rules is *not* to build it in memory
-+	 * at all. We know the length fits in 16 bits so the
-+	 * partial checksum of 00 00 LL LL 00 00 00 NH ends up
-+	 * being just LLLL + NH.
-+	 */
-+	sum += IPPROTO_ICMPV6;
-+	sum += ICMP_MINLEN + sizeof(ping_payload);
-+
-+	sum += csum_partial((uint16_t *)icmph, icmplen / 2);
-+	icmph->icmp6_cksum = csum_finish(sum);
-+	return plen;
-+}
-+
-+
-+static int check_icmp_response(unsigned char *data, uint32_t len, struct in6_addr *dst, struct in6_addr *src)
-+{
-+	struct ip6_hdr *iph = (void *)data;
-+	return ( len >= 41 && (ntohl(iph->ip6_flow) >> 28)==6 /* IPv6 header */
-+		 && iph->ip6_nxt == IPPROTO_ICMPV6 /* IPv6 next header field = ICMPv6 */
-+		 && !memcmp(&iph->ip6_src, src, 16) /* source == magic address */
-+		 && !memcmp(&iph->ip6_dst, dst, 16) /* source == magic address */
-+		 && len >= 40 + ICMP_MINLEN + sizeof(ping_payload) /* No short-packet segfaults */
-+		 && data[40] == ICMP6_ECHO_REPLY /* ICMPv6 reply */
-+		 && !memcmp(&data[40 + ICMP_MINLEN], ping_payload, sizeof(ping_payload)) /* Same payload in response */
-+		 );
-+
-+}
-+
-+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-+#define vio16(x) (x)
-+#define vio32(x) (x)
-+#define vio64(x) (x)
-+#else
-+#define vio16(x) __builtin_bswap16(x)
-+#define vio32(x) __builtin_bswap32(x)
-+#define vio64(x) __builtin_bswap64(x)
-+#endif
-+
-+
-+int test_vhost(int vnet_hdr_sz, int xdp, uint64_t features)
-+{
-+	int call_fd = eventfd(0, EFD_CLOEXEC|EFD_NONBLOCK);
-+	int kick_fd = eventfd(0, EFD_CLOEXEC|EFD_NONBLOCK);
-+	int vhost_fd = open("/dev/vhost-net", O_RDWR);
-+	int tun_fd = -1;
-+	int ret = KSFT_SKIP;
-+
-+	if (call_fd < 0 || kick_fd < 0 || vhost_fd < 0)
-+		goto err;
-+
-+	memset(rings, 0, sizeof(rings));
-+
-+	/* Pick up the link-local address that the kernel
-+	 * assigns to the tun device. */
-+	struct in6_addr tun_addr;
-+	tun_fd = open_tun(vnet_hdr_sz, &tun_addr);
-+	if (tun_fd < 0)
-+		goto err;
-+
-+	if (features & (1ULL << VHOST_NET_F_VIRTIO_NET_HDR)) {
-+		if (vnet_hdr_sz) {
-+			ret = -1;
-+			goto err;
-+		}
-+
-+		vnet_hdr_sz = (features & ((1ULL << VIRTIO_NET_F_MRG_RXBUF) |
-+					   (1ULL << VIRTIO_F_VERSION_1))) ?
-+			sizeof(struct virtio_net_hdr_mrg_rxbuf) :
-+			sizeof(struct virtio_net_hdr);
-+	}
-+
-+	if (!xdp) {
-+		int sndbuf = RING_SIZE * 2048;
-+		if (ioctl(tun_fd, TUNSETSNDBUF, &sndbuf) < 0) {
-+			perror("TUNSETSNDBUF");
-+			ret = -1;
-+			goto err;
-+		}
-+	}
-+
-+	ret = setup_vhost(vhost_fd, tun_fd, call_fd, kick_fd, features);
-+	if (ret)
-+		goto err;
-+
-+	/* A fake link-local address for the userspace end */
-+	struct in6_addr local_addr = { 0 };
-+	local_addr.s6_addr16[0] = htons(0xfe80);
-+	local_addr.s6_addr16[7] = htons(1);
-+
-+	/* Set up RX and TX descriptors; the latter with ping packets ready to
-+	 * send to the kernel, but don't actually send them yet. */
-+	for (int i = 0; i < RING_SIZE; i++) {
-+		struct pkt_buf *pkt = &rings[1].pkts[i];
-+		int plen = create_icmp_echo(&pkt->data[vnet_hdr_sz], &tun_addr,
-+					    &local_addr, 0x4747, i);
-+
-+		rings[1].desc[i].addr = vio64((uint64_t)pkt);
-+		rings[1].desc[i].len = vio32(plen + vnet_hdr_sz);
-+		rings[1].avail_ring[i] = vio16(i);
-+
-+
-+		pkt = &rings[0].pkts[i];
-+		rings[0].desc[i].addr = vio64((uint64_t)pkt);
-+		rings[0].desc[i].len = vio32(sizeof(*pkt));
-+		rings[0].desc[i].flags = vio16(VRING_DESC_F_WRITE);
-+		rings[0].avail_ring[i] = vio16(i);
-+	}
-+	barrier();
-+
-+	rings[0].avail.idx = RING_SIZE;
-+	rings[1].avail.idx = vio16(1);
-+
-+	barrier();
-+	eventfd_write(kick_fd, 1);
-+
-+	uint16_t rx_seen_used = 0;
-+	struct timeval tv = { 1, 0 };
-+	while (1) {
-+		fd_set rfds = { 0 };
-+		FD_SET(call_fd, &rfds);
-+
-+		if (select(call_fd + 1, &rfds, NULL, NULL, &tv) <= 0) {
-+			ret = -1;
-+			goto err;
-+		}
-+
-+		uint16_t rx_used_idx = vio16(rings[0].used.idx);
-+		barrier();
-+
-+		while(rx_used_idx != rx_seen_used) {
-+			uint32_t desc = vio32(rings[0].used_ring[RING_MASK(rx_seen_used)].id);
-+			uint32_t len  = vio32(rings[0].used_ring[RING_MASK(rx_seen_used)].len);
-+
-+			if (desc >= RING_SIZE || len < vnet_hdr_sz)
-+				return -1;
-+
-+			uint64_t addr = vio64(rings[0].desc[desc].addr);
-+			if (!addr)
-+				return -1;
-+
-+			if (check_icmp_response((void *)(addr + vnet_hdr_sz), len - vnet_hdr_sz,
-+						&local_addr, &tun_addr)) {
-+				ret = 0;
-+				printf("Success (%d %d %llx)\n", vnet_hdr_sz, xdp, (unsigned long long)features);
-+				goto err;
-+			}
-+			rx_seen_used++;
-+
-+			/* Give the same buffer back */
-+			rings[0].avail.idx = vio16(rx_seen_used + RING_SIZE);
-+			barrier();
-+			eventfd_write(kick_fd, 1);
-+		}
-+
-+		uint64_t ev_val;
-+		eventfd_read(call_fd, &ev_val);
-+	}
-+
-+ err:
-+	if (call_fd != -1)
-+		close(call_fd);
-+	if (kick_fd != -1)
-+		close(kick_fd);
-+	if (vhost_fd != -1)
-+		close(vhost_fd);
-+	if (tun_fd != -1)
-+		close(tun_fd);
-+
-+	return ret;
-+}
-+
-+
-+int main(void)
-+{
-+	int ret;
-+
-+	ret = test_vhost(0, 0, ((1ULL << VHOST_NET_F_VIRTIO_NET_HDR) |
-+				(1ULL << VIRTIO_F_VERSION_1)));
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+
-+	ret = test_vhost(0, 1, ((1ULL << VHOST_NET_F_VIRTIO_NET_HDR) |
-+				(1ULL << VIRTIO_F_VERSION_1)));
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+
-+	ret = test_vhost(0, 0, ((1ULL << VHOST_NET_F_VIRTIO_NET_HDR)));
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+
-+	ret = test_vhost(0, 1, ((1ULL << VHOST_NET_F_VIRTIO_NET_HDR)));
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+
-+	ret = test_vhost(10, 0, 0);
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+
-+	ret = test_vhost(10, 1, 0);
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+
-+#if 0 /* These ones will fail */
-+	ret = test_vhost(0, 0, 0);
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+
-+	ret = test_vhost(0, 1, 0);
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+
-+	ret = test_vhost(12, 0, 0);
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+
-+	ret = test_vhost(12, 1, 0);
-+	if (ret && ret != KSFT_SKIP)
-+		return ret;
-+#endif
-+
-+	return ret;
-+}
--- 
-2.31.1
+commit:         a96bfed6 Merge tag 'for-linus' of git://git.armlinux.org.u..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12448400300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3932cedd2c2d4a69
+dashboard link: https://syzkaller.appspot.com/bug?extid=abd2e0dafb481b621869
+compiler:       
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=15683230300000
 
