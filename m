@@ -2,102 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B05A63B07C6
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 16:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B0023B07D1
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 16:45:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232068AbhFVOrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 10:47:05 -0400
-Received: from relay.sw.ru ([185.231.240.75]:34904 "EHLO relay.sw.ru"
+        id S231917AbhFVOsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 10:48:09 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49920 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232070AbhFVOrB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 10:47:01 -0400
-X-Greylist: delayed 2292 seconds by postgrey-1.27 at vger.kernel.org; Tue, 22 Jun 2021 10:47:01 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=MIME-Version:Message-Id:Date:Subject:From:
-        Content-Type; bh=cXVrQPmKPtaz2B0OL/bqqIQGRshh1tX59zroIcYoP0c=; b=rkre/3ZjdSlT
-        naXKoIBK8IAChwqd74ARMWRc7rJZ0AGGpG+7RcBVlDoyvRrLtpTsnwet23szh08FkLiq8gR4D7tRw
-        hHe+0GVNncaXyD3ffmjgcACFGGtLBYMsvtu4aXraIgYeN3taugVcc7PzgcTvdnMxDsfuP0LKQUZiP
-        915Ss=;
-Received: from [192.168.15.175] (helo=mikhalitsyn-laptop.sw.ru)
-        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1lVOh8-001U6O-4H; Tue, 22 Jun 2021 17:44:43 +0300
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Subject: [PATCH iproute2] ip route: ignore ENOENT during save if RT_TABLE_MAIN is being dumped
-Date:   Tue, 22 Jun 2021 17:44:34 +0300
-Message-Id: <20210622144434.27129-1-alexander.mikhalitsyn@virtuozzo.com>
-X-Mailer: git-send-email 2.31.1
+        id S230047AbhFVOsI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 10:48:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=q4u6Ka7Ccy+su35CUuUUUAOO0X3N/5b6fTLgnaTXVSM=; b=NxBhF2v0dxBcEriZbSX7MLbD1Z
+        XA3GL4dmPoBWU+KOTLBNJz3uDBlv3z9gKNHWBh5xzwbeqZwbyMt2NOOFp17KKumnHGF7aYluQDrqR
+        RXWa124Dcw3ebe+1GPuFKbkTlX6QqECYaAF05dYyrSGAEMHzVvH8ozX7HOwZrY/BF6FU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lvher-00AiST-1j; Tue, 22 Jun 2021 16:45:45 +0200
+Date:   Tue, 22 Jun 2021 16:45:45 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mark Einon <mark.einon@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-kernel@lists.infradead.org
+Subject: Re: [RFC 1/3] ARM: dts: imx28: Add description for L2 switch on XEA
+ board
+Message-ID: <YNH3mb9fyBjLf0fj@lunn.ch>
+References: <20210622144111.19647-1-lukma@denx.de>
+ <20210622144111.19647-2-lukma@denx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210622144111.19647-2-lukma@denx.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We started to use in-kernel filtering feature which allows to get only needed
-tables (see iproute_dump_filter()). From the kernel side it's implemented in
-net/ipv4/fib_frontend.c (inet_dump_fib), net/ipv6/ip6_fib.c (inet6_dump_fib).
-The problem here is that behaviour of "ip route save" was changed after
-c7e6371bc ("ip route: Add protocol, table id and device to dump request").
-If filters are used, then kernel returns ENOENT error if requested table is absent,
-but in newly created net namespace even RT_TABLE_MAIN table doesn't exist.
-It is really allocated, for instance, after issuing "ip l set lo up".
+On Tue, Jun 22, 2021 at 04:41:09PM +0200, Lukasz Majewski wrote:
+> The 'eth_switch' node is now extendfed to enable support for L2
+> switch.
+> 
+> Moreover, the mac[01] nodes are defined as well and linked to the
+> former with 'phy-handle' property.
 
-Reproducer is fairly simple:
-Error: ipv4: FIB table does not exist.
-Dump terminated
+A phy-handle points to a phy, not a MAC! Don't abuse a well known DT
+property like this.
 
-Expected result here is to get empty dump file (as it was before this change).
-
-This affects on CRIU [1] because we use ip route save in dump process, to workaround
-problem in tests we just put loopback interface up in each net namespace.
-
-Links:
-[1] https://github.com/checkpoint-restore/criu/issues/747
-[2] https://www.spinics.net/lists/netdev/msg559739.html
-
-Fixes: c7e6371bc ("ip route: Add protocol, table id and device to dump request")
-
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Stephen Hemminger <stephen@networkplumber.org>
-Cc: Andrei Vagin <avagin@gmail.com>
-Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
----
- ip/iproute.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/ip/iproute.c b/ip/iproute.c
-index 5853f026..b70acc00 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -1734,6 +1734,7 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
- 	char *od = NULL;
- 	unsigned int mark = 0;
- 	rtnl_filter_t filter_fn;
-+	int ret;
- 
- 	if (action == IPROUTE_SAVE) {
- 		if (save_route_prep())
-@@ -1939,7 +1940,11 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
- 
- 	new_json_obj(json);
- 
--	if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
-+	ret = rtnl_dump_filter(&rth, filter_fn, stdout);
-+
-+	/* Let's ignore ENOENT error if we want to dump RT_TABLE_MAIN table */
-+	if (ret < 0 &&
-+	    !(errno == ENOENT && filter.tb == RT_TABLE_MAIN)) {
- 		fprintf(stderr, "Dump terminated\n");
- 		return -2;
- 	}
--- 
-2.31.1
+  Andrew
 
