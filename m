@@ -2,309 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8595E3B1008
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 00:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8454D3B1041
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 00:55:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbhFVW1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 18:27:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59858 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229718AbhFVW1I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 18:27:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2E0BE60FF1;
-        Tue, 22 Jun 2021 22:24:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624400692;
-        bh=3bT3+tWBO4biTRfb812rpj7cpDTgOkkgaprFMj2f9ew=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XF9jh73jtHatbF2hXw6KUEPQVlchSUDBrUWqrVCmS0+oKmOSk9dEtpnguPR+FvbnU
-         2DuswPdBrL1azU3XvEm24tkl4pmyvF7ba6b7dmQ8tG4mlUAxYklr0UscTvJWREDIek
-         CffoQ2QQhJq+BHpac868K8cqMTZGC22mSmOtjBETXfk3KosIJPstuVnSaB/v6dNd8j
-         I6QaTqHzuKyn7QOXnLXr5NbLm+huzNltdhKI5w96WgWOwxiOHfmZMPUdBBBYSDVkHw
-         W1X6sFCDhmyVv6lrwWjROEGfsBRUlPPmnBCz28N7qFmAVp0Mo+hUaoEZuLKJnnX/dr
-         pTkZIbMp3v+xA==
-Date:   Tue, 22 Jun 2021 15:24:51 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, vfedorenko@novek.ru
-Subject: Re: [PATCH net] ip6_tunnel: fix GRE6 segmentation
-Message-ID: <20210622152451.7847bc24@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <33902f8c-e14a-7dc6-9bde-4f8f168505b5@gmail.com>
-References: <20210622015254.1967716-1-kuba@kernel.org>
-        <33902f8c-e14a-7dc6-9bde-4f8f168505b5@gmail.com>
+        id S230288AbhFVW5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 18:57:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56121 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229955AbhFVW5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 18:57:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624402530;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gkdf7S21VnLiNI2hSPYpqilho1jT158l5Aks2PTMc+8=;
+        b=fQn444yimybY7VOXyaN42Bz0Ev+ZA3S0Ara2YvSbpDCiMn70Daa1OGIKYsuL1nbnsXTJGH
+        ppGt9oViaePKAdiVzCX6eJcvM/DhlYVQ1WZPaEOuVzhCdzoWC5087sSRD0kaoouK6yn1nX
+        UzNb2m2xEx+HmKdPx0dDClQy/WDtrzc=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-184-_KYXW3G7NkKIw8lDGnLYCQ-1; Tue, 22 Jun 2021 18:55:29 -0400
+X-MC-Unique: _KYXW3G7NkKIw8lDGnLYCQ-1
+Received: by mail-ed1-f72.google.com with SMTP id j19-20020aa7c4130000b029039497d5cdbeso326738edq.15
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 15:55:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=gkdf7S21VnLiNI2hSPYpqilho1jT158l5Aks2PTMc+8=;
+        b=eOo/JBJJX91PPLzGLS+Mh6xF68X4mrMIEjiZjcora2WFi5ihpNatQFgRE3CjO/T9y8
+         cM2x1S577y87DqNf6E8Ir2tDCp8KpunJeO4M59fQTaIn5QTVcOAD7gLU2d/m9gxzvtiI
+         Gn+ygMfF6cnqQNNO2S7liiprAJbqUVm1vlwpy+s3Llv4Bu9zLAngejInc0uoj69FbrHe
+         ZQEo3PBcs7ZYd4jmia88RR7PQlpYcyHDMuGK20XBEyHQr8Ti6W788A39L8/0gPEOVp5O
+         9hgOKZH5X/lmEyPBrBQMKHBrHJOLp3ddJKfPfRFig+ii9oofn9B5wNfTL3NcE7zmDpDr
+         kBZA==
+X-Gm-Message-State: AOAM5301DiL18i+vOJReOZdL8XlhffxaqJMkHW7FMi4BbFiFgrdyw98/
+        fbHX0C4rPxzi0LSopBmvoCCWcrM4a1tJ1enEFYZ9G5l5qbpL0bsl17GQqgajDYQOjLv2RlmJBnj
+        k33Mk2xJeW5BoPZm9
+X-Received: by 2002:a17:906:3057:: with SMTP id d23mr6367483ejd.131.1624401189508;
+        Tue, 22 Jun 2021 15:33:09 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzloo3phLmnqBeluVZUPr6bPCfoe/PWVRjC8errtEifQAVlZ/aBqsnGR8bFTh5W5SFYJukYkw==
+X-Received: by 2002:a17:906:3057:: with SMTP id d23mr6367463ejd.131.1624401189297;
+        Tue, 22 Jun 2021 15:33:09 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id cw10sm6493977ejb.62.2021.06.22.15.33.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Jun 2021 15:33:08 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 1DA17180730; Wed, 23 Jun 2021 00:33:06 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+Subject: Re: [PATCH net-next v3 2/5] bitops: add non-atomic bitops for pointers
+In-Reply-To: <20210622221023.gklikg5yib4ky35m@apollo>
+References: <20210622202835.1151230-1-memxor@gmail.com>
+ <20210622202835.1151230-3-memxor@gmail.com> <871r8tpnws.fsf@toke.dk>
+ <20210622221023.gklikg5yib4ky35m@apollo>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 23 Jun 2021 00:33:06 +0200
+Message-ID: <87y2b1o7h9.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Jun 2021 22:28:05 -0600 David Ahern wrote:
-> On 6/21/21 7:52 PM, Jakub Kicinski wrote:
-> > Commit 6c11fbf97e69 ("ip6_tunnel: add MPLS transmit support")
-> > moved assiging inner_ipproto down from ipxip6_tnl_xmit() to
-> > its callee ip6_tnl_xmit(). The latter is also used by GRE.
-> > 
-> > Since commit 38720352412a ("gre: Use inner_proto to obtain inner
-> > header protocol") GRE had been depending on skb->inner_protocol
-> > during segmentation. It sets it in gre_build_header() and reads
-> > it in gre_gso_segment(). Changes to ip6_tnl_xmit() overwrite
-> > the protocol, resulting in GSO skbs getting dropped.
-> > 
-> > Note that inner_protocol is a union with inner_ipproto,
-> > GRE uses the former while the change switched it to the latter
-> > (always setting it to just IPPROTO_GRE).
-> > 
-> > Restore the original location of skb_set_inner_ipproto(),
-> > it is unclear why it was moved in the first place.
-> > 
-> > Fixes: 6c11fbf97e69 ("ip6_tunnel: add MPLS transmit support")
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> > ---
-> >  net/ipv6/ip6_tunnel.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >   
-> 
-> would be good to capture the GRE use case that found the bug and the
-> MPLS version as test cases under tools/testing/selftests/net. Both
-> should be doable using namespaces.
+Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
 
-I believe Vadim is working on MPLS side, how does this look for GRE?
+> On Wed, Jun 23, 2021 at 03:22:51AM IST, Toke H=C3=B8iland-J=C3=B8rgensen =
+wrote:
+>> Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
+>>
+>> > cpumap needs to set, clear, and test the lowest bit in skb pointer in
+>> > various places. To make these checks less noisy, add pointer friendly
+>> > bitop macros that also do some typechecking to sanitize the argument.
+>> >
+>> > These wrap the non-atomic bitops __set_bit, __clear_bit, and test_bit
+>> > but for pointer arguments. Pointer's address has to be passed in and it
+>> > is treated as an unsigned long *, since width and representation of
+>> > pointer and unsigned long match on targets Linux supports. They are
+>> > prefixed with double underscore to indicate lack of atomicity.
+>> >
+>> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+>> > ---
+>> >  include/linux/bitops.h    | 19 +++++++++++++++++++
+>> >  include/linux/typecheck.h | 10 ++++++++++
+>> >  2 files changed, 29 insertions(+)
+>> >
+>> > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+>> > index 26bf15e6cd35..a9e336b9fa4d 100644
+>> > --- a/include/linux/bitops.h
+>> > +++ b/include/linux/bitops.h
+>> > @@ -4,6 +4,7 @@
+>> >
+>> >  #include <asm/types.h>
+>> >  #include <linux/bits.h>
+>> > +#include <linux/typecheck.h>
+>> >
+>> >  #include <uapi/linux/kernel.h>
+>> >
+>> > @@ -253,6 +254,24 @@ static __always_inline void __assign_bit(long nr,=
+ volatile unsigned long *addr,
+>> >  		__clear_bit(nr, addr);
+>> >  }
+>> >
+>> > +#define __ptr_set_bit(nr, addr)                         \
+>> > +	({                                              \
+>> > +		typecheck_pointer(*(addr));             \
+>> > +		__set_bit(nr, (unsigned long *)(addr)); \
+>> > +	})
+>> > +
+>> > +#define __ptr_clear_bit(nr, addr)                         \
+>> > +	({                                                \
+>> > +		typecheck_pointer(*(addr));               \
+>> > +		__clear_bit(nr, (unsigned long *)(addr)); \
+>> > +	})
+>> > +
+>> > +#define __ptr_test_bit(nr, addr)                       \
+>> > +	({                                             \
+>> > +		typecheck_pointer(*(addr));            \
+>> > +		test_bit(nr, (unsigned long *)(addr)); \
+>> > +	})
+>> > +
+>>
+>> Before these were functions that returned the modified values, now they
+>> are macros that modify in-place. Why the change? :)
+>>
+>
+> Given that we're exporting this to all kernel users now, it felt more
+> appropriate to follow the existing convention/argument order for the
+> functions/ops they are wrapping.
 
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
+I wasn't talking about the order of the arguments; swapping those is
+fine. But before, you had:
 
-# This test is for checking GRE GSO.
+static void *__ptr_set_bit(void *ptr, int bit)
 
-ret=0
-# Kselftest framework requirement - SKIP code is 4.
-ksft_skip=4
+with usage (function return is the modified value):
+ret =3D ptr_ring_produce(rcpu->queue, __ptr_set_bit(skb, 0));
 
-# all tests in this script. Can be overridden with -t option
-TESTS="gre_gso"
+now you have:
+#define __ptr_set_bit(nr, addr)
 
-VERBOSE=0
-PAUSE_ON_FAIL=no
-PAUSE=no
-IP="ip -netns ns1"
-NS_EXEC="ip netns exec ns1"
-TMPFILE=`mktemp`
-PID=
+with usage (modifies argument in-place):
+__ptr_set_bit(0, &skb);
+ret =3D ptr_ring_produce(rcpu->queue, skb);
 
-log_test()
-{
-	local rc=$1
-	local expected=$2
-	local msg="$3"
+why change from function to macro?
 
-	if [ ${rc} -eq ${expected} ]; then
-		printf "    TEST: %-60s  [ OK ]\n" "${msg}"
-		nsuccess=$((nsuccess+1))
-	else
-		ret=1
-		nfail=$((nfail+1))
-		printf "    TEST: %-60s  [FAIL]\n" "${msg}"
-		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-		echo
-			echo "hit enter to continue, 'q' to quit"
-			read a
-			[ "$a" = "q" ] && exit 1
-		fi
-	fi
-
-	if [ "${PAUSE}" = "yes" ]; then
-		echo
-		echo "hit enter to continue, 'q' to quit"
-		read a
-		[ "$a" = "q" ] && exit 1
-	fi
-}
-
-setup()
-{
-	set -e
-	ip netns add ns1
-	ip netns set ns1 auto
-	$IP link set dev lo up
-
-	ip link add veth0 type veth peer name veth1
-	ip link set veth0 up
-	ip link set veth1 netns ns1
-	$IP link set veth1 name veth0
-	$IP link set veth0 up
-
-	dd if=/dev/urandom of=$TMPFILE bs=1024 count=2048 &>/dev/null
-	set +e
-}
-
-cleanup()
-{
-	rm -rf $TMPFILE
-	[ -n "$PID" ] && kill $PID
-	ip link del dev gre1 &> /dev/null
-	ip link del dev veth0 &> /dev/null
-	ip netns del ns1
-}
-
-get_linklocal()
-{
-	local dev=$1
-	local ns=$2
-	local addr
-
-	[ -n "$ns" ] && ns="-netns $ns"
-
-	addr=$(ip -6 -br $ns addr show dev ${dev} | \
-	awk '{
-		for (i = 3; i <= NF; ++i) {
-			if ($i ~ /^fe80/)
-				print $i
-		}
-	}'
-	)
-	addr=${addr/\/*}
-
-	[ -z "$addr" ] && return 1
-
-	echo $addr
-
-	return 0
-}
-
-gre_create_tun()
-{
-	local a1=$1
-	local a2=$2
-	local mode
-
-	[[ $a1 =~ ^[0-9.]*$ ]] && mode=gre || mode=ip6gre
-
-	ip tunnel add gre1 mode $mode local $a1 remote $a2 dev veth0
-	ip link set gre1 up
-	$IP tunnel add gre1 mode $mode local $a2 remote $a1 dev veth0
-	$IP link set gre1 up
-}
-
-gre_gst_test_checks()
-{
-	local name=$1
-	local addr=$2
-
-	$NS_EXEC nc -kl $port >/dev/null &
-	PID=$!
-
-	cat $TMPFILE | timeout 1 nc $addr $port
-	log_test $? 0 "$name - copy file w/ TSO"
-
-	ethtool -K veth0 tso off
-
-	cat $TMPFILE | timeout 1 nc $addr $port
-	log_test $? 0 "$name - copy file w/ GSO"
-
-	ethtool -K veth0 tso on
-
-	kill $PID
-	PID=
-}
-
-gre6_gso_test()
-{
-	local port=7777
-
-	setup
-
-	a1=$(get_linklocal veth0)
-	a2=$(get_linklocal veth0 ns1)
-
-	gre_create_tun $a1 $a2
-
-	ip  addr add 172.16.2.1/24 dev gre1
-	$IP addr add 172.16.2.2/24 dev gre1
-
-	ip  -6 addr add 2001:db8:1::1/64 dev gre1 nodad
-	$IP -6 addr add 2001:db8:1::2/64 dev gre1 nodad
-
-	sleep 2
-
-	gre_gst_test_checks GREv6/v4 172.16.2.2
-	gre_gst_test_checks GREv6/v6 2001:db8:1::2
-
-	cleanup
-}
-
-gre_gso_test()
-{
-	gre6_gso_test
-}
-
-################################################################################
-# usage
-
-usage()
-{
-	cat <<EOF
-usage: ${0##*/} OPTS
-
-        -t <test>   Test(s) to run (default: all)
-                    (options: $TESTS)
-        -p          Pause on fail
-        -P          Pause after each test before cleanup
-        -v          verbose mode (show commands and output)
-EOF
-}
-
-################################################################################
-# main
-
-while getopts :t:pPhv o
-do
-	case $o in
-		t) TESTS=$OPTARG;;
-		p) PAUSE_ON_FAIL=yes;;
-		P) PAUSE=yes;;
-		v) VERBOSE=$(($VERBOSE + 1));;
-		h) usage; exit 0;;
-		*) usage; exit 1;;
-	esac
-done
-
-PEER_CMD="ip netns exec ${PEER_NS}"
-
-# make sure we don't pause twice
-[ "${PAUSE}" = "yes" ] && PAUSE_ON_FAIL=no
-
-if [ "$(id -u)" -ne 0 ];then
-	echo "SKIP: Need root privileges"
-	exit $ksft_skip;
-fi
-
-if [ ! -x "$(command -v ip)" ]; then
-	echo "SKIP: Could not run test without ip tool"
-	exit $ksft_skip
-fi
-
-if [ ! -x "$(command -v nc)" ]; then
-	echo "SKIP: Could not run test without nc tool"
-	exit $ksft_skip
-fi
-
-# start clean
-cleanup &> /dev/null
-
-for t in $TESTS
-do
-	case $t in
-	gre_gso)		gre_gso_test;;
-
-	help) echo "Test names: $TESTS"; exit 0;;
-	esac
-done
-
-if [ "$TESTS" != "none" ]; then
-	printf "\nTests passed: %3d\n" ${nsuccess}
-	printf "Tests failed: %3d\n"   ${nfail}
-fi
-
-exit $ret
+-Toke
 
