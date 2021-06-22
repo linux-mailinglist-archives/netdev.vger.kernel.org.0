@@ -2,414 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98AC33B0EAE
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42AF13B0EA9
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:23:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbhFVU0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 16:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42660 "EHLO
+        id S230061AbhFVU0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 16:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbhFVU0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:26:54 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C3DC061574;
-        Tue, 22 Jun 2021 13:24:37 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id a127so457487pfa.10;
-        Tue, 22 Jun 2021 13:24:37 -0700 (PDT)
+        with ESMTP id S229667AbhFVU0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:26:08 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8A2C061574;
+        Tue, 22 Jun 2021 13:23:51 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id e22so112479wrc.1;
+        Tue, 22 Jun 2021 13:23:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=k++n0+ipVRB05jJq75tr8M42/4RiGXyubtFFBQd+du4=;
-        b=hAsD+OWTdbWX3RbgQWE1yB8tUrDg3Im9KDhg7icf2BTtbHvX9Rl0g+izX9TEAQxCAi
-         9gY1hPAvT5TUXJgWsoTbbjPV1WO7t4qZNc9ArCBgQLHNlGie7qSILMnmWdEJ5r60EXgO
-         /dxVzfrWGFKV6+Re5ISZvSAug60Mp5ADaQcu3buxuGQG8BXyOFL94jn3SnQxYUelqCtZ
-         Q81T6tSAtGRJ/vRJw1ng2/8Bw3b9AowEpTlzWSnMENjTNfNQ1SSzaShDK3ktVq0uVYdT
-         gPCzrlbu8FHCJd3ogZppZfEgfIr3yLB1h/dfkRMuIhPLQdS3trgfc0FNYdb234IubRkt
-         c1JA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=86O3Q6DG70rY1uZMDvMI5OoC90pTmj89Bu051GHFOrY=;
+        b=MKDG29332LDSoXTFutQYCdm2rDvpET2y4VkTQLSXaOcAkuDG5NVfwCdJIta5Kz4Iq8
+         r16IYbqn/7UNWmC/AypxlTJsJw+9PYC5mAKwCLHXulXKP4uaIX0/LMp+0moBlHQSRSRN
+         xFx7vssXVJykFani5lEoCAwGUTCQmnfY/l7CzVWxFRrzstY2MP0JtBH5yXw4PJdLEFjP
+         HZjm09jNP0sCW+ugua8x7t+8qP9L/AJHb+01nvkU87rKeVuc3D0peoAsrRFVhHBOzs/8
+         wXjZaDltkLtGeUXHE1kmg4l/1QSVBVhugt+8QPlE0EAyCJr7EQT7neuvamfn4eKHWxti
+         A5bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=k++n0+ipVRB05jJq75tr8M42/4RiGXyubtFFBQd+du4=;
-        b=mcauW6GhzdH1FHnRi3YrbA9iLHCn1qDDUt/PfnqxynVaINrFm4M6kSDL+RklszTTgO
-         PtdDcB4AP/tx9kGwOk3PlpDJeq9EzH3BCSSGVUJtcnjktzvp9trsuFlW4U2XctAyAgkS
-         T/EjDFqqiqsRKSGmBhCfq0YxdcnVjAnAIn1MQmBqNcOcyXmBBhM363py2fDkEFJyCIyM
-         tl61Wu/gMIYAI8O2PeusP56ZiIa7hBF7oKQBFnsuFscROOWjYn3seFRnY0x4IAAHxFaK
-         QWQGjryPxhl9h+h5OxlH+sCXNgV4zd/jK02KYXwVOw0g6uDLpjhEc6fVJSxF+fFpT6KU
-         +wvA==
-X-Gm-Message-State: AOAM5335vxM4hBvYR2VuKB4PNBS3N7Teyy3QJPoTl96VJTPo2WENfr42
-        wA852PK0c7tF2x5e6Fwz43QyGi3C+vY=
-X-Google-Smtp-Source: ABdhPJxluWMkJP/tKOiu9ktUVh8qXQViuK8XhU46VpiQOSnH5MdOtC5h0f1yyy9atiX18W8RtsKrRA==
-X-Received: by 2002:a65:4985:: with SMTP id r5mr425054pgs.122.1624393476360;
-        Tue, 22 Jun 2021 13:24:36 -0700 (PDT)
-Received: from localhost ([2402:3a80:11bb:33b3:7f0c:3646:8bde:417e])
-        by smtp.gmail.com with ESMTPSA id q18sm11795692pgj.8.2021.06.22.13.24.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=86O3Q6DG70rY1uZMDvMI5OoC90pTmj89Bu051GHFOrY=;
+        b=W2mh6gbnGo1VV/pKvYY5pVQ4Vwfml80L3yEe9uu+LrQZz3IScJF6lC0WdF/Ps7+AUX
+         70xtaYXC9tZRHY4OWubWVeniThjtARroczOoLwntD/MB8ywqk7vd0ekkityN9E1yN3Ya
+         +GSnAQMi6edDBAT1PXoN42/BAoGJKesN2zDBqF5NXu9gNClp25qy8B26WpcDYE8iAorb
+         884JhPEqwxE06hG1xz9BhCF35dr190curWT9X6qEf1hjQSp0Nzq/jXRmyEQbqsgvbMru
+         4pPdtCIRyUeE4cgtu//yFsJTkdgLXx0tvbii3x81sBUdLKV/zGfr9fD8hp2nI+SoIyg5
+         Cfig==
+X-Gm-Message-State: AOAM531LFeCmvKjXR+W//ahJ80+k1BjXm0ZLJIW/VmDdZtVMVt0QaJ2X
+        WDOnCU3y1cT495XvMIhsPKg=
+X-Google-Smtp-Source: ABdhPJxj2hZDz0aLZEYLXSZtPvpOS7b/OxL0ct1AL1iAEw1IKSU690T/1p11JhSnctrNh2B6zMghQw==
+X-Received: by 2002:a5d:4cd1:: with SMTP id c17mr7114655wrt.295.1624393430001;
+        Tue, 22 Jun 2021 13:23:50 -0700 (PDT)
+Received: from kista.localdomain (cpe1-4-249.cable.triera.net. [213.161.4.249])
+        by smtp.gmail.com with ESMTPSA id e3sm452989wro.26.2021.06.22.13.23.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 13:24:35 -0700 (PDT)
-Date:   Wed, 23 Jun 2021 01:53:04 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/5] bpf: cpumap: implement generic cpumap
-Message-ID: <20210622202304.oiz25v2gjlt35hzm@apollo>
-References: <20210622195527.1110497-1-memxor@gmail.com>
- <20210622195527.1110497-4-memxor@gmail.com>
+        Tue, 22 Jun 2021 13:23:49 -0700 (PDT)
+From:   Jernej Skrabec <jernej.skrabec@gmail.com>
+To:     pizza@shaftnet.org
+Cc:     ulf.hansson@linaro.org, arnd@arndb.de, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: [RFC PATCH] cw1200: use kmalloc() allocation instead of stack
+Date:   Tue, 22 Jun 2021 22:23:45 +0200
+Message-Id: <20210622202345.795578-1-jernej.skrabec@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210622195527.1110497-4-memxor@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 23, 2021 at 01:25:25AM IST, Kumar Kartikeya Dwivedi wrote:
-> This change implements CPUMAP redirect support for generic XDP programs.
-> The idea is to reuse the cpu map entry's queue that is used to push
-> native xdp frames for redirecting skb to a different CPU. This will
-> match native XDP behavior (in that RPS is invoked again for packet
-> reinjected into networking stack).
->
-> To be able to determine whether the incoming skb is from the driver or
-> cpumap, we reuse skb->redirected bit that skips generic XDP processing
-> when it is set. To always make use of this, CONFIG_NET_REDIRECT guard on
-> it has been lifted and it is always available.
->
-> From the redirect side, we add the skb to ptr_ring with its lowest bit
-> set to 1.  This should be safe as skb is not 1-byte aligned. This allows
-> kthread to discern between xdp_frames and sk_buff. On consumption of the
-> ptr_ring item, the lowest bit is unset.
->
-> In the end, the skb is simply added to the list that kthread is anyway
-> going to maintain for xdp_frames converted to skb, and then received
-> again by using netif_receive_skb_list.
->
-> Bulking optimization for generic cpumap is left as an exercise for a
-> future patch for now.
->
-> Since cpumap entry progs are now supported, also remove check in
-> generic_xdp_install for the cpumap.
->
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->  include/linux/bpf.h    |   9 +++-
->  include/linux/skbuff.h |  10 +---
->  kernel/bpf/cpumap.c    | 115 +++++++++++++++++++++++++++++++++++------
->  net/core/dev.c         |   3 +-
->  net/core/filter.c      |   6 ++-
->  5 files changed, 115 insertions(+), 28 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index f309fc1509f2..095aaa104c56 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1513,7 +1513,8 @@ bool dev_map_can_have_prog(struct bpf_map *map);
->  void __cpu_map_flush(void);
->  int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_buff *xdp,
->  		    struct net_device *dev_rx);
-> -bool cpu_map_prog_allowed(struct bpf_map *map);
-> +int cpu_map_generic_redirect(struct bpf_cpu_map_entry *rcpu,
-> +			     struct sk_buff *skb);
->
->  /* Return map's numa specified by userspace */
->  static inline int bpf_map_attr_numa_node(const union bpf_attr *attr)
-> @@ -1710,6 +1711,12 @@ static inline int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu,
->  	return 0;
->  }
->
-> +static inline int cpu_map_generic_redirect(struct bpf_cpu_map_entry *rcpu,
-> +					   struct sk_buff *skb)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
->  static inline bool cpu_map_prog_allowed(struct bpf_map *map)
->  {
->  	return false;
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index b2db9cd9a73f..f19190820e63 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -863,8 +863,8 @@ struct sk_buff {
->  	__u8			tc_skip_classify:1;
->  	__u8			tc_at_ingress:1;
->  #endif
-> -#ifdef CONFIG_NET_REDIRECT
->  	__u8			redirected:1;
-> +#ifdef CONFIG_NET_REDIRECT
->  	__u8			from_ingress:1;
->  #endif
->  #ifdef CONFIG_TLS_DEVICE
-> @@ -4664,17 +4664,13 @@ static inline __wsum lco_csum(struct sk_buff *skb)
->
->  static inline bool skb_is_redirected(const struct sk_buff *skb)
->  {
-> -#ifdef CONFIG_NET_REDIRECT
->  	return skb->redirected;
-> -#else
-> -	return false;
-> -#endif
->  }
->
->  static inline void skb_set_redirected(struct sk_buff *skb, bool from_ingress)
->  {
-> -#ifdef CONFIG_NET_REDIRECT
->  	skb->redirected = 1;
-> +#ifdef CONFIG_NET_REDIRECT
->  	skb->from_ingress = from_ingress;
->  	if (skb->from_ingress)
->  		skb->tstamp = 0;
-> @@ -4683,9 +4679,7 @@ static inline void skb_set_redirected(struct sk_buff *skb, bool from_ingress)
->
->  static inline void skb_reset_redirect(struct sk_buff *skb)
->  {
-> -#ifdef CONFIG_NET_REDIRECT
->  	skb->redirected = 0;
-> -#endif
->  }
->
->  static inline bool skb_csum_is_sctp(struct sk_buff *skb)
-> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-> index a1a0c4e791c6..57f751212a9d 100644
-> --- a/kernel/bpf/cpumap.c
-> +++ b/kernel/bpf/cpumap.c
-> @@ -16,6 +16,7 @@
->   * netstack, and assigning dedicated CPUs for this stage.  This
->   * basically allows for 10G wirespeed pre-filtering via bpf.
->   */
-> +#include <linux/bitops.h>
->  #include <linux/bpf.h>
->  #include <linux/filter.h>
->  #include <linux/ptr_ring.h>
-> @@ -168,6 +169,49 @@ static void put_cpu_map_entry(struct bpf_cpu_map_entry *rcpu)
->  	}
->  }
->
-> +static void cpu_map_bpf_prog_run_skb(struct bpf_cpu_map_entry *rcpu,
-> +				     struct list_head *listp,
-> +				     struct xdp_cpumap_stats *stats)
-> +{
-> +	struct xdp_buff xdp;
-> +	struct sk_buff *skb;
-> +	u32 act;
-> +	int err;
-> +
-> +	if (!rcpu->prog)
-> +		return;
-> +
-> +	list_for_each_entry(skb, listp, list) {
+It turns out that if CONFIG_VMAP_STACK is enabled and src or dst is
+memory allocated on stack, SDIO operations fail due to invalid memory
+address conversion:
 
-Oops, this should be list_for_each_entry_safe, I forgot to run format-patch
-after fixing this...
+cw1200_wlan_sdio: Probe called
+sunxi-mmc 4021000.mmc: DMA addr 0x0000800051eab954+4 overflow (mask ffffffff, bus limit 0).
+WARNING: CPU: 2 PID: 152 at kernel/dma/direct.h:97 dma_direct_map_sg+0x26c/0x28c
+CPU: 2 PID: 152 Comm: kworker/2:2 Not tainted 5.13.0-rc1-00026-g84114ef026b9-dirty #85
+Hardware name: X96 Mate (DT)
+Workqueue: events_freezable mmc_rescan
+pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
+pc : dma_direct_map_sg+0x26c/0x28c
+lr : dma_direct_map_sg+0x26c/0x28c
+sp : ffff800011eab540
+x29: ffff800011eab540 x28: ffff800011eab738 x27: 0000000000000000
+x26: ffff000001daf010 x25: 0000000000000000 x24: 0000000000000000
+x23: 0000000000000002 x22: fffffc0000000000 x21: ffff8000113b0ab0
+x20: ffff80001181abb0 x19: 0000000000000001 x18: ffffffffffffffff
+x17: 00000000fa97f83f x16: 00000000d2e01bf8 x15: ffff8000117ffb1d
+x14: ffffffffffffffff x13: ffff8000117ffb18 x12: fffffffffffc593f
+x11: ffff800011676ad0 x10: fffffffffffe0000 x9 : ffff800011eab540
+x8 : 206b73616d282077 x7 : 000000000000000f x6 : 000000000000000c
+x5 : 0000000000000000 x4 : 0000000000000000 x3 : 00000000ffffffff
+x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff00000283b800
+Call trace:
+ dma_direct_map_sg+0x26c/0x28c
+ dma_map_sg_attrs+0x2c/0x60
+ sunxi_mmc_request+0x70/0x420
+ __mmc_start_request+0x68/0x134
+ mmc_start_request+0x84/0xac
+ mmc_wait_for_req+0x70/0x100
+ mmc_io_rw_extended+0x1cc/0x2c0
+ sdio_io_rw_ext_helper+0x194/0x240
+ sdio_memcpy_fromio+0x20/0x2c
+ cw1200_sdio_memcpy_fromio+0x20/0x2c
+ __cw1200_reg_read+0x34/0x60
+ cw1200_reg_read+0x48/0x70
+ cw1200_load_firmware+0x38/0x5d0
+ cw1200_core_probe+0x794/0x970
+ cw1200_sdio_probe+0x124/0x22c
+ sdio_bus_probe+0xe8/0x1d0
+ really_probe+0xe4/0x504
+ driver_probe_device+0x64/0xcc
+ __device_attach_driver+0xd0/0x14c
+ bus_for_each_drv+0x78/0xd0
+ __device_attach+0xdc/0x184
+ device_initial_probe+0x14/0x20
+ bus_probe_device+0x9c/0xa4
+ device_add+0x350/0x83c
+ sdio_add_func+0x6c/0x90
+ mmc_attach_sdio+0x1b0/0x430
+ mmc_rescan+0x254/0x2e0
+ process_one_work+0x1d0/0x34c
+ worker_thread+0x13c/0x470
+ kthread+0x154/0x160
+ ret_from_fork+0x10/0x34
+sunxi-mmc 4021000.mmc: dma_map_sg failed
+sunxi-mmc 4021000.mmc: map DMA failed
+Can't read config register.
 
-Resending, sorry for the noise.
+Fix that by using kmalloc() allocated memory for read/write 16/32
+funtions.
 
-> +		act = bpf_prog_run_generic_xdp(skb, &xdp, rcpu->prog);
-> +		switch (act) {
-> +		case XDP_PASS:
-> +			break;
-> +		case XDP_REDIRECT:
-> +			skb_list_del_init(skb);
-> +			err = xdp_do_generic_redirect(skb->dev, skb, &xdp,
-> +						      rcpu->prog);
-> +			if (unlikely(err)) {
-> +				kfree_skb(skb);
-> +				stats->drop++;
-> +			} else {
-> +				stats->redirect++;
-> +			}
-> +			return;
-> +		default:
-> +			bpf_warn_invalid_xdp_action(act);
-> +			fallthrough;
-> +		case XDP_ABORTED:
-> +			trace_xdp_exception(skb->dev, rcpu->prog, act);
-> +			fallthrough;
-> +		case XDP_DROP:
-> +			skb_list_del_init(skb);
-> +			kfree_skb(skb);
-> +			stats->drop++;
-> +			return;
-> +		}
-> +	}
-> +}
-> +
->  static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
->  				    void **frames, int n,
->  				    struct xdp_cpumap_stats *stats)
-> @@ -179,8 +223,6 @@ static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
->  	if (!rcpu->prog)
->  		return n;
->
-> -	rcu_read_lock_bh();
-> -
->  	xdp_set_return_frame_no_direct();
->  	xdp.rxq = &rxq;
->
-> @@ -227,17 +269,34 @@ static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
->  		}
->  	}
->
-> +	xdp_clear_return_frame_no_direct();
-> +
-> +	return nframes;
-> +}
-> +
-> +#define CPUMAP_BATCH 8
-> +
-> +static int cpu_map_bpf_prog_run(struct bpf_cpu_map_entry *rcpu, void **frames,
-> +				int xdp_n, struct xdp_cpumap_stats *stats,
-> +				struct list_head *list)
-> +{
-> +	int nframes;
-> +
-> +	rcu_read_lock_bh();
-> +
-> +	nframes = cpu_map_bpf_prog_run_xdp(rcpu, frames, xdp_n, stats);
-> +
->  	if (stats->redirect)
-> -		xdp_do_flush_map();
-> +		xdp_do_flush();
->
-> -	xdp_clear_return_frame_no_direct();
-> +	if (unlikely(!list_empty(list)))
-> +		cpu_map_bpf_prog_run_skb(rcpu, list, stats);
->
-> -	rcu_read_unlock_bh(); /* resched point, may call do_softirq() */
-> +	rcu_read_unlock_bh();
->
->  	return nframes;
->  }
->
-> -#define CPUMAP_BATCH 8
->
->  static int cpu_map_kthread_run(void *data)
->  {
-> @@ -254,9 +313,9 @@ static int cpu_map_kthread_run(void *data)
->  		struct xdp_cpumap_stats stats = {}; /* zero stats */
->  		unsigned int kmem_alloc_drops = 0, sched = 0;
->  		gfp_t gfp = __GFP_ZERO | GFP_ATOMIC;
-> +		int i, n, m, nframes, xdp_n;
->  		void *frames[CPUMAP_BATCH];
->  		void *skbs[CPUMAP_BATCH];
-> -		int i, n, m, nframes;
->  		LIST_HEAD(list);
->
->  		/* Release CPU reschedule checks */
-> @@ -280,9 +339,20 @@ static int cpu_map_kthread_run(void *data)
->  		 */
->  		n = __ptr_ring_consume_batched(rcpu->queue, frames,
->  					       CPUMAP_BATCH);
-> -		for (i = 0; i < n; i++) {
-> +		for (i = 0, xdp_n = 0; i < n; i++) {
->  			void *f = frames[i];
-> -			struct page *page = virt_to_page(f);
-> +			struct page *page;
-> +
-> +			if (unlikely(__ptr_test_bit(0, &f))) {
-> +				struct sk_buff *skb = f;
-> +
-> +				__ptr_clear_bit(0, &skb);
-> +				list_add_tail(&skb->list, &list);
-> +				continue;
-> +			}
-> +
-> +			frames[xdp_n++] = f;
-> +			page = virt_to_page(f);
->
->  			/* Bring struct page memory area to curr CPU. Read by
->  			 * build_skb_around via page_is_pfmemalloc(), and when
-> @@ -292,7 +362,7 @@ static int cpu_map_kthread_run(void *data)
->  		}
->
->  		/* Support running another XDP prog on this CPU */
-> -		nframes = cpu_map_bpf_prog_run_xdp(rcpu, frames, n, &stats);
-> +		nframes = cpu_map_bpf_prog_run(rcpu, frames, xdp_n, &stats, &list);
->  		if (nframes) {
->  			m = kmem_cache_alloc_bulk(skbuff_head_cache, gfp, nframes, skbs);
->  			if (unlikely(m == 0)) {
-> @@ -330,12 +400,6 @@ static int cpu_map_kthread_run(void *data)
->  	return 0;
->  }
->
-> -bool cpu_map_prog_allowed(struct bpf_map *map)
-> -{
-> -	return map->map_type == BPF_MAP_TYPE_CPUMAP &&
-> -	       map->value_size != offsetofend(struct bpf_cpumap_val, qsize);
-> -}
-> -
->  static int __cpu_map_load_bpf_program(struct bpf_cpu_map_entry *rcpu, int fd)
->  {
->  	struct bpf_prog *prog;
-> @@ -696,6 +760,25 @@ int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_buff *xdp,
->  	return 0;
->  }
->
-> +int cpu_map_generic_redirect(struct bpf_cpu_map_entry *rcpu,
-> +			     struct sk_buff *skb)
-> +{
-> +	int ret;
-> +
-> +	__skb_pull(skb, skb->mac_len);
-> +	skb_set_redirected(skb, false);
-> +	__ptr_set_bit(0, &skb);
-> +
-> +	ret = ptr_ring_produce(rcpu->queue, skb);
-> +	if (ret < 0)
-> +		goto trace;
-> +
-> +	wake_up_process(rcpu->kthread);
-> +trace:
-> +	trace_xdp_cpumap_enqueue(rcpu->map_id, !ret, !!ret, rcpu->cpu);
-> +	return ret;
-> +}
-> +
->  void __cpu_map_flush(void)
->  {
->  	struct list_head *flush_list = this_cpu_ptr(&cpu_map_flush_list);
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index c34ff1dbf6e6..a00421e9ee16 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5642,8 +5642,7 @@ static int generic_xdp_install(struct net_device *dev, struct netdev_bpf *xdp)
->  		 * have a bpf_prog installed on an entry
->  		 */
->  		for (i = 0; i < new->aux->used_map_cnt; i++) {
-> -			if (dev_map_can_have_prog(new->aux->used_maps[i]) ||
-> -			    cpu_map_prog_allowed(new->aux->used_maps[i])) {
-> +			if (dev_map_can_have_prog(new->aux->used_maps[i])) {
->  				mutex_unlock(&new->aux->used_maps_mutex);
->  				return -EINVAL;
->  			}
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 0b13d8157a8f..4a21fde3028f 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -4038,8 +4038,12 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
->  			goto err;
->  		consume_skb(skb);
->  		break;
-> +	case BPF_MAP_TYPE_CPUMAP:
-> +		err = cpu_map_generic_redirect(fwd, skb);
-> +		if (unlikely(err))
-> +			goto err;
-> +		break;
->  	default:
-> -		/* TODO: Handle BPF_MAP_TYPE_CPUMAP */
->  		err = -EBADRQC;
->  		goto err;
->  	}
-> --
-> 2.31.1
->
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/net/wireless/st/cw1200/hwio.c | 52 +++++++++++++++++++++------
+ drivers/net/wireless/st/cw1200/hwio.h | 51 ++++++++++++++++++++------
+ 2 files changed, 83 insertions(+), 20 deletions(-)
 
---
-Kartikeya
+diff --git a/drivers/net/wireless/st/cw1200/hwio.c b/drivers/net/wireless/st/cw1200/hwio.c
+index 3ba462de8e91..5521cb7f2233 100644
+--- a/drivers/net/wireless/st/cw1200/hwio.c
++++ b/drivers/net/wireless/st/cw1200/hwio.c
+@@ -66,33 +66,65 @@ static int __cw1200_reg_write(struct cw1200_common *priv, u16 addr,
+ static inline int __cw1200_reg_read_32(struct cw1200_common *priv,
+ 					u16 addr, u32 *val)
+ {
+-	__le32 tmp;
+-	int i = __cw1200_reg_read(priv, addr, &tmp, sizeof(tmp), 0);
+-	*val = le32_to_cpu(tmp);
++	__le32 *tmp;
++	int i;
++
++	tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++
++	i = __cw1200_reg_read(priv, addr, tmp, sizeof(*tmp), 0);
++	*val = le32_to_cpu(*tmp);
++	kfree(tmp);
+ 	return i;
+ }
+ 
+ static inline int __cw1200_reg_write_32(struct cw1200_common *priv,
+ 					u16 addr, u32 val)
+ {
+-	__le32 tmp = cpu_to_le32(val);
+-	return __cw1200_reg_write(priv, addr, &tmp, sizeof(tmp), 0);
++	__le32 *tmp;
++	int i;
++
++	tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++
++	*tmp = cpu_to_le32(val);
++	i = __cw1200_reg_write(priv, addr, tmp, sizeof(*tmp), 0);
++	kfree(tmp);
++	return i;
+ }
+ 
+ static inline int __cw1200_reg_read_16(struct cw1200_common *priv,
+ 					u16 addr, u16 *val)
+ {
+-	__le16 tmp;
+-	int i = __cw1200_reg_read(priv, addr, &tmp, sizeof(tmp), 0);
+-	*val = le16_to_cpu(tmp);
++	__le16 *tmp;
++	int i;
++
++	tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++
++	i = __cw1200_reg_read(priv, addr, tmp, sizeof(*tmp), 0);
++	*val = le16_to_cpu(*tmp);
++	kfree(tmp);
+ 	return i;
+ }
+ 
+ static inline int __cw1200_reg_write_16(struct cw1200_common *priv,
+ 					u16 addr, u16 val)
+ {
+-	__le16 tmp = cpu_to_le16(val);
+-	return __cw1200_reg_write(priv, addr, &tmp, sizeof(tmp), 0);
++	__le16 *tmp;
++	int i;
++
++	tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++
++	*tmp = cpu_to_le16(val);
++	i = __cw1200_reg_write(priv, addr, tmp, sizeof(*tmp), 0);
++	kfree(tmp);
++	return i;
+ }
+ 
+ int cw1200_reg_read(struct cw1200_common *priv, u16 addr, void *buf,
+diff --git a/drivers/net/wireless/st/cw1200/hwio.h b/drivers/net/wireless/st/cw1200/hwio.h
+index d1e629a566c2..088d2a1bacc0 100644
+--- a/drivers/net/wireless/st/cw1200/hwio.h
++++ b/drivers/net/wireless/st/cw1200/hwio.h
+@@ -166,34 +166,65 @@ int cw1200_reg_write(struct cw1200_common *priv, u16 addr,
+ static inline int cw1200_reg_read_16(struct cw1200_common *priv,
+ 				     u16 addr, u16 *val)
+ {
+-	__le32 tmp;
++	__le32 *tmp;
+ 	int i;
+-	i = cw1200_reg_read(priv, addr, &tmp, sizeof(tmp));
+-	*val = le32_to_cpu(tmp) & 0xfffff;
++
++	tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++
++	i = cw1200_reg_read(priv, addr, tmp, sizeof(*tmp));
++	*val = le32_to_cpu(*tmp) & 0xfffff;
++	kfree(tmp);
+ 	return i;
+ }
+ 
+ static inline int cw1200_reg_write_16(struct cw1200_common *priv,
+ 				      u16 addr, u16 val)
+ {
+-	__le32 tmp = cpu_to_le32((u32)val);
+-	return cw1200_reg_write(priv, addr, &tmp, sizeof(tmp));
++	__le32 *tmp;
++	int i;
++
++	tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++
++	*tmp = cpu_to_le32((u32)val);
++	i = cw1200_reg_write(priv, addr, tmp, sizeof(*tmp));
++	kfree(tmp);
++	return i;
+ }
+ 
+ static inline int cw1200_reg_read_32(struct cw1200_common *priv,
+ 				     u16 addr, u32 *val)
+ {
+-	__le32 tmp;
+-	int i = cw1200_reg_read(priv, addr, &tmp, sizeof(tmp));
+-	*val = le32_to_cpu(tmp);
++	__le32 *tmp;
++	int i;
++
++	tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++
++	i = cw1200_reg_read(priv, addr, tmp, sizeof(*tmp));
++	*val = le32_to_cpu(*tmp);
++	kfree(tmp);
+ 	return i;
+ }
+ 
+ static inline int cw1200_reg_write_32(struct cw1200_common *priv,
+ 				      u16 addr, u32 val)
+ {
+-	__le32 tmp = cpu_to_le32(val);
+-	return cw1200_reg_write(priv, addr, &tmp, sizeof(val));
++	__le32 *tmp;
++	int i;
++
++	tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++
++	*tmp = cpu_to_le32(val);
++	i = cw1200_reg_write(priv, addr, tmp, sizeof(val));
++	kfree(tmp);
++	return i;
+ }
+ 
+ int cw1200_indirect_read(struct cw1200_common *priv, u32 addr, void *buf,
+-- 
+2.32.0
+
