@@ -2,137 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EABB3B0CEC
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:31:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7D83B0D2D
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:46:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232049AbhFVSd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 14:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230146AbhFVSd6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:33:58 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBD2C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:31:41 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id j4so132249lfc.8
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:31:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:date:from:user-agent:mime-version:to:cc:subject
-         :references:in-reply-to:content-transfer-encoding;
-        bh=oEJ10bPYm2tKsq7koP1acFEWdcXK8lq6pl+D4aLyMEE=;
-        b=e5tbGVtEfDBmUr2oipZN4Sw66WwLSpggn/UUYwhgK/YIMCyT/SfLMd/l+HP4LOg/Bx
-         k436OfSAfFYd90cJ22qZvl3ba5TW0bkQ9/VDJFuYnS+nVl1Vbr5eKimf4Ge5UbJSde6o
-         kNOrdRo6Ts6Y5YkeXMcXNghwRVO1GfY8yXYpXPadRJwmQ2jiGF4m6WZD1CMFdGuGSOnY
-         Kt2/QO0jEVg/eZvB3O+Fdyw4fhkJnh0ydD3ZQaWt+KwnYqsJ72/K+qS9PB9OfgiZ4AYp
-         rVhT51oYq6kPO37QyXmvUFWMZAJDwYjG1lI2hTJpoEr196Bj9grg6Ik41xpXj8m0lrpS
-         LLnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
-         :cc:subject:references:in-reply-to:content-transfer-encoding;
-        bh=oEJ10bPYm2tKsq7koP1acFEWdcXK8lq6pl+D4aLyMEE=;
-        b=Gvv25YajOoypzB46KO8sE68CoO+a6lePNNX4Mm4p1/MoLzyztXLMbo4h7suhoXbZYw
-         D3B92j0K1CfrFICVzOlQDeIxbq8rh+iJor9CC+UhfvggigCjeAzUcyrWUy2AMBpjoLfo
-         nmeUbw4IClrgJkWBqVWwff5I6fT/4Tpzqi6x0lJUiBRYeg28HPumNt/NF8MlGB3Kn7Bj
-         P9YQ5lHR3VcDJotD6n5Vl78m22epoxDTIEkVuBONBJNQOEINnZNlFwvAU4DLnPEp4QEw
-         hldofeaaLOT2GqEIW/JzAKvxvO5RB7tiepGtkpq6KhFaw5EtxMjRsPUlhcKvNgbzbmR1
-         q3xA==
-X-Gm-Message-State: AOAM530gf2MCoYOAfnPlogWQ5UktQMyBZG2LObT17uyOt4eGeAAQwyE1
-        Uz9QtRlg88kBqR3O39DK8VQ=
-X-Google-Smtp-Source: ABdhPJz74UX8pw9WxzIJQNIQgwfuxzqqZXgMcUojTGZOt86EXxvTHY1atnxa6EB5mPVawyr0MPtiYg==
-X-Received: by 2002:ac2:4281:: with SMTP id m1mr3811877lfh.164.1624386700094;
-        Tue, 22 Jun 2021 11:31:40 -0700 (PDT)
-Received: from [192.168.0.91] ([188.242.181.97])
-        by smtp.googlemail.com with ESMTPSA id 26sm1884763lfz.136.2021.06.22.11.31.39
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Tue, 22 Jun 2021 11:31:39 -0700 (PDT)
-Message-ID: <60D22F1D.1000205@gmail.com>
-Date:   Tue, 22 Jun 2021 21:42:37 +0300
-From:   Nikolai Zhubr <zhubr.2@gmail.com>
-User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
+        id S232662AbhFVSsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 14:48:15 -0400
+Received: from mail-dm6nam12on2076.outbound.protection.outlook.com ([40.107.243.76]:17376
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232638AbhFVSsO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 14:48:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NKltZSoOeCB25y+hWd0GN/sJ93LEllqbqvWqV9ndnflBNNjlnyIOaXVIi5q9HoQDWvvA4LscJyrw17u584IMPOYhy+A3PgTI7fIX6WNc+P+mLf+WNNWRNOFc8w5PFZ/8g/Qe1Qi68lC6QFDwchuS9sqGpZkaHN1MopUyHe/otppFP6qkyLB6SY0oOPtYl1wM/Ni+q/UHO0odweep1DfPrsIM14IsE6opTRNM2peQSgkG3lK41Ff7hAhj/d0P0LZEr3X2c7beQvsArLLLKMsCktAexgNXdnqy438WGFfmYzAkm/nBi/MkGWDvdsipFbAmbc882+QxAn665kAL2Sf5fw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KMGZiI9byiiNt/jwj3RKb0biAafqOxsDIRUVTzOQItk=;
+ b=G4c1S2lC2qtiFkgXwnglLk1OEU2Dwe1/DBeIpaxZaXx823H4ErobfxkkfaI3jJLkzIPeaxT/9W2MdMO45qzQ8tJZomcNbDmBenO2mXnW0NHvXSmX/eD2B0tKrv8eUrGw+djNIL3r7OLqFw6Q79/lVSc3yHO7rC6buFQqmokiakxjyr/Vg9o80NLiCp2tnw+6PzMTdWOxakgSywnT4zd/mBJ2yqQFugRfKKwJIoZQ+tnCIhU/6Mjy/udSLgZOJlJAPRmmxEt4/xqjJkvnR3Mdd2Lw0bv/sIZPAj+cVFnASzTk6wr/ukuJ+Hcolt9nC+SqcuERiveqFIWEOopC3NUUzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KMGZiI9byiiNt/jwj3RKb0biAafqOxsDIRUVTzOQItk=;
+ b=k7qzBTibV1HC3byk9tbGSiF7bgwIokFMrAw1eOxfzBURSz51KVj4YCaF+K8CZB1Tt+gZum8smzg3kj6tDpsG333T4puY0uaXVCQ6/Ny7HCDhMI7Du7qaD+CgYjjoPB8MrjuSfb7rGsJ8TNf7Am3AUEvg/MZfVEpVfL7yMER50b2syp2WtkcSxpMsQ/3BpnJkhoMPScLJUZ4S+/lhvYOJYNqsRq9U1XBYP97zz3MZxOQXQ47pzsQjBAZXPITXjgFTN8QLqYVeg7KLXjQwEYw8akcGFosiTHDlxOaQ20hQXiYohwAcqhQFR02DnlxuIKf+Uh4JgMuf7LgwHDXIJoGZlA==
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5205.namprd12.prod.outlook.com (2603:10b6:208:308::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.18; Tue, 22 Jun
+ 2021 18:45:57 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e%8]) with mapi id 15.20.4264.018; Tue, 22 Jun 2021
+ 18:45:57 +0000
+Date:   Tue, 22 Jun 2021 15:45:56 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Lior Nahmanson <liorna@nvidia.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH rdma-next v1 2/3] RDMA/mlx5: Separate DCI QP creation
+ logic
+Message-ID: <20210622184556.GA2596427@nvidia.com>
+References: <cover.1624258894.git.leonro@nvidia.com>
+ <b4530bdd999349c59691224f016ff1efb5dc3b92.1624258894.git.leonro@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b4530bdd999349c59691224f016ff1efb5dc3b92.1624258894.git.leonro@nvidia.com>
+X-Originating-IP: [47.55.113.94]
+X-ClientProxiedBy: BL1PR13CA0268.namprd13.prod.outlook.com
+ (2603:10b6:208:2ba::33) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-To:     Arnd Bergmann <arnd@kernel.org>
-CC:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: Realtek 8139 problem on 486.
-References: <60B24AC2.9050505@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com> <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com> <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com> <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com> <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com> <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com> <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com> <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk> <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com> <877dipgyrb.ffs@nanos.tec.linutronix.de> <alpine.DEB.2.21.2106200749300.61140@angie.orcam.me.uk> <CAK8P3a0Z56XvLHJHjvsX3F76ZF0n-VXwPoWbvfQdTgfEBfOneg@mail.gmail.com> <60D1DAC1.9060200@gmail.com> <CAK8P3a1XaTUgxM3YBa=iHGrLX_Wn66NhTTEXtV=vaNre7K3GOA@mail.gmail.com>
-In-Reply-To: <CAK8P3a1XaTUgxM3YBa=iHGrLX_Wn66NhTTEXtV=vaNre7K3GOA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (47.55.113.94) by BL1PR13CA0268.namprd13.prod.outlook.com (2603:10b6:208:2ba::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.9 via Frontend Transport; Tue, 22 Jun 2021 18:45:57 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lvlPI-00AtWJ-CR; Tue, 22 Jun 2021 15:45:56 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ae6b796f-3527-4576-e49b-08d935adf8f1
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5205:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB52059AE28AD1F483A8BF6818C2099@BL1PR12MB5205.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: P6K8mpFipdyQkibNGNyRFeJOyHcJ7gFPkGQkQY9SrAQWKHO5TZ0dbgcS6dfBDVKBzrmOK+SLHXNZbva8CGzjrKTQq+0WDl/xjXbQJVhGgpHHYKTsbftepG8/pyicxaoNjiET6MHH9iEVI7VWc6lSI9P04GvANBl6mi0ghjxf0e70Fvuo5Veuka9q1JWJDQFUWafECKSNhSniETujSUHVmN9CvHoLNuy7Gb+i9oeXUIpJ9Ano6bqyzBt2A05pFxlZJDqGPnTNPqcw40LG8gbHaz1aDjT5Pncr1gNYT/0ge0ROs4fkv7xVqtJiHdPupRaxmUx8b9etAUp5LrXhX7dFT9oR3QLQFyrdelYa3Ylvnw3WP3l9MG+E3rkcJISJ8RK/wc5oC4eOjWHO688RkdSORCNaDNjyLCafvbR9x/ODjNpG+nsvkHe4SBV8t+Fm7drLVfu9TdfRamv0UNsKUmAj0644zrilpVfK2th/z859PrblBU4u7RjGAbCbiaUaq4u6FL+sgRii2Q0nzENL4gMv4PgMHxjwbhCPa3MIJL6TlA9v4DxqABcFYL1nTHpy+lwU9Y7oX5WwV1AxLGWF5fcAVPTAhEteNDrmG7e0ZtkplFM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(366004)(346002)(396003)(136003)(36756003)(66946007)(2616005)(66476007)(66556008)(9786002)(9746002)(426003)(8936002)(2906002)(8676002)(316002)(54906003)(5660300002)(86362001)(186003)(33656002)(26005)(1076003)(38100700002)(107886003)(4326008)(478600001)(6916009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QjHZjnZZNJ0wI7DF715He9r2YqCG7xRpRRPUlooA1lYvZDjLp3QbKAEKLcDK?=
+ =?us-ascii?Q?RermJqFmUD5BrU5ifS+adIG0owZjudkJAbkUYG+f94gvaBtRZhXsCpRmBTmg?=
+ =?us-ascii?Q?1D4snAZ5z/u1yN+g/HpihqshqUgHWKcvRBJ82f+JIzEYflLxKGshqRSeTd6O?=
+ =?us-ascii?Q?ftrob6psfguvGfWk21/N/tnDPV/cnn1jhOS/+aEyq/qUvnXzt5QvVXUlj5JW?=
+ =?us-ascii?Q?kriRZ+i/5Q/fbM4f3pwF8TSGtWUDvsxC/Ys2WCcoiKl7J5kyQ3+3EaTQyMT2?=
+ =?us-ascii?Q?Ws9IRMB6rcJanf2ZPCoL+6g0dBlXLWFhD8XPg7LvbO+eucYK6MUkOQghWT60?=
+ =?us-ascii?Q?w/EVnNRTqJAYyT4KDxx2GinAh56ncX18r26AS6lnvNqn+fIPiFibMtiYiZYZ?=
+ =?us-ascii?Q?QouOiVK6xgTTHTQuHNoqJ1PuAx24kzCsYu4U/B/p5UCaO7gWz4yTgZPJnhOp?=
+ =?us-ascii?Q?c5TpdzFm7PoJ8tRgy5esNiXNVj8PxC5xCJrXITEBdAacdEedndeflENRiid/?=
+ =?us-ascii?Q?FxmufhErXJfBAg/OLH1YvTrnm30iOTrBiTcdoVEz0DekzlwuXcfbmGjJabe8?=
+ =?us-ascii?Q?fnsqCcDeQh0soexMaBtHK79/VJM5LKZhHYlw/wYuz/OhorMbQCcoxurmGZqT?=
+ =?us-ascii?Q?m6CWuEX7xo931hbaW/fzaSQ98mc4lb7GcolgXA0nUheHmtOz1Hn+Ec/zvO84?=
+ =?us-ascii?Q?bcYFxTL/kipaSWzua4skCKJa5OleG/K4HaDJrXfd3ATP+9ZeoF0Dt70zYELB?=
+ =?us-ascii?Q?Li6d8Na8yrbIX0sqpADDGEUQUOIe61kt+MBWazTIxxTRyW6bJjsEryMjjOnv?=
+ =?us-ascii?Q?dg/DMB4Y/Mtxr4TBq/scxeGXISRAnPbiHZpI9NvDpy64Y3MMUGY2aPghcVPM?=
+ =?us-ascii?Q?4/DWmr7L8ceKUxPrp61zvJD3YyuvIningV5iHKeQixdb2IOu+ofrs8VuQVVN?=
+ =?us-ascii?Q?cJ21FhaEpbEAd1wma8rnnNORYVsu3ezR5jSpiXWrsmkMA7x54OaHJQmBEYie?=
+ =?us-ascii?Q?zQNYCFR/CrDktheAfQMJrZnsBnkeHCrxjUSTvXmJGgDXHP5nCLRNqyCha/tF?=
+ =?us-ascii?Q?/6e+u8N265icqtCNrCLuSPTyPULkA8dvbvoVXjKiGJFEYgrG6a5xAE60NPJT?=
+ =?us-ascii?Q?X7rxmDqnIxjGC9prFWrO1qYvNt2YpBfDQ8me5iANuaxZs282nAJQv7nVLbFo?=
+ =?us-ascii?Q?SwI5EJpx8OMZAGb+LPvnsRMkUoEomNg+VGhuznbGV0gngWviRni6Szxi9AKe?=
+ =?us-ascii?Q?D6zPE52mRFPeoRyC1AvmNQLtg85Ykay/j9vCKZGOYpktoSnKSFEjr1duj3VF?=
+ =?us-ascii?Q?cYZ0MfsIeu+35ALJTL/9pzi8?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae6b796f-3527-4576-e49b-08d935adf8f1
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2021 18:45:57.3335
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sxLsGpByaApBFYANBkeaYOL8BNU7ZOLrtqPt7oMe8uqUxLU4FYyaoHFkk+9f6vNR
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5205
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-22.06.2021 16:22, Arnd Bergmann:
-[...]
-> In this case, the function gives up with the  "can't route interrupt\n"
-> output and does not call elcr_set_level_irq(newirq). Adding the call
-> to elcr_set_level_irq() in that code path as well probably makes it
-> set the irq to level mode:
->
-> --- a/arch/x86/pci/irq.c
-> +++ b/arch/x86/pci/irq.c
-> @@ -984,6 +984,7 @@ static int pcibios_lookup_irq(struct pci_dev *dev,
-> int assign)
->                          irq = newirq;
->                  } else {
->                          dev_dbg(&dev->dev, "can't route interrupt\n");
-> +                       elcr_set_level_irq(newirq);
->                          return 0;
->                  }
->          }
+On Mon, Jun 21, 2021 at 10:06:15AM +0300, Leon Romanovsky wrote:
+> From: Lior Nahmanson <liorna@nvidia.com>
+> 
+> This patch isolates DCI QP creation logic to separate function, so this
+> change will reduce complexity when adding new features to DCI QP without
+> interfering with other QP types.
+> 
+> The code was copied from create_user_qp() while taking only DCI relevant bits.
+> 
+> Reviewed-by: Meir Lichtinger <meirl@nvidia.com>
+> Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+>  drivers/infiniband/hw/mlx5/qp.c | 157 ++++++++++++++++++++++++++++++++
+>  1 file changed, 157 insertions(+)
+> 
+> diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
+> index 7a5f1eba60e3..65a380543f5a 100644
+> +++ b/drivers/infiniband/hw/mlx5/qp.c
+> @@ -1974,6 +1974,160 @@ static int create_xrc_tgt_qp(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
+>  	return 0;
+>  }
+>  
+> +static int create_dci(struct mlx5_ib_dev *dev, struct ib_pd *pd,
+> +		      struct mlx5_ib_qp *qp,
+> +		      struct mlx5_create_qp_params *params)
+> +{
 
-Yes, it does indeed:
+This is a huge amount of copying just to add 4 lines, why?
 
-[    0.765886] 8139too 0000:00:0d.0: can't route interrupt
-[    0.765886] PCI: setting IRQ 9 as level-triggered
-[    0.781734] 8139too 0000:00:0d.0 eth0: RealTek RTL8139 at 0xc4804000, 
-00:11:6b:32:85:74, IRQ 9
+There must be a better way to do this qp stuff.
 
-And also here:
+Why not put more stuff in _create_user_qp()?
 
-# 8259A.pl
-irq 0: 00, edge
-irq 1: 00, edge
-irq 2: 00, edge
-irq 3: 00, edge
-irq 4: 00, edge
-irq 5: 00, edge
-irq 6: 00, edge
-irq 7: 00, edge
-irq 8: 02, edge
-irq 9: 02, level
-irq 10: 02, edge
-irq 11: 02, edge
-irq 12: 02, edge
-irq 13: 02, edge
-irq 14: 02, edge
-irq 15: 02, edge
-
-Now connection also works fine with unmodified 8139too driver.
-The percentage of low-level errors stays very small:
-
-RX packets:13953 errors:1 dropped:2 overruns:1 frame:0
-TX packets:37346 errors:0 dropped:0 overruns:13 carrier:0
-
-This fix looks really nice. Maybe it is right thing to do.
-
-
-Thank you,
-
-Regards,
-Nikolai
-
->
-> No idea if doing this is a good idea though, in particular I have no clue
-> about whether this is a common scenario or not.
->
->          Arnd
->
-
+Jason
