@@ -2,90 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C6CC3AFFBF
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 10:59:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35A6E3AFFF5
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 11:10:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbhFVJBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 05:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54104 "EHLO
+        id S229915AbhFVJMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 05:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbhFVJBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 05:01:41 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE58C061756
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 01:59:25 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id h15so16167523lfv.12
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 01:59:25 -0700 (PDT)
+        with ESMTP id S229690AbhFVJMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 05:12:52 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428FDC061574;
+        Tue, 22 Jun 2021 02:10:37 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id c7so21695179edn.6;
+        Tue, 22 Jun 2021 02:10:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=IgEmzdTN4HRdSGSGItritGnREG7UWG/WRpkp7ArUXcE=;
-        b=rGxrgaPHp+sQC8l6VapK8a6P5JqjpCZwJMXBj5xpye8EpqoWWkNlfMdkIdX5xHnqdL
-         3d7HZpEuLuxfLrsnaxPnbxThAWdjgDSMO7dFAv/gStfhd10R17bNGBDxQGTWDtNGj05s
-         ousef4QBfEkd8sZfycBEZooTm6yIngfBBQhY0=
+         :cc;
+        bh=+VJZUPUQz88r9uBZtHaEykoyTdoX0rU4WajJbPzDto8=;
+        b=htCdfqf6WMu0K1wO2niZdTlgugniSnEEAR2KlkxfcLtT+NQkjtCi7DJXKi1FPKBW5l
+         QzgpLCS4ZhSgJQxPaVxdlSzV4bLf0rdvZclDamQToTPqEHtmifkz+sQGsAHH1epna+e8
+         yQHr3btvwIIApK/e86+V+e1beuFDAei6Hr2ia1MdKzxUgXpkKoQ8TDHFzWJGaIUzpqXm
+         q6sY2iY8CDBaIVJ6XMygEqk2CCWQTNQxb7yt3AJH9fEjTFmeWkAkrN4LBNStvtWeAFzS
+         9Dn9nlBjjXempWsylxeVS72rTSX6cErCVptL5Ti128wGHGByiVkosPY5CZcZtMRp+Fed
+         9Sog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=IgEmzdTN4HRdSGSGItritGnREG7UWG/WRpkp7ArUXcE=;
-        b=PVhbfxT2kI3QeAQ9Mr59jzoSFxy5LdBdMjHvcLCW5VvViJIW9XF4CbJxk1ds3GMM+d
-         5g4mfQQNWfSzSufSK6RRrb0KdOpbkcfn71g3V6aAxur0iwZZq4qicXCh89xhW0a4UXu/
-         bm75dVL/wci9AIXmUwU5abLm6m8s4SZwvfeQnpQIsNVDzaqF5XjxPcFTVQEpgQRvW5N5
-         rGuRQ7dERL5VuDW4lhBCM5oEitfgAiECIw8CjaHyZu07WYJTNvbt+zT1nm524FZ80Oii
-         IUgo+N2wfP4eugMj+NbjBSODFToeEV/Nl+ilDhCEcZLcOyzrZveGYOeFsnWPlodxOVTK
-         l/jQ==
-X-Gm-Message-State: AOAM5322W33gxcRc0/72QaliXBPdrGknEZ2KlO4XSr6xBwLFwZbMFV6Q
-        OC2dQwxI+zif1aTTHLEIfO81Fv8U63T4bjSaX0prnQ==
-X-Google-Smtp-Source: ABdhPJzp+TlD60AbwK4d3/UXVRAhqAIiO3g137IxT9Fo7F+PNWnfzCBea7CtOcT9B5cFOg/d8yatTDuV+UGXrgsRXB4=
-X-Received: by 2002:ac2:4db6:: with SMTP id h22mr1985921lfe.171.1624352363827;
- Tue, 22 Jun 2021 01:59:23 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=+VJZUPUQz88r9uBZtHaEykoyTdoX0rU4WajJbPzDto8=;
+        b=nDMkkZP/tQO+1p8r0CQEgWWXTlpSHYccf9Gal5zxFkLnWQDf4Lvis6ZoguyJ92JKb0
+         S+52+MuGGkqhV7tEj/3ZbWKrQJP7WKWikk8l2Q+iBAgNSB2k4l2G7VrwsABCOay6cMcu
+         bN8m7lCHS27e1K597EkwAJOUxU7tzz4EXLQ3Suxj1pYxGWLi+CgV8BhoRUU2D//mOghc
+         obDOF0Q9N09tzm6mnLU/qA62A/4ilpwFilEKFfAcz5dqANLIGoe4+rIs6QIEK52n5DxU
+         A6nD7flHSHufHRnQSMOXyEK7Xo7qE+bmHy56o1uh0rgX+Nrp8u6SBFXxPlrOvCsVgPKF
+         Kfjg==
+X-Gm-Message-State: AOAM530uCsKDX2wzmPp/RHtxL/bRx/+i2fV88OQPrU8R2ftT6tQvymDn
+        CFFnsjJ+jn3CojoC+ABDOgdI+JSRFsRr2Vhh1vc=
+X-Google-Smtp-Source: ABdhPJxSPQWOmNrW1JkuIl00eMsxzS7DPdnbALvUH5tX1L+65pon2hWT8qyEUKCQCmzd6uNzLt6ZfKNYM0eI2jqQOD4=
+X-Received: by 2002:a50:d943:: with SMTP id u3mr3646718edj.175.1624353035898;
+ Tue, 22 Jun 2021 02:10:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210618105526.265003-1-zenczykowski@gmail.com>
- <CACAyw99k4ZhePBcRJzJn37rvGKnPHEgE3z8Y-47iYKQO2nqFpQ@mail.gmail.com>
- <CANP3RGdrpb+KiD+a29zTSU3LKR8Qo6aFdo4QseRvPdNhZ_AOJw@mail.gmail.com>
- <CACAyw9948drqRE=0tC=5OrdX=nOVR3JSPScXrkdAv+kGD_P3ZA@mail.gmail.com> <CAHo-Oozra2ygb4qW6s8rsgZFmdr-gaQuGzREtXuZLwzzESCYNw@mail.gmail.com>
-In-Reply-To: <CAHo-Oozra2ygb4qW6s8rsgZFmdr-gaQuGzREtXuZLwzzESCYNw@mail.gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Tue, 22 Jun 2021 09:59:12 +0100
-Message-ID: <CACAyw98B=uCnDY1tTw5STLUgNKvJeksJjaKiGqasJEEVv99GqA@mail.gmail.com>
-Subject: Re: [PATCH bpf] Revert "bpf: program: Refuse non-O_RDWR flags in BPF_OBJ_GET"
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
+References: <60cb0586.1c69fb81.8015b.37a1@mx.google.com> <YNCwJqtKKCskB2Au@kroah.com>
+In-Reply-To: <YNCwJqtKKCskB2Au@kroah.com>
+From:   Amit Klein <aksecurity@gmail.com>
+Date:   Tue, 22 Jun 2021 12:10:25 +0300
+Message-ID: <CANEQ_++HfmyfOzjqS2b_XPvAedzy=zCvDXP_=cfuowZUBJ8JjQ@mail.gmail.com>
+Subject: Re: [PATCH 4.19] inet: use bigger hash table for IP ID generation
+ (backported to 4.19)
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
         "David S . Miller" <davem@davemloft.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Greg Kroah-Hartman <gregkh@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Lorenzo Colitti <lorenzo@google.com>
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Jun 2021 at 22:37, Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
+On Mon, Jun 21, 2021 at 6:28 PM Greg KH <gregkh@linuxfoundation.org> wrote:
 >
-> Please revert immediately.  I've got better things to do.  I shouldn't
-> have to be thinking about this or arguing about this.
-> It already took me significantly more than a day simply to track this
-> down (arguably due to miscommunications with Greg, who'd earlier
-> actually found this in 5.12, but misunderstood the problem, but
-> still...).
+> On Thu, Jun 17, 2021 at 01:19:18AM -0700, Amit Klein wrote:
+> > Subject: inet: use bigger hash table for IP ID generation (backported to 4.19)
+> > From: Amit Klein <aksecurity@gmail.com>
+[...]
+>
+> I've queued this, and the 4.14 version up.  Can you create a 4.4.y and
+> 4.9.y version as well?
+>
 
-You're barking up the wrong tree. I don't object to reverting the
-patch, you asked me for context and I gave it to you.
+Done and submitted (a few minutes ago). Note the subject line has
+"[PATCH 4.9]" but it also fixes 4.4 (I didn't know what convention to
+use for this case).
 
-Best
-Lorenz
-
---=20
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
+Best,
+-Amit
