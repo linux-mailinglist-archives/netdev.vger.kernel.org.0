@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2C9A3B0CE8
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:30:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D83A53B0CEA
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232501AbhFVScP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 14:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
+        id S232533AbhFVScx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 14:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231297AbhFVScO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:32:14 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2526C061574;
-        Tue, 22 Jun 2021 11:29:57 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id n7so24796054wri.3;
-        Tue, 22 Jun 2021 11:29:57 -0700 (PDT)
+        with ESMTP id S231297AbhFVScw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:32:52 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C27C061574
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:30:35 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id j10so6657297wms.1
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:30:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6JFgiOQERZSIy0aWNl2Nl9CVI7uX5ANotzhjU2/vxGw=;
-        b=jIbmPpEhJU74qAsdco+GdmvRW7QJEL+iz1azILolEbS/x6/m088dbH2Nhzl5jhr/uv
-         etvI7XLpDyh+bk/6gXuIHY0qMATunpX6fjQ3NrttjO4u+HbNcinf7bkJCQxK8sTSc08K
-         EoD9Afn5HGSgn+Bsc3DifuEAeAh+2YmhjR3IlZwggW4YcAmA9YQCwSPGdwxp3nKxdqb0
-         AQpC8x/zK57rBdJwxzz/0ypiXYBTz0TsUo7L7khGcxjucRoKlrGGs87Kw19J6/FIvrnb
-         9tkX8QHrq7pPq5oeKCHiUkpSBUye9lJpHvG33iEiCVYT4O+Za7+fJOl62iM2ikc3EotX
-         D6bA==
+        bh=un/8VbfGaCSq6e5kZBov4MS2h80sOr5uk3ZcuorNMTg=;
+        b=DYzymdIoXqB6cj1WQSi4EsQknb79VnFPMIq+xKOyerxbT5bC1FKqVxQ3O1COV55MJl
+         HteRS7uWxP029f2uRmdH9kNV6n3gsLCPoLN09ZmQ9hU7oMZYb1mn4nceck41uL3DbRmP
+         0r/+cNTVOcEMI9w8cvlLz4Hxyo5bV3HLDKNMtMVdFjpywCTJJlMGfKbV1l5Wl1vKykJJ
+         RQfnPdfLJkakmAs+A81Z3ZTpOs/YhfTjlZQ0D1H4DUkqn4brXX2cQme79QSA+TjFCzYj
+         DjUDJwqZMNq/x5pENPK13GPDuJYl3Zm4yIhTRFZAmW5oNxnVDQi7r2xP3DVA1a9s2zyL
+         DoTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6JFgiOQERZSIy0aWNl2Nl9CVI7uX5ANotzhjU2/vxGw=;
-        b=paUN1JQgOkHGrH9gDnIUcxdCdJIaPHCWjHPN8cbpST/fJn+Pl3QXWs5JbHWfqw9Q4y
-         YJKdbm9XJRdYL9daGjL40gDjL0OKGCM7wy7WJxbQv8BRY3yP7jUDO1P5DZbZYebJwUtX
-         U7TdNhftsMtWUAwuQMIjxsjTOGzDgzUrzPsSuVa4AkEe4ABcatLyUfcq3aMIwr2Be7Oo
-         sNo4yEFPzxxM2BbvXHtaU7LoM16F2b1FdFbiBCCGHiX3RT53U9tha6+t2TxGNM55GNGk
-         ZD9TdOfR7LsZ6PKfvC/rH/ZVepJ9Al2mMTk8OE7D9uiikpmzzrks46aq7I903qqCbdxT
-         gQaA==
-X-Gm-Message-State: AOAM533ylD3ZWMDCcWKBXeRCfsj8tA+FLNxXA2+unrJypPuVJKcAu6ZP
-        CcVpOKNrcDBw4yI+YFYbt5Oil6kUQFTkCGkUXMY=
-X-Google-Smtp-Source: ABdhPJzLN9lgHu7OvRNCUQaRpxm70alEhzgPPZOlg1pCZqZyJEQ8nIDs/TQ1ghwGdgr8Y400beOlOs0T7GCv1ZBoo3g=
-X-Received: by 2002:a5d:5741:: with SMTP id q1mr2127032wrw.65.1624386596637;
- Tue, 22 Jun 2021 11:29:56 -0700 (PDT)
+        bh=un/8VbfGaCSq6e5kZBov4MS2h80sOr5uk3ZcuorNMTg=;
+        b=P9c769Dl0d5GdMWS/G31nXM3D59LsyBB7+XOvBhq+ujehnrOryrBZwXwuvWxD42pkB
+         QEtJiMwnbLN1cOC+4FsBct86K8RHLKgn1Y2QoeSNERyfrSD94ufQ5n6luL5CtM74TnCA
+         TyCRHbF/KTNcjVbPhi66391gJS/Myc7FZhPNC9OROxTsZpIB0krUzqM8BXsJZIjU3qlx
+         UN0eOLRwLT7L6+jreJ8iMZ8Soj23r+KqFmsZfajidr89G4Qfaag7ruyd6PzfdIzWkidc
+         dyMeTOkfjZqm5Hu9kW/eN697LlZ8M8PZhVkCL/QiF0gLj2C195VLmN7+4RQ4BV1WAvTj
+         mXAA==
+X-Gm-Message-State: AOAM531sYizztxP03RO3zK/hUaXry7lubuoPY0dkoJjD5IN5UQRGdwGN
+        1tpEdLE+bP/0NXM8ztpdQIq3MjF4l8Kgmg+9d3A=
+X-Google-Smtp-Source: ABdhPJxJOukr8mWMIzPZVTuKwdeAQyrn2GOpGgjPj/6aZvhzXbbhIWoAQrLo4AUNjaa+Ah0BbquIAxqob3qSf0QHiQI=
+X-Received: by 2002:a1c:7706:: with SMTP id t6mr6142058wmi.62.1624386633861;
+ Tue, 22 Jun 2021 11:30:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210616020901.2759466-1-mudongliangabcd@gmail.com>
-In-Reply-To: <20210616020901.2759466-1-mudongliangabcd@gmail.com>
+References: <20210621180244.882076-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210621180244.882076-1-eric.dumazet@gmail.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Tue, 22 Jun 2021 14:29:45 -0400
-Message-ID: <CAB_54W51MxDwN5oPxBqioaNhq-eB1QfXNMyUpmNZOWNDM3MmnA@mail.gmail.com>
-Subject: Re: [PATCH v2] ieee802154: hwsim: Fix memory leak in hwsim_add_one
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
+Date:   Tue, 22 Jun 2021 14:30:22 -0400
+Message-ID: <CAB_54W7GL8rX8_bRkgC7NAbEwmkfGOwDbdmqP6R43F_nEM3igA@mail.gmail.com>
+Subject: Re: [PATCH net] ieee802154: hwsim: avoid possible crash in hwsim_del_edge_nl()
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -65,27 +64,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Tue, 15 Jun 2021 at 22:09, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+On Mon, 21 Jun 2021 at 14:02, Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
-> No matter from hwsim_remove or hwsim_del_radio_nl, hwsim_del fails to
-> remove the entry in the edges list. Take the example below, phy0, phy1
-> and e0 will be deleted, resulting in e1 not freed and accessed in the
-> future.
+> From: Eric Dumazet <edumazet@google.com>
 >
->               hwsim_phys
->                   |
->     ------------------------------
->     |                            |
-> phy0 (edges)                 phy1 (edges)
->    ----> e1 (idx = 1)             ----> e0 (idx = 0)
+> Both MAC802154_HWSIM_ATTR_RADIO_ID and MAC802154_HWSIM_ATTR_RADIO_EDGE
+> must be present to avoid a crash.
 >
-> Fix this by deleting and freeing all the entries in the edges list
-> between hwsim_edge_unsubscribe_me and list_del(&phy->list).
->
-> Reported-by: syzbot+b80c9959009a9325cdff@syzkaller.appspotmail.com
-> Fixes: 1c9f4a3fce77 ("ieee802154: hwsim: fix rcu handling")
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Alexander Aring <alex.aring@gmail.com>
+> Cc: Stefan Schmidt <stefan@datenfreihafen.org>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
 
 Acked-by: Alexander Aring <aahringo@redhat.com>
 
 Thanks!
+
+- Alex
