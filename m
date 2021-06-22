@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 125D93B0D30
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:48:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AADD13B0D3A
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:52:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232418AbhFVSuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 14:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
+        id S232593AbhFVSye (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 14:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbhFVSuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:50:18 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA431C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:48:00 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id d11so22456138wrm.0
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:48:00 -0700 (PDT)
+        with ESMTP id S230338AbhFVSyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:54:33 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B60C061574
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:52:16 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id j2so14306989wrs.12
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:52:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iAITes+Jo71idw2S0QBWHuXUwCSrq9cK57h7PnnnYf4=;
-        b=X1Dakbuapi5D3kXJdZpcon1q/b2GXOa8DDUAsXVbb2Ut95DB2yZ4cJ0JJ5qocsMniJ
-         Kd1LpbNb/dM8Hm6YHNsYF3bqkH7L+AJL+uEP8D5NS6Tr80pI6IKNDd7ebbCmHFkhS1lw
-         h1wAekphlEmpLRIU7SYoSL1kAoMh1zOxn6nKKAIuEVDqQ1QgQqYu1Nf/5zAAJJJ7TCTy
-         4EBRmXuZBZdBxbXw1hG6Pvw4lhLGADoh3ffUpjTV9qIjsr8TUS+uNwWrRvML0RPvchPA
-         8kbMgTtwUoir+X390DCHj2uhs9cz6LjnaiWyREh5ZLwQjxcnuTQqvh6WrtIJLXPmmcUE
-         kLSg==
+        bh=Yj0I8GYVveKrE61j7Up1RtewsPEiyk6JOHutJblNkRs=;
+        b=Be6ekq+l6ZsOSCywWCLXAqn7l0fLOpCX1QSHDpjEH3ezavGd28x0lPuTdpVNxC+8Ir
+         bZPTJC1nTc9fqzMsyyVwaDrNX4ul+46ZRUhC3MnopvZDg0ulQ0RME9/nlHDLJkdqY8v9
+         8P87wIcF5qovG7l0+wNlprfPLZupY6zUbzfNSBGMTscA+IgZ9Br9WWod+qin4r02dsCZ
+         SDz1ZtuvQFopktqQGNcgxO+X1FeFHquf7Q8idVmBGTpkbnUa8riKVpbwEu5fMFaPPSZ3
+         g4u2k/teD6IuFVXFOwm+ZVIpTFUdWUpGX2dQ0P3ZJB3MzYqF+8i+3259Pv3wVhqXLarq
+         jxIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=iAITes+Jo71idw2S0QBWHuXUwCSrq9cK57h7PnnnYf4=;
-        b=J5+1ckz44i1i/JynyMk7ZkkgqKgqfgidCGWTyx3Qc24Wk49/cLJ7lRXUoENqxD7/Mx
-         ygLv1RDhYzIpOEssnAEGq9Z/y7dyswTjOXniMO2fT1/uuLBqLIA0ar+joxOPLOwCttSr
-         vmdrooVGbVC+wO0YJPreK13Tx+4nq7FM34b8OoTJdmxL5NkbffytI1+2punKx/YuvhBG
-         rK5/fUB6T8iJnFWRbn/1wB2Jgfjk3dKbCIlSaE9X5Tl4Xqi9JYHpfya2XiKZAl2cm5gJ
-         iq2ffZ3L9gvtEu9mDrDOdo8Pkk50l51v7+1a6TWWfUzCPWs7CrWI86gjCAebTQjKCCpY
-         u5ow==
-X-Gm-Message-State: AOAM530ZbfEpvH/kuL5V0weuaPJCzvkCfhO6v7xRaVZQF17cbS0n/SL5
-        Y7Z2UGIG70ecTLGh7jox1VM=
-X-Google-Smtp-Source: ABdhPJzB8JLxHK5LTxI1oNV3fZgIu7v4MgpuKu8NWDdCb+fqLbSCYFXyZ3URSytr7pfOCFc1/kJCCQ==
-X-Received: by 2002:adf:f1d0:: with SMTP id z16mr6761184wro.307.1624387679514;
-        Tue, 22 Jun 2021 11:47:59 -0700 (PDT)
+        bh=Yj0I8GYVveKrE61j7Up1RtewsPEiyk6JOHutJblNkRs=;
+        b=uhFIIV2LnOpRIThgk64z85NdsLZBQvVAsNIerClt9pE1CxDy6rnAxHhVdwyQoDCFwP
+         XG8l08RV73xfOsvwBtiiKfvDMPHIYZIM3GnX43SDTvkL5Z6S8xyU7tcZxGIw58W1TtOj
+         4ziNhPfgsGnpc3NH8AXeJd/TVEFK7DRZ0BFUWmYwJSHySEFkWJ4h3WRIjfMb5D27MBJf
+         I4sUVvOnCLcITbZgKl05Rj00vt6zy8yH+eM2zySzjbAmRFijmhuy6jEQgFBzX7oDN2/1
+         xJGwkroTkmNH2SruztZueYcpE8FfZCP/5KIDA50//Hl0gf6Z3itrt7aY0wcKM6YNhdDk
+         Eusg==
+X-Gm-Message-State: AOAM5321vzaU5+r/z18h0r2rjLQbU64sWzTVjfg8Wa26AZJtjyfcxodU
+        pJFB5i2FhMWRppRpL5yWDCY=
+X-Google-Smtp-Source: ABdhPJxQzmh35xbrVDH7TJTRsehSU99zjqudycRtlvfZXROg2iM/iheMigUA18/wSJ5sw5i8OaLTZg==
+X-Received: by 2002:a5d:6da2:: with SMTP id u2mr6571036wrs.355.1624387935245;
+        Tue, 22 Jun 2021 11:52:15 -0700 (PDT)
 Received: from [10.0.0.15] ([37.164.53.25])
-        by smtp.gmail.com with ESMTPSA id m184sm3368013wmm.26.2021.06.22.11.47.58
+        by smtp.gmail.com with ESMTPSA id b71sm3385484wmb.2.2021.06.22.11.52.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Jun 2021 11:47:59 -0700 (PDT)
-Subject: Re: [PATCH net-next] ip: avoid OOM kills with large UDP sends over
- loopback
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, willemb@google.com,
-        dsahern@gmail.com, yoshfuji@linux-ipv6.org, Dave Jones <dsj@fb.com>
-References: <20210621231307.1917413-1-kuba@kernel.org>
- <8fe00e04-3a79-6439-6ec7-5e40408529e2@gmail.com>
- <20210622095422.5e078bd4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <462f87f4-cc90-1c0e-3a9f-c65c64781dc3@gmail.com>
- <20210622110935.35318a30@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        Tue, 22 Jun 2021 11:52:14 -0700 (PDT)
+Subject: Re: [PATCH] bonding: avoid adding slave device with IFF_MASTER flag
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>,
+        zhudi <zhudi21@huawei.com>
+Cc:     vfalico@gmail.com, kuba@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, rose.chen@huawei.com
+References: <20210622030929.51295-1-zhudi21@huawei.com>
+ <21984.1624385801@famine>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d4e2cf28-89f9-7c1f-91de-759de2c47fae@gmail.com>
-Date:   Tue, 22 Jun 2021 20:47:57 +0200
+Message-ID: <bf84fc7b-8829-420a-3aca-00a378921f61@gmail.com>
+Date:   Tue, 22 Jun 2021 20:52:13 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210622110935.35318a30@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <21984.1624385801@famine>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,39 +71,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 6/22/21 8:09 PM, Jakub Kicinski wrote:
-> On Tue, 22 Jun 2021 19:48:43 +0200 Eric Dumazet wrote:
->>>> What about using 	sock_alloc_send_pskb(... PAGE_ALLOC_COSTLY_ORDER)
->>>> (as we did in unix_dgram_sendmsg() for large packets), for SG enabled interfaces ?  
->>>
->>> PAGE_ALLOC_COSTLY_ORDER in itself is more of a problem than a solution.
->>> AFAIU the app sends messages primarily above the ~60kB mark, which is
->>> above COSTLY, and those do not trigger OOM kills. All OOM kills we see
->>> have order=3. Checking with Rik and Johannes W that's expected, OOM
->>> killer is only invoked for allocations <= COSTLY, larger ones will just
->>> return NULL and let us deal with it (e.g. by falling back).  
+On 6/22/21 8:16 PM, Jay Vosburgh wrote:
+> zhudi <zhudi21@huawei.com> wrote:
+> 
+>> From: Di Zhu <zhudi21@huawei.com>
 >>
->> I  really thought alloc_skb_with_frags() was already handling low-memory-conditions.
+>> The following steps will definitely cause the kernel to crash:
+>> 	ip link add vrf1 type vrf table 1
+>> 	modprobe bonding.ko max_bonds=1
+>> 	echo "+vrf1" >/sys/class/net/bond0/bonding/slaves
+>> 	rmmod bonding
 >>
->> (alloc_skb_with_frags() is called from sock_alloc_send_pskb())
+>> The root cause is that: When the VRF is added to the slave device,
+>> it will fail, and some cleaning work will be done. because VRF device
+>> has IFF_MASTER flag, cleanup process  will not clear the IFF_BONDING flag.
+>> Then, when we unload the bonding module, unregister_netdevice_notifier()
+>> will treat the VRF device as a bond master device and treat netdev_priv()
+>> as struct bonding{} which actually is struct net_vrf{}.
 >>
->> If it is not, lets fix it, because af_unix sockets will have the same issue ?
+>> By analyzing the processing logic of bond_enslave(), it seems that
+>> it is not allowed to add the slave device with the IFF_MASTER flag, so
+>> we need to add a code check for this situation.
 > 
-> af_unix seems to cap at SKB_MAX_ALLOC which is order 2, AFAICT.
-
-It does not cap to SKB_MAX_ALLOC.
-
-It definitely attempt big allocations if you send 64KB datagrams.
-
-Please look at commit d14b56f508ad70eca3e659545aab3c45200f258c
-    net: cleanup gfp mask in alloc_skb_with_frags
-
-This explains why we do not have __GFP_NORETRY there.
-
+> 	I don't believe the statement just above is correct; nesting
+> bonds has historically been permitted, even if it is of questionable
+> value these days.  I've not tested nesting in a while, but last I recall
+> it did function.
 > 
-> Perhaps that's a good enough fix in practice given we see OOMs with
-> order=3 only?
+> 	Leaving aside the question of whether it's really useful to nest
+> bonds or not, my concern with disabling this is that it will break
+> existing configurations that currently work fine.
 > 
-> I'll review callers of alloc_skb_with_frags() and see if they depend 
-> on the explicit geometry of the skb or we can safely fallback to pages.
+> 	However, it should be possible to use netif_is_bonding_master
+> (which tests dev->flags & IFF_MASTER and dev->priv_flags & IFF_BONDING)
+> to exclude IFF_MASTER devices that are not bonds (which seem to be vrf
+> and eql), e.g.,
 > 
+> 	if ((slave_dev->flags & IFF_MASTER) &&
+> 		!netif_is_bond_master(slave_dev))
+> 
+> 	Or we can just go with this patch and see if anything breaks.
+> 
+
+syzbot for sure will stop finding stack overflows and other issues like that :)
+
+I know that some people used nested bonding devices in order to implement complex qdisc setups.
+(eg HTB on the first level, netem on the second level).
+
