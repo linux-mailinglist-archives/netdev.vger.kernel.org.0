@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B8A13B0409
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 14:16:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15A503B040D
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 14:16:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231382AbhFVMSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 08:18:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37916 "EHLO mail.kernel.org"
+        id S231445AbhFVMSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 08:18:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38126 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231284AbhFVMSd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 08:18:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 57FAB6102A;
-        Tue, 22 Jun 2021 12:16:15 +0000 (UTC)
+        id S230393AbhFVMSw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 08:18:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8105B60C41;
+        Tue, 22 Jun 2021 12:16:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624364177;
-        bh=+1Rkx2AAU1YZ/8Gjwnoz/KiMvPiJz7+wwcQW0aqUNWo=;
+        s=k20201202; t=1624364196;
+        bh=mNyb/gADrHsQToqWpHLZJITn6vzAF50b6ulNT3tHuRg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cEGaL8JTXU3ctEAiperZ9lZeOp/wOU3ZtQvKctfSXN43kZHbPq3R52h9iGd9DroYp
-         KgJzb5wKbShoiqaLLHmt+mdf5Gq+u8MoRB6kMJb3JfGbaiHnezNvQ6my6p+FmabgNb
-         W2cl6p2wLihMg/CoWvGceTBsLXRWYSVcPMrEWzSBoGqP+N9ji4++cCRycLcWMpbnS9
-         x4hiTfQsAHGipi0homI19GJjFVDaOMHxUpz5+3j0vkS40YIcVHmSL0gRPOBBRUBZxR
-         oso31RilcZvjQU7ZgpaxbslP89rbMHavToQP1tFo7kJRdPCHaiSld8UEqSWxRJIvWX
-         2Q+HPXmXI1I/Q==
-Date:   Tue, 22 Jun 2021 13:16:11 +0100
+        b=Zz/3delKwa2AtnTGh5TDwEROCk8xxj1lB762qpjwekZSo/UXEOPMzz5clP6/QCTCi
+         JRQR8Hs6AdHN0W4/24bSGIjQ4EtjQDwte+vKOSVgYkN408R4H+SL50vk9qlwsC3kK/
+         PzU4/fc+V6IGIqpkikNYnDW0d8+tX663J6DqyD8kMCejYy5diLi2aKqldM2/5CTtAO
+         CiPTVHzBk8TyDMPV8X6/UQx3GKEA63iPXB2EoNjxfiaEQWvcAY8EhvxH1roHTjeb8j
+         Fys3Al/tnBF1HeX6LuSIJCcbM0i/oSNOBC04ASdfX7OR4h9x1O5d1wo0mIpoxBfVUx
+         sd0xCo8GyO47Q==
+Date:   Tue, 22 Jun 2021 13:16:31 +0100
 From:   Will Deacon <will@kernel.org>
 To:     Guangbin Huang <huangguangbin2@huawei.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, catalin.marinas@arm.com,
@@ -31,125 +31,81 @@ Cc:     davem@davemloft.net, kuba@kernel.org, catalin.marinas@arm.com,
         qperret@google.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         lipeng321@huawei.com, peterz@infradead.org
-Subject: Re: [PATCH net-next 2/3] net: hns3: add support for TX push mode
-Message-ID: <20210622121611.GB30757@willie-the-truck>
+Subject: Re: [PATCH net-next 1/3] arm64: barrier: add DGH macros to control
+ memory accesses merging
+Message-ID: <20210622121630.GC30757@willie-the-truck>
 References: <1624360271-17525-1-git-send-email-huangguangbin2@huawei.com>
- <1624360271-17525-3-git-send-email-huangguangbin2@huawei.com>
+ <1624360271-17525-2-git-send-email-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1624360271-17525-3-git-send-email-huangguangbin2@huawei.com>
+In-Reply-To: <1624360271-17525-2-git-send-email-huangguangbin2@huawei.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 22, 2021 at 07:11:10PM +0800, Guangbin Huang wrote:
-> From: Huazhong Tan <tanhuazhong@huawei.com>
+On Tue, Jun 22, 2021 at 07:11:09PM +0800, Guangbin Huang wrote:
+> From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
 > 
-> For the device that supports the TX push capability, the BD can
-> be directly copied to the device memory. However, due to hardware
-> restrictions, the push mode can be used only when there are no
-> more than two BDs, otherwise, the doorbell mode based on device
-> memory is used.
-> 
-> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> DGH prohibits merging memory accesses with Normal-NC or Device-GRE
+> attributes before the hint instruction with any memory accesses
+> appearing after the hint instruction. Provide macros to expose it to the
+> arch code.
+
+Hmm.
+
+The architecture states:
+
+  | DGH is a hint instruction. A DGH instruction is not expected to be
+  | performance optimal to merge memory accesses with Normal Non-cacheable
+  | or Device-GRE attributes appearing in program order before the hint
+  | instruction with any memory accesses appearing after the hint instruction
+  | into a single memory transaction on an interconnect.
+
+which doesn't make a whole lot of sense to me, in all honesty.
+
+> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+> Signed-off-by: Cheng Jian <cj.chengjian@huawei.com>
 > Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 > ---
->  drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
->  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 83 ++++++++++++++++++++--
->  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  6 ++
->  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  2 +
->  .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |  2 +
->  .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 11 ++-
->  .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  8 +++
->  .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  2 +
->  .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 11 ++-
->  .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |  8 +++
->  10 files changed, 126 insertions(+), 8 deletions(-)
+>  arch/arm64/include/asm/assembler.h | 7 +++++++
+>  arch/arm64/include/asm/barrier.h   | 1 +
+>  2 files changed, 8 insertions(+)
 > 
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-> index 0b202f4def83..3979d5d2e842 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-> @@ -163,6 +163,7 @@ struct hnae3_handle;
+> diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
+> index 8418c1bd8f04..d723899328bd 100644
+> --- a/arch/arm64/include/asm/assembler.h
+> +++ b/arch/arm64/include/asm/assembler.h
+> @@ -90,6 +90,13 @@
+>  	.endm
 >  
->  struct hnae3_queue {
->  	void __iomem *io_base;
-> +	void __iomem *mem_base;
->  	struct hnae3_ae_algo *ae_algo;
->  	struct hnae3_handle *handle;
->  	int tqp_index;		/* index in a handle */
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> index cdb5f14fb6bc..8649bd8e1b57 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> @@ -2002,9 +2002,77 @@ static int hns3_fill_skb_to_desc(struct hns3_enet_ring *ring,
->  	return bd_num;
->  }
+>  /*
+> + * Data gathering hint
+> + */
+> +	.macro	dgh
+> +	hint	#6
+> +	.endm
+> +
+> +/*
+>   * RAS Error Synchronization barrier
+>   */
+>  	.macro  esb
+> diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
+> index 451e11e5fd23..02e1735706d2 100644
+> --- a/arch/arm64/include/asm/barrier.h
+> +++ b/arch/arm64/include/asm/barrier.h
+> @@ -22,6 +22,7 @@
+>  #define dmb(opt)	asm volatile("dmb " #opt : : : "memory")
+>  #define dsb(opt)	asm volatile("dsb " #opt : : : "memory")
 >  
-> +static void hns3_tx_push_bd(struct hns3_enet_ring *ring, int num)
-> +{
-> +#define HNS3_BYTES_PER_64BIT		8
-> +
-> +	struct hns3_desc desc[HNS3_MAX_PUSH_BD_NUM] = {};
-> +	int offset = 0;
-> +
-> +	/* make sure everything is visible to device before
-> +	 * excuting tx push or updating doorbell
-> +	 */
-> +	dma_wmb();
-> +
-> +	do {
-> +		int idx = (ring->next_to_use - num + ring->desc_num) %
-> +			  ring->desc_num;
-> +
-> +		u64_stats_update_begin(&ring->syncp);
-> +		ring->stats.tx_push++;
-> +		u64_stats_update_end(&ring->syncp);
-> +		memcpy(&desc[offset], &ring->desc[idx],
-> +		       sizeof(struct hns3_desc));
-> +		offset++;
-> +	} while (--num);
-> +
-> +	__iowrite64_copy(ring->tqp->mem_base, desc,
-> +			 (sizeof(struct hns3_desc) * HNS3_MAX_PUSH_BD_NUM) /
-> +			 HNS3_BYTES_PER_64BIT);
-> +
-> +#if defined(CONFIG_ARM64)
-> +	dgh();
-> +#endif
+> +#define dgh()		asm volatile("hint #6" : : : "memory")
 
-It looks a bit weird putting this at the end of the function, given that
-it's supposed to do something to a pair of accesses. Please can you explain
-what it's doing, and also provide some numbers to show that it's worthwhile
-(given that it's a performance hint not a correctness thing afaict).
-
-> +}
-> +
-> +static void hns3_tx_mem_doorbell(struct hns3_enet_ring *ring)
-> +{
-> +#define HNS3_MEM_DOORBELL_OFFSET	64
-> +
-> +	__le64 bd_num = cpu_to_le64((u64)ring->pending_buf);
-> +
-> +	/* make sure everything is visible to device before
-> +	 * excuting tx push or updating doorbell
-> +	 */
-> +	dma_wmb();
-> +
-> +	__iowrite64_copy(ring->tqp->mem_base + HNS3_MEM_DOORBELL_OFFSET,
-> +			 &bd_num, 1);
-> +	u64_stats_update_begin(&ring->syncp);
-> +	ring->stats.tx_mem_doorbell += ring->pending_buf;
-> +	u64_stats_update_end(&ring->syncp);
-> +
-> +#if defined(CONFIG_ARM64)
-> +	dgh();
-> +#endif
-
-Same here.
-
-Thanks,
+Although I'm fine with this in arm64, I don't think this is the interface
+which drivers should be using. Instead, once we know what this instruction
+is supposed to do, we should look at exposing it as part of the I/O barriers
+and providing a NOP implementation for other architectures. That way,
+drivers can use it without having to have the #ifdef CONFIG_ARM64 stuff that
+you have in the later patches here.
 
 Will
