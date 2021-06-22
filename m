@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D028F3AFD60
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 08:51:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDEEA3AFD61
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 08:52:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbhFVGyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 02:54:11 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:59763 "EHLO
+        id S230224AbhFVGyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 02:54:16 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:48071 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230004AbhFVGyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 02:54:09 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6EE495C00D5;
-        Tue, 22 Jun 2021 02:51:54 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S230175AbhFVGyM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 02:54:12 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 25C665C00AA;
+        Tue, 22 Jun 2021 02:51:57 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Tue, 22 Jun 2021 02:51:54 -0400
+  by compute3.internal (MEProxy); Tue, 22 Jun 2021 02:51:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=xQUpF9hi3K6wMYHzQrvvqSccP9/y+SFlSWlei2yokVE=; b=dGA0VOjC
-        eeGIwTX9+zakq79tqLJiD1iG+CGkRTPvSISePttTJ1DSuOGtopAdoGXjzv7b8DeL
-        l4h58pC451l9u1DTUwtETno32NiiROLJoIRwE3eQ8tQKhJFTwPFmKpXy4pFl1FZa
-        7HpkAqBicwYl6hE6Bq1foqP08KzDDklCNLT4sYr7f1k6SSpVOGCpxKnbgj8Ikgx5
-        y1aFOp0vbNJJgoviQTeTFq2ZrKC8Mui59mEZgiTZopoZ+5Oe09+UijxrO+VFWVfC
-        ZyfwuY+ibIzCi8+lHpjxuZ8ja3Mfr9z3px9gCmT/pvrZrhLOwoJov8rL1M9L0PF5
-        6c1hyKn71XCfCg==
-X-ME-Sender: <xms:iojRYDvZKJ2gfiyKbo0Havz0P0LwtRQ6-MZBtYkqREdBhINwfPgkEg>
-    <xme:iojRYEec6VEdgCrAbBcwlrMm4R4pElTdrW8iUL-xXZ08RC4jYDmKWbOdK5yR-_gi_
-    RqrErurEHCQb6g>
-X-ME-Received: <xmr:iojRYGyss10r_LIYBxBPCIXy1eMsojNl08NKEIzti34dk-_jnBsSMyfLLL562G4b-ScmjdfbPZJWE4yQckhuWIwy8PfNfQYK8yOwzo931Hl1mQ>
+        fm3; bh=r1FREHzWQS3p5+Gpjg1By6sPhPtQlXtrJNNIgev7YCM=; b=EByIR3Re
+        EAx8Vnp8x79lf5zlYjrbT2Vk7tuDpAvrjhYK79N1b1yMJAo2c/WzW+LVgkC3HCGG
+        0uFIGi/H/NbRncvD3CeuFNgYguQA7dfuPWk67I+yAxXNzJEumKNXWmUGivX0gLZb
+        UVihalysVn03jz/FJuAY4cgHjVXmIPg8DIMS+UrJcAXLDYAMBOKf38Xn//DlLcx4
+        6Xltf6olNcwoNm3jzuv0pw9ubWxaxt9KnIHfeo5DFV1t+yAPuZcYMVgwr2U1/CHI
+        kDNLNsfsIaaYHVPos/EOnD9bYF5DoBkKFviKXy5CMZhyUo7+ix7nlMd74MmrtAqT
+        ri6Vu623CNDGTg==
+X-ME-Sender: <xms:jYjRYMVDAdObT3nhlyYaPBhCJwaLxCCPwSFg5l7v25EgenbhwP2qZQ>
+    <xme:jYjRYAn1_pHVaThszOFgK5vUmW4oDkizSSumlXwupZ9tgsxpcApEE28tLqaF4Wdfx
+    t08UXcNXl1CUFM>
+X-ME-Received: <xmr:jYjRYAbDYOOZaZEHa2s8LnQAZY3j6lK-cdvpM84nPmVvPJbkzyf68mmeQTV1syq3odFdusjxnLL9IDIWu2XYLREhMa2z3PjErxEvI2lQXLTY8g>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegtddguddufecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegtddguddufecutefuodetgg
     ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
     ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedtnecu
     rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:iojRYCPe3DI5bL5jNhM225ydYy_A1eu5r03pcjjKiIhAsmO8XzaSmQ>
-    <xmx:iojRYD_LJXYo8yciycPZ44H403PchViDGYjZeJVbxUIRISUk2JgEkw>
-    <xmx:iojRYCXArMPzCy8bqoK81BXIhMRW-X-MmwJRpR0QNcV7mSOCW3niIQ>
-    <xmx:iojRYDwDO3OMLAGv8-rlAFyc8cTHqew-HL1nZMNCABdvl1cKqUYD8g>
+X-ME-Proxy: <xmx:jYjRYLXZ1QFzBktysLkZY15bruTbzVGWbpXVNL5xsfb922FaOQ_9Hw>
+    <xmx:jYjRYGkUxs74IrjVKji2liduWJDy_mKLKG8NSDTKN6-vtmMf0Nofag>
+    <xmx:jYjRYAejX2CXrShOfp7AZIJAOx6nsm0yxl0rqluykvS2E8yizm7mpw>
+    <xmx:jYjRYEYki9aCNdt0iqsdDgT1EFnBNgOghyCAxP6ooQaBGHzDWMitog>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 22 Jun 2021 02:51:51 -0400 (EDT)
+ 22 Jun 2021 02:51:54 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         vladyslavt@nvidia.com, mkubecek@suse.cz, moshe@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 1/7] ethtool: Use correct command name in title
-Date:   Tue, 22 Jun 2021 09:50:46 +0300
-Message-Id: <20210622065052.2545107-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/7] ethtool: Document correct attribute type
+Date:   Tue, 22 Jun 2021 09:50:47 +0300
+Message-Id: <20210622065052.2545107-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210622065052.2545107-1-idosch@idosch.org>
 References: <20210622065052.2545107-1-idosch@idosch.org>
@@ -63,29 +63,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The command is called 'ETHTOOL_MSG_MODULE_EEPROM_GET', not
-'ETHTOOL_MSG_MODULE_EEPROM'.
+'ETHTOOL_A_MODULE_EEPROM_DATA' is a binary attribute, not a nested one.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- Documentation/networking/ethtool-netlink.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/networking/ethtool-netlink.rst | 2 +-
+ include/uapi/linux/ethtool_netlink.h         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index 25131df3c2bd..c3600f9c8988 100644
+index c3600f9c8988..8ae644f800f0 100644
 --- a/Documentation/networking/ethtool-netlink.rst
 +++ b/Documentation/networking/ethtool-netlink.rst
-@@ -1363,8 +1363,8 @@ in an implementation specific way.
- ``ETHTOOL_A_FEC_AUTO`` requests the driver to choose FEC mode based on SFP
- module parameters. This does not mean autonegotiation.
+@@ -1388,7 +1388,7 @@ Kernel response contents:
+  +---------------------------------------------+--------+---------------------+
+  | ``ETHTOOL_A_MODULE_EEPROM_HEADER``          | nested | reply header        |
+  +---------------------------------------------+--------+---------------------+
+- | ``ETHTOOL_A_MODULE_EEPROM_DATA``            | nested | array of bytes from |
++ | ``ETHTOOL_A_MODULE_EEPROM_DATA``            | binary | array of bytes from |
+  |                                             |        | module EEPROM       |
+  +---------------------------------------------+--------+---------------------+
  
--MODULE_EEPROM
--=============
-+MODULE_EEPROM_GET
-+=================
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index 825cfda1c5d5..c7135c9c37a5 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -675,7 +675,7 @@ enum {
+ 	ETHTOOL_A_MODULE_EEPROM_PAGE,			/* u8 */
+ 	ETHTOOL_A_MODULE_EEPROM_BANK,			/* u8 */
+ 	ETHTOOL_A_MODULE_EEPROM_I2C_ADDRESS,		/* u8 */
+-	ETHTOOL_A_MODULE_EEPROM_DATA,			/* nested */
++	ETHTOOL_A_MODULE_EEPROM_DATA,			/* binary */
  
- Fetch module EEPROM data dump.
- This interface is designed to allow dumps of at most 1/2 page at once. This
+ 	__ETHTOOL_A_MODULE_EEPROM_CNT,
+ 	ETHTOOL_A_MODULE_EEPROM_MAX = (__ETHTOOL_A_MODULE_EEPROM_CNT - 1)
 -- 
 2.31.1
 
