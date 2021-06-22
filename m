@@ -2,115 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 663733B0ECA
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:31:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB55F3B0EE0
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:33:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbhFVUda (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 16:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44142 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbhFVUd2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:33:28 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC816C061574;
-        Tue, 22 Jun 2021 13:31:11 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id f10so8916020plg.0;
-        Tue, 22 Jun 2021 13:31:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ho8mpG9beAl+0ggB96aMls1JfFIVbnP4cgBTDr5kAic=;
-        b=moz/96mMW6dUOyAGHojY7v7orYfOZIHjrqog+XI4uttLQIgS4Jlwh3LKNtpVWyxVDz
-         b0A3Vmluc4NpSzDKqbuSk0SUxBg0LYhlitHBnSlKNDbPoNJ5aAxHVrHzgXAZq/7RhK+m
-         s2sN6eOL7N4JNCBIuB6ppMG01Vr2RF+uTwCCNV97LkDnVFUmOds/n/opeTwK3lO/3Ugw
-         R7+3UizZx2G0V1JKGcMhxTMmC2eYXJtiS8D7ymknixw0x0gvh/eCyQZJJaNIgk9bNODa
-         S9qbvsf9FkcN4uajXFtIAVdBHeLn1YdDX76Na8Vz3nV1QfivWg93IEIlfWevvH/Mx/KC
-         IPhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ho8mpG9beAl+0ggB96aMls1JfFIVbnP4cgBTDr5kAic=;
-        b=JRMprbOUvNOLDQEZszi3TUz9rOIPrfi3vdsS+C/X6ZLTHBTJO5MpqLI+C3eFQ5AuFg
-         1MCUffmLHVa/Ojxx7SdzHG7Z8obKsPnFRUbTfhYzPRLdnuR3NxiR+yxfPd5qL4uuRaqm
-         7xzauMiCMVh2Vsphc4XDv4u/jHHOI3zj+cyyW5GjxZpMa6gaNKusuPcSMwgjS2TnIZms
-         kPkQxbDg5nvda3OlR5K7ETeHfru2s+L6zi+Sl5uMYbIlwEt5msJeavDKSuCas78XhT2x
-         6LhNbvwvcThTHjGGuLIBElBOwOgWCI2UcTW/gCG499KVQ7qdaKAIFWecnCDndzYH9t4u
-         AEFw==
-X-Gm-Message-State: AOAM532sjfWbRPmKre1Jz9wqBWhU849oT4WMgjAxwZSr6WgIm9qs4rO7
-        w+oYoKey8WhxJPcEstmtZ+2H5d+DCzg=
-X-Google-Smtp-Source: ABdhPJxXNUDzs2e7ypHVjRfEmRuzDEU+LSLZ8ZT5crga9Wl6qI5WmW+7PcktfsCfM9MRvfer2hvGOQ==
-X-Received: by 2002:a17:902:720c:b029:11e:787d:407e with SMTP id ba12-20020a170902720cb029011e787d407emr24689318plb.31.1624393871194;
-        Tue, 22 Jun 2021 13:31:11 -0700 (PDT)
-Received: from localhost ([2402:3a80:11bb:33b3:7f0c:3646:8bde:417e])
-        by smtp.gmail.com with ESMTPSA id o1sm3118465pjf.56.2021.06.22.13.31.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 13:31:10 -0700 (PDT)
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Subject: [PATCH net-next v3 5/5] bpf: update XDP selftests to not fail with generic XDP
-Date:   Wed, 23 Jun 2021 01:58:35 +0530
-Message-Id: <20210622202835.1151230-6-memxor@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210622202835.1151230-1-memxor@gmail.com>
-References: <20210622202835.1151230-1-memxor@gmail.com>
+        id S230188AbhFVUfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 16:35:36 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:47049 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229629AbhFVUff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:35:35 -0400
+Received: from mail-wr1-f46.google.com ([209.85.221.46]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1Mqrs9-1lRSM03R1V-00mrbw; Tue, 22 Jun 2021 22:33:17 +0200
+Received: by mail-wr1-f46.google.com with SMTP id m18so133528wrv.2;
+        Tue, 22 Jun 2021 13:33:17 -0700 (PDT)
+X-Gm-Message-State: AOAM532uPd44LJIKfFzGpLjTCnJEot8IKsQp2+R0J2No2wyfqRGCzWh4
+        V6IJVaLdllkpXYPF17LjcmRSVTNkD+/VNP36FqQ=
+X-Google-Smtp-Source: ABdhPJxIxO/xXDmBL9CuTqUfJPeIqUNEO8k6TjCUhFN3xY3HAWWytEGfglJh+8bqyJP/NPuAFwnum684HVLDv6sIonM=
+X-Received: by 2002:a5d:5905:: with SMTP id v5mr7302490wrd.361.1624393997509;
+ Tue, 22 Jun 2021 13:33:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210622202345.795578-1-jernej.skrabec@gmail.com>
+In-Reply-To: <20210622202345.795578-1-jernej.skrabec@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 22 Jun 2021 22:30:58 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1mvRTTFHtxqREmcbgJS+e94BHajCtAU_fzBhNNKjJBcg@mail.gmail.com>
+Message-ID: <CAK8P3a1mvRTTFHtxqREmcbgJS+e94BHajCtAU_fzBhNNKjJBcg@mail.gmail.com>
+Subject: Re: [RFC PATCH] cw1200: use kmalloc() allocation instead of stack
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     pizza@shaftnet.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:UDwhB0AIeFYw8fWlG1HJDe/qGwXmYMz69G8vpsnra2CQVSh8lgt
+ pbGHN8cMNCDDd8FKbV87kDqsN3VuEryRhvAAXrV2vSRBetLS//TQOipgc3YbZwzZOEIKSPW
+ +9hJMSmXD1ehSw5HB2+0QQA92U8q0cDGjPrABSxJ4MeqT3Nxb0iGy87eADLY3+9IWOXHsaS
+ XIfzjmWcJYg6w0r08gEKA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:mXPUlyWGewU=:qsP5JBu1opz816nEqKxwqX
+ LgV2UsCLyCttOFmeWt98zf7GQmQUZLw/Nk91XuZkOiEWEu38PZWJ9mY4syOhYqR8egyoW15bC
+ HtCt3cyRYhwUKDRFY73ADtY+Rb/A2Ysg0ymgQ4yhE2h/UeKrm84UzGUo9Q7N7DHwJVonxg+20
+ YgSWhXW5mXA+B0nN5B72KoQxXUFLhbPbUkEcyToPsrd66Zh4AeN0BOoLaPjhC5Aap8Jo6S51C
+ QOwKmGMgQ0MLbtrTaS7uGqFMXL8GkrC+wPFyxr+bmcI7Hsg0yUj1JNgysO2r/G5XL5J732SGU
+ nRoP8H+20ZwwwRtwtpR+CRivE7Ew77kkdbzMURH11Ocxfz0ker+WATZkcCU8njFBRoX9FedYe
+ bqf78CbgJhz2063dPV2aajScT6RGNgQM8Aw/C+N9y8qA5wdukMOEHpxBxXoA+5a0QEMSWW9Ru
+ XtKC0eEqCZtpbyItnxwhLwNPk4QxTX8gZxjCh8TkoGjt2YCStniJxbIbaTLzDvzAdKupVYb21
+ 1Ev1kTozJcz4ZgRYstm9xY=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Generic XDP devmaps and cpumaps now allow setting value_size to 8 bytes
-(so that prog_fd can be specified) and XDP progs using them succeed in
-SKB mode now. Adjust the checks.
+On Tue, Jun 22, 2021 at 10:24 PM Jernej Skrabec
+<jernej.skrabec@gmail.com> wrote:
+>
+> It turns out that if CONFIG_VMAP_STACK is enabled and src or dst is
+> memory allocated on stack, SDIO operations fail due to invalid memory
+> address conversion:
 
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
----
- tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c | 4 ++--
- tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Thank you for sending this!
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-index 0176573fe4e7..42e46d2ae349 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-@@ -29,8 +29,8 @@ void test_xdp_with_cpumap_helpers(void)
- 	 */
- 	prog_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
- 	err = bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd, XDP_FLAGS_SKB_MODE);
--	CHECK(err == 0, "Generic attach of program with 8-byte CPUMAP",
--	      "should have failed\n");
-+	CHECK(err, "Generic attach of program with 8-byte CPUMAP",
-+	      "shouldn't have failed\n");
- 
- 	prog_fd = bpf_program__fd(skel->progs.xdp_dummy_cm);
- 	map_fd = bpf_map__fd(skel->maps.cpu_map);
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-index 88ef3ec8ac4c..861db508ace2 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-@@ -31,8 +31,8 @@ void test_xdp_with_devmap_helpers(void)
- 	 */
- 	dm_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
- 	err = bpf_set_link_xdp_fd(IFINDEX_LO, dm_fd, XDP_FLAGS_SKB_MODE);
--	CHECK(err == 0, "Generic attach of program with 8-byte devmap",
--	      "should have failed\n");
-+	CHECK(err, "Generic attach of program with 8-byte devmap",
-+	      "shouldn't have failed\n");
- 
- 	dm_fd = bpf_program__fd(skel->progs.xdp_dummy_dm);
- 	map_fd = bpf_map__fd(skel->maps.dm_ports);
--- 
-2.31.1
+It's worth pointing out that even without CONFIG_VMAP_STACK, using
+dma_map_sg() on a stack variable is broken, though it will appear to
+work most of the time but rarely cause a stack data corruption when
+the cache management goes wrong.
 
+This clearly needs to be fixed somewhere, if not with your patch, then
+a similar one.
+
+> diff --git a/drivers/net/wireless/st/cw1200/hwio.c b/drivers/net/wireless/st/cw1200/hwio.c
+> index 3ba462de8e91..5521cb7f2233 100644
+> --- a/drivers/net/wireless/st/cw1200/hwio.c
+> +++ b/drivers/net/wireless/st/cw1200/hwio.c
+> @@ -66,33 +66,65 @@ static int __cw1200_reg_write(struct cw1200_common *priv, u16 addr,
+>  static inline int __cw1200_reg_read_32(struct cw1200_common *priv,
+>                                         u16 addr, u32 *val)
+>  {
+> -       __le32 tmp;
+> -       int i = __cw1200_reg_read(priv, addr, &tmp, sizeof(tmp), 0);
+> -       *val = le32_to_cpu(tmp);
+> +       __le32 *tmp;
+> +       int i;
+> +
+> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
+> +       if (!tmp)
+> +               return -ENOMEM;
+> +
+> +       i = __cw1200_reg_read(priv, addr, tmp, sizeof(*tmp), 0);
+> +       *val = le32_to_cpu(*tmp);
+> +       kfree(tmp);
+>         return i;
+>  }
+
+There is a possible problem here when the function gets called from
+atomic context, so it might need to use GFP_ATOMIC instead of
+GFP_KERNEL. If it's never called from atomic context, then this patch
+looks correct to me.
+
+The alternative would be to add a bounce buffer check based on
+is_vmalloc_or_module_addr() in sdio_io_rw_ext_helper(), which would
+add a small bit of complexity there but solve the problem for
+all drivers at once. In this case, it would probably have to use
+GFP_ATOMIC regardless of whether __cw1200_reg_read_32()
+is allowed to sleep, since other callers might not.
+
+      Arnd
