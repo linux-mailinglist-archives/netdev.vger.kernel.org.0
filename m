@@ -2,184 +2,1803 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F9643AFC3F
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 06:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EB793AFC6D
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 07:07:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbhFVEy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 00:54:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39713 "EHLO
+        id S229948AbhFVFJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 01:09:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56797 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229752AbhFVEy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 00:54:58 -0400
+        by vger.kernel.org with ESMTP id S229837AbhFVFJR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 01:09:17 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624337562;
+        s=mimecast20190719; t=1624338422;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Atyt1+cSJGxIDTuhYClDV19GU9l/MfXJf0Ylpee1EbA=;
-        b=dm8gEWY0Q5ke/BTByrbGdB10fltPyZT6gmprAtfmOIyv0rrrubqJeOG4I6CEocb22n162q
-        cbYseQHl53vIohF8/RABl20j0Y63bRlk+l6+XfeKijkLtiZFdzDmkRcS8ppcWSJ3Ycp8Od
-        ijU9unPbhGxzB+OugM/kE/Ma19oulAI=
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
- [209.85.215.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-97-enqilrjxNoWfUvXXeKNvLQ-1; Tue, 22 Jun 2021 00:52:38 -0400
-X-MC-Unique: enqilrjxNoWfUvXXeKNvLQ-1
-Received: by mail-pg1-f200.google.com with SMTP id f24-20020a631f180000b0290222eb79d493so10945214pgf.8
-        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 21:52:38 -0700 (PDT)
+        bh=2ZRIfQ1z1aTm2SnHKEOxbV1hbgwf/o+AvND1awWYHYY=;
+        b=RYJclPCPJ80QGweJ5NHOUQ0XMkZst3ob4GVU3f5vyS/V0s4dbDJaRmfirvRvs1lCMqMrlM
+        3vvOfn/Q0DrH+Wo4rTYMvycx8xH36s1E4KmEiKLN9pxFtFV3rWwTydYkjo6qvjObj6uYUE
+        8t0PxHXZIBBR5XSFciLddPM6Q/c4emU=
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
+ [209.85.214.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-539-BmY1IxGaPjO1VlQc_q1XZQ-1; Tue, 22 Jun 2021 01:06:58 -0400
+X-MC-Unique: BmY1IxGaPjO1VlQc_q1XZQ-1
+Received: by mail-pl1-f200.google.com with SMTP id l10-20020a17090270cab029011dbfb3981aso5860472plt.22
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 22:06:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language;
-        bh=Atyt1+cSJGxIDTuhYClDV19GU9l/MfXJf0Ylpee1EbA=;
-        b=OSycNHcAJwmqDtU3fNj1lw5uiBZ1nyyB87zyhoWNUzORRIHWVZY9hOEhRwTRs82JBQ
-         jL/d8WuHMQdjtqLue9qD6XHoTip1oy/sgY9t1/bS8P9pY44jFIxi+D4f02v6IsG8UrAf
-         7gclWdJBoX/qfmMgQ5wyrl/xsKsTJfxOU3HXs9FsQyElHKNzCv5HhjGlfPiiLQ6aM+pF
-         Ze7eFHQJYsKOK5UxI+FtehYa0b6JoCvLDVb6vEStaQEW/kPGzQ+l9R155Gka39NP1e4Q
-         Npt6fLHWo3mOKhcYCbJp44lLL9sgQuTQaOdrU5qPzSAU/bmfvG2RPZobMWokv6b54lLN
-         ahfw==
-X-Gm-Message-State: AOAM530mLWd/NGzgyOl98SpM7wFSJMiEMk5MYZqYMA9bdaz6e56TLjkF
-        g46P7mdfkHJ2B32RY0vvjPSBZeKEUiErLnn+qCMlije/KqDAT+HSub+2qssMnnenG2J8to6+H3M
-        9RI3b6t3eTUI9Lbul
-X-Received: by 2002:a65:67c8:: with SMTP id b8mr1925468pgs.109.1624337557479;
-        Mon, 21 Jun 2021 21:52:37 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwHgovhbb8iXHgjflVp6w5zsyzSlwmzClpJVhgiyjTV+j1E/gAtLCG6YIEvXtduWlzdlN0ODA==
-X-Received: by 2002:a65:67c8:: with SMTP id b8mr1925444pgs.109.1624337557219;
-        Mon, 21 Jun 2021 21:52:37 -0700 (PDT)
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=2ZRIfQ1z1aTm2SnHKEOxbV1hbgwf/o+AvND1awWYHYY=;
+        b=XmWmigQYrIXb1pIRekEXFFrop0m3jiDxtnrIlyd/2tGV4LzpXtDkywG8cJSOiiGvCp
+         NLFZGPTWKvXpjzdieAzFW+/Vn8Uk95ucM8kRjPzwSxMKH4uaFmJZJ67l4nqbyocqtsPl
+         dwDfDuhrdfuCqX/sR07QZcmjvs6okKGIRwOdErtRRNjtLSyvSS9xY3YsbVq/IcBywkm/
+         C8L35oRIbUYYqKM/HJ6znmTwwdINs7g8HVPYrdiWWFn0PuOli1W9KYg8PaZdJEM6W15i
+         wUlOrFHRog/Yizcfqeviz22NPSIcsGXoljw90buIdI+YNTjGa6lvxQvSwSMjqNbY+lqX
+         swDA==
+X-Gm-Message-State: AOAM530/GM8ytoBOF+iT16zGvCG5lbV+sw8ejtRYjCCwZXkQmP6stWe0
+        MCtJW1hMBbne2+SVSwHbBDL/j09gVZHtWg06GA6tHO+HpgE1D+NrmycjmidczBH7xSdiccNCLXP
+        z9JezTm2S2auE9t36
+X-Received: by 2002:a17:90a:1e82:: with SMTP id x2mr2029041pjx.11.1624338417704;
+        Mon, 21 Jun 2021 22:06:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxWu7VJ1i8Hm/0dONPfTSH47PWWl51Y2auxRuPrZ3RZO7RXMkuwV8jx9BpjNZsql8zLcMnEfA==
+X-Received: by 2002:a17:90a:1e82:: with SMTP id x2mr2028995pjx.11.1624338417189;
+        Mon, 21 Jun 2021 22:06:57 -0700 (PDT)
 Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id n23sm17692619pgv.76.2021.06.21.21.52.35
+        by smtp.gmail.com with ESMTPSA id q24sm18650112pgk.32.2021.06.21.22.06.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Jun 2021 21:52:36 -0700 (PDT)
-Subject: Re: [PATCH] net: tun: fix tun_xdp_one() for IFF_TUN mode
-To:     David Woodhouse <dwmw2@infradead.org>,
-        netdev <netdev@vger.kernel.org>
-Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
- <e832b356-ffc2-8bca-f5d9-75e8b98cfcf2@redhat.com>
- <2cbe878845eb2a1e3803b3340263ea14436fe053.camel@infradead.org>
- <2433592d2b26deec33336dd3e83acfd273b0cf30.camel@infradead.org>
- <c93c7357e9fa8a6ce89c0fc53328eeb4f3eb68d5.camel@infradead.org>
+        Mon, 21 Jun 2021 22:06:56 -0700 (PDT)
+Subject: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in
+ Userspace
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20210615141331.407-1-xieyongji@bytedance.com>
+ <20210615141331.407-10-xieyongji@bytedance.com>
+ <adfb2be9-9ed9-ca37-ac37-4cd00bdff349@redhat.com>
+ <CACycT3tAON+-qZev+9EqyL2XbgH5HDspOqNt3ohQLQ8GqVK=EA@mail.gmail.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <d26bbeb7-d184-9bda-55c3-2273f743b139@redhat.com>
-Date:   Tue, 22 Jun 2021 12:52:29 +0800
+Message-ID: <1bba439f-ffc8-c20e-e8a4-ac73e890c592@redhat.com>
+Date:   Tue, 22 Jun 2021 13:06:42 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <c93c7357e9fa8a6ce89c0fc53328eeb4f3eb68d5.camel@infradead.org>
-Content-Type: multipart/mixed;
- boundary="------------AE6A664F681FA24A414B9D6B"
+In-Reply-To: <CACycT3tAON+-qZev+9EqyL2XbgH5HDspOqNt3ohQLQ8GqVK=EA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------AE6A664F681FA24A414B9D6B
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
-
-在 2021/6/22 上午4:43, David Woodhouse 写道:
-> On Mon, 2021-06-21 at 15:50 +0100, David Woodhouse wrote:
->> On Mon, 2021-06-21 at 11:52 +0100, David Woodhouse wrote:
->>> Firstly, I don't think I can set IFF_VNET_HDR on the tun device after
->>> opening it. So my model of "open the tun device, then *see* if we can
->>> use vhost to accelerate it" doesn't work.
+在 2021/6/21 下午6:41, Yongji Xie 写道:
+> On Mon, Jun 21, 2021 at 5:14 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> 在 2021/6/15 下午10:13, Xie Yongji 写道:
+>>> This VDUSE driver enables implementing vDPA devices in userspace.
+>>> The vDPA device's control path is handled in kernel and the data
+>>> path is handled in userspace.
 >>>
->>> I tried setting VHOST_NET_F_VIRTIO_NET_HDR in the vhost features
->>> instead, but that gives me a weird failure mode where it drops around
->>> half the incoming packets, and I haven't yet worked out why.
->> FWIW that problem also goes away if I set TUNSNDBUF and avoid the XDP
->> data path.
-> Looks like there are two problems there.
+>>> A message mechnism is used by VDUSE driver to forward some control
+>>> messages such as starting/stopping datapath to userspace. Userspace
+>>> can use read()/write() to receive/reply those control messages.
+>>>
+>>> And some ioctls are introduced to help userspace to implement the
+>>> data path. VDUSE_IOTLB_GET_FD ioctl can be used to get the file
+>>> descriptors referring to vDPA device's iova regions. Then userspace
+>>> can use mmap() to access those iova regions. VDUSE_DEV_GET_FEATURES
+>>> and VDUSE_VQ_GET_INFO ioctls are used to get the negotiated features
+>>> and metadata of virtqueues. VDUSE_INJECT_VQ_IRQ and VDUSE_VQ_SETUP_KICKFD
+>>> ioctls can be used to inject interrupt and setup the kickfd for
+>>> virtqueues. VDUSE_DEV_UPDATE_CONFIG ioctl is used to update the
+>>> configuration space and inject a config interrupt.
+>>>
+>>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+>>> ---
+>>>    Documentation/userspace-api/ioctl/ioctl-number.rst |    1 +
+>>>    drivers/vdpa/Kconfig                               |   10 +
+>>>    drivers/vdpa/Makefile                              |    1 +
+>>>    drivers/vdpa/vdpa_user/Makefile                    |    5 +
+>>>    drivers/vdpa/vdpa_user/vduse_dev.c                 | 1453 ++++++++++++++++++++
+>>>    include/uapi/linux/vduse.h                         |  143 ++
+>>>    6 files changed, 1613 insertions(+)
+>>>    create mode 100644 drivers/vdpa/vdpa_user/Makefile
+>>>    create mode 100644 drivers/vdpa/vdpa_user/vduse_dev.c
+>>>    create mode 100644 include/uapi/linux/vduse.h
+>>>
+>>> diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/userspace-api/ioctl/ioctl-number.rst
+>>> index 9bfc2b510c64..acd95e9dcfe7 100644
+>>> --- a/Documentation/userspace-api/ioctl/ioctl-number.rst
+>>> +++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
+>>> @@ -300,6 +300,7 @@ Code  Seq#    Include File                                           Comments
+>>>    'z'   10-4F  drivers/s390/crypto/zcrypt_api.h                        conflict!
+>>>    '|'   00-7F  linux/media.h
+>>>    0x80  00-1F  linux/fb.h
+>>> +0x81  00-1F  linux/vduse.h
+>>>    0x89  00-06  arch/x86/include/asm/sockios.h
+>>>    0x89  0B-DF  linux/sockios.h
+>>>    0x89  E0-EF  linux/sockios.h                                         SIOCPROTOPRIVATE range
+>>> diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
+>>> index a503c1b2bfd9..6e23bce6433a 100644
+>>> --- a/drivers/vdpa/Kconfig
+>>> +++ b/drivers/vdpa/Kconfig
+>>> @@ -33,6 +33,16 @@ config VDPA_SIM_BLOCK
+>>>          vDPA block device simulator which terminates IO request in a
+>>>          memory buffer.
+>>>
+>>> +config VDPA_USER
+>>> +     tristate "VDUSE (vDPA Device in Userspace) support"
+>>> +     depends on EVENTFD && MMU && HAS_DMA
+>>> +     select DMA_OPS
+>>> +     select VHOST_IOTLB
+>>> +     select IOMMU_IOVA
+>>> +     help
+>>> +       With VDUSE it is possible to emulate a vDPA Device
+>>> +       in a userspace program.
+>>> +
+>>>    config IFCVF
+>>>        tristate "Intel IFC VF vDPA driver"
+>>>        depends on PCI_MSI
+>>> diff --git a/drivers/vdpa/Makefile b/drivers/vdpa/Makefile
+>>> index 67fe7f3d6943..f02ebed33f19 100644
+>>> --- a/drivers/vdpa/Makefile
+>>> +++ b/drivers/vdpa/Makefile
+>>> @@ -1,6 +1,7 @@
+>>>    # SPDX-License-Identifier: GPL-2.0
+>>>    obj-$(CONFIG_VDPA) += vdpa.o
+>>>    obj-$(CONFIG_VDPA_SIM) += vdpa_sim/
+>>> +obj-$(CONFIG_VDPA_USER) += vdpa_user/
+>>>    obj-$(CONFIG_IFCVF)    += ifcvf/
+>>>    obj-$(CONFIG_MLX5_VDPA) += mlx5/
+>>>    obj-$(CONFIG_VP_VDPA)    += virtio_pci/
+>>> diff --git a/drivers/vdpa/vdpa_user/Makefile b/drivers/vdpa/vdpa_user/Makefile
+>>> new file mode 100644
+>>> index 000000000000..260e0b26af99
+>>> --- /dev/null
+>>> +++ b/drivers/vdpa/vdpa_user/Makefile
+>>> @@ -0,0 +1,5 @@
+>>> +# SPDX-License-Identifier: GPL-2.0
+>>> +
+>>> +vduse-y := vduse_dev.o iova_domain.o
+>>> +
+>>> +obj-$(CONFIG_VDPA_USER) += vduse.o
+>>> diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
+>>> new file mode 100644
+>>> index 000000000000..5271cbd15e28
+>>> --- /dev/null
+>>> +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+>>> @@ -0,0 +1,1453 @@
+>>> +// SPDX-License-Identifier: GPL-2.0-only
+>>> +/*
+>>> + * VDUSE: vDPA Device in Userspace
+>>> + *
+>>> + * Copyright (C) 2020-2021 Bytedance Inc. and/or its affiliates. All rights reserved.
+>>> + *
+>>> + * Author: Xie Yongji <xieyongji@bytedance.com>
+>>> + *
+>>> + */
+>>> +
+>>> +#include <linux/init.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/cdev.h>
+>>> +#include <linux/device.h>
+>>> +#include <linux/eventfd.h>
+>>> +#include <linux/slab.h>
+>>> +#include <linux/wait.h>
+>>> +#include <linux/dma-map-ops.h>
+>>> +#include <linux/poll.h>
+>>> +#include <linux/file.h>
+>>> +#include <linux/uio.h>
+>>> +#include <linux/vdpa.h>
+>>> +#include <linux/nospec.h>
+>>> +#include <uapi/linux/vduse.h>
+>>> +#include <uapi/linux/vdpa.h>
+>>> +#include <uapi/linux/virtio_config.h>
+>>> +#include <uapi/linux/virtio_ids.h>
+>>> +#include <uapi/linux/virtio_blk.h>
+>>> +#include <linux/mod_devicetable.h>
+>>> +
+>>> +#include "iova_domain.h"
+>>> +
+>>> +#define DRV_AUTHOR   "Yongji Xie <xieyongji@bytedance.com>"
+>>> +#define DRV_DESC     "vDPA Device in Userspace"
+>>> +#define DRV_LICENSE  "GPL v2"
+>>> +
+>>> +#define VDUSE_DEV_MAX (1U << MINORBITS)
+>>> +#define VDUSE_MAX_BOUNCE_SIZE (64 * 1024 * 1024)
+>>> +#define VDUSE_IOVA_SIZE (128 * 1024 * 1024)
+>>> +#define VDUSE_REQUEST_TIMEOUT 30
+>>> +
+>>> +struct vduse_virtqueue {
+>>> +     u16 index;
+>>> +     u32 num;
+>>> +     u32 avail_idx;
+>>> +     u64 desc_addr;
+>>> +     u64 driver_addr;
+>>> +     u64 device_addr;
+>>> +     bool ready;
+>>> +     bool kicked;
+>>> +     spinlock_t kick_lock;
+>>> +     spinlock_t irq_lock;
+>>> +     struct eventfd_ctx *kickfd;
+>>> +     struct vdpa_callback cb;
+>>> +     struct work_struct inject;
+>>> +};
+>>> +
+>>> +struct vduse_dev;
+>>> +
+>>> +struct vduse_vdpa {
+>>> +     struct vdpa_device vdpa;
+>>> +     struct vduse_dev *dev;
+>>> +};
+>>> +
+>>> +struct vduse_dev {
+>>> +     struct vduse_vdpa *vdev;
+>>> +     struct device *dev;
+>>> +     struct vduse_virtqueue *vqs;
+>>> +     struct vduse_iova_domain *domain;
+>>> +     char *name;
+>>> +     struct mutex lock;
+>>> +     spinlock_t msg_lock;
+>>> +     u64 msg_unique;
+>>> +     wait_queue_head_t waitq;
+>>> +     struct list_head send_list;
+>>> +     struct list_head recv_list;
+>>> +     struct vdpa_callback config_cb;
+>>> +     struct work_struct inject;
+>>> +     spinlock_t irq_lock;
+>>> +     int minor;
+>>> +     bool connected;
+>>> +     bool started;
+>>> +     u64 api_version;
+>>> +     u64 user_features;
+>>
+>> Let's use device_features.
+>>
+> OK.
 >
-> Firstly, vhost_net_build_xdp() doesn't cope well with sock_hlen being
-> zero. It reads those zero bytes into its buffer, then points 'gso' at
-> the buffer with no valid data in it, and checks gso->flags for the
-> NEEDS_CSUM flag.
+>>> +     u64 features;
+>>
+>> And driver features.
+>>
+> OK.
 >
-> Secondly, tun_xdp_one() doesn't cope with receiving packets without the
-> virtio header either. While tun_get_user() correctly checks
-> IFF_VNET_HDR, tun_xdp_one() does not, and treats the start of my IP
-> packets as if they were a virtio_net_hdr.
->
-> I'll look at turning my code into a test case for kernel selftests.
+>>> +     u32 device_id;
+>>> +     u32 vendor_id;
+>>> +     u32 generation;
+>>> +     u32 config_size;
+>>> +     void *config;
+>>> +     u8 status;
+>>> +     u16 vq_size_max;
+>>> +     u32 vq_num;
+>>> +     u32 vq_align;
+>>> +};
+>>> +
+>>> +struct vduse_dev_msg {
+>>> +     struct vduse_dev_request req;
+>>> +     struct vduse_dev_response resp;
+>>> +     struct list_head list;
+>>> +     wait_queue_head_t waitq;
+>>> +     bool completed;
+>>> +};
+>>> +
+>>> +struct vduse_control {
+>>> +     u64 api_version;
+>>> +};
+>>> +
+>>> +static DEFINE_MUTEX(vduse_lock);
+>>> +static DEFINE_IDR(vduse_idr);
+>>> +
+>>> +static dev_t vduse_major;
+>>> +static struct class *vduse_class;
+>>> +static struct cdev vduse_ctrl_cdev;
+>>> +static struct cdev vduse_cdev;
+>>> +static struct workqueue_struct *vduse_irq_wq;
+>>> +
+>>> +static u32 allowed_device_id[] = {
+>>> +     VIRTIO_ID_BLOCK,
+>>> +};
+>>> +
+>>> +static inline struct vduse_dev *vdpa_to_vduse(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_vdpa *vdev = container_of(vdpa, struct vduse_vdpa, vdpa);
+>>> +
+>>> +     return vdev->dev;
+>>> +}
+>>> +
+>>> +static inline struct vduse_dev *dev_to_vduse(struct device *dev)
+>>> +{
+>>> +     struct vdpa_device *vdpa = dev_to_vdpa(dev);
+>>> +
+>>> +     return vdpa_to_vduse(vdpa);
+>>> +}
+>>> +
+>>> +static struct vduse_dev_msg *vduse_find_msg(struct list_head *head,
+>>> +                                         uint32_t request_id)
+>>> +{
+>>> +     struct vduse_dev_msg *msg;
+>>> +
+>>> +     list_for_each_entry(msg, head, list) {
+>>> +             if (msg->req.request_id == request_id) {
+>>> +                     list_del(&msg->list);
+>>> +                     return msg;
+>>> +             }
+>>> +     }
+>>> +
+>>> +     return NULL;
+>>> +}
+>>> +
+>>> +static struct vduse_dev_msg *vduse_dequeue_msg(struct list_head *head)
+>>> +{
+>>> +     struct vduse_dev_msg *msg = NULL;
+>>> +
+>>> +     if (!list_empty(head)) {
+>>> +             msg = list_first_entry(head, struct vduse_dev_msg, list);
+>>> +             list_del(&msg->list);
+>>> +     }
+>>> +
+>>> +     return msg;
+>>> +}
+>>> +
+>>> +static void vduse_enqueue_msg(struct list_head *head,
+>>> +                           struct vduse_dev_msg *msg)
+>>> +{
+>>> +     list_add_tail(&msg->list, head);
+>>> +}
+>>> +
+>>> +static int vduse_dev_msg_send(struct vduse_dev *dev,
+>>> +                           struct vduse_dev_msg *msg, bool no_reply)
+>>> +{
+>>
+>> It looks to me the only user for no_reply=true is the dataplane start. I
+>> wonder no_reply is really needed consider we have switched to use
+>> wait_event_killable_timeout().
+>>
+> Do we need to handle the error in this case if we remove the no_reply
+> flag. Print a warning message?
 
 
-I cook two patches. Please see and check if they fix the problem. 
-(compile test only for me).
+See below.
+
+
+>
+>> In another way, no_reply is false for vq state synchronization and IOTLB
+>> updating. I wonder if we can simply use no_reply = true for them.
+>>
+> Looks like we can't, e.g. we need to get a reply from userspace for vq state.
+
+
+Right.
+
+
+>
+>>> +     init_waitqueue_head(&msg->waitq);
+>>> +     spin_lock(&dev->msg_lock);
+>>> +     msg->req.request_id = dev->msg_unique++;
+>>> +     vduse_enqueue_msg(&dev->send_list, msg);
+>>> +     wake_up(&dev->waitq);
+>>> +     spin_unlock(&dev->msg_lock);
+>>> +     if (no_reply)
+>>> +             return 0;
+>>> +
+>>> +     wait_event_killable_timeout(msg->waitq, msg->completed,
+>>> +                                 VDUSE_REQUEST_TIMEOUT * HZ);
+>>> +     spin_lock(&dev->msg_lock);
+>>> +     if (!msg->completed) {
+>>> +             list_del(&msg->list);
+>>> +             msg->resp.result = VDUSE_REQ_RESULT_FAILED;
+>>> +     }
+>>> +     spin_unlock(&dev->msg_lock);
+>>> +
+>>> +     return (msg->resp.result == VDUSE_REQ_RESULT_OK) ? 0 : -EIO;
+>>
+>> Do we need to serialize the check by protecting it with the spinlock above?
+>>
+> Good point.
+>
+>>> +}
+>>> +
+>>> +static void vduse_dev_msg_cleanup(struct vduse_dev *dev)
+>>> +{
+>>> +     struct vduse_dev_msg *msg;
+>>> +
+>>> +     spin_lock(&dev->msg_lock);
+>>> +     while ((msg = vduse_dequeue_msg(&dev->send_list))) {
+>>> +             if (msg->req.flags & VDUSE_REQ_FLAGS_NO_REPLY)
+>>> +                     kfree(msg);
+>>> +             else
+>>> +                     vduse_enqueue_msg(&dev->recv_list, msg);
+>>> +     }
+>>> +     while ((msg = vduse_dequeue_msg(&dev->recv_list))) {
+>>> +             msg->resp.result = VDUSE_REQ_RESULT_FAILED;
+>>> +             msg->completed = 1;
+>>> +             wake_up(&msg->waitq);
+>>> +     }
+>>> +     spin_unlock(&dev->msg_lock);
+>>> +}
+>>> +
+>>> +static void vduse_dev_start_dataplane(struct vduse_dev *dev)
+>>> +{
+>>> +     struct vduse_dev_msg *msg = kzalloc(sizeof(*msg),
+>>> +                                         GFP_KERNEL | __GFP_NOFAIL);
+>>> +
+>>> +     msg->req.type = VDUSE_START_DATAPLANE;
+>>> +     msg->req.flags |= VDUSE_REQ_FLAGS_NO_REPLY;
+>>> +     vduse_dev_msg_send(dev, msg, true);
+>>> +}
+>>> +
+>>> +static void vduse_dev_stop_dataplane(struct vduse_dev *dev)
+>>> +{
+>>> +     struct vduse_dev_msg *msg = kzalloc(sizeof(*msg),
+>>> +                                         GFP_KERNEL | __GFP_NOFAIL);
+>>> +
+>>> +     msg->req.type = VDUSE_STOP_DATAPLANE;
+>>> +     msg->req.flags |= VDUSE_REQ_FLAGS_NO_REPLY;
+>>
+>> Can we simply use this flag instead of introducing a new parameter
+>> (no_reply) in vduse_dev_msg_send()?
+>>
+> Looks good to me.
+>
+>>> +     vduse_dev_msg_send(dev, msg, true);
+>>> +}
+>>> +
+>>> +static int vduse_dev_get_vq_state(struct vduse_dev *dev,
+>>> +                               struct vduse_virtqueue *vq,
+>>> +                               struct vdpa_vq_state *state)
+>>> +{
+>>> +     struct vduse_dev_msg msg = { 0 };
+>>> +     int ret;
+>>
+>> Note that I post a series that implement the packed virtqueue support:
+>>
+>> https://lists.linuxfoundation.org/pipermail/virtualization/2021-June/054501.html
+>>
+>> So this patch needs to be updated as well.
+>>
+> Will do it.
+>
+>>> +
+>>> +     msg.req.type = VDUSE_GET_VQ_STATE;
+>>> +     msg.req.vq_state.index = vq->index;
+>>> +
+>>> +     ret = vduse_dev_msg_send(dev, &msg, false);
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     state->avail_index = msg.resp.vq_state.avail_idx;
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static int vduse_dev_update_iotlb(struct vduse_dev *dev,
+>>> +                             u64 start, u64 last)
+>>> +{
+>>> +     struct vduse_dev_msg msg = { 0 };
+>>> +
+>>> +     if (last < start)
+>>> +             return -EINVAL;
+>>> +
+>>> +     msg.req.type = VDUSE_UPDATE_IOTLB;
+>>> +     msg.req.iova.start = start;
+>>> +     msg.req.iova.last = last;
+>>> +
+>>> +     return vduse_dev_msg_send(dev, &msg, false);
+>>> +}
+>>> +
+>>> +static ssize_t vduse_dev_read_iter(struct kiocb *iocb, struct iov_iter *to)
+>>> +{
+>>> +     struct file *file = iocb->ki_filp;
+>>> +     struct vduse_dev *dev = file->private_data;
+>>> +     struct vduse_dev_msg *msg;
+>>> +     int size = sizeof(struct vduse_dev_request);
+>>> +     ssize_t ret;
+>>> +
+>>> +     if (iov_iter_count(to) < size)
+>>> +             return -EINVAL;
+>>> +
+>>> +     spin_lock(&dev->msg_lock);
+>>> +     while (1) {
+>>> +             msg = vduse_dequeue_msg(&dev->send_list);
+>>> +             if (msg)
+>>> +                     break;
+>>> +
+>>> +             ret = -EAGAIN;
+>>> +             if (file->f_flags & O_NONBLOCK)
+>>> +                     goto unlock;
+>>> +
+>>> +             spin_unlock(&dev->msg_lock);
+>>> +             ret = wait_event_interruptible_exclusive(dev->waitq,
+>>> +                                     !list_empty(&dev->send_list));
+>>> +             if (ret)
+>>> +                     return ret;
+>>> +
+>>> +             spin_lock(&dev->msg_lock);
+>>> +     }
+>>> +     spin_unlock(&dev->msg_lock);
+>>> +     ret = copy_to_iter(&msg->req, size, to);
+>>> +     spin_lock(&dev->msg_lock);
+>>> +     if (ret != size) {
+>>> +             ret = -EFAULT;
+>>> +             vduse_enqueue_msg(&dev->send_list, msg);
+>>> +             goto unlock;
+>>> +     }
+>>> +     if (msg->req.flags & VDUSE_REQ_FLAGS_NO_REPLY)
+>>> +             kfree(msg);
+>>> +     else
+>>> +             vduse_enqueue_msg(&dev->recv_list, msg);
+>>> +unlock:
+>>> +     spin_unlock(&dev->msg_lock);
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static ssize_t vduse_dev_write_iter(struct kiocb *iocb, struct iov_iter *from)
+>>> +{
+>>> +     struct file *file = iocb->ki_filp;
+>>> +     struct vduse_dev *dev = file->private_data;
+>>> +     struct vduse_dev_response resp;
+>>> +     struct vduse_dev_msg *msg;
+>>> +     size_t ret;
+>>> +
+>>> +     ret = copy_from_iter(&resp, sizeof(resp), from);
+>>> +     if (ret != sizeof(resp))
+>>> +             return -EINVAL;
+>>> +
+>>> +     spin_lock(&dev->msg_lock);
+>>> +     msg = vduse_find_msg(&dev->recv_list, resp.request_id);
+>>> +     if (!msg) {
+>>> +             ret = -ENOENT;
+>>> +             goto unlock;
+>>> +     }
+>>> +
+>>> +     memcpy(&msg->resp, &resp, sizeof(resp));
+>>> +     msg->completed = 1;
+>>> +     wake_up(&msg->waitq);
+>>> +unlock:
+>>> +     spin_unlock(&dev->msg_lock);
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static __poll_t vduse_dev_poll(struct file *file, poll_table *wait)
+>>> +{
+>>> +     struct vduse_dev *dev = file->private_data;
+>>> +     __poll_t mask = 0;
+>>> +
+>>> +     poll_wait(file, &dev->waitq, wait);
+>>> +
+>>> +     if (!list_empty(&dev->send_list))
+>>> +             mask |= EPOLLIN | EPOLLRDNORM;
+>>> +     if (!list_empty(&dev->recv_list))
+>>> +             mask |= EPOLLOUT | EPOLLWRNORM;
+>>> +
+>>> +     return mask;
+>>> +}
+>>> +
+>>> +static void vduse_dev_reset(struct vduse_dev *dev)
+>>> +{
+>>> +     int i;
+>>> +     struct vduse_iova_domain *domain = dev->domain;
+>>> +
+>>> +     /* The coherent mappings are handled in vduse_dev_free_coherent() */
+>>> +     if (domain->bounce_map)
+>>> +             vduse_domain_reset_bounce_map(domain);
+>>> +
+>>> +     dev->features = 0;
+>>> +     dev->generation++;
+>>> +     spin_lock(&dev->irq_lock);
+>>> +     dev->config_cb.callback = NULL;
+>>> +     dev->config_cb.private = NULL;
+>>> +     spin_unlock(&dev->irq_lock);
+>>> +
+>>> +     for (i = 0; i < dev->vq_num; i++) {
+>>> +             struct vduse_virtqueue *vq = &dev->vqs[i];
+>>> +
+>>> +             vq->ready = false;
+>>> +             vq->desc_addr = 0;
+>>> +             vq->driver_addr = 0;
+>>> +             vq->device_addr = 0;
+>>> +             vq->avail_idx = 0;
+>>> +             vq->num = 0;
+>>> +
+>>> +             spin_lock(&vq->kick_lock);
+>>> +             vq->kicked = false;
+>>> +             if (vq->kickfd)
+>>> +                     eventfd_ctx_put(vq->kickfd);
+>>> +             vq->kickfd = NULL;
+>>> +             spin_unlock(&vq->kick_lock);
+>>> +
+>>> +             spin_lock(&vq->irq_lock);
+>>> +             vq->cb.callback = NULL;
+>>> +             vq->cb.private = NULL;
+>>> +             spin_unlock(&vq->irq_lock);
+>>> +     }
+>>> +}
+>>> +
+>>> +static int vduse_vdpa_set_vq_address(struct vdpa_device *vdpa, u16 idx,
+>>> +                             u64 desc_area, u64 driver_area,
+>>> +                             u64 device_area)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     struct vduse_virtqueue *vq = &dev->vqs[idx];
+>>> +
+>>> +     vq->desc_addr = desc_area;
+>>> +     vq->driver_addr = driver_area;
+>>> +     vq->device_addr = device_area;
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static void vduse_vdpa_kick_vq(struct vdpa_device *vdpa, u16 idx)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     struct vduse_virtqueue *vq = &dev->vqs[idx];
+>>> +
+>>> +     spin_lock(&vq->kick_lock);
+>>> +     if (!vq->ready)
+>>> +             goto unlock;
+>>> +
+>>> +     if (vq->kickfd)
+>>> +             eventfd_signal(vq->kickfd, 1);
+>>> +     else
+>>> +             vq->kicked = true;
+>>> +unlock:
+>>> +     spin_unlock(&vq->kick_lock);
+>>> +}
+>>> +
+>>> +static void vduse_vdpa_set_vq_cb(struct vdpa_device *vdpa, u16 idx,
+>>> +                           struct vdpa_callback *cb)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     struct vduse_virtqueue *vq = &dev->vqs[idx];
+>>> +
+>>> +     spin_lock(&vq->irq_lock);
+>>> +     vq->cb.callback = cb->callback;
+>>> +     vq->cb.private = cb->private;
+>>> +     spin_unlock(&vq->irq_lock);
+>>> +}
+>>> +
+>>> +static void vduse_vdpa_set_vq_num(struct vdpa_device *vdpa, u16 idx, u32 num)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     struct vduse_virtqueue *vq = &dev->vqs[idx];
+>>> +
+>>> +     vq->num = num;
+>>> +}
+>>> +
+>>> +static void vduse_vdpa_set_vq_ready(struct vdpa_device *vdpa,
+>>> +                                     u16 idx, bool ready)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     struct vduse_virtqueue *vq = &dev->vqs[idx];
+>>> +
+>>> +     vq->ready = ready;
+>>> +}
+>>> +
+>>> +static bool vduse_vdpa_get_vq_ready(struct vdpa_device *vdpa, u16 idx)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     struct vduse_virtqueue *vq = &dev->vqs[idx];
+>>> +
+>>> +     return vq->ready;
+>>> +}
+>>> +
+>>> +static int vduse_vdpa_set_vq_state(struct vdpa_device *vdpa, u16 idx,
+>>> +                             const struct vdpa_vq_state *state)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     struct vduse_virtqueue *vq = &dev->vqs[idx];
+>>> +
+>>> +     vq->avail_idx = state->avail_index;
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static int vduse_vdpa_get_vq_state(struct vdpa_device *vdpa, u16 idx,
+>>> +                             struct vdpa_vq_state *state)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     struct vduse_virtqueue *vq = &dev->vqs[idx];
+>>> +
+>>> +     return vduse_dev_get_vq_state(dev, vq, state);
+>>> +}
+>>> +
+>>> +static u32 vduse_vdpa_get_vq_align(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     return dev->vq_align;
+>>> +}
+>>> +
+>>> +static u64 vduse_vdpa_get_features(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     return dev->user_features;
+>>> +}
+>>> +
+>>> +static int vduse_vdpa_set_features(struct vdpa_device *vdpa, u64 features)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     dev->features = features;
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static void vduse_vdpa_set_config_cb(struct vdpa_device *vdpa,
+>>> +                               struct vdpa_callback *cb)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     spin_lock(&dev->irq_lock);
+>>> +     dev->config_cb.callback = cb->callback;
+>>> +     dev->config_cb.private = cb->private;
+>>> +     spin_unlock(&dev->irq_lock);
+>>> +}
+>>> +
+>>> +static u16 vduse_vdpa_get_vq_num_max(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     return dev->vq_size_max;
+>>> +}
+>>> +
+>>> +static u32 vduse_vdpa_get_device_id(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     return dev->device_id;
+>>> +}
+>>> +
+>>> +static u32 vduse_vdpa_get_vendor_id(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     return dev->vendor_id;
+>>> +}
+>>> +
+>>> +static u8 vduse_vdpa_get_status(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     return dev->status;
+>>> +}
+>>> +
+>>> +static void vduse_vdpa_set_status(struct vdpa_device *vdpa, u8 status)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     bool started = !!(status & VIRTIO_CONFIG_S_DRIVER_OK);
+>>> +
+>>> +     dev->status = status;
+>>> +
+>>> +     if (dev->started == started)
+>>> +             return;
+>>
+>> If we check dev->status == status, (or only check the DRIVER_OK bit)
+>> then there's no need to introduce an extra dev->started.
+>>
+> Will do it.
+>
+>>> +
+>>> +     dev->started = started;
+>>> +     if (dev->started) {
+>>> +             vduse_dev_start_dataplane(dev);
+>>> +     } else {
+>>> +             vduse_dev_reset(dev);
+>>> +             vduse_dev_stop_dataplane(dev);
+>>
+>> I wonder if no_reply work for the case of vhost-vdpa. For virtio-vDPA,
+>> we have bouncing buffers so it's harmless if usersapce dataplane keeps
+>> performing read/write. For vhost-vDPA we don't have such stuffs.
+>>
+> OK. So it still needs to be synchronized here. If so, how to handle
+> the error? Looks like printing a warning message should be enough.
+
+
+We need fix a way to propagate the error to the userspace.
+
+E.g if we want to stop the deivce, we will delay the status reset until 
+we get respose from the userspace?
+
+
+>
+>>> +     }
+>>> +}
+>>> +
+>>> +static size_t vduse_vdpa_get_config_size(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     return dev->config_size;
+>>> +}
+>>> +
+>>> +static void vduse_vdpa_get_config(struct vdpa_device *vdpa, unsigned int offset,
+>>> +                               void *buf, unsigned int len)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     memcpy(buf, dev->config + offset, len);
+>>> +}
+>>> +
+>>> +static void vduse_vdpa_set_config(struct vdpa_device *vdpa, unsigned int offset,
+>>> +                     const void *buf, unsigned int len)
+>>> +{
+>>> +     /* Now we only support read-only configuration space */
+>>> +}
+>>> +
+>>> +static u32 vduse_vdpa_get_generation(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     return dev->generation;
+>>> +}
+>>> +
+>>> +static int vduse_vdpa_set_map(struct vdpa_device *vdpa,
+>>> +                             struct vhost_iotlb *iotlb)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +     int ret;
+>>> +
+>>> +     ret = vduse_domain_set_map(dev->domain, iotlb);
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     ret = vduse_dev_update_iotlb(dev, 0ULL, ULLONG_MAX);
+>>> +     if (ret) {
+>>> +             vduse_domain_clear_map(dev->domain, iotlb);
+>>> +             return ret;
+>>> +     }
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static void vduse_vdpa_free(struct vdpa_device *vdpa)
+>>> +{
+>>> +     struct vduse_dev *dev = vdpa_to_vduse(vdpa);
+>>> +
+>>> +     dev->vdev = NULL;
+>>> +}
+>>> +
+>>> +static const struct vdpa_config_ops vduse_vdpa_config_ops = {
+>>> +     .set_vq_address         = vduse_vdpa_set_vq_address,
+>>> +     .kick_vq                = vduse_vdpa_kick_vq,
+>>> +     .set_vq_cb              = vduse_vdpa_set_vq_cb,
+>>> +     .set_vq_num             = vduse_vdpa_set_vq_num,
+>>> +     .set_vq_ready           = vduse_vdpa_set_vq_ready,
+>>> +     .get_vq_ready           = vduse_vdpa_get_vq_ready,
+>>> +     .set_vq_state           = vduse_vdpa_set_vq_state,
+>>> +     .get_vq_state           = vduse_vdpa_get_vq_state,
+>>> +     .get_vq_align           = vduse_vdpa_get_vq_align,
+>>> +     .get_features           = vduse_vdpa_get_features,
+>>> +     .set_features           = vduse_vdpa_set_features,
+>>> +     .set_config_cb          = vduse_vdpa_set_config_cb,
+>>> +     .get_vq_num_max         = vduse_vdpa_get_vq_num_max,
+>>> +     .get_device_id          = vduse_vdpa_get_device_id,
+>>> +     .get_vendor_id          = vduse_vdpa_get_vendor_id,
+>>> +     .get_status             = vduse_vdpa_get_status,
+>>> +     .set_status             = vduse_vdpa_set_status,
+>>> +     .get_config_size        = vduse_vdpa_get_config_size,
+>>> +     .get_config             = vduse_vdpa_get_config,
+>>> +     .set_config             = vduse_vdpa_set_config,
+>>> +     .get_generation         = vduse_vdpa_get_generation,
+>>> +     .set_map                = vduse_vdpa_set_map,
+>>> +     .free                   = vduse_vdpa_free,
+>>> +};
+>>> +
+>>> +static dma_addr_t vduse_dev_map_page(struct device *dev, struct page *page,
+>>> +                                  unsigned long offset, size_t size,
+>>> +                                  enum dma_data_direction dir,
+>>> +                                  unsigned long attrs)
+>>> +{
+>>> +     struct vduse_dev *vdev = dev_to_vduse(dev);
+>>> +     struct vduse_iova_domain *domain = vdev->domain;
+>>> +
+>>> +     return vduse_domain_map_page(domain, page, offset, size, dir, attrs);
+>>> +}
+>>> +
+>>> +static void vduse_dev_unmap_page(struct device *dev, dma_addr_t dma_addr,
+>>> +                             size_t size, enum dma_data_direction dir,
+>>> +                             unsigned long attrs)
+>>> +{
+>>> +     struct vduse_dev *vdev = dev_to_vduse(dev);
+>>> +     struct vduse_iova_domain *domain = vdev->domain;
+>>> +
+>>> +     return vduse_domain_unmap_page(domain, dma_addr, size, dir, attrs);
+>>> +}
+>>> +
+>>> +static void *vduse_dev_alloc_coherent(struct device *dev, size_t size,
+>>> +                                     dma_addr_t *dma_addr, gfp_t flag,
+>>> +                                     unsigned long attrs)
+>>> +{
+>>> +     struct vduse_dev *vdev = dev_to_vduse(dev);
+>>> +     struct vduse_iova_domain *domain = vdev->domain;
+>>> +     unsigned long iova;
+>>> +     void *addr;
+>>> +
+>>> +     *dma_addr = DMA_MAPPING_ERROR;
+>>> +     addr = vduse_domain_alloc_coherent(domain, size,
+>>> +                             (dma_addr_t *)&iova, flag, attrs);
+>>> +     if (!addr)
+>>> +             return NULL;
+>>> +
+>>> +     *dma_addr = (dma_addr_t)iova;
+>>> +
+>>> +     return addr;
+>>> +}
+>>> +
+>>> +static void vduse_dev_free_coherent(struct device *dev, size_t size,
+>>> +                                     void *vaddr, dma_addr_t dma_addr,
+>>> +                                     unsigned long attrs)
+>>> +{
+>>> +     struct vduse_dev *vdev = dev_to_vduse(dev);
+>>> +     struct vduse_iova_domain *domain = vdev->domain;
+>>> +
+>>> +     vduse_domain_free_coherent(domain, size, vaddr, dma_addr, attrs);
+>>> +}
+>>> +
+>>> +static size_t vduse_dev_max_mapping_size(struct device *dev)
+>>> +{
+>>> +     struct vduse_dev *vdev = dev_to_vduse(dev);
+>>> +     struct vduse_iova_domain *domain = vdev->domain;
+>>> +
+>>> +     return domain->bounce_size;
+>>> +}
+>>> +
+>>> +static const struct dma_map_ops vduse_dev_dma_ops = {
+>>> +     .map_page = vduse_dev_map_page,
+>>> +     .unmap_page = vduse_dev_unmap_page,
+>>> +     .alloc = vduse_dev_alloc_coherent,
+>>> +     .free = vduse_dev_free_coherent,
+>>> +     .max_mapping_size = vduse_dev_max_mapping_size,
+>>> +};
+>>> +
+>>> +static unsigned int perm_to_file_flags(u8 perm)
+>>> +{
+>>> +     unsigned int flags = 0;
+>>> +
+>>> +     switch (perm) {
+>>> +     case VDUSE_ACCESS_WO:
+>>> +             flags |= O_WRONLY;
+>>> +             break;
+>>> +     case VDUSE_ACCESS_RO:
+>>> +             flags |= O_RDONLY;
+>>> +             break;
+>>> +     case VDUSE_ACCESS_RW:
+>>> +             flags |= O_RDWR;
+>>> +             break;
+>>> +     default:
+>>> +             WARN(1, "invalidate vhost IOTLB permission\n");
+>>> +             break;
+>>> +     }
+>>> +
+>>> +     return flags;
+>>> +}
+>>> +
+>>> +static int vduse_kickfd_setup(struct vduse_dev *dev,
+>>> +                     struct vduse_vq_eventfd *eventfd)
+>>> +{
+>>> +     struct eventfd_ctx *ctx = NULL;
+>>> +     struct vduse_virtqueue *vq;
+>>> +     u32 index;
+>>> +
+>>> +     if (eventfd->index >= dev->vq_num)
+>>> +             return -EINVAL;
+>>> +
+>>> +     index = array_index_nospec(eventfd->index, dev->vq_num);
+>>> +     vq = &dev->vqs[index];
+>>> +     if (eventfd->fd >= 0) {
+>>> +             ctx = eventfd_ctx_fdget(eventfd->fd);
+>>> +             if (IS_ERR(ctx))
+>>> +                     return PTR_ERR(ctx);
+>>> +     } else if (eventfd->fd != VDUSE_EVENTFD_DEASSIGN)
+>>> +             return 0;
+>>> +
+>>> +     spin_lock(&vq->kick_lock);
+>>> +     if (vq->kickfd)
+>>> +             eventfd_ctx_put(vq->kickfd);
+>>> +     vq->kickfd = ctx;
+>>> +     if (vq->ready && vq->kicked && vq->kickfd) {
+>>> +             eventfd_signal(vq->kickfd, 1);
+>>> +             vq->kicked = false;
+>>> +     }
+>>> +     spin_unlock(&vq->kick_lock);
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static void vduse_dev_irq_inject(struct work_struct *work)
+>>> +{
+>>> +     struct vduse_dev *dev = container_of(work, struct vduse_dev, inject);
+>>> +
+>>> +     spin_lock_irq(&dev->irq_lock);
+>>> +     if (dev->config_cb.callback)
+>>> +             dev->config_cb.callback(dev->config_cb.private);
+>>> +     spin_unlock_irq(&dev->irq_lock);
+>>> +}
+>>> +
+>>> +static void vduse_vq_irq_inject(struct work_struct *work)
+>>> +{
+>>> +     struct vduse_virtqueue *vq = container_of(work,
+>>> +                                     struct vduse_virtqueue, inject);
+>>> +
+>>> +     spin_lock_irq(&vq->irq_lock);
+>>> +     if (vq->ready && vq->cb.callback)
+>>> +             vq->cb.callback(vq->cb.private);
+>>> +     spin_unlock_irq(&vq->irq_lock);
+>>> +}
+>>> +
+>>> +static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
+>>> +                         unsigned long arg)
+>>> +{
+>>> +     struct vduse_dev *dev = file->private_data;
+>>> +     void __user *argp = (void __user *)arg;
+>>> +     int ret;
+>>> +
+>>> +     switch (cmd) {
+>>> +     case VDUSE_IOTLB_GET_FD: {
+>>> +             struct vduse_iotlb_entry entry;
+>>> +             struct vhost_iotlb_map *map;
+>>> +             struct vdpa_map_file *map_file;
+>>> +             struct vduse_iova_domain *domain = dev->domain;
+>>> +             struct file *f = NULL;
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (copy_from_user(&entry, argp, sizeof(entry)))
+>>> +                     break;
+>>> +
+>>> +             ret = -EINVAL;
+>>> +             if (entry.start > entry.last)
+>>> +                     break;
+>>> +
+>>> +             spin_lock(&domain->iotlb_lock);
+>>> +             map = vhost_iotlb_itree_first(domain->iotlb,
+>>> +                                           entry.start, entry.last);
+>>> +             if (map) {
+>>> +                     map_file = (struct vdpa_map_file *)map->opaque;
+>>> +                     f = get_file(map_file->file);
+>>> +                     entry.offset = map_file->offset;
+>>> +                     entry.start = map->start;
+>>> +                     entry.last = map->last;
+>>> +                     entry.perm = map->perm;
+>>> +             }
+>>> +             spin_unlock(&domain->iotlb_lock);
+>>> +             ret = -EINVAL;
+>>> +             if (!f)
+>>> +                     break;
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (copy_to_user(argp, &entry, sizeof(entry))) {
+>>> +                     fput(f);
+>>> +                     break;
+>>> +             }
+>>> +             ret = receive_fd(f, perm_to_file_flags(entry.perm));
+>>> +             fput(f);
+>>> +             break;
+>>> +     }
+>>> +     case VDUSE_DEV_GET_FEATURES:
+>>> +             ret = put_user(dev->features, (u64 __user *)argp);
+>>> +             break;
+>>> +     case VDUSE_DEV_UPDATE_CONFIG: {
+>>> +             struct vduse_config_update config;
+>>> +             unsigned long size = offsetof(struct vduse_config_update,
+>>> +                                           buffer);
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (copy_from_user(&config, argp, size))
+>>> +                     break;
+>>> +
+>>> +             ret = -EINVAL;
+>>> +             if (config.length == 0 ||
+>>> +                 config.length > dev->config_size - config.offset)
+>>> +                     break;
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (copy_from_user(dev->config + config.offset, argp + size,
+>>> +                                config.length))
+>>> +                     break;
+>>> +
+>>> +             ret = 0;
+>>> +             queue_work(vduse_irq_wq, &dev->inject);
+>>
+>> I wonder if it's better to separate config interrupt out of config
+>> update or we need document this.
+>>
+> I have documented it in the docs. Looks like a config update should be
+> always followed by a config interrupt. I didn't find a case that uses
+> them separately.
+
+
+The uAPI doesn't prevent us from the following scenario:
+
+update_config(mac[0], ..);
+update_config(max[1], ..);
+
+So it looks to me it's better to separate the config interrupt from the 
+config updating.
+
+
+>
+>>> +             break;
+>>> +     }
+>>> +     case VDUSE_VQ_GET_INFO: {
+>>
+>> Do we need to limit this only when DRIVER_OK is set?
+>>
+> Any reason to add this limitation?
+
+
+Otherwise the vq is not fully initialized, e.g the desc_addr might not 
+be correct.
+
+
+>
+>>> +             struct vduse_vq_info vq_info;
+>>> +             u32 vq_index;
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (copy_from_user(&vq_info, argp, sizeof(vq_info)))
+>>> +                     break;
+>>> +
+>>> +             ret = -EINVAL;
+>>> +             if (vq_info.index >= dev->vq_num)
+>>> +                     break;
+>>> +
+>>> +             vq_index = array_index_nospec(vq_info.index, dev->vq_num);
+>>> +             vq_info.desc_addr = dev->vqs[vq_index].desc_addr;
+>>> +             vq_info.driver_addr = dev->vqs[vq_index].driver_addr;
+>>> +             vq_info.device_addr = dev->vqs[vq_index].device_addr;
+>>> +             vq_info.num = dev->vqs[vq_index].num;
+>>> +             vq_info.avail_idx = dev->vqs[vq_index].avail_idx;
+>>> +             vq_info.ready = dev->vqs[vq_index].ready;
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (copy_to_user(argp, &vq_info, sizeof(vq_info)))
+>>> +                     break;
+>>> +
+>>> +             ret = 0;
+>>> +             break;
+>>> +     }
+>>> +     case VDUSE_VQ_SETUP_KICKFD: {
+>>> +             struct vduse_vq_eventfd eventfd;
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (copy_from_user(&eventfd, argp, sizeof(eventfd)))
+>>> +                     break;
+>>> +
+>>> +             ret = vduse_kickfd_setup(dev, &eventfd);
+>>> +             break;
+>>> +     }
+>>> +     case VDUSE_VQ_INJECT_IRQ: {
+>>> +             u32 vq_index;
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (get_user(vq_index, (u32 __user *)argp))
+>>> +                     break;
+>>> +
+>>> +             ret = -EINVAL;
+>>> +             if (vq_index >= dev->vq_num)
+>>> +                     break;
+>>> +
+>>> +             ret = 0;
+>>> +             vq_index = array_index_nospec(vq_index, dev->vq_num);
+>>> +             queue_work(vduse_irq_wq, &dev->vqs[vq_index].inject);
+>>> +             break;
+>>> +     }
+>>> +     default:
+>>> +             ret = -ENOIOCTLCMD;
+>>> +             break;
+>>> +     }
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static int vduse_dev_release(struct inode *inode, struct file *file)
+>>> +{
+>>> +     struct vduse_dev *dev = file->private_data;
+>>> +
+>>> +     spin_lock(&dev->msg_lock);
+>>> +     /* Make sure the inflight messages can processed after reconncection */
+>>> +     list_splice_init(&dev->recv_list, &dev->send_list);
+>>> +     spin_unlock(&dev->msg_lock);
+>>> +     dev->connected = false;
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static struct vduse_dev *vduse_dev_get_from_minor(int minor)
+>>> +{
+>>> +     struct vduse_dev *dev;
+>>> +
+>>> +     mutex_lock(&vduse_lock);
+>>> +     dev = idr_find(&vduse_idr, minor);
+>>> +     mutex_unlock(&vduse_lock);
+>>> +
+>>> +     return dev;
+>>> +}
+>>> +
+>>> +static int vduse_dev_open(struct inode *inode, struct file *file)
+>>> +{
+>>> +     int ret;
+>>> +     struct vduse_dev *dev = vduse_dev_get_from_minor(iminor(inode));
+>>> +
+>>> +     if (!dev)
+>>> +             return -ENODEV;
+>>> +
+>>> +     ret = -EBUSY;
+>>> +     mutex_lock(&dev->lock);
+>>> +     if (dev->connected)
+>>> +             goto unlock;
+>>> +
+>>> +     ret = 0;
+>>> +     dev->connected = true;
+>>> +     file->private_data = dev;
+>>> +unlock:
+>>> +     mutex_unlock(&dev->lock);
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static const struct file_operations vduse_dev_fops = {
+>>> +     .owner          = THIS_MODULE,
+>>> +     .open           = vduse_dev_open,
+>>> +     .release        = vduse_dev_release,
+>>> +     .read_iter      = vduse_dev_read_iter,
+>>> +     .write_iter     = vduse_dev_write_iter,
+>>> +     .poll           = vduse_dev_poll,
+>>> +     .unlocked_ioctl = vduse_dev_ioctl,
+>>> +     .compat_ioctl   = compat_ptr_ioctl,
+>>> +     .llseek         = noop_llseek,
+>>> +};
+>>> +
+>>> +static struct vduse_dev *vduse_dev_create(void)
+>>> +{
+>>> +     struct vduse_dev *dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+>>> +
+>>> +     if (!dev)
+>>> +             return NULL;
+>>> +
+>>> +     mutex_init(&dev->lock);
+>>> +     spin_lock_init(&dev->msg_lock);
+>>> +     INIT_LIST_HEAD(&dev->send_list);
+>>> +     INIT_LIST_HEAD(&dev->recv_list);
+>>> +     spin_lock_init(&dev->irq_lock);
+>>> +
+>>> +     INIT_WORK(&dev->inject, vduse_dev_irq_inject);
+>>> +     init_waitqueue_head(&dev->waitq);
+>>> +
+>>> +     return dev;
+>>> +}
+>>> +
+>>> +static void vduse_dev_destroy(struct vduse_dev *dev)
+>>> +{
+>>> +     kfree(dev);
+>>> +}
+>>> +
+>>> +static struct vduse_dev *vduse_find_dev(const char *name)
+>>> +{
+>>> +     struct vduse_dev *dev;
+>>> +     int id;
+>>> +
+>>> +     idr_for_each_entry(&vduse_idr, dev, id)
+>>> +             if (!strcmp(dev->name, name))
+>>> +                     return dev;
+>>> +
+>>> +     return NULL;
+>>> +}
+>>> +
+>>> +static int vduse_destroy_dev(char *name)
+>>> +{
+>>> +     struct vduse_dev *dev = vduse_find_dev(name);
+>>> +
+>>> +     if (!dev)
+>>> +             return -EINVAL;
+>>> +
+>>> +     mutex_lock(&dev->lock);
+>>> +     if (dev->vdev || dev->connected) {
+>>> +             mutex_unlock(&dev->lock);
+>>> +             return -EBUSY;
+>>> +     }
+>>> +     dev->connected = true;
+>>> +     mutex_unlock(&dev->lock);
+>>> +
+>>> +     vduse_dev_msg_cleanup(dev);
+>>> +     device_destroy(vduse_class, MKDEV(MAJOR(vduse_major), dev->minor));
+>>> +     idr_remove(&vduse_idr, dev->minor);
+>>> +     kvfree(dev->config);
+>>> +     kfree(dev->vqs);
+>>> +     vduse_domain_destroy(dev->domain);
+>>> +     kfree(dev->name);
+>>> +     vduse_dev_destroy(dev);
+>>> +     module_put(THIS_MODULE);
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static bool device_is_allowed(u32 device_id)
+>>> +{
+>>> +     int i;
+>>> +
+>>> +     for (i = 0; i < ARRAY_SIZE(allowed_device_id); i++)
+>>> +             if (allowed_device_id[i] == device_id)
+>>> +                     return true;
+>>> +
+>>> +     return false;
+>>> +}
+>>> +
+>>> +static bool features_is_valid(u64 features)
+>>> +{
+>>> +     if (!(features & (1ULL << VIRTIO_F_ACCESS_PLATFORM)))
+>>> +             return false;
+>>> +
+>>> +     /* Now we only support read-only configuration space */
+>>> +     if (features & (1ULL << VIRTIO_BLK_F_CONFIG_WCE))
+>>> +             return false;
+>>> +
+>>> +     return true;
+>>> +}
+>>> +
+>>> +static bool vduse_validate_config(struct vduse_dev_config *config)
+>>> +{
+>>> +     if (config->bounce_size > VDUSE_MAX_BOUNCE_SIZE)
+>>> +             return false;
+>>> +
+>>> +     if (config->vq_align > PAGE_SIZE)
+>>> +             return false;
+>>> +
+>>> +     if (config->config_size > PAGE_SIZE)
+>>> +             return false;
+>>> +
+>>> +     if (!device_is_allowed(config->device_id))
+>>> +             return false;
+>>> +
+>>> +     if (!features_is_valid(config->features))
+>>> +             return false;
+>>
+>> Do we need to validate whether or not config_size is too small otherwise
+>> we may have OOB access in get_config()?
+>>
+> How about adding validation in get_config()? It seems to be hard to
+> define the lower bound.
+
+
+It should work.
 
 Thanks
 
 
 >
+>>> +
+>>> +     return true;
+>>> +}
+>>> +
+>>> +static int vduse_create_dev(struct vduse_dev_config *config,
+>>> +                         void *config_buf, u64 api_version)
+>>> +{
+>>> +     int i, ret;
+>>> +     struct vduse_dev *dev;
+>>> +
+>>> +     ret = -EEXIST;
+>>> +     if (vduse_find_dev(config->name))
+>>> +             goto err;
+>>> +
+>>> +     ret = -ENOMEM;
+>>> +     dev = vduse_dev_create();
+>>> +     if (!dev)
+>>> +             goto err;
+>>> +
+>>> +     dev->api_version = api_version;
+>>> +     dev->user_features = config->features;
+>>> +     dev->device_id = config->device_id;
+>>> +     dev->vendor_id = config->vendor_id;
+>>> +     dev->name = kstrdup(config->name, GFP_KERNEL);
+>>> +     if (!dev->name)
+>>> +             goto err_str;
+>>> +
+>>> +     dev->domain = vduse_domain_create(VDUSE_IOVA_SIZE - 1,
+>>> +                                       config->bounce_size);
+>>> +     if (!dev->domain)
+>>> +             goto err_domain;
+>>> +
+>>> +     dev->config = config_buf;
+>>> +     dev->config_size = config->config_size;
+>>> +     dev->vq_align = config->vq_align;
+>>> +     dev->vq_size_max = config->vq_size_max;
+>>> +     dev->vq_num = config->vq_num;
+>>> +     dev->vqs = kcalloc(dev->vq_num, sizeof(*dev->vqs), GFP_KERNEL);
+>>> +     if (!dev->vqs)
+>>> +             goto err_vqs;
+>>> +
+>>> +     for (i = 0; i < dev->vq_num; i++) {
+>>> +             dev->vqs[i].index = i;
+>>> +             INIT_WORK(&dev->vqs[i].inject, vduse_vq_irq_inject);
+>>> +             spin_lock_init(&dev->vqs[i].kick_lock);
+>>> +             spin_lock_init(&dev->vqs[i].irq_lock);
+>>> +     }
+>>> +
+>>> +     ret = idr_alloc(&vduse_idr, dev, 1, VDUSE_DEV_MAX, GFP_KERNEL);
+>>> +     if (ret < 0)
+>>> +             goto err_idr;
+>>> +
+>>> +     dev->minor = ret;
+>>> +     dev->dev = device_create(vduse_class, NULL,
+>>> +                              MKDEV(MAJOR(vduse_major), dev->minor),
+>>> +                              NULL, "%s", config->name);
+>>> +     if (IS_ERR(dev->dev)) {
+>>> +             ret = PTR_ERR(dev->dev);
+>>> +             goto err_dev;
+>>> +     }
+>>> +     __module_get(THIS_MODULE);
+>>> +
+>>> +     return 0;
+>>> +err_dev:
+>>> +     idr_remove(&vduse_idr, dev->minor);
+>>> +err_idr:
+>>> +     kfree(dev->vqs);
+>>> +err_vqs:
+>>> +     vduse_domain_destroy(dev->domain);
+>>> +err_domain:
+>>> +     kfree(dev->name);
+>>> +err_str:
+>>> +     vduse_dev_destroy(dev);
+>>> +err:
+>>> +     kvfree(config_buf);
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static long vduse_ioctl(struct file *file, unsigned int cmd,
+>>> +                     unsigned long arg)
+>>> +{
+>>> +     int ret;
+>>> +     void __user *argp = (void __user *)arg;
+>>> +     struct vduse_control *control = file->private_data;
+>>> +
+>>> +     mutex_lock(&vduse_lock);
+>>> +     switch (cmd) {
+>>> +     case VDUSE_GET_API_VERSION:
+>>> +             ret = put_user(control->api_version, (u64 __user *)argp);
+>>> +             break;
+>>> +     case VDUSE_SET_API_VERSION: {
+>>> +             u64 api_version;
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (get_user(api_version, (u64 __user *)argp))
+>>> +                     break;
+>>> +
+>>> +             ret = -EINVAL;
+>>> +             if (api_version > VDUSE_API_VERSION)
+>>> +                     break;
+>>> +
+>>> +             ret = 0;
+>>> +             control->api_version = api_version;
+>>> +             break;
+>>> +     }
+>>> +     case VDUSE_CREATE_DEV: {
+>>> +             struct vduse_dev_config config;
+>>> +             unsigned long size = offsetof(struct vduse_dev_config, config);
+>>> +             void *buf;
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (copy_from_user(&config, argp, size))
+>>> +                     break;
+>>> +
+>>> +             ret = -EINVAL;
+>>> +             if (vduse_validate_config(&config) == false)
+>>> +                     break;
+>>> +
+>>> +             buf = vmemdup_user(argp + size, config.config_size);
+>>> +             if (IS_ERR(buf)) {
+>>> +                     ret = PTR_ERR(buf);
+>>> +                     break;
+>>> +             }
+>>> +             ret = vduse_create_dev(&config, buf, control->api_version);
+>>> +             break;
+>>> +     }
+>>> +     case VDUSE_DESTROY_DEV: {
+>>> +             char name[VDUSE_NAME_MAX];
+>>> +
+>>> +             ret = -EFAULT;
+>>> +             if (copy_from_user(name, argp, VDUSE_NAME_MAX))
+>>> +                     break;
+>>> +
+>>> +             ret = vduse_destroy_dev(name);
+>>> +             break;
+>>> +     }
+>>> +     default:
+>>> +             ret = -EINVAL;
+>>> +             break;
+>>> +     }
+>>> +     mutex_unlock(&vduse_lock);
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static int vduse_release(struct inode *inode, struct file *file)
+>>> +{
+>>> +     struct vduse_control *control = file->private_data;
+>>> +
+>>> +     kfree(control);
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static int vduse_open(struct inode *inode, struct file *file)
+>>> +{
+>>> +     struct vduse_control *control;
+>>> +
+>>> +     control = kmalloc(sizeof(struct vduse_control), GFP_KERNEL);
+>>> +     if (!control)
+>>> +             return -ENOMEM;
+>>> +
+>>> +     control->api_version = VDUSE_API_VERSION;
+>>> +     file->private_data = control;
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static const struct file_operations vduse_ctrl_fops = {
+>>> +     .owner          = THIS_MODULE,
+>>> +     .open           = vduse_open,
+>>> +     .release        = vduse_release,
+>>> +     .unlocked_ioctl = vduse_ioctl,
+>>> +     .compat_ioctl   = compat_ptr_ioctl,
+>>> +     .llseek         = noop_llseek,
+>>> +};
+>>> +
+>>> +static char *vduse_devnode(struct device *dev, umode_t *mode)
+>>> +{
+>>> +     return kasprintf(GFP_KERNEL, "vduse/%s", dev_name(dev));
+>>> +}
+>>> +
+>>> +static void vduse_mgmtdev_release(struct device *dev)
+>>> +{
+>>> +}
+>>> +
+>>> +static struct device vduse_mgmtdev = {
+>>> +     .init_name = "vduse",
+>>> +     .release = vduse_mgmtdev_release,
+>>> +};
+>>> +
+>>> +static struct vdpa_mgmt_dev mgmt_dev;
+>>> +
+>>> +static int vduse_dev_init_vdpa(struct vduse_dev *dev, const char *name)
+>>> +{
+>>> +     struct vduse_vdpa *vdev;
+>>> +     int ret;
+>>> +
+>>> +     if (dev->vdev)
+>>> +             return -EEXIST;
+>>> +
+>>> +     vdev = vdpa_alloc_device(struct vduse_vdpa, vdpa, dev->dev,
+>>> +                              &vduse_vdpa_config_ops, name, true);
+>>> +     if (!vdev)
+>>> +             return -ENOMEM;
+>>> +
+>>> +     dev->vdev = vdev;
+>>> +     vdev->dev = dev;
+>>> +     vdev->vdpa.dev.dma_mask = &vdev->vdpa.dev.coherent_dma_mask;
+>>> +     ret = dma_set_mask_and_coherent(&vdev->vdpa.dev, DMA_BIT_MASK(64));
+>>> +     if (ret) {
+>>> +             put_device(&vdev->vdpa.dev);
+>>> +             return ret;
+>>> +     }
+>>> +     set_dma_ops(&vdev->vdpa.dev, &vduse_dev_dma_ops);
+>>> +     vdev->vdpa.dma_dev = &vdev->vdpa.dev;
+>>> +     vdev->vdpa.mdev = &mgmt_dev;
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static int vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name)
+>>> +{
+>>> +     struct vduse_dev *dev;
+>>> +     int ret;
+>>> +
+>>> +     mutex_lock(&vduse_lock);
+>>> +     dev = vduse_find_dev(name);
+>>> +     if (!dev) {
+>>> +             mutex_unlock(&vduse_lock);
+>>> +             return -EINVAL;
+>>> +     }
+>>> +     ret = vduse_dev_init_vdpa(dev, name);
+>>> +     mutex_unlock(&vduse_lock);
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     ret = _vdpa_register_device(&dev->vdev->vdpa, dev->vq_num);
+>>> +     if (ret) {
+>>> +             put_device(&dev->vdev->vdpa.dev);
+>>> +             return ret;
+>>> +     }
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static void vdpa_dev_del(struct vdpa_mgmt_dev *mdev, struct vdpa_device *dev)
+>>> +{
+>>> +     _vdpa_unregister_device(dev);
+>>> +}
+>>> +
+>>> +static const struct vdpa_mgmtdev_ops vdpa_dev_mgmtdev_ops = {
+>>> +     .dev_add = vdpa_dev_add,
+>>> +     .dev_del = vdpa_dev_del,
+>>> +};
+>>> +
+>>> +static struct virtio_device_id id_table[] = {
+>>> +     { VIRTIO_ID_BLOCK, VIRTIO_DEV_ANY_ID },
+>>> +     { 0 },
+>>> +};
+>>> +
+>>> +static struct vdpa_mgmt_dev mgmt_dev = {
+>>> +     .device = &vduse_mgmtdev,
+>>> +     .id_table = id_table,
+>>> +     .ops = &vdpa_dev_mgmtdev_ops,
+>>> +};
+>>> +
+>>> +static int vduse_mgmtdev_init(void)
+>>> +{
+>>> +     int ret;
+>>> +
+>>> +     ret = device_register(&vduse_mgmtdev);
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     ret = vdpa_mgmtdev_register(&mgmt_dev);
+>>> +     if (ret)
+>>> +             goto err;
+>>> +
+>>> +     return 0;
+>>> +err:
+>>> +     device_unregister(&vduse_mgmtdev);
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static void vduse_mgmtdev_exit(void)
+>>> +{
+>>> +     vdpa_mgmtdev_unregister(&mgmt_dev);
+>>> +     device_unregister(&vduse_mgmtdev);
+>>> +}
+>>> +
+>>> +static int vduse_init(void)
+>>> +{
+>>> +     int ret;
+>>> +     struct device *dev;
+>>> +
+>>> +     vduse_class = class_create(THIS_MODULE, "vduse");
+>>> +     if (IS_ERR(vduse_class))
+>>> +             return PTR_ERR(vduse_class);
+>>> +
+>>> +     vduse_class->devnode = vduse_devnode;
+>>> +
+>>> +     ret = alloc_chrdev_region(&vduse_major, 0, VDUSE_DEV_MAX, "vduse");
+>>> +     if (ret)
+>>> +             goto err_chardev_region;
+>>> +
+>>> +     /* /dev/vduse/control */
+>>> +     cdev_init(&vduse_ctrl_cdev, &vduse_ctrl_fops);
+>>> +     vduse_ctrl_cdev.owner = THIS_MODULE;
+>>> +     ret = cdev_add(&vduse_ctrl_cdev, vduse_major, 1);
+>>> +     if (ret)
+>>> +             goto err_ctrl_cdev;
+>>> +
+>>> +     dev = device_create(vduse_class, NULL, vduse_major, NULL, "control");
+>>> +     if (IS_ERR(dev)) {
+>>> +             ret = PTR_ERR(dev);
+>>> +             goto err_device;
+>>> +     }
+>>> +
+>>> +     /* /dev/vduse/$DEVICE */
+>>> +     cdev_init(&vduse_cdev, &vduse_dev_fops);
+>>> +     vduse_cdev.owner = THIS_MODULE;
+>>> +     ret = cdev_add(&vduse_cdev, MKDEV(MAJOR(vduse_major), 1),
+>>> +                    VDUSE_DEV_MAX - 1);
+>>> +     if (ret)
+>>> +             goto err_cdev;
+>>> +
+>>> +     vduse_irq_wq = alloc_workqueue("vduse-irq",
+>>> +                             WQ_HIGHPRI | WQ_SYSFS | WQ_UNBOUND, 0);
+>>> +     if (!vduse_irq_wq)
+>>> +             goto err_wq;
+>>> +
+>>> +     ret = vduse_domain_init();
+>>> +     if (ret)
+>>> +             goto err_domain;
+>>> +
+>>> +     ret = vduse_mgmtdev_init();
+>>> +     if (ret)
+>>> +             goto err_mgmtdev;
+>>> +
+>>> +     return 0;
+>>> +err_mgmtdev:
+>>> +     vduse_domain_exit();
+>>> +err_domain:
+>>> +     destroy_workqueue(vduse_irq_wq);
+>>> +err_wq:
+>>> +     cdev_del(&vduse_cdev);
+>>> +err_cdev:
+>>> +     device_destroy(vduse_class, vduse_major);
+>>> +err_device:
+>>> +     cdev_del(&vduse_ctrl_cdev);
+>>> +err_ctrl_cdev:
+>>> +     unregister_chrdev_region(vduse_major, VDUSE_DEV_MAX);
+>>> +err_chardev_region:
+>>> +     class_destroy(vduse_class);
+>>> +     return ret;
+>>> +}
+>>> +module_init(vduse_init);
+>>> +
+>>> +static void vduse_exit(void)
+>>> +{
+>>> +     vduse_mgmtdev_exit();
+>>> +     vduse_domain_exit();
+>>> +     destroy_workqueue(vduse_irq_wq);
+>>> +     cdev_del(&vduse_cdev);
+>>> +     device_destroy(vduse_class, vduse_major);
+>>> +     cdev_del(&vduse_ctrl_cdev);
+>>> +     unregister_chrdev_region(vduse_major, VDUSE_DEV_MAX);
+>>> +     class_destroy(vduse_class);
+>>> +}
+>>> +module_exit(vduse_exit);
+>>> +
+>>> +MODULE_LICENSE(DRV_LICENSE);
+>>> +MODULE_AUTHOR(DRV_AUTHOR);
+>>> +MODULE_DESCRIPTION(DRV_DESC);
+>>> diff --git a/include/uapi/linux/vduse.h b/include/uapi/linux/vduse.h
+>>> new file mode 100644
+>>> index 000000000000..f21b2e51b5c8
+>>> --- /dev/null
+>>> +++ b/include/uapi/linux/vduse.h
+>>> @@ -0,0 +1,143 @@
+>>> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+>>> +#ifndef _UAPI_VDUSE_H_
+>>> +#define _UAPI_VDUSE_H_
+>>> +
+>>> +#include <linux/types.h>
+>>> +
+>>> +#define VDUSE_API_VERSION    0
+>>> +
+>>> +#define VDUSE_NAME_MAX       256
+>>> +
+>>> +/* the control messages definition for read/write */
+>>> +
+>>> +enum vduse_req_type {
+>>> +     /* Get the state for virtqueue from userspace */
+>>> +     VDUSE_GET_VQ_STATE,
+>>> +     /* Notify userspace to start the dataplane, no reply */
+>>> +     VDUSE_START_DATAPLANE,
+>>> +     /* Notify userspace to stop the dataplane, no reply */
+>>> +     VDUSE_STOP_DATAPLANE,
+>>> +     /* Notify userspace to update the memory mapping in device IOTLB */
+>>> +     VDUSE_UPDATE_IOTLB,
+>>> +};
+>>> +
+>>> +struct vduse_vq_state {
+>>> +     __u32 index; /* virtqueue index */
+>>> +     __u32 avail_idx; /* virtqueue state (last_avail_idx) */
+>>> +};
+>>
+>> This needs some tweaks to support packed virtqueue.
+>>
+> OK.
 >
-
---------------AE6A664F681FA24A414B9D6B
-Content-Type: text/plain; charset=UTF-8; x-mac-type="0"; x-mac-creator="0";
- name="0001-vhost_net-validate-gso-metadata-only-if-socket-has-v.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename*0="0001-vhost_net-validate-gso-metadata-only-if-socket-has-v.pa";
- filename*1="tch"
-
-RnJvbSA1ZDc4NTAyN2RhODdlNDAxMzg0MDdkNzY4NDFmNWNkZDY0OTE0NTQxIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29t
-PgpEYXRlOiBUdWUsIDIyIEp1biAyMDIxIDEyOjA3OjU5ICswODAwClN1YmplY3Q6IFtQQVRD
-SCAxLzJdIHZob3N0X25ldDogdmFsaWRhdGUgZ3NvIG1ldGFkYXRhIG9ubHkgaWYgc29ja2V0
-IGhhcyB2bmV0CiBoZWFkZXIKCldoZW4gc29ja19obGVuIGlzIHplcm8sIHRoZXJlJ3Mgbm8g
-bmVlZCB0byB2YWxpZGF0ZSB0aGUgc29ja2V0IHZuZXQKaGVhZGVyIHNpbmNlIGl0IGRvZXNu
-J3Qgc3VwcG9ydCB0aGF0LgoKU2lnbmVkLW9mZi1ieTogSmFzb24gV2FuZyA8amFzb3dhbmdA
-cmVkaGF0LmNvbT4KLS0tCiBkcml2ZXJzL3Zob3N0L25ldC5jIHwgMiArLQogMSBmaWxlIGNo
-YW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvZHJp
-dmVycy92aG9zdC9uZXQuYyBiL2RyaXZlcnMvdmhvc3QvbmV0LmMKaW5kZXggZGY4MmIxMjQx
-NzBlLi41MDM0YzQ5NDliYzQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdmhvc3QvbmV0LmMKKysr
-IGIvZHJpdmVycy92aG9zdC9uZXQuYwpAQCAtNzI1LDcgKzcyNSw3IEBAIHN0YXRpYyBpbnQg
-dmhvc3RfbmV0X2J1aWxkX3hkcChzdHJ1Y3Qgdmhvc3RfbmV0X3ZpcnRxdWV1ZSAqbnZxLAog
-CWhkciA9IGJ1ZjsKIAlnc28gPSAmaGRyLT5nc287CiAKLQlpZiAoKGdzby0+ZmxhZ3MgJiBW
-SVJUSU9fTkVUX0hEUl9GX05FRURTX0NTVU0pICYmCisJaWYgKG52cS0+c29ja19obGVuICYm
-IChnc28tPmZsYWdzICYgVklSVElPX05FVF9IRFJfRl9ORUVEU19DU1VNKSAmJgogCSAgICB2
-aG9zdDE2X3RvX2NwdSh2cSwgZ3NvLT5jc3VtX3N0YXJ0KSArCiAJICAgIHZob3N0MTZfdG9f
-Y3B1KHZxLCBnc28tPmNzdW1fb2Zmc2V0KSArIDIgPgogCSAgICB2aG9zdDE2X3RvX2NwdSh2
-cSwgZ3NvLT5oZHJfbGVuKSkgewotLSAKMi4yNS4xCgo=
---------------AE6A664F681FA24A414B9D6B
-Content-Type: text/plain; charset=UTF-8; x-mac-type="0"; x-mac-creator="0";
- name="0002-tun-use-vnet-header-only-when-IFF_VNET_HDR-in-tun_xd.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename*0="0002-tun-use-vnet-header-only-when-IFF_VNET_HDR-in-tun_xd.pa";
- filename*1="tch"
-
-RnJvbSBkNWYzNmY3M2JlMDVlZTQyNWVjYTczYjYzYjM3ZDVhMjBiMjI4MzdhIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29t
-PgpEYXRlOiBUdWUsIDIyIEp1biAyMDIxIDEyOjM0OjU4ICswODAwClN1YmplY3Q6IFtQQVRD
-SCAyLzJdIHR1bjogdXNlIHZuZXQgaGVhZGVyIG9ubHkgd2hlbiBJRkZfVk5FVF9IRFIgaW4K
-IHR1bl94ZHBfb25lKCkKCldlIHNob3VsZCBub3QgdHJ5IHRvIHJlYWQgdm5ldCBoZWFkZXIg
-ZnJvbSB0aGUgeGRwIGJ1ZmZlciBpZgpJRkZfVk5FVF9IRFIgaXMgbm90IHNldCwgb3RoZXJ3
-aXNlIHdlIGJyZWFrIHRoZSBzZW1hbnRpYyBvZgpJRkZfVk5FVF9IRFIuCgpTaWduZWQtb2Zm
-LWJ5OiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPgotLS0KIGRyaXZlcnMvbmV0
-L3R1bi5jIHwgMTAgKysrKysrKy0tLQogMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygr
-KSwgMyBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC90dW4uYyBiL2Ry
-aXZlcnMvbmV0L3R1bi5jCmluZGV4IDg0ZjgzMjgwNjMxMy4uNzBjNGJiMjJlZjc4IDEwMDY0
-NAotLS0gYS9kcml2ZXJzL25ldC90dW4uYworKysgYi9kcml2ZXJzL25ldC90dW4uYwpAQCAt
-MjMzNCwxOCArMjMzNCwyMiBAQCBzdGF0aWMgaW50IHR1bl94ZHBfb25lKHN0cnVjdCB0dW5f
-c3RydWN0ICp0dW4sCiB7CiAJdW5zaWduZWQgaW50IGRhdGFzaXplID0geGRwLT5kYXRhX2Vu
-ZCAtIHhkcC0+ZGF0YTsKIAlzdHJ1Y3QgdHVuX3hkcF9oZHIgKmhkciA9IHhkcC0+ZGF0YV9o
-YXJkX3N0YXJ0OwotCXN0cnVjdCB2aXJ0aW9fbmV0X2hkciAqZ3NvID0gJmhkci0+Z3NvOwor
-CXN0cnVjdCB2aXJ0aW9fbmV0X2hkciBnc28gPSB7IDAgfTsKIAlzdHJ1Y3QgYnBmX3Byb2cg
-KnhkcF9wcm9nOwogCXN0cnVjdCBza19idWZmICpza2IgPSBOVUxMOwogCXUzMiByeGhhc2gg
-PSAwLCBhY3Q7CiAJaW50IGJ1ZmxlbiA9IGhkci0+YnVmbGVuOworCWJvb2wgdm5ldF9oZHIg
-PSB0dW4tPmZsYWdzICYgSUZGX1ZORVRfSERSOwogCWludCBlcnIgPSAwOwogCWJvb2wgc2ti
-X3hkcCA9IGZhbHNlOwogCXN0cnVjdCBwYWdlICpwYWdlOwogCisJaWYgKHZuZXRfaGRyKQor
-CQltZW1jcHkoJmdzbywgJmhkci0+Z3NvLCBzaXplb2YoZ3NvKSk7CisKIAl4ZHBfcHJvZyA9
-IHJjdV9kZXJlZmVyZW5jZSh0dW4tPnhkcF9wcm9nKTsKIAlpZiAoeGRwX3Byb2cpIHsKLQkJ
-aWYgKGdzby0+Z3NvX3R5cGUpIHsKKwkJaWYgKGdzby5nc29fdHlwZSkgewogCQkJc2tiX3hk
-cCA9IHRydWU7CiAJCQlnb3RvIGJ1aWxkOwogCQl9CkBAIC0yMzkxLDcgKzIzOTUsNyBAQCBz
-dGF0aWMgaW50IHR1bl94ZHBfb25lKHN0cnVjdCB0dW5fc3RydWN0ICp0dW4sCiAJc2tiX3Jl
-c2VydmUoc2tiLCB4ZHAtPmRhdGEgLSB4ZHAtPmRhdGFfaGFyZF9zdGFydCk7CiAJc2tiX3B1
-dChza2IsIHhkcC0+ZGF0YV9lbmQgLSB4ZHAtPmRhdGEpOwogCi0JaWYgKHZpcnRpb19uZXRf
-aGRyX3RvX3NrYihza2IsIGdzbywgdHVuX2lzX2xpdHRsZV9lbmRpYW4odHVuKSkpIHsKKwlp
-ZiAodmlydGlvX25ldF9oZHJfdG9fc2tiKHNrYiwgJmdzbywgdHVuX2lzX2xpdHRsZV9lbmRp
-YW4odHVuKSkpIHsKIAkJYXRvbWljX2xvbmdfaW5jKCZ0dW4tPnJ4X2ZyYW1lX2Vycm9ycyk7
-CiAJCWtmcmVlX3NrYihza2IpOwogCQllcnIgPSAtRUlOVkFMOwotLSAKMi4yNS4xCgo=
---------------AE6A664F681FA24A414B9D6B--
+> Thanks,
+> Yongji
+>
 
