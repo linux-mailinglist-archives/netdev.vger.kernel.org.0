@@ -2,248 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E84B3B10AA
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 01:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0142F3B10AF
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 01:38:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbhFVXij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 19:38:39 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:6849 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbhFVXii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 19:38:38 -0400
+        id S229849AbhFVXkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 19:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229704AbhFVXkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 19:40:17 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5F5C061574;
+        Tue, 22 Jun 2021 16:38:00 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id d9so1197625ioo.2;
+        Tue, 22 Jun 2021 16:38:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1624404983; x=1655940983;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=KiWM31DEZ9fCZKAZ2n31GvpR84Di+uhdfpU02AmyVmI=;
-  b=ZwfKpftf1DQti99amxMNqCi658QX49PE8rcFCGQi7A+0McgZXfHqMNWc
-   b7tyAMtKiwdTGDPHl5ZEvAVOFW3aNBwQNQ0WES17LXNQZEyO5mqmyBfK+
-   eN72/3ExgQWHFOBQ1UL/cPRWHOmquNTw8K7QljQSqUZIpxQKBM1RiFHXf
-   4=;
-X-IronPort-AV: E=Sophos;i="5.83,292,1616457600"; 
-   d="scan'208";a="117694856"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-76e0922c.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 22 Jun 2021 23:36:21 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2c-76e0922c.us-west-2.amazon.com (Postfix) with ESMTPS id 0240FA3103;
-        Tue, 22 Jun 2021 23:36:18 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Tue, 22 Jun 2021 23:36:18 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.115) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Tue, 22 Jun 2021 23:36:14 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-CC:     Yuchung Cheng <ycheng@google.com>, Martin KaFai Lau <kafai@fb.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>
-Subject: [PATCH net-next] tcp: Add stats for socket migration.
-Date:   Wed, 23 Jun 2021 08:35:29 +0900
-Message-ID: <20210622233529.65158-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.115]
-X-ClientProxiedBy: EX13D07UWB003.ant.amazon.com (10.43.161.66) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=8fEzBbUVM6Br303r9wPjZ5cak2kYT/wYK8XH8paPOy8=;
+        b=t4WqQZS7JomsUMWmchBW1LwUmA1X1tjqycdE8/wv3Ty5DZO8pMT1wLrLEIlM1zEd8B
+         hGie5vpGis6A21O/bmh+ccFaLF13IBcoC8z3kNgYDCVS6pf6TzPlLD+CllvItGnTrpga
+         jaPeFlzbxOQq6c9zxgIYgrtn2F+sn2w093v3TAFcw2iE4TIH5S7Sg+hVTg0M3+TPPIN3
+         af60S17dcplncx8LXcAqMB3zFCO1LI6Zxfu2mdgkVWwkxZ0DZXPWwyuPQktnSYK2RcbQ
+         ASxGR4ovGROCCsttE4L18YvFO9hh/34hUVLsx8w++bSsC+EvS7LMxSb9F7rSIY2kozUs
+         TLcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=8fEzBbUVM6Br303r9wPjZ5cak2kYT/wYK8XH8paPOy8=;
+        b=ERzVIMAioPBTp/7/iE8IXkcnE43ezvhN8pNEOsF9WzJt628Ywn6MzN2mQOb+569ynA
+         G037oa0uxaPmIw3GIV6K05zE5Y+oL5hTLXRQ1Ra0FmaYBR75CddF1cWtWAQ1ZYpAwCEb
+         CLYwHSGsASXhfF2RzcNI6dNHNtIf3R80LEurUGGMGVtul6PSyDY2hmM0sqIYhpYAJuCH
+         PEQM8NnhU4WY43mZgVA2HF4/oLvMd6npZqivyi8EhCm5/whAVjVbI3pYyxXJ1+UcsuNQ
+         OW6lHr1qL/LmgyYHsDrkVKfTawQ1UO5djRIR6X2lPzqo/DETAfO66lBHNikO1MWG5c9D
+         lPTA==
+X-Gm-Message-State: AOAM530UCGmhOWlfx7yQyfMtbv4/60OoUeLAtpo7TgGa53o9IouK8m/z
+        tTII9Na0SgUFx2gZB2bJInA=
+X-Google-Smtp-Source: ABdhPJzOpjusoTATNk78lE6l9ADCbWG7QsB5AbJP09T0NvBUROQ6qhwbsZy3kx0htbtTNqPEZ/vAIQ==
+X-Received: by 2002:a05:6602:2001:: with SMTP id y1mr4815280iod.181.1624405079751;
+        Tue, 22 Jun 2021 16:37:59 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id z19sm12307486ioc.29.2021.06.22.16.37.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Jun 2021 16:37:59 -0700 (PDT)
+Date:   Tue, 22 Jun 2021 16:37:50 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
+        brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com
+Message-ID: <60d2744ee12c2_1342e208f7@john-XPS-13-9370.notmuch>
+In-Reply-To: <863f4934d251f44ad85a6be08b3737fac74f9b5a.1623674025.git.lorenzo@kernel.org>
+References: <cover.1623674025.git.lorenzo@kernel.org>
+ <863f4934d251f44ad85a6be08b3737fac74f9b5a.1623674025.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v9 bpf-next 08/14] bpf: add multi-buff support to the
+ bpf_xdp_adjust_tail() API
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds two stats for the socket migration feature to evaluate the
-effectiveness: LINUX_MIB_TCPMIGRATEREQ(SUCCESS|FAILURE).
+Lorenzo Bianconi wrote:
+> From: Eelco Chaudron <echaudro@redhat.com>
+> 
+> This change adds support for tail growing and shrinking for XDP multi-buff.
+> 
 
-If the migration fails because of the own_req race in receiving ACK and
-sending SYN+ACK paths, we do not increment the failure stat. Then another
-CPU is responsible for the req.
+It would be nice if the commit message gave us some details on how the
+growing/shrinking works in the multi-buff support.
 
-Link: https://lore.kernel.org/bpf/CAK6E8=cgFKuGecTzSCSQ8z3YJ_163C0uwO9yRvfDSE7vOe9mJA@mail.gmail.com/
-Suggested-by: Yuchung Cheng <ycheng@google.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
----
- include/uapi/linux/snmp.h       |  2 ++
- net/core/sock_reuseport.c       | 15 +++++++++++----
- net/ipv4/inet_connection_sock.c | 15 +++++++++++++--
- net/ipv4/proc.c                 |  2 ++
- net/ipv4/tcp_minisocks.c        |  3 +++
- 5 files changed, 31 insertions(+), 6 deletions(-)
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  include/net/xdp.h |  7 ++++++
+>  net/core/filter.c | 62 +++++++++++++++++++++++++++++++++++++++++++++++
+>  net/core/xdp.c    |  5 ++--
+>  3 files changed, 72 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 935a6f83115f..3525801c6ed5 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -132,6 +132,11 @@ xdp_get_shared_info_from_buff(struct xdp_buff *xdp)
+>  	return (struct skb_shared_info *)xdp_data_hard_end(xdp);
+>  }
+>  
+> +static inline unsigned int xdp_get_frag_tailroom(const skb_frag_t *frag)
+> +{
+> +	return PAGE_SIZE - skb_frag_size(frag) - skb_frag_off(frag);
+> +}
+> +
+>  struct xdp_frame {
+>  	void *data;
+>  	u16 len;
+> @@ -259,6 +264,8 @@ struct xdp_frame *xdp_convert_buff_to_frame(struct xdp_buff *xdp)
+>  	return xdp_frame;
+>  }
+>  
+> +void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
+> +		  struct xdp_buff *xdp);
+>  void xdp_return_frame(struct xdp_frame *xdpf);
+>  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf);
+>  void xdp_return_buff(struct xdp_buff *xdp);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index caa88955562e..05f574a3d690 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3859,11 +3859,73 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
+>  	.arg2_type	= ARG_ANYTHING,
+>  };
+>  
+> +static int bpf_xdp_mb_adjust_tail(struct xdp_buff *xdp, int offset)
+> +{
+> +	struct skb_shared_info *sinfo;
+> +
+> +	if (unlikely(!xdp_buff_is_mb(xdp)))
+> +		return -EINVAL;
+> +
+> +	sinfo = xdp_get_shared_info_from_buff(xdp);
+> +	if (offset >= 0) {
+> +		skb_frag_t *frag = &sinfo->frags[sinfo->nr_frags - 1];
+> +		int size;
+> +
+> +		if (unlikely(offset > xdp_get_frag_tailroom(frag)))
+> +			return -EINVAL;
+> +
+> +		size = skb_frag_size(frag);
+> +		memset(skb_frag_address(frag) + size, 0, offset);
+> +		skb_frag_size_set(frag, size + offset);
+> +		sinfo->data_len += offset;
 
-diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-index 26fc60ce9298..904909d020e2 100644
---- a/include/uapi/linux/snmp.h
-+++ b/include/uapi/linux/snmp.h
-@@ -290,6 +290,8 @@ enum
- 	LINUX_MIB_TCPDUPLICATEDATAREHASH,	/* TCPDuplicateDataRehash */
- 	LINUX_MIB_TCPDSACKRECVSEGS,		/* TCPDSACKRecvSegs */
- 	LINUX_MIB_TCPDSACKIGNOREDDUBIOUS,	/* TCPDSACKIgnoredDubious */
-+	LINUX_MIB_TCPMIGRATEREQSUCCESS,		/* TCPMigrateReqSuccess */
-+	LINUX_MIB_TCPMIGRATEREQFAILURE,		/* TCPMigrateReqFailure */
- 	__LINUX_MIB_MAX
- };
- 
-diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-index de5ee3ae86d5..3f00a28fe762 100644
---- a/net/core/sock_reuseport.c
-+++ b/net/core/sock_reuseport.c
-@@ -6,6 +6,7 @@
-  * selecting the socket index from the array of available sockets.
-  */
- 
-+#include <net/ip.h>
- #include <net/sock_reuseport.h>
- #include <linux/bpf.h>
- #include <linux/idr.h>
-@@ -536,7 +537,7 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
- 
- 	socks = READ_ONCE(reuse->num_socks);
- 	if (unlikely(!socks))
--		goto out;
-+		goto failure;
- 
- 	/* paired with smp_wmb() in __reuseport_add_sock() */
- 	smp_rmb();
-@@ -546,13 +547,13 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
- 	if (!prog || prog->expected_attach_type != BPF_SK_REUSEPORT_SELECT_OR_MIGRATE) {
- 		if (sock_net(sk)->ipv4.sysctl_tcp_migrate_req)
- 			goto select_by_hash;
--		goto out;
-+		goto failure;
- 	}
- 
- 	if (!skb) {
- 		skb = alloc_skb(0, GFP_ATOMIC);
- 		if (!skb)
--			goto out;
-+			goto failure;
- 		allocated = true;
- 	}
- 
-@@ -565,12 +566,18 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
- 	if (!nsk)
- 		nsk = reuseport_select_sock_by_hash(reuse, hash, socks);
- 
--	if (IS_ERR_OR_NULL(nsk) || unlikely(!refcount_inc_not_zero(&nsk->sk_refcnt)))
-+	if (IS_ERR_OR_NULL(nsk) || unlikely(!refcount_inc_not_zero(&nsk->sk_refcnt))) {
- 		nsk = NULL;
-+		goto failure;
-+	}
- 
- out:
- 	rcu_read_unlock();
- 	return nsk;
-+
-+failure:
-+	__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
-+	goto out;
- }
- EXPORT_SYMBOL(reuseport_migrate_sock);
- 
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 0eea878edc30..754013fa393b 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -703,6 +703,8 @@ static struct request_sock *inet_reqsk_clone(struct request_sock *req,
- 
- 	nreq = kmem_cache_alloc(req->rsk_ops->slab, GFP_ATOMIC | __GFP_NOWARN);
- 	if (!nreq) {
-+		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
-+
- 		/* paired with refcount_inc_not_zero() in reuseport_migrate_sock() */
- 		sock_put(sk);
- 		return NULL;
-@@ -876,9 +878,10 @@ static void reqsk_timer_handler(struct timer_list *t)
- 		if (!inet_ehash_insert(req_to_sk(nreq), req_to_sk(oreq), NULL)) {
- 			/* delete timer */
- 			inet_csk_reqsk_queue_drop(sk_listener, nreq);
--			goto drop;
-+			goto no_ownership;
- 		}
- 
-+		__NET_INC_STATS(net, LINUX_MIB_TCPMIGRATEREQSUCCESS);
- 		reqsk_migrate_reset(oreq);
- 		reqsk_queue_removed(&inet_csk(oreq->rsk_listener)->icsk_accept_queue, oreq);
- 		reqsk_put(oreq);
-@@ -887,17 +890,19 @@ static void reqsk_timer_handler(struct timer_list *t)
- 		return;
- 	}
- 
--drop:
- 	/* Even if we can clone the req, we may need not retransmit any more
- 	 * SYN+ACKs (nreq->num_timeout > max_syn_ack_retries, etc), or another
- 	 * CPU may win the "own_req" race so that inet_ehash_insert() fails.
- 	 */
- 	if (nreq) {
-+		__NET_INC_STATS(net, LINUX_MIB_TCPMIGRATEREQFAILURE);
-+no_ownership:
- 		reqsk_migrate_reset(nreq);
- 		reqsk_queue_removed(queue, nreq);
- 		__reqsk_free(nreq);
- 	}
- 
-+drop:
- 	inet_csk_reqsk_queue_drop_and_put(oreq->rsk_listener, oreq);
- }
- 
-@@ -1135,11 +1140,13 @@ struct sock *inet_csk_complete_hashdance(struct sock *sk, struct sock *child,
- 
- 			refcount_set(&nreq->rsk_refcnt, 1);
- 			if (inet_csk_reqsk_queue_add(sk, nreq, child)) {
-+				__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQSUCCESS);
- 				reqsk_migrate_reset(req);
- 				reqsk_put(req);
- 				return child;
- 			}
- 
-+			__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
- 			reqsk_migrate_reset(nreq);
- 			__reqsk_free(nreq);
- 		} else if (inet_csk_reqsk_queue_add(sk, req, child)) {
-@@ -1188,8 +1195,12 @@ void inet_csk_listen_stop(struct sock *sk)
- 				refcount_set(&nreq->rsk_refcnt, 1);
- 
- 				if (inet_csk_reqsk_queue_add(nsk, nreq, child)) {
-+					__NET_INC_STATS(sock_net(nsk),
-+							LINUX_MIB_TCPMIGRATEREQSUCCESS);
- 					reqsk_migrate_reset(req);
- 				} else {
-+					__NET_INC_STATS(sock_net(nsk),
-+							LINUX_MIB_TCPMIGRATEREQFAILURE);
- 					reqsk_migrate_reset(nreq);
- 					__reqsk_free(nreq);
- 				}
-diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index 6d46297a99f8..b0d3a09dc84e 100644
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -295,6 +295,8 @@ static const struct snmp_mib snmp4_net_list[] = {
- 	SNMP_MIB_ITEM("TcpDuplicateDataRehash", LINUX_MIB_TCPDUPLICATEDATAREHASH),
- 	SNMP_MIB_ITEM("TCPDSACKRecvSegs", LINUX_MIB_TCPDSACKRECVSEGS),
- 	SNMP_MIB_ITEM("TCPDSACKIgnoredDubious", LINUX_MIB_TCPDSACKIGNOREDDUBIOUS),
-+	SNMP_MIB_ITEM("TCPMigrateReqSuccess", LINUX_MIB_TCPMIGRATEREQSUCCESS),
-+	SNMP_MIB_ITEM("TCPMigrateReqFailure", LINUX_MIB_TCPMIGRATEREQFAILURE),
- 	SNMP_MIB_SENTINEL
- };
- 
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index f258a4c0da71..0a4f3f16140a 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -786,6 +786,9 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 	return inet_csk_complete_hashdance(sk, child, req, own_req);
- 
- listen_overflow:
-+	if (sk != req->rsk_listener)
-+		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
-+
- 	if (!sock_net(sk)->ipv4.sysctl_tcp_abort_on_overflow) {
- 		inet_rsk(req)->acked = 1;
- 		return NULL;
--- 
-2.30.2
+Can you add some comment on how this works? So today I call
+bpf_xdp_adjust_tail() to add some trailer to my packet.
+This looks like it adds tailroom to the last frag? But, then
+how do I insert my trailer? I don't think we can without the
+extra multi-buffer access support right.
 
+Also data_end will be unchanged yet it will return 0 so my
+current programs will likely be a bit confused by this.
+
+> +	} else {
