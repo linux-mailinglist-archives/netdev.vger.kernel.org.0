@@ -2,230 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CD73AFA6D
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 03:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD43F3AFA7D
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 03:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230130AbhFVBIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 21:08:46 -0400
-Received: from ozlabs.org ([203.11.71.1]:47613 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229663AbhFVBIn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Jun 2021 21:08:43 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G87Wj0MKbz9sT6;
-        Tue, 22 Jun 2021 11:06:24 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1624323986;
-        bh=9YjXmRPRl40v1/64q9EY5/EN6DGBD3y3fJr/d84LgUI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=KT5V6JBBl/NKcx7AxYaR6r9sJO+QQsgmnf+QQ1uDy+jN8xVkkdiS7EAES40ND2Dvx
-         zjD6OdE9sYQrwHFC/A3e1jIe8H4l1rXcFYZxV9z8iCFk7ZYDMJMHwC38VsPNoQMJFx
-         JJ5X2vBrZkwbcHi3Q3mVZhyCXMwrrlG1+1FHVDDb1toOGSlyfmhGiVQ5IMDDUCYDlk
-         RjYAt4H9AxbP2tHq+Z99P7a1BhEKM8jtjPJGCVh224etilpkhaKcx8vvtN1IaOiR1u
-         lMZQhKORe6RXlAOkyNH+M1mf06aeR0YosrQgtJMjtXqHz5fnLIaoT715MU3LuB9+8H
-         UwG3y/mQkDM6w==
-Date:   Tue, 22 Jun 2021 11:06:22 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the net-next tree with the bpf tree
-Message-ID: <20210622110622.25f9f026@canb.auug.org.au>
+        id S230152AbhFVBQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 21:16:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229663AbhFVBQZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 21:16:25 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5386FC061574;
+        Mon, 21 Jun 2021 18:14:10 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id i94so21611858wri.4;
+        Mon, 21 Jun 2021 18:14:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YKGpqBSae3SQn5FXwUHkM5Y5Zy1QUuaeOYx04RqOUvw=;
+        b=NsQGP6vTQiB8xPTvgdgwiwUf+uIKxW9qgKOxA7tnEbiNVfdqwPQ4Xa4aLgy/bR6ZjC
+         7Xi2FmPn8yw1jkJWtddhsAxxKyu9Plwj61IhYD839/rgokoRl02DAD5dFY2iHcQ/Ch+a
+         b2+gL8HRVWxPKX0h1IiyJrvT4aU2Yq3z2I39BR0eiX9BBBijajizwK37IW3GQRlEdz8d
+         u8lm9cNOy9kj3PV6rKaVjnlv5IM4I1AtmPfefULB1hmiHAPXRIrGMwYg6tXVGrWWEiBQ
+         XhIh5pJyWQ+MjZcaCAl/0pBMUhMMG98gnofRZnb/ZV4816Nov9oNew3wOvKPDFbiWF5r
+         7PNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YKGpqBSae3SQn5FXwUHkM5Y5Zy1QUuaeOYx04RqOUvw=;
+        b=GirmLS6MQvEqD+eZeMuF/tcuFVqdVeeZsZPPo72l9uMf8AozT3H2+JRaiXHSpNuIBf
+         7PZlpN1MLfnCct+7wvlbSd3rdhe3fWml+9okJkolZlRCFfDDH7STpZ3txGFi1iNlqsv1
+         LxGRd1qKF3LDQHdnqcZ3SwjQui56Ha2ZxhZ6APwlPQXOqVskYTpXdiixsC2CopErmRvp
+         NIec91C5FA4ccci04Wlb6lbFPvJYsVvWXWCrJfVKJpjmL5oooihaGKq8qrL8fzcDgWFt
+         ezduDY8W3njCs9kz/4m0bTmFttDFgmusdD3XJv/qBlwZabiFipErmY9nFIpjfw83P+LC
+         6/+A==
+X-Gm-Message-State: AOAM530Bo6knidp582n9KUswhfR3IUvrUuWxsHQT/F/IwND22ZGPjsk1
+        Y+vUBGLYnUqGRBf5sRqyknZOJ2Lz4bUqXuBrdsw=
+X-Google-Smtp-Source: ABdhPJxUI/4c4cpW9zuyZDxEj0yUVCZv1Ub+4FqshB2g6pGOnGOi+3UW/hfVfVzR5ml+jmwLqLksoa71RmtolIGudV4=
+X-Received: by 2002:a05:6000:2a3:: with SMTP id l3mr1390712wry.395.1624324448810;
+ Mon, 21 Jun 2021 18:14:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/2Q2oum8Y9H2GJuK+E75X+cp";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <66a73fb28cc8175ac80735f6301110b952f6e139.1624239422.git.lucien.xin@gmail.com>
+ <202106211151.QDS54KHu-lkp@intel.com>
+In-Reply-To: <202106211151.QDS54KHu-lkp@intel.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 21 Jun 2021 21:13:59 -0400
+Message-ID: <CADvbK_dCgaqrr=pxZGfBmm=3m31+eKgcfkU7AowFbnZAcC92bQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 06/14] sctp: do the basic send and recv for
+ PLPMTUD probe
+To:     kernel test robot <lkp@intel.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        kbuild-all@lists.01.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/2Q2oum8Y9H2GJuK+E75X+cp
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This is a "set but not used" warning, I can fix it after.
 
-Hi all,
+Thanks.
 
-Today's linux-next merge of the net-next tree got conflicts in:
-
-  net/ipv4/tcp_bpf.c
-  net/ipv4/udp_bpf.c
-  include/linux/skmsg.h
-  net/core/skmsg.c
-
-between commit:
-
-  9f2470fbc4cb ("skmsg: Improve udp_bpf_recvmsg() accuracy")
-
-from the bpf tree and commit:
-
-  c49661aa6f70 ("skmsg: Remove unused parameters of sk_msg_wait_data()")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc include/linux/skmsg.h
-index e3d080c299f6,fcaa9a7996c8..000000000000
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-diff --cc net/core/skmsg.c
-index 9b6160a191f8,f0b9decdf279..000000000000
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-diff --cc net/ipv4/tcp_bpf.c
-index bb49b52d7be8,a80de92ea3b6..000000000000
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@@ -163,28 -163,6 +163,28 @@@ static bool tcp_bpf_stream_read(const s
-  	return !empty;
-  }
- =20
-- static int tcp_msg_wait_data(struct sock *sk, struct sk_psock *psock, int=
- flags,
-- 			     long timeo, int *err)
-++static int tcp_msg_wait_data(struct sock *sk, struct sk_psock *psock,
-++			     long timeo)
- +{
- +	DEFINE_WAIT_FUNC(wait, woken_wake_function);
- +	int ret =3D 0;
- +
- +	if (sk->sk_shutdown & RCV_SHUTDOWN)
- +		return 1;
- +
- +	if (!timeo)
- +		return ret;
- +
- +	add_wait_queue(sk_sleep(sk), &wait);
- +	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
- +	ret =3D sk_wait_event(sk, &timeo,
- +			    !list_empty(&psock->ingress_msg) ||
- +			    !skb_queue_empty(&sk->sk_receive_queue), &wait);
- +	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
- +	remove_wait_queue(sk_sleep(sk), &wait);
- +	return ret;
- +}
- +
-  static int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t le=
-n,
-  		    int nonblock, int flags, int *addr_len)
-  {
-@@@ -206,11 -184,11 +206,11 @@@
-  msg_bytes_ready:
-  	copied =3D sk_msg_recvmsg(sk, psock, msg, len, flags);
-  	if (!copied) {
-- 		int data, err =3D 0;
-  		long timeo;
-+ 		int data;
- =20
-  		timeo =3D sock_rcvtimeo(sk, nonblock);
-- 		data =3D tcp_msg_wait_data(sk, psock, flags, timeo, &err);
- -		data =3D sk_msg_wait_data(sk, psock, timeo);
-++		data =3D tcp_msg_wait_data(sk, psock, timeo);
-  		if (data) {
-  			if (!sk_psock_queue_empty(psock))
-  				goto msg_bytes_ready;
-diff --cc net/ipv4/udp_bpf.c
-index 565a70040c57,b07e4b6dda25..000000000000
---- a/net/ipv4/udp_bpf.c
-+++ b/net/ipv4/udp_bpf.c
-@@@ -21,45 -21,6 +21,45 @@@ static int sk_udp_recvmsg(struct sock *
-  	return udp_prot.recvmsg(sk, msg, len, noblock, flags, addr_len);
-  }
- =20
- +static bool udp_sk_has_data(struct sock *sk)
- +{
- +	return !skb_queue_empty(&udp_sk(sk)->reader_queue) ||
- +	       !skb_queue_empty(&sk->sk_receive_queue);
- +}
- +
- +static bool psock_has_data(struct sk_psock *psock)
- +{
- +	return !skb_queue_empty(&psock->ingress_skb) ||
- +	       !sk_psock_queue_empty(psock);
- +}
- +
- +#define udp_msg_has_data(__sk, __psock)	\
- +		({ udp_sk_has_data(__sk) || psock_has_data(__psock); })
- +
-- static int udp_msg_wait_data(struct sock *sk, struct sk_psock *psock, int=
- flags,
-- 			     long timeo, int *err)
-++static int udp_msg_wait_data(struct sock *sk, struct sk_psock *psock,
-++			     long timeo)
- +{
- +	DEFINE_WAIT_FUNC(wait, woken_wake_function);
- +	int ret =3D 0;
- +
- +	if (sk->sk_shutdown & RCV_SHUTDOWN)
- +		return 1;
- +
- +	if (!timeo)
- +		return ret;
- +
- +	add_wait_queue(sk_sleep(sk), &wait);
- +	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
- +	ret =3D udp_msg_has_data(sk, psock);
- +	if (!ret) {
- +		wait_woken(&wait, TASK_INTERRUPTIBLE, timeo);
- +		ret =3D udp_msg_has_data(sk, psock);
- +	}
- +	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
- +	remove_wait_queue(sk_sleep(sk), &wait);
- +	return ret;
- +}
- +
-  static int udp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t le=
-n,
-  			   int nonblock, int flags, int *addr_len)
-  {
-@@@ -81,13 -43,13 +81,13 @@@
-  msg_bytes_ready:
-  	copied =3D sk_msg_recvmsg(sk, psock, msg, len, flags);
-  	if (!copied) {
-- 		int data, err =3D 0;
-  		long timeo;
-+ 		int data;
- =20
-  		timeo =3D sock_rcvtimeo(sk, nonblock);
-- 		data =3D udp_msg_wait_data(sk, psock, flags, timeo, &err);
- -		data =3D sk_msg_wait_data(sk, psock, timeo);
-++		data =3D udp_msg_wait_data(sk, psock, timeo);
-  		if (data) {
- -			if (!sk_psock_queue_empty(psock))
- +			if (psock_has_data(psock))
-  				goto msg_bytes_ready;
-  			ret =3D sk_udp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
-  			goto out;
-
---Sig_/2Q2oum8Y9H2GJuK+E75X+cp
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDRN44ACgkQAVBC80lX
-0GziiAf/dC8a0qkAG7lFb2nIFgVtmOQaSPyWs+NPZa6zvG+UbCrWmPMEfHB4YyVC
-PRGAlz88dKL5a8Kayqt+9LwqpblHO9wgQF2jXXiKDL+fC0Gd4vwERCO4ByDVgAQB
-+03OU22o6eYEeZIFoL9Fo8g3kgc78iTmZcqu1XDW0B9MDbgVTE8fxDaVdTH4VVQh
-+L6FckTw6g89oyhthg4H8fH4Q+w/TD/HkhPHPsLE8LwKumhSh+9ideD7YX7B+cRJ
-lsin7mLiSi0LcKaIwyQTxjhUKITSR6WUSB+IS1f3unmSPDU/KhuPxVA2cjpfADN0
-BlmVR2VjA8Mk6Gd8lZfG1h/pdRa+2w==
-=GlCG
------END PGP SIGNATURE-----
-
---Sig_/2Q2oum8Y9H2GJuK+E75X+cp--
+On Sun, Jun 20, 2021 at 11:50 PM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi Xin,
+>
+> Thank you for the patch! Perhaps something to improve:
+>
+> [auto build test WARNING on net-next/master]
+>
+> url:    https://github.com/0day-ci/linux/commits/Xin-Long/sctp-implement-RFC8899-Packetization-Layer-Path-MTU-Discovery-for-SCTP-transport/20210621-094007
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git adc2e56ebe6377f5c032d96aee0feac30a640453
+> config: i386-randconfig-r023-20210620 (attached as .config)
+> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+> reproduce (this is a W=1 build):
+>         # https://github.com/0day-ci/linux/commit/fcac1d6488c8bc7cb69af9e8051686a674d94fc3
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Xin-Long/sctp-implement-RFC8899-Packetization-Layer-Path-MTU-Discovery-for-SCTP-transport/20210621-094007
+>         git checkout fcac1d6488c8bc7cb69af9e8051686a674d94fc3
+>         # save the attached .config to linux build tree
+>         make W=1 ARCH=i386
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+> >> net/sctp/output.c:215:16: warning: no previous prototype for 'sctp_packet_bundle_pad' [-Wmissing-prototypes]
+>      215 | enum sctp_xmit sctp_packet_bundle_pad(struct sctp_packet *pkt, struct sctp_chunk *chunk)
+>          |                ^~~~~~~~~~~~~~~~~~~~~~
+>    net/sctp/output.c: In function 'sctp_packet_bundle_pad':
+> >> net/sctp/output.c:219:20: warning: variable 'sp' set but not used [-Wunused-but-set-variable]
+>      219 |  struct sctp_sock *sp;
+>          |                    ^~
+>
+>
+> vim +/sctp_packet_bundle_pad +215 net/sctp/output.c
+>
+>    213
+>    214  /* Try to bundle a pad chunk into a packet with a heartbeat chunk for PLPMTUTD probe */
+>  > 215  enum sctp_xmit sctp_packet_bundle_pad(struct sctp_packet *pkt, struct sctp_chunk *chunk)
+>    216  {
+>    217          struct sctp_transport *t = pkt->transport;
+>    218          struct sctp_chunk *pad;
+>  > 219          struct sctp_sock *sp;
+>    220          int overhead = 0;
+>    221
+>    222          if (!chunk->pmtu_probe)
+>    223                  return SCTP_XMIT_OK;
+>    224
+>    225          sp = sctp_sk(t->asoc->base.sk);
+>    226
+>    227          /* calculate the Padding Data size for the pad chunk */
+>    228          overhead += sizeof(struct sctphdr) + sizeof(struct sctp_chunkhdr);
+>    229          overhead += sizeof(struct sctp_sender_hb_info) + sizeof(struct sctp_pad_chunk);
+>    230          pad = sctp_make_pad(t->asoc, t->pl.probe_size - overhead);
+>    231          if (!pad)
+>    232                  return SCTP_XMIT_DELAY;
+>    233
+>    234          list_add_tail(&pad->list, &pkt->chunk_list);
+>    235          pkt->size += SCTP_PAD4(ntohs(pad->chunk_hdr->length));
+>    236          chunk->transport = t;
+>    237
+>    238          return SCTP_XMIT_OK;
+>    239  }
+>    240
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
