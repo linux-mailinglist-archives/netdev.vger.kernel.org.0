@@ -2,83 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D83A53B0CEA
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F17033B0D18
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 20:40:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232533AbhFVScx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 14:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231297AbhFVScw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 14:32:52 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C27C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:30:35 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id j10so6657297wms.1
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 11:30:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=un/8VbfGaCSq6e5kZBov4MS2h80sOr5uk3ZcuorNMTg=;
-        b=DYzymdIoXqB6cj1WQSi4EsQknb79VnFPMIq+xKOyerxbT5bC1FKqVxQ3O1COV55MJl
-         HteRS7uWxP029f2uRmdH9kNV6n3gsLCPoLN09ZmQ9hU7oMZYb1mn4nceck41uL3DbRmP
-         0r/+cNTVOcEMI9w8cvlLz4Hxyo5bV3HLDKNMtMVdFjpywCTJJlMGfKbV1l5Wl1vKykJJ
-         RQfnPdfLJkakmAs+A81Z3ZTpOs/YhfTjlZQ0D1H4DUkqn4brXX2cQme79QSA+TjFCzYj
-         DjUDJwqZMNq/x5pENPK13GPDuJYl3Zm4yIhTRFZAmW5oNxnVDQi7r2xP3DVA1a9s2zyL
-         DoTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=un/8VbfGaCSq6e5kZBov4MS2h80sOr5uk3ZcuorNMTg=;
-        b=P9c769Dl0d5GdMWS/G31nXM3D59LsyBB7+XOvBhq+ujehnrOryrBZwXwuvWxD42pkB
-         QEtJiMwnbLN1cOC+4FsBct86K8RHLKgn1Y2QoeSNERyfrSD94ufQ5n6luL5CtM74TnCA
-         TyCRHbF/KTNcjVbPhi66391gJS/Myc7FZhPNC9OROxTsZpIB0krUzqM8BXsJZIjU3qlx
-         UN0eOLRwLT7L6+jreJ8iMZ8Soj23r+KqFmsZfajidr89G4Qfaag7ruyd6PzfdIzWkidc
-         dyMeTOkfjZqm5Hu9kW/eN697LlZ8M8PZhVkCL/QiF0gLj2C195VLmN7+4RQ4BV1WAvTj
-         mXAA==
-X-Gm-Message-State: AOAM531sYizztxP03RO3zK/hUaXry7lubuoPY0dkoJjD5IN5UQRGdwGN
-        1tpEdLE+bP/0NXM8ztpdQIq3MjF4l8Kgmg+9d3A=
-X-Google-Smtp-Source: ABdhPJxJOukr8mWMIzPZVTuKwdeAQyrn2GOpGgjPj/6aZvhzXbbhIWoAQrLo4AUNjaa+Ah0BbquIAxqob3qSf0QHiQI=
-X-Received: by 2002:a1c:7706:: with SMTP id t6mr6142058wmi.62.1624386633861;
- Tue, 22 Jun 2021 11:30:33 -0700 (PDT)
+        id S232415AbhFVSmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 14:42:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42486 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230146AbhFVSmW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 14:42:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 8BA516128C;
+        Tue, 22 Jun 2021 18:40:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624387206;
+        bh=qw91iE0jZ/x2Ymg8H9qTCVqUd9ZGBkvtbseOaXsKCa0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=c2IJPV3wWj2hGH3OlDUcgFTNFfGki2IAU3b89QwHQXThE4yy76Zu3fYJ6zgj7A1cy
+         dsiJIcgDbtxzGrEAIVPBhVyJnwI8giFCsQ7SeXq3+kV2Fbk/AcP9epBekh9wCQHdM8
+         1YD1iYw2Nq5rxxT3TC6b+Gs03Z/Pc6Ak1oedNBRBiLpbajevLugLkejMtTgptfeGmB
+         NzUWhg7NGtfVfBdt9p8Omi4otT062cpt/WJx2k+HRwuJVVgMDcGkG1rFR1DV3YjT7b
+         WbhLp2rvIhfX6OivvKUGbr1xQicsuHOn3xT1GL4wso+1wqB9d0A4LTNDfwtzj0xAHc
+         Z7pZYobtWQmNw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7DC58609FF;
+        Tue, 22 Jun 2021 18:40:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210621180244.882076-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210621180244.882076-1-eric.dumazet@gmail.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Tue, 22 Jun 2021 14:30:22 -0400
-Message-ID: <CAB_54W7GL8rX8_bRkgC7NAbEwmkfGOwDbdmqP6R43F_nEM3igA@mail.gmail.com>
-Subject: Re: [PATCH net] ieee802154: hwsim: avoid possible crash in hwsim_del_edge_nl()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv2 net-next 00/14] sctp: implement RFC8899: Packetization Layer
+ Path MTU Discovery for SCTP transport
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162438720650.29926.6241107476929251289.git-patchwork-notify@kernel.org>
+Date:   Tue, 22 Jun 2021 18:40:06 +0000
+References: <cover.1624384990.git.lucien.xin@gmail.com>
+In-Reply-To: <cover.1624384990.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        marcelo.leitner@gmail.com, linux-sctp@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello:
 
-On Mon, 21 Jun 2021 at 14:02, Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> Both MAC802154_HWSIM_ATTR_RADIO_ID and MAC802154_HWSIM_ATTR_RADIO_EDGE
-> must be present to avoid a crash.
->
-> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Alexander Aring <alex.aring@gmail.com>
-> Cc: Stefan Schmidt <stefan@datenfreihafen.org>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Acked-by: Alexander Aring <aahringo@redhat.com>
+On Tue, 22 Jun 2021 14:04:46 -0400 you wrote:
+> Overview(From RFC8899):
+> 
+>   In contrast to PMTUD, Packetization Layer Path MTU Discovery
+>   (PLPMTUD) [RFC4821] introduces a method that does not rely upon
+>   reception and validation of PTB messages.  It is therefore more
+>   robust than Classical PMTUD.  This has become the recommended
+>   approach for implementing discovery of the PMTU [BCP145].
+> 
+> [...]
 
-Thanks!
+Here is the summary with links:
+  - [PATCHv2,net-next,01/14] sctp: add pad chunk and its make function and event table
+    https://git.kernel.org/netdev/net-next/c/745a32117b5a
+  - [PATCHv2,net-next,02/14] sctp: add probe_interval in sysctl and sock/asoc/transport
+    https://git.kernel.org/netdev/net-next/c/d1e462a7a5f3
+  - [PATCHv2,net-next,03/14] sctp: add SCTP_PLPMTUD_PROBE_INTERVAL sockopt for sock/asoc/transport
+    https://git.kernel.org/netdev/net-next/c/3190b649b4d9
+  - [PATCHv2,net-next,04/14] sctp: add the constants/variables and states and some APIs for transport
+    https://git.kernel.org/netdev/net-next/c/d9e2e410ae30
+  - [PATCHv2,net-next,05/14] sctp: add the probe timer in transport for PLPMTUD
+    https://git.kernel.org/netdev/net-next/c/92548ec2f1f9
+  - [PATCHv2,net-next,06/14] sctp: do the basic send and recv for PLPMTUD probe
+    https://git.kernel.org/netdev/net-next/c/fe59379b9ab7
+  - [PATCHv2,net-next,07/14] sctp: do state transition when PROBE_COUNT == MAX_PROBES on HB send path
+    https://git.kernel.org/netdev/net-next/c/1dc68c194571
+  - [PATCHv2,net-next,08/14] sctp: do state transition when a probe succeeds on HB ACK recv path
+    https://git.kernel.org/netdev/net-next/c/b87641aff9e7
+  - [PATCHv2,net-next,09/14] sctp: do state transition when receiving an icmp TOOBIG packet
+    https://git.kernel.org/netdev/net-next/c/836964083177
+  - [PATCHv2,net-next,10/14] sctp: enable PLPMTUD when the transport is ready
+    https://git.kernel.org/netdev/net-next/c/7307e4fa4d29
+  - [PATCHv2,net-next,11/14] sctp: remove the unessessary hold for idev in sctp_v6_err
+    https://git.kernel.org/netdev/net-next/c/237a6a2e318c
+  - [PATCHv2,net-next,12/14] sctp: extract sctp_v6_err_handle function from sctp_v6_err
+    https://git.kernel.org/netdev/net-next/c/f6549bd37b92
+  - [PATCHv2,net-next,13/14] sctp: extract sctp_v4_err_handle function from sctp_v4_err
+    https://git.kernel.org/netdev/net-next/c/d83060759a65
+  - [PATCHv2,net-next,14/14] sctp: process sctp over udp icmp err on sctp side
+    https://git.kernel.org/netdev/net-next/c/9e47df005cab
 
-- Alex
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
