@@ -2,176 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78C343AFFA0
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 10:51:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05D443AFFB2
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 10:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbhFVIxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 04:53:51 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52152 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbhFVIxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 04:53:25 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lvc7A-0008rI-VJ; Tue, 22 Jun 2021 10:50:37 +0200
-Received: from [85.7.101.30] (helo=linux-3.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lvc7A-000J9k-O5; Tue, 22 Jun 2021 10:50:36 +0200
-Subject: Re: [PATCH bpf-next v3 03/16] xdp: add proper __rcu annotations to
- redirect map entries
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210617212748.32456-1-toke@redhat.com>
- <20210617212748.32456-4-toke@redhat.com>
- <1881ecbe-06ec-6b0a-836c-033c31fabef4@iogearbox.net> <87zgvirj6g.fsf@toke.dk>
- <96117b3f-8041-b524-ef70-d5afc97e32f9@iogearbox.net> <87r1gurgmb.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2f11d71d-0298-4177-6ac6-4483adf36ed9@iogearbox.net>
-Date:   Tue, 22 Jun 2021 10:50:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S229837AbhFVI7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 04:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229490AbhFVI7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 04:59:30 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28853C061574;
+        Tue, 22 Jun 2021 01:57:15 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id j2so12129568wrs.12;
+        Tue, 22 Jun 2021 01:57:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:date:mime-version:from:to:subject
+         :content-transfer-encoding;
+        bh=FG0AmbsSXTq8aZKNtsn7qS7XkGzSZ8NL2jrigaWI+cc=;
+        b=dQM1cqmfZIDA4EaULsoVcI3RAMKrX41ul7kX4Wtg3Zdqmj3LBl6x5hY1Cds5MVl6et
+         xj/qBCwARkSOc74ozQepZDW1mE/fP/75TcFJjfJsKZjR7zy8I1emDv/Ja0TBwFyraeN3
+         6nkAYSAaYyyVnKcO0J5MH4Ls/BeceZqelLtYwjFf11GyvWt/LO3ZLtdWxE7JFdePFjgE
+         vOXIU9Hr5y+C0V9KStzhv5qmyf70pdKE9gS72UzUUJktOfLwhKtAQteKXh/VyyT1Rzwd
+         vyK3FHZeg8xCLEg7I83f4KbylBpbfFNxG8N6v9A1ZAPztlKusWAsn9I6jOZPuOm9tpAW
+         KwZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:date:mime-version:from:to:subject
+         :content-transfer-encoding;
+        bh=FG0AmbsSXTq8aZKNtsn7qS7XkGzSZ8NL2jrigaWI+cc=;
+        b=NiAjsM8gc/VWIMf1lVZBer7La1ph6rjNq5BwTmlxL6vcv1qMvd9vqagxZkbi7R0qil
+         ByiA46X4mFwlvid1qU0JhJsFeiSt3urojfY9wtueAW6k3E98ox+30rJAsUgoU0g67tgV
+         3NLPQSyvdgKRlPDF2CsOLZAL/Iy9Y+8hotBL0IoVCM66ytagf+WDAheWGNIuxjFJZkFx
+         kg6BCzb0lcxPq1auZHxSokTAxRZgDSuwRTvvxgM44eERMjKc23qoNlM2gUVefsmpo265
+         nexV7jKn5yVYC7j3IzqoNRf0J25mJMW3vsswpdoF35DJDVG2DJR9b0tFxDiN+Qda/GIZ
+         ZdHA==
+X-Gm-Message-State: AOAM5315YVePrzgKDSFLNUAgBXqkuRuLUMON94Iupx5oSzhCdocK6HJl
+        t2egJYW/GF7ADXu2BBQ6Rtzljm4llwU4Le5G
+X-Google-Smtp-Source: ABdhPJzObstSbscLENNm/C+3vJyNLfRtj3jIxzaOBOkXNCu3wXIhowoUiYmvG8PechJ7JKAh0zhiEw==
+X-Received: by 2002:adf:dcca:: with SMTP id x10mr3332298wrm.39.1624352233510;
+        Tue, 22 Jun 2021 01:57:13 -0700 (PDT)
+Received: from DESKTOP-A66711V ([5.29.25.101])
+        by smtp.gmail.com with ESMTPSA id p11sm10799591wre.57.2021.06.22.01.57.12
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 22 Jun 2021 01:57:13 -0700 (PDT)
+Message-ID: <60d1a5e9.1c69fb81.7f729.b892@mx.google.com>
+Date:   Tue, 22 Jun 2021 01:57:13 -0700 (PDT)
+X-Google-Original-Date: 22 Jun 2021 11:57:13 +0300
 MIME-Version: 1.0
-In-Reply-To: <87r1gurgmb.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26208/Mon Jun 21 13:09:26 2021)
+From:   "Amit Klein" <aksecurity@gmail.com>
+To:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        stable@vger.kernel.org, edumazet@google.com, w@1wt.eu,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 4.9] inet: use bigger hash table for IP ID generation
+ (backported to 4.9 and 4.4)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/22/21 12:35 AM, Toke Høiland-Jørgensen wrote:
-> Daniel Borkmann <daniel@iogearbox.net> writes:
->> On 6/21/21 11:39 PM, Toke Høiland-Jørgensen wrote:
->>> Daniel Borkmann <daniel@iogearbox.net> writes:
->>>> On 6/17/21 11:27 PM, Toke Høiland-Jørgensen wrote:
->>>>> XDP_REDIRECT works by a three-step process: the bpf_redirect() and
->>>>> bpf_redirect_map() helpers will lookup the target of the redirect and store
->>>>> it (along with some other metadata) in a per-CPU struct bpf_redirect_info.
->>>>> Next, when the program returns the XDP_REDIRECT return code, the driver
->>>>> will call xdp_do_redirect() which will use the information thus stored to
->>>>> actually enqueue the frame into a bulk queue structure (that differs
->>>>> slightly by map type, but shares the same principle). Finally, before
->>>>> exiting its NAPI poll loop, the driver will call xdp_do_flush(), which will
->>>>> flush all the different bulk queues, thus completing the redirect.
->>>>>
->>>>> Pointers to the map entries will be kept around for this whole sequence of
->>>>> steps, protected by RCU. However, there is no top-level rcu_read_lock() in
->>>>> the core code; instead drivers add their own rcu_read_lock() around the XDP
->>>>> portions of the code, but somewhat inconsistently as Martin discovered[0].
->>>>> However, things still work because everything happens inside a single NAPI
->>>>> poll sequence, which means it's between a pair of calls to
->>>>> local_bh_disable()/local_bh_enable(). So Paul suggested[1] that we could
->>>>> document this intention by using rcu_dereference_check() with
->>>>> rcu_read_lock_bh_held() as a second parameter, thus allowing sparse and
->>>>> lockdep to verify that everything is done correctly.
->>>>>
->>>>> This patch does just that: we add an __rcu annotation to the map entry
->>>>> pointers and remove the various comments explaining the NAPI poll assurance
->>>>> strewn through devmap.c in favour of a longer explanation in filter.c. The
->>>>> goal is to have one coherent documentation of the entire flow, and rely on
->>>>> the RCU annotations as a "standard" way of communicating the flow in the
->>>>> map code (which can additionally be understood by sparse and lockdep).
->>>>>
->>>>> The RCU annotation replacements result in a fairly straight-forward
->>>>> replacement where READ_ONCE() becomes rcu_dereference_check(), WRITE_ONCE()
->>>>> becomes rcu_assign_pointer() and xchg() and cmpxchg() gets wrapped in the
->>>>> proper constructs to cast the pointer back and forth between __rcu and
->>>>> __kernel address space (for the benefit of sparse). The one complication is
->>>>> that xskmap has a few constructions where double-pointers are passed back
->>>>> and forth; these simply all gain __rcu annotations, and only the final
->>>>> reference/dereference to the inner-most pointer gets changed.
->>>>>
->>>>> With this, everything can be run through sparse without eliciting
->>>>> complaints, and lockdep can verify correctness even without the use of
->>>>> rcu_read_lock() in the drivers. Subsequent patches will clean these up from
->>>>> the drivers.
->>>>>
->>>>> [0] https://lore.kernel.org/bpf/20210415173551.7ma4slcbqeyiba2r@kafai-mbp.dhcp.thefacebook.com/
->>>>> [1] https://lore.kernel.org/bpf/20210419165837.GA975577@paulmck-ThinkPad-P17-Gen-1/
->>>>>
->>>>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->>>>> ---
->>>>>     include/net/xdp_sock.h |  2 +-
->>>>>     kernel/bpf/cpumap.c    | 13 +++++++----
->>>>>     kernel/bpf/devmap.c    | 49 ++++++++++++++++++------------------------
->>>>>     net/core/filter.c      | 28 ++++++++++++++++++++++++
->>>>>     net/xdp/xsk.c          |  4 ++--
->>>>>     net/xdp/xsk.h          |  4 ++--
->>>>>     net/xdp/xskmap.c       | 29 ++++++++++++++-----------
->>>>>     7 files changed, 80 insertions(+), 49 deletions(-)
->>>> [...]
->>>>>     						 __dev_map_entry_free);
->>>>> diff --git a/net/core/filter.c b/net/core/filter.c
->>>>> index caa88955562e..0b7db5c70385 100644
->>>>> --- a/net/core/filter.c
->>>>> +++ b/net/core/filter.c
->>>>> @@ -3922,6 +3922,34 @@ static const struct bpf_func_proto bpf_xdp_adjust_meta_proto = {
->>>>>     	.arg2_type	= ARG_ANYTHING,
->>>>>     };
->>>>>     
->>>>> +/* XDP_REDIRECT works by a three-step process, implemented in the functions
->>>>> + * below:
->>>>> + *
->>>>> + * 1. The bpf_redirect() and bpf_redirect_map() helpers will lookup the target
->>>>> + *    of the redirect and store it (along with some other metadata) in a per-CPU
->>>>> + *    struct bpf_redirect_info.
->>>>> + *
->>>>> + * 2. When the program returns the XDP_REDIRECT return code, the driver will
->>>>> + *    call xdp_do_redirect() which will use the information in struct
->>>>> + *    bpf_redirect_info to actually enqueue the frame into a map type-specific
->>>>> + *    bulk queue structure.
->>>>> + *
->>>>> + * 3. Before exiting its NAPI poll loop, the driver will call xdp_do_flush(),
->>>>> + *    which will flush all the different bulk queues, thus completing the
->>>>> + *    redirect.
->>>>> + *
->>>>> + * Pointers to the map entries will be kept around for this whole sequence of
->>>>> + * steps, protected by RCU. However, there is no top-level rcu_read_lock() in
->>>>> + * the core code; instead, the RCU protection relies on everything happening
->>>>> + * inside a single NAPI poll sequence, which means it's between a pair of calls
->>>>> + * to local_bh_disable()/local_bh_enable().
->>>>> + *
->>>>> + * The map entries are marked as __rcu and the map code makes sure to
->>>>> + * dereference those pointers with rcu_dereference_check() in a way that works
->>>>> + * for both sections that to hold an rcu_read_lock() and sections that are
->>>>> + * called from NAPI without a separate rcu_read_lock(). The code below does not
->>>>> + * use RCU annotations, but relies on those in the map code.
->>>>
->>>> One more follow-up question related to tc BPF: given we do use rcu_read_lock_bh()
->>>> in case of sch_handle_egress(), could we also remove the rcu_read_lock() pair
->>>> from cls_bpf_classify() then?
->>>
->>> I believe so, yeah. Patch 2 in this series should even make lockdep stop
->>> complaining about it :)
->>
->> Btw, I was wondering whether we should just get rid of all the WARN_ON_ONCE()s
->> from those map helpers given in most situations these are not triggered anyway
->> due to retpoline avoidance where verifier rewrites the calls to jump to the map
->> backend implementation directly. One alternative could be to have an extension
->> to the bpf prologue generation under CONFIG_DEBUG_LOCK_ALLOC and call the lockdep
->> checks from there, but it's probably not worth the effort. (In the trampoline
->> case we have those __bpf_prog_enter()/__bpf_prog_enter_sleepable() where the
->> latter in particular has asserts like might_fault(), fwiw.)
-> 
-> I agree that it's probably overkill to amend the prologue. No strong
-> opinion on whether removing the checks entirely is a good idea; I guess
-> they at least serve as documentation even if they're not actually called
-> that often?
+Subject: inet: use bigger hash table for IP ID generation (backpo=
+rted to 4.9 and 4.4)=0AFrom: Amit Klein <aksecurity@gmail.com>=0A=
+=0A[ Upstream commit aa6dd211e4b1dde9d5dc25d699d35f789ae7eeba ]=0A=
+ =0AThis is a backport to 4.9 and 4.4 of the following patch, ori=
+ginally=0Adeveloped by Eric Dumazet.=0A=0AIn commit 73f156a6e8c1 =
+("inetpeer: get rid of ip_id_count")=0AI used a very small hash t=
+able that could be abused=0Aby patient attackers to reveal sensit=
+ive information.=0A=0ASwitch to a dynamic sizing, depending on RA=
+M size.=0A=0ATypical big hosts will now use 128x more storage (2 =
+MB)=0Ato get a similar increase in security and reduction=0Aof ha=
+sh collisions.=0A=0AAs a bonus, use of alloc_large_system_hash() =
+spreads=0Aallocated memory among all NUMA nodes.=0A=0AFixes: 73f1=
+56a6e8c1 ("inetpeer: get rid of ip_id_count")=0AReported-by: Amit=
+ Klein <aksecurity@gmail.com>=0ACc: stable@vger.kernel.org=0ACc: =
+Eric Dumazet <edumazet@google.com>=0ACc: Willy Tarreau <w@1wt.eu>=
+=0A---=0A net/ipv4/route.c | 42 +++++++++++++++++++++++++++++----=
+---------=0A 1 file changed, 29 insertions(+), 13 deletions(-)=0A=
+=0Adiff --git a/net/ipv4/route.c b/net/ipv4/route.c=0Aindex e9aae=
+46..5350e1b 100644=0A--- a/net/ipv4/route.c=0A+++ b/net/ipv4/rout=
+e.c=0A@@ -70,6 +70,7 @@=0A #include <linux/types.h>=0A #include <=
+linux/kernel.h>=0A #include <linux/mm.h>=0A+#include <linux/bootm=
+em.h>=0A #include <linux/string.h>=0A #include <linux/socket.h>=0A=
+ #include <linux/sockios.h>=0A@@ -463,8 +464,10 @@ static struct =
+neighbour *ipv4_neigh_lookup(const struct dst_entry *dst,=0A 	ret=
+urn neigh_create(&arp_tbl, pkey, dev);=0A }=0A =0A-#define IP_IDE=
+NTS_SZ 2048u=0A-=0A+/* Hash tables of size 2048..262144 depending=
+ on RAM size.=0A+ * Each bucket uses 8 bytes.=0A+ */=0A+static u3=
+2 ip_idents_mask __read_mostly;=0A static atomic_t *ip_idents __r=
+ead_mostly;=0A static u32 *ip_tstamps __read_mostly;=0A =0A@@ -47=
+4,12 +477,16 @@ static u32 *ip_tstamps __read_mostly;=0A  */=0A u=
+32 ip_idents_reserve(u32 hash, int segs)=0A {=0A-	u32 *p_tstamp =3D=
+ ip_tstamps + hash % IP_IDENTS_SZ;=0A-	atomic_t *p_id =3D ip_iden=
+ts + hash % IP_IDENTS_SZ;=0A-	u32 old =3D ACCESS_ONCE(*p_tstamp);=
+=0A-	u32 now =3D (u32)jiffies;=0A+	u32 bucket, old, now =3D (u32)=
+jiffies;=0A+	atomic_t *p_id;=0A+	u32 *p_tstamp;=0A 	u32 delta =3D=
+ 0;=0A =0A+	bucket =3D hash & ip_idents_mask;=0A+	p_tstamp =3D ip=
+_tstamps + bucket;=0A+	p_id =3D ip_idents + bucket;=0A+	old =3D A=
+CCESS_ONCE(*p_tstamp);=0A+=0A 	if (old !=3D now && cmpxchg(p_tsta=
+mp, old, now) =3D=3D old)=0A 		delta =3D prandom_u32_max(now - ol=
+d);=0A =0A@@ -2936,18 +2943,27 @@ struct ip_rt_acct __percpu *ip_=
+rt_acct __read_mostly;=0A =0A int __init ip_rt_init(void)=0A {=0A=
++	void *idents_hash;=0A 	int rc =3D 0;=0A 	int cpu;=0A =0A-	ip_id=
+ents =3D kmalloc(IP_IDENTS_SZ * sizeof(*ip_idents), GFP_KERNEL);=0A=
+-	if (!ip_idents)=0A-		panic("IP: failed to allocate ip_idents\n"=
+);=0A+	/* For modern hosts, this will use 2 MB of memory */=0A+	i=
+dents_hash =3D alloc_large_system_hash("IP idents",=0A+					     =
+ sizeof(*ip_idents) + sizeof(*ip_tstamps),=0A+					      0,=0A+		=
+			      16, /* one bucket per 64 KB */=0A+					      0,=0A+					=
+      NULL,=0A+					      &ip_idents_mask,=0A+					      2048,=0A=
++					      256*1024);=0A+=0A+	ip_idents =3D idents_hash;=0A =0A-=
+	prandom_bytes(ip_idents, IP_IDENTS_SZ * sizeof(*ip_idents));=0A+=
+	prandom_bytes(ip_idents, (ip_idents_mask + 1) * sizeof(*ip_ident=
+s));=0A =0A-	ip_tstamps =3D kcalloc(IP_IDENTS_SZ, sizeof(*ip_tsta=
+mps), GFP_KERNEL);=0A-	if (!ip_tstamps)=0A-		panic("IP: failed to=
+ allocate ip_tstamps\n");=0A+	ip_tstamps =3D idents_hash + (ip_id=
+ents_mask + 1) * sizeof(*ip_idents);=0A+	memset(ip_tstamps, 0, (i=
+p_idents_mask + 1) * sizeof(*ip_tstamps));=0A =0A 	for_each_possi=
+ble_cpu(cpu) {=0A 		struct uncached_list *ul =3D &per_cpu(rt_unca=
+ched_list, cpu);=0A-- =0Acgit 1.2.3-1.el7=0A=0A
 
-Ack, that's okay with me, and if we find a better solution, we can always change it
-later on.
-
-Thanks,
-Daniel
