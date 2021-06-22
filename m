@@ -2,166 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE11F3B071C
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 16:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A07433B073E
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 16:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231589AbhFVOOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 10:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41566 "EHLO
+        id S231752AbhFVOUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 10:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231348AbhFVOOa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 10:14:30 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4D6C061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 07:12:14 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id m18so23862229wrv.2
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 07:12:14 -0700 (PDT)
+        with ESMTP id S231701AbhFVOUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 10:20:04 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E263C061574
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 07:17:48 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id d196so39807448qkg.12
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 07:17:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IuYCkiUjGqZ1aZwCzkarx0PPbQs1Bqo9JGZtZtG8d5U=;
-        b=qGuE703iUsKtMsCvQxny0JdxFWXRZfQ0oQNHlwvPCVVXtNrLFKxVbNLqp4sW/xmzcP
-         i22p+a+/igAj6xbdwtQy0wsTaTRqMy9g6oA7zLLwM3K6TbW0SMM5afZZ19VrATF6efZf
-         GG9+pqZJi8L0m4Cs4MIncRo4yu7c5QjER8E5OnTHHzLRlM+xKm3wZz+RdfPgDyydu26j
-         rX9s5F7seiRfx8Enp/Y0R74TVYi+3uWJodndbf/e4zh1X1QJ8zZ1Q/A34q/inkA1XL+R
-         yZY4TurBacJVnSXTT1yVyLe32CoJlGoDw6muwAV4RsaDNtc19zJtWe8Hx6FDlqB6lXHx
-         a+nA==
+        bh=JTI+VmMw1x2j76RTTZ/iJ5sMtzr8R2nscp+r894b6xA=;
+        b=aX5dJsL3ZMyIQVpMylq29qgyw2r6Il6ePgad3ov4zzd1Db71kv3dAEHUAD+iJXZT+j
+         h8AilG4D3kEe8yr3velk/go5gs+few50le5y2k0RApzLXlB7lhneujc3M0xUeI17rJ8h
+         OkcUxsXCZy03vu1J9keu2E1deoMSONFwmXmnkstGOxf9WbCgipY1co38lNuqGNmxhrjF
+         yvV4/+qMaMUN90bJ3A24X/j45XkLuqAuSsmtlHevuc9ALmrVq85RTCrp0f11d6nkPOtQ
+         CqqxLGBIy2RVlMLDjFQfjGXinEC5lHeJoTvTdhrB9vfGPgJekKw4yMGzvX/ZiAD2DNPj
+         ZdFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=IuYCkiUjGqZ1aZwCzkarx0PPbQs1Bqo9JGZtZtG8d5U=;
-        b=eJtQaatuv/2SCad8xVLMcIf8owRo13SD4IDSLAdFOzBI3njCSeDuTSvyrlOtCkYuxa
-         nem0avEuDNXW7WWU/vu3rvDIGrPhnopEjo8YKw/4NqhoCZ75g+gOFCH4OarLSllguuTU
-         YDP9lymRc+Eh+VZK5YygY2wCVZevs5kCsuK1FpCo3CL4k5q9uRgqSLBKKB+MdE1k7DYd
-         gJxVwiaLIkkutzyhZ6OEphLsJt6s461dRlgINvdvvLI2PGiw77F4hPkxbhhMKtEiLLvR
-         5pwSEpg5DxtbfofqgT+llsyTVsDkyI0GhwtzeY2/BTFoc5Z20Pvp4Fw0a7U8Nrw1l+WG
-         BhwA==
-X-Gm-Message-State: AOAM5318FubLtLU2qkGlBuDELI/2YfDGaw1xhje1mHIv4ndiSpDLj1po
-        XzAg5Ty+EjCYXm+W6Z92J78=
-X-Google-Smtp-Source: ABdhPJxshEiNbnPHqgNZXjMbbggkilLvtuLp9k1JKCmPJxq+fywz+YeXTeAhN7w2zubNhna/NGY2pQ==
-X-Received: by 2002:adf:e787:: with SMTP id n7mr4990974wrm.169.1624371133443;
-        Tue, 22 Jun 2021 07:12:13 -0700 (PDT)
-Received: from [192.168.181.98] (15.248.23.93.rev.sfr.net. [93.23.248.15])
-        by smtp.gmail.com with ESMTPSA id 61sm22950449wrp.4.2021.06.22.07.12.12
+        bh=JTI+VmMw1x2j76RTTZ/iJ5sMtzr8R2nscp+r894b6xA=;
+        b=tEZHmVRQ805cxYWZ0wBoqie78Ql4LBRJ2hJDAiiqUZNDyrTkpkEqUXFaR4j2N1Z0mw
+         SHIwcimVMQXg4PDEf9bsam2o66+nVaCg0a5lJsraIrQzSBJjOlu8Ui0CnJ1rGlz3MsRn
+         mhtJugAuM7qtnJbQBozq8VP3p9w534bFG5+2oPgnBGtRVh4GbddjsSfy8Lv2QAE1nkRU
+         /lUBOLeqdnEnY66osktrZ35ZIfaVhVXC2GV22Z810ShFPCy1zJXefzg35oyzoF5p0qV2
+         ziEgijlMw0g6K8Vsp4QbGqObI8xJHIFJV0+zxbPMtYUUttl4aJwFa8WWxcST6UswaauU
+         kQHQ==
+X-Gm-Message-State: AOAM532wQIgc3mr51Y/C+cE+rKyvYwcUtvEL1AKGjf9w9lhhlhEbmIp9
+        7MnTatHAFKB9JTBBRy4JrCvQpw==
+X-Google-Smtp-Source: ABdhPJz+EdspyO9doRY76WgLQ/Xf/UkJiteqHjecHaetQqVz6wbwtzJ0ulGEVq+2AbdKisW+DNCBBg==
+X-Received: by 2002:a37:84c3:: with SMTP id g186mr4491372qkd.276.1624371467313;
+        Tue, 22 Jun 2021 07:17:47 -0700 (PDT)
+Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-24-174-92-115-23.dsl.bell.ca. [174.92.115.23])
+        by smtp.googlemail.com with ESMTPSA id k19sm12872492qkj.89.2021.06.22.07.17.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Jun 2021 07:12:12 -0700 (PDT)
-Subject: Re: [PATCH net-next] ip: avoid OOM kills with large UDP sends over
- loopback
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, willemb@google.com, eric.dumazet@gmail.com,
-        dsahern@gmail.com, yoshfuji@linux-ipv6.org, Dave Jones <dsj@fb.com>
-References: <20210621231307.1917413-1-kuba@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <8fe00e04-3a79-6439-6ec7-5e40408529e2@gmail.com>
-Date:   Tue, 22 Jun 2021 16:12:11 +0200
+        Tue, 22 Jun 2021 07:17:46 -0700 (PDT)
+Subject: Re: [PATCH net-next] net/sched: cls_flower: fix resetting of ether
+ proto mask
+To:     Boris Sukholitko <boris.sukholitko@broadcom.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Vadym Kochan <vadym.kochan@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jiri@resnulli.us, idosch@idosch.org, ilya.lifshits@broadcom.com
+References: <20210617161435.8853-1-vadym.kochan@plvision.eu>
+ <20210617164155.li3fct6ad45a6j7h@skbuf>
+ <20210617195102.h3bg6khvaogc2vwh@skbuf> <20210621083037.GA9665@builder>
+ <f18e6fee-8724-b246-adf9-53cc47f9520b@mojatatu.com>
+ <20210622131314.GA14973@builder>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <451abd22-4c81-2821-e8d4-4f305697890c@mojatatu.com>
+Date:   Tue, 22 Jun 2021 10:17:45 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210621231307.1917413-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20210622131314.GA14973@builder>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Boris,
 
-
-On 6/22/21 1:13 AM, Jakub Kicinski wrote:
-> Dave observed number of machines hitting OOM on the UDP send
-> path. The workload seems to be sending large UDP packets over
-> loopback. Since loopback has MTU of 64k kernel will try to
-> allocate an skb with up to 64k of head space. This has a good
-> chance of failing under memory pressure. What's worse if
-> the message length is <32k the allocation may trigger an
-> OOM killer.
+On 2021-06-22 9:13 a.m., Boris Sukholitko wrote:
+> Hi Jamal,
 > 
-> This is entirely avoidable, we can use an skb with frags.
+> On Mon, Jun 21, 2021 at 10:04:41AM -0400, Jamal Hadi Salim wrote:
+>> On 2021-06-21 4:32 a.m., Boris Sukholitko wrote:
+
+[..]
+>>> I like this solution. To be more explicit, the plan becomes:
+>>>
+>>> 1. Add FLOW_DISSECTOR_KEY_ETH_TYPE and struct flow_dissector_key_eth_type.
+>>> 2. Have skb flow dissector use it.
+>>> 3. Userspace does not set TCA_FLOWER_KEY_ETH_TYPE automagically
+>>>      anymore. cls_flower takes basic.n_proto from struct tcf_proto.
+>>> 4. Add eth_type to the userspace and use it to set TCA_FLOWER_KEY_ETH_TYPE
+>>> 5. Existence of TCA_FLOWER_KEY_ETH_TYPE triggers new eth_type dissector.
+>>>
+>>> IMHO this neatly solves non-vlan protocol match case.
+>>>
+>>> What should we do with the VLANs then? Should we have vlan_pure_ethtype
+>>> and cvlan_pure_ethtype as additional keys?
+>>>
+>>
+>> I didnt see the original patch you sent until after it was applied
+>> and the cursory 30 second glance didnt say much to me.
+>>
+>> Vlans unfortunately are a speacial beast: You will have to retrieve
+>> the proto differently.
 > 
-> The scenario is unlikely and always using frags requires
-> an extra allocation so opt for using fallback, rather
-> then always using frag'ed/paged skb when payload is large.
+> Do you by any chance have some naming suggestion? Does
+> vlan_pure_ethtype sound ok? What about vlan_{orig, pkt, raw, hdr}_ethtype?
 > 
-> Note that the size heuristic (header_len > PAGE_SIZE)
-> is not entirely accurate, __alloc_skb() will add ~400B
-> to size. Occasional order-1 allocation should be fine,
-> though, we are primarily concerned with order-3.
+
+The distinction is in getting the inner vs outer proto, correct?
+
+Before we go there let me push back a little since no other
+classifier has this problem. IIUC:
+For the hardware offload current scheme works fine. On the
+non-offload side, the issue seems to be that classify() was
+not getting the proper protocol?
+
+I pointed to Toke's change since it tries to generalize the
+solution.  you'd use that approach
+(eg setting to true).
+
+Would that solve the issue?
+
+If not maybe we need a naming convention for inner vs out proto.
+Should be noted that user space semantics require that the "current
+protocol" be specified in the policy. i.e if you have an inner
+protocol and you need both looked at then you would have two rules
+like this:
+
+1) tc filter ... protocol outer .... action-to-strip-outer-header \
+action reclassify
+2) tc filter ... protoco inner ... action blah
+
+The action-to-strip-outer-header will set properly the skb->proto
+after moving the data pointers so that #2 will match it.
+
+>>
+>> Q: Was this always broken? Example look at Toke's change here:
+>> commit d7bf2ebebc2bd61ab95e2a8e33541ef282f303d4
+>>
 > 
-> Reported-by: Dave Jones <dsj@fb.com>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  include/net/sock.h    | 11 +++++++++++
->  net/ipv4/ip_output.c  | 19 +++++++++++++++++--
->  net/ipv6/ip6_output.c | 19 +++++++++++++++++--
->  3 files changed, 45 insertions(+), 4 deletions(-)
+> IMHO we've always had this problem. I did some archeology on this
+> code and didn't see anything which might have caused the bug.
 > 
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 7a7058f4f265..4134fb718b97 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -924,6 +924,17 @@ static inline gfp_t sk_gfp_mask(const struct sock *sk, gfp_t gfp_mask)
->  	return gfp_mask | (sk->sk_allocation & __GFP_MEMALLOC);
->  }
->  
-> +static inline void sk_allocation_push(struct sock *sk, gfp_t flag, gfp_t *old)
-> +{
-> +	*old = sk->sk_allocation;
-> +	sk->sk_allocation |= flag;
-> +}
-> +
 
-This is not thread safe.
+Suprised it took this long to find out.
 
-Remember UDP sendmsg() does not lock the socket for non-corking sends.
+> Toke's change doesn't look related because in fl_classify it does:
+> 
+> 	skb_key.basic.n_proto = skb_protocol(skb, false);
+> 
+> before running the dissector. In case of a known tunnelling protocol (such
+> as ETH_P_PPP_SES) the n_proto will be overriden by __skb_flow_dissect.
+> 
 
-> +static inline void sk_allocation_pop(struct sock *sk, gfp_t old)
-> +{
-> +	sk->sk_allocation = old;
-> +}
-> +
->  static inline void sk_acceptq_removed(struct sock *sk)
->  {
->  	WRITE_ONCE(sk->sk_ack_backlog, sk->sk_ack_backlog - 1);
-> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-> index c3efc7d658f6..a300c2c65d57 100644
-> --- a/net/ipv4/ip_output.c
-> +++ b/net/ipv4/ip_output.c
-> @@ -1095,9 +1095,24 @@ static int __ip_append_data(struct sock *sk,
->  				alloclen += rt->dst.trailer_len;
->  
->  			if (transhdrlen) {
-> -				skb = sock_alloc_send_skb(sk,
-> -						alloclen + hh_len + 15,
-> +				size_t header_len = alloclen + hh_len + 15;
-> +				gfp_t sk_allocation;
-> +
-> +				if (header_len > PAGE_SIZE)
-> +					sk_allocation_push(sk, __GFP_NORETRY,
-> +							   &sk_allocation);
-> +				skb = sock_alloc_send_skb(sk, header_len,
->  						(flags & MSG_DONTWAIT), &err);
-> +				if (header_len > PAGE_SIZE) {
-> +					BUILD_BUG_ON(MAX_HEADER >= PAGE_SIZE);
-> +
-> +					sk_allocation_pop(sk, sk_allocation);
-> +					if (unlikely(!skb) && !paged &&
-> +					    rt->dst.dev->features & NETIF_F_SG) {
-> +						paged = true;
-> +						goto alloc_new_skb;
-> +					}
-> +				}
+Toke's change may have left things as they were before
+but generally to get vlan protos you'd do things differently.
 
+This is because when vlan offloading was merged it skewed
+things a little and we had to live with that.
 
-What about using sock_alloc_send_pskb(... PAGE_ALLOC_COSTLY_ORDER)
-(as we did in unix_dgram_sendmsg() for large packets), for SG enabled interfaces ?
+Flower is unique in its use of the dissector which other classifiers
+dont. Is this resolvable by having the fix in the  dissector?
 
-We do not _have_ to put all the payload in skb linear part,
-we could instead use page frags (order-0 if high order pages are not available)
+cheers,
+jamal
 
-
->  			} else {
->  				skb = NULL;
->  				if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
