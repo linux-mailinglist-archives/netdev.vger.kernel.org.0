@@ -2,100 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EABF3B027F
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 13:13:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1E143B02A3
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 13:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbhFVLPS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Jun 2021 07:15:18 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:44485 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229907AbhFVLPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 07:15:09 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-248-470f9WPFPfOPrVuVhG1iDQ-1; Tue, 22 Jun 2021 12:12:50 +0100
-X-MC-Unique: 470f9WPFPfOPrVuVhG1iDQ-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 22 Jun
- 2021 12:12:50 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.018; Tue, 22 Jun 2021 12:12:50 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Maciej W. Rozycki'" <macro@orcam.me.uk>,
-        Arnd Bergmann <arnd@kernel.org>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Nikolai Zhubr <zhubr.2@gmail.com>,
-        netdev <netdev@vger.kernel.org>, Jeff Garzik <jgarzik@pobox.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Borislav Petkov" <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>
-Subject: RE: Realtek 8139 problem on 486.
-Thread-Topic: Realtek 8139 problem on 486.
-Thread-Index: AQHXZqun9ddGhoaceUiSd9Xuse9vp6sf31wg
-Date:   Tue, 22 Jun 2021 11:12:49 +0000
-Message-ID: <15eaef22bc2a4929a0d82fd98b2097c2@AcuMS.aculab.com>
-References: <60B24AC2.9050505@gmail.com> <60B2E0FF.4030705@gmail.com>
- <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com>
- <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
- <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com>
- <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com>
- <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
- <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
- <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com>
- <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com>
- <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk>
- <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com>
- <877dipgyrb.ffs@nanos.tec.linutronix.de>
- <alpine.DEB.2.21.2106200749300.61140@angie.orcam.me.uk>
- <CAK8P3a0Z56XvLHJHjvsX3F76ZF0n-VXwPoWbvfQdTgfEBfOneg@mail.gmail.com>
- <alpine.DEB.2.21.2106211623090.779@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2106211623090.779@angie.orcam.me.uk>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S229853AbhFVLYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 07:24:22 -0400
+Received: from mailout1.secunet.com ([62.96.220.44]:60190 "EHLO
+        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229567AbhFVLYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 07:24:18 -0400
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 5323680004E;
+        Tue, 22 Jun 2021 13:22:00 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 22 Jun 2021 13:22:00 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 22 Jun
+ 2021 13:21:59 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 681FC318045C; Tue, 22 Jun 2021 13:21:59 +0200 (CEST)
+Date:   Tue, 22 Jun 2021 13:21:59 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Varad Gautam <varad.gautam@suse.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        <stable@vger.kernel.org>
+Subject: Re: [PATCH] xfrm: policy: Restructure RCU-read locking in
+ xfrm_sk_policy_lookup
+Message-ID: <20210622112159.GC40979@gauss3.secunet.de>
+References: <20210618141101.18168-1-varad.gautam@suse.com>
+ <20210621082949.GX40979@gauss3.secunet.de>
+ <f41d40cc-e474-1324-be0a-7beaf580c292@suse.com>
+ <20210621110528.GZ40979@gauss3.secunet.de>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210621110528.GZ40979@gauss3.secunet.de>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej W. Rozycki
-> Sent: 21 June 2021 15:42
-...
->  The rule of thumb is to acknowledge early in the handler, and to work
-> around broken configurations it may be desirable to also briefly mask all
-> the interrupt sources with the device so as to make sure it deasserts its
-> IRQ line even if another interrupt has already been queued.  OTOH if IRQ
-> sharing is to be supported a device absolutely has to have an interrupt
-> mask register, as the system cannot rely on masking at the interrupt
-> controller if multiple devices are to be handled with a single line.  I
-> suspect many of our drivers do not do such precautionary masking though.
+On Mon, Jun 21, 2021 at 01:05:28PM +0200, Steffen Klassert wrote:
+> On Mon, Jun 21, 2021 at 11:11:18AM +0200, Varad Gautam wrote:
+> > 
+> > Right, I misread the call chain - security_xfrm_policy_lookup does not reach
+> > xfrm_policy_lookup, making this patch unnecessary. The bug I have is:
+> > 
+> > T1, holding hash_resize_mutex and sleeping inside synchronize_rcu:
+> > 
+> > __schedule
+> > schedule
+> > schedule_timeout
+> > wait_for_completion
+> > __wait_rcu_gp
+> > synchronize_rcu
+> > xfrm_hash_resize
+> > 
+> > And T2 producing RCU-stalls since it blocked on the mutex:
+> > 
+> > __schedule
+> > schedule
+> > __rt_mutex_slowlock
+> > rt_mutex_slowlock_locked
+> > rt_mutex_slowlock
+> > xfrm_policy_lookup_bytype.constprop.77
+> 
+> Ugh, why does xfrm_policy_lookup_bytype use a mutex? This is called
+> in the receive path inside a sofirq.
+> 
+> The bug was introduced by: 
+> 
+> commit 77cc278f7b202e4f16f8596837219d02cb090b96
+> Author: Ahmed S. Darwish <a.darwish@linutronix.de>
+> Date:   Mon Jul 20 17:55:22 2020 +0200
+> 
+>     xfrm: policy: Use sequence counters with associated lock
+> 
+>     A sequence counter write side critical section must be protected by some
+>     form of locking to serialize writers. If the serialization primitive is
+>     not disabling preemption implicitly, preemption has to be explicitly
+>     disabled before entering the sequence counter write side critical
+>     section.
+> 
+>     A plain seqcount_t does not contain the information of which lock must
+>     be held when entering a write side critical section.
+> 
+>     Use the new seqcount_spinlock_t and seqcount_mutex_t data types instead,
+>     which allow to associate a lock with the sequence counter. This enables
+>     lockdep to verify that the lock used for writer serialization is held
+>     when the write side critical section is entered.
+> 
+>     If lockdep is disabled this lock association is compiled out and has
+>     neither storage size nor runtime overhead.
+> 
+>     Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+>     Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>     Link: https://lkml.kernel.org/r/20200720155530.1173732-17-a.darwish@linutronix.de
+> 
+> This uses a seqcount_mutex_t for xfrm_policy_hash_generation, that's
+> wrong.
 
-Typically you need to:
-1) stop the chip driving IRQ low.
-2) process all the completed RX and TX entries.
-3) clear the chip's interrupt pending bits (often write to clear).
-4) check for completed RX/TX entries, back to 2 if found.
-5) enable driving IRQ.
-
-The loop (4) is needed because of the timing window between
-(2) and (3).
-You can swap (2) and (3) over - but then you get an additional
-interrupt if packets arrive during processing - which is common.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Varad, can you try to replace the seqcount_mutex_t for xfrm_policy_hash_generation
+by a seqcount_spinlock_t? I'm not familiar with that seqcount changes,
+but we should not end up with using a mutex in this codepath.
 
