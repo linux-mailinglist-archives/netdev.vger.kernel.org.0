@@ -2,120 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F2A63B0B50
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 19:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BB623B0B52
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 19:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231964AbhFVRV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 13:21:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54649 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230182AbhFVRVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 13:21:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624382379;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oCmhYX4FMHa1vHCb0sAJt4ZxgQGn9P18XQ4+1q0bk94=;
-        b=dq1mU7keWv4t/UVjV/TQWZamou0Al/AcofwXon5FeA304FocdXQw4jRnMZmW+iHkdS0PbE
-        SoDwrcja/jCyN0/fXscIexVheO3RLo8UoEsaQnWTjguB+Ub8ZFHuaaB/JUqWGVYcZntZdS
-        fcTZgZcXcsmYsi5Cu5Xb2B3LQcqL0Jk=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-567-3dmbF07CPKu_5jHHG20X9w-1; Tue, 22 Jun 2021 13:19:37 -0400
-X-MC-Unique: 3dmbF07CPKu_5jHHG20X9w-1
-Received: by mail-ed1-f69.google.com with SMTP id j19-20020aa7c4130000b029039497d5cdbeso5818442edq.15
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 10:19:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oCmhYX4FMHa1vHCb0sAJt4ZxgQGn9P18XQ4+1q0bk94=;
-        b=OG3WxD7s6mBTWud1UW1VJPDvkvyexgy30LaXX/S4waAqm3grWFpV26ZqyE0ymTWWlQ
-         2f9dIVODYRDeHfwHyZ8AqpNjtvKbl86PKmJBvqcCtWwByfuPQhrbESgwM6oz2s6KmBPA
-         x+EFWdZUCtgJGUOiX8NM5sXq4xblxA6BnmVBliUoRRqwGEG+tsShdxwdZhMaSSQU0nEY
-         6xd8AQwt3XQN/PXIBmhi8zbvYuVZhx8viLUGvowxXdITDqb6AnO/g664/SqYKmnkfu1W
-         yrshdG2g17O0NjyJ0evcn9uWFAa4d/ieIPVMCbp148nVakmppdnCKqKwKzaE8+aliajm
-         f5Fg==
-X-Gm-Message-State: AOAM530yzt7nfgNwmJcfpKe+CjTxo9s7ulyOYFpreHe4FXLSBUDPPa22
-        UlJwIcGl98ga65IF5QF+iklUWICrax2QBB/+oySTTQxhVcWZxGZ5FMfpgCLDckmkhY+2ZJsn8ja
-        qUAZL8v0IIL7vjdkU
-X-Received: by 2002:a17:906:2513:: with SMTP id i19mr4948427ejb.164.1624382376356;
-        Tue, 22 Jun 2021 10:19:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwDN9E0exQEIgJ92bAsxoIVdsDt6RUASv5gDictcsjcMzaS9Ki/x6rj9N/8BmTCbQt4HqZoUQ==
-X-Received: by 2002:a17:906:2513:: with SMTP id i19mr4948411ejb.164.1624382376200;
-        Tue, 22 Jun 2021 10:19:36 -0700 (PDT)
-Received: from localhost (net-130-25-105-72.cust.vodafonedsl.it. [130.25.105.72])
-        by smtp.gmail.com with ESMTPSA id ml22sm4899602ejb.93.2021.06.22.10.19.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 10:19:35 -0700 (PDT)
-Date:   Tue, 22 Jun 2021 19:19:32 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, mcroce@linux.microsoft.com,
-        kuba@kernel.org, sgoutham@marvell.com, sbhatta@marvell.com,
-        stefanc@marvell.com, brouer@redhat.com,
-        thomas.petazzoni@bootlin.com, linux@armlinux.org.uk,
-        mw@semihalf.com
-Subject: Re: [PATCH net-next] net: marvell: return csum computation result
- from mvneta_rx_csum/mvpp2_rx_csum
-Message-ID: <YNIbpP4gFDNz1YIU@lore-desk>
-References: <73619ca7d64b1dee91ed8ed2dcf0ddbbc57b4b0a.1623943981.git.lorenzo@kernel.org>
- <YNGdw+T283xPwQDM@lore-desk>
- <20210622.100556.369690653202936593.davem@davemloft.net>
+        id S231991AbhFVRWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 13:22:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40076 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230182AbhFVRWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 13:22:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D365361026;
+        Tue, 22 Jun 2021 17:19:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624382393;
+        bh=z5yOOT5esyKS8Dgsj2tlS/BuZXg2aa89V0SIURoMpXI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nRIPHj2WonsG66nmeP44NbnvzWTQ7rt+z1azjIKQuMynp+rrkVlKmQ56Mr+YFPO3T
+         XYR5p2FZlLlHspMkITsMpAwNnCXH4FjXCWuFDQ9Vu8LKp9dw55apD2M8pMjo+iI+/7
+         8KLWAzpshP42W7Hn8UFZjmKtNmyH2YJCMOVItr8UPjYQjwamLfg8+xSnKExuqYAJ/w
+         aHY45R5K/sI2astmFNEVdEiP9or3lnsXUK4ZFMy8aVW+w0ia+PUpwlqdleBYCi84Dt
+         BIILJ95XVvGN738zPZrb24RsBO29oephmUdozG99mzO4prGwLvj4PxV64iro+HgBAH
+         0g6mEEnqy7QZA==
+Date:   Tue, 22 Jun 2021 10:19:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, willemb@google.com,
+        dsahern@gmail.com, yoshfuji@linux-ipv6.org, Dave Jones <dsj@fb.com>
+Subject: Re: [PATCH net-next] ip: avoid OOM kills with large UDP sends over
+ loopback
+Message-ID: <20210622101952.28839d7e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20210622095422.5e078bd4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <20210621231307.1917413-1-kuba@kernel.org>
+        <8fe00e04-3a79-6439-6ec7-5e40408529e2@gmail.com>
+        <20210622095422.5e078bd4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Z1sed/+xHzYYIBDR"
-Content-Disposition: inline
-In-Reply-To: <20210622.100556.369690653202936593.davem@davemloft.net>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 22 Jun 2021 09:54:22 -0700 Jakub Kicinski wrote:
+> > > +static inline void sk_allocation_push(struct sock *sk, gfp_t flag, gfp_t *old)
+> > > +{
+> > > +	*old = sk->sk_allocation;
+> > > +	sk->sk_allocation |= flag;
+> > > +}
+> > > +    
+> > 
+> > This is not thread safe.
+> > 
+> > Remember UDP sendmsg() does not lock the socket for non-corking sends.  
+> 
+> Ugh, you're right :(
 
---Z1sed/+xHzYYIBDR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hm, isn't it buggy to call sock_alloc_send_[p]skb() without holding the
+lock in the first place, then? The knee jerk fix would be to add another 
+layer of specialization to the helpers:
 
-On Jun 22, David Miller wrote:
-> From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-> Date: Tue, 22 Jun 2021 10:22:27 +0200
->=20
-> >> This is a preliminary patch to add hw csum hint support to
-> >> mvneta/mvpp2 xdp implementation
-> >>=20
-> >> Tested-by: Matteo Croce <mcroce@linux.microsoft.com>
-> >> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> >=20
-> > Hi Dave and Jakub,
-> >=20
-> > I have just noticed this patch is marked as "Not Applicable" in patchwo=
-rk. I
-> > tried to rebase it on top of net-next and it applies and compiles so I =
-am
-> > wondering why it is "not applicable". Am I missing something?
->=20
-> It did not apply cleanly for me, please resend.
->=20
-> Thank you.
->=20
-
-ack, I will post v2 soon.
-
-Regards,
-Lorenzo
-
---Z1sed/+xHzYYIBDR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYNIboQAKCRA6cBh0uS2t
-rKaeAQChmgiEN9pSDq4KF0t+jKqsfIz8q92RXodB7bcGI0tv5AD+INkMGo/H2mK8
-1cyu9kCTWstg8OW/1bKiZLJNrL8S6QI=
-=BjOQ
------END PGP SIGNATURE-----
-
---Z1sed/+xHzYYIBDR--
-
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 7a7058f4f265..06f031705418 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1714,9 +1725,20 @@ int sock_gettstamp(struct socket *sock, void __user *userstamp,
+ 		   bool timeval, bool time32);
+ struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
+ 				    int noblock, int *errcode);
+-struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+-				     unsigned long data_len, int noblock,
+-				     int *errcode, int max_page_order);
++struct sk_buff *__sock_alloc_send_pskb(struct sock *sk,
++				       unsigned long header_len,
++				       unsigned long data_len, int noblock,
++				       int *errcode, int max_page_order,
++				       gfp_t gfp_flags);
++
++static inline sk_buff *
++sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
++		     unsigned long data_len, int noblock, int *errcode)
++{
++	return __sock_alloc_send_pskb(sk, header_len, data_len,
++				      noblock, errcode, 0, sk->sk_allocation);
++}
++
+ void *sock_kmalloc(struct sock *sk, int size, gfp_t priority);
+ void sock_kfree_s(struct sock *sk, void *mem, int size);
+ void sock_kzfree_s(struct sock *sk, void *mem, int size);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 946888afef88..64b7271a7d21 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2331,9 +2331,11 @@ static long sock_wait_for_wmem(struct sock *sk, long timeo)
+  *	Generic send/receive buffer handlers
+  */
+ 
+-struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+-				     unsigned long data_len, int noblock,
+-				     int *errcode, int max_page_order)
++struct sk_buff *__sock_alloc_send_pskb(struct sock *sk,
++				       unsigned long header_len,
++				       unsigned long data_len, int noblock,
++				       int *errcode, int max_page_order,
++				       gfp_t gfp_flags)
+ {
+ 	struct sk_buff *skb;
+ 	long timeo;
+@@ -2362,7 +2364,7 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+ 		timeo = sock_wait_for_wmem(sk, timeo);
+ 	}
+ 	skb = alloc_skb_with_frags(header_len, data_len, max_page_order,
+-				   errcode, sk->sk_allocation);
++				   errcode, gfp_flags);
+ 	if (skb)
+ 		skb_set_owner_w(skb, sk);
+ 	return skb;
+@@ -2373,7 +2375,7 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+ 	*errcode = err;
+ 	return NULL;
+ }
+-EXPORT_SYMBOL(sock_alloc_send_pskb);
++EXPORT_SYMBOL(__sock_alloc_send_pskb);
+ 
+ struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
+ 				    int noblock, int *errcode)
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index c3efc7d658f6..211f1ea6cf2a 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1095,9 +1095,22 @@ static int __ip_append_data(struct sock *sk,
+ 				alloclen += rt->dst.trailer_len;
+ 
+ 			if (transhdrlen) {
+-				skb = sock_alloc_send_skb(sk,
+-						alloclen + hh_len + 15,
+-						(flags & MSG_DONTWAIT), &err);
++				bool sg = rt->dst.dev->features & NETIF_F_SG;
++				size_t header_len = alloclen + hh_len + 15;
++				gfp_t sk_allocation;
++
++				sk_allocation = sk->sk_allocation;
++				if (header_len > PAGE_SIZE && sg)
++					sk_allocation |= __GFP_NORETRY;
++
++				skb = __sock_alloc_send_pskb(sk, header_len, 0,
++						(flags & MSG_DONTWAIT), &err,
++							     0, sk_allocation);
++				if (unlikely(!skb) && !paged && sg) {
++					BUILD_BUG_ON(MAX_HEADER >= PAGE_SIZE);
++					paged = true;
++					goto alloc_new_skb;
++				}
+ 			} else {
+ 				skb = NULL;
+ 				if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
