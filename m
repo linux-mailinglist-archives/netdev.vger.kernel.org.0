@@ -2,102 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB7B43B05AB
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 15:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 202B23B05C5
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 15:25:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbhFVNSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 09:18:40 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49768 "EHLO vps0.lunn.ch"
+        id S230103AbhFVN1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 09:27:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229913AbhFVNSj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 09:18:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ASPA2Alud/ObRkYHzXvNjD5ePOL4W0UexmCN5MberbY=; b=pOUwXcvoNtNuIXN2pOgQyZU/xD
-        I91eWspKCBJU6kaqFVByzQJ7jstAiWk3hgZ4WenUt4SqtHiyf2sByQWg1FTwuXdV2kVlweerL4ucb
-        /Wy3YRBk6RzBgpQXwDVpQ4VefBqZe0Z4GV1qGfqKZKYFBkaG867TyIXNowo/w3TuoNnU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lvgG8-00AhuO-Im; Tue, 22 Jun 2021 15:16:08 +0200
-Date:   Tue, 22 Jun 2021 15:16:08 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "hmehrtens@maxlinear.com" <hmehrtens@maxlinear.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tmohren@maxlinear.com" <tmohren@maxlinear.com>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        "lxu@maxlinear.com" <lxu@maxlinear.com>
-Subject: Re: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
-Message-ID: <YNHimAJNg0rO/Tt4@lunn.ch>
-References: <CO1PR11MB477189838CFCDB952D4B064BD5099@CO1PR11MB4771.namprd11.prod.outlook.com>
+        id S230039AbhFVN1b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 09:27:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 017DA6102A
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 13:25:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624368316;
+        bh=hB1/TGIJKn1vgmhSjWYV0Dh8RFDDR81gbSs9JMWDEhQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=gHYMBDT+sw6v1hDScJ2avWsASU9xsbR3w+sXj+xvyur0TdGknPMAOZRxEFJNlYePC
+         EVnXeJInLtieaKog08BYrkb2bUFb5UPLaFCkgBQeC+PtNB7o7R/1jjjT01TJqgZuwP
+         Phl9fZXaE/eC6ATz1zbgkZt3FbTj0od8SyLGIBN0hE1594Tvi/0sLWkaoiAaAOmXpu
+         Mj0hjquk4lQ5jhCqIFZPTdHYr+cCMHAkZ47I58gvFrHBJlqbI4cWNP+hqU14Ih1K7H
+         hzWiHyH+1FVpSTiND1F35ns+6w0yS3X9jnXbMc83iCe7R9tdDmk4ZerBS8f0Uh2wxn
+         /p73a9IDdeA5w==
+Received: by mail-wm1-f41.google.com with SMTP id m41-20020a05600c3b29b02901dcd3733f24so1764021wms.1
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 06:25:15 -0700 (PDT)
+X-Gm-Message-State: AOAM531q15rKNW8v4WxqzqDucUsPRNvssPGh0TZdgUumwIE8JSz3TLOo
+        A2lKXnRHxc6XBrGd58/xZJlQ4TSxhtuir12no8c=
+X-Google-Smtp-Source: ABdhPJwj40yuXVFBjODysme3PQ1I3BtSpfl3QdB8opzmnPFhL6UhaW24rs/pd9xvEwfnjTCY4KebbmIdbzVnpkz4NqA=
+X-Received: by 2002:a1c:28a:: with SMTP id 132mr4542141wmc.120.1624368314645;
+ Tue, 22 Jun 2021 06:25:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB477189838CFCDB952D4B064BD5099@CO1PR11MB4771.namprd11.prod.outlook.com>
+References: <60B24AC2.9050505@gmail.com> <CAP8WD_bKiGLczUfRVOWY3y4TT80yhRCPmLkN7pDMhkJ5m=2Pew@mail.gmail.com>
+ <60B2E0FF.4030705@gmail.com> <60B36A9A.4010806@gmail.com> <60B3CAF8.90902@gmail.com>
+ <CAK8P3a3y3vvgdWXU3x9f1cwYKt3AvLUfN6sMEo0SXFPTCuxjCw@mail.gmail.com>
+ <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com>
+ <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com>
+ <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com>
+ <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com>
+ <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com>
+ <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk> <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com>
+ <877dipgyrb.ffs@nanos.tec.linutronix.de> <alpine.DEB.2.21.2106200749300.61140@angie.orcam.me.uk>
+ <CAK8P3a0Z56XvLHJHjvsX3F76ZF0n-VXwPoWbvfQdTgfEBfOneg@mail.gmail.com> <60D1DAC1.9060200@gmail.com>
+In-Reply-To: <60D1DAC1.9060200@gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 22 Jun 2021 15:22:55 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1XaTUgxM3YBa=iHGrLX_Wn66NhTTEXtV=vaNre7K3GOA@mail.gmail.com>
+Message-ID: <CAK8P3a1XaTUgxM3YBa=iHGrLX_Wn66NhTTEXtV=vaNre7K3GOA@mail.gmail.com>
+Subject: Re: Realtek 8139 problem on 486.
+To:     Nikolai Zhubr <zhubr.2@gmail.com>
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 22, 2021 at 04:21:47AM +0000, Ismail, Mohammad Athari wrote:
-> > -----Original Message-----
-> > From: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
-> > Sent: Tuesday, June 22, 2021 12:15 PM
-> > To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
-> > Subject:
-> > 
-> > > Net-next:
-> > >
-> > > int genphy_loopback(struct phy_device *phydev, bool enable) {
-> > >      if (enable) {
-> > >          u16 val, ctl = BMCR_LOOPBACK;
-> > >          int ret;
-> > >
-> > >          if (phydev->speed == SPEED_1000)
-> > >              ctl |= BMCR_SPEED1000;
-> > >          else if (phydev->speed == SPEED_100)
-> > >              ctl |= BMCR_SPEED100;
-> > >
-> > >          if (phydev->duplex == DUPLEX_FULL)
-> > >              ctl |= BMCR_FULLDPLX;
-> > >
-> > >          phy_modify(phydev, MII_BMCR, ~0, ctl);
-> > >
-> > >          ret = phy_read_poll_timeout(phydev, MII_BMSR, val,
-> > >                          val & BMSR_LSTATUS,
-> > >                      5000, 500000, true);
-> > >          if (ret)
-> > >              return ret;
-> > >      } else {
-> > >          phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
-> > >
-> > >          phy_config_aneg(phydev);
-> > >      }
-> > >
-> > >      return 0;
-> > > }
-> 
-> Hi Andrew,
-> 
+On Tue, Jun 22, 2021 at 2:32 PM Nikolai Zhubr <zhubr.2@gmail.com> wrote:
+>
+> 21.06.2021 14:22, Arnd Bergmann:
+> [...]
+> > I looked some more through the git history and found at least one time
+> > that the per-chipset ELCR fixup came up for discussion[1], and this
+> > appears to have resulted in generalizing an ALI specific fixup into
+> > common code into common code[2], so we should already be doing
+> > exactly this in many cases. If Nikolai can boot the system with debugging
+> > enabled for arch/x86/pci/irq.c, we should be able to see exactly
+> > which code path is his in his case, and why it doesn't go through
+> > setting that register at the moment.
+>
+> Here is my dmesg with debugging (hopefully) added to irq.c:
+>
+> https://pastebin.com/tnC2rRDM
 
-> We also observe same issue on Marvell88E1510 PHY (C22 supported PHY)
-> as well. It works with v5.12.11's genphy_loopback() but not
-> net-next's.
+Ok, so it's getting roughly through the right code path:
 
-Ah, yes. The Marvell probably needs a software reset after the write
-to the MII_BMSR register. But just setting the loopback bit also
-probably needed a software reset as well, so i suspect it was broken
-before this change.
+        dev_dbg(&dev->dev, "PCI INT %c -> PIRQ %02x, mask %04x, excl %04x",
+                'A' + pin - 1, pirq, mask, pirq_table->exclusive_irqs);
+...
+        dev_dbg(&dev->dev, "PCI INT %c -> newirq %d", 'A' + pin - 1, newirq);
 
-Oleksij, rather that writing registers directly, we probably need to
-use the phylib API calls to configure the PHY. That will handle
-oddities like the Marvell needing a reset, or PHYs with other speeds
-etc.
+        /* Check if it is hardcoded */
+        if ((pirq & 0xf0) == 0xf0) {
+                irq = pirq & 0xf;
+                msg = "hardcoded";
+        } else if (r->get && (irq = r->get(pirq_router_dev, dev, pirq)) && \
+        ((!(pci_probe & PCI_USE_PIRQ_MASK)) || ((1 << irq) & mask))) {
+                msg = "found";
+                elcr_set_level_irq(irq);
+        } else if (newirq && r->set &&
+                (dev->class >> 8) != PCI_CLASS_DISPLAY_VGA) {
+                if (r->set(pirq_router_dev, dev, pirq, newirq)) {
+                        elcr_set_level_irq(newirq);
+                        msg = "assigned";
+                        irq = newirq;
+                }
+        }
 
-	Andrew
+        if (!irq) {
+                if (newirq && mask == (1 << newirq)) {
+                        msg = "guessed";
+                        irq = newirq;
+                } else {
+                        dev_dbg(&dev->dev, "can't route interrupt\n");
+                        return 0;
+                }
+        }
+        dev_info(&dev->dev, "%s PCI INT %c -> IRQ %d\n", msg, 'A' +
+pin - 1, irq);
+
+with the corresponding output from that one being
+
+[    0.761546] 8139too 0000:00:0d.0: runtime IRQ mapping not provided by arch
+[    0.761546] 8139too: 8139too Fast Ethernet driver 0.9.28
+[    0.761546] 8139too 0000:00:0d.0: PCI INT A -> PIRQ 02, mask 1eb8, excl 0001
+[    0.765817] 8139too 0000:00:0d.0: PCI INT A -> newirq 9
+[    0.765817] 8139too 0000:00:0d.0: can't route interrupt
+[    0.777546] 8139too 0000:00:0d.0 eth0: RealTek RTL8139 at
+0xc4804000, 00:11:6b:32:85:74, IRQ 9
+
+From what I can tell, this means that there is no chipset specific
+get/set function,
+the irq is not hardcoded but the 'mask' value in the irq_info table (0x1eb8)
+lists a number of options.
+
+In this case, the function gives up with the  "can't route interrupt\n"
+output and does not call elcr_set_level_irq(newirq). Adding the call
+to elcr_set_level_irq() in that code path as well probably makes it
+set the irq to level mode:
+
+--- a/arch/x86/pci/irq.c
++++ b/arch/x86/pci/irq.c
+@@ -984,6 +984,7 @@ static int pcibios_lookup_irq(struct pci_dev *dev,
+int assign)
+                        irq = newirq;
+                } else {
+                        dev_dbg(&dev->dev, "can't route interrupt\n");
++                       elcr_set_level_irq(newirq);
+                        return 0;
+                }
+        }
+
+No idea if doing this is a good idea though, in particular I have no clue
+about whether this is a common scenario or not.
+
+        Arnd
