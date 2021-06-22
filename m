@@ -2,136 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD43F3AFA7D
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 03:14:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4783AFA94
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 03:23:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbhFVBQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Jun 2021 21:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        id S230161AbhFVB0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Jun 2021 21:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbhFVBQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 21:16:25 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5386FC061574;
-        Mon, 21 Jun 2021 18:14:10 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id i94so21611858wri.4;
-        Mon, 21 Jun 2021 18:14:10 -0700 (PDT)
+        with ESMTP id S229663AbhFVB0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Jun 2021 21:26:03 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2747BC061574
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 18:23:48 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id h9so9507144oih.4
+        for <netdev@vger.kernel.org>; Mon, 21 Jun 2021 18:23:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YKGpqBSae3SQn5FXwUHkM5Y5Zy1QUuaeOYx04RqOUvw=;
-        b=NsQGP6vTQiB8xPTvgdgwiwUf+uIKxW9qgKOxA7tnEbiNVfdqwPQ4Xa4aLgy/bR6ZjC
-         7Xi2FmPn8yw1jkJWtddhsAxxKyu9Plwj61IhYD839/rgokoRl02DAD5dFY2iHcQ/Ch+a
-         b2+gL8HRVWxPKX0h1IiyJrvT4aU2Yq3z2I39BR0eiX9BBBijajizwK37IW3GQRlEdz8d
-         u8lm9cNOy9kj3PV6rKaVjnlv5IM4I1AtmPfefULB1hmiHAPXRIrGMwYg6tXVGrWWEiBQ
-         XhIh5pJyWQ+MjZcaCAl/0pBMUhMMG98gnofRZnb/ZV4816Nov9oNew3wOvKPDFbiWF5r
-         7PNA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lhZYntEEuYqUA133fAaedO2k+Cwq0lDVg5QX0PUDcEM=;
+        b=NT/dbl6v2tLR2lbFI8TRniJXb7LoCHkNZqbRr4t6woGYuBdJKt8U5AWtDj5RL2jfuv
+         ioqegbFnAZRZl89vSUbAw6WTqtd/Ou/Q+LlG9xbvzCspqgdcTdnnmLEzMx+bJl0C4DI1
+         0GRh68k3rNgpIXCLFRdjcpLjmydFGTJWBO+eV+20kMAqRXBAL3cs9S18EK3vJZdlmN4E
+         xV3zRniZWh8dqzEmNI1qa+L4oWVqh6Tq00nAF77/B6BMueeH8ES3rUtXS8tH31Pmi/Rs
+         GbArTs/g3MNdMEZpaXMOHQNUQsmkedvUwstHYVfp6PU7tFDKq5004+Idl4808yb/I8X8
+         +RBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YKGpqBSae3SQn5FXwUHkM5Y5Zy1QUuaeOYx04RqOUvw=;
-        b=GirmLS6MQvEqD+eZeMuF/tcuFVqdVeeZsZPPo72l9uMf8AozT3H2+JRaiXHSpNuIBf
-         7PZlpN1MLfnCct+7wvlbSd3rdhe3fWml+9okJkolZlRCFfDDH7STpZ3txGFi1iNlqsv1
-         LxGRd1qKF3LDQHdnqcZ3SwjQui56Ha2ZxhZ6APwlPQXOqVskYTpXdiixsC2CopErmRvp
-         NIec91C5FA4ccci04Wlb6lbFPvJYsVvWXWCrJfVKJpjmL5oooihaGKq8qrL8fzcDgWFt
-         ezduDY8W3njCs9kz/4m0bTmFttDFgmusdD3XJv/qBlwZabiFipErmY9nFIpjfw83P+LC
-         6/+A==
-X-Gm-Message-State: AOAM530Bo6knidp582n9KUswhfR3IUvrUuWxsHQT/F/IwND22ZGPjsk1
-        Y+vUBGLYnUqGRBf5sRqyknZOJ2Lz4bUqXuBrdsw=
-X-Google-Smtp-Source: ABdhPJxUI/4c4cpW9zuyZDxEj0yUVCZv1Ub+4FqshB2g6pGOnGOi+3UW/hfVfVzR5ml+jmwLqLksoa71RmtolIGudV4=
-X-Received: by 2002:a05:6000:2a3:: with SMTP id l3mr1390712wry.395.1624324448810;
- Mon, 21 Jun 2021 18:14:08 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lhZYntEEuYqUA133fAaedO2k+Cwq0lDVg5QX0PUDcEM=;
+        b=ZZo0C8CIxMoh/hmgqGgHjqyThmRx7ORzvkzWAvPP9hP0//9JQw7HX6GaSfhAQpW3nT
+         mVHqnv/efSDVaGy1lkU+iX9CH1YVM6fQARYXb9cZe5I2TRZPl8jMLcF4/rLWv8w7Eh1Y
+         sC/zp4YLnNIEOO45HAGLeGZ0AiETFIK86z/pv4HdOwukx3zvdzL8FM4+eRv+oUoxArvc
+         pJfCQA7Vbwz1K9WTO66ZRgehu98vYYvqH6o8dLp0QLFBWoRbonKh6IidTFEnk/SDGXSy
+         mmf1bIs9Sv5MsofiwmBBiYtz7hbasPHB6jHPyKD8BE/a1IK/kUC6ekvuf6HFT0sbwxw0
+         Penw==
+X-Gm-Message-State: AOAM530z1zRuHJwtHqlUL0mwVdbiRJsMoAVd9umXfqBWbCWcD03mpKw+
+        IU9Fu9mBW3eG4zxpGwLvUdZFLAUemaQ=
+X-Google-Smtp-Source: ABdhPJz200JtJaWBFj+GXiR1QeIaainz8Va2TuayVLaalcrKO1neMJzLrsAohX+U7a+t5Nj7UBUUJg==
+X-Received: by 2002:aca:b343:: with SMTP id c64mr1134993oif.137.1624325027410;
+        Mon, 21 Jun 2021 18:23:47 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id w69sm3997167oia.22.2021.06.21.18.23.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Jun 2021 18:23:47 -0700 (PDT)
+Subject: Re: [PATCH] net/ipv4: swap flow ports when validating source
+To:     Wang Shanker <shankerwangmiao@gmail.com>, netdev@vger.kernel.org
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>
+References: <1B652E0A-2749-4B75-BC6D-2DAE2A4555A8@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a08932fe-789d-3b38-3d92-e00225a8cf9f@gmail.com>
+Date:   Mon, 21 Jun 2021 19:23:45 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <66a73fb28cc8175ac80735f6301110b952f6e139.1624239422.git.lucien.xin@gmail.com>
- <202106211151.QDS54KHu-lkp@intel.com>
-In-Reply-To: <202106211151.QDS54KHu-lkp@intel.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Mon, 21 Jun 2021 21:13:59 -0400
-Message-ID: <CADvbK_dCgaqrr=pxZGfBmm=3m31+eKgcfkU7AowFbnZAcC92bQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 06/14] sctp: do the basic send and recv for
- PLPMTUD probe
-To:     kernel test robot <lkp@intel.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        kbuild-all@lists.01.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1B652E0A-2749-4B75-BC6D-2DAE2A4555A8@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a "set but not used" warning, I can fix it after.
+On 6/21/21 9:17 AM, Wang Shanker wrote:
+> When doing source address validation, the flowi4 struct used for
+> fib_lookup should be in the reverse direction to the given skb.
+> fl4_dport and fl4_sport returned by fib4_rules_early_flow_dissect
+> should thus be swapped.
+> 
+> Fixes: 5a847a6 ("net/ipv4: Initialize proto and ports in flow struct")
 
-Thanks.
+I believe the hash should be 12 chars: 5a847a6e1477
 
-On Sun, Jun 20, 2021 at 11:50 PM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Xin,
->
-> Thank you for the patch! Perhaps something to improve:
->
-> [auto build test WARNING on net-next/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Xin-Long/sctp-implement-RFC8899-Packetization-Layer-Path-MTU-Discovery-for-SCTP-transport/20210621-094007
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git adc2e56ebe6377f5c032d96aee0feac30a640453
-> config: i386-randconfig-r023-20210620 (attached as .config)
-> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-> reproduce (this is a W=1 build):
->         # https://github.com/0day-ci/linux/commit/fcac1d6488c8bc7cb69af9e8051686a674d94fc3
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Xin-Long/sctp-implement-RFC8899-Packetization-Layer-Path-MTU-Discovery-for-SCTP-transport/20210621-094007
->         git checkout fcac1d6488c8bc7cb69af9e8051686a674d94fc3
->         # save the attached .config to linux build tree
->         make W=1 ARCH=i386
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All warnings (new ones prefixed by >>):
->
-> >> net/sctp/output.c:215:16: warning: no previous prototype for 'sctp_packet_bundle_pad' [-Wmissing-prototypes]
->      215 | enum sctp_xmit sctp_packet_bundle_pad(struct sctp_packet *pkt, struct sctp_chunk *chunk)
->          |                ^~~~~~~~~~~~~~~~~~~~~~
->    net/sctp/output.c: In function 'sctp_packet_bundle_pad':
-> >> net/sctp/output.c:219:20: warning: variable 'sp' set but not used [-Wunused-but-set-variable]
->      219 |  struct sctp_sock *sp;
->          |                    ^~
->
->
-> vim +/sctp_packet_bundle_pad +215 net/sctp/output.c
->
->    213
->    214  /* Try to bundle a pad chunk into a packet with a heartbeat chunk for PLPMTUTD probe */
->  > 215  enum sctp_xmit sctp_packet_bundle_pad(struct sctp_packet *pkt, struct sctp_chunk *chunk)
->    216  {
->    217          struct sctp_transport *t = pkt->transport;
->    218          struct sctp_chunk *pad;
->  > 219          struct sctp_sock *sp;
->    220          int overhead = 0;
->    221
->    222          if (!chunk->pmtu_probe)
->    223                  return SCTP_XMIT_OK;
->    224
->    225          sp = sctp_sk(t->asoc->base.sk);
->    226
->    227          /* calculate the Padding Data size for the pad chunk */
->    228          overhead += sizeof(struct sctphdr) + sizeof(struct sctp_chunkhdr);
->    229          overhead += sizeof(struct sctp_sender_hb_info) + sizeof(struct sctp_pad_chunk);
->    230          pad = sctp_make_pad(t->asoc, t->pl.probe_size - overhead);
->    231          if (!pad)
->    232                  return SCTP_XMIT_DELAY;
->    233
->    234          list_add_tail(&pad->list, &pkt->chunk_list);
->    235          pkt->size += SCTP_PAD4(ntohs(pad->chunk_hdr->length));
->    236          chunk->transport = t;
->    237
->    238          return SCTP_XMIT_OK;
->    239  }
->    240
->
+> Signed-off-by: Miao Wang <shankerwangmiao@gmail.com>
 > ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>  net/ipv4/fib_frontend.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+> index 84bb707bd88d..647bceab56c2 100644
+> --- a/net/ipv4/fib_frontend.c
+> +++ b/net/ipv4/fib_frontend.c
+> @@ -371,6 +371,8 @@ static int __fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
+>  		fl4.flowi4_proto = 0;
+>  		fl4.fl4_sport = 0;
+>  		fl4.fl4_dport = 0;
+> +	} else {
+> +		swap(fl4.fl4_sport, fl4.fl4_dport);
+>  	}
+>  
+>  	if (fib_lookup(net, &fl4, &res, 0))
+> 
+
+Reviewed-by: David Ahern <dsahern@kernel.org>
