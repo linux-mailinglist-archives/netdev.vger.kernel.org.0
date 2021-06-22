@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE14F3B0EC8
-	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 663733B0ECA
+	for <lists+netdev@lfdr.de>; Tue, 22 Jun 2021 22:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbhFVUd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 16:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
+        id S229667AbhFVUda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 16:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbhFVUdZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:33:25 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A16FC061574;
-        Tue, 22 Jun 2021 13:31:08 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id x22so9505190pll.11;
-        Tue, 22 Jun 2021 13:31:08 -0700 (PDT)
+        with ESMTP id S230114AbhFVUd2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 16:33:28 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC816C061574;
+        Tue, 22 Jun 2021 13:31:11 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id f10so8916020plg.0;
+        Tue, 22 Jun 2021 13:31:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2M+/jke7oI/v1bHKeQ1t1eI5gEmwcggeXPdID1191qU=;
-        b=N0nK/svAuC7AIHjqpiLyovimqrdAVO3vPDc3px0VJ/KbEgf6a9upKvzxQC12D/3DdP
-         0dekTPFS3gNUVEE6z6hNhKL73CqGMiOOHu7VIp/bE8QYc8wEvxr4HAlJiVIuo+UMlVD8
-         LlM4PuRnaMc7/9/XrA8nA2mg/rjiU5cHVfbseACTO5gUENC+gSJt17uCv41upqY99n+S
-         F0MfsOcFCXngjDQWNPHoSUaCQnxZtjnHboStCUbr+voODSRD2qtsnkhwwu3LZRbDTa/R
-         c2Q9KA9tOAG6MdS2jmpgwSBEhW3XUKUjr9Ui/r7Vf0l64Ec3a+ABPAnJXpPteByMQffk
-         Flhg==
+        bh=Ho8mpG9beAl+0ggB96aMls1JfFIVbnP4cgBTDr5kAic=;
+        b=moz/96mMW6dUOyAGHojY7v7orYfOZIHjrqog+XI4uttLQIgS4Jlwh3LKNtpVWyxVDz
+         b0A3Vmluc4NpSzDKqbuSk0SUxBg0LYhlitHBnSlKNDbPoNJ5aAxHVrHzgXAZq/7RhK+m
+         s2sN6eOL7N4JNCBIuB6ppMG01Vr2RF+uTwCCNV97LkDnVFUmOds/n/opeTwK3lO/3Ugw
+         R7+3UizZx2G0V1JKGcMhxTMmC2eYXJtiS8D7ymknixw0x0gvh/eCyQZJJaNIgk9bNODa
+         S9qbvsf9FkcN4uajXFtIAVdBHeLn1YdDX76Na8Vz3nV1QfivWg93IEIlfWevvH/Mx/KC
+         IPhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2M+/jke7oI/v1bHKeQ1t1eI5gEmwcggeXPdID1191qU=;
-        b=qEep6XXdZ/PcY7TwFzdzxCIKFoYkhnB5bj+b52mp66dZ8h50Vlfao4xtjiMXUIUr9c
-         vlM0YZOIL/UnNtRvUyFROZxZStFcBVtVJbNvE2Bq/hpPFzqJhOkY3gC/1FYF7vmGyy6I
-         Gp7ceX3qw+wuenuNsqAuzDd9DjWn5k0Jd6D80TI9RlmrvUXUlkbUsqmdo0zXm4dsd6K/
-         EowjyeKCgN3FvhU2bpGyuKEyjdPryq7wqI7NTp2mCwr2oUnxDtim4aDS/WwA2yPZauuV
-         DawwC/vulmvuFakg6lnR+L3d7AUxBOrsrFSfjLHUZ9Awt4G40IUAUR8hRmAlf1U110uC
-         ++6w==
-X-Gm-Message-State: AOAM5334ylikhovvHmnLHgBOAm43gt7GL4LpfJikN6E37HShqMq1tZ+Y
-        m28ccBOavEJyVQFhjSZBUUYiq62+34U=
-X-Google-Smtp-Source: ABdhPJw5NmcV1zqNDRZjhyYk34cp+B95MmGclSBdWwyz42jrDkfa/lARWAiiNsD1I/dsU6u0R6Na7Q==
-X-Received: by 2002:a17:90a:aa93:: with SMTP id l19mr5745716pjq.142.1624393867382;
-        Tue, 22 Jun 2021 13:31:07 -0700 (PDT)
+        bh=Ho8mpG9beAl+0ggB96aMls1JfFIVbnP4cgBTDr5kAic=;
+        b=JRMprbOUvNOLDQEZszi3TUz9rOIPrfi3vdsS+C/X6ZLTHBTJO5MpqLI+C3eFQ5AuFg
+         1MCUffmLHVa/Ojxx7SdzHG7Z8obKsPnFRUbTfhYzPRLdnuR3NxiR+yxfPd5qL4uuRaqm
+         7xzauMiCMVh2Vsphc4XDv4u/jHHOI3zj+cyyW5GjxZpMa6gaNKusuPcSMwgjS2TnIZms
+         kPkQxbDg5nvda3OlR5K7ETeHfru2s+L6zi+Sl5uMYbIlwEt5msJeavDKSuCas78XhT2x
+         6LhNbvwvcThTHjGGuLIBElBOwOgWCI2UcTW/gCG499KVQ7qdaKAIFWecnCDndzYH9t4u
+         AEFw==
+X-Gm-Message-State: AOAM532sjfWbRPmKre1Jz9wqBWhU849oT4WMgjAxwZSr6WgIm9qs4rO7
+        w+oYoKey8WhxJPcEstmtZ+2H5d+DCzg=
+X-Google-Smtp-Source: ABdhPJxXNUDzs2e7ypHVjRfEmRuzDEU+LSLZ8ZT5crga9Wl6qI5WmW+7PcktfsCfM9MRvfer2hvGOQ==
+X-Received: by 2002:a17:902:720c:b029:11e:787d:407e with SMTP id ba12-20020a170902720cb029011e787d407emr24689318plb.31.1624393871194;
+        Tue, 22 Jun 2021 13:31:11 -0700 (PDT)
 Received: from localhost ([2402:3a80:11bb:33b3:7f0c:3646:8bde:417e])
-        by smtp.gmail.com with ESMTPSA id o8sm192470pfp.48.2021.06.22.13.31.06
+        by smtp.gmail.com with ESMTPSA id o1sm3118465pjf.56.2021.06.22.13.31.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 13:31:07 -0700 (PDT)
+        Tue, 22 Jun 2021 13:31:10 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Subject: [PATCH net-next v3 4/5] bpf: devmap: implement devmap prog execution for generic XDP
-Date:   Wed, 23 Jun 2021 01:58:34 +0530
-Message-Id: <20210622202835.1151230-5-memxor@gmail.com>
+Subject: [PATCH net-next v3 5/5] bpf: update XDP selftests to not fail with generic XDP
+Date:   Wed, 23 Jun 2021 01:58:35 +0530
+Message-Id: <20210622202835.1151230-6-memxor@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210622202835.1151230-1-memxor@gmail.com>
 References: <20210622202835.1151230-1-memxor@gmail.com>
@@ -71,145 +71,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This lifts the restriction on running devmap BPF progs in generic
-redirect mode. To match native XDP behavior, it is invoked right before
-generic_xdp_tx is called, and only supports XDP_PASS/XDP_ABORTED/
-XDP_DROP actions.
-
-We also return 0 even if devmap program drops the packet, as
-semantically redirect has already succeeded and the devmap prog is the
-last point before TX of the packet to device where it can deliver a
-verdict on the packet.
-
-This also means it must take care of freeing the skb, as
-xdp_do_generic_redirect callers only do that in case an error is
-returned.
-
-Since devmap entry prog is supported, remove the check in
-generic_xdp_install entirely.
+Generic XDP devmaps and cpumaps now allow setting value_size to 8 bytes
+(so that prog_fd can be specified) and XDP progs using them succeed in
+SKB mode now. Adjust the checks.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/bpf.h |  1 -
- kernel/bpf/devmap.c | 49 ++++++++++++++++++++++++++++++++++++---------
- net/core/dev.c      | 18 -----------------
- 3 files changed, 39 insertions(+), 29 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c | 4 ++--
+ tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 095aaa104c56..4afbff308ca3 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1508,7 +1508,6 @@ int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
- int dev_map_redirect_multi(struct net_device *dev, struct sk_buff *skb,
- 			   struct bpf_prog *xdp_prog, struct bpf_map *map,
- 			   bool exclude_ingress);
--bool dev_map_can_have_prog(struct bpf_map *map);
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+index 0176573fe4e7..42e46d2ae349 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+@@ -29,8 +29,8 @@ void test_xdp_with_cpumap_helpers(void)
+ 	 */
+ 	prog_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
+ 	err = bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd, XDP_FLAGS_SKB_MODE);
+-	CHECK(err == 0, "Generic attach of program with 8-byte CPUMAP",
+-	      "should have failed\n");
++	CHECK(err, "Generic attach of program with 8-byte CPUMAP",
++	      "shouldn't have failed\n");
  
- void __cpu_map_flush(void);
- int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_buff *xdp,
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index 2a75e6c2d27d..49f03e8e5561 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -318,16 +318,6 @@ static int dev_map_hash_get_next_key(struct bpf_map *map, void *key,
- 	return -ENOENT;
- }
+ 	prog_fd = bpf_program__fd(skel->progs.xdp_dummy_cm);
+ 	map_fd = bpf_map__fd(skel->maps.cpu_map);
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
+index 88ef3ec8ac4c..861db508ace2 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
+@@ -31,8 +31,8 @@ void test_xdp_with_devmap_helpers(void)
+ 	 */
+ 	dm_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
+ 	err = bpf_set_link_xdp_fd(IFINDEX_LO, dm_fd, XDP_FLAGS_SKB_MODE);
+-	CHECK(err == 0, "Generic attach of program with 8-byte devmap",
+-	      "should have failed\n");
++	CHECK(err, "Generic attach of program with 8-byte devmap",
++	      "shouldn't have failed\n");
  
--bool dev_map_can_have_prog(struct bpf_map *map)
--{
--	if ((map->map_type == BPF_MAP_TYPE_DEVMAP ||
--	     map->map_type == BPF_MAP_TYPE_DEVMAP_HASH) &&
--	    map->value_size != offsetofend(struct bpf_devmap_val, ifindex))
--		return true;
--
--	return false;
--}
--
- static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
- 				struct xdp_frame **frames, int n,
- 				struct net_device *dev)
-@@ -499,6 +489,37 @@ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
- 	return 0;
- }
- 
-+static u32 dev_map_bpf_prog_run_skb(struct sk_buff *skb, struct bpf_dtab_netdev *dst)
-+{
-+	struct xdp_txq_info txq = { .dev = dst->dev };
-+	struct xdp_buff xdp;
-+	u32 act;
-+
-+	if (!dst->xdp_prog)
-+		return XDP_PASS;
-+
-+	__skb_pull(skb, skb->mac_len);
-+	xdp.txq = &txq;
-+
-+	act = bpf_prog_run_generic_xdp(skb, &xdp, dst->xdp_prog);
-+	switch (act) {
-+	case XDP_PASS:
-+		__skb_push(skb, skb->mac_len);
-+		break;
-+	default:
-+		bpf_warn_invalid_xdp_action(act);
-+		fallthrough;
-+	case XDP_ABORTED:
-+		trace_xdp_exception(dst->dev, dst->xdp_prog, act);
-+		fallthrough;
-+	case XDP_DROP:
-+		kfree_skb(skb);
-+		break;
-+	}
-+
-+	return act;
-+}
-+
- int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
- 		    struct net_device *dev_rx)
- {
-@@ -614,6 +635,14 @@ int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
- 	err = xdp_ok_fwd_dev(dst->dev, skb->len);
- 	if (unlikely(err))
- 		return err;
-+
-+	/* Redirect has already succeeded semantically at this point, so we just
-+	 * return 0 even if packet is dropped. Helper below takes care of
-+	 * freeing skb.
-+	 */
-+	if (dev_map_bpf_prog_run_skb(skb, dst) != XDP_PASS)
-+		return 0;
-+
- 	skb->dev = dst->dev;
- 	generic_xdp_tx(skb, xdp_prog);
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a00421e9ee16..9d9c78496459 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5633,24 +5633,6 @@ static int generic_xdp_install(struct net_device *dev, struct netdev_bpf *xdp)
- 	struct bpf_prog *new = xdp->prog;
- 	int ret = 0;
- 
--	if (new) {
--		u32 i;
--
--		mutex_lock(&new->aux->used_maps_mutex);
--
--		/* generic XDP does not work with DEVMAPs that can
--		 * have a bpf_prog installed on an entry
--		 */
--		for (i = 0; i < new->aux->used_map_cnt; i++) {
--			if (dev_map_can_have_prog(new->aux->used_maps[i])) {
--				mutex_unlock(&new->aux->used_maps_mutex);
--				return -EINVAL;
--			}
--		}
--
--		mutex_unlock(&new->aux->used_maps_mutex);
--	}
--
- 	switch (xdp->command) {
- 	case XDP_SETUP_PROG:
- 		rcu_assign_pointer(dev->xdp_prog, new);
+ 	dm_fd = bpf_program__fd(skel->progs.xdp_dummy_dm);
+ 	map_fd = bpf_map__fd(skel->maps.dm_ports);
 -- 
 2.31.1
 
