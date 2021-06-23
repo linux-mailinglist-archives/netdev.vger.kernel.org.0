@@ -2,89 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B14303B161E
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 10:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 357943B1697
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 11:15:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230130AbhFWIrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 04:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229918AbhFWIrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 04:47:22 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40146C061756
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 01:45:05 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id p7so2821770lfg.4
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 01:45:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mnf/412BXT3SW6cMM4XrHUEIZkc2F6iPAGQOAC9hxkI=;
-        b=HRe8ptDqAKO9fbUgdpEpgLH+fZ2WoPny5DL8SFLjklM1wPMdFyZ8rDTy5Zf6zytLuS
-         yyW3HOR8JXPAcThdImno7gqL53pekgyvJAV+R0hQiNDQIQ1BNzjJDPX99dsjp6ueApbx
-         S8iiesbcp2zi71iXH0Mdkm02Z96nIOuol/S3w=
+        id S230185AbhFWJRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 05:17:41 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:56127 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230157AbhFWJRk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 05:17:40 -0400
+Received: by mail-io1-f71.google.com with SMTP id i13-20020a5d88cd0000b02904e5ab8bdc6cso1428720iol.22
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 02:15:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mnf/412BXT3SW6cMM4XrHUEIZkc2F6iPAGQOAC9hxkI=;
-        b=d6PUJqZoXvMeKSf4xasPY+2hBh8kvdZW/FBUl0eJ9Jo23Pu1V4FIFSTrsjyW6M6Zb/
-         2N+eIGOmmA7KJaaVDe9rIFLhAYSBhgCPZJaQywq70VrbE5f6jgvncESh8wdZapFPeeDE
-         waIU3VQc/TVBrA1ONqi3MvUY2OqWczF5UUV+RI8Oax76yk8oRui2SBTmEbxQq9B2XL31
-         uCwEpR4wbBMjVURi1ZjJEqtcTXMk3zkTX6MRRM0+QxvSTAlWkDQLfp2nSYSz1+ealq29
-         7YSy6aSXgJrtJaZ/8pH840x5CR+BmRwX8eGDwRtioMQlNbT9NAxNhDMZitGSl5JtGnkT
-         bFWQ==
-X-Gm-Message-State: AOAM531Wu0tJDANUqVsP/AvOA5AziKcADbXPxBZLYtDVImFPn0sIiSUp
-        g5rpVhZ1k1HAnX/iJ7BtlgwluldULfnNkSwX/nsBzw==
-X-Google-Smtp-Source: ABdhPJzixrwlbsgihe9DSf0fQWrERfgmVQa0QAoHiwkWYylAeOsi7OM1vaTkpZk9MirF+w40feaVLpI7dAXAZ3q1yY0=
-X-Received: by 2002:ac2:4db6:: with SMTP id h22mr5928298lfe.171.1624437903317;
- Wed, 23 Jun 2021 01:45:03 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=tu+XTnTLmC9DibbRT9Ja/k7FUiyom6JkIMBLX50ARKo=;
+        b=UdJhsoRYhef6PFYr0sKf0+Me+Rd1BMeBFRh4xxOZwWtOF4dgDORmpq/U+ZbT4FFqKK
+         vpZhjzYxsMrnMHPsEuiBWJ5c7GyT6Pc7jc2qhfNdnK3yPyfnyyrbtjiBi+Yd8pS/EhDb
+         FuOSd6u8KFDkB2jeI9PdVsb3eyIBJzPpmDR0namgnIQXHGFSKqtaw/Zniv/0F7eRJL8c
+         UhkmR6a1UfiOFUzARb6M44UYEyQh+aTt3XkJrudfiQdtoRcLqsYdmv1o+xXWsRW2BHev
+         DmSSo5jjvKhQf/mz3a5TI3Chg6taLY9WeVY9K8AYMKPAPvm1WrKwFliIvtwDCeEELhNq
+         RKKw==
+X-Gm-Message-State: AOAM532/2sWpRKmgwCbzE61yykETdtuYLoldN1XuZWtMOjC2ZCMc8tp+
+        5L0JmQGJsFXM4awtU7/UMWR1ccVvjFuSuCgjd3ffHmeCk8js
+X-Google-Smtp-Source: ABdhPJx+TvC18vUgDtM/8/PQwHM8IDggKp4p/DvJ5T0Ya/ItnxEhnGJ1rQGrB461kRji28Bs/ivSB/XZunBwKS4d2V0bDZecfUqE
 MIME-Version: 1.0
-References: <20210618105526.265003-1-zenczykowski@gmail.com>
-In-Reply-To: <20210618105526.265003-1-zenczykowski@gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Wed, 23 Jun 2021 09:44:52 +0100
-Message-ID: <CACAyw9-UnQODTf+=xEmexpWE6zhYUQfp7go76bEEc_A1rAyd7Q@mail.gmail.com>
-Subject: Re: [PATCH bpf] Revert "bpf: program: Refuse non-O_RDWR flags in BPF_OBJ_GET"
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Greg Kroah-Hartman <gregkh@google.com>
+X-Received: by 2002:a05:6e02:1a66:: with SMTP id w6mr2222624ilv.99.1624439723269;
+ Wed, 23 Jun 2021 02:15:23 -0700 (PDT)
+Date:   Wed, 23 Jun 2021 02:15:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000aa23a205c56b587d@google.com>
+Subject: [syzbot] WARNING: zero-size vmalloc in corrupted
+From:   syzbot <syzbot+c2f6f09fe907a838effb@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, coreteam@netfilter.org,
+        davem@davemloft.net, dsahern@kernel.org, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Jun 2021 at 11:55, Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
->
-> From: Maciej =C5=BBenczykowski <maze@google.com>
->
-> This reverts commit d37300ed182131f1757895a62e556332857417e5.
->
-> This breaks Android userspace which expects to be able to
-> fetch programs with just read permissions.
->
-> See: https://cs.android.com/android/platform/superproject/+/master:framew=
-orks/libs/net/common/native/bpf_syscall_wrappers/include/BpfSyscallWrappers=
-.h;drc=3D7005c764be23d31fa1d69e826b4a2f6689a8c81e;l=3D124
+Hello,
 
-As a follow up, what does Android expect to be able to do with this
-read only FD?
+syzbot found the following issue on:
 
-Lorenz
+HEAD commit:    13311e74 Linux 5.13-rc7
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15d01e58300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=42ecca11b759d96c
+dashboard link: https://syzkaller.appspot.com/bug?extid=c2f6f09fe907a838effb
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14bb89e8300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17cc51b8300000
 
---=20
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+The issue was bisected to:
 
-www.cloudflare.com
+commit f9006acc8dfe59e25aa75729728ac57a8d84fc32
+Author: Florian Westphal <fw@strlen.de>
+Date:   Wed Apr 21 07:51:08 2021 +0000
+
+    netfilter: arp_tables: pass table pointer via nf_hook_ops
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13b88400300000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=10788400300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17b88400300000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c2f6f09fe907a838effb@syzkaller.appspotmail.com
+Fixes: f9006acc8dfe ("netfilter: arp_tables: pass table pointer via nf_hook_ops")
+
+usb 1-1: media controller created
+dvbdev: dvb_create_media_entity: media entity 'dvb-demux' registered.
+cxusb: set interface failed
+dvb-usb: bulk message failed: -22 (1/0)
+DVB: Unable to find symbol mt352_attach()
+dvb-usb: no frontend was attached by 'DViCO FusionHDTV DVB-T USB (LGZ201)'
+dvbdev: DVB: registering new adapter (DViCO FusionHDTV DVB-T USB (LGZ201))
+usb 1-1: media controller created
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 2950 at mm/vmalloc.c:2873 __vmalloc_node_range+0x769/0x970 mm/vmalloc.c:2873
+Modules linked in:
+CPU: 1 PID: 2950 Comm: kworker/1:2 Not tainted 5.13.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: usb_hub_wq hub_event
+RIP: 0010:__vmalloc_node_range+0x769/0x970 mm/vmalloc.c:2873
+Code: c7 04 24 00 00 00 00 eb 93 e8 b3 44 c5 ff 44 89 fa 44 89 f6 4c 89 ef e8 05 f7 09 00 48 89 04 24 e9 be fb ff ff e8 97 44 c5 ff <0f> 0b 48
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
