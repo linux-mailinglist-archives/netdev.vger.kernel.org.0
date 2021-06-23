@@ -2,126 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 702A23B2161
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 21:46:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B673B2165
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 21:48:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbhFWTs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 15:48:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21367 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229523AbhFWTs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 15:48:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624477568;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5RisPrPjCMS6safES3jNCNozmv4O8WOuYlgF9/vHY9w=;
-        b=DZGtOiDqoNI1Ttto8PmHGsVKKNepzETX1t82w1M12mRQXdGgWa0NdX0uRYg9g3ak3wTGv8
-        KFDGtsyEkMxS3QeKMlm9I19sUnwKHE7L0baf6unem4Ttk5KXiYvMxXaB8BgOJStkZJgTYM
-        FNrgx5EHkh4F8R0f1ST/JgkuqNq9HFY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-324-_Bw6S495N7GWHT4OF3XpkA-1; Wed, 23 Jun 2021 15:46:04 -0400
-X-MC-Unique: _Bw6S495N7GWHT4OF3XpkA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CBC331084F4C;
-        Wed, 23 Jun 2021 19:46:02 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 55232100164A;
-        Wed, 23 Jun 2021 19:45:56 +0000 (UTC)
-Date:   Wed, 23 Jun 2021 21:45:55 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     brouer@redhat.com, davem@davemloft.net, netdev@vger.kernel.org,
-        willemb@google.com, eric.dumazet@gmail.com, dsahern@gmail.com,
-        yoshfuji@linux-ipv6.org, Dave Jones <dsj@fb.com>
-Subject: Re: [PATCH net-next v3] net: ip: avoid OOM kills with large UDP
- sends over loopback
-Message-ID: <20210623214555.5c683821@carbon>
-In-Reply-To: <20210623162328.2197645-1-kuba@kernel.org>
-References: <20210623162328.2197645-1-kuba@kernel.org>
+        id S229881AbhFWTuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 15:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229523AbhFWTun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 15:50:43 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EA7C061574;
+        Wed, 23 Jun 2021 12:48:25 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id a11so3894822wrt.13;
+        Wed, 23 Jun 2021 12:48:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KX8dDc5fpk9Kie+XkJJwJofB6xMasuroCY1CbSLZ0uE=;
+        b=ftnP+Unqlszu2rTiEVn5ytUZ4nKAHZROAMkfC2AlqtyywoO5eZvihbq5etUZOD9JQT
+         2mGKsqL/25gg9smeWjhdmDJresRr/Ci9E+2NGofFRueWVdCMBXnw6b1jVA+yE4PkbglJ
+         hYQwpUoDTVzsdi5sTXsCD3MOGhzH8iVyIsmkykmDUrMdDnKpV9FmX07+7ehXDThfuRfL
+         t8YOeB3jumMDe2yF+EBJQsrdcq90IHqoNveRxGXJXE09PPg1AGunHkIYb+Qj1OOOh6Bl
+         gkrszhaqu1AkOxJCDz+HeXZRSa0NVo6hb6jwf8bEeJVEBo2JQWlJ76kPKuz0STTMstgP
+         CH/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KX8dDc5fpk9Kie+XkJJwJofB6xMasuroCY1CbSLZ0uE=;
+        b=HB/r9nHtBrcygL/CpUzGobT6MFTVG/qS5LA9Iv0v11zFc0z7genYCrLdM3268iPXCH
+         jy5vy2pbYHYyHw7HeNhplYP3KFyFHC0fraEhBKsGig8EqhS135i7kY+ehZHsGNvNFN3J
+         DYceu9LEB/I6tLKj7/E+aiW48/jtL5wuWS1Z/5/7RyZQ+dt7PPmZBT47T91qaGEMw2eu
+         bzqdzq+R77Npp/8tG4FlpaiMdYoNq0+jdjeJWMQJD6xpxBTAvZzFG1IIjTXIp7FZJkDv
+         oP0acjaeN/UVjWD+0n0NEEFSQfygfspF0e1QSkMnivWoTKlcl/mI3rQ4YIiAsinZJlUc
+         SAPQ==
+X-Gm-Message-State: AOAM5339wVLBdkMXTs1gSN9hMvNV/GmmpHdA9flQ0Mkgk1GoWlIT7040
+        G8RIFA24DWqvNOWBDPxeSa0=
+X-Google-Smtp-Source: ABdhPJwd8ha6mq7oKaNT3T7zwk7D8mRrd8zKGofLVszDjg7uFN3bGJdTdh9nYZVZ0DnzbhgwFaDD+g==
+X-Received: by 2002:a05:6000:188a:: with SMTP id a10mr2102496wri.210.1624477704269;
+        Wed, 23 Jun 2021 12:48:24 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:3800:4902:ce4c:d883:c087? (p200300ea8f2938004902ce4cd883c087.dip0.t-ipconnect.de. [2003:ea:8f29:3800:4902:ce4c:d883:c087])
+        by smtp.googlemail.com with ESMTPSA id v16sm1017937wrr.6.2021.06.23.12.48.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Jun 2021 12:48:23 -0700 (PDT)
+Subject: Re: [PATCH] r8169: Avoid duplicate sysfs entry creation error
+To:     Andre Przywara <andre.przywara@arm.com>, nic_swsd@realtek.com
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sayanta Pattanayak <sayanta.pattanayak@arm.com>
+References: <20210622125206.1437-1-andre.przywara@arm.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <1c26684c-d3eb-92b9-b93f-4dd02b47603e@gmail.com>
+Date:   Wed, 23 Jun 2021 21:48:14 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+In-Reply-To: <20210622125206.1437-1-andre.przywara@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Jun 2021 09:23:28 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
-
-> Dave observed number of machines hitting OOM on the UDP send
-> path. The workload seems to be sending large UDP packets over
-> loopback. Since loopback has MTU of 64k kernel will try to
-> allocate an skb with up to 64k of head space. This has a good
-> chance of failing under memory pressure. What's worse if
-> the message length is <32k the allocation may trigger an
-> OOM killer.
+On 22.06.2021 14:52, Andre Przywara wrote:
+> From: Sayanta Pattanayak <sayanta.pattanayak@arm.com>
 > 
-> This is entirely avoidable, we can use an skb with page frags.
+> When registering the MDIO bus for a r8169 device, we use the PCI B/D/F
+> specifier as a (seemingly) unique device identifier.
+> However the very same BDF number can be used on another PCI segment,
+> which makes the driver fail probing:
 > 
-> af_unix solves a similar problem by limiting the head
-> length to SKB_MAX_ALLOC. This seems like a good and simple
-> approach. It means that UDP messages > 16kB will now
-> use fragments if underlying device supports SG, if extra
-> allocator pressure causes regressions in real workloads
-> we can switch to trying the large allocation first and
-> falling back.
+> [ 27.544136] r8169 0002:07:00.0: enabling device (0000 -> 0003)
+> [ 27.559734] sysfs: cannot create duplicate filename '/class/mdio_bus/r8169-700'
+> ....…
+> [ 27.684858] libphy: mii_bus r8169-700 failed to register
+> [ 27.695602] r8169: probe of 0002:07:00.0 failed with error -22
 > 
-> Reported-by: Dave Jones <dsj@fb.com>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Add the segment number to the device name to make it more unique.
+> 
+> This fixes operation on an ARM N1SDP board, where two boards might be
+> connected together to form an SMP system, and all on-board devices show
+> up twice, just on different PCI segments.
+> 
+> Signed-off-by: Sayanta Pattanayak <sayanta.pattanayak@arm.com>
+> [Andre: expand commit message]
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 > ---
->  net/ipv4/ip_output.c  | 4 +++-
->  net/ipv6/ip6_output.c | 4 +++-
->  2 files changed, 6 insertions(+), 2 deletions(-)
+>  drivers/net/ethernet/realtek/r8169_main.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-> index c3efc7d658f6..790dd28fd198 100644
-> --- a/net/ipv4/ip_output.c
-> +++ b/net/ipv4/ip_output.c
-> @@ -1077,7 +1077,9 @@ static int __ip_append_data(struct sock *sk,
->  			if ((flags & MSG_MORE) &&
->  			    !(rt->dst.dev->features&NETIF_F_SG))
->  				alloclen = mtu;
-> -			else if (!paged)
-> +			else if (!paged &&
-> +				 (fraglen + hh_len + 15 < SKB_MAX_ALLOC ||
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 2c89cde7da1e..209dee295ce2 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -5086,7 +5086,8 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
+>  	new_bus->priv = tp;
+>  	new_bus->parent = &pdev->dev;
+>  	new_bus->irq[0] = PHY_MAC_INTERRUPT;
+> -	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x", pci_dev_id(pdev));
+> +	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x-%x",
+> +		 pdev->bus->domain_nr, pci_dev_id(pdev));
+>  
+I think you saw the error mail from kernel test robot.
+You have to use pci_domain_nr() instead of member domain_nr directly.
 
-What does the number 15 represent here?
-
-> +				  !(rt->dst.dev->features & NETIF_F_SG)))
->  				alloclen = fraglen;
->  			else {
->  				alloclen = min_t(int, fraglen, MAX_HEADER);
-> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> index ff4f9ebcf7f6..ae8dbd6cdab1 100644
-> --- a/net/ipv6/ip6_output.c
-> +++ b/net/ipv6/ip6_output.c
-> @@ -1585,7 +1585,9 @@ static int __ip6_append_data(struct sock *sk,
->  			if ((flags & MSG_MORE) &&
->  			    !(rt->dst.dev->features&NETIF_F_SG))
->  				alloclen = mtu;
-> -			else if (!paged)
-> +			else if (!paged &&
-> +				 (fraglen + hh_len < SKB_MAX_ALLOC ||
-
-The number 15 is not use here.
-
-> +				  !(rt->dst.dev->features & NETIF_F_SG)))
->  				alloclen = fraglen;
->  			else {
->  				alloclen = min_t(int, fraglen, MAX_HEADER);
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+>  	new_bus->read = r8169_mdio_read_reg;
+>  	new_bus->write = r8169_mdio_write_reg;
+> 
 
