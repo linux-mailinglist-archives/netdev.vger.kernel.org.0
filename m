@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AE8D3B1F33
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 19:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 134EA3B1F34
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 19:03:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230174AbhFWRFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 13:05:35 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:33550 "EHLO
+        id S230205AbhFWRFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 13:05:36 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:33558 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230041AbhFWRFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 13:05:31 -0400
+        with ESMTP id S230052AbhFWRFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 13:05:32 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 9FE6B6427E;
-        Wed, 23 Jun 2021 19:01:47 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 441D064275;
+        Wed, 23 Jun 2021 19:01:48 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 5/6] docs: networking: Update connection tracking offload sysctl parameters
-Date:   Wed, 23 Jun 2021 19:03:00 +0200
-Message-Id: <20210623170301.59973-6-pablo@netfilter.org>
+Subject: [PATCH net-next 6/6] netfilter: nfnetlink_hook: fix check for snprintf() overflow
+Date:   Wed, 23 Jun 2021 19:03:01 +0200
+Message-Id: <20210623170301.59973-7-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210623170301.59973-1-pablo@netfilter.org>
 References: <20210623170301.59973-1-pablo@netfilter.org>
@@ -29,52 +29,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oz Shlomo <ozsh@nvidia.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-Document the following connection offload configuration parameters:
-- nf_flowtable_tcp_timeout
-- nf_flowtable_tcp_pickup
-- nf_flowtable_udp_timeout
-- nf_flowtable_udp_pickup
+The kernel version of snprintf() can't return negatives.  The
+"ret > (int)sizeof(sym)" check is off by one because and it should be
+>=.  Finally, we need to set a negative error code.
 
-Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
+Fixes: e2cf17d3774c ("netfilter: add new hook nfnl subsystem")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- .../networking/nf_conntrack-sysctl.rst        | 24 +++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ net/netfilter/nfnetlink_hook.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/nf_conntrack-sysctl.rst b/Documentation/networking/nf_conntrack-sysctl.rst
-index 11a9b76786cb..0467b30e4abe 100644
---- a/Documentation/networking/nf_conntrack-sysctl.rst
-+++ b/Documentation/networking/nf_conntrack-sysctl.rst
-@@ -177,3 +177,27 @@ nf_conntrack_gre_timeout_stream - INTEGER (seconds)
+diff --git a/net/netfilter/nfnetlink_hook.c b/net/netfilter/nfnetlink_hook.c
+index 58fda6ac663b..50b4e3c9347a 100644
+--- a/net/netfilter/nfnetlink_hook.c
++++ b/net/netfilter/nfnetlink_hook.c
+@@ -126,8 +126,10 @@ static int nfnl_hook_dump_one(struct sk_buff *nlskb,
  
- 	This extended timeout will be used in case there is an GRE stream
- 	detected.
-+
-+nf_flowtable_tcp_timeout - INTEGER (seconds)
-+        default 30
-+
-+        Control offload timeout for tcp connections.
-+        TCP connections may be offloaded from nf conntrack to nf flow table.
-+        Once aged, the connection is returned to nf conntrack with tcp pickup timeout.
-+
-+nf_flowtable_tcp_pickup - INTEGER (seconds)
-+        default 120
-+
-+        TCP connection timeout after being aged from nf flow table offload.
-+
-+nf_flowtable_udp_timeout - INTEGER (seconds)
-+        default 30
-+
-+        Control offload timeout for udp connections.
-+        UDP connections may be offloaded from nf conntrack to nf flow table.
-+        Once aged, the connection is returned to nf conntrack with udp pickup timeout.
-+
-+nf_flowtable_udp_pickup - INTEGER (seconds)
-+        default 30
-+
-+        UDP connection timeout after being aged from nf flow table offload.
+ #ifdef CONFIG_KALLSYMS
+ 	ret = snprintf(sym, sizeof(sym), "%ps", ops->hook);
+-	if (ret < 0 || ret > (int)sizeof(sym))
++	if (ret >= sizeof(sym)) {
++		ret = -EINVAL;
+ 		goto nla_put_failure;
++	}
+ 
+ 	module_name = strstr(sym, " [");
+ 	if (module_name) {
 -- 
 2.30.2
 
