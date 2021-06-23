@@ -2,87 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D27CC3B13B1
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 08:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22F933B13FE
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 08:32:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbhFWGJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 02:09:21 -0400
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:54880 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229896AbhFWGJU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 02:09:20 -0400
+        id S229916AbhFWGfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 02:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229660AbhFWGfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 02:35:00 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854D0C061574;
+        Tue, 22 Jun 2021 23:32:42 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id l11so913505pji.5;
+        Tue, 22 Jun 2021 23:32:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1624428424; x=1655964424;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=YCtpVTQAaNY+hgGVKdr0kJYx/uxBrYXjRLRe3p6CJqg=;
-  b=TjKeW12Djx7IUHLQ+8ZksD5Xu0N2DHCMVYtdQO3+wgTs5p4ZCO82la5c
-   jaVUZ//QvMyTP8k3elCniUflsiroU4sZcfkNt+SzXpb6OpsVW94gGwtFg
-   F2DILhfC3phyZMq/3bLj7myG4hlf6PiRu/JU50MLQq9sg9+/IhE8vHeJl
-   E=;
-X-IronPort-AV: E=Sophos;i="5.83,293,1616457600"; 
-   d="scan'208";a="116186703"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-8cc5d68b.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-4101.iad4.amazon.com with ESMTP; 23 Jun 2021 06:07:03 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-2b-8cc5d68b.us-west-2.amazon.com (Postfix) with ESMTPS id 9A207A1880;
-        Wed, 23 Jun 2021 06:07:01 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Wed, 23 Jun 2021 06:07:00 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.36) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.18; Wed, 23 Jun 2021 06:06:57 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>
-Subject: [PATCH net-next] net/tls: Remove the __TLS_DEC_STATS() macro.
-Date:   Wed, 23 Jun 2021 15:06:34 +0900
-Message-ID: <20210623060634.1909-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xJdnFfE3PfYVnhG5Z/vLXv7ETsm3m4letYFLnkEV8dM=;
+        b=kKHO+F2wzhMRj9EgaZlyVg552Sm6hloAXa1E534iJAGvKsRIAfUGHZgw5SCARpeos2
+         c+YI6/QunZgQrWlyJUuEFqGbOTV4Zg6JOwhhRK7AteFqZrKM66i/PIrqjYK0mY1Te9Vj
+         eQLz35+73moIyCLaWsHyg6af8MNf4C/uhnrcHtitmPsQfiKQTz5zXMeKzpRKNXwjFfq/
+         5ALRlubNloYGJvNbeHLdpi4HcCHCseTIByVTaWc8oRxjr4VVI+zZ08bTi7GEOT21nZc1
+         tGUfqhXumPJJIanSTGOduA40fTI5hHRx6LzB3fXEwlw3ywPI/rKNZrtXmFmw0pIcskNr
+         +nSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xJdnFfE3PfYVnhG5Z/vLXv7ETsm3m4letYFLnkEV8dM=;
+        b=Lo+fZ2Ym+QYTcbIAAKjhz3CW9SPwh7dqfCq1k7WhwL8Q0G5Apd7HVsUI2LzW2Lr4J2
+         fnCvXSWD3buKp7r1v3M1TUi2NCNCpW31T7H98jV68RrmrRzdUGh6qTgUvyJX7YpgGCdt
+         qMAliqO6JDCsZIYNGPSQtpsDdcod5o3KKT2Dl1WeWx3uoQxRtSNr93iTN3ytk/j+b93t
+         UqHtYT7IiRmv0x1+sIA95XeCI5Vge6YlGnVu+bDYA+4efaAEjTvVHke22M0SPIM6yiiv
+         iD1lUwSu4DV+N2wGOvV8vdrh36FMem9RN0JgoHmOaK1g6EyPmO9229Gswz4QzNJwoG3G
+         8QIw==
+X-Gm-Message-State: AOAM531YE7wAr4WFvFcOA9Dz3OBBWu5Ax7LB3ZVHbcovONR0f/dY3rJO
+        GHqjZrvFZjgrr1tT2KLYYaJJYgNCC/yYAnV9GUU=
+X-Google-Smtp-Source: ABdhPJw7ScLCZDYlVN5RUxJ2w8iUMF+Ur6lP6oF1HYkj6gfGi5L79ao+U07v6Dvsaeg8fFnx8/lPuZSFVglkCmSvQWg=
+X-Received: by 2002:a17:90a:8589:: with SMTP id m9mr7956572pjn.168.1624429961937;
+ Tue, 22 Jun 2021 23:32:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.36]
-X-ClientProxiedBy: EX13P01UWA002.ant.amazon.com (10.43.160.46) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+References: <20210622185647.3705104-1-i.maximets@ovn.org>
+In-Reply-To: <20210622185647.3705104-1-i.maximets@ovn.org>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 23 Jun 2021 08:32:30 +0200
+Message-ID: <CAJ8uoz3Wbfq4C2NeXS6f_1aUk6tb9qRmsKQK7fDyqsgZEXKoSA@mail.gmail.com>
+Subject: Re: [PATCH] docs: af_xdp: consistent indentation in examples
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit d26b698dd3cd ("net/tls: add skeleton of MIB statistics")
-introduced __TLS_DEC_STATS(), but it is not used and __SNMP_DEC_STATS() is
-not defined also. Let's remove it.
+On Tue, Jun 22, 2021 at 8:57 PM Ilya Maximets <i.maximets@ovn.org> wrote:
+>
+> Examples in this document use all kinds of indentation from 3 to 5
+> spaces and even mixed with tabs.  Making them all even and equal to
+> 4 spaces.
+>
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
+>  Documentation/networking/af_xdp.rst | 32 ++++++++++++++---------------
+>  1 file changed, 16 insertions(+), 16 deletions(-)
 
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
----
-The commit d26b698dd3cd does not contain a bug, so I think Fixes tag is not
-necessary and post this to net-next. But if the tag is needed, I'll respin
-to the net tree with the tag, so please let me know.
----
- include/net/tls.h | 2 --
- 1 file changed, 2 deletions(-)
+Thanks for the cleanup Ilya.
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 8341a8d1e807..8d398a5de3ee 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -79,8 +79,6 @@
- 	__SNMP_INC_STATS((net)->mib.tls_statistics, field)
- #define TLS_INC_STATS(net, field)				\
- 	SNMP_INC_STATS((net)->mib.tls_statistics, field)
--#define __TLS_DEC_STATS(net, field)				\
--	__SNMP_DEC_STATS((net)->mib.tls_statistics, field)
- #define TLS_DEC_STATS(net, field)				\
- 	SNMP_DEC_STATS((net)->mib.tls_statistics, field)
- 
--- 
-2.30.2
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
+> diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networking/af_xdp.rst
+> index 2ccc5644cc98..42576880aa4a 100644
+> --- a/Documentation/networking/af_xdp.rst
+> +++ b/Documentation/networking/af_xdp.rst
+> @@ -290,19 +290,19 @@ round-robin example of distributing packets is shown below:
+>     #define MAX_SOCKS 16
+>
+>     struct {
+> -        __uint(type, BPF_MAP_TYPE_XSKMAP);
+> -        __uint(max_entries, MAX_SOCKS);
+> -        __uint(key_size, sizeof(int));
+> -        __uint(value_size, sizeof(int));
+> +       __uint(type, BPF_MAP_TYPE_XSKMAP);
+> +       __uint(max_entries, MAX_SOCKS);
+> +       __uint(key_size, sizeof(int));
+> +       __uint(value_size, sizeof(int));
+>     } xsks_map SEC(".maps");
+>
+>     static unsigned int rr;
+>
+>     SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
+>     {
+> -       rr = (rr + 1) & (MAX_SOCKS - 1);
+> +       rr = (rr + 1) & (MAX_SOCKS - 1);
+>
+> -       return bpf_redirect_map(&xsks_map, rr, XDP_DROP);
+> +       return bpf_redirect_map(&xsks_map, rr, XDP_DROP);
+>     }
+>
+>  Note, that since there is only a single set of FILL and COMPLETION
+> @@ -379,7 +379,7 @@ would look like this for the TX path:
+>  .. code-block:: c
+>
+>     if (xsk_ring_prod__needs_wakeup(&my_tx_ring))
+> -      sendto(xsk_socket__fd(xsk_handle), NULL, 0, MSG_DONTWAIT, NULL, 0);
+> +       sendto(xsk_socket__fd(xsk_handle), NULL, 0, MSG_DONTWAIT, NULL, 0);
+>
+>  I.e., only use the syscall if the flag is set.
+>
+> @@ -442,9 +442,9 @@ purposes. The supported statistics are shown below:
+>  .. code-block:: c
+>
+>     struct xdp_statistics {
+> -         __u64 rx_dropped; /* Dropped for reasons other than invalid desc */
+> -         __u64 rx_invalid_descs; /* Dropped due to invalid descriptor */
+> -         __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+> +       __u64 rx_dropped; /* Dropped for reasons other than invalid desc */
+> +       __u64 rx_invalid_descs; /* Dropped due to invalid descriptor */
+> +       __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+>     };
+>
+>  XDP_OPTIONS getsockopt
+> @@ -483,15 +483,15 @@ like this:
+>  .. code-block:: c
+>
+>      // struct xdp_rxtx_ring {
+> -    //         __u32 *producer;
+> -    //         __u32 *consumer;
+> -    //         struct xdp_desc *desc;
+> +    //     __u32 *producer;
+> +    //     __u32 *consumer;
+> +    //     struct xdp_desc *desc;
+>      // };
+>
+>      // struct xdp_umem_ring {
+> -    //         __u32 *producer;
+> -    //         __u32 *consumer;
+> -    //         __u64 *desc;
+> +    //     __u32 *producer;
+> +    //     __u32 *consumer;
+> +    //     __u64 *desc;
+>      // };
+>
+>      // typedef struct xdp_rxtx_ring RING;
+> --
+> 2.26.3
+>
