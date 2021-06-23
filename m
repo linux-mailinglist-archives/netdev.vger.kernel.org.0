@@ -2,98 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C5973B1E5D
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 18:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EE283B1E67
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 18:12:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbhFWQMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 12:12:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24584 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229801AbhFWQMm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 12:12:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624464624;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rnf1xld2zG7ITor+H4pye+Ce8VDHDjjS7DCz0019lgk=;
-        b=MVxi1JwfqKfNNVHr6QXkPTV7AIbUFVIfbJRX76T6CYKnX9FTwyOzL4KOSzx043hnWkLlea
-        HFRaSssq8yVW4CwE/UoqaaUACFcvYqqjou+1gtO+LelUXOJaP7jIWPA7QYUw/PolUOptjn
-        lwhIWcl8U55xR3hjkMFXHy4GZlBYmz0=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-303-N0y4Wpi6PLGHIdrJmBpAow-1; Wed, 23 Jun 2021 12:10:23 -0400
-X-MC-Unique: N0y4Wpi6PLGHIdrJmBpAow-1
-Received: by mail-ej1-f71.google.com with SMTP id jw19-20020a17090776b3b0290481592f1fc4so1174460ejc.2
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 09:10:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Rnf1xld2zG7ITor+H4pye+Ce8VDHDjjS7DCz0019lgk=;
-        b=uHlvqvgPJm4yhhjzo9tlNv1iHtZuVAgKd4vIxQU6I//Ad8ygYQOdIv9z6fZbkg3wA7
-         BIsxVTbf/2M1vdMsjqUx11lUJXl1jV4L56q0VHL+IKyOWY0PG8sG/BQV0/2EG6jjaEQ7
-         hzk4ajRcwTd73em44EpZnOd1fylqaMd45czI0uFFtDFr+X09yZlnCDnHkSqxHV2dPkBZ
-         e47SSrwufSYMdjRHDxGOSU8ezHcq4k8zLh4GuOxyTlMoHG9wwtH/9IvwL+HQfInxh1/y
-         BSbp2LcBRdqnN2DuOlB+QVdeFkxhGKFz6l8IDHKNrmXy4Cck52e35ixgXz8BYeqn1Cqq
-         v+Yg==
-X-Gm-Message-State: AOAM531xWYbHgsR6t75rI14Pz6OxLQvniiQ8/d30QevP2N7YyYsxnz/N
-        hU4pGWvKts8KFBTwtgneJE82z24fsCWcqGIoMbxhFrWYJrMhPC+Y6/7wczR8BCTBQlzTXXFqqtP
-        N0ItMd7xAaNTXPVZa
-X-Received: by 2002:a17:906:5049:: with SMTP id e9mr840283ejk.30.1624464618607;
-        Wed, 23 Jun 2021 09:10:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw1pKANbb6hP+TU5DFw0ClGZrpYkWFi0a2by+iDKCeEPzurXLgBC+9knH9a6wa4g8T3K5CnSw==
-X-Received: by 2002:a17:906:5049:: with SMTP id e9mr840077ejk.30.1624464616406;
-        Wed, 23 Jun 2021 09:10:16 -0700 (PDT)
-Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
-        by smtp.gmail.com with ESMTPSA id x21sm260208edv.97.2021.06.23.09.10.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Jun 2021 09:10:15 -0700 (PDT)
-Date:   Wed, 23 Jun 2021 18:10:13 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Neeraj Upadhyay <neeraju@codeaurora.org>
-Cc:     mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vringh: Use wiov->used to check for read/write desc order
-Message-ID: <20210623161013.qg3azanyxt7nucgl@steredhat>
-References: <1624361873-6097-1-git-send-email-neeraju@codeaurora.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <1624361873-6097-1-git-send-email-neeraju@codeaurora.org>
+        id S229844AbhFWQOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 12:14:07 -0400
+Received: from relay.sw.ru ([185.231.240.75]:34736 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229688AbhFWQOG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 12:14:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:Mime-Version:Message-Id:Subject:From
+        :Date; bh=+PqA5Sk3kqj3VQF46OEAnz0MRkeCTs+jD1ynou9EECg=; b=RUUcW4W8WD88Y8qIb+R
+        h+TYHozv/FmVvlc2OY1Z27bI3B7ecy2JhE6VkkPSZDBua0/fw8n3Afxfz0RiIfS2OZ++WtDai3ZY0
+        XTJ+HgBwfjF5pl0Zeg7Fn3ro9nJOMPdqvL/p1DMwq+kNHt3Gfk1GK+gqsZcxDQIBvDdcufLGDzc=;
+Received: from [192.168.15.15] (helo=mikhalitsyn-laptop)
+        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
+        id 1lVmWu-001cIX-AG; Wed, 23 Jun 2021 19:11:45 +0300
+Date:   Wed, 23 Jun 2021 19:11:41 +0300
+From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Andrei Vagin <avagin@gmail.com>,
+        Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Subject: Re: [PATCH iproute2] ip route: ignore ENOENT during save if
+ RT_TABLE_MAIN is being dumped
+Message-Id: <20210623191141.c058e6ea78577d3bd54cea02@virtuozzo.com>
+In-Reply-To: <042c0ec6-f347-8b82-2bb2-c4ea87cf4a6d@gmail.com>
+References: <20210622150330.28014-1-alexander.mikhalitsyn@virtuozzo.com>
+        <042c0ec6-f347-8b82-2bb2-c4ea87cf4a6d@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 22, 2021 at 05:07:53PM +0530, Neeraj Upadhyay wrote:
->As iov->used is incremented when descriptors are processed
->in __vringh_iov(), use it to check for incorrect read
->and write descriptor order.
->
->Signed-off-by: Neeraj Upadhyay <neeraju@codeaurora.org>
->---
-> drivers/vhost/vringh.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, 23 Jun 2021 09:36:29 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> On 6/22/21 9:03 AM, Alexander Mikhalitsyn wrote:
+> > We started to use in-kernel filtering feature which allows to get only needed
+> > tables (see iproute_dump_filter()). From the kernel side it's implemented in
+> > net/ipv4/fib_frontend.c (inet_dump_fib), net/ipv6/ip6_fib.c (inet6_dump_fib).
+> > The problem here is that behaviour of "ip route save" was changed after
+> > c7e6371bc ("ip route: Add protocol, table id and device to dump request").
+> > If filters are used, then kernel returns ENOENT error if requested table is absent,
+> > but in newly created net namespace even RT_TABLE_MAIN table doesn't exist.
+> > It is really allocated, for instance, after issuing "ip l set lo up".
+> > 
+> > Reproducer is fairly simple:
+> > $ unshare -n ip route save > dump
+> > Error: ipv4: FIB table does not exist.
+> > Dump terminated
+> 
+> The above command on 5.4 kernel with corresponding iproute2 does not
+> show that error. Is your kernel compiled with CONFIG_IP_MULTIPLE_TABLES
+> enabled?
+> 
+Yes it is.
+$ grep CONFIG_IP_MULTIPLE_TABLES .config
+CONFIG_IP_MULTIPLE_TABLES=y
 
->
->diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
->index 4af8fa2..14e2043 100644
->--- a/drivers/vhost/vringh.c
->+++ b/drivers/vhost/vringh.c
->@@ -359,7 +359,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
-> 			iov = wiov;
-> 		else {
-> 			iov = riov;
->-			if (unlikely(wiov && wiov->i)) {
->+			if (unlikely(wiov && wiov->used)) {
-> 				vringh_bad("Readable desc %p after writable",
-> 					   &descs[i]);
-> 				err = -EINVAL;
->-- 
->QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
->hosted by The Linux Foundation
->
+> > 
+> > Expected result here is to get empty dump file (as it was before this change).
+> > 
+> > This affects on CRIU [1] because we use ip route save in dump process, to workaround
+> > problem in tests we just put loopback interface up in each net namespace.
+> > Other users also met this problem [2].
+> > 
+> > Links:
+> > [1] https://github.com/checkpoint-restore/criu/issues/747
+> > [2] https://www.spinics.net/lists/netdev/msg559739.html
+> > 
+> > Fixes: c7e6371bc ("ip route: Add protocol, table id and device to dump request")
+> > 
+> > Cc: David Ahern <dsahern@kernel.org>
+> > Cc: Stephen Hemminger <stephen@networkplumber.org>
+> > Cc: Andrei Vagin <avagin@gmail.com>
+> > Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
+> > Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+> > ---
+> >  ip/iproute.c | 7 ++++++-
+> >  1 file changed, 6 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/ip/iproute.c b/ip/iproute.c
+> > index 5853f026..b70acc00 100644
+> > --- a/ip/iproute.c
+> > +++ b/ip/iproute.c
+> > @@ -1734,6 +1734,7 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
+> >  	char *od = NULL;
+> >  	unsigned int mark = 0;
+> >  	rtnl_filter_t filter_fn;
+> > +	int ret;
+> >  
+> >  	if (action == IPROUTE_SAVE) {
+> >  		if (save_route_prep())
+> > @@ -1939,7 +1940,11 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
+> >  
+> >  	new_json_obj(json);
+> >  
+> > -	if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
+> > +	ret = rtnl_dump_filter(&rth, filter_fn, stdout);
+> > +
+> > +	/* Let's ignore ENOENT error if we want to dump RT_TABLE_MAIN table */
+> > +	if (ret < 0 &&
+> 
+> ret temp variable is not needed; just add the extra checks.
 
+Sure, thanks!
+I will send v2 if all fine in general with this approach to fix the problem.
+
+> 
+> > +	    !(errno == ENOENT && filter.tb == RT_TABLE_MAIN)) {
+> >  		fprintf(stderr, "Dump terminated\n");
+> >  		return -2;
+> >  	}
+> > 
+> 
+> This looks fine to me, but I want clarification on the kernel config. As
+> I recall with multiple tables and fib rules tables are created when net
+> namespace is created.
+I've traced how fib tables allocated (fib_new_table function) during
+$ ip l set lo up
+and stack looks like that:
+ip   740 [003] 99894.075766: probe:fib_new_table: (ffffffffb08ff9a0)
+        ffffffffb08ff9a1 fib_new_table+0x1 ([kernel.kallsyms])
+        ffffffffb09001d1 fib_magic.isra.24+0xc1 ([kernel.kallsyms])
+        ffffffffb0901b3d fib_add_ifaddr+0x16d ([kernel.kallsyms])
+        ffffffffb0901be5 fib_netdev_event+0x95 ([kernel.kallsyms])
+        ffffffffafed5457 notifier_call_chain+0x47 ([kernel.kallsyms])
+        ffffffffb07f249b __dev_notify_flags+0x5b ([kernel.kallsyms])
+        ffffffffb07f2c48 dev_change_flags+0x48 ([kernel.kallsyms])
+        ffffffffb0805d34 do_setlink+0x314 ([kernel.kallsyms])
+        ffffffffb080ad9d __rtnl_newlink+0x53d ([kernel.kallsyms])
+        ffffffffb080b143 rtnl_newlink+0x43 ([kernel.kallsyms])
+        ffffffffb08048ba rtnetlink_rcv_msg+0x22a ([kernel.kallsyms])
+        ffffffffb0848dfc netlink_rcv_skb+0x4c ([kernel.kallsyms])
+        ffffffffb084868d netlink_unicast+0x21d ([kernel.kallsyms])
+        ffffffffb08488fe netlink_sendmsg+0x22e ([kernel.kallsyms])
+        ffffffffb07cad9c sock_sendmsg+0x4c ([kernel.kallsyms])
+        ffffffffb07cb0bb ____sys_sendmsg+0x1eb ([kernel.kallsyms])
+        ffffffffb07cc74c ___sys_sendmsg+0x7c ([kernel.kallsyms])
+        ffffffffb07cc817 __sys_sendmsg+0x57 ([kernel.kallsyms])
+        ffffffffafe0279b do_syscall_64+0x5b ([kernel.kallsyms])
+        ffffffffb0c000ad entry_SYSCALL_64_after_hwframe+0x65 ([kernel.kallsyms])
+            7f556c716d78 __libc_sendmsg+0x18 (/usr/lib64/libc-2.28.so)
+
+During trace of:
+$ unshare -n
+I see no fib_new_table() calls.
+
+Thank you very much for your attention to the patch.
+
+Regards,
+Alex
