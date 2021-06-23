@@ -2,28 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 693BA3B1181
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 04:02:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A58C13B1193
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 04:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230189AbhFWCEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 22:04:34 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:8294 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbhFWCEe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 22:04:34 -0400
-Received: from nkgeml706-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4G8mbj4rgSz1BQd9;
-        Wed, 23 Jun 2021 09:57:05 +0800 (CST)
+        id S230094AbhFWCNy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Jun 2021 22:13:54 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:8310 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229890AbhFWCNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 22:13:54 -0400
+Received: from nkgeml705-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4G8mqj3L02z7179;
+        Wed, 23 Jun 2021 10:07:29 +0800 (CST)
 Received: from dggpemm500021.china.huawei.com (7.185.36.109) by
- nkgeml706-chm.china.huawei.com (10.98.57.153) with Microsoft SMTP Server
+ nkgeml705-chm.china.huawei.com (10.98.57.154) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 23 Jun 2021 10:02:14 +0800
+ 15.1.2176.2; Wed, 23 Jun 2021 10:11:35 +0800
 Received: from dggpemm500021.china.huawei.com ([7.185.36.109]) by
  dggpemm500021.china.huawei.com ([7.185.36.109]) with mapi id 15.01.2176.012;
- Wed, 23 Jun 2021 10:02:14 +0800
+ Wed, 23 Jun 2021 10:11:34 +0800
 From:   "zhudi (J)" <zhudi21@huawei.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
 CC:     "vfalico@gmail.com" <vfalico@gmail.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
@@ -31,62 +30,96 @@ CC:     "vfalico@gmail.com" <vfalico@gmail.com>,
         "Chenxiang (EulerOS)" <rose.chen@huawei.com>
 Subject: Re: [PATCH] bonding: avoid adding slave device with IFF_MASTER flag
 Thread-Topic: [PATCH] bonding: avoid adding slave device with IFF_MASTER flag
-Thread-Index: Addn0lDNQ8Ker7O+Ra2emPmghn4FNg==
-Date:   Wed, 23 Jun 2021 02:02:14 +0000
-Message-ID: <b8d459068a994586a1ad8f6e2d3a1e92@huawei.com>
+Thread-Index: Addn09ZA/E4WbBHCRzmFDVcPTfcbog==
+Date:   Wed, 23 Jun 2021 02:11:34 +0000
+Message-ID: <fad7ab99d95645698717df1d79b247f3@huawei.com>
 Accept-Language: zh-CN, en-US
 Content-Language: zh-CN
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-originating-ip: [10.136.114.155]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiANCj4gT24gNi8yMi8yMSA4OjE2IFBNLCBKYXkgVm9zYnVyZ2ggd3JvdGU6DQo+ID4gemh1ZGkg
-PHpodWRpMjFAaHVhd2VpLmNvbT4gd3JvdGU6DQo+ID4NCj4gPj4gRnJvbTogRGkgWmh1IDx6aHVk
-aTIxQGh1YXdlaS5jb20+DQo+ID4+DQo+ID4+IFRoZSBmb2xsb3dpbmcgc3RlcHMgd2lsbCBkZWZp
-bml0ZWx5IGNhdXNlIHRoZSBrZXJuZWwgdG8gY3Jhc2g6DQo+ID4+IAlpcCBsaW5rIGFkZCB2cmYx
-IHR5cGUgdnJmIHRhYmxlIDENCj4gPj4gCW1vZHByb2JlIGJvbmRpbmcua28gbWF4X2JvbmRzPTEN
-Cj4gPj4gCWVjaG8gIit2cmYxIiA+L3N5cy9jbGFzcy9uZXQvYm9uZDAvYm9uZGluZy9zbGF2ZXMN
-Cj4gPj4gCXJtbW9kIGJvbmRpbmcNCj4gPj4NCj4gPj4gVGhlIHJvb3QgY2F1c2UgaXMgdGhhdDog
-V2hlbiB0aGUgVlJGIGlzIGFkZGVkIHRvIHRoZSBzbGF2ZSBkZXZpY2UsIGl0DQo+ID4+IHdpbGwg
-ZmFpbCwgYW5kIHNvbWUgY2xlYW5pbmcgd29yayB3aWxsIGJlIGRvbmUuIGJlY2F1c2UgVlJGIGRl
-dmljZQ0KPiA+PiBoYXMgSUZGX01BU1RFUiBmbGFnLCBjbGVhbnVwIHByb2Nlc3MgIHdpbGwgbm90
-IGNsZWFyIHRoZSBJRkZfQk9ORElORw0KPiBmbGFnLg0KPiA+PiBUaGVuLCB3aGVuIHdlIHVubG9h
-ZCB0aGUgYm9uZGluZyBtb2R1bGUsDQo+ID4+IHVucmVnaXN0ZXJfbmV0ZGV2aWNlX25vdGlmaWVy
-KCkgd2lsbCB0cmVhdCB0aGUgVlJGIGRldmljZSBhcyBhIGJvbmQNCj4gPj4gbWFzdGVyIGRldmlj
-ZSBhbmQgdHJlYXQgbmV0ZGV2X3ByaXYoKSBhcyBzdHJ1Y3QgYm9uZGluZ3t9IHdoaWNoIGFjdHVh
-bGx5IGlzDQo+IHN0cnVjdCBuZXRfdnJme30uDQo+ID4+DQo+ID4+IEJ5IGFuYWx5emluZyB0aGUg
-cHJvY2Vzc2luZyBsb2dpYyBvZiBib25kX2Vuc2xhdmUoKSwgaXQgc2VlbXMgdGhhdCBpdA0KPiA+
-PiBpcyBub3QgYWxsb3dlZCB0byBhZGQgdGhlIHNsYXZlIGRldmljZSB3aXRoIHRoZSBJRkZfTUFT
-VEVSIGZsYWcsIHNvDQo+ID4+IHdlIG5lZWQgdG8gYWRkIGEgY29kZSBjaGVjayBmb3IgdGhpcyBz
-aXR1YXRpb24uDQo+ID4NCj4gPiAJSSBkb24ndCBiZWxpZXZlIHRoZSBzdGF0ZW1lbnQganVzdCBh
-Ym92ZSBpcyBjb3JyZWN0OyBuZXN0aW5nIGJvbmRzDQo+ID4gaGFzIGhpc3RvcmljYWxseSBiZWVu
-IHBlcm1pdHRlZCwgZXZlbiBpZiBpdCBpcyBvZiBxdWVzdGlvbmFibGUgdmFsdWUNCj4gPiB0aGVz
-ZSBkYXlzLiAgSSd2ZSBub3QgdGVzdGVkIG5lc3RpbmcgaW4gYSB3aGlsZSwgYnV0IGxhc3QgSSBy
-ZWNhbGwgaXQNCj4gPiBkaWQgZnVuY3Rpb24uDQo+ID4NCj4gPiAJTGVhdmluZyBhc2lkZSB0aGUg
-cXVlc3Rpb24gb2Ygd2hldGhlciBpdCdzIHJlYWxseSB1c2VmdWwgdG8gbmVzdA0KPiA+IGJvbmRz
-IG9yIG5vdCwgbXkgY29uY2VybiB3aXRoIGRpc2FibGluZyB0aGlzIGlzIHRoYXQgaXQgd2lsbCBi
-cmVhaw0KPiA+IGV4aXN0aW5nIGNvbmZpZ3VyYXRpb25zIHRoYXQgY3VycmVudGx5IHdvcmsgZmlu
-ZS4NCj4gPg0KPiA+IAlIb3dldmVyLCBpdCBzaG91bGQgYmUgcG9zc2libGUgdG8gdXNlIG5ldGlm
-X2lzX2JvbmRpbmdfbWFzdGVyDQo+ICh3aGljaA0KPiA+IHRlc3RzIGRldi0+ZmxhZ3MgJiBJRkZf
-TUFTVEVSIGFuZCBkZXYtPnByaXZfZmxhZ3MgJiBJRkZfQk9ORElORykgdG8NCj4gPiBleGNsdWRl
-IElGRl9NQVNURVIgZGV2aWNlcyB0aGF0IGFyZSBub3QgYm9uZHMgKHdoaWNoIHNlZW0gdG8gYmUg
-dnJmDQo+ID4gYW5kIGVxbCksIGUuZy4sDQo+ID4NCj4gPiAJaWYgKChzbGF2ZV9kZXYtPmZsYWdz
-ICYgSUZGX01BU1RFUikgJiYNCj4gPiAJCSFuZXRpZl9pc19ib25kX21hc3RlcihzbGF2ZV9kZXYp
-KQ0KPiA+DQo+ID4gCU9yIHdlIGNhbiBqdXN0IGdvIHdpdGggdGhpcyBwYXRjaCBhbmQgc2VlIGlm
-IGFueXRoaW5nIGJyZWFrcy4NCj4gPg0KPiANCj4gc3l6Ym90IGZvciBzdXJlIHdpbGwgc3RvcCBm
-aW5kaW5nIHN0YWNrIG92ZXJmbG93cyBhbmQgb3RoZXIgaXNzdWVzIGxpa2UgdGhhdCA6KQ0KPiAN
-Cj4gSSBrbm93IHRoYXQgc29tZSBwZW9wbGUgdXNlZCBuZXN0ZWQgYm9uZGluZyBkZXZpY2VzIGlu
-IG9yZGVyIHRvIGltcGxlbWVudA0KPiBjb21wbGV4IHFkaXNjIHNldHVwcy4NCj4gKGVnIEhUQiBv
-biB0aGUgZmlyc3QgbGV2ZWwsIG5ldGVtIG9uIHRoZSBzZWNvbmQgbGV2ZWwpLg0KDQpJZiB0aGVy
-ZSBpcyBzdWNoIGEgdXNhZ2Ugc2NlbmFyaW8sICB0aGUgZm9sbG93aW5nIGNvZGUgcHJvcG9zZWQg
-YnkgSmF5IFZvc2J1cmdoIGlzIGJldHRlcjoNCglpZiAoKHNsYXZlX2Rldi0+ZmxhZ3MgJiBJRkZf
-TUFTVEVSKSAmJiANCgkJCSFuZXRpZl9pc19ib25kX21hc3RlcihzbGF2ZV9kZXYpKQ0KDQpUaGFu
-ayB5b3UgZm9yIHlvdXIgYWR2aWNlLCBJIHdpbGwgc2VuZCBhbm90aGVyIHBhdGNoIHRvIGZpeCBp
-dC4NCg0KDQoNCg==
+> 
+> >From: Di Zhu <zhudi21@huawei.com>
+> >
+> >The following steps will definitely cause the kernel to crash:
+> >	ip link add vrf1 type vrf table 1
+> >	modprobe bonding.ko max_bonds=1
+> >	echo "+vrf1" >/sys/class/net/bond0/bonding/slaves
+> >	rmmod bonding
+> >
+> >The root cause is that: When the VRF is added to the slave device,
+> >it will fail, and some cleaning work will be done. because VRF device
+> >has IFF_MASTER flag, cleanup process  will not clear the IFF_BONDING flag.
+> >Then, when we unload the bonding module,
+> unregister_netdevice_notifier()
+> >will treat the VRF device as a bond master device and treat netdev_priv()
+> >as struct bonding{} which actually is struct net_vrf{}.
+> >
+> >By analyzing the processing logic of bond_enslave(), it seems that
+> >it is not allowed to add the slave device with the IFF_MASTER flag, so
+> >we need to add a code check for this situation.
+> 
+> 	I don't believe the statement just above is correct; nesting
+> bonds has historically been permitted, even if it is of questionable
+> value these days.  I've not tested nesting in a while, but last I recall
+> it did function.
+> 
+> 	Leaving aside the question of whether it's really useful to nest
+> bonds or not, my concern with disabling this is that it will break
+> existing configurations that currently work fine.
+> 
+> 	However, it should be possible to use netif_is_bonding_master
+> (which tests dev->flags & IFF_MASTER and dev->priv_flags & IFF_BONDING)
+> to exclude IFF_MASTER devices that are not bonds (which seem to be vrf
+> and eql), e.g.,
+> 
+> 	if ((slave_dev->flags & IFF_MASTER) &&
+> 		!netif_is_bond_master(slave_dev))
+> 	
+> 	Or we can just go with this patch and see if anything breaks.
+> 
+> 	-J
+
+	Thank you for your advice, as Eric dumazet described: since there is a usage scenario
+about nesting bonding, we should not break it.
+
+> 
+> >Signed-off-by: Di Zhu <zhudi21@huawei.com>
+> >---
+> > drivers/net/bonding/bond_main.c | 6 ++++++
+> > 1 file changed, 6 insertions(+)
+> >
+> >diff --git a/drivers/net/bonding/bond_main.c
+> b/drivers/net/bonding/bond_main.c
+> >index c5a646d06102..16840c9bc00d 100644
+> >--- a/drivers/net/bonding/bond_main.c
+> >+++ b/drivers/net/bonding/bond_main.c
+> >@@ -1601,6 +1601,12 @@ int bond_enslave(struct net_device *bond_dev,
+> struct net_device *slave_dev,
+> > 	int link_reporting;
+> > 	int res = 0, i;
+> >
+> >+	if (slave_dev->flags & IFF_MASTER) {
+> >+		netdev_err(bond_dev,
+> >+			   "Error: Device with IFF_MASTER cannot be
+> enslaved\n");
+> >+		return -EPERM;
+> >+	}
+> >+
+> > 	if (!bond->params.use_carrier &&
+> > 	    slave_dev->ethtool_ops->get_link == NULL &&
+> > 	    slave_ops->ndo_do_ioctl == NULL) {
+> >--
+> >2.23.0
+> >
+> 
+> ---
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
