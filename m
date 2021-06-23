@@ -2,160 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE08B3B2374
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 00:14:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 293AD3B2398
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 00:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230296AbhFWWQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 18:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
+        id S229864AbhFWWbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 18:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230379AbhFWWQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 18:16:33 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C381DC0698C8
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 15:10:38 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id j184so9287369qkd.6
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 15:10:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=0TJKI4xg1MiJTtI9uHGWJ686K09GTfrrpJPfhT4aShg=;
-        b=GOHJ9m5SNCptct6yjocdXwedQaeSofI8mOZ3RQrQ0IxXnIyGCVSOUnavx1jX/sQJdM
-         pheR6Wq9aR4FWu7bCAuWSi4lvITk+8JKMTrgRwMhh9naxcAJA+Ov9YQ1uK0jtqNwmYdX
-         48EXoq8VukYz9YeVJyL8FcEBpt4FKXP2SSBAuOZc7kSKAzbXZBoQHKy2fovrLxZSCta9
-         459D3t1i1cumoOGx2x+9H4R8GqDsafS/2bqVKhf7r8eiiTnUEuFkRDMtowyLHY4Xg8nr
-         dngowICkhKLOnHdtExcQs/ZAcakgGiu7HA41lDJFk9UEOQddopWMC21vgqZ41b6rgg3n
-         2vsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0TJKI4xg1MiJTtI9uHGWJ686K09GTfrrpJPfhT4aShg=;
-        b=gkmZnlBoEzDH4ym5hdCV5P9T/pZgCZPYVjT9LtKmsUyXl9wy8oOO+RLOgzUJVdvfVf
-         Px2DJerxtAE2GRu9tnJVYll4NE6UkfSJ1MISugnUf0OnY7r+SLEFphIYSm//h55W++NI
-         /m39Z0dZzu4IpebgA4rqFNHhQNdnmmpIb2alrJAwtWpgpP7+as3ZhFkH+Gz+y4a13e9i
-         Llyd8XtgsLwtdinUFfmknrg6UIBeZCjy6JQZFgcMHvhGfd1MftGDOaGwygEp5kWEQNsG
-         ZMSTH65bSNDyTJ7Z2rSKITeYQI5gcttD/lUqS1HONBXG2miYtX/Z7Qe269fv6ReWnK2O
-         ZI9w==
-X-Gm-Message-State: AOAM533Ek4lUgaG/NbiUZApfJ/cBW0o84M6XUlvuz3fSIg0ax1qPvet7
-        l4O54tFPeW86tNn3BBbusQdvNy4GhPv1bN/Wy+g83A==
-X-Google-Smtp-Source: ABdhPJwH6G33CSLRbK/YrlBVYQgaxrVkIGfnuaoOZoME1EqaPdgjdwiBFGo/91dZUEdsIzo9e3Hd4CNZALLtH9Agb1w=
-X-Received: by 2002:a37:a1d5:: with SMTP id k204mr2452384qke.300.1624486237874;
- Wed, 23 Jun 2021 15:10:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210621173028.3541424-1-mw@semihalf.com> <20210621173028.3541424-3-mw@semihalf.com>
- <YNOYFFgB5UNdSYeI@lunn.ch>
-In-Reply-To: <YNOYFFgB5UNdSYeI@lunn.ch>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 24 Jun 2021 00:10:28 +0200
-Message-ID: <CAPv3WKdR-NJ8oPo5JHb9rztYdQUZA=D3sLyf07D5n5oOm=UfjA@mail.gmail.com>
-Subject: Re: [net-next: PATCH v3 2/6] net: mdiobus: Introduce fwnode_mdbiobus_register()
-To:     Andrew Lunn <andrew@lunn.ch>
+        with ESMTP id S229688AbhFWWbf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 18:31:35 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F9CC061574;
+        Wed, 23 Jun 2021 15:29:16 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G9HxP1HNPz9sCD;
+        Thu, 24 Jun 2021 08:29:12 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1624487353;
+        bh=B0nnRaXy3juVwSWhjg6oCgD9xS70cicB6mdlEGWBlF0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=YhD5Q6GLIwL//8kIvc1dJ1BBS1np/DKQz7tryiVL8eNi69BU5MyGfIfHIF/lc/LXz
+         MRW3NrrCRwAcGLt1VWHKz4LHwz9rwVQgc9YvHgY4CLb4Sh4nXWGTwgdhVpgxQyTQ4L
+         nSX+Ue6K2yf/DfJ9Sx5JN3tsQQzl3+dO8jlpiiO9oj/ik87nh6pwX7oum5ouj53GJ5
+         1Dm5GQVGw2aWimTKIA6cJ9bIRqdKlvI/hrEspv5YMWMGC1V+8674lWD90j2giMEE3A
+         x6C0A+VaNirVz/xu++0jUzmrWVSUpJCqr7vCdopPwf2JkXABoAg+tHns87myulzAZs
+         nupcoi0ybuxmg==
+Date:   Thu, 24 Jun 2021 08:29:11 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>,
-        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
-        lenb@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Marcin Wojtas <mw@semihalf.com>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20210624082911.5d013e8c@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/ZRNepBVwBa+CXQz8hwLzlt6";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+--Sig_/ZRNepBVwBa+CXQz8hwLzlt6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-=C5=9Br., 23 cze 2021 o 22:22 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
->
-> On Mon, Jun 21, 2021 at 07:30:24PM +0200, Marcin Wojtas wrote:
-> > This patch introduces a new helper function that
-> > wraps acpi_/of_ mdiobus_register() and allows its
-> > usage via common fwnode_ interface.
-> >
-> > Fall back to raw mdiobus_register() in case CONFIG_FWNODE_MDIO
-> > is not enabled, in order to satisfy compatibility
-> > in all future user drivers.
-> >
-> > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
-> > ---
-> >  include/linux/fwnode_mdio.h    | 12 +++++++++++
-> >  drivers/net/mdio/fwnode_mdio.c | 22 ++++++++++++++++++++
-> >  2 files changed, 34 insertions(+)
-> >
-> > diff --git a/include/linux/fwnode_mdio.h b/include/linux/fwnode_mdio.h
-> > index faf603c48c86..13d4ae8fee0a 100644
-> > --- a/include/linux/fwnode_mdio.h
-> > +++ b/include/linux/fwnode_mdio.h
-> > @@ -16,6 +16,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus=
- *mdio,
-> >  int fwnode_mdiobus_register_phy(struct mii_bus *bus,
-> >                               struct fwnode_handle *child, u32 addr);
-> >
-> > +int fwnode_mdiobus_register(struct mii_bus *bus, struct fwnode_handle =
-*fwnode);
-> >  #else /* CONFIG_FWNODE_MDIO */
-> >  int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
-> >                                      struct phy_device *phy,
-> > @@ -30,6 +31,17 @@ static inline int fwnode_mdiobus_register_phy(struct=
- mii_bus *bus,
-> >  {
-> >       return -EINVAL;
-> >  }
-> > +
-> > +static inline int fwnode_mdiobus_register(struct mii_bus *bus,
-> > +                                       struct fwnode_handle *fwnode)
-> > +{
-> > +     /*
-> > +      * Fall back to mdiobus_register() function to register a bus.
-> > +      * This way, we don't have to keep compat bits around in drivers.
-> > +      */
-> > +
-> > +     return mdiobus_register(mdio);
-> > +}
-> >  #endif
->
-> I looked at this some more, and in the end i decided it was O.K.
->
-> > +/**
-> > + * fwnode_mdiobus_register - bring up all the PHYs on a given MDIO bus=
- and
-> > + *   attach them to it.
-> > + * @bus: Target MDIO bus.
-> > + * @fwnode: Pointer to fwnode of the MDIO controller.
-> > + *
-> > + * Return values are determined accordingly to acpi_/of_ mdiobus_regis=
-ter()
-> > + * operation.
-> > + */
-> > +int fwnode_mdiobus_register(struct mii_bus *bus, struct fwnode_handle =
-*fwnode)
-> > +{
-> > +     if (is_acpi_node(fwnode))
-> > +             return acpi_mdiobus_register(bus, fwnode);
-> > +     else if (is_of_node(fwnode))
-> > +             return of_mdiobus_register(bus, to_of_node(fwnode));
-> > +     else
-> > +             return -EINVAL;
->
-> I wounder if here you should call mdiobus_register(mdio), rather than
-> -EINVAL?
->
-> I don't have a strong opinion.
+Hi all,
 
-Currently (and in foreseeable future) we support only DT/ACPI as a
-firmware description, reaching the last "else" means something really
-wrong. The case of lack of DT/ACPI and the fallback is handled on the
-include/linux/fwnode_mdio.h level.
+Today's linux-next build (x86_64 modules_install) failed like this:
 
->
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
->
+depmod: ../tools/depmod.c:1792: depmod_report_cycles_from_root: Assertion `=
+is < stack_size' failed.
 
-Thanks,
-Marcin
+Caused by commit
+
+62a6ef6a996f ("net: mdiobus: Introduce fwnode_mdbiobus_register()")
+
+(I bisected to there and tested the commit before.)
+
+The actual build is an x86_64 allmodconfig, followed by a
+modules_install.  This happens in my cross build environment as well as
+a native build.
+
+$ gcc --version
+gcc (Debian 10.2.1-6) 10.2.1 20210110
+$ ld --version
+GNU ld (GNU Binutils for Debian) 2.35.2
+$ /sbin/depmod --version
+kmod version 28
+-ZSTD +XZ -ZLIB +LIBCRYPTO -EXPERIMENTAL
+
+I have no idea why that commit should caused this failure.
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/ZRNepBVwBa+CXQz8hwLzlt6
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDTtbcACgkQAVBC80lX
+0GyWnAf/fmWanH5fu0BZZxX7crVE4yFDux50672MBz3UemASiwSxESWCibgyLt/S
+iX4tn6ZZ4xev5Zj/2WBHee53ZQ+R8tpWt8JGultrcy4nWN9/+QzUJL28WRKtg3ih
+Wcau62uEnk0nI3pN/LB3OJBdrF3jsPk27zWemNdlGKK9HHLz5jwXuH2cIZXu2Y23
+jN+bJbSc/svwAQzQvNpAZiKdN4LCrGXakpYL5ztmWYDVleqYOIDZ2GZU5pQcaT+2
+J5pwlBQPjq80n3sqoBObnkTAqVRY0N78uQXraK0SWMJ4ORla9LiHme57uoIIY4nW
+JpqVGSvOqSjc9RgasAnIocaM8P4iyQ==
+=I5ac
+-----END PGP SIGNATURE-----
+
+--Sig_/ZRNepBVwBa+CXQz8hwLzlt6--
