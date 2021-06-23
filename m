@@ -2,106 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67D673B2089
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 20:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 240183B20BD
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 21:01:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbhFWSrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 14:47:20 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52192 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229523AbhFWSrS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 14:47:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=42GPZFs4rINBWycXZaqV8FG8P886kdleDSzhHJCKgRU=; b=nikJP2KFEDPF78x0ag6cpCYtgn
-        +ZgJNLsU56vewHaRPzFuvnSzsgmpdxmQyLVzrOEu7w4tysWTCNKnNM8cTHnAhkXxrey+HiX/A913s
-        JnhpXCnzph+B4AfiRDHrLRa3/tzkBwywbUuvQTZBcqfA7UnSOB5agWcq6bx+DiY0HmWk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lw7rt-00AsNX-E8; Wed, 23 Jun 2021 20:44:57 +0200
-Date:   Wed, 23 Jun 2021 20:44:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, vladyslavt@nvidia.com, moshe@nvidia.com,
-        vadimp@nvidia.com, mkubecek@suse.cz, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to write to
- transceiver module EEPROMs
-Message-ID: <YNOBKRzk4S7ZTeJr@lunn.ch>
-References: <20210623075925.2610908-1-idosch@idosch.org>
+        id S229938AbhFWTDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 15:03:25 -0400
+Received: from h4.fbrelay.privateemail.com ([131.153.2.45]:51170 "EHLO
+        h4.fbrelay.privateemail.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229523AbhFWTDZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 15:03:25 -0400
+X-Greylist: delayed 883 seconds by postgrey-1.27 at vger.kernel.org; Wed, 23 Jun 2021 15:03:24 EDT
+Received: from MTA-06-3.privateemail.com (mta-06.privateemail.com [68.65.122.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by h3.fbrelay.privateemail.com (Postfix) with ESMTPS id 718C8809C4;
+        Wed, 23 Jun 2021 14:46:23 -0400 (EDT)
+Received: from MTA-06.privateemail.com (localhost [127.0.0.1])
+        by MTA-06.privateemail.com (Postfix) with ESMTP id E826C600BA;
+        Wed, 23 Jun 2021 14:46:21 -0400 (EDT)
+Received: from hal-station.. (unknown [10.20.151.223])
+        by MTA-06.privateemail.com (Postfix) with ESMTPA id 11D5760071;
+        Wed, 23 Jun 2021 14:46:20 -0400 (EDT)
+From:   Hamza Mahfooz <someguy@effective-light.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Hamza Mahfooz <someguy@effective-light.com>
+Subject: [PATCH] iwlwifi: remove redundant calls to unlikely()
+Date:   Wed, 23 Jun 2021 14:45:46 -0400
+Message-Id: <20210623184546.14769-1-someguy@effective-light.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210623075925.2610908-1-idosch@idosch.org>
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 23, 2021 at 10:59:21AM +0300, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> This patchset adds write support to transceiver module EEPROMs by
-> extending the ethtool netlink API.
-> 
-> Motivation
-> ==========
-> 
-> The kernel can currently dump the contents of module EEPROMs to user
-> space via the ethtool legacy ioctl API or the new netlink API. These
-> dumps can then be parsed by ethtool(8) according to the specification
-> that defines the memory map of the EEPROM. For example, SFF-8636 [1] for
-> QSFP and CMIS [2] for QSFP-DD.
-> 
-> In addition to read-only elements, these specifications also define
-> writeable elements that can be used to control the behavior of the
-> module. For example, controlling whether the module is put in low or
-> high power mode to limit its power consumption.
+As per commit a7f3d3d3600c ("dma-mapping: add unlikely hint to error path
+in dma_mapping_error"), dma_mapping_error now internally calls unlikely(),
+so we don't need to call it directly anymore.
 
-Hi Ido
+Signed-off-by: Hamza Mahfooz <someguy@effective-light.com>
+---
+ drivers/net/wireless/intel/iwlwifi/pcie/tx.c  | 10 +++++-----
+ drivers/net/wireless/intel/iwlwifi/queue/tx.c | 10 +++++-----
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-So power control is part of the specification? All CMIS devices should
-implement it the same.
-
-> The CMIS specification even defines a message exchange mechanism (CDB,
-> Command Data Block) on top of the module's memory map. This allows the
-> host to send various commands to the module. For example, to update its
-> firmware.
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/tx.c b/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
+index 4f6c187eed69..3bf56d30f741 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
+@@ -1253,7 +1253,7 @@ static int iwl_fill_data_tbs(struct iwl_trans *trans, struct sk_buff *skb,
+ 		dma_addr_t tb_phys = dma_map_single(trans->dev,
+ 						    skb->data + hdr_len,
+ 						    head_tb_len, DMA_TO_DEVICE);
+-		if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
++		if (dma_mapping_error(trans->dev, tb_phys))
+ 			return -EINVAL;
+ 		trace_iwlwifi_dev_tx_tb(trans->dev, skb, skb->data + hdr_len,
+ 					tb_phys, head_tb_len);
+@@ -1272,7 +1272,7 @@ static int iwl_fill_data_tbs(struct iwl_trans *trans, struct sk_buff *skb,
+ 		tb_phys = skb_frag_dma_map(trans->dev, frag, 0,
+ 					   skb_frag_size(frag), DMA_TO_DEVICE);
  
-> This approach allows the kernel to remain ignorant of the various
-> standards and avoids the need to constantly update the kernel to support
-> new registers / commands. More importantly, it allows advanced
-> functionality such as firmware update to be implemented once in user
-> space and shared across all the drivers that support read and write
-> access to module EEPROMs.
-
-I fear we are opening the door for user space binary blob drivers,
-which do much more than just firmware upgrade. You seems to say that
-power control is part of the CMIS standard. So we don't need userspace
-involved for that. We can implement a library which any MAC driver can
-share.
-
-I also wonder if it is safe to perform firmware upgrade from user
-space? I've not looked at the code yet, but i assume you only allow
-write when the interface is down? Otherwise isn't there a danger you
-can brick the SFP if the MAC accesses it at the same time as when an
-upgrade is happening?
-
-Do you have other concrete use cases for write from user space?
-
-In general, we don't allow uncontrolled access to hardware from user
-space. We add specific, well documented API calls, and expect kernel
-drivers to implement them. I don't see why SFPs should be
-different. Standardised parts we can implement in common code. None
-standard parts we need device/vendor specific code. Which just means
-we need drivers following the usual linux conventions, some sort of
-bus driver which reads the vendor/device ID from the EEPROM and probes
-a driver for the specific SFP.
-
-  Andrew
-
-
+-		if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
++		if (dma_mapping_error(trans->dev, tb_phys))
+ 			return -EINVAL;
+ 		trace_iwlwifi_dev_tx_tb(trans->dev, skb, skb_frag_address(frag),
+ 					tb_phys, skb_frag_size(frag));
+@@ -1380,7 +1380,7 @@ static int iwl_fill_data_tbs_amsdu(struct iwl_trans *trans, struct sk_buff *skb,
+ 		hdr_tb_len = hdr_page->pos - start_hdr;
+ 		hdr_tb_phys = dma_map_single(trans->dev, start_hdr,
+ 					     hdr_tb_len, DMA_TO_DEVICE);
+-		if (unlikely(dma_mapping_error(trans->dev, hdr_tb_phys)))
++		if (dma_mapping_error(trans->dev, hdr_tb_phys))
+ 			return -EINVAL;
+ 		iwl_pcie_txq_build_tfd(trans, txq, hdr_tb_phys,
+ 				       hdr_tb_len, false);
+@@ -1400,7 +1400,7 @@ static int iwl_fill_data_tbs_amsdu(struct iwl_trans *trans, struct sk_buff *skb,
+ 
+ 			tb_phys = dma_map_single(trans->dev, tso.data,
+ 						 size, DMA_TO_DEVICE);
+-			if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
++			if (dma_mapping_error(trans->dev, tb_phys))
+ 				return -EINVAL;
+ 
+ 			iwl_pcie_txq_build_tfd(trans, txq, tb_phys,
+@@ -1551,7 +1551,7 @@ int iwl_trans_pcie_tx(struct iwl_trans *trans, struct sk_buff *skb,
+ 	/* map the data for TB1 */
+ 	tb1_addr = ((u8 *)&dev_cmd->hdr) + IWL_FIRST_TB_SIZE;
+ 	tb1_phys = dma_map_single(trans->dev, tb1_addr, tb1_len, DMA_TO_DEVICE);
+-	if (unlikely(dma_mapping_error(trans->dev, tb1_phys)))
++	if (dma_mapping_error(trans->dev, tb1_phys))
+ 		goto out_err;
+ 	iwl_pcie_txq_build_tfd(trans, txq, tb1_phys, tb1_len, false);
+ 
+diff --git a/drivers/net/wireless/intel/iwlwifi/queue/tx.c b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
+index 451b06069350..2b409fb33c99 100644
+--- a/drivers/net/wireless/intel/iwlwifi/queue/tx.c
++++ b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
+@@ -211,7 +211,7 @@ static int iwl_txq_gen2_set_tb_with_wa(struct iwl_trans *trans,
+ 	struct page *page;
+ 	int ret;
+ 
+-	if (unlikely(dma_mapping_error(trans->dev, phys)))
++	if (dma_mapping_error(trans->dev, phys))
+ 		return -ENOMEM;
+ 
+ 	if (likely(!iwl_txq_crosses_4g_boundary(phys, len))) {
+@@ -251,7 +251,7 @@ static int iwl_txq_gen2_set_tb_with_wa(struct iwl_trans *trans,
+ 
+ 	phys = dma_map_single(trans->dev, page_address(page), len,
+ 			      DMA_TO_DEVICE);
+-	if (unlikely(dma_mapping_error(trans->dev, phys)))
++	if (dma_mapping_error(trans->dev, phys))
+ 		return -ENOMEM;
+ 	ret = iwl_txq_gen2_set_tb(trans, tfd, phys, len);
+ 	if (ret < 0) {
+@@ -405,7 +405,7 @@ static int iwl_txq_gen2_build_amsdu(struct iwl_trans *trans,
+ 		tb_len = hdr_page->pos - start_hdr;
+ 		tb_phys = dma_map_single(trans->dev, start_hdr,
+ 					 tb_len, DMA_TO_DEVICE);
+-		if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
++		if (dma_mapping_error(trans->dev, tb_phys))
+ 			goto out_err;
+ 		/*
+ 		 * No need for _with_wa, this is from the TSO page and
+@@ -487,7 +487,7 @@ iwl_tfh_tfd *iwl_txq_gen2_build_tx_amsdu(struct iwl_trans *trans,
+ 	/* map the data for TB1 */
+ 	tb1_addr = ((u8 *)&dev_cmd->hdr) + IWL_FIRST_TB_SIZE;
+ 	tb_phys = dma_map_single(trans->dev, tb1_addr, len, DMA_TO_DEVICE);
+-	if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
++	if (dma_mapping_error(trans->dev, tb_phys))
+ 		goto out_err;
+ 	/*
+ 	 * No need for _with_wa(), we ensure (via alignment) that the data
+@@ -582,7 +582,7 @@ iwl_tfh_tfd *iwl_txq_gen2_build_tx(struct iwl_trans *trans,
+ 	/* map the data for TB1 */
+ 	tb1_addr = ((u8 *)&dev_cmd->hdr) + IWL_FIRST_TB_SIZE;
+ 	tb_phys = dma_map_single(trans->dev, tb1_addr, tb1_len, DMA_TO_DEVICE);
+-	if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
++	if (dma_mapping_error(trans->dev, tb_phys))
+ 		goto out_err;
+ 	/*
+ 	 * No need for _with_wa(), we ensure (via alignment) that the data
+-- 
+2.32.0
 
