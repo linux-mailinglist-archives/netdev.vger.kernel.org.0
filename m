@@ -2,84 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D5D53B1271
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:47:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C63AD3B1275
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:48:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230273AbhFWDuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 23:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        id S230236AbhFWDvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 23:51:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229890AbhFWDuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:50:06 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C9FC061574
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 20:47:48 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id s23so1804857oiw.9
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 20:47:48 -0700 (PDT)
+        with ESMTP id S229774AbhFWDvB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:51:01 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63158C061574;
+        Tue, 22 Jun 2021 20:48:44 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id h21-20020a1ccc150000b02901d4d33c5ca0so358287wmb.3;
+        Tue, 22 Jun 2021 20:48:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6iOtJY8+CanP+GQBJVX14WGuM7C/OsANuY/l+Tk7nh4=;
-        b=q5x3KpDC6jnfb8KVmHuHKIXnTz918OznnXyUNuBMm1DUvfGNTx2Qp52axtYF2GUuYE
-         bEw/ptQZ+rKDzCnZXdy5SQnz1x7nyZA1qU1+RWrFcWW0xjksPC5BGbTPfkFIvXslH4NH
-         fapjUYTuBs907K2fe/hdApQIzVyxXA8rOlhW9wRuIIw40ut2aAhIglUe7ztQMbi4huLn
-         wrhlwuIfExuRlC3LTj4uJbFUYGCm/GPkZMSxGDHvksk71QRn8JaBHNJEpbw7gA8xMXiA
-         UqG3frdNETi1sLKRLjDj2hidgdeTjYvqT7TAhS+d/Li9Mua6Jm52denuhzX/apT6LIBt
-         +X4g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8+ZeLnwHh9Py0eDeZIZvkJQttIs0sxzhqw37BA3s270=;
+        b=qlWreJ/BoQONV/bBEO+485rLDa7rgGeR7Xu6Ve+1XJU6wbKjZKUJaNVDVnBMH65DQY
+         FXN1TjCpmXE2QOe9g5i8zT5/2pk4to0/vT+7TYDirQ7Jzu6Ucxzgn2GXJqwJK6/+Ap5p
+         jYEWQdWvyXjDFGDXab5xQNyzM1JSgKoSpc5c0OBXfig6KyAUH7OSPqRl0d2n3cn57AGY
+         zpAVeNxUnnaY4Frx4AO/mNJHXZA329LQM71+DtuW91R+uB4mU32SRL0/QyWayCbgU4zJ
+         /awWYA1g5mHS9OCK7mnQIPcRWZoqGz7nMddb8Uee0H3P+KI4VSOXgpIaRITrQ7jCSu2F
+         1Fcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6iOtJY8+CanP+GQBJVX14WGuM7C/OsANuY/l+Tk7nh4=;
-        b=dRMvTFnwoTaiijCtsqmg3l0Xpw8ACAaLzCkYg5vqOfz4LW6CEibfrJ/C/cAbk1mnSw
-         pJnhgV3KM+LCAJg9sSvriUH1XMN7MG05sI70NTPzAqqofLXQTkR7QURHwBkh1es6EyNy
-         dPV8jlhwnY8T1FvqIHS8Ntcypvg6Xlgz9dTp6KsOol9Ce8e/sJEb9pcjVPsdUWXangSw
-         682cn+h7sXxbX5MKMVQu0pXK2vzDiBEKD4MTxVFqQd5PwUS5r5G/kqdQX69NYPnIzal3
-         UN9hwMzB4ZYJeKIrP3nQPzDfTwvICkpCfXXYtln4qzyhorCMFHq61f5VhwxjD7M3VWgY
-         44iA==
-X-Gm-Message-State: AOAM530v9B0+i8dQDwo5qeo0xcWO3hTuuwuxea8sh7yXypkCt7v7hoV0
-        sxoQAT1TtK2kZsBHpoeF3kppvbDil+4=
-X-Google-Smtp-Source: ABdhPJwVeHuyg9Mp22zALeEznoymVuMLKYqHRgY6uB+36ZdBnvLbZupTOKvFozxc1XD4WPGKiYNHXQ==
-X-Received: by 2002:aca:d54f:: with SMTP id m76mr1582709oig.47.1624420067268;
-        Tue, 22 Jun 2021 20:47:47 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.38])
-        by smtp.googlemail.com with ESMTPSA id x31sm312607ota.24.2021.06.22.20.47.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Jun 2021 20:47:46 -0700 (PDT)
-Subject: Re: [PATCH net] ip6_tunnel: fix GRE6 segmentation
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, vfedorenko@novek.ru
-References: <20210622015254.1967716-1-kuba@kernel.org>
- <33902f8c-e14a-7dc6-9bde-4f8f168505b5@gmail.com>
- <20210622152451.7847bc24@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <592a8a33-dfb8-c67f-c9e6-0e1bab37b00d@gmail.com>
-Date:   Tue, 22 Jun 2021 21:47:45 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8+ZeLnwHh9Py0eDeZIZvkJQttIs0sxzhqw37BA3s270=;
+        b=KzsH2LusU0vVqA1P/7RPqz/dl1gBU9s1RabGs3HXKq4mjN5L6+ZBJCzNrcxgXfsdle
+         IEM8pGpR0QpmFCpAPgcQctjhvy9nd/DVSt0ShYpk4IiLju5dkHPH/AakGHiqKkX0yCrW
+         pEwZa2V7qaFD0ibhUdNJWpBbtEz/OOhE1sMlIWW9n6wkNldmu30g4/4I9i8qiXMPL7ol
+         0WC1wD4ccUPWoR+gH7ajO858QYI3z3mrkABjvVMxLK2XBlA1AIgBItqGkX/DL5sgmgDc
+         Zup5b+cyZd+gffPqnECBueaBQg4POyIfT7VuUyyQUlhDYowgyt42rEFTs0+cE5SFGOVm
+         LCRQ==
+X-Gm-Message-State: AOAM531RatzdrpHCwg23PKICApvs+n2mnHVr3X6plvC0i1r6XqGxKz8x
+        FWZtNmbxKCv325RTQdYLmeNTzM9btKRKI5NgWq8=
+X-Google-Smtp-Source: ABdhPJzFgactEuWl5qZafUmm5ynYzUFp21GHhNlV06lVCPK9bXBCIS5NB3nCJYmQbe6HRCPbi6K5IPfdm/womrknF0I=
+X-Received: by 2002:a1c:5413:: with SMTP id i19mr8616884wmb.12.1624420122997;
+ Tue, 22 Jun 2021 20:48:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210622152451.7847bc24@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <cover.1624384990.git.lucien.xin@gmail.com> <cfaa01992d064520b3a9138983e8ec41@AcuMS.aculab.com>
+ <CADvbK_e7D4s81vS0rq=P4mQe47dshJgQzaWnrUyCi-Cis4xyhQ@mail.gmail.com>
+In-Reply-To: <CADvbK_e7D4s81vS0rq=P4mQe47dshJgQzaWnrUyCi-Cis4xyhQ@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 22 Jun 2021 23:48:33 -0400
+Message-ID: <CADvbK_eeJVoWps8UrygEfNdXL76Q2XMoNOoELWHFqOTq2634cA@mail.gmail.com>
+Subject: Re: [PATCHv2 net-next 00/14] sctp: implement RFC8899: Packetization
+ Layer Path MTU Discovery for SCTP transport
+To:     David Laight <David.Laight@aculab.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/22/21 4:24 PM, Jakub Kicinski wrote:
->>>   
->>
->> would be good to capture the GRE use case that found the bug and the
->> MPLS version as test cases under tools/testing/selftests/net. Both
->> should be doable using namespaces.
-> 
-> I believe Vadim is working on MPLS side, how does this look for GRE?
-> 
+On Tue, Jun 22, 2021 at 9:09 PM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> On Tue, Jun 22, 2021 at 6:13 PM David Laight <David.Laight@aculab.com> wrote:
+> >
+> > From: Xin Long
+> > > Sent: 22 June 2021 19:05
+> > >
+> > > Overview(From RFC8899):
+> > >
+> > >   In contrast to PMTUD, Packetization Layer Path MTU Discovery
+> > >   (PLPMTUD) [RFC4821] introduces a method that does not rely upon
+> > >   reception and validation of PTB messages.  It is therefore more
+> > >   robust than Classical PMTUD.  This has become the recommended
+> > >   approach for implementing discovery of the PMTU [BCP145].
+> > >
+> > >   It uses a general strategy in which the PL sends probe packets to
+> > >   search for the largest size of unfragmented datagram that can be sent
+> > >   over a network path.  Probe packets are sent to explore using a
+> > >   larger packet size.  If a probe packet is successfully delivered (as
+> > >   determined by the PL), then the PLPMTU is raised to the size of the
+> > >   successful probe.  If a black hole is detected (e.g., where packets
+> > >   of size PLPMTU are consistently not received), the method reduces the
+> > >   PLPMTU.
+> >
+> > This seems to take a long time (probably well over a minute)
+> > to determine the mtu.
+> I just noticed this is a misread of RFC8899, and the next probe packet
+> should be sent immediately once the ACK of the last probe is received,
+> instead of waiting the timeout, which should be for the missing probe.
+>
+> I will fix this with:
+>
+> diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+> index d29b579da904..f3aca1acf93a 100644
+> --- a/net/sctp/sm_statefuns.c
+> +++ b/net/sctp/sm_statefuns.c
+> @@ -1275,6 +1275,8 @@ enum sctp_disposition
+> sctp_sf_backbeat_8_3(struct net *net,
+>                         return SCTP_DISPOSITION_DISCARD;
+>
+>                 sctp_transport_pl_recv(link);
+> +               sctp_add_cmd_sf(commands, SCTP_CMD_PROBE_TIMER_UPDATE,
+> +                               SCTP_TRANSPORT(link));
+>                 return SCTP_DISPOSITION_CONSUME;
+>         }
+>
+> diff --git a/net/sctp/transport.c b/net/sctp/transport.c
+> index f27b856ea8ce..88815b98d9d0 100644
+> --- a/net/sctp/transport.c
+> +++ b/net/sctp/transport.c
+> @@ -215,6 +215,11 @@ void sctp_transport_reset_probe_timer(struct
+> sctp_transport *transport)
+>  {
+>         int scale = 1;
+>
+> +       if (transport->pl.probe_count == 0) {
+> +               if (!mod_timer(&transport->probe_timer, jiffies +
+> transport->rto))
+> +                       sctp_transport_hold(transport);
+> +               return;
+> +       }
+>         if (timer_pending(&transport->probe_timer))
+>                 return;
+>         if (transport->pl.state == SCTP_PL_COMPLETE &&
+>
+> Thanks for the comment.
+A more efficient improvement:
 
-I like the template you followed. :-)
+diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+index d29b579da904..d5cb0124bafa 100644
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -1275,7 +1275,13 @@ enum sctp_disposition
+sctp_sf_backbeat_8_3(struct net *net,
+                        return SCTP_DISPOSITION_DISCARD;
 
-The test case looks good to me, thanks for doing it.
+                sctp_transport_pl_recv(link);
+-               return SCTP_DISPOSITION_CONSUME;
++
++               if (link->pl.state == SCTP_PL_COMPLETE) {
++                       sctp_add_cmd_sf(commands, SCTP_CMD_PROBE_TIMER_UPDATE,
++                                       SCTP_TRANSPORT(link));
++                       return SCTP_DISPOSITION_CONSUME;
++               }
++               return sctp_sf_send_probe(net, ep, asoc, type, link, commands);
+        }
 
+        max_interval = link->hbinterval + link->rto;
+diff --git a/net/sctp/transport.c b/net/sctp/transport.c
+index f27b856ea8ce..37f65f617f05 100644
+--- a/net/sctp/transport.c
++++ b/net/sctp/transport.c
+@@ -215,10 +215,8 @@ void sctp_transport_reset_probe_timer(struct
+sctp_transport *transport)
+ {
+        int scale = 1;
+
+-       if (timer_pending(&transport->probe_timer))
+-               return;
+        if (transport->pl.state == SCTP_PL_COMPLETE &&
+-           transport->pl.probe_count == 1)
++           transport->pl.probe_count == 0)
+                scale = 30; /* works as PMTU_RAISE_TIMER */
+        if (!mod_timer(&transport->probe_timer,
+                       jiffies + transport->probe_interval * scale))
+
+[103] pl_send: PLPMTUD: state: 1, size: 1200, high: 0 <--[a]
+[103] pl_recv: PLPMTUD: state: 1, size: 1200, high: 0
+[103] pl_send: PLPMTUD: state: 2, size: 1232, high: 0
+[103] pl_recv: PLPMTUD: state: 2, size: 1232, high: 0
+[103] pl_send: PLPMTUD: state: 2, size: 1264, high: 0
+[103] pl_recv: PLPMTUD: state: 2, size: 1264, high: 0
+[103] pl_send: PLPMTUD: state: 2, size: 1296, high: 0
+[103] pl_recv: PLPMTUD: state: 2, size: 1296, high: 0
+[103] pl_send: PLPMTUD: state: 2, size: 1328, high: 0
+[103] pl_recv: PLPMTUD: state: 2, size: 1328, high: 0
+[103] pl_send: PLPMTUD: state: 2, size: 1360, high: 0
+[103] pl_recv: PLPMTUD: state: 2, size: 1360, high: 0
+[103] pl_send: PLPMTUD: state: 2, size: 1392, high: 0
+[103] pl_recv: PLPMTUD: state: 2, size: 1392, high: 0
+[103] pl_send: PLPMTUD: state: 2, size: 1424, high: 0
+[103] pl_recv: PLPMTUD: state: 2, size: 1424, high: 0
+[103] pl_send: PLPMTUD: state: 2, size: 1456, high: 0
+[103] pl_recv: PLPMTUD: state: 2, size: 1456, high: 0  <--[b]
+[103] pl_send: PLPMTUD: state: 2, size: 1488, high: 0
+[108] pl_send: PLPMTUD: state: 2, size: 1488, high: 0
+[113] pl_send: PLPMTUD: state: 2, size: 1488, high: 0
+[118] pl_send: PLPMTUD: state: 2, size: 1488, high: 0
+[118] pl_recv: PLPMTUD: state: 2, size: 1456, high: 1488 <---[c]
+[118] pl_send: PLPMTUD: state: 2, size: 1460, high: 1488
+[118] pl_recv: PLPMTUD: state: 2, size: 1460, high: 1488 <--- [d]
+[118] pl_send: PLPMTUD: state: 2, size: 1464, high: 1488
+[124] pl_send: PLPMTUD: state: 2, size: 1464, high: 1488
+[129] pl_send: PLPMTUD: state: 2, size: 1464, high: 1488
+[134] pl_send: PLPMTUD: state: 2, size: 1464, high: 1488
+[134] pl_recv: PLPMTUD: state: 2, size: 1460, high: 1464 <-- around
+30s "search complete from 1200 bytes"
+[287] pl_send: PLPMTUD: state: 3, size: 1460, high: 0
+[287] pl_recv: PLPMTUD: state: 3, size: 1460, high: 0
+[287] pl_send: PLPMTUD: state: 2, size: 1464, high: 0 <-- [aa]
+[292] pl_send: PLPMTUD: state: 2, size: 1464, high: 0
+[298] pl_send: PLPMTUD: state: 2, size: 1464, high: 0
+[303] pl_send: PLPMTUD: state: 2, size: 1464, high: 0
+[303] pl_recv: PLPMTUD: state: 2, size: 1460, high: 1464  <--[bb]  <--
+around 15s "re-search complete from current pmtu"
+
+So since no interval to send the next probe when the ACK is received
+for the last one,
+it won't take much time from [a] to [b], and [c] to [d],
+and there are at most 2 failures to find the right pmtu, each failure
+takes 5s * 3 = 15s.
+
+when it goes back to search from search complete after a long timeout,
+it will take only 1 failure to get the right pmtu from [aa] to [bb].
+
+ Thanks.
+> >
+> > What is used for the actual mtu while this is in progress?
+> >
+> > Does packet loss and packet retransmission cause the mtu
+> > to be reduced as well?
+> No, the data packet is not a probe in this implementation.
+>
+> >
+> > I can imagine that there is an expectation (from the application)
+> > that the mtu is that of an ethernet link - perhaps less a PPPoE
+> > header.
+> > Starting with an mtu of 1200 will break this assumption and may
+> > have odd side effects.
+> Starting searching from mtu of 1200, but the real pmtu will only be updated
+> when the search is done and optimal mtu is found.
+> So at the beginning, it will still use the dst mtu as before.
+>
+> > For TCP/UDP the ICMP segmentation required error is immediate
+> > and gets used for the retransmissions.
+> > This code seems to be looking at separate timeouts - so a lot of
+> > packets could get discarded and application timers expire before
+> > if determines the correct mtu.
+> This patch will also process ICMP error msg, and gets the 'mtu' size from it
+> but before using it, it will verify(probe) it first:
+>
+> see Patch: sctp: do state transition when receiving an icmp TOOBIG packet
+>
+> >
+> > Maybe I missed something about this only being done on inactive
+> > paths?
+> >
+> >         David
+> >
+> > -
+> > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> > Registration No: 1397386 (Wales)
+> >
