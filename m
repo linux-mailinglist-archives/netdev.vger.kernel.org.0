@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C4E63B2175
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 22:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C213B2177
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 22:00:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbhFWUCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 16:02:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56028 "EHLO mail.kernel.org"
+        id S230048AbhFWUC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 16:02:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56018 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229759AbhFWUCX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229523AbhFWUCX (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 23 Jun 2021 16:02:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3637B61166;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 25C8161185;
         Wed, 23 Jun 2021 20:00:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1624478405;
-        bh=rVbncDEFVGhe2mhI+dvtaGzIBf9X+RlcWMI4IIPNTmM=;
+        bh=hVCBY7QfK0vAo7AjFAw6puD6+nQO1/E5ur3q5kjlXJc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ilApgzuua5PS9mPhx4yu8VhsaKTlWhQnrKrD4kgwyndZkJiNNecs4fSRxuVp/JfuW
-         ZXRoIi6kzHI8aycfoT/j82XtmOn//5bdBtQPBg5l7TJ74SA9d6/ho6RA4yB2yHq7Ce
-         smsS7+TY3FXbTTDBChssbarq5igLmDteocxw8K5+MAhwoJxUD4eniCxTgn96502Ig7
-         6OgOqiRT2w20ld78lkoz80oHyTH6Ifh1m+y8GWQnVH0+041IY+kPp1p7FLHQE7x+BW
-         25SOebHMzXDp4/KztYQijjl4EeNCH++ZQqFCsVUATgKq6k8j1FKd4u/AEuMmVcWqbM
-         9r3NLVIHnBxEQ==
+        b=JRftS1U9DySw+hSOzxLC5iagcBBtzdeaK5zb+2mU38PiXR4HflBKaTXYGpEhVS/3F
+         HzJnObJ8aBDuZsHBXDt7EfduasHX0yyWbSxWIpTcG3IaepPA2szYfKCOL0WC4NKQed
+         upQ07UyIr/6GH03/7PuQ7AxTq76f7kTk0kYjlMi7UP9gj+r7Exf6of07BMp0yTwmXo
+         uU1r4UKGCoB1kKrheuJphA3Ix1bYEZB5X8+oCCj9YVN4jmjZmV8i5eXkdltN286XDD
+         dLFwZaqJZ0emp5rzoM0AITJmoqNOTNrZKZo/8976/cWZtZJ7ZEftp0+o2AoEcIYblZ
+         p0HpZHnY8I+fw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 244606094F;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 17FFD60A2F;
         Wed, 23 Jun 2021 20:00:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v1] ibmveth: Set CHECKSUM_PARTIAL if NULL TCP CSUM.
+Subject: Re: [PATCH net-next] tcp: Add stats for socket migration.
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162447840514.26653.14841241495197479979.git-patchwork-notify@kernel.org>
+Message-Id: <162447840509.26653.11794900341617628039.git-patchwork-notify@kernel.org>
 Date:   Wed, 23 Jun 2021 20:00:05 +0000
-References: <20210622215215.1947909-1-dwilder@us.ibm.com>
-In-Reply-To: <20210622215215.1947909-1-dwilder@us.ibm.com>
-To:     David Wilder <dwilder@us.ibm.com>
-Cc:     netdev@vger.kernel.org, cforno12@linux.ibm.com,
-        pradeeps@linux.vnet.ibm.com, wilder@us.ibm.com, kuba@kernel.org
+References: <20210622233529.65158-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20210622233529.65158-1-kuniyu@amazon.co.jp>
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        ycheng@google.com, kafai@fb.com, kuni1840@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,20 +47,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 22 Jun 2021 14:52:15 -0700 you wrote:
-> TCP checksums on received packets may be set to NULL by the sender if CSO
-> is enabled. The hypervisor flags these packets as check-sum-ok and the
-> skb is then flagged CHECKSUM_UNNECESSARY. If these packets are then
-> forwarded the sender will not request CSO due to the CHECKSUM_UNNECESSARY
-> flag. The result is a TCP packet sent with a bad checksum. This change
-> sets up CHECKSUM_PARTIAL on these packets causing the sender to correctly
-> request CSUM offload.
+On Wed, 23 Jun 2021 08:35:29 +0900 you wrote:
+> This commit adds two stats for the socket migration feature to evaluate the
+> effectiveness: LINUX_MIB_TCPMIGRATEREQ(SUCCESS|FAILURE).
+> 
+> If the migration fails because of the own_req race in receiving ACK and
+> sending SYN+ACK paths, we do not increment the failure stat. Then another
+> CPU is responsible for the req.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v1] ibmveth: Set CHECKSUM_PARTIAL if NULL TCP CSUM.
-    https://git.kernel.org/netdev/net-next/c/7525de2516fb
+  - [net-next] tcp: Add stats for socket migration.
+    https://git.kernel.org/netdev/net-next/c/55d444b310c6
 
 You are awesome, thank you!
 --
