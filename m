@@ -2,115 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEF5E3B13A3
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 08:03:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D27CC3B13B1
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 08:07:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229987AbhFWGGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 02:06:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38452 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229800AbhFWGF7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 02:05:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BFC2761186;
-        Wed, 23 Jun 2021 06:03:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624428222;
-        bh=Ja+ISr0NAdxQoaoVB7TsXbPptUPHLgLampPKJ/ivUd4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZdtqaLMcLwNums4Y8j4S/gJQ3NLegOj572Ir5OQkxmcgonjj/A+HbtjIznU08vNxL
-         6XKx/6db6BKqFHQcx5NsvKw2b7Uee8R/gznS1QgoFGdFqWF4n+oicc/oDu2l5BtWbO
-         6d190iknFRX1hPtHGoBMYGa/kcujRlRkUGnPj7v4cjpUsDFwyuYfkrU/ewuQbtaOXf
-         EPBlli8bRjgZVDjFO0N7QqX7U9/GRyYWazQtAHldNVdS6U98Tu77JJWlfrhDyNIvIp
-         Bcvvatl7woQ7Ohsk4FCUW5MZeUpOAig3RBNMUCg90zRAl4bpQL6NlJgbWA3lOlIKJB
-         3obbxS42HmQhA==
-Date:   Wed, 23 Jun 2021 09:03:38 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Lior Nahmanson <liorna@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH rdma-next v1 2/3] RDMA/mlx5: Separate DCI QP creation
- logic
-Message-ID: <YNLOurv1BXrlpsha@unreal>
-References: <cover.1624258894.git.leonro@nvidia.com>
- <b4530bdd999349c59691224f016ff1efb5dc3b92.1624258894.git.leonro@nvidia.com>
- <20210622184556.GA2596427@nvidia.com>
+        id S229933AbhFWGJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 02:09:21 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:54880 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229896AbhFWGJU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 02:09:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1624428424; x=1655964424;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YCtpVTQAaNY+hgGVKdr0kJYx/uxBrYXjRLRe3p6CJqg=;
+  b=TjKeW12Djx7IUHLQ+8ZksD5Xu0N2DHCMVYtdQO3+wgTs5p4ZCO82la5c
+   jaVUZ//QvMyTP8k3elCniUflsiroU4sZcfkNt+SzXpb6OpsVW94gGwtFg
+   F2DILhfC3phyZMq/3bLj7myG4hlf6PiRu/JU50MLQq9sg9+/IhE8vHeJl
+   E=;
+X-IronPort-AV: E=Sophos;i="5.83,293,1616457600"; 
+   d="scan'208";a="116186703"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-8cc5d68b.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-4101.iad4.amazon.com with ESMTP; 23 Jun 2021 06:07:03 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2b-8cc5d68b.us-west-2.amazon.com (Postfix) with ESMTPS id 9A207A1880;
+        Wed, 23 Jun 2021 06:07:01 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Wed, 23 Jun 2021 06:07:00 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.36) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.18; Wed, 23 Jun 2021 06:06:57 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>
+Subject: [PATCH net-next] net/tls: Remove the __TLS_DEC_STATS() macro.
+Date:   Wed, 23 Jun 2021 15:06:34 +0900
+Message-ID: <20210623060634.1909-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210622184556.GA2596427@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.36]
+X-ClientProxiedBy: EX13P01UWA002.ant.amazon.com (10.43.160.46) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 22, 2021 at 03:45:56PM -0300, Jason Gunthorpe wrote:
-> On Mon, Jun 21, 2021 at 10:06:15AM +0300, Leon Romanovsky wrote:
-> > From: Lior Nahmanson <liorna@nvidia.com>
-> > 
-> > This patch isolates DCI QP creation logic to separate function, so this
-> > change will reduce complexity when adding new features to DCI QP without
-> > interfering with other QP types.
-> > 
-> > The code was copied from create_user_qp() while taking only DCI relevant bits.
-> > 
-> > Reviewed-by: Meir Lichtinger <meirl@nvidia.com>
-> > Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> >  drivers/infiniband/hw/mlx5/qp.c | 157 ++++++++++++++++++++++++++++++++
-> >  1 file changed, 157 insertions(+)
-> > 
-> > diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
-> > index 7a5f1eba60e3..65a380543f5a 100644
-> > +++ b/drivers/infiniband/hw/mlx5/qp.c
-> > @@ -1974,6 +1974,160 @@ static int create_xrc_tgt_qp(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
-> >  	return 0;
-> >  }
-> >  
-> > +static int create_dci(struct mlx5_ib_dev *dev, struct ib_pd *pd,
-> > +		      struct mlx5_ib_qp *qp,
-> > +		      struct mlx5_create_qp_params *params)
-> > +{
-> 
-> This is a huge amount of copying just to add 4 lines, why?
-> 
-> There must be a better way to do this qp stuff.
-> 
-> Why not put more stuff in _create_user_qp()?
+The commit d26b698dd3cd ("net/tls: add skeleton of MIB statistics")
+introduced __TLS_DEC_STATS(), but it is not used and __SNMP_DEC_STATS() is
+not defined also. Let's remove it.
 
-Lior proposed it in original patch, but I didn't like it. It caused to
-mix of various QP types and maze of "if () else ()" that are not applicable
-one to another.
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+---
+The commit d26b698dd3cd does not contain a bug, so I think Fixes tag is not
+necessary and post this to net-next. But if the tag is needed, I'll respin
+to the net tree with the tag, so please let me know.
+---
+ include/net/tls.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-The huge _create_user_qp() is the reason why create_dci() is not small,
-we simply had hard time to understand if specific HW bit is needed or
-not in DCI flow.
+diff --git a/include/net/tls.h b/include/net/tls.h
+index 8341a8d1e807..8d398a5de3ee 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -79,8 +79,6 @@
+ 	__SNMP_INC_STATS((net)->mib.tls_statistics, field)
+ #define TLS_INC_STATS(net, field)				\
+ 	SNMP_INC_STATS((net)->mib.tls_statistics, field)
+-#define __TLS_DEC_STATS(net, field)				\
+-	__SNMP_DEC_STATS((net)->mib.tls_statistics, field)
+ #define TLS_DEC_STATS(net, field)				\
+ 	SNMP_DEC_STATS((net)->mib.tls_statistics, field)
+ 
+-- 
+2.30.2
 
-My goal is to have small per-QP type specific functions that calls
-to simple functions for very narrow scope.
-
-Something like that:
-static int create_dci(...)
-{
-  ...
-  configure_send_cq(..)
-  configure_recv_sq(..)
-  configure_srq(...)
-  ...
-}
-
-static int create_user_qp(...)
-{
-  ...
-  configure_send_cq(..)
-  configure_recv_sq(..)
-  configure_srq(...)
-  ...
-}
-
-
-Thanks
-
-> 
-> Jason
