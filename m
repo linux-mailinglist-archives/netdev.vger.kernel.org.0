@@ -2,385 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24A5F3B1910
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 13:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D99013B1911
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 13:37:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbhFWLjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 07:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbhFWLjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 07:39:31 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D696C061574
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 04:37:14 -0700 (PDT)
-Received: from ktm (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 22F5280050;
-        Wed, 23 Jun 2021 13:37:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1624448230;
-        bh=pKHSqXHSqcJptoB96ACC83KzfSoh0g5MljQsmN9+xlc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vBUh6UQaEtVqQVbPNSs0rpAgpAnqyk7oMoNBJ73S/ECwkneXkmCp9q7aVJaMLchhP
-         wNLaiLkk0P4x7DjQxkoxYykLf0Mmgawjjfj3tgt6DG57FyPAltnXQe3yst10aRzVLt
-         GUZWzPy3F8HH9XuWnjfewiOFKe14Lm7k+LjeLtqL2Deyl3gdVhz52+chGF7vROr44O
-         BhAqDkh9gweq9t7PV1NOSapUrXNP5H+83ifKaaZ7a95rmaWS4b2KKkj1sQ0Sv/QKjg
-         6cjQUHYTcsQAUbcqhQJDJ9SJsw57YmOLjRFTQJBapJBd5ohTMFe9sZY7w7+yuhbfXh
-         KyoHvW+gzOmeQ==
-Date:   Wed, 23 Jun 2021 13:37:04 +0200
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mark Einon <mark.einon@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel@lists.infradead.org
-Subject: Re: [RFC 2/3] net: Provide switchdev driver for NXP's More Than IP
- L2 switch
-Message-ID: <20210623133704.334a84df@ktm>
-In-Reply-To: <YNH7vS9FgvEhz2fZ@lunn.ch>
-References: <20210622144111.19647-1-lukma@denx.de>
-        <20210622144111.19647-3-lukma@denx.de>
-        <YNH7vS9FgvEhz2fZ@lunn.ch>
-Organization: denx.de
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S230182AbhFWLkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 07:40:03 -0400
+Received: from mga11.intel.com ([192.55.52.93]:63084 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230031AbhFWLkC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 07:40:02 -0400
+IronPort-SDR: wuCr1dXK9RS6zbUU3IUf46TOq5KARiqhOnrrBqGraRHY+jrSvuox6rIkq1awtVlEVDlWMpOPcD
+ WmEIEtnr4FAg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10023"; a="204235219"
+X-IronPort-AV: E=Sophos;i="5.83,293,1616482800"; 
+   d="scan'208";a="204235219"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2021 04:37:45 -0700
+IronPort-SDR: S2ADK69CeK8No3oXD0KFxKaw/YGcbSc+J+pgl1IhcTaSZkg92hNqFk8cBDVIaSdflZUCDmHVFL
+ 3TkBuwGHzxSA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,293,1616482800"; 
+   d="scan'208";a="454621510"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga008.fm.intel.com with ESMTP; 23 Jun 2021 04:37:45 -0700
+Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Wed, 23 Jun 2021 04:37:44 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
+ via Frontend Transport; Wed, 23 Jun 2021 04:37:44 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.4; Wed, 23 Jun 2021 04:37:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OjuorYrVjhAVxnRaYN/4KzgRf3DLK+lApwHsfHzxAXCC8xpzLTo8qh6s+gTAwRlSIlKA1hCMX8hA56elBHNXDc29MbRbP/+FrTAEJEaExr/Aunac/F5v1pXopji3sTqc+sFdxyctoOwhx0V3tQawnE+42djraGD8ChZCpcmJ86Q6+2Jdh61nDsVPCz3iZ6rYhSADU3c0nFbXQhv06c71pLCpV44nW3WUfs57Hz3Op5PehQ8UKCsmmKD8DWGDaRfO74YnbpXanOKhu4UOZ+fhV9a01e9Jj2MStI+1pBC1SdxBPSdmK99oDEaDEH+tUsT7Q2+4htAeg/ghYTj6id/5uQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e7KeL2jfeAsF+yvoZxuZb1niT00HBEowrwiGKQyUQHs=;
+ b=NbfYqQODJHf5bJTxxgKADlyyYXW63SjaslsMpC8+r0vMLrcB99TmwAJwsxUr6HWxvh0iFgqOW1YK3/PriR6i2SeD6dIgj5CQbH2JkDE7SrWnZbaYyDAdNLHLLaJGxDjWb+LjmENLadfkWFxpumqJ+ypeADt2oSOvShCyGeDpkjLtzDtA0fD44YYdZGqXb22D+hV19Gnsil8/xr1nx97N9oVKQku+5y2dyDuZTePTk1M9OLiuVQCZSIgHc8oav70soBOYmdPylhYxXqi4Bt3VFwuXEa1ZwtVCuSal25IvGmRV5YM2vkI+I1zLVsvnZ1aiJSo2rZiDsttwSNNC7Ldwag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e7KeL2jfeAsF+yvoZxuZb1niT00HBEowrwiGKQyUQHs=;
+ b=idmXIH5de7KE1ArlcqPRnWb20UKLKg4NRtYr8IIZ2X2eQv0+3vVa6TKIewLXqu78lQRdk/bfEJqlOpkzeT9XWAtdmXqeDivL6D57v43hUWfJ3ICrz/viu4f/2ZGjAAkVG/kcbwYbo5I0EbTwrUVzQ026zFGqS3obHAAwcnAz4nY=
+Received: from SA2PR11MB4777.namprd11.prod.outlook.com (2603:10b6:806:115::24)
+ by SA0PR11MB4688.namprd11.prod.outlook.com (2603:10b6:806:72::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.18; Wed, 23 Jun
+ 2021 11:37:43 +0000
+Received: from SA2PR11MB4777.namprd11.prod.outlook.com
+ ([fe80::4426:b918:4325:f2ea]) by SA2PR11MB4777.namprd11.prod.outlook.com
+ ([fe80::4426:b918:4325:f2ea%9]) with mapi id 15.20.4242.023; Wed, 23 Jun 2021
+ 11:37:43 +0000
+From:   "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
+To:     netdev <netdev@vger.kernel.org>
+CC:     Jose Abreu <joabreu@synopsys.com>
+Subject: [BUG] Kernel panic when running stmmac selftest
+Thread-Topic: [BUG] Kernel panic when running stmmac selftest
+Thread-Index: Addn/CZFyMX+RtMtS0K/3u5i9rQBrw==
+Date:   Wed, 23 Jun 2021 11:37:43 +0000
+Message-ID: <SA2PR11MB47770A9C3665761D697086C6D5089@SA2PR11MB4777.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [175.136.124.169]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c89234dc-a69e-4f25-e6e3-08d9363b50a8
+x-ms-traffictypediagnostic: SA0PR11MB4688:
+x-microsoft-antispam-prvs: <SA0PR11MB46884EBAD3710AE4584936FAD5089@SA0PR11MB4688.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3968;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: YYyiOYPC07K5Xltlzr4HgixpXLwci5YsqXQhIFASqCaFey8a+E1pjHCtb7wWV3fRltdxbrAIa7SJZiLE9JwJk+yTyU1xML47FnsgymBs3XnQjkHfL/jIoeN5C1wlzbIsNCM+8kjz2aFffQWvCk0kl0ZT7CShEr24KWy2VaeT/D+lU9NcCiN/ZkP7do3/PnWI9UVPhAyS3OSjcjqdvDsAlpP1smexwbO7TivCOGYhFbwGT2Wby3YGWwTuTbNe3VqVvVjcNwrwvY8sVQTSsvyfOzQ7x6Qg3Y/WTDj+iTrQI1D31YWdA327rNgQeO/foeN0chPAmrCX/R7RGEMT6SIPZZ2OvVYxajW3BtK9kelJuCd0AxzMa+6EdKGaemIZIxyGqY4T61oVyiNM8PNdf7Jjzsr/Vca43mZixpGRQgAfec6OJIHqe1IYshgjuYfhCy4/pKKWm3wC7AY2ThvBAkqIG5fkj3PsCfhEogyd9VAvhgH/n3dHc7vEJZiEDbwdrSqqN8FlJJ6lSuIZYBTt1xYCufPRwkmmRoM4q7FFEIVvZbBJPOPx316uAIPHJdn+S1mdbTLNh8rhRfNREDJBgHXJZ2KuxhAanacG4vOMQV+0HYr646+ElIJEilFh2xBTujO/JSYbfq1Y8yYPaoDJTJhZtQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR11MB4777.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(376002)(366004)(346002)(39860400002)(66946007)(83380400001)(76116006)(2906002)(71200400001)(4326008)(45080400002)(316002)(38100700002)(66556008)(64756008)(8676002)(8936002)(66446008)(66476007)(6916009)(122000001)(86362001)(478600001)(26005)(55016002)(9686003)(52536014)(7696005)(5660300002)(186003)(33656002)(6506007)(55236004);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?wLoqJvRdrwyofUfY8LQF85gmV3VV+4ImJpl4cnOasXYTJ1YwKfwp9eA1WXVd?=
+ =?us-ascii?Q?PkCix8FpYuFOfPjo0/AnhgJU4d62OZT7YIvSRReakwAq12nARjnuDe+Mdc++?=
+ =?us-ascii?Q?TQMF8nt7xToEQ0swlLn26hIhvGUll+nR7fG+YcdjUgmbvPnh5GBy7YSWAWEA?=
+ =?us-ascii?Q?JXpnKcab4C7RjKxcsu40yRlSsQvB0dz3axam2QkKI9F1gx2xaTnRyVHb5+nX?=
+ =?us-ascii?Q?Ar8VYqid8ejoGPidCm0ZdTKvON0ppOAO8kYRvPpJAuK9akSTY5QStB+G/NCc?=
+ =?us-ascii?Q?uF9taqTx9+Yv/0OP2KWLoyZBQHAcOCMFTVoCf+cCMQyuyxLMIWuNt3nQNL0D?=
+ =?us-ascii?Q?b3FzzVYvMkiaesE+g+TY9HkKg9sMeJIrRNT3AAB5fRpeyhZIbcMK9NGiIE35?=
+ =?us-ascii?Q?jVb5OTvqRRKAy/eMokWc1Vc+O8/XCv4ayY/79Juf3MJ3Sx6miHYCj/wJpqbX?=
+ =?us-ascii?Q?X0pFnKhg+74hdCQeAwP+HudPnXAJyIWnto1SYSE7YLuQtBU0FCrjs/AM8wtx?=
+ =?us-ascii?Q?EHIQbCzB9Si2QYBZ/TtZIkdHDU5516UtNaturq6fLjVG5ZQUTEYOA2Kq2f5z?=
+ =?us-ascii?Q?mPZ6IRXxiO21ZTP58BqJy5W61m8QFZ1MePuuiVKlvt61ooNir1iXQ62/5FCl?=
+ =?us-ascii?Q?R4cmzVk6pahaHv6+DBPvV5SRgD3IjaGURDH5aE2G7/g6dF6rXm9SIQYlEeJO?=
+ =?us-ascii?Q?1YApS65oKiGCKF4fQGkS+q43m+AMckOHOptthwx7xgC16Mp2LVtnhDRGbOqi?=
+ =?us-ascii?Q?Tu/H80VxjadVefJWros/g25fvqKa41Pkt8Snphc9GEOLr1Vmpn7s1E/iJLEx?=
+ =?us-ascii?Q?x+pt0cFvCGiL91fyNFn9dG/qXOQXkB7H7YOgU9DuTcEeoC+IaYjNdYtzOJUF?=
+ =?us-ascii?Q?TSWwXYe9dZfs84Ka+yMVpvlzhI5CoJGuq4roB19VKuR42hNjDaTqtAR1HZkd?=
+ =?us-ascii?Q?P6fHfHt0/QxV1z1fPSHzMrwiY3HmHIZiIrgP+M9Vl24dwIEqUjMashLAY5Sr?=
+ =?us-ascii?Q?z0vBG2KmL2x8L44+nUFfwVxhxYboeMBdvJSZCXK6a8vpJo7g8CdYVVdWr5H4?=
+ =?us-ascii?Q?/ky2vGGKX3Ech6tfS5ApGbUx4RfoKKzkaM9y8oiSaw6awc1H678dU9XZ/3cz?=
+ =?us-ascii?Q?tFegM7qUihcQIpC8AbxKlZP7DsZ0NJ0aRP8YAWlo8iG6b2CP/u1ESPxCoXHZ?=
+ =?us-ascii?Q?2iDKeLjson3b/C6NSosvcpouXwLUFo2MmW/+n4P5Hl8y6paM/MQHsJ2q4qKF?=
+ =?us-ascii?Q?gz7iBQiCwDoojatd+qG4/GgVVuI3P5RC5GyWM5QHorTm2oFimX+qj93GlZpl?=
+ =?us-ascii?Q?7eh1aWDvI1AZsi4F54aCKPUV?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- boundary="Sig_/PlJN2z9vs/ks/6=T=lKv9SG"; protocol="application/pgp-signature"
-X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
-X-Virus-Status: Clean
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA2PR11MB4777.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c89234dc-a69e-4f25-e6e3-08d9363b50a8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jun 2021 11:37:43.2996
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AJuxb/UK4O4hvU1ds5rJ3CMHlO0Yoip4yzpjnF7L1suPcjirDNnaZyDochU7ZJIAAAPEk0uOpudMJ7adUEDv50S3BotzodKv8ghkOFMfKKyn9mqJhOauZ+QUuOFaNzdI
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4688
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/PlJN2z9vs/ks/6=T=lKv9SG
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Hi Andrew,
+I'm getting Kernel panic when running stmmac selftest using "ethtool -t enp=
+0s30f4 offline" command. I'm using net/master branch with last commit ID f4=
+b29d2ee903 (net/master) Merge git://git.kernel.org/pub/scm/linux/kernel/git=
+/pablo/nf.
+It is tested on Intel ElkhartLake platform which has DesignWare Core Ethern=
+et QoS version 5.20 (MAC), DesignWare Core Ethernet PCS version 3.30 and Ma=
+rvell88E2110 PHY.
 
-> > +static void write_atable(struct mtipl2sw_priv *priv, int index,
-> > +	unsigned long write_lo, unsigned long write_hi)
-> > +{
-> > +	unsigned long atable_base =3D (unsigned long)priv->hwentry;
-> > +
-> > +	writel(write_lo, (volatile void *)atable_base + (index <<
-> > 3));
-> > +	writel(write_hi, (volatile void *)atable_base + (index <<
-> > 3) + 4); =20
->=20
-> Using volatile is generally wrong. Why do you need it?
+Below is the Kernel dump:
 
-This was the code, which I took from the legacy driver. I will adjust
-it.
+[   40.099871] ------------[ cut here ]------------
+[   40.105049] kernel BUG at net/core/skbuff.c:1673!
+[   40.110331] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+[   40.116179] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G     U            5.=
+13.0-rc6-intel-lts-mismail5+ #89
+[   40.126786] Hardware name: Intel Corporation Elkhart Lake Embedded Platf=
+orm/ElkhartLake LPDDR4x T4 RVP1, BIOS EHLSFWI1.R00.3192.A01.2105041421 05/0=
+4/2021
+[   40.142135] RIP: 0010:pskb_expand_head+0x24b/0x2d0
+[   40.147491] Code: df e8 c9 fc ff ff e9 ae fe ff ff 44 2b 74 24 04 31 c0 =
+44 01 b3 d0 00 00 00 48 83 c4 08 5b 5d 41 5c 41 5d 41 5e 41 5f c3 0f 0b <0f=
+> 0b be 02 00 00 00 e8 49 41 be ff e9 67 ff ff ff f6 c2 01 75 0d
+[   40.168474] RSP: 0018:ffffa78100003b78 EFLAGS: 00010202
+[   40.174308] RAX: 000000000000028d RBX: ffff8c0907ac3300 RCX: 00000000000=
+00a20
+[   40.182272] RDX: 0000000000000002 RSI: 0000000000000000 RDI: ffff8c0907a=
+c3300
+[   40.190241] RBP: ffffa78100003bf0 R08: ffff8c0907ac33d4 R09: 00000000000=
+00043
+[   40.198212] R10: 0000000000000008 R11: ffff8c0908788090 R12: 00000000000=
+00224
+[   40.206182] R13: ffff8c0907ac3300 R14: ffff8c090896bd40 R15: ffff8c0907a=
+c3300
+[   40.214150] FS:  0000000000000000(0000) GS:ffff8c0a64200000(0000) knlGS:=
+0000000000000000
+[   40.223188] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   40.229602] CR2: 00007f81a5a99e30 CR3: 0000000103c6c000 CR4: 00000000003=
+50ef0
+[   40.237573] Call Trace:
+[   40.240297]  <IRQ>
+[   40.242528]  __pskb_pull_tail+0x4f/0x3b0
+[   40.246924]  stmmac_test_loopback_validate+0x6c/0x220 [stmmac]
+[   40.253452]  __netif_receive_skb_core+0x66a/0x1120
+[   40.258800]  ? domain_unmap+0x6e/0xf0
+[   40.262888]  __netif_receive_skb_list_core+0x10d/0x280
+[   40.268625]  ? mod_timer+0x1b5/0x320
+[   40.272614]  netif_receive_skb_list_internal+0x1cd/0x2d0
+[   40.278537]  gro_normal_list.part.160+0x19/0x40
+[   40.283594]  napi_complete_done+0x65/0x150
+[   40.288165]  stmmac_napi_poll_rx+0xc7f/0xd70 [stmmac]
+[   40.293811]  ? __napi_schedule+0x7a/0x90
+[   40.298190]  __napi_poll+0x28/0x140
+[   40.302082]  net_rx_action+0x23d/0x290
+[   40.306268]  __do_softirq+0xa3/0x2ef
+[   40.310258]  irq_exit_rcu+0xbc/0xd0
+[   40.314151]  common_interrupt+0xaf/0xe0
+[   40.318434]  </IRQ>
+[   40.320772]  asm_common_interrupt+0x1e/0x40
+[   40.325443] RIP: 0010:cpuidle_enter_state+0xd9/0x370
+[   40.330987] Code: 85 c0 0f 8f 0a 02 00 00 31 ff e8 a2 71 7c ff 45 84 ff =
+74 12 9c 58 f6 c4 02 0f 85 47 02 00 00 31 ff e8 0b 43 82 ff fb 45 85 f6 <0f=
+> 88 ab 00 00 00 49 63 ce 48 2b 2c 24 48 89 c8 48 6b d1 68 48 c1
+[   40.351969] RSP: 0018:ffffffff93803e50 EFLAGS: 00000202
+[   40.357806] RAX: ffff8c0a64200000 RBX: 0000000000000001 RCX: 00000000000=
+0001f
+[   40.365774] RDX: 0000000956207c60 RSI: ffffffff93664a37 RDI: ffffffff936=
+6ed64
+[   40.373742] RBP: 0000000956207c60 R08: 0000000000000000 R09: 00000000000=
+2a340
+[   40.381712] R10: 0000001a53fb88c6 R11: ffff8c0a64229ae4 R12: ffffc780ffc=
+24618
+[   40.389679] R13: ffffffff93977380 R14: 0000000000000001 R15: 00000000000=
+00000
+[   40.397650]  cpuidle_enter+0x29/0x40
+[   40.401638]  do_idle+0x250/0x290
+[   40.405238]  cpu_startup_entry+0x19/0x20
+[   40.409608]  start_kernel+0x537/0x55c
+[   40.413695]  secondary_startup_64_no_verify+0xb0/0xbb
+[   40.419335] Modules linked in: bnep 8021q bluetooth ecryptfs marvell10g =
+nfsd snd_sof_pci_intel_tgl iTCO_wdt snd_sof_intel_hda_common x86_pkg_temp_t=
+hermal intel_ishtp_loader mei_hdcp soundwire_intel sch_fq_codel iTCO_vendor=
+_support intel_ishtp_hid kvm_intel marvell soundwire_generic_allocation sou=
+ndwire_cadence soundwire_bus kvm snd_hda_codec_hdmi snd_sof_xtensa_dsp uio =
+snd_soc_acpi_intel_match uhid dwmac_intel snd_soc_acpi irqbypass stmmac int=
+el_rapl_msr igb pcspkr snd_hda_intel pcs_xpcs snd_intel_dspcfg phylink i2c_=
+i801 snd_intel_sdw_acpi libphy dca intel_ish_ipc snd_hda_codec mei_me snd_h=
+da_core intel_ishtp mei i2c_smbus 8250_lpss spi_dw_pci dw_dmac_core spi_dw =
+thermal tpm_crb tpm_tis tpm_tis_core parport_pc parport tpm intel_pmc_core =
+i915 fuse configfs snd_sof_pci snd_sof snd_soc_core snd_compress ac97_bus l=
+edtrig_audio snd_pcm snd_timer snd soundcore
+[   40.503980] ---[ end trace a6a698bb4b2d1455 ]---
+[   40.561709] RIP: 0010:pskb_expand_head+0x24b/0x2d0
+[   40.567069] Code: df e8 c9 fc ff ff e9 ae fe ff ff 44 2b 74 24 04 31 c0 =
+44 01 b3 d0 00 00 00 48 83 c4 08 5b 5d 41 5c 41 5d 41 5e 41 5f c3 0f 0b <0f=
+> 0b be 02 00 00 00 e8 49 41 be ff e9 67 ff ff ff f6 c2 01 75 0d
+[   40.588052] RSP: 0018:ffffa78100003b78 EFLAGS: 00010202
+[   40.593888] RAX: 000000000000028d RBX: ffff8c0907ac3300 RCX: 00000000000=
+00a20
+[   40.601864] RDX: 0000000000000002 RSI: 0000000000000000 RDI: ffff8c0907a=
+c3300
+[   40.609838] RBP: ffffa78100003bf0 R08: ffff8c0907ac33d4 R09: 00000000000=
+00043
+[   40.609840] R10: 0000000000000008 R11: ffff8c0908788090 R12: 00000000000=
+00224
+[   40.609841] R13: ffff8c0907ac3300 R14: ffff8c090896bd40 R15: ffff8c0907a=
+c3300
+[   40.609841] FS:  0000000000000000(0000) GS:ffff8c0a64200000(0000) knlGS:=
+0000000000000000
+[   40.609843] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   40.609844] CR2: 00007f81a5a99e30 CR3: 0000000103c6c000 CR4: 00000000003=
+50ef0
+[   40.609845] Kernel panic - not syncing: Fatal exception in interrupt
+[   40.609885] Kernel Offset: 0x11200000 from 0xffffffff81000000 (relocatio=
+n range: 0xffffffff80000000-0xffffffffbfffffff)
+[   40.727867] ---[ end Kernel panic - not syncing: Fatal exception in inte=
+rrupt ]---
 
->=20
->  > +}
-> > +
-> > +/*
-> > + * Clear complete MAC Look Up Table
-> > + */
-> > +static void esw_clear_atable(struct mtipl2sw_priv *priv)
-> > +{
-> > +	int index;
-> > +	for (index =3D 0; index < 2048; index++)
-> > +		write_atable(priv, index, 0, 0);
-> > +}
-> > +
-> > +static int mtipl2_sw_enable(struct mtipl2sw_priv *priv)
-> > +{
-> > +	/*
-> > +	 * L2 switch - reset
-> > +	 */
-> > +	writel(MCF_ESW_MODE_SW_RST, &priv->fecp->ESW_MODE);
-> > +	udelay(10);
-> > +
-> > +	/* Configure switch*/
-> > +	writel(MCF_ESW_MODE_STATRST, &priv->fecp->ESW_MODE);
-> > +	writel(MCF_ESW_MODE_SW_EN, &priv->fecp->ESW_MODE);
-> > +
-> > +	/* Management port configuration, make port 0 as
-> > management port */
-> > +	writel(0, &priv->fecp->ESW_BMPC);
-> > +
-> > +	/*
-> > +	 * Set backpressure threshold to minimize discarded frames
-> > +	 * during due to congestion.
-> > +	 */
-> > +	writel(P0BC_THRESHOLD, &priv->fecp->ESW_P0BCT);
-> > +
-> > +	/* Set the max rx buffer size */
-> > +	writel(L2SW_PKT_MAXBLR_SIZE, priv->hwpsw +
-> > MCF_ESW_R_BUFF_SIZE);
-> > +	/* Enable broadcast on all ports */
-> > +	writel(0x7, &priv->fecp->ESW_DBCR);
-> > +
-> > +	/* Enable multicast on all ports */
-> > +	writel(0x7, &priv->fecp->ESW_DMCR);
-> > +
-> > +	esw_clear_atable(priv);
-> > +
-> > +	/* Clear all pending interrupts */
-> > +	writel(0xffffffff, priv->hwpsw + FEC_IEVENT);
-> > +
-> > +	/* Enable interrupts we wish to service */
-> > +	writel(FEC_MTIP_DEFAULT_IMASK, priv->hwpsw + FEC_IMASK);
-> > +	priv->l2sw_on =3D true;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static void mtipl2_sw_disable(struct mtipl2sw_priv *priv)
-> > +{
-> > +	writel(0, &priv->fecp->ESW_MODE);
-> > +}
-> > +
-> > +static int mtipl2_port_enable (struct mtipl2sw_priv *priv, int
-> > port) +{
-> > +	u32 l2_ports_en;
-> > +
-> > +	pr_err("%s: PORT ENABLE %d\n", __func__, port);
-> > +
-> > +	/* Enable tx/rx on L2 switch ports */
-> > +	l2_ports_en =3D readl(&priv->fecp->ESW_PER);
-> > +	if (!(l2_ports_en & MCF_ESW_ENA_PORT_0))
-> > +		l2_ports_en =3D MCF_ESW_ENA_PORT_0;
-> > +
-> > +	if (port =3D=3D 0 && !(l2_ports_en & MCF_ESW_ENA_PORT_1))
-> > +		l2_ports_en |=3D MCF_ESW_ENA_PORT_1;
-> > +
-> > +	if (port =3D=3D 1 && !(l2_ports_en & MCF_ESW_ENA_PORT_2))
-> > +		l2_ports_en |=3D MCF_ESW_ENA_PORT_2;
-> > +
-> > +	writel(l2_ports_en, &priv->fecp->ESW_PER);
-> > +
-> > +	/*
-> > +	 * Check if MAC IP block is already enabled (after switch
-> > initializtion)
-> > +	 * or if we need to enable it after mtipl2_port_disable
-> > was called.
-> > +	 */
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static void mtipl2_port_disable (struct mtipl2sw_priv *priv, int
-> > port) +{
-> > +	u32 l2_ports_en;
-> > +
-> > +	pr_err(" %s: PORT DISABLE %d\n", __func__, port); =20
->=20
-> Please clean up debug code this this.
->=20
+I`m not really have much knowledge and expertise on skb framework. It look =
+like the issue is due to the skb is still shared by other user before runni=
+ng skb_linearize().
 
-Ok.
+The Kernel panic can be fixed (as workaround) by below change:
 
-> > +
-> > +	l2_ports_en =3D readl(&priv->fecp->ESW_PER);
-> > +	if (port =3D=3D 0)
-> > +		l2_ports_en &=3D ~MCF_ESW_ENA_PORT_1;
-> > +
-> > +	if (port =3D=3D 1)
-> > +		l2_ports_en &=3D ~MCF_ESW_ENA_PORT_2;
-> > +
-> > +	/* Finally disable tx/rx on port 0 */
-> > +	if (!(l2_ports_en & MCF_ESW_ENA_PORT_1) &&
-> > +	    !(l2_ports_en & MCF_ESW_ENA_PORT_2))
-> > +		l2_ports_en &=3D ~MCF_ESW_ENA_PORT_0;
-> > +
-> > +	writel(l2_ports_en, &priv->fecp->ESW_PER);
-> > +}
-> > +
-> > +irqreturn_t
-> > +mtip_l2sw_interrupt_handler(int irq, void *dev_id)
-> > +{
-> > +	struct mtipl2sw_priv *priv =3D dev_id;
-> > +	struct fec_enet_private *fep =3D priv->fep[0];
-> > +	irqreturn_t ret =3D IRQ_NONE;
-> > +	u32 int_events, int_imask; =20
->=20
-> Reverse christmas tree.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drive=
+rs/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index 0462dcc93e53..53b1a9efb3d4 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -261,6 +261,10 @@ static int stmmac_test_loopback_validate(struct sk_buf=
+f *skb,
+        if (!skb)
+                goto out;
+=20
++       skb =3D skb_share_check(skb, GFP_ATOMIC);
++       if (!skb)
++               goto out;
++
+        if (skb_linearize(skb))
+                goto out;
+        if (skb_headlen(skb) < (STMMAC_TEST_PKT_SIZE - ETH_HLEN))
 
-Ok.
+Please comment and advise.
 
->=20
-> > +
-> > +	int_events =3D readl(fec_hwp(fep) + FEC_IEVENT);
-> > +	writel(int_events, fec_hwp(fep) + FEC_IEVENT);
-> > +
-> > +	if ((int_events & FEC_MTIP_DEFAULT_IMASK) && fep->link) {
-> > +		ret =3D IRQ_HANDLED;
-> > +
-> > +		if (napi_schedule_prep(&fep->napi)) {
-> > +			/* Disable RX interrupts */
-> > +			int_imask =3D readl(fec_hwp(fep) +
-> > FEC_IMASK);
-> > +			int_imask &=3D ~FEC_MTIP_ENET_RXF;
-> > +			writel(int_imask, fec_hwp(fep) +
-> > FEC_IMASK);
-> > +			__napi_schedule(&fep->napi);
-> > +		}
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int mtipl2_parse_of(struct mtipl2sw_priv *priv, struct
-> > device_node *np) +{
-> > +	struct device_node *port, *p, *fep_np;
-> > +	struct platform_device *pdev;
-> > +	struct net_device *ndev;
-> > +	unsigned int port_num;
-> > +
-> > +	p =3D of_find_node_by_name(np, "ports");
-> > +
-> > +	for_each_available_child_of_node(p, port) {
-> > +		if (of_property_read_u32(port, "reg", &port_num))
-> > +			continue;
-> > +
-> > +		priv->n_ports =3D port_num;
-> > +
-> > +		fep_np =3D of_parse_phandle(port, "phy-handle", 0); =20
->=20
-> As i said, phy-handle points to a phy. It minimum, you need to call
-> this mac-handle. But that then makes this switch driver very different
-> to every other switch driver.
+Thank you.
 
-Other drivers (DSA for example) use "ethernet" or "link" properties.
-Maybe those can be reused?
+Regards,
+Athari
 
->=20
-> > +		pdev =3D of_find_device_by_node(fep_np);
-> > +		ndev =3D platform_get_drvdata(pdev);
-> > +		priv->fep[port_num - 1] =3D netdev_priv(ndev); =20
->=20
-> What happens when somebody puts reg=3D<42>; in DT?
-
-I do guess that this will break the code.
-
-However, DSA DT descriptions also rely on the exact numbering [1] (via
-e.g. reg property) of the ports. I've followed this paradigm.
-
->=20
-> I would say, your basic structure needs to change, to make it more
-> like other switchdev drivers. You need to replace the two FEC device
-> instances with one switchdev driver.
-
-I've used the cpsw_new.c as the example.
-
-> The switchdev driver will then
-> instantiate the two netdevs for the two external MACs.
-
-Then there is a question - what about eth[01], which already exists?
-
-Shall I close them and then reuse (create as a new one?) eth0 to be
-connected to switch port0 (via DMA0)?
-
-Then, I do need two net_device ports, which would only control PHY
-device and setup ENET-MAC for rmii, as the L2 switch will provide data
-for transmission. Those two ports are connected to switch's port[12]
-and look very similar to ports created by DSA driver (but shall not
-transmit and receive data).
-
-Maybe I've overlooked something, but the rocker switchdev driver
-(rocker_main.c) sets netdev_ops (with .ndo_start_xmit) for ports which
-it creates. The prestera's prestera_sdma_xmit() (in prestera_rxtx.c)
-also setups the SDMA for those.
-
-In i.MX L2 switch case - one just needs to setup DMA0 to send data to
-engress ports. IMHO, those ports just need to handle PHY link (up/down
-10/100 change) and statistics.
-
-> You can
-> hopefully reuse some of the FEC code for that, but i expect you are
-> going to have to refactor the FEC driver and turn part of it into a
-> library, which the switchdev driver can then use.
-
-To be honest - such driver for L2 switch already has been forward
-ported by me [2] to v4.19.
-
-It has the L2 switch enabled after the boot and there is no way to
-disable it.
-
-When you look on the code - it is a copy-paste of the FEC driver, with
-some necessary adjustments.=20
-
-The FEC driver itself is large and used by almost _ALL_ i.MX SoCs.
-Turning it into library will move the already working code around. I
-wanted to avoid it.
-
-The idea behind this patch series is as follows (to offload bridging to
-MTIP L2 switch IP block):
--------------------------
-1. When bridge is created disable eth0 and eth1 (fec_close)
-
-2. Set a flag for fec driver, so DMA descriptors registers and ones to
-initiate transfer are adjusted for DMA0 (eth0) device. Also L2 switch
-IP block has different bits positions for interrupts.
-
-3. DMA1 - which with normal setup corresponds to eth1 - is not used.
-
-4. FEC driver also monitors PHY changes (link up/down speed change
-10/100) (for both eth0, eth1).
-
-5. When br0 is deleted - the mtip support flag is cleared and FEC
-network interfaces (eth[01]) are opened again (via fec_open).
-
-With above approach many operations are already performed - like
-ENET-MAC setup, buffers allocation, etc.
-To make L2 switch working with this setup we need to re-map 4 registers
-and two interrupt bits in fec_main driver.
-
-I'm just wondering if is it worth to refactor already working driver to
-library, instantiate new interfaces and re-init all the already
-initialized stuff ?
-
-
->=20
-> 	 Andrew
-
-
-Links:
-
-[1] -
-https://elixir.bootlin.com/linux/latest/source/arch/arm/boot/dts/armada-388=
--clearfog.dts#L93
-
-[2] - https://github.com/lmajewski/linux-imx28-l2switch/commits/master
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/PlJN2z9vs/ks/6=T=lKv9SG
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmDTHOAACgkQAR8vZIA0
-zr2qdAgA432VPTX8S8gLTIK2Y+d3E8p6iq5zK2VplriRx0bhoILU5bQoCPE5C4Ww
-vJ5CLv9ixqO/LHwvxzPtqpYBFiApkwPCQFxVzFS4WYSI0mjCWp4A+p52WvPDGJoZ
-mn4zxq3vS/5Y+KvlEpTFLG544UpidZP/bsDpBSXFObR+enL/Bw6wB8I95CXwjyx/
-lTg9xa0aoCt2QI/Tt7ZwiQijWCMsfhvxIqtUXjHtTa2zBeNDQStzw3T/nzsv4mmg
-gIE4IXIY7C7JBS+rXx6tTLPkbyPDP2pCxM5AFzeUKQz9pubePv+w276pFJ7F83CD
-RmNLzt8nq6N+hW5dyM6I08q/iUit0w==
-=zz1z
------END PGP SIGNATURE-----
-
---Sig_/PlJN2z9vs/ks/6=T=lKv9SG--
