@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F16493B154F
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 10:01:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 174243B156A
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 10:09:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230222AbhFWIEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 04:04:00 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:44439 "EHLO
+        id S230032AbhFWILP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 04:11:15 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:52051 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230290AbhFWIDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 04:03:41 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id BB54658070C;
-        Wed, 23 Jun 2021 04:01:24 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S229920AbhFWILO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 04:11:14 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 320245805A2;
+        Wed, 23 Jun 2021 04:08:57 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 23 Jun 2021 04:01:24 -0400
+  by compute3.internal (MEProxy); Wed, 23 Jun 2021 04:08:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=23wsahIQosPUvOapAIZyoWqr8C8IjN+CjOMSeRFXJvA=; b=qJPdedD5
-        VyB8X9jtozadJ7GZk42fBhh9eJngIsPyfz7XvYA3l1MZOE/3XCc8wMoGNkfnZKYV
-        aSpq7Rw2RF/ia7mK/C/jW8bFbnY2aCzpjD6GOUpaKdRphPSBoD0AXUj02KpHaqET
-        Ih9+Vc0rbiZQU5kNyEMdiPE/BFzPpY0xKH63Jug2tOtu0moTpjDmpv8GO0DQ5s0t
-        7xE6PQNaKta/hf8bEtcC9QeiXkc6HePVKmqq34R/XxeDlQB87tlTWhe+ZfjzySL3
-        36S63BekcE48trDbiPSIYDCzwFAVe1vA1tbBuZwwyMVn03jLipFV2/0o8opNPDF+
-        MKSEduVseUu06Q==
-X-ME-Sender: <xms:VOrSYAxBTWxVgam7MmdPmDaw-TceAG7wLmY55HJekJRU1-jr4v_vpQ>
-    <xme:VOrSYESWWyzrVOZU5wFZPmvyNDNZj-a4ieR3FPQ9fngdRcGnp09bEfDkTag4rFoR9
-    ta7bFx2ohjHNm0>
-X-ME-Received: <xmr:VOrSYCVrEKJDTFC7BMXrVX3TejhnxtW6SW4v-YZYGVd9t309f-Z_L-j_FcWX9VkLYvMym789klOBt3XZNGz7sJJEFjbHPahorM7Fsi0Q-68BMg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegvddguddukecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
-    ekhefgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedtnecu
-    rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:VOrSYOhIQOKSeFuZyQwUGPdwwLmBFBqPvPt9V-UWC46z_Dzcl6RfLg>
-    <xmx:VOrSYCA_A7mexreA9GUO64jdYxktbH9Jv7_pSeVggV4tMJYuyDrmog>
-    <xmx:VOrSYPI8fyMwS8j7VRGMZ5FyGgwKDfTjN6Es2lFhg_uIZd_rVlqv9A>
-    <xmx:VOrSYO1mdOveCZ1ARi23-rEm24cRYxIz9h7pSRUWyxOMlfbqCf7c7A>
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=m98Jzuc367jxXvbeE
+        hg9koiEhwLhRzYcHLurko353sg=; b=JRo/7vCUsUiIezXzVmgIH4QikiBU6KeDh
+        NOmD5ac7EfbdgTmlnMKkV0TjbzcPVN7n5Wyx8ok+aWKo5Nr/XVPKkLTMItwB3yjk
+        /Any05X9eFs0yDjY2dJnDVeWHXqGxV/lv6Zzmy7hJdDhF6f/adqk87ekQQroAWaH
+        VV4dMODaES433CcBS2v9h0ouUdzqpovfTUX6PDDhrhs6iQRRli+/nCgKPRxTHYKP
+        RCJZmHJkPAu0F4NiZruBPAmhCUId+HhX9suOVAlXhWaT7KFrwdwib4N/oI/A9tTb
+        O1faYd5YI2NUhOSDsgATvIa8ssRz3mWtJdDfmONsmN5hS5GX1k3gg==
+X-ME-Sender: <xms:GOzSYPr_l-8mOTZxuPB6Xonz7KHtB-fHTK96kbKozL_HNr-2TAwUrw>
+    <xme:GOzSYJq1IKK0V2OTT7mCGCOYaT-1LQwzP3JY8Jicj4LgeNn5fs73lT87sRWId3_M2
+    0Aro_iL3e8usJY>
+X-ME-Received: <xmr:GOzSYMMGblgx2s_kgrvT-602Pg5xK3yUN9q-YsrnWh0WpK26-3zgWvEfyu-crJt0GJz4j15th8AMY0d6l24N1mDcLCmXI-EbnpI3a05HXknZMQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegfedgtddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepleeuffeukeejteeugfdvgfdtheefgfejud
+    ethfdtveeujedvkefguddvudfhjeefnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:GOzSYC5_kxtpx9Bvgrm9wFYZu4en5OO8nS9yp6VVG1o6WHGrnybHVQ>
+    <xmx:GOzSYO4-vKAcW1WHfR-W9uf3Op1M2Z5-DGd9wIE2JgVkRPuVYbvKyA>
+    <xmx:GOzSYKg7_3hj8fZGivX3GEDH5ffbEXZSHOX6XScENE3EKIlTYmbk6A>
+    <xmx:GezSYAsmCLjUR8o-XqDRt7NKvAqSR2JZ7D3rz9JvScohMVz8Hft3og>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 23 Jun 2021 04:01:22 -0400 (EDT)
+ 23 Jun 2021 04:08:53 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         andrew@lunn.ch, vladyslavt@nvidia.com, moshe@nvidia.com,
         vadimp@nvidia.com, mkubecek@suse.cz, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 4/4] mlxsw: core: Add support for module EEPROM write by page
-Date:   Wed, 23 Jun 2021 10:59:25 +0300
-Message-Id: <20210623075925.2610908-5-idosch@idosch.org>
+Subject: [RFC PATCH ethtool-next 0/2] ethtool: Add ability to write to transceiver module EEPROMs
+Date:   Wed, 23 Jun 2021 11:08:23 +0300
+Message-Id: <20210623080825.2612270-1-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210623075925.2610908-1-idosch@idosch.org>
-References: <20210623075925.2610908-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -64,168 +62,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Add support for ethtool_ops::set_module_eeprom_by_page() which allows
-user space to write to transceiver module EEPROM based on passed
-parameters.
+Patch #1 updates the UAPI headers.
 
-The I2C address is not validated in order to avoid module-specific code.
-In case of wrong address, error will be returned from device's firmware.
+Patch #2 adds the actual implementation. See the commit message for
+example output.
 
-Tested by writing to page 3 (User EEPROM) on a QSFP-DD module:
+Patches are on top of [1] which are currently under review.
 
- # ethtool -m swp11 offset 0x80 length 3 page 3 bank 0 i2c 0x50
- Offset          Values
- ------          ------
- 0x0080:         00 00 00
- # ethtool -M swp11 offset 0x80 page 3 bank 0 i2c 0x50 value 0x44
- # ethtool -M swp11 offset 0x81 page 3 bank 0 i2c 0x50 value 0x41
- # ethtool -M swp11 offset 0x82 page 3 bank 0 i2c 0x50 value 0x44
- # ethtool -m swp11 offset 0x80 length 3 page 3 bank 0 i2c 0x50
- Offset          Values
- ------          ------
- 0x0080:         44 41 44
+Refer to [2] for more background information.
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- .../net/ethernet/mellanox/mlxsw/core_env.c    | 44 +++++++++++++++++++
- .../net/ethernet/mellanox/mlxsw/core_env.h    |  5 +++
- drivers/net/ethernet/mellanox/mlxsw/minimal.c | 13 ++++++
- .../mellanox/mlxsw/spectrum_ethtool.c         | 14 ++++++
- 4 files changed, 76 insertions(+)
+[1] https://patchwork.kernel.org/project/netdevbpf/cover/1623949504-51291-1-git-send-email-moshe@nvidia.com/
+[2] https://patchwork.kernel.org/project/netdevbpf/cover/20210623075925.2610908-1-idosch@idosch.org/
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_env.c b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-index 3713c45cfa1e..4cb69eddbd1e 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-@@ -389,6 +389,50 @@ mlxsw_env_get_module_eeprom_by_page(struct mlxsw_core *mlxsw_core, u8 module,
- }
- EXPORT_SYMBOL(mlxsw_env_get_module_eeprom_by_page);
- 
-+int
-+mlxsw_env_set_module_eeprom_by_page(struct mlxsw_core *mlxsw_core, u8 module,
-+				    const struct ethtool_module_eeprom *page,
-+				    struct netlink_ext_ack *extack)
-+{
-+	u32 bytes_written = 0;
-+	u16 device_addr;
-+
-+	/* Offset cannot be larger than 2 * ETH_MODULE_EEPROM_PAGE_LEN */
-+	device_addr = page->offset;
-+
-+	while (bytes_written < page->length) {
-+		char eeprom_tmp[MLXSW_REG_MCIA_EEPROM_SIZE] = {};
-+		char mcia_pl[MLXSW_REG_MCIA_LEN];
-+		u8 size;
-+		int err;
-+
-+		size = min_t(u8, page->length - bytes_written,
-+			     MLXSW_REG_MCIA_EEPROM_SIZE);
-+
-+		mlxsw_reg_mcia_pack(mcia_pl, module, 0, page->page,
-+				    device_addr + bytes_written, size,
-+				    page->i2c_address);
-+		mlxsw_reg_mcia_bank_number_set(mcia_pl, page->bank);
-+		memcpy(eeprom_tmp, page->data + bytes_written, size);
-+		mlxsw_reg_mcia_eeprom_memcpy_to(mcia_pl, eeprom_tmp);
-+
-+		err = mlxsw_reg_write(mlxsw_core, MLXSW_REG(mcia), mcia_pl);
-+		if (err) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to access module's EEPROM");
-+			return err;
-+		}
-+
-+		err = mlxsw_env_mcia_status_process(mcia_pl, extack);
-+		if (err)
-+			return err;
-+
-+		bytes_written += size;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(mlxsw_env_set_module_eeprom_by_page);
-+
- static int mlxsw_env_module_has_temp_sensor(struct mlxsw_core *mlxsw_core,
- 					    u8 module,
- 					    bool *p_has_temp_sensor)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_env.h b/drivers/net/ethernet/mellanox/mlxsw/core_env.h
-index 0bf5bd0f8a7e..e07f48ffbf2b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_env.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_env.h
-@@ -24,6 +24,11 @@ mlxsw_env_get_module_eeprom_by_page(struct mlxsw_core *mlxsw_core, u8 module,
- 				    const struct ethtool_module_eeprom *page,
- 				    struct netlink_ext_ack *extack);
- 
-+int
-+mlxsw_env_set_module_eeprom_by_page(struct mlxsw_core *mlxsw_core, u8 module,
-+				    const struct ethtool_module_eeprom *page,
-+				    struct netlink_ext_ack *extack);
-+
- int
- mlxsw_env_module_overheat_counter_get(struct mlxsw_core *mlxsw_core, u8 module,
- 				      u64 *p_counter);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
-index d9d56c44e994..b795520566bb 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
-@@ -124,11 +124,24 @@ mlxsw_m_get_module_eeprom_by_page(struct net_device *netdev,
- 						   page, extack);
- }
- 
-+static int
-+mlxsw_m_set_module_eeprom_by_page(struct net_device *netdev,
-+				  const struct ethtool_module_eeprom *page,
-+				  struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_m_port *mlxsw_m_port = netdev_priv(netdev);
-+	struct mlxsw_core *core = mlxsw_m_port->mlxsw_m->core;
-+
-+	return mlxsw_env_set_module_eeprom_by_page(core, mlxsw_m_port->module,
-+						   page, extack);
-+}
-+
- static const struct ethtool_ops mlxsw_m_port_ethtool_ops = {
- 	.get_drvinfo		= mlxsw_m_module_get_drvinfo,
- 	.get_module_info	= mlxsw_m_get_module_info,
- 	.get_module_eeprom	= mlxsw_m_get_module_eeprom,
- 	.get_module_eeprom_by_page = mlxsw_m_get_module_eeprom_by_page,
-+	.set_module_eeprom_by_page = mlxsw_m_set_module_eeprom_by_page,
- };
- 
- static int
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-index 267590a0eee7..2e7f57a6fbb2 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-@@ -1063,6 +1063,19 @@ mlxsw_sp_get_module_eeprom_by_page(struct net_device *dev,
- 						   extack);
- }
- 
-+static int
-+mlxsw_sp_set_module_eeprom_by_page(struct net_device *dev,
-+				   const struct ethtool_module_eeprom *page,
-+				   struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
-+	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
-+	u8 module = mlxsw_sp_port->mapping.module;
-+
-+	return mlxsw_env_set_module_eeprom_by_page(mlxsw_sp->core, module, page,
-+						   extack);
-+}
-+
- static int
- mlxsw_sp_get_ts_info(struct net_device *netdev, struct ethtool_ts_info *info)
- {
-@@ -1213,6 +1226,7 @@ const struct ethtool_ops mlxsw_sp_port_ethtool_ops = {
- 	.get_module_info		= mlxsw_sp_get_module_info,
- 	.get_module_eeprom		= mlxsw_sp_get_module_eeprom,
- 	.get_module_eeprom_by_page	= mlxsw_sp_get_module_eeprom_by_page,
-+	.set_module_eeprom_by_page	= mlxsw_sp_set_module_eeprom_by_page,
- 	.get_ts_info			= mlxsw_sp_get_ts_info,
- 	.get_eth_phy_stats		= mlxsw_sp_get_eth_phy_stats,
- 	.get_eth_mac_stats		= mlxsw_sp_get_eth_mac_stats,
+Ido Schimmel (2):
+  Update UAPI header copies
+  ethtool: Add ability to write to transceiver module EEPROM
+
+ ethtool.8.in                 |  29 ++++++++
+ ethtool.c                    |  10 +++
+ netlink/desc-ethtool.c       |   2 +
+ netlink/extapi.h             |   2 +
+ netlink/module-eeprom.c      | 125 ++++++++++++++++++++++++++++++++++-
+ netlink/monitor.c            |   4 ++
+ netlink/netlink.h            |   1 +
+ uapi/linux/ethtool.h         |   4 +-
+ uapi/linux/ethtool_netlink.h |   4 +-
+ uapi/linux/if_link.h         |   9 +++
+ uapi/linux/netlink.h         |   5 +-
+ 11 files changed, 188 insertions(+), 7 deletions(-)
+
 -- 
 2.31.1
 
