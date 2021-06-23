@@ -2,184 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D32B3B1BA8
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 15:55:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DBEE3B1BAA
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 15:55:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231145AbhFWN5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 09:57:23 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:38949 "EHLO
+        id S231157AbhFWN5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 09:57:33 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:55531 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230334AbhFWN5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 09:57:23 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3A56F5C0103;
-        Wed, 23 Jun 2021 09:55:05 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S230263AbhFWN5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 09:57:31 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id C68F95C0081;
+        Wed, 23 Jun 2021 09:55:13 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 23 Jun 2021 09:55:05 -0400
+  by compute5.internal (MEProxy); Wed, 23 Jun 2021 09:55:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=vtmGXF2gOg0tenqHe
-        +3xsWB/EUrU/lgdMIbnAB9fmQ8=; b=iwVPWyMG+LNHewDIK6Rx3fGc5ygfrj6zn
-        Unaw9MHZWNhXz7vipKcmMDGb7NajawvlVXHyXGILtNbhs/ncoicwIHvNmQB00oBi
-        qr2WDMTwP+FsdpX961V6rUddATyKqG+rUwbwqINoNZPwJ61uCjhXBUxOYEyLk66S
-        IFNs/GIn0qQrxwuQNJxDAPECRTM8Wm2hEugClddaq7KqbVHMXMmWq2nhZPPuEcF2
-        QxCdsuYH59phBzFpT3yRy1afu+dGZbIZMeYIx1C2EUG/XeICJ5/FyYULAZYP6BNU
-        X+nSK/poTHEceyTF4f4hlMstfRYxm3iDLLVDJHKcYOoW21HOhSm2g==
-X-ME-Sender: <xms:OD3TYDkJOWSCDUrtBg2_X4YSkVSyIarCzVA07LYPLD2Gj2QfVHw2yA>
-    <xme:OD3TYG0_FCH7pBOX-PLI0yd2_A10rwVzhS0yfExsFyeybPehhIcX0mSBbKehF3wtW
-    l0eLWzddNIVIcdT30k>
-X-ME-Received: <xmr:OD3TYJpHdzwf1dd3Gb2qQ_GOMEAt6j3lk0eAm3enwF2xf38-tI5j7YVhcHTiuzT8SerhMg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegfedgjeduucetufdoteggodetrfdotf
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=gUWzsfhi8Ky7FahDiCmtxCzmrxQlRChjZMzLJyOh0lY=; b=jYUMuGJ8
+        QleVRUcutSi3BPauS1EaK/m4bkNtG+N7OTUaJwvKwumhtWvBIVzF46XKSv1Pl8Vp
+        c+U0sUbKVV25DOt/BwunAV27ZQptJ33HREJ8fJYP5fUQ9seyx1EJIsZU4iRn35GV
+        f39h/LkIs9UST+bW96C0UvjspwgrmJS4x3MZc3iMYTdDYtlqPo1OA407ja8VMo6M
+        9U23rnQg2kN+MOoHYDQgjjZ9+PFfSZNcibZx0F5MzxcWW/rFtJ6QYqcJGvXS5PxA
+        5yd1SJkqwxtNRBtt9RpmWVHCu7dIBvwgae0QU7tOnFj4ilvUU36QGzc2wxQVSYZ8
+        imvxLC/38jz3Uw==
+X-ME-Sender: <xms:QT3TYMOfU_a83oTdP32yPoWm93j4Xi7Rc7cHz20alUpIEWB0fxkHOg>
+    <xme:QT3TYC9U3qwocZjrrQf0sRJ7Y-WwQzyQ3YzlwiyLeRfzY7OhJIXM2k2a3jXIvTvbb
+    jCMP_aWp3YFtv2xFWA>
+X-ME-Received: <xmr:QT3TYDRqAK_CNgn4Lz5mvypEzpq4TQ-2CRP6pvtDTxvDX7NE55cfbdVJs7mHxz2LsM78CQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegfedgjedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepofgrrhhthihnrghsucfruhhmphhuthhishcuoehmsehlrghmsggu
-    rgdrlhhtqeenucggtffrrghtthgvrhhnpedvvdeguedvheejgeeutdeuffehfeffhfdtge
-    eujeekudduiefggeekgeejfffgheenucffohhmrghinhepkhekshdrihhonecuvehluhhs
-    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmheslhgrmhgsuggrrd
-    hlth
-X-ME-Proxy: <xmx:OD3TYLlE-bvYc5KX50DrN7UnkBDJm_35c_017q-JJgq1kH_ImnvhoQ>
-    <xmx:OD3TYB09sAE5PZSgdkUELd1rmCMxej-yV3fEV6ublysFPXjH3UT13w>
-    <xmx:OD3TYKuvlAyHGjlgOwBhO65nySv6mvVDmUNqkUGi0y3oCD7V1tYfIg>
-    <xmx:OT3TYKw_pXaSkhEC4E8rsmlqGEbqrItkzK0uWVXaCYXG-8BfZ9HTvw>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepofgrrhhthihnrghsucfruhhmphhuthhishcuoehmsehlrghm
+    sggurgdrlhhtqeenucggtffrrghtthgvrhhnpedtffffgeffjeeiheeuvdfhkeejvefhie
+    dufeekffekueeuhfelvdetjeeiteduvdenucevlhhushhtvghrufhiiigvpedtnecurfgr
+    rhgrmhepmhgrihhlfhhrohhmpehmsehlrghmsggurgdrlhht
+X-ME-Proxy: <xmx:QT3TYEtcayeLoY2A_altQrTL8R4Q0601u0nQoSmZhziaAnpgE-xDIg>
+    <xmx:QT3TYEdyCZlaV37KSUu4md7vlyBmbVdNia-zsnaIxbB5dRKaZmoubA>
+    <xmx:QT3TYI0ODBIng5Qb0ZIANqkZdpM0Qhc-2l54m3XE_sN-IJFGPbM5_g>
+    <xmx:QT3TYM7YoGPy04MhSA6TAB_jJ4mjNUR4hcVSEfgilqofnisyQni94g>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 23 Jun 2021 09:55:03 -0400 (EDT)
+ 23 Jun 2021 09:55:12 -0400 (EDT)
 From:   Martynas Pumputis <m@lambda.lt>
 To:     netdev@vger.kernel.org
 Cc:     edumazet@google.com, daniel@iogearbox.net, ast@kernel.org,
         m@lambda.lt, Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH net-next v2 1/2] net: retrieve netns cookie via getsocketopt
-Date:   Wed, 23 Jun 2021 15:56:45 +0200
-Message-Id: <20210623135646.1632083-1-m@lambda.lt>
+Subject: [PATCH net-next v2 2/2] tools/testing: add a selftest for SO_NETNS_COOKIE
+Date:   Wed, 23 Jun 2021 15:56:46 +0200
+Message-Id: <20210623135646.1632083-2-m@lambda.lt>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210623135646.1632083-1-m@lambda.lt>
+References: <20210623135646.1632083-1-m@lambda.lt>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's getting more common to run nested container environments for
-testing cloud software. One of such examples is Kind [1] which runs a
-Kubernetes cluster in Docker containers on a single host. Each container
-acts as a Kubernetes node, and thus can run any Pod (aka container)
-inside the former. This approach simplifies testing a lot, as it
-eliminates complicated VM setups.
+From: Lorenz Bauer <lmb@cloudflare.com>
 
-Unfortunately, such a setup breaks some functionality when cgroupv2 BPF
-programs are used for load-balancing. The load-balancer BPF program
-needs to detect whether a request originates from the host netns or a
-container netns in order to allow some access, e.g. to a service via a
-loopback IP address. Typically, the programs detect this by comparing
-netns cookies with the one of the init ns via a call to
-bpf_get_netns_cookie(NULL). However, in nested environments the latter
-cannot be used given the Kubernetes node's netns is outside the init ns.
-To fix this, we need to pass the Kubernetes node netns cookie to the
-program in a different way: by extending getsockopt() with a
-SO_NETNS_COOKIE option, the orchestrator which runs in the Kubernetes
-node netns can retrieve the cookie and pass it to the program instead.
-
-Thus, this is following up on Eric's commit 3d368ab87cf6 ("net:
-initialize net->net_cookie at netns setup") to allow retrieval via
-SO_NETNS_COOKIE.  This is also in line in how we retrieve socket cookie
-via SO_COOKIE.
-
-  [1] https://kind.sigs.k8s.io/
+Make sure that SO_NETNS_COOKIE returns a non-zero value, and
+that sockets from different namespaces have a distinct cookie
+value.
 
 Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Martynas Pumputis <m@lambda.lt>
-Cc: Eric Dumazet <edumazet@google.com>
 ---
- arch/alpha/include/uapi/asm/socket.h  | 2 ++
- arch/mips/include/uapi/asm/socket.h   | 2 ++
- arch/parisc/include/uapi/asm/socket.h | 2 ++
- arch/sparc/include/uapi/asm/socket.h  | 2 ++
- include/uapi/asm-generic/socket.h     | 2 ++
- net/core/sock.c                       | 7 +++++++
- 6 files changed, 17 insertions(+)
+ tools/testing/selftests/net/.gitignore        |  1 +
+ tools/testing/selftests/net/Makefile          |  2 +-
+ tools/testing/selftests/net/config            |  1 +
+ tools/testing/selftests/net/so_netns_cookie.c | 61 +++++++++++++++++++
+ 4 files changed, 64 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/net/so_netns_cookie.c
 
-diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
-index 57420356ce4c..6b3daba60987 100644
---- a/arch/alpha/include/uapi/asm/socket.h
-+++ b/arch/alpha/include/uapi/asm/socket.h
-@@ -127,6 +127,8 @@
- #define SO_PREFER_BUSY_POLL	69
- #define SO_BUSY_POLL_BUDGET	70
- 
-+#define SO_NETNS_COOKIE		71
+diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
+index 61ae899cfc17..19deb9cdf72f 100644
+--- a/tools/testing/selftests/net/.gitignore
++++ b/tools/testing/selftests/net/.gitignore
+@@ -30,3 +30,4 @@ hwtstamp_config
+ rxtimestamp
+ timestamping
+ txtimestamp
++so_netns_cookie
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 3915bb7bfc39..79c9eb0034d5 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -30,7 +30,7 @@ TEST_GEN_FILES =  socket nettest
+ TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
+ TEST_GEN_FILES += tcp_mmap tcp_inq psock_snd txring_overwrite
+ TEST_GEN_FILES += udpgso udpgso_bench_tx udpgso_bench_rx ip_defrag
+-TEST_GEN_FILES += so_txtime ipv6_flowlabel ipv6_flowlabel_mgr
++TEST_GEN_FILES += so_txtime ipv6_flowlabel ipv6_flowlabel_mgr so_netns_cookie
+ TEST_GEN_FILES += tcp_fastopen_backup_key
+ TEST_GEN_FILES += fin_ack_lat
+ TEST_GEN_FILES += reuseaddr_ports_exhausted
+diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
+index 614d5477365a..6f905b53904f 100644
+--- a/tools/testing/selftests/net/config
++++ b/tools/testing/selftests/net/config
+@@ -1,4 +1,5 @@
+ CONFIG_USER_NS=y
++CONFIG_NET_NS=y
+ CONFIG_BPF_SYSCALL=y
+ CONFIG_TEST_BPF=m
+ CONFIG_NUMA=y
+diff --git a/tools/testing/selftests/net/so_netns_cookie.c b/tools/testing/selftests/net/so_netns_cookie.c
+new file mode 100644
+index 000000000000..b39e87e967cd
+--- /dev/null
++++ b/tools/testing/selftests/net/so_netns_cookie.c
+@@ -0,0 +1,61 @@
++// SPDX-License-Identifier: GPL-2.0
++#define _GNU_SOURCE
++#include <sched.h>
++#include <unistd.h>
++#include <stdio.h>
++#include <errno.h>
++#include <string.h>
++#include <stdlib.h>
++#include <stdint.h>
++#include <sys/types.h>
++#include <sys/socket.h>
 +
- #if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64
-diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
-index 2d949969313b..cdf404a831b2 100644
---- a/arch/mips/include/uapi/asm/socket.h
-+++ b/arch/mips/include/uapi/asm/socket.h
-@@ -138,6 +138,8 @@
- #define SO_PREFER_BUSY_POLL	69
- #define SO_BUSY_POLL_BUDGET	70
- 
-+#define SO_NETNS_COOKIE		71
++#ifndef SO_NETNS_COOKIE
++#define SO_NETNS_COOKIE 71
++#endif
 +
- #if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64
-diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
-index f60904329bbc..5b5351cdcb33 100644
---- a/arch/parisc/include/uapi/asm/socket.h
-+++ b/arch/parisc/include/uapi/asm/socket.h
-@@ -119,6 +119,8 @@
- #define SO_PREFER_BUSY_POLL	0x4043
- #define SO_BUSY_POLL_BUDGET	0x4044
- 
-+#define SO_NETNS_COOKIE		0x4045
++#define pr_err(fmt, ...) \
++	({ \
++		fprintf(stderr, "%s:%d:" fmt ": %m\n", \
++			__func__, __LINE__, ##__VA_ARGS__); \
++		1; \
++	})
 +
- #if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64
-diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
-index 848a22fbac20..92675dc380fa 100644
---- a/arch/sparc/include/uapi/asm/socket.h
-+++ b/arch/sparc/include/uapi/asm/socket.h
-@@ -120,6 +120,8 @@
- #define SO_PREFER_BUSY_POLL	 0x0048
- #define SO_BUSY_POLL_BUDGET	 0x0049
- 
-+#define SO_NETNS_COOKIE          0x0050
++int main(int argc, char *argvp[])
++{
++	uint64_t cookie1, cookie2;
++	socklen_t vallen;
++	int sock1, sock2;
 +
- #if !defined(__KERNEL__)
- 
- 
-diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
-index 4dcd13d097a9..d588c244ec2f 100644
---- a/include/uapi/asm-generic/socket.h
-+++ b/include/uapi/asm-generic/socket.h
-@@ -122,6 +122,8 @@
- #define SO_PREFER_BUSY_POLL	69
- #define SO_BUSY_POLL_BUDGET	70
- 
-+#define SO_NETNS_COOKIE		71
++	sock1 = socket(AF_INET, SOCK_STREAM, 0);
++	if (sock1 < 0)
++		return pr_err("Unable to create TCP socket");
 +
- #if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
-diff --git a/net/core/sock.c b/net/core/sock.c
-index ddfa88082a2b..a2337b37eba6 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1635,6 +1635,13 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
- 		v.val = sk->sk_bound_dev_if;
- 		break;
- 
-+	case SO_NETNS_COOKIE:
-+		lv = sizeof(u64);
-+		if (len != lv)
-+			return -EINVAL;
-+		v.val64 = sock_net(sk)->net_cookie;
-+		break;
++	vallen = sizeof(cookie1);
++	if (getsockopt(sock1, SOL_SOCKET, SO_NETNS_COOKIE, &cookie1, &vallen) != 0)
++		return pr_err("getsockopt(SOL_SOCKET, SO_NETNS_COOKIE)");
 +
- 	default:
- 		/* We implement the SO_SNDLOWAT etc to not be settable
- 		 * (1003.1g 7).
++	if (!cookie1)
++		return pr_err("SO_NETNS_COOKIE returned zero cookie");
++
++	if (unshare(CLONE_NEWNET))
++		return pr_err("unshare");
++
++	sock2 = socket(AF_INET, SOCK_STREAM, 0);
++	if (sock2 < 0)
++		return pr_err("Unable to create TCP socket");
++
++	vallen = sizeof(cookie2);
++	if (getsockopt(sock2, SOL_SOCKET, SO_NETNS_COOKIE, &cookie2, &vallen) != 0)
++		return pr_err("getsockopt(SOL_SOCKET, SO_NETNS_COOKIE)");
++
++	if (!cookie2)
++		return pr_err("SO_NETNS_COOKIE returned zero cookie");
++
++	if (cookie1 == cookie2)
++		return pr_err("SO_NETNS_COOKIE returned identical cookies for distinct ns");
++
++	close(sock1);
++	close(sock2);
++	return 0;
++}
 -- 
 2.32.0
 
