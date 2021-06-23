@@ -2,115 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77C493B23AC
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 00:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE4143B23AD
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 00:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbhFWWtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 18:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbhFWWtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 18:49:16 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB3AC061574
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 15:46:58 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id c22so3433451qtn.1
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 15:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=baLWTJJOD9KKn4tbADk0l8SSVLIOO1E6adwsQz9cQtk=;
-        b=2P0QI+RvSARusDodtiS4LFDZvpm98ftfqZzlAvFmDeDEsWTR/41vPw2g5Li9BurLDS
-         KwtT+bk42gIoYWMCp6i2fLUoA7jI5XzJ0AGqnE/GtiO6/pXG+cxm0cCSXaa2xqH5sJkW
-         AzeSidNkqXfR4TdG0IL0yPw3nX/RyN7EjBZxCifIUKVJTFQeE+3tPkq9BBau39uHPrqp
-         tNQ93P1uB0t6SJjoMcFYIZxxTtZlmEJzXl2NUlZDA5nO0XiAwULd5DuKO2SXdOqWYk1v
-         rADERDLB7AWdggMHeLv6rediDUNjHjVoNQ13YpBJLtVJrYHiRIinfWB+4U0Zk2YhB4WO
-         cGvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=baLWTJJOD9KKn4tbADk0l8SSVLIOO1E6adwsQz9cQtk=;
-        b=uHl+uZ96qJvmZ+A2s/Hxt/w5ym0bqNwwAe2K47LsDey4eTmnHNYBUfhJRKxibUsR09
-         MQXhTtxKaAIIhdd8Ipv2OXogM+SIkOlGDKyHVHu+Re2nSwr0gt2HuJvkvItp2lBHHLZG
-         6/8YJdyYRvFAwRNtTyCe+duqUjUR7YZedNS9RGdD3nA4f8PE988cXRqdD0e6QbC7iazW
-         fcgTFNFTxM4CNOHXyAkTSptIj1LcCP+z64PNDn7TQsNaIrfqvhtFjEuKV4YbJkGS36MC
-         J6NfkJ7PbiJNGWKE+o6dNqqF3igl9uPxQ08+ZoqkPM9n0fxhaCzHafoj60y9tMpnhaqT
-         NSAQ==
-X-Gm-Message-State: AOAM531BPxJHLc2Gsjbz09azgJVTzYsPIyjm1bvmKPg2jvKJ2bnlSSrm
-        vPH9jrrdh5qoHvmrctdZ1s+KXJp4GDA0TQulg6OM2Q==
-X-Google-Smtp-Source: ABdhPJyDaVuIlMDJXtFMt64IfujIqi5BMZ+bhCdX3D/i+ZNuIXsAQQjFbyaLX2q5i1c7no1NEFTYdQt0F/BZmf/DLJc=
-X-Received: by 2002:ac8:57d2:: with SMTP id w18mr2192305qta.306.1624488417307;
- Wed, 23 Jun 2021 15:46:57 -0700 (PDT)
+        id S229759AbhFWWwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 18:52:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38142 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229688AbhFWWwV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 18:52:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 8B5926044F;
+        Wed, 23 Jun 2021 22:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624488603;
+        bh=ibs3CY5e94B0KKNSU4Td8H8DmHFlEdGp5UFEB2opioU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TZ+d5bIAWNnu7h8yk6EpuEA6xPR7Ew6us9uaHuolF7cF2zKRFvhNshkNWj6JJiy0u
+         T68oPmitv+Ek7nVUJ8qeYbxQ1y6JauJrl8CUEyjq4pZx1Fs5vpMV253u3mbh2dEOut
+         E6/53Z58nG9CwBfDwhIS2OyEMxNwtFUq59IQmsIgeaydnXGoIcJT4F+LBcBRDHcmbo
+         nsURTdxOZBBgjz9UsKQv500/vnWLyiG+JR4isE57qvS/HQBkD05z1B5NvVrJIY5asO
+         nwE4KqTASQ7wnbn83JRNEq3dJRgaH5d+TYDmuLLJNdfzDrv+YSewvGC2e2mdmvnNUj
+         LK4BX6ytjOx8w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 798B660A2F;
+        Wed, 23 Jun 2021 22:50:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210624082911.5d013e8c@canb.auug.org.au>
-In-Reply-To: <20210624082911.5d013e8c@canb.auug.org.au>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 24 Jun 2021 00:46:48 +0200
-Message-ID: <CAPv3WKfiL+sR+iK_BjGKDhtNgjoxKEPv49bU1X9_7+v+ytdR1w@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3] Fixes for devlink rate objects API
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162448860349.14508.16122130005796050829.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Jun 2021 22:50:03 +0000
+References: <1624455795-5160-1-git-send-email-dlinkin@nvidia.com>
+In-Reply-To: <1624455795-5160-1-git-send-email-dlinkin@nvidia.com>
+To:     Dmytro Linkin <dlinkin@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, parav@nvidia.com, vladbu@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
+Hello:
 
-czw., 24 cze 2021 o 00:29 Stephen Rothwell <sfr@canb.auug.org.au> napisa=C5=
-=82(a):
->
-> Hi all,
->
-> Today's linux-next build (x86_64 modules_install) failed like this:
->
-> depmod: ../tools/depmod.c:1792: depmod_report_cycles_from_root: Assertion=
- `is < stack_size' failed.
->
-> Caused by commit
->
-> 62a6ef6a996f ("net: mdiobus: Introduce fwnode_mdbiobus_register()")
->
-> (I bisected to there and tested the commit before.)
->
-> The actual build is an x86_64 allmodconfig, followed by a
-> modules_install.  This happens in my cross build environment as well as
-> a native build.
->
-> $ gcc --version
-> gcc (Debian 10.2.1-6) 10.2.1 20210110
-> $ ld --version
-> GNU ld (GNU Binutils for Debian) 2.35.2
-> $ /sbin/depmod --version
-> kmod version 28
-> -ZSTD +XZ -ZLIB +LIBCRYPTO -EXPERIMENTAL
->
-> I have no idea why that commit should caused this failure.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Thank you for letting us know. Not sure if related, but I just found
-out that this code won't compile for the !CONFIG_FWNODE_MDIO. Below
-one-liner fixes it:
+On Wed, 23 Jun 2021 16:43:12 +0300 you wrote:
+> From: Dmytro Linkin <dlinkin@nvidia.com>
+> 
+> Patch #1 fixes not decreased refcount of parent node for destroyed leaf
+> object.
+> 
+> Patch #2 fixes incorect eswitch mode check.
+> 
+> [...]
 
---- a/include/linux/fwnode_mdio.h
-+++ b/include/linux/fwnode_mdio.h
-@@ -40,7 +40,7 @@ static inline int fwnode_mdiobus_register(struct mii_bus =
-*bus,
-         * This way, we don't have to keep compat bits around in drivers.
-         */
+Here is the summary with links:
+  - [net-next,1/3] devlink: Decrease refcnt of parent rate object on leaf destroy
+    https://git.kernel.org/netdev/net-next/c/1321ed5e7648
+  - [net-next,2/3] devlink: Remove eswitch mode check for mode set call
+    https://git.kernel.org/netdev/net-next/c/ff99324ded01
+  - [net-next,3/3] devlink: Protect rate list with lock while switching modes
+    https://git.kernel.org/netdev/net-next/c/a3e5e5797faa
 
--       return mdiobus_register(mdio);
-+       return mdiobus_register(bus);
- }
- #endif
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I'm curious if this is the case. Tomorrow I'll resubmit with above, so
-I'd appreciate recheck.
 
-Thanks,
-Marcin
