@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD7243B143E
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 08:55:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3558D3B143A
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 08:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230014AbhFWG5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 02:57:23 -0400
-Received: from mailout1.secunet.com ([62.96.220.44]:33344 "EHLO
-        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbhFWG5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 02:57:13 -0400
+        id S230019AbhFWG5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 02:57:17 -0400
+Received: from mailout2.secunet.com ([62.96.220.49]:56114 "EHLO
+        mailout2.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229906AbhFWG5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 02:57:11 -0400
 Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 8093B800056;
+        by mailout2.secunet.com (Postfix) with ESMTP id 14C8A800056;
         Wed, 23 Jun 2021 08:54:53 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 23 Jun 2021 08:54:53 +0200
+ 15.1.2176.2; Wed, 23 Jun 2021 08:54:52 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 23 Jun
  2021 08:54:52 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 5661A31801F6; Wed, 23 Jun 2021 08:54:52 +0200 (CEST)
+        id 5AF37318047C; Wed, 23 Jun 2021 08:54:52 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 1/6] xfrm: xfrm_state_mtu should return at least 1280 for ipv6
-Date:   Wed, 23 Jun 2021 08:54:44 +0200
-Message-ID: <20210623065449.2143405-2-steffen.klassert@secunet.com>
+Subject: [PATCH 2/6] xfrm: policy: Read seqcount outside of rcu-read side in xfrm_policy_lookup_bytype
+Date:   Wed, 23 Jun 2021 08:54:45 +0200
+Message-ID: <20210623065449.2143405-3-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210623065449.2143405-1-steffen.klassert@secunet.com>
 References: <20210623065449.2143405-1-steffen.klassert@secunet.com>
@@ -46,106 +46,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
+From: Varad Gautam <varad.gautam@suse.com>
 
-Jianwen reported that IPv6 Interoperability tests are failing in an
-IPsec case where one of the links between the IPsec peers has an MTU
-of 1280. The peer generates a packet larger than this MTU, the router
-replies with a "Packet too big" message indicating an MTU of 1280.
-When the peer tries to send another large packet, xfrm_state_mtu
-returns 1280 - ipsec_overhead, which causes ip6_setup_cork to fail
-with EINVAL.
+xfrm_policy_lookup_bytype loops on seqcount mutex xfrm_policy_hash_generation
+within an RCU read side critical section. Although ill advised, this is fine if
+the loop is bounded.
 
-We can fix this by forcing xfrm_state_mtu to return IPV6_MIN_MTU when
-IPv6 is used. After going through IPsec, the packet will then be
-fragmented to obey the actual network's PMTU, just before leaving the
-host.
+xfrm_policy_hash_generation wraps mutex hash_resize_mutex, which is used to
+serialize writers (xfrm_hash_resize, xfrm_hash_rebuild). This is fine too.
 
-Currently, TFC padding is capped to PMTU - overhead to avoid
-fragementation: after padding and encapsulation, we still fit within
-the PMTU. That behavior is preserved in this patch.
+On PREEMPT_RT=y, the read_seqcount_begin call within xfrm_policy_lookup_bytype
+emits a mutex lock/unlock for hash_resize_mutex. Mutex locking is fine, since
+RCU read side critical sections are allowed to sleep with PREEMPT_RT.
 
-Fixes: 91657eafb64b ("xfrm: take net hdr len into account for esp payload size calculation")
-Reported-by: Jianwen Ji <jiji@redhat.com>
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+xfrm_hash_resize can, however, block on synchronize_rcu while holding
+hash_resize_mutex.
+
+This leads to the following situation on PREEMPT_RT, where the writer is
+blocked on RCU grace period expiry, while the reader is blocked on a lock held
+by the writer:
+
+Thead 1 (xfrm_hash_resize)	Thread 2 (xfrm_policy_lookup_bytype)
+
+				rcu_read_lock();
+mutex_lock(&hash_resize_mutex);
+				read_seqcount_begin(&xfrm_policy_hash_generation);
+				mutex_lock(&hash_resize_mutex); // block
+xfrm_bydst_resize();
+synchronize_rcu(); // block
+		<RCU stalls in xfrm_policy_lookup_bytype>
+
+Move the read_seqcount_begin call outside of the RCU read side critical section,
+and do an rcu_read_unlock/retry if we got stale data within the critical section.
+
+On non-PREEMPT_RT, this shortens the time spent within RCU read side critical
+section in case the seqcount needs a retry, and avoids unbounded looping.
+
+Fixes: 77cc278f7b20 ("xfrm: policy: Use sequence counters with associated lock")
+Signed-off-by: Varad Gautam <varad.gautam@suse.com>
+Cc: linux-rt-users <linux-rt-users@vger.kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: stable@vger.kernel.org # v4.9
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: "Ahmed S. Darwish" <a.darwish@linutronix.de>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Acked-by: Ahmed S. Darwish <a.darwish@linutronix.de>
 ---
- include/net/xfrm.h    |  1 +
- net/ipv4/esp4.c       |  2 +-
- net/ipv6/esp6.c       |  2 +-
- net/xfrm/xfrm_state.c | 14 ++++++++++++--
- 4 files changed, 15 insertions(+), 4 deletions(-)
+ net/xfrm/xfrm_policy.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index c58a6d4eb610..6232a5f048bd 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1546,6 +1546,7 @@ void xfrm_sad_getinfo(struct net *net, struct xfrmk_sadinfo *si);
- void xfrm_spd_getinfo(struct net *net, struct xfrmk_spdinfo *si);
- u32 xfrm_replay_seqhi(struct xfrm_state *x, __be32 net_seq);
- int xfrm_init_replay(struct xfrm_state *x);
-+u32 __xfrm_state_mtu(struct xfrm_state *x, int mtu);
- u32 xfrm_state_mtu(struct xfrm_state *x, int mtu);
- int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload);
- int xfrm_init_state(struct xfrm_state *x);
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 4b834bbf95e0..ed9857b2875d 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -673,7 +673,7 @@ static int esp_output(struct xfrm_state *x, struct sk_buff *skb)
- 		struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
- 		u32 padto;
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index b74f28cabe24..8c56e3e59c3c 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -2092,12 +2092,15 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
+ 	if (unlikely(!daddr || !saddr))
+ 		return NULL;
  
--		padto = min(x->tfcpad, xfrm_state_mtu(x, dst->child_mtu_cached));
-+		padto = min(x->tfcpad, __xfrm_state_mtu(x, dst->child_mtu_cached));
- 		if (skb->len < padto)
- 			esp.tfclen = padto - skb->len;
+-	rcu_read_lock();
+  retry:
+-	do {
+-		sequence = read_seqcount_begin(&xfrm_policy_hash_generation);
+-		chain = policy_hash_direct(net, daddr, saddr, family, dir);
+-	} while (read_seqcount_retry(&xfrm_policy_hash_generation, sequence));
++	sequence = read_seqcount_begin(&xfrm_policy_hash_generation);
++	rcu_read_lock();
++
++	chain = policy_hash_direct(net, daddr, saddr, family, dir);
++	if (read_seqcount_retry(&xfrm_policy_hash_generation, sequence)) {
++		rcu_read_unlock();
++		goto retry;
++	}
+ 
+ 	ret = NULL;
+ 	hlist_for_each_entry_rcu(pol, chain, bydst) {
+@@ -2128,11 +2131,15 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
  	}
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index 727d791ed5e6..9d1327b36bd3 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -708,7 +708,7 @@ static int esp6_output(struct xfrm_state *x, struct sk_buff *skb)
- 		struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
- 		u32 padto;
  
--		padto = min(x->tfcpad, xfrm_state_mtu(x, dst->child_mtu_cached));
-+		padto = min(x->tfcpad, __xfrm_state_mtu(x, dst->child_mtu_cached));
- 		if (skb->len < padto)
- 			esp.tfclen = padto - skb->len;
- 	}
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 4496f7efa220..c25586156c6a 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -2518,7 +2518,7 @@ void xfrm_state_delete_tunnel(struct xfrm_state *x)
- }
- EXPORT_SYMBOL(xfrm_state_delete_tunnel);
+ skip_inexact:
+-	if (read_seqcount_retry(&xfrm_policy_hash_generation, sequence))
++	if (read_seqcount_retry(&xfrm_policy_hash_generation, sequence)) {
++		rcu_read_unlock();
+ 		goto retry;
++	}
  
--u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
-+u32 __xfrm_state_mtu(struct xfrm_state *x, int mtu)
- {
- 	const struct xfrm_type *type = READ_ONCE(x->type);
- 	struct crypto_aead *aead;
-@@ -2549,7 +2549,17 @@ u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
- 	return ((mtu - x->props.header_len - crypto_aead_authsize(aead) -
- 		 net_adj) & ~(blksize - 1)) + net_adj - 2;
- }
--EXPORT_SYMBOL_GPL(xfrm_state_mtu);
-+EXPORT_SYMBOL_GPL(__xfrm_state_mtu);
-+
-+u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
-+{
-+	mtu = __xfrm_state_mtu(x, mtu);
-+
-+	if (x->props.family == AF_INET6 && mtu < IPV6_MIN_MTU)
-+		return IPV6_MIN_MTU;
-+
-+	return mtu;
-+}
+-	if (ret && !xfrm_pol_hold_rcu(ret))
++	if (ret && !xfrm_pol_hold_rcu(ret)) {
++		rcu_read_unlock();
+ 		goto retry;
++	}
+ fail:
+ 	rcu_read_unlock();
  
- int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload)
- {
 -- 
 2.25.1
 
