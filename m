@@ -2,115 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A47253B1EAF
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 18:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1A613B1E8C
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 18:21:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbhFWQbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 12:31:09 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:46018 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbhFWQbF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 12:31:05 -0400
-Received: by mail-io1-f71.google.com with SMTP id e24-20020a5d8e180000b02904dd8a55bbd7so2302774iod.12
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 09:28:46 -0700 (PDT)
+        id S229850AbhFWQXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 12:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229660AbhFWQXX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 12:23:23 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4569DC061574
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 09:21:04 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id r5so5095699lfr.5
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 09:21:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:date:from:user-agent:mime-version:to:cc:subject
+         :references:in-reply-to:content-transfer-encoding;
+        bh=dtQMs/e3dyJqCEZr8lIONXDOdaz9ORs5NcPMJLB1K/k=;
+        b=s7BoWm4WeId1KqfshPLT1jR0/8o25eQNCWpKq/bigUmx8IpVuVxwPD2IY9JZFnUPyF
+         ulEgsC88bdPW8jBTcg/udgMQ5OAdZsOQqdY6iYqvaXJ4vEKPgoqE/pxd/OwxI9EQ9qmX
+         rNteeUpHVy8GGPPrWWRht+SPJLkEAMPyShqH/OfS8K+cszv63KF60k4zC1G6qmaUkCj8
+         xsZSLDdE0nwgORXnmUzZRW1h8wusFvBM7TFOQLDXc8GdfF51xSSULceOt9IDOgBPF9Mh
+         wTuiH9voMFGLfxFfgRaEJYaY0JsQTkpke9ioU4C0HyLITZtTEOEIBzmcvVGmWe14Ytsi
+         zNzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:cc;
-        bh=U3PZEl0Cdz5lWpgoZ3LcxBmCftsorG7+dKagwjSphas=;
-        b=BaHqDn+Paahrdqm80xiHHsDdQGR9kwj6Udk00lNy1FKc8usR+BYAx+f915oUriNLwc
-         FjA39cGWp4lmjUUuGRcHyXd8ibjXcgJOanyia/xg3LLRtZEqDkAYddGlqnhp+kAmAQD3
-         yg9JSin0cbFJsFWQS8rJRJHwptZMMTBhye4eP6m9g8cakK8p/7hBWmq+b3SDTLoxlo6K
-         VQq8B7SoT2eS1EdRLnY3zW9m85H5t2+OxJpGxGCom6nnmMhVMsfAmBKJQ0CKVZYaM+UF
-         mdbdQ23MfkZ+ZJmEpnDsejEswqqHfPgxjm1JOdRmcm5FPyy7BNKf7HOO57Jtlm4cLF4v
-         7dJg==
-X-Gm-Message-State: AOAM532aYNRd3v5LnTB8iAhQ3JC6bSUOD9nf1sw0ga6WjvHue6REbG+M
-        NWAbb0E/Aw/4Q24SFQlX4brOxWGYcNDhpv6T+0hzL8beelut
-X-Google-Smtp-Source: ABdhPJxWibJjI3zl8BX97kjoK8MD9g1qOHd22umTb2oqfAL1duULt7iEPmx3R7h0vjlzdlOJ5d2bXHVdheJ/jqPGdiGn+EFMmyQK
+        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+         :cc:subject:references:in-reply-to:content-transfer-encoding;
+        bh=dtQMs/e3dyJqCEZr8lIONXDOdaz9ORs5NcPMJLB1K/k=;
+        b=aw4g7yIpACiYEeq9LDdcE95gsnX5xinozcoTIfJFSNqv6uAOY07jcAnDR2+P4KJmkj
+         /4nTT0j19qXIFi3NqOs7GveO5DXAXbIu6fpPrmI38B+0JLD46eX7H0M4LCH/sUp5YlF6
+         K9Kyumudwn3NPVZuvmO3Qr9O2yIz/Moj0mvF/fD9bRpxzLI7fpPGfb9uh18u+Lz8rRUL
+         K548n9wum7urWluQVoETxYFTTbVS+TqpvwNzORan6pSpqXSF2t/NdJPMlvOogTIY5Ag5
+         fM9oGrUXsjliuG8CeBGAxVes2nJXSo0bwHTGV7HIOCAJYekgUxf7mnpcOavLZJEaZn4u
+         L4BA==
+X-Gm-Message-State: AOAM532+vG6cQSxp/avFjUErDxzTo3Y79W5JLTTnb/WAdlOwaBWn8Rp1
+        Z5gDGXCvtalQ1YxPQKXcLoQ=
+X-Google-Smtp-Source: ABdhPJxvVS0K7yen95yVyGLsv/ahnzE3r/3vMhwqzF11L3Gz5xX3qLcAfVUm0CgA5WPoNUaOru7irg==
+X-Received: by 2002:a19:7d04:: with SMTP id y4mr287755lfc.201.1624465260771;
+        Wed, 23 Jun 2021 09:21:00 -0700 (PDT)
+Received: from [192.168.0.91] ([188.242.181.97])
+        by smtp.googlemail.com with ESMTPSA id z26sm40217lfi.7.2021.06.23.09.20.59
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Wed, 23 Jun 2021 09:21:00 -0700 (PDT)
+Message-ID: <60D361FF.70905@gmail.com>
+Date:   Wed, 23 Jun 2021 19:31:59 +0300
+From:   Nikolai Zhubr <zhubr.2@gmail.com>
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2206:: with SMTP id n6mr339969ion.54.1624465725884;
- Wed, 23 Jun 2021 09:28:45 -0700 (PDT)
-Date:   Wed, 23 Jun 2021 09:28:45 -0700
-In-Reply-To: <20210623192837.13792eae@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008a8f9c05c571668c@google.com>
-Subject: Re: [syzbot] WARNING: zero-size vmalloc in corrupted
-From:   syzbot <syzbot+c2f6f09fe907a838effb@syzkaller.appspotmail.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     akpm@linux-foundation.org, coreteam@netfilter.org,
-        davem@davemloft.net, dsahern@kernel.org, fw@strlen.de,
-        kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, paskripkin@gmail.com,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+To:     Arnd Bergmann <arnd@kernel.org>
+CC:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: Realtek 8139 problem on 486.
+References: <60B24AC2.9050505@gmail.com> <60B41D00.8050801@gmail.com> <60B514A0.1020701@gmail.com> <CAK8P3a08Bbzj9GtZi0Vo1-yRkqEMfnvTZMNEVWAn-gmLKx2Oag@mail.gmail.com> <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com> <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com> <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com> <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com> <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk> <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com> <877dipgyrb.ffs@nanos.tec.linutronix.de> <alpine.DEB.2.21.2106200749300.61140@angie.orcam.me.uk> <CAK8P3a0Z56XvLHJHjvsX3F76ZF0n-VXwPoWbvfQdTgfEBfOneg@mail.gmail.com> <60D1DAC1.9060200@gmail.com> <CAK8P3a1XaTUgxM3YBa=iHGrLX_Wn66NhTTEXtV=vaNre7K3GOA@mail.gmail.com> <60D22F1D.1000205@gmail.com> <CAK8P3a3Jk+zNnQ5r9gb60deqCmJT+S07VvL3SipKRYXdxM2kPQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a3Jk+zNnQ5r9gb60deqCmJT+S07VvL3SipKRYXdxM2kPQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Wed, 23 Jun 2021 19:19:28 +0300
-> Pavel Skripkin <paskripkin@gmail.com> wrote:
->
->> On Wed, 23 Jun 2021 02:15:23 -0700
->> syzbot <syzbot+c2f6f09fe907a838effb@syzkaller.appspotmail.com> wrote:
->> 
->> > Hello,
->> > 
->> > syzbot found the following issue on:
->> > 
->> > HEAD commit:    13311e74 Linux 5.13-rc7
->> > git tree:       upstream
->> > console output:
->> > https://syzkaller.appspot.com/x/log.txt?x=15d01e58300000 kernel
->> > config:  https://syzkaller.appspot.com/x/.config?x=42ecca11b759d96c
->> > dashboard link:
->> > https://syzkaller.appspot.com/bug?extid=c2f6f09fe907a838effb syz
->> > repro:
->> > https://syzkaller.appspot.com/x/repro.syz?x=14bb89e8300000 C
->> > reproducer:
->> > https://syzkaller.appspot.com/x/repro.c?x=17cc51b8300000
->> > 
->> > The issue was bisected to:
->> > 
->> > commit f9006acc8dfe59e25aa75729728ac57a8d84fc32
->> > Author: Florian Westphal <fw@strlen.de>
->> > Date:   Wed Apr 21 07:51:08 2021 +0000
->> > 
->> >     netfilter: arp_tables: pass table pointer via nf_hook_ops
->> > 
->> > bisection log:
->> > https://syzkaller.appspot.com/x/bisect.txt?x=13b88400300000 final
->> > oops:
->> > https://syzkaller.appspot.com/x/report.txt?x=10788400300000 console
->> > output: https://syzkaller.appspot.com/x/log.txt?x=17b88400300000
->> > 
->> 
->> This one is similar to previous zero-size vmalloc, I guess :)
->> 
->> #syz test
->> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->> master
->> 
->> 
->
-> Hah, I didn't notice that this one is already fixed by me. But the
-> patch is in the media tree, it's not upstreamed yet:  
->
-> https://git.linuxtv.org/media_tree.git/commit/?id=c680ed46e418e9c785d76cf44eb33bfd1e8cf3f6
->
-> So, 
->
-> #syz dup: WARNING: zero-size vmalloc in dvb_dmx_init
+22.06.2021 22:26, Arnd Bergmann:
+[...]
+> As I said before, I still think we should also merge the 8139 driver patch,
+> probably without that loop. It's not great, but I'm much more confident
+> I understand what that does and that the patched version is better than
+> the current code.
 
-Can't dup bug to a bug in different reporting (upstream->internal).Please dup syzbot bugs only onto syzbot bugs for the same kernel/reporting.
+Yes, the 'poll' approach apparently works stable and does not cause any 
+measurable performance decrease. But it would need some carefull 
+cleanup/review, especially WRT locking. Now that all real event handling 
+work is happening in the poll function, it still has to be protected 
+against the (potentially also long-running) reset function which in 
+current design can be called e.g. from a different thread due to tx 
+timeout, and this does not look good, but it is a bit beyond my 
+capability to arrange it better. Besides, the idea was to keep the fix 
+simple and avoid a massive rework...
+
+
+Thank you,
+
+Regards,
+Nikolai
+
 
 >
-> With regards,
-> Pavel Skripkin
+>        Arnd
 >
-> -- 
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/20210623192837.13792eae%40gmail.com.
+
