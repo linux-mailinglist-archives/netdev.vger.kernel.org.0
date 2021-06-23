@@ -2,117 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E3593B1306
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 06:55:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48C213B1339
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 07:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbhFWE5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 00:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbhFWE5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 00:57:38 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D79C061574;
-        Tue, 22 Jun 2021 21:55:21 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id m17so514339plx.7;
-        Tue, 22 Jun 2021 21:55:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Z98M28/S5DTkRaCcduNwo8JvvrtDJam3SJ6vLPsh7e8=;
-        b=t0j8pqTBwCofwBmzsMnRKN8o9RrKS1dthZm7imB1FnfTXT4A2CS3bmDV2d8UFN/n4N
-         fbTB+6140FV1SHkH6VwmXE1szaiWj2fZGCdsVaXGt142q2M9RNTxNs4GXuqKZDyqsfnD
-         LyO2vGQ9mfzOMJM23AnGFSEteQCimeJv+P7eMFcL4y/91lB+NW3HQakXN7LYiDIpFa9s
-         JBPPxLeMYO3mQR/2yCyVtlOGPgIhWRzGS+HlX2G6ymqCxqdcULDl9ATcoGU5mULnuOlO
-         N9BwAjm5kVRj5cZ87t1LVHOgCrsEErDJW6ILBQ08et/0UmsKEkaz8RbC7dJAXjwOYxBP
-         DeMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Z98M28/S5DTkRaCcduNwo8JvvrtDJam3SJ6vLPsh7e8=;
-        b=jj37eMHceGTT+xAIPSjvnMm+z5vacl1wAJExopmjaGBR7uCTRZ26vLhBhih2K7Jemu
-         +d8p1cp0cyb693hIVPNSjrvCnaE7F8SSc88vtlu0rNyIoYpfjvsyVf/41w8ok4jAUJfQ
-         1z761+zFK3/8iiL/N2RqrQEIQwYGgkrbMJWrQfSn2wGA8bFJ5hJ5CWYdZua2PmgJGfkK
-         GbYLis3luAZuzbPbbM5jS+oJ9uCj4gfpfC4rWcmCiObavPHyT85/13lN6DFUYXedJX+h
-         sNRQOx/Gcu8UaQ+2gv4Br84om2oOZebkQRAUYQS07/WNkr5WsRJ905wESBi0CXOXUadg
-         yg4g==
-X-Gm-Message-State: AOAM533aixgI5Gg0yAegaQNglku90xmGrUL9r3tE7tFB5kM2pLxSn1yk
-        ZwlMqURJQauO2JaLBg7/dxc=
-X-Google-Smtp-Source: ABdhPJyr34usZfM4otBZLMCgqdIkx6xknpF7q6eN/7Pl6CxcYIkUbun7aJssJW51BLb6HSZg9pSefQ==
-X-Received: by 2002:a17:90a:4410:: with SMTP id s16mr7264860pjg.25.1624424120569;
-        Tue, 22 Jun 2021 21:55:20 -0700 (PDT)
-Received: from d3 ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
-        by smtp.gmail.com with ESMTPSA id r14sm16539508pgu.18.2021.06.22.21.55.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Jun 2021 21:55:19 -0700 (PDT)
-Date:   Wed, 23 Jun 2021 13:55:15 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC 01/19] staging: qlge: fix incorrect truesize accounting
-Message-ID: <YNK+s9Rm7OtL++YM@d3>
-References: <20210621134902.83587-1-coiby.xu@gmail.com>
- <20210621134902.83587-2-coiby.xu@gmail.com>
- <20210621141027.GJ1861@kadam>
- <20210622113649.vm2hfh2veqr4dq6y@Rk>
+        id S229892AbhFWF3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 01:29:42 -0400
+Received: from mailout2.secunet.com ([62.96.220.49]:55912 "EHLO
+        mailout2.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229794AbhFWF3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 01:29:41 -0400
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 99552800056;
+        Wed, 23 Jun 2021 07:27:22 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 23 Jun 2021 07:27:22 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 23 Jun
+ 2021 07:27:22 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id C7C5731801F6; Wed, 23 Jun 2021 07:27:21 +0200 (CEST)
+Date:   Wed, 23 Jun 2021 07:27:21 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+CC:     Varad Gautam <varad.gautam@suse.com>,
+        <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        "Ahmed S. Darwish" <a.darwish@linutronix.de>,
+        <stable@vger.kernel.org>
+Subject: Re: [PATCH] xfrm: policy: Restructure RCU-read locking in
+ xfrm_sk_policy_lookup
+Message-ID: <20210623052721.GF40979@gauss3.secunet.de>
+References: <20210618141101.18168-1-varad.gautam@suse.com>
+ <20210621082949.GX40979@gauss3.secunet.de>
+ <f41d40cc-e474-1324-be0a-7beaf580c292@suse.com>
+ <20210621110528.GZ40979@gauss3.secunet.de>
+ <20210622112159.GC40979@gauss3.secunet.de>
+ <20210622115124.GA109262@lothringen>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20210622113649.vm2hfh2veqr4dq6y@Rk>
+In-Reply-To: <20210622115124.GA109262@lothringen>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-06-22 19:36 +0800, Coiby Xu wrote:
-> On Mon, Jun 21, 2021 at 05:10:27PM +0300, Dan Carpenter wrote:
-> > On Mon, Jun 21, 2021 at 09:48:44PM +0800, Coiby Xu wrote:
-> > > Commit 7c734359d3504c869132166d159c7f0649f0ab34 ("qlge: Size RX buffers
-> > > based on MTU") introduced page_chunk structure. We should add
-> > > qdev->lbq_buf_size to skb->truesize after __skb_fill_page_desc.
-> > > 
+On Tue, Jun 22, 2021 at 01:51:24PM +0200, Frederic Weisbecker wrote:
+> On Tue, Jun 22, 2021 at 01:21:59PM +0200, Steffen Klassert wrote:
+> > On Mon, Jun 21, 2021 at 01:05:28PM +0200, Steffen Klassert wrote:
+> > > On Mon, Jun 21, 2021 at 11:11:18AM +0200, Varad Gautam wrote:
 > > 
-> > Add a Fixes tag.
+> > Varad, can you try to replace the seqcount_mutex_t for xfrm_policy_hash_generation
+> > by a seqcount_spinlock_t? I'm not familiar with that seqcount changes,
+> > but we should not end up with using a mutex in this codepath.
 > 
-> I will fix it in next version, thanks!
+> Something like this? (beware, untested, also I don't know if the read side
+> should then disable bh, doesn't look necessary for PREEMPT_RT, but I may be
+> missing something...)
 > 
-> > 
-> > The runtime impact of this is just that ethtool will report things
-> > incorrectly, right?  It's not 100% from the commit message.  Could you
-> > please edit the commit message so that an ignoramous like myself can
-> > understand it?
+> diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
+> index e816b6a3ef2b..9b376b87bd54 100644
+> --- a/include/net/netns/xfrm.h
+> +++ b/include/net/netns/xfrm.h
+> @@ -74,6 +74,7 @@ struct netns_xfrm {
+>  #endif
+>  	spinlock_t		xfrm_state_lock;
+>  	seqcount_spinlock_t	xfrm_state_hash_generation;
+> +	seqcount_spinlock_t	xfrm_policy_hash_generation;
+>  
+>  	spinlock_t xfrm_policy_lock;
+>  	struct mutex xfrm_cfg_mutex;
+> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+> index ce500f847b99..46a6d15b66d6 100644
+> --- a/net/xfrm/xfrm_policy.c
+> +++ b/net/xfrm/xfrm_policy.c
+> @@ -155,7 +155,6 @@ static struct xfrm_policy_afinfo const __rcu *xfrm_policy_afinfo[AF_INET6 + 1]
+>  						__read_mostly;
+>  
+>  static struct kmem_cache *xfrm_dst_cache __ro_after_init;
+> -static __read_mostly seqcount_mutex_t xfrm_policy_hash_generation;
+>  
+>  static struct rhashtable xfrm_policy_inexact_table;
+>  static const struct rhashtable_params xfrm_pol_inexact_params;
+> @@ -585,7 +584,7 @@ static void xfrm_bydst_resize(struct net *net, int dir)
+>  		return;
+>  
+>  	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
+> -	write_seqcount_begin(&xfrm_policy_hash_generation);
+> +	write_seqcount_begin(&net->xfrm.xfrm_policy_hash_generation);
+>  
+>  	odst = rcu_dereference_protected(net->xfrm.policy_bydst[dir].table,
+>  				lockdep_is_held(&net->xfrm.xfrm_policy_lock));
+> @@ -596,7 +595,7 @@ static void xfrm_bydst_resize(struct net *net, int dir)
+>  	rcu_assign_pointer(net->xfrm.policy_bydst[dir].table, ndst);
+>  	net->xfrm.policy_bydst[dir].hmask = nhashmask;
+>  
+> -	write_seqcount_end(&xfrm_policy_hash_generation);
+> +	write_seqcount_end(&net->xfrm.xfrm_policy_hash_generation);
+>  	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
+>  
+>  	synchronize_rcu();
+> @@ -1245,7 +1244,7 @@ static void xfrm_hash_rebuild(struct work_struct *work)
+>  	} while (read_seqretry(&net->xfrm.policy_hthresh.lock, seq));
+>  
+>  	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
+> -	write_seqcount_begin(&xfrm_policy_hash_generation);
+> +	write_seqcount_begin(&net->xfrm.xfrm_policy_hash_generation);
+>  
+>  	/* make sure that we can insert the indirect policies again before
+>  	 * we start with destructive action.
+> @@ -1354,7 +1353,7 @@ static void xfrm_hash_rebuild(struct work_struct *work)
+>  
+>  out_unlock:
+>  	__xfrm_policy_inexact_flush(net);
+> -	write_seqcount_end(&xfrm_policy_hash_generation);
+> +	write_seqcount_end(&net->xfrm.xfrm_policy_hash_generation);
+>  	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
+>  
+>  	mutex_unlock(&hash_resize_mutex);
+> @@ -2095,9 +2094,9 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
+>  	rcu_read_lock();
+>   retry:
+>  	do {
+> -		sequence = read_seqcount_begin(&xfrm_policy_hash_generation);
+> +		sequence = read_seqcount_begin(&net->xfrm.xfrm_policy_hash_generation);
+>  		chain = policy_hash_direct(net, daddr, saddr, family, dir);
+> -	} while (read_seqcount_retry(&xfrm_policy_hash_generation, sequence));
+> +	} while (read_seqcount_retry(&net->xfrm.xfrm_policy_hash_generation, sequence));
+>  
+>  	ret = NULL;
+>  	hlist_for_each_entry_rcu(pol, chain, bydst) {
+> @@ -2128,7 +2127,7 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
+>  	}
+>  
+>  skip_inexact:
+> -	if (read_seqcount_retry(&xfrm_policy_hash_generation, sequence))
+> +	if (read_seqcount_retry(&net->xfrm.xfrm_policy_hash_generation, sequence))
+>  		goto retry;
+>  
+>  	if (ret && !xfrm_pol_hold_rcu(ret))
+> @@ -4084,6 +4083,7 @@ static int __net_init xfrm_net_init(struct net *net)
+>  	/* Initialize the per-net locks here */
+>  	spin_lock_init(&net->xfrm.xfrm_state_lock);
+>  	spin_lock_init(&net->xfrm.xfrm_policy_lock);
+> +	seqcount_spinlock_init(&net->xfrm.xfrm_policy_hash_generation, &net->xfrm.xfrm_policy_lock);
+>  	mutex_init(&net->xfrm.xfrm_cfg_mutex);
+>  
+>  	rv = xfrm_statistics_init(net);
+> @@ -4128,7 +4128,6 @@ void __init xfrm_init(void)
+>  {
+>  	register_pernet_subsys(&xfrm_net_ops);
+>  	xfrm_dev_init();
+> -	seqcount_mutex_init(&xfrm_policy_hash_generation, &hash_resize_mutex);
+>  	xfrm_input_init();
+>  
+>  #ifdef CONFIG_XFRM_ESPINTCP
 
-truesize is used in socket memory accounting, the stuff behind sysctl
-net.core.rmem_max, SO_RCVBUF, ss -m, ...
+Yes, looks like your patch should do it. The xfrm_policy_lock is the
+write side protection for the seqcount here.
 
-Some helpful chap wrote a page about it a while ago:
-http://vger.kernel.org/~davem/skb_sk.html
-
-> 
-> I'm not sure how it would affect ethtool. But according to "git log
-> --grep=truesize", it affects coalescing SKBs. Btw, I fixed the issue
-> according to the definition of truesize which according to Linux Kernel
-> Network by Rami Rosen, it's defined as follows,
-> > The total memory allocated for the SKB (including the SKB structure
-> > itself and the size of the allocated data block).
-> 
-> I'll edit the commit message to include it, thanks!
-> 
-> > 
-> > Why is this an RFC instead of just a normal patch which we can apply?
-> 
-> After doing the tests mentioned in the cover letter, I found Red Hat's
-> network QE team has quite a rigorous test suite. But I needed to return the
-> machine before having the time to learn about the test suite and run it by
-> myself. So I mark it as an RFC before I borrow the machine again to run the
-> test suite.
-
-Interesting. Is this test suite based on a public project?
+Thanks!
