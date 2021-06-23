@@ -2,87 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5E83B1259
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:41:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE9133B125E
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbhFWDoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 23:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbhFWDoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:44:02 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6345EC061574;
-        Tue, 22 Jun 2021 20:41:45 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id n99-20020a9d206c0000b029045d4f996e62so606598ota.4;
-        Tue, 22 Jun 2021 20:41:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=S/q1ilT1hs2TT/ds+4HdNsDS+C0sqazQRzGoxal5Y9M=;
-        b=PxQfmNFvrGQBO70YokAHlLczCPk+UCQXuBnXSWJgaebVZRomvU1opT4g303+VbW82C
-         EYISUruPWGX/gfarPsg5i4H6Ks3Y0MTzN43ezR6kbDDRbU70cwBoGewHjBWlXBi7fTqM
-         bs/C0K9rkGzONWLBLNcYNmDpceaHxgId3hyl4g8jMP8Xtp0tLwa2tn+JhFn4sCvdfC4w
-         KYj8WDL9UqK64HZUqJhOIjh9T3d064PQ1D/P+CnzcgJ9+6V+6Kgk4nEJUWkRQQJBYpw8
-         5MtsTLZlf2hIkdgMU9+EfuXeV7NVijymAncE9190ucUt4ywCkaZZJrluUUauAKaa1Hos
-         W0yw==
+        id S230130AbhFWDrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 23:47:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36591 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229774AbhFWDrb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:47:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624419914;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zRO9M68B1N+iUNIIknyesktneXdWBFn4ufwTcOykBZg=;
+        b=AhFnsvIV76reESiFdA++kagVp1DtEig1M7guKlUxd2V7y5T57xiu6VNQYVppQsMl5rBG1/
+        Sfk8EYqOZcJ1fevc9T833HMLwFM8iW8+ChDPzIvx+h3sgqfOwU8LtB+ShNkug8vMePKGnE
+        rqtKRWGgVDWd0yR392A09+Z8ABDlRqw=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-398-ZOkqT-VFOWK8WpbTwUZgNA-1; Tue, 22 Jun 2021 23:45:12 -0400
+X-MC-Unique: ZOkqT-VFOWK8WpbTwUZgNA-1
+Received: by mail-pl1-f197.google.com with SMTP id 62-20020a1709020544b0290116739a77a4so334768plf.7
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 20:45:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=S/q1ilT1hs2TT/ds+4HdNsDS+C0sqazQRzGoxal5Y9M=;
-        b=uSTfDXuLdYvveD2vqPv2Y8HMuv5HSkWAY0Rxybm9Se/egrdnJEmMp0BjPyAsn/3sMA
-         8utDND7lZt0A3C45dKYn0ajBA00qY2BxQLf/m24NL2+5oYMhKbOgvRKOBhVxhVDptsNE
-         qwHieHQlLmpcLej6KRHCiztIhpBqQlPe38Md078VQeT3QE8Fo3lQZAhtiN7TVIvN0ea0
-         ByrWP8aMR6akxR3/unogc3o58zy/6wg3P7TrtQF1pxsB4d8Ey6jN2Shv8NKhxsvYDp0u
-         IFbiQDJh8hpNBcHymyymaOi7dUWMmu6pmvp8Xaftc/myxvLx+gWR6xQGfokQKMbnsGnD
-         dVTQ==
-X-Gm-Message-State: AOAM531NBJsBruYd2KEHz4o/xuF496ykEY2N1frIbddAQ4ZezHi2Mha0
-        VzWRZETOHQ3qIvGb6CLBSfs=
-X-Google-Smtp-Source: ABdhPJzhJZpGiwd0SquMzMC6URN8IvrzXjtMucSiKVjc8p8GbVoC1+AoU9gU7wZ1lGpsdbptmD8Dmg==
-X-Received: by 2002:a9d:6f88:: with SMTP id h8mr5743849otq.73.1624419704829;
-        Tue, 22 Jun 2021 20:41:44 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.38])
-        by smtp.googlemail.com with ESMTPSA id f12sm999346ooh.38.2021.06.22.20.41.42
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=zRO9M68B1N+iUNIIknyesktneXdWBFn4ufwTcOykBZg=;
+        b=Nu9Hdo437DO/wQeYcMcjZpnzz6PEld9RPn7F6eSFM7Xfw8wfVdv4CgZGJ4yCYre19a
+         Jrom+nqvtKoMQ9IIBCZzeBdBIkntad69m5wScKc8rEtNaiQjy9hCSzVgy235kRUguld5
+         o+PvxcPJiDPZq1a9hfLqf29iXnLPLph1BjBJtD5JeGem3zxdsBbBz+WoJKtsdn7LeNYg
+         4jOcjWxnEpVG19Zk1g3oTkteFK95/UZnRzzl1+ySBxCBfp8Y7NxWoC+WGFOB8VkcNROV
+         8dFQrJGKT0UlZmUvZ4VxBu0FQVvWG63eYF3QQqFOnGRyqOnJEQPtVzcapG+XnXJk0hyq
+         C5GA==
+X-Gm-Message-State: AOAM532vHpJINC8lh0DKShv3ACXXDAP0HhMhs6ZkGyuqeqrp+OF3uhk9
+        gaOQ/pGkOwN8iU0F79UR5bjVolmZS0lij24mlgTNqUKlADV/emD7ulFH13adhNC82RmZqVB+ijf
+        5Nf368CWu/rDsuKrg
+X-Received: by 2002:a17:90b:a4d:: with SMTP id gw13mr7378687pjb.104.1624419911616;
+        Tue, 22 Jun 2021 20:45:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwxFqS7ubsJQfj4eUKMay2yhZshrB/Ikx5Se0fw5yi5YILch4xMHX63qczK3Qb17MW+OaNNRA==
+X-Received: by 2002:a17:90b:a4d:: with SMTP id gw13mr7378673pjb.104.1624419911344;
+        Tue, 22 Jun 2021 20:45:11 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y13sm20612981pgp.16.2021.06.22.20.45.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Jun 2021 20:41:44 -0700 (PDT)
-Subject: Re: [PATCH v9 bpf-next 00/14] mvneta: introduce XDP multi-buffer
- support
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        sameehj@amazon.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com
-References: <cover.1623674025.git.lorenzo@kernel.org>
- <60d26fcdbd5c7_1342e208f6@john-XPS-13-9370.notmuch>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <efe4fcfa-087b-e025-a371-269ef36a3e86@gmail.com>
-Date:   Tue, 22 Jun 2021 21:41:41 -0600
+        Tue, 22 Jun 2021 20:45:10 -0700 (PDT)
+Subject: Re: [PATCH v2 1/4] net: tun: fix tun_xdp_one() for IFF_TUN mode
+To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
+Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+ <20210622161533.1214662-1-dwmw2@infradead.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <fedca272-a03e-4bac-4038-2bb1f6b4df84@redhat.com>
+Date:   Wed, 23 Jun 2021 11:45:07 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <60d26fcdbd5c7_1342e208f6@john-XPS-13-9370.notmuch>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20210622161533.1214662-1-dwmw2@infradead.org>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/22/21 5:18 PM, John Fastabend wrote:
-> At this point I don't think we can have a partial implementation. At
-> the moment we have packet capture applications and protocol parsers
-> running in production. If we allow this to go in staged we are going
-> to break those applications that make the fundamental assumption they
-> have access to all the data in the packet.
 
-What about cases like netgpu where headers are accessible but data is
-not (e.g., gpu memory)? If the API indicates limited buffer access, is
-that sufficient?
+ÔÚ 2021/6/23 ÉÏÎç12:15, David Woodhouse Ð´µÀ:
+> From: David Woodhouse <dwmw@amazon.co.uk>
+>
+> In tun_get_user(), skb->protocol is either taken from the tun_pi header
+> or inferred from the first byte of the packet in IFF_TUN mode, while
+> eth_type_trans() is called only in the IFF_TAP mode where the payload
+> is expected to be an Ethernet frame.
+>
+> The alternative path in tun_xdp_one() was unconditionally using
+> eth_type_trans(), which corrupts packets in IFF_TUN mode. Fix it to
+> do the correct thing for IFF_TUN mode, as tun_get_user() does.
+>
+> Fixes: 043d222f93ab ("tuntap: accept an array of XDP buffs through sendmsg()")
+> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+> ---
+>   drivers/net/tun.c | 44 +++++++++++++++++++++++++++++++++++++++++++-
+>   1 file changed, 43 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 4cf38be26dc9..f812dcdc640e 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -2394,8 +2394,50 @@ static int tun_xdp_one(struct tun_struct *tun,
+>   		err = -EINVAL;
+>   		goto out;
+>   	}
+> +	switch (tun->flags & TUN_TYPE_MASK) {
+> +	case IFF_TUN:
+> +		if (tun->flags & IFF_NO_PI) {
+> +			u8 ip_version = skb->len ? (skb->data[0] >> 4) : 0;
+> +
+> +			switch (ip_version) {
+> +			case 4:
+> +				skb->protocol = htons(ETH_P_IP);
+> +				break;
+> +			case 6:
+> +				skb->protocol = htons(ETH_P_IPV6);
+> +				break;
+> +			default:
+> +				atomic_long_inc(&tun->dev->rx_dropped);
+> +				kfree_skb(skb);
+> +				err = -EINVAL;
+> +				goto out;
+> +			}
+> +		} else {
+> +			struct tun_pi *pi = (struct tun_pi *)skb->data;
+> +			if (!pskb_may_pull(skb, sizeof(*pi))) {
+> +				atomic_long_inc(&tun->dev->rx_dropped);
+> +				kfree_skb(skb);
+> +				err = -ENOMEM;
+> +				goto out;
+> +			}
+> +			skb_pull_inline(skb, sizeof(*pi));
+> +			skb->protocol = pi->proto;
+
+
+As replied in previous version, it would be better if we can unify 
+similar logic in tun_get_user().
+
+Thanks
+
+
+> +		}
+> +
+> +		skb_reset_mac_header(skb);
+> +		skb->dev = tun->dev;
+> +		break;
+> +	case IFF_TAP:
+> +		if (!pskb_may_pull(skb, ETH_HLEN)) {
+> +			atomic_long_inc(&tun->dev->rx_dropped);
+> +			kfree_skb(skb);
+> +			err = -ENOMEM;
+> +			goto out;
+> +		}
+> +		skb->protocol = eth_type_trans(skb, tun->dev);
+> +		break;
+> +	}
+>   
+> -	skb->protocol = eth_type_trans(skb, tun->dev);
+>   	skb_reset_network_header(skb);
+>   	skb_probe_transport_header(skb);
+>   	skb_record_rx_queue(skb, tfile->queue_index);
+
