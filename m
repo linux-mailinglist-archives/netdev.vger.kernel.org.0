@@ -2,96 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E74513B2239
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 23:07:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 674403B223E
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 23:09:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbhFWVJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 17:09:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55232 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229660AbhFWVJg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 17:09:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B648F6128D;
-        Wed, 23 Jun 2021 21:07:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624482439;
-        bh=WcBNFpaV4ey5OIqhKbUkuCChXBRkvhdJTXR0StZNpLE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rCgy38p8tT5mjI3oeUy6xd3akXkE8fFjnXnodxu5K/HLDNICr2QWSaXw/dUZ5AKU4
-         pbl4QoDYEYEak49tCSwuWtynAY+jELNgjYaqeiVzvWBEM8ZJ0C8Xq72bC5axajHYkW
-         4ACdW+IQuK4sKCMBDtPLcBaUEaJwjRMPrfdvbCssb2pkWCLP4JMiZOrOB20pdkU6nB
-         MQW3/qUIQ02YzyaFL1JBGpCJNwyEnWHjneyKICEl7XudRLEw5DR/nHsQ046tbjLvnZ
-         dwzf+H1WuF3ZBFij3I/mrT4M9zxVuIJRWIjhryNjbztr71bkTerB5qMKYxBW6KTN04
-         25u0+9DcoIzaA==
-Date:   Wed, 23 Jun 2021 14:07:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, willemb@google.com,
-        eric.dumazet@gmail.com, dsahern@gmail.com, yoshfuji@linux-ipv6.org,
-        Dave Jones <dsj@fb.com>
-Subject: Re: [PATCH net-next v3] net: ip: avoid OOM kills with large UDP
- sends over loopback
-Message-ID: <20210623140717.22997203@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210623214555.5c683821@carbon>
-References: <20210623162328.2197645-1-kuba@kernel.org>
-        <20210623214555.5c683821@carbon>
+        id S229881AbhFWVL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 17:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229800AbhFWVLz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 17:11:55 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993B9C061574
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 14:09:35 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ot9so5090066ejb.8
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 14:09:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=d53Qv8iAWYfi6ebO5/PMg7M8UrdqasY7sqYuTmSbVyA=;
+        b=sOFWZZ/7qk/1eJoTc7god9j7ZJn4p0EuAYfJL+9Hk/mwvbk8llOsGXOs4rDdaQmqoC
+         msPuu0ZMm2myNFqY8EV2ieT8iEPKZfxSdXakk2wGWUxMNYvP/eZhRin8HdMqfD4yEt6p
+         2aJwDxCpHH64lpmrFm+oLwNUT/LCI7atYChL4bdsZsCSARyyFZYk2NRGq4n8gaLLzdQl
+         cvTPBn+y5DZRnl/Q0gV5OYpdRhY9JhbkRXXVJhcrNSVX+D9vXlE5eW1noBDkyQ3pThSS
+         PNR+BXX/wibDSkkaZm8/lgzLls6afKuQoGWnSB8LGAqTlVxr9ECQvQ2t6FLo2pKK9G2d
+         Oldg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=d53Qv8iAWYfi6ebO5/PMg7M8UrdqasY7sqYuTmSbVyA=;
+        b=YV5WosLPyY16O7Oz8wC324k7TXgpPrrw5eU8M5y+nWG7rrYLeuR6JtrRI5kl8sa2hB
+         yRWJn2vlvT/BRlLyRIPqH3Slyf7xwZfiKknayRRlGyybBt0fpaB1VIOjjLdB1Dgnxeqy
+         B36Aj6vMEYEqMliFBG4k3ZOxmAZsR6X/TI5OKS/9WVX+z9BX64lw8oIEl9+EDxdQXxxK
+         IbHEGwbJ7NRb8MltczWIyt0rlxvXmT+dmeug7CiS2+zJ4hI1s6fdWj2cTG8CvKYQTKc9
+         ug8W3LY9mI57hG24/uV3XrnK5olnV5cYpY8TX+bV+rKjhOMOXK36cabSYXURNghIo916
+         nyvw==
+X-Gm-Message-State: AOAM532YjCprsZEJe9plCxRUC8Bpfsjv+CVbPxbzHI6/La9JvAVT5Ecb
+        dgJ/vF3owfSahrDxEyMFjPND1YNPFjkVjmvpbwo=
+X-Google-Smtp-Source: ABdhPJzpsqBNLPoeT+ZCjoO9mWKFiBMu5pcgeN2ZlL+8jCr6MBJ4ZHAGwLF/oDLJ7trK9Se7AS2BvT+MrYD3U3Sw3C4=
+X-Received: by 2002:a17:906:25cb:: with SMTP id n11mr1925747ejb.539.1624482574155;
+ Wed, 23 Jun 2021 14:09:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210604161250.49749-1-lxu@maxlinear.com> <20210604194428.2276092-1-martin.blumenstingl@googlemail.com>
+ <b01a8ac2-b77e-32aa-7c9b-57de4f2d3a95@maxlinear.com> <YLuzX5EYfGNaosHT@lunn.ch>
+ <9ecb75b8-c4d8-1769-58f4-1082b8f53e05@maxlinear.com> <CAFBinCARo+YiQezBQfZ=M6HNwvkro0nK=0Y9KhhhRO+akiaHbw@mail.gmail.com>
+ <MWHPR19MB0077D01E4EAFA9FE521D83ECBD0D9@MWHPR19MB0077.namprd19.prod.outlook.com>
+ <766ab274-25ff-c9a2-1ed6-fe2aa44b4660@maxlinear.com>
+In-Reply-To: <766ab274-25ff-c9a2-1ed6-fe2aa44b4660@maxlinear.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Wed, 23 Jun 2021 23:09:23 +0200
+Message-ID: <CAFBinCBCPcCD3uxO5iJF11LBhdMe32nzMLvnD1xyLvpT2HZt_Q@mail.gmail.com>
+Subject: Re: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
+To:     Liang Xu <lxu@maxlinear.com>
+Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Thomas Mohren <tmohren@maxlinear.com>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Jun 2021 21:45:55 +0200 Jesper Dangaard Brouer wrote:
-> > diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-> > index c3efc7d658f6..790dd28fd198 100644
-> > --- a/net/ipv4/ip_output.c
-> > +++ b/net/ipv4/ip_output.c
-> > @@ -1077,7 +1077,9 @@ static int __ip_append_data(struct sock *sk,
-> >  			if ((flags & MSG_MORE) &&
-> >  			    !(rt->dst.dev->features&NETIF_F_SG))
-> >  				alloclen = mtu;
-> > -			else if (!paged)
-> > +			else if (!paged &&
-> > +				 (fraglen + hh_len + 15 < SKB_MAX_ALLOC ||  
-> 
-> What does the number 15 represent here?
+Hi Liang,
 
-No idea, it's there on the allocation line, so I need to include it on
-the size check.
+On Wed, Jun 23, 2021 at 12:56 PM Liang Xu <lxu@maxlinear.com> wrote:
+[...]
+> Hi Martin,
+>
+> 1) The legacy PHY GPY111 does not share the same register format and addr=
+ess for WoL and LED registers. Therefore code saving with a common driver i=
+s not possible.
+> 2) The interrupt handling routine would be different when new features ar=
+e added in driver, such as PTP offload, MACsec offload. These will be added=
+ step by step as enhancement patches afte initial version of this driver up=
+streamed.
+I think that would leave only few shared registers with the older PHYs
+(and thus the intel-xway driver). Due to the lack of a public
+datasheet however I have no way to confirm this.
+So with this information added to the patch description having a
+different driver is fine for me
 
-Looking at super old code (2.4.x) it looks like it may have gotten
-copy & pasted mistakenly? The hard headers are rounded up to 16B,
-and there is code which does things like:
+Maybe Andrew can also share his opinion - based on this new
+information - as he previously also suggested to extend the intel-xway
+driver instead of creating a new one
 
-	skb_alloc(size + dev->hard_header_len + 15);
-	skb_reserve(skb, (dev->hard_header_len + 15) & ~15);
+> 3) The new PHY generation comes with a reasonable pre-configuration for t=
+he LED registers which does not need any modification usually.
+>    In case a customer needs a specific configuration (e.g. traffic pulsin=
+g only, no link status) he needs to configure this via MDIO. There is also =
+another option for a fixed preconfiguration with the support of an external=
+ flash. However, this is out of scope of the driver.
+older PHYs also do this, but not all boards use a reasonable LED setup
 
-in other spots. So if I was to guess I'd say someone decided to add the
-15B "to be safe" even though hh_len already includes the round up here.
+> 4) Many old products are mostly used on embedded devices which do not sup=
+port WoL. Therefore there was no request yet to supported by the legacy XWA=
+Y driver.
+my understanding of Andrew's argument is: "if the register layout is
+the same for old and new PHY then why would we do some extra effort to
+not add WoL support for the old PHYs"
+Based on your information above the register layout is different, so
+that means two different implementations are needed anyways.
 
-But that's just my guess. I can't get this simple patch right,
-so take that with a grain of salt :/
 
-> > +				  !(rt->dst.dev->features & NETIF_F_SG)))
-> >  				alloclen = fraglen;
-> >  			else {
-> >  				alloclen = min_t(int, fraglen, MAX_HEADER);
-> > diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> > index ff4f9ebcf7f6..ae8dbd6cdab1 100644
-> > --- a/net/ipv6/ip6_output.c
-> > +++ b/net/ipv6/ip6_output.c
-> > @@ -1585,7 +1585,9 @@ static int __ip6_append_data(struct sock *sk,
-> >  			if ((flags & MSG_MORE) &&
-> >  			    !(rt->dst.dev->features&NETIF_F_SG))
-> >  				alloclen = mtu;
-> > -			else if (!paged)
-> > +			else if (!paged &&
-> > +				 (fraglen + hh_len < SKB_MAX_ALLOC ||  
-> 
-> The number 15 is not use here.
-> 
-> > +				  !(rt->dst.dev->features & NETIF_F_SG)))
-> >  				alloclen = fraglen;
-> >  			else {
-> >  				alloclen = min_t(int, fraglen, MAX_HEADER);  
+Best regards,
+Martin
