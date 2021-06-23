@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3CDB3B1881
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 13:08:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C5263B1886
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 13:08:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230498AbhFWLK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 07:10:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46929 "EHLO
+        id S230419AbhFWLKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 07:10:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47402 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230204AbhFWLJz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 07:09:55 -0400
+        by vger.kernel.org with ESMTP id S230403AbhFWLKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 07:10:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624446457;
+        s=mimecast20190719; t=1624446482;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=r8Kxje9mo0eA1OfdUdQS/iz/Q4P9zCSTZ9JCaTqfbwY=;
-        b=LJ/LrixdY0DomJ1qdS+pxgzhaqOT9CEW3QPgifRTaeoZVKaIBnhZFij+ah/r7f/jxTFVA+
-        kLUCK/5s/5QAAbBDh0y4J63alDqtBb9vHu880OIZNaygFRrv9yTnccS5c2vT3V2nz1pbAi
-        cVfcT6P/Sikq/Q6I599bWqwd9W4zVIU=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-465-oHdCA3wqOJyQlgJUzHuk0A-1; Wed, 23 Jun 2021 07:07:36 -0400
-X-MC-Unique: oHdCA3wqOJyQlgJUzHuk0A-1
-Received: by mail-ed1-f70.google.com with SMTP id dy23-20020a05640231f7b0290394996f1452so1093107edb.18
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 04:07:36 -0700 (PDT)
+        bh=6wgUfE3YuyYqn3UXIkFwKI8I46axO+CjBlTP2HaYNQM=;
+        b=hOYf9YprlHcGInqr9Qmx61xAnO/vnF1NzK7DW05B0SsJGM75s6hM2+dtjeLzKITMJacHGp
+        MqUWTI7po0q0ZuWCOTjDHHrjBCaHJrTIuIEg4DeiiZxP2Bf3UgaR1IeKgmNDS25O1EJhS0
+        1BKu5zXyREkWtIHiVe0oYfvKNjXh2/A=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-135-81JP1ZIYNeaZOI_v-6DOKQ-1; Wed, 23 Jun 2021 07:07:57 -0400
+X-MC-Unique: 81JP1ZIYNeaZOI_v-6DOKQ-1
+Received: by mail-ej1-f69.google.com with SMTP id c13-20020a17090603cdb029049617c6be8eso828619eja.19
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 04:07:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=r8Kxje9mo0eA1OfdUdQS/iz/Q4P9zCSTZ9JCaTqfbwY=;
-        b=orOKDSy6rBjms9r77f4fF6HpbYh3TlHQctjVTk5bnU4TaDJDGnAM4U2R5VFSRC2TG3
-         YXOZQPW+d333t6kJzvOCrLSvCZ+VPwe/meXG+AyRnyc0CREmzkfdfgJ2dn0AO/Mml/qt
-         i5Gk4jVISHAmHSG7u7+D2uRcdnW/uFXseMr2rJG0xbKaag8R+ByTyx599IbVt3qOwkh2
-         I0uCzL5XnIdhX9efAVU8QHBS/0DOb2HMWiYd64p9kFDOrI+ZjW6JZ4/J7jN66RZBkfP2
-         IIKhP0UXz2cgRuxhkkGwMnHU03kw+RrT/1LSDCDy/QuxhGEQmYx1+bwZKHWGxk2frQ0x
-         W8hg==
-X-Gm-Message-State: AOAM531r7souSrKqJf3VO+BgE4K0D1Sd1PHdgw9j8quGpntblDwF0yqT
-        m3RNh6UVmoaomUnrsz5CAx8IUWKlGcL9Y5l2Ex9zVms6A9iBebDv+3c/iEf4nUOaF14dPcXVxaO
-        jMm+Joffbvas8usSK
-X-Received: by 2002:a17:907:2622:: with SMTP id aq2mr9352248ejc.48.1624446455075;
+        bh=6wgUfE3YuyYqn3UXIkFwKI8I46axO+CjBlTP2HaYNQM=;
+        b=ceR/XBrWZ2OEQ8oGOeQRV4BY4/hMuEfrrfAvuLuTmSGlIpkq2vEPUBkqya9bY453Bv
+         r2FX7sausS76ARp3n/dAAVulYVDHEgpwPHML+Rddzo/TH3Z/bU3Rpck/DlVGfT11sUUF
+         J3iwBDUPOW7B0YlQMQSQa2ybXLQQC40EeenlhxiEcW3h1+nKQAWdN4hChgaj76OFsB3U
+         B1dB5S/XmRyacmO8EXeZVayemKN/LjR2ZlUCv4P2Dpa0FRUbDTq8PDPI6tgl1Ld4hJpV
+         TnPM/sj4CT9u5bn03nA1k9lp2htYo3gWpYZ7y1YNEzcLRd3uNb9qj8ImbO6KmkM7znKo
+         HekA==
+X-Gm-Message-State: AOAM531+WKMJwZq1W9ZvvFlfTAEWJMP0B3/Kg71Hdd7QZMJeHBgycfzo
+        5syR6K7XyRampt7pHU37DStfN8HnAT2SDy/s56d2lohq5d7YtuRPJqkw12IXaxFj/h9+F2Nc1In
+        eyKbpC4u6OVgfxZyg
+X-Received: by 2002:a17:906:244d:: with SMTP id a13mr9452851ejb.551.1624446455888;
         Wed, 23 Jun 2021 04:07:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx9y32Eh+jTvhrwfrV+XjryvNhw+II0gK5l99fd1c7Gry3y4vk/TmSfoejTBO7gW/Bf7bP9qw==
-X-Received: by 2002:a17:907:2622:: with SMTP id aq2mr9352206ejc.48.1624446454670;
-        Wed, 23 Jun 2021 04:07:34 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id c15sm10860553edu.19.2021.06.23.04.07.29
+X-Google-Smtp-Source: ABdhPJyJuPR44sF0OT9/VupxhagYWjU/hFE+FqxoBPV+oB/0joRp0VUukfBXi80r+7q0PrJGZP+Gvw==
+X-Received: by 2002:a17:906:244d:: with SMTP id a13mr9452834ejb.551.1624446455697;
+        Wed, 23 Jun 2021 04:07:35 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id n2sm13468522edi.32.2021.06.23.04.07.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Jun 2021 04:07:29 -0700 (PDT)
+        Wed, 23 Jun 2021 04:07:30 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 266CE180737; Wed, 23 Jun 2021 13:07:28 +0200 (CEST)
+        id 2D0B9180738; Wed, 23 Jun 2021 13:07:28 +0200 (CEST)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Martin KaFai Lau <kafai@fb.com>,
@@ -61,11 +61,10 @@ Cc:     Martin KaFai Lau <kafai@fb.com>,
         "Paul E . McKenney" <paulmck@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Guy Tzalik <gtzalik@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>
-Subject: [PATCH bpf-next v4 07/19] ena: remove rcu_read_lock() around XDP program invocation
-Date:   Wed, 23 Jun 2021 13:07:15 +0200
-Message-Id: <20210623110727.221922-8-toke@redhat.com>
+        Michael Chan <michael.chan@broadcom.com>
+Subject: [PATCH bpf-next v4 08/19] bnxt: remove rcu_read_lock() around XDP program invocation
+Date:   Wed, 23 Jun 2021 13:07:16 +0200
+Message-Id: <20210623110727.221922-9-toke@redhat.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210623110727.221922-1-toke@redhat.com>
 References: <20210623110727.221922-1-toke@redhat.com>
@@ -76,7 +75,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ena driver has rcu_read_lock()/rcu_read_unlock() pairs around XDP
+The bnxt driver has rcu_read_lock()/rcu_read_unlock() pairs around XDP
 program invocations. However, the actual lifetime of the objects referred
 by the XDP program invocation is longer, all the way through to the call to
 xdp_do_flush(), making the scope of the rcu_read_lock() too small. This
@@ -89,34 +88,26 @@ entirely. With the addition of RCU annotations to the XDP_REDIRECT map
 types that take bh execution into account, lockdep even understands this to
 be safe, so there's really no reason to keep it around.
 
-Cc: Guy Tzalik <gtzalik@amazon.com>
-Cc: Saeed Bishara <saeedb@amazon.com>
+Cc: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 881f88754bf6..a4378b14af4c 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -385,7 +385,6 @@ static int ena_xdp_execute(struct ena_ring *rx_ring, struct xdp_buff *xdp)
- 	u64 *xdp_stat;
- 	int qid;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index ec9564e584e0..bee6e091a997 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -138,9 +138,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+ 	xdp_prepare_buff(&xdp, *data_ptr - offset, offset, *len, false);
+ 	orig_data = xdp.data;
  
 -	rcu_read_lock();
- 	xdp_prog = READ_ONCE(rx_ring->xdp_bpf_prog);
- 
- 	if (!xdp_prog)
-@@ -443,8 +442,6 @@ static int ena_xdp_execute(struct ena_ring *rx_ring, struct xdp_buff *xdp)
- 
- 	ena_increase_stat(xdp_stat, 1, &rx_ring->syncp);
- out:
+ 	act = bpf_prog_run_xdp(xdp_prog, &xdp);
 -	rcu_read_unlock();
--
- 	return verdict;
- }
  
+ 	tx_avail = bnxt_tx_avail(bp, txr);
+ 	/* If the tx ring is not full, we must not update the rx producer yet
 -- 
 2.32.0
 
