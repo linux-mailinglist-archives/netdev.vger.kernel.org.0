@@ -2,138 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE1D3B1253
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:40:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5E83B1259
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:41:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbhFWDmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 23:42:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34037 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229890AbhFWDma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:42:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624419613;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GB/r7lUtyIIaKBdNBMm0s52SNaJtn9H7PsTYTBV7IKA=;
-        b=dgc37nx3/Lv90wy0ZWfrL9DRXDZCK8d1O1UpNEL/+2jmOlv3VFbzusUBD6fjGX4Wcz8OV8
-        DnOKkSUvo/giC/xjfGoftnH3iitTzM79drLEUXo50f8V21yXv0j4r4YwJT79GwQ7+NnSIY
-        ycOazEXurlNXGAtUK0Fq0QFKfNRmPxk=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-304-hO2E-POkOBuSgo6jdgOj8w-1; Tue, 22 Jun 2021 23:40:11 -0400
-X-MC-Unique: hO2E-POkOBuSgo6jdgOj8w-1
-Received: by mail-pj1-f70.google.com with SMTP id c5-20020a17090a1d05b029016f9eccfcd6so562634pjd.0
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 20:40:11 -0700 (PDT)
+        id S230236AbhFWDoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 23:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229774AbhFWDoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:44:02 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6345EC061574;
+        Tue, 22 Jun 2021 20:41:45 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id n99-20020a9d206c0000b029045d4f996e62so606598ota.4;
+        Tue, 22 Jun 2021 20:41:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=S/q1ilT1hs2TT/ds+4HdNsDS+C0sqazQRzGoxal5Y9M=;
+        b=PxQfmNFvrGQBO70YokAHlLczCPk+UCQXuBnXSWJgaebVZRomvU1opT4g303+VbW82C
+         EYISUruPWGX/gfarPsg5i4H6Ks3Y0MTzN43ezR6kbDDRbU70cwBoGewHjBWlXBi7fTqM
+         bs/C0K9rkGzONWLBLNcYNmDpceaHxgId3hyl4g8jMP8Xtp0tLwa2tn+JhFn4sCvdfC4w
+         KYj8WDL9UqK64HZUqJhOIjh9T3d064PQ1D/P+CnzcgJ9+6V+6Kgk4nEJUWkRQQJBYpw8
+         5MtsTLZlf2hIkdgMU9+EfuXeV7NVijymAncE9190ucUt4ywCkaZZJrluUUauAKaa1Hos
+         W0yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=GB/r7lUtyIIaKBdNBMm0s52SNaJtn9H7PsTYTBV7IKA=;
-        b=SdAefcfnwfZuSUHbZOBtb9ee6uT5oTakFsV+/ayP/MKsDCt4lGPd8SqFLOUlGJEkph
-         fcnh+ev8oRwdQiUGR5SehGS2MGfIMbk+0OHrRRCiR5fj7xE3fZjCOe46faXPVoIq1ZjB
-         D5LQ29yeMAkRAhX7B1YSUIA0/aeVVcxi3+iUYQiunl1/5MRiCGi21B3+s4PAFn0WLuz1
-         cMWz1+DSFQg+YK40V2QbshGCxu1Lg4QeuLRN71HX9GJyRjvql4+vF4U1rkU/gvrk9trK
-         khaRTOTMHUaxKAs8a5KaJ9B+0HkMqMNm+07KpNpWYpFfTaupMI+rVgWUqKQnFopFufzE
-         gm+Q==
-X-Gm-Message-State: AOAM532Vy6fODoOwqIo9vqxD+ykmNroPgS8VVxRs32r9G8k5LwzmP+v4
-        tKNqBiV1htdPZjvwreZsDjHXmaputCba6VYFSx/N4VqZ92VuJa5YaGQFXCzaXzbgshRY69M2IGx
-        Yt/7O7wS1cd/AbNe6
-X-Received: by 2002:a17:902:be0d:b029:11d:6614:88cd with SMTP id r13-20020a170902be0db029011d661488cdmr25785739pls.40.1624419610607;
-        Tue, 22 Jun 2021 20:40:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJypJkpLJFgvhSP1sBslbGcn4btZveSjK+phAN+ZdehO21gt49bGD+mKQt7N2bSScSIsvdQu3g==
-X-Received: by 2002:a17:902:be0d:b029:11d:6614:88cd with SMTP id r13-20020a170902be0db029011d661488cdmr25785718pls.40.1624419610340;
-        Tue, 22 Jun 2021 20:40:10 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l201sm669242pfd.183.2021.06.22.20.40.08
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=S/q1ilT1hs2TT/ds+4HdNsDS+C0sqazQRzGoxal5Y9M=;
+        b=uSTfDXuLdYvveD2vqPv2Y8HMuv5HSkWAY0Rxybm9Se/egrdnJEmMp0BjPyAsn/3sMA
+         8utDND7lZt0A3C45dKYn0ajBA00qY2BxQLf/m24NL2+5oYMhKbOgvRKOBhVxhVDptsNE
+         qwHieHQlLmpcLej6KRHCiztIhpBqQlPe38Md078VQeT3QE8Fo3lQZAhtiN7TVIvN0ea0
+         ByrWP8aMR6akxR3/unogc3o58zy/6wg3P7TrtQF1pxsB4d8Ey6jN2Shv8NKhxsvYDp0u
+         IFbiQDJh8hpNBcHymyymaOi7dUWMmu6pmvp8Xaftc/myxvLx+gWR6xQGfokQKMbnsGnD
+         dVTQ==
+X-Gm-Message-State: AOAM531NBJsBruYd2KEHz4o/xuF496ykEY2N1frIbddAQ4ZezHi2Mha0
+        VzWRZETOHQ3qIvGb6CLBSfs=
+X-Google-Smtp-Source: ABdhPJzhJZpGiwd0SquMzMC6URN8IvrzXjtMucSiKVjc8p8GbVoC1+AoU9gU7wZ1lGpsdbptmD8Dmg==
+X-Received: by 2002:a9d:6f88:: with SMTP id h8mr5743849otq.73.1624419704829;
+        Tue, 22 Jun 2021 20:41:44 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id f12sm999346ooh.38.2021.06.22.20.41.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Jun 2021 20:40:09 -0700 (PDT)
-Subject: Re: [PATCH] net: tun: fix tun_xdp_one() for IFF_TUN mode
-To:     David Woodhouse <dwmw2@infradead.org>,
-        netdev <netdev@vger.kernel.org>
-Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
- <e832b356-ffc2-8bca-f5d9-75e8b98cfcf2@redhat.com>
- <2cbe878845eb2a1e3803b3340263ea14436fe053.camel@infradead.org>
- <c7ae488b-ffde-f9e3-8b45-1c3d5669b519@redhat.com>
- <b287e6a4e5968e524daeeee4216286666a83bcd8.camel@infradead.org>
- <cfe1ddd7-cc14-49ee-4126-83bd940b5777@redhat.com>
- <32a5efc2845118e8b97f2ee61dc88a3a734cb713.camel@infradead.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <ecc93a78-ee8b-bcf2-9b45-dd98d2f44768@redhat.com>
-Date:   Wed, 23 Jun 2021 11:39:50 +0800
+        Tue, 22 Jun 2021 20:41:44 -0700 (PDT)
+Subject: Re: [PATCH v9 bpf-next 00/14] mvneta: introduce XDP multi-buffer
+ support
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        sameehj@amazon.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com
+References: <cover.1623674025.git.lorenzo@kernel.org>
+ <60d26fcdbd5c7_1342e208f6@john-XPS-13-9370.notmuch>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <efe4fcfa-087b-e025-a371-269ef36a3e86@gmail.com>
+Date:   Tue, 22 Jun 2021 21:41:41 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <32a5efc2845118e8b97f2ee61dc88a3a734cb713.camel@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <60d26fcdbd5c7_1342e208f6@john-XPS-13-9370.notmuch>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 6/22/21 5:18 PM, John Fastabend wrote:
+> At this point I don't think we can have a partial implementation. At
+> the moment we have packet capture applications and protocol parsers
+> running in production. If we allow this to go in staged we are going
+> to break those applications that make the fundamental assumption they
+> have access to all the data in the packet.
 
-在 2021/6/22 下午4:29, David Woodhouse 写道:
-> On Tue, 2021-06-22 at 16:00 +0800, Jason Wang wrote:
->>> I'm tempted to add a new feature for that 1:1 access, with no ->umem or
->>> ->iotlb at all. And then I can use it as a key to know that the XDP
->>> bugs are fixed too :)
->>
->> This means we need validate the userspace address each time before vhost
->> tries to use that. This will de-gradate the performance. So we still
->> need to figure out the legal userspace address range which might not be
->> easy.
-> Easier from the kernel than from userspace though :)
-
-
-Yes.
-
-
->
-> But I don't know that we need it. Isn't a call to access_ok() going to
-> be faster than what translate_desc() does to look things up anyway?
-
-
-Right.
-
-
->
-> In the 1:1 mode, the access_ok() is all that's needed since there's no
-> translation.
->
-> @@ -2038,6 +2065,14 @@ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
->          u64 s = 0;
->          int ret = 0;
->   
-> +       if (vhost_has_feature(vq, VHOST_F_IDENTITY_MAPPING)) {
-
-
-Using vhost_has_feature() is kind of tricky since it's used for virtio 
-feature negotiation.
-
-We probably need to use backend_features instead.
-
-I think we should probably do more:
-
-1) forbid the feature to be set when mem table / IOTLB has at least one 
-mapping
-2) forbid the mem table / IOTLB updating after the feature is set
-
-Thanks
-
-
-> +               if (!access_ok((void __user *)addr, len))
-> +                       return -EFAULT;
-> +
-> +               iov[0].iov_len = len;
-> +               iov[0].iov_base = (void __user *)addr;
-> +               return 1;
-> +       }
->          while ((u64)len > s) {
->                  u64 size;
->                  if (unlikely(ret >= iov_size)) {
-
+What about cases like netgpu where headers are accessible but data is
+not (e.g., gpu memory)? If the API indicates limited buffer access, is
+that sufficient?
