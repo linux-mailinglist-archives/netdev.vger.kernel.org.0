@@ -2,214 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2309F3B22AD
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 23:44:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE3543B22B2
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 23:45:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbhFWVrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 17:47:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38342 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229758AbhFWVrD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 17:47:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EE4E61351;
-        Wed, 23 Jun 2021 21:44:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624484685;
-        bh=csHjNyXFHkq+19H+GO5YLUwqsW0i1/4JRdj9gXeSt3c=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AqA0q9AYDsx60QnCjbUJAzBtP0MFjPwHUDmM7fRZRy/X4je8PZ8FmAEnj13F/hJz3
-         r1Ldu0BI0yenZSJqxMONRKPvgGMGOHpLcfae5fyLghzP60iLJnrmTgymjig06Bln3W
-         KcrUZoVID0SsGwhOE0EtiRTAp2ndGNR5im47rEQ/apyG4KlqD8yJD3LhYlXNKVsAPz
-         POfEw4CCkuYgdM1liNe8qWLuiuQ6F7NdDyEbZnfVysuIjWgcDxHEhYIytnXrmmRjCh
-         oW1J8hctyHHmToQO4DaaKsobzT45gbsZl/MtZ840SAK2vJEnjHMlMe50uT0UoKAaTP
-         dOMvdwJAnIPsw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, willemb@google.com, eric.dumazet@gmail.com,
-        dsahern@gmail.com, yoshfuji@linux-ipv6.org, brouer@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, Dave Jones <dsj@fb.com>
-Subject: [PATCH net-next v4] net: ip: avoid OOM kills with large UDP sends over loopback
-Date:   Wed, 23 Jun 2021 14:44:38 -0700
-Message-Id: <20210623214438.2276538-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        id S229978AbhFWVrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 17:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229774AbhFWVrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 17:47:32 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1546C061756
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 14:45:14 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id e3so3348970qte.0
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 14:45:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=eO/gYbfA6Dk3fvPEfq//UAVbrBE1Hl+b3nbIln7zxCo=;
+        b=IWYpWrmxb6b5oYYzL2CGARVvY1cJdnFmp0pf3q3Bz5VW+Yv5HFpsH4M9Bq+Nw/sjHK
+         2L0nDVw45GcJe7nQTlZ28k/miOGGntJR8W5J4Voi7MO1jrBUJgB5Ea0Esw50VWRmm45Y
+         38AF8mhKCT8oJimpI7VLn2vlR+sGga5+4DD9qedz7Z2rFAxEOHAA6DcEET+mez1x3J6+
+         GOvlJYnOt+dfs+bJsq/MHUwUv+NMt525B239rkOXryVQEIrngwee2HEu7obvBb4/uncB
+         6O+ax7RxC2XTTn3FxGkC3LYkt9ImH0/OqEC7GesBlxBxvHieu9Z9J226aKdj5hGBSXcE
+         O9ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=eO/gYbfA6Dk3fvPEfq//UAVbrBE1Hl+b3nbIln7zxCo=;
+        b=HMZlveGuO7QqYwpJkKr7Z2G9qAiqrrIRIUw+W/l/MHN6iMksNXxqg6LHnnYgTy9qeb
+         f5SnF9lLEwim+mOChXyzs0PB5pECuG7mUcVKAVQ7EGdPvVbS9IISeYIiCq3O3KYkDNWD
+         2vjfcDcbzKqZzJsk9vO3MYstAMeATOz3z/6iDWe0cqS31IpdWd1UsbpTTklcek7gcUC/
+         zuB8Wo3oNvsUMHB+BwgyQ15/pnCZlGwXaGxo+zcDHldNEmA8CyghPfIpXi2ZGdHiWNWl
+         6BnAXws3ExsPOYr/5j39tfd4qhBk/1Wiwnf51I3G6XWry58PsgetqMlTspgg06gWJ19q
+         w4KQ==
+X-Gm-Message-State: AOAM530X/5/aHdZtgQwPfcUapqF83cqYi3IHhpiW7GegPSCuJuSt4ISL
+        GNFCyZWG9gHNi4DOeUaXrl4KkKZlrv1UM0+SXu0jM7k/tK8=
+X-Google-Smtp-Source: ABdhPJw3GtJtGKNZUWMs5ocfXyKukzULEu9ZrESDoOs8YOI4F1k7sQ982AKQG9jIeOCBC6M9JqVFAyAKPrwT60U/sRM=
+X-Received: by 2002:aed:2064:: with SMTP id 91mr1931402qta.318.1624484713483;
+ Wed, 23 Jun 2021 14:45:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210621173028.3541424-1-mw@semihalf.com> <20210621173028.3541424-6-mw@semihalf.com>
+ <YNObfrJN0Qk5RO+x@lunn.ch>
+In-Reply-To: <YNObfrJN0Qk5RO+x@lunn.ch>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Wed, 23 Jun 2021 23:45:04 +0200
+Message-ID: <CAPv3WKfdCwq=AYhARGxfRA92XcZjXYwdOj6_JLP+wOmPV8xxzQ@mail.gmail.com>
+Subject: Re: [net-next: PATCH v3 5/6] net: mvpp2: enable using phylink with ACPI
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        Jon Nettleton <jon@solid-run.com>,
+        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
+        lenb@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dave observed number of machines hitting OOM on the UDP send
-path. The workload seems to be sending large UDP packets over
-loopback. Since loopback has MTU of 64k kernel will try to
-allocate an skb with up to 64k of head space. This has a good
-chance of failing under memory pressure. What's worse if
-the message length is <32k the allocation may trigger an
-OOM killer.
+Hi,
 
-This is entirely avoidable, we can use an skb with page frags.
+=C5=9Br., 23 cze 2021 o 22:37 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
+>
+> > +static bool mvpp2_use_acpi_compat_mode(struct fwnode_handle *port_fwno=
+de)
+> > +{
+> > +     if (!is_acpi_node(port_fwnode))
+> > +             return false;
+> > +
+> > +     return (!fwnode_property_present(port_fwnode, "phy-handle") &&
+> > +             !fwnode_property_present(port_fwnode, "managed") &&
+> > +             !fwnode_get_named_child_node(port_fwnode, "fixed-link"));
+>
+> I'm not too sure about this last one. You only use fixed-link when
+> connecting to an Ethernet switch. I doubt anybody will try ACPI and a
+> switch. It has been agreed, ACPI is for simple hardware, and you need
+> to use DT for advanced hardware configurations.
+>
+> What is your use case for fixed-link?
+>
 
-af_unix solves a similar problem by limiting the head
-length to SKB_MAX_ALLOC. This seems like a good and simple
-approach. It means that UDP messages > 16kB will now
-use fragments if underlying device supports SG, if extra
-allocator pressure causes regressions in real workloads
-we can switch to trying the large allocation first and
-falling back.
+Regardless of the "simple hardware" definition or whether DSA + ACPI
+feasibility, you can still have e.g. the switch left in "unmanaged"
+mode (or whatever the firmware configures), connected via fixed-link
+to the MAC. The same effect as booting with DT, but not loading the
+DSA/switch driver - the "CPU port" can be used as a normal netdev
+interface.
 
-v4: pre-calculate all the additions to alloclen so
-    we can be sure it won't go over order-2
+I'd also prefer to have all 3 major interface types supported in
+phylink, explicitly checked in the driver - it has not been supported
+yet, but can be in the future, so let's have them covered in the
+backward compatibility check.
 
-Reported-by: Dave Jones <dsj@fb.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/ipv4/ip_output.c  | 32 ++++++++++++++++++--------------
- net/ipv6/ip6_output.c | 32 +++++++++++++++++---------------
- 2 files changed, 35 insertions(+), 29 deletions(-)
-
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index c3efc7d658f6..8d8a8da3ae7e 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1054,7 +1054,7 @@ static int __ip_append_data(struct sock *sk,
- 			unsigned int datalen;
- 			unsigned int fraglen;
- 			unsigned int fraggap;
--			unsigned int alloclen;
-+			unsigned int alloclen, alloc_extra;
- 			unsigned int pagedlen;
- 			struct sk_buff *skb_prev;
- alloc_new_skb:
-@@ -1074,35 +1074,39 @@ static int __ip_append_data(struct sock *sk,
- 			fraglen = datalen + fragheaderlen;
- 			pagedlen = 0;
- 
-+			alloc_extra = hh_len + 15;
-+			alloc_extra += exthdrlen;
-+
-+			/* The last fragment gets additional space at tail.
-+			 * Note, with MSG_MORE we overallocate on fragments,
-+			 * because we have no idea what fragment will be
-+			 * the last.
-+			 */
-+			if (datalen == length + fraggap)
-+				alloc_extra += rt->dst.trailer_len;
-+
- 			if ((flags & MSG_MORE) &&
- 			    !(rt->dst.dev->features&NETIF_F_SG))
- 				alloclen = mtu;
--			else if (!paged)
-+			else if (!paged &&
-+				 (fraglen + alloc_extra < SKB_MAX_ALLOC ||
-+				  !(rt->dst.dev->features & NETIF_F_SG)))
- 				alloclen = fraglen;
- 			else {
- 				alloclen = min_t(int, fraglen, MAX_HEADER);
- 				pagedlen = fraglen - alloclen;
- 			}
- 
--			alloclen += exthdrlen;
--
--			/* The last fragment gets additional space at tail.
--			 * Note, with MSG_MORE we overallocate on fragments,
--			 * because we have no idea what fragment will be
--			 * the last.
--			 */
--			if (datalen == length + fraggap)
--				alloclen += rt->dst.trailer_len;
-+			alloclen += alloc_extra;
- 
- 			if (transhdrlen) {
--				skb = sock_alloc_send_skb(sk,
--						alloclen + hh_len + 15,
-+				skb = sock_alloc_send_skb(sk, alloclen,
- 						(flags & MSG_DONTWAIT), &err);
- 			} else {
- 				skb = NULL;
- 				if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
- 				    2 * sk->sk_sndbuf)
--					skb = alloc_skb(alloclen + hh_len + 15,
-+					skb = alloc_skb(alloclen,
- 							sk->sk_allocation);
- 				if (unlikely(!skb))
- 					err = -ENOBUFS;
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index ff4f9ebcf7f6..497974b4372a 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1555,7 +1555,7 @@ static int __ip6_append_data(struct sock *sk,
- 			unsigned int datalen;
- 			unsigned int fraglen;
- 			unsigned int fraggap;
--			unsigned int alloclen;
-+			unsigned int alloclen, alloc_extra;
- 			unsigned int pagedlen;
- alloc_new_skb:
- 			/* There's no room in the current skb */
-@@ -1582,17 +1582,28 @@ static int __ip6_append_data(struct sock *sk,
- 			fraglen = datalen + fragheaderlen;
- 			pagedlen = 0;
- 
-+			alloc_extra = hh_len;
-+			alloc_extra += dst_exthdrlen;
-+			alloc_extra += rt->dst.trailer_len;
-+
-+			/* We just reserve space for fragment header.
-+			 * Note: this may be overallocation if the message
-+			 * (without MSG_MORE) fits into the MTU.
-+			 */
-+			alloc_extra += sizeof(struct frag_hdr);
-+
- 			if ((flags & MSG_MORE) &&
- 			    !(rt->dst.dev->features&NETIF_F_SG))
- 				alloclen = mtu;
--			else if (!paged)
-+			else if (!paged &&
-+				 (fraglen + alloc_extra < SKB_MAX_ALLOC ||
-+				  !(rt->dst.dev->features & NETIF_F_SG)))
- 				alloclen = fraglen;
- 			else {
- 				alloclen = min_t(int, fraglen, MAX_HEADER);
- 				pagedlen = fraglen - alloclen;
- 			}
--
--			alloclen += dst_exthdrlen;
-+			alloclen += alloc_extra;
- 
- 			if (datalen != length + fraggap) {
- 				/*
-@@ -1602,30 +1613,21 @@ static int __ip6_append_data(struct sock *sk,
- 				datalen += rt->dst.trailer_len;
- 			}
- 
--			alloclen += rt->dst.trailer_len;
- 			fraglen = datalen + fragheaderlen;
- 
--			/*
--			 * We just reserve space for fragment header.
--			 * Note: this may be overallocation if the message
--			 * (without MSG_MORE) fits into the MTU.
--			 */
--			alloclen += sizeof(struct frag_hdr);
--
- 			copy = datalen - transhdrlen - fraggap - pagedlen;
- 			if (copy < 0) {
- 				err = -EINVAL;
- 				goto error;
- 			}
- 			if (transhdrlen) {
--				skb = sock_alloc_send_skb(sk,
--						alloclen + hh_len,
-+				skb = sock_alloc_send_skb(sk, alloclen,
- 						(flags & MSG_DONTWAIT), &err);
- 			} else {
- 				skb = NULL;
- 				if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
- 				    2 * sk->sk_sndbuf)
--					skb = alloc_skb(alloclen + hh_len,
-+					skb = alloc_skb(alloclen,
- 							sk->sk_allocation);
- 				if (unlikely(!skb))
- 					err = -ENOBUFS;
--- 
-2.31.1
-
+Best regards,
+Marcin
