@@ -2,154 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 240183B20BD
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 21:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B0F3B20D8
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 21:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbhFWTDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 15:03:25 -0400
-Received: from h4.fbrelay.privateemail.com ([131.153.2.45]:51170 "EHLO
-        h4.fbrelay.privateemail.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229523AbhFWTDZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 15:03:25 -0400
-X-Greylist: delayed 883 seconds by postgrey-1.27 at vger.kernel.org; Wed, 23 Jun 2021 15:03:24 EDT
-Received: from MTA-06-3.privateemail.com (mta-06.privateemail.com [68.65.122.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by h3.fbrelay.privateemail.com (Postfix) with ESMTPS id 718C8809C4;
-        Wed, 23 Jun 2021 14:46:23 -0400 (EDT)
-Received: from MTA-06.privateemail.com (localhost [127.0.0.1])
-        by MTA-06.privateemail.com (Postfix) with ESMTP id E826C600BA;
-        Wed, 23 Jun 2021 14:46:21 -0400 (EDT)
-Received: from hal-station.. (unknown [10.20.151.223])
-        by MTA-06.privateemail.com (Postfix) with ESMTPA id 11D5760071;
-        Wed, 23 Jun 2021 14:46:20 -0400 (EDT)
-From:   Hamza Mahfooz <someguy@effective-light.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Hamza Mahfooz <someguy@effective-light.com>
-Subject: [PATCH] iwlwifi: remove redundant calls to unlikely()
-Date:   Wed, 23 Jun 2021 14:45:46 -0400
-Message-Id: <20210623184546.14769-1-someguy@effective-light.com>
+        id S229945AbhFWTQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 15:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39326 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229660AbhFWTQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 15:16:50 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7ADC061574;
+        Wed, 23 Jun 2021 12:14:32 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id j4so5892071lfc.8;
+        Wed, 23 Jun 2021 12:14:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vCA9UxJ+EMCBunFdIzfCgcc8cOVFYGFyGgIL+e4eYGc=;
+        b=UzNhGzf3APIIvFvjJsrVV26jL1WdkAkoAwzH5J+sxCyYYAY8XvjzLBKarHlYSgEW+H
+         ROakHkkCfn70i7JTu+yHbCUbnkuPf7TkqgAOUJt1d0Ms8qGccgWOFHX7YAWXLuxF4qZl
+         U/XbtVMPj5nLRPkZKpRykEAA6jKBoO5kEXNfZAlVD+EWR1Led/Uz5YOVeudBbQyx3X57
+         OurvlnmzdOoSny+LJAPPAbww4QTxM0W6d/VHRAR8uiuhK1xGiMG1A94AOKVZJSkD5qPj
+         0bbbGsEAChYON9jaMET8xnLxvZDByABYXkAbL4e6Wq3VBH9HdfNQcUsTU0Os2aMchm45
+         AXkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vCA9UxJ+EMCBunFdIzfCgcc8cOVFYGFyGgIL+e4eYGc=;
+        b=CKSGAoC5Pne2c1+Z7TYaz2ETAhWVDJzuHBvF4qt4K+V9wdQTXtJdAZNy8eU2ShOdOx
+         52AaOzbAgTTHr7rhAE6ovMExacva4RNDa+CnIwq857JzmCJit84zc/J21XY/LY+YQhas
+         9TTH2LKM98ZJZgVQonzP03h6ndothNXtMECA+AVrNulr+l2sLqnDt5JXRyuXWnItCQED
+         lvxLOnXL7VqdzP0beeafWfYkua6kF/1LxMV7hSka+gAdqLIAbIz1a/HSDRyfd6LdjmIC
+         vMMbdUTpNjBZgse9xUrfVnmm5WIV9wRnt3z6J6Wr2ePZUq2F+0VRrd4YoH5R082o1/h1
+         wJlQ==
+X-Gm-Message-State: AOAM533CPsEMfRKrC1YdLR44TZoS0oapic6eHuZYGopxEs94RkIe4VH+
+        2IVBAc6T9w7B37lmgvADWB7gXeuHhw4UmA==
+X-Google-Smtp-Source: ABdhPJwEryE5nA4/ztCF+DQUY46j/ZZB0JCfX0QWNYwk/Gjoy0mw/XvPRg1ombAoJ9/Rq/4JX1XHwg==
+X-Received: by 2002:a05:6512:b26:: with SMTP id w38mr859979lfu.227.1624475670940;
+        Wed, 23 Jun 2021 12:14:30 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.225.155])
+        by smtp.gmail.com with ESMTPSA id w4sm79724lfr.282.2021.06.23.12.14.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Jun 2021 12:14:30 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net, chunkeey@gmail.com
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH] net: ath10: add missing ret initialization
+Date:   Wed, 23 Jun 2021 22:14:26 +0300
+Message-Id: <20210623191426.13648-1-paskripkin@gmail.com>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As per commit a7f3d3d3600c ("dma-mapping: add unlikely hint to error path
-in dma_mapping_error"), dma_mapping_error now internally calls unlikely(),
-so we don't need to call it directly anymore.
+In case of not supported chip the code jump
+to the error handling path, but _ret_ will be set to 0.
+Returning 0 from probe means, that ->probe() succeeded, but
+it's not true when chip is not supported.
 
-Signed-off-by: Hamza Mahfooz <someguy@effective-light.com>
+Fixes: f8914a14623a ("ath10k: restore QCA9880-AR1A (v1) detection")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/tx.c  | 10 +++++-----
- drivers/net/wireless/intel/iwlwifi/queue/tx.c | 10 +++++-----
- 2 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/net/wireless/ath/ath10k/pci.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/tx.c b/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
-index 4f6c187eed69..3bf56d30f741 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
-@@ -1253,7 +1253,7 @@ static int iwl_fill_data_tbs(struct iwl_trans *trans, struct sk_buff *skb,
- 		dma_addr_t tb_phys = dma_map_single(trans->dev,
- 						    skb->data + hdr_len,
- 						    head_tb_len, DMA_TO_DEVICE);
--		if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
-+		if (dma_mapping_error(trans->dev, tb_phys))
- 			return -EINVAL;
- 		trace_iwlwifi_dev_tx_tb(trans->dev, skb, skb->data + hdr_len,
- 					tb_phys, head_tb_len);
-@@ -1272,7 +1272,7 @@ static int iwl_fill_data_tbs(struct iwl_trans *trans, struct sk_buff *skb,
- 		tb_phys = skb_frag_dma_map(trans->dev, frag, 0,
- 					   skb_frag_size(frag), DMA_TO_DEVICE);
+diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+index e7fde635e0ee..36ea8debd1c7 100644
+--- a/drivers/net/wireless/ath/ath10k/pci.c
++++ b/drivers/net/wireless/ath/ath10k/pci.c
+@@ -3697,11 +3697,15 @@ static int ath10k_pci_probe(struct pci_dev *pdev,
+ 	}
  
--		if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
-+		if (dma_mapping_error(trans->dev, tb_phys))
- 			return -EINVAL;
- 		trace_iwlwifi_dev_tx_tb(trans->dev, skb, skb_frag_address(frag),
- 					tb_phys, skb_frag_size(frag));
-@@ -1380,7 +1380,7 @@ static int iwl_fill_data_tbs_amsdu(struct iwl_trans *trans, struct sk_buff *skb,
- 		hdr_tb_len = hdr_page->pos - start_hdr;
- 		hdr_tb_phys = dma_map_single(trans->dev, start_hdr,
- 					     hdr_tb_len, DMA_TO_DEVICE);
--		if (unlikely(dma_mapping_error(trans->dev, hdr_tb_phys)))
-+		if (dma_mapping_error(trans->dev, hdr_tb_phys))
- 			return -EINVAL;
- 		iwl_pcie_txq_build_tfd(trans, txq, hdr_tb_phys,
- 				       hdr_tb_len, false);
-@@ -1400,7 +1400,7 @@ static int iwl_fill_data_tbs_amsdu(struct iwl_trans *trans, struct sk_buff *skb,
+ 	bus_params.chip_id = ath10k_pci_soc_read32(ar, SOC_CHIP_ID_ADDRESS);
+-	if (bus_params.chip_id == 0xffffffff)
++	if (bus_params.chip_id == 0xffffffff) {
++		ret = -ENODEV;
+ 		goto err_unsupported;
++	}
  
- 			tb_phys = dma_map_single(trans->dev, tso.data,
- 						 size, DMA_TO_DEVICE);
--			if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
-+			if (dma_mapping_error(trans->dev, tb_phys))
- 				return -EINVAL;
+-	if (!ath10k_pci_chip_is_supported(pdev->device, bus_params.chip_id))
++	if (!ath10k_pci_chip_is_supported(pdev->device, bus_params.chip_id)) {
++		ret = -ENODEV;
+ 		goto err_free_irq;
++	}
  
- 			iwl_pcie_txq_build_tfd(trans, txq, tb_phys,
-@@ -1551,7 +1551,7 @@ int iwl_trans_pcie_tx(struct iwl_trans *trans, struct sk_buff *skb,
- 	/* map the data for TB1 */
- 	tb1_addr = ((u8 *)&dev_cmd->hdr) + IWL_FIRST_TB_SIZE;
- 	tb1_phys = dma_map_single(trans->dev, tb1_addr, tb1_len, DMA_TO_DEVICE);
--	if (unlikely(dma_mapping_error(trans->dev, tb1_phys)))
-+	if (dma_mapping_error(trans->dev, tb1_phys))
- 		goto out_err;
- 	iwl_pcie_txq_build_tfd(trans, txq, tb1_phys, tb1_len, false);
- 
-diff --git a/drivers/net/wireless/intel/iwlwifi/queue/tx.c b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
-index 451b06069350..2b409fb33c99 100644
---- a/drivers/net/wireless/intel/iwlwifi/queue/tx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
-@@ -211,7 +211,7 @@ static int iwl_txq_gen2_set_tb_with_wa(struct iwl_trans *trans,
- 	struct page *page;
- 	int ret;
- 
--	if (unlikely(dma_mapping_error(trans->dev, phys)))
-+	if (dma_mapping_error(trans->dev, phys))
- 		return -ENOMEM;
- 
- 	if (likely(!iwl_txq_crosses_4g_boundary(phys, len))) {
-@@ -251,7 +251,7 @@ static int iwl_txq_gen2_set_tb_with_wa(struct iwl_trans *trans,
- 
- 	phys = dma_map_single(trans->dev, page_address(page), len,
- 			      DMA_TO_DEVICE);
--	if (unlikely(dma_mapping_error(trans->dev, phys)))
-+	if (dma_mapping_error(trans->dev, phys))
- 		return -ENOMEM;
- 	ret = iwl_txq_gen2_set_tb(trans, tfd, phys, len);
- 	if (ret < 0) {
-@@ -405,7 +405,7 @@ static int iwl_txq_gen2_build_amsdu(struct iwl_trans *trans,
- 		tb_len = hdr_page->pos - start_hdr;
- 		tb_phys = dma_map_single(trans->dev, start_hdr,
- 					 tb_len, DMA_TO_DEVICE);
--		if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
-+		if (dma_mapping_error(trans->dev, tb_phys))
- 			goto out_err;
- 		/*
- 		 * No need for _with_wa, this is from the TSO page and
-@@ -487,7 +487,7 @@ iwl_tfh_tfd *iwl_txq_gen2_build_tx_amsdu(struct iwl_trans *trans,
- 	/* map the data for TB1 */
- 	tb1_addr = ((u8 *)&dev_cmd->hdr) + IWL_FIRST_TB_SIZE;
- 	tb_phys = dma_map_single(trans->dev, tb1_addr, len, DMA_TO_DEVICE);
--	if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
-+	if (dma_mapping_error(trans->dev, tb_phys))
- 		goto out_err;
- 	/*
- 	 * No need for _with_wa(), we ensure (via alignment) that the data
-@@ -582,7 +582,7 @@ iwl_tfh_tfd *iwl_txq_gen2_build_tx(struct iwl_trans *trans,
- 	/* map the data for TB1 */
- 	tb1_addr = ((u8 *)&dev_cmd->hdr) + IWL_FIRST_TB_SIZE;
- 	tb_phys = dma_map_single(trans->dev, tb1_addr, tb1_len, DMA_TO_DEVICE);
--	if (unlikely(dma_mapping_error(trans->dev, tb_phys)))
-+	if (dma_mapping_error(trans->dev, tb_phys))
- 		goto out_err;
- 	/*
- 	 * No need for _with_wa(), we ensure (via alignment) that the data
+ 	ret = ath10k_core_register(ar, &bus_params);
+ 	if (ret) {
 -- 
 2.32.0
 
