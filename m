@@ -2,99 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 453613B1E6C
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 18:14:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDF3F3B1E71
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 18:15:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbhFWQQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 12:16:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26658 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229688AbhFWQQc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 12:16:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624464854;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nj23NkvOz6EzLV20ZpL38A+OlYN1UWETlVYZQZsTA/A=;
-        b=KHXrpb/BP3rWWeEkPdFFn2LPfUqDF4O7ZKaMPCf9MLVPoBy4XVRDoQ9vXua0trzU3l2CDq
-        rRg9HGMc+ho5WHLPbULRqSonm9kvWOQsoHNq3nQvgkbIxqTcvw55mgOoDYnvvigirgVPRg
-        P7wqjc3Dqoq+j8/VgOblMGAZd6QPVPg=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-235-KhX4pDt8MsOajfb5WBA0Fw-1; Wed, 23 Jun 2021 12:14:13 -0400
-X-MC-Unique: KhX4pDt8MsOajfb5WBA0Fw-1
-Received: by mail-ej1-f72.google.com with SMTP id g6-20020a1709064e46b02903f57f85ac45so1161063ejw.15
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 09:14:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nj23NkvOz6EzLV20ZpL38A+OlYN1UWETlVYZQZsTA/A=;
-        b=j2ZrA5BBYEE50YHpUfEG4nJ0n3P8hyRwvNlbaKdvjPw+zrex+zBhdyhC3gfTh4GiLh
-         DZF0plMZKAG0alv7qNEQTCBISdqtg5Ris8YLA5XQiQ2uQcJVXK18tBmWHkoZ0GG51ZRA
-         WawC5CCYY/F06NTNEKaEOv6EZk64bK55Ge/wfR9aH9NjfvnMgz9D+j7N+8fh09hsGz2T
-         4bDkGlzpmTxdRGS9EsaLNQ47A+OLgNQh0Wik6Vtq200VGn09mV+m/dlz7wiBI5a/2DCX
-         K8ftHdbbZxf9oqBnZ1k0xDE+2l8WEvXIKTg5ClxVXrujh+5LOFqWwg5s7sX0+1zmLfwg
-         dp9Q==
-X-Gm-Message-State: AOAM530pptA47WcbFQDAPSqXRYejndl8KySYbqzhLJSRk37Mkp1T7mrI
-        ez0huHR5XOX0+WSQsCDjhryCulL7FKYTN4x6VXrWhnOwSG8TLmGQosnfu393+4Kvg30sw+VLU1U
-        ZnHfj+CBFNByfVTJF
-X-Received: by 2002:a05:6402:358:: with SMTP id r24mr694014edw.69.1624464852042;
-        Wed, 23 Jun 2021 09:14:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwYtrsEjivOh9pUUY54YkoZINzNJahBEuMWFaogEOzw9HISbTNQJpM83z5DvSQQAP7UL/KVEw==
-X-Received: by 2002:a05:6402:358:: with SMTP id r24mr693976edw.69.1624464851854;
-        Wed, 23 Jun 2021 09:14:11 -0700 (PDT)
-Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
-        by smtp.gmail.com with ESMTPSA id em20sm101445ejc.70.2021.06.23.09.14.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Jun 2021 09:14:11 -0700 (PDT)
-Date:   Wed, 23 Jun 2021 18:14:08 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Xianting Tian <xianting_tian@126.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xianting Tian <xianting.tian@linux.alibaba.com>
-Subject: Re: [PATCH] virtio_net: Use virtio_find_vqs_ctx() helper
-Message-ID: <20210623161408.vzq3fizljtkyig76@steredhat>
-References: <1624461382-8302-1-git-send-email-xianting_tian@126.com>
+        id S229954AbhFWQRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 12:17:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52288 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229523AbhFWQRW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 12:17:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3242B60233;
+        Wed, 23 Jun 2021 16:15:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624464904;
+        bh=3VryKsqlmKhcKdkqnVgECqS0dNxg8oTKj2aBgAbdXMs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ULHQVAQxYgzXNQUz++8+On/dL/vR8gwghJjptSzlaa5yeh8OH72xzSUmruQgs0iU/
+         RGuhCGHbY+xHbZe9TszC7Q84JoD/edvaLjTDKeOgmh7xJp3brjdERN12jUraPIvD+n
+         jIhLs0isjuJv/g66VMTxD6q0i92JI0tjDZsa9v1PHI9yOvHMVEzImmmcWcNLXxXF+U
+         GpQNtPtm0XzDVW+o5ETvlzuePl4Qi0Bbui4aZoCMnY3gijzJKbpVBeBKUisAQAkbIK
+         OPXKUvCD08wHEUWC8ONT719LfWAheyC/DnCUxkRYbwCcaNxYE92DHQXaGc00CBNzWK
+         9YZpXhu0t+7eQ==
+Date:   Wed, 23 Jun 2021 09:14:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, vfedorenko@novek.ru
+Subject: Re: [PATCH net] ip6_tunnel: fix GRE6 segmentation
+Message-ID: <20210623091458.40fb59c6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <592a8a33-dfb8-c67f-c9e6-0e1bab37b00d@gmail.com>
+References: <20210622015254.1967716-1-kuba@kernel.org>
+        <33902f8c-e14a-7dc6-9bde-4f8f168505b5@gmail.com>
+        <20210622152451.7847bc24@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <592a8a33-dfb8-c67f-c9e6-0e1bab37b00d@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <1624461382-8302-1-git-send-email-xianting_tian@126.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 23, 2021 at 11:16:22AM -0400, Xianting Tian wrote:
->virtio_find_vqs_ctx() is defined but never be called currently,
->it is the right place to use it.
->
->Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
->---
-> drivers/net/virtio_net.c | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
+On Tue, 22 Jun 2021 21:47:45 -0600 David Ahern wrote:
+> On 6/22/21 4:24 PM, Jakub Kicinski wrote:
+> >> would be good to capture the GRE use case that found the bug and the
+> >> MPLS version as test cases under tools/testing/selftests/net. Both
+> >> should be doable using namespaces.  
+> > 
+> > I believe Vadim is working on MPLS side, how does this look for GRE?
+> 
+> I like the template you followed. :-)
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+:)
 
->
->diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->index 78a01c7..9061c55 100644
->--- a/drivers/net/virtio_net.c
->+++ b/drivers/net/virtio_net.c
->@@ -2830,8 +2830,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
-> 			ctx[rxq2vq(i)] = true;
-> 	}
->
->-	ret = vi->vdev->config->find_vqs(vi->vdev, total_vqs, vqs, callbacks,
->-					 names, ctx, NULL);
->+	ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
->+				  names, ctx, NULL);
-> 	if (ret)
-> 		goto err_find;
->
->-- 
->1.8.3.1
->
+> The test case looks good to me, thanks for doing it.
 
+Noob question, why do we need that 2 sec wait with IPv6 sometimes?
+I've seen it randomly in my local testing as well I wasn't sure if 
+it's a bug or expected.
+
+I make a v6 tunnel on top of a VLAN and for 2 secs after creation 
+I get the wrong route in ip -6 r g.
