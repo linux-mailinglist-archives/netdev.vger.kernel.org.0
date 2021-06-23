@@ -2,61 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 146663B21D7
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 22:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B9003B220A
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 22:50:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbhFWUjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 16:39:39 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52450 "EHLO vps0.lunn.ch"
+        id S229933AbhFWUwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 16:52:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229660AbhFWUji (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 16:39:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1XtEzc6VnSjwLXbMFdcKxrNUxmRgQuaNqMZ4b5TzFxo=; b=ONgnW4sIZKv4soPmAFcM4MNh6S
-        eBjrrNk0sM4dgCFBqgTez62PZAPefRuFqBJkswL0oQWBk81pdg+HOh8K4ry4inZlNo/YIwK3nICg0
-        gzTPcfsAmx4ExJT1NjxRcguwbqTSNSpxI2XNEckRW1kCaLLnH+Sjh0PN6/tqRGL+fVmM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lw9cc-00AtE6-9o; Wed, 23 Jun 2021 22:37:18 +0200
-Date:   Wed, 23 Jun 2021 22:37:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
-        jaz@semihalf.com, gjb@semihalf.com, upstream@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, jon@solid-run.com, tn@semihalf.com,
-        rjw@rjwysocki.net, lenb@kernel.org
-Subject: Re: [net-next: PATCH v3 5/6] net: mvpp2: enable using phylink with
- ACPI
-Message-ID: <YNObfrJN0Qk5RO+x@lunn.ch>
-References: <20210621173028.3541424-1-mw@semihalf.com>
- <20210621173028.3541424-6-mw@semihalf.com>
+        id S229800AbhFWUwV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 16:52:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B827D60234;
+        Wed, 23 Jun 2021 20:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624481403;
+        bh=rFwswodeKVEnjYsGgpiNg9T7sJMbkLnibysFCvmhSWM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EuGLy6ZawKGkE4j0WwOuDyCWuE2Nm75xLWaUb4PB72Ywx+werRjhUhuyc0snw0t3P
+         U3kNDNdoRrKqX/k3AHf6QOzvkmB7B7YLfJkh3cIu6c+8BVWDvx+wk0mzzctYpPkLdJ
+         cX5sGL6aoPxmpu+NUL0hWUL8Ll8bS7nTTTIhU+C/KF1GYuO4wKwxuqlw+hSwOTlKhf
+         sLTNhISKzTgtKG1Y5GoEqlovVVgnlmjaS64hzlqb6J13vkyUb/p09tQKyO6JuBwlI1
+         Ule0PV5ucuZ8dz62M1NpaysSn7XLiYZ5BVqzNkA0W9m0wctbHj0gmFcYFX65lDobTT
+         GIDY2gl0jqr6A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A73FC609B1;
+        Wed, 23 Jun 2021 20:50:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210621173028.3541424-6-mw@semihalf.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] bonding: allow nesting of bonding device
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162448140368.19131.15507947414317919406.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Jun 2021 20:50:03 +0000
+References: <20210623032108.51472-1-zhudi21@huawei.com>
+In-Reply-To: <20210623032108.51472-1-zhudi21@huawei.com>
+To:     zhudi <zhudi21@huawei.com>
+Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, kuba@kernel.org,
+        davem@davemloft.net, eric.dumazet@gmail.com,
+        netdev@vger.kernel.org, rose.chen@huawei.com,
+        jay.vosburgh@canonical.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static bool mvpp2_use_acpi_compat_mode(struct fwnode_handle *port_fwnode)
-> +{
-> +	if (!is_acpi_node(port_fwnode))
-> +		return false;
-> +
-> +	return (!fwnode_property_present(port_fwnode, "phy-handle") &&
-> +		!fwnode_property_present(port_fwnode, "managed") &&
-> +		!fwnode_get_named_child_node(port_fwnode, "fixed-link"));
+Hello:
 
-I'm not too sure about this last one. You only use fixed-link when
-connecting to an Ethernet switch. I doubt anybody will try ACPI and a
-switch. It has been agreed, ACPI is for simple hardware, and you need
-to use DT for advanced hardware configurations.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-What is your use case for fixed-link?
+On Wed, 23 Jun 2021 11:21:08 +0800 you wrote:
+> From: Di Zhu <zhudi21@huawei.com>
+> 
+> The commit 3c9ef511b9fa ("bonding: avoid adding slave device with
+> IFF_MASTER flag") fix a crash when add slave device with IFF_MASTER,
+> but it rejects the scenario of nested bonding device.
+> 
+> As Eric Dumazet described: since there indeed is a usage scenario about
+> nesting bonding, we should not break it.
+> 
+> [...]
 
-     Andrew
+Here is the summary with links:
+  - bonding: allow nesting of bonding device
+    https://git.kernel.org/netdev/net/c/4d293fe1c69c
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
