@@ -2,124 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39A353B1AB6
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 15:06:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74E923B1AC9
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 15:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbhFWNH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 09:07:57 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:42954 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbhFWNHt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 09:07:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1624453532; x=1655989532;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6ngQ1L8CvZrw2+GK1uugRRh4hu9W22hWObLewNrxIaM=;
-  b=QvqHL9lx/mKseEyBa6+G31vnMCkg5O6or01+PAPa2odHOaE7XSslv/SE
-   NCi3/akhz+Pbtu7wZ627qUmrRcn5foLUGxp/Gg0vhVx3+1aLvKMUudWUT
-   Rg5v3tsOFMaQd3o+BR42Iw9/iPL2oQ+DYLLK5ozemLFM330VGU3YXiPsC
-   NFHsrp0b6He1T7pY1b0FY24aFx9YApJzuD76l5GgKDAqzn2OKhCJCH3AO
-   oHaWe0Ye+gip2OzssQEl9kBQ2lti7nVDTrbOSqP1wr4+sm40yw+STPCLn
-   npQaYPTngXk6zIKtmHRqb51Qzdlp+c1jAR/wCaqW2NbkGXR6u+wWkJzYn
-   w==;
-IronPort-SDR: X4O/Y/IWGPQ2/LS/+RUEM3lDTTnBUBp1MK5HxwzY4+kfmteJJvxqfgNZcwo3kAQ5H3Da2LvhuH
- Zccelp4qDQ0v7eUaHF7Qbw8uppLC74TG5LTv4NZ4FOH5Y2EwvhmjnbAtzJExa5dtoK93oLhz2k
- vVgunE2YP1lbZkb/r8J1cr6uZ8UbVFaZpeBHlf0viFmbn06zJ5FgpfV3y+rqn5GDOI64Aw8v3f
- 2f/vQLhSA8fKnabwgXMpi0/thGg5VvBQ0xVhOlUAuMzZboDffsa27x0w1Xe5ffhk94pmSYtk+p
- zZQ=
+        id S230520AbhFWNMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 09:12:05 -0400
+Received: from mga03.intel.com ([134.134.136.65]:44388 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231126AbhFWNMD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 09:12:03 -0400
+IronPort-SDR: K7DGkeF+0S3RHlDnQxQnJ8AThy31G7ZKdaGX4zPwj8bcrmDq4TaB0aJNI0Qi8a3HjHVhDwOptr
+ Fq/V7t5BBQ1A==
+X-IronPort-AV: E=McAfee;i="6200,9189,10023"; a="207298336"
 X-IronPort-AV: E=Sophos;i="5.83,293,1616482800"; 
-   d="scan'208";a="126349718"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jun 2021 06:05:31 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 23 Jun 2021 06:05:31 -0700
-Received: from [10.205.21.35] (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Wed, 23 Jun 2021 06:05:26 -0700
-Message-ID: <13fc1b7dac31464f8a635336bf41143d7d02b04a.camel@microchip.com>
-Subject: Re: [PATCH net-next v4 04/10] net: sparx5: add port module support
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Simon Horman" <simon.horman@netronome.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Date:   Wed, 23 Jun 2021 15:05:25 +0200
-In-Reply-To: <20210621143334.GN22278@shell.armlinux.org.uk>
-References: <20210615085034.1262457-1-steen.hegelund@microchip.com>
-         <20210615085034.1262457-5-steen.hegelund@microchip.com>
-         <20210621143334.GN22278@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.2 
+   d="scan'208";a="207298336"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2021 06:09:43 -0700
+IronPort-SDR: 2Ww2ltAuTia9bEXIEITK6bMG3yryraNj/ALZPhjl0EP0LIDbqlM4jW780cX+L5EK4KkwU16Bwb
+ Ohu1C6R4Cejg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,293,1616482800"; 
+   d="scan'208";a="641979134"
+Received: from peileeli.png.intel.com ([172.30.240.12])
+  by fmsmga005.fm.intel.com with ESMTP; 23 Jun 2021 06:09:39 -0700
+From:   Ling Pei Lee <pei.lee.ling@intel.com>
+To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Marek Behun <marek.behun@nic.cz>, weifeng.voon@intel.com,
+        vee.khee.wong@linux.intel.com, vee.khee.wong@intel.com,
+        pei.lee.ling@intel.com
+Subject: [PATCH net-next] net: phy: marvell10g: enable WoL for mv2110
+Date:   Wed, 23 Jun 2021 21:09:29 +0800
+Message-Id: <20210623130929.805559-1-pei.lee.ling@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+From: Voon Weifeng <weifeng.voon@intel.com>
 
-Thanks for your comment.
+Basically it is just to enable to WoL interrupt and enable WoL detection.
+Then, configure the MAC address into address detection register.
 
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+Signed-off-by: Ling PeiLee <pei.lee.ling@intel.com>
+---
+ drivers/net/phy/marvell10g.c | 102 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 102 insertions(+)
 
-On Mon, 2021-06-21 at 15:33 +0100, Russell King (Oracle) wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> Hi,
-> 
-> On Tue, Jun 15, 2021 at 10:50:28AM +0200, Steen Hegelund wrote:
-> > +static int sparx5_port_pcs_low_set(struct sparx5 *sparx5,
-> > +                                struct sparx5_port *port,
-> > +                                struct sparx5_port_config *conf)
-> > +{
-> > +     bool sgmii = false, inband_aneg = false;
-> > +     int err;
-> > +
-> > +     if (!port->conf.has_sfp) {
-> > +             sgmii = true; /* Phy is connnected to the MAC */
-> > +     } else {
-> > +             if (conf->portmode == PHY_INTERFACE_MODE_SGMII ||
-> > +                 conf->portmode == PHY_INTERFACE_MODE_QSGMII)
-> > +                     inband_aneg = true; /* Cisco-SGMII in-band-aneg */
-> > +             else if (conf->portmode == PHY_INTERFACE_MODE_1000BASEX &&
-> > +                      conf->autoneg)
-> > +                     inband_aneg = true; /* Clause-37 in-band-aneg */
-> 
-> I have to wonder why the presence of inband aneg depends on whether
-> there's a SFP or not... We don't do that kind of thing in other
-> drivers, so what is different here?
-
-Hmm.
-I have changed the implementation to use phylink_autoneg_inband() instead of a preconfigured value.
-
-
-> 
-> Thanks.
-> 
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
-
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index bbbc6ac8fa82..93410ece83af 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -28,6 +28,7 @@
+ #include <linux/marvell_phy.h>
+ #include <linux/phy.h>
+ #include <linux/sfp.h>
++#include <linux/netdevice.h>
+ 
+ #define MV_PHY_ALASKA_NBT_QUIRK_MASK	0xfffffffe
+ #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
+@@ -106,6 +107,17 @@ enum {
+ 	MV_V2_TEMP_CTRL_DISABLE	= 0xc000,
+ 	MV_V2_TEMP		= 0xf08c,
+ 	MV_V2_TEMP_UNKNOWN	= 0x9600, /* unknown function */
++	MV_V2_MAGIC_PKT_WORD0	= 0xf06b,
++	MV_V2_MAGIC_PKT_WORD1	= 0xf06c,
++	MV_V2_MAGIC_PKT_WORD2	= 0xf06d,
++	/* Wake on LAN registers */
++	MV_V2_WOL_CTRL		= 0xf06e,
++	MV_V2_WOL_STS		= 0xf06f,
++	MV_V2_WOL_CLEAR_STS	= BIT(15),
++	MV_V2_WOL_MAGIC_PKT_EN	= BIT(0),
++	MV_V2_PORT_INTR_STS	= 0xf040,
++	MV_V2_PORT_INTR_MASK	= 0xf043,
++	MV_V2_WOL_INTR_EN	= BIT(8),
+ };
+ 
+ struct mv3310_chip {
+@@ -991,6 +1003,94 @@ static int mv2111_match_phy_device(struct phy_device *phydev)
+ 	return mv211x_match_phy_device(phydev, false);
+ }
+ 
++static void mv2110_get_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
++{
++	int ret = 0;
++
++	wol->supported = WAKE_MAGIC;
++	wol->wolopts = 0;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_WOL_CTRL);
++
++	if (ret & MV_V2_WOL_MAGIC_PKT_EN)
++		wol->wolopts |= WAKE_MAGIC;
++}
++
++static int mv2110_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
++{
++	int ret = 0;
++
++	if (wol->wolopts & WAKE_MAGIC) {
++		/* Enable the WOL interrupt */
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
++				       MV_V2_PORT_INTR_MASK,
++				       MV_V2_WOL_INTR_EN);
++
++		if (ret < 0)
++			return ret;
++
++		/* Store the device address for the magic packet */
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    MV_V2_MAGIC_PKT_WORD2,
++				    ((phydev->attached_dev->dev_addr[5] << 8) |
++				    phydev->attached_dev->dev_addr[4]));
++
++		if (ret < 0)
++			return ret;
++
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    MV_V2_MAGIC_PKT_WORD1,
++				    ((phydev->attached_dev->dev_addr[3] << 8) |
++				    phydev->attached_dev->dev_addr[2]));
++
++		if (ret < 0)
++			return ret;
++
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    MV_V2_MAGIC_PKT_WORD0,
++				    ((phydev->attached_dev->dev_addr[1] << 8) |
++				    phydev->attached_dev->dev_addr[0]));
++
++		if (ret < 0)
++			return ret;
++
++		/* Clear WOL status and enable magic packet matching */
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
++				       MV_V2_WOL_CTRL,
++				       MV_V2_WOL_MAGIC_PKT_EN |
++				       MV_V2_WOL_CLEAR_STS);
++
++		if (ret < 0)
++			return ret;
++
++		/* Reset the clear WOL status bit as it does not self-clear */
++		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
++					 MV_V2_WOL_CTRL,
++					 MV_V2_WOL_CLEAR_STS);
++
++		if (ret < 0)
++			return ret;
++	} else {
++		/* Disable magic packet matching & reset WOL status bit */
++		ret = phy_modify_mmd(phydev, MDIO_MMD_VEND2,
++				     MV_V2_WOL_CTRL,
++				     MV_V2_WOL_MAGIC_PKT_EN,
++				     MV_V2_WOL_CLEAR_STS);
++
++		if (ret < 0)
++			return ret;
++
++		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
++					 MV_V2_WOL_CTRL,
++					 MV_V2_WOL_CLEAR_STS);
++
++		if (ret < 0)
++			return ret;
++	}
++
++	return ret;
++}
++
+ static struct phy_driver mv3310_drivers[] = {
+ 	{
+ 		.phy_id		= MARVELL_PHY_ID_88X3310,
+@@ -1045,6 +1145,8 @@ static struct phy_driver mv3310_drivers[] = {
+ 		.set_tunable	= mv3310_set_tunable,
+ 		.remove		= mv3310_remove,
+ 		.set_loopback	= genphy_c45_loopback,
++		.get_wol	= mv2110_get_wol,
++		.set_wol	= mv2110_set_wol,
+ 	},
+ 	{
+ 		.phy_id		= MARVELL_PHY_ID_88E2110,
 -- 
-BR
-Steen
-
--=-=-=-=-=-=-=-=-=-=-=-=-=-=
-steen.hegelund@microchip.com
-
-
+2.25.1
 
