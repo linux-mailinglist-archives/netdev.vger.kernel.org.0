@@ -2,159 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F8473B1276
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:48:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C345D3B128D
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 06:01:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbhFWDvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 23:51:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22431 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229774AbhFWDvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:51:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624420130;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=v8mq8LxfuDXyJ+pHOiIlGCAFqRNvKwNqM3X44uV2r1M=;
-        b=gbbAZ/aD2/e03+dCht50ritGjchETo+mTAYrd/x6WfVFsVJiuc0T2HhmVivAO4fPYMsEt+
-        tG2ud8zIqVOl8zblSOtd7Y6uiMPFAjKaLMoHW8tCWMBj1PuYJDpbYLHQxXpyk31uC0Q+tg
-        Pf4CcCOOJeUha2y1HLjQqeSSa8qMjZQ=
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
- [209.85.216.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-560-6q5bk-ftPi2LaJQg_HYGdQ-1; Tue, 22 Jun 2021 23:48:47 -0400
-X-MC-Unique: 6q5bk-ftPi2LaJQg_HYGdQ-1
-Received: by mail-pj1-f72.google.com with SMTP id bv6-20020a17090af186b029016fb0e27fe2so3026668pjb.4
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 20:48:47 -0700 (PDT)
+        id S229916AbhFWEDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 00:03:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229485AbhFWEDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 00:03:19 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66B0C061574;
+        Tue, 22 Jun 2021 21:01:02 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id f3-20020a0568301c23b029044ce5da4794so603282ote.11;
+        Tue, 22 Jun 2021 21:01:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xu3J0MG1DAoiBty4+jXpzlIZwsi55uVKyRQkNX9z39w=;
+        b=My2OQKbp4vxT5pp+htE5GMVR5w/CffUe54PAXG5EIXkMvDictyyJ36KpPZ++gkbfmJ
+         MnJ9CmikGlbXwhEgrByuLfqsHRKamVBtlmMGxbdMbn+yMLL0ZTERCdGrqN5o4YirofI1
+         a3GWa8F/wv1dm5+I38cLFEMt5cf6oNPB0jA1t1qqrkulCheBp1lDftNPkZyx4f7COxey
+         qAfnjXzIXv+/g/IX/2efNJWsSOkwgIvwWg/5KjBsqevDUAoTxM8lvoPUIvzCF5xbdkeb
+         v8vOszEaF9pXXQOPZt6RaxD0XcClJRcBr5pD5TnQIlX0s2OzsDY2CJtA+pIIbRYCe/Qp
+         HXSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=v8mq8LxfuDXyJ+pHOiIlGCAFqRNvKwNqM3X44uV2r1M=;
-        b=SNm58v2GLz5EhG8pT7RV1u2MIvHL1K6uhXatfdu/Hkc/ZnW3rpKa6AKQxrofL0hLr2
-         x7IdwXrqMOq03Y7HVNy5CfC+7T/zWQkEQyRjuVwta1zpp8P7MMNmPm3wesPlZJNT0b6K
-         YY3uqJ5JjfF74jPz7pUzYMnnZcHHUStd3OEdwZdF98AcuyJ/PVeOerMED++oWp4f+xDt
-         jrtPDSly/YxqrwOlFZVQU2lVqV/uh6wzG0NuNL9BMtLDTUjvQp4eqIvUV/SJYNTU/k0E
-         qFWmQ0Gno/GfB/5xmzmKiqeeUT1KGrxUT1XT31PR6Y0970cX5iwcCafKMFlWYk9KzTtr
-         vpKQ==
-X-Gm-Message-State: AOAM530OJy5aDyHfQ/B+q9DnrhsYss+CVvqC7GluD+5IvYeiYflg0iwH
-        c5wQrXPenZ224F2xNLGXR0qFdFPeKVJ5ztlEYO8xHKLp0ecB4iVHpuglkBrx00zre6uNvAYc2NJ
-        XPHmg/0N5jAS5kjKv
-X-Received: by 2002:a17:90a:73ca:: with SMTP id n10mr7387637pjk.16.1624420126783;
-        Tue, 22 Jun 2021 20:48:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyvKYOqKbCzxHiBVXvmOhnEn/KiRgVFsZHCCRJglu7QNbTZ0GR4vMU2m4PbKylW4RmgAEnH7g==
-X-Received: by 2002:a17:90a:73ca:: with SMTP id n10mr7387626pjk.16.1624420126615;
-        Tue, 22 Jun 2021 20:48:46 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p24sm746279pfh.17.2021.06.22.20.48.44
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xu3J0MG1DAoiBty4+jXpzlIZwsi55uVKyRQkNX9z39w=;
+        b=rogdcqkXn86SoWxPqBIx8nUTUE7JBoHCYuKKpB7cVbZezZAOB3O9l872RzAowrJ7b0
+         vAKQWkJEe5oLFzuJ7K4VWvEtF2uuri6yYffDnwLj0LXoPg+5LQV5+MXhyEwqyR8N7tfq
+         idPCf5tPDTen1b3sl2LzL1hJWf7AYPEctwtR0wcqLAAxindicEdoVoPIv13Gir1iUsxp
+         B0QYmtij0qrz+/+yDI3LkN2iEknV5hOWzmjxF3IYV6uSA8Al+E5Hqy2AllyaWmlqGyI5
+         iWXi7INQ1J+lKsnMXXcDP0Q7kUEIjNtaWpDZM4qXJygtvQgIECMUeSFXlL4has5hd+f0
+         WXnA==
+X-Gm-Message-State: AOAM530vSHMdTBPgJhQgh16tYWm9Scmy4pNICL0+cMsU+/Af0rkaJksA
+        l0NTsIiPefXLxC0QqgS/XgA=
+X-Google-Smtp-Source: ABdhPJyKctj3yzlrMEzrjhyzrSCUQWW3Gp8SegBTo/THZdIwOKicAP0VZPs2LI7azl6TIumN7k8Uqw==
+X-Received: by 2002:a05:6830:2315:: with SMTP id u21mr6068794ote.365.1624420861910;
+        Tue, 22 Jun 2021 21:01:01 -0700 (PDT)
+Received: from ?IPv6:2600:1700:dfe0:49f0:702e:9530:891f:215c? ([2600:1700:dfe0:49f0:702e:9530:891f:215c])
+        by smtp.gmail.com with ESMTPSA id y5sm59578otq.5.2021.06.22.21.00.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Jun 2021 20:48:46 -0700 (PDT)
-Subject: Re: [PATCH v2 3/4] vhost_net: validate virtio_net_hdr only if it
- exists
-To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
-Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
- <20210622161533.1214662-1-dwmw2@infradead.org>
- <20210622161533.1214662-3-dwmw2@infradead.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <cbac7eca-c72f-2e64-5ec1-45ce414f0d7b@redhat.com>
-Date:   Wed, 23 Jun 2021 11:48:43 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        Tue, 22 Jun 2021 21:01:01 -0700 (PDT)
+Subject: Re: [PATCH v2] net: bcmgenet: Fix attaching to PYH failed on RPi 4B
+To:     Jian-Hong Pan <jhp@endlessos.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Doug Berger <opendmb@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessos.org,
+        linux-rpi-kernel@lists.infradead.org
+References: <CAPpJ_ecJxUjvxEb+3GLmtQyxhAZ3Tqk+hoUbSowG1bi+739u-g@mail.gmail.com>
+ <20210623032802.3377-1-jhp@endlessos.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <aa2ec0dd-6b43-099f-da0a-768d1668ec50@gmail.com>
+Date:   Tue, 22 Jun 2021 21:00:55 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210622161533.1214662-3-dwmw2@infradead.org>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210623032802.3377-1-jhp@endlessos.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The subject should be fixed s/PYH/PHY/ and also probably reworded to be:
 
-ÔÚ 2021/6/23 ÉÏÎç12:15, David Woodhouse Ð´µÀ:
-> From: David Woodhouse <dwmw@amazon.co.uk>
->
-> When the underlying socket doesn't handle the virtio_net_hdr, the
-> existing code in vhost_net_build_xdp() would attempt to validate stack
-> noise, by copying zero bytes into the local copy of the header and then
-> validating that. Skip the whole pointless pointer arithmetic and partial
-> copy (of zero bytes) in this case.
->
-> Fixes: 0a0be13b8fe2 ("vhost_net: batch submitting XDP buffers to underlayer sockets")
-> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+net: bcmgenet: Add mdio-bcm-unimac soft dependency
 
+On 6/22/2021 8:28 PM, Jian-Hong Pan wrote:
+> The Broadcom UniMAC MDIO bus from mdio-bcm-unimac module comes too late.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+It is not just coming too late, there is also no way for the module 
+loader to figure out the dependency between GENET and its MDIO bus 
+driver unless we provide this MODULE_SOFTDEP hint.
 
+> So, GENET cannot find the ethernet PHY on UniMAC MDIO bus. This leads
+> GENET fail to attach the PHY as following log:
+> 
+> bcmgenet fd580000.ethernet: GENET 5.0 EPHY: 0x0000
+> ...
+> could not attach to PHY
+> bcmgenet fd580000.ethernet eth0: failed to connect to PHY
+> uart-pl011 fe201000.serial: no DMA platform data
+> libphy: bcmgenet MII bus: probed
+> ...
+> unimac-mdio unimac-mdio.-19: Broadcom UniMAC MDIO bus
+> 
+> This patch adds the soft dependency to load mdio-bcm-unimac module
+> before genet module to avoid the issue.
+> 
+> Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=213485
+> Signed-off-by: Jian-Hong Pan <jhp@endlessos.org>
+
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: 9a4e79697009 ("net: bcmgenet: utilize generic Broadcom UniMAC 
+MDIO controller driver")
 
 > ---
->   drivers/vhost/net.c | 43 ++++++++++++++++++++++---------------------
->   1 file changed, 22 insertions(+), 21 deletions(-)
->
-> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-> index df82b124170e..1e3652eb53af 100644
-> --- a/drivers/vhost/net.c
-> +++ b/drivers/vhost/net.c
-> @@ -690,7 +690,6 @@ static int vhost_net_build_xdp(struct vhost_net_virtqueue *nvq,
->   					     dev);
->   	struct socket *sock = vhost_vq_get_backend(vq);
->   	struct page_frag *alloc_frag = &net->page_frag;
-> -	struct virtio_net_hdr *gso;
->   	struct xdp_buff *xdp = &nvq->xdp[nvq->batched_xdp];
->   	struct tun_xdp_hdr *hdr;
->   	size_t len = iov_iter_count(from);
-> @@ -715,29 +714,31 @@ static int vhost_net_build_xdp(struct vhost_net_virtqueue *nvq,
->   		return -ENOMEM;
->   
->   	buf = (char *)page_address(alloc_frag->page) + alloc_frag->offset;
-> -	copied = copy_page_from_iter(alloc_frag->page,
-> -				     alloc_frag->offset +
-> -				     offsetof(struct tun_xdp_hdr, gso),
-> -				     sock_hlen, from);
-> -	if (copied != sock_hlen)
-> -		return -EFAULT;
-> -
->   	hdr = buf;
-> -	gso = &hdr->gso;
-> -
-> -	if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
-> -	    vhost16_to_cpu(vq, gso->csum_start) +
-> -	    vhost16_to_cpu(vq, gso->csum_offset) + 2 >
-> -	    vhost16_to_cpu(vq, gso->hdr_len)) {
-> -		gso->hdr_len = cpu_to_vhost16(vq,
-> -			       vhost16_to_cpu(vq, gso->csum_start) +
-> -			       vhost16_to_cpu(vq, gso->csum_offset) + 2);
-> -
-> -		if (vhost16_to_cpu(vq, gso->hdr_len) > len)
-> -			return -EINVAL;
-> +	if (sock_hlen) {
-> +		struct virtio_net_hdr *gso = &hdr->gso;
-> +
-> +		copied = copy_page_from_iter(alloc_frag->page,
-> +					     alloc_frag->offset +
-> +					     offsetof(struct tun_xdp_hdr, gso),
-> +					     sock_hlen, from);
-> +		if (copied != sock_hlen)
-> +			return -EFAULT;
-> +
-> +		if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
-> +		    vhost16_to_cpu(vq, gso->csum_start) +
-> +		    vhost16_to_cpu(vq, gso->csum_offset) + 2 >
-> +		    vhost16_to_cpu(vq, gso->hdr_len)) {
-> +			gso->hdr_len = cpu_to_vhost16(vq,
-> +						      vhost16_to_cpu(vq, gso->csum_start) +
-> +						      vhost16_to_cpu(vq, gso->csum_offset) + 2);
-> +
-> +			if (vhost16_to_cpu(vq, gso->hdr_len) > len)
-> +				return -EINVAL;
-> +		}
-> +		len -= sock_hlen;
->   	}
->   
-> -	len -= sock_hlen;
->   	copied = copy_page_from_iter(alloc_frag->page,
->   				     alloc_frag->offset + pad,
->   				     len, from);
+> v2: Load mdio-bcm-unimac before genet module instead of trying to
+>      connect the PHY in a loop.
+> 
+>   drivers/net/ethernet/broadcom/genet/bcmgenet.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> index fcca023f22e5..41f7f078cd27 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> @@ -4296,3 +4296,4 @@ MODULE_AUTHOR("Broadcom Corporation");
+>   MODULE_DESCRIPTION("Broadcom GENET Ethernet controller driver");
+>   MODULE_ALIAS("platform:bcmgenet");
+>   MODULE_LICENSE("GPL");
+> +MODULE_SOFTDEP("pre: mdio-bcm-unimac");
+> 
 
+-- 
+Florian
