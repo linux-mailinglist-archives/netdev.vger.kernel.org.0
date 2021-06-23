@@ -2,100 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29B0F3B20D8
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 21:14:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C4C3B20E5
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 21:19:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbhFWTQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 15:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39326 "EHLO
+        id S229928AbhFWTVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 15:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbhFWTQu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 15:16:50 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7ADC061574;
-        Wed, 23 Jun 2021 12:14:32 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id j4so5892071lfc.8;
-        Wed, 23 Jun 2021 12:14:32 -0700 (PDT)
+        with ESMTP id S229660AbhFWTVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 15:21:20 -0400
+Received: from mail-ua1-x92e.google.com (mail-ua1-x92e.google.com [IPv6:2607:f8b0:4864:20::92e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C36C061574;
+        Wed, 23 Jun 2021 12:19:02 -0700 (PDT)
+Received: by mail-ua1-x92e.google.com with SMTP id k9so1284547uaq.6;
+        Wed, 23 Jun 2021 12:19:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vCA9UxJ+EMCBunFdIzfCgcc8cOVFYGFyGgIL+e4eYGc=;
-        b=UzNhGzf3APIIvFvjJsrVV26jL1WdkAkoAwzH5J+sxCyYYAY8XvjzLBKarHlYSgEW+H
-         ROakHkkCfn70i7JTu+yHbCUbnkuPf7TkqgAOUJt1d0Ms8qGccgWOFHX7YAWXLuxF4qZl
-         U/XbtVMPj5nLRPkZKpRykEAA6jKBoO5kEXNfZAlVD+EWR1Led/Uz5YOVeudBbQyx3X57
-         OurvlnmzdOoSny+LJAPPAbww4QTxM0W6d/VHRAR8uiuhK1xGiMG1A94AOKVZJSkD5qPj
-         0bbbGsEAChYON9jaMET8xnLxvZDByABYXkAbL4e6Wq3VBH9HdfNQcUsTU0Os2aMchm45
-         AXkQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v9LoyiV46pvdi80Pbx9CDtSP3RNB7KyV4DwXyuMZdGc=;
+        b=W3xk4sx35Lp/TDb6nZ99vzFv+COWGqNBIR2hpi8AVUZYCHyMciIn+bsVL58MGBFHgR
+         K8fdNathOjm8s9pJMzy5GAYVPmm/cN6z2sCnCexWUcTG6PR43x2ZSA5ymd6Gi7dx2GXs
+         yVDGYnFEY3R3di65ZbNsLJ6SYSqljZEH3GzVTWox2K5rIS8vwAX4SUik/CDJiYHkGnoL
+         Pj7Rbn9nx9zybEAny2aeYtVaGrJN99jbru3CR9yqG6l9XdzCn28V9UB1nuDgYc8TVZiS
+         MI7uHNVr4g2Ulbc/gkJIskNLecm/wFiqGmO0QtIPxWB7bbgqpjgD7+8A0xGROp031yFI
+         NitA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vCA9UxJ+EMCBunFdIzfCgcc8cOVFYGFyGgIL+e4eYGc=;
-        b=CKSGAoC5Pne2c1+Z7TYaz2ETAhWVDJzuHBvF4qt4K+V9wdQTXtJdAZNy8eU2ShOdOx
-         52AaOzbAgTTHr7rhAE6ovMExacva4RNDa+CnIwq857JzmCJit84zc/J21XY/LY+YQhas
-         9TTH2LKM98ZJZgVQonzP03h6ndothNXtMECA+AVrNulr+l2sLqnDt5JXRyuXWnItCQED
-         lvxLOnXL7VqdzP0beeafWfYkua6kF/1LxMV7hSka+gAdqLIAbIz1a/HSDRyfd6LdjmIC
-         vMMbdUTpNjBZgse9xUrfVnmm5WIV9wRnt3z6J6Wr2ePZUq2F+0VRrd4YoH5R082o1/h1
-         wJlQ==
-X-Gm-Message-State: AOAM533CPsEMfRKrC1YdLR44TZoS0oapic6eHuZYGopxEs94RkIe4VH+
-        2IVBAc6T9w7B37lmgvADWB7gXeuHhw4UmA==
-X-Google-Smtp-Source: ABdhPJwEryE5nA4/ztCF+DQUY46j/ZZB0JCfX0QWNYwk/Gjoy0mw/XvPRg1ombAoJ9/Rq/4JX1XHwg==
-X-Received: by 2002:a05:6512:b26:: with SMTP id w38mr859979lfu.227.1624475670940;
-        Wed, 23 Jun 2021 12:14:30 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.225.155])
-        by smtp.gmail.com with ESMTPSA id w4sm79724lfr.282.2021.06.23.12.14.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Jun 2021 12:14:30 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     kvalo@codeaurora.org, davem@davemloft.net, chunkeey@gmail.com
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH] net: ath10: add missing ret initialization
-Date:   Wed, 23 Jun 2021 22:14:26 +0300
-Message-Id: <20210623191426.13648-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v9LoyiV46pvdi80Pbx9CDtSP3RNB7KyV4DwXyuMZdGc=;
+        b=AgrTrMcTEYMWw9JemRwSOFiLM4kDJat8bD0cMvOfACOYu/kalm6hIGnsIao3ZCuf52
+         jmihlQGxEml5cQxmyIdlfMKdtqFTb4MwTLgbjYJZRSqRdXSDtT8IlbgA+X9nHYbvaIIT
+         QvZIkqzhIDYMSHytsLqZC5RoBsJAWio4k9WK7M7de0kK+obJM3xx6kVdhKm46KwvWsbO
+         uT2wIQwNjMDQxLpoMsVbhkFn/X0oLLLNgMsX7qHLSIFArJX0osz83+yJkmQnEM8uExIf
+         pirj3ov0VdG+DiU9zAq7/cc6hxneh9dkS9TKlDwGyGvb3smPxgpFbr3ODmI97zsbuGjj
+         l6VQ==
+X-Gm-Message-State: AOAM533ay0itJeBR1DiJHfUrsflGoVAOj+ZoSFFLCbEZFcUk7qzT3CdX
+        Vj2uWb/oHYtuvMWzkWyvGD4PmHzT7E8BTgXum+Q=
+X-Google-Smtp-Source: ABdhPJwxgoNgzKlegGJk3WiBlO4Ca8BbbgQAPN2l4R6CrRNKQ7GWCDxOCeLMOwKnNkhk5JjF05jxykEuv+4/GFVsyEQ=
+X-Received: by 2002:a9f:31b1:: with SMTP id v46mr2106369uad.22.1624475940993;
+ Wed, 23 Jun 2021 12:19:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1619348088-6887-1-git-send-email-jrdr.linux@gmail.com> <20210615133503.DA3B9C43149@smtp.codeaurora.org>
+In-Reply-To: <20210615133503.DA3B9C43149@smtp.codeaurora.org>
+From:   Souptick Joarder <jrdr.linux@gmail.com>
+Date:   Thu, 24 Jun 2021 00:48:48 +0530
+Message-ID: <CAFqt6zY-eXTALDeLknCMpvCi1BCsN9QSrdqUnn-XrokHoTdbaw@mail.gmail.com>
+Subject: Re: [PATCH v2] ipw2x00: Minor documentation update
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     stas.yakovlev@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of not supported chip the code jump
-to the error handling path, but _ret_ will be set to 0.
-Returning 0 from probe means, that ->probe() succeeded, but
-it's not true when chip is not supported.
+On Tue, Jun 15, 2021 at 7:05 PM Kalle Valo <kvalo@codeaurora.org> wrote:
+>
+> Souptick Joarder <jrdr.linux@gmail.com> wrote:
+>
+> > Kernel test robot throws below warning ->
+> >
+> > drivers/net/wireless/intel/ipw2x00/ipw2100.c:5359: warning: This comment
+> > starts with '/**', but isn't a kernel-doc comment. Refer
+> > Documentation/doc-guide/kernel-doc.rst
+> >
+> > Minor update in documentation.
+> >
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+> > Cc: Randy Dunlap <rdunlap@infradead.org>
+> > Acked-by: Randy Dunlap <rdunlap@infradead.org>
+>
+> Fails to apply, please rebase.
 
-Fixes: f8914a14623a ("ath10k: restore QCA9880-AR1A (v1) detection")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- drivers/net/wireless/ath/ath10k/pci.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
-index e7fde635e0ee..36ea8debd1c7 100644
---- a/drivers/net/wireless/ath/ath10k/pci.c
-+++ b/drivers/net/wireless/ath/ath10k/pci.c
-@@ -3697,11 +3697,15 @@ static int ath10k_pci_probe(struct pci_dev *pdev,
- 	}
- 
- 	bus_params.chip_id = ath10k_pci_soc_read32(ar, SOC_CHIP_ID_ADDRESS);
--	if (bus_params.chip_id == 0xffffffff)
-+	if (bus_params.chip_id == 0xffffffff) {
-+		ret = -ENODEV;
- 		goto err_unsupported;
-+	}
- 
--	if (!ath10k_pci_chip_is_supported(pdev->device, bus_params.chip_id))
-+	if (!ath10k_pci_chip_is_supported(pdev->device, bus_params.chip_id)) {
-+		ret = -ENODEV;
- 		goto err_free_irq;
-+	}
- 
- 	ret = ath10k_core_register(ar, &bus_params);
- 	if (ret) {
--- 
-2.32.0
-
+Sure.
+>
+> Recorded preimage for 'drivers/net/wireless/intel/ipw2x00/ipw2100.c'
+> error: Failed to merge in the changes.
+> hint: Use 'git am --show-current-patch' to see the failed patch
+> Applying: ipw2x00: Minor documentation update
+> Using index info to reconstruct a base tree...
+> M       drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> Falling back to patching base and 3-way merge...
+> Auto-merging drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> CONFLICT (content): Merge conflict in drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> Patch failed at 0001 ipw2x00: Minor documentation update
+>
+> Patch set to Changes Requested.
+>
+> --
+> https://patchwork.kernel.org/project/linux-wireless/patch/1619348088-6887-1-git-send-email-jrdr.linux@gmail.com/
+>
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>
