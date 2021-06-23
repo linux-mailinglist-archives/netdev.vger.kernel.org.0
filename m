@@ -2,130 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 169043B1518
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 09:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 129AF3B1541
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 10:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbhFWHvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 03:51:09 -0400
-Received: from phobos.denx.de ([85.214.62.61]:37512 "EHLO phobos.denx.de"
+        id S230118AbhFWICd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 04:02:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229660AbhFWHvI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 03:51:08 -0400
-Received: from ktm (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 4BDF580082;
-        Wed, 23 Jun 2021 09:48:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1624434529;
-        bh=yT4ZmsheDrzflNLYEnptapHjyIcqPcx1/TgV4RPFfYQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A/sEWLA2kbM9R0p1bJdCs8XKTue7dLtR9zbfBufZB/S8zEDH0q1VeueXWRtcsmVtn
-         CAdX/6gLQ6miW5wFV//wvVAAukBSpZollU/OSYLk1M7RRKbRcoV0edB40fXWLFByE1
-         S5S7pMMOHbAaD0ux9RAXWWvwHmyFF4qvRHihhiwJZ1Lr1OgbXL18pArTXF2EE5wkKt
-         OO7KwWYPXrYKwl6txBgdVJghEw9Y7tg3aDKKh3xDWKY1hEZ7iZYlO58xLcsOTNDLdA
-         D2Ox1EnNk2vQp+1rPKq8WLZi7b5cAylERufHvTU6rp4NNMFIkQGtEAzcAgga0jLbdu
-         JHVlpkZdrawoA==
-Date:   Wed, 23 Jun 2021 09:48:41 +0200
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mark Einon <mark.einon@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 3/3] net: imx: Adjust fec_main.c to provide support for L2
- switch
-Message-ID: <20210623094841.4ea531bc@ktm>
-In-Reply-To: <YNH9YvjqbcHMaUFw@lunn.ch>
-References: <20210622144111.19647-1-lukma@denx.de>
-        <20210622144111.19647-4-lukma@denx.de>
-        <YNH9YvjqbcHMaUFw@lunn.ch>
-Organization: denx.de
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S230052AbhFWICV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 04:02:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 045E661361;
+        Wed, 23 Jun 2021 08:00:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624435204;
+        bh=iHveAQ7hn8DmX+6PdFtc8zaPPT+BPX+b7UCxlM+J6kk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OH7vZ0XAzcDlrY5+iAwi+Jaqlk5d3g/ThJU0iE/SUFAJZnUY8k62W8/2O7PqiWQSg
+         G3z/H8XQGmkytMFuXNu92fPQ9T0dtjM27XXI3/e2TW5Resl+CjdLyV4qLvT+rXbenW
+         t71fuvz7mbzXiiTxt2a/Nn5yN7KH9/l1DtlR70/4Q+jP6ItpbvjmDRuHG0Y4aEMNMk
+         Vv3E26AIN+Apg083urx2CCvyk8K2sGsXVIxBQlhoXCWnalt2Dk0CXFJXnSQZ9I4uUF
+         NZLVsO1q2nrZnxaX93ix4Aw2JVmXzWkL1qcX5hLlhvSYxGvYWLk8PxLIhQzzCWYXFn
+         ZYY8q8XZSoyUw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EA7F960A47;
+        Wed, 23 Jun 2021 08:00:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- boundary="Sig_/GFIlbTP2B=sNE2jdlzTnphK"; protocol="application/pgp-signature"
-X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] docs: af_xdp: consistent indentation in examples
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162443520395.27724.1615585938370222693.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Jun 2021 08:00:03 +0000
+References: <20210622185647.3705104-1-i.maximets@ovn.org>
+In-Reply-To: <20210622185647.3705104-1-i.maximets@ovn.org>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     bjorn@kernel.org, magnus.karlsson@intel.com,
+        jonathan.lemon@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        corbet@lwn.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/GFIlbTP2B=sNE2jdlzTnphK
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hello:
 
-Hi Andrew,
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
 
-> > index 0602d5d5d2ee..dc2d31321cbd 100644
-> > --- a/drivers/net/ethernet/freescale/fec.h
-> > +++ b/drivers/net/ethernet/freescale/fec.h
-> > @@ -29,6 +29,10 @@
-> >   */
-> >  #define FEC_IEVENT		0x004 /* Interrupt event reg */
-> >  #define FEC_IMASK		0x008 /* Interrupt mask reg */
-> > +#ifdef CONFIG_FEC_MTIP_L2SW
-> > +#define FEC_MTIP_R_DES_ACTIVE_0	0x018 /* L2 switch Receive
-> > descriptor reg */ +#define FEC_MTIP_X_DES_ACTIVE_0	0x01C /*
-> > L2 switch Transmit descriptor reg */ +#endif =20
->=20
-> Please don't scatter #ifdef everywhere.
->=20
-> In this case, the register exists, even if the switch it not being
-> used, so there is no need to have it conditional.
+On Tue, 22 Jun 2021 20:56:47 +0200 you wrote:
+> Examples in this document use all kinds of indentation from 3 to 5
+> spaces and even mixed with tabs.  Making them all even and equal to
+> 4 spaces.
+> 
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
+>  Documentation/networking/af_xdp.rst | 32 ++++++++++++++---------------
+>  1 file changed, 16 insertions(+), 16 deletions(-)
 
-+1
+Here is the summary with links:
+  - docs: af_xdp: consistent indentation in examples
+    https://git.kernel.org/bpf/bpf-next/c/4b9718b5a201
 
->=20
-> >  #include <asm/cacheflush.h>
-> > =20
-> >  #include "fec.h"
-> > +#ifdef CONFIG_FEC_MTIP_L2SW
-> > +#include "./mtipsw/fec_mtip.h"
-> > +#endif =20
->=20
-> Why not just include it all the time?
-
-Ok.
-
->=20
->     Andrew
-
-
-
-
-Best regards,
-
-Lukasz Majewski
-
+You are awesome, thank you!
 --
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
 
---Sig_/GFIlbTP2B=sNE2jdlzTnphK
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmDS51kACgkQAR8vZIA0
-zr3+awf9ERCiE8gx/0jjYs1Hf/KTgAnemjWwYWqiLUlEcK/rXJFwUN2eQgJ93gUJ
-F8wrhAt4JZ8P158XUm8qpflU0e4F/PjVG2ndbIYJDPwWLppFz0wHesqJNf6rBW3l
-WZ/Myg7Cahems0W8g0yqtppR5+er0rl5PPNZlRjAwbXqsaSCnZlCmCxDzA7waxAu
-hGJoPJj7huDdO2KRKIUwfsX+TtoYUq93eAqMw4ldTV7gW9P3wi6BBYzUmjIsDrDA
-957tAHMF7Kb0KDQJp/P0CkYzgvHf7oJOn5HQbFFqzy8WuW4dvoaLGwS4p2od+FN4
-fCcwgsSI15Bl12Ivh7P8zvlvbzMC6Q==
-=w6o7
------END PGP SIGNATURE-----
-
---Sig_/GFIlbTP2B=sNE2jdlzTnphK--
