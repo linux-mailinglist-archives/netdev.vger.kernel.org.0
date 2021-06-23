@@ -2,120 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30B2A3B218F
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 22:06:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7760C3B2199
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 22:10:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbhFWUIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 16:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbhFWUIv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 16:08:51 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DA3C061574;
-        Wed, 23 Jun 2021 13:06:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=IG70MoZoSqiFPenmXjBN2WpuGpkp6Lvmd3cBwqO3yfU=; b=A6xFJgCylu/fj4hOTR91ki5aV
-        BWDasOfgOz8YW+o1jP05PuEWXYrn7xO0JzwSeX7AT/RhzYidVxsB9zFr3b7SaLxLWireB+nq+Tsv5
-        2illYDiuMIPXTiZSmfM3PaY2YUlg8lKBHJwr23gGT9Ii5fU9ydp8xzSF/jdIfY6TDuw2MgDvz1xCD
-        BBWljt6TNPxMqJS0gpajWFndOBASjWkTA3U0oUtJquJKVzPkmceGiGKs1p4qfoB9JUigBUpw6F0Zx
-        8VVYYNf7Vw9YKFDoxjHpY+471wmUZ+KS9/vh2XVHiDKIFm6hfe8+1/1vPsIqWBt6mAxmBgE/jGU57
-        kNKEGQ2eg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45280)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lw98f-0006lr-Cf; Wed, 23 Jun 2021 21:06:21 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lw98c-00050g-9k; Wed, 23 Jun 2021 21:06:18 +0100
-Date:   Wed, 23 Jun 2021 21:06:18 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Ling Pei Lee <pei.lee.ling@intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Marek Behun <marek.behun@nic.cz>,
-        weifeng.voon@intel.com, vee.khee.wong@linux.intel.com,
-        vee.khee.wong@intel.com
-Subject: Re: [PATCH net-next] net: phy: marvell10g: enable WoL for mv2110
-Message-ID: <20210623200618.GO22278@shell.armlinux.org.uk>
-References: <20210623130929.805559-1-pei.lee.ling@intel.com>
+        id S229975AbhFWUMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 16:12:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46849 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229755AbhFWUMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 16:12:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624478998;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SNHwVtAYqqtfz9mNkeT55CF9XxIVuvyFxJlzIeVcLAk=;
+        b=T7kl5mwIocf6iUR8dEivC49xk7FE0taqlw2K7PSd9l5wHbAfc7P2y1U8rRmD1KmVaAixXO
+        0Q3kckPJ9rPKDRhzlmq96XTCgBQRE44n3oqrrBhQAJZbQaoaZouXXLWFTGEbXTUBvD8xB3
+        DUnlJ81xfjLKyH36UZ5GXDFlezZF4H0=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-415-yF3YF8UiNzOPWnlKczGv9w-1; Wed, 23 Jun 2021 16:09:57 -0400
+X-MC-Unique: yF3YF8UiNzOPWnlKczGv9w-1
+Received: by mail-wr1-f72.google.com with SMTP id f9-20020a5d64c90000b029011a3c2a0337so1467334wri.0
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 13:09:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SNHwVtAYqqtfz9mNkeT55CF9XxIVuvyFxJlzIeVcLAk=;
+        b=F+fSgd68/hXSJlOPeSt1dUNHEkvBriLc7zmc/UQTYKhxdlRuMrDKHAAb6QG9luxKfd
+         XFPBGoUpbjNxQEBO6/OQpFY5faYX1SG5qsikFGCGqVtjHpTW5SX7txDzZuVpg8lqnMpc
+         EXQOX4IP12kKjDgl4aq5EN3P9aANSOH9E/h8BX/NUvb+uVZscUPoLfXEazPoBHdaY3xC
+         3GSOuaXCMg45+F1u52+MNd4ws5iRfWPC7vge5XmosnjxD793IuRbxwfc0eUr71tZzYi5
+         SII2zgpCc8RgjTcuw/ABvLL11pgPR3ydc/e2qFdSrU+kdrihwkJyIHDJSbe0kse5BJIz
+         gCjQ==
+X-Gm-Message-State: AOAM532JruaXgCBWQSL6RtXB7npp1ByNNSNA5kpjGANjeCYjDrTVovJB
+        2NlrhODK/IbEi1u1XTt9ZAfWm6+qSX4Y98ikKOcuA8Jrp3IiQDBzoM91ysBCrNOjOJy82IDXJGG
+        Y3Lm1505BZMaqUA7Y
+X-Received: by 2002:a1c:7212:: with SMTP id n18mr1676695wmc.58.1624478996041;
+        Wed, 23 Jun 2021 13:09:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJySpClCIQvpk/WXfIxuefSHcb638VT2EVIOvY1Um/TAJISNA6URG63qxqeWkIJOdkwi3J0frg==
+X-Received: by 2002:a1c:7212:: with SMTP id n18mr1676677wmc.58.1624478995902;
+        Wed, 23 Jun 2021 13:09:55 -0700 (PDT)
+Received: from redhat.com ([77.124.79.210])
+        by smtp.gmail.com with ESMTPSA id p20sm836135wma.19.2021.06.23.13.09.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Jun 2021 13:09:55 -0700 (PDT)
+Date:   Wed, 23 Jun 2021 16:09:52 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Neeraj Upadhyay <neeraju@codeaurora.org>
+Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vringh: Use wiov->used to check for read/write desc order
+Message-ID: <20210623160923-mutt-send-email-mst@kernel.org>
+References: <1624361873-6097-1-git-send-email-neeraju@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210623130929.805559-1-pei.lee.ling@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <1624361873-6097-1-git-send-email-neeraju@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 23, 2021 at 09:09:29PM +0800, Ling Pei Lee wrote:
-> +static void mv2110_get_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
-> +{
-> +	int ret = 0;
+On Tue, Jun 22, 2021 at 05:07:53PM +0530, Neeraj Upadhyay wrote:
+> As iov->used is incremented when descriptors are processed
+> in __vringh_iov(), use it to check for incorrect read
+> and write descriptor order.
 
-This initialiser doesn't do anything.
+Could the commit log be clearer? why is wiov->i incorrect here?
 
-> +
-> +	wol->supported = WAKE_MAGIC;
-> +	wol->wolopts = 0;
-> +
-> +	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_WOL_CTRL);
-> +
-> +	if (ret & MV_V2_WOL_MAGIC_PKT_EN)
-> +		wol->wolopts |= WAKE_MAGIC;
+> Signed-off-by: Neeraj Upadhyay <neeraju@codeaurora.org>
+> ---
+>  drivers/vhost/vringh.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> index 4af8fa2..14e2043 100644
+> --- a/drivers/vhost/vringh.c
+> +++ b/drivers/vhost/vringh.c
+> @@ -359,7 +359,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+>  			iov = wiov;
+>  		else {
+>  			iov = riov;
+> -			if (unlikely(wiov && wiov->i)) {
+> +			if (unlikely(wiov && wiov->used)) {
+>  				vringh_bad("Readable desc %p after writable",
+>  					   &descs[i]);
+>  				err = -EINVAL;
+> -- 
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, 
+> hosted by The Linux Foundation
 
-You need to check whether "ret" is a negative number - if phy_read_mmd()
-returns an error, this test could be true or false. It would be better
-to have well defined behaviour (e.g. reporting that WOL is disabled?)
-
-> +		/* Reset the clear WOL status bit as it does not self-clear */
-> +		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
-> +					 MV_V2_WOL_CTRL,
-> +					 MV_V2_WOL_CLEAR_STS);
-> +
-> +		if (ret < 0)
-> +			return ret;
-> +	} else {
-> +		/* Disable magic packet matching & reset WOL status bit */
-> +		ret = phy_modify_mmd(phydev, MDIO_MMD_VEND2,
-> +				     MV_V2_WOL_CTRL,
-> +				     MV_V2_WOL_MAGIC_PKT_EN,
-> +				     MV_V2_WOL_CLEAR_STS);
-> +
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
-> +					 MV_V2_WOL_CTRL,
-> +					 MV_V2_WOL_CLEAR_STS);
-> +
-> +		if (ret < 0)
-> +			return ret;
-
-This phy_clear_bits_mmd() is the same as the tail end of the other part
-of the if() clause. Consider moving it after the if () { } else { }
-statement...
-
-> +	}
-> +
-> +	return ret;
-
-and as all paths return "ret" just do:
-
-	return phy_clear_bits_mmd(...
-
-I will also need to check whether this is the same as the 88x3310, but
-I'm afraid I don't have the energy this evening - please email me a
-remind to look at this tomorrow. Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
