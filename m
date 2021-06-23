@@ -2,158 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A24CD3B22C3
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 23:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A7263B22D7
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 23:58:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbhFWVwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 17:52:33 -0400
-Received: from mail-pg1-f181.google.com ([209.85.215.181]:33687 "EHLO
-        mail-pg1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbhFWVwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 17:52:32 -0400
-Received: by mail-pg1-f181.google.com with SMTP id e20so2959196pgg.0;
-        Wed, 23 Jun 2021 14:50:14 -0700 (PDT)
+        id S229929AbhFWWAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 18:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47966 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229758AbhFWWAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 18:00:45 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23874C061574
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 14:58:25 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id r7so3302615qta.12
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 14:58:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=r/MN36zXLdNsjoAEGu6m1LiJpjInqCbgz6NsqthKVEQ=;
+        b=x/CV2npe7wDi6T0xQ3JhizA5sk4Y9x3fWAakMUZFQmDa4VVQTpnqKAvTiFXR3tCAJ5
+         GlmWxvM6BfHPRQ4z0zOF+o6WXdgNp6Qwx6scGfl0pIgCaLyFNR6Klg/ieJSOxb1M0ePj
+         RUtRJmEPNIndulg7moetEeSb8UPpieeiWjyh9uq6WOcdWhb0ITl/7tJo4hKP2gXTyAt1
+         zUFkq/QZjDyZd+icauQx0t4v3dThIQFmPZU/b8DE5iDlQPam+S/wjefYuk6cpinmFunZ
+         sugeswh88niYsGAipcN4QbOo5N1ihhOu7vONZUAsl7CpwnjuqkpttB2RdiA4vVG4Qvdu
+         USaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NcuezbW/3QXd9xoo1Wqe4V3CcqkkgQiQqDXARjEpQrQ=;
-        b=c56Ed57gWQz/r9nk52t+b9yW5Qj2IuaKDUGffsz075Iscs96rCWUOVZTBQQHPa/jK1
-         9CpIpPU+OSGfiauTMOFiXUM6LIMNnB0xnPBRVC3s96nKSSldo+rhoHf42W4rFTKv/bWX
-         gLY6tGLWHTskUn9uC9WtAfpf3Y798QgtaTqbSUoX7Mqv42yXvjvQw//PuW5BmNXzw1Sq
-         H5h1Ejt0c1amEvtf+nKRz3M8bdVt89TzS2utq+zlt4tiZgdgT/xlr0BgnfrWvoUFsgpt
-         +3GZh+B1JEvWm44KcC0KEADMwEeVYh+I/yLqE3RcUMVb/ZNcPLHCCdVcEA960BkljNsg
-         j5sA==
-X-Gm-Message-State: AOAM531xB+pXBMskZG8Y1TmAlf5I46I+09mHTygMl+Lt2gVyw7cDo9C+
-        YIUDRTm10cgqEbJH7Yg+bcI=
-X-Google-Smtp-Source: ABdhPJzDgKF3Tc86z1h/sQHaNFZ1VoEUhCcL00uHO/syYNpcu4lIF731nF/TnUYj7N75aSD6W3AmAA==
-X-Received: by 2002:a05:6a00:21c7:b029:2ec:2bfa:d0d1 with SMTP id t7-20020a056a0021c7b02902ec2bfad0d1mr1751644pfj.14.1624485014356;
-        Wed, 23 Jun 2021 14:50:14 -0700 (PDT)
-Received: from localhost ([191.96.121.71])
-        by smtp.gmail.com with ESMTPSA id 30sm461291pjz.42.2021.06.23.14.50.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Jun 2021 14:50:12 -0700 (PDT)
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     gregkh@linuxfoundation.org, rafael@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, andriin@fb.com,
-        daniel@iogearbox.net, atenart@kernel.org, alobakin@pm.me,
-        weiwan@google.com, ap420073@gmail.com
-Cc:     jeyu@kernel.org, ngupta@vflare.org,
-        sergey.senozhatsky.work@gmail.com, minchan@kernel.org,
-        mcgrof@kernel.org, axboe@kernel.dk, mbenes@suse.com,
-        jpoimboe@redhat.com, tglx@linutronix.de, keescook@chromium.org,
-        jikos@kernel.org, rostedt@goodmis.org, peterz@infradead.org,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4] sysfs: fix kobject refcount to address races with kobject removal
-Date:   Wed, 23 Jun 2021 14:50:07 -0700
-Message-Id: <20210623215007.862787-1-mcgrof@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=r/MN36zXLdNsjoAEGu6m1LiJpjInqCbgz6NsqthKVEQ=;
+        b=UPzGR+DCebMZxxB6Y3npUxYZMDtuIQIuIIQiIRsoYstaT91ftPYBN435BFm6Zn2jrP
+         9c0mwFfR+pCNFLO5WSDr73+XmOf/TKqZHQ8RljiWL3MjWjLVmepN6UU15r/0nJT1x6WX
+         ptp1BL1YCa+q2whFz0y2LTIKJvvjnoTf26wbrF1ECmjtZd+TF3WI0+e4pi0Tra7NDBpx
+         t+qS5DVWlB5svVKAsW3y6sskZ3USgFuZyO5plJSooVTH5VGMQ6BLxCiZEuG7z0j09wLv
+         rylSE4qBxEQlK/tNlxxPnf4fIs/2gLa2nZM9cItnKfmZ5dwyz+/Yftow5QA0ts7QxvCh
+         dShw==
+X-Gm-Message-State: AOAM532+ZK+GoojAHC9TxuVFuAJym1TBih0u3nqHE9QorOfp6REfPS8O
+        VcxJ6WAUwE2Oej+p8kUmQQcZXMZpD9h0tn/LGcOvvA==
+X-Google-Smtp-Source: ABdhPJxSvJ7TpynFxZzKD7X+xlm1ajpwRHLijqAwnuzKavaXB5t7Go+wmidIrlF0Zq9zHunTgCCBvNrDSBH4KqdjE6w=
+X-Received: by 2002:ac8:6e8e:: with SMTP id c14mr1999470qtv.216.1624485504204;
+ Wed, 23 Jun 2021 14:58:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210621173028.3541424-1-mw@semihalf.com> <20210621173028.3541424-5-mw@semihalf.com>
+ <YNOZfB4pBRrOYETA@lunn.ch>
+In-Reply-To: <YNOZfB4pBRrOYETA@lunn.ch>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Wed, 23 Jun 2021 23:58:14 +0200
+Message-ID: <CAPv3WKc5G07Te2yK+zJo=M0w-fmPVDZ3_YgNoO-BbssWHLtU7Q@mail.gmail.com>
+Subject: Re: [net-next: PATCH v3 4/6] net: mvmdio: add ACPI support
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        Jon Nettleton <jon@solid-run.com>,
+        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
+        lenb@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's possible today to have a device attribute read or store
-race against device removal. This is known to happen as follows:
+=C5=9Br., 23 cze 2021 o 22:28 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
+>
+> On Mon, Jun 21, 2021 at 07:30:26PM +0200, Marcin Wojtas wrote:
+> > This patch introducing ACPI support for the mvmdio driver by adding
+> > acpi_match_table with two entries:
+> >
+> > * "MRVL0100" for the SMI operation
+> > * "MRVL0101" for the XSMI mode
+>
+> Same as the freescale MDIO bus driver, you should add
+>
+> depends on FWNODE_MDIO
+>
+> Otherwise you might find randconfig builds end up with it disabled,
+> and then linker errors.
+>
 
-write system call -->
-  ksys_write () -->
-    vfs_write() -->
-      __vfs_write() -->
-        kernfs_fop_write_iter() -->
-          sysfs_kf_write() -->
-            dev_attr_store() -->
-              null reference
+The CONFIG_MVMDIO is selected by CONFIG_MV643XX_ETH and actually there
+is a real example of the previously discussed fallback to the
+mdiobus_register() (without DT/ACPI and now FWNODE_MDIO). I just
+checked and successfully built the kernel out of the dove_defconfig. I
+only needed below fix, that will be submitted in v4:
 
-This happens because the dev_attr->store() callback can be
-removed prior to its call, after dev_attr_store() was initiated.
-The null dereference is possible because the sysfs ops can be
-removed on module removal, for instance, when device_del() is
-called, and a sysfs read / store is not doing any kobject reference
-bumps either. This allows a read/store call to initiate, a
-device_del() to kick off, and then the read/store call can be
-gone by the time to execute it.
+--- a/include/linux/fwnode_mdio.h
++++ b/include/linux/fwnode_mdio.h
+@@ -40,7 +40,7 @@ static inline int fwnode_mdiobus_register(struct mii_bus =
+*bus,
+         * This way, we don't have to keep compat bits around in drivers.
+         */
 
-The sysfs filesystem is not doing any kobject reference bumps during a
-read / store ops to prevent this.
-
-To fix this in a simplified way, just bump the kobject reference when
-we create a directory and remove it on directory removal.
-
-The big unfortunate eye-sore is addressing the manual kobject reference
-assumption on the networking code, which leads me to believe we should
-end up replacing that eventually with another sort of check.
-
-Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
----
-
-This v4 moves to fixing the race condition on dev_attr_store() and
-dev_attr_read() to sysfs by bumping the kobject reference count
-on directory creation / deletion as suggested by Greg.
-
-Unfortunately at least the networking core has a manual refcount
-assumption, which needs to be adjusted to account for this change.
-This should also mean there is runtime for other kobjects which may
-not be explored yet which may need fixing as well. We may want to
-change the check to something else on the networking front, but its
-not clear to me yet what to use.
-
- fs/sysfs/dir.c | 3 +++
- net/core/dev.c | 4 ++--
- 2 files changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/fs/sysfs/dir.c b/fs/sysfs/dir.c
-index 59dffd5ca517..6c47aa4af6f5 100644
---- a/fs/sysfs/dir.c
-+++ b/fs/sysfs/dir.c
-@@ -56,12 +56,14 @@ int sysfs_create_dir_ns(struct kobject *kobj, const void *ns)
- 
- 	kobject_get_ownership(kobj, &uid, &gid);
- 
-+	kobject_get(kobj);
- 	kn = kernfs_create_dir_ns(parent, kobject_name(kobj),
- 				  S_IRWXU | S_IRUGO | S_IXUGO, uid, gid,
- 				  kobj, ns);
- 	if (IS_ERR(kn)) {
- 		if (PTR_ERR(kn) == -EEXIST)
- 			sysfs_warn_dup(parent, kobject_name(kobj));
-+		kobject_put(kobj);
- 		return PTR_ERR(kn);
- 	}
- 
-@@ -100,6 +102,7 @@ void sysfs_remove_dir(struct kobject *kobj)
- 	if (kn) {
- 		WARN_ON_ONCE(kernfs_type(kn) != KERNFS_DIR);
- 		kernfs_remove(kn);
-+		kobject_put(kobj);
- 	}
+-       return mdiobus_register(mdio);
++       return mdiobus_register(bus);
  }
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 222b1d322c96..3a0ffa603d14 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10429,7 +10429,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
- 	rebroadcast_time = warning_time = jiffies;
- 	refcnt = netdev_refcnt_read(dev);
- 
--	while (refcnt != 1) {
-+	while (refcnt != 3) {
- 		if (time_after(jiffies, rebroadcast_time + 1 * HZ)) {
- 			rtnl_lock();
- 
-@@ -10544,7 +10544,7 @@ void netdev_run_todo(void)
- 		netdev_wait_allrefs(dev);
- 
- 		/* paranoia */
--		BUG_ON(netdev_refcnt_read(dev) != 1);
-+		BUG_ON(netdev_refcnt_read(dev) != 3);
- 		BUG_ON(!list_empty(&dev->ptype_all));
- 		BUG_ON(!list_empty(&dev->ptype_specific));
- 		WARN_ON(rcu_access_pointer(dev->ip_ptr));
--- 
-2.27.0
+ #endif
 
+In order to leave dove_defconfig intact, I'd keep the current Kconfig
+shape for this driver.
+
+Thanks,
+Marcin
