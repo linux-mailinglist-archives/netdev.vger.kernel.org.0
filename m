@@ -2,62 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D95173B13E2
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 08:22:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEF5E3B13A3
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 08:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbhFWGZD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Jun 2021 02:25:03 -0400
-Received: from mail.blitar.go.id ([103.148.208.194]:46268 "EHLO
-        mail.blitarkota.go.id" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbhFWGZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 02:25:03 -0400
-X-Greylist: delayed 2891 seconds by postgrey-1.27 at vger.kernel.org; Wed, 23 Jun 2021 02:25:02 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mail.blitarkota.go.id (Postfix) with ESMTP id 158C455B1BB;
-        Wed, 23 Jun 2021 12:25:24 +0700 (WIB)
-Received: from mail.blitarkota.go.id ([127.0.0.1])
-        by localhost (mail.blitarkota.go.id [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id KeqpZAOoK1Mq; Wed, 23 Jun 2021 12:25:23 +0700 (WIB)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.blitarkota.go.id (Postfix) with ESMTP id D345A5F91CC;
-        Wed, 23 Jun 2021 12:25:23 +0700 (WIB)
-X-Virus-Scanned: amavisd-new at mail.blitarkota.go.id
-Received: from mail.blitarkota.go.id ([127.0.0.1])
-        by localhost (mail.blitarkota.go.id [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 8cXDuLKByCob; Wed, 23 Jun 2021 12:25:23 +0700 (WIB)
-Received: from [100.66.78.241] (unknown [106.223.84.129])
-        by mail.blitarkota.go.id (Postfix) with ESMTPSA id 9B24555B1BB;
-        Wed, 23 Jun 2021 12:25:12 +0700 (WIB)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S229987AbhFWGGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 02:06:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38452 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229800AbhFWGF7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 02:05:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BFC2761186;
+        Wed, 23 Jun 2021 06:03:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624428222;
+        bh=Ja+ISr0NAdxQoaoVB7TsXbPptUPHLgLampPKJ/ivUd4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZdtqaLMcLwNums4Y8j4S/gJQ3NLegOj572Ir5OQkxmcgonjj/A+HbtjIznU08vNxL
+         6XKx/6db6BKqFHQcx5NsvKw2b7Uee8R/gznS1QgoFGdFqWF4n+oicc/oDu2l5BtWbO
+         6d190iknFRX1hPtHGoBMYGa/kcujRlRkUGnPj7v4cjpUsDFwyuYfkrU/ewuQbtaOXf
+         EPBlli8bRjgZVDjFO0N7QqX7U9/GRyYWazQtAHldNVdS6U98Tu77JJWlfrhDyNIvIp
+         Bcvvatl7woQ7Ohsk4FCUW5MZeUpOAig3RBNMUCg90zRAl4bpQL6NlJgbWA3lOlIKJB
+         3obbxS42HmQhA==
+Date:   Wed, 23 Jun 2021 09:03:38 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Lior Nahmanson <liorna@nvidia.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH rdma-next v1 2/3] RDMA/mlx5: Separate DCI QP creation
+ logic
+Message-ID: <YNLOurv1BXrlpsha@unreal>
+References: <cover.1624258894.git.leonro@nvidia.com>
+ <b4530bdd999349c59691224f016ff1efb5dc3b92.1624258894.git.leonro@nvidia.com>
+ <20210622184556.GA2596427@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: =?utf-8?q?ATENCI=C3=93N_?=
-To:     Recipients <administrator@ancol.com>
-From:   Sistemas administrador <administrator@ancol.com>
-Date:   Wed, 23 Jun 2021 10:55:47 +0530
-Reply-To: sistemassadmins@mail2engineer.com
-Message-Id: <20210623052512.9B24555B1BB@mail.blitarkota.go.id>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210622184556.GA2596427@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ATENCIÓN;
+On Tue, Jun 22, 2021 at 03:45:56PM -0300, Jason Gunthorpe wrote:
+> On Mon, Jun 21, 2021 at 10:06:15AM +0300, Leon Romanovsky wrote:
+> > From: Lior Nahmanson <liorna@nvidia.com>
+> > 
+> > This patch isolates DCI QP creation logic to separate function, so this
+> > change will reduce complexity when adding new features to DCI QP without
+> > interfering with other QP types.
+> > 
+> > The code was copied from create_user_qp() while taking only DCI relevant bits.
+> > 
+> > Reviewed-by: Meir Lichtinger <meirl@nvidia.com>
+> > Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> >  drivers/infiniband/hw/mlx5/qp.c | 157 ++++++++++++++++++++++++++++++++
+> >  1 file changed, 157 insertions(+)
+> > 
+> > diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
+> > index 7a5f1eba60e3..65a380543f5a 100644
+> > +++ b/drivers/infiniband/hw/mlx5/qp.c
+> > @@ -1974,6 +1974,160 @@ static int create_xrc_tgt_qp(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
+> >  	return 0;
+> >  }
+> >  
+> > +static int create_dci(struct mlx5_ib_dev *dev, struct ib_pd *pd,
+> > +		      struct mlx5_ib_qp *qp,
+> > +		      struct mlx5_create_qp_params *params)
+> > +{
+> 
+> This is a huge amount of copying just to add 4 lines, why?
+> 
+> There must be a better way to do this qp stuff.
+> 
+> Why not put more stuff in _create_user_qp()?
 
-Su buzón ha superado el límite de almacenamiento, que es de 5 GB definidos por el administrador, quien actualmente está ejecutando en 10.9GB, no puede ser capaz de enviar o recibir correo nuevo hasta que vuelva a validar su buzón de correo electrónico. Para revalidar su buzón de correo, envíe la siguiente información a continuación:
+Lior proposed it in original patch, but I didn't like it. It caused to
+mix of various QP types and maze of "if () else ()" that are not applicable
+one to another.
 
-nombre: 
-Nombre de usuario: 
-contraseña:
-Confirmar contraseña: 
-E-mail: 
-teléfono:
+The huge _create_user_qp() is the reason why create_dci() is not small,
+we simply had hard time to understand if specific HW bit is needed or
+not in DCI flow.
 
-Si usted no puede revalidar su buzón, el buzón se deshabilitará!
+My goal is to have small per-QP type specific functions that calls
+to simple functions for very narrow scope.
 
-Disculpa las molestias.
-Código de verificación: es: 006524
-Correo Soporte Técnico © 2021
+Something like that:
+static int create_dci(...)
+{
+  ...
+  configure_send_cq(..)
+  configure_recv_sq(..)
+  configure_srq(...)
+  ...
+}
 
-¡gracias
-Sistemas administrador
+static int create_user_qp(...)
+{
+  ...
+  configure_send_cq(..)
+  configure_recv_sq(..)
+  configure_srq(...)
+  ...
+}
+
+
+Thanks
+
+> 
+> Jason
