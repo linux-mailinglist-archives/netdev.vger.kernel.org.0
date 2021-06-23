@@ -2,148 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A7B23B2160
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 21:44:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 702A23B2161
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 21:46:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbhFWTqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 15:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbhFWTqQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 15:46:16 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE1BC061574
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 12:43:57 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id i4so1702686plt.12
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 12:43:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XB5JUou7Jni7zwQBTGW32WDxJ8f3yrretJGVyDCYjYE=;
-        b=Y05WCe45J4sYTRS8EVxhN9yWHvGAsrturO0lgJ/Qc0HYcZfwkkq/+pEBnYLKIWZi48
-         JiB6XBz/FbTFaI/0rg3C6SzQcSmMFeHlGni30J8BdGZIPrPJT7J+uURO7jr8hmPROksF
-         Fe/v3F2KW2KTx64yWAJKAF7FSS7/bZ4dW0tAP3w9IBvqDerl9w4CpEVEkciXRusjVenY
-         jm70xxyjQnPskcxTXfzWnHAP5IHE5YMVtJEQz2JfGPO6zMUc5xfPeemjS6VSJrEtQMss
-         1goykr9zPe+syVPkWX7PVQyshKU1o6XRgSUox+ohs5TGcnJ5CdNHGqFtObj+Pe9iYsSv
-         Wt4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XB5JUou7Jni7zwQBTGW32WDxJ8f3yrretJGVyDCYjYE=;
-        b=m1wEsEJz5hOnFCzMSWdJTyJpcypzCyN2JHfDffGCQgJ/v8OWTSXUnNwKH8qrXCHLOK
-         5QS5/Y4HywhhaLJ5ze3urIPqjOKUoC13ml3HsBpnhWS3zW2oR/G4keBcQ689MxcyD4fR
-         pFeJKfn4Ub/J0tsrM2W33zGa71GdNY2esbsVGXwNPRB47fmfjC6tIJ/+kMCC6rlNy4i7
-         o0ZyhcuF9YAfWh2v1P6PK4o0gtWDJeSYKraVmJf7RNznNuKHUIqyvNVnXKt5v5CIQX8W
-         6ee93XoYCALxF2BM99kws4s2esGKtp3EZxJSLayF0LZCPBMhA9BeoolWLgzESrI9LQmo
-         tXig==
-X-Gm-Message-State: AOAM531lPrOj7Sz7iKwB6ky0HBvAgWg/VGExIwVPpdPZYxBCOKM2isEt
-        kGgb7Fve1/s1pM/BkvV0AGw=
-X-Google-Smtp-Source: ABdhPJxur/JWKkFkFkvFSYUt5BkrE4uBq1S6yPH/Ly0r97WyqsXKzP+ilexiQXnVyu0KUl5WlBkzqg==
-X-Received: by 2002:a17:902:3:b029:11f:e733:408f with SMTP id 3-20020a1709020003b029011fe733408fmr945235pla.21.1624477436861;
-        Wed, 23 Jun 2021 12:43:56 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2053:62d5:263a:1851])
-        by smtp.gmail.com with ESMTPSA id v14sm618205pgo.89.2021.06.23.12.43.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Jun 2021 12:43:56 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tom Herbert <tom@herbertland.com>
-Subject: [PATCH net] ipv6: fix out-of-bound access in ip6_parse_tlv()
-Date:   Wed, 23 Jun 2021 12:43:53 -0700
-Message-Id: <20210623194353.2021745-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.32.0.288.g62a8d224e6-goog
+        id S229900AbhFWTs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 15:48:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21367 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229523AbhFWTs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 15:48:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624477568;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5RisPrPjCMS6safES3jNCNozmv4O8WOuYlgF9/vHY9w=;
+        b=DZGtOiDqoNI1Ttto8PmHGsVKKNepzETX1t82w1M12mRQXdGgWa0NdX0uRYg9g3ak3wTGv8
+        KFDGtsyEkMxS3QeKMlm9I19sUnwKHE7L0baf6unem4Ttk5KXiYvMxXaB8BgOJStkZJgTYM
+        FNrgx5EHkh4F8R0f1ST/JgkuqNq9HFY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-324-_Bw6S495N7GWHT4OF3XpkA-1; Wed, 23 Jun 2021 15:46:04 -0400
+X-MC-Unique: _Bw6S495N7GWHT4OF3XpkA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CBC331084F4C;
+        Wed, 23 Jun 2021 19:46:02 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 55232100164A;
+        Wed, 23 Jun 2021 19:45:56 +0000 (UTC)
+Date:   Wed, 23 Jun 2021 21:45:55 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     brouer@redhat.com, davem@davemloft.net, netdev@vger.kernel.org,
+        willemb@google.com, eric.dumazet@gmail.com, dsahern@gmail.com,
+        yoshfuji@linux-ipv6.org, Dave Jones <dsj@fb.com>
+Subject: Re: [PATCH net-next v3] net: ip: avoid OOM kills with large UDP
+ sends over loopback
+Message-ID: <20210623214555.5c683821@carbon>
+In-Reply-To: <20210623162328.2197645-1-kuba@kernel.org>
+References: <20210623162328.2197645-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Wed, 23 Jun 2021 09:23:28 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-First problem is that optlen is fetched without checking
-there is more than one byte to parse.
+> Dave observed number of machines hitting OOM on the UDP send
+> path. The workload seems to be sending large UDP packets over
+> loopback. Since loopback has MTU of 64k kernel will try to
+> allocate an skb with up to 64k of head space. This has a good
+> chance of failing under memory pressure. What's worse if
+> the message length is <32k the allocation may trigger an
+> OOM killer.
+> 
+> This is entirely avoidable, we can use an skb with page frags.
+> 
+> af_unix solves a similar problem by limiting the head
+> length to SKB_MAX_ALLOC. This seems like a good and simple
+> approach. It means that UDP messages > 16kB will now
+> use fragments if underlying device supports SG, if extra
+> allocator pressure causes regressions in real workloads
+> we can switch to trying the large allocation first and
+> falling back.
+> 
+> Reported-by: Dave Jones <dsj@fb.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/ipv4/ip_output.c  | 4 +++-
+>  net/ipv6/ip6_output.c | 4 +++-
+>  2 files changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+> index c3efc7d658f6..790dd28fd198 100644
+> --- a/net/ipv4/ip_output.c
+> +++ b/net/ipv4/ip_output.c
+> @@ -1077,7 +1077,9 @@ static int __ip_append_data(struct sock *sk,
+>  			if ((flags & MSG_MORE) &&
+>  			    !(rt->dst.dev->features&NETIF_F_SG))
+>  				alloclen = mtu;
+> -			else if (!paged)
+> +			else if (!paged &&
+> +				 (fraglen + hh_len + 15 < SKB_MAX_ALLOC ||
 
-Fix this by taking care of IPV6_TLV_PAD1 before
-fetching optlen (under appropriate sanity checks against len)
+What does the number 15 represent here?
 
-Second problem is that IPV6_TLV_PADN checks of zero
-padding are performed before the check of remaining length.
+> +				  !(rt->dst.dev->features & NETIF_F_SG)))
+>  				alloclen = fraglen;
+>  			else {
+>  				alloclen = min_t(int, fraglen, MAX_HEADER);
+> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+> index ff4f9ebcf7f6..ae8dbd6cdab1 100644
+> --- a/net/ipv6/ip6_output.c
+> +++ b/net/ipv6/ip6_output.c
+> @@ -1585,7 +1585,9 @@ static int __ip6_append_data(struct sock *sk,
+>  			if ((flags & MSG_MORE) &&
+>  			    !(rt->dst.dev->features&NETIF_F_SG))
+>  				alloclen = mtu;
+> -			else if (!paged)
+> +			else if (!paged &&
+> +				 (fraglen + hh_len < SKB_MAX_ALLOC ||
 
-Fixes: c1412fce7ecc ("net/ipv6/exthdrs.c: Strict PadN option checking")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Tom Herbert <tom@herbertland.com>
----
+The number 15 is not use here.
 
-Only compiled, I would appreciate a solid review of this patch before merging it, thanks !
+> +				  !(rt->dst.dev->features & NETIF_F_SG)))
+>  				alloclen = fraglen;
+>  			else {
+>  				alloclen = min_t(int, fraglen, MAX_HEADER);
 
- net/ipv6/exthdrs.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 6f7da8f3e2e5849f917853984c69bf02a0f1e27c..007959d4d3748f1e21f83946024a9967d08b25b6 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -135,18 +135,24 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 	len -= 2;
- 
- 	while (len > 0) {
--		int optlen = nh[off + 1] + 2;
--		int i;
-+		int optlen, i;
- 
--		switch (nh[off]) {
--		case IPV6_TLV_PAD1:
-+		if (nh[off] == IPV6_TLV_PAD1) {
- 			optlen = 1;
- 			padlen++;
- 			if (padlen > 7)
- 				goto bad;
--			break;
-+			off++;
-+			len--;
-+			continue;
-+		}
-+		if (len < 2)
-+			goto bad;
-+		optlen = nh[off + 1] + 2;
-+		if (optlen > len)
-+			goto bad;
- 
--		case IPV6_TLV_PADN:
-+		if (nh[off] == IPV6_TLV_PADN) {
- 			/* RFC 2460 states that the purpose of PadN is
- 			 * to align the containing header to multiples
- 			 * of 8. 7 is therefore the highest valid value.
-@@ -163,12 +169,7 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 				if (nh[off + i] != 0)
- 					goto bad;
- 			}
--			break;
--
--		default: /* Other TLV code so scan list */
--			if (optlen > len)
--				goto bad;
--
-+		} else {
- 			tlv_count++;
- 			if (tlv_count > max_count)
- 				goto bad;
-@@ -188,7 +189,6 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 				return false;
- 
- 			padlen = 0;
--			break;
- 		}
- 		off += optlen;
- 		len -= optlen;
+
 -- 
-2.32.0.288.g62a8d224e6-goog
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
