@@ -2,257 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C63AD3B1275
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F8473B1276
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:48:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbhFWDvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 23:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbhFWDvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:51:01 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63158C061574;
-        Tue, 22 Jun 2021 20:48:44 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id h21-20020a1ccc150000b02901d4d33c5ca0so358287wmb.3;
-        Tue, 22 Jun 2021 20:48:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8+ZeLnwHh9Py0eDeZIZvkJQttIs0sxzhqw37BA3s270=;
-        b=qlWreJ/BoQONV/bBEO+485rLDa7rgGeR7Xu6Ve+1XJU6wbKjZKUJaNVDVnBMH65DQY
-         FXN1TjCpmXE2QOe9g5i8zT5/2pk4to0/vT+7TYDirQ7Jzu6Ucxzgn2GXJqwJK6/+Ap5p
-         jYEWQdWvyXjDFGDXab5xQNyzM1JSgKoSpc5c0OBXfig6KyAUH7OSPqRl0d2n3cn57AGY
-         zpAVeNxUnnaY4Frx4AO/mNJHXZA329LQM71+DtuW91R+uB4mU32SRL0/QyWayCbgU4zJ
-         /awWYA1g5mHS9OCK7mnQIPcRWZoqGz7nMddb8Uee0H3P+KI4VSOXgpIaRITrQ7jCSu2F
-         1Fcg==
+        id S230334AbhFWDvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 23:51:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22431 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229774AbhFWDvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:51:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624420130;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=v8mq8LxfuDXyJ+pHOiIlGCAFqRNvKwNqM3X44uV2r1M=;
+        b=gbbAZ/aD2/e03+dCht50ritGjchETo+mTAYrd/x6WfVFsVJiuc0T2HhmVivAO4fPYMsEt+
+        tG2ud8zIqVOl8zblSOtd7Y6uiMPFAjKaLMoHW8tCWMBj1PuYJDpbYLHQxXpyk31uC0Q+tg
+        Pf4CcCOOJeUha2y1HLjQqeSSa8qMjZQ=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-560-6q5bk-ftPi2LaJQg_HYGdQ-1; Tue, 22 Jun 2021 23:48:47 -0400
+X-MC-Unique: 6q5bk-ftPi2LaJQg_HYGdQ-1
+Received: by mail-pj1-f72.google.com with SMTP id bv6-20020a17090af186b029016fb0e27fe2so3026668pjb.4
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 20:48:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8+ZeLnwHh9Py0eDeZIZvkJQttIs0sxzhqw37BA3s270=;
-        b=KzsH2LusU0vVqA1P/7RPqz/dl1gBU9s1RabGs3HXKq4mjN5L6+ZBJCzNrcxgXfsdle
-         IEM8pGpR0QpmFCpAPgcQctjhvy9nd/DVSt0ShYpk4IiLju5dkHPH/AakGHiqKkX0yCrW
-         pEwZa2V7qaFD0ibhUdNJWpBbtEz/OOhE1sMlIWW9n6wkNldmu30g4/4I9i8qiXMPL7ol
-         0WC1wD4ccUPWoR+gH7ajO858QYI3z3mrkABjvVMxLK2XBlA1AIgBItqGkX/DL5sgmgDc
-         Zup5b+cyZd+gffPqnECBueaBQg4POyIfT7VuUyyQUlhDYowgyt42rEFTs0+cE5SFGOVm
-         LCRQ==
-X-Gm-Message-State: AOAM531RatzdrpHCwg23PKICApvs+n2mnHVr3X6plvC0i1r6XqGxKz8x
-        FWZtNmbxKCv325RTQdYLmeNTzM9btKRKI5NgWq8=
-X-Google-Smtp-Source: ABdhPJzFgactEuWl5qZafUmm5ynYzUFp21GHhNlV06lVCPK9bXBCIS5NB3nCJYmQbe6HRCPbi6K5IPfdm/womrknF0I=
-X-Received: by 2002:a1c:5413:: with SMTP id i19mr8616884wmb.12.1624420122997;
- Tue, 22 Jun 2021 20:48:42 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=v8mq8LxfuDXyJ+pHOiIlGCAFqRNvKwNqM3X44uV2r1M=;
+        b=SNm58v2GLz5EhG8pT7RV1u2MIvHL1K6uhXatfdu/Hkc/ZnW3rpKa6AKQxrofL0hLr2
+         x7IdwXrqMOq03Y7HVNy5CfC+7T/zWQkEQyRjuVwta1zpp8P7MMNmPm3wesPlZJNT0b6K
+         YY3uqJ5JjfF74jPz7pUzYMnnZcHHUStd3OEdwZdF98AcuyJ/PVeOerMED++oWp4f+xDt
+         jrtPDSly/YxqrwOlFZVQU2lVqV/uh6wzG0NuNL9BMtLDTUjvQp4eqIvUV/SJYNTU/k0E
+         qFWmQ0Gno/GfB/5xmzmKiqeeUT1KGrxUT1XT31PR6Y0970cX5iwcCafKMFlWYk9KzTtr
+         vpKQ==
+X-Gm-Message-State: AOAM530OJy5aDyHfQ/B+q9DnrhsYss+CVvqC7GluD+5IvYeiYflg0iwH
+        c5wQrXPenZ224F2xNLGXR0qFdFPeKVJ5ztlEYO8xHKLp0ecB4iVHpuglkBrx00zre6uNvAYc2NJ
+        XPHmg/0N5jAS5kjKv
+X-Received: by 2002:a17:90a:73ca:: with SMTP id n10mr7387637pjk.16.1624420126783;
+        Tue, 22 Jun 2021 20:48:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyvKYOqKbCzxHiBVXvmOhnEn/KiRgVFsZHCCRJglu7QNbTZ0GR4vMU2m4PbKylW4RmgAEnH7g==
+X-Received: by 2002:a17:90a:73ca:: with SMTP id n10mr7387626pjk.16.1624420126615;
+        Tue, 22 Jun 2021 20:48:46 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id p24sm746279pfh.17.2021.06.22.20.48.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Jun 2021 20:48:46 -0700 (PDT)
+Subject: Re: [PATCH v2 3/4] vhost_net: validate virtio_net_hdr only if it
+ exists
+To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
+Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+ <20210622161533.1214662-1-dwmw2@infradead.org>
+ <20210622161533.1214662-3-dwmw2@infradead.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <cbac7eca-c72f-2e64-5ec1-45ce414f0d7b@redhat.com>
+Date:   Wed, 23 Jun 2021 11:48:43 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <cover.1624384990.git.lucien.xin@gmail.com> <cfaa01992d064520b3a9138983e8ec41@AcuMS.aculab.com>
- <CADvbK_e7D4s81vS0rq=P4mQe47dshJgQzaWnrUyCi-Cis4xyhQ@mail.gmail.com>
-In-Reply-To: <CADvbK_e7D4s81vS0rq=P4mQe47dshJgQzaWnrUyCi-Cis4xyhQ@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 22 Jun 2021 23:48:33 -0400
-Message-ID: <CADvbK_eeJVoWps8UrygEfNdXL76Q2XMoNOoELWHFqOTq2634cA@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next 00/14] sctp: implement RFC8899: Packetization
- Layer Path MTU Discovery for SCTP transport
-To:     David Laight <David.Laight@aculab.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210622161533.1214662-3-dwmw2@infradead.org>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 22, 2021 at 9:09 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Tue, Jun 22, 2021 at 6:13 PM David Laight <David.Laight@aculab.com> wrote:
-> >
-> > From: Xin Long
-> > > Sent: 22 June 2021 19:05
-> > >
-> > > Overview(From RFC8899):
-> > >
-> > >   In contrast to PMTUD, Packetization Layer Path MTU Discovery
-> > >   (PLPMTUD) [RFC4821] introduces a method that does not rely upon
-> > >   reception and validation of PTB messages.  It is therefore more
-> > >   robust than Classical PMTUD.  This has become the recommended
-> > >   approach for implementing discovery of the PMTU [BCP145].
-> > >
-> > >   It uses a general strategy in which the PL sends probe packets to
-> > >   search for the largest size of unfragmented datagram that can be sent
-> > >   over a network path.  Probe packets are sent to explore using a
-> > >   larger packet size.  If a probe packet is successfully delivered (as
-> > >   determined by the PL), then the PLPMTU is raised to the size of the
-> > >   successful probe.  If a black hole is detected (e.g., where packets
-> > >   of size PLPMTU are consistently not received), the method reduces the
-> > >   PLPMTU.
-> >
-> > This seems to take a long time (probably well over a minute)
-> > to determine the mtu.
-> I just noticed this is a misread of RFC8899, and the next probe packet
-> should be sent immediately once the ACK of the last probe is received,
-> instead of waiting the timeout, which should be for the missing probe.
->
-> I will fix this with:
->
-> diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-> index d29b579da904..f3aca1acf93a 100644
-> --- a/net/sctp/sm_statefuns.c
-> +++ b/net/sctp/sm_statefuns.c
-> @@ -1275,6 +1275,8 @@ enum sctp_disposition
-> sctp_sf_backbeat_8_3(struct net *net,
->                         return SCTP_DISPOSITION_DISCARD;
->
->                 sctp_transport_pl_recv(link);
-> +               sctp_add_cmd_sf(commands, SCTP_CMD_PROBE_TIMER_UPDATE,
-> +                               SCTP_TRANSPORT(link));
->                 return SCTP_DISPOSITION_CONSUME;
->         }
->
-> diff --git a/net/sctp/transport.c b/net/sctp/transport.c
-> index f27b856ea8ce..88815b98d9d0 100644
-> --- a/net/sctp/transport.c
-> +++ b/net/sctp/transport.c
-> @@ -215,6 +215,11 @@ void sctp_transport_reset_probe_timer(struct
-> sctp_transport *transport)
->  {
->         int scale = 1;
->
-> +       if (transport->pl.probe_count == 0) {
-> +               if (!mod_timer(&transport->probe_timer, jiffies +
-> transport->rto))
-> +                       sctp_transport_hold(transport);
-> +               return;
-> +       }
->         if (timer_pending(&transport->probe_timer))
->                 return;
->         if (transport->pl.state == SCTP_PL_COMPLETE &&
->
-> Thanks for the comment.
-A more efficient improvement:
 
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index d29b579da904..d5cb0124bafa 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -1275,7 +1275,13 @@ enum sctp_disposition
-sctp_sf_backbeat_8_3(struct net *net,
-                        return SCTP_DISPOSITION_DISCARD;
-
-                sctp_transport_pl_recv(link);
--               return SCTP_DISPOSITION_CONSUME;
-+
-+               if (link->pl.state == SCTP_PL_COMPLETE) {
-+                       sctp_add_cmd_sf(commands, SCTP_CMD_PROBE_TIMER_UPDATE,
-+                                       SCTP_TRANSPORT(link));
-+                       return SCTP_DISPOSITION_CONSUME;
-+               }
-+               return sctp_sf_send_probe(net, ep, asoc, type, link, commands);
-        }
-
-        max_interval = link->hbinterval + link->rto;
-diff --git a/net/sctp/transport.c b/net/sctp/transport.c
-index f27b856ea8ce..37f65f617f05 100644
---- a/net/sctp/transport.c
-+++ b/net/sctp/transport.c
-@@ -215,10 +215,8 @@ void sctp_transport_reset_probe_timer(struct
-sctp_transport *transport)
- {
-        int scale = 1;
-
--       if (timer_pending(&transport->probe_timer))
--               return;
-        if (transport->pl.state == SCTP_PL_COMPLETE &&
--           transport->pl.probe_count == 1)
-+           transport->pl.probe_count == 0)
-                scale = 30; /* works as PMTU_RAISE_TIMER */
-        if (!mod_timer(&transport->probe_timer,
-                       jiffies + transport->probe_interval * scale))
-
-[103] pl_send: PLPMTUD: state: 1, size: 1200, high: 0 <--[a]
-[103] pl_recv: PLPMTUD: state: 1, size: 1200, high: 0
-[103] pl_send: PLPMTUD: state: 2, size: 1232, high: 0
-[103] pl_recv: PLPMTUD: state: 2, size: 1232, high: 0
-[103] pl_send: PLPMTUD: state: 2, size: 1264, high: 0
-[103] pl_recv: PLPMTUD: state: 2, size: 1264, high: 0
-[103] pl_send: PLPMTUD: state: 2, size: 1296, high: 0
-[103] pl_recv: PLPMTUD: state: 2, size: 1296, high: 0
-[103] pl_send: PLPMTUD: state: 2, size: 1328, high: 0
-[103] pl_recv: PLPMTUD: state: 2, size: 1328, high: 0
-[103] pl_send: PLPMTUD: state: 2, size: 1360, high: 0
-[103] pl_recv: PLPMTUD: state: 2, size: 1360, high: 0
-[103] pl_send: PLPMTUD: state: 2, size: 1392, high: 0
-[103] pl_recv: PLPMTUD: state: 2, size: 1392, high: 0
-[103] pl_send: PLPMTUD: state: 2, size: 1424, high: 0
-[103] pl_recv: PLPMTUD: state: 2, size: 1424, high: 0
-[103] pl_send: PLPMTUD: state: 2, size: 1456, high: 0
-[103] pl_recv: PLPMTUD: state: 2, size: 1456, high: 0  <--[b]
-[103] pl_send: PLPMTUD: state: 2, size: 1488, high: 0
-[108] pl_send: PLPMTUD: state: 2, size: 1488, high: 0
-[113] pl_send: PLPMTUD: state: 2, size: 1488, high: 0
-[118] pl_send: PLPMTUD: state: 2, size: 1488, high: 0
-[118] pl_recv: PLPMTUD: state: 2, size: 1456, high: 1488 <---[c]
-[118] pl_send: PLPMTUD: state: 2, size: 1460, high: 1488
-[118] pl_recv: PLPMTUD: state: 2, size: 1460, high: 1488 <--- [d]
-[118] pl_send: PLPMTUD: state: 2, size: 1464, high: 1488
-[124] pl_send: PLPMTUD: state: 2, size: 1464, high: 1488
-[129] pl_send: PLPMTUD: state: 2, size: 1464, high: 1488
-[134] pl_send: PLPMTUD: state: 2, size: 1464, high: 1488
-[134] pl_recv: PLPMTUD: state: 2, size: 1460, high: 1464 <-- around
-30s "search complete from 1200 bytes"
-[287] pl_send: PLPMTUD: state: 3, size: 1460, high: 0
-[287] pl_recv: PLPMTUD: state: 3, size: 1460, high: 0
-[287] pl_send: PLPMTUD: state: 2, size: 1464, high: 0 <-- [aa]
-[292] pl_send: PLPMTUD: state: 2, size: 1464, high: 0
-[298] pl_send: PLPMTUD: state: 2, size: 1464, high: 0
-[303] pl_send: PLPMTUD: state: 2, size: 1464, high: 0
-[303] pl_recv: PLPMTUD: state: 2, size: 1460, high: 1464  <--[bb]  <--
-around 15s "re-search complete from current pmtu"
-
-So since no interval to send the next probe when the ACK is received
-for the last one,
-it won't take much time from [a] to [b], and [c] to [d],
-and there are at most 2 failures to find the right pmtu, each failure
-takes 5s * 3 = 15s.
-
-when it goes back to search from search complete after a long timeout,
-it will take only 1 failure to get the right pmtu from [aa] to [bb].
-
- Thanks.
-> >
-> > What is used for the actual mtu while this is in progress?
-> >
-> > Does packet loss and packet retransmission cause the mtu
-> > to be reduced as well?
-> No, the data packet is not a probe in this implementation.
+ÔÚ 2021/6/23 ÉÏÎç12:15, David Woodhouse Ð´µÀ:
+> From: David Woodhouse <dwmw@amazon.co.uk>
 >
-> >
-> > I can imagine that there is an expectation (from the application)
-> > that the mtu is that of an ethernet link - perhaps less a PPPoE
-> > header.
-> > Starting with an mtu of 1200 will break this assumption and may
-> > have odd side effects.
-> Starting searching from mtu of 1200, but the real pmtu will only be updated
-> when the search is done and optimal mtu is found.
-> So at the beginning, it will still use the dst mtu as before.
+> When the underlying socket doesn't handle the virtio_net_hdr, the
+> existing code in vhost_net_build_xdp() would attempt to validate stack
+> noise, by copying zero bytes into the local copy of the header and then
+> validating that. Skip the whole pointless pointer arithmetic and partial
+> copy (of zero bytes) in this case.
 >
-> > For TCP/UDP the ICMP segmentation required error is immediate
-> > and gets used for the retransmissions.
-> > This code seems to be looking at separate timeouts - so a lot of
-> > packets could get discarded and application timers expire before
-> > if determines the correct mtu.
-> This patch will also process ICMP error msg, and gets the 'mtu' size from it
-> but before using it, it will verify(probe) it first:
+> Fixes: 0a0be13b8fe2 ("vhost_net: batch submitting XDP buffers to underlayer sockets")
+> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+
+> ---
+>   drivers/vhost/net.c | 43 ++++++++++++++++++++++---------------------
+>   1 file changed, 22 insertions(+), 21 deletions(-)
 >
-> see Patch: sctp: do state transition when receiving an icmp TOOBIG packet
->
-> >
-> > Maybe I missed something about this only being done on inactive
-> > paths?
-> >
-> >         David
-> >
-> > -
-> > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> > Registration No: 1397386 (Wales)
-> >
+> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> index df82b124170e..1e3652eb53af 100644
+> --- a/drivers/vhost/net.c
+> +++ b/drivers/vhost/net.c
+> @@ -690,7 +690,6 @@ static int vhost_net_build_xdp(struct vhost_net_virtqueue *nvq,
+>   					     dev);
+>   	struct socket *sock = vhost_vq_get_backend(vq);
+>   	struct page_frag *alloc_frag = &net->page_frag;
+> -	struct virtio_net_hdr *gso;
+>   	struct xdp_buff *xdp = &nvq->xdp[nvq->batched_xdp];
+>   	struct tun_xdp_hdr *hdr;
+>   	size_t len = iov_iter_count(from);
+> @@ -715,29 +714,31 @@ static int vhost_net_build_xdp(struct vhost_net_virtqueue *nvq,
+>   		return -ENOMEM;
+>   
+>   	buf = (char *)page_address(alloc_frag->page) + alloc_frag->offset;
+> -	copied = copy_page_from_iter(alloc_frag->page,
+> -				     alloc_frag->offset +
+> -				     offsetof(struct tun_xdp_hdr, gso),
+> -				     sock_hlen, from);
+> -	if (copied != sock_hlen)
+> -		return -EFAULT;
+> -
+>   	hdr = buf;
+> -	gso = &hdr->gso;
+> -
+> -	if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
+> -	    vhost16_to_cpu(vq, gso->csum_start) +
+> -	    vhost16_to_cpu(vq, gso->csum_offset) + 2 >
+> -	    vhost16_to_cpu(vq, gso->hdr_len)) {
+> -		gso->hdr_len = cpu_to_vhost16(vq,
+> -			       vhost16_to_cpu(vq, gso->csum_start) +
+> -			       vhost16_to_cpu(vq, gso->csum_offset) + 2);
+> -
+> -		if (vhost16_to_cpu(vq, gso->hdr_len) > len)
+> -			return -EINVAL;
+> +	if (sock_hlen) {
+> +		struct virtio_net_hdr *gso = &hdr->gso;
+> +
+> +		copied = copy_page_from_iter(alloc_frag->page,
+> +					     alloc_frag->offset +
+> +					     offsetof(struct tun_xdp_hdr, gso),
+> +					     sock_hlen, from);
+> +		if (copied != sock_hlen)
+> +			return -EFAULT;
+> +
+> +		if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
+> +		    vhost16_to_cpu(vq, gso->csum_start) +
+> +		    vhost16_to_cpu(vq, gso->csum_offset) + 2 >
+> +		    vhost16_to_cpu(vq, gso->hdr_len)) {
+> +			gso->hdr_len = cpu_to_vhost16(vq,
+> +						      vhost16_to_cpu(vq, gso->csum_start) +
+> +						      vhost16_to_cpu(vq, gso->csum_offset) + 2);
+> +
+> +			if (vhost16_to_cpu(vq, gso->hdr_len) > len)
+> +				return -EINVAL;
+> +		}
+> +		len -= sock_hlen;
+>   	}
+>   
+> -	len -= sock_hlen;
+>   	copied = copy_page_from_iter(alloc_frag->page,
+>   				     alloc_frag->offset + pad,
+>   				     len, from);
+
