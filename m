@@ -2,71 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E18393B1100
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 02:15:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 193AA3B1128
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 02:53:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbhFWAR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 20:17:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45448 "EHLO mail.kernel.org"
+        id S229995AbhFWAzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 20:55:45 -0400
+Received: from m12-11.163.com ([220.181.12.11]:49309 "EHLO m12-11.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229747AbhFWARy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Jun 2021 20:17:54 -0400
-Received: from rorschach.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6F7F560E0B;
-        Wed, 23 Jun 2021 00:15:36 +0000 (UTC)
-Date:   Tue, 22 Jun 2021 20:15:34 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        David Hildenbrand <david@redhat.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Greg KH <greg@kroah.com>, Christoph Lameter <cl@gentwo.de>,
-        Theodore Ts'o <tytso@mit.edu>, Jiri Kosina <jikos@kernel.org>,
-        ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-Message-ID: <20210622201534.53d3067b@rorschach.local.home>
-In-Reply-To: <66fce207-2602-6452-9216-01ebde656bcd@linuxfoundation.org>
-References: <YK+esqGjKaPb+b/Q@kroah.com>
-        <c46dbda64558ab884af060f405e3f067112b9c8a.camel@HansenPartnership.com>
-        <b32c8672-06ee-bf68-7963-10aeabc0596c@redhat.com>
-        <5038827c-463f-232d-4dec-da56c71089bd@metux.net>
-        <20210610182318.jrxe3avfhkqq7xqn@nitro.local>
-        <YMJcdbRaQYAgI9ER@pendragon.ideasonboard.com>
-        <20210610152633.7e4a7304@oasis.local.home>
-        <37e8d1a5-7c32-8e77-bb05-f851c87a1004@linuxfoundation.org>
-        <YMyjryXiAfKgS6BY@pendragon.ideasonboard.com>
-        <ae51f636-8fb5-20b7-bbc5-37e22edb9a02@linuxfoundation.org>
-        <YNJrZIMs7RvqRBSG@pendragon.ideasonboard.com>
-        <3bfbe45c-2356-6db0-e1b8-11b7e37ae858@linuxfoundation.org>
-        <66fce207-2602-6452-9216-01ebde656bcd@linuxfoundation.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S229751AbhFWAzp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Jun 2021 20:55:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=riv/d
+        1fiZZvZXSAHNlPrcNY0KX3T2Arv+m2otWF3/Rw=; b=bmK6Kw6kLWbGKhP6uiiOb
+        plTFSAEH9GsiuAzisBhhGQGeY+hQi/5R4lx/xaC+yPtqChaKFMKW0ZT9+va/GQPO
+        jWg9FJRjriqMvskWBC3VnG7/WDeg3awmjdzd0GMY0z/HIP28+EQYo8mkCCYOxH+f
+        GrDlrBJ0lecBRk31vNzxFQ=
+Received: from ubuntu.localdomain (unknown [218.17.89.92])
+        by smtp7 (Coremail) with SMTP id C8CowABHVn72hdJg0WmrjQ--.23263S2;
+        Wed, 23 Jun 2021 08:53:11 +0800 (CST)
+From:   13145886936@163.com
+To:     roopa@nvidia.com, nikolay@nvidia.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gushengxian <gushengxian@yulong.com>
+Subject: [PATCH] net: bridge: remove redundant return
+Date:   Tue, 22 Jun 2021 17:53:07 -0700
+Message-Id: <20210623005307.6215-1-13145886936@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: C8CowABHVn72hdJg0WmrjQ--.23263S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7JrWUJFyrAw17tFWrJw4UCFg_yoWkAwbEv3
+        s5ZrWI93yUXr92yrnrCw4qvF1rta1xur18CFnIgFW7trZ5Ar4Ig3WDJrs8trsFkw1xuFyU
+        Ar9YkFZIvr13KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5FYLPUUUUU==
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: 5zrdx5xxdq6xppld0qqrwthudrp/xtbBdhe6g1UMRWteoQAAsQ
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Jun 2021 17:57:11 -0600
-Shuah Khan <skhan@linuxfoundation.org> wrote:
+From: gushengxian <gushengxian@yulong.com>
 
->  Correct. It will be impossible to participate and moderate in workshop
-> > setting. We have to ask for volunteers and nominate moderators ahead of
-> > time.
-> >   
-> 
-> Subsystems could seek volunteers from other subsystems perhaps ...
+Return statements are not needed in Void function.
 
-Right, this is exactly what I was thinking. I could moderate a GPU
-subsystem, and even though I'm know for speaking, I would keep my mouth
-shut for such a session, as I'm totally clueless when it comes to the
-GPU subsystem ;-)
+Signed-off-by: gushengxian <gushengxian@yulong.com>
+---
+ net/bridge/br_netlink.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
--- Steve
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index 8642e56059fb..b70075939721 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -619,7 +619,7 @@ void br_ifinfo_notify(int event, const struct net_bridge *br,
+ {
+ 	u32 filter = RTEXT_FILTER_BRVLAN_COMPRESSED;
+ 
+-	return br_info_notify(event, br, port, filter);
++	br_info_notify(event, br, port, filter);
+ }
+ 
+ /*
+@@ -814,7 +814,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
+ 	[IFLA_BRPORT_MODE]	= { .type = NLA_U8 },
+ 	[IFLA_BRPORT_GUARD]	= { .type = NLA_U8 },
+ 	[IFLA_BRPORT_PROTECT]	= { .type = NLA_U8 },
+-	[IFLA_BRPORT_FAST_LEAVE]= { .type = NLA_U8 },
++	[IFLA_BRPORT_FAST_LEAVE] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_LEARNING]	= { .type = NLA_U8 },
+ 	[IFLA_BRPORT_UNICAST_FLOOD] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_PROXYARP]	= { .type = NLA_U8 },
+-- 
+2.25.1
+
