@@ -2,196 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04C733B1F82
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 19:31:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D7213B1F84
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 19:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbhFWRdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 13:33:24 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:53895 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229726AbhFWRdX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 13:33:23 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 43D69580661;
-        Wed, 23 Jun 2021 13:31:05 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Wed, 23 Jun 2021 13:31:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=xsm/iuKc+04iGIrtanquxcEfKGm
-        0/iHMtOF7c6r7Jqk=; b=nrg5Vic+q3fYGWO54Ohj8Ja8nFHGwEHL15bQRUdaZQo
-        UGdGD0d6oILejJ9507k2qhfYXJDztCBWHuNOWkMs2S/0AgNoK6dnZDc4IeI7quPo
-        Tfd9m+lYAEbt6yVey5delOudOe0Mi7PhH5s23sbJ7UFCY42UqWttU8CyP4vUluH5
-        K8bohS21hlYfN4McqQZoiAeoi2UGiuoYJtXhDZT0KfQqxH8Z7hhm5GmYiCBYZJyw
-        jpe8mrSiHV82GZjTBXb4GcIpOCu89hmzrJTZIONMwtEtz0vprOwy2IrgaeZEmsYi
-        SWW3hSco8qNmVOSke6zdY0nXIEUZHIINVTcPdmobTTQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=xsm/iu
-        Kc+04iGIrtanquxcEfKGm0/iHMtOF7c6r7Jqk=; b=Fo9q8bpZzDgc7kErb09oXI
-        L/ZU9KO7XyIILfJqtg43JCGiEPfeTMoiDq32drvTljvHqFARtCsnvYoiWGp7igI5
-        felWcOf7B2vZmkTjnY7VyvesdAiX2t95Wm7zHwze4zFwswr34gtzusL+toPXeOf0
-        t7TwQjj0LLa7KIe+9Cfrol6QOOh4GBlx+k0gvW7PgSDhrfg1/hNwv1540UMt8dLK
-        bpQxCvYuOXCAEp3mQXe3xZfzoMeiqIwaQMwXvnLPCrVu9PgOCD+ygtHbohasvpZ5
-        x/3XQZUPhPGgULtcje2D1jym3agHl+NjR00sPd6ubpYToDt0aUvq8vTu+nkms4cQ
-        ==
-X-ME-Sender: <xms:2G_TYMqLE7RSTgdCni3wFOh1kR67hgZfqVtYPBtC4RPT2QTZsWDSmA>
-    <xme:2G_TYCodGI49uGnzTMBkzy0o46HTwnGDndcYwqgq8-6uIvWzPMzhv7lETNqqvvwIc
-    RAGJQBaTLH53Q>
-X-ME-Received: <xmr:2G_TYBN_kHARcMAiOFf6bWJsZHPd0gHvgC78azWNqyPCnpQhEL-ngn8-AbCPmSVGWBrp6XwzM3GIrV-WU_qedwgZ2zhNPv5r>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeegfedgudduiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
-    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepveeuhe
-    ejgfffgfeivddukedvkedtleelleeghfeljeeiueeggeevueduudekvdetnecuvehluhhs
-    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorg
-    hhrdgtohhm
-X-ME-Proxy: <xmx:2G_TYD6ZGKR0p7X6ceaaEhq8wJb4NRANNBy-wxHWGZYCi125R5I9nw>
-    <xmx:2G_TYL63kj2TDy7ru6hSzII_Dv3XSAQTSJuZCQyLe_DJCfjQYIReiA>
-    <xmx:2G_TYDiMm7BDOwCejppN4LaCcmr7CAzZ5Q_S73TP-gj2VrSrab352w>
-    <xmx:2W_TYGOBXx-GP0OhlAjQKn9hFIcn2wdVc4nuUdGTGHMgpzqy7B2taQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 23 Jun 2021 13:31:03 -0400 (EDT)
-Date:   Wed, 23 Jun 2021 19:31:00 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Rocco Yue <rocco.yue@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, bpf@vger.kernel.org,
-        wsd_upstream@mediatek.com, chao.song@mediatek.com,
-        zhuoliang.zhang@mediatek.com, kuohong.wang@mediatek.com
-Subject: Re: [PATCH 4/4] drivers: net: mediatek: initial implementation of
- ccmni
-Message-ID: <YNNv1AxDNBdPcQ1U@kroah.com>
-References: <20210623113452.5671-1-rocco.yue@mediatek.com>
- <20210623113452.5671-4-rocco.yue@mediatek.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210623113452.5671-4-rocco.yue@mediatek.com>
+        id S229726AbhFWRdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 13:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229826AbhFWRdY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 13:33:24 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA0EC061574
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 10:31:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=4IudyNdv3GgBMmmxNU7K7aAr/FU5DtM6skeG1UrD9g0=; b=vQ5M4+5dmthNG/7Lg5mwTf7rRs
+        XXJiBidAnIQ0mgJxqRgjXYsY5AiL9v0sNHHxBK1yAaY14x5Gh01RcSmkwY3aX2jMUaYflXawuVTbF
+        6Uexca1hOlGqnoY4iUllo2kEBaXIEQIcvNI7yUFtHGqGe1jBEcWgIo0AIXlEjtL7xohdakYFIIJh2
+        vQ2CLbQ2GkKDrNK9DVsSjhgxnyJ52HOVEmo1B+Esk7QjDM3fUp4g4xplDUxRHJtiJDOLmEPoTy2+a
+        j0ZC6U4LQW9/awLVa2QuQEvk8TNFDcrrZagh90DPPITqV0m+/xbCCyur8WQiEe+Ng5cY47/00CDm+
+        rEfIaBVw==;
+Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.ant.amazon.com)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1lw6iO-00BP8U-EO; Wed, 23 Jun 2021 17:31:04 +0000
+Message-ID: <f2e6498d310454e9c884f3f8470477e0cc527b58.camel@infradead.org>
+Subject: Re: [PATCH v2 1/4] net: tun: fix tun_xdp_one() for IFF_TUN mode
+From:   David Woodhouse <dwmw2@infradead.org>
+To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
+Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
+Date:   Wed, 23 Jun 2021 18:31:02 +0100
+In-Reply-To: <e8843f32aa14baff398584e5b3a00d20994836b6.camel@infradead.org>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+         <20210622161533.1214662-1-dwmw2@infradead.org>
+         <fedca272-a03e-4bac-4038-2bb1f6b4df84@redhat.com>
+         <e8843f32aa14baff398584e5b3a00d20994836b6.camel@infradead.org>
+Content-Type: multipart/signed; micalg="sha-256";
+        protocol="application/x-pkcs7-signature";
+        boundary="=-VM9qBJoKn+SU/KLg4Q6r"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 23, 2021 at 07:34:52PM +0800, Rocco Yue wrote:
-> +static int ccmni_open(struct net_device *ccmni_dev)
-> +{
-> +	struct ccmni_inst *ccmni = netdev_priv(ccmni_dev);
-> +
-> +	netif_tx_start_all_queues(ccmni_dev);
-> +	netif_carrier_on(ccmni_dev);
-> +
-> +	if (atomic_inc_return(&ccmni->usage) > 1) {
-> +		atomic_dec(&ccmni->usage);
-> +		netdev_err(ccmni_dev, "dev already open\n");
-> +		return -EINVAL;
 
-You only check this _AFTER_ starting up?  If so, why even check a count
-at all?  Why does it matter as it's not keeping anything from working
-here.
+--=-VM9qBJoKn+SU/KLg4Q6r
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, 2021-06-23 at 14:52 +0100, David Woodhouse wrote:
+> @@ -2343,6 +2351,17 @@ static int tun_xdp_one(struct tun_struct *tun,
+>         if (tun->flags & IFF_VNET_HDR)
+>                 gso =3D &hdr->gso;
+> =20
+> +       if (!(tun->flags & IFF_NO_PI)) {
+> +               struct tun_pi *pi =3D xdp->data;
+> +               if (datasize < sizeof(*pi)) {
+> +                       atomic_long_inc(&tun->rx_frame_errors);
+> +                       return  -EINVAL;
+> +               }
+> +               proto =3D pi->proto;
+> +               reservelen +=3D sizeof(*pi);
+> +               datasize -=3D sizeof(*pi);
+> +       }
+> +
+>         xdp_prog =3D rcu_dereference(tun->xdp_prog);
+>         if (xdp_prog) {
+>                 if (gso && gso->gso_type) {
+
+Joy... that's wrong because when tun does both the PI and the vnet
+headers, the PI header comes *first*. When tun does only PI and vhost
+does the vnet headers, they come in the other order.
+
+Will fix (and adjust the test cases to cope).
 
 
+--=-VM9qBJoKn+SU/KLg4Q6r
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
 
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int ccmni_close(struct net_device *ccmni_dev)
-> +{
-> +	struct ccmni_inst *ccmni = netdev_priv(ccmni_dev);
-> +
-> +	atomic_dec(&ccmni->usage);
-> +	netif_tx_disable(ccmni_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static netdev_tx_t
-> +ccmni_start_xmit(struct sk_buff *skb, struct net_device *ccmni_dev)
-> +{
-> +	struct ccmni_inst *ccmni = NULL;
-> +
-> +	if (unlikely(!ccmni_hook_ready))
-> +		goto tx_ok;
-> +
-> +	if (!skb || !ccmni_dev)
-> +		goto tx_ok;
-> +
-> +	ccmni = netdev_priv(ccmni_dev);
-> +
-> +	/* some process can modify ccmni_dev->mtu */
-> +	if (skb->len > ccmni_dev->mtu) {
-> +		netdev_err(ccmni_dev, "xmit fail: len(0x%x) > MTU(0x%x, 0x%x)",
-> +			   skb->len, CCMNI_MTU, ccmni_dev->mtu);
-> +		goto tx_ok;
-> +	}
-> +
-> +	/* hardware driver send packet will return a negative value
-> +	 * ask the Linux netdevice to stop the tx queue
-> +	 */
-> +	if ((s_ccmni_ctlb->xmit_pkt(ccmni->index, skb, 0)) < 0)
-> +		return NETDEV_TX_BUSY;
-> +
-> +	return NETDEV_TX_OK;
-> +tx_ok:
-> +	dev_kfree_skb(skb);
-> +	ccmni_dev->stats.tx_dropped++;
-> +	return NETDEV_TX_OK;
-> +}
-> +
-> +static int ccmni_change_mtu(struct net_device *ccmni_dev, int new_mtu)
-> +{
-> +	if (new_mtu < 0 || new_mtu > CCMNI_MTU)
-> +		return -EINVAL;
-> +
-> +	if (unlikely(!ccmni_dev))
-> +		return -EINVAL;
-> +
-> +	ccmni_dev->mtu = new_mtu;
-> +	return 0;
-> +}
-> +
-> +static void ccmni_tx_timeout(struct net_device *ccmni_dev, unsigned int txqueue)
-> +{
-> +	struct ccmni_inst *ccmni = netdev_priv(ccmni_dev);
-> +
-> +	ccmni_dev->stats.tx_errors++;
-> +	if (atomic_read(&ccmni->usage) > 0)
-> +		netif_tx_wake_all_queues(ccmni_dev);
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
+ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
+OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
+RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
+cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
+uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
+Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
+Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
+xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
+BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
+dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
+LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
+Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
+Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
+YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
+nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
+PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
+7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
+Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
+MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
+NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
+/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
+0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
+vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
+ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
+ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
+CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
+BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
+aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
+bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
+LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
+W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
+vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
+gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
+RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
+jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
+AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
+BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
++bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
+WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
+aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
+CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
+u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
+RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
+QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
+b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
+cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
+SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
+0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
+KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
+E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
+M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
+jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
+yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
+gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
+R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
+ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
+NjIzMTczMTAyWjAvBgkqhkiG9w0BCQQxIgQgJbwhcELVjCC06KHShBWZc0kZF7wdUDdX0MBYO4kT
+MP8wgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
+PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
+DQEBAQUABIIBAC+FunQTfN+/2IRX/xZvZGfwSHvQ4m7cWHfzv/8izN6FGJHnWvakXt3qLk7GuQ4F
+QtN8fsQisaxEt3IOIqqI1EUTfSM9nUfGtuDRqHNKY6ej3Lu1IUJxuq8yyJI6iu6liWMFMBN/fjDG
+vR3G58cAh4H5Id1R/9EMo9KmrqyAf2PKbXb3WZYbaG+76c8RPw3XzeT4eVqoa+hUt3Aa7MdlFlin
+eH59KrknY8YKkHrNYpWMncvgvyETyCLCE91bVs4DjJrcLTJ9KSUS6P0N0nOP+hnavqQahraOxtto
+HBWUXr7xU7y9Uoiu8Gl1FKvL+rMIb+gr1x2OA1AOmYlU864/b/MAAAAAAAA=
 
-Why does it matter what the reference count is?  What happens if it
-drops _RIGHT_ after testing for it?
 
-Anytime you do an atomic_read() call, it's almost always a sign that the
-logic is not correct.
+--=-VM9qBJoKn+SU/KLg4Q6r--
 
-Again, why have this reference count at all?  What is it protecting?
-
-> +/* exposed API
-> + * receive incoming datagrams from the Modem and push them to the
-> + * kernel networking system
-> + */
-> +int ccmni_rx_push(unsigned int ccmni_idx, struct sk_buff *skb)
-
-Ah, so this driver doesn't really do anything on its own, as there is no
-modem driver for it.
-
-So without a modem driver, it will never be used?  Please submit the
-modem driver at the same time, otherwise it's impossible to review this
-correctly.
-
-thanks,
-
-greg k-h
