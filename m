@@ -2,125 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87C403B18BB
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 13:17:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B483B18C7
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 13:24:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbhFWLT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 07:19:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29729 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230202AbhFWLT4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 07:19:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624447058;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=b/3yS7LjHTHKfwybIlEpPmbf7+iHJm11BxEfhxSMx4s=;
-        b=SxQGLlR7g284IO5qTrBzTivM1l94i6wUUv8GFWr2FVWvd3LYWhyPb3eIiBtaJG8+02f7Qk
-        ARb588eA81/RW7o4yYZiYSSV2lx/dhJkUvmmC5Hm6lI4n6Iu2S7GQ2ioXW9FMrjbw22n1X
-        z5c0IJPE91L3PJ/Gc3lePSb9UQY0yDw=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-415-IsLY0TH7NESPMOVkEQS-4Q-1; Wed, 23 Jun 2021 07:17:37 -0400
-X-MC-Unique: IsLY0TH7NESPMOVkEQS-4Q-1
-Received: by mail-ej1-f71.google.com with SMTP id f1-20020a1709064941b02903f6b5ef17bfso833947ejt.20
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 04:17:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=b/3yS7LjHTHKfwybIlEpPmbf7+iHJm11BxEfhxSMx4s=;
-        b=TYZT0Kpgp95z40GYYHixPsd4+7Y6StcW2K9FV5A45jMgkFt41iPHcVGPO7xyhTGgG6
-         Wm3hb50amkB3CnF8/bzSjgm/wKYV/WJ2YOftyEBZJxGXJVz2eOF7PZLmCJ/YsAjr/lUR
-         MdhXrbjFAz7FV7Gflgzu0s4ircB+n/YoFA7hlEYfDvnXZ3WpFwaI9eOhQs/5a+Z9uSMk
-         jYkBivOaWJzHK+g1B1Jczvb0JaTgiqfGrHaU4EDPLt97gKPeToLtklGw0aOFcV0fsb7d
-         gljmLRi+ZhEaRzsLll+rOuaVo8SYMmvHfD8VDs87Rf2y0GtTSXUIYhcVM7JWJAVLhpS2
-         6QXg==
-X-Gm-Message-State: AOAM533UZOuECMqNo+mMOmDNB7eWqQm27Mf4NpUPiXQcZQFjcEZwrZnA
-        ReZWyT3Sf37fMr0AtBDmvVifaghuSZN67JRTe4qmf99DcaVLOPdb7Z62wySC2kqXtppSdJL8arM
-        2mo3BK8A+DnK6eYrO
-X-Received: by 2002:a17:907:628a:: with SMTP id nd10mr9446195ejc.326.1624447056203;
-        Wed, 23 Jun 2021 04:17:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz25B0vO27pZCcHDvVK0CgKzd9Bg8TdjridQdPvHb/yGoxtJKIdGkfYPe6XcUq0TCELpd5TLQ==
-X-Received: by 2002:a17:907:628a:: with SMTP id nd10mr9446166ejc.326.1624447056034;
-        Wed, 23 Jun 2021 04:17:36 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id cd4sm7154729ejb.104.2021.06.23.04.17.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Jun 2021 04:17:35 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id EC264180730; Wed, 23 Jun 2021 13:17:34 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, netdev@vger.kernel.org
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next v3 5/5] bpf: update XDP selftests to not fail
- with generic XDP
-In-Reply-To: <20210622202835.1151230-6-memxor@gmail.com>
-References: <20210622202835.1151230-1-memxor@gmail.com>
- <20210622202835.1151230-6-memxor@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 23 Jun 2021 13:17:34 +0200
-Message-ID: <878s30omnl.fsf@toke.dk>
+        id S230174AbhFWL0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 07:26:39 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:57171 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230031AbhFWL0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 07:26:38 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 15NBO6rnC023398, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 15NBO6rnC023398
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 23 Jun 2021 19:24:06 +0800
+Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 23 Jun 2021 19:24:06 +0800
+Received: from localhost.localdomain (172.21.177.191) by
+ RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 23 Jun 2021 19:24:05 +0800
+From:   Edward Wu <edwardwu@realtek.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, Edward Wu <edwardwu@realtek.com>
+Subject: [PATCH net-next resend] net: Exposing more skb fields in netif_receive_skb trace event
+Date:   Wed, 23 Jun 2021 19:23:39 +0800
+Message-ID: <20210623112339.29453-1-edwardwu@realtek.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210609093656.8984-1-edwardwu@realtek.com>
+References: <20210609093656.8984-1-edwardwu@realtek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [172.21.177.191]
+X-ClientProxiedBy: RTEXMBS02.realtek.com.tw (172.21.6.95) To
+ RTEXDAG01.realtek.com.tw (172.21.6.100)
+X-KSE-ServerInfo: RTEXDAG01.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/23/2021 11:03:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzYvMjMgpFekyCAwODowNjowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/23/2021 11:01:21
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 164570 [Jun 23 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: edwardwu@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/23/2021 11:03:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
+This exposing helps to analyze network behavior.
 
-> Generic XDP devmaps and cpumaps now allow setting value_size to 8 bytes
-> (so that prog_fd can be specified) and XDP progs using them succeed in
-> SKB mode now. Adjust the checks.
->
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->  tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c | 4 ++--
->  tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c | 4 ++--
->  2 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-> index 0176573fe4e7..42e46d2ae349 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-> @@ -29,8 +29,8 @@ void test_xdp_with_cpumap_helpers(void)
->  	 */
->  	prog_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
->  	err = bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd, XDP_FLAGS_SKB_MODE);
-> -	CHECK(err == 0, "Generic attach of program with 8-byte CPUMAP",
-> -	      "should have failed\n");
-> +	CHECK(err, "Generic attach of program with 8-byte CPUMAP",
-> +	      "shouldn't have failed\n");
+In performance tuning, we will check nr_frags to analyze
+GRO aggregation behavior. By this commit, we can
+enable netif_receive_skb trace event for dynamic debugging.
 
-There's a comment right above this that is now wrong... Also, this
-program is never being detached.
+Signed-off-by: Edward Wu <edwardwu@realtek.com>
+---
+ include/trace/events/net.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
->  	prog_fd = bpf_program__fd(skel->progs.xdp_dummy_cm);
->  	map_fd = bpf_map__fd(skel->maps.cpu_map);
-> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-> index 88ef3ec8ac4c..861db508ace2 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-> @@ -31,8 +31,8 @@ void test_xdp_with_devmap_helpers(void)
->  	 */
->  	dm_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
->  	err = bpf_set_link_xdp_fd(IFINDEX_LO, dm_fd, XDP_FLAGS_SKB_MODE);
-> -	CHECK(err == 0, "Generic attach of program with 8-byte devmap",
-> -	      "should have failed\n");
-> +	CHECK(err, "Generic attach of program with 8-byte devmap",
-> +	      "shouldn't have failed\n");
-
-... same here
-
-
--Toke
+diff --git a/include/trace/events/net.h b/include/trace/events/net.h
+index 2399073c3afc..48aa7168b68f 100644
+--- a/include/trace/events/net.h
++++ b/include/trace/events/net.h
+@@ -147,13 +147,6 @@ DEFINE_EVENT(net_dev_template, net_dev_queue,
+ 	TP_ARGS(skb)
+ );
+ 
+-DEFINE_EVENT(net_dev_template, netif_receive_skb,
+-
+-	TP_PROTO(struct sk_buff *skb),
+-
+-	TP_ARGS(skb)
+-);
+-
+ DEFINE_EVENT(net_dev_template, netif_rx,
+ 
+ 	TP_PROTO(struct sk_buff *skb),
+@@ -239,6 +232,13 @@ DEFINE_EVENT(net_dev_rx_verbose_template, napi_gro_receive_entry,
+ 	TP_ARGS(skb)
+ );
+ 
++DEFINE_EVENT(net_dev_rx_verbose_template, netif_receive_skb,
++
++	TP_PROTO(const struct sk_buff *skb),
++
++	TP_ARGS(skb)
++);
++
+ DEFINE_EVENT(net_dev_rx_verbose_template, netif_receive_skb_entry,
+ 
+ 	TP_PROTO(const struct sk_buff *skb),
+-- 
+2.17.1
 
