@@ -2,113 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9192E3B1841
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 12:52:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD793B1847
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 12:56:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbhFWKyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 06:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbhFWKyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 06:54:13 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E639C06175F;
-        Wed, 23 Jun 2021 03:51:55 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id n23so1310537wms.2;
-        Wed, 23 Jun 2021 03:51:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YJ73V5hYmJu2Li20f6H0oXcp8rTwNQepTRvs9pg0Ayc=;
-        b=HZnD6Mj9y0wPAxfFNO40Rb1hDKKLYfm6I3na+Q20BjgRD58FwReS9GD2VWdYVMRc+1
-         FQR75MY5dsj//IuErAWXf/U6ZYCLAP/lR1KJqRH0RUMp8xTNs0UyDyF8DDKWTlsASs8L
-         O1zYz64o4u8K86KqzbBp4s4NZmYAawkae9BPheLVAeL6gqdbcvDKMRcgmfqtSeqDPaN4
-         nM315GCJDwrFYlR8Mstpkypj/5xlHhDb9Uu3Ox+WnFSzVLDxUEX8De3RJtc1WYPDtoGU
-         Pw23ApaIhKLew7uSeSHAewpiC8RnWZ91XrWSGy1Wu0ywanr9nYg0UFwvf07o2ag/Bzmr
-         1EtA==
+        id S230130AbhFWK6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 06:58:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52630 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230071AbhFWK6V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 06:58:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624445763;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=l0rnZYZLTgGGB4O4LME1I6ADl2UwNN76Ezwf4qF0mCI=;
+        b=DsyzBKNJ2sP5nTVrHtCsesMh18YkG/3Q4T71ltZQEUpnRmZSWDgZbKskWgKled4Is4ZrVw
+        1guLcqWBcNyYZzpzpE2BQmEoLS6TXcvFTbRLrKvWqm3oHK/iNJHbQs26r7A0PmwCIKP+j+
+        q4R1UZLQ4/0sZCCAk63LnJTU/Ui1H+8=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-73-3CH_IGYvMOSb4VqsM5pcOA-1; Wed, 23 Jun 2021 06:55:59 -0400
+X-MC-Unique: 3CH_IGYvMOSb4VqsM5pcOA-1
+Received: by mail-ej1-f69.google.com with SMTP id jw19-20020a17090776b3b0290481592f1fc4so842296ejc.2
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 03:55:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YJ73V5hYmJu2Li20f6H0oXcp8rTwNQepTRvs9pg0Ayc=;
-        b=kK8BaNGqjTy90gBoI9fS6ZMj1QUJCwmhFm+lOP3aQewlF8pMAPZ/fZsrhGV2GZQRGj
-         tp+0MaP4gm+8/Ekj9ceXNfdObPsHLiarpjckcuMQd1aWPptIzHdCUh0QIXmwla0HbCGt
-         pis5OY0QwJsLfGESQ0vhXn3uzH8xKVzCgldBy1umMcwRTjyPIpUTvW4qyty4NXuIu5RB
-         dHAJG9WF1KT2xZvKCT0BG1LY4kZqUk+646tL6G6qy7rTK8q4eCsL5uraC644YB9JdX77
-         C4H5eDbx5H2C6kiBc7Xa0BdOjF+mf8Hkezdfx4/0Jl9+yF8FFvLqJ4jC049FXMJfrhJi
-         I8JA==
-X-Gm-Message-State: AOAM533KDPBPmE1dKCxqe2fHT3PObpvY1skH+Tjj6Cmu0gpNetJCzvlC
-        /qS8OPNVaddfh684f2B9UWM=
-X-Google-Smtp-Source: ABdhPJy0pdv8S5A+OZI7wjE988c0i8ppfp51KJK1z0gcAs4eD/JcFObMzLSWmeQFFFzuVphYwZzXhA==
-X-Received: by 2002:a1c:6408:: with SMTP id y8mr10151978wmb.30.1624445514286;
-        Wed, 23 Jun 2021 03:51:54 -0700 (PDT)
-Received: from [192.168.98.98] (8.249.23.93.rev.sfr.net. [93.23.249.8])
-        by smtp.gmail.com with ESMTPSA id i16sm5403832wmm.9.2021.06.23.03.51.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Jun 2021 03:51:53 -0700 (PDT)
-Subject: Re: [PATCH] net: bridge: remove redundant return
-To:     13145886936@163.com, roopa@nvidia.com, nikolay@nvidia.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gushengxian <gushengxian@yulong.com>
-References: <20210623005307.6215-1-13145886936@163.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e8df63b4-b16b-c3ed-3991-508c5840cf8d@gmail.com>
-Date:   Wed, 23 Jun 2021 12:51:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=l0rnZYZLTgGGB4O4LME1I6ADl2UwNN76Ezwf4qF0mCI=;
+        b=A+Coc9kgSE7Fc+EOHRvqaDaHMMfQZlQXq+ymNGluN9xWEKCE2E/AoeCr2Nm7sSBq4i
+         cJIhl1+S5bbUiHjvIGI2Kh7Cq9CLbA09kx9Kj4KJ9semFvScHyAMRcOVxxmbK1DBQv8i
+         zD9KuFCcUFhmGAjb1l/qLde9qsav+lEQAWbcwEk0T9oSQ+tRhFFxJfgYbraNDUFWLO0P
+         vdZpVeOFYBIWaaUr9l8ucLAEfTA1/CcVYziTjSMajrJRidKEhl2+/6jNXBS6QczITyQF
+         LEwqj18CvwPeaipUVZxYSiAxBsTZ4aDvoTlSJVFSK9kfM4riPJBjhgzKOU7XIkCEi26k
+         ixKw==
+X-Gm-Message-State: AOAM531LRd42FJvm4OsphmSXurwUhwbIWtQOsEghwIcEGlbtn19e5p/Q
+        ZEFXC5w0lqBewyX3sS53n0XFnklsJ/jtvSZebyt847gkI2wjilpNoeePz98VrP7UrRuVXpoKiBV
+        iCVTWVoDd51+bcEl4
+X-Received: by 2002:a05:6402:1d55:: with SMTP id dz21mr4598487edb.338.1624445758488;
+        Wed, 23 Jun 2021 03:55:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzl/daCOipGRoHNcu5HqM7PZSYLBKhJx+6m3jGMZC6YVrEBrzMUhI1Tf/lrymqJ58SdU1r77w==
+X-Received: by 2002:a05:6402:1d55:: with SMTP id dz21mr4598464edb.338.1624445758192;
+        Wed, 23 Jun 2021 03:55:58 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id u22sm13518224edr.11.2021.06.23.03.55.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Jun 2021 03:55:57 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id A4162180730; Wed, 23 Jun 2021 12:55:55 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     paulmck@kernel.org
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 03/16] xdp: add proper __rcu annotations to
+ redirect map entries
+In-Reply-To: <20210622231950.GK4397@paulmck-ThinkPad-P17-Gen-1>
+References: <20210617212748.32456-1-toke@redhat.com>
+ <20210617212748.32456-4-toke@redhat.com>
+ <1881ecbe-06ec-6b0a-836c-033c31fabef4@iogearbox.net>
+ <87zgvirj6g.fsf@toke.dk> <87r1guovg2.fsf@toke.dk>
+ <20210622202604.GH4397@paulmck-ThinkPad-P17-Gen-1>
+ <874kdppo45.fsf@toke.dk>
+ <20210622231950.GK4397@paulmck-ThinkPad-P17-Gen-1>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 23 Jun 2021 12:55:55 +0200
+Message-ID: <87eecsonno.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20210623005307.6215-1-13145886936@163.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+"Paul E. McKenney" <paulmck@kernel.org> writes:
 
+> On Tue, Jun 22, 2021 at 11:48:26PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> "Paul E. McKenney" <paulmck@kernel.org> writes:
+>>=20
+>> > On Tue, Jun 22, 2021 at 03:55:25PM +0200, Toke H=C3=B8iland-J=C3=B8rge=
+nsen wrote:
+>> >> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> writes:
+>> >>=20
+>> >> >> It would also be great if this scenario in general could be placed
+>> >> >> under the Documentation/RCU/whatisRCU.rst as an example, so we cou=
+ld
+>> >> >> refer to the official doc on this, too, if Paul is good with this.
+>> >> >
+>> >> > I'll take a look and see if I can find a way to fit it in there...
+>> >>=20
+>> >> OK, I poked around in Documentation/RCU and decided that the most
+>> >> natural place to put this was in checklist.rst which already talks ab=
+out
+>> >> local_bh_disable(), but a bit differently. Fixing that up to correspo=
+nd
+>> >> to what we've been discussing in this thread, and adding a mention of
+>> >> XDP as a usage example, results in the patch below.
+>> >>=20
+>> >> Paul, WDYT?
+>> >
+>> > I think that my original paragraph needed to have been updated back
+>> > when v4.20 came out.  And again when RCU Tasks Trace came out.  ;-)
+>> >
+>> > So I did that updating, then approximated your patch on top of it,
+>> > as shown below.  Does this work for you?
+>>=20
+>> Yup, LGTM, thanks! Shall I just fold that version into the next version
+>> of my series, or do you want to take it through your tree (I suppose
+>> it's independent of the rest, so either way is fine by me)?
+>
+> I currently have the two here in -rcu, most likely for v5.15 (as in
+> the merge window after the upcoming one):
+>
+> 2b7cb9d95ba4 ("doc: Clarify and expand RCU updaters and corresponding rea=
+ders")
+> c6ef58907d22 ("doc: Give XDP as example of non-obvious RCU reader/updater=
+ pairing")
+>
+> I am happy taking it, but if you really would like to add it to your
+> series, please do take both.  ;-)
 
-On 6/23/21 2:53 AM, 13145886936@163.com wrote:
-> From: gushengxian <gushengxian@yulong.com>
-> 
-> Return statements are not needed in Void function.
+Alright, I'll fold both in to v4 :)
 
-Maybe, but this just works.
+-Toke
 
-I see your patch as a matter of taste.
-
-
-> 
-> Signed-off-by: gushengxian <gushengxian@yulong.com>
-> ---
->  net/bridge/br_netlink.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-> index 8642e56059fb..b70075939721 100644
-> --- a/net/bridge/br_netlink.c
-> +++ b/net/bridge/br_netlink.c
-> @@ -619,7 +619,7 @@ void br_ifinfo_notify(int event, const struct net_bridge *br,
->  {
->  	u32 filter = RTEXT_FILTER_BRVLAN_COMPRESSED;
->  
-> -	return br_info_notify(event, br, port, filter);
-> +	br_info_notify(event, br, port, filter);
->  }
->  
->  /*
-> @@ -814,7 +814,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
->  	[IFLA_BRPORT_MODE]	= { .type = NLA_U8 },
->  	[IFLA_BRPORT_GUARD]	= { .type = NLA_U8 },
->  	[IFLA_BRPORT_PROTECT]	= { .type = NLA_U8 },
-> -	[IFLA_BRPORT_FAST_LEAVE]= { .type = NLA_U8 },
-> +	[IFLA_BRPORT_FAST_LEAVE] = { .type = NLA_U8 },
-
-Useless noise.
-
->  	[IFLA_BRPORT_LEARNING]	= { .type = NLA_U8 },
->  	[IFLA_BRPORT_UNICAST_FLOOD] = { .type = NLA_U8 },
->  	[IFLA_BRPORT_PROXYARP]	= { .type = NLA_U8 },
-> 
