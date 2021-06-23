@@ -2,106 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE3543B22B2
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 23:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A24CD3B22C3
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 23:50:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbhFWVrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 17:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbhFWVrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 17:47:32 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1546C061756
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 14:45:14 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id e3so3348970qte.0
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 14:45:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=eO/gYbfA6Dk3fvPEfq//UAVbrBE1Hl+b3nbIln7zxCo=;
-        b=IWYpWrmxb6b5oYYzL2CGARVvY1cJdnFmp0pf3q3Bz5VW+Yv5HFpsH4M9Bq+Nw/sjHK
-         2L0nDVw45GcJe7nQTlZ28k/miOGGntJR8W5J4Voi7MO1jrBUJgB5Ea0Esw50VWRmm45Y
-         38AF8mhKCT8oJimpI7VLn2vlR+sGga5+4DD9qedz7Z2rFAxEOHAA6DcEET+mez1x3J6+
-         GOvlJYnOt+dfs+bJsq/MHUwUv+NMt525B239rkOXryVQEIrngwee2HEu7obvBb4/uncB
-         6O+ax7RxC2XTTn3FxGkC3LYkt9ImH0/OqEC7GesBlxBxvHieu9Z9J226aKdj5hGBSXcE
-         O9ZQ==
+        id S229873AbhFWVwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 17:52:33 -0400
+Received: from mail-pg1-f181.google.com ([209.85.215.181]:33687 "EHLO
+        mail-pg1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229800AbhFWVwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 17:52:32 -0400
+Received: by mail-pg1-f181.google.com with SMTP id e20so2959196pgg.0;
+        Wed, 23 Jun 2021 14:50:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=eO/gYbfA6Dk3fvPEfq//UAVbrBE1Hl+b3nbIln7zxCo=;
-        b=HMZlveGuO7QqYwpJkKr7Z2G9qAiqrrIRIUw+W/l/MHN6iMksNXxqg6LHnnYgTy9qeb
-         f5SnF9lLEwim+mOChXyzs0PB5pECuG7mUcVKAVQ7EGdPvVbS9IISeYIiCq3O3KYkDNWD
-         2vjfcDcbzKqZzJsk9vO3MYstAMeATOz3z/6iDWe0cqS31IpdWd1UsbpTTklcek7gcUC/
-         zuB8Wo3oNvsUMHB+BwgyQ15/pnCZlGwXaGxo+zcDHldNEmA8CyghPfIpXi2ZGdHiWNWl
-         6BnAXws3ExsPOYr/5j39tfd4qhBk/1Wiwnf51I3G6XWry58PsgetqMlTspgg06gWJ19q
-         w4KQ==
-X-Gm-Message-State: AOAM530X/5/aHdZtgQwPfcUapqF83cqYi3IHhpiW7GegPSCuJuSt4ISL
-        GNFCyZWG9gHNi4DOeUaXrl4KkKZlrv1UM0+SXu0jM7k/tK8=
-X-Google-Smtp-Source: ABdhPJw3GtJtGKNZUWMs5ocfXyKukzULEu9ZrESDoOs8YOI4F1k7sQ982AKQG9jIeOCBC6M9JqVFAyAKPrwT60U/sRM=
-X-Received: by 2002:aed:2064:: with SMTP id 91mr1931402qta.318.1624484713483;
- Wed, 23 Jun 2021 14:45:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NcuezbW/3QXd9xoo1Wqe4V3CcqkkgQiQqDXARjEpQrQ=;
+        b=c56Ed57gWQz/r9nk52t+b9yW5Qj2IuaKDUGffsz075Iscs96rCWUOVZTBQQHPa/jK1
+         9CpIpPU+OSGfiauTMOFiXUM6LIMNnB0xnPBRVC3s96nKSSldo+rhoHf42W4rFTKv/bWX
+         gLY6tGLWHTskUn9uC9WtAfpf3Y798QgtaTqbSUoX7Mqv42yXvjvQw//PuW5BmNXzw1Sq
+         H5h1Ejt0c1amEvtf+nKRz3M8bdVt89TzS2utq+zlt4tiZgdgT/xlr0BgnfrWvoUFsgpt
+         +3GZh+B1JEvWm44KcC0KEADMwEeVYh+I/yLqE3RcUMVb/ZNcPLHCCdVcEA960BkljNsg
+         j5sA==
+X-Gm-Message-State: AOAM531xB+pXBMskZG8Y1TmAlf5I46I+09mHTygMl+Lt2gVyw7cDo9C+
+        YIUDRTm10cgqEbJH7Yg+bcI=
+X-Google-Smtp-Source: ABdhPJzDgKF3Tc86z1h/sQHaNFZ1VoEUhCcL00uHO/syYNpcu4lIF731nF/TnUYj7N75aSD6W3AmAA==
+X-Received: by 2002:a05:6a00:21c7:b029:2ec:2bfa:d0d1 with SMTP id t7-20020a056a0021c7b02902ec2bfad0d1mr1751644pfj.14.1624485014356;
+        Wed, 23 Jun 2021 14:50:14 -0700 (PDT)
+Received: from localhost ([191.96.121.71])
+        by smtp.gmail.com with ESMTPSA id 30sm461291pjz.42.2021.06.23.14.50.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Jun 2021 14:50:12 -0700 (PDT)
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     gregkh@linuxfoundation.org, rafael@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, andriin@fb.com,
+        daniel@iogearbox.net, atenart@kernel.org, alobakin@pm.me,
+        weiwan@google.com, ap420073@gmail.com
+Cc:     jeyu@kernel.org, ngupta@vflare.org,
+        sergey.senozhatsky.work@gmail.com, minchan@kernel.org,
+        mcgrof@kernel.org, axboe@kernel.dk, mbenes@suse.com,
+        jpoimboe@redhat.com, tglx@linutronix.de, keescook@chromium.org,
+        jikos@kernel.org, rostedt@goodmis.org, peterz@infradead.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4] sysfs: fix kobject refcount to address races with kobject removal
+Date:   Wed, 23 Jun 2021 14:50:07 -0700
+Message-Id: <20210623215007.862787-1-mcgrof@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20210621173028.3541424-1-mw@semihalf.com> <20210621173028.3541424-6-mw@semihalf.com>
- <YNObfrJN0Qk5RO+x@lunn.ch>
-In-Reply-To: <YNObfrJN0Qk5RO+x@lunn.ch>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Wed, 23 Jun 2021 23:45:04 +0200
-Message-ID: <CAPv3WKfdCwq=AYhARGxfRA92XcZjXYwdOj6_JLP+wOmPV8xxzQ@mail.gmail.com>
-Subject: Re: [net-next: PATCH v3 5/6] net: mvpp2: enable using phylink with ACPI
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>,
-        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
-        lenb@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+It's possible today to have a device attribute read or store
+race against device removal. This is known to happen as follows:
 
-=C5=9Br., 23 cze 2021 o 22:37 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
->
-> > +static bool mvpp2_use_acpi_compat_mode(struct fwnode_handle *port_fwno=
-de)
-> > +{
-> > +     if (!is_acpi_node(port_fwnode))
-> > +             return false;
-> > +
-> > +     return (!fwnode_property_present(port_fwnode, "phy-handle") &&
-> > +             !fwnode_property_present(port_fwnode, "managed") &&
-> > +             !fwnode_get_named_child_node(port_fwnode, "fixed-link"));
->
-> I'm not too sure about this last one. You only use fixed-link when
-> connecting to an Ethernet switch. I doubt anybody will try ACPI and a
-> switch. It has been agreed, ACPI is for simple hardware, and you need
-> to use DT for advanced hardware configurations.
->
-> What is your use case for fixed-link?
->
+write system call -->
+  ksys_write () -->
+    vfs_write() -->
+      __vfs_write() -->
+        kernfs_fop_write_iter() -->
+          sysfs_kf_write() -->
+            dev_attr_store() -->
+              null reference
 
-Regardless of the "simple hardware" definition or whether DSA + ACPI
-feasibility, you can still have e.g. the switch left in "unmanaged"
-mode (or whatever the firmware configures), connected via fixed-link
-to the MAC. The same effect as booting with DT, but not loading the
-DSA/switch driver - the "CPU port" can be used as a normal netdev
-interface.
+This happens because the dev_attr->store() callback can be
+removed prior to its call, after dev_attr_store() was initiated.
+The null dereference is possible because the sysfs ops can be
+removed on module removal, for instance, when device_del() is
+called, and a sysfs read / store is not doing any kobject reference
+bumps either. This allows a read/store call to initiate, a
+device_del() to kick off, and then the read/store call can be
+gone by the time to execute it.
 
-I'd also prefer to have all 3 major interface types supported in
-phylink, explicitly checked in the driver - it has not been supported
-yet, but can be in the future, so let's have them covered in the
-backward compatibility check.
+The sysfs filesystem is not doing any kobject reference bumps during a
+read / store ops to prevent this.
 
-Best regards,
-Marcin
+To fix this in a simplified way, just bump the kobject reference when
+we create a directory and remove it on directory removal.
+
+The big unfortunate eye-sore is addressing the manual kobject reference
+assumption on the networking code, which leads me to believe we should
+end up replacing that eventually with another sort of check.
+
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+---
+
+This v4 moves to fixing the race condition on dev_attr_store() and
+dev_attr_read() to sysfs by bumping the kobject reference count
+on directory creation / deletion as suggested by Greg.
+
+Unfortunately at least the networking core has a manual refcount
+assumption, which needs to be adjusted to account for this change.
+This should also mean there is runtime for other kobjects which may
+not be explored yet which may need fixing as well. We may want to
+change the check to something else on the networking front, but its
+not clear to me yet what to use.
+
+ fs/sysfs/dir.c | 3 +++
+ net/core/dev.c | 4 ++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/fs/sysfs/dir.c b/fs/sysfs/dir.c
+index 59dffd5ca517..6c47aa4af6f5 100644
+--- a/fs/sysfs/dir.c
++++ b/fs/sysfs/dir.c
+@@ -56,12 +56,14 @@ int sysfs_create_dir_ns(struct kobject *kobj, const void *ns)
+ 
+ 	kobject_get_ownership(kobj, &uid, &gid);
+ 
++	kobject_get(kobj);
+ 	kn = kernfs_create_dir_ns(parent, kobject_name(kobj),
+ 				  S_IRWXU | S_IRUGO | S_IXUGO, uid, gid,
+ 				  kobj, ns);
+ 	if (IS_ERR(kn)) {
+ 		if (PTR_ERR(kn) == -EEXIST)
+ 			sysfs_warn_dup(parent, kobject_name(kobj));
++		kobject_put(kobj);
+ 		return PTR_ERR(kn);
+ 	}
+ 
+@@ -100,6 +102,7 @@ void sysfs_remove_dir(struct kobject *kobj)
+ 	if (kn) {
+ 		WARN_ON_ONCE(kernfs_type(kn) != KERNFS_DIR);
+ 		kernfs_remove(kn);
++		kobject_put(kobj);
+ 	}
+ }
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 222b1d322c96..3a0ffa603d14 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10429,7 +10429,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+ 	rebroadcast_time = warning_time = jiffies;
+ 	refcnt = netdev_refcnt_read(dev);
+ 
+-	while (refcnt != 1) {
++	while (refcnt != 3) {
+ 		if (time_after(jiffies, rebroadcast_time + 1 * HZ)) {
+ 			rtnl_lock();
+ 
+@@ -10544,7 +10544,7 @@ void netdev_run_todo(void)
+ 		netdev_wait_allrefs(dev);
+ 
+ 		/* paranoia */
+-		BUG_ON(netdev_refcnt_read(dev) != 1);
++		BUG_ON(netdev_refcnt_read(dev) != 3);
+ 		BUG_ON(!list_empty(&dev->ptype_all));
+ 		BUG_ON(!list_empty(&dev->ptype_specific));
+ 		WARN_ON(rcu_access_pointer(dev->ip_ptr));
+-- 
+2.27.0
+
