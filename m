@@ -2,128 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B3C23B1260
-	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D5D53B1271
+	for <lists+netdev@lfdr.de>; Wed, 23 Jun 2021 05:47:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbhFWDsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Jun 2021 23:48:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48796 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229890AbhFWDsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:48:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624419980;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fLUNn2OL+lIBHunrvsHZ9I6/+LDngeoA1H0hMEdVY8E=;
-        b=DHVeOCzh44lFMmH0UFVsu26I0nQmLpabhtJzcuc4PlYWKzJavUXjy/dPiz7OxZfS+3pXfw
-        feMR4zmhjtnNAXJCaRB7P5ndm6p+9W07X5SyO5OAp+VehUnV6ZhS5ToqvcGz5zp9U0q9Po
-        VjoHmzWTd1lJWHe9fcHaiRVNkjLsOGM=
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
- [209.85.215.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-590-3hoTR2ZPMzeTzK6GeM_9lw-1; Tue, 22 Jun 2021 23:46:19 -0400
-X-MC-Unique: 3hoTR2ZPMzeTzK6GeM_9lw-1
-Received: by mail-pg1-f197.google.com with SMTP id m13-20020a633f0d0000b0290222ece48979so500287pga.1
-        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 20:46:19 -0700 (PDT)
+        id S230273AbhFWDuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Jun 2021 23:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229890AbhFWDuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Jun 2021 23:50:06 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C9FC061574
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 20:47:48 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id s23so1804857oiw.9
+        for <netdev@vger.kernel.org>; Tue, 22 Jun 2021 20:47:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6iOtJY8+CanP+GQBJVX14WGuM7C/OsANuY/l+Tk7nh4=;
+        b=q5x3KpDC6jnfb8KVmHuHKIXnTz918OznnXyUNuBMm1DUvfGNTx2Qp52axtYF2GUuYE
+         bEw/ptQZ+rKDzCnZXdy5SQnz1x7nyZA1qU1+RWrFcWW0xjksPC5BGbTPfkFIvXslH4NH
+         fapjUYTuBs907K2fe/hdApQIzVyxXA8rOlhW9wRuIIw40ut2aAhIglUe7ztQMbi4huLn
+         wrhlwuIfExuRlC3LTj4uJbFUYGCm/GPkZMSxGDHvksk71QRn8JaBHNJEpbw7gA8xMXiA
+         UqG3frdNETi1sLKRLjDj2hidgdeTjYvqT7TAhS+d/Li9Mua6Jm52denuhzX/apT6LIBt
+         +X4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=fLUNn2OL+lIBHunrvsHZ9I6/+LDngeoA1H0hMEdVY8E=;
-        b=ndgPcPmKC//D4wFvlwspRQ6tMinwVSuGHpXSFRVLOUN3b0E9jht7ch95t0jp1Qn4q3
-         9zPMv2RDKvveHa0W+d7mTP33t8DNf0s1qJAs0lVTD4ODlv7loe3+wVT8WMw2huZfgAUO
-         WUt4zva3DEYBcsTgtPioQvYWIFKozStJMrz0jp7iVxrRPH6rX6uDSrrVxrqjLAIgXlHN
-         E8d0zAPMnSiSPpq3HY/AaecWgKwZKeU1AM9IsnO5PqOJG3jYoKgiS5xyS9R/jaDPEUyl
-         J4C5t8Z05FtKLWU4HbVe9tXvZagliQ9a/+R8WVdYZm5flBSkZ1JZxSD5nHOCMSlUhN1f
-         knmg==
-X-Gm-Message-State: AOAM533CFREe11OqDxE3d4Mn1eQipLwOFyc57tQjEVOsIB94Otf/0awX
-        TSziczkn7V1pXVp03C5w8LoXQqAZpqNvLgnHo8YR0yzWaZNeXaGTqwX6QUrZ49H3nmjB6sGk9Iu
-        x/KC8Lzn8oMhaSL2U
-X-Received: by 2002:a63:ed12:: with SMTP id d18mr1827663pgi.12.1624419977995;
-        Tue, 22 Jun 2021 20:46:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyaFxmQgTFsJT0jqVxK9TBCQr6JI90Nk3lusMjQIiiucwzksZdnBjCbSwNjlzVnLAHRxWBWvg==
-X-Received: by 2002:a63:ed12:: with SMTP id d18mr1827650pgi.12.1624419977841;
-        Tue, 22 Jun 2021 20:46:17 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id go16sm2265965pjb.42.2021.06.22.20.46.16
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6iOtJY8+CanP+GQBJVX14WGuM7C/OsANuY/l+Tk7nh4=;
+        b=dRMvTFnwoTaiijCtsqmg3l0Xpw8ACAaLzCkYg5vqOfz4LW6CEibfrJ/C/cAbk1mnSw
+         pJnhgV3KM+LCAJg9sSvriUH1XMN7MG05sI70NTPzAqqofLXQTkR7QURHwBkh1es6EyNy
+         dPV8jlhwnY8T1FvqIHS8Ntcypvg6Xlgz9dTp6KsOol9Ce8e/sJEb9pcjVPsdUWXangSw
+         682cn+h7sXxbX5MKMVQu0pXK2vzDiBEKD4MTxVFqQd5PwUS5r5G/kqdQX69NYPnIzal3
+         UN9hwMzB4ZYJeKIrP3nQPzDfTwvICkpCfXXYtln4qzyhorCMFHq61f5VhwxjD7M3VWgY
+         44iA==
+X-Gm-Message-State: AOAM530v9B0+i8dQDwo5qeo0xcWO3hTuuwuxea8sh7yXypkCt7v7hoV0
+        sxoQAT1TtK2kZsBHpoeF3kppvbDil+4=
+X-Google-Smtp-Source: ABdhPJwVeHuyg9Mp22zALeEznoymVuMLKYqHRgY6uB+36ZdBnvLbZupTOKvFozxc1XD4WPGKiYNHXQ==
+X-Received: by 2002:aca:d54f:: with SMTP id m76mr1582709oig.47.1624420067268;
+        Tue, 22 Jun 2021 20:47:47 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id x31sm312607ota.24.2021.06.22.20.47.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Jun 2021 20:46:17 -0700 (PDT)
-Subject: Re: [PATCH v2 2/4] net: tun: don't assume IFF_VNET_HDR in
- tun_xdp_one() tx path
-To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
-Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
- <20210622161533.1214662-1-dwmw2@infradead.org>
- <20210622161533.1214662-2-dwmw2@infradead.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f345667e-e896-509b-6bb6-4efdf7c46ff6@redhat.com>
-Date:   Wed, 23 Jun 2021 11:46:14 +0800
+        Tue, 22 Jun 2021 20:47:46 -0700 (PDT)
+Subject: Re: [PATCH net] ip6_tunnel: fix GRE6 segmentation
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, vfedorenko@novek.ru
+References: <20210622015254.1967716-1-kuba@kernel.org>
+ <33902f8c-e14a-7dc6-9bde-4f8f168505b5@gmail.com>
+ <20210622152451.7847bc24@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <592a8a33-dfb8-c67f-c9e6-0e1bab37b00d@gmail.com>
+Date:   Tue, 22 Jun 2021 21:47:45 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210622161533.1214662-2-dwmw2@infradead.org>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210622152451.7847bc24@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 6/22/21 4:24 PM, Jakub Kicinski wrote:
+>>>   
+>>
+>> would be good to capture the GRE use case that found the bug and the
+>> MPLS version as test cases under tools/testing/selftests/net. Both
+>> should be doable using namespaces.
+> 
+> I believe Vadim is working on MPLS side, how does this look for GRE?
+> 
 
-ÔÚ 2021/6/23 ÉÏÎç12:15, David Woodhouse Ð´µÀ:
-> From: David Woodhouse <dwmw@amazon.co.uk>
->
-> Sometimes it's just a data packet. The virtio_net_hdr processing should be
-> conditional on IFF_VNET_HDR, just as it is in tun_get_user().
->
-> Fixes: 043d222f93ab ("tuntap: accept an array of XDP buffs through sendmsg()")
-> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+I like the template you followed. :-)
 
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
-> ---
->   drivers/net/tun.c | 9 ++++++---
->   1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index f812dcdc640e..96933887d03d 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -2331,7 +2331,7 @@ static int tun_xdp_one(struct tun_struct *tun,
->   {
->   	unsigned int datasize = xdp->data_end - xdp->data;
->   	struct tun_xdp_hdr *hdr = xdp->data_hard_start;
-> -	struct virtio_net_hdr *gso = &hdr->gso;
-> +	struct virtio_net_hdr *gso = NULL;
->   	struct bpf_prog *xdp_prog;
->   	struct sk_buff *skb = NULL;
->   	u32 rxhash = 0, act;
-> @@ -2340,9 +2340,12 @@ static int tun_xdp_one(struct tun_struct *tun,
->   	bool skb_xdp = false;
->   	struct page *page;
->   
-> +	if (tun->flags & IFF_VNET_HDR)
-> +		gso = &hdr->gso;
-> +
->   	xdp_prog = rcu_dereference(tun->xdp_prog);
->   	if (xdp_prog) {
-> -		if (gso->gso_type) {
-> +		if (gso && gso->gso_type) {
->   			skb_xdp = true;
->   			goto build;
->   		}
-> @@ -2388,7 +2391,7 @@ static int tun_xdp_one(struct tun_struct *tun,
->   	skb_reserve(skb, xdp->data - xdp->data_hard_start);
->   	skb_put(skb, xdp->data_end - xdp->data);
->   
-> -	if (virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
-> +	if (gso && virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
->   		atomic_long_inc(&tun->rx_frame_errors);
->   		kfree_skb(skb);
->   		err = -EINVAL;
+The test case looks good to me, thanks for doing it.
 
