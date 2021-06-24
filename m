@@ -2,92 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CFDE3B2463
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 03:06:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 208403B2466
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 03:09:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbhFXBI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 21:08:27 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52698 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229758AbhFXBI0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 21:08:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=4C8upAdlHdRQK9JoaWR39CXvfzPqZO8dKujhFIlIsbg=; b=O2NzqLPKpvD+WLf/nyEWRrFcjV
-        Nfl1W2HK9ATqjU1/CpOEixHpCykTsVhqRdhNUgnFAZ9FC676fafqymT3xFSHahRehH3JNu5HMBjQL
-        enONyrazeAu0uWTWQ7Myzf0QEsEORoFA/qq66rqnt4pZzt2xk/xYI9FfF62/eazy9KcY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lwDoe-00Aupq-O9; Thu, 24 Jun 2021 03:06:00 +0200
-Date:   Thu, 24 Jun 2021 03:06:00 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Liang Xu <lxu@maxlinear.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Thomas Mohren <tmohren@maxlinear.com>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>
-Subject: Re: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
-Message-ID: <YNPaeI+I3d2XnV6U@lunn.ch>
-References: <20210604161250.49749-1-lxu@maxlinear.com>
- <20210604194428.2276092-1-martin.blumenstingl@googlemail.com>
- <b01a8ac2-b77e-32aa-7c9b-57de4f2d3a95@maxlinear.com>
- <YLuzX5EYfGNaosHT@lunn.ch>
- <9ecb75b8-c4d8-1769-58f4-1082b8f53e05@maxlinear.com>
- <CAFBinCARo+YiQezBQfZ=M6HNwvkro0nK=0Y9KhhhRO+akiaHbw@mail.gmail.com>
- <MWHPR19MB0077D01E4EAFA9FE521D83ECBD0D9@MWHPR19MB0077.namprd19.prod.outlook.com>
- <766ab274-25ff-c9a2-1ed6-fe2aa44b4660@maxlinear.com>
- <CAFBinCBCPcCD3uxO5iJF11LBhdMe32nzMLvnD1xyLvpT2HZt_Q@mail.gmail.com>
+        id S229873AbhFXBMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 21:12:02 -0400
+Received: from mail-pj1-f54.google.com ([209.85.216.54]:43999 "EHLO
+        mail-pj1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229758AbhFXBMB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 21:12:01 -0400
+Received: by mail-pj1-f54.google.com with SMTP id x21-20020a17090aa395b029016e25313bfcso2436737pjp.2;
+        Wed, 23 Jun 2021 18:09:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PO+OZdeB1TBNrmdfG2tVTtR4I3d+YFWVIm9pGwjwxnE=;
+        b=cqDfDiiDKtWXhO4/aCcKIS9Msi7Koe0oMpUI4k06Jz9+JiiGzt7eNexUzogg7mmvQE
+         zOL5fDy4UaYFOrDQktuwaFPyhyXhzlX0gCXGx5wINmCDh+3T2EnZYwm2HOnNF0Z/INxK
+         0/EtOwlHDa+XMGSjdXgNlyUWQLbUOppz9XI0Mnqw5XS7MvtPA6XgZNO1NXNpEJ6dShWw
+         QZkyV44vED3YrzIMSKbpe8tWM4b8L3BI/6JGbxJ9FwBrOKhe4aJwpyi8cVT2wEjAJx/c
+         64/EXktekF7fI6teUnr/gcGCVdCmgAharfJv6jpeUkTTUxMQcc9zDtz/EFyd5QBHEBVk
+         /+lw==
+X-Gm-Message-State: AOAM532+Z2wniOOr7fqaoasypuMRxaWaNIi76v759XxbqG7XVvUDpeNW
+        M3Wlw+SSQiRNTy918bSmYEw=
+X-Google-Smtp-Source: ABdhPJz4hSR98F63n7IBaqWqCwwbKSQIvfmPp1JmZJih2MQBU+xd2rF2KWEtN3g1X+YSoC+euSnceQ==
+X-Received: by 2002:a17:902:7d8f:b029:116:4b69:c7c5 with SMTP id a15-20020a1709027d8fb02901164b69c7c5mr1980892plm.58.1624496983406;
+        Wed, 23 Jun 2021 18:09:43 -0700 (PDT)
+Received: from garbanzo ([191.96.121.71])
+        by smtp.gmail.com with ESMTPSA id o14sm289291pgk.82.2021.06.23.18.09.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Jun 2021 18:09:42 -0700 (PDT)
+Date:   Wed, 23 Jun 2021 18:09:38 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     gregkh@linuxfoundation.org, rafael@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, andriin@fb.com,
+        daniel@iogearbox.net, atenart@kernel.org, alobakin@pm.me,
+        weiwan@google.com, ap420073@gmail.com, jeyu@kernel.org,
+        ngupta@vflare.org, sergey.senozhatsky.work@gmail.com,
+        minchan@kernel.org, axboe@kernel.dk, mbenes@suse.com,
+        jpoimboe@redhat.com, tglx@linutronix.de, jikos@kernel.org,
+        rostedt@goodmis.org, peterz@infradead.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] sysfs: fix kobject refcount to address races with
+ kobject removal
+Message-ID: <20210624010938.h6asniijrd2nrlyy@garbanzo>
+References: <20210623215007.862787-1-mcgrof@kernel.org>
+ <202106231555.871D23D50@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFBinCBCPcCD3uxO5iJF11LBhdMe32nzMLvnD1xyLvpT2HZt_Q@mail.gmail.com>
+In-Reply-To: <202106231555.871D23D50@keescook>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 23, 2021 at 11:09:23PM +0200, Martin Blumenstingl wrote:
-> Hi Liang,
+On Wed, Jun 23, 2021 at 03:59:37PM -0700, Kees Cook wrote:
+> On Wed, Jun 23, 2021 at 02:50:07PM -0700, Luis Chamberlain wrote:
+> > It's possible today to have a device attribute read or store
+> > race against device removal. This is known to happen as follows:
+> > 
+> > write system call -->
+> >   ksys_write () -->
+> >     vfs_write() -->
+> >       __vfs_write() -->
+> >         kernfs_fop_write_iter() -->
+> >           sysfs_kf_write() -->
+> >             dev_attr_store() -->
+> >               null reference
+> > 
+> > This happens because the dev_attr->store() callback can be
+> > removed prior to its call, after dev_attr_store() was initiated.
+> > The null dereference is possible because the sysfs ops can be
+> > removed on module removal, for instance, when device_del() is
+> > called, and a sysfs read / store is not doing any kobject reference
+> > bumps either. This allows a read/store call to initiate, a
+> > device_del() to kick off, and then the read/store call can be
+> > gone by the time to execute it.
+> > 
+> > The sysfs filesystem is not doing any kobject reference bumps during a
+> > read / store ops to prevent this.
+> > 
+> > To fix this in a simplified way, just bump the kobject reference when
+> > we create a directory and remove it on directory removal.
+> > 
+> > The big unfortunate eye-sore is addressing the manual kobject reference
+> > assumption on the networking code, which leads me to believe we should
+> > end up replacing that eventually with another sort of check.
+> > 
+> > Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+> > ---
+> > 
+> > This v4 moves to fixing the race condition on dev_attr_store() and
+> > dev_attr_read() to sysfs by bumping the kobject reference count
+> > on directory creation / deletion as suggested by Greg.
+> > 
+> > Unfortunately at least the networking core has a manual refcount
+> > assumption, which needs to be adjusted to account for this change.
+> > This should also mean there is runtime for other kobjects which may
+> > not be explored yet which may need fixing as well. We may want to
+> > change the check to something else on the networking front, but its
+> > not clear to me yet what to use.
+> > 
+> >  fs/sysfs/dir.c | 3 +++
+> >  net/core/dev.c | 4 ++--
+> >  2 files changed, 5 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/fs/sysfs/dir.c b/fs/sysfs/dir.c
+> > index 59dffd5ca517..6c47aa4af6f5 100644
+> > --- a/fs/sysfs/dir.c
+> > +++ b/fs/sysfs/dir.c
+> > @@ -56,12 +56,14 @@ int sysfs_create_dir_ns(struct kobject *kobj, const void *ns)
+> >  
+> >  	kobject_get_ownership(kobj, &uid, &gid);
+> >  
+> > +	kobject_get(kobj);
+> >  	kn = kernfs_create_dir_ns(parent, kobject_name(kobj),
+> >  				  S_IRWXU | S_IRUGO | S_IXUGO, uid, gid,
+> >  				  kobj, ns);
+> >  	if (IS_ERR(kn)) {
+> >  		if (PTR_ERR(kn) == -EEXIST)
+> >  			sysfs_warn_dup(parent, kobject_name(kobj));
+> > +		kobject_put(kobj);
+> >  		return PTR_ERR(kn);
+> >  	}
+> >  
+> > @@ -100,6 +102,7 @@ void sysfs_remove_dir(struct kobject *kobj)
+> >  	if (kn) {
+> >  		WARN_ON_ONCE(kernfs_type(kn) != KERNFS_DIR);
+> >  		kernfs_remove(kn);
+> > +		kobject_put(kobj);
+> >  	}
+> >  }
 > 
-> On Wed, Jun 23, 2021 at 12:56 PM Liang Xu <lxu@maxlinear.com> wrote:
-> [...]
-> > Hi Martin,
-> >
-> > 1) The legacy PHY GPY111 does not share the same register format and address for WoL and LED registers. Therefore code saving with a common driver is not possible.
-> > 2) The interrupt handling routine would be different when new features are added in driver, such as PTP offload, MACsec offload. These will be added step by step as enhancement patches afte initial version of this driver upstreamed.
-> I think that would leave only few shared registers with the older PHYs
-> (and thus the intel-xway driver). Due to the lack of a public
-> datasheet however I have no way to confirm this.
-> So with this information added to the patch description having a
-> different driver is fine for me
+> Shouldn't this be taken on open() not sysfs creation, or is the problem
+> that the kobject is held the module memory rather than duplicated by
+> sysfs?
+
+If you kobject_get() you also protect from module removal to complete
+until the calls ends. The issue is the dereference for the attribute
+op will be gone if we don't protect the kobject during the op.
+
+We only have an open() call for the bin sysfs files. So the alternative
+is to sprinkly the get on all calls. The goal with adding it to the
+directory creation was to simplify this.
+
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 222b1d322c96..3a0ffa603d14 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -10429,7 +10429,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+> >  	rebroadcast_time = warning_time = jiffies;
+> >  	refcnt = netdev_refcnt_read(dev);
+> >  
+> > -	while (refcnt != 1) {
+> > +	while (refcnt != 3) {
+> >  		if (time_after(jiffies, rebroadcast_time + 1 * HZ)) {
+> >  			rtnl_lock();
+> >  
+> > @@ -10544,7 +10544,7 @@ void netdev_run_todo(void)
+> >  		netdev_wait_allrefs(dev);
+> >  
+> >  		/* paranoia */
+> > -		BUG_ON(netdev_refcnt_read(dev) != 1);
+> > +		BUG_ON(netdev_refcnt_read(dev) != 3);
 > 
-> Maybe Andrew can also share his opinion - based on this new
-> information - as he previously also suggested to extend the intel-xway
-> driver instead of creating a new one
+> And surely there are things besides netdevs that would suffer from this
+> change?
 
-If the potential sharing is minimal, then a new driver makes sense. So
-please do expand the patch description with a good justification.
+Yes, I noted this possibility below the commit log, below the "---".
 
-> > 3) The new PHY generation comes with a reasonable pre-configuration for the LED registers which does not need any modification usually.
-> >    In case a customer needs a specific configuration (e.g. traffic pulsing only, no link status) he needs to configure this via MDIO. There is also another option for a fixed preconfiguration with the support of an external flash. However, this is out of scope of the driver.
-> older PHYs also do this, but not all boards use a reasonable LED setup
-> 
-> > 4) Many old products are mostly used on embedded devices which do not support WoL. Therefore there was no request yet to supported by the legacy XWAY driver.
-> my understanding of Andrew's argument is: "if the register layout is
-> the same for old and new PHY then why would we do some extra effort to
-> not add WoL support for the old PHYs"
-> Based on your information above the register layout is different, so
-> that means two different implementations are needed anyways.
-
-It would be nice to add WoL support for the older devices. They might
-not be maxlinears latest and greatest, but there could be more of them
-actually in use at the moment than this new PHY.
-
-	 Andrew
+  Luis
