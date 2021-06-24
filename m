@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D9A3B354D
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 20:09:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B1FB3B354E
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 20:09:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232586AbhFXSK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 14:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37942 "EHLO
+        id S232634AbhFXSK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 14:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232568AbhFXSKj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 14:10:39 -0400
+        with ESMTP id S232549AbhFXSKk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 14:10:40 -0400
 Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DD6C06124C
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:08:06 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id g3-20020a256b030000b0290551bbd99700so500767ybc.6
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:08:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922BEC061756
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:08:08 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id p23-20020a25d8170000b0290550a9ad877dso493832ybg.12
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:08:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=mDUflbNJ3UkF1SaBijE+YQS26huBrHtUUF8L5XrEmVA=;
-        b=Z3KVlQoO8v9zXhUU3Z2QY8wV4hy0zlyPasyzJbv7b5eMbrrhU6CB9wGLnq5KbHCg62
-         DxADeujdgrUwIUOvHmT3K5UQLYerXOwdbSp4ZR3TEKQVBB2tPCfmHVpGek6OUXSHm6tv
-         CfG415/KNu3G51TWZt/3a8b2hHpPie5C84bij6pbDCobhumozkS3vjVU34JM1wmDaboj
-         X4Jd4i6IiE+0lVmD/gmH+f4CLOkjVpG9GPwLC/SpY6RWcsoSTWPsrphUG2H4EmAPOucW
-         TYFkbntaNcNM0skNBG+FDcBo9sjJRalgl7ZqIYE0qmLFrRMA7c8LTfN4AnA6LNWqtPwJ
-         NArw==
+        bh=InFKVL4xkdLtvkArol7Ll0FzvsiLZlsbBwBK7mb8lY4=;
+        b=EQ5YD3mf/sgxc9jOpVEpQozTVjuij0IHkzmGv8YKGadzUA/nvBO4RPXAj1DdNtq5ZS
+         1ZgFErGFTl4iSx9fgQidiOxeGd944MTlG8iaUg4txa3K87Dc6g56T0wRIV9oBAz6C3jK
+         rTMyPON01+YR/ZCeRoWqFoCAmE8XdRvTrzCZQCFDFUD/IPP+9taArxajExcDItF/XBsJ
+         W/WRwkVphYwA/fviouiLUyZsynjPLGeTJ+LhN2neGSvb6nYXA7+bMmyKycUAO7rufgmH
+         3WzCXuVph028eXXN2r5juAcv6UDP+DSbQ16vjAg0kGTnFHXyjEl1Ir+xXEW7HFcLqR5y
+         YQrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=mDUflbNJ3UkF1SaBijE+YQS26huBrHtUUF8L5XrEmVA=;
-        b=XTs0t4YUGd4NaHQw1rGM80O6vC27bzCpdu5KpYmCeb33dBtcKDnIurRWhpUTzg/npI
-         BEatyWa2e9zAAePdYDmty32OEg/NLSAceWIIHDxyM4H5LP5zt4QXdoj7d0cr+wjXqraF
-         PdXwEMZPpOPaH34zrSEFjduZyDdeoqjbvCP7097XlO0m7SOC66yLnW3S0/kmMrQkJop3
-         PR8mgdFKS41lJ6KhGavMdoGTcmUK/p3nT6q1acvnpvC8bgXkrf16Mpyd1BjAy4akWszW
-         cO/LMKD6/5qypv3Vxrmddms5gdA4eUM6k2w/vQB6lDX+jbZuNXIabS67h/atuPj3povb
-         t1NQ==
-X-Gm-Message-State: AOAM532QTRpw1fsayAjqrxbmh1M55qfNfroTkm1FehQHWxe+Mx6tKfUV
-        KJXeum2a0O9w2e58xDK8r6xfXOs=
-X-Google-Smtp-Source: ABdhPJwYwNuLFuWYFslkQT1X5tTaylwsjZjBduOFBGfdKHunkcvYe2sk4Nb8oY4Km5MH28Kglegw8pY=
+        bh=InFKVL4xkdLtvkArol7Ll0FzvsiLZlsbBwBK7mb8lY4=;
+        b=WSoJnqh/dXQd/q3C5G20MesGfNb+Ng9ORAUyZShodMRlBHCOMg3bv9unXtFPwU+EHa
+         ulHtzQrazaCJz/r0CMgUgG/AWDleLcii0Sm3mFAAK4HZd7o7eoGZU/PYFxSui84V0w51
+         gKijXq+ztBo2aJc+F0DiqF8tYILQ0ovwEwEto5nhw1huEKcBP1hyOsMY+Nml1SpDnHLd
+         l2hST6j5D7BfswC8dosrMQl+tSTxzSiqRJJzoViNVaWJvIDEX0gf3+Ti7MqVPiDR6Maq
+         p+6/4j+MSqnwUeJXtOIXt/WuTV/UhfWgEbvDcLHrItbKzXQ2dYx2x46TdPi/Y2XPt2O/
+         6nNg==
+X-Gm-Message-State: AOAM531OV5r0tFnOLqVoybe8ftdhaP4mky73xBjhjnDl6sUnDJpKuOVx
+        fUJTqgN0sps7ma/+9Rnzcd9KA1U=
+X-Google-Smtp-Source: ABdhPJy9YBozm0/MeDEgdjVhZaMOczj0FTNvoLEEIdM/32HYxdwV/9XyiwaxMANt7fCttwZgMCHNqvQ=
 X-Received: from bcf-linux.svl.corp.google.com ([2620:15c:2c4:1:cb6c:4753:6df0:b898])
- (user=bcf job=sendgmr) by 2002:a25:e70b:: with SMTP id e11mr3830327ybh.493.1624558085363;
- Thu, 24 Jun 2021 11:08:05 -0700 (PDT)
-Date:   Thu, 24 Jun 2021 11:06:31 -0700
+ (user=bcf job=sendgmr) by 2002:a25:bd84:: with SMTP id f4mr7365313ybh.143.1624558087742;
+ Thu, 24 Jun 2021 11:08:07 -0700 (PDT)
+Date:   Thu, 24 Jun 2021 11:06:32 -0700
 In-Reply-To: <20210624180632.3659809-1-bcf@google.com>
-Message-Id: <20210624180632.3659809-16-bcf@google.com>
+Message-Id: <20210624180632.3659809-17-bcf@google.com>
 Mime-Version: 1.0
 References: <20210624180632.3659809-1-bcf@google.com>
 X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
-Subject: [PATCH net-next 15/16] gve: DQO: Add TX path
+Subject: [PATCH net-next 16/16] gve: DQO: Add RX path
 From:   Bailey Forrest <bcf@google.com>
 To:     Bailey Forrest <bcf@google.com>,
         "David S . Miller" <davem@davemloft.net>
@@ -61,929 +61,717 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TX SKBs will have their buffers DMA mapped with the device. Each buffer
-will have at least one TX descriptor associated. Each SKB will also have
-a metadata descriptor.
+The RX queue has an array of `gve_rx_buf_state_dqo` objects. All
+allocated pages have an associated buf_state object. When a buffer is
+posted on the RX buffer queue, the buffer ID will be the buf_state's
+index into the RX queue's array.
 
-Each TX queue maintains an array of `gve_tx_pending_packet_dqo` objects.
-Every TX SKB will have an associated pending_packet object. A TX SKB's
-descriptors will use its pending_packet's index as the completion tag,
-which will be returned on the TX completion queue.
-
-The device implements a "flow-miss model". Most packets will simply
-receive a packet completion. The flow-miss system may choose to process
-a packet based on its contents. A TX packet which experiences a flow
-miss would receive a miss completion followed by a later reinjection
-completion. The miss-completion is received when the packet starts to be
-processed by the flow-miss system and the reinjection completion is
-received when the flow-miss system completes processing the packet and
-sends it on the wire.
+On packet reception, the RX queue will have one descriptor for each
+buffer associated with a received packet. Each RX descriptor will have
+a buffer_id that was posted on the buffer queue.
 
 Notable mentions:
 
-- Buffers may be freed after receiving the miss-completion, but in order
-  to avoid packet reordering, we do not complete the SKB until receiving
-  the reinjection completion.
+- We use a default buffer size of 2048 bytes. Based on page size, we
+  may post separate sections of a single page as separate buffers.
 
-- The driver must robustly handle the unlikely scenario where a miss
-  completion does not have an associated reinjection completion. This is
-  accomplished by maintaining a list of packets which have a pending
-  reinjection completion. After a short timeout (5 seconds), the
-  SKB and buffers are released and the pending_packet is moved to a
-  second list which has a longer timeout (60 seconds), where the
-  pending_packet will not be reused. When the longer timeout elapses,
-  the driver may assume the reinjection completion would never be
-  received and the pending_packet may be reused.
+- The driver holds an extra reference on pages passed up the receive
+  path with an skb and keeps these pages on a list. When posting new
+  buffers to the NIC, we check if any of these pages has only our
+  reference, or another buffer sized segment of the page has no
+  references. If so, it is free to reuse. This page recycling approach
+  is a common netdev optimization that reduces page alloc/free calls.
 
-- Completion handling is triggered by an interrupt and is done in the
-  NAPI poll function. Because the TX path and completion exist in
-  different threading contexts they maintain their own lists for free
-  pending_packet objects. The TX path uses a lock-free approach to steal
-  the list from the completion path.
+- Pages in the free list have a page_count bias in order to avoid an
+  atomic increment of pagecount every time we attempt to reuse a page.
+  # references = page_count() - bias
 
-- Both the TSO context and general context descriptors have metadata
-  bytes. The device requires that if multiple descriptors contain the
-  same field, each descriptor must have the same value set for that
-  field.
+- In order to track when a page is safe to reuse, we keep track of the
+  last offset which had a single SKB reference. When this occurs, it
+  implies that every single other offset is reusable. Otherwise, we
+  don't know if offsets can be safely reused.
+
+- We maintain two free lists of pages. List #1 (recycled_buf_states)
+  contains pages we know can be reused right away. List #2
+  (used_buf_states) contains pages which cannot be used right away. We
+  only attempt to get pages from list #2 when list #1 is empty. We only
+  attempt to use a small fixed number pages from list #2 before giving
+  up and allocating a new page. Both lists are FIFOs in hope that by the
+  time we attempt to reuse a page, the references were dropped.
 
 Signed-off-by: Bailey Forrest <bcf@google.com>
 Reviewed-by: Willem de Bruijn <willemb@google.com>
 Reviewed-by: Catherine Sullivan <csully@google.com>
 ---
- drivers/net/ethernet/google/gve/gve_dqo.h    |  12 +
- drivers/net/ethernet/google/gve/gve_tx_dqo.c | 819 ++++++++++++++++++-
- 2 files changed, 829 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/google/gve/gve.h        |   1 +
+ drivers/net/ethernet/google/gve/gve_rx_dqo.c | 582 +++++++++++++++++++
+ drivers/net/ethernet/google/gve/gve_utils.c  |  15 +
+ drivers/net/ethernet/google/gve/gve_utils.h  |   3 +
+ 4 files changed, 601 insertions(+)
 
-diff --git a/drivers/net/ethernet/google/gve/gve_dqo.h b/drivers/net/ethernet/google/gve/gve_dqo.h
-index 3b300223ea15..836042364124 100644
---- a/drivers/net/ethernet/google/gve/gve_dqo.h
-+++ b/drivers/net/ethernet/google/gve/gve_dqo.h
-@@ -19,6 +19,18 @@
- #define GVE_TX_IRQ_RATELIMIT_US_DQO 50
- #define GVE_RX_IRQ_RATELIMIT_US_DQO 20
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index 30978a15e37d..1d3188e8e3b3 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -59,6 +59,7 @@ struct gve_rx_slot_page_info {
+ 	struct page *page;
+ 	void *page_address;
+ 	u32 page_offset; /* offset to write to in page */
++	int pagecnt_bias; /* expected pagecnt if only the driver has a ref */
+ 	u8 can_flip;
+ };
  
-+/* Timeout in seconds to wait for a reinjection completion after receiving
-+ * its corresponding miss completion.
-+ */
-+#define GVE_REINJECT_COMPL_TIMEOUT 1
-+
-+/* Timeout in seconds to deallocate the completion tag for a packet that was
-+ * prematurely freed for not receiving a valid completion. This should be large
-+ * enough to rule out the possibility of receiving the corresponding valid
-+ * completion after this interval.
-+ */
-+#define GVE_DEALLOCATE_COMPL_TIMEOUT 60
-+
- netdev_tx_t gve_tx_dqo(struct sk_buff *skb, struct net_device *dev);
- bool gve_tx_poll_dqo(struct gve_notify_block *block, bool do_clean);
- int gve_rx_poll_dqo(struct gve_notify_block *block, int budget);
-diff --git a/drivers/net/ethernet/google/gve/gve_tx_dqo.c b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-index bde8f90ac8bd..a4906b9df540 100644
---- a/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-+++ b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-@@ -12,6 +12,67 @@
- #include <linux/slab.h>
- #include <linux/skbuff.h>
+diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+index 1073a820767d..8738db020061 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
++++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+@@ -16,9 +16,161 @@
+ #include <net/ipv6.h>
+ #include <net/tcp.h>
  
-+/* Returns true if a gve_tx_pending_packet_dqo object is available. */
-+static bool gve_has_pending_packet(struct gve_tx_ring *tx)
++static int gve_buf_ref_cnt(struct gve_rx_buf_state_dqo *bs)
 +{
-+	/* Check TX path's list. */
-+	if (tx->dqo_tx.free_pending_packets != -1)
-+		return true;
-+
-+	/* Check completion handler's list. */
-+	if (atomic_read_acquire(&tx->dqo_compl.free_pending_packets) != -1)
-+		return true;
-+
-+	return false;
++	return page_count(bs->page_info.page) - bs->page_info.pagecnt_bias;
 +}
 +
-+static struct gve_tx_pending_packet_dqo *
-+gve_alloc_pending_packet(struct gve_tx_ring *tx)
+ static void gve_free_page_dqo(struct gve_priv *priv,
+ 			      struct gve_rx_buf_state_dqo *bs)
+ {
++	page_ref_sub(bs->page_info.page, bs->page_info.pagecnt_bias - 1);
++	gve_free_page(&priv->pdev->dev, bs->page_info.page, bs->addr,
++		      DMA_FROM_DEVICE);
++	bs->page_info.page = NULL;
++}
++
++static struct gve_rx_buf_state_dqo *gve_alloc_buf_state(struct gve_rx_ring *rx)
 +{
-+	struct gve_tx_pending_packet_dqo *pending_packet;
-+	s16 index;
++	struct gve_rx_buf_state_dqo *buf_state;
++	s16 buffer_id;
 +
-+	index = tx->dqo_tx.free_pending_packets;
++	buffer_id = rx->dqo.free_buf_states;
++	if (unlikely(buffer_id == -1))
++		return NULL;
 +
-+	/* No pending_packets available, try to steal the list from the
-+	 * completion handler.
++	buf_state = &rx->dqo.buf_states[buffer_id];
++
++	/* Remove buf_state from free list */
++	rx->dqo.free_buf_states = buf_state->next;
++
++	/* Point buf_state to itself to mark it as allocated */
++	buf_state->next = buffer_id;
++
++	return buf_state;
++}
++
++static bool gve_buf_state_is_allocated(struct gve_rx_ring *rx,
++				       struct gve_rx_buf_state_dqo *buf_state)
++{
++	s16 buffer_id = buf_state - rx->dqo.buf_states;
++
++	return buf_state->next == buffer_id;
++}
++
++static void gve_free_buf_state(struct gve_rx_ring *rx,
++			       struct gve_rx_buf_state_dqo *buf_state)
++{
++	s16 buffer_id = buf_state - rx->dqo.buf_states;
++
++	buf_state->next = rx->dqo.free_buf_states;
++	rx->dqo.free_buf_states = buffer_id;
++}
++
++static struct gve_rx_buf_state_dqo *
++gve_dequeue_buf_state(struct gve_rx_ring *rx, struct gve_index_list *list)
++{
++	struct gve_rx_buf_state_dqo *buf_state;
++	s16 buffer_id;
++
++	buffer_id = list->head;
++	if (unlikely(buffer_id == -1))
++		return NULL;
++
++	buf_state = &rx->dqo.buf_states[buffer_id];
++
++	/* Remove buf_state from list */
++	list->head = buf_state->next;
++	if (buf_state->next == -1)
++		list->tail = -1;
++
++	/* Point buf_state to itself to mark it as allocated */
++	buf_state->next = buffer_id;
++
++	return buf_state;
++}
++
++static void gve_enqueue_buf_state(struct gve_rx_ring *rx,
++				  struct gve_index_list *list,
++				  struct gve_rx_buf_state_dqo *buf_state)
++{
++	s16 buffer_id = buf_state - rx->dqo.buf_states;
++
++	buf_state->next = -1;
++
++	if (list->head == -1) {
++		list->head = buffer_id;
++		list->tail = buffer_id;
++	} else {
++		int tail = list->tail;
++
++		rx->dqo.buf_states[tail].next = buffer_id;
++		list->tail = buffer_id;
++	}
++}
++
++static struct gve_rx_buf_state_dqo *
++gve_get_recycled_buf_state(struct gve_rx_ring *rx)
++{
++	struct gve_rx_buf_state_dqo *buf_state;
++	int i;
++
++	/* Recycled buf states are immediately usable. */
++	buf_state = gve_dequeue_buf_state(rx, &rx->dqo.recycled_buf_states);
++	if (likely(buf_state))
++		return buf_state;
++
++	if (unlikely(rx->dqo.used_buf_states.head == -1))
++		return NULL;
++
++	/* Used buf states are only usable when ref count reaches 0, which means
++	 * no SKBs refer to them.
++	 *
++	 * Search a limited number before giving up.
 +	 */
-+	if (unlikely(index == -1)) {
-+		tx->dqo_tx.free_pending_packets =
-+			atomic_xchg(&tx->dqo_compl.free_pending_packets, -1);
-+		index = tx->dqo_tx.free_pending_packets;
++	for (i = 0; i < 5; i++) {
++		buf_state = gve_dequeue_buf_state(rx, &rx->dqo.used_buf_states);
++		if (gve_buf_ref_cnt(buf_state) == 0)
++			return buf_state;
 +
-+		if (unlikely(index == -1))
-+			return NULL;
++		gve_enqueue_buf_state(rx, &rx->dqo.used_buf_states, buf_state);
 +	}
 +
-+	pending_packet = &tx->dqo.pending_packets[index];
++	/* If there are no free buf states discard an entry from
++	 * `used_buf_states` so it can be used.
++	 */
++	if (unlikely(rx->dqo.free_buf_states == -1)) {
++		buf_state = gve_dequeue_buf_state(rx, &rx->dqo.used_buf_states);
++		if (gve_buf_ref_cnt(buf_state) == 0)
++			return buf_state;
 +
-+	/* Remove pending_packet from free list */
-+	tx->dqo_tx.free_pending_packets = pending_packet->next;
-+	pending_packet->state = GVE_PACKET_STATE_PENDING_DATA_COMPL;
++		gve_free_page_dqo(rx->gve, buf_state);
++		gve_free_buf_state(rx, buf_state);
++	}
 +
-+	return pending_packet;
++	return NULL;
 +}
 +
-+static void
-+gve_free_pending_packet(struct gve_tx_ring *tx,
-+			struct gve_tx_pending_packet_dqo *pending_packet)
++static int gve_alloc_page_dqo(struct gve_priv *priv,
++			      struct gve_rx_buf_state_dqo *buf_state)
 +{
-+	s16 index = pending_packet - tx->dqo.pending_packets;
++	int err;
 +
-+	pending_packet->state = GVE_PACKET_STATE_UNALLOCATED;
-+	while (true) {
-+		s16 old_head = atomic_read_acquire(&tx->dqo_compl.free_pending_packets);
++	err = gve_alloc_page(priv, &priv->pdev->dev, &buf_state->page_info.page,
++			     &buf_state->addr, DMA_FROM_DEVICE);
++	if (err)
++		return err;
 +
-+		pending_packet->next = old_head;
-+		if (atomic_cmpxchg(&tx->dqo_compl.free_pending_packets,
-+				   old_head, index) == old_head) {
-+			break;
-+		}
-+	}
-+}
++	buf_state->page_info.page_offset = 0;
++	buf_state->page_info.page_address =
++		page_address(buf_state->page_info.page);
++	buf_state->last_single_ref_offset = 0;
 +
- /* gve_tx_free_desc - Cleans up all pending tx requests and buffers.
-  */
- static void gve_tx_clean_pending_packets(struct gve_tx_ring *tx)
-@@ -199,18 +260,772 @@ void gve_tx_free_rings_dqo(struct gve_priv *priv)
- 	}
++	/* The page already has 1 ref. */
++	page_ref_add(buf_state->page_info.page, INT_MAX - 1);
++	buf_state->page_info.pagecnt_bias = INT_MAX;
++
++	return 0;
  }
  
-+/* Returns the number of slots available in the ring */
-+static inline u32 num_avail_tx_slots(const struct gve_tx_ring *tx)
+ static void gve_rx_free_ring_dqo(struct gve_priv *priv, int idx)
+@@ -137,6 +289,14 @@ static int gve_rx_alloc_ring_dqo(struct gve_priv *priv, int idx)
+ 	return -ENOMEM;
+ }
+ 
++void gve_rx_write_doorbell_dqo(const struct gve_priv *priv, int queue_idx)
 +{
-+	u32 num_used = (tx->dqo_tx.tail - tx->dqo_tx.head) & tx->mask;
++	const struct gve_rx_ring *rx = &priv->rx[queue_idx];
++	u64 index = be32_to_cpu(rx->q_resources->db_index);
 +
-+	return tx->mask - num_used;
++	iowrite32(rx->dqo.bufq.tail, &priv->db_bar2[index]);
 +}
 +
-+/* Stops the queue if available descriptors is less than 'count'.
-+ * Return: 0 if stop is not required.
-+ */
-+static int gve_maybe_stop_tx_dqo(struct gve_tx_ring *tx, int count)
+ int gve_rx_alloc_rings_dqo(struct gve_priv *priv)
+ {
+ 	int err = 0;
+@@ -171,11 +331,433 @@ void gve_rx_free_rings_dqo(struct gve_priv *priv)
+ 
+ void gve_rx_post_buffers_dqo(struct gve_rx_ring *rx)
+ {
++	struct gve_rx_compl_queue_dqo *complq = &rx->dqo.complq;
++	struct gve_rx_buf_queue_dqo *bufq = &rx->dqo.bufq;
++	struct gve_priv *priv = rx->gve;
++	u32 num_avail_slots;
++	u32 num_full_slots;
++	u32 num_posted = 0;
++
++	num_full_slots = (bufq->tail - bufq->head) & bufq->mask;
++	num_avail_slots = bufq->mask - num_full_slots;
++
++	num_avail_slots = min_t(u32, num_avail_slots, complq->num_free_slots);
++	while (num_posted < num_avail_slots) {
++		struct gve_rx_desc_dqo *desc = &bufq->desc_ring[bufq->tail];
++		struct gve_rx_buf_state_dqo *buf_state;
++
++		buf_state = gve_get_recycled_buf_state(rx);
++		if (unlikely(!buf_state)) {
++			buf_state = gve_alloc_buf_state(rx);
++			if (unlikely(!buf_state))
++				break;
++
++			if (unlikely(gve_alloc_page_dqo(priv, buf_state))) {
++				u64_stats_update_begin(&rx->statss);
++				rx->rx_buf_alloc_fail++;
++				u64_stats_update_end(&rx->statss);
++				gve_free_buf_state(rx, buf_state);
++				break;
++			}
++		}
++
++		desc->buf_id = cpu_to_le16(buf_state - rx->dqo.buf_states);
++		desc->buf_addr = cpu_to_le64(buf_state->addr +
++					     buf_state->page_info.page_offset);
++
++		bufq->tail = (bufq->tail + 1) & bufq->mask;
++		complq->num_free_slots--;
++		num_posted++;
++
++		if ((bufq->tail & (GVE_RX_BUF_THRESH_DQO - 1)) == 0)
++			gve_rx_write_doorbell_dqo(priv, rx->q_num);
++	}
++
++	rx->fill_cnt += num_posted;
++}
++
++static void gve_try_recycle_buf(struct gve_priv *priv, struct gve_rx_ring *rx,
++				struct gve_rx_buf_state_dqo *buf_state)
 +{
-+	if (likely(gve_has_pending_packet(tx) &&
-+		   num_avail_tx_slots(tx) >= count))
-+		return 0;
++	const int data_buffer_size = priv->data_buffer_size_dqo;
++	int pagecount;
 +
-+	/* Update cached TX head pointer */
-+	tx->dqo_tx.head = atomic_read_acquire(&tx->dqo_compl.hw_tx_head);
++	/* Can't reuse if we only fit one buffer per page */
++	if (data_buffer_size * 2 > PAGE_SIZE)
++		goto mark_used;
 +
-+	if (likely(gve_has_pending_packet(tx) &&
-+		   num_avail_tx_slots(tx) >= count))
-+		return 0;
++	pagecount = gve_buf_ref_cnt(buf_state);
 +
-+	/* No space, so stop the queue */
-+	tx->stop_queue++;
-+	netif_tx_stop_queue(tx->netdev_txq);
-+
-+	/* Sync with restarting queue in `gve_tx_poll_dqo()` */
-+	mb();
-+
-+	/* After stopping queue, check if we can transmit again in order to
-+	 * avoid TOCTOU bug.
++	/* Record the offset when we have a single remaining reference.
++	 *
++	 * When this happens, we know all of the other offsets of the page are
++	 * usable.
 +	 */
-+	tx->dqo_tx.head = atomic_read_acquire(&tx->dqo_compl.hw_tx_head);
++	if (pagecount == 1) {
++		buf_state->last_single_ref_offset =
++			buf_state->page_info.page_offset;
++	}
 +
-+	if (likely(!gve_has_pending_packet(tx) ||
-+		   num_avail_tx_slots(tx) < count))
-+		return -EBUSY;
++	/* Use the next buffer sized chunk in the page. */
++	buf_state->page_info.page_offset += data_buffer_size;
++	buf_state->page_info.page_offset &= (PAGE_SIZE - 1);
 +
-+	netif_tx_start_queue(tx->netdev_txq);
-+	tx->wake_queue++;
++	/* If we wrap around to the same offset without ever dropping to 1
++	 * reference, then we don't know if this offset was ever freed.
++	 */
++	if (buf_state->page_info.page_offset ==
++	    buf_state->last_single_ref_offset) {
++		goto mark_used;
++	}
++
++	gve_enqueue_buf_state(rx, &rx->dqo.recycled_buf_states, buf_state);
++	return;
++
++mark_used:
++	gve_enqueue_buf_state(rx, &rx->dqo.used_buf_states, buf_state);
++}
++
++static void gve_rx_skb_csum(struct sk_buff *skb,
++			    const struct gve_rx_compl_desc_dqo *desc,
++			    struct gve_ptype ptype)
++{
++	skb->ip_summed = CHECKSUM_NONE;
++
++	/* HW did not identify and process L3 and L4 headers. */
++	if (unlikely(!desc->l3_l4_processed))
++		return;
++
++	if (ptype.l3_type == GVE_L3_TYPE_IPV4) {
++		if (unlikely(desc->csum_ip_err || desc->csum_external_ip_err))
++			return;
++	} else if (ptype.l3_type == GVE_L3_TYPE_IPV6) {
++		/* Checksum should be skipped if this flag is set. */
++		if (unlikely(desc->ipv6_ex_add))
++			return;
++	}
++
++	if (unlikely(desc->csum_l4_err))
++		return;
++
++	switch (ptype.l4_type) {
++	case GVE_L4_TYPE_TCP:
++	case GVE_L4_TYPE_UDP:
++	case GVE_L4_TYPE_ICMP:
++	case GVE_L4_TYPE_SCTP:
++		skb->ip_summed = CHECKSUM_UNNECESSARY;
++		break;
++	default:
++		break;
++	}
++}
++
++static void gve_rx_skb_hash(struct sk_buff *skb,
++			    const struct gve_rx_compl_desc_dqo *compl_desc,
++			    struct gve_ptype ptype)
++{
++	enum pkt_hash_types hash_type = PKT_HASH_TYPE_L2;
++
++	if (ptype.l4_type != GVE_L4_TYPE_UNKNOWN)
++		hash_type = PKT_HASH_TYPE_L4;
++	else if (ptype.l3_type != GVE_L3_TYPE_UNKNOWN)
++		hash_type = PKT_HASH_TYPE_L3;
++
++	skb_set_hash(skb, le32_to_cpu(compl_desc->hash), hash_type);
++}
++
++static void gve_rx_free_skb(struct gve_rx_ring *rx)
++{
++	if (!rx->skb_head)
++		return;
++
++	dev_kfree_skb_any(rx->skb_head);
++	rx->skb_head = NULL;
++	rx->skb_tail = NULL;
++}
++
++/* Chains multi skbs for single rx packet.
++ * Returns 0 if buffer is appended, -1 otherwise.
++ */
++static int gve_rx_append_frags(struct napi_struct *napi,
++			       struct gve_rx_buf_state_dqo *buf_state,
++			       u16 buf_len, struct gve_rx_ring *rx,
++			       struct gve_priv *priv)
++{
++	int num_frags = skb_shinfo(rx->skb_tail)->nr_frags;
++
++	if (unlikely(num_frags == MAX_SKB_FRAGS)) {
++		struct sk_buff *skb;
++
++		skb = napi_alloc_skb(napi, 0);
++		if (!skb)
++			return -1;
++
++		skb_shinfo(rx->skb_tail)->frag_list = skb;
++		rx->skb_tail = skb;
++		num_frags = 0;
++	}
++	if (rx->skb_tail != rx->skb_head) {
++		rx->skb_head->len += buf_len;
++		rx->skb_head->data_len += buf_len;
++		rx->skb_head->truesize += priv->data_buffer_size_dqo;
++	}
++
++	skb_add_rx_frag(rx->skb_tail, num_frags,
++			buf_state->page_info.page,
++			buf_state->page_info.page_offset,
++			buf_len, priv->data_buffer_size_dqo);
++	gve_dec_pagecnt_bias(&buf_state->page_info);
++
 +	return 0;
 +}
 +
-+static void gve_extract_tx_metadata_dqo(const struct sk_buff *skb,
-+					struct gve_tx_metadata_dqo *metadata)
-+{
-+	memset(metadata, 0, sizeof(*metadata));
-+	metadata->version = GVE_TX_METADATA_VERSION_DQO;
-+
-+	if (skb->l4_hash) {
-+		u16 path_hash = skb->hash ^ (skb->hash >> 16);
-+
-+		path_hash &= (1 << 15) - 1;
-+		if (unlikely(path_hash == 0))
-+			path_hash = ~path_hash;
-+
-+		metadata->path_hash = path_hash;
-+	}
-+}
-+
-+static void gve_tx_fill_pkt_desc_dqo(struct gve_tx_ring *tx, u32 *desc_idx,
-+				     struct sk_buff *skb, u32 len, u64 addr,
-+				     s16 compl_tag, bool eop, bool is_gso)
-+{
-+	const bool checksum_offload_en = skb->ip_summed == CHECKSUM_PARTIAL;
-+
-+	while (len > 0) {
-+		struct gve_tx_pkt_desc_dqo *desc =
-+			&tx->dqo.tx_ring[*desc_idx].pkt;
-+		u32 cur_len = min_t(u32, len, GVE_TX_MAX_BUF_SIZE_DQO);
-+		bool cur_eop = eop && cur_len == len;
-+
-+		*desc = (struct gve_tx_pkt_desc_dqo){
-+			.buf_addr = cpu_to_le64(addr),
-+			.dtype = GVE_TX_PKT_DESC_DTYPE_DQO,
-+			.end_of_packet = cur_eop,
-+			.checksum_offload_enable = checksum_offload_en,
-+			.compl_tag = cpu_to_le16(compl_tag),
-+			.buf_size = cur_len,
-+		};
-+
-+		addr += cur_len;
-+		len -= cur_len;
-+		*desc_idx = (*desc_idx + 1) & tx->mask;
-+	}
-+}
-+
-+/* Validates and prepares `skb` for TSO.
-+ *
-+ * Returns header length, or < 0 if invalid.
++/* Returns 0 if descriptor is completed successfully.
++ * Returns -EINVAL if descriptor is invalid.
++ * Returns -ENOMEM if data cannot be copied to skb.
 + */
-+static int gve_prep_tso(struct sk_buff *skb)
++static int gve_rx_dqo(struct napi_struct *napi, struct gve_rx_ring *rx,
++		      const struct gve_rx_compl_desc_dqo *compl_desc,
++		      int queue_idx)
 +{
-+	struct tcphdr *tcp;
-+	int header_len;
-+	u32 paylen;
-+	int err;
++	const u16 buffer_id = le16_to_cpu(compl_desc->buf_id);
++	const bool eop = compl_desc->end_of_packet != 0;
++	struct gve_rx_buf_state_dqo *buf_state;
++	struct gve_priv *priv = rx->gve;
++	u16 buf_len;
 +
-+	/* Note: HW requires MSS (gso_size) to be <= 9728 and the total length
-+	 * of the TSO to be <= 262143.
-+	 *
-+	 * However, we don't validate these because:
-+	 * - Hypervisor enforces a limit of 9K MTU
-+	 * - Kernel will not produce a TSO larger than 64k
++	if (unlikely(buffer_id > rx->dqo.num_buf_states)) {
++		net_err_ratelimited("%s: Invalid RX buffer_id=%u\n",
++				    priv->dev->name, buffer_id);
++		return -EINVAL;
++	}
++	buf_state = &rx->dqo.buf_states[buffer_id];
++	if (unlikely(!gve_buf_state_is_allocated(rx, buf_state))) {
++		net_err_ratelimited("%s: RX buffer_id is not allocated: %u\n",
++				    priv->dev->name, buffer_id);
++		return -EINVAL;
++	}
++
++	if (unlikely(compl_desc->rx_error)) {
++		gve_enqueue_buf_state(rx, &rx->dqo.recycled_buf_states,
++				      buf_state);
++		return -EINVAL;
++	}
++
++	buf_len = compl_desc->packet_len;
++
++	/* Page might have not been used for awhile and was likely last written
++	 * by a different thread.
 +	 */
++	prefetch(buf_state->page_info.page);
 +
-+	if (unlikely(skb_shinfo(skb)->gso_size < GVE_TX_MIN_TSO_MSS_DQO))
-+		return -1;
++	/* Sync the portion of dma buffer for CPU to read. */
++	dma_sync_single_range_for_cpu(&priv->pdev->dev, buf_state->addr,
++				      buf_state->page_info.page_offset,
++				      buf_len, DMA_FROM_DEVICE);
 +
-+	/* Needed because we will modify header. */
-+	err = skb_cow_head(skb, 0);
-+	if (err < 0)
-+		return err;
++	/* Append to current skb if one exists. */
++	if (rx->skb_head) {
++		if (unlikely(gve_rx_append_frags(napi, buf_state, buf_len, rx,
++						 priv)) != 0) {
++			goto error;
++		}
 +
-+	tcp = tcp_hdr(skb);
++		gve_try_recycle_buf(priv, rx, buf_state);
++		return 0;
++	}
 +
-+	/* Remove payload length from checksum. */
-+	paylen = skb->len - skb_transport_offset(skb);
++	/* Prefetch the payload header. */
++	prefetch((char *)buf_state->addr + buf_state->page_info.page_offset);
++#if L1_CACHE_BYTES < 128
++	prefetch((char *)buf_state->addr + buf_state->page_info.page_offset +
++		 L1_CACHE_BYTES);
++#endif
 +
-+	switch (skb_shinfo(skb)->gso_type) {
-+	case SKB_GSO_TCPV4:
-+	case SKB_GSO_TCPV6:
-+		csum_replace_by_diff(&tcp->check,
-+				     (__force __wsum)htonl(paylen));
++	if (eop && buf_len <= priv->rx_copybreak) {
++		rx->skb_head = gve_rx_copy(priv->dev, napi,
++					   &buf_state->page_info, buf_len, 0);
++		if (unlikely(!rx->skb_head))
++			goto error;
++		rx->skb_tail = rx->skb_head;
 +
-+		/* Compute length of segmentation header. */
-+		header_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
++		u64_stats_update_begin(&rx->statss);
++		rx->rx_copied_pkt++;
++		rx->rx_copybreak_pkt++;
++		u64_stats_update_end(&rx->statss);
++
++		gve_enqueue_buf_state(rx, &rx->dqo.recycled_buf_states,
++				      buf_state);
++		return 0;
++	}
++
++	rx->skb_head = napi_get_frags(napi);
++	if (unlikely(!rx->skb_head))
++		goto error;
++	rx->skb_tail = rx->skb_head;
++
++	skb_add_rx_frag(rx->skb_head, 0, buf_state->page_info.page,
++			buf_state->page_info.page_offset, buf_len,
++			priv->data_buffer_size_dqo);
++	gve_dec_pagecnt_bias(&buf_state->page_info);
++
++	gve_try_recycle_buf(priv, rx, buf_state);
++	return 0;
++
++error:
++	gve_enqueue_buf_state(rx, &rx->dqo.recycled_buf_states, buf_state);
++	return -ENOMEM;
++}
++
++static int gve_rx_complete_rsc(struct sk_buff *skb,
++			       const struct gve_rx_compl_desc_dqo *desc,
++			       struct gve_ptype ptype)
++{
++	struct skb_shared_info *shinfo = skb_shinfo(skb);
++
++	/* Only TCP is supported right now. */
++	if (ptype.l4_type != GVE_L4_TYPE_TCP)
++		return -EINVAL;
++
++	switch (ptype.l3_type) {
++	case GVE_L3_TYPE_IPV4:
++		shinfo->gso_type = SKB_GSO_TCPV4;
++		break;
++	case GVE_L3_TYPE_IPV6:
++		shinfo->gso_type = SKB_GSO_TCPV6;
 +		break;
 +	default:
 +		return -EINVAL;
 +	}
 +
-+	if (unlikely(header_len > GVE_TX_MAX_HDR_SIZE_DQO))
-+		return -EINVAL;
-+
-+	return header_len;
++	shinfo->gso_size = le16_to_cpu(desc->rsc_seg_len);
++	return 0;
 +}
 +
-+static void gve_tx_fill_tso_ctx_desc(struct gve_tx_tso_context_desc_dqo *desc,
-+				     const struct sk_buff *skb,
-+				     const struct gve_tx_metadata_dqo *metadata,
-+				     int header_len)
++/* Returns 0 if skb is completed successfully, -1 otherwise. */
++static int gve_rx_complete_skb(struct gve_rx_ring *rx, struct napi_struct *napi,
++			       const struct gve_rx_compl_desc_dqo *desc,
++			       netdev_features_t feat)
 +{
-+	*desc = (struct gve_tx_tso_context_desc_dqo){
-+		.header_len = header_len,
-+		.cmd_dtype = {
-+			.dtype = GVE_TX_TSO_CTX_DESC_DTYPE_DQO,
-+			.tso = 1,
-+		},
-+		.flex0 = metadata->bytes[0],
-+		.flex5 = metadata->bytes[5],
-+		.flex6 = metadata->bytes[6],
-+		.flex7 = metadata->bytes[7],
-+		.flex8 = metadata->bytes[8],
-+		.flex9 = metadata->bytes[9],
-+		.flex10 = metadata->bytes[10],
-+		.flex11 = metadata->bytes[11],
-+	};
-+	desc->tso_total_len = skb->len - header_len;
-+	desc->mss = skb_shinfo(skb)->gso_size;
-+}
++	struct gve_ptype ptype =
++		rx->gve->ptype_lut_dqo->ptypes[desc->packet_type];
++	int err;
 +
-+static void
-+gve_tx_fill_general_ctx_desc(struct gve_tx_general_context_desc_dqo *desc,
-+			     const struct gve_tx_metadata_dqo *metadata)
-+{
-+	*desc = (struct gve_tx_general_context_desc_dqo){
-+		.flex0 = metadata->bytes[0],
-+		.flex1 = metadata->bytes[1],
-+		.flex2 = metadata->bytes[2],
-+		.flex3 = metadata->bytes[3],
-+		.flex4 = metadata->bytes[4],
-+		.flex5 = metadata->bytes[5],
-+		.flex6 = metadata->bytes[6],
-+		.flex7 = metadata->bytes[7],
-+		.flex8 = metadata->bytes[8],
-+		.flex9 = metadata->bytes[9],
-+		.flex10 = metadata->bytes[10],
-+		.flex11 = metadata->bytes[11],
-+		.cmd_dtype = {.dtype = GVE_TX_GENERAL_CTX_DESC_DTYPE_DQO},
-+	};
-+}
++	skb_record_rx_queue(rx->skb_head, rx->q_num);
 +
-+/* Returns 0 on success, or < 0 on error.
-+ *
-+ * Before this function is called, the caller must ensure
-+ * gve_has_pending_packet(tx) returns true.
-+ */
-+static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
-+				      struct sk_buff *skb)
-+{
-+	const struct skb_shared_info *shinfo = skb_shinfo(skb);
-+	const bool is_gso = skb_is_gso(skb);
-+	u32 desc_idx = tx->dqo_tx.tail;
++	if (feat & NETIF_F_RXHASH)
++		gve_rx_skb_hash(rx->skb_head, desc, ptype);
 +
-+	struct gve_tx_pending_packet_dqo *pending_packet;
-+	struct gve_tx_metadata_dqo metadata;
-+	s16 completion_tag;
-+	int i;
++	if (feat & NETIF_F_RXCSUM)
++		gve_rx_skb_csum(rx->skb_head, desc, ptype);
 +
-+	pending_packet = gve_alloc_pending_packet(tx);
-+	pending_packet->skb = skb;
-+	pending_packet->num_bufs = 0;
-+	completion_tag = pending_packet - tx->dqo.pending_packets;
-+
-+	gve_extract_tx_metadata_dqo(skb, &metadata);
-+	if (is_gso) {
-+		int header_len = gve_prep_tso(skb);
-+
-+		if (unlikely(header_len < 0))
-+			goto err;
-+
-+		gve_tx_fill_tso_ctx_desc(&tx->dqo.tx_ring[desc_idx].tso_ctx,
-+					 skb, &metadata, header_len);
-+		desc_idx = (desc_idx + 1) & tx->mask;
-+	}
-+
-+	gve_tx_fill_general_ctx_desc(&tx->dqo.tx_ring[desc_idx].general_ctx,
-+				     &metadata);
-+	desc_idx = (desc_idx + 1) & tx->mask;
-+
-+	/* Note: HW requires that the size of a non-TSO packet be within the
-+	 * range of [17, 9728].
-+	 *
-+	 * We don't double check because
-+	 * - We limited `netdev->min_mtu` to ETH_MIN_MTU.
-+	 * - Hypervisor won't allow MTU larger than 9216.
++	/* RSC packets must set gso_size otherwise the TCP stack will complain
++	 * that packets are larger than MTU.
 +	 */
-+
-+	/* Map the linear portion of skb */
-+	{
-+		struct gve_tx_dma_buf *buf =
-+			&pending_packet->bufs[pending_packet->num_bufs];
-+		u32 len = skb_headlen(skb);
-+		dma_addr_t addr;
-+
-+		addr = dma_map_single(tx->dev, skb->data, len, DMA_TO_DEVICE);
-+		if (unlikely(dma_mapping_error(tx->dev, addr)))
-+			goto err;
-+
-+		dma_unmap_len_set(buf, len, len);
-+		dma_unmap_addr_set(buf, dma, addr);
-+		++pending_packet->num_bufs;
-+
-+		gve_tx_fill_pkt_desc_dqo(tx, &desc_idx, skb, len, addr,
-+					 completion_tag,
-+					 /*eop=*/shinfo->nr_frags == 0, is_gso);
++	if (desc->rsc) {
++		err = gve_rx_complete_rsc(rx->skb_head, desc, ptype);
++		if (err < 0)
++			return err;
 +	}
 +
-+	for (i = 0; i < shinfo->nr_frags; i++) {
-+		struct gve_tx_dma_buf *buf =
-+			&pending_packet->bufs[pending_packet->num_bufs];
-+		const skb_frag_t *frag = &shinfo->frags[i];
-+		bool is_eop = i == (shinfo->nr_frags - 1);
-+		u32 len = skb_frag_size(frag);
-+		dma_addr_t addr;
-+
-+		addr = skb_frag_dma_map(tx->dev, frag, 0, len, DMA_TO_DEVICE);
-+		if (unlikely(dma_mapping_error(tx->dev, addr)))
-+			goto err;
-+
-+		dma_unmap_len_set(buf, len, len);
-+		dma_unmap_addr_set(buf, dma, addr);
-+		++pending_packet->num_bufs;
-+
-+		gve_tx_fill_pkt_desc_dqo(tx, &desc_idx, skb, len, addr,
-+					 completion_tag, is_eop, is_gso);
-+	}
-+
-+	/* Commit the changes to our state */
-+	tx->dqo_tx.tail = desc_idx;
-+
-+	/* Request a descriptor completion on the last descriptor of the
-+	 * packet if we are allowed to by the HW enforced interval.
-+	 */
-+	{
-+		u32 last_desc_idx = (desc_idx - 1) & tx->mask;
-+		u32 last_report_event_interval =
-+			(last_desc_idx - tx->dqo_tx.last_re_idx) & tx->mask;
-+
-+		if (unlikely(last_report_event_interval >=
-+			     GVE_TX_MIN_RE_INTERVAL)) {
-+			tx->dqo.tx_ring[last_desc_idx].pkt.report_event = true;
-+			tx->dqo_tx.last_re_idx = last_desc_idx;
-+		}
-+	}
++	if (skb_headlen(rx->skb_head) == 0)
++		napi_gro_frags(napi);
++	else
++		napi_gro_receive(napi, rx->skb_head);
 +
 +	return 0;
-+
-+err:
-+	for (i = 0; i < pending_packet->num_bufs; i++) {
-+		struct gve_tx_dma_buf *buf = &pending_packet->bufs[i];
-+
-+		if (i == 0) {
-+			dma_unmap_single(tx->dev, dma_unmap_addr(buf, dma),
-+					 dma_unmap_len(buf, len),
-+					 DMA_TO_DEVICE);
-+		} else {
-+			dma_unmap_page(tx->dev, dma_unmap_addr(buf, dma),
-+				       dma_unmap_len(buf, len), DMA_TO_DEVICE);
-+		}
-+	}
-+
-+	pending_packet->skb = NULL;
-+	pending_packet->num_bufs = 0;
-+	gve_free_pending_packet(tx, pending_packet);
-+
-+	return -1;
-+}
-+
-+static int gve_num_descs_per_buf(size_t size)
-+{
-+	return DIV_ROUND_UP(size, GVE_TX_MAX_BUF_SIZE_DQO);
-+}
-+
-+static int gve_num_buffer_descs_needed(const struct sk_buff *skb)
-+{
-+	const struct skb_shared_info *shinfo = skb_shinfo(skb);
-+	int num_descs;
-+	int i;
-+
-+	num_descs = gve_num_descs_per_buf(skb_headlen(skb));
-+
-+	for (i = 0; i < shinfo->nr_frags; i++) {
-+		unsigned int frag_size = skb_frag_size(&shinfo->frags[i]);
-+
-+		num_descs += gve_num_descs_per_buf(frag_size);
-+	}
-+
-+	return num_descs;
-+}
-+
-+/* Returns true if HW is capable of sending TSO represented by `skb`.
-+ *
-+ * Each segment must not span more than GVE_TX_MAX_DATA_DESCS buffers.
-+ * - The header is counted as one buffer for every single segment.
-+ * - A buffer which is split between two segments is counted for both.
-+ * - If a buffer contains both header and payload, it is counted as two buffers.
-+ */
-+static bool gve_can_send_tso(const struct sk_buff *skb)
-+{
-+	const int header_len = skb_checksum_start_offset(skb) + tcp_hdrlen(skb);
-+	const int max_bufs_per_seg = GVE_TX_MAX_DATA_DESCS - 1;
-+	const struct skb_shared_info *shinfo = skb_shinfo(skb);
-+	const int gso_size = shinfo->gso_size;
-+	int cur_seg_num_bufs;
-+	int cur_seg_size;
-+	int i;
-+
-+	cur_seg_size = skb_headlen(skb) - header_len;
-+	cur_seg_num_bufs = cur_seg_size > 0;
-+
-+	for (i = 0; i < shinfo->nr_frags; i++) {
-+		if (cur_seg_size >= gso_size) {
-+			cur_seg_size %= gso_size;
-+			cur_seg_num_bufs = cur_seg_size > 0;
-+		}
-+
-+		if (unlikely(++cur_seg_num_bufs > max_bufs_per_seg))
-+			return false;
-+
-+		cur_seg_size += skb_frag_size(&shinfo->frags[i]);
-+	}
-+
-+	return true;
-+}
-+
-+/* Attempt to transmit specified SKB.
-+ *
-+ * Returns 0 if the SKB was transmitted or dropped.
-+ * Returns -1 if there is not currently enough space to transmit the SKB.
-+ */
-+static int gve_try_tx_skb(struct gve_priv *priv, struct gve_tx_ring *tx,
-+			  struct sk_buff *skb)
-+{
-+	int num_buffer_descs;
-+	int total_num_descs;
-+
-+	if (skb_is_gso(skb)) {
-+		/* If TSO doesn't meet HW requirements, attempt to linearize the
-+		 * packet.
-+		 */
-+		if (unlikely(!gve_can_send_tso(skb) &&
-+			     skb_linearize(skb) < 0)) {
-+			net_err_ratelimited("%s: Failed to transmit TSO packet\n",
-+					    priv->dev->name);
-+			goto drop;
-+		}
-+
-+		num_buffer_descs = gve_num_buffer_descs_needed(skb);
-+	} else {
-+		num_buffer_descs = gve_num_buffer_descs_needed(skb);
-+
-+		if (unlikely(num_buffer_descs > GVE_TX_MAX_DATA_DESCS)) {
-+			if (unlikely(skb_linearize(skb) < 0))
-+				goto drop;
-+
-+			num_buffer_descs = 1;
-+		}
-+	}
-+
-+	/* Metadata + (optional TSO) + data descriptors. */
-+	total_num_descs = 1 + skb_is_gso(skb) + num_buffer_descs;
-+	if (unlikely(gve_maybe_stop_tx_dqo(tx, total_num_descs +
-+			GVE_TX_MIN_DESC_PREVENT_CACHE_OVERLAP))) {
-+		return -1;
-+	}
-+
-+	if (unlikely(gve_tx_add_skb_no_copy_dqo(tx, skb) < 0))
-+		goto drop;
-+
-+	netdev_tx_sent_queue(tx->netdev_txq, skb->len);
-+	skb_tx_timestamp(skb);
-+	return 0;
-+
-+drop:
-+	tx->dropped_pkt++;
-+	dev_kfree_skb_any(skb);
-+	return 0;
-+}
-+
-+/* Transmit a given skb and ring the doorbell. */
- netdev_tx_t gve_tx_dqo(struct sk_buff *skb, struct net_device *dev)
- {
-+	struct gve_priv *priv = netdev_priv(dev);
-+	struct gve_tx_ring *tx;
-+
-+	tx = &priv->tx[skb_get_queue_mapping(skb)];
-+	if (unlikely(gve_try_tx_skb(priv, tx, skb) < 0)) {
-+		/* We need to ring the txq doorbell -- we have stopped the Tx
-+		 * queue for want of resources, but prior calls to gve_tx()
-+		 * may have added descriptors without ringing the doorbell.
-+		 */
-+		gve_tx_put_doorbell_dqo(priv, tx->q_resources, tx->dqo_tx.tail);
-+		return NETDEV_TX_BUSY;
-+	}
-+
-+	if (!netif_xmit_stopped(tx->netdev_txq) && netdev_xmit_more())
-+		return NETDEV_TX_OK;
-+
-+	gve_tx_put_doorbell_dqo(priv, tx->q_resources, tx->dqo_tx.tail);
- 	return NETDEV_TX_OK;
  }
  
-+static void add_to_list(struct gve_tx_ring *tx, struct gve_index_list *list,
-+			struct gve_tx_pending_packet_dqo *pending_packet)
-+{
-+	s16 old_tail, index;
-+
-+	index = pending_packet - tx->dqo.pending_packets;
-+	old_tail = list->tail;
-+	list->tail = index;
-+	if (old_tail == -1)
-+		list->head = index;
-+	else
-+		tx->dqo.pending_packets[old_tail].next = index;
-+
-+	pending_packet->next = -1;
-+	pending_packet->prev = old_tail;
-+}
-+
-+static void remove_from_list(struct gve_tx_ring *tx,
-+			     struct gve_index_list *list,
-+			     struct gve_tx_pending_packet_dqo *pending_packet)
-+{
-+	s16 index, prev_index, next_index;
-+
-+	index = pending_packet - tx->dqo.pending_packets;
-+	prev_index = pending_packet->prev;
-+	next_index = pending_packet->next;
-+
-+	if (prev_index == -1) {
-+		/* Node is head */
-+		list->head = next_index;
-+	} else {
-+		tx->dqo.pending_packets[prev_index].next = next_index;
-+	}
-+	if (next_index == -1) {
-+		/* Node is tail */
-+		list->tail = prev_index;
-+	} else {
-+		tx->dqo.pending_packets[next_index].prev = prev_index;
-+	}
-+}
-+
-+static void gve_unmap_packet(struct device *dev,
-+			     struct gve_tx_pending_packet_dqo *pending_packet)
-+{
-+	struct gve_tx_dma_buf *buf;
-+	int i;
-+
-+	/* SKB linear portion is guaranteed to be mapped */
-+	buf = &pending_packet->bufs[0];
-+	dma_unmap_single(dev, dma_unmap_addr(buf, dma),
-+			 dma_unmap_len(buf, len), DMA_TO_DEVICE);
-+	for (i = 1; i < pending_packet->num_bufs; i++) {
-+		buf = &pending_packet->bufs[i];
-+		dma_unmap_page(dev, dma_unmap_addr(buf, dma),
-+			       dma_unmap_len(buf, len), DMA_TO_DEVICE);
-+	}
-+	pending_packet->num_bufs = 0;
-+}
-+
-+/* Completion types and expected behavior:
-+ * No Miss compl + Packet compl = Packet completed normally.
-+ * Miss compl + Re-inject compl = Packet completed normally.
-+ * No Miss compl + Re-inject compl = Skipped i.e. packet not completed.
-+ * Miss compl + Packet compl = Skipped i.e. packet not completed.
-+ */
-+static void gve_handle_packet_completion(struct gve_priv *priv,
-+					 struct gve_tx_ring *tx, bool is_napi,
-+					 u16 compl_tag, u64 *bytes, u64 *pkts,
-+					 bool is_reinjection)
-+{
-+	struct gve_tx_pending_packet_dqo *pending_packet;
-+
-+	if (unlikely(compl_tag >= tx->dqo.num_pending_packets)) {
-+		net_err_ratelimited("%s: Invalid TX completion tag: %d\n",
-+				    priv->dev->name, (int)compl_tag);
-+		return;
-+	}
-+
-+	pending_packet = &tx->dqo.pending_packets[compl_tag];
-+
-+	if (unlikely(is_reinjection)) {
-+		if (unlikely(pending_packet->state ==
-+			     GVE_PACKET_STATE_TIMED_OUT_COMPL)) {
-+			net_err_ratelimited("%s: Re-injection completion: %d received after timeout.\n",
-+					    priv->dev->name, (int)compl_tag);
-+			/* Packet was already completed as a result of timeout,
-+			 * so just remove from list and free pending packet.
-+			 */
-+			remove_from_list(tx,
-+					 &tx->dqo_compl.timed_out_completions,
-+					 pending_packet);
-+			gve_free_pending_packet(tx, pending_packet);
-+			return;
-+		}
-+		if (unlikely(pending_packet->state !=
-+			     GVE_PACKET_STATE_PENDING_REINJECT_COMPL)) {
-+			/* No outstanding miss completion but packet allocated
-+			 * implies packet receives a re-injection completion
-+			 * without a a prior miss completion. Return without
-+			 * completing the packet.
-+			 */
-+			net_err_ratelimited("%s: Re-injection completion received without corresponding miss completion: %d\n",
-+					    priv->dev->name, (int)compl_tag);
-+			return;
-+		}
-+		remove_from_list(tx, &tx->dqo_compl.miss_completions,
-+				 pending_packet);
-+	} else {
-+		/* Packet is allocated but not a pending data completion. */
-+		if (unlikely(pending_packet->state !=
-+			     GVE_PACKET_STATE_PENDING_DATA_COMPL)) {
-+			net_err_ratelimited("%s: No pending data completion: %d\n",
-+					    priv->dev->name, (int)compl_tag);
-+			return;
-+		}
-+	}
-+	gve_unmap_packet(tx->dev, pending_packet);
-+
-+	*bytes += pending_packet->skb->len;
-+	(*pkts)++;
-+	napi_consume_skb(pending_packet->skb, is_napi);
-+	pending_packet->skb = NULL;
-+	gve_free_pending_packet(tx, pending_packet);
-+}
-+
-+static void gve_handle_miss_completion(struct gve_priv *priv,
-+				       struct gve_tx_ring *tx, u16 compl_tag,
-+				       u64 *bytes, u64 *pkts)
-+{
-+	struct gve_tx_pending_packet_dqo *pending_packet;
-+
-+	if (unlikely(compl_tag >= tx->dqo.num_pending_packets)) {
-+		net_err_ratelimited("%s: Invalid TX completion tag: %d\n",
-+				    priv->dev->name, (int)compl_tag);
-+		return;
-+	}
-+
-+	pending_packet = &tx->dqo.pending_packets[compl_tag];
-+	if (unlikely(pending_packet->state !=
-+				GVE_PACKET_STATE_PENDING_DATA_COMPL)) {
-+		net_err_ratelimited("%s: Unexpected packet state: %d for completion tag : %d\n",
-+				    priv->dev->name, (int)pending_packet->state,
-+				    (int)compl_tag);
-+		return;
-+	}
-+
-+	pending_packet->state = GVE_PACKET_STATE_PENDING_REINJECT_COMPL;
-+	/* jiffies can wraparound but time comparisons can handle overflows. */
-+	pending_packet->timeout_jiffies =
-+			jiffies +
-+			msecs_to_jiffies(GVE_REINJECT_COMPL_TIMEOUT *
-+					 MSEC_PER_SEC);
-+	add_to_list(tx, &tx->dqo_compl.miss_completions, pending_packet);
-+
-+	*bytes += pending_packet->skb->len;
-+	(*pkts)++;
-+}
-+
-+static void remove_miss_completions(struct gve_priv *priv,
-+				    struct gve_tx_ring *tx)
-+{
-+	struct gve_tx_pending_packet_dqo *pending_packet;
-+	s16 next_index;
-+
-+	next_index = tx->dqo_compl.miss_completions.head;
-+	while (next_index != -1) {
-+		pending_packet = &tx->dqo.pending_packets[next_index];
-+		next_index = pending_packet->next;
-+		/* Break early because packets should timeout in order. */
-+		if (time_is_after_jiffies(pending_packet->timeout_jiffies))
-+			break;
-+
-+		remove_from_list(tx, &tx->dqo_compl.miss_completions,
-+				 pending_packet);
-+		/* Unmap buffers and free skb but do not unallocate packet i.e.
-+		 * the completion tag is not freed to ensure that the driver
-+		 * can take appropriate action if a corresponding valid
-+		 * completion is received later.
-+		 */
-+		gve_unmap_packet(tx->dev, pending_packet);
-+		/* This indicates the packet was dropped. */
-+		dev_kfree_skb_any(pending_packet->skb);
-+		pending_packet->skb = NULL;
-+		tx->dropped_pkt++;
-+		net_err_ratelimited("%s: No reinjection completion was received for: %ld.\n",
-+				    priv->dev->name,
-+				    (pending_packet - tx->dqo.pending_packets));
-+
-+		pending_packet->state = GVE_PACKET_STATE_TIMED_OUT_COMPL;
-+		pending_packet->timeout_jiffies =
-+				jiffies +
-+				msecs_to_jiffies(GVE_DEALLOCATE_COMPL_TIMEOUT *
-+						 MSEC_PER_SEC);
-+		/* Maintain pending packet in another list so the packet can be
-+		 * unallocated at a later time.
-+		 */
-+		add_to_list(tx, &tx->dqo_compl.timed_out_completions,
-+			    pending_packet);
-+	}
-+}
-+
-+static void remove_timed_out_completions(struct gve_priv *priv,
-+					 struct gve_tx_ring *tx)
-+{
-+	struct gve_tx_pending_packet_dqo *pending_packet;
-+	s16 next_index;
-+
-+	next_index = tx->dqo_compl.timed_out_completions.head;
-+	while (next_index != -1) {
-+		pending_packet = &tx->dqo.pending_packets[next_index];
-+		next_index = pending_packet->next;
-+		/* Break early because packets should timeout in order. */
-+		if (time_is_after_jiffies(pending_packet->timeout_jiffies))
-+			break;
-+
-+		remove_from_list(tx, &tx->dqo_compl.timed_out_completions,
-+				 pending_packet);
-+		gve_free_pending_packet(tx, pending_packet);
-+	}
-+}
-+
- int gve_clean_tx_done_dqo(struct gve_priv *priv, struct gve_tx_ring *tx,
- 			  struct napi_struct *napi)
+ int gve_rx_poll_dqo(struct gve_notify_block *block, int budget)
  {
--	return 0;
-+	u64 reinject_compl_bytes = 0;
-+	u64 reinject_compl_pkts = 0;
-+	int num_descs_cleaned = 0;
-+	u64 miss_compl_bytes = 0;
-+	u64 miss_compl_pkts = 0;
-+	u64 pkt_compl_bytes = 0;
-+	u64 pkt_compl_pkts = 0;
++	struct napi_struct *napi = &block->napi;
++	netdev_features_t feat = napi->dev->features;
 +
-+	/* Limit in order to avoid blocking for too long */
-+	while (!napi || pkt_compl_pkts < napi->weight) {
-+		struct gve_tx_compl_desc *compl_desc =
-+			&tx->dqo.compl_ring[tx->dqo_compl.head];
-+		u16 type;
++	struct gve_rx_ring *rx = block->rx;
++	struct gve_rx_compl_queue_dqo *complq = &rx->dqo.complq;
 +
-+		if (compl_desc->generation == tx->dqo_compl.cur_gen_bit)
+ 	u32 work_done = 0;
++	u64 bytes = 0;
++	int err;
++
++	while (work_done < budget) {
++		struct gve_rx_compl_desc_dqo *compl_desc =
++			&complq->desc_ring[complq->head];
++		u32 pkt_bytes;
++
++		/* No more new packets */
++		if (compl_desc->generation == complq->cur_gen_bit)
 +			break;
 +
-+		/* Prefetch the next descriptor. */
-+		prefetch(&tx->dqo.compl_ring[(tx->dqo_compl.head + 1) &
-+				tx->dqo.complq_mask]);
++		/* Prefetch the next two descriptors. */
++		prefetch(&complq->desc_ring[(complq->head + 1) & complq->mask]);
++		prefetch(&complq->desc_ring[(complq->head + 2) & complq->mask]);
 +
 +		/* Do not read data until we own the descriptor */
 +		dma_rmb();
-+		type = compl_desc->type;
 +
-+		if (type == GVE_COMPL_TYPE_DQO_DESC) {
-+			/* This is the last descriptor fetched by HW plus one */
-+			u16 tx_head = le16_to_cpu(compl_desc->tx_head);
-+
-+			atomic_set_release(&tx->dqo_compl.hw_tx_head, tx_head);
-+		} else if (type == GVE_COMPL_TYPE_DQO_PKT) {
-+			u16 compl_tag = le16_to_cpu(compl_desc->completion_tag);
-+
-+			gve_handle_packet_completion(priv, tx, !!napi,
-+						     compl_tag,
-+						     &pkt_compl_bytes,
-+						     &pkt_compl_pkts,
-+						     /*is_reinjection=*/false);
-+		} else if (type == GVE_COMPL_TYPE_DQO_MISS) {
-+			u16 compl_tag = le16_to_cpu(compl_desc->completion_tag);
-+
-+			gve_handle_miss_completion(priv, tx, compl_tag,
-+						   &miss_compl_bytes,
-+						   &miss_compl_pkts);
-+		} else if (type == GVE_COMPL_TYPE_DQO_REINJECTION) {
-+			u16 compl_tag = le16_to_cpu(compl_desc->completion_tag);
-+
-+			gve_handle_packet_completion(priv, tx, !!napi,
-+						     compl_tag,
-+						     &reinject_compl_bytes,
-+						     &reinject_compl_pkts,
-+						     /*is_reinjection=*/true);
++		err = gve_rx_dqo(napi, rx, compl_desc, rx->q_num);
++		if (err < 0) {
++			gve_rx_free_skb(rx);
++			u64_stats_update_begin(&rx->statss);
++			if (err == -ENOMEM)
++				rx->rx_skb_alloc_fail++;
++			else if (err == -EINVAL)
++				rx->rx_desc_err_dropped_pkt++;
++			u64_stats_update_end(&rx->statss);
 +		}
 +
-+		tx->dqo_compl.head =
-+			(tx->dqo_compl.head + 1) & tx->dqo.complq_mask;
-+		/* Flip the generation bit when we wrap around */
-+		tx->dqo_compl.cur_gen_bit ^= tx->dqo_compl.head == 0;
-+		num_descs_cleaned++;
++		complq->head = (complq->head + 1) & complq->mask;
++		complq->num_free_slots++;
++
++		/* When the ring wraps, the generation bit is flipped. */
++		complq->cur_gen_bit ^= (complq->head == 0);
++
++		/* Receiving a completion means we have space to post another
++		 * buffer on the buffer queue.
++		 */
++		{
++			struct gve_rx_buf_queue_dqo *bufq = &rx->dqo.bufq;
++
++			bufq->head = (bufq->head + 1) & bufq->mask;
++		}
++
++		/* Free running counter of completed descriptors */
++		rx->cnt++;
++
++		if (!rx->skb_head)
++			continue;
++
++		if (!compl_desc->end_of_packet)
++			continue;
++
++		work_done++;
++		pkt_bytes = rx->skb_head->len;
++		/* The ethernet header (first ETH_HLEN bytes) is snipped off
++		 * by eth_type_trans.
++		 */
++		if (skb_headlen(rx->skb_head))
++			pkt_bytes += ETH_HLEN;
++
++		/* gve_rx_complete_skb() will consume skb if successful */
++		if (gve_rx_complete_skb(rx, napi, compl_desc, feat) != 0) {
++			gve_rx_free_skb(rx);
++			u64_stats_update_begin(&rx->statss);
++			rx->rx_desc_err_dropped_pkt++;
++			u64_stats_update_end(&rx->statss);
++			continue;
++		}
++
++		bytes += pkt_bytes;
++		rx->skb_head = NULL;
++		rx->skb_tail = NULL;
 +	}
 +
-+	netdev_tx_completed_queue(tx->netdev_txq,
-+				  pkt_compl_pkts + miss_compl_pkts,
-+				  pkt_compl_bytes + miss_compl_bytes);
++	gve_rx_post_buffers_dqo(rx);
 +
-+	remove_miss_completions(priv, tx);
-+	remove_timed_out_completions(priv, tx);
-+
-+	u64_stats_update_begin(&tx->statss);
-+	tx->bytes_done += pkt_compl_bytes + reinject_compl_bytes;
-+	tx->pkt_done += pkt_compl_pkts + reinject_compl_pkts;
-+	u64_stats_update_end(&tx->statss);
-+	return num_descs_cleaned;
++	u64_stats_update_begin(&rx->statss);
++	rx->rpackets += work_done;
++	rx->rbytes += bytes;
++	u64_stats_update_end(&rx->statss);
+ 
+ 	return work_done;
+ }
+diff --git a/drivers/net/ethernet/google/gve/gve_utils.c b/drivers/net/ethernet/google/gve/gve_utils.c
+index a0607a824ab9..93f3dcbeeea9 100644
+--- a/drivers/net/ethernet/google/gve/gve_utils.c
++++ b/drivers/net/ethernet/google/gve/gve_utils.c
+@@ -64,3 +64,18 @@ struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
+ 	return skb;
  }
  
- bool gve_tx_poll_dqo(struct gve_notify_block *block, bool do_clean)
- {
--	return false;
-+	struct gve_tx_compl_desc *compl_desc;
-+	struct gve_tx_ring *tx = block->tx;
-+	struct gve_priv *priv = block->priv;
++void gve_dec_pagecnt_bias(struct gve_rx_slot_page_info *page_info)
++{
++	page_info->pagecnt_bias--;
++	if (page_info->pagecnt_bias == 0) {
++		int pagecount = page_count(page_info->page);
 +
-+	if (do_clean) {
-+		int num_descs_cleaned = gve_clean_tx_done_dqo(priv, tx,
-+							      &block->napi);
++		/* If we have run out of bias - set it back up to INT_MAX
++		 * minus the existing refs.
++		 */
++		page_info->pagecnt_bias = INT_MAX - pagecount;
 +
-+		/* Sync with queue being stopped in `gve_maybe_stop_tx_dqo()` */
-+		mb();
-+
-+		if (netif_tx_queue_stopped(tx->netdev_txq) &&
-+		    num_descs_cleaned > 0) {
-+			tx->wake_queue++;
-+			netif_tx_wake_queue(tx->netdev_txq);
-+		}
++		/* Set pagecount back up to max. */
++		page_ref_add(page_info->page, INT_MAX - pagecount);
 +	}
++}
+diff --git a/drivers/net/ethernet/google/gve/gve_utils.h b/drivers/net/ethernet/google/gve/gve_utils.h
+index 8fb39b990bbc..79595940b351 100644
+--- a/drivers/net/ethernet/google/gve/gve_utils.h
++++ b/drivers/net/ethernet/google/gve/gve_utils.h
+@@ -21,5 +21,8 @@ struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
+ 			    struct gve_rx_slot_page_info *page_info, u16 len,
+ 			    u16 pad);
+ 
++/* Decrement pagecnt_bias. Set it back to INT_MAX if it reached zero. */
++void gve_dec_pagecnt_bias(struct gve_rx_slot_page_info *page_info);
 +
-+	/* Return true if we still have work. */
-+	compl_desc = &tx->dqo.compl_ring[tx->dqo_compl.head];
-+	return compl_desc->generation != tx->dqo_compl.cur_gen_bit;
- }
+ #endif /* _GVE_UTILS_H */
+ 
 -- 
 2.32.0.288.g62a8d224e6-goog
 
