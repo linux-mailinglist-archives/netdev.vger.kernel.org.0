@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4892C3B31D4
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 16:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D1793B31D6
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 16:56:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232312AbhFXO6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 10:58:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
+        id S232362AbhFXO6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 10:58:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232196AbhFXO6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 10:58:05 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008B7C061756;
-        Thu, 24 Jun 2021 07:55:44 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id h2so8985873edt.3;
-        Thu, 24 Jun 2021 07:55:44 -0700 (PDT)
+        with ESMTP id S232257AbhFXO6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 10:58:06 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F6BC061574;
+        Thu, 24 Jun 2021 07:55:45 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id h2so8985948edt.3;
+        Thu, 24 Jun 2021 07:55:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5nz3mZ/tDad88qOzTDjkrEglckpTIkuvEHPec0y3JGo=;
-        b=qgrI/o/QfFxa1DPd+80KvLmOprNKMnwSUeQu791eslyBFIqICKkEYnchqZCrsHeZGZ
-         BtKVfTdngkDc/tKwhfQiktbSBL7miIp6mFjE0PjWwoqdHB9tJ/AyBRvymmQIRO9CEt/v
-         9Vkm+K6rrXIV1vhTOptSPOX+NV1zSza4GXilKV2xCkJ5HmQiJLo181DsEtl+sDtPuqrf
-         BSTo6oXq+gDhBUpADKN9rMZz+RwRJws9jmGREt3xLKWZxU/N1ItfATIfF2D3aJqFEFh+
-         8WfKisLTO4a6DguCottrVwuGwYr2ZSgagNHSkPu+VarMt7ZipfFS/fXsFDExF09VZHZD
-         FlFg==
+        bh=OTyJyw/htMO1AJRTiqLNMT+bM+APi/6nePJGAuCnKuo=;
+        b=QPbH8Y0VnStaK5O89g2nrwrNN5J0s5bfhGzIO4itFkEgwj8CclZ4Ga7IvsjkXvrwgW
+         SA97Axc3KveRv3pk/yAZepAi2V6UCCghIzxJratOvWrCX3eWktpMcS7b3a+8l8Q4i2rT
+         y4+sS3nXeZtlAtxratWy3c/aeF7YDtIapTa+dDHw9i5S2r+kIsbkbqW5+F7i2DKY/v5v
+         FQNUl77flGdQZEukyQoGees8vWPw+Vydal77GbCFhGsWU1esVwW8sDMxE7Om9LAwyUSk
+         abfH0wl5ESRQsE5g0UrNAddPJEaGwKXEv12GUnDWEDz3fr3HtWXOW9upPJ9l1TsXEyKf
+         F6tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5nz3mZ/tDad88qOzTDjkrEglckpTIkuvEHPec0y3JGo=;
-        b=d/4Pt/sfahOK1bShaLC/lhzuOX+aYDLdPB0i/flPxem3sdbzfAIXvi+MEGXD0+W6pL
-         5k3+dJwrWrYhsZGSuNOzhuOYOo5HR8v48VaSjIrojo6aJNyPjqAU0kuaNknCCuWgVFbH
-         /J23n8QoD6wffE8hvlH6Jb1mf1ftxvbbHOqmVJe73zUcRBHi1I1P7fI/zN0FLYWGVq8r
-         H7pAkmIhwnKgs2bXKOfQXp+F0WqIKZp22m8Q8z/12dI9jvbiG+SzoTiU7XR6ID6rbwTA
-         7U0JUA7vMG2S2aJKlAjihJ2jz36ebRVmtuPXQINywlIuKFhnU7bCpGF5b8tBirMgTZQD
-         6bmQ==
-X-Gm-Message-State: AOAM533abGblcKFUte1y8UVpKvN4FIRTeGlTOOqzXmA5zVUinjSTZC/D
-        RODqJuuj4tbvpp/vZOGGj0A=
-X-Google-Smtp-Source: ABdhPJy8f6xkx4t3REx+k7rGpqUIcuCwzjS47t2alum/EPXRJ6yRw/9BJ2eaVVYeNOh92XicsteH9A==
-X-Received: by 2002:aa7:cac9:: with SMTP id l9mr7620704edt.373.1624546543594;
-        Thu, 24 Jun 2021 07:55:43 -0700 (PDT)
+        bh=OTyJyw/htMO1AJRTiqLNMT+bM+APi/6nePJGAuCnKuo=;
+        b=SOZf7rAy7/74lRzNMeyi8b4uGf/HFpYIyrxzwNaf1wzuo/F0X55N/ajh8O31Zxu2Hj
+         jkxXavxpZib+hj0IpAE+GXyCYInGDEQquIm70hH+DFs7nTwNVVk6c9rPriJgJXKyI1AN
+         FFblAML4U0hhLcYuy3iaqDvpiI8VbcVV3rYXaoclJRmtvjf/0YpzhWFsCoG1lMT/ZUje
+         8zjoHEYLsfgQ2GPL622r8QKSGZK3aI1vN1V7PDDpll7DA1cuv2oS0Um2ZIOYiOTNu8uj
+         ksMb6XAP/S/2U8Wktfap/DdsknM/cI3RAeik0NGppzXZwUq8ESiDuK+HrBoDrec55V4p
+         loCA==
+X-Gm-Message-State: AOAM530TK/bZnLz1VfcpXsI/0DyY5sZBKrTiPHR8DPbvSUoFQhcw3QnR
+        aYuZBZBc8oV628MpsFXpEFA=
+X-Google-Smtp-Source: ABdhPJypUVd6MVY4SDNAARmzzWBKlMDaIUg0/n63hwpAF/qvc3fcA0N9SR3X1S71H6VwhmZHcDpoZg==
+X-Received: by 2002:aa7:d9cc:: with SMTP id v12mr7753769eds.232.1624546544524;
+        Thu, 24 Jun 2021 07:55:44 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id n2sm2034061edi.32.2021.06.24.07.55.42
+        by smtp.gmail.com with ESMTPSA id n2sm2034061edi.32.2021.06.24.07.55.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 07:55:43 -0700 (PDT)
+        Thu, 24 Jun 2021 07:55:44 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 1/2] Documentation: net: dsa: add details about SJA1110
-Date:   Thu, 24 Jun 2021 17:55:23 +0300
-Message-Id: <20210624145524.944878-2-olteanv@gmail.com>
+Subject: [PATCH net-next 2/2] net: dsa: sja1105: document the SJA1110 in the Kconfig
+Date:   Thu, 24 Jun 2021 17:55:24 +0300
+Message-Id: <20210624145524.944878-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210624145524.944878-1-olteanv@gmail.com>
 References: <20210624145524.944878-1-olteanv@gmail.com>
@@ -70,98 +70,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Denote that the new switch generation is supported, detail its pin
-strapping options (with differences compared to SJA1105) and explain how
-MDIO access to the internal 100base-T1 and 100base-TX PHYs is performed.
+Mention support for the SJA1110 in menuconfig.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- Documentation/networking/dsa/sja1105.rst | 61 ++++++++++++++++++++++--
- 1 file changed, 57 insertions(+), 4 deletions(-)
+ drivers/net/dsa/sja1105/Kconfig | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
-index 7395a33baaf9..da4057ba37f1 100644
---- a/Documentation/networking/dsa/sja1105.rst
-+++ b/Documentation/networking/dsa/sja1105.rst
-@@ -5,7 +5,7 @@ NXP SJA1105 switch driver
- Overview
- ========
+diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
+index 8383cd6d2178..b29d41e5e1e7 100644
+--- a/drivers/net/dsa/sja1105/Kconfig
++++ b/drivers/net/dsa/sja1105/Kconfig
+@@ -7,8 +7,8 @@ tristate "NXP SJA1105 Ethernet switch family support"
+ 	select PACKING
+ 	select CRC32
+ 	help
+-	  This is the driver for the NXP SJA1105 automotive Ethernet switch
+-	  family. These are 5-port devices and are managed over an SPI
++	  This is the driver for the NXP SJA1105 (5-port) and SJA1110 (10-port)
++	  automotive Ethernet switch family. These are managed over an SPI
+ 	  interface. Probing is handled based on OF bindings and so is the
+ 	  linkage to PHYLINK. The driver supports the following revisions:
+ 	    - SJA1105E (Gen. 1, No TT-Ethernet)
+@@ -17,6 +17,10 @@ tristate "NXP SJA1105 Ethernet switch family support"
+ 	    - SJA1105Q (Gen. 2, No SGMII, TT-Ethernet)
+ 	    - SJA1105R (Gen. 2, SGMII, No TT-Ethernet)
+ 	    - SJA1105S (Gen. 2, SGMII, TT-Ethernet)
++	    - SJA1110A (Gen. 3, SGMII, TT-Ethernet, 100base-TX PHY, 10 ports)
++	    - SJA1110B (Gen. 3, SGMII, TT-Ethernet, 100base-TX PHY, 9 ports)
++	    - SJA1110C (Gen. 3, SGMII, TT-Ethernet, 100base-TX PHY, 7 ports)
++	    - SJA1110D (Gen. 3, SGMII, TT-Ethernet, no 100base-TX PHY, 7 ports)
  
--The NXP SJA1105 is a family of 6 devices:
-+The NXP SJA1105 is a family of 10 SPI-managed automotive switches:
- 
- - SJA1105E: First generation, no TTEthernet
- - SJA1105T: First generation, TTEthernet
-@@ -13,9 +13,11 @@ The NXP SJA1105 is a family of 6 devices:
- - SJA1105Q: Second generation, TTEthernet, no SGMII
- - SJA1105R: Second generation, no TTEthernet, SGMII
- - SJA1105S: Second generation, TTEthernet, SGMII
--
--These are SPI-managed automotive switches, with all ports being gigabit
--capable, and supporting MII/RMII/RGMII and optionally SGMII on one port.
-+- SJA1110A: Third generation, TTEthernet, SGMII, integrated 100base-T1 and
-+  100base-TX PHYs
-+- SJA1110B: Third generation, TTEthernet, SGMII, 100base-T1, 100base-TX
-+- SJA1110C: Third generation, TTEthernet, SGMII, 100base-T1, 100base-TX
-+- SJA1110D: Third generation, TTEthernet, SGMII, 100base-T1
- 
- Being automotive parts, their configuration interface is geared towards
- set-and-forget use, with minimal dynamic interaction at runtime. They
-@@ -579,3 +581,54 @@ A board would need to hook up the PHYs connected to the switch to any other
- MDIO bus available to Linux within the system (e.g. to the DSA master's MDIO
- bus). Link state management then works by the driver manually keeping in sync
- (over SPI commands) the MAC link speed with the settings negotiated by the PHY.
-+
-+By comparison, the SJA1110 supports an MDIO slave access point over which its
-+internal 100base-T1 PHYs can be accessed from the host. This is, however, not
-+used by the driver, instead the internal 100base-T1 and 100base-TX PHYs are
-+accessed through SPI commands, modeled in Linux as virtual MDIO buses.
-+
-+The microcontroller attached to the SJA1110 port 0 also has an MDIO controller
-+operating in master mode, however the driver does not support this either,
-+since the microcontroller gets disabled when the Linux driver operates.
-+Discrete PHYs connected to the switch ports should have their MDIO interface
-+attached to an MDIO controller from the host system and not to the switch,
-+similar to SJA1105.
-+
-+Port compatibility matrix
-+-------------------------
-+
-+The SJA1105 port compatibility matrix is:
-+
-+===== ============== ============== ==============
-+Port   SJA1105E/T     SJA1105P/Q     SJA1105R/S
-+===== ============== ============== ==============
-+0      xMII           xMII           xMII
-+1      xMII           xMII           xMII
-+2      xMII           xMII           xMII
-+3      xMII           xMII           xMII
-+4      xMII           xMII           SGMII
-+===== ============== ============== ==============
-+
-+
-+The SJA1110 port compatibility matrix is:
-+
-+===== ============== ============== ============== ==============
-+Port   SJA1110A       SJA1110B       SJA1110C       SJA1110D
-+===== ============== ============== ============== ==============
-+0      RevMII (uC)    RevMII (uC)    RevMII (uC)    RevMII (uC)
-+1      100base-TX     100base-TX     100base-TX
-+       or SGMII                                     SGMII
-+2      xMII           xMII           xMII           xMII
-+       or SGMII                                     or SGMII
-+3      xMII           xMII           xMII
-+       or SGMII       or SGMII                      SGMII
-+       or 2500base-X  or 2500base-X                 or 2500base-X
-+4      SGMII          SGMII          SGMII          SGMII
-+       or 2500base-X  or 2500base-X  or 2500base-X  or 2500base-X
-+5      100base-T1     100base-T1     100base-T1     100base-T1
-+6      100base-T1     100base-T1     100base-T1     100base-T1
-+7      100base-T1     100base-T1     100base-T1     100base-T1
-+8      100base-T1     100base-T1     n/a            n/a
-+9      100base-T1     100base-T1     n/a            n/a
-+10     100base-T1     n/a            n/a            n/a
-+===== ============== ============== ============== ==============
+ config NET_DSA_SJA1105_PTP
+ 	bool "Support for the PTP clock on the NXP SJA1105 Ethernet switch"
 -- 
 2.25.1
 
