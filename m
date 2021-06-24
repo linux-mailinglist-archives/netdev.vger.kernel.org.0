@@ -2,85 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73CE43B33B8
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 18:16:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 378E93B33CB
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 18:20:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbhFXQSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 12:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
+        id S232034AbhFXQWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 12:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbhFXQSV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 12:18:21 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E806FC061574;
-        Thu, 24 Jun 2021 09:16:01 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id s17-20020a17090a8811b029016e89654f93so6239959pjn.1;
-        Thu, 24 Jun 2021 09:16:01 -0700 (PDT)
+        with ESMTP id S231432AbhFXQWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 12:22:52 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114FDC061574;
+        Thu, 24 Jun 2021 09:20:33 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id f10so3237793plg.0;
+        Thu, 24 Jun 2021 09:20:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=ZiDQnFW1mi3okwHaS+e+SImAJ13yTfe8NvkJt2OVSpU=;
-        b=jwsAfKyVrpVBMxgh2LcwXgPb2LsA+daQ0Pfiz2wGhvFO2HUYH2Awk/AKFmHmbxCQWr
-         Gwooxo97rcqJRQnkz8/FnEGD3soF26WXeJd+0SNODs7i+vU1SEpTSVXQhCP1DVqFt9Gx
-         4f+wFR+Cw7KXqfiEFQI5Zeb3Q+NHhDFkgUnKhVWGV4KxE6YbOfhQSUnZ8MEHeTF7bW+n
-         yk7tSFOdD/5x9ur1Cm6WxDLMHfilrsFbJUv1li2CH6JTH+T/KOMw8nunoVSMUhWrw2gL
-         igKIKZ7sfyxDbj7A/r0h4XF2xPvch5HtjaYv9LfdfSh/Clkw10oWOJgWHvsXqIa8aw8Y
-         K4BA==
+        bh=z74dwwgtRQUNlIhpbvBd55oULYHT3xtpRXCFegJuaBk=;
+        b=QpojiMkpIGXZrFeJGLV5n2qfczA2Oh6WSY7PIwpX5/5cZdrklKqAvDJlDnk0BP6fvH
+         kx9+wN82z5YXG1A78/pVNc3M1s6Q5x93yD1A/XIm9mUS0H3564tUVKk3f2Kix2SBRyIg
+         +04aeYa9ZkXADAgLVGxNYJeOelQ6ESbFUYmWD33MOjVf00yXTd2o7HL2Zow11ORvMa9U
+         C4afE4kRcyyCJhFsb6DFyopt/+LNRaYygaFxuvoTQvaMWIgNHIcQtx4HmGrSsqIxH67q
+         GCo5OZBWcVe6Yr+EYZt1MIbgKQtV+sl8CPVgp8vfqVbyDPaS0BqzsjEc9ZFyyqYWdyG4
+         3WtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZiDQnFW1mi3okwHaS+e+SImAJ13yTfe8NvkJt2OVSpU=;
-        b=IFHIfnkZ4x+D1xkJKuYypQMqxqkKUoiDAQPSFSBQq2orpAdPK3256HoNCb+R5fahnp
-         onhq87dwSI8yHYQirHGagPRUnhTmywBkb4xtWTGjKgpKgov4iHuO26oARCKmYUfuoe7a
-         nbmnkPA25JflRjRYqhMuJm2KoyxoTz+yicArvkXQ4Lqkuxu1bzXD5IHjIY1A4es2hDl/
-         n15BPlrXzMigIAo5mt+naD33wSeNuvoVxo7/Eyu/aNb9Jm0QmMse52hH4fu8sziq66Nz
-         KeUfMpliYhkCtkl17gDeYG/e/1o2K2l7Q7+VyqMMphByjDH6qIG7ZQVWiR+maNa1pvUv
-         VjCw==
-X-Gm-Message-State: AOAM5315NYrwwr8rFlvcsKryp7Cw1gkYYoPsOsPVOFuPegLc+0gLqPSM
-        m8qYAx8JBK7trK1woAXmTaQzTaNrkQs=
-X-Google-Smtp-Source: ABdhPJyWK22OqMv1lrNcxYGWDs16Ewo9gHHXpG+JsqbmIHeiSbZtxwtjiAl+gyT0Tc6kOq5rarIk/g==
-X-Received: by 2002:a17:90b:1bcb:: with SMTP id oa11mr6104216pjb.29.1624551361524;
-        Thu, 24 Jun 2021 09:16:01 -0700 (PDT)
+        bh=z74dwwgtRQUNlIhpbvBd55oULYHT3xtpRXCFegJuaBk=;
+        b=DDbIQsObQXDmGN2WeUoT8/Or+R6qMkRAnDcmOlq03rGnVPF6r6LEU2maCdcGxwfJd1
+         E2fn5I7rgI3A/4cPxbANOt725fNXVixdMKA8DeepocsN/TXjf8UQFVkNxEBrJT9iO9Bk
+         ZN5iBRP+aXDIUfdbNT1bu87XYoIwYJ6xE/bphqQYxUgogyllQhAD2uES4U+PtYX2xjg1
+         eMs0Hpn+CPz6Ar8nIgyvCwYYkWsDTpG8pQ3vS4kNDMSZ7xZrDL3IkRgWfzahHIO/ZG9b
+         9lqfsDyHtUIDq2BWj2BLVtGWi9hRjrsOzWbtVOHkuYrM7FCjjgsNfb8akqZ5Au7MVgVB
+         yQCg==
+X-Gm-Message-State: AOAM533KrvyMSX9leDSKoGa+6XsQGh3h/+Hw0l72vqR54jQS0qddwK48
+        5GMbfskMqmghbQaqTx0xdFo=
+X-Google-Smtp-Source: ABdhPJwU8u61c4LPsf9ja2M8QJWl85/yzOJOSnKytjVtEPpVjLGhbsuCjmIKTZGBpWd2bhthsgIEGQ==
+X-Received: by 2002:a17:90b:3253:: with SMTP id jy19mr16693711pjb.196.1624551632637;
+        Thu, 24 Jun 2021 09:20:32 -0700 (PDT)
 Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id z6sm2906628pgs.24.2021.06.24.09.16.00
+        by smtp.gmail.com with ESMTPSA id a9sm3246397pfv.185.2021.06.24.09.20.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 09:16:01 -0700 (PDT)
-Date:   Thu, 24 Jun 2021 09:15:58 -0700
+        Thu, 24 Jun 2021 09:20:32 -0700 (PDT)
+Date:   Thu, 24 Jun 2021 09:20:29 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Min Li <min.li.xe@renesas.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net 2/2] ptp: idt82p33: implement double dco time
- correction
-Message-ID: <20210624161558.GD15473@hoboy.vegasvil.org>
+Subject: Re: [PATCH net 1/2] ptp: idt82p33: optimize idt82p33_adjtime
+Message-ID: <20210624162029.GE15473@hoboy.vegasvil.org>
 References: <1624459585-31233-1-git-send-email-min.li.xe@renesas.com>
- <1624459585-31233-2-git-send-email-min.li.xe@renesas.com>
- <20210624034343.GB6853@hoboy.vegasvil.org>
- <OS3PR01MB659335F4857D1FD1E8977C24BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
+ <20210624034026.GA6853@hoboy.vegasvil.org>
+ <OS3PR01MB6593D3DCF7CE756E260548B3BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <OS3PR01MB659335F4857D1FD1E8977C24BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS3PR01MB6593D3DCF7CE756E260548B3BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 02:40:52PM +0000, Min Li wrote:
-> > What happens if user space makes a new adjustment before this completes?
-> > 
-> > After all, some PTP profiles update the clock several times per second.
-> > 
-> > Thanks,
-> > Richard
-> 
-> Hi Richard
-> 
-> In that case, adjtime would simply return without doing anything as in
+On Thu, Jun 24, 2021 at 02:38:46PM +0000, Min Li wrote:
+> I have tested this change with ptp4l for by setting step_window to 48 (assuming 16 packets per second)
+> for both 8265.2/8275.1 and they performed well.
 
-This is not what user space expects.
+Both of these patches assume that user space has a special
+configuration that works together with the non-standard driver
+behavior.
+
+For this reason, I suggest making the new driver behavior optional,
+with the default being the origin version that "just works".  In that
+way, the admin/user can choose the special configuration on purpose,
+and the default performance will not be degraded.
 
 Thanks,
 Richard
