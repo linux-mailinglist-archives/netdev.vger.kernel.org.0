@@ -2,191 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20F503B2D4C
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 13:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6515C3B2DBB
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 13:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232381AbhFXLMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 07:12:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232317AbhFXLMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 07:12:36 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEE7C061574
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 04:10:17 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id u2so3029321qvp.13
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 04:10:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7Kmszu6cucNqXB6Mb5j/8fAwFEGVFfmkw2+JHwAEEiM=;
-        b=nJXky57xz0x7I98tBot6BTTDCKBhipY4/W6TqjIq+rVlcwTaEuRGYRH1yUZIm1Lw2T
-         55Fmn5qymxCIssEPmdIMUdq7zKex8WslkjYAL90d3NuPTV31HSb2fFdgYjzmGzXJSYFz
-         HyTSZ8wJ+QqJ0WpV2h3XuIl0x5tzxexO9r4JuWk+4Q/FQ6EqrsKz/rh9+CsQO6w+KP0Z
-         tSLR4QA0KgKnmez5FcxiKGoFUYGYW7OO1CXW+CZuxYoH7ZGSIfL4ukqwI4xPMJC6SMGW
-         mMNpg8Ly9LIR3nWr/eiUDh/cQCOd3Yh1cXmJlI5uDKBSfLXQQldQ7FtcHK+FVPZRkTtv
-         jU6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7Kmszu6cucNqXB6Mb5j/8fAwFEGVFfmkw2+JHwAEEiM=;
-        b=GZsYHNfc+i4OIKc7i3Dnvcjsl2Zn0ZbkH2lxN+pehM/qqWBegJ8bDfy5gM8vBVFs46
-         ryGVnKPbLOJDtoN2PGcNgejq3OvPx1YXjJYSyaqOnbjjOupzHGo8BY7OGcq94NLqID37
-         DEAYOUPn1oJriuapyS/b/fTvrSROLCscSm15qHZcSQSiYLZjVoLZfuqdatT6U1ID3oGy
-         Kst7Z8ipJPV+k40SLL6bQ1TIBdvBADaFd6AHYCY96GAPSq+8Hbbf2bNDFFOZMO3aZV8u
-         8e0sAQbFJpw/aHpvz9tCTdO/tBS7st80WrVnur+Fg7hVOGdjZu0xvvl3NormFJ5aeZYQ
-         5c6g==
-X-Gm-Message-State: AOAM532DsiLlnfOfXDD2td/AZOPiAq57MUWrwEU6YmLCiY6XNNs1l6d9
-        +qgXoXe/l941H8eTv7PYi9T73zB5ea/L5EITK5np6Q==
-X-Google-Smtp-Source: ABdhPJyuxLHvPFObd6POVT1jQHPEMa7EDK7m2QCVQAR5KroPHQHCehDC1xr8EBrrm9iNLl6RKXNuS6GApbblGPAcBDM=
-X-Received: by 2002:a05:6214:8ed:: with SMTP id dr13mr4792385qvb.59.1624533016863;
- Thu, 24 Jun 2021 04:10:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210621173028.3541424-1-mw@semihalf.com> <20210621173028.3541424-3-mw@semihalf.com>
- <YNOYFFgB5UNdSYeI@lunn.ch> <CAPv3WKdR-NJ8oPo5JHb9rztYdQUZA=D3sLyf07D5n5oOm=UfjA@mail.gmail.com>
-In-Reply-To: <CAPv3WKdR-NJ8oPo5JHb9rztYdQUZA=D3sLyf07D5n5oOm=UfjA@mail.gmail.com>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 24 Jun 2021 13:10:04 +0200
-Message-ID: <CAPv3WKdSNZzvDS5-FNK4eTMfRt6xuk6xYJ6eQf0N01Q4OhRS9Q@mail.gmail.com>
-Subject: Re: [net-next: PATCH v3 2/6] net: mdiobus: Introduce fwnode_mdbiobus_register()
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S232374AbhFXLX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 07:23:58 -0400
+Received: from phobos.denx.de ([85.214.62.61]:51020 "EHLO phobos.denx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232005AbhFXLX5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 07:23:57 -0400
+Received: from ktm (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 39BF58295B;
+        Thu, 24 Jun 2021 13:21:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1624533696;
+        bh=WZ94MCj4P+1Tk4h3F6uSezgDTShoq+YXMzbRU4lNdl0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PQljBxM3U7Mwv1StnBH3q2AmOPZ3PGkD6TS8yT3nkYx9SZVR5O4K7ITVan/aSo8Ee
+         CWOik36TaaA2kTppomLMpshRTtqwtmzgircbjHrVMAnmz4VSXEiIulzI0BLFNDZCEK
+         7OdMhkg26Ge0LTHvdz6rz99rTvMO17wFbmSRb4vycBjd7V2HJA1ROp3CP7773T7iDR
+         7ih48a4UnB9YT2r2eq9EFRfryEpq02rw31Xnq69pw7+mnQaLGWhTdRk1C9I4bo8pzu
+         UngHAd4NdV5y3RxgW8QXx/GrH1XNVctHG7nwmBIyl5quSX54yJYU/IPfnf76mda+Wt
+         cV3wS6JvSRKCg==
+Date:   Thu, 24 Jun 2021 13:21:29 +0200
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>,
-        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
-        lenb@kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mark Einon <mark.einon@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC 1/3] ARM: dts: imx28: Add description for L2 switch on XEA
+ board
+Message-ID: <20210624132129.1ade0614@ktm>
+In-Reply-To: <DB8PR04MB679567B66A45FBD1C23E7371E6079@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210622144111.19647-1-lukma@denx.de>
+        <20210622144111.19647-2-lukma@denx.de>
+        <YNH3mb9fyBjLf0fj@lunn.ch>
+        <20210622225134.4811b88f@ktm>
+        <YNM0Wz1wb4dnCg5/@lunn.ch>
+        <20210623172631.0b547fcd@ktm>
+        <76159e5c-6986-3877-c0a1-47b5a17bf0f1@gmail.com>
+        <DB8PR04MB679567B66A45FBD1C23E7371E6079@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Organization: denx.de
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ boundary="Sig_/kZDyde/N75IDMut=SSq/AH7"; protocol="application/pgp-signature"
+X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+--Sig_/kZDyde/N75IDMut=SSq/AH7
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-czw., 24 cze 2021 o 00:10 Marcin Wojtas <mw@semihalf.com> napisa=C5=82(a):
->
-> Hi,
->
-> =C5=9Br., 23 cze 2021 o 22:22 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a=
-):
-> >
-> > On Mon, Jun 21, 2021 at 07:30:24PM +0200, Marcin Wojtas wrote:
-> > > This patch introduces a new helper function that
-> > > wraps acpi_/of_ mdiobus_register() and allows its
-> > > usage via common fwnode_ interface.
-> > >
-> > > Fall back to raw mdiobus_register() in case CONFIG_FWNODE_MDIO
-> > > is not enabled, in order to satisfy compatibility
-> > > in all future user drivers.
-> > >
-> > > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
-> > > ---
-> > >  include/linux/fwnode_mdio.h    | 12 +++++++++++
-> > >  drivers/net/mdio/fwnode_mdio.c | 22 ++++++++++++++++++++
-> > >  2 files changed, 34 insertions(+)
-> > >
-> > > diff --git a/include/linux/fwnode_mdio.h b/include/linux/fwnode_mdio.=
-h
-> > > index faf603c48c86..13d4ae8fee0a 100644
-> > > --- a/include/linux/fwnode_mdio.h
-> > > +++ b/include/linux/fwnode_mdio.h
-> > > @@ -16,6 +16,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_b=
-us *mdio,
-> > >  int fwnode_mdiobus_register_phy(struct mii_bus *bus,
-> > >                               struct fwnode_handle *child, u32 addr);
-> > >
-> > > +int fwnode_mdiobus_register(struct mii_bus *bus, struct fwnode_handl=
-e *fwnode);
-> > >  #else /* CONFIG_FWNODE_MDIO */
-> > >  int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
-> > >                                      struct phy_device *phy,
-> > > @@ -30,6 +31,17 @@ static inline int fwnode_mdiobus_register_phy(stru=
-ct mii_bus *bus,
-> > >  {
-> > >       return -EINVAL;
-> > >  }
-> > > +
-> > > +static inline int fwnode_mdiobus_register(struct mii_bus *bus,
-> > > +                                       struct fwnode_handle *fwnode)
-> > > +{
-> > > +     /*
-> > > +      * Fall back to mdiobus_register() function to register a bus.
-> > > +      * This way, we don't have to keep compat bits around in driver=
-s.
-> > > +      */
-> > > +
-> > > +     return mdiobus_register(mdio);
-> > > +}
-> > >  #endif
-> >
-> > I looked at this some more, and in the end i decided it was O.K.
-> >
-> > > +/**
-> > > + * fwnode_mdiobus_register - bring up all the PHYs on a given MDIO b=
-us and
-> > > + *   attach them to it.
-> > > + * @bus: Target MDIO bus.
-> > > + * @fwnode: Pointer to fwnode of the MDIO controller.
-> > > + *
-> > > + * Return values are determined accordingly to acpi_/of_ mdiobus_reg=
-ister()
-> > > + * operation.
-> > > + */
-> > > +int fwnode_mdiobus_register(struct mii_bus *bus, struct fwnode_handl=
-e *fwnode)
-> > > +{
-> > > +     if (is_acpi_node(fwnode))
-> > > +             return acpi_mdiobus_register(bus, fwnode);
-> > > +     else if (is_of_node(fwnode))
-> > > +             return of_mdiobus_register(bus, to_of_node(fwnode));
-> > > +     else
-> > > +             return -EINVAL;
-> >
-> > I wounder if here you should call mdiobus_register(mdio), rather than
-> > -EINVAL?
-> >
-> > I don't have a strong opinion.
->
-> Currently (and in foreseeable future) we support only DT/ACPI as a
-> firmware description, reaching the last "else" means something really
-> wrong. The case of lack of DT/ACPI and the fallback is handled on the
-> include/linux/fwnode_mdio.h level.
->
-> >
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> >
+Hi Joakim,
 
-Unfortunately I have to withdraw this patch, as well as xgmac_mdio
-one. In case the fwnode_/of_/acpi_mdio are built as modules, we get a
-cycle dependency during depmod phase of modules_install, eg.:
+> Hi Lukasz, Florian, Andrew,
+>=20
+> > > Maybe somebody from NXP can provide input to this discussion - for
+> > > example to sched some light on FEC driver (near) future. =20
+> >=20
+> > Seems like some folks at NXP are focusing on the STMMAC controller
+> > these days (dwmac from Synopsys), so maybe they have given up on
+> > having their own Ethernet MAC for lower end products. =20
+>=20
+> I am very happy to take participate into this topic, but now I have
+> no experience to DSA and i.MX28 MAC, so I may need some time to
+> increase these knowledge, limited insight could be put to now.
 
-depmod: ERROR: Cycle detected: fwnode_mdio -> of_mdio -> fwnode_mdio
-depmod: ERROR: Found 2 modules in dependency cycles!
+Ok. No problem :-)
 
-OR:
+>=20
+> Florian, Andrew could comment more and I also can learn from it :-),
+> they are all very experienced expert.
 
-depmod: ERROR: Cycle detected: acpi_mdio -> fwnode_mdio -> acpi_mdio
-depmod: ERROR: Found 2 modules in dependency cycles!
+The main purpose of several RFCs for the L2 switch drivers (for DSA [1]
+and switchdev [2]) was to gain feedback from community as soon as
+possible (despite that the driver lacks some features - like VLAN, FDB,
+etc).
 
-The proper solution would be to merge contents of
-acpi_mdiobus_register and of_mdiobus_register inside the common
-fwnode_mdiobus_register (so that the former would only call the
-latter). However this change seems feasible, but I'd expect it to be a
-patchset bigger than this one alone and deserves its own thorough
-review and testing, as it would affect huge amount of current
-of_mdiobus_register users.
+>=20
+> We also want to maintain FEC driver since many SoCs implemented this
+> IP, and as I know we would also use it for future SoCs.
+>  =20
 
-Given above, for now I will resubmit this patchset in the shape as
-proposed in v1, i.e. using the 'if' condition explicitly in mvmdio
-driver.
+Florian, Andrew, please correct me if I'm wrong, but my impression is
+that upstreaming the support for L2 switch on iMX depends on FEC driver
+being rewritten to support switchdev?
+
+If yes, then unfortunately, I don't have time and resources to perform
+that task - that is why I have asked if NXP has any plans to update the
+FEC (fec_main.c) driver.
+
+
+Joakim, do you have any plans to re-factor the legacy FEC driver
+(fec_main.c) and introduce new one, which would support the switchdev?
+
+If NXP is not planning to update the driver, then maybe it would be
+worth to consider adding driver from [2] to mainline? Then I could
+finish it and provide all required features.
+
+
+Links:
+[1] -
+https://source.denx.de/linux/linux-imx28-l2switch/-/commits/imx28-v5.12-L2-=
+upstream-DSA-RFC_v1
+[2] -
+https://source.denx.de/linux/linux-imx28-l2switch/-/commits/imx28-v5.12-L2-=
+upstream-switchdev-RFC_v1
+
+> Best Regards,
+> Joakim Zhang
+
+
+
 
 Best regards,
-Marcin
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/kZDyde/N75IDMut=SSq/AH7
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmDUarkACgkQAR8vZIA0
+zr06nwf9G3OmyXuWlJdIM3Nl2cegkp7d1CLCHKra/d6RG6rtaMZEoF/bWU6XLAf2
++F+8UwamTxsqNgH0MYQ28KYoGjOTdq6fhN5tJbwin30oUkTfMzsWfANVSaZL3WLL
+LR9EOWZ2e9qzFnq5608+WIwEe8VPg3TxmeiDctM7vZ0cOqL9jOeMcoI73DTfNTRB
+wOEu6Pu6NjQeXEPJQ/+JJfw1KGHinFXc2RJRpPM5cW6QM+3FbmIe5y8KhEu8tD2x
+UFPOfYSi9dck8IeFVk40Eo/2OXpSi0arPJMoH7K2Pxtcg8zreXLAjsU+0azNBfl6
+Y85uaWBHWTBnPPiLLqY2WCgX8rBwZg==
+=zkQk
+-----END PGP SIGNATURE-----
+
+--Sig_/kZDyde/N75IDMut=SSq/AH7--
