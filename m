@@ -2,82 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 378E93B33CB
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 18:20:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CAD43B33DD
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 18:21:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232034AbhFXQWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 12:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231432AbhFXQWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 12:22:52 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114FDC061574;
-        Thu, 24 Jun 2021 09:20:33 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id f10so3237793plg.0;
-        Thu, 24 Jun 2021 09:20:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=z74dwwgtRQUNlIhpbvBd55oULYHT3xtpRXCFegJuaBk=;
-        b=QpojiMkpIGXZrFeJGLV5n2qfczA2Oh6WSY7PIwpX5/5cZdrklKqAvDJlDnk0BP6fvH
-         kx9+wN82z5YXG1A78/pVNc3M1s6Q5x93yD1A/XIm9mUS0H3564tUVKk3f2Kix2SBRyIg
-         +04aeYa9ZkXADAgLVGxNYJeOelQ6ESbFUYmWD33MOjVf00yXTd2o7HL2Zow11ORvMa9U
-         C4afE4kRcyyCJhFsb6DFyopt/+LNRaYygaFxuvoTQvaMWIgNHIcQtx4HmGrSsqIxH67q
-         GCo5OZBWcVe6Yr+EYZt1MIbgKQtV+sl8CPVgp8vfqVbyDPaS0BqzsjEc9ZFyyqYWdyG4
-         3WtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=z74dwwgtRQUNlIhpbvBd55oULYHT3xtpRXCFegJuaBk=;
-        b=DDbIQsObQXDmGN2WeUoT8/Or+R6qMkRAnDcmOlq03rGnVPF6r6LEU2maCdcGxwfJd1
-         E2fn5I7rgI3A/4cPxbANOt725fNXVixdMKA8DeepocsN/TXjf8UQFVkNxEBrJT9iO9Bk
-         ZN5iBRP+aXDIUfdbNT1bu87XYoIwYJ6xE/bphqQYxUgogyllQhAD2uES4U+PtYX2xjg1
-         eMs0Hpn+CPz6Ar8nIgyvCwYYkWsDTpG8pQ3vS4kNDMSZ7xZrDL3IkRgWfzahHIO/ZG9b
-         9lqfsDyHtUIDq2BWj2BLVtGWi9hRjrsOzWbtVOHkuYrM7FCjjgsNfb8akqZ5Au7MVgVB
-         yQCg==
-X-Gm-Message-State: AOAM533KrvyMSX9leDSKoGa+6XsQGh3h/+Hw0l72vqR54jQS0qddwK48
-        5GMbfskMqmghbQaqTx0xdFo=
-X-Google-Smtp-Source: ABdhPJwU8u61c4LPsf9ja2M8QJWl85/yzOJOSnKytjVtEPpVjLGhbsuCjmIKTZGBpWd2bhthsgIEGQ==
-X-Received: by 2002:a17:90b:3253:: with SMTP id jy19mr16693711pjb.196.1624551632637;
-        Thu, 24 Jun 2021 09:20:32 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id a9sm3246397pfv.185.2021.06.24.09.20.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 09:20:32 -0700 (PDT)
-Date:   Thu, 24 Jun 2021 09:20:29 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Min Li <min.li.xe@renesas.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net 1/2] ptp: idt82p33: optimize idt82p33_adjtime
-Message-ID: <20210624162029.GE15473@hoboy.vegasvil.org>
-References: <1624459585-31233-1-git-send-email-min.li.xe@renesas.com>
- <20210624034026.GA6853@hoboy.vegasvil.org>
- <OS3PR01MB6593D3DCF7CE756E260548B3BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
+        id S232200AbhFXQYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 12:24:04 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:48068 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230015AbhFXQYC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 12:24:02 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1624551703; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=G9Ul8IjbSeiyfi4kPMu1AfOkULwoWubc5zAIv9yEmFw=;
+ b=OCmxMiVox89W5r8zUDWIX37IxmLK+jFd3K2zEOt+H6zGlglscBNpp0v4LIMVDjfrT6lZN8KU
+ Id4jjyaSgyG0AWbFn2qFduEIZbjLYKtJH8+UGKOC5eEo1sbUFTX7lJ+z6WpGgAG5VoAzUaz2
+ h1pUi68SQ5CE2DVDbUui3toPXUQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 60d4b0e67e5ba0fdc0c47c85 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 24 Jun 2021 16:20:54
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 39D96C4338A; Thu, 24 Jun 2021 16:20:54 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id B7038C433F1;
+        Thu, 24 Jun 2021 16:20:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B7038C433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OS3PR01MB6593D3DCF7CE756E260548B3BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v3] brcmfmac: support parse country code map from DT
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210417075428.2671-1-shawn.guo@linaro.org>
+References: <20210417075428.2671-1-shawn.guo@linaro.org>
+To:     Shawn Guo <shawn.guo@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, Shawn Guo <shawn.guo@linaro.org>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-Id: <20210624162054.39D96C4338A@smtp.codeaurora.org>
+Date:   Thu, 24 Jun 2021 16:20:54 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 02:38:46PM +0000, Min Li wrote:
-> I have tested this change with ptp4l for by setting step_window to 48 (assuming 16 packets per second)
-> for both 8265.2/8275.1 and they performed well.
+Shawn Guo <shawn.guo@linaro.org> wrote:
 
-Both of these patches assume that user space has a special
-configuration that works together with the non-standard driver
-behavior.
+> With any regulatory domain requests coming from either user space or
+> 802.11 IE (Information Element), the country is coded in ISO3166
+> standard.  It needs to be translated to firmware country code and
+> revision with the mapping info in settings->country_codes table.
+> Support populate country_codes table by parsing the mapping from DT.
+> 
+> The BRCMF_BUSTYPE_SDIO bus_type check gets separated from general DT
+> validation, so that country code can be handled as general part rather
+> than SDIO bus specific one.
+> 
+> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
 
-For this reason, I suggest making the new driver behavior optional,
-with the default being the origin version that "just works".  In that
-way, the admin/user can choose the special configuration on purpose,
-and the default performance will not be degraded.
+Patch applied to wireless-drivers-next.git, thanks.
 
-Thanks,
-Richard
+1a3ac5c651a0 brcmfmac: support parse country code map from DT
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210417075428.2671-1-shawn.guo@linaro.org/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
