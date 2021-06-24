@@ -2,107 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D1793B31D6
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 16:56:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 048E53B3244
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232362AbhFXO6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 10:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232257AbhFXO6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 10:58:06 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F6BC061574;
-        Thu, 24 Jun 2021 07:55:45 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id h2so8985948edt.3;
-        Thu, 24 Jun 2021 07:55:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OTyJyw/htMO1AJRTiqLNMT+bM+APi/6nePJGAuCnKuo=;
-        b=QPbH8Y0VnStaK5O89g2nrwrNN5J0s5bfhGzIO4itFkEgwj8CclZ4Ga7IvsjkXvrwgW
-         SA97Axc3KveRv3pk/yAZepAi2V6UCCghIzxJratOvWrCX3eWktpMcS7b3a+8l8Q4i2rT
-         y4+sS3nXeZtlAtxratWy3c/aeF7YDtIapTa+dDHw9i5S2r+kIsbkbqW5+F7i2DKY/v5v
-         FQNUl77flGdQZEukyQoGees8vWPw+Vydal77GbCFhGsWU1esVwW8sDMxE7Om9LAwyUSk
-         abfH0wl5ESRQsE5g0UrNAddPJEaGwKXEv12GUnDWEDz3fr3HtWXOW9upPJ9l1TsXEyKf
-         F6tA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OTyJyw/htMO1AJRTiqLNMT+bM+APi/6nePJGAuCnKuo=;
-        b=SOZf7rAy7/74lRzNMeyi8b4uGf/HFpYIyrxzwNaf1wzuo/F0X55N/ajh8O31Zxu2Hj
-         jkxXavxpZib+hj0IpAE+GXyCYInGDEQquIm70hH+DFs7nTwNVVk6c9rPriJgJXKyI1AN
-         FFblAML4U0hhLcYuy3iaqDvpiI8VbcVV3rYXaoclJRmtvjf/0YpzhWFsCoG1lMT/ZUje
-         8zjoHEYLsfgQ2GPL622r8QKSGZK3aI1vN1V7PDDpll7DA1cuv2oS0Um2ZIOYiOTNu8uj
-         ksMb6XAP/S/2U8Wktfap/DdsknM/cI3RAeik0NGppzXZwUq8ESiDuK+HrBoDrec55V4p
-         loCA==
-X-Gm-Message-State: AOAM530TK/bZnLz1VfcpXsI/0DyY5sZBKrTiPHR8DPbvSUoFQhcw3QnR
-        aYuZBZBc8oV628MpsFXpEFA=
-X-Google-Smtp-Source: ABdhPJypUVd6MVY4SDNAARmzzWBKlMDaIUg0/n63hwpAF/qvc3fcA0N9SR3X1S71H6VwhmZHcDpoZg==
-X-Received: by 2002:aa7:d9cc:: with SMTP id v12mr7753769eds.232.1624546544524;
-        Thu, 24 Jun 2021 07:55:44 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id n2sm2034061edi.32.2021.06.24.07.55.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 07:55:44 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 2/2] net: dsa: sja1105: document the SJA1110 in the Kconfig
-Date:   Thu, 24 Jun 2021 17:55:24 +0300
-Message-Id: <20210624145524.944878-3-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210624145524.944878-1-olteanv@gmail.com>
-References: <20210624145524.944878-1-olteanv@gmail.com>
+        id S232346AbhFXPJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 11:09:12 -0400
+Received: from www62.your-server.de ([213.133.104.62]:40620 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232053AbhFXPJE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 11:09:04 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lwQwA-000Ecy-3N; Thu, 24 Jun 2021 17:06:38 +0200
+Received: from [85.7.101.30] (helo=linux-3.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lwQw9-000Cue-Ro; Thu, 24 Jun 2021 17:06:37 +0200
+Subject: Re: [PATCH bpf-next] libbpf: Introduce 'custom_btf_path' to
+ 'bpf_obj_open_opts'.
+To:     Shuyi Cheng <chengshuyi@linux.alibaba.com>, ast@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <1624507409-114522-1-git-send-email-chengshuyi@linux.alibaba.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <8ca15bab-ec66-657d-570a-278deff0b1a3@iogearbox.net>
+Date:   Thu, 24 Jun 2021 17:06:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1624507409-114522-1-git-send-email-chengshuyi@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26211/Thu Jun 24 13:04:24 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 6/24/21 6:03 AM, Shuyi Cheng wrote:
+> In order to enable the older kernel to use the CO-RE feature, load the
+> vmlinux btf of the specified path.
+> 
+> Learn from Andrii's comments in [0], add the custom_btf_path parameter
+> to bpf_obj_open_opts, you can directly use the skeleton's
+> <objname>_bpf__open_opts function to pass in the custom_btf_path
+> parameter.
+> 
+> Prior to this, there was also a developer who provided a patch with
+> similar functions. It is a pity that the follow-up did not continue to
+> advance. See [1].
+> 
+> 	[0]https://lore.kernel.org/bpf/CAEf4BzbJZLjNoiK8_VfeVg_Vrg=9iYFv+po-38SMe=UzwDKJ=Q@mail.gmail.com/#t
+> 	[1]https://yhbt.net/lore/all/CAEf4Bzbgw49w2PtowsrzKQNcxD4fZRE6AKByX-5-dMo-+oWHHA@mail.gmail.com/
+> 
+> Signed-off-by: Shuyi Cheng <chengshuyi@linux.alibaba.com>
+> ---
+>   tools/lib/bpf/libbpf.c | 23 ++++++++++++++++++++---
+>   tools/lib/bpf/libbpf.h |  6 +++++-
+>   2 files changed, 25 insertions(+), 4 deletions(-)
+> 
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 1e04ce7..518b19f 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -509,6 +509,8 @@ struct bpf_object {
+>   	void *priv;
+>   	bpf_object_clear_priv_t clear_priv;
+>   
+> +	char *custom_btf_path;
+> +
 
-Mention support for the SJA1110 in menuconfig.
+nit: This should rather go to the 'Parse and load BTF vmlinux if any of [...]'
+section of struct bpf_object, and for consistency, I'd keep the btf_ prefix,
+like: char *btf_custom_path
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/Kconfig | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+>   	char path[];
+>   };
+>   #define obj_elf_valid(o)	((o)->efile.elf)
+> @@ -2679,8 +2681,15 @@ static int bpf_object__load_vmlinux_btf(struct bpf_object *obj, bool force)
+>   	if (!force && !obj_needs_vmlinux_btf(obj))
+>   		return 0;
+>   
+> -	obj->btf_vmlinux = libbpf_find_kernel_btf();
+> -	err = libbpf_get_error(obj->btf_vmlinux);
+> +	if (obj->custom_btf_path) {
+> +		obj->btf_vmlinux = btf__parse(obj->custom_btf_path, NULL);
+> +		err = libbpf_get_error(obj->btf_vmlinux);
+> +		pr_debug("loading custom vmlinux BTF '%s': %d\n", obj->custom_btf_path, err);
+> +	} else {
+> +		obj->btf_vmlinux = libbpf_find_kernel_btf();
+> +		err = libbpf_get_error(obj->btf_vmlinux);
+> +	}
 
-diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
-index 8383cd6d2178..b29d41e5e1e7 100644
---- a/drivers/net/dsa/sja1105/Kconfig
-+++ b/drivers/net/dsa/sja1105/Kconfig
-@@ -7,8 +7,8 @@ tristate "NXP SJA1105 Ethernet switch family support"
- 	select PACKING
- 	select CRC32
- 	help
--	  This is the driver for the NXP SJA1105 automotive Ethernet switch
--	  family. These are 5-port devices and are managed over an SPI
-+	  This is the driver for the NXP SJA1105 (5-port) and SJA1110 (10-port)
-+	  automotive Ethernet switch family. These are managed over an SPI
- 	  interface. Probing is handled based on OF bindings and so is the
- 	  linkage to PHYLINK. The driver supports the following revisions:
- 	    - SJA1105E (Gen. 1, No TT-Ethernet)
-@@ -17,6 +17,10 @@ tristate "NXP SJA1105 Ethernet switch family support"
- 	    - SJA1105Q (Gen. 2, No SGMII, TT-Ethernet)
- 	    - SJA1105R (Gen. 2, SGMII, No TT-Ethernet)
- 	    - SJA1105S (Gen. 2, SGMII, TT-Ethernet)
-+	    - SJA1110A (Gen. 3, SGMII, TT-Ethernet, 100base-TX PHY, 10 ports)
-+	    - SJA1110B (Gen. 3, SGMII, TT-Ethernet, 100base-TX PHY, 9 ports)
-+	    - SJA1110C (Gen. 3, SGMII, TT-Ethernet, 100base-TX PHY, 7 ports)
-+	    - SJA1110D (Gen. 3, SGMII, TT-Ethernet, no 100base-TX PHY, 7 ports)
- 
- config NET_DSA_SJA1105_PTP
- 	bool "Support for the PTP clock on the NXP SJA1105 Ethernet switch"
--- 
-2.25.1
+Couldn't we do something like (only compile-tested):
+
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index b46760b93bb4..5b88ce3e483c 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -4394,7 +4394,7 @@ static int btf_dedup_remap_types(struct btf_dedup *d)
+   * Probe few well-known locations for vmlinux kernel image and try to load BTF
+   * data out of it to use for target BTF.
+   */
+-struct btf *libbpf_find_kernel_btf(void)
++static struct btf *__libbpf_find_kernel_btf(char *btf_custom_path)
+  {
+  	struct {
+  		const char *path_fmt;
+@@ -4402,6 +4402,8 @@ struct btf *libbpf_find_kernel_btf(void)
+  	} locations[] = {
+  		/* try canonical vmlinux BTF through sysfs first */
+  		{ "/sys/kernel/btf/vmlinux", true /* raw BTF */ },
++		/* try user defined vmlinux ELF if a path was specified */
++		{ btf_custom_path },
+  		/* fall back to trying to find vmlinux ELF on disk otherwise */
+  		{ "/boot/vmlinux-%1$s" },
+  		{ "/lib/modules/%1$s/vmlinux-%1$s" },
+@@ -4419,11 +4421,11 @@ struct btf *libbpf_find_kernel_btf(void)
+  	uname(&buf);
+
+  	for (i = 0; i < ARRAY_SIZE(locations); i++) {
++		if (!locations[i].path_fmt)
++			continue;
+  		snprintf(path, PATH_MAX, locations[i].path_fmt, buf.release);
+-
+  		if (access(path, R_OK))
+  			continue;
+-
+  		if (locations[i].raw_btf)
+  			btf = btf__parse_raw(path);
+  		else
+@@ -4440,6 +4442,11 @@ struct btf *libbpf_find_kernel_btf(void)
+  	return libbpf_err_ptr(-ESRCH);
+  }
+
++struct btf *libbpf_find_kernel_btf(void)
++{
++	return __libbpf_find_kernel_btf(NULL);
++}
++
+  int btf_type_visit_type_ids(struct btf_type *t, type_id_visit_fn visit, void *ctx)
+  {
+  	int i, n, err;
+
+And then you just call it as:
+
+	obj->btf_vmlinux = __libbpf_find_kernel_btf(obj->btf_custom_path);
+	err = libbpf_get_error(obj->btf_vmlinux);
+
+>   	if (err) {
+>   		pr_warn("Error loading vmlinux BTF: %d\n", err);
+>   		obj->btf_vmlinux = NULL;
+> @@ -7554,7 +7563,7 @@ int bpf_program__load(struct bpf_program *prog, char *license, __u32 kern_ver)
+>   __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+>   		   const struct bpf_object_open_opts *opts)
+>   {
+> -	const char *obj_name, *kconfig;
+> +	const char *obj_name, *kconfig, *tmp_btf_path;
+>   	struct bpf_program *prog;
+>   	struct bpf_object *obj;
+>   	char tmp_name[64];
+> @@ -7584,6 +7593,13 @@ int bpf_program__load(struct bpf_program *prog, char *license, __u32 kern_ver)
+>   	obj = bpf_object__new(path, obj_buf, obj_buf_sz, obj_name);
+>   	if (IS_ERR(obj))
+>   		return obj;
+> +
+> +	tmp_btf_path = OPTS_GET(opts, custom_btf_path, NULL);
+> +	if (tmp_btf_path && strlen(tmp_btf_path) < PATH_MAX) {
+> +		obj->custom_btf_path = strdup(tmp_btf_path);
+> +		if (!obj->custom_btf_path)
+> +			return ERR_PTR(-ENOMEM);
+> +	}
+>   
+>   	kconfig = OPTS_GET(opts, kconfig, NULL);
+>   	if (kconfig) {
+> @@ -8702,6 +8718,7 @@ void bpf_object__close(struct bpf_object *obj)
+>   	for (i = 0; i < obj->nr_maps; i++)
+>   		bpf_map__destroy(&obj->maps[i]);
+>   
+> +	zfree(&obj->custom_btf_path);
+>   	zfree(&obj->kconfig);
+>   	zfree(&obj->externs);
+>   	obj->nr_extern = 0;
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index 6e61342..16e0f01 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -94,8 +94,12 @@ struct bpf_object_open_opts {
+>   	 * system Kconfig for CONFIG_xxx externs.
+>   	 */
+>   	const char *kconfig;
+> +	/* Specify the path of vmlinux btf to facilitate the use of CO-RE features
+> +	 * in the old kernel.
+> +	 */
+> +	char *custom_btf_path;
+>   };
+> -#define bpf_object_open_opts__last_field kconfig
+> +#define bpf_object_open_opts__last_field custom_btf_path
+>   
+>   LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
+>   LIBBPF_API struct bpf_object *
+> 
 
