@@ -2,126 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F8143B2BCD
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 11:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAECB3B2C23
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 12:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232013AbhFXJvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 05:51:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55508 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231970AbhFXJvy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 05:51:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624528175;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AaxuCc7MF6STQtMRDUC9uPp9QcsP+FHFpIHOZFmA4Ew=;
-        b=Zo40O3d8JKyfyGQS0Psjm8XsJCCdYtee6kvOpHCK/QUlQVtBT7S609gcPm0i9aWl78/DZB
-        cY9VWTADUWqw0cCmC6POl8OKupe+hq/UaMp79QyXySQNuNG1XEH/rwX+mVlD0Ai9AD2T7t
-        yx0UWCpnLmXe1HIZGUN3rc3dPF2CjUg=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-86-3Ks6YttqPIax5KzWOQECOQ-1; Thu, 24 Jun 2021 05:49:33 -0400
-X-MC-Unique: 3Ks6YttqPIax5KzWOQECOQ-1
-Received: by mail-wm1-f72.google.com with SMTP id s80-20020a1ca9530000b02901cff732fde5so1425666wme.6
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 02:49:33 -0700 (PDT)
+        id S232098AbhFXKKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 06:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231501AbhFXKKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 06:10:38 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00766C061756
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 03:08:18 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id d12so4300346pgd.9
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 03:08:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x9NKcgEa68r5VdGmcZtR9q9EE3hL1EdjeVJHJPoqJac=;
+        b=kn+9SbsKlmW+K/3fcegv6Q8xm210aDfSmXbY1Tb6U6jsgpAkBpwOE6ANQdUFtQrfNb
+         eF78sWs37x+STI6rASR+L4B1P9lDnOiIQc1Qe48axMU5uYbb9f1W99yNwB74l32QpFD4
+         xVMOAaZaYvO9BXHV/5EOU+uBhVgGO4HYd1U+mU3Bn29UQkdVlrJZD8AfRY0KKNlFdml0
+         NyUy7Y52cLZSUOEvFuSr0sl+rW4o+7tWZgfUm/tjP/IjhcFQuL4sHJTgt30Z4qJfcOPN
+         ncMCrLMAn+DX8ByJLWR788bDBKu2A9tXJB9ExpgoLPl5xRl1rW6wRPCAbiJ7mT04Jukh
+         Fd0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=AaxuCc7MF6STQtMRDUC9uPp9QcsP+FHFpIHOZFmA4Ew=;
-        b=Cz6oPXKGyrgsRBWjPuabBraUCz/gLuPw1/2Jz7/qut8/Q3jaBMrZBOPlzPk4plzE+7
-         ho/LnCqQVBzVAu8EpXONuTJhQqvfdhySZGT7+mxR2KlafFiWd4njh4SpU19+i7A/iycM
-         qZTCSYuVWa+iIRPZtulDKZuYmnfDCanIlVJcdrDhLG7Eltnv57awwAC/7aaQYk6aMQFC
-         JBAmcAs/qPYFir/+8U9V46GyYjMSd9sQBGeto6wzKBfuj1s0njo0/I3n/PaUj/4nOv3D
-         11GwP6l6TJH2QXiryIGRGKZqaGdnQ+K9H0rZMDmSKkTKCL7Kcl/t8jEXoV5/qvZG+dqF
-         S+DQ==
-X-Gm-Message-State: AOAM532Od7kfOzuNEw5PLxtIMSMgGIqcEncCHlt21zVcgczZAq0OVTOI
-        nuIrEeywMwiPlx6vvppfPfUTyiuDkSFPW4AXAjv1kg42Us8TBtRrnWEQdzCLUzMSwx0X5E4/l9Q
-        TAVtWYuESb4fL8aEc
-X-Received: by 2002:a5d:6646:: with SMTP id f6mr3339979wrw.399.1624528172514;
-        Thu, 24 Jun 2021 02:49:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzlbMr8ygwlV2D6r8tmAibtIQsfA1Q+1UmXSQBSdAxsidGcU1vvLJ2eZY2m+mAf1Gy3cIxeQg==
-X-Received: by 2002:a5d:6646:: with SMTP id f6mr3339961wrw.399.1624528172314;
-        Thu, 24 Jun 2021 02:49:32 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-109-224.dyn.eolo.it. [146.241.109.224])
-        by smtp.gmail.com with ESMTPSA id z8sm761660wrw.18.2021.06.24.02.49.31
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x9NKcgEa68r5VdGmcZtR9q9EE3hL1EdjeVJHJPoqJac=;
+        b=aOiApzC1hUQQiEgpZiqjoI1B9J56f8nArOjPEg3wUvOqHlOfD1GvgmmVD1yz3Mdf8o
+         QnovQH4heEXJ9aTMyDvmSG30FvFGn3EIpx8152wYtmn5+8bSGRF0j4dicMqtJW0kYWOY
+         3sJ2g/PD/UKsHbOs6LcXhCIXrwe2DdofmvhNuVKvpHOgrPbXF2WZaL5VBYqbHjAbwbuB
+         MgGt0gFOudTm2YRIOiQCyA7lzmwLQUPuIcM7Em05skJUqsmi+xNZucF+b+bIFNESsWTj
+         hYL9uAmUzkaZCGZVnLbBovggtt+B8oNQFzFJkf0CbuHwBWN2dUPA8LeJfxJArP3pHZjq
+         7GhQ==
+X-Gm-Message-State: AOAM532to4Qv1MErh2YuWl45r/heqyeZhz2F3UY36vqQl3rNe/Dkl/AT
+        nRX0RifbrSZguRaBCabPHMMw9t+O630=
+X-Google-Smtp-Source: ABdhPJztf0AunmIR22HhtNF8zDiFaSyAG6bAzbX/9II5emdmyfrnvXw7g1r40jzMD0iFkQ9m8t3+ew==
+X-Received: by 2002:a63:5511:: with SMTP id j17mr4158419pgb.191.1624529298568;
+        Thu, 24 Jun 2021 03:08:18 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:927c:36f0:f328:b8f3])
+        by smtp.gmail.com with ESMTPSA id a6sm2365632pfo.212.2021.06.24.03.08.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 02:49:31 -0700 (PDT)
-Message-ID: <e0e59d780e1c979c2666e8bc77ce00249ac3e6e1.camel@redhat.com>
-Subject: Re: [PATCH net] ipv6: fix out-of-bound access in ip6_parse_tlv()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        Thu, 24 Jun 2021 03:08:17 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Tom Herbert <tom@herbertland.com>
-Date:   Thu, 24 Jun 2021 11:49:30 +0200
-In-Reply-To: <20210623194353.2021745-1-eric.dumazet@gmail.com>
-References: <20210623194353.2021745-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+Subject: [PATCH v2 net] ipv6: fix out-of-bound access in ip6_parse_tlv()
+Date:   Thu, 24 Jun 2021 03:07:20 -0700
+Message-Id: <20210624100720.2310271-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.32.0.288.g62a8d224e6-goog
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-06-23 at 12:43 -0700, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> First problem is that optlen is fetched without checking
-> there is more than one byte to parse.
-> 
-> Fix this by taking care of IPV6_TLV_PAD1 before
-> fetching optlen (under appropriate sanity checks against len)
-> 
-> Second problem is that IPV6_TLV_PADN checks of zero
-> padding are performed before the check of remaining length.
-> 
-> Fixes: c1412fce7ecc ("net/ipv6/exthdrs.c: Strict PadN option checking")
+From: Eric Dumazet <edumazet@google.com>
 
-Perhaps even:
+First problem is that optlen is fetched without checking
+there is more than one byte to parse.
+
+Fix this by taking care of IPV6_TLV_PAD1 before
+fetching optlen (under appropriate sanity checks against len)
+
+Second problem is that IPV6_TLV_PADN checks of zero
+padding are performed before the check of remaining length.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: c1412fce7ecc ("net/ipv6/exthdrs.c: Strict PadN option checking")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Tom Herbert <tom@herbertland.com>
+---
+v2: Removed not needed optlen assignment for IPV6_TLV_PAD1 handling,
+    added the Fixes: tag for first problem, feedback from Paolo, thanks !
 
-for the first issue?
+ net/ipv6/exthdrs.c | 27 +++++++++++++--------------
+ 1 file changed, 13 insertions(+), 14 deletions(-)
 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Tom Herbert <tom@herbertland.com>
-> ---
-> 
-> Only compiled, I would appreciate a solid review of this patch before merging it, thanks !
-> 
->  net/ipv6/exthdrs.c | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
-> 
-> diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-> index 6f7da8f3e2e5849f917853984c69bf02a0f1e27c..007959d4d3748f1e21f83946024a9967d08b25b6 100644
-> --- a/net/ipv6/exthdrs.c
-> +++ b/net/ipv6/exthdrs.c
-> @@ -135,18 +135,24 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
->  	len -= 2;
->  
->  	while (len > 0) {
-> -		int optlen = nh[off + 1] + 2;
-> -		int i;
-> +		int optlen, i;
->  
-> -		switch (nh[off]) {
-> -		case IPV6_TLV_PAD1:
-> +		if (nh[off] == IPV6_TLV_PAD1) {
->  			optlen = 1;
-
-It looks like the above assignment is not needed anymore.
-
-Other than that LGTM,
-
-Thanks!
-
-Paolo
+diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+index 6f7da8f3e2e5849f917853984c69bf02a0f1e27c..26882e165c9e37a105f988020031f03d6b1a5cf9 100644
+--- a/net/ipv6/exthdrs.c
++++ b/net/ipv6/exthdrs.c
+@@ -135,18 +135,23 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+ 	len -= 2;
+ 
+ 	while (len > 0) {
+-		int optlen = nh[off + 1] + 2;
+-		int i;
++		int optlen, i;
+ 
+-		switch (nh[off]) {
+-		case IPV6_TLV_PAD1:
+-			optlen = 1;
++		if (nh[off] == IPV6_TLV_PAD1) {
+ 			padlen++;
+ 			if (padlen > 7)
+ 				goto bad;
+-			break;
++			off++;
++			len--;
++			continue;
++		}
++		if (len < 2)
++			goto bad;
++		optlen = nh[off + 1] + 2;
++		if (optlen > len)
++			goto bad;
+ 
+-		case IPV6_TLV_PADN:
++		if (nh[off] == IPV6_TLV_PADN) {
+ 			/* RFC 2460 states that the purpose of PadN is
+ 			 * to align the containing header to multiples
+ 			 * of 8. 7 is therefore the highest valid value.
+@@ -163,12 +168,7 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+ 				if (nh[off + i] != 0)
+ 					goto bad;
+ 			}
+-			break;
+-
+-		default: /* Other TLV code so scan list */
+-			if (optlen > len)
+-				goto bad;
+-
++		} else {
+ 			tlv_count++;
+ 			if (tlv_count > max_count)
+ 				goto bad;
+@@ -188,7 +188,6 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+ 				return false;
+ 
+ 			padlen = 0;
+-			break;
+ 		}
+ 		off += optlen;
+ 		len -= optlen;
+-- 
+2.32.0.288.g62a8d224e6-goog
 
