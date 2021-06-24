@@ -2,112 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E1033B2503
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 04:29:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC5873B2525
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 04:41:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbhFXCbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 22:31:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59964 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229758AbhFXCbc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 22:31:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AB35F613B0;
-        Thu, 24 Jun 2021 02:29:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624501754;
-        bh=qfes4XlTr7wZHA/gX1R4vn3ErhXUgft2vuwloOuqJH8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FAMh4+QoAuFF1jJ9kHmTbp9/ydQxbb3M5ZXBFYFE5KwhbO8otL4kipxuWZCx5CvXV
-         1g/6NvgDwplHRZuGBhTtc6SHDQxjSpk6y95eGTetqRfIvyp32Kx5Ya5T5ay344bzEE
-         D9sGb1HKg9xTiP3RmSnd4WkjUR/SLietI7dEfA5kf+f011nRkGNq5yCRB1cyr9AQmK
-         00KuXivitCPNOy5tY6Da+rcrfkF2EBc9mOkR5HmtnRsp9bCtE9HojGQ9c48JJ6RFVv
-         /P/luhRi5YV574NjTxA3YTl7IYODn5ZeuXzd5tx51WGfWxH6C91MYON63V/vMoiXJ+
-         /lOBphk8eqyUg==
-Date:   Wed, 23 Jun 2021 19:29:11 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Message-ID: <YNPt91bfjrgSt8G3@Ryzen-9-3900X.localdomain>
-References: <20210624082911.5d013e8c@canb.auug.org.au>
- <CAPv3WKfiL+sR+iK_BjGKDhtNgjoxKEPv49bU1X9_7+v+ytdR1w@mail.gmail.com>
+        id S229948AbhFXCnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 22:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229918AbhFXCnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 22:43:52 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2C9C061574
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 19:41:33 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id ji1so7086545ejc.4
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 19:41:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t5yU4VNCFXj8gX5a2epQpgz96V1dLxQZPsWYLsxFdgg=;
+        b=Et++QnyDd9L4pOu9fEFAjTGysR5Tz9E2KZmoJkdrxAlKCYbST6FXREEOgxoKpGGj05
+         A90pCfDI4SdcJY+F6LV4GeeJAQF2fMW+TahVDSuVXNANhvdNw0zs725LwdkwGChNzlNu
+         ovJK8f+MSbHULjzHrctEqd5kGlm30gIhIrL9s1lzCIBcYSqy7g8xr3Auzxjkn0xjs4jX
+         2iQt9/NCqOVUniMQW7GtJ7IoV1KKMXwDjPoYc6FMTY7he2qzIeIXcmd74M613TwlXWk0
+         cHAcSyRJ9bz2pLhM2Ng0Nr73c5Pdp9awcyycj4cq/KXW+xU7ZgqhOgYxQo+DFTfty9My
+         a6LQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t5yU4VNCFXj8gX5a2epQpgz96V1dLxQZPsWYLsxFdgg=;
+        b=XfqRPlYyEUr2nDURFhJb5Wztf5z3odY5CnDcL2NaGmpBcDyTeujWr1hbjUcIUt6iWU
+         DbwQcTtWD2X80p5UbgmYWG2asOO7jptVnz5lEmaGDRFplrJ9rF7kXUPNP84UmZcj4+iS
+         Q4xqTV1XnsxDExzWPKVPxtLK2N91UuVaZG3Fk0Zj+REGsdFbhY7KHA5O76M2A7TyBHs7
+         OpQRqGkehFgvveIRng1DXFfv07zDOr+MQMwrbeQNN5yYqH+jjakzF9hW7avNKNBW/Rb+
+         05czClYPsvgO4toXUlWAaXjngo0uDx2gsmyk52aZj2PFWBBJaDWT627iIZMXumam/d1E
+         R1+Q==
+X-Gm-Message-State: AOAM5324xiNcfxbSKN+9NeJFgP7dCAyMCv69/szyo+c76ss4IMmcql8a
+        dMl8ftLxolptFHRsuv/87WjcbmysaIOQVA==
+X-Google-Smtp-Source: ABdhPJxoBhSy3nhPW/1t3eSR4SsseTSIkNvZS7eB9QDk2fKrrv1ajP3yDrMM2nePpcOPtk08nb2KZA==
+X-Received: by 2002:a17:906:1c84:: with SMTP id g4mr2840532ejh.99.1624502491725;
+        Wed, 23 Jun 2021 19:41:31 -0700 (PDT)
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com. [209.85.128.41])
+        by smtp.gmail.com with ESMTPSA id f14sm977340edd.69.2021.06.23.19.41.30
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Jun 2021 19:41:30 -0700 (PDT)
+Received: by mail-wm1-f41.google.com with SMTP id p10-20020a05600c430ab02901df57d735f7so5196759wme.3
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 19:41:30 -0700 (PDT)
+X-Received: by 2002:a1c:7c0b:: with SMTP id x11mr1342824wmc.183.1624502490152;
+ Wed, 23 Jun 2021 19:41:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPv3WKfiL+sR+iK_BjGKDhtNgjoxKEPv49bU1X9_7+v+ytdR1w@mail.gmail.com>
+References: <20210623214438.2276538-1-kuba@kernel.org> <CA+FuTSergCOgmYCGzT4vrYfoBB_vk-SwF45z2_XEBXNbyHvGUQ@mail.gmail.com>
+In-Reply-To: <CA+FuTSergCOgmYCGzT4vrYfoBB_vk-SwF45z2_XEBXNbyHvGUQ@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 23 Jun 2021 22:40:53 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeT9WWQYjDMCAOqjLuT-LjYOO+yrfE=qU=cwXRt+ExCug@mail.gmail.com>
+Message-ID: <CA+FuTSeT9WWQYjDMCAOqjLuT-LjYOO+yrfE=qU=cwXRt+ExCug@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] net: ip: avoid OOM kills with large UDP sends
+ over loopback
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, eric.dumazet@gmail.com, dsahern@gmail.com,
+        yoshfuji@linux-ipv6.org, brouer@redhat.com, Dave Jones <dsj@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 12:46:48AM +0200, Marcin Wojtas wrote:
-> Hi Stephen,
-> 
-> czw., 24 cze 2021 o 00:29 Stephen Rothwell <sfr@canb.auug.org.au> napisał(a):
-> >
-> > Hi all,
-> >
-> > Today's linux-next build (x86_64 modules_install) failed like this:
-> >
-> > depmod: ../tools/depmod.c:1792: depmod_report_cycles_from_root: Assertion `is < stack_size' failed.
-> >
-> > Caused by commit
-> >
-> > 62a6ef6a996f ("net: mdiobus: Introduce fwnode_mdbiobus_register()")
-> >
-> > (I bisected to there and tested the commit before.)
-> >
-> > The actual build is an x86_64 allmodconfig, followed by a
-> > modules_install.  This happens in my cross build environment as well as
-> > a native build.
-> >
-> > $ gcc --version
-> > gcc (Debian 10.2.1-6) 10.2.1 20210110
-> > $ ld --version
-> > GNU ld (GNU Binutils for Debian) 2.35.2
-> > $ /sbin/depmod --version
-> > kmod version 28
-> > -ZSTD +XZ -ZLIB +LIBCRYPTO -EXPERIMENTAL
-> >
-> > I have no idea why that commit should caused this failure.
-> 
-> Thank you for letting us know. Not sure if related, but I just found
-> out that this code won't compile for the !CONFIG_FWNODE_MDIO. Below
-> one-liner fixes it:
-> 
-> --- a/include/linux/fwnode_mdio.h
-> +++ b/include/linux/fwnode_mdio.h
-> @@ -40,7 +40,7 @@ static inline int fwnode_mdiobus_register(struct mii_bus *bus,
->          * This way, we don't have to keep compat bits around in drivers.
->          */
-> 
-> -       return mdiobus_register(mdio);
-> +       return mdiobus_register(bus);
->  }
->  #endif
-> 
-> I'm curious if this is the case. Tomorrow I'll resubmit with above, so
-> I'd appreciate recheck.
+> >                         if (transhdrlen) {
+> > -                               skb = sock_alloc_send_skb(sk,
+> > -                                               alloclen + hh_len + 15,
+> > +                               skb = sock_alloc_send_skb(sk, alloclen,
+> >                                                 (flags & MSG_DONTWAIT), &err);
+> >                         } else {
+> >                                 skb = NULL;
+> >                                 if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
+> >                                     2 * sk->sk_sndbuf)
+> > -                                       skb = alloc_skb(alloclen + hh_len + 15,
+> > +                                       skb = alloc_skb(alloclen,
+> >                                                         sk->sk_allocation);
+> >                                 if (unlikely(!skb))
+> >                                         err = -ENOBUFS;
+>
+> Is there any risk of regressions? If so, would it be preferable to try
+> regular alloc and only on failure, just below here, do the size and SG
+> test and if permitted jump back to the last of the three alloc_len
+> options?
 
-I wonder if this message that I see with Arch Linux's config is related
-and maybe explains the issue a little bit more:
-
-$ curl -LSso .config https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/linux/trunk/config
-
-# do not require pahole
-$ scripts/config -d DEBUG_INFO_BTF
-
-$ make -skj"$(nproc)" INSTALL_MOD_PATH=rootfs olddefconfig all modules_install
-...
-depmod: ERROR: Cycle detected: acpi_mdio -> fwnode_mdio -> acpi_mdio
-depmod: ERROR: Found 2 modules in dependency cycles!
-...
-
-Reverting all the patches in that series fixes the issue for me.
-
-Cheers,
-Nathan
+sk_page_frag_refill when using frags will try also try large allocations first
+(SKB_FRAG_PAGE_ORDER == order-3) , but can degrade more gracefully
+under memory pressure than this header alloc. Which can only succeed
+or fail for the total size. So without memory pressure this only takes two
+extra allocations for a 64KB skb.
