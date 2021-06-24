@@ -2,62 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB3BB3B34B0
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 19:23:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 515D93B34B2
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 19:23:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbhFXRZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 13:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229573AbhFXRZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 13:25:44 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701DBC061760
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 10:23:24 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id q18so7085817ile.10
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 10:23:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:in-reply-to:references:from:date:message-id
-         :subject:to;
-        bh=ANhbTggsY3NFhRZExKMwUmb3VzJqye8XLvWVXSvNBkQ=;
-        b=JkpCA0c1WE0O+qtnOo4F98bjxgDcdAOfneSK2ssBcpR7YSDyg+YJFh58ZeqJrv5MlG
-         ZP9f5oEu/Cac20jboaWMwGrmKTckemIAjkXFS0b1+6+P5aceOBWwHyApsPtfj+Yd/S65
-         Igqr6QFkR15TT+jddIr8cKEvXX5o0/Sa0XoP1u3O6ulkFEYJPNHbhVBPT7ZlDxOlN8EV
-         6zOXVaaRZwPhndH1JGanziuUK1LJnaZyM18ydqnpfa6wUCDCW9AUTkzeCg1R6iP70qiJ
-         kDm8hD7hInE41JocZX7yhJhjDY0TBhnYgX3uXEXQWPgjrMevZ7KpgFq+g43j8r3CtNvj
-         T+Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:in-reply-to:references
-         :from:date:message-id:subject:to;
-        bh=ANhbTggsY3NFhRZExKMwUmb3VzJqye8XLvWVXSvNBkQ=;
-        b=QHQyqr9TGmqATX2S2Fh5bwt4mgOYYS25nuAxHnHuRKmB41OYGUwZS2SrLSx8/hNhP3
-         XOaNgiUylP5iNiUJjdhvgd0GHaRD/ngPSAdo4HJ/E/WvxkCk6jGhHxHyrdcPp+/pakt2
-         g6NiwiVzmV5KUGQu449PGsQ7kT+qRMXRFuFCp1TSmJjGIeL2Dw6r1lgnKursJSMBXv4S
-         +7RCn19LvWACaiXLu42jYb2NOokTlIedA2yAVydlP4dTrqZlmmDzgMCHlgN6H+OQywIN
-         az4pZiq5hRqdc0dEan16HGShmxRb0aTviFmAh7C8jatGxnB/68raRAug0ZDanf/J6u9Y
-         hsng==
-X-Gm-Message-State: AOAM530K9Q802AQJDPkOOWWPORsYQrhncSj2FMvRqNtkWNaKp+IiIWTr
-        Dv2dmMzkxtRi9nh/KvpgNgTSxfSUpMBjLJI6Gsg=
-X-Google-Smtp-Source: ABdhPJxZ62ZI7yZSYkT2HhH/wgsJZv95Z4F/SUm9uQCEgH6mUoNSS2m9mIvt+OupMlpq0wrEeUgqQpt5aB8oJF682ac=
-X-Received: by 2002:a92:d7c8:: with SMTP id g8mr4438396ilq.117.1624555403898;
- Thu, 24 Jun 2021 10:23:23 -0700 (PDT)
+        id S232412AbhFXR0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 13:26:01 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54246 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230480AbhFXR0A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 13:26:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=NvvH96cmBXX2ORbFg1zoZQfm53jYn0pocb07kbwjspY=; b=x7kDFmdDvs/LcJbvQ8hU3IoRLq
+        QmSxiR9iBWL2MlrARpdXxmf1Sj3mDhneiRo6FkjHXRS+nvkmieoI0bF54fTTBj6O5j2LZpfDeiyWo
+        u0h3IOilrfvJXdIySuWE4S9PMfDfeTGGUr5xKzMbOAl57gjCUlze8onHhnl3y/7y5hn8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lwT4l-00B0Vd-OJ; Thu, 24 Jun 2021 19:23:39 +0200
+Date:   Thu, 24 Jun 2021 19:23:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     alexandru.tachici@analog.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: Re: [PATCH 1/4] net: phy: adin1100: Add initial support for ADIN1100
+ industrial PHY
+Message-ID: <YNS/mwLfM0M1ZOoQ@lunn.ch>
+References: <20210624145353.6910-1-alexandru.tachici@analog.com>
+ <20210624145353.6910-2-alexandru.tachici@analog.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6638:3aa:0:0:0:0 with HTTP; Thu, 24 Jun 2021 10:23:23
- -0700 (PDT)
-Reply-To: tutywoolgar021@gmail.com
-In-Reply-To: <CADB47+4Wa3T59Vq_==GTXEfHrX5x-2vQFxaTBO0dTdyAweCVpw@mail.gmail.com>
-References: <CADB47+4Wa3T59Vq_==GTXEfHrX5x-2vQFxaTBO0dTdyAweCVpw@mail.gmail.com>
-From:   tuty woolgar <faridaamadoubas@gmail.com>
-Date:   Thu, 24 Jun 2021 17:23:23 +0000
-Message-ID: <CADB47+4p1fgC-_U-tuAJARm1t6ST052LuyPJY-w4MnCgf6wMrA@mail.gmail.com>
-Subject: greetings,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210624145353.6910-2-alexandru.tachici@analog.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My greetings to you my friend i hope you are fine and good please respond
-back to me thanks,
+> +static int adin_config_init(struct phy_device *phydev)
+> +{
+> +	struct adin_priv *priv = phydev->priv;
+> +	struct device *dev = &phydev->mdio.dev;
+> +	int ret;
+> +
+> +	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, ADIN_B10L_PMA_STAT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* This depends on the voltage level from the power source */
+> +	priv->tx_level_24v = !!(ret & ADIN_PMA_STAT_B10L_TX_LVL_HI_ABLE);
+> +
+> +	phydev_dbg(phydev, "PHY supports 2.4V TX level: %s\n",
+> +		   priv->tx_level_24v ? "yes" : "no");
+> +
+> +	if (priv->tx_level_24v &&
+> +	    device_property_present(dev, "adi,disable-2-4-v-tx-level")) {
+> +		phydev_info(phydev,
+> +			    "PHY supports 2.4V TX level, but disabled via config\n");
+> +		priv->tx_level_24v = 0;
+
+Please document this in the device tree binding. I also suspect Rob
+will prefer something like adi,disable-2400mv-tx-level
+
+       Andrew
