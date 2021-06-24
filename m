@@ -2,75 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0053B399A
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 01:00:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DBB43B39AE
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 01:18:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232885AbhFXXC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 19:02:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34578 "EHLO mail.kernel.org"
+        id S232582AbhFXXUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 19:20:33 -0400
+Received: from mga11.intel.com ([192.55.52.93]:30667 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229971AbhFXXC0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Jun 2021 19:02:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 75A7C6137D;
-        Thu, 24 Jun 2021 23:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624575606;
-        bh=1pKMl6v1lQ/RlqQ5s8/YdrNna9rEOulyFNfUgxs3deY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uT5hUTceq2ERVlhBVuY2ES7ns7FVTlW6t7QJpiD/jsCdN93f3GVx8tZMQ8Oj5O0IS
-         U66a+xR3DZoA/zKBxZIQb4OJWFMIS26GI7SCpUR0cRJnaD0cdo67KLV2uV7TgxwzR5
-         27WMGCFdDK/CK3ljfF2S2Xtk9tekezydZAgTgs3h1CGyq5h10n+EUJwRcxnbG2FgT/
-         xD9oDzCQOsqrvwaRM9WOkZ0i9MlrOVMg+RLds3EgowGfsibT7kBxHNabbIU+evq2ZY
-         O0VzP/t+jaR2325mTN+s3JlhF/1r03hPcGfE9t+cCXrRfZPWpzftH4cqS9fs5XaU1l
-         Sn1j+7VUt/nXQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 68F9A60952;
-        Thu, 24 Jun 2021 23:00:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229585AbhFXXUd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 19:20:33 -0400
+IronPort-SDR: 5r3iESg80Mks136Y5VTjz2bcP1dY4MmRnOGVyeynw46LDHfJB6RuDk0BEkV7DIrJuo1zHQFJXa
+ tQ8f98IMvnFQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10025"; a="204566606"
+X-IronPort-AV: E=Sophos;i="5.83,297,1616482800"; 
+   d="scan'208";a="204566606"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2021 16:18:12 -0700
+IronPort-SDR: XtdU2V9Y4JHphMCTtOSe6BKj/dN4RO81C5hpswDBLyl51IHaR3zBnqPCiTJQhncw+YrtwMBkYy
+ RR/Vtm5rhZlQ==
+X-IronPort-AV: E=Sophos;i="5.83,297,1616482800"; 
+   d="scan'208";a="487956572"
+Received: from samudral-mobl.amr.corp.intel.com (HELO [10.212.175.27]) ([10.212.175.27])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2021 16:18:12 -0700
+Subject: Re: [PATCH net-next 12/16] gve: DQO: Add core netdev features
+To:     Bailey Forrest <bcf@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Willem de Bruijn <willemb@google.com>,
+        Catherine Sullivan <csully@google.com>
+References: <20210624180632.3659809-1-bcf@google.com>
+ <20210624180632.3659809-13-bcf@google.com>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <793c316c-e367-bf55-c4da-f4fc3d4aa587@intel.com>
+Date:   Thu, 24 Jun 2021 16:18:12 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] net: bcmgenet: Add mdio-bcm-unimac soft dependency
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162457560642.7534.18047903047924018273.git-patchwork-notify@kernel.org>
-Date:   Thu, 24 Jun 2021 23:00:06 +0000
-References: <20210624032240.2609-1-jhp@endlessos.org>
-In-Reply-To: <20210624032240.2609-1-jhp@endlessos.org>
-To:     Jian-Hong Pan <jhp@endlessos.org>
-Cc:     f.fainelli@gmail.com, stefan.wahren@i2se.com, opendmb@gmail.com,
-        andrew@lunn.ch, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@endlessos.org, linux-rpi-kernel@lists.infradead.org
+In-Reply-To: <20210624180632.3659809-13-bcf@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 6/24/2021 11:06 AM, Bailey Forrest wrote:
+> Add napi netdev device registration, interrupt handling and initial tx
+> and rx polling stubs. The stubs will be filled in follow-on patches.
+>
+> Also:
+> - LRO feature advertisement and handling
+> - Also update ethtool logic
+>
+> Signed-off-by: Bailey Forrest <bcf@google.com>
+> Reviewed-by: Willem de Bruijn <willemb@google.com>
+> Reviewed-by: Catherine Sullivan <csully@google.com>
+> ---
+>   drivers/net/ethernet/google/gve/Makefile      |   2 +-
+>   drivers/net/ethernet/google/gve/gve.h         |   2 +
+>   drivers/net/ethernet/google/gve/gve_adminq.c  |   2 +
+>   drivers/net/ethernet/google/gve/gve_dqo.h     |  32 +++
+>   drivers/net/ethernet/google/gve/gve_ethtool.c |  12 +-
+>   drivers/net/ethernet/google/gve/gve_main.c    | 188 ++++++++++++++++--
+>   drivers/net/ethernet/google/gve/gve_rx_dqo.c  |  24 +++
+>   drivers/net/ethernet/google/gve/gve_tx_dqo.c  |  23 +++
+>   8 files changed, 260 insertions(+), 25 deletions(-)
+>   create mode 100644 drivers/net/ethernet/google/gve/gve_dqo.h
+>   create mode 100644 drivers/net/ethernet/google/gve/gve_rx_dqo.c
+>   create mode 100644 drivers/net/ethernet/google/gve/gve_tx_dqo.c
+>
+> diff --git a/drivers/net/ethernet/google/gve/Makefile b/drivers/net/ethernet/google/gve/Makefile
+> index 0143f4471e42..b9a6be76531b 100644
+> --- a/drivers/net/ethernet/google/gve/Makefile
+> +++ b/drivers/net/ethernet/google/gve/Makefile
+> @@ -1,4 +1,4 @@
+>   # Makefile for the Google virtual Ethernet (gve) driver
+>   
+>   obj-$(CONFIG_GVE) += gve.o
+> -gve-objs := gve_main.o gve_tx.o gve_rx.o gve_ethtool.o gve_adminq.o gve_utils.o
+> +gve-objs := gve_main.o gve_tx.o gve_tx_dqo.o gve_rx.o gve_rx_dqo.o gve_ethtool.o gve_adminq.o gve_utils.o
+> diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+> index 8a2a8d125090..d6bf0466ae8b 100644
+> --- a/drivers/net/ethernet/google/gve/gve.h
+> +++ b/drivers/net/ethernet/google/gve/gve.h
+> @@ -45,6 +45,8 @@
+>   /* PTYPEs are always 10 bits. */
+>   #define GVE_NUM_PTYPES	1024
+>   
+> +#define GVE_RX_BUFFER_SIZE_DQO 2048
+> +
+>   /* Each slot in the desc ring has a 1:1 mapping to a slot in the data ring */
+>   struct gve_rx_desc_queue {
+>   	struct gve_rx_desc *desc_ring; /* the descriptor ring */
+> diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
+> index cf017a499119..5bb56b454541 100644
+> --- a/drivers/net/ethernet/google/gve/gve_adminq.c
+> +++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+> @@ -714,6 +714,8 @@ int gve_adminq_describe_device(struct gve_priv *priv)
+>   	if (gve_is_gqi(priv)) {
+>   		err = gve_set_desc_cnt(priv, descriptor);
+>   	} else {
+> +		/* DQO supports LRO. */
+> +		priv->dev->hw_features |= NETIF_F_LRO;
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Shouldn't this be NETIF_F_HW_GRO?
+Also, what does DQO stands for?
 
-On Thu, 24 Jun 2021 11:22:41 +0800 you wrote:
-> The Broadcom UniMAC MDIO bus from mdio-bcm-unimac module comes too late.
-> So, GENET cannot find the ethernet PHY on UniMAC MDIO bus. This leads
-> GENET fail to attach the PHY as following log:
-> 
-> bcmgenet fd580000.ethernet: GENET 5.0 EPHY: 0x0000
-> ...
-> could not attach to PHY
-> bcmgenet fd580000.ethernet eth0: failed to connect to PHY
-> uart-pl011 fe201000.serial: no DMA platform data
-> libphy: bcmgenet MII bus: probed
-> ...
-> unimac-mdio unimac-mdio.-19: Broadcom UniMAC MDIO bus
-> 
-> [...]
-
-Here is the summary with links:
-  - [v3] net: bcmgenet: Add mdio-bcm-unimac soft dependency
-    https://git.kernel.org/netdev/net-next/c/19938bafa7ae
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+<snip>
 
