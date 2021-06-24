@@ -2,118 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8026B3B32C0
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:40:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 827E93B32CC
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:48:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232003AbhFXPnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 11:43:08 -0400
-Received: from relay.sw.ru ([185.231.240.75]:38294 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230008AbhFXPnH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Jun 2021 11:43:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:Mime-Version:Message-Id:Subject:From
-        :Date; bh=U5XtIAnyUYl185YZGPYqlQwLeOOwdmtcFEFuO2lIj4g=; b=V+V1CkMju6lDDm+N2pq
-        YAt/ZyZGz43BiPLVcvBfITYkamQGAfoJphSoLZRVX+vD3PKxXQouwSH6hn4U2/XozTgOJnS2EXx+Z
-        IhwBfGJuwrs9TtbKJo3DO82s+/mWtUleU9JNMH2p32NKCnNajuydEOYfU/zatyJ+cH5bCd/V5yo=;
-Received: from [192.168.15.23] (helo=mikhalitsyn-laptop)
-        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1lW8WT-001j2N-O5; Thu, 24 Jun 2021 18:40:46 +0300
-Date:   Thu, 24 Jun 2021 18:40:44 +0300
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Andrei Vagin <avagin@gmail.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Subject: Re: [PATCHv2 iproute2] ip route: ignore ENOENT during save if
- RT_TABLE_MAIN is being dumped
-Message-Id: <20210624184044.80130fdc38822ee173a271b9@virtuozzo.com>
-In-Reply-To: <20210624083647.0f173c4b@hermes.local>
-References: <20210622150330.28014-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20210624152812.29031-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20210624083647.0f173c4b@hermes.local>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S232235AbhFXPuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 11:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34064 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230087AbhFXPub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 11:50:31 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF8BC061574;
+        Thu, 24 Jun 2021 08:48:12 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id g3so844106qth.11;
+        Thu, 24 Jun 2021 08:48:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R9+VKDibn9NfhjcFoZUD6oHbzR2Zf0N89Z4DFIz0UUg=;
+        b=fIJ0mc+eTzRNPGGu229pL+J+opk4FDs2FGKSw4Qalj9EgtxIqUp19j1Cyg/jUOF7DJ
+         Zxg9+whnldRC3c0EN1J61TT8uHSwZr07LqAggg2lj66fDsynb+sVxF46CScs2dxjMDHM
+         t/Hg2xreyJAnkpTZjQbT1A6REclcIlp/HmNznDkbbVkF6aENyJCXMRMJy8NlmGgNQ1rQ
+         eC/6Zoobe4afU++BArLenJkcKrE0ipan4dcrZA1OC4O26rNCDb1Loyv+7zlfWuOojZHJ
+         PV2UW4vVTJERA3uHc2VIVSvPzHzOnXeHQt10X3PIhodHEUl4x8G5AHfu4ly0KD1CJyuC
+         w6zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R9+VKDibn9NfhjcFoZUD6oHbzR2Zf0N89Z4DFIz0UUg=;
+        b=bexn/aqaVn3IM13vWD+sUKWeevuiTFdpzXVyKRUeMV5vJqWxmHE+/Dcb1VRZa1kLJ5
+         0BXSznOU7EK9EPt6sIf/InTZo7oGFrApb5ZCnFOyxNV3dE0qC9MVDys97zarK/j2NTOh
+         raZ2vecC9K8hT3rapn6AGCdjCpUYbRin198LLOFmD+4Kj5e7fcGqaINll9U+mqfYoKg2
+         dSrl0gIL8180FCM02ARZN51EY9Yl3WtG9hSrbSB7l3UAIqxRHnQq7XAsN4UGH+71hsjQ
+         6bEYMucW4n8FCtmHOn1ihjsDYwexMkEa8eO/kc1GYONp7gkoKYqcfBOdP3GKk1KH9H1+
+         J1bQ==
+X-Gm-Message-State: AOAM5315VPjsbeGJJQ23SWKATnckggJJBK18csRavF6QaLrDXF2rZP6V
+        O0MkSdLEMKxrPL9kctpDmLZA59jeM4PK3Q==
+X-Google-Smtp-Source: ABdhPJynEPsSyGIDYR6VePtr7oOuMh8S8I2BbGFtI/FE9cnDMEZ4qaLB0Ynv8aBuwn/ND41LEJFB7w==
+X-Received: by 2002:ac8:5784:: with SMTP id v4mr999712qta.29.1624549691430;
+        Thu, 24 Jun 2021 08:48:11 -0700 (PDT)
+Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id g19sm2181011qtg.36.2021.06.24.08.48.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Jun 2021 08:48:11 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        linux-sctp@vger.kernel.org
+Cc:     David Laight <david.laight@aculab.com>
+Subject: [PATCH net-next 0/2] sctp: make the PLPMTUD probe more effective and efficient
+Date:   Thu, 24 Jun 2021 11:48:07 -0400
+Message-Id: <cover.1624549642.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Jun 2021 08:36:47 -0700
-Stephen Hemminger <stephen@networkplumber.org> wrote:
+As David Laight noticed, it currently takes quite some time to find
+the optimal pmtu in the Search state, and also lacks the black hole
+detection in the Search Complete state. This patchset is to address
+them to mke the PLPMTUD probe more effective and efficient.
 
-> On Thu, 24 Jun 2021 18:28:12 +0300
-> Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
-> 
-> > We started to use in-kernel filtering feature which allows to get only needed
-> > tables (see iproute_dump_filter()). From the kernel side it's implemented in
-> > net/ipv4/fib_frontend.c (inet_dump_fib), net/ipv6/ip6_fib.c (inet6_dump_fib).
-> > The problem here is that behaviour of "ip route save" was changed after
-> > c7e6371bc ("ip route: Add protocol, table id and device to dump request").
-> > If filters are used, then kernel returns ENOENT error if requested table is absent,
-> > but in newly created net namespace even RT_TABLE_MAIN table doesn't exist.
-> > It is really allocated, for instance, after issuing "ip l set lo up".
-> > 
-> > Reproducer is fairly simple:
-> > $ unshare -n ip route save > dump
-> > Error: ipv4: FIB table does not exist.
-> > Dump terminated
-> > 
-> > Expected result here is to get empty dump file (as it was before this change).
-> > 
-> > v2: reworked, so, now it takes into account NLMSGERR_ATTR_MSG
-> > (see nl_dump_ext_ack_done() function). We want to suppress error messages
-> > in stderr about absent FIB table from kernel too.
-> > 
-> > Fixes: c7e6371bc ("ip route: Add protocol, table id and device to dump request")
-> > Cc: David Ahern <dsahern@gmail.com>
-> > Cc: Stephen Hemminger <stephen@networkplumber.org>
-> > Cc: Andrei Vagin <avagin@gmail.com>
-> > Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-> > Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-> > ---
-> >  include/libnetlink.h |  5 +++++
-> >  ip/iproute.c         |  8 +++++++-
-> >  lib/libnetlink.c     | 31 ++++++++++++++++++++++++++-----
-> >  3 files changed, 38 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/include/libnetlink.h b/include/libnetlink.h
-> > index b9073a6a..93c22a09 100644
-> > --- a/include/libnetlink.h
-> > +++ b/include/libnetlink.h
-> > @@ -121,6 +121,11 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
-> >  			void *arg, __u16 nc_flags);
-> >  #define rtnl_dump_filter(rth, filter, arg) \
-> >  	rtnl_dump_filter_nc(rth, filter, arg, 0)
-> > +int rtnl_dump_filter_suppress_rtnl_errmsg_nc(struct rtnl_handle *rth,
-> > +		     rtnl_filter_t filter,
-> > +		     void *arg1, __u16 nc_flags, const int *errnos);
-> > +#define rtnl_dump_filter_suppress_rtnl_errmsg(rth, filter, arg, errnos) \
-> > +	rtnl_dump_filter_suppress_rtnl_errmsg_nc(rth, filter, arg, 0, errnos)
-> >  int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
-> >  	      struct nlmsghdr **answer)
-> >  	__attribute__((warn_unused_result));
-> > diff --git a/ip/iproute.c b/ip/iproute.c
-> > index 5853f026..796d6d17 100644
-> > --- a/ip/iproute.c
-> > +++ b/ip/iproute.c
-> > @@ -1734,6 +1734,8 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
-> >  	char *od = NULL;
-> >  	unsigned int mark = 0;
-> >  	rtnl_filter_t filter_fn;
-> > +	/* last 0 is array trailing */
-> > +	int suppress_rtnl_errnos[2] = { 0, 0 };
-> >  
-> 
-> The design would be clearer if there were two arguments rather than magic array of size 2.
-> Also these are being used as boolean.
-You mean replace extra (int *) to pair (int *, size_t size)?
-For my case I need to filter only ENOENT error, but maybe for some other cases someone may want
-to filter out ENOENT and ENOSUPP, for instance then and use { ENOENT, ENOSUPP, 0 } as array.
+Xin Long (2):
+  sctp: do black hole detection in search complete state
+  sctp: send the next probe immediately once the last one is acked
 
+ Documentation/networking/ip-sysctl.rst | 12 ++++++++----
+ include/net/sctp/structs.h             |  3 ++-
+ net/sctp/sm_statefuns.c                |  5 ++++-
+ net/sctp/transport.c                   | 11 ++++-------
+ 4 files changed, 18 insertions(+), 13 deletions(-)
 
-Regards,
-Alex
+-- 
+2.27.0
+
