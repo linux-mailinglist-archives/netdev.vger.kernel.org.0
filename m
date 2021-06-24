@@ -2,115 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50B9D3B25B6
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 05:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03BA43B2582
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 05:35:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229987AbhFXDvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 23:51:23 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:39818 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229850AbhFXDvW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 23:51:22 -0400
-X-UUID: 0e541a2a7cb5412db0d434357bec808b-20210624
-X-UUID: 0e541a2a7cb5412db0d434357bec808b-20210624
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
-        (envelope-from <rocco.yue@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 358019924; Thu, 24 Jun 2021 11:48:58 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs08n2.mediatek.inc (172.21.101.56) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 24 Jun 2021 11:48:56 +0800
-Received: from localhost.localdomain (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 24 Jun 2021 11:48:54 +0800
-From:   Rocco Yue <rocco.yue@mediatek.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S229934AbhFXDhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 23:37:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35068 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229774AbhFXDhU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 23:37:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624505701;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5QohIO9QZ56POeZsL8ywMd6mageIeyr6m/mT20FPwPo=;
+        b=IvnMUpI8ARjUQ2px4raVHAzkZtw8Xe8nNM9kftL3XfBjKTJcrecktPUp7p9IcpR5MXDNGR
+        DE5AgIzEme5gS3gO8raxa67tqctDueaqX9ZfAub2jdg0bSe8pbw5yfGlIiIvz+ic3rtRao
+        E5g34nLDd19n6b7XaBsRfiqUYH2+tX8=
+Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
+ [209.85.210.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-544-e2P8yjemOZeFD7lBIMZhiw-1; Wed, 23 Jun 2021 23:34:59 -0400
+X-MC-Unique: e2P8yjemOZeFD7lBIMZhiw-1
+Received: by mail-pf1-f200.google.com with SMTP id b8-20020a056a000a88b02902e97a71383dso3051010pfl.13
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 20:34:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=5QohIO9QZ56POeZsL8ywMd6mageIeyr6m/mT20FPwPo=;
+        b=fLt5GF3L/URpUJduzYKx1c6uUNtS+KmnmovyV66MiT4li8H/TOZ0IGVi4ef8pRaJqL
+         LZAppMncMPxJdNqPpCZ0d2LP5vayBGsbuRUskCCATpv3VinuW6eYXgDjaNAHikSe/SE7
+         R4FVCggz4ljgwFX+wXGPnxV8cL/+ClBWpbV9Qg35jnOWRCkE8OT+DP3/aqf8nXl46QpI
+         5q7LbN97pS6guh1H1v57446vDx1G34QfZV+9h0bkdWqyrmMD+xJSeyHibNsGaMMa2u7P
+         hfiEZk9aeY8j4Geb5sRwQ/9ch7DWRWj56rEgr+sv3d/ZedYkUt2pdPPzwPawFcKnV3Rg
+         bnfA==
+X-Gm-Message-State: AOAM532VAPqTQUU5NeqimlMlgEjPai76oMa+csX0ekxgiZ70pJAwXNb9
+        VR/TO1uioxD0ppvXXt/XGHEgomKcwnLvv0TFSYfvqcXO+L+mUuCAn2gw2vqipJ6n+Silwrc3O7g
+        KXelqfw2Qs/JDaoj/
+X-Received: by 2002:a17:90b:1191:: with SMTP id gk17mr2989114pjb.95.1624505698641;
+        Wed, 23 Jun 2021 20:34:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxoEDvRxknwye7AvfyEaKP6cKcvSDe8Ou4kXVMU8NQ9OSeQD22thwiDze8XxBwVGv+OJzWxjg==
+X-Received: by 2002:a17:90b:1191:: with SMTP id gk17mr2989081pjb.95.1624505698416;
+        Wed, 23 Jun 2021 20:34:58 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a15sm1101133pff.128.2021.06.23.20.34.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Jun 2021 20:34:57 -0700 (PDT)
+Subject: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in
+ Userspace
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
         Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>, <netdev@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <bpf@vger.kernel.org>,
-        <wsd_upstream@mediatek.com>, <chao.song@mediatek.com>,
-        <kuohong.wang@mediatek.com>, Rocco Yue <rocco.yue@mediatek.com>
-Subject: Re: [PATCH 1/4] net: if_arp: add ARPHRD_PUREIP type
-Date:   Thu, 24 Jun 2021 11:33:53 +0800
-Message-ID: <20210624033353.25636-1-rocco.yue@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <YNNtN3cdDL71SiNt@kroah.com>
-References: <YNNtN3cdDL71SiNt@kroah.com>
+        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20210615141331.407-1-xieyongji@bytedance.com>
+ <20210615141331.407-10-xieyongji@bytedance.com>
+ <adfb2be9-9ed9-ca37-ac37-4cd00bdff349@redhat.com>
+ <CACycT3tAON+-qZev+9EqyL2XbgH5HDspOqNt3ohQLQ8GqVK=EA@mail.gmail.com>
+ <1bba439f-ffc8-c20e-e8a4-ac73e890c592@redhat.com>
+ <CACycT3uzMJS7vw6MVMOgY4rb=SPfT2srV+8DPdwUVeELEiJgbA@mail.gmail.com>
+ <0aeb7cb7-58e5-1a95-d830-68edd7e8ec2e@redhat.com>
+ <CACycT3uuooKLNnpPHewGZ=q46Fap2P4XCFirdxxn=FxK+X1ECg@mail.gmail.com>
+ <e4cdee72-b6b4-d055-9aac-3beae0e5e3e1@redhat.com>
+ <CACycT3u8=_D3hCtJR+d5BgeUQMce6S7c_6P3CVfvWfYhCQeXFA@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <d2334f66-907c-2e9c-ea4f-f912008e9be8@redhat.com>
+Date:   Thu, 24 Jun 2021 11:34:46 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+In-Reply-To: <CACycT3u8=_D3hCtJR+d5BgeUQMce6S7c_6P3CVfvWfYhCQeXFA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-06-23 at 19:19 +0200, Greg KH wrote:
-On Wed, Jun 23, 2021 at 07:34:49PM +0800, Rocco Yue wrote:
->> This patch add the definition of ARPHRD_PUREIP which can for
->> example be used by mobile ccmni device as device type.
->> ARPHRD_PUREIP means that this device doesn't need kernel to
->> generate ipv6 link-local address in any addr_gen_mode.
->> 
->> Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
->> ---
->>  include/uapi/linux/if_arp.h | 1 +
->>  1 file changed, 1 insertion(+)
->> 
->> diff --git a/include/uapi/linux/if_arp.h b/include/uapi/linux/if_arp.h
->> index c3cc5a9e5eaf..4463c9e9e8b4 100644
->> --- a/include/uapi/linux/if_arp.h
->> +++ b/include/uapi/linux/if_arp.h
->> @@ -61,6 +61,7 @@
->>  #define ARPHRD_DDCMP    517		/* Digital's DDCMP protocol     */
->>  #define ARPHRD_RAWHDLC	518		/* Raw HDLC			*/
->>  #define ARPHRD_RAWIP    519		/* Raw IP                       */
->> +#define ARPHRD_PUREIP	520		/* Pure IP			*/
-> 
-> In looking at the patches, what differs "PUREIP" from "RAWIP"?  It seems
 
-Thanks for your review.
+在 2021/6/23 下午1:50, Yongji Xie 写道:
+> On Wed, Jun 23, 2021 at 11:31 AM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> 在 2021/6/22 下午4:14, Yongji Xie 写道:
+>>> On Tue, Jun 22, 2021 at 3:50 PM Jason Wang <jasowang@redhat.com> wrote:
+>>>> 在 2021/6/22 下午3:22, Yongji Xie 写道:
+>>>>>> We need fix a way to propagate the error to the userspace.
+>>>>>>
+>>>>>> E.g if we want to stop the deivce, we will delay the status reset until
+>>>>>> we get respose from the userspace?
+>>>>>>
+>>>>> I didn't get how to delay the status reset. And should it be a DoS
+>>>>> that we want to fix if the userspace doesn't give a response forever?
+>>>> You're right. So let's make set_status() can fail first, then propagate
+>>>> its failure via VHOST_VDPA_SET_STATUS.
+>>>>
+>>> OK. So we only need to propagate the failure in the vhost-vdpa case, right?
+>>
+>> I think not, we need to deal with the reset for virtio as well:
+>>
+>> E.g in register_virtio_devices(), we have:
+>>
+>>           /* We always start by resetting the device, in case a previous
+>>            * driver messed it up.  This also tests that code path a
+>> little. */
+>>         dev->config->reset(dev);
+>>
+>> We probably need to make reset can fail and then fail the
+>> register_virtio_device() as well.
+>>
+> OK, looks like virtio_add_status() and virtio_device_ready()[1] should
+> be also modified if we need to propagate the failure in the
+> virtio-vdpa case. Or do we only need to care about the reset case?
+>
+> [1] https://lore.kernel.org/lkml/20210517093428.670-1-xieyongji@bytedance.com/
 
-The difference between RAWIP and PUREIP is that they generate IPv6
-link-local address and IPv6 global address in different ways.
 
-RAWIP:
-~~~~~~
-In the ipv6_generate_eui64() function, using RAWIP will always return 0,
-which will cause the kernel to automatically generate an IPv6 link-local
-address in EUI64 format and an IPv6 global address in EUI64 format.
+My understanding is DRIVER_OK is not something that needs to be validated:
 
-PUREIP:
-~~~~~~~
-After this patch set, when using PUREIP, kernel doesn't generate IPv6
-link-local address regardless of which IN6_ADDR_GEN_MODE is used.
+"
 
-@@  static void addrconf_dev_config(struct net_device *dev)
-+       if (dev->type == ARPHRD_PUREIP)
-+               return;
+DRIVER_OK (4)
+Indicates that the driver is set up and ready to drive the device.
 
-And after recving RA message, kernel iterates over the link-local address
-that exists for the interface and uses the low 64bits of the link-local
-address to generate the IPv6 global address.
-The general process is as follows:
-ndisc_router_discovery() -> addrconf_prefix_rcv() -> ipv6_generate_eui64() -> ipv6_inherit_eui64()
+"
 
-> to be the same to me.  If they are different, where is that documented?
-> 
-> thanks,
-> 
-> greg k-h
+Since the spec doesn't require to re-read the and check if DRIVER_OK is 
+set in 3.1.1 Driver Requirements: Device Initialization.
 
-I tried to find corresponding documents about other device types, but I
-am sorry I didn't find it. If it is needed, I am willing to provide.
+It's more about "telling the device that driver is ready."
 
-Thanks,
-Rocco
+But we don have some status bit that requires the synchronization with 
+the device.
+
+1) FEATURES_OK, spec requires to re-read the status bit to check whether 
+or it it was set by the device:
+
+"
+
+Re-read device status to ensure the FEATURES_OK bit is still set: 
+otherwise, the device does not support our subset of features and the 
+device is unusable.
+
+"
+
+This is useful for some device which can only support a subset of the 
+features. E.g a device that can only work for packed virtqueue. This 
+means the current design of set_features won't work, we need either:
+
+1a) relay the set_features request to userspace
+
+or
+
+1b) introduce a mandated_device_features during device creation and 
+validate the driver features during the set_features(), and don't set 
+FEATURES_OK if they don't match.
+
+
+2) Some transports (PCI) requires to re-read the status to ensure the 
+synchronization.
+
+"
+
+After writing 0 to device_status, the driver MUST wait for a read of 
+device_status to return 0 before reinitializing the device.
+
+"
+
+So we need to deal with both FEATURES_OK and reset, but probably not 
+DRIVER_OK.
+
+Thanks
+
+
+>
+> Thanks,
+> Yongji
+>
 
