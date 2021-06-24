@@ -2,122 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BD273B32D0
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 671503B32DA
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230087AbhFXPug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 11:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232370AbhFXPuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 11:50:35 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF092C061574;
-        Thu, 24 Jun 2021 08:48:15 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id b3so4476676qtq.6;
-        Thu, 24 Jun 2021 08:48:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UU6DtDGiyA1vWHeojTVbBhsXsciQ4zbhSh2JaptoGlM=;
-        b=SRlxey+oYCINUn9G4HTTJ0AqS9LuZVHwhL4xuNDscS4VmSHXTt406Pa3rUHVuTVs2F
-         ZNVZo2onwQ/nMo47SnpFXpv3ZLulKvxgYcL38t18JJWNhmF1yoCK2T1LPBjDOScf19Vt
-         qOjjLiidSwtRPpxfcPFuoaIcVF43HP2j3KdHj9OEP+osi0HpeqxgEtqFY3smFl/9jjIa
-         pF3RqEEI2bm6Omznd7d9RwdK8CpER0WUoffsF6LV8pLozFjwOjB0rM5gcfFYJQjVGy+p
-         w28ortidm4ra8bJCAT9S/dEHvp78ZiKY1EC6mX5lelvoWIoc79ZrFKgj9pEBRaVcROlD
-         j/bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UU6DtDGiyA1vWHeojTVbBhsXsciQ4zbhSh2JaptoGlM=;
-        b=sZUmio3Bd7zgY+x7CXC2+pNA2IfLZxpr9LdMUzhuH95NEkIm5fPKwZWAl+Nop7a3ie
-         R1xFpf0rgeDaIdLpnbobR7cO/QY9WKOsHUpwTSOXF5ABvy2kE/VbljoN8iomDKvfAJYX
-         AZm7yKJK0lC1ZJdwDYJkSHe0meDnjQNO+wj6fOQydXYWP0mxU6WcR+YWkpXt32g8iRGI
-         yEO3fGqnX2Zf0IXpTnwWbhICNuWqaicdf+XAhWrhTJstMP023a56ubj2yAulfxBFKw0W
-         t8uA2kWnRecCZ4+90zEnAbObkPpXgvjPHB8d1NCL3QFDje6M9/vsqcfMf9xn92HWrVwR
-         HVJA==
-X-Gm-Message-State: AOAM5326SdDC87bQ+zgm/3NlVkBbTfKhqFihd/xoeMtqCjAcwdPnT+qL
-        ngVgr7zwBR/0wBZwtDsrC2CO81KqKjjI7Q==
-X-Google-Smtp-Source: ABdhPJy+QqFZolzb9n224yoPQj9aU2hzd5auCxa0gGci1GSUMuvTgjhCr+G2oomQL8CSqmbew2rPIA==
-X-Received: by 2002:ac8:4a18:: with SMTP id x24mr5262672qtq.239.1624549694864;
-        Thu, 24 Jun 2021 08:48:14 -0700 (PDT)
-Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id j4sm2179897qtr.72.2021.06.24.08.48.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 08:48:14 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        linux-sctp@vger.kernel.org
-Cc:     David Laight <david.laight@aculab.com>
-Subject: [PATCH net-next 2/2] sctp: send the next probe immediately once the last one is acked
-Date:   Thu, 24 Jun 2021 11:48:09 -0400
-Message-Id: <5ef97ff6f95741bde34124e4d4aed8c32bde0ff5.1624549642.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1624549642.git.lucien.xin@gmail.com>
-References: <cover.1624549642.git.lucien.xin@gmail.com>
+        id S232432AbhFXPwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 11:52:39 -0400
+Received: from foss.arm.com ([217.140.110.172]:60944 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232053AbhFXPwi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 11:52:38 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 46B81ED1;
+        Thu, 24 Jun 2021 08:50:19 -0700 (PDT)
+Received: from localhost.localdomain (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE2033F719;
+        Thu, 24 Jun 2021 08:50:17 -0700 (PDT)
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>, nic_swsd@realtek.com
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sayanta Pattanayak <sayanta.pattanayak@arm.com>
+Subject: [PATCH v2] r8169: Avoid duplicate sysfs entry creation error
+Date:   Thu, 24 Jun 2021 16:49:45 +0100
+Message-Id: <20210624154945.19177-1-andre.przywara@arm.com>
+X-Mailer: git-send-email 2.14.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These is no need to wait for 'interval' period for the next probe
-if the last probe is already acked in search state. The 'interval'
-period waiting should be only for probe failure timeout and the
-current pmtu check when it's in search complete state.
+From: Sayanta Pattanayak <sayanta.pattanayak@arm.com>
 
-This change will shorten the probe time a lot in search state, and
-also fix the document accordingly.
+When registering the MDIO bus for a r8169 device, we use the PCI B/D/F
+specifier as a (seemingly) unique device identifier.
+However the very same BDF number can be used on another PCI segment,
+which makes the driver fail probing:
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+[ 27.544136] r8169 0002:07:00.0: enabling device (0000 -> 0003)
+[ 27.559734] sysfs: cannot create duplicate filename '/class/mdio_bus/r8169-700'
+....…
+[ 27.684858] libphy: mii_bus r8169-700 failed to register
+[ 27.695602] r8169: probe of 0002:07:00.0 failed with error -22
+
+Add the segment number to the device name to make it more unique.
+
+This fixes operation on an ARM N1SDP board, where two boards might be
+connected together to form an SMP system, and all on-board devices show
+up twice, just on different PCI segments.
+
+Signed-off-by: Sayanta Pattanayak <sayanta.pattanayak@arm.com>
+[Andre: expand commit message, use pci_domain_nr()]
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- Documentation/networking/ip-sysctl.rst | 12 ++++++++----
- net/sctp/sm_statefuns.c                |  5 ++++-
- 2 files changed, 12 insertions(+), 5 deletions(-)
+Now compile-tested on ARM, arm64, ppc64, sparc64, mips64, hppa, x86-64,
+i386.
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 8bff728b3a1e..b3fa522e4cd9 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2835,10 +2835,14 @@ encap_port - INTEGER
- 	Default: 0
+Changes v1 ... v2:
+- use pci_domain_nr() wrapper to fix compilation on various arches
+
+ drivers/net/ethernet/realtek/r8169_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 2c89cde7da1e..5f7f0db7c502 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5086,7 +5086,8 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
+ 	new_bus->priv = tp;
+ 	new_bus->parent = &pdev->dev;
+ 	new_bus->irq[0] = PHY_MAC_INTERRUPT;
+-	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x", pci_dev_id(pdev));
++	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x-%x",
++		 pci_domain_nr(pdev->bus), pci_dev_id(pdev));
  
- plpmtud_probe_interval - INTEGER
--        The time interval (in milliseconds) for sending PLPMTUD probe chunks.
--        These chunks are sent at the specified interval with a variable size
--        to probe the mtu of a given path between 2 endpoints. PLPMTUD will
--        be disabled when 0 is set, and other values for it must be >= 5000.
-+        The time interval (in milliseconds) for the PLPMTUD probe timer,
-+        which is configured to expire after this period to receive an
-+        acknowledgment to a probe packet. This is also the time interval
-+        between the probes for the current pmtu when the probe search
-+        is done.
-+
-+        PLPMTUD will be disabled when 0 is set, and other values for it
-+        must be >= 5000.
- 
- 	Default: 0
- 
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index d29b579da904..09a8f23ec709 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -1275,7 +1275,10 @@ enum sctp_disposition sctp_sf_backbeat_8_3(struct net *net,
- 			return SCTP_DISPOSITION_DISCARD;
- 
- 		sctp_transport_pl_recv(link);
--		return SCTP_DISPOSITION_CONSUME;
-+		if (link->pl.state == SCTP_PL_COMPLETE)
-+			return SCTP_DISPOSITION_CONSUME;
-+
-+		return sctp_sf_send_probe(net, ep, asoc, type, link, commands);
- 	}
- 
- 	max_interval = link->hbinterval + link->rto;
+ 	new_bus->read = r8169_mdio_read_reg;
+ 	new_bus->write = r8169_mdio_write_reg;
 -- 
-2.27.0
+2.17.5
 
