@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E3D03B24FE
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 04:25:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 715523B24FD
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 04:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbhFXC2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 22:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50474 "EHLO
+        id S230064AbhFXC2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 22:28:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbhFXC14 (ORCPT
+        with ESMTP id S230030AbhFXC14 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 22:27:56 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26381C0617A8;
-        Wed, 23 Jun 2021 19:25:34 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id c8so3891438pfp.5;
-        Wed, 23 Jun 2021 19:25:34 -0700 (PDT)
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B884EC0617AD;
+        Wed, 23 Jun 2021 19:25:35 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id g21so2181865pfc.11;
+        Wed, 23 Jun 2021 19:25:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=uF/odF3Gv6JL0X6Nc8bIvct/dLkyQfWNH8/SAaDlXe4=;
-        b=i/wAhGlmweEQz/EZQeXpL19IEWeC0BgxHjpGT819Ve91skEU6fk9Kf5QOV+p5dYhEU
-         DBGMQjo+UMJzSW+0WCK5iTiaT0fxROvccZLW7iuwG3k/hbdYi4xWIhQ1M7SqJ7hanY40
-         Ue0s5E07dx8l+Ny5yuyoTAXttQrWLIzYPGNWIlADjB5HCA1k9I7Bm8Oq4F5tWiSk+7gp
-         xemepYCBH2iOlNgKS5WvEhFlrxS47esUwETtRgM65lHQrZfQvMCYl6yySPB8e1WjXcbv
-         eVLAwzMZn38WA9nceWxOeiBldVlaFYrE+r9yeFsLWJOAacnKyZbTJ9GvTh0N+rCuHVZo
-         +c/g==
+        bh=W6OMaDkgPCSNRt4S9ZxziI3BCvcsK+GxZc4bBmTa4Tg=;
+        b=HvS6Ko/gR//Ru2kLd0sh8y0oG4kqilKvT2X5F28NUKMYZ7f3T4Jzq3a/swxSpOvKvf
+         yOq+/ChQm0A63ngbsXrmls5omZaaOu1fJXS1BJXEPCupAWwBraj4OHBlc3CN7zVLLuTB
+         B7F59VtrR/y7ifMFqDYxXIodmrsmv7ph2xeYMxuLIRVohc+ltAfNhwe8HShxkN390O3d
+         iAw8ShmIWmO33eyNWm8cd1O3bQzWaftE7wCMHXcAFSOji0AGAEcNHxZseqhoY66ATkNo
+         WpVGoNV9UYi1/DT2/+fvfdlgIgy27/DS0IzfMt/AqOl8EZpdAPl3zJZYpO24WYZadrBb
+         UQyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=uF/odF3Gv6JL0X6Nc8bIvct/dLkyQfWNH8/SAaDlXe4=;
-        b=W0TQCd6KH2VK2RsuZC4yViPyqqus43tH8NrgQ9pANQex1u6eoSMXq32qZRKMTJb1t4
-         Lvv3XKe3piqOgBWuRwW+i4Jo1kPxQFuygHvcpnWzxQcFltme4IJzsCoT2upvaqy1lTI/
-         VPKQjwioRuHbCkSGOQOp4A9W3D+zl8kLU+rbDu7tpCVAUb6Uqv3bVC92ujRHOpHXFEzs
-         z4/gnkBe7AZHzop9l3peItv4DIvFn/caYrHJcmkvSOkB8Dd8Zv9avmEo6nSVw0rg3iYt
-         pXJO3qzv5z7Yb13Mj6MXGKdKIFjQeIAjYwUEOF0ONU/4jFFRlK/llzT8TtamxiQ0BEhr
-         Fwcw==
-X-Gm-Message-State: AOAM532u7DAlHuRQNP9Ki6NmxFcFG5rAAi6iASZJulL3/BEardmX2aX6
-        JCdaVBv7BgbcrNSSzr7ARQc=
-X-Google-Smtp-Source: ABdhPJxWwY4Uk8BZz20X1uTp2uuzMpXUMtlPDpNyy3Y3Did7imKHJp81uN7nYhx72vF18O/UJRLQDg==
-X-Received: by 2002:a63:1e1e:: with SMTP id e30mr2491201pge.149.1624501533651;
-        Wed, 23 Jun 2021 19:25:33 -0700 (PDT)
+        bh=W6OMaDkgPCSNRt4S9ZxziI3BCvcsK+GxZc4bBmTa4Tg=;
+        b=kVQJ0QabXykQ3ngQJxFNbHKQoA5DCODHDiLT9V/NGUgstUh5zUwZCqsvnh8kU4ai43
+         nDo5K1v9VKX5nc1wi3kOC38GmyKEhMOCu8SIuTVZJ7BxcO6Q8WFklx01ow0tZnr/Ds2L
+         ZyVdFbprU6vMnoxsUWR9Yrd4OgtrMdEs1R0o+4xn+x8Cj26vP1SqG4f3YNuESzcKFv2J
+         CqqvPYoji9TrisCp2AjWFLZZ0dtSgr80DzP6ZMaR1SrTI6/MJJOPcWo/6xZqz0s8tPnu
+         5KxNj0P+5MHITzyzbPj928/ACHbVJny2cnkw3rhAGYz+1/fy9/nGeyQKqzEi1d374Eid
+         O/KQ==
+X-Gm-Message-State: AOAM532ucTTZC4nr917AH1k0IiZrIqNiAmdS2ECrvpIXqli00Efwg1He
+        KRmJ/wZ1Cvdjvm8meVDzllg=
+X-Google-Smtp-Source: ABdhPJy/5v4PjeGqE4kMx3R9RJkecD+7ELpYufyS4FA/Ei2nle7+h14vI+iRdkYJqXgtPk/LWfBdrw==
+X-Received: by 2002:a62:687:0:b029:2ef:be02:c346 with SMTP id 129-20020a6206870000b02902efbe02c346mr2698991pfg.51.1624501535326;
+        Wed, 23 Jun 2021 19:25:35 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:a319])
-        by smtp.gmail.com with ESMTPSA id f17sm4675965pjj.21.2021.06.23.19.25.32
+        by smtp.gmail.com with ESMTPSA id f17sm4675965pjj.21.2021.06.23.19.25.33
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Jun 2021 19:25:33 -0700 (PDT)
+        Wed, 23 Jun 2021 19:25:34 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v3 bpf-next 7/8] selftests/bpf: Add bpf_timer test.
-Date:   Wed, 23 Jun 2021 19:25:17 -0700
-Message-Id: <20210624022518.57875-8-alexei.starovoitov@gmail.com>
+Subject: [PATCH v3 bpf-next 8/8] selftests/bpf: Add a test with bpf_timer in inner map.
+Date:   Wed, 23 Jun 2021 19:25:18 -0700
+Message-Id: <20210624022518.57875-9-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
 References: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
@@ -62,89 +62,100 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Add bpf_timer test that creates timers in preallocated and
-non-preallocated hash, in array and in lru maps.
-Let array timer expire once and then re-arm it for 35 seconds.
-Arm lru timer into the same callback.
-Then arm and re-arm hash timers 10 times each.
-At the last invocation of prealloc hash timer cancel the array timer.
-Force timer free via LRU eviction and direct bpf_map_delete_elem.
+Check that map-in-map supports bpf timers.
+
+Check that indirect "recursion" of timer callbacks works:
+timer_cb1() { bpf_timer_start(timer_cb2); }
+timer_cb2() { bpf_timer_start(timer_cb1); }
+
+Check that
+  bpf_map_release
+    htab_free_prealloced_timers
+      bpf_timer_cancel_and_free
+        hrtimer_cancel
+works while timer cb is running.
+"while true; do ./test_progs -t timer_mim; done"
+is a great stress test. It caught missing timer cancel in htab->extra_elems.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- .../testing/selftests/bpf/prog_tests/timer.c  |  55 ++++
- tools/testing/selftests/bpf/progs/timer.c     | 293 ++++++++++++++++++
- 2 files changed, 348 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/timer.c
- create mode 100644 tools/testing/selftests/bpf/progs/timer.c
+ .../selftests/bpf/prog_tests/timer_mim.c      | 59 ++++++++++++++
+ tools/testing/selftests/bpf/progs/timer_mim.c | 81 +++++++++++++++++++
+ 2 files changed, 140 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/timer_mim.c
+ create mode 100644 tools/testing/selftests/bpf/progs/timer_mim.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/timer.c b/tools/testing/selftests/bpf/prog_tests/timer.c
+diff --git a/tools/testing/selftests/bpf/prog_tests/timer_mim.c b/tools/testing/selftests/bpf/prog_tests/timer_mim.c
 new file mode 100644
-index 000000000000..25f40e1b9967
+index 000000000000..d54b16a3d9ea
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/timer.c
-@@ -0,0 +1,55 @@
++++ b/tools/testing/selftests/bpf/prog_tests/timer_mim.c
+@@ -0,0 +1,59 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2021 Facebook */
 +#include <test_progs.h>
-+#include "timer.skel.h"
++#include "timer_mim.skel.h"
 +
-+static int timer(struct timer *timer_skel)
++static int timer_mim(struct timer_mim *timer_skel)
 +{
-+	int err, prog_fd;
 +	__u32 duration = 0, retval;
++	__u64 cnt1, cnt2;
++	int err, prog_fd, key1 = 1;
 +
-+	err = timer__attach(timer_skel);
++	err = timer_mim__attach(timer_skel);
 +	if (!ASSERT_OK(err, "timer_attach"))
 +		return err;
-+
-+	ASSERT_EQ(timer_skel->data->callback_check, 52, "callback_check1");
-+	ASSERT_EQ(timer_skel->data->callback2_check, 52, "callback2_check1");
 +
 +	prog_fd = bpf_program__fd(timer_skel->progs.test1);
 +	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
 +				NULL, NULL, &retval, &duration);
 +	ASSERT_OK(err, "test_run");
 +	ASSERT_EQ(retval, 0, "test_run");
-+	timer__detach(timer_skel);
++	timer_mim__detach(timer_skel);
 +
-+	usleep(50); /* 10 usecs should be enough, but give it extra */
-+	/* check that timer_cb1() was executed 10+10 times */
-+	ASSERT_EQ(timer_skel->data->callback_check, 42, "callback_check2");
-+	ASSERT_EQ(timer_skel->data->callback2_check, 42, "callback2_check2");
++	/* check that timer_cb[12] are incrementing 'cnt' */
++	cnt1 = READ_ONCE(timer_skel->bss->cnt);
++	usleep(2);
++	cnt2 = READ_ONCE(timer_skel->bss->cnt);
++	ASSERT_GT(cnt2, cnt1, "cnt");
 +
-+	/* check that timer_cb2() was executed twice */
-+	ASSERT_EQ(timer_skel->bss->bss_data, 10, "bss_data");
-+
-+	/* check that there were no errors in timer execution */
 +	ASSERT_EQ(timer_skel->bss->err, 0, "err");
-+
 +	/* check that code paths completed */
-+	ASSERT_EQ(timer_skel->bss->ok, 1 | 2 | 4, "ok");
++	ASSERT_EQ(timer_skel->bss->ok, 1 | 2, "ok");
++
++	close(bpf_map__fd(timer_skel->maps.inner_map));
++	err = bpf_map_delete_elem(bpf_map__fd(timer_skel->maps.outer_arr), &key1);
++	ASSERT_EQ(err, 0, "delete inner map");
++
++	/* check that timer_cb[12] are no longer running */
++	cnt1 = READ_ONCE(timer_skel->bss->cnt);
++	usleep(2);
++	cnt2 = READ_ONCE(timer_skel->bss->cnt);
++	ASSERT_EQ(cnt2, cnt1, "cnt");
 +
 +	return 0;
 +}
 +
-+void test_timer(void)
++void test_timer_mim(void)
 +{
-+	struct timer *timer_skel = NULL;
++	struct timer_mim *timer_skel = NULL;
 +	int err;
 +
-+	timer_skel = timer__open_and_load();
++	timer_skel = timer_mim__open_and_load();
 +	if (!ASSERT_OK_PTR(timer_skel, "timer_skel_load"))
 +		goto cleanup;
 +
-+	err = timer(timer_skel);
-+	ASSERT_OK(err, "timer");
++	err = timer_mim(timer_skel);
++	ASSERT_OK(err, "timer_mim");
 +cleanup:
-+	timer__destroy(timer_skel);
++	timer_mim__destroy(timer_skel);
 +}
-diff --git a/tools/testing/selftests/bpf/progs/timer.c b/tools/testing/selftests/bpf/progs/timer.c
+diff --git a/tools/testing/selftests/bpf/progs/timer_mim.c b/tools/testing/selftests/bpf/progs/timer_mim.c
 new file mode 100644
-index 000000000000..5d96a12c91a2
+index 000000000000..4d1d785d8d26
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/timer.c
-@@ -0,0 +1,293 @@
++++ b/tools/testing/selftests/bpf/progs/timer_mim.c
+@@ -0,0 +1,81 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2021 Facebook */
 +#include <linux/bpf.h>
@@ -155,288 +166,76 @@ index 000000000000..5d96a12c91a2
 +
 +char _license[] SEC("license") = "GPL";
 +struct hmap_elem {
-+	int counter;
++	int pad; /* unused */
 +	struct bpf_timer timer;
-+	struct bpf_spin_lock lock; /* unused */
 +};
 +
-+struct {
++struct inner_map {
 +	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 1000);
++	__uint(max_entries, 1024);
 +	__type(key, int);
 +	__type(value, struct hmap_elem);
-+} hmap SEC(".maps");
++} inner_map SEC(".maps");
 +
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(map_flags, BPF_F_NO_PREALLOC);
-+	__uint(max_entries, 1000);
-+	__type(key, int);
-+	__type(value, struct hmap_elem);
-+} hmap_malloc SEC(".maps");
++#define ARRAY_KEY 1
++#define HASH_KEY 1234
 +
-+struct elem {
-+	struct bpf_timer t;
-+};
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
++struct outer_arr {
++	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
 +	__uint(max_entries, 2);
-+	__type(key, int);
-+	__type(value, struct elem);
-+} array SEC(".maps");
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(int));
++	__array(values, struct inner_map);
++} outer_arr SEC(".maps") = {
++	.values = { [ARRAY_KEY] = &inner_map },
++};
 +
-+struct {
-+	__uint(type, BPF_MAP_TYPE_LRU_HASH);
-+	__uint(max_entries, 4);
-+	__type(key, int);
-+	__type(value, struct elem);
-+} lru SEC(".maps");
-+
-+__u64 bss_data;
 +__u64 err;
 +__u64 ok;
-+__u64 callback_check = 52;
-+__u64 callback2_check = 52;
++__u64 cnt;
 +
-+#define ARRAY 1
-+#define HTAB 2
-+#define HTAB_MALLOC 3
-+#define LRU 4
++static int timer_cb1(void *map, int *key, struct hmap_elem *val);
 +
-+/* callback for array and lru timers */
-+static int timer_cb1(void *map, int *key, struct bpf_timer *timer)
++static int timer_cb2(void *map, int *key, struct hmap_elem *val)
 +{
-+	/* increment bss variable twice.
-+	 * Once via array timer callback and once via lru timer callback
-+	 */
-+	bss_data += 5;
++	cnt++;
++	if (bpf_timer_start(&val->timer, timer_cb1, 1000) != 0)
++		err |= 1;
++	ok |= 1;
++	return 0;
++}
 +
-+	/* *key == 0 - the callback was called for array timer.
-+	 * *key == 4 - the callback was called from lru timer.
-+	 */
-+	if (*key == ARRAY) {
-+		struct bpf_timer *lru_timer;
-+		int lru_key = LRU;
-+
-+		/* rearm array timer to be called again in ~35 seconds */
-+		if (bpf_timer_start(timer, timer_cb1, 1ull << 35) != 0)
-+			err |= 1;
-+
-+		lru_timer = bpf_map_lookup_elem(&lru, &lru_key);
-+		if (!lru_timer)
-+			return 0;
-+		if (bpf_timer_start(lru_timer, timer_cb1, 0) != 0)
-+			err |= 2;
-+	} else if (*key == LRU) {
-+		int lru_key, i;
-+
-+		for (i = LRU + 1;
-+		     i <= 100  /* for current LRU eviction algorithm this number
-+				* should be larger than ~ lru->max_entries * 2
-+				*/;
-+		     i++) {
-+			struct elem init = {};
-+
-+			/* lru_key cannot be used as loop induction variable
-+			 * otherwise the loop will be unbounded.
-+			 */
-+			lru_key = i;
-+
-+			/* add more elements into lru map to push out current
-+			 * element and force deletion of this timer
-+			 */
-+			bpf_map_update_elem(map, &lru_key, &init, 0);
-+			/* look it up to bump it into active list */
-+			bpf_map_lookup_elem(map, &lru_key);
-+
-+			/* keep adding until *key changes underneath,
-+			 * which means that key/timer memory was reused
-+			 */
-+			if (*key != LRU)
-+				break;
-+		}
-+
-+		/* check that the timer was removed */
-+		if (bpf_timer_cancel(timer) != -EINVAL)
-+			err |= 4;
-+		ok |= 1;
-+	}
++/* callback for inner hash map */
++static int timer_cb1(void *map, int *key, struct hmap_elem *val)
++{
++	cnt++;
++	if (bpf_timer_start(&val->timer, timer_cb2, 1000) != 0)
++		err |= 2;
++	ok |= 2;
 +	return 0;
 +}
 +
 +SEC("fentry/bpf_fentry_test1")
 +int BPF_PROG(test1, int a)
 +{
-+	struct bpf_timer *arr_timer, *lru_timer;
-+	struct elem init = {};
-+	int lru_key = LRU;
-+	int array_key = ARRAY;
-+
-+	arr_timer = bpf_map_lookup_elem(&array, &array_key);
-+	if (!arr_timer)
-+		return 0;
-+	bpf_timer_init(arr_timer, CLOCK_MONOTONIC);
-+
-+	bpf_map_update_elem(&lru, &lru_key, &init, 0);
-+	lru_timer = bpf_map_lookup_elem(&lru, &lru_key);
-+	if (!lru_timer)
-+		return 0;
-+	bpf_timer_init(lru_timer, CLOCK_MONOTONIC);
-+
-+	bpf_timer_start(arr_timer, timer_cb1, 0 /* call timer_cb1 asap */);
-+
-+	/* init more timers to check that array destruction
-+	 * doesn't leak timer memory.
-+	 */
-+	array_key = 0;
-+	arr_timer = bpf_map_lookup_elem(&array, &array_key);
-+	if (!arr_timer)
-+		return 0;
-+	bpf_timer_init(arr_timer, CLOCK_MONOTONIC);
-+	return 0;
-+}
-+
-+/* callback for prealloc and non-prealloca hashtab timers */
-+static int timer_cb2(void *map, int *key, struct hmap_elem *val)
-+{
-+	if (*key == HTAB)
-+		callback_check--;
-+	else
-+		callback2_check--;
-+	if (val->counter > 0 && --val->counter) {
-+		/* re-arm the timer again to execute after 1 usec */
-+		bpf_timer_start(&val->timer, timer_cb2, 1000);
-+	} else if (*key == HTAB) {
-+		struct bpf_timer *arr_timer;
-+		int array_key = ARRAY;
-+
-+		/* cancel arr_timer otherwise bpf_fentry_test1 prog
-+		 * will stay alive forever.
-+		 */
-+		arr_timer = bpf_map_lookup_elem(&array, &array_key);
-+		if (!arr_timer)
-+			return 0;
-+		if (bpf_timer_cancel(arr_timer) != 1)
-+			/* bpf_timer_cancel should return 1 to indicate
-+			 * that arr_timer was active at this time
-+			 */
-+			err |= 8;
-+
-+		/* try to cancel ourself. It shouldn't deadlock. */
-+		if (bpf_timer_cancel(&val->timer) != -EDEADLK)
-+			err |= 16;
-+
-+		/* delete this key and this timer anyway.
-+		 * It shouldn't deadlock either.
-+		 */
-+		bpf_map_delete_elem(map, key);
-+
-+		/* in preallocated hashmap both 'key' and 'val' could have been
-+		 * reused to store another map element (like in LRU above),
-+		 * but in controlled test environment the below test works.
-+		 * It's not a use-after-free. The memory is owned by the map.
-+		 */
-+		if (bpf_timer_start(&val->timer, timer_cb2, 1000) != -EINVAL)
-+			err |= 32;
-+		ok |= 2;
-+	} else {
-+		if (*key != HTAB_MALLOC)
-+			err |= 64;
-+
-+		/* try to cancel ourself. It shouldn't deadlock. */
-+		if (bpf_timer_cancel(&val->timer) != -EDEADLK)
-+			err |= 128;
-+
-+		/* delete this key and this timer anyway.
-+		 * It shouldn't deadlock either.
-+		 */
-+		bpf_map_delete_elem(map, key);
-+
-+		/* in non-preallocated hashmap both 'key' and 'val' are RCU
-+		 * protected and still valid though this element was deleted
-+		 * from the map. Arm this timer for ~35 seconds. When callback
-+		 * finishes the call_rcu will invoke:
-+		 * htab_elem_free_rcu
-+		 *   check_and_free_timer
-+		 *     bpf_timer_cancel_and_free
-+		 * to cancel this 35 second sleep and delete the timer for real.
-+		 */
-+		if (bpf_timer_start(&val->timer, timer_cb2, 1ull << 35) != 0)
-+			err |= 256;
-+		ok |= 4;
-+	}
-+	return 0;
-+}
-+
-+int bpf_timer_test(void)
-+{
++	struct hmap_elem init = {};
++	struct bpf_map *inner_map;
 +	struct hmap_elem *val;
-+	int key = HTAB, key_malloc = HTAB_MALLOC;
++	int array_key = ARRAY_KEY;
++	int hash_key = HASH_KEY;
 +
-+	val = bpf_map_lookup_elem(&hmap, &key);
-+	if (val) {
-+		if (bpf_timer_init(&val->timer, CLOCK_BOOTTIME) != 0)
-+			err |= 512;
-+		bpf_timer_start(&val->timer, timer_cb2, 1000);
-+	}
-+	val = bpf_map_lookup_elem(&hmap_malloc, &key_malloc);
-+	if (val) {
-+		if (bpf_timer_init(&val->timer, CLOCK_BOOTTIME) != 0)
-+			err |= 1024;
-+		bpf_timer_start(&val->timer, timer_cb2, 1000);
-+	}
++	inner_map = bpf_map_lookup_elem(&outer_arr, &array_key);
++	if (!inner_map)
++		return 0;
++
++	bpf_map_update_elem(inner_map, &hash_key, &init, 0);
++	val = bpf_map_lookup_elem(inner_map, &hash_key);
++	if (!val)
++		return 0;
++
++	bpf_timer_init(&val->timer, CLOCK_MONOTONIC);
++	bpf_timer_start(&val->timer, timer_cb1, 0);
 +	return 0;
-+}
-+
-+SEC("fentry/bpf_fentry_test2")
-+int BPF_PROG(test2, int a, int b)
-+{
-+	struct hmap_elem init = {}, *val;
-+	int key = HTAB, key_malloc = HTAB_MALLOC;
-+
-+	init.counter = 10; /* number of times to trigger timer_cb2 */
-+	bpf_map_update_elem(&hmap, &key, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap, &key);
-+	if (val)
-+		bpf_timer_init(&val->timer, CLOCK_BOOTTIME);
-+	/* update the same key to free the timer */
-+	bpf_map_update_elem(&hmap, &key, &init, 0);
-+
-+	bpf_map_update_elem(&hmap_malloc, &key_malloc, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap_malloc, &key_malloc);
-+	if (val)
-+		bpf_timer_init(&val->timer, CLOCK_BOOTTIME);
-+	/* update the same key to free the timer */
-+	bpf_map_update_elem(&hmap_malloc, &key_malloc, &init, 0);
-+
-+	/* init more timers to check that htab operations
-+	 * don't leak timer memory.
-+	 */
-+	key = 0;
-+	bpf_map_update_elem(&hmap, &key, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap, &key);
-+	if (val)
-+		bpf_timer_init(&val->timer, CLOCK_BOOTTIME);
-+	bpf_map_delete_elem(&hmap, &key);
-+	bpf_map_update_elem(&hmap, &key, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap, &key);
-+	if (val)
-+		bpf_timer_init(&val->timer, CLOCK_BOOTTIME);
-+
-+	/* and with non-prealloc htab */
-+	key_malloc = 0;
-+	bpf_map_update_elem(&hmap_malloc, &key_malloc, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap_malloc, &key_malloc);
-+	if (val)
-+		bpf_timer_init(&val->timer, CLOCK_BOOTTIME);
-+	bpf_map_delete_elem(&hmap_malloc, &key_malloc);
-+	bpf_map_update_elem(&hmap_malloc, &key_malloc, &init, 0);
-+	val = bpf_map_lookup_elem(&hmap_malloc, &key_malloc);
-+	if (val)
-+		bpf_timer_init(&val->timer, CLOCK_BOOTTIME);
-+
-+	return bpf_timer_test();
 +}
 -- 
 2.30.2
