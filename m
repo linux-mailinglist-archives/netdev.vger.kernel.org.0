@@ -2,110 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD6C33B32DF
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:52:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBD63B339A
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 18:10:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232382AbhFXPyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 11:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231294AbhFXPyi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 11:54:38 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9282C061574
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 08:52:18 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id s6so9186828edu.10
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 08:52:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Pu/g2b+XuRImHt/QZ8v2d1zoeT32cbUhDFClrmI9wrw=;
-        b=nxflM7MZkX+AxgeplmnPXBt/GcLeQcc74upvLGq7pWE//cc35kOyE4ss+ttEQjUkJ9
-         thiflgCal2wvXaci/MzRveQC2AupaVoZO7kd3ktPjh3z3IrxkicHIW7zoNkGeASJyBw1
-         fQp0IK58+pSCcOlphFTRt6KmTvSeg+1kUQARr9LHAFT3VJ5ynhRkU77iiioSoM5E9lln
-         1EIVBqbGpl3kRUQBhJtIKj46+ng3tFSZXHUhMzn3WckmO3+HOQ4ti6qt1GYvmN0PyrWu
-         R98h0FYC5UvewsvpeQTOm7DjuPTILJQMrhOxSo0qq4JO4uRetqyQa/uQ9zUZqHqtWgpB
-         Og5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Pu/g2b+XuRImHt/QZ8v2d1zoeT32cbUhDFClrmI9wrw=;
-        b=HTT1q+WjJY3N2guOThOPkGft1+A+9ieo599GKftllLfN5xKjxGVP2FmQyH2IfcyUty
-         OeIUT8cLJLaPrYLZ+vjailSNXwPI1ECOdm8hOe8q8dsTAxcoubTjlhYMyFkUYPR3kTRL
-         PX4u7+T37I7HhNPylf2KI15qdnZT7uhOec23E6QZdwf7B21XHUohZAueKzUHhVroVKgX
-         M/bkursegwwsXVzkWjRcwJYWUdT3RAopLMWj0A/PALS39XIBqXtByMIPCBaniZYqZNju
-         3V3NhgJXpL9cCteKnco7Xd2mkg2T1XpwmNcQyYKQgFJiXCVQ0raNs529Xlwio9bZUvjo
-         JOOA==
-X-Gm-Message-State: AOAM530NYHVgamoZjs7ZrL9RM43E2cd/yT3cxBOYZ4i9I52e61PN/Mz9
-        yxu8mC5XNqoqWRvQMZr06s0=
-X-Google-Smtp-Source: ABdhPJziRVcMywrWHMHBsLQ2wV/jIe2LUWZF6Vo8rPshS6+JggVK6FV65rAYPPp0PxcJpFudL50feQ==
-X-Received: by 2002:aa7:d34f:: with SMTP id m15mr7837260edr.311.1624549937291;
-        Thu, 24 Jun 2021 08:52:17 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id hy18sm1396423ejc.111.2021.06.24.08.52.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 08:52:17 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net] net: dsa: sja1105: fix NULL pointer dereference in sja1105_reload_cbs()
-Date:   Thu, 24 Jun 2021 18:52:07 +0300
-Message-Id: <20210624155207.1005043-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S230188AbhFXQMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 12:12:22 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:51564 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229445AbhFXQMU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 12:12:20 -0400
+X-UUID: 8279eec4480b4048a414ccc5cbd21ae2-20210625
+X-UUID: 8279eec4480b4048a414ccc5cbd21ae2-20210625
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 2104162736; Fri, 25 Jun 2021 00:09:59 +0800
+Received: from mtkcas07.mediatek.inc (172.21.101.84) by
+ mtkmbs02n2.mediatek.inc (172.21.101.101) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 25 Jun 2021 00:09:58 +0800
+Received: from localhost.localdomain (10.15.20.246) by mtkcas07.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 25 Jun 2021 00:09:56 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>, <netdev@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <bpf@vger.kernel.org>,
+        <wsd_upstream@mediatek.com>, <chao.song@mediatek.com>,
+        <kuohong.wang@mediatek.com>, Rocco Yue <rocco.yue@mediatek.com>
+Subject: Re: [PATCH 4/4] drivers: net: mediatek: initial implementation of ccmni
+Date:   Thu, 24 Jun 2021 23:55:02 +0800
+Message-ID: <20210624155501.10024-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <YNR5QuYqknaZS9+j@kroah.com>
+References: <YNR5QuYqknaZS9+j@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Thu, 2021-06-24 at 14:23 +0200, Greg KH wrote:
+On Thu, Jun 24, 2021 at 07:53:49PM +0800, Rocco Yue wrote:
+>> 
+>> without MTK ap ccci driver (modem driver), ccmni_rx_push() and
+>> ccmni_hif_hook() are not be used.
+>> 
+>> Both of them are exported as symbols because MTK ap ccci driver
+>> will be compiled to the ccci.ko file.
+> 
+> But I do not see any code in this series that use these symbols.  We can
 
-priv->cbs is an array of priv->info->num_cbs_shapers elements of type
-struct sja1105_cbs_entry which only get allocated if CONFIG_NET_SCH_CBS
-is enabled.
+will delete these symbols.
 
-However, sja1105_reload_cbs() is called from sja1105_static_config_reload()
-which in turn is called for any of the items in sja1105_reset_reasons,
-therefore during the normal runtime of the driver and not just from a
-code path which can be triggered by the tc-cbs offload.
+> not have exports that no one uses.  Please add the driver to this patch
+> series when you resend it.
+> 
 
-The sja1105_reload_cbs() function does not contain a check whether the
-priv->cbs array is NULL or not, it just assumes it isn't and proceeds to
-iterate through the credit-based shaper elements. This leads to a NULL
-pointer dereference.
+I've just took a look at what the Linux staging tree is. It looks like
+a good choice for the current ccmni driver.
 
-The solution is to return success if the priv->cbs array has not been
-allocated, since sja1105_reload_cbs() has nothing to do.
+honstly, If I simply upload the relevant driver code B that calls
+A (e.g. ccmni_rx_push), there is still a lack of code to call B.
+This seems to be a continuty problem, unless all drivers codes are
+uploaded (e.g. power on modem, get hardware status, complete tx/rx flow).
 
-Fixes: 4d7525085a9b ("net: dsa: sja1105: offload the Credit-Based Shaper qdisc")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105_main.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+>> In addition, the code of MTK's modem driver is a bit complicated,
+>> because this part has more than 30,000 lines of code and contains
+>> more than 10 modules. We are completeing the upload of this huge
+>> code step by step. Our original intention was to upload the ccmni
+>> driver that directly interacts with the kernel first, and then
+>> complete the code from ccmni to the bottom layer one by one from
+>> top to bottom. We expect the completion period to be about 1 year.
+> 
+> Again, we can not add code to the kernel that is not used, sorry.  That
+> would not make any sense, would you want to maintain such a thing?
+> 
+> And 30k of code seems a bit excesive for a modem driver.   Vendors find
+> that when they submit code for inclusion in the kernel tree, in the end,
+> they end up 1/3 the original size, so 10k is reasonable.
+> 
+> I can also take any drivers today into the drivers/staging/ tree, and
+> you can do the cleanups there as well as getting help from others.
+> 
+> 1 year seems like a long time to do "cleanup", good luck!
+> 
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index a9777eb564c6..4f0545605f6b 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1818,6 +1818,12 @@ static int sja1105_reload_cbs(struct sja1105_private *priv)
- {
- 	int rc = 0, i;
- 
-+	/* The credit based shapers are only allocated if
-+	 * CONFIG_NET_SCH_CBS is enabled.
-+	 */
-+	if (!priv->cbs)
-+		return 0;
-+
- 	for (i = 0; i < priv->info->num_cbs_shapers; i++) {
- 		struct sja1105_cbs_entry *cbs = &priv->cbs[i];
- 
--- 
-2.25.1
+Thanks~
+
+Can I resend patch set as follows:
+(1) supplement the details of pureip for patch 1/4;
+(2) the document of ccmni.rst still live in the Documentation/...
+(3) modify ccmni and move it into the drivers/staging/...
+
+>>> +++ b/drivers/net/ethernet/mediatek/ccmni/ccmni.h
+>>> 
+>>> Why do you have a .h file for a single .c file?  that shouldn't be
+>>> needed.
+>> 
+>> I add a .h file to facilitate subsequent code expansion. If it's
+>> not appropriate to do this here, I can add the content of .h into
+>> .c file.
+> 
+> If nothing other than a single .c file needs it, put it into that .c
+> file please.
+
+will do.
+
+Thanks,
+Rocco
 
