@@ -2,125 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B51D83B328E
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0736A3B3292
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:27:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232418AbhFXP3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 11:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232415AbhFXP3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 11:29:21 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3149C061574
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 08:27:01 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id l12so6409029wrt.3
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 08:27:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=from:subject:reply-to:to:cc:references:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PzDOsz4dUMAwrPa1KQCzHsHNKY8qfIzsqCNnyWzyvto=;
-        b=MXs/+nh1lufJBCLf7SBkx4EJV3gAu1htyzetvuazfB3DpFr3ZrndwgSH+BUHLDG2A+
-         JeUpRicq46h/OeO/KtM5pg0TKjQbm0vEE4R58nfiCUwj6RiX5cHBNZ63w1ig7wa9lzuh
-         anAoHV8WyVZvKwrN4MLhRJouluLrE3xE7X5+jqhUDAeKwSjLzBH8USQHyVnoLrGhylgK
-         bICG4RcToUCxrVxc7P5pFqez41dRbAQ6EbXW0akao9nquwj6IW5nquLWafIZBRwWKk3p
-         OiGy2b7KVumNigjc8gulbki7N41fd6iF6cCzsVjc/8tqZVi68GyTjdi9MfWPhrFMUHB0
-         2nyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:reply-to:to:cc:references
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=PzDOsz4dUMAwrPa1KQCzHsHNKY8qfIzsqCNnyWzyvto=;
-        b=oSZfkKv3Yu43DGl6yEsuVfIaA9xZjO2dVWeEp0oaIHVMkfb8HgThLWfTdCkPgfpMtx
-         a3SSchDjDKRZH3Empc12KQ2ZXpABwBzf545Z2EZxAT0ZNjCY3IgIq62FxmYP+GBUKqUE
-         HhI9GXRI3b6dNjwcaTi2J/5GxAZ9TOiKT6D99U/pW3udXOuQDs78txq1kDJOeza/nt4r
-         SwcMX5w9HNFtnHKiUauYNhv59FtV+aiJsaZOuM7+ZphD/GrG7GEwgtZp24M2iLNnU1gY
-         n1fYjlL+1lFsHQgR+QRwB+4WnARVLpIfVP4v9cmL7/WCyrs/p40DPwEl4Aq+S1zvCGgR
-         LDiQ==
-X-Gm-Message-State: AOAM5301G9YKHrLR7OIqL0VwO8lpn6fH7gQp8t9s7r3JO4EPIWYw2nd9
-        PUkuJo2NW6NvnASqQ9v3LazMzQ==
-X-Google-Smtp-Source: ABdhPJxS0r/LbpPRdOtsqAkBHAvWZWQn60lbouVOLpyLnJjDMl34+lvzucJSOYadr4/c4R7UWa25Aw==
-X-Received: by 2002:adf:cd88:: with SMTP id q8mr5249855wrj.181.1624548420345;
-        Thu, 24 Jun 2021 08:27:00 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:48d1:d5b6:5b87:8a6e? ([2a01:e0a:410:bb00:48d1:d5b6:5b87:8a6e])
-        by smtp.gmail.com with ESMTPSA id l22sm4081907wrz.54.2021.06.24.08.26.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Jun 2021 08:26:59 -0700 (PDT)
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: Re: [PATCH net] dev_forward_skb: do not scrub skb mark within the
- same name space
-Reply-To: nicolas.dichtel@6wind.com
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        liran.alon@oracle.com, shmulik.ladkani@gmail.com,
-        daniel@iogearbox.net
-References: <20210624080505.21628-1-nicolas.dichtel@6wind.com>
- <ad019c34-6b18-9bd8-047f-6688cc4a3b8b@gmail.com>
-Organization: 6WIND
-Message-ID: <773bae50-3bd6-00bc-7cc6-f5eec510f0b8@6wind.com>
-Date:   Thu, 24 Jun 2021 17:26:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S232462AbhFXP3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 11:29:43 -0400
+Received: from mga04.intel.com ([192.55.52.120]:38217 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232434AbhFXP3m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 11:29:42 -0400
+IronPort-SDR: t7UdfbwSASiGnw2+CwpjXK+KcQvzcAw/21hvm7hWHBlPvI9jEJ9Gsk7kI5gJ++qlOlt1on0Ov5
+ mgADSQ+nyM+Q==
+X-IronPort-AV: E=McAfee;i="6200,9189,10025"; a="205665539"
+X-IronPort-AV: E=Sophos;i="5.83,296,1616482800"; 
+   d="scan'208";a="205665539"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2021 08:27:23 -0700
+IronPort-SDR: ynKQXvHzZ7K+f9HdcO1tePRbh646k7H8JexHM39k5E5uAKouwUsF8ZOfjWNzrEvkjVhAdC8jR9
+ wuQHHuo9Qdvw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,296,1616482800"; 
+   d="scan'208";a="557365578"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga001.fm.intel.com with ESMTP; 24 Jun 2021 08:27:22 -0700
+Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 0396C5807E2;
+        Thu, 24 Jun 2021 08:27:19 -0700 (PDT)
+Date:   Thu, 24 Jun 2021 23:27:17 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Ling Pei Lee <pei.lee.ling@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Marek Behun <marek.behun@nic.cz>,
+        weifeng.voon@intel.com, vee.khee.wong@intel.com
+Subject: Re: [PATCH net-next] net: phy: marvell10g: enable WoL for mv2110
+Message-ID: <20210624152716.GA29313@linux.intel.com>
+References: <20210623130929.805559-1-pei.lee.ling@intel.com>
+ <20210623200618.GO22278@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <ad019c34-6b18-9bd8-047f-6688cc4a3b8b@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210623200618.GO22278@shell.armlinux.org.uk>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eyal,
+Hi Russell,
 
-Le 24/06/2021 à 14:16, Eyal Birger a écrit :
-> Hi Nicholas,
+On Wed, Jun 23, 2021 at 09:06:18PM +0100, Russell King (Oracle) wrote:
+> On Wed, Jun 23, 2021 at 09:09:29PM +0800, Ling Pei Lee wrote:
+> > +static void mv2110_get_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
+> > +{
+> > +	int ret = 0;
 > 
-> On 24/06/2021 11:05, Nicolas Dichtel wrote:
->> The goal is to keep the mark during a bpf_redirect(), like it is done for
->> legacy encapsulation / decapsulation, when there is no x-netns.
->> This was initially done in commit 213dd74aee76 ("skbuff: Do not scrub skb
->> mark within the same name space").
->>
->> When the call to skb_scrub_packet() was added in dev_forward_skb() (commit
->> 8b27f27797ca ("skb: allow skb_scrub_packet() to be used by tunnels")), the
->> second argument (xnet) was set to true to force a call to skb_orphan(). At
->> this time, the mark was always cleanned up by skb_scrub_packet(), whatever
->> xnet value was.
->> This call to skb_orphan() was removed later in commit
->> 9c4c325252c5 ("skbuff: preserve sock reference when scrubbing the skb.").
->> But this 'true' stayed here without any real reason.
->>
->> Let's correctly set xnet in ____dev_forward_skb(), this function has access
->> to the previous interface and to the new interface.
+> This initialiser doesn't do anything.
 > 
-> This change was suggested in the past [1] and I think one of the main concerns
-> was breaking existing callers which assume the mark would be cleared [2].
-Thank you for the pointers!
+> > +
+> > +	wol->supported = WAKE_MAGIC;
+> > +	wol->wolopts = 0;
+> > +
+> > +	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_WOL_CTRL);
+> > +
+> > +	if (ret & MV_V2_WOL_MAGIC_PKT_EN)
+> > +		wol->wolopts |= WAKE_MAGIC;
+> 
+> You need to check whether "ret" is a negative number - if phy_read_mmd()
+> returns an error, this test could be true or false. It would be better
+> to have well defined behaviour (e.g. reporting that WOL is disabled?)
+> 
+> > +		/* Reset the clear WOL status bit as it does not self-clear */
+> > +		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
+> > +					 MV_V2_WOL_CTRL,
+> > +					 MV_V2_WOL_CLEAR_STS);
+> > +
+> > +		if (ret < 0)
+> > +			return ret;
+> > +	} else {
+> > +		/* Disable magic packet matching & reset WOL status bit */
+> > +		ret = phy_modify_mmd(phydev, MDIO_MMD_VEND2,
+> > +				     MV_V2_WOL_CTRL,
+> > +				     MV_V2_WOL_MAGIC_PKT_EN,
+> > +				     MV_V2_WOL_CLEAR_STS);
+> > +
+> > +		if (ret < 0)
+> > +			return ret;
+> > +
+> > +		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
+> > +					 MV_V2_WOL_CTRL,
+> > +					 MV_V2_WOL_CLEAR_STS);
+> > +
+> > +		if (ret < 0)
+> > +			return ret;
+> 
+> This phy_clear_bits_mmd() is the same as the tail end of the other part
+> of the if() clause. Consider moving it after the if () { } else { }
+> statement...
+> 
+> > +	}
+> > +
+> > +	return ret;
+> 
+> and as all paths return "ret" just do:
+> 
+> 	return phy_clear_bits_mmd(...
+> 
+> I will also need to check whether this is the same as the 88x3310, but
+> I'm afraid I don't have the energy this evening - please email me a
+> remind to look at this tomorrow. Thanks.
+>
 
-> 
-> Personally, I think the suggestion made in [3] adding a flag to bpf_redirect()
-> makes a lot of sense for this use case.
-I began with this approach, but actually, as I tried to explain in the commit
-log, this looks more like a bug. This function is called almost everywhere in
-the kernel (except for openvswitch and wireguard) with the xnet argument
-reflecting a netns change. In other words, the behavior is different between
-legacy encapsulation and the one made with ebpf :/
+Shall we add this for the 88x3310 as well?
 
-
-Regards,
-Nicolas
-
-> 
-> Eyal.
-> 
-> [1]
-> https://lore.kernel.org/netdev/1520953642-8145-1-git-send-email-liran.alon@oracle.com/
-> 
-> 
-> [2] https://lore.kernel.org/netdev/20180315112150.58586758@halley/
-> 
-> [3]
-> https://lore.kernel.org/netdev/cd0b73e3-2cde-1442-4312-566c69571e8a@iogearbox.net/
+BR,
+ VK 
