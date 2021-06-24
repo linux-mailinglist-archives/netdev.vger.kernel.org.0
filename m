@@ -2,157 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D563B2FDF
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 15:16:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E2423B300A
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 15:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230452AbhFXNS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 09:18:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33376 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229995AbhFXNS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 09:18:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624540567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=W2La/+xWtGGFQc9oDSR6+JS3JSfliljWEcUewtoETmE=;
-        b=Ry1dulidJsC6hh78ikrg/F6JZ5sshQOnIToK8rE05UpAliI0obU5wlteSxT0w6VL8B9np4
-        JDrfy9i6lkSh6JVbaXaekzpJL0ipVBEp99NA0OBLbvhiNtpRB3wnJ/Jf2tB9bqULAcMych
-        4EW8G38DxTai9LJKoqUBExKp5/yWscE=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-83-S59wFjDTNs-HwGkutkgWog-1; Thu, 24 Jun 2021 09:16:03 -0400
-X-MC-Unique: S59wFjDTNs-HwGkutkgWog-1
-Received: by mail-wm1-f71.google.com with SMTP id f11-20020a05600c154bb02901e0210617aaso1494138wmg.1
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 06:16:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=W2La/+xWtGGFQc9oDSR6+JS3JSfliljWEcUewtoETmE=;
-        b=lmAhaVvuKBS4ySIygGFpQ1UaqJWyNzXyqATPys/AvKaKK7nyRbZ1GJZFviW+6Dxhac
-         rUGbihWKi/FijkMrcmkddLAJ1mXtalgzmYQfJPupSLsnDt3DyF3UwZpBNLxhQfXp3ICK
-         ouQdF9O0P68IYQHYk0pb4frSR+2/j2pmJRKF8VM7WwLjtqFO03BqITWPUedltJ7B1XI+
-         bEyA4I+6eTFIsBwSwgTmCHX/pnLGloTj2fe8/szhW1OzB2LPlQ3rtmZnGYiBU6eAK0Hi
-         om4At8AhReDJSs8DpYiFuuaOCuKOxWtnLNACZV6JOtgCgH3g+qQFzA3R5IcI5Nntkrpj
-         pVig==
-X-Gm-Message-State: AOAM532FQ6ZsEgQmW9N0raSZVHafaebPvl4ihejwzE2HsyPLcM6n/LyV
-        oJ2VaPII/gjwlTCv8x+gswxjtHzz+qnHmJDHteGAHNfMoeQU4ehSToYOLYgFXbmPAbfS7kxJMXt
-        giXFDFhkRA+2TGyth
-X-Received: by 2002:adf:fac4:: with SMTP id a4mr4561385wrs.189.1624540560894;
-        Thu, 24 Jun 2021 06:16:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzQrQKrFkaoyC/yMBOxqTinJ31ke59GrE34hCKRRUdvjJsKrRk82HnEFhz5mHIFUJi5Bhhemw==
-X-Received: by 2002:adf:fac4:: with SMTP id a4mr4561368wrs.189.1624540560733;
-        Thu, 24 Jun 2021 06:16:00 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-109-224.dyn.eolo.it. [146.241.109.224])
-        by smtp.gmail.com with ESMTPSA id l12sm3240682wro.32.2021.06.24.06.16.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 06:16:00 -0700 (PDT)
-Message-ID: <0b2713a4e53f68f2636687c8caeb5a20803a2a1a.camel@redhat.com>
-Subject: Re: [PATCH v2 net] ipv6: fix out-of-bound access in ip6_parse_tlv()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Tom Herbert <tom@herbertland.com>
-Date:   Thu, 24 Jun 2021 15:15:59 +0200
-In-Reply-To: <20210624100720.2310271-1-eric.dumazet@gmail.com>
-References: <20210624100720.2310271-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S231591AbhFXNgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 09:36:36 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53700 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229878AbhFXNgf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 09:36:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/QoD2olOKiTnq2WBqvcr2a3obQ9nSZsgcbVeh4n1M8o=; b=eZ+A88OWuWRVcJCGkjiY3qUVtT
+        YZXBYa4kedsiNRipnvHUTk/z0/cuWTSN0vGoadd9CyKKQ1MhFYtOkIEnFJ9vCiz5yb3Og0NcDVqUs
+        hK8JmGNRBmqZ3CdpijySE22MhseVFGWxYsI+PZCgw9Eekk01qQVH8vTVrgNBBtfXALsU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lwPUX-00AyWz-CJ; Thu, 24 Jun 2021 15:34:01 +0200
+Date:   Thu, 24 Jun 2021 15:34:01 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mark Einon <mark.einon@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC 2/3] net: Provide switchdev driver for NXP's More Than IP
+ L2 switch
+Message-ID: <YNSJyf5vN4YuTUGb@lunn.ch>
+References: <20210622144111.19647-1-lukma@denx.de>
+ <20210622144111.19647-3-lukma@denx.de>
+ <YNH7vS9FgvEhz2fZ@lunn.ch>
+ <20210623133704.334a84df@ktm>
+ <YNOTKl7ZKk8vhcMR@lunn.ch>
+ <20210624125304.36636a44@ktm>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210624125304.36636a44@ktm>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-06-24 at 03:07 -0700, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> First problem is that optlen is fetched without checking
-> there is more than one byte to parse.
-> 
-> Fix this by taking care of IPV6_TLV_PAD1 before
-> fetching optlen (under appropriate sanity checks against len)
-> 
-> Second problem is that IPV6_TLV_PADN checks of zero
-> padding are performed before the check of remaining length.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Fixes: c1412fce7ecc ("net/ipv6/exthdrs.c: Strict PadN option checking")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Tom Herbert <tom@herbertland.com>
-> ---
-> v2: Removed not needed optlen assignment for IPV6_TLV_PAD1 handling,
->     added the Fixes: tag for first problem, feedback from Paolo, thanks !
-> 
->  net/ipv6/exthdrs.c | 27 +++++++++++++--------------
->  1 file changed, 13 insertions(+), 14 deletions(-)
-> 
-> diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-> index 6f7da8f3e2e5849f917853984c69bf02a0f1e27c..26882e165c9e37a105f988020031f03d6b1a5cf9 100644
-> --- a/net/ipv6/exthdrs.c
-> +++ b/net/ipv6/exthdrs.c
-> @@ -135,18 +135,23 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
->  	len -= 2;
->  
->  	while (len > 0) {
-> -		int optlen = nh[off + 1] + 2;
-> -		int i;
-> +		int optlen, i;
->  
-> -		switch (nh[off]) {
-> -		case IPV6_TLV_PAD1:
-> -			optlen = 1;
-> +		if (nh[off] == IPV6_TLV_PAD1) {
->  			padlen++;
->  			if (padlen > 7)
->  				goto bad;
-> -			break;
-> +			off++;
-> +			len--;
-> +			continue;
-> +		}
-> +		if (len < 2)
-> +			goto bad;
-> +		optlen = nh[off + 1] + 2;
-> +		if (optlen > len)
-> +			goto bad;
->  
-> -		case IPV6_TLV_PADN:
-> +		if (nh[off] == IPV6_TLV_PADN) {
->  			/* RFC 2460 states that the purpose of PadN is
->  			 * to align the containing header to multiples
->  			 * of 8. 7 is therefore the highest valid value.
-> @@ -163,12 +168,7 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
->  				if (nh[off + i] != 0)
->  					goto bad;
->  			}
-> -			break;
-> -
-> -		default: /* Other TLV code so scan list */
-> -			if (optlen > len)
-> -				goto bad;
-> -
-> +		} else {
->  			tlv_count++;
->  			if (tlv_count > max_count)
->  				goto bad;
-> @@ -188,7 +188,6 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
->  				return false;
->  
->  			padlen = 0;
-> -			break;
->  		}
->  		off += optlen;
->  		len -= optlen;
+> I'm not sure if the imx28 switch is similar to one from TI (cpsw-3g)
+> - it looks to me that the bypass mode for both seems to be very
+> different. For example, on NXP when switch is disabled we need to
+> handle two DMA[01]. When it is enabled, only one is used. The approach
+> with two DMAs is best handled with FEC driver instantiation.
 
-LGTM!
+I don't know if it applies to the FEC, but switches often have
+registers which control which egress port an ingress port can send
+packets to. So by default, you allow CPU to port0, CPU to port1, but
+block between port0 to port1. This would give you two independent
+interface, the switch enabled, and using one DMA. When the bridge is
+configured, you simply allow port0 and send/receive packets to/from
+port1. No change to the DMA setup, etc.
 
-Reviewd-by: Paolo Abeni <pabeni@redhat.com>
+> The code from [2] needs some vendor ioctl based tool (or hardcode) to
+> configure the switch. 
 
+This would not be allowed. You configure switches in Linux using the
+existing user space tools. No vendor tools are used.
+
+> > and how well future features can be added. Do you have
+> > support for VLANS? Adding and removing entries to the lookup tables?
+> > How will IGMP snooping work? How will STP work?
+> 
+> This can be easily added with serving netstack hooks (as it is already
+> done with cpsw_new) in the new switchdev based version [3] (based on
+> v5.12).
+
+Here i'm less convinced. I expect a fully functioning switch driver is
+going to need switch specific versions of some of the netdev ops
+functions, maybe the ethtool ops as well. It is going to want to add
+devlink ops. By hacking around with the FEC driver in the way you are,
+you might get very basic switch operation working. But as we have seen
+with cpsw, going from very basic to a fully functioning switchdev
+driver required a new driver, cpsw_new. It was getting more and more
+difficult to add features because its structure was just wrong. We
+don't want to add code to the kernel which is probably a dead end.
+
+      Andrew
