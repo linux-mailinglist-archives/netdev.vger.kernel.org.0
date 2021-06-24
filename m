@@ -2,173 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFCD23B2B42
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 11:19:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 794E13B2B58
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 11:26:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231757AbhFXJV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 05:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231656AbhFXJVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 05:21:19 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C21EC061760;
-        Thu, 24 Jun 2021 02:19:00 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id j1so5801720wrn.9;
-        Thu, 24 Jun 2021 02:19:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=DuciXB8pC/S/cafIAkU7rNe3wfMQWIg6ua/o3EYWQgk=;
-        b=YirveEKm5nW9Advs2EgBG4r4bLB00qOAjhdq6hMtC7BZOACkjyZTPKaPgF0Tmo5smE
-         01A334WlLy6ddUAGtMgaOi5dqZKCjXEruCAiBN0rqV9bcHE0c3q6QMMj4DzLDbZe3vNc
-         ++qslY10Lw9MwojPhKgB38LjEJpjBGZomcH793J79lJVW0uMkHS/wkczqjkPW9nuVIQ9
-         EZe+5ofEYj2vYtbbWqvdow/nDz0Hj74YsYmBDdDTkWDAnd/Ul7rLG9EZUj7t+YvkX2DA
-         OE4vndkwKu3s0z/VPLy+kahTJ0yHwjVCFt1ohxCiRII0DAR9aCnk28BWgfRfc5rZdvbb
-         ZLvQ==
+        id S231483AbhFXJ3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 05:29:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21135 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230438AbhFXJ3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 05:29:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624526806;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GIuAW01cKS1OnZV8RMNx2Mi1DilXa0t5oJqTvg7N4GM=;
+        b=TxDPYveuIQR16XeUZoxZVXPqgyyHtQ6tLIEQGuI3ER43MdI/E70+7nze+/o17zDQdjSIjB
+        Y8DbLLaedy1FfQx4xTAkTH+hqM4CcfUo8aJA0B1WfkzFsHX/zYYNQAyF0fwIoBEj3bmTMC
+        araInfU9dnBLqHSVDXr1OPskMqhGG6Q=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-97-dD2BtSxFPke4xwvH5Nm1aA-1; Thu, 24 Jun 2021 05:26:45 -0400
+X-MC-Unique: dD2BtSxFPke4xwvH5Nm1aA-1
+Received: by mail-ed1-f69.google.com with SMTP id z5-20020a05640235c5b0290393974bcf7eso3026556edc.2
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 02:26:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=DuciXB8pC/S/cafIAkU7rNe3wfMQWIg6ua/o3EYWQgk=;
-        b=E4RJ5wY32DewtX/6ZVzt4bkgFNgB/Cd/PpK7XL7Cyso2tnNiY+gmBYDkporRs9sbb1
-         UQi/Ju6dY3DvRMV5EtCvzeTgaycMy1lb6myHTdnpbpXI7sOp56GKSLQdFQjTK8nSRr08
-         7RchqKBGV6oD8aeCJ7Do8wwThlX7e+BkOx07QwB8/N0zCG+72p052A2HVA8IOYO20oow
-         Q5eZLiXFheaN054XgCp4rVitnSexGHqQ4OB0Qt9iezXck41SAvahNH4hXBss92UCy3B3
-         PutHNvmVLrzPJ1G3wy6JkmGFdW2KzssjQH0CSmglWdidCOV45oV9Nj3vObsmvY36CSM/
-         fFBQ==
-X-Gm-Message-State: AOAM5336M13UghnKNhnSNv7djsOKz7unl7xvuN0LorGAJvOXRskYD802
-        TRpwxtgS+cQ2d+m0RRG8/Q2YH06YCg9bZr4=
-X-Google-Smtp-Source: ABdhPJzIhL8DwCPWubiRYfU6YG5cV/d3+8cp6149ytNIu3E1a91PUCgAWwjLTXTkIK7Z7wff2p+iug==
-X-Received: by 2002:a5d:69c3:: with SMTP id s3mr3323656wrw.235.1624526338829;
-        Thu, 24 Jun 2021 02:18:58 -0700 (PDT)
-Received: from localhost.localdomain (212-51-151-130.fiber7.init7.net. [212.51.151.130])
-        by smtp.gmail.com with ESMTPSA id r1sm2456216wmh.32.2021.06.24.02.18.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 02:18:58 -0700 (PDT)
-From:   joamaki@gmail.com
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, j.vosburgh@gmail.com,
-        andy@greyhouse.net, vfalico@gmail.com, andrii@kernel.org,
+         :references:mime-version:content-transfer-encoding;
+        bh=GIuAW01cKS1OnZV8RMNx2Mi1DilXa0t5oJqTvg7N4GM=;
+        b=MDm+pOhf3g/0lGe85qGRNFpzlTMd1hBaWtTUcEirfPcRBFjKZX+2pu3kM8w9b6GTXO
+         EAvKLQAhN82jX0K+C4HXt3PWiVEw5qhYieWuNlAI32lfTb3Ozwppbe27Ra8ZmHCV/TRw
+         gEXpt/f60kQ1ZLo0L+aRGX0tIs57+ipBeiOSC6I8JRt36w3l8AxzOJ4Ih+FbppT63cV1
+         iIyYbmhfrbzyDPNhbNR20pF8AWMPCQUCbzNFujAcwAJZdOTamahutt39nWubN48OGSnQ
+         MP6b/bbjDVuzFcxdu/P3b2VcOIvicQXj8idpHy2iDMJmsgu3pcJ2KVKB8Q9BttytnXDm
+         Jrig==
+X-Gm-Message-State: AOAM532gp3zK93FKza6GCD5iZ6QBMTmh1auN5ImFj3XH4P4u8E56bz/A
+        wX36lmIKgMMDx3+r1bIkxJkt+OZmuqVD6a5lRMjnAH7u32HXYpOdezCYuXu6gENyh8SIlN2F4mf
+        /aOh1BTGMe4B9Q0QA
+X-Received: by 2002:a17:906:a20b:: with SMTP id r11mr4309450ejy.221.1624526802177;
+        Thu, 24 Jun 2021 02:26:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx8E+0cai8MQR04OQxOX2CPQPfA42Ue3UnJYcd/aSqSVey3Y/2g+42Y3U5KRP717THGCq3z5w==
+X-Received: by 2002:a17:906:a20b:: with SMTP id r11mr4309434ejy.221.1624526801991;
+        Thu, 24 Jun 2021 02:26:41 -0700 (PDT)
+Received: from [10.36.112.236] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id o5sm1539546edt.44.2021.06.24.02.26.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 24 Jun 2021 02:26:41 -0700 (PDT)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, shayagr@amazon.com, sameehj@amazon.com,
+        dsahern@kernel.org, brouer@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        Jussi Maki <joamaki@gmail.com>
-Subject: [PATCH bpf-next v2 4/4] devmap: Exclude XDP broadcast to master device
-Date:   Thu, 24 Jun 2021 09:18:43 +0000
-Message-Id: <20210624091843.5151-5-joamaki@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210624091843.5151-1-joamaki@gmail.com>
-References: <20210609135537.1460244-1-joamaki@gmail.com>
- <20210624091843.5151-1-joamaki@gmail.com>
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v9 bpf-next 08/14] bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+Date:   Thu, 24 Jun 2021 11:26:39 +0200
+X-Mailer: MailMate (1.14r5816)
+Message-ID: <4F52EE5B-1A3F-46CE-9A39-98475CA6B684@redhat.com>
+In-Reply-To: <60d2744ee12c2_1342e208f7@john-XPS-13-9370.notmuch>
+References: <cover.1623674025.git.lorenzo@kernel.org>
+ <863f4934d251f44ad85a6be08b3737fac74f9b5a.1623674025.git.lorenzo@kernel.org>
+ <60d2744ee12c2_1342e208f7@john-XPS-13-9370.notmuch>
+MIME-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jussi Maki <joamaki@gmail.com>
 
-If the ingress device is bond slave, do not broadcast back
-through it or the bond master.
 
-Signed-off-by: Jussi Maki <joamaki@gmail.com>
----
- kernel/bpf/devmap.c | 34 ++++++++++++++++++++++++++++------
- 1 file changed, 28 insertions(+), 6 deletions(-)
+On 23 Jun 2021, at 1:37, John Fastabend wrote:
 
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index 2a75e6c2d27d..0864fb28c8b5 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -514,9 +514,11 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
- }
- 
- static bool is_valid_dst(struct bpf_dtab_netdev *obj, struct xdp_buff *xdp,
--			 int exclude_ifindex)
-+			 int exclude_ifindex, int exclude_ifindex_master)
- {
--	if (!obj || obj->dev->ifindex == exclude_ifindex ||
-+	if (!obj ||
-+	    obj->dev->ifindex == exclude_ifindex ||
-+	    obj->dev->ifindex == exclude_ifindex_master ||
- 	    !obj->dev->netdev_ops->ndo_xdp_xmit)
- 		return false;
- 
-@@ -546,12 +548,19 @@ int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
- {
- 	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
- 	int exclude_ifindex = exclude_ingress ? dev_rx->ifindex : 0;
-+	int exclude_ifindex_master = 0;
- 	struct bpf_dtab_netdev *dst, *last_dst = NULL;
- 	struct hlist_head *head;
- 	struct xdp_frame *xdpf;
- 	unsigned int i;
- 	int err;
- 
-+	if (static_branch_unlikely(&bpf_master_redirect_enabled_key)) {
-+		struct net_device *master = netdev_master_upper_dev_get_rcu(dev_rx);
+> Lorenzo Bianconi wrote:
+>> From: Eelco Chaudron <echaudro@redhat.com>
+>>
+>> This change adds support for tail growing and shrinking for XDP multi-=
+buff.
+>>
+>
+> It would be nice if the commit message gave us some details on how the
+> growing/shrinking works in the multi-buff support.
+
+Will add this to the next rev.
+
+>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>> ---
+>>  include/net/xdp.h |  7 ++++++
+>>  net/core/filter.c | 62 ++++++++++++++++++++++++++++++++++++++++++++++=
 +
-+		exclude_ifindex_master = (master && exclude_ingress) ? master->ifindex : 0;
-+	}
-+
- 	xdpf = xdp_convert_buff_to_frame(xdp);
- 	if (unlikely(!xdpf))
- 		return -EOVERFLOW;
-@@ -559,7 +568,7 @@ int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
- 	if (map->map_type == BPF_MAP_TYPE_DEVMAP) {
- 		for (i = 0; i < map->max_entries; i++) {
- 			dst = READ_ONCE(dtab->netdev_map[i]);
--			if (!is_valid_dst(dst, xdp, exclude_ifindex))
-+			if (!is_valid_dst(dst, xdp, exclude_ifindex, exclude_ifindex_master))
- 				continue;
- 
- 			/* we only need n-1 clones; last_dst enqueued below */
-@@ -579,7 +588,9 @@ int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
- 			head = dev_map_index_hash(dtab, i);
- 			hlist_for_each_entry_rcu(dst, head, index_hlist,
- 						 lockdep_is_held(&dtab->index_lock)) {
--				if (!is_valid_dst(dst, xdp, exclude_ifindex))
-+				if (!is_valid_dst(dst, xdp,
-+						  exclude_ifindex,
-+						  exclude_ifindex_master))
- 					continue;
- 
- 				/* we only need n-1 clones; last_dst enqueued below */
-@@ -646,16 +657,25 @@ int dev_map_redirect_multi(struct net_device *dev, struct sk_buff *skb,
- {
- 	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
- 	int exclude_ifindex = exclude_ingress ? dev->ifindex : 0;
-+	int exclude_ifindex_master = 0;
- 	struct bpf_dtab_netdev *dst, *last_dst = NULL;
- 	struct hlist_head *head;
- 	struct hlist_node *next;
- 	unsigned int i;
- 	int err;
- 
-+	if (static_branch_unlikely(&bpf_master_redirect_enabled_key)) {
-+		struct net_device *master = netdev_master_upper_dev_get_rcu(dev);
-+
-+		exclude_ifindex_master = (master && exclude_ingress) ? master->ifindex : 0;
-+	}
-+
- 	if (map->map_type == BPF_MAP_TYPE_DEVMAP) {
- 		for (i = 0; i < map->max_entries; i++) {
- 			dst = READ_ONCE(dtab->netdev_map[i]);
--			if (!dst || dst->dev->ifindex == exclude_ifindex)
-+			if (!dst ||
-+			    dst->dev->ifindex == exclude_ifindex ||
-+			    dst->dev->ifindex == exclude_ifindex_master)
- 				continue;
- 
- 			/* we only need n-1 clones; last_dst enqueued below */
-@@ -674,7 +694,9 @@ int dev_map_redirect_multi(struct net_device *dev, struct sk_buff *skb,
- 		for (i = 0; i < dtab->n_buckets; i++) {
- 			head = dev_map_index_hash(dtab, i);
- 			hlist_for_each_entry_safe(dst, next, head, index_hlist) {
--				if (!dst || dst->dev->ifindex == exclude_ifindex)
-+				if (!dst ||
-+				    dst->dev->ifindex == exclude_ifindex ||
-+				    dst->dev->ifindex == exclude_ifindex_master)
- 					continue;
- 
- 				/* we only need n-1 clones; last_dst enqueued below */
--- 
-2.27.0
+>>  net/core/xdp.c    |  5 ++--
+>>  3 files changed, 72 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/net/xdp.h b/include/net/xdp.h
+>> index 935a6f83115f..3525801c6ed5 100644
+>> --- a/include/net/xdp.h
+>> +++ b/include/net/xdp.h
+>> @@ -132,6 +132,11 @@ xdp_get_shared_info_from_buff(struct xdp_buff *xd=
+p)
+>>  	return (struct skb_shared_info *)xdp_data_hard_end(xdp);
+>>  }
+>>
+>> +static inline unsigned int xdp_get_frag_tailroom(const skb_frag_t *fr=
+ag)
+>> +{
+>> +	return PAGE_SIZE - skb_frag_size(frag) - skb_frag_off(frag);
+>> +}
+>> +
+>>  struct xdp_frame {
+>>  	void *data;
+>>  	u16 len;
+>> @@ -259,6 +264,8 @@ struct xdp_frame *xdp_convert_buff_to_frame(struct=
+ xdp_buff *xdp)
+>>  	return xdp_frame;
+>>  }
+>>
+>> +void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_dir=
+ect,
+>> +		  struct xdp_buff *xdp);
+>>  void xdp_return_frame(struct xdp_frame *xdpf);
+>>  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf);
+>>  void xdp_return_buff(struct xdp_buff *xdp);
+>> diff --git a/net/core/filter.c b/net/core/filter.c
+>> index caa88955562e..05f574a3d690 100644
+>> --- a/net/core/filter.c
+>> +++ b/net/core/filter.c
+>> @@ -3859,11 +3859,73 @@ static const struct bpf_func_proto bpf_xdp_adj=
+ust_head_proto =3D {
+>>  	.arg2_type	=3D ARG_ANYTHING,
+>>  };
+>>
+>> +static int bpf_xdp_mb_adjust_tail(struct xdp_buff *xdp, int offset)
+>> +{
+>> +	struct skb_shared_info *sinfo;
+>> +
+>> +	if (unlikely(!xdp_buff_is_mb(xdp)))
+>> +		return -EINVAL;
+>> +
+>> +	sinfo =3D xdp_get_shared_info_from_buff(xdp);
+>> +	if (offset >=3D 0) {
+>> +		skb_frag_t *frag =3D &sinfo->frags[sinfo->nr_frags - 1];
+>> +		int size;
+>> +
+>> +		if (unlikely(offset > xdp_get_frag_tailroom(frag)))
+>> +			return -EINVAL;
+>> +
+>> +		size =3D skb_frag_size(frag);
+>> +		memset(skb_frag_address(frag) + size, 0, offset);
+>> +		skb_frag_size_set(frag, size + offset);
+>> +		sinfo->data_len +=3D offset;
+>
+> Can you add some comment on how this works? So today I call
+> bpf_xdp_adjust_tail() to add some trailer to my packet.
+> This looks like it adds tailroom to the last frag? But, then
+> how do I insert my trailer? I don't think we can without the
+> extra multi-buffer access support right.
+
+You are right, we need some kind of multi-buffer access helpers.
+
+> Also data_end will be unchanged yet it will return 0 so my
+> current programs will likely be a bit confused by this.
+
+Guess this is the tricky part, applications need to be multi-buffer aware=
+=2E If current applications rely on bpf_xdp_adjust_tail(+) to determine m=
+aximum frame length this approach might not work. In this case, we might =
+need an additional helper to do tail expansion with multi buffer support.=
+
+
+But then the question arrives how would mb unaware application behave in =
+general when an mb packet is supplied?? It would definitely not determine=
+ the correct packet length.
+
+>> +	} else {
 
