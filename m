@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F59A3B3586
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 20:20:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA30D3B3585
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 20:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232563AbhFXSW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 14:22:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56600 "EHLO mail.kernel.org"
+        id S232546AbhFXSWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 14:22:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56614 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230450AbhFXSWX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232537AbhFXSWX (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 24 Jun 2021 14:22:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E0D8F613B1;
-        Thu, 24 Jun 2021 18:20:03 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 01E2A613CE;
+        Thu, 24 Jun 2021 18:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624558803;
-        bh=OZBTVtRaVWQrL3KSyZXTy7QijVkyD/HNAgjEkbH4bLY=;
+        s=k20201202; t=1624558804;
+        bh=rdy2CjLrM3zFnLkMIvUODTRlsEtPqQwdOYK6lAR/aO4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UtOkphaqM7Z540x7CBoOXfwrMBxeXADbLmtCRqfCzHWFJn6HuSyaoW6B+YE8Hid81
-         wWJ5RrmZfTEoujvuVIB7qpwWnQkLjpIiQIzRKvmD5p35RSQBaJJV43fqDPUdunQcco
-         17/Kx6heYG32EapLuRtzMT5bhfB14JXuRhGObDvCiiOrvT1STEiN3HLe1lUbk7IzOs
-         7hc28c11AuXKBW2ouyHrhJuWBrroc2rFtMX5ON+kQ//hN3PjVBGryF91UMEx1AE9P1
-         YyTcmmnaixRRjhRfL9iiXn15zXWSAbH168RHTqpypY8LaxEo/8ao+Ogp1AHjt9IIRj
-         M49+zXOtUigvA==
+        b=hjMCfIO/y2xRp++TbM3fVTI+4YMQMBCOJfKQC/4nTaFWMayvnzRoW/wewUtDQKsEf
+         zqaJLZLkWmqJg4zcbejUxJSjz/WKQLc1sh+jHxH60bQLtmf3PED6YdGrIvC0FgAlcg
+         gShtBzabCG3WikHi9xo4peXFAZ0ftWDOyJ0d43vibBt0IMYzpOFh5hv05LtDBPPwqk
+         Yd4wETkZ5iwsoVa0XfVeXBioYweYEM11fNetwS6js/n1UGeaCKrCDOdsNbC/vkgQQI
+         wbOozqxCDCc5DkDz67RIPYzPLjBb3f2LfQHUrwXkPa6484S/8ZKibS6Usf3m2Uw2OR
+         9BHzjNcJyiDtw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D553560978;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E3FF860ACA;
         Thu, 24 Jun 2021 18:20:03 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 1/2] net: retrieve netns cookie via getsocketopt
+Subject: Re: [PATCH net-next v4] net: ip: avoid OOM kills with large UDP sends
+ over loopback
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162455880386.31056.3165434549238056943.git-patchwork-notify@kernel.org>
+Message-Id: <162455880392.31056.12656441466683804186.git-patchwork-notify@kernel.org>
 Date:   Thu, 24 Jun 2021 18:20:03 +0000
-References: <20210623135646.1632083-1-m@lambda.lt>
-In-Reply-To: <20210623135646.1632083-1-m@lambda.lt>
-To:     Martynas Pumputis <m@lambda.lt>
-Cc:     netdev@vger.kernel.org, edumazet@google.com, daniel@iogearbox.net,
-        ast@kernel.org, lmb@cloudflare.com
+References: <20210623214438.2276538-1-kuba@kernel.org>
+In-Reply-To: <20210623214438.2276538-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, willemb@google.com,
+        eric.dumazet@gmail.com, dsahern@gmail.com, yoshfuji@linux-ipv6.org,
+        brouer@redhat.com, dsj@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 23 Jun 2021 15:56:45 +0200 you wrote:
-> It's getting more common to run nested container environments for
-> testing cloud software. One of such examples is Kind [1] which runs a
-> Kubernetes cluster in Docker containers on a single host. Each container
-> acts as a Kubernetes node, and thus can run any Pod (aka container)
-> inside the former. This approach simplifies testing a lot, as it
-> eliminates complicated VM setups.
+On Wed, 23 Jun 2021 14:44:38 -0700 you wrote:
+> Dave observed number of machines hitting OOM on the UDP send
+> path. The workload seems to be sending large UDP packets over
+> loopback. Since loopback has MTU of 64k kernel will try to
+> allocate an skb with up to 64k of head space. This has a good
+> chance of failing under memory pressure. What's worse if
+> the message length is <32k the allocation may trigger an
+> OOM killer.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/2] net: retrieve netns cookie via getsocketopt
-    https://git.kernel.org/netdev/net-next/c/e8b9eab99232
-  - [net-next,v2,2/2] tools/testing: add a selftest for SO_NETNS_COOKIE
-    https://git.kernel.org/netdev/net-next/c/ae24bab257bb
+  - [net-next,v4] net: ip: avoid OOM kills with large UDP sends over loopback
+    https://git.kernel.org/netdev/net-next/c/6d123b81ac61
 
 You are awesome, thank you!
 --
