@@ -2,111 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B67E3B351D
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 20:00:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E3CC3B3538
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 20:07:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232077AbhFXSC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 14:02:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42862 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229464AbhFXSC1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Jun 2021 14:02:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C8905613EA;
-        Thu, 24 Jun 2021 18:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624557607;
-        bh=pM6bQ2mpdIH2Xq0e5attPpRJYFmyPq9/Y/Z5ebrECRE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NbeoCBGnre9ooVhkdhU+TaIBkzwrVfpLfN91cGQ8fgpabd9u9gaWSJhFjrAWjprjj
-         Q/2JKeE2y5y3B+lnojb2RDasXY1cV5YVTaFO24tUbBFXQ+6P9/hTtiOsS6U41FJggf
-         JpIkE2fdGKMb+jkqYzRQpbuTpCy4vOobFf3lTG+KBC6lf6FRqHux7f6esNNJunSJwh
-         J3ijd/+QczE+ZMqaqRoXDR1+2zDUFMjhFk2mCP2WVccR92mWZQDemroqPRjF97qmAi
-         l201hEFGlKjjfPVfeXl7FEF7dkVYvRkGrHLoUTkjWYuUxFKqhAv2g47VkFouV05+UM
-         qoqSEZxeCcUeg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BA22060952;
-        Thu, 24 Jun 2021 18:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v5 00/19] Clean up and document RCU-based object
- protection for XDP and TC BPF
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162455760775.19513.3320386456200490614.git-patchwork-notify@kernel.org>
-Date:   Thu, 24 Jun 2021 18:00:07 +0000
-References: <20210624160609.292325-1-toke@redhat.com>
-In-Reply-To: <20210624160609.292325-1-toke@redhat.com>
-To:     =?utf-8?b?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHJlZGhhdC5jb20+?=@ci.codeaurora.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, kafai@fb.com,
-        liuhangbin@gmail.com, brouer@redhat.com, magnus.karlsson@gmail.com,
-        paulmck@kernel.org, kuba@kernel.org
+        id S229573AbhFXSJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 14:09:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37692 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232429AbhFXSJv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 14:09:51 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B42BC061760
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:07:30 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id g3-20020a256b030000b0290551bbd99700so498532ybc.6
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:07:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=dvSNeM/HuzCD6/qY5AxiHJaWaTF4pUpRkK3BjwaDzSk=;
+        b=V69RgEAgIDscZEILB2M/mAFVLBwq676N7FZ8qp5pjCLn5fBjFPSmQaAHBuIcDKy7A/
+         DjHnCVA65ZB+FMgpVozpMwhL0fvNi+5+ym6ykkLJ2mZF+dm1Bi1h+vdcjkx4rkIUUIS6
+         pWQSCEqd04iyeh0L6dq+E9hE/+jiCt0fxvVjdk+qAvx5COtMFsjWE9b5V5clzSWFUB1K
+         lhMln+NyiUS9/gVYgZXI+k/shoveeNmJbTzg2L3P8rQqSHqxj/Yo+TuWtpmuNvvZpsVj
+         AG9/0IBFKpqB+E4E7vnT6PJcGhURSzpUCkP6XCgb0x/mLU4gNRJ5ErN0RxRgiqljZMp7
+         LBng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=dvSNeM/HuzCD6/qY5AxiHJaWaTF4pUpRkK3BjwaDzSk=;
+        b=SBCkmDrX7E9sat2JIEYKacRYVcOL/Rlj/TYc5d6lnTaIWNJmCZyNKrDRaB1IiUBIeC
+         qXnqwi51k/73l9PGwCJWaRtEeLZ/1ItvW//h+gp6Xyj+OY6MEw62jIsO0oyYXun9Kg/J
+         S4j8A0+DaD5hkoGL+gdiHe0IqcRyEUdpGDcabakbYl/GMmUGatpsI5ApVLsspYf46erm
+         ZenI2LeFrLWxQ+Y+4VyHbV8B1mnekRg+AV1xoN3iN+vXvR4TUm8Lw9XzO7m+0wKferKt
+         6Z9PQ5VQAWlLAeECGWhlHQ2r24g8C1M/+FvLdGm6UlK/JDMFaNwRkfZA2RWzNRfAbgd7
+         wq+w==
+X-Gm-Message-State: AOAM532G5Gx4YnFs7zkKF4n9P7VLCgBLQYtt/jFvCS35N7NMi73zhHcZ
+        KKUuOKiHHnBYEyI38v9Klx59a1w=
+X-Google-Smtp-Source: ABdhPJxgZM6hm7DUOEr3GJf7Nvk01UofwDwMKuVcl6/m9LM+s0iXwV8a/DZZD/PVSl5NcN8Mv6UEVO0=
+X-Received: from bcf-linux.svl.corp.google.com ([2620:15c:2c4:1:cb6c:4753:6df0:b898])
+ (user=bcf job=sendgmr) by 2002:a25:98c9:: with SMTP id m9mr6397301ybo.359.1624558049634;
+ Thu, 24 Jun 2021 11:07:29 -0700 (PDT)
+Date:   Thu, 24 Jun 2021 11:06:16 -0700
+Message-Id: <20210624180632.3659809-1-bcf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
+Subject: [PATCH net-next 00/16] gve: Introduce DQO descriptor format
+From:   Bailey Forrest <bcf@google.com>
+To:     Bailey Forrest <bcf@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+DQO is the descriptor format for our next generation virtual NIC. The existing
+descriptor format will be referred to as "GQI" in the patch set.
 
-This series was applied to bpf/bpf-next.git (refs/heads/master):
+One major change with DQO is it uses dual descriptor rings for both TX and RX
+queues.
 
-On Thu, 24 Jun 2021 18:05:50 +0200 you wrote:
-> During the discussion[0] of Hangbin's multicast patch series, Martin pointed out
-> that the lifetime of the RCU-protected  map entries used by XDP_REDIRECT is by
-> no means obvious. I promised to look into cleaning this up, and Paul helpfully
-> provided some hints and a new unrcu_pointer() helper to aid in this.
-> 
-> It seems[1] that back in the early days of XDP, local_bh_disable() did not
-> provide RCU protection, which is why the rcu_read_lock() calls were added
-> to drivers in the first place. But according to Paul[2], in recent kernels
-> a local_bh_disable()/local_bh_enable() pair functions as one big RCU
-> read-side section, so no further protection is needed. This even applies to
-> -rt kernels, which has an explicit rcu_read_lock() in place as part of the
-> local_bh_disable()[3].
-> 
-> [...]
+The TX path uses a TX queue to send descriptors to HW, and receives packet
+completion events on a TX completion queue.
 
-Here is the summary with links:
-  - [bpf-next,v5,01/19] rcu: Create an unrcu_pointer() to remove __rcu from a pointer
-    https://git.kernel.org/bpf/bpf-next/c/b9964ce74544
-  - [bpf-next,v5,02/19] doc: Clarify and expand RCU updaters and corresponding readers
-    https://git.kernel.org/bpf/bpf-next/c/9a145c04a293
-  - [bpf-next,v5,03/19] doc: Give XDP as example of non-obvious RCU reader/updater pairing
-    https://git.kernel.org/bpf/bpf-next/c/e74c74f9e51d
-  - [bpf-next,v5,04/19] bpf: allow RCU-protected lookups to happen from bh context
-    https://git.kernel.org/bpf/bpf-next/c/694cea395fde
-  - [bpf-next,v5,05/19] xdp: add proper __rcu annotations to redirect map entries
-    https://git.kernel.org/bpf/bpf-next/c/782347b6bcad
-  - [bpf-next,v5,06/19] sched: remove unneeded rcu_read_lock() around BPF program invocation
-    https://git.kernel.org/bpf/bpf-next/c/77151ccf1065
-  - [bpf-next,v5,07/19] ena: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/0939e0537896
-  - [bpf-next,v5,08/19] bnxt: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/158c1399fc45
-  - [bpf-next,v5,09/19] thunderx: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/36baafe347a8
-  - [bpf-next,v5,10/19] freescale: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/547aabcac325
-  - [bpf-next,v5,11/19] net: intel: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/49589b23d5a9
-  - [bpf-next,v5,12/19] marvell: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/959ad7ec066d
-  - [bpf-next,v5,13/19] mlx4: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/c4411b371c10
-  - [bpf-next,v5,14/19] nfp: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/d5789621b658
-  - [bpf-next,v5,15/19] qede: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/4415db6ca85a
-  - [bpf-next,v5,16/19] sfc: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/4eb14e3fc619
-  - [bpf-next,v5,17/19] netsec: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/7b6ee873ff20
-  - [bpf-next,v5,18/19] stmmac: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/2f1e432d339c
-  - [bpf-next,v5,19/19] net: ti: remove rcu_read_lock() around XDP program invocation
-    https://git.kernel.org/bpf/bpf-next/c/0cc84b9a6003
+The RX path posts buffers to HW using an RX buffer queue and receives incoming
+packets on an RX queue.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+One important note is that DQO descriptors and doorbells are little endian. We
+continue to use the existing big endian control plane infrastructure.
 
+The general format of the patch series is:
+- Refactor existing code/data structures to be shared by DQO
+- Expand admin queues to support DQO device setup
+- Expand data structures and device setup to support DQO
+- Add logic to setup DQO queues
+- Implement datapath
+
+Bailey Forrest (16):
+  gve: Update GVE documentation to describe DQO
+  gve: Move some static functions to a common file
+  gve: gve_rx_copy: Move padding to an argument
+  gve: Make gve_rx_slot_page_info.page_offset an absolute offset
+  gve: Introduce a new model for device options
+  gve: Introduce per netdev `enum gve_queue_format`
+  gve: adminq: DQO specific device descriptor logic
+  gve: Add support for DQO RX PTYPE map
+  gve: Add dqo descriptors
+  gve: Add DQO fields for core data structures
+  gve: Update adminq commands to support DQO queues
+  gve: DQO: Add core netdev features
+  gve: DQO: Add ring allocation and initialization
+  gve: DQO: Configure interrupts on device up
+  gve: DQO: Add TX path
+  gve: DQO: Add RX path
+
+ .../device_drivers/ethernet/google/gve.rst    |   53 +-
+ drivers/net/ethernet/google/Kconfig           |    2 +-
+ drivers/net/ethernet/google/gve/Makefile      |    2 +-
+ drivers/net/ethernet/google/gve/gve.h         |  332 +++++-
+ drivers/net/ethernet/google/gve/gve_adminq.c  |  334 ++++--
+ drivers/net/ethernet/google/gve/gve_adminq.h  |  112 +-
+ .../net/ethernet/google/gve/gve_desc_dqo.h    |  256 ++++
+ drivers/net/ethernet/google/gve/gve_dqo.h     |   81 ++
+ drivers/net/ethernet/google/gve/gve_ethtool.c |   21 +-
+ drivers/net/ethernet/google/gve/gve_main.c    |  291 ++++-
+ drivers/net/ethernet/google/gve/gve_rx.c      |   54 +-
+ drivers/net/ethernet/google/gve/gve_rx_dqo.c  |  763 ++++++++++++
+ drivers/net/ethernet/google/gve/gve_tx.c      |   25 +-
+ drivers/net/ethernet/google/gve/gve_tx_dqo.c  | 1031 +++++++++++++++++
+ drivers/net/ethernet/google/gve/gve_utils.c   |   81 ++
+ drivers/net/ethernet/google/gve/gve_utils.h   |   28 +
+ 16 files changed, 3250 insertions(+), 216 deletions(-)
+ create mode 100644 drivers/net/ethernet/google/gve/gve_desc_dqo.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_dqo.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_rx_dqo.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_tx_dqo.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_utils.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_utils.h
+
+
+base-commit: 35713d9b8f090d7a226e4aaeeb742265cde33c82
+-- 
+2.32.0.288.g62a8d224e6-goog
 
