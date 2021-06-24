@@ -2,1530 +2,437 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BAAB3B2853
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 09:09:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D7C3B287E
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 09:23:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbhFXHL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 03:11:26 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:35896 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231615AbhFXHLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 03:11:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1624518540; x=1656054540;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bEvAcr1EONNr8s3mRm3ozPNQ0h3A0xXPm8PJzeG6Rt4=;
-  b=QQ1gbUXzBccqn8jJtMg9BzZCiAi/PZKa/O5SLDSMYpdcoZIbVSLVAsN3
-   nQKAHaiFgSe9c+sEDCWAVDWR84DPIIgU5viYJX3EpjGsPvBS24PdEfTbq
-   qxpZkyEDkOURaISCl1mD/i2EKet5N0JHwhEPDuNFgFephzJOJMHtsggtK
-   XECL4/oZLW0dQCPVVWS3fYvDU97OJRsZG8hmbZN7xfzCpiyBT9ze75z3Y
-   /LzMenD7ya69+kVPY21sHmfnWl115S3t5ALB4CdcKmun4S1l5J6BdG0e7
-   vDiM1GMhMp1FZd+oH16x9xomTbbDIxsVBkjAyrb65Fb3KgjHrZwPL8gFj
-   w==;
-IronPort-SDR: 9N3acLnf4SzL0f8VrKU+WfgcIJq0dOrzh6ww49C+i/MtMdPJu+OEh8GWPpwcrcpcOyjv3gCAIH
- QWXeZuLgDhH6I7OUL8eRKOoqG5BLtI8C1JzLTjBcW/RyNpPk6cv5r54YDZUUlzCP/BXWlvdSOG
- cifNzuyMf1b72g6TR6DUBAItLpiGqs1O5rpNfL1FdCvOZwEgVSwUkWZ3ku7IzAp1cW7HajjEi6
- SLbWab/MkGM9cTQN6SCwuBvRmksNalvqH/I7QOD5L37wooT4/Hu+KwWfo/e9CYmWznwGVySJcU
- YBM=
-X-IronPort-AV: E=Sophos;i="5.83,295,1616482800"; 
-   d="scan'208";a="125891439"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jun 2021 00:08:48 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 24 Jun 2021 00:08:46 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Thu, 24 Jun 2021 00:08:42 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Device Tree List <devicetree@vger.kernel.org>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Simon Horman" <simon.horman@netronome.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Lars Povlsen" <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>
-Subject: [PATCH net-next v5 10/10] arm64: dts: sparx5: Add the Sparx5 switch node
-Date:   Thu, 24 Jun 2021 09:07:58 +0200
-Message-ID: <20210624070758.515521-11-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210624070758.515521-1-steen.hegelund@microchip.com>
-References: <20210624070758.515521-1-steen.hegelund@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        id S231442AbhFXHZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 03:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230402AbhFXHZo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 03:25:44 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE64C061574
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 00:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Eh53tinUObkHv0K9i6b4BR2hizCvCU8jDJYD17Su9l8=; b=xklgLJwZu2pXaFLNQ5AT4HsgNM
+        K9zQnp40doCgYb7ytf38GePoNmXUEDpyw4dnZJPKOPK/oRYRlN3eXJRmg6NOyRM6DKbZ4prKrEt3Z
+        Maha89hyeH01eQHtJ9C+PYkHjCOo3u7BvZQ/mJBaNBmzGAwrn8v4+v+D3hSxZwGL+SF7KVcbvcYqN
+        CyM4yr2loyi95vqEmiF0ijm3JPvP6YADc4kzH756wVNLhPdamMARabBIDuMVvxCT0NKbC4TqlbRXR
+        wdw2nvK53ryjUsJsgZ4/BDg2EO8CH+JvI7bB5vQJ9DeYtv1bH2hGGgUUXXZkfUYZkxu//eiPpMVep
+        8Ln2H4YA==;
+Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.ant.amazon.com)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1lwJhs-00DBCc-Hw; Thu, 24 Jun 2021 07:23:24 +0000
+Message-ID: <b25aa156491e2abd4f48da4d7bed82547024a40a.camel@infradead.org>
+Subject: Re: [PATCH v2 1/4] net: tun: fix tun_xdp_one() for IFF_TUN mode
+From:   David Woodhouse <dwmw2@infradead.org>
+To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
+Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
+Date:   Thu, 24 Jun 2021 08:23:21 +0100
+In-Reply-To: <12d5dc12-0b1a-eec1-2986-a971f660e850@redhat.com>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+         <20210622161533.1214662-1-dwmw2@infradead.org>
+         <fedca272-a03e-4bac-4038-2bb1f6b4df84@redhat.com>
+         <e8843f32aa14baff398584e5b3a00d20994836b6.camel@infradead.org>
+         <f2e6498d310454e9c884f3f8470477e0cc527b58.camel@infradead.org>
+         <e61c84062230d3454c0a6539ed372b84449d9572.camel@infradead.org>
+         <12d5dc12-0b1a-eec1-2986-a971f660e850@redhat.com>
+Content-Type: multipart/signed; micalg="sha-256";
+        protocol="application/x-pkcs7-signature";
+        boundary="=-4HHBHlWAU6IdyTaQRl7I"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This provides the configuration for the currently available evaluation
-boards PCB134 and PCB135.
 
-The series depends on the following series currently on its way
-into the kernel:
+--=-4HHBHlWAU6IdyTaQRl7I
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-- Sparx5 Reset Driver
-  Link: https://lore.kernel.org/r/20210416084054.2922327-1-steen.hegelund@microchip.com/
+On Thu, 2021-06-24 at 14:37 +0800, Jason Wang wrote:
+> =E5=9C=A8 2021/6/24 =E4=B8=8A=E5=8D=886:52, David Woodhouse =E5=86=99=E9=
+=81=93:
+> > On Wed, 2021-06-23 at 18:31 +0100, David Woodhouse wrote:
+> > > Joy... that's wrong because when tun does both the PI and the vnet
+> > > headers, the PI header comes *first*. When tun does only PI and vhost
+> > > does the vnet headers, they come in the other order.
+> > >=20
+> > > Will fix (and adjust the test cases to cope).
+> >=20
+> > I got this far, pushed to
+> > https://git.infradead.org/users/dwmw2/linux.git/shortlog/refs/heads/vho=
+st-net
+> >=20
+> > All the test cases are now passing. I don't guarantee I haven't
+> > actually broken qemu and IFF_TAP mode though, mind you :)
+>=20
+>=20
+> No problem, but it would be easier for me if you can post another=20
+> version of the series.
 
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Ack; I'm reworking it now into a saner series. All three of my initial
+simple fixes ended up with more changes once I expanded the test cases
+to cover more permutations of PI/XDP/headers :)
+
+> > As discussed, I expanded tun_get_socket()/tap_get_socket() to return
+> > the actual header length instead of letting vhost make wild guesses.
+>=20
+>=20
+> This probably won't work since we had TUNSETVNETHDRSZ.
+
+Or indeed IFF_NO_PI.
+
+> I agree the vhost codes is tricky since it assumes only two kinds of the=
+=20
+> hdr length.
+>=20
+> But it was basically how it works for the past 10 years. It depends on=
+=20
+> the userspace (Qemu) to coordinate it with the TUN/TAP through=20
+> TUNSETVNETHDRSZ during the feature negotiation.
+
+I think that in any given situation, the kernel should either work
+correctly, or gracefully refuse to set it up.
+
+My patch set will make it work correctly for all the permutations I've
+looked at. I would accept and answer of "screw that, just make
+tun_get_socket() return failure if IFF_NO_PI isn't set", for example.
+
+> > Note that in doing so, I have made tun_get_socket() return -ENOTCONN if
+> > the tun fd *isn't* actually attached (TUNSETIFF) to a real device yet.
+>=20
+> Any reason for doing this? Note that the socket is loosely coupled with=
+=20
+> the networking device.
+
+Because to determine the sock_hlen to return, it needs to look at the
+tun>flags and tun->vndr_hdr_sz field. And if there isn't an actual tun
+device attached, it can't.
+
+>=20
+> >=20
+> > I moved the sanity check back to tun/tap instead of doing it in
+> > vhost_net_build_xdp(), because the latter has no clue about the tun PI
+> > header and doesn't know *where* the virtio header is.
+>=20
+>=20
+> Right, the deserves a separate patch.
+
+Yep, in my tree it has one, but it's a bit mixed in with other fixes
+until I do that refactoring.=20
+
+> > diff --git a/include/linux/if_tun.h b/include/linux/if_tun.h
+> > index 2a7660843444..8d78b6bbc228 100644
+> > --- a/include/linux/if_tun.h
+> > +++ b/include/linux/if_tun.h
+> > @@ -21,11 +21,10 @@ struct tun_msg_ctl {
+> >  =20
+> >   struct tun_xdp_hdr {
+> >   	int buflen;
+> > -	struct virtio_net_hdr gso;
+>=20
+>=20
+> Any reason for doing this? I meant it can work but we need limit the=20
+> changes that is unrelated to the fixes.
+
+That's part of the patch that moves the sanity check back to tun/tap.
+As I said it needs a little reworking, so it currently contains a
+little bit of cleanup to previous code in tun_xdp_one(), but it looks
+like this. The bit in drivers/vhost/net.c is obviously removing code
+that I'd made conditional in a previous patch, so that will change
+somewhat as I rework the series and drop the original patch.
+
+=46rom 2a0080f37244ec6dac8fb3e8330f9153a4373cfd Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw@amazon.co.uk>
+Date: Wed, 23 Jun 2021 23:32:00 +0100
+Subject: [PATCH 10/10] net: remove virtio_net_hdr from struct tun_xdp_hdr
+
+The tun device puts its struct tun_pi *before* the virtio_net_hdr, which
+significantly complicates letting vhost validate it. Just let tap and
+tun validate it for themselves, as they do in the non-XDP case anyway.
+
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- arch/arm64/boot/dts/microchip/sparx5.dtsi     |  94 ++-
- .../dts/microchip/sparx5_pcb134_board.dtsi    | 481 ++++++++++++--
- .../dts/microchip/sparx5_pcb135_board.dtsi    | 621 +++++++++++++++++-
- 3 files changed, 1112 insertions(+), 84 deletions(-)
+ drivers/net/tap.c      | 25 ++++++++++++++++++++++---
+ drivers/net/tun.c      | 34 ++++++++++++++++++++++++----------
+ drivers/vhost/net.c    | 15 +--------------
+ include/linux/if_tun.h |  1 -
+ 4 files changed, 47 insertions(+), 28 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/microchip/sparx5.dtsi b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-index d64621d1213b..ad07fff40544 100644
---- a/arch/arm64/boot/dts/microchip/sparx5.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-@@ -135,9 +135,12 @@ mux: mux-controller {
- 			};
- 		};
- 
--		reset@611010008 {
--			compatible = "microchip,sparx5-chip-reset";
-+		reset: reset-controller@611010008 {
-+			compatible = "microchip,sparx5-switch-reset";
- 			reg = <0x6 0x11010008 0x4>;
-+			reg-names = "gcb";
-+			#reset-cells = <1>;
-+			cpu-syscon = <&cpu_ctrl>;
- 		};
- 
- 		uart0: serial@600100000 {
-@@ -275,6 +278,21 @@ emmc_pins: emmc-pins {
- 					"GPIO_46", "GPIO_47";
- 				function = "emmc";
- 			};
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index 2170a0d3d34c..d1b1f1de374e 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -1132,16 +1132,35 @@ static const struct file_operations tap_fops =3D {
+ static int tap_get_user_xdp(struct tap_queue *q, struct xdp_buff *xdp)
+ {
+ 	struct tun_xdp_hdr *hdr =3D xdp->data_hard_start;
+-	struct virtio_net_hdr *gso =3D &hdr->gso;
++	struct virtio_net_hdr *gso =3D NULL;
+ 	int buflen =3D hdr->buflen;
+ 	int vnet_hdr_len =3D 0;
+ 	struct tap_dev *tap;
+ 	struct sk_buff *skb;
+ 	int err, depth;
+=20
+-	if (q->flags & IFF_VNET_HDR)
++	if (q->flags & IFF_VNET_HDR) {
+ 		vnet_hdr_len =3D READ_ONCE(q->vnet_hdr_sz);
++		if (xdp->data !=3D xdp->data_hard_start + sizeof(*hdr) + vnet_hdr_len) {
++			err =3D -EINVAL;
++			goto err;
++		}
 +
-+			miim1_pins: miim1-pins {
-+				pins = "GPIO_56", "GPIO_57";
-+				function = "miim";
-+			};
++		gso =3D (void *)&hdr[1];
+=20
++		if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
++		     tap16_to_cpu(q, gso->csum_start) +
++		     tap16_to_cpu(q, gso->csum_offset) + 2 >
++			     tap16_to_cpu(q, gso->hdr_len))
++			gso->hdr_len =3D cpu_to_tap16(q,
++				 tap16_to_cpu(q, gso->csum_start) +
++				 tap16_to_cpu(q, gso->csum_offset) + 2);
 +
-+			miim2_pins: miim2-pins {
-+				pins = "GPIO_58", "GPIO_59";
-+				function = "miim";
-+			};
-+
-+			miim3_pins: miim3-pins {
-+				pins = "GPIO_52", "GPIO_53";
-+				function = "miim";
-+			};
- 		};
- 
- 		sgpio0: gpio@61101036c {
-@@ -285,6 +303,8 @@ sgpio0: gpio@61101036c {
- 			clocks = <&sys_clk>;
- 			pinctrl-0 = <&sgpio0_pins>;
- 			pinctrl-names = "default";
-+			resets = <&reset 0>;
-+			reset-names = "switch";
- 			reg = <0x6 0x1101036c 0x100>;
- 			sgpio_in0: gpio@0 {
- 				compatible = "microchip,sparx5-sgpio-bank";
-@@ -292,6 +312,9 @@ sgpio_in0: gpio@0 {
- 				gpio-controller;
- 				#gpio-cells = <3>;
- 				ngpios = <96>;
-+				interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-controller;
-+				#interrupt-cells = <3>;
- 			};
- 			sgpio_out0: gpio@1 {
- 				compatible = "microchip,sparx5-sgpio-bank";
-@@ -310,6 +333,8 @@ sgpio1: gpio@611010484 {
- 			clocks = <&sys_clk>;
- 			pinctrl-0 = <&sgpio1_pins>;
- 			pinctrl-names = "default";
-+			resets = <&reset 0>;
-+			reset-names = "switch";
- 			reg = <0x6 0x11010484 0x100>;
- 			sgpio_in1: gpio@0 {
- 				compatible = "microchip,sparx5-sgpio-bank";
-@@ -317,6 +342,9 @@ sgpio_in1: gpio@0 {
- 				gpio-controller;
- 				#gpio-cells = <3>;
- 				ngpios = <96>;
-+				interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-controller;
-+				#interrupt-cells = <3>;
- 			};
- 			sgpio_out1: gpio@1 {
- 				compatible = "microchip,sparx5-sgpio-bank";
-@@ -335,6 +363,8 @@ sgpio2: gpio@61101059c {
- 			clocks = <&sys_clk>;
- 			pinctrl-0 = <&sgpio2_pins>;
- 			pinctrl-names = "default";
-+			resets = <&reset 0>;
-+			reset-names = "switch";
- 			reg = <0x6 0x1101059c 0x100>;
- 			sgpio_in2: gpio@0 {
- 				reg = <0>;
-@@ -342,6 +372,9 @@ sgpio_in2: gpio@0 {
- 				gpio-controller;
- 				#gpio-cells = <3>;
- 				ngpios = <96>;
-+				interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
-+				interrupt-controller;
-+				#interrupt-cells = <3>;
- 			};
- 			sgpio_out2: gpio@1 {
- 				compatible = "microchip,sparx5-sgpio-bank";
-@@ -386,5 +419,62 @@ tmon0: tmon@610508110 {
- 			#thermal-sensor-cells = <0>;
- 			clocks = <&ahb_clk>;
- 		};
-+
-+		mdio0: mdio@6110102b0 {
-+			compatible = "mscc,ocelot-miim";
-+			status = "disabled";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0x6 0x110102b0 0x24>;
-+		};
-+
-+		mdio1: mdio@6110102d4 {
-+			compatible = "mscc,ocelot-miim";
-+			status = "disabled";
-+			pinctrl-0 = <&miim1_pins>;
-+			pinctrl-names = "default";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0x6 0x110102d4 0x24>;
-+		};
-+
-+		mdio2: mdio@6110102f8 {
-+			compatible = "mscc,ocelot-miim";
-+			status = "disabled";
-+			pinctrl-0 = <&miim2_pins>;
-+			pinctrl-names = "default";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0x6 0x110102d4 0x24>;
-+		};
-+
-+		mdio3: mdio@61101031c {
-+			compatible = "mscc,ocelot-miim";
-+			status = "disabled";
-+			pinctrl-0 = <&miim3_pins>;
-+			pinctrl-names = "default";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0x6 0x1101031c 0x24>;
-+		};
-+
-+		serdes: serdes@10808000 {
-+			compatible = "microchip,sparx5-serdes";
-+			#phy-cells = <1>;
-+			clocks = <&sys_clk>;
-+			reg = <0x6 0x10808000 0x5d0000>;
-+		};
-+
-+		switch: switch@0x600000000 {
-+			compatible = "microchip,sparx5-switch";
-+			reg =	<0x6 0 0x401000>,
-+				<0x6 0x10004000 0x7fc000>,
-+				<0x6 0x11010000 0xaf0000>;
-+			reg-names = "cpu", "dev", "gcb";
-+			interrupt-names = "xtr";
-+			interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
-+			resets = <&reset 0>;
-+			reset-names = "switch";
-+		};
- 	};
- };
-diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
-index f0c915160990..33faf1f3264f 100644
---- a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
-@@ -7,30 +7,6 @@
- #include "sparx5_pcb_common.dtsi"
- 
- /{
--	aliases {
--	    i2c0   = &i2c0;
--	    i2c100 = &i2c100;
--	    i2c101 = &i2c101;
--	    i2c102 = &i2c102;
--	    i2c103 = &i2c103;
--	    i2c104 = &i2c104;
--	    i2c105 = &i2c105;
--	    i2c106 = &i2c106;
--	    i2c107 = &i2c107;
--	    i2c108 = &i2c108;
--	    i2c109 = &i2c109;
--	    i2c110 = &i2c110;
--	    i2c111 = &i2c111;
--	    i2c112 = &i2c112;
--	    i2c113 = &i2c113;
--	    i2c114 = &i2c114;
--	    i2c115 = &i2c115;
--	    i2c116 = &i2c116;
--	    i2c117 = &i2c117;
--	    i2c118 = &i2c118;
--	    i2c119 = &i2c119;
--	};
++		if (tap16_to_cpu(q, gso->hdr_len) > xdp->data_end - xdp->data) {
++			err =3D -EINVAL;
++			goto err;
++		}
++	}
+ 	skb =3D build_skb(xdp->data_hard_start, buflen);
+ 	if (!skb) {
+ 		err =3D -ENOMEM;
+@@ -1155,7 +1174,7 @@ static int tap_get_user_xdp(struct tap_queue *q, stru=
+ct xdp_buff *xdp)
+ 	skb_reset_mac_header(skb);
+ 	skb->protocol =3D eth_hdr(skb)->h_proto;
+=20
+-	if (vnet_hdr_len) {
++	if (gso) {
+ 		err =3D virtio_net_hdr_to_skb(skb, gso, tap_is_little_endian(q));
+ 		if (err)
+ 			goto err_kfree;
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 69f6ce87b109..72f8a04f493b 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -2337,29 +2337,43 @@ static int tun_xdp_one(struct tun_struct *tun,
+ {
+ 	unsigned int datasize =3D xdp->data_end - xdp->data;
+ 	struct tun_xdp_hdr *hdr =3D xdp->data_hard_start;
++	void *tun_hdr =3D &hdr[1];
+ 	struct virtio_net_hdr *gso =3D NULL;
+ 	struct bpf_prog *xdp_prog;
+ 	struct sk_buff *skb =3D NULL;
+ 	__be16 proto =3D 0;
+ 	u32 rxhash =3D 0, act;
+ 	int buflen =3D hdr->buflen;
+-	int reservelen =3D xdp->data - xdp->data_hard_start;
+ 	int err =3D 0;
+ 	bool skb_xdp =3D false;
+ 	struct page *page;
+=20
+-	if (tun->flags & IFF_VNET_HDR)
+-		gso =3D &hdr->gso;
 -
- 	gpio-restart {
- 		compatible = "gpio-restart";
- 		gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
-@@ -298,17 +274,10 @@ gpio@1 {
- 
- &spi0 {
- 	status = "okay";
--	spi@0 {
--		compatible = "spi-mux";
--		mux-controls = <&mux>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--		reg = <0>;	/* CS0 */
--		spi-flash@9 {
--			compatible = "jedec,spi-nor";
--			spi-max-frequency = <8000000>;
--			reg = <0x9>;	/* SPI */
--		};
-+	spi-flash@0 {
-+		compatible = "jedec,spi-nor";
-+		spi-max-frequency = <8000000>;
-+		reg = <0>;
- 	};
- };
- 
-@@ -328,6 +297,33 @@ spi-flash@9 {
- 	};
- };
- 
-+&sgpio0 {
-+	status = "okay";
-+	microchip,sgpio-port-ranges = <8 15>;
-+	gpio@0 {
-+		ngpios = <64>;
-+	};
-+	gpio@1 {
-+		ngpios = <64>;
-+	};
-+};
+ 	if (!(tun->flags & IFF_NO_PI)) {
+-		struct tun_pi *pi =3D xdp->data;
+-		if (datasize < sizeof(*pi)) {
++		struct tun_pi *pi =3D tun_hdr;
++		tun_hdr +=3D sizeof(*pi);
 +
-+&sgpio1 {
-+	status = "okay";
-+	microchip,sgpio-port-ranges = <24 31>;
-+	gpio@0 {
-+		ngpios = <64>;
-+	};
-+	gpio@1 {
-+		ngpios = <64>;
-+	};
-+};
++		if (tun_hdr > xdp->data) {
+ 			atomic_long_inc(&tun->rx_frame_errors);
+-			return  -EINVAL;
++			return -EINVAL;
+ 		}
+ 		proto =3D pi->proto;
+-		reservelen +=3D sizeof(*pi);
+-		datasize -=3D sizeof(*pi);
++	}
 +
-+&sgpio2 {
-+	status = "okay";
-+	microchip,sgpio-port-ranges = <0 0>, <11 31>;
-+};
++	if (tun->flags & IFF_VNET_HDR) {
++		gso =3D tun_hdr;
++		tun_hdr +=3D sizeof(*gso);
 +
- &gpio {
- 	i2cmux_pins_i: i2cmux-pins-i {
- 	       pins = "GPIO_16", "GPIO_17", "GPIO_18", "GPIO_19",
-@@ -415,9 +411,9 @@ i2c0_emux: i2c0-emux@0 {
- 
- &i2c0_imux {
- 	pinctrl-names =
--		"i2c100", "i2c101", "i2c102", "i2c103",
--		"i2c104", "i2c105", "i2c106", "i2c107",
--		"i2c108", "i2c109", "i2c110", "i2c111", "idle";
-+		"i2c_sfp1", "i2c_sfp2", "i2c_sfp3", "i2c_sfp4",
-+		"i2c_sfp5", "i2c_sfp6", "i2c_sfp7", "i2c_sfp8",
-+		"i2c_sfp9", "i2c_sfp10", "i2c_sfp11", "i2c_sfp12", "idle";
- 	pinctrl-0 = <&i2cmux_0>;
- 	pinctrl-1 = <&i2cmux_1>;
- 	pinctrl-2 = <&i2cmux_2>;
-@@ -431,62 +427,62 @@ &i2c0_imux {
- 	pinctrl-10 = <&i2cmux_10>;
- 	pinctrl-11 = <&i2cmux_11>;
- 	pinctrl-12 = <&i2cmux_pins_i>;
--	i2c100: i2c_sfp1 {
-+	i2c_sfp1: i2c_sfp1 {
- 		reg = <0x0>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c101: i2c_sfp2 {
-+	i2c_sfp2: i2c_sfp2 {
- 		reg = <0x1>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c102: i2c_sfp3 {
-+	i2c_sfp3: i2c_sfp3 {
- 		reg = <0x2>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c103: i2c_sfp4 {
-+	i2c_sfp4: i2c_sfp4 {
- 		reg = <0x3>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c104: i2c_sfp5 {
-+	i2c_sfp5: i2c_sfp5 {
- 		reg = <0x4>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c105: i2c_sfp6 {
-+	i2c_sfp6: i2c_sfp6 {
- 		reg = <0x5>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c106: i2c_sfp7 {
-+	i2c_sfp7: i2c_sfp7 {
- 		reg = <0x6>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c107: i2c_sfp8 {
-+	i2c_sfp8: i2c_sfp8 {
- 		reg = <0x7>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c108: i2c_sfp9 {
-+	i2c_sfp9: i2c_sfp9 {
- 		reg = <0x8>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c109: i2c_sfp10 {
-+	i2c_sfp10: i2c_sfp10 {
- 		reg = <0x9>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c110: i2c_sfp11 {
-+	i2c_sfp11: i2c_sfp11 {
- 		reg = <0xa>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c111: i2c_sfp12 {
-+	i2c_sfp12: i2c_sfp12 {
- 		reg = <0xb>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
-@@ -499,44 +495,413 @@ &gpio 60 GPIO_ACTIVE_HIGH
- 		     &gpio 61 GPIO_ACTIVE_HIGH
- 		     &gpio 54 GPIO_ACTIVE_HIGH>;
- 	idle-state = <0x8>;
--	i2c112: i2c_sfp13 {
-+	i2c_sfp13: i2c_sfp13 {
- 		reg = <0x0>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c113: i2c_sfp14 {
-+	i2c_sfp14: i2c_sfp14 {
- 		reg = <0x1>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c114: i2c_sfp15 {
-+	i2c_sfp15: i2c_sfp15 {
- 		reg = <0x2>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c115: i2c_sfp16 {
-+	i2c_sfp16: i2c_sfp16 {
- 		reg = <0x3>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c116: i2c_sfp17 {
-+	i2c_sfp17: i2c_sfp17 {
- 		reg = <0x4>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c117: i2c_sfp18 {
-+	i2c_sfp18: i2c_sfp18 {
- 		reg = <0x5>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c118: i2c_sfp19 {
-+	i2c_sfp19: i2c_sfp19 {
- 		reg = <0x6>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c119: i2c_sfp20 {
-+	i2c_sfp20: i2c_sfp20 {
- 		reg = <0x7>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
- };
++		if (tun_hdr > xdp->data) {
++			atomic_long_inc(&tun->rx_frame_errors);
++			return -EINVAL;
++		}
 +
-+&mdio3 {
-+	status = "ok";
-+	phy64: ethernet-phy@64 {
-+		reg = <28>;
-+	};
-+};
++		if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
++		    tun16_to_cpu(tun, gso->csum_start) + tun16_to_cpu(tun, gso->csum_off=
+set) + 2 > tun16_to_cpu(tun, gso->hdr_len))
++			gso->hdr_len =3D cpu_to_tun16(tun, tun16_to_cpu(tun, gso->csum_start) +=
+ tun16_to_cpu(tun, gso->csum_offset) + 2);
 +
-+&axi {
-+	sfp_eth12: sfp-eth12 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp1>;
-+		tx-disable-gpios = <&sgpio_out2 11 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 11 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 11 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 12 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth13: sfp-eth13 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp2>;
-+		tx-disable-gpios = <&sgpio_out2 12 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 12 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 12 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 13 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth14: sfp-eth14 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp3>;
-+		tx-disable-gpios = <&sgpio_out2 13 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 13 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 13 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 14 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth15: sfp-eth15 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp4>;
-+		tx-disable-gpios = <&sgpio_out2 14 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 14 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 14 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 15 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth48: sfp-eth48 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp5>;
-+		tx-disable-gpios = <&sgpio_out2 15 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 15 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 15 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 16 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth49: sfp-eth49 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp6>;
-+		tx-disable-gpios = <&sgpio_out2 16 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 16 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 16 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 17 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth50: sfp-eth50 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp7>;
-+		tx-disable-gpios = <&sgpio_out2 17 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 17 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 17 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 18 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth51: sfp-eth51 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp8>;
-+		tx-disable-gpios = <&sgpio_out2 18 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 18 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 18 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 19 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth52: sfp-eth52 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp9>;
-+		tx-disable-gpios = <&sgpio_out2 19 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 19 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 19 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 20 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth53: sfp-eth53 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp10>;
-+		tx-disable-gpios = <&sgpio_out2 20 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 20 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 20 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 21 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth54: sfp-eth54 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp11>;
-+		tx-disable-gpios = <&sgpio_out2 21 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 21 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 21 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 22 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth55: sfp-eth55 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp12>;
-+		tx-disable-gpios = <&sgpio_out2 22 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 22 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 22 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 23 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth56: sfp-eth56 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp13>;
-+		tx-disable-gpios = <&sgpio_out2 23 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 23 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 23 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 24 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth57: sfp-eth57 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp14>;
-+		tx-disable-gpios = <&sgpio_out2 24 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 24 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 24 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 25 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth58: sfp-eth58 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp15>;
-+		tx-disable-gpios = <&sgpio_out2 25 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 25 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 25 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 26 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth59: sfp-eth59 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp16>;
-+		tx-disable-gpios = <&sgpio_out2 26 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 26 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 26 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 27 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth60: sfp-eth60 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp17>;
-+		tx-disable-gpios = <&sgpio_out2 27 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 27 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 27 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 28 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth61: sfp-eth61 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp18>;
-+		tx-disable-gpios = <&sgpio_out2 28 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 28 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 28 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 29 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth62: sfp-eth62 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp19>;
-+		tx-disable-gpios = <&sgpio_out2 29 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 29 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 29 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 30 0 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth63: sfp-eth63 {
-+		compatible       = "sff,sfp";
-+		i2c-bus          = <&i2c_sfp20>;
-+		tx-disable-gpios = <&sgpio_out2 30 1 GPIO_ACTIVE_LOW>;
-+		los-gpios        = <&sgpio_in2 30 1 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios   = <&sgpio_in2 30 2 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios   = <&sgpio_in2 31 0 GPIO_ACTIVE_HIGH>;
-+	};
-+};
-+
-+&switch {
-+	ethernet-ports {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		/* 10G SFPs */
-+		port12: port@12 {
-+			reg = <12>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 13>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth12>;
-+			microchip,sd-sgpio = <301>;
-+			managed = "in-band-status";
-+		};
-+		port13: port@13 {
-+			reg = <13>;
-+			/* Example: CU SFP, 1G speed */
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 14>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth13>;
-+			microchip,sd-sgpio = <305>;
-+			managed = "in-band-status";
-+		};
-+		port14: port@14 {
-+			reg = <14>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 15>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth14>;
-+			microchip,sd-sgpio = <309>;
-+			managed = "in-band-status";
-+		};
-+		port15: port@15 {
-+			reg = <15>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 16>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth15>;
-+			microchip,sd-sgpio = <313>;
-+			managed = "in-band-status";
-+		};
-+		port48: port@48 {
-+			reg = <48>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 17>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth48>;
-+			microchip,sd-sgpio = <317>;
-+			managed = "in-band-status";
-+		};
-+		port49: port@49 {
-+			reg = <49>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 18>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth49>;
-+			microchip,sd-sgpio = <321>;
-+			managed = "in-band-status";
-+		};
-+		port50: port@50 {
-+			reg = <50>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 19>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth50>;
-+			microchip,sd-sgpio = <325>;
-+			managed = "in-band-status";
-+		};
-+		port51: port@51 {
-+			reg = <51>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 20>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth51>;
-+			microchip,sd-sgpio = <329>;
-+			managed = "in-band-status";
-+		};
-+		port52: port@52 {
-+			reg = <52>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 21>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth52>;
-+			microchip,sd-sgpio = <333>;
-+			managed = "in-band-status";
-+		};
-+		port53: port@53 {
-+			reg = <53>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 22>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth53>;
-+			microchip,sd-sgpio = <337>;
-+			managed = "in-band-status";
-+		};
-+		port54: port@54 {
-+			reg = <54>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 23>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth54>;
-+			microchip,sd-sgpio = <341>;
-+			managed = "in-band-status";
-+		};
-+		port55: port@55 {
-+			reg = <55>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 24>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth55>;
-+			microchip,sd-sgpio = <345>;
-+			managed = "in-band-status";
-+		};
-+		/* 25G SFPs */
-+		port56: port@56 {
-+			reg = <56>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 25>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth56>;
-+			microchip,sd-sgpio = <349>;
-+			managed = "in-band-status";
-+		};
-+		port57: port@57 {
-+			reg = <57>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 26>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth57>;
-+			microchip,sd-sgpio = <353>;
-+			managed = "in-band-status";
-+		};
-+		port58: port@58 {
-+			reg = <58>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 27>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth58>;
-+			microchip,sd-sgpio = <357>;
-+			managed = "in-band-status";
-+		};
-+		port59: port@59 {
-+			reg = <59>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 28>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth59>;
-+			microchip,sd-sgpio = <361>;
-+			managed = "in-band-status";
-+		};
-+		port60: port@60 {
-+			reg = <60>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 29>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth60>;
-+			microchip,sd-sgpio = <365>;
-+			managed = "in-band-status";
-+		};
-+		port61: port@61 {
-+			reg = <61>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 30>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth61>;
-+			microchip,sd-sgpio = <369>;
-+			managed = "in-band-status";
-+		};
-+		port62: port@62 {
-+			reg = <62>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 31>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth62>;
-+			microchip,sd-sgpio = <373>;
-+			managed = "in-band-status";
-+		};
-+		port63: port@63 {
-+			reg = <63>;
-+			microchip,bandwidth = <10000>;
-+			phys = <&serdes 32>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth63>;
-+			microchip,sd-sgpio = <377>;
-+			managed = "in-band-status";
-+		};
-+		/* Finally the Management interface */
-+		port64: port@64 {
-+			reg = <64>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 0>;
-+			phy-handle = <&phy64>;
-+			phy-mode = "sgmii";
-+		};
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
-index e28c6dd16377..ef96e6d8c6b3 100644
---- a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
-@@ -7,14 +7,6 @@
- #include "sparx5_pcb_common.dtsi"
- 
- /{
--	aliases {
--	    i2c0   = &i2c0;
--	    i2c152 = &i2c152;
--	    i2c153 = &i2c153;
--	    i2c154 = &i2c154;
--	    i2c155 = &i2c155;
--	};
++		if (tun16_to_cpu(tun, gso->hdr_len) > datasize)
++			return -EINVAL;
+ 	}
+=20
+ 	xdp_prog =3D rcu_dereference(tun->xdp_prog);
+@@ -2407,7 +2421,7 @@ static int tun_xdp_one(struct tun_struct *tun,
+ 		goto out;
+ 	}
+=20
+-	skb_reserve(skb, reservelen);
++	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	skb_put(skb, datasize);
+=20
+ 	if (gso && virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index e88cc18d079f..d9491c620a9c 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -716,26 +716,13 @@ static int vhost_net_build_xdp(struct vhost_net_virtq=
+ueue *nvq,
+ 	buf =3D (char *)page_address(alloc_frag->page) + alloc_frag->offset;
+ 	hdr =3D buf;
+ 	if (sock_hlen) {
+-		struct virtio_net_hdr *gso =3D &hdr->gso;
 -
- 	gpio-restart {
- 		compatible = "gpio-restart";
- 		gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
-@@ -97,17 +89,10 @@ i2cmux_s32: i2cmux-3 {
- 
- &spi0 {
- 	status = "okay";
--	spi@0 {
--		compatible = "spi-mux";
--		mux-controls = <&mux>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--		reg = <0>; /* CS0 */
--		spi-flash@9 {
--			compatible = "jedec,spi-nor";
--			spi-max-frequency = <8000000>;
--			reg = <0x9>; /* SPI */
--		};
-+	spi-flash@0 {
-+		compatible = "jedec,spi-nor";
-+		spi-max-frequency = <8000000>;
-+		reg = <0>;
- 	};
+ 		copied =3D copy_page_from_iter(alloc_frag->page,
+ 					     alloc_frag->offset +
+-					     offsetof(struct tun_xdp_hdr, gso),
++					     sizeof(struct tun_xdp_hdr),
+ 					     sock_hlen, from);
+ 		if (copied !=3D sock_hlen)
+ 			return -EFAULT;
+=20
+-		if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
+-		    vhost16_to_cpu(vq, gso->csum_start) +
+-		    vhost16_to_cpu(vq, gso->csum_offset) + 2 >
+-		    vhost16_to_cpu(vq, gso->hdr_len)) {
+-			gso->hdr_len =3D cpu_to_vhost16(vq,
+-						      vhost16_to_cpu(vq, gso->csum_start) +
+-						      vhost16_to_cpu(vq, gso->csum_offset) + 2);
+-
+-			if (vhost16_to_cpu(vq, gso->hdr_len) > len)
+-				return -EINVAL;
+-		}
+ 		len -=3D sock_hlen;
+ 	}
+=20
+diff --git a/include/linux/if_tun.h b/include/linux/if_tun.h
+index 8a7debd3f663..8d78b6bbc228 100644
+--- a/include/linux/if_tun.h
++++ b/include/linux/if_tun.h
+@@ -21,7 +21,6 @@ struct tun_msg_ctl {
+=20
+ struct tun_xdp_hdr {
+ 	int buflen;
+-	struct virtio_net_hdr gso;
  };
- 
-@@ -138,6 +123,11 @@ gpio@1 {
- 	};
- };
- 
-+&sgpio2 {
-+	status = "okay";
-+	microchip,sgpio-port-ranges = <0 0>, <16 18>, <28 31>;
-+};
-+
- &axi {
- 	i2c0_imux: i2c0-imux@0 {
- 		compatible = "i2c-mux-pinctrl";
-@@ -149,31 +139,614 @@ i2c0_imux: i2c0-imux@0 {
- 
- &i2c0_imux {
- 	pinctrl-names =
--		"i2c152", "i2c153", "i2c154", "i2c155",
-+		"i2c_sfp1", "i2c_sfp2", "i2c_sfp3", "i2c_sfp4",
- 		"idle";
- 	pinctrl-0 = <&i2cmux_s29>;
- 	pinctrl-1 = <&i2cmux_s30>;
- 	pinctrl-2 = <&i2cmux_s31>;
- 	pinctrl-3 = <&i2cmux_s32>;
- 	pinctrl-4 = <&i2cmux_pins_i>;
--	i2c152: i2c_sfp1 {
-+	i2c_sfp1: i2c_sfp1 {
- 		reg = <0x0>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c153: i2c_sfp2 {
-+	i2c_sfp2: i2c_sfp2 {
- 		reg = <0x1>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c154: i2c_sfp3 {
-+	i2c_sfp3: i2c_sfp3 {
- 		reg = <0x2>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
--	i2c155: i2c_sfp4 {
-+	i2c_sfp4: i2c_sfp4 {
- 		reg = <0x3>;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 	};
- };
-+
-+&axi {
-+	sfp_eth60: sfp-eth60 {
-+		compatible	   = "sff,sfp";
-+		i2c-bus            = <&i2c_sfp1>;
-+		tx-disable-gpios   = <&sgpio_out2 28 0 GPIO_ACTIVE_LOW>;
-+		rate-select0-gpios = <&sgpio_out2 28 1 GPIO_ACTIVE_HIGH>;
-+		los-gpios          = <&sgpio_in2 28 0 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios     = <&sgpio_in2 28 1 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios     = <&sgpio_in2 28 2 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth61: sfp-eth61 {
-+		compatible         = "sff,sfp";
-+		i2c-bus            = <&i2c_sfp2>;
-+		tx-disable-gpios   = <&sgpio_out2 29 0 GPIO_ACTIVE_LOW>;
-+		rate-select0-gpios = <&sgpio_out2 29 1 GPIO_ACTIVE_HIGH>;
-+		los-gpios          = <&sgpio_in2 29 0 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios     = <&sgpio_in2 29 1 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios     = <&sgpio_in2 29 2 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth62: sfp-eth62 {
-+		compatible         = "sff,sfp";
-+		i2c-bus            = <&i2c_sfp3>;
-+		tx-disable-gpios   = <&sgpio_out2 30 0 GPIO_ACTIVE_LOW>;
-+		rate-select0-gpios = <&sgpio_out2 30 1 GPIO_ACTIVE_HIGH>;
-+		los-gpios          = <&sgpio_in2 30 0 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios     = <&sgpio_in2 30 1 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios     = <&sgpio_in2 30 2 GPIO_ACTIVE_HIGH>;
-+	};
-+	sfp_eth63: sfp-eth63 {
-+		compatible         = "sff,sfp";
-+		i2c-bus            = <&i2c_sfp4>;
-+		tx-disable-gpios   = <&sgpio_out2 31 0 GPIO_ACTIVE_LOW>;
-+		rate-select0-gpios = <&sgpio_out2 31 1 GPIO_ACTIVE_HIGH>;
-+		los-gpios          = <&sgpio_in2 31 0 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpios     = <&sgpio_in2 31 1 GPIO_ACTIVE_LOW>;
-+		tx-fault-gpios     = <&sgpio_in2 31 2 GPIO_ACTIVE_HIGH>;
-+	};
-+};
-+
-+&mdio0 {
-+	status = "ok";
-+	phy0: ethernet-phy@0 {
-+		reg = <0>;
-+	};
-+	phy1: ethernet-phy@1 {
-+		reg = <1>;
-+	};
-+	phy2: ethernet-phy@2 {
-+		reg = <2>;
-+	};
-+	phy3: ethernet-phy@3 {
-+		reg = <3>;
-+	};
-+	phy4: ethernet-phy@4 {
-+		reg = <4>;
-+	};
-+	phy5: ethernet-phy@5 {
-+		reg = <5>;
-+	};
-+	phy6: ethernet-phy@6 {
-+		reg = <6>;
-+	};
-+	phy7: ethernet-phy@7 {
-+		reg = <7>;
-+	};
-+	phy8: ethernet-phy@8 {
-+		reg = <8>;
-+	};
-+	phy9: ethernet-phy@9 {
-+		reg = <9>;
-+	};
-+	phy10: ethernet-phy@10 {
-+		reg = <10>;
-+	};
-+	phy11: ethernet-phy@11 {
-+		reg = <11>;
-+	};
-+	phy12: ethernet-phy@12 {
-+		reg = <12>;
-+	};
-+	phy13: ethernet-phy@13 {
-+		reg = <13>;
-+	};
-+	phy14: ethernet-phy@14 {
-+		reg = <14>;
-+	};
-+	phy15: ethernet-phy@15 {
-+		reg = <15>;
-+	};
-+	phy16: ethernet-phy@16 {
-+		reg = <16>;
-+	};
-+	phy17: ethernet-phy@17 {
-+		reg = <17>;
-+	};
-+	phy18: ethernet-phy@18 {
-+		reg = <18>;
-+	};
-+	phy19: ethernet-phy@19 {
-+		reg = <19>;
-+	};
-+	phy20: ethernet-phy@20 {
-+		reg = <20>;
-+	};
-+	phy21: ethernet-phy@21 {
-+		reg = <21>;
-+	};
-+	phy22: ethernet-phy@22 {
-+		reg = <22>;
-+	};
-+	phy23: ethernet-phy@23 {
-+		reg = <23>;
-+	};
-+};
-+
-+&mdio1 {
-+	status = "ok";
-+	phy24: ethernet-phy@24 {
-+		reg = <0>;
-+	};
-+	phy25: ethernet-phy@25 {
-+		reg = <1>;
-+	};
-+	phy26: ethernet-phy@26 {
-+		reg = <2>;
-+	};
-+	phy27: ethernet-phy@27 {
-+		reg = <3>;
-+	};
-+	phy28: ethernet-phy@28 {
-+		reg = <4>;
-+	};
-+	phy29: ethernet-phy@29 {
-+		reg = <5>;
-+	};
-+	phy30: ethernet-phy@30 {
-+		reg = <6>;
-+	};
-+	phy31: ethernet-phy@31 {
-+		reg = <7>;
-+	};
-+	phy32: ethernet-phy@32 {
-+		reg = <8>;
-+	};
-+	phy33: ethernet-phy@33 {
-+		reg = <9>;
-+	};
-+	phy34: ethernet-phy@34 {
-+		reg = <10>;
-+	};
-+	phy35: ethernet-phy@35 {
-+		reg = <11>;
-+	};
-+	phy36: ethernet-phy@36 {
-+		reg = <12>;
-+	};
-+	phy37: ethernet-phy@37 {
-+		reg = <13>;
-+	};
-+	phy38: ethernet-phy@38 {
-+		reg = <14>;
-+	};
-+	phy39: ethernet-phy@39 {
-+		reg = <15>;
-+	};
-+	phy40: ethernet-phy@40 {
-+		reg = <16>;
-+	};
-+	phy41: ethernet-phy@41 {
-+		reg = <17>;
-+	};
-+	phy42: ethernet-phy@42 {
-+		reg = <18>;
-+	};
-+	phy43: ethernet-phy@43 {
-+		reg = <19>;
-+	};
-+	phy44: ethernet-phy@44 {
-+		reg = <20>;
-+	};
-+	phy45: ethernet-phy@45 {
-+		reg = <21>;
-+	};
-+	phy46: ethernet-phy@46 {
-+		reg = <22>;
-+	};
-+	phy47: ethernet-phy@47 {
-+		reg = <23>;
-+	};
-+};
-+
-+&mdio3 {
-+	status = "ok";
-+	phy64: ethernet-phy@64 {
-+		reg = <28>;
-+	};
-+};
-+
-+&switch {
-+	ethernet-ports {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		port0: port@0 {
-+			reg = <0>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 13>;
-+			phy-handle = <&phy0>;
-+			phy-mode = "qsgmii";
-+		};
-+		port1: port@1 {
-+			reg = <1>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 13>;
-+			phy-handle = <&phy1>;
-+			phy-mode = "qsgmii";
-+		};
-+		port2: port@2 {
-+			reg = <2>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 13>;
-+			phy-handle = <&phy2>;
-+			phy-mode = "qsgmii";
-+		};
-+		port3: port@3 {
-+			reg = <3>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 13>;
-+			phy-handle = <&phy3>;
-+			phy-mode = "qsgmii";
-+		};
-+		port4: port@4 {
-+			reg = <4>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 14>;
-+			phy-handle = <&phy4>;
-+			phy-mode = "qsgmii";
-+		};
-+		port5: port@5 {
-+			reg = <5>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 14>;
-+			phy-handle = <&phy5>;
-+			phy-mode = "qsgmii";
-+		};
-+		port6: port@6 {
-+			reg = <6>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 14>;
-+			phy-handle = <&phy6>;
-+			phy-mode = "qsgmii";
-+		};
-+		port7: port@7 {
-+			reg = <7>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 14>;
-+			phy-handle = <&phy7>;
-+			phy-mode = "qsgmii";
-+		};
-+		port8: port@8 {
-+			reg = <8>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 15>;
-+			phy-handle = <&phy8>;
-+			phy-mode = "qsgmii";
-+		};
-+		port9: port@9 {
-+			reg = <9>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 15>;
-+			phy-handle = <&phy9>;
-+			phy-mode = "qsgmii";
-+		};
-+		port10: port@10 {
-+			reg = <10>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 15>;
-+			phy-handle = <&phy10>;
-+			phy-mode = "qsgmii";
-+		};
-+		port11: port@11 {
-+			reg = <11>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 15>;
-+			phy-handle = <&phy11>;
-+			phy-mode = "qsgmii";
-+		};
-+		port12: port@12 {
-+			reg = <12>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 16>;
-+			phy-handle = <&phy12>;
-+			phy-mode = "qsgmii";
-+		};
-+		port13: port@13 {
-+			reg = <13>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 16>;
-+			phy-handle = <&phy13>;
-+			phy-mode = "qsgmii";
-+		};
-+		port14: port@14 {
-+			reg = <14>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 16>;
-+			phy-handle = <&phy14>;
-+			phy-mode = "qsgmii";
-+		};
-+		port15: port@15 {
-+			reg = <15>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 16>;
-+			phy-handle = <&phy15>;
-+			phy-mode = "qsgmii";
-+		};
-+		port16: port@16 {
-+			reg = <16>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 17>;
-+			phy-handle = <&phy16>;
-+			phy-mode = "qsgmii";
-+		};
-+		port17: port@17 {
-+			reg = <17>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 17>;
-+			phy-handle = <&phy17>;
-+			phy-mode = "qsgmii";
-+		};
-+		port18: port@18 {
-+			reg = <18>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 17>;
-+			phy-handle = <&phy18>;
-+			phy-mode = "qsgmii";
-+		};
-+		port19: port@19 {
-+			reg = <19>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 17>;
-+			phy-handle = <&phy19>;
-+			phy-mode = "qsgmii";
-+		};
-+		port20: port@20 {
-+			reg = <20>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 18>;
-+			phy-handle = <&phy20>;
-+			phy-mode = "qsgmii";
-+		};
-+		port21: port@21 {
-+			reg = <21>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 18>;
-+			phy-handle = <&phy21>;
-+			phy-mode = "qsgmii";
-+		};
-+		port22: port@22 {
-+			reg = <22>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 18>;
-+			phy-handle = <&phy22>;
-+			phy-mode = "qsgmii";
-+		};
-+		port23: port@23 {
-+			reg = <23>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 18>;
-+			phy-handle = <&phy23>;
-+			phy-mode = "qsgmii";
-+		};
-+		port24: port@24 {
-+			reg = <24>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 19>;
-+			phy-handle = <&phy24>;
-+			phy-mode = "qsgmii";
-+		};
-+		port25: port@25 {
-+			reg = <25>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 19>;
-+			phy-handle = <&phy25>;
-+			phy-mode = "qsgmii";
-+		};
-+		port26: port@26 {
-+			reg = <26>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 19>;
-+			phy-handle = <&phy26>;
-+			phy-mode = "qsgmii";
-+		};
-+		port27: port@27 {
-+			reg = <27>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 19>;
-+			phy-handle = <&phy27>;
-+			phy-mode = "qsgmii";
-+		};
-+		port28: port@28 {
-+			reg = <28>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 20>;
-+			phy-handle = <&phy28>;
-+			phy-mode = "qsgmii";
-+		};
-+		port29: port@29 {
-+			reg = <29>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 20>;
-+			phy-handle = <&phy29>;
-+			phy-mode = "qsgmii";
-+		};
-+		port30: port@30 {
-+			reg = <30>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 20>;
-+			phy-handle = <&phy30>;
-+			phy-mode = "qsgmii";
-+		};
-+		port31: port@31 {
-+			reg = <31>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 20>;
-+			phy-handle = <&phy31>;
-+			phy-mode = "qsgmii";
-+		};
-+		port32: port@32 {
-+			reg = <32>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 21>;
-+			phy-handle = <&phy32>;
-+			phy-mode = "qsgmii";
-+		};
-+		port33: port@33 {
-+			reg = <33>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 21>;
-+			phy-handle = <&phy33>;
-+			phy-mode = "qsgmii";
-+		};
-+		port34: port@34 {
-+			reg = <34>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 21>;
-+			phy-handle = <&phy34>;
-+			phy-mode = "qsgmii";
-+		};
-+		port35: port@35 {
-+			reg = <35>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 21>;
-+			phy-handle = <&phy35>;
-+			phy-mode = "qsgmii";
-+		};
-+		port36: port@36 {
-+			reg = <36>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 22>;
-+			phy-handle = <&phy36>;
-+			phy-mode = "qsgmii";
-+		};
-+		port37: port@37 {
-+			reg = <37>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 22>;
-+			phy-handle = <&phy37>;
-+			phy-mode = "qsgmii";
-+		};
-+		port38: port@38 {
-+			reg = <38>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 22>;
-+			phy-handle = <&phy38>;
-+			phy-mode = "qsgmii";
-+		};
-+		port39: port@39 {
-+			reg = <39>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 22>;
-+			phy-handle = <&phy39>;
-+			phy-mode = "qsgmii";
-+		};
-+		port40: port@40 {
-+			reg = <40>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 23>;
-+			phy-handle = <&phy40>;
-+			phy-mode = "qsgmii";
-+		};
-+		port41: port@41 {
-+			reg = <41>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 23>;
-+			phy-handle = <&phy41>;
-+			phy-mode = "qsgmii";
-+		};
-+		port42: port@42 {
-+			reg = <42>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 23>;
-+			phy-handle = <&phy42>;
-+			phy-mode = "qsgmii";
-+		};
-+		port43: port@43 {
-+			reg = <43>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 23>;
-+			phy-handle = <&phy43>;
-+			phy-mode = "qsgmii";
-+		};
-+		port44: port@44 {
-+			reg = <44>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 24>;
-+			phy-handle = <&phy44>;
-+			phy-mode = "qsgmii";
-+		};
-+		port45: port@45 {
-+			reg = <45>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 24>;
-+			phy-handle = <&phy45>;
-+			phy-mode = "qsgmii";
-+		};
-+		port46: port@46 {
-+			reg = <46>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 24>;
-+			phy-handle = <&phy46>;
-+			phy-mode = "qsgmii";
-+		};
-+		port47: port@47 {
-+			reg = <47>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 24>;
-+			phy-handle = <&phy47>;
-+			phy-mode = "qsgmii";
-+		};
-+		/* Then the 25G interfaces */
-+		port60: port@60 {
-+			reg = <60>;
-+			microchip,bandwidth = <25000>;
-+			phys = <&serdes 29>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth60>;
-+			managed = "in-band-status";
-+		};
-+		port61: port@61 {
-+			reg = <61>;
-+			microchip,bandwidth = <25000>;
-+			phys = <&serdes 30>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth61>;
-+			managed = "in-band-status";
-+		};
-+		port62: port@62 {
-+			reg = <62>;
-+			microchip,bandwidth = <25000>;
-+			phys = <&serdes 31>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth62>;
-+			managed = "in-band-status";
-+		};
-+		port63: port@63 {
-+			reg = <63>;
-+			microchip,bandwidth = <25000>;
-+			phys = <&serdes 32>;
-+			phy-mode = "10gbase-r";
-+			sfp = <&sfp_eth63>;
-+			managed = "in-band-status";
-+		};
-+		/* Finally the Management interface */
-+		port64: port@64 {
-+			reg = <64>;
-+			microchip,bandwidth = <1000>;
-+			phys = <&serdes 0>;
-+			phy-handle = <&phy64>;
-+			phy-mode = "sgmii";
-+		};
-+	};
-+};
--- 
-2.32.0
+=20
+ #if defined(CONFIG_TUN) || defined(CONFIG_TUN_MODULE)
+--=20
+2.17.1
+
+
+
+--=-4HHBHlWAU6IdyTaQRl7I
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
+ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
+OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
+RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
+cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
+uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
+Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
+Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
+xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
+BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
+dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
+LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
+Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
+Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
+YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
+nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
+PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
+7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
+Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
+MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
+NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
+/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
+0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
+vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
+ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
+ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
+CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
+BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
+aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
+bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
+LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
+W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
+vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
+gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
+RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
+jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
+AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
+BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
++bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
+WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
+aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
+CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
+u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
+RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
+QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
+b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
+cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
+SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
+0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
+KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
+E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
+M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
+jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
+yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
+gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
+R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
+ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
+NjI0MDcyMzIyWjAvBgkqhkiG9w0BCQQxIgQgxtLjJsEuqGA15MwQpFmSLRNrKMIXv2R8wOYZO1RT
+0fMwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
+PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
+DQEBAQUABIIBACHT9WehosRwhb8o5wj/KpyGNiVs69lYisNtPnYbrHN4C5Mlwq9fxWuRcM2onwUy
+tTMrOR7KfVhzFpYEzk2TUTyeB10fWRG7pkSBREV5vokMjVi6yUMJS93hVn5LMx+hHwmEQ53os0h4
+kpJFjxW1K8XAIuywOP32WSE/mCkaEPatZrGWmc7pu+7eooFGD/CFSojAQbDjF4bzG2OY51DoELdz
+LpesVY+0N6f/TkQrBRBw7+58krnqvgdU0Ig3RaBD6kE59dQ1CpGKm5de2Tvyr3IfjSDkg5ZEYBqI
+6NPx+pFFMTmRAsz+2xV9gPLUq9zTMoqQVFqVJ1MHz4jeLrbdMP4AAAAAAAA=
+
+
+--=-4HHBHlWAU6IdyTaQRl7I--
 
