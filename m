@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 615CF3B2470
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 03:18:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06A413B2473
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 03:18:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229928AbhFXBUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 21:20:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52714 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229758AbhFXBUL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 21:20:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=PdTZfjbDLW3Cs289v9r6/DX24+QzrM8LQPMtC/3ieo8=; b=i8
-        hjm9V7PNk1vC2AXCq0+MfwTJgsDnzL0+p3Syo7Jyn3rCr5w2brgW9PDy64weIrAQB2tbsJBX2NqOP
-        6aqL+6YO+jF4R8KkyJK3+FrMbJVBpYqssT48M9RTCjeSlV12lnQmYLMdUy8eYhweg3NVNvTBOATnj
-        IPmLhky/gkxjtwk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lwE06-00AuuW-Iq; Thu, 24 Jun 2021 03:17:50 +0200
-Date:   Thu, 24 Jun 2021 03:17:50 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>,
-        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
-        lenb@kernel.org
-Subject: Re: [net-next: PATCH v3 5/6] net: mvpp2: enable using phylink with
- ACPI
-Message-ID: <YNPdPlYV5qwnJBdW@lunn.ch>
-References: <20210621173028.3541424-1-mw@semihalf.com>
- <20210621173028.3541424-6-mw@semihalf.com>
- <YNObfrJN0Qk5RO+x@lunn.ch>
- <CAPv3WKfdCwq=AYhARGxfRA92XcZjXYwdOj6_JLP+wOmPV8xxzQ@mail.gmail.com>
+        id S229952AbhFXBUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 21:20:30 -0400
+Received: from mx20.baidu.com ([111.202.115.85]:48686 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229864AbhFXBUa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 21:20:30 -0400
+Received: from BC-Mail-Ex12.internal.baidu.com (unknown [172.31.51.52])
+        by Forcepoint Email with ESMTPS id BFC658B1C1A00E2B8333;
+        Thu, 24 Jun 2021 09:18:04 +0800 (CST)
+Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
+ BC-Mail-Ex12.internal.baidu.com (172.31.51.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2242.10; Thu, 24 Jun 2021 09:18:04 +0800
+Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2242.4; Thu, 24 Jun 2021 09:18:04 +0800
+From:   Cai Huoqing <caihuoqing@baidu.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kvm@vger.kernel.org>, Cai Huoqing <caihuoqing@baidu.com>
+Subject: [PATCH v2] virtio_net/vringh: add "else { }" according coding style
+Date:   Thu, 24 Jun 2021 09:17:57 +0800
+Message-ID: <20210624011757.338-1-caihuoqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPv3WKfdCwq=AYhARGxfRA92XcZjXYwdOj6_JLP+wOmPV8xxzQ@mail.gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [172.31.63.8]
+X-ClientProxiedBy: BC-Mail-Ex11.internal.baidu.com (172.31.51.51) To
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 23, 2021 at 11:45:04PM +0200, Marcin Wojtas wrote:
-> Hi,
-> 
-> śr., 23 cze 2021 o 22:37 Andrew Lunn <andrew@lunn.ch> napisał(a):
-> >
-> > > +static bool mvpp2_use_acpi_compat_mode(struct fwnode_handle *port_fwnode)
-> > > +{
-> > > +     if (!is_acpi_node(port_fwnode))
-> > > +             return false;
-> > > +
-> > > +     return (!fwnode_property_present(port_fwnode, "phy-handle") &&
-> > > +             !fwnode_property_present(port_fwnode, "managed") &&
-> > > +             !fwnode_get_named_child_node(port_fwnode, "fixed-link"));
-> >
-> > I'm not too sure about this last one. You only use fixed-link when
-> > connecting to an Ethernet switch. I doubt anybody will try ACPI and a
-> > switch. It has been agreed, ACPI is for simple hardware, and you need
-> > to use DT for advanced hardware configurations.
-> >
-> > What is your use case for fixed-link?
-> >
-> 
-> Regardless of the "simple hardware" definition or whether DSA + ACPI
-> feasibility, you can still have e.g. the switch left in "unmanaged"
-> mode (or whatever the firmware configures), connected via fixed-link
-> to the MAC. The same effect as booting with DT, but not loading the
-> DSA/switch driver - the "CPU port" can be used as a normal netdev
-> interface.
+coding-style.rst shows that:
+        if (condition) {
+                do_this();
+                do_that();
+        } else {
+                otherwise();
+        }
 
-You can do this, but i would not recommend it. Without having STP,
-your network is going to be vulnerable to broadcast storms killing
-your network.
+Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+---
+ drivers/net/virtio_net.c | 3 ++-
+ drivers/vhost/vringh.c   | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-> I'd also prefer to have all 3 major interface types supported in
-> phylink, explicitly checked in the driver - it has not been supported
-> yet, but can be in the future, so let's have them covered in the
-> backward compatibility check.
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 21ff7b9e49c2..7cd062cb468e 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -314,8 +314,9 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
+                rq->pages = (struct page *)p->private;
+                /* clear private here, it is used to chain pages */
+                p->private = 0;
+-       } else
++       } else {
+                p = alloc_page(gfp_mask);
++       }
+        return p;
+ }
 
-Maybe i'm not understanding this correctly, but isn't this condition
-enforcing there must be a fixed link in order to use the new ACPI
-binding? But i expect most boards never need a fixed-link, it is
-optional after all.
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 4af8fa259d65..79542cad1072 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -454,8 +454,9 @@ static inline int __vringh_complete(struct vringh *vrh,
+                if (!err)
+                        err = putused(vrh, &used_ring->ring[0], used + part,
+                                      num_used - part);
+-       } else
++       } else {
+                err = putused(vrh, &used_ring->ring[off], used, num_used);
++       }
 
-	 Andrew
+        if (err) {
+                vringh_bad("Failed to write %u used entries %u at %p",
+--
+2.17.1
+
