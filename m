@@ -2,69 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D9D23B3769
+	by mail.lfdr.de (Postfix) with ESMTP id 9944F3B376A
 	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 21:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232878AbhFXTwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 15:52:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38548 "EHLO mail.kernel.org"
+        id S232956AbhFXTw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 15:52:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232740AbhFXTwX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232797AbhFXTwX (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 24 Jun 2021 15:52:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 12C1C613E1;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 234956135C;
         Thu, 24 Jun 2021 19:50:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1624564204;
-        bh=wRfzpCYHsqQZNbYRsceTZn6SPg3fxXS1baFEZlvB9jY=;
+        bh=bTB8r1HAIn7hdi046kFfZ2cR7cNC0MBy75g+y2OpkkA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=leTrnrdPFtmtMQ5D8PPdQeHwdm8IQI/bpryQclrzwYuYlc5M6VCPmzxEJKiJwiCnp
-         nZYTb4aRaSl3C0oP12GHUtCsVvYxZa+LCTxqh0maNI5WKf5OhY1HS7fkAiUGu3QgIo
-         2qNNezM9oWvQUjbVf8OdMlB0QVPSk3slOCycLelIUBOmmjwmvGaJtGidqaKWU7EDMj
-         /e8hoSZwoKC+MbpjA4ldXXY3MByfsuzN9/5lmY/3uzhVDc+mYJocCEG9iRwmmeaYiJ
-         gWQQDfNhhpHT19GiBcyZbG93Q3GbGvUdPFqV9g80cFv3CR+UWdLP20l29D3SWHNdzb
-         c8ai0ui9a8WiQ==
+        b=eoTcXiY95rdRUGqL5YDaoOJtixnwnkUWoHMc06/JHN2nBbEs8P18Tjr9RgaIyPkYw
+         Gufai8oC+PQFVFRUWIXEhNenjttITbFiqFG5RtokqbV7s2TsuSkGt+h/PS9Z77fXZz
+         50Sa8WquGIMtcEjBsnckZDL/So5xaBS4BuQGzXbiqEBBKFX0++CpeL3Qx+RLqUUuOt
+         0NfGuj1S/hOfhF+T4DduHLO7bJ5FhSi97I2qfJRZOy0Omm/cf/J0fs9yxGquLB0D0V
+         mKtuWAwMReENK7vRKltjz+Y4nL343DjyCvsgevcP4L8gtTQbPowEQU4QaCqfNUZDU8
+         BW8WdVP9R0Wcg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 05E2260A3C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1149D60978;
         Thu, 24 Jun 2021 19:50:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/3] net: macsec: fix key length when offloading
+Subject: Re: [PATCH v2 net] ipv6: fix out-of-bound access in ip6_parse_tlv()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162456420401.10881.7685764529566631071.git-patchwork-notify@kernel.org>
+Message-Id: <162456420406.10881.12824127599134062597.git-patchwork-notify@kernel.org>
 Date:   Thu, 24 Jun 2021 19:50:04 +0000
-References: <20210624093830.943139-1-atenart@kernel.org>
-In-Reply-To: <20210624093830.943139-1-atenart@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, sd@queasysnail.net,
-        andrew@lunn.ch, hkallweit1@gmail.com, irusskikh@marvell.com,
-        netdev@vger.kernel.org
+References: <20210624100720.2310271-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210624100720.2310271-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, pabeni@redhat.com, tom@herbertland.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 24 Jun 2021 11:38:27 +0200 you wrote:
-> Hello,
+On Thu, 24 Jun 2021 03:07:20 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> The key length used to copy the key to offloading drivers and to store
-> it is wrong and was working by chance as it matched the default key
-> length. But using a different key length fails. Fix it by using instead
-> the max length accepted in uAPI to store the key and the actual key
-> length when copying it.
+> First problem is that optlen is fetched without checking
+> there is more than one byte to parse.
+> 
+> Fix this by taking care of IPV6_TLV_PAD1 before
+> fetching optlen (under appropriate sanity checks against len)
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/3] net: macsec: fix the length used to copy the key for offloading
-    https://git.kernel.org/netdev/net/c/1f7fe5121127
-  - [net,2/3] net: phy: mscc: fix macsec key length
-    https://git.kernel.org/netdev/net/c/c309217f91f2
-  - [net,3/3] net: atlantic: fix the macsec key length
-    https://git.kernel.org/netdev/net/c/d67fb4772d9a
+  - [v2,net] ipv6: fix out-of-bound access in ip6_parse_tlv()
+    https://git.kernel.org/netdev/net/c/624085a31c1a
 
 You are awesome, thank you!
 --
