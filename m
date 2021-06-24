@@ -2,127 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 630783B2B31
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 11:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 748543B2B3B
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 11:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231476AbhFXJTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 05:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57288 "EHLO
+        id S231669AbhFXJVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 05:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231293AbhFXJTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 05:19:12 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50176C061760
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 02:16:52 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id s6so7460684edu.10
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 02:16:52 -0700 (PDT)
+        with ESMTP id S231569AbhFXJVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 05:21:16 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C481BC061574;
+        Thu, 24 Jun 2021 02:18:56 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id h11so5808928wrx.5;
+        Thu, 24 Jun 2021 02:18:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ToYKmnHgqk/66SzWjvRy2Lj5kh6aXbY58HiBGtTfTYc=;
-        b=ZEweUXuAJoGCGMqY3z9xEzvHeOc45CgfE+oRLPnwvWDM8sEylSod/l69pmO1wTq6Fk
-         dJ6IJffz8PwtlA84nAwOMbu/T24GwtdMUEWh7Wfy0A/5i4gI8Lx4GorjU0lFTf+6k/vp
-         waHl9OMa0UhLOi5kJckBgVUzPJL/7362ZFcIUrXc9waM3czme6JE2Mo08y5M7V+vITDj
-         FSMllieK9ieeAYx2zFLgwFaafNl51St8nhwF6tDUKXqzbB8XsjnOGrlgyKrhcMFFDR5E
-         SiRzn5cHnpY863Xr8EDmjh2FISKPY1AoSdoR/zlJVxPQyBejxzBJIxXPRJBt624oRvsJ
-         Nt6A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=tM3RWQBBauYQYRk1u1dT2ftwopoSoZPRTaiu9Ggky6I=;
+        b=YOLXzhpASbcxTUxqqfJxuMo/Ew36FKQEsppSpsnhHQjlYyx5Vl2GuLJLaGTrSutoJ1
+         QXlPHb1KdiUEkI2xX9vME6kSLOhd0rj6gGEYCYEFQbsO1/X0Qt1RAKM7SdZw/qAU+Pvb
+         Y9ys6H9lXZeMEeuIHpAepVj4EA5vzCRpm664owv6F72k7fkE+RVcngD22j24Jc39oQyE
+         UWH46172+SmCMR6ZPq7TV6/83y5SRFhbtQ0ArjcRs08mq6QX6QTLkJV4wRkUylULMaTQ
+         wIJen/HX2pR+V0w/WY0RVPAILR2KDl9RTgagEvbqk1n130ahN9J3kspMYJg10J5FRz5P
+         AVNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ToYKmnHgqk/66SzWjvRy2Lj5kh6aXbY58HiBGtTfTYc=;
-        b=Kq6ZJl4SwTjcz/z+Ue3bfxglzcr9DMVL8VD7nM9vUj7ZIUGJFNsHi0PjkDeyOlEuFx
-         V4IFk8iC6k9LWbos1c2h9yTYDQNKer6RxnejsQ+vRqKcFvq/fH3N+4thCeZcdcFT/vhk
-         UDbt98J579JzYJI/Ljs8NBU20pMph9M+FR+kdcSbcxWxIuCC94pDhxnp1mlkCzoB8x54
-         rVxCb9txpdzth9ktzaUmNEGaiTBPvJYhnRi6TbiO9Vd2aLyXrBm9pGnH3i9rBT6ZzPpE
-         DxOPt/cU2YS/DHITWUULhrNtmKFd2nIiITSCYMVhdzsBdFi8tXts75Rzw1y0BCx7AlLZ
-         /W9A==
-X-Gm-Message-State: AOAM533ZeKU0LQJSRtojErvIThEdq/FbdI/xsK/DymurVwk58nHqlB18
-        oy2XmMlS/D17oB0DJcOhFWcumqHpE6HA4WWZHKdL
-X-Google-Smtp-Source: ABdhPJwzxlNtCT4qXONVb1tZWclCON16CNPSh2qEimKMjvYzH/fk8YJnTCoKh644GYgJY+nPjC5RJVk2i47qjgJpKlM=
-X-Received: by 2002:a05:6402:27ce:: with SMTP id c14mr5750686ede.118.1624526210663;
- Thu, 24 Jun 2021 02:16:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210615141331.407-1-xieyongji@bytedance.com> <20210615141331.407-10-xieyongji@bytedance.com>
- <adfb2be9-9ed9-ca37-ac37-4cd00bdff349@redhat.com> <CACycT3tAON+-qZev+9EqyL2XbgH5HDspOqNt3ohQLQ8GqVK=EA@mail.gmail.com>
- <1bba439f-ffc8-c20e-e8a4-ac73e890c592@redhat.com> <CACycT3uzMJS7vw6MVMOgY4rb=SPfT2srV+8DPdwUVeELEiJgbA@mail.gmail.com>
- <0aeb7cb7-58e5-1a95-d830-68edd7e8ec2e@redhat.com> <CACycT3uuooKLNnpPHewGZ=q46Fap2P4XCFirdxxn=FxK+X1ECg@mail.gmail.com>
- <e4cdee72-b6b4-d055-9aac-3beae0e5e3e1@redhat.com> <CACycT3u8=_D3hCtJR+d5BgeUQMce6S7c_6P3CVfvWfYhCQeXFA@mail.gmail.com>
- <d2334f66-907c-2e9c-ea4f-f912008e9be8@redhat.com> <CACycT3uCSLUDVpQHdrmuxSuoBDg-4n22t+N-Jm2GoNNp9JYB2w@mail.gmail.com>
- <48cab125-093b-2299-ff9c-3de8c7c5ed3d@redhat.com>
-In-Reply-To: <48cab125-093b-2299-ff9c-3de8c7c5ed3d@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 24 Jun 2021 17:16:39 +0800
-Message-ID: <CACycT3tS=10kcUCNGYm=dUZsK+vrHzDvB3FSwAzuJCu3t+QuUQ@mail.gmail.com>
-Subject: Re: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=tM3RWQBBauYQYRk1u1dT2ftwopoSoZPRTaiu9Ggky6I=;
+        b=iUFtgzywMxqJz08yeTEI03kUDKmH6nwGzMFrb0UxhQphEl5BLxcYJRY5R2kcr1ijMR
+         Sh2CAY6EG8peM+mrczVeo3zST4phb1tgv6YJiwqmG4/Ul/kVfgAD7j/MBarbUos8aCZE
+         iHINBa45b/vu45SK30S6C9fgeRlPxfhT6rN8MlN3ABSWOPNK5nSafHBUfEhIPd9ynqho
+         78PIXJj41DYQYfBP6E1uoKLFiqafJzsom+8kvc3i1E5uaeEI/jYHxQv7eQrAXVqvPMqT
+         q/zYWoJIXpfrVkGAETGkydZwMS2r7er6ZyiTwobCo22b1dZWqKQ8THqeS9lKc1JDSSqS
+         HJNA==
+X-Gm-Message-State: AOAM530j+IzA+iXOM+0LYz6/toEdPwnHRZ6GUCqudzY/FkS/auiK9SXz
+        0aXSFAlvwYs0bLkKsCb/tR3V0jgKJtaHbPQ=
+X-Google-Smtp-Source: ABdhPJzp7Ig9vw7TqbMWKXJPRqdcYDe4o1FAzg2lAr1omGVf5YQbExagHZw2S9Clm6CL3SFy1iQwNQ==
+X-Received: by 2002:a5d:47ca:: with SMTP id o10mr2594958wrc.339.1624526335042;
+        Thu, 24 Jun 2021 02:18:55 -0700 (PDT)
+Received: from localhost.localdomain (212-51-151-130.fiber7.init7.net. [212.51.151.130])
+        by smtp.gmail.com with ESMTPSA id r1sm2456216wmh.32.2021.06.24.02.18.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Jun 2021 02:18:54 -0700 (PDT)
+From:   joamaki@gmail.com
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, j.vosburgh@gmail.com,
+        andy@greyhouse.net, vfalico@gmail.com, andrii@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        Jussi Maki <joamaki@gmail.com>
+Subject: [PATCH bpf-next v2 0/4] XDP bonding support
+Date:   Thu, 24 Jun 2021 09:18:39 +0000
+Message-Id: <20210624091843.5151-1-joamaki@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210609135537.1460244-1-joamaki@gmail.com>
+References: <20210609135537.1460244-1-joamaki@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 4:14 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2021/6/24 =E4=B8=8B=E5=8D=8812:46, Yongji Xie =E5=86=99=E9=81=
-=93:
-> >> So we need to deal with both FEATURES_OK and reset, but probably not
-> >> DRIVER_OK.
-> >>
-> > OK, I see. Thanks for the explanation. One more question is how about
-> > clearing the corresponding status bit in get_status() rather than
-> > making set_status() fail. Since the spec recommends this way for
-> > validation which is done in virtio_dev_remove() and
-> > virtio_finalize_features().
-> >
-> > Thanks,
-> > Yongji
-> >
->
-> I think you can. Or it would be even better that we just don't set the
-> bit during set_status().
->
+From: Jussi Maki <joamaki@gmail.com>
 
-Yes, that's what I mean.
+This patchset introduces XDP support to the bonding driver.
 
-> I just realize that in vdpa_reset() we had:
->
-> static inline void vdpa_reset(struct vdpa_device *vdev)
-> {
->          const struct vdpa_config_ops *ops =3D vdev->config;
->
->          vdev->features_valid =3D false;
->          ops->set_status(vdev, 0);
-> }
->
-> We probably need to add the synchronization here. E.g re-read with a
-> timeout.
->
+The motivation for this change is to enable use of bonding (and
+802.3ad) in hairpinning L4 load-balancers such as [1] implemented with
+XDP and also to transparently support bond devices for projects that
+use XDP given most modern NICs have dual port adapters.  An alternative
+to this approach would be to implement 802.3ad in user-space and
+implement the bonding load-balancing in the XDP program itself, but
+is rather a cumbersome endeavor in terms of slave device management
+(e.g. by watching netlink) and requires separate programs for native
+vs bond cases for the orchestrator. A native in-kernel implementation
+overcomes these issues and provides more flexibility.
 
-Looks like the timeout is already in set_status(). Do we really need a
-duplicated one here? And how to handle failure? Adding a return value
-to virtio_config_ops->reset() and passing the error to the upper
-layer?
+Below are benchmark results done on two machines with 100Gbit
+Intel E810 (ice) NIC and with 32-core 3970X on sending machine, and
+16-core 3950X on receiving machine. 64 byte packets were sent with
+pktgen-dpdk at full rate. Two issues [2, 3] were identified with the
+ice driver, so the tests were performed with iommu=off and patch [2]
+applied. Additionally the bonding round robin algorithm was modified
+to use per-cpu tx counters as high CPU load (50% vs 10%) and high rate
+of cache misses were caused by the shared rr_tx_counter. Fix for this
+has been already merged into net-next. The statistics were collected 
+using "sar -n dev -u 1 10".
 
-Thanks,
-Yongji
+ -----------------------|  CPU  |--| rxpck/s |--| txpck/s |----
+ without patch (1 dev):
+   XDP_DROP:              3.15%      48.6Mpps
+   XDP_TX:                3.12%      18.3Mpps     18.3Mpps
+   XDP_DROP (RSS):        9.47%      116.5Mpps
+   XDP_TX (RSS):          9.67%      25.3Mpps     24.2Mpps
+ -----------------------
+ with patch, bond (1 dev):
+   XDP_DROP:              3.14%      46.7Mpps
+   XDP_TX:                3.15%      13.9Mpps     13.9Mpps
+   XDP_DROP (RSS):        10.33%     117.2Mpps
+   XDP_TX (RSS):          10.64%     25.1Mpps     24.0Mpps
+ -----------------------
+ with patch, bond (2 devs):
+   XDP_DROP:              6.27%      92.7Mpps
+   XDP_TX:                6.26%      17.6Mpps     17.5Mpps
+   XDP_DROP (RSS):       11.38%      117.2Mpps
+   XDP_TX (RSS):         14.30%      28.7Mpps     27.4Mpps
+ --------------------------------------------------------------
+
+RSS: Receive Side Scaling, e.g. the packets were sent to a range of
+destination IPs.
+
+[1]: https://cilium.io/blog/2021/05/20/cilium-110#standalonelb
+[2]: https://lore.kernel.org/bpf/20210601113236.42651-1-maciej.fijalkowski@intel.com/T/#t
+[3]: https://lore.kernel.org/bpf/CAHn8xckNXci+X_Eb2WMv4uVYjO2331UWB2JLtXr_58z0Av8+8A@mail.gmail.com/
+
+Patch 1 prepares bond_xmit_hash for hashing xdp_buff's
+Patch 2 adds hooks to implement redirection after bpf prog run
+Patch 3 implements the hooks in the bonding driver. 
+Patch 4 modifies devmap to properly handle EXCLUDE_INGRESS with a slave device.
+
+v1->v2:
+- Split up into smaller easier to review patches and address cosmetic 
+  review comments.
+- Drop the INDIRECT_CALL optimization as it showed little improvement in tests.
+- Drop the rr_tx_counter patch as that has already been merged into net-next.
+- Separate the test suite into another patch set. This will follow later once a
+  patch set from Magnus Karlsson is merged and provides test utilities that can
+  be reused for XDP bonding tests. v2 contains no major functional changes and
+  was tested with the test suite included in v1.
+  (https://lore.kernel.org/bpf/202106221509.kwNvAAZg-lkp@intel.com/T/#m464146d47299125d5868a08affd6d6ce526dfad1)
+
+---
+
+Jussi Maki (4):
+  net: bonding: Refactor bond_xmit_hash for use with xdp_buff
+  net: core: Add support for XDP redirection to slave device
+  net: bonding: Add XDP support to the bonding driver
+  devmap: Exclude XDP broadcast to master device
+
+ drivers/net/bonding/bond_main.c | 431 +++++++++++++++++++++++++++-----
+ include/linux/filter.h          |  13 +-
+ include/linux/netdevice.h       |   5 +
+ include/net/bonding.h           |   1 +
+ kernel/bpf/devmap.c             |  34 ++-
+ net/core/filter.c               |  25 ++
+ 6 files changed, 445 insertions(+), 64 deletions(-)
+
+-- 
+2.27.0
+
