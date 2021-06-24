@@ -2,71 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A8D03B37CA
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 22:27:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B2813B3805
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 22:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232565AbhFXU3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 16:29:36 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54504 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232524AbhFXU3g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Jun 2021 16:29:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/pm2bkWF1cJ37ONb08ORETdFiK8h6vzOxgurAFfTJfw=; b=31NNr20SPIRxg8jIQlxyorAb0u
-        pOeV/OA8PcPZvLCD1tvdZQ7y4YOTmgo9p6IGB+w0w+FCz5z0w13zheqSGgklQPznUbVBVPwcxscMC
-        ZRNK6qoLChK3HlXkmbxrpgJI0fOFewBjf8k1knUkWbQyF/w7vPictzFCHflduCkPybjA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lwVwP-00B1cG-VY; Thu, 24 Jun 2021 22:27:13 +0200
-Date:   Thu, 24 Jun 2021 22:27:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, vladyslavt@nvidia.com, moshe@nvidia.com,
-        vadimp@nvidia.com, mkubecek@suse.cz, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to write to
- transceiver module EEPROMs
-Message-ID: <YNTqofVlJTgsvDqH@lunn.ch>
-References: <20210623075925.2610908-1-idosch@idosch.org>
- <YNOBKRzk4S7ZTeJr@lunn.ch>
- <YNTfMzKn2SN28Icq@shredder>
+        id S232653AbhFXUm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 16:42:59 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:33130 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232456AbhFXUm6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 16:42:58 -0400
+Received: from localhost.localdomain (p200300e9d7330cb6646baaec8ea0666e.dip0.t-ipconnect.de [IPv6:2003:e9:d733:cb6:646b:aaec:8ea0:666e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@sostec.de)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 82F17C03F3;
+        Thu, 24 Jun 2021 22:40:37 +0200 (CEST)
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
+        netdev@vger.kernel.org
+Subject: pull-request: ieee802154 for net 2021-06-24
+Date:   Thu, 24 Jun 2021 22:40:09 +0200
+Message-Id: <20210624204009.3953413-1-stefan@datenfreihafen.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YNTfMzKn2SN28Icq@shredder>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I fail to understand this logic. I would understand pushing
-> functionality into the kernel in order to create an abstraction for user
-> space over different hardware interfaces from different vendors. This is
-> not the case here. Nothing is vendor specific. Not to the host vendor
-> nor to the module vendor.
+Hello Dave, Jakub.
 
-Hi Ido
+An update from ieee802154 for your *net* tree.
 
-My worry is, we are opening up an ideal vector for user space drivers
-for SFPs. And worse still, closed source user space drivers. We have
-had great success with switchdev, over a hundred supported switches,
-partially because we have always pushed back against kAPIs which allow
-user space driver, closed binary blobs etc.
+This time we only have fixes for ieee802154 hwsim driver.
 
-We have the choice here. We can add a write method to the kAPI, add
-open source code to Ethtool using that API, and just accept people are
-going to abuse the API for all sorts of horrible things in user space.
-Or we can add more restrictive kAPIs, put more code in the kernel, and
-probably limit user space doing horrible things. Maybe as a side
-effect, SFP vendors contribute some open source code, rather than
-binary blobs?
+Sparked from some syzcaller reports We got a potential
+crash fix from Eric Dumazet and two memory leak fixes from
+Dongliang Mu.
 
-I tend to disagree about adding kAPIs which allow write. But i would
-like to hear other peoples opinions on this.
+regards
+Stefan Schmidt
 
-     Andrew
+The following changes since commit f2386cf7c5f4ff5d7b584f5d92014edd7df6c676:
 
+  net: lantiq: disable interrupt before sheduling NAPI (2021-06-08 19:16:32 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan.git tags/ieee802154-for-davem-2021-06-24
+
+for you to fetch changes up to 0303b30375dff5351a79cc2c3c87dfa4fda29bed:
+
+  ieee802154: hwsim: avoid possible crash in hwsim_del_edge_nl() (2021-06-22 21:26:59 +0200)
+
+----------------------------------------------------------------
+Dongliang Mu (2):
+      ieee802154: hwsim: Fix possible memory leak in hwsim_subscribe_all_others
+      ieee802154: hwsim: Fix memory leak in hwsim_add_one
+
+Eric Dumazet (1):
+      ieee802154: hwsim: avoid possible crash in hwsim_del_edge_nl()
+
+ drivers/net/ieee802154/mac802154_hwsim.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
