@@ -2,176 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7DD03B325C
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7B433B3267
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 17:17:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbhFXPSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 11:18:40 -0400
-Received: from mail-dm6nam11on2051.outbound.protection.outlook.com ([40.107.223.51]:41760
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231294AbhFXPSb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Jun 2021 11:18:31 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hovenQjar5i3cGl5xYd0eRY2MyxQ0P+PkVrfK78Oag+op9yo9hKGcltI9G1LiS1svocfpxB9QiMu3UGmKmp7pv01FC9zLbcFf6WlOS8+akh4swkMvfCKPCDLlUvpD80zd/t3BUxuld0y0DadWVn7pVzqdOtLgs+KCSBfd+RzP2WNlhXdlmYQOqxNwH3Tj6g91YPU5cqqi5hYcFsYe6AVWFTa4+SQQeX89E2WqJY+h6DllDKeeVmj2CtcV57vPMoz+VCYRzToa4LHd4X3QSgf9cv/jcmT1+mwmsea0sDbdDyeyt1LmhlFLO4PmH+P2G4N87Ait/D75S1YktmNqltNUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HC9yTzL7QTqjy/jpB3ZMrkJDuQj7v4mWm1U7JnRSJ4U=;
- b=Nu0wiI+/RH9tTprI3EpMjgnpvKr4XitBZZ49kgC4nOEmZBdXPDJN2bHA0uzLJc7wnz1/dLG0Rbsq/Wz42SVMxT3wMczSpOF9FHANHRTjrP6tnD7uNTVD+tJd2oIimv+vlFBEFyba9N6keN7Cl1bKWaVhaDg1BY9ipUjFczDCgJ7NaBY743fmCET9rECQcgHT96ApwfMLeiLL1RmfKJSyoFvuovUqs9QJQvur+5G0xi8yRbaiicYI0fufz9A2FK9hKP5WQVL4y2RXdALNwu9fRQWCerOzx4LohPZFNGgG7cEmNrA1EhT3P6zs8Ix5xqV2tHOi14d2mIXam2poeiBtNQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HC9yTzL7QTqjy/jpB3ZMrkJDuQj7v4mWm1U7JnRSJ4U=;
- b=dP1jfagj6/Aa029+ulcP8i6MCjwK0XgQ/TF1WFXuC/T1WaqYys46wOHgnYLcaGBJrX/hbQ4s83TtgG5tvmJLPkDER5eGWIZCZqBh4QJ8FGx29r8eq/6ayMUZbl1Mgpp0/BRQ1O2NxQ0hi5QxwNS7RxBFxQvoKq3yp46PW2VEEOnpxDgZhXlyIRh7PvETdHvnMds5J95qNo6yga1RMpSErcpUC5QRH0fO++eh00D1jFPw7SudS+V8aaa1bS64WymQW5rwvfieqOQ2mzUrJQ3quxKc+5bYVAqqJAhqP2/0g6jcluWLYOwgeF7qDdiGQ+cTwRDGt0eDYwds5CpPgOiFyA==
-Received: from MWHPR2201CA0037.namprd22.prod.outlook.com
- (2603:10b6:301:16::11) by BY5PR12MB4068.namprd12.prod.outlook.com
- (2603:10b6:a03:203::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.16; Thu, 24 Jun
- 2021 15:16:09 +0000
-Received: from CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:16:cafe::c2) by MWHPR2201CA0037.outlook.office365.com
- (2603:10b6:301:16::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.18 via Frontend
- Transport; Thu, 24 Jun 2021 15:16:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT007.mail.protection.outlook.com (10.13.174.131) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4264.18 via Frontend Transport; Thu, 24 Jun 2021 15:16:09 +0000
-Received: from dev-r-vrt-156.mtr.labs.mlnx (172.20.187.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 24 Jun 2021 15:15:49 +0000
-From:   Danielle Ratson <danieller@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <shuah@kernel.org>,
-        <idosch@nvidia.com>, <nikolay@nvidia.com>, <gnault@redhat.com>,
-        <baowen.zheng@corigine.com>, <vladimir.oltean@nxp.com>,
-        <amcohen@nvidia.com>, Danielle Ratson <danieller@nvidia.com>
-Subject: [PATCH net-next] selftests: net: Change the indication for iface is up
-Date:   Thu, 24 Jun 2021 18:15:15 +0300
-Message-ID: <20210624151515.794224-1-danieller@nvidia.com>
-X-Mailer: git-send-email 2.31.1
+        id S232222AbhFXPTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 11:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232357AbhFXPTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 11:19:19 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6073AC061574
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 08:16:59 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id hq39so10117564ejc.5
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 08:16:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=riotgames.com; s=riotgames;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=22Y42jbPpmoIkLk/IuRR1ccQuv0bmYkqo5PtAHbSdH4=;
+        b=P3TR7/0JAw5ltnrWXbgbwGgKDb7xESJQnbzm52rLFHQjluUFSiXwTyqxlOoJIOUto9
+         KsONtCEmqsd8vRIbOu/6XQoRCpN5Psy0c2AlET8uDUXuRHb8QMJ5YLqehPr9LsH4qQP2
+         6sMyF7zT0bGsSg1QOpdiIAz8lQ3Gknco+VM00=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=22Y42jbPpmoIkLk/IuRR1ccQuv0bmYkqo5PtAHbSdH4=;
+        b=VR8Xpjb9aaONIfM6ste/QBNq8l64qi6AQ9ckzmlc0Jy8rofMVKJIX2y9uTKGzfzuTr
+         7UnZ5NGrJOiWIh59CFZ9lNOdbfy1wsEogMmW4trbPiFJOPXkDtUAY5H/vwViqJXGOjfO
+         1RztsqDbGjQ+IMV+OnNGY18UiXoKjQIyxM227JSmZeZb1ye1gueDrha7r3OY7+i1dtr3
+         TfJ+XYPLvvAFzQr8qnmZpxRFpVCw0auUVERQATCidzA1TGPsJIMKhb9Wd73arumZovhH
+         ef2Br1F0e/IQXDzEiPWE0iAu0IVNILvpXwizlvjxFODQCebhrHAwsEhrriNL6HneFSt3
+         Hg6w==
+X-Gm-Message-State: AOAM532wGKrg7TR540UK9IlmxVrVAiJT0qozxcfenKs+Syb81AyEnrjP
+        rI6TqRhl5DE72r9r1fJVSYeBkJz2e6ddRi0L7lvTUQ==
+X-Google-Smtp-Source: ABdhPJxeiQZYYynTSeIrS2wCBkIK9QDAkD/Kt5eh4syfFc1Nui5REYA/ZueyOvBuvrAXrZuoqdBAqSOJR9RhpTOSMrY=
+X-Received: by 2002:a17:907:c87:: with SMTP id gi7mr5824600ejc.452.1624547817912;
+ Thu, 24 Jun 2021 08:16:57 -0700 (PDT)
 MIME-Version: 1.0
+References: <cover.1623674025.git.lorenzo@kernel.org> <863f4934d251f44ad85a6be08b3737fac74f9b5a.1623674025.git.lorenzo@kernel.org>
+ <60d2744ee12c2_1342e208f7@john-XPS-13-9370.notmuch> <4F52EE5B-1A3F-46CE-9A39-98475CA6B684@redhat.com>
+ <60d495a914773_2e84a2082d@john-XPS-13-9370.notmuch>
+In-Reply-To: <60d495a914773_2e84a2082d@john-XPS-13-9370.notmuch>
+From:   Zvi Effron <zeffron@riotgames.com>
+Date:   Thu, 24 Jun 2021 08:16:46 -0700
+Message-ID: <CAC1LvL0_DhsStjzHhRY_JrCVeBW0J6M2CDJ6qT77Do-deXq8Zg@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 08/14] bpf: add multi-buff support to the
+ bpf_xdp_adjust_tail() API
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Eelco Chaudron <echaudro@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        sameehj@amazon.com, dsahern@kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d499ae6b-8e49-44e0-9454-08d93722ff1a
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4068:
-X-Microsoft-Antispam-PRVS: <BY5PR12MB40689F35AC74BFA223A39DBFD8079@BY5PR12MB4068.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IQCmRs33ZRoBAJfcO95qGEL0yN0/3A1ULgj3kO/qW/OHPxf3x3yE7zYB7jOWmyK3KEbbQ0IGPNWxqwsrK/iMyfkRqBNy2Y8NF7pvjSsMpCDQ1Zjxse4xQIiBBhBWdMKA6X7uPShMqYUPRkIqT2S6vyaPfUU9JonPXnWm5lheKkRXvQYecArOUkCDh6zq3gT99cPGKR6ABKIuwpCWmpRVx4TUjPmkdxKNhbajIcDEkAPogPtA0Zj8TlheHDkBeFDSeCxh/m7+61Zse2NajgZ+Gcb7uRfaICoKaCOcQrmTLLvt9W3aciyao7mlLM8D7b6iqPrWOaF/0fe8v4aU8L3iYsR3+v7ivBA8mmxY+q/GmPukZSOJJYuGfdUSLNiyFCglyTDIYybyE/P3y6bxk7Kdma5wipJLza8mz5q/LU+y92i60sFCpWIGhniMBVD+L9o+EjQArc9OemJuXlsvOCtFWbFZAmDjAzjPmxAlDtof/7YIG46dWA+eOuu50yID04vdhaGGgWXlPLebrqczOJuAJl00ptAO8fFy1vPFwWtYIcPGJugDdbjbFyMr0rVnoDYp5xTITy92jlKbkbPntDg6YatWjdzvk+p1OgLjxjHv+jlZyS7k7KIutV2EiZ9P4CVzNJaOOwqCReTZFY+YCVd3VE4GhO5XB8UCDXjZIb4UThxwONGYubbiu8mih/VNpKyJKL22lTfBbr43aScJJRlvZw==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(2616005)(82310400003)(47076005)(8676002)(8936002)(186003)(2906002)(1076003)(83380400001)(16526019)(7636003)(86362001)(4326008)(70586007)(54906003)(26005)(356005)(336012)(6666004)(6916009)(498600001)(5660300002)(426003)(36860700001)(107886003)(36906005)(70206006)(36756003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2021 15:16:09.6894
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d499ae6b-8e49-44e0-9454-08d93722ff1a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4068
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the indication that an iface is up, is the mark 'state UP' in
-the iface info. That situation can be achieved also when the carrier is not
-ready, and therefore after the state was found as 'up', it can be still
-changed to 'down'.
+On Thu, Jun 24, 2021 at 7:24 AM John Fastabend <john.fastabend@gmail.com> w=
+rote:
+>
+> Eelco Chaudron wrote:
+> >
+> >
+> > On 23 Jun 2021, at 1:37, John Fastabend wrote:
+> >
+> > > Lorenzo Bianconi wrote:
+> > >> From: Eelco Chaudron <echaudro@redhat.com>
+> > >>
+> > >> This change adds support for tail growing and shrinking for XDP mult=
+i-buff.
+> > >>
+> > >
+> > > It would be nice if the commit message gave us some details on how th=
+e
+> > > growing/shrinking works in the multi-buff support.
+> >
+> > Will add this to the next rev.
+> >
+> > >> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> > >> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > >> ---
+> > >>  include/net/xdp.h |  7 ++++++
+> > >>  net/core/filter.c | 62 ++++++++++++++++++++++++++++++++++++++++++++=
++++
+> > >>  net/core/xdp.c    |  5 ++--
+> > >>  3 files changed, 72 insertions(+), 2 deletions(-)
+> > >>
+> > >> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > >> index 935a6f83115f..3525801c6ed5 100644
+> > >> --- a/include/net/xdp.h
+> > >> +++ b/include/net/xdp.h
+> > >> @@ -132,6 +132,11 @@ xdp_get_shared_info_from_buff(struct xdp_buff *=
+xdp)
+> > >>    return (struct skb_shared_info *)xdp_data_hard_end(xdp);
+> > >>  }
+> > >>
+> > >> +static inline unsigned int xdp_get_frag_tailroom(const skb_frag_t *=
+frag)
+> > >> +{
+> > >> +  return PAGE_SIZE - skb_frag_size(frag) - skb_frag_off(frag);
+> > >> +}
+> > >> +
+> > >>  struct xdp_frame {
+> > >>    void *data;
+> > >>    u16 len;
+> > >> @@ -259,6 +264,8 @@ struct xdp_frame *xdp_convert_buff_to_frame(stru=
+ct xdp_buff *xdp)
+> > >>    return xdp_frame;
+> > >>  }
+> > >>
+> > >> +void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_d=
+irect,
+> > >> +            struct xdp_buff *xdp);
+> > >>  void xdp_return_frame(struct xdp_frame *xdpf);
+> > >>  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf);
+> > >>  void xdp_return_buff(struct xdp_buff *xdp);
+> > >> diff --git a/net/core/filter.c b/net/core/filter.c
+> > >> index caa88955562e..05f574a3d690 100644
+> > >> --- a/net/core/filter.c
+> > >> +++ b/net/core/filter.c
+> > >> @@ -3859,11 +3859,73 @@ static const struct bpf_func_proto bpf_xdp_a=
+djust_head_proto =3D {
+> > >>    .arg2_type      =3D ARG_ANYTHING,
+> > >>  };
+> > >>
+> > >> +static int bpf_xdp_mb_adjust_tail(struct xdp_buff *xdp, int offset)
+> > >> +{
+> > >> +  struct skb_shared_info *sinfo;
+> > >> +
+> > >> +  if (unlikely(!xdp_buff_is_mb(xdp)))
+> > >> +          return -EINVAL;
+> > >> +
+> > >> +  sinfo =3D xdp_get_shared_info_from_buff(xdp);
+> > >> +  if (offset >=3D 0) {
+> > >> +          skb_frag_t *frag =3D &sinfo->frags[sinfo->nr_frags - 1];
+> > >> +          int size;
+> > >> +
+> > >> +          if (unlikely(offset > xdp_get_frag_tailroom(frag)))
+> > >> +                  return -EINVAL;
+> > >> +
+> > >> +          size =3D skb_frag_size(frag);
+> > >> +          memset(skb_frag_address(frag) + size, 0, offset);
+> > >> +          skb_frag_size_set(frag, size + offset);
+> > >> +          sinfo->data_len +=3D offset;
+> > >
+> > > Can you add some comment on how this works? So today I call
+> > > bpf_xdp_adjust_tail() to add some trailer to my packet.
+> > > This looks like it adds tailroom to the last frag? But, then
+> > > how do I insert my trailer? I don't think we can without the
+> > > extra multi-buffer access support right.
+> >
+> > You are right, we need some kind of multi-buffer access helpers.
+> >
+> > > Also data_end will be unchanged yet it will return 0 so my
+> > > current programs will likely be a bit confused by this.
+> >
+> > Guess this is the tricky part, applications need to be multi-buffer awa=
+re. If current applications rely on bpf_xdp_adjust_tail(+) to determine max=
+imum frame length this approach might not work. In this case, we might need=
+ an additional helper to do tail expansion with multi buffer support.
+> >
+> > But then the question arrives how would mb unaware application behave i=
+n general when an mb packet is supplied?? It would definitely not determine=
+ the correct packet length.
+>
+> Right that was my conclusion as well. Existing programs might
+> have subtle side effects if they start running on multibuffer
+> drivers as is. I don't have any good ideas though on how
+> to handle this.
+>
 
-For example, the below presents a part of a test output with one of the
-ifaces involved detailed info and timestamps:
+Would it be possible to detect multibuffer awareness of a program at load
+(or attach) time, perhaps by looking for the use of the new multibuffer
+helpers? That might make it possible to reject a non-multibuffer aware
+program on multibuffer drivers (or maybe even put the driver into a
+non-multibuffer mode at attach time), or at the very least issue a
+warning?
 
-In setup_wait()
-45: swp13: <BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel master
-    vswp13 state UP mode DEFAULT group default qlen 1000
-    link/ether 7c:fe:90:fc:7d:f1 brd ff:ff:ff:ff:ff:ff promiscuity 0
-minmtu 0 maxmtu 65535
-    vrf_slave table 1 addrgenmode eui64 numtxqueues 1 numrxqueues 1
-gso_max_size 65536 gso_max_segs 65535 portname p13 switchid 7cfe90fc7dc0
-17:58:27:242634417
-
-In dst_mac_match_test()
-45: swp13: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel
-    master vswp13 state DOWN mode DEFAULT group default qlen 1000
-    link/ether 7c:fe:90:fc:7d:f1 brd ff:ff:ff:ff:ff:ff promiscuity 0
-minmtu 0 maxmtu 65535
-    vrf_slave table 1 addrgenmode eui64 numtxqueues 1 numrxqueues 1
-gso_max_size 65536 gso_max_segs 65535 portname p13 switchid 7cfe90fc7dc0
-17:58:32:254535834
-TEST: dst_mac match (skip_hw)					    [FAIL]
-        Did not match on correct filter
-
-In src_mac_match_test()
-45: swp13: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel
-    master vswp13 state UP mode DEFAULT group default qlen 1000
-    link/ether 7c:fe:90:fc:7d:f1 brd ff:ff:ff:ff:ff:ff promiscuity 0
-minmtu 0 maxmtu 65535
-    vrf_slave table 1 addrgenmode eui64 numtxqueues 1 numrxqueues 1
-gso_max_size 65536 gso_max_segs 65535 portname p13 switchid 7cfe90fc7dc0
-17:58:34:446367468
-TEST: src_mac match (skip_hw)                                       [ OK ]
-
-In dst_ip_match_test()
-45: swp13: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel
-    master vswp13 state UP mode DEFAULT group default qlen 1000
-    link/ether 7c:fe:90:fc:7d:f1 brd ff:ff:ff:ff:ff:ff promiscuity 0
-minmtu 0 maxmtu 65535
-    vrf_slave table 1 addrgenmode eui64 numtxqueues 1 numrxqueues 1
-gso_max_size 65536 gso_max_segs 65535 portname p13 switchid 7cfe90fc7dc0
-17:58:35:633518622
-
-In the example, after the setup_prepare() phase, the iface state was
-indeed 'UP' so the setup_wait() phase pass successfully. But since
-'LOWER_UP' flag was not set yet, the next print, which was right before the
-first test case has started, the status turned into 'DOWN'.
-
-While, UP is an indicator that the interface has been enabled and running,
-LOWER_UP is a physical layer link flag. It indicates that an Ethernet
-cable was plugged in and that the device is connected to the network.
-
-Therefore, the existence of the 'LOWER_UP' flag is necessary for
-indicating that the port is up before testing communication.
-
-Change the indication for iface is up to include the existence of
-'LOWER_UP'.
-
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- tools/testing/selftests/net/forwarding/lib.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 42e28c983d41..a46076b8ebdd 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -399,7 +399,7 @@ setup_wait_dev_with_timeout()
- 
- 	for ((i = 1; i <= $max_iterations; ++i)); do
- 		ip link show dev $dev up \
--			| grep 'state UP' &> /dev/null
-+			| grep 'state UP' | grep 'LOWER_UP' &> /dev/null
- 		if [[ $? -ne 0 ]]; then
- 			sleep 1
- 		else
--- 
-2.31.1
-
+> >
+> > >> +  } else {
+> >
+>
+>
