@@ -2,124 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAD813B2F7B
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 14:57:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 613613B2FC0
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 15:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231847AbhFXNAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 09:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231649AbhFXNAF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 09:00:05 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A972C061756
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 05:57:44 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id u5-20020a7bc0450000b02901480e40338bso4800774wmc.1
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 05:57:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MCa72yMdHXGjGihv0hcDwVjOwX3qoCsp/TCZUGiyEnk=;
-        b=TIExZny+xagkJdssKAd3jS8wGhSkUlYDI5hsq2ZM+iJi2C/QQEP8SJyuCI1hur7nTJ
-         4Ls14QrMhP5QWHAn9pwfhrdRP+UNTrIoccNS0xnrmWe6e37QoavbDf9Y72E/0jWpXt7g
-         5NsS2hgZ8o+pel7fYqYU2NIMW8DB99s717K+YUyuDLiqhSBklQMm7POxsJnRxy4ioKmd
-         gz9UdhbKhJWVsGmnf8DHoC+A93Yz7kD9IOibXAywOOSCmHsuxUBD77Uq+SvlgsKylv12
-         97Vh3XoApp1YQrL/+etXNsaZizYmq4GH3b5OrILojDmXhEtBssflY9Grt4XMsNKRyqjF
-         DNng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=MCa72yMdHXGjGihv0hcDwVjOwX3qoCsp/TCZUGiyEnk=;
-        b=MdTWzmXxNDwk9COaxEO5LhXMxSrQXbhcPLcKfYe3AW5LmJ10QiNyrBSey1EqE1PaIQ
-         pHccv0t/FMxNbSfBDPMaR9zIbsU70Pghc6BL43bwBC+CVfLFXzr/GiBoNZJf05pcI/zF
-         SrL/8Zd6GqZv9PiCi/7xlf3wDTrbil/WpQKMS5luLo5nAcmeDzJLXc8sLLJ/DQgcKTyu
-         qSokJ8xwCzIg9ICQxyVm5GjemMnQE4/+0IPSBo+Qq0tS0f+cIZ15CDVG9O2xzNrraEyg
-         Fbrq4ZrXfmwpDzvVPb3f6mO/uIKqZXPP1D0SIQ+Q0icg/k/49+iguDOvF7NgBmQllKUp
-         nD9Q==
-X-Gm-Message-State: AOAM531HHBpwoC1yI5gZ5eZraPi6Nv13/hThdYVDfVwkW+0lxGs7V7Ge
-        Xp8pL/XnVSczjS42DCauH97Yqw==
-X-Google-Smtp-Source: ABdhPJwKRGU0zCbiJEFf8qoOi/UEAEX5xKJMMqB/j90+DxmWeR9Dm+bqOMo4JdGOpr2wWcg9SaHjsQ==
-X-Received: by 2002:a05:600c:2907:: with SMTP id i7mr4149323wmd.139.1624539463471;
-        Thu, 24 Jun 2021 05:57:43 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:108a:5c8a:bec4:9763? ([2a01:e0a:410:bb00:108a:5c8a:bec4:9763])
-        by smtp.gmail.com with ESMTPSA id m67sm9115639wmm.17.2021.06.24.05.57.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Jun 2021 05:57:42 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: Issues during assigning addresses on point to point interfaces
-To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        id S231241AbhFXNIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 09:08:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47386 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229940AbhFXNIb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 09:08:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D974C613C3;
+        Thu, 24 Jun 2021 13:06:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1624539971;
+        bh=X5fgruXZAH6/dwtIj9BUqyJ6jlUiiRQEvoljwULOpAw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OGYINAbuGasSG7nLZAa1F5HYrm1MRw/U0QA6imTs9s2BE2lPupOdkJkq0gZ87x0Sb
+         yesHqPbqTj80zcQ+MmgtI5bRE7sFF0bQV4SBJdQRyd99mOxV4POTAfrCs9pMok1y/Q
+         M8IzFW4pQrZMldEaFQlwECzz5es9sGGbKy5izkaY=
+Date:   Thu, 24 Jun 2021 15:06:09 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Rocco Yue <rocco.yue@mediatek.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Jonathan Corbet <corbet@lwn.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Phil Sutter <phil@nwl.cc>
-References: <20210606151008.7dwx5ukrlvxt4t3k@pali>
- <20210624124545.2b170258@dellmb>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <d3995a21-d9fe-9393-a10e-8eddccec2f47@6wind.com>
-Date:   Thu, 24 Jun 2021 14:57:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        David Ahern <dsahern@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, bpf@vger.kernel.org,
+        wsd_upstream@mediatek.com, chao.song@mediatek.com,
+        kuohong.wang@mediatek.com
+Subject: Re: [PATCH 1/4] net: if_arp: add ARPHRD_PUREIP type
+Message-ID: <YNSDQbp/h/aadpmV@kroah.com>
+References: <YNRKhJB9/K4SKPdR@kroah.com>
+ <20210624122435.11887-1-rocco.yue@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <20210624124545.2b170258@dellmb>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210624122435.11887-1-rocco.yue@mediatek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 24/06/2021 à 12:45, Marek Behún a écrit :
-> On Sun, 6 Jun 2021 17:10:08 +0200
-> Pali Rohár <pali@kernel.org> wrote:
+On Thu, Jun 24, 2021 at 08:24:35PM +0800, Rocco Yue wrote:
+> On Thu, 2021-06-24 at 11:04 +0200, Greg KH wrote:
+> On Thu, Jun 24, 2021 at 02:13:10PM +0800, Rocco Yue wrote:
+> >> On Thu, 2021-06-24 at 07:29 +0200, Greg KH wrote:
+> >>> 
+> >>> Thanks for the explaination, why is this hardware somehow "special" in
+> >>> this way that this has never been needed before?
+> >>> 
+> >>> thanks,
+> >>> 
+> >>> greg k-h
+> >>> 
+> >> 
+> >> Before kernel-4.18, RAWIP was the same as PUREIP, neither of them
+> >> automatically generates an IPv6 link-local address, and the way to
+> >> generate an IPv6 global address is the same.
+> >> 
+> >> After kernel-4.18 (include 4.18 version), the behavior of RAWIP had
+> >> changed due to the following patch:
+> >> @@  static int ipv6_generate_eui64(u8 *eui, struct net_device *dev)
+> >> +	case ARPHRD_RAWIP:
+> >> +		return addrconf_ifid_rawip(eui, dev);
+> >>  	}
+> >>  	return -1;
+> >> }
+> >> 
+> >> the reason why the kernel doesn't need to generate the link-local
+> >> address automatically is as follows:
+> >> 
+> >> In the 3GPP 29.061, here is some description as follows:
+> >> "in order to avoid any conflict between the link-local address of
+> >> MS and that of the GGSN, the Interface-Identifier used by the MS to
+> >> build its link-local address shall be assigned by the GGSN. The GGSN
+> >> ensures the uniqueness of this Interface-Identifier. Then MT shall
+> >> then enforce the use of this Interface-Identifier by the TE"
+> >> 
+> >> In other words, in the cellular network, GGSN determines whether to
+> >> reply to the Router Solicitation message of UE by identifying the
+> >> low 64bits of UE interface's ipv6 link-local address.
+> >> 
+> >> When using a new kernel and RAWIP, kernel will generate an EUI64
+> >> format ipv6 link-local address, and if the device uses this address
+> >> to send RS, GGSN will not reply RA message.
+> >> 
+> >> Therefore, in that background, we came up with PUREIP to make kernel
+> >> doesn't generate a ipv6 link-local address in any address generate
+> >> mode.
+> > 
+> > Thanks for the better description.  That should go into the changelog
+> > text somewhere so that others know what is going on here with this new
+> > option.
+> >
 > 
->> Hello!
->>
->> Seems that there is a bug during assigning IP addresses on point to
->> point interfaces.
->>
->> Assigning just one local address works fine:
->>
->>     ip address add fe80::6 dev ppp1 --> inet6 fe80::6/128 scope link
->>
->> Assigning both local and remote peer address also works fine:
->>
->>     ip address add fe80::7 peer fe80::8 dev ppp1 ---> inet6 fe80::7
->> peer fe80::8/128 scope link
->>
->> But trying to assign just remote peer address does not work. Moreover
->> "ip address" call does not fail, it returns zero but instead of
->> setting remote peer address, it sets local address:
->>
->>     ip address add peer fe80::5 dev ppp1 --> inet6 fe80::5/128 scope
->> link
->>
-> 
-> Adding some other people to Cc in order to get their opinions.
-> 
-> It seems this bug is there from the beginning, from commit
-> caeaba79009c2 ("ipv6: add support of peer address")
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=caeaba79009c2
-> 
-> Maybe some older user-space utilities use IFA_ADDRESS instead of
-> IFA_LOCAL, and this was done in order to be compatible with them?
-If I remember well, there was an issue in the uAPI.
-IFA_LOCAL is supposed to be the address of the interface and IFA_ADDRESS is
-supposed to be the endpoint of a point-to-point interface.
-However, in case of IPv6, it was not the case. In netlink messages generated by
-the kernel, IFA_ADDRESS was used instead of IFA_LOCAL.
-The patch tried to keep the backward compatibility and the symmetry between msg
-from userland and notification from the kernel.
+> Does changelog mean adding these details to the commit message ?
 
+Yes please.
 
-Regards,
-Nicolas
+> > And are these user-visable flags documented in a man page or something
+> > else somewhere?  If not, how does userspace know about them?
+> > 
+> 
+> There are mappings of these device types value in the libc:
+> "/bionic/libc/kernel/uapi/linux/if_arp.h".
+> userspace can get it from here.
+
+Yes, they will show up in a libc definition, but where is it documented
+in text form what the flag does?
+
+thanks,
+
+greg k-h
