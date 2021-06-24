@@ -2,82 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA7C73B2481
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 03:24:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5039C3B24AA
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 03:58:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbhFXB0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 21:26:54 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52734 "EHLO vps0.lunn.ch"
+        id S229922AbhFXCAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 22:00:55 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:32849 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229758AbhFXB0x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Jun 2021 21:26:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=jVNl6CYZ01C5i4KBiOlGFn8//idNYh9yzFXxk2AnPuQ=; b=am
-        1v1G+/9ktIZjtXECprM9EcvCf16/b1RAJ+Y2ThcFk/IFEXf8qRh1LfpMjTD1LcUyeSp6hR4mxNFzB
-        +mCRc+Ys3EAC1CPRXVWnPplak+/BWbY+I+rr4hsTezt20lvxhJathWEVojr/LddoOfLBC6PGFKgOK
-        64yGtaYe+27Z9gM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lwE6b-00Aux1-0D; Thu, 24 Jun 2021 03:24:33 +0200
-Date:   Thu, 24 Jun 2021 03:24:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcin Wojtas <mw@semihalf.com>
+        id S229812AbhFXCAy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 22:00:54 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G9NZy0B8nz9sX1;
+        Thu, 24 Jun 2021 11:58:33 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1624499914;
+        bh=TtVONHpBgW64sQti2v2KVngpO3bGOmdSaV6jJxzKf9U=;
+        h=Date:From:To:Cc:Subject:From;
+        b=VuYiF38/+zagiyIkOEMHCRgEr7fV8qgjGYE9VAnGlykMSonlALhy782hN3QrI2UUd
+         yfbzd+s5nEXlOOVgQ/EaUpD2NLLODKd0lk/++rmY7E57bRMZ394d8iMcRDZEpZ4YRx
+         dGw4YUJFw7XnqG1B4/hPGBiLIzHgq7z12Unzw9VWfnRF3e+L7dmEbIXlk+sCWaneuJ
+         wTpoTsEMyMt0tzroObiyHZuwAiMB1Ey88r/VRqQ5JRgP7OCpdlmRUNKgOmFH9uLlDV
+         hOacwF1bcUCXzrFsPfFfi3asBuQ4oSKjYfsf76ubYtPhFcieL/xdGeMRi7z+LvgJ/G
+         1oKF4oa/e07/w==
+Date:   Thu, 24 Jun 2021 11:58:30 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>, upstream@semihalf.com,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        Jon Nettleton <jon@solid-run.com>,
-        Tomasz Nowicki <tn@semihalf.com>, rjw@rjwysocki.net,
-        lenb@kernel.org
-Subject: Re: [net-next: PATCH v3 4/6] net: mvmdio: add ACPI support
-Message-ID: <YNPe0JyCuHxOQBPZ@lunn.ch>
-References: <20210621173028.3541424-1-mw@semihalf.com>
- <20210621173028.3541424-5-mw@semihalf.com>
- <YNOZfB4pBRrOYETA@lunn.ch>
- <CAPv3WKc5G07Te2yK+zJo=M0w-fmPVDZ3_YgNoO-BbssWHLtU7Q@mail.gmail.com>
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20210624115830.606b35c8@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPv3WKc5G07Te2yK+zJo=M0w-fmPVDZ3_YgNoO-BbssWHLtU7Q@mail.gmail.com>
+Content-Type: multipart/signed; boundary="Sig_/RkAg1RTb0HAPH/bjOvC2VIL";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 23, 2021 at 11:58:14PM +0200, Marcin Wojtas wrote:
-> śr., 23 cze 2021 o 22:28 Andrew Lunn <andrew@lunn.ch> napisał(a):
-> >
-> > On Mon, Jun 21, 2021 at 07:30:26PM +0200, Marcin Wojtas wrote:
-> > > This patch introducing ACPI support for the mvmdio driver by adding
-> > > acpi_match_table with two entries:
-> > >
-> > > * "MRVL0100" for the SMI operation
-> > > * "MRVL0101" for the XSMI mode
-> >
-> > Same as the freescale MDIO bus driver, you should add
-> >
-> > depends on FWNODE_MDIO
-> >
-> > Otherwise you might find randconfig builds end up with it disabled,
-> > and then linker errors.
-> >
-> 
-> The CONFIG_MVMDIO is selected by CONFIG_MV643XX_ETH and actually there
-> is a real example of the previously discussed fallback to the
-> mdiobus_register() (without DT/ACPI and now FWNODE_MDIO). I just
-> checked and successfully built the kernel out of the dove_defconfig. I
-> only needed below fix, that will be submitted in v4:
+--Sig_/RkAg1RTb0HAPH/bjOvC2VIL
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-You could be correct, but i've seen randconfig builds find issues. So
-i tend to add dependencies to avoid possible problems.  Such problem
-reports tend to come weeks later, when Arnd does such builds.
+Hi all,
 
-	Andrew
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  net/netfilter/nf_tables_api.c
+
+between commit:
+
+  3c5e44622011 ("netfilter: nf_tables: memleak in hw offload abort path")
+
+from the net tree and commit:
+
+  ef4b65e53cc7 ("netfilter: nfnetlink: add struct nfgenmsg to struct nfnl_i=
+nfo and use it")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/netfilter/nf_tables_api.c
+index fcb15b8904e8,d6214242fe7f..000000000000
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@@ -3249,9 -3236,9 +3242,9 @@@ static int nf_tables_newrule(struct sk_
+  	u8 genmask =3D nft_genmask_next(info->net);
+  	struct nft_rule *rule, *old_rule =3D NULL;
+  	struct nft_expr_info *expr_info =3D NULL;
++ 	u8 family =3D info->nfmsg->nfgen_family;
+ +	struct nft_flow_rule *flow =3D NULL;
+- 	int family =3D nfmsg->nfgen_family;
+  	struct net *net =3D info->net;
+ -	struct nft_flow_rule *flow;
+  	struct nft_userdata *udata;
+  	struct nft_table *table;
+  	struct nft_chain *chain;
+
+--Sig_/RkAg1RTb0HAPH/bjOvC2VIL
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDT5sYACgkQAVBC80lX
+0GyVZAf/WAOJ2xGd77gHjzc/0BJ12ETOmKga+KWO2BN7GfyjCjlQG2S9hRP+Fjoz
+fZTBq6mWUxcgHeU4XQx9qxOYSBcfwL1BlEo3WukOujVKZIaI+A0znhugHiHSxSZA
+CHTPBprceqxka7h3DCM6MwL7s3P390je0Jd7o06bgHjdlP8I8pCZ4H94m1sMVl2I
+KS6AcgGS1teas5EwABblyFwaeH2DAfYfj13cg91rxCZXqpNaZ3O/gRJLAAWgoq7X
+faPAMA8Lf0fzhCYl46QlWE2fukQFq/FnSjwCTPSqUiZcvSmAWYtbfruNDOtMgcRN
+qy28KEbnGf3ZgAlusW+m+sgzIeiuEw==
+=06H5
+-----END PGP SIGNATURE-----
+
+--Sig_/RkAg1RTb0HAPH/bjOvC2VIL--
