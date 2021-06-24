@@ -2,110 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA0B3B339D
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 18:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 220AF3B33AB
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 18:14:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbhFXQOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 12:14:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54050 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229445AbhFXQOG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Jun 2021 12:14:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=2zpxTskXtsSrCKrJdGxNHyEuYUkfYqVGKXrVSQNH2cg=; b=pCQpVOtxgMgXa5fmttOeaZCDS2
-        eGEAjIw+HJKlpBXv/y99EkzIEDk4LGG/2LWIobnETdlypWtlDiUJUMK2saxMzDiKGUZreG1Xyl3tP
-        Uyl81+u4qfj7XRxtu4TROreTRUb9p300x+w1Bd8UAXvj6C+7FgtTu7hlWUgMB71VSNas=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lwRx6-00Azym-DF; Thu, 24 Jun 2021 18:11:40 +0200
-Date:   Thu, 24 Jun 2021 18:11:40 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mark Einon <mark.einon@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 2/3] net: Provide switchdev driver for NXP's More Than IP
- L2 switch
-Message-ID: <YNSuvJsD0HSSshOJ@lunn.ch>
-References: <20210622144111.19647-1-lukma@denx.de>
- <20210622144111.19647-3-lukma@denx.de>
- <YNH7vS9FgvEhz2fZ@lunn.ch>
- <20210623133704.334a84df@ktm>
- <YNOTKl7ZKk8vhcMR@lunn.ch>
- <20210624125304.36636a44@ktm>
- <YNSJyf5vN4YuTUGb@lunn.ch>
- <20210624163542.5b6d87ee@ktm>
+        id S231723AbhFXQQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 12:16:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230052AbhFXQQ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 12:16:28 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44816C061756;
+        Thu, 24 Jun 2021 09:14:09 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id c5so5585591pfv.8;
+        Thu, 24 Jun 2021 09:14:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WfN0Frj56E6HhIm/MnEBVS0bsgQbJghIQhQlY6me8dE=;
+        b=uU/ytBH9iiY4KwS1lIwKPyeQPs1e5wmGZ5AVCp4mENFSvwdbsDf1l8CpwVakNkhYvY
+         AunZGpjEayBQ0voyqwJrZYQ4w7vRfXOy2ctSabQOe3CIwnTYAB539BggCPwD/1Q+IAbk
+         /MEgruZMSmo2xNAJTM4THdIMr6+Yh17BzNBrbfhGE1YuRRrMZL1RQMJzo0Un0tDI+syD
+         SiXvDJL8o6yBlne6ga1MDJkAdPHJvrK5azvwbWx0zASWttsInKVjYWR0X016ecXGvPRe
+         AWk2Rf0lQ4z1Gl7GgZIYoCRCs/05onS26o5rG39RunGh66sPOpm+bCZBYqSTcgO7qOsX
+         +txw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WfN0Frj56E6HhIm/MnEBVS0bsgQbJghIQhQlY6me8dE=;
+        b=a6bn3N/4piS6HmATM4qINe7U6hPp891NND2QRcI+ea+iRO9ZxcITKmMYKafLPmX7KH
+         Axf33na1xpYhz6gw3usy+5RnToq9Cope38ZzApUPw7TA2kIKA8K/Av4OogeSYenkVSPb
+         GCFl154W5z3VZ8PBJSOw2MAsvLLRAS5a3HHvv2beKiz2YKjoHy0O6ScVdYKqSLR7XMo4
+         pP2U/zCmItBGvUFf7I1i4xXbr9l8XzDzTiD6ynBleU9TY28jsWDe13UsVZ12Pf0B+4kT
+         jzqiWbYUO+hNfAU7cKYJuXaHbjjmRGEsyTX427I3McZZKwIClYGl8CEUWYZS3axrHCtR
+         yWCg==
+X-Gm-Message-State: AOAM533DIMgo2b438j4J3ey2EAfKdQJ/9lsld0N96pU18BnO5kf0i8pI
+        ZAdcmIqQffLJYZWYk98vY+SX76gR9dg=
+X-Google-Smtp-Source: ABdhPJyK0biPLsUmi3b3iZ+WXm5UW24dKMy+pSyjKzs+6TkAXlllDoEZg25qVFkriaXNVDXBogyWTQ==
+X-Received: by 2002:a63:2356:: with SMTP id u22mr5413589pgm.188.1624551248801;
+        Thu, 24 Jun 2021 09:14:08 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id o15sm3425870pfd.96.2021.06.24.09.14.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Jun 2021 09:14:08 -0700 (PDT)
+Date:   Thu, 24 Jun 2021 09:14:06 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Min Li <min.li.xe@renesas.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net 1/2] ptp: idt82p33: optimize idt82p33_adjtime
+Message-ID: <20210624161406.GC15473@hoboy.vegasvil.org>
+References: <1624459585-31233-1-git-send-email-min.li.xe@renesas.com>
+ <20210624034026.GA6853@hoboy.vegasvil.org>
+ <OS3PR01MB6593D3DCF7CE756E260548B3BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210624163542.5b6d87ee@ktm>
+In-Reply-To: <OS3PR01MB6593D3DCF7CE756E260548B3BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 04:35:42PM +0200, Lukasz Majewski wrote:
-> Hi Andrew,
+On Thu, Jun 24, 2021 at 02:38:46PM +0000, Min Li wrote:
+> For linuxptp/ptp4l, we can use step_window to adapt to the slow adjtime.
 > 
-> > > I'm not sure if the imx28 switch is similar to one from TI (cpsw-3g)
-> > > - it looks to me that the bypass mode for both seems to be very
-> > > different. For example, on NXP when switch is disabled we need to
-> > > handle two DMA[01]. When it is enabled, only one is used. The
-> > > approach with two DMAs is best handled with FEC driver
-> > > instantiation.  
-> > 
-> > I don't know if it applies to the FEC, but switches often have
-> > registers which control which egress port an ingress port can send
-> > packets to. So by default, you allow CPU to port0, CPU to port1, but
-> > block between port0 to port1. This would give you two independent
-> > interface, the switch enabled, and using one DMA. When the bridge is
-> > configured, you simply allow port0 and send/receive packets to/from
-> > port1. No change to the DMA setup, etc.
-> 
-> Please correct me if I misunderstood this concept - but it seems like
-> you refer to the use case where the switch is enabled, and by changing
-> it's "allowed internal port's" mapping it decides if frames are passed
-> between engress ports (port1 and port2).
+> I have tested this change with ptp4l for by setting step_window to 48 (assuming 16 packets per second)
+> for both 8265.2/8275.1 and they performed well.
 
-Correct.
+Yes, but that is a "magic" configuration that happens to work.
 
+Don't you want your driver to work out of the box with every user
+space program?
 
-> 	----------
-> DMA0 ->	|P0    P1| -> ENET-MAC (PHY control) -> eth0 (lan1)
-> 	|L2 SW	 |
-> 	|      P2| -> ENET-MAC (PHY control) -> eth1 (lan2)
-> 	----------
-> 
-> DMA1 (not used)
-> 
-> We can use this approach when we keep always enabled L2 switch.
-> 
-> However now in FEC we use the "bypass" mode, where:
-> DMA0 -> ENET-MAC (FEC instance driver 1) -> eth0
-> DMA1 -> ENET-MAC (FEC instance driver 2) -> eth1
-> 
-> And the "bypass" mode is the default one.
-
-Which is not a problem, when you refactor the FEC into a library and a
-driver, plus add a new switch driver. When the FEC loads, it uses
-bypass mode, the switch disabled. When the new switch driver loads, it
-always enables the switch, but disables communication between the two
-ports until they both join the same bridge.
-
-But i doubt we are actually getting anywhere. You say you don't have
-time to write a new driver. I'm not convinced you can hack the FEC
-like you are suggesting and not end up in the mess the cpsw had,
-before they wrote a new driver.
-
-       Andrew
+Thanks,
+Richard
