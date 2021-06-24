@@ -2,68 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2813B3805
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 22:40:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 466CD3B38EA
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 23:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232653AbhFXUm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 16:42:59 -0400
-Received: from proxima.lasnet.de ([78.47.171.185]:33130 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232456AbhFXUm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 16:42:58 -0400
-Received: from localhost.localdomain (p200300e9d7330cb6646baaec8ea0666e.dip0.t-ipconnect.de [IPv6:2003:e9:d733:cb6:646b:aaec:8ea0:666e])
+        id S232776AbhFXVrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 17:47:41 -0400
+Received: from ozlabs.org ([203.11.71.1]:58181 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232582AbhFXVrk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 17:47:40 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 82F17C03F3;
-        Thu, 24 Jun 2021 22:40:37 +0200 (CEST)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        netdev@vger.kernel.org
-Subject: pull-request: ieee802154 for net 2021-06-24
-Date:   Thu, 24 Jun 2021 22:40:09 +0200
-Message-Id: <20210624204009.3953413-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.31.1
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G9twG4vyMz9sWc;
+        Fri, 25 Jun 2021 07:45:18 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1624571119;
+        bh=VWRgsKGXs+kf4/GDRzLPQ68mIjEHYRO3f7+CVc1LDWQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=oFYiMF8J/INuMyv8WE7t81EJWa74FqXaaYUK9E+Awuz0QCEZR344mnq5MLhisTW/q
+         +su2dkXZ/4A6iRLj2VfTgEZiXhE1e6MH29BXLsrnUR28oTWz2TchGgXuBySPaHGMkv
+         8YRefE1aC8OLZSHM4ph7CJVGAxiH8k7+uu2NOa52LKj3Wq3G38DvnyZs9Nupl4BqJ+
+         SweSNvHAMh67g9cdx3V91e6oLUd9YP+HIbE/f//GqDZUOa6qcjet84aDUqtHjZ5w6r
+         W9nVG9GXgcAJ7eFqOLGfJmpn3YSjzF6nJWlFgwlgaEb9y21YxdFS0vGd+FNrZzTTIg
+         s1Kp02RFWKWIA==
+Date:   Fri, 25 Jun 2021 07:45:17 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20210625074517.685fb0f7@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/AYD8r9ygZRo2/172wzLr+4M";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave, Jakub.
+--Sig_/AYD8r9ygZRo2/172wzLr+4M
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-An update from ieee802154 for your *net* tree.
+Hi all,
 
-This time we only have fixes for ieee802154 hwsim driver.
+In commit
 
-Sparked from some syzcaller reports We got a potential
-crash fix from Eric Dumazet and two memory leak fixes from
-Dongliang Mu.
+  0ec13aff058a ("Revert "ibmvnic: simplify reset_long_term_buff function"")
 
-regards
-Stefan Schmidt
+Fixes tag
 
-The following changes since commit f2386cf7c5f4ff5d7b584f5d92014edd7df6c676:
+  Fixes: 1c7d45e7b2c ("ibmvnic: simplify reset_long_term_buff function")
 
-  net: lantiq: disable interrupt before sheduling NAPI (2021-06-08 19:16:32 -0700)
+has these problem(s):
 
-are available in the Git repository at:
+  - SHA1 should be at least 12 digits long
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan.git tags/ieee802154-for-davem-2021-06-24
+This can be fixed for the future by setting core.abbrev to 12 (or more)
+or (for git v2.11 or later) just making sure it is not set (or set to
+"auto").
 
-for you to fetch changes up to 0303b30375dff5351a79cc2c3c87dfa4fda29bed:
+--=20
+Cheers,
+Stephen Rothwell
 
-  ieee802154: hwsim: avoid possible crash in hwsim_del_edge_nl() (2021-06-22 21:26:59 +0200)
+--Sig_/AYD8r9ygZRo2/172wzLr+4M
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-----------------------------------------------------------------
-Dongliang Mu (2):
-      ieee802154: hwsim: Fix possible memory leak in hwsim_subscribe_all_others
-      ieee802154: hwsim: Fix memory leak in hwsim_add_one
+-----BEGIN PGP SIGNATURE-----
 
-Eric Dumazet (1):
-      ieee802154: hwsim: avoid possible crash in hwsim_del_edge_nl()
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDU/O0ACgkQAVBC80lX
+0GzhNwf+NojG313N29VJ5wIFTgpU8tivr9xiKfLduNAAhKMygb2iRFozu5F/z9+V
+57qwkGjqPbqEZl9HwIsKy4JPEGtuXX/L1nKgne8ZdVkkPK+6eAGOiprbt4X0/vIE
+g3nUDxzLgBJAsebLh7rFE/27nlwq9wfTitYk+s/LRIEL6RRAvZUzJlmt9reAuPAN
+bEGkuHs561JIBs6lMMd4hHZtGQJoJ797DBTyeDroz8BMxw4wWXQJ6TkywGkb9DRc
+kktnk3pT9awHaJ6zK50PjMgXP4cr/LJb3w3t7JX9mK6ef3KJ0ZWSxj/E3ji6ckqS
+v2Hmo8bLXbCbAAPHSs2mVP2iACMd3g==
+=xfRV
+-----END PGP SIGNATURE-----
 
- drivers/net/ieee802154/mac802154_hwsim.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+--Sig_/AYD8r9ygZRo2/172wzLr+4M--
