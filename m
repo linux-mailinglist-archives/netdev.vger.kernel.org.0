@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDE473B354A
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 20:09:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D1B3B354B
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 20:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232623AbhFXSKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 14:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37824 "EHLO
+        id S230480AbhFXSKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 14:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbhFXSK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 14:10:26 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC62C0613A2
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:07:58 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id y2-20020a0569020522b0290553ecd1c09bso495022ybs.10
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:07:58 -0700 (PDT)
+        with ESMTP id S232633AbhFXSKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 14:10:30 -0400
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913BDC061574
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:08:01 -0700 (PDT)
+Received: by mail-qt1-x849.google.com with SMTP id 44-20020aed30af0000b029024e8ccfcd07so7117423qtf.11
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 11:08:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=gwutKk2MXPqlYF8DRXhMSqy/SwYg9gAm6CUMvPoJ+3s=;
-        b=ngE56E4Ao07eBKr5OSBDPt/I9XyR63D2Z+r9NFPORdss38H0Ge+PGopp0/3JDZVmij
-         Dlu1NwmxHi9gUVkZRHInOAko18Yib+k9lKsqFfrmp79Ivq6M73OxYJdYUElpe9Tu5m/i
-         WC2ylPF8OTOl17OgUcItn8BsFPWSHvAlXWXHsXkyi76pKiKr9cmIZpjW2sofNqbBy5iY
-         HwG0vhf4rRefQRbWz58BaJOeXp/n9M973df0gCmjS4Umc27Qxgz4kY9bYZmagnjLDlg1
-         dorMMjg0OxDM4y9OozR3TGm6/7B18uTkW+b4g2CsHPpoOjTTv4BWEnqNdUZRkJDIFykj
-         t0Pg==
+        bh=VKCf8h/xZ9MVf2Csydsh3XQpFeXlCwvkWbdwrg3KyMU=;
+        b=H4WBqDUTUlnb4munKOe3vtRerfYxMH0MpEsov5UK7AGbc/mP4WLGi4hAveZoXL2VGF
+         36fzcUsEqQnn/uMpiAXkWrzaaBmTmHOU6mHXxr/yXVRBH04a2VWeM2MOvyqd3lWxdq+E
+         fSldIGFwh4tgHvDKr2IGWo75BSG2/NOA9E6oeDvcj37Gv6cZdEI9T9HecDQm+xIj3def
+         7qoYfwxWJSx8yfaDwX3Q1I0mNlkVZKpR6Swb1wGn1pqgIL6iB2yif8d5Xanqo83fai+6
+         LBPTbvCi1FXmM63e/lXbqgZYtz3MAQeJ7k7PdaxDSkNeEn7/G8761xafvQOeMKbox5cf
+         3feA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=gwutKk2MXPqlYF8DRXhMSqy/SwYg9gAm6CUMvPoJ+3s=;
-        b=JAUxdoAjlnPQKfkGYlo0tTa6j7vL3vQF+8MIzf05mhSsC7fPpGPLctLcRPaZKDhKvg
-         gXPCR+ZIh4pKzyZNu/WdWu26Nj6rlLdwSwBF8nVg1Ji+HGs14kz/oUhwZGH8g0UDZDXd
-         ZLEHNyQ3Z0cGJR8X7QqbU4zuj48TTu6AZjoFX5ChLRaOCgE4j+8bi6/5L5EcumE0mJQr
-         Up7PEYayk67nNjf6QkRqqqd06Sw3v/kpBSbKvOt8mT5lNLb0EsAwx5FMFKu34dW4f2kR
-         WwLTOgafDfu27ihZHfFE7dRdKlwT50lWnTiGW0IXAsiebHUN1VUVhVrcDVaQ5KRHHpDo
-         FGoQ==
-X-Gm-Message-State: AOAM532Tz9QDsJzOORA4lG9t0jv9zLdASg4EJlcVHhjhEDOi5g+v7cS5
-        V55AzsT1o0Vss7VLoMOZJ9qcsgQ=
-X-Google-Smtp-Source: ABdhPJyvygmIy4tDKO8/kLy0dsO88vTkXFlFWkPHFNGyU20trMTBoqgHw2VvI5OhITJbdhyugzleqg8=
+        bh=VKCf8h/xZ9MVf2Csydsh3XQpFeXlCwvkWbdwrg3KyMU=;
+        b=WqynBgS52TnxsGCY4YMNZYBRnDQs6mRhbuXBals8fGTWW7h56CeCphic2KU7+7Te86
+         okwpGDd0Aw1Nr1lROy+bZo4bF7wmrYCAn8vzNdxSBbd60Xr3OV0BA8cH4R18CRgeaf72
+         rd9EYXGloMrbTbTLaNe0Fd745zmv6N4uj/eyTpICSLHkef6WLJhOOwN9hYk6PvoC+iYR
+         FQoEJUBOJf9QGCq9LzGAUs07Xsx6EXRjkYo9nFBFRNtEn3cHgeK1BVejgY6JJ7DP7XQh
+         Dbxb6tq7e/SVt5+PYFhi53kSJZ62XpNONOTNWLZOAV9DcGs7CfplvgqTm/7do1K99zI4
+         Rewg==
+X-Gm-Message-State: AOAM530o2SHNRldQtQKMFg76qKHKwjqBeKU0M55pdl19kAHkata6kLtf
+        BJB7KAyf/9dGyrpCU8UI0GrXJbo=
+X-Google-Smtp-Source: ABdhPJxn0qy75M4MjwNU7Oe33tN3kfV0H9n5G3xmPOM0eyGy7wllr/qbkNhQdzUxyIV1iHlMaft8FUc=
 X-Received: from bcf-linux.svl.corp.google.com ([2620:15c:2c4:1:cb6c:4753:6df0:b898])
- (user=bcf job=sendgmr) by 2002:a25:cf08:: with SMTP id f8mr6446473ybg.249.1624558078000;
- Thu, 24 Jun 2021 11:07:58 -0700 (PDT)
-Date:   Thu, 24 Jun 2021 11:06:28 -0700
+ (user=bcf job=sendgmr) by 2002:ad4:4c43:: with SMTP id cs3mr6802921qvb.27.1624558080774;
+ Thu, 24 Jun 2021 11:08:00 -0700 (PDT)
+Date:   Thu, 24 Jun 2021 11:06:29 -0700
 In-Reply-To: <20210624180632.3659809-1-bcf@google.com>
-Message-Id: <20210624180632.3659809-13-bcf@google.com>
+Message-Id: <20210624180632.3659809-14-bcf@google.com>
 Mime-Version: 1.0
 References: <20210624180632.3659809-1-bcf@google.com>
 X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
-Subject: [PATCH net-next 12/16] gve: DQO: Add core netdev features
+Subject: [PATCH net-next 13/16] gve: DQO: Add ring allocation and initialization
 From:   Bailey Forrest <bcf@google.com>
 To:     Bailey Forrest <bcf@google.com>,
         "David S . Miller" <davem@davemloft.net>
@@ -61,497 +61,588 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add napi netdev device registration, interrupt handling and initial tx
-and rx polling stubs. The stubs will be filled in follow-on patches.
-
-Also:
-- LRO feature advertisement and handling
-- Also update ethtool logic
+Allocate the buffer and completion ring structures. Do not populate the
+rings yet. That will happen in the respective rx and tx datapath
+follow-on patches
 
 Signed-off-by: Bailey Forrest <bcf@google.com>
 Reviewed-by: Willem de Bruijn <willemb@google.com>
 Reviewed-by: Catherine Sullivan <csully@google.com>
 ---
- drivers/net/ethernet/google/gve/Makefile      |   2 +-
- drivers/net/ethernet/google/gve/gve.h         |   2 +
- drivers/net/ethernet/google/gve/gve_adminq.c  |   2 +
- drivers/net/ethernet/google/gve/gve_dqo.h     |  32 +++
- drivers/net/ethernet/google/gve/gve_ethtool.c |  12 +-
- drivers/net/ethernet/google/gve/gve_main.c    | 188 ++++++++++++++++--
- drivers/net/ethernet/google/gve/gve_rx_dqo.c  |  24 +++
- drivers/net/ethernet/google/gve/gve_tx_dqo.c  |  23 +++
- 8 files changed, 260 insertions(+), 25 deletions(-)
- create mode 100644 drivers/net/ethernet/google/gve/gve_dqo.h
- create mode 100644 drivers/net/ethernet/google/gve/gve_rx_dqo.c
- create mode 100644 drivers/net/ethernet/google/gve/gve_tx_dqo.c
+ drivers/net/ethernet/google/gve/gve.h        |   8 +-
+ drivers/net/ethernet/google/gve/gve_dqo.h    |  18 ++
+ drivers/net/ethernet/google/gve/gve_main.c   |  53 ++++-
+ drivers/net/ethernet/google/gve/gve_rx.c     |   2 +-
+ drivers/net/ethernet/google/gve/gve_rx_dqo.c | 157 +++++++++++++++
+ drivers/net/ethernet/google/gve/gve_tx.c     |   2 +-
+ drivers/net/ethernet/google/gve/gve_tx_dqo.c | 193 +++++++++++++++++++
+ 7 files changed, 420 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/google/gve/Makefile b/drivers/net/ethernet/google/gve/Makefile
-index 0143f4471e42..b9a6be76531b 100644
---- a/drivers/net/ethernet/google/gve/Makefile
-+++ b/drivers/net/ethernet/google/gve/Makefile
-@@ -1,4 +1,4 @@
- # Makefile for the Google virtual Ethernet (gve) driver
- 
- obj-$(CONFIG_GVE) += gve.o
--gve-objs := gve_main.o gve_tx.o gve_rx.o gve_ethtool.o gve_adminq.o gve_utils.o
-+gve-objs := gve_main.o gve_tx.o gve_tx_dqo.o gve_rx.o gve_rx_dqo.o gve_ethtool.o gve_adminq.o gve_utils.o
 diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index 8a2a8d125090..d6bf0466ae8b 100644
+index d6bf0466ae8b..30978a15e37d 100644
 --- a/drivers/net/ethernet/google/gve/gve.h
 +++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -45,6 +45,8 @@
- /* PTYPEs are always 10 bits. */
- #define GVE_NUM_PTYPES	1024
+@@ -204,6 +204,10 @@ struct gve_rx_ring {
+ 	struct gve_queue_resources *q_resources; /* head and tail pointer idx */
+ 	dma_addr_t q_resources_bus; /* dma address for the queue resources */
+ 	struct u64_stats_sync statss; /* sync stats for 32bit archs */
++
++	/* head and tail of skb chain for the current packet or NULL if none */
++	struct sk_buff *skb_head;
++	struct sk_buff *skb_tail;
+ };
  
-+#define GVE_RX_BUFFER_SIZE_DQO 2048
-+
- /* Each slot in the desc ring has a 1:1 mapping to a slot in the data ring */
- struct gve_rx_desc_queue {
- 	struct gve_rx_desc *desc_ring; /* the descriptor ring */
-diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
-index cf017a499119..5bb56b454541 100644
---- a/drivers/net/ethernet/google/gve/gve_adminq.c
-+++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -714,6 +714,8 @@ int gve_adminq_describe_device(struct gve_priv *priv)
- 	if (gve_is_gqi(priv)) {
- 		err = gve_set_desc_cnt(priv, descriptor);
- 	} else {
-+		/* DQO supports LRO. */
-+		priv->dev->hw_features |= NETIF_F_LRO;
- 		err = gve_set_desc_cnt_dqo(priv, descriptor, dev_op_dqo_rda);
- 	}
- 	if (err)
+ /* A TX desc ring entry */
+@@ -816,14 +820,14 @@ void gve_free_page(struct device *dev, struct page *page, dma_addr_t dma,
+ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev);
+ bool gve_tx_poll(struct gve_notify_block *block, int budget);
+ int gve_tx_alloc_rings(struct gve_priv *priv);
+-void gve_tx_free_rings(struct gve_priv *priv);
++void gve_tx_free_rings_gqi(struct gve_priv *priv);
+ __be32 gve_tx_load_event_counter(struct gve_priv *priv,
+ 				 struct gve_tx_ring *tx);
+ /* rx handling */
+ void gve_rx_write_doorbell(struct gve_priv *priv, struct gve_rx_ring *rx);
+ bool gve_rx_poll(struct gve_notify_block *block, int budget);
+ int gve_rx_alloc_rings(struct gve_priv *priv);
+-void gve_rx_free_rings(struct gve_priv *priv);
++void gve_rx_free_rings_gqi(struct gve_priv *priv);
+ bool gve_clean_rx_done(struct gve_rx_ring *rx, int budget,
+ 		       netdev_features_t feat);
+ /* Reset */
 diff --git a/drivers/net/ethernet/google/gve/gve_dqo.h b/drivers/net/ethernet/google/gve/gve_dqo.h
-new file mode 100644
-index 000000000000..cff4e6ef7bb6
---- /dev/null
+index cff4e6ef7bb6..9877a33ec068 100644
+--- a/drivers/net/ethernet/google/gve/gve_dqo.h
 +++ b/drivers/net/ethernet/google/gve/gve_dqo.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+ * Google virtual Ethernet (gve) driver
-+ *
-+ * Copyright (C) 2015-2021 Google, Inc.
-+ */
-+
-+#ifndef _GVE_DQO_H_
-+#define _GVE_DQO_H_
-+
-+#include "gve_adminq.h"
-+
-+#define GVE_ITR_ENABLE_BIT_DQO BIT(0)
-+#define GVE_ITR_CLEAR_PBA_BIT_DQO BIT(1)
-+#define GVE_ITR_NO_UPDATE_DQO (3 << 3)
-+
-+#define GVE_TX_IRQ_RATELIMIT_US_DQO 50
-+#define GVE_RX_IRQ_RATELIMIT_US_DQO 20
-+
-+netdev_tx_t gve_tx_dqo(struct sk_buff *skb, struct net_device *dev);
-+bool gve_tx_poll_dqo(struct gve_notify_block *block, bool do_clean);
-+int gve_rx_poll_dqo(struct gve_notify_block *block, int budget);
+@@ -19,6 +19,24 @@
+ netdev_tx_t gve_tx_dqo(struct sk_buff *skb, struct net_device *dev);
+ bool gve_tx_poll_dqo(struct gve_notify_block *block, bool do_clean);
+ int gve_rx_poll_dqo(struct gve_notify_block *block, int budget);
++int gve_tx_alloc_rings_dqo(struct gve_priv *priv);
++void gve_tx_free_rings_dqo(struct gve_priv *priv);
++int gve_rx_alloc_rings_dqo(struct gve_priv *priv);
++void gve_rx_free_rings_dqo(struct gve_priv *priv);
++int gve_clean_tx_done_dqo(struct gve_priv *priv, struct gve_tx_ring *tx,
++			  struct napi_struct *napi);
++void gve_rx_post_buffers_dqo(struct gve_rx_ring *rx);
++void gve_rx_write_doorbell_dqo(const struct gve_priv *priv, int queue_idx);
 +
 +static inline void
-+gve_write_irq_doorbell_dqo(const struct gve_priv *priv,
-+			   const struct gve_notify_block *block, u32 val)
++gve_tx_put_doorbell_dqo(const struct gve_priv *priv,
++			const struct gve_queue_resources *q_resources, u32 val)
 +{
-+	u32 index = be32_to_cpu(block->irq_db_index);
++	u64 index;
 +
++	index = be32_to_cpu(q_resources->db_index);
 +	iowrite32(val, &priv->db_bar2[index]);
 +}
-+
-+#endif /* _GVE_DQO_H_ */
-diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-index ccaf68562312..716e6240305d 100644
---- a/drivers/net/ethernet/google/gve/gve_ethtool.c
-+++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -311,8 +311,16 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 		for (ring = 0; ring < priv->tx_cfg.num_queues; ring++) {
- 			struct gve_tx_ring *tx = &priv->tx[ring];
  
--			data[i++] = tx->req;
--			data[i++] = tx->done;
-+			if (gve_is_gqi(priv)) {
-+				data[i++] = tx->req;
-+				data[i++] = tx->done;
-+			} else {
-+				/* DQO doesn't currently support
-+				 * posted/completed descriptor counts;
-+				 */
-+				data[i++] = 0;
-+				data[i++] = 0;
-+			}
- 			do {
- 				start =
- 				  u64_stats_fetch_begin(&priv->tx[ring].statss);
+ static inline void
+ gve_write_irq_doorbell_dqo(const struct gve_priv *priv,
 diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 8cc0ac061c93..579f867cf148 100644
+index 579f867cf148..cddf19c8cf0b 100644
 --- a/drivers/net/ethernet/google/gve/gve_main.c
 +++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -14,6 +14,7 @@
- #include <linux/workqueue.h>
- #include <net/sch_generic.h>
- #include "gve.h"
-+#include "gve_dqo.h"
- #include "gve_adminq.h"
- #include "gve_register.h"
+@@ -571,13 +571,21 @@ static int gve_create_rings(struct gve_priv *priv)
+ 	netif_dbg(priv, drv, priv->dev, "created %d rx queues\n",
+ 		  priv->rx_cfg.num_queues);
  
-@@ -26,6 +27,16 @@
- const char gve_version_str[] = GVE_VERSION;
- static const char gve_version_prefix[] = GVE_VERSION_PREFIX;
- 
-+static netdev_tx_t gve_start_xmit(struct sk_buff *skb, struct net_device *dev)
-+{
-+	struct gve_priv *priv = netdev_priv(dev);
-+
-+	if (gve_is_gqi(priv))
-+		return gve_tx(skb, dev);
-+	else
-+		return gve_tx_dqo(skb, dev);
-+}
-+
- static void gve_get_stats(struct net_device *dev, struct rtnl_link_stats64 *s)
- {
- 	struct gve_priv *priv = netdev_priv(dev);
-@@ -155,6 +166,15 @@ static irqreturn_t gve_intr(int irq, void *arg)
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t gve_intr_dqo(int irq, void *arg)
-+{
-+	struct gve_notify_block *block = arg;
-+
-+	/* Interrupts are automatically masked */
-+	napi_schedule_irqoff(&block->napi);
-+	return IRQ_HANDLED;
-+}
-+
- static int gve_napi_poll(struct napi_struct *napi, int budget)
- {
- 	struct gve_notify_block *block;
-@@ -191,6 +211,54 @@ static int gve_napi_poll(struct napi_struct *napi, int budget)
- 	return 0;
- }
- 
-+static int gve_napi_poll_dqo(struct napi_struct *napi, int budget)
-+{
-+	struct gve_notify_block *block =
-+		container_of(napi, struct gve_notify_block, napi);
-+	struct gve_priv *priv = block->priv;
-+	bool reschedule = false;
-+	int work_done = 0;
-+
-+	/* Clear PCI MSI-X Pending Bit Array (PBA)
-+	 *
-+	 * This bit is set if an interrupt event occurs while the vector is
-+	 * masked. If this bit is set and we reenable the interrupt, it will
-+	 * fire again. Since we're just about to poll the queue state, we don't
-+	 * need it to fire again.
-+	 *
-+	 * Under high softirq load, it's possible that the interrupt condition
-+	 * is triggered twice before we got the chance to process it.
-+	 */
-+	gve_write_irq_doorbell_dqo(priv, block,
-+				   GVE_ITR_NO_UPDATE_DQO | GVE_ITR_CLEAR_PBA_BIT_DQO);
-+
-+	if (block->tx)
-+		reschedule |= gve_tx_poll_dqo(block, /*do_clean=*/true);
-+
-+	if (block->rx) {
-+		work_done = gve_rx_poll_dqo(block, budget);
-+		reschedule |= work_done == budget;
-+	}
-+
-+	if (reschedule)
-+		return budget;
-+
-+	if (likely(napi_complete_done(napi, work_done))) {
-+		/* Enable interrupts again.
+-	/* Rx data ring has been prefilled with packet buffers at queue
+-	 * allocation time.
+-	 * Write the doorbell to provide descriptor slots and packet buffers
+-	 * to the NIC.
+-	 */
+-	for (i = 0; i < priv->rx_cfg.num_queues; i++)
+-		gve_rx_write_doorbell(priv, &priv->rx[i]);
++	if (gve_is_gqi(priv)) {
++		/* Rx data ring has been prefilled with packet buffers at queue
++		 * allocation time.
 +		 *
-+		 * We don't need to repoll afterwards because HW supports the
-+		 * PCI MSI-X PBA feature.
-+		 *
-+		 * Another interrupt would be triggered if a new event came in
-+		 * since the last one.
++		 * Write the doorbell to provide descriptor slots and packet
++		 * buffers to the NIC.
 +		 */
-+		gve_write_irq_doorbell_dqo(priv, block,
-+					   GVE_ITR_NO_UPDATE_DQO | GVE_ITR_ENABLE_BIT_DQO);
++		for (i = 0; i < priv->rx_cfg.num_queues; i++)
++			gve_rx_write_doorbell(priv, &priv->rx[i]);
++	} else {
++		for (i = 0; i < priv->rx_cfg.num_queues; i++) {
++			/* Post buffers and ring doorbell. */
++			gve_rx_post_buffers_dqo(&priv->rx[i]);
++		}
 +	}
-+
-+	return work_done;
-+}
-+
- static int gve_alloc_notify_blocks(struct gve_priv *priv)
- {
- 	int num_vecs_requested = priv->num_ntfy_blks + 1;
-@@ -264,7 +332,8 @@ static int gve_alloc_notify_blocks(struct gve_priv *priv)
- 			 name, i);
- 		block->priv = priv;
- 		err = request_irq(priv->msix_vectors[msix_idx].vector,
--				  gve_intr, 0, block->name, block);
-+				  gve_is_gqi(priv) ? gve_intr : gve_intr_dqo,
-+				  0, block->name, block);
- 		if (err) {
- 			dev_err(&priv->pdev->dev,
- 				"Failed to receive msix vector %d\n", i);
-@@ -417,11 +486,12 @@ static void gve_teardown_device_resources(struct gve_priv *priv)
- 	gve_clear_device_resources_ok(priv);
- }
  
--static void gve_add_napi(struct gve_priv *priv, int ntfy_idx)
-+static void gve_add_napi(struct gve_priv *priv, int ntfy_idx,
-+			 int (*gve_poll)(struct napi_struct *, int))
- {
- 	struct gve_notify_block *block = &priv->ntfy_blocks[ntfy_idx];
- 
--	netif_napi_add(priv->dev, &block->napi, gve_napi_poll,
-+	netif_napi_add(priv->dev, &block->napi, gve_poll,
- 		       NAPI_POLL_WEIGHT);
- }
- 
-@@ -512,11 +582,33 @@ static int gve_create_rings(struct gve_priv *priv)
  	return 0;
  }
+@@ -606,6 +614,15 @@ static void add_napi_init_sync_stats(struct gve_priv *priv,
+ 	}
+ }
  
-+static void add_napi_init_sync_stats(struct gve_priv *priv,
-+				     int (*napi_poll)(struct napi_struct *napi,
-+						      int budget))
++static void gve_tx_free_rings(struct gve_priv *priv)
 +{
-+	int i;
-+
-+	/* Add tx napi & init sync stats*/
-+	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
-+		int ntfy_idx = gve_tx_idx_to_ntfy(priv, i);
-+
-+		u64_stats_init(&priv->tx[i].statss);
-+		priv->tx[i].ntfy_id = ntfy_idx;
-+		gve_add_napi(priv, ntfy_idx, napi_poll);
-+	}
-+	/* Add rx napi  & init sync stats*/
-+	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
-+		int ntfy_idx = gve_rx_idx_to_ntfy(priv, i);
-+
-+		u64_stats_init(&priv->rx[i].statss);
-+		priv->rx[i].ntfy_id = ntfy_idx;
-+		gve_add_napi(priv, ntfy_idx, napi_poll);
++	if (gve_is_gqi(priv)) {
++		gve_tx_free_rings_gqi(priv);
++	} else {
++		gve_tx_free_rings_dqo(priv);
 +	}
 +}
 +
  static int gve_alloc_rings(struct gve_priv *priv)
  {
--	int ntfy_idx;
  	int err;
--	int i;
- 
- 	/* Setup tx rings */
- 	priv->tx = kvzalloc(priv->tx_cfg.num_queues * sizeof(*priv->tx),
-@@ -536,18 +628,11 @@ static int gve_alloc_rings(struct gve_priv *priv)
- 	err = gve_rx_alloc_rings(priv);
- 	if (err)
- 		goto free_rx;
--	/* Add tx napi & init sync stats*/
--	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
--		u64_stats_init(&priv->tx[i].statss);
--		ntfy_idx = gve_tx_idx_to_ntfy(priv, i);
--		gve_add_napi(priv, ntfy_idx);
--	}
--	/* Add rx napi  & init sync stats*/
--	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
--		u64_stats_init(&priv->rx[i].statss);
--		ntfy_idx = gve_rx_idx_to_ntfy(priv, i);
--		gve_add_napi(priv, ntfy_idx);
--	}
+@@ -615,9 +632,14 @@ static int gve_alloc_rings(struct gve_priv *priv)
+ 			    GFP_KERNEL);
+ 	if (!priv->tx)
+ 		return -ENOMEM;
+-	err = gve_tx_alloc_rings(priv);
 +
 +	if (gve_is_gqi(priv))
-+		add_napi_init_sync_stats(priv, gve_napi_poll);
++		err = gve_tx_alloc_rings(priv);
 +	else
-+		add_napi_init_sync_stats(priv, gve_napi_poll_dqo);
++		err = gve_tx_alloc_rings_dqo(priv);
+ 	if (err)
+ 		goto free_tx;
++
+ 	/* Setup rx rings */
+ 	priv->rx = kvzalloc(priv->rx_cfg.num_queues * sizeof(*priv->rx),
+ 			    GFP_KERNEL);
+@@ -625,7 +647,11 @@ static int gve_alloc_rings(struct gve_priv *priv)
+ 		err = -ENOMEM;
+ 		goto free_tx_queue;
+ 	}
+-	err = gve_rx_alloc_rings(priv);
++
++	if (gve_is_gqi(priv))
++		err = gve_rx_alloc_rings(priv);
++	else
++		err = gve_rx_alloc_rings_dqo(priv);
+ 	if (err)
+ 		goto free_rx;
  
+@@ -670,6 +696,14 @@ static int gve_destroy_rings(struct gve_priv *priv)
  	return 0;
- 
-@@ -798,9 +883,17 @@ static int gve_open(struct net_device *dev)
- 	err = gve_register_qpls(priv);
- 	if (err)
- 		goto reset;
-+
-+	if (!gve_is_gqi(priv)) {
-+		/* Hard code this for now. This may be tuned in the future for
-+		 * performance.
-+		 */
-+		priv->data_buffer_size_dqo = GVE_RX_BUFFER_SIZE_DQO;
-+	}
- 	err = gve_create_rings(priv);
- 	if (err)
- 		goto reset;
-+
- 	gve_set_device_rings_ok(priv);
- 
- 	if (gve_get_report_stats(priv))
-@@ -970,12 +1063,49 @@ static void gve_tx_timeout(struct net_device *dev, unsigned int txqueue)
- 	priv->tx_timeo_cnt++;
  }
  
-+static int gve_set_features(struct net_device *netdev,
-+			    netdev_features_t features)
++static inline void gve_rx_free_rings(struct gve_priv *priv)
 +{
-+	const netdev_features_t orig_features = netdev->features;
-+	struct gve_priv *priv = netdev_priv(netdev);
-+	int err;
++	if (gve_is_gqi(priv))
++		gve_rx_free_rings_gqi(priv);
++	else
++		gve_rx_free_rings_dqo(priv);
++}
 +
-+	if ((netdev->features & NETIF_F_LRO) != (features & NETIF_F_LRO)) {
-+		netdev->features ^= NETIF_F_LRO;
-+		if (netif_carrier_ok(netdev)) {
-+			/* To make this process as simple as possible we
-+			 * teardown the device, set the new configuration,
-+			 * and then bring the device up again.
-+			 */
-+			err = gve_close(netdev);
-+			/* We have already tried to reset in close, just fail
-+			 * at this point.
-+			 */
-+			if (err)
-+				goto err;
+ static void gve_free_rings(struct gve_priv *priv)
+ {
+ 	int ntfy_idx;
+@@ -869,6 +903,7 @@ static int gve_open(struct net_device *dev)
+ 	err = gve_alloc_qpls(priv);
+ 	if (err)
+ 		return err;
 +
-+			err = gve_open(netdev);
-+			if (err)
-+				goto err;
+ 	err = gve_alloc_rings(priv);
+ 	if (err)
+ 		goto free_qpls;
+diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+index 15a64e40004d..bb8261368250 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx.c
++++ b/drivers/net/ethernet/google/gve/gve_rx.c
+@@ -238,7 +238,7 @@ int gve_rx_alloc_rings(struct gve_priv *priv)
+ 	return err;
+ }
+ 
+-void gve_rx_free_rings(struct gve_priv *priv)
++void gve_rx_free_rings_gqi(struct gve_priv *priv)
+ {
+ 	int i;
+ 
+diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+index 808e09741ecc..1073a820767d 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
++++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+@@ -16,6 +16,163 @@
+ #include <net/ipv6.h>
+ #include <net/tcp.h>
+ 
++static void gve_free_page_dqo(struct gve_priv *priv,
++			      struct gve_rx_buf_state_dqo *bs)
++{
++}
++
++static void gve_rx_free_ring_dqo(struct gve_priv *priv, int idx)
++{
++	struct gve_rx_ring *rx = &priv->rx[idx];
++	struct device *hdev = &priv->pdev->dev;
++	size_t completion_queue_slots;
++	size_t buffer_queue_slots;
++	size_t size;
++	int i;
++
++	completion_queue_slots = rx->dqo.complq.mask + 1;
++	buffer_queue_slots = rx->dqo.bufq.mask + 1;
++
++	gve_rx_remove_from_block(priv, idx);
++
++	if (rx->q_resources) {
++		dma_free_coherent(hdev, sizeof(*rx->q_resources),
++				  rx->q_resources, rx->q_resources_bus);
++		rx->q_resources = NULL;
++	}
++
++	for (i = 0; i < rx->dqo.num_buf_states; i++) {
++		struct gve_rx_buf_state_dqo *bs = &rx->dqo.buf_states[i];
++
++		if (bs->page_info.page)
++			gve_free_page_dqo(priv, bs);
++	}
++
++	if (rx->dqo.bufq.desc_ring) {
++		size = sizeof(rx->dqo.bufq.desc_ring[0]) * buffer_queue_slots;
++		dma_free_coherent(hdev, size, rx->dqo.bufq.desc_ring,
++				  rx->dqo.bufq.bus);
++		rx->dqo.bufq.desc_ring = NULL;
++	}
++
++	if (rx->dqo.complq.desc_ring) {
++		size = sizeof(rx->dqo.complq.desc_ring[0]) *
++			completion_queue_slots;
++		dma_free_coherent(hdev, size, rx->dqo.complq.desc_ring,
++				  rx->dqo.complq.bus);
++		rx->dqo.complq.desc_ring = NULL;
++	}
++
++	kvfree(rx->dqo.buf_states);
++	rx->dqo.buf_states = NULL;
++
++	netif_dbg(priv, drv, priv->dev, "freed rx ring %d\n", idx);
++}
++
++static int gve_rx_alloc_ring_dqo(struct gve_priv *priv, int idx)
++{
++	struct gve_rx_ring *rx = &priv->rx[idx];
++	struct device *hdev = &priv->pdev->dev;
++	size_t size;
++	int i;
++
++	const u32 buffer_queue_slots =
++		priv->options_dqo_rda.rx_buff_ring_entries;
++	const u32 completion_queue_slots = priv->rx_desc_cnt;
++
++	netif_dbg(priv, drv, priv->dev, "allocating rx ring DQO\n");
++
++	memset(rx, 0, sizeof(*rx));
++	rx->gve = priv;
++	rx->q_num = idx;
++	rx->dqo.bufq.mask = buffer_queue_slots - 1;
++	rx->dqo.complq.num_free_slots = completion_queue_slots;
++	rx->dqo.complq.mask = completion_queue_slots - 1;
++	rx->skb_head = NULL;
++	rx->skb_tail = NULL;
++
++	rx->dqo.num_buf_states = min_t(s16, S16_MAX, buffer_queue_slots * 4);
++	rx->dqo.buf_states = kvcalloc(rx->dqo.num_buf_states,
++				      sizeof(rx->dqo.buf_states[0]),
++				      GFP_KERNEL);
++	if (!rx->dqo.buf_states)
++		return -ENOMEM;
++
++	/* Set up linked list of buffer IDs */
++	for (i = 0; i < rx->dqo.num_buf_states - 1; i++)
++		rx->dqo.buf_states[i].next = i + 1;
++
++	rx->dqo.buf_states[rx->dqo.num_buf_states - 1].next = -1;
++	rx->dqo.recycled_buf_states.head = -1;
++	rx->dqo.recycled_buf_states.tail = -1;
++	rx->dqo.used_buf_states.head = -1;
++	rx->dqo.used_buf_states.tail = -1;
++
++	/* Allocate RX completion queue */
++	size = sizeof(rx->dqo.complq.desc_ring[0]) *
++		completion_queue_slots;
++	rx->dqo.complq.desc_ring =
++		dma_alloc_coherent(hdev, size, &rx->dqo.complq.bus, GFP_KERNEL);
++	if (!rx->dqo.complq.desc_ring)
++		goto err;
++
++	/* Allocate RX buffer queue */
++	size = sizeof(rx->dqo.bufq.desc_ring[0]) * buffer_queue_slots;
++	rx->dqo.bufq.desc_ring =
++		dma_alloc_coherent(hdev, size, &rx->dqo.bufq.bus, GFP_KERNEL);
++	if (!rx->dqo.bufq.desc_ring)
++		goto err;
++
++	rx->q_resources = dma_alloc_coherent(hdev, sizeof(*rx->q_resources),
++					     &rx->q_resources_bus, GFP_KERNEL);
++	if (!rx->q_resources)
++		goto err;
++
++	gve_rx_add_to_block(priv, idx);
++
++	return 0;
++
++err:
++	gve_rx_free_ring_dqo(priv, idx);
++	return -ENOMEM;
++}
++
++int gve_rx_alloc_rings_dqo(struct gve_priv *priv)
++{
++	int err = 0;
++	int i;
++
++	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
++		err = gve_rx_alloc_ring_dqo(priv, i);
++		if (err) {
++			netif_err(priv, drv, priv->dev,
++				  "Failed to alloc rx ring=%d: err=%d\n",
++				  i, err);
++			goto err;
 +		}
 +	}
 +
 +	return 0;
++
 +err:
-+	/* Reverts the change on error. */
-+	netdev->features = orig_features;
-+	netif_err(priv, drv, netdev,
-+		  "Set features failed! !!! DISABLING ALL QUEUES !!!\n");
++	for (i--; i >= 0; i--)
++		gve_rx_free_ring_dqo(priv, i);
++
 +	return err;
 +}
 +
- static const struct net_device_ops gve_netdev_ops = {
--	.ndo_start_xmit		=	gve_tx,
-+	.ndo_start_xmit		=	gve_start_xmit,
- 	.ndo_open		=	gve_open,
- 	.ndo_stop		=	gve_close,
- 	.ndo_get_stats64	=	gve_get_stats,
- 	.ndo_tx_timeout         =       gve_tx_timeout,
-+	.ndo_set_features	=	gve_set_features,
- };
++void gve_rx_free_rings_dqo(struct gve_priv *priv)
++{
++	int i;
++
++	for (i = 0; i < priv->rx_cfg.num_queues; i++)
++		gve_rx_free_ring_dqo(priv, i);
++}
++
++void gve_rx_post_buffers_dqo(struct gve_rx_ring *rx)
++{
++}
++
+ int gve_rx_poll_dqo(struct gve_notify_block *block, int budget)
+ {
+ 	u32 work_done = 0;
+diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
+index 75930bb64eb9..665ac795a1ad 100644
+--- a/drivers/net/ethernet/google/gve/gve_tx.c
++++ b/drivers/net/ethernet/google/gve/gve_tx.c
+@@ -256,7 +256,7 @@ int gve_tx_alloc_rings(struct gve_priv *priv)
+ 	return err;
+ }
  
- static void gve_handle_status(struct gve_priv *priv, u32 status)
-@@ -1019,6 +1149,15 @@ void gve_handle_report_stats(struct gve_priv *priv)
- 	/* tx stats */
- 	if (priv->tx) {
- 		for (idx = 0; idx < priv->tx_cfg.num_queues; idx++) {
-+			u32 last_completion = 0;
-+			u32 tx_frames = 0;
-+
-+			/* DQO doesn't currently support these metrics. */
-+			if (gve_is_gqi(priv)) {
-+				last_completion = priv->tx[idx].done;
-+				tx_frames = priv->tx[idx].req;
-+			}
-+
- 			do {
- 				start = u64_stats_fetch_begin(&priv->tx[idx].statss);
- 				tx_bytes = priv->tx[idx].bytes_done;
-@@ -1035,7 +1174,7 @@ void gve_handle_report_stats(struct gve_priv *priv)
- 			};
- 			stats[stats_idx++] = (struct stats) {
- 				.stat_name = cpu_to_be32(TX_FRAMES_SENT),
--				.value = cpu_to_be64(priv->tx[idx].req),
-+				.value = cpu_to_be64(tx_frames),
- 				.queue_id = cpu_to_be32(idx),
- 			};
- 			stats[stats_idx++] = (struct stats) {
-@@ -1045,7 +1184,7 @@ void gve_handle_report_stats(struct gve_priv *priv)
- 			};
- 			stats[stats_idx++] = (struct stats) {
- 				.stat_name = cpu_to_be32(TX_LAST_COMPLETION_PROCESSED),
--				.value = cpu_to_be64(priv->tx[idx].done),
-+				.value = cpu_to_be64(last_completion),
- 				.queue_id = cpu_to_be32(idx),
- 			};
- 		}
-@@ -1121,7 +1260,7 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
- 			"Could not get device information: err=%d\n", err);
- 		goto err;
- 	}
--	if (priv->dev->max_mtu > PAGE_SIZE) {
-+	if (gve_is_gqi(priv) && priv->dev->max_mtu > PAGE_SIZE) {
- 		priv->dev->max_mtu = PAGE_SIZE;
- 		err = gve_adminq_set_mtu(priv, priv->dev->mtu);
- 		if (err) {
-@@ -1332,7 +1471,12 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	pci_set_drvdata(pdev, dev);
- 	dev->ethtool_ops = &gve_ethtool_ops;
- 	dev->netdev_ops = &gve_netdev_ops;
--	/* advertise features */
-+
-+	/* Set default and supported features.
-+	 *
-+	 * Features might be set in other locations as well (such as
-+	 * `gve_adminq_describe_device`).
-+	 */
- 	dev->hw_features = NETIF_F_HIGHDMA;
- 	dev->hw_features |= NETIF_F_SG;
- 	dev->hw_features |= NETIF_F_HW_CSUM;
-diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-new file mode 100644
-index 000000000000..808e09741ecc
---- /dev/null
-+++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-@@ -0,0 +1,24 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Google virtual Ethernet (gve) driver
-+ *
-+ * Copyright (C) 2015-2021 Google, Inc.
-+ */
-+
-+#include "gve.h"
-+#include "gve_dqo.h"
-+#include "gve_adminq.h"
-+#include "gve_utils.h"
-+#include <linux/ip.h>
-+#include <linux/ipv6.h>
-+#include <linux/skbuff.h>
-+#include <linux/slab.h>
-+#include <net/ip6_checksum.h>
-+#include <net/ipv6.h>
-+#include <net/tcp.h>
-+
-+int gve_rx_poll_dqo(struct gve_notify_block *block, int budget)
-+{
-+	u32 work_done = 0;
-+
-+	return work_done;
-+}
+-void gve_tx_free_rings(struct gve_priv *priv)
++void gve_tx_free_rings_gqi(struct gve_priv *priv)
+ {
+ 	int i;
+ 
 diff --git a/drivers/net/ethernet/google/gve/gve_tx_dqo.c b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-new file mode 100644
-index 000000000000..4b3319a1b299
---- /dev/null
+index 4b3319a1b299..bde8f90ac8bd 100644
+--- a/drivers/net/ethernet/google/gve/gve_tx_dqo.c
 +++ b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-@@ -0,0 +1,23 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Google virtual Ethernet (gve) driver
-+ *
-+ * Copyright (C) 2015-2021 Google, Inc.
+@@ -12,11 +12,204 @@
+ #include <linux/slab.h>
+ #include <linux/skbuff.h>
+ 
++/* gve_tx_free_desc - Cleans up all pending tx requests and buffers.
 + */
-+
-+#include "gve.h"
-+#include "gve_adminq.h"
-+#include "gve_utils.h"
-+#include "gve_dqo.h"
-+#include <linux/tcp.h>
-+#include <linux/slab.h>
-+#include <linux/skbuff.h>
-+
-+netdev_tx_t gve_tx_dqo(struct sk_buff *skb, struct net_device *dev)
++static void gve_tx_clean_pending_packets(struct gve_tx_ring *tx)
 +{
-+	return NETDEV_TX_OK;
++	int i;
++
++	for (i = 0; i < tx->dqo.num_pending_packets; i++) {
++		struct gve_tx_pending_packet_dqo *cur_state =
++			&tx->dqo.pending_packets[i];
++		int j;
++
++		for (j = 0; j < cur_state->num_bufs; j++) {
++			struct gve_tx_dma_buf *buf = &cur_state->bufs[j];
++
++			if (j == 0) {
++				dma_unmap_single(tx->dev,
++						 dma_unmap_addr(buf, dma),
++						 dma_unmap_len(buf, len),
++						 DMA_TO_DEVICE);
++			} else {
++				dma_unmap_page(tx->dev,
++					       dma_unmap_addr(buf, dma),
++					       dma_unmap_len(buf, len),
++					       DMA_TO_DEVICE);
++			}
++		}
++		if (cur_state->skb) {
++			dev_consume_skb_any(cur_state->skb);
++			cur_state->skb = NULL;
++		}
++	}
 +}
 +
-+bool gve_tx_poll_dqo(struct gve_notify_block *block, bool do_clean)
++static void gve_tx_free_ring_dqo(struct gve_priv *priv, int idx)
 +{
-+	return false;
++	struct gve_tx_ring *tx = &priv->tx[idx];
++	struct device *hdev = &priv->pdev->dev;
++	size_t bytes;
++
++	gve_tx_remove_from_block(priv, idx);
++
++	if (tx->q_resources) {
++		dma_free_coherent(hdev, sizeof(*tx->q_resources),
++				  tx->q_resources, tx->q_resources_bus);
++		tx->q_resources = NULL;
++	}
++
++	if (tx->dqo.compl_ring) {
++		bytes = sizeof(tx->dqo.compl_ring[0]) *
++			(tx->dqo.complq_mask + 1);
++		dma_free_coherent(hdev, bytes, tx->dqo.compl_ring,
++				  tx->complq_bus_dqo);
++		tx->dqo.compl_ring = NULL;
++	}
++
++	if (tx->dqo.tx_ring) {
++		bytes = sizeof(tx->dqo.tx_ring[0]) * (tx->mask + 1);
++		dma_free_coherent(hdev, bytes, tx->dqo.tx_ring, tx->bus);
++		tx->dqo.tx_ring = NULL;
++	}
++
++	kvfree(tx->dqo.pending_packets);
++	tx->dqo.pending_packets = NULL;
++
++	netif_dbg(priv, drv, priv->dev, "freed tx queue %d\n", idx);
 +}
++
++static int gve_tx_alloc_ring_dqo(struct gve_priv *priv, int idx)
++{
++	struct gve_tx_ring *tx = &priv->tx[idx];
++	struct device *hdev = &priv->pdev->dev;
++	int num_pending_packets;
++	size_t bytes;
++	int i;
++
++	memset(tx, 0, sizeof(*tx));
++	tx->q_num = idx;
++	tx->dev = &priv->pdev->dev;
++	tx->netdev_txq = netdev_get_tx_queue(priv->dev, idx);
++	atomic_set_release(&tx->dqo_compl.hw_tx_head, 0);
++
++	/* Queue sizes must be a power of 2 */
++	tx->mask = priv->tx_desc_cnt - 1;
++	tx->dqo.complq_mask = priv->options_dqo_rda.tx_comp_ring_entries - 1;
++
++	/* The max number of pending packets determines the maximum number of
++	 * descriptors which maybe written to the completion queue.
++	 *
++	 * We must set the number small enough to make sure we never overrun the
++	 * completion queue.
++	 */
++	num_pending_packets = tx->dqo.complq_mask + 1;
++
++	/* Reserve space for descriptor completions, which will be reported at
++	 * most every GVE_TX_MIN_RE_INTERVAL packets.
++	 */
++	num_pending_packets -=
++		(tx->dqo.complq_mask + 1) / GVE_TX_MIN_RE_INTERVAL;
++
++	/* Each packet may have at most 2 buffer completions if it receives both
++	 * a miss and reinjection completion.
++	 */
++	num_pending_packets /= 2;
++
++	tx->dqo.num_pending_packets = min_t(int, num_pending_packets, S16_MAX);
++	tx->dqo.pending_packets = kvcalloc(tx->dqo.num_pending_packets,
++					   sizeof(tx->dqo.pending_packets[0]),
++					   GFP_KERNEL);
++	if (!tx->dqo.pending_packets)
++		goto err;
++
++	/* Set up linked list of pending packets */
++	for (i = 0; i < tx->dqo.num_pending_packets - 1; i++)
++		tx->dqo.pending_packets[i].next = i + 1;
++
++	tx->dqo.pending_packets[tx->dqo.num_pending_packets - 1].next = -1;
++	atomic_set_release(&tx->dqo_compl.free_pending_packets, -1);
++	tx->dqo_compl.miss_completions.head = -1;
++	tx->dqo_compl.miss_completions.tail = -1;
++	tx->dqo_compl.timed_out_completions.head = -1;
++	tx->dqo_compl.timed_out_completions.tail = -1;
++
++	bytes = sizeof(tx->dqo.tx_ring[0]) * (tx->mask + 1);
++	tx->dqo.tx_ring = dma_alloc_coherent(hdev, bytes, &tx->bus, GFP_KERNEL);
++	if (!tx->dqo.tx_ring)
++		goto err;
++
++	bytes = sizeof(tx->dqo.compl_ring[0]) * (tx->dqo.complq_mask + 1);
++	tx->dqo.compl_ring = dma_alloc_coherent(hdev, bytes,
++						&tx->complq_bus_dqo,
++						GFP_KERNEL);
++	if (!tx->dqo.compl_ring)
++		goto err;
++
++	tx->q_resources = dma_alloc_coherent(hdev, sizeof(*tx->q_resources),
++					     &tx->q_resources_bus, GFP_KERNEL);
++	if (!tx->q_resources)
++		goto err;
++
++	gve_tx_add_to_block(priv, idx);
++
++	return 0;
++
++err:
++	gve_tx_free_ring_dqo(priv, idx);
++	return -ENOMEM;
++}
++
++int gve_tx_alloc_rings_dqo(struct gve_priv *priv)
++{
++	int err = 0;
++	int i;
++
++	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
++		err = gve_tx_alloc_ring_dqo(priv, i);
++		if (err) {
++			netif_err(priv, drv, priv->dev,
++				  "Failed to alloc tx ring=%d: err=%d\n",
++				  i, err);
++			goto err;
++		}
++	}
++
++	return 0;
++
++err:
++	for (i--; i >= 0; i--)
++		gve_tx_free_ring_dqo(priv, i);
++
++	return err;
++}
++
++void gve_tx_free_rings_dqo(struct gve_priv *priv)
++{
++	int i;
++
++	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
++		struct gve_tx_ring *tx = &priv->tx[i];
++
++		gve_clean_tx_done_dqo(priv, tx, /*napi=*/NULL);
++		netdev_tx_reset_queue(tx->netdev_txq);
++		gve_tx_clean_pending_packets(tx);
++
++		gve_tx_free_ring_dqo(priv, i);
++	}
++}
++
+ netdev_tx_t gve_tx_dqo(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	return NETDEV_TX_OK;
+ }
+ 
++int gve_clean_tx_done_dqo(struct gve_priv *priv, struct gve_tx_ring *tx,
++			  struct napi_struct *napi)
++{
++	return 0;
++}
++
+ bool gve_tx_poll_dqo(struct gve_notify_block *block, bool do_clean)
+ {
+ 	return false;
 -- 
 2.32.0.288.g62a8d224e6-goog
 
