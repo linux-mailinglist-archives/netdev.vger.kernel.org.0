@@ -2,170 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F26C3B2836
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 09:07:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E282F3B2838
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 09:07:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231490AbhFXHIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 03:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55924 "EHLO
+        id S231398AbhFXHJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 03:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231435AbhFXHIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 03:08:00 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBD2C061766
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 00:05:41 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id x6so2800826qvx.4
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 00:05:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=uyb2tZAPltFwu0/3f+8N1Whypmr/BCkiRPdpo/+aATQ=;
-        b=1k4BwsViMRanh9l3pCxYXbVk+Oyx377MNyaN+A7H1GoOF1uRYXQGng5Of4MMTa9UU3
-         vORjZS6xeUVPxvspcQ+l+7w1fTkM0/00RGXBi45WRT5KU/9WAV/KPULzqMKBijts9khK
-         F/lF/vsX/G4rPWOQsLPLocaEyCyCWwzGBf8kLIPp+hHU3hyhLJl3VUbudhMPApe30AUw
-         RCSulmDgTqH92L5VXwVSOkzK+czifbqwhrLaP/jTRp1bG/lKc1y127f3Ieh+WAUpA4nc
-         IaehzvKKDdPzLdpQu/ioAXIcbwjbMwFLZwax+0y3VVLjhiGZ1wN5ESUfl8EJFlxVCzcG
-         c9lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=uyb2tZAPltFwu0/3f+8N1Whypmr/BCkiRPdpo/+aATQ=;
-        b=Y5knHHReyOWV/zD2n7xd/cR8pJiJ7lov4/kb357QThzINvQPcKLCCgvjuVyKfMdU/1
-         QvKny34I/ftEhaPRQOADw5PAIYJVwl/00kI/o9mXHVzDHx1XoLT0fXTDd4aMighLkq5X
-         t/roVvNruoUy9FvF8JAOk5KcetUXQKvmNFZbeZ62KOglr3KjKonOHca23+dTTDSP3Ro0
-         jr3+HHumZzE4pJ7QK2c1PtsPTXch3+vv79YAH9IW4SP/MgOBW4h0nfWwyruVqWOYhN1E
-         3sgiChGoELMdasq5Xil9DUhGm7hMPnzf+CSjwAk/GSQtPXMnrxZ33Z19SX1gs5o5d3sn
-         mF0A==
-X-Gm-Message-State: AOAM532/eWBaZarjM3P4ef6kHhr+azA8iEYchyorBWb2b6vTq1sdUguX
-        Bjz93GWwyoJth71nKchMd3q6d8I8C8ZSCuZ8Yzvtrg7sk74=
-X-Google-Smtp-Source: ABdhPJyGJSZUCvOO+Zj3YeyJ93PvQJ+8PxOIr1FJk6NHef4t2hFw140HmPxZ6bPSrcxq2Ngz0CZqAkTIcWAnx9n6EWM=
-X-Received: by 2002:a05:6214:a0f:: with SMTP id dw15mr4071409qvb.10.1624518340902;
- Thu, 24 Jun 2021 00:05:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210624082911.5d013e8c@canb.auug.org.au> <CAPv3WKfiL+sR+iK_BjGKDhtNgjoxKEPv49bU1X9_7+v+ytdR1w@mail.gmail.com>
- <YNPt91bfjrgSt8G3@Ryzen-9-3900X.localdomain> <CA+G9fYtb07aySOpB6=wc4ip_9S4Rr2UUYNgEOG6i76g--uPryQ@mail.gmail.com>
-In-Reply-To: <CA+G9fYtb07aySOpB6=wc4ip_9S4Rr2UUYNgEOG6i76g--uPryQ@mail.gmail.com>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 24 Jun 2021 09:05:28 +0200
-Message-ID: <CAPv3WKdPxhS6_kAe5Z=sJcss=kYf4CR4DThLL_Sdete3Hk95Dg@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        lkft-triage@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S231477AbhFXHIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 03:08:36 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94865C061574
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 00:05:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=7gAZxIl1OsmmTIITBNCtItCx+SUG3LgAgfurg61s9zQ=; b=XyFG6zAr9zYNdYb/VkyveZ/bHQ
+        KOIXH3Fh+JVTH0E6gVTz2uYJiB/nPZV2dSzWYFANZjKT/pjF76/LVtwHXrokXPmuF3SGJW+RiyqGO
+        TbqRejQA5ahBPXjN30WEjD5Ra9RIqsN+3IVj3DxHAybYsvrZD7/6hcL5NttP5qk2k4wLfii5l0HCu
+        UWRM+fzl8DLFmKQ+Uguqz5nZhHLuw7KqSdem8I8p+QkDDOXoYAryBPd/9KTyaTuSg/PsFfXK+dDP5
+        d+pP/W4zwaxkAllTEQWrE527+9eI12mqjAmRqauVUxGn8X8oBQsTor+/QCXpHEXjAm3QP/w4QSDGy
+        8m7RS8wQ==;
+Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1lwJQp-00D5ro-L0; Thu, 24 Jun 2021 07:05:48 +0000
+Message-ID: <8ff25025b4c5e167c3176b4607191019e4f3729a.camel@infradead.org>
+Subject: Re: [PATCH v2 1/4] net: tun: fix tun_xdp_one() for IFF_TUN mode
+From:   David Woodhouse <dwmw2@infradead.org>
+To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
+Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
+Date:   Thu, 24 Jun 2021 08:05:45 +0100
+In-Reply-To: <f860d6a2-12a4-c766-ee57-db789c4a8d1f@redhat.com>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+         <20210622161533.1214662-1-dwmw2@infradead.org>
+         <fedca272-a03e-4bac-4038-2bb1f6b4df84@redhat.com>
+         <e8843f32aa14baff398584e5b3a00d20994836b6.camel@infradead.org>
+         <f860d6a2-12a4-c766-ee57-db789c4a8d1f@redhat.com>
+Content-Type: multipart/signed; micalg="sha-256";
+        protocol="application/x-pkcs7-signature";
+        boundary="=-jW0kPcffSHK7hF+IKkMQ"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+
+--=-jW0kPcffSHK7hF+IKkMQ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, 2021-06-24 at 14:18 +0800, Jason Wang wrote:
+> =E5=9C=A8 2021/6/23 =E4=B8=8B=E5=8D=889:52, David Woodhouse =E5=86=99=E9=
+=81=93:
+> > On Wed, 2021-06-23 at 11:45 +0800, Jason Wang wrote:
+> > > As replied in previous version, it would be better if we can unify
+> > > similar logic in tun_get_user().
+> >=20
+> > So that ends up looking something like this (incremental).
+> >=20
+> > Note the '/* XXX: frags && */' part in tun_skb_set_protocol(), because
+> > the 'frags &&' was there in tun_get_user() and it wasn't obvious to me
+> > whether I should be lifting that out as a separate argument to
+> > tun_skb_set_protocol() or if there's a better way.
+> >=20
+> > Either way, in my judgement this is less suitable for a stable fix and
+> > more appropriate for a follow-on cleanup. But I don't feel that
+> > strongly; I'm more than happy for you to overrule me on that.
+> > Especially if you fix the above XXX part while you're at it :)
+>=20
+>=20
+> By simply adding a boolean "pull" in tun_skb_set_protocol()?
+
+Sure; thanks. It's been a few years since I really played with skb
+handling; I was half hoping for a simpler "you don't need to
+because..." answer, but that works :)
 
 
-czw., 24 cze 2021 o 08:13 Naresh Kamboju <naresh.kamboju@linaro.org> napisa=
-=C5=82(a):
->
-> Hi Marcin,
->
-> On Thu, 24 Jun 2021 at 07:59, Nathan Chancellor <nathan@kernel.org> wrote=
-:
-> >
-> > On Thu, Jun 24, 2021 at 12:46:48AM +0200, Marcin Wojtas wrote:
-> > > Hi Stephen,
-> > >
-> > > czw., 24 cze 2021 o 00:29 Stephen Rothwell <sfr@canb.auug.org.au> nap=
-isa=C5=82(a):
-> > > >
-> > > > Hi all,
-> > > >
-> > > > Today's linux-next build (x86_64 modules_install) failed like this:
-> > > >
-> > > > depmod: ../tools/depmod.c:1792: depmod_report_cycles_from_root: Ass=
-ertion `is < stack_size' failed.
->
-> LKFT test farm found this build error.
->
-> Regressions found on mips:
->
->  - build/gcc-9-malta_defconfig
->  - build/gcc-10-malta_defconfig
->  - build/gcc-8-malta_defconfig
->
-> depmod: ERROR: Cycle detected: fwnode_mdio -> of_mdio -> fwnode_mdio
-> depmod: ERROR: Found 2 modules in dependency cycles!
-> make[1]: *** [/builds/linux/Makefile:1875: modules_install] Error 1
->
-> > > Thank you for letting us know. Not sure if related, but I just found
-> > > out that this code won't compile for the !CONFIG_FWNODE_MDIO. Below
-> > > one-liner fixes it:
-> > >
-> > > --- a/include/linux/fwnode_mdio.h
-> > > +++ b/include/linux/fwnode_mdio.h
-> > > @@ -40,7 +40,7 @@ static inline int fwnode_mdiobus_register(struct mi=
-i_bus *bus,
-> > >          * This way, we don't have to keep compat bits around in driv=
-ers.
-> > >          */
-> > >
-> > > -       return mdiobus_register(mdio);
-> > > +       return mdiobus_register(bus);
-> > >  }
-> > >  #endif
-> > >
-> > > I'm curious if this is the case. Tomorrow I'll resubmit with above, s=
-o
-> > > I'd appreciate recheck.
->
-> This proposed fix did not work.
->
-> > Reverting all the patches in that series fixes the issue for me.
->
-> Yes.
-> Reverting all the (6) patches in that series fixed this build problem.
->
-> git log --oneline | head
-> 3752a7bfe73e Revert "Documentation: ACPI: DSD: describe additional MAC
-> configuration"
-> da53528ed548 Revert "net: mdiobus: Introduce fwnode_mdbiobus_register()"
-> 479b72ae8b68 Revert "net/fsl: switch to fwnode_mdiobus_register"
-> 92f85677aff4 Revert "net: mvmdio: add ACPI support"
-> 3d725ff0f271 Revert "net: mvpp2: enable using phylink with ACPI"
-> ffa8c267d44e Revert "net: mvpp2: remove unused 'has_phy' field"
-> d61c8b66c840 Add linux-next specific files for 20210623
->
-> steps to reproduce, config and build log located here in this link,
-> https://builds.tuxbuild.com/1uNjGjPUAI4XwwcwKFr5FUxkwzy/
->
+--=-jW0kPcffSHK7hF+IKkMQ
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
 
-Thank you for your reports. I'm currently trying to reproduce and come
-back with a fix asap.
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
+ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
+OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
+RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
+cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
+uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
+Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
+Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
+xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
+BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
+dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
+LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
+Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
+Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
+YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
+nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
+PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
+7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
+Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
+MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
+NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
+/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
+0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
+vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
+ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
+ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
+CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
+BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
+aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
+bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
+LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
+W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
+vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
+gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
+RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
+jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
+AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
+BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
++bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
+WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
+aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
+CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
+u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
+RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
+QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
+b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
+cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
+SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
+0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
+KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
+E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
+M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
+jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
+yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
+gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
+R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
+ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
+NjI0MDcwNTQ1WjAvBgkqhkiG9w0BCQQxIgQgKtS6Yt7V+9xzX65HDTp7arPLuxT+I7cJNhpP+OFG
+gGswgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
+PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
+DQEBAQUABIIBAFkRMIgLgDUCArXceuuyrb4H7rPGXiLlDnGM+1pgtSxc7s38LI/KK+TMlcNfXDO/
+/4Ev88uBLYsVqZowjGJixYfYlovWguO1v5SoUaqbupBNwVOOqh2S+J88upENQ+Lye14/C+ee8AXa
+XgKOcvPyZDC6ExuNSwg2zTyaot2rQmTAW7rFDaV3Q8hultP6lShzXBctRvhoFHF6FGE+WUbuq2qj
+vj9vZTGzo5nTtzt63G2PYkq4UwC/9v8B745e9ALBKNGVQLtbK9+xTIo6kSz97L5BnCIM/m9kOIhQ
+WfNrI68GbqKCnDZXGmKV6ySuzN5bSgXvashndiMKnTf4gnEHLQ4AAAAAAAA=
 
-Best regards,
-Marcin
 
->
-> # TuxMake is a command line tool and Python library that provides
-> # portable and repeatable Linux kernel builds across a variety of
-> # architectures, toolchains, kernel configurations, and make targets.
-> #
-> # TuxMake supports the concept of runtimes.
-> # See https://docs.tuxmake.org/runtimes/, for that to work it requires
-> # that you install podman or docker on your system.
-> #
-> # To install tuxmake on your system globally:
-> # sudo pip3 install -U tuxmake
-> #
-> # See https://docs.tuxmake.org/ for complete documentation.
->
->
-> tuxmake --runtime podman --target-arch mips --toolchain gcc-10
-> --kconfig malta_defconfig
->
->
-> - Naresh
+--=-jW0kPcffSHK7hF+IKkMQ--
+
