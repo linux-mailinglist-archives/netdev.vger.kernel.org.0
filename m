@@ -2,137 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01EA33B25F7
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 06:03:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F33073B25FE
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 06:04:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbhFXEFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 00:05:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37804 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229926AbhFXEFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 00:05:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624507381;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=t6l8HNUseLWNe4QRrXc5Pxgwkec9RXr3zdcloJqebyc=;
-        b=gLVhDbID8o+MCAotB9oBrboA8Z3X58AE9zXVhWit2X/zYiiEi3AljxMpNralw70AJQxrbW
-        Yi0xe2Y5z9qVkxjtJ60hyvbjovBnWFbegieiyLFet2Vbx/u2VskGXGPl1vN06pmOfSjxuy
-        VN+gEMX0Ba9Gn0IxZ4EpWpfFG3HSQ6U=
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
- [209.85.210.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-492-kVBQODz3MiCCX3MIz40_3Q-1; Thu, 24 Jun 2021 00:02:59 -0400
-X-MC-Unique: kVBQODz3MiCCX3MIz40_3Q-1
-Received: by mail-pf1-f197.google.com with SMTP id o11-20020a62f90b0000b02902db3045f898so3073508pfh.23
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 21:02:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=t6l8HNUseLWNe4QRrXc5Pxgwkec9RXr3zdcloJqebyc=;
-        b=UfllHSuZPit7Z2JqqGKSl93gRbAPF1WJkEv/v9/FmnLFR2dstx8Z5hZ9FbsHRV+gv4
-         QqeUcFHimgbCXvEmwZrL4Bvj6zGi0bEF00c5jy/JyKzhC/0JervMzQYyEaCqAn/CG63W
-         wdNB3512fLn6wsOL+TnQi46sHH+wvMVkiIxi/AvKl9AiNYJa9HvsM7EtHChyY1DQmuQr
-         UPPRk2faw1kW9ZR9aw7MqIUirFzHt7vA73bu+0PnpbB7PevSZf0meAPcRAHERfs7N/4Z
-         lDWr0Va6wP8EiwEKIYUlppb6oRnsdm2ha+VkIsw06zD9GYYhZ4aG/bqNi51MTdFD7ATt
-         3wRw==
-X-Gm-Message-State: AOAM532E9ePkttfWu+upPeFw97uRNYZeZ4SaGT3RLo4/6CbER25Tv6jb
-        fVXPdYga1S8I79ZlvMCG8mH5pRmJh5wwHxjvpepMpzd31xAEM5lvZbBfU8DKCKuIW2nlm2N3Nng
-        sae7XNfasrLxT156h
-X-Received: by 2002:a17:90a:bc89:: with SMTP id x9mr3143556pjr.228.1624507378337;
-        Wed, 23 Jun 2021 21:02:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxANFKxiBZPVYUWF8G1+pn0yAJ3j5nPH8r+gAHEprM5IowLdBJhaK1UbOKwNKvW/vGrG1fMTQ==
-X-Received: by 2002:a17:90a:bc89:: with SMTP id x9mr3143534pjr.228.1624507378157;
-        Wed, 23 Jun 2021 21:02:58 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id b6sm599868pgw.67.2021.06.23.21.02.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Jun 2021 21:02:57 -0700 (PDT)
-Subject: Re: [PATCH v2] virtio_net/vringh: add "else { }" according coding
- style
-To:     Cai Huoqing <caihuoqing@baidu.com>, mst@redhat.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-References: <20210624011757.338-1-caihuoqing@baidu.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <93b1bdd8-93b7-9e85-7c52-9b4b8ff36292@redhat.com>
-Date:   Thu, 24 Jun 2021 12:02:49 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <20210624011757.338-1-caihuoqing@baidu.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        id S230011AbhFXEG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 00:06:26 -0400
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:51118 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229448AbhFXEGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 00:06:25 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=chengshuyi@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0UdU7aWh_1624507436;
+Received: from localhost(mailfrom:chengshuyi@linux.alibaba.com fp:SMTPD_---0UdU7aWh_1624507436)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 24 Jun 2021 12:04:04 +0800
+From:   Shuyi Cheng <chengshuyi@linux.alibaba.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Shuyi Cheng <chengshuyi@linux.alibaba.com>
+Subject: [PATCH bpf-next] libbpf: Introduce 'custom_btf_path' to 'bpf_obj_open_opts'.
+Date:   Thu, 24 Jun 2021 12:03:29 +0800
+Message-Id: <1624507409-114522-1-git-send-email-chengshuyi@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In order to enable the older kernel to use the CO-RE feature, load the
+vmlinux btf of the specified path.
 
-ÔÚ 2021/6/24 ÉÏÎç9:17, Cai Huoqing Ð´µÀ:
-> coding-style.rst shows that:
->          if (condition) {
->                  do_this();
->                  do_that();
->          } else {
->                  otherwise();
->          }
+Learn from Andrii's comments in [0], add the custom_btf_path parameter
+to bpf_obj_open_opts, you can directly use the skeleton's
+<objname>_bpf__open_opts function to pass in the custom_btf_path
+parameter.
 
+Prior to this, there was also a developer who provided a patch with
+similar functions. It is a pity that the follow-up did not continue to
+advance. See [1].
 
-So git grep told me there're at least 28 similar "issues" in 
-drivers/virito. And there will be a lot in the other part of the kernel
+	[0]https://lore.kernel.org/bpf/CAEf4BzbJZLjNoiK8_VfeVg_Vrg=9iYFv+po-38SMe=UzwDKJ=Q@mail.gmail.com/#t
+	[1]https://yhbt.net/lore/all/CAEf4Bzbgw49w2PtowsrzKQNcxD4fZRE6AKByX-5-dMo-+oWHHA@mail.gmail.com/
 
-I think it's not worth to bother. We can start to work on something that 
-is really interesting.
+Signed-off-by: Shuyi Cheng <chengshuyi@linux.alibaba.com>
+---
+ tools/lib/bpf/libbpf.c | 23 ++++++++++++++++++++---
+ tools/lib/bpf/libbpf.h |  6 +++++-
+ 2 files changed, 25 insertions(+), 4 deletions(-)
 
-E.g we had the plan to convert to use iov iterator instead of using a 
-vringh specific iov "iterator" implementation. Do you want to do that?
-
-Thanks
-
-
->
-> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
-> ---
->   drivers/net/virtio_net.c | 3 ++-
->   drivers/vhost/vringh.c   | 3 ++-
->   2 files changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 21ff7b9e49c2..7cd062cb468e 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -314,8 +314,9 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
->                  rq->pages = (struct page *)p->private;
->                  /* clear private here, it is used to chain pages */
->                  p->private = 0;
-> -       } else
-> +       } else {
->                  p = alloc_page(gfp_mask);
-> +       }
->          return p;
->   }
->
-> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> index 4af8fa259d65..79542cad1072 100644
-> --- a/drivers/vhost/vringh.c
-> +++ b/drivers/vhost/vringh.c
-> @@ -454,8 +454,9 @@ static inline int __vringh_complete(struct vringh *vrh,
->                  if (!err)
->                          err = putused(vrh, &used_ring->ring[0], used + part,
->                                        num_used - part);
-> -       } else
-> +       } else {
->                  err = putused(vrh, &used_ring->ring[off], used, num_used);
-> +       }
->
->          if (err) {
->                  vringh_bad("Failed to write %u used entries %u at %p",
-> --
-> 2.17.1
->
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 1e04ce7..518b19f 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -509,6 +509,8 @@ struct bpf_object {
+ 	void *priv;
+ 	bpf_object_clear_priv_t clear_priv;
+ 
++	char *custom_btf_path;
++
+ 	char path[];
+ };
+ #define obj_elf_valid(o)	((o)->efile.elf)
+@@ -2679,8 +2681,15 @@ static int bpf_object__load_vmlinux_btf(struct bpf_object *obj, bool force)
+ 	if (!force && !obj_needs_vmlinux_btf(obj))
+ 		return 0;
+ 
+-	obj->btf_vmlinux = libbpf_find_kernel_btf();
+-	err = libbpf_get_error(obj->btf_vmlinux);
++	if (obj->custom_btf_path) {
++		obj->btf_vmlinux = btf__parse(obj->custom_btf_path, NULL);
++		err = libbpf_get_error(obj->btf_vmlinux);
++		pr_debug("loading custom vmlinux BTF '%s': %d\n", obj->custom_btf_path, err);
++	} else {
++		obj->btf_vmlinux = libbpf_find_kernel_btf();
++		err = libbpf_get_error(obj->btf_vmlinux);
++	}
++
+ 	if (err) {
+ 		pr_warn("Error loading vmlinux BTF: %d\n", err);
+ 		obj->btf_vmlinux = NULL;
+@@ -7554,7 +7563,7 @@ int bpf_program__load(struct bpf_program *prog, char *license, __u32 kern_ver)
+ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+ 		   const struct bpf_object_open_opts *opts)
+ {
+-	const char *obj_name, *kconfig;
++	const char *obj_name, *kconfig, *tmp_btf_path;
+ 	struct bpf_program *prog;
+ 	struct bpf_object *obj;
+ 	char tmp_name[64];
+@@ -7584,6 +7593,13 @@ int bpf_program__load(struct bpf_program *prog, char *license, __u32 kern_ver)
+ 	obj = bpf_object__new(path, obj_buf, obj_buf_sz, obj_name);
+ 	if (IS_ERR(obj))
+ 		return obj;
++
++	tmp_btf_path = OPTS_GET(opts, custom_btf_path, NULL);
++	if (tmp_btf_path && strlen(tmp_btf_path) < PATH_MAX) {
++		obj->custom_btf_path = strdup(tmp_btf_path);
++		if (!obj->custom_btf_path)
++			return ERR_PTR(-ENOMEM);
++	}
+ 
+ 	kconfig = OPTS_GET(opts, kconfig, NULL);
+ 	if (kconfig) {
+@@ -8702,6 +8718,7 @@ void bpf_object__close(struct bpf_object *obj)
+ 	for (i = 0; i < obj->nr_maps; i++)
+ 		bpf_map__destroy(&obj->maps[i]);
+ 
++	zfree(&obj->custom_btf_path);
+ 	zfree(&obj->kconfig);
+ 	zfree(&obj->externs);
+ 	obj->nr_extern = 0;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 6e61342..16e0f01 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -94,8 +94,12 @@ struct bpf_object_open_opts {
+ 	 * system Kconfig for CONFIG_xxx externs.
+ 	 */
+ 	const char *kconfig;
++	/* Specify the path of vmlinux btf to facilitate the use of CO-RE features
++	 * in the old kernel.
++	 */
++	char *custom_btf_path;
+ };
+-#define bpf_object_open_opts__last_field kconfig
++#define bpf_object_open_opts__last_field custom_btf_path
+ 
+ LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
+ LIBBPF_API struct bpf_object *
+-- 
+1.8.3.1
 
