@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAD963B29BC
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 09:51:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 690943B29D6
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 10:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbhFXHxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 03:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231709AbhFXHxc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 03:53:32 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B18C061574;
-        Thu, 24 Jun 2021 00:51:13 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1lwK8f-00AtWB-CA; Thu, 24 Jun 2021 09:51:05 +0200
-Message-ID: <63d3f8ec9095031d5d6b1374f304a76c64a036f2.camel@sipsolutions.net>
-Subject: Re: [PATCH] mac80211: add dependency for MAC80211_LEDS
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Liwei Song <liwei.song@windriver.com>, David <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 24 Jun 2021 09:51:04 +0200
-In-Reply-To: <20210624074956.37298-1-liwei.song@windriver.com>
-References: <20210624074956.37298-1-liwei.song@windriver.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S231823AbhFXIHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 04:07:30 -0400
+Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:45868 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S231788AbhFXIHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 04:07:30 -0400
+Received: from bretzel (unknown [10.16.0.57])
+        by proxy.6wind.com (Postfix) with ESMTPS id EFA06A33CE5;
+        Thu, 24 Jun 2021 10:05:09 +0200 (CEST)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1lwKMH-0005eE-U7; Thu, 24 Jun 2021 10:05:09 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net] dev_forward_skb: do not scrub skb mark within the same name space
+Date:   Thu, 24 Jun 2021 10:05:05 +0200
+Message-Id: <20210624080505.21628-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-06-24 at 15:49 +0800, Liwei Song wrote:
-> Let MAC80211_LEDS depends on LEDS_CLASS=IWLWIFI to fix the below warning:
-> 
-> WARNING: unmet direct dependencies detected for MAC80211_LEDS
->   Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
->   Selected by [m]:
->   - IWLWIFI_LEDS [=y] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_INTEL [=y] && IWLWIFI [=m] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=IWLWIFI [=m]) && (IWLMVM [=m] || IWLDVM [=m])
-> 
-> Signed-off-by: Liwei Song <liwei.song@windriver.com>
-> ---
->  net/mac80211/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/mac80211/Kconfig b/net/mac80211/Kconfig
-> index 51ec8256b7fa..918a11fed563 100644
-> --- a/net/mac80211/Kconfig
-> +++ b/net/mac80211/Kconfig
-> @@ -69,7 +69,7 @@ config MAC80211_MESH
->  config MAC80211_LEDS
->  	bool "Enable LED triggers"
->  	depends on MAC80211
-> -	depends on LEDS_CLASS=y || LEDS_CLASS=MAC80211
-> +	depends on LEDS_CLASS=y || LEDS_CLASS=MAC80211 || LEDS_CLASS=IWLWIFI
+The goal is to keep the mark during a bpf_redirect(), like it is done for
+legacy encapsulation / decapsulation, when there is no x-netns.
+This was initially done in commit 213dd74aee76 ("skbuff: Do not scrub skb
+mark within the same name space").
 
-Eh, no. this is the wrong way around. If anything needs to be fixed,
-then it must be in iwlwifi, not the generic core part.
+When the call to skb_scrub_packet() was added in dev_forward_skb() (commit
+8b27f27797ca ("skb: allow skb_scrub_packet() to be used by tunnels")), the
+second argument (xnet) was set to true to force a call to skb_orphan(). At
+this time, the mark was always cleanned up by skb_scrub_packet(), whatever
+xnet value was.
+This call to skb_orphan() was removed later in commit
+9c4c325252c5 ("skbuff: preserve sock reference when scrubbing the skb.").
+But this 'true' stayed here without any real reason.
 
-johannes
+Let's correctly set xnet in ____dev_forward_skb(), this function has access
+to the previous interface and to the new interface.
+
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
+ include/linux/netdevice.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 5cbc950b34df..5ab2d1917ca1 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -4114,7 +4114,7 @@ static __always_inline int ____dev_forward_skb(struct net_device *dev,
+ 		return NET_RX_DROP;
+ 	}
+ 
+-	skb_scrub_packet(skb, true);
++	skb_scrub_packet(skb, !net_eq(dev_net(dev), dev_net(skb->dev)));
+ 	skb->priority = 0;
+ 	return 0;
+ }
+-- 
+2.30.0
 
