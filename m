@@ -2,71 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B69C63B394C
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 00:45:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ACC23B3959
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 00:45:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232838AbhFXWmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 18:42:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47706 "EHLO mail.kernel.org"
+        id S232925AbhFXWno (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 18:43:44 -0400
+Received: from ozlabs.org ([203.11.71.1]:39751 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229643AbhFXWmX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Jun 2021 18:42:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 55111613AD;
-        Thu, 24 Jun 2021 22:40:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624574403;
-        bh=OKgEB73NCuefgeU3fi95dRm1KPK46StpjrjmgDWJ+6w=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Q+d0YkVafeNmDCGrnu9oQSL+/O4BxVn+WsAErcn3eyX5ZksceKhhPJxHEreCSBX0r
-         aUcm5gY1Qf3yml/XY4zVY4FEQ+HK0GaZE3MJiJkB4GkUuBDoJQ+cJxCpI/8GVHnItP
-         qQpIwBPSPXOzij3t95wkQH5o5h2QblSzgi6l6Z106+vYu+3F9rTDueg94EPxEnql30
-         itl4qg7tahUgDBylAPxOR+IdbzhwlH6E7AxqtP79xYV5z9l0ZBCJk62/zgnznBCJB1
-         ZQfcAfILsrsgnTRkulxkscpKpln4Y8nUezarhylK26uMA3tZqvjty1Pp1nHmBxY5L2
-         rgjBjHR4yHdpA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4B01860A3C;
-        Thu, 24 Jun 2021 22:40:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232913AbhFXWnm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 18:43:42 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4G9w8q4svlz9sV8;
+        Fri, 25 Jun 2021 08:41:15 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1624574477;
+        bh=Dzv52F0SnnFNYtb+bHVaVYmqTSKv7JgbUkh4dGMK1G4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rljYfYqLBYPqi3yaoU8df5DSATRX2yaxSAUCltw/4bX3jJuERSFCSYH885HrGPNQ4
+         Tah0CKLhvnev+bEVMgMZueWnrsD0iQLv8OnB9oAal+7BGQgt8ITE+2m8AA9wu51aJJ
+         K94xkURch6Ioy2MycJEj/6ZO5X+FrkRotl3yNJT3EnQ5BFsAvwyZaDfg0d8XK/d/uT
+         Dj3o10RhlnFYb067vVNhDrenyhCgNl40Oa5NJbAZ+hq1e/h4jOKgt8HYl83aiETzPy
+         Y6Qn5AwRslPHjKoycanOO4TQTZLTEHrAEU43EOzIjn84nu0VamSey4Rw3eyHFTT1xh
+         hUTuXIQC6WVMg==
+Date:   Fri, 25 Jun 2021 08:41:14 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        lkft-triage@lists.linaro.org
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Message-ID: <20210625084114.4126dd02@canb.auug.org.au>
+In-Reply-To: <CAPv3WKf6HguRC_2ckau99d4iWG-FV71kn8wiX9r5wuK335EEFw@mail.gmail.com>
+References: <20210624082911.5d013e8c@canb.auug.org.au>
+        <CAPv3WKfiL+sR+iK_BjGKDhtNgjoxKEPv49bU1X9_7+v+ytdR1w@mail.gmail.com>
+        <YNPt91bfjrgSt8G3@Ryzen-9-3900X.localdomain>
+        <CA+G9fYtb07aySOpB6=wc4ip_9S4Rr2UUYNgEOG6i76g--uPryQ@mail.gmail.com>
+        <20210624185430.692d4b60@canb.auug.org.au>
+        <CAPv3WKf6HguRC_2ckau99d4iWG-FV71kn8wiX9r5wuK335EEFw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] gve: Fix warnings reported for DQO patchset
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162457440330.29082.5547197130022643735.git-patchwork-notify@kernel.org>
-Date:   Thu, 24 Jun 2021 22:40:03 +0000
-References: <20210624220852.3733930-1-bcf@google.com>
-In-Reply-To: <20210624220852.3733930-1-bcf@google.com>
-To:     Bailey Forrest <bcf@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        willemb@google.com
+Content-Type: multipart/signed; boundary="Sig_/fsjcmTTZ98dxqF2S9vcrms2";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+--Sig_/fsjcmTTZ98dxqF2S9vcrms2
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Hi Marcin,
 
-On Thu, 24 Jun 2021 15:08:52 -0700 you wrote:
-> https://patchwork.kernel.org/project/netdevbpf/list/?series=506637&state=*
-> 
-> - Remove unused variable
-> - Use correct integer type for string formatting.
-> - Remove `inline` in C files
-> 
-> Fixes: 9c1a59a2f4bc ("gve: DQO: Add ring allocation and initialization")
-> Fixes: a57e5de476be ("gve: DQO: Add TX path")
-> Signed-off-by: Bailey Forrest <bcf@google.com>
-> Reviewed-by: Willem de Bruijn <willemb@google.com>
-> 
-> [...]
+On Thu, 24 Jun 2021 16:25:57 +0200 Marcin Wojtas <mw@semihalf.com> wrote:
+>
+> Just to understand correctly - you reverted merge from the local
+> branch (I still see the commits on Dave M's net-next/master). I see a
 
-Here is the summary with links:
-  - [net-next] gve: Fix warnings reported for DQO patchset
-    https://git.kernel.org/netdev/net-next/c/e8192476de58
+Yes, I reverted the merge in linux-next only.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> quick solution, but I'm wondering how I should proceed. Submit a
+> correction patch to the mailing lists against the net-next? Or the
+> branch is going to be reverted and I should resubmit everything as v4?
 
+I see others have answered this.
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/fsjcmTTZ98dxqF2S9vcrms2
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDVCgoACgkQAVBC80lX
+0GzmWwf/fr8EWOF5GQYVveJX5NrFqj8EcNIrHX9mXjVZPvXEWqQiyvnDEBXxkzmf
+9B+CQIKIyMkAnJOS3P3jJVteoy2+9SzTzEbHtYDp2yelazNDNG80Oe5H0UwZ7nYU
+mY+ba2x6vs88YoO8NB24WnIV56zul+tEo3SJH8bwdCg7ayX5HwpvjCHu+XEqf3Dw
+cUErzauWomCu5lBSBfifO5tpr7+Zl2T/1xVRSSVBr70KlwigvCKIqy5oSMR5YY7R
+f5cB9/H0Zemr2qj7zRjUUEPYjlOzksM5tTbl4PB0EUw5QJevCed/q5vVTb3cVUQn
+XaMJ79suCXHMJLIso5B/pgazhPL8nQ==
+=yG3T
+-----END PGP SIGNATURE-----
+
+--Sig_/fsjcmTTZ98dxqF2S9vcrms2--
