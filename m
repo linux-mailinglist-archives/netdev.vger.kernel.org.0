@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC493B2EEE
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 14:30:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 749F83B2EF0
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 14:31:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbhFXMck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 08:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
+        id S231468AbhFXMdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 08:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231407AbhFXMc3 (ORCPT
+        with ESMTP id S231432AbhFXMc3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 08:32:29 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37BEC061574
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 05:30:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBB46C061760
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 05:30:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Sender:Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=c8vL8HZX/zIZPP6WgQpljiTWkbKb1nnMUaed62zzHUA=; b=Ez7x7SmJShwnSTPgGFFS6Wj+EI
-        vmI37361G8xYO1ae6YTdUBPWjn3aGuKc3tzidjN29CfGo1orKgSEqR36CGcemn8a0CiO2HtMmESZ2
-        tsHNqki6tziqUo7tX9t5s3P7nrzVQwtPj2uCbDt4tk0bXLpGQDvzT2+t0F4b2ONj/FJ7okMk9xdvz
-        s6zwA36S53mnvX8e7BJNWvUiHFdTtwMW9etzcPlkj1CXGeaqY7x5hpyNP+14StRdzFNpvWJnTwy3o
-        GJCTT0Ewno6lJfgQPh/A9vX13vY3QDZVWgTDjhn3qxgJ+McbwsyDL54LzuoY3GL77WcJM7rRWSJWD
-        Ros65bfw==;
+        bh=gGZaECOQuaiwn+numAlhP+P5/O9waNNMX3buiX5lvnY=; b=TyilwAzLNJY8NmlbJJpbhaa2wG
+        htWpR1HaS/9kimT13H+1s11hni0lPrtgrlIEuW3Q8fb1WrGs8gMrGRXgI8mQ/vB46j7yL4/y7/viL
+        OqVf7s7COcTismmD+2tA4dq2vDKU+YviyBc0wo/ZflMje/bW81r9TGzsY9kt4GaBUexIOMyxkjaST
+        ut9KTKxm+ickd4VtxLdc9G43mWRr3GgIO1cl92iZdgUWgETEKJAdn8QkJ0dZB648D3/gP0WERoGyK
+        6It6vejArXP4hA+Q+rouC4qfoEd9zmH5bSvlkqZwmV1KmXIlfZG0gT1XVqYfLgRIBY4qU1W4Bb1Zj
+        iMnu6b4A==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lwOUZ-00BEEO-6D; Thu, 24 Jun 2021 12:30:06 +0000
+        id 1lwOUZ-00BEEP-6t; Thu, 24 Jun 2021 12:30:06 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lwOUf-005Sf1-L6; Thu, 24 Jun 2021 13:30:05 +0100
+        id 1lwOUf-005Sf5-NC; Thu, 24 Jun 2021 13:30:05 +0100
 From:   David Woodhouse <dwmw2@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     Jason Wang <jasowang@redhat.com>,
         =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
         Willem de Bruijn <willemb@google.com>
-Subject: [PATCH v3 3/5] vhost_net: remove virtio_net_hdr validation, let tun/tap do it themselves
-Date:   Thu, 24 Jun 2021 13:30:03 +0100
-Message-Id: <20210624123005.1301761-3-dwmw2@infradead.org>
+Subject: [PATCH v3 4/5] net: tun: fix tun_xdp_one() for IFF_TUN mode
+Date:   Thu, 24 Jun 2021 13:30:04 +0100
+Message-Id: <20210624123005.1301761-4-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210624123005.1301761-1-dwmw2@infradead.org>
 References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
@@ -51,193 +51,171 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Woodhouse <dwmw@amazon.co.uk>
 
-When the underlying socket isn't configured with a virtio_net_hdr, the
-existing code in vhost_net_build_xdp() would attempt to validate
-uninitialised data, by copying zero bytes (sock_hlen) into the local
-copy of the header and then trying to validate that.
+In tun_get_user(), skb->protocol is either taken from the tun_pi header
+or inferred from the first byte of the packet in IFF_TUN mode, while
+eth_type_trans() is called only in the IFF_TAP mode where the payload
+is expected to be an Ethernet frame.
 
-Fixing it is somewhat non-trivial because the tun device might put a
-struct tun_pi *before* the virtio_net_hdr, which makes it hard to find.
-So just stop messing with someone else's data in vhost_net_build_xdp(),
-and let tap and tun validate it for themselves, as they do in the
-non-XDP case anyway.
+The equivalent code path in tun_xdp_one() was unconditionally using
+eth_type_trans(), which is the wrong thing to do in IFF_TUN mode and
+corrupts packets.
 
-This means that the 'gso' member of struct tun_xdp_hdr can die, leaving
-only 'int buflen'.
+Pull the logic out to a separate tun_skb_set_protocol() function, and
+call it from both tun_get_user() and tun_xdp_one().
 
-The socket header of sock_hlen is still copied separately from the
-data payload because there may be a gap between them to ensure suitable
-alignment of the latter.
+XX: It is not entirely clear to me why it's OK to call eth_type_trans()
+in some cases without first checking that enough of the Ethernet header
+is linearly present by calling pskb_may_pull(). Such a check was never
+present in the tun_xdp_one() code path, and commit 96aa1b22bd6bb ("tun:
+correct header offsets in napi frags mode") deliberately added it *only*
+for the IFF_NAPI_FRAGS mode.
 
-Fixes: 0a0be13b8fe2 ("vhost_net: batch submitting XDP buffers to underlayer sockets")
+I would like to see specific explanations of *why* it's ever valid and
+necessary (is it so much faster?) to skip the pskb_may_pull() by setting
+the 'no_pull_check' flag to tun_skb_set_protocol(), but for now I'll
+settle for faithfully preserving the existing behaviour and pretending
+it's someone else's problem.
+
+Cc: Willem de Bruijn <willemb@google.com>
+Fixes: 043d222f93ab ("tuntap: accept an array of XDP buffs through sendmsg()")
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- drivers/net/tap.c      | 25 ++++++++++++++++++++++---
- drivers/net/tun.c      | 21 ++++++++++++++++++---
- drivers/vhost/net.c    | 30 +++++++++---------------------
- include/linux/if_tun.h |  1 -
- 4 files changed, 49 insertions(+), 28 deletions(-)
+ drivers/net/tun.c | 95 +++++++++++++++++++++++++++++++----------------
+ 1 file changed, 63 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index 2170a0d3d34c..d1b1f1de374e 100644
---- a/drivers/net/tap.c
-+++ b/drivers/net/tap.c
-@@ -1132,16 +1132,35 @@ static const struct file_operations tap_fops = {
- static int tap_get_user_xdp(struct tap_queue *q, struct xdp_buff *xdp)
- {
- 	struct tun_xdp_hdr *hdr = xdp->data_hard_start;
--	struct virtio_net_hdr *gso = &hdr->gso;
-+	struct virtio_net_hdr *gso = NULL;
- 	int buflen = hdr->buflen;
- 	int vnet_hdr_len = 0;
- 	struct tap_dev *tap;
- 	struct sk_buff *skb;
- 	int err, depth;
- 
--	if (q->flags & IFF_VNET_HDR)
-+	if (q->flags & IFF_VNET_HDR) {
- 		vnet_hdr_len = READ_ONCE(q->vnet_hdr_sz);
-+		if (xdp->data != xdp->data_hard_start + sizeof(*hdr) + vnet_hdr_len) {
-+			err = -EINVAL;
-+			goto err;
-+		}
-+
-+		gso = (void *)&hdr[1];
- 
-+		if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
-+		     tap16_to_cpu(q, gso->csum_start) +
-+		     tap16_to_cpu(q, gso->csum_offset) + 2 >
-+			     tap16_to_cpu(q, gso->hdr_len))
-+			gso->hdr_len = cpu_to_tap16(q,
-+				 tap16_to_cpu(q, gso->csum_start) +
-+				 tap16_to_cpu(q, gso->csum_offset) + 2);
-+
-+		if (tap16_to_cpu(q, gso->hdr_len) > xdp->data_end - xdp->data) {
-+			err = -EINVAL;
-+			goto err;
-+		}
-+	}
- 	skb = build_skb(xdp->data_hard_start, buflen);
- 	if (!skb) {
- 		err = -ENOMEM;
-@@ -1155,7 +1174,7 @@ static int tap_get_user_xdp(struct tap_queue *q, struct xdp_buff *xdp)
- 	skb_reset_mac_header(skb);
- 	skb->protocol = eth_hdr(skb)->h_proto;
- 
--	if (vnet_hdr_len) {
-+	if (gso) {
- 		err = virtio_net_hdr_to_skb(skb, gso, tap_is_little_endian(q));
- 		if (err)
- 			goto err_kfree;
 diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 9acd448e6dfc..1b553f79adb0 100644
+index 1b553f79adb0..9379fa86fae9 100644
 --- a/drivers/net/tun.c
 +++ b/drivers/net/tun.c
-@@ -2331,6 +2331,7 @@ static int tun_xdp_one(struct tun_struct *tun,
- {
- 	unsigned int datasize = xdp->data_end - xdp->data;
- 	struct tun_xdp_hdr *hdr = xdp->data_hard_start;
-+	void *tun_hdr = &hdr[1];
+@@ -1641,6 +1641,47 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
+ 	return NULL;
+ }
+ 
++static int tun_skb_set_protocol(struct tun_struct *tun, struct sk_buff *skb,
++				__be16 pi_proto, bool no_pull_check)
++{
++	switch (tun->flags & TUN_TYPE_MASK) {
++	case IFF_TUN:
++		if (tun->flags & IFF_NO_PI) {
++			u8 ip_version = skb->len ? (skb->data[0] >> 4) : 0;
++
++			switch (ip_version) {
++			case 4:
++				pi_proto = htons(ETH_P_IP);
++				break;
++			case 6:
++				pi_proto = htons(ETH_P_IPV6);
++				break;
++			default:
++				return -EINVAL;
++			}
++		}
++
++		skb_reset_mac_header(skb);
++		skb->protocol = pi_proto;
++		skb->dev = tun->dev;
++		break;
++	case IFF_TAP:
++		/* As an optimisation, no_pull_check can be set in the cases
++		 * where the caller *knows* that eth_type_trans() will be OK
++		 * because the Ethernet header is linearised at skb->data.
++		 *
++		 * XX: Or so I was reliably assured when I moved this code
++		 * and didn't make it unconditional. dwmw2.
++		 */
++		if (!no_pull_check && !pskb_may_pull(skb, ETH_HLEN))
++			return -ENOMEM;
++
++		skb->protocol = eth_type_trans(skb, tun->dev);
++		break;
++	}
++	return 0;
++}
++
+ /* Get packet from user space buffer */
+ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 			    void *msg_control, struct iov_iter *from,
+@@ -1784,37 +1825,9 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 		return -EINVAL;
+ 	}
+ 
+-	switch (tun->flags & TUN_TYPE_MASK) {
+-	case IFF_TUN:
+-		if (tun->flags & IFF_NO_PI) {
+-			u8 ip_version = skb->len ? (skb->data[0] >> 4) : 0;
+-
+-			switch (ip_version) {
+-			case 4:
+-				pi.proto = htons(ETH_P_IP);
+-				break;
+-			case 6:
+-				pi.proto = htons(ETH_P_IPV6);
+-				break;
+-			default:
+-				atomic_long_inc(&tun->dev->rx_dropped);
+-				kfree_skb(skb);
+-				return -EINVAL;
+-			}
+-		}
+-
+-		skb_reset_mac_header(skb);
+-		skb->protocol = pi.proto;
+-		skb->dev = tun->dev;
+-		break;
+-	case IFF_TAP:
+-		if (frags && !pskb_may_pull(skb, ETH_HLEN)) {
+-			err = -ENOMEM;
+-			goto drop;
+-		}
+-		skb->protocol = eth_type_trans(skb, tun->dev);
+-		break;
+-	}
++	err = tun_skb_set_protocol(tun, skb, pi.proto, !frags);
++	if (err)
++		goto drop;
+ 
+ 	/* copy skb_ubuf_info for callback when skb has no error */
+ 	if (zerocopy) {
+@@ -2335,12 +2348,24 @@ static int tun_xdp_one(struct tun_struct *tun,
  	struct virtio_net_hdr *gso = NULL;
  	struct bpf_prog *xdp_prog;
  	struct sk_buff *skb = NULL;
-@@ -2340,8 +2341,22 @@ static int tun_xdp_one(struct tun_struct *tun,
++	__be16 proto = 0;
+ 	u32 rxhash = 0, act;
+ 	int buflen = hdr->buflen;
+ 	int err = 0;
  	bool skb_xdp = false;
  	struct page *page;
  
--	if (tun->flags & IFF_VNET_HDR)
--		gso = &hdr->gso;
-+	if (tun->flags & IFF_VNET_HDR) {
-+		gso = tun_hdr;
-+		tun_hdr += sizeof(*gso);
++	if (!(tun->flags & IFF_NO_PI)) {
++		struct tun_pi *pi = tun_hdr;
++		tun_hdr += sizeof(*pi);
 +
 +		if (tun_hdr > xdp->data) {
 +			atomic_long_inc(&tun->rx_frame_errors);
 +			return -EINVAL;
 +		}
-+
-+		if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
-+		    tun16_to_cpu(tun, gso->csum_start) + tun16_to_cpu(tun, gso->csum_offset) + 2 > tun16_to_cpu(tun, gso->hdr_len))
-+			gso->hdr_len = cpu_to_tun16(tun, tun16_to_cpu(tun, gso->csum_start) + tun16_to_cpu(tun, gso->csum_offset) + 2);
-+
-+		if (tun16_to_cpu(tun, gso->hdr_len) > datasize)
-+			return -EINVAL;
++		proto = pi->proto;
 +	}
- 
- 	xdp_prog = rcu_dereference(tun->xdp_prog);
- 	if (xdp_prog) {
-@@ -2389,7 +2404,7 @@ static int tun_xdp_one(struct tun_struct *tun,
- 	}
- 
- 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
--	skb_put(skb, xdp->data_end - xdp->data);
-+	skb_put(skb, datasize);
- 
- 	if (gso && virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
- 		atomic_long_inc(&tun->rx_frame_errors);
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index b92a7144ed90..7cae18151c60 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -690,7 +690,6 @@ static int vhost_net_build_xdp(struct vhost_net_virtqueue *nvq,
- 					     dev);
- 	struct socket *sock = vhost_vq_get_backend(vq);
- 	struct page_frag *alloc_frag = &net->page_frag;
--	struct virtio_net_hdr *gso;
- 	struct xdp_buff *xdp = &nvq->xdp[nvq->batched_xdp];
- 	struct tun_xdp_hdr *hdr;
- 	size_t len = iov_iter_count(from);
-@@ -715,29 +714,18 @@ static int vhost_net_build_xdp(struct vhost_net_virtqueue *nvq,
- 		return -ENOMEM;
- 
- 	buf = (char *)page_address(alloc_frag->page) + alloc_frag->offset;
--	copied = copy_page_from_iter(alloc_frag->page,
--				     alloc_frag->offset +
--				     offsetof(struct tun_xdp_hdr, gso),
--				     sock_hlen, from);
--	if (copied != sock_hlen)
--		return -EFAULT;
--
- 	hdr = buf;
--	gso = &hdr->gso;
--
--	if ((gso->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
--	    vhost16_to_cpu(vq, gso->csum_start) +
--	    vhost16_to_cpu(vq, gso->csum_offset) + 2 >
--	    vhost16_to_cpu(vq, gso->hdr_len)) {
--		gso->hdr_len = cpu_to_vhost16(vq,
--			       vhost16_to_cpu(vq, gso->csum_start) +
--			       vhost16_to_cpu(vq, gso->csum_offset) + 2);
--
--		if (vhost16_to_cpu(vq, gso->hdr_len) > len)
--			return -EINVAL;
-+	if (sock_hlen) {
-+		copied = copy_page_from_iter(alloc_frag->page,
-+					     alloc_frag->offset +
-+					     sizeof(struct tun_xdp_hdr),
-+					     sock_hlen, from);
-+		if (copied != sock_hlen)
-+			return -EFAULT;
 +
-+		len -= sock_hlen;
+ 	if (tun->flags & IFF_VNET_HDR) {
+ 		gso = tun_hdr;
+ 		tun_hdr += sizeof(*gso);
+@@ -2413,7 +2438,13 @@ static int tun_xdp_one(struct tun_struct *tun,
+ 		goto out;
  	}
  
--	len -= sock_hlen;
- 	copied = copy_page_from_iter(alloc_frag->page,
- 				     alloc_frag->offset + pad,
- 				     len, from);
-diff --git a/include/linux/if_tun.h b/include/linux/if_tun.h
-index 8a7debd3f663..8d78b6bbc228 100644
---- a/include/linux/if_tun.h
-+++ b/include/linux/if_tun.h
-@@ -21,7 +21,6 @@ struct tun_msg_ctl {
- 
- struct tun_xdp_hdr {
- 	int buflen;
--	struct virtio_net_hdr gso;
- };
- 
- #if defined(CONFIG_TUN) || defined(CONFIG_TUN_MODULE)
+-	skb->protocol = eth_type_trans(skb, tun->dev);
++	err = tun_skb_set_protocol(tun, skb, proto, true);
++	if (err) {
++		atomic_long_inc(&tun->dev->rx_dropped);
++		kfree_skb(skb);
++		goto out;
++	}
++
+ 	skb_reset_network_header(skb);
+ 	skb_probe_transport_header(skb);
+ 	skb_record_rx_queue(skb, tfile->queue_index);
 -- 
 2.31.1
 
