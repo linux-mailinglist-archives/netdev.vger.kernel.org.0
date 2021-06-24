@@ -2,241 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715523B24FD
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 04:25:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E1033B2503
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 04:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbhFXC2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 22:28:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbhFXC14 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 22:27:56 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B884EC0617AD;
-        Wed, 23 Jun 2021 19:25:35 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id g21so2181865pfc.11;
-        Wed, 23 Jun 2021 19:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=W6OMaDkgPCSNRt4S9ZxziI3BCvcsK+GxZc4bBmTa4Tg=;
-        b=HvS6Ko/gR//Ru2kLd0sh8y0oG4kqilKvT2X5F28NUKMYZ7f3T4Jzq3a/swxSpOvKvf
-         yOq+/ChQm0A63ngbsXrmls5omZaaOu1fJXS1BJXEPCupAWwBraj4OHBlc3CN7zVLLuTB
-         B7F59VtrR/y7ifMFqDYxXIodmrsmv7ph2xeYMxuLIRVohc+ltAfNhwe8HShxkN390O3d
-         iAw8ShmIWmO33eyNWm8cd1O3bQzWaftE7wCMHXcAFSOji0AGAEcNHxZseqhoY66ATkNo
-         WpVGoNV9UYi1/DT2/+fvfdlgIgy27/DS0IzfMt/AqOl8EZpdAPl3zJZYpO24WYZadrBb
-         UQyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=W6OMaDkgPCSNRt4S9ZxziI3BCvcsK+GxZc4bBmTa4Tg=;
-        b=kVQJ0QabXykQ3ngQJxFNbHKQoA5DCODHDiLT9V/NGUgstUh5zUwZCqsvnh8kU4ai43
-         nDo5K1v9VKX5nc1wi3kOC38GmyKEhMOCu8SIuTVZJ7BxcO6Q8WFklx01ow0tZnr/Ds2L
-         ZyVdFbprU6vMnoxsUWR9Yrd4OgtrMdEs1R0o+4xn+x8Cj26vP1SqG4f3YNuESzcKFv2J
-         CqqvPYoji9TrisCp2AjWFLZZ0dtSgr80DzP6ZMaR1SrTI6/MJJOPcWo/6xZqz0s8tPnu
-         5KxNj0P+5MHITzyzbPj928/ACHbVJny2cnkw3rhAGYz+1/fy9/nGeyQKqzEi1d374Eid
-         O/KQ==
-X-Gm-Message-State: AOAM532ucTTZC4nr917AH1k0IiZrIqNiAmdS2ECrvpIXqli00Efwg1He
-        KRmJ/wZ1Cvdjvm8meVDzllg=
-X-Google-Smtp-Source: ABdhPJy/5v4PjeGqE4kMx3R9RJkecD+7ELpYufyS4FA/Ei2nle7+h14vI+iRdkYJqXgtPk/LWfBdrw==
-X-Received: by 2002:a62:687:0:b029:2ef:be02:c346 with SMTP id 129-20020a6206870000b02902efbe02c346mr2698991pfg.51.1624501535326;
-        Wed, 23 Jun 2021 19:25:35 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:a319])
-        by smtp.gmail.com with ESMTPSA id f17sm4675965pjj.21.2021.06.23.19.25.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Jun 2021 19:25:34 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v3 bpf-next 8/8] selftests/bpf: Add a test with bpf_timer in inner map.
-Date:   Wed, 23 Jun 2021 19:25:18 -0700
-Message-Id: <20210624022518.57875-9-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
-In-Reply-To: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
-References: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
+        id S229873AbhFXCbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 22:31:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59964 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229758AbhFXCbc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 22:31:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AB35F613B0;
+        Thu, 24 Jun 2021 02:29:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624501754;
+        bh=qfes4XlTr7wZHA/gX1R4vn3ErhXUgft2vuwloOuqJH8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FAMh4+QoAuFF1jJ9kHmTbp9/ydQxbb3M5ZXBFYFE5KwhbO8otL4kipxuWZCx5CvXV
+         1g/6NvgDwplHRZuGBhTtc6SHDQxjSpk6y95eGTetqRfIvyp32Kx5Ya5T5ay344bzEE
+         D9sGb1HKg9xTiP3RmSnd4WkjUR/SLietI7dEfA5kf+f011nRkGNq5yCRB1cyr9AQmK
+         00KuXivitCPNOy5tY6Da+rcrfkF2EBc9mOkR5HmtnRsp9bCtE9HojGQ9c48JJ6RFVv
+         /P/luhRi5YV574NjTxA3YTl7IYODn5ZeuXzd5tx51WGfWxH6C91MYON63V/vMoiXJ+
+         /lOBphk8eqyUg==
+Date:   Wed, 23 Jun 2021 19:29:11 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Message-ID: <YNPt91bfjrgSt8G3@Ryzen-9-3900X.localdomain>
+References: <20210624082911.5d013e8c@canb.auug.org.au>
+ <CAPv3WKfiL+sR+iK_BjGKDhtNgjoxKEPv49bU1X9_7+v+ytdR1w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPv3WKfiL+sR+iK_BjGKDhtNgjoxKEPv49bU1X9_7+v+ytdR1w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+On Thu, Jun 24, 2021 at 12:46:48AM +0200, Marcin Wojtas wrote:
+> Hi Stephen,
+> 
+> czw., 24 cze 2021 o 00:29 Stephen Rothwell <sfr@canb.auug.org.au> napisał(a):
+> >
+> > Hi all,
+> >
+> > Today's linux-next build (x86_64 modules_install) failed like this:
+> >
+> > depmod: ../tools/depmod.c:1792: depmod_report_cycles_from_root: Assertion `is < stack_size' failed.
+> >
+> > Caused by commit
+> >
+> > 62a6ef6a996f ("net: mdiobus: Introduce fwnode_mdbiobus_register()")
+> >
+> > (I bisected to there and tested the commit before.)
+> >
+> > The actual build is an x86_64 allmodconfig, followed by a
+> > modules_install.  This happens in my cross build environment as well as
+> > a native build.
+> >
+> > $ gcc --version
+> > gcc (Debian 10.2.1-6) 10.2.1 20210110
+> > $ ld --version
+> > GNU ld (GNU Binutils for Debian) 2.35.2
+> > $ /sbin/depmod --version
+> > kmod version 28
+> > -ZSTD +XZ -ZLIB +LIBCRYPTO -EXPERIMENTAL
+> >
+> > I have no idea why that commit should caused this failure.
+> 
+> Thank you for letting us know. Not sure if related, but I just found
+> out that this code won't compile for the !CONFIG_FWNODE_MDIO. Below
+> one-liner fixes it:
+> 
+> --- a/include/linux/fwnode_mdio.h
+> +++ b/include/linux/fwnode_mdio.h
+> @@ -40,7 +40,7 @@ static inline int fwnode_mdiobus_register(struct mii_bus *bus,
+>          * This way, we don't have to keep compat bits around in drivers.
+>          */
+> 
+> -       return mdiobus_register(mdio);
+> +       return mdiobus_register(bus);
+>  }
+>  #endif
+> 
+> I'm curious if this is the case. Tomorrow I'll resubmit with above, so
+> I'd appreciate recheck.
 
-Check that map-in-map supports bpf timers.
+I wonder if this message that I see with Arch Linux's config is related
+and maybe explains the issue a little bit more:
 
-Check that indirect "recursion" of timer callbacks works:
-timer_cb1() { bpf_timer_start(timer_cb2); }
-timer_cb2() { bpf_timer_start(timer_cb1); }
+$ curl -LSso .config https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/linux/trunk/config
 
-Check that
-  bpf_map_release
-    htab_free_prealloced_timers
-      bpf_timer_cancel_and_free
-        hrtimer_cancel
-works while timer cb is running.
-"while true; do ./test_progs -t timer_mim; done"
-is a great stress test. It caught missing timer cancel in htab->extra_elems.
+# do not require pahole
+$ scripts/config -d DEBUG_INFO_BTF
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- .../selftests/bpf/prog_tests/timer_mim.c      | 59 ++++++++++++++
- tools/testing/selftests/bpf/progs/timer_mim.c | 81 +++++++++++++++++++
- 2 files changed, 140 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/timer_mim.c
- create mode 100644 tools/testing/selftests/bpf/progs/timer_mim.c
+$ make -skj"$(nproc)" INSTALL_MOD_PATH=rootfs olddefconfig all modules_install
+...
+depmod: ERROR: Cycle detected: acpi_mdio -> fwnode_mdio -> acpi_mdio
+depmod: ERROR: Found 2 modules in dependency cycles!
+...
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/timer_mim.c b/tools/testing/selftests/bpf/prog_tests/timer_mim.c
-new file mode 100644
-index 000000000000..d54b16a3d9ea
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/timer_mim.c
-@@ -0,0 +1,59 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <test_progs.h>
-+#include "timer_mim.skel.h"
-+
-+static int timer_mim(struct timer_mim *timer_skel)
-+{
-+	__u32 duration = 0, retval;
-+	__u64 cnt1, cnt2;
-+	int err, prog_fd, key1 = 1;
-+
-+	err = timer_mim__attach(timer_skel);
-+	if (!ASSERT_OK(err, "timer_attach"))
-+		return err;
-+
-+	prog_fd = bpf_program__fd(timer_skel->progs.test1);
-+	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-+				NULL, NULL, &retval, &duration);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(retval, 0, "test_run");
-+	timer_mim__detach(timer_skel);
-+
-+	/* check that timer_cb[12] are incrementing 'cnt' */
-+	cnt1 = READ_ONCE(timer_skel->bss->cnt);
-+	usleep(2);
-+	cnt2 = READ_ONCE(timer_skel->bss->cnt);
-+	ASSERT_GT(cnt2, cnt1, "cnt");
-+
-+	ASSERT_EQ(timer_skel->bss->err, 0, "err");
-+	/* check that code paths completed */
-+	ASSERT_EQ(timer_skel->bss->ok, 1 | 2, "ok");
-+
-+	close(bpf_map__fd(timer_skel->maps.inner_map));
-+	err = bpf_map_delete_elem(bpf_map__fd(timer_skel->maps.outer_arr), &key1);
-+	ASSERT_EQ(err, 0, "delete inner map");
-+
-+	/* check that timer_cb[12] are no longer running */
-+	cnt1 = READ_ONCE(timer_skel->bss->cnt);
-+	usleep(2);
-+	cnt2 = READ_ONCE(timer_skel->bss->cnt);
-+	ASSERT_EQ(cnt2, cnt1, "cnt");
-+
-+	return 0;
-+}
-+
-+void test_timer_mim(void)
-+{
-+	struct timer_mim *timer_skel = NULL;
-+	int err;
-+
-+	timer_skel = timer_mim__open_and_load();
-+	if (!ASSERT_OK_PTR(timer_skel, "timer_skel_load"))
-+		goto cleanup;
-+
-+	err = timer_mim(timer_skel);
-+	ASSERT_OK(err, "timer_mim");
-+cleanup:
-+	timer_mim__destroy(timer_skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/timer_mim.c b/tools/testing/selftests/bpf/progs/timer_mim.c
-new file mode 100644
-index 000000000000..4d1d785d8d26
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/timer_mim.c
-@@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <linux/bpf.h>
-+#include <time.h>
-+#include <errno.h>
-+#include <bpf/bpf_helpers.h>
-+#include "bpf_tcp_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+struct hmap_elem {
-+	int pad; /* unused */
-+	struct bpf_timer timer;
-+};
-+
-+struct inner_map {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 1024);
-+	__type(key, int);
-+	__type(value, struct hmap_elem);
-+} inner_map SEC(".maps");
-+
-+#define ARRAY_KEY 1
-+#define HASH_KEY 1234
-+
-+struct outer_arr {
-+	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
-+	__uint(max_entries, 2);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+	__array(values, struct inner_map);
-+} outer_arr SEC(".maps") = {
-+	.values = { [ARRAY_KEY] = &inner_map },
-+};
-+
-+__u64 err;
-+__u64 ok;
-+__u64 cnt;
-+
-+static int timer_cb1(void *map, int *key, struct hmap_elem *val);
-+
-+static int timer_cb2(void *map, int *key, struct hmap_elem *val)
-+{
-+	cnt++;
-+	if (bpf_timer_start(&val->timer, timer_cb1, 1000) != 0)
-+		err |= 1;
-+	ok |= 1;
-+	return 0;
-+}
-+
-+/* callback for inner hash map */
-+static int timer_cb1(void *map, int *key, struct hmap_elem *val)
-+{
-+	cnt++;
-+	if (bpf_timer_start(&val->timer, timer_cb2, 1000) != 0)
-+		err |= 2;
-+	ok |= 2;
-+	return 0;
-+}
-+
-+SEC("fentry/bpf_fentry_test1")
-+int BPF_PROG(test1, int a)
-+{
-+	struct hmap_elem init = {};
-+	struct bpf_map *inner_map;
-+	struct hmap_elem *val;
-+	int array_key = ARRAY_KEY;
-+	int hash_key = HASH_KEY;
-+
-+	inner_map = bpf_map_lookup_elem(&outer_arr, &array_key);
-+	if (!inner_map)
-+		return 0;
-+
-+	bpf_map_update_elem(inner_map, &hash_key, &init, 0);
-+	val = bpf_map_lookup_elem(inner_map, &hash_key);
-+	if (!val)
-+		return 0;
-+
-+	bpf_timer_init(&val->timer, CLOCK_MONOTONIC);
-+	bpf_timer_start(&val->timer, timer_cb1, 0);
-+	return 0;
-+}
--- 
-2.30.2
+Reverting all the patches in that series fixes the issue for me.
 
+Cheers,
+Nathan
