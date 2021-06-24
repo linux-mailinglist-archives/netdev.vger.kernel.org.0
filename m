@@ -2,158 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D0D3B373D
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 21:47:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D9D23B3769
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 21:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232528AbhFXTuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 15:50:02 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:52601 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232178AbhFXTuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 15:50:01 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 695B05C009F;
-        Thu, 24 Jun 2021 15:47:41 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Thu, 24 Jun 2021 15:47:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=MK+q1hQUCTqqHFhq/
-        4Rx/Gj2L1Pdnb8ujnL73wOnz8o=; b=OqncCxoemIcyFxFF0e+lpBQT5ba5FL/eS
-        sc8j+PtG4c1qrNhtLYCXB9TfY0aHteH02nDZ/jDYocdJKZg6Uk5dteWoxZ2Rbu+1
-        HGfdWNWzU5yj+o9fUV4hqMAjcJrGmDUkP4KsX0ro82/X7wGU2heSRnPbO6pQkPl5
-        mLfcAEOkkqTJ7qVPfoYavaYKipHGkUCg0ub3M7Q5VD3e8eG0AbLac9656EdxY3u+
-        ZdkLX5fQjUFCYT50nAuX2CrdgcK+7zAbGAJf1iiBQiKG+UQh0Wy7LtG0lCsjbXdn
-        hfnT4AUYCY4XcReLK+z+hvvi4Iv07WTRjXpF1W/CK9bBqNbA+Pa/w==
-X-ME-Sender: <xms:XeHUYHGamqxVbZCcCtwCIlvArR-IbgM_fPbYONxhu0jFzKcp6P66Kg>
-    <xme:XeHUYEVktwqbSBbxPYUkhx3TlPAOzWcw0HuutV27fYnd2qBHmjVNzc8i7CuKL6qbD
-    oz4ekm8pjY4d08>
-X-ME-Received: <xmr:XeHUYJIHKJG1Wx28sBO6KC_DPn7c5VsilJif0WK2J0Lh5Eeo9K1GjriG0DD85iJlbUExuu4XtKKrc5LqMbYD_F2nJue1vXkLgw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeghedgudegudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
-    ehteffieekgeehveefvdegledvffduhfenucevlhhushhtvghrufhiiigvpedtnecurfgr
-    rhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:XeHUYFHRU6Bh36JWOLV4GdgsZ51dDX1QxXH195g4n4zhg2slvs1cGg>
-    <xmx:XeHUYNWprgLPkuvaphDbz3W_B6VFAuBURxxcWBJI1J-fPh_1IJ6SgA>
-    <xmx:XeHUYANKNthMOgS-dnzKC--6NSKgrC8laHn65npyFhnhOjM_gfZIlg>
-    <xmx:XeHUYDyCwr74ewAzwlEAC6OnHM38qnAovZar-sJRxOqdqHIRx1b63A>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 24 Jun 2021 15:47:39 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        vadimp@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next] mlxsw: core_env: Avoid unnecessary memcpy()s
-Date:   Thu, 24 Jun 2021 22:47:24 +0300
-Message-Id: <20210624194724.2681198-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
+        id S232878AbhFXTwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 15:52:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38548 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232740AbhFXTwX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 15:52:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 12C1C613E1;
+        Thu, 24 Jun 2021 19:50:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624564204;
+        bh=wRfzpCYHsqQZNbYRsceTZn6SPg3fxXS1baFEZlvB9jY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=leTrnrdPFtmtMQ5D8PPdQeHwdm8IQI/bpryQclrzwYuYlc5M6VCPmzxEJKiJwiCnp
+         nZYTb4aRaSl3C0oP12GHUtCsVvYxZa+LCTxqh0maNI5WKf5OhY1HS7fkAiUGu3QgIo
+         2qNNezM9oWvQUjbVf8OdMlB0QVPSk3slOCycLelIUBOmmjwmvGaJtGidqaKWU7EDMj
+         /e8hoSZwoKC+MbpjA4ldXXY3MByfsuzN9/5lmY/3uzhVDc+mYJocCEG9iRwmmeaYiJ
+         gWQQDfNhhpHT19GiBcyZbG93Q3GbGvUdPFqV9g80cFv3CR+UWdLP20l29D3SWHNdzb
+         c8ai0ui9a8WiQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 05E2260A3C;
+        Thu, 24 Jun 2021 19:50:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/3] net: macsec: fix key length when offloading
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162456420401.10881.7685764529566631071.git-patchwork-notify@kernel.org>
+Date:   Thu, 24 Jun 2021 19:50:04 +0000
+References: <20210624093830.943139-1-atenart@kernel.org>
+In-Reply-To: <20210624093830.943139-1-atenart@kernel.org>
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, sd@queasysnail.net,
+        andrew@lunn.ch, hkallweit1@gmail.com, irusskikh@marvell.com,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+Hello:
 
-Simply get a pointer to the data in the register payload instead of
-copying it to a temporary buffer.
+This series was applied to netdev/net.git (refs/heads/master):
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxsw/core_env.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+On Thu, 24 Jun 2021 11:38:27 +0200 you wrote:
+> Hello,
+> 
+> The key length used to copy the key to offloading drivers and to store
+> it is wrong and was working by chance as it matched the default key
+> length. But using a different key length fails. Fix it by using instead
+> the max length accepted in uAPI to store the key and the actual key
+> length when copying it.
+> 
+> [...]
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_env.c b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-index 4a0dbdb6730b..3713c45cfa1e 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_env.c
-@@ -26,8 +26,8 @@ struct mlxsw_env {
- static int mlxsw_env_validate_cable_ident(struct mlxsw_core *core, int id,
- 					  bool *qsfp, bool *cmis)
- {
--	char eeprom_tmp[MLXSW_REG_MCIA_EEPROM_SIZE];
- 	char mcia_pl[MLXSW_REG_MCIA_LEN];
-+	char *eeprom_tmp;
- 	u8 ident;
- 	int err;
- 
-@@ -36,7 +36,7 @@ static int mlxsw_env_validate_cable_ident(struct mlxsw_core *core, int id,
- 	err = mlxsw_reg_query(core, MLXSW_REG(mcia), mcia_pl);
- 	if (err)
- 		return err;
--	mlxsw_reg_mcia_eeprom_memcpy_from(mcia_pl, eeprom_tmp);
-+	eeprom_tmp = mlxsw_reg_mcia_eeprom_data(mcia_pl);
- 	ident = eeprom_tmp[0];
- 	*cmis = false;
- 	switch (ident) {
-@@ -64,8 +64,8 @@ mlxsw_env_query_module_eeprom(struct mlxsw_core *mlxsw_core, int module,
- 			      u16 offset, u16 size, void *data,
- 			      bool qsfp, unsigned int *p_read_size)
- {
--	char eeprom_tmp[MLXSW_REG_MCIA_EEPROM_SIZE];
- 	char mcia_pl[MLXSW_REG_MCIA_LEN];
-+	char *eeprom_tmp;
- 	u16 i2c_addr;
- 	u8 page = 0;
- 	int status;
-@@ -116,7 +116,7 @@ mlxsw_env_query_module_eeprom(struct mlxsw_core *mlxsw_core, int module,
- 	if (status)
- 		return -EIO;
- 
--	mlxsw_reg_mcia_eeprom_memcpy_from(mcia_pl, eeprom_tmp);
-+	eeprom_tmp = mlxsw_reg_mcia_eeprom_data(mcia_pl);
- 	memcpy(data, eeprom_tmp, size);
- 	*p_read_size = size;
- 
-@@ -127,13 +127,13 @@ int mlxsw_env_module_temp_thresholds_get(struct mlxsw_core *core, int module,
- 					 int off, int *temp)
- {
- 	unsigned int module_temp, module_crit, module_emerg;
--	char eeprom_tmp[MLXSW_REG_MCIA_EEPROM_SIZE];
- 	union {
- 		u8 buf[MLXSW_REG_MCIA_TH_ITEM_SIZE];
- 		u16 temp;
- 	} temp_thresh;
- 	char mcia_pl[MLXSW_REG_MCIA_LEN] = {0};
- 	char mtmp_pl[MLXSW_REG_MTMP_LEN];
-+	char *eeprom_tmp;
- 	bool qsfp, cmis;
- 	int page;
- 	int err;
-@@ -195,7 +195,7 @@ int mlxsw_env_module_temp_thresholds_get(struct mlxsw_core *core, int module,
- 	if (err)
- 		return err;
- 
--	mlxsw_reg_mcia_eeprom_memcpy_from(mcia_pl, eeprom_tmp);
-+	eeprom_tmp = mlxsw_reg_mcia_eeprom_data(mcia_pl);
- 	memcpy(temp_thresh.buf, eeprom_tmp, MLXSW_REG_MCIA_TH_ITEM_SIZE);
- 	*temp = temp_thresh.temp * 1000;
- 
-@@ -357,8 +357,8 @@ mlxsw_env_get_module_eeprom_by_page(struct mlxsw_core *mlxsw_core, u8 module,
- 	device_addr = page->offset;
- 
- 	while (bytes_read < page->length) {
--		char eeprom_tmp[MLXSW_REG_MCIA_EEPROM_SIZE];
- 		char mcia_pl[MLXSW_REG_MCIA_LEN];
-+		char *eeprom_tmp;
- 		u8 size;
- 		int err;
- 
-@@ -380,7 +380,7 @@ mlxsw_env_get_module_eeprom_by_page(struct mlxsw_core *mlxsw_core, u8 module,
- 		if (err)
- 			return err;
- 
--		mlxsw_reg_mcia_eeprom_memcpy_from(mcia_pl, eeprom_tmp);
-+		eeprom_tmp = mlxsw_reg_mcia_eeprom_data(mcia_pl);
- 		memcpy(page->data + bytes_read, eeprom_tmp, size);
- 		bytes_read += size;
- 	}
--- 
-2.31.1
+Here is the summary with links:
+  - [net,1/3] net: macsec: fix the length used to copy the key for offloading
+    https://git.kernel.org/netdev/net/c/1f7fe5121127
+  - [net,2/3] net: phy: mscc: fix macsec key length
+    https://git.kernel.org/netdev/net/c/c309217f91f2
+  - [net,3/3] net: atlantic: fix the macsec key length
+    https://git.kernel.org/netdev/net/c/d67fb4772d9a
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
