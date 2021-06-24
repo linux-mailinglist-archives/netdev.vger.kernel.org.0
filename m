@@ -2,89 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02A4C3B245A
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 02:53:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CFDE3B2463
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 03:06:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbhFXAze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 20:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbhFXAzc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 20:55:32 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567C1C061574
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 17:53:13 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id r5so7272431lfr.5
-        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 17:53:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hi1YbzpzCridy/vQ8hgizgyXmNuKaQ2Nkv0Kcn9srVY=;
-        b=IbkuQi3Lsis6XdOo041PEiUdza67ZYLueW6eeFY9IHRHupcoNmz32sylAbB7DKNGil
-         LyryqlxPd1VcbgiYgOLAWrtSBxIlhgr66wnfd2M9CL6Eqs/i0eS+WXA4tamuYkdAd+mV
-         n2kw7xkiOMejUr6bElaBKZnAFbKSwSPcC4tcoifQE/aGyMfEvXePTjCjVAr8wBLYwdZD
-         7dw8h+QLJ76vrlPZgoHz6hrk7jkT9ke6E9g3H0Y6g7y0C/c8ZUHBxilbTm/kh7qX+6C1
-         S70bAV7VX8omEHtohhRV3AC2AVC8deN8DSdeQPEjqLmenqs3opix9xoqjINt/hasP/1M
-         C/0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hi1YbzpzCridy/vQ8hgizgyXmNuKaQ2Nkv0Kcn9srVY=;
-        b=AQZwnhANZ/WSad2DGY6GKQtOGXtqZ93xsVHAYGz9CFOegrWHGEeGgbHLd21H3i+bPN
-         sI/tc8WWWylnaaN/seGif2PFDFXKF9ivpYPeBhf5bNXquYi8hPGJ9wD5TZ+hs/2NAUOr
-         Wp4qebD2I6AorU4Ig2M9eg6mE/JJ+Yyg7oWOlss4RA0jB3BcNuzMUo3QD5Zq8zDgn4ae
-         GgpiEwz9GaS7us2AA1delTcKuNjKhBx59oiiWRJG6WQN53uyzQLSbT19fZDmvOdFgpJR
-         sa0MuTWhOQY+LG5uPlm2EYbuT56cHakmOz2Uazf105SLcb31Qlh1sGFUQ+9lEg6ie0Rn
-         u3wQ==
-X-Gm-Message-State: AOAM533ly+nH+OwdDKGCnOIljiSH9dnbCLtlMBXPmyj8EUvw3KjNU20Q
-        STb2aCZd33O+Mq7prZ9EbvAdD0Vy8lMd9Q==
-X-Google-Smtp-Source: ABdhPJwT0gYoxoJzqyF+mVw5EZY02M4E2KchGORLvfheKSkDDqC/tfso23X/QH0o/X6r0jm1aYbWiQ==
-X-Received: by 2002:ac2:5a11:: with SMTP id q17mr1734969lfn.479.1624495991567;
-        Wed, 23 Jun 2021 17:53:11 -0700 (PDT)
-Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id b7sm53776lfe.151.2021.06.23.17.53.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Jun 2021 17:53:11 -0700 (PDT)
-From:   Marcin Wojtas <mw@semihalf.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
-        jon@solid-run.com, tn@semihalf.com, jaz@semihalf.com,
-        hkallweit1@gmail.com, andrew@lunn.ch,
-        Marcin Wojtas <mw@semihalf.com>
-Subject: [net-next: PATCH] net: mdiobus: fix fwnode_mdbiobus_register() fallback case
-Date:   Thu, 24 Jun 2021 02:51:51 +0200
-Message-Id: <20210624005151.3735706-1-mw@semihalf.com>
-X-Mailer: git-send-email 2.29.0
+        id S229800AbhFXBI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 21:08:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52698 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229758AbhFXBI0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Jun 2021 21:08:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=4C8upAdlHdRQK9JoaWR39CXvfzPqZO8dKujhFIlIsbg=; b=O2NzqLPKpvD+WLf/nyEWRrFcjV
+        Nfl1W2HK9ATqjU1/CpOEixHpCykTsVhqRdhNUgnFAZ9FC676fafqymT3xFSHahRehH3JNu5HMBjQL
+        enONyrazeAu0uWTWQ7Myzf0QEsEORoFA/qq66rqnt4pZzt2xk/xYI9FfF62/eazy9KcY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lwDoe-00Aupq-O9; Thu, 24 Jun 2021 03:06:00 +0200
+Date:   Thu, 24 Jun 2021 03:06:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Liang Xu <lxu@maxlinear.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Thomas Mohren <tmohren@maxlinear.com>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>
+Subject: Re: [PATCH v3] net: phy: add Maxlinear GPY115/21x/24x driver
+Message-ID: <YNPaeI+I3d2XnV6U@lunn.ch>
+References: <20210604161250.49749-1-lxu@maxlinear.com>
+ <20210604194428.2276092-1-martin.blumenstingl@googlemail.com>
+ <b01a8ac2-b77e-32aa-7c9b-57de4f2d3a95@maxlinear.com>
+ <YLuzX5EYfGNaosHT@lunn.ch>
+ <9ecb75b8-c4d8-1769-58f4-1082b8f53e05@maxlinear.com>
+ <CAFBinCARo+YiQezBQfZ=M6HNwvkro0nK=0Y9KhhhRO+akiaHbw@mail.gmail.com>
+ <MWHPR19MB0077D01E4EAFA9FE521D83ECBD0D9@MWHPR19MB0077.namprd19.prod.outlook.com>
+ <766ab274-25ff-c9a2-1ed6-fe2aa44b4660@maxlinear.com>
+ <CAFBinCBCPcCD3uxO5iJF11LBhdMe32nzMLvnD1xyLvpT2HZt_Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFBinCBCPcCD3uxO5iJF11LBhdMe32nzMLvnD1xyLvpT2HZt_Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The fallback case of fwnode_mdbiobus_register()
-(relevant for !CONFIG_FWNODE_MDIO) was defined with wrong
-argument name, causing a compilation error. Fix that.
+On Wed, Jun 23, 2021 at 11:09:23PM +0200, Martin Blumenstingl wrote:
+> Hi Liang,
+> 
+> On Wed, Jun 23, 2021 at 12:56 PM Liang Xu <lxu@maxlinear.com> wrote:
+> [...]
+> > Hi Martin,
+> >
+> > 1) The legacy PHY GPY111 does not share the same register format and address for WoL and LED registers. Therefore code saving with a common driver is not possible.
+> > 2) The interrupt handling routine would be different when new features are added in driver, such as PTP offload, MACsec offload. These will be added step by step as enhancement patches afte initial version of this driver upstreamed.
+> I think that would leave only few shared registers with the older PHYs
+> (and thus the intel-xway driver). Due to the lack of a public
+> datasheet however I have no way to confirm this.
+> So with this information added to the patch description having a
+> different driver is fine for me
+> 
+> Maybe Andrew can also share his opinion - based on this new
+> information - as he previously also suggested to extend the intel-xway
+> driver instead of creating a new one
 
-Signed-off-by: Marcin Wojtas <mw@semihalf.com>
----
- include/linux/fwnode_mdio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If the potential sharing is minimal, then a new driver makes sense. So
+please do expand the patch description with a good justification.
 
-diff --git a/include/linux/fwnode_mdio.h b/include/linux/fwnode_mdio.h
-index 13d4ae8fee0a..f62817c23137 100644
---- a/include/linux/fwnode_mdio.h
-+++ b/include/linux/fwnode_mdio.h
-@@ -40,7 +40,7 @@ static inline int fwnode_mdiobus_register(struct mii_bus *bus,
- 	 * This way, we don't have to keep compat bits around in drivers.
- 	 */
- 
--	return mdiobus_register(mdio);
-+	return mdiobus_register(bus);
- }
- #endif
- 
--- 
-2.29.0
+> > 3) The new PHY generation comes with a reasonable pre-configuration for the LED registers which does not need any modification usually.
+> >    In case a customer needs a specific configuration (e.g. traffic pulsing only, no link status) he needs to configure this via MDIO. There is also another option for a fixed preconfiguration with the support of an external flash. However, this is out of scope of the driver.
+> older PHYs also do this, but not all boards use a reasonable LED setup
+> 
+> > 4) Many old products are mostly used on embedded devices which do not support WoL. Therefore there was no request yet to supported by the legacy XWAY driver.
+> my understanding of Andrew's argument is: "if the register layout is
+> the same for old and new PHY then why would we do some extra effort to
+> not add WoL support for the old PHYs"
+> Based on your information above the register layout is different, so
+> that means two different implementations are needed anyways.
 
+It would be nice to add WoL support for the older devices. They might
+not be maxlinears latest and greatest, but there could be more of them
+actually in use at the moment than this new PHY.
+
+	 Andrew
