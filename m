@@ -2,178 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB1823B3139
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 16:24:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5815B3B3141
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 16:26:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbhFXO1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 10:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231942AbhFXO1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 10:27:08 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913AEC061574;
-        Thu, 24 Jun 2021 07:24:49 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id i17so6448775ilj.11;
-        Thu, 24 Jun 2021 07:24:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=5ookobeVhr64r1NaUzaLn/rFAOpu9+UYNo31Yeae0Iw=;
-        b=cOHUdhaZootRKX2DAQO/73sxk9NheMXwv/iPVOtTNgTLrQuIJsvokK+CI4tVwvR1Sz
-         jI5SElKgrVcsreuz/5Pg4LLYuVzDJXzlHaGIgoQK0y3caFGWvnn7JGqRs/j2oH7KTlX+
-         jmHKGrq4iHSrsexRBELc8okQdiYNkROiDqYC7DDb10kAGnU08ncKsDckOZwrZ4whma8q
-         2azwVUcdPJmlwlVQAa8No43suzN91CdWFMKoKUaWSLn1F0RA7MUfmm/dZWRNSMgFXjkf
-         GsOVBdSb7lFZ3yicch2f3PtQLrB1+J3f5gb6Z6fQGU0tPypqEg2uKQf33z9Fuf8Yv7F4
-         cTjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=5ookobeVhr64r1NaUzaLn/rFAOpu9+UYNo31Yeae0Iw=;
-        b=mQRjNCleBQz9FnVeok5dzKmVwTpOh6hA7BxrGMbxg5wDnwPbMK0tpRJ/To40ZN0kzL
-         6INjx2FBBVdJqukh/JsmP6R1/MBbOVpOuTpx2eUGOip+m0wivILBFj6mLkpt48YQNBQg
-         DB17BMkaJWzMbZ2IeVvB1SUzwJi9nK5mRI06pWNxodvsaWzmtKc0UqzRfbJ8Kj4jLTiK
-         EdLzphbgcotdM6NsQk0dZtfKvjiy7lQA3N931jVxddAFmTKOASHN+l4nWVx9oB2Kaw8k
-         C/Cl3nFWxcVzh4wDoUVxkQFgIpZcsaUtghfHCMhgOXMJTzLY2cnKDTnwedkkTtSD4sKb
-         XBXA==
-X-Gm-Message-State: AOAM533gTJdhxH4JAy69LU/JWeZ1YQURjsBFQjJZS777t1UZrwFZ7qht
-        jEQwCxfNxDVAAIlHJBWXbis=
-X-Google-Smtp-Source: ABdhPJyroQNvPSwBQpM62epA8QpRYoa7bTKq3OmTZRvc4q+q8gxR4SaqQlc0gskGSWcab1KgNvJz9w==
-X-Received: by 2002:a92:7f07:: with SMTP id a7mr3677588ild.202.1624544689070;
-        Thu, 24 Jun 2021 07:24:49 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id v18sm1385869iom.5.2021.06.24.07.24.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 07:24:48 -0700 (PDT)
-Date:   Thu, 24 Jun 2021 07:24:41 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Eelco Chaudron <echaudro@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, shayagr@amazon.com, sameehj@amazon.com,
-        dsahern@kernel.org, brouer@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com
-Message-ID: <60d495a914773_2e84a2082d@john-XPS-13-9370.notmuch>
-In-Reply-To: <4F52EE5B-1A3F-46CE-9A39-98475CA6B684@redhat.com>
-References: <cover.1623674025.git.lorenzo@kernel.org>
- <863f4934d251f44ad85a6be08b3737fac74f9b5a.1623674025.git.lorenzo@kernel.org>
- <60d2744ee12c2_1342e208f7@john-XPS-13-9370.notmuch>
- <4F52EE5B-1A3F-46CE-9A39-98475CA6B684@redhat.com>
-Subject: Re: [PATCH v9 bpf-next 08/14] bpf: add multi-buff support to the
- bpf_xdp_adjust_tail() API
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S232066AbhFXO2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 10:28:22 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53824 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231978AbhFXO2V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 10:28:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=daRFBCA9iRpEHBee51ZqEeUZ2hHxuMUcehyqzo51cKE=; b=Y+DaKI+AJ2acjklMtCkCgeKtFx
+        y/BDgTdvQOihy8YSuq/2Go1I29pHdu1CMXmzld0D3NcaN9vTNN1HKBy4ITf3ZaWSiVKzo9V9gWxeJ
+        12ZhsEIo1S31bew7wKL7shzLdXIIqGxclsA8k6Sm9SHFoQIRgmBCUmXaW7HLQ5Lxie5U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lwQIf-00AzBN-7M; Thu, 24 Jun 2021 16:25:49 +0200
+Date:   Thu, 24 Jun 2021 16:25:49 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] net: stmmac: Fix an error code in dwmac-ingenic.c
+Message-ID: <YNSV7caeVBNnxr1S@lunn.ch>
+References: <1623811148-11064-1-git-send-email-yang.lee@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1623811148-11064-1-git-send-email-yang.lee@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eelco Chaudron wrote:
+On Wed, Jun 16, 2021 at 10:39:08AM +0800, Yang Li wrote:
+> When IS_ERR(mac->regmap) returns true, the value of ret is 0.
+> So, we set ret to -ENODEV to indicate this error.
 > 
+> Clean up smatch warning:
+> drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c:266
+> ingenic_mac_probe() warn: missing error code 'ret'
 > 
-> On 23 Jun 2021, at 1:37, John Fastabend wrote:
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> > Lorenzo Bianconi wrote:
-> >> From: Eelco Chaudron <echaudro@redhat.com>
-> >>
-> >> This change adds support for tail growing and shrinking for XDP multi-buff.
-> >>
-> >
-> > It would be nice if the commit message gave us some details on how the
-> > growing/shrinking works in the multi-buff support.
-> 
-> Will add this to the next rev.
-> 
-> >> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
-> >> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> >> ---
-> >>  include/net/xdp.h |  7 ++++++
-> >>  net/core/filter.c | 62 +++++++++++++++++++++++++++++++++++++++++++++++
-> >>  net/core/xdp.c    |  5 ++--
-> >>  3 files changed, 72 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> >> index 935a6f83115f..3525801c6ed5 100644
-> >> --- a/include/net/xdp.h
-> >> +++ b/include/net/xdp.h
-> >> @@ -132,6 +132,11 @@ xdp_get_shared_info_from_buff(struct xdp_buff *xdp)
-> >>  	return (struct skb_shared_info *)xdp_data_hard_end(xdp);
-> >>  }
-> >>
-> >> +static inline unsigned int xdp_get_frag_tailroom(const skb_frag_t *frag)
-> >> +{
-> >> +	return PAGE_SIZE - skb_frag_size(frag) - skb_frag_off(frag);
-> >> +}
-> >> +
-> >>  struct xdp_frame {
-> >>  	void *data;
-> >>  	u16 len;
-> >> @@ -259,6 +264,8 @@ struct xdp_frame *xdp_convert_buff_to_frame(struct xdp_buff *xdp)
-> >>  	return xdp_frame;
-> >>  }
-> >>
-> >> +void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
-> >> +		  struct xdp_buff *xdp);
-> >>  void xdp_return_frame(struct xdp_frame *xdpf);
-> >>  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf);
-> >>  void xdp_return_buff(struct xdp_buff *xdp);
-> >> diff --git a/net/core/filter.c b/net/core/filter.c
-> >> index caa88955562e..05f574a3d690 100644
-> >> --- a/net/core/filter.c
-> >> +++ b/net/core/filter.c
-> >> @@ -3859,11 +3859,73 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
-> >>  	.arg2_type	= ARG_ANYTHING,
-> >>  };
-> >>
-> >> +static int bpf_xdp_mb_adjust_tail(struct xdp_buff *xdp, int offset)
-> >> +{
-> >> +	struct skb_shared_info *sinfo;
-> >> +
-> >> +	if (unlikely(!xdp_buff_is_mb(xdp)))
-> >> +		return -EINVAL;
-> >> +
-> >> +	sinfo = xdp_get_shared_info_from_buff(xdp);
-> >> +	if (offset >= 0) {
-> >> +		skb_frag_t *frag = &sinfo->frags[sinfo->nr_frags - 1];
-> >> +		int size;
-> >> +
-> >> +		if (unlikely(offset > xdp_get_frag_tailroom(frag)))
-> >> +			return -EINVAL;
-> >> +
-> >> +		size = skb_frag_size(frag);
-> >> +		memset(skb_frag_address(frag) + size, 0, offset);
-> >> +		skb_frag_size_set(frag, size + offset);
-> >> +		sinfo->data_len += offset;
-> >
-> > Can you add some comment on how this works? So today I call
-> > bpf_xdp_adjust_tail() to add some trailer to my packet.
-> > This looks like it adds tailroom to the last frag? But, then
-> > how do I insert my trailer? I don't think we can without the
-> > extra multi-buffer access support right.
-> 
-> You are right, we need some kind of multi-buffer access helpers.
-> 
-> > Also data_end will be unchanged yet it will return 0 so my
-> > current programs will likely be a bit confused by this.
-> 
-> Guess this is the tricky part, applications need to be multi-buffer aware. If current applications rely on bpf_xdp_adjust_tail(+) to determine maximum frame length this approach might not work. In this case, we might need an additional helper to do tail expansion with multi buffer support.
-> 
-> But then the question arrives how would mb unaware application behave in general when an mb packet is supplied?? It would definitely not determine the correct packet length.
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
+> index 60984c1..f3950e0 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ingenic.c
+> @@ -263,6 +263,7 @@ static int ingenic_mac_probe(struct platform_device *pdev)
+>  	mac->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node, "mode-reg");
+>  	if (IS_ERR(mac->regmap)) {
+>  		dev_err(&pdev->dev, "%s: Failed to get syscon regmap\n", __func__);
+> +		ret = -ENODEV;
 
-Right that was my conclusion as well. Existing programs might
-have subtle side effects if they start running on multibuffer
-drivers as is. I don't have any good ideas though on how
-to handle this.
+mac->regmap is a ERR_PTR(), containing an error code. Please use that
+error code, not ENODEV.
 
-> 
-> >> +	} else {
-> 
-
-
+      Andrew
