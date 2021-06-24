@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 809D03B2850
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 09:09:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DE493B2845
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 09:08:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231604AbhFXHLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 03:11:20 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:35859 "EHLO
+        id S231536AbhFXHLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 03:11:00 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:40544 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbhFXHLN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 03:11:13 -0400
+        with ESMTP id S231569AbhFXHKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 03:10:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1624518536; x=1656054536;
+  t=1624518516; x=1656054516;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=alUubhhMOU0kPzKSGqKAV+K9Bo0bpG1BgWiv1DghlZg=;
-  b=P0lcTOv2YVABOJDuNAG9pOToCAUG3M7JB65T69Au4SxuX4bZhhdXq2s0
-   QfYk6jCWc0AmPLyLLs+uMqchyj/5qUP1A4uYp2r1waWcF7j+z55BRDPcl
-   qT54XoajPXIOe0+eHV+Cmq52KVuaflDO6jk6MPyl13ItGn5te0/Jj5gWO
-   E5HTpDWJbXx03OohN9H72rFAIiV1EtgNdml1z4aaUGasWjxy6OAZsWzGV
-   kDZZ8T9LGhns+hMw9Z3N0YqeCurHpGNLyka2VKwfjhOOtMVQhdioz9byE
-   TkWWQzqa0cm9NSfW1iNUG8zMzQau7Gx8jRrDudxrZ5scBDYXBVT6Haqmz
+  bh=HMh15sII90MWA73fsf+sMUcim9C4/HeWwCbhVY8cD/Y=;
+  b=vPWezdzfOBKsxvvsNkH6BSt5BOZBAMG+5vqKcfX1ENl4egyD6SoFxgC4
+   Aw1HvqaNFH9e1XvVz008tC+qW0G8OUpmDeUw/4aX55vRSyMOt05KSC/A0
+   ufG+SG4Jl/0TKakloLp3N9hjpBiFg6fapPUWDfLw0FsK80JeUh5xu+/lW
+   EzemyVJpn0QxV9OBYKp3VsvPpNR4tdEKfkbiWTeL+hhcNTSfmYK0kcOfe
+   C0HYir16ZSO0LhUPssVWtmL+6z3gvPSLJqEGqNgAwMaAXofUdhOF+Yp6w
+   izqZ3rTMTplOfGcwfYu8d5Luxnc04c2FghGwSQR8hCSwDTpMXARYfpZUN
    w==;
-IronPort-SDR: /HUX2FTp1wIPkwAQ0kKTSggPt1Qah09erRtcMCvLOo+JB74FaNkcnRhujd5QqtbBaQEMCovEeJ
- vZqd0rUGkvJbgCzfRewld4z82Wf0GJTKVEWDGqB4UcMz27ViBwsU/AkQA6JrAMrHbStkwqef4O
- vOqmg/t7l8yyjwpmJxCRNDDCwOJZTQCnj1Kr15+Rj/qJ0HZxJhyFXlqHA68HAcmfDBfQCV8W2D
- oVaYON9QaMS9eL4Aq+pGsky05Xm1O6/r1Bmwhm3Bspxv79QFhjbizH0tBvvLusYOzc9eV27FAb
- vfw=
+IronPort-SDR: FQqvjYqxloExH0mEVN9meyLiwyukZKFMclZUoyzfFx56xzorcOhcxKegOPKX1URCeEmiDJi3yl
+ I4iuaXSJY2VhyA0375G6TFR/yfM7Ouwix0wY0nZU++pIO81Y4MOvNhIQTzmKxa8/TYptnazCIV
+ jWBf/xLwqOAHbXIs9+RbS2bSJRQ4Amz0vfJ7chhQJ4Gl/nd4zkUyuFVI+BNo8CuQDRwgo343GV
+ yrrQIRXFaG26GHhIjQF2Dmbdh/G7pxaFvtLiZIEJx7Xt4c4tJZTDIEedcgjfD+RtdZ0osA6uZK
+ 2bU=
 X-IronPort-AV: E=Sophos;i="5.83,295,1616482800"; 
-   d="scan'208";a="125891399"
+   d="scan'208";a="126453789"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jun 2021 00:08:32 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jun 2021 00:08:35 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 24 Jun 2021 00:08:31 -0700
+ 15.1.2176.2; Thu, 24 Jun 2021 00:08:34 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Thu, 24 Jun 2021 00:08:27 -0700
+ 15.1.2176.2 via Frontend Transport; Thu, 24 Jun 2021 00:08:31 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -58,9 +58,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         <linux-arm-kernel@lists.infradead.org>,
         Bjarni Jonasson <bjarni.jonasson@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH net-next v5 06/10] net: sparx5: add vlan support
-Date:   Thu, 24 Jun 2021 09:07:54 +0200
-Message-ID: <20210624070758.515521-7-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v5 07/10] net: sparx5: add switching support
+Date:   Thu, 24 Jun 2021 09:07:55 +0200
+Message-ID: <20210624070758.515521-8-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210624070758.515521-1-steen.hegelund@microchip.com>
 References: <20210624070758.515521-1-steen.hegelund@microchip.com>
@@ -71,328 +71,660 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds Sparx5 VLAN support.
-
-Sparx5 has more VLAN features than provided here, but these will be added
-in later series. For now we only add the basic L2 features.
+This adds SwitchDev support by hardware offloading the
+software bridge.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
 Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
 ---
- .../net/ethernet/microchip/sparx5/Makefile    |   2 +-
- .../ethernet/microchip/sparx5/sparx5_main.c   |  10 +-
- .../ethernet/microchip/sparx5/sparx5_main.h   |  14 ++
- .../ethernet/microchip/sparx5/sparx5_vlan.c   | 224 ++++++++++++++++++
- 4 files changed, 246 insertions(+), 4 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
+ .../net/ethernet/microchip/sparx5/Makefile    |   3 +-
+ .../microchip/sparx5/sparx5_mactable.c        |   3 +
+ .../ethernet/microchip/sparx5/sparx5_main.c   |   4 +
+ .../ethernet/microchip/sparx5/sparx5_main.h   |  11 +
+ .../ethernet/microchip/sparx5/sparx5_netdev.c |  10 +
+ .../ethernet/microchip/sparx5/sparx5_packet.c |   6 +
+ .../microchip/sparx5/sparx5_switchdev.c       | 508 ++++++++++++++++++
+ 7 files changed, 544 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
 
 diff --git a/drivers/net/ethernet/microchip/sparx5/Makefile b/drivers/net/ethernet/microchip/sparx5/Makefile
-index 13876a9c5dbf..bd4793367844 100644
+index bd4793367844..5bf46b2fbdee 100644
 --- a/drivers/net/ethernet/microchip/sparx5/Makefile
 +++ b/drivers/net/ethernet/microchip/sparx5/Makefile
-@@ -6,4 +6,4 @@
+@@ -6,4 +6,5 @@
  obj-$(CONFIG_SPARX5_SWITCH) += sparx5-switch.o
  
  sparx5-switch-objs  := sparx5_main.o sparx5_packet.o \
-- sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o
-+ sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o sparx5_vlan.o
+- sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o sparx5_vlan.o
++ sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o sparx5_vlan.o \
++ sparx5_switchdev.o
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+index 6c5e04eccaa3..0443f66b5550 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+@@ -371,6 +371,9 @@ static void sparx5_mact_handle_entry(struct sparx5 *sparx5,
+ 	if (port >= SPX5_PORTS)
+ 		return;
+ 
++	if (!test_bit(port, sparx5->bridge_mask))
++		return;
++
+ 	mutex_lock(&sparx5->mact_lock);
+ 	list_for_each_entry(mact_entry, &sparx5->mact_entries, list) {
+ 		if (mact_entry->vid == vid &&
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-index c5f8f4a10475..857f6454b574 100644
+index 857f6454b574..549ec2d7bd5a 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-@@ -282,7 +282,8 @@ static int sparx5_create_port(struct sparx5 *sparx5,
+@@ -623,6 +623,7 @@ static int sparx5_start(struct sparx5 *sparx5)
+ 		return err;
+ 
+ 	sparx5_board_init(sparx5);
++	err = sparx5_register_notifier_blocks(sparx5);
+ 
+ 	/* Start register based INJ/XTR */
+ 	err = -ENXIO;
+@@ -812,6 +813,9 @@ static int mchp_sparx5_remove(struct platform_device *pdev)
+ 		sparx5->xtr_irq = -ENXIO;
  	}
- 	spx5_port->conf = config->conf;
- 
--	/* VLAN support to be added in later patches */
-+	/* Setup VLAN */
-+	sparx5_vlan_port_setup(sparx5, spx5_port->portno);
- 
- 	/* Create a phylink for PHY management.  Also handles SFPs */
- 	spx5_port->phylink_config.dev = &spx5_port->ndev->dev;
-@@ -578,7 +579,9 @@ static int sparx5_start(struct sparx5 *sparx5)
- 			 sparx5,
- 			 QFWD_SWITCH_PORT_MODE(idx));
- 
--	/* Forwarding masks to be added in later patches */
-+	/* Init masks */
-+	sparx5_update_fwd(sparx5);
+ 	sparx5_cleanup_ports(sparx5);
++	/* Unregister netdevs */
++	sparx5_unregister_notifier_blocks(sparx5);
 +
- 	/* CPU copy CPU pgids */
- 	spx5_wr(ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_SET(1),
- 		sparx5, ANA_AC_PGID_MISC_CFG(PGID_CPU));
-@@ -594,7 +597,8 @@ static int sparx5_start(struct sparx5 *sparx5)
- 	/* Init MAC table, ageing */
- 	sparx5_mact_init(sparx5);
+ 	return 0;
+ }
  
--	/* VLAN support to be added in later patches */
-+	/* Setup VLANs */
-+	sparx5_vlan_init(sparx5);
- 
- 	/* Add host mode BC address (points only to CPU) */
- 	sparx5_mact_learn(sparx5, PGID_CPU, broadcast, NULL_VID);
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-index e313611c2942..65b80033de9e 100644
+index 65b80033de9e..67bad6878e98 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-@@ -137,6 +137,10 @@ struct sparx5 {
+@@ -135,9 +135,16 @@ struct sparx5 {
+ 	/* port structures are in net device */
+ 	struct sparx5_port *ports[SPX5_PORTS];
  	enum sparx5_core_clockfreq coreclock;
++	/* Notifiers */
++	struct notifier_block netdevice_nb;
++	struct notifier_block switchdev_nb;
++	struct notifier_block switchdev_blocking_nb;
  	/* Switch state */
  	u8 base_mac[ETH_ALEN];
-+	/* Bridged interfaces */
-+	DECLARE_BITMAP(bridge_fwd_mask, SPX5_PORTS);
-+	DECLARE_BITMAP(bridge_lrn_mask, SPX5_PORTS);
-+	DECLARE_BITMAP(vlan_mask[VLAN_N_VID], SPX5_PORTS);
- 	/* SW MAC table */
- 	struct list_head mact_entries;
- 	/* mac table list (mact_entries) mutex */
-@@ -174,6 +178,16 @@ int sparx5_mc_unsync(struct net_device *dev, const unsigned char *addr);
- void sparx5_set_ageing(struct sparx5 *sparx5, int msecs);
- void sparx5_mact_init(struct sparx5 *sparx5);
++	/* Associated bridge device (when bridged) */
++	struct net_device *hw_bridge_dev;
+ 	/* Bridged interfaces */
++	DECLARE_BITMAP(bridge_mask, SPX5_PORTS);
+ 	DECLARE_BITMAP(bridge_fwd_mask, SPX5_PORTS);
+ 	DECLARE_BITMAP(bridge_lrn_mask, SPX5_PORTS);
+ 	DECLARE_BITMAP(vlan_mask[VLAN_N_VID], SPX5_PORTS);
+@@ -153,6 +160,10 @@ struct sparx5 {
+ 	int xtr_irq;
+ };
  
-+/* sparx5_vlan.c */
-+void sparx5_pgid_update_mask(struct sparx5_port *port, int pgid, bool enable);
-+void sparx5_update_fwd(struct sparx5 *sparx5);
-+void sparx5_vlan_init(struct sparx5 *sparx5);
-+void sparx5_vlan_port_setup(struct sparx5 *sparx5, int portno);
-+int sparx5_vlan_vid_add(struct sparx5_port *port, u16 vid, bool pvid,
-+			bool untagged);
-+int sparx5_vlan_vid_del(struct sparx5_port *port, u16 vid);
-+void sparx5_vlan_port_apply(struct sparx5 *sparx5, struct sparx5_port *port);
++/* sparx5_switchdev.c */
++int sparx5_register_notifier_blocks(struct sparx5 *sparx5);
++void sparx5_unregister_notifier_blocks(struct sparx5 *sparx5);
 +
- /* sparx5_netdev.c */
- bool sparx5_netdevice_check(const struct net_device *dev);
- struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno);
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
+ /* sparx5_packet.c */
+ irqreturn_t sparx5_xtr_handler(int irq, void *_priv);
+ int sparx5_port_xmit_impl(struct sk_buff *skb, struct net_device *dev);
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
+index 8a3008c86534..569a7f7ef0bb 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
+@@ -117,6 +117,15 @@ static int sparx5_port_stop(struct net_device *ndev)
+ 	return 0;
+ }
+ 
++static void sparx5_set_rx_mode(struct net_device *dev)
++{
++	struct sparx5_port *port = netdev_priv(dev);
++	struct sparx5 *sparx5 = port->sparx5;
++
++	if (!test_bit(port->portno, sparx5->bridge_mask))
++		__dev_mc_sync(dev, sparx5_mc_sync, sparx5_mc_unsync);
++}
++
+ static int sparx5_port_get_phys_port_name(struct net_device *dev,
+ 					  char *buf, size_t len)
+ {
+@@ -167,6 +176,7 @@ static const struct net_device_ops sparx5_port_netdev_ops = {
+ 	.ndo_open               = sparx5_port_open,
+ 	.ndo_stop               = sparx5_port_stop,
+ 	.ndo_start_xmit         = sparx5_port_xmit_impl,
++	.ndo_set_rx_mode        = sparx5_set_rx_mode,
+ 	.ndo_get_phys_port_name = sparx5_port_get_phys_port_name,
+ 	.ndo_set_mac_address    = sparx5_set_mac_address,
+ 	.ndo_validate_addr      = eth_validate_addr,
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+index 05f4f3f9b6e2..09ca7a3bafdc 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+@@ -139,6 +139,12 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
+ 		return;
+ 	}
+ 
++	/* Everything we see on an interface that is in the HW bridge
++	 * has already been forwarded
++	 */
++	if (test_bit(port->portno, sparx5->bridge_mask))
++		skb->offload_fwd_mark = 1;
++
+ 	/* Finish up skb */
+ 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
+ 	eth_skb_pad(skb);
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
 new file mode 100644
-index 000000000000..4ce490a25f33
+index 000000000000..19c7cb795b4b
 --- /dev/null
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
-@@ -0,0 +1,224 @@
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+@@ -0,0 +1,508 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/* Microchip Sparx5 Switch driver
 + *
 + * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
 + */
 +
++#include <linux/if_bridge.h>
++#include <net/switchdev.h>
++
 +#include "sparx5_main_regs.h"
 +#include "sparx5_main.h"
 +
-+static int sparx5_vlant_set_mask(struct sparx5 *sparx5, u16 vid)
++static struct workqueue_struct *sparx5_owq;
++
++struct sparx5_switchdev_event_work {
++	struct work_struct work;
++	struct switchdev_notifier_fdb_info fdb_info;
++	struct net_device *dev;
++	unsigned long event;
++};
++
++static void sparx5_port_attr_bridge_flags(struct sparx5_port *port,
++					  struct switchdev_brport_flags flags)
 +{
-+	u32 mask[3];
-+
-+	/* Divide up mask in 32 bit words */
-+	bitmap_to_arr32(mask, sparx5->vlan_mask[vid], SPX5_PORTS);
-+
-+	/* Output mask to respective registers */
-+	spx5_wr(mask[0], sparx5, ANA_L3_VLAN_MASK_CFG(vid));
-+	spx5_wr(mask[1], sparx5, ANA_L3_VLAN_MASK_CFG1(vid));
-+	spx5_wr(mask[2], sparx5, ANA_L3_VLAN_MASK_CFG2(vid));
-+
-+	return 0;
++	if (flags.mask & BR_MCAST_FLOOD)
++		sparx5_pgid_update_mask(port, PGID_MC_FLOOD, true);
 +}
 +
-+void sparx5_vlan_init(struct sparx5 *sparx5)
-+{
-+	u16 vid;
-+
-+	spx5_rmw(ANA_L3_VLAN_CTRL_VLAN_ENA_SET(1),
-+		 ANA_L3_VLAN_CTRL_VLAN_ENA,
-+		 sparx5,
-+		 ANA_L3_VLAN_CTRL);
-+
-+	/* Map VLAN = FID */
-+	for (vid = NULL_VID; vid < VLAN_N_VID; vid++)
-+		spx5_rmw(ANA_L3_VLAN_CFG_VLAN_FID_SET(vid),
-+			 ANA_L3_VLAN_CFG_VLAN_FID,
-+			 sparx5,
-+			 ANA_L3_VLAN_CFG(vid));
-+}
-+
-+void sparx5_vlan_port_setup(struct sparx5 *sparx5, int portno)
-+{
-+	struct sparx5_port *port = sparx5->ports[portno];
-+
-+	/* Configure PVID */
-+	spx5_rmw(ANA_CL_VLAN_CTRL_VLAN_AWARE_ENA_SET(0) |
-+		 ANA_CL_VLAN_CTRL_PORT_VID_SET(port->pvid),
-+		 ANA_CL_VLAN_CTRL_VLAN_AWARE_ENA |
-+		 ANA_CL_VLAN_CTRL_PORT_VID,
-+		 sparx5,
-+		 ANA_CL_VLAN_CTRL(port->portno));
-+}
-+
-+int sparx5_vlan_vid_add(struct sparx5_port *port, u16 vid, bool pvid,
-+			bool untagged)
++static void sparx5_attr_stp_state_set(struct sparx5_port *port,
++				      u8 state)
 +{
 +	struct sparx5 *sparx5 = port->sparx5;
-+	int ret;
 +
-+	/* Make the port a member of the VLAN */
-+	set_bit(port->portno, sparx5->vlan_mask[vid]);
-+	ret = sparx5_vlant_set_mask(sparx5, vid);
-+	if (ret)
-+		return ret;
-+
-+	/* Default ingress vlan classification */
-+	if (pvid)
-+		port->pvid = vid;
-+
-+	/* Untagged egress vlan classification */
-+	if (untagged && port->vid != vid) {
-+		if (port->vid) {
-+			netdev_err(port->ndev,
-+				   "Port already has a native VLAN: %d\n",
-+				   port->vid);
-+			return -EBUSY;
-+		}
-+		port->vid = vid;
++	if (!test_bit(port->portno, sparx5->bridge_mask)) {
++		netdev_err(port->ndev,
++			   "Controlling non-bridged port %d?\n", port->portno);
++		return;
 +	}
 +
-+	sparx5_vlan_port_apply(sparx5, port);
++	switch (state) {
++	case BR_STATE_FORWARDING:
++		set_bit(port->portno, sparx5->bridge_fwd_mask);
++		fallthrough;
++	case BR_STATE_LEARNING:
++		set_bit(port->portno, sparx5->bridge_lrn_mask);
++		break;
++
++	default:
++		/* All other states treated as blocking */
++		clear_bit(port->portno, sparx5->bridge_fwd_mask);
++		clear_bit(port->portno, sparx5->bridge_lrn_mask);
++		break;
++	}
++
++	/* apply the bridge_fwd_mask to all the ports */
++	sparx5_update_fwd(sparx5);
++}
++
++static void sparx5_port_attr_ageing_set(struct sparx5_port *port,
++					unsigned long ageing_clock_t)
++{
++	unsigned long ageing_jiffies = clock_t_to_jiffies(ageing_clock_t);
++	u32 ageing_time = jiffies_to_msecs(ageing_jiffies);
++
++	sparx5_set_ageing(port->sparx5, ageing_time);
++}
++
++static int sparx5_port_attr_set(struct net_device *dev,
++				const struct switchdev_attr *attr,
++				struct netlink_ext_ack *extack)
++{
++	struct sparx5_port *port = netdev_priv(dev);
++
++	switch (attr->id) {
++	case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
++		sparx5_port_attr_bridge_flags(port, attr->u.brport_flags);
++		break;
++	case SWITCHDEV_ATTR_ID_PORT_STP_STATE:
++		sparx5_attr_stp_state_set(port, attr->u.stp_state);
++		break;
++	case SWITCHDEV_ATTR_ID_BRIDGE_AGEING_TIME:
++		sparx5_port_attr_ageing_set(port, attr->u.ageing_time);
++		break;
++	case SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING:
++		port->vlan_aware = attr->u.vlan_filtering;
++		sparx5_vlan_port_apply(port->sparx5, port);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
 +
 +	return 0;
 +}
 +
-+int sparx5_vlan_vid_del(struct sparx5_port *port, u16 vid)
++static int sparx5_port_bridge_join(struct sparx5_port *port,
++				   struct net_device *bridge)
 +{
 +	struct sparx5 *sparx5 = port->sparx5;
-+	int ret;
 +
-+	/* 8021q removes VID 0 on module unload for all interfaces
-+	 * with VLAN filtering feature. We need to keep it to receive
-+	 * untagged traffic.
++	if (bitmap_empty(sparx5->bridge_mask, SPX5_PORTS))
++		/* First bridged port */
++		sparx5->hw_bridge_dev = bridge;
++	else
++		if (sparx5->hw_bridge_dev != bridge)
++			/* This is adding the port to a second bridge, this is
++			 * unsupported
++			 */
++			return -ENODEV;
++
++	set_bit(port->portno, sparx5->bridge_mask);
++
++	/* Port enters in bridge mode therefor don't need to copy to CPU
++	 * frames for multicast in case the bridge is not requesting them
 +	 */
-+	if (vid == 0)
++	__dev_mc_unsync(port->ndev, sparx5_mc_unsync);
++
++	return 0;
++}
++
++static void sparx5_port_bridge_leave(struct sparx5_port *port,
++				     struct net_device *bridge)
++{
++	struct sparx5 *sparx5 = port->sparx5;
++
++	clear_bit(port->portno, sparx5->bridge_mask);
++	if (bitmap_empty(sparx5->bridge_mask, SPX5_PORTS))
++		sparx5->hw_bridge_dev = NULL;
++
++	/* Clear bridge vlan settings before updating the port settings */
++	port->vlan_aware = 0;
++	port->pvid = NULL_VID;
++	port->vid = NULL_VID;
++
++	/* Port enters in host more therefore restore mc list */
++	__dev_mc_sync(port->ndev, sparx5_mc_sync, sparx5_mc_unsync);
++}
++
++static int sparx5_port_changeupper(struct net_device *dev,
++				   struct netdev_notifier_changeupper_info *info)
++{
++	struct sparx5_port *port = netdev_priv(dev);
++	int err = 0;
++
++	if (netif_is_bridge_master(info->upper_dev)) {
++		if (info->linking)
++			err = sparx5_port_bridge_join(port, info->upper_dev);
++		else
++			sparx5_port_bridge_leave(port, info->upper_dev);
++
++		sparx5_vlan_port_apply(port->sparx5, port);
++	}
++
++	return err;
++}
++
++static int sparx5_port_add_addr(struct net_device *dev, bool up)
++{
++	struct sparx5_port *port = netdev_priv(dev);
++	struct sparx5 *sparx5 = port->sparx5;
++	u16 vid = port->pvid;
++
++	if (up)
++		sparx5_mact_learn(sparx5, PGID_CPU, port->ndev->dev_addr, vid);
++	else
++		sparx5_mact_forget(sparx5, port->ndev->dev_addr, vid);
++
++	return 0;
++}
++
++static int sparx5_netdevice_port_event(struct net_device *dev,
++				       struct notifier_block *nb,
++				       unsigned long event, void *ptr)
++{
++	int err = 0;
++
++	if (!sparx5_netdevice_check(dev))
 +		return 0;
 +
-+	/* Stop the port from being a member of the vlan */
-+	clear_bit(port->portno, sparx5->vlan_mask[vid]);
-+	ret = sparx5_vlant_set_mask(sparx5, vid);
++	switch (event) {
++	case NETDEV_CHANGEUPPER:
++		err = sparx5_port_changeupper(dev, ptr);
++		break;
++	case NETDEV_PRE_UP:
++		err = sparx5_port_add_addr(dev, true);
++		break;
++	case NETDEV_DOWN:
++		err = sparx5_port_add_addr(dev, false);
++		break;
++	}
++
++	return err;
++}
++
++static int sparx5_netdevice_event(struct notifier_block *nb,
++				  unsigned long event, void *ptr)
++{
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++	int ret = 0;
++
++	ret = sparx5_netdevice_port_event(dev, nb, event, ptr);
++
++	return notifier_from_errno(ret);
++}
++
++static void sparx5_switchdev_bridge_fdb_event_work(struct work_struct *work)
++{
++	struct sparx5_switchdev_event_work *switchdev_work =
++		container_of(work, struct sparx5_switchdev_event_work, work);
++	struct net_device *dev = switchdev_work->dev;
++	struct switchdev_notifier_fdb_info *fdb_info;
++	struct sparx5_port *port;
++	struct sparx5 *sparx5;
++
++	rtnl_lock();
++	if (!sparx5_netdevice_check(dev))
++		goto out;
++
++	port = netdev_priv(dev);
++	sparx5 = port->sparx5;
++
++	fdb_info = &switchdev_work->fdb_info;
++
++	switch (switchdev_work->event) {
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++		if (!fdb_info->added_by_user)
++			break;
++		sparx5_add_mact_entry(sparx5, port, fdb_info->addr,
++				      fdb_info->vid);
++		break;
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		if (!fdb_info->added_by_user)
++			break;
++		sparx5_del_mact_entry(sparx5, fdb_info->addr, fdb_info->vid);
++		break;
++	}
++
++out:
++	rtnl_unlock();
++	kfree(switchdev_work->fdb_info.addr);
++	kfree(switchdev_work);
++	dev_put(dev);
++}
++
++static void sparx5_schedule_work(struct work_struct *work)
++{
++	queue_work(sparx5_owq, work);
++}
++
++static int sparx5_switchdev_event(struct notifier_block *unused,
++				  unsigned long event, void *ptr)
++{
++	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
++	struct sparx5_switchdev_event_work *switchdev_work;
++	struct switchdev_notifier_fdb_info *fdb_info;
++	struct switchdev_notifier_info *info = ptr;
++	int err;
++
++	switch (event) {
++	case SWITCHDEV_PORT_ATTR_SET:
++		err = switchdev_handle_port_attr_set(dev, ptr,
++						     sparx5_netdevice_check,
++						     sparx5_port_attr_set);
++		return notifier_from_errno(err);
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++		fallthrough;
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
++		if (!switchdev_work)
++			return NOTIFY_BAD;
++
++		switchdev_work->dev = dev;
++		switchdev_work->event = event;
++
++		fdb_info = container_of(info,
++					struct switchdev_notifier_fdb_info,
++					info);
++		INIT_WORK(&switchdev_work->work,
++			  sparx5_switchdev_bridge_fdb_event_work);
++		memcpy(&switchdev_work->fdb_info, ptr,
++		       sizeof(switchdev_work->fdb_info));
++		switchdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
++		if (!switchdev_work->fdb_info.addr)
++			goto err_addr_alloc;
++
++		ether_addr_copy((u8 *)switchdev_work->fdb_info.addr,
++				fdb_info->addr);
++		dev_hold(dev);
++
++		sparx5_schedule_work(&switchdev_work->work);
++		break;
++	}
++
++	return NOTIFY_DONE;
++err_addr_alloc:
++	kfree(switchdev_work);
++	return NOTIFY_BAD;
++}
++
++static void sparx5_sync_port_dev_addr(struct sparx5 *sparx5,
++				      struct sparx5_port *port,
++				      u16 vid, bool add)
++{
++	if (!port ||
++	    !test_bit(port->portno, sparx5->bridge_mask))
++		return; /* Skip null/host interfaces */
++
++	/* Bridge connects to vid? */
++	if (add) {
++		/* Add port MAC address from the VLAN */
++		sparx5_mact_learn(sparx5, PGID_CPU,
++				  port->ndev->dev_addr, vid);
++	} else {
++		/* Control port addr visibility depending on
++		 * port VLAN connectivity.
++		 */
++		if (test_bit(port->portno, sparx5->vlan_mask[vid]))
++			sparx5_mact_learn(sparx5, PGID_CPU,
++					  port->ndev->dev_addr, vid);
++		else
++			sparx5_mact_forget(sparx5,
++					   port->ndev->dev_addr, vid);
++	}
++}
++
++static void sparx5_sync_bridge_dev_addr(struct net_device *dev,
++					struct sparx5 *sparx5,
++					u16 vid, bool add)
++{
++	int i;
++
++	/* First, handle bridge address'es */
++	if (add) {
++		sparx5_mact_learn(sparx5, PGID_CPU, dev->dev_addr,
++				  vid);
++		sparx5_mact_learn(sparx5, PGID_BCAST, dev->broadcast,
++				  vid);
++	} else {
++		sparx5_mact_forget(sparx5, dev->dev_addr, vid);
++		sparx5_mact_forget(sparx5, dev->broadcast, vid);
++	}
++
++	/* Now look at bridged ports */
++	for (i = 0; i < SPX5_PORTS; i++)
++		sparx5_sync_port_dev_addr(sparx5, sparx5->ports[i], vid, add);
++}
++
++static int sparx5_handle_port_vlan_add(struct net_device *dev,
++				       struct notifier_block *nb,
++				       const struct switchdev_obj_port_vlan *v)
++{
++	struct sparx5_port *port = netdev_priv(dev);
++
++	if (netif_is_bridge_master(dev)) {
++		if (v->flags & BRIDGE_VLAN_INFO_BRENTRY) {
++			struct sparx5 *sparx5 =
++				container_of(nb, struct sparx5,
++					     switchdev_blocking_nb);
++
++			sparx5_sync_bridge_dev_addr(dev, sparx5, v->vid, true);
++		}
++		return 0;
++	}
++
++	if (!sparx5_netdevice_check(dev))
++		return -EOPNOTSUPP;
++
++	return sparx5_vlan_vid_add(port, v->vid,
++				  v->flags & BRIDGE_VLAN_INFO_PVID,
++				  v->flags & BRIDGE_VLAN_INFO_UNTAGGED);
++}
++
++static int sparx5_handle_port_obj_add(struct net_device *dev,
++				      struct notifier_block *nb,
++				      struct switchdev_notifier_port_obj_info *info)
++{
++	const struct switchdev_obj *obj = info->obj;
++	int err;
++
++	switch (obj->id) {
++	case SWITCHDEV_OBJ_ID_PORT_VLAN:
++		err = sparx5_handle_port_vlan_add(dev, nb,
++						  SWITCHDEV_OBJ_PORT_VLAN(obj));
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++
++	info->handled = true;
++	return err;
++}
++
++static int sparx5_handle_port_vlan_del(struct net_device *dev,
++				       struct notifier_block *nb,
++				       u16 vid)
++{
++	struct sparx5_port *port = netdev_priv(dev);
++	int ret;
++
++	/* Master bridge? */
++	if (netif_is_bridge_master(dev)) {
++		struct sparx5 *sparx5 =
++			container_of(nb, struct sparx5,
++				     switchdev_blocking_nb);
++
++		sparx5_sync_bridge_dev_addr(dev, sparx5, vid, false);
++		return 0;
++	}
++
++	if (!sparx5_netdevice_check(dev))
++		return -EOPNOTSUPP;
++
++	ret = sparx5_vlan_vid_del(port, vid);
 +	if (ret)
 +		return ret;
 +
-+	/* Ingress */
-+	if (port->pvid == vid)
-+		port->pvid = 0;
-+
-+	/* Egress */
-+	if (port->vid == vid)
-+		port->vid = 0;
-+
-+	sparx5_vlan_port_apply(sparx5, port);
++	/* Delete the port MAC address with the matching VLAN information */
++	sparx5_mact_forget(port->sparx5, port->ndev->dev_addr, vid);
 +
 +	return 0;
 +}
 +
-+void sparx5_pgid_update_mask(struct sparx5_port *port, int pgid, bool enable)
++static int sparx5_handle_port_obj_del(struct net_device *dev,
++				      struct notifier_block *nb,
++				      struct switchdev_notifier_port_obj_info *info)
 +{
-+	struct sparx5 *sparx5 = port->sparx5;
-+	u32 val, mask;
++	const struct switchdev_obj *obj = info->obj;
++	int err;
 +
-+	/* mask is spread across 3 registers x 32 bit */
-+	if (port->portno < 32) {
-+		mask = BIT(port->portno);
-+		val = enable ? mask : 0;
-+		spx5_rmw(val, mask, sparx5, ANA_AC_PGID_CFG(pgid));
-+	} else if (port->portno < 64) {
-+		mask = BIT(port->portno - 32);
-+		val = enable ? mask : 0;
-+		spx5_rmw(val, mask, sparx5, ANA_AC_PGID_CFG1(pgid));
-+	} else if (port->portno < SPX5_PORTS) {
-+		mask = BIT(port->portno - 64);
-+		val = enable ? mask : 0;
-+		spx5_rmw(val, mask, sparx5, ANA_AC_PGID_CFG2(pgid));
-+	} else {
-+		netdev_err(port->ndev, "Invalid port no: %d\n", port->portno);
++	switch (obj->id) {
++	case SWITCHDEV_OBJ_ID_PORT_VLAN:
++		err = sparx5_handle_port_vlan_del(dev, nb,
++						  SWITCHDEV_OBJ_PORT_VLAN(obj)->vid);
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
 +	}
++
++	info->handled = true;
++	return err;
 +}
 +
-+void sparx5_update_fwd(struct sparx5 *sparx5)
++static int sparx5_switchdev_blocking_event(struct notifier_block *nb,
++					   unsigned long event,
++					   void *ptr)
 +{
-+	DECLARE_BITMAP(workmask, SPX5_PORTS);
-+	u32 mask[3];
-+	int port;
++	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
++	int err;
 +
-+	/* Divide up fwd mask in 32 bit words */
-+	bitmap_to_arr32(mask, sparx5->bridge_fwd_mask, SPX5_PORTS);
-+
-+	/* Update flood masks */
-+	for (port = PGID_UC_FLOOD; port <= PGID_BCAST; port++) {
-+		spx5_wr(mask[0], sparx5, ANA_AC_PGID_CFG(port));
-+		spx5_wr(mask[1], sparx5, ANA_AC_PGID_CFG1(port));
-+		spx5_wr(mask[2], sparx5, ANA_AC_PGID_CFG2(port));
++	switch (event) {
++	case SWITCHDEV_PORT_OBJ_ADD:
++		err = sparx5_handle_port_obj_add(dev, nb, ptr);
++		return notifier_from_errno(err);
++	case SWITCHDEV_PORT_OBJ_DEL:
++		err = sparx5_handle_port_obj_del(dev, nb, ptr);
++		return notifier_from_errno(err);
++	case SWITCHDEV_PORT_ATTR_SET:
++		err = switchdev_handle_port_attr_set(dev, ptr,
++						     sparx5_netdevice_check,
++						     sparx5_port_attr_set);
++		return notifier_from_errno(err);
 +	}
 +
-+	/* Update SRC masks */
-+	for (port = 0; port < SPX5_PORTS; port++) {
-+		if (test_bit(port, sparx5->bridge_fwd_mask)) {
-+			/* Allow to send to all bridged but self */
-+			bitmap_copy(workmask, sparx5->bridge_fwd_mask, SPX5_PORTS);
-+			clear_bit(port, workmask);
-+			bitmap_to_arr32(mask, workmask, SPX5_PORTS);
-+			spx5_wr(mask[0], sparx5, ANA_AC_SRC_CFG(port));
-+			spx5_wr(mask[1], sparx5, ANA_AC_SRC_CFG1(port));
-+			spx5_wr(mask[2], sparx5, ANA_AC_SRC_CFG2(port));
-+		} else {
-+			spx5_wr(0, sparx5, ANA_AC_SRC_CFG(port));
-+			spx5_wr(0, sparx5, ANA_AC_SRC_CFG1(port));
-+			spx5_wr(0, sparx5, ANA_AC_SRC_CFG2(port));
-+		}
-+	}
-+
-+	/* Learning enabled only for bridged ports */
-+	bitmap_and(workmask, sparx5->bridge_fwd_mask,
-+		   sparx5->bridge_lrn_mask, SPX5_PORTS);
-+	bitmap_to_arr32(mask, workmask, SPX5_PORTS);
-+
-+	/* Apply learning mask */
-+	spx5_wr(mask[0], sparx5, ANA_L2_AUTO_LRN_CFG);
-+	spx5_wr(mask[1], sparx5, ANA_L2_AUTO_LRN_CFG1);
-+	spx5_wr(mask[2], sparx5, ANA_L2_AUTO_LRN_CFG2);
++	return NOTIFY_DONE;
 +}
 +
-+void sparx5_vlan_port_apply(struct sparx5 *sparx5,
-+			    struct sparx5_port *port)
-+
++int sparx5_register_notifier_blocks(struct sparx5 *s5)
 +{
-+	u32 val;
++	int err;
 +
-+	/* Configure PVID, vlan aware */
-+	val = ANA_CL_VLAN_CTRL_VLAN_AWARE_ENA_SET(port->vlan_aware) |
-+		ANA_CL_VLAN_CTRL_VLAN_POP_CNT_SET(port->vlan_aware) |
-+		ANA_CL_VLAN_CTRL_PORT_VID_SET(port->pvid);
-+	spx5_wr(val, sparx5, ANA_CL_VLAN_CTRL(port->portno));
++	s5->netdevice_nb.notifier_call = sparx5_netdevice_event;
++	err = register_netdevice_notifier(&s5->netdevice_nb);
++	if (err)
++		return err;
 +
-+	val = 0;
-+	if (port->vlan_aware && !port->pvid)
-+		/* If port is vlan-aware and tagged, drop untagged and
-+		 * priority tagged frames.
-+		 */
-+		val = ANA_CL_VLAN_FILTER_CTRL_TAG_REQUIRED_ENA_SET(1) |
-+			ANA_CL_VLAN_FILTER_CTRL_PRIO_CTAG_DIS_SET(1) |
-+			ANA_CL_VLAN_FILTER_CTRL_PRIO_STAG_DIS_SET(1);
-+	spx5_wr(val, sparx5,
-+		ANA_CL_VLAN_FILTER_CTRL(port->portno, 0));
++	s5->switchdev_nb.notifier_call = sparx5_switchdev_event;
++	err = register_switchdev_notifier(&s5->switchdev_nb);
++	if (err)
++		goto err_switchdev_nb;
 +
-+	/* Egress configuration (REW_TAG_CFG): VLAN tag type to 8021Q */
-+	val = REW_TAG_CTRL_TAG_TPID_CFG_SET(0);
-+	if (port->vlan_aware) {
-+		if (port->vid)
-+			/* Tag all frames except when VID == DEFAULT_VLAN */
-+			val |= REW_TAG_CTRL_TAG_CFG_SET(1);
-+		else
-+			val |= REW_TAG_CTRL_TAG_CFG_SET(3);
-+	}
-+	spx5_wr(val, sparx5, REW_TAG_CTRL(port->portno));
++	s5->switchdev_blocking_nb.notifier_call = sparx5_switchdev_blocking_event;
++	err = register_switchdev_blocking_notifier(&s5->switchdev_blocking_nb);
++	if (err)
++		goto err_switchdev_blocking_nb;
 +
-+	/* Egress VID */
-+	spx5_rmw(REW_PORT_VLAN_CFG_PORT_VID_SET(port->vid),
-+		 REW_PORT_VLAN_CFG_PORT_VID,
-+		 sparx5,
-+		 REW_PORT_VLAN_CFG(port->portno));
++	sparx5_owq = alloc_ordered_workqueue("sparx5_order", 0);
++	if (!sparx5_owq)
++		goto err_switchdev_blocking_nb;
++
++	return 0;
++
++err_switchdev_blocking_nb:
++	unregister_switchdev_notifier(&s5->switchdev_nb);
++err_switchdev_nb:
++	unregister_netdevice_notifier(&s5->netdevice_nb);
++
++	return err;
++}
++
++void sparx5_unregister_notifier_blocks(struct sparx5 *s5)
++{
++	destroy_workqueue(sparx5_owq);
++
++	unregister_switchdev_blocking_notifier(&s5->switchdev_blocking_nb);
++	unregister_switchdev_notifier(&s5->switchdev_nb);
++	unregister_netdevice_notifier(&s5->netdevice_nb);
 +}
 -- 
 2.32.0
