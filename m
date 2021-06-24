@@ -2,100 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E709E3B261A
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 06:16:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BABA3B266F
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 06:46:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbhFXEST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 00:18:19 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14524 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230062AbhFXEQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 00:16:15 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15O42ncO056753
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 00:13:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=MvRM0bmNm8mAUbTF96qQ97Pk6bEYy4zn9ku7T5IAd1E=;
- b=UiP71dsRGLbeirc/gAyoThPq4N0mU/dgDt5vNW3dsFerSUtt31NlXAg+LEVXPT/8VUCS
- yzM3X9XKxh3xN+vWjL4V4DS5g79NdDGzbbeiw8kfySnJNAZAT4mcOWi9j6ySGywLfb6F
- Aw+wrtsqbszzxS5Fm2c2bOsJkOg4UiZ5w9r0MoZ3o2kyEYFXhzFXIzeRRDptK0tDgWxd
- q4VSqDRlnJTep+XPBSc8g7tk5tVD2Bcx3m1woY8RwqmW9eI2x5on+C7IST/aH0IFVFvq
- VDVawtMjSvu/F47LHLA2mA1mnv1ikHE++XExOXnmloppBwWoLeniGG0aWIlJBaJ21K0B /w== 
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 39cj3ah33h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 00:13:29 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 15O48r9P022348
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 04:13:28 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma04dal.us.ibm.com with ESMTP id 39bds22u05-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 04:13:28 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 15O4DR2v7799252
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Jun 2021 04:13:27 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 51C2F6A04F;
-        Thu, 24 Jun 2021 04:13:27 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3E8B66A04D;
-        Thu, 24 Jun 2021 04:13:26 +0000 (GMT)
-Received: from suka-w540.ibmuc.com (unknown [9.85.145.253])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 24 Jun 2021 04:13:26 +0000 (GMT)
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Dany Madden <drt@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>, sukadev@linux.ibm.com,
-        Brian King <brking@linux.ibm.com>, cforno12@linux.ibm.com
-Subject: [PATCH net 7/7] ibmvnic: parenthesize a check
-Date:   Wed, 23 Jun 2021 21:13:16 -0700
-Message-Id: <20210624041316.567622-8-sukadev@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210624041316.567622-1-sukadev@linux.ibm.com>
-References: <20210624041316.567622-1-sukadev@linux.ibm.com>
+        id S230078AbhFXEtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 00:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53448 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229448AbhFXEtC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 00:49:02 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34553C061574
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 21:46:43 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ji1so7426670ejc.4
+        for <netdev@vger.kernel.org>; Wed, 23 Jun 2021 21:46:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=qV+mylXL/2SS4mJCMLehWyslEuC3Qq8x/PXCguBgY/I=;
+        b=yLsRfVae0FF0DXCc80Qe7rbCzVIrdmQDyeaVXSgU7731bg1QMqw4lgqLCxjyZUZjwu
+         TDH7cb0lIajOurwizpXzJMb1Ld/YEZ/vOZ/tKUWon1ytyFmk7qtEyniUaT9wfomHXaCZ
+         Q5k7DOlqy4oW2+TRbKidZkfTZk1foP9dbr9CEZLKOgBzOUjNXSWZEPhSFmyl+eKMt16P
+         UetkLAJ4Ll73DccWxMTSvwQYbyiWwHF4SXeF68p10765hT8FeXCxeTOqWo6XDYYUASaW
+         U0fLxWjMmOWM2r455SZayrz6m1rBoWQox1axwCaI6sMaC6VcTv4xi2V6T6wMsgxpGUUR
+         4qsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qV+mylXL/2SS4mJCMLehWyslEuC3Qq8x/PXCguBgY/I=;
+        b=HyGh1a+5ajYvjXvWLxRqsKx4o7RjeVVbP9Ob73rTb9Gbjtar4bsWUesoEmkOtKZRn0
+         riMMVHZbX7qGHwAsFn8xQ0t4okgr6CfVS8omh5YIAE/MQOg3H/NrEFMYPY2V5cwZjeB+
+         OZN0jff8la45Rt18Hh5nIhjXDZvg4dFO9rjikM3TFVLZy3HezEKvXISR5TD8oTTM7cJJ
+         2K78rKGJMi1KboA5bT4INna3OlkBInQCNsFu0wg7tuHdFeli9ZkF9r7iu3kTqcGs46jm
+         hcZ20d7DazI4141Oiku4su1zf54iCso+SymfCCBDL7L3FijzkBb0qQ2f+sPUY+vGx72o
+         CbXA==
+X-Gm-Message-State: AOAM533b0dhh/ALHb+U6b+ri0ycVmv0kZZIy8TvZ1+vwnb3CqeTDKj8C
+        yOnEkJkm5MK8i8GZUnKaeAgo3KRO+36K1d5O5QEq
+X-Google-Smtp-Source: ABdhPJxLv6gMYjF4IzwXDzBGPms1QJcwsfrq54qSD0tH6LJ386sUw0R2U1ERHQHkfRm0DArekdU8YwZzZP3+ubsA+P4=
+X-Received: by 2002:a17:906:3c4a:: with SMTP id i10mr3283231ejg.372.1624510001769;
+ Wed, 23 Jun 2021 21:46:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: P2mTNblo3Hk9A_J8fhUXAyBgEp7LlI8O
-X-Proofpoint-ORIG-GUID: P2mTNblo3Hk9A_J8fhUXAyBgEp7LlI8O
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-06-23_14:2021-06-23,2021-06-23 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- mlxlogscore=786 lowpriorityscore=0 spamscore=0 impostorscore=0
- priorityscore=1501 bulkscore=0 clxscore=1015 phishscore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106240021
+References: <20210615141331.407-1-xieyongji@bytedance.com> <20210615141331.407-10-xieyongji@bytedance.com>
+ <adfb2be9-9ed9-ca37-ac37-4cd00bdff349@redhat.com> <CACycT3tAON+-qZev+9EqyL2XbgH5HDspOqNt3ohQLQ8GqVK=EA@mail.gmail.com>
+ <1bba439f-ffc8-c20e-e8a4-ac73e890c592@redhat.com> <CACycT3uzMJS7vw6MVMOgY4rb=SPfT2srV+8DPdwUVeELEiJgbA@mail.gmail.com>
+ <0aeb7cb7-58e5-1a95-d830-68edd7e8ec2e@redhat.com> <CACycT3uuooKLNnpPHewGZ=q46Fap2P4XCFirdxxn=FxK+X1ECg@mail.gmail.com>
+ <e4cdee72-b6b4-d055-9aac-3beae0e5e3e1@redhat.com> <CACycT3u8=_D3hCtJR+d5BgeUQMce6S7c_6P3CVfvWfYhCQeXFA@mail.gmail.com>
+ <d2334f66-907c-2e9c-ea4f-f912008e9be8@redhat.com>
+In-Reply-To: <d2334f66-907c-2e9c-ea4f-f912008e9be8@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 24 Jun 2021 12:46:30 +0800
+Message-ID: <CACycT3uCSLUDVpQHdrmuxSuoBDg-4n22t+N-Jm2GoNNp9JYB2w@mail.gmail.com>
+Subject: Re: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Parenthesize a check to be more explicit and to fix a sparse warning
-seen on some distros.
+On Thu, Jun 24, 2021 at 11:35 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/6/23 =E4=B8=8B=E5=8D=881:50, Yongji Xie =E5=86=99=E9=81=93=
+:
+> > On Wed, Jun 23, 2021 at 11:31 AM Jason Wang <jasowang@redhat.com> wrote=
+:
+> >>
+> >> =E5=9C=A8 2021/6/22 =E4=B8=8B=E5=8D=884:14, Yongji Xie =E5=86=99=E9=81=
+=93:
+> >>> On Tue, Jun 22, 2021 at 3:50 PM Jason Wang <jasowang@redhat.com> wrot=
+e:
+> >>>> =E5=9C=A8 2021/6/22 =E4=B8=8B=E5=8D=883:22, Yongji Xie =E5=86=99=E9=
+=81=93:
+> >>>>>> We need fix a way to propagate the error to the userspace.
+> >>>>>>
+> >>>>>> E.g if we want to stop the deivce, we will delay the status reset =
+until
+> >>>>>> we get respose from the userspace?
+> >>>>>>
+> >>>>> I didn't get how to delay the status reset. And should it be a DoS
+> >>>>> that we want to fix if the userspace doesn't give a response foreve=
+r?
+> >>>> You're right. So let's make set_status() can fail first, then propag=
+ate
+> >>>> its failure via VHOST_VDPA_SET_STATUS.
+> >>>>
+> >>> OK. So we only need to propagate the failure in the vhost-vdpa case, =
+right?
+> >>
+> >> I think not, we need to deal with the reset for virtio as well:
+> >>
+> >> E.g in register_virtio_devices(), we have:
+> >>
+> >>           /* We always start by resetting the device, in case a previo=
+us
+> >>            * driver messed it up.  This also tests that code path a
+> >> little. */
+> >>         dev->config->reset(dev);
+> >>
+> >> We probably need to make reset can fail and then fail the
+> >> register_virtio_device() as well.
+> >>
+> > OK, looks like virtio_add_status() and virtio_device_ready()[1] should
+> > be also modified if we need to propagate the failure in the
+> > virtio-vdpa case. Or do we only need to care about the reset case?
+> >
+> > [1] https://lore.kernel.org/lkml/20210517093428.670-1-xieyongji@bytedan=
+ce.com/
+>
+>
+> My understanding is DRIVER_OK is not something that needs to be validated=
+:
+>
+> "
+>
+> DRIVER_OK (4)
+> Indicates that the driver is set up and ready to drive the device.
+>
+> "
+>
+> Since the spec doesn't require to re-read the and check if DRIVER_OK is
+> set in 3.1.1 Driver Requirements: Device Initialization.
+>
+> It's more about "telling the device that driver is ready."
+>
+> But we don have some status bit that requires the synchronization with
+> the device.
+>
+> 1) FEATURES_OK, spec requires to re-read the status bit to check whether
+> or it it was set by the device:
+>
+> "
+>
+> Re-read device status to ensure the FEATURES_OK bit is still set:
+> otherwise, the device does not support our subset of features and the
+> device is unusable.
+>
+> "
+>
+> This is useful for some device which can only support a subset of the
+> features. E.g a device that can only work for packed virtqueue. This
+> means the current design of set_features won't work, we need either:
+>
+> 1a) relay the set_features request to userspace
+>
+> or
+>
+> 1b) introduce a mandated_device_features during device creation and
+> validate the driver features during the set_features(), and don't set
+> FEATURES_OK if they don't match.
+>
+>
+> 2) Some transports (PCI) requires to re-read the status to ensure the
+> synchronization.
+>
+> "
+>
+> After writing 0 to device_status, the driver MUST wait for a read of
+> device_status to return 0 before reinitializing the device.
+>
+> "
+>
+> So we need to deal with both FEATURES_OK and reset, but probably not
+> DRIVER_OK.
+>
 
-Fixes: 91dc5d2553fbf ("ibmvnic: fix miscellaneous checks")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+OK, I see. Thanks for the explanation. One more question is how about
+clearing the corresponding status bit in get_status() rather than
+making set_status() fail. Since the spec recommends this way for
+validation which is done in virtio_dev_remove() and
+virtio_finalize_features().
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 363a5d5503ad..697b9714fc76 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -3367,7 +3367,7 @@ static int enable_scrq_irq(struct ibmvnic_adapter *adapter,
- 		/* H_EOI would fail with rc = H_FUNCTION when running
- 		 * in XIVE mode which is expected, but not an error.
- 		 */
--		if (rc && rc != H_FUNCTION)
-+		if (rc && (rc != H_FUNCTION))
- 			dev_err(dev, "H_EOI FAILED irq 0x%llx. rc=%ld\n",
- 				val, rc);
- 	}
--- 
-2.31.1
-
+Thanks,
+Yongji
