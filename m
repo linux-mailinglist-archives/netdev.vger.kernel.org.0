@@ -2,139 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E323B2DD7
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 13:27:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF0103B2DF7
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 13:35:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232470AbhFXLaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 07:30:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42912 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232274AbhFXLaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 07:30:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624534071;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nF0UhK3Tr0u38x+8i/4+COM0eyWxjXZTlIH47kl0kH4=;
-        b=IkOiiLYHdJ926NxhcdHBdNGj0Vm6ugNoKZIA6h52fVQ8uVwQvrfIDCoWP9LRtruPCasEpV
-        jOaul/L9MQh7i9atDO2Nq/86Tf3po/g3q8BlgjHlvyDuc3XcIbYWxnTDYdI6QBqnLSfrHB
-        kLF+c4C2S0XujG0RLkhUTI3t5x4YQJo=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-557-UWkc9ZePN-yG1MJ8v02TkQ-1; Thu, 24 Jun 2021 07:27:50 -0400
-X-MC-Unique: UWkc9ZePN-yG1MJ8v02TkQ-1
-Received: by mail-ed1-f72.google.com with SMTP id h11-20020a50ed8b0000b02903947b9ca1f3so3187138edr.7
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 04:27:49 -0700 (PDT)
+        id S232430AbhFXLho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 07:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232363AbhFXLhn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 07:37:43 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54444C061574;
+        Thu, 24 Jun 2021 04:35:24 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id e20so4515636pgg.0;
+        Thu, 24 Jun 2021 04:35:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=99mlqRPqpltRyIkzBDkulZzreBwoyXNFz/QwaO6c5sE=;
+        b=Lf7JdQpgE2BtfLvOWENxboAEdbIjgofEaFcEYibdAaOZbp6axxSsrmM7ZEZbC9hsSe
+         v2tpFvZbeYB9S7fFZOZ32OdCuh7fC9/GLLeRPIn+yPxPeLyT5+81FmZEad3GLTuzjouy
+         +/yaMzSgrpLcKWaBMi5Kex42f77V8mHnjdF5zn8gW7x2KRFUKWyYGOr+doAXzot82msd
+         AfLww2TPCtHIfZG9Cvyzh2a+5yTHjn4X3bNPSOeORUZacw5UjFdINBTmZ3p1bRS04FOR
+         CaCYVE2QUlDRb94iXpg+/VdRfxYlKcMyqeSQKMhAZ5QdpUAnRsNh6r3IxpvAkP8Ye2cH
+         JbHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=nF0UhK3Tr0u38x+8i/4+COM0eyWxjXZTlIH47kl0kH4=;
-        b=ARyycvXRt0NsjEa1waaR6Y4kIZc+rlE6f2ZFzCgh+YbK1BQQroKElBubB9rzCfbT1F
-         DOXNbEVV+6SBZwwKfwftt4ttu3S4DI/VgPQlYvbDQlJ2zmB27hACxLL2AV1HgjzF/CWd
-         2yV5y5c8oGPtZyEJopp5SMa7zsn1IYiYXR5Ao1xZzQbl1qLEmjjNOSlwqsdr79GyiGgy
-         RqSWf+H+2IX9/q/2RKLKMjYrWrl1QIpVJpVuBqWkYa8qHnEtTiuyAzSe65XXiHr50moD
-         MZh2EgzkOSIPMo2rStKmRGNgxGpvmCCS1nbF9yntIHWL/cZ4/2VRVZ3lXwFdpaRPf3gA
-         jXdw==
-X-Gm-Message-State: AOAM531FzO8ULlynDMvt8/EVd+ch3oyTd9hCgz0WWpo2nXyyfiM5xth4
-        NV2Sp6iHCa+3h4+vdWUtQ6Zyg8IW/NFQ6NIjWiZyRZ45zVUDWILMPbGzHzDrn0AsX4xuEww70jM
-        XOY9zGaZZwN/tewZB
-X-Received: by 2002:a17:906:ece7:: with SMTP id qt7mr4739840ejb.194.1624534068545;
-        Thu, 24 Jun 2021 04:27:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwiLkvv03dVbfxeXKIcI4MYuF7i/8ki5PwPd50/nXmW14AjctDZNd1qFBIZiijPXQNi2b5oWA==
-X-Received: by 2002:a17:906:ece7:: with SMTP id qt7mr4739802ejb.194.1624534067984;
-        Thu, 24 Jun 2021 04:27:47 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id cn10sm1789326edb.38.2021.06.24.04.27.47
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=99mlqRPqpltRyIkzBDkulZzreBwoyXNFz/QwaO6c5sE=;
+        b=P3woGY1ltCuhLM2NcHMSZ9x38DfYlWS31NowJuM78+uehtYRXR4SP/MY12uIzx+gHo
+         ODXmhC1uelsHmkjH6+XhSUU2+oQ3fKnp9dI4Wc+SjurHX4tn6TeAdBD99aIxUpOu3g+q
+         qqOqHZOQrWrRETnNzUmaDc8F4fl5hP6VPRiAqJTnwHg6kvKkr5I2LqOoz58cNDlvjyyh
+         VHOXIoNVk3FM6W/7hRQ/XmQUh477aUi9W3ARQdo6xN+EJH++K0f1nzIRsfiGmAFYb41B
+         4fs/xA5WHLyewiA9zrnplxJXaI13jn9Tsh8bh7tyrvMsBADkPAyqnMHkQJC+a1Vy4A6W
+         Yyzw==
+X-Gm-Message-State: AOAM533fzfrwDa6aDhf4JWYOlFphGUtSsI1N3mSCk67SgOQoI/14vhPL
+        ywBsTlHilI4aoyjdo15kV7k=
+X-Google-Smtp-Source: ABdhPJyrrBQto0sQiE2RBettf8+KQU8CW527ig2S7ZxcNAMdt6g2Nn3Q3xxjp0WGkGg2YTioe9VMCQ==
+X-Received: by 2002:a63:a80b:: with SMTP id o11mr4389582pgf.53.1624534523886;
+        Thu, 24 Jun 2021 04:35:23 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d2sm2116944pgh.59.2021.06.24.04.35.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 04:27:47 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C90EB180731; Thu, 24 Jun 2021 13:27:46 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        davem@davemloft.net
-Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 0/8] bpf: Introduce BPF timers.
-In-Reply-To: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
-References: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 24 Jun 2021 13:27:46 +0200
-Message-ID: <87sg17mril.fsf@toke.dk>
+        Thu, 24 Jun 2021 04:35:23 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Thu, 24 Jun 2021 19:33:53 +0800
+To:     Benjamin Poirier <benjamin.poirier@gmail.com>
+Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC 06/19] staging: qlge: disable flow control by default
+Message-ID: <20210624113353.mdcalrw77d4he4j5@Rk>
+References: <20210621134902.83587-1-coiby.xu@gmail.com>
+ <20210621134902.83587-7-coiby.xu@gmail.com>
+ <YNGWHxYF5UkPk2U5@d3>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <YNGWHxYF5UkPk2U5@d3>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-
-> From: Alexei Starovoitov <ast@kernel.org>
+On Tue, Jun 22, 2021 at 04:49:51PM +0900, Benjamin Poirier wrote:
+>On 2021-06-21 21:48 +0800, Coiby Xu wrote:
+>> According to the TODO item,
+>> > * the flow control implementation in firmware is buggy (sends a flood of pause
+>> >   frames, resets the link, device and driver buffer queues become
+>> >   desynchronized), disable it by default
+>>
+>> Currently, qlge_mpi_port_cfg_work calls qlge_mb_get_port_cfg which gets
+>> the link config from the firmware and saves it to qdev->link_config. By
+>> default, flow control is enabled. This commit writes the
+>> save the pause parameter of qdev->link_config and don't let it
+>> overwritten by link settings of current port. Since qdev->link_config=0
+>> when qdev is initialized, this could disable flow control by default and
+>> the pause parameter value could also survive MPI resetting,
+>>     $ ethtool -a enp94s0f0
+>>     Pause parameters for enp94s0f0:
+>>     Autonegotiate:  off
+>>     RX:             off
+>>     TX:             off
+>>
+>> The follow control can be enabled manually,
+>>
+>>     $ ethtool -A enp94s0f0 rx on tx on
+>>     $ ethtool -a enp94s0f0
+>>     Pause parameters for enp94s0f0:
+>>     Autonegotiate:  off
+>>     RX:             on
+>>     TX:             on
+>>
+>> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+>> ---
+>>  drivers/staging/qlge/TODO       |  3 ---
+>>  drivers/staging/qlge/qlge_mpi.c | 11 ++++++++++-
+>>  2 files changed, 10 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/staging/qlge/TODO b/drivers/staging/qlge/TODO
+>> index b7a60425fcd2..8c84160b5993 100644
+>> --- a/drivers/staging/qlge/TODO
+>> +++ b/drivers/staging/qlge/TODO
+>> @@ -4,9 +4,6 @@
+>>    ql_build_rx_skb(). That function is now used exclusively to handle packets
+>>    that underwent header splitting but it still contains code to handle non
+>>    split cases.
+>> -* the flow control implementation in firmware is buggy (sends a flood of pause
+>> -  frames, resets the link, device and driver buffer queues become
+>> -  desynchronized), disable it by default
+>>  * some structures are initialized redundantly (ex. memset 0 after
+>>    alloc_etherdev())
+>>  * the driver has a habit of using runtime checks where compile time checks are
+>> diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
+>> index 2630ebf50341..0f1c7da80413 100644
+>> --- a/drivers/staging/qlge/qlge_mpi.c
+>> +++ b/drivers/staging/qlge/qlge_mpi.c
+>> @@ -806,6 +806,7 @@ int qlge_mb_get_port_cfg(struct qlge_adapter *qdev)
+>>  {
+>>  	struct mbox_params mbc;
+>>  	struct mbox_params *mbcp = &mbc;
+>> +	u32 saved_pause_link_config = 0;
 >
-> The first request to support timers in bpf was made in 2013 before sys_bp=
-f syscall
-> was added. That use case was periodic sampling. It was address with attac=
-hing
-> bpf programs to perf_events. Then during XDP development the timers were =
-requested
-> to do garbage collection and health checks. They were worked around by im=
-plementing
-> timers in user space and triggering progs with BPF_PROG_RUN command.
-> The user space timers and perf_event+bpf timers are not armed by the bpf =
-program.
-> They're done asynchronously vs program execution. The XDP program cannot =
-send a
-> packet and arm the timer at the same time. The tracing prog cannot record=
- an
-> event and arm the timer right away. This large class of use cases remained
-> unaddressed. The jiffy based and hrtimer based timers are essential part =
-of the
-> kernel development and with this patch set the hrtimer based timers will =
-be
-> available to bpf programs.
->
-> TLDR: bpf timers is a wrapper of hrtimers with all the extra safety added
-> to make sure bpf progs cannot crash the kernel.
->
-> v2->v3:
-> The v2 approach attempted to bump bpf_prog refcnt when bpf_timer_start is
-> called to make sure callback code doesn't disappear when timer is active =
-and
-> drop refcnt when timer cb is done. That led to a ton of race conditions b=
-etween
-> callback running and concurrent bpf_timer_init/start/cancel on another cp=
-u,
-> and concurrent bpf_map_update/delete_elem, and map destroy.
->
-> Then v2.5 approach skipped prog refcnt altogether. Instead it remembered =
-all
-> timers that bpf prog armed in a link list and canceled them when prog ref=
-cnt
-> went to zero. The race conditions disappeared, but timers in map-in-map c=
-ould
-> not be supported cleanly, since timers in inner maps have inner map's lif=
-e time
-> and don't match prog's life time.
->
-> This v3 approach makes timers to be owned by maps. It allows timers in in=
-ner
-> maps to be supported from the start. This apporach relies on "user refcnt"
-> scheme used in prog_array that stores bpf programs for bpf_tail_call. The
-> bpf_timer_start() increments prog refcnt, but unlike 1st approach the tim=
-er
-> callback does decrement the refcnt. The ops->map_release_uref is
-> responsible for cancelling the timers and dropping prog refcnt when user =
-space
-> reference to a map is dropped. That addressed all the races and simplified
-> locking.
+>Initialization is not needed given the code below, 
 
-Great to see this! I missed v2, but the "owned by map + uref" approach
-makes sense.
+Thanks for the spotting this issue!
 
-For the series:
+> in fact the
+>declaration can be moved to the block below.
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+I thought I need to put the declaration in the beginning of the
+function. But it seems Linux kernel coding style doesn't require it.
+I'll move it to the else block below then.
 
+>
+>>  	int status = 0;
+>>
+>>  	memset(mbcp, 0, sizeof(struct mbox_params));
+>> @@ -826,7 +827,15 @@ int qlge_mb_get_port_cfg(struct qlge_adapter *qdev)
+>>  	} else	{
+>>  		netif_printk(qdev, drv, KERN_DEBUG, qdev->ndev,
+>>  			     "Passed Get Port Configuration.\n");
+>> -		qdev->link_config = mbcp->mbox_out[1];
+>> +		/*
+>> +		 * Don't let the pause parameter be overwritten by
+>> +		 *
+>> +		 * In this way, follow control can be disabled by default
+>> +		 * and the setting could also survive the MPI reset
+>> +		 */
+>
+>It seems this comment is incomplete. Also, it's "flow control", not
+>"follow control".
+
+Ah, yes. I should state it as "Don't let the pause parameter be 
+overwritten by be overwritten by the firmware.". And thanks for
+correcting the typo.
+>
+>> +		saved_pause_link_config = qdev->link_config & CFG_PAUSE_STD;
+>> +		qdev->link_config = ~CFG_PAUSE_STD & mbcp->mbox_out[1];
+>> +		qdev->link_config |= saved_pause_link_config;
+>>  		qdev->max_frame_size = mbcp->mbox_out[2];
+>>  	}
+>>  	return status;
+>> --
+>> 2.32.0
+>>
+
+-- 
+Best regards,
+Coiby
