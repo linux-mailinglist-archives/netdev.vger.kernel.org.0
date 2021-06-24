@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60F673B24F4
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 04:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EDAE3B24F7
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 04:25:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbhFXC1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Jun 2021 22:27:52 -0400
+        id S230041AbhFXC14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Jun 2021 22:27:56 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbhFXC1q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 22:27:46 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E79C061767;
-        Wed, 23 Jun 2021 19:25:27 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id g24so2564626pji.4;
-        Wed, 23 Jun 2021 19:25:27 -0700 (PDT)
+        with ESMTP id S229930AbhFXC1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Jun 2021 22:27:48 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E07C06175F;
+        Wed, 23 Jun 2021 19:25:29 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id i4so2140222plt.12;
+        Wed, 23 Jun 2021 19:25:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=gP6eoa6ljP3AuFuPQbTsl3f9RNFxlRZpcXxaVVr18i4=;
-        b=edfU0iuwZvuM7anv27QhK5agSCmyGIDSvtN6qzbhf8d0CAB0U2F3jY+euhT7CZMHJ3
-         FWbm0py4SfD8BexHIdMaa8leibJcQkAVHxs2iRKJuSrb8nHb/QC+e0i+lvZsJygV6Cvo
-         JMjU4WrTh8MWH4SuhIX5T8ZmhNu2/dnFEi4nxaVKGVp2S9Fgc9P2xHR1v6QokBXtmSyR
-         YYakDY72SwHI8I2pAtd8+J92WOKnpNsJ/f4Qi/yf4ehNtYHh+0giGulm2SuptvtGiZAl
-         yA7kKisHQ00jlbmoFEVJwdk54rrB/9kBGAivHAPZ3jvLrABL21gY+MFKVsTJlC+bIpcM
-         2VJA==
+        bh=61Zxou0shJyo7s954QoZWDRB4SKwIIim+C6QfK326Cg=;
+        b=r7ek+O1+drk+sgcif5X3Xre7ZUJNjstnxZaxoEFdOSf+Kxb3bDLD+PqvuYNAuAdGL1
+         A/zgTXL2q2lxVOm9y0/wcwjsowpzyACiBnutlBc3CoKWreDGwx/zFcie9f8f0JsZeWYo
+         ViOwJgCKwxMrLBhF+KhM/rJ0bZ2tGW4OjGhokvwltuzf2j9toyMlnEp3e2U5Az5kWDaS
+         s6kA/v6yRh82gebwmxWwFBqfOagojpdB0KOIl1y3vUS8jC6/oTFqiAt4JqRKsQg7kX2v
+         FS1MFt9P9XVOs/3QT0z/L5IeCyCcHfJfbQWL/QpgGkqz++bNn266oevbyVg8BeQcRSqt
+         scFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=gP6eoa6ljP3AuFuPQbTsl3f9RNFxlRZpcXxaVVr18i4=;
-        b=AaOGgABAdOmAX/Gz1Q8LkEi8rn0PSAL7eWavzYhMYtmKEJMfBfhEQuzEPep/drZoRn
-         WQtTg9R0T6S8oKIwuB+Qkurn6MreQ+lQFEOs9a+t2Sdfr8wr7xvlS90HpaBk1thzfvhV
-         K0zAOeoXNn2myPTxYc9cugOPiEvOg2pr33Clle7XOM17BAnfzB1Aq4OOvY+nREbyi2Js
-         mV59fzVnEzgB7MtUH7QAIyuwlGIHE54FDFjtBgjv11HynLiGztFufE7ZTI+Ijw5qIHGh
-         0hurk0eOdta9g111l26BEuDn5GpQBWibuFXlm9JjSKWHhMz7B/sbM6Rc/a7RvZNZKI3w
-         lhpQ==
-X-Gm-Message-State: AOAM531+TTwX7lcIhAKOJGQdoSaP+VNDWGpr/ueLsaZaicMgKVbVdBI7
-        2F6bPl5gkxTLZztsRYcGOFY=
-X-Google-Smtp-Source: ABdhPJzPfW6biR7jB4aOj6R4wR2byXVJxzutQwOqkF0UZ2UPx0CIWZe0LOUulPlA4V2/rDNV6zDaAw==
-X-Received: by 2002:a17:90b:4c8c:: with SMTP id my12mr2841509pjb.13.1624501526909;
-        Wed, 23 Jun 2021 19:25:26 -0700 (PDT)
+        bh=61Zxou0shJyo7s954QoZWDRB4SKwIIim+C6QfK326Cg=;
+        b=QlWKi/xQ2DdAl/LyIiyq3p3HbyJwQTziwTWVA/+45PGgfoGz7KCttp6X2FeJoNOgVN
+         3a2RrHZSYsXGuXE9Es2oIJy07lf5Xmv40kDvrGilSTv+B4T1V7F6B+Elkx76nDldnDCo
+         mED85I9mKCAozNvajgiLmYSrMIyIAwwGnCt4aZxaNKOMWZn87c0tKl4PTNTko53gnvCV
+         kZ0nrKu0Rgf+YWqLLr/F+kgbf2arnCuljIw2DvU4dsYsGihI19VtGRjJ/RHzwEsuLHrA
+         l+FHxZ8iBhZOwIxQpTglMUqUj8bcvIrNoNDOC1302Ru/RZOuVAssKGotz+ttHBN9nZZv
+         IJyg==
+X-Gm-Message-State: AOAM5308GGSZ+uV5FFWSQWnDYpIuIQeZIDuszeHXlRsj9mBAHJuSIam3
+        o7h2zaNGXlTcDksKcROaQDc=
+X-Google-Smtp-Source: ABdhPJwH3+tZ82MCupZ8p4rXCHCuNiKuj0GNtx+HasA34t3N1G1qTYghIRGrO1W0Rw+ymyTKn4+F9w==
+X-Received: by 2002:a17:90a:a108:: with SMTP id s8mr12501742pjp.85.1624501528556;
+        Wed, 23 Jun 2021 19:25:28 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:a319])
-        by smtp.gmail.com with ESMTPSA id f17sm4675965pjj.21.2021.06.23.19.25.25
+        by smtp.gmail.com with ESMTPSA id f17sm4675965pjj.21.2021.06.23.19.25.27
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Jun 2021 19:25:26 -0700 (PDT)
+        Wed, 23 Jun 2021 19:25:28 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v3 bpf-next 3/8] bpf: Remember BTF of inner maps.
-Date:   Wed, 23 Jun 2021 19:25:13 -0700
-Message-Id: <20210624022518.57875-4-alexei.starovoitov@gmail.com>
+Subject: [PATCH v3 bpf-next 4/8] bpf: Relax verifier recursion check.
+Date:   Wed, 23 Jun 2021 19:25:14 -0700
+Message-Id: <20210624022518.57875-5-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
 References: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
@@ -62,51 +62,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-BTF is required for 'struct bpf_timer' to be recognized inside map value.
-The bpf timers are supported inside inner maps.
-Remember 'struct btf *' in inner_map_meta to make it available
-to the verifier in the sequence:
+In the following bpf subprogram:
+static int timer_cb(void *map, void *key, void *value)
+{
+    bpf_timer_start(.., timer_cb, ..);
+}
 
-struct bpf_map *inner_map = bpf_map_lookup_elem(&outer_map, ...);
-if (inner_map)
-    timer = bpf_map_lookup_elem(&inner_map, ...);
+the 'timer_cb' is a pointer to a function.
+ld_imm64 insn is used to carry this pointer.
+bpf_pseudo_func() returns true for such ld_imm64 insn.
+
+Unlike bpf_for_each_map_elem() the bpf_timer_start() callback is asynchronous.
+Relax control flow check to allow such "recursion" that is seen as an infinite
+loop by check_cfg(). The distinction between bpf_for_each_map_elem() the
+bpf_timer_start() is done in the follow up patch.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- kernel/bpf/map_in_map.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ kernel/bpf/verifier.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/bpf/map_in_map.c b/kernel/bpf/map_in_map.c
-index 2f961b941159..d737cff90922 100644
---- a/kernel/bpf/map_in_map.c
-+++ b/kernel/bpf/map_in_map.c
-@@ -3,6 +3,7 @@
-  */
- #include <linux/slab.h>
- #include <linux/bpf.h>
-+#include <linux/btf.h>
- 
- #include "map_in_map.h"
- 
-@@ -51,6 +52,10 @@ struct bpf_map *bpf_map_meta_alloc(int inner_map_ufd)
- 	inner_map_meta->max_entries = inner_map->max_entries;
- 	inner_map_meta->spin_lock_off = inner_map->spin_lock_off;
- 	inner_map_meta->timer_off = inner_map->timer_off;
-+	if (inner_map->btf) {
-+		btf_get(inner_map->btf);
-+		inner_map_meta->btf = inner_map->btf;
-+	}
- 
- 	/* Misc members not needed in bpf_map_meta_equal() check. */
- 	inner_map_meta->ops = inner_map->ops;
-@@ -66,6 +71,7 @@ struct bpf_map *bpf_map_meta_alloc(int inner_map_ufd)
- 
- void bpf_map_meta_free(struct bpf_map *map_meta)
- {
-+	btf_put(map_meta->btf);
- 	kfree(map_meta);
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 7868481af61c..c88caec4ad28 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -9387,8 +9387,12 @@ static int visit_func_call_insn(int t, int insn_cnt,
+ 		init_explored_state(env, t + 1);
+ 	if (visit_callee) {
+ 		init_explored_state(env, t);
+-		ret = push_insn(t, t + insns[t].imm + 1, BRANCH,
+-				env, false);
++		ret = push_insn(t, t + insns[t].imm + 1, BRANCH, env,
++				/* It's ok to allow recursion from CFG point of
++				 * view. __check_func_call() will do the actual
++				 * check.
++				 */
++				bpf_pseudo_func(insns + t));
+ 	}
+ 	return ret;
  }
- 
 -- 
 2.30.2
 
