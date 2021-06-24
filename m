@@ -2,96 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CAD43B33DD
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 18:21:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 684D43B33F0
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 18:28:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232200AbhFXQYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 12:24:04 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:48068 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbhFXQYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 12:24:02 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1624551703; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=G9Ul8IjbSeiyfi4kPMu1AfOkULwoWubc5zAIv9yEmFw=;
- b=OCmxMiVox89W5r8zUDWIX37IxmLK+jFd3K2zEOt+H6zGlglscBNpp0v4LIMVDjfrT6lZN8KU
- Id4jjyaSgyG0AWbFn2qFduEIZbjLYKtJH8+UGKOC5eEo1sbUFTX7lJ+z6WpGgAG5VoAzUaz2
- h1pUi68SQ5CE2DVDbUui3toPXUQ=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 60d4b0e67e5ba0fdc0c47c85 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 24 Jun 2021 16:20:54
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 39D96C4338A; Thu, 24 Jun 2021 16:20:54 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from tykki.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B7038C433F1;
-        Thu, 24 Jun 2021 16:20:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B7038C433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S230299AbhFXQas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 12:30:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38744 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229464AbhFXQao (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 12:30:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 40E55613C7;
+        Thu, 24 Jun 2021 16:28:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624552105;
+        bh=0eCSVwcHM/SBTZCb7Rzxy3Mo0ffe1VZFNd0rw7ZVjfw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kVXC/sFFEkCCSLHGlCiw5elkHuAhSKe1rJlDE8Y+T1bXxhCNBxv64Hj8TIuyEKsVk
+         j6aYxLC9tcyy2obmgt9+7AlszkZ1apnKX5bhedmffG5DlebJj9jszb9sOnXmVNDNU/
+         rV/nKhD+ey6y+0THuElMeIYN+zGKx3dSnzsbtXZocx1BG/k5nge6NNba2HYgeGC5Yu
+         xttljW41FPo/MjQ/7KenlY9wnbLBYQ32KXv4YFdulhA9aXJTmeuigmjiHjyy9H2HUF
+         +uxbzo+lvR8za5dIGJ0lLeaCfwvLuQfYTYnfiuTh0xf5x2v7/W1tb2bPHHoxiM6tsN
+         BcfNmb6MbQIxg==
+Date:   Thu, 24 Jun 2021 09:28:24 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, dsahern@gmail.com, yoshfuji@linux-ipv6.org,
+        brouer@redhat.com, Dave Jones <dsj@fb.com>
+Subject: Re: [PATCH net-next v4] net: ip: avoid OOM kills with large UDP
+ sends over loopback
+Message-ID: <20210624092824.7d7103a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CA+FuTSergCOgmYCGzT4vrYfoBB_vk-SwF45z2_XEBXNbyHvGUQ@mail.gmail.com>
+References: <20210623214438.2276538-1-kuba@kernel.org>
+        <CA+FuTSergCOgmYCGzT4vrYfoBB_vk-SwF45z2_XEBXNbyHvGUQ@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3] brcmfmac: support parse country code map from DT
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210417075428.2671-1-shawn.guo@linaro.org>
-References: <20210417075428.2671-1-shawn.guo@linaro.org>
-To:     Shawn Guo <shawn.guo@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, Shawn Guo <shawn.guo@linaro.org>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-Id: <20210624162054.39D96C4338A@smtp.codeaurora.org>
-Date:   Thu, 24 Jun 2021 16:20:54 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shawn Guo <shawn.guo@linaro.org> wrote:
-
-> With any regulatory domain requests coming from either user space or
-> 802.11 IE (Information Element), the country is coded in ISO3166
-> standard.  It needs to be translated to firmware country code and
-> revision with the mapping info in settings->country_codes table.
-> Support populate country_codes table by parsing the mapping from DT.
+On Wed, 23 Jun 2021 22:21:11 -0400 Willem de Bruijn wrote:
+> On Wed, Jun 23, 2021 at 5:44 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > Dave observed number of machines hitting OOM on the UDP send
+> > path. The workload seems to be sending large UDP packets over
+> > loopback. Since loopback has MTU of 64k kernel will try to
+> > allocate an skb with up to 64k of head space. This has a good
+> > chance of failing under memory pressure. What's worse if
+> > the message length is <32k the allocation may trigger an
+> > OOM killer.
+> >
+> > This is entirely avoidable, we can use an skb with page frags.
+> >
+> > af_unix solves a similar problem by limiting the head
+> > length to SKB_MAX_ALLOC. This seems like a good and simple
+> > approach. It means that UDP messages > 16kB will now
+> > use fragments if underlying device supports SG, if extra
+> > allocator pressure causes regressions in real workloads
+> > we can switch to trying the large allocation first and
+> > falling back.
+> >
+> > v4: pre-calculate all the additions to alloclen so
+> >     we can be sure it won't go over order-2
+> >
+> > Reported-by: Dave Jones <dsj@fb.com>
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > ---
+> >  net/ipv4/ip_output.c  | 32 ++++++++++++++++++--------------
+> >  net/ipv6/ip6_output.c | 32 +++++++++++++++++---------------
+> >  2 files changed, 35 insertions(+), 29 deletions(-)
+> >
+> > diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+> > index c3efc7d658f6..8d8a8da3ae7e 100644
+> > --- a/net/ipv4/ip_output.c
+> > +++ b/net/ipv4/ip_output.c
+> > @@ -1054,7 +1054,7 @@ static int __ip_append_data(struct sock *sk,
+> >                         unsigned int datalen;
+> >                         unsigned int fraglen;
+> >                         unsigned int fraggap;
+> > -                       unsigned int alloclen;
+> > +                       unsigned int alloclen, alloc_extra;  
 > 
-> The BRCMF_BUSTYPE_SDIO bus_type check gets separated from general DT
-> validation, so that country code can be handled as general part rather
-> than SDIO bus specific one.
+> Separate line?
+
+But why? What makes it preferable to have logically connected variables
+declared on separate lines? The function is already 300 LoC. I've been
+meaning to ask someone about this preference for a while :)
+
+> >                         unsigned int pagedlen;
+> >                         struct sk_buff *skb_prev;
+> >  alloc_new_skb:
+> > @@ -1074,35 +1074,39 @@ static int __ip_append_data(struct sock *sk,
+> >                         fraglen = datalen + fragheaderlen;
+> >                         pagedlen = 0;
+> >
+> > +                       alloc_extra = hh_len + 15;
+> > +                       alloc_extra += exthdrlen;
+> > +
+> > +                       /* The last fragment gets additional space at tail.
+> > +                        * Note, with MSG_MORE we overallocate on fragments,
+> > +                        * because we have no idea what fragment will be
+> > +                        * the last.
+> > +                        */
+> > +                       if (datalen == length + fraggap)
+> > +                               alloc_extra += rt->dst.trailer_len;
+> > +
+> >                         if ((flags & MSG_MORE) &&
+> >                             !(rt->dst.dev->features&NETIF_F_SG))
+> >                                 alloclen = mtu;
+> > -                       else if (!paged)
+> > +                       else if (!paged &&
+> > +                                (fraglen + alloc_extra < SKB_MAX_ALLOC ||
+> > +                                 !(rt->dst.dev->features & NETIF_F_SG)))  
 > 
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> This perhaps deserves a comment. Something like this?
+> 
+>   /* avoid order-3 allocations where possible: replace with frags if
+> allowed (sg) */
 
-Patch applied to wireless-drivers-next.git, thanks.
+Here I thought comparing skb alloc size to SKB_MAX_ALLOC is explanatory
+enough ;)
 
-1a3ac5c651a0 brcmfmac: support parse country code map from DT
+In the middle of the test, like this, right?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210417075428.2671-1-shawn.guo@linaro.org/
+                 else if (!paged &&
+                          /* avoid order-3 allocations if device
+                           * can handle skb frags (sg)
+                           */
+                          (fraglen + alloc_extra < SKB_MAX_ALLOC ||
+                          !(rt->dst.dev->features & NETIF_F_SG)))  
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+I should make it less-equal while at it.
 
+> >                                 alloclen = fraglen;
+> >                         else {
+> >                                 alloclen = min_t(int, fraglen, MAX_HEADER);
+> >                                 pagedlen = fraglen - alloclen;
+> >                         }
+> >
+> > -                       alloclen += exthdrlen;
+> > -
+> > -                       /* The last fragment gets additional space at tail.
+> > -                        * Note, with MSG_MORE we overallocate on fragments,
+> > -                        * because we have no idea what fragment will be
+> > -                        * the last.
+> > -                        */
+> > -                       if (datalen == length + fraggap)
+> > -                               alloclen += rt->dst.trailer_len;
+> > +                       alloclen += alloc_extra;
+> >
+> >                         if (transhdrlen) {
+> > -                               skb = sock_alloc_send_skb(sk,
+> > -                                               alloclen + hh_len + 15,
+> > +                               skb = sock_alloc_send_skb(sk, alloclen,
+> >                                                 (flags & MSG_DONTWAIT), &err);
+> >                         } else {
+> >                                 skb = NULL;
+> >                                 if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
+> >                                     2 * sk->sk_sndbuf)
+> > -                                       skb = alloc_skb(alloclen + hh_len + 15,
+> > +                                       skb = alloc_skb(alloclen,
+> >                                                         sk->sk_allocation);
+> >                                 if (unlikely(!skb))
+> >                                         err = -ENOBUFS;  
+> 
+> Is there any risk of regressions? If so, would it be preferable to try
+> regular alloc and only on failure, just below here, do the size and SG
+> test and if permitted jump back to the last of the three alloc_len
+> options?
+
+There is, that's what I tried in v1, Eric pointed out that we can't
+modify sk->sk_allocation here because UDP fast path doesn't take the
+lock, and pointed out that UNIX code has to handle similar problem. 
+So I decided to just copy what AF_UNIX does. In practical terms
+MTU > 16k is highly unlikely on physical devices (AFAIK) and with
+messages that large hopefully the trip thru the memory allocator won't
+be all that noticeable? If we were capping at one page that'd be a
+problem, but my gut feeling was that order-2 cap is unlikely to hurt.
+
+But I can go back, I'd have to refactor sock_alloc_send_pskb() to pass
+gfp_t explicitly. Probably by creating another layer of helpers
+(__sock_alloc_send_pskb()?). sock_alloc_send_pskb() already takes 6
+params so I was also thinking of converting it to ERR_PTR() return
+(instead of passing the error pointer) (6 is max for register passing).
+
+Should I go back to retry?
