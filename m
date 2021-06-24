@@ -2,126 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8A413B303D
-	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 15:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19A633B303E
+	for <lists+netdev@lfdr.de>; Thu, 24 Jun 2021 15:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231803AbhFXNk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 09:40:57 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:5422 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbhFXNk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 09:40:56 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4G9h2t1mVRz739f;
-        Thu, 24 Jun 2021 21:35:18 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Thu, 24 Jun 2021 21:38:34 +0800
-Received: from [10.67.102.67] (10.67.102.67) by dggemi759-chm.china.huawei.com
- (10.1.198.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 24
- Jun 2021 21:38:34 +0800
-Subject: Re: [PATCH net-next 1/3] arm64: barrier: add DGH macros to control
- memory accesses merging
-To:     Will Deacon <will@kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <catalin.marinas@arm.com>, <maz@kernel.org>,
-        <mark.rutland@arm.com>, <dbrazdil@google.com>,
-        <qperret@google.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <lipeng321@huawei.com>,
-        <peterz@infradead.org>
-References: <1624360271-17525-1-git-send-email-huangguangbin2@huawei.com>
- <1624360271-17525-2-git-send-email-huangguangbin2@huawei.com>
- <20210622121630.GC30757@willie-the-truck>
-From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
-Message-ID: <a0a1b7e6-01e3-2ba7-6255-0a9a7dcc75f1@huawei.com>
-Date:   Thu, 24 Jun 2021 21:38:34 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S231580AbhFXNlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 09:41:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51748 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229995AbhFXNll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 09:41:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624541960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9vLK98PdEnpyQ/nS6/7YJpw/gmVqIJdAagVZW4uCkYo=;
+        b=hH40r3nxhE480aJAjea+7jZRIp4WZw91yRNuo5g/HhnzchiGnuoy8kYeOnB7JqUse8GFGg
+        UI3UrNpb0fTVGBAriqCtf0fkCKyQDZep7CsC6OHUIEgMXlKqVBVwDWa0QJ/E3Y8N7CvOB3
+        ZcTvqg3hjNAzOtHofR5kOaXY/sjIi2E=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-532-s8-a7UoTMOC2w2wXKj0p-g-1; Thu, 24 Jun 2021 09:39:19 -0400
+X-MC-Unique: s8-a7UoTMOC2w2wXKj0p-g-1
+Received: by mail-wm1-f70.google.com with SMTP id j2-20020a05600c1c02b02901cecbe55d49so573882wms.3
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 06:39:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9vLK98PdEnpyQ/nS6/7YJpw/gmVqIJdAagVZW4uCkYo=;
+        b=iLwE+qSVFWY3HyyyW90FvrzD5eguBj2iZ57CzgiarnqXzuFR5X939PfpSSeCuj+48F
+         DuvPXvf0Nms+IHPmE+RLeTLI0Hl84lN8i9iRq7HsTOAakg70V/xvI1+PSEpBhfX/q9CF
+         FLZUQaZp9jUZ/Hr+Nazp+7nNK92Lwo9w9Nizy3eIaZ86bnV9cwJ5pK6uhTsZP3m7bbVi
+         11TXo1CGwDNbZR50SgAaSOQ1Z2Ii7sGU1Lc0qcRQ2F2W2WykYy0T2GIalDMVsvj3Vi9s
+         Je8G/0byv5jl8/s0TM5ztQrDJ8k72SKDyLCVUJanvFwgxOB+XAGd/PXdY3jnXCg6KeM3
+         kBWQ==
+X-Gm-Message-State: AOAM532tSh0RxdnbafGflAnkpSpnXTyc6+SrXYLQBa5Kjn4KBTv/689B
+        cWxVEA3WgEn+Gqvic5XJjApSE0wuxHJslTTqS3xVjU9EQmhsOQaBSPLhORSneDDFXEHKzA44OqD
+        4luQPkHkMsHZL/eU0
+X-Received: by 2002:a5d:4a01:: with SMTP id m1mr4658206wrq.51.1624541958186;
+        Thu, 24 Jun 2021 06:39:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzAJF2wUKvYOPeRb1CAsZgVlgHOPr4wgvdb504Sg1whYhBbruwbvWgntrHJxJYp0n/StAFHkA==
+X-Received: by 2002:a5d:4a01:: with SMTP id m1mr4658188wrq.51.1624541958066;
+        Thu, 24 Jun 2021 06:39:18 -0700 (PDT)
+Received: from pc-32.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id u18sm2798608wmj.15.2021.06.24.06.39.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Jun 2021 06:39:17 -0700 (PDT)
+Date:   Thu, 24 Jun 2021 15:39:15 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, vfedorenko@novek.ru
+Subject: Re: [PATCH net] ip6_tunnel: fix GRE6 segmentation
+Message-ID: <20210624133915.GA4606@pc-32.home>
+References: <20210622015254.1967716-1-kuba@kernel.org>
+ <33902f8c-e14a-7dc6-9bde-4f8f168505b5@gmail.com>
+ <20210622152451.7847bc24@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <592a8a33-dfb8-c67f-c9e6-0e1bab37b00d@gmail.com>
+ <20210623091458.40fb59c6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <5011b8aa-8bbf-9172-0982-599afed69c5d@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210622121630.GC30757@willie-the-truck>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.67]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5011b8aa-8bbf-9172-0982-599afed69c5d@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jun 23, 2021 at 12:28:05PM -0600, David Ahern wrote:
+> On 6/23/21 10:14 AM, Jakub Kicinski wrote:
+> > Noob question, why do we need that 2 sec wait with IPv6 sometimes?
+> > I've seen it randomly in my local testing as well I wasn't sure if 
+> > it's a bug or expected.
+> 
+> It is to let IPv6 DAD to complete otherwise the address will not be
+> selected as a source address. That typically results in test failures.
+> There are sysctl settings that can prevent the race and hence the need
+> for the sleep.
 
+But Jakub's script uses "nodad" in the "ip address add ..." commands.
+Isn't that supposed to disable DAD entirely for the new address?
+Why would it need an additional "sleep 2"?
 
-On 2021/6/22 20:16, Will Deacon wrote:
-> On Tue, Jun 22, 2021 at 07:11:09PM +0800, Guangbin Huang wrote:
->> From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
->>
->> DGH prohibits merging memory accesses with Normal-NC or Device-GRE
->> attributes before the hint instruction with any memory accesses
->> appearing after the hint instruction. Provide macros to expose it to the
->> arch code.
-> 
-> Hmm.
-> 
-> The architecture states:
-> 
->    | DGH is a hint instruction. A DGH instruction is not expected to be
->    | performance optimal to merge memory accesses with Normal Non-cacheable
->    | or Device-GRE attributes appearing in program order before the hint
->    | instruction with any memory accesses appearing after the hint instruction
->    | into a single memory transaction on an interconnect.
-> 
-> which doesn't make a whole lot of sense to me, in all honesty.
-> 
-Thanks for your review and modification of commit log.
-
->> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
->> Signed-off-by: Cheng Jian <cj.chengjian@huawei.com>
->> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
->> ---
->>   arch/arm64/include/asm/assembler.h | 7 +++++++
->>   arch/arm64/include/asm/barrier.h   | 1 +
->>   2 files changed, 8 insertions(+)
->>
->> diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
->> index 8418c1bd8f04..d723899328bd 100644
->> --- a/arch/arm64/include/asm/assembler.h
->> +++ b/arch/arm64/include/asm/assembler.h
->> @@ -90,6 +90,13 @@
->>   	.endm
->>   
->>   /*
->> + * Data gathering hint
->> + */
->> +	.macro	dgh
->> +	hint	#6
->> +	.endm
->> +
->> +/*
->>    * RAS Error Synchronization barrier
->>    */
->>   	.macro  esb
->> diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
->> index 451e11e5fd23..02e1735706d2 100644
->> --- a/arch/arm64/include/asm/barrier.h
->> +++ b/arch/arm64/include/asm/barrier.h
->> @@ -22,6 +22,7 @@
->>   #define dmb(opt)	asm volatile("dmb " #opt : : : "memory")
->>   #define dsb(opt)	asm volatile("dsb " #opt : : : "memory")
->>   
->> +#define dgh()		asm volatile("hint #6" : : : "memory")
-> 
-> Although I'm fine with this in arm64, I don't think this is the interface
-> which drivers should be using. Instead, once we know what this instruction
-> is supposed to do, we should look at exposing it as part of the I/O barriers
-> and providing a NOP implementation for other architectures. That way,
-> drivers can use it without having to have the #ifdef CONFIG_ARM64 stuff that
-> you have in the later patches here.
-> 
-> Will
-> .
-> 
-Ok, thanks, we will try to implement a new I/O barriers interface as your opinion
-and repost a new version after we test ok.
