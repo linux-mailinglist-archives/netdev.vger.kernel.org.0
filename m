@@ -2,148 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A67413B46BA
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 17:36:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DB103B470A
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 17:55:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbhFYPjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 11:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbhFYPi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 11:38:59 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 773CDC061574
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 08:36:36 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id v7so7890018pgl.2
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 08:36:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Q48+8/zBPx4T9aYN64WgheNQyajMIdAuDo9+C5se/CU=;
-        b=O7+1sH7/ZQp7rnBKEChvHh2n5H092A5QHvhOd/umYQeDgMPQBdkYrXCaeoooZgdcfb
-         ct3Q3a8t9un70yOp67sliKFSTQe5JjSqi3M0MPy9Ku5SiihrKGm/Rm9dy3r4djHmLTN9
-         sQ0klPnWVNV8MOD2uh7v+N1RkLFy3Ig+A+Jbmsh4O1pAQhUauSGpF5VWkD7eeSvJB8yt
-         iVBbY/uE8h0RF2C/92Fna+U1qmayGhhO7xDpwwrqOaSWWofwhRcWu4cbpjmuB8wT54KN
-         LcZMk/OXkTWKoRj2lhb/of74KRokcOHy4FPHbS2PdIlCTVACG90fT0KTSFWC7WLQ4Rni
-         C2tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Q48+8/zBPx4T9aYN64WgheNQyajMIdAuDo9+C5se/CU=;
-        b=OoxSmQ3cJ8vvXYdtT6qVh8ppxDMMKh5Fai4R/MuZ1VgKIdNgGjtGSwod5SNKmiFj+x
-         RE2gmV+YOfXgnKnqkvzyO3zPXLOCwMI8m3pYs906eNg8eiA/S+VGmYyCCa9jTDAReUJl
-         QHe+a5x7GiKmqONeb3oZe40f9ragC9oSzUE4DpS4BM7ufINyRJWnFu1cMnHbONCjjnWH
-         FOpk9hDSj1l93YdO5UCu3w7sOYdVNRO61SD42joiElUZAJoEyeVAvEcIhFyrFdmCDoAU
-         4ZJ5DP147pKDTOQERsf2pcne/VLZNCMQn9NAqzY8z+Dt21ScAojIWAPB+V3dVTbvrs4I
-         X26Q==
-X-Gm-Message-State: AOAM53282FGLvWXgQXavRkGcEI3f/gfwPUX5RdahOSC+vtQlDDx7PbXO
-        aHSHIJLkcCboObviN2BQ9tHb/nFvqlihzA==
-X-Google-Smtp-Source: ABdhPJz09pc0jv6fdVlaWb8ryuJ7tvxGIBpLqrxqoerjYXtFVtmzIJoN41jg4ylmxrvsY06n4gvYYw==
-X-Received: by 2002:a62:7d81:0:b029:2f1:b41b:21cd with SMTP id y123-20020a627d810000b02902f1b41b21cdmr6498594pfc.41.1624635395482;
-        Fri, 25 Jun 2021 08:36:35 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id p1sm5963891pfp.137.2021.06.25.08.36.34
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Jun 2021 08:36:35 -0700 (PDT)
-Date:   Fri, 25 Jun 2021 08:36:32 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 213581] New: Change in ip_dst_mtu_maybe_forward() breaks
- WebRTC connections
-Message-ID: <20210625083632.5a321cef@hermes.local>
+        id S229938AbhFYP5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 11:57:35 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:49400 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229738AbhFYP5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 11:57:34 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15PFocsc002805;
+        Fri, 25 Jun 2021 08:55:00 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=uweTxAw4AANpy+a4/WOarC4isghWooQBb1BBW9D+JMk=;
+ b=L4x66a5RHCCRChqb8AzeclLn1tdKboYZ5ims60CRr6rmHuqDVbGHzJMq2W1kZd1dfFWP
+ 1vPm4yeMIirLEolLPGg33X8ZhPCH9sOYSEsGVHtNZOqlANA7VYC9Ck1hDGCVNusUIlz3
+ XoVa4FoRoYDs2bC53gwYV62z0Ln4IZojdCA= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 39d255myx9-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 25 Jun 2021 08:54:59 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 25 Jun 2021 08:54:59 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QKCvw4ZjvUWQDkGmIzOWUKBwQ5D/9BFE3d+4cEjtFIs8hRizfl+Ig14demFFspkWuVnHBFzQhlON739sfcRkbrS8gaAOlmS4j4dleyh6b8WiVxRc5u/vUADR3e1XTGVLI2oBeUTjI02zQQ9TW3VoBT7XOCjvtROg3FkEbawYPhWU8r7oLF5hvDQwjeECoWHJuS3M2+YIt99ADD5kqGPE9INZWO9BOU0qTsXZUEljZaCrBggxvfHYRpD04jlRYQU6KZ4niOlx/AJxs6pnCgAi1bTJJDhyAXXw9Mq3vA17CqlauyaGYBYauHLUculbW0vppEvb6Q3+yW4OvbhUJbc/bw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uweTxAw4AANpy+a4/WOarC4isghWooQBb1BBW9D+JMk=;
+ b=IRXp20CSHEj/QhRaHlMLAe2StyeM8ymeT+Anwfz9uTmUxWAp6JfZUYh/iUdcpd2/IB27UE6igoh8PqieeXcUFcRO0h2yssRmLVsHywA1thF7PyEICd3iRDliC8QPv/W2OS/LQSjvneLin1X7/tF3PCRUrk4kcexVSmiUPq+KzMg9ILi8W7OvVtHEnRb+lh8cqyMyjvWyLOa2dirPigpD2YXog7n7SRnig4eqw/GBOv6pn819DeudHBzlwbnCJ/kNIgDDkdRfrHnTEq0LugyQjYNcCRKvsEvB5K19FLOhBMSgCYr2I1uvFoWusERSz9lAz9o4jIotQTvnQqqDPTetAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SA1PR15MB4659.namprd15.prod.outlook.com (2603:10b6:806:19e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.18; Fri, 25 Jun
+ 2021 15:54:58 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::d886:b658:e2eb:a906]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::d886:b658:e2eb:a906%5]) with mapi id 15.20.4264.023; Fri, 25 Jun 2021
+ 15:54:58 +0000
+Subject: Re: [PATCH v3 bpf-next 1/8] bpf: Introduce bpf timers.
+To:     Alexei Starovoitov <ast@fb.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <kernel-team@fb.com>
+References: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
+ <20210624022518.57875-2-alexei.starovoitov@gmail.com>
+ <4bf664bc-aad0-ef80-c745-af01fed8757a@fb.com>
+ <de1204cc-8c20-0e09-8880-e39c9ee6d889@fb.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <cfa10fa1-9ee4-95de-109d-a24cd5d43a98@fb.com>
+Date:   Fri, 25 Jun 2021 08:54:55 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
+In-Reply-To: <de1204cc-8c20-0e09-8880-e39c9ee6d889@fb.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [2620:10d:c090:400::5:4ed3]
+X-ClientProxiedBy: BYAPR06CA0036.namprd06.prod.outlook.com
+ (2603:10b6:a03:d4::49) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21e1::1328] (2620:10d:c090:400::5:4ed3) by BYAPR06CA0036.namprd06.prod.outlook.com (2603:10b6:a03:d4::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.19 via Frontend Transport; Fri, 25 Jun 2021 15:54:57 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: acf791ab-b719-4c1b-692e-08d937f19571
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4659:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SA1PR15MB4659685B5DF30EEA3D0E7ED2D3069@SA1PR15MB4659.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QIuds0W/bMs73SrULXZVibBYz3lL1FzmRuU7ryRpqhtrNnbFMMkKe9naYAKXJVLRuZv7b0xr/xZRblMt9PYgGFrqjWKISlx9/kfp6SnZhC3aIrNvV9v+ykS/PaJh35IKZMdeDVybvBlEKA8ySCxdf2+f6ZUWrIAjlprcZ4RNjC4gTBq/ohybGmaqIxtyT58GbTkjnidnDvl+scCj4YoSNkogMVdKNx6jtzPuAGnIbNSQGDklmD2Yr95XO8g24mu9XJjfw+NMdzX+AANWOQVunFS5HzGJ+jEkw6e5bEBUepLlk4KsHkjXYOsVKjprCxOwo+k5f7VsLnTGe45taiVlnsUC6FhcEmAVlyIrljGZVneVgxWKCl6euxgqZ2EAx3XcJ3Bf+/5Pzr5mftjGFuo22HPTB+0JzVsPLX39tyHwa9wXeQP9h8SfY2ubEatb3bWNJV4shxpqcYGidcj4x2ipLGdJadv1D3dNJ0KXIiw7OSwRsAxCd33o1S0e0HPXqpt1/X8tCLVWD9iWVY0kUKA3Ds2vS3VQy/LlpGfzM+XtGwYC9fHj0GZnNbaA23B+LYWTKZ/GJ4esNKtIQcazTQBCb5fh+sTjcC13tDqKBRccs0G6ZIy8vVfEIHvfPV8gxGmYjuaVxuWbr43dCa8x7WcSSHqqlUvD9XHVuCMmm/rsvjv5l/ud/0ARZXFGySRN6xk3oH/0ER3VwEtmTCZD9vxT45YkbbjaGPSTnLBthZfIuDk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39860400002)(136003)(366004)(346002)(376002)(66556008)(5660300002)(66476007)(110136005)(66946007)(316002)(38100700002)(2906002)(31686004)(83380400001)(6486002)(4326008)(186003)(16526019)(36756003)(31696002)(86362001)(53546011)(2616005)(478600001)(8936002)(52116002)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VFp3b2VWTWFWNjZUemFtTUtwT1hkLzZMdW5RRml2ZkU5T2hJRXVsMUtEWHJs?=
+ =?utf-8?B?MDFVQnhtTnBVWGhYTFJESUtFNVRJYldmTmdaOEJ0VkhLZmZqVlQ2S2RmVHJw?=
+ =?utf-8?B?YmRmbkJtTDNZWEVQNWVTRUxhV0xoRk43S1MrSm1SSVNrRHFnVDliTVluRXNQ?=
+ =?utf-8?B?TEl0MFUwY1BlUHJad2FGTlY4N1VZNWRCZDZRUWx1bkFIOGxkVW9uWDROendB?=
+ =?utf-8?B?YnVaaFpZcFhWeEdkbmIwTFlUajJkRjFBUUpQMmxqWm9IM0hSZFp3WEtmbXN1?=
+ =?utf-8?B?UndLaE92Q3Mzcm5WajUrVEY3aGJUWU50SVhSVjIyVDB3NnZlVGtnMm81d2FP?=
+ =?utf-8?B?NVM1L2FIOHdncVVQd2ZxOHY4WW80SUxJenV1WDJUaXl2TXFaSWFNdWtxT2RJ?=
+ =?utf-8?B?bXN5UVdYQ2xoUEpSUGtGeGNzdUNjak9kTHJydFF6aGlwOCs1cXNDQUFyckx4?=
+ =?utf-8?B?UTZHZXl0QVhpclJLcXh2VWc4RG5NRlJNM0REY2JkME5heG9hQlovenlid3J1?=
+ =?utf-8?B?VjI2dlVJWFhWb0xtdHIyTk9vSDIzWDJTaTF5Z2szQWpDNTk4bDdzeXo5cmhJ?=
+ =?utf-8?B?V2NITExLM0g1Z1pyWEg4dFVMbmJQN0NKTFllcnVpU1htQ2ZZT3lNUEVtcnNa?=
+ =?utf-8?B?TnhGbUZtdTRyQjJhdlhwci9vbXFTWXk4V2NEQjhCdjhFR0ZpQTM3a2wreXM0?=
+ =?utf-8?B?MFVjUXA3VkFicVNMRkNGdnJJZmJJc052bHA4bGl3eUx2MUxwUG04ckRUMW56?=
+ =?utf-8?B?QkhDTHJiYVlnaThIZlNzQXd5K3h5VW5DSEpoRER4cno5aDgwUnBQT1pzbnVP?=
+ =?utf-8?B?OHprTzhKWG9NdTBxVWpNSFdMMFJnUm93cGdmRFZ6c0FNcEQ0TTFXNm5GbXlE?=
+ =?utf-8?B?QXU0dWlqbSszRUZGVmFWVUVVREVlU25XSUh6U1ZQRG5Sdi9BK29SR0ZXN0l3?=
+ =?utf-8?B?aU9wUGFkOFV2OVFTL0JwaEgxMmlpVnRxVXIzOVk2ZnBPcDUrS3VEVEN5bGpY?=
+ =?utf-8?B?b1FuenJWZXdoN2NZTjI5NTZEMjE5L0h1d3BMcUZUU1V3WUdEU2FQU3pzaG9q?=
+ =?utf-8?B?azJkc1VxeEIzc1o0VFFnMzJwbGdHMWM0UFdyQktRYXpxVjRHNDAxM05zWXpH?=
+ =?utf-8?B?b3hWTnEyL1o3bk9WaW9rc2NXSVVqVnJxSU53UUNsR3JNSW9QT255UDlJaVYv?=
+ =?utf-8?B?ckcvTmx4Kzlid3JjQzNlOUk4elZPVTFUbFVibG43UCtETkl1bVRQNDdMcytu?=
+ =?utf-8?B?SGdXOTczQmNiWStpdDJYbXY4NWpiYjRwWWFjMGFxMWdwaDB2NXFYY3AxakZK?=
+ =?utf-8?B?ZUpXdWVwb0UrbzRSV1oweW5MNHB5TGROMHRkMmFqbWtxQzZEM3Q0TzRaK3Yy?=
+ =?utf-8?B?dVJoUlZBTDlod05QRWE3ZGpQOUhBcVpKVVBhTFc3MDZ2S2hMVW5wekVDSzJU?=
+ =?utf-8?B?Yk80UXpMRjVnUG9ia1hZRzZzV0pXWkFtcHhsVktPMGZRemFkaG5waUpyNHJp?=
+ =?utf-8?B?b3h6bG9CUnh3SEkyOS8vUFQrYmwvME52UzZFem5RVG5Bc0o3ZlkvRVBzeTlI?=
+ =?utf-8?B?RkF5ZCs3eTExalJ3eWg5MGFXcUk5VS9nZENPWWw1eHphZ0tDcW5yZ0EzQmpl?=
+ =?utf-8?B?YkJaSnVxbE1OaXVwTVBQUFpla2QzMk9LbGMwWXdlVHB3cTFMdksxWmM1Q2NY?=
+ =?utf-8?B?T2ZRMlNTZWswdEU4eG5wMytDNUdHdVlUeXNpU2RYMTE3dXF2dnU2dGVTT3lV?=
+ =?utf-8?B?bDRvVHlBYjY2c0F5Uk9WK2JvV1kwemNab2dLOUorVWdvM0ZNWFpMQmorNndm?=
+ =?utf-8?B?MGs3Z1ZkZXpNNkJZNmxvZz09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: acf791ab-b719-4c1b-692e-08d937f19571
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2021 15:54:58.5018
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CZkHClMEzNJ+scOfcZClP6khiVA7a5+5MsVGRPykkeV8uONeLMKYHHzgmeBDJQoS
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4659
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: TIsD7wBhgKjI6ciAcf5B6HzqhxUfFbzN
+X-Proofpoint-GUID: TIsD7wBhgKjI6ciAcf5B6HzqhxUfFbzN
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-06-25_06:2021-06-25,2021-06-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ mlxscore=0 bulkscore=0 suspectscore=0 mlxlogscore=999 malwarescore=0
+ impostorscore=0 phishscore=0 spamscore=0 clxscore=1015 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106250093
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-Begin forwarded message:
+On 6/25/21 7:57 AM, Alexei Starovoitov wrote:
+> On 6/24/21 11:25 PM, Yonghong Song wrote:
+>>
+>>> +
+>>> +    ____bpf_spin_lock(&timer->lock);
+>>
+>> I think we may still have some issues.
+>> Case 1:
+>>    1. one bpf program is running in process context,
+>>       bpf_timer_start() is called and timer->lock is taken
+>>    2. timer softirq is triggered and this callback is called
+> 
+> ___bpf_spin_lock is actually irqsave version of spin_lock.
+> So this race is not possible.
 
-Date: Fri, 25 Jun 2021 11:54:19 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 213581] New: Change in ip_dst_mtu_maybe_forward() breaks WebRTC connections
+Sorry I missed that ____bpf_spin_lock() has local_irq_save(),
+so yes. the above situation cannot happen.
 
+> 
+>> Case 2:
+>>    1. this callback is called, timer->lock is taken
+>>    2. a nmi happens and some bpf program is called (kprobe, tracepoint,
+>>       fentry/fexit or perf_event, etc.) and that program calls
+>>       bpf_timer_start()
+>>
+>> So we could have deadlock in both above cases?
+> 
+> Shouldn't be possible either because bpf timers are not allowed
+> in nmi-bpf-progs. I'll double check that it's the case.
+> Pretty much the same restrictions are with bpf_spin_lock.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=213581
+The patch added bpf_base_func_proto() to bpf_tracing_func_proto:
 
-            Bug ID: 213581
-           Summary: Change in ip_dst_mtu_maybe_forward() breaks WebRTC
-                    connections
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.13.0-rc7
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: IPV4
-          Assignee: stephen@networkplumber.org
-          Reporter: godlike64@gmail.com
-        Regression: No
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 7a52bc172841..80f6e6dafd5e 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1057,7 +1057,7 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, 
+const struct bpf_prog *prog)
+  	case BPF_FUNC_snprintf:
+  		return &bpf_snprintf_proto;
+  	default:
+-		return NULL;
++		return bpf_base_func_proto(func_id);
+  	}
+  }
 
-Recent Linux kernel versions (>=5.9 if my calculations are correct), when used
-as a gateway on a LAN (or a similar setup) will break WebRTC protocols such as
-Google Meet, Discord, etc. (have not done extensive testing but would gather
-that most similar protocols are affected). In the case of Meet, no video for
-any participant is ever shown (other than my own), and nobody can see my video,
-although audio does work. In the case of Discord, no audio/video for other
-participants is ever shown. Note that every meeting is initiated or joined from
-inside the LAN, not on the gateway itself.
+and timer helpers are added to bpf_base_func_proto:
+@@ -1055,6 +1330,12 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+  		return &bpf_per_cpu_ptr_proto;
+  	case BPF_FUNC_this_cpu_ptr:
+  		return &bpf_this_cpu_ptr_proto;
++	case BPF_FUNC_timer_init:
++		return &bpf_timer_init_proto;
++	case BPF_FUNC_timer_start:
++		return &bpf_timer_start_proto;
++	case BPF_FUNC_timer_cancel:
++		return &bpf_timer_cancel_proto;
+  	default:
+  		break;
+  	}
 
-Using plain iptables, firewalld+iptables or firewalld+nftables makes no
-difference (it was the first thing I tried). I discovered this a few months ago
-when updating the kernel, and found that reverting to the previous kernel made
-this work again. I didn't look further into it until now, when I can no longer
-stay on that old of a kernel :).
+static const struct bpf_func_proto *
+pe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+{
+         switch (func_id) {
+...
+         default:
+                 return bpf_tracing_func_proto(func_id, prog);
+         }
+}
 
-Using git-bisect I was able to identify the offending commit:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=02a1b175b0e92d9e0fa5df3957ade8d733ceb6a0
+static const struct bpf_func_proto *
+kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog 
+*prog)
+{
+...
+         default:
+                 return bpf_tracing_func_proto(func_id, prog);
+         }
+}
 
-This patch was backported to linux-stable shortly after 5.4.72 released. It
-appears to still be there in vanilla upstream. I can confirm that reverting
-this patch in 5.4.109 fixes the issue and webrtc works again.
+Also, we have some functions inside ____bpf_spin_lock() e.g., 
+bpf_prog_inc(), hrtimer_start(), etc. If we want to be absolutely safe,
+we need to mark them not tracable for kprobe/kretprobe/fentry/fexit/...
+But I am not sure whether this is really needed or not.
 
-I have also reverted this patch in 5.13.0-rc7 and WebRTC works with the patch
-reverted. Without reverting the patch, it's broken.
+> 
+>>
+>>> +    /* callback_fn and prog need to match. They're updated together
+>>> +     * and have to be read under lock.
+>>> +     */
+>>> +    prog = t->prog;
+>>> +    callback_fn = t->callback_fn;
+>>> +
+>>> +    /* wrap bpf subprog invocation with prog->refcnt++ and -- to make
+>>> +     * sure that refcnt doesn't become zero when subprog is executing.
+>>> +     * Do it under lock to make sure that bpf_timer_start doesn't drop
+>>> +     * prev prog refcnt to zero before timer_cb has a chance to bump 
+>>> it.
+>>> +     */
+>>> +    bpf_prog_inc(prog);
+>>> +    ____bpf_spin_unlock(&timer->lock);
+>>> +
+>>> +    /* bpf_timer_cb() runs in hrtimer_run_softirq. It doesn't 
+>>> migrate and
+>>> +     * cannot be preempted by another bpf_timer_cb() on the same cpu.
+>>> +     * Remember the timer this callback is servicing to prevent
+>>> +     * deadlock if callback_fn() calls bpf_timer_cancel() on the 
+>>> same timer.
+>>> +     */
+>>> +    this_cpu_write(hrtimer_running, t);
+>>
+>> This is not protected by spinlock, in bpf_timer_cancel() and
+>> bpf_timer_cancel_and_free(), we have spinlock protected read, so
+>> there is potential race conditions if callback function and 
+>> helper/bpf_timer_cancel_and_free run in different context?
+> 
+> what kind of race do you see?
+> This is per-cpu var and bpf_timer_cb is in softirq
+> while timer_cancel/cancel_and_free are calling it under
+> spin_lock_irqsave... so they cannot race because softirq
+> and bpf_timer_cb will run after start/canel/cancel_free
+> will do unlock_irqrestore.
 
-No other protocol/connection seems to be affected.
+Again, I missed local_irq_save(). With irqsave, this indeed
+won't happen. The same for a few comments below.
 
-Reproducible: Always
-
-Steps to Reproduce:
-1. Install any kernel >5.4.9 on a gateway device.
-2. Try to use a conferencing application that uses WebRTC (Meet, Discord, etc).
-Either start or join a meeting from a device that sits in the LAN.
-Actual Results:  
-Audio and/or video does not work when a meeting is initiated/joined from within
-the LAN
-
-Expected Results:  
-Both audio and video should work when inside the meeting.
-
-My C is quite limited, but it appears that this function, from wherever it gets
-called, returns a different value after the mentioned commit. It used to
-return:
-
-return min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
-
-Now it returns:
-
-mtu = dst_metric_raw(dst, RTAX_MTU);
-if (mtu)
-    return mtu;
-
--- 
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are the assignee for the bug.
+> 
+>>> +    prev = t->prog;
+>>> +    if (prev != prog) {
+>>> +        if (prev)
+>>> +            /* Drop pref prog refcnt when swapping with new prog */
+>>
+>> pref -> prev
+>>
+>>> +            bpf_prog_put(prev);
+>>
+>> Maybe we want to put the above two lines with {}?
+> 
+> you mean add {} because there is a comment ?
+> I don't think the kernel coding style considers comment as a statement.
+> 
+>>> +    if (this_cpu_read(hrtimer_running) != t)
+>>> +        hrtimer_cancel(&t->timer);
+>>
+>> We could still have race conditions here when 
+>> bpf_timer_cancel_and_free() runs in process context and callback in
+>> softirq context. I guess we might be okay.
+> 
+> No, since this check is under spin_lock_irsave.
+> 
+>> But if bpf_timer_cancel_and_free() in nmi context, not 100% sure
+>> whether we have issues or not.
+> 
+> timers shouldn't be available to nmi-bpf progs.
+> There will be all sorts of issues.
+> The underlying hrtimer implementation cannot deal with nmi either.
