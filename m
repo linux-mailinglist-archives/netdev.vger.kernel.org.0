@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 679453B4905
+	by mail.lfdr.de (Postfix) with ESMTP id D54483B4906
 	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 20:54:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbhFYS5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 14:57:05 -0400
+        id S229924AbhFYS5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 14:57:06 -0400
 Received: from mga01.intel.com ([192.55.52.88]:14426 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229738AbhFYS5E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229812AbhFYS5E (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 25 Jun 2021 14:57:04 -0400
-IronPort-SDR: R/jDU5R+ltXQML7XBNINeYxssWjBcb++bqZxpn8YUPnuICKupitcSnmtS54aPQUCW0Rv7iax84
- xvBB8XLhzH3w==
-X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="229326797"
+IronPort-SDR: 6dYrVt9WK0Uw2s9Wjw8vUVR7uUHQLIAWb2CQx4yfss7rhvrkHXx0rdWZVw5VcLkUMqUKXJ0UuQ
+ OUZKZVs+8YKw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="229326799"
 X-IronPort-AV: E=Sophos;i="5.83,299,1616482800"; 
-   d="scan'208";a="229326797"
+   d="scan'208";a="229326799"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 11:54:43 -0700
-IronPort-SDR: 0VgAamWpAHK2I9/fQ7kVjyvcWqyNrMfKD5dzV/4mW88pjEzrNUukcVIHKDBNIcBajQRCMYMiLk
- n4K1FnbsZrnA==
+IronPort-SDR: 65VdD4JjthSgDv4F5vpO1JKVv1o/Ql+HdFYHnjNa2hktZyY2Z6dDdO8uHFV+GxMMTauh7tGqDg
+ tB998kxl7C4Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,299,1616482800"; 
-   d="scan'208";a="491655922"
+   d="scan'208";a="491655927"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga002.fm.intel.com with ESMTP; 25 Jun 2021 11:54:43 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+Cc:     Maciej Machnikowski <maciej.machnikowski@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Ben Shelton <benjamin.h.shelton@intel.com>,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 1/5] ice: add tracepoints
-Date:   Fri, 25 Jun 2021 11:57:29 -0700
-Message-Id: <20210625185733.1848704-2-anthony.l.nguyen@intel.com>
+        richardcochran@gmail.com, Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH net-next 2/5] ice: add support for auxiliary input/output pins
+Date:   Fri, 25 Jun 2021 11:57:30 -0700
+Message-Id: <20210625185733.1848704-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210625185733.1848704-1-anthony.l.nguyen@intel.com>
 References: <20210625185733.1848704-1-anthony.l.nguyen@intel.com>
@@ -43,376 +42,529 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Maciej Machnikowski <maciej.machnikowski@intel.com>
 
-This patch is modeled after one by Scott Peterson for i40e.
+The E810 device supports programmable pins for enabling both input and
+output events related to the PTP hardware clock. This includes both
+output signals with programmable period, as well as timestamping of
+events on input pins.
 
-Add tracepoints to the driver, via a new file ice_trace.h and some new
-trace calls added in interesting places in the driver. Add some tracing
-for DIMLIB to help debug interrupt moderation problems.
+Add support for enabling these using the CONFIG_PTP_1588_CLOCK
+interface.
 
-Performance should not be affected, and this can be very useful
-for debugging and adding new trace events to paths in the future.
+This allows programming the software defined pins to take advantage of
+the hardware clock features.
 
-Note eBPF programs can attach to these events, as well as perf
-can count them since we're attaching to the events subsystem
-in the kernel.
-
-Co-developed-by: Ben Shelton <benjamin.h.shelton@intel.com>
-Signed-off-by: Ben Shelton <benjamin.h.shelton@intel.com>
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+Signed-off-by: Maciej Machnikowski <maciej.machnikowski@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
-NOTE: checkpatch will complain about this patch due to the macros
-defining the new trace functionality being formatted for readability.
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |  18 ++
+ drivers/net/ethernet/intel/ice/ice_main.c     |  12 +
+ drivers/net/ethernet/intel/ice/ice_ptp.c      | 293 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_ptp.h      |  43 +++
+ 4 files changed, 366 insertions(+)
 
- drivers/net/ethernet/intel/ice/ice_main.c  |   8 +
- drivers/net/ethernet/intel/ice/ice_trace.h | 232 +++++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_txrx.c  |   9 +
- 3 files changed, 249 insertions(+)
- create mode 100644 drivers/net/ethernet/intel/ice/ice_trace.h
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 6989a76c42a7..76021d977b60 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -138,6 +138,10 @@
+ #define GLGEN_CLKSTAT_SRC_PSM_CLK_SRC_S		4
+ #define GLGEN_CLKSTAT_SRC_PSM_CLK_SRC_M		ICE_M(0x3, 4)
+ #define GLGEN_CLKSTAT_SRC			0x000B826C
++#define GLGEN_GPIO_CTL(_i)			(0x000880C8 + ((_i) * 4))
++#define GLGEN_GPIO_CTL_PIN_DIR_M		BIT(4)
++#define GLGEN_GPIO_CTL_PIN_FUNC_S		8
++#define GLGEN_GPIO_CTL_PIN_FUNC_M		ICE_M(0xF, 8)
+ #define GLGEN_RSTAT				0x000B8188
+ #define GLGEN_RSTAT_DEVSTATE_M			ICE_M(0x3, 0)
+ #define GLGEN_RSTCTL				0x000B8180
+@@ -203,6 +207,7 @@
+ #define PFINT_MBX_CTL_CAUSE_ENA_M		BIT(30)
+ #define PFINT_OICR				0x0016CA00
+ #define PFINT_OICR_TSYN_TX_M			BIT(11)
++#define PFINT_OICR_TSYN_EVNT_M			BIT(12)
+ #define PFINT_OICR_ECC_ERR_M			BIT(16)
+ #define PFINT_OICR_MAL_DETECT_M			BIT(19)
+ #define PFINT_OICR_GRST_M			BIT(20)
+@@ -434,10 +439,18 @@
+ #define GLV_UPRCL(_i)				(0x003B2000 + ((_i) * 8))
+ #define GLV_UPTCL(_i)				(0x0030A000 + ((_i) * 8))
+ #define PRTRPB_RDPC				0x000AC260
++#define GLTSYN_AUX_IN_0(_i)			(0x000889D8 + ((_i) * 4))
++#define GLTSYN_AUX_IN_0_INT_ENA_M		BIT(4)
++#define GLTSYN_AUX_OUT_0(_i)			(0x00088998 + ((_i) * 4))
++#define GLTSYN_AUX_OUT_0_OUT_ENA_M		BIT(0)
++#define GLTSYN_AUX_OUT_0_OUTMOD_M		ICE_M(0x3, 1)
++#define GLTSYN_CLKO_0(_i)			(0x000889B8 + ((_i) * 4))
+ #define GLTSYN_CMD				0x00088810
+ #define GLTSYN_CMD_SYNC				0x00088814
+ #define GLTSYN_ENA(_i)				(0x00088808 + ((_i) * 4))
+ #define GLTSYN_ENA_TSYN_ENA_M			BIT(0)
++#define GLTSYN_EVNT_H_0(_i)			(0x00088970 + ((_i) * 4))
++#define GLTSYN_EVNT_L_0(_i)			(0x00088968 + ((_i) * 4))
+ #define GLTSYN_INCVAL_H(_i)			(0x00088920 + ((_i) * 4))
+ #define GLTSYN_INCVAL_L(_i)			(0x00088918 + ((_i) * 4))
+ #define GLTSYN_SHADJ_H(_i)			(0x00088910 + ((_i) * 4))
+@@ -446,7 +459,12 @@
+ #define GLTSYN_SHTIME_H(_i)			(0x000888F0 + ((_i) * 4))
+ #define GLTSYN_SHTIME_L(_i)			(0x000888E8 + ((_i) * 4))
+ #define GLTSYN_STAT(_i)				(0x000888C0 + ((_i) * 4))
++#define GLTSYN_STAT_EVENT0_M			BIT(0)
++#define GLTSYN_STAT_EVENT1_M			BIT(1)
++#define GLTSYN_STAT_EVENT2_M			BIT(2)
+ #define GLTSYN_SYNC_DLAY			0x00088818
++#define GLTSYN_TGT_H_0(_i)			(0x00088930 + ((_i) * 4))
++#define GLTSYN_TGT_L_0(_i)			(0x00088928 + ((_i) * 4))
+ #define GLTSYN_TIME_H(_i)			(0x000888D8 + ((_i) * 4))
+ #define GLTSYN_TIME_L(_i)			(0x000888D0 + ((_i) * 4))
+ #define PFTSYN_SEM				0x00088880
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 5c3ea504770a..b72ab9e97e79 100644
+index b72ab9e97e79..ef8d1815af56 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -13,6 +13,12 @@
- #include "ice_dcb_lib.h"
- #include "ice_dcb_nl.h"
- #include "ice_devlink.h"
-+/* Including ice_trace.h with CREATE_TRACE_POINTS defined will generate the
-+ * ice tracepoint functions. This must be done exactly once across the
-+ * ice driver.
-+ */
-+#define CREATE_TRACE_POINTS
-+#include "ice_trace.h"
+@@ -2817,6 +2817,18 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
+ 		ice_ptp_process_ts(pf);
+ 	}
  
- #define DRV_SUMMARY	"Intel(R) Ethernet Connection E800 Series Linux Driver"
- static const char ice_driver_string[] = DRV_SUMMARY;
-@@ -5477,6 +5483,7 @@ static void ice_tx_dim_work(struct work_struct *work)
- 	itr = tx_profile[dim->profile_ix].itr;
- 	intrl = tx_profile[dim->profile_ix].intrl;
- 
-+	ice_trace(tx_dim_work, q_vector, dim);
- 	ice_write_itr(rc, itr);
- 	ice_write_intrl(q_vector, intrl);
- 
-@@ -5501,6 +5508,7 @@ static void ice_rx_dim_work(struct work_struct *work)
- 	itr = rx_profile[dim->profile_ix].itr;
- 	intrl = rx_profile[dim->profile_ix].intrl;
- 
-+	ice_trace(rx_dim_work, q_vector, dim);
- 	ice_write_itr(rc, itr);
- 	ice_write_intrl(q_vector, intrl);
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_trace.h b/drivers/net/ethernet/intel/ice/ice_trace.h
-new file mode 100644
-index 000000000000..9bc0b8fdfc77
---- /dev/null
-+++ b/drivers/net/ethernet/intel/ice/ice_trace.h
-@@ -0,0 +1,232 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2021 Intel Corporation. */
++	if (oicr & PFINT_OICR_TSYN_EVNT_M) {
++		u8 tmr_idx = hw->func_caps.ts_func_info.tmr_index_owned;
++		u32 gltsyn_stat = rd32(hw, GLTSYN_STAT(tmr_idx));
 +
-+/* Modeled on trace-events-sample.h */
++		/* Save EVENTs from GTSYN register */
++		pf->ptp.ext_ts_irq |= gltsyn_stat & (GLTSYN_STAT_EVENT0_M |
++						     GLTSYN_STAT_EVENT1_M |
++						     GLTSYN_STAT_EVENT2_M);
++		ena_mask &= ~PFINT_OICR_TSYN_EVNT_M;
++		kthread_queue_work(pf->ptp.kworker, &pf->ptp.extts_work);
++	}
 +
-+/* The trace subsystem name for ice will be "ice".
-+ *
-+ * This file is named ice_trace.h.
-+ *
-+ * Since this include file's name is different from the trace
-+ * subsystem name, we'll have to define TRACE_INCLUDE_FILE at the end
-+ * of this file.
-+ */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM ice
-+
-+/* See trace-events-sample.h for a detailed description of why this
-+ * guard clause is different from most normal include files.
-+ */
-+#if !defined(_ICE_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
-+#define _ICE_TRACE_H_
-+
-+#include <linux/tracepoint.h>
-+
-+/* ice_trace() macro enables shared code to refer to trace points
-+ * like:
-+ *
-+ * trace_ice_example(args...)
-+ *
-+ * ... as:
-+ *
-+ * ice_trace(example, args...)
-+ *
-+ * ... to resolve to the PF version of the tracepoint without
-+ * ifdefs, and to allow tracepoints to be disabled entirely at build
-+ * time.
-+ *
-+ * Trace point should always be referred to in the driver via this
-+ * macro.
-+ *
-+ * Similarly, ice_trace_enabled(trace_name) wraps references to
-+ * trace_ice_<trace_name>_enabled() functions.
-+ * @trace_name: name of tracepoint
-+ */
-+#define _ICE_TRACE_NAME(trace_name) (trace_##ice##_##trace_name)
-+#define ICE_TRACE_NAME(trace_name) _ICE_TRACE_NAME(trace_name)
-+
-+#define ice_trace(trace_name, args...) ICE_TRACE_NAME(trace_name)(args)
-+
-+#define ice_trace_enabled(trace_name) ICE_TRACE_NAME(trace_name##_enabled)()
-+
-+/* This is for events common to PF. Corresponding versions will be named
-+ * trace_ice_*. The ice_trace() macro above will select the right trace point
-+ * name for the driver.
-+ */
-+
-+/* Begin tracepoints */
-+
-+/* Global tracepoints */
-+
-+/* Events related to DIM, q_vectors and ring containers */
-+DECLARE_EVENT_CLASS(ice_rx_dim_template,
-+		    TP_PROTO(struct ice_q_vector *q_vector, struct dim *dim),
-+		    TP_ARGS(q_vector, dim),
-+		    TP_STRUCT__entry(__field(struct ice_q_vector *, q_vector)
-+				     __field(struct dim *, dim)
-+				     __string(devname, q_vector->rx.ring->netdev->name)),
-+
-+		    TP_fast_assign(__entry->q_vector = q_vector;
-+				   __entry->dim = dim;
-+				   __assign_str(devname, q_vector->rx.ring->netdev->name);),
-+
-+		    TP_printk("netdev: %s Rx-Q: %d dim-state: %d dim-profile: %d dim-tune: %d dim-st-right: %d dim-st-left: %d dim-tired: %d",
-+			      __get_str(devname),
-+			      __entry->q_vector->rx.ring->q_index,
-+			      __entry->dim->state,
-+			      __entry->dim->profile_ix,
-+			      __entry->dim->tune_state,
-+			      __entry->dim->steps_right,
-+			      __entry->dim->steps_left,
-+			      __entry->dim->tired)
-+);
-+
-+DEFINE_EVENT(ice_rx_dim_template, ice_rx_dim_work,
-+	     TP_PROTO(struct ice_q_vector *q_vector, struct dim *dim),
-+	     TP_ARGS(q_vector, dim)
-+);
-+
-+DECLARE_EVENT_CLASS(ice_tx_dim_template,
-+		    TP_PROTO(struct ice_q_vector *q_vector, struct dim *dim),
-+		    TP_ARGS(q_vector, dim),
-+		    TP_STRUCT__entry(__field(struct ice_q_vector *, q_vector)
-+				     __field(struct dim *, dim)
-+				     __string(devname, q_vector->tx.ring->netdev->name)),
-+
-+		    TP_fast_assign(__entry->q_vector = q_vector;
-+				   __entry->dim = dim;
-+				   __assign_str(devname, q_vector->tx.ring->netdev->name);),
-+
-+		    TP_printk("netdev: %s Tx-Q: %d dim-state: %d dim-profile: %d dim-tune: %d dim-st-right: %d dim-st-left: %d dim-tired: %d",
-+			      __get_str(devname),
-+			      __entry->q_vector->tx.ring->q_index,
-+			      __entry->dim->state,
-+			      __entry->dim->profile_ix,
-+			      __entry->dim->tune_state,
-+			      __entry->dim->steps_right,
-+			      __entry->dim->steps_left,
-+			      __entry->dim->tired)
-+);
-+
-+DEFINE_EVENT(ice_tx_dim_template, ice_tx_dim_work,
-+	     TP_PROTO(struct ice_q_vector *q_vector, struct dim *dim),
-+	     TP_ARGS(q_vector, dim)
-+);
-+
-+/* Events related to a vsi & ring */
-+DECLARE_EVENT_CLASS(ice_tx_template,
-+		    TP_PROTO(struct ice_ring *ring, struct ice_tx_desc *desc,
-+			     struct ice_tx_buf *buf),
-+
-+		    TP_ARGS(ring, desc, buf),
-+		    TP_STRUCT__entry(__field(void *, ring)
-+				     __field(void *, desc)
-+				     __field(void *, buf)
-+				     __string(devname, ring->netdev->name)),
-+
-+		    TP_fast_assign(__entry->ring = ring;
-+				   __entry->desc = desc;
-+				   __entry->buf = buf;
-+				   __assign_str(devname, ring->netdev->name);),
-+
-+		    TP_printk("netdev: %s ring: %pK desc: %pK buf %pK", __get_str(devname),
-+			      __entry->ring, __entry->desc, __entry->buf)
-+);
-+
-+#define DEFINE_TX_TEMPLATE_OP_EVENT(name) \
-+DEFINE_EVENT(ice_tx_template, name, \
-+	     TP_PROTO(struct ice_ring *ring, \
-+		      struct ice_tx_desc *desc, \
-+		      struct ice_tx_buf *buf), \
-+	     TP_ARGS(ring, desc, buf))
-+
-+DEFINE_TX_TEMPLATE_OP_EVENT(ice_clean_tx_irq);
-+DEFINE_TX_TEMPLATE_OP_EVENT(ice_clean_tx_irq_unmap);
-+DEFINE_TX_TEMPLATE_OP_EVENT(ice_clean_tx_irq_unmap_eop);
-+
-+DECLARE_EVENT_CLASS(ice_rx_template,
-+		    TP_PROTO(struct ice_ring *ring, union ice_32b_rx_flex_desc *desc),
-+
-+		    TP_ARGS(ring, desc),
-+
-+		    TP_STRUCT__entry(__field(void *, ring)
-+				     __field(void *, desc)
-+				     __string(devname, ring->netdev->name)),
-+
-+		    TP_fast_assign(__entry->ring = ring;
-+				   __entry->desc = desc;
-+				   __assign_str(devname, ring->netdev->name);),
-+
-+		    TP_printk("netdev: %s ring: %pK desc: %pK", __get_str(devname),
-+			      __entry->ring, __entry->desc)
-+);
-+DEFINE_EVENT(ice_rx_template, ice_clean_rx_irq,
-+	     TP_PROTO(struct ice_ring *ring, union ice_32b_rx_flex_desc *desc),
-+	     TP_ARGS(ring, desc)
-+);
-+
-+DECLARE_EVENT_CLASS(ice_rx_indicate_template,
-+		    TP_PROTO(struct ice_ring *ring, union ice_32b_rx_flex_desc *desc,
-+			     struct sk_buff *skb),
-+
-+		    TP_ARGS(ring, desc, skb),
-+
-+		    TP_STRUCT__entry(__field(void *, ring)
-+				     __field(void *, desc)
-+				     __field(void *, skb)
-+				     __string(devname, ring->netdev->name)),
-+
-+		    TP_fast_assign(__entry->ring = ring;
-+				   __entry->desc = desc;
-+				   __entry->skb = skb;
-+				   __assign_str(devname, ring->netdev->name);),
-+
-+		    TP_printk("netdev: %s ring: %pK desc: %pK skb %pK", __get_str(devname),
-+			      __entry->ring, __entry->desc, __entry->skb)
-+);
-+
-+DEFINE_EVENT(ice_rx_indicate_template, ice_clean_rx_irq_indicate,
-+	     TP_PROTO(struct ice_ring *ring, union ice_32b_rx_flex_desc *desc,
-+		      struct sk_buff *skb),
-+	     TP_ARGS(ring, desc, skb)
-+);
-+
-+DECLARE_EVENT_CLASS(ice_xmit_template,
-+		    TP_PROTO(struct ice_ring *ring, struct sk_buff *skb),
-+
-+		    TP_ARGS(ring, skb),
-+
-+		    TP_STRUCT__entry(__field(void *, ring)
-+				     __field(void *, skb)
-+				     __string(devname, ring->netdev->name)),
-+
-+		    TP_fast_assign(__entry->ring = ring;
-+				   __entry->skb = skb;
-+				   __assign_str(devname, ring->netdev->name);),
-+
-+		    TP_printk("netdev: %s skb: %pK ring: %pK", __get_str(devname),
-+			      __entry->skb, __entry->ring)
-+);
-+
-+#define DEFINE_XMIT_TEMPLATE_OP_EVENT(name) \
-+DEFINE_EVENT(ice_xmit_template, name, \
-+	     TP_PROTO(struct ice_ring *ring, struct sk_buff *skb), \
-+	     TP_ARGS(ring, skb))
-+
-+DEFINE_XMIT_TEMPLATE_OP_EVENT(ice_xmit_frame_ring);
-+DEFINE_XMIT_TEMPLATE_OP_EVENT(ice_xmit_frame_ring_drop);
-+
-+/* End tracepoints */
-+
-+#endif /* _ICE_TRACE_H_ */
-+/* This must be outside ifdef _ICE_TRACE_H */
-+
-+/* This trace include file is not located in the .../include/trace
-+ * with the kernel tracepoint definitions, because we're a loadable
-+ * module.
-+ */
-+#undef TRACE_INCLUDE_PATH
-+#define TRACE_INCLUDE_PATH .
-+#undef TRACE_INCLUDE_FILE
-+#define TRACE_INCLUDE_FILE ../../drivers/net/ethernet/intel/ice/ice_trace
-+#include <trace/define_trace.h>
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index e9e9edb32c6f..a63d5916ebb0 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -10,6 +10,7 @@
- #include "ice_txrx_lib.h"
- #include "ice_lib.h"
+ #define ICE_AUX_CRIT_ERR (PFINT_OICR_PE_CRITERR_M | PFINT_OICR_HMC_ERR_M | PFINT_OICR_PE_PUSH_M)
+ 	if (oicr & ICE_AUX_CRIT_ERR) {
+ 		struct iidc_event *event;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index 609f433a4b96..5d5207b56ca9 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -4,6 +4,8 @@
  #include "ice.h"
-+#include "ice_trace.h"
- #include "ice_dcb_lib.h"
- #include "ice_xsk.h"
+ #include "ice_lib.h"
  
-@@ -224,6 +225,7 @@ static bool ice_clean_tx_irq(struct ice_ring *tx_ring, int napi_budget)
- 
- 		smp_rmb();	/* prevent any other reads prior to eop_desc */
- 
-+		ice_trace(clean_tx_irq, tx_ring, tx_desc, tx_buf);
- 		/* if the descriptor isn't done, no work yet to do */
- 		if (!(eop_desc->cmd_type_offset_bsz &
- 		      cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE)))
-@@ -254,6 +256,7 @@ static bool ice_clean_tx_irq(struct ice_ring *tx_ring, int napi_budget)
- 
- 		/* unmap remaining buffers */
- 		while (tx_desc != eop_desc) {
-+			ice_trace(clean_tx_irq_unmap, tx_ring, tx_desc, tx_buf);
- 			tx_buf++;
- 			tx_desc++;
- 			i++;
-@@ -272,6 +275,7 @@ static bool ice_clean_tx_irq(struct ice_ring *tx_ring, int napi_budget)
- 				dma_unmap_len_set(tx_buf, len, 0);
- 			}
- 		}
-+		ice_trace(clean_tx_irq_unmap_eop, tx_ring, tx_desc, tx_buf);
- 
- 		/* move us one more past the eop_desc for start of next pkt */
- 		tx_buf++;
-@@ -1102,6 +1106,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 		 */
- 		dma_rmb();
- 
-+		ice_trace(clean_rx_irq, rx_ring, rx_desc);
- 		if (rx_desc->wb.rxdid == FDIR_DESC_RXDID || !rx_ring->netdev) {
- 			struct ice_vsi *ctrl_vsi = rx_ring->vsi;
- 
-@@ -1207,6 +1212,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 
- 		ice_process_skb_fields(rx_ring, rx_desc, skb, rx_ptype);
- 
-+		ice_trace(clean_rx_irq_indicate, rx_ring, rx_desc, skb);
- 		/* send completed skb up the stack */
- 		ice_receive_skb(rx_ring, skb, vlan_tag);
- 		skb = NULL;
-@@ -2188,6 +2194,8 @@ ice_xmit_frame_ring(struct sk_buff *skb, struct ice_ring *tx_ring)
- 	unsigned int count;
- 	int tso, csum;
- 
-+	ice_trace(xmit_frame_ring, tx_ring, skb);
++#define E810_OUT_PROP_DELAY_NS 1
 +
- 	count = ice_xmit_desc_count(skb);
- 	if (ice_chk_linearize(skb, count)) {
- 		if (__skb_linearize(skb))
-@@ -2262,6 +2270,7 @@ ice_xmit_frame_ring(struct sk_buff *skb, struct ice_ring *tx_ring)
- 	return NETDEV_TX_OK;
- 
- out_drop:
-+	ice_trace(xmit_frame_ring_drop, tx_ring, skb);
- 	dev_kfree_skb_any(skb);
- 	return NETDEV_TX_OK;
+ /**
+  * ice_set_tx_tstamp - Enable or disable Tx timestamping
+  * @pf: The PF pointer to search in
+@@ -483,6 +485,255 @@ static int ice_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
+ 	return 0;
  }
+ 
++/**
++ * ice_ptp_extts_work - Workqueue task function
++ * @work: external timestamp work structure
++ *
++ * Service for PTP external clock event
++ */
++static void ice_ptp_extts_work(struct kthread_work *work)
++{
++	struct ice_ptp *ptp = container_of(work, struct ice_ptp, extts_work);
++	struct ice_pf *pf = container_of(ptp, struct ice_pf, ptp);
++	struct ptp_clock_event event;
++	struct ice_hw *hw = &pf->hw;
++	u8 chan, tmr_idx;
++	u32 hi, lo;
++
++	tmr_idx = hw->func_caps.ts_func_info.tmr_index_owned;
++	/* Event time is captured by one of the two matched registers
++	 *      GLTSYN_EVNT_L: 32 LSB of sampled time event
++	 *      GLTSYN_EVNT_H: 32 MSB of sampled time event
++	 * Event is defined in GLTSYN_EVNT_0 register
++	 */
++	for (chan = 0; chan < GLTSYN_EVNT_H_IDX_MAX; chan++) {
++		/* Check if channel is enabled */
++		if (pf->ptp.ext_ts_irq & (1 << chan)) {
++			lo = rd32(hw, GLTSYN_EVNT_L(chan, tmr_idx));
++			hi = rd32(hw, GLTSYN_EVNT_H(chan, tmr_idx));
++			event.timestamp = (((u64)hi) << 32) | lo;
++			event.type = PTP_CLOCK_EXTTS;
++			event.index = chan;
++
++			/* Fire event */
++			ptp_clock_event(pf->ptp.clock, &event);
++			pf->ptp.ext_ts_irq &= ~(1 << chan);
++		}
++	}
++}
++
++/**
++ * ice_ptp_cfg_extts - Configure EXTTS pin and channel
++ * @pf: Board private structure
++ * @ena: true to enable; false to disable
++ * @chan: GPIO channel (0-3)
++ * @gpio_pin: GPIO pin
++ * @extts_flags: request flags from the ptp_extts_request.flags
++ */
++static int
++ice_ptp_cfg_extts(struct ice_pf *pf, bool ena, unsigned int chan, u32 gpio_pin,
++		  unsigned int extts_flags)
++{
++	u32 func, aux_reg, gpio_reg, irq_reg;
++	struct ice_hw *hw = &pf->hw;
++	u8 tmr_idx;
++
++	if (chan > (unsigned int)pf->ptp.info.n_ext_ts)
++		return -EINVAL;
++
++	tmr_idx = hw->func_caps.ts_func_info.tmr_index_owned;
++
++	irq_reg = rd32(hw, PFINT_OICR_ENA);
++
++	if (ena) {
++		/* Enable the interrupt */
++		irq_reg |= PFINT_OICR_TSYN_EVNT_M;
++		aux_reg = GLTSYN_AUX_IN_0_INT_ENA_M;
++
++#define GLTSYN_AUX_IN_0_EVNTLVL_RISING_EDGE	BIT(0)
++#define GLTSYN_AUX_IN_0_EVNTLVL_FALLING_EDGE	BIT(1)
++
++		/* set event level to requested edge */
++		if (extts_flags & PTP_FALLING_EDGE)
++			aux_reg |= GLTSYN_AUX_IN_0_EVNTLVL_FALLING_EDGE;
++		if (extts_flags & PTP_RISING_EDGE)
++			aux_reg |= GLTSYN_AUX_IN_0_EVNTLVL_RISING_EDGE;
++
++		/* Write GPIO CTL reg.
++		 * 0x1 is input sampled by EVENT register(channel)
++		 * + num_in_channels * tmr_idx
++		 */
++		func = 1 + chan + (tmr_idx * 3);
++		gpio_reg = ((func << GLGEN_GPIO_CTL_PIN_FUNC_S) &
++			    GLGEN_GPIO_CTL_PIN_FUNC_M);
++		pf->ptp.ext_ts_chan |= (1 << chan);
++	} else {
++		/* clear the values we set to reset defaults */
++		aux_reg = 0;
++		gpio_reg = 0;
++		pf->ptp.ext_ts_chan &= ~(1 << chan);
++		if (!pf->ptp.ext_ts_chan)
++			irq_reg &= ~PFINT_OICR_TSYN_EVNT_M;
++	}
++
++	wr32(hw, PFINT_OICR_ENA, irq_reg);
++	wr32(hw, GLTSYN_AUX_IN(chan, tmr_idx), aux_reg);
++	wr32(hw, GLGEN_GPIO_CTL(gpio_pin), gpio_reg);
++
++	return 0;
++}
++
++/**
++ * ice_ptp_cfg_clkout - Configure clock to generate periodic wave
++ * @pf: Board private structure
++ * @chan: GPIO channel (0-3)
++ * @config: desired periodic clk configuration. NULL will disable channel
++ * @store: If set to true the values will be stored
++ *
++ * Configure the internal clock generator modules to generate the clock wave of
++ * specified period.
++ */
++static int ice_ptp_cfg_clkout(struct ice_pf *pf, unsigned int chan,
++			      struct ice_perout_channel *config, bool store)
++{
++	u64 current_time, period, start_time, phase;
++	struct ice_hw *hw = &pf->hw;
++	u32 func, val, gpio_pin;
++	u8 tmr_idx;
++
++	tmr_idx = hw->func_caps.ts_func_info.tmr_index_owned;
++
++	/* 0. Reset mode & out_en in AUX_OUT */
++	wr32(hw, GLTSYN_AUX_OUT(chan, tmr_idx), 0);
++
++	/* If we're disabling the output, clear out CLKO and TGT and keep
++	 * output level low
++	 */
++	if (!config || !config->ena) {
++		wr32(hw, GLTSYN_CLKO(chan, tmr_idx), 0);
++		wr32(hw, GLTSYN_TGT_L(chan, tmr_idx), 0);
++		wr32(hw, GLTSYN_TGT_H(chan, tmr_idx), 0);
++
++		val = GLGEN_GPIO_CTL_PIN_DIR_M;
++		gpio_pin = pf->ptp.perout_channels[chan].gpio_pin;
++		wr32(hw, GLGEN_GPIO_CTL(gpio_pin), val);
++
++		/* Store the value if requested */
++		if (store)
++			memset(&pf->ptp.perout_channels[chan], 0,
++			       sizeof(struct ice_perout_channel));
++
++		return 0;
++	}
++	period = config->period;
++	start_time = config->start_time;
++	div64_u64_rem(start_time, period, &phase);
++	gpio_pin = config->gpio_pin;
++
++	/* 1. Write clkout with half of required period value */
++	if (period & 0x1) {
++		dev_err(ice_pf_to_dev(pf), "CLK Period must be an even value\n");
++		goto err;
++	}
++
++	period >>= 1;
++
++	/* For proper operation, the GLTSYN_CLKO must be larger than clock tick
++	 */
++#define MIN_PULSE 3
++	if (period <= MIN_PULSE || period > U32_MAX) {
++		dev_err(ice_pf_to_dev(pf), "CLK Period must be > %d && < 2^33",
++			MIN_PULSE * 2);
++		goto err;
++	}
++
++	wr32(hw, GLTSYN_CLKO(chan, tmr_idx), lower_32_bits(period));
++
++	/* Allow time for programming before start_time is hit */
++	current_time = ice_ptp_read_src_clk_reg(pf, NULL);
++
++	/* if start time is in the past start the timer at the nearest second
++	 * maintaining phase
++	 */
++	if (start_time < current_time)
++		start_time = div64_u64(current_time + NSEC_PER_MSEC - 1,
++				       NSEC_PER_SEC) * NSEC_PER_SEC + phase;
++
++	start_time -= E810_OUT_PROP_DELAY_NS;
++
++	/* 2. Write TARGET time */
++	wr32(hw, GLTSYN_TGT_L(chan, tmr_idx), lower_32_bits(start_time));
++	wr32(hw, GLTSYN_TGT_H(chan, tmr_idx), upper_32_bits(start_time));
++
++	/* 3. Write AUX_OUT register */
++	val = GLTSYN_AUX_OUT_0_OUT_ENA_M | GLTSYN_AUX_OUT_0_OUTMOD_M;
++	wr32(hw, GLTSYN_AUX_OUT(chan, tmr_idx), val);
++
++	/* 4. write GPIO CTL reg */
++	func = 8 + chan + (tmr_idx * 4);
++	val = GLGEN_GPIO_CTL_PIN_DIR_M |
++	      ((func << GLGEN_GPIO_CTL_PIN_FUNC_S) & GLGEN_GPIO_CTL_PIN_FUNC_M);
++	wr32(hw, GLGEN_GPIO_CTL(gpio_pin), val);
++
++	/* Store the value if requested */
++	if (store) {
++		memcpy(&pf->ptp.perout_channels[chan], config,
++		       sizeof(struct ice_perout_channel));
++		pf->ptp.perout_channels[chan].start_time = phase;
++	}
++
++	return 0;
++err:
++	dev_err(ice_pf_to_dev(pf), "PTP failed to cfg per_clk\n");
++	return -EFAULT;
++}
++
++/**
++ * ice_ptp_gpio_enable_e810 - Enable/disable ancillary features of PHC
++ * @info: the driver's PTP info structure
++ * @rq: The requested feature to change
++ * @on: Enable/disable flag
++ */
++static int
++ice_ptp_gpio_enable_e810(struct ptp_clock_info *info,
++			 struct ptp_clock_request *rq, int on)
++{
++	struct ice_pf *pf = ptp_info_to_pf(info);
++	struct ice_perout_channel clk_cfg = {0};
++	unsigned int chan;
++	u32 gpio_pin;
++	int err;
++
++	switch (rq->type) {
++	case PTP_CLK_REQ_PEROUT:
++		chan = rq->perout.index;
++		if (chan == PPS_CLK_GEN_CHAN)
++			clk_cfg.gpio_pin = PPS_PIN_INDEX;
++		else
++			clk_cfg.gpio_pin = chan;
++
++		clk_cfg.period = ((rq->perout.period.sec * NSEC_PER_SEC) +
++				   rq->perout.period.nsec);
++		clk_cfg.start_time = ((rq->perout.start.sec * NSEC_PER_SEC) +
++				       rq->perout.start.nsec);
++		clk_cfg.ena = !!on;
++
++		err = ice_ptp_cfg_clkout(pf, chan, &clk_cfg, true);
++		break;
++	case PTP_CLK_REQ_EXTTS:
++		chan = rq->extts.index;
++		gpio_pin = chan;
++
++		err = ice_ptp_cfg_extts(pf, !!on, chan, gpio_pin,
++					rq->extts.flags);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return err;
++}
++
+ /**
+  * ice_ptp_gettimex64 - Get the time of the clock
+  * @info: the driver's PTP info structure
+@@ -740,6 +991,34 @@ ice_ptp_rx_hwtstamp(struct ice_ring *rx_ring,
+ 	}
+ }
+ 
++/**
++ * ice_ptp_setup_pins_e810 - Setup PTP pins in sysfs
++ * @info: PTP clock capabilities
++ */
++static void ice_ptp_setup_pins_e810(struct ptp_clock_info *info)
++{
++	info->n_per_out = E810_N_PER_OUT;
++	info->n_ext_ts = E810_N_EXT_TS;
++}
++
++/**
++ * ice_ptp_set_funcs_e810 - Set specialized functions for E810 support
++ * @pf: Board private structure
++ * @info: PTP info to fill
++ *
++ * Assign functions to the PTP capabiltiies structure for E810 devices.
++ * Functions which operate across all device families should be set directly
++ * in ice_ptp_set_caps. Only add functions here which are distinct for e810
++ * devices.
++ */
++static void
++ice_ptp_set_funcs_e810(struct ice_pf *pf, struct ptp_clock_info *info)
++{
++	info->enable = ice_ptp_gpio_enable_e810;
++
++	ice_ptp_setup_pins_e810(info);
++}
++
+ /**
+  * ice_ptp_set_caps - Set PTP capabilities
+  * @pf: Board private structure
+@@ -757,6 +1036,8 @@ static void ice_ptp_set_caps(struct ice_pf *pf)
+ 	info->adjfine = ice_ptp_adjfine;
+ 	info->gettimex64 = ice_ptp_gettimex64;
+ 	info->settime64 = ice_ptp_settime64;
++
++	ice_ptp_set_funcs_e810(pf, info);
+ }
+ 
+ /**
+@@ -783,6 +1064,17 @@ static long ice_ptp_create_clock(struct ice_pf *pf)
+ 	info = &pf->ptp.info;
+ 	dev = ice_pf_to_dev(pf);
+ 
++	/* Allocate memory for kernel pins interface */
++	if (info->n_pins) {
++		info->pin_config = devm_kcalloc(dev, info->n_pins,
++						sizeof(*info->pin_config),
++						GFP_KERNEL);
++		if (!info->pin_config) {
++			info->n_pins = 0;
++			return -ENOMEM;
++		}
++	}
++
+ 	/* Attempt to register the clock before enabling the hardware. */
+ 	clock = ptp_clock_register(info, dev);
+ 	if (IS_ERR(clock))
+@@ -1203,6 +1495,7 @@ void ice_ptp_init(struct ice_pf *pf)
+ 
+ 	/* Initialize work functions */
+ 	kthread_init_delayed_work(&pf->ptp.work, ice_ptp_periodic_work);
++	kthread_init_work(&pf->ptp.extts_work, ice_ptp_extts_work);
+ 
+ 	/* Allocate a kworker for handling work required for the ports
+ 	 * connected to the PTP hardware clock.
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
+index d01507eba036..e1c787bd5b96 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.h
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
+@@ -9,6 +9,21 @@
+ 
+ #include "ice_ptp_hw.h"
+ 
++enum ice_ptp_pin {
++	GPIO_20 = 0,
++	GPIO_21,
++	GPIO_22,
++	GPIO_23,
++	NUM_ICE_PTP_PIN
++};
++
++struct ice_perout_channel {
++	bool ena;
++	u32 gpio_pin;
++	u64 period;
++	u64 start_time;
++};
++
+ /* The ice hardware captures Tx hardware timestamps in the PHY. The timestamp
+  * is stored in a buffer of registers. Depending on the specific hardware,
+  * this buffer might be shared across multiple PHY ports.
+@@ -82,12 +97,18 @@ struct ice_ptp_port {
+ 	struct ice_ptp_tx tx;
+ };
+ 
++#define GLTSYN_TGT_H_IDX_MAX		4
++
+ /**
+  * struct ice_ptp - data used for integrating with CONFIG_PTP_1588_CLOCK
+  * @port: data for the PHY port initialization procedure
+  * @work: delayed work function for periodic tasks
++ * @extts_work: work function for handling external Tx timestamps
+  * @cached_phc_time: a cached copy of the PHC time for timestamp extension
++ * @ext_ts_chan: the external timestamp channel in use
++ * @ext_ts_irq: the external timestamp IRQ in use
+  * @kworker: kwork thread for handling periodic work
++ * @perout_channels: periodic output data
+  * @info: structure defining PTP hardware capabilities
+  * @clock: pointer to registered PTP clock device
+  * @tstamp_config: hardware timestamping configuration
+@@ -95,8 +116,12 @@ struct ice_ptp_port {
+ struct ice_ptp {
+ 	struct ice_ptp_port port;
+ 	struct kthread_delayed_work work;
++	struct kthread_work extts_work;
+ 	u64 cached_phc_time;
++	u8 ext_ts_chan;
++	u8 ext_ts_irq;
+ 	struct kthread_worker *kworker;
++	struct ice_perout_channel perout_channels[GLTSYN_TGT_H_IDX_MAX];
+ 	struct ptp_clock_info info;
+ 	struct ptp_clock *clock;
+ 	struct hwtstamp_config tstamp_config;
+@@ -115,6 +140,24 @@ struct ice_ptp {
+ #define PTP_SHARED_CLK_IDX_VALID	BIT(31)
+ #define ICE_PTP_TS_VALID		BIT(0)
+ 
++/* Per-channel register definitions */
++#define GLTSYN_AUX_OUT(_chan, _idx)	(GLTSYN_AUX_OUT_0(_idx) + ((_chan) * 8))
++#define GLTSYN_AUX_IN(_chan, _idx)	(GLTSYN_AUX_IN_0(_idx) + ((_chan) * 8))
++#define GLTSYN_CLKO(_chan, _idx)	(GLTSYN_CLKO_0(_idx) + ((_chan) * 8))
++#define GLTSYN_TGT_L(_chan, _idx)	(GLTSYN_TGT_L_0(_idx) + ((_chan) * 16))
++#define GLTSYN_TGT_H(_chan, _idx)	(GLTSYN_TGT_H_0(_idx) + ((_chan) * 16))
++#define GLTSYN_EVNT_L(_chan, _idx)	(GLTSYN_EVNT_L_0(_idx) + ((_chan) * 16))
++#define GLTSYN_EVNT_H(_chan, _idx)	(GLTSYN_EVNT_H_0(_idx) + ((_chan) * 16))
++#define GLTSYN_EVNT_H_IDX_MAX		3
++
++/* Pin definitions for PTP PPS out */
++#define PPS_CLK_GEN_CHAN		3
++#define PPS_CLK_SRC_CHAN		2
++#define PPS_PIN_INDEX			5
++#define TIME_SYNC_PIN_INDEX		4
++#define E810_N_EXT_TS			3
++#define E810_N_PER_OUT			4
++
+ #if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
+ struct ice_pf;
+ int ice_ptp_set_ts_config(struct ice_pf *pf, struct ifreq *ifr);
 -- 
 2.26.2
 
