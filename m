@@ -2,76 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 725533B4756
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 18:21:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C88E23B4757
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 18:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbhFYQXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 12:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbhFYQXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 12:23:17 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51E6C061574;
-        Fri, 25 Jun 2021 09:20:56 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id w15so3430404pgk.13;
-        Fri, 25 Jun 2021 09:20:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=htPvWVA6EXYwx6R2EmjwW/HIupnQLxRcccuBJ1K1BUQ=;
-        b=pgl5ycF5C72kQhDibUaNGeo3MuVrVtWtIYy1n9IibrZuK0hqLbLP1CQPe+iPX7hVDQ
-         59fLD8VvB7ApA+mszVcRGMXITVz09Q6Ka6ll+DI+we9H86wHIH9w8sNEXs9ix6o6PKch
-         +f2S9W+Yedqs6sPtonDT1QEq6hJh5EjXiRQYoWpAbjCkCGNyIwlXE3qEqH3FU6AAwzC7
-         uIowu7jgusE7Tx2gmrgIxAs+YcP9D7wnehTpHH0t2xsdTh5bUTJCO3RdqEI+lMl5PHJp
-         XwYjgYT4YWV0MB+omO91dseF3WJhR9DkfxGsHY526Uk+dvQObgQ863j/uwTqY8s20xZz
-         neLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=htPvWVA6EXYwx6R2EmjwW/HIupnQLxRcccuBJ1K1BUQ=;
-        b=ZAVEPywrZc18TyCcwDc6gPpRtUBQfwItzhI5uYoFchhk8+DZ5sQhwQLkUGCEyIfzph
-         IsdY3fNxRC2aMhUPbGQAnfXXihAOydK7mQ8GyjbHCeAlvRsLnk6VHm3hpquo+oMV1FMe
-         JpYkCplCEZbYF+wikGciZRh80Fa/HTJhg41m0anWnYb9womQXqF+SVfVo+pJghwsz9Tm
-         KynQLsvnXcmm33AAHRpdGTS0Vu1yNZjNpkRzpzIR9IwUvdxF3YJ7SSgFpNFO0vVIl6BG
-         FaSSy1ph/dvhhIs1MfKYvedlSFu0WbswbUyIsjwS2pLfIIKsG7FsrMvUm/mCl2Dzk3Tk
-         j2uQ==
-X-Gm-Message-State: AOAM531tzXsABmNdn30o2xmHJhYqxhyEggCvbzTumZiw6ByQnqhvt3tJ
-        zshp9FS8fdOj+iyxZJavqjay3Dh7Oi8=
-X-Google-Smtp-Source: ABdhPJyi+AxRDC20KKsil/43KorI+swZT/lmdRIzXGDbpplfV+4BkdOrTZb9otumPBX3nRJCi3oenA==
-X-Received: by 2002:a63:e703:: with SMTP id b3mr4553858pgi.369.1624638056483;
-        Fri, 25 Jun 2021 09:20:56 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id c14sm5786603pgv.86.2021.06.25.09.20.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Jun 2021 09:20:55 -0700 (PDT)
-Date:   Fri, 25 Jun 2021 09:20:53 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Min Li <min.li.xe@renesas.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net 1/2] ptp: idt82p33: optimize idt82p33_adjtime
-Message-ID: <20210625162053.GA2017@hoboy.vegasvil.org>
-References: <1624459585-31233-1-git-send-email-min.li.xe@renesas.com>
- <20210624034026.GA6853@hoboy.vegasvil.org>
- <OS3PR01MB6593D3DCF7CE756E260548B3BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
- <20210624162029.GE15473@hoboy.vegasvil.org>
- <OS3PR01MB6593FC9D6C4C6FE67205DC69BA069@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OS3PR01MB6593FC9D6C4C6FE67205DC69BA069@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S229445AbhFYQYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 12:24:10 -0400
+Received: from novek.ru ([213.148.174.62]:32928 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229741AbhFYQYI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Jun 2021 12:24:08 -0400
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 580D15006F4;
+        Fri, 25 Jun 2021 19:19:47 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 580D15006F4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1624637988; bh=IIdYOt76pPp/xsK07p9lzAwrjDJKt3ZZ9LkXwfIritw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=xPi0h6Ny9zColP9i+FVncH3Qsbxl2Pzyin6C6fo2R/SDg2OC0drfcC/ufopPyaF+8
+         O4eGkLMywGnGy4n0/tM2yXzPh1SNh08LGTWWLEXk99oOSQtc/5nNOwB6fgG3n5nY7G
+         byoYwUoOZZEJArdPvcNcUIx7PMuD+YP0SIcYxq+E=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vadim Fedorenko <vfedorenko@novek.ru>
+Subject: [PATCH net v2] net: lwtunnel: handle MTU calculation in forwading
+Date:   Fri, 25 Jun 2021 19:21:39 +0300
+Message-Id: <20210625162139.9067-1-vfedorenko@novek.ru>
+X-Mailer: git-send-email 2.18.4
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 25, 2021 at 02:24:24PM +0000, Min Li wrote:
-> How would you suggest to implement the change that make the new driver behavior optional?
+Commit 14972cbd34ff ("net: lwtunnel: Handle fragmentation") moved
+fragmentation logic away from lwtunnel by carry encap headroom and
+use it in output MTU calculation. But the forwarding part was not
+covered and created difference in MTU for output and forwarding and
+further to silent drops on ipv4 forwarding path. Fix it by taking
+into account lwtunnel encap headroom.
 
-I would say, module parameter or debugfs knob.
+The same commit also introduced difference in how to treat RTAX_MTU
+in IPv4 and IPv6 where latter explicitly removes lwtunnel encap
+headroom from route MTU. Make IPv4 version do the same.
 
-Thanks,
-Richard
+Fixes: 14972cbd34ff ("net: lwtunnel: Handle fragmentation")
+Suggested-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+---
+ include/net/ip.h        | 12 ++++++++----
+ include/net/ip6_route.h | 16 ++++++++++++----
+ net/ipv4/route.c        |  3 ++-
+ 3 files changed, 22 insertions(+), 9 deletions(-)
+
+diff --git a/include/net/ip.h b/include/net/ip.h
+index e20874059f82..d9683bef8684 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -31,6 +31,7 @@
+ #include <net/flow.h>
+ #include <net/flow_dissector.h>
+ #include <net/netns/hash.h>
++#include <net/lwtunnel.h>
+ 
+ #define IPV4_MAX_PMTU		65535U		/* RFC 2675, Section 5.1 */
+ #define IPV4_MIN_MTU		68			/* RFC 791 */
+@@ -445,22 +446,25 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
+ 
+ 	/* 'forwarding = true' case should always honour route mtu */
+ 	mtu = dst_metric_raw(dst, RTAX_MTU);
+-	if (mtu)
+-		return mtu;
++	if (!mtu)
++		mtu = min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
+ 
+-	return min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
++	return mtu - lwtunnel_headroom(dst->lwtstate, mtu);
+ }
+ 
+ static inline unsigned int ip_skb_dst_mtu(struct sock *sk,
+ 					  const struct sk_buff *skb)
+ {
++	unsigned int mtu;
++
+ 	if (!sk || !sk_fullsock(sk) || ip_sk_use_pmtu(sk)) {
+ 		bool forwarding = IPCB(skb)->flags & IPSKB_FORWARDED;
+ 
+ 		return ip_dst_mtu_maybe_forward(skb_dst(skb), forwarding);
+ 	}
+ 
+-	return min(READ_ONCE(skb_dst(skb)->dev->mtu), IP_MAX_MTU);
++	mtu = min(READ_ONCE(skb_dst(skb)->dev->mtu), IP_MAX_MTU);
++	return mtu - lwtunnel_headroom(skb_dst(skb)->lwtstate, mtu);
+ }
+ 
+ struct dst_metrics *ip_fib_metrics_init(struct net *net, struct nlattr *fc_mx,
+diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+index f51a118bfce8..f14149df5a65 100644
+--- a/include/net/ip6_route.h
++++ b/include/net/ip6_route.h
+@@ -265,11 +265,18 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+ 
+ static inline int ip6_skb_dst_mtu(struct sk_buff *skb)
+ {
++	int mtu;
++
+ 	struct ipv6_pinfo *np = skb->sk && !dev_recursion_level() ?
+ 				inet6_sk(skb->sk) : NULL;
+ 
+-	return (np && np->pmtudisc >= IPV6_PMTUDISC_PROBE) ?
+-	       skb_dst(skb)->dev->mtu : dst_mtu(skb_dst(skb));
++	if (np && np->pmtudisc >= IPV6_PMTUDISC_PROBE) {
++		mtu = READ_ONCE(skb_dst(skb)->dev->mtu);
++		mtu -= lwtunnel_headroom(skb_dst(skb)->lwtstate, mtu);
++	} else
++		mtu = dst_mtu(skb_dst(skb));
++
++	return mtu;
+ }
+ 
+ static inline bool ip6_sk_accept_pmtu(const struct sock *sk)
+@@ -317,7 +324,7 @@ static inline unsigned int ip6_dst_mtu_forward(const struct dst_entry *dst)
+ 	if (dst_metric_locked(dst, RTAX_MTU)) {
+ 		mtu = dst_metric_raw(dst, RTAX_MTU);
+ 		if (mtu)
+-			return mtu;
++			goto out;
+ 	}
+ 
+ 	mtu = IPV6_MIN_MTU;
+@@ -327,7 +334,8 @@ static inline unsigned int ip6_dst_mtu_forward(const struct dst_entry *dst)
+ 		mtu = idev->cnf.mtu6;
+ 	rcu_read_unlock();
+ 
+-	return mtu;
++out:
++	return mtu - lwtunnel_headroom(dst->lwtstate, mtu);
+ }
+ 
+ u32 ip6_mtu_from_fib6(const struct fib6_result *res,
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 6a36ac98476f..78d1e5afc452 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1306,7 +1306,7 @@ INDIRECT_CALLABLE_SCOPE unsigned int ipv4_mtu(const struct dst_entry *dst)
+ 		mtu = dst_metric_raw(dst, RTAX_MTU);
+ 
+ 	if (mtu)
+-		return mtu;
++		goto out;
+ 
+ 	mtu = READ_ONCE(dst->dev->mtu);
+ 
+@@ -1315,6 +1315,7 @@ INDIRECT_CALLABLE_SCOPE unsigned int ipv4_mtu(const struct dst_entry *dst)
+ 			mtu = 576;
+ 	}
+ 
++out:
+ 	mtu = min_t(unsigned int, mtu, IP_MAX_MTU);
+ 
+ 	return mtu - lwtunnel_headroom(dst->lwtstate, mtu);
+-- 
+2.18.4
+
