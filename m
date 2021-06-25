@@ -2,244 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D38603B3F5E
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 10:33:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEC6F3B3F6A
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 10:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbhFYIgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 04:36:07 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:11095 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbhFYIgG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 04:36:06 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GB9Dx51skzZjdq;
-        Fri, 25 Jun 2021 16:30:41 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 25 Jun 2021 16:33:41 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 25 Jun
- 2021 16:33:41 +0800
-Subject: Re: [PATCH net-next v2 2/2] ptr_ring: make __ptr_ring_empty()
- checking more reliable
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jasowang@redhat.com>,
-        <brouer@redhat.com>, <paulmck@kernel.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <shuah@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
-References: <1624591136-6647-1-git-send-email-linyunsheng@huawei.com>
- <1624591136-6647-3-git-send-email-linyunsheng@huawei.com>
- <20210625022128-mutt-send-email-mst@kernel.org>
- <c6975b2d-2b4a-5b3f-418c-1a59607b9864@huawei.com>
- <20210625032508-mutt-send-email-mst@kernel.org>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <4ced872f-da7a-95a3-2ef1-c281dfb84425@huawei.com>
-Date:   Fri, 25 Jun 2021 16:33:40 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
-MIME-Version: 1.0
-In-Reply-To: <20210625032508-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme709-chm.china.huawei.com (10.1.199.105) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+        id S230121AbhFYIj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 04:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229839AbhFYIj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 04:39:58 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8D8C061574
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 01:37:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=1NaUN0NwpwlP3ZE5U637BuIrad6EOUnAWbnID16rRWk=; b=e3XrT7GSUByDOcHeOBas1gbyuN
+        eYTfqeBuiBTnBIGxJyNl7MQPJ/KREU0SYi38B1CnxjgF185drs/8nt3DK9uTuCr6pp2hERA1ZfncO
+        XeaFlLIzzaQQWs7G46Xx7Z1RnVVv4oh7zgeW9jG+yFJNBny7qpohUnz6AvkMwE0e1ZqnzE8V3WNrl
+        SZDwjwoowSIV207ye5APhjyfXTi2a6Q9dx0GN+Nt/T6o3/eKYYNG3O9Sd8J8ctFnsOp1ljZ27+pnF
+        xEtl+G4mT59d+q5Ys/XwHpm0qdlevs57HgrfU8pT75SYqDhdgc52RZ+9ZQJJXFS+Mo8G3Q+WiGfhA
+        w5sZZHMg==;
+Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.ant.amazon.com)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1lwhLF-000PtV-6d; Fri, 25 Jun 2021 08:37:37 +0000
+Message-ID: <bfad641875aff8ff008dd7f9a072c5aa980703f4.camel@infradead.org>
+Subject: Re: [PATCH v3 3/5] vhost_net: remove virtio_net_hdr validation, let
+ tun/tap do it themselves
+From:   David Woodhouse <dwmw2@infradead.org>
+To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
+Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        Willem de Bruijn <willemb@google.com>
+Date:   Fri, 25 Jun 2021 09:37:34 +0100
+In-Reply-To: <b339549d-c8f1-1e56-2759-f7b15ee8eca1@redhat.com>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+         <20210624123005.1301761-1-dwmw2@infradead.org>
+         <20210624123005.1301761-3-dwmw2@infradead.org>
+         <b339549d-c8f1-1e56-2759-f7b15ee8eca1@redhat.com>
+Content-Type: multipart/signed; micalg="sha-256";
+        protocol="application/x-pkcs7-signature";
+        boundary="=-aj3LK2m0WzasyqwgLZox"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/6/25 15:30, Michael S. Tsirkin wrote:
-> On Fri, Jun 25, 2021 at 03:21:33PM +0800, Yunsheng Lin wrote:
->> On 2021/6/25 14:32, Michael S. Tsirkin wrote:
->>> On Fri, Jun 25, 2021 at 11:18:56AM +0800, Yunsheng Lin wrote:
->>>> Currently r->queue[] is cleared after r->consumer_head is moved
->>>> forward, which makes the __ptr_ring_empty() checking called in
->>>> page_pool_refill_alloc_cache() unreliable if the checking is done
->>>> after the r->queue clearing and before the consumer_head moving
->>>> forward.
->>>
->>>
->>> Well the documentation for __ptr_ring_empty clearly states is
->>> is not guaranteed to be reliable.
->>
->> Yes, this patch does not make __ptr_ring_empty() strictly reliable
->> without taking the r->consumer_lock, as the disscuission in [1].
->>
->> 1. https://patchwork.kernel.org/project/netdevbpf/patch/1622032173-11883-1-git-send-email-linyunsheng@huawei.com/#24207011
->>
->>>
->>>  *
->>>  * NB: This is only safe to call if ring is never resized.
->>>  *
->>>  * However, if some other CPU consumes ring entries at the same time, the value
->>>  * returned is not guaranteed to be correct.
->>>  *
->>>  * In this case - to avoid incorrectly detecting the ring
->>>  * as empty - the CPU consuming the ring entries is responsible
->>>  * for either consuming all ring entries until the ring is empty,
->>>  * or synchronizing with some other CPU and causing it to
->>>  * re-test __ptr_ring_empty and/or consume the ring enteries
->>>  * after the synchronization point.
->>>  *
->>>
->>> Is it then the case that page_pool_refill_alloc_cache violates
->>> this requirement? How?
->>
->> As my understanding:
->> page_pool_refill_alloc_cache() uses __ptr_ring_empty() to avoid
->> taking r->consumer_lock, when the above data race happens, it will
->> exit out and allocate page from the page allocator instead of reusing
->> the page in ptr_ring, which *may* not be happening if __ptr_ring_empty()
->> is more reliable.
-> 
-> Question is how do we know it's more reliable?
-> It would be nice if we did actually made it more reliable,
-> as it is we are just shifting races around.
-> 
-> 
->>>
->>> It looks like you are trying to make the guarantee stronger and ensure
->>> no false positives.
->>>
->>> If yes please document this as such, update the comment so all
->>> code can be evaluated with the eye towards whether the new stronger
->>> guarantee is maintained. In particular I think I see at least one
->>> issue with this immediately.
->>>
->>>
->>>> Move the r->queue[] clearing after consumer_head moving forward
->>>> to make __ptr_ring_empty() checking more reliable.
->>>>
->>>> As a side effect of above change, a consumer_head checking is
->>>> avoided for the likely case, and it has noticeable performance
->>>> improvement when it is tested using the ptr_ring_test selftest
->>>> added in the previous patch.
->>>>
->>>> Using "taskset -c 1 ./ptr_ring_test -s 1000 -m 0 -N 100000000"
->>>> to test the case of single thread doing both the enqueuing and
->>>> dequeuing:
->>>>
->>>>  arch     unpatched           patched       delta
->>>> arm64      4648 ms            4464 ms       +3.9%
->>>>  X86       2562 ms            2401 ms       +6.2%
->>>>
->>>> Using "taskset -c 1-2 ./ptr_ring_test -s 1000 -m 1 -N 100000000"
->>>> to test the case of one thread doing enqueuing and another thread
->>>> doing dequeuing concurrently, also known as single-producer/single-
->>>> consumer:
->>>>
->>>>  arch      unpatched             patched         delta
->>>> arm64   3624 ms + 3624 ms   3462 ms + 3462 ms    +4.4%
->>>>  x86    2758 ms + 2758 ms   2547 ms + 2547 ms    +7.6%
->>>>
->>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->>>> ---
->>>> V2: Add performance data.
->>>> ---
->>>>  include/linux/ptr_ring.h | 25 ++++++++++++++++---------
->>>>  1 file changed, 16 insertions(+), 9 deletions(-)
->>>>
->>>> diff --git a/include/linux/ptr_ring.h b/include/linux/ptr_ring.h
->>>> index 808f9d3..db9c282 100644
->>>> --- a/include/linux/ptr_ring.h
->>>> +++ b/include/linux/ptr_ring.h
->>>> @@ -261,8 +261,7 @@ static inline void __ptr_ring_discard_one(struct ptr_ring *r)
->>>>  	/* Note: we must keep consumer_head valid at all times for __ptr_ring_empty
->>>>  	 * to work correctly.
->>>>  	 */
->>>> -	int consumer_head = r->consumer_head;
->>>> -	int head = consumer_head++;
->>>> +	int consumer_head = r->consumer_head + 1;
->>>>  
->>>>  	/* Once we have processed enough entries invalidate them in
->>>>  	 * the ring all at once so producer can reuse their space in the ring.
->>>> @@ -271,19 +270,27 @@ static inline void __ptr_ring_discard_one(struct ptr_ring *r)
->>>>  	 */
->>>>  	if (unlikely(consumer_head - r->consumer_tail >= r->batch ||
->>>>  		     consumer_head >= r->size)) {
->>>> +		int tail = r->consumer_tail;
->>>> +
->>>> +		if (unlikely(consumer_head >= r->size)) {
->>>> +			r->consumer_tail = 0;
->>>> +			WRITE_ONCE(r->consumer_head, 0);
->>>> +		} else {
->>>> +			r->consumer_tail = consumer_head;
->>>> +			WRITE_ONCE(r->consumer_head, consumer_head);
->>>> +		}
->>>> +
->>>>  		/* Zero out entries in the reverse order: this way we touch the
->>>>  		 * cache line that producer might currently be reading the last;
->>>>  		 * producer won't make progress and touch other cache lines
->>>>  		 * besides the first one until we write out all entries.
->>>>  		 */
->>>> -		while (likely(head >= r->consumer_tail))
->>>> -			r->queue[head--] = NULL;
->>>> -		r->consumer_tail = consumer_head;
->>>> -	}
->>>> -	if (unlikely(consumer_head >= r->size)) {
->>>> -		consumer_head = 0;
->>>> -		r->consumer_tail = 0;
->>>> +		while (likely(--consumer_head >= tail))
->>>> +			r->queue[consumer_head] = NULL;
->>>> +
->>>> +		return;
->>>
->>>
->>> So if now we need this to be reliable then
->>> we also need smp_wmb before writing r->queue[consumer_head],
->>> there could be other gotchas.
->>
->> Yes, This patch does not make it strictly reliable.
->> T think I could mention that in the commit log?
-> 
-> OK so it's not that it makes it more reliable - this patch simply makes
-> a possible false positive less likely while making  a false negative
-> more likely. Our assumption is that a false negative is cheaper then?
-> 
-> How do we know that it is?
-> 
-> And even if we prove the ptr_ring itself is faster now,
-> how do we know what affects callers in a better way a
-> false positive or a false negative?
-> 
-> I would rather we worked on actually making it reliable
-> e.g. if we can guarantee no false positives, that would be
-> a net win.
-I thought deeper about the case you mentioned above, it
-seems for the above to happen, the consumer_head need to
-be rolled back to zero and incremented to the point when
-caller of __ptr_ring_empty() is still *not* able to see the
-r->queue[] which has been set to NULL in __ptr_ring_discard_one().
 
-It seems smp_wmb() only need to be done once when consumer_head
-is rolled back to zero, and maybe that is enough to make sure the
-case you mentioned is fixed too?
+--=-aj3LK2m0WzasyqwgLZox
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-And the smp_wmb() is only done once in a round of producing/
-consuming, so the performance impact should be minimized?(of
-course we need to test it too).
+On Fri, 2021-06-25 at 15:33 +0800, Jason Wang wrote:
+> =E5=9C=A8 2021/6/24 =E4=B8=8B=E5=8D=888:30, David Woodhouse =E5=86=99=E9=
+=81=93:
+> > From: David Woodhouse<dwmw@amazon.co.uk>
+> >=20
+> > When the underlying socket isn't configured with a virtio_net_hdr, the
+> > existing code in vhost_net_build_xdp() would attempt to validate
+> > uninitialised data, by copying zero bytes (sock_hlen) into the local
+> > copy of the header and then trying to validate that.
+> >=20
+> > Fixing it is somewhat non-trivial because the tun device might put a
+> > struct tun_pi*before*  the virtio_net_hdr, which makes it hard to find.
+> > So just stop messing with someone else's data in vhost_net_build_xdp(),
+> > and let tap and tun validate it for themselves, as they do in the
+> > non-XDP case anyway.
+>=20
+>=20
+> Thinking in another way. All XDP stuffs for vhost is prepared for TAP.=
+=20
+> XDP is not expected to work for TUN.
+>=20
+> So we can simply let's vhost doesn't go with XDP path is the underlayer=
+=20
+> socket is TUN.
 
-> 
->>
->>>
->>>>  	}
->>>> +
->>>>  	/* matching READ_ONCE in __ptr_ring_empty for lockless tests */
->>>>  	WRITE_ONCE(r->consumer_head, consumer_head);
->>>>  }
->>>> -- 
->>>> 2.7.4
->>>
->>>
->>> .
->>>
-> 
-> 
-> .
-> 
+Actually, IFF_TUN mode per se isn't that complex. It's fixed purely on
+the tun side by that first patch I posted, which I later expanded a
+little to factor out tun_skb_set_protocol().
+
+The next two patches in my original set were fixing up the fact that
+XDP currently assumes that the *socket* will be doing the vhdr, not
+vhost. Those two weren't tun-specific at all.
+
+It's supporting the PI header (which tun puts *before* the virtio
+header as I just said) which introduces a tiny bit more complexity.
+
+So yes, avoiding the XDP path if PI is being used would make some
+sense.
+
+In fact I wouldn't be entirely averse to refusing PI mode completely,
+as long as we fail gracefully at setup time by refusing the
+SET_BACKEND. Not by just silently failing to receive packets.
+
+But then again, it's not actually *that* hard to support, and it's
+working fine in my selftests at the end of my patch series.
+
+
+--=-aj3LK2m0WzasyqwgLZox
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
+ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
+OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
+RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
+cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
+uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
+Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
+Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
+xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
+BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
+dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
+LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
+Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
+Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
+YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
+nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
+PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
+7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
+Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
+MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
+NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
+/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
+0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
+vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
+ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
+ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
+CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
+BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
+aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
+bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
+LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
+W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
+vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
+gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
+RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
+jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
+AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
+BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
++bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
+WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
+aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
+CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
+u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
+RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
+QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
+b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
+cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
+SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
+0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
+KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
+E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
+M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
+jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
+yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
+gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
+R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
+ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
+NjI1MDgzNzM0WjAvBgkqhkiG9w0BCQQxIgQgs961arNNHVAh9CbSJIHfbCfcFjUfaD0canDOCjeR
+nwQwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
+PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
+DQEBAQUABIIBAEpU6tj65ySYlbVRxh1r7n0erUIh4qmVQCfOOnFmbbEo4rwwA/B1L8/6joyvBUBm
+6vasUCEOUdUlR1u1FdgQpJz6idcRz2FXodjXGbA/edLa2aoX4efAIMD4plcYWrAOo5U0u7fAKHRi
+vk8VyuFeCBQHaHtWGCl/ZS7QSvQFLwp58M/jjlISilY+ZNlA1BUwZZ1ylMGPdtXyECL/hTxT48o1
+zD4bm/pSpmIzHEKngu5wmyKwmHTjyIqjXZAfLEotHbBQ57hHfZ6j48D97nKKGzGGfOzlirMP48oB
+tSjFaTO6HfreWY5FBj2GPrhuRBjGAPde9XiYr3zBpgAd+Wp4ypoAAAAAAAA=
+
+
+--=-aj3LK2m0WzasyqwgLZox--
 
