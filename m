@@ -2,37 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 396F53B4777
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 18:36:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79D333B4791
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 18:49:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229776AbhFYQin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 12:38:43 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56096 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229630AbhFYQim (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Jun 2021 12:38:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=T+2AZqZ/2b1WKu9bOF0NlpVpI3gvGrzpNuubkbB7csA=; b=rfl06C/1fRVC7umAQcMO/zyfMt
-        JRgQ4p3iSfBEidWiJvjmq7mEzPgywhhOceNMNfCMF7v8ObeISZDO6f4nQLqY0rDWFIBKQQwZX5I9L
-        feMPq1iMNKdTANKS9d0xc4WIsyXVoHAoPOPV4a5daIExejy2S5qimdxYyRye1GJTJu0A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lwoo9-00B7fE-8y; Fri, 25 Jun 2021 18:35:57 +0200
-Date:   Fri, 25 Jun 2021 18:35:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
+        id S229975AbhFYQvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 12:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229586AbhFYQvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 12:51:21 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649E0C061574;
+        Fri, 25 Jun 2021 09:49:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=kwgIfr/lhJ0ryHMTahUJt0vf/j0H30v0H27zweCUKY4=; b=RmM6MYi8CJXQUpD5jBXg6mQqx
+        I6hvx10q1MZOSwQlQgYTsD+Y7zeyGwCQGmlq8VnNQ7eYpdRf61PMb7VF06+h5Zzk1s1eExAcx7F6W
+        52XOWHkYUlq+/8ACcAwwuSJ4vWwZjd5DY2/kccT8XM3IvOSBCQxXebA95AjQAUnZoJiLHSXb4A/rS
+        9N1kXxmj/EB4DuwGMRSzl7D1ZR1Yf8+zZPG2+fgDH10cSZ0N/S1xJYLwTJHY3pkm1JsCi18XsJTz1
+        OGi2pz/aWCYPWyYS5LXNHvh2lmykl+VfwXH2psA3GVWeyU7BAOA05rufDlX/xABQx6qoV1gwfFpu9
+        062j/bl1A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45354)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lwp0R-00010f-V9; Fri, 25 Jun 2021 17:48:40 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lwp0M-0006pT-SI; Fri, 25 Jun 2021 17:48:35 +0100
+Date:   Fri, 25 Jun 2021 17:48:34 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
 To:     "Voon, Weifeng" <weifeng.voon@intel.com>
-Cc:     "Ling, Pei Lee" <pei.lee.ling@intel.com>,
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "Ling, Pei Lee" <pei.lee.ling@intel.com>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         Jose Abreu <joabreu@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
         "Ong, Boon Leong" <boon.leong.ong@intel.com>,
         Wong Vee Khee <vee.khee.wong@linux.intel.com>,
         "Wong, Vee Khee" <vee.khee.wong@intel.com>,
@@ -46,7 +58,7 @@ Cc:     "Ling, Pei Lee" <pei.lee.ling@intel.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH net-next V1 3/4] net: stmmac: Reconfigure the PHY WOL
  settings in stmmac_resume()
-Message-ID: <YNYF7XCyCIuwT0mT@lunn.ch>
+Message-ID: <20210625164834.GY22278@shell.armlinux.org.uk>
 References: <20210621094536.387442-1-pei.lee.ling@intel.com>
  <20210621094536.387442-4-pei.lee.ling@intel.com>
  <YNCOqGCDgSOy/yTP@lunn.ch>
@@ -59,34 +71,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <CH0PR11MB53806D16AF301F16A298C70C88069@CH0PR11MB5380.namprd11.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I would like to rephase the commit message to make things clear:
-> 
-> After PHY received a magic packet, the PHY WOL event will be
-> triggered. At the same time, the "Magic Packet Match Detected" bit
-> is set. In order for the PHY WOL event to be triggered again, the 
-> WOL event status of "Magic Packet Match Detected" bit needs to be 
-> cleared. When the PHY is in polling mode, the WOL event status needs
-> to be manually cleared.
-> 
-> Ethtool settings will remain with WOL enabled after a S3/S4
-> suspend resume cycle as expected. Hence, the driver should
-> reconfigure the PHY settings to reenable/disable WOL
-> depending on the ethtool WOL settings in the MAC resume flow.
-> The PHY set_wol flow would clear the WOL event status.
+On Fri, Jun 25, 2021 at 03:58:17PM +0000, Voon, Weifeng wrote:
+> > > No, the interrupt will not be discarded. If the PHY is in interrupt
+> > > mode, the interrupt handler will triggers and ISR will clear the WOL
+> > status bit.
+> > > The condition here is when the PHY is in polling mode, the PHY driver
+> > > does not have any other mechanism to clear the WOL interrupt status bit.
+> > > Hence, we need to go through the PHY set_wol() again.
+> > 
+> > I would say you have a broken setup. If you are explicitly using the
+> > interrupt as a wakeup source, you need to be servicing the interrupt. You
+> > cannot use polled mode.
+>  
+> Sorry for the confusion. But I would like to clarify the I should use the
+> term of "WOL event status" rather than "WOL interrupt status". 
+> For interrupt mode, clearing the "WOL interrupt status" register will auto
+> clear the "WOL event status".
+> For polling mode, the phy driver can manually clear the "WOL event status" by
+> setting 1 to "Clear WOL Status" bit.  
 
-I would still argue that making use of a WoL interrupts and PHY
-polling is just wrong. But i assume you cannot fix this? You have a
-hardware design error?
+If WOL raises an interrupt signal from the PHY, but the PHY interrupt
+signal is not wired, how does the wakeup happen? What is the PHY
+interrupt wired to?
 
-The problem with this solution is you need to modify every MAC driver
-using the Marvell PHY. It does not scale.
-
-Please try to find a solution within phylib or the marvell
-driver. Something which will work for any broken setup which is using
-WoL interrupts combined with polling.
-
-    Andrew
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
