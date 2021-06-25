@@ -2,143 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0C653B457D
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 16:24:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D490C3B4589
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 16:28:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230135AbhFYO0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 10:26:51 -0400
-Received: from mail-eopbgr1400091.outbound.protection.outlook.com ([40.107.140.91]:35450
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229573AbhFYO0u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Jun 2021 10:26:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e5jRApj70VE2Gjz2brDDMzc3D44fTa+k03ubJI28+9GzUxWwChx6a+/KM5Et4hE04j7qnhybe0y6m3pozUAvKKP2/dhGTv390ts/gkKNvU3g+Fgf067e7/D22rOegH9fYFSAIBIirpbdPdvh7RjJHAq+Z0/mDrKQtKRVq/fjHnbaRJM59S6JnMx/hd7rONHlrmFSUjxhLpDd72RUXjFZ7bMre86hVZPb8SDVYQOTYx2AgNCnaEyX3W8SU2RtGhE7ujDUiIKU/Ir5bcgZf4cigX/ZGTTrfZgKF9ByKAy+Dbp7bskHJm36R1QeShbnVabscGIEgJFoLehFfusLDg+bJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z/SEv4CUJiSIMalJ5QtB1YgScicb8dQk1PbJrik9TV4=;
- b=aExLK5lT4PbEBBvjQ2yqrWK28EhoVgB4kMWQcgmI4zI4KDMzogyo665d86nbNuFkWo1c62qzp9GlNhXLPPsVA7NkqXh3NVE1JuetaS/UWYb13Kc5oeZFgomF98iIKnt+j6eOuGnf2GIPXJgwW47SDaaylu/9zo+v51rpkfqIqmoxg3Qa2M04ikzeBdrtnpNQgbdUgXiAln1WdQSMPVG7XybHAfej23EJD4IsTVDBfXqalg/HZxbX8gPuIeNe/PL3rpuB9HDFZk2NRVImfHRKATescMfLKtLDHIUk9EKa/njX8ugfHkA18iX2s+3K0UoDek1XlwuvE+JRLeXyIXclWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
+        id S231672AbhFYOag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 10:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231570AbhFYOaf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 10:30:35 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F225C061766
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 07:28:13 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id g14so7600703qtv.4
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 07:28:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z/SEv4CUJiSIMalJ5QtB1YgScicb8dQk1PbJrik9TV4=;
- b=Gaffhvi4FFgL7PKgr9x4g0dTzNZrP/qqmKR+9/0atHxcuqcd85xS/o6kM3hSNGEpa7RLHcgS3aLkd5B//h5JHAmXSE4aQvoEUOWp2G03EN7daWytH4Vg7jmB6+AE9Hs0IoMJP4ZI6j98pDL5j2FjsX4k+N4HmJ78C8ZoKSpKzmU=
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
- by OSAPR01MB4643.jpnprd01.prod.outlook.com (2603:1096:604:36::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.22; Fri, 25 Jun
- 2021 14:24:25 +0000
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::a53c:198f:9145:903b]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::a53c:198f:9145:903b%8]) with mapi id 15.20.4264.023; Fri, 25 Jun 2021
- 14:24:24 +0000
-From:   Min Li <min.li.xe@renesas.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net 1/2] ptp: idt82p33: optimize idt82p33_adjtime
-Thread-Topic: [PATCH net 1/2] ptp: idt82p33: optimize idt82p33_adjtime
-Thread-Index: AQHXaD6QH3kS+d8DxUyFpooG2wAFo6sihNkAgAC1sPCAAB6rgIABcPxg
-Date:   Fri, 25 Jun 2021 14:24:24 +0000
-Message-ID: <OS3PR01MB6593FC9D6C4C6FE67205DC69BA069@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-References: <1624459585-31233-1-git-send-email-min.li.xe@renesas.com>
- <20210624034026.GA6853@hoboy.vegasvil.org>
- <OS3PR01MB6593D3DCF7CE756E260548B3BA079@OS3PR01MB6593.jpnprd01.prod.outlook.com>
- <20210624162029.GE15473@hoboy.vegasvil.org>
-In-Reply-To: <20210624162029.GE15473@hoboy.vegasvil.org>
-Accept-Language: en-CA, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=renesas.com;
-x-originating-ip: [72.140.114.230]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: da8765a0-3011-42e6-0f23-08d937e4eee7
-x-ms-traffictypediagnostic: OSAPR01MB4643:
-x-microsoft-antispam-prvs: <OSAPR01MB464368A71C444A59EA315854BA069@OSAPR01MB4643.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8h5nmk7HYfQqvrMGs5Vwf7Vvte6MbemsyEvO/O8v/ijA1VYifmPOu97sgq43CrbznRiNWTB5AMHt23hA43I733qLP5WfI/ereL03lqRONbjL0XK6Z/ZjPKRhzwNcPehdndp1SVrNt6CeKjjwVDuOLM3sEgOiFzNsc5YJEOCKUjIOf1Yypyx2jEcGNMv8fwHLO4C5186HDAMNyM5qewHywZ2U1zLqGaSAjr37GUxUPX7pULrqdFj8Y25qrwdM3ICEGtsujox1Cz/3M037/OoQ+UPU1qsn5CAQCQ2S8mD3NzXFYDSq5PKt3Gy2nFi5m+MkZPpFw5lULUVcBIgN0XGPWRyFRDcC92mRPdCYMR5xNL48PcXkDkdO29C5/j9pipKs8QfD4ZgX2hC19gP4762j4+TrguSTET0lY6YC6ByMeFZ92DPJgCOgf5qz1XcbP/quaVS/DNUtplFPjsnpZTuLcexlJHcZImvkYfl+V+/2uSZEqd/dqhre1eR8ytbTW9wR4CZqqv1IWt9UtLdFYXJ77zvbLWGY3/FQ8joVINEnLITKhsJU/RK4HOrEdtlwCHBCYAaZ5cBQczgW+HX0i9YOKJ2PICTzPvwDR1fU01+Kzv65V6QyGCmhBqN8WvGm1NXsGtxyRIOJIUbwqzgO//k4lQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(376002)(366004)(346002)(396003)(9686003)(66446008)(7696005)(186003)(55016002)(8936002)(2906002)(66556008)(122000001)(6506007)(71200400001)(53546011)(8676002)(6916009)(86362001)(66476007)(478600001)(26005)(66946007)(33656002)(64756008)(38100700002)(5660300002)(83380400001)(4326008)(316002)(76116006)(54906003)(52536014);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?m6DGvow6CDRw+Wdb6023ZUWzYGDLffLySzEAX66jUoReSindcmxyh28YLXO7?=
- =?us-ascii?Q?jof9U0q2XbdGL/aZaTzNpbAEzx2I0C8yrE09+odkqbAJAq6XCYsrDfge5LmD?=
- =?us-ascii?Q?gVGMx4Tt4+AOpbRT2ZenpojFVP+lSRztMQvnXCz4HeILJVmxESOMyhmzBFgV?=
- =?us-ascii?Q?6eWaEFdW8UIvSMpi73n/rTSt3/bM39DOi+AnTk+MeCd5FKVY5LGDNwoVmTK9?=
- =?us-ascii?Q?GWOuEk4hc28pbpOBTmIDPwqX6P0x9jmQ1xycKOiDP157LIU241MFDv6TcFO/?=
- =?us-ascii?Q?hlo5Dw8GXyenHVfbOx0fLQwiknvPajW7TTA5A1X62+rxnrnDsBx7odKtavKE?=
- =?us-ascii?Q?glpLB7CCqScjW9VZY0o16IrHmtCRb6O/sC7OaVxEOVwHxxfS5P3KpUqC02xo?=
- =?us-ascii?Q?7dMx5d5wvwxX0paN6KcxSY0+agyb/9I/zXEKWRhVh44LKAoGEjMuUx2LxiiL?=
- =?us-ascii?Q?viKWR6Plti4V4MD6jjUe5KoAOYlp7me6ccvlTAZHcmEHvK2KqBsBi8yaB62n?=
- =?us-ascii?Q?/o9+W6gZN+4mE36lXYll0/p5xNSSw6Gd//SC1XHIYdsTJsJz7klXW9nfwaK9?=
- =?us-ascii?Q?igvUu062acVVAlR6OKuTeoK5ldb33g4P96GJ1szQ0y03kfKt//ADv2WjQL8N?=
- =?us-ascii?Q?7tLTphhl4Cq9dWyXa9NfZZzsldUEkJvH+DfOqqwOESg7A6CsxP+dQYUHEvwk?=
- =?us-ascii?Q?o4LQX/1SyeZSl7JJyJYCMj/Ii2OQIn7as+BwOnWntZwwTvyCeNDbauBfhtDn?=
- =?us-ascii?Q?XpnoPirl74k0GnlVS3WKxPpCHgAS7QC0Z8U+T4k9SQiss1Cv+6zdxa6T2MWy?=
- =?us-ascii?Q?RQ1gi2lZl/Y9F4FtedUhXd4dIl1BQvek8x8gZ+2VCJxPkBotXmUxtKl743nN?=
- =?us-ascii?Q?HJr0BNSynRQcYP1OOut3FUWJjBxfZRj3xhNJlGYDRJ2OFURwpS5HjaqMO7ep?=
- =?us-ascii?Q?OJjFvYFphG/dwkEWjuBymvzvjgL3vbiUsdWa6fe95Ie8Y9P7a1vZ745HeW7/?=
- =?us-ascii?Q?SqFfFLnZpDiBggBCiJYkJhPXzOlg8qVSVof8CvqXcE81N2pKCTwL/eFEXbiS?=
- =?us-ascii?Q?/14dbl1c6SwG0etJ1kdbAW2qvEvxucBnSgLDOo7u1cnkWEpmoywtm83tQOsP?=
- =?us-ascii?Q?1V/Jh/3Y4GmwMkXVqrAb93gG9JgkVimLRHOz1ZZtDCOo6iYopkm/pe+y71Wa?=
- =?us-ascii?Q?lQHZRunCn5TQG8XQOAY+ToerWFI5Ugu9Fi1PosyyObv+cVt9MI4/XSGXMJfw?=
- =?us-ascii?Q?HjcwvqoQ3E/Z73ryClGEvoiB/xz0UJGDmMZnd1zXxpOPhOsgMt1gMUZVa7PS?=
- =?us-ascii?Q?fkerF0LcrKWhwG31Qqcn2Ij0?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/ZgLDmf4P91A2RHgxZba0+RJ1N9ppXcf6PPDNksXoJw=;
+        b=oB537cv+7rW36nLqzmSKurcx8XeCx4ShtN2KTeKpAFXu3Ce6WvWOu+DaKvJIk+2nnA
+         OBiAZXWbhyc+cm0cmprCWN3oDK+44jpDq74w8EIIrtuFA6m4dMkC2vMBuwy3OZOtnP+9
+         8oIua2zsmZ4h5osGPMO25wQmXkHc3vg+SI1P/x42tqLR6JKeyVqqPxLW1SVN2OU/67O4
+         ZXHJSlqcTUotXHjVT9uOkS2YlfnK5O7j+zRJqdUY4ZN57e2Ws3KGaOGNfiWYBwWIYpKL
+         DYxBd80wA+gnnnOK1X+eeKJ7WR9yvkXHZxKAJ67JPWsg2a0zKNhmgV5hKaH9CXlLWHKM
+         6GMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/ZgLDmf4P91A2RHgxZba0+RJ1N9ppXcf6PPDNksXoJw=;
+        b=T36W+UAJexigVOQaT/uZuFBTRVGbAsFuOdpd8qUXmL9cZpoA80NE6rD/PDR9AkD7O3
+         Lut+FIJfoVOJn8usRwoHF4nGM+It2uKYG+VYdnCh2vUOA7HJ1eWcmyJWW3vNeTbGI63r
+         oTmbxMamSX/+pQasV5kCkcNFh13x7rktK8cYVZBR45A5eaejRmfH6I4eVXIH3ewjw+hI
+         Vz3OelZnrxKTNqPsdZvz9Q4UTM8rdv0BdJxlwawZh9qMO0mBHGxQvWoksGuLuNeJCgMd
+         0H1R+mXLe+KmgUQR/q0vx16kmORHeDWq1rhTA8laFBA+RHqtwWfvhE24aaIugESe0sFJ
+         DHRg==
+X-Gm-Message-State: AOAM530RSwkDZ42ehXrGkbnbPFoF4C9+SGcENSbGlqvcpGaHtTMOd2HV
+        dVhfMZ6ALPCQqmiYds9P9MDd1YdALWUH1ssOGVWpoQ==
+X-Google-Smtp-Source: ABdhPJzYL8s1lJU9KzPzunn0ci7SYPyzALfsn/DFxLj6mqn8o0QuAynGEZnBOhCg11vT14u8xnOJKacmUn3UJ6axiwY=
+X-Received: by 2002:ac8:7616:: with SMTP id t22mr9473960qtq.43.1624631292305;
+ Fri, 25 Jun 2021 07:28:12 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: da8765a0-3011-42e6-0f23-08d937e4eee7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2021 14:24:24.8502
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fF3TarwX74+xG1rs30wK/7+K67NoZOiDUgIaD0NQnNztH86fZXouQr/Evni1MmGxnvxrZwdkB6xR9Cb6KtLITQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB4643
+References: <000000000000911d3905b459824c@google.com> <000000000000e56a2605b616b2d9@google.com>
+ <YD0UjWjQmYgY4Qgh@nuc10> <CACT4Y+YQzTkk=UPNH5g96e+yPYyaPBemmhqXz5oaWEvW9xb-rQ@mail.gmail.com>
+ <YD1RE3O4FBkKK32l@nuc10> <CACT4Y+bvWyipjZ6P6gkno0ZHRWPJ-HFGiT3yECqQU37a0E_tgQ@mail.gmail.com>
+ <YG4/PEhZ9CnKo1K3@nuc10> <CAEf4BzbB3r2pOeKBQe2F08g5ojj0RaEHHeg5L6=MVMYy-J5baA@mail.gmail.com>
+ <YG9Rz4R5bx+FnkaF@nuc10> <YMYhcMVTxThJYxMo@nuc10> <YNTAqiE7CWJhOK2M@nuc10>
+In-Reply-To: <YNTAqiE7CWJhOK2M@nuc10>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 25 Jun 2021 16:28:00 +0200
+Message-ID: <CACT4Y+Z4fjZZhCEM8eRRpw3qSpKY+nRoVcjtPQKsM7uYUL7xbQ@mail.gmail.com>
+Subject: Re: memory leak in bpf
+To:     Rustam Kovhaev <rkovhaev@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        syzbot <syzbot+f3694595248708227d35@syzkaller.appspotmail.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Richard
+On Thu, Jun 24, 2021 at 7:28 PM Rustam Kovhaev <rkovhaev@gmail.com> wrote:
+> > > > On Wed, Apr 7, 2021 at 4:24 PM Rustam Kovhaev <rkovhaev@gmail.com> wrote:
+> > > > >
+> > > > > On Mon, Mar 01, 2021 at 09:43:00PM +0100, Dmitry Vyukov wrote:
+> > > > > > On Mon, Mar 1, 2021 at 9:39 PM Rustam Kovhaev <rkovhaev@gmail.com> wrote:
+> > > > > > >
+> > > > > > > On Mon, Mar 01, 2021 at 08:05:42PM +0100, Dmitry Vyukov wrote:
+> > > > > > > > On Mon, Mar 1, 2021 at 5:21 PM Rustam Kovhaev <rkovhaev@gmail.com> wrote:
+> > > > > > > > >
+> > > > > > > > > On Wed, Dec 09, 2020 at 10:58:10PM -0800, syzbot wrote:
+> > > > > > > > > > syzbot has found a reproducer for the following issue on:
+> > > > > > > > > >
+> > > > > > > > > > HEAD commit:    a68a0262 mm/madvise: remove racy mm ownership check
+> > > > > > > > > > git tree:       upstream
+> > > > > > > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=11facf17500000
+> > > > > > > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=4305fa9ea70c7a9f
+> > > > > > > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=f3694595248708227d35
+> > > > > > > > > > compiler:       gcc (GCC) 10.1.0-syz 20200507
+> > > > > > > > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=159a9613500000
+> > > > > > > > > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11bf7123500000
+> > > > > > > > > >
+> > > > > > > > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > > > > > > > > Reported-by: syzbot+f3694595248708227d35@syzkaller.appspotmail.com
+> > > > > > > > > >
+> > > > > > > > > > Debian GNU/Linux 9 syzkaller ttyS0
+> > > > > > > > > > Warning: Permanently added '10.128.0.9' (ECDSA) to the list of known hosts.
+> > > > > > > > > > executing program
+> > > > > > > > > > executing program
+> > > > > > > > > > executing program
+> > > > > > > > > > BUG: memory leak
+> > > > > > > > > > unreferenced object 0xffff88810efccc80 (size 64):
+> > > > > > > > > >   comm "syz-executor334", pid 8460, jiffies 4294945724 (age 13.850s)
+> > > > > > > > > >   hex dump (first 32 bytes):
+> > > > > > > > > >     c0 cb 14 04 00 ea ff ff c0 c2 11 04 00 ea ff ff  ................
+> > > > > > > > > >     c0 56 3f 04 00 ea ff ff 40 18 38 04 00 ea ff ff  .V?.....@.8.....
+> > > > > > > > > >   backtrace:
+> > > > > > > > > >     [<0000000036ae98a7>] kmalloc_node include/linux/slab.h:575 [inline]
+> > > > > > > > > >     [<0000000036ae98a7>] bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:94 [inline]
+> > > > > > > > > >     [<0000000036ae98a7>] bpf_ringbuf_alloc kernel/bpf/ringbuf.c:135 [inline]
+> > > > > > > > > >     [<0000000036ae98a7>] ringbuf_map_alloc kernel/bpf/ringbuf.c:183 [inline]
+> > > > > > > > > >     [<0000000036ae98a7>] ringbuf_map_alloc+0x1be/0x410 kernel/bpf/ringbuf.c:150
+> > > > > > > > > >     [<00000000d2cb93ae>] find_and_alloc_map kernel/bpf/syscall.c:122 [inline]
+> > > > > > > > > >     [<00000000d2cb93ae>] map_create kernel/bpf/syscall.c:825 [inline]
+> > > > > > > > > >     [<00000000d2cb93ae>] __do_sys_bpf+0x7d0/0x30a0 kernel/bpf/syscall.c:4381
+> > > > > > > > > >     [<000000008feaf393>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+> > > > > > > > > >     [<00000000e1f53cfd>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > > > > > > > > >
+> > > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > i am pretty sure that this one is a false positive
+> > > > > > > > > the problem with reproducer is that it does not terminate all of the
+> > > > > > > > > child processes that it spawns
+> > > > > > > > >
+> > > > > > > > > i confirmed that it is a false positive by tracing __fput() and
+> > > > > > > > > bpf_map_release(), i ran reproducer, got kmemleak report, then i
+> > > > > > > > > manually killed those running leftover processes from reproducer and
+> > > > > > > > > then both functions were executed and memory was freed
+> > > > > > > > >
+> > > > > > > > > i am marking this one as:
+> > > > > > > > > #syz invalid
+> > > > > > > >
+> > > > > > > > Hi Rustam,
+> > > > > > > >
+> > > > > > > > Thanks for looking into this.
+> > > > > > > >
+> > > > > > > > I wonder how/where are these objects referenced? If they are not
+> > > > > > > > leaked and referenced somewhere, KMEMLEAK should not report them as
+> > > > > > > > leaks.
+> > > > > > > > So even if this is a false positive for BPF, this is a true positive
+> > > > > > > > bug and something to fix for KMEMLEAK ;)
+> > > > > > > > And syzbot will probably re-create this bug report soon as this still
+> > > > > > > > happens and is not a one-off thing.
+> > > > > > >
+> > > > > > > hi Dmitry, i haven't thought of it this way, but i guess you are right,
+> > > > > > > it is a kmemleak bug, ideally kmemleak should be aware that there are
+> > > > > > > still running processes holding references to bpf fd/anonymous inodes
+> > > > > > > which in their turn hold references to allocated bpf maps
+> > > > > >
+> > > > > > KMEMLEAK scans whole memory, so if there are pointers to the object
+> > > > > > anywhere in memory, KMEMLEAK should not report them as leaked. Running
+> > > > > > processes have no direct effect on KMEMLEAK logic.
+> > > > > > So the question is: where are these pointers to these objects? If we
+> > > > > > answer this, we can check how/why KMEMLEAK misses them. Are they
+> > > > > > mangled in some way?
+> > > > > thank you for your comments, they make sense, and indeed, the pointer
+> > > > > gets vmaped.
+> > > > > i should have looked into this sooner, becaused syzbot did trigger the
+> > > > > issue again, and Andrii had to look into the same bug, sorry about that.
+> > > >
+> > > > No worries! I actually forgot about this thread :) Let's leave the
+> > > > link to my today's investigation ([0]) just for completeness.
+> > > >
+> > > >   [0] https://lore.kernel.org/bpf/CAEf4BzYk+dqs+jwu6VKXP-RttcTEGFe+ySTGWT9CRNkagDiJVA@mail.gmail.com/
+> > > >
+> > > > > if i am understanding this correctly here is what the fix should be:
+> > > > > ---
+> > > > >  kernel/bpf/ringbuf.c | 2 ++
+> > > > >  1 file changed, 2 insertions(+)
+> > > > >
+> > > > > diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+> > > > > index f25b719ac786..30400e74abe2 100644
+> > > > > --- a/kernel/bpf/ringbuf.c
+> > > > > +++ b/kernel/bpf/ringbuf.c
+> > > > > @@ -8,6 +8,7 @@
+> > > > >  #include <linux/vmalloc.h>
+> > > > >  #include <linux/wait.h>
+> > > > >  #include <linux/poll.h>
+> > > > > +#include <linux/kmemleak.h>
+> > > > >  #include <uapi/linux/btf.h>
+> > > > >
+> > > > >  #define RINGBUF_CREATE_FLAG_MASK (BPF_F_NUMA_NODE)
+> > > > > @@ -105,6 +106,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
+> > > > >         rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
+> > > > >                   VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
+> > > > >         if (rb) {
+> > > > > +               kmemleak_not_leak((void *) pages);
+> > > >
+> > > > If that makes kmemleak happy, I have no problems with this. But maybe
+> > > > leave some comment explaining why this is needed at all?
+> > > >
+> > > > And for my understanding, how vmap changes anything? Those pages are
+> > > > still referenced from rb, which is referenced from some struct file in
+> > > > the system. Sorry if that's a naive question.
+> > > >
+> > > valid question, it does look like kmemleak should be scanning
+> > > vmalloc()/vmap() memory, i will research this further
+> >
+> > a quick update, i see a problem in kmemleak code, and i have simplified
+> > the reproducer by getting rid of a vmap().
+> > i will reach out to maintainer and mm and afterwards i will update this
+> > bug, cheers!
+> >
+>
+> Andrii, we have discovered that kmemleak scans struct page, but it does
+> not scan page contents and this is by design. if we allocate some memory
+> with kmalloc(), then allocate page with alloc_page(), and if we put
+> kmalloc pointer somewhere inside that page, kmemleak will report kmalloc
+> pointer as a false positive.
+> we can instruct kmemleak to scan the memory area by calling
+> kmemleak_alloc()/kmemleak_free() as shown below. if we don't need that
+> memory to be scanned then we can use kmemleak_not_leak().
+> if we use the former then i guess we need to be careful since we do not
+> want/need to scan the memory that is being used by user-space.
 
-How would you suggest to implement the change that make the new driver beha=
-vior optional?
-There is no additional parameter in adjtime to let me do that.
+Thanks for your heroic digging and persistence on this issue, Rustam!
 
-Thanks
-
-Min
-
-> -----Original Message-----
-> From: Richard Cochran <richardcochran@gmail.com>
-> Sent: June 24, 2021 12:20 PM
-> To: Min Li <min.li.xe@renesas.com>
-> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH net 1/2] ptp: idt82p33: optimize idt82p33_adjtime
->=20
-> On Thu, Jun 24, 2021 at 02:38:46PM +0000, Min Li wrote:
-> > I have tested this change with ptp4l for by setting step_window to 48
-> > (assuming 16 packets per second) for both 8265.2/8275.1 and they
-> performed well.
->=20
-> Both of these patches assume that user space has a special configuration
-> that works together with the non-standard driver behavior.
->=20
-> For this reason, I suggest making the new driver behavior optional, with =
-the
-> default being the origin version that "just works".  In that way, the
-> admin/user can choose the special configuration on purpose, and the
-> default performance will not be degraded.
->=20
-> Thanks,
-> Richard
+> ---
+>  kernel/bpf/ringbuf.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+> index 84b3b35fc0d0..cf7ce10b4fb1 100644
+> --- a/kernel/bpf/ringbuf.c
+> +++ b/kernel/bpf/ringbuf.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/vmalloc.h>
+>  #include <linux/wait.h>
+>  #include <linux/poll.h>
+> +#include <linux/kmemleak.h>
+>  #include <uapi/linux/btf.h>
+>
+>  #define RINGBUF_CREATE_FLAG_MASK (BPF_F_NUMA_NODE)
+> @@ -105,6 +106,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
+>         rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
+>                   VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
+>         if (rb) {
+> +               kmemleak_alloc(rb, PAGE_SIZE, 1, flags);
+>                 rb->pages = pages;
+>                 rb->nr_pages = nr_pages;
+>                 return rb;
+> @@ -184,6 +186,7 @@ static void bpf_ringbuf_free(struct bpf_ringbuf *rb)
+>         struct page **pages = rb->pages;
+>         int i, nr_pages = rb->nr_pages;
+>
+> +       kmemleak_free(rb);
+>         vunmap(rb);
+>         for (i = 0; i < nr_pages; i++)
+>                 __free_page(pages[i]);
+> --
+> 2.30.2
+>
