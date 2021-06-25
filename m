@@ -2,97 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CB083B475C
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 18:23:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6938B3B4762
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 18:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbhFYQ0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 12:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbhFYQ0O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 12:26:14 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3980C061574;
-        Fri, 25 Jun 2021 09:23:52 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id h11so11190824wrx.5;
-        Fri, 25 Jun 2021 09:23:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g914Jjm76QsmLVzeN/lBb1BZS1C8GkhpCRu0Pq7q75E=;
-        b=SoLoLOHnCqCbQCdAkcczjM79YmdaNPTznGvfYDzVmuKG7s+zQkyxTzG1Ckfb8JrQ4M
-         8GrgTBm/R7Zxa/vLSHP/2C2dPa2O52VfylggeRuNFezB+CUkCUoCTDdZxlDwhGt1CUKf
-         rNwbs4gcH5dR7QMhdiyR282jp8FeTApu3cjgDEGzUP28cSMLhB9dxZ6+JuDGb2Rzjbm2
-         YI/WQFPpQJvrMAxC8BufCqsC7GwfmKlXDiRgXwCt0igaW3+ABy7JhzKBpmBtO2CtUBE6
-         xSq7106lNJ2rM/PDywsuNtuh67nPIyNun+eS/c0krzfuG5ydubDCmyA2O3pmzY3/3pGn
-         q4hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g914Jjm76QsmLVzeN/lBb1BZS1C8GkhpCRu0Pq7q75E=;
-        b=b1BsRAqOex/Is1Fg+GqZXYaX7eSn/3zt+CbDaQZ/jCgKHu1R4CbgSrnHL8xTCl1r7+
-         yDmyTwnVxmgH7+P7RbNAoCHZNcQr/XYkEv56jHr3bvMkIQB4yDe4HxAUZwaMJQsf02I5
-         swXJ7MqtcOZHj5H69d/8B93fse3Tp0okpVx81HGrvpbwVS9L2YlgeSsKO5dDrChpGckh
-         SWqzifm2fjujIrnq5lVbiFylgZvPQgzvKHPtAiRTHdQ1015Jk8ebUh/RKE23OgKUl8gx
-         thDDncYXtoi+iV4ihqE2zJtOUKHDQCkWLHSEiQ4adgpS2uK1zIrnOwphLUfqc9Jl738j
-         YO+Q==
-X-Gm-Message-State: AOAM533UxCviUnkB8SVrSA/5HmizZN87K/a70RWLid5k1Gos3nQ4x6L/
-        20+a/u0rjgWBjSyQZOPd5JS/RLse2wWhSvYx77Q=
-X-Google-Smtp-Source: ABdhPJyzYaRKjxo/PWr9IyRPuS2hD+Vyd08Bp2R15bnDNVjDujmAvsm3S76Q9GOfupBttyOwNUz/uif13J//ClIKQ9Y=
-X-Received: by 2002:a05:6000:1acb:: with SMTP id i11mr11923562wry.120.1624638231527;
- Fri, 25 Jun 2021 09:23:51 -0700 (PDT)
+        id S229741AbhFYQ2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 12:28:39 -0400
+Received: from novek.ru ([213.148.174.62]:33002 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229630AbhFYQ2i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Jun 2021 12:28:38 -0400
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 4E5B95006F4;
+        Fri, 25 Jun 2021 19:24:17 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 4E5B95006F4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1624638258; bh=TTdfN3XYxrgv+fWtlaeKlYfmYOSe3GRZrTomK+ueHHI=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=APdl0BJKwsIDnfLQrO5QDTBVhaEo4COPBIKL+kCLURy8CetIDdQaLJG8Zn550HQl4
+         /WgjuHE7iFh77bfZXOgWKN+BbfADOQuEBp9rCEX1GIzB6d1NCskuT0/dIGSMYO/G2f
+         DhwMWRObFHi78rjnBe7enURu2Q665DF7uezf30QA=
+Subject: Re: Fw: [Bug 213581] New: Change in ip_dst_mtu_maybe_forward() breaks
+ WebRTC connections
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+References: <20210625083632.5a321cef@hermes.local>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <11df926b-ed72-e558-8d49-46e1804eaefd@novek.ru>
+Date:   Fri, 25 Jun 2021 17:26:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <cover.1624549642.git.lucien.xin@gmail.com> <08344e5d9b0eb31c1b777f44cd1b95ecdde5a3d6.1624549642.git.lucien.xin@gmail.com>
- <YNUtWejWC4ftv0DA@horizon.localdomain>
-In-Reply-To: <YNUtWejWC4ftv0DA@horizon.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 25 Jun 2021 12:23:41 -0400
-Message-ID: <CADvbK_dFw+FLV7yRd9R_xkUotWXe8=r2ptyaQmTjghvLQ9VE9Q@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] sctp: do black hole detection in search
- complete state
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        David Laight <david.laight@aculab.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210625083632.5a321cef@hermes.local>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 9:11 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Thu, Jun 24, 2021 at 11:48:08AM -0400, Xin Long wrote:
-> > @@ -333,13 +328,15 @@ void sctp_transport_pl_recv(struct sctp_transport *t)
-> >               t->pl.probe_size += SCTP_PL_MIN_STEP;
-> >               if (t->pl.probe_size >= t->pl.probe_high) {
-> >                       t->pl.probe_high = 0;
-> > +                     t->pl.raise_count = 0;
-> >                       t->pl.state = SCTP_PL_COMPLETE; /* Search -> Search Complete */
-> >
-> >                       t->pl.probe_size = t->pl.pmtu;
-> >                       t->pathmtu = t->pl.pmtu + sctp_transport_pl_hlen(t);
-> >                       sctp_assoc_sync_pmtu(t->asoc);
-> >               }
-> > -     } else if (t->pl.state == SCTP_PL_COMPLETE) {
-> > +     } else if (t->pl.state == SCTP_PL_COMPLETE && ++t->pl.raise_count == 30) {
->
-> Please either break the condition into 2 lines or even in 2 if()s. The
-> ++ operator here can easily go unnoticed otherwise.
-will change it to:
-        } else if (t->pl.state == SCTP_PL_COMPLETE) {
-                t->pl.raise_count++;
-                if (t->pl.raise_count == 30) {
+On 25.06.2021 16:36, Stephen Hemminger wrote:
+> 
+> 
+> Begin forwarded message:
+> 
+> Date: Fri, 25 Jun 2021 11:54:19 +0000
+> From: bugzilla-daemon@bugzilla.kernel.org
+> To: stephen@networkplumber.org
+> Subject: [Bug 213581] New: Change in ip_dst_mtu_maybe_forward() breaks WebRTC connections
+> 
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=213581
+> 
+>              Bug ID: 213581
+>             Summary: Change in ip_dst_mtu_maybe_forward() breaks WebRTC
+>                      connections
+>             Product: Networking
+>             Version: 2.5
+>      Kernel Version: 5.13.0-rc7
+>            Hardware: All
+>                  OS: Linux
+>                Tree: Mainline
+>              Status: NEW
+>            Severity: normal
+>            Priority: P1
+>           Component: IPV4
+>            Assignee: stephen@networkplumber.org
+>            Reporter: godlike64@gmail.com
+>          Regression: No
+> 
+> Recent Linux kernel versions (>=5.9 if my calculations are correct), when used
+> as a gateway on a LAN (or a similar setup) will break WebRTC protocols such as
+> Google Meet, Discord, etc. (have not done extensive testing but would gather
+> that most similar protocols are affected). In the case of Meet, no video for
+> any participant is ever shown (other than my own), and nobody can see my video,
+> although audio does work. In the case of Discord, no audio/video for other
+> participants is ever shown. Note that every meeting is initiated or joined from
+> inside the LAN, not on the gateway itself.
+> 
+> Using plain iptables, firewalld+iptables or firewalld+nftables makes no
+> difference (it was the first thing I tried). I discovered this a few months ago
+> when updating the kernel, and found that reverting to the previous kernel made
+> this work again. I didn't look further into it until now, when I can no longer
+> stay on that old of a kernel :).
+> 
+> Using git-bisect I was able to identify the offending commit:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=02a1b175b0e92d9e0fa5df3957ade8d733ceb6a0
+> 
+> This patch was backported to linux-stable shortly after 5.4.72 released. It
+> appears to still be there in vanilla upstream. I can confirm that reverting
+> this patch in 5.4.109 fixes the issue and webrtc works again.
+> 
+> I have also reverted this patch in 5.13.0-rc7 and WebRTC works with the patch
+> reverted. Without reverting the patch, it's broken.
+> 
+> No other protocol/connection seems to be affected.
+> 
+> Reproducible: Always
+> 
+> Steps to Reproduce:
+> 1. Install any kernel >5.4.9 on a gateway device.
+> 2. Try to use a conferencing application that uses WebRTC (Meet, Discord, etc).
+> Either start or join a meeting from a device that sits in the LAN.
+> Actual Results:
+> Audio and/or video does not work when a meeting is initiated/joined from within
+> the LAN
+> 
+> Expected Results:
+> Both audio and video should work when inside the meeting.
+> 
+> My C is quite limited, but it appears that this function, from wherever it gets
+> called, returns a different value after the mentioned commit. It used to
+> return:
+> 
+> return min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
+> 
+> Now it returns:
+> 
+> mtu = dst_metric_raw(dst, RTAX_MTU);
+> if (mtu)
+>      return mtu;
+> 
 
-Thanks.
->
-> > +             /* Raise probe_size again after 30 * interval in Search Complete */
-> >               t->pl.state = SCTP_PL_SEARCH; /* Search Complete -> Search */
-> >               t->pl.probe_size += SCTP_PL_MIN_STEP;
-> >       }
-> > --
-> > 2.27.0
-> >
+I'm trying to deal with this function right now, so I can try to reproduce this 
+bug too. Actually, the change should only affect configuration with route with 
+mtu specified explicitly. What is the routing configuration for this case? Does 
+it use any kind of tunnels to connect networks?
+
