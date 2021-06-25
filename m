@@ -2,100 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 811183B3CC9
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 08:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDA813B3CEA
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 08:58:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233210AbhFYGo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 02:44:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34336 "EHLO
+        id S229813AbhFYHBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 03:01:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55902 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230097AbhFYGo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 02:44:57 -0400
+        by vger.kernel.org with ESMTP id S229741AbhFYHBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 03:01:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624603356;
+        s=mimecast20190719; t=1624604335;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=G9jRj0tpYxmkhpGWsyUbyAZnE8Gx5cKf3gFKh8399ko=;
-        b=A4Q0NnSaVK36qAeSNRrojEuxxUNMwgK4qaMCzNX1BeVzY8hRGG96ZwXN9cMHo4kaKIFhw2
-        4kgQXDifLXjqBgIbZbB6xyV2xx/M3DhRPc2BtMqzvH36+FQo2tte/CgMOstddA2kO1R+y4
-        6Ve+Xxlaw42UHn04RH/oy5V26VOyYHA=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-358-6Zeb36uLMVCEZQt49_1ukA-1; Fri, 25 Jun 2021 02:42:35 -0400
-X-MC-Unique: 6Zeb36uLMVCEZQt49_1ukA-1
-Received: by mail-wr1-f69.google.com with SMTP id j1-20020adfb3010000b02901232ed22e14so3141070wrd.5
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 23:42:34 -0700 (PDT)
+        bh=iKRBxKOs5o7oDuuNio2hXfanoEaZ20AOxL/AQwEayew=;
+        b=icGs2eZZVPEYTRrX1CC6iibB+eEbxacmyf08WyHhS8Jy8XJsPuH2t0SkZLhZGQneMwYNGi
+        471bge05kehbKOZ6Ixgklhyb0q4qSdam5pVGWs6Vkzq8e0ZoyViWrCXSDuVqAbJu6kKJ6W
+        SsO0NWLEB7lXFz42OGKMJ0NoP6R9kpk=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-592-Lb-dn6r_P4KA5-9lVkyTlQ-1; Fri, 25 Jun 2021 02:58:53 -0400
+X-MC-Unique: Lb-dn6r_P4KA5-9lVkyTlQ-1
+Received: by mail-pj1-f71.google.com with SMTP id b9-20020a17090aa589b029016e99e81994so7613044pjq.0
+        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 23:58:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=G9jRj0tpYxmkhpGWsyUbyAZnE8Gx5cKf3gFKh8399ko=;
-        b=rU9DWhgJ7UTfoA3lhkwIcjpgfTXUlBGgGqTdx8yLtAiajR49HZOviPaobLx0HXvh6R
-         MMV0QQA4NcQo3Ll39hexEkpoL9J1tp1315zPvgFqYyTHqa25HBAcqr88U6MFzuqlqayG
-         UwkoDTfgJsMQR1LJR0XQkD23uFvMsB/3ku6fLwQ4gieA9pEZ2u9yq35wNbnQqRNy7Blm
-         6dqVt3m6oT27WzD+5HzQWyQAyGm1e1ue6ufkDHHLaYbc+7XHAc8EDbsRfPYDLKLxxtrF
-         l6Vx77gHMPzuhXPtsIbAXJXdskBEtcLaDx07go1hxHT9b05Q3R6DyChE6ZigIhCSu0IA
-         WwFQ==
-X-Gm-Message-State: AOAM533IofgTyCt5sd+O2R4w+4HefExTXN/9v7AyyJP5Lkxak9YJbWmp
-        CMfEQv2g6kqNo+J02H5Wb/n90RYqzVWEge+8uSCrlJdXDLvP9LvXjo/y7D27YTBZwv6us6WAU1Q
-        pxMPS9TNnF1ls/n1F
-X-Received: by 2002:a5d:6b82:: with SMTP id n2mr8884405wrx.206.1624603354054;
-        Thu, 24 Jun 2021 23:42:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw92gxo6icRkyIW2W9jDfsnK0lVx5O0U/fJfH24QR4NPITd1aULbry65dD0d5lmfFtShv6qCw==
-X-Received: by 2002:a5d:6b82:: with SMTP id n2mr8884384wrx.206.1624603353946;
-        Thu, 24 Jun 2021 23:42:33 -0700 (PDT)
-Received: from redhat.com ([77.124.79.210])
-        by smtp.gmail.com with ESMTPSA id v18sm5762831wrv.24.2021.06.24.23.42.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Jun 2021 23:42:33 -0700 (PDT)
-Date:   Fri, 25 Jun 2021 02:42:04 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, jasowang@redhat.com,
-        brouer@redhat.com, paulmck@kernel.org, peterz@infradead.org,
-        will@kernel.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linuxarm@openeuler.org
-Subject: Re: [PATCH net-next v2 0/2] add benchmark selftest and optimization
- for ptr_ring
-Message-ID: <20210625024131-mutt-send-email-mst@kernel.org>
-References: <1624591136-6647-1-git-send-email-linyunsheng@huawei.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=iKRBxKOs5o7oDuuNio2hXfanoEaZ20AOxL/AQwEayew=;
+        b=nsb4DFkZ4oM/6jtkCaCUDsKHF85Svj6/8xpkG/mKeBbCd6Yua3MsiJA19dA91g2NAA
+         LA7W/VD1CuKs0ewru6azAqFUR4KhuUPo0OCVnBW6aC2FrV6A+PnRrRfxA7eMK7RiVYjQ
+         cnN6SbaKN3uKax8G+V4hVcfgPq+PBTiRvs4RNksVG7eAu/S/lsrxxu58MWM6sxTsGHRH
+         mOM3sNSAl1RLwQq3T53WK7ueeRzclvTiW8ZLKzegipKns+UWZm8h0e2Dw2Nv3PNZP7oO
+         LK568haVMxjRHaPmtF5dcbxykOBjiuiQFV0MHgcZv5TWgrEeHXWPPBuKRxOO4CXZsxF2
+         DPqQ==
+X-Gm-Message-State: AOAM5323DMADQ94GKnautDCcWSJ3dhklh+325WHy9YrRsC3G3v6AS3DW
+        zQ+vwS27s/MFwQary7hqUqbzQgA++xsF/Mcr7elo+akBvU9PJq2UCr1HoSf/bUmJPrXEs0fvrVJ
+        d6UtZJotB1yZd7YsC
+X-Received: by 2002:a62:8286:0:b029:2fc:812d:2e70 with SMTP id w128-20020a6282860000b02902fc812d2e70mr5174041pfd.24.1624604332384;
+        Thu, 24 Jun 2021 23:58:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzETLmB5Oiws/nfe9ZLnzbe4nL3T+jcaIKrJH7VTExZ/N01jjU9W4XYYODnrCi3bmOC8IO60w==
+X-Received: by 2002:a62:8286:0:b029:2fc:812d:2e70 with SMTP id w128-20020a6282860000b02902fc812d2e70mr5174022pfd.24.1624604332121;
+        Thu, 24 Jun 2021 23:58:52 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 136sm4068169pfa.158.2021.06.24.23.58.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Jun 2021 23:58:51 -0700 (PDT)
+Subject: Re: [PATCH v3 2/5] net: tun: don't assume IFF_VNET_HDR in
+ tun_xdp_one() tx path
+To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
+Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
+        Willem de Bruijn <willemb@google.com>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+ <20210624123005.1301761-1-dwmw2@infradead.org>
+ <20210624123005.1301761-2-dwmw2@infradead.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <3fb5a99a-52bb-0a47-0ea6-531104db5838@redhat.com>
+Date:   Fri, 25 Jun 2021 14:58:32 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1624591136-6647-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <20210624123005.1301761-2-dwmw2@infradead.org>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 25, 2021 at 11:18:54AM +0800, Yunsheng Lin wrote:
-> Patch 1: add a selftest app to benchmark the performance
->          of ptr_ring.
-> Patch 2: make __ptr_ring_empty() checking more reliable
->          and use the just added selftest to benchmark the
->          performance impact.
-> 
-> V2: add patch 1 and add performance data for patch 2.
 
-Thanks for the patches!
-There are some things to improve there - I sent comments
-in response to invididual patches.
+ÔÚ 2021/6/24 ÏÂÎç8:30, David Woodhouse Ð´µÀ:
+> From: David Woodhouse <dwmw@amazon.co.uk>
+>
+> Sometimes it's just a data packet. The virtio_net_hdr processing should be
+> conditional on IFF_VNET_HDR, just as it is in tun_get_user().
+>
+> Fixes: 043d222f93ab ("tuntap: accept an array of XDP buffs through sendmsg()")
+> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 
-> Yunsheng Lin (2):
->   selftests/ptr_ring: add benchmark application for ptr_ring
->   ptr_ring: make __ptr_ring_empty() checking more reliable
-> 
->  MAINTAINERS                                      |   5 +
->  include/linux/ptr_ring.h                         |  25 ++-
->  tools/testing/selftests/ptr_ring/Makefile        |   6 +
->  tools/testing/selftests/ptr_ring/ptr_ring_test.c | 249 +++++++++++++++++++++++
->  tools/testing/selftests/ptr_ring/ptr_ring_test.h | 150 ++++++++++++++
->  5 files changed, 426 insertions(+), 9 deletions(-)
->  create mode 100644 tools/testing/selftests/ptr_ring/Makefile
->  create mode 100644 tools/testing/selftests/ptr_ring/ptr_ring_test.c
->  create mode 100644 tools/testing/selftests/ptr_ring/ptr_ring_test.h
-> 
-> -- 
-> 2.7.4
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+
+> ---
+>   drivers/net/tun.c | 9 ++++++---
+>   1 file changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 67b406fa0881..9acd448e6dfc 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -2331,7 +2331,7 @@ static int tun_xdp_one(struct tun_struct *tun,
+>   {
+>   	unsigned int datasize = xdp->data_end - xdp->data;
+>   	struct tun_xdp_hdr *hdr = xdp->data_hard_start;
+> -	struct virtio_net_hdr *gso = &hdr->gso;
+> +	struct virtio_net_hdr *gso = NULL;
+>   	struct bpf_prog *xdp_prog;
+>   	struct sk_buff *skb = NULL;
+>   	u32 rxhash = 0, act;
+> @@ -2340,9 +2340,12 @@ static int tun_xdp_one(struct tun_struct *tun,
+>   	bool skb_xdp = false;
+>   	struct page *page;
+>   
+> +	if (tun->flags & IFF_VNET_HDR)
+> +		gso = &hdr->gso;
+> +
+>   	xdp_prog = rcu_dereference(tun->xdp_prog);
+>   	if (xdp_prog) {
+> -		if (gso->gso_type) {
+> +		if (gso && gso->gso_type) {
+>   			skb_xdp = true;
+>   			goto build;
+>   		}
+> @@ -2388,7 +2391,7 @@ static int tun_xdp_one(struct tun_struct *tun,
+>   	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+>   	skb_put(skb, xdp->data_end - xdp->data);
+>   
+> -	if (virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
+> +	if (gso && virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
+>   		atomic_long_inc(&tun->rx_frame_errors);
+>   		kfree_skb(skb);
+>   		err = -EINVAL;
 
