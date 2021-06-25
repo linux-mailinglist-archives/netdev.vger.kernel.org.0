@@ -2,116 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3E1A3B3D74
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 09:34:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E77213B3D7C
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 09:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230073AbhFYHgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 03:36:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28718 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230111AbhFYHgE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 03:36:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624606424;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1LhOEe0NchnLPEK73YryX6GSY7fv1PW9V4gyCQJIs+A=;
-        b=RH6ijZ0OkiKv3WsyevVe2upgcBJuqFYlX5kEt3aIwm8f2axOMh/1R9AQEiYBema3Wn1W9b
-        /u21RJG/qTVKPpk4pgQw2Bwjt9CIRR7U5NSIJ9SbzIA9m8weO7F85BA777Bdzfn1RR3gOk
-        AY2vx+t0u03c0ZoLoQcZ4qv7yydBQ0I=
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
- [209.85.215.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-512-Qij6WHupMzO4qOgZ21GVHw-1; Fri, 25 Jun 2021 03:33:42 -0400
-X-MC-Unique: Qij6WHupMzO4qOgZ21GVHw-1
-Received: by mail-pg1-f199.google.com with SMTP id y1-20020a655b410000b02902235977d00cso5511467pgr.21
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 00:33:42 -0700 (PDT)
+        id S229945AbhFYHiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 03:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229671AbhFYHiq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 03:38:46 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FB7C061756
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 00:36:25 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id g7so4869893wri.7
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 00:36:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ubique-spb-ru.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=A+iYsxnNRChil1qMH5MHHpKdV0Rl30rr/MhL/n0ldpo=;
+        b=OwabMajJMXwFXlsoPKacy7ZKWmFfW+oWJ21Q3d4KKvsGhyzEhATItY3xjHbr0gG7Ze
+         yL5f93uQgC6lqZg5i4lrjdFHoczrlNvRisnKJ4b8LO5Q0ey3yYMdil9PMm5fm9txhx1a
+         oirlatfmY919d1KX6n97MhlhL1o5Po+QP2TBKybwDaC+m7ofZ6/497Sl6GHQ1JJFbSHy
+         fS61WF1bB+fyfe5cHEpgEaUM3Ywanpwr4JZscgUV1SkicD64tI8f2mUaK3yXhSedJ6+a
+         DxUxN8MG3557snFkRRlzkT/qG2P4A60VrTPGFusuzM3vibbLCpZhAJBM3L0SlILGt2j1
+         0f+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=1LhOEe0NchnLPEK73YryX6GSY7fv1PW9V4gyCQJIs+A=;
-        b=DQWFj5/HRmEMnlCQxyv3OjcQpNvMrzVG8kOfrpTS8Fc0rjvL654E2gUFlpAtMdG+w/
-         EbwjUjRzSc7dPjyEk4OTgxlT/uUYxSesd21NOA0tZqRvi7B8ITm7IVjeQA/jmMtxh6MT
-         RyY/iiFM28LS1O+IDxWrZNONJROcOrve+e7KpIGUvXyVIESOYjauK6UVKiT48olJSr/0
-         teW3Dvl8CQNiq0hjlEoBOsevWzV8g4BamK4NqvrLEyRmVQVbDEwxEn5KH9MtqFTqXbXd
-         vFR0QyeluUhdKByuYg9YpMXrWabEWRpZhSggRYhTiLZG0JGiH70jVxrd+DoG5jBzLVg4
-         P/Sw==
-X-Gm-Message-State: AOAM531BdeNDrqY/uBk3h4xaWNS1j200CD/wazZpKnQWEcf1/0ZMIrBD
-        tjpnGL/9SoxAmgEHmwjGHc5z/Vzs/2MNPBtPUdcl3DJYh/+I81qoBy3E/wa7zzS6qTDFfbDrOFE
-        OhJXVfmOjLXS5FIOY
-X-Received: by 2002:aa7:829a:0:b029:2e9:e53:198d with SMTP id s26-20020aa7829a0000b02902e90e53198dmr9392573pfm.72.1624606421309;
-        Fri, 25 Jun 2021 00:33:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyNbqDtLT+W2TBlvt4EeH2TlY6CMl62jQSAlMBKUImWe1znpEvBJ4IEDkia+M2NjyEolCWhGA==
-X-Received: by 2002:aa7:829a:0:b029:2e9:e53:198d with SMTP id s26-20020aa7829a0000b02902e90e53198dmr9392552pfm.72.1624606421053;
-        Fri, 25 Jun 2021 00:33:41 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id i128sm4981430pfc.142.2021.06.25.00.33.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Jun 2021 00:33:40 -0700 (PDT)
-Subject: Re: [PATCH v3 3/5] vhost_net: remove virtio_net_hdr validation, let
- tun/tap do it themselves
-To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
-Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
-        Willem de Bruijn <willemb@google.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
- <20210624123005.1301761-1-dwmw2@infradead.org>
- <20210624123005.1301761-3-dwmw2@infradead.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <b339549d-c8f1-1e56-2759-f7b15ee8eca1@redhat.com>
-Date:   Fri, 25 Jun 2021 15:33:36 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=A+iYsxnNRChil1qMH5MHHpKdV0Rl30rr/MhL/n0ldpo=;
+        b=j4tJ/96mKEwysOig26VH1yvdm11ECXb/91zIci2UISkN5ZzLmeikfRHutVRvCpazEM
+         cXDtuEf+MBhyLNsuqv1MkafU0kDULxon2lCSPxzs4i7g2TkOs/onuzf2dJDJuMiCJhua
+         CsfqEYzsQRa0h7xp5C68o7OD2vx4MQwgmtA+FAzGLtcydk8+iaB7Q3M8H7iHgim8fyPL
+         bKl0G1uNwdcol+ov7ghxfJtu5W4He8NJFOX7wVuG9U1sWmVBtHGPQlf3v1vugNJttNIy
+         DbM2ZClTJG+b78wq25tF7DGhIcY18PWh3b7sXTK4Zue+upyKrAbJSAQ17wCjR4UGlpgm
+         gLqw==
+X-Gm-Message-State: AOAM531Iaw/rd50Tf5lDIu0C0A8+1dml/wxRVmlhPCiF7MUuB18jj7Wf
+        OuxF9gT+t1c/6bA3n+mMgHcNMw==
+X-Google-Smtp-Source: ABdhPJwbhMH8K0ko7h1DMvsBPkXfcdQWgEd8GSufhINDO4SZsP+VSNa9+m4a6/rLkDMoT68d4YcW0Q==
+X-Received: by 2002:a5d:6a4e:: with SMTP id t14mr9258510wrw.211.1624606583710;
+        Fri, 25 Jun 2021 00:36:23 -0700 (PDT)
+Received: from localhost ([154.21.15.43])
+        by smtp.gmail.com with ESMTPSA id 61sm6023536wrp.4.2021.06.25.00.36.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Jun 2021 00:36:23 -0700 (PDT)
+Date:   Fri, 25 Jun 2021 11:36:21 +0400
+From:   Dmitrii Banshchikov <me@ubique.spb.ru>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Gary Lin <glin@suse.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Martin Loviska <mloviska@suse.com>
+Subject: Re: [PATCH bpf] net/bpfilter: specify the log level for the kmsg
+ message
+Message-ID: <20210625073621.zmd2w33wi335lya3@amnesia>
+References: <20210623040918.8683-1-glin@suse.com>
+ <CAADnVQLpN993VpnPkTUxXpBMZtS6+h4CVruH33zbw-BLWj41-A@mail.gmail.com>
+ <20210623065744.igawwy424y2zy26t@amnesia>
+ <CAADnVQK2uQ3MvwaRztMtcw8SJz1r213hxA+vM2dCtr6RfpZnSA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210624123005.1301761-3-dwmw2@infradead.org>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQK2uQ3MvwaRztMtcw8SJz1r213hxA+vM2dCtr6RfpZnSA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 24, 2021 at 08:47:06PM -0700, Alexei Starovoitov wrote:
+> On Tue, Jun 22, 2021 at 11:57 PM Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
+> >
+> > On Tue, Jun 22, 2021 at 09:38:38PM -0700, Alexei Starovoitov wrote:
+> > > On Tue, Jun 22, 2021 at 9:09 PM Gary Lin <glin@suse.com> wrote:
+> > > >
+> > > > Per the kmsg document(*), if we don't specify the log level with a
+> > > > prefix "<N>" in the message string, the default log level will be
+> > > > applied to the message. Since the default level could be warning(4),
+> > > > this would make the log utility such as journalctl treat the message,
+> > > > "Started bpfilter", as a warning. To avoid confusion, this commit adds
+> > > > the prefix "<5>" to make the message always a notice.
+> > > >
+> > > > (*) https://www.kernel.org/doc/Documentation/ABI/testing/dev-kmsg
+> > > >
+> > > > Fixes: 36c4357c63f3 ("net: bpfilter: print umh messages to /dev/kmsg")
+> > > > Reported-by: Martin Loviska <mloviska@suse.com>
+> > > > Signed-off-by: Gary Lin <glin@suse.com>
+> > > > ---
+> > > >  net/bpfilter/main.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/net/bpfilter/main.c b/net/bpfilter/main.c
+> > > > index 05e1cfc1e5cd..291a92546246 100644
+> > > > --- a/net/bpfilter/main.c
+> > > > +++ b/net/bpfilter/main.c
+> > > > @@ -57,7 +57,7 @@ int main(void)
+> > > >  {
+> > > >         debug_f = fopen("/dev/kmsg", "w");
+> > > >         setvbuf(debug_f, 0, _IOLBF, 0);
+> > > > -       fprintf(debug_f, "Started bpfilter\n");
+> > > > +       fprintf(debug_f, "<5>Started bpfilter\n");
+> > > >         loop();
+> > > >         fclose(debug_f);
+> > > >         return 0;
+> > >
+> > > Adding Dmitrii who is redesigning the whole bpfilter.
+> >
+> > Thanks. The same logic already exists in the bpfilter v1 patchset
+> > - [1].
+> >
+> > 1. https://lore.kernel.org/bpf/c72bac57-84a0-ac4c-8bd8-08758715118e@fb.com/T/#mb36e20c4e5e4a70746bd50a109b1630687990214
+> 
+> Dmitrii,
+> 
+> what do you prefer we should do with this patch then?
 
-ÔÚ 2021/6/24 ÏÂÎç8:30, David Woodhouse Ð´µÀ:
-> From: David Woodhouse<dwmw@amazon.co.uk>
->
-> When the underlying socket isn't configured with a virtio_net_hdr, the
-> existing code in vhost_net_build_xdp() would attempt to validate
-> uninitialised data, by copying zero bytes (sock_hlen) into the local
-> copy of the header and then trying to validate that.
->
-> Fixing it is somewhat non-trivial because the tun device might put a
-> struct tun_pi*before*  the virtio_net_hdr, which makes it hard to find.
-> So just stop messing with someone else's data in vhost_net_build_xdp(),
-> and let tap and tun validate it for themselves, as they do in the
-> non-XDP case anyway.
+There was an explicit request to make an event of loading a UMH
+visible - [1]. Given that the default for MaxLevelConsole is info
+and the patch makes the behavior slightly more accurate - ack
+from me.
 
+1. https://lore.kernel.org/netdev/CA+55aFx5Q8D3cmuoXJFV9Ok_vc3fd3rNP-5onqFTPTtfZgi=HQ@mail.gmail.com/
 
-Thinking in another way. All XDP stuffs for vhost is prepared for TAP. 
-XDP is not expected to work for TUN.
+-- 
 
-So we can simply let's vhost doesn't go with XDP path is the underlayer 
-socket is TUN.
-
-Thanks
-
-
->
-> This means that the 'gso' member of struct tun_xdp_hdr can die, leaving
-> only 'int buflen'.
->
-> The socket header of sock_hlen is still copied separately from the
-> data payload because there may be a gap between them to ensure suitable
-> alignment of the latter.
->
-> Fixes: 0a0be13b8fe2 ("vhost_net: batch submitting XDP buffers to underlayer sockets")
-> Signed-off-by: David Woodhouse<dwmw@amazon.co.uk>
-> ---
->   drivers/net/tap.c      | 25 ++++++++++++++++++++++---
->   drivers/net/tun.c      | 21 ++++++++++++++++++---
->   drivers/vhost/net.c    | 30 +++++++++---------------------
->   include/linux/if_tun.h |  1 -
->   4 files changed, 49 insertions(+), 28 deletions(-)
-
+Dmitrii Banshchikov
