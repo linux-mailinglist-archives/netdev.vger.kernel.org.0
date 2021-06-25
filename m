@@ -2,221 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D97B3B487B
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 19:52:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 710693B4889
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 19:57:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229573AbhFYRyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 13:54:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32398 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229531AbhFYRym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 13:54:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624643541;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Np0xO1RJa8Fe+o0fE+8kFFb6yFJ3EzhbKHebm61tvY8=;
-        b=EMsy/twQiSuiWXxDvsqMXKElfFERbu+jKS+iBmRoj8bxzjJHtTjmc6r1n79zCy2lTZr6Xd
-        Aol6V7D/3tLjzIACkY4zhFov46ZSfVA/FfUKahyBLPiaYZEb36i/OsSfQxE86xjLzYVEMG
-        LW4+gHO1Ej/9EKoAmqeQDXMP5pi/NLA=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-434-ZZ7wPEmCN5mQxLTxRTppZA-1; Fri, 25 Jun 2021 13:52:20 -0400
-X-MC-Unique: ZZ7wPEmCN5mQxLTxRTppZA-1
-Received: by mail-lj1-f197.google.com with SMTP id y15-20020a2e95cf0000b0290176854e0819so1026282ljh.23
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 10:52:19 -0700 (PDT)
+        id S229738AbhFYR7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 13:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229531AbhFYR7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 13:59:49 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBE4C061574
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 10:57:26 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id d16so12904557ejm.7
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 10:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=arRhN62j44m4VA64Q3RmWl4Xr3lAv7AA6ZGCOSiWYN0=;
+        b=OZT6dW0up4Hk8JNW1J9IATWzn3DNme20t1n201zhzHM1CRQLX7c9adj0YogqtqN6Fg
+         lyf/uR9qH/8UQG5Xg48BT6fSjXoJ6SF2e5zOI2G99zUFdE+VRxnvzyhFw9z3HDks7PGj
+         soNjTN3MLAZTm6CSNQtB2n4mrRRnqNK76yxCwMBPJcTGd8w2CF1ytJdkEaHh95UonyuV
+         Jdn2CpTGJ6tSY+N9sCa7TmAzablRJ5cNAaaSykMThb+mND8iplNc2ptOR5T3D156DBY+
+         /Sc6vn3U3PjXxz58ROLD2gxdzzvmCWYwBXchgJa0h3MUImqHaaC1ay3UnlodhgNU/Vzk
+         Zc5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Np0xO1RJa8Fe+o0fE+8kFFb6yFJ3EzhbKHebm61tvY8=;
-        b=qLb8s4VKC/fR7FLQmlIM78MwV6t5364liqIRi6/jLXK18tRGouYzZa4PXDJzSXkXs0
-         KWwwyyJ/eCzCFePZaFLuwpTUiGJGu9eJTGwgFGSTtC7YIhrxl2JnTwtpCRBi+TKH1Nm3
-         kZKDlL1wQqD34dLYDWOIHVA5PPEQoRK4C6Z49XQDFRTslmoNtY01xRiCLJGrI7iDn1tO
-         o6HlkMD4UTgCCVUubbOyDGxek/SRGIR2XmbfPyLHi8M77Pg1CZIEDq3rgK3fm24tuGHi
-         jkEde7LgJM6dEfOSY9rxTFgr7XLrWX8t9SPiHLV9vLjUT9AfZtU1Dzvj4bTHzTzAFC6p
-         qftw==
-X-Gm-Message-State: AOAM531neAAZpy40gPhV6oCwxcbN2UhOv30Bgca8h80YMfti1TfhK2OG
-        WMFGfxSilSSy3R9HZyCH+gkX7Im8ofqtvDuoNau0Tjy76TUTvLvUUWSfxZaPVWK8fYfYAivqzUG
-        iM9IvDPJSin69IICL9/H8AifCFlq1+UUL
-X-Received: by 2002:a05:6512:1188:: with SMTP id g8mr9091330lfr.114.1624643538671;
-        Fri, 25 Jun 2021 10:52:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwv3ONlbYdOAJeKoocH2JT7i37U2k3Ba34lvXyyU9Xl8b/vh+ACiLOhDBLiq7MSlh/s914KOVChB9p0l3+RVAk=
-X-Received: by 2002:a05:6512:1188:: with SMTP id g8mr9091276lfr.114.1624643538381;
- Fri, 25 Jun 2021 10:52:18 -0700 (PDT)
+        bh=arRhN62j44m4VA64Q3RmWl4Xr3lAv7AA6ZGCOSiWYN0=;
+        b=Cdk94y/wobPcD5QragOSjC0ifqpSI+gN6mZwLVVNosEWxB7/4tqjZQ7kfOmvYkNY26
+         huT2q5Od90yDad9IfpM7IwrkJmxoOODBv6qhGjg2vlLOFuFn+I0Ees6O5a2qw7MT1g0q
+         WirreFefBAZWBeTjP4ZHj8CzBAvIB39ALPirlfYKcKcWrvx2AT9ufHEHwzkvSl+8NMRN
+         zJg8clmTCCNgDPsi6u6WKZKK31fPGJ1GmvUy7SBbdgxZrl+/sLRvuIAJtEK+OEUPVRZQ
+         ZgkamiYlNL6uFmrdMm5ZvdjftzqnUgvW+SVhm1e3jFhOhGto0/tJkKZZtFmmHUyNK902
+         dz/w==
+X-Gm-Message-State: AOAM5308aJ2yREbB1w+39SnLaZ3EygPdaBC4M6vnQBOrYoHWZlukA/k1
+        7qqiPUAd7QP1yNFD7MCZajUvjxXYRJrhjQ==
+X-Google-Smtp-Source: ABdhPJzjMpSMtBDTCQREqxlYhWkMfxrkv5P/NNh9WQxIETm/xl7k+N344ZScP6MzClD0LCfzjgvlqA==
+X-Received: by 2002:a17:906:8c1:: with SMTP id o1mr12377794eje.530.1624643845370;
+        Fri, 25 Jun 2021 10:57:25 -0700 (PDT)
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
+        by smtp.gmail.com with ESMTPSA id ml22sm1185469ejb.71.2021.06.25.10.57.24
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Jun 2021 10:57:24 -0700 (PDT)
+Received: by mail-wm1-f51.google.com with SMTP id o22so5844626wms.0
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 10:57:24 -0700 (PDT)
+X-Received: by 2002:a1c:7c0b:: with SMTP id x11mr11959013wmc.183.1624643843964;
+ Fri, 25 Jun 2021 10:57:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210617182242.8637-1-nitesh@redhat.com> <20210617182242.8637-2-nitesh@redhat.com>
-In-Reply-To: <20210617182242.8637-2-nitesh@redhat.com>
-From:   Nitesh Lal <nilal@redhat.com>
-Date:   Fri, 25 Jun 2021 13:52:04 -0400
-Message-ID: <CAFki+Ln=OS1unuybbD0MKmeJwZci66j6m5OjpNvKDN74E0qw2Q@mail.gmail.com>
-Subject: Re: [PATCH v1 01/14] genirq: Provide new interfaces for affinity hints
-To:     linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>, jbrandeb@kernel.org,
-        frederic@kernel.org, Juri Lelli <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, rostedt@goodmis.org,
-        peterz@infradead.org, davem@davemloft.net,
-        akpm@linux-foundation.org, sfr@canb.auug.org.au,
-        stephen@networkplumber.org, rppt@linux.vnet.ibm.com,
-        chris.friesen@windriver.com, Marc Zyngier <maz@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com,
-        Stefan Assmann <sassmann@redhat.com>,
-        Tomas Henzl <thenzl@redhat.com>, kashyap.desai@broadcom.com,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        shivasharan.srikanteshwara@broadcom.com,
-        sathya.prakash@broadcom.com,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        suganath-prabu.subramani@broadcom.com, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, Ken Cox <jkc@redhat.com>,
-        faisal.latif@intel.com, shiraz.saleem@intel.com, tariqt@nvidia.com,
-        Alaa Hleihel <ahleihel@redhat.com>,
-        Kamal Heib <kheib@redhat.com>, borisp@nvidia.com,
-        saeedm@nvidia.com, benve@cisco.com, govind@gmx.com,
-        jassisinghbrar@gmail.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com
+References: <98f7ab5fb176f1d1565a001c3324f1db6c0e6d4f.1624632443.git.andreas.a.roeseler@gmail.com>
+In-Reply-To: <98f7ab5fb176f1d1565a001c3324f1db6c0e6d4f.1624632443.git.andreas.a.roeseler@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 25 Jun 2021 13:56:47 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSf7oXy3xQ8yetP7e8q_bpf_FwHmW5QHdQL7csz0i0O56w@mail.gmail.com>
+Message-ID: <CA+FuTSf7oXy3xQ8yetP7e8q_bpf_FwHmW5QHdQL7csz0i0O56w@mail.gmail.com>
+Subject: Re: [PATCH net-next V3] ipv6: ICMPV6: add response to ICMPV6 RFC 8335
+ PROBE messages
+To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        willemdebruijn.kernel@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 17, 2021 at 2:23 PM Nitesh Narayan Lal <nitesh@redhat.com> wrote:
+On Fri, Jun 25, 2021 at 11:19 AM Andreas Roeseler
+<andreas.a.roeseler@gmail.com> wrote:
 >
-> From: Thomas Gleixner <tglx@linutronix.de>
+> This patch builds off of commit 2b246b2569cd2ac6ff700d0dce56b8bae29b1842
+> and adds functionality to respond to ICMPV6 PROBE requests.
 >
-> The discussion about removing the side effect of irq_set_affinity_hint() of
-> actually applying the cpumask (if not NULL) as affinity to the interrupt,
-> unearthed a few unpleasantries:
+> Add icmp_build_probe function to construct PROBE requests for both
+> ICMPV4 and ICMPV6.
 >
->   1) The modular perf drivers rely on the current behaviour for the very
->      wrong reasons.
+> Modify icmpv6_rcv to detect ICMPV6 PROBE messages and call the
+> icmpv6_echo_reply handler.
 >
->   2) While none of the other drivers prevents user space from changing
->      the affinity, a cursorily inspection shows that there are at least
->      expectations in some drivers.
+> Modify icmpv6_echo_reply to build a PROBE response message based on the
+> queried interface.
 >
-> #1 needs to be cleaned up anyway, so that's not a problem
+> This patch has been tested using a branch of the iputils git repo which can
+> be found here: https://github.com/Juniper-Clinic-2020/iputils/tree/probe-request
 >
-> #2 might result in subtle regressions especially when irqbalanced (which
->    nowadays ignores the affinity hint) is disabled.
->
-> Provide new interfaces:
->
->   irq_update_affinity_hint()  - Only sets the affinity hint pointer
->   irq_set_affinity_and_hint() - Set the pointer and apply the affinity to
->                                 the interrupt
->
-> Make irq_set_affinity_hint() a wrapper around irq_apply_affinity_hint() and
-> document it to be phased out.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-> Link: https://lore.kernel.org/r/20210501021832.743094-1-jesse.brandeburg@intel.com
+> Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
 > ---
->  include/linux/interrupt.h | 41 ++++++++++++++++++++++++++++++++++++++-
->  kernel/irq/manage.c       |  8 ++++----
->  2 files changed, 44 insertions(+), 5 deletions(-)
+> Changes:
+> v1 -> v2:
+> Suggested by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> - Do not add sysctl for ICMPV6 PROBE control and instead use existing
+>   ICMPV4 sysctl.
+> - Add icmp_build_probe function to construct PROBE responses for both
+>   ICMPV4 and ICMPV6.
 >
-> diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-> index 2ed65b01c961..4ca491a76033 100644
-> --- a/include/linux/interrupt.h
-> +++ b/include/linux/interrupt.h
-> @@ -328,7 +328,46 @@ extern int irq_force_affinity(unsigned int irq, const struct cpumask *cpumask);
->  extern int irq_can_set_affinity(unsigned int irq);
->  extern int irq_select_affinity(unsigned int irq);
+> v2 -> v3:
+> Suggested by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> - Move icmp_build_probe helper to after icmp_echo to reduce diff size.
+> - Export icmp_build_probe for use in icmpv6_echo_reply when compiled
+>   modularly.
+> - Simplify icmp_echo control flow by removing extra if statement.
+> - Simplify icmpv6 handler case statements.
+
+> @@ -908,14 +921,12 @@ static int icmpv6_rcv(struct sk_buff *skb)
 >
-> -extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
-> +extern int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
-> +                                    bool setaffinity);
-> +
-> +/**
-> + * irq_update_affinity_hint - Update the affinity hint
-> + * @irq:       Interrupt to update
-> + * @cpumask:   cpumask pointer (NULL to clear the hint)
-> + *
-> + * Updates the affinity hint, but does not change the affinity of the interrupt.
-> + */
-> +static inline int
-> +irq_update_affinity_hint(unsigned int irq, const struct cpumask *m)
-> +{
-> +       return __irq_apply_affinity_hint(irq, m, false);
-> +}
-> +
-> +/**
-> + * irq_set_affinity_and_hint - Update the affinity hint and apply the provided
-> + *                          cpumask to the interrupt
-> + * @irq:       Interrupt to update
-> + * @cpumask:   cpumask pointer (NULL to clear the hint)
-> + *
-> + * Updates the affinity hint and if @cpumask is not NULL it applies it as
-> + * the affinity of that interrupt.
-> + */
-> +static inline int
-> +irq_set_affinity_and_hint(unsigned int irq, const struct cpumask *m)
-> +{
-> +       return __irq_apply_affinity_hint(irq, m, true);
-> +}
-> +
-> +/*
-> + * Deprecated. Use irq_update_affinity_hint() or irq_set_affinity_and_hint()
-> + * instead.
-> + */
-> +static inline int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
-> +{
-> +       return irq_set_affinity_and_hint(irq, m);
-> +}
-> +
->  extern int irq_update_affinity_desc(unsigned int irq,
->                                     struct irq_affinity_desc *affinity);
->
-> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-> index ef30b4762947..837b63e63111 100644
-> --- a/kernel/irq/manage.c
-> +++ b/kernel/irq/manage.c
-> @@ -487,7 +487,8 @@ int irq_force_affinity(unsigned int irq, const struct cpumask *cpumask)
->  }
->  EXPORT_SYMBOL_GPL(irq_force_affinity);
->
-> -int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
-> +int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
-> +                             bool setaffinity)
->  {
->         unsigned long flags;
->         struct irq_desc *desc = irq_get_desc_lock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
-> @@ -496,12 +497,11 @@ int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
->                 return -EINVAL;
->         desc->affinity_hint = m;
->         irq_put_desc_unlock(desc, flags);
-> -       /* set the initial affinity to prevent every interrupt being on CPU0 */
-> -       if (m)
-> +       if (m && setaffinity)
->                 __irq_set_affinity(irq, m, false);
->         return 0;
->  }
-> -EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
-> +EXPORT_SYMBOL_GPL(__irq_apply_affinity_hint);
->
->  static void irq_affinity_notify(struct work_struct *work)
->  {
+>         switch (type) {
+>         case ICMPV6_ECHO_REQUEST:
+> +       case ICMPV6_EXT_ECHO_REQUEST:
+>                 if (!net->ipv6.sysctl.icmpv6_echo_ignore_all)
+>                         icmpv6_echo_reply(skb);
+>                 break;
+
+On second thought, maybe it is cleaner to keep a separate case, and
+then check both sysctls here:
+
+ +       case ICMPV6_EXT_ECHO_REQUEST:
+ +               if (!net->ipv6.sysctl.icmpv6_echo_ignore_all &&
+ +                  net->ipv4.sysctl_icmp_echo_enable_probe)
+ +                       icmpv6_echo_reply(skb);
+ +               break;
+
+>         case ICMPV6_ECHO_REPLY:
+> -               success = ping_rcv(skb);
+> -               break;
+> -
+
+Unintended removal
+
+>         case ICMPV6_EXT_ECHO_REPLY:
+>                 success = ping_rcv(skb);
+>                 break;
 > --
-> 2.27.0
+> 2.32.0
 >
-
-It turns out that this patch has an issue. The new interfaces are not
-added under the #ifdef (CONFIG_SMP)'s else section.
-I will fix it and send a v2 with other changes.
-
-
---
-Thanks
-
-Nitesh
-
