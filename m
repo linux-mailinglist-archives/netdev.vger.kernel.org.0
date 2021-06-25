@@ -2,108 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFFEF3B3B4C
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 05:47:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB6813B3B58
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 05:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233076AbhFYDto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 23:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232996AbhFYDtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 23:49:41 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660B1C061574;
-        Thu, 24 Jun 2021 20:47:20 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id j4so14002850lfc.8;
-        Thu, 24 Jun 2021 20:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=toZAs9JPmAsiOSU1MchBEbcfF/e+3WBe3Mbk19M8Xak=;
-        b=Ub0q0f9PXGDvdf0VIKmWYwY2N4zilskDEJxvFL47SQvZpC3JD1ZTftgRPCsB6Oo3ih
-         fThaeKnMz+tqj4Ydo+Y6ttmF9aIYmZy1+AbrTY3cEfm4+8yl6zXrm9GYtWKcvh6HEfVj
-         EnxpQBQH2YEDeG+5lwlDphfY8u7DNw7Ig0gwKIZzlmN0E1T/dxjvepB6+8w3SspLpQcG
-         J1Caj7hkaGRWZtdnQjk2uhralBsuHdPRR1iu9bM1Wo9v8+c6Lbm3kFIrST6qszMUsdYf
-         O1yB2GymzGCk60WSyMhn/N+dUTpD9BhGsaWP8geaRxAjAxo4VQ864yI0ZePjA87R9FZW
-         1Iew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=toZAs9JPmAsiOSU1MchBEbcfF/e+3WBe3Mbk19M8Xak=;
-        b=JjNwOWcbfSe9YfOUDFzQwk24KUyTs4qmf6sz3XgzJEgkpLaNzXF9P9/yAPH41vVho9
-         ad6I5SJtyZON0cV0RTeJ5oJdx+I4kBa/l7W9mU4fx0aaME0cfsOVuY+XCDrOUpZn7E/4
-         DcYJpO3UdBsIftALuYuWBM4slL8kdESn2YvClLofTNcX1QrCTQ0oZZEsJFLMnxZMl9fd
-         4X96ECAwPY5DWkibTwXcfsbqQNQi1xbrPS9IivEkQCfxt8Ey/+14SI10Pa+zGdcGG8YS
-         WwBnXL0u7Qwnfkkmp3L+nlfM5qLoMkuQRqPRSR3Ty45ksVoeskDmvrVcW+wOnKtmQud7
-         CUCA==
-X-Gm-Message-State: AOAM532ZecgyIdQHMyiVY/bICGe81EUqvfYbUickW2/jxN11N1ma+zyL
-        cimlrppzBd2jk0QhcSsJ/dbiLPAXbP7+x3wLZho=
-X-Google-Smtp-Source: ABdhPJyx6Gtk+UC67EnJ7OopVHNoNFLcsWqtJnP+/KpuoMIhDpX/gUZE9KGMKKlCD3eJFwmOiUje8R3L7t+ubZ+Kul4=
-X-Received: by 2002:a05:6512:3293:: with SMTP id p19mr6568951lfe.214.1624592837649;
- Thu, 24 Jun 2021 20:47:17 -0700 (PDT)
+        id S233094AbhFYDy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 23:54:56 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:5076 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233023AbhFYDyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 23:54:55 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GB2y00n5jzXktQ;
+        Fri, 25 Jun 2021 11:47:20 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 25 Jun 2021 11:52:17 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 25 Jun
+ 2021 11:52:16 +0800
+Subject: Re: [PATCH net-next v2 1/2] selftests/ptr_ring: add benchmark
+ application for ptr_ring
+To:     Jason Wang <jasowang@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <mst@redhat.com>
+CC:     <brouer@redhat.com>, <paulmck@kernel.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <shuah@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
+References: <1624591136-6647-1-git-send-email-linyunsheng@huawei.com>
+ <1624591136-6647-2-git-send-email-linyunsheng@huawei.com>
+ <ff47ed0b-332d-2772-d6e1-8277ac602c8c@redhat.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <3ba4a6f1-2e1e-8c1a-6f47-5d182f05d1cd@huawei.com>
+Date:   Fri, 25 Jun 2021 11:52:16 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <20210623040918.8683-1-glin@suse.com> <CAADnVQLpN993VpnPkTUxXpBMZtS6+h4CVruH33zbw-BLWj41-A@mail.gmail.com>
- <20210623065744.igawwy424y2zy26t@amnesia>
-In-Reply-To: <20210623065744.igawwy424y2zy26t@amnesia>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 24 Jun 2021 20:47:06 -0700
-Message-ID: <CAADnVQK2uQ3MvwaRztMtcw8SJz1r213hxA+vM2dCtr6RfpZnSA@mail.gmail.com>
-Subject: Re: [PATCH bpf] net/bpfilter: specify the log level for the kmsg message
-To:     Dmitrii Banshchikov <me@ubique.spb.ru>
-Cc:     Gary Lin <glin@suse.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Martin Loviska <mloviska@suse.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <ff47ed0b-332d-2772-d6e1-8277ac602c8c@redhat.com>
+Content-Type: text/plain; charset="gbk"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme710-chm.china.huawei.com (10.1.199.106) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 22, 2021 at 11:57 PM Dmitrii Banshchikov <me@ubique.spb.ru> wrote:
->
-> On Tue, Jun 22, 2021 at 09:38:38PM -0700, Alexei Starovoitov wrote:
-> > On Tue, Jun 22, 2021 at 9:09 PM Gary Lin <glin@suse.com> wrote:
-> > >
-> > > Per the kmsg document(*), if we don't specify the log level with a
-> > > prefix "<N>" in the message string, the default log level will be
-> > > applied to the message. Since the default level could be warning(4),
-> > > this would make the log utility such as journalctl treat the message,
-> > > "Started bpfilter", as a warning. To avoid confusion, this commit adds
-> > > the prefix "<5>" to make the message always a notice.
-> > >
-> > > (*) https://www.kernel.org/doc/Documentation/ABI/testing/dev-kmsg
-> > >
-> > > Fixes: 36c4357c63f3 ("net: bpfilter: print umh messages to /dev/kmsg")
-> > > Reported-by: Martin Loviska <mloviska@suse.com>
-> > > Signed-off-by: Gary Lin <glin@suse.com>
-> > > ---
-> > >  net/bpfilter/main.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/net/bpfilter/main.c b/net/bpfilter/main.c
-> > > index 05e1cfc1e5cd..291a92546246 100644
-> > > --- a/net/bpfilter/main.c
-> > > +++ b/net/bpfilter/main.c
-> > > @@ -57,7 +57,7 @@ int main(void)
-> > >  {
-> > >         debug_f = fopen("/dev/kmsg", "w");
-> > >         setvbuf(debug_f, 0, _IOLBF, 0);
-> > > -       fprintf(debug_f, "Started bpfilter\n");
-> > > +       fprintf(debug_f, "<5>Started bpfilter\n");
-> > >         loop();
-> > >         fclose(debug_f);
-> > >         return 0;
-> >
-> > Adding Dmitrii who is redesigning the whole bpfilter.
->
-> Thanks. The same logic already exists in the bpfilter v1 patchset
-> - [1].
->
-> 1. https://lore.kernel.org/bpf/c72bac57-84a0-ac4c-8bd8-08758715118e@fb.com/T/#mb36e20c4e5e4a70746bd50a109b1630687990214
+On 2021/6/25 11:36, Jason Wang wrote:
+> 
+> ÔÚ 2021/6/25 ÉÏÎç11:18, Yunsheng Lin Ð´µÀ:
+>> Currently ptr_ring selftest is embedded within the virtio
+>> selftest, which involves some specific virtio operation,
+>> such as notifying and kicking.
+>>
+>> As ptr_ring has been used by various subsystems, it deserves
+>> it's owner's selftest in order to benchmark different usecase
+>> of ptr_ring, such as page pool and pfifo_fast qdisc.
+>>
+>> So add a simple application to benchmark ptr_ring performance.
+>> Currently two test mode is supported:
+>> Mode 0: Both enqueuing and dequeuing is done in a single thread,
+>>          it is called simple test mode in the test app.
+>> Mode 1: Enqueuing and dequeuing is done in different thread
+>>          concurrently, also known as SPSC(single-producer/
+>>          single-consumer) test.
+>>
+>> The multi-producer/single-consumer test for pfifo_fast case is
+>> not added yet, which can be added if using CAS atomic operation
+>> to enable lockless multi-producer is proved to be better than
+>> using r->producer_lock.
+>>
+>> Only supported on x86 and arm64 for now.
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>>   MAINTAINERS                                      |   5 +
+>>   tools/testing/selftests/ptr_ring/Makefile        |   6 +
+>>   tools/testing/selftests/ptr_ring/ptr_ring_test.c | 249 +++++++++++++++++++++++
+>>   tools/testing/selftests/ptr_ring/ptr_ring_test.h | 150 ++++++++++++++
+>>   4 files changed, 410 insertions(+)
+> 
+> 
+> Why can't you simply reuse tools/virtio/ringtest?
 
-Dmitrii,
+The main reason is stated in the commit log:
+"Currently ptr_ring selftest is embedded within the virtio
+selftest, which involves some specific virtio operation,
+such as notifying and kicking.
 
-what do you prefer we should do with this patch then?
+As ptr_ring has been used by various subsystems, it deserves
+it's owner's selftest in order to benchmark different usecase
+of ptr_ring, such as page pool and pfifo_fast qdisc."
+
+More specificly in tools/virtio/ringtest/main.c and
+tools/virtio/ringtest/ptr_ring.c, there are a lot of operation
+related to virtio usecase, such as start_guest(), start_host(),
+poll_used(), notify() or kick() ....., so it makes more sense
+to add a generic selftest for ptr ring as it is not only used
+by virtio now.
+
+
+> 
+> Thanks
+> 
+> 
+> .
+> 
+
