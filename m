@@ -2,195 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D353B3F49
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 10:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D38603B3F5E
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 10:33:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230481AbhFYIaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 04:30:39 -0400
-Received: from mail-vi1eur05on2056.outbound.protection.outlook.com ([40.107.21.56]:49857
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231153AbhFYIa1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Jun 2021 04:30:27 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zp6R6VnTTa3d3xGAAsH1NstAtIcCVDFcta5uFptqLp5D1kuki8ZBN5rxAdoYirm8h2T+uvxaJnSSzPAE4YQjHtz1D0NRDO0YHSubo+iI45oLbtQ9nsE8HD9halQZsT2ohFQDStXHyhS5JzahQNoFg8jDv4M5iekINLRt52hgztKZhdtO5HJt1YLjDwG+GCh8S+mxihWPIU5dkikYUvOmYgcoCT8frSMQGVTlDmK/w5458xbtK1p+NUgbfTb3NGXs1EPemNHAfu5PWrULCqO/PaFBMP5esB7xl/ZeFI2tBsKyX8mQWdE0xXl/xOPuqs2ZoPcSKGW4+qaZoN7cYBfShQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5g83TxXgp2GzReA3b1vBMJkk+C1LTaG3hmekVe7CckA=;
- b=AUt+1cWSyVCCu9GlSjIytdprK/UAprDhyveTvA5OzmfeF/lM+z5vn+EUQV2pNvqnwPUvHZ9WaHMJPS3jy5/6lfY5syb30zr/swYMJd/ENBRtb1Tgb3sMtdbcg2x9jiK4ZaiH5ZOuEe8OEqWjSP50V7Uv4G+S8vfHxakCLJ07Xwyv8LL0AGXXflnb4CsZpwj5VvR6O4gVLzmhhCjYivD4LhiJWqIZdGamvIV2X2u0lqEWAiqRrLtkjxnurZQpHb++jo8Bc517qjMi/U3u0roZko+hYY2D1hyaPwtWhiZnZV/UsQhktVrgsOTgn5ufkb4FOsGZn/Um9d3YcvXd4Rh5qQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5g83TxXgp2GzReA3b1vBMJkk+C1LTaG3hmekVe7CckA=;
- b=IGQpsTQHbfrTEHOrSOtUwCdIK7bywVxRoqgmri5OsVPCEDZUklhwyjopSi3E1d1eOF4SAoLn4zIr/YQ9wShFlShCRqzS4GOX+bGqiGLVHvhiA/o5w+Zz4jyCuAHLUH2Zp9w+4bk342nS9kJaJhfca833DupSI0AvLJlFFt3C9RM=
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB7PR04MB4780.eurprd04.prod.outlook.com (2603:10a6:10:1c::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.21; Fri, 25 Jun
- 2021 08:28:03 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::f5e8:4886:3923:e92e]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::f5e8:4886:3923:e92e%8]) with mapi id 15.20.4264.023; Fri, 25 Jun 2021
- 08:28:03 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Lukasz Majewski <lukma@denx.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mark Einon <mark.einon@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [RFC 1/3] ARM: dts: imx28: Add description for L2 switch on XEA
- board
-Thread-Topic: [RFC 1/3] ARM: dts: imx28: Add description for L2 switch on XEA
- board
-Thread-Index: AQHXZ3S0rjpj2HsO7kKyP5U2LAA3HasgG6aAgABmNgCAARNlgIAAJB6AgACZzYCAABfeIIAAnDSAgAFKiaA=
-Date:   Fri, 25 Jun 2021 08:28:03 +0000
-Message-ID: <DB8PR04MB6795CDCD1DC16B3F55F97753E6069@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20210622144111.19647-1-lukma@denx.de>
-        <20210622144111.19647-2-lukma@denx.de>  <YNH3mb9fyBjLf0fj@lunn.ch>
-        <20210622225134.4811b88f@ktm>   <YNM0Wz1wb4dnCg5/@lunn.ch>
-        <20210623172631.0b547fcd@ktm>
-        <76159e5c-6986-3877-c0a1-47b5a17bf0f1@gmail.com>
-        <DB8PR04MB679567B66A45FBD1C23E7371E6079@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210624132129.1ade0614@ktm>
-In-Reply-To: <20210624132129.1ade0614@ktm>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: denx.de; dkim=none (message not signed)
- header.d=none;denx.de; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 812249f8-493f-4665-ed81-08d937b32664
-x-ms-traffictypediagnostic: DB7PR04MB4780:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB4780F710452ADD57171546FCE6069@DB7PR04MB4780.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: FlXC5ZxIDTBClg7bIj8ZwnYjA2WRYVTz0OX1ryRN9tUjcOHIdSpnYLWbUyeh+miWUUruZB4UX6r8aiSSpWGwfgvdKs1KZLjxREOEQtUyOAI8R4/z2CjJIJjFNQHTbsTUFCbXBokIj3jXk6l468OW+nVumapj4BmuLS991HAERokhcUduUeYbYVhTQa6SekbqahYLeAUYc7qAw9Wvm5+MJgt352AI8SKwtuA30MqrOgRzcO+TTxPldZKzAdSfAJEY/AHg6+nCoZ4fKuXMh97g51otaoo85mZiqBmiPU9/mRQ1jOceXmEXIgd+fXl/WFMqxU5KXxPvNQT4Rcl+ZlJ9qTjEjD5fBX2SOhQpOk3mxltedzsjh94x/qtmc+uEaGg5ujKjTHG+9HMM+Ug9XfCI3gNKNwp6z7PV8OXkIPqTa/gZRbK9qfy2Gv9omWHQC8106XmiSWgakqANR36ZnVBcycGrK8FTeadJXG3t+HViQdOW6zKDaYE8+OwVtTYK4zsYSbvwj0cpaDD01CwTLIBk8qCci8fRMnToQULCmXUO4isH9nqcbF8WoKt3oZmB5QratTyz0LLQ2pvZpfLrjyc5JxFJ9jYUyS1xroc7QXyYWWhxYzR4zHs+6pfWVuEWuH7Or/L8atAU6ZE8J6mI6sh/ye10L8RShvQGRHnnNeH8YX7uOR4e35sLn3y3sScKdNh7zhAZFcU7ZYERFMxZLl4Szw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(396003)(376002)(39860400002)(346002)(38100700002)(122000001)(53546011)(9686003)(6506007)(186003)(2906002)(76116006)(7416002)(66556008)(7696005)(66446008)(86362001)(64756008)(66476007)(4326008)(52536014)(55016002)(66946007)(5660300002)(33656002)(54906003)(71200400001)(26005)(316002)(110136005)(83380400001)(8936002)(478600001)(8676002)(966005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?VDU5S1pTMkV1M2ZUSFgySjVNMFFwZndNbkFYZnFIOURXblhLQlcrTlRGaGY3?=
- =?gb2312?B?ZzZYL2gzMmNES0UrNVZFQVc2OEljVnAxVGtXcUJ4Y2pJNXNrOGNiR1hqcXlD?=
- =?gb2312?B?eTltMDlrWnlScFJvWk1TQWUzS3VzY3JROGoxM2xweFFkdWtmaXRmUjkzdHp2?=
- =?gb2312?B?eFBPanRxSGpwRlJlTC9ndGlsbG4yeGs3cEg5d0tJWFFuK2NBcXpVOHNTcmh0?=
- =?gb2312?B?TEJyU0hoeHc1a1pLajYyL1gvbmdpRi9RdHhzZmEyN1NobXU3amNGZTVKTkJ5?=
- =?gb2312?B?U0FRdVdLSGtxSEFnWU1qckZmVzh4MC9QVUhON3JGWVdpZjVwTGt4K2ZYRExi?=
- =?gb2312?B?TU9RNGtJL3o0bnNkTlppa0laNUlGNUxnaVlUdG5KMjA0blRYOUNVTkFBVm5t?=
- =?gb2312?B?Y0lmQzRBNkhKa0V0V0dHdDNKQmlhVWEwQ3dEUlkxTWxvTkNOYm8yOUFSY0VQ?=
- =?gb2312?B?MmlYQUY5eFkzWmdvdWxoNFJaa3gyOEtEQTRkKzMxODRDRDRLS2xhRjJ5bTFB?=
- =?gb2312?B?NXJudkhtc1o3SXlpZy95aFdRNENXYW4vS1dUY1cydDhvL3dmSE1JRmFIQ0py?=
- =?gb2312?B?eTRMaVFxMXc0c3ExZmJDbWRhZWdHRkZ5cHZKbTM2YTB6bGpZdFB1enVnQkE0?=
- =?gb2312?B?bmIrS055V3JvOTJrZS9HWWJaQ3g3QTJucTN0Y01OWDh0YnorVkJoa1hWMXBY?=
- =?gb2312?B?alB1a3c5cWtURHk1SExzRkxBUktiemorUnEvN1Y2bFNGL055TnhDZXpmSGtB?=
- =?gb2312?B?aG52QmFYQVZlSDNQQjBkeVh5OWIwc0pYd21RTmM4REdkOXdvOGJHRE5vZ3Mz?=
- =?gb2312?B?QlZHazNtRFlpUFRHRG9oWjMwT21WTVNKZjFhNGxQcDFGTmdIYmd2MUJZZTVF?=
- =?gb2312?B?bDBER3dYYUdnanAzODFmazI4RDkwNUVrMFNGR2crdk41dW02Z3RybUJEdFZ1?=
- =?gb2312?B?UWt0VVI0SEtUSWNxN002L0RsZ0ZnZmJIWEU2RzU3aEhXZmVXSk1kYUZwWmpo?=
- =?gb2312?B?TVp3dnEwQktyWGZTODNXQkt6YzVvRnJQVXBjMTl3SnVpYWRvV3ByZjNWMTZu?=
- =?gb2312?B?b2dJUjJkK2Qra2xoblloQkQxSG9oRWpnY1dOV3pqUHpxcjAzbHFsN1J3MW5h?=
- =?gb2312?B?cG1YUS9xaXorVWpIdXRDbjFhZ25sMGpmZVhtelhNdW9TeXEvSlRNZG5oSmdM?=
- =?gb2312?B?RHhUUUtIRUJWRWdXZjd4TytZTWJMamhYKzd3eGhQc29NZDVLUDBrM005S0g3?=
- =?gb2312?B?QjlYS3NndStRUkxrWWdpalVRTE5VTXNQQWNpTER6bVJKbTFPK09YNDRpYWVZ?=
- =?gb2312?B?SVB0TG5uWVNHMjZ6aDZab0JXeUNvOER6MHg5eWhHdlRQZkNYUCs5TEZONEVR?=
- =?gb2312?B?WU42aytwNStxNzV1TGdRRXdYNlNzMVZJMVMwY3Y0VEZHUGJMdVJuZGM5bVd2?=
- =?gb2312?B?ZUNTYWJvOHlQZEIzLzdXVDB2Zm9ncEhXak5Fc3RtSWszMlJrSzNjNWkvakZ6?=
- =?gb2312?B?Z3lOUHY5WG51SjR2YTFVMi9RU1RZVVhkVFhIcEMwdjVZUW9paWRiTU5IZ3d5?=
- =?gb2312?B?QXJDZTFBd251cnRKWndDbmdJU3BzUUUzWGdWNTBIb3hERnhFZzIydWczcnVX?=
- =?gb2312?B?VWlVNThqT0I5cE8wSmcydHZJTUs5elVqYUNzVmNPVkl2d0RaOGlrbDlJSWc5?=
- =?gb2312?B?SkhaZ29UTjkxbjArbTRoZnJKVmFLcCsxVzRwcTBuZ0FKcXR4QlQ1MzlvVm1o?=
- =?gb2312?Q?VHf1MZsvHIP8RyGMTg=3D?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S230020AbhFYIgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 04:36:07 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:11095 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229839AbhFYIgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 04:36:06 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GB9Dx51skzZjdq;
+        Fri, 25 Jun 2021 16:30:41 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 25 Jun 2021 16:33:41 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 25 Jun
+ 2021 16:33:41 +0800
+Subject: Re: [PATCH net-next v2 2/2] ptr_ring: make __ptr_ring_empty()
+ checking more reliable
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jasowang@redhat.com>,
+        <brouer@redhat.com>, <paulmck@kernel.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <shuah@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
+References: <1624591136-6647-1-git-send-email-linyunsheng@huawei.com>
+ <1624591136-6647-3-git-send-email-linyunsheng@huawei.com>
+ <20210625022128-mutt-send-email-mst@kernel.org>
+ <c6975b2d-2b4a-5b3f-418c-1a59607b9864@huawei.com>
+ <20210625032508-mutt-send-email-mst@kernel.org>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <4ced872f-da7a-95a3-2ef1-c281dfb84425@huawei.com>
+Date:   Fri, 25 Jun 2021 16:33:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 812249f8-493f-4665-ed81-08d937b32664
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2021 08:28:03.1412
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nIQh/pjV/e3mcO1pAeSbzclc1wOrQEvgWSutBUvC8RNRQgk6epidsFIQzNbcR3eSzX9y0xdOVLqDTxxumms5Ew==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4780
+In-Reply-To: <20210625032508-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme709-chm.china.huawei.com (10.1.199.105) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpIaSBMdWthc3osDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTHVr
-YXN6IE1hamV3c2tpIDxsdWttYUBkZW54LmRlPg0KPiBTZW50OiAyMDIxxOo21MIyNMjVIDE5OjIx
-DQo+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPjsgRmxvcmlhbiBG
-YWluZWxsaQ0KPiA8Zi5mYWluZWxsaUBnbWFpbC5jb20+OyBBbmRyZXcgTHVubiA8YW5kcmV3QGx1
-bm4uY2g+DQo+IENjOiBEYXZpZCBTIC4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsgSmFr
-dWIgS2ljaW5za2kNCj4gPGt1YmFAa2VybmVsLm9yZz47IE1hZGFsaW4gQnVjdXIgKE9TUykgPG1h
-ZGFsaW4uYnVjdXJAb3NzLm54cC5jb20+Ow0KPiBOaWNvbGFzIEZlcnJlIDxuaWNvbGFzLmZlcnJl
-QG1pY3JvY2hpcC5jb20+OyBWbGFkaW1pciBPbHRlYW4NCj4gPG9sdGVhbnZAZ21haWwuY29tPjsg
-bmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgQXJuZCBCZXJnbWFubg0KPiA8YXJuZEBhcm5kYi5kZT47
-IE1hcmsgRWlub24gPG1hcmsuZWlub25AZ21haWwuY29tPjsgZGwtbGludXgtaW14DQo+IDxsaW51
-eC1pbXhAbnhwLmNvbT47IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDog
-UmU6IFtSRkMgMS8zXSBBUk06IGR0czogaW14Mjg6IEFkZCBkZXNjcmlwdGlvbiBmb3IgTDIgc3dp
-dGNoIG9uIFhFQQ0KPiBib2FyZA0KPiANCj4gSGkgSm9ha2ltLA0KPiANCj4gPiBIaSBMdWthc3os
-IEZsb3JpYW4sIEFuZHJldywNCj4gPg0KPiA+ID4gPiBNYXliZSBzb21lYm9keSBmcm9tIE5YUCBj
-YW4gcHJvdmlkZSBpbnB1dCB0byB0aGlzIGRpc2N1c3Npb24gLSBmb3INCj4gPiA+ID4gZXhhbXBs
-ZSB0byBzY2hlZCBzb21lIGxpZ2h0IG9uIEZFQyBkcml2ZXIgKG5lYXIpIGZ1dHVyZS4NCj4gPiA+
-DQo+ID4gPiBTZWVtcyBsaWtlIHNvbWUgZm9sa3MgYXQgTlhQIGFyZSBmb2N1c2luZyBvbiB0aGUg
-U1RNTUFDIGNvbnRyb2xsZXINCj4gPiA+IHRoZXNlIGRheXMgKGR3bWFjIGZyb20gU3lub3BzeXMp
-LCBzbyBtYXliZSB0aGV5IGhhdmUgZ2l2ZW4gdXAgb24NCj4gPiA+IGhhdmluZyB0aGVpciBvd24g
-RXRoZXJuZXQgTUFDIGZvciBsb3dlciBlbmQgcHJvZHVjdHMuDQo+ID4NCj4gPiBJIGFtIHZlcnkg
-aGFwcHkgdG8gdGFrZSBwYXJ0aWNpcGF0ZSBpbnRvIHRoaXMgdG9waWMsIGJ1dCBub3cgSSBoYXZl
-IG5vDQo+ID4gZXhwZXJpZW5jZSB0byBEU0EgYW5kIGkuTVgyOCBNQUMsIHNvIEkgbWF5IG5lZWQg
-c29tZSB0aW1lIHRvIGluY3JlYXNlDQo+ID4gdGhlc2Uga25vd2xlZGdlLCBsaW1pdGVkIGluc2ln
-aHQgY291bGQgYmUgcHV0IHRvIG5vdy4NCj4gDQo+IE9rLiBObyBwcm9ibGVtIDotKQ0KPiANCj4g
-Pg0KPiA+IEZsb3JpYW4sIEFuZHJldyBjb3VsZCBjb21tZW50IG1vcmUgYW5kIEkgYWxzbyBjYW4g
-bGVhcm4gZnJvbSBpdCA6LSksDQo+ID4gdGhleSBhcmUgYWxsIHZlcnkgZXhwZXJpZW5jZWQgZXhw
-ZXJ0Lg0KPiANCj4gVGhlIG1haW4gcHVycG9zZSBvZiBzZXZlcmFsIFJGQ3MgZm9yIHRoZSBMMiBz
-d2l0Y2ggZHJpdmVycyAoZm9yIERTQSBbMV0gYW5kDQo+IHN3aXRjaGRldiBbMl0pIHdhcyB0byBn
-YWluIGZlZWRiYWNrIGZyb20gY29tbXVuaXR5IGFzIHNvb24gYXMgcG9zc2libGUNCj4gKGRlc3Bp
-dGUgdGhhdCB0aGUgZHJpdmVyIGxhY2tzIHNvbWUgZmVhdHVyZXMgLSBsaWtlIFZMQU4sIEZEQiwg
-ZXRjKS4NCj4gDQo+ID4NCj4gPiBXZSBhbHNvIHdhbnQgdG8gbWFpbnRhaW4gRkVDIGRyaXZlciBz
-aW5jZSBtYW55IFNvQ3MgaW1wbGVtZW50ZWQgdGhpcw0KPiA+IElQLCBhbmQgYXMgSSBrbm93IHdl
-IHdvdWxkIGFsc28gdXNlIGl0IGZvciBmdXR1cmUgU29Dcy4NCj4gPg0KPiANCj4gRmxvcmlhbiwg
-QW5kcmV3LCBwbGVhc2UgY29ycmVjdCBtZSBpZiBJJ20gd3JvbmcsIGJ1dCBteSBpbXByZXNzaW9u
-IGlzIHRoYXQNCj4gdXBzdHJlYW1pbmcgdGhlIHN1cHBvcnQgZm9yIEwyIHN3aXRjaCBvbiBpTVgg
-ZGVwZW5kcyBvbiBGRUMgZHJpdmVyIGJlaW5nDQo+IHJld3JpdHRlbiB0byBzdXBwb3J0IHN3aXRj
-aGRldj8NCj4gDQo+IElmIHllcywgdGhlbiB1bmZvcnR1bmF0ZWx5LCBJIGRvbid0IGhhdmUgdGlt
-ZSBhbmQgcmVzb3VyY2VzIHRvIHBlcmZvcm0gdGhhdCB0YXNrDQo+IC0gdGhhdCBpcyB3aHkgSSBo
-YXZlIGFza2VkIGlmIE5YUCBoYXMgYW55IHBsYW5zIHRvIHVwZGF0ZSB0aGUgRkVDIChmZWNfbWFp
-bi5jKQ0KPiBkcml2ZXIuDQo+IA0KPiANCj4gSm9ha2ltLCBkbyB5b3UgaGF2ZSBhbnkgcGxhbnMg
-dG8gcmUtZmFjdG9yIHRoZSBsZWdhY3kgRkVDIGRyaXZlcg0KPiAoZmVjX21haW4uYykgYW5kIGlu
-dHJvZHVjZSBuZXcgb25lLCB3aGljaCB3b3VsZCBzdXBwb3J0IHRoZSBzd2l0Y2hkZXY/DQo+IA0K
-PiBJZiBOWFAgaXMgbm90IHBsYW5uaW5nIHRvIHVwZGF0ZSB0aGUgZHJpdmVyLCB0aGVuIG1heWJl
-IGl0IHdvdWxkIGJlIHdvcnRoIHRvDQo+IGNvbnNpZGVyIGFkZGluZyBkcml2ZXIgZnJvbSBbMl0g
-dG8gbWFpbmxpbmU/IFRoZW4gSSBjb3VsZCBmaW5pc2ggaXQgYW5kIHByb3ZpZGUgYWxsDQo+IHJl
-cXVpcmVkIGZlYXR1cmVzLg0KDQpJIGRvbid0IGhhdmUgc3VjaCBwbGFuIG5vdywgYW5kIGhhdmUg
-bm8gY29uZmlkZW5jZSB0byByZS1mYWN0b3IgdGhlIGxlZ2FjeSBGRUMgZHJpdmVyIGFuZCBpbnRy
-b2R1Y2UgbmV3IG9uZSwNCndoaWNoIHRvIHN1cHBvcnQgc3dpdGNoZGV2IGluIGEgc2hvcnQgdGlt
-ZS4gSSBhbSBub3QgdmVyeSBleHBlcmllbmNlZCBmb3IgRkVDIGRyaXZlciwgc2luY2UgSSBoYXZl
-IGp1c3QgbWFpbnRhaW5lZA0KaXQgZm9yIGhhbGYgYSB5ZWFyLiBUbyBiZSBob25lc3QsIEkgaGF2
-ZSBubyBpZGVhIGluIG15IGhlYWQgcmlnaHQgbm93LCB3ZSBldmVuIGRvbid0IGhhdmUgaS5NWDI4
-IGJvYXJkcy4NCkknbSBzbyBzb3JyeSBhYm91dCB0aGlzLCBidXQgSSBhbSBhbHNvIGludGVyZXN0
-ZWQgaW4gaXQsIEkgYW0gZmluZGluZyB0aW1lIHRvIGluY3JlYXNlIHJlbGF0ZWQga25vd2xlZGdl
-Lg0KDQpCZXN0IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCj4gDQo+IExpbmtzOg0KPiBbMV0gLQ0K
-PiBodHRwczovL3NvdXJjZS5kZW54LmRlL2xpbnV4L2xpbnV4LWlteDI4LWwyc3dpdGNoLy0vY29t
-bWl0cy9pbXgyOC12NS4xMi1MMi11DQo+IHBzdHJlYW0tRFNBLVJGQ192MQ0KPiBbMl0gLQ0KPiBo
-dHRwczovL3NvdXJjZS5kZW54LmRlL2xpbnV4L2xpbnV4LWlteDI4LWwyc3dpdGNoLy0vY29tbWl0
-cy9pbXgyOC12NS4xMi1MMi11DQo+IHBzdHJlYW0tc3dpdGNoZGV2LVJGQ192MQ0KPiANCj4gPiBC
-ZXN0IFJlZ2FyZHMsDQo+ID4gSm9ha2ltIFpoYW5nDQo+IA0KPiANCj4gDQo+IA0KPiBCZXN0IHJl
-Z2FyZHMsDQo+IA0KPiBMdWthc3ogTWFqZXdza2kNCj4gDQo+IC0tDQo+IA0KPiBERU5YIFNvZnR3
-YXJlIEVuZ2luZWVyaW5nIEdtYkgsICAgICAgTWFuYWdpbmcgRGlyZWN0b3I6IFdvbGZnYW5nIERl
-bmsNCj4gSFJCIDE2NTIzNSBNdW5pY2gsIE9mZmljZTogS2lyY2hlbnN0ci41LCBELTgyMTk0IEdy
-b2ViZW56ZWxsLCBHZXJtYW55DQo+IFBob25lOiAoKzQ5KS04MTQyLTY2OTg5LTU5IEZheDogKCs0
-OSktODE0Mi02Njk4OS04MCBFbWFpbDogbHVrbWFAZGVueC5kZQ0K
+On 2021/6/25 15:30, Michael S. Tsirkin wrote:
+> On Fri, Jun 25, 2021 at 03:21:33PM +0800, Yunsheng Lin wrote:
+>> On 2021/6/25 14:32, Michael S. Tsirkin wrote:
+>>> On Fri, Jun 25, 2021 at 11:18:56AM +0800, Yunsheng Lin wrote:
+>>>> Currently r->queue[] is cleared after r->consumer_head is moved
+>>>> forward, which makes the __ptr_ring_empty() checking called in
+>>>> page_pool_refill_alloc_cache() unreliable if the checking is done
+>>>> after the r->queue clearing and before the consumer_head moving
+>>>> forward.
+>>>
+>>>
+>>> Well the documentation for __ptr_ring_empty clearly states is
+>>> is not guaranteed to be reliable.
+>>
+>> Yes, this patch does not make __ptr_ring_empty() strictly reliable
+>> without taking the r->consumer_lock, as the disscuission in [1].
+>>
+>> 1. https://patchwork.kernel.org/project/netdevbpf/patch/1622032173-11883-1-git-send-email-linyunsheng@huawei.com/#24207011
+>>
+>>>
+>>>  *
+>>>  * NB: This is only safe to call if ring is never resized.
+>>>  *
+>>>  * However, if some other CPU consumes ring entries at the same time, the value
+>>>  * returned is not guaranteed to be correct.
+>>>  *
+>>>  * In this case - to avoid incorrectly detecting the ring
+>>>  * as empty - the CPU consuming the ring entries is responsible
+>>>  * for either consuming all ring entries until the ring is empty,
+>>>  * or synchronizing with some other CPU and causing it to
+>>>  * re-test __ptr_ring_empty and/or consume the ring enteries
+>>>  * after the synchronization point.
+>>>  *
+>>>
+>>> Is it then the case that page_pool_refill_alloc_cache violates
+>>> this requirement? How?
+>>
+>> As my understanding:
+>> page_pool_refill_alloc_cache() uses __ptr_ring_empty() to avoid
+>> taking r->consumer_lock, when the above data race happens, it will
+>> exit out and allocate page from the page allocator instead of reusing
+>> the page in ptr_ring, which *may* not be happening if __ptr_ring_empty()
+>> is more reliable.
+> 
+> Question is how do we know it's more reliable?
+> It would be nice if we did actually made it more reliable,
+> as it is we are just shifting races around.
+> 
+> 
+>>>
+>>> It looks like you are trying to make the guarantee stronger and ensure
+>>> no false positives.
+>>>
+>>> If yes please document this as such, update the comment so all
+>>> code can be evaluated with the eye towards whether the new stronger
+>>> guarantee is maintained. In particular I think I see at least one
+>>> issue with this immediately.
+>>>
+>>>
+>>>> Move the r->queue[] clearing after consumer_head moving forward
+>>>> to make __ptr_ring_empty() checking more reliable.
+>>>>
+>>>> As a side effect of above change, a consumer_head checking is
+>>>> avoided for the likely case, and it has noticeable performance
+>>>> improvement when it is tested using the ptr_ring_test selftest
+>>>> added in the previous patch.
+>>>>
+>>>> Using "taskset -c 1 ./ptr_ring_test -s 1000 -m 0 -N 100000000"
+>>>> to test the case of single thread doing both the enqueuing and
+>>>> dequeuing:
+>>>>
+>>>>  arch     unpatched           patched       delta
+>>>> arm64      4648 ms            4464 ms       +3.9%
+>>>>  X86       2562 ms            2401 ms       +6.2%
+>>>>
+>>>> Using "taskset -c 1-2 ./ptr_ring_test -s 1000 -m 1 -N 100000000"
+>>>> to test the case of one thread doing enqueuing and another thread
+>>>> doing dequeuing concurrently, also known as single-producer/single-
+>>>> consumer:
+>>>>
+>>>>  arch      unpatched             patched         delta
+>>>> arm64   3624 ms + 3624 ms   3462 ms + 3462 ms    +4.4%
+>>>>  x86    2758 ms + 2758 ms   2547 ms + 2547 ms    +7.6%
+>>>>
+>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>>>> ---
+>>>> V2: Add performance data.
+>>>> ---
+>>>>  include/linux/ptr_ring.h | 25 ++++++++++++++++---------
+>>>>  1 file changed, 16 insertions(+), 9 deletions(-)
+>>>>
+>>>> diff --git a/include/linux/ptr_ring.h b/include/linux/ptr_ring.h
+>>>> index 808f9d3..db9c282 100644
+>>>> --- a/include/linux/ptr_ring.h
+>>>> +++ b/include/linux/ptr_ring.h
+>>>> @@ -261,8 +261,7 @@ static inline void __ptr_ring_discard_one(struct ptr_ring *r)
+>>>>  	/* Note: we must keep consumer_head valid at all times for __ptr_ring_empty
+>>>>  	 * to work correctly.
+>>>>  	 */
+>>>> -	int consumer_head = r->consumer_head;
+>>>> -	int head = consumer_head++;
+>>>> +	int consumer_head = r->consumer_head + 1;
+>>>>  
+>>>>  	/* Once we have processed enough entries invalidate them in
+>>>>  	 * the ring all at once so producer can reuse their space in the ring.
+>>>> @@ -271,19 +270,27 @@ static inline void __ptr_ring_discard_one(struct ptr_ring *r)
+>>>>  	 */
+>>>>  	if (unlikely(consumer_head - r->consumer_tail >= r->batch ||
+>>>>  		     consumer_head >= r->size)) {
+>>>> +		int tail = r->consumer_tail;
+>>>> +
+>>>> +		if (unlikely(consumer_head >= r->size)) {
+>>>> +			r->consumer_tail = 0;
+>>>> +			WRITE_ONCE(r->consumer_head, 0);
+>>>> +		} else {
+>>>> +			r->consumer_tail = consumer_head;
+>>>> +			WRITE_ONCE(r->consumer_head, consumer_head);
+>>>> +		}
+>>>> +
+>>>>  		/* Zero out entries in the reverse order: this way we touch the
+>>>>  		 * cache line that producer might currently be reading the last;
+>>>>  		 * producer won't make progress and touch other cache lines
+>>>>  		 * besides the first one until we write out all entries.
+>>>>  		 */
+>>>> -		while (likely(head >= r->consumer_tail))
+>>>> -			r->queue[head--] = NULL;
+>>>> -		r->consumer_tail = consumer_head;
+>>>> -	}
+>>>> -	if (unlikely(consumer_head >= r->size)) {
+>>>> -		consumer_head = 0;
+>>>> -		r->consumer_tail = 0;
+>>>> +		while (likely(--consumer_head >= tail))
+>>>> +			r->queue[consumer_head] = NULL;
+>>>> +
+>>>> +		return;
+>>>
+>>>
+>>> So if now we need this to be reliable then
+>>> we also need smp_wmb before writing r->queue[consumer_head],
+>>> there could be other gotchas.
+>>
+>> Yes, This patch does not make it strictly reliable.
+>> T think I could mention that in the commit log?
+> 
+> OK so it's not that it makes it more reliable - this patch simply makes
+> a possible false positive less likely while making  a false negative
+> more likely. Our assumption is that a false negative is cheaper then?
+> 
+> How do we know that it is?
+> 
+> And even if we prove the ptr_ring itself is faster now,
+> how do we know what affects callers in a better way a
+> false positive or a false negative?
+> 
+> I would rather we worked on actually making it reliable
+> e.g. if we can guarantee no false positives, that would be
+> a net win.
+I thought deeper about the case you mentioned above, it
+seems for the above to happen, the consumer_head need to
+be rolled back to zero and incremented to the point when
+caller of __ptr_ring_empty() is still *not* able to see the
+r->queue[] which has been set to NULL in __ptr_ring_discard_one().
+
+It seems smp_wmb() only need to be done once when consumer_head
+is rolled back to zero, and maybe that is enough to make sure the
+case you mentioned is fixed too?
+
+And the smp_wmb() is only done once in a round of producing/
+consuming, so the performance impact should be minimized?(of
+course we need to test it too).
+
+> 
+>>
+>>>
+>>>>  	}
+>>>> +
+>>>>  	/* matching READ_ONCE in __ptr_ring_empty for lockless tests */
+>>>>  	WRITE_ONCE(r->consumer_head, consumer_head);
+>>>>  }
+>>>> -- 
+>>>> 2.7.4
+>>>
+>>>
+>>> .
+>>>
+> 
+> 
+> .
+> 
+
