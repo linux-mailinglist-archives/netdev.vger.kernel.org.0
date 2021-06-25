@@ -2,115 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FCCD3B48EA
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 20:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 430893B48F9
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 20:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbhFYSqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 14:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58210 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbhFYSqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 14:46:48 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EBFC061574
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 11:44:27 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id s15so14658877edt.13
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 11:44:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BXsss1G9KDRHd5vDIGHmD+1GwtkPgSlwLuaVF/dvD0w=;
-        b=mZGy/Jw+nrJfy2G1w0cWQpus4ZueoOBwSg5zvTvpkgULB77HuwM5QGmf5pFjmZSGUn
-         1ilS95HroOjlNK2ICCQTy7vow3Z3ovtOJVZ0WaiZs65igoCHG6DLYNGDceCqVhGQ92Rf
-         vs11p07yka0EZsymHRjA8XEiTjwR1l9aTEOAjbHvPl6HX3zXDlEeHN2nCmvKdU+WczNh
-         6JzPI4UegNOHOsM70sCI8JZGOk3nOXkMp0yzu1D8K8KuwYFPP+5KenfL6njDOGfbQ/ZF
-         CtzI/nGd1etWOoTifgj16GBJzvZxFFBcKXBJqWLX3g0gDurt9jfGqM4m0Vt+dUjkGnXL
-         Olng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BXsss1G9KDRHd5vDIGHmD+1GwtkPgSlwLuaVF/dvD0w=;
-        b=ikjRssR+hNrEO7LA+QmpZlD8HBIO/00JwKWokut/aUCjoCIu3+foq2YLJFAaQ4VSBV
-         xRaQlqRRvOonQ+sXvIUWvSIw2odB9THyLhgIdcdZE0ZVVoxnyG6xIFrQKuWYojv9dJi9
-         fQ7vPFzAtLM9OCNQj59OR4m8XagZ532GvT4JpLU2u87qUGbt4WWu4b5F2fyr7s/2h5K3
-         tK1RCUHB/M0qpBdlz3xKg9EDxxeptwUfmUhnZ30HgYaZkG7UP2G5RbCLRyU4uYOjejwy
-         XIiixuGLmTkVNouJKsnJPhSspBRAzVE0G3jzYwDS0o0wDp4p+ftcLO+u6YbO/CD7tq5/
-         +psQ==
-X-Gm-Message-State: AOAM532AphIBbs99lASytc88JL/FGVffkPl5tAeGzEM2BoQxuqmFTq8R
-        HDeQNqvpj9F2ysKFBWoedFYltFJUPsJHnQ==
-X-Google-Smtp-Source: ABdhPJz2pV5rC3JHUvuEOBDydrCSA4/xiP9it80nZSGf97ocTHxwSAmic5LK3K+UnKz1kSH+7mixmw==
-X-Received: by 2002:a50:fb14:: with SMTP id d20mr16703813edq.187.1624646666323;
-        Fri, 25 Jun 2021 11:44:26 -0700 (PDT)
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
-        by smtp.gmail.com with ESMTPSA id e3sm3236955ejy.78.2021.06.25.11.44.25
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Jun 2021 11:44:25 -0700 (PDT)
-Received: by mail-wr1-f42.google.com with SMTP id j2so11602734wrs.12
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 11:44:25 -0700 (PDT)
-X-Received: by 2002:adf:e502:: with SMTP id j2mr12305713wrm.275.1624646664642;
- Fri, 25 Jun 2021 11:44:24 -0700 (PDT)
+        id S229816AbhFYSwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 14:52:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41524 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229671AbhFYSwY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Jun 2021 14:52:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B1FFC61960;
+        Fri, 25 Jun 2021 18:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624647003;
+        bh=MDbdx1tGkxVWDukB2VXHB7pTkAgl4pZkTkkZwkJL7pc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=oz4mcXJjAREnhGJ2mr6G5MfPGuDP5ZHoo93zfn3Q26tJtfIypca+kYgq6rleHRqCy
+         V9GgJfxlRbNnCl1/YLEr9ky4+KKXj5tj3ODvB2Vws02F1AcztYThxASk6eBjVoPl+h
+         EIacdccXJmZWWFAd0rKyzkZ1rM676jivYNzBkHWqmfSzbGu2jxLPJMOdkIbqSEmsXu
+         yJ6N7E5LWoEkVab1MMBospktkupkZVKv7r7xoHwrvFGUKF1U16uEKAXUf3sXhUjwF5
+         TJi/WpMUCGw8ZhvYsLWIlKQRJ0lydkNeRcLIXBPT3WQiyszWweVb/DKnm5aizlXk/4
+         dEwR6o+e/8nkw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A4A9C60A37;
+        Fri, 25 Jun 2021 18:50:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
- <20210624123005.1301761-1-dwmw2@infradead.org> <20210624123005.1301761-4-dwmw2@infradead.org>
-In-Reply-To: <20210624123005.1301761-4-dwmw2@infradead.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 25 Jun 2021 14:43:47 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSc-8uO2wUNZH_HhcJ-+SrncyCvJ2NaASCzixpoZQ6cfpQ@mail.gmail.com>
-Message-ID: <CA+FuTSc-8uO2wUNZH_HhcJ-+SrncyCvJ2NaASCzixpoZQ6cfpQ@mail.gmail.com>
-Subject: Re: [PATCH v3 4/5] net: tun: fix tun_xdp_one() for IFF_TUN mode
-To:     David Woodhouse <dwmw2@infradead.org>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] Revert "be2net: disable bh with spin_lock in
+ be_process_mcc"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162464700366.1054.1799505322526105978.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Jun 2021 18:50:03 +0000
+References: <20210625082745.1761296-1-poros@redhat.com>
+In-Reply-To: <20210625082745.1761296-1-poros@redhat.com>
+To:     Petr Oros <poros@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
+        somnath.kotur@broadcom.com, davem@davemloft.net, kuba@kernel.org,
+        kda@linux-powerpc.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 8:30 AM David Woodhouse <dwmw2@infradead.org> wrote:
->
-> From: David Woodhouse <dwmw@amazon.co.uk>
->
-> In tun_get_user(), skb->protocol is either taken from the tun_pi header
-> or inferred from the first byte of the packet in IFF_TUN mode, while
-> eth_type_trans() is called only in the IFF_TAP mode where the payload
-> is expected to be an Ethernet frame.
->
-> The equivalent code path in tun_xdp_one() was unconditionally using
-> eth_type_trans(), which is the wrong thing to do in IFF_TUN mode and
-> corrupts packets.
->
-> Pull the logic out to a separate tun_skb_set_protocol() function, and
-> call it from both tun_get_user() and tun_xdp_one().
+Hello:
 
-I think this should be two patches. The support for parsing pi is an
-independent fix.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-> XX: It is not entirely clear to me why it's OK to call eth_type_trans()
-> in some cases without first checking that enough of the Ethernet header
-> is linearly present by calling pskb_may_pull(). Such a check was never
-> present in the tun_xdp_one() code path, and commit 96aa1b22bd6bb ("tun:
-> correct header offsets in napi frags mode") deliberately added it *only*
-> for the IFF_NAPI_FRAGS mode.
+On Fri, 25 Jun 2021 10:27:45 +0200 you wrote:
+> Patch was based on wrong presumption that be_poll can be called only
+> from bh context. It reintroducing old regression (also reverted) and
+> causing deadlock when we use netconsole with benet in bonding.
+> 
+> Old revert: commit 072a9c486004 ("netpoll: revert 6bdb7fe3104 and fix
+> be_poll() instead")
+> 
+> [...]
 
-IFF_NAPI_FRAGS exercises napi_gro_frags, which uses the frag0
-optimization where all data is in frags. The other receive paths do
-not.
+Here is the summary with links:
+  - [net] Revert "be2net: disable bh with spin_lock in be_process_mcc"
+    https://git.kernel.org/netdev/net/c/d6765985a42a
 
-For the other cases, linear is guaranteed to include the link layer
-header. __tun_build_skb, for instance, just allocates one big
-skb->data. It is admittedly not trivial to prove this point
-exhaustively for all paths.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-commit 96aa1b22bd6bb restricted the new test to the frags case, to
-limit the potential blast radius of a bug fix to only the code path
-affected by the bug.
 
-> I would like to see specific explanations of *why* it's ever valid and
-> necessary (is it so much faster?) to skip the pskb_may_pull()
-
-It was just not needed and that did not complicate anything until this
-patch. It's fine to unconditionally check if that simplifies this
-change.
