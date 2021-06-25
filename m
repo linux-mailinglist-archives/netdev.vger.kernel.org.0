@@ -2,136 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C18EE3B3B20
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 05:19:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD683B3B2D
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 05:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233118AbhFYDVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 23:21:50 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:8322 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233080AbhFYDVt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 23:21:49 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GB2F01nZfz7202;
-        Fri, 25 Jun 2021 11:15:16 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 25 Jun 2021 11:19:24 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 25 Jun 2021 11:19:24 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <jasowang@redhat.com>,
-        <mst@redhat.com>
-CC:     <brouer@redhat.com>, <paulmck@kernel.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <shuah@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [PATCH net-next v2 2/2] ptr_ring: make __ptr_ring_empty() checking more reliable
-Date:   Fri, 25 Jun 2021 11:18:56 +0800
-Message-ID: <1624591136-6647-3-git-send-email-linyunsheng@huawei.com>
+        id S233054AbhFYD1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 23:27:30 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:34292 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232973AbhFYD13 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Jun 2021 23:27:29 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1624591509; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=1OKKAMM0YbUVRu/d0x/9APRTo8SYNuVejwQx1EDQ0qY=; b=toTuJevzmcQlQsPtndVC+jDbB53yxaHI34cD2SzkAClci+FAIRkYWbXgVpGrwug4Ja1T4onQ
+ vfMZENxrMyILLc1VMJ+s/+mml+ix9kKXXS9j7m/ciIzwe0M+nzRa9zRs74vuCm5OnqZUMZ5C
+ 2pGSP7i6NuPi9MzHhL+/2VJtEYM=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 60d54c944ca9face34423a03 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 25 Jun 2021 03:25:08
+ GMT
+Sender: neeraju=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id C3469C43460; Fri, 25 Jun 2021 03:25:07 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from localhost (unknown [202.46.22.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: neeraju)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2E19FC433F1;
+        Fri, 25 Jun 2021 03:25:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2E19FC433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=neeraju@codeaurora.org
+From:   Neeraj Upadhyay <neeraju@codeaurora.org>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sgarzare@redhat.com,
+        Neeraj Upadhyay <neeraju@codeaurora.org>
+Subject: [PATCH v2] vringh: Use wiov->used to check for read/write desc order
+Date:   Fri, 25 Jun 2021 08:55:02 +0530
+Message-Id: <1624591502-4827-1-git-send-email-neeraju@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1624591136-6647-1-git-send-email-linyunsheng@huawei.com>
-References: <1624591136-6647-1-git-send-email-linyunsheng@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently r->queue[] is cleared after r->consumer_head is moved
-forward, which makes the __ptr_ring_empty() checking called in
-page_pool_refill_alloc_cache() unreliable if the checking is done
-after the r->queue clearing and before the consumer_head moving
-forward.
+As __vringh_iov() traverses a descriptor chain, it populates
+each descriptor entry into either read or write vring iov
+and increments that iov's ->used member. So, as we iterate
+over a descriptor chain, at any point, (riov/wriov)->used
+value gives the number of descriptor enteries available,
+which are to be read or written by the device. As all read
+iovs must precede the write iovs, wiov->used should be zero
+when we are traversing a read descriptor. Current code checks
+for wiov->i, to figure out whether any previous entry in the
+current descriptor chain was a write descriptor. However,
+iov->i is only incremented, when these vring iovs are consumed,
+at a later point, and remain 0 in __vringh_iov(). So, correct
+the check for read and write descriptor order, to use
+wiov->used.
 
-Move the r->queue[] clearing after consumer_head moving forward
-to make __ptr_ring_empty() checking more reliable.
-
-As a side effect of above change, a consumer_head checking is
-avoided for the likely case, and it has noticeable performance
-improvement when it is tested using the ptr_ring_test selftest
-added in the previous patch.
-
-Using "taskset -c 1 ./ptr_ring_test -s 1000 -m 0 -N 100000000"
-to test the case of single thread doing both the enqueuing and
-dequeuing:
-
- arch     unpatched           patched       delta
-arm64      4648 ms            4464 ms       +3.9%
- X86       2562 ms            2401 ms       +6.2%
-
-Using "taskset -c 1-2 ./ptr_ring_test -s 1000 -m 1 -N 100000000"
-to test the case of one thread doing enqueuing and another thread
-doing dequeuing concurrently, also known as single-producer/single-
-consumer:
-
- arch      unpatched             patched         delta
-arm64   3624 ms + 3624 ms   3462 ms + 3462 ms    +4.4%
- x86    2758 ms + 2758 ms   2547 ms + 2547 ms    +7.6%
-
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Neeraj Upadhyay <neeraju@codeaurora.org>
 ---
-V2: Add performance data.
----
- include/linux/ptr_ring.h | 25 ++++++++++++++++---------
- 1 file changed, 16 insertions(+), 9 deletions(-)
+Changes in v2:
+ Commit message updated to clarify why wiov->i cannot be used.
 
-diff --git a/include/linux/ptr_ring.h b/include/linux/ptr_ring.h
-index 808f9d3..db9c282 100644
---- a/include/linux/ptr_ring.h
-+++ b/include/linux/ptr_ring.h
-@@ -261,8 +261,7 @@ static inline void __ptr_ring_discard_one(struct ptr_ring *r)
- 	/* Note: we must keep consumer_head valid at all times for __ptr_ring_empty
- 	 * to work correctly.
- 	 */
--	int consumer_head = r->consumer_head;
--	int head = consumer_head++;
-+	int consumer_head = r->consumer_head + 1;
- 
- 	/* Once we have processed enough entries invalidate them in
- 	 * the ring all at once so producer can reuse their space in the ring.
-@@ -271,19 +270,27 @@ static inline void __ptr_ring_discard_one(struct ptr_ring *r)
- 	 */
- 	if (unlikely(consumer_head - r->consumer_tail >= r->batch ||
- 		     consumer_head >= r->size)) {
-+		int tail = r->consumer_tail;
-+
-+		if (unlikely(consumer_head >= r->size)) {
-+			r->consumer_tail = 0;
-+			WRITE_ONCE(r->consumer_head, 0);
-+		} else {
-+			r->consumer_tail = consumer_head;
-+			WRITE_ONCE(r->consumer_head, consumer_head);
-+		}
-+
- 		/* Zero out entries in the reverse order: this way we touch the
- 		 * cache line that producer might currently be reading the last;
- 		 * producer won't make progress and touch other cache lines
- 		 * besides the first one until we write out all entries.
- 		 */
--		while (likely(head >= r->consumer_tail))
--			r->queue[head--] = NULL;
--		r->consumer_tail = consumer_head;
--	}
--	if (unlikely(consumer_head >= r->size)) {
--		consumer_head = 0;
--		r->consumer_tail = 0;
-+		while (likely(--consumer_head >= tail))
-+			r->queue[consumer_head] = NULL;
-+
-+		return;
- 	}
-+
- 	/* matching READ_ONCE in __ptr_ring_empty for lockless tests */
- 	WRITE_ONCE(r->consumer_head, consumer_head);
- }
+ drivers/vhost/vringh.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 4af8fa2..14e2043 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -359,7 +359,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 			iov = wiov;
+ 		else {
+ 			iov = riov;
+-			if (unlikely(wiov && wiov->i)) {
++			if (unlikely(wiov && wiov->used)) {
+ 				vringh_bad("Readable desc %p after writable",
+ 					   &descs[i]);
+ 				err = -EINVAL;
 -- 
-2.7.4
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, 
+hosted by The Linux Foundation
 
