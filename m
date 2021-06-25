@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BA333B4909
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 20:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43DD33B4911
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 21:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbhFYS5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 14:57:13 -0400
-Received: from mga01.intel.com ([192.55.52.88]:14427 "EHLO mga01.intel.com"
+        id S229816AbhFYTCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 15:02:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44390 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229850AbhFYS5F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Jun 2021 14:57:05 -0400
-IronPort-SDR: yExibea0oACaqWjHz2KaBqzN78fT0jXraEZcDjFbd8yXF1LgosquNQ5OKDe6g8wHY9nXEu7RPG
- QUibyfC4VKvQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="229326802"
-X-IronPort-AV: E=Sophos;i="5.83,299,1616482800"; 
-   d="scan'208";a="229326802"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 11:54:44 -0700
-IronPort-SDR: ui1ry0S40mTyxEIAu0Fwr2o1aiRNqxPRnOovqZ/fnchX1B9y7SOwGQi6fJJ4m7ijdv37zn31p/
- XlZ04kBcL4+A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,299,1616482800"; 
-   d="scan'208";a="491655936"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Jun 2021 11:54:44 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com
-Subject: [PATCH net-next 5/5] ice: Fix a memory leak in an error handling path in 'ice_pf_dcb_cfg()'
-Date:   Fri, 25 Jun 2021 11:57:33 -0700
-Message-Id: <20210625185733.1848704-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210625185733.1848704-1-anthony.l.nguyen@intel.com>
-References: <20210625185733.1848704-1-anthony.l.nguyen@intel.com>
+        id S229759AbhFYTCb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Jun 2021 15:02:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B4EE861960;
+        Fri, 25 Jun 2021 19:00:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624647610;
+        bh=4bx5P918C+2n24hESgkhLgfn1hqIqIb900POO/Jamws=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NTkBUmZofPJcHO8TCaiZtkGWqUqyXlUq9+6HCuRXSc3eYq9v6ppgwfYWllXjesL97
+         EQXJHqeBZK2tA3dggXj3IUulitwO1v6B05LRSJGV3FLiRvgLDeu6H1LzhcE+Yw3xpF
+         fsGpy9Fer76uEonlIT818jQ8CHpTUixiuKadK98sL9IW7ArJpnsPUx5RO88WlCP3XN
+         Fvp9IlpDsJ9T8mBvsX4PVua+Yt61Yl2DbNu32rWAXtur4URgA2343X/WIl4q23ut/n
+         WEVkijFSBdBVzis78f64cQKKT2v6vnV229b33XjUYUveAo3q7X5stl0P4zQQuoulI8
+         l5aU1SFsZJeMw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A948C60A53;
+        Fri, 25 Jun 2021 19:00:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: wireless-drivers-next-2021-06-25
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162464761068.5473.10028410822181008168.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Jun 2021 19:00:10 +0000
+References: <20210625121705.57905C433F1@smtp.codeaurora.org>
+In-Reply-To: <20210625121705.57905C433F1@smtp.codeaurora.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Hello:
 
-If this 'kzalloc()' fails we must free some resources as in all the other
-error handling paths of this function.
+This pull request was applied to netdev/net-next.git (refs/heads/master):
 
-Fixes: 348048e724a0 ("ice: Implement iidc operations")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+On Fri, 25 Jun 2021 12:17:05 +0000 (UTC) you wrote:
+> Hi,
+> 
+> here's a pull request to net-next tree, more info below. Please let me know if
+> there are any problems.
+> 
+> Kalle
+> 
+> [...]
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index 857dc62da7a8..926cf748c5ec 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -316,8 +316,10 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
- 
- 	/* Notify AUX drivers about impending change to TCs */
- 	event = kzalloc(sizeof(*event), GFP_KERNEL);
--	if (!event)
--		return -ENOMEM;
-+	if (!event) {
-+		ret = -ENOMEM;
-+		goto free_cfg;
-+	}
- 
- 	set_bit(IIDC_EVENT_BEFORE_TC_CHANGE, event->type);
- 	ice_send_event_to_aux(pf, event);
--- 
-2.26.2
+Here is the summary with links:
+  - pull-request: wireless-drivers-next-2021-06-25
+    https://git.kernel.org/netdev/net-next/c/4e3db44a242a
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
