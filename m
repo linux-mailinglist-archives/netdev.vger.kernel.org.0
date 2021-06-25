@@ -2,165 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3DA43B4142
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 12:14:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D20263B415C
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 12:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231251AbhFYKRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 06:17:17 -0400
-Received: from mx01-muc.bfs.de ([193.174.230.67]:17536 "EHLO mx01-muc.bfs.de"
+        id S231436AbhFYKUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 06:20:51 -0400
+Received: from phobos.denx.de ([85.214.62.61]:41910 "EHLO phobos.denx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229940AbhFYKRR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Jun 2021 06:17:17 -0400
-X-Greylist: delayed 507 seconds by postgrey-1.27 at vger.kernel.org; Fri, 25 Jun 2021 06:17:16 EDT
-Received: from SRVEX01-SZ.bfs.intern (exchange-sz.bfs.de [10.129.90.31])
-        by mx01-muc.bfs.de (Postfix) with ESMTPS id 9FFEA202DF;
-        Fri, 25 Jun 2021 12:06:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bfs.de; s=dkim201901;
-        t=1624615587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lnyniA925oaLv6xCmAUV0koGpDyQMoCBIxvn4fBq48g=;
-        b=xnppenF25ro/6uqS/VaNmGOypuWgFRalWkw6LQc16W4MDIuTw/Q00n3zgnIZDd14tCMXYm
-        OPbPLCNt8NHWOVP1pWGt3KO8NjL8LY+rhm+QS8eoUfjvoXE3reA2nksAj087bvDpOnnlBd
-        03ZYwdllCkR/AYaqAyzI4S8vO0cjtofALgAcyyg48xIcw3ssbBv5/bMIdgJTnezTR4A1v1
-        9RQ5QzEztuVZVyrN0umswtnl705IK/09LTlGkD/iP957+LLEAROFQqriS+vkMaZMvI1S/s
-        PZY3ImLlsxkm5rdg61XgGMpobSBzS4K92VTP+OqOgCkD6PcoGxswfAhvOMTDgw==
-Received: from SRVEX01-SZ.bfs.intern (10.129.90.31) by SRVEX01-SZ.bfs.intern
- (10.129.90.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2242.4; Fri, 25 Jun
- 2021 12:06:26 +0200
-Received: from SRVEX01-SZ.bfs.intern ([fe80::7d2d:f9cb:2761:d24a]) by
- SRVEX01-SZ.bfs.intern ([fe80::7d2d:f9cb:2761:d24a%13]) with mapi id
- 15.01.2242.008; Fri, 25 Jun 2021 12:06:26 +0200
-From:   Walter Harms <wharms@bfs.de>
-To:     Colin King <colin.king@canonical.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        "Florian Westphal" <fw@strlen.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        id S231193AbhFYKUv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Jun 2021 06:20:51 -0400
+Received: from ktm (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id D160D82BED;
+        Fri, 25 Jun 2021 12:18:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1624616309;
+        bh=IzUjC8qtz0wz/5DU4735vakKqG89fReInmoUKyyPtt4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jykOLrjt4ZP857/BG5+9ZyQfu2yVaz9nAlUsaXEUSZHxnP8EcSTRQKsnVbZ9E1trt
+         1h/ky/7I9b7Az04GnthhJwFJf5pM9Uqai1wwBZ/gNNRy3ApT88QKc2cFWOFZGxTqEf
+         bfDEB5SIygBmHmD5DueWOmhvw5gp2KIIfQQnP0EetxTmdU1p7F7g3QMq+VApwOjtM3
+         YcIIxfPs7cumvG97MftnC8plfclrjHAYItFGD14L6NMLQFsf7PV8bOJ0hj5W3PcJPB
+         MvoUsbTlXFn4Ue5Oo2Sdf+ceNUAJMoTx6mb2U/lzzq+zGHfWHJsMQe6oNtRVC+rAIC
+         poCQ8ESRAj/fA==
+Date:   Fri, 25 Jun 2021 12:18:17 +0200
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mark Einon <mark.einon@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: AW: [PATCH][next] netfilter: nf_tables: Fix dereference of null
- pointer flow
-Thread-Topic: [PATCH][next] netfilter: nf_tables: Fix dereference of null
- pointer flow
-Thread-Index: AQHXaTMrWtvE9yeYHE6OoR1wi0gmZqskfzhs
-Date:   Fri, 25 Jun 2021 10:06:26 +0000
-Message-ID: <b9c2377849aa4ac38ab0306589eb22d2@bfs.de>
-References: <20210624195718.170796-1-colin.king@canonical.com>
-In-Reply-To: <20210624195718.170796-1-colin.king@canonical.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.137.16.39]
-x-tm-as-product-ver: SMEX-14.0.0.3080-8.6.1012-26240.007
-x-tm-as-result: No-10-1.494800-5.000000
-x-tmase-matchedrid: 1S6u5QTQd1vRubRCcrbc5grcxrzwsv5u3dCmvEa6IiEIhX6eoWEDQDK2
-        ieu8M5yxXbEQ4IMEUkNYSFfNN4dT5nnpTNH/AsJs3nHtGkYl/VqospiVPA7RNd5JCoCAal7SqAX
-        wsdh85gYWMGt82b0KdosykhlkMBZrns4ol/Cq0ar27WtDgGBc8rFPTb5VFSmp+frbXg+Uc4WlSP
-        ogXOOu0nkxLxnSVVL2YckdNkata7p1A7Kay+/ARqRUKLeQWKvT/OXzMJnlSkVqEsgVJ+91qjXoJ
-        TJoH3SyuW01O3xWv9744I/8BxtbujmGi73P/qmpHWRJEfGP5nl+CWCcHScOE/kuQv9PIVnNCd/k
-        lmH4wZWb/TcV2K3QQB+XeYq6CbwCLGmmJTL2jhwD2WXLXdz+Adi5W7Rf+s6QkHPVkBTu31OW1Ro
-        eNht4RefOVcxjDhcwPcCXjNqUmkVYF3qW3Je6+wPi+Wq5iTrnL9aE8reMsSUmpZaVbtuQtjySXe
-        WTqK8YOj1mmoYoiHtHUiUGLlM6fiBt/EW/7slJ+SxNivL27/fZQR0FijuLkt7hHyldoPK3Ce3Hh
-        LNk3bDTNQdFAimn3qV/ssqsXD7H9qHo4HSWvyB+3BndfXUhXQ==
-x-tm-as-user-approved-sender: No
-x-tm-as-user-blocked-sender: No
-x-tmase-result: 10-1.494800-5.000000
-x-tmase-version: SMEX-14.0.0.3080-8.6.1012-26240.007
-x-tm-snts-smtp: 1E84C81F601FA0A81524726E59E79818BC81096A2DE42DC5DBB5023316AAF4202000:9
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [RFC 1/3] ARM: dts: imx28: Add description for L2 switch on XEA
+ board
+Message-ID: <20210625121817.77643fe0@ktm>
+In-Reply-To: <DB8PR04MB6795CDCD1DC16B3F55F97753E6069@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210622144111.19647-1-lukma@denx.de>
+        <20210622144111.19647-2-lukma@denx.de>
+        <YNH3mb9fyBjLf0fj@lunn.ch>
+        <20210622225134.4811b88f@ktm>
+        <YNM0Wz1wb4dnCg5/@lunn.ch>
+        <20210623172631.0b547fcd@ktm>
+        <76159e5c-6986-3877-c0a1-47b5a17bf0f1@gmail.com>
+        <DB8PR04MB679567B66A45FBD1C23E7371E6079@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        <20210624132129.1ade0614@ktm>
+        <DB8PR04MB6795CDCD1DC16B3F55F97753E6069@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Organization: denx.de
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Spam-Status: No, score=-18.00
-X-Spamd-Result: default: False [-18.00 / 7.00];
-         ARC_NA(0.00)[];
-         TO_DN_EQ_ADDR_SOME(0.00)[];
-         HAS_XOIP(0.00)[];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         MIME_GOOD(-0.10)[text/plain];
-         DKIM_SIGNED(0.00)[bfs.de:s=dkim201901];
-         WHITELIST_LOCAL_IP(-15.00)[10.129.90.31];
-         RCPT_COUNT_SEVEN(0.00)[11];
-         RCVD_NO_TLS_LAST(0.10)[];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         RCVD_COUNT_TWO(0.00)[2];
-         MID_RHS_MATCH_FROM(0.00)[];
-         BAYES_HAM(-3.00)[99.99%]
-Authentication-Results: mx01-muc.bfs.de;
-        none
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ boundary="Sig_/2mc=ShYF09lsy_uW76bivdq"; protocol="application/pgp-signature"
+X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi Colin,
-most free_something_functions accept NULL
-these days, perhaps it would be more efficient
-to add a check in nft_flow_rule_destroy().
-There is a chance that this will catch the same
-mistake in future  also.
+--Sig_/2mc=ShYF09lsy_uW76bivdq
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-jm2c,
-re,
- wh
-________________________________________
-Von: Colin King <colin.king@canonical.com>
-Gesendet: Donnerstag, 24. Juni 2021 21:57:18
-An: Pablo Neira Ayuso; Jozsef Kadlecsik; Florian Westphal; David S . Miller=
-; Jakub Kicinski; netfilter-devel@vger.kernel.org; coreteam@netfilter.org; =
-netdev@vger.kernel.org
-Cc: kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
-Betreff: [PATCH][next] netfilter: nf_tables: Fix dereference of null pointe=
-r flow
+Hi Joakim, Andrew,
 
-WARNUNG: Diese E-Mail kam von au=DFerhalb der Organisation. Klicken Sie nic=
-ht auf Links oder =F6ffnen Sie keine Anh=E4nge, es sei denn, Sie kennen den=
-/die Absender*in und wissen, dass der Inhalt sicher ist.
+> Hi Lukasz,
+>=20
+> > -----Original Message-----
+> > From: Lukasz Majewski <lukma@denx.de>
+> > Sent: 2021=E5=B9=B46=E6=9C=8824=E6=97=A5 19:21
+> > To: Joakim Zhang <qiangqing.zhang@nxp.com>; Florian Fainelli
+> > <f.fainelli@gmail.com>; Andrew Lunn <andrew@lunn.ch>
+> > Cc: David S . Miller <davem@davemloft.net>; Jakub Kicinski
+> > <kuba@kernel.org>; Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>;
+> > Nicolas Ferre <nicolas.ferre@microchip.com>; Vladimir Oltean
+> > <olteanv@gmail.com>; netdev@vger.kernel.org; Arnd Bergmann
+> > <arnd@arndb.de>; Mark Einon <mark.einon@gmail.com>; dl-linux-imx
+> > <linux-imx@nxp.com>; linux-kernel@vger.kernel.org
+> > Subject: Re: [RFC 1/3] ARM: dts: imx28: Add description for L2
+> > switch on XEA board
+> >=20
+> > Hi Joakim,
+> >  =20
+> > > Hi Lukasz, Florian, Andrew,
+> > > =20
+> > > > > Maybe somebody from NXP can provide input to this discussion
+> > > > > - for example to sched some light on FEC driver (near)
+> > > > > future. =20
+> > > >
+> > > > Seems like some folks at NXP are focusing on the STMMAC
+> > > > controller these days (dwmac from Synopsys), so maybe they have
+> > > > given up on having their own Ethernet MAC for lower end
+> > > > products. =20
+> > >
+> > > I am very happy to take participate into this topic, but now I
+> > > have no experience to DSA and i.MX28 MAC, so I may need some time
+> > > to increase these knowledge, limited insight could be put to now.
+> > > =20
+> >=20
+> > Ok. No problem :-)
+> >  =20
+> > >
+> > > Florian, Andrew could comment more and I also can learn from it
+> > > :-), they are all very experienced expert. =20
+> >=20
+> > The main purpose of several RFCs for the L2 switch drivers (for DSA
+> > [1] and switchdev [2]) was to gain feedback from community as soon
+> > as possible (despite that the driver lacks some features - like
+> > VLAN, FDB, etc).=20
+> > >
+> > > We also want to maintain FEC driver since many SoCs implemented
+> > > this IP, and as I know we would also use it for future SoCs.
+> > > =20
+> >=20
+> > Florian, Andrew, please correct me if I'm wrong, but my impression
+> > is that upstreaming the support for L2 switch on iMX depends on FEC
+> > driver being rewritten to support switchdev?
+> >=20
+> > If yes, then unfortunately, I don't have time and resources to
+> > perform that task
+> > - that is why I have asked if NXP has any plans to update the FEC
+> > (fec_main.c) driver.
+> >=20
+> >=20
+> > Joakim, do you have any plans to re-factor the legacy FEC driver
+> > (fec_main.c) and introduce new one, which would support the
+> > switchdev?
+> >=20
+> > If NXP is not planning to update the driver, then maybe it would be
+> > worth to consider adding driver from [2] to mainline? Then I could
+> > finish it and provide all required features. =20
+>=20
+> I don't have such plan now, and have no confidence to re-factor the
+> legacy FEC driver and introduce new one, which to support switchdev
+> in a short time.=20
+
+Thanks for the clear statement, appreciated.
+
+> I am not very experienced for FEC driver, since I
+> have just maintained it for half a year.=20
+
+Ok. No problem.
+
+> To be honest, I have no idea
+> in my head right now, we even don't have i.MX28 boards.
+
+As fair as I remember there is still imx28-dev board available for
+purchase. You can also use vf610 based board.
+
+> I'm so sorry
+> about this, but I am also interested in it, I am finding time to
+> increase related knowledge.
+
+Ok.
+
+To sum up:
+
+- The FEC driver (legacy one) will not be rewritten anytime soon
+  (maybe any other community member will work on this sooner...)
+
+- Considering the above, support for L2 switch on imx28, vf610 is
+  blocked [*]. As a result some essential functionality for still
+  actively used SoCs is going to be maintained out of tree (for example
+  [1][2]).=20
+
+[*] - as I've stated in the other mail - what's about the situation
+where FEC legacy driver is not going to be excessively modified (just
+changes from this patch set)?
+
+Links:
+
+[1] -
+https://source.denx.de/linux/linux-imx28-l2switch/-/commits/imx28-v5.12-L2-=
+upstream-switchdev-RFC_v1
+
+[2] -
+https://source.denx.de/linux/linux-imx28-l2switch/-/commits/imx28-v5.12-L2-=
+upstream-DSA-RFC_v1
+
+>=20
+> Best Regards,
+> Joakim Zhang
+> >=20
+> > Links:
+> > [1] -
+> > https://source.denx.de/linux/linux-imx28-l2switch/-/commits/imx28-v5.12=
+-L2-u
+> > pstream-DSA-RFC_v1
+> > [2] -
+> > https://source.denx.de/linux/linux-imx28-l2switch/-/commits/imx28-v5.12=
+-L2-u
+> > pstream-switchdev-RFC_v1
+> >  =20
+> > > Best Regards,
+> > > Joakim Zhang =20
+> >=20
+> >=20
+> >=20
+> >=20
+> > Best regards,
+> >=20
+> > Lukasz Majewski
+> >=20
+> > --
+> >=20
+> > DENX Software Engineering GmbH,      Managing Director: Wolfgang
+> > Denk HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell,
+> > Germany Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email:
+> > lukma@denx.de =20
 
 
-From: Colin Ian King <colin.king@canonical.com>
+Best regards,
 
-In the case where chain->flags & NFT_CHAIN_HW_OFFLOAD is false then
-nft_flow_rule_create is not called and flow is NULL. The subsequent
-error handling execution via label err_destroy_flow_rule will lead
-to a null pointer dereference on flow when calling nft_flow_rule_destroy.
-Since the error path to err_destroy_flow_rule has to cater for null
-and non-null flows, only call nft_flow_rule_destroy if flow is non-null
-to fix this issue.
+Lukasz Majewski
 
-Addresses-Coverity: ("Explicity null dereference")
-Fixes: 3c5e44622011 ("netfilter: nf_tables: memleak in hw offload abort pat=
-h")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- net/netfilter/nf_tables_api.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 390d4466567f..de182d1f7c4e 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3446,7 +3446,8 @@ static int nf_tables_newrule(struct sk_buff *skb, con=
-st struct nfnl_info *info,
-        return 0;
-
- err_destroy_flow_rule:
--       nft_flow_rule_destroy(flow);
-+       if (flow)
-+               nft_flow_rule_destroy(flow);
- err_release_rule:
-        nf_tables_rule_release(&ctx, rule);
- err_release_expr:
 --
-2.31.1
 
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/2mc=ShYF09lsy_uW76bivdq
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmDVrWkACgkQAR8vZIA0
+zr08+QgA52HulydPpTba/n5izK1UKGy7ReuvNvsu7nuykMp9QYcNY+SzRL7rPmx9
+TPQKsNm/YTR5zrr1ziOglojDRjztl+H4MUUyYGbXkcImylYJA0iYf2xqN5ciMjtQ
+d1TqRKxmEhSyLfi1grqRLDiNDDhVbLD51F47Kad95cg0aBvioCBNunOcwsI4hywC
+vrNL2iEcGbQTsLtLGhdnY+z6geMDXOhKfVH95ZWvr6fX41E6hqeYtZ1AQk6eG0CR
+FFUFVhJLq8ToqX6nqV96lfL4QqPZ4aaWBPq564DX3YVv/vTSg8VMGw87ih69FfC+
+y08gO5b/dQ3zeg0qM+4qh2GjM2yYhw==
+=Zk3/
+-----END PGP SIGNATURE-----
+
+--Sig_/2mc=ShYF09lsy_uW76bivdq--
