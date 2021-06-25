@@ -2,250 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD9923B41D7
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 12:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 851503B41DD
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 12:44:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231489AbhFYKl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 06:41:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230436AbhFYKlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 06:41:55 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98141C061760
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 03:39:34 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id a15so7718027lfr.6
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 03:39:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1JLbEN1TKhcX6p1OYtPD1Zi9vVkvH8zkhA8ECcL2ejY=;
-        b=DKf/xYNZ2nh5nqt4QzVC4uXOqBWlKYDEY+ltNsaqEpEP9l+kOCUkfSH0HyZmse3q92
-         aCzhzis54jooC+1QzM/ooR50X75/DtXvTjeD8fw+71ZdHxenG/L3pcFhl8AMO8I1Xm8i
-         xZwOIZUji5yGV/S5hDkdpEn5SPoawuM2wxwlb16+xVuSjP2psVZXgYSbYyxxV/6dkOtB
-         vnGZVHQa94IH6xOIXchx3vah6k+W3jpLT6JobcZ1fOcDgyMcf97vJbMYhQhK4TakF1Ag
-         Tfp24EtceRbh+NEytKcZpYO9oJopRdzlIEtH07Z0L92lwlMvflXWp+kpyfWvxdkNE4sv
-         nZgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1JLbEN1TKhcX6p1OYtPD1Zi9vVkvH8zkhA8ECcL2ejY=;
-        b=FTReHNAoaqbYE0eTMWMVaIA70UL8M+bRlwp/M4whsGDhbjHe+K9Ybv6LHP1X/T9wDb
-         9yMzNHCdn7W6PJKI+CLAwjKU1/5oA4NlcE7ura2p307YHJ2tMeBpJeg1E0QUp/OSF70K
-         p4zB+/mhYrqp2xNg48b8iy+unr/Esn0MG3/jt85ptGGz4Dq1vZm+K/TfH7kOUUag1qB/
-         nQ83osRAEBXkv02HIPhMEh79vvHfbD+lyAiwENidj401k6Eo5kcmw7dpgKYhpNFU0grO
-         sSHAMRUzeiUbAtVyBmuKIdUYIw583guxgz9v3oZ00uoMEvECIJ79Y4a4xVl6TgotoJyC
-         VOzg==
-X-Gm-Message-State: AOAM533ZjFwAgBHtdQFfXyktvMpO4cG7PKcGzF0/rtfYFSv/MYL7m7Fb
-        IIqGvcMDz0cUqt+VRznoxSblYg==
-X-Google-Smtp-Source: ABdhPJyiBoBGGeHRTJdLmgIaGdr9qWi+4S5VWMPTU24b2f9ktoe2IGiWy+Ip1Pxk0RreYXfSJoSC2w==
-X-Received: by 2002:a05:6512:15a2:: with SMTP id bp34mr7257061lfb.40.1624617572852;
-        Fri, 25 Jun 2021 03:39:32 -0700 (PDT)
-Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id f17sm479884lfl.161.2021.06.25.03.39.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Jun 2021 03:39:32 -0700 (PDT)
-From:   Marcin Wojtas <mw@semihalf.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jon@solid-run.com,
-        tn@semihalf.com, jaz@semihalf.com, hkallweit1@gmail.com,
-        andrew@lunn.ch, nathan@kernel.org, sfr@canb.auug.org.au,
-        Marcin Wojtas <mw@semihalf.com>
-Subject: [net-next: PATCH] net: mdiobus: withdraw fwnode_mdbiobus_register
-Date:   Fri, 25 Jun 2021 12:38:53 +0200
-Message-Id: <20210625103853.459277-1-mw@semihalf.com>
-X-Mailer: git-send-email 2.29.0
+        id S231196AbhFYKrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 06:47:12 -0400
+Received: from relay.sw.ru ([185.231.240.75]:49654 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230526AbhFYKrL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Jun 2021 06:47:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=MIME-Version:Message-Id:Date:Subject:From:
+        Content-Type; bh=XU5ixHKqzZJhd+3cx8flu2aimmRnqcA+nBlNEW+SeJE=; b=husuyx9YfoWK
+        kBc2SuoJcbeaOw4YUQ14sdiXeIfL019qixg2W8Jf/w6FCUgjBjibkDf7XpBMPFNnadXmWkxrtoonW
+        oOVBMPTQ8ZqB1MFEBBwIC51qux+FM5AYFTxMmwqAuP3I0jF/Av6Ra8DdwdM71LlbjzLY8aQ3k7fhJ
+        Kf4M4=;
+Received: from [192.168.15.9] (helo=mikhalitsyn-laptop.lan)
+        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
+        id 1lWQNb-001ncA-DO; Fri, 25 Jun 2021 13:44:48 +0300
+From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+To:     netdev@vger.kernel.org
+Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Andrei Vagin <avagin@gmail.com>,
+        Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Subject: [PATCHv3 iproute2] ip route: ignore ENOENT during save if RT_TABLE_MAIN is being dumped
+Date:   Fri, 25 Jun 2021 13:44:40 +0300
+Message-Id: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210624152812.29031-1-alexander.mikhalitsyn@virtuozzo.com>
+References: <20210624152812.29031-1-alexander.mikhalitsyn@virtuozzo.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The newly implemented fwnode_mdbiobus_register turned out to be
-problematic - in case the fwnode_/of_/acpi_mdio are built as
-modules, a dependency cycle can be observed during the depmod phase of
-modules_install, eg.:
+We started to use in-kernel filtering feature which allows to get only needed
+tables (see iproute_dump_filter()). From the kernel side it's implemented in
+net/ipv4/fib_frontend.c (inet_dump_fib), net/ipv6/ip6_fib.c (inet6_dump_fib).
+The problem here is that behaviour of "ip route save" was changed after
+c7e6371bc ("ip route: Add protocol, table id and device to dump request").
+If filters are used, then kernel returns ENOENT error if requested table is absent,
+but in newly created net namespace even RT_TABLE_MAIN table doesn't exist.
+It is really allocated, for instance, after issuing "ip l set lo up".
 
-depmod: ERROR: Cycle detected: fwnode_mdio -> of_mdio -> fwnode_mdio
-depmod: ERROR: Found 2 modules in dependency cycles!
+Reproducer is fairly simple:
+$ unshare -n ip route save > dump
+Error: ipv4: FIB table does not exist.
+Dump terminated
 
-OR:
+Expected result here is to get empty dump file (as it was before this change).
 
-depmod: ERROR: Cycle detected: acpi_mdio -> fwnode_mdio -> acpi_mdio
-depmod: ERROR: Found 2 modules in dependency cycles!
+v2: reworked, so, now it takes into account NLMSGERR_ATTR_MSG
+(see nl_dump_ext_ack_done() function). We want to suppress error messages
+in stderr about absent FIB table from kernel too.
 
-A possible solution could be to rework fwnode_mdiobus_register,
-so that to merge the contents of acpi_mdiobus_register and
-of_mdiobus_register. However feasible, such change would
-be very intrusive and affect huge amount of the of_mdiobus_register
-users.
+v3: reworked to make code clearer. Introduced rtnl_suppressed_errors(),
+rtnl_suppress_error() helpers. User may suppress up to 3 errors (may be
+easily extened by changing SUPPRESS_ERRORS_INIT macro).
 
-Since there are currently 2 users of ACPI and MDIO
-(xgmac_mdio and mvmdio), withdraw the fwnode_mdbiobus_register
-and roll back to a simple 'if' condition in affected drivers.
-
-Fixes: 62a6ef6a996f ("net: mdiobus: Introduce fwnode_mdbiobus_register()")
-Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+Fixes: c7e6371bc ("ip route: Add protocol, table id and device to dump request")
+Cc: David Ahern <dsahern@gmail.com>
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Andrei Vagin <avagin@gmail.com>
+Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
 ---
- drivers/net/ethernet/freescale/Kconfig      |  4 +++-
- drivers/net/ethernet/freescale/xgmac_mdio.c | 11 +++++++++--
- drivers/net/ethernet/marvell/mvmdio.c       | 10 ++++++++--
- drivers/net/mdio/fwnode_mdio.c              | 22 ---------------------
- include/linux/fwnode_mdio.h                 | 12 -----------
- 5 files changed, 20 insertions(+), 39 deletions(-)
+ include/libnetlink.h | 37 +++++++++++++++++++++++++++++++++++++
+ ip/iproute.c         |  7 ++++++-
+ lib/libnetlink.c     | 27 ++++++++++++++++++++++-----
+ 3 files changed, 65 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
-index 92a390576b88..2d1abdd58fab 100644
---- a/drivers/net/ethernet/freescale/Kconfig
-+++ b/drivers/net/ethernet/freescale/Kconfig
-@@ -67,7 +67,9 @@ config FSL_PQ_MDIO
+diff --git a/include/libnetlink.h b/include/libnetlink.h
+index b9073a6a..c41f714a 100644
+--- a/include/libnetlink.h
++++ b/include/libnetlink.h
+@@ -121,6 +121,43 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
+ 			void *arg, __u16 nc_flags);
+ #define rtnl_dump_filter(rth, filter, arg) \
+ 	rtnl_dump_filter_nc(rth, filter, arg, 0)
++int rtnl_dump_filter_suppress_rtnl_errmsg_nc(struct rtnl_handle *rth,
++		     rtnl_filter_t filter,
++		     void *arg1, __u16 nc_flags, const int *errnos);
++#define rtnl_dump_filter_suppress_rtnl_errmsg(rth, filter, arg, errnos) \
++	rtnl_dump_filter_suppress_rtnl_errmsg_nc(rth, filter, arg, 0, errnos)
++#define SUPPRESS_ERRORS_INIT { 0, 0, 0, 0 }
++static inline int rtnl_suppressed_error(const int *errnos, int err_no)
++{
++	/* errnos is 0 terminated array or NULL */
++	while (errnos && *errnos) {
++		if (err_no == *errnos)
++			return 1;
++
++		errnos++;
++	}
++
++	return 0;
++}
++static inline void rtnl_suppress_error(int *errnos, int err_no)
++{
++	/* last 0 is trailing for errnos array */
++	int max = sizeof((int[])SUPPRESS_ERRORS_INIT) /
++			sizeof(int) - 1;
++
++	if (errnos == NULL)
++		return;
++
++	for (int i = 0; i < max; i++) {
++		if (errnos[i] == err_no)
++			break;
++
++		if (!errnos[i]) {
++			errnos[i] = err_no;
++			break;
++		}
++	}
++}
+ int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
+ 	      struct nlmsghdr **answer)
+ 	__attribute__((warn_unused_result));
+diff --git a/ip/iproute.c b/ip/iproute.c
+index 5853f026..532ca724 100644
+--- a/ip/iproute.c
++++ b/ip/iproute.c
+@@ -1734,6 +1734,7 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
+ 	char *od = NULL;
+ 	unsigned int mark = 0;
+ 	rtnl_filter_t filter_fn;
++	int suppress_rtnl_errnos[] = SUPPRESS_ERRORS_INIT;
  
- config FSL_XGMAC_MDIO
- 	tristate "Freescale XGMAC MDIO"
--	depends on FWNODE_MDIO
-+	select PHYLIB
-+	depends on OF
-+	select OF_MDIO
- 	help
- 	  This driver supports the MDIO bus on the Fman 10G Ethernet MACs, and
- 	  on the FMan mEMAC (which supports both Clauses 22 and 45)
-diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
-index 2d99edc8a647..0b68852379da 100644
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -13,7 +13,7 @@
-  */
+ 	if (action == IPROUTE_SAVE) {
+ 		if (save_route_prep())
+@@ -1939,7 +1940,11 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
  
- #include <linux/acpi.h>
--#include <linux/fwnode_mdio.h>
-+#include <linux/acpi_mdio.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/mdio.h>
-@@ -246,6 +246,7 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 	new_json_obj(json);
  
- static int xgmac_mdio_probe(struct platform_device *pdev)
+-	if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
++	if (filter.tb == RT_TABLE_MAIN)
++		rtnl_suppress_error(suppress_rtnl_errnos, ENOENT);
++
++	if (rtnl_dump_filter_suppress_rtnl_errmsg(&rth, filter_fn, stdout,
++						  suppress_rtnl_errnos) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
+ 		return -2;
+ 	}
+diff --git a/lib/libnetlink.c b/lib/libnetlink.c
+index c958aa57..5c5a19bb 100644
+--- a/lib/libnetlink.c
++++ b/lib/libnetlink.c
+@@ -673,7 +673,7 @@ int rtnl_dump_request_n(struct rtnl_handle *rth, struct nlmsghdr *n)
+ 	return sendmsg(rth->fd, &msg, 0);
+ }
+ 
+-static int rtnl_dump_done(struct nlmsghdr *h)
++static int rtnl_dump_done(struct nlmsghdr *h, const int *errnos)
  {
-+	struct fwnode_handle *fwnode;
- 	struct mdio_fsl_priv *priv;
- 	struct resource *res;
- 	struct mii_bus *bus;
-@@ -290,7 +291,13 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
- 	priv->has_a011043 = device_property_read_bool(&pdev->dev,
- 						      "fsl,erratum-a011043");
+ 	int len = *(int *)NLMSG_DATA(h);
  
--	ret = fwnode_mdiobus_register(bus, pdev->dev.fwnode);
-+	fwnode = pdev->dev.fwnode;
-+	if (is_of_node(fwnode))
-+		ret = of_mdiobus_register(bus, to_of_node(fwnode));
-+	else if (is_acpi_node(fwnode))
-+		ret = acpi_mdiobus_register(bus, fwnode);
-+	else
-+		ret = -EINVAL;
- 	if (ret) {
- 		dev_err(&pdev->dev, "cannot register MDIO bus\n");
- 		goto err_registration;
-diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet/marvell/mvmdio.c
-index 7537ee3f6622..62a97c46fba0 100644
---- a/drivers/net/ethernet/marvell/mvmdio.c
-+++ b/drivers/net/ethernet/marvell/mvmdio.c
-@@ -18,9 +18,9 @@
-  */
- 
- #include <linux/acpi.h>
-+#include <linux/acpi_mdio.h>
- #include <linux/clk.h>
- #include <linux/delay.h>
--#include <linux/fwnode_mdio.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-@@ -371,7 +371,13 @@ static int orion_mdio_probe(struct platform_device *pdev)
- 		goto out_mdio;
+@@ -683,11 +683,15 @@ static int rtnl_dump_done(struct nlmsghdr *h)
  	}
  
--	ret = fwnode_mdiobus_register(bus, pdev->dev.fwnode);
-+	/* For the platforms not supporting DT/ACPI fall-back
-+	 * to mdiobus_register via of_mdiobus_register.
-+	 */
-+	if (is_acpi_node(pdev->dev.fwnode))
-+		ret = acpi_mdiobus_register(bus, pdev->dev.fwnode);
-+	else
-+		ret = of_mdiobus_register(bus, pdev->dev.of_node);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
- 		goto out_mdio;
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index ae0bf71a9932..1becb1a731f6 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -7,10 +7,8 @@
-  */
+ 	if (len < 0) {
++		errno = -len;
++
++		if (rtnl_suppressed_error(errnos, errno))
++			return 0;
++
+ 		/* check for any messages returned from kernel */
+ 		if (nl_dump_ext_ack_done(h, len))
+ 			return len;
  
- #include <linux/acpi.h>
--#include <linux/acpi_mdio.h>
- #include <linux/fwnode_mdio.h>
- #include <linux/of.h>
--#include <linux/of_mdio.h>
- #include <linux/phy.h>
- 
- MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
-@@ -144,23 +142,3 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 	return 0;
+-		errno = -len;
+ 		switch (errno) {
+ 		case ENOENT:
+ 		case EOPNOTSUPP:
+@@ -789,7 +793,8 @@ static int rtnl_recvmsg(int fd, struct msghdr *msg, char **answer)
  }
- EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
--
--/**
-- * fwnode_mdiobus_register - bring up all the PHYs on a given MDIO bus and
-- *	attach them to it.
-- * @bus: Target MDIO bus.
-- * @fwnode: Pointer to fwnode of the MDIO controller.
-- *
-- * Return values are determined accordingly to acpi_/of_ mdiobus_register()
-- * operation.
-- */
--int fwnode_mdiobus_register(struct mii_bus *bus, struct fwnode_handle *fwnode)
--{
--	if (is_acpi_node(fwnode))
--		return acpi_mdiobus_register(bus, fwnode);
--	else if (is_of_node(fwnode))
--		return of_mdiobus_register(bus, to_of_node(fwnode));
--	else
--		return -EINVAL;
--}
--EXPORT_SYMBOL(fwnode_mdiobus_register);
-diff --git a/include/linux/fwnode_mdio.h b/include/linux/fwnode_mdio.h
-index f62817c23137..faf603c48c86 100644
---- a/include/linux/fwnode_mdio.h
-+++ b/include/linux/fwnode_mdio.h
-@@ -16,7 +16,6 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
- int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 				struct fwnode_handle *child, u32 addr);
  
--int fwnode_mdiobus_register(struct mii_bus *bus, struct fwnode_handle *fwnode);
- #else /* CONFIG_FWNODE_MDIO */
- int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
- 				       struct phy_device *phy,
-@@ -31,17 +30,6 @@ static inline int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
+-			      const struct rtnl_dump_filter_arg *arg)
++			      const struct rtnl_dump_filter_arg *arg,
++			      const int *errnos)
  {
- 	return -EINVAL;
- }
--
--static inline int fwnode_mdiobus_register(struct mii_bus *bus,
--					  struct fwnode_handle *fwnode)
--{
--	/*
--	 * Fall back to mdiobus_register() function to register a bus.
--	 * This way, we don't have to keep compat bits around in drivers.
--	 */
--
--	return mdiobus_register(bus);
--}
- #endif
+ 	struct sockaddr_nl nladdr;
+ 	struct iovec iov;
+@@ -834,7 +839,7 @@ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
+ 					dump_intr = 1;
  
- #endif /* __LINUX_FWNODE_MDIO_H */
+ 				if (h->nlmsg_type == NLMSG_DONE) {
+-					err = rtnl_dump_done(h);
++					err = rtnl_dump_done(h, errnos);
+ 					if (err < 0) {
+ 						free(buf);
+ 						return -1;
+@@ -891,7 +896,19 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
+ 		{ .filter = NULL,   .arg1 = NULL, .nc_flags = 0, },
+ 	};
+ 
+-	return rtnl_dump_filter_l(rth, a);
++	return rtnl_dump_filter_l(rth, a, NULL);
++}
++
++int rtnl_dump_filter_suppress_rtnl_errmsg_nc(struct rtnl_handle *rth,
++		     rtnl_filter_t filter,
++		     void *arg1, __u16 nc_flags, const int *errnos)
++{
++	const struct rtnl_dump_filter_arg a[2] = {
++		{ .filter = filter, .arg1 = arg1, .nc_flags = nc_flags, },
++		{ .filter = NULL,   .arg1 = NULL, .nc_flags = 0, },
++	};
++
++	return rtnl_dump_filter_l(rth, a, errnos);
+ }
+ 
+ static void rtnl_talk_error(struct nlmsghdr *h, struct nlmsgerr *err,
 -- 
-2.29.0
+2.31.1
 
