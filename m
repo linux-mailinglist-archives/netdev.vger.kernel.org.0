@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E80043B499F
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 22:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 288BF3B49A0
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 22:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229948AbhFYUHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229971AbhFYUHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 25 Jun 2021 16:07:43 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:14312 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229831AbhFYUHm (ORCPT
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:7282 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229774AbhFYUHm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 16:07:42 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15PJxHrA022848
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 15PK4KW3001663
         for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 13:05:21 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=D5gYKZmeoLvbMoqCkGct6o7H9L2LBkqzP4GWz9cx/MM=;
- b=nRJWp1X0KVtVDHVTqtuKEA0m84H0FNChMuAeINpZrx2Fw2K2Fi7K2m22Tcw5Qu65/vAc
- B2eHQQjYLAm4ZToGZRxGnsTPniaz3jQJh5gSrbSiMzL6c+OY7fd5kKE6VtoJBFU0COMb
- ZpXpv1m7spLTZaKOL1jEQh2snN4bi8fvVew= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 39d23kequb-10
+ bh=PjRtIq2lwdfr6jQlWN1rqSauL6MjzsyAin4/GjXSODc=;
+ b=Y/cbgm+PuI6bazl2LirxCThGjCivmXkDD2S28mKjnuGZKEdcUDTVrhfW8BnN3fJzuaez
+ kRULIjFs1VZ5YDrx4seXwHgEify4KdBzzaExf9sVhZKzZMy7u9AnDkXtB0BXNVf7yIfZ
+ FIriBe3gkgJnLODaxS+oPnsPBJA/Fmzla8U= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 39d253xpg3-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
         for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 13:05:21 -0700
-Received: from intmgw001.37.frc1.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+Received: from intmgw001.05.ash7.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 25 Jun 2021 13:05:19 -0700
+ 15.1.2176.2; Fri, 25 Jun 2021 13:05:20 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 4048029422B0; Fri, 25 Jun 2021 13:05:11 -0700 (PDT)
+        id 8148329422B0; Fri, 25 Jun 2021 13:05:17 -0700 (PDT)
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -38,9 +38,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Eric Dumazet <edumazet@google.com>, <kernel-team@fb.com>,
         Neal Cardwell <ncardwell@google.com>, <netdev@vger.kernel.org>,
         Yonghong Song <yhs@fb.com>, Yuchung Cheng <ycheng@google.com>
-Subject: [PATCH bpf-next 4/8] tcp: seq_file: Add listening_get_first()
-Date:   Fri, 25 Jun 2021 13:05:11 -0700
-Message-ID: <20210625200511.726185-1-kafai@fb.com>
+Subject: [PATCH bpf-next 5/8] tcp: seq_file: Replace listening_hash with lhash2
+Date:   Fri, 25 Jun 2021 13:05:17 -0700
+Message-ID: <20210625200517.726679-1-kafai@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210625200446.723230-1-kafai@fb.com>
 References: <20210625200446.723230-1-kafai@fb.com>
@@ -48,148 +48,154 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: 0cK7lT6QqjkaetdPgjklt5w9D08-nV6j
-X-Proofpoint-ORIG-GUID: 0cK7lT6QqjkaetdPgjklt5w9D08-nV6j
+X-Proofpoint-ORIG-GUID: SdI8FRw-DwdU07xEKcE5KSq3eaEMlsxI
+X-Proofpoint-GUID: SdI8FRw-DwdU07xEKcE5KSq3eaEMlsxI
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
  definitions=2021-06-25_07:2021-06-25,2021-06-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=933
- lowpriorityscore=0 impostorscore=0 malwarescore=0 bulkscore=0
- clxscore=1015 spamscore=0 phishscore=0 suspectscore=0 mlxscore=0
- adultscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104190000 definitions=main-2106250122
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ priorityscore=1501 bulkscore=0 clxscore=1015 impostorscore=0
+ lowpriorityscore=0 adultscore=0 suspectscore=0 mlxlogscore=706 mlxscore=0
+ spamscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106250123
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current listening_get_next() is overloaded by passing
-NULL to the 2nd arg, like listening_get_next(seq, NULL), to
-mean get_first().
+This patch moves the tcp seq_file iteration on listeners
+from the port only listening_hash to the port+addr lhash2.
 
-This patch moves some logic from the listening_get_next() into
-a new function listening_get_first().  It will be equivalent
-to the current established_get_first() and established_get_next()
-setup.  get_first() is to find a non empty bucket and return
-the first sk.  get_next() is to find the next sk of the current
-bucket and then resorts to get_first() if the current bucket is
-exhausted.
+When iterating from the bpf iter, the next patch will need to
+lock the socket such that the bpf iter with netadmin cap can do
+setsockopt (e.g. to change the TCP_CONGESTION).  To avoid locking the
+bucket and then locking the sock, the bpf iter will first batch some
+sockets from the same bucket and then unlock the bucket.  If the bucket
+size is small (which usually is), it is easier to batch the whole
+bucket such that it is less likely to miss a setsockopt on a socket
+due to changes in the bucket.
 
-The next patch is to move the listener seq_file iteration from
-listening_hash (port only) to lhash2 (port+addr).
-Separating out listening_get_first() from listening_get_next()
-here will make the following lhash2 changes cleaner and easier to
-follow.
+However, the port only listening_hash could have many listeners
+hashed to a bucket (e.g. many individual VIP(s):443 and also
+multiple by the number of SO_REUSEPORT).  We have seen bucket size in
+tens of thousands range.  Also, the chance of having changes
+in some popular port buckets (e.g. 443) is also high.
+
+The port+addr lhash2 was introduced to solve this large listener bucket
+issue.  Also, the listening_hash usage has already been replaced with
+lhash2 in the fast path inet[6]_lookup_listener().  This patch follows
+the same direction on moving to lhash2 and iterates the lhash2
+instead of listening_hash.
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- net/ipv4/tcp_ipv4.c | 59 ++++++++++++++++++++++++++++++---------------
- 1 file changed, 39 insertions(+), 20 deletions(-)
+ include/net/inet_hashtables.h |  6 ++++++
+ net/ipv4/tcp_ipv4.c           | 35 ++++++++++++++++++-----------------
+ 2 files changed, 24 insertions(+), 17 deletions(-)
 
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.=
+h
+index ca6a3ea9057e..f72ec113ae56 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -160,6 +160,12 @@ struct inet_hashinfo {
+ 					____cacheline_aligned_in_smp;
+ };
+=20
++#define inet_lhash2_for_each_icsk_continue(__icsk) \
++	hlist_for_each_entry_continue(__icsk, icsk_listen_portaddr_node)
++
++#define inet_lhash2_for_each_icsk(__icsk, list) \
++	hlist_for_each_entry(__icsk, list, icsk_listen_portaddr_node)
++
+ #define inet_lhash2_for_each_icsk_rcu(__icsk, list) \
+ 	hlist_for_each_entry_rcu(__icsk, list, icsk_listen_portaddr_node)
+=20
 diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index ca55e87f6cc9..693bda155876 100644
+index 693bda155876..0d851289a89e 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
-@@ -2288,10 +2288,38 @@ static bool seq_sk_match(struct seq_file *seq, co=
-nst struct sock *sk)
- 		net_eq(sock_net(sk), seq_file_net(seq)));
- }
+@@ -2296,21 +2296,22 @@ static void *listening_get_first(struct seq_file =
+*seq)
+ 	struct tcp_iter_state *st =3D seq->private;
 =20
--/*
-- * Get next listener socket follow cur.  If cur is NULL, get first socke=
-t
-- * starting from bucket given in st->bucket; when st->bucket is zero the
-- * very first socket in the hash table is returned.
-+/* Find a non empty bucket (starting from st->bucket)
-+ * and return the first sk from it.
-+ */
-+static void *listening_get_first(struct seq_file *seq)
-+{
-+	struct tcp_iter_state *st =3D seq->private;
-+
-+	st->offset =3D 0;
-+	for (; st->bucket < INET_LHTABLE_SIZE; st->bucket++) {
-+		struct inet_listen_hashbucket *ilb;
-+		struct hlist_nulls_node *node;
-+		struct sock *sk;
-+
-+		ilb =3D &tcp_hashinfo.listening_hash[st->bucket];
-+		if (hlist_nulls_empty(&ilb->nulls_head))
-+			continue;
-+
-+		spin_lock(&ilb->lock);
-+		sk_nulls_for_each(sk, node, &ilb->nulls_head) {
-+			if (seq_sk_match(seq, sk))
-+				return sk;
-+		}
-+		spin_unlock(&ilb->lock);
-+	}
-+
-+	return NULL;
-+}
-+
-+/* Find the next sk of "cur" within the same bucket (i.e. st->bucket).
-+ * If "cur" is the last one in the st->bucket,
-+ * call listening_get_first() to return the first sk of the next
-+ * non empty bucket.
-  */
+ 	st->offset =3D 0;
+-	for (; st->bucket < INET_LHTABLE_SIZE; st->bucket++) {
+-		struct inet_listen_hashbucket *ilb;
+-		struct hlist_nulls_node *node;
++	for (; st->bucket <=3D tcp_hashinfo.lhash2_mask; st->bucket++) {
++		struct inet_listen_hashbucket *ilb2;
++		struct inet_connection_sock *icsk;
+ 		struct sock *sk;
+=20
+-		ilb =3D &tcp_hashinfo.listening_hash[st->bucket];
+-		if (hlist_nulls_empty(&ilb->nulls_head))
++		ilb2 =3D &tcp_hashinfo.lhash2[st->bucket];
++		if (hlist_empty(&ilb2->head))
+ 			continue;
+=20
+-		spin_lock(&ilb->lock);
+-		sk_nulls_for_each(sk, node, &ilb->nulls_head) {
++		spin_lock(&ilb2->lock);
++		inet_lhash2_for_each_icsk(icsk, &ilb2->head) {
++			sk =3D (struct sock *)icsk;
+ 			if (seq_sk_match(seq, sk))
+ 				return sk;
+ 		}
+-		spin_unlock(&ilb->lock);
++		spin_unlock(&ilb2->lock);
+ 	}
+=20
+ 	return NULL;
+@@ -2324,22 +2325,22 @@ static void *listening_get_first(struct seq_file =
+*seq)
  static void *listening_get_next(struct seq_file *seq, void *cur)
  {
-@@ -2300,29 +2328,20 @@ static void *listening_get_next(struct seq_file *=
-seq, void *cur)
- 	struct hlist_nulls_node *node;
+ 	struct tcp_iter_state *st =3D seq->private;
+-	struct inet_listen_hashbucket *ilb;
+-	struct hlist_nulls_node *node;
++	struct inet_listen_hashbucket *ilb2;
++	struct inet_connection_sock *icsk;
  	struct sock *sk =3D cur;
 =20
--	if (!sk) {
--get_head:
--		ilb =3D &tcp_hashinfo.listening_hash[st->bucket];
--		spin_lock(&ilb->lock);
--		sk =3D sk_nulls_head(&ilb->nulls_head);
--		st->offset =3D 0;
--		goto get_sk;
--	}
--	ilb =3D &tcp_hashinfo.listening_hash[st->bucket];
  	++st->num;
  	++st->offset;
 =20
- 	sk =3D sk_nulls_next(sk);
--get_sk:
-+
- 	sk_nulls_for_each_from(sk, node) {
+-	sk =3D sk_nulls_next(sk);
+-
+-	sk_nulls_for_each_from(sk, node) {
++	icsk =3D inet_csk(sk);
++	inet_lhash2_for_each_icsk_continue(icsk) {
++		sk =3D (struct sock *)icsk;
  		if (seq_sk_match(seq, sk))
  			return sk;
  	}
-+
-+	ilb =3D &tcp_hashinfo.listening_hash[st->bucket];
- 	spin_unlock(&ilb->lock);
--	st->offset =3D 0;
--	if (++st->bucket < INET_LHTABLE_SIZE)
--		goto get_head;
--	return NULL;
-+	++st->bucket;
-+	return listening_get_first(seq);
+=20
+-	ilb =3D &tcp_hashinfo.listening_hash[st->bucket];
+-	spin_unlock(&ilb->lock);
++	ilb2 =3D &tcp_hashinfo.lhash2[st->bucket];
++	spin_unlock(&ilb2->lock);
+ 	++st->bucket;
+ 	return listening_get_first(seq);
  }
-=20
- static void *listening_get_idx(struct seq_file *seq, loff_t *pos)
-@@ -2332,7 +2351,7 @@ static void *listening_get_idx(struct seq_file *seq=
-, loff_t *pos)
-=20
- 	st->bucket =3D 0;
- 	st->offset =3D 0;
--	rc =3D listening_get_next(seq, NULL);
-+	rc =3D listening_get_first(seq);
-=20
- 	while (rc && *pos) {
- 		rc =3D listening_get_next(seq, rc);
-@@ -2440,7 +2459,7 @@ static void *tcp_seek_last_pos(struct seq_file *seq=
+@@ -2456,7 +2457,7 @@ static void *tcp_seek_last_pos(struct seq_file *seq=
 )
- 		if (st->bucket >=3D INET_LHTABLE_SIZE)
+=20
+ 	switch (st->state) {
+ 	case TCP_SEQ_STATE_LISTENING:
+-		if (st->bucket >=3D INET_LHTABLE_SIZE)
++		if (st->bucket > tcp_hashinfo.lhash2_mask)
  			break;
  		st->state =3D TCP_SEQ_STATE_LISTENING;
--		rc =3D listening_get_next(seq, NULL);
-+		rc =3D listening_get_first(seq);
- 		while (offset-- && rc && bucket =3D=3D st->bucket)
- 			rc =3D listening_get_next(seq, rc);
- 		if (rc)
+ 		rc =3D listening_get_first(seq);
+@@ -2541,7 +2542,7 @@ void tcp_seq_stop(struct seq_file *seq, void *v)
+ 	switch (st->state) {
+ 	case TCP_SEQ_STATE_LISTENING:
+ 		if (v !=3D SEQ_START_TOKEN)
+-			spin_unlock(&tcp_hashinfo.listening_hash[st->bucket].lock);
++			spin_unlock(&tcp_hashinfo.lhash2[st->bucket].lock);
+ 		break;
+ 	case TCP_SEQ_STATE_ESTABLISHED:
+ 		if (v)
 --=20
 2.30.2
 
