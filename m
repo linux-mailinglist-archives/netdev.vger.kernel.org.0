@@ -2,130 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 668703B4196
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 12:24:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 379073B41B7
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 12:33:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbhFYK1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 06:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbhFYK1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 06:27:11 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F447C061760
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 03:24:51 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id m2so7212584pgk.7
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 03:24:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2KwSMGzrjG0d9zXmhqtipfkU8z6/nsyvvAQ1+pXQ/ew=;
-        b=ytg97sPLtLPlJKWLEx+0YPHiyXOnx7jFacu45wsLZEPjJZ5SC9J0ntLvABE/zEFnAK
-         CFk//6RYn8Yn6i+2U+3/XkHZ0xRonpMnqxp50+ot4Xb1XJBMN6SUuJjRu00tSW34J9D2
-         GN5p7jZ0x9nEchXgQTJ6XU6FvQBczKdRkRKcxuECopGBo7SJdabh35JsPBvLHLebYGR7
-         +dLBEPBS7B4y8Frhn2lfd45ju+vgNvpqikZGGdbgzZFwIj33CDmn/eVDsTCxhNMWVCDg
-         GJp2qbK3QV3InaYwhgRA4qqCCpzCN7645bE6aVWCGe7IXZpQmhZk0RvqcweU0vTt2Tv6
-         nP1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2KwSMGzrjG0d9zXmhqtipfkU8z6/nsyvvAQ1+pXQ/ew=;
-        b=H1cUy0Vx0hHiFBX9nsAd3tzJpNfR423KjBR9mzqMA3kdHDCbRja1i4bDWaw7/tMvhJ
-         F2HbGWK/Y/ZXaDFyS4JgDqQL35HgLK9CD2drnnd7INSnvdEXGAwbboqobqltPo8KCgMY
-         b5lZ3+SxR542HhNvaaWhYxCOm3thbs065JF6ayTPSJ0xnYB+hD/OdzlPHeLHiSahQ8PO
-         O2pAqv8BuBA3rwm5mQKUTHzV1LZywJ33WwYi+xORz8aLjUOq2WbVzXTvpTq6VSobaLak
-         /Z/6tJYXmwGK1lxkTAIQeq5VxHiMoJWPvM4rIRZ/8YBNz5nbj1sMKFCVpst4qpVE4aar
-         H19Q==
-X-Gm-Message-State: AOAM5317z6NziQjt8WUq18k/4aqDgAPV9+gv7BKaL7PtVKHWB+fDNvAD
-        i504TSiXoxtWJyB5uiZjGJB2Ua+/Lwv2drrEXdZqYQ==
-X-Google-Smtp-Source: ABdhPJyXI8BHwWlE/zuSM4O5ASeaXOtu7t2Eju1dY+edUACoe9WILvtdmQJi9HmeRopa1iEWCoLBpfbA6UmKpq9zgMU=
-X-Received: by 2002:a65:63ce:: with SMTP id n14mr8930484pgv.273.1624616690717;
- Fri, 25 Jun 2021 03:24:50 -0700 (PDT)
+        id S231446AbhFYKf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 06:35:57 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:26518 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230379AbhFYKfv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 06:35:51 -0400
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15PAC0Lx003048;
+        Fri, 25 Jun 2021 10:33:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=7kXzU6VQY7lM9RFtj3Mn30bxf9x5MvbukVSQFWdLIZY=;
+ b=shLe6ys8iFsFYHDOZvl26wehMyAZpyOcBMPgpa/Y9ApffGJJCBLvHj8/3wXmktB5glND
+ ysiu+bscHge3edzw3lyRnjyM+9P51rLe23FPQn5oLzViS3jk+MiXIFBckxBdV7C+V2JF
+ 2EsXHayTySklTvB0+CGC+dZ92Y2WriziuC+hCJNqZ6t481Sr+/UuQCBJcVbgfw1xyrSC
+ Qv5ufAYKO1ZK8bX7jruIKBgmm6SYEqENjwHLoP26Z7X3Jjv+uZClpO3n/aoE/5TPjvKT
+ uDlnT40DTd5dWz0ckpeDS92XXF7/H/n2qoK5jLMx12Xl0iU07VHKG7pWpjbB+/skrHzs Ng== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 39d2kxs0v1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Jun 2021 10:33:19 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 15PABQ2i094051;
+        Fri, 25 Jun 2021 10:33:18 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 39dbb15rpe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Jun 2021 10:33:18 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15PASHaK149866;
+        Fri, 25 Jun 2021 10:33:17 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3020.oracle.com with ESMTP id 39dbb15rng-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Jun 2021 10:33:17 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+        by aserv0121.oracle.com (8.14.4/8.14.4) with ESMTP id 15PAXFOI031239;
+        Fri, 25 Jun 2021 10:33:16 GMT
+Received: from kadam (/102.222.70.252)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 25 Jun 2021 03:33:14 -0700
+Date:   Fri, 25 Jun 2021 13:33:04 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Colin King <colin.king@canonical.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] netfilter: nf_tables: Fix dereference of null
+ pointer flow
+Message-ID: <20210625103304.GI2040@kadam>
+References: <20210624195718.170796-1-colin.king@canonical.com>
+ <20210625095901.GH2040@kadam>
+ <20210625102021.GA32352@salvia>
 MIME-Version: 1.0
-References: <20210625084748.18128-1-wangqiang.wq.frank@bytedance.com>
-In-Reply-To: <20210625084748.18128-1-wangqiang.wq.frank@bytedance.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Fri, 25 Jun 2021 18:24:12 +0800
-Message-ID: <CAMZfGtWPi4CuVOtmUpy2N9J_mvp+5=gSAFvqV1nmvDKP+CAvQA@mail.gmail.com>
-Subject: Re: [Phishing Risk] [PATCH] kprobe: fix kretprobe stack backtrace
-To:     Qiang Wang <wangqiang.wq.frank@bytedance.com>
-Cc:     "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Xiongchun duan <duanxiongchun@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210625102021.GA32352@salvia>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-GUID: agBZSEvUiaAafEXSUMxVl_YcRlBC2KJn
+X-Proofpoint-ORIG-GUID: agBZSEvUiaAafEXSUMxVl_YcRlBC2KJn
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 25, 2021 at 4:49 PM Qiang Wang
-<wangqiang.wq.frank@bytedance.com> wrote:
->
-> We found that we couldn't get the correct kernel stack from
-> kretprobe. For example:
->
-> bpftrace -e 'kr:submit_bio {print(kstack)}'
-> Attaching 1 probe...
->
->         kretprobe_trampoline+0
->
->         kretprobe_trampoline+0
->
-> The problem is caused by the wrong instruction register which
-> points to the address of kretprobe_trampoline in regs.
-> So we set the real return address in instruction register.
-> Finally, we tested and successfully fixed it.
->
-> bpftrace -e 'kr:submit_bio {print(kstack)}'
-> Attaching 1 probe...
->
->         ext4_mpage_readpages+475
->         read_pages+139
->         page_cache_ra_unbounded+417
->         filemap_get_pages+245
->         filemap_read+169
->         __kernel_read+327
->         bprm_execve+648
->         do_execveat_common.isra.39+409
->         __x64_sys_execve+50
->         do_syscall_64+54
->         entry_SYSCALL_64_after_hwframe+68
->
-> Reported-by: Chengming Zhou <zhouchengming@bytedance.com>
-> Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
+On Fri, Jun 25, 2021 at 12:20:21PM +0200, Pablo Neira Ayuso wrote:
+> Hi,
+> 
+> On Fri, Jun 25, 2021 at 12:59:01PM +0300, Dan Carpenter wrote:
+> > Btw, why is there no clean up if nft_table_validate() fails?
+> 
+> See below.
+> 
+> > net/netfilter/nf_tables_api.c
+> >   3432                                  list_add_tail_rcu(&rule->list, &old_rule->list);
+> >   3433                          else
+> >   3434                                  list_add_rcu(&rule->list, &chain->rules);
+> >   3435                  }
+> >   3436          }
+> >   3437          kvfree(expr_info);
+> >   3438          chain->use++;
+> >   3439  
+> >   3440          if (flow)
+> >   3441                  nft_trans_flow_rule(trans) = flow;
+> >   3442  
+> >   3443          if (nft_net->validate_state == NFT_VALIDATE_DO)
+> >   3444                  return nft_table_validate(net, table);
+> >                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> > The cleanup for this would be quite involved unfortunately...  Not
+> > necessarily something to attempt without being able to test the code.
+> 
+> At this stage, the transaction has been already registered in the
+> list, and the nf_tables_abort() path takes care of undoing what has
+> been updated in the preparation phase.
+> 
 
-Seems like a bug. Maybe we should add a "Fixes" tag here.
+Ah...  Thanks.
 
-> ---
->  kernel/kprobes.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-> index 745f08fdd..1130381ca 100644
-> --- a/kernel/kprobes.c
-> +++ b/kernel/kprobes.c
-> @@ -1899,6 +1899,9 @@ unsigned long __kretprobe_trampoline_handler(struct pt_regs *regs,
->         current->kretprobe_instances.first = node->next;
->         node->next = NULL;
->
-> +       /* Kretprobe handler expects address is the real return address */
-> +       instruction_pointer_set(regs, (unsigned long)correct_ret_addr);
-> +
->         /* Run them..  */
->         while (first) {
->                 ri = container_of(first, struct kretprobe_instance, llist);
-> --
-> 2.20.1
->
+regards,
+dan carpenter
+
