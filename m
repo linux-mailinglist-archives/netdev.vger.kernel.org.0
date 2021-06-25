@@ -2,312 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB703B3EFD
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 10:23:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEBEA3B3F17
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 10:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbhFYIZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 04:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbhFYIZw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 04:25:52 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B0BC061574
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 01:23:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
-        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=jDI5hW3GgEPHVoue/If3RmdOtbGfuMxHWCSdjOkljvg=; b=mVdHKYkENYkNW0w6FINsO+w7TG
-        5LZma73i363/RYJior7/M+bjTtPZ2jii0RURjNN1z1HxGAJv4dwKCflZaaY+ELf7UUH6nkNncZfG0
-        i5AIXer4IU2UYric+tP6qz1edV7kQpwUA27kN98m5YshshUgqTGmdk0Zeg8pKPveO1JbqxHYl8w8v
-        S5d8UvJqgNulsDsBlBHIj9EiR81ZBlzFOclwGu3vHqD4RjW1gNX+GDa7qzJ3BUy+fY45elRHrAkDd
-        HRPQAAfm3ixhkrH8HXyNCdu0+IInV5J911sNt2OhtJDLYGN/zN9Rd7yW6F+AmW7cJjD3Il1YC7Bos
-        u69zo6Nw==;
-Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.ant.amazon.com)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lwh7Z-000IQw-NA; Fri, 25 Jun 2021 08:23:30 +0000
-Message-ID: <4b33ed9ac98c28e8980043d482cc3549acfba799.camel@infradead.org>
-Subject: Re: [PATCH v3 1/5] net: add header len parameter to
- tun_get_socket(), tap_get_socket()
-From:   David Woodhouse <dwmw2@infradead.org>
-To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
-Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-        Willem de Bruijn <willemb@google.com>
-Date:   Fri, 25 Jun 2021 09:23:27 +0100
-In-Reply-To: <8bc0d9b7-b3d8-ddbb-bcdc-e0169fac7111@redhat.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
-         <20210624123005.1301761-1-dwmw2@infradead.org>
-         <8bc0d9b7-b3d8-ddbb-bcdc-e0169fac7111@redhat.com>
-Content-Type: multipart/signed; micalg="sha-256";
-        protocol="application/x-pkcs7-signature";
-        boundary="=-yi1cl3fh583v9Yrq7LFE"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        id S229890AbhFYI1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 04:27:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39593 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229764AbhFYI1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 04:27:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624609531;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xZT1eWwSl2gWm9TJxiG1euPIAbDLGMNVs+rDy05LtXI=;
+        b=iusEJTsq5UwuE4CaR9juQ7333rmR42BVFT384OI8v6vXF482adArsmrFkAR90ALkZ/cX73
+        a4SRcXg7caoWzc1CvorUhTRpGegVhgyWesWaHFl0+txE0jSZgxJo7pPl01Qb2pkzRJgGVL
+        8tgInjCbE0NjFep9dqANADmqyFbF3dI=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-262-KlEsRUIKO6qpLeBGs8aVwg-1; Fri, 25 Jun 2021 04:25:29 -0400
+X-MC-Unique: KlEsRUIKO6qpLeBGs8aVwg-1
+Received: by mail-ej1-f70.google.com with SMTP id j26-20020a170906411ab02904774cb499f8so2831289ejk.6
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 01:25:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xZT1eWwSl2gWm9TJxiG1euPIAbDLGMNVs+rDy05LtXI=;
+        b=ICZ8lfwfrltU13lxas5OwGxVUuBIAhGACEdIn8ZvKGUg9N8KaVwKW4EMVYiQWFKhp7
+         2JXxMu+0YaG+rSJkHwT5PBOwa3hsT2m4QYC8HwpUcMaS5jLDPakLXqn/KJagr5wMMHPC
+         DgiC57SHfHSUm5Gq5XS/12HDLBZW+1rr1chU8nHg6jjO19Oo6nsu7O8bZWJIa6I37K9G
+         A0ZrNJjkfow3GGapAn9P1VYKIoqcdOsUljuaq26SIStNHlyiQCwwOKlwxz2l9lbo1k/5
+         zANWe3gC12WwhF56ffsU4eJIzl7/X8bs8jrZiFh4M5x2WypYbmRZlWFNrO67XJTU1EpS
+         niCw==
+X-Gm-Message-State: AOAM5304KkbTTJ0iO6krPU6j8aidkxMDrMrvtymVWQ00VKyXvNuYjzFI
+        jlmZhEWBJFx+Lg0/h/eip9Gb394O39yEoqAd9RrCi/hni6HV6uLUyxk2v/6Jm7zKiU/kd9hqC7t
+        PD1Jh4pEGNMB6pCEB
+X-Received: by 2002:a05:6402:1d55:: with SMTP id dz21mr12590916edb.338.1624609528803;
+        Fri, 25 Jun 2021 01:25:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzkE4jDXXqx+GNZrlBP6kzqYdNu1Tdl/P85WqCxWgwwC6C3D91FQ4pxMxW0Osxnkv94oiyv4g==
+X-Received: by 2002:a05:6402:1d55:: with SMTP id dz21mr12590895edb.338.1624609528620;
+        Fri, 25 Jun 2021 01:25:28 -0700 (PDT)
+Received: from [10.36.113.16] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id x17sm3539734edr.88.2021.06.25.01.25.27
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 25 Jun 2021 01:25:28 -0700 (PDT)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, shayagr@amazon.com, sameehj@amazon.com,
+        dsahern@kernel.org, brouer@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v9 bpf-next 10/14] bpf: add multi-buffer support to xdp copy helpers
+Date:   Fri, 25 Jun 2021 10:25:26 +0200
+X-Mailer: MailMate (1.14r5816)
+Message-ID: <911124FA-EE96-495C-AFC3-578B2D38247E@redhat.com>
+In-Reply-To: <60d49690a87ae_2e84a2082c@john-XPS-13-9370.notmuch>
+References: <cover.1623674025.git.lorenzo@kernel.org>
+ <4d2a74f7389eb51e2b43c63df76d9cd76f57384c.1623674025.git.lorenzo@kernel.org>
+ <60d27716b5a5a_1342e208d5@john-XPS-13-9370.notmuch>
+ <34E2BF41-03E0-4DEC-ABF3-72C8FF7B4E4A@redhat.com>
+ <60d49690a87ae_2e84a2082c@john-XPS-13-9370.notmuch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---=-yi1cl3fh583v9Yrq7LFE
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2021-06-25 at 13:00 +0800, Jason Wang wrote:
-> =E5=9C=A8 2021/6/24 =E4=B8=8B=E5=8D=888:30, David Woodhouse =E5=86=99=E9=
-=81=93:
-> > From: David Woodhouse <dwmw@amazon.co.uk>
-> >=20
-> > The vhost-net driver was making wild assumptions about the header lengt=
-h
-> > of the underlying tun/tap socket.
->=20
->=20
-> It's by design to depend on the userspace to co-ordinate the vnet header=
-=20
-> setting with the underlying sockets.
->=20
->=20
-> >   Then it was discarding packets if
-> > the number of bytes it got from sock_recvmsg() didn't precisely match
-> > its guess.
->=20
->=20
-> Anything that is broken by this? The failure is a hint for the userspace=
-=20
-> that something is wrong during the coordination.
+On 24 Jun 2021, at 16:28, John Fastabend wrote:
 
-I am not a fan of this approach. I firmly believe that for a given
-configuration, the kernel should either *work* or it should gracefully
-refuse to set it up that way. And the requirements should be clearly
-documented.
+> Eelco Chaudron wrote:
+>>
+>>
+>> On 23 Jun 2021, at 1:49, John Fastabend wrote:
+>>
+>>> Lorenzo Bianconi wrote:
+>>>> From: Eelco Chaudron <echaudro@redhat.com>
+>>>>
+>>>> This patch adds support for multi-buffer for the following helpers:
+>>>>   - bpf_xdp_output()
+>>>>   - bpf_perf_event_output()
+>>>>
+>>>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>>>> ---
+>>>
+>>> Ah ok so at least xdp_output will work with all bytes. But this is
+>>> getting close to having access into the frags so I think doing
+>>> the last bit shouldn't be too hard?
+>>
+>>
+>> Guess you are talking about multi-buffer access in the XDP program?
+>>
+>> I did suggest an API a while back, https://lore.kernel.org/bpf/FD3E6E0=
+8-DE78-4FBA-96F6-646C93E88631@redhat.com/ but I had/have not time to work=
+ on it. Guess the difficult part is to convince the verifier to allow the=
+ data to be accessed.
+>
+> Ah great I think we had the same idea I called it xdp_pull_data()
+> though.
+>
+> Whats the complication though it looks like it can be done by simply
+> moving the data and data_end pointers around then marking them
+> invalidated. This way the verifier knows the program needs to
+> rewrite them. I can probably look more into next week.
+>
+> From my first glance it looks relatively straight forward to do
+> now. I really would like to avoid yet another iteration of
+> programs features I have to discover and somehow work around
+> if we can get the helper into this series. If you really don't
+> have time I can probably take a look early next week on an
+> RFC for something like above helper.
 
-Having been on the receiving end of this "hint" of which you speak, I
-found it distinctly suboptimal as a user interface. I was left
-scrabbling around trying to find a set of options which *would* work,
-and it was only through debugging the kernel that I managed to work out
-that I:
+I=E2=80=99m on a small side project for the next 2 to 3 weeks, and after =
+that, I have some PTO, so if you have time for an RFC, that will speed up=
+ this patchset.
 
-  =E2=80=A2 MUST set IFF_NO_PI
-  =E2=80=A2 MUST use TUNSETSNDBUF to reduce the sndbuf from INT_MAX
-  =E2=80=A2 MUST use a virtio_net_hdr that I don't want
+Thanks,
 
-If my application failed to do any of those things, I got a silent
-failure to transport any packets. The only thing I could do *without*
-debugging the kernel was tcpdump on the 'tun0' interface and see if the
-TX packets I put into the ring were even making it to the interface,
-and what they looked like if they did. (Losing the first 14 bytes and
-having the *next* 14 bytes scribbled on by an Ethernet header was a fun
-one.)
-
-
-
-
-
-> >=20
-> > Fix it to get the correct information along with the socket itself.
->=20
->=20
-> I'm not sure what is fixed by this. It looks to me it tires to let=20
-> packet go even if the userspace set the wrong attributes to tap or=20
-> vhost. This is even sub-optimal than failing explicitly fail the RX.
-
-I'm OK with explicit failure. But once I'd let it *get* the information
-from the underlying socket in order to decide whether it should fail or
-not, it turned out to be easy enough just to make those configs work
-anyway.
-
-The main case where that "easy enough" is stretched a little (IMO) was
-when there's a tun_pi header. I have one more of your emails to reply
-to after this, and I'll address that there.
+Eelco
 
 
->=20
-> > As a side-effect, this means that tun_get_socket() won't work if the
-> > tun file isn't actually connected to a device, since there's no 'tun'
-> > yet in that case to get the information from.
->=20
->=20
-> This may break the existing application. Vhost-net is tied to the socket=
-=20
-> instead of the device that the socket is loosely coupled.
-
-Hm. Perhaps the PI and vnet hdr should be considered an option of the
-*socket* (which is tied to the tfile), not purely an option of the
-underlying device?
-
-Or maybe it's sufficient just to get the flags from *either* tfile->tun=20
-or tfile->detached, so that it works when the queue is detached. I'll
-take a look.
-
-I suppose we could even have a fallback that makes stuff up like we do
-today. If the user attempts to attach a tun file descriptor to vhost
-without ever calling TUNSETIFF on it first, *then* we make the same
-assumptions we do today?
-
-> > --- a/drivers/vhost/net.c
-> > +++ b/drivers/vhost/net.c
-> > @@ -1143,7 +1143,8 @@ static void handle_rx(struct vhost_net *net)
-> >  =20
-> >   	vq_log =3D unlikely(vhost_has_feature(vq, VHOST_F_LOG_ALL)) ?
-> >   		vq->log : NULL;
-> > -	mergeable =3D vhost_has_feature(vq, VIRTIO_NET_F_MRG_RXBUF);
-> > +	mergeable =3D vhost_has_feature(vq, VIRTIO_NET_F_MRG_RXBUF) &&
-> > +		(vhost_hlen || sock_hlen >=3D sizeof(num_buffers));
->=20
->=20
-> So this change the behavior. When mergeable buffer is enabled, userspace=
-=20
-> expects the vhost to merge buffers. If the feature is disabled silently,=
-=20
-> it violates virtio spec.
->=20
-> If anything wrong in the setup, userspace just breaks itself.
->=20
-> E.g if sock_hlen is less that struct virtio_net_hdr_mrg_buf. The packet=
-=20
-> header might be overwrote by the vnet header.
-
-This wasn't intended to change the behaviour of any code path that is
-already working today. If *either* vhost or the underlying device have
-provided a vnet header, we still merge.
-
-If *neither* provide a vnet hdr, there's nowhere to put num_buffers and
-we can't merge.
-
-That code path doesn't work at all today, but does after my patches.
-But you're right, we should explicitly refuse to negotiate
-VIRITO_NET_F_MSG_RXBUF in that case.
-
->=20
-> >  =20
-> >   	do {
-> >   		sock_len =3D vhost_net_rx_peek_head_len(net, sock->sk,
-> > @@ -1213,9 +1214,10 @@ static void handle_rx(struct vhost_net *net)
-> >   			}
-> >   		} else {
-> >   			/* Header came from socket; we'll need to patch
-> > -			 * ->num_buffers over if VIRTIO_NET_F_MRG_RXBUF
-> > +			 * ->num_buffers over the last two bytes if
-> > +			 * VIRTIO_NET_F_MRG_RXBUF is enabled.
-> >   			 */
-> > -			iov_iter_advance(&fixup, sizeof(hdr));
-> > +			iov_iter_advance(&fixup, sock_hlen - 2);
->=20
->=20
-> I'm not sure what did the above code want to fix. It doesn't change=20
-> anything if vnet header is set correctly in TUN. It only prevents the=20
-> the packet header from being rewrote.
->=20
-
-It fixes the case where the virtio_net_hdr isn't at the start of the
-tun header, because the tun actually puts the tun_pi struct *first*,
-and *then* the virtio_net_hdr.=20
-
-The num_buffers field needs to go at the *end* of sock_hlen. Not at a
-fixed offset from the *start* of it.
-
-At least, that's true unless we want to just declare that we *only*
-support TUN with the IFF_NO_PI flag. (qv).
-
---=-yi1cl3fh583v9Yrq7LFE
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
-ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
-OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
-RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
-cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
-uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
-Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
-Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
-xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
-BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
-dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
-LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
-Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
-Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
-YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
-nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
-PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
-7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
-Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
-MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
-NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
-/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
-0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
-vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
-ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
-ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
-CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
-BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
-aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
-bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
-LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
-W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
-vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
-gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
-RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
-jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
-AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
-BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
-+bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
-WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
-aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
-CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
-u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
-RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
-QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
-b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
-cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
-SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
-0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
-KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
-E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
-M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
-jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
-yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
-gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
-R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
-ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
-NjI1MDgyMzI3WjAvBgkqhkiG9w0BCQQxIgQg7SMov45425s84Q09iirif2F3cMSqch+mei2vs5mI
-Ui8wgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
-TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
-PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAARPQlv4H7Tsss1BmUfq3gv3Sgm5xa+DNMO12bQWZFI2pcKZ9n7WiOFdivAozx6R
-aj7srbgYAjiUFIUCGof40OoiECfofHl77W67OfdNavIxwEzU9gIZyezHekfDt1+aSPcmQoT7ujGx
-bVJXI+vDNGPWrrUQpVrcyHZeZ5OxLCcnAK7hLNaQ79WI6c9WFTHADgrLH6ffji/sZPepU1WLUTYk
-zGfZtVVdpE2KZUZlzNPL08qxiBtpgHWvS8tpH+UvL1Ut5jQ9QepKmIMXLtVS3yr5ZEVg01hoZKEN
-/1Yupn8SyuEgKG5vSdEvRLKgEa1BFyHa5eXDVTfPnDK2Ps0UQhIAAAAAAAA=
-
-
---=-yi1cl3fh583v9Yrq7LFE--
+> .John
 
