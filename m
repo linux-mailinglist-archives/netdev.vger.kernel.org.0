@@ -2,71 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC3233B3A26
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 02:22:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A86383B3A28
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 02:27:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232915AbhFYAYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Jun 2021 20:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
+        id S232921AbhFYA3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Jun 2021 20:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbhFYAYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 20:24:41 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BCCC061574
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 17:22:20 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id df12so11095250edb.2
-        for <netdev@vger.kernel.org>; Thu, 24 Jun 2021 17:22:20 -0700 (PDT)
+        with ESMTP id S229585AbhFYA3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Jun 2021 20:29:53 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179A9C061756;
+        Thu, 24 Jun 2021 17:27:33 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id k10so13315761lfv.13;
+        Thu, 24 Jun 2021 17:27:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=V5EAusOWeaWjxDeOUrtt5BLE93n2Q9vwQBSAe++MbSA=;
-        b=eteEBvVf6k4C5kpfvt5s6d4hU8EjJAbmsNwnIfFo3GJ9/+PRCu/UfaFm1Oc0prvesm
-         WCDnp4rwYU6DqLHWE4Pg15yhf413blXX/WbH01CbWqa+QjMOKiHt+raMnV7MkBIi5Ly9
-         sAkHJ3YcKBQI2EoFbQOQKd+l3Rre0fe7DlHC++GHxpfubImz6x64c79imc9/r/winrTh
-         UEisJSh4rrVEVxPfbtG/SSbAKaJDdDMSPt7VZfevtZ4VGPh3NjuAmxDxAeReouOlRAPg
-         3v4AETT5kBX7IBXebFJIH+3wxiia+RzgWW339EqCaMJ1JFg+J/fO69IjzJLNmKWkXLl3
-         fU2A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QkGCFslBFVEm4J7DpBVdsnseTugB0cOwDNm7cV2zBW0=;
+        b=rJuTb2Bj4MaSE0spXSNP6lUBaC4itatlnuLFjKVcH6w7feh1vwKaEvzssnbkKxQYh/
+         /dK2+nhp/wXoWHPTlgwUj+/nmIdwq1NQrJs8YJPECGNT/6PtpCyq/usEKcVX96n/liDP
+         KmxleMYl/+GXPZNKc4qHBWN3QYNnp0W3sFrOV7/uONgbjvqySwtt3Yia7hmrYQdKITHl
+         HJN3YOUQXIgnvw5Kfxev9gNHflCGOZCMoxEUm2UgIIo0c7zaXuattH1vr5hSjX5JYQup
+         OKHRyy8lJB7wV2l83ud8q0od1gxaVGGmyyOJI0Q+O14Wsrn8eMUX8RJhJGNVvUJiQE3u
+         1uzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=V5EAusOWeaWjxDeOUrtt5BLE93n2Q9vwQBSAe++MbSA=;
-        b=qmA2K7JStnwHSt4BhdaMcw32+g7/W/uGp0yCeocZCASE4T1yDhQnDgODmVJIZQtMUX
-         nkQy6cRvLMoR1CCxqcVSZR/6u12NgJqk6RBHqx78oIEPBMPhS9Ezzr7WyReucxNdyXVu
-         N2juzC/GcYsGEsMZgFSVWZFRtnBrYR5WPj82aJdb21gS7xaeZJmw3ReFMdYJMDh+Qo91
-         GxvslWC+MrCPF1xtTWwJ0V/6IBS6JZDgUI+MZdQo+TNNyAHnmq5UtSXhwONzsyvoHHli
-         frjkLjW6cypHzxa0N3ZccHLYMpb3dAT63222sB9oFU7T6UrHe7TerndGsGTtogRbyWsc
-         bKxw==
-X-Gm-Message-State: AOAM533Ps+CWfcII80j/STCZ+RFjzJCzfozDcT3V8AOF3NSmKvQIc3Xl
-        0s6UKCQuMmn520Vp5LkbbswabdpTqcPIIl2f3pE=
-X-Google-Smtp-Source: ABdhPJzS+/2d1VAG35Wej9U3I0wpI9+V8WTFwa/FtTAYWBxw7I8I8mN6hAzVCFJ23uPtqTZ9iezptjcKLwsjEgS0joY=
-X-Received: by 2002:aa7:c3d3:: with SMTP id l19mr10882989edr.48.1624580539112;
- Thu, 24 Jun 2021 17:22:19 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QkGCFslBFVEm4J7DpBVdsnseTugB0cOwDNm7cV2zBW0=;
+        b=uod2S2vMhVFcnVz2qBIVI/IxNDgzux/vvn0VT/TeuVW0eTCPCoRCMgsYpioc90wA+u
+         Q3rZJnf/dLXz0ghBL30ctc1ROfdRfYcO46PVz4uLxp251RVbSJNtoVfNhz4PnB0hQ//k
+         MAAft0afK0QZK2jwO2qWItwlJyUP/s5KDwV7pF7F9KiuraJv4yUQTzf+60XbLYt4R/8L
+         FN87NntDm+8O8ul5nCpGGiW+GneS340TPY3b3WAS5XiuvjEA3sEjiNkmnLPYXLRE0HB+
+         bCG81m+n8BhtCkz+BLv3QVuSr5SsD0iwIucv8CC6ci2O8Ja0aYUg7F71tjsfq+mNyQdy
+         SiYA==
+X-Gm-Message-State: AOAM531TXcCUJhqjWSuwz8v8DigvNgglShq6EjrAPGRKe73IpVd+A0xK
+        mGs9kaIdBD/sDl5YbTdLjFKv2Sn/ylqUb1r42lg=
+X-Google-Smtp-Source: ABdhPJyviSFlWFHqasv17UScTMsfxi7ZruZxtI0tWDeJte1oxuzJA8SXIU2JpFZePfNXJdMAsyVw7ZEERdlWdFvqPic=
+X-Received: by 2002:a05:6512:3e02:: with SMTP id i2mr5674462lfv.409.1624580851373;
+ Thu, 24 Jun 2021 17:27:31 -0700 (PDT)
 MIME-Version: 1.0
-Reply-To: alahmedhassan5602@gmail.com
-Sender: ismahalidu1@gmail.com
-Received: by 2002:a17:906:6843:0:0:0:0 with HTTP; Thu, 24 Jun 2021 17:22:18
- -0700 (PDT)
-From:   Ahmed Hassan <alahmed4445aa@gmail.com>
-Date:   Fri, 25 Jun 2021 00:22:18 +0000
-X-Google-Sender-Auth: halHhCZE9FyjbsA7HLBbZjJu3-8
-Message-ID: <CA+9k9_wy1UCU=5PsPDw+wJ-494t1BQaFnAJkPt_MJ5Ys=OZQrg@mail.gmail.com>
-Subject: I need your cooperation
-To:     undisclosed-recipients:;
+References: <20210618105526.265003-1-zenczykowski@gmail.com>
+ <CACAyw99k4ZhePBcRJzJn37rvGKnPHEgE3z8Y-47iYKQO2nqFpQ@mail.gmail.com>
+ <CANP3RGdrpb+KiD+a29zTSU3LKR8Qo6aFdo4QseRvPdNhZ_AOJw@mail.gmail.com>
+ <CACAyw9948drqRE=0tC=5OrdX=nOVR3JSPScXrkdAv+kGD_P3ZA@mail.gmail.com>
+ <CAHo-Oozra2ygb4qW6s8rsgZFmdr-gaQuGzREtXuZLwzzESCYNw@mail.gmail.com>
+ <CACAyw98B=uCnDY1tTw5STLUgNKvJeksJjaKiGqasJEEVv99GqA@mail.gmail.com> <a703516a-1566-d5fe-cf4c-f2bb004a4f4e@iogearbox.net>
+In-Reply-To: <a703516a-1566-d5fe-cf4c-f2bb004a4f4e@iogearbox.net>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Thu, 24 Jun 2021 17:27:20 -0700
+Message-ID: <CAHo-OoxM25VzpHTQsY6sAoiAGDooROqaHrTX+n=PFO-TEA8mCw@mail.gmail.com>
+Subject: Re: [PATCH bpf] Revert "bpf: program: Refuse non-O_RDWR flags in BPF_OBJ_GET"
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Greg Kroah-Hartman <gregkh@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+> > You're barking up the wrong tree. I don't object to reverting the
+> > patch, you asked me for context and I gave it to you.
+>
+> +1, this kind of barking was unnecessary and inappropriate.
+>
+> I revamped the commit message a bit to have some more context for future
+> reference when we need to get back on this.
+>
+> Anyway, applied.
 
-I need your urgent assistance in transferring the sum of $11.3 million
-USD, to your private account Where this money can be shared between
-us. The money has been here in our Bank lying dormant for years now
-without anybody coming for the claim.
+Thank you for applying the change.
 
-By indicating your interest I will send you the full details on how
-the business will be executed.
+Sorry for the tone, but work has been particularly hectic these past
+few quarters, with a constant onslaught of neverending deadlines...
 
-Best Regards,
-Ahmed Hassan
+The current kernel patch management system provides virtually no
+feedback about (rejected) patches.
+There is no email when a patch is rejected (and often even when
+applied) and there is no notification of who did it or why.
+It's very much like dealing with a faceless robot.
+
+I'm stuck periodically refreshing a browser tab with
+https://patchwork.kernel.org/project/netdevbpf/list/ and waiting on
+patch state to change from new to accepted or 'changes requested'.  In
+this particular case, there was no email feedback
+from any maintainer, except for the patch going into 'changes
+requested' state on patchworks, and the email thread (which only had
+me and Lorenz participating) also didn't appear to have any reason in
+it either....
+
+As such, it was extremely unclear what was being asked of me.
+It felt like I was simply being ignored.
+
+- Maciej
