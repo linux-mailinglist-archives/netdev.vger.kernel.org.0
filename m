@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C5443B4996
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 22:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B91843B4998
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 22:05:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbhFYUHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 16:07:16 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:51756 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229712AbhFYUHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 16:07:13 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15PJxEFw005852
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 13:04:51 -0700
+        id S229900AbhFYUHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 16:07:20 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:27796 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229873AbhFYUHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 16:07:18 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 15PK4LAZ001695
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 13:04:56 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=sGXoSWisqxFkfdeszz5U9gKg/5S3Fy/jhAbUlP6uWYs=;
- b=jJAAsJZaDwItVKbmvYkag/Mr0kwITwNeAvfiVPt72ymyUALUzfmV8CVvQkPlvTQCmqq7
- mIIW9j2/c9b968LJm1R0+snlIbU8xIeSeTmWj94tuKhMvHmiJ2iv0hiTDUUYID8KnF5+
- BHurhJr5V5KqAwaoWDptyvOvqIh5U8AzbzA= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 39d23jes1g-3
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=BCXA1is2SgfRbBG9IuoIHQcqTpKa0CM3/e/1g+2tH20=;
+ b=TuTaZPWPpM9Ey4AEBjZ0j6/1t9cDjawfQdV5ECpbIxlSPoAGbKw12ItDUzcOp3VRXQ49
+ U19iCSA6yoK7/K652BApNjBQ+SOCGaGf9aMpOEV5TroBYQy/6abDt4N7olKj+9jvgKh8
+ tg5EF0DzUMyKbhiL8fTHX0ZrkmN65xlCXu0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 39d253xpe0-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 13:04:51 -0700
-Received: from intmgw001.06.ash9.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 13:04:56 -0700
+Received: from intmgw001.05.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 25 Jun 2021 13:04:49 -0700
+ 15.1.2176.2; Fri, 25 Jun 2021 13:04:55 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 3CFDB2942295; Fri, 25 Jun 2021 13:04:46 -0700 (PDT)
+        id 74D1E2942295; Fri, 25 Jun 2021 13:04:52 -0700 (PDT)
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -37,79 +38,91 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Eric Dumazet <edumazet@google.com>, <kernel-team@fb.com>,
         Neal Cardwell <ncardwell@google.com>, <netdev@vger.kernel.org>,
         Yonghong Song <yhs@fb.com>, Yuchung Cheng <ycheng@google.com>
-Subject: [PATCH bpf-next 0/8] bpf: Allow bpf tcp iter to do bpf_setsockopt
-Date:   Fri, 25 Jun 2021 13:04:46 -0700
-Message-ID: <20210625200446.723230-1-kafai@fb.com>
+Subject: [PATCH bpf-next 1/8] tcp: seq_file: Avoid skipping sk during tcp_seek_last_pos
+Date:   Fri, 25 Jun 2021 13:04:52 -0700
+Message-ID: <20210625200452.723506-1-kafai@fb.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210625200446.723230-1-kafai@fb.com>
+References: <20210625200446.723230-1-kafai@fb.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Z2H67PzJzkYTBN_sjnWqi89-rKr6c4kp
-X-Proofpoint-GUID: Z2H67PzJzkYTBN_sjnWqi89-rKr6c4kp
+X-Proofpoint-ORIG-GUID: 9L_88lny7u7a8RVf2OgASLI8YsoQ8VhT
+X-Proofpoint-GUID: 9L_88lny7u7a8RVf2OgASLI8YsoQ8VhT
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
  definitions=2021-06-25_07:2021-06-25,2021-06-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- impostorscore=0 mlxscore=0 malwarescore=0 mlxlogscore=632 phishscore=0
- spamscore=0 adultscore=0 suspectscore=0 bulkscore=0 priorityscore=1501
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106250122
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ priorityscore=1501 bulkscore=0 clxscore=1015 impostorscore=0
+ lowpriorityscore=0 adultscore=0 suspectscore=0 mlxlogscore=964 mlxscore=0
+ spamscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106250123
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This set is to allow bpf tcp iter to call bpf_setsockopt.
+st->bucket stores the current bucket number.
+st->offset stores the offset within this bucket that is the sk to be
+seq_show().  Thus, st->offset only makes sense within the same
+st->bucket.
 
-With bpf-tcp-cc, new algo rollout happens more often.  Instead of
-restarting the applications to pick up the new tcp-cc, this set
-allows the bpf tcp iter with the netadmin cap to call
-bpf_setsockopt(TCP_CONGESTION).  It is not limited to TCP_CONGESTION
-and the bpf tcp iter can call bpf_setsockopt() with other options.
-The bpf tcp iter can read into all the fields of a tcp_sock, so
-there is a lot of flexibility to select the desired sk to do
-setsockopt(), e.g. it can test for TCP_LISTEN only and leave
-the established connections untouched, or check the addr/port,
-or check the current tcp-cc name, ...etc.
+These two variables are an optimization for the common no-lseek case.
+When resuming the seq_file iteration (i.e. seq_start()),
+tcp_seek_last_pos() tries to continue from the st->offset
+at bucket st->bucket.
 
-Patch 1-4 are some cleanup and prep work in the tcp and bpf seq_file.
+However, it is possible that the bucket pointed by st->bucket
+has changed and st->offset may end up skipping the whole st->bucket
+without finding a sk.  In this case, tcp_seek_last_pos() currently
+continues to satisfy the offset condition in the next (and incorrect)
+bucket.  Instead, regardless of the offset value, the first sk of the
+next bucket should be returned.  Thus, "bucket =3D=3D st->bucket" check i=
+s
+added to tcp_seek_last_pos().
 
-Patch 5 is to have the tcp seq_file iterate on the
-port+addr lhash2 instead of the port only listening_hash.
+The chance of hitting this is small and the issue is a decade old,
+so targeting for the next tree.
 
-Patch 6 is to have the bpf tcp iter doing batching which
-then allows lock_sock.  lock_sock is needed for setsockopt.
+Fixes: a8b690f98baf ("tcp: Fix slowness in read /proc/net/tcp")
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+---
+ net/ipv4/tcp_ipv4.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Patch 7 allows the bpf tcp iter to call bpf_setsockopt.
-
-Martin KaFai Lau (8):
-  tcp: seq_file: Avoid skipping sk during tcp_seek_last_pos
-  tcp: seq_file: Refactor net and family matching
-  bpf: tcp: seq_file: Remove bpf_seq_afinfo from tcp_iter_state
-  tcp: seq_file: Add listening_get_first()
-  tcp: seq_file: Replace listening_hash with lhash2
-  bpf: tcp: bpf iter batching and lock_sock
-  bpf: tcp: Support bpf_setsockopt in bpf tcp iter
-  bpf: selftest: Test batching and bpf_setsockopt in bpf tcp iter
-
- include/linux/bpf.h                           |   7 +
- include/net/inet_hashtables.h                 |   6 +
- include/net/tcp.h                             |   1 -
- kernel/bpf/bpf_iter.c                         |  22 +
- kernel/trace/bpf_trace.c                      |   7 +-
- net/core/filter.c                             |  17 +
- net/ipv4/tcp_ipv4.c                           | 409 ++++++++++++++----
- tools/testing/selftests/bpf/network_helpers.c |  85 +++-
- tools/testing/selftests/bpf/network_helpers.h |   4 +
- .../bpf/prog_tests/bpf_iter_setsockopt.c      | 226 ++++++++++
- .../selftests/bpf/progs/bpf_iter_setsockopt.c |  76 ++++
- .../selftests/bpf/progs/bpf_tracing_net.h     |   4 +
- 12 files changed, 767 insertions(+), 97 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_iter_setso=
-ckopt.c
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_setsockopt=
-.c
-
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 6cb8e269f1ab..7a49427eefbf 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2451,6 +2451,7 @@ static void *tcp_get_idx(struct seq_file *seq, loff=
+_t pos)
+ static void *tcp_seek_last_pos(struct seq_file *seq)
+ {
+ 	struct tcp_iter_state *st =3D seq->private;
++	int bucket =3D st->bucket;
+ 	int offset =3D st->offset;
+ 	int orig_num =3D st->num;
+ 	void *rc =3D NULL;
+@@ -2461,7 +2462,7 @@ static void *tcp_seek_last_pos(struct seq_file *seq=
+)
+ 			break;
+ 		st->state =3D TCP_SEQ_STATE_LISTENING;
+ 		rc =3D listening_get_next(seq, NULL);
+-		while (offset-- && rc)
++		while (offset-- && rc && bucket =3D=3D st->bucket)
+ 			rc =3D listening_get_next(seq, rc);
+ 		if (rc)
+ 			break;
+@@ -2472,7 +2473,7 @@ static void *tcp_seek_last_pos(struct seq_file *seq=
+)
+ 		if (st->bucket > tcp_hashinfo.ehash_mask)
+ 			break;
+ 		rc =3D established_get_first(seq);
+-		while (offset-- && rc)
++		while (offset-- && rc && bucket =3D=3D st->bucket)
+ 			rc =3D established_get_next(seq, rc);
+ 	}
+=20
 --=20
 2.30.2
 
