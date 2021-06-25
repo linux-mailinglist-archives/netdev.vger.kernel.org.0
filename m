@@ -2,256 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D490C3B4589
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 16:28:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D675D3B45C2
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 16:37:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231672AbhFYOag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 10:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57194 "EHLO
+        id S231848AbhFYOjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 10:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231570AbhFYOaf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 10:30:35 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F225C061766
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 07:28:13 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id g14so7600703qtv.4
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 07:28:13 -0700 (PDT)
+        with ESMTP id S231753AbhFYOjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 10:39:20 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12704C061574
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 07:36:59 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id d11so10908055wrm.0
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 07:36:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/ZgLDmf4P91A2RHgxZba0+RJ1N9ppXcf6PPDNksXoJw=;
-        b=oB537cv+7rW36nLqzmSKurcx8XeCx4ShtN2KTeKpAFXu3Ce6WvWOu+DaKvJIk+2nnA
-         OBiAZXWbhyc+cm0cmprCWN3oDK+44jpDq74w8EIIrtuFA6m4dMkC2vMBuwy3OZOtnP+9
-         8oIua2zsmZ4h5osGPMO25wQmXkHc3vg+SI1P/x42tqLR6JKeyVqqPxLW1SVN2OU/67O4
-         ZXHJSlqcTUotXHjVT9uOkS2YlfnK5O7j+zRJqdUY4ZN57e2Ws3KGaOGNfiWYBwWIYpKL
-         DYxBd80wA+gnnnOK1X+eeKJ7WR9yvkXHZxKAJ67JPWsg2a0zKNhmgV5hKaH9CXlLWHKM
-         6GMw==
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=A0E3pSDkLfYCboHxYqwHDLZbIFP5PlugYpHieNhdQAw=;
+        b=FAIHhdKKllJHF5CshRRd+lsMpyhAG7TeyTCYuMCvkqmjBWVoi2euN/tlC/ArjQhKNa
+         7eulQw4HwBy3vtlPHwyadqmTdXSqcgAJfsXBBwXSWEwYFxyEdINgIivH30iwPGTHmjFE
+         D2qWvr0Fzhh+f7oEUHYMIgl2ctvmGz5r2q+6Ced0VBma9Q42UsUcpKXTUhqv3n9rmeOZ
+         tocPpxr+qRKzR4fGDh6dl4huIio30g645eAJGJu9fMt8sqqTOxOtw4NwWljGS0evYK7y
+         +Lw0XFkwTHby0XS1/Gw0nCEtLtGJr0QdEcfWs8LaSpflHbUBCdXsHaBbptqaS/cGHvy8
+         AB6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/ZgLDmf4P91A2RHgxZba0+RJ1N9ppXcf6PPDNksXoJw=;
-        b=T36W+UAJexigVOQaT/uZuFBTRVGbAsFuOdpd8qUXmL9cZpoA80NE6rD/PDR9AkD7O3
-         Lut+FIJfoVOJn8usRwoHF4nGM+It2uKYG+VYdnCh2vUOA7HJ1eWcmyJWW3vNeTbGI63r
-         oTmbxMamSX/+pQasV5kCkcNFh13x7rktK8cYVZBR45A5eaejRmfH6I4eVXIH3ewjw+hI
-         Vz3OelZnrxKTNqPsdZvz9Q4UTM8rdv0BdJxlwawZh9qMO0mBHGxQvWoksGuLuNeJCgMd
-         0H1R+mXLe+KmgUQR/q0vx16kmORHeDWq1rhTA8laFBA+RHqtwWfvhE24aaIugESe0sFJ
-         DHRg==
-X-Gm-Message-State: AOAM530RSwkDZ42ehXrGkbnbPFoF4C9+SGcENSbGlqvcpGaHtTMOd2HV
-        dVhfMZ6ALPCQqmiYds9P9MDd1YdALWUH1ssOGVWpoQ==
-X-Google-Smtp-Source: ABdhPJzYL8s1lJU9KzPzunn0ci7SYPyzALfsn/DFxLj6mqn8o0QuAynGEZnBOhCg11vT14u8xnOJKacmUn3UJ6axiwY=
-X-Received: by 2002:ac8:7616:: with SMTP id t22mr9473960qtq.43.1624631292305;
- Fri, 25 Jun 2021 07:28:12 -0700 (PDT)
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=A0E3pSDkLfYCboHxYqwHDLZbIFP5PlugYpHieNhdQAw=;
+        b=Z/65NTrR2b3u198Pub3u5WPaEid+otIBKl9kZ4S/auKcFmuEwOoKL8KWHyI5ADg0Yz
+         bSbz/xDml6R+o9Yyr4zTy91JQaU0E2hB2s+wS1lqdsMZniZF7pD1hkP+CQ3Wz6nmLjfW
+         yoCRUJF88YtcQgawEOPSPd7hKn4ya/nATkhuKQmYWQlPfC+aFQmh7RPUnGkVR+9J84Hg
+         cHiTlXYrLG9tchDd8E0jIKFxf+sY7wh3IgQU+70oaIt8WW9+FFqNo0BiuJ17jKQb1o93
+         Tk5LHDD00b8bsqK9nm6b+yKwjDBKIHbktsNL8EK8ksU21lSttqlbkxXSww8kV/qCCZXe
+         0ddA==
+X-Gm-Message-State: AOAM532XBBDl2MHBi06VU0aZQOqPd1ENj1gr5ZP95y7WdEpTw+NAe8eS
+        0z3OujbQUBjZTOy3OmCCr4WNxA==
+X-Google-Smtp-Source: ABdhPJxgmB1hKi7at4a1wWrHxkfFUKkEdc50d0LpApqWj3IQWDKcKikPTtl1IcarNjmfTAkDAMQU/g==
+X-Received: by 2002:a5d:6d8b:: with SMTP id l11mr11335816wrs.21.1624631817553;
+        Fri, 25 Jun 2021 07:36:57 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:48d1:d5b6:5b87:8a6e? ([2a01:e0a:410:bb00:48d1:d5b6:5b87:8a6e])
+        by smtp.gmail.com with ESMTPSA id o203sm6586361wmo.36.2021.06.25.07.36.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Jun 2021 07:36:56 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net] dev_forward_skb: do not scrub skb mark within the
+ same name space
+To:     Eyal Birger <eyal.birger@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        liran.alon@oracle.com, shmulik.ladkani@gmail.com,
+        daniel@iogearbox.net
+References: <20210624080505.21628-1-nicolas.dichtel@6wind.com>
+ <ad019c34-6b18-9bd8-047f-6688cc4a3b8b@gmail.com>
+ <773bae50-3bd6-00bc-7cc6-f5eec510f0b8@6wind.com>
+ <2b01ec85-216a-2785-fd1c-42c38ad30c9d@gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <6e28a019-db7c-1916-2842-cae9bc249872@6wind.com>
+Date:   Fri, 25 Jun 2021 16:36:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <000000000000911d3905b459824c@google.com> <000000000000e56a2605b616b2d9@google.com>
- <YD0UjWjQmYgY4Qgh@nuc10> <CACT4Y+YQzTkk=UPNH5g96e+yPYyaPBemmhqXz5oaWEvW9xb-rQ@mail.gmail.com>
- <YD1RE3O4FBkKK32l@nuc10> <CACT4Y+bvWyipjZ6P6gkno0ZHRWPJ-HFGiT3yECqQU37a0E_tgQ@mail.gmail.com>
- <YG4/PEhZ9CnKo1K3@nuc10> <CAEf4BzbB3r2pOeKBQe2F08g5ojj0RaEHHeg5L6=MVMYy-J5baA@mail.gmail.com>
- <YG9Rz4R5bx+FnkaF@nuc10> <YMYhcMVTxThJYxMo@nuc10> <YNTAqiE7CWJhOK2M@nuc10>
-In-Reply-To: <YNTAqiE7CWJhOK2M@nuc10>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 25 Jun 2021 16:28:00 +0200
-Message-ID: <CACT4Y+Z4fjZZhCEM8eRRpw3qSpKY+nRoVcjtPQKsM7uYUL7xbQ@mail.gmail.com>
-Subject: Re: memory leak in bpf
-To:     Rustam Kovhaev <rkovhaev@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        syzbot <syzbot+f3694595248708227d35@syzkaller.appspotmail.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <2b01ec85-216a-2785-fd1c-42c38ad30c9d@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 7:28 PM Rustam Kovhaev <rkovhaev@gmail.com> wrote:
-> > > > On Wed, Apr 7, 2021 at 4:24 PM Rustam Kovhaev <rkovhaev@gmail.com> wrote:
-> > > > >
-> > > > > On Mon, Mar 01, 2021 at 09:43:00PM +0100, Dmitry Vyukov wrote:
-> > > > > > On Mon, Mar 1, 2021 at 9:39 PM Rustam Kovhaev <rkovhaev@gmail.com> wrote:
-> > > > > > >
-> > > > > > > On Mon, Mar 01, 2021 at 08:05:42PM +0100, Dmitry Vyukov wrote:
-> > > > > > > > On Mon, Mar 1, 2021 at 5:21 PM Rustam Kovhaev <rkovhaev@gmail.com> wrote:
-> > > > > > > > >
-> > > > > > > > > On Wed, Dec 09, 2020 at 10:58:10PM -0800, syzbot wrote:
-> > > > > > > > > > syzbot has found a reproducer for the following issue on:
-> > > > > > > > > >
-> > > > > > > > > > HEAD commit:    a68a0262 mm/madvise: remove racy mm ownership check
-> > > > > > > > > > git tree:       upstream
-> > > > > > > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=11facf17500000
-> > > > > > > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=4305fa9ea70c7a9f
-> > > > > > > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=f3694595248708227d35
-> > > > > > > > > > compiler:       gcc (GCC) 10.1.0-syz 20200507
-> > > > > > > > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=159a9613500000
-> > > > > > > > > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11bf7123500000
-> > > > > > > > > >
-> > > > > > > > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > > > > > > > > Reported-by: syzbot+f3694595248708227d35@syzkaller.appspotmail.com
-> > > > > > > > > >
-> > > > > > > > > > Debian GNU/Linux 9 syzkaller ttyS0
-> > > > > > > > > > Warning: Permanently added '10.128.0.9' (ECDSA) to the list of known hosts.
-> > > > > > > > > > executing program
-> > > > > > > > > > executing program
-> > > > > > > > > > executing program
-> > > > > > > > > > BUG: memory leak
-> > > > > > > > > > unreferenced object 0xffff88810efccc80 (size 64):
-> > > > > > > > > >   comm "syz-executor334", pid 8460, jiffies 4294945724 (age 13.850s)
-> > > > > > > > > >   hex dump (first 32 bytes):
-> > > > > > > > > >     c0 cb 14 04 00 ea ff ff c0 c2 11 04 00 ea ff ff  ................
-> > > > > > > > > >     c0 56 3f 04 00 ea ff ff 40 18 38 04 00 ea ff ff  .V?.....@.8.....
-> > > > > > > > > >   backtrace:
-> > > > > > > > > >     [<0000000036ae98a7>] kmalloc_node include/linux/slab.h:575 [inline]
-> > > > > > > > > >     [<0000000036ae98a7>] bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:94 [inline]
-> > > > > > > > > >     [<0000000036ae98a7>] bpf_ringbuf_alloc kernel/bpf/ringbuf.c:135 [inline]
-> > > > > > > > > >     [<0000000036ae98a7>] ringbuf_map_alloc kernel/bpf/ringbuf.c:183 [inline]
-> > > > > > > > > >     [<0000000036ae98a7>] ringbuf_map_alloc+0x1be/0x410 kernel/bpf/ringbuf.c:150
-> > > > > > > > > >     [<00000000d2cb93ae>] find_and_alloc_map kernel/bpf/syscall.c:122 [inline]
-> > > > > > > > > >     [<00000000d2cb93ae>] map_create kernel/bpf/syscall.c:825 [inline]
-> > > > > > > > > >     [<00000000d2cb93ae>] __do_sys_bpf+0x7d0/0x30a0 kernel/bpf/syscall.c:4381
-> > > > > > > > > >     [<000000008feaf393>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-> > > > > > > > > >     [<00000000e1f53cfd>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > > > > > > > > >
-> > > > > > > > > >
-> > > > > > > > >
-> > > > > > > > > i am pretty sure that this one is a false positive
-> > > > > > > > > the problem with reproducer is that it does not terminate all of the
-> > > > > > > > > child processes that it spawns
-> > > > > > > > >
-> > > > > > > > > i confirmed that it is a false positive by tracing __fput() and
-> > > > > > > > > bpf_map_release(), i ran reproducer, got kmemleak report, then i
-> > > > > > > > > manually killed those running leftover processes from reproducer and
-> > > > > > > > > then both functions were executed and memory was freed
-> > > > > > > > >
-> > > > > > > > > i am marking this one as:
-> > > > > > > > > #syz invalid
-> > > > > > > >
-> > > > > > > > Hi Rustam,
-> > > > > > > >
-> > > > > > > > Thanks for looking into this.
-> > > > > > > >
-> > > > > > > > I wonder how/where are these objects referenced? If they are not
-> > > > > > > > leaked and referenced somewhere, KMEMLEAK should not report them as
-> > > > > > > > leaks.
-> > > > > > > > So even if this is a false positive for BPF, this is a true positive
-> > > > > > > > bug and something to fix for KMEMLEAK ;)
-> > > > > > > > And syzbot will probably re-create this bug report soon as this still
-> > > > > > > > happens and is not a one-off thing.
-> > > > > > >
-> > > > > > > hi Dmitry, i haven't thought of it this way, but i guess you are right,
-> > > > > > > it is a kmemleak bug, ideally kmemleak should be aware that there are
-> > > > > > > still running processes holding references to bpf fd/anonymous inodes
-> > > > > > > which in their turn hold references to allocated bpf maps
-> > > > > >
-> > > > > > KMEMLEAK scans whole memory, so if there are pointers to the object
-> > > > > > anywhere in memory, KMEMLEAK should not report them as leaked. Running
-> > > > > > processes have no direct effect on KMEMLEAK logic.
-> > > > > > So the question is: where are these pointers to these objects? If we
-> > > > > > answer this, we can check how/why KMEMLEAK misses them. Are they
-> > > > > > mangled in some way?
-> > > > > thank you for your comments, they make sense, and indeed, the pointer
-> > > > > gets vmaped.
-> > > > > i should have looked into this sooner, becaused syzbot did trigger the
-> > > > > issue again, and Andrii had to look into the same bug, sorry about that.
-> > > >
-> > > > No worries! I actually forgot about this thread :) Let's leave the
-> > > > link to my today's investigation ([0]) just for completeness.
-> > > >
-> > > >   [0] https://lore.kernel.org/bpf/CAEf4BzYk+dqs+jwu6VKXP-RttcTEGFe+ySTGWT9CRNkagDiJVA@mail.gmail.com/
-> > > >
-> > > > > if i am understanding this correctly here is what the fix should be:
-> > > > > ---
-> > > > >  kernel/bpf/ringbuf.c | 2 ++
-> > > > >  1 file changed, 2 insertions(+)
-> > > > >
-> > > > > diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-> > > > > index f25b719ac786..30400e74abe2 100644
-> > > > > --- a/kernel/bpf/ringbuf.c
-> > > > > +++ b/kernel/bpf/ringbuf.c
-> > > > > @@ -8,6 +8,7 @@
-> > > > >  #include <linux/vmalloc.h>
-> > > > >  #include <linux/wait.h>
-> > > > >  #include <linux/poll.h>
-> > > > > +#include <linux/kmemleak.h>
-> > > > >  #include <uapi/linux/btf.h>
-> > > > >
-> > > > >  #define RINGBUF_CREATE_FLAG_MASK (BPF_F_NUMA_NODE)
-> > > > > @@ -105,6 +106,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
-> > > > >         rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
-> > > > >                   VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
-> > > > >         if (rb) {
-> > > > > +               kmemleak_not_leak((void *) pages);
-> > > >
-> > > > If that makes kmemleak happy, I have no problems with this. But maybe
-> > > > leave some comment explaining why this is needed at all?
-> > > >
-> > > > And for my understanding, how vmap changes anything? Those pages are
-> > > > still referenced from rb, which is referenced from some struct file in
-> > > > the system. Sorry if that's a naive question.
-> > > >
-> > > valid question, it does look like kmemleak should be scanning
-> > > vmalloc()/vmap() memory, i will research this further
-> >
-> > a quick update, i see a problem in kmemleak code, and i have simplified
-> > the reproducer by getting rid of a vmap().
-> > i will reach out to maintainer and mm and afterwards i will update this
-> > bug, cheers!
-> >
->
-> Andrii, we have discovered that kmemleak scans struct page, but it does
-> not scan page contents and this is by design. if we allocate some memory
-> with kmalloc(), then allocate page with alloc_page(), and if we put
-> kmalloc pointer somewhere inside that page, kmemleak will report kmalloc
-> pointer as a false positive.
-> we can instruct kmemleak to scan the memory area by calling
-> kmemleak_alloc()/kmemleak_free() as shown below. if we don't need that
-> memory to be scanned then we can use kmemleak_not_leak().
-> if we use the former then i guess we need to be careful since we do not
-> want/need to scan the memory that is being used by user-space.
+Le 25/06/2021 à 10:45, Eyal Birger a écrit :
+> 
+> 
+> On 24/06/2021 18:26, Nicolas Dichtel wrote:
+>> Hi Eyal,
+>>
+>> Le 24/06/2021 à 14:16, Eyal Birger a écrit :
+>>> Hi Nicholas,
+>>>
+>>> On 24/06/2021 11:05, Nicolas Dichtel wrote:
+>>>> The goal is to keep the mark during a bpf_redirect(), like it is done for
+>>>> legacy encapsulation / decapsulation, when there is no x-netns.
+>>>> This was initially done in commit 213dd74aee76 ("skbuff: Do not scrub skb
+>>>> mark within the same name space").
+>>>>
+>>>> When the call to skb_scrub_packet() was added in dev_forward_skb() (commit
+>>>> 8b27f27797ca ("skb: allow skb_scrub_packet() to be used by tunnels")), the
+>>>> second argument (xnet) was set to true to force a call to skb_orphan(). At
+>>>> this time, the mark was always cleanned up by skb_scrub_packet(), whatever
+>>>> xnet value was.
+>>>> This call to skb_orphan() was removed later in commit
+>>>> 9c4c325252c5 ("skbuff: preserve sock reference when scrubbing the skb.").
+>>>> But this 'true' stayed here without any real reason.
+>>>>
+>>>> Let's correctly set xnet in ____dev_forward_skb(), this function has access
+>>>> to the previous interface and to the new interface.
+>>>
+>>> This change was suggested in the past [1] and I think one of the main concerns
+>>> was breaking existing callers which assume the mark would be cleared [2].
+>> Thank you for the pointers!
+>>
+>>>
+>>> Personally, I think the suggestion made in [3] adding a flag to bpf_redirect()
+>>> makes a lot of sense for this use case.
+>> I began with this approach, but actually, as I tried to explain in the commit
+>> log, this looks more like a bug. This function is called almost everywhere in
+>> the kernel (except for openvswitch and wireguard) with the xnet argument
+>> reflecting a netns change. In other words, the behavior is different between
+>> legacy encapsulation and the one made with ebpf :/
+>>
+> 
+> I agree, and was also surprised that ebpf redirection scrubs the mark in the
+> same ns - and only on ingress! - so I think keeping the mark should have been
+Yes, there is also this asymmetry :/
 
-Thanks for your heroic digging and persistence on this issue, Rustam!
+> the default behavior. As noted in the thread though it is not clear whether this
+> would break existing deployments both for ebpf and veth pairs on the same ns.
+To summarize:
+ - it's not consistent between legacy tunnels and ebpf;
+ - it's not consistent between ingress and egress;
+ - it was already fixed in the past for legacy tunnel (commit 213dd74aee76);
+ - this kind of patch has already been done in the past, see commit
+   + 963a88b31ddb ("tunnels: harmonize cleanup done on skb on xmit path");
+   + ea23192e8e57 ("tunnels: harmonize cleanup done on skb on rx path");
+ - nobody stated (on netdev at least) that he relied on this behavior.
 
-> ---
->  kernel/bpf/ringbuf.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-> index 84b3b35fc0d0..cf7ce10b4fb1 100644
-> --- a/kernel/bpf/ringbuf.c
-> +++ b/kernel/bpf/ringbuf.c
-> @@ -8,6 +8,7 @@
->  #include <linux/vmalloc.h>
->  #include <linux/wait.h>
->  #include <linux/poll.h>
-> +#include <linux/kmemleak.h>
->  #include <uapi/linux/btf.h>
->
->  #define RINGBUF_CREATE_FLAG_MASK (BPF_F_NUMA_NODE)
-> @@ -105,6 +106,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
->         rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
->                   VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
->         if (rb) {
-> +               kmemleak_alloc(rb, PAGE_SIZE, 1, flags);
->                 rb->pages = pages;
->                 rb->nr_pages = nr_pages;
->                 return rb;
-> @@ -184,6 +186,7 @@ static void bpf_ringbuf_free(struct bpf_ringbuf *rb)
->         struct page **pages = rb->pages;
->         int i, nr_pages = rb->nr_pages;
->
-> +       kmemleak_free(rb);
->         vunmap(rb);
->         for (i = 0; i < nr_pages; i++)
->                 __free_page(pages[i]);
-> --
-> 2.30.2
->
+For all those reasons, I'm inclined to think that this patch is acceptable.
+Obviously, it's not my decision ;-)
+
+Note also that clearing the mark is possible directly in the ebpf prog,
+preserving it not. It means that, in the worst case of someone relying on this,
+the bug can be fixed without patching the kernel. A trade-off could be to reset
+the mark in the veth case only.
+
+Side note: the mark was not cleared (for veth) between 2.6.34 and 3.4, see
+commit 59b9997baba5 ("Revert "net: maintain namespace isolation between vlan and
+real device"") and the revert was not done due to this ;-)
+
+Comments are welcomed.
+
+Regards,
+Nicolas
