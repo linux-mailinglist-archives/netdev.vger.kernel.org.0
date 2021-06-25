@@ -2,49 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F8103B3E10
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 09:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB703B3EFD
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 10:23:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229886AbhFYH4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 03:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52708 "EHLO
+        id S230138AbhFYIZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 04:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbhFYH4s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 03:56:48 -0400
+        with ESMTP id S229878AbhFYIZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 04:25:52 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D812C061574
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 00:54:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B0BC061574
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 01:23:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
         In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Lew5KxyXzDFKbUiHyGxNbnkyLkUmf6mJ0pI1WuFoUIY=; b=cGEDpBc8X58gDPvujQ9FwvWmtz
-        uEnvEslXN/53dsF5IapkbUdvH+s3JbJQsyPMAuOGuPZHBuv52NE5O5xExVcdkIuXJ/UYZ3SEtGnCo
-        x8L8Kf5SlI/Uzv7wwAHwT+dKQjilW7RJu4dJolxGFS5WelH/UWx9LaA7SVNmKLKDt8eNM64FEvoIM
-        QmCJpxgit7ooFTvCwxJ+3JnBsWCrdG1UkGQsCub/oT4HafhezO+xFEL6jyaA9cS/j8qfxonUJ+HTG
-        qznje4P/FiiWXozbfYfPeb5D9MKPJzVywRQpX2ubcGiASFkeETG+lvUfq8Zxe/qeeo+vEcMXeZA9h
-        3jvTpdiw==;
-Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.infradead.org)
+        bh=jDI5hW3GgEPHVoue/If3RmdOtbGfuMxHWCSdjOkljvg=; b=mVdHKYkENYkNW0w6FINsO+w7TG
+        5LZma73i363/RYJior7/M+bjTtPZ2jii0RURjNN1z1HxGAJv4dwKCflZaaY+ELf7UUH6nkNncZfG0
+        i5AIXer4IU2UYric+tP6qz1edV7kQpwUA27kN98m5YshshUgqTGmdk0Zeg8pKPveO1JbqxHYl8w8v
+        S5d8UvJqgNulsDsBlBHIj9EiR81ZBlzFOclwGu3vHqD4RjW1gNX+GDa7qzJ3BUy+fY45elRHrAkDd
+        HRPQAAfm3ixhkrH8HXyNCdu0+IInV5J911sNt2OhtJDLYGN/zN9Rd7yW6F+AmW7cJjD3Il1YC7Bos
+        u69zo6Nw==;
+Received: from [2001:8b0:10b:1::3ae] (helo=u3832b3a9db3152.ant.amazon.com)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lwgfR-0009mM-NO; Fri, 25 Jun 2021 07:54:26 +0000
-Message-ID: <283f7e387ec1edc5104377e0583f50910122806f.camel@infradead.org>
-Subject: Re: [PATCH v2 4/4] vhost_net: Add self test with tun device
+        id 1lwh7Z-000IQw-NA; Fri, 25 Jun 2021 08:23:30 +0000
+Message-ID: <4b33ed9ac98c28e8980043d482cc3549acfba799.camel@infradead.org>
+Subject: Re: [PATCH v3 1/5] net: add header len parameter to
+ tun_get_socket(), tap_get_socket()
 From:   David Woodhouse <dwmw2@infradead.org>
 To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
-Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
-Date:   Fri, 25 Jun 2021 08:54:23 +0100
-In-Reply-To: <20fd6dcc-d9dc-2979-c6ab-1cdf04de57b8@redhat.com>
+Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        Willem de Bruijn <willemb@google.com>
+Date:   Fri, 25 Jun 2021 09:23:27 +0100
+In-Reply-To: <8bc0d9b7-b3d8-ddbb-bcdc-e0169fac7111@redhat.com>
 References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
-         <20210622161533.1214662-1-dwmw2@infradead.org>
-         <20210622161533.1214662-4-dwmw2@infradead.org>
-         <85e55d53-4ef2-0b61-234e-4b5f30909efa@redhat.com>
-         <d6ad85649fd56d3e12e59085836326a09885593b.camel@infradead.org>
-         <4a5c6e49-ee50-3c0c-c8e6-04d85137cfb1@redhat.com>
-         <3a5bf6b8a05a1bf6393abe4f3d2c7b0e8086c3df.camel@infradead.org>
-         <20fd6dcc-d9dc-2979-c6ab-1cdf04de57b8@redhat.com>
+         <20210624123005.1301761-1-dwmw2@infradead.org>
+         <8bc0d9b7-b3d8-ddbb-bcdc-e0169fac7111@redhat.com>
 Content-Type: multipart/signed; micalg="sha-256";
         protocol="application/x-pkcs7-signature";
-        boundary="=-hkaeNh+kyUGJL+ElvedQ"
+        boundary="=-yi1cl3fh583v9Yrq7LFE"
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Mime-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
@@ -53,105 +50,168 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---=-hkaeNh+kyUGJL+ElvedQ
+--=-yi1cl3fh583v9Yrq7LFE
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2021-06-25 at 10:55 +0800, Jason Wang wrote:
-> =E5=9C=A8 2021/6/24 =E4=B8=8B=E5=8D=886:42, David Woodhouse =E5=86=99=E9=
+On Fri, 2021-06-25 at 13:00 +0800, Jason Wang wrote:
+> =E5=9C=A8 2021/6/24 =E4=B8=8B=E5=8D=888:30, David Woodhouse =E5=86=99=E9=
 =81=93:
-> > On Thu, 2021-06-24 at 14:12 +0800, Jason Wang wrote:
-> > > =E5=9C=A8 2021/6/24 =E4=B8=8A=E5=8D=8812:12, David Woodhouse =E5=86=
-=99=E9=81=93:
-> > > > We *should* eventually expand this test case to attach an AF_PACKET
-> > > > device to the vhost-net, instead of using a tun device as the back =
-end.
-> > > > (Although I don't really see *why* vhost is limited to AF_PACKET. W=
-hy
-> > > > *can't* I attach anything else, like an AF_UNIX socket, to vhost-ne=
-t?)
-> > >=20
-> > > It's just because nobody wrote the code. And we're lacking the real u=
-se
-> > > case.
+> > From: David Woodhouse <dwmw@amazon.co.uk>
 > >=20
-> > Hm, what code?
+> > The vhost-net driver was making wild assumptions about the header lengt=
+h
+> > of the underlying tun/tap socket.
 >=20
 >=20
-> The codes to support AF_UNIX.
+> It's by design to depend on the userspace to co-ordinate the vnet header=
+=20
+> setting with the underlying sockets.
 >=20
 >=20
-> >   For AF_PACKET I haven't actually spotted that there *is* any.
+> >   Then it was discarding packets if
+> > the number of bytes it got from sock_recvmsg() didn't precisely match
+> > its guess.
 >=20
 >=20
-> Vhost_net has this support for more than 10 years. It's hard to say=20
-> there's no user for that.
->=20
+> Anything that is broken by this? The failure is a hint for the userspace=
+=20
+> that something is wrong during the coordination.
 
-I wasn't saying I hadn't spotted the use case. I hadn't spotted the
-*code* which is in af_packet to support vhost. But...
+I am not a fan of this approach. I firmly believe that for a given
+configuration, the kernel should either *work* or it should gracefully
+refuse to set it up that way. And the requirements should be clearly
+documented.
 
-> > As I've been refactoring the interaction between vhost and tun/tap, and
-> > fixing it up for different vhdr lengths, PI, and (just now) frowning in
-> > horror at the concept that tun and vhost can have *different*
-> > endiannesses, I hadn't spotted that there was anything special on the
-> > packet socket.
->=20
-> Vnet header support.
+Having been on the receiving end of this "hint" of which you speak, I
+found it distinctly suboptimal as a user interface. I was left
+scrabbling around trying to find a set of options which *would* work,
+and it was only through debugging the kernel that I managed to work out
+that I:
 
-... I have no idea how I failed to spot that. OK, so AF_PACKET sockets
-can *optionally* support the case where *they* provide the
-virtio_net_hdr =E2=80=94 instead of vhost doing it, or there being none.
+  =E2=80=A2 MUST set IFF_NO_PI
+  =E2=80=A2 MUST use TUNSETSNDBUF to reduce the sndbuf from INT_MAX
+  =E2=80=A2 MUST use a virtio_net_hdr that I don't want
 
-But any other sockets would work for the "vhost does it" or the "no
-vhdr" case.
+If my application failed to do any of those things, I got a silent
+failure to transport any packets. The only thing I could do *without*
+debugging the kernel was tcpdump on the 'tun0' interface and see if the
+TX packets I put into the ring were even making it to the interface,
+and what they looked like if they did. (Losing the first 14 bytes and
+having the *next* 14 bytes scribbled on by an Ethernet header was a fun
+one.)
 
-... and I need to fix my 'get sock_hlen from the underlying tun/tap
-device' patch to *not* assume that sock_hlen is zero for a raw socket;
-it needs to check the PACKET_VNET_HDR sockopt. And *that* was broken
-for the VERSION_1|MRG_RXBUF case before I came along, wasn't it?
-Because vhost would have assumed sock_hlen to be 12 bytes, while in
-AF_PACKET it's always only 10?
 
-> >   For that case, sock_hlen is just zero and we
-> > send/receive plain packets... or so I thought? Did I miss something?
->=20
->=20
-> With vnet header, it can have GSO and csum offload.
->=20
->=20
+
+
+
 > >=20
-> > As far as I was aware, that ought to have worked with any datagram
-> > socket. I was pondering not just AF_UNIX but also UDP (since that's my
-> > main transport for VPN data, at least in the case where I care about
-> > performance).
+> > Fix it to get the correct information along with the socket itself.
 >=20
 >=20
-> My understanding is that vhost_net designed for accelerating virtio=20
-> datapath which is mainly used for VM (L2 traffic). So all kinds of TAPs=
-=20
-> (tuntap,macvtap or packet socket) are the main users. If you check git=
-=20
-> history, vhost can only be enabled without KVM until sometime last year.=
-=20
-> So I confess it can serve as a more general use case, and we had already=
-=20
-> has some discussions. But it's hard to say it's worth to do that since=
-=20
-> it became a re-invention of io_uring?
+> I'm not sure what is fixed by this. It looks to me it tires to let=20
+> packet go even if the userspace set the wrong attributes to tap or=20
+> vhost. This is even sub-optimal than failing explicitly fail the RX.
 
-Yeah, ultimately I'm not sure that's worth exploring. As I said, I was
-looking for something that works on *current* kernels. Which means no
-io_uring on the underlying tun socket, and no vhost on UDP. If I want
-to go and implement *both* ring protocols in userspace and make use of
-each of them on the socket that they do support, I can do that. Yay! :)
+I'm OK with explicit failure. But once I'd let it *get* the information
+from the underlying socket in order to decide whether it should fail or
+not, it turned out to be easy enough just to make those configs work
+anyway.
 
-If I'm going to require new kernels, then I should just work on the
-"ideal" data path which doesn't really involve userspace at all. But we
-should probably take that discussion to a separate thread.
+The main case where that "easy enough" is stretched a little (IMO) was
+when there's a tun_pi header. I have one more of your emails to reply
+to after this, and I'll address that there.
 
 
---=-hkaeNh+kyUGJL+ElvedQ
+>=20
+> > As a side-effect, this means that tun_get_socket() won't work if the
+> > tun file isn't actually connected to a device, since there's no 'tun'
+> > yet in that case to get the information from.
+>=20
+>=20
+> This may break the existing application. Vhost-net is tied to the socket=
+=20
+> instead of the device that the socket is loosely coupled.
+
+Hm. Perhaps the PI and vnet hdr should be considered an option of the
+*socket* (which is tied to the tfile), not purely an option of the
+underlying device?
+
+Or maybe it's sufficient just to get the flags from *either* tfile->tun=20
+or tfile->detached, so that it works when the queue is detached. I'll
+take a look.
+
+I suppose we could even have a fallback that makes stuff up like we do
+today. If the user attempts to attach a tun file descriptor to vhost
+without ever calling TUNSETIFF on it first, *then* we make the same
+assumptions we do today?
+
+> > --- a/drivers/vhost/net.c
+> > +++ b/drivers/vhost/net.c
+> > @@ -1143,7 +1143,8 @@ static void handle_rx(struct vhost_net *net)
+> >  =20
+> >   	vq_log =3D unlikely(vhost_has_feature(vq, VHOST_F_LOG_ALL)) ?
+> >   		vq->log : NULL;
+> > -	mergeable =3D vhost_has_feature(vq, VIRTIO_NET_F_MRG_RXBUF);
+> > +	mergeable =3D vhost_has_feature(vq, VIRTIO_NET_F_MRG_RXBUF) &&
+> > +		(vhost_hlen || sock_hlen >=3D sizeof(num_buffers));
+>=20
+>=20
+> So this change the behavior. When mergeable buffer is enabled, userspace=
+=20
+> expects the vhost to merge buffers. If the feature is disabled silently,=
+=20
+> it violates virtio spec.
+>=20
+> If anything wrong in the setup, userspace just breaks itself.
+>=20
+> E.g if sock_hlen is less that struct virtio_net_hdr_mrg_buf. The packet=
+=20
+> header might be overwrote by the vnet header.
+
+This wasn't intended to change the behaviour of any code path that is
+already working today. If *either* vhost or the underlying device have
+provided a vnet header, we still merge.
+
+If *neither* provide a vnet hdr, there's nowhere to put num_buffers and
+we can't merge.
+
+That code path doesn't work at all today, but does after my patches.
+But you're right, we should explicitly refuse to negotiate
+VIRITO_NET_F_MSG_RXBUF in that case.
+
+>=20
+> >  =20
+> >   	do {
+> >   		sock_len =3D vhost_net_rx_peek_head_len(net, sock->sk,
+> > @@ -1213,9 +1214,10 @@ static void handle_rx(struct vhost_net *net)
+> >   			}
+> >   		} else {
+> >   			/* Header came from socket; we'll need to patch
+> > -			 * ->num_buffers over if VIRTIO_NET_F_MRG_RXBUF
+> > +			 * ->num_buffers over the last two bytes if
+> > +			 * VIRTIO_NET_F_MRG_RXBUF is enabled.
+> >   			 */
+> > -			iov_iter_advance(&fixup, sizeof(hdr));
+> > +			iov_iter_advance(&fixup, sock_hlen - 2);
+>=20
+>=20
+> I'm not sure what did the above code want to fix. It doesn't change=20
+> anything if vnet header is set correctly in TUN. It only prevents the=20
+> the packet header from being rewrote.
+>=20
+
+It fixes the case where the virtio_net_hdr isn't at the start of the
+tun header, because the tun actually puts the tun_pi struct *first*,
+and *then* the virtio_net_hdr.=20
+
+The num_buffers field needs to go at the *end* of sock_hlen. Not at a
+fixed offset from the *start* of it.
+
+At least, that's true unless we want to just declare that we *only*
+support TUN with the IFF_NO_PI flag. (qv).
+
+--=-yi1cl3fh583v9Yrq7LFE
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -234,20 +294,20 @@ BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
 BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
 ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
 ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
-NjI1MDc1NDIzWjAvBgkqhkiG9w0BCQQxIgQgpjrjPVWtcTpZonha/uepc+5aSJYDGmRMDGr3Il09
-j+0wgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+NjI1MDgyMzI3WjAvBgkqhkiG9w0BCQQxIgQg7SMov45425s84Q09iirif2F3cMSqch+mei2vs5mI
+Ui8wgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
 TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
 PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
 aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
 BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
 A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
 bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAC1IHQ2ugwDcdo+9/uu08dwcdzr134J98ph/ddRC74cYbSVrUqbkN7ZuCdo4Etwb
-70OLgBF8aOfCYZA9N5bl7Cf2Qhh5vBYd8N7fssIVY+Rbhew6g/iD4IQNMsT9CzhCxWqNw30s4GNh
-vmMultiszh6ViaJdqPb0/egG6EVLd6npLnTVRCMDdG2cQPhQbM5jwOhdgHAEnPytR5D2QlO3dcAY
-3jAGBcRKdiM+Mcr9y0oc90rff5F6WMupxejXuP55vygc3izmZLsNVMAR5iz4Ugh+Zmp2ZUIGLwX+
-c2yFzF4wPu7P/c3k2o4SZ/mCYNZj2w+w2Z9OGgX2mwxlSZYFgYsAAAAAAAA=
+DQEBAQUABIIBAARPQlv4H7Tsss1BmUfq3gv3Sgm5xa+DNMO12bQWZFI2pcKZ9n7WiOFdivAozx6R
+aj7srbgYAjiUFIUCGof40OoiECfofHl77W67OfdNavIxwEzU9gIZyezHekfDt1+aSPcmQoT7ujGx
+bVJXI+vDNGPWrrUQpVrcyHZeZ5OxLCcnAK7hLNaQ79WI6c9WFTHADgrLH6ffji/sZPepU1WLUTYk
+zGfZtVVdpE2KZUZlzNPL08qxiBtpgHWvS8tpH+UvL1Ut5jQ9QepKmIMXLtVS3yr5ZEVg01hoZKEN
+/1Yupn8SyuEgKG5vSdEvRLKgEa1BFyHa5eXDVTfPnDK2Ps0UQhIAAAAAAAA=
 
 
---=-hkaeNh+kyUGJL+ElvedQ--
+--=-yi1cl3fh583v9Yrq7LFE--
 
