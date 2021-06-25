@@ -2,138 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 710693B4889
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 19:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 053033B48A9
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 20:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbhFYR7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 13:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47970 "EHLO
+        id S230006AbhFYSQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 14:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbhFYR7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 13:59:49 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBE4C061574
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 10:57:26 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id d16so12904557ejm.7
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 10:57:26 -0700 (PDT)
+        with ESMTP id S229586AbhFYSQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Jun 2021 14:16:31 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75286C061574
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 11:14:08 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id ot9so15443041ejb.8
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 11:14:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=arRhN62j44m4VA64Q3RmWl4Xr3lAv7AA6ZGCOSiWYN0=;
-        b=OZT6dW0up4Hk8JNW1J9IATWzn3DNme20t1n201zhzHM1CRQLX7c9adj0YogqtqN6Fg
-         lyf/uR9qH/8UQG5Xg48BT6fSjXoJ6SF2e5zOI2G99zUFdE+VRxnvzyhFw9z3HDks7PGj
-         soNjTN3MLAZTm6CSNQtB2n4mrRRnqNK76yxCwMBPJcTGd8w2CF1ytJdkEaHh95UonyuV
-         Jdn2CpTGJ6tSY+N9sCa7TmAzablRJ5cNAaaSykMThb+mND8iplNc2ptOR5T3D156DBY+
-         /Sc6vn3U3PjXxz58ROLD2gxdzzvmCWYwBXchgJa0h3MUImqHaaC1ay3UnlodhgNU/Vzk
-         Zc5Q==
+        bh=Xxh0Induztb2rUtSsmgRJ/cNAZJ6K6sJwuLV2z/d4Cg=;
+        b=tk0yFNTyWUBWnrsnNxVxPgNxjzS6xJsRUCujez9uRTRKN8/+qQykdRYuYsE0QyKAdA
+         7hK/cLYHSOJmgEhUjt9SGoSo3LJu+YXy8p/UwnSntuSlmeBFjbmcNc4kjooRYboSGxWF
+         SCCC0n5alKEWQHoFGWGAb4ValTqVjWJ8LS/ZtBFzYL2zC38VaUTLYOCPf2+i3IbhoEdt
+         WRifY9LgBsCA7GTUw/Mrq9ir0sDEspEYHd8e05a4jNE40PYrYo0381k9wmaCbcElcOyn
+         t5hXu/5+4D0NwcEvE8GZ+InnpGAojz9/W/cxU/wdWZQT6HG0uf/rJSZvoYnbyBbVHkQA
+         3dJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=arRhN62j44m4VA64Q3RmWl4Xr3lAv7AA6ZGCOSiWYN0=;
-        b=Cdk94y/wobPcD5QragOSjC0ifqpSI+gN6mZwLVVNosEWxB7/4tqjZQ7kfOmvYkNY26
-         huT2q5Od90yDad9IfpM7IwrkJmxoOODBv6qhGjg2vlLOFuFn+I0Ees6O5a2qw7MT1g0q
-         WirreFefBAZWBeTjP4ZHj8CzBAvIB39ALPirlfYKcKcWrvx2AT9ufHEHwzkvSl+8NMRN
-         zJg8clmTCCNgDPsi6u6WKZKK31fPGJ1GmvUy7SBbdgxZrl+/sLRvuIAJtEK+OEUPVRZQ
-         ZgkamiYlNL6uFmrdMm5ZvdjftzqnUgvW+SVhm1e3jFhOhGto0/tJkKZZtFmmHUyNK902
-         dz/w==
-X-Gm-Message-State: AOAM5308aJ2yREbB1w+39SnLaZ3EygPdaBC4M6vnQBOrYoHWZlukA/k1
-        7qqiPUAd7QP1yNFD7MCZajUvjxXYRJrhjQ==
-X-Google-Smtp-Source: ABdhPJzjMpSMtBDTCQREqxlYhWkMfxrkv5P/NNh9WQxIETm/xl7k+N344ZScP6MzClD0LCfzjgvlqA==
-X-Received: by 2002:a17:906:8c1:: with SMTP id o1mr12377794eje.530.1624643845370;
-        Fri, 25 Jun 2021 10:57:25 -0700 (PDT)
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
-        by smtp.gmail.com with ESMTPSA id ml22sm1185469ejb.71.2021.06.25.10.57.24
+        bh=Xxh0Induztb2rUtSsmgRJ/cNAZJ6K6sJwuLV2z/d4Cg=;
+        b=grH8p1oLKpCrZHNlUet7FJmNoyvyEg05VMyYF//XenXROnxv6QoetrHdFKWDunRtSO
+         ZWgmkQVSZUwnxSsTp5ccv3j8SBKSMJYXG5FG/4ROeUE0kVYEesXceK6sgHCx27xqoMk7
+         zDh/PIef0Bh2MbrjzlOjPh+Qis38MggK7eUez2WlK5TRBiGPgOkwqITU40njLMStIohA
+         VsojOfyUNeKTwtLL24Vh4KSd0wmlzb/E8q5a66P59Q/qewVRCvwIyny8Kltshkmpwu1g
+         W2eUROL/FNiP2l8N4Bpev+LWWVwlnnoxXE6+oz/xWG1dY7wnPBDrUy5Fhjgm86yrrNF3
+         fn2g==
+X-Gm-Message-State: AOAM533p34ksPuQcP3F8zLsFyoRx4u3umt3JLku2dgup2gSZOyvQl4bE
+        NdCbSFX04R5AtK4o8q5p+jwopeySGCu6yQ==
+X-Google-Smtp-Source: ABdhPJy9YBOU3VP6YRTjZMs0+p6UYVduZKimXHfVeDGWmAq+glQGwmf2aGRQiz2TP9BmGls+kDLoTA==
+X-Received: by 2002:a17:906:30d0:: with SMTP id b16mr12384906ejb.495.1624644847095;
+        Fri, 25 Jun 2021 11:14:07 -0700 (PDT)
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com. [209.85.128.41])
+        by smtp.gmail.com with ESMTPSA id j22sm3258984ejt.11.2021.06.25.11.14.06
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Jun 2021 10:57:24 -0700 (PDT)
-Received: by mail-wm1-f51.google.com with SMTP id o22so5844626wms.0
-        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 10:57:24 -0700 (PDT)
-X-Received: by 2002:a1c:7c0b:: with SMTP id x11mr11959013wmc.183.1624643843964;
- Fri, 25 Jun 2021 10:57:23 -0700 (PDT)
+        Fri, 25 Jun 2021 11:14:06 -0700 (PDT)
+Received: by mail-wm1-f41.google.com with SMTP id k30-20020a05600c1c9eb02901d4d33c5ca0so965391wms.3
+        for <netdev@vger.kernel.org>; Fri, 25 Jun 2021 11:14:06 -0700 (PDT)
+X-Received: by 2002:a05:600c:4e93:: with SMTP id f19mr6522674wmq.169.1624644845535;
+ Fri, 25 Jun 2021 11:14:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <98f7ab5fb176f1d1565a001c3324f1db6c0e6d4f.1624632443.git.andreas.a.roeseler@gmail.com>
-In-Reply-To: <98f7ab5fb176f1d1565a001c3324f1db6c0e6d4f.1624632443.git.andreas.a.roeseler@gmail.com>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org> <20210624123005.1301761-1-dwmw2@infradead.org>
+In-Reply-To: <20210624123005.1301761-1-dwmw2@infradead.org>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 25 Jun 2021 13:56:47 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSf7oXy3xQ8yetP7e8q_bpf_FwHmW5QHdQL7csz0i0O56w@mail.gmail.com>
-Message-ID: <CA+FuTSf7oXy3xQ8yetP7e8q_bpf_FwHmW5QHdQL7csz0i0O56w@mail.gmail.com>
-Subject: Re: [PATCH net-next V3] ipv6: ICMPV6: add response to ICMPV6 RFC 8335
- PROBE messages
-To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        willemdebruijn.kernel@gmail.com
+Date:   Fri, 25 Jun 2021 14:13:28 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSecOyH_k-jmLm_Ux4V9w0LOfWfVf6kuKfhOPU5DyD-wCw@mail.gmail.com>
+Message-ID: <CA+FuTSecOyH_k-jmLm_Ux4V9w0LOfWfVf6kuKfhOPU5DyD-wCw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/5] net: add header len parameter to tun_get_socket(), tap_get_socket()
+To:     David Woodhouse <dwmw2@infradead.org>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 25, 2021 at 11:19 AM Andreas Roeseler
-<andreas.a.roeseler@gmail.com> wrote:
+On Thu, Jun 24, 2021 at 8:30 AM David Woodhouse <dwmw2@infradead.org> wrote:
 >
-> This patch builds off of commit 2b246b2569cd2ac6ff700d0dce56b8bae29b1842
-> and adds functionality to respond to ICMPV6 PROBE requests.
+> From: David Woodhouse <dwmw@amazon.co.uk>
 >
-> Add icmp_build_probe function to construct PROBE requests for both
-> ICMPV4 and ICMPV6.
->
-> Modify icmpv6_rcv to detect ICMPV6 PROBE messages and call the
-> icmpv6_echo_reply handler.
->
-> Modify icmpv6_echo_reply to build a PROBE response message based on the
-> queried interface.
->
-> This patch has been tested using a branch of the iputils git repo which can
-> be found here: https://github.com/Juniper-Clinic-2020/iputils/tree/probe-request
->
-> Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
-> ---
-> Changes:
-> v1 -> v2:
-> Suggested by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> - Do not add sysctl for ICMPV6 PROBE control and instead use existing
->   ICMPV4 sysctl.
-> - Add icmp_build_probe function to construct PROBE responses for both
->   ICMPV4 and ICMPV6.
->
-> v2 -> v3:
-> Suggested by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> - Move icmp_build_probe helper to after icmp_echo to reduce diff size.
-> - Export icmp_build_probe for use in icmpv6_echo_reply when compiled
->   modularly.
-> - Simplify icmp_echo control flow by removing extra if statement.
-> - Simplify icmpv6 handler case statements.
+> The vhost-net driver was making wild assumptions about the header length
 
-> @@ -908,14 +921,12 @@ static int icmpv6_rcv(struct sk_buff *skb)
+If respinning, please more concretely describe which configuration is
+currently broken.
+
+IFF_NO_PI + IFF_VNET_HDR, if I understand correctly. But I got that
+from the discussion, not the commit message.
+
+> of the underlying tun/tap socket. Then it was discarding packets if
+> the number of bytes it got from sock_recvmsg() didn't precisely match
+> its guess.
 >
->         switch (type) {
->         case ICMPV6_ECHO_REQUEST:
-> +       case ICMPV6_EXT_ECHO_REQUEST:
->                 if (!net->ipv6.sysctl.icmpv6_echo_ignore_all)
->                         icmpv6_echo_reply(skb);
->                 break;
-
-On second thought, maybe it is cleaner to keep a separate case, and
-then check both sysctls here:
-
- +       case ICMPV6_EXT_ECHO_REQUEST:
- +               if (!net->ipv6.sysctl.icmpv6_echo_ignore_all &&
- +                  net->ipv4.sysctl_icmp_echo_enable_probe)
- +                       icmpv6_echo_reply(skb);
- +               break;
-
->         case ICMPV6_ECHO_REPLY:
-> -               success = ping_rcv(skb);
-> -               break;
-> -
-
-Unintended removal
-
->         case ICMPV6_EXT_ECHO_REPLY:
->                 success = ping_rcv(skb);
->                 break;
-> --
-> 2.32.0
+> Fix it to get the correct information along with the socket itself.
+> As a side-effect, this means that tun_get_socket() won't work if the
+> tun file isn't actually connected to a device, since there's no 'tun'
+> yet in that case to get the information from.
 >
+> On the receive side, where the tun device generates the virtio_net_hdr
+> but VIRITO_NET_F_MSG_RXBUF was negotiated and vhost-net needs to fill
+
+Nit: VIRTIO_NET_F_MSG_RXBUF
+
+> in the 'num_buffers' field on top of the existing virtio_net_hdr, fix
+> that to use 'sock_hlen - 2' as the location, which means that it goes
+
+Please use sizeof(hdr.num_buffers) instead of a raw constant 2, to
+self document the code.
+
+Should this be an independent one-line fix?
