@@ -2,181 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D896E3B4107
-	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 11:59:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3DA43B4142
+	for <lists+netdev@lfdr.de>; Fri, 25 Jun 2021 12:14:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231279AbhFYKCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 06:02:06 -0400
-Received: from phobos.denx.de ([85.214.62.61]:53410 "EHLO phobos.denx.de"
+        id S231251AbhFYKRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 06:17:17 -0400
+Received: from mx01-muc.bfs.de ([193.174.230.67]:17536 "EHLO mx01-muc.bfs.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229902AbhFYKCF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Jun 2021 06:02:05 -0400
-Received: from ktm (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 30403829BE;
-        Fri, 25 Jun 2021 11:59:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1624615183;
-        bh=gdYanvGSzDRlcAUO0Yh0FR9zxuzSoEjpPYMgRTCkuzM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rROYKipvUS77ZhVzTbUUNl4HhKLxOEBEXuptOhgUBstC7UG4iZ8Kn+c/w2QSbhAHN
-         XoVOln/4jK5nbYOOUxsja/OUW2x6iXosolkm9k8QnsYh9z3vO+NLiFavz17DOhwqNZ
-         oNrS+YiO0FxFGRB96/OCgimwGYCSk9Oa4WljFILBAPZCdHVLo/MTfbg7L4mH+kVswx
-         R40OiLGz7+9FuvfqaN7XtoKDn5ay3ECFcmFErZQifKk2kqWi1F65KApHJhedteEnFl
-         LE4k+tV0C/OMSjAHMNFoYUwC4jduP+AKk+0kTO9RawYgWu/6m5r/1/63ZrCOBLuanq
-         x2nksAQ/LT/jw==
-Date:   Fri, 25 Jun 2021 11:59:35 +0200
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mark Einon <mark.einon@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 2/3] net: Provide switchdev driver for NXP's More Than IP
- L2 switch
-Message-ID: <20210625115935.132922ff@ktm>
-In-Reply-To: <YNSuvJsD0HSSshOJ@lunn.ch>
-References: <20210622144111.19647-1-lukma@denx.de>
-        <20210622144111.19647-3-lukma@denx.de>
-        <YNH7vS9FgvEhz2fZ@lunn.ch>
-        <20210623133704.334a84df@ktm>
-        <YNOTKl7ZKk8vhcMR@lunn.ch>
-        <20210624125304.36636a44@ktm>
-        <YNSJyf5vN4YuTUGb@lunn.ch>
-        <20210624163542.5b6d87ee@ktm>
-        <YNSuvJsD0HSSshOJ@lunn.ch>
-Organization: denx.de
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S229940AbhFYKRR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Jun 2021 06:17:17 -0400
+X-Greylist: delayed 507 seconds by postgrey-1.27 at vger.kernel.org; Fri, 25 Jun 2021 06:17:16 EDT
+Received: from SRVEX01-SZ.bfs.intern (exchange-sz.bfs.de [10.129.90.31])
+        by mx01-muc.bfs.de (Postfix) with ESMTPS id 9FFEA202DF;
+        Fri, 25 Jun 2021 12:06:27 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bfs.de; s=dkim201901;
+        t=1624615587;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lnyniA925oaLv6xCmAUV0koGpDyQMoCBIxvn4fBq48g=;
+        b=xnppenF25ro/6uqS/VaNmGOypuWgFRalWkw6LQc16W4MDIuTw/Q00n3zgnIZDd14tCMXYm
+        OPbPLCNt8NHWOVP1pWGt3KO8NjL8LY+rhm+QS8eoUfjvoXE3reA2nksAj087bvDpOnnlBd
+        03ZYwdllCkR/AYaqAyzI4S8vO0cjtofALgAcyyg48xIcw3ssbBv5/bMIdgJTnezTR4A1v1
+        9RQ5QzEztuVZVyrN0umswtnl705IK/09LTlGkD/iP957+LLEAROFQqriS+vkMaZMvI1S/s
+        PZY3ImLlsxkm5rdg61XgGMpobSBzS4K92VTP+OqOgCkD6PcoGxswfAhvOMTDgw==
+Received: from SRVEX01-SZ.bfs.intern (10.129.90.31) by SRVEX01-SZ.bfs.intern
+ (10.129.90.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2242.4; Fri, 25 Jun
+ 2021 12:06:26 +0200
+Received: from SRVEX01-SZ.bfs.intern ([fe80::7d2d:f9cb:2761:d24a]) by
+ SRVEX01-SZ.bfs.intern ([fe80::7d2d:f9cb:2761:d24a%13]) with mapi id
+ 15.01.2242.008; Fri, 25 Jun 2021 12:06:26 +0200
+From:   Walter Harms <wharms@bfs.de>
+To:     Colin King <colin.king@canonical.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        "Florian Westphal" <fw@strlen.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: AW: [PATCH][next] netfilter: nf_tables: Fix dereference of null
+ pointer flow
+Thread-Topic: [PATCH][next] netfilter: nf_tables: Fix dereference of null
+ pointer flow
+Thread-Index: AQHXaTMrWtvE9yeYHE6OoR1wi0gmZqskfzhs
+Date:   Fri, 25 Jun 2021 10:06:26 +0000
+Message-ID: <b9c2377849aa4ac38ab0306589eb22d2@bfs.de>
+References: <20210624195718.170796-1-colin.king@canonical.com>
+In-Reply-To: <20210624195718.170796-1-colin.king@canonical.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.137.16.39]
+x-tm-as-product-ver: SMEX-14.0.0.3080-8.6.1012-26240.007
+x-tm-as-result: No-10-1.494800-5.000000
+x-tmase-matchedrid: 1S6u5QTQd1vRubRCcrbc5grcxrzwsv5u3dCmvEa6IiEIhX6eoWEDQDK2
+        ieu8M5yxXbEQ4IMEUkNYSFfNN4dT5nnpTNH/AsJs3nHtGkYl/VqospiVPA7RNd5JCoCAal7SqAX
+        wsdh85gYWMGt82b0KdosykhlkMBZrns4ol/Cq0ar27WtDgGBc8rFPTb5VFSmp+frbXg+Uc4WlSP
+        ogXOOu0nkxLxnSVVL2YckdNkata7p1A7Kay+/ARqRUKLeQWKvT/OXzMJnlSkVqEsgVJ+91qjXoJ
+        TJoH3SyuW01O3xWv9744I/8BxtbujmGi73P/qmpHWRJEfGP5nl+CWCcHScOE/kuQv9PIVnNCd/k
+        lmH4wZWb/TcV2K3QQB+XeYq6CbwCLGmmJTL2jhwD2WXLXdz+Adi5W7Rf+s6QkHPVkBTu31OW1Ro
+        eNht4RefOVcxjDhcwPcCXjNqUmkVYF3qW3Je6+wPi+Wq5iTrnL9aE8reMsSUmpZaVbtuQtjySXe
+        WTqK8YOj1mmoYoiHtHUiUGLlM6fiBt/EW/7slJ+SxNivL27/fZQR0FijuLkt7hHyldoPK3Ce3Hh
+        LNk3bDTNQdFAimn3qV/ssqsXD7H9qHo4HSWvyB+3BndfXUhXQ==
+x-tm-as-user-approved-sender: No
+x-tm-as-user-blocked-sender: No
+x-tmase-result: 10-1.494800-5.000000
+x-tmase-version: SMEX-14.0.0.3080-8.6.1012-26240.007
+x-tm-snts-smtp: 1E84C81F601FA0A81524726E59E79818BC81096A2DE42DC5DBB5023316AAF4202000:9
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- boundary="Sig_/HH17enIFFxd8w1TzOqPbMaA"; protocol="application/pgp-signature"
-X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
-X-Virus-Status: Clean
+X-Spam-Status: No, score=-18.00
+X-Spamd-Result: default: False [-18.00 / 7.00];
+         ARC_NA(0.00)[];
+         TO_DN_EQ_ADDR_SOME(0.00)[];
+         HAS_XOIP(0.00)[];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         DKIM_SIGNED(0.00)[bfs.de:s=dkim201901];
+         WHITELIST_LOCAL_IP(-15.00)[10.129.90.31];
+         RCPT_COUNT_SEVEN(0.00)[11];
+         RCVD_NO_TLS_LAST(0.10)[];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         RCVD_COUNT_TWO(0.00)[2];
+         MID_RHS_MATCH_FROM(0.00)[];
+         BAYES_HAM(-3.00)[99.99%]
+Authentication-Results: mx01-muc.bfs.de;
+        none
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/HH17enIFFxd8w1TzOqPbMaA
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+hi Colin,
+most free_something_functions accept NULL
+these days, perhaps it would be more efficient
+to add a check in nft_flow_rule_destroy().
+There is a chance that this will catch the same
+mistake in future  also.
 
-Hi Andrew,
+jm2c,
+re,
+ wh
+________________________________________
+Von: Colin King <colin.king@canonical.com>
+Gesendet: Donnerstag, 24. Juni 2021 21:57:18
+An: Pablo Neira Ayuso; Jozsef Kadlecsik; Florian Westphal; David S . Miller=
+; Jakub Kicinski; netfilter-devel@vger.kernel.org; coreteam@netfilter.org; =
+netdev@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
+Betreff: [PATCH][next] netfilter: nf_tables: Fix dereference of null pointe=
+r flow
 
-> On Thu, Jun 24, 2021 at 04:35:42PM +0200, Lukasz Majewski wrote:
-> > Hi Andrew,
-> >  =20
-> > > > I'm not sure if the imx28 switch is similar to one from TI
-> > > > (cpsw-3g)
-> > > > - it looks to me that the bypass mode for both seems to be very
-> > > > different. For example, on NXP when switch is disabled we need
-> > > > to handle two DMA[01]. When it is enabled, only one is used. The
-> > > > approach with two DMAs is best handled with FEC driver
-> > > > instantiation.   =20
-> > >=20
-> > > I don't know if it applies to the FEC, but switches often have
-> > > registers which control which egress port an ingress port can send
-> > > packets to. So by default, you allow CPU to port0, CPU to port1,
-> > > but block between port0 to port1. This would give you two
-> > > independent interface, the switch enabled, and using one DMA.
-> > > When the bridge is configured, you simply allow port0 and
-> > > send/receive packets to/from port1. No change to the DMA setup,
-> > > etc. =20
-> >=20
-> > Please correct me if I misunderstood this concept - but it seems
-> > like you refer to the use case where the switch is enabled, and by
-> > changing it's "allowed internal port's" mapping it decides if
-> > frames are passed between engress ports (port1 and port2). =20
->=20
-> Correct.
->=20
->=20
-> > 	----------
-> > DMA0 ->	|P0    P1| -> ENET-MAC (PHY control) -> eth0 (lan1)
-> > 	|L2 SW	 |
-> > 	|      P2| -> ENET-MAC (PHY control) -> eth1 (lan2)
-> > 	----------
-> >=20
-> > DMA1 (not used)
-> >=20
-> > We can use this approach when we keep always enabled L2 switch.
-> >=20
-> > However now in FEC we use the "bypass" mode, where:
-> > DMA0 -> ENET-MAC (FEC instance driver 1) -> eth0
-> > DMA1 -> ENET-MAC (FEC instance driver 2) -> eth1
-> >=20
-> > And the "bypass" mode is the default one. =20
->=20
-> Which is not a problem, when you refactor the FEC into a library and a
-> driver, plus add a new switch driver. When the FEC loads, it uses
-> bypass mode, the switch disabled. When the new switch driver loads, it
-> always enables the switch, but disables communication between the two
-> ports until they both join the same bridge.
-
-Ok, the proposed idea would be to use FEC (refactored) on devices which
-are not equipped with the switch.
-
-On devices, which have this IP block (like vf610, imx287) we would use
-the driver with switch enabled and then in switch either bridge or
-separate the traffic?
-
->=20
-> But i doubt we are actually getting anywhere. You say you don't have
-> time to write a new driver.
-
-Yes, I believe that this would be a very time consuming task. Joakim
-also pointed out that the rewrite from NXP will not happen anytime soon.
-
-> I'm not convinced you can hack the FEC
-> like you are suggesting=20
-
-I do believe that I can just extend the L2 switch driver (fec_mtip.c
-file to be precise) to provide full blown L2 switch functionality
-without touching the legacy FEC more than in this patch set.
-
-Would you consider applying this patch series then?
-
-> and not end up in the mess the cpsw had,
-> before they wrote a new driver.
-
-I do see some conceptual differences between those two drivers.
-
->=20
->        Andrew
+WARNUNG: Diese E-Mail kam von au=DFerhalb der Organisation. Klicken Sie nic=
+ht auf Links oder =F6ffnen Sie keine Anh=E4nge, es sei denn, Sie kennen den=
+/die Absender*in und wissen, dass der Inhalt sicher ist.
 
 
-Best regards,
+From: Colin Ian King <colin.king@canonical.com>
 
-Lukasz Majewski
+In the case where chain->flags & NFT_CHAIN_HW_OFFLOAD is false then
+nft_flow_rule_create is not called and flow is NULL. The subsequent
+error handling execution via label err_destroy_flow_rule will lead
+to a null pointer dereference on flow when calling nft_flow_rule_destroy.
+Since the error path to err_destroy_flow_rule has to cater for null
+and non-null flows, only call nft_flow_rule_destroy if flow is non-null
+to fix this issue.
 
+Addresses-Coverity: ("Explicity null dereference")
+Fixes: 3c5e44622011 ("netfilter: nf_tables: memleak in hw offload abort pat=
+h")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ net/netfilter/nf_tables_api.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 390d4466567f..de182d1f7c4e 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -3446,7 +3446,8 @@ static int nf_tables_newrule(struct sk_buff *skb, con=
+st struct nfnl_info *info,
+        return 0;
+
+ err_destroy_flow_rule:
+-       nft_flow_rule_destroy(flow);
++       if (flow)
++               nft_flow_rule_destroy(flow);
+ err_release_rule:
+        nf_tables_rule_release(&ctx, rule);
+ err_release_expr:
 --
+2.31.1
 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/HH17enIFFxd8w1TzOqPbMaA
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmDVqQcACgkQAR8vZIA0
-zr0u0Qf9HhUfM14c/5OoAaQ5tMLlAthPnr4oaFv+IzjgvQSUSzmsPeme/gZsj8Hq
-anDl1KWQ+leqH3iA7dmgWZz8uu5mYC3nNQ4GZYrK/5sV6kWBPlL/67chlf+WD/dv
-aj1hmrivLCAAt20WFB0GYQgUH/IKPLdpIMnwO+ztyj1bBx26CqMC+12B68Rgh51l
-fiZrL09UYiGlnvJG3Nt+1RzbHLumXClphxhQH8oRCBcVMWaTPJQqetyrnszDlCDK
-SnuBoEuc80ym8s0Nw19ruuZhitWPjz/tzdPoK2Ue0s39kOhV5OK4leaIMwvcqcDN
-gnb/ErF82xM6pij+8VHG/xuA1UNBCA==
-=4WKs
------END PGP SIGNATURE-----
-
---Sig_/HH17enIFFxd8w1TzOqPbMaA--
