@@ -2,110 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F6A3B4D7F
-	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 09:45:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 887D03B4E2F
+	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 12:42:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbhFZHrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Jun 2021 03:47:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35700 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229518AbhFZHrg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Jun 2021 03:47:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7CD6261920;
-        Sat, 26 Jun 2021 07:45:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624693514;
-        bh=hE151Rwvxv8fyh2RIoTD8BLb6s5GnQKgrDyzp83j4co=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SrJgM7VeO+apDWOFnICgMQG6g3yqm/j0lPAKpq6k+i0f+M4Gw1tNjzT10e738xlgs
-         d4sp5yPLEHbpKBF8R40kRq5SPn5SQqg1i7DikBCIVcATxU5Oj3slmF8qpBStRzYoDV
-         hTtlNM4xNzRuO0nuCCCEB8UWyLR69Vynwbd8EVm/7ibri4vWe4eHkYoPW7AFJ/j8CN
-         H1835bjRN4+jdeuHmCSqq7twlqnvPubSCmVhxE2s+ALINA5dt+UObg2OyK2u/bKwvp
-         xHg/sY6Whdp126PZEeQt2t5vYTXAc5+tl0IuYGFdohu9jvlmK5efzN2zgNdc0Vf3KD
-         wK6+fMfc0pAIA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        Huy Nguyen <huyn@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 6/6] net/mlx5e: Add IPsec support to uplink representor
-Date:   Sat, 26 Jun 2021 00:44:17 -0700
-Message-Id: <20210626074417.714833-7-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210626074417.714833-1-saeed@kernel.org>
-References: <20210626074417.714833-1-saeed@kernel.org>
+        id S229949AbhFZKoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Jun 2021 06:44:46 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:12031 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229586AbhFZKoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Jun 2021 06:44:44 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GBr2q6CbRzZjyt;
+        Sat, 26 Jun 2021 18:39:15 +0800 (CST)
+Received: from dggema769-chm.china.huawei.com (10.1.198.211) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Sat, 26 Jun 2021 18:42:19 +0800
+Received: from localhost (10.174.179.215) by dggema769-chm.china.huawei.com
+ (10.1.198.211) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sat, 26
+ Jun 2021 18:42:18 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <johannes@sipsolutions.net>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <periyasa@codeaurora.org>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] mac80211: Reject zero MAC address in sta_info_insert_check()
+Date:   Sat, 26 Jun 2021 18:38:56 +0800
+Message-ID: <20210626103856.19816-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggema769-chm.china.huawei.com (10.1.198.211)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Raed Salem <raeds@nvidia.com>
+As commit 52dba8d7d5ab ("mac80211: reject zero MAC address in add station")
+said, we don't consider all-zeroes to be a valid MAC address in most places,
+so also reject it here.
 
-Add the xfrm xdo and ipsec_init/cleanup to uplink representor to
-support IPsec in SRIOV switchdev mode.
-
-Signed-off-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Huy Nguyen <huyn@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reported-by: syzbot+ef4ca92d9d6f5ba2f880@syzkaller.appspotmail.com
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c         | 7 +++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ net/mac80211/sta_info.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index 26f7fab109d9..7cab08a2f715 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -428,7 +428,6 @@ int mlx5e_ipsec_init(struct mlx5e_priv *priv)
- 	spin_lock_init(&ipsec->sadb_rx_lock);
- 	ida_init(&ipsec->halloc);
- 	ipsec->en_priv = priv;
--	ipsec->en_priv->ipsec = ipsec;
- 	ipsec->no_trailer = !!(mlx5_accel_ipsec_device_caps(priv->mdev) &
- 			       MLX5_ACCEL_IPSEC_CAP_RX_NO_TRAILER);
- 	ipsec->wq = alloc_ordered_workqueue("mlx5e_ipsec: %s", 0,
-@@ -438,6 +437,7 @@ int mlx5e_ipsec_init(struct mlx5e_priv *priv)
- 		return -ENOMEM;
- 	}
+diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+index f2fb69da9b6e..3a6887fc9160 100644
+--- a/net/mac80211/sta_info.c
++++ b/net/mac80211/sta_info.c
+@@ -547,7 +547,7 @@ static int sta_info_insert_check(struct sta_info *sta)
+ 		return -ENETDOWN;
  
-+	priv->ipsec = ipsec;
- 	mlx5e_accel_ipsec_fs_init(priv);
- 	netdev_dbg(priv->netdev, "IPSec attached to netdevice\n");
- 	return 0;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 2d2cc5f3b03f..bf94bcb6fa5d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -51,6 +51,7 @@
- #include "lib/mlx5.h"
- #define CREATE_TRACE_POINTS
- #include "diag/en_rep_tracepoint.h"
-+#include "en_accel/ipsec.h"
+ 	if (WARN_ON(ether_addr_equal(sta->sta.addr, sdata->vif.addr) ||
+-		    is_multicast_ether_addr(sta->sta.addr)))
++		    is_valid_ether_addr(sta->sta.addr)))
+ 		return -EINVAL;
  
- #define MLX5E_REP_PARAMS_DEF_LOG_SQ_SIZE \
- 	max(0x7, MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE)
-@@ -630,6 +631,11 @@ static int mlx5e_init_ul_rep(struct mlx5_core_dev *mdev,
- 			     struct net_device *netdev)
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	int err;
-+
-+	err = mlx5e_ipsec_init(priv);
-+	if (err)
-+		mlx5_core_err(mdev, "Uplink rep IPsec initialization failed, %d\n", err);
- 
- 	mlx5e_vxlan_set_netdev_info(priv);
- 	return mlx5e_init_rep(mdev, netdev);
-@@ -637,6 +643,7 @@ static int mlx5e_init_ul_rep(struct mlx5_core_dev *mdev,
- 
- static void mlx5e_cleanup_rep(struct mlx5e_priv *priv)
- {
-+	mlx5e_ipsec_cleanup(priv);
- }
- 
- static int mlx5e_create_rep_ttc_table(struct mlx5e_priv *priv)
+ 	/* The RCU read lock is required by rhashtable due to
 -- 
-2.31.1
+2.17.1
 
