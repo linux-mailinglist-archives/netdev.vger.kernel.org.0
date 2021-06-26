@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8928F3B4D7D
-	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 09:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87CDE3B4D7E
+	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 09:45:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbhFZHrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Jun 2021 03:47:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35610 "EHLO mail.kernel.org"
+        id S229991AbhFZHrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Jun 2021 03:47:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35672 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229794AbhFZHrS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Jun 2021 03:47:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 780476186A;
-        Sat, 26 Jun 2021 07:44:50 +0000 (UTC)
+        id S229741AbhFZHrY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Jun 2021 03:47:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 773F86186A;
+        Sat, 26 Jun 2021 07:44:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624693496;
-        bh=LUow8aDu7UyIBr9vl+NV9KscFpX4p3SkIVKvtQSBEcg=;
+        s=k20201202; t=1624693502;
+        bh=pZw3ksNBgk3TpykGjInD766lpiusxUZKuFYmYxCJmZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N2aTOwuHY+hsNdwxAEjvnhwTv6qrY7wZjOpJ2cPThex0DNzGMXyRGIUDGhlXYunbC
-         kmzhye810+FiDCcCtuvcCDDkqyKYCYEeWh4S6AbMwWxWiBBMM3fof+QN1qUutqQ31d
-         UNRtT839GhU29fpOkEM1RiOqsJ2u9e0HD+P7bk7mqgdGA4tP9KTLWzdhUv+Nfs+sS0
-         sf/h9j8RhPkk5/1asMAsZb3GXux6ruQAqheglp8c8pTMyxkw2jpUSK5iNaqhB6JlLE
-         R39z4DdBS5JoEdh3cKeKU9+0I3/h+ImR6kupfjHAn7OMWWAO1+I60O6xOrOsFQsIhr
-         6oK8594h72VZQ==
+        b=tswB4xu5n/UHLP/BwPGRm/q713kR34eTfqLBi6maxhqGfgowqv0GNFMu+1hVES6hi
+         BaLjM50Q+4mUuXTjzRee1NAYfdGlWxyJUoh7lcATa4JfRkX9WCW41xDg05edGEjV4G
+         ZWKoHqUA8BNpmM9ZeEIVRRRLW8JkEPoznlWyb2PvKR1RJnuVYH5P+cbMVPYj1xiMjd
+         9X30GC08F5/dtUuli2vSKHH1+H/NCK1fLzskfbAcqWsG94/mLVrkNbxsb08gtF6tAg
+         nyJxvsR/zOnhesqKi9tWRiN2MDqlyGkOQhZbrvYSMVOS7eicbF9sbP3If7I+NUW1hi
+         k6nC7vu/T4i+A==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 4/6] net/mlx5: SF, Improve performance in SF allocation
-Date:   Sat, 26 Jun 2021 00:44:15 -0700
-Message-Id: <20210626074417.714833-5-saeed@kernel.org>
+Subject: [net-next 5/6] net/mlx5e: kTLS, Add stats for number of deleted kTLS TX offloaded connections
+Date:   Sat, 26 Jun 2021 00:44:16 -0700
+Message-Id: <20210626074417.714833-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210626074417.714833-1-saeed@kernel.org>
 References: <20210626074417.714833-1-saeed@kernel.org>
@@ -41,62 +40,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-Avoid second traversal on the SF table by recording the first free entry
-and using it in case the looked up entry was not found in the table.
+Expose ethtool SW counter for the number of kTLS device-offloaded
+TX connections that are finished and deleted.
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Signed-off-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/sf/hw_table.c | 23 +++++++++++--------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c   | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.h       | 1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_stats.c | 1 +
+ 3 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-index 500c71fb6f6d..d9c69123c1ab 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-@@ -73,26 +73,29 @@ static int mlx5_sf_hw_table_id_alloc(struct mlx5_sf_hw_table *table, u32 control
- 				     u32 usr_sfnum)
- {
- 	struct mlx5_sf_hwc_table *hwc;
-+	int free_idx = -1;
- 	int i;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+index 2c0a9344338a..9ad3459fb63a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+@@ -138,6 +138,7 @@ void mlx5e_ktls_del_tx(struct net_device *netdev, struct tls_context *tls_ctx)
+ 	priv = netdev_priv(netdev);
+ 	mdev = priv->mdev;
  
- 	hwc = mlx5_sf_controller_to_hwc(table->dev, controller);
- 	if (!hwc->sfs)
- 		return -ENOSPC;
++	atomic64_inc(&priv_tx->sw_stats->tx_tls_del);
+ 	mlx5e_destroy_tis(mdev, priv_tx->tisn);
+ 	mlx5_ktls_destroy_key(mdev, priv_tx->key_id);
+ 	kfree(priv_tx);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.h
+index 3fd6fd69bbd0..62ecf14bf86a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.h
+@@ -42,6 +42,7 @@
  
--	/* Check if sf with same sfnum already exists or not. */
- 	for (i = 0; i < hwc->max_fn; i++) {
-+		if (!hwc->sfs[i].allocated && free_idx == -1) {
-+			free_idx = i;
-+			continue;
-+		}
-+
- 		if (hwc->sfs[i].allocated && hwc->sfs[i].usr_sfnum == usr_sfnum)
- 			return -EEXIST;
- 	}
--	/* Find the free entry and allocate the entry from the array */
--	for (i = 0; i < hwc->max_fn; i++) {
--		if (!hwc->sfs[i].allocated) {
--			hwc->sfs[i].usr_sfnum = usr_sfnum;
--			hwc->sfs[i].allocated = true;
--			return i;
--		}
--	}
--	return -ENOSPC;
-+
-+	if (free_idx == -1)
-+		return -ENOSPC;
-+
-+	hwc->sfs[free_idx].usr_sfnum = usr_sfnum;
-+	hwc->sfs[free_idx].allocated = true;
-+	return free_idx;
- }
+ struct mlx5e_tls_sw_stats {
+ 	atomic64_t tx_tls_ctx;
++	atomic64_t tx_tls_del;
+ 	atomic64_t tx_tls_drop_metadata;
+ 	atomic64_t tx_tls_drop_resync_alloc;
+ 	atomic64_t tx_tls_drop_no_sync_data;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_stats.c
+index ffc84f9b41b0..56e7b2aee85f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_stats.c
+@@ -47,6 +47,7 @@ static const struct counter_desc mlx5e_tls_sw_stats_desc[] = {
  
- static void mlx5_sf_hw_table_id_free(struct mlx5_sf_hw_table *table, u32 controller, int id)
+ static const struct counter_desc mlx5e_ktls_sw_stats_desc[] = {
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, tx_tls_ctx) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, tx_tls_del) },
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, rx_tls_ctx) },
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, rx_tls_del) },
+ };
 -- 
 2.31.1
 
