@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 760203B4B8C
+	by mail.lfdr.de (Postfix) with ESMTP id 2E48C3B4B8B
 	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 02:33:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230004AbhFZAgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 20:36:11 -0400
-Received: from mga18.intel.com ([134.134.136.126]:48448 "EHLO mga18.intel.com"
+        id S229996AbhFZAgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 20:36:10 -0400
+Received: from mga18.intel.com ([134.134.136.126]:48451 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229922AbhFZAgE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229924AbhFZAgE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 25 Jun 2021 20:36:04 -0400
-IronPort-SDR: 1MnxyWSRRuv1IZZwo5ZDwgj68YdsTFKxhaRFSGtAdhMRUPNjK6kv7V24Sk4CFAlEHlYmGSyaPl
- g9/C/ue+A2HA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="195054021"
+IronPort-SDR: ug9NuVVKSVgCmd2Glt6X3Y2kx/BQ9peoeMoqdUos1+hm99hAuVrXKpnYcgxqXMNeCUzkRp0rsV
+ NKaq+Cf6wUYA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="195054022"
 X-IronPort-AV: E=Sophos;i="5.83,300,1616482800"; 
-   d="scan'208";a="195054021"
+   d="scan'208";a="195054022"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:33:42 -0700
-IronPort-SDR: /jLsiXYjJFYWokIPQC2hSdJBrS5ZQtMbuxp+QimkmN+gl2nRqIZwfpWE+L/1y8ilaWAh83Xzdy
- EsxGbWA8iMyA==
+IronPort-SDR: KED/AhN6B81Gg8FJp8HpNvhyx1Oh9aMjih62jBfI4YrQ4vVKhXBgn4KgtBp94VQIcq7nT+rn3I
+ l+d1u1PKeFXQ==
 X-IronPort-AV: E=Sophos;i="5.83,300,1616482800"; 
-   d="scan'208";a="557008609"
+   d="scan'208";a="557008612"
 Received: from aschmalt-mobl1.amr.corp.intel.com (HELO localhost.localdomain) ([10.212.160.59])
   by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:33:42 -0700
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
@@ -31,9 +31,9 @@ Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
         vladimir.oltean@nxp.com, po.liu@nxp.com,
         intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
         mkubecek@suse.cz
-Subject: [PATCH net-next v4 05/12] mqprio: Add support for frame preemption offload
-Date:   Fri, 25 Jun 2021 17:33:07 -0700
-Message-Id: <20210626003314.3159402-6-vinicius.gomes@intel.com>
+Subject: [PATCH net-next v4 06/12] igc: Add support for enabling frame preemption via ethtool
+Date:   Fri, 25 Jun 2021 17:33:08 -0700
+Message-Id: <20210626003314.3159402-7-vinicius.gomes@intel.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210626003314.3159402-1-vinicius.gomes@intel.com>
 References: <20210626003314.3159402-1-vinicius.gomes@intel.com>
@@ -43,131 +43,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds a way to configure which traffic classes are marked as
-preemptible and which are marked as express.
+Adds support for enabling frame preemption via ethtool. All that's
+left for ethtool is to save the settings in the adapter state, and the
+request for those settings to be applied.
 
-Even if frame preemption is not a "real" offload, because it can't be
-executed purely in software, having this information near where the
-mapping of traffic classes to queues is specified, makes it,
-hopefully, easier to use.
-
-mqprio will receive the information of which traffic classes are
-marked as express/preemptible, and when offloading frame preemption to
-the driver will convert the information, so the driver receives which
-queues are marked as express/preemptible.
+It's done this because the TSN features (frame preemption is part of
+them) interact with one another and it's better to keep track from a
+central place.
 
 Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 ---
- include/uapi/linux/pkt_sched.h |  1 +
- net/sched/sch_mqprio.c         | 41 ++++++++++++++++++++++++++++++++--
- 2 files changed, 40 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/igc/igc.h         |  2 ++
+ drivers/net/ethernet/intel/igc/igc_ethtool.c | 31 ++++++++++++++++++++
+ 2 files changed, 33 insertions(+)
 
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index 830ce9c9ec6f..06aa155e46f7 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -738,6 +738,7 @@ enum {
- 	TCA_MQPRIO_SHAPER,
- 	TCA_MQPRIO_MIN_RATE64,
- 	TCA_MQPRIO_MAX_RATE64,
-+	TCA_MQPRIO_PREEMPT_TCS,
- 	__TCA_MQPRIO_MAX,
- };
+diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+index 9e0bbb2e55e3..9afee4712aeb 100644
+--- a/drivers/net/ethernet/intel/igc/igc.h
++++ b/drivers/net/ethernet/intel/igc/igc.h
+@@ -173,6 +173,8 @@ struct igc_adapter {
  
-diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index 8766ab5b8788..86e6012f180a 100644
---- a/net/sched/sch_mqprio.c
-+++ b/net/sched/sch_mqprio.c
-@@ -23,6 +23,7 @@ struct mqprio_sched {
- 	u16 shaper;
- 	int hw_offload;
- 	u32 flags;
-+	u32 preemptible_tcs;
- 	u64 min_rate[TC_QOPT_MAX_QUEUE];
- 	u64 max_rate[TC_QOPT_MAX_QUEUE];
- };
-@@ -33,6 +34,13 @@ static void mqprio_destroy(struct Qdisc *sch)
- 	struct mqprio_sched *priv = qdisc_priv(sch);
- 	unsigned int ntx;
+ 	ktime_t base_time;
+ 	ktime_t cycle_time;
++	bool frame_preemption_active;
++	u32 add_frag_size;
  
-+	if (priv->preemptible_tcs && dev->netdev_ops->ndo_setup_tc) {
-+		struct tc_preempt_qopt_offload preempt = { };
-+
-+		dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_PREEMPT,
-+						    &preempt);
-+	}
-+
- 	if (priv->qdiscs) {
- 		for (ntx = 0;
- 		     ntx < dev->num_tx_queues && priv->qdiscs[ntx];
-@@ -112,6 +120,7 @@ static int mqprio_parse_opt(struct net_device *dev, struct tc_mqprio_qopt *qopt)
- static const struct nla_policy mqprio_policy[TCA_MQPRIO_MAX + 1] = {
- 	[TCA_MQPRIO_MODE]	= { .len = sizeof(u16) },
- 	[TCA_MQPRIO_SHAPER]	= { .len = sizeof(u16) },
-+	[TCA_MQPRIO_PREEMPT_TCS] = { .type = NLA_U32 },
- 	[TCA_MQPRIO_MIN_RATE64]	= { .type = NLA_NESTED },
- 	[TCA_MQPRIO_MAX_RATE64]	= { .type = NLA_NESTED },
- };
-@@ -171,8 +180,17 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
- 		if (err < 0)
- 			return err;
+ 	/* OS defined structs */
+ 	struct pci_dev *pdev;
+diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+index fa4171860623..84d5afe92154 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
++++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+@@ -8,6 +8,7 @@
  
--		if (!qopt->hw)
--			return -EINVAL;
-+		if (tb[TCA_MQPRIO_PREEMPT_TCS]) {
-+			u32 preempt = nla_get_u32(tb[TCA_MQPRIO_PREEMPT_TCS]);
-+			u32 all_tcs_mask = GENMASK(qopt->num_tc, 0);
-+
-+			if ((preempt & all_tcs_mask) == all_tcs_mask) {
-+				NL_SET_ERR_MSG(extack, "At least one traffic class must be not be preemptible");
-+				return -EINVAL;
-+			}
-+
-+			priv->preemptible_tcs = preempt;
-+		}
+ #include "igc.h"
+ #include "igc_diag.h"
++#include "igc_tsn.h"
  
- 		if (tb[TCA_MQPRIO_MODE]) {
- 			priv->flags |= TC_MQPRIO_F_MODE;
-@@ -217,6 +235,9 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
- 		}
- 	}
- 
-+	if (!qopt->hw && priv->flags)
-+		return -EINVAL;
-+
- 	/* pre-allocate qdisc, attachment can't fail */
- 	priv->qdiscs = kcalloc(dev->num_tx_queues, sizeof(priv->qdiscs[0]),
- 			       GFP_KERNEL);
-@@ -282,6 +303,18 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
- 	for (i = 0; i < TC_BITMASK + 1; i++)
- 		netdev_set_prio_tc_map(dev, i, qopt->prio_tc_map[i]);
- 
-+	if (priv->preemptible_tcs) {
-+		struct tc_preempt_qopt_offload preempt = { };
-+
-+		preempt.preemptible_queues =
-+			netdev_tc_map_to_queue_mask(dev, priv->preemptible_tcs);
-+
-+		err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_PREEMPT,
-+						    &preempt);
-+		if (err)
-+			return err;
-+	}
-+
- 	sch->flags |= TCQ_F_MQROOT;
+ /* forward declaration */
+ struct igc_stats {
+@@ -1641,6 +1642,34 @@ static int igc_ethtool_set_eee(struct net_device *netdev,
  	return 0;
  }
-@@ -450,6 +483,10 @@ static int mqprio_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	    (dump_rates(priv, &opt, skb) != 0))
- 		goto nla_put_failure;
  
-+	if (priv->preemptible_tcs &&
-+	    nla_put_u32(skb, TCA_MQPRIO_PREEMPT_TCS, priv->preemptible_tcs))
-+		goto nla_put_failure;
++static int igc_ethtool_get_preempt(struct net_device *netdev,
++				   struct ethtool_fp *fpcmd)
++{
++	struct igc_adapter *adapter = netdev_priv(netdev);
 +
- 	return nla_nest_end(skb, nla);
- nla_put_failure:
- 	nlmsg_trim(skb, nla);
++	fpcmd->enabled = adapter->frame_preemption_active;
++	fpcmd->add_frag_size = adapter->add_frag_size;
++
++	return 0;
++}
++
++static int igc_ethtool_set_preempt(struct net_device *netdev,
++				   struct ethtool_fp *fpcmd,
++				   struct netlink_ext_ack *extack)
++{
++	struct igc_adapter *adapter = netdev_priv(netdev);
++
++	if (fpcmd->add_frag_size < 68 || fpcmd->add_frag_size > 260) {
++		NL_SET_ERR_MSG_MOD(extack, "Invalid value for add-frag-size");
++		return -EINVAL;
++	}
++
++	adapter->frame_preemption_active = fpcmd->enabled;
++	adapter->add_frag_size = fpcmd->add_frag_size;
++
++	return igc_tsn_offload_apply(adapter);
++}
++
+ static int igc_ethtool_begin(struct net_device *netdev)
+ {
+ 	struct igc_adapter *adapter = netdev_priv(netdev);
+@@ -1934,6 +1963,8 @@ static const struct ethtool_ops igc_ethtool_ops = {
+ 	.get_ts_info		= igc_ethtool_get_ts_info,
+ 	.get_channels		= igc_ethtool_get_channels,
+ 	.set_channels		= igc_ethtool_set_channels,
++	.get_preempt		= igc_ethtool_get_preempt,
++	.set_preempt		= igc_ethtool_set_preempt,
+ 	.get_priv_flags		= igc_ethtool_get_priv_flags,
+ 	.set_priv_flags		= igc_ethtool_set_priv_flags,
+ 	.get_eee		= igc_ethtool_get_eee,
 -- 
 2.32.0
 
