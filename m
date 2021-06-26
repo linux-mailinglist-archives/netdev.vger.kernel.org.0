@@ -2,455 +2,349 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 584903B4B99
-	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 02:34:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A043B4BBA
+	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 02:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbhFZAgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 20:36:24 -0400
-Received: from mga18.intel.com ([134.134.136.126]:48454 "EHLO mga18.intel.com"
+        id S229929AbhFZBB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 21:01:58 -0400
+Received: from mga14.intel.com ([192.55.52.115]:62766 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229952AbhFZAgG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Jun 2021 20:36:06 -0400
-IronPort-SDR: tr52577wrhaGD/t1yBAgtNlp5AJNboXlmBXXWynO479Te0LEJtrAe2Jh/Q/v++t1KOvTiTr/lV
- 5nSXHGBA0O1g==
-X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="195054030"
+        id S229831AbhFZBBy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Jun 2021 21:01:54 -0400
+IronPort-SDR: XC3g3k9+KdVmgsOg7X9V6ssBf3Yp66C7Vj+E0XUWJH1Tgu4TPGukKp1aTEJbxydVGfFaFQwaBE
+ j1kSKQnbzGrw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="207579695"
 X-IronPort-AV: E=Sophos;i="5.83,300,1616482800"; 
-   d="scan'208";a="195054030"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:33:44 -0700
-IronPort-SDR: Di6NiHd182cYjYlOATfADzRXlXMHsQL2U95/yaTmTrIKE9fYgvpgYm6Ecgx+v2jwXerDOJoI+f
- TroL3Xa+B/2A==
+   d="scan'208";a="207579695"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:59:32 -0700
+IronPort-SDR: m8c6UzKBEjURU2bi+h2NHgo9ksyz5z1IMtnKvUBrFAToc9Sn2KLNxCTPeb4duq5cTkiwKlmrZC
+ eBBEOEVm0wJA==
 X-IronPort-AV: E=Sophos;i="5.83,300,1616482800"; 
-   d="scan'208";a="557008632"
-Received: from aschmalt-mobl1.amr.corp.intel.com (HELO localhost.localdomain) ([10.212.160.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:33:44 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuba@kernel.org,
-        vladimir.oltean@nxp.com, po.liu@nxp.com,
-        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
-        mkubecek@suse.cz
-Subject: [PATCH net-next v4 12/12] igc: Add support for Frame Preemption verification
-Date:   Fri, 25 Jun 2021 17:33:14 -0700
-Message-Id: <20210626003314.3159402-13-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210626003314.3159402-1-vinicius.gomes@intel.com>
-References: <20210626003314.3159402-1-vinicius.gomes@intel.com>
+   d="scan'208";a="557853496"
+Received: from vsampat1-mobl2.amr.corp.intel.com ([10.212.210.249])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:59:31 -0700
+Date:   Fri, 25 Jun 2021 17:59:31 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Yangbo Lu <yangbo.lu@nxp.com>
+cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, mptcp@lists.linux.dev,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
+        Sebastien Laveze <sebastien.laveze@nxp.com>
+Subject: Re: [net-next, v4, 08/11] net: sock: extend SO_TIMESTAMPING for PHC
+ binding
+In-Reply-To: <20210625093513.38524-9-yangbo.lu@nxp.com>
+Message-ID: <8e78961d-238f-fd22-42b-999c3647a328@linux.intel.com>
+References: <20210625093513.38524-1-yangbo.lu@nxp.com> <20210625093513.38524-9-yangbo.lu@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for sending/receiving Frame Preemption verification
-frames.
+On Fri, 25 Jun 2021, Yangbo Lu wrote:
 
-The i225 hardware doesn't implement the process of verification
-internally, this is left to the driver.
+> Since PTP virtual clock support is added, there can be
+> several PTP virtual clocks based on one PTP physical
+> clock for timestamping.
+>
+> This patch is to extend SO_TIMESTAMPING API to support
+> PHC (PTP Hardware Clock) binding by adding a new flag
+> SOF_TIMESTAMPING_BIND_PHC. When PTP virtual clocks are
+> in use, user space can configure to bind one for
+> timestamping, but PTP physical clock is not supported
+> and not needed to bind.
+>
+> This patch is preparation for timestamp conversion from
+> raw timestamp to a specific PTP virtual clock time in
+> core net.
+>
+> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+> ---
+> Changes for v3:
+> 	- Added this patch.
+> Changes for v4:
+> 	- Passed so_timestamping for sock_set_timestamping.
+> ---
+> include/net/sock.h              |  8 +++-
+> include/uapi/linux/net_tstamp.h | 17 ++++++++-
+> net/core/sock.c                 | 65 +++++++++++++++++++++++++++++++--
+> net/ethtool/common.c            |  1 +
+> net/mptcp/sockopt.c             | 22 ++++++++---
+> 5 files changed, 101 insertions(+), 12 deletions(-)
+>
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index ced2fc965ec7..49a7858a8a03 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -316,7 +316,9 @@ struct bpf_local_storage;
+>   *	@sk_timer: sock cleanup timer
+>   *	@sk_stamp: time stamp of last packet received
+>   *	@sk_stamp_seq: lock for accessing sk_stamp on 32 bit architectures only
+> -  *	@sk_tsflags: SO_TIMESTAMPING socket options
+> +  *	@sk_tsflags: SO_TIMESTAMPING flags
+> +  *	@sk_bind_phc: SO_TIMESTAMPING bind PHC index of PTP virtual clock
+> +  *	              for timestamping
+>   *	@sk_tskey: counter to disambiguate concurrent tstamp requests
+>   *	@sk_zckey: counter to order MSG_ZEROCOPY notifications
+>   *	@sk_socket: Identd and reporting IO signals
+> @@ -493,6 +495,7 @@ struct sock {
+> 	seqlock_t		sk_stamp_seq;
+> #endif
+> 	u16			sk_tsflags;
+> +	int			sk_bind_phc;
+> 	u8			sk_shutdown;
+> 	u32			sk_tskey;
+> 	atomic_t		sk_zckey;
+> @@ -2753,7 +2756,8 @@ void sock_def_readable(struct sock *sk);
+>
+> int sock_bindtoindex(struct sock *sk, int ifindex, bool lock_sk);
+> void sock_set_timestamp(struct sock *sk, int optname, bool valbool);
+> -int sock_set_timestamping(struct sock *sk, int optname, int val);
+> +int sock_set_timestamping(struct sock *sk, int optname,
+> +			  struct so_timestamping timestamping);
+>
+> void sock_enable_timestamps(struct sock *sk);
+> void sock_no_linger(struct sock *sk);
+> diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
+> index 7ed0b3d1c00a..fcc61c73a666 100644
+> --- a/include/uapi/linux/net_tstamp.h
+> +++ b/include/uapi/linux/net_tstamp.h
+> @@ -13,7 +13,7 @@
+> #include <linux/types.h>
+> #include <linux/socket.h>   /* for SO_TIMESTAMPING */
+>
+> -/* SO_TIMESTAMPING gets an integer bit field comprised of these values */
+> +/* SO_TIMESTAMPING flags */
+> enum {
+> 	SOF_TIMESTAMPING_TX_HARDWARE = (1<<0),
+> 	SOF_TIMESTAMPING_TX_SOFTWARE = (1<<1),
+> @@ -30,8 +30,9 @@ enum {
+> 	SOF_TIMESTAMPING_OPT_STATS = (1<<12),
+> 	SOF_TIMESTAMPING_OPT_PKTINFO = (1<<13),
+> 	SOF_TIMESTAMPING_OPT_TX_SWHW = (1<<14),
+> +	SOF_TIMESTAMPING_BIND_PHC = (1 << 15),
+>
+> -	SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_OPT_TX_SWHW,
+> +	SOF_TIMESTAMPING_LAST = SOF_TIMESTAMPING_BIND_PHC,
+> 	SOF_TIMESTAMPING_MASK = (SOF_TIMESTAMPING_LAST - 1) |
+> 				 SOF_TIMESTAMPING_LAST
+> };
+> @@ -46,6 +47,18 @@ enum {
+> 					 SOF_TIMESTAMPING_TX_SCHED | \
+> 					 SOF_TIMESTAMPING_TX_ACK)
+>
+> +/**
+> + * struct so_timestamping - SO_TIMESTAMPING parameter
+> + *
+> + * @flags:	SO_TIMESTAMPING flags
+> + * @bind_phc:	Index of PTP virtual clock bound to sock. This is available
+> + *		if flag SOF_TIMESTAMPING_BIND_PHC is set.
+> + */
+> +struct so_timestamping {
+> +	int flags;
+> +	int bind_phc;
+> +};
+> +
+> /**
+>  * struct hwtstamp_config - %SIOCGHWTSTAMP and %SIOCSHWTSTAMP parameter
+>  *
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index a2337b37eba6..c59b8a20dc00 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -139,6 +139,8 @@
+> #include <net/tcp.h>
+> #include <net/busy_poll.h>
+>
+> +#include <linux/ethtool.h>
+> +
+> static DEFINE_MUTEX(proto_list_mutex);
+> static LIST_HEAD(proto_list);
+>
+> @@ -794,8 +796,47 @@ void sock_set_timestamp(struct sock *sk, int optname, bool valbool)
+> 	}
+> }
+>
+> -int sock_set_timestamping(struct sock *sk, int optname, int val)
+> +static int sock_timestamping_bind_phc(struct sock *sk, int phc_index)
+> {
+> +	struct net *net = sock_net(sk);
+> +	struct net_device *dev = NULL;
+> +	bool match = false;
+> +	int *vclock_index;
+> +	int i, num;
+> +
+> +	if (sk->sk_bound_dev_if)
+> +		dev = dev_get_by_index(net, sk->sk_bound_dev_if);
+> +
+> +	if (!dev) {
+> +		pr_err("%s: sock not bind to device\n", __func__);
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	num = ethtool_get_phc_vclocks(dev, &vclock_index);
+> +	for (i = 0; i < num; i++) {
+> +		if (*(vclock_index + i) == phc_index) {
+> +			match = true;
+> +			break;
+> +		}
+> +	}
+> +
+> +	if (num > 0)
+> +		kfree(vclock_index);
+> +
+> +	if (!match)
+> +		return -EINVAL;
+> +
+> +	sk->sk_bind_phc = phc_index;
+> +
+> +	return 0;
+> +}
+> +
+> +int sock_set_timestamping(struct sock *sk, int optname,
+> +			  struct so_timestamping timestamping)
+> +{
+> +	int val = timestamping.flags;
+> +	int ret;
+> +
+> 	if (val & ~SOF_TIMESTAMPING_MASK)
+> 		return -EINVAL;
+>
+> @@ -816,6 +857,12 @@ int sock_set_timestamping(struct sock *sk, int optname, int val)
+> 	    !(val & SOF_TIMESTAMPING_OPT_TSONLY))
+> 		return -EINVAL;
+>
+> +	if (val & SOF_TIMESTAMPING_BIND_PHC) {
+> +		ret = sock_timestamping_bind_phc(sk, timestamping.bind_phc);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> 	sk->sk_tsflags = val;
+> 	sock_valbool_flag(sk, SOCK_TSTAMP_NEW, optname == SO_TIMESTAMPING_NEW);
+>
+> @@ -891,6 +938,7 @@ EXPORT_SYMBOL(sock_set_mark);
+> int sock_setsockopt(struct socket *sock, int level, int optname,
+> 		    sockptr_t optval, unsigned int optlen)
+> {
+> +	struct so_timestamping timestamping;
+> 	struct sock_txtime sk_txtime;
+> 	struct sock *sk = sock->sk;
+> 	int val;
+> @@ -1057,7 +1105,15 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+>
+> 	case SO_TIMESTAMPING_NEW:
+> 	case SO_TIMESTAMPING_OLD:
+> -		ret = sock_set_timestamping(sk, optname, val);
+> +		if (optlen == sizeof(timestamping)) {
+> +			if (copy_from_sockptr(&timestamping, optval,
+> +					      sizeof(timestamping)))
+> +				return -EFAULT;
+> +		} else {
+> +			memset(&timestamping, 0, sizeof(timestamping));
+> +			timestamping.flags = val;
+> +		}
+> +		ret = sock_set_timestamping(sk, optname, timestamping);
+> 		break;
+>
+> 	case SO_RCVLOWAT:
+> @@ -1332,6 +1388,7 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+> 		struct __kernel_old_timeval tm;
+> 		struct  __kernel_sock_timeval stm;
+> 		struct sock_txtime txtime;
+> +		struct so_timestamping timestamping;
+> 	} v;
+>
+> 	int lv = sizeof(int);
+> @@ -1435,7 +1492,9 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+> 		break;
+>
+> 	case SO_TIMESTAMPING_OLD:
+> -		v.val = sk->sk_tsflags;
+> +		lv = sizeof(v.timestamping);
+> +		v.timestamping.flags = sk->sk_tsflags;
+> +		v.timestamping.bind_phc = sk->sk_bind_phc;
+> 		break;
+>
+> 	case SO_RCVTIMEO_OLD:
+> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+> index 798231b07676..c63e0739dc6a 100644
+> --- a/net/ethtool/common.c
+> +++ b/net/ethtool/common.c
+> @@ -398,6 +398,7 @@ const char sof_timestamping_names[][ETH_GSTRING_LEN] = {
+> 	[const_ilog2(SOF_TIMESTAMPING_OPT_STATS)]    = "option-stats",
+> 	[const_ilog2(SOF_TIMESTAMPING_OPT_PKTINFO)]  = "option-pktinfo",
+> 	[const_ilog2(SOF_TIMESTAMPING_OPT_TX_SWHW)]  = "option-tx-swhw",
+> +	[const_ilog2(SOF_TIMESTAMPING_BIND_PHC)]     = "bind-phc",
+> };
+> static_assert(ARRAY_SIZE(sof_timestamping_names) == __SOF_TIMESTAMPING_CNT);
+>
+> diff --git a/net/mptcp/sockopt.c b/net/mptcp/sockopt.c
+> index ea38cbcd2ad4..e20aefc20d75 100644
+> --- a/net/mptcp/sockopt.c
+> +++ b/net/mptcp/sockopt.c
+> @@ -207,14 +207,26 @@ static int mptcp_setsockopt_sol_socket_timestamping(struct mptcp_sock *msk,
+> {
+> 	struct mptcp_subflow_context *subflow;
+> 	struct sock *sk = (struct sock *)msk;
+> +	struct so_timestamping timestamping;
+> 	int val, ret;
+>
+> -	ret = mptcp_get_int_option(msk, optval, optlen, &val);
+> -	if (ret)
+> -		return ret;
+> +	if (optlen == sizeof(timestamping)) {
+> +		if (copy_from_sockptr(&timestamping, optval,
+> +				      sizeof(timestamping)))
+> +			return -EFAULT;
+> +	} else if (optlen == sizeof(int)) {
+> +		if (copy_from_sockptr(val, optval, sizeof(*val)))
+                                       ^^^
 
-Add a simple implementation of the state machine defined in IEEE
-802.3-2018, Section 99.4.7.
+As the kbuild bot noted, this needs to be a pointer. You could pass in 
+&timestamping.flags and you wouldn't need the 'val' variable at all.
 
-For now, the state machine is started manually by the user, when
-enabling verification. Example:
 
-$ ethtool --set-frame-preemption IFACE disable-verify off
+-Mat
 
-The "verified" condition is set to true when the SMD-V frame is sent,
-and the SMD-R frame is received. So, it only tracks the transmission
-side. This seems to be what's expected from IEEE 802.3-2018.
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- drivers/net/ethernet/intel/igc/igc.h         |  15 ++
- drivers/net/ethernet/intel/igc/igc_defines.h |  13 ++
- drivers/net/ethernet/intel/igc/igc_ethtool.c |  20 +-
- drivers/net/ethernet/intel/igc/igc_main.c    | 216 +++++++++++++++++++
- 4 files changed, 261 insertions(+), 3 deletions(-)
+> +			return -EFAULT;
+> +
+> +		memset(&timestamping, 0, sizeof(timestamping));
+> +		timestamping.flags = val;
+> +	} else {
+> +		return -EINVAL;
+> +	}
+>
+> 	ret = sock_setsockopt(sk->sk_socket, SOL_SOCKET, optname,
+> -			      KERNEL_SOCKPTR(&val), sizeof(val));
+> +			      KERNEL_SOCKPTR(&timestamping),
+> +			      sizeof(timestamping));
+> 	if (ret)
+> 		return ret;
+>
+> @@ -224,7 +236,7 @@ static int mptcp_setsockopt_sol_socket_timestamping(struct mptcp_sock *msk,
+> 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+> 		bool slow = lock_sock_fast(ssk);
+>
+> -		sock_set_timestamping(sk, optname, val);
+> +		sock_set_timestamping(sk, optname, timestamping);
+> 		unlock_sock_fast(ssk, slow);
+> 	}
+>
+> -- 
+> 2.25.1
+>
+>
 
-diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index 9b2ddcbf65fb..84234efed781 100644
---- a/drivers/net/ethernet/intel/igc/igc.h
-+++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -122,6 +122,13 @@ struct igc_ring {
- 	struct xsk_buff_pool *xsk_pool;
- } ____cacheline_internodealigned_in_smp;
- 
-+enum frame_preemption_state {
-+	FRAME_PREEMPTION_STATE_FAILED,
-+	FRAME_PREEMPTION_STATE_DONE,
-+	FRAME_PREEMPTION_STATE_START,
-+	FRAME_PREEMPTION_STATE_SENT,
-+};
-+
- /* Board specific private data structure */
- struct igc_adapter {
- 	struct net_device *netdev;
-@@ -240,6 +247,14 @@ struct igc_adapter {
- 		struct timespec64 start;
- 		struct timespec64 period;
- 	} perout[IGC_N_PEROUT];
-+
-+	struct delayed_work fp_verification_work;
-+	unsigned long fp_start;
-+	bool fp_received_smd_v;
-+	bool fp_received_smd_r;
-+	unsigned int fp_verify_cnt;
-+	enum frame_preemption_state fp_tx_state;
-+	bool fp_disable_verify;
- };
- 
- void igc_up(struct igc_adapter *adapter);
-diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index a2ea057d8e6e..cf46f5d5a505 100644
---- a/drivers/net/ethernet/intel/igc/igc_defines.h
-+++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -268,6 +268,8 @@
- #define IGC_TXD_DTYP_C		0x00000000 /* Context Descriptor */
- #define IGC_TXD_POPTS_IXSM	0x01       /* Insert IP checksum */
- #define IGC_TXD_POPTS_TXSM	0x02       /* Insert TCP/UDP checksum */
-+#define IGC_TXD_POPTS_SMD_V	0x10       /* Transmitted packet is a SMD-Verify */
-+#define IGC_TXD_POPTS_SMD_R	0x20       /* Transmitted packet is a SMD-Response */
- #define IGC_TXD_CMD_EOP		0x01000000 /* End of Packet */
- #define IGC_TXD_CMD_IC		0x04000000 /* Insert Checksum */
- #define IGC_TXD_CMD_DEXT	0x20000000 /* Desc extension (0 = legacy) */
-@@ -327,9 +329,20 @@
- 
- #define IGC_RXDEXT_STATERR_LB	0x00040000
- 
-+#define IGC_RXD_STAT_SMD_V	0x2000  /* Received packet is SMD-Verify packet */
-+#define IGC_RXD_STAT_SMD_R	0x4000  /* Received packet is SMD-Response packet */
-+
- /* Advanced Receive Descriptor bit definitions */
- #define IGC_RXDADV_STAT_TSIP	0x08000 /* timestamp in packet */
- 
-+#define IGC_RXDADV_STAT_SMD_TYPE_MASK	0x06000
-+#define IGC_RXDADV_STAT_SMD_TYPE_SHIFT	13
-+
-+#define IGC_SMD_TYPE_SFD		0x0
-+#define IGC_SMD_TYPE_SMD_V		0x1
-+#define IGC_SMD_TYPE_SMD_R		0x2
-+#define IGC_SMD_TYPE_COMPLETE		0x3
-+
- #define IGC_RXDEXT_STATERR_L4E		0x20000000
- #define IGC_RXDEXT_STATERR_IPE		0x40000000
- #define IGC_RXDEXT_STATERR_RXE		0x80000000
-diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-index 84d5afe92154..f52a7be3af66 100644
---- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-@@ -1649,6 +1649,8 @@ static int igc_ethtool_get_preempt(struct net_device *netdev,
- 
- 	fpcmd->enabled = adapter->frame_preemption_active;
- 	fpcmd->add_frag_size = adapter->add_frag_size;
-+	fpcmd->verified = adapter->fp_tx_state == FRAME_PREEMPTION_STATE_DONE;
-+	fpcmd->disable_verify = adapter->fp_disable_verify;
- 
- 	return 0;
- }
-@@ -1664,10 +1666,22 @@ static int igc_ethtool_set_preempt(struct net_device *netdev,
- 		return -EINVAL;
- 	}
- 
--	adapter->frame_preemption_active = fpcmd->enabled;
--	adapter->add_frag_size = fpcmd->add_frag_size;
-+	if (!fpcmd->disable_verify && adapter->fp_disable_verify) {
-+		adapter->fp_tx_state = FRAME_PREEMPTION_STATE_START;
-+		schedule_delayed_work(&adapter->fp_verification_work, msecs_to_jiffies(10));
-+	}
- 
--	return igc_tsn_offload_apply(adapter);
-+	adapter->fp_disable_verify = fpcmd->disable_verify;
-+
-+	if (adapter->frame_preemption_active != fpcmd->enabled ||
-+	    adapter->add_frag_size != fpcmd->add_frag_size) {
-+		adapter->frame_preemption_active = fpcmd->enabled;
-+		adapter->add_frag_size = fpcmd->add_frag_size;
-+
-+		return igc_tsn_offload_apply(adapter);
-+	}
-+
-+	return 0;
- }
- 
- static int igc_ethtool_begin(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 20dac04a02f2..ed55bd13e4a1 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -28,6 +28,11 @@
- #define IGC_XDP_TX		BIT(1)
- #define IGC_XDP_REDIRECT	BIT(2)
- 
-+#define IGC_FP_TIMEOUT msecs_to_jiffies(100)
-+#define IGC_MAX_VERIFY_CNT 3
-+
-+#define IGC_FP_SMD_FRAME_SIZE 60
-+
- static int debug = -1;
- 
- MODULE_AUTHOR("Intel Corporation, <linux.nics@intel.com>");
-@@ -2169,6 +2174,79 @@ static int igc_xdp_init_tx_descriptor(struct igc_ring *ring,
- 	return 0;
- }
- 
-+static int igc_fp_init_smd_frame(struct igc_ring *ring, struct igc_tx_buffer *buffer,
-+				 struct sk_buff *skb)
-+{
-+	dma_addr_t dma;
-+	unsigned int size;
-+
-+	size = skb_headlen(skb);
-+
-+	dma = dma_map_single(ring->dev, skb->data, size, DMA_TO_DEVICE);
-+	if (dma_mapping_error(ring->dev, dma)) {
-+		netdev_err_once(ring->netdev, "Failed to map DMA for TX\n");
-+		return -ENOMEM;
-+	}
-+
-+	buffer->skb = skb;
-+	buffer->protocol = 0;
-+	buffer->bytecount = skb->len;
-+	buffer->gso_segs = 1;
-+	buffer->time_stamp = jiffies;
-+	dma_unmap_len_set(buffer, len, skb->len);
-+	dma_unmap_addr_set(buffer, dma, dma);
-+
-+	return 0;
-+}
-+
-+static int igc_fp_init_tx_descriptor(struct igc_ring *ring,
-+				     struct sk_buff *skb, int type)
-+{
-+	struct igc_tx_buffer *buffer;
-+	union igc_adv_tx_desc *desc;
-+	u32 cmd_type, olinfo_status;
-+	int err;
-+
-+	if (!igc_desc_unused(ring))
-+		return -EBUSY;
-+
-+	buffer = &ring->tx_buffer_info[ring->next_to_use];
-+	err = igc_fp_init_smd_frame(ring, buffer, skb);
-+	if (err)
-+		return err;
-+
-+	cmd_type = IGC_ADVTXD_DTYP_DATA | IGC_ADVTXD_DCMD_DEXT |
-+		   IGC_ADVTXD_DCMD_IFCS | IGC_TXD_DCMD |
-+		   buffer->bytecount;
-+	olinfo_status = buffer->bytecount << IGC_ADVTXD_PAYLEN_SHIFT;
-+
-+	switch (type) {
-+	case IGC_SMD_TYPE_SMD_V:
-+		olinfo_status |= (IGC_TXD_POPTS_SMD_V << 8);
-+		break;
-+	case IGC_SMD_TYPE_SMD_R:
-+		olinfo_status |= (IGC_TXD_POPTS_SMD_R << 8);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	desc = IGC_TX_DESC(ring, ring->next_to_use);
-+	desc->read.cmd_type_len = cpu_to_le32(cmd_type);
-+	desc->read.olinfo_status = cpu_to_le32(olinfo_status);
-+	desc->read.buffer_addr = cpu_to_le64(dma_unmap_addr(buffer, dma));
-+
-+	netdev_tx_sent_queue(txring_txq(ring), skb->len);
-+
-+	buffer->next_to_watch = desc;
-+
-+	ring->next_to_use++;
-+	if (ring->next_to_use == ring->count)
-+		ring->next_to_use = 0;
-+
-+	return 0;
-+}
-+
- static struct igc_ring *igc_xdp_get_tx_ring(struct igc_adapter *adapter,
- 					    int cpu)
- {
-@@ -2299,6 +2377,19 @@ static void igc_update_rx_stats(struct igc_q_vector *q_vector,
- 	q_vector->rx.total_bytes += bytes;
- }
- 
-+static int igc_rx_desc_smd_type(union igc_adv_rx_desc *rx_desc)
-+{
-+	u32 status = le32_to_cpu(rx_desc->wb.upper.status_error);
-+
-+	return (status & IGC_RXDADV_STAT_SMD_TYPE_MASK)
-+		>> IGC_RXDADV_STAT_SMD_TYPE_SHIFT;
-+}
-+
-+static bool igc_check_smd_frame(struct igc_rx_buffer *rx_buffer, unsigned int size)
-+{
-+	return size == 60;
-+}
-+
- static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
- {
- 	unsigned int total_bytes = 0, total_packets = 0;
-@@ -2315,6 +2406,7 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
- 		ktime_t timestamp = 0;
- 		struct xdp_buff xdp;
- 		int pkt_offset = 0;
-+		int smd_type;
- 		void *pktbuf;
- 
- 		/* return some buffers to hardware, one at a time is too slow */
-@@ -2346,6 +2438,22 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
- 			size -= IGC_TS_HDR_LEN;
- 		}
- 
-+		smd_type = igc_rx_desc_smd_type(rx_desc);
-+
-+		if (smd_type == IGC_SMD_TYPE_SMD_V || smd_type == IGC_SMD_TYPE_SMD_R) {
-+			if (igc_check_smd_frame(rx_buffer, size)) {
-+				adapter->fp_received_smd_v = smd_type == IGC_SMD_TYPE_SMD_V;
-+				adapter->fp_received_smd_r = smd_type == IGC_SMD_TYPE_SMD_R;
-+				schedule_delayed_work(&adapter->fp_verification_work, 0);
-+			}
-+
-+			/* Advance the ring next-to-clean */
-+			igc_is_non_eop(rx_ring, rx_desc);
-+
-+			cleaned_count++;
-+			continue;
-+		}
-+
- 		if (!skb) {
- 			xdp_init_buff(&xdp, truesize, &rx_ring->xdp_rxq);
- 			xdp_prepare_buff(&xdp, pktbuf - igc_rx_offset(rx_ring),
-@@ -5607,6 +5715,107 @@ static int igc_tsn_enable_qbv_scheduling(struct igc_adapter *adapter,
- 	return igc_tsn_offload_apply(adapter);
- }
- 
-+/* I225 doesn't send the SMD frames automatically, we need to handle
-+ * them ourselves.
-+ */
-+static int igc_xmit_smd_frame(struct igc_adapter *adapter, int type)
-+{
-+	int cpu = smp_processor_id();
-+	struct netdev_queue *nq;
-+	struct igc_ring *ring;
-+	struct sk_buff *skb;
-+	void *data;
-+	int err;
-+
-+	if (!netif_running(adapter->netdev))
-+		return -ENOTCONN;
-+
-+	/* FIXME: rename this function to something less specific, as
-+	 * it can be used outside XDP.
-+	 */
-+	ring = igc_xdp_get_tx_ring(adapter, cpu);
-+	nq = txring_txq(ring);
-+
-+	skb = alloc_skb(IGC_FP_SMD_FRAME_SIZE, GFP_KERNEL);
-+	if (!skb)
-+		return -ENOMEM;
-+
-+	data = skb_put(skb, IGC_FP_SMD_FRAME_SIZE);
-+	memset(data, 0, IGC_FP_SMD_FRAME_SIZE);
-+
-+	__netif_tx_lock(nq, cpu);
-+
-+	err = igc_fp_init_tx_descriptor(ring, skb, type);
-+
-+	igc_flush_tx_descriptors(ring);
-+
-+	__netif_tx_unlock(nq);
-+
-+	return err;
-+}
-+
-+static void igc_fp_verification_work(struct work_struct *work)
-+{
-+	struct delayed_work *dwork = to_delayed_work(work);
-+	struct igc_adapter *adapter;
-+	int err;
-+
-+	adapter = container_of(dwork, struct igc_adapter, fp_verification_work);
-+
-+	if (adapter->fp_disable_verify)
-+		goto done;
-+
-+	switch (adapter->fp_tx_state) {
-+	case FRAME_PREEMPTION_STATE_START:
-+		adapter->fp_received_smd_r = false;
-+		err = igc_xmit_smd_frame(adapter, IGC_SMD_TYPE_SMD_V);
-+		if (err < 0)
-+			netdev_err(adapter->netdev, "Error sending SMD-V frame\n");
-+
-+		adapter->fp_tx_state = FRAME_PREEMPTION_STATE_SENT;
-+		adapter->fp_start = jiffies;
-+		schedule_delayed_work(&adapter->fp_verification_work, IGC_FP_TIMEOUT);
-+		break;
-+
-+	case FRAME_PREEMPTION_STATE_SENT:
-+		if (adapter->fp_received_smd_r) {
-+			adapter->fp_tx_state = FRAME_PREEMPTION_STATE_DONE;
-+			adapter->fp_received_smd_r = false;
-+			break;
-+		}
-+
-+		if (time_is_before_jiffies(adapter->fp_start + IGC_FP_TIMEOUT)) {
-+			adapter->fp_verify_cnt++;
-+			netdev_warn(adapter->netdev, "Timeout waiting for SMD-R frame\n");
-+
-+			if (adapter->fp_verify_cnt > IGC_MAX_VERIFY_CNT) {
-+				adapter->fp_verify_cnt = 0;
-+				adapter->fp_tx_state = FRAME_PREEMPTION_STATE_FAILED;
-+				netdev_err(adapter->netdev,
-+					   "Exceeded number of attempts for frame preemption verification\n");
-+			} else {
-+				adapter->fp_tx_state = FRAME_PREEMPTION_STATE_START;
-+			}
-+			schedule_delayed_work(&adapter->fp_verification_work, IGC_FP_TIMEOUT);
-+		}
-+
-+		break;
-+
-+	case FRAME_PREEMPTION_STATE_FAILED:
-+	case FRAME_PREEMPTION_STATE_DONE:
-+		break;
-+	}
-+
-+done:
-+	if (adapter->fp_received_smd_v) {
-+		err = igc_xmit_smd_frame(adapter, IGC_SMD_TYPE_SMD_R);
-+		if (err < 0)
-+			netdev_err(adapter->netdev, "Error sending SMD-R frame\n");
-+
-+		adapter->fp_received_smd_v = false;
-+	}
-+}
-+
- static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			void *type_data)
- {
-@@ -6023,6 +6232,7 @@ static int igc_probe(struct pci_dev *pdev,
- 
- 	INIT_WORK(&adapter->reset_task, igc_reset_task);
- 	INIT_WORK(&adapter->watchdog_task, igc_watchdog_task);
-+	INIT_DELAYED_WORK(&adapter->fp_verification_work, igc_fp_verification_work);
- 
- 	/* Initialize link properties that are user-changeable */
- 	adapter->fc_autoneg = true;
-@@ -6044,6 +6254,12 @@ static int igc_probe(struct pci_dev *pdev,
- 
- 	igc_ptp_init(adapter);
- 
-+	/* FIXME: This sets the default to not do the verification
-+	 * automatically, when we have support in multiple
-+	 * controllers, this default can be changed.
-+	 */
-+	adapter->fp_disable_verify = true;
-+
- 	/* reset the hardware with the new settings */
- 	igc_reset(adapter);
- 
--- 
-2.32.0
-
+--
+Mat Martineau
+Intel
