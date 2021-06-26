@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E860F3B4B93
-	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 02:34:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A25C63B4B95
+	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 02:34:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbhFZAgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Jun 2021 20:36:21 -0400
-Received: from mga18.intel.com ([134.134.136.126]:48448 "EHLO mga18.intel.com"
+        id S230126AbhFZAgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Jun 2021 20:36:22 -0400
+Received: from mga18.intel.com ([134.134.136.126]:48451 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229929AbhFZAgE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229933AbhFZAgE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 25 Jun 2021 20:36:04 -0400
-IronPort-SDR: U5M+gNkRdu19XM+44a/CvXf2hmIPhUaQdIxrMU3frS6SOh+MeZt8UP3fL45LwTuszCDx68D+Up
- YgghzE3k5C7A==
-X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="195054024"
+IronPort-SDR: KjEYUXvcMRu5T2k84M7CctFuOWvCu4QS69Ld9KRmJ30vJz8d3SNeiSSmyWedPUsnlalwj2qQ9l
+ V+9j298bqEbg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10026"; a="195054025"
 X-IronPort-AV: E=Sophos;i="5.83,300,1616482800"; 
-   d="scan'208";a="195054024"
+   d="scan'208";a="195054025"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:33:42 -0700
-IronPort-SDR: D4VtIbCZZ/e0pqhO62BUhdML0gSHuv9bAxtqAcHwE3i2/yvlY1JshRWq87YqnIuFv0zYVSxX50
- DiIQMFJtwgiQ==
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:33:43 -0700
+IronPort-SDR: GD9oy9Nko6YOi6hnwCtLfOa7zIOwr96rjKGym9CUHF+mU6FG2czQvUuaDyNvqMxtJzGWnHQ4FI
+ Qydff5sFvojw==
 X-IronPort-AV: E=Sophos;i="5.83,300,1616482800"; 
-   d="scan'208";a="557008616"
+   d="scan'208";a="557008619"
 Received: from aschmalt-mobl1.amr.corp.intel.com (HELO localhost.localdomain) ([10.212.160.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:33:42 -0700
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2021 17:33:43 -0700
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
@@ -31,9 +31,9 @@ Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
         vladimir.oltean@nxp.com, po.liu@nxp.com,
         intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
         mkubecek@suse.cz
-Subject: [PATCH net-next v4 07/12] igc: Add support for TC_SETUP_PREEMPT
-Date:   Fri, 25 Jun 2021 17:33:09 -0700
-Message-Id: <20210626003314.3159402-8-vinicius.gomes@intel.com>
+Subject: [PATCH net-next v4 08/12] igc: Simplify TSN flags handling
+Date:   Fri, 25 Jun 2021 17:33:10 -0700
+Message-Id: <20210626003314.3159402-9-vinicius.gomes@intel.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210626003314.3159402-1-vinicius.gomes@intel.com>
 References: <20210626003314.3159402-1-vinicius.gomes@intel.com>
@@ -43,65 +43,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Saves which queues are marked as preemptible, activating frame
-preemption is done when the user requests it enabled, via ethtool.
+Separates the procedure done during reset from applying a
+configuration, knowing when the code is executing allow us to separate
+the better what changes the hardware state from what changes only the
+driver state.
 
 Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc.h      |  1 +
- drivers/net/ethernet/intel/igc/igc_main.c | 20 ++++++++++++++++++++
- 2 files changed, 21 insertions(+)
+ drivers/net/ethernet/intel/igc/igc.h      |  4 ++
+ drivers/net/ethernet/intel/igc/igc_main.c |  2 +-
+ drivers/net/ethernet/intel/igc/igc_tsn.c  | 71 ++++++++++++++---------
+ drivers/net/ethernet/intel/igc/igc_tsn.h  |  1 +
+ 4 files changed, 48 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index 9afee4712aeb..68c7262bd172 100644
+index 68c7262bd172..ccd5f6b02e3a 100644
 --- a/drivers/net/ethernet/intel/igc/igc.h
 +++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -92,6 +92,7 @@ struct igc_ring {
- 	u8 queue_index;                 /* logical index of the ring*/
- 	u8 reg_idx;                     /* physical index of the ring */
- 	bool launchtime_enable;         /* true if LaunchTime is enabled */
-+	bool preemptible;               /* true if not express */
+@@ -290,6 +290,10 @@ extern char igc_driver_name[];
+ #define IGC_FLAG_VLAN_PROMISC		BIT(15)
+ #define IGC_FLAG_RX_LEGACY		BIT(16)
+ #define IGC_FLAG_TSN_QBV_ENABLED	BIT(17)
++#define IGC_FLAG_TSN_PREEMPT_ENABLED	BIT(18)
++
++#define IGC_FLAG_TSN_ANY_ENABLED \
++	(IGC_FLAG_TSN_QBV_ENABLED | IGC_FLAG_TSN_PREEMPT_ENABLED)
  
- 	u32 start_time;
- 	u32 end_time;
+ #define IGC_FLAG_RSS_FIELD_IPV4_UDP	BIT(6)
+ #define IGC_FLAG_RSS_FIELD_IPV6_UDP	BIT(7)
 diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 3f6b6d4543a8..b0981ea0ae63 100644
+index b0981ea0ae63..038383519b10 100644
 --- a/drivers/net/ethernet/intel/igc/igc_main.c
 +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -5563,6 +5563,23 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
+@@ -118,7 +118,7 @@ void igc_reset(struct igc_adapter *adapter)
+ 	igc_ptp_reset(adapter);
+ 
+ 	/* Re-enable TSN offloading, where applicable. */
+-	igc_tsn_offload_apply(adapter);
++	igc_tsn_reset(adapter);
+ 
+ 	igc_get_phy_info(hw);
+ }
+diff --git a/drivers/net/ethernet/intel/igc/igc_tsn.c b/drivers/net/ethernet/intel/igc/igc_tsn.c
+index 174103c4bea6..f2dfc8059847 100644
+--- a/drivers/net/ethernet/intel/igc/igc_tsn.c
++++ b/drivers/net/ethernet/intel/igc/igc_tsn.c
+@@ -18,8 +18,21 @@ static bool is_any_launchtime(struct igc_adapter *adapter)
+ 	return false;
+ }
+ 
++static unsigned int igc_tsn_new_flags(struct igc_adapter *adapter)
++{
++	unsigned int new_flags = adapter->flags & ~IGC_FLAG_TSN_ANY_ENABLED;
++
++	if (adapter->base_time)
++		new_flags |= IGC_FLAG_TSN_QBV_ENABLED;
++
++	if (is_any_launchtime(adapter))
++		new_flags |= IGC_FLAG_TSN_QBV_ENABLED;
++
++	return new_flags;
++}
++
+ /* Returns the TSN specific registers to their default values after
+- * TSN offloading is disabled.
++ * the adapter is reset.
+  */
+ static int igc_tsn_disable_offload(struct igc_adapter *adapter)
+ {
+@@ -27,11 +40,6 @@ static int igc_tsn_disable_offload(struct igc_adapter *adapter)
+ 	u32 tqavctrl;
+ 	int i;
+ 
+-	if (!(adapter->flags & IGC_FLAG_TSN_QBV_ENABLED))
+-		return 0;
+-
+-	adapter->cycle_time = 0;
+-
+ 	wr32(IGC_TXPBS, I225_TXPBSIZE_DEFAULT);
+ 	wr32(IGC_DTXMXPKTSZ, IGC_DTXMXPKTSZ_DEFAULT);
+ 
+@@ -68,9 +76,6 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
+ 	ktime_t base_time, systim;
+ 	int i;
+ 
+-	if (adapter->flags & IGC_FLAG_TSN_QBV_ENABLED)
+-		return 0;
+-
+ 	cycle = adapter->cycle_time;
+ 	base_time = adapter->base_time;
+ 
+@@ -125,33 +130,41 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
+ 	wr32(IGC_BASET_H, baset_h);
+ 	wr32(IGC_BASET_L, baset_l);
+ 
+-	adapter->flags |= IGC_FLAG_TSN_QBV_ENABLED;
+-
  	return 0;
  }
  
-+static int igc_save_frame_preemption(struct igc_adapter *adapter,
-+				     struct tc_preempt_qopt_offload *qopt)
++int igc_tsn_reset(struct igc_adapter *adapter)
 +{
-+	u32 preempt;
-+	int i;
++	unsigned int new_flags;
++	int err = 0;
 +
-+	preempt = qopt->preemptible_queues;
++	new_flags = igc_tsn_new_flags(adapter);
 +
-+	for (i = 0; i < adapter->num_tx_queues; i++) {
-+		struct igc_ring *ring = adapter->tx_ring[i];
++	if (!(new_flags & IGC_FLAG_TSN_ANY_ENABLED))
++		return igc_tsn_disable_offload(adapter);
 +
-+		ring->preemptible = preempt & BIT(i);
-+	}
++	err = igc_tsn_enable_offload(adapter);
++	if (err < 0)
++		return err;
 +
-+	return 0;
++	adapter->flags = new_flags;
++
++	return err;
 +}
 +
- static int igc_tsn_enable_qbv_scheduling(struct igc_adapter *adapter,
- 					 struct tc_taprio_qopt_offload *qopt)
+ int igc_tsn_offload_apply(struct igc_adapter *adapter)
  {
-@@ -5591,6 +5608,9 @@ static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 	case TC_SETUP_QDISC_ETF:
- 		return igc_tsn_enable_launchtime(adapter, type_data);
+-	bool is_any_enabled = adapter->base_time || is_any_launchtime(adapter);
+-
+-	if (!(adapter->flags & IGC_FLAG_TSN_QBV_ENABLED) && !is_any_enabled)
+-		return 0;
+-
+-	if (!is_any_enabled) {
+-		int err = igc_tsn_disable_offload(adapter);
+-
+-		if (err < 0)
+-			return err;
+-
+-		/* The BASET registers aren't cleared when writing
+-		 * into them, force a reset if the interface is
+-		 * running.
+-		 */
+-		if (netif_running(adapter->netdev))
+-			schedule_work(&adapter->reset_task);
++	int err;
  
-+	case TC_SETUP_PREEMPT:
-+		return igc_save_frame_preemption(adapter, type_data);
-+
- 	default:
- 		return -EOPNOTSUPP;
++	if (netif_running(adapter->netdev)) {
++		schedule_work(&adapter->reset_task);
+ 		return 0;
  	}
+ 
+-	return igc_tsn_enable_offload(adapter);
++	err = igc_tsn_enable_offload(adapter);
++	if (err < 0)
++		return err;
++
++	adapter->flags = igc_tsn_new_flags(adapter);
++	return 0;
+ }
+diff --git a/drivers/net/ethernet/intel/igc/igc_tsn.h b/drivers/net/ethernet/intel/igc/igc_tsn.h
+index f76bc86ddccd..1512307f5a52 100644
+--- a/drivers/net/ethernet/intel/igc/igc_tsn.h
++++ b/drivers/net/ethernet/intel/igc/igc_tsn.h
+@@ -5,5 +5,6 @@
+ #define _IGC_TSN_H_
+ 
+ int igc_tsn_offload_apply(struct igc_adapter *adapter);
++int igc_tsn_reset(struct igc_adapter *adapter);
+ 
+ #endif /* _IGC_BASE_H */
 -- 
 2.32.0
 
