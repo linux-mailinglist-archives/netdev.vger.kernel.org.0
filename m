@@ -2,138 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92E7F3B4F42
-	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 17:43:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6D13B4F44
+	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 17:44:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbhFZPpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Jun 2021 11:45:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51650 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229796AbhFZPpS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Jun 2021 11:45:18 -0400
-Received: from rorschach.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2EE6C61941;
-        Sat, 26 Jun 2021 15:42:55 +0000 (UTC)
-Date:   Sat, 26 Jun 2021 11:41:57 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
-Subject: Re: [PATCH] tracepoint: Do not warn on EEXIST or ENOENT
-Message-ID: <20210626114157.765d9371@rorschach.local.home>
-In-Reply-To: <7297f336-70e5-82d3-f8d3-27f08c7d1548@i-love.sakura.ne.jp>
-References: <20210626135845.4080-1-penguin-kernel@I-love.SAKURA.ne.jp>
-        <20210626101834.55b4ecf1@rorschach.local.home>
-        <7297f336-70e5-82d3-f8d3-27f08c7d1548@i-love.sakura.ne.jp>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S229952AbhFZPrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Jun 2021 11:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229657AbhFZPrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Jun 2021 11:47:06 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAFFC061574
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 08:44:42 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id h17so17779634edw.11
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 08:44:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zZ8IGPIHs4CXPcgNEwFSxGDvp7LnLJfqRLnAqdPtDrE=;
+        b=DJszL1bTAIZSp/kMzOOvLRMLVCG4z6nF9HGFs7xj7Gf/e/iNRpMjGQe5iP/0DG+kj0
+         2WRYDp2+lEGPq9fdvnhff6mv4FFF4rsJZxqz3RSq5jwMvX7NeHlG89nFFPMBZNp6Ikk4
+         gV43xW+Xho9Mg/6SDFwwMjEOsiCetGgEXBsOUE5OjKJ0bZU9adgcQpvxhHFzSsL9qDmS
+         /mAlOA9yi3NlNNSHNml6Si74QBuDbQBi1fk88tFFEx1mXYY2NdJg2z1SkaM+FDNwiKhZ
+         p0Y6sKLtpmN0+bjCHYZaTjjzy9uWIkcDLqUTvH4dTqAW1u2vku/OPgd04/HLNvy8Ugy+
+         CDXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zZ8IGPIHs4CXPcgNEwFSxGDvp7LnLJfqRLnAqdPtDrE=;
+        b=jR0cVX+5jBu3urgxRS5oYKWpGCnEVBc74m5eHv4w2GQ7q+OfvYV9JuqfvV3zYfNT1U
+         mhfcCFSxFS4RQtT1OEYsyY74fcHKMAsdv0urm+KpU8KNgsYjXgsrl5CfawTVe7S7WLXC
+         dGx+EKfOP0mbCrhfxpeoDG1toZEgJ+fEKqFW9qIirio03iRZoyo3priqEoK2X6BWbaGM
+         RTbfiYLvhffQq4AZMVA8H/tts9cPnWkv3+ZOxiJsTNfLHiLic95sRMxyzZWzyg4lFrQh
+         yuqioUACB5N+D5gaS5MbqzM7AKOyvpof76ydqVrAPMsA8xvXUTec1LTomlD7nHikKbl9
+         T9SA==
+X-Gm-Message-State: AOAM531iLBOUvEMBc6TYYuEaLtQiKkcNfzeraJeCp1AtlYAJneNjCCOJ
+        9iQYaMKnQ0mUzj4gOHZnobAGywh2mkkeVw==
+X-Google-Smtp-Source: ABdhPJwRvt9aqG14PvtQ1+1Vfo5JJe7wCEYq/FBtxj5UI1HJbxEv0Whgntb72b8/clKRV74D5O7psw==
+X-Received: by 2002:a50:f10a:: with SMTP id w10mr22528049edl.137.1624722281311;
+        Sat, 26 Jun 2021 08:44:41 -0700 (PDT)
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com. [209.85.128.53])
+        by smtp.gmail.com with ESMTPSA id h7sm295335edb.13.2021.06.26.08.44.40
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 26 Jun 2021 08:44:40 -0700 (PDT)
+Received: by mail-wm1-f53.google.com with SMTP id u8-20020a7bcb080000b02901e44e9caa2aso7701529wmj.4
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 08:44:40 -0700 (PDT)
+X-Received: by 2002:a7b:c20d:: with SMTP id x13mr16794210wmi.70.1624722279814;
+ Sat, 26 Jun 2021 08:44:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <c9bd6d9006f446b7eebd3a5bf06cb92f61e5f3a8.1624716130.git.andreas.a.roeseler@gmail.com>
+In-Reply-To: <c9bd6d9006f446b7eebd3a5bf06cb92f61e5f3a8.1624716130.git.andreas.a.roeseler@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sat, 26 Jun 2021 11:44:03 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeirEnkOuPwsD2CH9TX5=rppNF8k9ZhBdFdSS9rn+CjbQ@mail.gmail.com>
+Message-ID: <CA+FuTSeirEnkOuPwsD2CH9TX5=rppNF8k9ZhBdFdSS9rn+CjbQ@mail.gmail.com>
+Subject: Re: [PATCH net-next V4] ipv6: ICMPV6: add response to ICMPV6 RFC 8335
+ PROBE messages
+To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        willemdebruijn.kernel@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 27 Jun 2021 00:13:17 +0900
-Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp> wrote:
+On Sat, Jun 26, 2021 at 10:08 AM Andreas Roeseler
+<andreas.a.roeseler@gmail.com> wrote:
+>
+> This patch builds off of commit 2b246b2569cd2ac6ff700d0dce56b8bae29b1842
+> and adds functionality to respond to ICMPV6 PROBE requests.
+>
+> Add icmp_build_probe function to construct PROBE requests for both
+> ICMPV4 and ICMPV6.
+>
+> Modify icmpv6_rcv to detect ICMPV6 PROBE messages and call the
+> icmpv6_echo_reply handler.
+>
+> Modify icmpv6_echo_reply to build a PROBE response message based on the
+> queried interface.
+>
+> This patch has been tested using a branch of the iputils git repo which can
+> be found here: https://github.com/Juniper-Clinic-2020/iputils/tree/probe-request
+>
+> Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
 
-> On 2021/06/26 23:18, Steven Rostedt wrote:
-> > On Sat, 26 Jun 2021 22:58:45 +0900
-> > Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp> wrote:
-> >   
-> >> syzbot is hitting WARN_ON_ONCE() at tracepoint_add_func() [1], but
-> >> func_add() returning -EEXIST and func_remove() returning -ENOENT are
-> >> not kernel bugs that can justify crashing the system.  
-> > 
-> > There should be no path that registers a tracepoint twice. That's a bug
-> > in the kernel. Looking at the link below, I see the backtrace:
-> > 
-> > Call Trace:
-> >  tracepoint_probe_register_prio kernel/tracepoint.c:369 [inline]
-> >  tracepoint_probe_register+0x9c/0xe0 kernel/tracepoint.c:389
-> >  __bpf_probe_register kernel/trace/bpf_trace.c:2154 [inline]
-> >  bpf_probe_register+0x15a/0x1c0 kernel/trace/bpf_trace.c:2159
-> >  bpf_raw_tracepoint_open+0x34a/0x720 kernel/bpf/syscall.c:2878
-> >  __do_sys_bpf+0x2586/0x4f40 kernel/bpf/syscall.c:4435
-> >  do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
-> > 
-> > So BPF is allowing the user to register the same tracepoint more than
-> > once? That looks to be a bug in the BPF code where it shouldn't be
-> > allowing user space to register the same tracepoint multiple times.  
-> 
-> I didn't catch your question.
-> 
->   (1) func_add() can reject an attempt to add same tracepoint multiple times
->       by returning -EINVAL to the caller.
->   (2) But tracepoint_add_func() (the caller of func_add()) is calling WARN_ON_ONCE()
->       if func_add() returned -EINVAL.
-
-That's because (before BPF) there's no place in the kernel that tries
-to register the same tracepoint multiple times, and was considered a
-bug if it happened, because there's no ref counters to deal with adding
-them multiple times.
-
-If the tracepoint is already registered (with the given function and
-data), then something likely went wrong.
-
->   (3) And tracepoint_add_func() is triggerable via request from userspace.
-
-Only via BPF correct?
-
-I'm not sure how it works, but can't BPF catch that it is registering
-the same tracepoint again?
-
-We could add this patch, but then we need to add the WARN_ON_ONCE() to
-all the other callers, because for the other callers it's a bug if the
-tracepoint was registered twice with the same callback and data.
-
-Or we can add another interface that wont warn, and BPF can use that.
-
->   (4) tracepoint_probe_register_prio() serializes tracepoint_add_func() call
->       triggered by concurrent request from userspace using tracepoints_mutex mutex.
-
-You keep saying user space. Is it a BPF program?
-
->   (5) But tracepoint_add_func() does not check whether same tracepoint multiple
->       is already registered before calling func_add().
-
-Because it's considered a bug in the kernel if that is the case.
-
->   (6) As a result, tracepoint_add_func() receives -EINVAL from func_add(), and
->       calls WARN_ON_ONCE() and the system crashes due to panic_on_warn == 1.
-> 
-> Why this is a bug in the BPF code? The BPF code is not allowing userspace to
-> register the same tracepoint multiple times. I think that tracepoint_add_func()
-
-Then how is the same tracepoint being registered multiple times?
-
-You keep saying "user space" but the only way user space is doing this
-is through BPF. Or am I missing something?
-
-> is stupid enough to crash the kernel instead of rejecting when an attempt to
-> register the same tracepoint multiple times is made.
-
-Because its a bug in the kernel, and WARN_ON_ONCE() is what is used
-when you detect something that is considered a bug in the kernel. If
-you don't want warnings to crash the kernel, you don't add
-"panic_on_warning".
-
-If BPF is expected to register the same tracepoint with the same
-callback and data more than once, then let's add a call to do that
-without warning. Like I said, other callers expect the call to succeed
-unless it's out of memory, which tends to cause other problems.
-
-FYI, this warning has caught bugs in my own code, that triggered my
-tests to fail, and had me go fix that bug before pushing it further.
-And my tests fail only on a full warning.
-
--- Steve
+Reviewed-by: Willem de Bruijn <willemb@google.com>
