@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD9583B504E
-	for <lists+netdev@lfdr.de>; Sat, 26 Jun 2021 23:42:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C72173B5074
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 01:24:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230406AbhFZVnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Jun 2021 17:43:49 -0400
-Received: from novek.ru ([213.148.174.62]:39140 "EHLO novek.ru"
+        id S230104AbhFZXXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Jun 2021 19:23:41 -0400
+Received: from novek.ru ([213.148.174.62]:39374 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230151AbhFZVns (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Jun 2021 17:43:48 -0400
+        id S229556AbhFZXXl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Jun 2021 19:23:41 -0400
 Received: from [192.168.0.18] (unknown [37.228.234.253])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 7D794503CB8;
-        Sun, 27 Jun 2021 00:39:23 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 7D794503CB8
+        by novek.ru (Postfix) with ESMTPSA id 13F62503CB8;
+        Sun, 27 Jun 2021 02:19:16 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 13F62503CB8
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1624743564; bh=xBbDc27JAwZmHTwc0ebKXdc1RR2VWjTOa10i8t+JmhA=;
+        t=1624749557; bh=HGkuypySFrOMd390va8Z8pxZ26jYBQlX0s9VKZbWhug=;
         h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=YtBAyAS6OUjBPAYepJF9LCUUuoKGBjt7EItb/I5hSx3Ii7HoioaP9zFexUjfrLboN
-         6d3kDNtAnMmS04Uf6sNzCmdUChEGLk0S6pbeiEVwzq5OojIghhqNFno8gUPdY9Q60e
-         lDHnAqr+srLm3p3+Og0k/5e1VjKXprQt0kyU0k0M=
+        b=TxbtS18+YDLyJxswRALN5FZLX3RLZzR0WJKvaU9xrOJ2Y1YXBB+K4rQgZhZE2M6I9
+         aPwBMr0nh5QCwko+c1yKDusMngZ9iTKiTBlAxl33EtmHVtzxRQacwGxbnOA5xKGs4B
+         iifcAbjbgx5reifkel0xZ6eq4DlTusqeAFDfwjYM=
 Subject: Re: [PATCH net v2] net: lwtunnel: handle MTU calculation in forwading
 To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
         netdev@vger.kernel.org, Roopa Prabhu <roopa@nvidia.com>
@@ -32,8 +32,8 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
 References: <20210625162139.9067-1-vfedorenko@novek.ru>
  <afc66439-d288-c2ea-f129-c9833d8a4d89@gmail.com>
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <65961d37-9f7f-631c-2293-aa1193aca83b@novek.ru>
-Date:   Sat, 26 Jun 2021 22:41:21 +0100
+Message-ID: <098bdb2d-aba1-0838-eae1-098848d174b1@novek.ru>
+Date:   Sun, 27 Jun 2021 00:21:13 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
@@ -78,15 +78,4 @@ On 26.06.2021 18:18, David Ahern wrote:
 > considered for the mtu. Did you run the pmtu.sh selftests to make sure
 > those still work?
 > 
-
-Actually not, I was running my own tests of routing configurations with 
-different types of tunnels like GRE, GUE and FOU with mpls lwtunnels to check 
-consistency of calculated mtus.
-
-Will re-run pmtu.sh but I my installation doesn't support OVS right now.
-
-Also, I was thinking about this RTAX_MTU and I'm really in doubt. Do we actually 
-want the situation when
-   ip route A.B.C.D/32 encap mpls 100 dev ip6tnl1 mtu 1400
-will actually require mtu=1396? Because this looks like not clear for users I 
-suppose.
+pmtu.sh tests are ok for everything except OVS which are skipped on my test system.
