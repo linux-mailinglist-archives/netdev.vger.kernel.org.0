@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D47DA3B5332
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 13:54:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56B2B3B5333
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 13:54:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230260AbhF0L5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 07:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54910 "EHLO
+        id S230225AbhF0L5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 07:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbhF0L5G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 07:57:06 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD89C061766
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 04:54:41 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id i24so20894167edx.4
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 04:54:40 -0700 (PDT)
+        with ESMTP id S230207AbhF0L5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 07:57:07 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A10C061767
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 04:54:42 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id t3so20878786edc.7
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 04:54:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8TkAsqOeKnMhY2yKN8Z193brKKb4tTAjtYMTNGSxg/w=;
-        b=vcSG+wcMfVLbMYYdPAGbsmVbqs0otGO/xUShpYi9w58lA+HLJ2EdisQEXLxwiO8atJ
-         z7r5aQuhFYBV42JkMxCTKYWALdw0acli/+BZsXYbsAMc07N6cS94SZGGevDSjhwZX0oo
-         qKYFJKg61OFQEvCNH6wjo2Adxn5gbRxWgSAe95LuuP6ZNl8gHXj6eMfrrK+GXHhBJAd/
-         CPS8+DlBj0DVSZkx6q14GRfV6nnEWIAQRg7CeUwLYkq8hrKHFu4a00FXn4P2DKQ/OseY
-         8lEg6rJ5RyiWsmxfWNvK+De4GZtMXIGXohZhr9/yohHEvl8sxXWM3/yeDxBSwdIDDzmq
-         wCHw==
+        bh=PhxhHzM+Gx5kDzn3PDcqP7KW1UZmwEUFvtjkuz9RLTg=;
+        b=vacwk4a6kyY8Rx0x4UB2qyzjxxBkjHKmup/Ahc0qj73Va39gfR6mud5nGjIV3HCL78
+         S7mi53qTbPJxx1wExRQNq5YT8BCElNZM2+Na0q6OSGh3DNHfP9A0HxQyZfx0tce14Xcl
+         BnObNoGDHvHWEoxJXiD+rgNtBLT1So+bwm6EvUaBl6ynMcOyvCjUCD5DekawiX5qUlNf
+         hC3odz0phVr0CO3zUZMyQ29oN5ObBVqkoYsAyFZpQXdzu3rxVBgm83TJlTh3Hey7xcZ4
+         staSBAHjYjos0+2dbt9YMJMqG6AKjlu72GuuPHzEbiePpuUjNGY4B4R4ylhhYoAqxDlD
+         bwZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8TkAsqOeKnMhY2yKN8Z193brKKb4tTAjtYMTNGSxg/w=;
-        b=ESue0NuTxHTAXVRj72A7GnWOk8TfRtwvrc9bFqnJdkYM9HXFhWZuuVRcnbQ0YJKekw
-         XPurlIMtj7ocNZgaKRgXraFnk/CHOvwF8t9Ludhklxtt72HBXv4ZSyNssjLnBvO6UQpK
-         bxIDdRk12gDvtvFd0f5qgGY/VPmvuBlGEY/u3Y+8zxREgsqTzUgsaO5SS24PVj9Gw+yy
-         oBCE8Y/EubcgsyEVMuuA2RAFXLoozemIZ2LDf0x+EQhMhAkpn7fdaT9a1C22u3kgQYZO
-         TvKMAe1DLbx6vRbqYELhgAmKG0sEwUHp7ox0Ggo1fJlB/mmruHz9TeZbk2KCT29h2/Bw
-         T0qw==
-X-Gm-Message-State: AOAM530ua/YyvFGDcQv3yJP6k4x09+30KWhRt1MfTr2ddBAGxmA2Gw9X
-        okB/tAAu+dwSQiik4mJNcZc=
-X-Google-Smtp-Source: ABdhPJyhcVBif4toFrrbZpc6Gsai7HcqzA1r1vqDT6zt1jZ462QW4mcdgpi58wbiwyFlJJyx383Q+Q==
-X-Received: by 2002:a05:6402:1d2d:: with SMTP id dh13mr13874262edb.282.1624794879615;
-        Sun, 27 Jun 2021 04:54:39 -0700 (PDT)
+        bh=PhxhHzM+Gx5kDzn3PDcqP7KW1UZmwEUFvtjkuz9RLTg=;
+        b=obFHkv97gtuF2vDE6JWYHdJm+o+eTGtCiCAWXTJhIVA38InbcUHRJD8djfd03cBO/9
+         xVjqHQ7qL0FldBmVV8gp6NE9nYzFgOs6mYWtxa/4+ngUiweEj9+HdZCRY3fxHXPl/Olh
+         NfB4LhEuzVIPbLTKmwyCuZ/1yU66glpy6KZZpk8oOxs5KQltpRN0EgmAhTiA3ee3tBJ3
+         1CdaWxlPwOskJ/5oVTvEaWn2CpC25BTBEDHxfzK9xxm/ysYpKFq0LIFIa6Wnz5M6q7nB
+         Y1NUCEHJAQPlvWefvsOrBji+Omc3wpQ7zBERT00G/ZozdteWYDncJmP/AuZ2vW6oPkrC
+         xa7w==
+X-Gm-Message-State: AOAM531iEWiWSGgTUA3865FT++Bv+lFP01LtJD7CHisG4saHvXjQ9hSy
+        H1Iq6NZK3V8GIbzg3SUsKnI=
+X-Google-Smtp-Source: ABdhPJwlCXcryeLfRSFpopvvmWYHty4jkKSZPoytm5ofSGMUXCKABf8SvezT6yKQ4vs3i0CyiE9MyQ==
+X-Received: by 2002:aa7:de90:: with SMTP id j16mr26804400edv.385.1624794880671;
+        Sun, 27 Jun 2021 04:54:40 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id s4sm7683688edu.49.2021.06.27.04.54.38
+        by smtp.gmail.com with ESMTPSA id s4sm7683688edu.49.2021.06.27.04.54.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Jun 2021 04:54:39 -0700 (PDT)
+        Sun, 27 Jun 2021 04:54:40 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -59,9 +59,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 3/8] net: switchdev: add a context void pointer to struct switchdev_notifier_info
-Date:   Sun, 27 Jun 2021 14:54:24 +0300
-Message-Id: <20210627115429.1084203-4-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 4/8] net: bridge: ignore switchdev events for LAG ports which didn't request replay
+Date:   Sun, 27 Jun 2021 14:54:25 +0300
+Message-Id: <20210627115429.1084203-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210627115429.1084203-1-olteanv@gmail.com>
 References: <20210627115429.1084203-1-olteanv@gmail.com>
@@ -73,446 +73,349 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-In the case where the driver asks for a replay of a certain type of
-event (port object or attribute) for a bridge port that is a LAG, it may
-do so because this port has just joined the LAG.
+There is a slight inconvenience in the switchdev replay helpers added
+recently, and this is when:
 
-But there might already be other switchdev ports in that LAG, and it is
-preferable that those preexisting switchdev ports do not act upon the
-replayed event.
+ip link add br0 type bridge
+ip link add bond0 type bond
+ip link set bond0 master br0
+bridge vlan add dev bond0 vid 100
+ip link set swp0 master bond0
+ip link set swp1 master bond0
 
-The solution is to add a context to switchdev events, which is NULL most
-of the time (when the bridge layer initiates the call) but which can be
-set to a value controlled by the switchdev driver when a replay is
-requested. The driver can then check the context to figure out if all
-ports within the LAG should act upon the switchdev event, or just the
-ones that match the context.
+Since the underlying driver (currently only DSA) asks for a replay of
+VLANs when swp0 and swp1 join the LAG because it is bridged, what will
+happen is that DSA will try to react twice on the VLAN event for swp0.
+This is not really a huge problem right now, because most drivers accept
+duplicates since the bridge itself does, but it will become a problem
+when we add support for replaying switchdev object deletions.
 
-We have to modify all switchdev_handle_* helper functions as well as the
-prototypes in the drivers that use these helpers too, because these
-helpers hide the underlying struct switchdev_notifier_info from us and
-there is no way to retrieve the context otherwise.
-
-The context structure will be populated and used in later patches.
+Let's fix this by adding a blank void *ctx in the replay helpers, which
+will be passed on by the bridge in the switchdev notifications. If the
+context is NULL, everything is the same as before. But if the context is
+populated with a valid pointer, the underlying switchdev driver
+(currently DSA) can use the pointer to 'see through' the bridge port
+(which in the example above is bond0) and 'know' that the event is only
+for a particular physical port offloading that bridge port, and not for
+all of them.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
-v1->v2: none
+v1->v2: s/void *ctx/const void *ctx/ in include/linux/if_bridge.h
 
- .../ethernet/freescale/dpaa2/dpaa2-switch.c   |  2 +-
- .../marvell/prestera/prestera_switchdev.c     |  6 ++---
- .../mellanox/mlx5/core/en/rep/bridge.c        |  3 +++
- .../mellanox/mlxsw/spectrum_switchdev.c       |  6 ++---
- .../microchip/sparx5/sparx5_switchdev.c       |  2 +-
- drivers/net/ethernet/mscc/ocelot_net.c        |  6 ++---
- drivers/net/ethernet/ti/am65-cpsw-switchdev.c |  6 ++---
- drivers/net/ethernet/ti/cpsw_switchdev.c      |  6 ++---
- include/net/switchdev.h                       | 13 +++++-----
- net/dsa/slave.c                               |  6 ++---
- net/switchdev/switchdev.c                     | 25 +++++++++++--------
- 11 files changed, 44 insertions(+), 37 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_net.c | 19 +++++++++++++++++--
+ include/linux/if_bridge.h              | 14 ++++++++------
+ net/bridge/br_fdb.c                    |  7 ++++---
+ net/bridge/br_mdb.c                    |  8 +++++---
+ net/bridge/br_vlan.c                   |  8 +++++---
+ net/dsa/port.c                         |  6 +++---
+ net/dsa/slave.c                        |  9 +++++++++
+ 7 files changed, 51 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-index 05de37c3b64c..f3d12d0714fb 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-@@ -1625,7 +1625,7 @@ static int dpaa2_switch_port_bridge_flags(struct net_device *netdev,
- 	return 0;
- }
- 
--static int dpaa2_switch_port_attr_set(struct net_device *netdev,
-+static int dpaa2_switch_port_attr_set(struct net_device *netdev, const void *ctx,
- 				      const struct switchdev_attr *attr,
- 				      struct netlink_ext_ack *extack)
- {
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-index 74b81b4fbb97..0b3e8f2db294 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-@@ -708,7 +708,7 @@ static int prestera_port_attr_stp_state_set(struct prestera_port *port,
- 	return err;
- }
- 
--static int prestera_port_obj_attr_set(struct net_device *dev,
-+static int prestera_port_obj_attr_set(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_attr *attr,
- 				      struct netlink_ext_ack *extack)
- {
-@@ -1040,7 +1040,7 @@ static int prestera_port_vlans_add(struct prestera_port *port,
- 					     flag_pvid, extack);
- }
- 
--static int prestera_port_obj_add(struct net_device *dev,
-+static int prestera_port_obj_add(struct net_device *dev, const void *ctx,
- 				 const struct switchdev_obj *obj,
- 				 struct netlink_ext_ack *extack)
- {
-@@ -1078,7 +1078,7 @@ static int prestera_port_vlans_del(struct prestera_port *port,
- 	return 0;
- }
- 
--static int prestera_port_obj_del(struct net_device *dev,
-+static int prestera_port_obj_del(struct net_device *dev, const void *ctx,
- 				 const struct switchdev_obj *obj)
- {
- 	struct prestera_port *port = netdev_priv(dev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-index 7f5efc1b4392..3c0032c9647c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
-@@ -76,6 +76,7 @@ static int mlx5_esw_bridge_switchdev_port_event(struct notifier_block *nb,
- }
- 
- static int mlx5_esw_bridge_port_obj_add(struct net_device *dev,
-+					const void *ctx,
- 					const struct switchdev_obj *obj,
- 					struct netlink_ext_ack *extack)
- {
-@@ -107,6 +108,7 @@ static int mlx5_esw_bridge_port_obj_add(struct net_device *dev,
- }
- 
- static int mlx5_esw_bridge_port_obj_del(struct net_device *dev,
-+					const void *ctx,
- 					const struct switchdev_obj *obj)
- {
- 	const struct switchdev_obj_port_vlan *vlan;
-@@ -136,6 +138,7 @@ static int mlx5_esw_bridge_port_obj_del(struct net_device *dev,
- }
- 
- static int mlx5_esw_bridge_port_obj_attr_set(struct net_device *dev,
-+					     const void *ctx,
- 					     const struct switchdev_attr *attr,
- 					     struct netlink_ext_ack *extack)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 0cfba2986841..c5ef9aa64efe 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -898,7 +898,7 @@ mlxsw_sp_port_attr_br_mrouter_set(struct mlxsw_sp_port *mlxsw_sp_port,
- 	return 0;
- }
- 
--static int mlxsw_sp_port_attr_set(struct net_device *dev,
-+static int mlxsw_sp_port_attr_set(struct net_device *dev, const void *ctx,
- 				  const struct switchdev_attr *attr,
- 				  struct netlink_ext_ack *extack)
- {
-@@ -1766,7 +1766,7 @@ mlxsw_sp_port_mrouter_update_mdb(struct mlxsw_sp_port *mlxsw_sp_port,
- 	}
- }
- 
--static int mlxsw_sp_port_obj_add(struct net_device *dev,
-+static int mlxsw_sp_port_obj_add(struct net_device *dev, const void *ctx,
- 				 const struct switchdev_obj *obj,
- 				 struct netlink_ext_ack *extack)
- {
-@@ -1916,7 +1916,7 @@ mlxsw_sp_bridge_port_mdb_flush(struct mlxsw_sp_port *mlxsw_sp_port,
- 	}
- }
- 
--static int mlxsw_sp_port_obj_del(struct net_device *dev,
-+static int mlxsw_sp_port_obj_del(struct net_device *dev, const void *ctx,
- 				 const struct switchdev_obj *obj)
- {
- 	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-index 19c7cb795b4b..246eba711f15 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-@@ -65,7 +65,7 @@ static void sparx5_port_attr_ageing_set(struct sparx5_port *port,
- 	sparx5_set_ageing(port->sparx5, ageing_time);
- }
- 
--static int sparx5_port_attr_set(struct net_device *dev,
-+static int sparx5_port_attr_set(struct net_device *dev, const void *ctx,
- 				const struct switchdev_attr *attr,
- 				struct netlink_ext_ack *extack)
- {
 diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 4fc74ee4aaab..456541640feb 100644
+index 456541640feb..166d851962d2 100644
 --- a/drivers/net/ethernet/mscc/ocelot_net.c
 +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -939,7 +939,7 @@ static void ocelot_port_attr_mc_set(struct ocelot *ocelot, int port, bool mc)
- 		       ANA_PORT_CPU_FWD_CFG, port);
- }
+@@ -948,6 +948,9 @@ static int ocelot_port_attr_set(struct net_device *dev, const void *ctx,
+ 	int port = priv->chip_port;
+ 	int err = 0;
  
--static int ocelot_port_attr_set(struct net_device *dev,
-+static int ocelot_port_attr_set(struct net_device *dev, const void *ctx,
- 				const struct switchdev_attr *attr,
- 				struct netlink_ext_ack *extack)
- {
-@@ -1058,7 +1058,7 @@ ocelot_port_obj_mrp_del_ring_role(struct net_device *dev,
- 	return ocelot_mrp_del_ring_role(ocelot, port, mrp);
- }
- 
--static int ocelot_port_obj_add(struct net_device *dev,
-+static int ocelot_port_obj_add(struct net_device *dev, const void *ctx,
++	if (ctx && ctx != priv)
++		return 0;
++
+ 	switch (attr->id) {
+ 	case SWITCHDEV_ATTR_ID_PORT_STP_STATE:
+ 		ocelot_port_attr_stp_state_set(ocelot, port, attr->u.stp_state);
+@@ -1062,8 +1065,12 @@ static int ocelot_port_obj_add(struct net_device *dev, const void *ctx,
  			       const struct switchdev_obj *obj,
  			       struct netlink_ext_ack *extack)
  {
-@@ -1086,7 +1086,7 @@ static int ocelot_port_obj_add(struct net_device *dev,
- 	return ret;
- }
++	struct ocelot_port_private *priv = netdev_priv(dev);
+ 	int ret = 0;
  
--static int ocelot_port_obj_del(struct net_device *dev,
-+static int ocelot_port_obj_del(struct net_device *dev, const void *ctx,
++	if (ctx && ctx != priv)
++		return 0;
++
+ 	switch (obj->id) {
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+ 		ret = ocelot_port_obj_add_vlan(dev,
+@@ -1089,8 +1096,12 @@ static int ocelot_port_obj_add(struct net_device *dev, const void *ctx,
+ static int ocelot_port_obj_del(struct net_device *dev, const void *ctx,
  			       const struct switchdev_obj *obj)
  {
++	struct ocelot_port_private *priv = netdev_priv(dev);
  	int ret = 0;
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
-index 23cfb91e9c4d..9c29b363e9ae 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
-@@ -84,7 +84,7 @@ static int am65_cpsw_port_attr_br_flags_pre_set(struct net_device *netdev,
- 	return 0;
- }
  
--static int am65_cpsw_port_attr_set(struct net_device *ndev,
-+static int am65_cpsw_port_attr_set(struct net_device *ndev, const void *ctx,
- 				   const struct switchdev_attr *attr,
- 				   struct netlink_ext_ack *extack)
++	if (ctx && ctx != priv)
++		return 0;
++
+ 	switch (obj->id) {
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+ 		ret = ocelot_vlan_vid_del(dev,
+@@ -1143,10 +1154,14 @@ static int ocelot_switchdev_sync(struct ocelot *ocelot, int port,
+ 				 struct net_device *bridge_dev,
+ 				 struct netlink_ext_ack *extack)
  {
-@@ -302,7 +302,7 @@ static int am65_cpsw_port_mdb_del(struct am65_cpsw_port *port,
- 	return 0;
- }
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	struct ocelot_port_private *priv;
+ 	clock_t ageing_time;
+ 	u8 stp_state;
+ 	int err;
  
--static int am65_cpsw_port_obj_add(struct net_device *ndev,
-+static int am65_cpsw_port_obj_add(struct net_device *ndev, const void *ctx,
- 				  const struct switchdev_obj *obj,
- 				  struct netlink_ext_ack *extack)
- {
-@@ -329,7 +329,7 @@ static int am65_cpsw_port_obj_add(struct net_device *ndev,
- 	return err;
- }
++	priv = container_of(ocelot_port, struct ocelot_port_private, port);
++
+ 	ocelot_inherit_brport_flags(ocelot, port, brport_dev);
  
--static int am65_cpsw_port_obj_del(struct net_device *ndev,
-+static int am65_cpsw_port_obj_del(struct net_device *ndev, const void *ctx,
- 				  const struct switchdev_obj *obj)
- {
- 	struct switchdev_obj_port_vlan *vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
-diff --git a/drivers/net/ethernet/ti/cpsw_switchdev.c b/drivers/net/ethernet/ti/cpsw_switchdev.c
-index 05a64fb7a04f..f7fb6e17dadd 100644
---- a/drivers/net/ethernet/ti/cpsw_switchdev.c
-+++ b/drivers/net/ethernet/ti/cpsw_switchdev.c
-@@ -86,7 +86,7 @@ static int cpsw_port_attr_br_flags_pre_set(struct net_device *netdev,
- 	return 0;
- }
+ 	stp_state = br_port_get_stp_state(brport_dev);
+@@ -1160,12 +1175,12 @@ static int ocelot_switchdev_sync(struct ocelot *ocelot, int port,
+ 	ageing_time = br_get_ageing_time(bridge_dev);
+ 	ocelot_port_attr_ageing_set(ocelot, port, ageing_time);
  
--static int cpsw_port_attr_set(struct net_device *ndev,
-+static int cpsw_port_attr_set(struct net_device *ndev, const void *ctx,
- 			      const struct switchdev_attr *attr,
- 			      struct netlink_ext_ack *extack)
- {
-@@ -310,7 +310,7 @@ static int cpsw_port_mdb_del(struct cpsw_priv *priv,
- 	return err;
- }
+-	err = br_mdb_replay(bridge_dev, brport_dev,
++	err = br_mdb_replay(bridge_dev, brport_dev, priv,
+ 			    &ocelot_switchdev_blocking_nb, extack);
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
  
--static int cpsw_port_obj_add(struct net_device *ndev,
-+static int cpsw_port_obj_add(struct net_device *ndev, const void *ctx,
- 			     const struct switchdev_obj *obj,
- 			     struct netlink_ext_ack *extack)
- {
-@@ -338,7 +338,7 @@ static int cpsw_port_obj_add(struct net_device *ndev,
- 	return err;
- }
- 
--static int cpsw_port_obj_del(struct net_device *ndev,
-+static int cpsw_port_obj_del(struct net_device *ndev, const void *ctx,
- 			     const struct switchdev_obj *obj)
- {
- 	struct switchdev_obj_port_vlan *vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index f1a5a9a3634d..e4cac9218ce1 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -202,6 +202,7 @@ enum switchdev_notifier_type {
- struct switchdev_notifier_info {
- 	struct net_device *dev;
- 	struct netlink_ext_ack *extack;
-+	const void *ctx;
- };
- 
- struct switchdev_notifier_fdb_info {
-@@ -268,19 +269,19 @@ void switchdev_port_fwd_mark_set(struct net_device *dev,
- int switchdev_handle_port_obj_add(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*add_cb)(struct net_device *dev,
-+			int (*add_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj,
- 				      struct netlink_ext_ack *extack));
- int switchdev_handle_port_obj_del(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*del_cb)(struct net_device *dev,
-+			int (*del_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj));
- 
- int switchdev_handle_port_attr_set(struct net_device *dev,
- 			struct switchdev_notifier_port_attr_info *port_attr_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*set_cb)(struct net_device *dev,
-+			int (*set_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_attr *attr,
- 				      struct netlink_ext_ack *extack));
+-	err = br_vlan_replay(bridge_dev, brport_dev,
++	err = br_vlan_replay(bridge_dev, brport_dev, priv,
+ 			     &ocelot_switchdev_blocking_nb, extack);
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
+diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+index 12e9a32dbca0..57df761b6f4a 100644
+--- a/include/linux/if_bridge.h
++++ b/include/linux/if_bridge.h
+@@ -71,7 +71,8 @@ bool br_multicast_has_router_adjacent(struct net_device *dev, int proto);
+ bool br_multicast_enabled(const struct net_device *dev);
+ bool br_multicast_router(const struct net_device *dev);
+ int br_mdb_replay(struct net_device *br_dev, struct net_device *dev,
+-		  struct notifier_block *nb, struct netlink_ext_ack *extack);
++		  const void *ctx, struct notifier_block *nb,
++		  struct netlink_ext_ack *extack);
  #else
-@@ -352,7 +353,7 @@ static inline int
- switchdev_handle_port_obj_add(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*add_cb)(struct net_device *dev,
-+			int (*add_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj,
- 				      struct netlink_ext_ack *extack))
+ static inline int br_multicast_list_adjacent(struct net_device *dev,
+ 					     struct list_head *br_ip_list)
+@@ -104,7 +105,7 @@ static inline bool br_multicast_router(const struct net_device *dev)
+ 	return false;
+ }
+ static inline int br_mdb_replay(struct net_device *br_dev,
+-				struct net_device *dev,
++				struct net_device *dev, const void *ctx,
+ 				struct notifier_block *nb,
+ 				struct netlink_ext_ack *extack)
  {
-@@ -363,7 +364,7 @@ static inline int
- switchdev_handle_port_obj_del(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*del_cb)(struct net_device *dev,
-+			int (*del_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj))
+@@ -120,7 +121,8 @@ int br_vlan_get_proto(const struct net_device *dev, u16 *p_proto);
+ int br_vlan_get_info(const struct net_device *dev, u16 vid,
+ 		     struct bridge_vlan_info *p_vinfo);
+ int br_vlan_replay(struct net_device *br_dev, struct net_device *dev,
+-		   struct notifier_block *nb, struct netlink_ext_ack *extack);
++		   const void *ctx, struct notifier_block *nb,
++		   struct netlink_ext_ack *extack);
+ #else
+ static inline bool br_vlan_enabled(const struct net_device *dev)
  {
- 	return 0;
-@@ -373,7 +374,7 @@ static inline int
- switchdev_handle_port_attr_set(struct net_device *dev,
- 			struct switchdev_notifier_port_attr_info *port_attr_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*set_cb)(struct net_device *dev,
-+			int (*set_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_attr *attr,
- 				      struct netlink_ext_ack *extack))
+@@ -149,7 +151,7 @@ static inline int br_vlan_get_info(const struct net_device *dev, u16 vid,
+ }
+ 
+ static inline int br_vlan_replay(struct net_device *br_dev,
+-				 struct net_device *dev,
++				 struct net_device *dev, const void *ctx,
+ 				 struct notifier_block *nb,
+ 				 struct netlink_ext_ack *extack)
  {
+@@ -166,7 +168,7 @@ bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
+ u8 br_port_get_stp_state(const struct net_device *dev);
+ clock_t br_get_ageing_time(struct net_device *br_dev);
+ int br_fdb_replay(struct net_device *br_dev, struct net_device *dev,
+-		  struct notifier_block *nb);
++		  const void *ctx, struct notifier_block *nb);
+ #else
+ static inline struct net_device *
+ br_fdb_find_port(const struct net_device *br_dev,
+@@ -197,7 +199,7 @@ static inline clock_t br_get_ageing_time(struct net_device *br_dev)
+ }
+ 
+ static inline int br_fdb_replay(struct net_device *br_dev,
+-				struct net_device *dev,
++				struct net_device *dev, const void *ctx,
+ 				struct notifier_block *nb)
+ {
+ 	return -EOPNOTSUPP;
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index b8d3ddfe5853..9d164a518e38 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -728,7 +728,7 @@ static inline size_t fdb_nlmsg_size(void)
+ 
+ static int br_fdb_replay_one(struct notifier_block *nb,
+ 			     struct net_bridge_fdb_entry *fdb,
+-			     struct net_device *dev)
++			     struct net_device *dev, const void *ctx)
+ {
+ 	struct switchdev_notifier_fdb_info item;
+ 	int err;
+@@ -739,13 +739,14 @@ static int br_fdb_replay_one(struct notifier_block *nb,
+ 	item.offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
+ 	item.is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
+ 	item.info.dev = dev;
++	item.info.ctx = ctx;
+ 
+ 	err = nb->notifier_call(nb, SWITCHDEV_FDB_ADD_TO_DEVICE, &item);
+ 	return notifier_to_errno(err);
+ }
+ 
+ int br_fdb_replay(struct net_device *br_dev, struct net_device *dev,
+-		  struct notifier_block *nb)
++		  const void *ctx, struct notifier_block *nb)
+ {
+ 	struct net_bridge_fdb_entry *fdb;
+ 	struct net_bridge *br;
+@@ -766,7 +767,7 @@ int br_fdb_replay(struct net_device *br_dev, struct net_device *dev,
+ 		if (dst_dev != br_dev && dst_dev != dev)
+ 			continue;
+ 
+-		err = br_fdb_replay_one(nb, fdb, dst_dev);
++		err = br_fdb_replay_one(nb, fdb, dst_dev, ctx);
+ 		if (err)
+ 			break;
+ 	}
+diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
+index 3f839a8cc9fb..8bc6afca5e8c 100644
+--- a/net/bridge/br_mdb.c
++++ b/net/bridge/br_mdb.c
+@@ -568,12 +568,13 @@ static void br_switchdev_mdb_populate(struct switchdev_obj_port_mdb *mdb,
+ 
+ static int br_mdb_replay_one(struct notifier_block *nb, struct net_device *dev,
+ 			     struct switchdev_obj_port_mdb *mdb,
+-			     struct netlink_ext_ack *extack)
++			     const void *ctx, struct netlink_ext_ack *extack)
+ {
+ 	struct switchdev_notifier_port_obj_info obj_info = {
+ 		.info = {
+ 			.dev = dev,
+ 			.extack = extack,
++			.ctx = ctx,
+ 		},
+ 		.obj = &mdb->obj,
+ 	};
+@@ -603,7 +604,8 @@ static int br_mdb_queue_one(struct list_head *mdb_list,
+ }
+ 
+ int br_mdb_replay(struct net_device *br_dev, struct net_device *dev,
+-		  struct notifier_block *nb, struct netlink_ext_ack *extack)
++		  const void *ctx, struct notifier_block *nb,
++		  struct netlink_ext_ack *extack)
+ {
+ 	struct net_bridge_mdb_entry *mp;
+ 	struct switchdev_obj *obj, *tmp;
+@@ -664,7 +666,7 @@ int br_mdb_replay(struct net_device *br_dev, struct net_device *dev,
+ 
+ 	list_for_each_entry(obj, &mdb_list, list) {
+ 		err = br_mdb_replay_one(nb, dev, SWITCHDEV_OBJ_PORT_MDB(obj),
+-					extack);
++					ctx, extack);
+ 		if (err)
+ 			goto out_free_mdb;
+ 	}
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 8789a57af543..2bfa2a00e193 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -1807,12 +1807,13 @@ void br_vlan_notify(const struct net_bridge *br,
+ static int br_vlan_replay_one(struct notifier_block *nb,
+ 			      struct net_device *dev,
+ 			      struct switchdev_obj_port_vlan *vlan,
+-			      struct netlink_ext_ack *extack)
++			      const void *ctx, struct netlink_ext_ack *extack)
+ {
+ 	struct switchdev_notifier_port_obj_info obj_info = {
+ 		.info = {
+ 			.dev = dev,
+ 			.extack = extack,
++			.ctx = ctx,
+ 		},
+ 		.obj = &vlan->obj,
+ 	};
+@@ -1823,7 +1824,8 @@ static int br_vlan_replay_one(struct notifier_block *nb,
+ }
+ 
+ int br_vlan_replay(struct net_device *br_dev, struct net_device *dev,
+-		   struct notifier_block *nb, struct netlink_ext_ack *extack)
++		   const void *ctx, struct notifier_block *nb,
++		   struct netlink_ext_ack *extack)
+ {
+ 	struct net_bridge_vlan_group *vg;
+ 	struct net_bridge_vlan *v;
+@@ -1868,7 +1870,7 @@ int br_vlan_replay(struct net_device *br_dev, struct net_device *dev,
+ 		if (!br_vlan_should_use(v))
+ 			continue;
+ 
+-		err = br_vlan_replay_one(nb, dev, &vlan, extack);
++		err = br_vlan_replay_one(nb, dev, &vlan, ctx, extack);
+ 		if (err)
+ 			return err;
+ 	}
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 5c93f1e1a03d..339781c98de1 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -194,17 +194,17 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
+ 
+-	err = br_mdb_replay(br, brport_dev,
++	err = br_mdb_replay(br, brport_dev, dp,
+ 			    &dsa_slave_switchdev_blocking_notifier,
+ 			    extack);
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
+ 
+-	err = br_fdb_replay(br, brport_dev, &dsa_slave_switchdev_notifier);
++	err = br_fdb_replay(br, brport_dev, dp, &dsa_slave_switchdev_notifier);
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
+ 
+-	err = br_vlan_replay(br, brport_dev,
++	err = br_vlan_replay(br, brport_dev, dp,
+ 			     &dsa_slave_switchdev_blocking_notifier,
+ 			     extack);
+ 	if (err && err != -EOPNOTSUPP)
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 5e668e529575..3692259a025f 100644
+index 3692259a025f..2f0d0a6b1f9c 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -271,7 +271,7 @@ static int dsa_slave_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	return phylink_mii_ioctl(p->dp->pl, ifr, cmd);
- }
- 
--static int dsa_slave_port_attr_set(struct net_device *dev,
-+static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
- 				   const struct switchdev_attr *attr,
- 				   struct netlink_ext_ack *extack)
- {
-@@ -394,7 +394,7 @@ static int dsa_slave_vlan_add(struct net_device *dev,
- 	return vlan_vid_add(master, htons(ETH_P_8021Q), vlan.vid);
- }
- 
--static int dsa_slave_port_obj_add(struct net_device *dev,
-+static int dsa_slave_port_obj_add(struct net_device *dev, const void *ctx,
- 				  const struct switchdev_obj *obj,
- 				  struct netlink_ext_ack *extack)
- {
-@@ -469,7 +469,7 @@ static int dsa_slave_vlan_del(struct net_device *dev,
- 	return 0;
- }
- 
--static int dsa_slave_port_obj_del(struct net_device *dev,
-+static int dsa_slave_port_obj_del(struct net_device *dev, const void *ctx,
- 				  const struct switchdev_obj *obj)
- {
+@@ -278,6 +278,9 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
  	struct dsa_port *dp = dsa_slave_to_port(dev);
-diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
-index 89a36db47ab4..070698dd19bc 100644
---- a/net/switchdev/switchdev.c
-+++ b/net/switchdev/switchdev.c
-@@ -381,19 +381,20 @@ EXPORT_SYMBOL_GPL(call_switchdev_blocking_notifiers);
- static int __switchdev_handle_port_obj_add(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*add_cb)(struct net_device *dev,
-+			int (*add_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj,
- 				      struct netlink_ext_ack *extack))
- {
-+	struct switchdev_notifier_info *info = &port_obj_info->info;
- 	struct netlink_ext_ack *extack;
- 	struct net_device *lower_dev;
- 	struct list_head *iter;
- 	int err = -EOPNOTSUPP;
+ 	int ret;
  
--	extack = switchdev_notifier_info_to_extack(&port_obj_info->info);
-+	extack = switchdev_notifier_info_to_extack(info);
- 
- 	if (check_cb(dev)) {
--		err = add_cb(dev, port_obj_info->obj, extack);
-+		err = add_cb(dev, info->ctx, port_obj_info->obj, extack);
- 		if (err != -EOPNOTSUPP)
- 			port_obj_info->handled = true;
- 		return err;
-@@ -422,7 +423,7 @@ static int __switchdev_handle_port_obj_add(struct net_device *dev,
- int switchdev_handle_port_obj_add(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*add_cb)(struct net_device *dev,
-+			int (*add_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj,
- 				      struct netlink_ext_ack *extack))
- {
-@@ -439,15 +440,16 @@ EXPORT_SYMBOL_GPL(switchdev_handle_port_obj_add);
- static int __switchdev_handle_port_obj_del(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*del_cb)(struct net_device *dev,
-+			int (*del_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj))
- {
-+	struct switchdev_notifier_info *info = &port_obj_info->info;
- 	struct net_device *lower_dev;
- 	struct list_head *iter;
- 	int err = -EOPNOTSUPP;
- 
- 	if (check_cb(dev)) {
--		err = del_cb(dev, port_obj_info->obj);
-+		err = del_cb(dev, info->ctx, port_obj_info->obj);
- 		if (err != -EOPNOTSUPP)
- 			port_obj_info->handled = true;
- 		return err;
-@@ -476,7 +478,7 @@ static int __switchdev_handle_port_obj_del(struct net_device *dev,
- int switchdev_handle_port_obj_del(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*del_cb)(struct net_device *dev,
-+			int (*del_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_obj *obj))
- {
++	if (ctx && ctx != dp)
++		return 0;
++
+ 	switch (attr->id) {
+ 	case SWITCHDEV_ATTR_ID_PORT_STP_STATE:
+ 		if (!dsa_port_offloads_bridge_port(dp, attr->orig_dev))
+@@ -401,6 +404,9 @@ static int dsa_slave_port_obj_add(struct net_device *dev, const void *ctx,
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
  	int err;
-@@ -492,19 +494,20 @@ EXPORT_SYMBOL_GPL(switchdev_handle_port_obj_del);
- static int __switchdev_handle_port_attr_set(struct net_device *dev,
- 			struct switchdev_notifier_port_attr_info *port_attr_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*set_cb)(struct net_device *dev,
-+			int (*set_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_attr *attr,
- 				      struct netlink_ext_ack *extack))
- {
-+	struct switchdev_notifier_info *info = &port_attr_info->info;
- 	struct netlink_ext_ack *extack;
- 	struct net_device *lower_dev;
- 	struct list_head *iter;
- 	int err = -EOPNOTSUPP;
  
--	extack = switchdev_notifier_info_to_extack(&port_attr_info->info);
-+	extack = switchdev_notifier_info_to_extack(info);
++	if (ctx && ctx != dp)
++		return 0;
++
+ 	switch (obj->id) {
+ 	case SWITCHDEV_OBJ_ID_PORT_MDB:
+ 		if (!dsa_port_offloads_bridge_port(dp, obj->orig_dev))
+@@ -475,6 +481,9 @@ static int dsa_slave_port_obj_del(struct net_device *dev, const void *ctx,
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	int err;
  
- 	if (check_cb(dev)) {
--		err = set_cb(dev, port_attr_info->attr, extack);
-+		err = set_cb(dev, info->ctx, port_attr_info->attr, extack);
- 		if (err != -EOPNOTSUPP)
- 			port_attr_info->handled = true;
- 		return err;
-@@ -533,7 +536,7 @@ static int __switchdev_handle_port_attr_set(struct net_device *dev,
- int switchdev_handle_port_attr_set(struct net_device *dev,
- 			struct switchdev_notifier_port_attr_info *port_attr_info,
- 			bool (*check_cb)(const struct net_device *dev),
--			int (*set_cb)(struct net_device *dev,
-+			int (*set_cb)(struct net_device *dev, const void *ctx,
- 				      const struct switchdev_attr *attr,
- 				      struct netlink_ext_ack *extack))
- {
++	if (ctx && ctx != dp)
++		return 0;
++
+ 	switch (obj->id) {
+ 	case SWITCHDEV_OBJ_ID_PORT_MDB:
+ 		if (!dsa_port_offloads_bridge_port(dp, obj->orig_dev))
 -- 
 2.25.1
 
