@@ -2,68 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8DBD3B53A7
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 16:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E65173B53C4
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 16:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbhF0ONN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 10:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56048 "EHLO
+        id S231219AbhF0O3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 10:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231303AbhF0ONE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 10:13:04 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94999C0617A6
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 07:10:39 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id o11so11270507ejd.4
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 07:10:39 -0700 (PDT)
+        with ESMTP id S230268AbhF0O3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 10:29:40 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB0DC061574
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 07:27:16 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id yy20so16718514ejb.6
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 07:27:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eqjTrbP8WLdm2CiHqRr8RY8N7+TrvxKyRWH+kkJBIzY=;
-        b=prYv8boBImsZO3XgQQYhT8bIJ6AnkHY9B04FjWLXefNXlGhKGjmaz4Ei7HsbkuIoxv
-         VRidw6jpgIlYdld03b+8tLJjEYDF33kUISZMvUMPB2xSBeq6xPaHmh5H3Mz09fkbnzR4
-         BinXyejE539Rgv0CRqNlAwfTdSiMKp1F7hv6c+fAVUHQwC8tqqyiMCAfxNS+RfYkNbLt
-         LPW4MC9IbvRt8tm+fZfUtBecsmBWgVJ4A4Fv/aQ5GobITh0NM+jtbMNdjGJXh/AYg03u
-         Nimy9blVRNOaJxMrrvBngt1cK2itx4EFlMNRkALPi/7LY3YaMBWTWr4wQjBWKIQxjvhd
-         OsBw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UfoiygWHNUpm4I6CQGjQwLqViDT2vNralulzzr0DlQE=;
+        b=lCwFWpSNEePQsxmYTxe09VV3bo3AS/c520D2JzzPOC2FsEUKK0sXzxscxJkeOEZH1n
+         Gktxh7P4ZCS5VRxZpKErqs+T+5N2ggPVH7CtZofE0m6wEDk/NqinA4A+MgIlFpTeFype
+         VSrsyu+Gm5GAqq3Cv90YrPOWJfh8xhy5IrKk2wQCfliEEDzSL+Ksm8oM9jeck1l35D3e
+         eyslCSCYLAS05Em51lXxvcCfsNHNOyK+mK2s7L11SJ5sCpysOw7B2z3AmQWO8EwzG7Ed
+         OSi1rzCaS01HVLlIU9LBvuNBIwVbgJHdn+DukKC9b5ED+/JE9NEcErHAhrHNWf44VC1g
+         aLFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eqjTrbP8WLdm2CiHqRr8RY8N7+TrvxKyRWH+kkJBIzY=;
-        b=H5WO74C+ACMASmBn/OMcJFJ0qPglzTrWm0IHpduc/qhgqdJts7KInd5j+2vBov4cfZ
-         2T0/Zp9ifA4rbJMLzvUAqO1M8dR2BFD8cgokpJmgiUtPjteUnVXO781p4OFRzpnrIWOX
-         CtiUA3CfW3b0hgoSGtMA7A1wJMs36zL01kEwLCTfzDH5qxknt4Ru4lN7zDaQ/vPw3oQs
-         ddBCPcvra0OhN92H0jlgTCABqBOjHKJ3MiG+K4H1tG+UM5WSYDxI425b+M39ZRg/xcGn
-         7hS4Qkp6aCvdm1hGiOhAdZWOLzFxC/ZjfhAcNraFuAvUw/uU4liXVnknhHF646VF1u4D
-         CKzA==
-X-Gm-Message-State: AOAM532xdEZ//9RJWLjCUnAuA0XxTkxwWlkG6uwcZXiRChDMdBvYH2sr
-        UWIjMfE09jtesrNydJ4TPGFL6VmLaKU=
-X-Google-Smtp-Source: ABdhPJydZbS+5vlvMb+Eaaa/H15g1P6tRQrBcg3iYmDRwKYK+4H4WFfPi8RGEkDkLRZGKYU7/v6zOA==
-X-Received: by 2002:a17:906:c10f:: with SMTP id do15mr17136408ejc.475.1624803038021;
-        Sun, 27 Jun 2021 07:10:38 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UfoiygWHNUpm4I6CQGjQwLqViDT2vNralulzzr0DlQE=;
+        b=VQT8vGmb2IFSZw9m6RzfERVzw8yYPxVw4gnJ9c2bADVH9Y4fRhoPDue1apX4JxqB5G
+         +H+LmRl7mc/sPhmis7adntW0AVnGi0xgTTFtUHr3mMIz1mt8IU+muClMmvrs0xOZCyoQ
+         ncL5y8pX/Sg3Jy61Dr4eqqqyQPQ3zrsk685MBM5rtkpU20AHaxL7NQ5MmOVJmMdwAaaX
+         H6KiuQhWMzzRHtGPd8vpRUsGq49BqKSRU73iOZzr+orSBLMkIU2f9EvwaKVoB/tWMUzz
+         asNMH1+LV359rNdDnKUcbZdE3hDCSLr1hgCGpcg1iFycPtTNBXcIoa4PdsfxYZ0/jnF9
+         sABA==
+X-Gm-Message-State: AOAM533uf929m4iFFI9BAeCtuPFmZ7wcWXrMDEhnL5mLX+0e6ddkxJqu
+        /arlwHfdbkTc+WJnU84Didw=
+X-Google-Smtp-Source: ABdhPJy76yeOXE2W6z2yNrQTEj+8qFse5Iz0G9B5jfekkSWUESG81aRxiOVkKhooWkJrazfa9F+SzQ==
+X-Received: by 2002:a17:906:2892:: with SMTP id o18mr19912994ejd.370.1624804034739;
+        Sun, 27 Jun 2021 07:27:14 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id s4sm7857389edu.49.2021.06.27.07.10.37
+        by smtp.gmail.com with ESMTPSA id hg25sm5585855ejc.51.2021.06.27.07.27.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Jun 2021 07:10:37 -0700 (PDT)
+        Sun, 27 Jun 2021 07:27:14 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH v3 net-next 15/15] net: dsa: replay the local bridge FDB entries pointing to the bridge dev too
-Date:   Sun, 27 Jun 2021 17:10:13 +0300
-Message-Id: <20210627141013.1273942-16-olteanv@gmail.com>
+Subject: [PATCH net-next] net: dsa: sja1105: fix dynamic access to L2 Address Lookup table for SJA1110
+Date:   Sun, 27 Jun 2021 17:27:08 +0300
+Message-Id: <20210627142708.1277273-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210627141013.1273942-1-olteanv@gmail.com>
-References: <20210627141013.1273942-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -72,73 +66,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-When we join a bridge that already has some local addresses pointing to
-itself, we do not get those notifications. Similarly, when we leave that
-bridge, we do not get notifications for the deletion of those entries.
-The only switchdev notifications we get are those of entries added while
-the DSA port is enslaved to the bridge.
+The SJA1105P/Q/R/S and SJA1110 may have the same layout for the command
+to read/write/search for L2 Address Lookup entries, but as explained in
+the comments at the beginning of the sja1105_dynamic_config.c file, the
+command portion of the buffer is at the end, and we need to obtain a
+pointer to it by adding the length of the entry to the buffer.
 
-This makes use cases such as the following work properly (with the
-number of additions and removals properly balanced):
+Alas, the length of an L2 Address Lookup entry is larger in SJA1110 than
+it is for SJA1105P/Q/R/S, so we need to create a common helper to access
+the command buffer, and this receives as argument the length of the
+entry buffer.
 
-ip link add br0 type bridge
-ip link add br1 type bridge
-ip link set br0 address 00:01:02:03:04:05
-ip link set br1 address 00:01:02:03:04:05
-ip link set swp0 up
-ip link set swp1 up
-ip link set swp0 master br0
-ip link set swp1 master br1
-ip link set br0 up
-ip link set br1 up
-ip link del br1 # 00:01:02:03:04:05 still installed on the CPU port
-ip link del br0 # 00:01:02:03:04:05 finally removed from the CPU port
-
+Fixes: 3e77e59bf8cf ("net: dsa: sja1105: add support for the SJA1110 switch family")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/port.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../net/dsa/sja1105/sja1105_dynamic_config.c  | 26 ++++++++++++++++---
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 255172a8599a..a833684349cb 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -199,11 +199,17 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
- 	if (err && err != -EOPNOTSUPP)
- 		return err;
+diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+index 4c4c04f04269..56fead68ea9f 100644
+--- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
++++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
+@@ -258,11 +258,11 @@ sja1110_vl_policing_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
+ }
  
-+	/* Forwarding and termination FDB entries on the port */
- 	err = br_fdb_replay(br, brport_dev, dp, true,
- 			    &dsa_slave_switchdev_notifier);
- 	if (err && err != -EOPNOTSUPP)
- 		return err;
+ static void
+-sja1105pqrs_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
+-				  enum packing_op op)
++sja1105pqrs_common_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
++					 enum packing_op op, int entry_size)
+ {
+-	u8 *p = buf + SJA1105PQRS_SIZE_L2_LOOKUP_ENTRY;
+ 	const int size = SJA1105_SIZE_DYN_CMD;
++	u8 *p = buf + entry_size;
+ 	u64 hostcmd;
  
-+	/* Termination FDB entries on the bridge itself */
-+	err = br_fdb_replay(br, br, dp, true, &dsa_slave_switchdev_notifier);
-+	if (err && err != -EOPNOTSUPP)
-+		return err;
+ 	sja1105_packing(p, &cmd->valid,    31, 31, size, op);
+@@ -317,6 +317,24 @@ sja1105pqrs_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
+ 			SJA1105PQRS_SIZE_L2_LOOKUP_ENTRY, op);
+ }
+ 
++static void
++sja1105pqrs_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
++				  enum packing_op op)
++{
++	int size = SJA1105PQRS_SIZE_L2_LOOKUP_ENTRY;
 +
- 	err = br_vlan_replay(br, brport_dev, dp, true,
- 			     &dsa_slave_switchdev_blocking_notifier, extack);
- 	if (err && err != -EOPNOTSUPP)
-@@ -225,11 +231,17 @@ static int dsa_port_switchdev_unsync_objs(struct dsa_port *dp,
- 	if (err && err != -EOPNOTSUPP)
- 		return err;
- 
-+	/* Forwarding and termination FDB entries on the port */
- 	err = br_fdb_replay(br, brport_dev, dp, false,
- 			    &dsa_slave_switchdev_notifier);
- 	if (err && err != -EOPNOTSUPP)
- 		return err;
- 
-+	/* Termination FDB entries on the bridge itself */
-+	err = br_fdb_replay(br, br, dp, false, &dsa_slave_switchdev_notifier);
-+	if (err && err != -EOPNOTSUPP)
-+		return err;
++	return sja1105pqrs_common_l2_lookup_cmd_packing(buf, cmd, op, size);
++}
 +
- 	err = br_vlan_replay(br, brport_dev, dp, false,
- 			     &dsa_slave_switchdev_blocking_notifier, extack);
- 	if (err && err != -EOPNOTSUPP)
++static void
++sja1110_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
++			      enum packing_op op)
++{
++	int size = SJA1110_SIZE_L2_LOOKUP_ENTRY;
++
++	return sja1105pqrs_common_l2_lookup_cmd_packing(buf, cmd, op, size);
++}
++
+ /* The switch is so retarded that it makes our command/entry abstraction
+  * crumble apart.
+  *
+@@ -1055,7 +1073,7 @@ const struct sja1105_dynamic_table_ops sja1110_dyn_ops[BLK_IDX_MAX_DYN] = {
+ 	},
+ 	[BLK_IDX_L2_LOOKUP] = {
+ 		.entry_packing = sja1110_dyn_l2_lookup_entry_packing,
+-		.cmd_packing = sja1105pqrs_l2_lookup_cmd_packing,
++		.cmd_packing = sja1110_l2_lookup_cmd_packing,
+ 		.access = (OP_READ | OP_WRITE | OP_DEL | OP_SEARCH),
+ 		.max_entry_count = SJA1105_MAX_L2_LOOKUP_COUNT,
+ 		.packed_size = SJA1110_SIZE_L2_LOOKUP_DYN_CMD,
 -- 
 2.25.1
 
