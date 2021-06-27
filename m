@@ -2,177 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97D963B547B
+	by mail.lfdr.de (Postfix) with ESMTP id E12233B547C
 	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 19:20:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbhF0RW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 13:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40484 "EHLO
+        id S231395AbhF0RW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 13:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231391AbhF0RWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 13:22:53 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26EAC061574
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 10:20:29 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id kt19so610642pjb.2
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 10:20:29 -0700 (PDT)
+        with ESMTP id S231390AbhF0RW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 13:22:57 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F38C061787
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 10:20:33 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id e33so13225430pgm.3
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 10:20:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=KqVgzyS5+3DgSIIq4n0nf8OMEspFvgZlN6c5QQQvoPE=;
-        b=W2ewsHUEskOEwKmwPn1kQwAD+xTJIxUOH/3rYxNe34dM2QcOg+6c4akyrs2At4XqKp
-         F4PW3c0hXZ1X+7OgzbF+dL6R3+Z1dUhq3Bh2K5ki1TQO9eDkAdNvlcgA1BNaa9jAeKtF
-         jfzVv8WPZmbkn0oGAzowAY9DH21Fm/IEjRRNk=
+        bh=pOKOviOib6Phu+bj0fyMjVgcAvOnEBIMrO7BXKLWijI=;
+        b=Qxud4Z8YU2uUyWifoaD7XPgIsVWeRbnMXAuPtMeKH9qcUcH3SYEEqD+Cnmyzi+1gSZ
+         DtFGMnOjVegx2ZyfFP4gV7UbHOXL28kOMmZ5dtgtp3bI+tAChBg4TSzDsIDxn8n2gFf1
+         CiFCyDPN1dvK+ORj3Hcwgp4JTOGnJOjg1kqSw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=KqVgzyS5+3DgSIIq4n0nf8OMEspFvgZlN6c5QQQvoPE=;
-        b=f6233H21wO0EY/A7mAbM99CtZKWlvRKU1STNGgFrtdier3tqCA8FF2zZYD5uX8dZPU
-         XbSqBgTPDgVXBkcGJK3pKgeztWaQe0ZUHEFaUX0388AKIeoVISptZhH5Gc/dS7sxOFTA
-         cAAj33/AfyAzaB7tXMKghT1A0QHtYe2vdd4ATmWMHxDAx81dc8GsubZE+Re1kWLBnKDi
-         cbGd5jhLoAB/wheC4H8OVA6PP85fnHc/zY7cj9tjQHGoGjRLdLY6adF31F7Z7nhDFBNk
-         IqQczVSWWU3A0m/V56oUyT37XyluyiQtoe028EQZDXzsSqrSglxThjnS3tiYNbQnEo6i
-         pJbg==
-X-Gm-Message-State: AOAM531WMQHiGzGfl2jPb1Q2ztLjFEr/+s+mYCsbawZ/4T3JYlnEULx5
-        x7eB1E/0hVy6C452IqgnXQIEEw==
-X-Google-Smtp-Source: ABdhPJx11+xBjKOUUTdpafOdrj4eg78Gzl9j7w77h3HJCHxabmZitzlV3XG8Gfvefxh1VQdiQamYSA==
-X-Received: by 2002:a17:902:c611:b029:122:847c:66e9 with SMTP id r17-20020a170902c611b0290122847c66e9mr19019723plr.82.1624814428905;
-        Sun, 27 Jun 2021 10:20:28 -0700 (PDT)
+        bh=pOKOviOib6Phu+bj0fyMjVgcAvOnEBIMrO7BXKLWijI=;
+        b=hj/+iVGqSwftnHd5N2tJfbG2c2VEy96JHwx5FbATRkWV0D9ebjy73ScFDjlKn023GO
+         gtSqHuPuV6lrlbjLtkeqUNKQyJGUpMmzSNBZhLbb77AJaEGvUXg20vJ+pFBhcz8fiV8h
+         xiBnZqFqP7B6jZVKSNMSCy8M1JbdFUCeLw2LY9HkzpT9BN/Jq9UT4mcZmQrshE6yXJtF
+         gnh154hp3yTg69o9G/pvL/Eqiu7y6jAhODN1w6UBQLj2vXTbvBanr/LFRc4pm/GRRB44
+         u2eUVzg6xwvNTGqO/YC8YAPwe1RT7Y+QEJNyINnJKkb72etvOykpAopohrcPduL5Z+AR
+         0JbA==
+X-Gm-Message-State: AOAM533D8yP5r+l5wfNE+o0RaSCtmZWwAGTywEMQLIPjvDOlCge576X+
+        UjiSinKii10xhBjl3+FAcBiZmw==
+X-Google-Smtp-Source: ABdhPJyMDuuuN68TFDf/1eETXJ1yLAhpUrxgtJq4uKWcvDEXf6RSFaUXfFVwTW5+pzeBMFxbJFkvlQ==
+X-Received: by 2002:a63:609:: with SMTP id 9mr19380437pgg.44.1624814432985;
+        Sun, 27 Jun 2021 10:20:32 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j8sm11011584pfu.60.2021.06.27.10.20.25
+        by smtp.gmail.com with ESMTPSA id j8sm11011584pfu.60.2021.06.27.10.20.29
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 27 Jun 2021 10:20:28 -0700 (PDT)
+        Sun, 27 Jun 2021 10:20:32 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         richardcochran@gmail.com, pavan.chebbi@broadcom.com,
         edwin.peer@broadcom.com
-Subject: [PATCH net-next v2 4/7] bnxt_en: Get the full 48-bit hardware timestamp periodically
-Date:   Sun, 27 Jun 2021 13:19:47 -0400
-Message-Id: <1624814390-1300-5-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 5/7] bnxt_en: Get the RX packet timestamp
+Date:   Sun, 27 Jun 2021 13:19:48 -0400
+Message-Id: <1624814390-1300-6-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1624814390-1300-1-git-send-email-michael.chan@broadcom.com>
 References: <1624814390-1300-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000e41c9f05c5c29650"
+        boundary="0000000000002184c205c5c297b1"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000e41c9f05c5c29650
+--0000000000002184c205c5c297b1
 
 From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-From the bnxt_timer(), read the 48-bit hardware running clock
-periodically and store it in ptp->current_time.  The previous snapshot
-of the clock will be stored in ptp->old_time.  The old_time snapshot
-will be used in the next patches to compute the RX packet timestamps.
+If the RX packet is timestamped by the hardware, the RX completion
+record will contain the lower 32-bit of the timestamp.  This needs
+to be combined with the upper 16-bit of the periodic timestamp that
+we get from the timer.  The previous snapshot in ptp->old_timer is
+used to make sure that the snapshot is not ahead of the RX timestamp
+and we adjust for wrap-around if needed.
 
-v2: Use .do_aux_work() to read the timer periodically.
+v2: Make ptp->old_time read access safe on 32-bit CPUs.
 
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 39 +++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |  1 +
- 3 files changed, 41 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 23 +++++++++++++++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  3 ++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 16 +++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h | 13 +++++++++++
+ 4 files changed, 52 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 1250a5b50b50..23eddde7bf12 100644
+index 23eddde7bf12..5132f07a5f43 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10075,6 +10075,7 @@ static int __bnxt_open_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
+@@ -1709,9 +1709,9 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 	u8 *data_ptr, agg_bufs, cmp_type;
+ 	dma_addr_t dma_addr;
+ 	struct sk_buff *skb;
++	u32 flags, misc;
+ 	void *data;
+ 	int rc = 0;
+-	u32 misc;
+ 
+ 	rxcmp = (struct rx_cmp *)
+ 			&cpr->cp_desc_ring[CP_RING(cp_cons)][CP_IDX(cp_cons)];
+@@ -1809,7 +1809,8 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 		goto next_rx_no_len;
+ 	}
+ 
+-	len = le32_to_cpu(rxcmp->rx_cmp_len_flags_type) >> RX_CMP_LEN_SHIFT;
++	flags = le32_to_cpu(rxcmp->rx_cmp_len_flags_type);
++	len = flags >> RX_CMP_LEN_SHIFT;
+ 	dma_addr = rx_buf->mapping;
+ 
+ 	if (bnxt_rx_xdp(bp, rxr, cons, data, &data_ptr, &len, event)) {
+@@ -1886,6 +1887,24 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
  		}
  	}
  
-+	bnxt_ptp_start(bp);
- 	rc = bnxt_init_nic(bp, irq_re_init);
- 	if (rc) {
- 		netdev_err(bp->dev, "bnxt_init_nic err: %x\n", rc);
++	if (unlikely((flags & RX_CMP_FLAGS_ITYPES_MASK) ==
++		     RX_CMP_FLAGS_ITYPE_PTP_W_TS)) {
++		if (bp->flags & BNXT_FLAG_CHIP_P5) {
++			u32 cmpl_ts = le32_to_cpu(rxcmp1->rx_cmp_timestamp);
++			u64 ns, ts;
++
++			if (!bnxt_get_rx_ts_p5(bp, &ts, cmpl_ts)) {
++				struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++
++				spin_lock_bh(&ptp->ptp_lock);
++				ns = timecounter_cyc2time(&ptp->tc, ts);
++				spin_unlock_bh(&ptp->ptp_lock);
++				memset(skb_hwtstamps(skb), 0,
++				       sizeof(*skb_hwtstamps(skb)));
++				skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(ns);
++			}
++		}
++	}
+ 	bnxt_deliver_skb(bp, bnapi, skb);
+ 	rc = 1;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 696163559b64..94a612e8cd42 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -159,6 +159,7 @@ struct rx_cmp {
+ 	#define RX_CMP_FLAGS_RSS_VALID				(1 << 10)
+ 	#define RX_CMP_FLAGS_UNUSED				(1 << 11)
+ 	 #define RX_CMP_FLAGS_ITYPES_SHIFT			 12
++	 #define RX_CMP_FLAGS_ITYPES_MASK			 0xf000
+ 	 #define RX_CMP_FLAGS_ITYPE_UNKNOWN			 (0 << 12)
+ 	 #define RX_CMP_FLAGS_ITYPE_IP				 (1 << 12)
+ 	 #define RX_CMP_FLAGS_ITYPE_TCP				 (2 << 12)
+@@ -240,7 +241,7 @@ struct rx_cmp_ext {
+ 	#define RX_CMPL_CFA_CODE_MASK				(0xffff << 16)
+ 	 #define RX_CMPL_CFA_CODE_SFT				 16
+ 
+-	__le32 rx_cmp_unused3;
++	__le32 rx_cmp_timestamp;
+ };
+ 
+ #define RX_CMP_L2_ERRORS						\
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index 47f1f9c3380c..b0563c7761ff 100644
+index b0563c7761ff..cea7220f3d1b 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -45,6 +45,18 @@ static u64 bnxt_refclk_read(struct bnxt *bp, struct ptp_system_timestamp *sts)
- 	return ns;
+@@ -279,6 +279,22 @@ static long bnxt_ptp_ts_aux_work(struct ptp_clock_info *ptp_info)
+ 	return HZ;
  }
  
-+static void bnxt_ptp_get_current_time(struct bnxt *bp)
++int bnxt_get_rx_ts_p5(struct bnxt *bp, u64 *ts, u32 pkt_ts)
 +{
 +	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++	u64 time;
 +
 +	if (!ptp)
-+		return;
-+	spin_lock_bh(&ptp->ptp_lock);
-+	WRITE_ONCE(ptp->old_time, ptp->current_time);
-+	ptp->current_time = bnxt_refclk_read(bp, NULL);
-+	spin_unlock_bh(&ptp->ptp_lock);
++		return -ENODEV;
++
++	BNXT_READ_TIME64(ptp, time, ptp->old_time);
++	*ts = (time & BNXT_HI_TIMER_MASK) | pkt_ts;
++	if (pkt_ts < (time & BNXT_LO_TIMER_MASK))
++		*ts += BNXT_LO_TIMER_MASK + 1;
++
++	return 0;
 +}
 +
- static int bnxt_ptp_gettimex(struct ptp_clock_info *ptp_info,
- 			     struct timespec64 *ts,
- 			     struct ptp_system_timestamp *sts)
-@@ -257,6 +269,32 @@ static u64 bnxt_cc_read(const struct cyclecounter *cc)
- 	return bnxt_refclk_read(ptp->bp, NULL);
- }
- 
-+static long bnxt_ptp_ts_aux_work(struct ptp_clock_info *ptp_info)
-+{
-+	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
-+						ptp_info);
-+	struct bnxt *bp = ptp->bp;
-+
-+	bnxt_ptp_get_current_time(bp);
-+	return HZ;
-+}
-+
-+void bnxt_ptp_start(struct bnxt *bp)
-+{
-+	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
-+
-+	if (!ptp)
-+		return;
-+
-+	if (bp->flags & BNXT_FLAG_CHIP_P5) {
-+		spin_lock_bh(&ptp->ptp_lock);
-+		ptp->current_time = bnxt_refclk_read(bp, NULL);
-+		WRITE_ONCE(ptp->old_time, ptp->current_time);
-+		spin_unlock_bh(&ptp->ptp_lock);
-+		ptp_schedule_worker(ptp->ptp_clock, 0);
-+	}
-+}
-+
- static const struct ptp_clock_info bnxt_ptp_caps = {
- 	.owner		= THIS_MODULE,
- 	.name		= "bnxt clock",
-@@ -268,6 +306,7 @@ static const struct ptp_clock_info bnxt_ptp_caps = {
- 	.pps		= 0,
- 	.adjfreq	= bnxt_ptp_adjfreq,
- 	.adjtime	= bnxt_ptp_adjtime,
-+	.do_aux_work	= bnxt_ptp_ts_aux_work,
- 	.gettimex64	= bnxt_ptp_gettimex,
- 	.settime64	= bnxt_ptp_settime,
- 	.enable		= bnxt_ptp_enable,
+ void bnxt_ptp_start(struct bnxt *bp)
+ {
+ 	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-index 93a9921a8b46..61a67055c812 100644
+index 61a67055c812..4f2c62f5a78e 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-@@ -60,6 +60,7 @@ struct bnxt_ptp_cfg {
+@@ -58,8 +58,21 @@ struct bnxt_ptp_cfg {
+ 	u32			refclk_mapped_regs[2];
+ };
  
++#if BITS_PER_LONG == 32
++#define BNXT_READ_TIME64(ptp, dst, src)		\
++do {						\
++	spin_lock_bh(&(ptp)->ptp_lock);		\
++	(dst) = (src);				\
++	spin_unlock_bh(&(ptp)->ptp_lock);	\
++} while (0)
++#else
++#define BNXT_READ_TIME64(ptp, dst, src)		\
++	((dst) = READ_ONCE(src))
++#endif
++
  int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr);
  int bnxt_hwtstamp_get(struct net_device *dev, struct ifreq *ifr);
-+void bnxt_ptp_start(struct bnxt *bp);
++int bnxt_get_rx_ts_p5(struct bnxt *bp, u64 *ts, u32 pkt_ts);
+ void bnxt_ptp_start(struct bnxt *bp);
  int bnxt_ptp_init(struct bnxt *bp);
  void bnxt_ptp_clear(struct bnxt *bp);
- #endif
 -- 
 2.18.1
 
 
---000000000000e41c9f05c5c29650
+--0000000000002184c205c5c297b1
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -243,13 +282,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILw/izJm4VsoIzSidLor1aUUAe8gBMFQ
-KbYjzdtaN6TRMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDYy
-NzE3MjAyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICJ6Bi76uMcr6CqeTc5ucDRwYxqHH9m1
+TOxE9aRDyZC/MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDYy
+NzE3MjAzM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAtRZrlApne9xq0CYlzSgRR3dZFIS2twkhXBtKVRBnOSEIosf3t
-2+xW/9dMGMquu750zotfb6/iDKM7URe9pKpcYGzIhlRVUgONrlixzZmggjdQ8YrWnHXArXSf0XnK
-AoQsxNcNuQR1B0BGJIl76NwFUhlW9Y1+kS17xVQWaJlyjXb0mWjoycdBoTG+AuuwSKM8bh2BZIrQ
-CAQZeIdabM5XraK1E6dMEv+xCus0+5MTZYoxCUvqT/w0e9bQEiXbPzUmKB1CqDfkFPPfBEcSslkt
-cmLaYjjcy6dmQaDbshOnOB6kTFQDGNPU297lpBpitIjoA2WPObnkVdwWUVmDQsDi
---000000000000e41c9f05c5c29650--
+ATANBgkqhkiG9w0BAQEFAASCAQCfmES5XX3Z5njQgXwDCMro0GMqYYM9PPr8AsmrpcqriUOdQ2yj
+XevVQcrB2Af0QyoxMnTK2ZXqLwqHIhBCzJoBnpavRGJimQhNm1g8sSRaiDPBrt28Kl9arhsBI1pq
++lBdSFEGkypTh5xVW2BJHxSNUlUeuAmIgCQMNi9qyedoDhAnc4z0X7PgJe5SAMAJKsecJYCdx2D4
++dGL5quo2pkzbrStCCrj8BcZfkCTQearnxXetxw8egU2dq47c5X5uxk/DGCilJFviHIsvXXL++eI
+FXdtB0L8kb60N5+S8QrVBn3/n8HyJ6754HXaiGpoPpxCiuwsQBH1tlkPph68o19+
+--0000000000002184c205c5c297b1--
