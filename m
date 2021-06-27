@@ -2,115 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 177753B50CF
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 04:52:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C8723B50D5
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 04:55:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230433AbhF0CzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Jun 2021 22:55:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37222 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230186AbhF0Cy7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Jun 2021 22:54:59 -0400
-Received: from rorschach.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0C20661C54;
-        Sun, 27 Jun 2021 02:52:34 +0000 (UTC)
-Date:   Sat, 26 Jun 2021 22:52:33 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
-Subject: Re: [PATCH] tracepoint: Do not warn on EEXIST or ENOENT
-Message-ID: <20210626225233.2baae8be@rorschach.local.home>
-In-Reply-To: <fc5d0f90-502d-b217-0ad6-0d17cae12ff7@i-love.sakura.ne.jp>
-References: <20210626135845.4080-1-penguin-kernel@I-love.SAKURA.ne.jp>
-        <20210626101834.55b4ecf1@rorschach.local.home>
-        <7297f336-70e5-82d3-f8d3-27f08c7d1548@i-love.sakura.ne.jp>
-        <20210626114157.765d9371@rorschach.local.home>
-        <20210626142213.6dee5c60@rorschach.local.home>
-        <fc5d0f90-502d-b217-0ad6-0d17cae12ff7@i-love.sakura.ne.jp>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230404AbhF0C57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Jun 2021 22:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230186AbhF0C54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Jun 2021 22:57:56 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365A8C061574
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:55:32 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id i4so6853808plt.12
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:55:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PMyYlkVwRHQ9DUEr8ngi8UQn9GVr2wePG86nkiL2lzE=;
+        b=h53LOynHitcTvixuxfqSb6+jVhGNfIY5S2Mp6d6ZLxXBMROSaOW9tzkZlvHK6IoZmm
+         jnYbyrecNypu12SWhHoS2WDBxh84GKIB0pTo9HY4oYaVQ6Esmr7KD1OzUYfcSDLCVIO+
+         NCK3jMpjbXS1IAFjEpUh2wE8/7+7KVd4c5L7VglMwrP893QECi7A7oZ6CCp8QNLXkIVX
+         +EX/DblPQp8xDgaRZeNyTZ6I9fiKbnluP75m9UoX20PmHk5Cj9nGelOg/5DmMMKAgoez
+         VMYgctUE2B2+45RLxxERxmw9pSgmIb9yvz+7skxW0imKT/OeqBIzGPuQ49p+RmX3fnoJ
+         90MQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PMyYlkVwRHQ9DUEr8ngi8UQn9GVr2wePG86nkiL2lzE=;
+        b=IuXxNVjuOYYi1fGQFIyohkZ7Q+RXjcwwsOzOuKM0gUq8AVj+B1BlUGCkNowGde114Q
+         6geWRu0T8elEQNJjYNpQXxtK6177iEqWxfjubMm88MEEW8WFekQr7Mg5GZMpYPH2yS4C
+         u2Hf31w/NAxj7BQL9tLyY5zXQyogBhB3hge06vPR+jC/JSFCpX3uUAtQs9oLiLsXP7Cz
+         AkM2CsKBuP4nn7vmTElzXmPXAdKoItNBm1jySwU+zqWItpz62tqftjzclpdT48QhgeS7
+         wLsyoPzF3E3maKogq9aDHeCKBl5B03JroogWZN30FmolEPEOb2ebeKrvwr/MhAt2EQ8X
+         SUVQ==
+X-Gm-Message-State: AOAM530hw8DT++3IP2dheSigwW82kcCHesEdnfTspxYWGooy4iodhv93
+        9NbhoIPwus41LYr5Tcv6a60=
+X-Google-Smtp-Source: ABdhPJyvO9b3D7LOk3utvQv2I3VKZXEUbuybTRtclOLGngI/AbgDY7kjtYNsIA/8Zbl99DcvEgV4Pw==
+X-Received: by 2002:a17:902:f1cb:b029:120:768f:5b46 with SMTP id e11-20020a170902f1cbb0290120768f5b46mr15882530plc.3.1624762531649;
+        Sat, 26 Jun 2021 19:55:31 -0700 (PDT)
+Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id n6sm9805185pgt.7.2021.06.26.19.55.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 26 Jun 2021 19:55:30 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/7] net: bridge: include the is_local bit in
+ br_fdb_replay
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20210625185321.626325-1-olteanv@gmail.com>
+ <20210625185321.626325-2-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <a13657a8-d8bf-fe46-4061-60b093074059@gmail.com>
+Date:   Sat, 26 Jun 2021 19:55:28 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210625185321.626325-2-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 27 Jun 2021 10:10:24 +0900
-Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp> wrote:
 
-> On 2021/06/27 3:22, Steven Rostedt wrote:
-> >> If BPF is expected to register the same tracepoint with the same
-> >> callback and data more than once, then let's add a call to do that
-> >> without warning. Like I said, other callers expect the call to succeed
-> >> unless it's out of memory, which tends to cause other problems.  
-> > 
-> > If BPF is OK with registering the same probe more than once if user
-> > space expects it, we can add this patch, which allows the caller (in
-> > this case BPF) to not warn if the probe being registered is already
-> > registered, and keeps the idea that a probe registered twice is a bug
-> > for all other use cases.  
+
+On 6/25/2021 11:53 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> I think BPF will not register the same tracepoint with the same callback and
-> data more than once, for bpf(BPF_RAW_TRACEPOINT_OPEN) cleans the request up
-> by calling bpf_link_cleanup() and returns -EEXIST. But I think BPF relies on
-> tracepoint_add_func() returning -EEXIST without crashing the kernel.
-
-Which is the only user that does so, and what this patch addresses.
-
-> > That's because (before BPF) there's no place in the kernel that tries
-> > to register the same tracepoint multiple times, and was considered a
-> > bug if it happened, because there's no ref counters to deal with adding
-> > them multiple times.  
+> Since commit 2c4eca3ef716 ("net: bridge: switchdev: include local flag
+> in FDB notifications"), the bridge emits SWITCHDEV_FDB_ADD_TO_DEVICE
+> events with the is_local flag populated (but we ignore it nonetheless).
 > 
-> I see. But does that make sense? Since func_add() can fail with -ENOMEM,
-> all places (even before BPF) needs to be prepared for failures.
-
-Yes. -ENOMEM means that there's no resources to create a tracepoint.
-But if the tracepoint already exsits, that means the accounting for
-what tracepoints are running has been corrupted.
-
+> We would like DSA to start treating this bit, but it is still not
+> populated by the replay helper, so add it there too.
 > 
-> > 
-> > If the tracepoint is already registered (with the given function and
-> > data), then something likely went wrong.  
-> 
-> That can be prepared on the caller side of tracepoint_add_func() rather than
-> tracepoint_add_func() side.
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Not sure what you mean by that.
-
-> 
-> >   
-> >>   (3) And tracepoint_add_func() is triggerable via request from userspace.  
-> > 
-> > Only via BPF correct?
-> > 
-> > I'm not sure how it works, but can't BPF catch that it is registering
-> > the same tracepoint again?  
-> 
-> There is no chance to check whether some tracepoint is already registered, for
-> tracepoints_mutex is the only lock which gives us a chance to check whether
-> some tracepoint is already registered.
-> 
-> Should bpf() syscall hold a global lock (like tracepoints_mutex) which will serialize
-> the entire code in order to check whether some tracepoint is already registered?
-> That might severely damage concurrency.
-
-I think that the patch I posted handles what you want. For BPF it
-returns without warning, but for all other cases, it warns. Does it fix
-your issue?
-
--- Steve
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
