@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9183B50D7
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 04:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71B803B50D8
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 04:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230444AbhF0C7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Jun 2021 22:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
+        id S230363AbhF0DAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Jun 2021 23:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230186AbhF0C7E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Jun 2021 22:59:04 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6114FC061574
-        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:56:41 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id u190so12105263pgd.8
-        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:56:41 -0700 (PDT)
+        with ESMTP id S230186AbhF0DAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Jun 2021 23:00:30 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259E7C061574
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:58:06 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id i4so6855517plt.12
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:58:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5K3Z9PlDkYH5BFqBYV3N7wulKTjLE4+UqXM5JIiKSF8=;
-        b=jcaJKmXMy/Bm3CpsedDWG4QpmjKCiiU9cZeS6jEH+Kz8q8JXGBRAJZKIOLZ6+xog8K
-         IC0W5f8m0FrxnDhm1TleV8i6Wh2Hh7OJ9Bul1MRUE+ZSdOT+Erb+QEH2fZMWYMnWowf6
-         +aoxZsgRLw6gr6Qrc+Omird8WdhUFJrsJfSDhhxrwQ+YFiz/OLQiTwgTgrDDSNnky4GL
-         YchleAKPNMmAg4zE8fUKsoyoyfujmZF7QcLPy1hH4gIfXImVUDrnjzUb/tqT80fPQa/H
-         ySXCy+MTdtZkoJrPgmVRiksn+Y61bQZSQCpM1yEdeRIjIvXRk+mCPlBCwkzh65tFsEJZ
-         8p8A==
+        bh=5HxtteAQUPSatsJ6KWiDbf5DKN39pchrQdYKh8fNAWw=;
+        b=tYKcbMAhbyULyFoZhvtRmr1Y5/sToiL133PLfQX9olXQyiaADfdji/SYboXKl5v9jq
+         SlyIyOdDTrJDhd7je/ZO06Wlr6L5+GRa9l3x8Baov5KecYPgyWv6gaOe/nvM+FfXAB8M
+         6DnTTyakLc6ZSKXqGsPADEgYqOeqnIyRHozFKFyOGHoExgm9s56i3iyhf/XHMtubVEMN
+         e0L0AjnOmDidRltLdMZcr1qootdlb2Xr1KKC3mEBD3EpT7A7AtplEHkEwpy6GofE3Qt1
+         aqTt7rVVsXSxff4+MgD/1zR+uDWJ4mEgjYeHtyEKSjQdPRB3oWYeJh9xHY9RCygCD26z
+         JjtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=5K3Z9PlDkYH5BFqBYV3N7wulKTjLE4+UqXM5JIiKSF8=;
-        b=FvStKtdhdZM5LQxeoHej2m1JtzTg/gbjQQz8A++/1VHVAalcJhuv6qTVQk1CUvxsLS
-         RpRKJGpUYVVWCuMPghSSl4DbUMw7gFOaV/xQcPD06iGITzCPsZhYk2PkiZoLK45RMnQH
-         bQuH1YVvPfQNIuyFgLm98gEvBbbLgd0Nc86KItOX3YSxMJQin9aaIla6VZ6s+MKft9K8
-         rUdbfRgYx7xR9I1lTSYtu3w8wjJwp8v/5LiwnKwfo6dACFhsnea+BTBUe6LmBf79cqxA
-         Mkg3FPTZhBFWu8OO0KKDsHiYtgkp9EQxZ073BTaA5MtxHm5sDmfMFXO3l9jrUudJspuX
-         BAAQ==
-X-Gm-Message-State: AOAM531yfdu2A4NsUC01x0Qlrmv/42zy5IcJh6yDJJmkBDDpgwPlcFl8
-        3X8XqSK6yaMlhiaHv8ZBe1M=
-X-Google-Smtp-Source: ABdhPJwBZJx6BBvgsRa+QilernCCnWFFcpvrLh5PAm5NUeEP+F5eEoA2SU+HFbDk1NyULShFsd/6cg==
-X-Received: by 2002:a62:e908:0:b029:2db:8791:c217 with SMTP id j8-20020a62e9080000b02902db8791c217mr18609578pfh.28.1624762600965;
-        Sat, 26 Jun 2021 19:56:40 -0700 (PDT)
+        bh=5HxtteAQUPSatsJ6KWiDbf5DKN39pchrQdYKh8fNAWw=;
+        b=ZrwwIhJlhU/nzCcnRhzvGzRjn/EFeGUT0RuDsLF521S9LwdFtJLRPQ3t8eNdGsXXWW
+         oqoJovOnWqTM/LNAgg1RE37KIzmq5I6J7pd8YJ7Ay72qE49w5+NEQF18tjOJjPZczyox
+         9V6kJAk/uhZq69xGG/pVk8deiwW7wqBDxGPIy5M4Wx2ioqO4zR0qpvsfEiPlKuI50/Wx
+         XXjjSEMcNVmBzPvDL0pI2FksF36qlCWGEkqJM0j/MOHl3qQx323KAMbKAKP3sqb34nS5
+         JYBil6HZXBPxHXP7sRIbexrsvefhw52fgTsYbkpVaskaPrZtvfOBgb8DS6lWRKwP550B
+         KOrA==
+X-Gm-Message-State: AOAM533r/YxuRlvo6gac0s5e7utBZih6DjUFpOM785K0ra9jFjxgGGHf
+        WYzegzVXEOJXHwGM6iB8+H0=
+X-Google-Smtp-Source: ABdhPJwOBpMcIWS8nievbKdMf0IBde6q7cEHpEP/fKQ6BAM5jsp0ulwN3hVD9WuCcZ6FiYQQYS5Y0w==
+X-Received: by 2002:a17:902:d489:b029:120:b1f5:7867 with SMTP id c9-20020a170902d489b0290120b1f57867mr16247229plg.75.1624762685120;
+        Sat, 26 Jun 2021 19:58:05 -0700 (PDT)
 Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id i3sm10692094pgc.92.2021.06.26.19.56.39
+        by smtp.gmail.com with ESMTPSA id d19sm1853284pgk.15.2021.06.26.19.58.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Jun 2021 19:56:40 -0700 (PDT)
-Subject: Re: [PATCH net-next 5/7] net: bridge: constify variables in the
- replay helpers
+        Sat, 26 Jun 2021 19:58:04 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/7] net: switchdev: add a context void pointer
+ to struct switchdev_notifier_info
 To:     Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -62,14 +62,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20210625185321.626325-1-olteanv@gmail.com>
- <20210625185321.626325-6-olteanv@gmail.com>
+ <20210625185321.626325-4-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e3e85fde-3cc4-4672-66ad-268671bf544c@gmail.com>
-Date:   Sat, 26 Jun 2021 19:56:38 -0700
+Message-ID: <30f7a2a2-5ac9-3c91-67e4-b4f624262ec9@gmail.com>
+Date:   Sat, 26 Jun 2021 19:58:02 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210625185321.626325-6-olteanv@gmail.com>
+In-Reply-To: <20210625185321.626325-4-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -82,8 +82,27 @@ X-Mailing-List: netdev@vger.kernel.org
 On 6/25/2021 11:53 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Some of the arguments and local variables for the newly added switchdev
-> replay helpers can be const, so let's make them so.
+> In the case where the driver asks for a replay of a certain type of
+> event (port object or attribute) for a bridge port that is a LAG, it may
+> do so because this port has just joined the LAG.
+> 
+> But there might already be other switchdev ports in that LAG, and it is
+> preferable that those preexisting switchdev ports do not act upon the
+> replayed event.
+> 
+> The solution is to add a context to switchdev events, which is NULL most
+> of the time (when the bridge layer initiates the call) but which can be
+> set to a value controlled by the switchdev driver when a replay is
+> requested. The driver can then check the context to figure out if all
+> ports within the LAG should act upon the switchdev event, or just the
+> ones that match the context.
+> 
+> We have to modify all switchdev_handle_* helper functions as well as the
+> prototypes in the drivers that use these helpers too, because these
+> helpers hide the underlying struct switchdev_notifier_info from us and
+> there is no way to retrieve the context otherwise.
+> 
+> The context structure will be populated and used in later patches.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
