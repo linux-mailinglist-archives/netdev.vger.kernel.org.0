@@ -2,117 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B323B5280
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 09:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 003903B5288
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 10:11:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbhF0IAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 04:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbhF0IAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 04:00:11 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735FAC061574
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 00:57:48 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id c19-20020a9d6c930000b0290464c2cdfe2bso3606339otr.9
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 00:57:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KMsX/JmWmDl5DkYGWepvSQmkHVeO1LqZDKLWlaY4m5g=;
-        b=jTJEvSnZFmrO0DEryJpSFK5jqf1V5cq6k42rcJEIWRa9l1YXAEZ5bjL4eWaG1sRUs+
-         sXFlyyP8+AVR9MYsEYYL5WgXEQ3LEDbGqk2tQazaIyjllx0hnMwczV2FlrZkMUwEF0sd
-         UXRqL26NWjiGeIoKrRIwUE3gwjpqNHoHziFLrIUGyOJANvvny0vSSfnQTM4GSDEfydX4
-         TW64bM1miXcFABdNT+r3nzVB0r/8ywuAOoJrJGk0qWJk14ONCCizln5BolYEZU/S1n4/
-         pVskSij9q1rOH4ZSUt8gREGPrNaRKeRgnN/RNuiFZP3HXCRfzXw2WxloRF3rmkgSLQsM
-         XXQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KMsX/JmWmDl5DkYGWepvSQmkHVeO1LqZDKLWlaY4m5g=;
-        b=h64MWA9Q8/QUddeQkSrhr3eudHCq/WpEwPr+OWxY4OEFc+Z90Ishj8ppxK3DaF5U3j
-         95RWR8b6QnTplr+uX6QWd7HK6mRbGiShxQfuhta0uxTJStTxZcbcH5+jxSxrUjPgb2eF
-         PVmiNNpK1JF/7R8gJVYRVIncrE99BX0+1fiJKQAfXF3meBhn53hBRLgQfFKI85BFwcba
-         nJpmMbJdG/uT/ecqZfcesZotP1Wd9E3HJ3s+C/TEX0QZ9CF0Nq2Xc/eBC8mHbyBIjT1k
-         5bDxXgOV1+VYlrHePhqujwQF/6bk0y8rLVa8HFMjrMUdMb/0G/x3yqTM3FcbVfMaBWED
-         B14w==
-X-Gm-Message-State: AOAM531+JFiAyX8YlO9H/XuFUk6tF9YA+6taIMTlbVTg+SroKHdUd2wc
-        eDg/JSltSJpaSlOwCRr3F8PjqBt4Ntk=
-X-Google-Smtp-Source: ABdhPJyw9QmUHFfvRPr08OLJZ15CCycODz07DIJ/0tUi+Q1G7rAESMtlXpEz4m59/LNy5xx9IDX+jg==
-X-Received: by 2002:a9d:7acc:: with SMTP id m12mr17017438otn.27.1624780667616;
-        Sun, 27 Jun 2021 00:57:47 -0700 (PDT)
-Received: from localhost.localdomain ([50.236.19.102])
-        by smtp.gmail.com with ESMTPSA id z5sm2554042oth.6.2021.06.27.00.57.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 27 Jun 2021 00:57:46 -0700 (PDT)
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next] udp: allow changing mapping of a socket to queue
-Date:   Sun, 27 Jun 2021 15:57:40 +0800
-Message-Id: <20210627075740.68554-1-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        id S230008AbhF0INb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 04:13:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42438 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229507AbhF0INb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Jun 2021 04:13:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 090F661C32;
+        Sun, 27 Jun 2021 08:11:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624781467;
+        bh=WNn1g6kdCSHd3xWcHByeDlzEeojulDSBssUamtJ6PgA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XxzylgjunLF+94kbeLOPB4AoEnt1QpfBOsc/nqgArJmwVmJYpMqvTNgS1+oklrlgj
+         Oz/hkw9dWZaaKpLoau9T+0eVAQmepx+XdhTVhnslTJrQKRzCuonvR+fbySu7Uv49bg
+         NYA6NUQoreVRGX8XBd07H61D3LXzBE+WFxrvl8lcCzTNglq1zyTWlmI+eG8gH14/i+
+         DCHwjnQOoRW4XI3zeKaItRzBs8Pd+uuBUP31ygr8EBfOhC9rDchqy0p9tervqLbobJ
+         BSse7/6YoSHRxmIHuKBpwgLnzBuKUgiphbyWp9N35+4a4rM6Fz08cZj/2mhjlmQkeN
+         j5/h7R13KswGg==
+Date:   Sun, 27 Jun 2021 11:11:04 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, willemb@google.com,
+        eric.dumazet@gmail.com, dsahern@gmail.com, yoshfuji@linux-ipv6.org,
+        brouer@redhat.com, Dave Jones <dsj@fb.com>
+Subject: Re: [PATCH net-next v5] net: ip: avoid OOM kills with large UDP
+ sends over loopback
+Message-ID: <YNgymLc+1iUatk9F@unreal>
+References: <20210624175724.2389359-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210624175724.2389359-1-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are many containers running on host. These containers
-share the host resources(e.g. netdev rx/tx queue). For isolating
-tx/rx queue, when the process migrated to other cpu, we hope
-this process will use tx/rx queue mapped to this cpu.
+On Thu, Jun 24, 2021 at 10:57:24AM -0700, Jakub Kicinski wrote:
+> Dave observed number of machines hitting OOM on the UDP send
+> path. The workload seems to be sending large UDP packets over
+> loopback. Since loopback has MTU of 64k kernel will try to
+> allocate an skb with up to 64k of head space. This has a good
+> chance of failing under memory pressure. What's worse if
+> the message length is <32k the allocation may trigger an
+> OOM killer.
+> 
+> This is entirely avoidable, we can use an skb with page frags.
+> 
+> af_unix solves a similar problem by limiting the head
+> length to SKB_MAX_ALLOC. This seems like a good and simple
+> approach. It means that UDP messages > 16kB will now
+> use fragments if underlying device supports SG, if extra
+> allocator pressure causes regressions in real workloads
+> we can switch to trying the large allocation first and
+> falling back.
+> 
+> v4: pre-calculate all the additions to alloclen so
+>     we can be sure it won't go over order-2
+> v5: s/< MAX/<= MAX/ ; reorder variable declaration
 
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- net/ipv4/udp.c         | 2 ++
- net/ipv4/udp_offload.c | 4 ++++
- 2 files changed, 6 insertions(+)
+Jakub,
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 15f5504adf5b..72104c45e6b4 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -950,6 +950,8 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
- 		uh->check = CSUM_MANGLED_0;
- 
- send:
-+	/* pick tx queue for this skb list. */
-+	skb->ooo_okay = true;
- 	err = ip_send_skb(sock_net(sk), skb);
- 	if (err) {
- 		if (err == -ENOBUFS && !inet->recverr) {
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index 54e06b88af69..62683efca647 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -269,6 +269,7 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
- 	struct udphdr *uh;
- 	unsigned int mss;
- 	bool copy_dtor;
-+	bool ooo_okay;
- 	__sum16 check;
- 	__be16 newlen;
- 
-@@ -286,6 +287,8 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
- 	if (copy_dtor)
- 		gso_skb->destructor = NULL;
- 
-+	ooo_okay = gso_skb->ooo_okay;
-+	gso_skb->ooo_okay = 0;
- 	segs = skb_segment(gso_skb, features);
- 	if (IS_ERR_OR_NULL(segs)) {
- 		if (copy_dtor)
-@@ -293,6 +296,7 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
- 		return segs;
- 	}
- 
-+	segs->ooo_okay = ooo_okay;
- 	/* GSO partial and frag_list segmentation only requires splitting
- 	 * the frame into an MSS multiple and possibly a remainder, both
- 	 * cases return a GSO skb. So update the mss now.
--- 
-2.27.0
+Can you please put changelog under "---" below SOB?
+It gives no value to see all vX in the final git log.
 
+Thanks
+
+> 
+> Reported-by: Dave Jones <dsj@fb.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/ipv4/ip_output.c  | 32 ++++++++++++++++++--------------
+>  net/ipv6/ip6_output.c | 32 +++++++++++++++++---------------
+>  2 files changed, 35 insertions(+), 29 deletions(-)
+> 
+> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+> index c3efc7d658f6..f5c398036efa 100644
+> --- a/net/ipv4/ip_output.c
+> +++ b/net/ipv4/ip_output.c
+> @@ -1050,11 +1050,11 @@ static int __ip_append_data(struct sock *sk,
+>  		if (copy < length)
+>  			copy = maxfraglen - skb->len;
+>  		if (copy <= 0) {
+> +			unsigned int alloclen, alloc_extra;
+>  			char *data;
+>  			unsigned int datalen;
+>  			unsigned int fraglen;
+>  			unsigned int fraggap;
+> -			unsigned int alloclen;
+>  			unsigned int pagedlen;
+>  			struct sk_buff *skb_prev;
+>  alloc_new_skb:
+> @@ -1074,35 +1074,39 @@ static int __ip_append_data(struct sock *sk,
+>  			fraglen = datalen + fragheaderlen;
+>  			pagedlen = 0;
+>  
+> +			alloc_extra = hh_len + 15;
+> +			alloc_extra += exthdrlen;
+> +
+> +			/* The last fragment gets additional space at tail.
+> +			 * Note, with MSG_MORE we overallocate on fragments,
+> +			 * because we have no idea what fragment will be
+> +			 * the last.
+> +			 */
+> +			if (datalen == length + fraggap)
+> +				alloc_extra += rt->dst.trailer_len;
+> +
+>  			if ((flags & MSG_MORE) &&
+>  			    !(rt->dst.dev->features&NETIF_F_SG))
+>  				alloclen = mtu;
+> -			else if (!paged)
+> +			else if (!paged &&
+> +				 (fraglen + alloc_extra <= SKB_MAX_ALLOC ||
+> +				  !(rt->dst.dev->features & NETIF_F_SG)))
+>  				alloclen = fraglen;
+>  			else {
+>  				alloclen = min_t(int, fraglen, MAX_HEADER);
+>  				pagedlen = fraglen - alloclen;
+>  			}
+>  
+> -			alloclen += exthdrlen;
+> -
+> -			/* The last fragment gets additional space at tail.
+> -			 * Note, with MSG_MORE we overallocate on fragments,
+> -			 * because we have no idea what fragment will be
+> -			 * the last.
+> -			 */
+> -			if (datalen == length + fraggap)
+> -				alloclen += rt->dst.trailer_len;
+> +			alloclen += alloc_extra;
+>  
+>  			if (transhdrlen) {
+> -				skb = sock_alloc_send_skb(sk,
+> -						alloclen + hh_len + 15,
+> +				skb = sock_alloc_send_skb(sk, alloclen,
+>  						(flags & MSG_DONTWAIT), &err);
+>  			} else {
+>  				skb = NULL;
+>  				if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
+>  				    2 * sk->sk_sndbuf)
+> -					skb = alloc_skb(alloclen + hh_len + 15,
+> +					skb = alloc_skb(alloclen,
+>  							sk->sk_allocation);
+>  				if (unlikely(!skb))
+>  					err = -ENOBUFS;
+> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+> index ff4f9ebcf7f6..afe887dd5e35 100644
+> --- a/net/ipv6/ip6_output.c
+> +++ b/net/ipv6/ip6_output.c
+> @@ -1551,11 +1551,11 @@ static int __ip6_append_data(struct sock *sk,
+>  			copy = maxfraglen - skb->len;
+>  
+>  		if (copy <= 0) {
+> +			unsigned int alloclen, alloc_extra;
+>  			char *data;
+>  			unsigned int datalen;
+>  			unsigned int fraglen;
+>  			unsigned int fraggap;
+> -			unsigned int alloclen;
+>  			unsigned int pagedlen;
+>  alloc_new_skb:
+>  			/* There's no room in the current skb */
+> @@ -1582,17 +1582,28 @@ static int __ip6_append_data(struct sock *sk,
+>  			fraglen = datalen + fragheaderlen;
+>  			pagedlen = 0;
+>  
+> +			alloc_extra = hh_len;
+> +			alloc_extra += dst_exthdrlen;
+> +			alloc_extra += rt->dst.trailer_len;
+> +
+> +			/* We just reserve space for fragment header.
+> +			 * Note: this may be overallocation if the message
+> +			 * (without MSG_MORE) fits into the MTU.
+> +			 */
+> +			alloc_extra += sizeof(struct frag_hdr);
+> +
+>  			if ((flags & MSG_MORE) &&
+>  			    !(rt->dst.dev->features&NETIF_F_SG))
+>  				alloclen = mtu;
+> -			else if (!paged)
+> +			else if (!paged &&
+> +				 (fraglen + alloc_extra <= SKB_MAX_ALLOC ||
+> +				  !(rt->dst.dev->features & NETIF_F_SG)))
+>  				alloclen = fraglen;
+>  			else {
+>  				alloclen = min_t(int, fraglen, MAX_HEADER);
+>  				pagedlen = fraglen - alloclen;
+>  			}
+> -
+> -			alloclen += dst_exthdrlen;
+> +			alloclen += alloc_extra;
+>  
+>  			if (datalen != length + fraggap) {
+>  				/*
+> @@ -1602,30 +1613,21 @@ static int __ip6_append_data(struct sock *sk,
+>  				datalen += rt->dst.trailer_len;
+>  			}
+>  
+> -			alloclen += rt->dst.trailer_len;
+>  			fraglen = datalen + fragheaderlen;
+>  
+> -			/*
+> -			 * We just reserve space for fragment header.
+> -			 * Note: this may be overallocation if the message
+> -			 * (without MSG_MORE) fits into the MTU.
+> -			 */
+> -			alloclen += sizeof(struct frag_hdr);
+> -
+>  			copy = datalen - transhdrlen - fraggap - pagedlen;
+>  			if (copy < 0) {
+>  				err = -EINVAL;
+>  				goto error;
+>  			}
+>  			if (transhdrlen) {
+> -				skb = sock_alloc_send_skb(sk,
+> -						alloclen + hh_len,
+> +				skb = sock_alloc_send_skb(sk, alloclen,
+>  						(flags & MSG_DONTWAIT), &err);
+>  			} else {
+>  				skb = NULL;
+>  				if (refcount_read(&sk->sk_wmem_alloc) + wmem_alloc_delta <=
+>  				    2 * sk->sk_sndbuf)
+> -					skb = alloc_skb(alloclen + hh_len,
+> +					skb = alloc_skb(alloclen,
+>  							sk->sk_allocation);
+>  				if (unlikely(!skb))
+>  					err = -ENOBUFS;
+> -- 
+> 2.31.1
+> 
