@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C8723B50D5
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 04:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D53093B50D6
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 04:56:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230404AbhF0C57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Jun 2021 22:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
+        id S230388AbhF0C6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Jun 2021 22:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230186AbhF0C54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Jun 2021 22:57:56 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365A8C061574
-        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:55:32 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id i4so6853808plt.12
-        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:55:32 -0700 (PDT)
+        with ESMTP id S230186AbhF0C6X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Jun 2021 22:58:23 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB1DC061574
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:55:58 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id v7so12111890pgl.2
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:55:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PMyYlkVwRHQ9DUEr8ngi8UQn9GVr2wePG86nkiL2lzE=;
-        b=h53LOynHitcTvixuxfqSb6+jVhGNfIY5S2Mp6d6ZLxXBMROSaOW9tzkZlvHK6IoZmm
-         jnYbyrecNypu12SWhHoS2WDBxh84GKIB0pTo9HY4oYaVQ6Esmr7KD1OzUYfcSDLCVIO+
-         NCK3jMpjbXS1IAFjEpUh2wE8/7+7KVd4c5L7VglMwrP893QECi7A7oZ6CCp8QNLXkIVX
-         +EX/DblPQp8xDgaRZeNyTZ6I9fiKbnluP75m9UoX20PmHk5Cj9nGelOg/5DmMMKAgoez
-         VMYgctUE2B2+45RLxxERxmw9pSgmIb9yvz+7skxW0imKT/OeqBIzGPuQ49p+RmX3fnoJ
-         90MQ==
+        bh=c5EWtGUx9ZRp325Wj5021/NoEepkMsKhBX29uNd61x8=;
+        b=UA7+0W13nkrhM917nhX0BGNaMA969/83JbXEYHZFtGY7IEi3XqlV6Z93QeBgwmgePF
+         Pw/nO7NlvGOMjxzcVqs3qXbqAFtTJF0Gsjrt8P9F9SkPMnIYJYZVMN7Gn+tVj16Xtp/b
+         gErkU6aSRnvs9N8CKBprOAxOw0P/fyVcKRCwJfbu/yK6ZCd6CIHc376ZEw6R3uFa0kgA
+         fFKxbs8FrVZjXiXmmJUSPs2j+xNjLxp6LP0iV1avTKRJZWyheN8tRwJCYJlb9OEgKzv8
+         hjulXmZ3Ebt3D7JmqHp7EJZmcrBF11Zipe65OPh8qH0PifZpjhWLu628DaU/S9r84ere
+         NsOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=PMyYlkVwRHQ9DUEr8ngi8UQn9GVr2wePG86nkiL2lzE=;
-        b=IuXxNVjuOYYi1fGQFIyohkZ7Q+RXjcwwsOzOuKM0gUq8AVj+B1BlUGCkNowGde114Q
-         6geWRu0T8elEQNJjYNpQXxtK6177iEqWxfjubMm88MEEW8WFekQr7Mg5GZMpYPH2yS4C
-         u2Hf31w/NAxj7BQL9tLyY5zXQyogBhB3hge06vPR+jC/JSFCpX3uUAtQs9oLiLsXP7Cz
-         AkM2CsKBuP4nn7vmTElzXmPXAdKoItNBm1jySwU+zqWItpz62tqftjzclpdT48QhgeS7
-         wLsyoPzF3E3maKogq9aDHeCKBl5B03JroogWZN30FmolEPEOb2ebeKrvwr/MhAt2EQ8X
-         SUVQ==
-X-Gm-Message-State: AOAM530hw8DT++3IP2dheSigwW82kcCHesEdnfTspxYWGooy4iodhv93
-        9NbhoIPwus41LYr5Tcv6a60=
-X-Google-Smtp-Source: ABdhPJyvO9b3D7LOk3utvQv2I3VKZXEUbuybTRtclOLGngI/AbgDY7kjtYNsIA/8Zbl99DcvEgV4Pw==
-X-Received: by 2002:a17:902:f1cb:b029:120:768f:5b46 with SMTP id e11-20020a170902f1cbb0290120768f5b46mr15882530plc.3.1624762531649;
-        Sat, 26 Jun 2021 19:55:31 -0700 (PDT)
+        bh=c5EWtGUx9ZRp325Wj5021/NoEepkMsKhBX29uNd61x8=;
+        b=d3ijkJAXTo0LfD1KvVRC38J78Qvy57I8NIRYIQx+nonjZzoMezpxGz6tND8CNAz78I
+         Ngwdp+GLt1UtAZwbv0zIfKLJ55BQQLtMCNWY6mehlktDW6Yx8PfHNgb89zXQh9agsD2s
+         5MLYuBONaxq37tsT6fCcSOevx17tK0euUN9yRqrW1r/r2pG8IdyV/s3EBTYyseEMN74Q
+         ZmxRpLysuUX5mDn25zPE1yFXPZ2CfWBryB5bZx3qNTVDG47UwuDgwuDopAgxC1dPBOHM
+         kYriMWdsPeoKFmpULWRjAvXVijTv7eALgvxY1UWjYmEB25lytItEbNT9LjYKook2xp7S
+         eJCA==
+X-Gm-Message-State: AOAM5336yFLOFRho0p8Xv5bkQaTioie4JmyQ14S7QPB/aUpm97wzrVuT
+        jTVlCS5NRUZeIE38EOBeA/I=
+X-Google-Smtp-Source: ABdhPJzVL6nzO3JprwEwW4P/lW7vRCy74i7OohTNJaxyqdKbs105lRkrtfm6okxHcYXwWaOP8aeQ7A==
+X-Received: by 2002:a63:5302:: with SMTP id h2mr7431316pgb.262.1624762558541;
+        Sat, 26 Jun 2021 19:55:58 -0700 (PDT)
 Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id n6sm9805185pgt.7.2021.06.26.19.55.29
+        by smtp.gmail.com with ESMTPSA id 1sm10296838pfo.92.2021.06.26.19.55.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Jun 2021 19:55:30 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/7] net: bridge: include the is_local bit in
- br_fdb_replay
+        Sat, 26 Jun 2021 19:55:58 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/7] net: ocelot: delete call to br_fdb_replay
 To:     Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -62,14 +61,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20210625185321.626325-1-olteanv@gmail.com>
- <20210625185321.626325-2-olteanv@gmail.com>
+ <20210625185321.626325-3-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a13657a8-d8bf-fe46-4061-60b093074059@gmail.com>
-Date:   Sat, 26 Jun 2021 19:55:28 -0700
+Message-ID: <7f61fb80-8118-e8cd-31cc-88dde60fbaf4@gmail.com>
+Date:   Sat, 26 Jun 2021 19:55:56 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210625185321.626325-2-olteanv@gmail.com>
+In-Reply-To: <20210625185321.626325-3-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -82,12 +81,11 @@ X-Mailing-List: netdev@vger.kernel.org
 On 6/25/2021 11:53 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Since commit 2c4eca3ef716 ("net: bridge: switchdev: include local flag
-> in FDB notifications"), the bridge emits SWITCHDEV_FDB_ADD_TO_DEVICE
-> events with the is_local flag populated (but we ignore it nonetheless).
-> 
-> We would like DSA to start treating this bit, but it is still not
-> populated by the replay helper, so add it there too.
+> Not using this driver, I did not realize it doesn't react to
+> SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE notifications, but it implements just
+> the bridge bypass operations (.ndo_fdb_{add,del}). So the call to
+> br_fdb_replay just produces notifications that are ignored, delete it
+> for now.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
