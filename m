@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71A2F3B50D9
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 05:00:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6A563B50DB
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 05:01:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbhF0DCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Jun 2021 23:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
+        id S230299AbhF0DD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Jun 2021 23:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230186AbhF0DCT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Jun 2021 23:02:19 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C913C061574
-        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:59:55 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id e20so12134400pgg.0
-        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 19:59:55 -0700 (PDT)
+        with ESMTP id S230104AbhF0DD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Jun 2021 23:03:56 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31E9C061574
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 20:01:33 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id m17so6864236plx.7
+        for <netdev@vger.kernel.org>; Sat, 26 Jun 2021 20:01:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uZwB7XAjwnYGnVKivth6WAkPdVdITuREDD7ibzddp1U=;
-        b=rp+epZ5gFKrOHUs0Or3gLW/cS7RmKszQ9mo+HgtNk0GQRMlE3P0U7x0wCx8TZsUjC1
-         Wr//5wwkbrzZj1PU033FSs0MA9I2XBhw5YJNthbN092JiXWSpLMQT8Rba2NzcIumcGla
-         fE89kJFOqCXxh9syN8fmL/IthZ6evjHeOkB6FGTZe9kHO4bihwW5UGf7ilYPUs+RMdEb
-         Y1lT4qCx7od45i4qKMuNqMPlTWSnfAlOBEDbUb/gOVkGtwM6z3oxZvcyyMbiDA3DQgPf
-         XZN4hCSfxMPboxMDQXkVuHsT6/vOP7cg6krpAPJGr6LppHrZugfTmxuuKHOV1pLdiZOY
-         Fg0A==
+        bh=BD8FXNOGL6nLxco6A1aTNYWsjM2mSp0cjQxg/+vjerc=;
+        b=Zc6I/9v+YH21NYGPNNsjRF/wWUKpwtjPkgvb4WAaGZTVQaDNHLPa0iPXYqW1UPAVLM
+         oi9QBsN9rDasuihT5Bxrnja79+jkzEFiEzwdh8mFg/GOEOLOtcA2V/x6RaoTOGtLJqeJ
+         yHz6uiJhjQu6cjiCy1NugE9D1kxRTczykObYWz+VyTXU3xMl2RrpyxI4wcUSbTl6tcZk
+         oblvzjzpaycwx/d8wasQyj9sZMl06WyzGTqycN5fDn1n3UAW6NT+0rTQYoEIu3pQ7mU8
+         Vuj3AnZihFEqbh2wkQuQa6ksK50XvRt5zMYa2yJjq0i2flx9QAYODh0y3rjWkxDihyii
+         WBcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=uZwB7XAjwnYGnVKivth6WAkPdVdITuREDD7ibzddp1U=;
-        b=iCLThntsbd4gekJ/geFZk8YQ6FesooHCnyiXAaHftkIs5X1J6hHUxTGE5jWqmqPG2B
-         a3oCTGazVw8ZcsoWWf2yWW4JP7xgkLOaP8P3lzrlUJGUCHMwDtWOQ/Nrd1Q7QtLkleke
-         Mizhvrp2/78dK+AjoN1FB4BsAuDWc4y7kXzvqC11U2+5E+4N/5OGHpRMjB2OrIKGAPgr
-         DWBxf3zEhmpIuOzGIjhNEHEaklICR1olya9m0XgK94nGo6RJ31d6NP30m/mzt10157vF
-         nVtY5ldmq2NkIfkF7bN4+lylffrlwNJoukgYHdqCZBbNUniYotEpY8s6dvAHvXv39TFH
-         5mog==
-X-Gm-Message-State: AOAM532+5rFg9h1hd+UJAbVyRN1OysH53gzEiepsuSvA/CYIgNkkf9cH
-        N4GNv3bnmFx/2XmfpwK2/AQ=
-X-Google-Smtp-Source: ABdhPJxT8Xb85hnpNjeR3D9yRkSl2qL/yPYmEw1Wqxl9XQSKB8mVvQjLt3omP955Fvc2l37er6lX0A==
-X-Received: by 2002:a63:1c0e:: with SMTP id c14mr4284712pgc.11.1624762794857;
-        Sat, 26 Jun 2021 19:59:54 -0700 (PDT)
+        bh=BD8FXNOGL6nLxco6A1aTNYWsjM2mSp0cjQxg/+vjerc=;
+        b=pNw6lciPsVQ5E1G8+n+9G8xAR3tHjJBI6S4GlA0S3k+BmyK7uEy2Awx0EcuuWFsxd/
+         IKDep2hvOnls43oCIenHwGeaxeZE58kbPkdffcWXTl83bYnpqidNztZnIj7Jxs4ZPaC7
+         G2tozM2FDLzk0gMoEreyL2bMew2QYfgkhGh46sb2dti0/qZ99J5WB94bwtuc3WGKnFJm
+         vDLOHfNgy17fV3B6SVIZ/UYnnZ166AtBGH3tGAi63dQbsyBd9GYE/X4rVBUY6E+brTbk
+         xfGXgkTXjMezlnz1y6nnZufKTkdzEeXCL0x7rbxnjCfc+lZvYX+g/rUnmFggICjM8daI
+         jcWw==
+X-Gm-Message-State: AOAM530oN5t5KSTiIjavqyQdUsNqGfGgv/aS5hwkoCmf+3sE1OX8CLkz
+        L26kqdN0IbF3wbSm8n//o/I=
+X-Google-Smtp-Source: ABdhPJzZ5rwDWJD774hnVJgGBShOVk2VC0NJOqvsXv9SU+g4t3/H68IFJnamBbD6X9Wa1aSCgzskiQ==
+X-Received: by 2002:a17:90a:b28a:: with SMTP id c10mr28559945pjr.59.1624762893262;
+        Sat, 26 Jun 2021 20:01:33 -0700 (PDT)
 Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id a9sm9691186pfo.69.2021.06.26.19.59.53
+        by smtp.gmail.com with ESMTPSA id k63sm14810575pjh.13.2021.06.26.20.01.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Jun 2021 19:59:54 -0700 (PDT)
-Subject: Re: [PATCH net-next 4/7] net: bridge: ignore switchdev events for LAG
- ports which didn't request replay
+        Sat, 26 Jun 2021 20:01:32 -0700 (PDT)
+Subject: Re: [PATCH net-next 6/7] net: bridge: allow the switchdev replay
+ functions to be called for deletion
 To:     Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
@@ -62,14 +62,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20210625185321.626325-1-olteanv@gmail.com>
- <20210625185321.626325-5-olteanv@gmail.com>
+ <20210625185321.626325-7-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <6b065c09-1db8-1b80-b0ea-c66451adc8af@gmail.com>
-Date:   Sat, 26 Jun 2021 19:59:52 -0700
+Message-ID: <42b36391-a496-41f0-18bf-7427211c0117@gmail.com>
+Date:   Sat, 26 Jun 2021 20:01:30 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210625185321.626325-5-olteanv@gmail.com>
+In-Reply-To: <20210625185321.626325-7-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -82,35 +82,30 @@ X-Mailing-List: netdev@vger.kernel.org
 On 6/25/2021 11:53 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> There is a slight inconvenience in the switchdev replay helpers added
-> recently, and this is when:
+> When a switchdev port leaves a LAG that is a bridge port, the switchdev
+> objects and port attributes offloaded to that port are not removed:
 > 
 > ip link add br0 type bridge
-> ip link add bond0 type bond
+> ip link add bond0 type bond mode 802.3ad
+> ip link set swp0 master bond0
 > ip link set bond0 master br0
 > bridge vlan add dev bond0 vid 100
-> ip link set swp0 master bond0
-> ip link set swp1 master bond0
+> ip link set swp0 nomaster
 > 
-> Since the underlying driver (currently only DSA) asks for a replay of
-> VLANs when swp0 and swp1 join the LAG because it is bridged, what will
-> happen is that DSA will try to react twice on the VLAN event for swp0.
-> This is not really a huge problem right now, because most drivers accept
-> duplicates since the bridge itself does, but it will become a problem
-> when we add support for replaying switchdev object deletions.
+> VLAN 100 will remain installed on swp0 despite it going into standalone
+> mode, because as far as the bridge is concerned, nothing ever happened
+> to its bridge port.
 > 
-> Let's fix this by adding a blank void *ctx in the replay helpers, which
-> will be passed on by the bridge in the switchdev notifications. If the
-> context is NULL, everything is the same as before. But if the context is
-> populated with a valid pointer, the underlying switchdev driver
-> (currently DSA) can use the pointer to 'see through' the bridge port
-> (which in the example above is bond0) and 'know' that the event is only
-> for a particular physical port offloading that bridge port, and not for
-> all of them.
+> Let's extend the bridge vlan, fdb and mdb replay functions to take a
+> 'bool adding' argument, and make DSA and ocelot call the replay
+> functions with 'adding' as false from the switchdev unsync path, for the
+> switch port that leaves the bridge.
+> 
+> Note that this patch in itself does not salvage anything, because in the
+> current pull mode of operation, DSA still needs to call the replay
+> helpers with adding=false. This will be done in another patch.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-With your own comment fixed:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
