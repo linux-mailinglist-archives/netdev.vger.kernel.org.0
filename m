@@ -2,258 +2,654 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D75D13B54FD
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 21:12:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BBE73B5506
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 21:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231476AbhF0TOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 15:14:41 -0400
-Received: from mail-vi1eur05on2129.outbound.protection.outlook.com ([40.107.21.129]:24480
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S231487AbhF0TqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 15:46:06 -0400
+Received: from mail-eopbgr10083.outbound.protection.outlook.com ([40.107.1.83]:64647
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231375AbhF0TOl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Jun 2021 15:14:41 -0400
+        id S231468AbhF0TqF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Jun 2021 15:46:05 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DI3lB8QuK86vdGNI4AP1zW47ZCwWBFnI4kRxbCjsUKzBLztgldOOAKz3MqRnLx08/sBG6UbJ7bm7cfw+zPo0ZOfmJhM0Sdq6ZLL4ET+vX70UwvM/qB9GHZ5Kf086AbCfPRvei4fqGASCHMVnS/mzunlfkStkg0tED8eekZ3c4QoQWpdx5P/hvVFTinldeTt9HSRB/MaDsv7FqlkRrA3AEmEYML1g8Unv+CyC2Byok7kl+xylolZv2uVOrjh2Af7QAkPxubJtWU1fVOsp/+uCnBk0XvIhX8ZbMPu/vG81eNgxZpv/jKAnKftG8iKKFvyv8LHtyLkS7+7UP2c71z+m2g==
+ b=h8Xulrzxa1p9gxHJVPSGLdEKMMzuVwGWyyOpMqoH6R3I85WqtiFOE+NeQO+AgFebBFIozL+YLuJvyXaFoCrRlMYLgIvZ1S322um0mF3frzZ4FSJaevDf/bxLN6i4GZ5wWjrfTK6uc5qs2ZQ3XOVrMlIsv/pxLlDWat8kv1Yf2ED6CeLT3yp42aepXhTR2lzR3zcVPa7uiIncvP+YP2vhrPYgh8kSdUy+MCmqDt8OLAQpuvzFCpRhroWrIl3EdIWjU+qGXoBw+/Ud7z0IwGJrB+oS4shcGc8VhoJ5qcB6VbVYUJ0hnVW9NzL/iGR37Nb2H+JpuIbXTaRFymE5myyyVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kz/IupXG4n+GysJ9Sl/uEu9dgnSTTbHH6x3Xcbt3Rvs=;
- b=hFR/zBPE1VZz39YS+u4MCPC4kxTz44bWiXwMuZnhtsR7PV7Ud+NHy9TAmXvqLctsT5PsDOTa+qO9+7kltCCpjCnUIBmjcQXx/U3qz6vR035eNRCQv2Q29YA51NjPCoX5kYH9uimfHzzEDEz89huSZJOuMarkxyGhRycApR3rdQ2NAAmSPnuZvrDW+FbNwXtlOBO9GzCtlOh0KjpbZgpf1g4LUHE7LwhlrFyZN4kIzRIoBIxO/mbfLmqKtkMhswn/sseC3lAkHvKxe5sbYiC0fHhLm099d4NaGwiZPvekjJkQT74vjQKa02O78uiiP14Qq1r1Hs11cu5QqgrWyp/hcg==
+ bh=eWc44oqEq4z39bDKr1iO1Ibj5cwnSqmHlPqpItojeQg=;
+ b=VaiGTb6NOL9tXvPMFbwaxCL0tZEs0RCM9dnm7vxq0P/gyJ1f/vh/x5xkgpOAI5H2I92J/Pdgx8PYZvIyQQMs1qTyPPQhvjVjsykAH0P97p9E4pfYneI0rNuvg/6LXUXzSP31MBTcc1bQapBnbezsnCOp3B0q4v9lYa2JfflUdmxhrten88j2fPTW2AhkcSCr9McUY7uE5CZ1A6WI2Y9UhqqXt14giw+MY9VtrBNHK75G7JbIe5XFIgtOt8J6HbvNq1EFWDO5izjkBIAW0nBcr2x6/eRy728gQUJZkMU+91MhBuYWy3LPKvIGZ0xlo4SjnnjAOe2SzHcRrDCCytEclw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=itu.dk; dmarc=pass action=none header.from=itu.dk; dkim=pass
- header.d=itu.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=itu.dk; s=selector1;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kz/IupXG4n+GysJ9Sl/uEu9dgnSTTbHH6x3Xcbt3Rvs=;
- b=JWFxZjQ6UO+nRe/I+QNHajQz4aOWj7jfey/mAEYiloW0W9GAE4TkiBM3IaSUI4YAWDuYIjLtJYQAdo8ZwVib2AWIogAQLlyBFCu/xUCHvTfLbrzPCqMqOqiSOrAyXO6NeNH1AVdAZqldipAtjGU3XI5LXgcAHFC8elJlN5BWFq2AvNi+reKfDGZ+5Mu1P+32DhxrCE2iMFotwfpv9nIUyBYzADBgWGx8jlslbgSsVihKhpfLqSNTxgPlau6RoUjG0CUGvaDGCxnvOLiL9wcJshV2aYQySDYFSp6t1ZyVjVunpTGQvlUWJ1sv/yzKdfZIXu0/XjijyegHKYL7xmJi7w==
-Received: from AM0PR02MB5777.eurprd02.prod.outlook.com (2603:10a6:208:180::13)
- by AM9PR02MB7345.eurprd02.prod.outlook.com (2603:10a6:20b:3b6::13) with
+ bh=eWc44oqEq4z39bDKr1iO1Ibj5cwnSqmHlPqpItojeQg=;
+ b=AVwDPx43Xz+BJzqHMeT+MC3EHJEwBoOsu9zsg1fTscnjaE6eIv0fk94qo8r7+p07OhX1EmaYUXoSpwH4plPMIjf7FWuzwxIYGkUoE8NAbPu3tP0Gf9nKt/Rsbuo8HBRZN8974RHlNPryJgYt8C1Z3FcWhFs/3IuVKo8zV+NsD6Q=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB5502.eurprd04.prod.outlook.com (2603:10a6:803:c9::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.23; Sun, 27 Jun
- 2021 19:12:13 +0000
-Received: from AM0PR02MB5777.eurprd02.prod.outlook.com
- ([fe80::9832:7a6d:cf4e:d511]) by AM0PR02MB5777.eurprd02.prod.outlook.com
- ([fe80::9832:7a6d:cf4e:d511%9]) with mapi id 15.20.4264.026; Sun, 27 Jun 2021
- 19:12:13 +0000
-From:   Niclas Hedam <nhed@itu.dk>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net: sched: Add support for packet bursting.
-Thread-Topic: [PATCH] net: sched: Add support for packet bursting.
-Thread-Index: AQHXaboRq3ThYDzh+UOlN3JDzgVYqKsoMjKAgAALBYA=
-Date:   Sun, 27 Jun 2021 19:12:13 +0000
-Message-ID: <A5627177-BF51-46C5-99AD-E25357CC7617@itu.dk>
-References: <0124A7CD-1C46-4BC2-A18C-9B03DD57B8B8@itu.dk>
- <CAM_iQpWC0arAJsY2Y+SKzYwaiyGDwQ61mopriEK9Q9EsPnwgTw@mail.gmail.com>
-In-Reply-To: <CAM_iQpWC0arAJsY2Y+SKzYwaiyGDwQ61mopriEK9Q9EsPnwgTw@mail.gmail.com>
-Accept-Language: en-GB, en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.24; Sun, 27 Jun
+ 2021 19:43:37 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::b1a0:d654:a578:53ab]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::b1a0:d654:a578:53ab%7]) with mapi id 15.20.4264.026; Sun, 27 Jun 2021
+ 19:43:37 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "kuba@kernel.org" <kuba@kernel.org>, Po Liu <po.liu@nxp.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next v4 01/12] ethtool: Add support for configuring
+ frame preemption
+Thread-Topic: [PATCH net-next v4 01/12] ethtool: Add support for configuring
+ frame preemption
+Thread-Index: AQHXaiLt1oRehZqnY0+RdmtDxrn0Q6soRSmA
+Date:   Sun, 27 Jun 2021 19:43:36 +0000
+Message-ID: <20210627194335.vrhwurg43esnodi3@skbuf>
+References: <20210626003314.3159402-1-vinicius.gomes@intel.com>
+ <20210626003314.3159402-2-vinicius.gomes@intel.com>
+In-Reply-To: <20210626003314.3159402-2-vinicius.gomes@intel.com>
+Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=itu.dk;
-x-originating-ip: [213.32.242.111]
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.224.68]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8ab1c1b4-67c2-4cf5-5733-08d9399f78bb
-x-ms-traffictypediagnostic: AM9PR02MB7345:
-x-microsoft-antispam-prvs: <AM9PR02MB73457711B6CE2B630F44F5DEB4049@AM9PR02MB7345.eurprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:883;
+x-ms-office365-filtering-correlation-id: a66d1093-babd-4da3-013c-08d939a3db47
+x-ms-traffictypediagnostic: VI1PR04MB5502:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB55027545D22A8C3754BB73F4E0049@VI1PR04MB5502.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +FvXp3ifDOkMhoroxkZbaNq3eAiWJZ+dxJ+4N1JToXQOPGfLceDqpkVucH5ZoDNxasWsNiPnczN1C03hp3TNIiq9a3GU09YhA8Qpj/MIm3VFXzBOeJvYj2lmhjh8IigRk6WrfRO5JyYPncyGLd31sxa/aNVW2GbKFz2I8/dbFxoqjaPtM6Yh+Z1U3RW02kbdI1+WH1hwkgZc+4ztyfeA02NYrLYZ9oDMdnnIrR7ge2QS1VvKjMY2/Zo7EJmB1UEOYqPvCVli3K2G9ddhdqEaNvFtGIiCHhLsX80PuiMKMG7GfvlVoGEo3a1TMOfRoPffEj48rK1/SBdv3++OgxaNMj2oDH6hPbRdA5KYSAb1J3L+LCud4qyJ34BTilWj5gYK/BCvSAqfbP2O+Bf4S3REdO7cBhQd+bWBVgg2dglFuZgG4SIDfz8W5OS91n7nZJMkt4/0MWSQL88+KgzU5Zc79ysSnIpLGAdRe4CLn1KrjCw9xvokQy7VsYmjVT0Yq4rx21kLTBdVP39tT+Fd1Mk85F29vH3PbSKX6ETti+mveyFkOJERlP3GS612ppNBPQCzx10yTDEakcHuNvbbGoCqD+B6PqZG9IHu+ZyaolSjOu/iwkIoeTnX8wkuzg+Wxy0s5PPtBSJDYEdV9zvIs+5vPQqiSrGxOtvmLUVnWA6sjX1rdRE7oUZxrytbOISpeophbiWoIx07FylzTVjUf2vIGw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB5777.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(136003)(39840400004)(376002)(346002)(316002)(786003)(5660300002)(91956017)(33656002)(66446008)(478600001)(54906003)(66556008)(66476007)(2616005)(64756008)(83380400001)(76116006)(186003)(66946007)(36756003)(26005)(4326008)(2906002)(6512007)(122000001)(38100700002)(6916009)(6486002)(8936002)(8676002)(53546011)(86362001)(71200400001)(8976002)(6506007)(45980500001);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: QDfSsNvgG5ozFTB1G+CJBgONbTvdG0m4TmjNbpG8VFDPyI/LlpYyhqTFgZ3EIV80AMVyeFUR0HLF4A4mF6payy2aqOZ0BqSM/oFgTRsPQId1D0AY8o6kNyKz7sRZR3xKciQdByYNABgU/yuSnVrQjIjmNzyWAtWUvAVAlL4rHVIAecTW7NWuxpVyl30RvpvbMUo2uH0q/yoCnRka2uUJwfi/7lFYz3KQTuiOrxI+kx11jt1o+Ei+ulmXPZt8BGwjtxxkE296qeprg129/hm6HAmVwL84SlCEjuZHk4MTloYPecpL8ZjIx+1tXQt4cJcbAkOYGLTx6lDMR1XC9xgMwwWnbqMFqhc7SEcyDlUqRgdxkAKNtablb+7wzcJL9W7lQrgUphWamgDlxPt+ByD9ttyCo72bdHLTCTPyQwNI75q4UNpTnPD9LF2i9Uz/1lVuuYUB0xcQ0CR+iNgL4N3HmlgkJaJghEU7OMEVngJgeIZbfyB4eL+8Gtdgz7gra8WoUbOZcF23tW2GXFNKcrEQvvr3DcdKtTarHFFcC0C/QRHb2WTinIF7btdmtc8ZcFSzeUoZR82pKTBgvOC2o3tVNWpWDoKUWUu+Bd79wea8alIGL8TfhJUlrZCe8Djnziw9W9z0n3yr+aaLdPlaNmhhBw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(396003)(136003)(366004)(346002)(39850400004)(376002)(4326008)(76116006)(91956017)(44832011)(186003)(9686003)(66946007)(6486002)(33716001)(64756008)(66556008)(478600001)(122000001)(6512007)(54906003)(2906002)(66476007)(66446008)(38100700002)(316002)(6916009)(8936002)(8676002)(5660300002)(1076003)(86362001)(30864003)(6506007)(19627235002)(26005)(83380400001)(71200400001)(579004);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?DWKXEl59fD4lEL+wNbfTMN8pS/G8BY0MnRTuFD/jBCTx6bwX1lt25hif3Wm6?=
- =?us-ascii?Q?hGKkmyxC8owChLOVGiEnjIY4z0Skus2WZlCpOtR0TwZMyrKd02K5LjZrQ7Bx?=
- =?us-ascii?Q?zumIzmD+kiPma7alDaHDb0JVgJrdSoDOahyPpxXAtah/8uJnCp/z1kxXvfGt?=
- =?us-ascii?Q?WHqa5eyr+mUbNBLLS9/5DN8lIAcWMAoMg2V8a/VpJJ0s0cJE8xSHxrby3xe5?=
- =?us-ascii?Q?aG/+BR6mMDrywguHf0E2EnaP45hPX/yvzEamaSjSfQgyFyufvN+J6k7hrX26?=
- =?us-ascii?Q?tLTQ57hDz4O7QNvWOVntbS+G5gK83QK7GCIB8p6jqDb0Nl+ul9XjLXwI5xXr?=
- =?us-ascii?Q?MpMelNmJ9Rv/3MZlkhrUuxamilMrkheZwnQE2VV5ce9I9EO7mZgZFlCHxD5x?=
- =?us-ascii?Q?CyW761hnvfF5g1HMm4DXqBorDbHWFi8PC2wNiOQwaA/e+U9htzr+JfDxSrt7?=
- =?us-ascii?Q?uAqImBiVCyfS8lVXOyIFFMbJaGzY8VgK+5SOshqYspcCnPpZXXUwpnMzmVDC?=
- =?us-ascii?Q?6QqVBepI6/7W7CVp74fKNsTjVY765ZvcaelCaYSoELXuHgmyxLSmGcZxjrpw?=
- =?us-ascii?Q?hZgAKP6l7SlHIbYQ4Emp0Y4D5QKe41iMEmkqCnzn+iO8xR2ZOuk8kNoS9FJj?=
- =?us-ascii?Q?fUkvZZ5jB04+lyyL3MuHcs21EUtYkljDZRdeJk504I7PRaGOxTmQynpxgJBZ?=
- =?us-ascii?Q?Wn3/dDxN/YWTGkiR0yDzVkJS4vpKlL+NAfWMcdSq+nxNDCD4F604O7HDpSr9?=
- =?us-ascii?Q?yXF4mwLbf8QI9DRiu1jLM1LkiIyBQhmosjMZoVOIZ3nVDb7bda+u7wxchoxv?=
- =?us-ascii?Q?3Ww74zkLLBOLV8mc8r8uB9+h2rJLGBf+WJfMtPiSjP+w385cjsoLXnNF73Vr?=
- =?us-ascii?Q?iTrtqe5yoQUkl5WoogEiTM7E/PaH95ACNXJLn5d9r7VCtk9umQ85H4npJg9B?=
- =?us-ascii?Q?2hhXFxWlZePQT/fwj+5n3UjOSyjr3x6wF+LbRVZ+IOKCiXcDO+pIAMrQOzcK?=
- =?us-ascii?Q?OVbrIqCtNlLTuB0ABqR/YJMC457CG0l/+mWnLYyyGbC0TI355zTajNroLsIh?=
- =?us-ascii?Q?fRwluqq41jAAYGzqg0lXvW1IZm/ew4MpDndr9uyip6R8HDHI24aDE3wLaCCO?=
- =?us-ascii?Q?VK7bQR5YO9Eh8lYSgSuvuJAcDjNcS8855+K4z+oo185LK1l8/ubBRXV099vF?=
- =?us-ascii?Q?F4hon9RIrK0t78B03lQNawAe5INaPtK96JMfCi40buW46ku4Exx5FvGeTdfY?=
- =?us-ascii?Q?LLKT6anlguiFfbQUqVPaI+UIv6Bol6nnj/iMnWhtSD1cSCXREFyYOf2wzTbQ?=
- =?us-ascii?Q?mTVn5oMmZPvZggODJ6RNuGpu?=
-x-ms-exchange-transport-forked: True
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ja6noxo2OMiuKbQxlQd9gqr655P/Sgh3OmLqSIav2Zc45i9T1Os/lQP41kXk?=
+ =?us-ascii?Q?KwHXBdBR6ZMT5F3kIceEPjvf3ffsdlBE/aeq4ffVTfPkOYnwF7v/LpSTb3gw?=
+ =?us-ascii?Q?ci6/nXmw8dG1IhSp0UESkdDcUXJBdV02FtwhqPGDvqCZ9fH8Cl8psqRSC4rx?=
+ =?us-ascii?Q?tRnWXlvSkQ4lOz/2glgkPz/4ZQO34ly1jQEvTX5FIY4B0phoCZc4T62DxUbK?=
+ =?us-ascii?Q?/sqCQZ6jskD2JFK0QED+Y2HbGAPMkeCU07F+BC75OBGou6ZMUGgoiIZPryL/?=
+ =?us-ascii?Q?e0jgdkIAVWo5Kq/bbZOjbzJeYV08klrRq9i7gLL1mAkfLfjJUp9O0oqCewGr?=
+ =?us-ascii?Q?8gcghbkGYb6AGrZQF78IAWas/buDEF11h+Nd3APRmsNOpxBnI995fW58jiyu?=
+ =?us-ascii?Q?K8IS39LUMfr7BFAGsDs1SS6FrGlBgrWtNKArYv5h18mD0nd2EAgVIY7ZvTjQ?=
+ =?us-ascii?Q?uJdGPqcSIY64OYO3+2gjAzHSXevdvqzlATVCuO1WmON02lfCtO0/l5tGonQk?=
+ =?us-ascii?Q?hDbWC8tZx8p8poZMwxJwiz2XDSiZfEWtGyISydbMW8D9hlWCb0zfP6e9pqGc?=
+ =?us-ascii?Q?uKLbQ7cHN4IUOJ8GAnWgXz4tofx6CAD0gqtrPcvwopRcBcvSeqsJWYSzjjsj?=
+ =?us-ascii?Q?BpC7t9O24ExhzYEylUCzNW7W4f1SJb05zL64W93hE0MVr/yUxDIomfYHYbJV?=
+ =?us-ascii?Q?CmZfBcDerST70RZrC4/wapygmJRKoIIIvNFgxdoazKUxBL22ZpbcOZWfn/WD?=
+ =?us-ascii?Q?3EjbnU8zq3LeHcaRmiXf5T/wrml6nSOEQEZx1t7HTRWDRxvhwFYz/v7AW88l?=
+ =?us-ascii?Q?enzop2ZN3LMcNSdaDZ+UIPOLg+JNnYz9ncFQClwf8kD3O6ImdpvlzBCnjh95?=
+ =?us-ascii?Q?zjIdjyWRd3zQkjZhoztKc9la3deVnDQ4h0RH7C5E1ej8Hput+lZyaUSqW3Ni?=
+ =?us-ascii?Q?cqWxohqkAccgA62I3sk+VBctCrdNNgnSrmvVZQdQuTZLCNEOiBpfiyR9gnt4?=
+ =?us-ascii?Q?PQp+gNFuuSV1Yx0CErqL/xTJRpXfZNgm4nLvWjVC5eWRvRlfUpA/oAsT8Kd4?=
+ =?us-ascii?Q?qU+waZjaHnjwFRHQgB4IUvkUTJKNWDFAxJ+OVaLB1rMJkhZqQEt13Tq5cTFz?=
+ =?us-ascii?Q?rJMhZ0QfkdEcTGcUvslNMNJK0kefHUsIeV62njhMSH0YvuzxmlJyXQ/6x3hY?=
+ =?us-ascii?Q?79hvchheX0D/rKHPauQBRgd/12v7GfTJUTy8zjU8zQ1Z99theIZZs0m2wFKs?=
+ =?us-ascii?Q?TcebQ8Y6R+rmSPVuXm/GsHdWNUTCo1kXfpL98yV2zzPEyd3iL+C/BU0HYxcB?=
+ =?us-ascii?Q?KswcIoK+gWAACu45jUf3s5Rm?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <13D1E0957C6D544D9E8EB3171E4D6096@eurprd02.prod.outlook.com>
+Content-ID: <87EC0A4C3B774640BE94CBE106B41955@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: itu.dk
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB5777.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ab1c1b4-67c2-4cf5-5733-08d9399f78bb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2021 19:12:13.6717
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a66d1093-babd-4da3-013c-08d939a3db47
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2021 19:43:36.9719
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: bea229b6-7a08-4086-b44c-71f57f716bdb
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UGVZ7+xbyWmg2oDKzSqv/40lDp/LOqfghgQJMp7YcD2iCQFyEJoY0Y5JM3/kYuqW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR02MB7345
+X-MS-Exchange-CrossTenant-userprincipalname: VIK05Vub7r4e/SvW24h+46jukyq4/kcxi38I1w2JTmxvsR//Lk6nytBaqySrQ3+jGQkmXh3iV4KeAUV0ulcnEg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5502
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Cong,
-
-Good point.
-Here is a new patch.
-
-From 71843907bdb9cdc4e24358f0c16a8778f2762dc7 Mon Sep 17 00:00:00 2001
-From: Niclas Hedam <nhed@itu.dk>
-Date: Fri, 25 Jun 2021 13:37:18 +0200
-Subject: [PATCH] net: sched: Add support for packet bursting.
-
-This commit implements packet bursting in the NetEm scheduler.
-This allows system administrators to hold back outgoing
-packets and release them at a multiple of a time quantum.
-This feature can be used to prevent timing attacks caused
-by network latency.
-
-Signed-off-by: Niclas Hedam <niclas@hed.am>
----
- include/uapi/linux/pkt_sched.h |  2 ++
- net/sched/sch_netem.c          | 24 +++++++++++++++++++++---
- 2 files changed, 23 insertions(+), 3 deletions(-)
-
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.=
-h
-index 79a699f106b1..1ba49f141dae 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -603,6 +603,7 @@ enum {
- 	TCA_NETEM_JITTER64,
- 	TCA_NETEM_SLOT,
- 	TCA_NETEM_SLOT_DIST,
-+        TCA_NETEM_BURSTING,
- 	__TCA_NETEM_MAX,
- };
-
-@@ -615,6 +616,7 @@ struct tc_netem_qopt {
- 	__u32	gap;		/* re-ordering gap (0 for none) */
- 	__u32   duplicate;	/* random packet dup  (0=3Dnone ~0=3D100%) */
- 	__u32	jitter;		/* random jitter in latency (us) */
-+	__u32	bursting;	/* send packets in bursts (us) */
- };
-
- struct tc_netem_corr {
-diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-index 0c345e43a09a..52d796287b86 100644
---- a/net/sched/sch_netem.c
-+++ b/net/sched/sch_netem.c
-@@ -85,6 +85,7 @@ struct netem_sched_data {
- 	s64 latency;
- 	s64 jitter;
-
-+	u32 bursting;
- 	u32 loss;
- 	u32 ecn;
- 	u32 limit;
-@@ -467,7 +468,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qd=
-isc *sch,
- 	/* If a delay is expected, orphan the skb. (orphaning usually takes
- 	 * place at TX completion time, so _before_ the link transit delay)
- 	 */
--	if (q->latency || q->jitter || q->rate)
-+	if (q->latency || q->jitter || q->rate || q->bursting)
- 		skb_orphan_partial(skb);
-
- 	/*
-@@ -527,8 +528,17 @@ static int netem_enqueue(struct sk_buff *skb, struct Q=
-disc *sch,
- 	qdisc_qstats_backlog_inc(sch, skb);
-
- 	cb =3D netem_skb_cb(skb);
--	if (q->gap =3D=3D 0 ||		/* not doing reordering */
--	    q->counter < q->gap - 1 ||	/* inside last reordering gap */
-+	if (q->bursting > 0) {
-+		u64 now;
-+
-+		now =3D ktime_get_ns();
-+
-+		cb->time_to_send =3D now - (now % q->bursting) + q->bursting;
-+
-+		++q->counter;
-+		tfifo_enqueue(skb, sch);
-+	} else if (q->gap =3D=3D 0 ||		/* not doing reordering */
-+	    q->counter < q->gap - 1 ||		/* inside last reordering gap */
- 	    q->reorder < get_crandom(&q->reorder_cor)) {
- 		u64 now;
- 		s64 delay;
-@@ -927,6 +937,7 @@ static const struct nla_policy netem_policy[TCA_NETEM_M=
-AX + 1] =3D {
- 	[TCA_NETEM_ECN]		=3D { .type =3D NLA_U32 },
- 	[TCA_NETEM_RATE64]	=3D { .type =3D NLA_U64 },
- 	[TCA_NETEM_LATENCY64]	=3D { .type =3D NLA_S64 },
-+	[TCA_NETEM_BURSTING]	=3D { .type =3D NLA_U64 },
- 	[TCA_NETEM_JITTER64]	=3D { .type =3D NLA_S64 },
- 	[TCA_NETEM_SLOT]	=3D { .len =3D sizeof(struct tc_netem_slot) },
- };
-@@ -1001,6 +1012,7 @@ static int netem_change(struct Qdisc *sch, struct nla=
-ttr *opt,
-
- 	q->latency =3D PSCHED_TICKS2NS(qopt->latency);
- 	q->jitter =3D PSCHED_TICKS2NS(qopt->jitter);
-+	q->bursting =3D PSCHED_TICKS2NS(qopt->bursting);
- 	q->limit =3D qopt->limit;
- 	q->gap =3D qopt->gap;
- 	q->counter =3D 0;
-@@ -1032,6 +1044,9 @@ static int netem_change(struct Qdisc *sch, struct nla=
-ttr *opt,
- 	if (tb[TCA_NETEM_LATENCY64])
- 		q->latency =3D nla_get_s64(tb[TCA_NETEM_LATENCY64]);
-
-+	if (tb[TCA_NETEM_BURSTING])
-+		q->bursting =3D nla_get_u64(tb[TCA_NETEM_BURSTING]);
-+
- 	if (tb[TCA_NETEM_JITTER64])
- 		q->jitter =3D nla_get_s64(tb[TCA_NETEM_JITTER64]);
-
-@@ -1150,6 +1165,9 @@ static int netem_dump(struct Qdisc *sch, struct sk_bu=
-ff *skb)
- 			     UINT_MAX);
- 	qopt.jitter =3D min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->jitter),
- 			    UINT_MAX);
-+	qopt.bursting =3D min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->bursting),
-+			    UINT_MAX);
-+
- 	qopt.limit =3D q->limit;
- 	qopt.loss =3D q->loss;
- 	qopt.gap =3D q->gap;
---
-2.25.1
-
-> On 27 Jun 2021, at 20:32, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Fri, Jun 25, 2021 at 05:33:03PM -0700, Vinicius Costa Gomes wrote:
+> Frame preemption (described in IEEE 802.3-2018, Section 99 in
+> particular) defines the concept of preemptible and express queues. It
+> allows traffic from express queues to "interrupt" traffic from
+> preemptible queues, which are "resumed" after the express traffic has
+> finished transmitting.
 >=20
-> On Fri, Jun 25, 2021 at 5:03 AM Niclas Hedam <nhed@itu.dk> wrote:
->> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sch=
-ed.h
->> index 79a699f106b1..826d1dee6601 100644
->> --- a/include/uapi/linux/pkt_sched.h
->> +++ b/include/uapi/linux/pkt_sched.h
->> @@ -594,6 +594,7 @@ enum {
->>        TCA_NETEM_DELAY_DIST,
->>        TCA_NETEM_REORDER,
->>        TCA_NETEM_CORRUPT,
->> +       TCA_NETEM_BURSTING,
->>        TCA_NETEM_LOSS,
->>        TCA_NETEM_RATE,
->>        TCA_NETEM_ECN,
+> Frame preemption can only be used when both the local device and the
+> link partner support it.
 >=20
-> You can't add a new enum in the middle, as it is UAPI.
+> Only parameters for enabling/disabling frame preemption and
+> configuring the minimum fragment size are included here. Expressing
+> which queues are marked as preemptible is left to mqprio/taprio, as
+> having that information there should be easier on the user.
 >=20
-> Thanks.
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> ---
+>  Documentation/networking/ethtool-netlink.rst |  38 +++++
+>  include/linux/ethtool.h                      |  22 +++
+>  include/uapi/linux/ethtool_netlink.h         |  17 +++
+>  net/ethtool/Makefile                         |   2 +-
+>  net/ethtool/common.c                         |  25 ++++
+>  net/ethtool/netlink.c                        |  19 +++
+>  net/ethtool/netlink.h                        |   4 +
+>  net/ethtool/preempt.c                        | 146 +++++++++++++++++++
+>  8 files changed, 272 insertions(+), 1 deletion(-)
+>  create mode 100644 net/ethtool/preempt.c
+>=20
+> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation=
+/networking/ethtool-netlink.rst
+> index 6ea91e41593f..a87f1716944e 100644
+> --- a/Documentation/networking/ethtool-netlink.rst
+> +++ b/Documentation/networking/ethtool-netlink.rst
+> @@ -1477,6 +1477,44 @@ Low and high bounds are inclusive, for example:
+>   etherStatsPkts512to1023Octets 512  1023
+>   =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D =3D=3D=3D=3D
 
+I think you need to add some extra documentation bits to the
+
+List of message types
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+and
+
+Request translation
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+sections.
+
+> =20
+> +PREEMPT_GET
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Get information about frame preemption state.
+> +
+> +Request contents:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``ETHTOOL_A_PREEMPT_HEADER``          nested  request header
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Request contents:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``ETHTOOL_A_PREEMPT_HEADER``           nested  reply header
+> +  ``ETHTOOL_A_PREEMPT_ENABLED``          u8      frame preemption enable=
+d
+> +  ``ETHTOOL_A_PREEMPT_ADD_FRAG_SIZE``    u32     Min additional frag siz=
+e
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +``ETHTOOL_A_PREEMPT_ADD_FRAG_SIZE`` configures the minimum non-final
+> +fragment size that the receiver device supports.
+> +
+> +PREEMPT_SET
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Sets frame preemption parameters.
+> +
+> +Request contents:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``ETHTOOL_A_CHANNELS_HEADER``          nested  reply header
+> +  ``ETHTOOL_A_PREEMPT_ENABLED``          u8      frame preemption enable=
+d
+> +  ``ETHTOOL_A_PREEMPT_ADD_FRAG_SIZE``    u32     Min additional frag siz=
+e
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +``ETHTOOL_A_PREEMPT_ADD_FRAG_SIZE`` configures the minimum non-final
+> +fragment size that the receiver device supports.
+> +
+>  Request translation
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> =20
+> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+> index 29dbb603bc91..7e449be8f335 100644
+> --- a/include/linux/ethtool.h
+> +++ b/include/linux/ethtool.h
+> @@ -409,6 +409,19 @@ struct ethtool_module_eeprom {
+>  	u8	*data;
+>  };
+> =20
+> +/**
+> + * struct ethtool_fp - Frame Preemption information
+> + *
+> + * @enabled: Enable frame preemption.
+> + * @add_frag_size: Minimum size for additional (non-final) fragments
+> + * in bytes, for the value defined in the IEEE 802.3-2018 standard see
+> + * ethtool_frag_size_to_mult().
+> + */
+> +struct ethtool_fp {
+> +	u8 enabled;
+> +	u32 add_frag_size;
+
+Strange that the verify_disable bit is not in here? I haven't looked at
+further patches in detail but I saw in the commit message that you added
+support for it, maybe it needs to be squashed with this?
+
+Can we make "enabled" a bool?
+
+> +};
+> +
+>  /**
+>   * struct ethtool_ops - optional netdev operations
+>   * @cap_link_lanes_supported: indicates if the driver supports lanes
+> @@ -561,6 +574,8 @@ struct ethtool_module_eeprom {
+>   *	not report statistics.
+>   * @get_fecparam: Get the network device Forward Error Correction parame=
+ters.
+>   * @set_fecparam: Set the network device Forward Error Correction parame=
+ters.
+> + * @get_preempt: Get the network device Frame Preemption parameters.
+> + * @set_preempt: Set the network device Frame Preemption parameters.
+>   * @get_ethtool_phy_stats: Return extended statistics about the PHY devi=
+ce.
+>   *	This is only useful if the device maintains PHY statistics and
+>   *	cannot use the standard PHY library helpers.
+> @@ -675,6 +690,10 @@ struct ethtool_ops {
+>  				      struct ethtool_fecparam *);
+>  	int	(*set_fecparam)(struct net_device *,
+>  				      struct ethtool_fecparam *);
+> +	int	(*get_preempt)(struct net_device *,
+> +			       struct ethtool_fp *);
+> +	int	(*set_preempt)(struct net_device *, struct ethtool_fp *,
+> +			       struct netlink_ext_ack *);
+>  	void	(*get_ethtool_phy_stats)(struct net_device *,
+>  					 struct ethtool_stats *, u64 *);
+>  	int	(*get_phy_tunable)(struct net_device *,
+> @@ -766,4 +785,7 @@ ethtool_params_from_link_mode(struct ethtool_link_kse=
+ttings *link_ksettings,
+>   * next string.
+>   */
+>  extern __printf(2, 3) void ethtool_sprintf(u8 **data, const char *fmt, .=
+..);
+> +
+> +u8 ethtool_frag_size_to_mult(u32 frag_size);
+> +
+>  #endif /* _LINUX_ETHTOOL_H */
+> diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/et=
+htool_netlink.h
+> index c7135c9c37a5..4600aba1c693 100644
+> --- a/include/uapi/linux/ethtool_netlink.h
+> +++ b/include/uapi/linux/ethtool_netlink.h
+> @@ -44,6 +44,8 @@ enum {
+>  	ETHTOOL_MSG_TUNNEL_INFO_GET,
+>  	ETHTOOL_MSG_FEC_GET,
+>  	ETHTOOL_MSG_FEC_SET,
+> +	ETHTOOL_MSG_PREEMPT_GET,
+> +	ETHTOOL_MSG_PREEMPT_SET,
+>  	ETHTOOL_MSG_MODULE_EEPROM_GET,
+>  	ETHTOOL_MSG_STATS_GET,
+> =20
+> @@ -86,6 +88,8 @@ enum {
+>  	ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY,
+>  	ETHTOOL_MSG_FEC_GET_REPLY,
+>  	ETHTOOL_MSG_FEC_NTF,
+> +	ETHTOOL_MSG_PREEMPT_GET_REPLY,
+> +	ETHTOOL_MSG_PREEMPT_NTF,
+>  	ETHTOOL_MSG_MODULE_EEPROM_GET_REPLY,
+>  	ETHTOOL_MSG_STATS_GET_REPLY,
+
+Correct me if I'm wrong, but enums in uapi should always be added at the
+end, otherwise you break value with user space binaries which use
+ETHTOOL_MSG_MODULE_EEPROM_GET and are compiled against old kernel
+headers.
+
+> =20
+> @@ -664,6 +668,19 @@ enum {
+>  	ETHTOOL_A_FEC_STAT_MAX =3D (__ETHTOOL_A_FEC_STAT_CNT - 1)
+>  };
+> =20
+> +/* FRAME PREEMPTION */
+> +
+> +enum {
+> +	ETHTOOL_A_PREEMPT_UNSPEC,
+> +	ETHTOOL_A_PREEMPT_HEADER,			/* nest - _A_HEADER_* */
+> +	ETHTOOL_A_PREEMPT_ENABLED,			/* u8 */
+> +	ETHTOOL_A_PREEMPT_ADD_FRAG_SIZE,		/* u32 */
+> +
+> +	/* add new constants above here */
+> +	__ETHTOOL_A_PREEMPT_CNT,
+> +	ETHTOOL_A_PREEMPT_MAX =3D (__ETHTOOL_A_PREEMPT_CNT - 1)
+> +};
+> +
+>  /* MODULE EEPROM */
+> =20
+>  enum {
+> diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
+> index 723c9a8a8cdf..4b84b2d34c7a 100644
+> --- a/net/ethtool/Makefile
+> +++ b/net/ethtool/Makefile
+> @@ -7,4 +7,4 @@ obj-$(CONFIG_ETHTOOL_NETLINK)	+=3D ethtool_nl.o
+>  ethtool_nl-y	:=3D netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
+>  		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
+>  		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
+> -		   tunnels.o fec.o eeprom.o stats.o
+> +		   tunnels.o fec.o preempt.o eeprom.o stats.o
+> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+> index f9dcbad84788..68d123dd500b 100644
+> --- a/net/ethtool/common.c
+> +++ b/net/ethtool/common.c
+> @@ -579,3 +579,28 @@ ethtool_params_from_link_mode(struct ethtool_link_ks=
+ettings *link_ksettings,
+>  	link_ksettings->base.duplex =3D link_info->duplex;
+>  }
+>  EXPORT_SYMBOL_GPL(ethtool_params_from_link_mode);
+> +
+> +/**
+> + * ethtool_frag_size_to_mult() - Convert from a Frame Preemption
+> + * Additional Fragment size in bytes to a multiplier.
+> + * @frag_size: minimum non-final fragment size in bytes.
+> + *
+> + * The multiplier is defined as:
+> + *	"A 2-bit integer value used to indicate the minimum size of
+> + *	non-final fragments supported by the receiver on the given port
+> + *	associated with the local System. This value is expressed in units
+> + *	of 64 octets of additional fragment length."
+> + *	Equivalent to `30.14.1.7 aMACMergeAddFragSize` from the IEEE 802.3-20=
+18
+> + *	standard.
+> + *
+> + * Return: the multiplier is a number in the [0, 2] interval.
+> + */
+> +u8 ethtool_frag_size_to_mult(u32 frag_size)
+> +{
+> +	u8 mult =3D (frag_size / 64) - 1;
+> +
+> +	mult =3D clamp_t(u8, mult, 0, 3);
+> +
+> +	return mult;
+
+I think it would look better as "return clamp_t(u8, mult, 0, 3);"
+
+> +}
+> +EXPORT_SYMBOL_GPL(ethtool_frag_size_to_mult);
+> diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+> index a7346346114f..f4e07b740790 100644
+> --- a/net/ethtool/netlink.c
+> +++ b/net/ethtool/netlink.c
+> @@ -246,6 +246,7 @@ ethnl_default_requests[__ETHTOOL_MSG_USER_CNT] =3D {
+>  	[ETHTOOL_MSG_EEE_GET]		=3D &ethnl_eee_request_ops,
+>  	[ETHTOOL_MSG_FEC_GET]		=3D &ethnl_fec_request_ops,
+>  	[ETHTOOL_MSG_TSINFO_GET]	=3D &ethnl_tsinfo_request_ops,
+> +	[ETHTOOL_MSG_PREEMPT_GET]	=3D &ethnl_preempt_request_ops,
+>  	[ETHTOOL_MSG_MODULE_EEPROM_GET]	=3D &ethnl_module_eeprom_request_ops,
+>  	[ETHTOOL_MSG_STATS_GET]		=3D &ethnl_stats_request_ops,
+>  };
+> @@ -561,6 +562,7 @@ ethnl_default_notify_ops[ETHTOOL_MSG_KERNEL_MAX + 1] =
+=3D {
+>  	[ETHTOOL_MSG_PAUSE_NTF]		=3D &ethnl_pause_request_ops,
+>  	[ETHTOOL_MSG_EEE_NTF]		=3D &ethnl_eee_request_ops,
+>  	[ETHTOOL_MSG_FEC_NTF]		=3D &ethnl_fec_request_ops,
+> +	[ETHTOOL_MSG_PREEMPT_NTF]	=3D &ethnl_preempt_request_ops,
+>  };
+> =20
+>  /* default notification handler */
+> @@ -654,6 +656,7 @@ static const ethnl_notify_handler_t ethnl_notify_hand=
+lers[] =3D {
+>  	[ETHTOOL_MSG_PAUSE_NTF]		=3D ethnl_default_notify,
+>  	[ETHTOOL_MSG_EEE_NTF]		=3D ethnl_default_notify,
+>  	[ETHTOOL_MSG_FEC_NTF]		=3D ethnl_default_notify,
+> +	[ETHTOOL_MSG_PREEMPT_NTF]	=3D ethnl_default_notify,
+>  };
+> =20
+>  void ethtool_notify(struct net_device *dev, unsigned int cmd, const void=
+ *data)
+> @@ -958,6 +961,22 @@ static const struct genl_ops ethtool_genl_ops[] =3D =
+{
+>  		.policy =3D ethnl_stats_get_policy,
+>  		.maxattr =3D ARRAY_SIZE(ethnl_stats_get_policy) - 1,
+>  	},
+> +	{
+> +		.cmd	=3D ETHTOOL_MSG_PREEMPT_GET,
+> +		.doit	=3D ethnl_default_doit,
+> +		.start	=3D ethnl_default_start,
+> +		.dumpit	=3D ethnl_default_dumpit,
+> +		.done	=3D ethnl_default_done,
+> +		.policy =3D ethnl_preempt_get_policy,
+> +		.maxattr =3D ARRAY_SIZE(ethnl_preempt_get_policy) - 1,
+> +	},
+> +	{
+> +		.cmd	=3D ETHTOOL_MSG_PREEMPT_SET,
+> +		.flags	=3D GENL_UNS_ADMIN_PERM,
+> +		.doit	=3D ethnl_set_preempt,
+> +		.policy =3D ethnl_preempt_set_policy,
+> +		.maxattr =3D ARRAY_SIZE(ethnl_preempt_set_policy) - 1,
+> +	},
+>  };
+> =20
+>  static const struct genl_multicast_group ethtool_nl_mcgrps[] =3D {
+> diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+> index 3e25a47fd482..cc90a463a81c 100644
+> --- a/net/ethtool/netlink.h
+> +++ b/net/ethtool/netlink.h
+> @@ -345,6 +345,7 @@ extern const struct ethnl_request_ops ethnl_pause_req=
+uest_ops;
+>  extern const struct ethnl_request_ops ethnl_eee_request_ops;
+>  extern const struct ethnl_request_ops ethnl_tsinfo_request_ops;
+>  extern const struct ethnl_request_ops ethnl_fec_request_ops;
+> +extern const struct ethnl_request_ops ethnl_preempt_request_ops;
+>  extern const struct ethnl_request_ops ethnl_module_eeprom_request_ops;
+>  extern const struct ethnl_request_ops ethnl_stats_request_ops;
+> =20
+> @@ -381,6 +382,8 @@ extern const struct nla_policy ethnl_tunnel_info_get_=
+policy[ETHTOOL_A_TUNNEL_INF
+>  extern const struct nla_policy ethnl_fec_get_policy[ETHTOOL_A_FEC_HEADER=
+ + 1];
+>  extern const struct nla_policy ethnl_fec_set_policy[ETHTOOL_A_FEC_AUTO +=
+ 1];
+>  extern const struct nla_policy ethnl_module_eeprom_get_policy[ETHTOOL_A_=
+MODULE_EEPROM_I2C_ADDRESS + 1];
+> +extern const struct nla_policy ethnl_preempt_get_policy[ETHTOOL_A_PREEMP=
+T_HEADER + 1];
+> +extern const struct nla_policy ethnl_preempt_set_policy[ETHTOOL_A_PREEMP=
+T_ADD_FRAG_SIZE + 1];
+>  extern const struct nla_policy ethnl_stats_get_policy[ETHTOOL_A_STATS_GR=
+OUPS + 1];
+> =20
+>  int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
+> @@ -400,6 +403,7 @@ int ethnl_tunnel_info_doit(struct sk_buff *skb, struc=
+t genl_info *info);
+>  int ethnl_tunnel_info_start(struct netlink_callback *cb);
+>  int ethnl_tunnel_info_dumpit(struct sk_buff *skb, struct netlink_callbac=
+k *cb);
+>  int ethnl_set_fec(struct sk_buff *skb, struct genl_info *info);
+> +int ethnl_set_preempt(struct sk_buff *skb, struct genl_info *info);
+> =20
+>  extern const char stats_std_names[__ETHTOOL_STATS_CNT][ETH_GSTRING_LEN];
+>  extern const char stats_eth_phy_names[__ETHTOOL_A_STATS_ETH_PHY_CNT][ETH=
+_GSTRING_LEN];
+> diff --git a/net/ethtool/preempt.c b/net/ethtool/preempt.c
+> new file mode 100644
+> index 000000000000..4f96d3c2b1d5
+> --- /dev/null
+> +++ b/net/ethtool/preempt.c
+> @@ -0,0 +1,146 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +#include "netlink.h"
+> +#include "common.h"
+> +
+> +struct preempt_req_info {
+> +	struct ethnl_req_info		base;
+> +};
+> +
+> +struct preempt_reply_data {
+> +	struct ethnl_reply_data		base;
+> +	struct ethtool_fp		fp;
+> +};
+> +
+> +#define PREEMPT_REPDATA(__reply_base) \
+> +	container_of(__reply_base, struct preempt_reply_data, base)
+> +
+> +const struct nla_policy
+> +ethnl_preempt_get_policy[] =3D {
+> +	[ETHTOOL_A_PREEMPT_HEADER]		=3D NLA_POLICY_NESTED(ethnl_header_policy),
+> +};
+> +
+> +static int preempt_prepare_data(const struct ethnl_req_info *req_base,
+> +				struct ethnl_reply_data *reply_base,
+> +				struct genl_info *info)
+> +{
+> +	struct preempt_reply_data *data =3D PREEMPT_REPDATA(reply_base);
+> +	struct net_device *dev =3D reply_base->dev;
+> +	int ret;
+> +
+> +	if (!dev->ethtool_ops->get_preempt)
+> +		return -EOPNOTSUPP;
+> +
+> +	ret =3D ethnl_ops_begin(dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret =3D dev->ethtool_ops->get_preempt(dev, &data->fp);
+> +	ethnl_ops_complete(dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int preempt_reply_size(const struct ethnl_req_info *req_base,
+> +			      const struct ethnl_reply_data *reply_base)
+> +{
+> +	int len =3D 0;
+> +
+> +	len +=3D nla_total_size(sizeof(u8)); /* _PREEMPT_ENABLED */
+> +	len +=3D nla_total_size(sizeof(u32)); /* _PREEMPT_ADD_FRAG_SIZE */
+> +
+> +	return len;
+> +}
+> +
+> +static int preempt_fill_reply(struct sk_buff *skb,
+> +			      const struct ethnl_req_info *req_base,
+> +			      const struct ethnl_reply_data *reply_base)
+> +{
+> +	const struct preempt_reply_data *data =3D PREEMPT_REPDATA(reply_base);
+> +	const struct ethtool_fp *preempt =3D &data->fp;
+> +
+> +	if (nla_put_u8(skb, ETHTOOL_A_PREEMPT_ENABLED, preempt->enabled))
+> +		return -EMSGSIZE;
+> +
+> +	if (nla_put_u32(skb, ETHTOOL_A_PREEMPT_ADD_FRAG_SIZE,
+> +			preempt->add_frag_size))
+> +		return -EMSGSIZE;
+> +
+> +	return 0;
+> +}
+> +
+> +const struct ethnl_request_ops ethnl_preempt_request_ops =3D {
+> +	.request_cmd		=3D ETHTOOL_MSG_PREEMPT_GET,
+> +	.reply_cmd		=3D ETHTOOL_MSG_PREEMPT_GET_REPLY,
+> +	.hdr_attr		=3D ETHTOOL_A_PREEMPT_HEADER,
+> +	.req_info_size		=3D sizeof(struct preempt_req_info),
+> +	.reply_data_size	=3D sizeof(struct preempt_reply_data),
+> +
+> +	.prepare_data		=3D preempt_prepare_data,
+> +	.reply_size		=3D preempt_reply_size,
+> +	.fill_reply		=3D preempt_fill_reply,
+> +};
+> +
+> +const struct nla_policy
+> +ethnl_preempt_set_policy[ETHTOOL_A_PREEMPT_MAX + 1] =3D {
+> +	[ETHTOOL_A_PREEMPT_HEADER]			=3D NLA_POLICY_NESTED(ethnl_header_policy)=
+,
+> +	[ETHTOOL_A_PREEMPT_ENABLED]			=3D NLA_POLICY_RANGE(NLA_U8, 0, 1),
+> +	[ETHTOOL_A_PREEMPT_ADD_FRAG_SIZE]		=3D { .type =3D NLA_U32 },
+> +};
+> +
+> +int ethnl_set_preempt(struct sk_buff *skb, struct genl_info *info)
+> +{
+> +	struct ethnl_req_info req_info =3D {};
+> +	struct nlattr **tb =3D info->attrs;
+> +	struct ethtool_fp preempt =3D {};
+> +	struct net_device *dev;
+> +	bool mod =3D false;
+> +	int ret;
+> +
+> +	ret =3D ethnl_parse_header_dev_get(&req_info,
+> +					 tb[ETHTOOL_A_PREEMPT_HEADER],
+> +					 genl_info_net(info), info->extack,
+> +					 true);
+> +	if (ret < 0)
+> +		return ret;
+> +	dev =3D req_info.dev;
+> +	ret =3D -EOPNOTSUPP;
+
+Some new lines around here please? And maybe it would look a bit cleaner
+if you could assign "ret =3D -EOPNOTSUPP" in the "preempt ops not present"
+if condition body?
+
+> +	if (!dev->ethtool_ops->get_preempt ||
+> +	    !dev->ethtool_ops->set_preempt)
+> +		goto out_dev;
+> +
+> +	rtnl_lock();
+> +	ret =3D ethnl_ops_begin(dev);
+> +	if (ret < 0)
+> +		goto out_rtnl;
+> +
+> +	ret =3D dev->ethtool_ops->get_preempt(dev, &preempt);
+
+I don't know much about the background of ethtool netlink, but why does
+the .doit of ETHTOOL_MSG_*_SET go through a getter first? Is it because
+all the netlink attributes from the message are optional, and we need to
+default to the current state?
+
+> +	if (ret < 0) {
+> +		GENL_SET_ERR_MSG(info, "failed to retrieve frame preemption settings")=
+;
+> +		goto out_ops;
+> +	}
+> +
+> +	ethnl_update_u8(&preempt.enabled,
+> +			tb[ETHTOOL_A_PREEMPT_ENABLED], &mod);
+> +	ethnl_update_u32(&preempt.add_frag_size,
+> +			 tb[ETHTOOL_A_PREEMPT_ADD_FRAG_SIZE], &mod);
+> +	ret =3D 0;
+
+This reinitialization of ret to zero is interesting. It implies
+->get_preempt() is allowed to return > 0 as a success error code.
+However ->set_preempt() below isn't? (its return value is directly
+propagated to callers of ethnl_set_preempt().
+
+> +	if (!mod)
+> +		goto out_ops;
+> +
+> +	ret =3D dev->ethtool_ops->set_preempt(dev, &preempt, info->extack);
+> +	if (ret < 0) {
+> +		GENL_SET_ERR_MSG(info, "frame preemption settings update failed");
+> +		goto out_ops;
+> +	}
+> +
+> +	ethtool_notify(dev, ETHTOOL_MSG_PREEMPT_NTF, NULL);
+> +
+> +out_ops:
+> +	ethnl_ops_complete(dev);
+> +out_rtnl:
+> +	rtnl_unlock();
+> +out_dev:
+> +	dev_put(dev);
+> +	return ret;
+> +}
+> --=20
+> 2.32.0
+> =
