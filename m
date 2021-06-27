@@ -2,101 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8432A3B54B0
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 20:47:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A58583B54FC
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 21:09:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231442AbhF0SsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 14:48:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53816 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231288AbhF0SsQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Jun 2021 14:48:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5C6B460238;
-        Sun, 27 Jun 2021 18:45:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624819552;
-        bh=3hhruk8vsdFYQE9Ix7WJ83E7zQ+QcT3hQRPYO9nBSIQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CBWdslT8I612HJasa5MRKDWsMgFYzySb+kj1GYAQtP49EAxdFwVq4sWMdQwOjOrjg
-         DL6JLizYG42iOUrqGIs268wxrvdQ/6g9HSsg8nt7kKTFYzSPZ3QUvrvu1Jo8t0wSX6
-         Kn6ySjWXlvBH6yU5tcNb6MRqDMlWq5G7CNLiuwiHdRwp600pWJ54m72kXvxSEQT3X4
-         wBAcc8G4K0olko4fiZd1Sdke6U7Bbv9om/VWqEoUIdfA25xRAtjooXSrDYZBQp+sZ1
-         WHMvmbhkP+yLCGOB2snAs0U1UWV3XEc+kNhYSRqF03sMvgkV7g1LCS7xhxPRCuSo4p
-         GrouzVj3EyuWw==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S231410AbhF0TLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 15:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231298AbhF0TLq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 15:11:46 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E27A7C061574
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 12:09:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=5zpTy+eOeqgDk1er2L+8M8sTsHq+yo60ivWXGQSjcWM=; b=OuV2HZuP9uOUtecpV0ZB71Cw4
+        99LE2ZAIh7jf3+Q0XwJxi/Czi5He84KlWmm06j1uKGcGMDV/EtFU0myguSI0leXUVIJCOuwVbZu5+
+        Cr4JZ9lZ4O36Jx+EIjktNX5vKyNuePho0vHjvtAWKPy85nR0NONyBNBelK3hOhMG2o9NwaxQg/BdM
+        chPBlkGfttHUZN4UMtGaBjmLOMRLWaxV10GEN1PHOfPye/N3ECixZdpZPPLyB8TIIJGy2nx7U5AQe
+        wLT6RxWlSX2OJ0vB0WKnTVDuLzx58oQw5zwdveL61XLzHbE0lusiWU7lGQHNdERgiIya8BPP9Albb
+        bgwsKzs2g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45414)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lxa9a-0002nN-Tr; Sun, 27 Jun 2021 20:09:14 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lxa9a-0000LW-3D; Sun, 27 Jun 2021 20:09:14 +0100
+Date:   Sun, 27 Jun 2021 20:09:14 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>
-Cc:     UNGLinuxDriver@microchip.com,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH net-next] net: sparx5: Do not use mac_addr uninitialized in mchp_sparx5_probe()
-Date:   Sun, 27 Jun 2021 11:45:43 -0700
-Message-Id: <20210627184543.4122478-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.32.0.93.g670b81a890
+        Michal Kubecek <mkubecek@suse.cz>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: PHY vs. MAC ethtool Wake-on-LAN selection
+Message-ID: <20210627190913.GA22278@shell.armlinux.org.uk>
+References: <554fea3f-ba7c-b2fc-5ee6-755015f6dfba@gmail.com>
+ <YNiwJTgEZjRG7bha@lunn.ch>
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YNiwJTgEZjRG7bha@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+On Sun, Jun 27, 2021 at 07:06:45PM +0200, Andrew Lunn wrote:
+> > - Ethernet MAC (bcmgenet) is capable of doing Wake-on-LAN using Magic
+> > Packets (g) with password (s) or network filters (f) and is powered on in
+> > the "standby" (as written in /sys/power/state) suspend state, and completely
+> > powered off (by hardware) in the "mem" state
+> > 
+> > - Ethernet PHY (broadcom.c, no code there to support WoL yet) is capable of
+> > doing Wake-on-LAN using Magic Packets (g) with password (s) or a 48-bit MAC
+> > destination address (f) match allowing us to match on say, Broadcom and
+> > Multicast. That PHY is on during both the "standby" and "mem" suspend states
+> 
+> Marvell systems are similar. The mvneta hardware has support for WOL,
+> and has quite a capable filter. But there is no driver support. WOL is
+> simply forwarded to the PHY.
+> 
+> > What I envision we could do is add a ETHTOOL_A_WOL_DEVICE u8 field and have
+> > it take the values: 0 (default), 1 (MAC), 2 (PHY), 3 (both) and you would do
+> > the following on the command line:
+> > 
+> > ethtool -s eth0 wol g # default/existing mode, leave it to the driver
+> > ethtool -s eth0 wol g target mac # target the MAC only
+> > ethtool -s eth0 wol g target phy # target the PHY only
+> > ethtool -s eth0 wol g target mac+phy # target both MAC and PHY
+> 
+> This API seems like a start, but is it going to be limiting? It does
+> not appear you can say:
+> 
+> ethtool -s eth0 wol g target phy wol f target mac
+> 
+> So make use of magic packet in the PHY and filtering in the MAC.
+> ETHTOOL_A_WOL_DEVICE u8 appears to apply to all WoL options, not one
+> u8 per option.
+> 
+> And does mac+phy mean both will generate an interrupt? I'm assuming
+> the default of 0 means do whatever undefined behaviour we have now. Do
+> we need another value, 4 (auto) and the MAC driver will first try to
+> offload to the PHY, and if that fails, it does it at the MAC, with the
+> potential for some options to be in the MAC and some in the PHY?
 
-drivers/net/ethernet/microchip/sparx5/sparx5_main.c:760:29: warning:
-variable 'mac_addr' is uninitialized when used here [-Wuninitialized]
-        if (of_get_mac_address(np, mac_addr)) {
-                                   ^~~~~~~~
-drivers/net/ethernet/microchip/sparx5/sparx5_main.c:669:14: note:
-initialize the variable 'mac_addr' to silence this warning
-        u8 *mac_addr;
-                    ^
-                     = NULL
-1 warning generated.
+Another question concerns the capabilities of the MAC and PHY in each
+low power mode. Consider that userspace wishes to program the system
+to wakeup when a certain packet is received. How does it know whether
+it needs to program that into the MAC or the PHY or both?
 
-mac_addr is only used to store the value retrieved from
-of_get_mac_address(), which is then copied into the base_mac member of
-the sparx5 struct using ether_addr_copy(). It is easier to just use the
-base_mac address directly, which avoids the warning and the extra copy.
+Should that level of detail be available to userspace, or kept within
+the driver?
 
-Fixes: 3cfa11bac9bb ("net: sparx5: add the basic sparx5 driver")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1413
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_main.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+For example, if userspace requests destination MAC address wakeup, then
+shouldn't the driver be making the decision about which of the MAC or
+PHY gets programmed to cause the wakeup depending on which mode the
+system will be switching to and whether the appropriate blocks can be
+left powered?
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-index a325f7c05a07..c73359de3fdd 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-@@ -666,7 +666,6 @@ static int mchp_sparx5_probe(struct platform_device *pdev)
- 	struct reset_control *reset;
- 	struct sparx5 *sparx5;
- 	int idx = 0, err = 0;
--	u8 *mac_addr;
- 
- 	if (!np && !pdev->dev.platform_data)
- 		return -ENODEV;
-@@ -757,12 +756,10 @@ static int mchp_sparx5_probe(struct platform_device *pdev)
- 	if (err)
- 		goto cleanup_config;
- 
--	if (of_get_mac_address(np, mac_addr)) {
-+	if (!of_get_mac_address(np, sparx5->base_mac)) {
- 		dev_info(sparx5->dev, "MAC addr was not set, use random MAC\n");
- 		eth_random_addr(sparx5->base_mac);
- 		sparx5->base_mac[5] = 0;
--	} else {
--		ether_addr_copy(sparx5->base_mac, mac_addr);
- 	}
- 
- 	sparx5->xtr_irq = platform_get_irq_byname(sparx5->pdev, "xtr");
+Another question would be - if the PHY can only do magic packet and
+remains powered, and the MAC can only do destination MAC but is powered
+down in the "mem" state, what do we advertise to the user. If the user
+selects destination MAC and then requests the system enter "mem" state,
+then what? Should we try to do the best we can?
 
-base-commit: ff8744b5eb116fdf9b80a6ff774393afac7325bd
+Should we at the very least be advertising which WOL modes are
+supported in each power state?
+
+Sorry for adding to the questions...
+
 -- 
-2.32.0.93.g670b81a890
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
