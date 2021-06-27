@@ -2,212 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5AD93B5479
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 19:20:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AEF63B547A
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 19:20:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231352AbhF0RWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 13:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
+        id S231359AbhF0RWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 13:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230321AbhF0RWp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 13:22:45 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91759C061574
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 10:20:21 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id a7so2505879pga.1
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 10:20:21 -0700 (PDT)
+        with ESMTP id S231378AbhF0RWt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 13:22:49 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DFF4C061574
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 10:20:25 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id g24so8526277pji.4
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 10:20:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=QJwSRJB3WvL/r+rJVolomgKsryKna49pAgmJHaVBzFA=;
-        b=LvXJXdpz+LV6/CaoHY/pSq9m+vuO+PWH+9VdShYC42q0y/NG6GctJtU1+wZqqgPmHy
-         aOWaSmIACxRU1L8ZvxAxeulpf52VxNyNHoja7QE3pIyYq9ejvKhs3SKWgRQHETJWgJpC
-         okP6NMLUFGaIwIwYs6VaRAUhgodf+aw/hiLuU=
+        bh=Qaot+TzaDvBtYaDU+kGb+b0QPRw378XDllUyXE9l1cA=;
+        b=Q406fZkwFw7JTEg8cRr+5+yjq8l7TLJgHPiYee5N1ytLyoFq6yCeLzmqDF9geFVUkF
+         k1R1zlcKSnof5CilQ8qYvvFCH4tBs5mV8pE6hkQglrNs1nx/t6w2EWRv2zaZnJMO5CpP
+         wUKz4BqMEvOGQoQisPPqiYW6XXB+v3wSl3Wd8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=QJwSRJB3WvL/r+rJVolomgKsryKna49pAgmJHaVBzFA=;
-        b=t6eiWd8ZzysgbUiFbvD4ZOTQf8YNsv+XIlnWmFkQfruR2zOJ1ahwEkELtxF2E6uVFa
-         /JipjOJ6/wpnn1QPlkimzjwR5bf6HwlocpcPWuzbUTxMsBv6933KBImCDMPl6MufrZ3k
-         CcbCdAZazww2A+kvcTbOzRUpjNnckeRAiwxrrXIAyzGbbDAKhtcEHh52vGVZfCizAePY
-         egLe3xwsH4l08w4SDkYxyTKBCBBY8gNLJVqoMcSrSpAdWlF4uMGAenhVjDNfgFF17OSR
-         3YWajxwJxLz44YYASYLNFI0wVVcdSM/30o2Lr07sn0bvMUsrqO74k6mkcgtjDwkV8Jgj
-         OOlg==
-X-Gm-Message-State: AOAM532WM3TbX/n98G6CR9NxL66XPjS7bi4IMBrtJV2GLW+wXjsWIJrb
-        DglCHnpyPvTmW4x8yEr24ciANw==
-X-Google-Smtp-Source: ABdhPJzLgXw+dN7eO1105kFDxRiewCdig913q2TQxAbU2uNJ5b3hH+YIwiMuTi7WvpP8kjd3WGu7CQ==
-X-Received: by 2002:aa7:8b56:0:b029:2b9:77be:d305 with SMTP id i22-20020aa78b560000b02902b977bed305mr20782200pfd.61.1624814420891;
-        Sun, 27 Jun 2021 10:20:20 -0700 (PDT)
+        bh=Qaot+TzaDvBtYaDU+kGb+b0QPRw378XDllUyXE9l1cA=;
+        b=IF24URyJYKMFDw4mKZPTiiiPbOjdYZOPEHkkRMB/dyLguU1QCytjo3/8Zi5nQL39XN
+         TcFfOxSbh6i6fl3NOmDhKFugZn+C0rSi3zVgrWBW4eiA9mylektO0sShL350DZxmangE
+         84zMSseEeFgk01KNcz64gWmPHtumeY5vYNnNppdfEosmEWKFeBH1jRfgAN+aQXqtCVDt
+         TB6QF0ajPbgiJwE872Gfb9UYmksODRGD4rcjRhZf4WKqjLuOHkTJZ0DwSwP1KguJi/40
+         LKZ/f9vsHkDyWB3e8WsvS4zLu1S/HlMuF7llnfFoZPLS5oY8VH4SvAFc6mwFm0Z4OAjN
+         /tjw==
+X-Gm-Message-State: AOAM533+UuzrIaDnouH++yaGDhViicYRgEJIqb2sF1EeKWd5iGpw/yFl
+        ykduFz0Lu5TTL16aXyoE3EA4Ag==
+X-Google-Smtp-Source: ABdhPJz78aTIhClY4NWtK3derfUoM02OwJMMNGccUfi6OAOJXkbCmrtp8Xw0w3nGfsMf9A3+sXu1eA==
+X-Received: by 2002:a17:903:248e:b029:101:fa49:3f96 with SMTP id p14-20020a170903248eb0290101fa493f96mr18673272plw.16.1624814424929;
+        Sun, 27 Jun 2021 10:20:24 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j8sm11011584pfu.60.2021.06.27.10.20.17
+        by smtp.gmail.com with ESMTPSA id j8sm11011584pfu.60.2021.06.27.10.20.21
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 27 Jun 2021 10:20:20 -0700 (PDT)
+        Sun, 27 Jun 2021 10:20:24 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         richardcochran@gmail.com, pavan.chebbi@broadcom.com,
         edwin.peer@broadcom.com
-Subject: [PATCH net-next v2 2/7] bnxt_en: Get PTP hardware capability from firmware
-Date:   Sun, 27 Jun 2021 13:19:45 -0400
-Message-Id: <1624814390-1300-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 3/7] bnxt_en: Add PTP clock APIs, ioctls, and ethtool methods
+Date:   Sun, 27 Jun 2021 13:19:46 -0400
+Message-Id: <1624814390-1300-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1624814390-1300-1-git-send-email-michael.chan@broadcom.com>
 References: <1624814390-1300-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000696c3405c5c29618"
+        boundary="000000000000a738b205c5c296f4"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000696c3405c5c29618
+--000000000000a738b205c5c296f4
 
-Store PTP hardware info in a structure if hardware and firmware support PTP.
+Add the clock APIs to set/get/adjust the hw clock, and the related
+ioctls and ethtool methods.
+
+v2: Propagate error code from ptp_clock_register().
+    Add spinlock to serialize access to the timecounter.  The
+    timecounter is accessed in process context and the RX datapath.
+    Read the PHC using direct registers.
 
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 59 +++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  5 ++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h | 49 +++++++++++++++
- 3 files changed, 113 insertions(+)
- create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+ drivers/net/ethernet/broadcom/Kconfig         |   1 +
+ drivers/net/ethernet/broadcom/bnxt/Makefile   |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   6 +
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  34 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 324 ++++++++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |  16 +
+ 6 files changed, 382 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
 
+diff --git a/drivers/net/ethernet/broadcom/Kconfig b/drivers/net/ethernet/broadcom/Kconfig
+index cb88ffb8f12f..1a02ca600b71 100644
+--- a/drivers/net/ethernet/broadcom/Kconfig
++++ b/drivers/net/ethernet/broadcom/Kconfig
+@@ -206,6 +206,7 @@ config SYSTEMPORT
+ config BNXT
+ 	tristate "Broadcom NetXtreme-C/E support"
+ 	depends on PCI
++	imply PTP_1588_CLOCK
+ 	select FW_LOADER
+ 	select LIBCRC32C
+ 	select NET_DEVLINK
+diff --git a/drivers/net/ethernet/broadcom/bnxt/Makefile b/drivers/net/ethernet/broadcom/bnxt/Makefile
+index cb97ec56fdec..2b8ae687b3c1 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/Makefile
++++ b/drivers/net/ethernet/broadcom/bnxt/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_BNXT) += bnxt_en.o
+ 
+-bnxt_en-y := bnxt.o bnxt_sriov.o bnxt_ethtool.o bnxt_dcb.o bnxt_ulp.o bnxt_xdp.o bnxt_vfr.o bnxt_devlink.o bnxt_dim.o
++bnxt_en-y := bnxt.o bnxt_sriov.o bnxt_ethtool.o bnxt_dcb.o bnxt_ulp.o bnxt_xdp.o bnxt_ptp.o bnxt_vfr.o bnxt_devlink.o bnxt_dim.o
+ bnxt_en-$(CONFIG_BNXT_FLOWER_OFFLOAD) += bnxt_tc.o
+ bnxt_en-$(CONFIG_DEBUG_FS) += bnxt_debugfs.o
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index aef3fccc27a9..081cdcb02b48 100644
+index 081cdcb02b48..1250a5b50b50 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -49,6 +49,8 @@
- #include <linux/log2.h>
- #include <linux/aer.h>
- #include <linux/bitmap.h>
+@@ -10390,6 +10390,12 @@ static int bnxt_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 		return bnxt_hwrm_port_phy_write(bp, mdio->phy_id, mdio->reg_num,
+ 						mdio->val_in);
+ 
++	case SIOCSHWTSTAMP:
++		return bnxt_hwtstamp_set(dev, ifr);
++
++	case SIOCGHWTSTAMP:
++		return bnxt_hwtstamp_get(dev, ifr);
++
+ 	default:
+ 		/* do nothing */
+ 		break;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index c664ec52ebcf..786ca51e669b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -19,9 +19,13 @@
+ #include <linux/firmware.h>
+ #include <linux/utsname.h>
+ #include <linux/time.h>
 +#include <linux/ptp_clock_kernel.h>
++#include <linux/net_tstamp.h>
 +#include <linux/timecounter.h>
- #include <linux/cpu_rmap.h>
- #include <linux/cpumask.h>
- #include <net/pkt_cls.h>
-@@ -63,6 +65,7 @@
- #include "bnxt_ethtool.h"
- #include "bnxt_dcb.h"
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
  #include "bnxt_xdp.h"
 +#include "bnxt_ptp.h"
- #include "bnxt_vfr.h"
- #include "bnxt_tc.h"
- #include "bnxt_devlink.h"
-@@ -7391,6 +7394,56 @@ int bnxt_hwrm_func_resc_qcaps(struct bnxt *bp, bool all)
- 	return rc;
+ #include "bnxt_ethtool.h"
+ #include "bnxt_nvm_defs.h"	/* NVRAM content constant and structure defs */
+ #include "bnxt_fw_hdr.h"	/* Firmware hdr constant and structure defs */
+@@ -3926,6 +3930,35 @@ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
+ 	return 0;
  }
  
-+/* bp->hwrm_cmd_lock already held. */
-+static int __bnxt_hwrm_ptp_qcfg(struct bnxt *bp)
++static int bnxt_get_ts_info(struct net_device *dev,
++			    struct ethtool_ts_info *info)
 +{
-+	struct hwrm_port_mac_ptp_qcfg_output *resp = bp->hwrm_cmd_resp_addr;
-+	struct hwrm_port_mac_ptp_qcfg_input req = {0};
-+	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
-+	u8 flags;
-+	int rc;
++	struct bnxt *bp = netdev_priv(dev);
++	struct bnxt_ptp_cfg *ptp;
 +
-+	if (bp->hwrm_spec_code < 0x10801) {
-+		rc = -ENODEV;
-+		goto no_ptp;
-+	}
++	ptp = bp->ptp_cfg;
++	info->so_timestamping = SOF_TIMESTAMPING_TX_SOFTWARE |
++				SOF_TIMESTAMPING_RX_SOFTWARE |
++				SOF_TIMESTAMPING_SOFTWARE;
 +
-+	req.port_id = cpu_to_le16(bp->pf.port_id);
-+	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_MAC_PTP_QCFG, -1, -1);
-+	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
-+	if (rc)
-+		goto no_ptp;
++	info->phc_index = -1;
++	if (!ptp)
++		return 0;
 +
-+	flags = resp->flags;
-+	if (!(flags & PORT_MAC_PTP_QCFG_RESP_FLAGS_HWRM_ACCESS)) {
-+		rc = -ENODEV;
-+		goto no_ptp;
-+	}
-+	if (!ptp) {
-+		ptp = kzalloc(sizeof(*ptp), GFP_KERNEL);
-+		if (!ptp)
-+			return -ENOMEM;
-+		ptp->bp = bp;
-+		bp->ptp_cfg = ptp;
-+	}
-+	if (flags & PORT_MAC_PTP_QCFG_RESP_FLAGS_PARTIAL_DIRECT_ACCESS_REF_CLOCK) {
-+		ptp->refclk_regs[0] = le32_to_cpu(resp->ts_ref_clock_reg_lower);
-+		ptp->refclk_regs[1] = le32_to_cpu(resp->ts_ref_clock_reg_upper);
-+	} else if (bp->flags & BNXT_FLAG_CHIP_P5) {
-+		ptp->refclk_regs[0] = BNXT_TS_REG_TIMESYNC_TS0_LOWER;
-+		ptp->refclk_regs[1] = BNXT_TS_REG_TIMESYNC_TS0_UPPER;
-+	} else {
-+		rc = -ENODEV;
-+		goto no_ptp;
-+	}
++	info->so_timestamping |= SOF_TIMESTAMPING_TX_HARDWARE |
++				 SOF_TIMESTAMPING_RX_HARDWARE |
++				 SOF_TIMESTAMPING_RAW_HARDWARE;
++	if (ptp->ptp_clock)
++		info->phc_index = ptp_clock_index(ptp->ptp_clock);
++
++	info->tx_types = (1 << HWTSTAMP_TX_OFF) | (1 << HWTSTAMP_TX_ON);
++
++	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
++			   (1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
++			   (1 << HWTSTAMP_FILTER_PTP_V2_L4_EVENT);
 +	return 0;
-+
-+no_ptp:
-+	kfree(ptp);
-+	bp->ptp_cfg = NULL;
-+	return rc;
 +}
 +
- static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
+ void bnxt_ethtool_init(struct bnxt *bp)
  {
- 	int rc = 0;
-@@ -7462,6 +7515,8 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
- 		bp->flags &= ~BNXT_FLAG_WOL_CAP;
- 		if (flags & FUNC_QCAPS_RESP_FLAGS_WOL_MAGICPKT_SUPPORTED)
- 			bp->flags |= BNXT_FLAG_WOL_CAP;
-+		if (flags & FUNC_QCAPS_RESP_FLAGS_PTP_SUPPORTED)
-+			__bnxt_hwrm_ptp_qcfg(bp);
- 	} else {
- #ifdef CONFIG_BNXT_SRIOV
- 		struct bnxt_vf_info *vf = &bp->vf;
-@@ -12571,6 +12626,8 @@ static void bnxt_remove_one(struct pci_dev *pdev)
- 	bnxt_dcb_free(bp);
- 	kfree(bp->edev);
- 	bp->edev = NULL;
-+	kfree(bp->ptp_cfg);
-+	bp->ptp_cfg = NULL;
- 	kfree(bp->fw_health);
- 	bp->fw_health = NULL;
- 	bnxt_cleanup_pci(bp);
-@@ -13161,6 +13218,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	bnxt_free_hwrm_short_cmd_req(bp);
- 	bnxt_free_hwrm_resources(bp);
- 	bnxt_ethtool_free(bp);
-+	kfree(bp->ptp_cfg);
-+	bp->ptp_cfg = NULL;
- 	kfree(bp->fw_health);
- 	bp->fw_health = NULL;
- 	bnxt_cleanup_pci(bp);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 30e47ea343f9..696163559b64 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1362,6 +1362,9 @@ struct bnxt_test_info {
- #define BNXT_GRC_REG_CHIP_NUM			0x48
- #define BNXT_GRC_REG_BASE			0x260000
- 
-+#define BNXT_TS_REG_TIMESYNC_TS0_LOWER		0x640180c
-+#define BNXT_TS_REG_TIMESYNC_TS0_UPPER		0x6401810
-+
- #define BNXT_GRC_BASE_MASK			0xfffff000
- #define BNXT_GRC_OFFSET_MASK			0x00000ffc
- 
-@@ -2042,6 +2045,8 @@ struct bnxt {
- 
- 	struct bpf_prog		*xdp_prog;
- 
-+	struct bnxt_ptp_cfg	*ptp_cfg;
-+
- 	/* devlink interface and vf-rep structs */
- 	struct devlink		*dl;
- 	struct devlink_port	dl_port;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+ 	struct hwrm_selftest_qlist_output *resp = bp->hwrm_cmd_resp_addr;
+@@ -4172,6 +4205,7 @@ const struct ethtool_ops bnxt_ethtool_ops = {
+ 	.nway_reset		= bnxt_nway_reset,
+ 	.set_phys_id		= bnxt_set_phys_id,
+ 	.self_test		= bnxt_self_test,
++	.get_ts_info		= bnxt_get_ts_info,
+ 	.reset			= bnxt_reset,
+ 	.set_dump		= bnxt_set_dump,
+ 	.get_dump_flag		= bnxt_get_dump_flag,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
 new file mode 100644
-index 000000000000..603f0fdb71c2
+index 000000000000..47f1f9c3380c
 --- /dev/null
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-@@ -0,0 +1,49 @@
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -0,0 +1,324 @@
 +/* Broadcom NetXtreme-C/E network driver.
 + *
 + * Copyright (c) 2021 Broadcom Inc.
@@ -216,52 +200,359 @@ index 000000000000..603f0fdb71c2
 + * it under the terms of the GNU General Public License as published by
 + * the Free Software Foundation.
 + */
++#include <linux/kernel.h>
++#include <linux/errno.h>
++#include <linux/pci.h>
++#include <linux/netdevice.h>
++#include <linux/etherdevice.h>
++#include <linux/ptp_clock_kernel.h>
++#include <linux/net_tstamp.h>
++#include <linux/timecounter.h>
++#include <linux/timekeeping.h>
++#include "bnxt_hsi.h"
++#include "bnxt.h"
++#include "bnxt_ptp.h"
 +
-+#ifndef BNXT_PTP_H
-+#define BNXT_PTP_H
++static int bnxt_ptp_settime(struct ptp_clock_info *ptp_info,
++			    const struct timespec64 *ts)
++{
++	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
++						ptp_info);
++	u64 ns = timespec64_to_ns(ts);
 +
-+struct bnxt_ptp_cfg {
-+	struct ptp_clock_info	ptp_info;
-+	struct ptp_clock	*ptp_clock;
-+	struct cyclecounter	cc;
-+	struct timecounter	tc;
-+	/* serialize timecounter access */
-+	spinlock_t		ptp_lock;
-+	struct sk_buff		*tx_skb;
-+	u64			current_time;
-+	u64			old_time;
-+	unsigned long		next_period;
-+	u16			tx_seqid;
-+	struct bnxt		*bp;
-+	atomic_t		tx_avail;
-+#define BNXT_MAX_TX_TS	1
-+	u16			rxctl;
-+#define BNXT_PTP_MSG_SYNC			(1 << 0)
-+#define BNXT_PTP_MSG_DELAY_REQ			(1 << 1)
-+#define BNXT_PTP_MSG_PDELAY_REQ			(1 << 2)
-+#define BNXT_PTP_MSG_PDELAY_RESP		(1 << 3)
-+#define BNXT_PTP_MSG_FOLLOW_UP			(1 << 8)
-+#define BNXT_PTP_MSG_DELAY_RESP			(1 << 9)
-+#define BNXT_PTP_MSG_PDELAY_RESP_FOLLOW_UP	(1 << 10)
-+#define BNXT_PTP_MSG_ANNOUNCE			(1 << 11)
-+#define BNXT_PTP_MSG_SIGNALING			(1 << 12)
-+#define BNXT_PTP_MSG_MANAGEMENT			(1 << 13)
-+#define BNXT_PTP_MSG_EVENTS		(BNXT_PTP_MSG_SYNC |		\
-+					 BNXT_PTP_MSG_DELAY_REQ |	\
-+					 BNXT_PTP_MSG_PDELAY_REQ |	\
-+					 BNXT_PTP_MSG_PDELAY_RESP)
-+	u8			tx_tstamp_en:1;
-+	int			rx_filter;
++	spin_lock_bh(&ptp->ptp_lock);
++	timecounter_init(&ptp->tc, &ptp->cc, ns);
++	spin_unlock_bh(&ptp->ptp_lock);
++	return 0;
++}
 +
-+	u32			refclk_regs[2];
-+	u32			refclk_mapped_regs[2];
++/* Caller holds ptp_lock */
++static u64 bnxt_refclk_read(struct bnxt *bp, struct ptp_system_timestamp *sts)
++{
++	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++	u64 ns;
++
++	ptp_read_system_prets(sts);
++	ns = readl(bp->bar0 + ptp->refclk_mapped_regs[0]);
++	ptp_read_system_postts(sts);
++	ns |= (u64)readl(bp->bar0 + ptp->refclk_mapped_regs[1]) << 32;
++	return ns;
++}
++
++static int bnxt_ptp_gettimex(struct ptp_clock_info *ptp_info,
++			     struct timespec64 *ts,
++			     struct ptp_system_timestamp *sts)
++{
++	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
++						ptp_info);
++	u64 ns, cycles;
++
++	spin_lock_bh(&ptp->ptp_lock);
++	cycles = bnxt_refclk_read(ptp->bp, sts);
++	ns = timecounter_cyc2time(&ptp->tc, cycles);
++	spin_unlock_bh(&ptp->ptp_lock);
++	*ts = ns_to_timespec64(ns);
++
++	return 0;
++}
++
++static int bnxt_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
++{
++	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
++						ptp_info);
++
++	spin_lock_bh(&ptp->ptp_lock);
++	timecounter_adjtime(&ptp->tc, delta);
++	spin_unlock_bh(&ptp->ptp_lock);
++	return 0;
++}
++
++static int bnxt_ptp_adjfreq(struct ptp_clock_info *ptp_info, s32 ppb)
++{
++	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
++						ptp_info);
++	struct hwrm_port_mac_cfg_input req = {0};
++	struct bnxt *bp = ptp->bp;
++	int rc;
++
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_MAC_CFG, -1, -1);
++	req.ptp_freq_adj_ppb = cpu_to_le32(ppb);
++	req.enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_PTP_FREQ_ADJ_PPB);
++	rc = hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++	if (rc)
++		netdev_err(ptp->bp->dev,
++			   "ptp adjfreq failed. rc = %d\n", rc);
++	return rc;
++}
++
++static int bnxt_ptp_enable(struct ptp_clock_info *ptp,
++			   struct ptp_clock_request *rq, int on)
++{
++	return -EOPNOTSUPP;
++}
++
++static int bnxt_hwrm_ptp_cfg(struct bnxt *bp)
++{
++	struct hwrm_port_mac_cfg_input req = {0};
++	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++	u32 flags = 0;
++
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_MAC_CFG, -1, -1);
++	if (ptp->rx_filter)
++		flags |= PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_ENABLE;
++	else
++		flags |= PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE;
++	if (ptp->tx_tstamp_en)
++		flags |= PORT_MAC_CFG_REQ_FLAGS_PTP_TX_TS_CAPTURE_ENABLE;
++	else
++		flags |= PORT_MAC_CFG_REQ_FLAGS_PTP_TX_TS_CAPTURE_DISABLE;
++	req.flags = cpu_to_le32(flags);
++	req.enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_RX_TS_CAPTURE_PTP_MSG_TYPE);
++	req.rx_ts_capture_ptp_msg_type = cpu_to_le16(ptp->rxctl);
++
++	return hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++}
++
++int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
++{
++	struct bnxt *bp = netdev_priv(dev);
++	struct hwtstamp_config stmpconf;
++	struct bnxt_ptp_cfg *ptp;
++	u16 old_rxctl;
++	int old_rx_filter, rc;
++	u8 old_tx_tstamp_en;
++
++	ptp = bp->ptp_cfg;
++	if (!ptp)
++		return -EOPNOTSUPP;
++
++	if (copy_from_user(&stmpconf, ifr->ifr_data, sizeof(stmpconf)))
++		return -EFAULT;
++
++	if (stmpconf.flags)
++		return -EINVAL;
++
++	if (stmpconf.tx_type != HWTSTAMP_TX_ON &&
++	    stmpconf.tx_type != HWTSTAMP_TX_OFF)
++		return -ERANGE;
++
++	old_rx_filter = ptp->rx_filter;
++	old_rxctl = ptp->rxctl;
++	old_tx_tstamp_en = ptp->tx_tstamp_en;
++	switch (stmpconf.rx_filter) {
++	case HWTSTAMP_FILTER_NONE:
++		ptp->rxctl = 0;
++		ptp->rx_filter = HWTSTAMP_FILTER_NONE;
++		break;
++	case HWTSTAMP_FILTER_PTP_V2_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
++		ptp->rxctl = BNXT_PTP_MSG_EVENTS;
++		ptp->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
++		break;
++	case HWTSTAMP_FILTER_PTP_V2_SYNC:
++	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
++	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
++		ptp->rxctl = BNXT_PTP_MSG_SYNC;
++		ptp->rx_filter = HWTSTAMP_FILTER_PTP_V2_SYNC;
++		break;
++	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
++	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
++	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
++		ptp->rxctl = BNXT_PTP_MSG_DELAY_REQ;
++		ptp->rx_filter = HWTSTAMP_FILTER_PTP_V2_DELAY_REQ;
++		break;
++	default:
++		return -ERANGE;
++	}
++
++	if (stmpconf.tx_type == HWTSTAMP_TX_ON)
++		ptp->tx_tstamp_en = 1;
++	else
++		ptp->tx_tstamp_en = 0;
++
++	rc = bnxt_hwrm_ptp_cfg(bp);
++	if (rc)
++		goto ts_set_err;
++
++	stmpconf.rx_filter = ptp->rx_filter;
++	return copy_to_user(ifr->ifr_data, &stmpconf, sizeof(stmpconf)) ?
++		-EFAULT : 0;
++
++ts_set_err:
++	ptp->rx_filter = old_rx_filter;
++	ptp->rxctl = old_rxctl;
++	ptp->tx_tstamp_en = old_tx_tstamp_en;
++	return rc;
++}
++
++int bnxt_hwtstamp_get(struct net_device *dev, struct ifreq *ifr)
++{
++	struct bnxt *bp = netdev_priv(dev);
++	struct hwtstamp_config stmpconf;
++	struct bnxt_ptp_cfg *ptp;
++
++	ptp = bp->ptp_cfg;
++	if (!ptp)
++		return -EOPNOTSUPP;
++
++	stmpconf.flags = 0;
++	stmpconf.tx_type = ptp->tx_tstamp_en ? HWTSTAMP_TX_ON : HWTSTAMP_TX_OFF;
++
++	stmpconf.rx_filter = ptp->rx_filter;
++	return copy_to_user(ifr->ifr_data, &stmpconf, sizeof(stmpconf)) ?
++		-EFAULT : 0;
++}
++
++static int bnxt_map_regs(struct bnxt *bp, u32 *reg_arr, int count, int reg_win)
++{
++	u32 reg_base = *reg_arr & BNXT_GRC_BASE_MASK;
++	u32 win_off;
++	int i;
++
++	for (i = 0; i < count; i++) {
++		if ((reg_arr[i] & BNXT_GRC_BASE_MASK) != reg_base)
++			return -ERANGE;
++	}
++	win_off = BNXT_GRCPF_REG_WINDOW_BASE_OUT + (reg_win - 1) * 4;
++	writel(reg_base, bp->bar0 + win_off);
++	return 0;
++}
++
++static int bnxt_map_ptp_regs(struct bnxt *bp)
++{
++	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++	u32 *reg_arr;
++	int rc, i;
++
++	reg_arr = ptp->refclk_regs;
++	if (bp->flags & BNXT_FLAG_CHIP_P5) {
++		rc = bnxt_map_regs(bp, reg_arr, 2, BNXT_PTP_GRC_WIN);
++		if (rc)
++			return rc;
++		for (i = 0; i < 2; i++)
++			ptp->refclk_mapped_regs[i] = BNXT_PTP_GRC_WIN_BASE +
++				(ptp->refclk_regs[i] & BNXT_GRC_OFFSET_MASK);
++		return 0;
++	}
++	return -ENODEV;
++}
++
++static void bnxt_unmap_ptp_regs(struct bnxt *bp)
++{
++	writel(0, bp->bar0 + BNXT_GRCPF_REG_WINDOW_BASE_OUT +
++		  (BNXT_PTP_GRC_WIN - 1) * 4);
++}
++
++static u64 bnxt_cc_read(const struct cyclecounter *cc)
++{
++	struct bnxt_ptp_cfg *ptp = container_of(cc, struct bnxt_ptp_cfg, cc);
++
++	return bnxt_refclk_read(ptp->bp, NULL);
++}
++
++static const struct ptp_clock_info bnxt_ptp_caps = {
++	.owner		= THIS_MODULE,
++	.name		= "bnxt clock",
++	.max_adj	= BNXT_MAX_PHC_DRIFT,
++	.n_alarm	= 0,
++	.n_ext_ts	= 0,
++	.n_per_out	= 0,
++	.n_pins		= 0,
++	.pps		= 0,
++	.adjfreq	= bnxt_ptp_adjfreq,
++	.adjtime	= bnxt_ptp_adjtime,
++	.gettimex64	= bnxt_ptp_gettimex,
++	.settime64	= bnxt_ptp_settime,
++	.enable		= bnxt_ptp_enable,
 +};
-+#endif
++
++int bnxt_ptp_init(struct bnxt *bp)
++{
++	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++	int rc;
++
++	if (!ptp)
++		return 0;
++
++	rc = bnxt_map_ptp_regs(bp);
++	if (rc)
++		return rc;
++
++	atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
++	spin_lock_init(&ptp->ptp_lock);
++
++	memset(&ptp->cc, 0, sizeof(ptp->cc));
++	ptp->cc.read = bnxt_cc_read;
++	ptp->cc.mask = CYCLECOUNTER_MASK(48);
++	ptp->cc.shift = 0;
++	ptp->cc.mult = 1;
++
++	timecounter_init(&ptp->tc, &ptp->cc, ktime_to_ns(ktime_get_real()));
++
++	ptp->ptp_info = bnxt_ptp_caps;
++	ptp->ptp_clock = ptp_clock_register(&ptp->ptp_info, &bp->pdev->dev);
++	if (IS_ERR(ptp->ptp_clock)) {
++		int err = PTR_ERR(ptp->ptp_clock);
++
++		ptp->ptp_clock = NULL;
++		bnxt_unmap_ptp_regs(bp);
++		return err;
++	}
++
++	return 0;
++}
++
++void bnxt_ptp_clear(struct bnxt *bp)
++{
++	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++
++	if (!ptp)
++		return;
++
++	if (ptp->ptp_clock)
++		ptp_clock_unregister(ptp->ptp_clock);
++
++	ptp->ptp_clock = NULL;
++	bnxt_unmap_ptp_regs(bp);
++}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+index 603f0fdb71c2..93a9921a8b46 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+@@ -10,6 +10,17 @@
+ #ifndef BNXT_PTP_H
+ #define BNXT_PTP_H
+ 
++#define BNXT_PTP_GRC_WIN	5
++#define BNXT_PTP_GRC_WIN_BASE	0x5000
++
++#define BNXT_MAX_PHC_DRIFT	31000000
++#define BNXT_LO_TIMER_MASK	0x0000ffffffffUL
++#define BNXT_HI_TIMER_MASK	0xffff00000000UL
++
++#define BNXT_PTP_QTS_TIMEOUT	1000
++#define BNXT_PTP_QTS_TX_ENABLES	(PORT_TS_QUERY_REQ_ENABLES_PTP_SEQ_ID |	\
++				 PORT_TS_QUERY_REQ_ENABLES_TS_REQ_TIMEOUT)
++
+ struct bnxt_ptp_cfg {
+ 	struct ptp_clock_info	ptp_info;
+ 	struct ptp_clock	*ptp_clock;
+@@ -46,4 +57,9 @@ struct bnxt_ptp_cfg {
+ 	u32			refclk_regs[2];
+ 	u32			refclk_mapped_regs[2];
+ };
++
++int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr);
++int bnxt_hwtstamp_get(struct net_device *dev, struct ifreq *ifr);
++int bnxt_ptp_init(struct bnxt *bp);
++void bnxt_ptp_clear(struct bnxt *bp);
+ #endif
 -- 
 2.18.1
 
 
---000000000000696c3405c5c29618
+--000000000000a738b205c5c296f4
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -332,13 +623,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJOj9kJ6v8llhrbmr5Da3XJL8XFKKx1B
-ST0YcztUgyUHMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDYy
-NzE3MjAyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBU7pss3bqrGWrQQJ3DigGODcftDxCiB
+yWJnn0EV2glbMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDYy
+NzE3MjAyNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCNfYt42tFbz/CqfSXSS58mOtocLZzRaybOz5aD5eMdjEhimhPn
-7eoaFOVee8Ez7BvFrHzPDm0XRqFPmTm1iSQlfzE+RHV2MOJjg45m3NHewqNerDzpesYET8ucMMBD
-wVbIpfjHqyOO9RgyabUzLfVH0U7Jrynni0Rhts8Z2bnWNZA7v72ZgbNwUUaEY81FyIEzIyP7u8An
-gIzmZs3tY3cuGEWqZa14HDUgiTXFNrEM1zYYcCv41wRG2f202TWAKwZ7KVNVcbg37PU4Od6D9pwM
-MTbjRcvz40ggBTPwnfsyraXq4DXvRiP6bpTyfHxgz5gPKivFN53R93rZxJ0LQAGx
---000000000000696c3405c5c29618--
+ATANBgkqhkiG9w0BAQEFAASCAQBvrtbq67uNatOvH6NXxjLACSJx2bRhe9pj/1Ye5p52F5kGG+5Z
+eSufhgs7IuPQ741DEOIsWKuRt6HH1xKQIB7acJ4O/qZF+O3HlWvwDy348kiuR6b6ihn21htWTIIU
+X2AVW7jk+sWlZ0pttGI1RBbT2y1wa6RvJYJEqtewir1AfO6LQqNW22W6sP6WB7FHfa9KkuvBSN+4
+CpiBDYSI9owQ1QbhU5MLDvi1prSWO6XNxqctUYukTRJ2oewoAjjTqQqnZV22Xw96GfnhPtfv98pS
+uNjuo9W589cLeBReGDjBf1Hn+gA1NKTbsuieM3SOBeBgdmjqQ/Pg5LmWTmTtYWqz
+--000000000000a738b205c5c296f4--
