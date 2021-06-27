@@ -2,140 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E65173B53C4
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 16:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4288E3B53F7
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 17:12:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231219AbhF0O3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 10:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230268AbhF0O3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 10:29:40 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB0DC061574
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 07:27:16 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id yy20so16718514ejb.6
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 07:27:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UfoiygWHNUpm4I6CQGjQwLqViDT2vNralulzzr0DlQE=;
-        b=lCwFWpSNEePQsxmYTxe09VV3bo3AS/c520D2JzzPOC2FsEUKK0sXzxscxJkeOEZH1n
-         Gktxh7P4ZCS5VRxZpKErqs+T+5N2ggPVH7CtZofE0m6wEDk/NqinA4A+MgIlFpTeFype
-         VSrsyu+Gm5GAqq3Cv90YrPOWJfh8xhy5IrKk2wQCfliEEDzSL+Ksm8oM9jeck1l35D3e
-         eyslCSCYLAS05Em51lXxvcCfsNHNOyK+mK2s7L11SJ5sCpysOw7B2z3AmQWO8EwzG7Ed
-         OSi1rzCaS01HVLlIU9LBvuNBIwVbgJHdn+DukKC9b5ED+/JE9NEcErHAhrHNWf44VC1g
-         aLFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UfoiygWHNUpm4I6CQGjQwLqViDT2vNralulzzr0DlQE=;
-        b=VQT8vGmb2IFSZw9m6RzfERVzw8yYPxVw4gnJ9c2bADVH9Y4fRhoPDue1apX4JxqB5G
-         +H+LmRl7mc/sPhmis7adntW0AVnGi0xgTTFtUHr3mMIz1mt8IU+muClMmvrs0xOZCyoQ
-         ncL5y8pX/Sg3Jy61Dr4eqqqyQPQ3zrsk685MBM5rtkpU20AHaxL7NQ5MmOVJmMdwAaaX
-         H6KiuQhWMzzRHtGPd8vpRUsGq49BqKSRU73iOZzr+orSBLMkIU2f9EvwaKVoB/tWMUzz
-         asNMH1+LV359rNdDnKUcbZdE3hDCSLr1hgCGpcg1iFycPtTNBXcIoa4PdsfxYZ0/jnF9
-         sABA==
-X-Gm-Message-State: AOAM533uf929m4iFFI9BAeCtuPFmZ7wcWXrMDEhnL5mLX+0e6ddkxJqu
-        /arlwHfdbkTc+WJnU84Didw=
-X-Google-Smtp-Source: ABdhPJy76yeOXE2W6z2yNrQTEj+8qFse5Iz0G9B5jfekkSWUESG81aRxiOVkKhooWkJrazfa9F+SzQ==
-X-Received: by 2002:a17:906:2892:: with SMTP id o18mr19912994ejd.370.1624804034739;
-        Sun, 27 Jun 2021 07:27:14 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id hg25sm5585855ejc.51.2021.06.27.07.27.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Jun 2021 07:27:14 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next] net: dsa: sja1105: fix dynamic access to L2 Address Lookup table for SJA1110
-Date:   Sun, 27 Jun 2021 17:27:08 +0300
-Message-Id: <20210627142708.1277273-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S230436AbhF0POy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 11:14:54 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57978 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230260AbhF0POy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Jun 2021 11:14:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=cAgU1LZJU+4bPdsqzJiE890ojfilFw9fy3C817Mu+YU=; b=bXcZr+kjWWH5ZC4J6IT/wnLa/E
+        vNy6qdtU32EFUVAbBEx9WG38rOg4LHXwUDz/TpSvC/actqUzP6Y6/qwKIvcWTMAmbc6SiQ9wxXOkY
+        TaElx9ZUN40jLkEFR7ZI4Ft9Kglz5PMsjwTdYR/CSSrXosSNJ77NtRiOw1jbBjtGXoxs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lxWSQ-00BKPd-Dz; Sun, 27 Jun 2021 17:12:26 +0200
+Date:   Sun, 27 Jun 2021 17:12:26 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, vladyslavt@nvidia.com, moshe@nvidia.com,
+        vadimp@nvidia.com, mkubecek@suse.cz, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to write to
+ transceiver module EEPROMs
+Message-ID: <YNiVWhoqyHSVa+K4@lunn.ch>
+References: <20210623075925.2610908-1-idosch@idosch.org>
+ <YNOBKRzk4S7ZTeJr@lunn.ch>
+ <YNTfMzKn2SN28Icq@shredder>
+ <YNTqofVlJTgsvDqH@lunn.ch>
+ <YNhT6aAFUwOF8qrL@shredder>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YNhT6aAFUwOF8qrL@shredder>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Sun, Jun 27, 2021 at 01:33:13PM +0300, Ido Schimmel wrote:
+> On Thu, Jun 24, 2021 at 10:27:13PM +0200, Andrew Lunn wrote:
+> > > I fail to understand this logic. I would understand pushing
+> > > functionality into the kernel in order to create an abstraction for user
+> > > space over different hardware interfaces from different vendors. This is
+> > > not the case here. Nothing is vendor specific. Not to the host vendor
+> > > nor to the module vendor.
+> > 
+> > Hi Ido
+> 
+> Hi Andrew,
+> 
+> > 
+> > My worry is, we are opening up an ideal vector for user space drivers
+> > for SFPs. And worse still, closed source user space drivers. We have
+> > had great success with switchdev, over a hundred supported switches,
+> > partially because we have always pushed back against kAPIs which allow
+> > user space driver, closed binary blobs etc.
+> 
+> I don't think it's a correct comparison. Switch ASICs don't have a
+> standardized interface towards the host. It is therefore essential that
+> the kernel will abstract these differences to user space.
+> 
+> > 
+> > We have the choice here. We can add a write method to the kAPI, add
+> > open source code to Ethtool using that API, and just accept people are
+> > going to abuse the API for all sorts of horrible things in user space.
+> > Or we can add more restrictive kAPIs, put more code in the kernel, and
+> > probably limit user space doing horrible things. Maybe as a side
+> > effect, SFP vendors contribute some open source code, rather than
+> > binary blobs?
+> 
+> I didn't see any code or binary blobs from SFP vendors and I'm not sure
+> how they can provide these either. Their goal is - I believe - to sell
+> as much modules as possible to what the standard calls "systems
+> manufactures" / "system integrators". Therefore, they cannot make any
+> assumptions about the I2C connectivity (whether to the ASIC or the CPU),
+> the operating system running on the host and the user interface (ioctl /
+> netlink etc).
+> 
+> Given all these moving parts, I don't see how they can provide any
+> tooling. It is in their best interest to simply follow the standard and
+> make the tooling a problem of the "systems manufactures" / "system
+> integrators". In fact, the user who requested this functionality claims:
+> "the cable vendors don't develop the tools to burn the FW since the
+> vendors claim that the CMIS is supported". The user also confirmed that
+> another provider "is able to burn the FW for the cables from different
+> vendors".
 
-The SJA1105P/Q/R/S and SJA1110 may have the same layout for the command
-to read/write/search for L2 Address Lookup entries, but as explained in
-the comments at the beginning of the sja1105_dynamic_config.c file, the
-command portion of the buffer is at the end, and we need to obtain a
-pointer to it by adding the length of the entry to the buffer.
+Hi Ido
 
-Alas, the length of an L2 Address Lookup entry is larger in SJA1110 than
-it is for SJA1105P/Q/R/S, so we need to create a common helper to access
-the command buffer, and this receives as argument the length of the
-entry buffer.
+This API is not just about CMIS, it covers any I2C connected SFP
+device. I'm more involved in the lower end, 1G, 2.5G and 10G. Devices
+in this category seem to be very bad a following the standards. GPON
+is especially bad, and GPON manufactures don't seem to care their
+devices don't follow the standard, they assume the Customer Premises
+Equipment is going to run software to work around whatever issues
+their specific GPON has, maybe they provide driver code? The API you
+are adding would be ideal for putting that driver in user space, as a
+binary blob. That is going to make it harder for us to open up the
+many millions of CPE used in FTTH. And there are people attempting to
+do that.
 
-Fixes: 3e77e59bf8cf ("net: dsa: sja1105: add support for the SJA1110 switch family")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- .../net/dsa/sja1105/sja1105_dynamic_config.c  | 26 ++++++++++++++++---
- 1 file changed, 22 insertions(+), 4 deletions(-)
+If devices following CMIS really are closely following the standard
+that is great. We should provide tooling to do firmware upgrade. But
+at the same time, we don't want to aid those who go against the
+standards and do their own thing. And it sounds like in the CMIS
+world, we might have the power to encourage vendors to follow CMIS,
+"Look, firmware upgrade just works for the competitors devices, why
+should i use your device when it does not work?"
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-index 4c4c04f04269..56fead68ea9f 100644
---- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-@@ -258,11 +258,11 @@ sja1110_vl_policing_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
- }
- 
- static void
--sja1105pqrs_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
--				  enum packing_op op)
-+sja1105pqrs_common_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
-+					 enum packing_op op, int entry_size)
- {
--	u8 *p = buf + SJA1105PQRS_SIZE_L2_LOOKUP_ENTRY;
- 	const int size = SJA1105_SIZE_DYN_CMD;
-+	u8 *p = buf + entry_size;
- 	u64 hostcmd;
- 
- 	sja1105_packing(p, &cmd->valid,    31, 31, size, op);
-@@ -317,6 +317,24 @@ sja1105pqrs_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
- 			SJA1105PQRS_SIZE_L2_LOOKUP_ENTRY, op);
- }
- 
-+static void
-+sja1105pqrs_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
-+				  enum packing_op op)
-+{
-+	int size = SJA1105PQRS_SIZE_L2_LOOKUP_ENTRY;
-+
-+	return sja1105pqrs_common_l2_lookup_cmd_packing(buf, cmd, op, size);
-+}
-+
-+static void
-+sja1110_l2_lookup_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
-+			      enum packing_op op)
-+{
-+	int size = SJA1110_SIZE_L2_LOOKUP_ENTRY;
-+
-+	return sja1105pqrs_common_l2_lookup_cmd_packing(buf, cmd, op, size);
-+}
-+
- /* The switch is so retarded that it makes our command/entry abstraction
-  * crumble apart.
-  *
-@@ -1055,7 +1073,7 @@ const struct sja1105_dynamic_table_ops sja1110_dyn_ops[BLK_IDX_MAX_DYN] = {
- 	},
- 	[BLK_IDX_L2_LOOKUP] = {
- 		.entry_packing = sja1110_dyn_l2_lookup_entry_packing,
--		.cmd_packing = sja1105pqrs_l2_lookup_cmd_packing,
-+		.cmd_packing = sja1110_l2_lookup_cmd_packing,
- 		.access = (OP_READ | OP_WRITE | OP_DEL | OP_SEARCH),
- 		.max_entry_count = SJA1105_MAX_L2_LOOKUP_COUNT,
- 		.packed_size = SJA1110_SIZE_L2_LOOKUP_DYN_CMD,
--- 
-2.25.1
+I just want to make sure we are considering the full range of devices
+this new API will cover. From little ARM systems with 1G copper and
+FTTH fibre ports through to big TOR systems with large number of 100G
+ports.  If CMIS is well support by vendors, putting the code into the
+kernel, as a loadable module, might be the better solution for the
+whole range of devices the kernel needs to support.
 
+      Andrew
