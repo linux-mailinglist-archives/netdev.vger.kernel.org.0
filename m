@@ -2,94 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 057583B52CA
-	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 12:16:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E5853B52D5
+	for <lists+netdev@lfdr.de>; Sun, 27 Jun 2021 12:33:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbhF0KSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 06:18:34 -0400
-Received: from perseus.uberspace.de ([95.143.172.134]:39776 "EHLO
-        perseus.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbhF0KSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 06:18:30 -0400
-Received: (qmail 29836 invoked from network); 27 Jun 2021 10:16:04 -0000
-Received: from localhost (HELO localhost) (127.0.0.1)
-  by perseus.uberspace.de with SMTP; 27 Jun 2021 10:16:04 -0000
-From:   David Bauer <mail@david-bauer.net>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] net: phy: at803x: mask 1000 Base-X link mode
-Date:   Sun, 27 Jun 2021 12:16:07 +0200
-Message-Id: <20210627101607.79604-1-mail@david-bauer.net>
-X-Mailer: git-send-email 2.32.0
+        id S230146AbhF0Kfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 06:35:41 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:35943 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229761AbhF0Kfl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 06:35:41 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id E66605805C9;
+        Sun, 27 Jun 2021 06:33:16 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 27 Jun 2021 06:33:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=9Q9NxT
+        OMyNZY04hi81t5aW1NL/jvGVXzK0xYeWpQ/yk=; b=Cnief0dEOZagOQc0SBNZe6
+        hM3dRqJl2eGWHaUqehQdBqeeWK/2b5/TbWAKV3rPGsjb+kj8FBbVNgxVGxJjdDU9
+        AbGw480/VbIR3DRkzmzygt4IzOcN/ZTkkpUnd40ln6fU5FKX14vCMkrQwHxKx6u9
+        4/QMHS+bMEjW94czVrQK+yywcRjKMDQ4LWf8PZBjnaX2J9GGwm1fRXqPMX++bOV8
+        zJNMPsfe3RCH5fhyV/zsMbNDl6HICtvj2qGu7+EAoITdhY+/JmAADm3RLnOZH4Lo
+        JcIF5zLRBxMdmlQV2ZfqCKVkvn/Zob4rOe84pBIqQPLfW1oxoPKNtHJJLX3C2AXw
+        ==
+X-ME-Sender: <xms:7FPYYDPuKDbOrBIDAVOik4mJLDe497Fx7Ka2shUEXkYgnyTotjmbHw>
+    <xme:7FPYYN9Zae5skxfMwID7_J59Kvwzh62aBU9BJk4lWwBZXlId3T9fMIFEtOHXJKBWc
+    YMwFXeNZolJsDs>
+X-ME-Received: <xmr:7FPYYCT2jVwvCAvV3lrNprXMvg9A9VTutMpb8QJc-ItLYezrSJK8GXVvYqgv>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeehvddgfedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:7FPYYHuRqVnrzaT1jdBk5Jrj8Elya0C0alsyQKnzQGxlCCAvl4xWoQ>
+    <xmx:7FPYYLc3j4kc5IDo-ptm-gXGnI4k8BELA7eGDzBYKb99Aasew4AF9g>
+    <xmx:7FPYYD2_o80eTrmcva4tdPiRFts5kv5TFKJUJ9eY3pyGDMDySeYExA>
+    <xmx:7FPYYKyv9tt3pCwwmdu4C-k4ugAq0Cm9Rf2nDazh5URORnv54j5g9g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 27 Jun 2021 06:33:15 -0400 (EDT)
+Date:   Sun, 27 Jun 2021 13:33:13 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, vladyslavt@nvidia.com, moshe@nvidia.com,
+        vadimp@nvidia.com, mkubecek@suse.cz, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to write to
+ transceiver module EEPROMs
+Message-ID: <YNhT6aAFUwOF8qrL@shredder>
+References: <20210623075925.2610908-1-idosch@idosch.org>
+ <YNOBKRzk4S7ZTeJr@lunn.ch>
+ <YNTfMzKn2SN28Icq@shredder>
+ <YNTqofVlJTgsvDqH@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YNTqofVlJTgsvDqH@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-AR8031/AR8033 have different status registers for copper
-and fiber operation. However, the extended status register
-is the same for both operation modes.
+On Thu, Jun 24, 2021 at 10:27:13PM +0200, Andrew Lunn wrote:
+> > I fail to understand this logic. I would understand pushing
+> > functionality into the kernel in order to create an abstraction for user
+> > space over different hardware interfaces from different vendors. This is
+> > not the case here. Nothing is vendor specific. Not to the host vendor
+> > nor to the module vendor.
+> 
+> Hi Ido
 
-As a result of that, ESTATUS_1000_XFULL is set to 1 even when
-operating in copper TP mode.
+Hi Andrew,
 
-Remove this mode from the supported link modes, as this driver
-currently only supports copper operation.
+> 
+> My worry is, we are opening up an ideal vector for user space drivers
+> for SFPs. And worse still, closed source user space drivers. We have
+> had great success with switchdev, over a hundred supported switches,
+> partially because we have always pushed back against kAPIs which allow
+> user space driver, closed binary blobs etc.
 
-Signed-off-by: David Bauer <mail@david-bauer.net>
----
- drivers/net/phy/at803x.c | 30 +++++++++++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+I don't think it's a correct comparison. Switch ASICs don't have a
+standardized interface towards the host. It is therefore essential that
+the kernel will abstract these differences to user space.
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 32af52dd5aed..d797c2c9ae3f 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -610,6 +610,34 @@ static void at803x_remove(struct phy_device *phydev)
- 		regulator_disable(priv->vddio);
- }
- 
-+static int at803x_get_features(struct phy_device *phydev)
-+{
-+	int err;
-+
-+	err = genphy_read_abilities(phydev);
-+	if (err)
-+		return err;
-+
-+	if (!at803x_match_phy_id(phydev, ATH8031_PHY_ID))
-+		return 0;
-+
-+	/* AR8031/AR8033 have different status registers
-+	 * for copper and fiber operation. However, the
-+	 * extended status register is the same for both
-+	 * operation modes.
-+	 *
-+	 * As a result of that, ESTATUS_1000_XFULL is set
-+	 * to 1 even when operating in copper TP mode.
-+	 *
-+	 * Remove this mode from the supported link modes,
-+	 * as this driver currently only supports copper
-+	 * operation.
-+	 */
-+	linkmode_clear_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
-+			   phydev->supported);
-+	return 0;
-+}
-+
- static int at803x_smarteee_config(struct phy_device *phydev)
- {
- 	struct at803x_priv *priv = phydev->priv;
-@@ -1225,7 +1253,7 @@ static struct phy_driver at803x_driver[] = {
- 	.resume			= at803x_resume,
- 	.read_page		= at803x_read_page,
- 	.write_page		= at803x_write_page,
--	/* PHY_GBIT_FEATURES */
-+	.get_features		= at803x_get_features,
- 	.read_status		= at803x_read_status,
- 	.config_intr		= &at803x_config_intr,
- 	.handle_interrupt	= at803x_handle_interrupt,
--- 
-2.32.0
+> 
+> We have the choice here. We can add a write method to the kAPI, add
+> open source code to Ethtool using that API, and just accept people are
+> going to abuse the API for all sorts of horrible things in user space.
+> Or we can add more restrictive kAPIs, put more code in the kernel, and
+> probably limit user space doing horrible things. Maybe as a side
+> effect, SFP vendors contribute some open source code, rather than
+> binary blobs?
 
+I didn't see any code or binary blobs from SFP vendors and I'm not sure
+how they can provide these either. Their goal is - I believe - to sell
+as much modules as possible to what the standard calls "systems
+manufactures" / "system integrators". Therefore, they cannot make any
+assumptions about the I2C connectivity (whether to the ASIC or the CPU),
+the operating system running on the host and the user interface (ioctl /
+netlink etc).
+
+Given all these moving parts, I don't see how they can provide any
+tooling. It is in their best interest to simply follow the standard and
+make the tooling a problem of the "systems manufactures" / "system
+integrators". In fact, the user who requested this functionality claims:
+"the cable vendors don't develop the tools to burn the FW since the
+vendors claim that the CMIS is supported". The user also confirmed that
+another provider "is able to burn the FW for the cables from different
+vendors".
+
+> 
+> I tend to disagree about adding kAPIs which allow write. But i would
+> like to hear other peoples opinions on this.
+> 
+>      Andrew
+> 
