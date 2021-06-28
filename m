@@ -2,73 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B08373B67D0
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 19:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 070193B67E5
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 19:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233987AbhF1Rmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 13:42:53 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:50779 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232266AbhF1Rmv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 13:42:51 -0400
-Received: by mail-io1-f72.google.com with SMTP id c2-20020a0566023342b02904f81edccbe3so2576274ioz.17
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 10:40:25 -0700 (PDT)
+        id S234698AbhF1RpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 13:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233053AbhF1RpS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 13:45:18 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FFEC061574
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 10:42:53 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id u8so6376245qvg.0
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 10:42:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5z8xTefTXXBZHreuPxHijQ+K1tgqds+2BhuT6QVllF8=;
+        b=BQu+mmzu4I/Np3ZVLkFCGpvrFhtLKnYrfcedxbtAE0J0tghiARC6bJAmPlZhlTeLT2
+         OTcjDVNo8EfhDKz9a4wrEi58tIpefm+qUp/Ut3ErBp33ozWnDUcckMKnlz+wiIpQTtAg
+         44/MDonCURAYnf3pOergDCp3PlEPs3KdDtHLiiIhVdQMtMNT79EZZqQdM/FlemhlubUx
+         L/eB8/FZuyTPEednYKNQU/BioEbX5pdsDg2xKp+DOjWEh3OXYewhDkxYg4d9Xy4XASSj
+         YL4Ex7faHD2LcQVr+DpXwP5hwCUX7SDltCO6TTvJv9dIEk1MMz4vv8maxuXWtVB41XU6
+         uWlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=mamGdRr9TtNFKyGZqfzXXm7iLxuMh6BAprI2TBJ/kFY=;
-        b=hPcpawV/U50TPqgKW+INZXnbF3tzxYEWxwUG2ZPjYdhizQBdD1y4XzUJ+QSd/NDRcX
-         IM+mKeuFXg91z/VMJrF0fCxhLhZ6PwGNrKGS7ezNmt8SAYtGAd6iZPrkbAuq/QcD0EuO
-         mynyvQj16h6p1zgB/Nl5M75KKWBsYceWGoaAND3qt+HSTZiJKWlSkcWpnNs+cp0SuxkN
-         LaxLecAzaXV24XPvF6dPTBNurMQ9onYJ2LkL4OO29xpijtxIG9Zh5Cu2t7Lqfo78BogI
-         yhZ+aoehNpFOALlliTxLA0mDH2AMbglCLm6Jt74Hl9Mq/sb8ujYrFmlc4n1uzZQYfzRq
-         XhOw==
-X-Gm-Message-State: AOAM532O33WkauxT5r0CypDeeRwGu1ZmRWRgMOlNt8jja1rcYTvZ/+en
-        4yngSEb7Ex5R/N7zO3Mpcb2WpUo/FvNaq46dt5lz7UWd40mC
-X-Google-Smtp-Source: ABdhPJyaDlxUEjvQIzTkW+w1ZtbJogMdvpkrnW70YEn0DNvi2+wzXaNVn3GsN9haeh1mGsR2sVDiE51khrAvQ+NnYL0WcI3HWRh6
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5z8xTefTXXBZHreuPxHijQ+K1tgqds+2BhuT6QVllF8=;
+        b=eIKiEuyHJGFf8Xsb/kzDlfxR4hbcrN91XOY42+av7E4Fr16MKb0oSpOnZyLRvWnCi9
+         jYWz60T/+WrMQC2ffekRPI2IW0GtR+XkQzt2D/STx18EVZh4NtmE1Qi4zt9AAFjRcm08
+         /yAsZPbLxXDlE/KV6HRGwQFCjX/6TfFfnq9C1gcWYHq+Z1OexG3E+SwHd8d6tLm8LXLm
+         5Bsyq/zhCdYimcxJE9UgNNgydf/VQsTQgvYWjOlFBXQiaKXA3orePjI63C/FsbcNyiJP
+         DsZuqJpJMS+zCmdp8OVPMeVDLxcx366DY8M+THsz2pRqri0mwV9bivgvJUPduVau1bHg
+         YzIQ==
+X-Gm-Message-State: AOAM530Hx/nyeHKhUX8FWSkt0Urf20ISLF4KkSGFqbsuvJpL/zuNWTxP
+        so18A9fIkqR5JmfcI+x2ISeIy9quUGqCta3VCnv5Qg==
+X-Google-Smtp-Source: ABdhPJy+i4+80mk8MxeLmCECHeFOCZdu2jBCIB4nSyt/gNT+V7xu7pdJXruAytfs1O4/Af+YVIbmzcOWAP8sz5MMRcc=
+X-Received: by 2002:a05:6214:80c:: with SMTP id df12mr26690669qvb.18.1624902172110;
+ Mon, 28 Jun 2021 10:42:52 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a02:a916:: with SMTP id n22mr675264jam.110.1624902025592;
- Mon, 28 Jun 2021 10:40:25 -0700 (PDT)
-Date:   Mon, 28 Jun 2021 10:40:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000007c48405c5d6fcb3@google.com>
-Subject: [syzbot] unexpected kernel reboot (6)
-From:   syzbot <syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <00000000000007c48405c5d6fcb3@google.com>
+In-Reply-To: <00000000000007c48405c5d6fcb3@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 28 Jun 2021 19:42:40 +0200
+Message-ID: <CACT4Y+Z6YTVhY8nrxFaubLyWWLGrg4Hvwb2-30hio2p2ziRt=w@mail.gmail.com>
+Subject: Re: [syzbot] unexpected kernel reboot (6)
+To:     syzbot <syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Jun 28, 2021 at 7:40 PM syzbot
+<syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    ff8744b5 Merge branch '100GbE' of git://git.kernel.org/pub..
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1722068c300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=7cf9abab1592f017
+> dashboard link: https://syzkaller.appspot.com/bug?extid=04cbcd264375a290f444
+>
+> Unfortunately, I don't have any reproducer for this issue yet.
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com
 
-syzbot found the following issue on:
++Tetsuo
 
-HEAD commit:    ff8744b5 Merge branch '100GbE' of git://git.kernel.org/pub..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1722068c300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7cf9abab1592f017
-dashboard link: https://syzkaller.appspot.com/bug?extid=04cbcd264375a290f444
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com
-
-output_len: 0x000000000e83eb68
-kernel_total_size: 0x000000000fc26000
-needed_size: 0x000000000fe00000
-trampoline_32bit: 0x000000000009d000
-Decompressing Linux... Parsing ELF... done.
-Booting the kernel.
+The reboot strikes again. The syzkaller revision already includes
+sysfs filtering and there are no mentions of "sysfs" in the log.
+Maybe something related to usb again. So far it happened only once, if
+it does not happen too frequently then it's not a high priority.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> output_len: 0x000000000e83eb68
+> kernel_total_size: 0x000000000fc26000
+> needed_size: 0x000000000fe00000
+> trampoline_32bit: 0x000000000009d000
+> Decompressing Linux... Parsing ELF... done.
+> Booting the kernel.
+>
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
