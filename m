@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B697E3B6AAC
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 00:00:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89FE23B6AAE
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 00:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237038AbhF1WDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 18:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52566 "EHLO
+        id S237704AbhF1WD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 18:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236820AbhF1WDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 18:03:05 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9A0C061574
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:35 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id df12so28269670edb.2
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:35 -0700 (PDT)
+        with ESMTP id S236799AbhF1WDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 18:03:06 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFC7C061760
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:36 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id n25so1726218edw.9
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U0nTvzpOYlzS2K2vDwU1PVgZJvf6WRgahWZkw2g5X9A=;
-        b=Gs7K+GQWGkZvIqCUryoti3K8ump8sZODhDBIH+ICaJRNcNvcTL72wBV7dVwugJqEVb
-         SZpib6bRShisBe8ul7m4+pZntBmF4qt+/5ThFMelWuQO6GIp+8SX+bW9xuK/AKSsPtXE
-         YFEw4PpHldNg7sPKP2fmnHrR7HNz+VhYDk5Af+YGQV0xUpR4Sfom/QnURXmCF2lM1NRt
-         Rk/Jnd97txJapoyxYUbZcLf0QZFwZpHR7H7izEtLMT2RcAMeniBxE7vNhq2zU/8CN8NV
-         sYaraAOAy2ZLZ1pda3e1JFh++SW4h1P2Q3h2QpuK74lV7lKOsoDQG2f8i8b8hb162Pwt
-         ZxEg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=l0CZNtkfeJQejItwC7vZvOlnWOoK6FFD+nSdpk8okW4=;
+        b=BO/Ai9PlHbIxyVNWVaAHGkiBr8HQm6cvZHGsk3OXeRFuJqgvjLlaYa299SRg68ZY1R
+         6qn8yhcAeGF/B/DsGPyojUNJ8qALapguVZJHMajxzBIR+BCyWl+c34WhStONUS/nJXQZ
+         FGDaI7hRMXmJcAHQqClEheljpX7vUtlZUxmCSf4WjWGxGUoEerH0Go3+eEzZDYS9p32C
+         ZTkMwjRURbI1XPNyX9PDTxoc33qA1hdTC5SBPOhtwUQCCKV/TroGvWBV0gb0odS4aCjw
+         mkAlhQiSZzJyXMjE8WToUZYu9/yoZ1AdIPZzL4thVZ2yC8a1xZoFK66S7nRINjM0ZUnz
+         +hPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U0nTvzpOYlzS2K2vDwU1PVgZJvf6WRgahWZkw2g5X9A=;
-        b=FLtN6KX/ISBUr0SX0PFEHmvBggWbOnlolQnSqPBRLNu8rZwnEhFArWWnbXT4qLv3M+
-         o0fheO9HGp8yaKIgoMf2QcJ0ivSgJhgsLzBeE8wztmGY8jcEN8YJp6/ML+UI6Mzd+JeP
-         4Iz+VF4FF9svq4nEejqJKpoDH3oGo6vz0uPOOssBggZ8Xvf5emDrPujlVYrthtRzUpHh
-         WfMgBqDsXYpj7qSjXgoJv6XF8jynny/BAEllSJaRwX4TU5cmnkK/o2TCRvSkdyg0Y1pA
-         cWdjDPOxoRJFqluxLc5Xpl0XP+0O25MTpXmwKYN8O05neUpC6vBdunuOpP26LlyaG1xH
-         pG+g==
-X-Gm-Message-State: AOAM532r+ofuMsXRBkm1I/uYFS2oXsBONx7n8pQ3q0MG0znqvWjE4c04
-        CBNUhIAWXF3ORgYyKMzRgMME9gP+XD8=
-X-Google-Smtp-Source: ABdhPJyYGJDNGASgSQuOziGwNzOjOhED+XokMA4A7ewKqqcs1IGbWTZ+f+5qn+XEqOX5ZY5vSUOD0g==
-X-Received: by 2002:aa7:c997:: with SMTP id c23mr35770797edt.42.1624917633955;
-        Mon, 28 Jun 2021 15:00:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=l0CZNtkfeJQejItwC7vZvOlnWOoK6FFD+nSdpk8okW4=;
+        b=FasO6YtJ5EGjKQY0PbO7dF91qYEjsgbC8xAWyxR2+GS4k4Whh2AsmWFLiugrsXLPHp
+         ADrWCDsRd3bpeRV+g3Hu/AMJkL9m1FAo2AzYU0BOinBqZegB3LrH7PU6DTvysJ8S8ZDz
+         FPeMXzDjsF9/w+fyz2u/51Er6OQ1/eKA0cwVONU5np5jIqZvfqEQFT4Y+mrOzjxIr6EF
+         COjDWHqrl20DxAlRmlf8rd2c+2hUrZfwSgqXr523aT+E5pJ0/MrioNWr/DGJ06m5exM9
+         e4v06S1q9K6hb2arlGrj/haFtG/qnTAkeAZpsq3LI5ARbe/5UWk07GYvFIZUiYcwbSJt
+         UBEw==
+X-Gm-Message-State: AOAM532RU6X8eGxloiQkmlbcXwLElkhMMjcA9OkKwZbCHHqnc511fXv8
+        WVLNXditk0ZP1tl5wbcfBLMfwACLS5w=
+X-Google-Smtp-Source: ABdhPJxTEiRk5Kgi8p7ywQ+fKxgCD0RUcu1xZ/37jomsujwp+6OZfhdkHeVxiT8Sdv72f56bjuU72Q==
+X-Received: by 2002:a05:6402:1111:: with SMTP id u17mr35975530edv.87.1624917635119;
+        Mon, 28 Jun 2021 15:00:35 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id dn7sm10146615edb.29.2021.06.28.15.00.32
+        by smtp.gmail.com with ESMTPSA id dn7sm10146615edb.29.2021.06.28.15.00.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Jun 2021 15:00:33 -0700 (PDT)
+        Mon, 28 Jun 2021 15:00:34 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -58,80 +58,115 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v4 net-next 00/14] RX filtering in DSA
-Date:   Tue, 29 Jun 2021 00:59:57 +0300
-Message-Id: <20210628220011.1910096-1-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 01/14] net: bridge: switchdev: send FDB notifications for host addresses
+Date:   Tue, 29 Jun 2021 00:59:58 +0300
+Message-Id: <20210628220011.1910096-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210628220011.1910096-1-olteanv@gmail.com>
+References: <20210628220011.1910096-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-This is my fourth stab (identical to the third one except sent as
-non-RFC) at creating a list of unicast and multicast addresses that the
-DSA CPU ports must trap. I am reusing a lot of Tobias's work which he
-submitted here:
-https://patchwork.kernel.org/project/netdevbpf/cover/20210116012515.3152-1-tobias@waldekranz.com/
+Treat addresses added to the bridge itself in the same way as regular
+ports and send out a notification so that drivers may sync it down to
+the hardware FDB.
 
-My additions to Tobias' work come in the form of taking some care that
-additions and removals of host addresses are properly balanced, so that
-we can do reference counting on them for cross-chip setups and multiple
-bridges spanning the same switch (I am working on an NXP board where
-both are real requirements).
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/bridge/br_fdb.c       |  4 ++--
+ net/bridge/br_private.h   |  7 ++++---
+ net/bridge/br_switchdev.c | 11 +++++------
+ 3 files changed, 11 insertions(+), 11 deletions(-)
 
-During the last attempted submission of multiple CPU ports for DSA:
-https://patchwork.kernel.org/project/netdevbpf/cover/20210410133454.4768-1-ansuelsmth@gmail.com/
-
-it became clear that the concept of multiple CPU ports would not be
-compatible with the idea of address learning on those CPU ports (when
-those CPU ports are statically assigned to user ports, not in a LAG)
-unless the switch supports complete FDB isolation, which most switches
-do not. So DSA needs to manage in software all addresses that are
-installed on the CPU port(s), which is what this patch set does.
-
-Compared to all earlier attempts, this series does not fiddle with how
-DSA operates the ports in standalone mode at all, just when bridged.
-We need to sort that out properly, then any optimization that comes in
-standalone mode (i.e. IFF_UNICAST_FLT) can come later.
-
-Tobias Waldekranz (3):
-  net: bridge: switchdev: send FDB notifications for host addresses
-  net: dsa: sync static FDB entries on foreign interfaces to hardware
-  net: dsa: include bridge addresses which are local in the host fdb
-    list
-
-Vladimir Oltean (11):
-  net: bridge: allow br_fdb_replay to be called for the bridge device
-  net: dsa: delete dsa_legacy_fdb_add and dsa_legacy_fdb_del
-  net: dsa: introduce dsa_is_upstream_port and dsa_switch_is_upstream_of
-  net: dsa: introduce a separate cross-chip notifier type for host MDBs
-  net: dsa: reference count the MDB entries at the cross-chip notifier
-    level
-  net: dsa: introduce a separate cross-chip notifier type for host FDBs
-  net: dsa: reference count the FDB addresses at the cross-chip notifier
-    level
-  net: dsa: install the host MDB and FDB entries in the master's RX
-    filter
-  net: dsa: include fdb entries pointing to bridge in the host fdb list
-  net: dsa: ensure during dsa_fdb_offload_notify that dev_hold and
-    dev_put are on the same dev
-  net: dsa: replay the local bridge FDB entries pointing to the bridge
-    dev too
-
- include/net/dsa.h         |  39 ++++++
- net/bridge/br_fdb.c       |   7 +-
- net/bridge/br_private.h   |   7 +-
- net/bridge/br_switchdev.c |  11 +-
- net/dsa/dsa2.c            |  14 ++
- net/dsa/dsa_priv.h        |  14 ++
- net/dsa/port.c            |  86 ++++++++++++
- net/dsa/slave.c           | 102 +++++++-------
- net/dsa/switch.c          | 276 +++++++++++++++++++++++++++++++++++++-
- 9 files changed, 488 insertions(+), 68 deletions(-)
-
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 16f9434fdb5d..0296d737a519 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -602,7 +602,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+ 			/* fastpath: update of existing entry */
+ 			if (unlikely(source != fdb->dst &&
+ 				     !test_bit(BR_FDB_STICKY, &fdb->flags))) {
+-				br_switchdev_fdb_notify(fdb, RTM_DELNEIGH);
++				br_switchdev_fdb_notify(br, fdb, RTM_DELNEIGH);
+ 				fdb->dst = source;
+ 				fdb_modified = true;
+ 				/* Take over HW learned entry */
+@@ -794,7 +794,7 @@ static void fdb_notify(struct net_bridge *br,
+ 	int err = -ENOBUFS;
+ 
+ 	if (swdev_notify)
+-		br_switchdev_fdb_notify(fdb, type);
++		br_switchdev_fdb_notify(br, fdb, type);
+ 
+ 	skb = nlmsg_new(fdb_nlmsg_size(), GFP_ATOMIC);
+ 	if (skb == NULL)
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index a684d0cfc58c..2b48b204205e 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1654,8 +1654,8 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 			       unsigned long flags,
+ 			       unsigned long mask,
+ 			       struct netlink_ext_ack *extack);
+-void br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb,
+-			     int type);
++void br_switchdev_fdb_notify(struct net_bridge *br,
++			     const struct net_bridge_fdb_entry *fdb, int type);
+ int br_switchdev_port_vlan_add(struct net_device *dev, u16 vid, u16 flags,
+ 			       struct netlink_ext_ack *extack);
+ int br_switchdev_port_vlan_del(struct net_device *dev, u16 vid);
+@@ -1702,7 +1702,8 @@ static inline int br_switchdev_port_vlan_del(struct net_device *dev, u16 vid)
+ }
+ 
+ static inline void
+-br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb, int type)
++br_switchdev_fdb_notify(struct net_bridge *br,
++			const struct net_bridge_fdb_entry *fdb, int type)
+ {
+ }
+ 
+diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+index a5e601e41cb9..9a707da79dfe 100644
+--- a/net/bridge/br_switchdev.c
++++ b/net/bridge/br_switchdev.c
+@@ -108,7 +108,8 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ }
+ 
+ void
+-br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb, int type)
++br_switchdev_fdb_notify(struct net_bridge *br,
++			const struct net_bridge_fdb_entry *fdb, int type)
+ {
+ 	struct switchdev_notifier_fdb_info info = {
+ 		.addr = fdb->key.addr.addr,
+@@ -117,18 +118,16 @@ br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb, int type)
+ 		.is_local = test_bit(BR_FDB_LOCAL, &fdb->flags),
+ 		.offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags),
+ 	};
+-
+-	if (!fdb->dst)
+-		return;
++	struct net_device *dev = fdb->dst ? fdb->dst->dev : br->dev;
+ 
+ 	switch (type) {
+ 	case RTM_DELNEIGH:
+ 		call_switchdev_notifiers(SWITCHDEV_FDB_DEL_TO_DEVICE,
+-					 fdb->dst->dev, &info.info, NULL);
++					 dev, &info.info, NULL);
+ 		break;
+ 	case RTM_NEWNEIGH:
+ 		call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_DEVICE,
+-					 fdb->dst->dev, &info.info, NULL);
++					 dev, &info.info, NULL);
+ 		break;
+ 	}
+ }
 -- 
 2.25.1
 
