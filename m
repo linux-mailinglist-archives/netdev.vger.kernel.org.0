@@ -2,79 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAFD43B6B06
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 00:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A04F53B6B0A
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 00:45:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236117AbhF1Wmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 18:42:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35368 "EHLO mail.kernel.org"
+        id S233305AbhF1WsU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 28 Jun 2021 18:48:20 -0400
+Received: from mga07.intel.com ([134.134.136.100]:9981 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233653AbhF1Wma (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Jun 2021 18:42:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5618361CF9;
-        Mon, 28 Jun 2021 22:40:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624920004;
-        bh=lI1x18sgwhttMDRBy6XlYbKMaQWFdvyxZ1P/Q3gy36o=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CstQ6+KledjTDryy6xL/1S+sSM4Rzr5ujkC+BUBL3j8PNsMHiVipbkbfm1HAR9V4V
-         7XJ5/agR9vo22E1Kzv6y6qMWETf4tcyJP6BYIBvRtZtbdkRFHsMIl1fIDI9x1oSpkC
-         +rqAxMgwI5LCcY0PqIMXPq3sFawM6qHRaJf7c6g9FwSuHUQLjQNTfWjuEEk18nNBOY
-         DysEdsU5+gu3+on2W96dZt5Rrdw6I89odMtiFwvCBXQ7qNI+7J316bsTjOsrHtFOjt
-         QxxOnjrcQawVDcf3/l0oDz4r65QKOMW7pNVITylY83XQlp8BC/qTAddsT3P2ZNAzvz
-         8Z5Ewvm+tDdQg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 49C1560CE2;
-        Mon, 28 Jun 2021 22:40:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233035AbhF1WsT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Jun 2021 18:48:19 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10029"; a="271903954"
+X-IronPort-AV: E=Sophos;i="5.83,306,1616482800"; 
+   d="scan'208";a="271903954"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2021 15:45:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,306,1616482800"; 
+   d="scan'208";a="407918057"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+  by orsmga006.jf.intel.com with ESMTP; 28 Jun 2021 15:45:51 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Mon, 28 Jun 2021 15:45:51 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Mon, 28 Jun 2021 15:45:50 -0700
+Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
+ ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.2242.008;
+ Mon, 28 Jun 2021 15:45:50 -0700
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next 2/5] ice: add support for auxiliary input/output
+ pins
+Thread-Topic: [PATCH net-next 2/5] ice: add support for auxiliary input/output
+ pins
+Thread-Index: AQHXafOQsu1unZMWWk2FI7QX5ZbbUasmyVGAgANBEXA=
+Date:   Mon, 28 Jun 2021 22:45:50 +0000
+Message-ID: <fcc626d6773745ae9ecee10dfaca1316@intel.com>
+References: <20210625185733.1848704-1-anthony.l.nguyen@intel.com>
+ <20210625185733.1848704-3-anthony.l.nguyen@intel.com>
+ <20210626140245.GA15724@hoboy.vegasvil.org>
+In-Reply-To: <20210626140245.GA15724@hoboy.vegasvil.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] sctp: add some size validations
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162492000429.15052.17681742361896989241.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Jun 2021 22:40:04 +0000
-References: <cover.1624904195.git.marcelo.leitner@gmail.com>
-In-Reply-To: <cover.1624904195.git.marcelo.leitner@gmail.com>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
-        ivansprundel@ioactive.com, nhorman@tuxdriver.com,
-        vyasevich@gmail.com, lucien.xin@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 28 Jun 2021 16:13:40 -0300 you wrote:
-> Ilja Van Sprundel reported that some size validations on inbound
-> SCTP packets were missing. After some code review, I noticed two
-> others that are all fixed here.
+> -----Original Message-----
+> From: Richard Cochran <richardcochran@gmail.com>
+> Sent: Saturday, June 26, 2021 7:03 AM
+> To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
+> Cc: davem@davemloft.net; kuba@kernel.org; Machnikowski, Maciej
+> <maciej.machnikowski@intel.com>; netdev@vger.kernel.org; Keller, Jacob E
+> <jacob.e.keller@intel.com>
+> Subject: Re: [PATCH net-next 2/5] ice: add support for auxiliary input/output pins
 > 
-> Thanks Ilja for reporting this.
+> On Fri, Jun 25, 2021 at 11:57:30AM -0700, Tony Nguyen wrote:
 > 
-> Marcelo Ricardo Leitner (4):
->   sctp: validate from_addr_param return
->   sctp: add size validation when walking chunks
->   sctp: validate chunk size in __rcv_asconf_lookup
->   sctp: add param size validation for SCTP_PARAM_SET_PRIMARY
+> > @@ -783,6 +1064,17 @@ static long ice_ptp_create_clock(struct ice_pf *pf)
+> >  	info = &pf->ptp.info;
+> >  	dev = ice_pf_to_dev(pf);
+> >
+> > +	/* Allocate memory for kernel pins interface */
+> > +	if (info->n_pins) {
+> > +		info->pin_config = devm_kcalloc(dev, info->n_pins,
+> > +						sizeof(*info->pin_config),
+> > +						GFP_KERNEL);
+> > +		if (!info->pin_config) {
+> > +			info->n_pins = 0;
+> > +			return -ENOMEM;
+> > +		}
+> > +	}
 > 
-> [...]
+> How is this supposed to worK?
+> 
+> - If n_pins is non-zero, there must also be a ptp_caps.verify method,
+>   but you don't provide one.
+> 
 
-Here is the summary with links:
-  - [net,1/4] sctp: validate from_addr_param return
-    https://git.kernel.org/netdev/net/c/0c5dc070ff3d
-  - [net,2/4] sctp: add size validation when walking chunks
-    https://git.kernel.org/netdev/net/c/50619dbf8db7
-  - [net,3/4] sctp: validate chunk size in __rcv_asconf_lookup
-    https://git.kernel.org/netdev/net/c/b6ffe7671b24
-  - [net,4/4] sctp: add param size validation for SCTP_PARAM_SET_PRIMARY
-    https://git.kernel.org/netdev/net/c/ef6c8d6ccf0c
+Hmm. Yea, that's missing.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> - You allocate the pin_config, but you don't set the .name or .index fields.
+> 
 
+Ok
 
+> Thanks,
+> Richard
+> 
+
+Lets hold on this one until I can discuss with Maciej about what's missing here and what we need to add.
+
+Thanks for the careful review, Richard!
+
+Thanks,
+Jake
