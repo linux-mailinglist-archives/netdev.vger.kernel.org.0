@@ -2,98 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 757073B6B53
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 01:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37E3C3B6B54
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 01:26:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237123AbhF1X1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 19:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
+        id S232413AbhF1X2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 19:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234600AbhF1X1Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 19:27:16 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18237C061574
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 16:24:50 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id l24so382885edr.11
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 16:24:49 -0700 (PDT)
+        with ESMTP id S231723AbhF1X23 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 19:28:29 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26E6C061574
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 16:26:02 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id j11so2997822edq.6
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 16:26:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mind.be; s=google;
         h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=2k16VreGlb0/o0N+zmbY+GmliwSFX9zafv1cD1flMTw=;
-        b=I0/8CKu1r3M+S9dhlXB6ZuAayinoekfIC8FdfKhCxK3/fhZJu1hoaFyNaNO+CJnTCC
-         Z1LD0BIyU2q3yHKZ+pzBi8AnJEToWFcjIVFpwx1LXz5k4ZxjAfLvVTbDs1oyk8+sudAi
-         DTOlrBqhQL3SYycop7tiEnUrDe/Cos9J6zl+5yBClGtQWixkden8GZnPdhaUoXpi9GQI
-         zRtAa8grRTTrkTgv4FXx8mZ8KCYFjTitJ1LbERoldAKFiLmbRsVX/JD16hYD8oIPcOj2
-         xMsFncN92IimTFnkbzmC6ebsBCquc/uqb0KAI1cbdU/6iZuz3Kk2GfDjWPgiLnfmN3pW
-         yFMQ==
+         :in-reply-to:user-agent;
+        bh=2ypRTeGHuIOXSEJy9R66nJ8j/xbaZrpom+WwAyuP5cE=;
+        b=Ov9QNozqoz/wIo/6zdnuXVrulV7q7idxyUSmryBaQN6lHQc2x9OR5Jb81YjNsXjOIY
+         MtJFF5UNMk4JW/56cfWt01MBynaDs0+8rpBGWzsLu7feRIgnn1e7afMiPTCBJ5U0Kn+Z
+         hXfx1NqH3ar3m28MjJBfnGseY2NNtkDGN8ZvKC5z3qtNN0lHGtg6eLwScsx/+QWXyXXf
+         Ul79IaJFiMR5mHu2O3ArIUcWVHUjXteomPs+eYMuQMYq0/rgF1fDWjp8RClTuhov2e3x
+         Ecu+u5+QiQcNpxvjerKSQ+EoJiJj3GQdE64mFFEwEaw4xJJ1kp0/ViQiuGq+WwJNODrS
+         5qkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=2k16VreGlb0/o0N+zmbY+GmliwSFX9zafv1cD1flMTw=;
-        b=YP8xTOpVwXzWfy8QQH8+Jj16sU+K7t/Q3ftkwcYnmUDWaY7bl4k6oVzcF6aJyyQTwk
-         NcZ9TLLbjJ3p2nCI0vnDYMWNKRqCo+YAbYsYYrpD35+fjXTn70BN45Cjz6eJst7e772K
-         cNdEYUhdfcuJCrKAeWlyeATaz3l3iwEpLLTgjRXH4RQ8mQX1sanz8pjMljNlvDQsZAfW
-         ESkYo+0Eg1xNBUy4pleZq+KnwJZDZkSxrUP6/nnb4txwfKD9WdoPMWDHivNdFUhzu/8X
-         v5HkEl9e69TQRYgxioQbA9euFwPQc/0SCyDXomYdmrFJ8j2wgQKUNhRV1vn369O8kzpc
-         kSfA==
-X-Gm-Message-State: AOAM5305HWzKAXZxhY+dLULQYHt0CB3VGKtnvfOEicmZ+h4+t1GTdxH7
-        SOgGVGY/dpC5nH1V0KHN+MtiovX9unu6qg==
-X-Google-Smtp-Source: ABdhPJzYt4gdth1N1tyVzVzz+yZV76ydDAN6K9uJlrVvKIO/rLFQ4vn1yjRJm5eN6A8/wkIQE2A0lQ==
-X-Received: by 2002:a05:6402:49a:: with SMTP id k26mr36133613edv.279.1624922688583;
-        Mon, 28 Jun 2021 16:24:48 -0700 (PDT)
+         :content-disposition:in-reply-to:user-agent;
+        bh=2ypRTeGHuIOXSEJy9R66nJ8j/xbaZrpom+WwAyuP5cE=;
+        b=lD0U1z17zBAdn+nQ52puo75vnnV2pYica+MVtFB5ifnWsaIzQ5MaVO0yQsSRVT98MC
+         ctGQPgAaJaV8oYZwS7v3t0kZz7NQ/YAN9fnOlfO4N2bJuecG8KjJ2VK3c+dKU4AtOXBs
+         udI5RJRwZj7ip6eXwOr9VkpWbt3v98l9GEgEo04Hf9cD/v3cHdOnbRgs+2yUPUQbaHFM
+         xNl8Pi2RItfj8iehibRv3fw9kHYcki9pybdtc5oVwo9eS8eNdoyQz/F2gLtOQZ7zAjH5
+         FAHTQIVanUlT8kJUz/ejVfKz0wosUJRZWAeB8V4ACNnOzOr7/M6S1F0GZFVoCk3Bcy6/
+         L5+Q==
+X-Gm-Message-State: AOAM532ikM3fIe76K6weRYJ1ucybYYNZwGH6ifqhmyQQbZmB36aIqDiO
+        2MHsQU+Fp4m9B7sUTnPrAWNpxN491L0Org==
+X-Google-Smtp-Source: ABdhPJx4YEJ4N+EZm3D+ZCcHA5OuyjxSka9dmT05a2T/bvQM8nhGxek9xVLGA9au1cFiSxFUkinHKg==
+X-Received: by 2002:aa7:d592:: with SMTP id r18mr1779640edq.269.1624922761259;
+        Mon, 28 Jun 2021 16:26:01 -0700 (PDT)
 Received: from cephalopod (168.7-181-91.adsl-dyn.isp.belgacom.be. [91.181.7.168])
-        by smtp.gmail.com with ESMTPSA id p19sm10131276edr.73.2021.06.28.16.24.48
+        by smtp.gmail.com with ESMTPSA id du7sm10118903edb.1.2021.06.28.16.26.00
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Jun 2021 16:24:48 -0700 (PDT)
-Date:   Tue, 29 Jun 2021 01:24:46 +0200
+        Mon, 28 Jun 2021 16:26:01 -0700 (PDT)
+Date:   Tue, 29 Jun 2021 01:25:59 +0200
 From:   Ben Hutchings <ben.hutchings@mind.be>
 To:     netdev@vger.kernel.org
-Subject: [PATCH iproute2 1/2] utils: Fix BIT() to support up to 64 bits on
- all architectures
-Message-ID: <20210628232446.GA1443@cephalopod>
+Subject: [PATCH iproute2 2/2] devlink: Fix printf() type mismatches on 32-bit
+ architectures
+Message-ID: <20210628232558.GB1443@cephalopod>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20210628232446.GA1443@cephalopod>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-devlink and vdpa use BIT() together with 64-bit flag fields.  devlink
-is already using bit numbers greater than 31 and so does not work
-correctly on 32-bit architectures.
+devlink currently uses "%lu" to format values of type uint64_t,
+but on 32-bit architectures uint64_t is defined as unsigned
+long long and this does not work correctly.
 
-Fix this by making BIT() use uint64_t instead of unsigned long.
+Fix this by using the standard macro PRIu64 instead.
 
 Signed-off-by: Ben Hutchings <ben.hutchings@mind.be>
 ---
- include/utils.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ devlink/devlink.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/utils.h b/include/utils.h
-index 187444d5..70db9f60 100644
---- a/include/utils.h
-+++ b/include/utils.h
-@@ -8,6 +8,7 @@
- #include <stdlib.h>
- #include <stdbool.h>
- #include <time.h>
-+#include <stdint.h>
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 0b5548fb..5db709cc 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -3546,7 +3546,7 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
+ 		}
+ 	}
+ 	if (total) {
+-		pr_out_tty(" %3lu%%", (done * 100) / total);
++		pr_out_tty(" %3"PRIu64"%%", (done * 100) / total);
+ 		ctx->last_pc = 1;
+ 	} else {
+ 		ctx->last_pc = 0;
+@@ -3601,7 +3601,7 @@ static void cmd_dev_flash_time_elapsed(struct cmd_dev_flash_status_ctx *ctx)
+ 		 */
+ 		if (!ctx->status_msg_timeout) {
+ 			len = snprintf(msg, sizeof(msg),
+-				       " ( %lum %lus )", elapsed_m, elapsed_s);
++				       " ( %"PRIu64"m %"PRIu64"s )", elapsed_m, elapsed_s);
+ 		} else if (res.tv_sec <= ctx->status_msg_timeout) {
+ 			uint64_t timeout_m, timeout_s;
  
- #ifdef HAVE_LIBBSD
- #include <bsd/string.h>
-@@ -264,7 +265,7 @@ void print_nlmsg_timestamp(FILE *fp, const struct nlmsghdr *n);
- unsigned int print_name_and_link(const char *fmt,
- 				 const char *name, struct rtattr *tb[]);
+@@ -3609,11 +3609,11 @@ static void cmd_dev_flash_time_elapsed(struct cmd_dev_flash_status_ctx *ctx)
+ 			timeout_s = ctx->status_msg_timeout % 60;
  
--#define BIT(nr)                 (1UL << (nr))
-+#define BIT(nr)                 (UINT64_C(1) << (nr))
+ 			len = snprintf(msg, sizeof(msg),
+-				       " ( %lum %lus : %lum %lus )",
++				       " ( %"PRIu64"m %"PRIu64"s : %"PRIu64"m %"PRIu64"s )",
+ 				       elapsed_m, elapsed_s, timeout_m, timeout_s);
+ 		} else {
+ 			len = snprintf(msg, sizeof(msg),
+-				       " ( %lum %lus : timeout reached )", elapsed_m, elapsed_s);
++				       " ( %"PRIu64"m %"PRIu64"s : timeout reached )", elapsed_m, elapsed_s);
+ 		}
  
- #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
- 
+ 		ctx->elapsed_time_msg_len = len;
 -- 
 2.20.1
+
 
