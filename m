@@ -2,101 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 070193B67E5
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 19:42:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E74BD3B6873
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 20:25:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234698AbhF1RpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 13:45:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233053AbhF1RpS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 13:45:18 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FFEC061574
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 10:42:53 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id u8so6376245qvg.0
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 10:42:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5z8xTefTXXBZHreuPxHijQ+K1tgqds+2BhuT6QVllF8=;
-        b=BQu+mmzu4I/Np3ZVLkFCGpvrFhtLKnYrfcedxbtAE0J0tghiARC6bJAmPlZhlTeLT2
-         OTcjDVNo8EfhDKz9a4wrEi58tIpefm+qUp/Ut3ErBp33ozWnDUcckMKnlz+wiIpQTtAg
-         44/MDonCURAYnf3pOergDCp3PlEPs3KdDtHLiiIhVdQMtMNT79EZZqQdM/FlemhlubUx
-         L/eB8/FZuyTPEednYKNQU/BioEbX5pdsDg2xKp+DOjWEh3OXYewhDkxYg4d9Xy4XASSj
-         YL4Ex7faHD2LcQVr+DpXwP5hwCUX7SDltCO6TTvJv9dIEk1MMz4vv8maxuXWtVB41XU6
-         uWlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5z8xTefTXXBZHreuPxHijQ+K1tgqds+2BhuT6QVllF8=;
-        b=eIKiEuyHJGFf8Xsb/kzDlfxR4hbcrN91XOY42+av7E4Fr16MKb0oSpOnZyLRvWnCi9
-         jYWz60T/+WrMQC2ffekRPI2IW0GtR+XkQzt2D/STx18EVZh4NtmE1Qi4zt9AAFjRcm08
-         /yAsZPbLxXDlE/KV6HRGwQFCjX/6TfFfnq9C1gcWYHq+Z1OexG3E+SwHd8d6tLm8LXLm
-         5Bsyq/zhCdYimcxJE9UgNNgydf/VQsTQgvYWjOlFBXQiaKXA3orePjI63C/FsbcNyiJP
-         DsZuqJpJMS+zCmdp8OVPMeVDLxcx366DY8M+THsz2pRqri0mwV9bivgvJUPduVau1bHg
-         YzIQ==
-X-Gm-Message-State: AOAM530Hx/nyeHKhUX8FWSkt0Urf20ISLF4KkSGFqbsuvJpL/zuNWTxP
-        so18A9fIkqR5JmfcI+x2ISeIy9quUGqCta3VCnv5Qg==
-X-Google-Smtp-Source: ABdhPJy+i4+80mk8MxeLmCECHeFOCZdu2jBCIB4nSyt/gNT+V7xu7pdJXruAytfs1O4/Af+YVIbmzcOWAP8sz5MMRcc=
-X-Received: by 2002:a05:6214:80c:: with SMTP id df12mr26690669qvb.18.1624902172110;
- Mon, 28 Jun 2021 10:42:52 -0700 (PDT)
+        id S230291AbhF1S2G convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 28 Jun 2021 14:28:06 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:51522 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230166AbhF1S2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 14:28:05 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 15SIKjUt011696
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 11:25:38 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 39emg5g2yh-16
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 11:25:38 -0700
+Received: from intmgw001.05.ash7.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 28 Jun 2021 11:25:36 -0700
+Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
+        id 1D9BFCE608B2; Mon, 28 Jun 2021 11:25:33 -0700 (PDT)
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     <netdev@vger.kernel.org>, <richardcochran@gmail.com>
+CC:     <kernel-team@fb.com>
+Subject: [PATCH] ptp: Set lookup cookie when creating a PTP PPS source.
+Date:   Mon, 28 Jun 2021 11:25:33 -0700
+Message-ID: <20210628182533.2930715-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <00000000000007c48405c5d6fcb3@google.com>
-In-Reply-To: <00000000000007c48405c5d6fcb3@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 28 Jun 2021 19:42:40 +0200
-Message-ID: <CACT4Y+Z6YTVhY8nrxFaubLyWWLGrg4Hvwb2-30hio2p2ziRt=w@mail.gmail.com>
-Subject: Re: [syzbot] unexpected kernel reboot (6)
-To:     syzbot <syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: 7HGATgW-DbQDzw5zDaeK_z4Drws9p0Lk
+X-Proofpoint-GUID: 7HGATgW-DbQDzw5zDaeK_z4Drws9p0Lk
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-06-28_14:2021-06-25,2021-06-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ impostorscore=0 phishscore=0 suspectscore=0 adultscore=0 mlxlogscore=919
+ lowpriorityscore=0 priorityscore=1501 mlxscore=0 malwarescore=0
+ clxscore=1034 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106280120
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 28, 2021 at 7:40 PM syzbot
-<syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    ff8744b5 Merge branch '100GbE' of git://git.kernel.org/pub..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1722068c300000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=7cf9abab1592f017
-> dashboard link: https://syzkaller.appspot.com/bug?extid=04cbcd264375a290f444
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com
+When creating a PTP device, the configuration block allows
+creation of an associated PPS device.  However, there isn't
+any way to associate the two devices after creation.
 
-+Tetsuo
+Set the PPS cookie, so pps_lookup_dev(ptp) performs correctly.
 
-The reboot strikes again. The syzkaller revision already includes
-sysfs filtering and there are no mentions of "sysfs" in the log.
-Maybe something related to usb again. So far it happened only once, if
-it does not happen too frequently then it's not a high priority.
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+---
+ drivers/ptp/ptp_clock.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index c176fa82df85..45429853d60f 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -240,6 +240,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+ 			pr_err("failed to create ptp aux_worker %d\n", err);
+ 			goto kworker_err;
+ 		}
++		ptp->pps_source->lookup_cookie = ptp;
+ 	}
+ 
+ 	err = ptp_populate_pin_groups(ptp);
+-- 
+2.30.2
 
-> output_len: 0x000000000e83eb68
-> kernel_total_size: 0x000000000fc26000
-> needed_size: 0x000000000fe00000
-> trampoline_32bit: 0x000000000009d000
-> Decompressing Linux... Parsing ELF... done.
-> Booting the kernel.
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
