@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8238B3B5C12
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 12:04:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EB543B5C17
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 12:05:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232803AbhF1KHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 06:07:12 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:21653 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232804AbhF1KHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 06:07:05 -0400
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 6773175B6D;
-        Mon, 28 Jun 2021 13:04:37 +0300 (MSK)
+        id S232713AbhF1KHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 06:07:23 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:61522 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232818AbhF1KHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 06:07:18 -0400
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 9BA35521DD5;
+        Mon, 28 Jun 2021 13:04:51 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1624874677;
-        bh=BZ3jvjqP0xCXEbI7iayhyYQw7MsrUL69d6g1M8V5buA=;
+        s=mail202102; t=1624874691;
+        bh=nJ3CVmXNvkiXgk+hkdyEWyiTTYjnZRN33KoZQsVXAmQ=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=yTxDsPYXj6w27A4gagCsZb80X5LF8N3MsjYL/dGVCCMcQmE69C0//inbM/2DtwK3s
-         R1zN/4OomSdIrUIS796TfbjNp8diTOMActuVcn3N3BgVhoE6G5NDXmc/3D8DVz9nvf
-         6RDZbE4T/+te/ynJLP44was87X1eI/Ejv4u3SPSyUGCzuXQRu0fIT+ITKscuZNHXh5
-         uqRVvGO9Ms6qSf3z8GY1qzBSkDIZSEuYBotKNy60khs97Txg41+ftDW4YQCwYmuJCD
-         uVqUvFe26XLymV9P6qJGJXIwWb1/DkKaiihea2AtoYeFKiTqe7qHrkRltj+diMVxy4
-         OhyvsE00VdT+A==
+        b=j/bEtK8pGF0MI3+ZB8uSvVfz32G+STE/T4I2G1Wxa+go8nrvb0JWkQCyaT1ypZslW
+         VpoKVzm72BL5aWscvlVo6EBOE3ULO1EhJE8AGpWduri7CtINN8Mmmm4uT+H7KneMn+
+         jqhG2DePajxtEnM7Rs5IrDAY333AetLDHXHI8y6Y9DZNOnXil5zVvEEAkitKlZYqik
+         8PheMsjF9/xBsTeup7+mEtvxDv5nQYdq6PZfPCnb9PvFf/v/gXDpoSj7mQ0LMt+eG0
+         Iv7u48LZx7/TINavk2RhSWCySv/E7nG0pZ/+GFrn37FHjdERLwssv0sJ2GExTGvRnu
+         hTB2LE7hyWA8Q==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 24E3B75B2F;
-        Mon, 28 Jun 2021 13:04:37 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 531C4521056;
+        Mon, 28 Jun 2021 13:04:51 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Mon, 28
- Jun 2021 13:04:36 +0300
+ Jun 2021 13:04:50 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -41,22 +41,23 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>
+        Andra Paraschiv <andraprs@amazon.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <oxffffaa@gmail.com>
-Subject: [RFC PATCH v1 12/16] virtio/vsock: add 'drop until EOR' logic
-Date:   Mon, 28 Jun 2021 13:04:29 +0300
-Message-ID: <20210628100432.571516-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v1 13/16] vhost/vsock: enable 'seqpacket_drop' callback in transport
+Date:   Mon, 28 Jun 2021 13:04:42 +0300
+Message-ID: <20210628100445.571625-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
 References: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.64.121]
+X-Originating-IP: [10.64.68.128]
 X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
@@ -97,92 +98,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Data will copied only if 'drop until EOR' mode is disabled, also
-if EOR found, 'msg_ready' is set only if we don't have current
-message to drop.
+Set 'seqpacket_drop()' callback in transport struct.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- include/linux/virtio_vsock.h            |  2 ++
- net/vmw_vsock/virtio_transport_common.c | 23 +++++++++++++++++++----
- 2 files changed, 21 insertions(+), 4 deletions(-)
+ drivers/vhost/vsock.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-index 7360ab7ea0af..18a50f64bf54 100644
---- a/include/linux/virtio_vsock.h
-+++ b/include/linux/virtio_vsock.h
-@@ -36,6 +36,7 @@ struct virtio_vsock_sock {
- 	u32 rx_bytes;
- 	u32 buf_alloc;
- 	struct list_head rx_queue;
-+	bool drop_until_eor;
- };
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 4118390aeab6..0c154c2ca596 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -447,6 +447,7 @@ static struct virtio_transport vhost_transport = {
+ 		.stream_rcvhiwat          = virtio_transport_stream_rcvhiwat,
+ 		.stream_is_active         = virtio_transport_stream_is_active,
+ 		.stream_allow             = virtio_transport_stream_allow,
++		.seqpacket_drop           = virtio_transport_seqpacket_drop,
  
- struct virtio_vsock_pkt {
-@@ -89,6 +90,7 @@ virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
- 				   struct msghdr *msg,
- 				   int flags,
- 				   bool *msg_ready);
-+void virtio_transport_seqpacket_drop(struct vsock_sock *vsk);
- s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
- s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
- 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 5a46c3f94e83..a8f74cc343e4 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -425,7 +425,7 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
- 		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
- 		pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
- 
--		bytes_to_copy = min(user_buf_len, pkt_len);
-+		bytes_to_copy = vvs->drop_until_eor ? 0 : min(user_buf_len, pkt_len);
- 
- 		if (bytes_to_copy) {
- 			int err;
-@@ -438,17 +438,22 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
- 
- 			spin_lock_bh(&vvs->rx_lock);
- 
--			if (err)
-+			if (err) {
- 				dequeued_len = err;
--			else
-+				vvs->drop_until_eor = true;
-+			} else {
- 				user_buf_len -= bytes_to_copy;
-+			}
- 		}
- 
- 		if (dequeued_len >= 0)
- 			dequeued_len += pkt_len;
- 
- 		if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR) {
--			*msg_ready = true;
-+			if (vvs->drop_until_eor)
-+				vvs->drop_until_eor = false;
-+			else
-+				*msg_ready = true;
- 		}
- 
- 		virtio_transport_dec_rx_pkt(vvs, pkt);
-@@ -487,6 +492,16 @@ virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
- }
- EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_dequeue);
- 
-+void virtio_transport_seqpacket_drop(struct vsock_sock *vsk)
-+{
-+	struct virtio_vsock_sock *vvs = vsk->trans;
-+
-+	spin_lock_bh(&vvs->rx_lock);
-+	vvs->drop_until_eor = true;
-+	spin_unlock_bh(&vvs->rx_lock);
-+}
-+EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_drop);
-+
- int
- virtio_transport_seqpacket_enqueue(struct vsock_sock *vsk,
- 				   struct msghdr *msg,
+ 		.seqpacket_dequeue        = virtio_transport_seqpacket_dequeue,
+ 		.seqpacket_enqueue        = virtio_transport_seqpacket_enqueue,
 -- 
 2.25.1
 
