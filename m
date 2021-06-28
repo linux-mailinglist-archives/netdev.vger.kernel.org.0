@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 071C73B58CA
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 07:55:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5014A3B58CD
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 07:55:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232218AbhF1F51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 01:57:27 -0400
-Received: from mailout2.secunet.com ([62.96.220.49]:35574 "EHLO
-        mailout2.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232198AbhF1F5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 01:57:23 -0400
+        id S232261AbhF1F5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 01:57:30 -0400
+Received: from mailout1.secunet.com ([62.96.220.44]:40966 "EHLO
+        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232199AbhF1F5Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 01:57:24 -0400
 Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout2.secunet.com (Postfix) with ESMTP id B6D2680004A;
+        by mailout1.secunet.com (Postfix) with ESMTP id D7AD7800055;
         Mon, 28 Jun 2021 07:54:57 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
@@ -23,16 +23,16 @@ Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 28 Jun
  2021 07:54:57 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id B2DA031805FE; Mon, 28 Jun 2021 07:45:28 +0200 (CEST)
+        id B775E318064D; Mon, 28 Jun 2021 07:45:28 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 16/17] xfrm: replay: avoid replay indirection
-Date:   Mon, 28 Jun 2021 07:45:21 +0200
-Message-ID: <20210628054522.1718786-17-steffen.klassert@secunet.com>
+Subject: [PATCH 17/17] xfrm: replay: remove last replay indirection
+Date:   Mon, 28 Jun 2021 07:45:22 +0200
+Message-ID: <20210628054522.1718786-18-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210628054522.1718786-1-steffen.klassert@secunet.com>
 References: <20210628054522.1718786-1-steffen.klassert@secunet.com>
@@ -48,130 +48,159 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-Add and use xfrm_replay_check helper instead of indirection.
+This replaces the overflow indirection with the new xfrm_replay_overflow
+helper.  After this, the 'repl' pointer in xfrm_state is no longer
+needed and can be removed as well.
+
+xfrm_replay_overflow() is added in two incarnations, one is used
+when the kernel is compiled with xfrm hardware offload support enabled,
+the other when its disabled.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- include/net/xfrm.h     |  4 +---
- net/xfrm/xfrm_input.c  |  2 +-
- net/xfrm/xfrm_replay.c | 27 ++++++++++++++++++---------
- 3 files changed, 20 insertions(+), 13 deletions(-)
+ include/net/xfrm.h     |  8 +------
+ net/xfrm/xfrm_output.c |  2 +-
+ net/xfrm/xfrm_replay.c | 51 +++++++++++++++++++++---------------------
+ 3 files changed, 28 insertions(+), 33 deletions(-)
 
 diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 3a219b34cb8c..0206d80ec291 100644
+index 0206d80ec291..d2a0559c255f 100644
 --- a/include/net/xfrm.h
 +++ b/include/net/xfrm.h
-@@ -306,9 +306,6 @@ struct km_event {
+@@ -221,9 +221,6 @@ struct xfrm_state {
+ 	struct xfrm_replay_state preplay;
+ 	struct xfrm_replay_state_esn *preplay_esn;
+ 
+-	/* The functions for replay detection. */
+-	const struct xfrm_replay *repl;
+-
+ 	/* replay detection mode */
+ 	enum xfrm_replay_mode    repl_mode;
+ 	/* internal flag that only holds state for delayed aevent at the
+@@ -305,10 +302,6 @@ struct km_event {
+ 	struct net *net;
  };
  
- struct xfrm_replay {
--	int	(*check)(struct xfrm_state *x,
--			 struct sk_buff *skb,
--			 __be32 net_seq);
- 	int	(*overflow)(struct xfrm_state *x, struct sk_buff *skb);
- };
- 
-@@ -1719,6 +1716,7 @@ static inline int xfrm_policy_id2dir(u32 index)
- 
- #ifdef CONFIG_XFRM
+-struct xfrm_replay {
+-	int	(*overflow)(struct xfrm_state *x, struct sk_buff *skb);
+-};
+-
+ struct xfrm_if_cb {
+ 	struct xfrm_if	*(*decode_session)(struct sk_buff *skb,
+ 					   unsigned short family);
+@@ -1718,6 +1711,7 @@ static inline int xfrm_policy_id2dir(u32 index)
  void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq);
-+int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
+ int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
  void xfrm_replay_notify(struct xfrm_state *x, int event);
++int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb);
  int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
  
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 8046ef1a6680..3df0861d4390 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -612,7 +612,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 			goto drop_unlock;
+ static inline int xfrm_aevent_is_on(struct net *net)
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index 0b2975ef0668..527da58464f3 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -525,7 +525,7 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
+ 			goto error;
  		}
  
--		if (x->repl->check(x, skb, seq)) {
-+		if (xfrm_replay_check(x, skb, seq)) {
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATESEQERROR);
- 			goto drop_unlock;
- 		}
+-		err = x->repl->overflow(x, skb);
++		err = xfrm_replay_overflow(x, skb);
+ 		if (err) {
+ 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATESEQERROR);
+ 			goto error;
 diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-index 59391dc80fa3..e8703aa8d06a 100644
+index e8703aa8d06a..9277d81b344c 100644
 --- a/net/xfrm/xfrm_replay.c
 +++ b/net/xfrm/xfrm_replay.c
-@@ -118,8 +118,8 @@ static int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+@@ -95,7 +95,7 @@ void xfrm_replay_notify(struct xfrm_state *x, int event)
+ 		x->xflags &= ~XFRM_TIME_DEFER;
+ }
+ 
+-static int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
++static int __xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+ {
+ 	int err = 0;
+ 	struct net *net = xs_net(x);
+@@ -617,7 +617,7 @@ static int xfrm_replay_overflow_offload(struct xfrm_state *x, struct sk_buff *sk
+ 	__u32 oseq = x->replay.oseq;
+ 
+ 	if (!xo)
+-		return xfrm_replay_overflow(x, skb);
++		return __xfrm_replay_overflow(x, skb);
+ 
+ 	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
+ 		if (!skb_is_gso(skb)) {
+@@ -737,29 +737,33 @@ static int xfrm_replay_overflow_offload_esn(struct xfrm_state *x, struct sk_buff
  	return err;
  }
  
--static int xfrm_replay_check(struct xfrm_state *x,
--		      struct sk_buff *skb, __be32 net_seq)
-+static int xfrm_replay_check_legacy(struct xfrm_state *x,
-+				    struct sk_buff *skb, __be32 net_seq)
- {
- 	u32 diff;
- 	u32 seq = ntohl(net_seq);
-@@ -507,6 +507,21 @@ static int xfrm_replay_check_esn(struct xfrm_state *x,
- 	return -EINVAL;
- }
- 
-+int xfrm_replay_check(struct xfrm_state *x,
-+		      struct sk_buff *skb, __be32 net_seq)
+-static const struct xfrm_replay xfrm_replay_legacy = {
+-	.overflow	= xfrm_replay_overflow_offload,
+-};
+-
+-static const struct xfrm_replay xfrm_replay_bmp = {
+-	.overflow	= xfrm_replay_overflow_offload_bmp,
+-};
++int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
 +{
 +	switch (x->repl_mode) {
 +	case XFRM_REPLAY_MODE_LEGACY:
 +		break;
 +	case XFRM_REPLAY_MODE_BMP:
-+		return xfrm_replay_check_bmp(x, skb, net_seq);
++		return xfrm_replay_overflow_offload_bmp(x, skb);
 +	case XFRM_REPLAY_MODE_ESN:
-+		return xfrm_replay_check_esn(x, skb, net_seq);
++		return xfrm_replay_overflow_offload_esn(x, skb);
 +	}
-+
-+	return xfrm_replay_check_legacy(x, skb, net_seq);
+ 
+-static const struct xfrm_replay xfrm_replay_esn = {
+-	.overflow	= xfrm_replay_overflow_offload_esn,
+-};
++	return xfrm_replay_overflow_offload(x, skb);
 +}
-+
- static int xfrm_replay_recheck_esn(struct xfrm_state *x,
- 				   struct sk_buff *skb, __be32 net_seq)
- {
-@@ -532,7 +547,7 @@ int xfrm_replay_recheck(struct xfrm_state *x,
- 		return xfrm_replay_recheck_esn(x, skb, net_seq);
+ #else
+-static const struct xfrm_replay xfrm_replay_legacy = {
+-	.overflow	= xfrm_replay_overflow,
+-};
+-
+-static const struct xfrm_replay xfrm_replay_bmp = {
+-	.overflow	= xfrm_replay_overflow_bmp,
+-};
++int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
++{
++	switch (x->repl_mode) {
++	case XFRM_REPLAY_MODE_LEGACY:
++		break;
++	case XFRM_REPLAY_MODE_BMP:
++		return xfrm_replay_overflow_bmp(x, skb);
++	case XFRM_REPLAY_MODE_ESN:
++		return xfrm_replay_overflow_esn(x, skb);
++	}
+ 
+-static const struct xfrm_replay xfrm_replay_esn = {
+-	.overflow	= xfrm_replay_overflow_esn,
+-};
++	return __xfrm_replay_overflow(x, skb);
++}
+ #endif
+ 
+ int xfrm_init_replay(struct xfrm_state *x)
+@@ -774,14 +778,11 @@ int xfrm_init_replay(struct xfrm_state *x)
+ 		if (x->props.flags & XFRM_STATE_ESN) {
+ 			if (replay_esn->replay_window == 0)
+ 				return -EINVAL;
+-			x->repl = &xfrm_replay_esn;
+ 			x->repl_mode = XFRM_REPLAY_MODE_ESN;
+ 		} else {
+-			x->repl = &xfrm_replay_bmp;
+ 			x->repl_mode = XFRM_REPLAY_MODE_BMP;
+ 		}
+ 	} else {
+-		x->repl = &xfrm_replay_legacy;
+ 		x->repl_mode = XFRM_REPLAY_MODE_LEGACY;
  	}
  
--	return xfrm_replay_check(x, skb, net_seq);
-+	return xfrm_replay_check_legacy(x, skb, net_seq);
- }
- 
- static void xfrm_replay_advance_esn(struct xfrm_state *x, __be32 net_seq)
-@@ -723,32 +738,26 @@ static int xfrm_replay_overflow_offload_esn(struct xfrm_state *x, struct sk_buff
- }
- 
- static const struct xfrm_replay xfrm_replay_legacy = {
--	.check		= xfrm_replay_check,
- 	.overflow	= xfrm_replay_overflow_offload,
- };
- 
- static const struct xfrm_replay xfrm_replay_bmp = {
--	.check		= xfrm_replay_check_bmp,
- 	.overflow	= xfrm_replay_overflow_offload_bmp,
- };
- 
- static const struct xfrm_replay xfrm_replay_esn = {
--	.check		= xfrm_replay_check_esn,
- 	.overflow	= xfrm_replay_overflow_offload_esn,
- };
- #else
- static const struct xfrm_replay xfrm_replay_legacy = {
--	.check		= xfrm_replay_check,
- 	.overflow	= xfrm_replay_overflow,
- };
- 
- static const struct xfrm_replay xfrm_replay_bmp = {
--	.check		= xfrm_replay_check_bmp,
- 	.overflow	= xfrm_replay_overflow_bmp,
- };
- 
- static const struct xfrm_replay xfrm_replay_esn = {
--	.check		= xfrm_replay_check_esn,
- 	.overflow	= xfrm_replay_overflow_esn,
- };
- #endif
 -- 
 2.25.1
 
