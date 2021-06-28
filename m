@@ -2,85 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E30B63B69E4
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 22:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 162373B69FD
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 23:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237281AbhF1Uwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 16:52:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49578 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236264AbhF1Uwa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Jun 2021 16:52:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 81FFD61CF1;
-        Mon, 28 Jun 2021 20:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624913404;
-        bh=HilnqKRlIRB0CVdZ5ZXPD04RmF+1vwQkPqMBuXQQVBE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iXPHEt45pKixPGIAvUrdV74hRHjPUmnSS968RjWwOccYjMfW2bFR/T/WLgDS4+nky
-         34lT2u9wk2uGaXbjKzT59qOYX30/V2IBAHoM2lntsM9WUEC5DzrJZ9vwldUfGq5sX4
-         l/CxSi9CfaJoSY/xKAoygQNgsR3zA105pvGWsl1BSbrxvEatcb/1VNGuAfLgM+JN+7
-         g+2dYkkIhmflClCub6uOzz1TYQk1N6DpkgTSFQsktT2R7qE17/c+jb7blHhrKzZ2of
-         qZxpPi32s1SJ84NyypRkjab+sfqkjvZgH72NjDC7lGffOhebvsfzda28xtoy1nTXI2
-         mgupfJ1PS1+PA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 754BE60C09;
-        Mon, 28 Jun 2021 20:50:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S237613AbhF1VIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 17:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236768AbhF1VIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 17:08:22 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E620FC061574;
+        Mon, 28 Jun 2021 14:05:54 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id l24so2984926ejq.11;
+        Mon, 28 Jun 2021 14:05:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tSDrQI55PB7nEOHMqwZIcytnnCkvMaB4GbC+4XlI3S0=;
+        b=HJ9yta653GJGmMG+RUIh44BNmEtzZKzXrGVSL7vt+vfXMaMloURcGruXv1Hu+JoVlo
+         ek6fWVq2hCYQbK+u1vghIpb6zlGdOfBQXhr7v3YfRORHEpZkeXX3PsLFym/s67L/fQxP
+         7Rb1aB4N72utred8t1W+65m6jszkzkHBRc80SwSVbwIGdR3BYHQpaimN9pV/y7769ZOu
+         bB71Fxhg5cr0TnLmdvhyQU7y6x8csiw921sb/jPzkaLOeUMXpi5qUvGPpHzcjfZwGDHB
+         gAXDw5B+wu2ekDZRNZH6ZjtF6yHlbkOxO0A7LkTwPAPzEH39rJu12R/NJEyhseJRYk1j
+         N9wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tSDrQI55PB7nEOHMqwZIcytnnCkvMaB4GbC+4XlI3S0=;
+        b=mV7oxV8KwukQM/TbC1bEqRbBgSDbIsWacys73PSZuGQmqOXTcjYfhUxVtjeCbbNjEz
+         oSAUkY/NobIjgQLvtW30bBypwwOsl+zMamdU/1ZKN8I/LUVLWnRGgjFwVo9bPSlXQt9L
+         yiIzXe2mrK5ly1ogF94WYnK/hSxfXkQLaqqSj6yWIz05GygWm+armb/g4GsUXpZSvIBs
+         tAqqeZPBaUQ9ZcfwnTeAn1tspHx+opjzf5P0PPX8fhEjuAq4qmm5hZqVuBiVZsooxNcp
+         cHS4UEbVZovNgmxaHcmZ67mkeZMIxseudZL+Wvt4NAr4WGCyJp1XhcswgwaYk02P5x2R
+         YmKw==
+X-Gm-Message-State: AOAM5301IG/h35xrouKHfrZwlYuZgCcCP9lP2XCB7yEWO2tsZjFM/uuW
+        HwCgik1roaK4Fh3kh9QnimmZk6GMrFczYmJRF4g=
+X-Google-Smtp-Source: ABdhPJx/Q1Ch1QWdDp/MHfuw1NEtPmcLdB7+4nJIBdUcPfDaqoA0MjN35w5gCpL9P4dfqP3GEiMXku1vM2RGKdWd9ho=
+X-Received: by 2002:a17:907:3e1b:: with SMTP id hp27mr25777856ejc.470.1624914353373;
+ Mon, 28 Jun 2021 14:05:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/7] bnxt_en: Add hardware PTP timestamping
- support on 575XX devices
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162491340447.24399.7662066111966364643.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Jun 2021 20:50:04 +0000
-References: <1624814390-1300-1-git-send-email-michael.chan@broadcom.com>
-In-Reply-To: <1624814390-1300-1-git-send-email-michael.chan@broadcom.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        gospo@broadcom.com, richardcochran@gmail.com,
-        pavan.chebbi@broadcom.com, edwin.peer@broadcom.com
+References: <cover.1623674025.git.lorenzo@kernel.org> <7f61f8f7d38cf819383db739c14c874ccd3b53e2.1623674025.git.lorenzo@kernel.org>
+In-Reply-To: <7f61f8f7d38cf819383db739c14c874ccd3b53e2.1623674025.git.lorenzo@kernel.org>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 28 Jun 2021 14:05:42 -0700
+Message-ID: <CAKgT0Ue=74BPWFDFYtWEA9DnNj35PgigDZAwCc5N6X=QpKz4GA@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 07/14] net: xdp: add multi-buff support to xdp_build_skb_from_frame
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        lorenzo.bianconi@redhat.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, Jun 14, 2021 at 5:51 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> Introduce xdp multi-buff support to
+> __xdp_build_skb_from_frame/xdp_build_skb_from_frame
+> utility routines.
+>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  net/core/xdp.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+>
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index f61c63115c95..71bedf6049a1 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -582,9 +582,15 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+>                                            struct sk_buff *skb,
+>                                            struct net_device *dev)
+>  {
+> +       struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
+>         unsigned int headroom, frame_size;
+> +       int i, num_frags = 0;
+>         void *hard_start;
+>
+> +       /* xdp multi-buff frame */
+> +       if (unlikely(xdp_frame_is_mb(xdpf)))
+> +               num_frags = sinfo->nr_frags;
+> +
+>         /* Part of headroom was reserved to xdpf */
+>         headroom = sizeof(*xdpf) + xdpf->headroom;
+>
+> @@ -603,6 +609,13 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+>         if (xdpf->metasize)
+>                 skb_metadata_set(skb, xdpf->metasize);
+>
+> +       for (i = 0; i < num_frags; i++)
+> +               skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+> +                               skb_frag_page(&sinfo->frags[i]),
+> +                               skb_frag_off(&sinfo->frags[i]),
+> +                               skb_frag_size(&sinfo->frags[i]),
+> +                               xdpf->frame_sz);
+> +
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+So this is assuming the header frame and all of the frags are using
+the same size. Rather than reading the frags out and then writing them
+back, why not just directly rewrite the nr_frags, add the total size
+to skb->len and skb->data_len, and then update the truesize?
 
-On Sun, 27 Jun 2021 13:19:43 -0400 you wrote:
-> Add PTP RX and TX hardware timestamp support on 575XX devices.  These
-> devices use the two-step method to implement the IEEE-1588 timestamping
-> support.
-> 
-> v2: Add spinlock to serialize access to the timecounter.
->     Use .do_aux_work() for the periodic timer reading and to get the TX
->     timestamp from the firmware.
->     Propagate error code from ptp_clock_register().
->     Make the 64-bit timer access safe on 32-bit CPUs.
->     Read PHC using direct register access.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v2,1/7] bnxt_en: Update firmware interface to 1.10.2.47
-    https://git.kernel.org/netdev/net-next/c/78eeadb8fea6
-  - [net-next,v2,2/7] bnxt_en: Get PTP hardware capability from firmware
-    https://git.kernel.org/netdev/net-next/c/ae5c42f0b92c
-  - [net-next,v2,3/7] bnxt_en: Add PTP clock APIs, ioctls, and ethtool methods
-    https://git.kernel.org/netdev/net-next/c/118612d519d8
-  - [net-next,v2,4/7] bnxt_en: Get the full 48-bit hardware timestamp periodically
-    https://git.kernel.org/netdev/net-next/c/390862f45c85
-  - [net-next,v2,5/7] bnxt_en: Get the RX packet timestamp
-    https://git.kernel.org/netdev/net-next/c/7f5515d19cd7
-  - [net-next,v2,6/7] bnxt_en: Transmit and retrieve packet timestamps
-    https://git.kernel.org/netdev/net-next/c/83bb623c968e
-  - [net-next,v2,7/7] bnxt_en: Enable hardware PTP support
-    https://git.kernel.org/netdev/net-next/c/93cb62d98e9c
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Actually, I think you might need to store the truesize somewhere in
+addition to the data_len that you were storing in the shared info.
