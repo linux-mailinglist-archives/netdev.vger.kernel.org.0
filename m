@@ -2,72 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A083E3B5819
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 06:23:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60ED63B5850
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 06:27:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbhF1EZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 00:25:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21333 "EHLO
+        id S230154AbhF1E3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 00:29:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45129 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229578AbhF1EZp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 00:25:45 -0400
+        by vger.kernel.org with ESMTP id S229578AbhF1E3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 00:29:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624854200;
+        s=mimecast20190719; t=1624854448;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oLeqIOgpBkD1FX+tqeP1n2Jv04KIufJT9c8xXyMNgRY=;
-        b=WQ9eDrddA/Cjlwl/S54UrbF/6LAlLi0OnQaLMrlLPxjDQmdq978lvwpPJqbicsvlhPLy36
-        x00JQ6AgCW5rZ1BUEUKHv0vPwWNQwVdHY+SJGAsQBFatSD7MzIGMfwLygXcmk+Qkbieshr
-        J56ZFbQJf2KRHQiGUifVnKQairlW4Xc=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-24-RITVEDQ9Plq_008N2zuKsg-1; Mon, 28 Jun 2021 00:23:18 -0400
-X-MC-Unique: RITVEDQ9Plq_008N2zuKsg-1
-Received: by mail-pj1-f69.google.com with SMTP id j8-20020a17090a8408b02901651fe80217so9751330pjn.1
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 21:23:18 -0700 (PDT)
+        bh=o1xtLTToeyqa2U4eJBXFpKDKIzd68CvhihFPifGQBPQ=;
+        b=LhxR9twiM3fYxtQb2t7o4w/hcD0G/vNms5C5Bs5NBXTvlNvu2TAArHdDXK8aLy4dl48fPv
+        q1jIKCkuQ8qIQDFCpAdnWFgNIrShZjsB6XWhEWGQwyGbAwdXXPD0h5emK4okY/PaJtYpsf
+        syETBhQI5vaLyiOvvRWKyvvSt22Rsoc=
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
+ [209.85.216.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-378-Zu0R2lxSMQi_aNwXwyj_Rw-1; Mon, 28 Jun 2021 00:27:26 -0400
+X-MC-Unique: Zu0R2lxSMQi_aNwXwyj_Rw-1
+Received: by mail-pj1-f70.google.com with SMTP id u8-20020a17090a8908b029016f79b38655so11183821pjn.8
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 21:27:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=oLeqIOgpBkD1FX+tqeP1n2Jv04KIufJT9c8xXyMNgRY=;
-        b=GTvDrN1GCAjfdpoKAi7dnoGJl80LZBntiZXeW5hjGUvGcskUK0Y6lIJB0p4oB2WU75
-         JQNq94lAWvnnXtTGMIJ/y7tbwJP/UF6lUYfd32QNmbZWFF7fZPv3A7gwJFpESmonCPP4
-         Xy9krUH+AH0XyziWfzY+yMR+smXAF+bidSu2w/g4WK2lxF5kyIj3ThBaAspWTU+LTE4+
-         dQo1fhGRLnNhGRsn+sLpsj6YrLEyMpaTGlXBA3noCDICqV8wqS4FCd+GHBjrw/R7nB1G
-         GtzBPQaweoQXGUIKfp/ryXKHczb1MA/Kr2ALF+JfzNkEutpvq2loueKY2kVdS7weVJE0
-         4IXQ==
-X-Gm-Message-State: AOAM530yE/N2ZrEVX1stWF5jVVERACGUqRd4rl6YMgQhFyPGGdgA3v/M
-        uVCnaNBX4xpV6nPrX7j6i+fItvsMnGca/dHRmJ005ia72Ucq6mA6issO6T4CzEOKYP14pHnwUry
-        iJLCD9T6y6FAjlsHP
-X-Received: by 2002:a17:90a:b94c:: with SMTP id f12mr34283591pjw.58.1624854197426;
-        Sun, 27 Jun 2021 21:23:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyyRvBc20XCEQjaRdjsIVaQUcgdppdduDYx4ICNx+8Zwn4eueVsNJJToQho/N37fXHMcJk33A==
-X-Received: by 2002:a17:90a:b94c:: with SMTP id f12mr34283575pjw.58.1624854197275;
-        Sun, 27 Jun 2021 21:23:17 -0700 (PDT)
+        bh=o1xtLTToeyqa2U4eJBXFpKDKIzd68CvhihFPifGQBPQ=;
+        b=e3k3MP7h/m8LrQ/NwP3PTGmvoeGDNK3U8qh7GRMKCQE1x36mVl2ai5JKlTrOVyB43q
+         a6yDndbcMR9YCT9ZxCwyRPxdr1YUz98ZmsrRat7es6RQq4lsV+iMSVsVR693bXMEr/jA
+         AgZHR4GqS8XUDmLSbwlgbRHtPknZ428Bfx4pdGp47t81sU+2HPMLmcrO8gwiThg+FQ7L
+         SoV8PKbasK/fsSYxA+iL5bqX+1onGeFpmk2b9BbmUjAiikI/m4DHhy+l2V8uxVkZR9oY
+         btWc6RXJhbWNmjO6bXCfvFMY44i+W+aDjRo9rZG3wP43msZvo79lZ6aVeYBTTrXAjSgs
+         xuwg==
+X-Gm-Message-State: AOAM533a8ciO+a26NqdkeNw2BWRNcBQom/SntFxLoylSz66GE7lb7piP
+        lU9vQ1to4CJWc6TKzw6boShQ5JNaRi0HZvkz6j4k8hMJ0GkcwAJWtDDSJsa96eO9rf+CNDfbdS2
+        ZCPCvLC4lxGhzTMsu
+X-Received: by 2002:a17:90b:3142:: with SMTP id ip2mr34543001pjb.63.1624854445326;
+        Sun, 27 Jun 2021 21:27:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzTxjiSUInT9Lkq2bvqXC0+T2xLQ44T+XHJaHjdcs/PVsq1liVR3goJXjp3j0Q6IoPdBYTtMQ==
+X-Received: by 2002:a17:90b:3142:: with SMTP id ip2mr34542983pjb.63.1624854445157;
+        Sun, 27 Jun 2021 21:27:25 -0700 (PDT)
 Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id q3sm12327716pfj.89.2021.06.27.21.23.15
+        by smtp.gmail.com with ESMTPSA id l4sm1611362pjf.49.2021.06.27.21.27.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Jun 2021 21:23:16 -0700 (PDT)
-Subject: Re: [PATCH v3 3/5] vhost_net: remove virtio_net_hdr validation, let
- tun/tap do it themselves
+        Sun, 27 Jun 2021 21:27:24 -0700 (PDT)
+Subject: Re: [PATCH v3 4/5] net: tun: fix tun_xdp_one() for IFF_TUN mode
 To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
 Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
         Willem de Bruijn <willemb@google.com>
 References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
  <20210624123005.1301761-1-dwmw2@infradead.org>
- <20210624123005.1301761-3-dwmw2@infradead.org>
- <b339549d-c8f1-1e56-2759-f7b15ee8eca1@redhat.com>
- <bfad641875aff8ff008dd7f9a072c5aa980703f4.camel@infradead.org>
+ <20210624123005.1301761-4-dwmw2@infradead.org>
+ <be6ec48e-ffc7-749b-f775-a34d376f474c@redhat.com>
+ <32071ebb3f433b239394e243a6fc8a2bc6d36dcb.camel@infradead.org>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <1c6110d9-2a45-f766-9d9a-e2996c14b748@redhat.com>
-Date:   Mon, 28 Jun 2021 12:23:13 +0800
+Message-ID: <8914d56f-8059-71df-ab51-9fbb9637e45a@redhat.com>
+Date:   Mon, 28 Jun 2021 12:27:21 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <bfad641875aff8ff008dd7f9a072c5aa980703f4.camel@infradead.org>
+In-Reply-To: <32071ebb3f433b239394e243a6fc8a2bc6d36dcb.camel@infradead.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
@@ -76,59 +75,88 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2021/6/25 下午4:37, David Woodhouse 写道:
-> On Fri, 2021-06-25 at 15:33 +0800, Jason Wang wrote:
+在 2021/6/25 下午4:51, David Woodhouse 写道:
+> On Fri, 2021-06-25 at 15:41 +0800, Jason Wang wrote:
 >> 在 2021/6/24 下午8:30, David Woodhouse 写道:
->>> From: David Woodhouse<dwmw@amazon.co.uk>
+>>> From: David Woodhouse <dwmw@amazon.co.uk>
 >>>
->>> When the underlying socket isn't configured with a virtio_net_hdr, the
->>> existing code in vhost_net_build_xdp() would attempt to validate
->>> uninitialised data, by copying zero bytes (sock_hlen) into the local
->>> copy of the header and then trying to validate that.
+>>> In tun_get_user(), skb->protocol is either taken from the tun_pi header
+>>> or inferred from the first byte of the packet in IFF_TUN mode, while
+>>> eth_type_trans() is called only in the IFF_TAP mode where the payload
+>>> is expected to be an Ethernet frame.
 >>>
->>> Fixing it is somewhat non-trivial because the tun device might put a
->>> struct tun_pi*before*  the virtio_net_hdr, which makes it hard to find.
->>> So just stop messing with someone else's data in vhost_net_build_xdp(),
->>> and let tap and tun validate it for themselves, as they do in the
->>> non-XDP case anyway.
+>>> The equivalent code path in tun_xdp_one() was unconditionally using
+>>> eth_type_trans(), which is the wrong thing to do in IFF_TUN mode and
+>>> corrupts packets.
+>>>
+>>> Pull the logic out to a separate tun_skb_set_protocol() function, and
+>>> call it from both tun_get_user() and tun_xdp_one().
+>>>
+>>> XX: It is not entirely clear to me why it's OK to call eth_type_trans()
+>>> in some cases without first checking that enough of the Ethernet header
+>>> is linearly present by calling pskb_may_pull().
 >>
->> Thinking in another way. All XDP stuffs for vhost is prepared for TAP.
->> XDP is not expected to work for TUN.
+>> Looks like a bug.
 >>
->> So we can simply let's vhost doesn't go with XDP path is the underlayer
->> socket is TUN.
-> Actually, IFF_TUN mode per se isn't that complex. It's fixed purely on
-> the tun side by that first patch I posted, which I later expanded a
-> little to factor out tun_skb_set_protocol().
+>>
+>>>     Such a check was never
+>>> present in the tun_xdp_one() code path, and commit 96aa1b22bd6bb ("tun:
+>>> correct header offsets in napi frags mode") deliberately added it *only*
+>>> for the IFF_NAPI_FRAGS mode.
+>>
+>> We had already checked this in tun_get_user() before:
+>>
+>>           if ((tun->flags & TUN_TYPE_MASK) == IFF_TAP) {
+>>                   align += NET_IP_ALIGN;
+>>                   if (unlikely(len < ETH_HLEN ||
+>>                                (gso.hdr_len && tun16_to_cpu(tun,
+>> gso.hdr_len) < ETH_HLEN)))
+>>                           return -EINVAL;
+>>           }
+> We'd checked skb->len, but that doesn't mean we had a full Ethernet
+> header *linearly* at skb->data, does it?
+
+
+The linear room is guaranteed through either:
+
+1) tun_build_skb()
+
+or
+
+2) tun_alloc_skb()
+
+
 >
-> The next two patches in my original set were fixing up the fact that
-> XDP currently assumes that the *socket* will be doing the vhdr, not
-> vhost. Those two weren't tun-specific at all.
+> For the basic tun_get_user() case I suppose we copy_from_user() into a
+> single linear skb anyway, even if userspace had fragment it and used
+> writev(). So we *are* probably safe there?
 >
-> It's supporting the PI header (which tun puts *before* the virtio
-> header as I just said) which introduces a tiny bit more complexity.
-
-
-This reminds me we need to fix tun_put_user_xdp(), but as we've 
-discussed, we need first figure out if PI is worth to support for vhost-net.
-
-
+> I'm sure we *can* contrive a proof that it's safe for that case, if we
+> must. But I think we should *need* that proof, if we're going to bypass
+> the check. And I wasn't comfortable touching that code without it.
 >
-> So yes, avoiding the XDP path if PI is being used would make some
-> sense.
+> We should also have a fairly good reason... it isn't clear to me *why*
+> we're bothering to avoid the check. Is it so slow, even in the case
+> where there's nothing to be done?
 >
-> In fact I wouldn't be entirely averse to refusing PI mode completely,
-> as long as we fail gracefully at setup time by refusing the
-> SET_BACKEND. Not by just silently failing to receive packets.
+> For a linear skb, the inline pskb_may_pull() is going to immediately
+> return true because ETH_HLEN < skb_headlen(skb), isn't it? Why optimise
+> *that* away?
+>
+> Willem, was there a reason you made that conditional in the first
+> place?
+>
+> If we're going to continue to *not* check on the XDP path, we similarly
+> need a proof that it can't be fragmented. And also a reason to bother
+> with the "optimisation", of course.
 
 
-That's another way. Actually, macvtap mandate IFF_TAP | IFF_NO_PI.
+For XDP path, we simply need to add a length check since the packet is 
+always a linear memory.
 
 Thanks
 
 
 >
-> But then again, it's not actually *that* hard to support, and it's
-> working fine in my selftests at the end of my patch series.
 >
 
