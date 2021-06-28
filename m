@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F54A3B69D4
+	by mail.lfdr.de (Postfix) with ESMTP id 2B68E3B69D3
 	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 22:41:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237512AbhF1Unf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 16:43:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45704 "EHLO mail.kernel.org"
+        id S237495AbhF1Unc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 16:43:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45726 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236493AbhF1UnU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236739AbhF1UnU (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 28 Jun 2021 16:43:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4CBB661CDD;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 69F3461CE4;
         Mon, 28 Jun 2021 20:40:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1624912854;
-        bh=yhEZRFQiSw9S3Aif7Qz3l5vOqPa+yDWqL7UsZ1HLndY=;
+        bh=CajqUMecoADBkbeoaKzPXIX7jkPoVWBcpxW+ih912Nc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=J5XXAxevur0/HGavC3dearHr6NAJU9xc3cezr9e9/LW3QhpYp2GeBeHdWaBvFa/HK
-         iAx+so5KF7LNlFFSwJl+QJcY2JNJYb2jsFUIF6r8YcyFNqgKaCQkyK7p8cb9pAh4cH
-         L1w6urt4WmVkJiBQvN/a20u5d8HzeZsKIcKy6LZLyJ0ZajSu3N7y/qZ9h9b51VQZkV
-         1H/GPKNkZqTMwhODC786fA1eW4x6F8OH7Oj56rrDJW7bPdU/r61UPA2rD9maubTo+Q
-         eWBLb6YiRs/AOYEAAltx2nsJkqxthjzKmFo+AY+VatW79G/Qec5TvniTCAW/b89+/R
-         5jcXA6600HqUw==
+        b=R2jJhCSc4wSD4vvlubUzrOObNeknGUtx60loLfAThVfTTX1RCsgAYifz0WGQIoi9l
+         PT32E0Lm3SiC3l2PGyI4Wh+V2evHdPLX9T4VCqmLle655cfgnobVMAzNuf05T7mBfZ
+         Ew2JgwEVhxz7QJ8bJgv6+MwRoFUJvdjxKMUPDujzbqpJ2Okg9lUcuvHPCASk1Wjw4p
+         SJ0q3hFTrUYv8Ot9ECuyiq7gGspB07ql7b8GWI0/04eRiPduKndp79j0nkcOWkP7Ed
+         1lB83Yn13PqQuzIMEV0NS4CGyI317xs+DDazrnRQmlE6fZrNq4iiWvO8VzQ0AWGqWt
+         uUXE6UJi4i5Kg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4140060D02;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5E75860A6C;
         Mon, 28 Jun 2021 20:40:54 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2 net-next 0/2] net: hns3: add new debugfs commands
+Subject: Re: pull request (net-next): ipsec-next 2021-06-28
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162491285426.18293.16987102070760656311.git-patchwork-notify@kernel.org>
+Message-Id: <162491285438.18293.5911624500438120439.git-patchwork-notify@kernel.org>
 Date:   Mon, 28 Jun 2021 20:40:54 +0000
-References: <1624669217-38264-1-git-send-email-huangguangbin2@huawei.com>
-In-Reply-To: <1624669217-38264-1-git-send-email-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, salil.mehta@huawei.com,
-        lipeng321@huawei.com
+References: <20210628054522.1718786-1-steffen.klassert@secunet.com>
+In-Reply-To: <20210628054522.1718786-1-steffen.klassert@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This pull request was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat, 26 Jun 2021 09:00:15 +0800 you wrote:
-> This series adds three new debugfs commands for the HNS3 ethernet driver.
+On Mon, 28 Jun 2021 07:45:05 +0200 you wrote:
+> 1) Remove an unneeded error assignment in esp4_gro_receive().
+>    From Yang Li.
 > 
-> change log:
-> V1 -> V2:
-> 1. remove patch "net: hns3: add support for link diagnosis info in debugfs"
->    and use ethtool extended link state to implement similar function
->    according to Jakub Kicinski's opinion.
+> 2) Add a new byseq state hashtable to find acquire states faster.
+>    From Sabrina Dubroca.
+> 
+> 3) Remove some unnecessary variables in pfkey_create().
+>    From zuoqilin.
 > 
 > [...]
 
 Here is the summary with links:
-  - [V2,net-next,1/2] net: hns3: add support for FD counter in debugfs
-    https://git.kernel.org/netdev/net-next/c/03a92fe8cedb
-  - [V2,net-next,2/2] net: hns3: add support for dumping MAC umv counter in debugfs
-    https://git.kernel.org/netdev/net-next/c/d59daf6a4cee
+  - pull request (net-next): ipsec-next 2021-06-28
+    https://git.kernel.org/netdev/net-next/c/1b077ce1c5be
 
 You are awesome, thank you!
 --
