@@ -2,340 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 582EB3B5787
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 04:55:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A20C3B57D6
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 05:29:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232106AbhF1C6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 22:58:02 -0400
-Received: from mga01.intel.com ([192.55.52.88]:52659 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231984AbhF1C6B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Jun 2021 22:58:01 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10028"; a="229493910"
-X-IronPort-AV: E=Sophos;i="5.83,304,1616482800"; 
-   d="scan'208";a="229493910"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2021 19:55:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,304,1616482800"; 
-   d="scan'208";a="419007818"
-Received: from storage2.sh.intel.com (HELO localhost) ([10.67.110.211])
-  by fmsmga007.fm.intel.com with ESMTP; 27 Jun 2021 19:55:30 -0700
-Date:   Mon, 28 Jun 2021 06:33:09 -0400
-From:   Liu Xiaodong <xiaodong.liu@intel.com>
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        jasowang@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
-        parav@nvidia.com, hch@infradead.org,
-        christian.brauner@canonical.com, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
-        dan.carpenter@oracle.com, joro@8bytes.org,
-        gregkh@linuxfoundation.org, xiaodong.liu@intel.com
-Cc:     songmuchun@bytedance.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 00/10] Introduce VDUSE - vDPA Device in Userspace
-Message-ID: <20210628103309.GA205554@storage2.sh.intel.com>
-References: <20210615141331.407-1-xieyongji@bytedance.com>
+        id S232042AbhF1Dbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 23:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59056 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231678AbhF1Dbt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 23:31:49 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5998AC061574
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 20:29:24 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id d12so5256391pfj.2
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 20:29:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=934vcY9hbIVSaHD+0ugO70/hPHjLe40xLmd0lmTxwZk=;
+        b=s6YtIcWZUYoyqq7N8lLbitHjyXtyEiz8cN0sEmKtSNS3VLV+C+3PtOZLFf71WevXbz
+         wnzjm+1a3xAGuizk+mo7ro3MHcq2xw9DL+8bBejQBWTuR/x24/kSKRHUMkqZOTgMF33T
+         1cinQGSD7F580qh/5Oxmbidb46CSWAjI8/yEjvgZqOT5/HLYnYW04T3oiHOXmj8PaNGW
+         Ssbjnl2ToiZ7QVEVXEI16CPlEfzGJKfFCVn24humgLT4E7TODEzlxInbTHvuRlOdDpAk
+         VRoAEi3JkKalE0/KihwxRA64xhwG03y4uX8QFfC9MpVC0BApRc1poGEFmPJ1T11k0RTt
+         tGaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=934vcY9hbIVSaHD+0ugO70/hPHjLe40xLmd0lmTxwZk=;
+        b=joIoFU+2n9DPzR9COJ5v9wGwTR6wqhe8grSZIZyR76iBJ6TSroprkbYayeLazTHNJw
+         VvGzVvKYQu6jLDPbUCHSoqSQ55WADTTaKFvpIpVnmFNwD/jztEzRVt9fq29VeWonUKbD
+         TDvZIQjrWghaGirhPsH5y+EggSYE5AuksFC5lbMkwCV4O5G8PXK4pIlZGChLk1JeVr1t
+         H3ziA4IJ1Kb/z9SRDGW7rJA+ibm4K+Af+wuNghXLfvr3XzF/OmkAw3eyjiK+BYXaJWvr
+         g7J0w38pCBfQbVTtWS0GlpyiKgTRFwQJYd+zXrilEjJyJISuyA6DamWa4bWFa/bUeE8V
+         a+fA==
+X-Gm-Message-State: AOAM530tDN4ANw08l+BGE8NNeRq0KRXAffCvDz99bEDNuh5pa261bbSL
+        64gBzS4Zc/r6iwP4hbKYi7U=
+X-Google-Smtp-Source: ABdhPJywidgeRTHO3f2be4yMbZFtPovfzR+XuHY1xL1x0k1CHmKIwpJgXsyMMq4jnJE+4mqr97VT7A==
+X-Received: by 2002:a62:e90f:0:b029:307:8154:9ff7 with SMTP id j15-20020a62e90f0000b029030781549ff7mr22589524pfh.79.1624850963742;
+        Sun, 27 Jun 2021 20:29:23 -0700 (PDT)
+Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id y7sm18538233pja.8.2021.06.27.20.29.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Jun 2021 20:29:22 -0700 (PDT)
+Subject: Re: PHY vs. MAC ethtool Wake-on-LAN selection
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <554fea3f-ba7c-b2fc-5ee6-755015f6dfba@gmail.com>
+ <YNiwJTgEZjRG7bha@lunn.ch> <20210627190913.GA22278@shell.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <b6e99d7b-2cb7-c892-3bd2-fa545ae9056b@gmail.com>
+Date:   Sun, 27 Jun 2021 20:29:20 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210615141331.407-1-xieyongji@bytedance.com>
-User-Agent: Mutt/1.9.2 (2017-12-15)
+In-Reply-To: <20210627190913.GA22278@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 15, 2021 at 10:13:21PM +0800, Xie Yongji wrote:
-> 
-> This series introduces a framework that makes it possible to implement
-> software-emulated vDPA devices in userspace. And to make it simple, the
-> emulated vDPA device's control path is handled in the kernel and only the
-> data path is implemented in the userspace.
-> 
-> Since the emuldated vDPA device's control path is handled in the kernel,
-> a message mechnism is introduced to make userspace be aware of the data
-> path related changes. Userspace can use read()/write() to receive/reply
-> the control messages.
-> 
-> In the data path, the core is mapping dma buffer into VDUSE daemon's
-> address space, which can be implemented in different ways depending on
-> the vdpa bus to which the vDPA device is attached.
-> 
-> In virtio-vdpa case, we implements a MMU-based on-chip IOMMU driver with
-> bounce-buffering mechanism to achieve that. And in vhost-vdpa case, the dma
-> buffer is reside in a userspace memory region which can be shared to the
-> VDUSE userspace processs via transferring the shmfd.
-> 
-> The details and our user case is shown below:
-> 
-> ------------------------    -------------------------   ----------------------------------------------
-> |            Container |    |              QEMU(VM) |   |                               VDUSE daemon |
-> |       ---------      |    |  -------------------  |   | ------------------------- ---------------- |
-> |       |dev/vdx|      |    |  |/dev/vhost-vdpa-x|  |   | | vDPA device emulation | | block driver | |
-> ------------+-----------     -----------+------------   -------------+----------------------+---------
->             |                           |                            |                      |
->             |                           |                            |                      |
-> ------------+---------------------------+----------------------------+----------------------+---------
-> |    | block device |           |  vhost device |            | vduse driver |          | TCP/IP |    |
-> |    -------+--------           --------+--------            -------+--------          -----+----    |
-> |           |                           |                           |                       |        |
-> | ----------+----------       ----------+-----------         -------+-------                |        |
-> | | virtio-blk driver |       |  vhost-vdpa driver |         | vdpa device |                |        |
-> | ----------+----------       ----------+-----------         -------+-------                |        |
-> |           |      virtio bus           |                           |                       |        |
-> |   --------+----+-----------           |                           |                       |        |
-> |                |                      |                           |                       |        |
-> |      ----------+----------            |                           |                       |        |
-> |      | virtio-blk device |            |                           |                       |        |
-> |      ----------+----------            |                           |                       |        |
-> |                |                      |                           |                       |        |
-> |     -----------+-----------           |                           |                       |        |
-> |     |  virtio-vdpa driver |           |                           |                       |        |
-> |     -----------+-----------           |                           |                       |        |
-> |                |                      |                           |    vdpa bus           |        |
-> |     -----------+----------------------+---------------------------+------------           |        |
-> |                                                                                        ---+---     |
-> -----------------------------------------------------------------------------------------| NIC |------
->                                                                                          ---+---
->                                                                                             |
->                                                                                    ---------+---------
->                                                                                    | Remote Storages |
->                                                                                    -------------------
-> 
-> We make use of it to implement a block device connecting to
-> our distributed storage, which can be used both in containers and
-> VMs. Thus, we can have an unified technology stack in this two cases.
-> 
-> To test it with null-blk:
-> 
->   $ qemu-storage-daemon \
->       --chardev socket,id=charmonitor,path=/tmp/qmp.sock,server,nowait \
->       --monitor chardev=charmonitor \
->       --blockdev driver=host_device,cache.direct=on,aio=native,filename=/dev/nullb0,node-name=disk0 \
->       --export type=vduse-blk,id=test,node-name=disk0,writable=on,name=vduse-null,num-queues=16,queue-size=128
-> 
-> The qemu-storage-daemon can be found at https://github.com/bytedance/qemu/tree/vduse
-> 
-> To make the userspace VDUSE processes such as qemu-storage-daemon able to
-> be run by an unprivileged user. We did some works on virtio driver to avoid
-> trusting device, including:
-> 
->   - validating the used length:
-> 
->     * https://lore.kernel.org/lkml/20210531135852.113-1-xieyongji@bytedance.com/
->     * https://lore.kernel.org/lkml/20210525125622.1203-1-xieyongji@bytedance.com/
-> 
->   - validating the device config:
-> 
->     * https://lore.kernel.org/lkml/20210615104810.151-1-xieyongji@bytedance.com/
-> 
->   - validating the device response:
-> 
->     * https://lore.kernel.org/lkml/20210615105218.214-1-xieyongji@bytedance.com/
-> 
-> Since I'm not sure if I missing something during auditing, especially on some
-> virtio device drivers that I'm not familiar with, we limit the supported device
-> type to virtio block device currently. The support for other device types can be
-> added after the security issue of corresponding device driver is clarified or
-> fixed in the future.
-> 
-> Future work:
->   - Improve performance
->   - Userspace library (find a way to reuse device emulation code in qemu/rust-vmm)
->   - Support more device types
-> 
-> V7 to V8:
-> - Rebased to newest kernel tree
-> - Rework VDUSE driver to handle the device's control path in kernel
-> - Limit the supported device type to virtio block device
-> - Export free_iova_fast()
-> - Remove the virtio-blk and virtio-scsi patches (will send them alone)
-> - Remove all module parameters
-> - Use the same MAJOR for both control device and VDUSE devices
-> - Avoid eventfd cleanup in vduse_dev_release()
-> 
-> V6 to V7:
-> - Export alloc_iova_fast()
-> - Add get_config_size() callback
-> - Add some patches to avoid trusting virtio devices
-> - Add limited device emulation
-> - Add some documents
-> - Use workqueue to inject config irq
-> - Add parameter on vq irq injecting
-> - Rename vduse_domain_get_mapping_page() to vduse_domain_get_coherent_page()
-> - Add WARN_ON() to catch message failure
-> - Add some padding/reserved fields to uAPI structure
-> - Fix some bugs
-> - Rebase to vhost.git
-> 
-> V5 to V6:
-> - Export receive_fd() instead of __receive_fd()
-> - Factor out the unmapping logic of pa and va separatedly
-> - Remove the logic of bounce page allocation in page fault handler
-> - Use PAGE_SIZE as IOVA allocation granule
-> - Add EPOLLOUT support
-> - Enable setting API version in userspace
-> - Fix some bugs
-> 
-> V4 to V5:
-> - Remove the patch for irq binding
-> - Use a single IOTLB for all types of mapping
-> - Factor out vhost_vdpa_pa_map()
-> - Add some sample codes in document
-> - Use receice_fd_user() to pass file descriptor
-> - Fix some bugs
-> 
-> V3 to V4:
-> - Rebase to vhost.git
-> - Split some patches
-> - Add some documents
-> - Use ioctl to inject interrupt rather than eventfd
-> - Enable config interrupt support
-> - Support binding irq to the specified cpu
-> - Add two module parameter to limit bounce/iova size
-> - Create char device rather than anon inode per vduse
-> - Reuse vhost IOTLB for iova domain
-> - Rework the message mechnism in control path
-> 
-> V2 to V3:
-> - Rework the MMU-based IOMMU driver
-> - Use the iova domain as iova allocator instead of genpool
-> - Support transferring vma->vm_file in vhost-vdpa
-> - Add SVA support in vhost-vdpa
-> - Remove the patches on bounce pages reclaim
-> 
-> V1 to V2:
-> - Add vhost-vdpa support
-> - Add some documents
-> - Based on the vdpa management tool
-> - Introduce a workqueue for irq injection
-> - Replace interval tree with array map to store the iova_map
-> 
-> Xie Yongji (10):
->   iova: Export alloc_iova_fast() and free_iova_fast();
->   file: Export receive_fd() to modules
->   eventfd: Increase the recursion depth of eventfd_signal()
->   vhost-iotlb: Add an opaque pointer for vhost IOTLB
->   vdpa: Add an opaque pointer for vdpa_config_ops.dma_map()
->   vdpa: factor out vhost_vdpa_pa_map() and vhost_vdpa_pa_unmap()
->   vdpa: Support transferring virtual addressing during DMA mapping
->   vduse: Implement an MMU-based IOMMU driver
->   vduse: Introduce VDUSE - vDPA Device in Userspace
->   Documentation: Add documentation for VDUSE
-> 
->  Documentation/userspace-api/index.rst              |    1 +
->  Documentation/userspace-api/ioctl/ioctl-number.rst |    1 +
->  Documentation/userspace-api/vduse.rst              |  222 +++
->  drivers/iommu/iova.c                               |    2 +
->  drivers/vdpa/Kconfig                               |   10 +
->  drivers/vdpa/Makefile                              |    1 +
->  drivers/vdpa/ifcvf/ifcvf_main.c                    |    2 +-
->  drivers/vdpa/mlx5/net/mlx5_vnet.c                  |    2 +-
->  drivers/vdpa/vdpa.c                                |    9 +-
->  drivers/vdpa/vdpa_sim/vdpa_sim.c                   |    8 +-
->  drivers/vdpa/vdpa_user/Makefile                    |    5 +
->  drivers/vdpa/vdpa_user/iova_domain.c               |  545 ++++++++
->  drivers/vdpa/vdpa_user/iova_domain.h               |   73 +
->  drivers/vdpa/vdpa_user/vduse_dev.c                 | 1453 ++++++++++++++++++++
->  drivers/vdpa/virtio_pci/vp_vdpa.c                  |    2 +-
->  drivers/vhost/iotlb.c                              |   20 +-
->  drivers/vhost/vdpa.c                               |  148 +-
->  fs/eventfd.c                                       |    2 +-
->  fs/file.c                                          |    6 +
->  include/linux/eventfd.h                            |    5 +-
->  include/linux/file.h                               |    7 +-
->  include/linux/vdpa.h                               |   21 +-
->  include/linux/vhost_iotlb.h                        |    3 +
->  include/uapi/linux/vduse.h                         |  143 ++
->  24 files changed, 2641 insertions(+), 50 deletions(-)
->  create mode 100644 Documentation/userspace-api/vduse.rst
->  create mode 100644 drivers/vdpa/vdpa_user/Makefile
->  create mode 100644 drivers/vdpa/vdpa_user/iova_domain.c
->  create mode 100644 drivers/vdpa/vdpa_user/iova_domain.h
->  create mode 100644 drivers/vdpa/vdpa_user/vduse_dev.c
->  create mode 100644 include/uapi/linux/vduse.h
-> 
-> --
-> 2.11.0
-
-Hi, Yongji
-
-Great work! your method is really wise that implements a software IOMMU
-so that data path gets processed by userspace application efficiently.
-Sorry, I've just realized your work and patches.
 
 
-I was working on a similar thing aiming to get vhost-user-blk device
-from SPDK vhost-target to be exported as local host kernel block device.
-It's diagram is like this:
+On 6/27/2021 12:09 PM, Russell King (Oracle) wrote:
+> On Sun, Jun 27, 2021 at 07:06:45PM +0200, Andrew Lunn wrote:
+>>> - Ethernet MAC (bcmgenet) is capable of doing Wake-on-LAN using Magic
+>>> Packets (g) with password (s) or network filters (f) and is powered on in
+>>> the "standby" (as written in /sys/power/state) suspend state, and completely
+>>> powered off (by hardware) in the "mem" state
+>>>
+>>> - Ethernet PHY (broadcom.c, no code there to support WoL yet) is capable of
+>>> doing Wake-on-LAN using Magic Packets (g) with password (s) or a 48-bit MAC
+>>> destination address (f) match allowing us to match on say, Broadcom and
+>>> Multicast. That PHY is on during both the "standby" and "mem" suspend states
+>>
+>> Marvell systems are similar. The mvneta hardware has support for WOL,
+>> and has quite a capable filter. But there is no driver support. WOL is
+>> simply forwarded to the PHY.
+>>
+>>> What I envision we could do is add a ETHTOOL_A_WOL_DEVICE u8 field and have
+>>> it take the values: 0 (default), 1 (MAC), 2 (PHY), 3 (both) and you would do
+>>> the following on the command line:
+>>>
+>>> ethtool -s eth0 wol g # default/existing mode, leave it to the driver
+>>> ethtool -s eth0 wol g target mac # target the MAC only
+>>> ethtool -s eth0 wol g target phy # target the PHY only
+>>> ethtool -s eth0 wol g target mac+phy # target both MAC and PHY
+>>
+>> This API seems like a start, but is it going to be limiting? It does
+>> not appear you can say:
+>>
+>> ethtool -s eth0 wol g target phy wol f target mac
+>>
+>> So make use of magic packet in the PHY and filtering in the MAC.
+>> ETHTOOL_A_WOL_DEVICE u8 appears to apply to all WoL options, not one
+>> u8 per option.
+>>
+>> And does mac+phy mean both will generate an interrupt? I'm assuming
+>> the default of 0 means do whatever undefined behaviour we have now. Do
+>> we need another value, 4 (auto) and the MAC driver will first try to
+>> offload to the PHY, and if that fails, it does it at the MAC, with the
+>> potential for some options to be in the MAC and some in the PHY?
+> 
+> Another question concerns the capabilities of the MAC and PHY in each
+> low power mode. Consider that userspace wishes to program the system
+> to wakeup when a certain packet is received. How does it know whether
+> it needs to program that into the MAC or the PHY or both?
 
+There is no way right now to know other than just having user-space be 
+customized to the desired platform which is something that works 
+reasonably well for Android, not so much for other distros.
 
-                                -----------------------------                
-------------------------        |    -----------------      |    ---------------------------------------
-|   <RunC Container>   |     <<<<<<<<| Shared-Memory |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>        |
-|       ---------      |     v  |    -----------------      |    |                            v        |
-|       |dev/vdx|      |     v  |   <virtio-local-agent>    |    |      <Vhost-user Target>   v        |
-------------+-----------     v  | ------------------------  |    |  --------------------------v------  |
-            |                v  | |/dev/virtio-local-ctrl|  |    |  | unix socket |   |block driver |  |
-            |                v  ------------+----------------    --------+--------------------v---------
-            |                v              |                            |                    v
-------------+----------------v--------------+----------------------------+--------------------v--------|
-|    | block device |        v      |  Misc device |                     |                    v        |
-|    -------+--------        v      --------+-------                     |                    v        |
-|           |                v              |                            |                    v        |
-| ----------+----------      v              |                            |                    v        |
-| | virtio-blk driver |      v              |                            |                    v        |
-| ----------+----------      v              |                            |                    v        |
-|           | virtio bus     v              |                            |                    v        |
-|   --------+---+-------     v              |                            |                    v        |
-|               |            v              |                            |                    v        |
-|               |            v              |                            |                    v        |
-|     ----------+----------  v     ---------+-----------                 |                    v        |
-|     | virtio-blk device |--<----| virtio-local driver |----------------<                    v        |
-|     ----------+----------       ----------+-----------                                      v        |
-|                                                                                    ---------+--------|
--------------------------------------------------------------------------------------| RNIC |--| PCIe |-
-                                                                                     ----+---  | NVMe |
-                                                                                         |     --------
-                                                                                ---------+---------
-                                                                                | Remote Storages |
-                                                                                -------------------
+> 
+> Should that level of detail be available to userspace, or kept within
+> the driver?
+> 
+> For example, if userspace requests destination MAC address wakeup, then
+> shouldn't the driver be making the decision about which of the MAC or
+> PHY gets programmed to cause the wakeup depending on which mode the
+> system will be switching to and whether the appropriate blocks can be
+> left powered?
+> 
+> Another question would be - if the PHY can only do magic packet and
+> remains powered, and the MAC can only do destination MAC but is powered
+> down in the "mem" state, what do we advertise to the user. If the user
+> selects destination MAC and then requests the system enter "mem" state,
+> then what? Should we try to do the best we can?
 
+This is the part where it may be reasonable to lean on to user-space to 
+program either the MAC or the PHY in a way that makes sense to support a 
+Wake-on-LAN scheme, whether that means that ethtool should also report 
+which modes are supported depending on the target system suspend such 
+that user-space has information to make an appropriate decision may just 
+be the next step.
 
-I just draft out an initial proof version. When seeing your RFC mail,
-I'm thinking that SPDK target may depends on your work, so I could
-directly drop mine.
-But after a glance of the RFC patches, seems it is not so easy or
-efficient to get vduse leveraged by SPDK.
-(Please correct me, if I get wrong understanding on vduse. :) )
+> 
+> Should we at the very least be advertising which WOL modes are
+> supported in each power state?
 
-The large barrier is bounce-buffer mapping: SPDK requires hugepages
-for NVMe over PCIe and RDMA, so take some preallcoated hugepages to
-map as bounce buffer is necessary. Or it's hard to avoid an extra
-memcpy from bounce-buffer to hugepage.
-If you can add an option to map hugepages as bounce-buffer,
-then SPDK could also be a potential user of vduse.
-
-It would be better if SPDK vhost-target could leverage the datapath of
-vduse directly and efficiently. Even the control path is vdpa based,
-we may work out one daemon as agent to bridge SPDK vhost-target with vduse.
-Then users who already deployed SPDK vhost-target, can smoothly run
-some agent daemon without code modification on SPDK vhost-target itself.
-(It is only better-to-have for SPDK vhost-target app, not mandatory for SPDK) :)
-At least, some small barrier is there that blocked a vhost-target use vduse
-datapath efficiently:
-- Current IO completion irq of vduse is IOCTL based. If add one option
-to get it eventfd based, then vhost-target can directly notify IO
-completion via negotiated eventfd.
-
-
-Thanks
-From Xiaodong
-
-
-
-
-
-									
+It would make sense to do that, I do wonder if the reporting may be more 
+complicated in case there are device-specific power domains that we need 
+to be aware of, instead of just a report per PM_SUSPEND_* mode defined 
+in include/linux/suspend.h.
+-- 
+Florian
