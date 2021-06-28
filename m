@@ -2,682 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6B343B6746
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 19:07:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B190C3B674F
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 19:09:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232989AbhF1RJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 13:09:52 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:64070 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232877AbhF1RJn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 13:09:43 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15SH74sw029838;
-        Mon, 28 Jun 2021 10:07:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=aRAmn1silCf48yNrV/xj5VeDmS3II5B0MGIPubquoAE=;
- b=EL9EvksgOui1ORdpITnJqNn05FbIL3i1r+89U5nLUG6BNCdtFjzDELukd6f7gDPX6Ciu
- LnJid1seyC3VsBi/K0lFkMK8dtkA+/EXQPi2tGeNokuTlGKKdCzphmQt14wljq6J1Q6S
- 7d9FNZ3oGWjWQkr6+t/o1e+l4xniJUvlHWeDAPQPCz6lcpR5KyIo4smGL1MZxGIKoeE7
- o+ptVPBJWo9CsVMChTxbgYkenC46iFtR7iQSjv18WjKEoWZ828Vx1W6soHX5PLYhginK
- ptdtDsoNWQWP6Kz50QB3Hx8TEgneG1PZjAXWiAPcIiAGGZlosaYuFKq1AROc4UOBS3FZ IA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 39f11y3bqf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 28 Jun 2021 10:07:12 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 28 Jun
- 2021 10:07:10 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Mon, 28 Jun 2021 10:07:10 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 9691C3F7067;
-        Mon, 28 Jun 2021 10:07:07 -0700 (PDT)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
-        <hkelam@marvell.com>
-Subject: [net-next 3/3] octeontx2-pf: offload DMAC filters to CGX/RPM block
-Date:   Mon, 28 Jun 2021 22:36:54 +0530
-Message-ID: <20210628170654.22995-4-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210628170654.22995-1-hkelam@marvell.com>
-References: <20210628170654.22995-1-hkelam@marvell.com>
+        id S232889AbhF1RL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 13:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44058 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232010AbhF1RL2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 13:11:28 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD98EC061760;
+        Mon, 28 Jun 2021 10:09:01 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id z3-20020a17090a3983b029016bc232e40bso464431pjb.4;
+        Mon, 28 Jun 2021 10:09:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ayzyjA7sqM8Kd0CJnae9oXKGxQfRtU8wzvTHP0aSqm0=;
+        b=CBPnTpTe13ZK90tvlBVOzrN5AoRb8fD4Ygtx7eu7+r0C6kDSEcAISHcVBe2M868qXm
+         RvqKiep7EKSvJ5PiJsKSWQRyR6/LO6/tgxcjmSsMXHm1mf+bBPSAwha6fQ7VmuUXLyby
+         h9wcflY+9Su9h+7fm07oaf47P2wUnqx1KH7Ofk9N4wliUqwWb9yNoUMaK927ibwksUBD
+         hV909Th3J0g/j4bB8OCzs+5CfaJTwsBAeM43IePE5HF4no2A3a0ZcLb8LopKqq69G2PC
+         SWxgOYmW/6+WUzKKggmonnkHWiGn83GctpfLipwjTd86nqho5Ow9JG58MEpyc+malKIn
+         mI8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ayzyjA7sqM8Kd0CJnae9oXKGxQfRtU8wzvTHP0aSqm0=;
+        b=f+nCIud64A567LcTMDjSGnSvJ3Xb7NRbpyWXrIKK4opR5jNuzAHpDAM57/hH6lOzwz
+         h/Y6XRn+Ut0UjLxDDjHBitkvjukYd+62LIzI7cEx/J1IqPkWm62QjeZgHIccQeNrRkHJ
+         gVU7LJOH1wJhkrJcEOfopZvKypw0UCW23W3GYmJGivoYIzWJ0/bIXbV7R3TX2oGPg2XO
+         pNbLVcIsWBLJSW2wZe+V/gcicj7nqJ4NGh0i5rDXTOz6ZrNjatILoiyYSsBBmZhUdosV
+         qLetMly/Uu9vTeQ+n1DbnlVIXrp5MngLUxUIjH2pfLpF6q0H7kcMULhJxH5MFHfRr433
+         oM2Q==
+X-Gm-Message-State: AOAM533uSFCvbohC4hqlMD9zjXndFq7YqI1mR776/eKsNRffzkbLkNBr
+        yei8ncdPcduSJOYrZOG5y08=
+X-Google-Smtp-Source: ABdhPJz9vrMR1rvIO0tSeBI0MW0WKXlBdN7mJIe5WrjBfaKrK3dOp0Yb4lEUzX46EC9ZrLnUENAnUA==
+X-Received: by 2002:a17:902:f243:b029:11e:3249:4a17 with SMTP id j3-20020a170902f243b029011e32494a17mr23537915plc.0.1624900141179;
+        Mon, 28 Jun 2021 10:09:01 -0700 (PDT)
+Received: from localhost.localdomain (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id y1sm15344343pgr.70.2021.06.28.10.09.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Jun 2021 10:09:00 -0700 (PDT)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth-next 2021-06-28
+Date:   Mon, 28 Jun 2021 10:08:58 -0700
+Message-Id: <20210628170858.312168-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: B9H6kQjQdKiLtRQg-EQuND4hricAAn1i
-X-Proofpoint-ORIG-GUID: B9H6kQjQdKiLtRQg-EQuND4hricAAn1i
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-06-28_14:2021-06-25,2021-06-28 signatures=0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DMAC filtering can be achieved by either NPC MCAM rules or
-CGX/RPM MAC filters. Currently we are achieving this by NPC
-MCAM rules. This patch offloads DMAC filters to CGX/RPM MAC
-filters instead of NPC MCAM rules. Offloading DMAC filter to
-CGX/RPM block helps in reducing traffic to NPC block and
-save MCAM rules
+The following changes since commit ff8744b5eb116fdf9b80a6ff774393afac7325bd:
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
- .../ethernet/marvell/octeontx2/nic/Makefile   |   2 +-
- .../marvell/octeontx2/nic/otx2_common.c       |   3 +
- .../marvell/octeontx2/nic/otx2_common.h       |  11 +
- .../marvell/octeontx2/nic/otx2_dmac_flt.c     | 173 ++++++++++++++
- .../marvell/octeontx2/nic/otx2_flows.c        | 225 +++++++++++++++++-
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |   9 +
- 6 files changed, 413 insertions(+), 10 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
+  Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue (2021-06-25 11:59:11 -0700)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-index 457c94793e63..3254b02205ca 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-@@ -7,7 +7,7 @@ obj-$(CONFIG_OCTEONTX2_PF) += rvu_nicpf.o
- obj-$(CONFIG_OCTEONTX2_VF) += rvu_nicvf.o
- 
- rvu_nicpf-y := otx2_pf.o otx2_common.o otx2_txrx.o otx2_ethtool.o \
--		     otx2_ptp.o otx2_flows.o otx2_tc.o cn10k.o
-+               otx2_ptp.o otx2_flows.o otx2_tc.o cn10k.o otx2_dmac_flt.o
- rvu_nicvf-y := otx2_vf.o
- 
- ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index cf7875d51d87..7cccd802c4ed 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -210,6 +210,9 @@ int otx2_set_mac_address(struct net_device *netdev, void *p)
- 		/* update dmac field in vlan offload rule */
- 		if (pfvf->flags & OTX2_FLAG_RX_VLAN_SUPPORT)
- 			otx2_install_rxvlan_offload_flow(pfvf);
-+		/* update dmac address in ntuple and DMAC filter list */
-+		if (pfvf->flags & OTX2_FLAG_DMACFLTR_SUPPORT)
-+			otx2_dmacflt_update_pfmac_flow(pfvf);
- 	} else {
- 		return -EPERM;
- 	}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 234b330f3183..71448674fb24 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -288,6 +288,9 @@ struct otx2_flow_config {
- 	u16			tc_flower_offset;
- 	u16                     ntuple_max_flows;
- 	u16			tc_max_flows;
-+	u8			dmacflt_max_flows;
-+	u8			*bmap_to_dmacindex;
-+	unsigned long		dmacflt_bmap;
- 	struct list_head	flow_list;
- };
- 
-@@ -329,6 +332,7 @@ struct otx2_nic {
- #define OTX2_FLAG_TC_FLOWER_SUPPORT		BIT_ULL(11)
- #define OTX2_FLAG_TC_MATCHALL_EGRESS_ENABLED	BIT_ULL(12)
- #define OTX2_FLAG_TC_MATCHALL_INGRESS_ENABLED	BIT_ULL(13)
-+#define OTX2_FLAG_DMACFLTR_SUPPORT		BIT_ULL(14)
- 	u64			flags;
- 
- 	struct otx2_qset	qset;
-@@ -833,4 +837,11 @@ int otx2_init_tc(struct otx2_nic *nic);
- void otx2_shutdown_tc(struct otx2_nic *nic);
- int otx2_setup_tc(struct net_device *netdev, enum tc_setup_type type,
- 		  void *type_data);
-+/* CGX/RPM DMAC filters support */
-+int otx2_dmacflt_get_max_cnt(struct otx2_nic *pf);
-+int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u8 bit_pos);
-+int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac, u8 bit_pos);
-+int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos);
-+void otx2_dmacflt_reinstall_flows(struct otx2_nic *pf);
-+void otx2_dmacflt_update_pfmac_flow(struct otx2_nic *pfvf);
- #endif /* OTX2_COMMON_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
-new file mode 100644
-index 000000000000..ffe3e94562d0
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dmac_flt.c
-@@ -0,0 +1,173 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Marvell OcteonTx2 RVU Physcial Function ethernet driver
-+ *
-+ * Copyright (C) 2021 Marvell.
-+ */
-+
-+#include "otx2_common.h"
-+
-+static int otx2_dmacflt_do_add(struct otx2_nic *pf, const u8 *mac,
-+			       u8 *dmac_index)
-+{
-+	struct cgx_mac_addr_add_req *req;
-+	struct cgx_mac_addr_add_rsp *rsp;
-+	int err;
-+
-+	mutex_lock(&pf->mbox.lock);
-+
-+	req = otx2_mbox_alloc_msg_cgx_mac_addr_add(&pf->mbox);
-+	if (!req) {
-+		mutex_unlock(&pf->mbox.lock);
-+		return -ENOMEM;
-+	}
-+
-+	ether_addr_copy(req->mac_addr, mac);
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+
-+	if (!err) {
-+		rsp = (struct cgx_mac_addr_add_rsp *)
-+			 otx2_mbox_get_rsp(&pf->mbox.mbox, 0, &req->hdr);
-+		*dmac_index = rsp->index;
-+	}
-+
-+	mutex_unlock(&pf->mbox.lock);
-+	return err;
-+}
-+
-+static int otx2_dmacflt_add_pfmac(struct otx2_nic *pf)
-+{
-+	struct cgx_mac_addr_set_or_get *req;
-+	int err;
-+
-+	mutex_lock(&pf->mbox.lock);
-+
-+	req = otx2_mbox_alloc_msg_cgx_mac_addr_set(&pf->mbox);
-+	if (!req) {
-+		mutex_unlock(&pf->mbox.lock);
-+		return -ENOMEM;
-+	}
-+
-+	ether_addr_copy(req->mac_addr, pf->netdev->dev_addr);
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+
-+	mutex_unlock(&pf->mbox.lock);
-+	return err;
-+}
-+
-+int otx2_dmacflt_add(struct otx2_nic *pf, const u8 *mac, u8 bit_pos)
-+{
-+	u8 *dmacindex;
-+
-+	/* Store dmacindex returned by CGX/RPM driver which will
-+	 * be used for macaddr update/remove
-+	 */
-+	dmacindex = &pf->flow_cfg->bmap_to_dmacindex[bit_pos];
-+
-+	if (ether_addr_equal(mac, pf->netdev->dev_addr))
-+		return otx2_dmacflt_add_pfmac(pf);
-+	else
-+		return otx2_dmacflt_do_add(pf, mac, dmacindex);
-+}
-+
-+static int otx2_dmacflt_do_remove(struct otx2_nic *pfvf, const u8 *mac,
-+				  u8 dmac_index)
-+{
-+	struct cgx_mac_addr_del_req *req;
-+	int err;
-+
-+	mutex_lock(&pfvf->mbox.lock);
-+	req = otx2_mbox_alloc_msg_cgx_mac_addr_del(&pfvf->mbox);
-+	if (!req) {
-+		mutex_unlock(&pfvf->mbox.lock);
-+		return -ENOMEM;
-+	}
-+
-+	req->index = dmac_index;
-+
-+	err = otx2_sync_mbox_msg(&pfvf->mbox);
-+	mutex_unlock(&pfvf->mbox.lock);
-+
-+	return err;
-+}
-+
-+static int otx2_dmacflt_remove_pfmac(struct otx2_nic *pf)
-+{
-+	struct msg_req *req;
-+	int err;
-+
-+	mutex_lock(&pf->mbox.lock);
-+	req = otx2_mbox_alloc_msg_cgx_mac_addr_reset(&pf->mbox);
-+	if (!req) {
-+		mutex_unlock(&pf->mbox.lock);
-+		return -ENOMEM;
-+	}
-+
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+
-+	mutex_unlock(&pf->mbox.lock);
-+	return err;
-+}
-+
-+int otx2_dmacflt_remove(struct otx2_nic *pf, const u8 *mac,
-+			u8 bit_pos)
-+{
-+	u8 dmacindex = pf->flow_cfg->bmap_to_dmacindex[bit_pos];
-+
-+	if (ether_addr_equal(mac, pf->netdev->dev_addr))
-+		return otx2_dmacflt_remove_pfmac(pf);
-+	else
-+		return otx2_dmacflt_do_remove(pf, mac, dmacindex);
-+}
-+
-+/* CGX/RPM blocks support max unicast entries of 32.
-+ * on typical configuration MAC block associated
-+ * with 4 lmacs, each lmac will have 8 dmac entries
-+ */
-+int otx2_dmacflt_get_max_cnt(struct otx2_nic *pf)
-+{
-+	struct cgx_max_dmac_entries_get_rsp *rsp;
-+	struct msg_req *msg;
-+	int err;
-+
-+	mutex_lock(&pf->mbox.lock);
-+	msg = otx2_mbox_alloc_msg_cgx_mac_max_entries_get(&pf->mbox);
-+
-+	if (!msg) {
-+		mutex_unlock(&pf->mbox.lock);
-+		return -ENOMEM;
-+	}
-+
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+	if (err)
-+		goto out;
-+
-+	rsp = (struct cgx_max_dmac_entries_get_rsp *)
-+		     otx2_mbox_get_rsp(&pf->mbox.mbox, 0, &msg->hdr);
-+	pf->flow_cfg->dmacflt_max_flows = rsp->max_dmac_filters;
-+
-+out:
-+	mutex_unlock(&pf->mbox.lock);
-+	return err;
-+}
-+
-+int otx2_dmacflt_update(struct otx2_nic *pf, u8 *mac, u8 bit_pos)
-+{
-+	struct cgx_mac_addr_update_req *req;
-+	int rc;
-+
-+	mutex_lock(&pf->mbox.lock);
-+
-+	req = otx2_mbox_alloc_msg_cgx_mac_addr_update(&pf->mbox);
-+
-+	if (!req) {
-+		mutex_unlock(&pf->mbox.lock);
-+		rc = -ENOMEM;
-+	}
-+
-+	ether_addr_copy(req->mac_addr, mac);
-+	req->index = pf->flow_cfg->bmap_to_dmacindex[bit_pos];
-+	rc = otx2_sync_mbox_msg(&pf->mbox);
-+
-+	mutex_unlock(&pf->mbox.lock);
-+	return rc;
-+}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index 8c97106bdd1c..1c17853e5b0b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -18,6 +18,12 @@ struct otx2_flow {
- 	bool is_vf;
- 	u8 rss_ctx_id;
- 	int vf;
-+	bool dmac_filter;
-+};
-+
-+enum dmac_req {
-+	DMAC_ADDR_UPDATE,
-+	DMAC_ADDR_DEL
- };
- 
- static void otx2_clear_ntuple_flow_info(struct otx2_nic *pfvf, struct otx2_flow_config *flow_cfg)
-@@ -219,6 +225,21 @@ int otx2_mcam_flow_init(struct otx2_nic *pf)
- 	if (!pf->mac_table)
- 		return -ENOMEM;
- 
-+	otx2_dmacflt_get_max_cnt(pf);
-+
-+	/* DMAC filters are not allocated */
-+	if (!pf->flow_cfg->dmacflt_max_flows)
-+		return 0;
-+
-+	pf->flow_cfg->bmap_to_dmacindex = devm_kzalloc(pf->dev, sizeof(u8)
-+						       * pf->flow_cfg->dmacflt_max_flows,
-+						       GFP_KERNEL);
-+
-+	if (!pf->flow_cfg->bmap_to_dmacindex)
-+		return -ENOMEM;
-+
-+	pf->flags |= OTX2_FLAG_DMACFLTR_SUPPORT;
-+
- 	return 0;
- }
- 
-@@ -280,6 +301,12 @@ int otx2_add_macfilter(struct net_device *netdev, const u8 *mac)
- {
- 	struct otx2_nic *pf = netdev_priv(netdev);
- 
-+	if (bitmap_weight(&pf->flow_cfg->dmacflt_bmap,
-+			  pf->flow_cfg->dmacflt_max_flows))
-+		netdev_warn(netdev,
-+			    "Add %pM to CGX/RPM DMAC filters list as well\n",
-+			    mac);
-+
- 	return otx2_do_add_macfilter(pf, mac);
- }
- 
-@@ -351,12 +378,22 @@ static void otx2_add_flow_to_list(struct otx2_nic *pfvf, struct otx2_flow *flow)
- 	list_add(&flow->list, head);
- }
- 
-+static int otx2_get_maxflows(struct otx2_flow_config *flow_cfg)
-+{
-+	if (flow_cfg->nr_flows == flow_cfg->ntuple_max_flows ||
-+	    bitmap_weight(&flow_cfg->dmacflt_bmap,
-+			  flow_cfg->dmacflt_max_flows))
-+		return flow_cfg->ntuple_max_flows + flow_cfg->dmacflt_max_flows;
-+	else
-+		return flow_cfg->ntuple_max_flows;
-+}
-+
- int otx2_get_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc,
- 		  u32 location)
- {
- 	struct otx2_flow *iter;
- 
--	if (location >= pfvf->flow_cfg->ntuple_max_flows)
-+	if (location >= otx2_get_maxflows(pfvf->flow_cfg))
- 		return -EINVAL;
- 
- 	list_for_each_entry(iter, &pfvf->flow_cfg->flow_list, list) {
-@@ -378,7 +415,7 @@ int otx2_get_all_flows(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc,
- 	int idx = 0;
- 	int err = 0;
- 
--	nfc->data = pfvf->flow_cfg->ntuple_max_flows;
-+	nfc->data = otx2_get_maxflows(pfvf->flow_cfg);
- 	while ((!err || err == -ENOENT) && idx < rule_cnt) {
- 		err = otx2_get_flow(pfvf, nfc, location);
- 		if (!err)
-@@ -760,6 +797,32 @@ int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
- 	return 0;
- }
- 
-+static int otx2_is_flow_rule_dmacfilter(struct otx2_nic *pfvf,
-+					struct ethtool_rx_flow_spec *fsp)
-+{
-+	struct ethhdr *eth_mask = &fsp->m_u.ether_spec;
-+	struct ethhdr *eth_hdr = &fsp->h_u.ether_spec;
-+	u64 ring_cookie = fsp->ring_cookie;
-+	u32 flow_type;
-+
-+	if (!(pfvf->flags & OTX2_FLAG_DMACFLTR_SUPPORT))
-+		return false;
-+
-+	flow_type = fsp->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS);
-+
-+	/* CGX/RPM block dmac filtering configured for white listing
-+	 * check for action other than DROP
-+	 */
-+	if (flow_type == ETHER_FLOW && ring_cookie != RX_CLS_FLOW_DISC &&
-+	    !ethtool_get_flow_spec_ring_vf(ring_cookie)) {
-+		if (is_zero_ether_addr(eth_mask->h_dest) &&
-+		    is_valid_ether_addr(eth_hdr->h_dest))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
- {
- 	u64 ring_cookie = flow->flow_spec.ring_cookie;
-@@ -818,14 +881,45 @@ static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
- 	return err;
- }
- 
-+static int otx2_add_flow_with_pfmac(struct otx2_nic *pfvf, struct otx2_flow *flow)
-+{
-+	struct otx2_flow *pf_mac;
-+	struct ethhdr *eth_hdr;
-+
-+	pf_mac = kzalloc(sizeof(*pf_mac), GFP_KERNEL);
-+	if (!pf_mac)
-+		return -ENOMEM;
-+
-+	pf_mac->entry = 0;
-+	pf_mac->dmac_filter = true;
-+	pf_mac->location = pfvf->flow_cfg->ntuple_max_flows;
-+	memcpy(&pf_mac->flow_spec, &flow->flow_spec,
-+	       sizeof(struct ethtool_rx_flow_spec));
-+	pf_mac->flow_spec.location = pf_mac->location;
-+
-+	/* Copy PF mac address */
-+	eth_hdr = &pf_mac->flow_spec.h_u.ether_spec;
-+	ether_addr_copy(eth_hdr->h_dest, pfvf->netdev->dev_addr);
-+
-+	/* Install DMAC filter with PF mac address */
-+	otx2_dmacflt_add(pfvf, eth_hdr->h_dest, 0);
-+
-+	otx2_add_flow_to_list(pfvf, pf_mac);
-+	pfvf->flow_cfg->nr_flows++;
-+	set_bit(0, &pfvf->flow_cfg->dmacflt_bmap);
-+
-+	return 0;
-+}
-+
- int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- {
- 	struct otx2_flow_config *flow_cfg = pfvf->flow_cfg;
- 	struct ethtool_rx_flow_spec *fsp = &nfc->fs;
- 	struct otx2_flow *flow;
-+	struct ethhdr *eth_hdr;
- 	bool new = false;
-+	int err = 0;
- 	u32 ring;
--	int err;
- 
- 	ring = ethtool_get_flow_spec_ring(fsp->ring_cookie);
- 	if (!(pfvf->flags & OTX2_FLAG_NTUPLE_SUPPORT))
-@@ -834,16 +928,15 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- 	if (ring >= pfvf->hw.rx_queues && fsp->ring_cookie != RX_CLS_FLOW_DISC)
- 		return -EINVAL;
- 
--	if (fsp->location >= flow_cfg->ntuple_max_flows)
-+	if (fsp->location >= otx2_get_maxflows(flow_cfg))
- 		return -EINVAL;
- 
- 	flow = otx2_find_flow(pfvf, fsp->location);
- 	if (!flow) {
--		flow = kzalloc(sizeof(*flow), GFP_ATOMIC);
-+		flow = kzalloc(sizeof(*flow), GFP_KERNEL);
- 		if (!flow)
- 			return -ENOMEM;
- 		flow->location = fsp->location;
--		flow->entry = flow_cfg->flow_ent[flow->location];
- 		new = true;
- 	}
- 	/* struct copy */
-@@ -852,7 +945,52 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- 	if (fsp->flow_type & FLOW_RSS)
- 		flow->rss_ctx_id = nfc->rss_context;
- 
--	err = otx2_add_flow_msg(pfvf, flow);
-+	if (otx2_is_flow_rule_dmacfilter(pfvf, &flow->flow_spec)) {
-+		eth_hdr = &flow->flow_spec.h_u.ether_spec;
-+
-+		/* Sync dmac filter table with updated fields */
-+		if (flow->dmac_filter)
-+			return otx2_dmacflt_update(pfvf, eth_hdr->h_dest,
-+						   flow->entry);
-+
-+		if (bitmap_full(&flow_cfg->dmacflt_bmap,
-+				flow_cfg->dmacflt_max_flows)) {
-+			netdev_warn(pfvf->netdev,
-+				    "Can't insert the rule %d as max allowed dmac filters are %d\n",
-+				    flow->location + flow_cfg->dmacflt_max_flows,
-+				    flow_cfg->dmacflt_max_flows);
-+			err = -EINVAL;
-+			if (new)
-+				kfree(flow);
-+			return err;
-+		}
-+
-+		/* Install PF mac address to DMAC filter list */
-+		if (!test_bit(0, &flow_cfg->dmacflt_bmap))
-+			otx2_add_flow_with_pfmac(pfvf, flow);
-+
-+		flow->dmac_filter = true;
-+		flow->entry = find_first_zero_bit(&flow_cfg->dmacflt_bmap,
-+						  flow_cfg->dmacflt_max_flows);
-+		fsp->location = flow_cfg->ntuple_max_flows + flow->entry;
-+		flow->flow_spec.location = fsp->location;
-+		flow->location = fsp->location;
-+
-+		set_bit(flow->entry, &flow_cfg->dmacflt_bmap);
-+		otx2_dmacflt_add(pfvf, eth_hdr->h_dest, flow->entry);
-+
-+	} else {
-+		if (flow->location >= pfvf->flow_cfg->ntuple_max_flows) {
-+			netdev_warn(pfvf->netdev,
-+				    "Can't insert non dmac ntuple rule at %d, allowed range %d-0\n",
-+				    flow->location, flow_cfg->ntuple_max_flows - 1);
-+			err = -EINVAL;
-+		} else {
-+			flow->entry = flow_cfg->flow_ent[flow->location];
-+			err = otx2_add_flow_msg(pfvf, flow);
-+		}
-+	}
-+
- 	if (err) {
- 		if (new)
- 			kfree(flow);
-@@ -890,20 +1028,70 @@ static int otx2_remove_flow_msg(struct otx2_nic *pfvf, u16 entry, bool all)
- 	return err;
- }
- 
-+static void otx2_update_rem_pfmac(struct otx2_nic *pfvf, int req)
-+{
-+	struct otx2_flow *iter;
-+	struct ethhdr *eth_hdr;
-+	bool found = false;
-+
-+	list_for_each_entry(iter, &pfvf->flow_cfg->flow_list, list) {
-+		if (iter->dmac_filter && iter->entry == 0) {
-+			eth_hdr = &iter->flow_spec.h_u.ether_spec;
-+			if (req == DMAC_ADDR_DEL) {
-+				otx2_dmacflt_remove(pfvf, eth_hdr->h_dest,
-+						    0);
-+				clear_bit(0, &pfvf->flow_cfg->dmacflt_bmap);
-+				found = true;
-+			} else {
-+				ether_addr_copy(eth_hdr->h_dest,
-+						pfvf->netdev->dev_addr);
-+				otx2_dmacflt_update(pfvf, eth_hdr->h_dest, 0);
-+			}
-+			break;
-+		}
-+	}
-+
-+	if (found) {
-+		list_del(&iter->list);
-+		kfree(iter);
-+		pfvf->flow_cfg->nr_flows--;
-+	}
-+}
-+
- int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
- {
- 	struct otx2_flow_config *flow_cfg = pfvf->flow_cfg;
- 	struct otx2_flow *flow;
- 	int err;
- 
--	if (location >= flow_cfg->ntuple_max_flows)
-+	if (location >= otx2_get_maxflows(flow_cfg))
- 		return -EINVAL;
- 
- 	flow = otx2_find_flow(pfvf, location);
- 	if (!flow)
- 		return -ENOENT;
- 
--	err = otx2_remove_flow_msg(pfvf, flow->entry, false);
-+	if (flow->dmac_filter) {
-+		struct ethhdr *eth_hdr = &flow->flow_spec.h_u.ether_spec;
-+
-+		/* user not allowed to remove dmac filter with interface mac */
-+		if (ether_addr_equal(pfvf->netdev->dev_addr, eth_hdr->h_dest))
-+			return -EPERM;
-+
-+		err = otx2_dmacflt_remove(pfvf, eth_hdr->h_dest,
-+					  flow->entry);
-+		clear_bit(flow->entry, &flow_cfg->dmacflt_bmap);
-+		/* If all dmac filters are removed delete macfilter with
-+		 * interface mac address and configure CGX/RPM block in
-+		 * promiscuous mode
-+		 */
-+		if (bitmap_weight(&flow_cfg->dmacflt_bmap,
-+				  flow_cfg->dmacflt_max_flows) == 1)
-+			otx2_update_rem_pfmac(pfvf, DMAC_ADDR_DEL);
-+	} else {
-+		err = otx2_remove_flow_msg(pfvf, flow->entry, false);
-+	}
-+
- 	if (err)
- 		return err;
- 
-@@ -1100,3 +1288,22 @@ int otx2_enable_rxvlan(struct otx2_nic *pf, bool enable)
- 	mutex_unlock(&pf->mbox.lock);
- 	return rsp_hdr->rc;
- }
-+
-+void otx2_dmacflt_reinstall_flows(struct otx2_nic *pf)
-+{
-+	struct otx2_flow *iter;
-+	struct ethhdr *eth_hdr;
-+
-+	list_for_each_entry(iter, &pf->flow_cfg->flow_list, list) {
-+		if (iter->dmac_filter) {
-+			eth_hdr = &iter->flow_spec.h_u.ether_spec;
-+			otx2_dmacflt_add(pf, eth_hdr->h_dest,
-+					 iter->entry);
-+		}
-+	}
-+}
-+
-+void otx2_dmacflt_update_pfmac_flow(struct otx2_nic *pfvf)
-+{
-+	otx2_update_rem_pfmac(pfvf, DMAC_ADDR_UPDATE);
-+}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 59912f73417b..fe8789357746 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1110,6 +1110,11 @@ static int otx2_cgx_config_loopback(struct otx2_nic *pf, bool enable)
- 	struct msg_req *msg;
- 	int err;
- 
-+	if (enable && bitmap_weight(&pf->flow_cfg->dmacflt_bmap,
-+				    pf->flow_cfg->dmacflt_max_flows))
-+		netdev_warn(pf->netdev,
-+			    "CGX/RPM internal loopback might not work as DMAC filters are active\n");
-+
- 	mutex_lock(&pf->mbox.lock);
- 	if (enable)
- 		msg = otx2_mbox_alloc_msg_cgx_intlbk_enable(&pf->mbox);
-@@ -1644,6 +1649,10 @@ int otx2_open(struct net_device *netdev)
- 	/* Restore pause frame settings */
- 	otx2_config_pause_frm(pf);
- 
-+	/* Install DMAC Filters */
-+	if (pf->flags & OTX2_FLAG_DMACFLTR_SUPPORT)
-+		otx2_dmacflt_reinstall_flows(pf);
-+
- 	err = otx2_rxtx_enable(pf, true);
- 	if (err)
- 		goto err_tx_stop_queues;
--- 
-2.17.1
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2021-06-28
+
+for you to fetch changes up to 1f0536139cb8e8175ca034e12706b86f77f9061e:
+
+  Bluetooth: hci_uart: Remove redundant assignment to fw_ptr (2021-06-26 07:52:41 +0200)
+
+----------------------------------------------------------------
+bluetooth-next pull request for net-next:
+
+ - Proper support for BCM4330 and BMC4334
+ - Various improvements for firmware download of Intel controllers
+ - Update management interface revision to 20
+ - Support for AOSP HCI vendor commands
+ - Initial Virtio support
+
+----------------------------------------------------------------
+Archie Pusaka (9):
+      Bluetooth: hci_h5: Add RTL8822CS capabilities
+      Bluetooth: use inclusive language in hci_core.h
+      Bluetooth: use inclusive language to describe CPB
+      Bluetooth: use inclusive language in HCI LE features
+      Bluetooth: use inclusive language in SMP
+      Bluetooth: use inclusive language in comments
+      Bluetooth: use inclusive language in HCI role comments
+      Bluetooth: use inclusive language when tracking connections
+      Bluetooth: use inclusive language when filtering devices
+
+Colin Ian King (2):
+      Bluetooth: virtio_bt: add missing null pointer check on alloc_skb call return
+      Bluetooth: btmrvl: remove redundant continue statement
+
+Connor Abbott (1):
+      Bluetooth: btqca: Don't modify firmware contents in-place
+
+Daniel Lenski (1):
+      Bluetooth: btusb: Add a new QCA_ROME device (0cf3:e500)
+
+Hilda Wu (1):
+      Bluetooth: btusb: Add support USB ALT 3 for WBS
+
+Jiapeng Chong (1):
+      Bluetooth: 6lowpan: remove unused function
+
+Joakim Tjernlund (2):
+      Bluetooth: btusb: Add 0x0b05:0x190e Realtek 8761BU (ASUS BT500) device.
+      Bluetooth: btrtl: rename USB fw for RTL8761
+
+Kai Ye (11):
+      Bluetooth: 6lowpan: delete unneeded variable initialization
+      Bluetooth: bnep: Use the correct print format
+      Bluetooth: cmtp: Use the correct print format
+      Bluetooth: hidp: Use the correct print format
+      Bluetooth: 6lowpan: Use the correct print format
+      Bluetooth: a2mp: Use the correct print format
+      Bluetooth: amp: Use the correct print format
+      Bluetooth: mgmt: Use the correct print format
+      Bluetooth: msft: Use the correct print format
+      Bluetooth: sco: Use the correct print format
+      Bluetooth: smp: Use the correct print format
+
+Kai-Heng Feng (1):
+      Bluetooth: Shutdown controller after workqueues are flushed or cancelled
+
+Kiran K (1):
+      Bluetooth: Fix alt settings for incoming SCO with transparent coding format
+
+Luiz Augusto von Dentz (5):
+      Bluetooth: L2CAP: Fix invalid access if ECRED Reconfigure fails
+      Bluetooth: L2CAP: Fix invalid access on ECRED Connection response
+      Bluetooth: mgmt: Fix slab-out-of-bounds in tlv_data_is_valid
+      Bluetooth: Fix Set Extended (Scan Response) Data
+      Bluetooth: Fix handling of HCI_LE_Advertising_Set_Terminated event
+
+Manish Mandlik (1):
+      Bluetooth: Add ncmd=0 recovery handling
+
+Marcel Holtmann (1):
+      Bluetooth: Increment management interface revision
+
+Mikhail Rudenko (1):
+      Bluetooth: btbcm: Add entry for BCM43430B0 UART Bluetooth
+
+Muhammad Usama Anjum (1):
+      Bluetooth: btusb: fix memory leak
+
+Nigel Christian (1):
+      Bluetooth: hci_uart: Remove redundant assignment to fw_ptr
+
+Pavel Skripkin (1):
+      Bluetooth: hci_qca: fix potential GPF
+
+Qiheng Lin (1):
+      Bluetooth: use flexible-array member instead of zero-length array
+
+Sathish Narasimman (1):
+      Bluetooth: Translate additional address type during le_conn_comp
+
+Szymon Janc (1):
+      Bluetooth: Remove spurious error message
+
+Tedd Ho-Jeong An (1):
+      Bluetooth: mgmt: Fix the command returns garbage parameter value
+
+Thadeu Lima de Souza Cascardo (1):
+      Bluetooth: cmtp: fix file refcount when cmtp_attach_device fails
+
+Tim Jiang (2):
+      Bluetooth: btusb: use default nvm if boardID is 0 for wcn6855.
+      Bluetooth: btusb: fix bt fiwmare downloading failure issue for qca btsoc.
+
+Venkata Lakshmi Narayana Gubba (5):
+      Bluetooth: hci_qca: Add support for QTI Bluetooth chip wcn6750
+      Bluetooth: btqca: Add support for firmware image with mbn type for WCN6750
+      Bluetooth: btqca: Moved extracting rom version info to common place
+      dt-bindings: net: bluetooth: Convert Qualcomm BT binding to DT schema
+      dt-bindings: net: bluetooth: Add device tree bindings for QTI chip wcn6750
+
+Yu Liu (2):
+      Bluetooth: Return whether a connection is outbound
+      Bluetooth: Fix the HCI to MGMT status conversion table
+
+YueHaibing (1):
+      Bluetooth: RFCOMM: Use DEVICE_ATTR_RO macro
+
+Yun-Hao Chung (1):
+      Bluetooth: disable filter dup when scan for adv monitor
+
+Zhang Qilong (1):
+      Bluetooth: btmtkuart: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+
+mark-yw.chen (2):
+      Bluetooth: btusb: Fixed too many in-token issue for Mediatek Chip.
+      Bluetooth: btusb: Add support for Lite-On Mediatek Chip
+
+ .../devicetree/bindings/net/qualcomm-bluetooth.txt |  69 -------
+ .../bindings/net/qualcomm-bluetooth.yaml           | 183 +++++++++++++++++++
+ drivers/bluetooth/btbcm.c                          |   1 +
+ drivers/bluetooth/btmrvl_sdio.c                    |   4 +-
+ drivers/bluetooth/btmtkuart.c                      |   6 +-
+ drivers/bluetooth/btqca.c                          | 113 +++++++++---
+ drivers/bluetooth/btqca.h                          |  14 +-
+ drivers/bluetooth/btrtl.c                          |  35 ++--
+ drivers/bluetooth/btrtl.h                          |   7 +
+ drivers/bluetooth/btusb.c                          |  45 ++++-
+ drivers/bluetooth/hci_ag6xx.c                      |   1 -
+ drivers/bluetooth/hci_h5.c                         |   5 +-
+ drivers/bluetooth/hci_qca.c                        | 118 +++++++++---
+ drivers/bluetooth/virtio_bt.c                      |   3 +
+ include/net/bluetooth/hci.h                        |  99 +++++-----
+ include/net/bluetooth/hci_core.h                   |  29 +--
+ include/net/bluetooth/mgmt.h                       |   3 +-
+ net/bluetooth/6lowpan.c                            |  54 +-----
+ net/bluetooth/a2mp.c                               |  24 +--
+ net/bluetooth/amp.c                                |   6 +-
+ net/bluetooth/bnep/core.c                          |   8 +-
+ net/bluetooth/cmtp/capi.c                          |  22 +--
+ net/bluetooth/cmtp/core.c                          |   5 +
+ net/bluetooth/hci_conn.c                           |  10 +-
+ net/bluetooth/hci_core.c                           |  78 +++++---
+ net/bluetooth/hci_debugfs.c                        |   8 +-
+ net/bluetooth/hci_event.c                          | 187 +++++++++++--------
+ net/bluetooth/hci_request.c                        | 203 +++++++++++++--------
+ net/bluetooth/hci_sock.c                           |  12 +-
+ net/bluetooth/hidp/core.c                          |   8 +-
+ net/bluetooth/l2cap_core.c                         |  16 +-
+ net/bluetooth/mgmt.c                               |  58 +++---
+ net/bluetooth/mgmt_config.c                        |   4 +-
+ net/bluetooth/msft.c                               |   8 +-
+ net/bluetooth/rfcomm/tty.c                         |  10 +-
+ net/bluetooth/sco.c                                |   8 +-
+ net/bluetooth/smp.c                                |  78 ++++----
+ net/bluetooth/smp.h                                |   6 +-
+ 38 files changed, 967 insertions(+), 581 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+ create mode 100644 Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
