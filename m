@@ -2,132 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE60D3B5F93
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 16:06:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B96D3B5FBC
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 16:13:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232256AbhF1OI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 10:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbhF1OI1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 10:08:27 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C87B5C061574;
-        Mon, 28 Jun 2021 07:06:00 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id k8so25881436lja.4;
-        Mon, 28 Jun 2021 07:06:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=1R0iH+DWaUknOCEjRDNGWia7J9lYBcVhqVAgEOlMaNg=;
-        b=GcGrlpvy5yF9fsY4YxegiUwYF+38oGxhgYU5mtnIdoHsQq/KpDgtXl9jUogcBfNKcH
-         krtoUNXYrGKumjVU3XCO9C3ifwRX2xdkrpPScOAiCN6GU35qTOb2bbaOb+t31IN/xyX0
-         i1FcK7djGng+NoF5DO/c0I6xQqIulU/ykl2pRQG5rN85N4+K38uepEtyJPlYfsDTutrc
-         tX1SJAysW+LPOYLLqyvydhgjBYEnGmWjYSF9UIDXM42yZ3C4RBhYxf+6zelnS+LDZA63
-         EGYIJoWZvc+1TLGqQxygmqV4pWnkKEBssfkvp8GlSUuqw/VQrAPlzBB/offaEngnOAgq
-         AiKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=1R0iH+DWaUknOCEjRDNGWia7J9lYBcVhqVAgEOlMaNg=;
-        b=IQzxrffXYUTZx1vpBUDPYc3Rw64URscFGhmafMmbgICcVVvUEaCTZY8hlG0vtXZBN/
-         s9+cCbdLdsmDwQT0d2VBXh7YGWVC9G/wO2PcwhRIOicfj41+XRAvchtzXr4xZlydR9B0
-         7cKKOAWgv+v8nCq9Ts9nXlFStxO06lbUoDIgpv0bmecf2zCOe3boGHSS8EPYQ5EW2tQS
-         ERTOI20yJngQyBqZzwXqEFQYpU15RNFmLdogSMZQG4Ns1G9pDscuMXDUPuRd0nSPdObV
-         lN4AWHFqVWcA+d3jYgC31uwPpeRzRNO8YoE0MQAsvO5VkyGietm0wk/EFkuZNO1sDjk+
-         Po6w==
-X-Gm-Message-State: AOAM530yBDGM6tHsKfns0Pwotzm5sB6Nj1h6TXQ/W5KBK5FIdwqkh6nI
-        rLg26WI6thZnLck4bFQs/rJJY0ZBymSc7w==
-X-Google-Smtp-Source: ABdhPJzbc9uuPKdCa17OwWSdgQGREWE9z4SHVIBe4YdZ/BPD0trRDMyNsw9uxMp9tuIreRSKTdRoqQ==
-X-Received: by 2002:a2e:a7cd:: with SMTP id x13mr19940525ljp.218.1624889157571;
-        Mon, 28 Jun 2021 07:05:57 -0700 (PDT)
-Received: from razdolb ([62.176.30.88])
-        by smtp.gmail.com with ESMTPSA id bu21sm1440090lfb.180.2021.06.28.07.05.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Jun 2021 07:05:56 -0700 (PDT)
-References: <20210509233010.2477973-1-mike.rudenko@gmail.com>
- <c63f85b6-dbca-7f89-a015-70f5821df96d@broadcom.com>
-User-agent: mu4e 1.4.15; emacs 27.2
-From:   Mikhail Rudenko <mike.rudenko@gmail.com>
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S232480AbhF1OPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 10:15:49 -0400
+Received: from phobos.denx.de ([85.214.62.61]:51236 "EHLO phobos.denx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232465AbhF1OPs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Jun 2021 10:15:48 -0400
+Received: from ktm (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 3D93582D99;
+        Mon, 28 Jun 2021 16:13:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1624889601;
+        bh=rEHKnpCCOjhwWxcMc4pBrXRlstTD75NAJKi157PQKUU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iHZCYUicoJ4sCMdzXa3p2o73NMx0MVeumWQhMDaSusFaxu8myswuUWQCYDPLByMHg
+         1yhoEy0UopUwD/HGc2hcFruNkh7PYhQn7Lxcm4qcvpN9JAjI8j0a6ztTrtXJhNFYuF
+         c9Tpp3fNniAcBYmo3RRL4F596MIWnpwutZ4yerDw+K4ERxcQhKTLJzJCyA1pEPnIb8
+         RAec3Xu0YvGYt0SYyTSMwRyk1aP3cX0dx6E6o/DDS0JyVQmPFC/R9T7YT2YfLhLydo
+         jW+SutmF52Gp89FI3mw7I4QsFMfuJSvBZGiQbYxHBZKQwkfbS7HLxRYJx18ZCD3CCG
+         dPA/w3A7/5FSw==
+Date:   Mon, 28 Jun 2021 16:13:14 +0200
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Double Lo <double.lo@cypress.com>,
-        Remi Depommier <rde@setrix.com>,
-        Amar Shankar <amsr@cypress.com>,
-        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
-        Frank Kao <frank.kao@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Mark Einon <mark.einon@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] brcmfmac: use separate firmware for 43430 revision 2
-In-reply-to: <c63f85b6-dbca-7f89-a015-70f5821df96d@broadcom.com>
-Date:   Mon, 28 Jun 2021 17:05:55 +0300
-Message-ID: <87k0mem6d8.fsf@gmail.com>
+Subject: Re: [RFC 2/3] net: Provide switchdev driver for NXP's More Than IP
+ L2 switch
+Message-ID: <20210628161314.37223141@ktm>
+In-Reply-To: <20210628124835.zbuija3hwsnh2zmd@skbuf>
+References: <YNH7vS9FgvEhz2fZ@lunn.ch>
+        <20210623133704.334a84df@ktm>
+        <YNOTKl7ZKk8vhcMR@lunn.ch>
+        <20210624125304.36636a44@ktm>
+        <YNSJyf5vN4YuTUGb@lunn.ch>
+        <20210624163542.5b6d87ee@ktm>
+        <YNSuvJsD0HSSshOJ@lunn.ch>
+        <20210625115935.132922ff@ktm>
+        <YNXq1bp7XH8jRyx0@lunn.ch>
+        <20210628140526.7417fbf2@ktm>
+        <20210628124835.zbuija3hwsnh2zmd@skbuf>
+Organization: denx.de
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ boundary="Sig_/iX6di2EciPiCLEusLdw9kdi"; protocol="application/pgp-signature"
+X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/iX6di2EciPiCLEusLdw9kdi
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On 2021-06-28 at 15:16 MSK, Arend van Spriel <arend.vanspriel@broadcom.com> wrote:
+Hi Vladimir,
 
-> On 5/10/2021 1:30 AM, Mikhail Rudenko wrote:
->> A separate firmware is needed for Broadcom 43430 revision 2.  This
->> chip can be found in e.g. certain revisions of Ampak AP6212 wireless
->> IC. Original firmware file from IC vendor is named
->> 'fw_bcm43436b0.bin', but brcmfmac and also btbcm drivers report chip
->> id 43430, so requested firmware file name is
->> 'brcmfmac43430b0-sdio.bin' in line with other 43430 revisions.
->
-> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
->> Signed-off-by: Mikhail Rudenko <mike.rudenko@gmail.com>
->> ---
->>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->> index 16ed325795a8..f0c22b5bb57c 100644
->> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->> @@ -617,6 +617,7 @@ BRCMF_FW_DEF(4339, "brcmfmac4339-sdio");
->>   BRCMF_FW_DEF(43430A0, "brcmfmac43430a0-sdio");
->>   /* Note the names are not postfixed with a1 for backward compatibility */
->>   BRCMF_FW_DEF(43430A1, "brcmfmac43430-sdio");
->> +BRCMF_FW_DEF(43430B0, "brcmfmac43430b0-sdio");
->>   BRCMF_FW_DEF(43455, "brcmfmac43455-sdio");
->>   BRCMF_FW_DEF(43456, "brcmfmac43456-sdio");
->>   BRCMF_FW_DEF(4354, "brcmfmac4354-sdio");
->> @@ -643,7 +644,8 @@ static const struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
->>   	BRCMF_FW_ENTRY(BRCM_CC_43362_CHIP_ID, 0xFFFFFFFE, 43362),
->>   	BRCMF_FW_ENTRY(BRCM_CC_4339_CHIP_ID, 0xFFFFFFFF, 4339),
->>   	BRCMF_FW_ENTRY(BRCM_CC_43430_CHIP_ID, 0x00000001, 43430A0),
->> -	BRCMF_FW_ENTRY(BRCM_CC_43430_CHIP_ID, 0xFFFFFFFE, 43430A1),
->> +	BRCMF_FW_ENTRY(BRCM_CC_43430_CHIP_ID, 0x00000002, 43430A1),
->> +	BRCMF_FW_ENTRY(BRCM_CC_43430_CHIP_ID, 0x00000004, 43430B0),
->
-> Please follow the existing strategy, ie. support higher chip revisions
-> unless proven otherwise. So 0xFFFFFFFC iso 0x00000004.
+> On Mon, Jun 28, 2021 at 02:05:26PM +0200, Lukasz Majewski wrote:
+> > Hi Andrew,
+> > =20
+> > > > I do believe that I can just extend the L2 switch driver
+> > > > (fec_mtip.c file to be precise) to provide full blown L2 switch
+> > > > functionality without touching the legacy FEC more than in this
+> > > > patch set.
+> > > >
+> > > > Would you consider applying this patch series then? =20
+> > >
+> > > What is most important is the ABI. If something is merged now, we
+> > > need to ensure it does not block later refactoring to a clean new
+> > > driver. The DT binding is considered ABI. So the DT binding needs
+> > > to be like a traditional switchdev driver. Florian already
+> > > pointed out, you can use a binding very similar to DSA.
+> > > ti,cpsw-switch.yaml is another good example. =20
+> >
+> > The best I could get would be:
+> >
+> > &eth_switch {
+> > 	compatible =3D "imx,mtip-l2switch";
+> > 	reg =3D <0x800f8000 0x400>, <0x800fC000 0x4000>;
+> >
+> > 	interrupts =3D <100>;
+> > 	status =3D "okay";
+> >
+> > 	ethernet-ports {
+> > 		port1@1 {
+> > 			reg =3D <1>;
+> > 			label =3D "eth0";
+> > 			phys =3D <&mac0 0>;
+> > 		};
+> >
+> > 		port2@2 {
+> > 			reg =3D <2>;
+> > 			label =3D "eth1";
+> > 			phys =3D <&mac1 1>;
+> > 		};
+> > 	};
+> > };
+> >
+> > Which would abuse the "phys" properties usages - as 'mac[01]' are
+> > referring to ethernet controllers.
+> >
+> > On TI SoCs (e.g. am33xx-l4.dtsi) phys refer to some separate driver
+> > responsible for PHY management. On NXP this is integrated with FEC
+> > driver itself. =20
+>=20
+> If we were really honest, the binding would need to be called
+>=20
+> port@0 {
+> 	puppet =3D <&mac0>;
+> };
+>=20
+> port@1 {
+> 	puppet =3D <&mac1>;
+> };
+>=20
+> which speaks for itself as to why accepting "puppet master" drivers is
+> not really very compelling. I concur with the recommendation given by
+> Andrew and Florian to refactor FEC as a multi-port single driver.
 
-Will fix in v2, thanks.
+Ok.
 
->>   	BRCMF_FW_ENTRY(BRCM_CC_4345_CHIP_ID, 0x00000200, 43456),
->>   	BRCMF_FW_ENTRY(BRCM_CC_4345_CHIP_ID, 0xFFFFFDC0, 43455),
->>   	BRCMF_FW_ENTRY(BRCM_CC_4354_CHIP_ID, 0xFFFFFFFF, 4354),
->>
+>=20
+> > >
+> > > So before considering merging your changes, i would like to see a
+> > > usable binding.
+> > >
+> > > I also don't remember seeing support for STP. Without that, your
+> > > network has broadcast storm problems when there are loops. So i
+> > > would like to see the code needed to put ports into blocking,
+> > > listening, learning, and forwarding states.
+> > >
+> > > 	  Andrew =20
+>=20
+> I cannot stress enough how important it is for us to see STP support
+> and consequently the ndo_start_xmit procedure for switch ports.
+
+Ok.
+
+> Let me see if I understand correctly. When the switch is enabled, eth0
+> sends packets towards both physical switch ports, and eth1 sends
+> packets towards none, but eth0 handles the link state of switch port
+> 0, and eth1 handles the link state of switch port 1?
+
+Exactly, this is how FEC driver is utilized for this switch.=20
+
+
+Best regards,
+
+Lukasz Majewski
 
 --
-Regards,
-Mikhail
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/iX6di2EciPiCLEusLdw9kdi
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmDZ2PoACgkQAR8vZIA0
+zr0aUAf9E5BRJ+WcI/6OphC0Lod4LCdW059FQBJGB/ZGFNjGvhtHJ0tfumTNCZjH
+lIYBW5IiH3uMKa8LmkqYMJ9jwN0thh/ms+Sis1x7lcQLSEJ182rWh9Ox7KkU8iJK
+ig5bj2SLsYOZZ4vypt/XqDBpTkSNeFpn0GCx0DtkxR5Idgu29fO5+e3BGDW2+YFv
+KqRMCE+GirfG92vYLv7lrlvjQpaDr/p6jwkjJLFjHrjnTZ6FzsPsCkCD6DxH2p/D
+DTrLWcCfUdZi7W0+QdzsB0l51qkwonPvo5jwLb1meP2wQtTnRIFevQE8VxJLfNyE
+gBXDQruPm0kIQbWQwUO7GsGsokLGfw==
+=n4Sd
+-----END PGP SIGNATURE-----
+
+--Sig_/iX6di2EciPiCLEusLdw9kdi--
