@@ -2,118 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 217D33B6750
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 19:10:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A6613B6759
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 19:10:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233008AbhF1RM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 13:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
+        id S233075AbhF1RNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 13:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232010AbhF1RM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 13:12:27 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDDBC061760
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 10:10:01 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id x12so10449063vsp.4
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 10:10:01 -0700 (PDT)
+        with ESMTP id S231961AbhF1RNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 13:13:08 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289C0C061574;
+        Mon, 28 Jun 2021 10:10:42 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id g19so9009402ybe.11;
+        Mon, 28 Jun 2021 10:10:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Mo3OdiLTZvGcXxBpncIESoNRczm8dPaHap71ZY+M2V0=;
-        b=vIIyxo7OmqipykkX5c7TZY0dBl2DBO3LJAsvk6kupavZ/V87biwTFvAdI+3oiiDJX+
-         EzSvGXjyp22IIwsK7mBLNaYK555SXWp/BRJ0EhlU636KrVcvtIAssh5/qazVZqfrqcuF
-         92aIwWe3w8N96gfULh0Ql+FKm+XbNgVhqm0e/M2O3+0TR6w6FCUycRXn0Jw4F/JcKgUk
-         LsF/f8FZNQLv+CpRz5a7Ruq6qCmvTmH/c5Fy8hb8bLFq18kpNQ74EBh7HGgcau3OuQoq
-         XAiVrjqI5gMizAgWSksVHOLw/nOB4/PnbeLua3/N28XxnwCnK6rVI0SCLJ4q4CN3/5hk
-         tr7Q==
+        bh=5PVPcKnsSweDpSLYQhuO82TIT1xE0upl1GkK15sJLec=;
+        b=RNiU65wZ0IlGd97qPqZUiy0qBek3iORKqKnw64htqT+htarS7qcHnZwn8Vd9PpJ9AM
+         nAJJQUnZUEZXIbHPi8VNTTMHk8Ej6hQPBLy38xH/sq/H7BC3aYundY1QVLrzQ3HxmRfd
+         r/Nhw407PJh3+ogmZA63HzWo4w97T21mD7stzWK76P4vBID8uV1NIH0KVlWYU+O2lHvR
+         9psYzWDXctOGKPMFt2bVYOnMsVdSov5aDnq8p3QI8rdjzXSPYFXLYDPte8d+r/FxluLp
+         wrkAq48YlaftvQCuN2dK42MZNPBbSFn0wjDFvQqeuPJJcQYjGbYTprW9C/lbdvdcce3W
+         nmNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Mo3OdiLTZvGcXxBpncIESoNRczm8dPaHap71ZY+M2V0=;
-        b=Fp9x4/7tpe2IsyGbYrkG8KBVqkEkLkgd+VoALzkrP/fZqRpfeme3oHgXrl3/x+IlIt
-         V6u81s4LiTFcj2As6j0hwtk3Eq2GOfq8Qy9yHyob2U21mDfrsLIba84DTN7EFKwylcgm
-         DVhLre53suqqu3Z0jJd5gJDGRDEP3zzJPaSI9nzgMx/k96nZlpfLOZjBsdW0AGesIqD9
-         6e74DK1vfY/Feiqr9ZxJRLNhh7M2qYZODVIxajD480f4ZmpVnQRg2rcygKWlfLpHgMs3
-         sov594UVejrX/ZPvjvgwsoLFb/+WQYsUWc+0Whv0C2Yy/EXAKSGWQKVdSpVCJBtoLoLX
-         tupQ==
-X-Gm-Message-State: AOAM530J7XphMGAQ4ZHiq6/I0ErtIClWB/1h50q4CyidJfkJjmcSGNSl
-        X9zoh5Ks5DJnRhPUT+Y1YTrQ8SMsk84ItsLNQHXGdQ==
-X-Google-Smtp-Source: ABdhPJxZvUL4IYU2328Efy3AR47Zraw12zY2/+WkyDw8j3H3zqpchIbYSF4iWNXEHqJseW4aHy4U7rx1BK2J5qYZGL4=
-X-Received: by 2002:a67:f244:: with SMTP id y4mr20182870vsm.52.1624900200466;
- Mon, 28 Jun 2021 10:10:00 -0700 (PDT)
+        bh=5PVPcKnsSweDpSLYQhuO82TIT1xE0upl1GkK15sJLec=;
+        b=ghmqSlv44E3ms+0cWySgD6UcQ71igVe01XVAzIcINFWFQbj26OfsH1sBlG7gAYn0g6
+         3uIj2m4L+HojhKKmkf8M/GYruzNcPgb+Euk8JYv+rSl2CocmO6NZAMWsmP8PIuX+igwe
+         yP0WStEKlw9dHZDsjRTkuK8NfiEoCHDrSfi69tYnhlmCjc5vwVN9ep1e0gX6o3vIOliT
+         mz8jgcqGQeWHKJqnobOycbPDIlndsyhAIkLkbt1z2zmIgFms/5OwGaApRebuf0CEa6SZ
+         J6MHeXBG7q87Wjtw861KiMaBGu8mLewz2N88VkoTTpfN5qKVIkF99/EqsYuFwNMYUDs0
+         1QyQ==
+X-Gm-Message-State: AOAM5301FLNfNAhLoWMggtlOBiQVimy8Npz2N70pkZQbDZQQU/PLCwlc
+        XlLROXkWqUjpWcAMS3PHqH74P1hH9xmnCrtNAis=
+X-Google-Smtp-Source: ABdhPJxFOcl//64pUUGHZji3dkAkaA0fEnSNJnG8lnBLi8kK+eWiJkTcUhaDWQFdKQsoh3W3PVZDKjkYxvCFn7D02bQ=
+X-Received: by 2002:a25:acdf:: with SMTP id x31mr33674367ybd.222.1624900241351;
+ Mon, 28 Jun 2021 10:10:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210628144908.881499-1-phind.uet@gmail.com>
-In-Reply-To: <20210628144908.881499-1-phind.uet@gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Mon, 28 Jun 2021 13:09:43 -0400
-Message-ID: <CADVnQy=QDCFi8mj249krPyPZmPickEaC+3z_7-tCSvsde65xOw@mail.gmail.com>
-Subject: Re: [PATCH] tcp: Do not reset the icsk_ca_initialized in tcp_init_transfer.
-To:     Nguyen Dinh Phi <phind.uet@gmail.com>
-Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com,
-        Yuchung Cheng <ycheng@google.com>, Kevin Yang <yyd@google.com>
+References: <20210628170858.312168-1-luiz.dentz@gmail.com>
+In-Reply-To: <20210628170858.312168-1-luiz.dentz@gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Mon, 28 Jun 2021 10:10:30 -0700
+Message-ID: <CABBYNZJyqWe+8tJ4ii=9pXN5gGd_2V_RN8Gn14pKmXLU35C16w@mail.gmail.com>
+Subject: Re: pull request: bluetooth-next 2021-06-28
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 28, 2021 at 11:39 AM Nguyen Dinh Phi <phind.uet@gmail.com> wrote:
+Hi David, Jakub,
+
+Please disregard this, looks like the tag description is wrong, I will
+send a new one shortly.
+
+On Mon, Jun 28, 2021 at 10:09 AM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
 >
-> icsk_ca_initialized be always set to zero before we examine it in if
-> block, this makes the congestion control module's initialization be
-> called even if the CC module was initialized already.
-> In case the CC module allocates and setups its dynamically allocated
-> private data in its init() function, e.g, CDG, the memory leak may occur.
+> The following changes since commit ff8744b5eb116fdf9b80a6ff774393afac7325bd:
 >
-> Reported-by: syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
+>   Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue (2021-06-25 11:59:11 -0700)
 >
-> Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
-> ---
->  net/ipv4/tcp_input.c | 1 -
->  1 file changed, 1 deletion(-)
+> are available in the Git repository at:
 >
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index 7d5e59f688de..855ada2be25e 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -5922,7 +5922,6 @@ void tcp_init_transfer(struct sock *sk, int bpf_op, struct sk_buff *skb)
->                 tp->snd_cwnd = tcp_init_cwnd(tp, __sk_dst_get(sk));
->         tp->snd_cwnd_stamp = tcp_jiffies32;
+>   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2021-06-28
 >
-> -       icsk->icsk_ca_initialized = 0;
+> for you to fetch changes up to 1f0536139cb8e8175ca034e12706b86f77f9061e:
+>
+>   Bluetooth: hci_uart: Remove redundant assignment to fw_ptr (2021-06-26 07:52:41 +0200)
+>
+> ----------------------------------------------------------------
+> bluetooth-next pull request for net-next:
+>
+>  - Proper support for BCM4330 and BMC4334
+>  - Various improvements for firmware download of Intel controllers
+>  - Update management interface revision to 20
+>  - Support for AOSP HCI vendor commands
+>  - Initial Virtio support
+>
+> ----------------------------------------------------------------
+> Archie Pusaka (9):
+>       Bluetooth: hci_h5: Add RTL8822CS capabilities
+>       Bluetooth: use inclusive language in hci_core.h
+>       Bluetooth: use inclusive language to describe CPB
+>       Bluetooth: use inclusive language in HCI LE features
+>       Bluetooth: use inclusive language in SMP
+>       Bluetooth: use inclusive language in comments
+>       Bluetooth: use inclusive language in HCI role comments
+>       Bluetooth: use inclusive language when tracking connections
+>       Bluetooth: use inclusive language when filtering devices
+>
+> Colin Ian King (2):
+>       Bluetooth: virtio_bt: add missing null pointer check on alloc_skb call return
+>       Bluetooth: btmrvl: remove redundant continue statement
+>
+> Connor Abbott (1):
+>       Bluetooth: btqca: Don't modify firmware contents in-place
+>
+> Daniel Lenski (1):
+>       Bluetooth: btusb: Add a new QCA_ROME device (0cf3:e500)
+>
+> Hilda Wu (1):
+>       Bluetooth: btusb: Add support USB ALT 3 for WBS
+>
+> Jiapeng Chong (1):
+>       Bluetooth: 6lowpan: remove unused function
+>
+> Joakim Tjernlund (2):
+>       Bluetooth: btusb: Add 0x0b05:0x190e Realtek 8761BU (ASUS BT500) device.
+>       Bluetooth: btrtl: rename USB fw for RTL8761
+>
+> Kai Ye (11):
+>       Bluetooth: 6lowpan: delete unneeded variable initialization
+>       Bluetooth: bnep: Use the correct print format
+>       Bluetooth: cmtp: Use the correct print format
+>       Bluetooth: hidp: Use the correct print format
+>       Bluetooth: 6lowpan: Use the correct print format
+>       Bluetooth: a2mp: Use the correct print format
+>       Bluetooth: amp: Use the correct print format
+>       Bluetooth: mgmt: Use the correct print format
+>       Bluetooth: msft: Use the correct print format
+>       Bluetooth: sco: Use the correct print format
+>       Bluetooth: smp: Use the correct print format
+>
+> Kai-Heng Feng (1):
+>       Bluetooth: Shutdown controller after workqueues are flushed or cancelled
+>
+> Kiran K (1):
+>       Bluetooth: Fix alt settings for incoming SCO with transparent coding format
+>
+> Luiz Augusto von Dentz (5):
+>       Bluetooth: L2CAP: Fix invalid access if ECRED Reconfigure fails
+>       Bluetooth: L2CAP: Fix invalid access on ECRED Connection response
+>       Bluetooth: mgmt: Fix slab-out-of-bounds in tlv_data_is_valid
+>       Bluetooth: Fix Set Extended (Scan Response) Data
+>       Bluetooth: Fix handling of HCI_LE_Advertising_Set_Terminated event
+>
+> Manish Mandlik (1):
+>       Bluetooth: Add ncmd=0 recovery handling
+>
+> Marcel Holtmann (1):
+>       Bluetooth: Increment management interface revision
+>
+> Mikhail Rudenko (1):
+>       Bluetooth: btbcm: Add entry for BCM43430B0 UART Bluetooth
+>
+> Muhammad Usama Anjum (1):
+>       Bluetooth: btusb: fix memory leak
+>
+> Nigel Christian (1):
+>       Bluetooth: hci_uart: Remove redundant assignment to fw_ptr
+>
+> Pavel Skripkin (1):
+>       Bluetooth: hci_qca: fix potential GPF
+>
+> Qiheng Lin (1):
+>       Bluetooth: use flexible-array member instead of zero-length array
+>
+> Sathish Narasimman (1):
+>       Bluetooth: Translate additional address type during le_conn_comp
+>
+> Szymon Janc (1):
+>       Bluetooth: Remove spurious error message
+>
+> Tedd Ho-Jeong An (1):
+>       Bluetooth: mgmt: Fix the command returns garbage parameter value
+>
+> Thadeu Lima de Souza Cascardo (1):
+>       Bluetooth: cmtp: fix file refcount when cmtp_attach_device fails
+>
+> Tim Jiang (2):
+>       Bluetooth: btusb: use default nvm if boardID is 0 for wcn6855.
+>       Bluetooth: btusb: fix bt fiwmare downloading failure issue for qca btsoc.
+>
+> Venkata Lakshmi Narayana Gubba (5):
+>       Bluetooth: hci_qca: Add support for QTI Bluetooth chip wcn6750
+>       Bluetooth: btqca: Add support for firmware image with mbn type for WCN6750
+>       Bluetooth: btqca: Moved extracting rom version info to common place
+>       dt-bindings: net: bluetooth: Convert Qualcomm BT binding to DT schema
+>       dt-bindings: net: bluetooth: Add device tree bindings for QTI chip wcn6750
+>
+> Yu Liu (2):
+>       Bluetooth: Return whether a connection is outbound
+>       Bluetooth: Fix the HCI to MGMT status conversion table
+>
+> YueHaibing (1):
+>       Bluetooth: RFCOMM: Use DEVICE_ATTR_RO macro
+>
+> Yun-Hao Chung (1):
+>       Bluetooth: disable filter dup when scan for adv monitor
+>
+> Zhang Qilong (1):
+>       Bluetooth: btmtkuart: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+>
+> mark-yw.chen (2):
+>       Bluetooth: btusb: Fixed too many in-token issue for Mediatek Chip.
+>       Bluetooth: btusb: Add support for Lite-On Mediatek Chip
+>
+>  .../devicetree/bindings/net/qualcomm-bluetooth.txt |  69 -------
+>  .../bindings/net/qualcomm-bluetooth.yaml           | 183 +++++++++++++++++++
+>  drivers/bluetooth/btbcm.c                          |   1 +
+>  drivers/bluetooth/btmrvl_sdio.c                    |   4 +-
+>  drivers/bluetooth/btmtkuart.c                      |   6 +-
+>  drivers/bluetooth/btqca.c                          | 113 +++++++++---
+>  drivers/bluetooth/btqca.h                          |  14 +-
+>  drivers/bluetooth/btrtl.c                          |  35 ++--
+>  drivers/bluetooth/btrtl.h                          |   7 +
+>  drivers/bluetooth/btusb.c                          |  45 ++++-
+>  drivers/bluetooth/hci_ag6xx.c                      |   1 -
+>  drivers/bluetooth/hci_h5.c                         |   5 +-
+>  drivers/bluetooth/hci_qca.c                        | 118 +++++++++---
+>  drivers/bluetooth/virtio_bt.c                      |   3 +
+>  include/net/bluetooth/hci.h                        |  99 +++++-----
+>  include/net/bluetooth/hci_core.h                   |  29 +--
+>  include/net/bluetooth/mgmt.h                       |   3 +-
+>  net/bluetooth/6lowpan.c                            |  54 +-----
+>  net/bluetooth/a2mp.c                               |  24 +--
+>  net/bluetooth/amp.c                                |   6 +-
+>  net/bluetooth/bnep/core.c                          |   8 +-
+>  net/bluetooth/cmtp/capi.c                          |  22 +--
+>  net/bluetooth/cmtp/core.c                          |   5 +
+>  net/bluetooth/hci_conn.c                           |  10 +-
+>  net/bluetooth/hci_core.c                           |  78 +++++---
+>  net/bluetooth/hci_debugfs.c                        |   8 +-
+>  net/bluetooth/hci_event.c                          | 187 +++++++++++--------
+>  net/bluetooth/hci_request.c                        | 203 +++++++++++++--------
+>  net/bluetooth/hci_sock.c                           |  12 +-
+>  net/bluetooth/hidp/core.c                          |   8 +-
+>  net/bluetooth/l2cap_core.c                         |  16 +-
+>  net/bluetooth/mgmt.c                               |  58 +++---
+>  net/bluetooth/mgmt_config.c                        |   4 +-
+>  net/bluetooth/msft.c                               |   8 +-
+>  net/bluetooth/rfcomm/tty.c                         |  10 +-
+>  net/bluetooth/sco.c                                |   8 +-
+>  net/bluetooth/smp.c                                |  78 ++++----
+>  net/bluetooth/smp.h                                |   6 +-
+>  38 files changed, 967 insertions(+), 581 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
 
-If this patch removes that line, then AFAICT the patch should also
-insert a corresponding:
 
-  icsk->icsk_ca_initialized = 0;
 
-in tcp_ca_openreq_child(), so that any non-zero icsk_ca_initialized
-value in a listener socket (on which setsockopt(TCP_CONGESTION) was
-called)  is not erroneously inherited by a child socket due to the
-tcp_create_openreq_child() -> inet_csk_clone_lock() -> sock_copy()
-call chain. Something like:
-
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index c48d8336f26d..4d6a76dfa1c4 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -446,6 +446,7 @@ void tcp_ca_openreq_child(struct sock *sk, const
-struct dst_entry *dst)
-        }
-
-        /* If no valid choice made yet, assign current system default ca. */
-+       icsk->icsk_ca_initialized = 0;
-        if (!ca_got_dst &&
-            (!icsk->icsk_ca_setsockopt ||
-             !bpf_try_module_get(icsk->icsk_ca_ops, icsk->icsk_ca_ops->owner)))
-
-thanks,
-neal
+-- 
+Luiz Augusto von Dentz
