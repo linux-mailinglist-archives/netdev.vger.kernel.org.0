@@ -2,103 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A963B5DCC
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 14:16:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06DF33B5DE7
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 14:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232978AbhF1MTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 08:19:21 -0400
-Received: from lpdvsmtp10.broadcom.com ([192.19.11.229]:39206 "EHLO
-        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232802AbhF1MTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 08:19:19 -0400
-Received: from bld-lvn-bcawlan-34.lvn.broadcom.net (bld-lvn-bcawlan-34.lvn.broadcom.net [10.75.138.137])
-        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 21B96827D;
-        Mon, 28 Jun 2021 05:16:53 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 21B96827D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1624882613;
-        bh=G9cr5vNy9UFNI35mUQl46GB0uW3+EP/3puSIRnjeyp4=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=U1jRlZVKx1wXrH8FSiAFwg6aqKXtWJSfvsgGqAUCYzHM81Z07U35VkS04qRwDSSMp
-         KNTgHOumsVgq//zh1fVXY4fwjvLrTcEVB0yfNLPgyClvK5Pj7D5lKsWkHF84Q07reU
-         eHS3OiPcbQWCZFHy3nstIR3ASIs8CY+OQuo4GH2w=
-Received: from [10.176.68.80] (39y1yf2.dhcp.broadcom.net [10.176.68.80])
-        by bld-lvn-bcawlan-34.lvn.broadcom.net (Postfix) with ESMTPSA id 7692B1874BE;
-        Mon, 28 Jun 2021 05:16:49 -0700 (PDT)
-Subject: Re: [PATCH] brcmfmac: use separate firmware for 43430 revision 2
-To:     Mikhail Rudenko <mike.rudenko@gmail.com>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Double Lo <double.lo@cypress.com>,
-        Remi Depommier <rde@setrix.com>,
-        Amar Shankar <amsr@cypress.com>,
-        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
-        Frank Kao <frank.kao@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210509233010.2477973-1-mike.rudenko@gmail.com>
-From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <c63f85b6-dbca-7f89-a015-70f5821df96d@broadcom.com>
-Date:   Mon, 28 Jun 2021 14:16:47 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S232932AbhF1MXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 08:23:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37773 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232833AbhF1MXx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 08:23:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624882887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7DySyswlfe87nm5LPAvUQAuBcS2ywXAMZom2XmcAtdQ=;
+        b=X5e3V+1FvXlKLgbIcZKhwOt+fLb0hrHtn4P5p4J5MnFHBq4bYa07hXOFKppQjGreEoP2p6
+        s0aJGAm2weGU/ngyOkQ95JWzNiiDkjrxppIw2col9ejzOFFmHOR30Sn5FZPLPXtNQb0ojd
+        Kfd7WL5R8qwijBnhGl9JWeKu1oUaRIM=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-586-1usAv248M028g3QjDIRcSQ-1; Mon, 28 Jun 2021 08:21:23 -0400
+X-MC-Unique: 1usAv248M028g3QjDIRcSQ-1
+Received: by mail-ed1-f69.google.com with SMTP id f20-20020a0564020054b0290395573bbc17so2179125edu.19
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 05:21:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=7DySyswlfe87nm5LPAvUQAuBcS2ywXAMZom2XmcAtdQ=;
+        b=VoIXt7QA37LDFsUpxNeSD1zjuzHFxYwNVlfIorDH6gZlAMvU+t/27xDD60tKzHKT5I
+         j87tsm0RcDFMPYzfGQsHgAN5s3bP249yXTnk8649pxfDqDHo0zAcql6736/V3CjYrB0A
+         cKWEDMDWsGa+el8hEn87+29ZNMTnZmqQqmukfQTvdGtu/YwE4gne7GIAgeRHfWDhxyQW
+         uizjrk2kzdgd8Nw/geW6Zx14rRO0Y5qNj+7NPqCssaBrPL0yNkhxoNX53tLo92nyVPco
+         c0JhiFB+UY6iVgyodOb5mO44YKi1k+qlFSJDswj1mTxm3giDXBumoBih05UaRAdBqLxx
+         YVQg==
+X-Gm-Message-State: AOAM530fKZnYLStKJnQxkGh6JJgsRSiK5cysaDifxJn8apoq8zEu2Pq/
+        kj9AyQ3L1A+KNa7RkBlKwZZ26iXlPM+4PUG+Xe6Txq2QJMm4/k3emhQrGrf44Jca44Cfo62QORm
+        MRnWPMYh426RwEMLB
+X-Received: by 2002:a17:906:9be5:: with SMTP id de37mr2359698ejc.549.1624882882708;
+        Mon, 28 Jun 2021 05:21:22 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwCCTJsL7eCd8tO3CTaohACscZDFQuj/jU2zidvwTZigoCEauLOtGmJsCKN2Zr2qFvQ2zAsNA==
+X-Received: by 2002:a17:906:9be5:: with SMTP id de37mr2359688ejc.549.1624882882565;
+        Mon, 28 Jun 2021 05:21:22 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id yh13sm6730379ejb.28.2021.06.28.05.21.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Jun 2021 05:21:22 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 6F35F18071E; Mon, 28 Jun 2021 14:21:20 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Niclas Hedam <nhed@itu.dk>
+Cc:     "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Dave Taht <dave.taht@gmail.com>
+Subject: Re: [PATCH v2] net: sched: Add support for packet bursting.
+In-Reply-To: <B28935AB-6078-4258-8E7C-14E11D1AD57F@itu.dk>
+References: <532A8EEC-59FD-42F2-8568-4C649677B4B0@itu.dk>
+ <877diekybt.fsf@toke.dk> <B28935AB-6078-4258-8E7C-14E11D1AD57F@itu.dk>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 28 Jun 2021 14:21:20 +0200
+Message-ID: <87wnqeji2n.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20210509233010.2477973-1-mike.rudenko@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/10/2021 1:30 AM, Mikhail Rudenko wrote:
-> A separate firmware is needed for Broadcom 43430 revision 2.  This
-> chip can be found in e.g. certain revisions of Ampak AP6212 wireless
-> IC. Original firmware file from IC vendor is named
-> 'fw_bcm43436b0.bin', but brcmfmac and also btbcm drivers report chip
-> id 43430, so requested firmware file name is
-> 'brcmfmac43430b0-sdio.bin' in line with other 43430 revisions.
+Niclas Hedam <nhed@itu.dk> writes:
 
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Signed-off-by: Mikhail Rudenko <mike.rudenko@gmail.com>
-> ---
->   drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> index 16ed325795a8..f0c22b5bb57c 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> @@ -617,6 +617,7 @@ BRCMF_FW_DEF(4339, "brcmfmac4339-sdio");
->   BRCMF_FW_DEF(43430A0, "brcmfmac43430a0-sdio");
->   /* Note the names are not postfixed with a1 for backward compatibility */
->   BRCMF_FW_DEF(43430A1, "brcmfmac43430-sdio");
-> +BRCMF_FW_DEF(43430B0, "brcmfmac43430b0-sdio");
->   BRCMF_FW_DEF(43455, "brcmfmac43455-sdio");
->   BRCMF_FW_DEF(43456, "brcmfmac43456-sdio");
->   BRCMF_FW_DEF(4354, "brcmfmac4354-sdio");
-> @@ -643,7 +644,8 @@ static const struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
->   	BRCMF_FW_ENTRY(BRCM_CC_43362_CHIP_ID, 0xFFFFFFFE, 43362),
->   	BRCMF_FW_ENTRY(BRCM_CC_4339_CHIP_ID, 0xFFFFFFFF, 4339),
->   	BRCMF_FW_ENTRY(BRCM_CC_43430_CHIP_ID, 0x00000001, 43430A0),
-> -	BRCMF_FW_ENTRY(BRCM_CC_43430_CHIP_ID, 0xFFFFFFFE, 43430A1),
-> +	BRCMF_FW_ENTRY(BRCM_CC_43430_CHIP_ID, 0x00000002, 43430A1),
-> +	BRCMF_FW_ENTRY(BRCM_CC_43430_CHIP_ID, 0x00000004, 43430B0),
+>>> From 71843907bdb9cdc4e24358f0c16a8778f2762dc7 Mon Sep 17 00:00:00 2001
+>>> From: Niclas Hedam <nhed@itu.dk>
+>>> Date: Fri, 25 Jun 2021 13:37:18 +0200
+>>> Subject: [PATCH] net: sched: Add support for packet bursting.
+>> 
+>> Something went wrong with the formatting here.
+>
+> I'll resubmit with fixed formatting. My bad.
+>
+>>> 
+>>> This commit implements packet bursting in the NetEm scheduler.
+>>> This allows system administrators to hold back outgoing
+>>> packets and release them at a multiple of a time quantum.
+>>> This feature can be used to prevent timing attacks caused
+>>> by network latency.
+>> 
+>> How is this bursting feature different from the existing slot-based
+>> mechanism?
+>
+> It is similar, but the reason for separating it is the audience that they are catering.
+> The slots seems to be focused on networking constraints and duty cycles.
+> My contribution and mechanism is mitigating timing attacks. The
+> complexity of slots are mostly unwanted in this context as we want as
+> few CPU cycles as possible.
 
-Please follow the existing strategy, ie. support higher chip revisions 
-unless proven otherwise. So 0xFFFFFFFC iso 0x00000004.
+(Adding Dave who wrote the slots code)
 
->   	BRCMF_FW_ENTRY(BRCM_CC_4345_CHIP_ID, 0x00000200, 43456),
->   	BRCMF_FW_ENTRY(BRCM_CC_4345_CHIP_ID, 0xFFFFFDC0, 43455),
->   	BRCMF_FW_ENTRY(BRCM_CC_4354_CHIP_ID, 0xFFFFFFFF, 4354),
-> 
+But you're still duplicating functionality, then? This has a cost in
+terms of maintainability and interactions (what happens if someone turns
+on both slots and bursting, for instance)?
+
+If the concern is CPU cost (got benchmarks to back that up?), why not
+improve the existing mechanism so it can be used for your use case as
+well?
+
+-Toke
+
