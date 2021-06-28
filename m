@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A00913B6AB5
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 00:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BBC73B6AB8
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 00:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238092AbhF1WD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 18:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        id S238232AbhF1WEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 18:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236827AbhF1WDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 18:03:12 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1210CC061767
+        with ESMTP id S237383AbhF1WDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 18:03:13 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0882CC061768
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:46 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id t3so28240185edc.7
         for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:45 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id w13so22291519edc.0
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3CRcEaN0Bg+xQgzR5B59tpxXfhAiXab1BE8fXxf/L7k=;
-        b=jn5xJmiNdoN6KAjqGkM51cGC79topffl8hOvskITt+5O844KhoStE2l7zyPxmFRtiQ
-         CoW0h4EMPCmh+zi/dP5sbSbrzFQMCowQ74tti3WXGMhIYKt7SLuRMtJHRk2wcliIE+RC
-         T/lAzRnZkjolajVR5qYNG22c0J/To2/t33gpUcdniKpzdn7WuXdOxQlpEX8nGjax+i0G
-         rKyW9rBp+fwoUnt9YL7MMT0H1pEQPEMUatdjoPG5qkuBo8f1GwFUvzCxcm0x3bBUhLAk
-         sXDrGBQjEAGSaQo4pjVU7CRFdQdgSblpLLvgl6MTpszVGb13vuWPa84bpQTbIiDmUNPV
-         QBNg==
+        bh=cOcrEyVseqjoteqwx/PlBKbx2ck6ms2QqjNCJLmGW94=;
+        b=lMTeIUOehbBkr3Cxr/4rI0sHRAiHbDjcYFnkTQDR/zzg2HNbhqCH+Owqdbdz3NSwcX
+         8HSDwtuKw7kdY11kF56IV3/MQCnVUQ12/SdeQibUQey0qWEAyxzgl46AwZNo40uWmBFM
+         CMK0Yz5h8Gv/sKvRTQ/SOGQgy9k6U/hEKQz5llauf6CeDud01VzLvE3TNXEZj/vVVIej
+         /EHTZzL2zQINp69aOlofNxeaFOc0kHLVqaFd8LU43+PsBUc+6F5L+ytQEwHblVlFqLrR
+         /QAu9RZ6uCqg6zYnM3PFFlHuTjbsp8lweS2cC5iVazUBne66pS76OxKRiWUn+17r2PTZ
+         Rk7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3CRcEaN0Bg+xQgzR5B59tpxXfhAiXab1BE8fXxf/L7k=;
-        b=bkhnK1fGrvscOK201WzIP0W5F44vdC9iHhy0cfEEuZVOY+hSuR44nvs6ve18ZwAlRD
-         9f1sAg84Q7GjWdKw9lfUGKWwqLSFwGmJhBLEKBQwXQ5kBlol9RCL/Ap0XjgFkq1Zsh30
-         RZMz5tv4z+6txRWysOrEW396nTYmqauS1Xmt7+TAE4aoyucHqNU2tZulTRhudNAsV3VO
-         krIPuTbW+sKvg9UyGyaOfHf4kNmUwLe56zSXIw8uCTnb6cdT/D8VD6ZLpJ6l8tJ4oOMD
-         bcA/B6eHm2O5PaoeePmgd3qFROC28jGfU+LenaEeLh0MzsV/aZtCsJH4ps/Cc+LHVyy7
-         tGcg==
-X-Gm-Message-State: AOAM530QQe6l39OH5Xgp6K52A9/oLa4Hump0n/Is4KvzxskZ6k0AedlP
-        Bqvq+PMz7LJl7WjWy5X7OfXYonDYX2Y=
-X-Google-Smtp-Source: ABdhPJxdNBYJQRyMh6W+ppR+Cj7VhHugNiu+ulM1BZAcli/K8CWkqC3rpqmffSX0wUnDwlcYdeCFbg==
-X-Received: by 2002:a05:6402:27d1:: with SMTP id c17mr35672719ede.17.1624917643557;
-        Mon, 28 Jun 2021 15:00:43 -0700 (PDT)
+        bh=cOcrEyVseqjoteqwx/PlBKbx2ck6ms2QqjNCJLmGW94=;
+        b=G0oTpB/FlGaTQ3ltLiiCAWAmFylh1OrbmvfArZSBATV4eDbIJ8uW6Fo/stXXECYxAk
+         fdTVsYfpSWdXa9d8tp6xvogc63UgkfvDXqPGAZFLcHAXcf7axgVPKY63pvqQQyQ+n+Jh
+         PMiUQcHa8J49NEwTaJVd8lSQVab4pT9cw6rsY2SpVhhSZIgIxzYDeAHxGCawRB96mUyG
+         iroerBIFVCOi3bZyab5qBQKvEZSpGjhJU6nDMYRBAGT+saTq2YjRriWzL2mw6Hr9px/C
+         exq5kxvi6nHdDVCL4Xf4jU1R5nNKeDK95ixUjSLHCVI976XtrYmjSTOP3iLFofYRFt+L
+         f+AA==
+X-Gm-Message-State: AOAM5323KdaQjHqo1ZUWam9rrJwsjhqJrIwiLtUgwcKG2mJwR1k2NsGg
+        ZGRXtQ8OV33BB6TWbLr1zpV4id5gv40=
+X-Google-Smtp-Source: ABdhPJzwNoyNpecVJykjQovr3w6RSmFWuyPSkr/IrzIZ2qBt5joRzTOtTOzsNE3zxNMD7qBy4gvuXA==
+X-Received: by 2002:aa7:dc0c:: with SMTP id b12mr14422499edu.105.1624917644539;
+        Mon, 28 Jun 2021 15:00:44 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id dn7sm10146615edb.29.2021.06.28.15.00.42
+        by smtp.gmail.com with ESMTPSA id dn7sm10146615edb.29.2021.06.28.15.00.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Jun 2021 15:00:43 -0700 (PDT)
+        Mon, 28 Jun 2021 15:00:44 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -58,9 +58,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v4 net-next 09/14] net: dsa: install the host MDB and FDB entries in the master's RX filter
-Date:   Tue, 29 Jun 2021 01:00:06 +0300
-Message-Id: <20210628220011.1910096-10-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 10/14] net: dsa: sync static FDB entries on foreign interfaces to hardware
+Date:   Tue, 29 Jun 2021 01:00:07 +0300
+Message-Id: <20210628220011.1910096-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210628220011.1910096-1-olteanv@gmail.com>
 References: <20210628220011.1910096-1-olteanv@gmail.com>
@@ -70,90 +70,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-If the DSA master implements strict address filtering, then the unicast
-and multicast addresses kept by the DSA CPU ports should be synchronized
-with the address lists of the DSA master.
+Reuse the "assisted_learning_on_cpu_port" functionality to always add
+entries for user-configured entries on foreign interfaces, even if
+assisted_learning_on_cpu_port is not enabled. E.g. in this situation:
 
-Note that we want the synchronization of the master's address lists even
-if the DSA switch doesn't support unicast/multicast database operations,
-on the premises that the packets will be flooded to the CPU in that
-case, and we should still instruct the master to receive them.
+   br0
+   / \
+swp0 dummy0
 
+$ bridge fdb add 02:00:de:ad:00:01 dev dummy0 vlan 1 master static
+
+Results in DSA adding an entry in the hardware FDB, pointing this
+address towards the CPU port.
+
+The same is true for entries added to the bridge itself, e.g:
+
+$ bridge fdb add 02:00:de:ad:00:01 dev br0 vlan 1 self local
+
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/port.c | 32 ++++++++++++++++++++++++++++----
- 1 file changed, 28 insertions(+), 4 deletions(-)
+ net/dsa/slave.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 1b80e0fbdfaa..255172a8599a 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -655,8 +655,14 @@ int dsa_port_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 		.addr = addr,
- 		.vid = vid,
- 	};
-+	struct dsa_port *cpu_dp = dp->cpu_dp;
-+	int err;
-+
-+	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_ADD, &info);
-+	if (err)
-+		return err;
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index ac7f4f200ab1..ea9a7c1ce83e 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2403,9 +2403,12 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
  
--	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_ADD, &info);
-+	return dev_uc_add(cpu_dp->master, addr);
- }
+ 			dp = dsa_slave_to_port(dev);
+ 		} else {
+-			/* Snoop addresses learnt on foreign interfaces
+-			 * bridged with us, for switches that don't
+-			 * automatically learn SA from CPU-injected traffic
++			/* Snoop addresses added to foreign interfaces
++			 * bridged with us, or the bridge
++			 * itself. Dynamically learned addresses can
++			 * also be added for switches that don't
++			 * automatically learn SA from CPU-injected
++			 * traffic.
+ 			 */
+ 			struct net_device *br_dev;
+ 			struct dsa_slave_priv *p;
+@@ -2424,7 +2427,8 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
+ 			dp = p->dp;
+ 			host_addr = true;
  
- int dsa_port_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-@@ -668,8 +674,14 @@ int dsa_port_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
- 		.addr = addr,
- 		.vid = vid,
- 	};
-+	struct dsa_port *cpu_dp = dp->cpu_dp;
-+	int err;
-+
-+	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_DEL, &info);
-+	if (err)
-+		return err;
+-			if (!dp->ds->assisted_learning_on_cpu_port)
++			if (!fdb_info->added_by_user &&
++			    !dp->ds->assisted_learning_on_cpu_port)
+ 				return NOTIFY_DONE;
  
--	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_DEL, &info);
-+	return dev_uc_del(cpu_dp->master, addr);
- }
- 
- int dsa_port_fdb_dump(struct dsa_port *dp, dsa_fdb_dump_cb_t *cb, void *data)
-@@ -715,8 +727,14 @@ int dsa_port_host_mdb_add(const struct dsa_port *dp,
- 		.port = dp->index,
- 		.mdb = mdb,
- 	};
-+	struct dsa_port *cpu_dp = dp->cpu_dp;
-+	int err;
-+
-+	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_ADD, &info);
-+	if (err)
-+		return err;
- 
--	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_ADD, &info);
-+	return dev_mc_add(cpu_dp->master, mdb->addr);
- }
- 
- int dsa_port_host_mdb_del(const struct dsa_port *dp,
-@@ -727,8 +745,14 @@ int dsa_port_host_mdb_del(const struct dsa_port *dp,
- 		.port = dp->index,
- 		.mdb = mdb,
- 	};
-+	struct dsa_port *cpu_dp = dp->cpu_dp;
-+	int err;
-+
-+	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_DEL, &info);
-+	if (err)
-+		return err;
- 
--	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_DEL, &info);
-+	return dev_mc_del(cpu_dp->master, mdb->addr);
- }
- 
- int dsa_port_vlan_add(struct dsa_port *dp,
+ 			/* When the bridge learns an address on an offloaded
 -- 
 2.25.1
 
