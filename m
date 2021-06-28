@@ -2,140 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 918F83B5F09
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 15:35:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F7083B5F5D
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 15:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232151AbhF1NhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 09:37:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37494 "EHLO mail.kernel.org"
+        id S232236AbhF1Nwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 09:52:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54016 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232135AbhF1NhB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Jun 2021 09:37:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C360F6141F;
-        Mon, 28 Jun 2021 13:34:31 +0000 (UTC)
+        id S232095AbhF1Nw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Jun 2021 09:52:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2BA2D61C77;
+        Mon, 28 Jun 2021 13:50:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624887274;
-        bh=ExvLWOqClO9sX13cV55KLyhbaOqefGQ9NVgjvW91HcM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G8XqjEDLyMf7yPiws6v/aTmEH/Fvvqt8X6YfNn4TYi2kVGPf93lfm7abPNVg9gSUU
-         BA8WhrvVbBDnyUVB+BSPMgNafGcIqEumrpxl8WnWbAZI3gYbX99T90bopduHba8JnX
-         xdbpmyIsup6cFs9d81j5gPpIeblVpm6Arwml1Kb4SrztEwwmwXXaMTP5tt6ZSXNg6A
-         OwNoZIMyL1RRgNfzejuNvb/r1i9BoBE0pjJdNylLTJfJP1tXSUwd/i09NmxayAlNmk
-         zBP6D5Xi79x1LeZwM4dbkPovRGYUk4LJFHFl4+ACWgHTe52iGuiImK9LTcUD7XVGUr
-         yIg4zXSDgBYZA==
-Date:   Mon, 28 Jun 2021 22:34:30 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Qiang Wang <wangqiang.wq.frank@bytedance.com>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Xiongchun duan <duanxiongchun@bytedance.com>
-Subject: Re: [Phishing Risk] [PATCH] kprobe: fix kretprobe stack backtrace
-Message-Id: <20210628223430.8f903ea25977f5568ec1df6e@kernel.org>
-In-Reply-To: <CAMZfGtWPi4CuVOtmUpy2N9J_mvp+5=gSAFvqV1nmvDKP+CAvQA@mail.gmail.com>
-References: <20210625084748.18128-1-wangqiang.wq.frank@bytedance.com>
-        <CAMZfGtWPi4CuVOtmUpy2N9J_mvp+5=gSAFvqV1nmvDKP+CAvQA@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        s=k20201202; t=1624888203;
+        bh=9HPRI9DaXKR/s8cm3cxQYIMeQMrbIEzHSAlcbNsfFgQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=BNQP+2nPE3tiYWw6ZRmWq6VFn8QRxTvXTjNxtRGpYe5bHWRubjWlQQ8+iJTpXseCh
+         pJ5q066kk+Qs+Yl3zpuR30coqEClne2oXR8xeRYq2mAQaULl+BWwMCsqdyY+Jsi1dB
+         pCL+5+Lr9clRYyW8yTOIa7siz6PuMa5OjvCAyx+0kMoF77e53VJOSEY0KykX4oSl56
+         LZyq4jdhrtFsBOwGifKnLF8KhXfHWS6zG6Idb8W05QhAE58h5a6MJPS7P/nnMtBxWs
+         KV6Y9nzXdablHKt4mu764td4RVopPC3MHA4ReDdmhXJzzXJCkydA62spvDcR8kCMIV
+         Pm5c9wgIrLOaw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1DB2260A3A;
+        Mon, 28 Jun 2021 13:50:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] bpf: Allow bpf_get_current_ancestor_cgroup_id for tracing
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162488820311.25678.12475103487123481913.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Jun 2021 13:50:03 +0000
+References: <20210627153627.824198-1-namhyung@kernel.org>
+In-Reply-To: <20210627153627.824198-1-namhyung@kernel.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, acme@kernel.org,
+        jolsa@redhat.com, rostedt@goodmis.org, mingo@kernel.org,
+        irogers@google.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 25 Jun 2021 18:24:12 +0800
-Muchun Song <songmuchun@bytedance.com> wrote:
+Hello:
 
-> On Fri, Jun 25, 2021 at 4:49 PM Qiang Wang
-> <wangqiang.wq.frank@bytedance.com> wrote:
-> >
-> > We found that we couldn't get the correct kernel stack from
-> > kretprobe. For example:
-> >
-> > bpftrace -e 'kr:submit_bio {print(kstack)}'
-> > Attaching 1 probe...
-> >
-> >         kretprobe_trampoline+0
-> >
-> >         kretprobe_trampoline+0
-> >
-> > The problem is caused by the wrong instruction register which
-> > points to the address of kretprobe_trampoline in regs.
-> > So we set the real return address in instruction register.
-> > Finally, we tested and successfully fixed it.
-> >
-> > bpftrace -e 'kr:submit_bio {print(kstack)}'
-> > Attaching 1 probe...
-> >
-> >         ext4_mpage_readpages+475
-> >         read_pages+139
-> >         page_cache_ra_unbounded+417
-> >         filemap_get_pages+245
-> >         filemap_read+169
-> >         __kernel_read+327
-> >         bprm_execve+648
-> >         do_execveat_common.isra.39+409
-> >         __x64_sys_execve+50
-> >         do_syscall_64+54
-> >         entry_SYSCALL_64_after_hwframe+68
-> >
-> > Reported-by: Chengming Zhou <zhouchengming@bytedance.com>
-> > Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
+
+On Sun, 27 Jun 2021 08:36:27 -0700 you wrote:
+> Allow the helper to be called from tracing programs.  This is needed
+> to handle cgroup hiererachies in the program.
 > 
-> Seems like a bug. Maybe we should add a "Fixes" tag here.
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> ---
+>  kernel/trace/bpf_trace.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-No, that is not a bug in the kretprobes. If you carefully check
-kretprobes provided the rp->addr as ip address. BPF just did not
-use it.
+Here is the summary with links:
+  - bpf: Allow bpf_get_current_ancestor_cgroup_id for tracing
+    https://git.kernel.org/bpf/bpf-next/c/95b861a7935b
 
-Anyway, I already made a same patch in the below series.
-
-https://lore.kernel.org/bpf/162400000592.506599.4695807810528866713.stgit@devnote2/
-
-and you can see that the series is including below 3 patches for that change.
-
-https://lore.kernel.org/bpf/162399997853.506599.13701157683968161733.stgit@devnote2/
-https://lore.kernel.org/bpf/162399998747.506599.1115560529431673586.stgit@devnote2/
-https://lore.kernel.org/bpf/162399999702.506599.16339931387573094059.stgit@devnote2/
-
-Without these patches, this change will break other arch.
-
-Thanks,
-
-> 
-> > ---
-> >  kernel/kprobes.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-> > index 745f08fdd..1130381ca 100644
-> > --- a/kernel/kprobes.c
-> > +++ b/kernel/kprobes.c
-> > @@ -1899,6 +1899,9 @@ unsigned long __kretprobe_trampoline_handler(struct pt_regs *regs,
-> >         current->kretprobe_instances.first = node->next;
-> >         node->next = NULL;
-> >
-> > +       /* Kretprobe handler expects address is the real return address */
-> > +       instruction_pointer_set(regs, (unsigned long)correct_ret_addr);
-> > +
-> >         /* Run them..  */
-> >         while (first) {
-> >                 ri = container_of(first, struct kretprobe_instance, llist);
-> > --
-> > 2.20.1
-> >
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
