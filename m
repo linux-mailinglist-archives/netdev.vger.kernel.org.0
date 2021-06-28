@@ -2,93 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CAB13B5EA2
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 15:02:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA13D3B5ED3
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 15:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233167AbhF1NFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 09:05:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59066 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233159AbhF1NFA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 09:05:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624885354;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fndY61EcgfzsXcmaCK7BMnLfNMbphujT+QMr+Pswt68=;
-        b=PGfmTACvAqpUJzwPjJ5xCRO9N3+up85oL8AVWjBsFYsbkaG0rXjH3Fxumk5HSF2FuxPtl5
-        YMW1Ah4dD5pKCIUOOCu/rYnE/v7OvKkULjsoOBCiVFgrrRHGP/csbA5REN7lmaNHjX08y7
-        CI24pan6AQxIIpG8WllqSTz7KeyXw3E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-128-lJbSiAWjOGCgZVrmUVHPPA-1; Mon, 28 Jun 2021 09:02:28 -0400
-X-MC-Unique: lJbSiAWjOGCgZVrmUVHPPA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 88C80800C78;
-        Mon, 28 Jun 2021 13:02:25 +0000 (UTC)
-Received: from localhost (ovpn-112-170.ams2.redhat.com [10.36.112.170])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7AFA969CB6;
-        Mon, 28 Jun 2021 13:02:03 +0000 (UTC)
-Date:   Thu, 24 Jun 2021 16:12:09 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Xie Yongji <xieyongji@bytedance.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
-        parav@nvidia.com, hch@infradead.org,
-        christian.brauner@canonical.com, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
-        dan.carpenter@oracle.com, joro@8bytes.org,
-        gregkh@linuxfoundation.org, songmuchun@bytedance.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 00/10] Introduce VDUSE - vDPA Device in Userspace
-Message-ID: <YNSgyTHpNjxdKLLR@stefanha-x1.localdomain>
-References: <20210615141331.407-1-xieyongji@bytedance.com>
+        id S233133AbhF1NZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 09:25:44 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60010 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232507AbhF1NZn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Jun 2021 09:25:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=bSkz8XGnJiW02FSnzZBKRHgloSBrP+z/kUoQN/yD/1c=; b=heB0EHmd6jCJFYtVHHcYbvVs+G
+        00K7hRR8R5gOk384kxzFQSc6CwwpHYBWJ1sNsbe64HS0NulfZrZfXrvH+HsOPhasV9RtfZ8Ipeb3Z
+        fd1xN/RaE4EMijA7ns1vLkGFkTku5s0NYjLWV6lUZ9QckqceYbfvneYTNZYdAj45tbng=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lxrE6-00BQnQ-Jf; Mon, 28 Jun 2021 15:23:02 +0200
+Date:   Mon, 28 Jun 2021 15:23:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mark Einon <mark.einon@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC 2/3] net: Provide switchdev driver for NXP's More Than IP
+ L2 switch
+Message-ID: <YNnNNkjOiH6hd2l9@lunn.ch>
+References: <YNH7vS9FgvEhz2fZ@lunn.ch>
+ <20210623133704.334a84df@ktm>
+ <YNOTKl7ZKk8vhcMR@lunn.ch>
+ <20210624125304.36636a44@ktm>
+ <YNSJyf5vN4YuTUGb@lunn.ch>
+ <20210624163542.5b6d87ee@ktm>
+ <YNSuvJsD0HSSshOJ@lunn.ch>
+ <20210625115935.132922ff@ktm>
+ <YNXq1bp7XH8jRyx0@lunn.ch>
+ <20210628140526.7417fbf2@ktm>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Bv+EGssEb3iM6ws2"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210615141331.407-1-xieyongji@bytedance.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20210628140526.7417fbf2@ktm>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> The best I could get would be:
+> 
+> &eth_switch {
+> 	compatible = "imx,mtip-l2switch";
+> 	reg = <0x800f8000 0x400>, <0x800fC000 0x4000>;
+> 
+> 	interrupts = <100>;
+> 	status = "okay";
+> 
+> 	ethernet-ports {
+> 		port1@1 {
+> 			reg = <1>;
+> 			label = "eth0";
+> 			phys = <&mac0 0>;
+> 		};
+> 
+> 		port2@2 {
+> 			reg = <2>;
+> 			label = "eth1";
+> 			phys = <&mac1 1>;
+> 		};
+> 	};
+> };
+> 
+> Which would abuse the "phys" properties usages - as 'mac[01]' are
+> referring to ethernet controllers.
 
---Bv+EGssEb3iM6ws2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This is not how a dedicated driver would have its binding. We should
+not establish this as ABI.
 
-On Tue, Jun 15, 2021 at 10:13:21PM +0800, Xie Yongji wrote:
-> This series introduces a framework that makes it possible to implement
-> software-emulated vDPA devices in userspace. And to make it simple, the
-> emulated vDPA device's control path is handled in the kernel and only the
-> data path is implemented in the userspace.
+So, sorry, but no.
 
-This looks interesting. Unfortunately I don't have enough time to do a
-full review, but I looked at the documentation and uapi header file to
-give feedback on the userspace ABI.
-
-Stefan
-
---Bv+EGssEb3iM6ws2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDUoMkACgkQnKSrs4Gr
-c8i9mAf/TQBs0m0AVmZZD8+mPJMwfeWR4pxCS+XbMMUr1xqCc7eSxhjMY6H1LNO6
-3r+wPajMdIuXEW16AsGRAplQmvTNAdUMjcDnSeS/Y1LBecoKKAnKOYuvRZ1HCaqk
-Ye3vT+jpDz+X/+miO5LiIenkJB9bouoqAxeNXIXQL5jOMw+pW7R2CD3YUK0k4AMn
-+X179rAMEOsPG+jyOlWDU1MDbdy1vZEIRQ7MoqrMqsHq/O+AnBXFyZISDwrUttZw
-HoXWFEeLdyh0mKaniHbsEvSQaAXrG+UBg5xqpYw9RNmbJ7ax+qQ4sUZHbkZlsXXe
-p++cvUCG1Xk7kOv1o28B3KBn/lyQQA==
-=Kg3j
------END PGP SIGNATURE-----
-
---Bv+EGssEb3iM6ws2--
-
+    Andrew
