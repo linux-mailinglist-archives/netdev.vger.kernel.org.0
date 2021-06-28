@@ -2,161 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60ED63B5850
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 06:27:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 208953B5852
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 06:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbhF1E3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 00:29:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45129 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229578AbhF1E3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 00:29:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624854448;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=o1xtLTToeyqa2U4eJBXFpKDKIzd68CvhihFPifGQBPQ=;
-        b=LhxR9twiM3fYxtQb2t7o4w/hcD0G/vNms5C5Bs5NBXTvlNvu2TAArHdDXK8aLy4dl48fPv
-        q1jIKCkuQ8qIQDFCpAdnWFgNIrShZjsB6XWhEWGQwyGbAwdXXPD0h5emK4okY/PaJtYpsf
-        syETBhQI5vaLyiOvvRWKyvvSt22Rsoc=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-378-Zu0R2lxSMQi_aNwXwyj_Rw-1; Mon, 28 Jun 2021 00:27:26 -0400
-X-MC-Unique: Zu0R2lxSMQi_aNwXwyj_Rw-1
-Received: by mail-pj1-f70.google.com with SMTP id u8-20020a17090a8908b029016f79b38655so11183821pjn.8
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 21:27:26 -0700 (PDT)
+        id S230426AbhF1Eam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 00:30:42 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:40800 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230203AbhF1Eal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 00:30:41 -0400
+Received: by mail-il1-f197.google.com with SMTP id c15-20020a92b74f0000b02901ee2d62033eso9985020ilm.7
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 21:28:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=o1xtLTToeyqa2U4eJBXFpKDKIzd68CvhihFPifGQBPQ=;
-        b=e3k3MP7h/m8LrQ/NwP3PTGmvoeGDNK3U8qh7GRMKCQE1x36mVl2ai5JKlTrOVyB43q
-         a6yDndbcMR9YCT9ZxCwyRPxdr1YUz98ZmsrRat7es6RQq4lsV+iMSVsVR693bXMEr/jA
-         AgZHR4GqS8XUDmLSbwlgbRHtPknZ428Bfx4pdGp47t81sU+2HPMLmcrO8gwiThg+FQ7L
-         SoV8PKbasK/fsSYxA+iL5bqX+1onGeFpmk2b9BbmUjAiikI/m4DHhy+l2V8uxVkZR9oY
-         btWc6RXJhbWNmjO6bXCfvFMY44i+W+aDjRo9rZG3wP43msZvo79lZ6aVeYBTTrXAjSgs
-         xuwg==
-X-Gm-Message-State: AOAM533a8ciO+a26NqdkeNw2BWRNcBQom/SntFxLoylSz66GE7lb7piP
-        lU9vQ1to4CJWc6TKzw6boShQ5JNaRi0HZvkz6j4k8hMJ0GkcwAJWtDDSJsa96eO9rf+CNDfbdS2
-        ZCPCvLC4lxGhzTMsu
-X-Received: by 2002:a17:90b:3142:: with SMTP id ip2mr34543001pjb.63.1624854445326;
-        Sun, 27 Jun 2021 21:27:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzTxjiSUInT9Lkq2bvqXC0+T2xLQ44T+XHJaHjdcs/PVsq1liVR3goJXjp3j0Q6IoPdBYTtMQ==
-X-Received: by 2002:a17:90b:3142:: with SMTP id ip2mr34542983pjb.63.1624854445157;
-        Sun, 27 Jun 2021 21:27:25 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l4sm1611362pjf.49.2021.06.27.21.27.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Jun 2021 21:27:24 -0700 (PDT)
-Subject: Re: [PATCH v3 4/5] net: tun: fix tun_xdp_one() for IFF_TUN mode
-To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
-Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
-        Willem de Bruijn <willemb@google.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
- <20210624123005.1301761-1-dwmw2@infradead.org>
- <20210624123005.1301761-4-dwmw2@infradead.org>
- <be6ec48e-ffc7-749b-f775-a34d376f474c@redhat.com>
- <32071ebb3f433b239394e243a6fc8a2bc6d36dcb.camel@infradead.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <8914d56f-8059-71df-ab51-9fbb9637e45a@redhat.com>
-Date:   Mon, 28 Jun 2021 12:27:21 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=icxrGNLP9JeJyygKnYHu0Kd8QQahd5TDh1IJBmjQ4fU=;
+        b=E0h3aqWe2c8TOyZ0pGxVCJi/cEMMKCr1HTdQn0mJKhrN7YNoOunK3QNgep9+cq/We2
+         OEN0xRK+DWfCG5YLim9Bjsm7IQuO5vCHLUFpAHXkpyP26nn8xrHxLM8JdgQfoC0HGPtG
+         fap2pKTZS6LbEMFJEoF+uVJgaIUg8XH5Uak09B1ZHj+oJw7Jz8IU1cRnk/bigaortA/X
+         GLO+jQw+7MLhbPSe9gQMaDk7Pgl5nAi1lh/winu2dEDJq9IhaFzysV/7fxD0YilOHOwb
+         Xv2n8+3a7Vm/No8fJnnLJfQv/Mo3bYk2BKj3vmqQwXNO03z59PzPWE2SBaOz7NVLNmDG
+         8sZQ==
+X-Gm-Message-State: AOAM530Dm42vv8c1yb6CJoYSlaLgHVyjpHCCvfzDT/A0M0w1Wag0NUwT
+        i+UKyeTJkxQo1bVnWycfe+NI1F8sT8Xn3/lQf/zFsNZQHNkR
+X-Google-Smtp-Source: ABdhPJz7x+mV90IRliuwgevDl/SQ8cw3MqpMFiOQ9959GwywBmL3g9wJR0IxB8UWyt3n+YMx9APc5G0ogAWyctYmtGl/Od5a/Frl
 MIME-Version: 1.0
-In-Reply-To: <32071ebb3f433b239394e243a6fc8a2bc6d36dcb.camel@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+X-Received: by 2002:a5d:9c43:: with SMTP id 3mr3689294iof.123.1624854496443;
+ Sun, 27 Jun 2021 21:28:16 -0700 (PDT)
+Date:   Sun, 27 Jun 2021 21:28:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001285b905c5cbeb8f@google.com>
+Subject: [syzbot] memory leak in j1939_sk_sendmsg
+From:   syzbot <syzbot+085305c4b952053c9437@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kernel@pengutronix.de, kuba@kernel.org,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
+        robin@protonic.nl, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-在 2021/6/25 下午4:51, David Woodhouse 写道:
-> On Fri, 2021-06-25 at 15:41 +0800, Jason Wang wrote:
->> 在 2021/6/24 下午8:30, David Woodhouse 写道:
->>> From: David Woodhouse <dwmw@amazon.co.uk>
->>>
->>> In tun_get_user(), skb->protocol is either taken from the tun_pi header
->>> or inferred from the first byte of the packet in IFF_TUN mode, while
->>> eth_type_trans() is called only in the IFF_TAP mode where the payload
->>> is expected to be an Ethernet frame.
->>>
->>> The equivalent code path in tun_xdp_one() was unconditionally using
->>> eth_type_trans(), which is the wrong thing to do in IFF_TUN mode and
->>> corrupts packets.
->>>
->>> Pull the logic out to a separate tun_skb_set_protocol() function, and
->>> call it from both tun_get_user() and tun_xdp_one().
->>>
->>> XX: It is not entirely clear to me why it's OK to call eth_type_trans()
->>> in some cases without first checking that enough of the Ethernet header
->>> is linearly present by calling pskb_may_pull().
->>
->> Looks like a bug.
->>
->>
->>>     Such a check was never
->>> present in the tun_xdp_one() code path, and commit 96aa1b22bd6bb ("tun:
->>> correct header offsets in napi frags mode") deliberately added it *only*
->>> for the IFF_NAPI_FRAGS mode.
->>
->> We had already checked this in tun_get_user() before:
->>
->>           if ((tun->flags & TUN_TYPE_MASK) == IFF_TAP) {
->>                   align += NET_IP_ALIGN;
->>                   if (unlikely(len < ETH_HLEN ||
->>                                (gso.hdr_len && tun16_to_cpu(tun,
->> gso.hdr_len) < ETH_HLEN)))
->>                           return -EINVAL;
->>           }
-> We'd checked skb->len, but that doesn't mean we had a full Ethernet
-> header *linearly* at skb->data, does it?
+syzbot found the following issue on:
+
+HEAD commit:    7266f203 Merge tag 'pm-5.13-rc8' of git://git.kernel.org/p..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16e22d34300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3aac8c6ef370586a
+dashboard link: https://syzkaller.appspot.com/bug?extid=085305c4b952053c9437
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11e0d6a4300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13528400300000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+085305c4b952053c9437@syzkaller.appspotmail.com
+
+BUG: memory leak
+unreferenced object 0xffff888112d44400 (size 232):
+  comm "syz-executor006", pid 8628, jiffies 4294942391 (age 8.470s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 80 d7 0f 81 88 ff ff 00 64 db 16 81 88 ff ff  .........d......
+  backtrace:
+    [<ffffffff836a0f8f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:413
+    [<ffffffff836ac44a>] alloc_skb include/linux/skbuff.h:1107 [inline]
+    [<ffffffff836ac44a>] alloc_skb_with_frags+0x6a/0x2c0 net/core/skbuff.c:5992
+    [<ffffffff83699e63>] sock_alloc_send_pskb+0x353/0x3c0 net/core/sock.c:2364
+    [<ffffffff83c54592>] j1939_sk_alloc_skb net/can/j1939/socket.c:858 [inline]
+    [<ffffffff83c54592>] j1939_sk_send_loop net/can/j1939/socket.c:1040 [inline]
+    [<ffffffff83c54592>] j1939_sk_sendmsg+0x2e2/0x7d0 net/can/j1939/socket.c:1175
+    [<ffffffff83690ad6>] sock_sendmsg_nosec net/socket.c:654 [inline]
+    [<ffffffff83690ad6>] sock_sendmsg+0x56/0x80 net/socket.c:674
+    [<ffffffff83696e9f>] sock_no_sendpage+0x8f/0xc0 net/core/sock.c:2862
+    [<ffffffff836903db>] kernel_sendpage.part.0+0xeb/0x150 net/socket.c:3618
+    [<ffffffff836910bb>] kernel_sendpage net/socket.c:3615 [inline]
+    [<ffffffff836910bb>] sock_sendpage+0x5b/0x90 net/socket.c:947
+    [<ffffffff815b8862>] pipe_to_sendpage+0xa2/0x110 fs/splice.c:364
+    [<ffffffff815ba702>] splice_from_pipe_feed fs/splice.c:418 [inline]
+    [<ffffffff815ba702>] __splice_from_pipe+0x1e2/0x330 fs/splice.c:562
+    [<ffffffff815baf2f>] splice_from_pipe fs/splice.c:597 [inline]
+    [<ffffffff815baf2f>] generic_splice_sendpage+0x6f/0xa0 fs/splice.c:746
+    [<ffffffff815b891b>] do_splice_from fs/splice.c:767 [inline]
+    [<ffffffff815b891b>] direct_splice_actor+0x4b/0x70 fs/splice.c:936
+    [<ffffffff815b9033>] splice_direct_to_actor+0x153/0x350 fs/splice.c:891
+    [<ffffffff815b9318>] do_splice_direct+0xe8/0x150 fs/splice.c:979
+    [<ffffffff8155a64f>] do_sendfile+0x51f/0x760 fs/read_write.c:1260
+    [<ffffffff8155cf82>] __do_sys_sendfile64 fs/read_write.c:1325 [inline]
+    [<ffffffff8155cf82>] __se_sys_sendfile64 fs/read_write.c:1311 [inline]
+    [<ffffffff8155cf82>] __x64_sys_sendfile64+0xe2/0x100 fs/read_write.c:1311
+
+BUG: memory leak
+unreferenced object 0xffff888116d2d800 (size 1024):
+  comm "syz-executor006", pid 8628, jiffies 4294942391 (age 8.470s)
+  hex dump (first 32 bytes):
+    0d 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff836a0e5f>] kmalloc_reserve net/core/skbuff.c:354 [inline]
+    [<ffffffff836a0e5f>] __alloc_skb+0xdf/0x280 net/core/skbuff.c:425
+    [<ffffffff836ac44a>] alloc_skb include/linux/skbuff.h:1107 [inline]
+    [<ffffffff836ac44a>] alloc_skb_with_frags+0x6a/0x2c0 net/core/skbuff.c:5992
+    [<ffffffff83699e63>] sock_alloc_send_pskb+0x353/0x3c0 net/core/sock.c:2364
+    [<ffffffff83c54592>] j1939_sk_alloc_skb net/can/j1939/socket.c:858 [inline]
+    [<ffffffff83c54592>] j1939_sk_send_loop net/can/j1939/socket.c:1040 [inline]
+    [<ffffffff83c54592>] j1939_sk_sendmsg+0x2e2/0x7d0 net/can/j1939/socket.c:1175
+    [<ffffffff83690ad6>] sock_sendmsg_nosec net/socket.c:654 [inline]
+    [<ffffffff83690ad6>] sock_sendmsg+0x56/0x80 net/socket.c:674
+    [<ffffffff83696e9f>] sock_no_sendpage+0x8f/0xc0 net/core/sock.c:2862
+    [<ffffffff836903db>] kernel_sendpage.part.0+0xeb/0x150 net/socket.c:3618
+    [<ffffffff836910bb>] kernel_sendpage net/socket.c:3615 [inline]
+    [<ffffffff836910bb>] sock_sendpage+0x5b/0x90 net/socket.c:947
+    [<ffffffff815b8862>] pipe_to_sendpage+0xa2/0x110 fs/splice.c:364
+    [<ffffffff815ba702>] splice_from_pipe_feed fs/splice.c:418 [inline]
+    [<ffffffff815ba702>] __splice_from_pipe+0x1e2/0x330 fs/splice.c:562
+    [<ffffffff815baf2f>] splice_from_pipe fs/splice.c:597 [inline]
+    [<ffffffff815baf2f>] generic_splice_sendpage+0x6f/0xa0 fs/splice.c:746
+    [<ffffffff815b891b>] do_splice_from fs/splice.c:767 [inline]
+    [<ffffffff815b891b>] direct_splice_actor+0x4b/0x70 fs/splice.c:936
+    [<ffffffff815b9033>] splice_direct_to_actor+0x153/0x350 fs/splice.c:891
+    [<ffffffff815b9318>] do_splice_direct+0xe8/0x150 fs/splice.c:979
+    [<ffffffff8155a64f>] do_sendfile+0x51f/0x760 fs/read_write.c:1260
+    [<ffffffff8155cf82>] __do_sys_sendfile64 fs/read_write.c:1325 [inline]
+    [<ffffffff8155cf82>] __se_sys_sendfile64 fs/read_write.c:1311 [inline]
+    [<ffffffff8155cf82>] __x64_sys_sendfile64+0xe2/0x100 fs/read_write.c:1311
+
+BUG: memory leak
+unreferenced object 0xffff888111010d00 (size 232):
+  comm "syz-executor006", pid 8628, jiffies 4294942391 (age 8.470s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 80 d7 0f 81 88 ff ff 00 64 db 16 81 88 ff ff  .........d......
+  backtrace:
+    [<ffffffff836a0f8f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:413
+    [<ffffffff836ac44a>] alloc_skb include/linux/skbuff.h:1107 [inline]
+    [<ffffffff836ac44a>] alloc_skb_with_frags+0x6a/0x2c0 net/core/skbuff.c:5992
+    [<ffffffff83699e63>] sock_alloc_send_pskb+0x353/0x3c0 net/core/sock.c:2364
+    [<ffffffff83c54592>] j1939_sk_alloc_skb net/can/j1939/socket.c:858 [inline]
+    [<ffffffff83c54592>] j1939_sk_send_loop net/can/j1939/socket.c:1040 [inline]
+    [<ffffffff83c54592>] j1939_sk_sendmsg+0x2e2/0x7d0 net/can/j1939/socket.c:1175
+    [<ffffffff83690ad6>] sock_sendmsg_nosec net/socket.c:654 [inline]
+    [<ffffffff83690ad6>] sock_sendmsg+0x56/0x80 net/socket.c:674
+    [<ffffffff83696e9f>] sock_no_sendpage+0x8f/0xc0 net/core/sock.c:2862
+    [<ffffffff836903db>] kernel_sendpage.part.0+0xeb/0x150 net/socket.c:3618
+    [<ffffffff836910bb>] kernel_sendpage net/socket.c:3615 [inline]
+    [<ffffffff836910bb>] sock_sendpage+0x5b/0x90 net/socket.c:947
+    [<ffffffff815b8862>] pipe_to_sendpage+0xa2/0x110 fs/splice.c:364
+    [<ffffffff815ba702>] splice_from_pipe_feed fs/splice.c:418 [inline]
+    [<ffffffff815ba702>] __splice_from_pipe+0x1e2/0x330 fs/splice.c:562
+    [<ffffffff815baf2f>] splice_from_pipe fs/splice.c:597 [inline]
+    [<ffffffff815baf2f>] generic_splice_sendpage+0x6f/0xa0 fs/splice.c:746
+    [<ffffffff815b891b>] do_splice_from fs/splice.c:767 [inline]
+    [<ffffffff815b891b>] direct_splice_actor+0x4b/0x70 fs/splice.c:936
+    [<ffffffff815b9033>] splice_direct_to_actor+0x153/0x350 fs/splice.c:891
+    [<ffffffff815b9318>] do_splice_direct+0xe8/0x150 fs/splice.c:979
+    [<ffffffff8155a64f>] do_sendfile+0x51f/0x760 fs/read_write.c:1260
+    [<ffffffff8155cf82>] __do_sys_sendfile64 fs/read_write.c:1325 [inline]
+    [<ffffffff8155cf82>] __se_sys_sendfile64 fs/read_write.c:1311 [inline]
+    [<ffffffff8155cf82>] __x64_sys_sendfile64+0xe2/0x100 fs/read_write.c:1311
 
 
-The linear room is guaranteed through either:
 
-1) tun_build_skb()
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-or
-
-2) tun_alloc_skb()
-
-
->
-> For the basic tun_get_user() case I suppose we copy_from_user() into a
-> single linear skb anyway, even if userspace had fragment it and used
-> writev(). So we *are* probably safe there?
->
-> I'm sure we *can* contrive a proof that it's safe for that case, if we
-> must. But I think we should *need* that proof, if we're going to bypass
-> the check. And I wasn't comfortable touching that code without it.
->
-> We should also have a fairly good reason... it isn't clear to me *why*
-> we're bothering to avoid the check. Is it so slow, even in the case
-> where there's nothing to be done?
->
-> For a linear skb, the inline pskb_may_pull() is going to immediately
-> return true because ETH_HLEN < skb_headlen(skb), isn't it? Why optimise
-> *that* away?
->
-> Willem, was there a reason you made that conditional in the first
-> place?
->
-> If we're going to continue to *not* check on the XDP path, we similarly
-> need a proof that it can't be fragmented. And also a reason to bother
-> with the "optimisation", of course.
-
-
-For XDP path, we simply need to add a length check since the packet is 
-always a linear memory.
-
-Thanks
-
-
->
->
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
