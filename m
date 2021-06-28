@@ -2,113 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE92D3B68E7
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 21:14:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61E323B6921
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 21:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236224AbhF1TQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 15:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43724 "EHLO
+        id S236621AbhF1Tdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 15:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235278AbhF1TQW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 15:16:22 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C63C061760;
-        Mon, 28 Jun 2021 12:13:55 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id v7so16307190pgl.2;
-        Mon, 28 Jun 2021 12:13:55 -0700 (PDT)
+        with ESMTP id S236582AbhF1Tdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 15:33:38 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D273FC061574
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 12:31:10 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id b2so2563682qka.7
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 12:31:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BCs+o6gnuZtfNOzQ4frdEyd2QHilOo8Pj6iWOjokB3s=;
-        b=BplzLOLNxYA00SkMeaix/bUXKP0Kf0s4DsFQ6TD9ikLPsurY14W4kuDuOiwfqjYl5s
-         k39d9S9aZ1KdXAbguHNeCzzET8EnW0DopvD9I7vVL6/KPQVYmXKKFT88WD295SD1tj5V
-         pmyp1IR/C4IEUlaOmOGzQFwNCgjDE+hazP/637Lb+uZ4PmlXtKxaBlT14DsHva+tuirB
-         QVPu+JdfMBK6H+66pxfKCvVthb9mHgxQDt2niAmTxgatLyaSuGjfP9sadw+KDQWbVPoA
-         aq2bfQuIkeyV0/lLCsqyEq2phZEPWnq++J+jxqxx/vanexoW+LF/+X8Zz8pyM1Fkh138
-         D4VQ==
+        d=x64architecture.com; s=x64;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r5M2GtCdyWVHpdPTGmNoigWQRvUhgbWJWC6QquVhxlA=;
+        b=qwuMyjUp8zlnw5vN+WuMTXVWaS+69jKxNgI4AULhLzs+xYbG8PPku73+WnAvVWK5QG
+         mHTpxxx8sYaZi+OYUQva0LpKSizjhPyp8krYlNDnDhUoAu2+PCHLv4IQ0zo/G0DkP+2m
+         qFRoSKOmJ/8wIp+Ytl/cLyHEe7a3oPou+ucH99pcRkFzFnF4XoOpL/dzuO1PXWSd7q/f
+         gysrQDLj48M4DYnhU65R4dAXUuYXc3L/wbkcwipbqQwBnTQSWiDrpx8o4qjLXXkOCdWY
+         dpiGh3z3XcwMng1we1opTQCrnS4Ic7WnUpds0z2FO2l36dmO8UcKUzeBQ+r2Ovghv/ws
+         ES1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BCs+o6gnuZtfNOzQ4frdEyd2QHilOo8Pj6iWOjokB3s=;
-        b=IyXiFHikLwkI1rms5MIBOvSbcf7yvA/8eAsJ+ZEvAe2QsHke/cENOpXGJcEoh/Q1ZL
-         CELNreHOOWDnH1rHE2x7boERy8AbGLghT3v9RhNcjJ7aPcYUTAmeCHI7yPzX2BKRYpSP
-         hXrNXoiXBx4NVsZVF/zTzQwpcEIJAs/s+zDgRodPIdZ5ujzezU8w5QYY4/ng7VKF2zTG
-         sZtsBKZXA0JmT0i//ALK6mkI55q2BY+6X6gwdZ5gOpsTBoON8A6YjzPVeHAafoEQSsOC
-         RUGflO0KHmN8LfotbUc5xKbrvt8F0JAwCojigWRoVPrxYM2P2ztDdVcoRCjFCzYs2ejl
-         c9Vg==
-X-Gm-Message-State: AOAM5308b2POZc/If1kRDGF9QC7LkpK23mN7Z1eFmpRkdX8ALAQq9S19
-        OueERWy0bwjzaonE0Y24Yg8=
-X-Google-Smtp-Source: ABdhPJyiKFIdr3hbu7dZXAZ4/QDE46GPyiYAXPA58rfCzU2ZMzC8su6No4EYhe1C7WLFw2ebhI8sVQ==
-X-Received: by 2002:a05:6a00:168a:b029:2fb:6bb0:aba with SMTP id k10-20020a056a00168ab02902fb6bb00abamr26557996pfc.32.1624907634902;
-        Mon, 28 Jun 2021 12:13:54 -0700 (PDT)
-Received: from horizon.localdomain ([177.220.172.71])
-        by smtp.gmail.com with ESMTPSA id g123sm10203999pfb.187.2021.06.28.12.13.54
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r5M2GtCdyWVHpdPTGmNoigWQRvUhgbWJWC6QquVhxlA=;
+        b=mf6OrXzXGqdd8YeqHsCKuidui1m5WfEwA/p2JZlpZVRft6UqRJI2jjk5KySK2emP4g
+         jyXm4heuXRjrhbGYGdfM0ge5GXQxJTta/03U9lfDuotfxS9XN/Bx+123FLpJwCt/Wx10
+         B5B6AZHjNHHDqOjv19UqyN0k2w5NqSgNleryvJib9YCfcgzgJkTnpvCH38TAe+dhQ4t1
+         KMulLHCekGwGqFuSxRvNcciMly15e3F5ht99iy30lbsmUl36aT3Fb0PB2aLYzvXtWClX
+         3GuM62CXxP2Wr4gVGF/RIFdiMoIiZklNElff1hrHZL4Yc5f1nur55rUn6RJET6QVNSZz
+         nM4Q==
+X-Gm-Message-State: AOAM5337UyaVrtOHzpFwomnIf76A/fHj6716TmOp8Rfd00vIGsLX9VwH
+        QZLWuzlSZ8qtP9tlijZgyukk0Rkx4umy9pFS
+X-Google-Smtp-Source: ABdhPJwnCwstKPguwu+4vHWetfZf006IHocDJZzbadNlsgGQZ+XscRUNYKGiKD/A//OxwdtOg+cKmw==
+X-Received: by 2002:a37:468b:: with SMTP id t133mr27431065qka.244.1624908669958;
+        Mon, 28 Jun 2021 12:31:09 -0700 (PDT)
+Received: from kcancemi-arch.Engineering.com ([167.206.126.218])
+        by smtp.gmail.com with ESMTPSA id c4sm4011866qtv.81.2021.06.28.12.31.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Jun 2021 12:13:54 -0700 (PDT)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id 3604DC13E9; Mon, 28 Jun 2021 16:13:52 -0300 (-03)
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+        Mon, 28 Jun 2021 12:31:09 -0700 (PDT)
+From:   Kurt Cancemi <kurt@x64architecture.com>
 To:     netdev@vger.kernel.org
-Cc:     linux-sctp@vger.kernel.org,
-        Ilja Van Sprundel <ivansprundel@ioactive.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>
-Subject: [PATCH net 4/4] sctp: add param size validation for SCTP_PARAM_SET_PRIMARY
-Date:   Mon, 28 Jun 2021 16:13:44 -0300
-Message-Id: <e39b372644b6e5bf48df25e54b9172f34ec223a1.1624904195.git.marcelo.leitner@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1624904195.git.marcelo.leitner@gmail.com>
-References: <cover.1624904195.git.marcelo.leitner@gmail.com>
+Cc:     Kurt Cancemi <kurt@x64architecture.com>
+Subject: [PATCH 0/1] Possible Issue Setting the Delay Flags in the Marvell Net PHY Driver
+Date:   Mon, 28 Jun 2021 15:28:25 -0400
+Message-Id: <20210628192826.1855132-1-kurt@x64architecture.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When SCTP handles an INIT chunk, it calls for example:
-sctp_sf_do_5_1B_init
-  sctp_verify_init
-    sctp_verify_param
-  sctp_process_init
-    sctp_process_param
-      handling of SCTP_PARAM_SET_PRIMARY
+Hi,
 
-sctp_verify_init() wasn't doing proper size validation and neither the
-later handling, allowing it to work over the chunk itself, possibly being
-uninitialized memory.
+I believe there is an issue setting the RX and TX delay flags in the Marvell
+net PHY driver. This patch fixes the issue for me but I am not convinced that
+this is the right way to fix the issue or that this patch will not cause side
+effects for other models. Feedback and comments are greatly appreciated.
 
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
----
- net/sctp/sm_make_chunk.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+Backstory:
 
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index f33a870b483da7123e2ddb4473b6200a1aca5ade..587fb3cb88e29f53148cd21f13a2a86487ce292b 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -2166,9 +2166,16 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
- 		break;
- 
- 	case SCTP_PARAM_SET_PRIMARY:
--		if (ep->asconf_enable)
--			break;
--		goto unhandled;
-+		if (!ep->asconf_enable)
-+			goto unhandled;
-+
-+		if (ntohs(param.p->length) < sizeof(struct sctp_addip_param) +
-+					     sizeof(struct sctp_paramhdr)) {
-+			sctp_process_inv_paramlength(asoc, param.p,
-+						     chunk, err_chunk);
-+			retval = SCTP_IERROR_ABORT;
-+		}
-+		break;
- 
- 	case SCTP_PARAM_HOST_NAME_ADDRESS:
- 		/* Tell the peer, we won't support this param.  */
+I have been troubleshooting getting ethernet to work on a board based off of
+the NXP T2080RDB (with DPAA ethernet). It has a Marvell 88E1510 PHY chip.
+When attempting to use ping to verify that the ethernet was working I was
+only getting RX and TX errors. Upon further debugging I discovered that the
+RX and TX delay flags were not being set.
+
+I believe there is an issue because of the following:
+
+* The DPAA memac driver correctly reports that the device tree ethernet
+  "phy-connection-type" is set to "rgmii-id" and the of_get_phy_mode()
+  function correctly returns 0x8 "PHY_INTERFACE_MODE_RGMII_ID"
+
+* A similar fix for this same issue was incorporated into U-Boot back in 2018:
+  https://github.com/u-boot/u-boot/commit/431be621c6cbc72efd1d45fa36686a682cbb470a
+
+* The ethernet works with the attached patch.
+
+Kurt
+
+Kurt Cancemi (1):
+  net: phy: marvell: Fixed handing of delays with plain RGMII interface
+
+ drivers/net/phy/marvell.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
 -- 
-2.31.1
+2.32.0
 
