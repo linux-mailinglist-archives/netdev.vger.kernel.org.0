@@ -2,111 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0EB43B6163
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 16:33:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D17143B6158
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 16:33:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234760AbhF1Ofr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 10:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35576 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234431AbhF1Ocr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 10:32:47 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982F2C0611C6;
-        Mon, 28 Jun 2021 07:23:32 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id h17so26148799edw.11;
-        Mon, 28 Jun 2021 07:23:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rfKuoJAtusVapu2kMNkcCOghL39W8RTkgqPaXUuzpo8=;
-        b=ZDRo78BaHPXxHFuzCVbfLd4RGcEPVTnhlS9BBkW9pXPF0D1YWb3CfCZroYT4gN+9yx
-         DHJPJ6Vk6gsB2GDCvGqaNltY9IdKnbRbFiW2ZCeevawG11FbaaPem3QT6umspNl74ZGF
-         sp+XIF68u49BhCc/fAOJhPWGAVapss6+9HA1+XYgSNMRQIX9hcNYY/HrUfycufng+SDs
-         /iWH7Mw6UYidGttFQHvdpsBDniMNgibVXGdQoDHFnU1sm51c/EtzJ9EvGXZ59DSl9+Gp
-         Q+3q+kR3R2Sye0HfyIgXV5O7Jb43WJwdYWw/M8Ulb47lVWdSpuFeCdHPQpdQRbU6qYGi
-         o+eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rfKuoJAtusVapu2kMNkcCOghL39W8RTkgqPaXUuzpo8=;
-        b=YZN3auLm1D5fusVay4gpd96yVLxEgSK1TbLPHsWzlChwGC7a2XtZcNudhRLj7v+T7B
-         kk88yY/sXMZzd1q7yoVIycWbIn3u9ps2sNT7Trdf2c+r44p5sdY+Uk9CsQ6YLxrRh0Xn
-         rpuBcefzM4u+eIBw2MrE/c3vL7uD128BnEYUN8pd0xKcUOq5n32iN5BnKqiBRh0YZGu7
-         24JV4K27T7lATy54BNM1XmBs7xrwmdvd1+DiNpEhe6vxe1E6y1TssbtPPb0Hz20vV9tY
-         tZJHXhqk0FeKihKARdOeE1safrrg5hB/SDiSGexGz6RIFtS00ciICN+Hn9Tr2SnHyAek
-         nZXQ==
-X-Gm-Message-State: AOAM532AcSj4NScclQgULL2T36n/ckmmBLLJemxKoFHOwAWL+BY6u3RI
-        lHnmH7z3NKC6KpaSiv+VVhnXaeuM0zk=
-X-Google-Smtp-Source: ABdhPJwfobLX0Nexj7XfdQlU1nOg96cEbyQjKFS9BY0XcmMGP7zeiIu2sXZM7wjh3rbbdIaU05pSlA==
-X-Received: by 2002:a05:6402:154:: with SMTP id s20mr33653045edu.103.1624890211191;
-        Mon, 28 Jun 2021 07:23:31 -0700 (PDT)
-Received: from skbuf ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id cd4sm6983770ejb.104.2021.06.28.07.23.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Jun 2021 07:23:30 -0700 (PDT)
-Date:   Mon, 28 Jun 2021 17:23:29 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Mark Einon <mark.einon@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 2/3] net: Provide switchdev driver for NXP's More Than IP
- L2 switch
-Message-ID: <20210628142329.2y7gmykoy7uh44gd@skbuf>
-References: <YNOTKl7ZKk8vhcMR@lunn.ch>
- <20210624125304.36636a44@ktm>
- <YNSJyf5vN4YuTUGb@lunn.ch>
- <20210624163542.5b6d87ee@ktm>
- <YNSuvJsD0HSSshOJ@lunn.ch>
- <20210625115935.132922ff@ktm>
- <YNXq1bp7XH8jRyx0@lunn.ch>
- <20210628140526.7417fbf2@ktm>
- <20210628124835.zbuija3hwsnh2zmd@skbuf>
- <20210628161314.37223141@ktm>
+        id S233904AbhF1Ofi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 10:35:38 -0400
+Received: from us-smtp-delivery-115.mimecast.com ([216.205.24.115]:20844 "EHLO
+        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234163AbhF1Oci (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 10:32:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
+        s=selector; t=1624890610;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gyZfI7pvrpe2GYjzBa5V3TIpV5IC5MOrD1i16xRB/Jg=;
+        b=f8507faACyQZyk6v27hHWll5xGGKoLMtiTHUrp0pm8dVEKbmmgOw5am/wX1zNotP8ApN5m
+        h9jT7HDSHFBIuE45vz15UHLlqBhPaTayY9bZOLcmGafb2dy9xKXqt6FKOtUvYDs7BNvlTj
+        Gxiy27BQKe4n40+3sfHgiJJivwfSvDw=
+Received: from mail.maxlinear.com (174-47-1-84.static.ctl.one [174.47.1.84])
+ (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-225-RFFeUWYEPQ6eOk5yql5clQ-1; Mon, 28 Jun 2021 10:30:08 -0400
+X-MC-Unique: RFFeUWYEPQ6eOk5yql5clQ-1
+Received: from sgsxdev002.isng.phoenix.local (10.226.81.112) by
+ mail.maxlinear.com (10.23.38.119) with Microsoft SMTP Server id 15.1.2242.4;
+ Mon, 28 Jun 2021 07:30:03 -0700
+From:   Xu Liang <lxu@maxlinear.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <vee.khee.wong@linux.intel.com>
+CC:     <linux@armlinux.org.uk>, <hmehrtens@maxlinear.com>,
+        <tmohren@maxlinear.com>, <mohammad.athari.ismail@intel.com>,
+        Xu Liang <lxu@maxlinear.com>
+Subject: [PATCH v4 1/2] net: phy: add API to read 802.3-c45 IDs
+Date:   Mon, 28 Jun 2021 22:29:45 +0800
+Message-ID: <20210628142946.16319-1-lxu@maxlinear.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210628161314.37223141@ktm>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: maxlinear.com
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 28, 2021 at 04:13:14PM +0200, Lukasz Majewski wrote:
-> > > > So before considering merging your changes, i would like to see a
-> > > > usable binding.
-> > > >
-> > > > I also don't remember seeing support for STP. Without that, your
-> > > > network has broadcast storm problems when there are loops. So i
-> > > > would like to see the code needed to put ports into blocking,
-> > > > listening, learning, and forwarding states.
-> > > >
-> > > > 	  Andrew
-> >
-> > I cannot stress enough how important it is for us to see STP support
-> > and consequently the ndo_start_xmit procedure for switch ports.
->
-> Ok.
->
-> > Let me see if I understand correctly. When the switch is enabled, eth0
-> > sends packets towards both physical switch ports, and eth1 sends
-> > packets towards none, but eth0 handles the link state of switch port
-> > 0, and eth1 handles the link state of switch port 1?
->
-> Exactly, this is how FEC driver is utilized for this switch.
+Add API to read 802.3-c45 IDs so that C22/C45 mixed device can use
+C45 APIs without failing ID checks.
 
-This is a much bigger problem than anything which has to do with code
-organization. Linux does not have any sort of support for unmanaged
-switches. Please try to find out if your switch is supposed to be able
-to be managed (run control protocols on the CPU). If not, well, I don't
-know what to suggest.
+Signed-off-by: Xu Liang <lxu@maxlinear.com>
+---
+ drivers/net/phy/phy_device.c | 14 ++++++++++++++
+ include/linux/phy.h          |  1 +
+ 2 files changed, 15 insertions(+)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 0a2d8bedf73d..c8969642076f 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -935,6 +935,20 @@ void phy_device_remove(struct phy_device *phydev)
+ }
+ EXPORT_SYMBOL(phy_device_remove);
+=20
++/**
++ * get_phy_c45_ids - Read 802.3-c45 IDs for phy device.
++ * @phydev: phy_device structure to read 802.3-c45 IDs
++ *
++ * Returns zero on success, %-EIO on bus access error, or %-ENODEV if
++ * the "devices in package" is invalid.
++ */
++int phy_get_c45_ids(struct phy_device *phydev)
++{
++=09return get_phy_c45_ids(phydev->mdio.bus, phydev->mdio.addr,
++=09=09=09       &phydev->c45_ids);
++}
++EXPORT_SYMBOL(phy_get_c45_ids);
++
+ /**
+  * phy_find_first - finds the first PHY device on the bus
+  * @bus: the target MII bus
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 852743f07e3e..e46b23a2113b 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1391,6 +1391,7 @@ static inline int phy_device_register(struct phy_devi=
+ce *phy)
+ static inline void phy_device_free(struct phy_device *phydev) { }
+ #endif /* CONFIG_PHYLIB */
+ void phy_device_remove(struct phy_device *phydev);
++int phy_get_c45_ids(struct phy_device *phydev);
+ int phy_init_hw(struct phy_device *phydev);
+ int phy_suspend(struct phy_device *phydev);
+ int phy_resume(struct phy_device *phydev);
+--=20
+2.17.1
+
