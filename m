@@ -2,201 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D13403B660E
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 17:49:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E20DE3B65DD
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 17:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236172AbhF1Pvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 11:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236018AbhF1PvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 11:51:25 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F45BC06115A
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 08:27:52 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id i94so21802349wri.4
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 08:27:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lWo/Rt37gXmdt5sWI2DbV+mIEJQbvqNCpCWsIrIsohQ=;
-        b=Vfj0vYoHBNt+inN+GRRLpfHzvKOGvf1c4gjFttZkCeAjw8IcRzhqZLuxt1ukkZOOYB
-         aCTjhgtEeVUWHY8ukpA7uDl+L8HwPMiUzilJLDIIP03z3gF2Of6ZUZPWoC6kA6DqXsrw
-         h1tMIl5hAtbzW/3gwd6cH0R1fxpV1mJJeMRZ9IXcg36+jw57Qt/O985GhzsY27LEISlc
-         ynJtoTWykHCyPAqxM/YwZc6KrmivZHIZXmfQXKjNPfcLBYUSlUxxnmjikjAHtM2Sg4Ah
-         NNNUM8tCVtlCMnZrRRj1KVc9uv4u5cPczIX3F/1hZWiwigOdTFWW0Vdysyc2Qc2eaODU
-         oO8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lWo/Rt37gXmdt5sWI2DbV+mIEJQbvqNCpCWsIrIsohQ=;
-        b=uAyXc86MU59pqcl8ikS9h8tCQKwzUeVYOGs2BTFLYrt6vT3b0dNcAY9ITv6tVhCZfF
-         HdaEzYmaXMIiLLL8T6gI91ar4dHUUeUBsnfYPCGkdTKCCoYSk6CG9DJlMbGMtej4QbTr
-         +kR6HSFZaCZKPPaWqIKTdLPeDYlZaUNrwRECLaqHI2Np+64V3MSXQh3a64Y+va733lOL
-         t2a5XFgMDImUt6tRLHIZJD6nJPOUQiMNZ1jOyw1SeRRtEsikEtjPH+VIsmzY6pTDjEw+
-         tpCGtrGOLcq0gzD7qIhc1cztmLq8+4O5B/8q2WWRtk4U0s7nGIbrpeZWpULWtinfcC92
-         iHFg==
-X-Gm-Message-State: AOAM530OUBVW2O9dvIA5n9PmikQfCWMhhRx0laIjqSHMj2HF4YqKz+Ny
-        B/GyDa+8iyfW+v43RLJ7btqHlOmxyOQ=
-X-Google-Smtp-Source: ABdhPJztXf4+Diwz2iv2GjGJcZ57vXw16G9NxrzA/P+JiKdSVrerBVHDB0KyzI8bFdf5qPNQT8aeRg==
-X-Received: by 2002:a5d:4e08:: with SMTP id p8mr10040704wrt.425.1624894070973;
-        Mon, 28 Jun 2021 08:27:50 -0700 (PDT)
-Received: from [10.0.0.12] (65.196.23.93.rev.sfr.net. [93.23.196.65])
-        by smtp.gmail.com with ESMTPSA id s23sm15005989wmh.5.2021.06.28.08.27.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Jun 2021 08:27:49 -0700 (PDT)
-Subject: Re: [PATCH v3] net: sched: Add support for packet bursting.
-To:     Niclas Hedam <nhed@itu.dk>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        id S235695AbhF1PlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 11:41:14 -0400
+Received: from mail-eopbgr80113.outbound.protection.outlook.com ([40.107.8.113]:27886
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238721AbhF1PlD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Jun 2021 11:41:03 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c82nCtHvxCzr04n6WAhuGg/DahJU+kR/uTdwV4TuJA/sqt4sJi+V9B0L1xwi7e4ap6BDBa3v1VmUsL/V9jgNmWGJA3dIqAT61HWytLZb4cLMYPD2LPSk8hrIaFSwxZ/9cijtMXPdDoIImRCt7VLI27uHlIXU+p2JDJfqZRQ1jGSY7b99sSirf2v9VleiKK+F+miokwG7NqvLxtK2SZsnvYavsIWwbvW2gvfG5TxcN2pcWp94GeyThLDyDNRY7niIJYMdPLwa1+jmqecQDEDaNCpkMrnMTxaQ59T7e+ISWNagndSW7QtmKNH9z2E5CzQ5a3pFvAoEvHX0vv183nQDXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RvJ6jMLfZg46klG+EK+S3Yc9QIdwstNsTpvyNZEOLiY=;
+ b=hEGKtWolQWzsNtSAW4i8jbsqQd6zME7965EyseOYcyOBzObd/InFqrd1WhhXH7go1cFV4g5jSskdosgBiwyuK3cWV/uwETUfO6qL2xVkM4Y6+f2fhGKnAzeYrzhrtiu20wbAWFEHKjKNqP3JYelrPkq58hx9H/NB1hJgbMfWjYXiOXpspWxE4QVV9L8WmfxCgNkysp0eV81lRTPUQJy+dvBNGLrygtQCg1oh+bBoPJRhfV9qYjS4bUPuwqBIqKQAf7F6eeEBMvmS0p98kuEznkA2O2DumFsjKGJMB/tG4iUssyxdE4ZwPtWvon1JAp5wj22Iddq6TFjtIOr6ZM70eA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=itu.dk; dmarc=pass action=none header.from=itu.dk; dkim=pass
+ header.d=itu.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=itu.dk; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RvJ6jMLfZg46klG+EK+S3Yc9QIdwstNsTpvyNZEOLiY=;
+ b=dRZgUXJ7ZedCaz4EMiJSnIX66wO8o5PdPw4Ka8SrdswsVualV2tq/85CJU8WLhAd6qTaCf0TSSTPSnX9FOHM2m6g9yks9QuxBHJ1F9U7CW8votja1dJB54m/vcNWGQmPr7O1bHme2BaWIGGTczfoPQEdldhpp0RIqPLp1TRVNGQW5D9Rw67pSb8scz5g+VD/sT/vkZojlePPhA+Yp8+EYBSNJUvF+FTgKqHB7g2J/hgsiTW1HmnCL7dErSgniTNemxhb4aJ8aM1oC+kcXTKAPsWWNSTg9dkPbClADA+0k13tKKSuJwjPVKL+miucrLpOgvtKcdpEJz2e0BVxDANzIA==
+Received: from AM0PR02MB5777.eurprd02.prod.outlook.com (2603:10a6:208:180::13)
+ by AM0PR02MB5489.eurprd02.prod.outlook.com (2603:10a6:208:165::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.22; Mon, 28 Jun
+ 2021 15:38:32 +0000
+Received: from AM0PR02MB5777.eurprd02.prod.outlook.com
+ ([fe80::9832:7a6d:cf4e:d511]) by AM0PR02MB5777.eurprd02.prod.outlook.com
+ ([fe80::9832:7a6d:cf4e:d511%9]) with mapi id 15.20.4264.026; Mon, 28 Jun 2021
+ 15:38:32 +0000
+From:   Niclas Hedam <nhed@itu.dk>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+CC:     "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3] net: sched: Add support for packet bursting.
+Thread-Topic: [PATCH v3] net: sched: Add support for packet bursting.
+Thread-Index: AQHXbBZKwup3mKjwFEaXkQ4HGgDK06spjCAAgAAC//o=
+Date:   Mon, 28 Jun 2021 15:38:32 +0000
+Message-ID: <09A9813C-03B0-43F0-B51F-4594609417A1@itu.dk>
 References: <532A8EEC-59FD-42F2-8568-4C649677B4B0@itu.dk>
- <877diekybt.fsf@toke.dk> <5E66E8DB-E4E5-4658-9179-E3A5BD9E8A31@itu.dk>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <bff04971-9e46-6674-dbbc-53e6d12b114e@gmail.com>
-Date:   Mon, 28 Jun 2021 17:27:48 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <5E66E8DB-E4E5-4658-9179-E3A5BD9E8A31@itu.dk>
-Content-Type: text/plain; charset=utf-8
+ <877diekybt.fsf@toke.dk>
+ <5E66E8DB-E4E5-4658-9179-E3A5BD9E8A31@itu.dk>,<bff04971-9e46-6674-dbbc-53e6d12b114e@gmail.com>
+In-Reply-To: <bff04971-9e46-6674-dbbc-53e6d12b114e@gmail.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=none action=none header.from=itu.dk;
+x-originating-ip: [2a02:aa7:4601:7a11:1806:6c81:ed0f:3e49]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c5acc150-b635-4535-38f3-08d93a4ac8e6
+x-ms-traffictypediagnostic: AM0PR02MB5489:
+x-microsoft-antispam-prvs: <AM0PR02MB5489BAEB07BE0752A6F1200CB4039@AM0PR02MB5489.eurprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HjOIgLexRaw0/lAqyuODgB5q/f4Anidk5aym1KvXYchYuKV6iuGYLPT3kVj/wCACGneHWgXKkpbjjoB4fz+vNtf1GLsc4j8HED5xbiZNtIMn4BSaOP+io34lXvRc0kbJ7NlrF9MIsIE6Bn+mil/WsXQpGioVwnGBe4P6ujvFwEIr/ItAAn8t2IKFnCSCst2VuDVuE8EQeA8kXbYx9N2UnvfCmY8lokbMxrbWl92AvVHieitgs4RWo2LqztH6mHPEE+5zdhG05yj+oW91bDESVRnmUPgrcM+cQ9yWlBSZLu2B1N9BBXs1dFiYAIa4INryvtYti1hIL+9QaZ6Po3e5/lp7oQ9VGWqei0qdpwPNXpKwTljsVvpnQdIpKdeD7xFI0uEPGDvwof3FnJ98G5zRuABgnjYjZhslx1toxQ5k+zAcHDqdphW+rztZ2YVsZnJXzdyCC65zSC1/EgSALoPVOOZcbdoqItySM1Nsut7+BxJh8KTRky9US1unZRaWuVctnztXdAhI+PGaM+hisyOH0+OUYQd3e7lWzA/rlfTx9T3LHG1YelUDk/4N0mfrUorzqBsnWvuxeKABWZmZ5fNQvfWEVqHcgk9/CxuCCJqUX7kuXGRfWbnrwebVJe0YAV1zfZGGUW2vFQM+DSDDZajv+guTvuh37C6kEBw9Vw0YMMCU5AqVMJITwcrbwJvDqWV03gPBt5YDje/fVugcDHK9fA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB5777.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(186003)(6506007)(498600001)(54906003)(66574015)(83380400001)(33656002)(71200400001)(6916009)(38100700002)(2616005)(5660300002)(53546011)(122000001)(2906002)(8976002)(8676002)(66446008)(91956017)(76116006)(66476007)(6486002)(36756003)(66946007)(64756008)(66556008)(6512007)(4326008)(86362001)(8936002)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?eExWWldzQ1hHRHZYOVRMb05INVd3Y1F1bHV5VEszRktlRm1QVERGMUpGc0ZT?=
+ =?utf-8?B?U2JxNjJNYXJnUEVLOFdnMWxoZVIwaDZNKzkxeVcwZVpKdHNtd21CejA0T3k0?=
+ =?utf-8?B?dDJEN1pOa3pMekNOS3pzQjl6NStubyt5L1M4Z3oxeUpERWtxUUgzOGE2RWE2?=
+ =?utf-8?B?RllCaFBRZDIvNmNuVXIxSmErY3ZVdC9FZDZPRnpBZHhSTXJwNnQ3Y0VYZHQ1?=
+ =?utf-8?B?amtaVGErQVJTbjFPSk5WWU15RkZaaWlhT01qeHQ4ZVNwNXZEN1dERVJ2QUx3?=
+ =?utf-8?B?ZWhCaTBZbjVDRmlabU4yaS85bzY3bHlWVUFkaldyb2U0NE9oUWRDU1dFQ1Fx?=
+ =?utf-8?B?aExrM3NIUFdhTFZtZXU2NnZDTFltYzNFTTFJS1VnLzJodk9aYnE5K3pQWXgz?=
+ =?utf-8?B?blNZK1ZYTnc1RmlIcFViaDk3U1REZlRZOWZlTzFoRXFRZS83dkhiVkN2cGpI?=
+ =?utf-8?B?dEFRTFYxd1g2R29QOUdiMG5CUjROZ3VOMzdJNGJnRUsxRjdFb1hXNzBBcExu?=
+ =?utf-8?B?K0NjdHZhdGY2Um5DNVoxNnZPYUdqWnlqb0xXMEtVM1htYi9vTHB5ek04bWNi?=
+ =?utf-8?B?WGQybkNyQ1ZGUlZaWCtEVGxCQmhNK09aQ1N2UjRnUzBkVzg4S1JEbWVndmJm?=
+ =?utf-8?B?aStyT25TMlBjRHBUWGVvMGo3bytqQzg2Q2RzckxPQm5udXB2SEM4WGJjdWVz?=
+ =?utf-8?B?b0N0L2lLV0MrU2xuTmd1MXp1cFB6SC9oQktmK3gzSi94MjNnd1hyUWZsVlda?=
+ =?utf-8?B?OU9aRGtyM3NaN2JsUjRhZHVMdmZOOEVOci9jRHRuT05VQXJ6YTBOVkFYcVpP?=
+ =?utf-8?B?VFEwd29pb2RQN0ZydU5sbStGb05kREc4QU9uQ3VkM25VSWY1aXhNK3hpT20r?=
+ =?utf-8?B?ZjRFLzNmV0lpdVh2V1RLa2h6Z3FsU093bmZIYitFSHIzQzlVSzJERC9MaWNl?=
+ =?utf-8?B?Yi85dnhOLzZoQ3JPVHFxaWtTVXVmQkxlb0tXcnVMMHJpNWZMcWRHQ3ZMZWxQ?=
+ =?utf-8?B?VCtLMTNOOVFaK3NEQ2JCV0RNMzhkV21zOHdDNWVpZXY3RjZlREg5NVB1SzVO?=
+ =?utf-8?B?aHk2dUkxU21BUnpuRWpia1Y5eHIxZnpqVHdPL2ozcFBKeGVTTGhPMHcxSG9W?=
+ =?utf-8?B?YlRQQlpJMVVqTThQRVliOGxlM0M4T25NdGlzWllFQ2NpQlM3OEN0MHJTWld0?=
+ =?utf-8?B?MkpYTXd6SEQzOUtqc2RycGpGQ2FHc2Vvbmw3VjVXZVRiWkNBZGRtMGJFcU4w?=
+ =?utf-8?B?VUgyS3J3Z1FLeUZBNGdFTHNnc2Rwd244WTYzVkVncDZkNXBHWGc3MUw3cjhB?=
+ =?utf-8?B?UUN5Z1ZRUGo5cFR0dlFpSUZrczhXMDZhUjVHamNGRXllMTVTcE8vczlXY0Z6?=
+ =?utf-8?B?WmlSbnFFM2hFWmRyN3U0YlhhaUhIRXBFOVlxdm9LKzZxNHFacXozZlp6Mktw?=
+ =?utf-8?B?K211bHJzVXIvTmpTQ3VJc2tqdk1sR3VYTTZoWGd3SG8yQ3labGxXQm1BVy83?=
+ =?utf-8?B?bkV0cjlDUkVEbFdzT29Ob0xoVjNqSGhFb3NRS3pTUEZNMW8vUUdNR1JBY2s0?=
+ =?utf-8?B?NTE3NUhObGxTamUxZk1kSE1YMTUrdFRVeDNZdC9vR2k0N1VJK1kvcUhFVXJB?=
+ =?utf-8?B?TDREd2pjalpNeG0zbXdFSnBOQXRPSUxEUTV0UUhzcWU0aFpHcGhLa0NZRkUx?=
+ =?utf-8?B?ajhGQTdKQndtWXBhNDJGSGJTaHYxOElkSjY4disyczhRUGN5YVJzL2w0VjEy?=
+ =?utf-8?B?TUszT1FwSUx4TUVqUURTZHpqUzFXN3lLMngrNWVQenBzd2tMVE93NHdyZzI2?=
+ =?utf-8?B?TkIxQUdaUGVISlp0aU93T2lONW5GRXViQzhORFFtYjc1bGcwTUpvdHRLeGRj?=
+ =?utf-8?Q?c3G682z4FaLoe?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: itu.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB5777.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5acc150-b635-4535-38f3-08d93a4ac8e6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2021 15:38:32.1640
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: bea229b6-7a08-4086-b44c-71f57f716bdb
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MAroo3HCXao51kwC+A9ID9rS7HONsV4QTIApog2Cm2qoiEHkKMyFh9mr7+KPK3fH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR02MB5489
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 6/28/21 2:08 PM, Niclas Hedam wrote:
-> This commit implements packet bursting in the NetEm scheduler.
-> This allows system administrators to hold back outgoing
-> packets and release them at a multiple of a time quantum.
-> This feature can be used to prevent timing attacks caused
-> by network latency.
-> 
-> Signed-off-by: Niclas Hedam <niclas@hed.am>
-> ---
-> v2: add enum at end of list (Cong Wang)
-> v3: fixed formatting of commit diff (Toke Høiland-Jørgensen)
->  include/uapi/linux/pkt_sched.h |  2 ++
->  net/sched/sch_netem.c          | 24 +++++++++++++++++++++---
->  2 files changed, 23 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-> index 79a699f106b1..1ba49f141dae 100644
-> --- a/include/uapi/linux/pkt_sched.h
-> +++ b/include/uapi/linux/pkt_sched.h
-> @@ -603,6 +603,7 @@ enum {
->  	TCA_NETEM_JITTER64,
->  	TCA_NETEM_SLOT,
->  	TCA_NETEM_SLOT_DIST,
-> +        TCA_NETEM_BURSTING,
->  	__TCA_NETEM_MAX,
->  };
-> 
-> @@ -615,6 +616,7 @@ struct tc_netem_qopt {
->  	__u32	gap;		/* re-ordering gap (0 for none) */
->  	__u32   duplicate;	/* random packet dup  (0=none ~0=100%) */
->  	__u32	jitter;		/* random jitter in latency (us) */
-> +	__u32	bursting;	/* send packets in bursts (us) */
->  };
-> 
->  struct tc_netem_corr {
-> diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-> index 0c345e43a09a..52d796287b86 100644
-> --- a/net/sched/sch_netem.c
-> +++ b/net/sched/sch_netem.c
-> @@ -85,6 +85,7 @@ struct netem_sched_data {
->  	s64 latency;
->  	s64 jitter;
-> 
-> +	u32 bursting;
->  	u32 loss;
->  	u32 ecn;
->  	u32 limit;
-> @@ -467,7 +468,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
->  	/* If a delay is expected, orphan the skb. (orphaning usually takes
->  	 * place at TX completion time, so _before_ the link transit delay)
->  	 */
-> -	if (q->latency || q->jitter || q->rate)
-> +	if (q->latency || q->jitter || q->rate || q->bursting)
->  		skb_orphan_partial(skb);
-> 
->  	/*
-> @@ -527,8 +528,17 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
->  	qdisc_qstats_backlog_inc(sch, skb);
-> 
->  	cb = netem_skb_cb(skb);
-> -	if (q->gap == 0 ||		/* not doing reordering */
-> -	    q->counter < q->gap - 1 ||	/* inside last reordering gap */
-> +	if (q->bursting > 0) {
-> +		u64 now;
-> +
-> +		now = ktime_get_ns();
-> +
-> +		cb->time_to_send = now - (now % q->bursting) + q->bursting;
-
-This wont compile on 32bit arches.
-
-> +
-> +		++q->counter;
-> +		tfifo_enqueue(skb, sch);
-> +	} else if (q->gap == 0 ||		/* not doing reordering */
-> +	    q->counter < q->gap - 1 ||		/* inside last reordering gap */
->  	    q->reorder < get_crandom(&q->reorder_cor)) {
->  		u64 now;
->  		s64 delay;
-> @@ -927,6 +937,7 @@ static const struct nla_policy netem_policy[TCA_NETEM_MAX + 1] = {
->  	[TCA_NETEM_ECN]		= { .type = NLA_U32 },
->  	[TCA_NETEM_RATE64]	= { .type = NLA_U64 },
->  	[TCA_NETEM_LATENCY64]	= { .type = NLA_S64 },
-> +	[TCA_NETEM_BURSTING]	= { .type = NLA_U64 },
->  	[TCA_NETEM_JITTER64]	= { .type = NLA_S64 },
->  	[TCA_NETEM_SLOT]	= { .len = sizeof(struct tc_netem_slot) },
->  };
-> @@ -1001,6 +1012,7 @@ static int netem_change(struct Qdisc *sch, struct nlattr *opt,
-> 
->  	q->latency = PSCHED_TICKS2NS(qopt->latency);
->  	q->jitter = PSCHED_TICKS2NS(qopt->jitter);
-> +	q->bursting = PSCHED_TICKS2NS(qopt->bursting);
-
-This is a bit silly to use 64bit user<>kernel interface
-but still use the old legacy PSCHED_TICKS2NS conversion,
-since this will force a big granularity.
-
-If someone want 10 usec bursts, we should allow it.
-
-I would simply use a 32bit value, in ns unit.
-
-(bursts of more than 2^32 ns make no sense)
-
->  	q->limit = qopt->limit;
->  	q->gap = qopt->gap;
->  	q->counter = 0;
-> @@ -1032,6 +1044,9 @@ static int netem_change(struct Qdisc *sch, struct nlattr *opt,
->  	if (tb[TCA_NETEM_LATENCY64])
->  		q->latency = nla_get_s64(tb[TCA_NETEM_LATENCY64]);
-> 
-> +	if (tb[TCA_NETEM_BURSTING])
-> +		q->bursting = nla_get_u64(tb[TCA_NETEM_BURSTING]);
-> +
->  	if (tb[TCA_NETEM_JITTER64])
->  		q->jitter = nla_get_s64(tb[TCA_NETEM_JITTER64]);
-> 
-> @@ -1150,6 +1165,9 @@ static int netem_dump(struct Qdisc *sch, struct sk_buff *skb)
->  			     UINT_MAX);
->  	qopt.jitter = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->jitter),
->  			    UINT_MAX);
-> +	qopt.bursting = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->bursting),
-> +			    UINT_MAX);
-> +
->  	qopt.limit = q->limit;
->  	qopt.loss = q->loss;
->  	qopt.gap = q->gap;
-> --
-> 2.25.1
-> 
+R29vZCBwb2ludC4gSeKAmWxsIGNoYW5nZSBpdCB0byBhIDMyIGJpdCB1aW50IGxhdGVyIHRvZGF5
+Lg0KUmVtb3ZpbmcgdGhlIHRpY2sgYmFzZWQgY29udmVyc2lvbiByZW1vdmVzIHRoZSBhYmlsaXR5
+IHRvIHByb3ZpZGUgdGhlIGludGVydmFsIGluIHZhcmlvdXMgdW5pdHMsIGRvZXNu4oCZdCBpdD8N
+Cg0KPiBPbiAyOCBKdW4gMjAyMSwgYXQgMTcuMjcsIEVyaWMgRHVtYXpldCA8ZXJpYy5kdW1hemV0
+QGdtYWlsLmNvbT4gd3JvdGU6DQo+IA0KPiDvu78NCj4gDQo+PiBPbiA2LzI4LzIxIDI6MDggUE0s
+IE5pY2xhcyBIZWRhbSB3cm90ZToNCj4+IFRoaXMgY29tbWl0IGltcGxlbWVudHMgcGFja2V0IGJ1
+cnN0aW5nIGluIHRoZSBOZXRFbSBzY2hlZHVsZXIuDQo+PiBUaGlzIGFsbG93cyBzeXN0ZW0gYWRt
+aW5pc3RyYXRvcnMgdG8gaG9sZCBiYWNrIG91dGdvaW5nDQo+PiBwYWNrZXRzIGFuZCByZWxlYXNl
+IHRoZW0gYXQgYSBtdWx0aXBsZSBvZiBhIHRpbWUgcXVhbnR1bS4NCj4+IFRoaXMgZmVhdHVyZSBj
+YW4gYmUgdXNlZCB0byBwcmV2ZW50IHRpbWluZyBhdHRhY2tzIGNhdXNlZA0KPj4gYnkgbmV0d29y
+ayBsYXRlbmN5Lg0KPj4gDQo+PiBTaWduZWQtb2ZmLWJ5OiBOaWNsYXMgSGVkYW0gPG5pY2xhc0Bo
+ZWQuYW0+DQo+PiAtLS0NCj4+IHYyOiBhZGQgZW51bSBhdCBlbmQgb2YgbGlzdCAoQ29uZyBXYW5n
+KQ0KPj4gdjM6IGZpeGVkIGZvcm1hdHRpbmcgb2YgY29tbWl0IGRpZmYgKFRva2UgSMO4aWxhbmQt
+SsO4cmdlbnNlbikNCj4+IGluY2x1ZGUvdWFwaS9saW51eC9wa3Rfc2NoZWQuaCB8ICAyICsrDQo+
+PiBuZXQvc2NoZWQvc2NoX25ldGVtLmMgICAgICAgICAgfCAyNCArKysrKysrKysrKysrKysrKysr
+KystLS0NCj4+IDIgZmlsZXMgY2hhbmdlZCwgMjMgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMo
+LSkNCj4+IA0KPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvdWFwaS9saW51eC9wa3Rfc2NoZWQuaCBi
+L2luY2x1ZGUvdWFwaS9saW51eC9wa3Rfc2NoZWQuaA0KPj4gaW5kZXggNzlhNjk5ZjEwNmIxLi4x
+YmE0OWYxNDFkYWUgMTAwNjQ0DQo+PiAtLS0gYS9pbmNsdWRlL3VhcGkvbGludXgvcGt0X3NjaGVk
+LmgNCj4+ICsrKyBiL2luY2x1ZGUvdWFwaS9saW51eC9wa3Rfc2NoZWQuaA0KPj4gQEAgLTYwMyw2
+ICs2MDMsNyBAQCBlbnVtIHsNCj4+ICAgIFRDQV9ORVRFTV9KSVRURVI2NCwNCj4+ICAgIFRDQV9O
+RVRFTV9TTE9ULA0KPj4gICAgVENBX05FVEVNX1NMT1RfRElTVCwNCj4+ICsgICAgICAgIFRDQV9O
+RVRFTV9CVVJTVElORywNCj4+ICAgIF9fVENBX05FVEVNX01BWCwNCj4+IH07DQo+PiANCj4+IEBA
+IC02MTUsNiArNjE2LDcgQEAgc3RydWN0IHRjX25ldGVtX3FvcHQgew0KPj4gICAgX191MzIgICAg
+Z2FwOyAgICAgICAgLyogcmUtb3JkZXJpbmcgZ2FwICgwIGZvciBub25lKSAqLw0KPj4gICAgX191
+MzIgICBkdXBsaWNhdGU7ICAgIC8qIHJhbmRvbSBwYWNrZXQgZHVwICAoMD1ub25lIH4wPTEwMCUp
+ICovDQo+PiAgICBfX3UzMiAgICBqaXR0ZXI7ICAgICAgICAvKiByYW5kb20gaml0dGVyIGluIGxh
+dGVuY3kgKHVzKSAqLw0KPj4gKyAgICBfX3UzMiAgICBidXJzdGluZzsgICAgLyogc2VuZCBwYWNr
+ZXRzIGluIGJ1cnN0cyAodXMpICovDQo+PiB9Ow0KPj4gDQo+PiBzdHJ1Y3QgdGNfbmV0ZW1fY29y
+ciB7DQo+PiBkaWZmIC0tZ2l0IGEvbmV0L3NjaGVkL3NjaF9uZXRlbS5jIGIvbmV0L3NjaGVkL3Nj
+aF9uZXRlbS5jDQo+PiBpbmRleCAwYzM0NWU0M2EwOWEuLjUyZDc5NjI4N2I4NiAxMDA2NDQNCj4+
+IC0tLSBhL25ldC9zY2hlZC9zY2hfbmV0ZW0uYw0KPj4gKysrIGIvbmV0L3NjaGVkL3NjaF9uZXRl
+bS5jDQo+PiBAQCAtODUsNiArODUsNyBAQCBzdHJ1Y3QgbmV0ZW1fc2NoZWRfZGF0YSB7DQo+PiAg
+ICBzNjQgbGF0ZW5jeTsNCj4+ICAgIHM2NCBqaXR0ZXI7DQo+PiANCj4+ICsgICAgdTMyIGJ1cnN0
+aW5nOw0KPj4gICAgdTMyIGxvc3M7DQo+PiAgICB1MzIgZWNuOw0KPj4gICAgdTMyIGxpbWl0Ow0K
+Pj4gQEAgLTQ2Nyw3ICs0NjgsNyBAQCBzdGF0aWMgaW50IG5ldGVtX2VucXVldWUoc3RydWN0IHNr
+X2J1ZmYgKnNrYiwgc3RydWN0IFFkaXNjICpzY2gsDQo+PiAgICAvKiBJZiBhIGRlbGF5IGlzIGV4
+cGVjdGVkLCBvcnBoYW4gdGhlIHNrYi4gKG9ycGhhbmluZyB1c3VhbGx5IHRha2VzDQo+PiAgICAg
+KiBwbGFjZSBhdCBUWCBjb21wbGV0aW9uIHRpbWUsIHNvIF9iZWZvcmVfIHRoZSBsaW5rIHRyYW5z
+aXQgZGVsYXkpDQo+PiAgICAgKi8NCj4+IC0gICAgaWYgKHEtPmxhdGVuY3kgfHwgcS0+aml0dGVy
+IHx8IHEtPnJhdGUpDQo+PiArICAgIGlmIChxLT5sYXRlbmN5IHx8IHEtPmppdHRlciB8fCBxLT5y
+YXRlIHx8IHEtPmJ1cnN0aW5nKQ0KPj4gICAgICAgIHNrYl9vcnBoYW5fcGFydGlhbChza2IpOw0K
+Pj4gDQo+PiAgICAvKg0KPj4gQEAgLTUyNyw4ICs1MjgsMTcgQEAgc3RhdGljIGludCBuZXRlbV9l
+bnF1ZXVlKHN0cnVjdCBza19idWZmICpza2IsIHN0cnVjdCBRZGlzYyAqc2NoLA0KPj4gICAgcWRp
+c2NfcXN0YXRzX2JhY2tsb2dfaW5jKHNjaCwgc2tiKTsNCj4+IA0KPj4gICAgY2IgPSBuZXRlbV9z
+a2JfY2Ioc2tiKTsNCj4+IC0gICAgaWYgKHEtPmdhcCA9PSAwIHx8ICAgICAgICAvKiBub3QgZG9p
+bmcgcmVvcmRlcmluZyAqLw0KPj4gLSAgICAgICAgcS0+Y291bnRlciA8IHEtPmdhcCAtIDEgfHwg
+ICAgLyogaW5zaWRlIGxhc3QgcmVvcmRlcmluZyBnYXAgKi8NCj4+ICsgICAgaWYgKHEtPmJ1cnN0
+aW5nID4gMCkgew0KPj4gKyAgICAgICAgdTY0IG5vdzsNCj4+ICsNCj4+ICsgICAgICAgIG5vdyA9
+IGt0aW1lX2dldF9ucygpOw0KPj4gKw0KPj4gKyAgICAgICAgY2ItPnRpbWVfdG9fc2VuZCA9IG5v
+dyAtIChub3cgJSBxLT5idXJzdGluZykgKyBxLT5idXJzdGluZzsNCj4gDQo+IFRoaXMgd29udCBj
+b21waWxlIG9uIDMyYml0IGFyY2hlcy4NCj4gDQo+PiArDQo+PiArICAgICAgICArK3EtPmNvdW50
+ZXI7DQo+PiArICAgICAgICB0Zmlmb19lbnF1ZXVlKHNrYiwgc2NoKTsNCj4+ICsgICAgfSBlbHNl
+IGlmIChxLT5nYXAgPT0gMCB8fCAgICAgICAgLyogbm90IGRvaW5nIHJlb3JkZXJpbmcgKi8NCj4+
+ICsgICAgICAgIHEtPmNvdW50ZXIgPCBxLT5nYXAgLSAxIHx8ICAgICAgICAvKiBpbnNpZGUgbGFz
+dCByZW9yZGVyaW5nIGdhcCAqLw0KPj4gICAgICAgIHEtPnJlb3JkZXIgPCBnZXRfY3JhbmRvbSgm
+cS0+cmVvcmRlcl9jb3IpKSB7DQo+PiAgICAgICAgdTY0IG5vdzsNCj4+ICAgICAgICBzNjQgZGVs
+YXk7DQo+PiBAQCAtOTI3LDYgKzkzNyw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgbmxhX3BvbGlj
+eSBuZXRlbV9wb2xpY3lbVENBX05FVEVNX01BWCArIDFdID0gew0KPj4gICAgW1RDQV9ORVRFTV9F
+Q05dICAgICAgICA9IHsgLnR5cGUgPSBOTEFfVTMyIH0sDQo+PiAgICBbVENBX05FVEVNX1JBVEU2
+NF0gICAgPSB7IC50eXBlID0gTkxBX1U2NCB9LA0KPj4gICAgW1RDQV9ORVRFTV9MQVRFTkNZNjRd
+ICAgID0geyAudHlwZSA9IE5MQV9TNjQgfSwNCj4+ICsgICAgW1RDQV9ORVRFTV9CVVJTVElOR10g
+ICAgPSB7IC50eXBlID0gTkxBX1U2NCB9LA0KPj4gICAgW1RDQV9ORVRFTV9KSVRURVI2NF0gICAg
+PSB7IC50eXBlID0gTkxBX1M2NCB9LA0KPj4gICAgW1RDQV9ORVRFTV9TTE9UXSAgICA9IHsgLmxl
+biA9IHNpemVvZihzdHJ1Y3QgdGNfbmV0ZW1fc2xvdCkgfSwNCj4+IH07DQo+PiBAQCAtMTAwMSw2
+ICsxMDEyLDcgQEAgc3RhdGljIGludCBuZXRlbV9jaGFuZ2Uoc3RydWN0IFFkaXNjICpzY2gsIHN0
+cnVjdCBubGF0dHIgKm9wdCwNCj4+IA0KPj4gICAgcS0+bGF0ZW5jeSA9IFBTQ0hFRF9USUNLUzJO
+Uyhxb3B0LT5sYXRlbmN5KTsNCj4+ICAgIHEtPmppdHRlciA9IFBTQ0hFRF9USUNLUzJOUyhxb3B0
+LT5qaXR0ZXIpOw0KPj4gKyAgICBxLT5idXJzdGluZyA9IFBTQ0hFRF9USUNLUzJOUyhxb3B0LT5i
+dXJzdGluZyk7DQo+IA0KPiBUaGlzIGlzIGEgYml0IHNpbGx5IHRvIHVzZSA2NGJpdCB1c2VyPD5r
+ZXJuZWwgaW50ZXJmYWNlDQo+IGJ1dCBzdGlsbCB1c2UgdGhlIG9sZCBsZWdhY3kgUFNDSEVEX1RJ
+Q0tTMk5TIGNvbnZlcnNpb24sDQo+IHNpbmNlIHRoaXMgd2lsbCBmb3JjZSBhIGJpZyBncmFudWxh
+cml0eS4NCj4gDQo+IElmIHNvbWVvbmUgd2FudCAxMCB1c2VjIGJ1cnN0cywgd2Ugc2hvdWxkIGFs
+bG93IGl0Lg0KPiANCj4gSSB3b3VsZCBzaW1wbHkgdXNlIGEgMzJiaXQgdmFsdWUsIGluIG5zIHVu
+aXQuDQo+IA0KPiAoYnVyc3RzIG9mIG1vcmUgdGhhbiAyXjMyIG5zIG1ha2Ugbm8gc2Vuc2UpDQo+
+IA0KPj4gICAgcS0+bGltaXQgPSBxb3B0LT5saW1pdDsNCj4+ICAgIHEtPmdhcCA9IHFvcHQtPmdh
+cDsNCj4+ICAgIHEtPmNvdW50ZXIgPSAwOw0KPj4gQEAgLTEwMzIsNiArMTA0NCw5IEBAIHN0YXRp
+YyBpbnQgbmV0ZW1fY2hhbmdlKHN0cnVjdCBRZGlzYyAqc2NoLCBzdHJ1Y3QgbmxhdHRyICpvcHQs
+DQo+PiAgICBpZiAodGJbVENBX05FVEVNX0xBVEVOQ1k2NF0pDQo+PiAgICAgICAgcS0+bGF0ZW5j
+eSA9IG5sYV9nZXRfczY0KHRiW1RDQV9ORVRFTV9MQVRFTkNZNjRdKTsNCj4+IA0KPj4gKyAgICBp
+ZiAodGJbVENBX05FVEVNX0JVUlNUSU5HXSkNCj4+ICsgICAgICAgIHEtPmJ1cnN0aW5nID0gbmxh
+X2dldF91NjQodGJbVENBX05FVEVNX0JVUlNUSU5HXSk7DQo+PiArDQo+PiAgICBpZiAodGJbVENB
+X05FVEVNX0pJVFRFUjY0XSkNCj4+ICAgICAgICBxLT5qaXR0ZXIgPSBubGFfZ2V0X3M2NCh0YltU
+Q0FfTkVURU1fSklUVEVSNjRdKTsNCj4+IA0KPj4gQEAgLTExNTAsNiArMTE2NSw5IEBAIHN0YXRp
+YyBpbnQgbmV0ZW1fZHVtcChzdHJ1Y3QgUWRpc2MgKnNjaCwgc3RydWN0IHNrX2J1ZmYgKnNrYikN
+Cj4+ICAgICAgICAgICAgICAgICBVSU5UX01BWCk7DQo+PiAgICBxb3B0LmppdHRlciA9IG1pbl90
+KHBzY2hlZF90ZGlmZl90LCBQU0NIRURfTlMyVElDS1MocS0+aml0dGVyKSwNCj4+ICAgICAgICAg
+ICAgICAgIFVJTlRfTUFYKTsNCj4+ICsgICAgcW9wdC5idXJzdGluZyA9IG1pbl90KHBzY2hlZF90
+ZGlmZl90LCBQU0NIRURfTlMyVElDS1MocS0+YnVyc3RpbmcpLA0KPj4gKyAgICAgICAgICAgICAg
+ICBVSU5UX01BWCk7DQo+PiArDQo+PiAgICBxb3B0LmxpbWl0ID0gcS0+bGltaXQ7DQo+PiAgICBx
+b3B0Lmxvc3MgPSBxLT5sb3NzOw0KPj4gICAgcW9wdC5nYXAgPSBxLT5nYXA7DQo+PiAtLQ0KPj4g
+Mi4yNS4xDQo+PiANCg==
