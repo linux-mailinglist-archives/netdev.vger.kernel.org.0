@@ -2,85 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9D63B6B59
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 01:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A81F03B6B7D
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 01:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233332AbhF1Xd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 19:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44140 "EHLO
+        id S233263AbhF1XlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 19:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233000AbhF1Xd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 19:33:27 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47481C061574
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 16:31:00 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id e33so16857243pgm.3
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 16:31:00 -0700 (PDT)
+        with ESMTP id S236140AbhF1XlF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 19:41:05 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6ECC061760
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 16:38:38 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id g21so13894926pfc.11
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 16:38:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=dxVB5rfyATVJMNStjMKNCCRzrfmWo/zfa4NCkSwj7Lw=;
-        b=lGkrpZDQdncYxeJNYLubeaeQb3NSpQbxhx2QGigqJ9VPZVE7/63LRXmW+D6DJ51Hac
-         mMWDg4rUmeqxnBo2e4gxrfo9a5zZ1583tRa6Uk3eJuyZjT0PYS62dJq04bD0LuPWeaCr
-         69e1+1jSVYJXjjXu7NvARhTbQIipNdkPJ3p8B/CH9uE+sP5XvczTcb0iuQXU/p9rKdVg
-         ZlwKLQI8jIUHIN3WFb3PPTYVH2+9VT3tTsYPQ823+UPw2vmzI+u5WJZV+krvdOCeA9Pz
-         dbj3MiljQxh/vV/WM4sNDwyhzTjNF2pAJKGLhZmacpWB7U3pnd032S5E9W1lBB44Ddso
-         Mmuw==
+        bh=nclVkiYLXoFffUj1wobBCMhr60BViPV9a1xYgpiDQHs=;
+        b=Kh6TzMpNSOhv0BACwIlqCmBJd8NsGnlsaawevKUSRyia8r+koFfANsrazUAMiuLN+O
+         ckR+SOZHIYau+qwqNHj4mdnlfRkluKxH+oNMhaMZrbgEEo+m0sJzfbpYSriIvAftZkvq
+         lXIlhWmAlHtNZwzrnbM6B/UkxMWNi723cUzd1cqf0zp7+c+msWJiu4e1PcwAVz/ZUzIo
+         y3NExWAU3K5/aWr0CVXfg6oJEfdBRx/f0rgcb2cBHW9mVPgcFI7CUhiclxSGHmJAFdIB
+         OSCNDCuvCOsSRxtHNYsB/QqYF8OcUTWh3bBjngnPeYCKwFtMWas7GkY5VFWG5IJlLy0D
+         bHvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=dxVB5rfyATVJMNStjMKNCCRzrfmWo/zfa4NCkSwj7Lw=;
-        b=TP+0VUYiVhBM3+2OMYFH8hW9V0Ir+AgNzTH/v+B45URvgGurqmXAT/v3FSOqwdIRtx
-         ZiCKKHxXc6LchbaYQrKsG/nAPUVD7mYDUPpvNxJiC+nk/H6TbbQC15B3drvnSyQRe4Kl
-         TlkeASwrwqh4A+1t6AUpAdAZNEQT62muC081UFbXqFsbCu1+k3M+/AYEcagsX9kh3POq
-         2Lgl0Yc9Wfcg2r6b2+ySMG/3kokZHU75yLRXxnPWV3fDgrYI5hiW7u07PQRtNz78cOl1
-         yOSuUwX5y6q4xLKLLtgTu4KQ5nTqXoJuNtzoN6f7bicxHUJAVWs0KUGKoIA+RKHnvNPu
-         XPyg==
-X-Gm-Message-State: AOAM532Klz0NENcKV3wiidiiGKH8vAHpVM1zJsyyctmepAwx1Tqw4fBh
-        avjtbORRo6ziKxyY1Bh7W7I=
-X-Google-Smtp-Source: ABdhPJzc5VMYCU/7DLjCfP0FS1TJb1vTsf3VDc5btP91TCI+pU6H4gx/teQ6/IH2xRQ4h4miHq1eMw==
-X-Received: by 2002:a62:b502:0:b029:2ec:a539:e29b with SMTP id y2-20020a62b5020000b02902eca539e29bmr27142687pfe.37.1624923059752;
-        Mon, 28 Jun 2021 16:30:59 -0700 (PDT)
+        bh=nclVkiYLXoFffUj1wobBCMhr60BViPV9a1xYgpiDQHs=;
+        b=g+y9LFVyL/BmIEU/te9RuJYlKXcPmEqVIxmwWa1Vlxb8HyHS1D13dCbaVyBWp6B/tC
+         Pqo83/Umw1TREk2jVLtLcdIZeQsUEQHgRca7kkKql/v/O72f1lxDeEWWIvRYp27EY6Es
+         0X6y3Frs9lNbkPC8kDgsZwrSFTRx2Z/Druec07yFrtOKh76wml3JgyVvFVPNzhTdgZY2
+         ylnmFqwdXQbZBRQZGn0mQ9uFvKKnee6/2jWYZlshnvlmkbVpPJOS0ToohqgFSUODOFJf
+         43rlSSolneewSONUXvPG/CRlR7o5h5pPnb920W6ABXQCn1/4mSpNJ9ylQNgzbNH9mPqi
+         G35g==
+X-Gm-Message-State: AOAM530GrDS7Yu/0hkh3zazjkncZ2slwAnr0jMRQasBqscKAv2/qffuo
+        gB0aV2X9W6P9dvueC4CfLe0=
+X-Google-Smtp-Source: ABdhPJyQeLUcYA6niXGgUsxsLblENEONhaJO8Tlr4nn6pTPCqsq2Kr1D11ERnWWtQfD6zRvNWoVEew==
+X-Received: by 2002:a63:ae01:: with SMTP id q1mr24831967pgf.216.1624923517638;
+        Mon, 28 Jun 2021 16:38:37 -0700 (PDT)
 Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id p38sm13833900pfh.151.2021.06.28.16.30.58
+        by smtp.gmail.com with ESMTPSA id y9sm5637458pfa.197.2021.06.28.16.38.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Jun 2021 16:30:59 -0700 (PDT)
-Date:   Mon, 28 Jun 2021 16:30:56 -0700
+        Mon, 28 Jun 2021 16:38:37 -0700 (PDT)
+Date:   Mon, 28 Jun 2021 16:38:35 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Jonathan Lemon <jonathan.lemon@gmail.com>
 Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
-Message-ID: <20210628233056.GA766@hoboy.vegasvil.org>
-References: <20210628184611.3024919-1-jonathan.lemon@gmail.com>
+Subject: Re: [PATCH] ptp: Set lookup cookie when creating a PTP PPS source.
+Message-ID: <20210628233835.GB766@hoboy.vegasvil.org>
+References: <20210628182533.2930715-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210628184611.3024919-1-jonathan.lemon@gmail.com>
+In-Reply-To: <20210628182533.2930715-1-jonathan.lemon@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 28, 2021 at 11:46:11AM -0700, Jonathan Lemon wrote:
-> This event differs from CLOCK_EXTTS in two ways:
+On Mon, Jun 28, 2021 at 11:25:33AM -0700, Jonathan Lemon wrote:
+> When creating a PTP device, the configuration block allows
+> creation of an associated PPS device.  However, there isn't
+> any way to associate the two devices after creation.
 > 
->  1) The caller provides the sec/nsec fields directly, instead of
->     needing to convert them from the timestamp field.
+> Set the PPS cookie, so pps_lookup_dev(ptp) performs correctly.
 
-And that is useful?  how?
- 
->  2) A 32 bit data field is attached to the event, which is returned
->     to userspace, which allows returning timestamped data information.
->     This may be used for things like returning the phase difference
->     between two time sources.
+Setting lookup_cookie is harmless, AFAICT, but I wonder about the use
+case.  The doc for pps_lookup_dev() says,
 
-What two time sources?
+ * This is a bit of a kludge that is currently used only by the PPS                                                                      
+ * serial line discipline.
 
-What problem are you trying to solve?
+and indeed that is the case.
 
-As it stands, without any kind of rational at all, this patch gets a NAK.
+The PHC devices are never serial ports, so how does this help?
 
 Thanks,
 Richard
