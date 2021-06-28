@@ -2,107 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED7403B59D2
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 09:34:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E123B5A0D
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 09:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232417AbhF1Hg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 03:36:29 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:37325 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232415AbhF1HgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 03:36:25 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id CAE0E580563;
-        Mon, 28 Jun 2021 03:33:59 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Mon, 28 Jun 2021 03:33:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Ntdq4y
-        gMPnixY9DYrZhapTgZXq2nZ2pxOMHsssk055w=; b=tb2rJVNYQHhBFtT8ODFLuK
-        cKIBEkYRxEcXSfWtiAHMIt5KpVJu2UoOmeNK4jAR7xdk8QI/4WiyJr5im1eGvicE
-        XwcL7JxOenEWNkWEKeV/uod+HFLuZaTDI7chscbQb2so8TDk0/9VDLJ5QgSSWjZe
-        pu3JZv6+Tlm6/HMo7OqwZhQ+3d+rZ4Tlkd9v8W2UEj7KctUI3b7xmKccB2tRUbrY
-        gT0ejmrmZtY3LLujtXEAiN/Hx09JzERa19s0Vxvg11s15SxkBeaR4eQq/ti7FUIo
-        MIjahaif04OG6FYs4qnw7vct33vupJL7OyWs0vSQ3gQr/ER8MBF0WdVo2JOYyAKw
-        ==
-X-ME-Sender: <xms:ZnvZYOclUKjPVLrLHM3lDcImwT6vAfUbtHDzDFa2_6GXqK44lq4EKw>
-    <xme:ZnvZYIPJFzc-6_bvsxVPptk3n22k790ShrMuBV2-rgueP2ZdZMEiOfhv7yOvlBRLV
-    HziDaO7_bdmoxU>
-X-ME-Received: <xmr:ZnvZYPjWUCo3JSt4gIHj0nxm1CwGEs_wTGUNV9RoKzW-PSUIY-d5Xi7BxOZF5bgv4KCDRm-mdv74IMEQY_gN6Feh-wmT8A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeehfedguddugecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:ZnvZYL_DESdDp3lIBb-IJtU9aIPFSd4rfqShZq1s4Jq6bN5GUCQ5fg>
-    <xmx:ZnvZYKu2xer7U9rGLiOWnAQXJbHLvk9ID0VgbYdw-CX4TgUIC1bQiA>
-    <xmx:ZnvZYCEF18j2xm4cJzzwu8p0-dfuhyvBP77wZDPOqf3WwbDDunS3EA>
-    <xmx:Z3vZYIBtQwALR73p-y8mv9X0NW7m90127QGSpGfiUesdQuQ7u7F06Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 28 Jun 2021 03:33:58 -0400 (EDT)
-Date:   Mon, 28 Jun 2021 10:33:54 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, vladyslavt@nvidia.com, moshe@nvidia.com,
-        vadimp@nvidia.com, mkubecek@suse.cz, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to write to
- transceiver module EEPROMs
-Message-ID: <YNl7YlkYGxqsdyqA@shredder>
-References: <20210623075925.2610908-1-idosch@idosch.org>
- <YNOBKRzk4S7ZTeJr@lunn.ch>
- <YNTfMzKn2SN28Icq@shredder>
- <YNTqofVlJTgsvDqH@lunn.ch>
- <YNhT6aAFUwOF8qrL@shredder>
- <YNiVWhoqyHSVa+K4@lunn.ch>
+        id S232318AbhF1Hwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 03:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232351AbhF1Hwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 03:52:38 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9657CC061574;
+        Mon, 28 Jun 2021 00:50:13 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id c8so13424189pfp.5;
+        Mon, 28 Jun 2021 00:50:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a9SnhaSC0KGtJA4jbcNzI1RmFExj/PoChJSbMbViqHo=;
+        b=SlBZfW/vVWkuCoPhugNlcjB4fJuggEiyWrFbzXOSBp0G7zrKUI/R531RyHgcoG8efT
+         xMZRK6yAyqGWqh6LYzljI4DeFQA6oX0HXvbVZiflZqrioI0gcIFrYOmwvNwC+87d4SbO
+         NJBa4WTI/IOXtT7RPXxYE5OfokS/CmNnGGm8fCay/OWPwkl7L3GQ27x0aeMElR28679S
+         jmhnHhLXd6cdg+2kzk9jbWHc4Djt1aagDnGCpDyux6srGhw/DsjbElHyZkCzY1B+UOMK
+         prjZCWbYlh6BlTl6D0YBgmoYDCpNn/zSsUvf9ifiRhd2nQzDTtjAjpJRJVd6DAU21lzH
+         QC1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a9SnhaSC0KGtJA4jbcNzI1RmFExj/PoChJSbMbViqHo=;
+        b=pIsiLEP/7dSkozWCBaxSz2VxR1szpukwInDRZSPLfce8XC/IqDup4dYuI7SC8LNfPF
+         E0Z7CmgQgRTF9v6n4zH6Ri8kssH6xdyAYSxzFJJYOYQU6BVU9zgMqxNW43A1Mhk/Y6A5
+         DT36NFZdsNfVUbaYWWxW/7XP6ZU2LESS5rf60KKuPx3EYA1CetGepAvjt88+bNyDqELV
+         jOeZFZrvQeFwL8wSUOdywYVBytxefM4iVSZ14Ae8vAuPAoWER/6+l0kp8qdbmHrV2xAD
+         /BxzQmGFKixJHIPwFmpXjgfZbIPunT24keVPKj97h/H1efxVubPfF8OFvETaC/8T3qru
+         mUWQ==
+X-Gm-Message-State: AOAM531P96fqLelzBjNX3xzat4OgecncH1w0s1IRKhO3Xx4gya1HkEHT
+        /aZ9YBcsSk6ulnFRA+Ze92Q=
+X-Google-Smtp-Source: ABdhPJzmLptl5YBBhs4A80NLCSgl3oM4vlhA0HLGNblaK7RuNiVK3F/VD3Cb07Y/TvBgBZzt9AUuaw==
+X-Received: by 2002:a65:6555:: with SMTP id a21mr5312004pgw.53.1624866613181;
+        Mon, 28 Jun 2021 00:50:13 -0700 (PDT)
+Received: from localhost.localdomain ([118.200.190.93])
+        by smtp.gmail.com with ESMTPSA id c24sm14519028pgj.11.2021.06.28.00.50.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Jun 2021 00:50:12 -0700 (PDT)
+From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+        gregkh@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+Subject: [PATCH] Bluetooth: fix inconsistent lock state in sco
+Date:   Mon, 28 Jun 2021 15:48:34 +0800
+Message-Id: <20210628074834.161640-1-desmondcheongzx@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YNiVWhoqyHSVa+K4@lunn.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 27, 2021 at 05:12:26PM +0200, Andrew Lunn wrote:
-> This API is not just about CMIS, it covers any I2C connected SFP
-> device. I'm more involved in the lower end, 1G, 2.5G and 10G. Devices
-> in this category seem to be very bad a following the standards. GPON
-> is especially bad, and GPON manufactures don't seem to care their
-> devices don't follow the standard, they assume the Customer Premises
-> Equipment is going to run software to work around whatever issues
-> their specific GPON has, maybe they provide driver code? The API you
-> are adding would be ideal for putting that driver in user space, as a
-> binary blob. That is going to make it harder for us to open up the
-> many millions of CPE used in FTTH. And there are people attempting to
-> do that.
-> 
-> If devices following CMIS really are closely following the standard
-> that is great. We should provide tooling to do firmware upgrade. But
-> at the same time, we don't want to aid those who go against the
-> standards and do their own thing. And it sounds like in the CMIS
-> world, we might have the power to encourage vendors to follow CMIS,
-> "Look, firmware upgrade just works for the competitors devices, why
-> should i use your device when it does not work?"
-> 
-> I just want to make sure we are considering the full range of devices
-> this new API will cover. From little ARM systems with 1G copper and
-> FTTH fibre ports through to big TOR systems with large number of 100G
-> ports.  If CMIS is well support by vendors, putting the code into the
-> kernel, as a loadable module, might be the better solution for the
-> whole range of devices the kernel needs to support.
+Syzbot reported an inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} lock
+usage in sco_conn_del and sco_sock_timeout that could lead to
+deadlocks:
+https://syzkaller.appspot.com/bug?id=9089d89de0502e120f234ca0fc8a703f7368b31e
 
-If the goal is to limit what user space can do, then putting all the
-code in the kernel and adding an ever-growing number of restrictive user
-APIs is not the only way.
+This inconsistent lock state can also happen between sco_conn_ready
+and sco_sock_timeout.
 
-Even with the proposed approach, the kernel sits in the middle between
-the module and user space. As such, it can maintain an "allow list" that
-only allows access to modules with a specific memory map (CMIS and
-SFF-8636 for now) and only to a subset of the pages which are
-standardized by the specifications.
+The issue is that these three functions take a spin lock on the
+socket, but sco_sock_timeout is called from an IRQ context. Since
+bh_lock_sock calls spin_lock but does not disable softirqs, this could
+lead to deadlocks:
+
+       CPU0
+       ----
+  lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+  <Interrupt>
+    lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+
+ *** DEADLOCK ***
+
+We fix this by replacing bh_lock_sock with spin_lock_bh in
+sco_conn_del and sco_conn_ready.
+
+Additionally, to avoid regressions, we pull the clean-up code out from
+sco_chan_del and use it directly in sco_conn_del. This is necessary
+because sco_chan_del makes a call to sco_conn_lock which takes an
+SOFTIRQ-unsafe lock. This means that calling sco_chan_del while
+holding the socket lock would result in a SOFTIRQ-safe ->
+SOFTIRQ-unsafe lock hierarchy between slock-AF_BLUETOOTH-BTPROTO_SCO
+and &conn->lock#2. This could lead to a deadlock as well:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(&conn->lock#2);
+                                local_irq_disable();
+                                lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+                                lock(&conn->lock#2);
+   <Interrupt>
+     lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+
+  *** DEADLOCK ***
+
+Pulling out the code from sco_chan_del allows us to avoid this lock
+dependency by holding the two locks for only their required critical
+sections.
+
+Reported-and-tested-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+---
+ net/bluetooth/sco.c | 28 ++++++++++++++++++++--------
+ 1 file changed, 20 insertions(+), 8 deletions(-)
+
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 3bd41563f118..d05629d7cc55 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -173,10 +173,22 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+ 
+ 	if (sk) {
+ 		sock_hold(sk);
+-		bh_lock_sock(sk);
++
++		spin_lock_bh(&sk->sk_lock.slock);
+ 		sco_sock_clear_timer(sk);
+-		sco_chan_del(sk, err);
+-		bh_unlock_sock(sk);
++		sco_pi(sk)->conn = NULL;
++		if (conn->hcon)
++			hci_conn_drop(conn->hcon);
++		sk->sk_state = BT_CLOSED;
++		sk->sk_err   = err;
++		sk->sk_state_change(sk);
++		sock_set_flag(sk, SOCK_ZAPPED);
++		spin_unlock_bh(&sk->sk_lock.slock);
++
++		sco_conn_lock(conn);
++		conn->sk = NULL;
++		sco_conn_unlock(conn);
++
+ 		sco_sock_kill(sk);
+ 		sock_put(sk);
+ 	}
+@@ -1084,10 +1096,10 @@ static void sco_conn_ready(struct sco_conn *conn)
+ 
+ 	if (sk) {
+ 		sco_sock_clear_timer(sk);
+-		bh_lock_sock(sk);
++		spin_lock_bh(&sk->sk_lock.slock);
+ 		sk->sk_state = BT_CONNECTED;
+ 		sk->sk_state_change(sk);
+-		bh_unlock_sock(sk);
++		spin_unlock_bh(&sk->sk_lock.slock);
+ 	} else {
+ 		sco_conn_lock(conn);
+ 
+@@ -1102,12 +1114,12 @@ static void sco_conn_ready(struct sco_conn *conn)
+ 			return;
+ 		}
+ 
+-		bh_lock_sock(parent);
++		spin_lock_bh(&parent->sk_lock.slock);
+ 
+ 		sk = sco_sock_alloc(sock_net(parent), NULL,
+ 				    BTPROTO_SCO, GFP_ATOMIC, 0);
+ 		if (!sk) {
+-			bh_unlock_sock(parent);
++			spin_unlock_bh(&parent->sk_lock.slock);
+ 			sco_conn_unlock(conn);
+ 			return;
+ 		}
+@@ -1128,7 +1140,7 @@ static void sco_conn_ready(struct sco_conn *conn)
+ 		/* Wake up parent */
+ 		parent->sk_data_ready(parent);
+ 
+-		bh_unlock_sock(parent);
++		spin_unlock_bh(&parent->sk_lock.slock);
+ 
+ 		sco_conn_unlock(conn);
+ 	}
+-- 
+2.25.1
+
