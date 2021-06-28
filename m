@@ -2,106 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3237E3B5A98
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 10:43:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 015B33B5B0E
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 11:17:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232312AbhF1Ipu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 04:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232214AbhF1Ipt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 04:45:49 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51401C061767
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 01:43:23 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id g3so8735196qth.11
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 01:43:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+G0aFIa+dKIdQGhhAX7TYqH/nk+PfE3E5edNbclxiZM=;
-        b=SnecMWl5iR/bF/bsX0hSkvINZEErBldRKMwqj/t01OhZmr/rUI6aWOgdV2Z63oUgM8
-         6pqllFAquDXwhOQfUujcnQXr2Vdt/TS3VRqpGQQPXN39+8ZaFdMt+w6j7XAiAv7kkBKF
-         MkImyUeZ8SQcIaj50jvgoPeP+PjxLMw18cHaiGzDDHYp7DkDVtrgn9+Q5TdbukBrXTEj
-         wHo4sHoFMFroy4QnXleLwU4bn4lUpYGQKiJyfeTI9OHRFnv4nno16WIDeej7Bhm6OgYY
-         JNPI/h25UQu0S8vBO8Snj9ZCwWPrND4i+29JHGnz0A2KJsTCYh9ntV1ES2Wy3CYa4Gh7
-         RqZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+G0aFIa+dKIdQGhhAX7TYqH/nk+PfE3E5edNbclxiZM=;
-        b=C9OH3V2eeuMj3yrioaf5V2i22E8Tna5azVn9JXdWZGXboeTwkXc538gc0xp8564+zE
-         2Q8TUALctkiSbu8G0XGfqr+R5WCew4bTp7OzpwHNL9wX3k2whDNcoJBbsB8u9t8jKLZh
-         vLXredjgI8Bp8+ZN/HeNYxQPtil5r+qmNH/LRc3e3xeNh6bMTHrc4rOHzNjtd+HXwYN+
-         ZuoPhINAANpoNiNXLZwNtLfWYDtjqr9LfJgAtJnvQcqzIp0YpzwyHrBdwNaE6UwIxA+2
-         D89rWDD7e4ytwMMuYVh4ojmr1PPU10uyyOVuZwFS03bmbsE9RfDG5ObeEfCTk020fXKJ
-         vTUA==
-X-Gm-Message-State: AOAM531QKq5+b+teb6an6UpLjjoq45tT0cZXNjDoXTY/hgZnjE+ZYEt1
-        W3l81n+Wj+JHP7OP8dWFz19r7Q0kzU2nyF+YNHLqxA==
-X-Google-Smtp-Source: ABdhPJxVs9ovjQ9jj3UPUGVpqeS8rM0QoHg1qqvU59gg0Usr9RQl2QZjr4tMZakv7PIzKG8ZKBTB8VWWRxLoV12CKEw=
-X-Received: by 2002:ac8:1090:: with SMTP id a16mr20368058qtj.290.1624869796278;
- Mon, 28 Jun 2021 01:43:16 -0700 (PDT)
+        id S232450AbhF1JTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 05:19:43 -0400
+Received: from mail-eopbgr60069.outbound.protection.outlook.com ([40.107.6.69]:58881
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232353AbhF1JTl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Jun 2021 05:19:41 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AKHAfk29kPse/K1fV6Ct0MEp5QjtnzQwrpPvF1HGSAQav1BVLerRicWPcwcR0UUYOpcGR4KHiVS7wcOfwXeDUVOkuCGzbALWaYcS85fUjMPtN0Tsab2xswXXsD2WLct7RhjwMlkRkERE3J9ak7dkO1NHZYppVzY/VK3Fbw48BCAX4IghFuVmJ5zoaYiQDX8HFfnVkAuoCM4z+URlcyCJaoQj6h7V72NbGIwgmzSAnO0auDGFXNfTYueIRhNmL9KNZF1kH1BGxukTVqBXFxhMB5N2W0xKUI3W4GfVycoCn9KHhwQ3/wkyyElT4Lrx8a0C3uSA3wAcRuHiAuz1jtQkqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tMpKHLt/GGDB9t2bDj94BXDMh3I5EWxR4DHV7+4N0OQ=;
+ b=T8KVzZjw8NqP0IQ5VD7WqM4HBUG7hMqHVA0iUVyV4lc6hEetBDGQcQOZhGPxZjNQd7rMzbAnBmGUls832l5P5aXcRx26eXEKAujbhkPN99wIDu4spcNiRC/RoMOI7x6tDCbc08aGHmD8oFt3ndC2sma05etIoBJdnAHrzoZaZWQgOqBUZE8BEVNcr0U9Nzpu8vbjREA9kvnBw22Y2JI/Apy1xbTHBBZnVLbhxwVqCJyMoY5IsvZlz1tNfZ5/h7GWVARoRkz/QzypYkWI+5KmrV0BAIrqn9bDnHsoOiEUZAKSV8bquq6YMR2JkwIt91cnJh6g1felUAU9Xs+ELjSmIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tMpKHLt/GGDB9t2bDj94BXDMh3I5EWxR4DHV7+4N0OQ=;
+ b=f/RSRJxiJGi5rTo03DBWO1r1OYH75nS5nAzkJOmrlTrEI01gKU+VlW4Xq2XLrUBqXIWr6LlBhuu1REegmswa7ws/o8uakxVGV6JMRiRatA4njWX8v5QmZdf1aIx6gVuLmyTLcK+CwvLUXy/FhpIc01h2Ujbdz50nI5HVknafG3U=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0401MB2685.eurprd04.prod.outlook.com (2603:10a6:800:58::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.20; Mon, 28 Jun
+ 2021 09:17:14 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::b1a0:d654:a578:53ab]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::b1a0:d654:a578:53ab%7]) with mapi id 15.20.4264.026; Mon, 28 Jun 2021
+ 09:17:14 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "kuba@kernel.org" <kuba@kernel.org>, Po Liu <po.liu@nxp.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next v4 10/12] ethtool: Add support for Frame
+ Preemption verification
+Thread-Topic: [PATCH net-next v4 10/12] ethtool: Add support for Frame
+ Preemption verification
+Thread-Index: AQHXaiLwcLBt6arcA0+BcW0HnQpZuaspKHyA
+Date:   Mon, 28 Jun 2021 09:17:14 +0000
+Message-ID: <20210628091713.rezkkpwqacz4oqyj@skbuf>
+References: <20210626003314.3159402-1-vinicius.gomes@intel.com>
+ <20210626003314.3159402-11-vinicius.gomes@intel.com>
+In-Reply-To: <20210626003314.3159402-11-vinicius.gomes@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.224.68]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 539cb5f1-3cbd-4858-c579-08d93a15849b
+x-ms-traffictypediagnostic: VI1PR0401MB2685:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0401MB2685554173C59229B9641BCCE0039@VI1PR0401MB2685.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1728;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: O8IoVnsevus/cjdhWNLu+VLmmyEtPOSaFrr30bxeMFR0VHLgwwdo2qwRAxShltqEOYd7yREBHdo/dpSfI5SRtTMmCLTY82QZl2NXfVPmUSygRbs0LsS7/pvr3dz+4AoYjk7/WoLCYQxvfYL1Z0GCsMy9MnIa2MLM+7kHPJ5m1uRGgqxYUYaz0PnyDw6ffpQGLvUta7zbNPL96EbJK498IxegJECQ57J40OMxWfZ/7EAPhSUIVtgUxGeWVB5LTIFmaY+QjFo1hyZiIWJUVZwYhOlf/ovOdNN0Vf9qsKjIVAf3UW5/TOlkzLSCJYJiw9p8IiTZ7vfAvQrWu8YRs5qrEUy+rSY1L8nBLctDbJ9GX8ibbCYKJiyoVWmQX5gaSGpsFJTlwVPOU2eR9TY6kcLWCAK//nzwKLcIGEimEPSwDIgV/Nl+XAYuKfAHSnmTZlgc2w5jqD8XZlvTw87/DbTDQNrGRJIMMwnUqHinfUtR+LWpenldUmU21mL0RnEg3gHoueirocbblJgZW8+hmjO5Ce8DRgX+s173SuEY+9uSPXsm26Sr2cGgCwuw0jXKIygGyUi82tm6j5kXJb/VJyrhg7U3FtnYyPn+hdX3GwUzn+x/uOc9zFR7ZCk7cJAZoo/kRQzAn3kuBVuA+zVFccl6Ug==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(39860400002)(136003)(346002)(396003)(376002)(316002)(66946007)(66476007)(9686003)(76116006)(6486002)(6512007)(71200400001)(54906003)(1076003)(8676002)(33716001)(2906002)(64756008)(66446008)(478600001)(8936002)(66556008)(6916009)(86362001)(44832011)(38100700002)(5660300002)(4326008)(26005)(122000001)(558084003)(186003)(6506007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?+JImhbOiMQEAdhNyyGwzwTAPJsHz8Uu4SMtOgR/sRuCuSgerD1GD+E2KHpmD?=
+ =?us-ascii?Q?s06/piOKQV/0iGrDmhfRcm6DRuRhrF+V7r3/HNAzxjFmR7ZCykIWskHqQs9w?=
+ =?us-ascii?Q?h0VYCI0e4UtOvuMWkBpc2PLkw0SMfQFVPcMQaREK/ooj2exkMQLL3Rbq26L9?=
+ =?us-ascii?Q?LR01gVBUjKjLA5yHVubMkcxK9CtWW+0PObjr20cs8OdmhQpuhRNSdv/pOCjk?=
+ =?us-ascii?Q?7MuJ+dbyUrHPA04pOt2+djhKpYveCYPGiAQK1fvG9FUYZg3KD2peWPCrVdqB?=
+ =?us-ascii?Q?498GZnvHCBu9SLUfgGciueQA3bABRsyg+1FnLtvG0xOR7+sxok4Eb3/rLGYD?=
+ =?us-ascii?Q?emIdboNjkcwIx3gtqb1Fd2dCAC4lmoga/3a5tYHiOXePxIJROoRtsVdhLT5I?=
+ =?us-ascii?Q?wPT+Wr9tPi9EctSt4cymPE7iXTJqGDRE3AH9deVJWXKnqXmwC7cPlIA4FITx?=
+ =?us-ascii?Q?Ix6ia+E1Om0aIpTwEFao4R9Aala1OkHHi53FbkpxfM/BsRV4GaUjAR05OkfY?=
+ =?us-ascii?Q?c+L7tJBYUtVF5qvR4WNBNceBf5RbuRHlqYW7mxbpQWClm3S00+rTznzdOnk6?=
+ =?us-ascii?Q?fkkPYmk9OvRoRkARaP5ypbQTRiMkXT3XpNiASmkY5iOJ1JAX6FY53EG5XTR3?=
+ =?us-ascii?Q?zO2/+wqkodpVMhHbnBZctMwx6/LPK8r6ocJ1L285dV+/WoLFwQ3n45h949nn?=
+ =?us-ascii?Q?Ds5ebY5lU0INdEekkqIUf/GoLq/raNGMyuDs5tl26ZPYD3lRN2vqf8Z0+607?=
+ =?us-ascii?Q?mg6d1gBCRQvYPCO4XRHE9+RQRbqlhk+cvu5Ddcm6EM0P4QPMDMpVWiX/8/e8?=
+ =?us-ascii?Q?i+LOUdeOojBMoO+UiYQVGCV3R/65aP9GDsRzFAsgQGLjn3+Fxv0J3+nVW+BX?=
+ =?us-ascii?Q?EgRmy8AjSPlkgCPorMpP9U3gAvxi4ruqsa/qedzpv3Ow28wurTAWhcTx7891?=
+ =?us-ascii?Q?FnlHUUGP/hoS8nKFViPEUK+mNBg8fuHH2o6Ef5IA+KD7yG1GPxAwCdZ0DVBA?=
+ =?us-ascii?Q?9JjFJjZtIiF0uPFIISPdn+AFuai4CJKjJW08EcK8CctCe3FeVibn0ezirmTZ?=
+ =?us-ascii?Q?bwvQKjmTAcOakgLdnbbuc+AKuQWMSziqXly78v7ki1USDoHbCZsClXADaMpH?=
+ =?us-ascii?Q?Ngq9Gw197BCrsxVaRQdGqDm+tqgiY/kFuSVcxYkhMpA04QES/9dVr8sEcUjN?=
+ =?us-ascii?Q?8UWcNCSWVDzeVt4QXqdI5+WDOetsE4RTmBPH6us0caRah19jx5anS/1V/29P?=
+ =?us-ascii?Q?79DY58LvVdi6rHY6fMaz6Ta4XsvjIo1UNS4ClqZur+KCob/7G7qF495Pjj2o?=
+ =?us-ascii?Q?f1tFJsh+Je9LsWVQ3lSrDkjC?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2953AF1F0DDFDC478F3BFD94006FE014@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <000000000000f034fc05c2da6617@google.com> <000000000000cac82d05c5214992@google.com>
- <20210621224119.GW4397@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20210621224119.GW4397@paulmck-ThinkPad-P17-Gen-1>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 28 Jun 2021 10:43:04 +0200
-Message-ID: <CACT4Y+bL26nyHU5Tc4SV7AepPYSt_YZVfhLEMaLncZ2+-OyFCg@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in check_all_holdout_tasks_trace
-To:     paulmck@kernel.org
-Cc:     syzbot <syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
-        axboe@kernel.dk, bpf@vger.kernel.org, christian@brauner.io,
-        coreteam@netfilter.org, daniel@iogearbox.net, davem@davemloft.net,
-        dsahern@kernel.org, fw@strlen.de, jiangshanlai@gmail.com,
-        joel@joelfernandes.org, john.fastabend@gmail.com,
-        josh@joshtriplett.org, kadlec@netfilter.org, kafai@fb.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mathieu.desnoyers@efficios.com, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        peterz@infradead.org, rcu@vger.kernel.org, rostedt@goodmis.org,
-        shakeelb@google.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yanfei.xu@windriver.com,
-        yhs@fb.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 539cb5f1-3cbd-4858-c579-08d93a15849b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2021 09:17:14.1983
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FFZY7NdO3NMARGvbJNgcZ1I/3VFitFSVG5qgk9hTUX0VDoKHGVBNxxUKpv8rssRXo+GzoZrtsS83k0PnYBsRLg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2685
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 22, 2021 at 12:41 AM Paul E. McKenney <paulmck@kernel.org> wrote:
->
-> On Sat, Jun 19, 2021 at 09:54:06AM -0700, syzbot wrote:
-> > syzbot has bisected this issue to:
-> >
-> > commit f9006acc8dfe59e25aa75729728ac57a8d84fc32
-> > Author: Florian Westphal <fw@strlen.de>
-> > Date:   Wed Apr 21 07:51:08 2021 +0000
-> >
-> >     netfilter: arp_tables: pass table pointer via nf_hook_ops
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10dceae8300000
-> > start commit:   0c38740c selftests/bpf: Fix ringbuf test fetching map FD
-> > git tree:       bpf-next
-> > final oops:     https://syzkaller.appspot.com/x/report.txt?x=12dceae8300000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=14dceae8300000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=a6380da8984033f1
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=7b2b13f4943374609532
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1264c2d7d00000
-> >
-> > Reported-by: syzbot+7b2b13f4943374609532@syzkaller.appspotmail.com
-> > Fixes: f9006acc8dfe ("netfilter: arp_tables: pass table pointer via nf_hook_ops")
-> >
-> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
->
-> I am not seeing any mention of check_all_holdout_tasks_trace() in
-> the console output, but I again suggest the following two patches:
->
-> 6a04a59eacbd ("rcu-tasks: Don't delete holdouts within trc_inspect_reader()"
-> dd5da0a9140e ("rcu-tasks: Don't delete holdouts within trc_wait_for_one_reader()")
+On Fri, Jun 25, 2021 at 05:33:12PM -0700, Vinicius Costa Gomes wrote:
+> WIP WIP WIP
+>=20
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> ---
 
-Let's tell syzbot about these fixes, then it will tell us if they help or not.
-
-#syz fix: rcu-tasks: Don't delete holdouts within trc_inspect_reader()
+This looks good as long as it is squashed with the first patch.=
