@@ -2,119 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 836683B58D6
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 07:57:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53DF33B591A
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 08:25:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232217AbhF1F7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 01:59:52 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:38443 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232260AbhF1F7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 01:59:40 -0400
-Received: by mail-io1-f72.google.com with SMTP id q7-20020a5d87c70000b02904eff8ce1ea0so8163052ios.5
-        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 22:57:15 -0700 (PDT)
+        id S231506AbhF1G1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 02:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229778AbhF1G1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 02:27:21 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1269FC061574
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 23:24:56 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id h4so14576224pgp.5
+        for <netdev@vger.kernel.org>; Sun, 27 Jun 2021 23:24:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :in-reply-to;
+        bh=ftmArVHBnjaiqwLqmNckLLOV/rfNZ49SB3JHiTFd1Q8=;
+        b=cY/ejyQcjfUUFLOiZj9r+yav3Ij6o0rkpvgTT/IxDPz7+pMlWMAP8OeIgzWLkgcb9A
+         1lb2B9A/ujVeyPZVwvtpj4OMi5nnBsSkUXzagrL1udlwvCl954qsRA9gM2yN1KvItyek
+         g2XZ+E9xt03DjW0dJLkKr+4OBUmIAT4trVpSQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=NZiHOP66CN3/d3r09QWR20u5KTe63dZhDT9GX98ADZE=;
-        b=PFfjCL7GqpPO0yGatMyby7PiUjO0zU2ClMC9/wcrD/NmgKuga13ohXNOH6BH8YMA0v
-         k9t7AVTuZaWapzJxuDsDr9Pq4p+TaQXi7BLsDSaneCq41qi3o/1f9IuyfvCEhkxKNlEa
-         kb5Rt2yuF/mVq2ldfvIIYQ2GJKG7VFr2mReQeC3I4y16MWTA7t+DJQ8IeznhsXhMaE6e
-         bDWxSmyS2BRDGyZPPpmSSdMOzJA/DTPSEIgg4MIqLzv+7LMRLtivsZv/DOU7tg0NBw6g
-         OrjguP3G8nBscb3OkU7Y1RNQQkJ4H6Na17j4g9hpFQyo8WML97vmqgzd2I14n2Z1IR2M
-         pr+Q==
-X-Gm-Message-State: AOAM530sc7WeeN63va0CcaatxXDzykp4dFFbMYVmGavO9oM3VOM3Y5KP
-        FlNUVebAvucR2GxvOWvGHaqCrt8pEAeiLku7zIbR6Va7Pufi
-X-Google-Smtp-Source: ABdhPJyVpCwX1N8AuMDdD5DBKGlQWtCf2XKmIlAljvfGYQzEV66j1fnci6D6i9DyvzjYqPhyRYwdvaPHdX0++rYkrNEepIueusfi
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:in-reply-to;
+        bh=ftmArVHBnjaiqwLqmNckLLOV/rfNZ49SB3JHiTFd1Q8=;
+        b=VUtpfK4/muQQ7Ot4YJEy2KT1wJA3osaVoCteDIObMhO90ch483QlRa7kUVDepUXH59
+         Hjs+7MJ7oKq5OYc1AcICR1pNjF+/K2g7IYydkh/GDObZ3yWsp38l/eYJIrZ5meQzjHSK
+         AIxf+RMym/Xx/C+nc6SmfKW2Ye6CKwXKw68VwvLYTwkJEVzi5i+qqQYq8je+imOzbI6B
+         pA+l0sVipuRIFVH4VuGvU0zVr+posnB8HeePuJRueqx0lqeJU87Ou6ZgZUf7fH2cPnOR
+         wtfEz2erdz6R6iPn+p2GLaHipNJctQAJ+zMX4XZ/Fxtjq65yr8N/hI8fwUL6wX4RRh3T
+         9gDQ==
+X-Gm-Message-State: AOAM532NPo0/2Z3eZJfytmY+33Uf6IMNeYHgu11t0WhF0rA4+rRMzbpl
+        XHlgXEpJz3/yKUezdgm9RYQnkw==
+X-Google-Smtp-Source: ABdhPJzMesSDkFORP5hxE2I+QpOwurW1y2yvhe+6cHNwAJ7XgwzdIpLoQg93TKeTBobjBXbsYSs2dw==
+X-Received: by 2002:a63:cf4e:: with SMTP id b14mr8076988pgj.125.1624861495448;
+        Sun, 27 Jun 2021 23:24:55 -0700 (PDT)
+Received: from noodle ([192.19.250.250])
+        by smtp.gmail.com with ESMTPSA id w14sm13384658pjb.3.2021.06.27.23.24.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Jun 2021 23:24:54 -0700 (PDT)
+Date:   Mon, 28 Jun 2021 09:24:34 +0300
+From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Vadym Kochan <vadym.kochan@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jiri@resnulli.us, idosch@idosch.org, ilya.lifshits@broadcom.com
+Subject: Re: [PATCH net-next] net/sched: cls_flower: fix resetting of ether
+ proto mask
+Message-ID: <20210628062434.GA13594@noodle>
+References: <20210617161435.8853-1-vadym.kochan@plvision.eu>
+ <20210617164155.li3fct6ad45a6j7h@skbuf>
+ <20210617195102.h3bg6khvaogc2vwh@skbuf>
+ <20210621083037.GA9665@builder>
+ <f18e6fee-8724-b246-adf9-53cc47f9520b@mojatatu.com>
+ <20210622131314.GA14973@builder>
+ <451abd22-4c81-2821-e8d4-4f305697890c@mojatatu.com>
+ <20210622152218.GA1608@noodle>
+ <7d0367ab-22e4-522a-11ef-8fb376672b54@mojatatu.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:5c0a:: with SMTP id z10mr19934094ioh.122.1624859834952;
- Sun, 27 Jun 2021 22:57:14 -0700 (PDT)
-Date:   Sun, 27 Jun 2021 22:57:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000045ad9705c5cd29ab@google.com>
-Subject: [syzbot] INFO: task can't die in p9_client_rpc (3)
-From:   syzbot <syzbot+716aab0e63b2895e1811@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, davem@davemloft.net, ericvh@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org, lucho@ionkov.net,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <7d0367ab-22e4-522a-11ef-8fb376672b54@mojatatu.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000044f7ce05c5cd8cf2"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+--00000000000044f7ce05c5cd8cf2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-syzbot found the following issue on:
+Hi Jamal,
 
-HEAD commit:    a1f92694 Add linux-next specific files for 20210518
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=10805a64300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d612e75ffd53a6d3
-dashboard link: https://syzkaller.appspot.com/bug?extid=716aab0e63b2895e1811
+On Thu, Jun 24, 2021 at 04:07:56PM -0400, Jamal Hadi Salim wrote:
+> Hi Boris,
+> 
+> Apologies for the latency.
+> 
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Apparently mine is not great either. :)
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+716aab0e63b2895e1811@syzkaller.appspotmail.com
+> On 2021-06-22 11:22 a.m., Boris Sukholitko wrote:
+> > On Tue, Jun 22, 2021 at 10:17:45AM -0400, Jamal Hadi Salim wrote:
+> 
+> [..]
+> 
+> > > > Do you by any chance have some naming suggestion? Does
+> > > > vlan_pure_ethtype sound ok? What about vlan_{orig, pkt, raw, hdr}_ethtype?
+> > > > 
+> > > 
+> > > The distinction is in getting the inner vs outer proto, correct?
+> > 
+> > Yes. To be more explicit: the outer protocol (ETH_P_PPP_SES in this case) is
+> > invisible to the user due to __skb_flow_dissect drilling down
+> > to find the inner protocol.
+> 
+> Ok, seems this is going to be problematic for flower for more than
+> just ETH_P_PPP_SES, no? i.e anything that has an inner proto.
+> IIUC, basically what you end up seeing in fl_classify() is
+> the PPP protocol that is extracted by the dissector?
+> 
 
-INFO: task syz-executor.2:17696 can't die for more than 143 seconds.
-task:syz-executor.2  state:D stack:27376 pid:17696 ppid:  8468 flags:0x00004004
-Call Trace:
- context_switch kernel/sched/core.c:4688 [inline]
- __schedule+0xb38/0x58c0 kernel/sched/core.c:5945
- schedule+0xcf/0x270 kernel/sched/core.c:6024
- p9_client_rpc+0x405/0x1240 net/9p/client.c:759
- p9_client_flush+0x1f9/0x430 net/9p/client.c:667
- p9_client_rpc+0xfe3/0x1240 net/9p/client.c:784
- p9_client_version net/9p/client.c:955 [inline]
- p9_client_create+0xae1/0x1110 net/9p/client.c:1055
- v9fs_session_init+0x1dd/0x17b0 fs/9p/v9fs.c:406
- v9fs_mount+0x79/0x9c0 fs/9p/vfs_super.c:126
- legacy_get_tree+0x105/0x220 fs/fs_context.c:592
- vfs_get_tree+0x89/0x2f0 fs/super.c:1498
- do_new_mount fs/namespace.c:2905 [inline]
- path_mount+0x132a/0x1fa0 fs/namespace.c:3235
- do_mount fs/namespace.c:3248 [inline]
- __do_sys_mount fs/namespace.c:3456 [inline]
- __se_sys_mount fs/namespace.c:3433 [inline]
- __x64_sys_mount+0x27f/0x300 fs/namespace.c:3433
- do_syscall_64+0x31/0xb0 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665d9
-RSP: 002b:00007f42a9fe9188 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 000000000056bf80 RCX: 00000000004665d9
-RDX: 0000000020000200 RSI: 0000000020000000 RDI: 0000000000000000
-RBP: 00000000004bfcb9 R08: 0000000020000440 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
-R13: 00007ffdec5a8f0f R14: 00007f42a9fe9300 R15: 0000000000022000
+Yes. It looks like the problem for all of tunnel protocols.
 
-Showing all locks held in the system:
-1 lock held by khungtaskd/1641:
- #0: ffffffff8c17afe0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6333
-1 lock held by in:imklog/8364:
- #0: ffff888025c12370 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:990
-4 locks held by rs:main Q:Reg/8365:
- #0: ffff8880b9c35718 (&rq->__lock){-.-.}-{2:2}, at: raw_spin_rq_lock_nested+0x2b/0x120 kernel/sched/core.c:460
- #1: ffff8880b9c1f988 (&per_cpu_ptr(group->pcpu, cpu)->seq){-.-.}-{0:0}, at: psi_task_switch+0x24c/0x670 kernel/sched/psi.c:872
- #2: ffff88802e7cf230 (&sb->s_type->i_mutex_key#10){++++}-{3:3}, at: inode_lock include/linux/fs.h:774 [inline]
- #2: ffff88802e7cf230 (&sb->s_type->i_mutex_key#10){++++}-{3:3}, at: ext4_buffered_write_iter+0xb6/0x4d0 fs/ext4/file.c:263
- #3: ffff88802e7cf4f8 (&ei->i_raw_lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:359 [inline]
- #3: ffff88802e7cf4f8 (&ei->i_raw_lock){+.+.}-{2:2}, at: ext4_do_update_inode fs/ext4/inode.c:5033 [inline]
- #3: ffff88802e7cf4f8 (&ei->i_raw_lock){+.+.}-{2:2}, at: ext4_mark_iloc_dirty+0x213/0x38d0 fs/ext4/inode.c:5724
-2 locks held by agetty/8383:
- #0: ffff888015b94098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:253
- #1: ffffc90000fdc2e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xcf0/0x1230 drivers/tty/n_tty.c:2113
+> > Yes. Talking specifically about flower's fl_classify and the following
+> > rule (0x8864 is ETH_P_PPP_SES):
+> > 
+> > tc filter add dev eth0 ingress protocol 0x8864 flower action simple sdata hi6
+> > 
+> > skb_flow_dissect sets skb_key.basic.n_proto to the inner protocol
+> > contained inside the PPP tunnel. fl_mask_lookup will fail finding the
+> > outer protocol configured by the user.
+> > 
+> 
+> For vlans it seems that flower tries to "rectify" the situation
+> with skb_protocol() (that why i pointed to that function) - but the
+> situation in this case cant be rectified inside fl_classify().
+> 
+> Just quick glance of the dissector code though seems to indicate
+> skb->protocol is untouched, no? i.e if you have a simple pppoe with
+> ppp protocol == ipv4, skb->protocol should still be 0x8864 on it
+> (even when skb_key.basic.n_proto has ipv4).
+> 
 
-=============================================
+The skb->protocol is probably untouched. Unfortunately I don't see
+how this may help us... 
 
+> 
+> > It looks to me that there is no way to match on outer protocol such as
+> > ETH_P_PPP_SES at least in flower. Although other filters (e.g. matchall)
+> > will work, VLAN packets containing ETH_P_PPP_SES will require flower and
+> > still will not match.
+> 
+> This is a consequence of flower using flow_dissector and flow
+> dissector loosing information..
+> 
 
+Yes.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > > This is because when vlan offloading was merged it skewed
+> > > things a little and we had to live with that.
+> > > 
+> > > Flower is unique in its use of the dissector which other classifiers
+> > > dont. Is this resolvable by having the fix in the  dissector?
+> > 
+> > Yes, the solution suggested by Vladimir and elaborated by myself
+> > involves extending the dissector to keep the outer protocol and having
+> > flower eth_type match on it. This is the "plan" being quoted above.
+> > 
+> >
+> > I believe this is the solution for the non-vlan tagged traffic. For the
+> > vlans we already have [c]vlan_ethtype keys taken. Therefore we'll need
+> > new [c]vlan_outer_ethtype keys.
+> > 
+> 
+> I think that would work in the short term but what happens when you
+> have vlan in vlan carrying pppoe? i.e how much max nesting can you
+> assume and what would you call these fields?
+> 
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Currently flower matches on 2 level of vlans: e.g. it has vlan_prio for
+the outer vlan and cvlan_prio for the inner vlan. I have no ambition to
+go beyond that. Thus only two keys will be needed: vlan_outer_ethtype
+and cvlan_outer_ethtype, I think...
+
+In your vlan in vlan ppoe example, I hope that
+cvlan_outer_ethtype == ETH_P_PPP_SES will match.
+
+Thanks,
+Boris.
+
+> cheers,
+> jamal
+> 
+
+--00000000000044f7ce05c5cd8cf2
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIQeQYJKoZIhvcNAQcCoIIQajCCEGYCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3QMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
+9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
+7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
+9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
+52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
+rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
+t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
+CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
+979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
+bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
+ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
+ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHCGAU9+yj4zD6YP
+XyD8XTwRlMvDWPK47ZpO33OgbNi1MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIxMDYyODA2MjQ1NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQDHTnTgGkGDuWDbZddyEpwrUkjoEQZI7BNu
+7lpP4/Wxg1+r1J4Qt/BICBzMcplSSNTjUR4YuAiQgxW70v+7+wdP3DCtiVrxB8pwUcoBFEoZPzDe
+58IgtpZL+Xa32CQ2Eud/tcDx+p9uDswhUlK9gVupU+Fq96bIvZqKWkcI27GLCSLnx2cArFLkm4QD
+oztN7VNGFCS5s3o1HBEWPS32WiIz7gGyHWn58LIBxUPN7TU/NTMDF8mxX8VBNmzpHEwaMRh70lLx
+jp987Gniz00fIX+etXbZa+WP/9LdD0Z6uamCWtQCbdoF0q6H8IN2JGJqjFwB9bH8Vqxh61Y3AmWu
+dyzu
+--00000000000044f7ce05c5cd8cf2--
