@@ -2,122 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDB903B59D0
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 09:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED7403B59D2
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 09:34:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232399AbhF1HgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 03:36:23 -0400
-Received: from mailgw01.mediatek.com ([60.244.123.138]:53400 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232246AbhF1HgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 03:36:21 -0400
-X-UUID: 574c76e2c2aa4ea5935980c50dcfcddf-20210628
-X-UUID: 574c76e2c2aa4ea5935980c50dcfcddf-20210628
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <rocco.yue@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 253331028; Mon, 28 Jun 2021 15:33:51 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs02n2.mediatek.inc (172.21.101.101) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 28 Jun 2021 15:33:43 +0800
-Received: from localhost.localdomain (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 28 Jun 2021 15:33:42 +0800
-From:   Rocco Yue <rocco.yue@mediatek.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>, <netdev@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <bpf@vger.kernel.org>,
-        <wsd_upstream@mediatek.com>, <chao.song@mediatek.com>,
-        <kuohong.wang@mediatek.com>, Rocco Yue <rocco.yue@mediatek.com>
-Subject: Re: [PATCH 4/4] drivers: net: mediatek: initial implementation of ccmni
-Date:   Mon, 28 Jun 2021 15:18:30 +0800
-Message-ID: <20210628071829.14925-1-rocco.yue@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <YNS4GzYHpxMWIH+1@kroah.com>
-References: <YNS4GzYHpxMWIH+1@kroah.com>
+        id S232417AbhF1Hg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 03:36:29 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:37325 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232415AbhF1HgZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 03:36:25 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id CAE0E580563;
+        Mon, 28 Jun 2021 03:33:59 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Mon, 28 Jun 2021 03:33:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Ntdq4y
+        gMPnixY9DYrZhapTgZXq2nZ2pxOMHsssk055w=; b=tb2rJVNYQHhBFtT8ODFLuK
+        cKIBEkYRxEcXSfWtiAHMIt5KpVJu2UoOmeNK4jAR7xdk8QI/4WiyJr5im1eGvicE
+        XwcL7JxOenEWNkWEKeV/uod+HFLuZaTDI7chscbQb2so8TDk0/9VDLJ5QgSSWjZe
+        pu3JZv6+Tlm6/HMo7OqwZhQ+3d+rZ4Tlkd9v8W2UEj7KctUI3b7xmKccB2tRUbrY
+        gT0ejmrmZtY3LLujtXEAiN/Hx09JzERa19s0Vxvg11s15SxkBeaR4eQq/ti7FUIo
+        MIjahaif04OG6FYs4qnw7vct33vupJL7OyWs0vSQ3gQr/ER8MBF0WdVo2JOYyAKw
+        ==
+X-ME-Sender: <xms:ZnvZYOclUKjPVLrLHM3lDcImwT6vAfUbtHDzDFa2_6GXqK44lq4EKw>
+    <xme:ZnvZYIPJFzc-6_bvsxVPptk3n22k790ShrMuBV2-rgueP2ZdZMEiOfhv7yOvlBRLV
+    HziDaO7_bdmoxU>
+X-ME-Received: <xmr:ZnvZYPjWUCo3JSt4gIHj0nxm1CwGEs_wTGUNV9RoKzW-PSUIY-d5Xi7BxOZF5bgv4KCDRm-mdv74IMEQY_gN6Feh-wmT8A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeehfedguddugecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:ZnvZYL_DESdDp3lIBb-IJtU9aIPFSd4rfqShZq1s4Jq6bN5GUCQ5fg>
+    <xmx:ZnvZYKu2xer7U9rGLiOWnAQXJbHLvk9ID0VgbYdw-CX4TgUIC1bQiA>
+    <xmx:ZnvZYCEF18j2xm4cJzzwu8p0-dfuhyvBP77wZDPOqf3WwbDDunS3EA>
+    <xmx:Z3vZYIBtQwALR73p-y8mv9X0NW7m90127QGSpGfiUesdQuQ7u7F06Q>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 28 Jun 2021 03:33:58 -0400 (EDT)
+Date:   Mon, 28 Jun 2021 10:33:54 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, vladyslavt@nvidia.com, moshe@nvidia.com,
+        vadimp@nvidia.com, mkubecek@suse.cz, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to write to
+ transceiver module EEPROMs
+Message-ID: <YNl7YlkYGxqsdyqA@shredder>
+References: <20210623075925.2610908-1-idosch@idosch.org>
+ <YNOBKRzk4S7ZTeJr@lunn.ch>
+ <YNTfMzKn2SN28Icq@shredder>
+ <YNTqofVlJTgsvDqH@lunn.ch>
+ <YNhT6aAFUwOF8qrL@shredder>
+ <YNiVWhoqyHSVa+K4@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YNiVWhoqyHSVa+K4@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-06-24 at 18:51 +0200, Greg KH wrote:
-On Thu, Jun 24, 2021 at 11:55:02PM +0800, Rocco Yue wrote:
->> On Thu, 2021-06-24 at 14:23 +0200, Greg KH wrote:
->> On Thu, Jun 24, 2021 at 07:53:49PM +0800, Rocco Yue wrote:
->>> 
->>> not have exports that no one uses.  Please add the driver to this patch
->>> series when you resend it.
->>> 
->> 
->> I've just took a look at what the Linux staging tree is. It looks like
->> a good choice for the current ccmni driver.
->> 
->> honstly, If I simply upload the relevant driver code B that calls
->> A (e.g. ccmni_rx_push), there is still a lack of code to call B.
->> This seems to be a continuty problem, unless all drivers codes are
->> uploaded (e.g. power on modem, get hardware status, complete tx/rx flow).
+On Sun, Jun 27, 2021 at 05:12:26PM +0200, Andrew Lunn wrote:
+> This API is not just about CMIS, it covers any I2C connected SFP
+> device. I'm more involved in the lower end, 1G, 2.5G and 10G. Devices
+> in this category seem to be very bad a following the standards. GPON
+> is especially bad, and GPON manufactures don't seem to care their
+> devices don't follow the standard, they assume the Customer Premises
+> Equipment is going to run software to work around whatever issues
+> their specific GPON has, maybe they provide driver code? The API you
+> are adding would be ideal for putting that driver in user space, as a
+> binary blob. That is going to make it harder for us to open up the
+> many millions of CPE used in FTTH. And there are people attempting to
+> do that.
 > 
-> Great, send it all!  Why is it different modules, it's only for one
-> chunk of hardware, no need to split it up into tiny pieces.  That way
-> only causes it to be more code overall.
+> If devices following CMIS really are closely following the standard
+> that is great. We should provide tooling to do firmware upgrade. But
+> at the same time, we don't want to aid those who go against the
+> standards and do their own thing. And it sounds like in the CMIS
+> world, we might have the power to encourage vendors to follow CMIS,
+> "Look, firmware upgrade just works for the competitors devices, why
+> should i use your device when it does not work?"
 > 
->> 
->> Thanks~
->> 
->> Can I resend patch set as follows:
->> (1) supplement the details of pureip for patch 1/4;
->> (2) the document of ccmni.rst still live in the Documentation/...
->> (3) modify ccmni and move it into the drivers/staging/...
-> 
-> for drivers/staging/ the code needs to be "self contained" in that it
-> does not require adding anything outside of the directory for it.
-> 
-> If you still require this core networking change, that needs to be
-> accepted first by the networking developers and maintainers.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+> I just want to make sure we are considering the full range of devices
+> this new API will cover. From little ARM systems with 1G copper and
+> FTTH fibre ports through to big TOR systems with large number of 100G
+> ports.  If CMIS is well support by vendors, putting the code into the
+> kernel, as a loadable module, might be the better solution for the
+> whole range of devices the kernel needs to support.
 
-Hi Greg,
+If the goal is to limit what user space can do, then putting all the
+code in the kernel and adding an ever-growing number of restrictive user
+APIs is not the only way.
 
-I am grateful for your help.
-
-Both ccmni change and networking changes are needed, because as far
-as I know, usually a device type should have at least one device to
-use it, and pureip is what the ccmni driver needs, so I uploaded the
-networking change and ccmni driver together;
-
-Since MTK’s modem driver has a large amount of code and strong code
-coupling, it takes some time to clean up them. At this stage, it may
-be difficult to upstream all the codes together.
-
-During this period, even if ccmni is incomplete, can I put the ccmni
-driver initial code in the driver/staging first ? After that, we will
-gradually implement more functions of ccmni in the staging tree, and
-we can also gradually sort out and clean up modem driver in the staging.
-
-In addition, due to the requirements of GKI 2.0, if ccmni device
-uses RAWIP or NONE, it will hit ipv6 issue; and if ccmni uses
-a device type other than PUREIP/RAWIP/NONE, there will be tethering
-ebpf offload or clat ebpf offload can not work problems.
-
-I hope PUREIP and ccmni can be accepted by the Linux community.
-
-Thanks,
-Rocco
-
+Even with the proposed approach, the kernel sits in the middle between
+the module and user space. As such, it can maintain an "allow list" that
+only allows access to modules with a specific memory map (CMIS and
+SFF-8636 for now) and only to a subset of the pages which are
+standardized by the specifications.
