@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 425B43B5BE7
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 12:01:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6F063B5BE8
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 12:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232624AbhF1KD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 06:03:27 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:19630 "EHLO
+        id S232632AbhF1KER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 06:04:17 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:20152 "EHLO
         mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230256AbhF1KDY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 06:03:24 -0400
+        with ESMTP id S230256AbhF1KEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 06:04:16 -0400
 Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 6FCFA77F61;
-        Mon, 28 Jun 2021 13:00:57 +0300 (MSK)
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 21EE377F5C;
+        Mon, 28 Jun 2021 13:01:49 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1624874457;
-        bh=UMC86vtcZLtdkB0xX//h0oHfvby2pTa1TH5ZBf6lJes=;
+        s=mail202102; t=1624874509;
+        bh=sMkQyx0kGaqiiwJwOl8rjTgclLBqCw1i9wZF/05L2Ok=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=l/QhcMYtLxR0k2pLlQpyUxdREC57wlKFhQjMFmLFbOxhlVU5VTbIr2AgiaHYXVhrO
-         1pMNyDITLCxIV5WsHRiSWSWKZdy/trRnL13ytDNqPwSVHEbQE/Npw2BWvS+IS1LJsp
-         XgUfQeDhPbsuY5KyI1CsvKp2SkEDlvc5Y9YBVco2bDEfQ9eTwGnQO2TzWRoeWEN27W
-         1XS79jQE/1vTNzffPW58Tc/69wNxF7PtN38Pj0doVRHKQ3xTreiOnUKhwpGFnLM54e
-         M9KQbVywXLoGrhDASoVmpaNIyDPdfdkkgmvuVutsOpmqS/8TgUZBlTLFbPJPC4HC1Z
-         TpmirbheLajHw==
+        b=18+wlKA8Tk3NsHKSbw6eaDwdpx8wQSkhWJzu3dRozwmtHQTdUGrrkGsndiyyYC2fs
+         Is1VwgOnE6+ZaMWzKLJ0yB4cZwJLm4jIajiDLmbC0jQZIQdU8LDxFd/41WzqGOLS9O
+         UKdlJ8huhIcytOIencgJhvbz53af7PtHCBGZpFQt1GwqPkZ0bZ5YUEK9TICroCSO+d
+         ZRRFWJyUM1jPF/FBcLDAMiOl6q8b/rfXRzckIdq2A5mSnJvR60FBO33GTvaKNceERQ
+         szB+Q9fKfTjPsK//4XO9V6KaLnFOKvMrzOsqLcHXCaHk65A/bU6mj5uKRmg91ltO3f
+         cCaXHho4Aozug==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 2B38477F59;
-        Mon, 28 Jun 2021 13:00:56 +0300 (MSK)
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id E116777F59;
+        Mon, 28 Jun 2021 13:01:48 +0300 (MSK)
 Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Mon, 28
- Jun 2021 13:00:55 +0300
+ Jun 2021 13:01:48 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -47,10 +47,12 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <oxffffaa@gmail.com>
-Subject: [RFC PATCH v1 00/16] Improve SOCK_SEQPACKET receive logic
-Date:   Mon, 28 Jun 2021 12:59:54 +0300
-Message-ID: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v1 01/16] vhost/vsock: don't set 'seqpacket_has_data()' callback
+Date:   Mon, 28 Jun 2021 13:01:35 +0300
+Message-ID: <20210628100138.570219-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
+References: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -95,67 +97,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	This patchset modifies receive logic for SOCK_SEQPACKET.
-Difference between current implementation and this version is that
-now reader is woken up when there is at least one RW packet in rx
-queue of socket and data is copied to user's buffer, while merged
-approach wake up user only when whole message is received and kept
-in queue. New implementation has several advantages:
- 1) There is no limit for message length. Merged approach requires
-    that length must be smaller than 'peer_buf_alloc', otherwise
-    transmission will stuck.
- 2) There is no need to keep whole message in queue, thus no
-    'kmalloc()' memory will be wasted until EOR is received.
-
-    Also new approach has some feature: as fragments of message
-are copied until EOR is received, it is possible that part of
-message will be already in user's buffer, while rest of message
-still not received. And if user will be interrupted by signal or
-timeout with part of message in buffer, it will exit receive loop,
-leaving rest of message in queue. To solve this problem special
-callback was added to transport: it is called when user was forced
-to leave exit loop and tells transport to drop any packet until
-EOR met. When EOR is found, this mode is disabled and normal packet
-processing started. Note, that when 'drop until EOR' mode is on,
-incoming packets still inserted in queue, reader will be woken up,
-tries to copy data, but nothing will be copied until EOR found.
-It was possible to drain such unneeded packets it rx work without
-kicking user, but implemented way is simplest. Anyway, i think
-such cases are rare.
-
-    New test also added - it tries to copy to invalid user's
-buffer.
-
-Arseny Krasnov (16):
- vhost/vsock: don't set 'seqpacket_has_data()' callback
- vsock/loopback: don't set 'seqpacket_has_data()' callback
- virtio/vsock: don't set 'seqpacket_has_data()' callback
- virtio/vsock: remove 'virtio_transport_seqpacket_has_data'
- af_vsock: use SOCK_STREAM function to check data
- vsock/virtio: remove record size limit for SEQPACKET
- virtio/vsock: don't count EORs on receive
- af_vsock: change SEQPACKET receive loop
- af_vsock/virtio: update dequeue callback interface
- virtio/vsock: update SEQPACKET dequeue logic
- afvsock: add 'seqpacket_drop()'
- virtio/vsock: add 'drop until EOR' logic
- vhost/vsock: enable 'seqpacket_drop' callback in transport
- virtio/vsock: enable 'seqpacket_drop' callback in transport
- vsock/loopback: enable 'seqpacket_drop' callback in transport
- vsock_test: SEQPACKET read to broken buffer
-
- drivers/vhost/vsock.c                   |   2 +-
- include/linux/virtio_vsock.h            |   7 +-
- include/net/af_vsock.h                  |   4 +-
- net/vmw_vsock/af_vsock.c                |  44 ++++----
- net/vmw_vsock/virtio_transport.c        |   2 +-
- net/vmw_vsock/virtio_transport_common.c | 103 +++++++-----------
- net/vmw_vsock/vsock_loopback.c          |   2 +-
- tools/testing/vsock/vsock_test.c        | 121 ++++++++++++++++++++++
- 8 files changed, 194 insertions(+), 91 deletions(-)
+Clean 'seqpacket_has_data()' callback in transport struct.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+---
+ drivers/vhost/vsock.c | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 119f08491d3c..4118390aeab6 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -451,7 +451,6 @@ static struct virtio_transport vhost_transport = {
+ 		.seqpacket_dequeue        = virtio_transport_seqpacket_dequeue,
+ 		.seqpacket_enqueue        = virtio_transport_seqpacket_enqueue,
+ 		.seqpacket_allow          = vhost_transport_seqpacket_allow,
+-		.seqpacket_has_data       = virtio_transport_seqpacket_has_data,
+ 
+ 		.notify_poll_in           = virtio_transport_notify_poll_in,
+ 		.notify_poll_out          = virtio_transport_notify_poll_out,
 -- 
 2.25.1
 
