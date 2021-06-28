@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EB543B5C17
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 12:05:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 041813B5C1A
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 12:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232713AbhF1KHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 06:07:23 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:61522 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232818AbhF1KHS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 06:07:18 -0400
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 9BA35521DD5;
-        Mon, 28 Jun 2021 13:04:51 +0300 (MSK)
+        id S232709AbhF1KHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 06:07:43 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:22107 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232653AbhF1KHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 06:07:38 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 5BCCA77F63;
+        Mon, 28 Jun 2021 13:05:11 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1624874691;
-        bh=nJ3CVmXNvkiXgk+hkdyEWyiTTYjnZRN33KoZQsVXAmQ=;
+        s=mail202102; t=1624874711;
+        bh=e4DkdckEAh0PVvS/K1Ql1QB6DtA5RGTd3RndhPBptm0=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=j/bEtK8pGF0MI3+ZB8uSvVfz32G+STE/T4I2G1Wxa+go8nrvb0JWkQCyaT1ypZslW
-         VpoKVzm72BL5aWscvlVo6EBOE3ULO1EhJE8AGpWduri7CtINN8Mmmm4uT+H7KneMn+
-         jqhG2DePajxtEnM7Rs5IrDAY333AetLDHXHI8y6Y9DZNOnXil5zVvEEAkitKlZYqik
-         8PheMsjF9/xBsTeup7+mEtvxDv5nQYdq6PZfPCnb9PvFf/v/gXDpoSj7mQ0LMt+eG0
-         Iv7u48LZx7/TINavk2RhSWCySv/E7nG0pZ/+GFrn37FHjdERLwssv0sJ2GExTGvRnu
-         hTB2LE7hyWA8Q==
+        b=iPCMjfSKcP/pjtXJ67NuxEn7V+1/LA3FMfGy6sent9utgi44HEZ+JVvwAIZc1dP7+
+         kyDg0aCin5GEe6ABrOaaKmy4Dtm2Fh7kIM4ZDQNpQF12umcIBuQDnLGcP/TtvOqdj8
+         PAhxaYXKI8K62nPObOZJ0syGsyU8oqrtS/HPhVQMhv4Ut+5tvs9GAOLFuCyYvqJWRE
+         14lu2lyKKRM5w/b+GnV8kFQA/DdL8sp0xyJpQlSJkTwK2Z/9HULiFodASvqcKpkiSk
+         cDRgRChjuF9mZ/CIejnoQQB13INxF1insV2KzK3izOKnBVilI2yl5mji5Acz4I0bHO
+         NQVTp0gKq+KPg==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 531C4521056;
-        Mon, 28 Jun 2021 13:04:51 +0300 (MSK)
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 272C177F61;
+        Mon, 28 Jun 2021 13:05:11 +0300 (MSK)
 Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Mon, 28
- Jun 2021 13:04:50 +0300
+ Jun 2021 13:05:10 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -41,16 +41,15 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
         Colin Ian King <colin.king@canonical.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
         Andra Paraschiv <andraprs@amazon.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <oxffffaa@gmail.com>
-Subject: [RFC PATCH v1 13/16] vhost/vsock: enable 'seqpacket_drop' callback in transport
-Date:   Mon, 28 Jun 2021 13:04:42 +0300
-Message-ID: <20210628100445.571625-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v1 14/16] virtio/vsock: enable 'seqpacket_drop' callback in transport
+Date:   Mon, 28 Jun 2021 13:05:02 +0300
+Message-ID: <20210628100505.571758-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
 References: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
@@ -102,21 +101,21 @@ Set 'seqpacket_drop()' callback in transport struct.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- drivers/vhost/vsock.c | 1 +
+ net/vmw_vsock/virtio_transport.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 4118390aeab6..0c154c2ca596 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -447,6 +447,7 @@ static struct virtio_transport vhost_transport = {
- 		.stream_rcvhiwat          = virtio_transport_stream_rcvhiwat,
- 		.stream_is_active         = virtio_transport_stream_is_active,
- 		.stream_allow             = virtio_transport_stream_allow,
-+		.seqpacket_drop           = virtio_transport_seqpacket_drop,
- 
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index e8b8108f3a29..5b9679f33baa 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -475,6 +475,7 @@ static struct virtio_transport virtio_transport = {
  		.seqpacket_dequeue        = virtio_transport_seqpacket_dequeue,
  		.seqpacket_enqueue        = virtio_transport_seqpacket_enqueue,
+ 		.seqpacket_allow          = virtio_transport_seqpacket_allow,
++		.seqpacket_drop           = virtio_transport_seqpacket_drop,
+ 
+ 		.notify_poll_in           = virtio_transport_notify_poll_in,
+ 		.notify_poll_out          = virtio_transport_notify_poll_out,
 -- 
 2.25.1
 
