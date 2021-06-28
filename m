@@ -2,113 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 231D93B66AD
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 18:24:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 404833B6717
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 18:54:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233754AbhF1Q1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 12:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33704 "EHLO
+        id S232010AbhF1Q4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 12:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233318AbhF1Q1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 12:27:08 -0400
-Received: from mail-vk1-xa33.google.com (mail-vk1-xa33.google.com [IPv6:2607:f8b0:4864:20::a33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB4EC061574
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 09:24:41 -0700 (PDT)
-Received: by mail-vk1-xa33.google.com with SMTP id s72so4078954vkb.8
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 09:24:41 -0700 (PDT)
+        with ESMTP id S231918AbhF1Q4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 12:56:31 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF0BC061760;
+        Mon, 28 Jun 2021 09:54:05 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id y13so9265023plc.8;
+        Mon, 28 Jun 2021 09:54:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RpJ7w32iGqwOk/oM/d0ecaefQixseDwgEeakcU32Bpk=;
-        b=J5VVzZnCPxO4E4iVGvXs0S0FNIqPMIYqCPljwFsfMFBLSG5Xf/XsoDBBgz7XgOAHmm
-         vj7AoYTLWtcJtxnNJHMOS4ONGe4/xLbiLzUhOqtIS+2VZ8TjR/p4Jp/sjGyshvcYALQV
-         jiVsg2puI6vff5H82ZCHshluIz/QfrLLq8Q1ODcK2NxRkPvQDq4NlK8sQLRWj/URdKEZ
-         ZLO4SE0JpCoP3lPkkachFV5wjB0I/V2WtBgJTHN8spUvLb5bKq89e41L9bsmNvmMK9vp
-         dTyECvKDxu/nb0CWQCyyvTe4MPcCoERzBGkhHsCI7FYD+dGi9i2beYvViJ6+e6YeCT47
-         NvBw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tmxl8eIEOqRAiLGy7zngSLbmcyScWo7pKD8rcoN8hGo=;
+        b=kT4H/2hw3tI/lAL796sbzQNk6AXJQgTHVsML+xKEVthO1mmWTmKGmrpSgacUt594tR
+         tcM6XBrR/uoFXSp8W+exvviSc9V/BwJL9m20/Fg2HYF9u0/hOsdLvoG2z84oKm67NNna
+         H/S094TaZJseaWyvsy+97FSX1+sKV0NMqeSgzyZZAN8tEu9GgzMdBcqd2u8JhjNt2asL
+         meHLRWuDFlGS5nZuIq+U6riZhKrrdVSRqZH+4UP273VRRG2LZXgRwGkZqa8kENJGI0kE
+         QnzRrFTeVUiJb1mNdYwNJ5/cFjOWfaco80J+kMSKKulyhsUBFm8gOcPnpbMxq+BA+79X
+         CGdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RpJ7w32iGqwOk/oM/d0ecaefQixseDwgEeakcU32Bpk=;
-        b=POdGwcqLuk5cMYhCBKKTNvtZES7oV5jTZLaL0GD+h7hAmzyZtUyD8TcFFgSCWla3kS
-         acTczSalgl3s0TvgR1pUcGElvdJ+oelXp9QaOgRFe8ShYmysLJcU+7hxk0PnB/amTNdP
-         E3jkixuGxFzMcWNqWwZQlU/mWnD+V64ofa6fkcMdkk81cCZ3IwXkHKngkr/6wwPaZmzH
-         ozKikwCQL17zrbaEpwe/7W+VyfrTFKWSN5pjmFVAeRpxMLNzsgbPx1w4XOCvRhxQpl8G
-         lCwIq36JB5f/A9fLtWRBoxFqALrKVzKfFy0QaC+slRtC7QKgxok3zKOssw6E30UF5pxv
-         sCGw==
-X-Gm-Message-State: AOAM531RW0dNTOX+frEs4+uPkqNExlxXkpkqn1vmIckG3G89JSCcwIf9
-        OWdg1xHC27LXfygJ5bH2AjoB7U2wam+LMlY7hQWEVQ==
-X-Google-Smtp-Source: ABdhPJw91nOsdpuFZV/dLpAyCemkIwoeS+zWUP869PzyBrf5GyGV7tXMqGOVFz318/U7RCY6IgxhF5tRCxgIjbMCSos=
-X-Received: by 2002:a1f:280e:: with SMTP id o14mr17539002vko.19.1624897480401;
- Mon, 28 Jun 2021 09:24:40 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tmxl8eIEOqRAiLGy7zngSLbmcyScWo7pKD8rcoN8hGo=;
+        b=cfK/CBzi8WcEb/orZOEWjKFVrwYWCp9a8K6xmyCYjcGYWFRn+visSpfI5yesVtgXtP
+         fBhm+MN7dQVJlHO1ORuvoDKybpAScLVkQ5mlDoWz29fGpXTonJtIteyE0VcJFb4NrKY9
+         nArtfQfAd7O5ENvrgo29/lgwAwjjabJuX/YIuSANhh3aGgOGUGAKYkpA7W+fx7WaaiHP
+         I7CcNQeugldAaxQt+KFR5eWbhloOfoNIqriMRYmUfh9sIjSakt19+GbxPffqsIuW3FRl
+         lg2eeZ/cnwBEY1+SqUg2rqjTYc9ntoabAAQGOEnD2lB+bgr9UHOMpordTTkvhndxNec0
+         a8Cw==
+X-Gm-Message-State: AOAM5319gObiSqakSOb6G9rYmmZb+VasGgphZB4bI8nuPHfTrp+vl/dB
+        h/ZCLg5PEcOf6iZwk9r6RQUjNmwVjlKwqQ==
+X-Google-Smtp-Source: ABdhPJwkPFh9x93+LTqrRPX1N5AF48M5F+/d5ZMRZI/Ej8+hpn4NEacRKbSS52G+kk5G9Hg6o21onQ==
+X-Received: by 2002:a17:902:f282:b029:124:701f:2fe7 with SMTP id k2-20020a170902f282b0290124701f2fe7mr23306535plc.10.1624899244577;
+        Mon, 28 Jun 2021 09:54:04 -0700 (PDT)
+Received: from horizon.localdomain ([2001:1284:f016:ff7f:d8af:5617:5a5c:1405])
+        by smtp.gmail.com with ESMTPSA id u20sm15019012pfn.189.2021.06.28.09.54.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Jun 2021 09:54:04 -0700 (PDT)
+Received: by horizon.localdomain (Postfix, from userid 1000)
+        id DEB7FC08CB; Mon, 28 Jun 2021 13:54:01 -0300 (-03)
+Date:   Mon, 28 Jun 2021 13:54:01 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, linux-sctp@vger.kernel.org,
+        David Laight <david.laight@aculab.com>
+Subject: Re: [PATCHv2 net-next 0/2] sctp: make the PLPMTUD probe more
+ effective and efficient
+Message-ID: <YNn+qbI8gXLP7us/@horizon.localdomain>
+References: <cover.1624675179.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-References: <20210628144908.881499-1-phind.uet@gmail.com> <CANn89iJ6M2WFS3B+sSOysekScUFmO9q5YHxgHGsbozbvkW9ivg@mail.gmail.com>
- <79490158-e6d1-aabf-64aa-154b71205c74@gmail.com>
-In-Reply-To: <79490158-e6d1-aabf-64aa-154b71205c74@gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Mon, 28 Jun 2021 12:24:19 -0400
-Message-ID: <CADVnQy=Q9W=Vxu81ctPLx08D=ALnHBXGr0c4BLtQGxwQE+yjRg@mail.gmail.com>
-Subject: Re: [PATCH] tcp: Do not reset the icsk_ca_initialized in tcp_init_transfer.
-To:     Phi Nguyen <phind.uet@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1624675179.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 28, 2021 at 12:18 PM Phi Nguyen <phind.uet@gmail.com> wrote:
->
-> On 6/28/2021 10:52 PM, Eric Dumazet wrote:
->
-> > Unfortunately this patch might break things.
-> >
-> > We keep changing this CC switching, with eBPF being mixed in the equation.
-> >
-> > I would suggest you find a Fixes: tag first, so that we can continue
-> > the discussion.
-> >
-> > Thank you.
->
-> Thank for your feedback. I will resubmit it with a Fixes tag.
->
-> Regard.
+On Fri, Jun 25, 2021 at 10:40:53PM -0400, Xin Long wrote:
+> As David Laight noticed, it currently takes quite some time to find
+> the optimal pmtu in the Search state, and also lacks the black hole
+> detection in the Search Complete state. This patchset is to address
+> them to mke the PLPMTUD probe more effective and efficient.
+> 
+> v1->v2:
+>   - see Patch 1/2.
+> 
+> Xin Long (2):
+>   sctp: do black hole detection in search complete state
+>   sctp: send the next probe immediately once the last one is acked
 
-Thanks.
-
-Can you also please provide a summary of the event sequence that
-triggers the bug? Based on your Reported-by tag, I guess this is based
-on the syzbot reproducer:
-
- https://groups.google.com/g/syzkaller-bugs/c/VbHoSsBz0hk/m/cOxOoTgPCAAJ
-
-but perhaps you can give a summary of the event sequence that causes
-the bug? Is it that the call:
-
-setsockopt$inet_tcp_TCP_CONGESTION(r0, 0x6, 0xd,
-&(0x7f0000000000)='cdg\x00', 0x4)
-
-initializes the CC and happens before the connection is established,
-and then when the connection is established, the line that sets:
-  icsk->icsk_ca_initialized = 0;
-is incorrect, causing the CC to be initialized again without first
-calling the cleanup code that deallocates the CDG-allocated memory?
-
-thanks,
-neal
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
