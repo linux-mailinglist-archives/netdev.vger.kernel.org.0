@@ -2,276 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 482473B5D1A
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 13:23:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E452F3B5D1B
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 13:25:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232817AbhF1LZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 07:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232767AbhF1LZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 07:25:50 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195F6C061574
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 04:23:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
-        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=bcos9BoTUxzkVDHpk5hD0s1vmnOQDviiPWCwccEQuyg=; b=yFy9dr8/speqUT4bfqkYleS1To
-        T1NV15LDNObD27bhwe72P+VRF6qnNIQq2VNNg9iE9U6KGTlHdh2DeCLp0I+ow9dRfTzvbrqlLYw35
-        eKdT2VFm4N0Ny6NyHaJcgszLNxCJDVgSk+GCl+y0Ge7qk7P/3i/0A8bJ8K1XZy+S/Jj3KHMpPcXwq
-        JXRUpq9GcUeT4h35iNrwbVJlt9EpDTQm1H/AYg9qe7vGaec+QSlu63B8GcxeT5nAApNUlWaHkh3Jb
-        2nP6iYPA/XMlejmsYc2agseJhP4CHiO8TGeCuKWRwuzin7HYuszs1qObgYz76QAOgPUaomL7sagYU
-        3czG4lRw==;
-Received: from [54.239.6.185] (helo=u3832b3a9db3152.ant.amazon.com)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1lxpMJ-007kXJ-Sj; Mon, 28 Jun 2021 11:23:24 +0000
-Message-ID: <72dfecd426d183615c0dd4c2e68690b0e95dd739.camel@infradead.org>
-Subject: Re: [PATCH v3 3/5] vhost_net: remove virtio_net_hdr validation, let
- tun/tap do it themselves
-From:   David Woodhouse <dwmw2@infradead.org>
-To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
-Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-        Willem de Bruijn <willemb@google.com>
-Date:   Mon, 28 Jun 2021 12:23:21 +0100
-In-Reply-To: <1c6110d9-2a45-f766-9d9a-e2996c14b748@redhat.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
-         <20210624123005.1301761-1-dwmw2@infradead.org>
-         <20210624123005.1301761-3-dwmw2@infradead.org>
-         <b339549d-c8f1-1e56-2759-f7b15ee8eca1@redhat.com>
-         <bfad641875aff8ff008dd7f9a072c5aa980703f4.camel@infradead.org>
-         <1c6110d9-2a45-f766-9d9a-e2996c14b748@redhat.com>
-Content-Type: multipart/signed; micalg="sha-256";
-        protocol="application/x-pkcs7-signature";
-        boundary="=-Gq0gbVH2aGVdn8skwzEQ"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        id S232802AbhF1L2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 07:28:11 -0400
+Received: from mail-vi1eur05on2102.outbound.protection.outlook.com ([40.107.21.102]:22880
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232767AbhF1L2K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Jun 2021 07:28:10 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PeNxFcSEm0nwvIOhY6HOYp2WFtMFEa5OPkovXDs28K/m1M6hhtzCiDDd+XmPdDMTytsLkmqX0XuIjqi9KfTFRc1e83pliXcxYALkpGVSs2J9WECml+A0FFKG9dW5eR4HYM6hnWd5NHO6TYj9v3vIjKxUfvfSE9NcotD1yAyyysypeqXmF7ayJ0lJXqWcYPm+qmma4rbrZQY1QWNM6moKc4/S02msmcGraaOJczn7PxZ6bY2sTzDJWGUFCmA2OjAIZy1n+lahNcER5IKppY4LeMzBUi7b0s+xWdNrW11GRd7eA40QQOXry4uBgUBHitMqHnK32rebR68dHH2pn3SKiQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jrHVxbNMMQ/Tsf2Dswko8vpdg7UDqV4Q53KVkaIrZ50=;
+ b=ezFRhKVftWhpwS6laD6FT7oZm1ScxcdZd5gdPyK2lZIqO4SMwvgCAmxfhS2kBfeStSKMKbOGESIjb7CDchwvgSMtPxihfGYRrHwrnXYNRUX4ZGpMa23C0rNejC5elKcultSwAI3ILSCT9I65CQWTawBvsGpiwrkwkgTw1MaEZxypE4GYB7Uh4pa61M8MP+W7hpIrl2ac70OJY7mbS43TeWxWqp5C8iUXi/ExxkPNYBpgLwrsTawrco8FD5ehj6CpLzGfseFYOeLADl1zpOqoSpEKczOrH0eUMOE2PI2+QopKzFcBKSJJDZF9gOhgFb4mt7ne+H1hDc+9uo6grt0GGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=itu.dk; dmarc=pass action=none header.from=itu.dk; dkim=pass
+ header.d=itu.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=itu.dk; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jrHVxbNMMQ/Tsf2Dswko8vpdg7UDqV4Q53KVkaIrZ50=;
+ b=KIwd5dTQ7iRxWHymDlW86ejeGUgxXZA3IAY72BgYFBbWC2eZzTAE6sK0Ib2C2AuDjpR7sn/Vo2I1sgl0VpUQy/GMuoRMd4SD5THXOnHxpwZyXIwp8M5x6dZ4d/6d9hxW8kSKx8Yj0aK318oQJ9un24YEHs70uO2yt8y6kgov4OC4m0jjXBRjADvgZizq0I0CYE1Dbp0bGPto+wEHJ6GjvsDIqX3J1eDTdKF264z63Yder6OHjtxemPOjF9+gzlmVY+vK470uQM3SBgecJJNEUtqkBVqfXrsphVIrM395Xgv3B4gi1TbP8LMmZrvayNuuX8FbHJfqeyVn2ObLmuQrDw==
+Received: from AM0PR02MB5777.eurprd02.prod.outlook.com (2603:10a6:208:180::13)
+ by AM0PR02MB5202.eurprd02.prod.outlook.com (2603:10a6:208:100::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.20; Mon, 28 Jun
+ 2021 11:25:41 +0000
+Received: from AM0PR02MB5777.eurprd02.prod.outlook.com
+ ([fe80::9832:7a6d:cf4e:d511]) by AM0PR02MB5777.eurprd02.prod.outlook.com
+ ([fe80::9832:7a6d:cf4e:d511%9]) with mapi id 15.20.4264.026; Mon, 28 Jun 2021
+ 11:25:41 +0000
+From:   Niclas Hedam <nhed@itu.dk>
+To:     "stephen@networkplumber.org" <stephen@networkplumber.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH v2] net: sched: Add support for packet bursting.
+Thread-Topic: [PATCH v2] net: sched: Add support for packet bursting.
+Thread-Index: AQHXbBBTiYdTK7SBI0G27l9pUjSwVQ==
+Date:   Mon, 28 Jun 2021 11:25:41 +0000
+Message-ID: <532A8EEC-59FD-42F2-8568-4C649677B4B0@itu.dk>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=none action=none header.from=itu.dk;
+x-originating-ip: [130.226.132.10]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ae369b67-47a4-4410-feba-08d93a277675
+x-ms-traffictypediagnostic: AM0PR02MB5202:
+x-microsoft-antispam-prvs: <AM0PR02MB5202BD99772EBEED89F1C849B4039@AM0PR02MB5202.eurprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1850;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WIQaeCaVlWuxjBibCUlq1fKgF9u/uXsiDGixwgzLNX1LsuwH/gBXJ/RNdn5PNemk8sVNmEdVCse2mYm6f0WczRIUXph5qEefgh4S+6cjUQWV0Ci4B+9O4MJmNN9QHkAMRiuoH+ltA3v+7udbc9jX8FweJ2Y/FJS3+AARsrwFM/siY9q31I22yh7wTZKQF/GP8NEKGaRQbfPRgMuc3VHs0VP/k9c4VRoBAGGk5jWAtnga3ZhmiIHFbY6VvM4XdOvOwhPqyJqW612kp3LWSwoeJEvujSJJjGAcqK7mgMeVdZOqRJLfZJici0TfqzeJStI6cMR+kqyl75/CImRRGb2ko+o1972R6meRYXgzjFGjRMYEuT4QMFJx5V46iPaEkRZwo9zc73wlnF3+Xm/BNvUU3hH93T0sxNwhIt/YHaha2AnZplmyHfbXPSfSgaELGO8FCiRJEJR1q36/1gT3TaaJH8mAptF72+IDUSTtxrcic3bmla0WcCPQf+pLFoyDDfY1tWVXP0sYSi6QQ/f77K6t7JaKztNyl87QfERELgST0PYxqwfRCASychMY9HSbKA8elfvxT8djgC3WGKjC/QvevZUgK5ecwVFMQ+syQSdSgrb0s+FyGbpTlojPEl+2AhCFSLrY3QS1B/QhybTrXKmzOJXwOxKJuBPfW8QM9+jZLTy9MLHbHm8O8yMLSGM3he32OsEzREEOt2IepV2CBpUf2Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB5777.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39840400004)(396003)(346002)(136003)(366004)(64756008)(316002)(53546011)(66946007)(6506007)(66556008)(86362001)(33656002)(6486002)(5660300002)(2906002)(36756003)(786003)(66476007)(6916009)(66446008)(76116006)(26005)(122000001)(83380400001)(91956017)(71200400001)(186003)(6512007)(478600001)(8936002)(8676002)(38100700002)(8976002)(4326008)(2616005)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?R41DXBF27w8nkWZ+EZZUajzGaR2BUYJb5Q2yFHEo9XP0PnVo2fIsseel1rFr?=
+ =?us-ascii?Q?P0ckvd/5ymmfTw0awCJGJBdnvrKhYPurApZCrmFfRjxbqYJjj4fVp6Yf8bJR?=
+ =?us-ascii?Q?m/A45cYDK+mcrbUSUGpduQD1xmkoCyHWbvrsHpmD7q6DJv3d03ED6XDtZIwc?=
+ =?us-ascii?Q?PsChqkmXyhxUqRzfJjcT3XJ2QPJ6VTbdiVi/FTC/HvgzGumifcl1ZGTiLSxf?=
+ =?us-ascii?Q?7HJlWpBvM3sLCKVP9L6pKHLZ6Hesy3I9w/UQd5qyk86B62D/KguniLsrbjym?=
+ =?us-ascii?Q?eHyzIMEw1Un+9zoun/iNeg5n239P/PUcDzYX/jn2YtuCG8Zbo6Zxucqvq+Vc?=
+ =?us-ascii?Q?7KIwLraQEi7uaRxcJYUBCmbXfaUafIW61MKSXBAWYW1qiFmyP1+5U2KvTXNg?=
+ =?us-ascii?Q?DfHafagiiGLoxAjP5xO1PoYx/rw+KbbB+/IaNSwCNIzNshZRD6rh+NZFAXb+?=
+ =?us-ascii?Q?hH8EFTvoXqmVgClJuwQGM3x2mX7NxC2/4ndw4UJ4voYKhMfYpWtlDcXWNhtL?=
+ =?us-ascii?Q?MG+p7VOiuhcNTkIE/C3eq/rEPe3/rps92qP3CrVoQoYJeuWxuVGC2YFAolsL?=
+ =?us-ascii?Q?z0JRrMqx93psv1i9h60qZ7anq6wwQo8LAe0PjibR4USPFxn7kxJgQnTrfR96?=
+ =?us-ascii?Q?nqjiUJP//4mf0xuGdQzwYfHHd+K04fbInbObEyNONMW6nVVqu/OkXo7XSMPo?=
+ =?us-ascii?Q?F7v6RvxKi/fzwLgRPAiC7nVUnWbNE0OdIhNeVAvXhnT3y5h+p92TaTovJkT8?=
+ =?us-ascii?Q?tVCbLKEZScHXUi0bY26/w0eTS9RsxwH5wqNlc0NJXw1h4sP/2OmSvyLUZytt?=
+ =?us-ascii?Q?z7QTfdVae0p/MRAIhZ5uVaJPwfEecvp7ZEPoiwfH6ZxtUMb8XskpTsXEliHf?=
+ =?us-ascii?Q?UqCz/wYDI2525GmoUasHrihwrJYC0hHrX6RWNmYiS4rDqN5wC6vpxJ0soW2O?=
+ =?us-ascii?Q?w3xhdfm7Lms8NSDsI1UveSwJ/i40VUdNwuTr6ToQLVZuX+HY8lGjOBIEmG7J?=
+ =?us-ascii?Q?5483cdTGvwhKM0mlsHk/9qJ1ff1ce2pWRVDfDkUZYW8K1fDwwsDEWHZfmiCD?=
+ =?us-ascii?Q?dfAyxEZm1NCoLI+Y2L7KcTDH9Gov36MGD9Dkxz7jAIAYfRKV7olnClhurSuA?=
+ =?us-ascii?Q?qQ8Dppq+pf4xyDiXB2FvpzeeGfMdmu/lrJjy/9/yIArB6NXttfEaMeIrD2sw?=
+ =?us-ascii?Q?dtzV55d9mRFNJuiH6OEoqjJzDU+pMr7xzR0RhgRRlzT1NhmhPZajFIGx2p23?=
+ =?us-ascii?Q?Lila3mvwGg2fAsuHFqei5+FY1lSNOJLOCFFQfEq9rK1pB/UcyvPt1NO1T+uk?=
+ =?us-ascii?Q?lPIcf6/B/t2trJxxLaxLB6/k?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <431683225A31A844B294F2006EE3F7DA@eurprd02.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: itu.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB5777.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae369b67-47a4-4410-feba-08d93a277675
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2021 11:25:41.4180
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: bea229b6-7a08-4086-b44c-71f57f716bdb
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fiPO0gfKxO/Pzqy10F+BlUDs4WLMQl5hktwrDIKQ3FjOrL+1iO/Hzb05QGKqAGb7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR02MB5202
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From 71843907bdb9cdc4e24358f0c16a8778f2762dc7 Mon Sep 17 00:00:00 2001
+From: Niclas Hedam <nhed@itu.dk>
+Date: Fri, 25 Jun 2021 13:37:18 +0200
+Subject: [PATCH] net: sched: Add support for packet bursting.
 
---=-Gq0gbVH2aGVdn8skwzEQ
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This commit implements packet bursting in the NetEm scheduler.
+This allows system administrators to hold back outgoing
+packets and release them at a multiple of a time quantum.
+This feature can be used to prevent timing attacks caused
+by network latency.
 
-On Mon, 2021-06-28 at 12:23 +0800, Jason Wang wrote:
-> =E5=9C=A8 2021/6/25 =E4=B8=8B=E5=8D=884:37, David Woodhouse =E5=86=99=E9=
-=81=93:
-> > On Fri, 2021-06-25 at 15:33 +0800, Jason Wang wrote:
-> > > =E5=9C=A8 2021/6/24 =E4=B8=8B=E5=8D=888:30, David Woodhouse =E5=86=99=
-=E9=81=93:
-> > > > From: David Woodhouse<dwmw@amazon.co.uk>
-> > > >=20
-> > > > When the underlying socket isn't configured with a virtio_net_hdr, =
-the
-> > > > existing code in vhost_net_build_xdp() would attempt to validate
-> > > > uninitialised data, by copying zero bytes (sock_hlen) into the loca=
-l
-> > > > copy of the header and then trying to validate that.
-> > > >=20
-> > > > Fixing it is somewhat non-trivial because the tun device might put =
-a
-> > > > struct tun_pi*before*  the virtio_net_hdr, which makes it hard to f=
-ind.
-> > > > So just stop messing with someone else's data in vhost_net_build_xd=
-p(),
-> > > > and let tap and tun validate it for themselves, as they do in the
-> > > > non-XDP case anyway.
-> > >=20
-> > > Thinking in another way. All XDP stuffs for vhost is prepared for TAP=
-.
-> > > XDP is not expected to work for TUN.
-> > >=20
-> > > So we can simply let's vhost doesn't go with XDP path is the underlay=
-er
-> > > socket is TUN.
-> >=20
-> > Actually, IFF_TUN mode per se isn't that complex. It's fixed purely on
-> > the tun side by that first patch I posted, which I later expanded a
-> > little to factor out tun_skb_set_protocol().
-> >=20
-> > The next two patches in my original set were fixing up the fact that
-> > XDP currently assumes that the *socket* will be doing the vhdr, not
-> > vhost. Those two weren't tun-specific at all.
-> >=20
-> > It's supporting the PI header (which tun puts *before* the virtio
-> > header as I just said) which introduces a tiny bit more complexity.
->=20
->=20
-> This reminds me we need to fix tun_put_user_xdp(),
+Signed-off-by: Niclas Hedam <nhed@itu.dk>
+---
+v2: add enum at end of list (Cong Wang)
+include/uapi/linux/pkt_sched.h |  2 ++
+net/sched/sch_netem.c          | 24 +++++++++++++++++++++---
+2 files changed, 23 insertions(+), 3 deletions(-)
 
-Good point; thanks.
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.=
+h
+index 79a699f106b1..1ba49f141dae 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -603,6 +603,7 @@ enum {
+	TCA_NETEM_JITTER64,
+	TCA_NETEM_SLOT,
+	TCA_NETEM_SLOT_DIST,
++        TCA_NETEM_BURSTING,
+	__TCA_NETEM_MAX,
+};
 
-> but as we've discussed, we need first figure out if PI is worth to
-> support for vhost-net.
+@@ -615,6 +616,7 @@ struct tc_netem_qopt {
+	__u32	gap;		/* re-ordering gap (0 for none) */
+	__u32   duplicate;	/* random packet dup  (0=3Dnone ~0=3D100%) */
+	__u32	jitter;		/* random jitter in latency (us) */
++	__u32	bursting;	/* send packets in bursts (us) */
+};
 
-FWIW I certainly don't care about PI support. The only time anyone
-would want PI support is if they need to support protocols *other* than
-IPv6 and Legacy IP, over tun mode.
+struct tc_netem_corr {
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 0c345e43a09a..52d796287b86 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -85,6 +85,7 @@ struct netem_sched_data {
+	s64 latency;
+	s64 jitter;
 
-I'm fixing this stuff because when I tried to use vhost-tun + tun for
-*sensible* use cases, I ended up having to flounder around trying to
-find a combination of settings that actually worked. And that offended
-me :)
++	u32 bursting;
+	u32 loss;
+	u32 ecn;
+	u32 limit;
+@@ -467,7 +468,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qd=
+isc *sch,
+	/* If a delay is expected, orphan the skb. (orphaning usually takes
+	 * place at TX completion time, so _before_ the link transit delay)
+	 */
+-	if (q->latency || q->jitter || q->rate)
++	if (q->latency || q->jitter || q->rate || q->bursting)
+		skb_orphan_partial(skb);
 
-So I wrote a test case to iterate over various possible combinations of
-settings, and then kept typing until that all worked.
+	/*
+@@ -527,8 +528,17 @@ static int netem_enqueue(struct sk_buff *skb, struct Q=
+disc *sch,
+	qdisc_qstats_backlog_inc(sch, skb);
 
-The only thing I do feel quite strongly about is that stuff should
-either *work*, or *explicitly* fail if it's unsupported.
+	cb =3D netem_skb_cb(skb);
+-	if (q->gap =3D=3D 0 ||		/* not doing reordering */
+-	    q->counter < q->gap - 1 ||	/* inside last reordering gap */
++	if (q->bursting > 0) {
++		u64 now;
++
++		now =3D ktime_get_ns();
++
++		cb->time_to_send =3D now - (now % q->bursting) + q->bursting;
++
++		++q->counter;
++		tfifo_enqueue(skb, sch);
++	} else if (q->gap =3D=3D 0 ||		/* not doing reordering */
++	    q->counter < q->gap - 1 ||		/* inside last reordering gap */
+	    q->reorder < get_crandom(&q->reorder_cor)) {
+		u64 now;
+		s64 delay;
+@@ -927,6 +937,7 @@ static const struct nla_policy netem_policy[TCA_NETEM_M=
+AX + 1] =3D {
+	[TCA_NETEM_ECN]		=3D { .type =3D NLA_U32 },
+	[TCA_NETEM_RATE64]	=3D { .type =3D NLA_U64 },
+	[TCA_NETEM_LATENCY64]	=3D { .type =3D NLA_S64 },
++	[TCA_NETEM_BURSTING]	=3D { .type =3D NLA_U64 },
+	[TCA_NETEM_JITTER64]	=3D { .type =3D NLA_S64 },
+	[TCA_NETEM_SLOT]	=3D { .len =3D sizeof(struct tc_netem_slot) },
+};
+@@ -1001,6 +1012,7 @@ static int netem_change(struct Qdisc *sch, struct nla=
+ttr *opt,
 
-At this point, although I have no actual use for it myself, I'd
-probably just about come down on the side of supporting PI. On the
-basis that:
+	q->latency =3D PSCHED_TICKS2NS(qopt->latency);
+	q->jitter =3D PSCHED_TICKS2NS(qopt->jitter);
++	q->bursting =3D PSCHED_TICKS2NS(qopt->bursting);
+	q->limit =3D qopt->limit;
+	q->gap =3D qopt->gap;
+	q->counter =3D 0;
+@@ -1032,6 +1044,9 @@ static int netem_change(struct Qdisc *sch, struct nla=
+ttr *opt,
+	if (tb[TCA_NETEM_LATENCY64])
+		q->latency =3D nla_get_s64(tb[TCA_NETEM_LATENCY64]);
 
- =E2=80=A2 I've basically made it work already.
++	if (tb[TCA_NETEM_BURSTING])
++		q->bursting =3D nla_get_u64(tb[TCA_NETEM_BURSTING]);
++
+	if (tb[TCA_NETEM_JITTER64])
+		q->jitter =3D nla_get_s64(tb[TCA_NETEM_JITTER64]);
 
- =E2=80=A2 It allows those code paths like tun_skb_set_protocol() to be
-   consolidated as both calling code paths need the same thing.
-
- =E2=80=A2 Even in the kernel, and even when modules are as incestuously
-   intertwined as vhost-net and tun already are, I'm a strong
-   believer in *not* making assumptions about someone else's data,
-   so letting *tun* handle its own headers without making those
-   assumptions seems like the right thing to do.
-
-
-
-If we want to support PI, I need to go fix tun_put_user_xdp() as you
-noted (and work out how to add that to the test case). And resolve the
-fact that configuration might change after tun_get_socket() is called =E2=
-=80=94
-and indeed that there might not *be* a configuration at all when
-tun_get_socket() is called.
-
-
-If we *don't* want to support PI, well, the *interesting* part of the
-above needs fixing anyway. Because I strongly believe we should
-*prevent* it if we don't support it, and we *still* have the case you
-point out of the tun vhdr_size being changed at runtime.
-
-I'll take a look at whether can pass the socklen back from tun to
-vhost-net on *every* packet. Is there a MSG_XXX flag we can abuse and
-somewhere in the msghdr that could return the header length used for
-*this* packet? Or could we make vhost_net_rx_peek_head_len() call
-explicitly into the tun device instead of making stuff up in
-peek_head_len()?=20
-
-
-To be clear: from the point of view of my *application* I don't care
-about any of this; my only motivation here is to clean up the kernel
-behaviour and make life easier for potential future users. I have found
-a setup that works in today's kernels (even though I have to disable
-XDP, and have to use a virtio header that I don't want), and will stick
-with that for now, if I actually commit it to my master branch at all:
-https://gitlab.com/openconnect/openconnect/-/commit/0da4fe43b886403e6
-
-I might yet abandon it because I haven't *yet* seen it go any faster
-than the code which just does read()/write() on the tun device from
-userspace. And without XDP or zerocopy it's not clear that it could
-ever give me any benefit that I couldn't achieve purely in userspace by
-having a separate thread to do tun device I/O. But we'll see...
-
---=-Gq0gbVH2aGVdn8skwzEQ
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
-ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
-OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
-RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
-cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
-uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
-Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
-Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
-xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
-BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
-dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
-LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
-Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
-Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
-YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
-nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
-PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
-7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
-Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
-MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
-NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
-/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
-0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
-vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
-ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
-ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
-CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
-BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
-aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
-bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
-LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
-W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
-vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
-gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
-RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
-jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
-AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
-BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
-+bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
-WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
-aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
-CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
-u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
-RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
-QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
-b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
-cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
-SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
-0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
-KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
-E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
-M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
-jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
-yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
-gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
-R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
-ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
-NjI4MTEyMzIxWjAvBgkqhkiG9w0BCQQxIgQgf4xDKmR1rkC220iAsr1Dk8gjuER+iuVU5XqqAFAo
-wOEwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
-TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
-PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAG9U5RhSi2xXDw4Bxr9++LLRf1J2qP+mUduHnbyHwAsqPxz3LivcLOXZYuqNoxLP
-iDiodD2QQ5JXDyhTIdPD6cDbjvYhtnJCMgvIJBlghtgQ60eCDUvVRVQefzLNFJacZVs1fQEaLN6M
-1jSv/Fg8KHR7o6ScQCa5ZuiYMh7UYWJGN7Nf2LG+Yvg/wCRXZz3PgxB+oOhz3NOxOreT/NiwitY0
-GQOjfcRPkA7BoqL5s/TVIkmwqBRsTZShL8+cB1SCc+UApzpSJqdaxDgFxjIrLIxF4Ih14P1zQ4ZP
-4lgZGoUDvd6uQTPj6dXsMX5Xv2GjmsfyAV1seKH8ZAWgqzyQ72kAAAAAAAA=
-
-
---=-Gq0gbVH2aGVdn8skwzEQ--
-
+@@ -1150,6 +1165,9 @@ static int netem_dump(struct Qdisc *sch, struct sk_bu=
+ff *skb)
+			     UINT_MAX);
+	qopt.jitter =3D min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->jitter),
+			    UINT_MAX);
++	qopt.bursting =3D min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->bursting),
++			    UINT_MAX);
++
+	qopt.limit =3D q->limit;
+	qopt.loss =3D q->loss;
+	qopt.gap =3D q->gap;
+--
+2.25.1=
