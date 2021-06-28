@@ -2,303 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BEF43B678F
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 19:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B08373B67D0
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 19:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234332AbhF1RXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 13:23:36 -0400
-Received: from relay.sw.ru ([185.231.240.75]:52822 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232742AbhF1RXe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Jun 2021 13:23:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:Mime-Version:Message-Id:Subject:From
-        :Date; bh=VSPV7HzJ2Jqd6oAVaBkDmucmEZdtRDKNdz8RwlccbM8=; b=HzdT/476CGSzxNCL5P0
-        eiJGABpTBH5TGstZt4LV+9yOAoe0WkBK2up78O14/ZiZ7jLeHU2kip8NSaUPdp47y8uwdGCDlRacs
-        SgFfKzaTVDcCCLsJ+VcTHoNTzzJw6YqWvlYORa3c21gcdXVfjsTOkXms2bI6L+HY7qKGPOMRcFM=;
-Received: from [192.168.15.35] (helo=mikhalitsyn-laptop)
-        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1lXbzl-0024vY-4r; Mon, 28 Jun 2021 20:21:06 +0300
-Date:   Mon, 28 Jun 2021 20:21:05 +0300
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Andrei Vagin <avagin@gmail.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Subject: Re: [PATCHv3 iproute2] ip route: ignore ENOENT during save if
- RT_TABLE_MAIN is being dumped
-Message-Id: <20210628202105.d6eaee2101f98e9afe8989cb@virtuozzo.com>
-In-Reply-To: <20210628101745.1963b836@hermes.local>
-References: <20210624152812.29031-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20210627145424.181beae5@hermes.local>
-        <20210628093132.fe747541cbf0c708ac4da640@virtuozzo.com>
-        <20210628101745.1963b836@hermes.local>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S233987AbhF1Rmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 13:42:53 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:50779 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232266AbhF1Rmv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 13:42:51 -0400
+Received: by mail-io1-f72.google.com with SMTP id c2-20020a0566023342b02904f81edccbe3so2576274ioz.17
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 10:40:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=mamGdRr9TtNFKyGZqfzXXm7iLxuMh6BAprI2TBJ/kFY=;
+        b=hPcpawV/U50TPqgKW+INZXnbF3tzxYEWxwUG2ZPjYdhizQBdD1y4XzUJ+QSd/NDRcX
+         IM+mKeuFXg91z/VMJrF0fCxhLhZ6PwGNrKGS7ezNmt8SAYtGAd6iZPrkbAuq/QcD0EuO
+         mynyvQj16h6p1zgB/Nl5M75KKWBsYceWGoaAND3qt+HSTZiJKWlSkcWpnNs+cp0SuxkN
+         LaxLecAzaXV24XPvF6dPTBNurMQ9onYJ2LkL4OO29xpijtxIG9Zh5Cu2t7Lqfo78BogI
+         yhZ+aoehNpFOALlliTxLA0mDH2AMbglCLm6Jt74Hl9Mq/sb8ujYrFmlc4n1uzZQYfzRq
+         XhOw==
+X-Gm-Message-State: AOAM532O33WkauxT5r0CypDeeRwGu1ZmRWRgMOlNt8jja1rcYTvZ/+en
+        4yngSEb7Ex5R/N7zO3Mpcb2WpUo/FvNaq46dt5lz7UWd40mC
+X-Google-Smtp-Source: ABdhPJyaDlxUEjvQIzTkW+w1ZtbJogMdvpkrnW70YEn0DNvi2+wzXaNVn3GsN9haeh1mGsR2sVDiE51khrAvQ+NnYL0WcI3HWRh6
+MIME-Version: 1.0
+X-Received: by 2002:a02:a916:: with SMTP id n22mr675264jam.110.1624902025592;
+ Mon, 28 Jun 2021 10:40:25 -0700 (PDT)
+Date:   Mon, 28 Jun 2021 10:40:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000007c48405c5d6fcb3@google.com>
+Subject: [syzbot] unexpected kernel reboot (6)
+From:   syzbot <syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Jun 2021 10:17:45 -0700
-Stephen Hemminger <stephen@networkplumber.org> wrote:
+Hello,
 
-> On Mon, 28 Jun 2021 09:31:32 +0300
-> Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
-> 
-> > On Sun, 27 Jun 2021 14:54:24 -0700
-> > Stephen Hemminger <stephen@networkplumber.org> wrote:
-> > 
-> > > On Fri, 25 Jun 2021 13:44:40 +0300
-> > > Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
-> > >   
-> > > > We started to use in-kernel filtering feature which allows to get only needed
-> > > > tables (see iproute_dump_filter()). From the kernel side it's implemented in
-> > > > net/ipv4/fib_frontend.c (inet_dump_fib), net/ipv6/ip6_fib.c (inet6_dump_fib).
-> > > > The problem here is that behaviour of "ip route save" was changed after
-> > > > c7e6371bc ("ip route: Add protocol, table id and device to dump request").
-> > > > If filters are used, then kernel returns ENOENT error if requested table is absent,
-> > > > but in newly created net namespace even RT_TABLE_MAIN table doesn't exist.
-> > > > It is really allocated, for instance, after issuing "ip l set lo up".
-> > > > 
-> > > > Reproducer is fairly simple:
-> > > > $ unshare -n ip route save > dump
-> > > > Error: ipv4: FIB table does not exist.
-> > > > Dump terminated
-> > > > 
-> > > > Expected result here is to get empty dump file (as it was before this change).
-> > > > 
-> > > > v2: reworked, so, now it takes into account NLMSGERR_ATTR_MSG
-> > > > (see nl_dump_ext_ack_done() function). We want to suppress error messages
-> > > > in stderr about absent FIB table from kernel too.
-> > > > 
-> > > > v3: reworked to make code clearer. Introduced rtnl_suppressed_errors(),
-> > > > rtnl_suppress_error() helpers. User may suppress up to 3 errors (may be
-> > > > easily extened by changing SUPPRESS_ERRORS_INIT macro).
-> > > > 
-> > > > Fixes: c7e6371bc ("ip route: Add protocol, table id and device to dump request")
-> > > > Cc: David Ahern <dsahern@gmail.com>
-> > > > Cc: Stephen Hemminger <stephen@networkplumber.org>
-> > > > Cc: Andrei Vagin <avagin@gmail.com>
-> > > > Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-> > > > Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-> > > > ---
-> > > >  include/libnetlink.h | 37 +++++++++++++++++++++++++++++++++++++
-> > > >  ip/iproute.c         |  7 ++++++-
-> > > >  lib/libnetlink.c     | 27 ++++++++++++++++++++++-----
-> > > >  3 files changed, 65 insertions(+), 6 deletions(-)
-> > > > 
-> > > > diff --git a/include/libnetlink.h b/include/libnetlink.h
-> > > > index b9073a6a..c41f714a 100644
-> > > > --- a/include/libnetlink.h
-> > > > +++ b/include/libnetlink.h
-> > > > @@ -121,6 +121,43 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
-> > > >  			void *arg, __u16 nc_flags);
-> > > >  #define rtnl_dump_filter(rth, filter, arg) \
-> > > >  	rtnl_dump_filter_nc(rth, filter, arg, 0)
-> > > > +int rtnl_dump_filter_suppress_rtnl_errmsg_nc(struct rtnl_handle *rth,
-> > > > +		     rtnl_filter_t filter,
-> > > > +		     void *arg1, __u16 nc_flags, const int *errnos);
-> > > > +#define rtnl_dump_filter_suppress_rtnl_errmsg(rth, filter, arg, errnos) \
-> > > > +	rtnl_dump_filter_suppress_rtnl_errmsg_nc(rth, filter, arg, 0, errnos)  
-> > > 
-> > > Sorry, this is getting really ugly.  
-> > 
-> > Sorry, I apparently overdid it in refactoring ;)
-> > 
-> > > 
-> > > It is almost as bad as looking at Windows source code with the extremely long
-> > > function names.  
-> > 
-> > Sure, I will choose shorter names.
-> > 
-> > > 
-> > > It would be better to refactor the already overload  rtnl_dump_filter into sub
-> > > components and different parts could use the sub functions as needed.
-> > >   
-> > > > +#define SUPPRESS_ERRORS_INIT { 0, 0, 0, 0 }  
-> > > 
-> > > Why do you need a special macro just use {} in those places.  
-> > 
-> > It seems like I wrongly interpreted you words about "magic array of size 2"
-> > >>The design would be clearer if there were two arguments rather than magic array of size 2.  
-> > If I understand you correctly, you wanted to say that it's not fully convenient to read and
-> > see "magic" initializator { 0, 0, 0, 0 } or similar. (why four zeroes? why not 3 or 1?)
-> > So, I've decided to make macro for this initializer like we have macros for linked lists
-> > initializators in kernel, for instance. Another reason is that If someone need to skip more than
-> > 3 errors, he can change initializer size and helper function rtnl_suppress_error() will
-> > take new size into account.
-> > 
-> > What I want to implement:
-> > 1. Possibility to skip several errors in rtnl_dump_filter
-> > 2. Not use malloc for allocation of "errors" array (because array is really small and
-> > malloc needs free, so it's easier to make errors with memleak in the future)
-> > 3. I'm trying not to change original function rtnl_dump_filter() signature because
-> > it's used in other places and that's a stable API.
-> > 4. We want to allow programmer to dynamically add skipped errors. It means that
-> > user not specifying array of skipped errors directly like { ENOENT, ENOSUPP, 0 }, but
-> > can write something like:
-> > if (ignore_old_kernel_errors)
-> >     rtnl_suppress_error(errors, ENOSUPP)
-> > if (some_another_reason)
-> >     rtnl_suppress_error(errors, ENOENT)
-> > 
-> > 
-> > Maybe some of my points not valid for us and I can throw it?
-> > 
-> > Thank you for review! ;)
-> > 
-> > Alex.
-> > 
-> > > 
-> > >   
-> > > > +static inline int rtnl_suppressed_error(const int *errnos, int err_no)  
-> > > 
-> > > Inline is unnecessary here.
-> > >   
-> > > > +{
-> > > > +	/* errnos is 0 terminated array or NULL */
-> > > > +	while (errnos && *errnos) {
-> > > > +		if (err_no == *errnos)
-> > > > +			return 1;
-> > > > +
-> > > > +		errnos++;
-> > > > +	}
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +static inline void rtnl_suppress_error(int *errnos, int err_no)  
-> > > Blank line between functions, Again no inline
-> > >   
-> > > > +{
-> > > > +	/* last 0 is trailing for errnos array */
-> > > > +	int max = sizeof((int[])SUPPRESS_ERRORS_INIT) /
-> > > > +			sizeof(int) - 1;
-> > > > +
-> > > > +	if (errnos == NULL)
-> > > > +		return;
-> > > > +
-> > > > +	for (int i = 0; i < max; i++) {
-> > > > +		if (errnos[i] == err_no)
-> > > > +			break;
-> > > > +
-> > > > +		if (!errnos[i]) {
-> > > > +			errnos[i] = err_no;
-> > > > +			break;
-> > > > +		}
-> > > > +	}
-> > > > +}
-> > > >  int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
-> > > >  	      struct nlmsghdr **answer)
-> > > >  	__attribute__((warn_unused_result));
-> > > > diff --git a/ip/iproute.c b/ip/iproute.c
-> > > > index 5853f026..532ca724 100644
-> > > > --- a/ip/iproute.c
-> > > > +++ b/ip/iproute.c
-> > > > @@ -1734,6 +1734,7 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
-> > > >  	char *od = NULL;
-> > > >  	unsigned int mark = 0;
-> > > >  	rtnl_filter_t filter_fn;
-> > > > +	int suppress_rtnl_errnos[] = SUPPRESS_ERRORS_INIT;
-> > > >  
-> > > >  	if (action == IPROUTE_SAVE) {
-> > > >  		if (save_route_prep())
-> > > > @@ -1939,7 +1940,11 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
-> > > >  
-> > > >  	new_json_obj(json);
-> > > >  
-> > > > -	if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
-> > > > +	if (filter.tb == RT_TABLE_MAIN)
-> > > > +		rtnl_suppress_error(suppress_rtnl_errnos, ENOENT);
-> > > > +
-> > > > +	if (rtnl_dump_filter_suppress_rtnl_errmsg(&rth, filter_fn, stdout,
-> > > > +						  suppress_rtnl_errnos) < 0) {
-> > > >  		fprintf(stderr, "Dump terminated\n");
-> > > >  		return -2;
-> > > >  	}
-> > > > diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-> > > > index c958aa57..5c5a19bb 100644
-> > > > --- a/lib/libnetlink.c
-> > > > +++ b/lib/libnetlink.c
-> > > > @@ -673,7 +673,7 @@ int rtnl_dump_request_n(struct rtnl_handle *rth, struct nlmsghdr *n)
-> > > >  	return sendmsg(rth->fd, &msg, 0);
-> > > >  }
-> > > >  
-> > > > -static int rtnl_dump_done(struct nlmsghdr *h)
-> > > > +static int rtnl_dump_done(struct nlmsghdr *h, const int *errnos)
-> > > >  {
-> > > >  	int len = *(int *)NLMSG_DATA(h);
-> > > >  
-> > > > @@ -683,11 +683,15 @@ static int rtnl_dump_done(struct nlmsghdr *h)
-> > > >  	}
-> > > >  
-> > > >  	if (len < 0) {
-> > > > +		errno = -len;
-> > > > +
-> > > > +		if (rtnl_suppressed_error(errnos, errno))
-> > > > +			return 0;
-> > > > +
-> > > >  		/* check for any messages returned from kernel */
-> > > >  		if (nl_dump_ext_ack_done(h, len))
-> > > >  			return len;
-> > > >  
-> > > > -		errno = -len;
-> > > >  		switch (errno) {
-> > > >  		case ENOENT:
-> > > >  		case EOPNOTSUPP:
-> > > > @@ -789,7 +793,8 @@ static int rtnl_recvmsg(int fd, struct msghdr *msg, char **answer)
-> > > >  }
-> > > >  
-> > > >  static int rtnl_dump_filter_l(struct rtnl_handle *rth,
-> > > > -			      const struct rtnl_dump_filter_arg *arg)
-> > > > +			      const struct rtnl_dump_filter_arg *arg,
-> > > > +			      const int *errnos)
-> > > >  {
-> > > >  	struct sockaddr_nl nladdr;
-> > > >  	struct iovec iov;
-> > > > @@ -834,7 +839,7 @@ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
-> > > >  					dump_intr = 1;
-> > > >  
-> > > >  				if (h->nlmsg_type == NLMSG_DONE) {
-> > > > -					err = rtnl_dump_done(h);
-> > > > +					err = rtnl_dump_done(h, errnos);
-> > > >  					if (err < 0) {
-> > > >  						free(buf);
-> > > >  						return -1;
-> > > > @@ -891,7 +896,19 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
-> > > >  		{ .filter = NULL,   .arg1 = NULL, .nc_flags = 0, },
-> > > >  	};
-> > > >  
-> > > > -	return rtnl_dump_filter_l(rth, a);
-> > > > +	return rtnl_dump_filter_l(rth, a, NULL);
-> > > > +}
-> > > > +
-> > > > +int rtnl_dump_filter_suppress_rtnl_errmsg_nc(struct rtnl_handle *rth,
-> > > > +		     rtnl_filter_t filter,
-> > > > +		     void *arg1, __u16 nc_flags, const int *errnos)
-> > > > +{
-> > > > +	const struct rtnl_dump_filter_arg a[2] = {
-> > > > +		{ .filter = filter, .arg1 = arg1, .nc_flags = nc_flags, },
-> > > > +		{ .filter = NULL,   .arg1 = NULL, .nc_flags = 0, },
-> > > > +	};
-> > > > +
-> > > > +	return rtnl_dump_filter_l(rth, a, errnos);
-> > > >  }
-> > > >  
-> > > >  static void rtnl_talk_error(struct nlmsghdr *h, struct nlmsgerr *err,  
-> > >   
-> 
-> Maybe adding an error handler callback to existing dump filter routine.
-> And add a rtnl_dump_error() function as the default error handler. (ie if NULL is passed)
-> That way your callback could skip what ever errors it wants and call the rtnl_dump_error
-> routine for the ones it wants to handle.
-> 
+syzbot found the following issue on:
 
-Great. I'll implement that! ;)
+HEAD commit:    ff8744b5 Merge branch '100GbE' of git://git.kernel.org/pub..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1722068c300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7cf9abab1592f017
+dashboard link: https://syzkaller.appspot.com/bug?extid=04cbcd264375a290f444
 
-Thanks,
-Alex
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+04cbcd264375a290f444@syzkaller.appspotmail.com
+
+output_len: 0x000000000e83eb68
+kernel_total_size: 0x000000000fc26000
+needed_size: 0x000000000fe00000
+trampoline_32bit: 0x000000000009d000
+Decompressing Linux... Parsing ELF... done.
+Booting the kernel.
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
