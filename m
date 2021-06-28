@@ -2,52 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BBC13B6B0F
+	by mail.lfdr.de (Postfix) with ESMTP id EB88C3B6B10
 	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 00:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234262AbhF1Ww3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 18:52:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36586 "EHLO mail.kernel.org"
+        id S234612AbhF1Wwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 18:52:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36614 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233035AbhF1Ww2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Jun 2021 18:52:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 47AE561CC9;
-        Mon, 28 Jun 2021 22:50:01 +0000 (UTC)
+        id S234332AbhF1Ww3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Jun 2021 18:52:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6672761CF8;
+        Mon, 28 Jun 2021 22:50:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624920601;
-        bh=H6BL1k486TKe+t4QpXrk9/os9QpgymxfGXvSn9ApgfI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NvejgrmrTGG2Ow0MhsxMV88gEqLQbJWWg9NEY0YbP3dF+SEZ7U7dYEKYQcnp4zGo0
-         okoOG7CD4AeJDg7qyvKv3n+xVYJIpuPSIdemNWCcrtaGdiz3H3ovHUGuOmyOSR1ReT
-         IlF0x6BaNBI2O0qTqBeeW37JWTfSDwwVn2jSkytvjMn9Wb+knlMSyJhDt52YL5GqJG
-         lM9LUdQ6qk5FTI7FKh5G3Ht7UdGBzvj9beCfkHKKLuY63tC66ywv1WW2c4TA2NcuWW
-         GR7P0yPQZtOOsZ8lafqTIPaMpQmJSDObkMxbjTHR6viS331xLVgJ8w4L7BfCkirBcM
-         svSGvo0KPoI5w==
-Date:   Tue, 29 Jun 2021 00:49:58 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Kurt Cancemi <kurt@x64architecture.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] net: phy: marvell: Fixed handing of delays with
- plain RGMII interface
-Message-ID: <20210629004958.40f3b98c@thinkpad>
-In-Reply-To: <20210628192826.1855132-2-kurt@x64architecture.com>
-References: <20210628192826.1855132-1-kurt@x64architecture.com>
-        <20210628192826.1855132-2-kurt@x64architecture.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1624920603;
+        bh=+gUO1O+1c6ODZizu1igqWRG3S/qxAbxEupFjE4NJa2o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YbwAXixCvr411g6L7zj6mn/oBn6soO5Zkmw42NRaR/O7GYWs5b0we1TDFaNg4vkGT
+         X5jrRttkbY0z3YYSzA01fTOw3qEIclKVkniIyx2xBZRZ7zVye4/mVsb06TyJq/cf5j
+         vm7HDalTUQjq17DoN1uVfF3CfgEHCEqhbRlIJs4wsA1+TLxdkW5cxHsd980LEtGKB2
+         YKwSDtvpteg7YEUIOmS3Gem3Ldn1eBmJRBHrP+1Vhf6qKxAoAk22POxqhS92Ijpswj
+         n86S4caHshMKXePGZeUt6QFjg4+k2LW1zBoxD5HLrgAlBuObqsfzbdPxjrhpnmeqUf
+         Qc7ENNM5sQCaQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5B39860ACA;
+        Mon, 28 Jun 2021 22:50:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: phy: at803x: mask 1000 Base-X link mode
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162492060336.20914.6352883574180645313.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Jun 2021 22:50:03 +0000
+References: <20210627101607.79604-1-mail@david-bauer.net>
+In-Reply-To: <20210627101607.79604-1-mail@david-bauer.net>
+To:     David Bauer <mail@david-bauer.net>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Jun 2021 15:28:26 -0400
-Kurt Cancemi <kurt@x64architecture.com> wrote:
+Hello:
 
-> This patch changes the default behavior to enable RX and TX delays for
-> the PHY_INTERFACE_MODE_RGMII case by default.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-And why would we want that? I was under the impression that we have the
-_ID variants for enabling these delays.
+On Sun, 27 Jun 2021 12:16:07 +0200 you wrote:
+> AR8031/AR8033 have different status registers for copper
+> and fiber operation. However, the extended status register
+> is the same for both operation modes.
+> 
+> As a result of that, ESTATUS_1000_XFULL is set to 1 even when
+> operating in copper TP mode.
+> 
+> [...]
 
-Marek
+Here is the summary with links:
+  - net: phy: at803x: mask 1000 Base-X link mode
+    https://git.kernel.org/netdev/net/c/b856150c8098
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
