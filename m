@@ -2,95 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CEE73B68A7
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 20:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 516893B68AB
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 20:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235358AbhF1Srd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 14:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235322AbhF1Src (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 14:47:32 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51C3C061574
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 11:45:05 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id 7-20020a9d0d070000b0290439abcef697so19841506oti.2
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 11:45:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CaSXwSZ9lOhJ7Vg7wjpsjinwug5Z8Ow4GjREVcbjcLQ=;
-        b=HSLHEwwioiFdRLJuC9r/CJMHEdJhNpfb0oYGTKbExzJXvjKnzwz4RT3cpE8SUFK2Bk
-         mrCG80POlBZPyio+ybF3rQaUjUvEArcZPJYlnfMbef9SbEudiPMBDT47Bt1f5dx6CU7a
-         cX626t63fnZQ0S/3SIr2Akza9ggvo5HQYdU8zGk7Il5zrdEFBFzlVBFhtGZnyUiOY9If
-         F85b6Zbr+ryaR/Sbn38gfEnRANMfeUUO2kRe+cC0yzY9E8/PJ4oj4xOCDgCc82OTcQ2J
-         8SsX/o9v9guWdgHvDFi8lrLvkBWxf+3zQX7EvUjlkVRNWmGhVLdyYwIiJbUHkr4cO9eY
-         X6Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=CaSXwSZ9lOhJ7Vg7wjpsjinwug5Z8Ow4GjREVcbjcLQ=;
-        b=OSYjYhZ2MSvyr3pgQCTPT0EP6WJ5Tb/mjQCe/fiLMG0mmJVuPnMAGP8OlsBjLStT3p
-         op044Chr+1SDh3gRPY5mb2Ojto3Ek6pY5jH8xSGYpl8TzJVkEXaloW36GHgsJqmRMgVI
-         gj+kCenfBnGPr8k7tnrP/u5H5nSB4WR39LXB8lfcQaAZlziSmW/y+wuw8cbQtJ77OkF6
-         WtK8G51NR+ssKjeIIWJv7MYOLkDwedwRZDn2KSOUcdmhuM51ODdIvT91rJhRfQBT+4+g
-         h2wI8U9UhVq75PNNLTS+jbztsaey8a6GZrkTFKyU/usUu5rxCP2PcbOCkE6lhMbYVzNC
-         tNFw==
-X-Gm-Message-State: AOAM531NfOFLiqJCGv16g8T22SYORgMnuWeiwiG+KMOD1dZ9VwpXHdPi
-        tThNOqm0rFZhglg31QLXS24=
-X-Google-Smtp-Source: ABdhPJwSNVRkhoDvTkmGnhBwARbFiM8TX6anY+PcQCRzDghQ9f0H4JxHfXrKEWqeY1w6++CzWQTtDw==
-X-Received: by 2002:a05:6830:1f51:: with SMTP id u17mr879574oth.25.1624905905315;
-        Mon, 28 Jun 2021 11:45:05 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.38])
-        by smtp.googlemail.com with ESMTPSA id 35sm3531147oti.65.2021.06.28.11.45.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Jun 2021 11:45:05 -0700 (PDT)
-Subject: Re: [PATCH net v2] net: lwtunnel: handle MTU calculation in forwading
-To:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20210625162139.9067-1-vfedorenko@novek.ru>
- <afc66439-d288-c2ea-f129-c9833d8a4d89@gmail.com>
- <65961d37-9f7f-631c-2293-aa1193aca83b@novek.ru>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ffa948d1-3a19-ba02-26fb-c7f186d0e86c@gmail.com>
-Date:   Mon, 28 Jun 2021 12:45:02 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        id S233832AbhF1Ssn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 28 Jun 2021 14:48:43 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51084 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232350AbhF1Ssn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 14:48:43 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15SIZiZB030447
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 11:46:17 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 39ekwd8hcd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 11:46:17 -0700
+Received: from intmgw002.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 28 Jun 2021 11:46:15 -0700
+Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
+        id AAFA9CE63C65; Mon, 28 Jun 2021 11:46:11 -0700 (PDT)
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     <netdev@vger.kernel.org>, <richardcochran@gmail.com>
+CC:     <kernel-team@fb.com>
+Subject: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
+Date:   Mon, 28 Jun 2021 11:46:11 -0700
+Message-ID: <20210628184611.3024919-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <65961d37-9f7f-631c-2293-aa1193aca83b@novek.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: RVAVkrEEfrUmDXEW4PRxV6xkSNDzkuE9
+X-Proofpoint-ORIG-GUID: RVAVkrEEfrUmDXEW4PRxV6xkSNDzkuE9
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-06-28_14:2021-06-25,2021-06-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ priorityscore=1501 malwarescore=0 phishscore=0 mlxlogscore=915 mlxscore=0
+ adultscore=0 suspectscore=0 bulkscore=0 spamscore=0 impostorscore=0
+ clxscore=1034 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106280122
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/26/21 3:41 PM, Vadim Fedorenko wrote:
->>
->> I think this is the right approach - tunnel overhead should always be
->> considered for the mtu. Did you run the pmtu.sh selftests to make sure
->> those still work?
->>
-> 
-> Actually not, I was running my own tests of routing configurations with
-> different types of tunnels like GRE, GUE and FOU with mpls lwtunnels to
-> check consistency of calculated mtus.
-> 
-> Will re-run pmtu.sh but I my installation doesn't support OVS right now.
-> 
-> Also, I was thinking about this RTAX_MTU and I'm really in doubt. Do we
-> actually want the situation when
->   ip route A.B.C.D/32 encap mpls 100 dev ip6tnl1 mtu 1400
-> will actually require mtu=1396? Because this looks like not clear for
-> users I suppose.
+This event differs from CLOCK_EXTTS in two ways:
 
-It is simpler and cleaner to me for the stack to always subtract known
-tunnel overhead from the MTU and not expect users to do the math which
-is why I responded as this is the right approach.
+ 1) The caller provides the sec/nsec fields directly, instead of
+    needing to convert them from the timestamp field.
+
+ 2) A 32 bit data field is attached to the event, which is returned
+    to userspace, which allows returning timestamped data information.
+    This may be used for things like returning the phase difference
+    between two time sources.
+
+For discussion:
+
+The data field is returned as rsv[0], which is part of the current UAPI.
+Arguably, this should be renamed, and possibly a flag value set in the
+'struct ptp_extts_event' indicating field validity.
+
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+---
+ drivers/ptp/ptp_clock.c          | 27 +++++++++++++++++++++++++++
+ include/linux/ptp_clock_kernel.h |  3 +++
+ 2 files changed, 30 insertions(+)
+
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index 841d8900504d..c176fa82df85 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -63,6 +63,28 @@ static void enqueue_external_timestamp(struct timestamp_event_queue *queue,
+ 	spin_unlock_irqrestore(&queue->lock, flags);
+ }
+ 
++static void enqueue_external_usr_timestamp(struct timestamp_event_queue *queue,
++					   struct ptp_clock_event *src)
++{
++	struct ptp_extts_event *dst;
++	unsigned long flags;
++
++	spin_lock_irqsave(&queue->lock, flags);
++
++	dst = &queue->buf[queue->tail];
++	dst->index = src->index;
++	dst->t.sec = src->pps_times.ts_real.tv_sec;
++	dst->t.nsec = src->pps_times.ts_real.tv_nsec;
++	dst->rsv[0] = src->data;
++
++	if (!queue_free(queue))
++		queue->head = (queue->head + 1) % PTP_MAX_TIMESTAMPS;
++
++	queue->tail = (queue->tail + 1) % PTP_MAX_TIMESTAMPS;
++
++	spin_unlock_irqrestore(&queue->lock, flags);
++}
++
+ /* posix clock implementation */
+ 
+ static int ptp_clock_getres(struct posix_clock *pc, struct timespec64 *tp)
+@@ -311,6 +333,11 @@ void ptp_clock_event(struct ptp_clock *ptp, struct ptp_clock_event *event)
+ 		wake_up_interruptible(&ptp->tsev_wq);
+ 		break;
+ 
++	case PTP_CLOCK_EXTTSUSR:
++		enqueue_external_usr_timestamp(&ptp->tsevq, event);
++		wake_up_interruptible(&ptp->tsev_wq);
++		break;
++
+ 	case PTP_CLOCK_PPS:
+ 		pps_get_ts(&evt);
+ 		pps_event(ptp->pps_source, &evt, PTP_PPS_EVENT, NULL);
+diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+index aba237c0b3a2..ef1aa788350e 100644
+--- a/include/linux/ptp_clock_kernel.h
++++ b/include/linux/ptp_clock_kernel.h
+@@ -166,6 +166,7 @@ enum ptp_clock_events {
+ 	PTP_CLOCK_EXTTS,
+ 	PTP_CLOCK_PPS,
+ 	PTP_CLOCK_PPSUSR,
++	PTP_CLOCK_EXTTSUSR,
+ };
+ 
+ /**
+@@ -175,6 +176,7 @@ enum ptp_clock_events {
+  * @index: Identifies the source of the event.
+  * @timestamp: When the event occurred (%PTP_CLOCK_EXTTS only).
+  * @pps_times: When the event occurred (%PTP_CLOCK_PPSUSR only).
++ * @data: Extra data for event (%PTP_CLOCK_EXTTSUSR only).
+  */
+ 
+ struct ptp_clock_event {
+@@ -184,6 +186,7 @@ struct ptp_clock_event {
+ 		u64 timestamp;
+ 		struct pps_event_time pps_times;
+ 	};
++	unsigned int data;
+ };
+ 
+ /**
+-- 
+2.30.2
+
