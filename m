@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F4A3B6AB4
+	by mail.lfdr.de (Postfix) with ESMTP id A00913B6AB5
 	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 00:01:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238006AbhF1WDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 18:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52582 "EHLO
+        id S238092AbhF1WD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 18:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237157AbhF1WDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 18:03:11 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2599EC061574
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:44 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bu12so32605759ejb.0
+        with ESMTP id S236827AbhF1WDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 18:03:12 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1210CC061767
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:45 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id w13so22291519edc.0
         for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 15:00:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Jem2EutGvuK7ZAi4ooTGiXUOEEFNnBNXpCnfc2RJP6c=;
-        b=LptZCoB8mff7/j/j+TQ7ijHXE5wij1BZwSvlOWsdZEUd2GJBKFlXkvtl0VLM61j2/s
-         8YdVEgk4QEZrrtKVmZ3MoiOEPtr7N5q5ezJSsMeFIR3Qj1evtutp1AHjtVdkzamLf3qa
-         Yjct1i6Z6U2sYeKEhndczf1r5WLKjXYc+Tj5X2gq1oPwJ+RfOt61erZVSE0gsIsBh+Ss
-         dbsOSbhH+6xVadjZ/FINlv0mskyB277pNdtJkPQbPJcyPYLFNMuThy9iGKY+Ff54DOFa
-         cJVrsArJ7qvKuzj7uE/J3xL3E4O7FLn/o0CUctIlUxP6Z2viGrjRj7pjfgvif2CpTYw6
-         GWtQ==
+        bh=3CRcEaN0Bg+xQgzR5B59tpxXfhAiXab1BE8fXxf/L7k=;
+        b=jn5xJmiNdoN6KAjqGkM51cGC79topffl8hOvskITt+5O844KhoStE2l7zyPxmFRtiQ
+         CoW0h4EMPCmh+zi/dP5sbSbrzFQMCowQ74tti3WXGMhIYKt7SLuRMtJHRk2wcliIE+RC
+         T/lAzRnZkjolajVR5qYNG22c0J/To2/t33gpUcdniKpzdn7WuXdOxQlpEX8nGjax+i0G
+         rKyW9rBp+fwoUnt9YL7MMT0H1pEQPEMUatdjoPG5qkuBo8f1GwFUvzCxcm0x3bBUhLAk
+         sXDrGBQjEAGSaQo4pjVU7CRFdQdgSblpLLvgl6MTpszVGb13vuWPa84bpQTbIiDmUNPV
+         QBNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Jem2EutGvuK7ZAi4ooTGiXUOEEFNnBNXpCnfc2RJP6c=;
-        b=pqUUGFSrawWsO0ANd5j5KxLc/rC+WM57NhHADt9jfGwH5jasIlc5anNlwRYRBq8rUJ
-         XaGeNy5vmGWioXJO92nKyboOdNO9RLxi5UCwF/MWSC4A4xzHve5SWM6lfr3TURSMy8t8
-         vCtPDWxNcajg1thJwd8IHeXuJ/qxM1JYy776yQ2CpSmYvNWMTjjwaxR15otIUj4fAaKg
-         QJkM0b7V64oVB88mZxoKbFjMGws9EwJGkMgqWuo8vJEW+9C/RxqiPZQXKxyUKhUC2qQw
-         lPYku1+/9uR9mBq8XosNRPn1LSE/itLy7ZqzQXQ+bvW0h0XEYHfaCwUAcKEKZ3mj+R0o
-         PNhQ==
-X-Gm-Message-State: AOAM531qABzGrYBEdmsGnRGjBRTA6LUa315VyncJCOH71defb3kbgQJi
-        B2D7lBgvnhlQcffWNOli2Aw4DSuqLHk=
-X-Google-Smtp-Source: ABdhPJx7VPLLIHaVwXpcAiNTYzZjLpS/fAwCmhgNLiKj4qDcICafFOLh4gENGlqndDRvTYwNRs775Q==
-X-Received: by 2002:a17:907:1610:: with SMTP id hb16mr25935682ejc.147.1624917642589;
-        Mon, 28 Jun 2021 15:00:42 -0700 (PDT)
+        bh=3CRcEaN0Bg+xQgzR5B59tpxXfhAiXab1BE8fXxf/L7k=;
+        b=bkhnK1fGrvscOK201WzIP0W5F44vdC9iHhy0cfEEuZVOY+hSuR44nvs6ve18ZwAlRD
+         9f1sAg84Q7GjWdKw9lfUGKWwqLSFwGmJhBLEKBQwXQ5kBlol9RCL/Ap0XjgFkq1Zsh30
+         RZMz5tv4z+6txRWysOrEW396nTYmqauS1Xmt7+TAE4aoyucHqNU2tZulTRhudNAsV3VO
+         krIPuTbW+sKvg9UyGyaOfHf4kNmUwLe56zSXIw8uCTnb6cdT/D8VD6ZLpJ6l8tJ4oOMD
+         bcA/B6eHm2O5PaoeePmgd3qFROC28jGfU+LenaEeLh0MzsV/aZtCsJH4ps/Cc+LHVyy7
+         tGcg==
+X-Gm-Message-State: AOAM530QQe6l39OH5Xgp6K52A9/oLa4Hump0n/Is4KvzxskZ6k0AedlP
+        Bqvq+PMz7LJl7WjWy5X7OfXYonDYX2Y=
+X-Google-Smtp-Source: ABdhPJxdNBYJQRyMh6W+ppR+Cj7VhHugNiu+ulM1BZAcli/K8CWkqC3rpqmffSX0wUnDwlcYdeCFbg==
+X-Received: by 2002:a05:6402:27d1:: with SMTP id c17mr35672719ede.17.1624917643557;
+        Mon, 28 Jun 2021 15:00:43 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id dn7sm10146615edb.29.2021.06.28.15.00.41
+        by smtp.gmail.com with ESMTPSA id dn7sm10146615edb.29.2021.06.28.15.00.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Jun 2021 15:00:42 -0700 (PDT)
+        Mon, 28 Jun 2021 15:00:43 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -58,9 +58,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v4 net-next 08/14] net: dsa: reference count the FDB addresses at the cross-chip notifier level
-Date:   Tue, 29 Jun 2021 01:00:05 +0300
-Message-Id: <20210628220011.1910096-9-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 09/14] net: dsa: install the host MDB and FDB entries in the master's RX filter
+Date:   Tue, 29 Jun 2021 01:00:06 +0300
+Message-Id: <20210628220011.1910096-10-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210628220011.1910096-1-olteanv@gmail.com>
 References: <20210628220011.1910096-1-olteanv@gmail.com>
@@ -72,192 +72,88 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The same concerns expressed for host MDB entries are valid for host FDBs
-just as well:
+If the DSA master implements strict address filtering, then the unicast
+and multicast addresses kept by the DSA CPU ports should be synchronized
+with the address lists of the DSA master.
 
-- in the case of multiple bridges spanning the same switch chip, deleting
-  a host FDB entry that belongs to one bridge will result in breakage to
-  the other bridge
-- not deleting FDB entries across DSA links means that the switch's
-  hardware tables will eventually run out, given enough wear&tear
-
-So do the same thing and introduce reference counting for CPU ports and
-DSA links using the same data structures as we have for MDB entries.
+Note that we want the synchronization of the master's address lists even
+if the DSA switch doesn't support unicast/multicast database operations,
+on the premises that the packets will be flooded to the CPU in that
+case, and we should still instruct the master to receive them.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/net/dsa.h |  1 +
- net/dsa/dsa2.c    |  6 ++++
- net/dsa/switch.c  | 88 +++++++++++++++++++++++++++++++++++++++++++----
- 3 files changed, 88 insertions(+), 7 deletions(-)
+ net/dsa/port.c | 32 ++++++++++++++++++++++++++++----
+ 1 file changed, 28 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 2c50546f9667..33f40c1ec379 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -288,6 +288,7 @@ struct dsa_port {
- 	/* List of MAC addresses that must be forwarded on this port.
- 	 * These are only valid on CPU ports and DSA links.
- 	 */
-+	struct list_head	fdbs;
- 	struct list_head	mdbs;
- 
- 	bool setup;
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 2035d132682f..185629f27f80 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -348,6 +348,7 @@ static int dsa_port_setup(struct dsa_port *dp)
- 	if (dp->setup)
- 		return 0;
- 
-+	INIT_LIST_HEAD(&dp->fdbs);
- 	INIT_LIST_HEAD(&dp->mdbs);
- 
- 	switch (dp->type) {
-@@ -471,6 +472,11 @@ static void dsa_port_teardown(struct dsa_port *dp)
- 		break;
- 	}
- 
-+	list_for_each_entry_safe(a, tmp, &dp->fdbs, list) {
-+		list_del(&a->list);
-+		kfree(a);
-+	}
-+
- 	list_for_each_entry_safe(a, tmp, &dp->mdbs, list) {
- 		list_del(&a->list);
- 		kfree(a);
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index af1edb6082df..b872a9c92d3e 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -256,6 +256,71 @@ static int dsa_switch_do_mdb_del(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
-+static int dsa_switch_do_fdb_add(struct dsa_switch *ds, int port,
-+				 const unsigned char *addr, u16 vid)
-+{
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct dsa_mac_addr *a;
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 1b80e0fbdfaa..255172a8599a 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -655,8 +655,14 @@ int dsa_port_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ 		.addr = addr,
+ 		.vid = vid,
+ 	};
++	struct dsa_port *cpu_dp = dp->cpu_dp;
 +	int err;
 +
-+	/* No need to bother with refcounting for user ports */
-+	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
-+		return ds->ops->port_fdb_add(ds, port, addr, vid);
-+
-+	a = dsa_mac_addr_find(&dp->fdbs, addr, vid);
-+	if (a) {
-+		refcount_inc(&a->refcount);
-+		return 0;
-+	}
-+
-+	a = kzalloc(sizeof(*a), GFP_KERNEL);
-+	if (!a)
-+		return -ENOMEM;
-+
-+	err = ds->ops->port_fdb_add(ds, port, addr, vid);
-+	if (err) {
-+		kfree(a);
++	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_ADD, &info);
++	if (err)
 +		return err;
-+	}
-+
-+	ether_addr_copy(a->addr, addr);
-+	a->vid = vid;
-+	refcount_set(&a->refcount, 1);
-+	list_add_tail(&a->list, &dp->fdbs);
-+
-+	return 0;
-+}
-+
-+static int dsa_switch_do_fdb_del(struct dsa_switch *ds, int port,
-+				 const unsigned char *addr, u16 vid)
-+{
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct dsa_mac_addr *a;
+ 
+-	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_ADD, &info);
++	return dev_uc_add(cpu_dp->master, addr);
+ }
+ 
+ int dsa_port_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+@@ -668,8 +674,14 @@ int dsa_port_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+ 		.addr = addr,
+ 		.vid = vid,
+ 	};
++	struct dsa_port *cpu_dp = dp->cpu_dp;
 +	int err;
 +
-+	/* No need to bother with refcounting for user ports */
-+	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
-+		return ds->ops->port_fdb_del(ds, port, addr, vid);
-+
-+	a = dsa_mac_addr_find(&dp->fdbs, addr, vid);
-+	if (!a)
-+		return -ENOENT;
-+
-+	if (!refcount_dec_and_test(&a->refcount))
-+		return 0;
-+
-+	err = ds->ops->port_fdb_del(ds, port, addr, vid);
-+	if (err) {
-+		refcount_inc(&a->refcount);
++	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_DEL, &info);
++	if (err)
 +		return err;
-+	}
-+
-+	list_del(&a->list);
-+	kfree(a);
-+
-+	return 0;
-+}
-+
- static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
- 				   struct dsa_notifier_fdb_info *info)
- {
-@@ -268,7 +333,7 @@ static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
- 	for (port = 0; port < ds->num_ports; port++) {
- 		if (dsa_switch_host_address_match(ds, port, info->sw_index,
- 						  info->port)) {
--			err = ds->ops->port_fdb_add(ds, port, info->addr,
-+			err = dsa_switch_do_fdb_add(ds, port, info->addr,
- 						    info->vid);
- 			if (err)
- 				break;
-@@ -281,14 +346,23 @@ static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
- static int dsa_switch_host_fdb_del(struct dsa_switch *ds,
- 				   struct dsa_notifier_fdb_info *info)
- {
-+	int err = 0;
-+	int port;
-+
- 	if (!ds->ops->port_fdb_del)
- 		return -EOPNOTSUPP;
  
--	if (ds->index == info->sw_index)
--		return ds->ops->port_fdb_del(ds, info->port, info->addr,
--					     info->vid);
-+	for (port = 0; port < ds->num_ports; port++) {
-+		if (dsa_switch_host_address_match(ds, port, info->sw_index,
-+						  info->port)) {
-+			err = dsa_switch_do_fdb_del(ds, port, info->addr,
-+						    info->vid);
-+			if (err)
-+				break;
-+		}
-+	}
- 
--	return 0;
-+	return err;
+-	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_DEL, &info);
++	return dev_uc_del(cpu_dp->master, addr);
  }
  
- static int dsa_switch_fdb_add(struct dsa_switch *ds,
-@@ -299,7 +373,7 @@ static int dsa_switch_fdb_add(struct dsa_switch *ds,
- 	if (!ds->ops->port_fdb_add)
- 		return -EOPNOTSUPP;
+ int dsa_port_fdb_dump(struct dsa_port *dp, dsa_fdb_dump_cb_t *cb, void *data)
+@@ -715,8 +727,14 @@ int dsa_port_host_mdb_add(const struct dsa_port *dp,
+ 		.port = dp->index,
+ 		.mdb = mdb,
+ 	};
++	struct dsa_port *cpu_dp = dp->cpu_dp;
++	int err;
++
++	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_ADD, &info);
++	if (err)
++		return err;
  
--	return ds->ops->port_fdb_add(ds, port, info->addr, info->vid);
-+	return dsa_switch_do_fdb_add(ds, port, info->addr, info->vid);
+-	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_ADD, &info);
++	return dev_mc_add(cpu_dp->master, mdb->addr);
  }
  
- static int dsa_switch_fdb_del(struct dsa_switch *ds,
-@@ -310,7 +384,7 @@ static int dsa_switch_fdb_del(struct dsa_switch *ds,
- 	if (!ds->ops->port_fdb_del)
- 		return -EOPNOTSUPP;
+ int dsa_port_host_mdb_del(const struct dsa_port *dp,
+@@ -727,8 +745,14 @@ int dsa_port_host_mdb_del(const struct dsa_port *dp,
+ 		.port = dp->index,
+ 		.mdb = mdb,
+ 	};
++	struct dsa_port *cpu_dp = dp->cpu_dp;
++	int err;
++
++	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_DEL, &info);
++	if (err)
++		return err;
  
--	return ds->ops->port_fdb_del(ds, port, info->addr, info->vid);
-+	return dsa_switch_do_fdb_del(ds, port, info->addr, info->vid);
+-	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_DEL, &info);
++	return dev_mc_del(cpu_dp->master, mdb->addr);
  }
  
- static int dsa_switch_hsr_join(struct dsa_switch *ds,
+ int dsa_port_vlan_add(struct dsa_port *dp,
 -- 
 2.25.1
 
