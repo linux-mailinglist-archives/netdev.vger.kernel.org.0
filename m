@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1328A3B5C01
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 12:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65F0E3B5C05
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 12:04:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232572AbhF1KF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 06:05:56 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:21092 "EHLO
+        id S232732AbhF1KGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 06:06:09 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:21234 "EHLO
         mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232633AbhF1KFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 06:05:52 -0400
+        with ESMTP id S232633AbhF1KGF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 06:06:05 -0400
 Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 94D4277F63;
-        Mon, 28 Jun 2021 13:03:24 +0300 (MSK)
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 20D8975B70;
+        Mon, 28 Jun 2021 13:03:38 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1624874604;
-        bh=ibZigA0Xq1+KjDu6j4caIPoF9+c2+D7q+y3WIsHFS+k=;
+        s=mail202102; t=1624874618;
+        bh=ftVlHUQVi6Hz3lGl9ZJhrGsPguZLGSjfejDA2sUFwxE=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=WukXIki6XMW/8Gjk0qUtk8pu7ckalqQwh9E8eiBXEzG7vGvh3wV23oO26i6Qj9mHf
-         fRafSrz5/YIJmePzYXYgGta9l9ad2RP1WybDhgMBh2YFaYdMX+xKtX/yr1Fnp7Gp4X
-         6FlTw5DrjPHz5Ku8DFRpOjIhHmuvLzoVZkIfrAMDKL4qJHdw+1fH8PZP4xvxKqL0Hp
-         JWOaQkVrvqas1VodJmdq88J5zfllww/QTcMYB/kbwRXYFo2ajkmw3LTbM19H35/sa8
-         bMeK8KGHBGcG/usdbSwIlOFrzQm7w0BfXXmi5lsWDmF117c01fqgfY2NTNMOxFq0XG
-         SQxewL2Q2vMzw==
+        b=ToiZzfh38MkFb2NPzyjZYhRTJGxKvJGBaXK6hc1S0hBLL7tdeHdCXNFotBk257fdA
+         NPwePOVvUiRw4rZQaIj2ce+pOE9wFlPytlbmOyXtV1TjfR4FHUjZgMy0XDhU6Zjuh4
+         XgavYu4cnJTDDm1UDjVe7qTQ4lnPa0HUPYLY04syWcaEnCOEDsyD68pjY6SUSMoqqS
+         Nbz+rOGVxbKLW4duHoZz4DlwfUK5VYaikwamJq0ImWy29cWRH3kDON7QC8hVc9bYK0
+         X4MH8y0ZLSzqzuVjxwOA9GU6joF08F7cudN1e7Lf18tPMLxVzuGSZGSUQL8n+REZ0y
+         jGmwsRE4l+0mA==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 53E5A77F5E;
-        Mon, 28 Jun 2021 13:03:24 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id DA63875B6D;
+        Mon, 28 Jun 2021 13:03:37 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Mon, 28
- Jun 2021 13:03:23 +0300
+ Jun 2021 13:03:37 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -41,23 +41,24 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
+        Jorgen Hansen <jhansen@vmware.com>,
         Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>
+        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <oxffffaa@gmail.com>
-Subject: [RFC PATCH v1 07/16] virtio/vsock: don't count EORs on receive
-Date:   Mon, 28 Jun 2021 13:03:15 +0300
-Message-ID: <20210628100318.570947-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v1 08/16] af_vsock: change SEQPACKET receive loop
+Date:   Mon, 28 Jun 2021 13:03:28 +0300
+Message-ID: <20210628100331.571056-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
 References: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -97,28 +98,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no sense to count EORs, because 'rx_bytes' is
-used to check data presence on socket.
+Receive "loop" now really loop: it reads fragments one by
+one, sleeping if queue is empty.
+
+NOTE: 'msg_ready' pointer is not passed to 'seqpacket_dequeue()'
+here - it change callback interface, so it is moved to next patch.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- net/vmw_vsock/virtio_transport_common.c | 3 ---
- 1 file changed, 3 deletions(-)
+ net/vmw_vsock/af_vsock.c | 31 ++++++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 84431d7a87a5..319c3345f3e0 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -1005,9 +1005,6 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
- 		goto out;
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 59ce35da2e5b..9552f05119f2 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -2003,6 +2003,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+ 				     size_t len, int flags)
+ {
+ 	const struct vsock_transport *transport;
++	bool msg_ready;
+ 	struct vsock_sock *vsk;
+ 	ssize_t record_len;
+ 	long timeout;
+@@ -2013,23 +2014,36 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+ 	transport = vsk->transport;
+ 
+ 	timeout = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
++	msg_ready = false;
++	record_len = 0;
+ 
+-	err = vsock_connectible_wait_data(sk, &wait, timeout, NULL, 0);
+-	if (err <= 0)
+-		goto out;
++	while (!msg_ready) {
++		ssize_t fragment_len;
++		int intr_err;
+ 
+-	record_len = transport->seqpacket_dequeue(vsk, msg, flags);
++		intr_err = vsock_connectible_wait_data(sk, &wait, timeout, NULL, 0);
++		if (intr_err <= 0) {
++			err = intr_err;
++			break;
++		}
+ 
+-	if (record_len < 0) {
+-		err = -ENOMEM;
+-		goto out;
++		fragment_len = transport->seqpacket_dequeue(vsk, msg, flags);
++
++		if (fragment_len < 0) {
++			err = -ENOMEM;
++			break;
++		}
++
++		record_len += fragment_len;
  	}
  
--	if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SEQ_EOR)
--		vvs->msg_count++;
--
- 	/* Try to copy small packets into the buffer of last packet queued,
- 	 * to avoid wasting memory queueing the entire buffer with a small
- 	 * payload.
+ 	if (sk->sk_err) {
+ 		err = -sk->sk_err;
+ 	} else if (sk->sk_shutdown & RCV_SHUTDOWN) {
+ 		err = 0;
+-	} else {
++	}
++
++	if (msg_ready && !err) {
+ 		/* User sets MSG_TRUNC, so return real length of
+ 		 * packet.
+ 		 */
+@@ -2045,7 +2059,6 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+ 			msg->msg_flags |= MSG_TRUNC;
+ 	}
+ 
+-out:
+ 	return err;
+ }
+ 
 -- 
 2.25.1
 
