@@ -2,100 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14EFF3B5639
-	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 02:16:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E0D93B56D8
+	for <lists+netdev@lfdr.de>; Mon, 28 Jun 2021 03:42:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231678AbhF1ASC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Jun 2021 20:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44890 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbhF1ASC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 20:18:02 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00F4C061574;
-        Sun, 27 Jun 2021 17:15:36 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id d12so13852037pgd.9;
-        Sun, 27 Jun 2021 17:15:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VZuXigR7cViPxOT07DRneZhTndTX7Fj6p6fDTv4kP8Q=;
-        b=gmUtWqSmrtkcw9/cvXq/DSN5fCGFmCdhAod5dOcElRSbdTpZMZWBXSzXctMoAxfuuH
-         eFR/illJn6tVQet6en3xgmCInx33P2HgRYqQwH2DMC2egOMspMvJmRmubVUOf8e3GxQp
-         RCBr/XGQjqYwe3Ak5WFE25OuKI6/EP9CyXy2j4M5HruBS3Hc8YtxQEaj+PLty5+ynOMx
-         0vZFKQvPGsy2JG3+whUGOnYbccRx89hNxv58+NALqiJIGe5nghyupTT/wvKqtTB/DiUP
-         O/HRN3vcyjBBO8nOftKZBspNHwXsnRqx9EkF0ESpJTfW6Q1Z6uFrNYS/V/AwYUXIbhMq
-         i6MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VZuXigR7cViPxOT07DRneZhTndTX7Fj6p6fDTv4kP8Q=;
-        b=a02Z8UX3mzsUCC1PLNRtH0vJPwaB1diEw7IY4iV4+k0csQMj3vEcM3teFJX7MucqZ9
-         m8E6PkA+Dyx4VNyy5RzEKxx0yDK6hDP6ocVheigO6woP4Y70jfFBX6ZrY5v9jZFObQKL
-         cTUZHqsrubNNNinGLRzzBdP07GFstEKH8maOx0y4XTFXNqa9B1ADrf9XoZyanmmdn5Lk
-         C6ex9yCcqVa1aMqMTtLDGJ03KPIbz8fY4Md0/2JTIfWZbjoRcg7he9cYD4Ahvf2l5vD6
-         oIDNDyWgzEYMfP9NeaerEvq6GJ8E2o6ErkvCHxRpdon66GW6l349uhPJ2r1T67Dqate1
-         zwbw==
-X-Gm-Message-State: AOAM530+W+uS93m6Amyua9JQ2nRKJw43AkjSrXhaeb7XeznjTX8q2TmP
-        zS3eYfiz5feSC2Rfz/k6VBo=
-X-Google-Smtp-Source: ABdhPJws2QhuGOY4Ocg5kOzw0hbRAPY1TXZ0N1TR1cnkc9ACDq+YGz7eOLgwaaIszXzanMiQl07HUw==
-X-Received: by 2002:a05:6a00:10cd:b029:30a:ea3a:4acf with SMTP id d13-20020a056a0010cdb029030aea3a4acfmr7760984pfu.51.1624839336176;
-        Sun, 27 Jun 2021 17:15:36 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w20sm13813106pff.90.2021.06.27.17.15.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Jun 2021 17:15:35 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Mon, 28 Jun 2021 08:14:42 +0800
-To:     Benjamin Poirier <benjamin.poirier@gmail.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC 01/19] staging: qlge: fix incorrect truesize accounting
-Message-ID: <20210628001442.7fl3v6to5dzr557a@Rk>
-References: <20210621134902.83587-1-coiby.xu@gmail.com>
- <20210621134902.83587-2-coiby.xu@gmail.com>
- <20210621141027.GJ1861@kadam>
- <20210622113649.vm2hfh2veqr4dq6y@Rk>
- <YNK+s9Rm7OtL++YM@d3>
- <20210624114705.ehmzmysl3vdylg3x@Rk>
+        id S231851AbhF1Boe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Jun 2021 21:44:34 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:5802 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231678AbhF1Boe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Jun 2021 21:44:34 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GCqw246HfzXk6j;
+        Mon, 28 Jun 2021 09:36:50 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 28 Jun 2021 09:42:07 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 28 Jun
+ 2021 09:42:06 +0800
+Subject: Re: [PATCH net-next v2 1/2] selftests/ptr_ring: add benchmark
+ application for ptr_ring
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Jason Wang <jasowang@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <brouer@redhat.com>, <paulmck@kernel.org>,
+        <peterz@infradead.org>, <will@kernel.org>, <shuah@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
+References: <1624591136-6647-1-git-send-email-linyunsheng@huawei.com>
+ <1624591136-6647-2-git-send-email-linyunsheng@huawei.com>
+ <ff47ed0b-332d-2772-d6e1-8277ac602c8c@redhat.com>
+ <3ba4a6f1-2e1e-8c1a-6f47-5d182f05d1cd@huawei.com>
+ <20210627020746-mutt-send-email-mst@kernel.org>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <684b4448-6102-dd62-d3e5-97170468683d@huawei.com>
+Date:   Mon, 28 Jun 2021 09:42:06 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210624114705.ehmzmysl3vdylg3x@Rk>
+In-Reply-To: <20210627020746-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 07:47:05PM +0800, Coiby Xu wrote:
->On Wed, Jun 23, 2021 at 01:55:15PM +0900, Benjamin Poirier wrote:
-[..]
->>>> Why is this an RFC instead of just a normal patch which we can apply?
+On 2021/6/27 14:09, Michael S. Tsirkin wrote:
+> On Fri, Jun 25, 2021 at 11:52:16AM +0800, Yunsheng Lin wrote:
+>> On 2021/6/25 11:36, Jason Wang wrote:
 >>>
->>>After doing the tests mentioned in the cover letter, I found Red Hat's
->>>network QE team has quite a rigorous test suite. But I needed to return the
->>>machine before having the time to learn about the test suite and run it by
->>>myself. So I mark it as an RFC before I borrow the machine again to run the
->>>test suite.
+>>> 在 2021/6/25 上午11:18, Yunsheng Lin 写道:
+>>>> Currently ptr_ring selftest is embedded within the virtio
+>>>> selftest, which involves some specific virtio operation,
+>>>> such as notifying and kicking.
+>>>>
+>>>> As ptr_ring has been used by various subsystems, it deserves
+>>>> it's owner's selftest in order to benchmark different usecase
+>>>> of ptr_ring, such as page pool and pfifo_fast qdisc.
+>>>>
+>>>> So add a simple application to benchmark ptr_ring performance.
+>>>> Currently two test mode is supported:
+>>>> Mode 0: Both enqueuing and dequeuing is done in a single thread,
+>>>>          it is called simple test mode in the test app.
+>>>> Mode 1: Enqueuing and dequeuing is done in different thread
+>>>>          concurrently, also known as SPSC(single-producer/
+>>>>          single-consumer) test.
+>>>>
+>>>> The multi-producer/single-consumer test for pfifo_fast case is
+>>>> not added yet, which can be added if using CAS atomic operation
+>>>> to enable lockless multi-producer is proved to be better than
+>>>> using r->producer_lock.
+>>>>
+>>>> Only supported on x86 and arm64 for now.
+>>>>
+>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>>>> ---
+>>>>   MAINTAINERS                                      |   5 +
+>>>>   tools/testing/selftests/ptr_ring/Makefile        |   6 +
+>>>>   tools/testing/selftests/ptr_ring/ptr_ring_test.c | 249 +++++++++++++++++++++++
+>>>>   tools/testing/selftests/ptr_ring/ptr_ring_test.h | 150 ++++++++++++++
+>>>>   4 files changed, 410 insertions(+)
+>>>
+>>>
+>>> Why can't you simply reuse tools/virtio/ringtest?
 >>
->>Interesting. Is this test suite based on a public project?
->
->The test suite is written for Beaker [1] but it seems it's not public.
->
->[1] https://fedoraproject.org/wiki/QA/Beaker
+>> The main reason is stated in the commit log:
+>> "Currently ptr_ring selftest is embedded within the virtio
+>> selftest, which involves some specific virtio operation,
+>> such as notifying and kicking.
+>>
+>> As ptr_ring has been used by various subsystems, it deserves
+>> it's owner's selftest in order to benchmark different usecase
+>> of ptr_ring, such as page pool and pfifo_fast qdisc."
+>>
+>> More specificly in tools/virtio/ringtest/main.c and
+>> tools/virtio/ringtest/ptr_ring.c, there are a lot of operation
+>> related to virtio usecase, such as start_guest(), start_host(),
+>> poll_used(), notify() or kick() ....., so it makes more sense
+>> to add a generic selftest for ptr ring as it is not only used
+>> by virtio now.
+> 
+> 
+> Okay that answers why you didn't just run main.c
+> but why not add a new test under tools/virtio/ringtest/
+> reusing the rest of infrastructure that you currently copied?
 
-FYI, the tier-1 tests are part of the CKI project and are public [2].
+Actually, my first attempt was to reuse the infrastructure in
+tools/virtio/ or tools/virtio/ringtest/, and neither of them
+was able to be compiled in the latest kernel.
 
-[2] https://gitlab.com/cki-project/kernel-tests/-/tree/main/networking
+And then I read through the code to try fixing the compile error,
+I found that the testcase under tools/virtio/ is coupled deeply
+to virtio as explained above, which was difficult to read for
+someone who is not fimiliar with virtio.
 
--- 
-Best regards,
-Coiby
+So I searched for how testing is supposed to be added in the kernel,
+it seems it is more common to add the testing in tools/testing or
+tools/testing/selftest, and ptr ring is not only used by virtio now,
+so it seems more appropriate to add a sperate testing for virtio by
+instinct.
+
+Most of tools/virtio/ is to do testing related to virtio testing, IMHO,
+most of them are better to be in tools/testing/selftest. Even if most of
+virtio testing is moved to tools/testing/selftest, I think it makes more
+sense to decouple the virtio testing to ptr_ring testing too if we can
+find some mechanism to share the abstract infrastructure in ptr_ring_test.h
+for both virtio and ptr_ring testing.
+
+
+> 
+>>
+>>>
+>>> Thanks
+>>>
+>>>
+>>> .
+>>>
+> 
+> 
+> .
+> 
+
