@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70E673B757C
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 17:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7E653B7581
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 17:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234913AbhF2Pdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 11:33:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21430 "EHLO
+        id S234853AbhF2Pdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 11:33:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32175 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235126AbhF2PdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 11:33:11 -0400
+        by vger.kernel.org with ESMTP id S235054AbhF2PdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 11:33:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624980642;
+        s=mimecast20190719; t=1624980651;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=e5hTg1Q/xXLKrkoT71WaE5GWdRVD1c/vjjK2SiKdshc=;
-        b=UYdO7rfQDtbk3/BmMsV+vaBYyPp5oUwheaqe7keyHrRwH/0dzEYcj2sq+0XupftQwvcmi4
-        6dFjjvhLhG1Jrofa7DmOi83cWJYQVmQECjDfhIEXBFB2y6oTsGTqUWcE59rT6ShN3S2Ki8
-        cQ6OkY892RIFY724ZGdzNQnR5bJXo6U=
+        bh=Th3vaV2j817/WDzJbZssbF/Balmf7wt+58Irkccy28s=;
+        b=EobHfkf3xW9bbcD2rzr3+kS81yGtr6ANuzdMIgH8StPwaDYehznHVFM/Vgz/Rc6KWeaio2
+        iD1oEmmXwzEqR1kZ3Ra32PLnejbUWVND5uqZwX0D93VY5MkaacEDzDuOeZvyGFyB3ZKAcn
+        g/0Udw8LvGdkPOKx6e0Akf+eQURMpNk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-478-7pFQ2xHxNuycWqoldtqxqA-1; Tue, 29 Jun 2021 11:30:40 -0400
-X-MC-Unique: 7pFQ2xHxNuycWqoldtqxqA-1
+ us-mta-282-pJLjhAeOOoyzK9YxMKT_sA-1; Tue, 29 Jun 2021 11:30:49 -0400
+X-MC-Unique: pJLjhAeOOoyzK9YxMKT_sA-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A46B100C609;
-        Tue, 29 Jun 2021 15:30:35 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 662EF804140;
+        Tue, 29 Jun 2021 15:30:44 +0000 (UTC)
 Received: from virtlab719.virt.lab.eng.bos.redhat.com (virtlab719.virt.lab.eng.bos.redhat.com [10.19.153.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A0300604CC;
-        Tue, 29 Jun 2021 15:30:31 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 52421604CC;
+        Tue, 29 Jun 2021 15:30:35 +0000 (UTC)
 From:   Nitesh Narayan Lal <nitesh@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
@@ -58,9 +58,9 @@ To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
         somnath.kotur@broadcom.com, nilal@redhat.com,
         tatyana.e.nikolova@intel.com, mustafa.ismail@intel.com,
         ahs3@redhat.com, leonro@nvidia.com
-Subject: [PATCH v2 13/14] net/mlx5: Use irq_update_affinity_hint
-Date:   Tue, 29 Jun 2021 11:27:45 -0400
-Message-Id: <20210629152746.2953364-14-nitesh@redhat.com>
+Subject: [PATCH v2 14/14] net/mlx4: Use irq_update_affinity_hint
+Date:   Tue, 29 Jun 2021 11:27:46 -0400
+Message-Id: <20210629152746.2953364-15-nitesh@redhat.com>
 In-Reply-To: <20210629152746.2953364-1-nitesh@redhat.com>
 References: <20210629152746.2953364-1-nitesh@redhat.com>
 MIME-Version: 1.0
@@ -84,33 +84,36 @@ that only updates the affinity_hint pointer.
 Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
 Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/eq.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index c3373fb1cd7f..a1b9434f4e25 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -276,8 +276,8 @@ static int set_comp_irq_affinity_hint(struct mlx5_core_dev *mdev, int i)
- 	cpumask_set_cpu(cpumask_local_spread(i, mdev->priv.numa_node),
- 			irq->mask);
- 	if (IS_ENABLED(CONFIG_SMP) &&
--	    irq_set_affinity_hint(irqn, irq->mask))
--		mlx5_core_warn(mdev, "irq_set_affinity_hint failed, irq 0x%.4x",
-+	    irq_update_affinity_hint(irqn, irq->mask))
-+		mlx5_core_warn(mdev, "irq_update_affinity_hint failed, irq 0x%.4x",
- 			       irqn);
+diff --git a/drivers/net/ethernet/mellanox/mlx4/eq.c b/drivers/net/ethernet/mellanox/mlx4/eq.c
+index 9e48509ed3b2..414e390e6b48 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx4/eq.c
+@@ -244,9 +244,9 @@ static void mlx4_set_eq_affinity_hint(struct mlx4_priv *priv, int vec)
+ 	    cpumask_empty(eq->affinity_mask))
+ 		return;
  
- 	return 0;
-@@ -291,7 +291,7 @@ static void clear_comp_irq_affinity_hint(struct mlx5_core_dev *mdev, int i)
- 
- 	irq = mlx5_irq_get(mdev, vecidx);
- 	irqn = pci_irq_vector(mdev->pdev, vecidx);
--	irq_set_affinity_hint(irqn, NULL);
-+	irq_update_affinity_hint(irqn, NULL);
- 	free_cpumask_var(irq->mask);
+-	hint_err = irq_set_affinity_hint(eq->irq, eq->affinity_mask);
++	hint_err = irq_update_affinity_hint(eq->irq, eq->affinity_mask);
+ 	if (hint_err)
+-		mlx4_warn(dev, "irq_set_affinity_hint failed, err %d\n", hint_err);
++		mlx4_warn(dev, "irq_update_affinity_hint failed, err %d\n", hint_err);
  }
+ #endif
  
+@@ -1123,9 +1123,7 @@ static void mlx4_free_irqs(struct mlx4_dev *dev)
+ 	for (i = 0; i < dev->caps.num_comp_vectors + 1; ++i)
+ 		if (eq_table->eq[i].have_irq) {
+ 			free_cpumask_var(eq_table->eq[i].affinity_mask);
+-#if defined(CONFIG_SMP)
+-			irq_set_affinity_hint(eq_table->eq[i].irq, NULL);
+-#endif
++			irq_update_affinity_hint(eq_table->eq[i].irq, NULL);
+ 			free_irq(eq_table->eq[i].irq, eq_table->eq + i);
+ 			eq_table->eq[i].have_irq = 0;
+ 		}
 -- 
 2.27.0
 
