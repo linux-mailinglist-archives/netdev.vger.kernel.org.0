@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 491783B7524
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 17:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9069A3B752D
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 17:28:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234785AbhF2Pas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 11:30:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43548 "EHLO
+        id S234828AbhF2PbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 11:31:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40970 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234750AbhF2Pao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 11:30:44 -0400
+        by vger.kernel.org with ESMTP id S234823AbhF2Pa4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 11:30:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624980497;
+        s=mimecast20190719; t=1624980509;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=N8wP6BsQSgIxIz90ef3XyPwo0st6suyyqCq5ch5Qh4g=;
-        b=hzl3/COuISZZWV4HqP/ouJa8yopZEc/Ef0CcjYuao/56ZkgkZ4ck+H0yVCz/v8nzHTMaiz
-        u1qAlP66xytfKR9uvtf6+YAuN0F92gXg5yclCJeIdZ796XLROgUSlmRPrHly3YflTFv1Rg
-        U4Jga9MjQwflqS0MoprDA+ObY2eSykE=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=v4yUPdtpOJEcweWgkTfPnmAZIWcrOmFAWUYkxKtZ/fo=;
+        b=c42bJMGnmIVqVr/O8sl/nEc+0LVhE6SMl7qfhKL5ZGo/GdIltZt6n+I15sVjfnjBX/gMf6
+        eQekNJj5zEqV4XrDjAzn/EbLwljmTSZAAA2VVqSaMhrESCEZ163r5v7rVu2g2FcV7S0Cxc
+        Gjwi+Y913uo73XiARCEFCmTjKJHigQg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-8-DLlo7hvoNI2qT5BKPqO6ZQ-1; Tue, 29 Jun 2021 11:28:15 -0400
-X-MC-Unique: DLlo7hvoNI2qT5BKPqO6ZQ-1
+ us-mta-424-XIzoBdyXP4GXO5ynXFATzA-1; Tue, 29 Jun 2021 11:28:26 -0400
+X-MC-Unique: XIzoBdyXP4GXO5ynXFATzA-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D36BD9126D;
-        Tue, 29 Jun 2021 15:28:09 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B0761100CCCA;
+        Tue, 29 Jun 2021 15:28:21 +0000 (UTC)
 Received: from virtlab719.virt.lab.eng.bos.redhat.com (virtlab719.virt.lab.eng.bos.redhat.com [10.19.153.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 36381604CC;
-        Tue, 29 Jun 2021 15:27:56 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EA9CC69CB7;
+        Tue, 29 Jun 2021 15:28:09 +0000 (UTC)
 From:   Nitesh Narayan Lal <nitesh@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
@@ -57,9 +58,11 @@ To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
         somnath.kotur@broadcom.com, nilal@redhat.com,
         tatyana.e.nikolova@intel.com, mustafa.ismail@intel.com,
         ahs3@redhat.com, leonro@nvidia.com
-Subject: [PATCH v2 00/14] genirq: Cleanup the usage of irq_set_affinity_hint
-Date:   Tue, 29 Jun 2021 11:27:32 -0400
-Message-Id: <20210629152746.2953364-1-nitesh@redhat.com>
+Subject: [PATCH v2 01/14] genirq: Provide new interfaces for affinity hints
+Date:   Tue, 29 Jun 2021 11:27:33 -0400
+Message-Id: <20210629152746.2953364-2-nitesh@redhat.com>
+In-Reply-To: <20210629152746.2953364-1-nitesh@redhat.com>
+References: <20210629152746.2953364-1-nitesh@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
@@ -67,138 +70,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The drivers currently rely on irq_set_affinity_hint() to either set the
-affinity_hint that is consumed by the userspace and/or to enforce a custom
-affinity.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-irq_set_affinity_hint() as the name suggests is originally introduced to
-only set the affinity_hint to help the userspace in guiding the interrupts
-and not the affinity itself. However, since the commit
+The discussion about removing the side effect of irq_set_affinity_hint() of
+actually applying the cpumask (if not NULL) as affinity to the interrupt,
+unearthed a few unpleasantries:
 
-        e2e64a932556 "genirq: Set initial affinity in irq_set_affinity_hint()"
+  1) The modular perf drivers rely on the current behaviour for the very
+     wrong reasons.
 
-irq_set_affinity_hint() also started applying the provided cpumask (if not
-NULL) as the affinity for the interrupts. The issue that this commit was
-trying to solve is to allow the drivers to enforce their affinity mask to
-distribute the interrupts across the CPUs such that they don't always end
-up on CPU0. This issue has been resolved within the irq subsystem since the
-commit
+  2) While none of the other drivers prevents user space from changing
+     the affinity, a cursorily inspection shows that there are at least
+     expectations in some drivers.
 
-        a0c9259dc4e1 "irq/matrix: Spread interrupts on allocation"
+#1 needs to be cleaned up anyway, so that's not a problem
 
-Hence, there is no need for the drivers to overwrite the affinity to spread
-as it is dynamically performed at the time of allocation.
+#2 might result in subtle regressions especially when irqbalanced (which
+   nowadays ignores the affinity hint) is disabled.
 
-Also, irq_set_affinity_hint() setting affinity unconditionally introduces
-issues for the drivers that only want to set their affinity_hint and not the
-affinity itself as for these driver interrupts the default_smp_affinity_mask
-is completely ignored (for detailed investigation please refer to [1]).
+Provide new interfaces:
 
-Unfortunately reverting the commit e2e64a932556 is not an option at this
-point for two reasons [2]:
+  irq_update_affinity_hint()  - Only sets the affinity hint pointer
+  irq_set_affinity_and_hint() - Set the pointer and apply the affinity to
+                                the interrupt
 
-- Several drivers for a valid reason (performance) rely on this API to
-  enforce their affinity mask
+Make irq_set_affinity_hint() a wrapper around irq_apply_affinity_hint() and
+document it to be phased out.
 
-- Until very recently this was the only exported interface that was
-  available
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
+Link: https://lore.kernel.org/r/20210501021832.743094-1-jesse.brandeburg@intel.com
+---
+ include/linux/interrupt.h | 53 ++++++++++++++++++++++++++++++++++++++-
+ kernel/irq/manage.c       |  8 +++---
+ 2 files changed, 56 insertions(+), 5 deletions(-)
 
-To clear this out Thomas has come up with the following interfaces:
-
-- irq_set_affinity(): only sets affinity of an IRQ [3]
-- irq_update_affinity_hint(): Only sets the hint [4]
-- irq_set_affinity_and_hint(): Sets both affinity and the hint mask [4]
-
-The first API is already merged in the linux-next tree and the patch
-that introduces the other two interfaces are included with this patch-set.
-
-To move to the stage where we can safely get rid of the
-irq_set_affinity_hint(), which has been marked deprecated, we have to
-move all its consumers to these new interfaces. In this patch-set, I have
-done that for a few drivers and will hopefully try to move the remaining of
-them in the coming days.
-
-Testing
--------
-In terms of testing, I have performed some basic testing on x86 to verify
-things such as the interrupts are evenly spread on all CPUs, hint mask is
-correctly set etc. for the drivers - i40e, iavf, mlx5, mlx4, ixgbe, i40iw
-and enic on top of:
-
-        git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git
-
-So more testing is probably required for these and the drivers that I didn't
-test and any help will be much appreciated.
-
-
-Notes
------
-- I was told that i40iw driver is going to be replaced by irdma, however,
-  the new driver didn't land in Linus's tree yet. Once it does I will send
-  a follow up patch for that as well.
-
-- For the mpt3sas driver I decided to go with the usage of
-  irq_set_affinity_and_hint over irq_set_affinity based on my little
-  analysis of it and the megaraid driver. However, if we are sure that it
-  is not required then I can replace it with just irq_set_affinity as one
-  of its comment suggests.
-
-
-Change from v1 [5]
-------------------
-- Fixed compilation error by adding the new interface definitions for cases
-  where CONFIG_SMP is not defined
-
-- Fixed function usage in megaraid_sas and removed unnecessary variable
-  (Robin Murphy)
-
-- Removed unwanted #if/endif from mlx4 (Leon Romanovsky)
-
-- Other indentation related fixes
-
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index 2ed65b01c961..bd25ba029c68 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -328,7 +328,46 @@ extern int irq_force_affinity(unsigned int irq, const struct cpumask *cpumask);
+ extern int irq_can_set_affinity(unsigned int irq);
+ extern int irq_select_affinity(unsigned int irq);
  
-[1] https://lore.kernel.org/lkml/1a044a14-0884-eedb-5d30-28b4bec24b23@redhat.com/
-[2] https://lore.kernel.org/linux-pci/d1d5e797-49ee-4968-88c6-c07119343492@arm.com/
-[3] https://lore.kernel.org/linux-arm-kernel/20210518091725.046774792@linutronix.de/
-[4] https://lore.kernel.org/patchwork/patch/1434326/
-[5] https://lore.kernel.org/linux-scsi/20210617182242.8637-1-nitesh@redhat.com/
-
-
-Nitesh Narayan Lal (13):
-  iavf: Use irq_update_affinity_hint
-  i40e: Use irq_update_affinity_hint
-  scsi: megaraid_sas: Use irq_set_affinity_and_hint
-  scsi: mpt3sas: Use irq_set_affinity_and_hint
-  RDMA/i40iw: Use irq_update_affinity_hint
-  enic: Use irq_update_affinity_hint
-  be2net: Use irq_update_affinity_hint
-  ixgbe: Use irq_update_affinity_hint
-  mailbox: Use irq_update_affinity_hint
-  scsi: lpfc: Use irq_set_affinity
-  hinic: Use irq_set_affinity_and_hint
-  net/mlx5: Use irq_update_affinity_hint
-  net/mlx4: Use irq_update_affinity_hint
-
-Thomas Gleixner (1):
-  genirq: Provide new interfaces for affinity hints
-
- drivers/infiniband/hw/i40iw/i40iw_main.c      |  4 +-
- drivers/mailbox/bcm-flexrm-mailbox.c          |  4 +-
- drivers/net/ethernet/cisco/enic/enic_main.c   |  8 +--
- drivers/net/ethernet/emulex/benet/be_main.c   |  4 +-
- drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  4 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c   |  8 +--
- drivers/net/ethernet/intel/iavf/iavf_main.c   |  8 +--
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 10 ++--
- drivers/net/ethernet/mellanox/mlx4/eq.c       |  8 ++-
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  6 +--
- drivers/scsi/lpfc/lpfc_init.c                 |  4 +-
- drivers/scsi/megaraid/megaraid_sas_base.c     | 27 +++++-----
- drivers/scsi/mpt3sas/mpt3sas_base.c           | 21 ++++----
- include/linux/interrupt.h                     | 53 ++++++++++++++++++-
- kernel/irq/manage.c                           |  8 +--
- 15 files changed, 113 insertions(+), 64 deletions(-)
-
---  
-
+-extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
++extern int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
++				     bool setaffinity);
++
++/**
++ * irq_update_affinity_hint - Update the affinity hint
++ * @irq:	Interrupt to update
++ * @cpumask:	cpumask pointer (NULL to clear the hint)
++ *
++ * Updates the affinity hint, but does not change the affinity of the interrupt.
++ */
++static inline int
++irq_update_affinity_hint(unsigned int irq, const struct cpumask *m)
++{
++	return __irq_apply_affinity_hint(irq, m, false);
++}
++
++/**
++ * irq_set_affinity_and_hint - Update the affinity hint and apply the provided
++ *			     cpumask to the interrupt
++ * @irq:	Interrupt to update
++ * @cpumask:	cpumask pointer (NULL to clear the hint)
++ *
++ * Updates the affinity hint and if @cpumask is not NULL it applies it as
++ * the affinity of that interrupt.
++ */
++static inline int
++irq_set_affinity_and_hint(unsigned int irq, const struct cpumask *m)
++{
++	return __irq_apply_affinity_hint(irq, m, true);
++}
++
++/*
++ * Deprecated. Use irq_update_affinity_hint() or irq_set_affinity_and_hint()
++ * instead.
++ */
++static inline int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
++{
++	return irq_set_affinity_and_hint(irq, m);
++}
++
+ extern int irq_update_affinity_desc(unsigned int irq,
+ 				    struct irq_affinity_desc *affinity);
+ 
+@@ -360,6 +399,18 @@ static inline int irq_can_set_affinity(unsigned int irq)
+ 
+ static inline int irq_select_affinity(unsigned int irq)  { return 0; }
+ 
++static inline int irq_update_affinity_hint(unsigned int irq,
++					   const struct cpumask *m)
++{
++	return -EINVAL;
++}
++
++static inline int irq_set_affinity_and_hint(unsigned int irq,
++					    const struct cpumask *m)
++{
++	return -EINVAL;
++}
++
+ static inline int irq_set_affinity_hint(unsigned int irq,
+ 					const struct cpumask *m)
+ {
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index ef30b4762947..837b63e63111 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -487,7 +487,8 @@ int irq_force_affinity(unsigned int irq, const struct cpumask *cpumask)
+ }
+ EXPORT_SYMBOL_GPL(irq_force_affinity);
+ 
+-int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
++int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
++			      bool setaffinity)
+ {
+ 	unsigned long flags;
+ 	struct irq_desc *desc = irq_get_desc_lock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
+@@ -496,12 +497,11 @@ int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
+ 		return -EINVAL;
+ 	desc->affinity_hint = m;
+ 	irq_put_desc_unlock(desc, flags);
+-	/* set the initial affinity to prevent every interrupt being on CPU0 */
+-	if (m)
++	if (m && setaffinity)
+ 		__irq_set_affinity(irq, m, false);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
++EXPORT_SYMBOL_GPL(__irq_apply_affinity_hint);
+ 
+ static void irq_affinity_notify(struct work_struct *work)
+ {
+-- 
+2.27.0
 
