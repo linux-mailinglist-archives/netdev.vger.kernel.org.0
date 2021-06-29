@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9503B78A1
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:30:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7810C3B78A4
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:30:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234107AbhF2TcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 15:32:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33983 "EHLO
+        id S234266AbhF2TcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 15:32:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38970 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232544AbhF2TcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 15:32:19 -0400
+        by vger.kernel.org with ESMTP id S232544AbhF2TcV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 15:32:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624994991;
+        s=mimecast20190719; t=1624994993;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=EXphjE5iDPBSdRkWFkye1lTrfv8N97NQ//BDC7tfWi4=;
-        b=AH/AWgmGN6Eauzj81OoNJH5kr4P/aJAr7lCB2zWQ1EefcIjp83k5pL8O/Ur40KvEIDUt03
-        pZxmNZWrj6AEotsykm5fv/IWQ20WIiHqD965Opn4/+M3uwXgUqPfc535E3Rt2/birk2MNW
-        vDO9DVLRmd6xf6p1AkOAYfMNnaLf61s=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-363--r85z9i2PlCCQVRdeXFvdw-1; Tue, 29 Jun 2021 15:29:49 -0400
-X-MC-Unique: -r85z9i2PlCCQVRdeXFvdw-1
-Received: by mail-ej1-f72.google.com with SMTP id w22-20020a17090652d6b029048a3391d9f6so6160945ejn.12
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 12:29:49 -0700 (PDT)
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QgBr4LV9SR6/Qelufj3zindVEajUhYS2+l3zjx7rHSU=;
+        b=jN8Mb9waVl6aEdlN2rQLLeHjomuDBp9x8ciwcANSFVFpozF/uqAb6xfNq7F9MUZn59D6eb
+        y2ZRJUlXJt68i2qwTAH33bGCiI4jv1iapnKYGhosqK8MSAfED3yh1SvW3YbolvTYhqzFm2
+        tcLB+SQ9KTqQ47ZBo4uMBCjR2WlmvAk=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-97-jUk2KtUvPqKuVd2Y_IDMxA-1; Tue, 29 Jun 2021 15:29:51 -0400
+X-MC-Unique: jUk2KtUvPqKuVd2Y_IDMxA-1
+Received: by mail-ed1-f72.google.com with SMTP id p19-20020aa7c4d30000b0290394bdda6d9cso11913199edr.21
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 12:29:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EXphjE5iDPBSdRkWFkye1lTrfv8N97NQ//BDC7tfWi4=;
-        b=ZW+4Cx81ysbjDq8QwsT/kuMq355JL2r6fIQtEl1OfKjqGy4kimFGVBqFruHly5EiX4
-         Y9zHXh2bv817MasyyxEcZhtajBmBPMBk5lho8CazHXXG1G8fbYKyotY16b269aDuH0QM
-         2d4TNWIS/wAbLnI0lfFd2dfx+3BN0GJ6wKBiSSk+/yn30ZkLJBWRalgAJJrkyoErFCE2
-         nxivjAC/rSYe/u0WIFgZEoOWxQk+ZQyuI6+LFO0ToFXXzVg1Q0aKK5h+w3G+tbkb437K
-         6p84kroC8wHjpGkbkb/5ADbuWgs+DAulInvcyWJGyNsYootBN1lj5R8jttbzAgfUZK/7
-         QlhA==
-X-Gm-Message-State: AOAM5308D3tgvRQQn33olAGMWxvNvlozOBNDYQMkC9fEEfUQNIOlnlNc
-        iyJBB1zOATv/9got4a7sdSoAYnqbEMN1LFay6EYfHoJ4K47+0zXtTTZ7gffO7hTv2Z/ObBOGexi
-        1tVKm0yG+cfSBhJAc
-X-Received: by 2002:a17:906:cb81:: with SMTP id mf1mr32378929ejb.199.1624994988570;
-        Tue, 29 Jun 2021 12:29:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx+JyIotMLeITE1z4hHGqD9QoJk9a6CpkIRr0d92trk3HAASPjHtbjZIssFROgiR8XvaLgiKg==
-X-Received: by 2002:a17:906:cb81:: with SMTP id mf1mr32378911ejb.199.1624994988335;
-        Tue, 29 Jun 2021 12:29:48 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=QgBr4LV9SR6/Qelufj3zindVEajUhYS2+l3zjx7rHSU=;
+        b=Dn70XM4Z6LilgabqcZ7IZ97X3/T1pYVfxVF0mSg1pVujoJCXsN+3sdg5KIorITEDz/
+         YSUHAhAt6oiBRaVHivV08ZXcTP1FLCKaL4Urg7INivsQD/kIloLTVlvoCOSyXupXz/5p
+         lW3kxtl886b+rDudhzkgZ8mR9ZwbcZiPgrvQ1M/ufj5prVtagsYzvBeQE4XFNYHBy0QF
+         CHHHERPc7E20zo/84HVkynkHxxM5Wd2TDImUOAHpG2Q+XsAL82h4qsIIFeXW7C2fSDT8
+         th2CcbOoYlW6/1BkWbqy+UcpJt61nLd8/N++EuB3sWqGBPRBnqQBnrqKdhnr5diGrERh
+         n+pg==
+X-Gm-Message-State: AOAM533MlvaUrQc8I/yMAxT5znQ5tp8l7nMA0A3ryzRWdR9AdLU8ihdK
+        Ziu3EKWycQIzRiCxJj0MILmRgoIGPbaZC4tl2+q1AyoM4ZIHU76tYmFZ5GUuNpasLALg6fR9pC2
+        M64in0flD0DaMqM5c
+X-Received: by 2002:a05:6402:1c11:: with SMTP id ck17mr29205327edb.370.1624994990334;
+        Tue, 29 Jun 2021 12:29:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwXHlbTwtU81vylTCzW77E+j+DPUwj3/0W67M0b+va71aRhfz4ja1tt1bjornX+DBMxs/e2RA==
+X-Received: by 2002:a05:6402:1c11:: with SMTP id ck17mr29205314edb.370.1624994990153;
+        Tue, 29 Jun 2021 12:29:50 -0700 (PDT)
 Received: from krava.redhat.com ([185.153.78.55])
-        by smtp.gmail.com with ESMTPSA id n22sm472559eje.3.2021.06.29.12.29.46
+        by smtp.gmail.com with ESMTPSA id n22sm472559eje.3.2021.06.29.12.29.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Jun 2021 12:29:47 -0700 (PDT)
+        Tue, 29 Jun 2021 12:29:49 -0700 (PDT)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -60,63 +61,87 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [RFC bpf-next 0/5] bpf, x86: Add bpf_get_func_ip helper
-Date:   Tue, 29 Jun 2021 21:29:40 +0200
-Message-Id: <20210629192945.1071862-1-jolsa@kernel.org>
+Subject: [PATCH bpf-next 1/5] bpf, x86: Store caller's ip in trampoline stack
+Date:   Tue, 29 Jun 2021 21:29:41 +0200
+Message-Id: <20210629192945.1071862-2-jolsa@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210629192945.1071862-1-jolsa@kernel.org>
+References: <20210629192945.1071862-1-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-adding bpf_get_func_ip helper that returns IP address of the
-caller function for trampoline and krobe programs.
+Storing caller's ip in trampoline's stack. Trampoline programs
+can reach the IP in (ctx - 8) address, so there's no change in
+program's arguments interface.
 
-There're 2 specific implementation of the bpf_get_func_ip
-helper, one for trampoline progs and one for kprobe/kretprobe
-progs.
+The IP address is takes from [fp + 8], which is return address
+from the initial 'call fentry' call to trampoline.
 
-The trampoline helper call is replaced/inlined by verifier
-with simple move instruction. The kprobe/kretprobe is actual
-helper call that returns prepared caller address.
+This IP address will be returned via bpf_get_func_ip helper
+helper, which is added in following patches.
 
-The trampoline extra 3 instructions for storing IP address
-is now optional, which I'm not completely sure is necessary,
-so I plan to do some benchmarks, if it's noticeable, hence
-the RFC. I'm also not completely sure about the kprobe/kretprobe
-implementation.
-
-Also available at:
-  https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-  bpf/get_func_ip
-
-thanks,
-jirka
-
-
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
-Jiri Olsa (5):
-      bpf, x86: Store caller's ip in trampoline stack
-      bpf: Enable BPF_TRAMP_F_IP_ARG for trampolines with call_get_func_ip
-      bpf: Add bpf_get_func_ip helper for tracing programs
-      bpf: Add bpf_get_func_ip helper for kprobe programs
-      selftests/bpf: Add test for bpf_get_func_ip helper
+ arch/x86/net/bpf_jit_comp.c | 19 +++++++++++++++++++
+ include/linux/bpf.h         |  5 +++++
+ 2 files changed, 24 insertions(+)
 
- arch/x86/net/bpf_jit_comp.c                               | 19 +++++++++++++++++++
- include/linux/bpf.h                                       |  5 +++++
- include/linux/filter.h                                    |  3 ++-
- include/uapi/linux/bpf.h                                  |  7 +++++++
- kernel/bpf/trampoline.c                                   | 12 +++++++++---
- kernel/bpf/verifier.c                                     | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- kernel/trace/bpf_trace.c                                  | 29 +++++++++++++++++++++++++++++
- kernel/trace/trace_kprobe.c                               | 20 ++++++++++++++++++--
- kernel/trace/trace_probe.h                                |  5 +++++
- tools/include/uapi/linux/bpf.h                            |  7 +++++++
- tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c | 42 ++++++++++++++++++++++++++++++++++++++++++
- tools/testing/selftests/bpf/progs/get_func_ip_test.c      | 62 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 12 files changed, 260 insertions(+), 6 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
- create mode 100644 tools/testing/selftests/bpf/progs/get_func_ip_test.c
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index e835164189f1..c320b3ce7b58 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -1951,6 +1951,9 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 	if (flags & BPF_TRAMP_F_CALL_ORIG)
+ 		stack_size += 8; /* room for return value of orig_call */
+ 
++	if (flags & BPF_TRAMP_F_IP_ARG)
++		stack_size += 8; /* room for IP address argument */
++
+ 	if (flags & BPF_TRAMP_F_SKIP_FRAME)
+ 		/* skip patched call instruction and point orig_call to actual
+ 		 * body of the kernel function.
+@@ -1964,6 +1967,22 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 	EMIT4(0x48, 0x83, 0xEC, stack_size); /* sub rsp, stack_size */
+ 	EMIT1(0x53);		 /* push rbx */
+ 
++	if (flags & BPF_TRAMP_F_IP_ARG) {
++		/* Store IP address of the traced function:
++		 * mov rax, QWORD PTR [rbp + 8]
++		 * sub rax, X86_PATCH_SIZE
++		 * mov QWORD PTR [rbp - stack_size], rax
++		 */
++		emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
++		EMIT4(0x48, 0x83, 0xe8, X86_PATCH_SIZE);
++		emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -stack_size);
++
++		/* Continue with stack_size for regs storage, stack will
++		 * be correctly restored with 'leave' instruction.
++		 */
++		stack_size -= 8;
++	}
++
+ 	save_regs(m, &prog, nr_args, stack_size);
+ 
+ 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index f309fc1509f2..6b3da9bc3d16 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -554,6 +554,11 @@ struct btf_func_model {
+  */
+ #define BPF_TRAMP_F_SKIP_FRAME		BIT(2)
+ 
++/* Store IP address of the caller on the trampoline stack,
++ * so it's available for trampoline's programs.
++ */
++#define BPF_TRAMP_F_IP_ARG		BIT(3)
++
+ /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
+  * bytes on x86.  Pick a number to fit into BPF_IMAGE_SIZE / 2
+  */
+-- 
+2.31.1
 
