@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7DBD3B7826
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6964A3B7827
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:00:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235335AbhF2TCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 15:02:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54714 "EHLO mail.kernel.org"
+        id S235344AbhF2TCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 15:02:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54734 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230097AbhF2TCb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232416AbhF2TCb (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 29 Jun 2021 15:02:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2614D61DE3;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3A5B061DE4;
         Tue, 29 Jun 2021 19:00:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1624993204;
-        bh=Ig9EFN8Y5mzUuNIRgJEWKf+vtvUBLUyvz7C7ahDD+oo=;
+        bh=9X64JC5kNE3ywZHK3jW9Lc6RM6gL2IFBCy46yZ2ZPb0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BoFwq8haeTQ1Jc57HlRBjVG5LJ4vjTJjcDl4yIiaIGDwMSvGLXSFjewEPlJQ2mRn1
-         HKz3Da1Du4MICVWq9ABHcfXt2Mba0JRI7pDGPRMZ7wIEm86cSO1DDQPL+XpxvWKeRZ
-         zV9WL4tAdgarffxBIFaAqBAyvocOZYoYXIpEB23opMVrwjwQUDxFwz9wghJhJjT6KL
-         1X9TY2QfDkWi0FBiCYE0G8/7ygzMq/8CDYfq+WHiPrbx7piB0T+PEnDfWBD3GYlnHK
-         vLgCqCKI6233LI6DFxAD3BqLjE79kVy+j5phH692zlzezp+DcfLT+JIkYW1+AzJ46l
-         n+b7WDqSc4zMg==
+        b=FCktYluo5MUVPerER64mPFN7saaHfJHZ+mRB3UYgnEv0MvylWenToG8ISjGOWSd72
+         jtV9Lqfkh+uMN/VudiEwJeNwirOmEZULnZzNkSitRv8KQTlcoz3QItznMCfHhf2pLF
+         19Ih/BvRZy4QXw12uBKXVQoXatJ/iAGGHhDuwLp+tKnL9OwUUU/zD/c6PgGfEDD/OH
+         3FKaBsQCyTcWOsi0z93R32prduLiYxDY7Iwx3FYOTwS0BwmcgsINpkaBZK+14ttEAa
+         u64vhwCKbk+5HQk8cyL9MYbaKqy/lAq/YUkj66Cd82gcnqRTRoTZDW3hjK2GDPSIg2
+         iBwGw9lxoGmbA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 17D7C609B9;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3094360ACA;
         Tue, 29 Jun 2021 19:00:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] tcp: change ICSK_CA_PRIV_SIZE definition
+Subject: Re: [PATCH net-next] tcp_yeah: check struct yeah size at compile time
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162499320409.1879.1906072548580514952.git-patchwork-notify@kernel.org>
+Message-Id: <162499320419.1879.12302858565962420716.git-patchwork-notify@kernel.org>
 Date:   Tue, 29 Jun 2021 19:00:04 +0000
-References: <20210629135314.1070666-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210629135314.1070666-1-eric.dumazet@gmail.com>
+References: <20210629135213.1070529-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210629135213.1070529-1-eric.dumazet@gmail.com>
 To:     Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         edumazet@google.com
@@ -46,19 +46,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 29 Jun 2021 06:53:14 -0700 you wrote:
+On Tue, 29 Jun 2021 06:52:13 -0700 you wrote:
 > From: Eric Dumazet <edumazet@google.com>
 > 
-> Instead of a magic number (13 currently) and having
-> to change it every other year, use sizeof_field() macro.
+> Compiler can perform the sanity check instead of waiting
+> to load the module and crash the host.
 > 
 > Signed-off-by: Eric Dumazet <edumazet@google.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] tcp: change ICSK_CA_PRIV_SIZE definition
-    https://git.kernel.org/netdev/net-next/c/3f8ad50a9e43
+  - [net-next] tcp_yeah: check struct yeah size at compile time
+    https://git.kernel.org/netdev/net-next/c/6706721d82f8
 
 You are awesome, thank you!
 --
