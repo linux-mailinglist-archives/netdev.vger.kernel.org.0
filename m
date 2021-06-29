@@ -2,138 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B84E3B7127
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 13:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4A83B7160
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 13:36:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233387AbhF2LOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 07:14:07 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:9297 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233375AbhF2LOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 07:14:05 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GDhVZ36TVz1BSN7;
-        Tue, 29 Jun 2021 19:06:14 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 29 Jun 2021 19:11:32 +0800
-Received: from [10.174.179.5] (10.174.179.5) by dggpemm500002.china.huawei.com
- (7.185.36.229) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 29 Jun
- 2021 19:11:31 +0800
-Subject: Re: [PATCH net-next 1/3] arm64: barrier: add DGH macros to control
- memory accesses merging
-To:     Will Deacon <will@kernel.org>,
-        Guangbin Huang <huangguangbin2@huawei.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <catalin.marinas@arm.com>, <maz@kernel.org>,
-        <mark.rutland@arm.com>, <dbrazdil@google.com>,
-        <qperret@google.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <lipeng321@huawei.com>,
-        <peterz@infradead.org>
-References: <1624360271-17525-1-git-send-email-huangguangbin2@huawei.com>
- <1624360271-17525-2-git-send-email-huangguangbin2@huawei.com>
- <20210622121630.GC30757@willie-the-truck>
-From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Message-ID: <0c8f931b-9da8-ffb0-4b7c-7d291e9af8aa@huawei.com>
-Date:   Tue, 29 Jun 2021 19:11:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S233375AbhF2Lic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 07:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233337AbhF2Li1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 07:38:27 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E26DC061760
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 04:36:00 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id gn32so35864760ejc.2
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 04:36:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RNo2v+FbgzoADDcZDwSBQCTuCZYX8mLztqFJiqkXhoU=;
+        b=tgH5/g6SubUKRNiz76sbX1sUTRxAgsb0Cob1ELh2JqfyVBb7GO1BdzwIeLXCx6RJE0
+         qoooni1Mk2pc35QEsXFckRPR84bwdrt9mCUDOX4SVxQicRxBcy5oAdWqEICxOjFjXyFV
+         om8/r3jT+aZ5GyWxoxuXnSGwAWdgn+JrZsp35XK6yP7X0MdDH5jn5m72BsuxMP6uswrn
+         4yXh1pTpEGr56rS5dfS5AsEqzImvBWrNl3/x2yD1u2gaT9IUNXr+jaHFpivbAZ/Vw4TH
+         NrWaNLFdkUNHhUOpudZ4+QlqE+bnccvQJP/cjKe1MzeSqXCIM6vZaSzsAcmA6uwlMRrf
+         RtRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RNo2v+FbgzoADDcZDwSBQCTuCZYX8mLztqFJiqkXhoU=;
+        b=UFGxvzqEfMxNqDj6meMt7bNQECCrU10I/E8WjSlBEoeNxW6v5ysLiFD6/sY30PFlzb
+         jjw1t+Dvc4OdUDoKy1Lri/VSZpm1cZm2DlrFpI3oJrUwiOw7u+1EmEIwr9BxTvSzDo2L
+         qMMF4xb4dRlqXi1n2iFqMRsEU7rzow5Sm1hh7Q519fRik8wC6kQ+dXkWornIL6r+dDnK
+         WmO26Hdmcj+41I974WSa7K8+sRnke0pHL5BPqN57u3Tk3JuIzZsIUeuVm+0XGHCep01c
+         Ga/7Zo4XAe09DCply4jix+9are3qEUdWtXVxD4HlhRN3BfRRzPk3KPdJzFZxJCclDC3z
+         0bdA==
+X-Gm-Message-State: AOAM532O5b4owqFteVMIdIWUXkoenbVhIuhinsr01OzhpDWxcS0h4lPm
+        SquZNP12KeiJm07Q12Pksik=
+X-Google-Smtp-Source: ABdhPJwUR7xC6xiOKoQZcBqlIZBon2Y8NnCE/95PZX+urJoClsq84dNk3DxGrSw2ccymrjn3jszPIQ==
+X-Received: by 2002:a17:906:110b:: with SMTP id h11mr15132835eja.356.1624966559161;
+        Tue, 29 Jun 2021 04:35:59 -0700 (PDT)
+Received: from skbuf ([188.26.224.68])
+        by smtp.gmail.com with ESMTPSA id n11sm8445342ejg.43.2021.06.29.04.35.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Jun 2021 04:35:58 -0700 (PDT)
+Date:   Tue, 29 Jun 2021 14:35:57 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v4 net-next 01/14] net: bridge: switchdev: send FDB
+ notifications for host addresses
+Message-ID: <20210629113557.eu5it6lfsnnaioej@skbuf>
+References: <20210628220011.1910096-1-olteanv@gmail.com>
+ <20210628220011.1910096-2-olteanv@gmail.com>
+ <984a649e-38fb-9962-e7dd-3cd441a83ec9@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20210622121630.GC30757@willie-the-truck>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.5]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <984a649e-38fb-9962-e7dd-3cd441a83ec9@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Will,
+On Tue, Jun 29, 2021 at 01:40:20PM +0300, Nikolay Aleksandrov wrote:
+> > @@ -117,18 +118,16 @@ br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb, int type)
+> >  		.is_local = test_bit(BR_FDB_LOCAL, &fdb->flags),
+> >  		.offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags),
+> >  	};
+> > -
+> > -	if (!fdb->dst)
+> > -		return;
+> > +	struct net_device *dev = fdb->dst ? fdb->dst->dev : br->dev;
+> 
+> you should use READ_ONCE() for fdb->dst here to make sure it's read only once,
+> to be fair the old code had the same issue :)
 
-On 2021/6/22 20:16, Will Deacon wrote:
-> On Tue, Jun 22, 2021 at 07:11:09PM +0800, Guangbin Huang wrote:
->> From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
->>
->> DGH prohibits merging memory accesses with Normal-NC or Device-GRE
->> attributes before the hint instruction with any memory accesses
->> appearing after the hint instruction. Provide macros to expose it to the
->> arch code.
-> 
-> Hmm.
-> 
-> The architecture states:
-> 
->   | DGH is a hint instruction. A DGH instruction is not expected to be
->   | performance optimal to merge memory accesses with Normal Non-cacheable
->   | or Device-GRE attributes appearing in program order before the hint
->   | instruction with any memory accesses appearing after the hint instruction
->   | into a single memory transaction on an interconnect.
-> 
-> which doesn't make a whole lot of sense to me, in all honesty.
-> 
->> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
->> Signed-off-by: Cheng Jian <cj.chengjian@huawei.com>
->> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
->> ---
->>  arch/arm64/include/asm/assembler.h | 7 +++++++
->>  arch/arm64/include/asm/barrier.h   | 1 +
->>  2 files changed, 8 insertions(+)
->>
->> diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
->> index 8418c1bd8f04..d723899328bd 100644
->> --- a/arch/arm64/include/asm/assembler.h
->> +++ b/arch/arm64/include/asm/assembler.h
->> @@ -90,6 +90,13 @@
->>  	.endm
->>  
->>  /*
->> + * Data gathering hint
->> + */
->> +	.macro	dgh
->> +	hint	#6
->> +	.endm
->> +
->> +/*
->>   * RAS Error Synchronization barrier
->>   */
->>  	.macro  esb
->> diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
->> index 451e11e5fd23..02e1735706d2 100644
->> --- a/arch/arm64/include/asm/barrier.h
->> +++ b/arch/arm64/include/asm/barrier.h
->> @@ -22,6 +22,7 @@
->>  #define dmb(opt)	asm volatile("dmb " #opt : : : "memory")
->>  #define dsb(opt)	asm volatile("dsb " #opt : : : "memory")
->>  
->> +#define dgh()		asm volatile("hint #6" : : : "memory")
-> 
-> Although I'm fine with this in arm64, I don't think this is the interface
-> which drivers should be using. Instead, once we know what this instruction
-> is supposed to do, we should look at exposing it as part of the I/O barriers
-> and providing a NOP implementation for other architectures. That way,
-> drivers can use it without having to have the #ifdef CONFIG_ARM64 stuff that
-> you have in the later patches here.
-
-How about we adding a interface called flush_wc_writeX(), which can be used to
-flush the write-combined buffers to the device immediately.
-I found it has been disscussed in the below link, but it is unnessary in their
-situation.
-https://patchwork.ozlabs.org/project/netdev/patch/20200102180830.66676-3-liran.alon@oracle.com/
-
-Thanks,
-Xiongfeng
-
-> 
-> Will
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> .
-> 
+Thanks for the comment. I still have budget for one patch until I hit
+the 15 limit, so I guess I'll do that separately before this one.
+Just trying to make sure I get it right. You want me to annotate
+fdb_create(), br_fdb_update(), fdb_add_entry() and
+br_fdb_external_learn_add() with WRITE_ONCE() too, right?
+Can I resend right away or did you notice other issues in the other
+patches?
