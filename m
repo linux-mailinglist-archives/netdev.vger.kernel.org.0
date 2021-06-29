@@ -2,139 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99B393B78B5
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:32:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D303B78CE
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:44:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234953AbhF2Tes convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 29 Jun 2021 15:34:48 -0400
-Received: from mga03.intel.com ([134.134.136.65]:27002 "EHLO mga03.intel.com"
+        id S233329AbhF2Tqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 15:46:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36464 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235252AbhF2Tem (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Jun 2021 15:34:42 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10030"; a="208262025"
-X-IronPort-AV: E=Sophos;i="5.83,309,1616482800"; 
-   d="scan'208";a="208262025"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2021 12:32:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,309,1616482800"; 
-   d="scan'208";a="408546482"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga003.jf.intel.com with ESMTP; 29 Jun 2021 12:32:10 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Tue, 29 Jun 2021 12:32:10 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Tue, 29 Jun 2021 12:32:10 -0700
-Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
- ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.2242.008;
- Tue, 29 Jun 2021 12:32:10 -0700
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next 2/5] ice: add support for auxiliary input/output
- pins
-Thread-Topic: [PATCH net-next 2/5] ice: add support for auxiliary input/output
- pins
-Thread-Index: AQHXafOQsu1unZMWWk2FI7QX5ZbbUasmyVGAgANBEXCAAVrXAIAAAYTA
-Date:   Tue, 29 Jun 2021 19:32:09 +0000
-Message-ID: <5e60e10f4d5c43b78c9a46834a836cc1@intel.com>
-References: <20210625185733.1848704-1-anthony.l.nguyen@intel.com>
- <20210625185733.1848704-3-anthony.l.nguyen@intel.com>
- <20210626140245.GA15724@hoboy.vegasvil.org>
- <fcc626d6773745ae9ecee10dfaca1316@intel.com>
- <30480e4a473146f5a38e83e0602bd36c@intel.com>
-In-Reply-To: <30480e4a473146f5a38e83e0602bd36c@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.22.254.132]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S232257AbhF2Tqj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Jun 2021 15:46:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 920F0613E3;
+        Tue, 29 Jun 2021 19:44:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624995851;
+        bh=OZrBhbXTadX/iBB2INbThE0RbsKhauY1nJYvEZSTXC4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GWye6AZghNOY0SYx6xGWIM5A8/4NLrJZuRzdwtU6HEQ31bSBLgl6WiH2eIIcyeDUc
+         bZZ14iqQjfaZFuv41mwkVcVvBBJybv3rLB+GN/fg37ZhVtzb1Fj+Qg9NjnK8dqVRGe
+         XmybOm2jw2LumuHr+FBXgyfz8r+bR2lWktlAZH8yYqdbRp5dvrF6s4QuFhGQG3QE7f
+         yq/iwIRZaPeUxepACp63e2USU4no4d3eCttGp+ZmNxuCFcs/7HDbBKyV1DpN0P09Co
+         neT4i3OSSSeEBLSiBOJJZaZqjMhcL3CGypAuW/IqafbD8duBG4VWbc0Lr92l38637E
+         oLO8v6ISdvxMQ==
+Received: by pali.im (Postfix)
+        id 1DC3EAA8; Tue, 29 Jun 2021 21:44:09 +0200 (CEST)
+Date:   Tue, 29 Jun 2021 21:44:08 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        vladyslavt@nvidia.com, moshe@nvidia.com, vadimp@nvidia.com,
+        mkubecek@suse.cz, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/4] ethtool: Add ability to write to
+ transceiver module EEPROMs
+Message-ID: <20210629194408.eu7rcxb3uprfdk6p@pali>
+References: <20210623075925.2610908-1-idosch@idosch.org>
+ <YNOBKRzk4S7ZTeJr@lunn.ch>
+ <YNTfMzKn2SN28Icq@shredder>
+ <YNTqofVlJTgsvDqH@lunn.ch>
+ <YNhT6aAFUwOF8qrL@shredder>
+ <YNiVWhoqyHSVa+K4@lunn.ch>
+ <YNl7YlkYGxqsdyqA@shredder>
+ <YNskdT/FMWERmtF5@lunn.ch>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YNskdT/FMWERmtF5@lunn.ch>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tuesday 29 June 2021 15:47:33 Andrew Lunn wrote:
+> > Even with the proposed approach, the kernel sits in the middle between
+> > the module and user space. As such, it can maintain an "allow list" that
+> > only allows access to modules with a specific memory map (CMIS and
+> > SFF-8636 for now) and only to a subset of the pages which are
+> > standardized by the specifications.
+> 
+> Hi Ido
+> 
+> This seems like a reasonable compromise. But i would go further. Limit
+> it to just what is needed for firmware upgrade.
+> 
+>    Andrew
 
-
-> -----Original Message-----
-> From: Keller, Jacob E <jacob.e.keller@intel.com>
-> Sent: Tuesday, June 29, 2021 12:29 PM
-> To: Keller, Jacob E <jacob.e.keller@intel.com>; Richard Cochran
-> <richardcochran@gmail.com>; Nguyen, Anthony L
-> <anthony.l.nguyen@intel.com>
-> Cc: davem@davemloft.net; kuba@kernel.org; Machnikowski, Maciej
-> <maciej.machnikowski@intel.com>; netdev@vger.kernel.org
-> Subject: RE: [PATCH net-next 2/5] ice: add support for auxiliary input/output pins
-> 
-> 
-> 
-> > -----Original Message-----
-> > From: Keller, Jacob E <jacob.e.keller@intel.com>
-> > Sent: Monday, June 28, 2021 3:46 PM
-> > To: Richard Cochran <richardcochran@gmail.com>; Nguyen, Anthony L
-> > <anthony.l.nguyen@intel.com>
-> > Cc: davem@davemloft.net; kuba@kernel.org; Machnikowski, Maciej
-> > <maciej.machnikowski@intel.com>; netdev@vger.kernel.org
-> > Subject: RE: [PATCH net-next 2/5] ice: add support for auxiliary input/output
-> pins
-> >
-> >
-> >
-> > > -----Original Message-----
-> > > From: Richard Cochran <richardcochran@gmail.com>
-> > > Sent: Saturday, June 26, 2021 7:03 AM
-> > > To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
-> > > Cc: davem@davemloft.net; kuba@kernel.org; Machnikowski, Maciej
-> > > <maciej.machnikowski@intel.com>; netdev@vger.kernel.org; Keller, Jacob E
-> > > <jacob.e.keller@intel.com>
-> > > Subject: Re: [PATCH net-next 2/5] ice: add support for auxiliary input/output
-> > pins
-> > >
-> > > On Fri, Jun 25, 2021 at 11:57:30AM -0700, Tony Nguyen wrote:
-> > >
-> > > > @@ -783,6 +1064,17 @@ static long ice_ptp_create_clock(struct ice_pf *pf)
-> > > >  	info = &pf->ptp.info;
-> > > >  	dev = ice_pf_to_dev(pf);
-> > > >
-> > > > +	/* Allocate memory for kernel pins interface */
-> > > > +	if (info->n_pins) {
-> > > > +		info->pin_config = devm_kcalloc(dev, info->n_pins,
-> > > > +						sizeof(*info->pin_config),
-> > > > +						GFP_KERNEL);
-> > > > +		if (!info->pin_config) {
-> > > > +			info->n_pins = 0;
-> > > > +			return -ENOMEM;
-> > > > +		}
-> > > > +	}
-> > >
-> > > How is this supposed to worK?
-> > >
-> > > - If n_pins is non-zero, there must also be a ptp_caps.verify method,
-> > >   but you don't provide one.
-> > >
-> >
-> > Hmm. Yea, that's missing.
-> 
-> Ok, turns out this is only intended for a later patch that adds support for some
-> pins on E810-T devices, but that work wasn't done yet. We need to split this up
-> more, but currently we never set info->n_pins > 0 so this is effectively dead code.
-> 
-> For now, we need to drop this patch from the series.
-
-Looks like this was pulled already. It shouldn't cause an issue because n_pins is never set to non-zero so it's really just dead code until we can complete the E810-T work.
-
-Thanks,
-Jake
+Hello! If this is just because for CMIS firmware upgrade, what about
+rather providing kernel driver for CMIS firmware upgrade?
