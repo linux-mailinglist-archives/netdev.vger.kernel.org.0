@@ -2,184 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38CCA3B738A
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 15:55:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9155E3B73C0
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 16:05:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234139AbhF2N6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 09:58:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32994 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233052AbhF2N6N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Jun 2021 09:58:13 -0400
-Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 437BB61D8B;
-        Tue, 29 Jun 2021 13:55:45 +0000 (UTC)
-Date:   Tue, 29 Jun 2021 09:55:43 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        syzbot+721aa903751db87aa244@syzkaller.appspotmail.com,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
-Subject: [PATCH] tracepoint: Add tracepoint_probe_register_may_exist() for
- BPF tracing
-Message-ID: <20210629095543.391ac606@oasis.local.home>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S232213AbhF2OHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 10:07:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229990AbhF2OHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 10:07:36 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8DAC061760
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 07:05:08 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id w17so15970630edd.10
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 07:05:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rPEkCmec3SNIBsNmkCAS46X3u6XuZTa3DrxNLdIIU7Y=;
+        b=qGFQrP+JF7HBBNCt370tuH9/OCUjuc80jVvQtGOxkQmfbz6DX2AkLL7ea0MW4EiWJ1
+         rg4zk28F0lK/qs2Q3eY+0q8uTySewIlk8fRSmTGymdW1HqDDRLmp2mNctr4yunzgaHOT
+         Zd6/tDZC4zZUYJ5lJ3mSwp5E/O3vXSO7xWzojhmcGYnq4JyCNhgAe6x1OV6+CqS8qWmZ
+         /qVa8/a/Toxx66UiSU9waeYMkpZrjD4axNDYg0qnDTyEm9s/bm6ux7AfQRhnVi4n9bCT
+         akgds+Y4HlhKyqqkfU05NoHk0djs2bxHKqpdb+OJgW4CiYXNQtsmHUEMtFafX9Yx+aw+
+         fLWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rPEkCmec3SNIBsNmkCAS46X3u6XuZTa3DrxNLdIIU7Y=;
+        b=Xf/SYC10ulwSut8EqXId+LU7vB1N/k+jKtLx+2aIj6ZMSnHZW7aLyM4gXzSjzQ/eoB
+         Gtznu8lOLvs8ym5M+ghHH2WvUdNgloAPurMJS7uMRCZIAMygm5gtiOJt2zL4hpZOS+Md
+         TlJgwr3jVfsfyQhB6emO5mfpcVVSjbwM1R6+LEzVYJ221/jwV42OMCycvC1eLRcD5TeB
+         yZKR/Jjv8/OpIF7uLrTHnamfowDSEiNA22c8Mrzi1BkfsXSG9rSLHUEx6nwrqmPq5xxU
+         NPWUgS0lcoT9Zajo6cmKZmlcQvSPPeUXgh82nOoHHrsoK/loPMDd7799ZY1925jkKFxG
+         pZ/Q==
+X-Gm-Message-State: AOAM533EDd/u3OacjwrwN3pbzkOMbnLXxNb8Sws8x3ZvbPJelV5RFVMk
+        TAjlpeVBKFHsnT9/pcuBjZc=
+X-Google-Smtp-Source: ABdhPJxKB1+Jr0Snyszm8GFjw5QhYQYup9hANFL3KBerX9/syrIvGtPFxTnBbu09miaK5/OMUdpH2g==
+X-Received: by 2002:aa7:db93:: with SMTP id u19mr40322690edt.227.1624975507273;
+        Tue, 29 Jun 2021 07:05:07 -0700 (PDT)
+Received: from [192.168.1.24] ([213.57.166.51])
+        by smtp.gmail.com with ESMTPSA id ce3sm8336331ejc.53.2021.06.29.07.05.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Jun 2021 07:05:06 -0700 (PDT)
+Subject: Re: [PATCH net-next] ipv6: Add sysctl for RA default route table
+ number
+To:     antony.antony@secunet.com
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Christian Perle <christian.perle@secunet.com>,
+        David Ahern <dsahern@gmail.com>
+References: <cover.1619775297.git.antony.antony@secunet.com>
+ <32de887afdc7d6851e7c53d27a21f1389bb0bd0f.1624604535.git.antony.antony@secunet.com>
+ <95b096f7-8ece-46be-cedb-5ee4fc011477@gmail.com>
+ <20210629125316.GA18078@moon.secunet.de>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Message-ID: <69e7e4e5-4219-5149-e7aa-fd26aa62260e@gmail.com>
+Date:   Tue, 29 Jun 2021 17:05:03 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210629125316.GA18078@moon.secunet.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+Hi Antony,
 
-All internal use cases for tracepoint_probe_register() is set to not ever
-be called with the same function and data. If it is, it is considered a
-bug, as that means the accounting of handling tracepoints is corrupted.
-If the function and data for a tracepoint is already registered when
-tracepoint_probe_register() is called, it will call WARN_ON_ONCE() and
-return with EEXISTS.
+On 29/06/2021 15:53, Antony Antony wrote:
+> Hi David,
+> 
+> On Fri, Jun 25, 2021 at 22:47:41 -0600, David Ahern wrote:
+>> On 6/25/21 1:04 AM, Antony Antony wrote:
+>>> From: Christian Perle <christian.perle@secunet.com>
+>>>
+>>> Default routes learned from router advertisements(RA) are always placed
+>>> in main routing table. For policy based routing setups one may
+>>> want a different table for default routes. This commit adds a sysctl
+>>> to make table number for RA default routes configurable.
+>>>
+>>> examples:
+>>> sysctl net.ipv6.route.defrtr_table
+>>> sysctl -w net.ipv6.route.defrtr_table=42
+>>> ip -6 route show table 42
+>>
+>> How are the routing tables managed? If the netdevs are connected to a
+>> VRF this just works.
+> 
+> The main routing table has no default route. Our scripts add routing rules
+> based on interfaces. These rules use the specific routing table where the RA
+> (when using SLAAC) installs the default route. The rest just works.
 
-The BPF system call can end up calling tracepoint_probe_register() with
-the same data, which now means that this can trigger the warning because
-of a user space process. As WARN_ON_ONCE() should not be called because
-user space called a system call with bad data, there needs to be a way to
-register a tracepoint without triggering a warning.
+Could this be a devconf property instead of a global property? seems 
+like the difference would be minor to your patch but the benefit is that 
+setups using different routing tables for different policies could 
+benefit (as mentioned when not using vrfs).
 
-Enter tracepoint_probe_register_may_exist(), which can be called, but will
-not cause a WARN_ON() if the probe already exists. It will still error out
-with EEXIST, which will then be sent to the user space that performed the
-BPF system call.
-
-This keeps the previous testing for issues with other users of the
-tracepoint code, while letting BPF call it with duplicated data and not
-warn about it.
-
-Link: https://lore.kernel.org/lkml/20210626135845.4080-1-penguin-kernel@I-love.SAKURA.ne.jp/
-Link: https://syzkaller.appspot.com/bug?id=41f4318cf01762389f4d1c1c459da4f542fe5153 [1]`
-
-Cc: stable@vger.kernel.org
-Fixes: c4f6699dfcb85 ("bpf: introduce BPF_RAW_TRACEPOINT")
-Reported-by: syzbot <syzbot+721aa903751db87aa244@syzkaller.appspotmail.com>
-Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
----
-
-#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-
- include/linux/tracepoint.h | 10 ++++++++++
- kernel/trace/bpf_trace.c   |  3 ++-
- kernel/tracepoint.c        | 33 ++++++++++++++++++++++++++++++---
- 3 files changed, 42 insertions(+), 4 deletions(-)
-
-diff --git a/include/linux/tracepoint.h b/include/linux/tracepoint.h
-index 13f65420f188..ab58696d0ddd 100644
---- a/include/linux/tracepoint.h
-+++ b/include/linux/tracepoint.h
-@@ -41,7 +41,17 @@ extern int
- tracepoint_probe_register_prio(struct tracepoint *tp, void *probe, void *data,
- 			       int prio);
- extern int
-+tracepoint_probe_register_prio_may_exist(struct tracepoint *tp, void *probe, void *data,
-+					 int prio);
-+extern int
- tracepoint_probe_unregister(struct tracepoint *tp, void *probe, void *data);
-+static inline int
-+tracepoint_probe_register_may_exist(struct tracepoint *tp, void *probe,
-+				    void *data)
-+{
-+	return tracepoint_probe_register_prio_may_exist(tp, probe, data,
-+							TRACEPOINT_DEFAULT_PRIO);
-+}
- extern void
- for_each_kernel_tracepoint(void (*fct)(struct tracepoint *tp, void *priv),
- 		void *priv);
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 7a52bc172841..f0568b3d6bd1 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1840,7 +1840,8 @@ static int __bpf_probe_register(struct bpf_raw_event_map *btp, struct bpf_prog *
- 	if (prog->aux->max_tp_access > btp->writable_size)
- 		return -EINVAL;
- 
--	return tracepoint_probe_register(tp, (void *)btp->bpf_func, prog);
-+	return tracepoint_probe_register_may_exist(tp, (void *)btp->bpf_func,
-+						   prog);
- }
- 
- int bpf_probe_register(struct bpf_raw_event_map *btp, struct bpf_prog *prog)
-diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-index 9f478d29b926..976bf8ce8039 100644
---- a/kernel/tracepoint.c
-+++ b/kernel/tracepoint.c
-@@ -273,7 +273,8 @@ static void tracepoint_update_call(struct tracepoint *tp, struct tracepoint_func
-  * Add the probe function to a tracepoint.
-  */
- static int tracepoint_add_func(struct tracepoint *tp,
--			       struct tracepoint_func *func, int prio)
-+			       struct tracepoint_func *func, int prio,
-+			       bool warn)
- {
- 	struct tracepoint_func *old, *tp_funcs;
- 	int ret;
-@@ -288,7 +289,7 @@ static int tracepoint_add_func(struct tracepoint *tp,
- 			lockdep_is_held(&tracepoints_mutex));
- 	old = func_add(&tp_funcs, func, prio);
- 	if (IS_ERR(old)) {
--		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
-+		WARN_ON_ONCE(warn && PTR_ERR(old) != -ENOMEM);
- 		return PTR_ERR(old);
- 	}
- 
-@@ -343,6 +344,32 @@ static int tracepoint_remove_func(struct tracepoint *tp,
- 	return 0;
- }
- 
-+/**
-+ * tracepoint_probe_register_prio_may_exist -  Connect a probe to a tracepoint with priority
-+ * @tp: tracepoint
-+ * @probe: probe handler
-+ * @data: tracepoint data
-+ * @prio: priority of this function over other registered functions
-+ *
-+ * Same as tracepoint_probe_register_prio() except that it will not warn
-+ * if the tracepoint is already registered.
-+ */
-+int tracepoint_probe_register_prio_may_exist(struct tracepoint *tp, void *probe,
-+					     void *data, int prio)
-+{
-+	struct tracepoint_func tp_func;
-+	int ret;
-+
-+	mutex_lock(&tracepoints_mutex);
-+	tp_func.func = probe;
-+	tp_func.data = data;
-+	tp_func.prio = prio;
-+	ret = tracepoint_add_func(tp, &tp_func, prio, false);
-+	mutex_unlock(&tracepoints_mutex);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(tracepoint_probe_register_prio_may_exist);
-+
- /**
-  * tracepoint_probe_register_prio -  Connect a probe to a tracepoint with priority
-  * @tp: tracepoint
-@@ -366,7 +393,7 @@ int tracepoint_probe_register_prio(struct tracepoint *tp, void *probe,
- 	tp_func.func = probe;
- 	tp_func.data = data;
- 	tp_func.prio = prio;
--	ret = tracepoint_add_func(tp, &tp_func, prio);
-+	ret = tracepoint_add_func(tp, &tp_func, prio, true);
- 	mutex_unlock(&tracepoints_mutex);
- 	return ret;
- }
--- 
-2.29.2
-
+Eyal.
