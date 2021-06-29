@@ -2,53 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D9C73B725C
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 14:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07E6A3B7240
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 14:43:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232867AbhF2MxD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 29 Jun 2021 08:53:03 -0400
-Received: from [218.75.92.58] ([218.75.92.58]:65147 "EHLO WIN-VTPUBHNS72V"
-        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232755AbhF2Mw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Jun 2021 08:52:59 -0400
-Received: from [192.168.43.47] (Unknown [197.210.84.10])
-        by WIN-VTPUBHNS72V with ESMTPA
-        ; Thu, 24 Jun 2021 20:46:28 +0800
-Message-ID: <9A845A47-7571-4588-B7D6-EB33577619B5@WIN-VTPUBHNS72V>
-Content-Type: text/plain; charset="iso-8859-1"
+        id S232958AbhF2MqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 08:46:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41126 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232791AbhF2MqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 08:46:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624970617;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yyNLaQOoPGIq71zJhTuanVIUejq6DWASK6M626mU0CM=;
+        b=BX0CEXbZRTrFpV4zpGKNksd/jxjJ+GQ/ZIX/tp4/4wtfCGsj9piyyO2UuCn3xoGN+DaV13
+        CiL392LabuOxKoqe4ESuhKFFRwV+JHFQJprcex0/RvDalHL4sb2Xj6eKZZ9ejOdxqNXyBs
+        Bq6IaTFzyYdm+WdFmTS6FYDYkU2rrqY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-423-Zahsn_1LOUazmcVgFRpGgg-1; Tue, 29 Jun 2021 08:43:35 -0400
+X-MC-Unique: Zahsn_1LOUazmcVgFRpGgg-1
+Received: by mail-wm1-f69.google.com with SMTP id k16-20020a7bc3100000b02901d849b41038so1240907wmj.7
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 05:43:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yyNLaQOoPGIq71zJhTuanVIUejq6DWASK6M626mU0CM=;
+        b=WFEsyQJedzWLgIw6D1AUjVkqe+1yjY+lmAkKTCexUz8KSZVQYeDyB39aNQuOqPKW1M
+         jy2j4KXZjm2CoAFFehLeGykTFK7kKZIXnj5mJyiV4fDzTuCB94D3zA1SrHEt+nJNhK94
+         EosPWqYMjO/wEduHF7yosRu1JuvfvQyE0z+KPq8i7VweRUjgNJlcecCL8EKqnOucBPXU
+         qPyNdBt0BWhOzYGUXMpF7PPrNXrjRwca5q8jRiVTv0jFm9b37YUOFdEQLN+si4mw0AHP
+         hTrv4OSDySebTv7fq+hmxYD7c1NZBFWRILY6JRtHEGn/ECmWt7oISUaksW0C50D/V8hW
+         5kiQ==
+X-Gm-Message-State: AOAM532zQ9OrqOJZoP3nIN2vGjSHaAZpcY2DXNiLmnoRbZNvrBFOiQ+x
+        s2jXBKE9RxiwYxif3gOCGwWj0WGlYsKnmezfy+SBqmP7MCfOnP/20OkZdbiXG/5bQZLCY6Wm1Gd
+        yVyXYR4N7UxuwSdeF
+X-Received: by 2002:a5d:6cce:: with SMTP id c14mr12518474wrc.183.1624970614755;
+        Tue, 29 Jun 2021 05:43:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwsf0VMED12h7fYp2HlnA99Tk63UyMm41linO8I665c5thVC9jLaMZBoREbYWJo2NopfwWRQw==
+X-Received: by 2002:a5d:6cce:: with SMTP id c14mr12518451wrc.183.1624970614615;
+        Tue, 29 Jun 2021 05:43:34 -0700 (PDT)
+Received: from localhost (net-130-25-105-72.cust.vodafonedsl.it. [130.25.105.72])
+        by smtp.gmail.com with ESMTPSA id t17sm16519941wmi.47.2021.06.29.05.43.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Jun 2021 05:43:34 -0700 (PDT)
+Date:   Tue, 29 Jun 2021 14:43:31 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+Subject: Re: [PATCH v9 bpf-next 02/14] xdp: introduce flags field in
+ xdp_buff/xdp_frame
+Message-ID: <YNsVcy8e4Mgyg7g3@lore-desk>
+References: <cover.1623674025.git.lorenzo@kernel.org>
+ <1316f3ef2763ff4c02244fb726c61568c972514c.1623674025.git.lorenzo@kernel.org>
+ <CAKgT0Ue7TsgwbQF+mfeDB-18Q-R29YZWe=y6Kgeg0xxbwds=vw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: URGENT ATTENTION
-To:     Recipients <wjjt@wjjt.cn>
-From:   "Andres Auchincloss" <wjjt@wjjt.cn>
-Date:   Thu, 24 Jun 2021 14:45:50 +0200
-Reply-To: andresauchincloss926@gmail.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="/WJaeTxyp07KkM0F"
+Content-Disposition: inline
+In-Reply-To: <CAKgT0Ue7TsgwbQF+mfeDB-18Q-R29YZWe=y6Kgeg0xxbwds=vw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-I will like to use this opportunity to wish you a productive time in 2021 and also confide in you to finalize this transaction of mutual benefits. It may seem strange to you, but it is real. This is a transaction that has no risk at all, due process shall be followed and it shall be carried out under the ambit of the financial laws. Being the Chief Financial Officer, BP Plc. I want to trust and put in your care Eighteen Million British Pounds Sterling, The funds were acquired from an over-invoiced payment from a past contract executed in one of my departments.
+--/WJaeTxyp07KkM0F
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I can't successfully achieve this transaction without presenting you as foreign contractor who will provide a bank account to receive the funds.
+> On Mon, Jun 14, 2021 at 5:50 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
+te:
+> >
+> > Introduce flags field in xdp_frame/xdp_buffer data structure
+> > to define additional buffer features. At the moment the only
+> > supported buffer feature is multi-buffer bit (mb). Multi-buffer bit
+> > is used to specify if this is a linear buffer (mb =3D 0) or a multi-buf=
+fer
+> > frame (mb =3D 1). In the latter case the shared_info area at the end of
+> > the first buffer will be properly initialized to link together
+> > subsequent buffers.
+> >
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>=20
+> Instead of passing this between buffers and frames I wonder if this
+> wouldn't be better to place in something like the xdp_mem_info
+> structure since this is something that would be specific to how the
+> device is handling memory anyway. You could probably split the type
+> field into a 16b type and a 16b flags field. Then add your bit where 0
+> is linear/legacy and 1 is scatter-gather/multi-buffer.
+>=20
 
-Documentation for the claim of the funds will be legally processed and documented, so I will need your full cooperation on this matter for our mutual benefits. We will discuss details if you are interested to work with me to secure this funds. I will appreciate your prompt response in every bit of our communication. Stay Blessed and Stay Safe.
+ack, this should be fine but I put the flag field in xdp_buff/xdp_frame
+in order to reuse it for some xdp hw-hints (e.g rx checksum type).
+We can put it in xdp_mem_info too but I guess it would be less intuitive, w=
+hat
+do you think?
 
+Regards,
+Lorenzo
 
+--/WJaeTxyp07KkM0F
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Best Regards
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYNsVcAAKCRA6cBh0uS2t
+rOBMAP0QuANCEfNrUHQieXmXcMC+YQjXw8MI4YP+VcEiWVtNMwD/blc9x9QPmb+b
+UZUgAMV3XFYBY6qo0gER2PyEmoQdnww=
+=mvKO
+-----END PGP SIGNATURE-----
 
-
-
-Tel: +1 (587) 770-0485
-Andres .B. Auchincloss
-Chief financial officerBP Petroleum p.l.c.
-
-
-
-
-                                  Copyright ©? 1996-2021
+--/WJaeTxyp07KkM0F--
 
