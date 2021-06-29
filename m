@@ -2,90 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41CFE3B7385
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 15:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38CCA3B738A
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 15:55:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233478AbhF2Nzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 09:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233315AbhF2Nzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 09:55:46 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FEDC061760
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 06:53:18 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id cs1-20020a17090af501b0290170856e1a8aso1972124pjb.3
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 06:53:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8xOEtj5mnztXicwvYwri1sbc7OMDUP0KqeYQpkbWHXQ=;
-        b=G3eJKTxT7iMvDsl9sV9OLiz7w1xw26uiDDhFuQh2B1TcHbc/Vyc/Mpc9h14zMyFdSA
-         vEtLm9L8vLAKXrxS23F2JYxaW4ULgn5fqAQJCR7NrF7slIGFoGvl+H/PJkBrAxEKRBww
-         RORaeqol44GtgrsLuZjBI3+SKV0a5anmfRdrp7tZO8VrGknanki5a7pD9MMqh/aElxMi
-         1bIYMeG5ZnHRj/VwfQuyCgwvF5ZzXsTAed9nIBtSjxjeLU3Qn7ArQ8pVO4z6gPWmnTyD
-         6bVdR6jUixJaxAu4hdvLDJhmgUoO6deXY9tA8wIuRhWBMEqWT19MqTquD6XPJoQEsPor
-         Zv8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8xOEtj5mnztXicwvYwri1sbc7OMDUP0KqeYQpkbWHXQ=;
-        b=fc5BOWZQxkJkXR2MpkY7ElzO+MHiz9NeCKsCRo72olKp+g+HBUTv0i5gIytMaZS4kJ
-         aS7lpx04/zyEt3+7hf74/SblfrepHQybnUbLQCQNu8DfTDvpzRwXpGa/AshKvyq9jiw2
-         Oht/uiOHtQf6+VjXkystxxz+zEjydbHzsfqBed+rPRrct5AFlbMgTELYid+Z8/pSB2oV
-         A9JFrwFsIgCvNPYtxsGUCIvoR3xnUk6miorllUDmsQl4h9M9vQHRj89u2WpLLjViqVG4
-         nQGzWztlVekOnl6FqgJu2I+5Ipny8de/it3xxz/SMKUsjxf/C7sbNN/WxW2zwKtp3iYJ
-         TBWA==
-X-Gm-Message-State: AOAM5332oFbgNNdKJYWAteUp6VrRwBiSFpY/owu8G2v/8FfpA9m/fjzo
-        ZKaCmWFtGXHoz/wnJzEJ2w8=
-X-Google-Smtp-Source: ABdhPJzU/CVL4W5r8a59HeQ2+l/Z+FyCWnYc2ruielLbPfbfLR6aoWPI0VuAmtfJwnxJ8q4FDNSNkw==
-X-Received: by 2002:a17:902:ce91:b029:127:9386:932d with SMTP id f17-20020a170902ce91b02901279386932dmr28162666plg.5.1624974797928;
-        Tue, 29 Jun 2021 06:53:17 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6838:b492:569f:2a9a])
-        by smtp.gmail.com with ESMTPSA id m14sm18806807pgu.84.2021.06.29.06.53.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Jun 2021 06:53:17 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next] tcp: change ICSK_CA_PRIV_SIZE definition
-Date:   Tue, 29 Jun 2021 06:53:14 -0700
-Message-Id: <20210629135314.1070666-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
+        id S234139AbhF2N6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 09:58:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32994 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233052AbhF2N6N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Jun 2021 09:58:13 -0400
+Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 437BB61D8B;
+        Tue, 29 Jun 2021 13:55:45 +0000 (UTC)
+Date:   Tue, 29 Jun 2021 09:55:43 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        syzbot+721aa903751db87aa244@syzkaller.appspotmail.com,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org
+Subject: [PATCH] tracepoint: Add tracepoint_probe_register_may_exist() for
+ BPF tracing
+Message-ID: <20210629095543.391ac606@oasis.local.home>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
 
-Instead of a magic number (13 currently) and having
-to change it every other year, use sizeof_field() macro.
+All internal use cases for tracepoint_probe_register() is set to not ever
+be called with the same function and data. If it is, it is considered a
+bug, as that means the accounting of handling tracepoints is corrupted.
+If the function and data for a tracepoint is already registered when
+tracepoint_probe_register() is called, it will call WARN_ON_ONCE() and
+return with EEXISTS.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+The BPF system call can end up calling tracepoint_probe_register() with
+the same data, which now means that this can trigger the warning because
+of a user space process. As WARN_ON_ONCE() should not be called because
+user space called a system call with bad data, there needs to be a way to
+register a tracepoint without triggering a warning.
+
+Enter tracepoint_probe_register_may_exist(), which can be called, but will
+not cause a WARN_ON() if the probe already exists. It will still error out
+with EEXIST, which will then be sent to the user space that performed the
+BPF system call.
+
+This keeps the previous testing for issues with other users of the
+tracepoint code, while letting BPF call it with duplicated data and not
+warn about it.
+
+Link: https://lore.kernel.org/lkml/20210626135845.4080-1-penguin-kernel@I-love.SAKURA.ne.jp/
+Link: https://syzkaller.appspot.com/bug?id=41f4318cf01762389f4d1c1c459da4f542fe5153 [1]`
+
+Cc: stable@vger.kernel.org
+Fixes: c4f6699dfcb85 ("bpf: introduce BPF_RAW_TRACEPOINT")
+Reported-by: syzbot <syzbot+721aa903751db87aa244@syzkaller.appspotmail.com>
+Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 ---
- include/net/inet_connection_sock.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
-index 3c8c59471bc19d53c0cebd4a7e5ef42886d34783..b06c2d02ec84e96c6222ac608473d7eaf71e5590 100644
---- a/include/net/inet_connection_sock.h
-+++ b/include/net/inet_connection_sock.h
-@@ -135,7 +135,7 @@ struct inet_connection_sock {
- 	u32			  icsk_user_timeout;
+#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+
+ include/linux/tracepoint.h | 10 ++++++++++
+ kernel/trace/bpf_trace.c   |  3 ++-
+ kernel/tracepoint.c        | 33 ++++++++++++++++++++++++++++++---
+ 3 files changed, 42 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/tracepoint.h b/include/linux/tracepoint.h
+index 13f65420f188..ab58696d0ddd 100644
+--- a/include/linux/tracepoint.h
++++ b/include/linux/tracepoint.h
+@@ -41,7 +41,17 @@ extern int
+ tracepoint_probe_register_prio(struct tracepoint *tp, void *probe, void *data,
+ 			       int prio);
+ extern int
++tracepoint_probe_register_prio_may_exist(struct tracepoint *tp, void *probe, void *data,
++					 int prio);
++extern int
+ tracepoint_probe_unregister(struct tracepoint *tp, void *probe, void *data);
++static inline int
++tracepoint_probe_register_may_exist(struct tracepoint *tp, void *probe,
++				    void *data)
++{
++	return tracepoint_probe_register_prio_may_exist(tp, probe, data,
++							TRACEPOINT_DEFAULT_PRIO);
++}
+ extern void
+ for_each_kernel_tracepoint(void (*fct)(struct tracepoint *tp, void *priv),
+ 		void *priv);
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 7a52bc172841..f0568b3d6bd1 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1840,7 +1840,8 @@ static int __bpf_probe_register(struct bpf_raw_event_map *btp, struct bpf_prog *
+ 	if (prog->aux->max_tp_access > btp->writable_size)
+ 		return -EINVAL;
  
- 	u64			  icsk_ca_priv[104 / sizeof(u64)];
--#define ICSK_CA_PRIV_SIZE      (13 * sizeof(u64))
-+#define ICSK_CA_PRIV_SIZE	  sizeof_field(struct inet_connection_sock, icsk_ca_priv)
- };
+-	return tracepoint_probe_register(tp, (void *)btp->bpf_func, prog);
++	return tracepoint_probe_register_may_exist(tp, (void *)btp->bpf_func,
++						   prog);
+ }
  
- #define ICSK_TIME_RETRANS	1	/* Retransmit timer */
+ int bpf_probe_register(struct bpf_raw_event_map *btp, struct bpf_prog *prog)
+diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
+index 9f478d29b926..976bf8ce8039 100644
+--- a/kernel/tracepoint.c
++++ b/kernel/tracepoint.c
+@@ -273,7 +273,8 @@ static void tracepoint_update_call(struct tracepoint *tp, struct tracepoint_func
+  * Add the probe function to a tracepoint.
+  */
+ static int tracepoint_add_func(struct tracepoint *tp,
+-			       struct tracepoint_func *func, int prio)
++			       struct tracepoint_func *func, int prio,
++			       bool warn)
+ {
+ 	struct tracepoint_func *old, *tp_funcs;
+ 	int ret;
+@@ -288,7 +289,7 @@ static int tracepoint_add_func(struct tracepoint *tp,
+ 			lockdep_is_held(&tracepoints_mutex));
+ 	old = func_add(&tp_funcs, func, prio);
+ 	if (IS_ERR(old)) {
+-		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
++		WARN_ON_ONCE(warn && PTR_ERR(old) != -ENOMEM);
+ 		return PTR_ERR(old);
+ 	}
+ 
+@@ -343,6 +344,32 @@ static int tracepoint_remove_func(struct tracepoint *tp,
+ 	return 0;
+ }
+ 
++/**
++ * tracepoint_probe_register_prio_may_exist -  Connect a probe to a tracepoint with priority
++ * @tp: tracepoint
++ * @probe: probe handler
++ * @data: tracepoint data
++ * @prio: priority of this function over other registered functions
++ *
++ * Same as tracepoint_probe_register_prio() except that it will not warn
++ * if the tracepoint is already registered.
++ */
++int tracepoint_probe_register_prio_may_exist(struct tracepoint *tp, void *probe,
++					     void *data, int prio)
++{
++	struct tracepoint_func tp_func;
++	int ret;
++
++	mutex_lock(&tracepoints_mutex);
++	tp_func.func = probe;
++	tp_func.data = data;
++	tp_func.prio = prio;
++	ret = tracepoint_add_func(tp, &tp_func, prio, false);
++	mutex_unlock(&tracepoints_mutex);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(tracepoint_probe_register_prio_may_exist);
++
+ /**
+  * tracepoint_probe_register_prio -  Connect a probe to a tracepoint with priority
+  * @tp: tracepoint
+@@ -366,7 +393,7 @@ int tracepoint_probe_register_prio(struct tracepoint *tp, void *probe,
+ 	tp_func.func = probe;
+ 	tp_func.data = data;
+ 	tp_func.prio = prio;
+-	ret = tracepoint_add_func(tp, &tp_func, prio);
++	ret = tracepoint_add_func(tp, &tp_func, prio, true);
+ 	mutex_unlock(&tracepoints_mutex);
+ 	return ret;
+ }
 -- 
-2.32.0.93.g670b81a890-goog
+2.29.2
 
