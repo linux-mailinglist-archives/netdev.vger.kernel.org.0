@@ -2,120 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87AC73B6EA5
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 09:19:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83ECA3B6EC5
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 09:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232227AbhF2HV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 03:21:58 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:9317 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232213AbhF2HV5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 03:21:57 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GDbN40btHz7094;
-        Tue, 29 Jun 2021 15:15:16 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 29 Jun 2021 15:19:28 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 29 Jun
- 2021 15:19:28 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>
-Subject: [PATCH net] net/802/mrp: fix memleak in mrp_request_join()
-Date:   Tue, 29 Jun 2021 15:22:37 +0800
-Message-ID: <20210629072237.991461-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S232284AbhF2HgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 03:36:13 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:51476 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232233AbhF2HgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 03:36:11 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 997AA2260E;
+        Tue, 29 Jun 2021 07:33:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1624952023; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=geQ8X9AXOnUE02C9Qq1it11DiCym9pX59BDvz1OzC7k=;
+        b=P+tiQH5rW0/Dloy//w95TmLcNMu6BCsUHKys9M41li+NI8D8wXbiar2U1j2u5U0n0lEZFn
+        u7k9rjUSbQ6384+6ASh8ezwuBUq+T1Ru2HxAjHYFwR9HLX0GQu3qQ0GfEth+yDNjgUABse
+        z8bxmXM/5iE4VkgL4s3CxT2u8unwIPg=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 478CEA3B8F;
+        Tue, 29 Jun 2021 07:33:43 +0000 (UTC)
+Date:   Tue, 29 Jun 2021 09:33:42 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Tanner Love <tannerlove.kernel@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        "Darrick J . Wong" <djwong@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Tanner Love <tannerlove@google.com>
+Subject: Re: [PATCH net-next v3 1/2] once: implement DO_ONCE_LITE for
+ non-fast-path "do once" functionality
+Message-ID: <YNrM1neBRdjkRf02@alley>
+References: <20210628135007.1358909-1-tannerlove.kernel@gmail.com>
+ <20210628135007.1358909-2-tannerlove.kernel@gmail.com>
+ <20210628111446.357b2418@oasis.local.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210628111446.357b2418@oasis.local.home>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got kmemleak report when doing fuzz test:
+On Mon 2021-06-28 11:14:46, Steven Rostedt wrote:
+> On Mon, 28 Jun 2021 09:50:06 -0400
+> Tanner Love <tannerlove.kernel@gmail.com> wrote:
+> 
+> > Certain uses of "do once" functionality reside outside of fast path,
+> > and so do not require jump label patching via static keys, making
+> > existing DO_ONCE undesirable in such cases.
+> > 
+> > Replace uses of __section(".data.once") with DO_ONCE_LITE(_IF)?
+> 
+> I hate the name "_LITE" but can't come up with something better.
+> 
+> Maybe: DO_ONCE_SLOW() ??
 
-BUG: memory leak
-unreferenced object 0xffff88810c239500 (size 64):
-comm "syz-executor940", pid 882, jiffies 4294712870 (age 14.631s)
-hex dump (first 32 bytes):
-01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-00 00 00 00 00 00 00 00 01 00 00 00 01 02 00 04 ................
-backtrace:
-[<00000000a323afa4>] slab_alloc_node mm/slub.c:2972 [inline]
-[<00000000a323afa4>] slab_alloc mm/slub.c:2980 [inline]
-[<00000000a323afa4>] __kmalloc+0x167/0x340 mm/slub.c:4130
-[<000000005034ca11>] kmalloc include/linux/slab.h:595 [inline]
-[<000000005034ca11>] mrp_attr_create net/802/mrp.c:276 [inline]
-[<000000005034ca11>] mrp_request_join+0x265/0x550 net/802/mrp.c:530
-[<00000000fcfd81f3>] vlan_mvrp_request_join+0x145/0x170 net/8021q/vlan_mvrp.c:40
-[<000000009258546e>] vlan_dev_open+0x477/0x890 net/8021q/vlan_dev.c:292
-[<0000000059acd82b>] __dev_open+0x281/0x410 net/core/dev.c:1609
-[<000000004e6dc695>] __dev_change_flags+0x424/0x560 net/core/dev.c:8767
-[<00000000471a09af>] rtnl_configure_link+0xd9/0x210 net/core/rtnetlink.c:3122
-[<0000000037a4672b>] __rtnl_newlink+0xe08/0x13e0 net/core/rtnetlink.c:3448
-[<000000008d5d0fda>] rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3488
-[<000000004882fe39>] rtnetlink_rcv_msg+0x369/0xa10 net/core/rtnetlink.c:5552
-[<00000000907e6c54>] netlink_rcv_skb+0x134/0x3d0 net/netlink/af_netlink.c:2504
-[<00000000e7d7a8c4>] netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
-[<00000000e7d7a8c4>] netlink_unicast+0x4a0/0x6a0 net/netlink/af_netlink.c:1340
-[<00000000e0645d50>] netlink_sendmsg+0x78e/0xc90 net/netlink/af_netlink.c:1929
-[<00000000c24559b7>] sock_sendmsg_nosec net/socket.c:654 [inline]
-[<00000000c24559b7>] sock_sendmsg+0x139/0x170 net/socket.c:674
-[<00000000fc210bc2>] ____sys_sendmsg+0x658/0x7d0 net/socket.c:2350
-[<00000000be4577b5>] ___sys_sendmsg+0xf8/0x170 net/socket.c:2404
+Or rename the original DO_ONCE() to DO_ONCE_FAST() because it is
+more tricky to be fast. And call the "normal" implementation DO_ONCE().
 
-Calling mrp_request_leave() after mrp_request_join(), the attr->state
-is set to MRP_APPLICANT_VO, mrp_attr_destroy() won't be called in last
-TX event in mrp_uninit_applicant(), the attr of applicant will be leaked.
-To fix this leak, iterate and free each attr of applicant before rerturning
-from mrp_uninit_applicant().
+> Anyway, besides my bike-shedding comment above...
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- net/802/mrp.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+Same here :-)
 
-diff --git a/net/802/mrp.c b/net/802/mrp.c
-index bea6e43d45a0..35e04cc5390c 100644
---- a/net/802/mrp.c
-+++ b/net/802/mrp.c
-@@ -292,6 +292,19 @@ static void mrp_attr_destroy(struct mrp_applicant *app, struct mrp_attr *attr)
- 	kfree(attr);
- }
- 
-+static void mrp_attr_destroy_all(struct mrp_applicant *app)
-+{
-+	struct rb_node *node, *next;
-+	struct mrp_attr *attr;
-+
-+	for (node = rb_first(&app->mad);
-+	     next = node ? rb_next(node) : NULL, node != NULL;
-+	     node = next) {
-+		attr = rb_entry(node, struct mrp_attr, node);
-+		mrp_attr_destroy(app, attr);
-+	}
-+}
-+
- static int mrp_pdu_init(struct mrp_applicant *app)
- {
- 	struct sk_buff *skb;
-@@ -895,6 +908,7 @@ void mrp_uninit_applicant(struct net_device *dev, struct mrp_application *appl)
- 
- 	spin_lock_bh(&app->lock);
- 	mrp_mad_event(app, MRP_EVENT_TX);
-+	mrp_attr_destroy_all(app);
- 	mrp_pdu_queue(app);
- 	spin_unlock_bh(&app->lock);
- 
--- 
-2.25.1
+Acked-by: Petr Mladek <pmladek@suse.com>
 
+Best Regards,
+Petr
