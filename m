@@ -2,69 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C7FE3B74C0
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 16:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDDFA3B74C3
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 16:58:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234493AbhF2O7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 10:59:00 -0400
-Received: from mga11.intel.com ([192.55.52.93]:63732 "EHLO mga11.intel.com"
+        id S234550AbhF2PBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 11:01:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33488 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232521AbhF2O67 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Jun 2021 10:58:59 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10029"; a="205153451"
-X-IronPort-AV: E=Sophos;i="5.83,309,1616482800"; 
-   d="scan'208";a="205153451"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2021 07:56:32 -0700
-X-IronPort-AV: E=Sophos;i="5.83,309,1616482800"; 
-   d="scan'208";a="408197136"
-Received: from mckumar-mobl.gar.corp.intel.com (HELO [10.213.117.55]) ([10.213.117.55])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2021 07:56:29 -0700
-Subject: Re: [PATCH net-next 06/10] net: iosm: drop custom netdev(s) removing
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linuxwwan <linuxwwan@intel.com>
-References: <20210615003016.477-1-ryazanov.s.a@gmail.com>
- <20210615003016.477-7-ryazanov.s.a@gmail.com>
- <CAHNKnsR5X8Axttk_YX=fpi5h6iV191fLJ6MZqrLvhZvPe==mXA@mail.gmail.com>
- <1d31c18cebf74ff29b5e388c4cd26361@intel.com>
- <CAMZdPi9bqTB8+=xAsx3C6yAJdf3CHx9Z0AUxZpFQ-FFU5q84cQ@mail.gmail.com>
-From:   "Kumar, M Chetan" <m.chetan.kumar@intel.com>
-Message-ID: <e241d0d4-563d-e111-974e-9e47228f5178@intel.com>
-Date:   Tue, 29 Jun 2021 20:26:16 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S232521AbhF2PBC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Jun 2021 11:01:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=HEcsTCVg6+kwx1n3BhXwX1d9BEiVWSf6P93gu6Ugbsc=; b=5iLPhUiyIu5AwUpSFK99Ah7J5v
+        wpZ67NmlQUy0hWlHUkCax2+HzNZy/3u2bfTNR7fQ5Saf9HiGCw3jrVjeqQodE+DSOENgPFDndK9Bh
+        WWMp3zVTzWxpTW6euWx1SnGaI1/MIRzpQxNx3ph1g5AqwBVtKM5+V0iW2ZwzLZ4N7a9E=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lyFC3-00BYQO-7O; Tue, 29 Jun 2021 16:58:31 +0200
+Date:   Tue, 29 Jun 2021 16:58:31 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Xu Liang <lxu@maxlinear.com>
+Cc:     hkallweit1@gmail.com, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, vee.khee.wong@linux.intel.com,
+        linux@armlinux.org.uk, hmehrtens@maxlinear.com,
+        tmohren@maxlinear.com, mohammad.athari.ismail@intel.com
+Subject: Re: [PATCH v4 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
+Message-ID: <YNs1F7pgNzDlm/mD@lunn.ch>
+References: <20210628142946.16319-1-lxu@maxlinear.com>
+ <20210628142946.16319-2-lxu@maxlinear.com>
 MIME-Version: 1.0
-In-Reply-To: <CAMZdPi9bqTB8+=xAsx3C6yAJdf3CHx9Z0AUxZpFQ-FFU5q84cQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210628142946.16319-2-lxu@maxlinear.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Loic,
+> +static int gpy_config_aneg(struct phy_device *phydev)
+> +{
+> +	bool changed = false;
+> +	u32 adv;
+> +	int ret;
+> +
+> +	if (phydev->autoneg == AUTONEG_DISABLE) {
+> +		/* Configure half duplex with genphy_setup_forced,
+> +		 * because genphy_c45_pma_setup_forced does not support.
+> +		 */
+> +		return phydev->duplex != DUPLEX_FULL
+> +			? genphy_setup_forced(phydev)
+> +			: genphy_c45_pma_setup_forced(phydev);
+> +	}
+> +
+> +	ret = genphy_c45_an_config_aneg(phydev);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret > 0)
+> +		changed = true;
+> +
+> +	adv = linkmode_adv_to_mii_ctrl1000_t(phydev->advertising);
+> +	ret = phy_modify_changed(phydev, MII_CTRL1000,
+> +				 ADVERTISE_1000FULL | ADVERTISE_1000HALF,
+> +				 adv);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret > 0)
+> +		changed = true;
+> +
+> +	ret = genphy_c45_check_and_restart_aneg(phydev, changed);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (phydev->interface == PHY_INTERFACE_MODE_USXGMII ||
+> +	    phydev->interface == PHY_INTERFACE_MODE_INTERNAL)
+> +		return 0;
+> +
+> +	/* No need to trigger re-ANEG if SGMII link speed is 2.5G
+> +	 * or SGMII ANEG is disabled.
+> +	 */
 
-On 6/29/2021 7:44 PM, Loic Poulain wrote:
+Is this correct. Are you using SGMII at 2.5G, or should this comment
+be 2500BaseX?
 
->>> BTW, if IOSM modems have a default data channel, I can add a separate
->>> patch to the series to create a default network interface for IOSM if you tell
->>> me which link id is used for the default data channel.
->>
->> Link id 1 is always associated as default data channel.
-> 
-> Quick question, Isn't your driver use MBIM session IDs? with
-> session-ID 0 as the default one?
+Otherwise, this looks good now.
 
-Link Id from 1 to 8 are treated as valid link ids. These ids are
-decremented by 1 to match session id.
-
-In this case link id 1 would be mapped to session id 0. So have
-requested link id 1 to be set as default data channel.
-
-Regards,
-Chetan
+   Andrew
