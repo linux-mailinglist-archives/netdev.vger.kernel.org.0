@@ -2,159 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A4133B763A
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 18:07:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A4473B76BE
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 18:56:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232315AbhF2QKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 12:10:22 -0400
-Received: from us-smtp-delivery-115.mimecast.com ([216.205.24.115]:41210 "EHLO
-        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232257AbhF2QIO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 12:08:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
-        s=selector; t=1624982738;
+        id S234365AbhF2Q6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 12:58:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35231 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232176AbhF2Q6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 12:58:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624985764;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gLFbQt3/BKDVl7YsAllqrHZEuNb9Nx52sj4Yu3FMrT4=;
-        b=CuB2KxHqGuoO1RwCwwIn7N9D1zSSFTGcKKsRayh+n3s/VHx75LxAazKVRLcXxx3A5dut+b
-        csmlBZig14Mz62mMBgehB6xI9iWrGaHj5zxtAjjM6qLBuEeyI+IEm0e6Nafal74zDaSWK/
-        XWaPKAJI53u2tLOUvaXLYcSb0SHejdo=
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam08lp2048.outbound.protection.outlook.com [104.47.74.48]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- us-mta-307-oQTP2I_-MOy6N3dZ9T0u1A-1; Tue, 29 Jun 2021 12:05:35 -0400
-X-MC-Unique: oQTP2I_-MOy6N3dZ9T0u1A-1
-Received: from MWHPR19MB0077.namprd19.prod.outlook.com (2603:10b6:301:67::32)
- by MW3PR19MB4345.namprd19.prod.outlook.com (2603:10b6:303:49::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.18; Tue, 29 Jun
- 2021 16:05:33 +0000
-Received: from MWHPR19MB0077.namprd19.prod.outlook.com
- ([fe80::b931:30a4:ce59:dc87]) by MWHPR19MB0077.namprd19.prod.outlook.com
- ([fe80::b931:30a4:ce59:dc87%4]) with mapi id 15.20.4219.024; Tue, 29 Jun 2021
- 16:05:33 +0000
-From:   Liang Xu <lxu@maxlinear.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        Thomas Mohren <tmohren@maxlinear.com>,
-        "mohammad.athari.ismail@intel.com" <mohammad.athari.ismail@intel.com>
-Subject: Re: [PATCH v4 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
-Thread-Topic: [PATCH v4 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
-Thread-Index: AQHXbCotGaKisHiq60uUI9dpHq7kBqsrFh6AgAASuYA=
-Date:   Tue, 29 Jun 2021 16:05:33 +0000
-Message-ID: <6068f6ab-1521-48be-20a6-f8a30ad75d3f@maxlinear.com>
-References: <20210628142946.16319-1-lxu@maxlinear.com>
- <20210628142946.16319-2-lxu@maxlinear.com> <YNs1F7pgNzDlm/mD@lunn.ch>
-In-Reply-To: <YNs1F7pgNzDlm/mD@lunn.ch>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+        bh=q2NICKy+eY6u9v6U5C5rPMzRkfmDNI+XJLW4LIKdeOM=;
+        b=VgXgZxLX6Re2snoYVLU/w9QJhBDQkwUsSU9tT/7r7j8yBsc+Z4Z0dK+T1ncIrwpz8pqG7D
+        ftRA7mIQj3kDlSgzi/uAyb+aZKZlxGazHFN61hDzKw2X9my8GKz1ay4dahbPd3ZIuuLgzB
+        etmfZe+fbJaTiQyctOp9C0Z1+/DL4OA=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-154-gKV6Ww_mN0OfrtvD0A6CTA-1; Tue, 29 Jun 2021 12:56:02 -0400
+X-MC-Unique: gKV6Ww_mN0OfrtvD0A6CTA-1
+Received: by mail-ed1-f72.google.com with SMTP id j15-20020a05640211cfb0290394f9de5750so11167671edw.16
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 09:56:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=q2NICKy+eY6u9v6U5C5rPMzRkfmDNI+XJLW4LIKdeOM=;
+        b=rr+hucG0E1SGhPsE0y7l7dic4sl6zHJkX1pPd9MyiU895W+KQWqFd9GdGhaTKn19jX
+         HGcbsUoB9Pbo/wHk9vEjUe0y4byD0Y2SXgCt6fkq80w6/EsmhxqkbCMAQXdu5/7J7PiZ
+         Lzzk91bxKRZQo7hjqxnhq8Y4NnjOwPGbbbKt+Sju1mWU+Z/yOvPQC2dOdhH3UCO1fF2f
+         PxmbFSv5gqbiFqSZMt/CjfVmYUL16b+NC2XedejLzovkf6e5SUwhTfmKtIzEmHOCb127
+         lPOKpRuOJ1TNAjabUTiduxi+SgXqueqqO49Ti4T/M1Q8Lt0nM6Xo0vkWBvm5T4guklsp
+         SXSA==
+X-Gm-Message-State: AOAM533kV7eKShkGg5/9zslil0ewvM/cSGK1LfsIaAeY4IY2roXMwDPI
+        CCK9Qz79qtSZ0f0WJma2vZGepZ4e2DD/OGXXD7cCrcEgm70pugXCKZ7lKNOCngjLgMw2QkKpjaQ
+        aorPsfvt/o07PXvNf
+X-Received: by 2002:a05:6402:51c9:: with SMTP id r9mr10497264edd.326.1624985761638;
+        Tue, 29 Jun 2021 09:56:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx6JX0kG7OliK+69WwEBKZuT8U9A5MzKTXCdCtoFvyGEIz/VAikmU9KP1H/PmK4CJpy/7zJHQ==
+X-Received: by 2002:a05:6402:51c9:: with SMTP id r9mr10497251edd.326.1624985761526;
+        Tue, 29 Jun 2021 09:56:01 -0700 (PDT)
+Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id gv20sm8656803ejc.23.2021.06.29.09.56.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Jun 2021 09:56:01 -0700 (PDT)
+Subject: Re: [PATCH net v2] xdp, net: fix for construct skb by xdp inside xsk
+ zc rx
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        intel-wired-lan@lists.osuosl.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+References: <20210617145534.101458-1-xuanzhuo@linux.alibaba.com>
+ <20210628104721.GA57589@ranger.igk.intel.com>
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+Message-ID: <f5ce5610-443c-a2d9-43ef-d203f9afb0d8@redhat.com>
+Date:   Tue, 29 Jun 2021 18:55:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
-x-originating-ip: [138.75.37.21]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 48dfaf3a-76af-4b99-8c8e-08d93b17b9d9
-x-ms-traffictypediagnostic: MW3PR19MB4345:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW3PR19MB4345D6350E74931F8A589966BD029@MW3PR19MB4345.namprd19.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4303
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0
-x-microsoft-antispam-message-info: lHPmVyoUItb6yxAbJv8mPBvpFDI1+D6W9fB9oMV2d67VpLiCwymFWZR4PljkrmD1nSm35cev2CtL5me71JY2MD0T66Td990zNF4l5ZspX//yRk7bCxGM3xZt/R4tIfPh1Ng7miGBqJfo52vBRhZtm14Z78WlYe1ekzWrwHuchuqEWsB5RyV0EDjNB20+yWQejOYOXI63QLlgCaeea4LfMMyw0tjsgS8Bl5mGUQl7ontGmtJhWvo+tjnEhnLGfLXquSUHZKmKe7vCCMz12opeCVZ5QsxduIzrSRZS9foOONpC2IU4sUWuX4loc2NgXmibixdPjbQjay0L2DG+MrhDjOV1gleVF0Syd1oKIcNcD0amVQ4n4ItpbHpkHVdCWK+G11GYnnlwnsYe2lIYYL4vRmwkc4PZDZCNKDfbjWJrIHWu6q7t+n3qY5lJGGfEKGTzyYxf7gg8sKrWQyLiyPJ6NSVxSDvjzx5UfPXAl3PHaHnsd/ANYFd4pYfky+j/AzxpSeiCdj7ftk0oyV8oGJrnoq9ugE9VsNKSSQ3KwwEp3RrEz4Gho6RjQ7feABdcb7NWZFGADqo/4NwckkT6q48T7xRP2ZgNqAld8Dzi5xitfwVfk8XvhLhuyKFJ+mlQs5pFVz8qCTJmPUKclbfgY9rVMOalGHJQB9B6d8pAr7txWWnmR6xzcnohSt9aloNC8/J+E+aTrkhXN99ml/spNH/OT5z1/eCD7DyOouviJayHk6I=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR19MB0077.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(39840400004)(366004)(396003)(346002)(6512007)(64756008)(6916009)(66476007)(2616005)(91956017)(66946007)(86362001)(2906002)(66446008)(5660300002)(76116006)(26005)(186003)(66556008)(83380400001)(36756003)(53546011)(316002)(6486002)(122000001)(4326008)(38100700002)(8676002)(54906003)(31686004)(71200400001)(6506007)(478600001)(31696002)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1102
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WjVqVEdydGUrakNPdkZwaDJnQVZaVys0bmJNcVhXZjRrZkYyUVE1OGcybUZ2?=
- =?utf-8?B?Zys2ZGg3NFVnNUtNWkZ3T2pwL3JrSzc1eFVURWdIRDlkSUdUWlU5VHo3cE1q?=
- =?utf-8?B?UUVER2UwbjZ4OXM1Z1FWaDVHMS9KREZublMzckg4TDI1OExFYk5YQ2JrQUhn?=
- =?utf-8?B?YnRORzZTbG44RjFmVEVacnV0bDFpSW9WeGMwWkt4SFhCNTNuNU1iYlRhTFYy?=
- =?utf-8?B?MmRLVW51YWk3MVlCcUpnRGNIc0Q1Z0g5VlBuU1BOVk9QWktZZlZNUzJlTi81?=
- =?utf-8?B?ak9nZW9GUnZHOUVlS0Y3aTczeFJpYll6dTJGSXRiNWttN01QTWdRZ09xUjQ4?=
- =?utf-8?B?UlprTmRlYXJaNEprWklnREFWUGRKa3Bqc1prWkJObUVuUlFBVVZqVWhQRWQ2?=
- =?utf-8?B?L1I5OTlMbzVZcGQzZXBoTzdqYWl6RXA5RDBMblViMEZwYnRhbDZ2Wm16bjBB?=
- =?utf-8?B?MU5ORXZFR0ZORXBSNUhPUiszcklNUFF2R3JRcXVzam1ZUTM3YUhNSVJ2WDRx?=
- =?utf-8?B?SHF5M2ZMZTZrS3VXTDJaVklpbGpmWENmaWtZN0dlS1N1SGhoeUQxNDY3RHFP?=
- =?utf-8?B?STVkNGM3eWRUK3hHWHhta0lSNGd2RjRZQ0pEbTQ3dFVMNWRialJ3L2N3K2tI?=
- =?utf-8?B?ZURQc2w2VVR5cHhEbUw0bnNnVXU2dWNlOWJVeWlncGxMQnNiSmY1MjFkMEo1?=
- =?utf-8?B?aEk3WE1ENmZZVnoreVdOSFFmSDFVNGxBYUpjSHJtb0dPdGtjdjJsR3pRNEYy?=
- =?utf-8?B?SWZlV0RnSzR0Q0NLK210N2ZzVGprdXkyYzJETC9BUDJjd2JPeHZiRncvU05G?=
- =?utf-8?B?UUJLaXFHVkU3RUVldHRSNWJhVVRNbkhDbVRLOEc3enJ0cnZDS0tGZjk4bjEw?=
- =?utf-8?B?ZjNiYUJ1a1RFaGV3czFsSENLWXBGR29ZQ0ZEWDgzLytadWt4RG1xVUpOaG9l?=
- =?utf-8?B?Q2NOWWlYN084ZjUzN1dabHRHVnp6a0pnRzFoMzBoclVsZzc1STdkS0pSRkh2?=
- =?utf-8?B?MmJBcklWVG82eWNGZEpPMTIrdmczZXZPS3I0QTJnZzIzWHNPR29iQzB3dC9M?=
- =?utf-8?B?dm51aTJZQ29ZT0o1eWJDS2czVStpRTcvQmF6Z054emJvYlFqbGd4c2xPOEtE?=
- =?utf-8?B?cFFFakdCaGdQa1d6dUVVY20rYlpzVmNqU0ExODlxcTNpSVRDd3hPRU03VFVo?=
- =?utf-8?B?bXFkbElIZ2JTOGtoQXhCc0ZCREtCU1pDeGVxNnlQTFdVZW5iN1NEUHMzSWcv?=
- =?utf-8?B?NnFGKzdnYkJWL282ajNSZEQzaHcreHZHcjRGL3ArRHpWcVFHb25rMkNGUGpN?=
- =?utf-8?B?SWVZYTA4SzZWNk5GT2JZRlh5aWJLQTNQS0VXNmZqS2tySUVBNXNhaXRQUnMw?=
- =?utf-8?B?bzhpclBMa1FMWFNuMmZOWWhLRElFbTMyTjJrdmlIR0syQU9BSS9EVW5iYm9h?=
- =?utf-8?B?NEdpZGhZU3Y3SkY4dFZrK2FRM0FJem9FbytXQThQMEV6eEJ1T0FPMUR2Smc5?=
- =?utf-8?B?bXZkTlNQUVhtSUV1clE3WmlOYXd1Ung5NDhTUnhpM2xpSkpGSFdWd3BKQmJN?=
- =?utf-8?B?SGt1RmhKVXI0K25teW9VdVNYOHplRUFsK0N3UDEvVmR0K1FscEZhak5wRk0v?=
- =?utf-8?B?Y1lkNExHL0NvandsdEprZUE1RkJwK2FFSVh6Q1A4a25uOEIxbHR5cUlLblJo?=
- =?utf-8?B?SFhNTXlWQlR2VmxuM240N1l6U01jaVBYNDZCRnRDRVJlOWNUaG1FNit6Ullx?=
- =?utf-8?Q?8t8tI7A/QcdEtqvZX8=3D?=
 MIME-Version: 1.0
-X-OriginatorOrg: maxlinear.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR19MB0077.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 48dfaf3a-76af-4b99-8c8e-08d93b17b9d9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2021 16:05:33.6055
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: dac28005-13e0-41b8-8280-7663835f2b1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: DISCSqEdkNcupwh2CdmbM6Qy8RbeOEst6KY6iiX9YBdXYz4aUdqhPQ/XvPTfh9tFQhCG03OkaTcRuI/DMMKeVQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR19MB4345
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: maxlinear.com
+In-Reply-To: <20210628104721.GA57589@ranger.igk.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-ID: <8D689081522BBB45B1867D9A546B6879@namprd19.prod.outlook.com>
-Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjkvNi8yMDIxIDEwOjU4IHBtLCBBbmRyZXcgTHVubiB3cm90ZToNCj4gVGhpcyBlbWFpbCB3
-YXMgc2VudCBmcm9tIG91dHNpZGUgb2YgTWF4TGluZWFyLg0KPg0KPg0KPj4gK3N0YXRpYyBpbnQg
-Z3B5X2NvbmZpZ19hbmVnKHN0cnVjdCBwaHlfZGV2aWNlICpwaHlkZXYpDQo+PiArew0KPj4gKyAg
-ICAgYm9vbCBjaGFuZ2VkID0gZmFsc2U7DQo+PiArICAgICB1MzIgYWR2Ow0KPj4gKyAgICAgaW50
-IHJldDsNCj4+ICsNCj4+ICsgICAgIGlmIChwaHlkZXYtPmF1dG9uZWcgPT0gQVVUT05FR19ESVNB
-QkxFKSB7DQo+PiArICAgICAgICAgICAgIC8qIENvbmZpZ3VyZSBoYWxmIGR1cGxleCB3aXRoIGdl
-bnBoeV9zZXR1cF9mb3JjZWQsDQo+PiArICAgICAgICAgICAgICAqIGJlY2F1c2UgZ2VucGh5X2M0
-NV9wbWFfc2V0dXBfZm9yY2VkIGRvZXMgbm90IHN1cHBvcnQuDQo+PiArICAgICAgICAgICAgICAq
-Lw0KPj4gKyAgICAgICAgICAgICByZXR1cm4gcGh5ZGV2LT5kdXBsZXggIT0gRFVQTEVYX0ZVTEwN
-Cj4+ICsgICAgICAgICAgICAgICAgICAgICA/IGdlbnBoeV9zZXR1cF9mb3JjZWQocGh5ZGV2KQ0K
-Pj4gKyAgICAgICAgICAgICAgICAgICAgIDogZ2VucGh5X2M0NV9wbWFfc2V0dXBfZm9yY2VkKHBo
-eWRldik7DQo+PiArICAgICB9DQo+PiArDQo+PiArICAgICByZXQgPSBnZW5waHlfYzQ1X2FuX2Nv
-bmZpZ19hbmVnKHBoeWRldik7DQo+PiArICAgICBpZiAocmV0IDwgMCkNCj4+ICsgICAgICAgICAg
-ICAgcmV0dXJuIHJldDsNCj4+ICsgICAgIGlmIChyZXQgPiAwKQ0KPj4gKyAgICAgICAgICAgICBj
-aGFuZ2VkID0gdHJ1ZTsNCj4+ICsNCj4+ICsgICAgIGFkdiA9IGxpbmttb2RlX2Fkdl90b19taWlf
-Y3RybDEwMDBfdChwaHlkZXYtPmFkdmVydGlzaW5nKTsNCj4+ICsgICAgIHJldCA9IHBoeV9tb2Rp
-ZnlfY2hhbmdlZChwaHlkZXYsIE1JSV9DVFJMMTAwMCwNCj4+ICsgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICBBRFZFUlRJU0VfMTAwMEZVTEwgfCBBRFZFUlRJU0VfMTAwMEhBTEYsDQo+PiAr
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgYWR2KTsNCj4+ICsgICAgIGlmIChyZXQgPCAw
-KQ0KPj4gKyAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPj4gKyAgICAgaWYgKHJldCA+IDApDQo+
-PiArICAgICAgICAgICAgIGNoYW5nZWQgPSB0cnVlOw0KPj4gKw0KPj4gKyAgICAgcmV0ID0gZ2Vu
-cGh5X2M0NV9jaGVja19hbmRfcmVzdGFydF9hbmVnKHBoeWRldiwgY2hhbmdlZCk7DQo+PiArICAg
-ICBpZiAocmV0IDwgMCkNCj4+ICsgICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4+ICsNCj4+ICsg
-ICAgIGlmIChwaHlkZXYtPmludGVyZmFjZSA9PSBQSFlfSU5URVJGQUNFX01PREVfVVNYR01JSSB8
-fA0KPj4gKyAgICAgICAgIHBoeWRldi0+aW50ZXJmYWNlID09IFBIWV9JTlRFUkZBQ0VfTU9ERV9J
-TlRFUk5BTCkNCj4+ICsgICAgICAgICAgICAgcmV0dXJuIDA7DQo+PiArDQo+PiArICAgICAvKiBO
-byBuZWVkIHRvIHRyaWdnZXIgcmUtQU5FRyBpZiBTR01JSSBsaW5rIHNwZWVkIGlzIDIuNUcNCj4+
-ICsgICAgICAqIG9yIFNHTUlJIEFORUcgaXMgZGlzYWJsZWQuDQo+PiArICAgICAgKi8NCj4gSXMg
-dGhpcyBjb3JyZWN0LiBBcmUgeW91IHVzaW5nIFNHTUlJIGF0IDIuNUcsIG9yIHNob3VsZCB0aGlz
-IGNvbW1lbnQNCj4gYmUgMjUwMEJhc2VYPw0KPg0KPiBPdGhlcndpc2UsIHRoaXMgbG9va3MgZ29v
-ZCBub3cuDQo+DQo+ICAgICBBbmRyZXcNCj4NCkNhbiBJIGNoYW5nZSB0byAiaWYgbGluayBzcGVl
-ZCBpcyAyLjVHIj8NCg0KDQo=
+On 28/06/2021 12.47, Maciej Fijalkowski wrote:
+
+> +static __always_inline struct sk_buff *
+> +xdp_construct_skb(struct xdp_buff *xdp, struct napi_struct *napi)
+> +{
+
+I don't like the generic name "xdp_construct_skb".
+
+What about calling it "xdp_copy_construct_skb", because below is 
+memcpy'ing the data.
+
+Functions that use this call free (or recycle) the memory backing the 
+packet, after calling this function.
+
+(I'm open to other naming suggestions)
+
+
+> +	unsigned int metasize;
+> +	unsigned int datasize;
+> +	unsigned int headroom;
+> +	struct sk_buff *skb;
+> +	unsigned int len;
+> +
+> +	/* this include metasize */
+> +	datasize = xdp->data_end  - xdp->data_meta;
+> +	metasize = xdp->data      - xdp->data_meta;
+> +	headroom = xdp->data_meta - xdp->data_hard_start;
+> +	len      = xdp->data_end  - xdp->data_hard_start;
+> +
+> +	/* allocate a skb to store the frags */
+> +	skb = __napi_alloc_skb(napi, len, GFP_ATOMIC | __GFP_NOWARN);
+> +	if (unlikely(!skb))
+> +		return NULL;
+> +
+> +	skb_reserve(skb, headroom);
+> +	memcpy(__skb_put(skb, datasize), xdp->data_meta, datasize);
+> +	if (metasize) {
+> +		__skb_pull(skb, metasize);
+> +		skb_metadata_set(skb, metasize);
+> +	}
+> +
+> +	return skb;
+> +}
 
