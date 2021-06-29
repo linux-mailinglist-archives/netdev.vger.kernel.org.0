@@ -2,181 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB1FF3B6F14
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 10:11:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D04D33B6F23
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 10:15:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232371AbhF2IMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 04:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        id S232412AbhF2IRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 04:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232349AbhF2IMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 04:12:15 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95104C061574;
-        Tue, 29 Jun 2021 01:09:48 -0700 (PDT)
-Received: from ktm (85-222-111-42.dynamic.chello.pl [85.222.111.42])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: lukma@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id E4BBD83121;
-        Tue, 29 Jun 2021 10:09:44 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1624954185;
-        bh=FAYNqeS6gRGT1P8zbOQz0D0+tAy4ISiTRiBKF07uiQk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GLHdqpew3bzBUNovke7LKaB7cbIEq1WsFEPwluQ0YnsIIF90LBjiWx5OlpwJDxRLL
-         YNWcxKuSo5YdPtE2sGajLZ3ijq4uewTTWl+MJllYZis15d43iaGY0ClURiuKeMcbuc
-         mGGDTYAP7Vgkz9NyqgzKJ1U5AeDqxUEsU6yxZXIUEPej2xDdl6y7QDAIAGtS6cllZz
-         QA1TcdGHIHr8JppI+r543IZuvolFYdZSpncVEKTpcaXvfdV8ySdHjJEZsBiymwYvLZ
-         LgAEmzjPszd9huv+IGU9cjNVG9SMBMHcAX/uM1Wql3bhdC5yD2FZ8jqkvvRIOeBSIq
-         xvdcwZe/RJHow==
-Date:   Tue, 29 Jun 2021 10:09:37 +0200
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Mark Einon <mark.einon@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 2/3] net: Provide switchdev driver for NXP's More Than IP
- L2 switch
-Message-ID: <20210629100937.10ce871d@ktm>
-In-Reply-To: <20210628142329.2y7gmykoy7uh44gd@skbuf>
-References: <YNOTKl7ZKk8vhcMR@lunn.ch>
-        <20210624125304.36636a44@ktm>
-        <YNSJyf5vN4YuTUGb@lunn.ch>
-        <20210624163542.5b6d87ee@ktm>
-        <YNSuvJsD0HSSshOJ@lunn.ch>
-        <20210625115935.132922ff@ktm>
-        <YNXq1bp7XH8jRyx0@lunn.ch>
-        <20210628140526.7417fbf2@ktm>
-        <20210628124835.zbuija3hwsnh2zmd@skbuf>
-        <20210628161314.37223141@ktm>
-        <20210628142329.2y7gmykoy7uh44gd@skbuf>
-Organization: denx.de
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S232394AbhF2IRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 04:17:14 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78411C061767
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 01:14:47 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id l24so5563938ejq.11
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 01:14:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uptPqcgshGnCftIWPnxGiyLOnUUUIP0/+ojiVFO1k00=;
+        b=DRDFZWTpGi9GCyTDEZBHK+CH/M843cbtTy9vUm8a5IsHg/jkfiUZbd4xYJX6iZu6cW
+         9GFiPjoCONUMKxg5SnLXbhDBJ/pjzDoy1JqsZXHVy8Kr2mESTA8qWpG1fam0YYiIMbhU
+         9GQywd2enJcCN300YNcOenjqf+z61wovjpxOBODz/aIV6xIqUGQr1Ssg3Hyiv4mAs1Cc
+         kfrvmN8IkAPcaOiP2ZLt/twpqM4r/ihXgA9G7NK7+twdlzhXEEjkO9OxziYqElX+Wri1
+         /EcksaYxLEvAl4P9igdr5L643F8OFvKS3ZRNWd9sxRl+uBkLH/YyNWfUL3Qa4HWi9OmH
+         NBOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uptPqcgshGnCftIWPnxGiyLOnUUUIP0/+ojiVFO1k00=;
+        b=sOLBZ8kk0ZrVPPcq/uwUSMGzXbDrCavu5LJ2ZaRqhGqh7/o6oJrqcNbUZBS6N0kpVg
+         X9nGuZbyUqVZmrHv6YddG6hbbZhCh8F8RLo5YGSolDFWD1+kfIIXiXRGk1FOQBgz0dMw
+         v+SdagLlADF033xcnArlKq/Iptq8+kUOpCsagtEEJXOIYUa52+uTM/77kXyaQWW876qV
+         SjIEpDDWBFIOA7iln2fM9/UGxES/8u7iOnmhP7N/ihEb+kh7muOdWvNuR7Kv+kvPBnlY
+         EBedp3r+ute5OaLvtUenGCoD1w/jml2BdTt9/szpNY1LJoiv5/ZX+YjhcX2CGZ/+mGzP
+         Rfwg==
+X-Gm-Message-State: AOAM532m7+n57y1CUm0r/sBrdre9sqjznSCpQJU7k9/suHECorjRyg2c
+        BM/BbsYOYQvYaa6YsuI1NESubHoc+GgagbCw4PVh
+X-Google-Smtp-Source: ABdhPJzdlnMCYGA3kLT4t5c8ykTQcQqn/qmqlv/E8TGGEpG2riZ7T0plVIhIHa9FvZNn80TVOmuS6b2nFy6yQNioXsA=
+X-Received: by 2002:a17:906:7142:: with SMTP id z2mr28262180ejj.427.1624954486045;
+ Tue, 29 Jun 2021 01:14:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- boundary="Sig_/fL/0X0KY/DOM/P3UCC=9=NJ"; protocol="application/pgp-signature"
-X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
-X-Virus-Status: Clean
+References: <20210615141331.407-1-xieyongji@bytedance.com> <20210628103309.GA205554@storage2.sh.intel.com>
+ <bdbe3a79-e5ce-c3a5-4c68-c11c65857377@redhat.com> <BYAPR11MB2662FFF6140A4C634648BB2E8C039@BYAPR11MB2662.namprd11.prod.outlook.com>
+ <41cc419e-48b5-6755-0cb0-9033bd1310e4@redhat.com> <BYAPR11MB266276002F42D91FCE6E83CE8C029@BYAPR11MB2662.namprd11.prod.outlook.com>
+In-Reply-To: <BYAPR11MB266276002F42D91FCE6E83CE8C029@BYAPR11MB2662.namprd11.prod.outlook.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 29 Jun 2021 16:14:35 +0800
+Message-ID: <CACycT3sfZCpWqB+GKQYMi3WjOkU0jAkBPU-u+MHHDCbLUvvu4w@mail.gmail.com>
+Subject: Re: RE: [PATCH v8 00/10] Introduce VDUSE - vDPA Device in Userspace
+To:     "Liu, Xiaodong" <xiaodong.liu@intel.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>,
+        "sgarzare@redhat.com" <sgarzare@redhat.com>,
+        "parav@nvidia.com" <parav@nvidia.com>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "christian.brauner@canonical.com" <christian.brauner@canonical.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "willy@infradead.org" <willy@infradead.org>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "bcrl@kvack.org" <bcrl@kvack.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "mika.penttila@nextfour.com" <mika.penttila@nextfour.com>,
+        "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "songmuchun@bytedance.com" <songmuchun@bytedance.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/fL/0X0KY/DOM/P3UCC=9=NJ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi Vladimir,
-
-> On Mon, Jun 28, 2021 at 04:13:14PM +0200, Lukasz Majewski wrote:
-> > > > > So before considering merging your changes, i would like to
-> > > > > see a usable binding.
-> > > > >
-> > > > > I also don't remember seeing support for STP. Without that,
-> > > > > your network has broadcast storm problems when there are
-> > > > > loops. So i would like to see the code needed to put ports
-> > > > > into blocking, listening, learning, and forwarding states.
-> > > > >
-> > > > > 	  Andrew =20
-> > >
-> > > I cannot stress enough how important it is for us to see STP
-> > > support and consequently the ndo_start_xmit procedure for switch
-> > > ports. =20
+On Tue, Jun 29, 2021 at 3:56 PM Liu, Xiaodong <xiaodong.liu@intel.com> wrot=
+e:
+>
+>
+>
+> >-----Original Message-----
+> >From: Jason Wang <jasowang@redhat.com>
+> >Sent: Tuesday, June 29, 2021 12:11 PM
+> >To: Liu, Xiaodong <xiaodong.liu@intel.com>; Xie Yongji
+> ><xieyongji@bytedance.com>; mst@redhat.com; stefanha@redhat.com;
+> >sgarzare@redhat.com; parav@nvidia.com; hch@infradead.org;
+> >christian.brauner@canonical.com; rdunlap@infradead.org; willy@infradead.=
+org;
+> >viro@zeniv.linux.org.uk; axboe@kernel.dk; bcrl@kvack.org; corbet@lwn.net=
+;
+> >mika.penttila@nextfour.com; dan.carpenter@oracle.com; joro@8bytes.org;
+> >gregkh@linuxfoundation.org
+> >Cc: songmuchun@bytedance.com; virtualization@lists.linux-foundation.org;
+> >netdev@vger.kernel.org; kvm@vger.kernel.org; linux-fsdevel@vger.kernel.o=
+rg;
+> >iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org
+> >Subject: Re: [PATCH v8 00/10] Introduce VDUSE - vDPA Device in Userspace
 > >
-> > Ok.
-> > =20
-> > > Let me see if I understand correctly. When the switch is enabled,
-> > > eth0 sends packets towards both physical switch ports, and eth1
-> > > sends packets towards none, but eth0 handles the link state of
-> > > switch port 0, and eth1 handles the link state of switch port 1? =20
 > >
-> > Exactly, this is how FEC driver is utilized for this switch. =20
->=20
-> This is a much bigger problem than anything which has to do with code
-> organization. Linux does not have any sort of support for unmanaged
-> switches.
+> >=E5=9C=A8 2021/6/28 =E4=B8=8B=E5=8D=881:54, Liu, Xiaodong =E5=86=99=E9=
+=81=93:
+> >>> Several issues:
+> >>>
+> >>> - VDUSE needs to limit the total size of the bounce buffers (64M if I=
+ was not
+> >>> wrong). Does it work for SPDK?
+> >> Yes, Jason. It is enough and works for SPDK.
+> >> Since it's a kind of bounce buffer mainly for in-flight IO, so limited=
+ size like
+> >> 64MB is enough.
+> >
+> >
+> >Ok.
+> >
+> >
+> >>
+> >>> - VDUSE can use hugepages but I'm not sure we can mandate hugepages (=
+or
+> >we
+> >>> need introduce new flags for supporting this)
+> >> Same with your worry, I'm afraid too that it is a hard for a kernel mo=
+dule
+> >> to directly preallocate hugepage internal.
+> >> What I tried is that:
+> >> 1. A simple agent daemon (represents for one device)  `preallocates` a=
+nd maps
+> >>      dozens of 2MB hugepages (like 64MB) for one device.
+> >> 2. The daemon passes its mapping addr&len and hugepage fd to kernel
+> >>      module through created IOCTL.
+> >> 3. Kernel module remaps the hugepages inside kernel.
+> >
+> >
+> >Such model should work, but the main "issue" is that it introduce
+> >overheads in the case of vhost-vDPA.
+> >
+> >Note that in the case of vhost-vDPA, we don't use bounce buffer, the
+> >userspace pages were shared directly.
+> >
+> >And since DMA is not done per page, it prevents us from using tricks
+> >like vm_insert_page() in those cases.
+> >
+>
+> Yes, really, it's a problem to handle vhost-vDPA case.
+> But there are already several solutions to get VM served, like vhost-user=
+,
+> vfio-user, so at least for SPDK, it won't serve VM through VDUSE. If a us=
+er
+> still want to do that, then the user should tolerate Introduced overhead.
+>
+> In other words, software backend like SPDK, will appreciate the virtio
+> datapath of VDUSE to serve local host instead of VM. That's why I also dr=
+afted
+> a "virtio-local" to bridge vhost-user target and local host kernel virtio=
+-blk.
+>
+> >
+> >> 4. Vhost user target gets and maps hugepage fd from kernel module
+> >>      in vhost-user msg through Unix Domain Socket cmsg.
+> >> Then kernel module and target map on the same hugepage based
+> >> bounce buffer for in-flight IO.
+> >>
+> >> If there is one option in VDUSE to map userspace preallocated memory, =
+then
+> >> VDUSE should be able to mandate it even it is hugepage based.
+> >>
+> >
+> >As above, this requires some kind of re-design since VDUSE depends on
+> >the model of mmap(MAP_SHARED) instead of umem registering.
+>
+> Got it, Jason, this may be hard for current version of VDUSE.
+> Maybe we can consider these options after VDUSE merged later.
+>
+> Since if VDUSE datapath could be directly leveraged by vhost-user target,
+> its value will be propagated immediately.
+>
 
-My impression is similar. This switch cannot easily fit into DSA (lack
-of appending tags) nor to switchdev.
+Agreed=EF=BC=81
 
-The latter is caused by two modes of operation:
-
-- Bypass mode (no switch) -> DMA1 and DMA0 are used
-- Switch mode -> only DMA0 is used
-
-
-Moreover, from my understanding of the CPSW - looks like it uses always
-just a single DMA, and the switching seems to be the default operation
-for two ethernet ports.
-
-The "bypass mode" from NXP's L2 switch seems to be achieved inside the
-CPSW switch, by configuring it to not pass packets between those ports.
-
-> Please try to find out if your switch is supposed to be able
-> to be managed (run control protocols on the CPU).
-
-It can support all the "normal" set of L2 switch features:
-
-- VLANs, lookup table (with learning), filtering and forwarding
-  (Multicast, Broadcast, Unicast), priority queues, IP snooping, etc.
-
-Frames for BPDU are recognized by the switch and can be used to
-implement support for RSTP. However, this switch has a separate address
-space (not covered and accessed by FEC address).
-
-> If not, well, I
-> don't know what to suggest.
-
-For me it looks like the NXP's L2 switch shall be treated _just_ as
-offloading IP block to accelerate switching (NXP already support
-dpaa[2] for example).
-
-The idea with having it configured on demand, when:
-ip link add name br0 type bridge; ip link set br0 up;
-ip link set eth0 master br0;
-ip link set eth1 master br0;
-
-Seems to be a reasonable one. In the above scenario it would work hand
-by hand with FEC drivers (as those would handle PHY communication
-setup and link up/down events).
-
-It would be welcome if the community could come up with some rough idea
-how to proceed with this IP block support (especially that for example
-imx287 is used in many embedded devices and is going to be in active
-production for next 10+ years).
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/fL/0X0KY/DOM/P3UCC=9=NJ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmDa1UEACgkQAR8vZIA0
-zr1otAgApnelllapqfHrULNWTGmc4JtHdczHLbYNZ3aX3DM56WYNVRgs9kTJ3+Pt
-fz6pXAGbdGmbqufMiOeATp2Tuj9kT/YJB/W9/hrjUn7Ret6nvCPup/XTjn2UcQPh
-8jdtyDYX61vqz/Lzj2Fzlb1tdGUzzKJ0p+aACRz5X63P6nWMsRzmU1L5/hwwUErc
-w2tQORjpOQa1CyHfmHpud2g7URlC7yjHoPqcdHVtDwtPDmx3XOHHpJ3fQv+OcTuf
-nlWaB/9C2A5jTLwGXN2f9u/UVYe89t21E153rln9wLWwvPcBgGjjmbeq+Oh2XDrf
-GflLEKetwCp+7ukQhre3EhVfk4HTug==
-=K7rH
------END PGP SIGNATURE-----
-
---Sig_/fL/0X0KY/DOM/P3UCC=9=NJ--
+Thanks,
+Yongji
