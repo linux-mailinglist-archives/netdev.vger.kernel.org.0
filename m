@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7810C3B78A4
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76ECF3B78A6
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234266AbhF2TcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 15:32:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38970 "EHLO
+        id S234754AbhF2TcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 15:32:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49405 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232544AbhF2TcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 15:32:21 -0400
+        by vger.kernel.org with ESMTP id S234582AbhF2TcY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 15:32:24 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624994993;
+        s=mimecast20190719; t=1624994996;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QgBr4LV9SR6/Qelufj3zindVEajUhYS2+l3zjx7rHSU=;
-        b=jN8Mb9waVl6aEdlN2rQLLeHjomuDBp9x8ciwcANSFVFpozF/uqAb6xfNq7F9MUZn59D6eb
-        y2ZRJUlXJt68i2qwTAH33bGCiI4jv1iapnKYGhosqK8MSAfED3yh1SvW3YbolvTYhqzFm2
-        tcLB+SQ9KTqQ47ZBo4uMBCjR2WlmvAk=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-97-jUk2KtUvPqKuVd2Y_IDMxA-1; Tue, 29 Jun 2021 15:29:51 -0400
-X-MC-Unique: jUk2KtUvPqKuVd2Y_IDMxA-1
-Received: by mail-ed1-f72.google.com with SMTP id p19-20020aa7c4d30000b0290394bdda6d9cso11913199edr.21
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 12:29:51 -0700 (PDT)
+        bh=Jm5cd0zOZ7Itm+FjlMPQhsBe4LoJlMQjbASHrTs/ggA=;
+        b=cCLo6L8xdEkdjjqJvWpg9bl8KYp0p1bhWd5aESB0bv5/sQqDzU+t1eiFCOM3WOYoX4cdwn
+        CRaMWocCytNgYKn3jtt10kn1pxYoKc6FUkvi4hInMD0RRnwaEFydSjD9ipdUFgvlnxT6gS
+        7XmktfwI5eNiJZi4vI3jTosy7ul/no0=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-532-a_sVf0a7NouPActytzzeWw-1; Tue, 29 Jun 2021 15:29:54 -0400
+X-MC-Unique: a_sVf0a7NouPActytzzeWw-1
+Received: by mail-ed1-f71.google.com with SMTP id n13-20020a05640206cdb029039589a2a771so479651edy.5
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 12:29:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=QgBr4LV9SR6/Qelufj3zindVEajUhYS2+l3zjx7rHSU=;
-        b=Dn70XM4Z6LilgabqcZ7IZ97X3/T1pYVfxVF0mSg1pVujoJCXsN+3sdg5KIorITEDz/
-         YSUHAhAt6oiBRaVHivV08ZXcTP1FLCKaL4Urg7INivsQD/kIloLTVlvoCOSyXupXz/5p
-         lW3kxtl886b+rDudhzkgZ8mR9ZwbcZiPgrvQ1M/ufj5prVtagsYzvBeQE4XFNYHBy0QF
-         CHHHERPc7E20zo/84HVkynkHxxM5Wd2TDImUOAHpG2Q+XsAL82h4qsIIFeXW7C2fSDT8
-         th2CcbOoYlW6/1BkWbqy+UcpJt61nLd8/N++EuB3sWqGBPRBnqQBnrqKdhnr5diGrERh
-         n+pg==
-X-Gm-Message-State: AOAM533MlvaUrQc8I/yMAxT5znQ5tp8l7nMA0A3ryzRWdR9AdLU8ihdK
-        Ziu3EKWycQIzRiCxJj0MILmRgoIGPbaZC4tl2+q1AyoM4ZIHU76tYmFZ5GUuNpasLALg6fR9pC2
-        M64in0flD0DaMqM5c
-X-Received: by 2002:a05:6402:1c11:: with SMTP id ck17mr29205327edb.370.1624994990334;
-        Tue, 29 Jun 2021 12:29:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwXHlbTwtU81vylTCzW77E+j+DPUwj3/0W67M0b+va71aRhfz4ja1tt1bjornX+DBMxs/e2RA==
-X-Received: by 2002:a05:6402:1c11:: with SMTP id ck17mr29205314edb.370.1624994990153;
-        Tue, 29 Jun 2021 12:29:50 -0700 (PDT)
+        bh=Jm5cd0zOZ7Itm+FjlMPQhsBe4LoJlMQjbASHrTs/ggA=;
+        b=rfnGgGDJIOixnWGkiHVaenIuanGpUfFZxKmkKO9GA/jT6Sx2ttANZllqJ3Luhdiblu
+         2du2CyMB4DzJdMfPG233+AV4Ft4Dypz92iAuAuXGWgNcFfycRuZeLbWvT9wTJEt3MF+3
+         eaxMEr98kh2i056wII+YuD5RS6LleZhk2llh6uxJn1V3Uy721WWEsq0NCGeA7yr3SoLr
+         gn9zLbtAFJ/rOYQEa6WQpoWQSgQ5tZmyDm3xfkcigvtXSLaqdu+q6L/ScJ8B1vsmlkxX
+         B0H2pE5fOVAYkqqagq1GdZPpADNb1r28O+HbAGpAwH1PmDWOkXUT7XXl1YxkEAuPtcfF
+         AT3Q==
+X-Gm-Message-State: AOAM531SE+8mZi0ED0Vq12hDw+SooAdmzj/2fMw2pRGvX65tUK0dPwQx
+        ygEAJgixXD1msnhq12w5Cby76yK0XUnOWGoTA+TEkLbhcixcMRq0FjhSGqATUbKCEOU0qhfv0G/
+        rPxQ1HP+1ltgnRCHq
+X-Received: by 2002:aa7:d8d4:: with SMTP id k20mr41688295eds.143.1624994993070;
+        Tue, 29 Jun 2021 12:29:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz5OvjTkKZzLuY/9wnAZ95R6xQ/Jmsq4KCZeL0+5Rkjq44ZUqUpAvXSe1v+Q79LdCNb87I4/g==
+X-Received: by 2002:aa7:d8d4:: with SMTP id k20mr41688287eds.143.1624994992931;
+        Tue, 29 Jun 2021 12:29:52 -0700 (PDT)
 Received: from krava.redhat.com ([185.153.78.55])
-        by smtp.gmail.com with ESMTPSA id n22sm472559eje.3.2021.06.29.12.29.48
+        by smtp.gmail.com with ESMTPSA id n22sm472559eje.3.2021.06.29.12.29.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Jun 2021 12:29:49 -0700 (PDT)
+        Tue, 29 Jun 2021 12:29:52 -0700 (PDT)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -61,9 +61,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH bpf-next 1/5] bpf, x86: Store caller's ip in trampoline stack
-Date:   Tue, 29 Jun 2021 21:29:41 +0200
-Message-Id: <20210629192945.1071862-2-jolsa@kernel.org>
+Subject: [PATCH bpf-next 2/5] bpf: Enable BPF_TRAMP_F_IP_ARG for trampolines with call_get_func_ip
+Date:   Tue, 29 Jun 2021 21:29:42 +0200
+Message-Id: <20210629192945.1071862-3-jolsa@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210629192945.1071862-1-jolsa@kernel.org>
 References: <20210629192945.1071862-1-jolsa@kernel.org>
@@ -73,75 +73,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Storing caller's ip in trampoline's stack. Trampoline programs
-can reach the IP in (ctx - 8) address, so there's no change in
-program's arguments interface.
+Enabling BPF_TRAMP_F_IP_ARG for trampolines that actually need it.
 
-The IP address is takes from [fp + 8], which is return address
-from the initial 'call fentry' call to trampoline.
+The BPF_TRAMP_F_IP_ARG adds extra 3 instructions to trampoline code
+and is used only by programs with bpf_get_func_ip helper, which is
+added in following patch and sets call_get_func_ip bit.
 
-This IP address will be returned via bpf_get_func_ip helper
-helper, which is added in following patches.
+This patch ensures that BPF_TRAMP_F_IP_ARG flag is used only for
+trampolines that have programs with call_get_func_ip set.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c | 19 +++++++++++++++++++
- include/linux/bpf.h         |  5 +++++
- 2 files changed, 24 insertions(+)
+ include/linux/filter.h  |  3 ++-
+ kernel/bpf/trampoline.c | 12 +++++++++---
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index e835164189f1..c320b3ce7b58 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1951,6 +1951,9 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 	if (flags & BPF_TRAMP_F_CALL_ORIG)
- 		stack_size += 8; /* room for return value of orig_call */
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 472f97074da0..ba36989f711a 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -559,7 +559,8 @@ struct bpf_prog {
+ 				kprobe_override:1, /* Do we override a kprobe? */
+ 				has_callchain_buf:1, /* callchain buffer allocated? */
+ 				enforce_expected_attach_type:1, /* Enforce expected_attach_type checking at attach time */
+-				call_get_stack:1; /* Do we call bpf_get_stack() or bpf_get_stackid() */
++				call_get_stack:1, /* Do we call bpf_get_stack() or bpf_get_stackid() */
++				call_get_func_ip:1; /* Do we call get_func_ip() */
+ 	enum bpf_prog_type	type;		/* Type of BPF program */
+ 	enum bpf_attach_type	expected_attach_type; /* For some prog types */
+ 	u32			len;		/* Number of filter blocks */
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 28a3630c48ee..b2535acfe9db 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -172,7 +172,7 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
+ }
  
-+	if (flags & BPF_TRAMP_F_IP_ARG)
-+		stack_size += 8; /* room for IP address argument */
-+
- 	if (flags & BPF_TRAMP_F_SKIP_FRAME)
- 		/* skip patched call instruction and point orig_call to actual
- 		 * body of the kernel function.
-@@ -1964,6 +1967,22 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 	EMIT4(0x48, 0x83, 0xEC, stack_size); /* sub rsp, stack_size */
- 	EMIT1(0x53);		 /* push rbx */
+ static struct bpf_tramp_progs *
+-bpf_trampoline_get_progs(const struct bpf_trampoline *tr, int *total)
++bpf_trampoline_get_progs(const struct bpf_trampoline *tr, int *total, bool *ip_arg)
+ {
+ 	const struct bpf_prog_aux *aux;
+ 	struct bpf_tramp_progs *tprogs;
+@@ -189,8 +189,10 @@ bpf_trampoline_get_progs(const struct bpf_trampoline *tr, int *total)
+ 		*total += tr->progs_cnt[kind];
+ 		progs = tprogs[kind].progs;
  
-+	if (flags & BPF_TRAMP_F_IP_ARG) {
-+		/* Store IP address of the traced function:
-+		 * mov rax, QWORD PTR [rbp + 8]
-+		 * sub rax, X86_PATCH_SIZE
-+		 * mov QWORD PTR [rbp - stack_size], rax
-+		 */
-+		emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
-+		EMIT4(0x48, 0x83, 0xe8, X86_PATCH_SIZE);
-+		emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -stack_size);
-+
-+		/* Continue with stack_size for regs storage, stack will
-+		 * be correctly restored with 'leave' instruction.
-+		 */
-+		stack_size -= 8;
-+	}
-+
- 	save_regs(m, &prog, nr_args, stack_size);
+-		hlist_for_each_entry(aux, &tr->progs_hlist[kind], tramp_hlist)
++		hlist_for_each_entry(aux, &tr->progs_hlist[kind], tramp_hlist) {
++			*ip_arg |= aux->prog->call_get_func_ip;
+ 			*progs++ = aux->prog;
++		}
+ 	}
+ 	return tprogs;
+ }
+@@ -333,9 +335,10 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ 	struct bpf_tramp_image *im;
+ 	struct bpf_tramp_progs *tprogs;
+ 	u32 flags = BPF_TRAMP_F_RESTORE_REGS;
++	bool ip_arg = false;
+ 	int err, total;
  
- 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index f309fc1509f2..6b3da9bc3d16 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -554,6 +554,11 @@ struct btf_func_model {
-  */
- #define BPF_TRAMP_F_SKIP_FRAME		BIT(2)
+-	tprogs = bpf_trampoline_get_progs(tr, &total);
++	tprogs = bpf_trampoline_get_progs(tr, &total, &ip_arg);
+ 	if (IS_ERR(tprogs))
+ 		return PTR_ERR(tprogs);
  
-+/* Store IP address of the caller on the trampoline stack,
-+ * so it's available for trampoline's programs.
-+ */
-+#define BPF_TRAMP_F_IP_ARG		BIT(3)
+@@ -357,6 +360,9 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ 	    tprogs[BPF_TRAMP_MODIFY_RETURN].nr_progs)
+ 		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
+ 
++	if (ip_arg)
++		flags |= BPF_TRAMP_F_IP_ARG;
 +
- /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
-  * bytes on x86.  Pick a number to fit into BPF_IMAGE_SIZE / 2
-  */
+ 	err = arch_prepare_bpf_trampoline(im, im->image, im->image + PAGE_SIZE,
+ 					  &tr->func.model, flags, tprogs,
+ 					  tr->func.addr);
 -- 
 2.31.1
 
