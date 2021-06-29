@@ -2,97 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D00AD3B7843
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:09:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 323613B784B
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 21:11:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235446AbhF2TL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 15:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233916AbhF2TLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 15:11:54 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B29DC061760
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 12:09:27 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id nd37so38143774ejc.3
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 12:09:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PY/2WH5hnilO8u4PmgXgGiXRhHzf3uFJjP0VaA/hWn4=;
-        b=QKSsB4h3ID/kSdb7wt92GbeIhWMNyCrJgByY7HREdDhAvHoD1qW1tudgyyu16IU0F2
-         2k9bC3KBxgbFB2zTPpkjB9j+EEYrpp5wyw54cU0rS+QNlajm0IUgfW/LTUZijVmRU4Yr
-         3Tpti+RM4el2Jaa8SG4ltVLAkKO9GlE98FEMweO+g5MqB84JolKvEXOvvqz5g45yDxxW
-         /724aRYmRxy8bs1+jOoFZpAM9JF+/tDh7I+NWCayDF+vzoDG7tDOvVN4hHvyToDA/3lN
-         8PiwjdMkOBRis0vKmzfYQwH3nxTfuafodN7AWZG7kz53fEHtYgeyFth5aWfBw5M7W5NL
-         9m4g==
+        id S235456AbhF2TOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 15:14:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25271 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233916AbhF2TOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 15:14:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624993892;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hQbKJDDcSDig+ZoAeWjxtVythqP5H1mHSwjXk0i1+DA=;
+        b=cgOKIyvytVibtn96Mz00EQFk/XsBio9T8ZsDYiayc/9P2ZQEPOQF7K6D6xBB7XLRqx4Fbi
+        LYT58ngSuv8e/AOeTGjtIT1CK96DfTwz9CVrw29algc6ZMAdlMq+U3cMunCTVrtt05RQsW
+        FysRP0zt0wK8HQWF4pZVoOTxUXsCvco=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-584-bzfWpom-M4KgESoPWVGJNA-1; Tue, 29 Jun 2021 15:11:31 -0400
+X-MC-Unique: bzfWpom-M4KgESoPWVGJNA-1
+Received: by mail-ej1-f70.google.com with SMTP id p5-20020a17090653c5b02903db1cfa514dso6092098ejo.13
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 12:11:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PY/2WH5hnilO8u4PmgXgGiXRhHzf3uFJjP0VaA/hWn4=;
-        b=m2cAz2ue5uAhTYVVKXPT5xYkmutIbsjgUWx5Zl8F6NHsTZVNtNk3jXYCLLre1aITOG
-         +JJXJ51ur2L+AWn6AkW7zmqv9B0F+xErUKvvM+3bDuqUrrE16ESGJ2DkN9kr28gmEZsk
-         IZxduso2CiSjyz6Obm3tRkAy21h/+DUqnYsXZI7QwHKRrC8NiVDQjFVpNPB2Q5BUkwk+
-         CuLXTPWDYILTw11YlPeYAWl/phWy4eiXkFpgl8vVqh/f/Q/sCWjpj+S2HfU9ZD+wwamo
-         nHXJD/rWVPSI6hDEiy5cfRtSY+YI85TEwBMV5wKI0EomknGwZavIkNDYzBryziLjYFli
-         XYNg==
-X-Gm-Message-State: AOAM533TQxLYXfGmD3E0+4N8x+3OACjuxp7pCaLDZprejrJNkyf5q6Px
-        P5zcp4rGiquA+4rzGaJy0DM=
-X-Google-Smtp-Source: ABdhPJyZcaQ0SliB2uagtAxsRZdZzU/nealf18lmN0FRMeoKlWt+wK5KUCrMzPQh4y9FbJ/Ftf2bXg==
-X-Received: by 2002:a17:906:9be5:: with SMTP id de37mr9730803ejc.549.1624993765732;
-        Tue, 29 Jun 2021 12:09:25 -0700 (PDT)
-Received: from skbuf ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id dd15sm11812959edb.45.2021.06.29.12.09.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Jun 2021 12:09:25 -0700 (PDT)
-Date:   Tue, 29 Jun 2021 22:09:23 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, jiri@resnulli.us,
-        idosch@idosch.org, tobias@waldekranz.com, roopa@nvidia.com,
-        nikolay@nvidia.com, bridge@lists.linux-foundation.org,
-        vladimir.oltean@nxp.com
-Subject: Re: [PATCH v5 net-next 00/15] RX filtering in DSA
-Message-ID: <20210629190923.kf5utzbhmmgszwwc@skbuf>
-References: <20210629140658.2510288-1-olteanv@gmail.com>
- <20210629.115213.547056454675149348.davem@davemloft.net>
- <20210629185822.ir3vp52xkyddm3j3@skbuf>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=hQbKJDDcSDig+ZoAeWjxtVythqP5H1mHSwjXk0i1+DA=;
+        b=WTEyte4kuHeo3xNMsrMJUjT8Dj7RHleFSVRBzPDT6ZLMIQcw1mo4laKZp4wABaDyP/
+         IXTemDrfYnCxQlAr7GQoKjzB+rZmUAXJAwVGU71BEwk59vs4/IghOT5JINQnhG93zaE3
+         jpqKRFAOWdsE+NYmKibSTZ9g/xmTadAAZasPoZ0/SmKQehqZhC0rsZWos/+HD+iGKc8w
+         bJz6CjBC9HEHykxedSZJSv/b1oBpSRKs+EGq2ICU3EDOyC7Xf/pawqXww0RjVCDFrpf4
+         8k7hQvvrMhIOYEzCDGjZZu2vngDEvQPg6zJOOhopVjZwnTk6yxngJES8Q793cly0RvJN
+         wQVQ==
+X-Gm-Message-State: AOAM530vM+0n97/ErHxPGUhpWHhbHxpQD4GQgBQTnOLyZFGaYzieHwDI
+        A/Aa1QcFxwmlaektomJ7TESMso6grvQ6tv+puYbXvRPJ0VWfaKIF+9GxkcnnfquCMgmv0xOFp9e
+        BMVRnEvdMWL8XnEXd
+X-Received: by 2002:aa7:cb90:: with SMTP id r16mr42469797edt.121.1624993889968;
+        Tue, 29 Jun 2021 12:11:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyYfiAdRV7D9nbJlFYuLhJYgtRi1/mP11UguePTeWSxfBXzg7z7ozLYXvwGM8BWUH2BqP+sHA==
+X-Received: by 2002:aa7:cb90:: with SMTP id r16mr42469769edt.121.1624993889846;
+        Tue, 29 Jun 2021 12:11:29 -0700 (PDT)
+Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id n4sm8519460eja.121.2021.06.29.12.11.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Jun 2021 12:11:29 -0700 (PDT)
+Subject: Re: [PATCH v9 bpf-next 01/14] net: skbuff: add data_len field to
+ skb_shared_info
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+References: <cover.1623674025.git.lorenzo@kernel.org>
+ <8ad0d38259a678fb42245368f974f1a5cf47d68d.1623674025.git.lorenzo@kernel.org>
+ <CAKgT0UcwYHXosz-XuQximak63=ugb9thEc=dkUUZzDpoPCH+Qg@mail.gmail.com>
+ <YNsVyBw5i4hAHRN8@lore-desk>
+ <20210629100852.56d995a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAKgT0Ue1HKMpsBtoW=js2oMRAhcqSrAfTTmPC8Wc97G6=TiaZg@mail.gmail.com>
+ <20210629113714.6d8e2445@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+Message-ID: <e0b50540-0055-1f5c-af5f-0cd26616693a@redhat.com>
+Date:   Tue, 29 Jun 2021 21:11:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210629185822.ir3vp52xkyddm3j3@skbuf>
+In-Reply-To: <20210629113714.6d8e2445@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 29, 2021 at 09:58:22PM +0300, Vladimir Oltean wrote:
-> On Tue, Jun 29, 2021 at 11:52:13AM -0700, David Miller wrote:
-> > From: Vladimir Oltean <olteanv@gmail.com>
-> > Date: Tue, 29 Jun 2021 17:06:43 +0300
-> > 
-> > > Changes in v5:
-> > > - added READ_ONCE and WRITE_ONCE for fdb->dst
-> > > - removed a paranoid WARN_ON in DSA
-> > > - added some documentation regarding how 'bridge fdb' is supposed to be
-> > >   used with DSA
-> > 
-> > Vlad, I applied v4, could you please send me relative fixups to v5?
-> > 
-> > Thank you.
-> 
-> Thanks for applying. I'm going to prepare the delta patches right now.
 
-Dave, is it possible that you may have applied v5 with the cover letter
-from v4? I checked and everything is in its right place:
+On 29/06/2021 20.37, Jakub Kicinski wrote:
+> On Tue, 29 Jun 2021 11:18:38 -0700 Alexander Duyck wrote:
+>> On Tue, Jun 29, 2021 at 10:08 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>>> ack, I agree. I will fix it in v10.
+>>> Why is XDP mb incompatible with LRO? I thought that was one of the use
+>>> cases (mentioned by Willem IIRC).
+>> XDP is meant to be a per packet operation with support for TX and
+>> REDIRECT, and LRO isn't routable. So we could put together a large LRO
+>> frame but we wouldn't be able to break it apart again. If we allow
+>> that then we are going to need a ton more exception handling added to
+>> the XDP paths.
+>>
+>> As far as GSO it would require setting many more fields in order to
+>> actually make it offloadable by any hardware.
+> It would require more work, but TSO seems to be explicitly stated
+> as what the series builds towards (in the cover letter). It's fine
+> to make choices we'd need to redo later, I guess, I'm just trying
+> to understand the why.
 
-- the READ_ONCE stuff for fdb->dst:
-  https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/bridge/br_fdb.c#n447
-- there is no WARN_ON in DSA switch.c:
-  https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/dsa/switch.c#n167
-- the additional documentation chapter is there:
-  https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/Documentation/networking/dsa/configuration.rst#n296
+This is also my understanding that LRO and TSO is what this patchset is 
+working towards.
 
-Thanks.
+Sorry, I don't agree or understand this requested change.
+
+
