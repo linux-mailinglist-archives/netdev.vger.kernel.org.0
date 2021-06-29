@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D4623B73E8
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 16:08:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3202B3B73EA
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 16:08:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234277AbhF2OKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 10:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40944 "EHLO
+        id S234298AbhF2OK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 10:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234263AbhF2OKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 10:10:05 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB8BC06124A
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 07:07:31 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id c17so10674531ejk.13
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 07:07:31 -0700 (PDT)
+        with ESMTP id S233843AbhF2OKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 10:10:07 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A38BC061226
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 07:07:32 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id i5so31540005eds.1
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 07:07:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ExBxfgEAQTeIcUqZy35cgliNZw5pKEc8pvrekt89wDM=;
-        b=hHj7Fs0zMwlg1N14gH3jx9xGdI7XkmEm8PzB+RALPqNc0IAHNCDd8bKAMlUz6P1qcn
-         VeOEL0jG778JVmkwvSzYVwoFtDk3uxfZlA9jGl6l33juRtkWsQgimncnk6niKur2IMGR
-         EqOaqnB1vS5augQiQzsagOD7DmOKigoiQCDDycoTT7MB9qX95qbReK2m5dY4kac8s1EY
-         NoIplKBlUIO9gv3yXmto1o5Us714Vjk1xb6WQD8WuP2iVJK8fFRwNrl/bZV2jj5aC203
-         v/ffQ58zYbpRJcoUVPDmgzemgkOtRcEnDrm7cbnsRNw09xqK+V5FAfg5HykFmHQO39xY
-         o+UQ==
+        bh=BOMzh8BvHskVBrXcwAoloE2yOIC+E69XRfT1jHkRC1Q=;
+        b=fO/0/fnnnR63NQyNWELQzWLeqGg3F+vEXP6dbYjC8bNeQw7J3Bjmb4WxBhj3tjx/ns
+         s2okUXZC6wkt2i96ClUKWd69J+f33i+V5l9LVv2nLe8JOUftGJVogTJTm/yD3rxp2Cn5
+         ZDLL26CuapdYY9r2iLrozwTnVHdLYy2+/4fSuJbUyfiitKny6iCdiXhvaa7TWAkXIWYM
+         z0qgN4O/f+mQA0xQoEdZpDeuoMtLicmD3kENRvCOefpqnb/Wjt/ewL+AhLGjpbDCuY0v
+         bxkBsWzh1s84j/IQZaKo//A7+yM6sQxdx5DQKIMpGlzQRF6tiaeZ/BPjFUJni0X9D4IH
+         mSiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ExBxfgEAQTeIcUqZy35cgliNZw5pKEc8pvrekt89wDM=;
-        b=oCrgPNSiL5YYtdYXUSPjtO6uGGdMg7jk5nFpBzIFi9P7Sd0BaoIgs4etorUoK0IM5E
-         OlqsI+jveONUYif3KxGEVYq56d65TURsSonQjm+heclyo7FUz5damzIwas2U8TuJRhew
-         cgd5suEH1t5dh4XWRI2uIuccNrXWJjgNqCaXd6kt+6z0UJ2Sl5kXmm6g4jWAKtQo5qOk
-         bJVRfn+9founrwUc7hV5fH2lPOKNxZLtmRAQIBj3K1ND+UsqrOocLiz85MZGpd+lWAmm
-         6dhpEZi//tTssqxZhvRGUqYjP7fAaabnxM/cPtQnA7K4xGPv4KNKTUFrTakuAUZgy8RQ
-         5cnQ==
-X-Gm-Message-State: AOAM533s8IuwEs7qR9T6QE1kMKfI4areKV2e90zN1WugdeSkXg8rjGY2
-        uZNdG5JFrnBvUTePFSilI6+vvpuLfWU=
-X-Google-Smtp-Source: ABdhPJxw+4Vh4LKmPVGz1+DrfVaZQj1VAwygr4y0s2bilcCRg80ecnuUO67N2CiixpuLs8kMrt8axA==
-X-Received: by 2002:a17:906:52d6:: with SMTP id w22mr30364861ejn.512.1624975650027;
-        Tue, 29 Jun 2021 07:07:30 -0700 (PDT)
+        bh=BOMzh8BvHskVBrXcwAoloE2yOIC+E69XRfT1jHkRC1Q=;
+        b=rL+2d7IopjVxIAVJysyRpBQYj5+ZM87O3qITJefFVSocb4PNOsg6XqLcFqhIptj//V
+         LqpflAQRddZnk1BcPoC068PYm19NVMgyU7wb9a4pWjMNcwntkprUa3qEWzLoN/hZuQS6
+         1FzGSTIgJne5rfNOPkKWXQrq7w8rEwzB2lMVOIopuOcgsIk+2gcFR0zk33Go13yjmtgI
+         PawY5IZNvHry81hffxgp1zV0/0m6cQ/WPYDWP8I2U+kh/eycYaybh2Lk9SQcT2gfvJuL
+         6SaIn3xvQQ0FNXZcA+jOwn/gcjRIO5ADNx9Ip1R2xMAoYBNcjWU1Zk2auR/W/kW59k4Y
+         DLQQ==
+X-Gm-Message-State: AOAM532jTsU2PbtczZlde894IFP8sjRgMF7xnkarCWg16CegRpijOS2m
+        GsmWdmicZ8fuLI8RlfuS+09Y1m1RHwE=
+X-Google-Smtp-Source: ABdhPJxodBWegIv9JxWdAxD3DDeD8A6DYVxOsxaHi9l21ZpnZLIkC/D/5eejp45sFGwnHFlrcqFvww==
+X-Received: by 2002:aa7:d78b:: with SMTP id s11mr5813879edq.280.1624975651063;
+        Tue, 29 Jun 2021 07:07:31 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.224.68])
-        by smtp.gmail.com with ESMTPSA id b27sm8220121ejl.10.2021.06.29.07.07.28
+        by smtp.gmail.com with ESMTPSA id b27sm8220121ejl.10.2021.06.29.07.07.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Jun 2021 07:07:29 -0700 (PDT)
+        Tue, 29 Jun 2021 07:07:30 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -60,9 +60,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         bridge@lists.linux-foundation.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v5 net-next 13/15] net: dsa: include fdb entries pointing to bridge in the host fdb list
-Date:   Tue, 29 Jun 2021 17:06:56 +0300
-Message-Id: <20210629140658.2510288-14-olteanv@gmail.com>
+Subject: [PATCH v5 net-next 14/15] net: dsa: ensure during dsa_fdb_offload_notify that dev_hold and dev_put are on the same dev
+Date:   Tue, 29 Jun 2021 17:06:57 +0300
+Message-Id: <20210629140658.2510288-15-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210629140658.2510288-1-olteanv@gmail.com>
 References: <20210629140658.2510288-1-olteanv@gmail.com>
@@ -74,75 +74,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The bridge supports a legacy way of adding local (non-forwarded) FDB
-entries, which works on an individual port basis:
+When
+(a) "dev" is a bridge port which the DSA switch tree offloads, but is
+    otherwise not a dsa slave (such as a LAG netdev), or
+(b) "dev" is the bridge net device itself
 
-bridge fdb add dev swp0 00:01:02:03:04:05 master local
+then strange things happen to the dev_hold/dev_put pair:
+dsa_schedule_work() will still be called with a DSA port that offloads
+that netdev, but dev_hold() will be called on the non-DSA netdev.
+Then the "if" condition in dsa_slave_switchdev_event_work() does not
+pass, because "dev" is not a DSA netdev, so dev_put() is not called.
 
-As well as a new way, added by Roopa Prabhu in commit 3741873b4f73
-("bridge: allow adding of fdb entries pointing to the bridge device"):
+This results in the simple fact that we have a reference counting
+mismatch on the "dev" net device.
 
-bridge fdb add dev br0 00:01:02:03:04:05 self local
+This can be seen when we add support for host addresses installed on the
+bridge net device.
 
-The two commands are functionally equivalent, except that the first one
-produces an entry with fdb->dst == swp0, and the other an entry with
-fdb->dst == NULL. The confusing part, though, is that even if fdb->dst
-is swp0 for the 'local on port' entry, that destination is not used.
+ip link add br1 type bridge
+ip link set br1 address 00:01:02:03:04:05
+ip link set swp0 master br1
+ip link del br1
+[  968.512278] unregister_netdevice: waiting for br1 to become free. Usage count = 5
 
-Nonetheless, the idea is that the bridge has reference counting for
-local entries, and local entries pointing towards the bridge are still
-'as local' as local entries for a port.
+It seems foolish to do penny pinching and not add the net_device pointer
+in the dsa_switchdev_event_work structure, so let's finally do that.
+As an added bonus, when we start offloading local entries pointing
+towards the bridge, these will now properly appear as 'offloaded' in
+'bridge fdb' (this was not possible before, because 'dev' was assumed to
+only be a DSA net device):
 
-The bridge adds the MAC addresses of the interfaces automatically as
-FDB entries with is_local=1. For the MAC address of the ports, fdb->dst
-will be equal to the port, and for the MAC address of the bridge,
-fdb->dst will point towards the bridge (i.e. be NULL). Therefore, if the
-MAC address of the bridge is not inherited from either of the physical
-ports, then we must explicitly catch local FDB entries emitted towards
-the br0, otherwise we'll miss the MAC address of the bridge (and, of
-course, any entry with 'bridge add dev br0 ... self local').
+00:01:02:03:04:05 dev br0 vlan 1 offload master br0 permanent
+00:01:02:03:04:05 dev br0 offload master br0 permanent
 
-Co-developed-by: Tobias Waldekranz <tobias@waldekranz.com>
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 v4->v5: none
 
- net/dsa/slave.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ net/dsa/dsa_priv.h | 1 +
+ net/dsa/slave.c    | 9 ++++-----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 36e667ea94db..f201c33980bf 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -116,6 +116,7 @@ struct dsa_notifier_mrp_ring_role_info {
+ struct dsa_switchdev_event_work {
+ 	struct dsa_switch *ds;
+ 	int port;
++	struct net_device *dev;
+ 	struct work_struct work;
+ 	unsigned long event;
+ 	/* Specific for SWITCHDEV_FDB_ADD_TO_DEVICE and
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index d006bd04f84a..a7b5d2a41472 100644
+index a7b5d2a41472..ffbba1e71551 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -2415,7 +2415,11 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
- 			struct net_device *br_dev;
- 			struct dsa_slave_priv *p;
+@@ -2349,9 +2349,8 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 	}
+ 	rtnl_unlock();
  
--			br_dev = netdev_master_upper_dev_get_rcu(dev);
-+			if (netif_is_bridge_master(dev))
-+				br_dev = dev;
-+			else
-+				br_dev = netdev_master_upper_dev_get_rcu(dev);
-+
- 			if (!br_dev)
- 				return NOTIFY_DONE;
++	dev_put(switchdev_work->dev);
+ 	kfree(switchdev_work);
+-	if (dsa_is_user_port(ds, dp->index))
+-		dev_put(dp->slave);
+ }
  
-@@ -2443,8 +2447,13 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
- 			 * LAG we don't want to send traffic to the CPU, the
- 			 * other ports bridged with the LAG should be able to
- 			 * autonomously forward towards it.
-+			 * On the other hand, if the address is local
-+			 * (therefore not learned) then we want to trap it to
-+			 * the CPU regardless of whether the interface it
-+			 * belongs to is offloaded or not.
- 			 */
--			if (dsa_tree_offloads_bridge_port(dp->ds->dst, dev))
-+			if (dsa_tree_offloads_bridge_port(dp->ds->dst, dev) &&
-+			    !fdb_info->is_local)
- 				return NOTIFY_DONE;
- 		}
+ static int dsa_lower_dev_walk(struct net_device *lower_dev,
+@@ -2469,15 +2468,15 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
+ 		switchdev_work->ds = dp->ds;
+ 		switchdev_work->port = dp->index;
+ 		switchdev_work->event = event;
++		switchdev_work->dev = dev;
  
+ 		ether_addr_copy(switchdev_work->addr,
+ 				fdb_info->addr);
+ 		switchdev_work->vid = fdb_info->vid;
+ 		switchdev_work->host_addr = host_addr;
+ 
+-		/* Hold a reference on the slave for dsa_fdb_offload_notify */
+-		if (dsa_is_user_port(dp->ds, dp->index))
+-			dev_hold(dev);
++		/* Hold a reference for dsa_fdb_offload_notify */
++		dev_hold(dev);
+ 		dsa_schedule_work(&switchdev_work->work);
+ 		break;
+ 	default:
 -- 
 2.25.1
 
