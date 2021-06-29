@@ -2,74 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B5723B6BA8
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 02:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A0BF3B6BAA
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 02:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232029AbhF2AXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 20:23:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59326 "EHLO mail.kernel.org"
+        id S232088AbhF2A0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 20:26:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59928 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232018AbhF2AXg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Jun 2021 20:23:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DC3A961CED;
-        Tue, 29 Jun 2021 00:21:09 +0000 (UTC)
+        id S232073AbhF2A0F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Jun 2021 20:26:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 732C761CF4;
+        Tue, 29 Jun 2021 00:23:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1624926070;
-        bh=1QPO1mcA+UJxp/Jc2BIHhK7gJ8qRdu2eQv8OZVQo7MY=;
+        s=k20201202; t=1624926219;
+        bh=f4wlMVrJoHI+NL1idxlmKF/5RXEb+XMGFjbxCrypME8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kEgyuIMLG2eEYbt0wQ8cAf0KWqD+1v7jD6BIpqNSo+u5ewoUwlbfmeD0tfV0+vVEu
-         XFWS/EgdseN22ACVyUIyJrAU0EdpQE/IbrxGPZNP+ZkhKESdFY9MdKY9f75R0ap7Bt
-         S27fyKgda3ybt6j6TA5vHuKy0uCkgbCX58v9RD1HyAqVxyHkF3ZC8LGlD3Mq8SpnN/
-         beTdTjM7f7EUHA36XYS3lOcojOnIRRkaKTRdpWEmYlnHaDYLsyCp8NRT7qk9fWqZSC
-         yLrAsY2JayBQnHiQQlcbUPDGJ2WQ2TAQ7XsP0DAFXFoCOxuNEyyGYJJSS2cHnSbeWY
-         7iglQo8faBZOQ==
-Date:   Tue, 29 Jun 2021 02:21:06 +0200
+        b=GrpwPj74jycIPFYPZmiDgtFoJrZso3obOOnff4uc4l3aabifcsTh1cJlK+63Lya+f
+         8qK39zkK6B7G6RpV7yMxgege84Tuz36hGYTFcsqCiNo+FynozPPte0PQIbrxEgt1aQ
+         okNqMpJ+NErsc2OkS911FdB/SnkJFH63m22vdCC/PvbmupDGMm70V0b0OlXZt4JgDB
+         izHJzBnOVlEnXw99i8F6XvGu/O9neJfKEwttia4Sx2/eGc0cOcF99FDqLayqAP89Mo
+         Jn6HdQpMB86c4aFsuwo4Q6n+HmWD6L8MftzoU31IwqJT4tCmF0svbnLIXJiYQpZa+5
+         QAvQc/OP+eoOg==
+Date:   Tue, 29 Jun 2021 02:23:35 +0200
 From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
 To:     Kurt Cancemi <kurt@x64architecture.com>
-Cc:     Marcin Wojtas <mw@semihalf.com>, netdev <netdev@vger.kernel.org>
+Cc:     netdev@vger.kernel.org
 Subject: Re: [PATCH 1/1] net: phy: marvell: Fixed handing of delays with
  plain RGMII interface
-Message-ID: <20210629022106.58925d5f@thinkpad>
-In-Reply-To: <CADujJWW=QbsRcrvF+7UxWZssMJ0iK1+xq+mfCTAVb7SkKKXcaA@mail.gmail.com>
+Message-ID: <20210629022335.1d27efc9@thinkpad>
+In-Reply-To: <CADujJWWoWRyW3S+f3F_Zhq9H90QZ1W4eu=5dyad3DeMLHFp2TA@mail.gmail.com>
 References: <20210628192826.1855132-1-kurt@x64architecture.com>
         <20210628192826.1855132-2-kurt@x64architecture.com>
         <20210629004958.40f3b98c@thinkpad>
-        <CAPv3WKfcHZ642S1SczFNMruq64H9E6x0KD5+bYWHcs3uu058cQ@mail.gmail.com>
-        <CADujJWW=QbsRcrvF+7UxWZssMJ0iK1+xq+mfCTAVb7SkKKXcaA@mail.gmail.com>
+        <CADujJWWoWRyW3S+f3F_Zhq9H90QZ1W4eu=5dyad3DeMLHFp2TA@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Jun 2021 20:05:19 -0400
+On Mon, 28 Jun 2021 19:09:49 -0400
 Kurt Cancemi <kurt@x64architecture.com> wrote:
 
-> Well I'm sorry for the noise I was running into a lot of other DPAA
-> ethernet related issues and overlooked adding phy-mode = "rgmii-id";
-> that fixed the issue. I knew my patch was not correct (as I explained
-> in the cover email) but I was not sure why it was necessary but now I
-> see it was not necessary I just had "phy-connection-mode" instead of
-> "phy-mode".
-> 
-> May I ask what is the purpose of phy-connection-mode? And why did the
+> I=E2=80=99m sorry if I proposed this wrong (I am new to the kernel mailin=
+g list), I
+> acknowledge that this is probably not the way to fix the problem, I wanted
+> to discuss why my fix is necessary. In the cover email I explained that I
+> used (in the device tree) =E2=80=9Crgmii-id=E2=80=9D for the =E2=80=9Cphy=
+-connection-type=E2=80=9D and the
+> DPAA memac correctly reports that the PHY type is =E2=80=9CPHY_INTERFACE_=
+MODE_RGMII_ID=E2=80=9D
+> but without my patch the RX and TX delay flags are not set on the
+> underlying Marvell PHY and I receive RX and TX errors on every network
+> request. Maybe there is some type of incompatibility between the Freescale
+> DPAA1 Ethernet driver and the Marvell PHY?
 
-phy-connection-type, not mode
-
-> DPAA driver recognize the PHY interface mode as RGMII ID but the
-> Marvell PHY driver didn't?
-
-phy-mode and phy-connection-type are synonyms. phy-mode takes
-precedence. Look at drivers/of/of_net.c function of_get_phy_mode().
-
-If your device tree declares both, it can lead to confusion. For
-example if dtsi file says
-  phy-mode = "rgmii";
-and you include this dtsi file but than you say
-  phy-connection-type = "rgmii-id";
-the kernel code will use rgmii, not rgmii-id, because phy-mode takes
-precedence over phy-connection-type.
-
-Marek
+Which driver again?
+  drivers/net/ethernet/freescale/dpaa
+or
+  drivers/net/ethernet/freescale/dpaa2
+?
