@@ -2,107 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B79D13B7766
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 19:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00A653B7767
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 19:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232608AbhF2Rv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 13:51:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38726 "EHLO mail.kernel.org"
+        id S233609AbhF2Rwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 13:52:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38904 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232066AbhF2Rv6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Jun 2021 13:51:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C6F4861DC8;
-        Tue, 29 Jun 2021 17:49:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1624988971;
-        bh=qeivbnpYYv2NfIGODb0jY2+d5rdKnmM3+1jdUWCjvyg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cQa1yq6v8BCpUXxpBsad9tIIQqzWtgOt31UAsc5pTCF1X18AgCyoAj64JyXBOQR4z
-         eKo/Wp0e7yHCrSZCobrTpf5F3Y3cpTeja9Jro2BjhVTA84OeKu3K5+vfZaRaZ1gFZg
-         BnN54xj1Tgk5C6vRH5vAk9gLDLEn4jlW+Xarw81Q=
-Date:   Tue, 29 Jun 2021 19:49:29 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Davis <davikovs@gmail.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: Posible memory corruption from "mac80211: do not accept/forward
- invalid EAPOL frames"
-Message-ID: <YNtdKb+2j02fxfJl@kroah.com>
-References: <CAHQn7pKcyC_jYmGyTcPCdk9xxATwW5QPNph=bsZV8d-HPwNsyA@mail.gmail.com>
- <a7f11cc2-7bef-4727-91b7-b51da218d2ee@nbd.name>
+        id S232066AbhF2Rwd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Jun 2021 13:52:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6E49A61DC8;
+        Tue, 29 Jun 2021 17:50:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1624989006;
+        bh=D7zX8Vvn5Nvdr5GMBCI1hETZd+uLvp8YCBT4Kb/r/gY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XW2Av6Pcul9X//Ci6wwv88LqKV5LjOcCEkWuy19tsD17hpVvoUccO+cahctB+Z6Rk
+         uuTgnw71xwQ3bvUjDvx2SWk/SnRTuMaQRjtKJ0m1UQY2QYk3ia+XZZZ45M5+PG/2GS
+         UZ4CBvEepdV7s0dA8c7Wqks2opPCGZM6oJkvtLWaqJEVe5gTIBg1xmCix/B+7QJfkV
+         rEhBlnOLx8gm+Dv3dK+bDpfrRrjRc0rNZ+8qGZQGymwaXXpgahHCqaW0o4cOuE3n38
+         Hv4RgVB9vgeqZVCr15hILRtu68uUBZnKO72cM3aZTWveBifrYudUjkO5aajtY8yaQr
+         yH5Ts5lIYC1pw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5DE6860ACA;
+        Tue, 29 Jun 2021 17:50:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a7f11cc2-7bef-4727-91b7-b51da218d2ee@nbd.name>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 net-next 00/15] RX filtering in DSA
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162498900637.32370.6838402243574308383.git-patchwork-notify@kernel.org>
+Date:   Tue, 29 Jun 2021 17:50:06 +0000
+References: <20210629140658.2510288-1-olteanv@gmail.com>
+In-Reply-To: <20210629140658.2510288-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        jiri@resnulli.us, idosch@idosch.org, tobias@waldekranz.com,
+        roopa@nvidia.com, nikolay@nvidia.com,
+        bridge@lists.linux-foundation.org, vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 29, 2021 at 07:26:03PM +0200, Felix Fietkau wrote:
-> 
-> Hi,
-> 
-> On 2021-06-29 06:48, Davis wrote:
-> > Greetings!
-> > 
-> > Could it be possible that
-> > https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=v5.12.13&id=a8c4d76a8dd4fb9666fc8919a703d85fb8f44ed8
-> > or at least its backport to 4.4 has the potential for memory
-> > corruption due to incorrect pointer calculation?
-> > Shouldn't the line:
-> >   struct ethhdr *ehdr = (void *)skb_mac_header(skb);
-> > be:
-> >   struct ethhdr *ehdr = (struct ethhdr *) skb->data;
-> > 
-> > Later ehdr->h_dest is referenced, read and (when not equal to expected
-> > value) written:
-> >   if (unlikely(skb->protocol == sdata->control_port_protocol &&
-> >       !ether_addr_equal(ehdr->h_dest, sdata->vif.addr)))
-> >     ether_addr_copy(ehdr->h_dest, sdata->vif.addr);
-> > 
-> > In my case after cherry-picking
-> > https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=v4.4.273&id=e3d4030498c304d7c36bccc6acdedacf55402387
-> > to 4.4 kernel of an ARM device occasional memory corruption was observed.
-> > 
-> > To investigate this issue logging was added - the pointer calculation
-> > was expressed as:
-> >   struct ethhdr *ehdr = (void *)skb_mac_header(skb);
-> >   struct ethhdr *ehdr2 = (struct ethhdr *) skb->data;
-> > and memory writing was replaced by logging:
-> >   if (unlikely(skb->protocol == sdata->control_port_protocol &&
-> >       (!ether_addr_equal(ehdr->h_dest, sdata->vif.addr) ||
-> > !ether_addr_equal(ehdr2->h_dest, sdata->vif.addr))))
-> >     printk(KERN_ERR "Matching1: %u, matching2: %u, addr1: %px, addr2:
-> > %px", !ether_addr_equal(ehdr->h_dest, sdata->vif.addr),
-> > !ether_addr_equal(ehdr2->h_dest, sdata->vif.addr), ehdr->h_dest,
-> > ehdr2->h_dest);
-> > 
-> > During normal use of wifi (in residential environment) logging was
-> > triggered several times, in all cases matching1 was 1 and matching2
-> > was 0.
-> > This makes me think that normal control frames were received and
-> > correctly validated by !ether_addr_equal(ehdr2->h_dest,
-> > sdata->vif.addr), however !ether_addr_equal(ehdr->h_dest,
-> > sdata->vif.addr) was checking incorrect buffer and identified the
-> > frames as malformed/correctable.
-> > This also explains memory corruption - offset difference between both
-> > buffers (addr1 and addr2) was close to 64 KB in all cases, virtually
-> > always a random memory location (around 64 KB away from the correct
-> > buffer) will belong to something else, will have a value that differs
-> > from the expected MAC address and will get overwritten by the
-> > cherry-picked code.
-> It seems that the 4.4 backport is broken. The problem is the fact that
-> skb_mac_header is called before eth_type_trans(). This means that the
-> mac header offset still has the default value of (u16)-1, resulting in
-> the 64 KB memory offset that you observed.
-> 
-> I think that for 4.4, the code should be changed to use skb->data
-> instead of skb_mac_header. 4.9 looks broken in the same way.
-> 5.4 seems fine, so newer kernels should be fine as well.
+Hello:
 
-Thanks for looking into this, can you submit a patch to fix this up in
-the older kernel trees?
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-thanks,
+On Tue, 29 Jun 2021 17:06:43 +0300 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> This is my 5th stab at creating a list of unicast and multicast
+> addresses that the DSA CPU ports must trap. I am reusing a lot of
+> Tobias's work which he submitted here:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20210116012515.3152-1-tobias@waldekranz.com/
+> 
+> [...]
 
-greg k-h
+Here is the summary with links:
+  - [v5,net-next,01/15] net: bridge: use READ_ONCE() and WRITE_ONCE() compiler barriers for fdb->dst
+    https://git.kernel.org/netdev/net-next/c/3e19ae7c6fd6
+  - [v5,net-next,02/15] net: bridge: switchdev: send FDB notifications for host addresses
+    https://git.kernel.org/netdev/net-next/c/6eb38bf8eb90
+  - [v5,net-next,03/15] net: bridge: allow br_fdb_replay to be called for the bridge device
+    https://git.kernel.org/netdev/net-next/c/f851a721a638
+  - [v5,net-next,04/15] net: dsa: delete dsa_legacy_fdb_add and dsa_legacy_fdb_del
+    https://git.kernel.org/netdev/net-next/c/b117e1e8a86d
+  - [v5,net-next,05/15] net: dsa: introduce dsa_is_upstream_port and dsa_switch_is_upstream_of
+    https://git.kernel.org/netdev/net-next/c/63609c8fac40
+  - [v5,net-next,06/15] net: dsa: introduce a separate cross-chip notifier type for host MDBs
+    https://git.kernel.org/netdev/net-next/c/b8e997c49003
+  - [v5,net-next,07/15] net: dsa: reference count the MDB entries at the cross-chip notifier level
+    https://git.kernel.org/netdev/net-next/c/161ca59d39e9
+  - [v5,net-next,08/15] net: dsa: introduce a separate cross-chip notifier type for host FDBs
+    https://git.kernel.org/netdev/net-next/c/3dc80afc5098
+  - [v5,net-next,09/15] net: dsa: reference count the FDB addresses at the cross-chip notifier level
+    https://git.kernel.org/netdev/net-next/c/3f6e32f92a02
+  - [v5,net-next,10/15] net: dsa: install the host MDB and FDB entries in the master's RX filter
+    https://git.kernel.org/netdev/net-next/c/26ee7b06a4d3
+  - [v5,net-next,11/15] net: dsa: sync static FDB entries on foreign interfaces to hardware
+    https://git.kernel.org/netdev/net-next/c/3068d466a67e
+  - [v5,net-next,12/15] net: dsa: include bridge addresses which are local in the host fdb list
+    https://git.kernel.org/netdev/net-next/c/10fae4ac89ce
+  - [v5,net-next,13/15] net: dsa: include fdb entries pointing to bridge in the host fdb list
+    https://git.kernel.org/netdev/net-next/c/81a619f78759
+  - [v5,net-next,14/15] net: dsa: ensure during dsa_fdb_offload_notify that dev_hold and dev_put are on the same dev
+    https://git.kernel.org/netdev/net-next/c/4bed397c3e65
+  - [v5,net-next,15/15] net: dsa: replay the local bridge FDB entries pointing to the bridge dev too
+    https://git.kernel.org/netdev/net-next/c/63c51453c82c
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
