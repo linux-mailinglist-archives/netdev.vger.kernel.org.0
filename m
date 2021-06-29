@@ -2,291 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A00F53B75E4
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 17:51:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFF363B7615
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 18:00:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233943AbhF2Pxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 11:53:54 -0400
-Received: from relay.sw.ru ([185.231.240.75]:37984 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233946AbhF2Pxu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Jun 2021 11:53:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=MIME-Version:Message-Id:Date:Subject:From:
-        Content-Type; bh=Lz4cS1gl+Pxt+jJ3Fm07nbykceefDjWfmLkQXWPMy4I=; b=OmQ5+TmEhWx4
-        BdfuYVwRN76AeqEwoX2Xl8Us0Qpq8oMivwe6wlLb3h49jpPltNwwVD/gqySXCq78ObM5GX2XFHduN
-        z+a98aE/zMSW7LFX3l2/RNhj95kSo8IgtKm+/VU2FqtVf/1iZ0/PKIjNasFx1eRXGMDgsxbikGvSZ
-        jO4q4=;
-Received: from [192.168.15.46] (helo=mikhalitsyn-laptop.sw.ru)
-        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1lXx4Q-002CfC-TK; Tue, 29 Jun 2021 18:51:19 +0300
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Andrei Vagin <avagin@gmail.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Subject: [PATCHv4 iproute2] ip route: ignore ENOENT during save if RT_TABLE_MAIN is being dumped
-Date:   Tue, 29 Jun 2021 18:51:15 +0300
-Message-Id: <20210629155116.23464-1-alexander.mikhalitsyn@virtuozzo.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
-References: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
+        id S234160AbhF2QCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 12:02:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234089AbhF2QC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 12:02:29 -0400
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8218EC061767
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 09:00:01 -0700 (PDT)
+Received: by mail-vs1-xe2b.google.com with SMTP id l26so12406734vsm.9
+        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 09:00:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XhBLIZ8SeN0Q4YkyREg3OHNcuvIGJYM1mFWikBEBPjU=;
+        b=FNLQ9Y+Fv5j4B6qlfvyZe82uBP23klCkWrC+zqTQCsIKE9CExq5Wu3RYv92l0WWnuX
+         OZOi5q2iZAlkBZZONRziR9DxhUBzG9qRJIWj+85GGmVWGjSJESzhulPiLgA8E1cOS7gi
+         Q6ybHlbpK/8HeKc4zyiPQXwNfl4mWqhmi0pJz3az+GiZzWjUqgAjXPbrZvmZTkkeFA9j
+         MyzyZWHf2KRP14eJYRtPRi0l6A5wzUfiu689G7caqSon0tLYoLxQn9T9/7PbERYJ8Ysi
+         Pb2WtmowmxRgENSjeCtuNeE/oir4tnyMBUjVkCwlvP+9tVCdhRe3IE3znOORbBtwhHn0
+         7DsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XhBLIZ8SeN0Q4YkyREg3OHNcuvIGJYM1mFWikBEBPjU=;
+        b=pVLrQ8ljiM+0bY5RDg4wlqDjt8rVedCL3udPRYOWIgORWUHYHPJFAMCpngvPlkTO59
+         /v5mi1QjRViPEgf9KlssLkRg9E6R4KcIUtae/u43gpt5wH5O01y8f3COoy2mFxqQB63k
+         zAZY4ejmwmc2Ctyuw7Br+m/SWBUIOLgjUI71megpKIX18WvyawSlAnlUmflMri3cYU7p
+         96Xg2RF/3S67oNjrWV5BBgpfRZLQB1zetQ6uA791v5NYQxTwbj6lnRd9kPO/XVTIt1Ew
+         YdFGbU6o5XYEaykU0ffz7zs60vt1bKZlv+hoVl0+O3xM/IFCbVSlqL7StDtttam89s6q
+         lkHA==
+X-Gm-Message-State: AOAM533w6hTqTonqsp4qatbGY0r7yLpKVUyvHR3aQU6uPxo7YgjQBmf1
+        rBIiuB4BmCW0/dbrRiu6p4ocCr4s3izokgiWaVhFcw==
+X-Google-Smtp-Source: ABdhPJwobUDC1855lf1exKUJy1yWcCxV2mM/hLHb8peV3rSrtPvrKzHsicCp5dWdk4WZMrWLD9E2gkICoF7r5fVgRlY=
+X-Received: by 2002:a05:6102:a33:: with SMTP id 19mr24990687vsb.54.1624982400345;
+ Tue, 29 Jun 2021 09:00:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210628144908.881499-1-phind.uet@gmail.com> <CANn89iJ6M2WFS3B+sSOysekScUFmO9q5YHxgHGsbozbvkW9ivg@mail.gmail.com>
+ <79490158-e6d1-aabf-64aa-154b71205c74@gmail.com> <CADVnQy=Q9W=Vxu81ctPLx08D=ALnHBXGr0c4BLtQGxwQE+yjRg@mail.gmail.com>
+ <ee5ef69e-ee3f-1df0-2033-5adc06a46b9c@gmail.com> <CADVnQynqMQhO4cBON=xUCkne9-E1hze3naMZZ8tQ-a0k71kh8g@mail.gmail.com>
+ <205F52AB-4A5B-4953-B97E-17E7CACBBCD8@gmail.com> <CANn89iJbquZ=tVBRg7JNR8pB106UY4Xvi7zkPVn0Uov9sj8akg@mail.gmail.com>
+ <1786BBEE-9C7B-45B2-B451-F535ABB804EF@gmail.com> <CANn89iK4Qwf0ezWac3Cn1xWN_Hw+-QL-+H8YmDm4cZP=FH+MTQ@mail.gmail.com>
+In-Reply-To: <CANn89iK4Qwf0ezWac3Cn1xWN_Hw+-QL-+H8YmDm4cZP=FH+MTQ@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Tue, 29 Jun 2021 11:59:43 -0400
+Message-ID: <CADVnQyk9maCc+tJ4-b6kufcBES9+Y2KpHPZadXssoVWX=Xr1Vw@mail.gmail.com>
+Subject: Re: [PATCH] tcp: Do not reset the icsk_ca_initialized in tcp_init_transfer.
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Nguyen Dinh Phi <phind.uet@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We started to use in-kernel filtering feature which allows to get only needed
-tables (see iproute_dump_filter()). From the kernel side it's implemented in
-net/ipv4/fib_frontend.c (inet_dump_fib), net/ipv6/ip6_fib.c (inet6_dump_fib).
-The problem here is that behaviour of "ip route save" was changed after
-c7e6371bc ("ip route: Add protocol, table id and device to dump request").
-If filters are used, then kernel returns ENOENT error if requested table is absent,
-but in newly created net namespace even RT_TABLE_MAIN table doesn't exist.
-It is really allocated, for instance, after issuing "ip l set lo up".
+  On Tue, Jun 29, 2021 at 8:58 AM Eric Dumazet <edumazet@google.com> wrote:
+> > Because the problem only happens with CDG, is adding check in its tcp_cdg_init() function Ok? And about  icsk_ca_initialized, Could I expect it to be 0 in CC's init functions?
+>
+> I think icsk_ca_initialized  lost its strong meaning when CDG was
+> introduced (since this is the only CC allocating memory)
+>
+> The bug really is that before clearing icsk_ca_initialized we should
+> call cc->release()
+>
+> Maybe we missed this cleanup in commit
+> 8919a9b31eb4fb4c0a93e5fb350a626924302aa6 ("tcp: Only init congestion
+> control if not initialized already")
 
-Reproducer is fairly simple:
-$ unshare -n ip route save > dump
-Error: ipv4: FIB table does not exist.
-Dump terminated
+From my perspective, the bug was introduced when that 8919a9b31eb4
+commit introduced icsk_ca_initialized and set icsk_ca_initialized to 0
+in tcp_init_transfer(), missing the possibility that a process could
+call setsockopt(TCP_CONGESTION)  in state TCP_SYN_SENT (i.e. after the
+connect() or TFO open sendmsg()), which would call
+tcp_init_congestion_control(). The 8919a9b31eb4 commit did not intend
+to reset any initialization that the user had already explicitly made;
+it just missed the possibility of that particular sequence (which
+syzkaller managed to find!).
 
-Expected result here is to get empty dump file (as it was before this change).
+> Although I am not sure what happens at accept() time when the listener
+> socket is cloned.
 
-v2: reworked, so, now it takes into account NLMSGERR_ATTR_MSG
-(see nl_dump_ext_ack_done() function). We want to suppress error messages
-in stderr about absent FIB table from kernel too.
+It seems that for listener sockets, they cannot initialize their CC
+module state, because there is no way for them to reach
+tcp_init_congestion_control(), since:
 
-v3: reworked to make code clearer. Introduced rtnl_suppressed_errors(),
-rtnl_suppress_error() helpers. User may suppress up to 3 errors (may be
-easily extened by changing SUPPRESS_ERRORS_INIT macro).
+(a) tcp_set_congestion_control() -> tcp_reinit_congestion_control()
+will not call tcp_init_congestion_control() on a socket in CLOSE or
+LISTEN
 
-v4: reworked, rtnl_dump_filter_errhndlr() was introduced. Thanks
-to Stephen Hemminger for comments and suggestions
+(b) tcp_init_transfer() -> tcp_init_congestion_control() can only
+happen for established sockets and successful TFO SYN_RECV sockets
 
-Fixes: c7e6371bc ("ip route: Add protocol, table id and device to dump request")
-Cc: David Ahern <dsahern@gmail.com>
-Cc: Stephen Hemminger <stephen@networkplumber.org>
-Cc: Andrei Vagin <avagin@gmail.com>
-Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
----
- include/libnetlink.h | 32 +++++++++++++++++++++++++
- ip/iproute.c         | 15 +++++++++++-
- lib/libnetlink.c     | 56 +++++++++++++++++++++++++++++++++++---------
- 3 files changed, 91 insertions(+), 12 deletions(-)
+So it seems my previously suggested change (yesterday in this thread)
+to add icsk_ca_initialized=0 in tcp_ca_openreq_child() is not needed.
 
-diff --git a/include/libnetlink.h b/include/libnetlink.h
-index b9073a6a..4545e5e5 100644
---- a/include/libnetlink.h
-+++ b/include/libnetlink.h
-@@ -104,6 +104,27 @@ struct rtnl_ctrl_data {
- 
- typedef int (*rtnl_filter_t)(struct nlmsghdr *n, void *);
- 
-+/**
-+ * rtnl error handler called from
-+ * 	rtnl_dump_done()
-+ * 	rtnl_dump_error()
-+ *
-+ * Return value is a bitmask of the following values:
-+ * RTNL_LET_NLERR
-+ * 	error handled as usual
-+ * RTNL_SUPPRESS_NLMSG_DONE_NLERR
-+ * 	error in nlmsg_type == NLMSG_DONE will be suppressed
-+ * RTNL_SUPPRESS_NLMSG_ERROR_NLERR
-+ * 	error in nlmsg_type == NLMSG_ERROR will be suppressed
-+ * 	and nlmsg will be skipped
-+ * RTNL_SUPPRESS_NLERR - suppress error in both previous cases
-+ */
-+#define RTNL_LET_NLERR				0x01
-+#define RTNL_SUPPRESS_NLMSG_DONE_NLERR		0x02
-+#define RTNL_SUPPRESS_NLMSG_ERROR_NLERR		0x04
-+#define RTNL_SUPPRESS_NLERR			0x06
-+typedef int (*rtnl_err_hndlr_t)(struct nlmsghdr *n, void *);
-+
- typedef int (*rtnl_listen_filter_t)(struct rtnl_ctrl_data *,
- 				    struct nlmsghdr *n, void *);
- 
-@@ -113,6 +134,8 @@ typedef int (*nl_ext_ack_fn_t)(const char *errmsg, uint32_t off,
- struct rtnl_dump_filter_arg {
- 	rtnl_filter_t filter;
- 	void *arg1;
-+	rtnl_err_hndlr_t errhndlr;
-+	void *arg2;
- 	__u16 nc_flags;
- };
- 
-@@ -121,6 +144,15 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
- 			void *arg, __u16 nc_flags);
- #define rtnl_dump_filter(rth, filter, arg) \
- 	rtnl_dump_filter_nc(rth, filter, arg, 0)
-+int rtnl_dump_filter_errhndlr_nc(struct rtnl_handle *rth,
-+				 rtnl_filter_t filter,
-+				 void *arg1,
-+				 rtnl_err_hndlr_t errhndlr,
-+				 void *arg2,
-+				 __u16 nc_flags);
-+#define rtnl_dump_filter_errhndlr(rth, filter, farg, errhndlr, earg) \
-+	rtnl_dump_filter_errhndlr_nc(rth, filter, farg, errhndlr, earg, 0)
-+
- int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
- 	      struct nlmsghdr **answer)
- 	__attribute__((warn_unused_result));
-diff --git a/ip/iproute.c b/ip/iproute.c
-index 5853f026..e45f0bea 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -1727,6 +1727,18 @@ static int iproute_flush(int family, rtnl_filter_t filter_fn)
- 	}
- }
- 
-+static int save_route_errhndlr(struct nlmsghdr *n, void *arg)
-+{
-+	int err = -*(int *)NLMSG_DATA(n);
-+
-+	if (n->nlmsg_type == NLMSG_DONE &&
-+	    filter.tb == RT_TABLE_MAIN &&
-+	    err == ENOENT)
-+		return RTNL_SUPPRESS_NLMSG_DONE_NLERR;
-+
-+	return RTNL_LET_NLERR;
-+}
-+
- static int iproute_list_flush_or_save(int argc, char **argv, int action)
- {
- 	int dump_family = preferred_family;
-@@ -1939,7 +1951,8 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
- 
- 	new_json_obj(json);
- 
--	if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
-+	if (rtnl_dump_filter_errhndlr(&rth, filter_fn, stdout,
-+				      save_route_errhndlr, NULL) < 0) {
- 		fprintf(stderr, "Dump terminated\n");
- 		return -2;
- 	}
-diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-index c958aa57..80a92e6f 100644
---- a/lib/libnetlink.c
-+++ b/lib/libnetlink.c
-@@ -673,7 +673,8 @@ int rtnl_dump_request_n(struct rtnl_handle *rth, struct nlmsghdr *n)
- 	return sendmsg(rth->fd, &msg, 0);
- }
- 
--static int rtnl_dump_done(struct nlmsghdr *h)
-+static int rtnl_dump_done(struct nlmsghdr *h,
-+			  const struct rtnl_dump_filter_arg *a)
- {
- 	int len = *(int *)NLMSG_DATA(h);
- 
-@@ -683,11 +684,15 @@ static int rtnl_dump_done(struct nlmsghdr *h)
- 	}
- 
- 	if (len < 0) {
-+		errno = -len;
-+
-+		if (a->errhndlr(h, a->arg2) & RTNL_SUPPRESS_NLMSG_DONE_NLERR)
-+			return 0;
-+
- 		/* check for any messages returned from kernel */
- 		if (nl_dump_ext_ack_done(h, len))
- 			return len;
- 
--		errno = -len;
- 		switch (errno) {
- 		case ENOENT:
- 		case EOPNOTSUPP:
-@@ -708,8 +713,9 @@ static int rtnl_dump_done(struct nlmsghdr *h)
- 	return 0;
- }
- 
--static void rtnl_dump_error(const struct rtnl_handle *rth,
--			    struct nlmsghdr *h)
-+static int rtnl_dump_error(const struct rtnl_handle *rth,
-+			    struct nlmsghdr *h,
-+			    const struct rtnl_dump_filter_arg *a)
- {
- 
- 	if (h->nlmsg_len < NLMSG_LENGTH(sizeof(struct nlmsgerr))) {
-@@ -721,11 +727,16 @@ static void rtnl_dump_error(const struct rtnl_handle *rth,
- 		if (rth->proto == NETLINK_SOCK_DIAG &&
- 		    (errno == ENOENT ||
- 		     errno == EOPNOTSUPP))
--			return;
-+			return -1;
-+
-+		if (a->errhndlr(h, a->arg2) & RTNL_SUPPRESS_NLMSG_ERROR_NLERR)
-+			return 0;
- 
- 		if (!(rth->flags & RTNL_HANDLE_F_SUPPRESS_NLERR))
- 			perror("RTNETLINK answers");
- 	}
-+
-+	return -1;
- }
- 
- static int __rtnl_recvmsg(int fd, struct msghdr *msg, int flags)
-@@ -834,7 +845,7 @@ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
- 					dump_intr = 1;
- 
- 				if (h->nlmsg_type == NLMSG_DONE) {
--					err = rtnl_dump_done(h);
-+					err = rtnl_dump_done(h, a);
- 					if (err < 0) {
- 						free(buf);
- 						return -1;
-@@ -845,9 +856,13 @@ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
- 				}
- 
- 				if (h->nlmsg_type == NLMSG_ERROR) {
--					rtnl_dump_error(rth, h);
--					free(buf);
--					return -1;
-+					err = rtnl_dump_error(rth, h, a);
-+					if (err < 0) {
-+						free(buf);
-+						return -1;
-+					}
-+
-+					goto skip_it;
- 				}
- 
- 				if (!rth->dump_fp) {
-@@ -887,8 +902,27 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
- 		     void *arg1, __u16 nc_flags)
- {
- 	const struct rtnl_dump_filter_arg a[2] = {
--		{ .filter = filter, .arg1 = arg1, .nc_flags = nc_flags, },
--		{ .filter = NULL,   .arg1 = NULL, .nc_flags = 0, },
-+		{ .filter = filter, .arg1 = arg1,
-+		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = nc_flags, },
-+		{ .filter = NULL,   .arg1 = NULL,
-+		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = 0, },
-+	};
-+
-+	return rtnl_dump_filter_l(rth, a);
-+}
-+
-+int rtnl_dump_filter_errhndlr_nc(struct rtnl_handle *rth,
-+		     rtnl_filter_t filter,
-+		     void *arg1,
-+		     rtnl_err_hndlr_t errhndlr,
-+		     void *arg2,
-+		     __u16 nc_flags)
-+{
-+	const struct rtnl_dump_filter_arg a[2] = {
-+		{ .filter = filter, .arg1 = arg1,
-+		  .errhndlr = errhndlr, .arg2 = arg2, .nc_flags = nc_flags, },
-+		{ .filter = NULL,   .arg1 = NULL,
-+		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = 0, },
- 	};
- 
- 	return rtnl_dump_filter_l(rth, a);
--- 
-2.31.1
+> If we make any hypothesis, we need to check all CC modules to make
+> sure they respect it.
 
+AFAICT the fix is correct; it just needs a Fixes: tag and a more clear
+description in the commit message.
+
+I have cherry-picked the patch into our kernel and verified it passes
+all of our internal packetdrill tests.
+
+So the diff seems OK, but I would suggest a commit message something
+like the following:
+
+--
+[PATCH] tcp: fix tcp_init_transfer() to not reset icsk_ca_initialized
+
+This commit fixes a bug (found by syzkaller) that could cause spurious
+double-initializations for congestion control modules, which could cause memory
+leaks orother problems for congestion control modules (like CDG) that allocate
+memory in their init functions.
+
+The buggy scenario constructed by syzkaller was something like:
+
+(1) create a TCP socket
+(2) initiate a TFO connect via sendto()
+(3) while socket is in TCP_SYN_SENT, call setsockopt(TCP_CONGESTION),
+    which calls:
+       tcp_set_congestion_control() ->
+         tcp_reinit_congestion_control() ->
+           tcp_init_congestion_control()
+(4) receive ACK, connection is established, call tcp_init_transfer(),
+    set icsk_ca_initialized=0 (without first calling cc->release()),
+    call tcp_init_congestion_control() again.
+
+Note that in this sequence tcp_init_congestion_control() is called twice
+without a cc->release() call in between. Thus, for CC modules that allocate
+memory in their init() function, e.g, CDG, a memory leak may occur. The
+syzkaller tool managed to find a reproducer that triggered such a leak in CDG.
+
+The bug was introduced when that 8919a9b31eb4 commit introduced
+icsk_ca_initialized and set icsk_ca_initialized to 0 in tcp_init_transfer(),
+missing the possibility for a sequence like the one above, where a process
+could call setsockopt(TCP_CONGESTION) in state TCP_SYN_SENT (i.e. after the
+connect() or TFO open sendmsg()), which would call
+tcp_init_congestion_control(). The 8919a9b31eb4 commit did not intend to reset
+any initialization that the user had already explicitly made; it just missed
+the possibility of that particular sequence (which syzkaller managed to find).
+
+Fixes: 8919a9b31eb4 ("tcp: Only init congestion control if not
+initialized already")
+Reported-by: syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
+Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+--
+
+neal
