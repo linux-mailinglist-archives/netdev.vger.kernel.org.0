@@ -2,102 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A151A3B6D21
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 05:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7186A3B6D37
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 05:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231918AbhF2Dtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 23:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44222 "EHLO
+        id S232011AbhF2D7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 23:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231598AbhF2Dte (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 23:49:34 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB51FC061574;
-        Mon, 28 Jun 2021 20:47:07 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id e20so17319185pgg.0;
-        Mon, 28 Jun 2021 20:47:07 -0700 (PDT)
+        with ESMTP id S231719AbhF2D7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 23:59:07 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A089BC061760
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 20:56:39 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id o11so20669838ejd.4
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 20:56:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hZzqtbvkB7GBRgetqJbBkcO8TSNI10ddi6eSpYQhmjk=;
-        b=u9wduzDmN6NnfbfcHJ6Z+ZIf6NZApRuPIqHspA8SfbBh44cMhfCkLtrmvuSzR/Xwm3
-         fBnpUaot1FuwKG4xF4umBk3biBH/iWmOmSR+2+wsE4WKI4IN6eoXRaRXbzTFnHww3Kv3
-         tfVTMMwBqoAdXFHD0jIi2OkTZ8opsWfIb+T5Qhz8QjewANwp6IDySHQMi5XXfxJy1qz6
-         zqsSV3g3mBMRKeUa8eXrj+kmeWQHSOGSrmbMTHnSL/mWY4wXSYLuSJ1EcmrrFGDRx3PC
-         u0dwJYmv8icWioAO5t9W1OoGYTudl61L+SJAccGz8C9NS83YoPB7KJXzDXGn/+ENPvW5
-         uGdw==
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=D86WnvUg/Gf6HvI1cRKKP6mYttXzkG9si4A9EUDsAM8=;
+        b=ktycy0u3fd2n2LkkSyJRlmSxqWEZlI+BMvbBCygDsyL4bIVPtYgv5F3+OlCovp8IE5
+         YdPYVKSMPNv8K2fsE7c+BMChTcNAl5zpMojzsBvnVkL4PPrg7fnB0m/BFLGeBU0lzU1m
+         MU7KsdUKUmnRFvYuD/eV+6Db6BPIOkjzmSt9osG/AWuczpiHFJ2Bu4tU+ciassk5Ffh/
+         eGTomGEeKsvnc7O2JYvkMtm4pMXolMCXY87xsSrpS765Ssqow1gwNrBX4Dxq/qiRbqeG
+         izQopD22vjrMYv+U6MDcAo2FarGQHBrWmq+Nm6+vmwbR1xRB/et+FjzeuFqj2ugygP0H
+         WDGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hZzqtbvkB7GBRgetqJbBkcO8TSNI10ddi6eSpYQhmjk=;
-        b=luX4s3fQvpmkcID5hiPteQFKzlHHVd1E6fSPmAbLUfEsd1W4NkPXdioT7TvAZ3J4Pe
-         AYQRW/MEfapsM0f8Xtww/ELnRWD5phC5kbh1MY+47U+lqBfvJe72Vxgd6jDZKfyIVpCq
-         G2ziFve6jGUNjdxdSy/F193VUX2flPU5uYvJSv93xiO6H1gNOo8g4/NyMVndeT0Wz955
-         Ca51vvrShvCiLB7XzM0FQrlCmDwDRE2XwA+eNUjWvhmpXS4LUKE/sIOHAF/TNFkkL1UA
-         JemW+kiEsK/gXih7u9kWU929uPHTKFNlYPkCbVje+/39PNOPaSfMmpYA3ySQJLIH+uiK
-         j3QQ==
-X-Gm-Message-State: AOAM530QLN7QFxB2rht29vvFW1U4DBIFRcoRNJcBltBEMbLrMSVklpB2
-        di0ddLPgH+Hwzgi4KUa/xCQng6dhV0Q=
-X-Google-Smtp-Source: ABdhPJzr517gUfci9KTm5fRHv38JUMaAO8LsYEEvRWR63qVQgiEE0MWdkUoZkzyGDsqiWHeaFmFtyg==
-X-Received: by 2002:a63:d909:: with SMTP id r9mr26771453pgg.285.1624938427052;
-        Mon, 28 Jun 2021 20:47:07 -0700 (PDT)
-Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id z15sm9134313pgc.13.2021.06.28.20.47.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Jun 2021 20:47:06 -0700 (PDT)
-Subject: Re: [PATCH net] net: bcmgenet: ensure EXT_ENERGY_DET_MASK is clear
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210625215732.209588-1-opendmb@gmail.com>
- <79839c8f-4c4d-a70d-178c-1d7674e2b429@gmail.com>
-Message-ID: <8076667b-59e7-5289-362d-5cc55bfb56f5@gmail.com>
-Date:   Mon, 28 Jun 2021 20:47:04 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=D86WnvUg/Gf6HvI1cRKKP6mYttXzkG9si4A9EUDsAM8=;
+        b=XuGNlnAnWqmohzDMUtF0IiziLvHtX/DB84amC5uM3VfBpAOd5fe/2262m+5LA2OMNy
+         fey9FS4AmheJTsa0yqsCbVMwD3gdAwmbRG2vAuOwNtdI+kRm8jVvlN02WBMYrEkek2hE
+         1Xi9ZE0lUTdA21Og5b4zQPiI+zd0BsdMOl98JEa+yfvqL285iax+vqE0QLhQ4TBVS0vz
+         hoe7BDGHZ+JOw2441p5wZsaFeUbAcJvEiNCcbGYiMTPxxAXYJQUA1jCJXowPYxm6llBL
+         ybIkEfDnWIl2hnpqe3GAeaYCvDhMxyHA/Fcd1UtIZYUgkBNtNNOOcm5rfJ5jw8V+eSAm
+         pIpg==
+X-Gm-Message-State: AOAM533TjrhJRFS6prGYwttLZuQWjrfnZX4VgPWaT9ho7fbEQYk0se9s
+        kbCNhdmZ3MzajWZUL2L3MCRPzCtDdXXRr4T5M9le
+X-Google-Smtp-Source: ABdhPJwtp85h6QY/GJlNTdlYZ5BUszc1XLhwmkDVnzLYJaYJYGPEVbGPDY3rOdmLE4oNkfRjGeiuf2gOtKcicAsxgrk=
+X-Received: by 2002:a17:906:7142:: with SMTP id z2mr27152930ejj.427.1624938998259;
+ Mon, 28 Jun 2021 20:56:38 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <79839c8f-4c4d-a70d-178c-1d7674e2b429@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210615141331.407-1-xieyongji@bytedance.com> <CACycT3tAON+-qZev+9EqyL2XbgH5HDspOqNt3ohQLQ8GqVK=EA@mail.gmail.com>
+ <1bba439f-ffc8-c20e-e8a4-ac73e890c592@redhat.com> <CACycT3uzMJS7vw6MVMOgY4rb=SPfT2srV+8DPdwUVeELEiJgbA@mail.gmail.com>
+ <0aeb7cb7-58e5-1a95-d830-68edd7e8ec2e@redhat.com> <CACycT3uuooKLNnpPHewGZ=q46Fap2P4XCFirdxxn=FxK+X1ECg@mail.gmail.com>
+ <e4cdee72-b6b4-d055-9aac-3beae0e5e3e1@redhat.com> <CACycT3u8=_D3hCtJR+d5BgeUQMce6S7c_6P3CVfvWfYhCQeXFA@mail.gmail.com>
+ <d2334f66-907c-2e9c-ea4f-f912008e9be8@redhat.com> <CACycT3uCSLUDVpQHdrmuxSuoBDg-4n22t+N-Jm2GoNNp9JYB2w@mail.gmail.com>
+ <48cab125-093b-2299-ff9c-3de8c7c5ed3d@redhat.com> <CACycT3tS=10kcUCNGYm=dUZsK+vrHzDvB3FSwAzuJCu3t+QuUQ@mail.gmail.com>
+ <b10b3916-74d4-3171-db92-be0afb479a1c@redhat.com> <CACycT3vpMFbc9Fzuo9oksMaA-pVb1dEVTEgjNoft16voryPSWQ@mail.gmail.com>
+ <d7e42109-0ba6-3e1a-c42a-898b6f33c089@redhat.com> <CACycT3u9-id2DxPpuVLtyg4tzrUF9xCAGr7nBm=21HfUJJasaQ@mail.gmail.com>
+ <e82766ff-dc6b-2cbb-3504-0ef618d538e2@redhat.com>
+In-Reply-To: <e82766ff-dc6b-2cbb-3504-0ef618d538e2@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 29 Jun 2021 11:56:27 +0800
+Message-ID: <CACycT3ucVz3D4Tcr1C6uzWyApZy7Xk4o17VH2gvLO3w1Ra+skg@mail.gmail.com>
+Subject: Re: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 29, 2021 at 11:29 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/6/29 =E4=B8=8A=E5=8D=8810:26, Yongji Xie =E5=86=99=E9=81=
+=93:
+> > On Mon, Jun 28, 2021 at 12:40 PM Jason Wang <jasowang@redhat.com> wrote=
+:
+> >>
+> >> =E5=9C=A8 2021/6/25 =E4=B8=8B=E5=8D=8812:19, Yongji Xie =E5=86=99=E9=
+=81=93:
+> >>>> 2b) for set_status(): simply relay the message to userspace, reply i=
+s no
+> >>>> needed. Userspace will use a command to update the status when the
+> >>>> datapath is stop. The the status could be fetched via get_stats().
+> >>>>
+> >>>> 2b looks more spec complaint.
+> >>>>
+> >>> Looks good to me. And I think we can use the reply of the message to
+> >>> update the status instead of introducing a new command.
+> >>>
+> >> Just notice this part in virtio_finalize_features():
+> >>
+> >>           virtio_add_status(dev, VIRTIO_CONFIG_S_FEATURES_OK);
+> >>           status =3D dev->config->get_status(dev);
+> >>           if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
+> >>
+> >> So we no reply doesn't work for FEATURES_OK.
+> >>
+> >> So my understanding is:
+> >>
+> >> 1) We must not use noreply for set_status()
+> >> 2) We can use noreply for get_status(), but it requires a new ioctl to
+> >> update the status.
+> >>
+> >> So it looks to me we need synchronize for both get_status() and
+> >> set_status().
+> >>
+> > We should not send messages to userspace in the FEATURES_OK case. So
+> > the synchronization is not necessary.
+>
+>
+> As discussed previously, there could be a device that mandates some
+> features (VIRTIO_F_RING_PACKED). So it can choose to not accept
+> FEATURES_OK is packed virtqueue is not negotiated.
+>
+> In this case we need to relay the message to userspace.
+>
 
+OK, I see. If so, I prefer to only use noreply for set_status(). We do
+not set the status bit if the message is failed. In this way, we don't
+need to change lots of virtio core codes to handle the failure of
+set_status()/get_status().
 
-On 6/25/2021 3:03 PM, Florian Fainelli wrote:
-> On 6/25/21 2:57 PM, Doug Berger wrote:
->> Setting the EXT_ENERGY_DET_MASK bit allows the port energy detection
->> logic of the internal PHY to prevent the system from sleeping. Some
->> internal PHYs will report that energy is detected when the network
->> interface is closed which can prevent the system from going to sleep
->> if WoL is enabled when the interface is brought down.
->>
->> Since the driver does not support waking the system on this logic,
->> this commit clears the bit whenever the internal PHY is powered up
->> and the other logic for manipulating the bit is removed since it
->> serves no useful function.
->>
->> Fixes: 1c1008c793fa ("net: bcmgenet: add main driver file")
->> Signed-off-by: Doug Berger <opendmb@gmail.com>
-> 
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-
-Doug, it looks like this patch introduces an unused "reg" variable 
-warning at lines 3296 and 4137 which is why the patch was marked as 
-"Changes Requested":
-
-https://patchwork.kernel.org/project/netdevbpf/patch/20210625215732.209588-1-opendmb@gmail.com/
-https://patchwork.hopto.org/static/nipa//507371/12345957/build_32bit
-
-
--- 
-Florian
+Thanks,
+Yongji
