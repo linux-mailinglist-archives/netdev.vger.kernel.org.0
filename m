@@ -2,139 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 171D93B7243
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 14:45:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2E23B729F
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 14:53:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233692AbhF2Mrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Jun 2021 08:47:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44190 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232685AbhF2Mra (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 08:47:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624970703;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xIjW/V4kVWn/MdXXf2UdvAErF5+HSdnEQLS6aNgfUT0=;
-        b=RoFYQg2VTG0z0lEDUgHq24RvKLjlo6T8XZnQF0zB2H/WEonSGXNeuF8kVxGkNORoivbxUu
-        uKx0tkJ5BYT19KGWermztjpNfpJFMzfhO7GotVeCUa/+YfPm10PQF5Q3FgEQuLuNumqtkU
-        Xe1D9UxmD40qZT8rfMvK3slN5M4nr54=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-204-ndE3Jx6fO9-9pQFHfVGiOw-1; Tue, 29 Jun 2021 08:45:00 -0400
-X-MC-Unique: ndE3Jx6fO9-9pQFHfVGiOw-1
-Received: by mail-wm1-f72.google.com with SMTP id t82-20020a1cc3550000b02901ee1ed24f94so1237765wmf.9
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 05:45:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xIjW/V4kVWn/MdXXf2UdvAErF5+HSdnEQLS6aNgfUT0=;
-        b=DYH9DZRyGMC4WBIGeKi0ZrnmzfcNZWNXNId8WpMSNvP6YOp2Vp+YWgZ+gmQCsTNfcW
-         Ryjdunb8Zh/V3nP4Vgcq3bAF5tI27VPYQLpuMoFJBOUjk0/MVNlzY+Y76Raxdye1fOwt
-         H5VB7f4JzBl+hEeadvwqQ9/NuMgr0ebeRBw5mSH+yGdpKadLmV7Yl5TLthn8Y/1arR7M
-         4KraCs8HKdGfq1Ds6q0RtWfoSyigC+EikDa8hpFmCj4Tk2acz5xQzE/J9tiaRNxVSTtl
-         +WSFiyMBhMiPEnxJ2bNYBvPzUxzaIkaN7ugyqOc9NyTf1TFSpg8Ya7pomTzV1rxliM4b
-         HP4w==
-X-Gm-Message-State: AOAM530JpbfrkzrEN/4/iCp019HPoltrDHRd8nsfCqY4dMI4naFkmm9P
-        XbDWY0ueIVT5vnQR9I9DFgc1Qqk+5ojfX7mrqGM1JNZRTKYlYSPmcVhE0Vnmc3XggSXiDyHvpZ9
-        UrplKqR1Gt87DtdFS
-X-Received: by 2002:a5d:5742:: with SMTP id q2mr13942847wrw.256.1624970699912;
-        Tue, 29 Jun 2021 05:44:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyotqRFyli+/8rVZrv9pvFzSzm2HLFibGkrDpQKFRn5/xEi7IrLcvCjXFQPc3qOoI6HNGSmcQ==
-X-Received: by 2002:a5d:5742:: with SMTP id q2mr13942835wrw.256.1624970699730;
-        Tue, 29 Jun 2021 05:44:59 -0700 (PDT)
-Received: from localhost (net-130-25-105-72.cust.vodafonedsl.it. [130.25.105.72])
-        by smtp.gmail.com with ESMTPSA id u12sm18900267wrq.50.2021.06.29.05.44.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Jun 2021 05:44:59 -0700 (PDT)
-Date:   Tue, 29 Jun 2021 14:44:56 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        id S233120AbhF2Mz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Jun 2021 08:55:59 -0400
+Received: from mailout1.secunet.com ([62.96.220.44]:44244 "EHLO
+        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232498AbhF2Mzy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Jun 2021 08:55:54 -0400
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout1.secunet.com (Postfix) with ESMTP id 9CCAF800056;
+        Tue, 29 Jun 2021 14:53:26 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 29 Jun 2021 14:53:26 +0200
+Received: from moon.secunet.de (172.18.26.121) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 29 Jun
+ 2021 14:53:25 +0200
+Date:   Tue, 29 Jun 2021 14:53:16 +0200
+From:   Antony Antony <antony.antony@secunet.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     <antony.antony@secunet.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Tirthendu <tirthendu.sarkar@intel.com>
-Subject: Re: [PATCH v9 bpf-next 01/14] net: skbuff: add data_len field to
- skb_shared_info
-Message-ID: <YNsVyBw5i4hAHRN8@lore-desk>
-References: <cover.1623674025.git.lorenzo@kernel.org>
- <8ad0d38259a678fb42245368f974f1a5cf47d68d.1623674025.git.lorenzo@kernel.org>
- <CAKgT0UcwYHXosz-XuQximak63=ugb9thEc=dkUUZzDpoPCH+Qg@mail.gmail.com>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, <netdev@vger.kernel.org>,
+        Christian Perle <christian.perle@secunet.com>
+Subject: Re: [PATCH net-next] ipv6: Add sysctl for RA default route table
+ number
+Message-ID: <20210629125316.GA18078@moon.secunet.de>
+Reply-To: <antony.antony@secunet.com>
+References: <cover.1619775297.git.antony.antony@secunet.com>
+ <32de887afdc7d6851e7c53d27a21f1389bb0bd0f.1624604535.git.antony.antony@secunet.com>
+ <95b096f7-8ece-46be-cedb-5ee4fc011477@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="TnpqoEfdeJq0NZsS"
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <CAKgT0UcwYHXosz-XuQximak63=ugb9thEc=dkUUZzDpoPCH+Qg@mail.gmail.com>
+In-Reply-To: <95b096f7-8ece-46be-cedb-5ee4fc011477@gmail.com>
+Organization: secunet
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi David,
 
---TnpqoEfdeJq0NZsS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Fri, Jun 25, 2021 at 22:47:41 -0600, David Ahern wrote:
+> On 6/25/21 1:04 AM, Antony Antony wrote:
+> > From: Christian Perle <christian.perle@secunet.com>
+> > 
+> > Default routes learned from router advertisements(RA) are always placed
+> > in main routing table. For policy based routing setups one may
+> > want a different table for default routes. This commit adds a sysctl
+> > to make table number for RA default routes configurable.
+> > 
+> > examples:
+> > sysctl net.ipv6.route.defrtr_table
+> > sysctl -w net.ipv6.route.defrtr_table=42
+> > ip -6 route show table 42
+> 
+> How are the routing tables managed? If the netdevs are connected to a
+> VRF this just works.
 
-> On Mon, Jun 14, 2021 at 5:50 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
-te:
-> >
-> > data_len field will be used for paged frame len for xdp_buff/xdp_frame.
-> > This is a preliminary patch to properly support xdp-multibuff
-> >
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  include/linux/skbuff.h | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index dbf820a50a39..332ec56c200d 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -522,7 +522,10 @@ struct skb_shared_info {
-> >         struct sk_buff  *frag_list;
-> >         struct skb_shared_hwtstamps hwtstamps;
-> >         unsigned int    gso_type;
-> > -       u32             tskey;
-> > +       union {
-> > +               u32     tskey;
-> > +               u32     data_len;
-> > +       };
-> >
->=20
-> Rather than use the tskey field why not repurpose the gso_size field?
-> I would think in the XDP paths that the gso fields would be unused
-> since LRO and HW_GRO would be incompatible with XDP anyway.
->=20
+The main routing table has no default route. Our scripts add routing rules 
+based on interfaces. These rules use the specific routing table where the RA 
+(when using SLAAC) installs the default route. The rest just works.
 
-ack, I agree. I will fix it in v10.
+I noticed an improvement the patch I sent.
+I will sent a rebased v2 after the net-next tree is open.
+I guess the net-next is closed now?
 
-Regards,
-Lorenzo
+-               .proc_handler   =       proc_dointvec,
++               .proc_handler   =       proc_douintvec,
 
---TnpqoEfdeJq0NZsS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYNsVxQAKCRA6cBh0uS2t
-rEmgAP9KZXucmbMs8RGZQqN1U14pzi2BrPVzx7MbkYu4b1UwjwD+MRc5OwyXRxU2
-KxbPHqzyhcEiQqaZ4ETD/w8rIWaUwAU=
-=T+wb
------END PGP SIGNATURE-----
-
---TnpqoEfdeJq0NZsS--
-
+-antony
