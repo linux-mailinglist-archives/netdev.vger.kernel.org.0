@@ -2,121 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 862E63B6D1D
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 05:43:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A151A3B6D21
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 05:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231809AbhF2Dpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 23:45:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29430 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231598AbhF2Dpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 23:45:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1624938202;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I6uzht0J8yGjsrjxBDqwtdt/Lmm5gSxrLU9WevRZ53c=;
-        b=UNCT3l1ous8IMaTNzJm9Bj7+NcXKSsx7j5pER0CjjuGOhO05rjvKKJBFslUvZzv3frYqWz
-        Zwdi3MuUEpN88ANopE7I2w7w297ItIanYsIjrvkwA+WrboCEYfUavo9RkuoP1xcpg0o119
-        MQ50naJ2mjKM53Dw4ZVIBHIlz14VaHo=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-487-xZbP0M-rO3SAXY3weF3EBA-1; Mon, 28 Jun 2021 23:43:20 -0400
-X-MC-Unique: xZbP0M-rO3SAXY3weF3EBA-1
-Received: by mail-pj1-f71.google.com with SMTP id u8-20020a17090a8908b029016f79b38655so1326269pjn.8
-        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 20:43:20 -0700 (PDT)
+        id S231918AbhF2Dtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 23:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231598AbhF2Dte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 23:49:34 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB51FC061574;
+        Mon, 28 Jun 2021 20:47:07 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id e20so17319185pgg.0;
+        Mon, 28 Jun 2021 20:47:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hZzqtbvkB7GBRgetqJbBkcO8TSNI10ddi6eSpYQhmjk=;
+        b=u9wduzDmN6NnfbfcHJ6Z+ZIf6NZApRuPIqHspA8SfbBh44cMhfCkLtrmvuSzR/Xwm3
+         fBnpUaot1FuwKG4xF4umBk3biBH/iWmOmSR+2+wsE4WKI4IN6eoXRaRXbzTFnHww3Kv3
+         tfVTMMwBqoAdXFHD0jIi2OkTZ8opsWfIb+T5Qhz8QjewANwp6IDySHQMi5XXfxJy1qz6
+         zqsSV3g3mBMRKeUa8eXrj+kmeWQHSOGSrmbMTHnSL/mWY4wXSYLuSJ1EcmrrFGDRx3PC
+         u0dwJYmv8icWioAO5t9W1OoGYTudl61L+SJAccGz8C9NS83YoPB7KJXzDXGn/+ENPvW5
+         uGdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=I6uzht0J8yGjsrjxBDqwtdt/Lmm5gSxrLU9WevRZ53c=;
-        b=Uum/VzC97wAtDTG1D2BIpPhGVjfLqCNqLR35W/VBqI06FdY1bge/5F1BTOCva1rWPk
-         hw5h4M1hWcK/2FiOar3NtWxHs2xCwm70lRmg3+cIK4fzJEnYodZJRMgqh6yaog42GhDn
-         vIyV3ovgilIQreafFNU8AhMyPRQLwrmiYoW7Xz/4TepY+awk82QSHLly3H6GsyR9RVJj
-         lawh7FWpaHkvcIfIBpAgiKhurHsYESucUr4KC4VicgbcOfJG5fpU/dR4I/flRIgUsXBa
-         fWoXG2v1NuLr2T+o0QVyEI/SQXXJaTgnfebdWlDbbPdVLdF/lcf1O48f6BeNEehvs04h
-         CY2w==
-X-Gm-Message-State: AOAM530opoPh1Rty93yCMjgdg1U4qpAe5nEO5JQCk5zRQw0XzBokwJHS
-        g2+F0dj0WqBvzaU1USqBOlNpEoWc1dsGiVITzp2JJT/qb98ER8F8FvLi/2BH2YLmoPFjQyZJyBv
-        sRo2FvuSjuju3zsWi
-X-Received: by 2002:a62:774b:0:b029:308:b858:b1fa with SMTP id s72-20020a62774b0000b0290308b858b1famr24061329pfc.34.1624938199426;
-        Mon, 28 Jun 2021 20:43:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwKNiz3y4btrOis0zGy7eUSnWU2c2EAaqoFTKggUNGJABGTMIHtAIEm754m4hXZMBr1HqfWUg==
-X-Received: by 2002:a62:774b:0:b029:308:b858:b1fa with SMTP id s72-20020a62774b0000b0290308b858b1famr24061320pfc.34.1624938199245;
-        Mon, 28 Jun 2021 20:43:19 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id r21sm1066549pjz.12.2021.06.28.20.43.17
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hZzqtbvkB7GBRgetqJbBkcO8TSNI10ddi6eSpYQhmjk=;
+        b=luX4s3fQvpmkcID5hiPteQFKzlHHVd1E6fSPmAbLUfEsd1W4NkPXdioT7TvAZ3J4Pe
+         AYQRW/MEfapsM0f8Xtww/ELnRWD5phC5kbh1MY+47U+lqBfvJe72Vxgd6jDZKfyIVpCq
+         G2ziFve6jGUNjdxdSy/F193VUX2flPU5uYvJSv93xiO6H1gNOo8g4/NyMVndeT0Wz955
+         Ca51vvrShvCiLB7XzM0FQrlCmDwDRE2XwA+eNUjWvhmpXS4LUKE/sIOHAF/TNFkkL1UA
+         JemW+kiEsK/gXih7u9kWU929uPHTKFNlYPkCbVje+/39PNOPaSfMmpYA3ySQJLIH+uiK
+         j3QQ==
+X-Gm-Message-State: AOAM530QLN7QFxB2rht29vvFW1U4DBIFRcoRNJcBltBEMbLrMSVklpB2
+        di0ddLPgH+Hwzgi4KUa/xCQng6dhV0Q=
+X-Google-Smtp-Source: ABdhPJzr517gUfci9KTm5fRHv38JUMaAO8LsYEEvRWR63qVQgiEE0MWdkUoZkzyGDsqiWHeaFmFtyg==
+X-Received: by 2002:a63:d909:: with SMTP id r9mr26771453pgg.285.1624938427052;
+        Mon, 28 Jun 2021 20:47:07 -0700 (PDT)
+Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id z15sm9134313pgc.13.2021.06.28.20.47.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Jun 2021 20:43:18 -0700 (PDT)
-Subject: Re: [PATCH v3 3/5] vhost_net: remove virtio_net_hdr validation, let
- tun/tap do it themselves
-To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
-Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
-        Willem de Bruijn <willemb@google.com>
-References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
- <20210624123005.1301761-1-dwmw2@infradead.org>
- <20210624123005.1301761-3-dwmw2@infradead.org>
- <b339549d-c8f1-1e56-2759-f7b15ee8eca1@redhat.com>
- <bfad641875aff8ff008dd7f9a072c5aa980703f4.camel@infradead.org>
- <1c6110d9-2a45-f766-9d9a-e2996c14b748@redhat.com>
- <72dfecd426d183615c0dd4c2e68690b0e95dd739.camel@infradead.org>
- <80f61c54a2b39cb129e8606f843f7ace605d67e0.camel@infradead.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <99496947-8171-d252-66d3-0af12c62fd2c@redhat.com>
-Date:   Tue, 29 Jun 2021 11:43:15 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        Mon, 28 Jun 2021 20:47:06 -0700 (PDT)
+Subject: Re: [PATCH net] net: bcmgenet: ensure EXT_ENERGY_DET_MASK is clear
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210625215732.209588-1-opendmb@gmail.com>
+ <79839c8f-4c4d-a70d-178c-1d7674e2b429@gmail.com>
+Message-ID: <8076667b-59e7-5289-362d-5cc55bfb56f5@gmail.com>
+Date:   Mon, 28 Jun 2021 20:47:04 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <80f61c54a2b39cb129e8606f843f7ace605d67e0.camel@infradead.org>
+In-Reply-To: <79839c8f-4c4d-a70d-178c-1d7674e2b429@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2021/6/29 上午7:29, David Woodhouse 写道:
-> On Mon, 2021-06-28 at 12:23 +0100, David Woodhouse wrote:
->> To be clear: from the point of view of my *application* I don't care
->> about any of this; my only motivation here is to clean up the kernel
->> behaviour and make life easier for potential future users. I have found
->> a setup that works in today's kernels (even though I have to disable
->> XDP, and have to use a virtio header that I don't want), and will stick
->> with that for now, if I actually commit it to my master branch at all:
->> https://gitlab.com/openconnect/openconnect/-/commit/0da4fe43b886403e6
+
+On 6/25/2021 3:03 PM, Florian Fainelli wrote:
+> On 6/25/21 2:57 PM, Doug Berger wrote:
+>> Setting the EXT_ENERGY_DET_MASK bit allows the port energy detection
+>> logic of the internal PHY to prevent the system from sleeping. Some
+>> internal PHYs will report that energy is detected when the network
+>> interface is closed which can prevent the system from going to sleep
+>> if WoL is enabled when the interface is brought down.
 >>
->> I might yet abandon it because I haven't *yet* seen it go any faster
->> than the code which just does read()/write() on the tun device from
->> userspace. And without XDP or zerocopy it's not clear that it could
->> ever give me any benefit that I couldn't achieve purely in userspace by
->> having a separate thread to do tun device I/O. But we'll see...
-> I managed to do some proper testing, between EC2 c5 (Skylake) virtual
-> instances.
->
-> The kernel on a c5.metal can transmit (AES128-SHA1) ESP at about
-> 1.2Gb/s from iperf, as it seems to be doing it all from the iperf
-> thread.
->
-> Before I started messing with OpenConnect, it could transmit 1.6Gb/s.
->
-> When I pull in the 'stitched' AES+SHA code from OpenSSL instead of
-> doing the encryption and the HMAC in separate passes, I get to 2.1Gb/s.
->
-> Adding vhost support on top of that takes me to 2.46Gb/s, which is a
-> decent enough win.
+>> Since the driver does not support waking the system on this logic,
+>> this commit clears the bit whenever the internal PHY is powered up
+>> and the other logic for manipulating the bit is removed since it
+>> serves no useful function.
+>>
+>> Fixes: 1c1008c793fa ("net: bcmgenet: add main driver file")
+>> Signed-off-by: Doug Berger <opendmb@gmail.com>
+> 
+> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+
+Doug, it looks like this patch introduces an unused "reg" variable 
+warning at lines 3296 and 4137 which is why the patch was marked as 
+"Changes Requested":
+
+https://patchwork.kernel.org/project/netdevbpf/patch/20210625215732.209588-1-opendmb@gmail.com/
+https://patchwork.hopto.org/static/nipa//507371/12345957/build_32bit
 
 
-Interesting, I think the latency should be improved as well in this case.
-
-Thanks
-
-
-> That's with OpenConnect taking 100% CPU, iperf3
-> taking 50% of another one, and the vhost kernel thread taking ~20%.
->
->
-
+-- 
+Florian
