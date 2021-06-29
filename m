@@ -2,106 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DDF43B6D01
-	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 05:32:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 862E63B6D1D
+	for <lists+netdev@lfdr.de>; Tue, 29 Jun 2021 05:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231817AbhF2De4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Jun 2021 23:34:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231750AbhF2Dez (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 23:34:55 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7128EC061574;
-        Mon, 28 Jun 2021 20:32:28 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id j24so2013766pfi.12;
-        Mon, 28 Jun 2021 20:32:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uBxOpljOGcm1/gwGnziTsaGLnW/IZFNclIouVxEAQTM=;
-        b=GlBM275AXJy0V6faEkaaGqpJcNj8AvSTYTkPTT71arsvlHLu6JDmbhtJVW5VAwVCh4
-         w/ZhvzXF7iZ7KxX/HQgpZQz9CZPWVQFs2j/YV6s2CpsNbpK/jnv2aqJbkK9mbtStbG9B
-         +LGHNcSKDTZLQZkCTXq0tApDq4VlOe1x8ibbX2ExA/L2Nfr4eLa/srHTrMz8LdcrZ1Ci
-         7PQqjG/qIKABXLj6cMszsNKMfI+C12aWt4N3fXGPyr2B0Ln17V/+q7Cso0K6ohwLKWWb
-         Ad1qzYLJ/yZq9Cn+OnjnXMSKgjr8TYiIKRsBtsLqBSE1SFOl+GikHrIUMs2DFRBz4ldD
-         9a5w==
+        id S231809AbhF2Dpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Jun 2021 23:45:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29430 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231598AbhF2Dpu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Jun 2021 23:45:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1624938202;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I6uzht0J8yGjsrjxBDqwtdt/Lmm5gSxrLU9WevRZ53c=;
+        b=UNCT3l1ous8IMaTNzJm9Bj7+NcXKSsx7j5pER0CjjuGOhO05rjvKKJBFslUvZzv3frYqWz
+        Zwdi3MuUEpN88ANopE7I2w7w297ItIanYsIjrvkwA+WrboCEYfUavo9RkuoP1xcpg0o119
+        MQ50naJ2mjKM53Dw4ZVIBHIlz14VaHo=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-487-xZbP0M-rO3SAXY3weF3EBA-1; Mon, 28 Jun 2021 23:43:20 -0400
+X-MC-Unique: xZbP0M-rO3SAXY3weF3EBA-1
+Received: by mail-pj1-f71.google.com with SMTP id u8-20020a17090a8908b029016f79b38655so1326269pjn.8
+        for <netdev@vger.kernel.org>; Mon, 28 Jun 2021 20:43:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uBxOpljOGcm1/gwGnziTsaGLnW/IZFNclIouVxEAQTM=;
-        b=coRVrLJ58WDt2PWKmYEGo/9D+OLEju5gqXu1uBSU6nAP9JeH/GLLkwZe+QY9IKjiCP
-         ZAK2zQ9DZSzZ8bXVkUE0I0knaxuXgHQpuxbuEQfyu2r8iU2yQQ0qhtwykZwx7rwQm/Ub
-         Rzx3e3rk5tArdIv9fL+XvUT4AnrDASX+oU7RbbqkIqmY2j5E9uTS2Y3A/AUwdtYZEILu
-         soIvxR1YvXdBwzUX+DsI4TVmw7RJ3M/qVUEZx4PIqz2rN3T/W4yg9lnOuowlJbUEmRRd
-         U23Wr7i7BKXDll+Jse4igPWM495hW85eOAboYJ6jRPASs+37WebrhrpVaqQke/UYTL7s
-         hfBg==
-X-Gm-Message-State: AOAM530tNq8yTSpu7frtuOdtFHe/vICwiD2/acXngFJCAvzHOAXsrzcG
-        qHviSm2xnHBLneHCHg2zmvs=
-X-Google-Smtp-Source: ABdhPJwyU0C6/L6r4khPqro224h2/4hSRTB9RVQI7Iz6kZ0yOVRCAbq/puAG9CTNFa6HjG4YUSMvyA==
-X-Received: by 2002:a63:a54b:: with SMTP id r11mr25988904pgu.43.1624937547799;
-        Mon, 28 Jun 2021 20:32:27 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:45ad])
-        by smtp.gmail.com with ESMTPSA id a31sm16213874pgm.73.2021.06.28.20.32.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 28 Jun 2021 20:32:26 -0700 (PDT)
-Date:   Mon, 28 Jun 2021 20:32:24 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 1/8] bpf: Introduce bpf timers.
-Message-ID: <20210629033223.yknyaj2trkvnm77v@ast-mbp.dhcp.thefacebook.com>
-References: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
- <20210624022518.57875-2-alexei.starovoitov@gmail.com>
- <fd30895e-475f-c78a-d367-2abdf835c9ef@fb.com>
- <20210629014607.fz5tkewb6n3u6pvr@ast-mbp.dhcp.thefacebook.com>
- <bcc2f155-129d-12f1-1e3d-c741c746df10@fb.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=I6uzht0J8yGjsrjxBDqwtdt/Lmm5gSxrLU9WevRZ53c=;
+        b=Uum/VzC97wAtDTG1D2BIpPhGVjfLqCNqLR35W/VBqI06FdY1bge/5F1BTOCva1rWPk
+         hw5h4M1hWcK/2FiOar3NtWxHs2xCwm70lRmg3+cIK4fzJEnYodZJRMgqh6yaog42GhDn
+         vIyV3ovgilIQreafFNU8AhMyPRQLwrmiYoW7Xz/4TepY+awk82QSHLly3H6GsyR9RVJj
+         lawh7FWpaHkvcIfIBpAgiKhurHsYESucUr4KC4VicgbcOfJG5fpU/dR4I/flRIgUsXBa
+         fWoXG2v1NuLr2T+o0QVyEI/SQXXJaTgnfebdWlDbbPdVLdF/lcf1O48f6BeNEehvs04h
+         CY2w==
+X-Gm-Message-State: AOAM530opoPh1Rty93yCMjgdg1U4qpAe5nEO5JQCk5zRQw0XzBokwJHS
+        g2+F0dj0WqBvzaU1USqBOlNpEoWc1dsGiVITzp2JJT/qb98ER8F8FvLi/2BH2YLmoPFjQyZJyBv
+        sRo2FvuSjuju3zsWi
+X-Received: by 2002:a62:774b:0:b029:308:b858:b1fa with SMTP id s72-20020a62774b0000b0290308b858b1famr24061329pfc.34.1624938199426;
+        Mon, 28 Jun 2021 20:43:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwKNiz3y4btrOis0zGy7eUSnWU2c2EAaqoFTKggUNGJABGTMIHtAIEm754m4hXZMBr1HqfWUg==
+X-Received: by 2002:a62:774b:0:b029:308:b858:b1fa with SMTP id s72-20020a62774b0000b0290308b858b1famr24061320pfc.34.1624938199245;
+        Mon, 28 Jun 2021 20:43:19 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id r21sm1066549pjz.12.2021.06.28.20.43.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Jun 2021 20:43:18 -0700 (PDT)
+Subject: Re: [PATCH v3 3/5] vhost_net: remove virtio_net_hdr validation, let
+ tun/tap do it themselves
+To:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org
+Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
+        Willem de Bruijn <willemb@google.com>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+ <20210624123005.1301761-1-dwmw2@infradead.org>
+ <20210624123005.1301761-3-dwmw2@infradead.org>
+ <b339549d-c8f1-1e56-2759-f7b15ee8eca1@redhat.com>
+ <bfad641875aff8ff008dd7f9a072c5aa980703f4.camel@infradead.org>
+ <1c6110d9-2a45-f766-9d9a-e2996c14b748@redhat.com>
+ <72dfecd426d183615c0dd4c2e68690b0e95dd739.camel@infradead.org>
+ <80f61c54a2b39cb129e8606f843f7ace605d67e0.camel@infradead.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <99496947-8171-d252-66d3-0af12c62fd2c@redhat.com>
+Date:   Tue, 29 Jun 2021 11:43:15 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bcc2f155-129d-12f1-1e3d-c741c746df10@fb.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <80f61c54a2b39cb129e8606f843f7ace605d67e0.camel@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 28, 2021 at 07:24:28PM -0700, Yonghong Song wrote:
-> 
-> > 
-> > While talking to Martin about the api he pointed out that
-> > callback_fn in timer_start() doesn't achieve the full use case
-> > of replacing a prog. So in the next spin I'll split it into
-> > bpf_timer_set_callback(timer, callback_fn);
-> > bpf_timer_start(timer, nsec);
-> > This way callback and prog can be replaced without resetting
-> > timer expiry which could be useful.
-> 
-> I took a brief look for patch 4-6 and it looks okay. But since
-> you will change helper signatures I will hold and check next
-> revision instead.
 
-Thanks. The verifier patches won't change though.
+在 2021/6/29 上午7:29, David Woodhouse 写道:
+> On Mon, 2021-06-28 at 12:23 +0100, David Woodhouse wrote:
+>> To be clear: from the point of view of my *application* I don't care
+>> about any of this; my only motivation here is to clean up the kernel
+>> behaviour and make life easier for potential future users. I have found
+>> a setup that works in today's kernels (even though I have to disable
+>> XDP, and have to use a virtio header that I don't want), and will stick
+>> with that for now, if I actually commit it to my master branch at all:
+>> https://gitlab.com/openconnect/openconnect/-/commit/0da4fe43b886403e6
+>>
+>> I might yet abandon it because I haven't *yet* seen it go any faster
+>> than the code which just does read()/write() on the tun device from
+>> userspace. And without XDP or zerocopy it's not clear that it could
+>> ever give me any benefit that I couldn't achieve purely in userspace by
+>> having a separate thread to do tun device I/O. But we'll see...
+> I managed to do some proper testing, between EC2 c5 (Skylake) virtual
+> instances.
+>
+> The kernel on a c5.metal can transmit (AES128-SHA1) ESP at about
+> 1.2Gb/s from iperf, as it seems to be doing it all from the iperf
+> thread.
+>
+> Before I started messing with OpenConnect, it could transmit 1.6Gb/s.
+>
+> When I pull in the 'stitched' AES+SHA code from OpenSSL instead of
+> doing the encryption and the HMAC in separate passes, I get to 2.1Gb/s.
+>
+> Adding vhost support on top of that takes me to 2.46Gb/s, which is a
+> decent enough win.
 
-> 
-> BTW, does this mean the following scenario will be supported?
->   prog1: bpf_timer_set_callback(time, callback_fn)
->   prog2: bpf_timer_start(timer, nsec)
-> so here prog2 can start the timer which call prog1's callback_fn?
 
-right.
+Interesting, I think the latency should be improved as well in this case.
 
-> > 
-> > Also Daniel and Andrii reminded that cpu pinning would be next
-> > feature request. The api extensibility allows to add it in the future.
-> > I'm going to delay implementing it until bpf_smp_call_single()
-> > implications are understood.
-> 
-> Do we need to any a 'flags' parameter for bpf_timer_start() helper
-> so we can encode target cpu in 'flags'?
+Thanks
 
-I thought that bpf_timer_init will handle the cpu selection,
-but you're right that having cpu in bpf_timer_start is more flexible.
-So I'll add a flag.
+
+> That's with OpenConnect taking 100% CPU, iperf3
+> taking 50% of another one, and the vhost kernel thread taking ~20%.
+>
+>
+
