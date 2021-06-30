@@ -2,78 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C5783B7E43
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 09:39:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF8583B7E71
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 10:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233085AbhF3Hl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 03:41:29 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:47950 "EHLO m43-7.mailgun.net"
+        id S233085AbhF3IDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 04:03:49 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:58948 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232812AbhF3Hl1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Jun 2021 03:41:27 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1625038738; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=uJxVvsiCedprGjRzxY3ikvKab0oW98BYPa0SrJjrBh0=; b=hXY4iPjdEA4vO6qDghTct5fLeWS5ZWqSsDgRaaV4Pq7aiQy5KQRcgRkULHS04Gx0JjLQFsGG
- nz0+EYKUI8FDMk+BGFyz968CiA3zwX2QdDNyF2xYXPyECyh/kljetC9khZ3WCPGgsZOGXVRK
- tDnm6pBzOAHlR4Tzi+4OXz+i2Zc=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 60dc1f923a8b6d0a4521bf1b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 30 Jun 2021 07:38:58
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D8187C43460; Wed, 30 Jun 2021 07:38:57 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 32558C4338A;
-        Wed, 30 Jun 2021 07:38:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 32558C4338A
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [GIT PULL] Networking for v5.14
-References: <20210630051855.3380189-1-kuba@kernel.org>
-Date:   Wed, 30 Jun 2021 10:38:49 +0300
-In-Reply-To: <20210630051855.3380189-1-kuba@kernel.org> (Jakub Kicinski's
-        message of "Tue, 29 Jun 2021 22:18:55 -0700")
-Message-ID: <871r8jhkdy.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S232788AbhF3IDs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Jun 2021 04:03:48 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 18FBC2030A9;
+        Wed, 30 Jun 2021 10:01:19 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A3C93202677;
+        Wed, 30 Jun 2021 10:01:18 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 9414D183ACCB;
+        Wed, 30 Jun 2021 16:01:16 +0800 (+08)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, mptcp@lists.linux.dev,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
+        Sebastien Laveze <sebastien.laveze@nxp.com>
+Subject: [net-next, v5, 00/11] ptp: support virtual clocks and timestamping
+Date:   Wed, 30 Jun 2021 16:11:51 +0800
+Message-Id: <20210630081202.4423-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+Current PTP driver exposes one PTP device to user which binds network
+interface/interfaces to provide timestamping. Actually we have a way
+utilizing timecounter/cyclecounter to virtualize any number of PTP
+clocks based on a same free running physical clock for using.
+The purpose of having multiple PTP virtual clocks is for user space
+to directly/easily use them for multiple domains synchronization.
 
-> This is the networking PR for 5.14.
+user
+space:     ^                                  ^
+           | SO_TIMESTAMPING new flag:        | Packets with
+           | SOF_TIMESTAMPING_BIND_PHC        | TX/RX HW timestamps
+           v                                  v
+         +--------------------------------------------+
+sock:    |     sock (new member sk_bind_phc)          |
+         +--------------------------------------------+
+           ^                                  ^
+           | ethtool_get_phc_vclocks          | Convert HW timestamps
+           |                                  | to sk_bind_phc
+           v                                  v
+         +--------------+--------------+--------------+
+vclock:  | ptp1         | ptp2         | ptpN         |
+         +--------------+--------------+--------------+
+pclock:  |             ptp0 free running              |
+         +--------------------------------------------+
 
-[...]
+The block diagram may explain how it works. Besides the PTP virtual
+clocks, the packet HW timestamp converting to the bound PHC is also
+done in sock driver. For user space, PTP virtual clocks can be
+created via sysfs, and extended SO_TIMESTAMPING API (new flag
+SOF_TIMESTAMPING_BIND_PHC) can be used to bind one PTP virtual clock
+for timestamping.
 
->  - Qualcomm 60GHz WiFi (wcn36xx)
->     - Wake-on-WLAN support with magic packets and GTK rekeying
+The test tool timestamping.c (together with linuxptp phc_ctl tool) can
+be used to verify:
 
-wcn36xx is actually a driver for older Qualcomm mobile chipsets
-supporting 802.11n and 802.11ac. But wil6210 driver supports Qualcomm
-802.11ad devices working on 60GHz band. Not a big deal and very easy to
-confuse the two, just wanted to clarify here :)
+  # echo 4 > /sys/class/ptp/ptp0/n_vclocks
+  [  129.399472] ptp ptp0: new virtual clock ptp2
+  [  129.404234] ptp ptp0: new virtual clock ptp3
+  [  129.409532] ptp ptp0: new virtual clock ptp4
+  [  129.413942] ptp ptp0: new virtual clock ptp5
+  [  129.418257] ptp ptp0: guarantee physical clock free running
+  #
+  # phc_ctl /dev/ptp2 set 10000
+  # phc_ctl /dev/ptp3 set 20000
+  #
+  # timestamping eno0 2 SOF_TIMESTAMPING_TX_HARDWARE SOF_TIMESTAMPING_RAW_HARDWARE SOF_TIMESTAMPING_BIND_PHC
+  # timestamping eno0 2 SOF_TIMESTAMPING_RX_HARDWARE SOF_TIMESTAMPING_RAW_HARDWARE SOF_TIMESTAMPING_BIND_PHC
+  # timestamping eno0 3 SOF_TIMESTAMPING_TX_HARDWARE SOF_TIMESTAMPING_RAW_HARDWARE SOF_TIMESTAMPING_BIND_PHC
+  # timestamping eno0 3 SOF_TIMESTAMPING_RX_HARDWARE SOF_TIMESTAMPING_RAW_HARDWARE SOF_TIMESTAMPING_BIND_PHC
 
+Changes for v2:
+	- Converted to num_vclocks for creating virtual clocks.
+	- Guranteed physical clock free running when using virtual
+	  clocks.
+	- Fixed build warning.
+	- Updated copyright.
+Changes for v3:
+	- Supported PTP virtual clock in default in PTP driver.
+	- Protected concurrency of ptp->num_vclocks accessing.
+	- Supported PHC vclocks query via ethtool.
+	- Extended SO_TIMESTAMPING API for PHC binding.
+	- Converted HW timestamps to PHC bound, instead of previous
+	  binding domain value to PHC idea.
+	- Other minor fixes.
+Changes for v4:
+	- Used do_aux_work callback for vclock refreshing instead.
+	- Used unsigned int for vclocks number, and max_vclocks
+	  for limitiation.
+	- Fixed mutex locking.
+	- Dynamically allocated memory for vclock index storage.
+	- Removed ethtool ioctl command for vclocks getting.
+	- Updated doc for ethtool phc vclocks get.
+	- Converted to mptcp_setsockopt_sol_socket_timestamping().
+	- Passed so_timestamping for sock_set_timestamping.
+	- Fixed checkpatch/build.
+	- Other minor fixed.
+Changes for v5:
+	- Fixed checkpatch/build/bug reported by test robot.
+
+Yangbo Lu (11):
+  ptp: add ptp virtual clock driver framework
+  ptp: support ptp physical/virtual clocks conversion
+  ptp: track available ptp vclocks information
+  ptp: add kernel API ptp_get_vclocks_index()
+  ethtool: add a new command for getting PHC virtual clocks
+  ptp: add kernel API ptp_convert_timestamp()
+  mptcp: setsockopt: convert to
+    mptcp_setsockopt_sol_socket_timestamping()
+  net: sock: extend SO_TIMESTAMPING for PHC binding
+  net: socket: support hardware timestamp conversion to PHC bound
+  selftests/net: timestamping: support binding PHC
+  MAINTAINERS: add entry for PTP virtual clock driver
+
+ Documentation/ABI/testing/sysfs-ptp          |  20 ++
+ Documentation/networking/ethtool-netlink.rst |  22 ++
+ MAINTAINERS                                  |   7 +
+ drivers/ptp/Makefile                         |   2 +-
+ drivers/ptp/ptp_clock.c                      |  42 +++-
+ drivers/ptp/ptp_private.h                    |  39 ++++
+ drivers/ptp/ptp_sysfs.c                      | 160 ++++++++++++++
+ drivers/ptp/ptp_vclock.c                     | 219 +++++++++++++++++++
+ include/linux/ethtool.h                      |  10 +
+ include/linux/ptp_clock_kernel.h             |  31 ++-
+ include/net/sock.h                           |   8 +-
+ include/uapi/linux/ethtool_netlink.h         |  15 ++
+ include/uapi/linux/net_tstamp.h              |  17 +-
+ net/core/sock.c                              |  65 +++++-
+ net/ethtool/Makefile                         |   2 +-
+ net/ethtool/common.c                         |  14 ++
+ net/ethtool/netlink.c                        |  10 +
+ net/ethtool/netlink.h                        |   2 +
+ net/ethtool/phc_vclocks.c                    |  94 ++++++++
+ net/mptcp/sockopt.c                          |  68 ++++--
+ net/socket.c                                 |  19 +-
+ tools/testing/selftests/net/timestamping.c   |  55 +++--
+ 22 files changed, 867 insertions(+), 54 deletions(-)
+ create mode 100644 drivers/ptp/ptp_vclock.c
+ create mode 100644 net/ethtool/phc_vclocks.c
+
+
+base-commit: b6df00789e2831fff7a2c65aa7164b2a4dcbe599
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.25.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
