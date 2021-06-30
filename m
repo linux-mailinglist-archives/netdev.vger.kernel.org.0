@@ -2,132 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B693B3B8AFC
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 01:35:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C2B83B8B07
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 01:59:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237487AbhF3XiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 19:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34786 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236647AbhF3XiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 19:38:04 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A890C061756;
-        Wed, 30 Jun 2021 16:35:32 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id x21-20020a17090aa395b029016e25313bfcso2647878pjp.2;
-        Wed, 30 Jun 2021 16:35:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=votCsR8QuC+BJJYuIxcHQ0x9+KTlBJzpPzzO+5vNEZg=;
-        b=kfeG4KUCtbuMI2RLmqJGZDydOwhKjll5sSqDv3t1Ce6JcNf9RLaOIuKVtkOnCB2Y2c
-         yu3rc2f5OdkS9JTpEqH3ugYrL08zUg1ror7qjfOx0GGSIS528YW+G9sBmRnk+GI322cH
-         hjSDM7pv+6fLN9vG7LOTSm6ML0PEPig0qL9deap2vU9xycDcCOC0eZpiZmrcpM5BLgn+
-         A3SAxIMc5rEmnVQWTAR/sl3XoQIE6mThQumrqycQ5KH7RiOQmcg+ECuuvImSLxwQ8noz
-         hMjx+40qlk6kKJeXvsylwDc83ltplzEF2CIuklhodVwDKzUrLlQhg+xizoUg4qDxJgP8
-         zLJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=votCsR8QuC+BJJYuIxcHQ0x9+KTlBJzpPzzO+5vNEZg=;
-        b=pjxJMcpVRGYIaJ5ThK5NhyeKh3MsW1hlh0w3CelJrn8dwlvhukFKDsNLdvRwxqHIgX
-         /5lMCMOM74yW0//FL0RkpH9Jgz7UHtea/6joY8CIRSTI0n2g84SlpkCoBvj+rAeLu48o
-         2HCDyQKGq85dbG1kBkZiCurQ1QxUMqBu/5FCfbYzP+ThizTygpDKzGSsxlxQrwCYFduz
-         eMU7cOeyrCihngyZfjVSyqCUNFqcR5zn0O3kLj9ERpThdsC+hGYdNfDxdL6hg1CilJWS
-         th0iBIgV76wCVzIgjY1kCmxR6Uho596pLO2TrBbU/Qr/oHJjNnIfBYFqk9g8tbzSu+mC
-         7Adg==
-X-Gm-Message-State: AOAM531BfRDGZ5cRcaz7Pjd1KeuFTA/YmX4qRhf8ObD3QVmJgd6RMte0
-        f4IZI/qX4mjTfs5LCA4bEVE=
-X-Google-Smtp-Source: ABdhPJzd5JEwCoPqJU17RS0Lrgrkyu2E4sKAT1naAE8xJJf2bR4D/5IEkWgkAJ+hOiFB1KUAnrYq/w==
-X-Received: by 2002:a17:90a:fa97:: with SMTP id cu23mr1645386pjb.126.1625096131882;
-        Wed, 30 Jun 2021 16:35:31 -0700 (PDT)
-Received: from localhost ([160.16.113.140])
-        by smtp.gmail.com with ESMTPSA id i13sm8202807pgm.26.2021.06.30.16.35.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Jun 2021 16:35:31 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Thu, 1 Jul 2021 07:33:38 +0800
-To:     Joe Perches <joe@perches.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        Benjamin Poirier <benjamin.poirier@gmail.com>,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC 13/19] staging: qlge: rewrite do while loop as for loop in
- qlge_sem_spinlock
-Message-ID: <20210630233338.2l34shhrm3bdd4gx@Rk>
-References: <20210621134902.83587-1-coiby.xu@gmail.com>
- <20210621134902.83587-14-coiby.xu@gmail.com>
- <20210622072036.GK1861@kadam>
- <20210624112245.zgvkcxyu7hzrzc23@Rk>
- <f7beb9aee00a1cdb8dd97a49a36abd60d58279f2.camel@perches.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f7beb9aee00a1cdb8dd97a49a36abd60d58279f2.camel@perches.com>
+        id S238091AbhGAAB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 20:01:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49552 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229864AbhGAAB1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Jun 2021 20:01:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 493F3613F7;
+        Wed, 30 Jun 2021 23:58:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625097537;
+        bh=F5a8UcLjpBxCfgcs/9ldfS6ToJ0b1vKhOUDCo+oZJjc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SG/hE0eBldza/ursZAX5oBMZG14zhf6rEn7rqweEnXsAN+vK11iwWZtpx7xT3DQqE
+         vRFqrN9P0lHH6L0gVvHp+b27qkuyvtJ/bJuivenBBO9P+vNUZKCexHO8pJGMoVFN16
+         IKvGVDVaGO8w8ZtXmGDU+2ku0SQSoVcqa87S761NvPXp9AJjbn9m1ztbNl0Ax3+J2x
+         EWHN1Dwe4fRMCxBoC9d2Gqg87g6aHtqIj32kHMmzWRvY7pfwnp7Hjk/pcZV+fqWna2
+         /ld2Pe973Lu1dZkUhvm3Ew47iPvu7kYKa7D3YfheS+dBWnGigR3s7uB6RrMXaq8v2O
+         1T7gtl4VrpBgA==
+Date:   Thu, 1 Jul 2021 08:58:54 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH bpf-next 4/5] bpf: Add bpf_get_func_ip helper for kprobe
+ programs
+Message-Id: <20210701085854.0f2aeafc0fce11f3ca9d52a8@kernel.org>
+In-Reply-To: <9286ce63-5cba-e16a-a7db-886548a04a64@fb.com>
+References: <20210629192945.1071862-1-jolsa@kernel.org>
+        <20210629192945.1071862-5-jolsa@kernel.org>
+        <9286ce63-5cba-e16a-a7db-886548a04a64@fb.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 30, 2021 at 03:58:06AM -0700, Joe Perches wrote:
->On Thu, 2021-06-24 at 19:22 +0800, Coiby Xu wrote:
->> On Tue, Jun 22, 2021 at 10:20:36AM +0300, Dan Carpenter wrote:
->> > On Mon, Jun 21, 2021 at 09:48:56PM +0800, Coiby Xu wrote:
->> > > Since wait_count=30 > 0, the for loop is equivalent to do while
->> > > loop. This commit also replaces 100 with UDELAY_DELAY.
->[]
->> > > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
->[]
->> > > @@ -140,12 +140,13 @@ static int qlge_sem_trylock(struct qlge_adapter *qdev, u32 sem_mask)
->> > >  int qlge_sem_spinlock(struct qlge_adapter *qdev, u32 sem_mask)
->> > >  {
->> > >  	unsigned int wait_count = 30;
->> > > +	int count;
->> > >
->> > > -	do {
->> > > +	for (count = 0; count < wait_count; count++) {
->> > >  		if (!qlge_sem_trylock(qdev, sem_mask))
->> > >  			return 0;
->> > > -		udelay(100);
->> > > -	} while (--wait_count);
->> > > +		udelay(UDELAY_DELAY);
->> >
->> > This is an interesting way to silence the checkpatch udelay warning.  ;)
->>
->> I didn't know this could silence the warning :)
->
->It also seems odd to have unsigned int wait_count and int count.
->
->Maybe just use 30 in the loop without using wait_count at all.
+On Wed, 30 Jun 2021 10:47:01 -0700
+Yonghong Song <yhs@fb.com> wrote:
 
-Thanks for the suggestion. I will apply it to v1.
->
->I also think using UDELAY_DELAY is silly and essentially misleading
->as it's also used as an argument value for mdelay
->
->$ git grep -w UDELAY_DELAY
->drivers/staging/qlge/qlge.h:#define UDELAY_DELAY 100
->drivers/staging/qlge/qlge_main.c:               udelay(UDELAY_DELAY);
->drivers/staging/qlge/qlge_main.c:               udelay(UDELAY_DELAY);
->drivers/staging/qlge/qlge_mpi.c:                mdelay(UDELAY_DELAY);
->drivers/staging/qlge/qlge_mpi.c:                mdelay(UDELAY_DELAY);
->drivers/staging/qlge/qlge_mpi.c:                mdelay(UDELAY_DELAY); /* 100ms */
+> 
+> 
+> On 6/29/21 12:29 PM, Jiri Olsa wrote:
+> > Adding bpf_get_func_ip helper for BPF_PROG_TYPE_KPROBE programs,
+> > so it's now possible to call bpf_get_func_ip from both kprobe and
+> > kretprobe programs.
+> > 
+> > Taking the caller's address from 'struct kprobe::addr', which is
+> > defined for both kprobe and kretprobe.
+> > 
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >   include/uapi/linux/bpf.h       |  2 +-
+> >   kernel/bpf/verifier.c          |  2 ++
+> >   kernel/trace/bpf_trace.c       | 14 ++++++++++++++
+> >   kernel/trace/trace_kprobe.c    | 20 ++++++++++++++++++--
+> >   kernel/trace/trace_probe.h     |  5 +++++
+> >   tools/include/uapi/linux/bpf.h |  2 +-
+> >   6 files changed, 41 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 83e87ffdbb6e..4894f99a1993 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -4783,7 +4783,7 @@ union bpf_attr {
+> >    *
+> >    * u64 bpf_get_func_ip(void *ctx)
+> >    * 	Description
+> > - * 		Get address of the traced function (for tracing programs).
+> > + * 		Get address of the traced function (for tracing and kprobe programs).
+> >    * 	Return
+> >    * 		Address of the traced function.
+> >    */
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 701ff7384fa7..b66e0a7104f8 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -5979,6 +5979,8 @@ static bool has_get_func_ip(struct bpf_verifier_env *env)
+> >   			return -ENOTSUPP;
+> >   		}
+> >   		return 0;
+> > +	} else if (type == BPF_PROG_TYPE_KPROBE) {
+> > +		return 0;
+> >   	}
+> >   
+> >   	verbose(env, "func %s#%d not supported for program type %d\n",
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index 9edd3b1a00ad..1a5bddce9abd 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -961,6 +961,18 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_tracing = {
+> >   	.arg1_type	= ARG_PTR_TO_CTX,
+> >   };
+> >   
+> > +BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
+> > +{
+> > +	return trace_current_kprobe_addr();
+> > +}
+> > +
+> > +static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
+> > +	.func		= bpf_get_func_ip_kprobe,
+> > +	.gpl_only	= true,
+> > +	.ret_type	= RET_INTEGER,
+> > +	.arg1_type	= ARG_PTR_TO_CTX,
+> > +};
+> > +
+> >   const struct bpf_func_proto *
+> >   bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >   {
+> > @@ -1092,6 +1104,8 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >   	case BPF_FUNC_override_return:
+> >   		return &bpf_override_return_proto;
+> >   #endif
+> > +	case BPF_FUNC_get_func_ip:
+> > +		return &bpf_get_func_ip_proto_kprobe;
+> >   	default:
+> >   		return bpf_tracing_func_proto(func_id, prog);
+> >   	}
+> > diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+> > index ea6178cb5e33..b07d5888db14 100644
+> > --- a/kernel/trace/trace_kprobe.c
+> > +++ b/kernel/trace/trace_kprobe.c
+> > @@ -1570,6 +1570,18 @@ static int kretprobe_event_define_fields(struct trace_event_call *event_call)
+> >   }
+> >   
+> >   #ifdef CONFIG_PERF_EVENTS
+> > +/* Used by bpf get_func_ip helper */
+> > +DEFINE_PER_CPU(u64, current_kprobe_addr) = 0;
+> 
+> Didn't check other architectures. But this should work
+> for x86 where if nested kprobe happens, the second
+> kprobe will not call kprobe handlers.
 
-Thanks for spotting this issue! How about "#define MDELAY_DELAY 100" for
-mdelay?
+No problem, other architecture also does not call nested kprobes handlers.
+However, you don't need this because you can use kprobe_running()
+in kprobe context.
 
->
->
+kp = kprobe_running();
+if (kp)
+	return kp->addr;
+
+BTW, I'm not sure why don't you use instruction_pointer(regs)?
+
+Thank you,
+
+> 
+> This essentially is to provide an additional parameter to
+> bpf program. Andrii is developing a mechanism to
+> save arbitrary data in *current task_struct*, which
+> might be used here to save current_kprobe_addr, we can
+> save one per cpu variable.
+> 
+> > +
+> > +u64 trace_current_kprobe_addr(void)
+> > +{
+> > +	return *this_cpu_ptr(&current_kprobe_addr);
+> > +}
+> > +
+> > +static void trace_current_kprobe_set(struct trace_kprobe *tk)
+> > +{
+> > +	__this_cpu_write(current_kprobe_addr, (u64) tk->rp.kp.addr);
+> > +}
+> >   
+> >   /* Kprobe profile handler */
+> >   static int
+> > @@ -1585,6 +1597,7 @@ kprobe_perf_func(struct trace_kprobe *tk, struct pt_regs *regs)
+> >   		unsigned long orig_ip = instruction_pointer(regs);
+> >   		int ret;
+> >   
+> > +		trace_current_kprobe_set(tk);
+> >   		ret = trace_call_bpf(call, regs);
+> >   
+> >   		/*
+> > @@ -1631,8 +1644,11 @@ kretprobe_perf_func(struct trace_kprobe *tk, struct kretprobe_instance *ri,
+> >   	int size, __size, dsize;
+> >   	int rctx;
+> >   
+> > -	if (bpf_prog_array_valid(call) && !trace_call_bpf(call, regs))
+> > -		return;
+> > +	if (bpf_prog_array_valid(call)) {
+> > +		trace_current_kprobe_set(tk);
+> > +		if (!trace_call_bpf(call, regs))
+> > +			return;
+> > +	}
+> >   
+> >   	head = this_cpu_ptr(call->perf_events);
+> >   	if (hlist_empty(head))
+> [...]
+
 
 -- 
-Best regards,
-Coiby
+Masami Hiramatsu <mhiramat@kernel.org>
