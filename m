@@ -2,82 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E883B8A6A
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 00:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A3D03B8AA9
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 00:57:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233727AbhF3WZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 18:25:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56352 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233336AbhF3WZO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Jun 2021 18:25:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C00446147E;
-        Wed, 30 Jun 2021 22:22:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625091764;
-        bh=4uWCrW7McsS6Rg1FgUC+m+llNKgmulxnudse+VqZFd0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lKPl4KrU7uA1GDJIZkVOadMybqLWVoxnVKjC6HPT/Q2nMPQZmbSy2Yo3DydbP00MV
-         ydmUIIWq+WW7EVBfvYQHEUCPcU33bt/TUxjZujzMJULrke/xTEbLpu+Dy1b4dzAYPT
-         08dYBwygAmoLnZZLojRq9u/OBve/h2A/EOs7A/MkY5tWMChQDPhDhfM6hLCp6tMu0V
-         up3TQsjw+HcOkXDLKqbLFbShx3ytvG+oBc5zxVbRoVqFMSiXTp/ehZ4SRjyPDfjmMc
-         5adBJSxyFgcI9zP0WDKmu+P2F7GGezssR5oyZpwYoIcTcTWiL6scHdSuaDihD1DdDv
-         w1wzfLMYAy+og==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net v2 6/6] net: dsa: mv88e6xxx: enable SerDes PCS register dump via ethtool -d on Topaz
-Date:   Thu,  1 Jul 2021 00:22:31 +0200
-Message-Id: <20210630222231.2297-7-kabel@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210630222231.2297-1-kabel@kernel.org>
-References: <20210630222231.2297-1-kabel@kernel.org>
+        id S233237AbhF3XAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 19:00:12 -0400
+Received: from smtp8.emailarray.com ([65.39.216.67]:27288 "EHLO
+        smtp8.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232397AbhF3XAI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 19:00:08 -0400
+Received: (qmail 51969 invoked by uid 89); 30 Jun 2021 22:57:35 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
+  by smtp8.emailarray.com with SMTP; 30 Jun 2021 22:57:35 -0000
+Date:   Wed, 30 Jun 2021 15:57:34 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
+Message-ID: <20210630225734.ymgdtzpwvyvj7gfa@bsd-mbp.dhcp.thefacebook.com>
+References: <20210628184611.3024919-1-jonathan.lemon@gmail.com>
+ <20210628233056.GA766@hoboy.vegasvil.org>
+ <20210629001928.yhiql2dngstkpadb@bsd-mbp.dhcp.thefacebook.com>
+ <20210630000933.GA21533@hoboy.vegasvil.org>
+ <20210630035031.ulgiwewccgiz3rsv@bsd-mbp.dhcp.thefacebook.com>
+ <20210630144257.GA30627@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210630144257.GA30627@hoboy.vegasvil.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit bf3504cea7d7e ("net: dsa: mv88e6xxx: Add 6390 family PCS
-registers to ethtool -d") added support for dumping SerDes PCS registers
-via ethtool -d for Peridot.
+On Wed, Jun 30, 2021 at 07:42:57AM -0700, Richard Cochran wrote:
+> On Tue, Jun 29, 2021 at 08:50:31PM -0700, Jonathan Lemon wrote:
+> > The PHC should be sync'd to the PPS coming from the GPS signal.
+> > However, the GPS may be in holdover, so the actual counter comes
+> > from an atomic oscillator.  As the oscillator may be ever so 
+> > slightly out of sync with the GPS (or drifts with temperature),
+> > so we need to measure the phase difference between the two and
+> > steer the oscillator slightly.
+> > 
+> > The phase comparision between the two signals is done in HW 
+> > with a phasemeter, for precise comparisons.  The actual phase
+> > steering/adjustment is done through adjphase().
+> 
+> So you don't need the time stamp itself, just the phase offset, right?
+> 
+> > What's missing is the ability to report the phase difference
+> > to user space so the adjustment can be performed.
+> 
+> So let's create an interface for that reporting.
 
-The same implementation is also valid for Topaz, but was not
-enabled at the time.
+The current 'struct ptp_extts_event' returns 32 bytes to userspace
+for every event.  Of these, 16 bytes (50%) are unused, as the structure
+only returns a timestamp + index, without any event information.
 
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Fixes: bf3504cea7d7e ("net: dsa: mv88e6xxx: Add 6390 family PCS registers to ethtool -d")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 4 ++++
- 1 file changed, 4 insertions(+)
+It seems logical that these unused bytes (which are event specific)
+could be used to convey more information about the event itself.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 1e95a0facbd4..beb41572d04e 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3626,6 +3626,8 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
- 	.serdes_get_sset_count = mv88e6390_serdes_get_sset_count,
- 	.serdes_get_strings = mv88e6390_serdes_get_strings,
- 	.serdes_get_stats = mv88e6390_serdes_get_stats,
-+	.serdes_get_regs_len = mv88e6390_serdes_get_regs_len,
-+	.serdes_get_regs = mv88e6390_serdes_get_regs,
- 	.phylink_validate = mv88e6341_phylink_validate,
- };
- 
-@@ -4435,6 +4437,8 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
- 	.serdes_get_sset_count = mv88e6390_serdes_get_sset_count,
- 	.serdes_get_strings = mv88e6390_serdes_get_strings,
- 	.serdes_get_stats = mv88e6390_serdes_get_stats,
-+	.serdes_get_regs_len = mv88e6390_serdes_get_regs_len,
-+	.serdes_get_regs = mv88e6390_serdes_get_regs,
- 	.phylink_validate = mv88e6341_phylink_validate,
- };
- 
+
+> It is about getting the right interface.  The external time stamp
+> interface is generic and all-purpose, and so I question whether your
+> extension makes sense.
+
+I question whether the definition of "all-purpose" really applies
+here.  All it tells me is that "an event happened on this channel 
+at this time".
+
+If the user doesn't care about additional data, it can just be 
+ignored, right?
+
+
+In the meantime, let's see what the HW guys say about doing the 
+comparision in SW.  Other vendors have PPS input to their MAC,
+so the disciplining is done in HW, bypassing adjphase() completely.
 -- 
-2.31.1
-
+Jonathan
