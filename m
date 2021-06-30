@@ -2,235 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B9B43B8093
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 12:06:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2D93B809C
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 12:08:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234148AbhF3KIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 06:08:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51824 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234059AbhF3KIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 06:08:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625047578;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LMceomtZpeBJxouu/8TZ2RWttETJTNeq4YrEIozF2xg=;
-        b=VY2X7ZnQcKMNfb/oWgksKDkPHGJoA7QhKCatCZiPiqBrr4r5HJwL5Gr16Sk+fgIP4qhHYf
-        tK0X8l4sLOvOSYBRse1Sv2DbedOWkXq4qr/tHzwCE3KmWv7vnvc6nbweW1VNge8OHCZBQ3
-        Ogzy3TyCzATqlneZzO1yKIMGnQPNlSM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-250-eLpe537eMKuoj_qUhesd5w-1; Wed, 30 Jun 2021 06:06:15 -0400
-X-MC-Unique: eLpe537eMKuoj_qUhesd5w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B65AB1084F4B;
-        Wed, 30 Jun 2021 10:06:12 +0000 (UTC)
-Received: from localhost (ovpn-113-77.ams2.redhat.com [10.36.113.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B6621980E;
-        Wed, 30 Jun 2021 10:06:07 +0000 (UTC)
-Date:   Wed, 30 Jun 2021 11:06:06 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: Re: [PATCH v8 10/10] Documentation: Add documentation for VDUSE
-Message-ID: <YNxCDpM3bO5cPjqi@stefanha-x1.localdomain>
-References: <20210615141331.407-1-xieyongji@bytedance.com>
- <20210615141331.407-11-xieyongji@bytedance.com>
- <YNSCH6l31zwPxBjL@stefanha-x1.localdomain>
- <CACycT3uxnQmXWsgmNVxQtiRhz1UXXTAJFY3OiAJqokbJH6ifMA@mail.gmail.com>
+        id S234120AbhF3KKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 06:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52878 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234095AbhF3KKw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 06:10:52 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26204C061756;
+        Wed, 30 Jun 2021 03:08:23 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id i4so4101627ybe.2;
+        Wed, 30 Jun 2021 03:08:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=315GgWjphcSz4gPu0C1m0uStExLIy8BjxmSHxJbMz+A=;
+        b=ZnDBa1cXuz8dugVH3GM27VJNdOaUpFHAt1ec71DlEUe9Fs5vHDkM5qK4wDJWt5dEap
+         tfS8FvGyEXeO4G//gvgDi63Y6FjfNrmutpus4X4YHBWTi16pQ3oplLhkqRFKMGke2beZ
+         EIiGrP9u2oQ0WtMwWycf3SemKo3/LbUCoyarSTdragiWtNo6Zj6CbArMe62GncasWQqi
+         Qpv0pE1YIOWnosj6Isn6xYYy6X3KNuDZvlOLSQc20rpRoKolqCZAasyntyewtKKsEd3Y
+         pCm2lZ4W0WE9BGCnmchzO5Qpr8q1Oly+VhP4YQUq95lHQxLWtt7BBqtXGPbFUr3EUsxc
+         xMLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=315GgWjphcSz4gPu0C1m0uStExLIy8BjxmSHxJbMz+A=;
+        b=V83wiMX7D6/7uM/cHO2yCBE5opJ5U4mKI0KV721eO1IdcgBcAYNrgtDgWCWWYz5Ywh
+         bj6gcQ2RUV1AEFaurry3GON7LIvDb7eSfnfUpGglOsTzFt5Q/9QXlv40NmLfVczmswNS
+         7aSsSskFWS9TMBKWnWq7/ebYsM/FvfL7PvzuBw7oGj6feP+HvTapB659/Q32Eqd+Sz0t
+         I4wghSYQzb4+uKQUtOJFMrEhdTl1fKsL2ltOK3jjgLnXsAzA9OgoxjzeyoIb1+sKCsOu
+         SOGP1al8NZAc41ZTxmbVQEJJOJmkA+6oCT5oqD+lqFsVQ+4+MdaSiUs3wvgYhMBi8lGg
+         NlUA==
+X-Gm-Message-State: AOAM532UPjhJS9rFvxAChM8VwuxZh8tV53DL1OsTdBhCIFu4QFOxWDlV
+        MJAK7afjW+lZAL9g7ZrZsp38W/Zzac6+P8J1v7o=
+X-Google-Smtp-Source: ABdhPJyP06aeOdXsv7HZlWAV/uAGgwFMb31hNT4oKTPcE3/6jCBK8xYLq6eH5qRRwa9FQ5luL0ArmsAZMBy1GN1Ctdo=
+X-Received: by 2002:a25:1455:: with SMTP id 82mr44281547ybu.403.1625047701821;
+ Wed, 30 Jun 2021 03:08:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="geeWI88lXXlJDriY"
-Content-Disposition: inline
-In-Reply-To: <CACycT3uxnQmXWsgmNVxQtiRhz1UXXTAJFY3OiAJqokbJH6ifMA@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
+ <20210624022518.57875-2-alexei.starovoitov@gmail.com> <fd30895e-475f-c78a-d367-2abdf835c9ef@fb.com>
+ <20210629014607.fz5tkewb6n3u6pvr@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzaPPDEUvsx51mEpp_vJoXVwJQrLu5QnL4pSnL9YAPXevw@mail.gmail.com> <CAADnVQ+erEuHj_0cy16DBFSu_Otj-+60EZN__9W=vogeNQuBOg@mail.gmail.com>
+In-Reply-To: <CAADnVQ+erEuHj_0cy16DBFSu_Otj-+60EZN__9W=vogeNQuBOg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 30 Jun 2021 13:08:08 +0300
+Message-ID: <CAEf4BzbpF7S2861ueTHC7u4avzFZU7vXkujNX+bLewd4hN5trw@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 1/8] bpf: Introduce bpf timers.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---geeWI88lXXlJDriY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Jun 29, 2021 at 01:43:11PM +0800, Yongji Xie wrote:
-> On Mon, Jun 28, 2021 at 9:02 PM Stefan Hajnoczi <stefanha@redhat.com> wro=
-te:
-> > On Tue, Jun 15, 2021 at 10:13:31PM +0800, Xie Yongji wrote:
-> > > +     static void *iova_to_va(int dev_fd, uint64_t iova, uint64_t *le=
-n)
-> > > +     {
-> > > +             int fd;
-> > > +             void *addr;
-> > > +             size_t size;
-> > > +             struct vduse_iotlb_entry entry;
-> > > +
-> > > +             entry.start =3D iova;
-> > > +             entry.last =3D iova + 1;
+On Tue, Jun 29, 2021 at 4:28 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Mon, Jun 28, 2021 at 11:34 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
 > >
-> > Why +1?
+> > Have you considered alternatively to implement something like
+> > bpf_ringbuf_query() for BPF ringbuf that will allow to query various
+> > things about the timer (e.g., whether it is active or not, and, of
+> > course, remaining expiry time). That will be more general, easier to
+> > extend, and will cover this use case:
 > >
-> > I expected the request to include *len so that VDUSE can create a bounce
-> > buffer for the full iova range, if necessary.
-> >
->=20
-> The function is used to translate iova to va. And the *len is not
-> specified by the caller. Instead, it's used to tell the caller the
-> length of the contiguous iova region from the specified iova. And the
-> ioctl VDUSE_IOTLB_GET_FD will get the file descriptor to the first
-> overlapped iova region. So using iova + 1 should be enough here.
+> > long exp = bpf_timer_query(&t->timer, BPF_TIMER_EXPIRY);
+> > bpf_timer_start(&t->timer, new_callback, exp);
+>
+> yes, but...
+> hrtimer_get_remaining + timer_start to that value is racy
+> and not accurate.
 
-Does the entry.last field have any purpose with VDUSE_IOTLB_GET_FD? I
-wonder why userspace needs to assign a value at all if it's always +1.
+yes, but even though we specify expiration in nanosecond precision, no
+one should expect that precision w.r.t. when callback is actually
+fired. So fetching current expiration, adding new one, and re-setting
+it shouldn't be a problem in practice, IMO.
 
->=20
-> > > +             fd =3D ioctl(dev_fd, VDUSE_IOTLB_GET_FD, &entry);
-> > > +             if (fd < 0)
-> > > +                     return NULL;
-> > > +
-> > > +             size =3D entry.last - entry.start + 1;
-> > > +             *len =3D entry.last - iova + 1;
-> > > +             addr =3D mmap(0, size, perm_to_prot(entry.perm), MAP_SH=
-ARED,
-> > > +                         fd, entry.offset);
-> > > +             close(fd);
-> > > +             if (addr =3D=3D MAP_FAILED)
-> > > +                     return NULL;
-> > > +
-> > > +             /* do something to cache this iova region */
-> >
-> > How is userspace expected to manage iotlb mmaps? When should munmap(2)
-> > be called?
-> >
->=20
-> The simple way is using a list to store the iotlb mappings. And we
-> should call the munmap(2) for the old mappings when VDUSE_UPDATE_IOTLB
-> or VDUSE_STOP_DATAPLANE message is received.
+I just think the most common case is to set a timer once, so ideally
+usability is optimized for that (so taken to extreme it would be just
+bpf_timer_start without any bpf_timer_init, but we've already
+discussed this, no need to do that again here). Needing bpf_timer_init
++ bpf_timer_set_callbcack + bpf_timer_start for a common case feels
+suboptimal usability-wise.
 
-Thanks for explaining. It would be helpful to have a description of
-IOTLB operation in this document.
+There is also a new race with bpf_timer_set_callback +
+bpf_timer_start. Callback can fire inbetween those two operations, so
+we could get new callback at old expiration or old callback with new
+expiration. To do full update reliably, you'd need to explicitly
+bpf_timer_cancel() first, at which point separate
+bpf_timer_set_callback() doesn't help at all.
 
-> > Should userspace expect VDUSE_IOTLB_GET_FD to return a full chunk of
-> > guest RAM (e.g. multiple gigabytes) that can be cached permanently or
-> > will it return just enough pages to cover [start, last)?
-> >
->=20
-> It should return one iotlb mapping that covers [start, last). In
-> vhost-vdpa cases, it might be a full chunk of guest RAM. In
-> virtio-vdpa cases, it might be the whole bounce buffer or one coherent
-> mapping (produced by dma_alloc_coherent()).
+> hrtimer_get_expires_ns + timer_start(MODE_ABS)
+> would be accurate, but that's an unnecessary complication.
+> To live replace old bpf prog with new one
+> bpf_for_each_map_elem() { bpf_timer_set_callback(new_prog); }
+> is much faster, since timers don't need to be dequeue, enqueue.
+> No need to worry about hrtimer machinery internal changes, etc.
+> bpf prog being replaced shouldn't be affecting the rest of the system.
 
-Great, thanks. Adding something about this to the documentation would
-help others implementing VDUSE devices or libraries.
+That's a good property, but if it was done as a
+bpf_timer_set_callback() in addition to current
+bpf_timer_start(callback_fn) it would still allow to have a simple
+typical use.
 
-> > > +
-> > > +             return addr + iova - entry.start;
-> > > +     }
-> > > +
-> > > +- VDUSE_DEV_GET_FEATURES: Get the negotiated features
-> >
-> > Are these VIRTIO feature bits? Please explain how feature negotiation
-> > works. There must be a way for userspace to report the device's
-> > supported feature bits to the kernel.
-> >
->=20
-> Yes, these are VIRTIO feature bits. Userspace will specify the
-> device's supported feature bits when creating a new VDUSE device with
-> ioctl(VDUSE_CREATE_DEV).
+Another usability consideration. With mandatory
+bpf_timer_set_callback(), bpf_timer_start() will need to return some
+error code if the callback wasn't set yet, right? I'm afraid that in
+practice it will be the situation similar to bpf_trace_printk() where
+people expect that it always succeeds and will never check the return
+code. It's obviously debuggable, but a friction point nevertheless.
 
-Can the VDUSE device influence feature bit negotiation? For example, if
-the VDUSE virtio-blk device does not implement discard/write-zeroes, how
-does QEMU or the guest find out about this?
+>
+> > This will keep common timer scenarios to just two steps, init + start,
+> > but won't prevent more complicated ones. Things like extending
+> > expiration by one second relative that what was remaining will be
+> > possible as well.
+>
+> Extending expiration would be more accurate with hrtimer_forward_now().
+>
+> All of the above points are minor compared to the verifier advantage.
+> bpf_timer_set_callback() typically won't be called from the callback.
+> So verifier's insn_procssed will be drastically lower.
+> The combinatorial explosion of states even for this small
+> selftests/bpf/progs/timer.c is significant.
+> With bpf_timer_set_callback() is done outside of callback the verifier
+> behavior will be predictable.
+> To some degree patches 4-6 could have been delayed, but since the
+> the algo is understood and it's working, I'm going to keep them.
+> It's nice to have that flexibility, but the less pressure on the
+> verifier the better.
 
-> > > +- VDUSE_DEV_UPDATE_CONFIG: Update the configuration space and inject=
- a config interrupt
-> >
-> > Does this mean the contents of the configuration space are cached by
-> > VDUSE?
->=20
-> Yes, but the kernel will also store the same contents.
->=20
-> > The downside is that the userspace code cannot generate the
-> > contents on demand. Most devices doin't need to generate the contents
-> > on demand, so I think this is okay but I had expected a different
-> > interface:
-> >
-> > kernel->userspace VDUSE_DEV_GET_CONFIG
-> > userspace->kernel VDUSE_DEV_INJECT_CONFIG_IRQ
-> >
->=20
-> The problem is how to handle the failure of VDUSE_DEV_GET_CONFIG. We
-> will need lots of modification of virtio codes to support that. So to
-> make it simple, we choose this way:
->=20
-> userspace -> kernel VDUSE_DEV_SET_CONFIG
-> userspace -> kernel VDUSE_DEV_INJECT_CONFIG_IRQ
->=20
-> > I think you can leave it the way it is, but I wanted to mention this in
-> > case someone thinks it's important to support generating the contents of
-> > the configuration space on demand.
-> >
->=20
-> Sorry, I didn't get you here. Can't VDUSE_DEV_SET_CONFIG and
-> VDUSE_DEV_INJECT_CONFIG_IRQ achieve that?
-
-If the contents of the configuration space change continuously, then the
-VDUSE_DEV_SET_CONFIG approach is inefficient and might have race
-conditions. For example, imagine a device where the driver can read a
-timer from the configuration space. I think the VIRTIO device model
-allows that although I'm not aware of any devices that do something like
-it today. The problem is that VDUSE_DEV_SET_CONFIG would have to be
-called frequently to keep the timer value updated even though the guest
-driver probably isn't accessing it.
-
-What's worse is that there might be race conditions where other
-driver->device operations are supposed to update the configuration space
-but VDUSE_DEV_SET_CONFIG means that the VDUSE kernel code is caching an
-outdated copy.
-
-Again, I don't think it's a problem for existing devices in the VIRTIO
-specification. But I'm not 100% sure and future devices might require
-what I've described, so the VDUSE_DEV_SET_CONFIG interface could become
-a problem.
-
-Stefan
-
---geeWI88lXXlJDriY
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDcQg4ACgkQnKSrs4Gr
-c8h7hggAnQQOdWOGK8gte/C5wPC6wIaHByFsU4T4LRipSwLegybqDEkWufZOH+Sa
-1xx1Jh7X2zc+VrfGU6jMXoejDqg/+powEv+AtJcm7EKUDOWNBpUK4e36qaxSjhqd
-U2Gya8ZhM+qgGnxgEJPl1anLmISVmMHSnulGdPy5c7Lsf6qa8n3PrBYcKpiwaFcJ
-keyHVt9KxkIJsV/2UVUsA+LzYL4H24FOyAllkjTRLm3wjqwsmciUELmvTvMKORu1
-TeIVS7Mn7J10Fegx54MOlWakdPahmuXloGv/yhxR102k/9dieMeoE3N4H+30PaU9
-IAuiYtoWhZNM5xwyR/ht7sVUVkOlQw==
-=j8XL
------END PGP SIGNATURE-----
-
---geeWI88lXXlJDriY--
-
+I haven't had time to understand those new patches yet, sorry, so not
+sure where the state explosion is coming from. I'll get to it for real
+next week. But improving verifier internals can be done transparently,
+while changing/fixing BPF UAPI is much harder and more disruptive.
