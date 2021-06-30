@@ -2,96 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2221C3B81F6
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 14:21:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D21003B81FE
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 14:21:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234576AbhF3MXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 08:23:37 -0400
-Received: from mailout2.secunet.com ([62.96.220.49]:40758 "EHLO
-        mailout2.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234510AbhF3MXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 08:23:36 -0400
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout2.secunet.com (Postfix) with ESMTP id 2F24A800056;
-        Wed, 30 Jun 2021 14:21:06 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 30 Jun 2021 14:21:06 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 30 Jun
- 2021 14:21:05 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 808F8318040F; Wed, 30 Jun 2021 14:21:05 +0200 (CEST)
-Date:   Wed, 30 Jun 2021 14:21:05 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Varad Gautam <varad.gautam@suse.com>
-CC:     Frederic Weisbecker <frederic@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Ahmed S . Darwish" <a.darwish@linutronix.de>,
-        <stable@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH] xfrm: Fix RCU vs hash_resize_mutex lock inversion
-Message-ID: <20210630122105.GY40979@gauss3.secunet.de>
-References: <20210628133428.5660-1-frederic@kernel.org>
- <20210630065753.GU40979@gauss3.secunet.de>
- <ff82a4ad-179e-6a81-eacc-addc8ed12b0f@suse.com>
+        id S234719AbhF3MYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 08:24:13 -0400
+Received: from mout.kundenserver.de ([212.227.126.130]:60021 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234703AbhF3MYM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 08:24:12 -0400
+Received: from mail-wr1-f51.google.com ([209.85.221.51]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MmUcL-1lYXsV2q7l-00iVws; Wed, 30 Jun 2021 14:21:42 +0200
+Received: by mail-wr1-f51.google.com with SMTP id a13so3362430wrf.10;
+        Wed, 30 Jun 2021 05:21:42 -0700 (PDT)
+X-Gm-Message-State: AOAM530WakbCHpA1tgG69QVBM7Pw0X7PUFrYEpnT4JUnfBIQlnUcyOVH
+        nxgT4g5+suYjbRisJcd9jXMfOo1Q1i6XWKbOWq8=
+X-Google-Smtp-Source: ABdhPJzbMwqO0UqMwf08cToMR/xIYXkh4mMK63b049cBHLY2kvkRRGsefeAfve5VBN+0PclfxL041WfPnXFS6N7HuDs=
+X-Received: by 2002:adf:ee10:: with SMTP id y16mr1601608wrn.99.1625055702317;
+ Wed, 30 Jun 2021 05:21:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ff82a4ad-179e-6a81-eacc-addc8ed12b0f@suse.com>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+References: <20210622202345.795578-1-jernej.skrabec@gmail.com>
+ <CAK8P3a1mvRTTFHtxqREmcbgJS+e94BHajCtAU_fzBhNNKjJBcg@mail.gmail.com>
+ <CAPDyKFqFTCzXFMar88CYdZKc=eMjKszsOCS1LwLmnF0uNQyPAw@mail.gmail.com>
+ <CAK8P3a2yo6eAe+jZQ7XB9ERYOYvBdCfjMKCYgm=gh-Ekd=SQ3Q@mail.gmail.com> <CAPDyKFp4BkfEW+wKwED97FNvnb4_5AWDO8KwpQvVXaHa7pSywQ@mail.gmail.com>
+In-Reply-To: <CAPDyKFp4BkfEW+wKwED97FNvnb4_5AWDO8KwpQvVXaHa7pSywQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 30 Jun 2021 14:21:26 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0gMv9d9Pqm-tjPScL404DSiQx8x8oFim8cvypx2ao14A@mail.gmail.com>
+Message-ID: <CAK8P3a0gMv9d9Pqm-tjPScL404DSiQx8x8oFim8cvypx2ao14A@mail.gmail.com>
+Subject: Re: [RFC PATCH] cw1200: use kmalloc() allocation instead of stack
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>, pizza@shaftnet.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:a/U8MAMPEw2KACok6Xjsaf8/I2V/gxbsq6rUtKS5+gFDLaJF+nV
+ 7TaFLFfeh/BOoB0TybuxZll+jHHaDF9XqF4cWy7XViMr7xSD4MBxCnwkjesKWEwV5cboOjl
+ NZrBF8RQmoy4nm4QGa6RMCXNL2jSYgur10xx86pPjLzocbyudK0LbGpp4CV1ISXrexTygse
+ pYOVAyk4NqMXoreWPYlmA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+5lFCng3GbQ=:7r5+yyrDTv1YIInn8eb7JY
+ JEIVXUz0Op1LRbt2THBuNnIfJDkQZiz3u7/5lKvXMjFeRcPHnVmwP0lAfn2ExTgLBrCZ4KNXi
+ 4l/1kkv2fpuIU8yL7JX31IP1/VijimXRSkjQlfyyUoxNOJOsxu39DZqa6UQJmB6kwQhKs/+oO
+ 2FQIpjfcxdx17bWWlWQ2LYLujF+lLB+PVUH99ahNl2SoAWuJ3mUc2v+INhH4W+K3vkXcCzu6n
+ 2Fq8hvBw61araw8UggHKFOZbvC+KGSADdUzd8yz0KTgjc7NvK9yC5TQIigKl4+H1WJsVmjTJU
+ oRQXW5gCfY6uIW1TcuZ3Z++kB2g/xKD8egEB9QViOCsuq/tEx9jw6sYlcC3Lp0OBRbwpfNFHY
+ CgZQCnw6Nd+AGS/IrE4IaAPWciZN4GcDKPQB9LqvVxufrRkhtOeGDyHtxDXUowK21Ih+yFstk
+ vQgin0EH3XvjtJC8eVviXGs9zpayUVO/bT4htAXbdMDgUSVeakiWlZTzblCMIf4Ubp0yoOvZe
+ ziTXBmLoFlzI/Dnz1wkQBV2CO4Au7+0AbiZ8643b+P8jDuOPjbWYV+y74vZqw8D1V2mh8DeD+
+ CVInLFld6QyM7MGSdyVHWl0RBTa/Gsa+KQDgsfb80zHDJU36ivtJILZzNDlqaOf85p76uWbSz
+ 0YdLUqnsqTpQQpTDk7I0pTQUikx7auh0LQQI9oJlSDL/Fkt6JH9ruMwkxLTaij6wR+PLeGUBu
+ FyNvKIVZWlDCXdAx43G6OvUCNAR0XzMH3v2wksZLGb/H7vbBovzI4P21D7Xqq53Yd2I+L/NwQ
+ ZfqBwnf7YQQAhWPqOVdjBlE7m8sLHetotSBkrbNK3iRvcSqDMrB31fa8Y+5rObZfLh869BXKp
+ 1glk+uI9XConiJIiZ1zKBK1Q0zthQG1L3fCXQZVgePctJ1m4HoQGVNOWm92QacVSLqEndKLyi
+ UEQ+NyhbalDA4jMvClf7fGSnINtvPFv9ansH8Q9YjaJtpTJ4kK6wI
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 30, 2021 at 02:11:24PM +0200, Varad Gautam wrote:
-> On 6/30/21 8:57 AM, Steffen Klassert wrote:
-> > On Mon, Jun 28, 2021 at 03:34:28PM +0200, Frederic Weisbecker wrote:
-> >> xfrm_bydst_resize() calls synchronize_rcu() while holding
-> >> hash_resize_mutex. But then on PREEMPT_RT configurations,
-> >> xfrm_policy_lookup_bytype() may acquire that mutex while running in an
-> >> RCU read side critical section. This results in a deadlock.
-> >>
-> >> In fact the scope of hash_resize_mutex is way beyond the purpose of
-> >> xfrm_policy_lookup_bytype() to just fetch a coherent and stable policy
-> >> for a given destination/direction, along with other details.
-> >>
-> >> The lower level net->xfrm.xfrm_policy_lock, which among other things
-> >> protects per destination/direction references to policy entries, is
-> >> enough to serialize and benefit from priority inheritance against the
-> >> write side. As a bonus, it makes it officially a per network namespace
-> >> synchronization business where a policy table resize on namespace A
-> >> shouldn't block a policy lookup on namespace B.
-> >>
-> >> Fixes: 77cc278f7b20 (xfrm: policy: Use sequence counters with associated lock)
-> >> Cc: stable@vger.kernel.org
-> >> Cc: Ahmed S. Darwish <a.darwish@linutronix.de>
-> >> Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-> >> Cc: Varad Gautam <varad.gautam@suse.com>
-> >> Cc: Steffen Klassert <steffen.klassert@secunet.com>
-> >> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> >> Cc: David S. Miller <davem@davemloft.net>
-> >> Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-> > 
-> > Your patch has a conflicht with ("commit d7b0408934c7 xfrm: policy: Read
-> > seqcount outside of rcu-read side in xfrm_policy_lookup_bytype")
-> > from Varad. Can you please rebase onto the ipsec tree?
-> > 
-> > Btw. Varad, your above mentioned patch tried to fix the same issue.
-> > Do we still need it, or is it obsolete with the fix from Frederic?
-> > 
-> 
-> The patch "xfrm: policy: Read seqcount outside of rcu-read side in
-> xfrm_policy_lookup_bytype" shouldn't be needed after Frederic's fix since
-> the offending mutex is now gone. It can be dropped.
+On Wed, Jun 30, 2021 at 2:03 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
 
-Ok, so I'll revert your patch and apply Frederic's patch on
-top of that revert.
+> > diff --git a/drivers/mmc/core/sdio_ops.c b/drivers/mmc/core/sdio_ops.c
+> > index 4c229dd2b6e5..845f9ca3b200 100644
+> > --- a/drivers/mmc/core/sdio_ops.c
+> > +++ b/drivers/mmc/core/sdio_ops.c
+> > @@ -124,6 +124,7 @@ int mmc_io_rw_extended(struct mmc_card *card, int
+> > write, unsigned fn,
+> >         int err;
+> >
+> >         WARN_ON(blksz == 0);
+> > +       WARN_ON_ONCE(is_vmalloc_or_module_addr(buf) || object_is_on_stack(buf));
+>
+> Looks reasonable to me, at least we should start giving a warning.
+> Would you like to send a formal patch that we can test?
 
-Thanks a lot everyone!
+Done.
+
+        Arnd
