@@ -2,304 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E98573B8089
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 12:04:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B9B43B8093
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 12:06:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234134AbhF3KGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 06:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51854 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234018AbhF3KGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 06:06:20 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABB1C061766
-        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 03:03:51 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id l68so1316086vsc.13
-        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 03:03:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EQ8w6GsN05322Cp5xiff2OqrAS1Uq1JUpp0VzCYRiqQ=;
-        b=v/st+ruvXovNFjiOUybQSZEwm8aliOS8F10G093+IRFjuDAadgNjroQHZutTjgg9Z6
-         NZrtAoT4vcgk8WT1t89hiwnMeyZGEutFmyWiJd7/DB6ouFAt+zUR7vvbkdYyV9bsH/Nn
-         sXypgcJFFTN0T1LlKNwWFVS0PBuu49nzHp7juQPd5BzJUiZ+QjlO8EdD4nwCAuN4XqNy
-         REMiMlbd8CUSzKcgXt5xiqZFfFnUc0YXCTSgKGD2ty11RXtMPMxwtlUb29QImjZJpGTe
-         GoeIdUDSC9mCz0bWtck+xnxS+YVu4aQ5SF/rVVAjiCsL4GT1za9M4y+etXF7Uhsufa32
-         cwEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EQ8w6GsN05322Cp5xiff2OqrAS1Uq1JUpp0VzCYRiqQ=;
-        b=Venpps5t3n0jvZ0N646mVm/zrklMoNewTCQgaYKh+WFBwWXlp9Tevb6tdkPfyMASXN
-         gSieK9lyAGwxqiimGeluXQKw/z+7da3MGat0E9OIHh0Htvz1dlib2wKEaF0T7gLGdWGI
-         SS4NelFfcdkordujKV34ALeIAqCQn/OD7LbjZyILcnQTmFhEMnBdU3HdJMJOfmNvGiiJ
-         11vlI47MIs3gou0zFjYa++Bmpl3hLZ9F7yPkzXpnXod10c+dZD0WMgysqHPOyjblqbPP
-         E/JPdz11avTsNhwVjQIPXuz3bdZ+whAOBc2FOPP4TCL2BUAspBibLYd18Z949GkCqPpd
-         OqQA==
-X-Gm-Message-State: AOAM532VT8cYzgHvFtC0n1AMzjXy480m85fwYzn84YB5Sco0bUbtQ2sI
-        ulhjhJz++v6cCViT8aRwLgatmkWTv1DjndmwIvEa5Q==
-X-Google-Smtp-Source: ABdhPJy8/Kr8/BB05B2jOlxNSoq/iS7lQFd+tjs21sJnNBIgdlGOfg/KO+6ZjjYYAptdivo6nHgkcxxpshu5i2mCA1E=
-X-Received: by 2002:a05:6102:3a70:: with SMTP id bf16mr30808168vsb.48.1625047430169;
- Wed, 30 Jun 2021 03:03:50 -0700 (PDT)
+        id S234148AbhF3KIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 06:08:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51824 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234059AbhF3KIr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 06:08:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625047578;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LMceomtZpeBJxouu/8TZ2RWttETJTNeq4YrEIozF2xg=;
+        b=VY2X7ZnQcKMNfb/oWgksKDkPHGJoA7QhKCatCZiPiqBrr4r5HJwL5Gr16Sk+fgIP4qhHYf
+        tK0X8l4sLOvOSYBRse1Sv2DbedOWkXq4qr/tHzwCE3KmWv7vnvc6nbweW1VNge8OHCZBQ3
+        Ogzy3TyCzATqlneZzO1yKIMGnQPNlSM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-250-eLpe537eMKuoj_qUhesd5w-1; Wed, 30 Jun 2021 06:06:15 -0400
+X-MC-Unique: eLpe537eMKuoj_qUhesd5w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B65AB1084F4B;
+        Wed, 30 Jun 2021 10:06:12 +0000 (UTC)
+Received: from localhost (ovpn-113-77.ams2.redhat.com [10.36.113.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B6621980E;
+        Wed, 30 Jun 2021 10:06:07 +0000 (UTC)
+Date:   Wed, 30 Jun 2021 11:06:06 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: Re: [PATCH v8 10/10] Documentation: Add documentation for VDUSE
+Message-ID: <YNxCDpM3bO5cPjqi@stefanha-x1.localdomain>
+References: <20210615141331.407-1-xieyongji@bytedance.com>
+ <20210615141331.407-11-xieyongji@bytedance.com>
+ <YNSCH6l31zwPxBjL@stefanha-x1.localdomain>
+ <CACycT3uxnQmXWsgmNVxQtiRhz1UXXTAJFY3OiAJqokbJH6ifMA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210622202345.795578-1-jernej.skrabec@gmail.com>
-In-Reply-To: <20210622202345.795578-1-jernej.skrabec@gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 30 Jun 2021 12:03:13 +0200
-Message-ID: <CAPDyKFo6AVGq5Q9bRKPjypRMxisLf0nZWLtSeARGO-3kO7=+zQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] cw1200: use kmalloc() allocation instead of stack
-To:     Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     pizza@shaftnet.org, Arnd Bergmann <arnd@arndb.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="geeWI88lXXlJDriY"
+Content-Disposition: inline
+In-Reply-To: <CACycT3uxnQmXWsgmNVxQtiRhz1UXXTAJFY3OiAJqokbJH6ifMA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Jun 2021 at 22:23, Jernej Skrabec <jernej.skrabec@gmail.com> wrote:
->
-> It turns out that if CONFIG_VMAP_STACK is enabled and src or dst is
-> memory allocated on stack, SDIO operations fail due to invalid memory
-> address conversion:
->
-> cw1200_wlan_sdio: Probe called
-> sunxi-mmc 4021000.mmc: DMA addr 0x0000800051eab954+4 overflow (mask ffffffff, bus limit 0).
-> WARNING: CPU: 2 PID: 152 at kernel/dma/direct.h:97 dma_direct_map_sg+0x26c/0x28c
-> CPU: 2 PID: 152 Comm: kworker/2:2 Not tainted 5.13.0-rc1-00026-g84114ef026b9-dirty #85
-> Hardware name: X96 Mate (DT)
-> Workqueue: events_freezable mmc_rescan
-> pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
-> pc : dma_direct_map_sg+0x26c/0x28c
-> lr : dma_direct_map_sg+0x26c/0x28c
-> sp : ffff800011eab540
-> x29: ffff800011eab540 x28: ffff800011eab738 x27: 0000000000000000
-> x26: ffff000001daf010 x25: 0000000000000000 x24: 0000000000000000
-> x23: 0000000000000002 x22: fffffc0000000000 x21: ffff8000113b0ab0
-> x20: ffff80001181abb0 x19: 0000000000000001 x18: ffffffffffffffff
-> x17: 00000000fa97f83f x16: 00000000d2e01bf8 x15: ffff8000117ffb1d
-> x14: ffffffffffffffff x13: ffff8000117ffb18 x12: fffffffffffc593f
-> x11: ffff800011676ad0 x10: fffffffffffe0000 x9 : ffff800011eab540
-> x8 : 206b73616d282077 x7 : 000000000000000f x6 : 000000000000000c
-> x5 : 0000000000000000 x4 : 0000000000000000 x3 : 00000000ffffffff
-> x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff00000283b800
-> Call trace:
->  dma_direct_map_sg+0x26c/0x28c
->  dma_map_sg_attrs+0x2c/0x60
->  sunxi_mmc_request+0x70/0x420
->  __mmc_start_request+0x68/0x134
->  mmc_start_request+0x84/0xac
->  mmc_wait_for_req+0x70/0x100
->  mmc_io_rw_extended+0x1cc/0x2c0
->  sdio_io_rw_ext_helper+0x194/0x240
->  sdio_memcpy_fromio+0x20/0x2c
->  cw1200_sdio_memcpy_fromio+0x20/0x2c
->  __cw1200_reg_read+0x34/0x60
->  cw1200_reg_read+0x48/0x70
->  cw1200_load_firmware+0x38/0x5d0
->  cw1200_core_probe+0x794/0x970
->  cw1200_sdio_probe+0x124/0x22c
->  sdio_bus_probe+0xe8/0x1d0
->  really_probe+0xe4/0x504
->  driver_probe_device+0x64/0xcc
->  __device_attach_driver+0xd0/0x14c
->  bus_for_each_drv+0x78/0xd0
->  __device_attach+0xdc/0x184
->  device_initial_probe+0x14/0x20
->  bus_probe_device+0x9c/0xa4
->  device_add+0x350/0x83c
->  sdio_add_func+0x6c/0x90
->  mmc_attach_sdio+0x1b0/0x430
->  mmc_rescan+0x254/0x2e0
->  process_one_work+0x1d0/0x34c
->  worker_thread+0x13c/0x470
->  kthread+0x154/0x160
->  ret_from_fork+0x10/0x34
-> sunxi-mmc 4021000.mmc: dma_map_sg failed
-> sunxi-mmc 4021000.mmc: map DMA failed
-> Can't read config register.
->
-> Fix that by using kmalloc() allocated memory for read/write 16/32
-> funtions.
->
-> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+--geeWI88lXXlJDriY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Kind regards
-Uffe
+On Tue, Jun 29, 2021 at 01:43:11PM +0800, Yongji Xie wrote:
+> On Mon, Jun 28, 2021 at 9:02 PM Stefan Hajnoczi <stefanha@redhat.com> wro=
+te:
+> > On Tue, Jun 15, 2021 at 10:13:31PM +0800, Xie Yongji wrote:
+> > > +     static void *iova_to_va(int dev_fd, uint64_t iova, uint64_t *le=
+n)
+> > > +     {
+> > > +             int fd;
+> > > +             void *addr;
+> > > +             size_t size;
+> > > +             struct vduse_iotlb_entry entry;
+> > > +
+> > > +             entry.start =3D iova;
+> > > +             entry.last =3D iova + 1;
+> >
+> > Why +1?
+> >
+> > I expected the request to include *len so that VDUSE can create a bounce
+> > buffer for the full iova range, if necessary.
+> >
+>=20
+> The function is used to translate iova to va. And the *len is not
+> specified by the caller. Instead, it's used to tell the caller the
+> length of the contiguous iova region from the specified iova. And the
+> ioctl VDUSE_IOTLB_GET_FD will get the file descriptor to the first
+> overlapped iova region. So using iova + 1 should be enough here.
 
-> ---
->  drivers/net/wireless/st/cw1200/hwio.c | 52 +++++++++++++++++++++------
->  drivers/net/wireless/st/cw1200/hwio.h | 51 ++++++++++++++++++++------
->  2 files changed, 83 insertions(+), 20 deletions(-)
->
-> diff --git a/drivers/net/wireless/st/cw1200/hwio.c b/drivers/net/wireless/st/cw1200/hwio.c
-> index 3ba462de8e91..5521cb7f2233 100644
-> --- a/drivers/net/wireless/st/cw1200/hwio.c
-> +++ b/drivers/net/wireless/st/cw1200/hwio.c
-> @@ -66,33 +66,65 @@ static int __cw1200_reg_write(struct cw1200_common *priv, u16 addr,
->  static inline int __cw1200_reg_read_32(struct cw1200_common *priv,
->                                         u16 addr, u32 *val)
->  {
-> -       __le32 tmp;
-> -       int i = __cw1200_reg_read(priv, addr, &tmp, sizeof(tmp), 0);
-> -       *val = le32_to_cpu(tmp);
-> +       __le32 *tmp;
-> +       int i;
-> +
-> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
-> +       if (!tmp)
-> +               return -ENOMEM;
-> +
-> +       i = __cw1200_reg_read(priv, addr, tmp, sizeof(*tmp), 0);
-> +       *val = le32_to_cpu(*tmp);
-> +       kfree(tmp);
->         return i;
->  }
->
->  static inline int __cw1200_reg_write_32(struct cw1200_common *priv,
->                                         u16 addr, u32 val)
->  {
-> -       __le32 tmp = cpu_to_le32(val);
-> -       return __cw1200_reg_write(priv, addr, &tmp, sizeof(tmp), 0);
-> +       __le32 *tmp;
-> +       int i;
-> +
-> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
-> +       if (!tmp)
-> +               return -ENOMEM;
-> +
-> +       *tmp = cpu_to_le32(val);
-> +       i = __cw1200_reg_write(priv, addr, tmp, sizeof(*tmp), 0);
-> +       kfree(tmp);
-> +       return i;
->  }
->
->  static inline int __cw1200_reg_read_16(struct cw1200_common *priv,
->                                         u16 addr, u16 *val)
->  {
-> -       __le16 tmp;
-> -       int i = __cw1200_reg_read(priv, addr, &tmp, sizeof(tmp), 0);
-> -       *val = le16_to_cpu(tmp);
-> +       __le16 *tmp;
-> +       int i;
-> +
-> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
-> +       if (!tmp)
-> +               return -ENOMEM;
-> +
-> +       i = __cw1200_reg_read(priv, addr, tmp, sizeof(*tmp), 0);
-> +       *val = le16_to_cpu(*tmp);
-> +       kfree(tmp);
->         return i;
->  }
->
->  static inline int __cw1200_reg_write_16(struct cw1200_common *priv,
->                                         u16 addr, u16 val)
->  {
-> -       __le16 tmp = cpu_to_le16(val);
-> -       return __cw1200_reg_write(priv, addr, &tmp, sizeof(tmp), 0);
-> +       __le16 *tmp;
-> +       int i;
-> +
-> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
-> +       if (!tmp)
-> +               return -ENOMEM;
-> +
-> +       *tmp = cpu_to_le16(val);
-> +       i = __cw1200_reg_write(priv, addr, tmp, sizeof(*tmp), 0);
-> +       kfree(tmp);
-> +       return i;
->  }
->
->  int cw1200_reg_read(struct cw1200_common *priv, u16 addr, void *buf,
-> diff --git a/drivers/net/wireless/st/cw1200/hwio.h b/drivers/net/wireless/st/cw1200/hwio.h
-> index d1e629a566c2..088d2a1bacc0 100644
-> --- a/drivers/net/wireless/st/cw1200/hwio.h
-> +++ b/drivers/net/wireless/st/cw1200/hwio.h
-> @@ -166,34 +166,65 @@ int cw1200_reg_write(struct cw1200_common *priv, u16 addr,
->  static inline int cw1200_reg_read_16(struct cw1200_common *priv,
->                                      u16 addr, u16 *val)
->  {
-> -       __le32 tmp;
-> +       __le32 *tmp;
->         int i;
-> -       i = cw1200_reg_read(priv, addr, &tmp, sizeof(tmp));
-> -       *val = le32_to_cpu(tmp) & 0xfffff;
-> +
-> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
-> +       if (!tmp)
-> +               return -ENOMEM;
-> +
-> +       i = cw1200_reg_read(priv, addr, tmp, sizeof(*tmp));
-> +       *val = le32_to_cpu(*tmp) & 0xfffff;
-> +       kfree(tmp);
->         return i;
->  }
->
->  static inline int cw1200_reg_write_16(struct cw1200_common *priv,
->                                       u16 addr, u16 val)
->  {
-> -       __le32 tmp = cpu_to_le32((u32)val);
-> -       return cw1200_reg_write(priv, addr, &tmp, sizeof(tmp));
-> +       __le32 *tmp;
-> +       int i;
-> +
-> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
-> +       if (!tmp)
-> +               return -ENOMEM;
-> +
-> +       *tmp = cpu_to_le32((u32)val);
-> +       i = cw1200_reg_write(priv, addr, tmp, sizeof(*tmp));
-> +       kfree(tmp);
-> +       return i;
->  }
->
->  static inline int cw1200_reg_read_32(struct cw1200_common *priv,
->                                      u16 addr, u32 *val)
->  {
-> -       __le32 tmp;
-> -       int i = cw1200_reg_read(priv, addr, &tmp, sizeof(tmp));
-> -       *val = le32_to_cpu(tmp);
-> +       __le32 *tmp;
-> +       int i;
-> +
-> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
-> +       if (!tmp)
-> +               return -ENOMEM;
-> +
-> +       i = cw1200_reg_read(priv, addr, tmp, sizeof(*tmp));
-> +       *val = le32_to_cpu(*tmp);
-> +       kfree(tmp);
->         return i;
->  }
->
->  static inline int cw1200_reg_write_32(struct cw1200_common *priv,
->                                       u16 addr, u32 val)
->  {
-> -       __le32 tmp = cpu_to_le32(val);
-> -       return cw1200_reg_write(priv, addr, &tmp, sizeof(val));
-> +       __le32 *tmp;
-> +       int i;
-> +
-> +       tmp = kmalloc(sizeof(*tmp), GFP_KERNEL);
-> +       if (!tmp)
-> +               return -ENOMEM;
-> +
-> +       *tmp = cpu_to_le32(val);
-> +       i = cw1200_reg_write(priv, addr, tmp, sizeof(val));
-> +       kfree(tmp);
-> +       return i;
->  }
->
->  int cw1200_indirect_read(struct cw1200_common *priv, u32 addr, void *buf,
-> --
-> 2.32.0
->
+Does the entry.last field have any purpose with VDUSE_IOTLB_GET_FD? I
+wonder why userspace needs to assign a value at all if it's always +1.
+
+>=20
+> > > +             fd =3D ioctl(dev_fd, VDUSE_IOTLB_GET_FD, &entry);
+> > > +             if (fd < 0)
+> > > +                     return NULL;
+> > > +
+> > > +             size =3D entry.last - entry.start + 1;
+> > > +             *len =3D entry.last - iova + 1;
+> > > +             addr =3D mmap(0, size, perm_to_prot(entry.perm), MAP_SH=
+ARED,
+> > > +                         fd, entry.offset);
+> > > +             close(fd);
+> > > +             if (addr =3D=3D MAP_FAILED)
+> > > +                     return NULL;
+> > > +
+> > > +             /* do something to cache this iova region */
+> >
+> > How is userspace expected to manage iotlb mmaps? When should munmap(2)
+> > be called?
+> >
+>=20
+> The simple way is using a list to store the iotlb mappings. And we
+> should call the munmap(2) for the old mappings when VDUSE_UPDATE_IOTLB
+> or VDUSE_STOP_DATAPLANE message is received.
+
+Thanks for explaining. It would be helpful to have a description of
+IOTLB operation in this document.
+
+> > Should userspace expect VDUSE_IOTLB_GET_FD to return a full chunk of
+> > guest RAM (e.g. multiple gigabytes) that can be cached permanently or
+> > will it return just enough pages to cover [start, last)?
+> >
+>=20
+> It should return one iotlb mapping that covers [start, last). In
+> vhost-vdpa cases, it might be a full chunk of guest RAM. In
+> virtio-vdpa cases, it might be the whole bounce buffer or one coherent
+> mapping (produced by dma_alloc_coherent()).
+
+Great, thanks. Adding something about this to the documentation would
+help others implementing VDUSE devices or libraries.
+
+> > > +
+> > > +             return addr + iova - entry.start;
+> > > +     }
+> > > +
+> > > +- VDUSE_DEV_GET_FEATURES: Get the negotiated features
+> >
+> > Are these VIRTIO feature bits? Please explain how feature negotiation
+> > works. There must be a way for userspace to report the device's
+> > supported feature bits to the kernel.
+> >
+>=20
+> Yes, these are VIRTIO feature bits. Userspace will specify the
+> device's supported feature bits when creating a new VDUSE device with
+> ioctl(VDUSE_CREATE_DEV).
+
+Can the VDUSE device influence feature bit negotiation? For example, if
+the VDUSE virtio-blk device does not implement discard/write-zeroes, how
+does QEMU or the guest find out about this?
+
+> > > +- VDUSE_DEV_UPDATE_CONFIG: Update the configuration space and inject=
+ a config interrupt
+> >
+> > Does this mean the contents of the configuration space are cached by
+> > VDUSE?
+>=20
+> Yes, but the kernel will also store the same contents.
+>=20
+> > The downside is that the userspace code cannot generate the
+> > contents on demand. Most devices doin't need to generate the contents
+> > on demand, so I think this is okay but I had expected a different
+> > interface:
+> >
+> > kernel->userspace VDUSE_DEV_GET_CONFIG
+> > userspace->kernel VDUSE_DEV_INJECT_CONFIG_IRQ
+> >
+>=20
+> The problem is how to handle the failure of VDUSE_DEV_GET_CONFIG. We
+> will need lots of modification of virtio codes to support that. So to
+> make it simple, we choose this way:
+>=20
+> userspace -> kernel VDUSE_DEV_SET_CONFIG
+> userspace -> kernel VDUSE_DEV_INJECT_CONFIG_IRQ
+>=20
+> > I think you can leave it the way it is, but I wanted to mention this in
+> > case someone thinks it's important to support generating the contents of
+> > the configuration space on demand.
+> >
+>=20
+> Sorry, I didn't get you here. Can't VDUSE_DEV_SET_CONFIG and
+> VDUSE_DEV_INJECT_CONFIG_IRQ achieve that?
+
+If the contents of the configuration space change continuously, then the
+VDUSE_DEV_SET_CONFIG approach is inefficient and might have race
+conditions. For example, imagine a device where the driver can read a
+timer from the configuration space. I think the VIRTIO device model
+allows that although I'm not aware of any devices that do something like
+it today. The problem is that VDUSE_DEV_SET_CONFIG would have to be
+called frequently to keep the timer value updated even though the guest
+driver probably isn't accessing it.
+
+What's worse is that there might be race conditions where other
+driver->device operations are supposed to update the configuration space
+but VDUSE_DEV_SET_CONFIG means that the VDUSE kernel code is caching an
+outdated copy.
+
+Again, I don't think it's a problem for existing devices in the VIRTIO
+specification. But I'm not 100% sure and future devices might require
+what I've described, so the VDUSE_DEV_SET_CONFIG interface could become
+a problem.
+
+Stefan
+
+--geeWI88lXXlJDriY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDcQg4ACgkQnKSrs4Gr
+c8h7hggAnQQOdWOGK8gte/C5wPC6wIaHByFsU4T4LRipSwLegybqDEkWufZOH+Sa
+1xx1Jh7X2zc+VrfGU6jMXoejDqg/+powEv+AtJcm7EKUDOWNBpUK4e36qaxSjhqd
+U2Gya8ZhM+qgGnxgEJPl1anLmISVmMHSnulGdPy5c7Lsf6qa8n3PrBYcKpiwaFcJ
+keyHVt9KxkIJsV/2UVUsA+LzYL4H24FOyAllkjTRLm3wjqwsmciUELmvTvMKORu1
+TeIVS7Mn7J10Fegx54MOlWakdPahmuXloGv/yhxR102k/9dieMeoE3N4H+30PaU9
+IAuiYtoWhZNM5xwyR/ht7sVUVkOlQw==
+=j8XL
+-----END PGP SIGNATURE-----
+
+--geeWI88lXXlJDriY--
+
