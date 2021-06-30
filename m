@@ -2,193 +2,448 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 683D53B801C
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 11:36:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D119F3B803E
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 11:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233996AbhF3Jiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 05:38:50 -0400
-Received: from mga01.intel.com ([192.55.52.88]:38884 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233952AbhF3Jis (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Jun 2021 05:38:48 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10030"; a="229955610"
-X-IronPort-AV: E=Sophos;i="5.83,311,1616482800"; 
-   d="scan'208";a="229955610"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2021 02:36:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,311,1616482800"; 
-   d="scan'208";a="641645157"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by fmsmga006.fm.intel.com with ESMTP; 30 Jun 2021 02:36:17 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Wed, 30 Jun 2021 02:36:16 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Wed, 30 Jun 2021 02:36:16 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
- via Frontend Transport; Wed, 30 Jun 2021 02:36:16 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.4; Wed, 30 Jun 2021 02:36:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mGRvXp8e14GgrM7PlBA9K70LIyephy5nfo6M3zzScDRU9vua6M18KhW9vo1xc9NipJ7SPtX9bU6Hp0DZlk6eVemZzOffNMvbl0NwjAATB3gpOxZeTsWpUUrxzzZW9Y1JEYZ4e72Gr3WOc8+r26HpnEjN89MQc6QmhLMiwsveasA6ZUvlaJ/NPPkoOjSCDsDZCyQoi5d6FS1M+9efaDEKeFppHCPcLnbw6WisTwT6IFp7nzRUwK80BNnFw3M5JwCCgdSLcmZlTAooaXzva5OP+aSsxOft+zgLZA1bR1+/tmbG+iiPU85SFyBaW2uFDoLler9SOEG9MPQeCKKLmZI3sg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nFtJcwz4di6eafShsFU0waBrDTztP/42Q5tcDki2+Qw=;
- b=jbE6bjYnM3Mi7t5vPwGDGCumKwfVy17s5OQgC9um/hlOHR8+aWOqVoszjVOVopXbvROvi78aC24oEpUU2qRO40XRNwUo0ptBcd4YbuQGjgFp7m0akGvEFFKtGirKzkIu4xuHtXfAQyzeHshNWtftZjri9oGUHqaKZPdB3/xcL3B702ZziOPbKcpvwwGvsU+bHSj7FXzWTA2Aviw3XTuPQIPG+FeP42O4VNPXX5K2UssrYoQlc4Q4bCfEqAIcZx23yaLUy8HZPgUxvmLVYCizk7enz2xeDFIrIbIZ/KSTLfjA1TtmdgQP+uu35ycMdCR8dB5Z4A+aNedaNWY/J86SBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nFtJcwz4di6eafShsFU0waBrDTztP/42Q5tcDki2+Qw=;
- b=Hi5GWd05d6JAVu1cSnTk8pbjxpjitpo6DgowPmM4F4Kx4L3XfjYZe4V87ujsBK3sZcsMDSCT6UkM50Y9gyb1HnnAs+LncBul3Y4CeR8Ey/NNEd+KJKjY6FF4Mv/vqGl+sidPkAFrLugodafDSA+4Y7MwdVtfSqyJqufUO2M05iE=
-Received: from CO1PR11MB4771.namprd11.prod.outlook.com (2603:10b6:303:9f::9)
- by CO1PR11MB5027.namprd11.prod.outlook.com (2603:10b6:303:9d::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.26; Wed, 30 Jun
- 2021 09:36:15 +0000
-Received: from CO1PR11MB4771.namprd11.prod.outlook.com
- ([fe80::44f:69d:f997:336b]) by CO1PR11MB4771.namprd11.prod.outlook.com
- ([fe80::44f:69d:f997:336b%8]) with mapi id 15.20.4264.027; Wed, 30 Jun 2021
- 09:36:15 +0000
-From:   "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "Tan, Tee Min" <tee.min.tan@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH net] net: stmmac: Terminate FPE workqueue in suspend
-Thread-Topic: [PATCH net] net: stmmac: Terminate FPE workqueue in suspend
-Thread-Index: AQHXbZDxwVBFmrbn6UOsWXk8TxYekassSnMAgAAA+hA=
-Date:   Wed, 30 Jun 2021 09:36:15 +0000
-Message-ID: <CO1PR11MB4771641AAA5020C0253964FED5019@CO1PR11MB4771.namprd11.prod.outlook.com>
-References: <20210630091754.23423-1-mohammad.athari.ismail@intel.com>
- <YNw6Fm/bxum6Diiy@kroah.com>
-In-Reply-To: <YNw6Fm/bxum6Diiy@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: linuxfoundation.org; dkim=none (message not signed)
- header.d=none;linuxfoundation.org; dmarc=none action=none
- header.from=intel.com;
-x-originating-ip: [175.136.124.169]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bc18a81a-1d43-4a5f-c29a-08d93baa81b8
-x-ms-traffictypediagnostic: CO1PR11MB5027:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CO1PR11MB50279DF03053791C1D6D8E46D5019@CO1PR11MB5027.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: r9eHqQ2WPTTAgf1AINn5ZFglrXsWUEVM35qcMMrpuw5I1lmpL4/Xqc3vjvdfBG5AEdt+DTL9s8IeUDgmd2TYwaTCCvt8v6jF7kKKsFKc4hoypuXPAlCiJUh+QdM1JZzmbY3oP3WjNEE4QD+x7i7kObwdYQdoKMnTR2w532J88T/mlLrl4M4zVB1vf23+H6jm/6bs4G+ILiROnpX0hLCvXcotO6PJW5ss65iKAA2XWPVDzmUJJzHW8Q9yWDpe6LO13C/fpi+R5v9S2dFHuceGYCJFkh2d/l7nja4x7rWWISKYWjFze/zB9hisLDcuH0R+PZMgoATKAQKdSsDNGJZMZe1jPO9jVkW60DqGL2pJx4ob9s3MSP3j1SwNnoUg577Rtuv9Z/GtMbtt1fsCQFIlvaO8054GjHmGpypFbXcXC39aJEBHSQyGcxRhKJtywrE9yDzaSt+QiW2cQylYc4fIY6bMKedcOlbOAdnPv2iUJc3saxb1UvsI/PBhXZW7jtqqBFgDZ5ltx8sA+wnUyW39Ewn8NeuUK0+mkpxJc1OcN3DtxmawBKqFvREPSVXNTv2HmJOPZ5wmQJ6e2PHmGaL07Dt+p6EwLSWUUO4FXgzCmdDC4O+vl/Z0q2rSvmtw8QZumJJoQ74sYIH2o52GdycF4+nVnz+5MpFkJvLRUoI2ddLlS4SZ7OQCp2HdCSe0mIv7pp5vibPW6zCAPLCne3R78yLN8Y0s+ZZn7mkHHhg7aCkcbLhVp9BkxlatD12QuCk2+5uJ5p1xmIu6HIdnJXa1mg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4771.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(136003)(346002)(39860400002)(396003)(52536014)(8676002)(186003)(15650500001)(26005)(55016002)(86362001)(6916009)(9686003)(5660300002)(33656002)(7696005)(8936002)(53546011)(38100700002)(4326008)(55236004)(316002)(83380400001)(7416002)(478600001)(54906003)(66946007)(6506007)(122000001)(966005)(71200400001)(76116006)(64756008)(66476007)(66556008)(2906002)(66446008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?SVDxbMlIkKRRdJttLinA4D6YJ+JV3Ian/11mGZwYIkuUQQiDCkCdpBQ5eblE?=
- =?us-ascii?Q?aVZ/enfl+jctuSymD2BIzQI2wMrRkFXlZXwDHtwL8aWvKP2NYnKH3/eLVtDz?=
- =?us-ascii?Q?qACQXYxWTSJE3nnWuIpw0FvS0W+WfRLSykpZzSPavtaXwFqmP3ApOKtKitxm?=
- =?us-ascii?Q?B0L4mUP9OYSYEy98OVtZ2ZlGo1/rDm6cfa6FHObQZL5gf4/D5Q9iihafYqae?=
- =?us-ascii?Q?Ko4XOuMnvnR5PG6hUJTVqfpb4rMPLt/ZDWo93a5bpv32wa7Nt6h8fMJ5eSXb?=
- =?us-ascii?Q?EmMY6rcIiNVcmgXadfyvBSfEgr6xeHnxBEg2uZIpwh6hXRbHNvMZM+6YV+Ol?=
- =?us-ascii?Q?u71YscQkJ4w7fu51NlKpXlhhj/Yy3mYc1PGo9K6M6JCbIGBIGJhpcSOHAbx+?=
- =?us-ascii?Q?IR/j6ka5eHhczq+jh3WCv7bxu1Wwh9lVElhBiuFx+dAW2E6+h9F5KEmzMgeB?=
- =?us-ascii?Q?z7TnbBqzkjLTab9Epo9Vn55rBzJEQ5Jfh6fH32lGVjjXykkcooYPmkUOi8oB?=
- =?us-ascii?Q?4CyACgneD0jy1qRypcsZ7uEyM4oqiSM9zNleUeBR100vVPlhP+YL1tynsAmi?=
- =?us-ascii?Q?v8dwQOGUOF2icYJCnqDXqQVLPu74TAhm+yz3m9WhBwUVbD4pAqFfRyUfA7He?=
- =?us-ascii?Q?jzvN4ct+rl+yxSkSEvH3OoCnDvjgjEryypoqpJWeNPO6kP80OyqeAehvFCc0?=
- =?us-ascii?Q?eLX3nPYCMAU7QiBla/YBhcO+BoijPKglG2wNqKeQ8o1P8GT/9xcRd/0mmlIZ?=
- =?us-ascii?Q?kNmAyNgUDF/sYftjdRW4kQukR7ND0/7xZJ+O/t+jFHMJgwbAPBn8SzE4zLaD?=
- =?us-ascii?Q?//GEa7l+S5dOevCmtquGLRjH0IQgcQJfKSiXTX8BfGEcsCALovyHbbxBJMID?=
- =?us-ascii?Q?t11FQ+wefIjCkSgWrPIqDPzT/JBeey8dAKkmDMqvPAwDioX3qNpEX+yFRXTc?=
- =?us-ascii?Q?fVFIkbtaOSjxNcV9+pJZwU1SLfj67ExHkrSH/Gal8k8tjEFsmmhJHHu7kh5Y?=
- =?us-ascii?Q?DYyxRUXa7dWkILO4bh6SoOriNuNd/seiiTWGfVamhBSDPP5jf7TajWnxFjGu?=
- =?us-ascii?Q?JOa6YokIpo4fEfql2DN1nQWe/NQ9Z9dXSvdX/FpD/dnhJ2opip6j6kX8Lob/?=
- =?us-ascii?Q?M52PfBYgTYRniRtT36v302S5Fg3zBGorKpHMTiJpdfXj9iWEWRYMbUa+so88?=
- =?us-ascii?Q?kr+E6flKFxQkPBHCXSNN3CDwc0LtW9jqNUaN/XLgx8qjW+c+iUP8cBJt2NXZ?=
- =?us-ascii?Q?Kf02j9M9Did59wgDgW/e7t8ZE2Ejt7zvTv62VW5v7pfZa32oTitKVfFhTPGx?=
- =?us-ascii?Q?b3fxiX8MMLIAPXQneOKtoTIp?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S233961AbhF3Jqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 05:46:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54544 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233541AbhF3Jqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 05:46:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625046249;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BZW/Rn0ajcqxcEumszhyBNvuyU3u+upm9NLSeqr1nAA=;
+        b=aoQhi9umhSILOqVZ3pqfUwz9+NTs17MPbGV66HLN0ktkhCQ5fMjrpDNCIxVmpBJoFBBBdI
+        wk12W2LAYVTPLFSsBppDCgPer9gW9GjNUquwqfpVqT28gNKRBScORLh7FRbElQArapuQSh
+        FXotx4VTvzW/ZE3tg67B6vkGmZiwE48=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-551-oLov0DfqOJ6y8e5Y8iaudg-1; Wed, 30 Jun 2021 05:44:08 -0400
+X-MC-Unique: oLov0DfqOJ6y8e5Y8iaudg-1
+Received: by mail-wr1-f72.google.com with SMTP id p12-20020a5d59ac0000b0290125818b9a60so638011wrr.19
+        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 02:44:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=BZW/Rn0ajcqxcEumszhyBNvuyU3u+upm9NLSeqr1nAA=;
+        b=sClMDSzTM7GTG587/gGX7gvtdYauGHn9aNTQEh11MzpSrFJLzXy2m+FXpB9zIODA2o
+         aUt70zz1ip9H/2cDZ6mNRRJa0jGzeaza8Q+gHtSZ9WqAvBiPI52WE5Qpuq8+iSPNtava
+         sWeut7+2d0zIhontOYIQWHy7q5A7nEe8988wy78OETYoghnjSVqjlIMjWbzdJuaB6rE8
+         bpLwYlz3CC20SaSdrDHgJpke30YfYvu6ACXeovlakd4xDOl8+Zic0ZOtEu/9ni+HSmys
+         IT+yZLB8vUd34o1NCAaNZf6P1GZnGtZk24iMvyPz/9kD7obOyILBH6Izucc/Ov3aob62
+         +X8A==
+X-Gm-Message-State: AOAM530b5+3gUolF6skfqTq2L0NfoF4OmePrR/sdAKP9NybKegoBduje
+        psJt8XS1CcVlSznQ40qdkqHYXgW7ufBp5XYbctO0+X0xHR0sx2TWvUjsJfbtP7iJGTCTOh0f5bf
+        9dzK/ZoVSqp/leCCD
+X-Received: by 2002:a7b:c351:: with SMTP id l17mr37559824wmj.120.1625046247205;
+        Wed, 30 Jun 2021 02:44:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwTTbkT2HBVl61YopYP0Lb3ln1jlymnM000T/Zzqbocs5jOOAsAB96bIoc1NeGssng0xISUAQ==
+X-Received: by 2002:a7b:c351:: with SMTP id l17mr37559782wmj.120.1625046246797;
+        Wed, 30 Jun 2021 02:44:06 -0700 (PDT)
+Received: from magray.users.ipa.redhat.com ([109.79.14.233])
+        by smtp.gmail.com with ESMTPSA id w3sm5761734wmi.24.2021.06.30.02.44.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Jun 2021 02:44:06 -0700 (PDT)
+Reply-To: Mark Gray <mark.d.gray@redhat.com>
+Subject: Re: [ovs-dev] [RFC net-next] openvswitch: Introduce per-cpu upcall
+ dispatch
+To:     Flavio Leitner <fbl@sysclose.org>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org
+References: <20210430153325.28322-1-mark.d.gray@redhat.com>
+ <YLFJWoj6+N1FTmka@p50>
+From:   Mark Gray <mark.d.gray@redhat.com>
+Message-ID: <5a2c4440-cb08-cf5d-e03e-ec292d5909e6@redhat.com>
+Date:   Wed, 30 Jun 2021 10:44:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4771.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc18a81a-1d43-4a5f-c29a-08d93baa81b8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2021 09:36:15.5468
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ygqkr9q2X8P9zjHXrGlCpflg/QsJ1yEvcINt34Cx+6vnAsd+eTbaq2Cm18UhhM61QJhj8miZeWg5KWgbH8l22hwY25qnkyYxZFSlDzfH5h2/z9SXPxVbk1TpEhb7PyYW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5027
-X-OriginatorOrg: intel.com
+In-Reply-To: <YLFJWoj6+N1FTmka@p50>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 28/05/2021 20:49, Flavio Leitner wrote:
+> 
+> Hi Mark,
+> 
+> I think this patch is going in the right direction but there
+> are some points that I think we should address. See below.
+> 
+> On Fri, Apr 30, 2021 at 11:33:25AM -0400, Mark Gray wrote:
+>> The Open vSwitch kernel module uses the upcall mechanism to send
+>> packets from kernel space to user space when it misses in the kernel
+>> space flow table. The upcall sends packets via a Netlink socket.
+>> Currently, a Netlink socket is created for every vport. In this way,
+>> there is a 1:1 mapping between a vport and a Netlink socket.
+>> When a packet is received by a vport, if it needs to be sent to
+>> user space, it is sent via the corresponding Netlink socket.
+>>
+>> This mechanism, with various iterations of the corresponding user
+>> space code, has seen some limitations and issues:
+>>
+>> * On systems with a large number of vports, there is a correspondingly
+>> large number of Netlink sockets which can limit scaling.
+>> (https://bugzilla.redhat.com/show_bug.cgi?id=1526306)
+>> * Packet reordering on upcalls.
+>> (https://bugzilla.redhat.com/show_bug.cgi?id=1844576)
+>> * A thundering herd issue.
+>> (https://bugzilla.redhat.com/show_bug.cgi?id=1834444)
+>>
+>> This patch introduces an alternative, feature-negotiated, upcall
+>> mode using a per-cpu dispatch rather than a per-vport dispatch.
+>>
+>> In this mode, the Netlink socket to be used for the upcall is
+>> selected based on the CPU of the thread that is executing the upcall.
+>> In this way, it resolves the issues above as:
+>>
+>> a) The number of Netlink sockets scales with the number of CPUs
+>> rather than the number of vports.
+>> b) Ordering per-flow is maintained as packets are distributed to
+>> CPUs based on mechanisms such as RSS and flows are distributed
+>> to a single user space thread.
+>> c) Packets from a flow can only wake up one user space thread.
+>>
+>> The corresponding user space code can be found at:
+>> https://mail.openvswitch.org/pipermail/ovs-dev/2021-April/382618.html
+> 
+> Thanks for writing a nice commit description.
+> 
+>>
+>> Bugzilla: https://bugzilla.redhat.com/1844576
+>> Signed-off-by: Mark Gray <mark.d.gray@redhat.com>
+>> ---
+>>  include/uapi/linux/openvswitch.h |  8 ++++
+>>  net/openvswitch/datapath.c       | 70 +++++++++++++++++++++++++++++++-
+>>  net/openvswitch/datapath.h       | 18 ++++++++
+>>  net/openvswitch/flow_netlink.c   |  4 --
+>>  4 files changed, 94 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+>> index 8d16744edc31..6571b57b2268 100644
+>> --- a/include/uapi/linux/openvswitch.h
+>> +++ b/include/uapi/linux/openvswitch.h
+>> @@ -70,6 +70,8 @@ enum ovs_datapath_cmd {
+>>   * set on the datapath port (for OVS_ACTION_ATTR_MISS).  Only valid on
+>>   * %OVS_DP_CMD_NEW requests. A value of zero indicates that upcalls should
+>>   * not be sent.
+>> + * OVS_DP_ATTR_PER_CPU_PIDS: Per-cpu array of PIDs for upcalls when
+>> + * OVS_DP_F_DISPATCH_UPCALL_PER_CPU feature is set.
+>>   * @OVS_DP_ATTR_STATS: Statistics about packets that have passed through the
+>>   * datapath.  Always present in notifications.
+>>   * @OVS_DP_ATTR_MEGAFLOW_STATS: Statistics about mega flow masks usage for the
+>> @@ -87,6 +89,9 @@ enum ovs_datapath_attr {
+>>  	OVS_DP_ATTR_USER_FEATURES,	/* OVS_DP_F_*  */
+>>  	OVS_DP_ATTR_PAD,
+>>  	OVS_DP_ATTR_MASKS_CACHE_SIZE,
+>> +	OVS_DP_ATTR_PER_CPU_PIDS,   /* Netlink PIDS to receive upcalls in per-cpu
+>> +				     * dispatch mode
+>> +				     */
+>>  	__OVS_DP_ATTR_MAX
+>>  };
+>>  
+>> @@ -127,6 +132,9 @@ struct ovs_vport_stats {
+>>  /* Allow tc offload recirc sharing */
+>>  #define OVS_DP_F_TC_RECIRC_SHARING	(1 << 2)
+>>  
+>> +/* Allow per-cpu dispatch of upcalls */
+>> +#define OVS_DP_F_DISPATCH_UPCALL_PER_CPU	(1 << 3)
+>> +
+>>  /* Fixed logical ports. */
+>>  #define OVSP_LOCAL      ((__u32)0)
+>>  
+>> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+>> index 9d6ef6cb9b26..98d54f41fdaa 100644
+>> --- a/net/openvswitch/datapath.c
+>> +++ b/net/openvswitch/datapath.c
+>> @@ -121,6 +121,8 @@ int lockdep_ovsl_is_held(void)
+>>  #endif
+>>  
+>>  static struct vport *new_vport(const struct vport_parms *);
+>> +static u32 ovs_dp_get_upcall_portid(const struct datapath *, uint32_t);
+>> +static int ovs_dp_set_upcall_portids(struct datapath *, const struct nlattr *);
+>>  static int queue_gso_packets(struct datapath *dp, struct sk_buff *,
+>>  			     const struct sw_flow_key *,
+>>  			     const struct dp_upcall_info *,
+>> @@ -238,7 +240,12 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+>>  
+>>  		memset(&upcall, 0, sizeof(upcall));
+>>  		upcall.cmd = OVS_PACKET_CMD_MISS;
+>> -		upcall.portid = ovs_vport_find_upcall_portid(p, skb);
+>> +
+>> +		if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU)
+>> +			upcall.portid = ovs_dp_get_upcall_portid(dp, smp_processor_id());
+>> +		else
+>> +			upcall.portid = ovs_vport_find_upcall_portid(p, skb);
+>> +
+> 
+> We don't expect that to change during packet processing, so I
+> wondered if that could be improved. However, user_feature is
+> in the same cache line as stats_percpu which is also used.
+
+I haven't changed anything here but I am open to changing it. We *will*
+need to check something here as we need to make a decision as to how to
+select the "portid". As you state, there could be a performance issue
+depending on which cache line we use to make our check and whether or
+not multiple cores are writing that cache line (and the cache
+architecture of the CPU on which we are running). I have not seen any
+major degradation in performance from this change but I am not ruling it
+out. Do you have a suggestion for a better approach?
+
+> 
+> 
+>>  		upcall.mru = OVS_CB(skb)->mru;
+>>  		error = ovs_dp_upcall(dp, skb, key, &upcall, 0);
+>>  		if (unlikely(error))
+>> @@ -1590,16 +1597,67 @@ static void ovs_dp_reset_user_features(struct sk_buff *skb,
+>>  
+>>  DEFINE_STATIC_KEY_FALSE(tc_recirc_sharing_support);
+>>  
+>> +static int ovs_dp_set_upcall_portids(struct datapath *dp,
+>> +				     const struct nlattr *ids)
+>> +{
+>> +	struct dp_portids *old, *dp_portids;
+>> +
+>> +	if (!nla_len(ids) || nla_len(ids) % sizeof(u32))
+>> +		return -EINVAL;
+>> +
+>> +	old = ovsl_dereference(dp->upcall_portids);
+>> +
+>> +	dp_portids = kmalloc(sizeof(*dp_portids) + nla_len(ids),
+>> +			     GFP_KERNEL);
+>> +	if (!dp)
+> 
+> I suspect you meant dp_portids.
+
+Yes, Dan Carpenter also caught this.
+
+> 
+>> +		return -ENOMEM;
+>> +
+>> +	dp_portids->n_ids = nla_len(ids) / sizeof(u32);
+>> +	nla_memcpy(dp_portids->ids, ids, nla_len(ids));
+>> +
+>> +	rcu_assign_pointer(dp->upcall_portids, dp_portids);
+>> +
+>> +	if (old)
+>> +		kfree_rcu(old, rcu);
+> 
+> IIRC, the kfree_rcu() checks for NULL pointers.
+> 
+> 
+
+I checked and it does.
+>> +	return 0;
+>> +}
+>> +
+>> +static u32 ovs_dp_get_upcall_portid(const struct datapath *dp, uint32_t cpu_id)
+>> +{
+>> +	struct dp_portids *dp_portids;
+>> +
+>> +	dp_portids = rcu_dereference_ovsl(dp->upcall_portids);
+>> +
+>> +	if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU && dp_portids) {
+> 
+> The OVS_DP_F_DISPATCH_UPCALL_PER_CPU needs to be verified
+> by the caller to decide whether to use this function or
+> ovs_vport_find_upcall_portid(), so perhaps function could
+> check only if dp_portids is set.
 
 
-> -----Original Message-----
-> From: Greg KH <gregkh@linuxfoundation.org>
-> Sent: Wednesday, June 30, 2021 5:32 PM
-> To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
-> Cc: Alexandre Torgue <alexandre.torgue@st.com>; Jose Abreu
-> <joabreu@synopsys.com>; David S . Miller <davem@davemloft.net>; Jakub
-> Kicinski <kuba@kernel.org>; Giuseppe Cavallaro <peppe.cavallaro@st.com>;
-> Maxime Coquelin <mcoquelin.stm32@gmail.com>; Ong, Boon Leong
-> <boon.leong.ong@intel.com>; Voon, Weifeng <weifeng.voon@intel.com>; Tan,
-> Tee Min <tee.min.tan@intel.com>; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org; stable@vger.kernel.org
-> Subject: Re: [PATCH net] net: stmmac: Terminate FPE workqueue in suspend
->=20
-> On Wed, Jun 30, 2021 at 05:17:54PM +0800,
-> mohammad.athari.ismail@intel.com wrote:
-> > From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-> >
-> > Add stmmac_fpe_stop_wq() in stmmac_suspend() to terminate FPE
-> > workqueue during suspend. So, in suspend mode, there will be no FPE
-> > workqueue available. Without this fix, new additional FPE workqueue
-> > will be created in every suspend->resume cycle.
-> >
-> > Fixes: 5a5586112b92 ("net: stmmac: support FPE link partner
-> > hand-shaking procedure")
-> > Signed-off-by: Mohammad Athari Bin Ismail
-> > <mohammad.athari.ismail@intel.com>
-> > ---
-> >  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 +
-> >  1 file changed, 1 insertion(+)
->=20
-> <formletter>
->=20
-> This is not the correct way to submit patches for inclusion in the stable=
- kernel
-> tree.  Please read:
->     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.ht=
-ml
-> for how to do this properly.
->=20
-> </formletter>
+Yes, I have removed this check
 
-I'm sorry. Will follow the correct process. Thank you for the advice.
+> 
+> 
+>> +		if (cpu_id < dp_portids->n_ids) {
+>> +			return dp_portids->ids[cpu_id];
+>> +		} else if (dp_portids->n_ids > 0 && cpu_id >= dp_portids->n_ids) {
+>> +			/* If the number of netlink PIDs is mismatched with the number of
+>> +			 * CPUs as seen by the kernel, log this and send the upcall to an
+>> +			 * arbitrary socket (0) in order to not drop packets
+>> +			 */
+>> +			pr_info_ratelimited("cpu_id mismatch with handler threads");
+>> +			return dp_portids->ids[0];
+> 
+> Instead of returning a fixed pid for all other unmapped CPUs, perhaps
+> it could distribute among mapped ones to help with the load:
+> 
+>             return dp_portids->ids[cpu_id % dp_portids->n_ids]
 
--Athari-
+I have changed as you suggested. I actually thought it might make
+debugging issues easier but, in retrospect, it could affect the
+performance too much in case of an issue.
+
+> 
+> 
+>> +		} else {
+>> +			return 0;
+>> +		}
+>> +	} else {
+>> +		return 0;
+>> +	}
+>> +}
+>> +
+>>  static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
+>>  {
+>>  	u32 user_features = 0;
+>> +	int err;
+>>  
+>>  	if (a[OVS_DP_ATTR_USER_FEATURES]) {
+>>  		user_features = nla_get_u32(a[OVS_DP_ATTR_USER_FEATURES]);
+>>  
+>>  		if (user_features & ~(OVS_DP_F_VPORT_PIDS |
+>>  				      OVS_DP_F_UNALIGNED |
+>> -				      OVS_DP_F_TC_RECIRC_SHARING))
+>> +				      OVS_DP_F_TC_RECIRC_SHARING |
+>> +				      OVS_DP_F_DISPATCH_UPCALL_PER_CPU))
+>>  			return -EOPNOTSUPP;
+>>  
+>>  #if !IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+>> @@ -1620,6 +1678,14 @@ static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
+>>  
+>>  	dp->user_features = user_features;
+>>  
+>> +	if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU &&
+>> +	    a[OVS_DP_ATTR_PER_CPU_PIDS]) {
+>> +		/* Upcall Netlink Port IDs have been updated */
+>> +		err = ovs_dp_set_upcall_portids(dp, a[OVS_DP_ATTR_PER_CPU_PIDS]);
+>> +		if (err)
+>> +			return err;
+>> +	}
+> 
+> It is possible to switch between per_cpu_pids and per_ports_pids
+> and vice versa. It seems this patch doesn't count for that.
+
+Yes, it is possible (see also thread with Pravin for partially related
+question). There is nothing that needs to be done here, *i think*. In
+the case going from "per-cpu" to "per-vport", user space will recreate
+the dpif instance and recreate all threads. This will force netlink
+sockets to be assigned to each vport and it should behave as before. Its
+worth noting that assigning netlink sockets to vports happens as part of
+the vport code rather than the datapath code. This seems to work as per
+my testing (feel free to reproduce in case I am missing something). In
+the case "per-vport" to "per-cpu", the dpif will get recreated and the
+threads recreated which will send a message and trigger the
+ovs_dp_change() clause above.
+
+FYI: As part of checking this, I noticed I wasn't freeing the 'struct
+dp_nlsk_portid' structure on deletion of a datapath. I have rectified that.
+
+> 
+> 
+>> +
+>>  	if (dp->user_features & OVS_DP_F_TC_RECIRC_SHARING)
+>>  		static_branch_enable(&tc_recirc_sharing_support);
+>>  	else
+>> diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
+>> index 38f7d3e66ca6..6003eba81958 100644
+>> --- a/net/openvswitch/datapath.h
+>> +++ b/net/openvswitch/datapath.h
+>> @@ -50,6 +50,21 @@ struct dp_stats_percpu {
+>>  	struct u64_stats_sync syncp;
+>>  };
+>>  
+>> +/**
+>> + * struct dp_portids - array of netlink portids of for a datapath.
+>> + *                     This is used when OVS_DP_F_DISPATCH_UPCALL_PER_CPU
+>> + *                     is enabled and must be protected by rcu.
+>> + * @rcu: RCU callback head for deferred destruction.
+>> + * @n_ids: Size of @ids array.
+>> + * @ids: Array storing the Netlink socket PIDs indexed by CPU ID for packets
+>> + *       that miss the flow table.
+>> + */
+>> +struct dp_portids {
+>> +	struct rcu_head rcu;
+>> +	u32 n_ids;
+>> +	u32 ids[];
+>> +};
+> 
+> It doesn't have any relation to ports, so the name is somewhat
+> misleading and confusing with the existing one.  What do you
+> think about the suggestion below:
+> 
+> 	struct dp_nlsk_pids {
+> 		struct rcu_head rcu;
+> 		u32 n_pids;
+> 		u32 pids[];
+> 	};
+> 
+
+Port refers to "Netlink Ports" rather than vports. The equivalent
+structure in the vport case is 'vport_portids'. However, it is
+misleading. I have taken your suggestion.
+
+>> +
+>>  /**
+>>   * struct datapath - datapath for flow-based packet switching
+>>   * @rcu: RCU callback head for deferred destruction.
+>> @@ -61,6 +76,7 @@ struct dp_stats_percpu {
+>>   * @net: Reference to net namespace.
+>>   * @max_headroom: the maximum headroom of all vports in this datapath; it will
+>>   * be used by all the internal vports in this dp.
+>> + * @upcall_portids: RCU protected 'struct dp_portids'.
+>>   *
+>>   * Context: See the comment on locking at the top of datapath.c for additional
+>>   * locking information.
+>> @@ -87,6 +103,8 @@ struct datapath {
+>>  
+>>  	/* Switch meters. */
+>>  	struct dp_meter_table meter_tbl;
+>> +
+>> +	struct dp_portids __rcu *upcall_portids;
+>>  };
+>>  
+>>  /**
+>> diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+>> index fd1f809e9bc1..97242bc1d960 100644
+>> --- a/net/openvswitch/flow_netlink.c
+>> +++ b/net/openvswitch/flow_netlink.c
+>> @@ -2928,10 +2928,6 @@ static int validate_userspace(const struct nlattr *attr)
+>>  	if (error)
+>>  		return error;
+>>  
+>> -	if (!a[OVS_USERSPACE_ATTR_PID] ||
+>> -	    !nla_get_u32(a[OVS_USERSPACE_ATTR_PID]))
+>> -		return -EINVAL;
+>> -
+> 
+> It can't be removed because it is still required by ovs_dp_upcall().
+> 
+> There is a problem with the action output_userspace which still
+> uses the netlink OVS_USERSPACE_ATTR_PID to set upcall.portid.
+> Later ovs_dp_upcall() returns -ENOTCONN if that is missing.
+> 
+> The userspace patchset posted together with this patch does:
+> 
+>   static uint32_t
+>   dpif_netlink_port_get_pid(const struct dpif *dpif_, odp_port_t port_no)
+>   {
+>       const struct dpif_netlink *dpif = dpif_netlink_cast(dpif_);
+>       uint32_t ret;
+>   
+>       /* In per-cpu dispatch mode, vports do not have an associated PID */
+>       if (DISPATCH_MODE_PER_CPU(dpif)) {
+>           return 0;
+>       }
+>   
+> That is used by compose_slow_path() to create userspace actions. So,
+> it seems all userspace actions would be using id 0 and that would
+> discarded by the kernel with -ENOTCONN.
+
+I fixed this.
+
+>  
+> --
+> fbl
+> 
+
