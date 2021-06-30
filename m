@@ -2,62 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C7E3B8A5D
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 00:15:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D613D3B8A5E
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 00:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232850AbhF3WRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 18:17:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55192 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232459AbhF3WRh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Jun 2021 18:17:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AD1E661476;
-        Wed, 30 Jun 2021 22:15:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625091307;
-        bh=ntoGudrHrFJ2rcbL/OpgcgUyyAIhV6vEnQPBh24omdk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TZ3HQeHc1OqhrOaUhiO1XSqxON4+mz5Hs3Za/QiWpzj0iy96VQ8+o81luJAX2zPqA
-         K23VYoTtWQXv6/SfwrnNo0FI43ej8bXrht99E0/LdnLuk2WGkyZeOSxdDPPefQcS1Z
-         KHjVhJpv/ohrsrGlHGp5kiLkE2u5/j6y79Drs6rct+ODtGkehAL3PBygG8qvnXOm3g
-         y4GOihZzEQEBaGD9VHLFcUURN4X9UBQwXI4PEyrZg6B2x+gJb0GSR8nD6P6FpFZpQ7
-         8k5iATiv9CWfofF9MQa3uPrV9N8h6JhPt+i5Shb+ek+hplAiArMnZQwyrcJ7kOT1xE
-         sNqgr7THgVtgw==
-Date:   Thu, 1 Jul 2021 00:15:03 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net 5/6] net: dsa: mv88e6xxx: enable SerDes RX stats for
- Topaz
-Message-ID: <20210701001503.01aa4d07@thinkpad>
-In-Reply-To: <20210630174308.31831-6-kabel@kernel.org>
-References: <20210630174308.31831-1-kabel@kernel.org>
-        <20210630174308.31831-6-kabel@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S232971AbhF3WSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 18:18:41 -0400
+Received: from smtp5.emailarray.com ([65.39.216.39]:56499 "EHLO
+        smtp5.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232459AbhF3WSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 18:18:40 -0400
+Received: (qmail 1582 invoked by uid 89); 30 Jun 2021 22:16:10 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
+  by smtp5.emailarray.com with SMTP; 30 Jun 2021 22:16:10 -0000
+Date:   Wed, 30 Jun 2021 15:16:08 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>
+Subject: Re: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
+Message-ID: <20210630221608.h7xdvmsc4tdgqeof@bsd-mbp.dhcp.thefacebook.com>
+References: <20210628184611.3024919-1-jonathan.lemon@gmail.com>
+ <20210628233056.GA766@hoboy.vegasvil.org>
+ <20210629001928.yhiql2dngstkpadb@bsd-mbp.dhcp.thefacebook.com>
+ <20210630000933.GA21533@hoboy.vegasvil.org>
+ <20210630035031.ulgiwewccgiz3rsv@bsd-mbp.dhcp.thefacebook.com>
+ <20210630144257.GA30627@hoboy.vegasvil.org>
+ <PH0PR11MB495167E58F24332D30517809EA019@PH0PR11MB4951.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR11MB495167E58F24332D30517809EA019@PH0PR11MB4951.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Jun 2021 19:43:07 +0200
-Marek Beh=C3=BAn <kabel@kernel.org> wrote:
+On Wed, Jun 30, 2021 at 03:55:03PM +0000, Machnikowski, Maciej wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Richard Cochran <richardcochran@gmail.com>
+> > Sent: Wednesday, June 30, 2021 4:43 PM
+> > To: Jonathan Lemon <jonathan.lemon@gmail.com>
+> > Cc: netdev@vger.kernel.org; kernel-team@fb.com
+> > Subject: Re: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
+> > 
+> > On Tue, Jun 29, 2021 at 08:50:31PM -0700, Jonathan Lemon wrote:
+> > > The PHC should be sync'd to the PPS coming from the GPS signal.
+> > > However, the GPS may be in holdover, so the actual counter comes from
+> > > an atomic oscillator.  As the oscillator may be ever so slightly out
+> > > of sync with the GPS (or drifts with temperature), so we need to
+> > > measure the phase difference between the two and steer the oscillator
+> > > slightly.
+> > >
+> > > The phase comparision between the two signals is done in HW with a
+> > > phasemeter, for precise comparisons.  The actual phase
+> > > steering/adjustment is done through adjphase().
+> > 
+> 
+> You can use different channel index in the struct ptp_clock_event to receive 
+> them from more than one source. Then just calculate the difference between 
+> the 1PPS from channel 0 and channel 1. Wouldn't that be sufficient?
 
-> Commit 0df952873636a ("mv88e6xxx: Add serdes Rx statistics") added
-> support for RX statistics on SerDes ports for Peridot.
->=20
-> This same implementation is also valid for Topaz, but was not enabled
-> at the time.
->=20
-> Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
-> Fixes: 0df952873636a ("mv88e6xxx: Add serdes Rx statistics")
-
-I accidentally sent wrong version of this fix which won't work. There
-is another change needed which I applied to another branch while
-testing and then generated the patches from the branch where this
-change was missing.
-
-I am going to send v2 in a moment.
+This is what is being done right now - just in hardware for higher precision.
+I asked the HW guys to check whether doing this in SW instead will provide
+the same precision - I should hear back by tomorrow.
+-- 
+Jonathan
