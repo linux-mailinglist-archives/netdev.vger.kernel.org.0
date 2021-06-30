@@ -2,139 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4D6C3B8889
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 20:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A39773B8892
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 20:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234350AbhF3Siw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 14:38:52 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:2874 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234297AbhF3Siu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 14:38:50 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 15UIWuIk102540
-        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 14:36:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id; s=pp1;
- bh=/A4W+vtmgWnlwYkFUfqNtqLnSFNg0+097mLwQejjGtk=;
- b=lImxiIJPHlXmxjrHryaj/t9Ymnm/TYa5+ae9MIY4F+VSgZ4hUQA5335DMzRqI4xGkD5O
- HVW3tEzEGu4vpAkXXewl5cCWt+F8y0oN7/6kTAefeH82feGaCCwd/HnLzhrwvwcErNF5
- EZMc16sAkehMp3HKQ5xOS1g3I4IUlcXBpK7niGwwMYV809vysmg7SSoyN4eOEk8wux5G
- HGPndtHjj+HiPUGdN5MNHJZwXl974P3SfkPzbv6OfvXC5EBXVVP1OkRcU0n9S+fbMaCU
- YTf1rzhXNXpW7OK+TUy2gc5iWIUZjlgflxgEjP5KkRQy00Vqf8rwJaSBTyjFrxGY9eLS 7A== 
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 39gv6ru43e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 14:36:20 -0400
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 15UIY2Zm016346
-        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 18:36:19 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma03dal.us.ibm.com with ESMTP id 39duvdye7f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 18:36:19 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 15UIaJhE31981836
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 30 Jun 2021 18:36:19 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F37F7AC05E;
-        Wed, 30 Jun 2021 18:36:18 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A86BFAC05F;
-        Wed, 30 Jun 2021 18:36:17 +0000 (GMT)
-Received: from ltcalpine2-lp16.aus.stglabs.ibm.com (unknown [9.40.195.199])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 30 Jun 2021 18:36:17 +0000 (GMT)
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     drt@linux.ibm.com, brking@linux.vnet.ibm.com,
-        ricklind@linux.vnet.ibm.com
-Subject: [PATCH 1/1] ibmvnic: retry reset if there are no other resets
-Date:   Wed, 30 Jun 2021 14:36:17 -0400
-Message-Id: <20210630183617.3093690-1-sukadev@linux.ibm.com>
-X-Mailer: git-send-email 2.18.2
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 2lpF1NhqYw1blxYbbXA7ATQNk-Nc1ry-
-X-Proofpoint-ORIG-GUID: 2lpF1NhqYw1blxYbbXA7ATQNk-Nc1ry-
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-06-30_08:2021-06-30,2021-06-30 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 suspectscore=0 clxscore=1015 phishscore=0
- impostorscore=0 lowpriorityscore=0 malwarescore=0 bulkscore=0
- mlxlogscore=999 adultscore=0 mlxscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2106300103
+        id S234583AbhF3Sjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 14:39:51 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:33762 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233514AbhF3Sju (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 14:39:50 -0400
+Received: by mail-io1-f71.google.com with SMTP id i9-20020a0566021349b02904df6556dad4so2565053iov.0
+        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 11:37:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=/AVs9oHqf5mp42OqIZCGa4M29OQT9RBw7MUMCFsEQn0=;
+        b=E9VIjeNBHcKL2kYd1d4RtYXP+MKC2kKXFeCvm6f30SGXNnT1oDbpqqYOgKw7VyIZlP
+         QIMb3abYI8MzLgrevr0ank1htQe95bHWdNoveHi3RozieLR+/RQ1IEe351FNbc7eesBO
+         rzkO5msArQkhDNaFFRkJEmoQe/HQ/1eo/TqyF3aqmx0H8DmqHopzSa2tNHH3Mid0JOr8
+         tRbjCQ0IZyvvE8nxtyCFsU1Lm5DMUcgguFMEDP/4vKI1V3UZZwBdVCbLbQvotHXCMO0/
+         asdjAN4UQhdX+hjI+oVYCvPkSgo8yHgNQ+zc661P0MsTKD831yXaHHw5JyztV3itA8V8
+         wD+g==
+X-Gm-Message-State: AOAM532UrwdDZL8fhdr5Ces7fB7K8X6JaGrRFcLLZIh77v/hg6yteLm7
+        HQnHbKIh/Fs5CTPjEw5dii6rnd4YIWzTAZeS/L73pPRAl2v3
+X-Google-Smtp-Source: ABdhPJzZvR0NYGpXS3+SeZggX9oRZCqPAvFkSzttmjiRa4KtvdZZePDccoA3EO2tRxLo/siE0QTBhoKRFS4/qqnOhrXt1qFzLRvy
+MIME-Version: 1.0
+X-Received: by 2002:a5d:8d16:: with SMTP id p22mr8920953ioj.90.1625078240745;
+ Wed, 30 Jun 2021 11:37:20 -0700 (PDT)
+Date:   Wed, 30 Jun 2021 11:37:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000459ea305c6000318@google.com>
+Subject: [syzbot] BUG: scheduling while atomic: syz-executor/ADDR
+From:   syzbot <syzbot+20191dc583eff8602d2d@syzkaller.appspotmail.com>
+To:     ardb@kernel.org, bp@alien8.de, dave.hansen@intel.com,
+        davem@davemloft.net, herbert@gondor.apana.org.au, hpa@zytor.com,
+        jpa@git.mail.kapsi.fi, kan.liang@linux.intel.com,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luto@kernel.org, mingo@redhat.com, netdev@vger.kernel.org,
+        peterz@infradead.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Normally, if a reset fails due to failover or other communication error
-there is another reset (eg: FAILOVER) in the queue and we would process
-that reset. But if we are unable to communicate with PHYP or VIOS after
-H_FREE_CRQ, there would be no other resets in the queue and the adapter
-would be in an undefined state even though it was in the OPEN state
-earlier. While starting the reset we set the carrier to off state so
-we won't even get the timeout resets.
+Hello,
 
-If the last queued reset fails, retry it as a hard reset (after the
-usual 60 second settling time).
+syzbot found the following issue on:
 
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+HEAD commit:    ff8744b5 Merge branch '100GbE' of git://git.kernel.org/pub..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=163cc5dc300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7cf9abab1592f017
+dashboard link: https://syzkaller.appspot.com/bug?extid=20191dc583eff8602d2d
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14a81190300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1417f5bfd00000
+
+The issue was bisected to:
+
+commit 2481104fe98d5b016fdd95d649b1235f21e491ba
+Author: Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu Dec 31 16:41:55 2020 +0000
+
+    crypto: x86/aes-ni-xts - rewrite and drop indirections via glue helper
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=164ee60c300000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=154ee60c300000
+console output: https://syzkaller.appspot.com/x/log.txt?x=114ee60c300000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+20191dc583eff8602d2d@syzkaller.appspotmail.com
+Fixes: 2481104fe98d ("crypto: x86/aes-ni-xts - rewrite and drop indirections via glue helper")
+
+RBP: 00007ffd23488340 R08: 0000000000000000 R09: 00007ffd234884c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000005
+R13: 0000000000000000 R14: 00000000004ae018 R15: 0000000000400488
+syz-executor607[8444]: segfault at 4b0e48 ip 0000000000408e15 sp 00007ffd234882e0 error 7 in syz-executor607098311[401000+82000]
+Code: 0a 00 00 74 08 84 c9 0f 85 46 02 00 00 45 31 e4 0f 1f 44 00 00 64 8b 04 25 18 00 00 00 ba 01 00 00 00 85 c0 0f 85 d5 01 00 00 <0f> b1 15 2c 80 0a 00 4c 8b 33 4d 85 f6 75 3b e9 72 01 00 00 0f 1f
+BUG: scheduling while atomic: syz-executor607/8444/0x00000002
+no locks held by syz-executor607/8444.
+Modules linked in:
+Preemption disabled at:
+[<ffffffff812aa3e4>] kernel_fpu_begin_mask+0x64/0x260 arch/x86/kernel/fpu/core.c:126
+Kernel panic - not syncing: scheduling while atomic
+CPU: 1 PID: 8444 Comm: syz-executor607 Not tainted 5.13.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ panic+0x306/0x73d kernel/panic.c:231
+ __schedule_bug.cold+0x10c/0x143 kernel/sched/core.c:4880
+ schedule_debug kernel/sched/core.c:4909 [inline]
+ __schedule+0x19df/0x23e0 kernel/sched/core.c:5038
+ schedule+0xcf/0x270 kernel/sched/core.c:5226
+ exit_to_user_mode_loop kernel/entry/common.c:163 [inline]
+ exit_to_user_mode_prepare+0x14d/0x290 kernel/entry/common.c:209
+ irqentry_exit_to_user_mode+0x5/0x40 kernel/entry/common.c:315
+ exc_page_fault+0xc6/0x180 arch/x86/mm/fault.c:1534
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:577
+RIP: 0033:0x408e15
+Code: 0a 00 00 74 08 84 c9 0f 85 46 02 00 00 45 31 e4 0f 1f 44 00 00 64 8b 04 25 18 00 00 00 ba 01 00 00 00 85 c0 0f 85 d5 01 00 00 <0f> b1 15 2c 80 0a 00 4c 8b 33 4d 85 f6 75 3b e9 72 01 00 00 0f 1f
+RSP: 002b:00007ffd234882e0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 00000000004ae108 RCX: 0000000000000001
+RDX: 0000000000000001 RSI: 00000000004ae108 RDI: 0000000000000001
+RBP: 0000000000000001 R08: 0000000000000000 R09: 00007ffd234884c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000001 R14: 00000000004ae018 R15: 0000000000400488
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 697b9714fc76..ff49cda142b0 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2420,9 +2420,10 @@ static int do_passive_init(struct ibmvnic_adapter *adapter)
- 
- static void __ibmvnic_reset(struct work_struct *work)
- {
--	struct ibmvnic_rwi *rwi;
- 	struct ibmvnic_adapter *adapter;
- 	bool saved_state = false;
-+	struct ibmvnic_rwi *tmprwi;
-+	struct ibmvnic_rwi *rwi;
- 	unsigned long flags;
- 	u32 reset_state;
- 	int rc = 0;
-@@ -2489,7 +2490,7 @@ static void __ibmvnic_reset(struct work_struct *work)
- 		} else {
- 			rc = do_reset(adapter, rwi, reset_state);
- 		}
--		kfree(rwi);
-+		tmprwi = rwi;
- 		adapter->last_reset_time = jiffies;
- 
- 		if (rc)
-@@ -2497,8 +2498,23 @@ static void __ibmvnic_reset(struct work_struct *work)
- 
- 		rwi = get_next_rwi(adapter);
- 
-+		/*
-+		 * If there is another reset queued, free the previous rwi
-+		 * and process the new reset even if previous reset failed
-+		 * (the previous reset could have failed because of a fail
-+		 * over for instance, so process the fail over).
-+		 *
-+		 * If there are no resets queued and the previous reset failed,
-+		 * the adapter would be in an undefined state. So retry the
-+		 * previous reset as a hard reset.
-+		 */
-+		if (rwi)
-+			kfree(tmprwi);
-+		else if (rc)
-+			rwi = tmprwi;
-+
- 		if (rwi && (rwi->reset_reason == VNIC_RESET_FAILOVER ||
--			    rwi->reset_reason == VNIC_RESET_MOBILITY))
-+			    rwi->reset_reason == VNIC_RESET_MOBILITY || rc))
- 			adapter->force_reset_recovery = true;
- 	}
- 
--- 
-2.18.2
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
