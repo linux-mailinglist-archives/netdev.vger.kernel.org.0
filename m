@@ -2,80 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A3D03B8AA9
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 00:57:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A509D3B8AD3
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 01:14:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233237AbhF3XAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 19:00:12 -0400
-Received: from smtp8.emailarray.com ([65.39.216.67]:27288 "EHLO
-        smtp8.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232397AbhF3XAI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 19:00:08 -0400
-Received: (qmail 51969 invoked by uid 89); 30 Jun 2021 22:57:35 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
-  by smtp8.emailarray.com with SMTP; 30 Jun 2021 22:57:35 -0000
-Date:   Wed, 30 Jun 2021 15:57:34 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
-Message-ID: <20210630225734.ymgdtzpwvyvj7gfa@bsd-mbp.dhcp.thefacebook.com>
-References: <20210628184611.3024919-1-jonathan.lemon@gmail.com>
- <20210628233056.GA766@hoboy.vegasvil.org>
- <20210629001928.yhiql2dngstkpadb@bsd-mbp.dhcp.thefacebook.com>
- <20210630000933.GA21533@hoboy.vegasvil.org>
- <20210630035031.ulgiwewccgiz3rsv@bsd-mbp.dhcp.thefacebook.com>
- <20210630144257.GA30627@hoboy.vegasvil.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210630144257.GA30627@hoboy.vegasvil.org>
+        id S232373AbhF3XQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 19:16:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35868 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229540AbhF3XQk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Jun 2021 19:16:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B560E613A9;
+        Wed, 30 Jun 2021 23:14:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625094850;
+        bh=OaobmDfYGlODepv0TfEoXUQolmhzH19OwnEyRNaOgyc=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=OcIPiWagCPF9rqVh77aSVcDmGilk+r0T4Z/G8ANWa/iqPGKFjyB0k5+FW9u3jBb37
+         qjceOcbExuXlFhhOSvdDICywYmj4lZJziYKUCTujVqgcBGvfYcU4wjQ9SPFJqnrBV2
+         lePf66NYE+yep9rwKpijZUhMauvWrRW9YmeO47uwYHHImtir1l34hjw3gF49OPOfWv
+         8qhKiovNeZx+yRcLM3uBWWAJMcvQE8bA1+Y+becVzlIJ8knswmwY7BjcG3ufK+KXeP
+         nfslfVDb7G2IBbvZdGMDadlqW4tXbzswwwi35c6Z2ttVt09Q930ZK31ZqnL0GbYMl3
+         EMmouxbNo55Xg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A24376095D;
+        Wed, 30 Jun 2021 23:14:10 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for v5.14
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20210630051855.3380189-1-kuba@kernel.org>
+References: <20210630051855.3380189-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20210630051855.3380189-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git tags/net-next-5.14
+X-PR-Tracked-Commit-Id: b6df00789e2831fff7a2c65aa7164b2a4dcbe599
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: dbe69e43372212527abf48609aba7fc39a6daa27
+Message-Id: <162509485060.23001.15009915450669760468.pr-tracker-bot@kernel.org>
+Date:   Wed, 30 Jun 2021 23:14:10 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 30, 2021 at 07:42:57AM -0700, Richard Cochran wrote:
-> On Tue, Jun 29, 2021 at 08:50:31PM -0700, Jonathan Lemon wrote:
-> > The PHC should be sync'd to the PPS coming from the GPS signal.
-> > However, the GPS may be in holdover, so the actual counter comes
-> > from an atomic oscillator.  As the oscillator may be ever so 
-> > slightly out of sync with the GPS (or drifts with temperature),
-> > so we need to measure the phase difference between the two and
-> > steer the oscillator slightly.
-> > 
-> > The phase comparision between the two signals is done in HW 
-> > with a phasemeter, for precise comparisons.  The actual phase
-> > steering/adjustment is done through adjphase().
-> 
-> So you don't need the time stamp itself, just the phase offset, right?
-> 
-> > What's missing is the ability to report the phase difference
-> > to user space so the adjustment can be performed.
-> 
-> So let's create an interface for that reporting.
+The pull request you sent on Tue, 29 Jun 2021 22:18:55 -0700:
 
-The current 'struct ptp_extts_event' returns 32 bytes to userspace
-for every event.  Of these, 16 bytes (50%) are unused, as the structure
-only returns a timestamp + index, without any event information.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git tags/net-next-5.14
 
-It seems logical that these unused bytes (which are event specific)
-could be used to convey more information about the event itself.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/dbe69e43372212527abf48609aba7fc39a6daa27
 
+Thank you!
 
-> It is about getting the right interface.  The external time stamp
-> interface is generic and all-purpose, and so I question whether your
-> extension makes sense.
-
-I question whether the definition of "all-purpose" really applies
-here.  All it tells me is that "an event happened on this channel 
-at this time".
-
-If the user doesn't care about additional data, it can just be 
-ignored, right?
-
-
-In the meantime, let's see what the HW guys say about doing the 
-comparision in SW.  Other vendors have PPS input to their MAC,
-so the disciplining is done in HW, bypassing adjphase() completely.
 -- 
-Jonathan
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
