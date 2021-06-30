@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8373B87FC
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 19:48:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC7D43B87FF
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 19:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233117AbhF3Ruc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 13:50:32 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:39873 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233152AbhF3Ru3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 13:50:29 -0400
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 044CC5212B8;
-        Wed, 30 Jun 2021 20:47:58 +0300 (MSK)
+        id S233256AbhF3Ruu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 13:50:50 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:46113 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233035AbhF3Rut (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 13:50:49 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 01CC4765AD;
+        Wed, 30 Jun 2021 20:48:18 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1625075278;
-        bh=os+BkFctfMAbcaoBq1Fr50yLvnUAXFHjkvEs1uGP1FM=;
+        s=mail202102; t=1625075298;
+        bh=wTjYsDYdCcl2wrFdgyR1LeTjMj8BoNMgmgdB77KybX0=;
         h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=iFvyjDmvaM8va5ketsgEEirTy+Ni6noDAj0qwDqZat9jYBnkbPqdhyWFHwRpjgIHB
-         v+2LSZIewkOyXo4raHO1dM4iRyHanNn+pj1+VzaT5p6PDHIPnX/psxnAhbcXkQqOnt
-         LRi0Gvjru7sE7enl5CTGo9jnO1AkpajTFJ1jTFNlNpMzIPoJZ51LpuMQmxs57FXeqM
-         uKkVp2puHmTYyJQvzw3sT7k3a9RuJFmIiqW26b9niASA88904YwOC0fqaPTArRn4p8
-         daHglldxfoXTYghxHM1SXTylxh9poUKwHUwuhS4QElNpmn+hnblpNOjvPS6yPV6aYK
-         xuhTTFFtKBdTA==
+        b=gH/bjQ3UvZjDSAuc/Kso5NipdhqKXyRj9Pnr3XQ3OMj0gKMOCHkbQWQHs4VghlUJq
+         rpbs7ZdePbN7Pl0lxad1m0vnDt1g0LowORIMn6KUjo4wAmBTsfOEFHHj9T6z5CatJT
+         pH1JUonRMZ2tqgPDz/oIG2rgmZ/3J4Hc/3rS6+BoCME1TC4+IUrhObpxwYHlHoPRfK
+         40ycfG7nMW0sLZTsO3Lf+kAdPtylQkQL/p/F3Z3OTPUwvkq8+36aK5KbUsiradRK8g
+         RCM7OYIm7ZzQyvYC8531PY+q3gJeM3oOc3CdukUhKYuoiVUrsagVbkm6WTREAMFn2p
+         A2Zu65Zq/dFew==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id AAD6E5212CD;
-        Wed, 30 Jun 2021 20:47:57 +0300 (MSK)
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 735AE765EE;
+        Wed, 30 Jun 2021 20:48:16 +0300 (MSK)
 Received: from [10.16.171.77] (10.64.64.121) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Wed, 30
- Jun 2021 20:47:57 +0300
-Subject: Re: [RFC PATCH v1 08/16] af_vsock: change SEQPACKET receive loop
+ Jun 2021 20:48:16 +0300
+Subject: Re: [RFC PATCH v1 11/16] afvsock: add 'seqpacket_drop()'
 To:     Stefano Garzarella <sgarzare@redhat.com>
 CC:     Stefan Hajnoczi <stefanha@redhat.com>,
         "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
         Colin Ian King <colin.king@canonical.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
         kvm <kvm@vger.kernel.org>,
         Linux Virtualization <virtualization@lists.linux-foundation.org>,
         netdev <netdev@vger.kernel.org>,
         kernel list <linux-kernel@vger.kernel.org>,
         Krasnov Arseniy <oxffffaa@gmail.com>
 References: <20210628095959.569772-1-arseny.krasnov@kaspersky.com>
- <20210628100331.571056-1-arseny.krasnov@kaspersky.com>
- <CAGxU2F5XtfKJ9cnK=J-gz4uW0AR9FsMc1Dq2jQx=dPGLRC+NTQ@mail.gmail.com>
+ <20210628100415.571391-1-arseny.krasnov@kaspersky.com>
+ <CAGxU2F4mX5khjA+a_LQEfZYg1rjEmccXce-ab0DVyEJEX-kYcw@mail.gmail.com>
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <8769f306-1b95-6cda-828a-68c298093ad3@kaspersky.com>
-Date:   Wed, 30 Jun 2021 20:47:56 +0300
+Message-ID: <bb4ef19f-6a49-9486-b420-f2ce55edc265@kaspersky.com>
+Date:   Wed, 30 Jun 2021 20:48:11 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <CAGxU2F5XtfKJ9cnK=J-gz4uW0AR9FsMc1Dq2jQx=dPGLRC+NTQ@mail.gmail.com>
+In-Reply-To: <CAGxU2F4mX5khjA+a_LQEfZYg1rjEmccXce-ab0DVyEJEX-kYcw@mail.gmail.com>
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
 X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -105,91 +104,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 30.06.2021 15:12, Stefano Garzarella wrote:
-> On Mon, Jun 28, 2021 at 01:03:28PM +0300, Arseny Krasnov wrote:
->> Receive "loop" now really loop: it reads fragments one by
->> one, sleeping if queue is empty.
->>
->> NOTE: 'msg_ready' pointer is not passed to 'seqpacket_dequeue()'
->> here - it change callback interface, so it is moved to next patch.
+> On Mon, Jun 28, 2021 at 01:04:12PM +0300, Arseny Krasnov wrote:
+>> Add special callback for SEQPACKET socket which is called when
+>> we need to drop current in-progress record: part of record was
+>> copied successfully, reader wait rest of record, but signal
+>> interrupts it and reader leaves it's loop, leaving packets of
+>> current record still in queue. So to avoid copy of "orphaned"
+>> record, we tell transport to drop every packet until EOR will
+>> be found.
 >>
 >> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 >> ---
->> net/vmw_vsock/af_vsock.c | 31 ++++++++++++++++++++++---------
->> 1 file changed, 22 insertions(+), 9 deletions(-)
-> I think you can merge patches 8, 9, and 10 together since we
-> are touching the seqpacket_dequeue() behaviour.
->
-> Then you can remove in separate patches the unneeded parts (e.g.
-> seqpacket_has_data, msg_count, etc.).
+>> include/net/af_vsock.h   | 1 +
+>> net/vmw_vsock/af_vsock.c | 1 +
+>> 2 files changed, 2 insertions(+)
+> And also for this change, I think you can merge with patches 12, 13, 14, 
+> 15, otherwise if we bisect and we build at this patch, the 
+> seqpacket_drop pointer is not valid.
 >
 > Thanks,
 > Stefano
 Ack
 >
+>> diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+>> index 1747c0b564ef..356878aabbd4 100644
+>> --- a/include/net/af_vsock.h
+>> +++ b/include/net/af_vsock.h
+>> @@ -141,6 +141,7 @@ struct vsock_transport {
+>>       int (*seqpacket_enqueue)(struct vsock_sock *vsk, struct msghdr *msg,
+>>                                size_t len);
+>>       bool (*seqpacket_allow)(u32 remote_cid);
+>> +      void (*seqpacket_drop)(struct vsock_sock *vsk);
+>>
+>>       /* Notification. */
+>>       int (*notify_poll_in)(struct vsock_sock *, size_t, bool *);
 >> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->> index 59ce35da2e5b..9552f05119f2 100644
+>> index ec54e4222cbf..27fa38090e13 100644
 >> --- a/net/vmw_vsock/af_vsock.c
 >> +++ b/net/vmw_vsock/af_vsock.c
->> @@ -2003,6 +2003,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
->>                                    size_t len, int flags)
->> {
->>       const struct vsock_transport *transport;
->> +      bool msg_ready;
->>       struct vsock_sock *vsk;
->>       ssize_t record_len;
->>       long timeout;
->> @@ -2013,23 +2014,36 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
->>       transport = vsk->transport;
->>
->>       timeout = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
->> +      msg_ready = false;
->> +      record_len = 0;
->>
->> -      err = vsock_connectible_wait_data(sk, &wait, timeout, NULL, 0);
->> -      if (err <= 0)
->> -              goto out;
->> +      while (!msg_ready) {
->> +              ssize_t fragment_len;
->> +              int intr_err;
->>
->> -      record_len = transport->seqpacket_dequeue(vsk, msg, flags);
->> +              intr_err = vsock_connectible_wait_data(sk, &wait, timeout, NULL, 0);
->> +              if (intr_err <= 0) {
->> +                      err = intr_err;
->> +                      break;
->> +              }
->>
->> -      if (record_len < 0) {
->> -              err = -ENOMEM;
->> -              goto out;
->> +              fragment_len = transport->seqpacket_dequeue(vsk, msg, flags);
->> +
->> +              if (fragment_len < 0) {
->> +                      err = -ENOMEM;
->> +                      break;
->> +              }
->> +
->> +              record_len += fragment_len;
->>       }
->>
->>       if (sk->sk_err) {
->>               err = -sk->sk_err;
->>       } else if (sk->sk_shutdown & RCV_SHUTDOWN) {
->>               err = 0;
->> -      } else {
->> +      }
->> +
->> +      if (msg_ready && !err) {
->>               /* User sets MSG_TRUNC, so return real length of
->>                * packet.
->>                */
->> @@ -2045,7 +2059,6 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
->>                       msg->msg_flags |= MSG_TRUNC;
->>       }
->>
->> -out:
->>       return err;
->> }
+>> @@ -2024,6 +2024,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+>>               intr_err = vsock_connectible_wait_data(sk, &wait, timeout, NULL, 0);
+>>               if (intr_err <= 0) {
+>>                       err = intr_err;
+>> +                      transport->seqpacket_drop(vsk);
+>>                       break;
+>>               }
 >>
 >> --
 >> 2.25.1
