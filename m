@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D613D3B8A5E
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 00:16:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A19A13B8A64
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 00:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232971AbhF3WSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 18:18:41 -0400
-Received: from smtp5.emailarray.com ([65.39.216.39]:56499 "EHLO
-        smtp5.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232459AbhF3WSk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 18:18:40 -0400
-Received: (qmail 1582 invoked by uid 89); 30 Jun 2021 22:16:10 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
-  by smtp5.emailarray.com with SMTP; 30 Jun 2021 22:16:10 -0000
-Date:   Wed, 30 Jun 2021 15:16:08 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-team@fb.com" <kernel-team@fb.com>
-Subject: Re: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
-Message-ID: <20210630221608.h7xdvmsc4tdgqeof@bsd-mbp.dhcp.thefacebook.com>
-References: <20210628184611.3024919-1-jonathan.lemon@gmail.com>
- <20210628233056.GA766@hoboy.vegasvil.org>
- <20210629001928.yhiql2dngstkpadb@bsd-mbp.dhcp.thefacebook.com>
- <20210630000933.GA21533@hoboy.vegasvil.org>
- <20210630035031.ulgiwewccgiz3rsv@bsd-mbp.dhcp.thefacebook.com>
- <20210630144257.GA30627@hoboy.vegasvil.org>
- <PH0PR11MB495167E58F24332D30517809EA019@PH0PR11MB4951.namprd11.prod.outlook.com>
+        id S233050AbhF3WZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 18:25:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56210 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232459AbhF3WZF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Jun 2021 18:25:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8C00361476;
+        Wed, 30 Jun 2021 22:22:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625091755;
+        bh=68tqGUY9CK65gwqSJffEicdTboiJC/8fg8g36aTZZlM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZYi3PT8WWXts6vb9DoAxxRxpXgGVygmB8vP6O6i2fMXHFrEUAMbOvZF8vzNbPBZ8m
+         IV2dGZJDpblaWBwLT8Vg9k3TWbLeGfUnGthiPnalb0h5omNxseBOPKrZ1euSS0hiRa
+         +GNQ4Hx76pNwhmLg6uHBeNxwTdJ4YfIgM+MevrhNPHKGK44y58IxFubEbx7p1kiRxf
+         de/LCfT5xq64mTG8o+rOtcQml4Oavxeh1UZ5W7HqT89GYaHHh7SZQ6Fvx0bQtBFicr
+         V+n+Xwsn+JatpcTSsdFmvmbMyHpje1L806OS8Yon56Mv/teTptpK+/hLGKYKz1Li2h
+         92BhF38k/+OOQ==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH net v2 0/6] dsa: mv88e6xxx: Topaz fixes
+Date:   Thu,  1 Jul 2021 00:22:25 +0200
+Message-Id: <20210630222231.2297-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210630174308.31831-1-kabel@kernel.org>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB495167E58F24332D30517809EA019@PH0PR11MB4951.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 30, 2021 at 03:55:03PM +0000, Machnikowski, Maciej wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Richard Cochran <richardcochran@gmail.com>
-> > Sent: Wednesday, June 30, 2021 4:43 PM
-> > To: Jonathan Lemon <jonathan.lemon@gmail.com>
-> > Cc: netdev@vger.kernel.org; kernel-team@fb.com
-> > Subject: Re: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
-> > 
-> > On Tue, Jun 29, 2021 at 08:50:31PM -0700, Jonathan Lemon wrote:
-> > > The PHC should be sync'd to the PPS coming from the GPS signal.
-> > > However, the GPS may be in holdover, so the actual counter comes from
-> > > an atomic oscillator.  As the oscillator may be ever so slightly out
-> > > of sync with the GPS (or drifts with temperature), so we need to
-> > > measure the phase difference between the two and steer the oscillator
-> > > slightly.
-> > >
-> > > The phase comparision between the two signals is done in HW with a
-> > > phasemeter, for precise comparisons.  The actual phase
-> > > steering/adjustment is done through adjphase().
-> > 
-> 
-> You can use different channel index in the struct ptp_clock_event to receive 
-> them from more than one source. Then just calculate the difference between 
-> the 1PPS from channel 0 and channel 1. Wouldn't that be sufficient?
+Hello,
 
-This is what is being done right now - just in hardware for higher precision.
-I asked the HW guys to check whether doing this in SW instead will provide
-the same precision - I should hear back by tomorrow.
+here comes some fixes for the Topaz family (Marvell 88E6141 / 88E6341)
+which I found out about when I compared the Topaz' operations
+structure with that one of Peridot (6390).
+
+This is v2. In v1, I accidentally sent patches generated from wrong
+branch and the 5th patch does not contain a necessary change in
+serdes.c.
+
+Changes from v1:
+- the fifth patch, "enable SerDes RX stats for Topaz", needs another
+  change in serdes.c
+- Andrew's Reviewed-by to 1,2,3,4 and 6
+
+Marek Behún (6):
+  net: dsa: mv88e6xxx: enable .port_set_policy() on Topaz
+  net: dsa: mv88e6xxx: use correct .stats_set_histogram() on Topaz
+  net: dsa: mv88e6xxx: enable .rmu_disable() on Topaz
+  net: dsa: mv88e6xxx: enable devlink ATU hash param for Topaz
+  net: dsa: mv88e6xxx: enable SerDes RX stats for Topaz
+  net: dsa: mv88e6xxx: enable SerDes PCS register dump via ethtool -d on
+    Topaz
+
+ drivers/net/dsa/mv88e6xxx/chip.c   | 22 ++++++++++++++++++++--
+ drivers/net/dsa/mv88e6xxx/serdes.c |  6 +++---
+ 2 files changed, 23 insertions(+), 5 deletions(-)
+
 -- 
-Jonathan
+2.31.1
+
