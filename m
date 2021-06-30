@@ -2,214 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5CFE3B84F9
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 16:21:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7436C3B8504
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 16:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235091AbhF3OXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 10:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53180 "EHLO
+        id S235141AbhF3O1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 10:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234851AbhF3OXc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 10:23:32 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386F8C061756;
-        Wed, 30 Jun 2021 07:21:03 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1lyb57-0001Fh-WB; Wed, 30 Jun 2021 16:20:50 +0200
-Date:   Wed, 30 Jun 2021 16:20:49 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
-Cc:     pablo@netfilter.org,
-        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
-        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
-        Blair Steven <blair.steven@alliedtelesis.co.nz>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+        with ESMTP id S234913AbhF3O1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 10:27:38 -0400
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59644C061756
+        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 07:25:08 -0700 (PDT)
+Received: by mail-oo1-xc2e.google.com with SMTP id 128-20020a4a11860000b029024b19a4d98eso669123ooc.5
+        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 07:25:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EF2/INPdayXeLBwSZpEd7pDb7bOGB7yn3DM4oKFU+OU=;
+        b=vSgiI2jEqwgAvHIMm2wDsUWkJQznNB+1DvqdaNua9B7YKy1gngENkVkZGACkOzOhvm
+         GfcH6i7ICR+RbhJ2Yfyzerx0HOqVS2MlrSteyiiLZsLdq8OmYwiTlSRc8bcFmtpA3OST
+         aZhinh8H4XSACmIgi3pR6e/DIB/1BNR6+IN05zIydXh1cukTrRAuW8VHv+gLYTLx7h+w
+         MqSxuDT5NpeD23uHRB3umitDjeuvy0NCuHXt0RrJNGkT1+iupLXynzRiQzSFvA7nY2OS
+         5C80KbMC9/p28Nv24mDMCgkBuuv/chBVyBO0zjcMmzIyZdlj7NnVSNQ0K7JJGkkp11bB
+         czSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EF2/INPdayXeLBwSZpEd7pDb7bOGB7yn3DM4oKFU+OU=;
+        b=CkJPy/OkDWwxU29cJILd3hTGKUnKJr51VlYxPAMl0aBGbDMRir9LyaCgMZQkClLXva
+         UBssQ/tZXWvuDWM9KDxOvf2B7CsQzyKz6nSf6HL5/sUyCAziLDNJqecp0e9e8mH9s2BJ
+         klbQQnysW9rnJNPaTDcGut1MVpF/JLU1z3hGSn/YDb9mXvva0V45ZliAhedcL+S9fv1j
+         cEGxce0ejm85L8ctwRerGyRRk05LUw9u0fb6VK2D/uOkTarvrgtioiJ5cRLBY1e4uF+L
+         uxtzst+2MGOaN0HL2MOkTueWZ5iDPGe5B4fdXi7v6jCcdYDYFqgDCO2YFgAysfMUJCLG
+         8zyA==
+X-Gm-Message-State: AOAM531DxsvLRqEsdBHfPkXwncdTcm3gU3gkKwVdgAepgd4rhYYIR6pG
+        cXxNac4KGbNgOPGaZQDyVek=
+X-Google-Smtp-Source: ABdhPJxmAfsAop38YpPt2SiSr/zBvy4i2otBSX/UvZpS8ehm2kdzmPo6Z7HlhfLvUEIqBzyQiBQkRQ==
+X-Received: by 2002:a4a:6c0c:: with SMTP id q12mr8631919ooc.81.1625063107453;
+        Wed, 30 Jun 2021 07:25:07 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id o26sm519511oic.12.2021.06.30.07.25.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Jun 2021 07:25:06 -0700 (PDT)
+Subject: Re: [PATCH net-next] ipv6: Add sysctl for RA default route table
+ number
+To:     antony.antony@secunet.com
+Cc:     Eyal Birger <eyal.birger@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: netfilter: Add RFC-7597 Section 5.1 PSID support
-Message-ID: <20210630142049.GC18022@breakpoint.cc>
-References: <20210426122324.GA975@breakpoint.cc>
- <20210629004819.4750-1-Cole.Dishington@alliedtelesis.co.nz>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Christian Perle <christian.perle@secunet.com>
+References: <cover.1619775297.git.antony.antony@secunet.com>
+ <32de887afdc7d6851e7c53d27a21f1389bb0bd0f.1624604535.git.antony.antony@secunet.com>
+ <95b096f7-8ece-46be-cedb-5ee4fc011477@gmail.com>
+ <20210629125316.GA18078@moon.secunet.de>
+ <69e7e4e5-4219-5149-e7aa-fd26aa62260e@gmail.com>
+ <b7e41f4b-04d6-2cff-038b-ccb250c2eb84@gmail.com>
+ <20210630053448.GA24708@moon.secunet.de>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <bd21f382-c9f4-23cd-3775-3531774d58a8@gmail.com>
+Date:   Wed, 30 Jun 2021 08:25:05 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210629004819.4750-1-Cole.Dishington@alliedtelesis.co.nz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210630053448.GA24708@moon.secunet.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cole Dishington <Cole.Dishington@alliedtelesis.co.nz> wrote:
->     Comments:
->     Selecting the ports for psid needs to be in nf_nat_core since the PSID ranges are not a single range. e.g. offset=1024, PSID=0, psid_length=8 generates the ranges 1024-1027, 2048-2051, ..., 63488-63491, ... (example taken from RFC7597 B.2).
->     This is why it is enough to set NF_NAT_RANGE_PROTO_SPECIFIED and init upper/lower boundaries.
+On 6/29/21 11:34 PM, Antony Antony wrote:
+> On Tue, Jun 29, 2021 at 09:34:22 -0600, David Ahern wrote:
+>> On 6/29/21 8:05 AM, Eyal Birger wrote:
+>>> Hi Antony,
+>>>
+>>> On 29/06/2021 15:53, Antony Antony wrote:
+>>>> Hi David,
+>>>>
+>>>> On Fri, Jun 25, 2021 at 22:47:41 -0600, David Ahern wrote:
+>>>>> On 6/25/21 1:04 AM, Antony Antony wrote:
+>>>>>> From: Christian Perle <christian.perle@secunet.com>
+>>>>>>
+>>>>>> Default routes learned from router advertisements(RA) are always placed
+>>>>>> in main routing table. For policy based routing setups one may
+>>>>>> want a different table for default routes. This commit adds a sysctl
+>>>>>> to make table number for RA default routes configurable.
+>>>>>>
+>>>>>> examples:
+>>>>>> sysctl net.ipv6.route.defrtr_table
+>>>>>> sysctl -w net.ipv6.route.defrtr_table=42
+>>>>>> ip -6 route show table 42
+>>>>>
+>>>>> How are the routing tables managed? If the netdevs are connected to a
+>>>>> VRF this just works.
+> 
+> Ah! I figured it out what you were hinting at! Sorry, I didn't know about
+> IFLA_VRF_TABLE attribute of link type vrf.
+> 
+> I also found the Documentation/networking/vrf.rst and red the commits
+> including the iproute2 commits. Thanks for the hint.
+> 
+> It looks like the vrf->tb_id is used for both v4 and v6 routing?
+> We are only looking at V6 routing, because the table only have v6 routes.
 
-I suspect this misses a NOT.  But current algorithm has problems, see
-below.
+That's fine. There is no requirement to use both.
 
-> +	if (range->flags & NF_NAT_RANGE_PSID) {
-> +		/* PSID defines a group of port ranges, per PSID. PSID
-> +		 * is already contained in min and max.
-> +		 */
-> +		unsigned int min_to_max, base;
-> +
-> +		min = ntohs(range->min_proto.all);
-> +		max = ntohs(range->max_proto.all);
-> +		base = ntohs(range->base_proto.all);
-> +		min_to_max = max - min;
-> +		for (; max <= (1 << 16) - 1; min += base, max = min + min_to_max) {
-> +			for (off = 0; off <= min_to_max; off++) {
-> +				*keyptr = htons(min + off);
-> +				if (!nf_nat_used_tuple(tuple, ct))
-> +					return;
-> +			}
-> +		}
-> +	}
+> 
+>>>>
+>>>> The main routing table has no default route. Our scripts add routing
+>>>> rules
+>>>> based on interfaces. These rules use the specific routing table where
+>>
+>> That's the VRF use case -- routing rules based on interfaces. Connect
+>> those devices to VRFs and the RA does the right thing.
+>>
+>>>> the RA
+>>>> (when using SLAAC) installs the default route. The rest just works.
+>>>
+>>> Could this be a devconf property instead of a global property? seems
+> 
+> yes adding to ipv6_devconf.cnf.ra_defrtr_tble is interesting.
+> 
+> I may propose a general solution that can replaces 
+> vrf_fib_table(retrun vrf->tb_id).
 
-I fear this searches waaaay to many ports.
-We had softlockups in the past because of exhausive searches.
+no. You missed my point. No change is needed to VRF at all. No change is
+needed for this use case at all if you simply:
 
-See a504b703bb1da526a01593da0e4be2af9d9f5fa8
-("netfilter: nat: limit port clash resolution attempts").
+ip link add VRF type vrf table TABLE
+ip link set VRF up
+ip link set dev <RA DEV> vrf VRF
 
-I suggest you try pre-selecting one of the eligible ranges in
-nf_nat_masquerade_ipv4 when the 'newrange' is filled in and set
-RANGE_PROTO_SPECIFIED.
+You are good. RAs are processed and added to TABLE.
 
-Maybe even prandom-based preselection is good enough.
-
->  	/* If no range specified... */
->  	if (!(range->flags & NF_NAT_RANGE_PROTO_SPECIFIED)) {
->  		/* If it's dst rewrite, can't change port */
-> @@ -529,11 +572,19 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
->  
->  	/* Only bother mapping if it's not already in range and unique */
->  	if (!(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
-> -		if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED) {
-> +		/* PSID mode is present always needs to check
-> +		 * to see if the source ports are in range.
-> +		 */
-> +		if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED ||
-> +		    (range->flags & NF_NAT_RANGE_PSID &&
-
-Why the extra check?
-Can't you set NF_NAT_RANGE_PROTO_SPECIFIED in case PSID is requested by
-userspace?
-
-> diff --git a/net/netfilter/nf_nat_ftp.c b/net/netfilter/nf_nat_ftp.c
-> index aace6768a64e..f65163278db0 100644
-> --- a/net/netfilter/nf_nat_ftp.c
-> +++ b/net/netfilter/nf_nat_ftp.c
-> @@ -17,6 +17,10 @@
->  #include <net/netfilter/nf_conntrack_helper.h>
->  #include <net/netfilter/nf_conntrack_expect.h>
->  #include <linux/netfilter/nf_conntrack_ftp.h>
-> +void nf_nat_l4proto_unique_tuple(struct nf_conntrack_tuple *tuple,
-> +				 const struct nf_nat_range2 *range,
-> +				 enum nf_nat_manip_type maniptype,
-> +				 const struct nf_conn *ct);
->  
->  #define NAT_HELPER_NAME "ftp"
->  
-> @@ -72,8 +76,13 @@ static unsigned int nf_nat_ftp(struct sk_buff *skb,
->  	u_int16_t port;
->  	int dir = CTINFO2DIR(ctinfo);
->  	struct nf_conn *ct = exp->master;
-> +	struct nf_conn_nat *nat = nfct_nat(ct);
->  	char buffer[sizeof("|1||65535|") + INET6_ADDRSTRLEN];
->  	unsigned int buflen;
-> +	int ret;
-> +
-> +	if (WARN_ON_ONCE(!nat))
-> +		return NF_DROP;
->  
->  	pr_debug("type %i, off %u len %u\n", type, matchoff, matchlen);
->  
-> @@ -86,18 +95,14 @@ static unsigned int nf_nat_ftp(struct sk_buff *skb,
->  	 * this one. */
->  	exp->expectfn = nf_nat_follow_master;
->  
-> -	/* Try to get same port: if not, try to change it. */
-> -	for (port = ntohs(exp->saved_proto.tcp.port); port != 0; port++) {
-> -		int ret;
-> -
-> -		exp->tuple.dst.u.tcp.port = htons(port);
-> -		ret = nf_ct_expect_related(exp, 0);
-> -		if (ret == 0)
-> -			break;
-> -		else if (ret != -EBUSY) {
-> -			port = 0;
-> -			break;
-> -		}
-> +	/* Find a port that matches the MASQ rule. */
-> +	nf_nat_l4proto_unique_tuple(&exp->tuple, nat->range,
-> +				    dir ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST,
-> +				    ct);
-
-Hmm, I am ingorant on details here, but is this correct?
-
-This could be an inbound connection, rather than outbound.
-
-> diff --git a/net/netfilter/nf_nat_helper.c b/net/netfilter/nf_nat_helper.c
-> index a263505455fc..2d105e4eb8f8 100644
-> --- a/net/netfilter/nf_nat_helper.c
-> +++ b/net/netfilter/nf_nat_helper.c
-> @@ -179,15 +179,23 @@ EXPORT_SYMBOL(nf_nat_mangle_udp_packet);
->  void nf_nat_follow_master(struct nf_conn *ct,
->  			  struct nf_conntrack_expect *exp)
->  {
-> +	struct nf_conn_nat *nat = NULL;
->  	struct nf_nat_range2 range;
->  
->  	/* This must be a fresh one. */
->  	BUG_ON(ct->status & IPS_NAT_DONE_MASK);
->  
-> -	/* Change src to where master sends to */
-> -	range.flags = NF_NAT_RANGE_MAP_IPS;
-> -	range.min_addr = range.max_addr
-> -		= ct->master->tuplehash[!exp->dir].tuple.dst.u3;
-> +	if (exp->master && !exp->dir) {
-> +		nat = nfct_nat(exp->master);
-> +		if (nat)
-> +			range = *nat->range;
-
-Can't you store the psid-relevant parts of the range struct only?
-Non-PSID doesn't need the original range, so why do you?
-
-> diff --git a/net/netfilter/nf_nat_masquerade.c b/net/netfilter/nf_nat_masquerade.c
-> index 8e8a65d46345..d83cd3d8ad3f 100644
-> --- a/net/netfilter/nf_nat_masquerade.c
-> +++ b/net/netfilter/nf_nat_masquerade.c
-> @@ -45,10 +45,6 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
->  		return NF_DROP;
->  	}
->  
-> -	nat = nf_ct_nat_ext_add(ct);
-> -	if (nat)
-> -		nat->masq_index = out->ifindex;
-> -
->  	/* Transfer from original range. */
->  	memset(&newrange.min_addr, 0, sizeof(newrange.min_addr));
->  	memset(&newrange.max_addr, 0, sizeof(newrange.max_addr));
-> @@ -57,6 +53,15 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
->  	newrange.max_addr.ip = newsrc;
->  	newrange.min_proto   = range->min_proto;
->  	newrange.max_proto   = range->max_proto;
-> +	newrange.base_proto  = range->base_proto;
-> +
-> +	nat = nf_ct_nat_ext_add(ct);
-> +	if (nat) {
-> +		nat->masq_index = out->ifindex;
-> +		if (!nat->range)
-> +			nat->range = kmalloc(sizeof(*nat->range), 0);
-> +		memcpy(nat->range, &newrange, sizeof(*nat->range));
-
-kmemdup.  Also misses error handling.  Should use GFP_ATOMIC.
-Where is this free'd again?
-
-It would be good if you could chop this up in smaller chunks.
-A selftest would be nice as well (see tools/testing/selftests/netfilter).
+your proposed change is not needed.
