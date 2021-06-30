@@ -2,56 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99DD33B7D56
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 08:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54C7B3B7DA1
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 08:51:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232409AbhF3GXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 02:23:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbhF3GXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 02:23:11 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6767C061766
-        for <netdev@vger.kernel.org>; Tue, 29 Jun 2021 23:20:42 -0700 (PDT)
-Received: from miraculix.mork.no ([IPv6:2a01:799:95d:4a0a:c6de:35d9:792f:bbcf])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 15U6KRsK029132
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Wed, 30 Jun 2021 08:20:30 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1625034030; bh=aiV7FZK5oej1+IjMd2NoWtNj9THDP7vYJxGzVIeSvbU=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=hRq32yeVlTX/tE25E1DBGNRCP5I/d8gcwuZgdSrwcDZHYjCSLHcYKVre9DMLDpwX9
-         1Wg1wJ14QShJSYoLOJCthaHE17fwvCZpG1ulqO57fNt1ISyJeQg/XbodUj6nXuRkH4
-         0h4ueUEWB7y1xJFXp7TaNPb2s/8H+mhpkZPU4y+c=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
-        (envelope-from <bjorn@mork.no>)
-        id 1lyTa8-0003rN-E9; Wed, 30 Jun 2021 08:20:20 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Marco De Marco <marco.demarco@posteo.net>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] net: Add support for u-blox LARA-R6 modules family
-Organization: m
-References: <4911218.dTlGXAFRqV@mars> <5473473.x7jBqtuPIS@mars>
-Date:   Wed, 30 Jun 2021 08:20:20 +0200
-In-Reply-To: <5473473.x7jBqtuPIS@mars> (Marco De Marco's message of "Tue, 29
-        Jun 2021 15:29:17 +0000")
-Message-ID: <87eecjj2l7.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S232636AbhF3Gxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 02:53:39 -0400
+Received: from mailout2.secunet.com ([62.96.220.49]:39710 "EHLO
+        mailout2.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232491AbhF3Gxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 02:53:38 -0400
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id B63B7800051;
+        Wed, 30 Jun 2021 08:51:08 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 30 Jun 2021 08:51:08 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 30 Jun
+ 2021 08:51:08 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 0182E318040F; Wed, 30 Jun 2021 08:51:07 +0200 (CEST)
+Date:   Wed, 30 Jun 2021 08:51:07 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <0x7f454c46@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-kernel-mentees@lists.linuxfoundation.org>,
+        <syzbot+fb347cf82c73a90efcca@syzkaller.appspotmail.com>
+Subject: Re: [PATCH] net: xfrm: fix memory leak in xfrm_user_rcv_msg
+Message-ID: <20210630065107.GT40979@gauss3.secunet.de>
+References: <20210625102354.18266-1-paskripkin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.2 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210625102354.18266-1-paskripkin@gmail.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marco De Marco <marco.demarco@posteo.net> writes:
+On Fri, Jun 25, 2021 at 01:23:54PM +0300, Pavel Skripkin wrote:
+> Syzbot reported memory leak in xfrm_user_rcv_msg(). The
+> problem was is non-freed skb's frag_list.
+> 
+> In skb_release_all() skb_release_data() will be called only
+> in case of skb->head != NULL, but netlink_skb_destructor()
+> sets head to NULL. So, allocated frag_list skb should be
+> freed manualy, since consume_skb() won't take care of it
+> 
+> Fixes: 5106f4a8acff ("xfrm/compat: Add 32=>64-bit messages translator")
+> Reported-and-tested-by: syzbot+fb347cf82c73a90efcca@syzkaller.appspotmail.com
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 
-> Support for u-blox LARA-R6 modules family - QMI wan interface.
->
-> Signed-off-by: Marco De Marco <marco.demarco@posteo.net>
-
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+Applied, thanks a lot!
