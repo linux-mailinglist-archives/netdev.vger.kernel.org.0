@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E4CC3B7E82
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 10:01:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE28F3B7E84
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 10:01:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233380AbhF3IEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 04:04:06 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:37066 "EHLO inva020.nxp.com"
+        id S233634AbhF3IEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 04:04:08 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:59842 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233327AbhF3ID5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Jun 2021 04:03:57 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 2B7C01A26B1;
-        Wed, 30 Jun 2021 10:01:28 +0200 (CEST)
+        id S233368AbhF3ID7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Jun 2021 04:03:59 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id EC90B20062A;
+        Wed, 30 Jun 2021 10:01:29 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AF5DC1A2698;
-        Wed, 30 Jun 2021 10:01:27 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 84F8920264F;
+        Wed, 30 Jun 2021 10:01:29 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id B42D2183AC99;
-        Wed, 30 Jun 2021 16:01:25 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 399F2183AC72;
+        Wed, 30 Jun 2021 16:01:27 +0800 (+08)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
@@ -34,9 +34,9 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
         Sebastien Laveze <sebastien.laveze@nxp.com>
-Subject: [net-next, v5, 06/11] ptp: add kernel API ptp_convert_timestamp()
-Date:   Wed, 30 Jun 2021 16:11:57 +0800
-Message-Id: <20210630081202.4423-7-yangbo.lu@nxp.com>
+Subject: [net-next, v5, 07/11] mptcp: setsockopt: convert to mptcp_setsockopt_sol_socket_timestamping()
+Date:   Wed, 30 Jun 2021 16:11:58 +0800
+Message-Id: <20210630081202.4423-8-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210630081202.4423-1-yangbo.lu@nxp.com>
 References: <20210630081202.4423-1-yangbo.lu@nxp.com>
@@ -45,106 +45,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add kernel API ptp_convert_timestamp() to convert raw hardware timestamp
-to a specified ptp vclock time.
+Split timestamping handling into a new function
+mptcp_setsockopt_sol_socket_timestamping().
+This is preparation for extending SO_TIMESTAMPING
+for PHC binding, since optval will no longer be
+integer.
 
 Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 ---
-Changes for v2:
-	- Split from v1 patch #1 and #2.
-	- Fixed build warning.
-Changes for v3:
-	- Converted HW timestamps to PHC bound, instead of previous
-	  binding domain value to PHC idea.
 Changes for v4:
-	- Fixed build issue.
+	- Added this patch.
 Changes for v5:
 	- None.
 ---
- drivers/ptp/ptp_vclock.c         | 34 ++++++++++++++++++++++++++++++++
- include/linux/ptp_clock_kernel.h | 13 ++++++++++++
- 2 files changed, 47 insertions(+)
+ net/mptcp/sockopt.c | 57 +++++++++++++++++++++++++++++++--------------
+ 1 file changed, 40 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
-index cefab29a0592..e0f87c57749a 100644
---- a/drivers/ptp/ptp_vclock.c
-+++ b/drivers/ptp/ptp_vclock.c
-@@ -183,3 +183,37 @@ int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
- 	return num;
+diff --git a/net/mptcp/sockopt.c b/net/mptcp/sockopt.c
+index 092d1f635d27..ea38cbcd2ad4 100644
+--- a/net/mptcp/sockopt.c
++++ b/net/mptcp/sockopt.c
+@@ -157,19 +157,7 @@ static int mptcp_setsockopt_sol_socket_tstamp(struct mptcp_sock *msk, int optnam
+ 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+ 		bool slow = lock_sock_fast(ssk);
+ 
+-		switch (optname) {
+-		case SO_TIMESTAMP_OLD:
+-		case SO_TIMESTAMP_NEW:
+-		case SO_TIMESTAMPNS_OLD:
+-		case SO_TIMESTAMPNS_NEW:
+-			sock_set_timestamp(sk, optname, !!val);
+-			break;
+-		case SO_TIMESTAMPING_NEW:
+-		case SO_TIMESTAMPING_OLD:
+-			sock_set_timestamping(sk, optname, val);
+-			break;
+-		}
+-
++		sock_set_timestamp(sk, optname, !!val);
+ 		unlock_sock_fast(ssk, slow);
+ 	}
+ 
+@@ -178,7 +166,8 @@ static int mptcp_setsockopt_sol_socket_tstamp(struct mptcp_sock *msk, int optnam
  }
- EXPORT_SYMBOL(ptp_get_vclocks_index);
-+
-+void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
-+			   int vclock_index)
+ 
+ static int mptcp_setsockopt_sol_socket_int(struct mptcp_sock *msk, int optname,
+-					   sockptr_t optval, unsigned int optlen)
++					   sockptr_t optval,
++					   unsigned int optlen)
+ {
+ 	int val, ret;
+ 
+@@ -205,14 +194,45 @@ static int mptcp_setsockopt_sol_socket_int(struct mptcp_sock *msk, int optname,
+ 	case SO_TIMESTAMP_NEW:
+ 	case SO_TIMESTAMPNS_OLD:
+ 	case SO_TIMESTAMPNS_NEW:
+-	case SO_TIMESTAMPING_OLD:
+-	case SO_TIMESTAMPING_NEW:
+ 		return mptcp_setsockopt_sol_socket_tstamp(msk, optname, val);
+ 	}
+ 
+ 	return -ENOPROTOOPT;
+ }
+ 
++static int mptcp_setsockopt_sol_socket_timestamping(struct mptcp_sock *msk,
++						    int optname,
++						    sockptr_t optval,
++						    unsigned int optlen)
 +{
-+	char name[PTP_CLOCK_NAME_LEN] = "";
-+	struct ptp_vclock *vclock;
-+	struct ptp_clock *ptp;
-+	unsigned long flags;
-+	struct device *dev;
-+	u64 ns;
++	struct mptcp_subflow_context *subflow;
++	struct sock *sk = (struct sock *)msk;
++	int val, ret;
 +
-+	snprintf(name, PTP_CLOCK_NAME_LEN, "ptp%d", vclock_index);
-+	dev = class_find_device_by_name(ptp_class, name);
-+	if (!dev)
-+		return;
++	ret = mptcp_get_int_option(msk, optval, optlen, &val);
++	if (ret)
++		return ret;
 +
-+	ptp = dev_get_drvdata(dev);
-+	if (!ptp->is_virtual_clock) {
-+		put_device(dev);
-+		return;
++	ret = sock_setsockopt(sk->sk_socket, SOL_SOCKET, optname,
++			      KERNEL_SOCKPTR(&val), sizeof(val));
++	if (ret)
++		return ret;
++
++	lock_sock(sk);
++
++	mptcp_for_each_subflow(msk, subflow) {
++		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
++		bool slow = lock_sock_fast(ssk);
++
++		sock_set_timestamping(sk, optname, val);
++		unlock_sock_fast(ssk, slow);
 +	}
 +
-+	vclock = info_to_vclock(ptp->info);
++	release_sock(sk);
 +
-+	ns = ktime_to_ns(hwtstamps->hwtstamp);
-+
-+	spin_lock_irqsave(&vclock->lock, flags);
-+	ns = timecounter_cyc2time(&vclock->tc, ns);
-+	spin_unlock_irqrestore(&vclock->lock, flags);
-+
-+	put_device(dev);
-+	hwtstamps->hwtstamp = ns_to_ktime(ns);
++	return 0;
 +}
-+EXPORT_SYMBOL(ptp_convert_timestamp);
-diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
-index 300a984fec87..71fac9237725 100644
---- a/include/linux/ptp_clock_kernel.h
-+++ b/include/linux/ptp_clock_kernel.h
-@@ -12,6 +12,7 @@
- #include <linux/pps_kernel.h>
- #include <linux/ptp_clock.h>
- #include <linux/timecounter.h>
-+#include <linux/skbuff.h>
- 
- #define PTP_CLOCK_NAME_LEN	32
- /**
-@@ -318,6 +319,15 @@ void ptp_cancel_worker_sync(struct ptp_clock *ptp);
-  */
- int ptp_get_vclocks_index(int pclock_index, int **vclock_index);
- 
-+/**
-+ * ptp_convert_timestamp() - convert timestamp to a ptp vclock time
-+ *
-+ * @hwtstamps:    skb_shared_hwtstamps structure pointer
-+ * @vclock_index: phc index of ptp vclock.
-+ */
-+void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
-+			   int vclock_index);
 +
- #else
- static inline struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
- 						   struct device *parent)
-@@ -339,6 +349,9 @@ static inline void ptp_cancel_worker_sync(struct ptp_clock *ptp)
- { }
- static inline int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
- { return 0; }
-+static inline void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
-+					 int vclock_index)
-+{ }
- 
- #endif
- 
+ static int mptcp_setsockopt_sol_socket_linger(struct mptcp_sock *msk, sockptr_t optval,
+ 					      unsigned int optlen)
+ {
+@@ -299,9 +319,12 @@ static int mptcp_setsockopt_sol_socket(struct mptcp_sock *msk, int optname,
+ 	case SO_TIMESTAMP_NEW:
+ 	case SO_TIMESTAMPNS_OLD:
+ 	case SO_TIMESTAMPNS_NEW:
++		return mptcp_setsockopt_sol_socket_int(msk, optname, optval,
++						       optlen);
+ 	case SO_TIMESTAMPING_OLD:
+ 	case SO_TIMESTAMPING_NEW:
+-		return mptcp_setsockopt_sol_socket_int(msk, optname, optval, optlen);
++		return mptcp_setsockopt_sol_socket_timestamping(msk, optname,
++								optval, optlen);
+ 	case SO_LINGER:
+ 		return mptcp_setsockopt_sol_socket_linger(msk, optval, optlen);
+ 	case SO_RCVLOWAT:
 -- 
 2.25.1
 
