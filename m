@@ -2,95 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5FB93B82CA
-	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 15:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5CFE3B84F9
+	for <lists+netdev@lfdr.de>; Wed, 30 Jun 2021 16:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234794AbhF3NWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 09:22:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39190 "EHLO
+        id S235091AbhF3OXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 10:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234679AbhF3NWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 09:22:36 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A95CC061756
-        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 06:20:07 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id j34so2039630wms.5
-        for <netdev@vger.kernel.org>; Wed, 30 Jun 2021 06:20:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zhaTOxwiv0G5pOoKD1haOhhYSHrm2ybALBhLQmjGz2o=;
-        b=cLZC+U55FdGehnaXGYZ74WBciK5NY8a6KgcHwuVo5kdD9nnCl/cQpX+RDDCYYTJDoc
-         mdwS7hXiQ6iXdflU8/mSQUU8JuOfC8TJM7vlGiuKon5Wm5SlilMT92wjf3lmWo4aQYWY
-         2E6Nmst1nG3piBQVJfNlymXdhHfquYETcm6asNw1PSdyz0c+8OGDT9ky4u3IKAWuTNBR
-         hUIgoC/HkevTl/zup/wNtZlDcxrIuqsmWqY3fLJk6J2oSTTe+d9yEZlgWmDQoek/xyfq
-         0u7YqFo1LtCuH+BDgG/mOvNWKd9GFjC7j1iiJMO2ueJlvG/zQky0NZ+AV2Mcj7qL4IvT
-         QuPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zhaTOxwiv0G5pOoKD1haOhhYSHrm2ybALBhLQmjGz2o=;
-        b=YQdQPsvuH/xMoKSD98mzt0ue74d6vCh6MU2byzECuauoqIh1WShydrsUdvNO0Sf0N+
-         UxuKTr0uI5xYdaAiXaNc4QngCtTo68xZ17dmc+8Q+mQ+z8gzJtzCfR+eALVyP9GKVCsi
-         4bOZ1rVRYWyL+M1a6yLTWlAmCGhQnFcxldg3NTN4+ZMxyjjRC4u2NIC/THQt9z26ULDt
-         c6SFTk3rQuR0vWTzomEoC/zDoCPu32DXrCJdtzC0NRHH1VwC+JrInz8byA0RM6fndp5u
-         jeCxqzutEDCn3abhroEe7X+/LNw07c0tbkpSsGKLYbTdr7AIe2wLtWTfuTMzfJ34Pxmx
-         74gw==
-X-Gm-Message-State: AOAM533GimjMmy1Kgg2kxytEe4w7VFwYT4WJyEj0KAUbgVOok14WNkhn
-        m5zKjUQ+P79k/i+/o0L3kVM=
-X-Google-Smtp-Source: ABdhPJyXjbPjcO7ISDSJx3gWb6XKmaF94FzVUMS/hIJNmE8pUho63dsIJ2Qd/nbGcGFDyZDQRVo4vQ==
-X-Received: by 2002:a7b:c092:: with SMTP id r18mr15918234wmh.181.1625059206010;
-        Wed, 30 Jun 2021 06:20:06 -0700 (PDT)
-Received: from [192.168.98.98] (80.17.23.93.rev.sfr.net. [93.23.17.80])
-        by smtp.gmail.com with ESMTPSA id n8sm21903934wrt.95.2021.06.30.06.20.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Jun 2021 06:20:05 -0700 (PDT)
-Subject: Re: [PATCH net] tcp: consistently disable header prediction for mptcp
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S234851AbhF3OXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 10:23:32 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386F8C061756;
+        Wed, 30 Jun 2021 07:21:03 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1lyb57-0001Fh-WB; Wed, 30 Jun 2021 16:20:50 +0200
+Date:   Wed, 30 Jun 2021 16:20:49 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+Cc:     pablo@netfilter.org,
+        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
+        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
+        Blair Steven <blair.steven@alliedtelesis.co.nz>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        mptcp@lists.linux.dev
-References: <7f941e06e6434902ea4a0a572392f65cd2745447.1625053058.git.pabeni@redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <4638ad50-5495-aad2-86e9-8e89273a74a8@gmail.com>
-Date:   Wed, 30 Jun 2021 15:20:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: netfilter: Add RFC-7597 Section 5.1 PSID support
+Message-ID: <20210630142049.GC18022@breakpoint.cc>
+References: <20210426122324.GA975@breakpoint.cc>
+ <20210629004819.4750-1-Cole.Dishington@alliedtelesis.co.nz>
 MIME-Version: 1.0
-In-Reply-To: <7f941e06e6434902ea4a0a572392f65cd2745447.1625053058.git.pabeni@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210629004819.4750-1-Cole.Dishington@alliedtelesis.co.nz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Cole Dishington <Cole.Dishington@alliedtelesis.co.nz> wrote:
+>     Comments:
+>     Selecting the ports for psid needs to be in nf_nat_core since the PSID ranges are not a single range. e.g. offset=1024, PSID=0, psid_length=8 generates the ranges 1024-1027, 2048-2051, ..., 63488-63491, ... (example taken from RFC7597 B.2).
+>     This is why it is enough to set NF_NAT_RANGE_PROTO_SPECIFIED and init upper/lower boundaries.
 
+I suspect this misses a NOT.  But current algorithm has problems, see
+below.
 
-On 6/30/21 1:42 PM, Paolo Abeni wrote:
-> The MPTCP receive path is hooked only into the TCP slow-path.
-> The DSS presence allows plain MPTCP traffic to hit that
-> consistently.
-> 
-> Since commit e1ff9e82e2ea ("net: mptcp: improve fallback to TCP"),
-> when an MPTCP socket falls back to TCP, it can hit the TCP receive
-> fast-path, and delay or stop triggering the event notification.
-> 
-> Address the issue explicitly disabling the header prediction
-> for MPTCP sockets.
-> 
-> Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/200
-> Fixes: e1ff9e82e2ea ("net: mptcp: improve fallback to TCP")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
+> +	if (range->flags & NF_NAT_RANGE_PSID) {
+> +		/* PSID defines a group of port ranges, per PSID. PSID
+> +		 * is already contained in min and max.
+> +		 */
+> +		unsigned int min_to_max, base;
+> +
+> +		min = ntohs(range->min_proto.all);
+> +		max = ntohs(range->max_proto.all);
+> +		base = ntohs(range->base_proto.all);
+> +		min_to_max = max - min;
+> +		for (; max <= (1 << 16) - 1; min += base, max = min + min_to_max) {
+> +			for (off = 0; off <= min_to_max; off++) {
+> +				*keyptr = htons(min + off);
+> +				if (!nf_nat_used_tuple(tuple, ct))
+> +					return;
+> +			}
+> +		}
+> +	}
 
-SGTM, thanks.
+I fear this searches waaaay to many ports.
+We had softlockups in the past because of exhausive searches.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+See a504b703bb1da526a01593da0e4be2af9d9f5fa8
+("netfilter: nat: limit port clash resolution attempts").
 
+I suggest you try pre-selecting one of the eligible ranges in
+nf_nat_masquerade_ipv4 when the 'newrange' is filled in and set
+RANGE_PROTO_SPECIFIED.
+
+Maybe even prandom-based preselection is good enough.
+
+>  	/* If no range specified... */
+>  	if (!(range->flags & NF_NAT_RANGE_PROTO_SPECIFIED)) {
+>  		/* If it's dst rewrite, can't change port */
+> @@ -529,11 +572,19 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
+>  
+>  	/* Only bother mapping if it's not already in range and unique */
+>  	if (!(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
+> -		if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED) {
+> +		/* PSID mode is present always needs to check
+> +		 * to see if the source ports are in range.
+> +		 */
+> +		if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED ||
+> +		    (range->flags & NF_NAT_RANGE_PSID &&
+
+Why the extra check?
+Can't you set NF_NAT_RANGE_PROTO_SPECIFIED in case PSID is requested by
+userspace?
+
+> diff --git a/net/netfilter/nf_nat_ftp.c b/net/netfilter/nf_nat_ftp.c
+> index aace6768a64e..f65163278db0 100644
+> --- a/net/netfilter/nf_nat_ftp.c
+> +++ b/net/netfilter/nf_nat_ftp.c
+> @@ -17,6 +17,10 @@
+>  #include <net/netfilter/nf_conntrack_helper.h>
+>  #include <net/netfilter/nf_conntrack_expect.h>
+>  #include <linux/netfilter/nf_conntrack_ftp.h>
+> +void nf_nat_l4proto_unique_tuple(struct nf_conntrack_tuple *tuple,
+> +				 const struct nf_nat_range2 *range,
+> +				 enum nf_nat_manip_type maniptype,
+> +				 const struct nf_conn *ct);
+>  
+>  #define NAT_HELPER_NAME "ftp"
+>  
+> @@ -72,8 +76,13 @@ static unsigned int nf_nat_ftp(struct sk_buff *skb,
+>  	u_int16_t port;
+>  	int dir = CTINFO2DIR(ctinfo);
+>  	struct nf_conn *ct = exp->master;
+> +	struct nf_conn_nat *nat = nfct_nat(ct);
+>  	char buffer[sizeof("|1||65535|") + INET6_ADDRSTRLEN];
+>  	unsigned int buflen;
+> +	int ret;
+> +
+> +	if (WARN_ON_ONCE(!nat))
+> +		return NF_DROP;
+>  
+>  	pr_debug("type %i, off %u len %u\n", type, matchoff, matchlen);
+>  
+> @@ -86,18 +95,14 @@ static unsigned int nf_nat_ftp(struct sk_buff *skb,
+>  	 * this one. */
+>  	exp->expectfn = nf_nat_follow_master;
+>  
+> -	/* Try to get same port: if not, try to change it. */
+> -	for (port = ntohs(exp->saved_proto.tcp.port); port != 0; port++) {
+> -		int ret;
+> -
+> -		exp->tuple.dst.u.tcp.port = htons(port);
+> -		ret = nf_ct_expect_related(exp, 0);
+> -		if (ret == 0)
+> -			break;
+> -		else if (ret != -EBUSY) {
+> -			port = 0;
+> -			break;
+> -		}
+> +	/* Find a port that matches the MASQ rule. */
+> +	nf_nat_l4proto_unique_tuple(&exp->tuple, nat->range,
+> +				    dir ? NF_NAT_MANIP_SRC : NF_NAT_MANIP_DST,
+> +				    ct);
+
+Hmm, I am ingorant on details here, but is this correct?
+
+This could be an inbound connection, rather than outbound.
+
+> diff --git a/net/netfilter/nf_nat_helper.c b/net/netfilter/nf_nat_helper.c
+> index a263505455fc..2d105e4eb8f8 100644
+> --- a/net/netfilter/nf_nat_helper.c
+> +++ b/net/netfilter/nf_nat_helper.c
+> @@ -179,15 +179,23 @@ EXPORT_SYMBOL(nf_nat_mangle_udp_packet);
+>  void nf_nat_follow_master(struct nf_conn *ct,
+>  			  struct nf_conntrack_expect *exp)
+>  {
+> +	struct nf_conn_nat *nat = NULL;
+>  	struct nf_nat_range2 range;
+>  
+>  	/* This must be a fresh one. */
+>  	BUG_ON(ct->status & IPS_NAT_DONE_MASK);
+>  
+> -	/* Change src to where master sends to */
+> -	range.flags = NF_NAT_RANGE_MAP_IPS;
+> -	range.min_addr = range.max_addr
+> -		= ct->master->tuplehash[!exp->dir].tuple.dst.u3;
+> +	if (exp->master && !exp->dir) {
+> +		nat = nfct_nat(exp->master);
+> +		if (nat)
+> +			range = *nat->range;
+
+Can't you store the psid-relevant parts of the range struct only?
+Non-PSID doesn't need the original range, so why do you?
+
+> diff --git a/net/netfilter/nf_nat_masquerade.c b/net/netfilter/nf_nat_masquerade.c
+> index 8e8a65d46345..d83cd3d8ad3f 100644
+> --- a/net/netfilter/nf_nat_masquerade.c
+> +++ b/net/netfilter/nf_nat_masquerade.c
+> @@ -45,10 +45,6 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
+>  		return NF_DROP;
+>  	}
+>  
+> -	nat = nf_ct_nat_ext_add(ct);
+> -	if (nat)
+> -		nat->masq_index = out->ifindex;
+> -
+>  	/* Transfer from original range. */
+>  	memset(&newrange.min_addr, 0, sizeof(newrange.min_addr));
+>  	memset(&newrange.max_addr, 0, sizeof(newrange.max_addr));
+> @@ -57,6 +53,15 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
+>  	newrange.max_addr.ip = newsrc;
+>  	newrange.min_proto   = range->min_proto;
+>  	newrange.max_proto   = range->max_proto;
+> +	newrange.base_proto  = range->base_proto;
+> +
+> +	nat = nf_ct_nat_ext_add(ct);
+> +	if (nat) {
+> +		nat->masq_index = out->ifindex;
+> +		if (!nat->range)
+> +			nat->range = kmalloc(sizeof(*nat->range), 0);
+> +		memcpy(nat->range, &newrange, sizeof(*nat->range));
+
+kmemdup.  Also misses error handling.  Should use GFP_ATOMIC.
+Where is this free'd again?
+
+It would be good if you could chop this up in smaller chunks.
+A selftest would be nice as well (see tools/testing/selftests/netfilter).
