@@ -2,216 +2,324 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F37053B9567
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 19:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C1003B9595
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 19:39:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232593AbhGARZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 13:25:56 -0400
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:60180 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230139AbhGARZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 13:25:55 -0400
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 161HBjkA017337;
-        Thu, 1 Jul 2021 17:23:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : content-type :
- mime-version; s=corp-2020-01-29;
- bh=EgAhZPaW2wqlGk0izpIvxP7Tp4COA5MwLtH0oT2w5T0=;
- b=pde+aOSsWqBEF3bCxrNXPXeNpqtweiL0Qaub9ksAdgqAk8Bm2U4c9IIvxw2G2xQ8x2eS
- nVLzr/x2yDOLgEsf0iSJw8TmJSPzfJvH8MGAXlkXIjsxrkilR3zU7GQaG40Qg3q9ePYM
- Qg/M7VLDG8DXjauv07cFolzxBYn4FIpOlsZrump5o7tBtc0sw4V5eyjjA5GWcAsbrhAy
- Auf089D4xSP1TT7zrdeDhBVTrEnWqujIEY5nOeor2cCYdWsXHEALlsFhxbAQwRwthtoe
- KYvtuvaaQLY7N7UYLXTrxF5NIjos/HBRPc5t6e3VXQGKP5OD6G2AWqCvi5nPUK++wTUv Iw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 39gha4c0a0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 01 Jul 2021 17:23:06 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 161HBmL5132172;
-        Thu, 1 Jul 2021 17:23:05 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2104.outbound.protection.outlook.com [104.47.55.104])
-        by userp3030.oracle.com with ESMTP id 39dsc4c9r8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 01 Jul 2021 17:23:05 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n9Owm1tkGSGpSU7HzUAd3+cVQfRMNJRcpOt4GQRQ01s56+PJhMmhyJwiU5wowPPy+gP2axEbV2Duza56ygZI/ULsZgGCBDCFbZCLgr93tWXPG0yNKSYb42Q3EOmXf0n3CH0oz1p2RRgUJtqRu/4ohiC+c8rmBVjQzP01gTK48dPrbx3vv0mLzsDkORmJqsTpyYoxmPTvrZ7vuDkV2ZtxkUgfABxCdHGHAcrsTzahJB2F4ENHzTVOC+xhfiw9X6SwfGzGajHLgvdKc6YMzZZbGhL/XUHmDS/vtJrRYmV2FIBh0VObYQITboIoLrmvHApdcKSp/0a+GLT8k8GKgzBEAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EgAhZPaW2wqlGk0izpIvxP7Tp4COA5MwLtH0oT2w5T0=;
- b=IK1J0vweFPRGxmO8Y4IcrAIcK+ykKz0J72YAqlAkag3Fo1FW4N+SiF4ZtUyV6WlFAnk3T1PUgaEvSvqfLmq9/4T8V+hjoLRf9VcT0x7vZ3F8ap6/UKG/jzm8dgu+JoEMo+Xid2f4BS8G3pXXXzqaLReyFSGoMAoPSc/QG9jAuh2oDufWSCHxU+adc9n2Z6sEo8qfXL2dH6DNcWDyZGWm2x5v+1wXakQlEAZUc3PZBKLrn/1q0/zn1ecVV9VL0EGz3UoaiT7uAwZr/c6r4odH8P/pNtRupRAppuMBUZxT+aAdIhjQQDv7x3qqkWCpFCkGxk64GcQc2oCwTIY4TAwG+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EgAhZPaW2wqlGk0izpIvxP7Tp4COA5MwLtH0oT2w5T0=;
- b=fKhBrTkSxj05n80TDS9tMukLtZnl6e+c44fU54vXy/0x9DhOQy11aJOUkERDKqJkIug8T86asCocRYOiTNu1ypM/D3ZRKY6srIoqZixzoLAKDqTkDtxXyWK5/KRLWi5Qt1XYKONBpVTVddTIEiqChZQkCwfNERbVVDaz/tCAkFY=
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=oracle.com;
-Received: from BLAPR10MB5267.namprd10.prod.outlook.com (2603:10b6:208:30e::22)
- by MN2PR10MB3263.namprd10.prod.outlook.com (2603:10b6:208:12a::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.21; Thu, 1 Jul
- 2021 17:23:00 +0000
-Received: from BLAPR10MB5267.namprd10.prod.outlook.com
- ([fe80::39e8:94ec:fc2d:5a56]) by BLAPR10MB5267.namprd10.prod.outlook.com
- ([fe80::39e8:94ec:fc2d:5a56%9]) with mapi id 15.20.4287.024; Thu, 1 Jul 2021
- 17:23:00 +0000
-Date:   Thu, 1 Jul 2021 18:22:45 +0100 (IST)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@localhost
-To:     Jiri Olsa <jolsa@redhat.com>
-cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [RFC bpf-next 0/5] bpf, x86: Add bpf_get_func_ip helper
-In-Reply-To: <20210629192945.1071862-1-jolsa@kernel.org>
-Message-ID: <alpine.LRH.2.23.451.2107011819160.27594@localhost>
-References: <20210629192945.1071862-1-jolsa@kernel.org>
-Content-Type: text/plain; charset=US-ASCII
-X-Originating-IP: [2a02:6900:8208:1848::16ae]
-X-ClientProxiedBy: LO4P123CA0324.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:197::23) To BLAPR10MB5267.namprd10.prod.outlook.com
- (2603:10b6:208:30e::22)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (2a02:6900:8208:1848::16ae) by LO4P123CA0324.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:197::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend Transport; Thu, 1 Jul 2021 17:22:58 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ed72c246-64e0-4455-d372-08d93cb4e014
-X-MS-TrafficTypeDiagnostic: MN2PR10MB3263:
-X-Microsoft-Antispam-PRVS: <MN2PR10MB3263054025831A92398BED22EF009@MN2PR10MB3263.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VEBzNU6SmlClQ47MP1BI+5cjHZ5v5yOIEKjiW7uU9FFwuXgVnRY4Rg/I+Xo0p3o++7sa3OQVZYq8/rCeb+SEaEOlWsTdDknA06in+YdYJKpq9XM90UIW13ikiyE4R0WAAVDpg65wvAtHbs//IibmfouLvay3xnr3jwqe/hpTap1Ez10pnnWMR982c+2LCay1s4GTx/4DppGPAfSUNjrTMUhAFLAiDu0iXqKRCxulLEfQuQ3xnS7b5n7nzpuNCiK1NhMOJuExCB7k1qpbt4IamtnbZzsEO9BwI9SSesFsOvXCDijrvwU14U45d+HOUqjEZwezj9EDfhhPR+8ch3yCGLd0vOXpPxIYVNCkjnIeAQ1P2Q/K1aZu7dpAw1RsryGe99oVTahM3UW28ZUB/eZlMjWK9WL1BDxMoE89NZ5UXlwTCEpaq2GXJoPieSlGzVu0eYWALNMj5gEcDTDBWZ8YN3sgh30XmE+KFov3op+kjzUYDXbf/U4/z1N9PP/f20WrdRc13EnhhOyXTxP+9rG2R/dTPO9YKyz6MJAPpQaEhJOTJNWgBMrP+lWzE5SDTEgTVKUSdTTCDImxw7hndzlqa5uwg9N+P0Lwqbva/SHtlkG/TC/qZyUIGklr4a2p4ghtTP6IgkrfnjNE4UU+zwv1a7NWPV8P3TVJ0NOrAK7JqNFeDjCYRq/hnL93hbaxfnmqR2afVcpYEGS4czQJL/m071QFhs7xTmszSb5V174eul/kIX9Tj1tj39wh02bQ7rlid5gpFnUJZmhM2s/sluUDTQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5267.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39860400002)(346002)(366004)(376002)(136003)(6486002)(52116002)(44832011)(6512007)(9686003)(966005)(186003)(7416002)(8936002)(2906002)(8676002)(9576002)(16526019)(6916009)(316002)(66476007)(38100700002)(83380400001)(33716001)(6666004)(6506007)(66556008)(478600001)(4326008)(66946007)(5660300002)(86362001)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hauVMcvjitO/SWCyb1bs0UwhEQd018eLgXzAWQPTYuwRiuWPar+vNBEIMdnm?=
- =?us-ascii?Q?g1NQpXcqmOWjz/D1sEPLFR9Q6d5YcxMeKNJJ48GYpL9eG2QaQb/pDc/uJA4f?=
- =?us-ascii?Q?bNR1rL56zCktcxZiZAe6AixY3em2BOau+22zWbqY1YlOzECSvECLX7dEnciK?=
- =?us-ascii?Q?T1YhzW6E94l6T1hyKBxYc7q9QR0j/29u2jvSshmnYUenjgUiTiPCii2WRgGA?=
- =?us-ascii?Q?VMNQ4U057g+x0FjO84XdBHDbwMSV+YBBOo0CaPNVo3LQVFRwhAgD49g7LB8Y?=
- =?us-ascii?Q?48Hz8C3Rm0OCISz7P58jUFowntxcoLLJbqLwm0y/M9NSaidk1V/XX4lGPg7/?=
- =?us-ascii?Q?GU/ROu2tJv6ZS7GoMgXZu6+3/uoHTfJZKtPGVb42vGvYJa/mOrMZmE4DTz/b?=
- =?us-ascii?Q?f6nNirzr0iMS2qL1iV4eUyM14zY1vxX7yhRVG2eJ+Zdu6ejjnzB2reX1b5RV?=
- =?us-ascii?Q?jn05sSJCPSVLFr1x4ONunqxm7F2HYl9BurNoMFo6a5CHTLyXii2ZEsI/Lm18?=
- =?us-ascii?Q?uBNpXBy/UZ7PaYUXgriIK+4Du4CD5NS0/neEATHL6hGkb8AxFku3wUhuIdDK?=
- =?us-ascii?Q?jyh1MHgiNWb3Zijtq3BDHv3fSYqYCnQRL8G/WyH7qDpXZnHLCkyWM0N4Ljo4?=
- =?us-ascii?Q?/Dfz5oklVEoMxIv8HHCv+BRu1CTS6kCcSdF/9P8ZriCELCkriMqYe4LUm1yt?=
- =?us-ascii?Q?2+3+42jKABs/JbbU5z5QKRn5LCRA1tkHgaQIU/t0eO87BjrjuR4naSTFSHYw?=
- =?us-ascii?Q?ZAvsTHuy5aFM8bfgJ+9J6X8r9ypcdB5We16rMZ+BtLzDOqQFc69wCxuGlRGI?=
- =?us-ascii?Q?oqgvyTlMTyy3Ehde78Bjaka2cDYa5/q9B08lfhLvHV8z7N3aZfMqvu4wUYaL?=
- =?us-ascii?Q?JaVNTk+wMJUPCnu+0eRLRnbq6nFxhpoP1l82DFWKF7o/E1gGJjtgeo9qwY6g?=
- =?us-ascii?Q?ExLJ+FdjoSLEDQ5B2W19F/Ryv2jhdUGsMLDH5cQAdjDftdo17cjgwo6DWKp+?=
- =?us-ascii?Q?IWtps3N3PKJKmZWy2pwFuf0rtQzy0SgzUKtr9sfXQkz3whoFmuTGgiYUMjsr?=
- =?us-ascii?Q?L2AiZQEpCOQ/VOFVlTfiMfR05/puH0OO9Rs0xTOwSdH7rtWGttZib7C2fDXP?=
- =?us-ascii?Q?wBWcakfruUEVHa9vhW7nLNZfLD3WSP9fwX2bYJJgT8cEVGelk9Ir/1bSFxeM?=
- =?us-ascii?Q?W7ccjgHMgxYennHZPhuLBrXqNlTS8x/9P7z0ncTyVGHKS0MxXYaGNV9iiypa?=
- =?us-ascii?Q?aW9+DoMswWzgLX18QV/1/9gfO2QpcBmKifjOacEztOXGksozWnbxTuo6kljO?=
- =?us-ascii?Q?f61L2nsEFKBw8h7sTriRZEVMAvMIfAG4vz9cQP5mDNGl6g=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed72c246-64e0-4455-d372-08d93cb4e014
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5267.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2021 17:23:00.2360
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yCn9Oxu+XL1bqA2AAa67OZeTCj28DQJLLzDVnfgLPNw1sOCRxEGb57zHumplLuPWfe2+6BXIh/+VS+/WmRZn+w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3263
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10032 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0
- mlxlogscore=999 suspectscore=0 phishscore=0 bulkscore=0 adultscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2107010102
-X-Proofpoint-ORIG-GUID: xoJLkxN_c3D7QJa4n2DMe60foAXjOF1F
-X-Proofpoint-GUID: xoJLkxN_c3D7QJa4n2DMe60foAXjOF1F
+        id S232523AbhGARle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 13:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229978AbhGARle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 13:41:34 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0174C061762
+        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 10:39:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=wutHQnSFuSsbpWDjhp5LbXwI1xk6Pmj5T8hInVm+r8E=; b=eU4Tr9VYJv79RXyPaw+Vby2lKS
+        GlcGCxDZGJ4rqImZbxCQrbC/7urrb4uy5D7jyNqq6iuNrlh/4kalNf7YxT61Qy2oCjoCE95ny0ErX
+        D0m3CY1+jQrUDvUgOBIll68Z/9QqzYqrN23gyHkNyyuxNgbtdAc2cemDhkfcs79hCk6b5jDLqjoR7
+        TtunRpzUMP544Bn7Byt+B4vTB6U2mc4WxnVSOBcyo/0t70rpNmeoRFb9ri+z4R0wnXybWRN8qAWhk
+        wknMI3pOcd2oG5D9llLYjSI8SnFRZ1HD6bDDbxHaBHbTM/vSSn9cDAsjwrZwYPw5GliNpHuWM+c9Z
+        enrOluGA==;
+Received: from 54-240-197-232.amazon.com ([54.240.197.232] helo=freeip.amazon.com)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1lz0eV-000dwP-2U; Thu, 01 Jul 2021 17:39:03 +0000
+Message-ID: <1d5b8251e8d9e67613295d5b7f51c49c1ee8c0a8.camel@infradead.org>
+Subject: Re: [PATCH v3 3/5] vhost_net: remove virtio_net_hdr validation, let
+ tun/tap do it themselves
+From:   David Woodhouse <dwmw2@infradead.org>
+To:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org
+Cc:     Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "Michael S.Tsirkin" <mst@redhat.com>
+Date:   Thu, 01 Jul 2021 18:39:00 +0100
+In-Reply-To: <b6192a2a-0226-2767-46b2-ae61494a8ae7@redhat.com>
+References: <03ee62602dd7b7101f78e0802249a6e2e4c10b7f.camel@infradead.org>
+         <20210624123005.1301761-1-dwmw2@infradead.org>
+         <20210624123005.1301761-3-dwmw2@infradead.org>
+         <b339549d-c8f1-1e56-2759-f7b15ee8eca1@redhat.com>
+         <bfad641875aff8ff008dd7f9a072c5aa980703f4.camel@infradead.org>
+         <1c6110d9-2a45-f766-9d9a-e2996c14b748@redhat.com>
+         <72dfecd426d183615c0dd4c2e68690b0e95dd739.camel@infradead.org>
+         <80f61c54a2b39cb129e8606f843f7ace605d67e0.camel@infradead.org>
+         <99496947-8171-d252-66d3-0af12c62fd2c@redhat.com>
+         <cdf3fe3ceff17bc2a5aaf006577c1cb0bef40f3a.camel@infradead.org>
+         <500370cc-d030-6c2d-8e96-533a3533a8e2@redhat.com>
+         <aa70346d6983a0146b2220e93dac001706723fe3.camel@infradead.org>
+         <b6192a2a-0226-2767-46b2-ae61494a8ae7@redhat.com>
+Content-Type: multipart/signed; micalg="sha-256";
+        protocol="application/x-pkcs7-signature";
+        boundary="=-CAlq5QINaohkmriR4npb"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Jun 2021, Jiri Olsa wrote:
 
-> hi,
-> adding bpf_get_func_ip helper that returns IP address of the
-> caller function for trampoline and krobe programs.
-> 
-> There're 2 specific implementation of the bpf_get_func_ip
-> helper, one for trampoline progs and one for kprobe/kretprobe
-> progs.
-> 
-> The trampoline helper call is replaced/inlined by verifier
-> with simple move instruction. The kprobe/kretprobe is actual
-> helper call that returns prepared caller address.
-> 
-> The trampoline extra 3 instructions for storing IP address
-> is now optional, which I'm not completely sure is necessary,
-> so I plan to do some benchmarks, if it's noticeable, hence
-> the RFC. I'm also not completely sure about the kprobe/kretprobe
-> implementation.
-> 
-> Also available at:
->   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
->   bpf/get_func_ip
-> 
-> thanks,
-> jirka
-> 
->
+--=-CAlq5QINaohkmriR4npb
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This is great Jiri! Feel free to add for the series:
+On Thu, 2021-07-01 at 12:13 +0800, Jason Wang wrote:
+> =E5=9C=A8 2021/6/30 =E4=B8=8B=E5=8D=886:02, David Woodhouse =E5=86=99=E9=
+=81=93:
+> > On Wed, 2021-06-30 at 12:39 +0800, Jason Wang wrote:
+> > > =E5=9C=A8 2021/6/29 =E4=B8=8B=E5=8D=886:49, David Woodhouse =E5=86=99=
+=E9=81=93:
+> > > > So as I expected, the throughput is better with vhost-net once I ge=
+t to
+> > > > the point of 100% CPU usage in my main thread, because it offloads =
+the
+> > > > kernel=E2=86=90=E2=86=92user copies. But latency is somewhat worse.
+> > > >=20
+> > > > I'm still using select() instead of epoll() which would give me a
+> > > > little back =E2=80=94 but only a little, as I only poll on 3-4 fds,=
+ and more to
+> > > > the point it'll give me just as much win in the non-vhost case too,=
+ so
+> > > > it won't make much difference to the vhost vs. non-vhost comparison=
+.
+> > > >=20
+> > > > Perhaps I really should look into that trick of "if the vhost TX ri=
+ng
+> > > > is already stopped and would need a kick, and I only have a few pac=
+kets
+> > > > in the batch, just write them directly to /dev/net/tun".
+> > >=20
+> > > That should work on low throughput.
+> >=20
+> > Indeed it works remarkably well, as I noted in my follow-up. I also
+> > fixed a minor stupidity where I was reading from the 'call' eventfd
+> > *before* doing the real work of moving packets around. And that gives
+> > me a few tens of microseconds back too.
+> >=20
+> > > > I'm wondering how that optimisation would translate to actual guest=
+s,
+> > > > which presumably have the same problem. Perhaps it would be an
+> > > > operation on the vhost fd, which ends up processing the ring right
+> > > > there in the context of *that* process instead of doing a wakeup?
+> > >=20
+> > > It might improve the latency in an ideal case but several possible is=
+sues:
+> > >=20
+> > > 1) this will blocks vCPU running until the sent is done
+> > > 2) copy_from_user() may sleep which will block the vcpu thread furthe=
+r
+> >=20
+> > Yes, it would block the vCPU for a short period of time, but we could
+> > limit that. The real win is to improve latency of single, short packets
+> > like a first SYN, or SYNACK. It should work fine even if it's limited
+> > to *one* *short* packet which *is* resident in memory.
+>=20
+>=20
+> This looks tricky since we need to poke both virtqueue metadata as well=
+=20
+> as the payload.
 
-Tested-by: Alan Maguire <alan.maguire@oracle.com>
+That's OK as we'd *only* do it if the thread is quiescent anyway.
 
-BTW I also verified that if we extend bpf_program__attach_kprobe() to
-support the function+offset format in the func_name argument for kprobes, 
-the following test will pass too:
+> And we need to let the packet iterate the network stack which might have=
+=20
+> extra latency (qdiscs, eBPF, switch/OVS).
+>=20
+> So it looks to me it's better to use vhost_net busy polling instead=20
+> (VHOST_SET_VRING_BUSYLOOP_TIMEOUT).
 
-__u64 test5_result = 0;
-SEC("kprobe/bpf_fentry_test5+0x6")
-int test5(struct pt_regs *ctx)
-{
-        __u64 addr = bpf_get_func_ip(ctx);
+Or something very similar, with the *trylock* and bailing out.
 
-        test5_result = (const void *) addr == (&bpf_fentry_test5 + 0x6);
-        return 0;
-}
+> Userspace can detect this feature by validating the existence of the ioct=
+l.
 
-Thanks!
+Yep. Or if we want to get fancy, we could even offer it to the guest.
+As a *different* doorbell register to poke if they want to relinquish
+the physical CPU to process the packet quicker. We wouldn't even *need*
+to go through userspace at all, if we put that into a separate page...
+but that probably *is* overengineering it :)
 
-Alan
- 
-> ---
-> Jiri Olsa (5):
->       bpf, x86: Store caller's ip in trampoline stack
->       bpf: Enable BPF_TRAMP_F_IP_ARG for trampolines with call_get_func_ip
->       bpf: Add bpf_get_func_ip helper for tracing programs
->       bpf: Add bpf_get_func_ip helper for kprobe programs
->       selftests/bpf: Add test for bpf_get_func_ip helper
-> 
->  arch/x86/net/bpf_jit_comp.c                               | 19 +++++++++++++++++++
->  include/linux/bpf.h                                       |  5 +++++
->  include/linux/filter.h                                    |  3 ++-
->  include/uapi/linux/bpf.h                                  |  7 +++++++
->  kernel/bpf/trampoline.c                                   | 12 +++++++++---
->  kernel/bpf/verifier.c                                     | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  kernel/trace/bpf_trace.c                                  | 29 +++++++++++++++++++++++++++++
->  kernel/trace/trace_kprobe.c                               | 20 ++++++++++++++++++--
->  kernel/trace/trace_probe.h                                |  5 +++++
->  tools/include/uapi/linux/bpf.h                            |  7 +++++++
->  tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c | 42 ++++++++++++++++++++++++++++++++++++++++++
->  tools/testing/selftests/bpf/progs/get_func_ip_test.c      | 62 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  12 files changed, 260 insertions(+), 6 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
->  create mode 100644 tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> 
-> 
+> > Although actually I'm not *overly* worried about the 'resident' part.
+> > For a transmit packet, especially a short one not a sendpage(), it's
+> > fairly likely the the guest has touched the buffer right before sending
+> > it. And taken the hit of faulting it in then, if necessary. If the host
+> > is paging out memory which is *active* use by a guest, that guest is
+> > screwed anyway :)
+>=20
+>=20
+> Right, but there could be workload that is unrelated to the networking.=
+=20
+> Block vCPU thread in this case seems sub-optimal.
+>=20
+
+Right, but the VMM (or the guest, if we're letting the guest choose)
+wouldn't have to use it for those cases.
+
+> > Alternatively, there's still the memory map thing I need to fix before
+> > I can commit this in my application:
+> >=20
+> > #ifdef __x86_64__
+> > 	vmem->regions[0].guest_phys_addr =3D 4096;
+> > 	vmem->regions[0].memory_size =3D 0x7fffffffe000;
+> > 	vmem->regions[0].userspace_addr =3D 4096;
+> > #else
+> > #error FIXME
+> > #endif
+> > 	if (ioctl(vpninfo->vhost_fd, VHOST_SET_MEM_TABLE, vmem) < 0) {
+> >=20
+> > Perhaps if we end up with a user-visible feature to deal with that,
+> > then I could use the presence of *that* feature to infer that the tun
+> > bugs are fixed.
+>=20
+>=20
+> As we discussed before it could be a new backend feature. VHOST_NET_SVA=
+=20
+> (shared virtual address)?
+
+Yeah, I'll take a look.
+
+> > Another random thought as I stare at this... can't we handle checksums
+> > in tun_get_user() / tun_put_user()? We could always set NETIF_F_HW_CSUM
+> > on the tun device, and just do it *while* we're copying the packet to
+> > userspace, if userspace doesn't support it. That would be better than
+> > having the kernel complete the checksum in a separate pass *before*
+> > handing the skb to tun_net_xmit().
+>=20
+>=20
+> I'm not sure I get this, but for performance reason we don't do any csum=
+=20
+> in this case?
+
+I think we have to; the packets can't leave the box without a valid
+checksum. If the skb isn't CHECKSUM_COMPLETE at the time it's handed
+off to the ->hard_start_xmit of a netdev which doesn't advertise
+hardware checksum support, the network stack will do it manually in an
+extra pass.
+
+Which is kind of silly if the tun device is going to do a pass over all
+the data *anyway* as it copies it up to userspace. Even in the normal
+case without vhost-net.
+
+> > We could similarly do a partial checksum in tun_get_user() and hand it
+> > off to the network stack with ->ip_summed =3D=3D CHECKSUM_PARTIAL.
+>=20
+>=20
+> I think that's is how it is expected to work (via vnet header), see=20
+> virtio_net_hdr_to_skb().
+
+But only if the "guest" supports it; it doesn't get handled by the tun
+device. It *could*, since we already have the helpers to checksum *as*
+we copy to/from userspace.
+
+It doesn't help for me to advertise that I support TX checksums in
+userspace because I'd have to do an extra pass for that. I only do one
+pass over the data as I encrypt it, and in many block cipher modes the
+encryption of the early blocks affects the IV for the subsequent
+blocks... do I can't just go back and "fix" the checksum at the start
+of the packet, once I'm finished.
+
+So doing the checksum as the packet is copied up to userspace would be
+very useful.
+
+--=-CAlq5QINaohkmriR4npb
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
+ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
+OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
+RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
+cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
+uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
+Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
+Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
+xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
+BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
+dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
+LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
+Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
+Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
+YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
+nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
+PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
+7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
+Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
+MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
+NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
+/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
+0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
+vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
+ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
+ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
+CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
+BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
+aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
+bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
+LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
+W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
+vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
+gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
+RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
+jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
+AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
+BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
++bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
+WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
+aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
+CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
+u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
+RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
+QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
+b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
+cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
+SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
+0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
+KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
+E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
+M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
+jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
+yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
+gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
+R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
+ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
+NzAxMTczOTAwWjAvBgkqhkiG9w0BCQQxIgQgVhewBAFQcYyIFEK/LXK5fkSb/rJPosiwWyfI+Gx2
+22Awgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
+PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
+DQEBAQUABIIBAHSDYc7iqjtvXKKTDoPkcDH9xgRnOreGSA9a7D0r7wBr90jDVbi16YWI/2jA5kAb
+nzyii+qMD0RHsXkSvMUPUxwDAc1kgoLS3wj6DWxqMzsykirc6lloZw9dqSCw5sczXp04OJjywYZT
+qSuhsFApGpOTTf5S9cf04ZXVKiYMNli8AMkwNdeDsN2l/GZRGdd3aLxTOO7qfJLHrgPaz5W1iO7R
++3PGBVAhkU8LGNKcvd920z0jP0IxDTB6z1QpoQOC85NlI0U6peAGEW93j8xo6GV01xFLhVLc12oR
+SUyRlrK1ydwcUrQxkqh1+4tjDmNVVjRsdLQPr46y3tfglrXCmbIAAAAAAAA=
+
+
+--=-CAlq5QINaohkmriR4npb--
+
