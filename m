@@ -2,227 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D9663B8BE1
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 04:01:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1613B8C03
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 04:16:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238590AbhGACDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 22:03:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50742 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237937AbhGACDv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Jun 2021 22:03:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3EA7A61469;
-        Thu,  1 Jul 2021 02:01:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625104881;
-        bh=SuLfwbKkLfU3ZJX2CLwKdN+PLnxLZwCbh0DFof5hfwM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EoK29zMcQJa4JZ/4g4n2WXccb2esbP84pr80Va3z7+WKu+IWpBXn5c0X3ANbN+W8R
-         epeZp87tDf+cl7WsTFePSz5UfZakdaNEeyyJFTZaPWR++lDlTfoMYiU4xtgWJohXP5
-         cZA5sI/8r7edFpr98JGIN6xBBxLj8/MDaxug8rrRl4fHoC1Ra5gmikyYvPh7trbjTI
-         cUiiHEH/z22UbDUwQU2nYYS64nJ/gyNtLdpFA4G1iLqUwGoBJRxmn9qII2yv1332Gb
-         SJsU7w6jnIcXBFWjOLbEqvxKkgAav6A7MVjzZisLRCL+VsDCrJWtb73UiTnk8oggyx
-         uF0XUjV6BlSjw==
-Date:   Thu, 1 Jul 2021 11:01:18 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH bpf-next 4/5] bpf: Add bpf_get_func_ip helper for kprobe
- programs
-Message-Id: <20210701110118.2de4bb9352ca7e8cb86ee6de@kernel.org>
-In-Reply-To: <9bf11f44-37cf-3d39-619d-87b9b611716e@fb.com>
-References: <20210629192945.1071862-1-jolsa@kernel.org>
-        <20210629192945.1071862-5-jolsa@kernel.org>
-        <9286ce63-5cba-e16a-a7db-886548a04a64@fb.com>
-        <20210701085854.0f2aeafc0fce11f3ca9d52a8@kernel.org>
-        <9bf11f44-37cf-3d39-619d-87b9b611716e@fb.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S238609AbhGACSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 22:18:33 -0400
+Received: from mailgw01.mediatek.com ([60.244.123.138]:33803 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234257AbhGACSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 22:18:32 -0400
+X-UUID: 7a6e163fe3ba47bd8806663946434be4-20210701
+X-UUID: 7a6e163fe3ba47bd8806663946434be4-20210701
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1093462285; Thu, 01 Jul 2021 10:15:59 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 1 Jul 2021 10:15:51 +0800
+Received: from localhost.localdomain (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 1 Jul 2021 10:15:51 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <wsd_upstream@mediatek.com>,
+        <Rocco.Yue@gmail.com>, <chao.song@mediatek.com>,
+        <kuohong.wang@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        Rocco Yue <rocco.yue@mediatek.com>
+Subject: [PATCH] net: ipv6: don't generate link-local address in any addr_gen_mode
+Date:   Thu, 1 Jul 2021 09:59:40 +0800
+Message-ID: <20210701015940.29726-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Jun 2021 18:45:46 -0700
-Yonghong Song <yhs@fb.com> wrote:
+This patch provides an ipv6 proc file named
+"disable_gen_linklocal_addr", its absolute path is as follows:
+"/proc/sys/net/ipv6/conf/<iface>/disable_gen_linklocal_addr".
 
-> 
-> 
-> On 6/30/21 4:58 PM, Masami Hiramatsu wrote:
-> > On Wed, 30 Jun 2021 10:47:01 -0700
-> > Yonghong Song <yhs@fb.com> wrote:
-> > 
-> >>
-> >>
-> >> On 6/29/21 12:29 PM, Jiri Olsa wrote:
-> >>> Adding bpf_get_func_ip helper for BPF_PROG_TYPE_KPROBE programs,
-> >>> so it's now possible to call bpf_get_func_ip from both kprobe and
-> >>> kretprobe programs.
-> >>>
-> >>> Taking the caller's address from 'struct kprobe::addr', which is
-> >>> defined for both kprobe and kretprobe.
-> >>>
-> >>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> >>> ---
-> >>>    include/uapi/linux/bpf.h       |  2 +-
-> >>>    kernel/bpf/verifier.c          |  2 ++
-> >>>    kernel/trace/bpf_trace.c       | 14 ++++++++++++++
-> >>>    kernel/trace/trace_kprobe.c    | 20 ++++++++++++++++++--
-> >>>    kernel/trace/trace_probe.h     |  5 +++++
-> >>>    tools/include/uapi/linux/bpf.h |  2 +-
-> >>>    6 files changed, 41 insertions(+), 4 deletions(-)
-> >>>
-> >>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> >>> index 83e87ffdbb6e..4894f99a1993 100644
-> >>> --- a/include/uapi/linux/bpf.h
-> >>> +++ b/include/uapi/linux/bpf.h
-> >>> @@ -4783,7 +4783,7 @@ union bpf_attr {
-> >>>     *
-> >>>     * u64 bpf_get_func_ip(void *ctx)
-> >>>     * 	Description
-> >>> - * 		Get address of the traced function (for tracing programs).
-> >>> + * 		Get address of the traced function (for tracing and kprobe programs).
-> >>>     * 	Return
-> >>>     * 		Address of the traced function.
-> >>>     */
-> >>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> >>> index 701ff7384fa7..b66e0a7104f8 100644
-> >>> --- a/kernel/bpf/verifier.c
-> >>> +++ b/kernel/bpf/verifier.c
-> >>> @@ -5979,6 +5979,8 @@ static bool has_get_func_ip(struct bpf_verifier_env *env)
-> >>>    			return -ENOTSUPP;
-> >>>    		}
-> >>>    		return 0;
-> >>> +	} else if (type == BPF_PROG_TYPE_KPROBE) {
-> >>> +		return 0;
-> >>>    	}
-> >>>    
-> >>>    	verbose(env, "func %s#%d not supported for program type %d\n",
-> >>> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> >>> index 9edd3b1a00ad..1a5bddce9abd 100644
-> >>> --- a/kernel/trace/bpf_trace.c
-> >>> +++ b/kernel/trace/bpf_trace.c
-> >>> @@ -961,6 +961,18 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_tracing = {
-> >>>    	.arg1_type	= ARG_PTR_TO_CTX,
-> >>>    };
-> >>>    
-> >>> +BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
-> >>> +{
-> >>> +	return trace_current_kprobe_addr();
-> >>> +}
-> >>> +
-> >>> +static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
-> >>> +	.func		= bpf_get_func_ip_kprobe,
-> >>> +	.gpl_only	= true,
-> >>> +	.ret_type	= RET_INTEGER,
-> >>> +	.arg1_type	= ARG_PTR_TO_CTX,
-> >>> +};
-> >>> +
-> >>>    const struct bpf_func_proto *
-> >>>    bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> >>>    {
-> >>> @@ -1092,6 +1104,8 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> >>>    	case BPF_FUNC_override_return:
-> >>>    		return &bpf_override_return_proto;
-> >>>    #endif
-> >>> +	case BPF_FUNC_get_func_ip:
-> >>> +		return &bpf_get_func_ip_proto_kprobe;
-> >>>    	default:
-> >>>    		return bpf_tracing_func_proto(func_id, prog);
-> >>>    	}
-> >>> diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-> >>> index ea6178cb5e33..b07d5888db14 100644
-> >>> --- a/kernel/trace/trace_kprobe.c
-> >>> +++ b/kernel/trace/trace_kprobe.c
-> >>> @@ -1570,6 +1570,18 @@ static int kretprobe_event_define_fields(struct trace_event_call *event_call)
-> >>>    }
-> >>>    
-> >>>    #ifdef CONFIG_PERF_EVENTS
-> >>> +/* Used by bpf get_func_ip helper */
-> >>> +DEFINE_PER_CPU(u64, current_kprobe_addr) = 0;
-> >>
-> >> Didn't check other architectures. But this should work
-> >> for x86 where if nested kprobe happens, the second
-> >> kprobe will not call kprobe handlers.
-> > 
-> > No problem, other architecture also does not call nested kprobes handlers.
-> > However, you don't need this because you can use kprobe_running()
-> > in kprobe context.
-> > 
-> > kp = kprobe_running();
-> > if (kp)
-> > 	return kp->addr;
-> > 
-> > BTW, I'm not sure why don't you use instruction_pointer(regs)?
-> 
-> How about kretprobe? I guess kp->addr should still point to
-> function address but instruction_pointer(regs) does not?
+When the "disable_gen_linklocal_addr" value of a device is 1,
+it means that this device does not need the Linux kernel to
+automatically generate the ipv6 link-local address no matter
+which IN6_ADDR_GEN_MODE is used.
 
-It is now under review (waiting for merge), please check this series.
+The reasons why the kernel does not need to automatically
+generate the ipv6 link-local address are as follows:
 
-https://lore.kernel.org/bpf/162400000592.506599.4695807810528866713.stgit@devnote2/
+(1) In the 3GPP TS 29.061, here is a description as follows:
+"in order to avoid any conflict between the link-local address
+of the MS and that of the GGSN, the Interface-Identifier used
+by the MS to build its link-local address shall be assigned by
+the GGSN. The GGSN ensures the uniqueness of this Interface-
+Identifier. The MT shall then enforce the use of this
+Interface-Identifier by the TE"
 
-Then you can use instruction_pointer(regs) in kretprobes too.
+In other words, in the cellular network, GGSN determines whether
+to reply a solicited RA message by identifying the low 64 bits
+of the source address of the received RS message. Therefore,
+cellular network device's ipv6 link-local address should be set
+as the format of fe80::(GGSN assigned IID).
 
-Thank you,
+For example: When using a new kernel and ARPHRD_RAWIP, kernel
+will generate an EUI64 format ipv6 link-local address, and the
+Linux kernel will uses this link-local address to send RS message.
+The result is that the GGSN will not reply to the RS message with
+a solicited RA message.
 
-> 
-> > 
-> > Thank you,
-> > 
-> >>
-> >> This essentially is to provide an additional parameter to
-> >> bpf program. Andrii is developing a mechanism to
-> >> save arbitrary data in *current task_struct*, which
-> >> might be used here to save current_kprobe_addr, we can
-> >> save one per cpu variable.
-> >>
-> >>> +
-> >>> +u64 trace_current_kprobe_addr(void)
-> >>> +{
-> >>> +	return *this_cpu_ptr(&current_kprobe_addr);
-> >>> +}
-> >>> +
-> >>> +static void trace_current_kprobe_set(struct trace_kprobe *tk)
-> >>> +{
-> >>> +	__this_cpu_write(current_kprobe_addr, (u64) tk->rp.kp.addr);
-> >>> +}
-> >>>    
-> >>>    /* Kprobe profile handler */
-> >>>    static int
-> >>> @@ -1585,6 +1597,7 @@ kprobe_perf_func(struct trace_kprobe *tk, struct pt_regs *regs)
-> >>>    		unsigned long orig_ip = instruction_pointer(regs);
-> >>>    		int ret;
-> >>>    
-> >>> +		trace_current_kprobe_set(tk);
-> >>>    		ret = trace_call_bpf(call, regs);
-> >>>    
-> >>>    		/*
-> >>> @@ -1631,8 +1644,11 @@ kretprobe_perf_func(struct trace_kprobe *tk, struct kretprobe_instance *ri,
-> >>>    	int size, __size, dsize;
-> >>>    	int rctx;
-> >>>    
-> >>> -	if (bpf_prog_array_valid(call) && !trace_call_bpf(call, regs))
-> >>> -		return;
-> >>> +	if (bpf_prog_array_valid(call)) {
-> >>> +		trace_current_kprobe_set(tk);
-> >>> +		if (!trace_call_bpf(call, regs))
-> >>> +			return;
-> >>> +	}
-> >>>    
-> >>>    	head = this_cpu_ptr(call->perf_events);
-> >>>    	if (hlist_empty(head))
-> >> [...]
-> > 
-> > 
+Although the combination of IN6_ADDR_GEN_MODE_NONE + ARPHRD_NONE
+can avoid the above problem (1), when the addr_gen_mode is changed
+to the IN6_ADDR_GEN_MODE_STABLE_PRIVACY, the above problem still
+exist. The detail as follows:
 
+(2) Among global mobile operators, some operators have already
+request MT (Mobile Terminal) to support RFC7217, such as AT&T.
+This means that the device not only needs the IID assigned by the
+GGSN to build the ipv6 link-local address to trigger the RS message,
+but also needs to use the stable privacy mode to build the ipv6
+global address after receiving the RA.
 
+Obviously using APRHRD_NONE and IN6_ADDR_GEN_MODE_STABLE_PRIVACY
+mode cannot achieve this.
+
+In summary, using the "disable_gen_linklocal_addr" proc file can
+disable kernel auto generate ipv6 link-local address no matter
+which addr_gen_mode is used.
+
+Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
+---
+ include/linux/ipv6.h      |  1 +
+ include/uapi/linux/ipv6.h |  1 +
+ net/ipv6/addrconf.c       | 16 ++++++++++++++++
+ 3 files changed, 18 insertions(+)
+
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index 70b2ad3b9884..60c5da76e207 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -76,6 +76,7 @@ struct ipv6_devconf {
+ 	__s32		disable_policy;
+ 	__s32           ndisc_tclass;
+ 	__s32		rpl_seg_enabled;
++	__s32		disable_gen_linklocal_addr;
+ 
+ 	struct ctl_table_header *sysctl_header;
+ };
+diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
+index 70603775fe91..0449d908b8c2 100644
+--- a/include/uapi/linux/ipv6.h
++++ b/include/uapi/linux/ipv6.h
+@@ -190,6 +190,7 @@ enum {
+ 	DEVCONF_NDISC_TCLASS,
+ 	DEVCONF_RPL_SEG_ENABLED,
+ 	DEVCONF_RA_DEFRTR_METRIC,
++	DEVCONF_DISABLE_GEN_LINKLOCAL_ADDR,
+ 	DEVCONF_MAX
+ };
+ 
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 701eb82acd1c..0035f935b25a 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -237,6 +237,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
+ 	.addr_gen_mode		= IN6_ADDR_GEN_MODE_EUI64,
+ 	.disable_policy		= 0,
+ 	.rpl_seg_enabled	= 0,
++	.disable_gen_linklocal_addr = 0,
+ };
+ 
+ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
+@@ -293,6 +294,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
+ 	.addr_gen_mode		= IN6_ADDR_GEN_MODE_EUI64,
+ 	.disable_policy		= 0,
+ 	.rpl_seg_enabled	= 0,
++	.disable_gen_linklocal_addr = 0,
+ };
+ 
+ /* Check if link is ready: is it up and is a valid qdisc available */
+@@ -3352,6 +3354,12 @@ static void addrconf_dev_config(struct net_device *dev)
+ 	if (IS_ERR(idev))
+ 		return;
+ 
++	if (idev->cnf.disable_gen_linklocal_addr) {
++		pr_info("%s: IPv6 link-local address being disabled\n",
++			idev->dev->name);
++		return;
++	}
++
+ 	/* this device type has no EUI support */
+ 	if (dev->type == ARPHRD_NONE &&
+ 	    idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_EUI64)
+@@ -5526,6 +5534,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
+ 	array[DEVCONF_DISABLE_POLICY] = cnf->disable_policy;
+ 	array[DEVCONF_NDISC_TCLASS] = cnf->ndisc_tclass;
+ 	array[DEVCONF_RPL_SEG_ENABLED] = cnf->rpl_seg_enabled;
++	array[DEVCONF_DISABLE_GEN_LINKLOCAL_ADDR] = cnf->disable_gen_linklocal_addr;
+ }
+ 
+ static inline size_t inet6_ifla6_size(void)
+@@ -6932,6 +6941,13 @@ static const struct ctl_table addrconf_sysctl[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
+ 	},
++	{
++		.procname	= "disable_gen_linklocal_addr",
++		.data		= &ipv6_devconf.disable_gen_linklocal_addr,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
+ 	{
+ 		/* sentinel */
+ 	}
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.18.0
+
