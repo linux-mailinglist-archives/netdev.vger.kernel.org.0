@@ -2,74 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F2BE3B94B5
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 18:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0340A3B951B
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 18:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbhGAQgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 12:36:48 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:37668 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbhGAQgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 12:36:47 -0400
-Received: from 111-240-144-27.dynamic-ip.hinet.net ([111.240.144.27] helo=localhost.localdomain)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <chris.chiu@canonical.com>)
-        id 1lyzdj-0000i1-Tp; Thu, 01 Jul 2021 16:34:12 +0000
-From:   chris.chiu@canonical.com
-To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org, code@reto-schneider.ch
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chris Chiu <chris.chiu@canonical.com>
-Subject: [PATCH] rtl8xxxu: disable interrupt_in transfer for 8188cu and 8192cu
-Date:   Fri,  2 Jul 2021 00:33:54 +0800
-Message-Id: <20210701163354.118403-1-chris.chiu@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S232766AbhGARCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 13:02:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48869 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229929AbhGARCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 13:02:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625158776;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JHh8ICKOowqqu/ghi9bTRyehDsl7GNMy0SOY9PPvc9Q=;
+        b=hJgpjQ58cTpygw4YrSkl7QIRF4XrVpS+N3ap1QsRH7xfjl+FAz5qb8NYM7RLDe8hSPNy0M
+        jLj0NzADYH6dYIDeK3X20e0/TsWong3s/hNwDQVswGKeI5qCsLIN/gPhm3/Ci/nWMQ+XR9
+        omvLTgNDQGW3RegV2WK2WPP6ZY2SbB0=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-227-_gRJn7o3NbaUXzDtddTy_g-1; Thu, 01 Jul 2021 12:59:35 -0400
+X-MC-Unique: _gRJn7o3NbaUXzDtddTy_g-1
+Received: by mail-wr1-f71.google.com with SMTP id p12-20020a5d59ac0000b0290125818b9a60so2792019wrr.19
+        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 09:59:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JHh8ICKOowqqu/ghi9bTRyehDsl7GNMy0SOY9PPvc9Q=;
+        b=P5RrC0dYAQCfs/5YYSgPhk8nLwnOpvPQwk2AGyKQXvNVPY2cUU+UyyU7x5sD2uLHK1
+         yPGPyeQNYTqklm6jovIPqKUYhGNkkp2fqkSw+GhUi8gDwyfcWwPkV28u9uKVMKg2g6a8
+         OBRGDoMfQVCStZLlme07p+gTan4QVI9gTCN32RnMJQOn8AozpzLQxFqmAw4p35we7X5J
+         2TcwF/LPmatSb4EiwfDPN5ET7iaX+ifkss69X/XehA6Lch5KVp/odjBoW7TXkB/yVglL
+         d/Xb+DiINQ6CbSZ3XhWQUHp+YXxynkKSHbRmXWf5kJ9fvgir7XStTfWkiWBTYaYJkrCt
+         1MPg==
+X-Gm-Message-State: AOAM531/rYB509lWFx/8Dv38Xohc19PWszHWEE4l2FS0Om9C4BiL3+bN
+        TRkbCKLpOEmPBB0VQR7B7+sRagk6aar5gqBxYwypPm6oggpSKZqcFOLk2DfsQW+niLIBKflQadQ
+        ma3AADqkhANSgikSW
+X-Received: by 2002:a1c:4b08:: with SMTP id y8mr708124wma.80.1625158774498;
+        Thu, 01 Jul 2021 09:59:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzUJwaFSBPDak7ty0IV5j7y2eQyFVUQYPsp6gCVoc+oDBE3CM0+VQeowj59kEauWhKjd5LaHQ==
+X-Received: by 2002:a1c:4b08:: with SMTP id y8mr708103wma.80.1625158774317;
+        Thu, 01 Jul 2021 09:59:34 -0700 (PDT)
+Received: from pc-32.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id v25sm543261wrd.65.2021.07.01.09.59.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Jul 2021 09:59:33 -0700 (PDT)
+Date:   Thu, 1 Jul 2021 18:59:31 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next 1/4] selftests: forwarding: Test redirecting gre
+ or ipip packets to Ethernet
+Message-ID: <20210701165931.GB3933@pc-32.home>
+References: <cover.1625056665.git.gnault@redhat.com>
+ <0a4e63cd3cde3c71cfc422a7f0f5e9bc76c0c1f5.1625056665.git.gnault@redhat.com>
+ <YN1Wxm0mOFFhbuTl@shredder>
+ <20210701145943.GA3933@pc-32.home>
+ <1932a3af-2fdd-229a-e5f5-6b1ef95361e1@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1932a3af-2fdd-229a-e5f5-6b1ef95361e1@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Chiu <chris.chiu@canonical.com>
+On Thu, Jul 01, 2021 at 09:38:44AM -0600, David Ahern wrote:
+> On 7/1/21 8:59 AM, Guillaume Nault wrote:
+> > I first tried to write this selftest using VRFs, but there were some
+> > problems that made me switch to namespaces (I don't remember precisely
+> > which ones, probably virtual tunnel devices in collect_md mode).
+> 
+> if you hit a problem with the test not working, send me the test script
+> and I will take a look.
 
-There will be crazy numbers of interrupts triggered by 8188cu and
-8192cu module, around 8000~10000 interrupts per second, on the usb
-host controller. Compare with the vendor driver source code, it's
-mapping to the configuration CONFIG_USB_INTERRUPT_IN_PIPE and it is
-disabled by default.
-
-Since the interrupt transfer is neither used for TX/RX nor H2C
-commands. Disable it to avoid the confusing interrupts for the
-8188cu and 8192cu module which I only have for verification.
-
-Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
----
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 03c6ed7efe06..6a3dfa71b27f 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -1670,7 +1670,7 @@ static int rtl8xxxu_identify_chip(struct rtl8xxxu_priv *priv)
- 			priv->rf_paths = 2;
- 			priv->rx_paths = 2;
- 			priv->tx_paths = 2;
--			priv->usb_interrupts = 1;
-+			priv->usb_interrupts = 0;
- 			priv->rtl_chip = RTL8192C;
- 		}
- 		priv->has_wifi = 1;
-@@ -1680,7 +1680,7 @@ static int rtl8xxxu_identify_chip(struct rtl8xxxu_priv *priv)
- 		priv->rx_paths = 1;
- 		priv->tx_paths = 1;
- 		priv->rtl_chip = RTL8188C;
--		priv->usb_interrupts = 1;
-+		priv->usb_interrupts = 0;
- 		priv->has_wifi = 1;
- 	}
- 
--- 
-2.20.1
+Okay, thanks.
 
