@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBAC13B91A0
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 14:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1FF83B919D
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 14:27:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236440AbhGAM3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 08:29:53 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:13049 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236407AbhGAM3w (ORCPT
+        id S236458AbhGAM3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 08:29:54 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9442 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236332AbhGAM3w (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 08:29:52 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GFy7W34K8zZjZl;
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GFy7W35R8zZpSZ;
         Thu,  1 Jul 2021 20:24:07 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Thu, 1 Jul 2021 20:27:14 +0800
 Received: from localhost.localdomain (10.69.192.56) by
@@ -29,9 +29,9 @@ CC:     <brouer@redhat.com>, <paulmck@kernel.org>, <peterz@infradead.org>,
         <will@kernel.org>, <shuah@kernel.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [PATCH net-next v3 1/3] selftests/ptr_ring: add benchmark application for ptr_ring
-Date:   Thu, 1 Jul 2021 20:26:40 +0800
-Message-ID: <1625142402-64945-2-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH net-next v3 2/3] ptr_ring: move r->queue[] clearing after r->consumer_head updating
+Date:   Thu, 1 Jul 2021 20:26:41 +0800
+Message-ID: <1625142402-64945-3-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1625142402-64945-1-git-send-email-linyunsheng@huawei.com>
 References: <1625142402-64945-1-git-send-email-linyunsheng@huawei.com>
@@ -45,435 +45,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently ptr_ring selftest is embedded within the virtio
-selftest, which involves some specific virtio operation,
-such as notifying and kicking.
+Currently r->queue[] clearing is done before r->consumer_head
+updating, which makes the __ptr_ring_empty() returning false
+positive result(the ring is non-empty, but __ptr_ring_empty()
+suggest that it is empty) if the checking is done after the
+r->queue clearing and before the consumer_head moving forward.
 
-As ptr_ring has been used by various subsystems, it deserves
-it's owner selftest in order to benchmark different usecase
-of ptr_ring, such as page pool and pfifo_fast qdisc.
+Move the r->queue[] clearing after consumer_head moving forward
+to avoid the above case.
 
-So add a simple application to benchmark ptr_ring performance.
-Currently two test mode is supported:
-Mode 0: Both producing and consuming is done in a single thread,
-        it is called simple test mode in the test app.
-Mode 1: Producing and consuming is done in different thread
-        concurrently, also known as SPSC(single-producer/
-        single-consumer) test.
+As a side effect of above change, a consumer_head checking is
+avoided for the likely case, and it has noticeable performance
+improvement when it is tested using the ptr_ring_test selftest
+added in the previous patch.
 
-The multi-producer/single-consumer test for pfifo_fast case is
-not added yet, which can be added if using CAS atomic operation
-to enable lockless multi-producer is proved to be better than
-using r->producer_lock.
+Tested using the "perf stat -r 1000 ./ptr_ring_test -s 1000 -m 1
+-N 100000000", comparing the elapsed time:
+
+ arch     unpatched           patched       improvement
+arm64    2.087205 sec       1.888224 sec      +9.5%
+ X86      2.6538 sec         2.5422 sec       +4.2%
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
-V3: Remove timestamp sampling, use standard C library as much
-    as possible.
+V3: adjust the title and comment log according to disscusion in
+    V2, and update performance data using "perf stat -r".
+V2: Add performance data.
 ---
- MAINTAINERS                                      |   5 +
- tools/testing/selftests/ptr_ring/Makefile        |   6 +
- tools/testing/selftests/ptr_ring/ptr_ring_test.c | 224 +++++++++++++++++++++++
- tools/testing/selftests/ptr_ring/ptr_ring_test.h | 130 +++++++++++++
- 4 files changed, 365 insertions(+)
- create mode 100644 tools/testing/selftests/ptr_ring/Makefile
- create mode 100644 tools/testing/selftests/ptr_ring/ptr_ring_test.c
- create mode 100644 tools/testing/selftests/ptr_ring/ptr_ring_test.h
+ include/linux/ptr_ring.h | 25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index cc375fd..1227022 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14847,6 +14847,11 @@ F:	drivers/net/phy/dp83640*
- F:	drivers/ptp/*
- F:	include/linux/ptp_cl*
+diff --git a/include/linux/ptr_ring.h b/include/linux/ptr_ring.h
+index 808f9d3..db9c282 100644
+--- a/include/linux/ptr_ring.h
++++ b/include/linux/ptr_ring.h
+@@ -261,8 +261,7 @@ static inline void __ptr_ring_discard_one(struct ptr_ring *r)
+ 	/* Note: we must keep consumer_head valid at all times for __ptr_ring_empty
+ 	 * to work correctly.
+ 	 */
+-	int consumer_head = r->consumer_head;
+-	int head = consumer_head++;
++	int consumer_head = r->consumer_head + 1;
  
-+PTR RING BENCHMARK
-+M:	Yunsheng Lin <linyunsheng@huawei.com>
-+L:	netdev@vger.kernel.org
-+F:	tools/testing/selftests/ptr_ring/
+ 	/* Once we have processed enough entries invalidate them in
+ 	 * the ring all at once so producer can reuse their space in the ring.
+@@ -271,19 +270,27 @@ static inline void __ptr_ring_discard_one(struct ptr_ring *r)
+ 	 */
+ 	if (unlikely(consumer_head - r->consumer_tail >= r->batch ||
+ 		     consumer_head >= r->size)) {
++		int tail = r->consumer_tail;
 +
- PTRACE SUPPORT
- M:	Oleg Nesterov <oleg@redhat.com>
- S:	Maintained
-diff --git a/tools/testing/selftests/ptr_ring/Makefile b/tools/testing/selftests/ptr_ring/Makefile
-new file mode 100644
-index 0000000..346dea9
---- /dev/null
-+++ b/tools/testing/selftests/ptr_ring/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+LDLIBS = -lpthread
-+
-+TEST_GEN_PROGS := ptr_ring_test
-+
-+include ../lib.mk
-diff --git a/tools/testing/selftests/ptr_ring/ptr_ring_test.c b/tools/testing/selftests/ptr_ring/ptr_ring_test.c
-new file mode 100644
-index 0000000..4a5312f
---- /dev/null
-+++ b/tools/testing/selftests/ptr_ring/ptr_ring_test.c
-@@ -0,0 +1,224 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2021 HiSilicon Limited.
-+ */
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+#include <string.h>
-+#include <errno.h>
-+#include <malloc.h>
-+#include <stdbool.h>
-+
-+#include "ptr_ring_test.h"
-+#include "../../../../include/linux/ptr_ring.h"
-+
-+#define MIN_RING_SIZE	2
-+#define MAX_RING_SIZE	10000000
-+
-+static struct ptr_ring ring ____cacheline_aligned_in_smp;
-+
-+struct worker_info {
-+	pthread_t tid;
-+	int test_count;
-+	bool error;
-+};
-+
-+static void *produce_worker(void *arg)
-+{
-+	struct worker_info *info = arg;
-+	unsigned long i = 0;
-+	int ret;
-+
-+	while (++i <= info->test_count) {
-+		while (__ptr_ring_full(&ring))
-+			cpu_relax();
-+
-+		ret = __ptr_ring_produce(&ring, (void *)i);
-+		if (ret) {
-+			fprintf(stderr, "produce failed: %d\n", ret);
-+			info->error = true;
-+			return NULL;
++		if (unlikely(consumer_head >= r->size)) {
++			r->consumer_tail = 0;
++			WRITE_ONCE(r->consumer_head, 0);
++		} else {
++			r->consumer_tail = consumer_head;
++			WRITE_ONCE(r->consumer_head, consumer_head);
 +		}
-+	}
 +
-+	info->error = false;
+ 		/* Zero out entries in the reverse order: this way we touch the
+ 		 * cache line that producer might currently be reading the last;
+ 		 * producer won't make progress and touch other cache lines
+ 		 * besides the first one until we write out all entries.
+ 		 */
+-		while (likely(head >= r->consumer_tail))
+-			r->queue[head--] = NULL;
+-		r->consumer_tail = consumer_head;
+-	}
+-	if (unlikely(consumer_head >= r->size)) {
+-		consumer_head = 0;
+-		r->consumer_tail = 0;
++		while (likely(--consumer_head >= tail))
++			r->queue[consumer_head] = NULL;
 +
-+	return NULL;
-+}
-+
-+static void *consume_worker(void *arg)
-+{
-+	struct worker_info *info = arg;
-+	unsigned long i = 0;
-+	int *ptr;
-+
-+	while (++i <= info->test_count) {
-+		while (__ptr_ring_empty(&ring))
-+			cpu_relax();
-+
-+		ptr = __ptr_ring_consume(&ring);
-+		if ((unsigned long)ptr != i) {
-+			fprintf(stderr, "consumer failed, ptr: %lu, i: %lu\n",
-+				(unsigned long)ptr, i);
-+			info->error = true;
-+			return NULL;
-+		}
-+	}
-+
-+	if (!__ptr_ring_empty(&ring)) {
-+		fprintf(stderr, "ring should be empty, test failed\n");
-+		info->error = true;
-+		return NULL;
-+	}
-+
-+	info->error = false;
-+	return NULL;
-+}
-+
-+/* test case for single producer single consumer */
-+static void spsc_test(int size, int count)
-+{
-+	struct worker_info producer, consumer;
-+	pthread_attr_t attr;
-+	void *res;
-+	int ret;
-+
-+	ret = ptr_ring_init(&ring, size, 0);
-+	if (ret) {
-+		fprintf(stderr, "init failed: %d\n", ret);
 +		return;
-+	}
+ 	}
 +
-+	producer.test_count = count;
-+	consumer.test_count = count;
-+
-+	ret = pthread_attr_init(&attr);
-+	if (ret) {
-+		fprintf(stderr, "pthread attr init failed: %d\n", ret);
-+		goto out;
-+	}
-+
-+	ret = pthread_create(&producer.tid, &attr,
-+			     produce_worker, &producer);
-+	if (ret) {
-+		fprintf(stderr, "create producer thread failed: %d\n", ret);
-+		goto out;
-+	}
-+
-+	ret = pthread_create(&consumer.tid, &attr,
-+			     consume_worker, &consumer);
-+	if (ret) {
-+		fprintf(stderr, "create consumer thread failed: %d\n", ret);
-+		goto out;
-+	}
-+
-+	ret = pthread_join(producer.tid, &res);
-+	if (ret) {
-+		fprintf(stderr, "join producer thread failed: %d\n", ret);
-+		goto out;
-+	}
-+
-+	ret = pthread_join(consumer.tid, &res);
-+	if (ret) {
-+		fprintf(stderr, "join consumer thread failed: %d\n", ret);
-+		goto out;
-+	}
-+
-+	if (producer.error || consumer.error) {
-+		fprintf(stderr, "spsc test failed\n");
-+		goto out;
-+	}
-+
-+	printf("ptr_ring(size:%d) perf spsc test produced/comsumed %d items, finished\n",
-+	       size, count);
-+out:
-+	ptr_ring_cleanup(&ring, NULL);
-+}
-+
-+static void simple_test(int size, int count)
-+{
-+	struct timeval start, end;
-+	int i = 0;
-+	int *ptr;
-+	int ret;
-+
-+	ret = ptr_ring_init(&ring, size, 0);
-+	if (ret) {
-+		fprintf(stderr, "init failed: %d\n", ret);
-+		return;
-+	}
-+
-+	while (++i <= count) {
-+		ret = __ptr_ring_produce(&ring, &count);
-+		if (ret) {
-+			fprintf(stderr, "produce failed: %d\n", ret);
-+			goto out;
-+		}
-+
-+		ptr = __ptr_ring_consume(&ring);
-+		if (ptr != &count)  {
-+			fprintf(stderr, "consume failed: %p\n", ptr);
-+			goto out;
-+		}
-+	}
-+
-+	printf("ptr_ring(size:%d) perf simple test produced/consumed %d items, finished\n",
-+	       size, count);
-+
-+out:
-+	ptr_ring_cleanup(&ring, NULL);
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	int count = 1000000;
-+	int size = 1000;
-+	int mode = 0;
-+	int opt;
-+
-+	while ((opt = getopt(argc, argv, "N:s:m:h")) != -1) {
-+		switch (opt) {
-+		case 'N':
-+			count = atoi(optarg);
-+			break;
-+		case 's':
-+			size = atoi(optarg);
-+			break;
-+		case 'm':
-+			mode = atoi(optarg);
-+			break;
-+		case 'h':
-+			printf("usage: ptr_ring_test [-N COUNT] [-s RING_SIZE] [-m TEST_MODE]\n");
-+			return 0;
-+		default:
-+			return -1;
-+		}
-+	}
-+
-+	if (count <= 0) {
-+		fprintf(stderr, "invalid test count, must be > 0\n");
-+		return -1;
-+	}
-+
-+	if (size < MIN_RING_SIZE || size > MAX_RING_SIZE) {
-+		fprintf(stderr, "invalid ring size, must be in %d-%d\n",
-+			MIN_RING_SIZE, MAX_RING_SIZE);
-+		return -1;
-+	}
-+
-+	switch (mode) {
-+	case 0:
-+		simple_test(size, count);
-+		break;
-+	case 1:
-+		spsc_test(size, count);
-+		break;
-+	default:
-+		fprintf(stderr, "invalid test mode\n");
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-diff --git a/tools/testing/selftests/ptr_ring/ptr_ring_test.h b/tools/testing/selftests/ptr_ring/ptr_ring_test.h
-new file mode 100644
-index 0000000..32bfefb
---- /dev/null
-+++ b/tools/testing/selftests/ptr_ring/ptr_ring_test.h
-@@ -0,0 +1,130 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+
-+#ifndef _TEST_PTR_RING_TEST_H
-+#define _TEST_PTR_RING_TEST_H
-+
-+#include <assert.h>
-+#include <stdatomic.h>
-+#include <pthread.h>
-+
-+/* Assuming the cache line size is 64 for most cpu,
-+ * change it accordingly if the running cpu has different
-+ * cache line size in order to get more accurate result.
-+ */
-+#define SMP_CACHE_BYTES	64
-+
-+#define cpu_relax()	sched_yield()
-+#define smp_release()	atomic_thread_fence(memory_order_release)
-+#define smp_acquire()	atomic_thread_fence(memory_order_acquire)
-+#define smp_wmb()	smp_release()
-+#define smp_store_release(p, v)	\
-+		atomic_store_explicit(p, v, memory_order_release)
-+
-+#define READ_ONCE(x)		(*(volatile typeof(x) *)&(x))
-+#define WRITE_ONCE(x, val)	((*(volatile typeof(x) *)&(x)) = (val))
-+#define cache_line_size		SMP_CACHE_BYTES
-+#define unlikely(x)		(__builtin_expect(!!(x), 0))
-+#define likely(x)		(__builtin_expect(!!(x), 1))
-+#define ALIGN(x, a)		(((x) + (a) - 1) / (a) * (a))
-+#define SIZE_MAX		(~(size_t)0)
-+#define KMALLOC_MAX_SIZE	SIZE_MAX
-+#define spinlock_t		pthread_spinlock_t
-+#define gfp_t			int
-+#define __GFP_ZERO		0x1
-+
-+#define ____cacheline_aligned_in_smp \
-+		__attribute__((aligned(SMP_CACHE_BYTES)))
-+
-+static inline void *kmalloc(unsigned int size, gfp_t gfp)
-+{
-+	void *p;
-+
-+	p = memalign(64, size);
-+	if (!p)
-+		return p;
-+
-+	if (gfp & __GFP_ZERO)
-+		memset(p, 0, size);
-+
-+	return p;
-+}
-+
-+static inline void *kzalloc(unsigned int size, gfp_t flags)
-+{
-+	return kmalloc(size, flags | __GFP_ZERO);
-+}
-+
-+static inline void *kmalloc_array(size_t n, size_t size, gfp_t flags)
-+{
-+	if (size != 0 && n > SIZE_MAX / size)
-+		return NULL;
-+	return kmalloc(n * size, flags);
-+}
-+
-+static inline void *kcalloc(size_t n, size_t size, gfp_t flags)
-+{
-+	return kmalloc_array(n, size, flags | __GFP_ZERO);
-+}
-+
-+static inline void kfree(void *p)
-+{
-+	free(p);
-+}
-+
-+#define kvmalloc_array		kmalloc_array
-+#define kvfree			kfree
-+
-+static inline void spin_lock_init(spinlock_t *lock)
-+{
-+	int r = pthread_spin_init(lock, 0);
-+
-+	assert(!r);
-+}
-+
-+static inline void spin_lock(spinlock_t *lock)
-+{
-+	int ret = pthread_spin_lock(lock);
-+
-+	assert(!ret);
-+}
-+
-+static inline void spin_unlock(spinlock_t *lock)
-+{
-+	int ret = pthread_spin_unlock(lock);
-+
-+	assert(!ret);
-+}
-+
-+static inline void spin_lock_bh(spinlock_t *lock)
-+{
-+	spin_lock(lock);
-+}
-+
-+static inline void spin_unlock_bh(spinlock_t *lock)
-+{
-+	spin_unlock(lock);
-+}
-+
-+static inline void spin_lock_irq(spinlock_t *lock)
-+{
-+	spin_lock(lock);
-+}
-+
-+static inline void spin_unlock_irq(spinlock_t *lock)
-+{
-+	spin_unlock(lock);
-+}
-+
-+static inline void spin_lock_irqsave(spinlock_t *lock,
-+				     unsigned long f)
-+{
-+	spin_lock(lock);
-+}
-+
-+static inline void spin_unlock_irqrestore(spinlock_t *lock,
-+					  unsigned long f)
-+{
-+	spin_unlock(lock);
-+}
-+
-+#endif
+ 	/* matching READ_ONCE in __ptr_ring_empty for lockless tests */
+ 	WRITE_ONCE(r->consumer_head, consumer_head);
+ }
 -- 
 2.7.4
 
