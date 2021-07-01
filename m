@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E613B9032
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 12:01:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FC973B907B
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 12:26:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235927AbhGAKDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 06:03:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58208 "EHLO
+        id S235978AbhGAK3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 06:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235868AbhGAKDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 06:03:33 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86968C0617AF
-        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 03:01:02 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id t3so7556066edc.7
-        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 03:01:02 -0700 (PDT)
+        with ESMTP id S229878AbhGAK3E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 06:29:04 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA52C061756
+        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 03:26:34 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id i24so7672055edx.4
+        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 03:26:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qOYZNd8tzTZWQQ3iE/sKulUoLJ+DUUAeTlRapzbCzyo=;
-        b=QSYlrD/MVr22v17jK2LXYkFKyNvXa0YtIYF3RTHJJ96XgQMn9ZdBpDSuIl776nTqDj
-         ZZ8IuDUT4n9Ep52Xzk0RDkyrkzxv3JwMWXoKleEDDWHooUD5W5822cyOIET5JiCXulby
-         JAjhI5jYtXrjjcp7gfS8T373fXHVCkGeU9EobRUUj9OfU40q1cl2Q1oOhWyFLAgM613K
-         LgaOz8L+f1U86RJx/r7kggiyvlkMSVmZFE1SGzCnUuy3ZklwPNDYuX2wEZH7rwrej/td
-         gwQZCuONr9oVPSL91ymdqJ9VOd2kslHupYAZuuskcnLB8gL++4dMAPNKxhu/UG51UU5U
-         4xPw==
+         :cc:content-transfer-encoding;
+        bh=a9K4jyXYx47Q8btyuDKrrTrq0PEaaUA3+QP6HJIrGos=;
+        b=UbsrHWUQ+mj/292xk46YRGIEWdXS7+QUOxq+6nNb3yIUs4zHYJrkuHGgQOce8DFrQe
+         md9AW7iO+3I2/Gy/0pAB4ksC45W+234IMOkL++jK9Ut5s1vRLJE3bHdXjN761/r4oe2f
+         rrENVsppo3Jrt+VvPkoj8uviilfOhQYD1fLZsSYmxlaq+oX/ZAl36g/kjQIzB82UT/ci
+         MsYhbtWrw18oEv5eBIolntsiKHP3qi59dFbBWXD2KwR7OAOnPaSBv5xvF7/vHO2gDnY9
+         DYJCzMg6LY4GJsFkzIZYE13B6X8/NPbpnEh/pX4mSS3+UYLngtGXoFLSkaU2VGZ/3SUB
+         VdKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qOYZNd8tzTZWQQ3iE/sKulUoLJ+DUUAeTlRapzbCzyo=;
-        b=DsN8wjo5RWhRcqO1agVYs9mzBST1KJluriO9Fsjf/uApqoOjWqAC/+/JsqzP9Dt8ys
-         vu8kSABuLvj/TQ9kkp/8bbF4et/73K5ILVBwSWGGyYMygia6ZfchPRdfg7gVyyUzhJ7x
-         DFlHCgPj3Ru0TudsRhxNvUxKGMYdmtgySa0NDBKhpAiXVOrI3/82F6sACWZ7o8wLxm0G
-         vIvkssVYEjQzG456BUi7EHbtApoTxMl52lKaFzglWOwlRmFep+C/t+B9W2br34qgKQMP
-         0vicxMY+VaVVCb9byln0shvt9eKjIgoxHVPthoZtqYtkJBzqd7Y3nW7iZuioIZL9JxJA
-         WWvA==
-X-Gm-Message-State: AOAM533zenBoyuOz4DvMK6oqWf0ec+FM3+Snk41osoNiSOtBSUaTYq41
-        PsR8epeYp4Rlg31VxoJN2zlv+T1eAJfqLy50+JG6
-X-Google-Smtp-Source: ABdhPJyVuZAS/8fRhn8JfTgP4stvjkAYWDbtWQVryrBZd8Z2Eh+Eo9sdOMWCKMsJZJcpoIcUAu683H7RRLEbnF1GDBs=
-X-Received: by 2002:a05:6402:4243:: with SMTP id g3mr35275741edb.118.1625133660893;
- Thu, 01 Jul 2021 03:01:00 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=a9K4jyXYx47Q8btyuDKrrTrq0PEaaUA3+QP6HJIrGos=;
+        b=lzcFlBNEp0pnrOoy3aRBj9ihM70zDLzy+Dl93q2jAC52XzNZZRx/lkXg7TjMCuQTOK
+         GCIaEeuyza+lCpX+3eMrOJ9Q0UDugK9lM/m6jlAb4LgZ7OPm/VIPI67cxULhP9LP+w3K
+         dbYLjmum+l1TZnS7UnXybydB4ABolozXKCCeqEybQmbfR/5ZeVRxi//3RGtYsmSS+h/p
+         4yw82gmbWuF5Zg82t3jYJPYdQLohlOaBy5YMjCiSGMTmcLZzr++3W3McMyIoxt1fuydq
+         l9G5evNuOqYi/GMKsv6DtfYOLDMAswj6rP+cxebHHjbwr2LrhBlOj37GAOjxeZ6h/9bV
+         NlyA==
+X-Gm-Message-State: AOAM533nBcgZdyvSBKl4eDHv2qHvwJ2tUN9eOU2eg8Jby2IVGAtNxfYt
+        1sGjCNPBY8Nuep33qRHEkb7hZjmZZCRIkec/IQN9
+X-Google-Smtp-Source: ABdhPJz1/meMgJS0CbGomq08efo6oPox9DOh/ZiqfZwarY0z7LVGZFk2nW7ff1FIg7dKAGvVHmDMMOZVK5XkBCN2Y10=
+X-Received: by 2002:a50:ff01:: with SMTP id a1mr52286665edu.253.1625135192829;
+ Thu, 01 Jul 2021 03:26:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210615141331.407-1-xieyongji@bytedance.com> <20210615141331.407-11-xieyongji@bytedance.com>
- <YNSCH6l31zwPxBjL@stefanha-x1.localdomain> <CACycT3uxnQmXWsgmNVxQtiRhz1UXXTAJFY3OiAJqokbJH6ifMA@mail.gmail.com>
- <YNxCDpM3bO5cPjqi@stefanha-x1.localdomain>
-In-Reply-To: <YNxCDpM3bO5cPjqi@stefanha-x1.localdomain>
+References: <20210615141331.407-1-xieyongji@bytedance.com> <20210615141331.407-10-xieyongji@bytedance.com>
+ <YNSatrDFsg+4VvH4@stefanha-x1.localdomain> <CACycT3vaXQ4dxC9QUzXXJs7og6TVqqVGa8uHZnTStacsYAiFwQ@mail.gmail.com>
+ <YNw+q/ADMPviZi6S@stefanha-x1.localdomain> <CACycT3t6M5i0gznABm52v=rdmeeLZu8smXAOLg+WsM3WY1fgTw@mail.gmail.com>
+ <7264cb0b-7072-098e-3d22-2b7e89216545@redhat.com>
+In-Reply-To: <7264cb0b-7072-098e-3d22-2b7e89216545@redhat.com>
 From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 1 Jul 2021 18:00:48 +0800
-Message-ID: <CACycT3taKhf1cWp3Jd0aSVekAZvpbR-_fkyPLQ=B+jZBB5H=8Q@mail.gmail.com>
-Subject: Re: Re: Re: [PATCH v8 10/10] Documentation: Add documentation for VDUSE
-To:     Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+Date:   Thu, 1 Jul 2021 18:26:21 +0800
+Message-ID: <CACycT3v7pYXAFtijPgWCMZ2WXxjT2Y-DUwS3hN_T7dhfE5o_6g@mail.gmail.com>
+Subject: Re: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
         Parav Pandit <parav@nvidia.com>,
         Christoph Hellwig <hch@infradead.org>,
@@ -72,179 +73,69 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
         linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 30, 2021 at 6:06 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
+On Thu, Jul 1, 2021 at 3:55 PM Jason Wang <jasowang@redhat.com> wrote:
 >
-> On Tue, Jun 29, 2021 at 01:43:11PM +0800, Yongji Xie wrote:
-> > On Mon, Jun 28, 2021 at 9:02 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
-> > > On Tue, Jun 15, 2021 at 10:13:31PM +0800, Xie Yongji wrote:
-> > > > +     static void *iova_to_va(int dev_fd, uint64_t iova, uint64_t *len)
-> > > > +     {
-> > > > +             int fd;
-> > > > +             void *addr;
-> > > > +             size_t size;
-> > > > +             struct vduse_iotlb_entry entry;
-> > > > +
-> > > > +             entry.start = iova;
-> > > > +             entry.last = iova + 1;
-> > >
-> > > Why +1?
-> > >
-> > > I expected the request to include *len so that VDUSE can create a bounce
-> > > buffer for the full iova range, if necessary.
-> > >
+>
+> =E5=9C=A8 2021/7/1 =E4=B8=8B=E5=8D=882:50, Yongji Xie =E5=86=99=E9=81=93:
+> > On Wed, Jun 30, 2021 at 5:51 PM Stefan Hajnoczi <stefanha@redhat.com> w=
+rote:
+> >> On Tue, Jun 29, 2021 at 10:59:51AM +0800, Yongji Xie wrote:
+> >>> On Mon, Jun 28, 2021 at 9:02 PM Stefan Hajnoczi <stefanha@redhat.com>=
+ wrote:
+> >>>> On Tue, Jun 15, 2021 at 10:13:30PM +0800, Xie Yongji wrote:
+> >>>>> +/* ioctls */
+> >>>>> +
+> >>>>> +struct vduse_dev_config {
+> >>>>> +     char name[VDUSE_NAME_MAX]; /* vduse device name */
+> >>>>> +     __u32 vendor_id; /* virtio vendor id */
+> >>>>> +     __u32 device_id; /* virtio device id */
+> >>>>> +     __u64 features; /* device features */
+> >>>>> +     __u64 bounce_size; /* bounce buffer size for iommu */
+> >>>>> +     __u16 vq_size_max; /* the max size of virtqueue */
+> >>>> The VIRTIO specification allows per-virtqueue sizes. A device can ha=
+ve
+> >>>> two virtqueues, where the first one allows up to 1024 descriptors an=
+d
+> >>>> the second one allows only 128 descriptors, for example.
+> >>>>
+> >>> Good point! But it looks like virtio-vdpa/virtio-pci doesn't support
+> >>> that now. All virtqueues have the same maximum size.
+> >> I see struct vpda_config_ops only supports a per-device max vq size:
+> >> u16 (*get_vq_num_max)(struct vdpa_device *vdev);
+> >>
+> >> virtio-pci supports per-virtqueue sizes because the struct
+> >> virtio_pci_common_cfg->queue_size register is per-queue (controlled by
+> >> queue_select).
+> >>
+> > Oh, yes. I miss queue_select.
 > >
-> > The function is used to translate iova to va. And the *len is not
-> > specified by the caller. Instead, it's used to tell the caller the
-> > length of the contiguous iova region from the specified iova. And the
-> > ioctl VDUSE_IOTLB_GET_FD will get the file descriptor to the first
-> > overlapped iova region. So using iova + 1 should be enough here.
+> >> I guess this is a question for Jason: will vdpa will keep this limitat=
+ion?
+> >> If yes, then VDUSE can stick to it too without running into problems i=
+n
+> >> the future.
 >
-> Does the entry.last field have any purpose with VDUSE_IOTLB_GET_FD? I
-> wonder why userspace needs to assign a value at all if it's always +1.
 >
-
-If we need to get some iova regions in the specified range, we need
-the entry.last field. For example, we can use [0, ULONG_MAX] to get
-the first overlapped iova region which might be [4096, 8192]. But in
-this function, we don't use VDUSE_IOTLB_GET_FD like this. We need to
-get the iova region including the specified iova.
-
-> >
-> > > > +             fd = ioctl(dev_fd, VDUSE_IOTLB_GET_FD, &entry);
-> > > > +             if (fd < 0)
-> > > > +                     return NULL;
-> > > > +
-> > > > +             size = entry.last - entry.start + 1;
-> > > > +             *len = entry.last - iova + 1;
-> > > > +             addr = mmap(0, size, perm_to_prot(entry.perm), MAP_SHARED,
-> > > > +                         fd, entry.offset);
-> > > > +             close(fd);
-> > > > +             if (addr == MAP_FAILED)
-> > > > +                     return NULL;
-> > > > +
-> > > > +             /* do something to cache this iova region */
-> > >
-> > > How is userspace expected to manage iotlb mmaps? When should munmap(2)
-> > > be called?
-> > >
-> >
-> > The simple way is using a list to store the iotlb mappings. And we
-> > should call the munmap(2) for the old mappings when VDUSE_UPDATE_IOTLB
-> > or VDUSE_STOP_DATAPLANE message is received.
+> I think it's better to extend the get_vq_num_max() per virtqueue.
 >
-> Thanks for explaining. It would be helpful to have a description of
-> IOTLB operation in this document.
+> Currently, vDPA assumes the parent to have a global max size. This seems
+> to work on most of the parents but not vp-vDPA (which could be backed by
+> QEMU, in that case cvq's size is smaller).
+>
+> Fortunately, we haven't enabled had cvq support in the userspace now.
+>
+> I can post the fixes.
 >
 
-Sure.
-
-> > > Should userspace expect VDUSE_IOTLB_GET_FD to return a full chunk of
-> > > guest RAM (e.g. multiple gigabytes) that can be cached permanently or
-> > > will it return just enough pages to cover [start, last)?
-> > >
-> >
-> > It should return one iotlb mapping that covers [start, last). In
-> > vhost-vdpa cases, it might be a full chunk of guest RAM. In
-> > virtio-vdpa cases, it might be the whole bounce buffer or one coherent
-> > mapping (produced by dma_alloc_coherent()).
->
-> Great, thanks. Adding something about this to the documentation would
-> help others implementing VDUSE devices or libraries.
->
-
-OK.
-
-> > > > +
-> > > > +             return addr + iova - entry.start;
-> > > > +     }
-> > > > +
-> > > > +- VDUSE_DEV_GET_FEATURES: Get the negotiated features
-> > >
-> > > Are these VIRTIO feature bits? Please explain how feature negotiation
-> > > works. There must be a way for userspace to report the device's
-> > > supported feature bits to the kernel.
-> > >
-> >
-> > Yes, these are VIRTIO feature bits. Userspace will specify the
-> > device's supported feature bits when creating a new VDUSE device with
-> > ioctl(VDUSE_CREATE_DEV).
->
-> Can the VDUSE device influence feature bit negotiation? For example, if
-> the VDUSE virtio-blk device does not implement discard/write-zeroes, how
-> does QEMU or the guest find out about this?
->
-
-There is a "features" field in struct vduse_dev_config which is used
-to do feature negotiation.
-
-> > > > +- VDUSE_DEV_UPDATE_CONFIG: Update the configuration space and inject a config interrupt
-> > >
-> > > Does this mean the contents of the configuration space are cached by
-> > > VDUSE?
-> >
-> > Yes, but the kernel will also store the same contents.
-> >
-> > > The downside is that the userspace code cannot generate the
-> > > contents on demand. Most devices doin't need to generate the contents
-> > > on demand, so I think this is okay but I had expected a different
-> > > interface:
-> > >
-> > > kernel->userspace VDUSE_DEV_GET_CONFIG
-> > > userspace->kernel VDUSE_DEV_INJECT_CONFIG_IRQ
-> > >
-> >
-> > The problem is how to handle the failure of VDUSE_DEV_GET_CONFIG. We
-> > will need lots of modification of virtio codes to support that. So to
-> > make it simple, we choose this way:
-> >
-> > userspace -> kernel VDUSE_DEV_SET_CONFIG
-> > userspace -> kernel VDUSE_DEV_INJECT_CONFIG_IRQ
-> >
-> > > I think you can leave it the way it is, but I wanted to mention this in
-> > > case someone thinks it's important to support generating the contents of
-> > > the configuration space on demand.
-> > >
-> >
-> > Sorry, I didn't get you here. Can't VDUSE_DEV_SET_CONFIG and
-> > VDUSE_DEV_INJECT_CONFIG_IRQ achieve that?
->
-> If the contents of the configuration space change continuously, then the
-> VDUSE_DEV_SET_CONFIG approach is inefficient and might have race
-> conditions. For example, imagine a device where the driver can read a
-> timer from the configuration space. I think the VIRTIO device model
-> allows that although I'm not aware of any devices that do something like
-> it today. The problem is that VDUSE_DEV_SET_CONFIG would have to be
-> called frequently to keep the timer value updated even though the guest
-> driver probably isn't accessing it.
->
-
-OK, I get you now. Since the VIRTIO specification says "Device
-configuration space is generally used for rarely-changing or
-initialization-time parameters". I assume the VDUSE_DEV_SET_CONFIG
-ioctl should not be called frequently.
-
-> What's worse is that there might be race conditions where other
-> driver->device operations are supposed to update the configuration space
-> but VDUSE_DEV_SET_CONFIG means that the VDUSE kernel code is caching an
-> outdated copy.
->
-
-I'm not sure. Should the device and driver be able to access the same
-fields concurrently?
-
-> Again, I don't think it's a problem for existing devices in the VIRTIO
-> specification. But I'm not 100% sure and future devices might require
-> what I've described, so the VDUSE_DEV_SET_CONFIG interface could become
-> a problem.
->
-
-If so, maybe a new interface can be added at that time. The
-VDUSE_DEV_GET_CONFIG might be better, but I still did not find a good
-way for failure handling.
+OK. If so, it looks like we need to support the per-vq configuration.
+I wonder if it's better to use something like: VDUSE_CREATE_DEVICE ->
+VDUSE_SETUP_VQ -> VDUSE_SETUP_VQ -> ... -> VDUSE_ENABLE_DEVICE to do
+initialization rather than only use VDUSE_CREATE_DEVICE.
 
 Thanks,
 Yongji
