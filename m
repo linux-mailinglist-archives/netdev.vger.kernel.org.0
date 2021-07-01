@@ -2,86 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FDF43B97F5
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 23:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F06653B9824
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 23:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234230AbhGAVJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 17:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37520 "EHLO
+        id S234325AbhGAV3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 17:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233893AbhGAVJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 17:09:22 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C378C061762;
-        Thu,  1 Jul 2021 14:06:50 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id v10so5164069qto.1;
-        Thu, 01 Jul 2021 14:06:50 -0700 (PDT)
+        with ESMTP id S234255AbhGAV3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 17:29:40 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE808C061764
+        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 14:27:08 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id e3so1978482ljo.6
+        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 14:27:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JdZfhD8zS8Li7V1IWr5im/Ov0yGZJzdw3SFKa8tmvaA=;
-        b=coFXzdn8+GFRVvzHgAyl5ya90JjlYSnS84Ena2i664mPYGWza2mLyEi8CqvbBO8QoK
-         AMKqkrmx7AB/snglYTmG5VrGh4KFMVa7MmrarR+R6xWquwmAObVhKQrwP0YBpq0OWeXZ
-         ffUGNPzJd2Q0pR2qmS8V2U7qHuxJPArIgljtleqjf3PwLu85WorQ4hrTVQoQLOCZ2fwb
-         zk4mMVfXrcghfDxud6b6JG16Psnajj/rrjufSzS+N1gtQT6TfXL6qfak/ryp5/D0kWmv
-         FB23x9kxBbkg4Gmi16pIJJ5sNRXbfXSlqkeMVKEeD9YZLh0MnFAwgshvw+7RY6IdV8Mt
-         1wFw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tNdovWONAJS2tmla2jBCM5Itz2o4pqMUjGORL+HptVU=;
+        b=kNiciE1LKvyy4oLjI1gsH75NPWT6lqeO2ZobdhJ5FuiJiASUJ7WhGVQDwXaox9IWqb
+         sDgEKqepnkz0avDsZjGb+wr7h1FJIbDfaJgCBQcMvoxv/JHElZ1uM8YB/OlBkN7Hb3ET
+         LBQVxNBuUUY9VM792HIoU+GSfrsx25WYxwp0cBnAfsnuoE4xcH2oOczPgX+fo6tnFnAZ
+         4kvCLLgpPwVT3pjSRLLIzng4lnnAvcymVtaINT3OoysXzgyPMLo5eVUmRBjqInnBBcm2
+         tZqZPjzh3Si96zFD0tXxg0mHQuSh+MfZkJjsk/rx1tcifTze5i/LCy16p29HVp2l3527
+         Igrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JdZfhD8zS8Li7V1IWr5im/Ov0yGZJzdw3SFKa8tmvaA=;
-        b=kT8STan2hJsl6HR8nrfeAEga18F/Vu0YCEVNjFphBdsH+q1AruUne+FzsMJ4tNJ1Q2
-         s1ZNZRWIRU+pGaGh+U0ITUAVOquKTuQ8jfJFzuC5YqwLyNGiU3aXMEHIDM5NOAUBbg1C
-         81eYs0BWD9FZ3FcvktNxFL8GE5nuPvtz/lLiWyhaps+g60l9UGHCCfGIU4lhmiUASC0t
-         FZOOw4cjq3JAVYxSLn8w8QrwTF4e6EuB4QPnLeuVLxpMGj1vAfPrwB8vAM172oD2LUee
-         vnl4U0TzdOwKbr8MWRQXR0hX6YxW33b9xephDnhsOySIi3oDNxv6rYJQGHIR2BvRBGOB
-         5JJQ==
-X-Gm-Message-State: AOAM532Wo3nfxKuSyJ9N2IWVAv057evM5MaSWjh1J5EnjKn6TKhnu0Tn
-        9Dmo0Bc3m/JYAwU/aW+PFg==
-X-Google-Smtp-Source: ABdhPJzJZm7Wwvj9JL2Rw3TI6kf2fUOVVJh1b0RQieFYgctpFerkJ6QWAsaYSREJxI0H7Uuwi4ovZg==
-X-Received: by 2002:a05:622a:453:: with SMTP id o19mr1903676qtx.122.1625173609396;
-        Thu, 01 Jul 2021 14:06:49 -0700 (PDT)
-Received: from PWN (104-9-124-193.lightspeed.sntcca.sbcglobal.net. [104.9.124.193])
-        by smtp.gmail.com with ESMTPSA id t62sm431440qkc.26.2021.07.01.14.06.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 14:06:49 -0700 (PDT)
-Date:   Thu, 1 Jul 2021 17:06:45 -0400
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Alexander Larkin <avlarkin82@gmail.com>
-Cc:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: maybe similar bug exists for HCI_EV_INQUIRY_RESULT* like
- [Linux-kernel-mentees] [PATCH v2] net/bluetooth: slab-out-of-bounds read in
- hci_extended_inquiry_result_evt()
-Message-ID: <20210701210645.GA14471@PWN>
-References: <20200709130224.214204-1-yepeilin.cs@gmail.com>
- <20210701153936.2954886-1-avlarkin82@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tNdovWONAJS2tmla2jBCM5Itz2o4pqMUjGORL+HptVU=;
+        b=obv00mFExftzd9zxQfnGk/f7O4Q5h9cw7j+8t0DLthdBeXTNlzramEHLJo+Sb6dzeT
+         I2c5MhpXWzifndfGZdJH7kY63ok/aZWnxgISexhHpO9CasnGew7UiwEmfVmMKeMwt5pI
+         R/ZB4qyrCHICn1X018NQIASTFCR961EW2XKv87GE9wESo6qVedIrb21Dk5BP1RJpUH5L
+         l/qKHp08SHvGqdgJd2/LGNAd1AExoNtDmALYwodfvwSdopksDHsKU2/VemgwuEL0uU55
+         YaG92T1LCdBEqObcoMx3JpQ66tNXoVL1r5dzHxzBiCDoFVz7A2y/J5xCMoutX8gW/2Sl
+         mBrw==
+X-Gm-Message-State: AOAM533GDWaLXOtsn7c1uToehqurzehHhR+cg4xooDyWWulavT2P2kk6
+        wmGNZ0RTXtjQSuhLQtkRLzFOejXTwMNq41a++Axq+g==
+X-Google-Smtp-Source: ABdhPJwFqmciUVS+yaaqjQV5c2F883P7rLgFT4w/dpSTBGNG7drC0d+KS7wtsp1DcNlNLXKew0OzKqYf8TbyEYWqdWU=
+X-Received: by 2002:a05:651c:305:: with SMTP id a5mr1167662ljp.337.1625174826795;
+ Thu, 01 Jul 2021 14:27:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210701153936.2954886-1-avlarkin82@gmail.com>
+References: <a8ff6511e4740cff2bb549708b98fb1e6dd7e070.1625172036.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <a8ff6511e4740cff2bb549708b98fb1e6dd7e070.1625172036.git.christophe.jaillet@wanadoo.fr>
+From:   Catherine Sullivan <csully@google.com>
+Date:   Thu, 1 Jul 2021 14:26:30 -0700
+Message-ID: <CAH_-1qyRsfFzm_F26WV4wSjMojTVQSdahASWTKXb7VgQPHHUNA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] gve: Simplify code and axe the use of a
+ deprecated API
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Sagi Shahar <sagis@google.com>, Jon Olson <jonolson@google.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        David Awogbemila <awogbemila@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Yangchun Fu <yangchun@google.com>,
+        Bailey Forrest <bcf@google.com>, Kuo Zhao <kuozhao@google.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 01, 2021 at 06:39:36PM +0300, Alexander Larkin wrote:
-> For the net/bluetooth/hci_event.c , maybe similar bug could be inside
-> hci_inquiry_result_with_rssi_evt() that is HCI_EV_INQUIRY_RESULT_WITH_RSSI
-> and inside hci_inquiry_result_evt() that is HCI_EV_INQUIRY_RESULT. 
+On Thu, Jul 1, 2021 at 1:41 PM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> The wrappers in include/linux/pci-dma-compat.h should go away.
+>
+> Replace 'pci_set_dma_mask/pci_set_consistent_dma_mask' by an equivalent
+> and less verbose 'dma_set_mask_and_coherent()' call.
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Hi Alexander,
+Reviewed-by: Catherine Sullivan <csully@google.com>
 
-Thanks for looking into this, I believe they were handled in commit
-629b49c848ee ("Bluetooth: Prevent out-of-bounds read in
-hci_inquiry_result_with_rssi_evt()") and commit 75bbd2ea50ba ("Bluetooth:
-Prevent out-of-bounds read in hci_inquiry_result_evt()").
+> ---
+> If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+>    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+>
+> v2: Unchanged
+>     This patch was previously 3/3 of a serie
+> ---
+>  drivers/net/ethernet/google/gve/gve_main.c | 9 +--------
+>  1 file changed, 1 insertion(+), 8 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+> index c03984b26db4..099a2bc5ae67 100644
+> --- a/drivers/net/ethernet/google/gve/gve_main.c
+> +++ b/drivers/net/ethernet/google/gve/gve_main.c
+> @@ -1477,19 +1477,12 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>
+>         pci_set_master(pdev);
+>
+> -       err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
+> +       err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+>         if (err) {
+>                 dev_err(&pdev->dev, "Failed to set dma mask: err=%d\n", err);
+>                 goto abort_with_pci_region;
+>         }
+>
+> -       err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+> -       if (err) {
+> -               dev_err(&pdev->dev,
+> -                       "Failed to set consistent dma mask: err=%d\n", err);
+> -               goto abort_with_pci_region;
+> -       }
+> -
+>         reg_bar = pci_iomap(pdev, GVE_REGISTER_BAR, 0);
+>         if (!reg_bar) {
+>                 dev_err(&pdev->dev, "Failed to map pci bar!\n");
+> --
+> 2.30.2
+>
 
-Thanks,
-Peilin Ye
-
+Thanks!
