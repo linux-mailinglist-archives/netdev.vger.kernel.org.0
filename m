@@ -2,90 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 605C43B95C9
+	by mail.lfdr.de (Postfix) with ESMTP id B64F83B95CA
 	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 20:01:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233050AbhGASD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 14:03:59 -0400
+        id S233327AbhGASEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 14:04:00 -0400
 Received: from mga12.intel.com ([192.55.52.136]:63745 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233038AbhGASD5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Jul 2021 14:03:57 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10032"; a="188272881"
+        id S233045AbhGASD6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Jul 2021 14:03:58 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10032"; a="188272882"
 X-IronPort-AV: E=Sophos;i="5.83,315,1616482800"; 
-   d="scan'208";a="188272881"
+   d="scan'208";a="188272882"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2021 11:01:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.83,315,1616482800"; 
-   d="scan'208";a="409018392"
+   d="scan'208";a="409018395"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 01 Jul 2021 11:01:26 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
-Subject: [PATCH net 00/11][pull request] Intel Wired LAN Driver Updates 2021-07-01
-Date:   Thu,  1 Jul 2021 11:04:09 -0700
-Message-Id: <20210701180420.346126-1-anthony.l.nguyen@intel.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        Erez Geva <erez.geva.ext@siemens.com>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Subject: [PATCH net 01/11] igc: Fix use-after-free error during reset
+Date:   Thu,  1 Jul 2021 11:04:10 -0700
+Message-Id: <20210701180420.346126-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210701180420.346126-1-anthony.l.nguyen@intel.com>
+References: <20210701180420.346126-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to igb, igc, ixgbe, e1000e, fm10k, and iavf
-drivers.
+From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-Vinicius fixes a use-after-free issue present in igc and igb.
+Cleans the next descriptor to watch (next_to_watch) when cleaning the
+TX ring.
 
-Tom Rix fixes the return value for igc_read_phy_reg() when the
-operation is not supported for igc.
+Failure to do so can cause invalid memory accesses. If igc_poll() runs
+while the controller is being reset this can lead to the driver try to
+free a skb that was already freed.
 
-Christophe Jaillet fixes unrolling of PCIe error reporting for ixgbe,
-igc, igb, fm10k, e10000e, and iavf.
+Log message:
 
-Alex ensures that q_vector array is not accessed beyond its bounds for
-igb.
+ [  101.525242] refcount_t: underflow; use-after-free.
+ [  101.525251] WARNING: CPU: 1 PID: 646 at lib/refcount.c:28 refcount_warn_saturate+0xab/0xf0
+ [  101.525259] Modules linked in: sch_etf(E) sch_mqprio(E) rfkill(E) intel_rapl_msr(E) intel_rapl_common(E)
+ x86_pkg_temp_thermal(E) intel_powerclamp(E) coretemp(E) binfmt_misc(E) kvm_intel(E) kvm(E) irqbypass(E) crc32_pclmul(E)
+ ghash_clmulni_intel(E) aesni_intel(E) mei_wdt(E) libaes(E) crypto_simd(E) cryptd(E) glue_helper(E) snd_hda_codec_hdmi(E)
+ rapl(E) intel_cstate(E) snd_hda_intel(E) snd_intel_dspcfg(E) sg(E) soundwire_intel(E) intel_uncore(E) at24(E)
+ soundwire_generic_allocation(E) iTCO_wdt(E) soundwire_cadence(E) intel_pmc_bxt(E) serio_raw(E) snd_hda_codec(E)
+ iTCO_vendor_support(E) watchdog(E) snd_hda_core(E) snd_hwdep(E) snd_soc_core(E) snd_compress(E) snd_pcsp(E)
+ soundwire_bus(E) snd_pcm(E) evdev(E) snd_timer(E) mei_me(E) snd(E) soundcore(E) mei(E) configfs(E) ip_tables(E) x_tables(E)
+ autofs4(E) ext4(E) crc32c_generic(E) crc16(E) mbcache(E) jbd2(E) sd_mod(E) t10_pi(E) crc_t10dif(E) crct10dif_generic(E)
+ i915(E) ahci(E) libahci(E) ehci_pci(E) igb(E) xhci_pci(E) ehci_hcd(E)
+ [  101.525303]  drm_kms_helper(E) dca(E) xhci_hcd(E) libata(E) crct10dif_pclmul(E) cec(E) crct10dif_common(E) tsn(E) igc(E)
+ e1000e(E) ptp(E) i2c_i801(E) crc32c_intel(E) psmouse(E) i2c_algo_bit(E) i2c_smbus(E) scsi_mod(E) lpc_ich(E) pps_core(E)
+ usbcore(E) drm(E) button(E) video(E)
+ [  101.525318] CPU: 1 PID: 646 Comm: irq/37-enp7s0-T Tainted: G            E     5.10.30-rt37-tsn1-rt-ipipe #ipipe
+ [  101.525320] Hardware name: SIEMENS AG SIMATIC IPC427D/A5E31233588, BIOS V17.02.09 03/31/2017
+ [  101.525322] RIP: 0010:refcount_warn_saturate+0xab/0xf0
+ [  101.525325] Code: 05 31 48 44 01 01 e8 f0 c6 42 00 0f 0b c3 80 3d 1f 48 44 01 00 75 90 48 c7 c7 78 a8 f3 a6 c6 05 0f 48
+ 44 01 01 e8 d1 c6 42 00 <0f> 0b c3 80 3d fe 47 44 01 00 0f 85 6d ff ff ff 48 c7 c7 d0 a8 f3
+ [  101.525327] RSP: 0018:ffffbdedc0917cb8 EFLAGS: 00010286
+ [  101.525329] RAX: 0000000000000000 RBX: ffff98fd6becbf40 RCX: 0000000000000001
+ [  101.525330] RDX: 0000000000000001 RSI: ffffffffa6f2700c RDI: 00000000ffffffff
+ [  101.525332] RBP: ffff98fd6becc14c R08: ffffffffa7463d00 R09: ffffbdedc0917c50
+ [  101.525333] R10: ffffffffa74c3578 R11: 0000000000000034 R12: 00000000ffffff00
+ [  101.525335] R13: ffff98fd6b0b1000 R14: 0000000000000039 R15: ffff98fd6be35c40
+ [  101.525337] FS:  0000000000000000(0000) GS:ffff98fd6e240000(0000) knlGS:0000000000000000
+ [  101.525339] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ [  101.525341] CR2: 00007f34135a3a70 CR3: 0000000150210003 CR4: 00000000001706e0
+ [  101.525343] Call Trace:
+ [  101.525346]  sock_wfree+0x9c/0xa0
+ [  101.525353]  unix_destruct_scm+0x7b/0xa0
+ [  101.525358]  skb_release_head_state+0x40/0x90
+ [  101.525362]  skb_release_all+0xe/0x30
+ [  101.525364]  napi_consume_skb+0x57/0x160
+ [  101.525367]  igc_poll+0xb7/0xc80 [igc]
+ [  101.525376]  ? sched_clock+0x5/0x10
+ [  101.525381]  ? sched_clock_cpu+0xe/0x100
+ [  101.525385]  net_rx_action+0x14c/0x410
+ [  101.525388]  __do_softirq+0xe9/0x2f4
+ [  101.525391]  __local_bh_enable_ip+0xe3/0x110
+ [  101.525395]  ? irq_finalize_oneshot.part.47+0xe0/0xe0
+ [  101.525398]  irq_forced_thread_fn+0x6a/0x80
+ [  101.525401]  irq_thread+0xe8/0x180
+ [  101.525403]  ? wake_threads_waitq+0x30/0x30
+ [  101.525406]  ? irq_thread_check_affinity+0xd0/0xd0
+ [  101.525408]  kthread+0x183/0x1a0
+ [  101.525412]  ? kthread_park+0x80/0x80
+ [  101.525415]  ret_from_fork+0x22/0x30
 
-Jedrzej moves ring assignment to occur after bounds have been checked in
-igb.
+Fixes: 13b5b7fd6a4a ("igc: Add support for Tx/Rx rings")
+Reported-by: Erez Geva <erez.geva.ext@siemens.com>
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/igc/igc_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-The following are changes since commit dbe69e43372212527abf48609aba7fc39a6daa27:
-  Merge tag 'net-next-5.14' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 1GbE
-
-Aleksandr Loktionov (1):
-  igb: Check if num of q_vectors is smaller than max before array access
-
-Christophe JAILLET (6):
-  ixgbe: Fix an error handling path in 'ixgbe_probe()'
-  igc: Fix an error handling path in 'igc_probe()'
-  igb: Fix an error handling path in 'igb_probe()'
-  fm10k: Fix an error handling path in 'fm10k_probe()'
-  e1000e: Fix an error handling path in 'e1000_probe()'
-  iavf: Fix an error handling path in 'iavf_probe()'
-
-Jedrzej Jagielski (1):
-  igb: Fix position of assignment to *ring
-
-Tom Rix (1):
-  igc: change default return of igc_read_phy_reg()
-
-Vinicius Costa Gomes (2):
-  igc: Fix use-after-free error during reset
-  igb: Fix use-after-free error during reset
-
- drivers/net/ethernet/intel/e1000e/netdev.c    |  1 +
- drivers/net/ethernet/intel/fm10k/fm10k_pci.c  |  1 +
- drivers/net/ethernet/intel/iavf/iavf_main.c   |  1 +
- drivers/net/ethernet/intel/igb/igb_main.c     | 15 +++++++++++++--
- drivers/net/ethernet/intel/igc/igc.h          |  2 +-
- drivers/net/ethernet/intel/igc/igc_main.c     |  3 +++
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  1 +
- 7 files changed, 21 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 95323095094d..1d00a63eb935 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -232,6 +232,8 @@ static void igc_clean_tx_ring(struct igc_ring *tx_ring)
+ 				igc_unmap_tx_buffer(tx_ring->dev, tx_buffer);
+ 		}
+ 
++		tx_buffer->next_to_watch = NULL;
++
+ 		/* move us one more past the eop_desc for start of next pkt */
+ 		tx_buffer++;
+ 		i++;
 -- 
 2.26.2
 
