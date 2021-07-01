@@ -2,279 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CDF73B92B7
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 16:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 907A53B9331
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 16:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233207AbhGAOGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 10:06:05 -0400
-Received: from mail-il1-f173.google.com ([209.85.166.173]:33652 "EHLO
-        mail-il1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232806AbhGAOGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 10:06:01 -0400
-Received: by mail-il1-f173.google.com with SMTP id z1so6527451ils.0;
-        Thu, 01 Jul 2021 07:03:29 -0700 (PDT)
+        id S233335AbhGAO0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 10:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233301AbhGAO0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 10:26:03 -0400
+Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20B9C061762
+        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 07:23:31 -0700 (PDT)
+Received: by mail-ua1-x929.google.com with SMTP id q3so2310734uao.0
+        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 07:23:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8ZYZZPLtxm0D8wKCq6t4+Fy+RhxhZRnjK7G5sIibVAY=;
+        b=kBv9cdGrIayWfMzZazwxNI9/duBTp2RkiZ5RCpTGoMmI4sxwPfmxtyqijgoC6eFaHP
+         vuY6nQPmSg0rBx1F6AnU3iGjJXVrIv6hMPT5BDZnXtJ8kZ6ta2AKfwvSzsQiBoGDBLxe
+         Dmi2eQ+66de1aSZjyItIFwNWh1cy7b6EjIO393RJPGKNXebp3P4Yx/mAegF28z7zxu3H
+         LLjGSN1TkEEC2gynwHgOJdUg1KIDxVmNmxUfSOg+YNg1SDUVOYC9QVrLdvNk9oHHIut5
+         NEaw07sNcTuAQPUw2+IKV8UcC+TCiR2ZQmvtrZRt2mROer1FgbKX1f54BG6f/nPVo19B
+         +X5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=Uriiw2oK46wfr+xz0mNWX1msjZE6Zg9K8LUgs0YARhA=;
-        b=dNeJYl7PVrNGNJRASLZvY0oW6XQidEvF8pQWivfRp8g8BBfcAFttqYfscusR71DMdg
-         orQOnPhRKqedEzSd4GecwCNyAaxk79y2ePUi3Xdwf7pGqbo8PVbmHLpLGUFR7fbt5PS9
-         tOVJOijNYKHguza5Q8mM5SgfveIWunXvz7OqmcgaQ4CDxSkdB2dMUc/yiPoHHWI6ZewR
-         XS5KUkcuJk15JxwrOkPajWXEAx2MkQdCjlzw3M+yoEoKa2c2rYHU0inrYm5ESfzT+RZG
-         0Xw61GjFOlQlkTpgwaakCuGEVRKAlhnWdIG/d8AfLaW6VizkerKkJObxsYB3pkcIPI6V
-         rWww==
-X-Gm-Message-State: AOAM531qbbcBDmP5ue6WsX+OV7QjGEND87IBiRBT0ug/gjhPOA1bFmby
-        NuGl8otweoEtQHAiCH4x6ds2qwLzUQ==
-X-Google-Smtp-Source: ABdhPJz3mSzWc3I0nI9smMtCYYSDVYUFVywBs/aLUAhljnMHpacOJre8MStKUN8fPx+UdNp8IdbDGQ==
-X-Received: by 2002:a92:680c:: with SMTP id d12mr22694894ilc.67.1625148209059;
-        Thu, 01 Jul 2021 07:03:29 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id w19sm31980ilj.46.2021.07.01.07.03.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 07:03:28 -0700 (PDT)
-Received: (nullmailer pid 2278708 invoked by uid 1000);
-        Thu, 01 Jul 2021 14:02:43 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?q?Marek_Beh=C3=BAn?= <kabel@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        netdev@vger.kernel.org, Peter Rosin <peda@axentia.se>
-In-Reply-To: <20210701005347.8280-1-kabel@kernel.org>
-References: <20210701005347.8280-1-kabel@kernel.org>
-Subject: Re: [PATCH RFC net-next] dt-bindings: ethernet-controller: document signal multiplexer
-Date:   Thu, 01 Jul 2021 08:02:43 -0600
-Message-Id: <1625148163.578605.2278707.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8ZYZZPLtxm0D8wKCq6t4+Fy+RhxhZRnjK7G5sIibVAY=;
+        b=nYNxpNwnEI44MDWqDqwDQYDWWmU9FU9T8uNs8y/RsuNd0jAj8pqxP8WLRsu00ACdWG
+         F//RItkvPAbcOZGIlLQ2wW58ZRPnJrMFvYadelkLg69GHNJZNYgzy3Xhn/cSYeGGxFfX
+         lCvBnzmd0tk66eJW8BgsXAlaj0eIdxroDsJVmTB4kVtTBByZ+xoEhWMBcEbJrNZHYhuC
+         ZuOVRMy5AyUjSKTbUSSqirs0zZwR0z1Vd6Yn/M6sVhCLCyTqLxXZMNQm3qnXv99uyqjv
+         idiSYcppUIv4xfviw7aVbdZpx8VyCudW3t31zqpYN3r2H4EJyTUYH3KVp4yONza8PxZU
+         Gbvg==
+X-Gm-Message-State: AOAM530Hye0KjweP3qfJ1ubHhOF3Ghb+oQCV2OX0gB6VpwhxMnNn1DpL
+        cm71XkYRfDL8VZv0wbC9BSV5xmsGdx7/T5ei4AZJDQ==
+X-Google-Smtp-Source: ABdhPJx2oBw+TeBECEm0/q5V+pChm69gVODCsQXZeTvzl9jaJ3WWW/V23J8lrJcxwiS1GyjoBORkKFEfajqRXSJj0AE=
+X-Received: by 2002:ab0:3ae:: with SMTP id 43mr211048uau.63.1625149409711;
+ Thu, 01 Jul 2021 07:23:29 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210628144908.881499-1-phind.uet@gmail.com> <CANn89iJ6M2WFS3B+sSOysekScUFmO9q5YHxgHGsbozbvkW9ivg@mail.gmail.com>
+ <79490158-e6d1-aabf-64aa-154b71205c74@gmail.com> <CADVnQy=Q9W=Vxu81ctPLx08D=ALnHBXGr0c4BLtQGxwQE+yjRg@mail.gmail.com>
+ <ee5ef69e-ee3f-1df0-2033-5adc06a46b9c@gmail.com> <CADVnQynqMQhO4cBON=xUCkne9-E1hze3naMZZ8tQ-a0k71kh8g@mail.gmail.com>
+ <205F52AB-4A5B-4953-B97E-17E7CACBBCD8@gmail.com> <CANn89iJbquZ=tVBRg7JNR8pB106UY4Xvi7zkPVn0Uov9sj8akg@mail.gmail.com>
+ <1786BBEE-9C7B-45B2-B451-F535ABB804EF@gmail.com> <CANn89iK4Qwf0ezWac3Cn1xWN_Hw+-QL-+H8YmDm4cZP=FH+MTQ@mail.gmail.com>
+ <CADVnQyk9maCc+tJ4-b6kufcBES9+Y2KpHPZadXssoVWX=Xr1Vw@mail.gmail.com> <30527e25-dd66-da7a-7344-494b4539abf7@gmail.com>
+In-Reply-To: <30527e25-dd66-da7a-7344-494b4539abf7@gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Thu, 1 Jul 2021 10:23:13 -0400
+Message-ID: <CADVnQyn_965EHdQke_S7FUySiamyyRx-3b8o+cm+=4jYxG_GOw@mail.gmail.com>
+Subject: Re: [PATCH] tcp: Do not reset the icsk_ca_initialized in tcp_init_transfer.
+To:     Phi Nguyen <phind.uet@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 01 Jul 2021 02:53:47 +0200, Marek Behún wrote:
-> There are devices where the MAC signals from the ethernet controller are
-> not directly connected to an ethernet PHY or a SFP cage, but to a
-> multiplexer, so that the device can switch between the endpoints.
-> 
-> For example on Turris Omnia the WAN controller is connected to a SerDes
-> switch, which multiplexes the SerDes lanes between SFP cage and ethernet
-> PHY, depending on whether a SFP module is present (MOD_DEF0 GPIO from
-> the SFP cage).
-> 
-> Document how to describe such a situation for an ethernet controller in
-> the device tree bindings.
-> 
-> Example usage could then look like:
->   &eth2 {
->     status = "okay";
->     phys = <&comphy5 2>;
->     buffer-manager = <&bm>;
->     bm,pool-long = <2>;
->     bm,pool-short = <3>;
-> 
->     signal-multiplexer {
->       compatible = "gpio-signal-multiplexer";
->       gpios = <&pcawan 4 GPIO_ACTIVE_LOW>;
-> 
->       endpoint@0 {
->         phy-mode = "sgmii";
-> 	phy-handle = <&phy1>;
->       };
-> 
->       endpoint@1 {
->         sfp = <&sfp>;
-> 	phy-mode = "sgmii";
-> 	managed = "in-band-status";
->       };
->     };
->   };
-> 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> ---
-> I wonder if this is the proper way to do this.
-> 
-> We already have framework for multiplexers in Linux, in drivers/mux.
-> But as I understand it, that framework is meant to be used when the
-> multiplexer state is to be set by kernel, while here it is possible
-> that the multiplexer state can be (and on Turris Omnia is) set by
-> the user plugging a SFP module into the SFP cage.
-> 
-> We theoretically could add a method for getting mux state into the mux
-> framework and state notification support. But using the mux framework
-> to solve this case in phylink would be rather complicated, especially
-> since mux framework is abstract, and if the multiplexer state is
-> determined by the MOD_DEF0 GPIO, which is also used by SFP code, the
-> implementation would get rather complicate in phylink...
-> 
-> I wonder whether driver implementation complexity should play a role
-> when proposing device tree bindings :-)
-> 
-> Some thoughts?
-> ---
->  .../bindings/net/ethernet-controller.yaml     | 60 +++++++++++++++++++
->  1 file changed, 60 insertions(+)
-> 
+On Wed, Jun 30, 2021 at 2:25 PM Phi Nguyen <phind.uet@gmail.com> wrote:
+>
+> On 6/29/2021 11:59 PM, Neal Cardwell wrote:
+> >    On Tue, Jun 29, 2021 at 8:58 AM Eric Dumazet <edumazet@google.com> wrote:
+> >  From my perspective, the bug was introduced when that 8919a9b31eb4
+> > commit introduced icsk_ca_initialized and set icsk_ca_initialized to 0
+> > in tcp_init_transfer(), missing the possibility that a process could
+> > call setsockopt(TCP_CONGESTION)  in state TCP_SYN_SENT (i.e. after the
+> > connect() or TFO open sendmsg()), which would call
+> > tcp_init_congestion_control(). The 8919a9b31eb4 commit did not intend
+> > to reset any initialization that the user had already explicitly made;
+> > it just missed the possibility of that particular sequence (which
+> > syzkaller managed to find!).
+> >
+> >> Although I am not sure what happens at accept() time when the listener
+> >> socket is cloned.
+> >
+> > It seems that for listener sockets, they cannot initialize their CC
+> > module state, because there is no way for them to reach
+> > tcp_init_congestion_control(), since:
+> >
+> > (a) tcp_set_congestion_control() -> tcp_reinit_congestion_control()
+> > will not call tcp_init_congestion_control() on a socket in CLOSE or
+> > LISTEN
+> >
+> > (b) tcp_init_transfer() -> tcp_init_congestion_control() can only
+> > happen for established sockets and successful TFO SYN_RECV sockets
+> Is this what was mentioned in this commit ce69e563b325(tcp: make sure
+> listeners don't initialize congestion-control state)
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Yes, exactly.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/net/ethernet-controller.yaml:258:18: [error] empty value in block mapping (empty-values)
-./Documentation/devicetree/bindings/net/ethernet-controller.yaml:261:18: [error] empty value in block mapping (empty-values)
-./Documentation/devicetree/bindings/net/ethernet-controller.yaml:264:18: [error] empty value in block mapping (empty-values)
-./Documentation/devicetree/bindings/net/ethernet-controller.yaml:267:18: [error] empty value in block mapping (empty-values)
-./Documentation/devicetree/bindings/net/ethernet-controller.yaml:270:18: [error] empty value in block mapping (empty-values)
-./Documentation/devicetree/bindings/net/ethernet-controller.yaml:273:18: [error] empty value in block mapping (empty-values)
-./Documentation/devicetree/bindings/net/ethernet-controller.yaml:276:18: [error] empty value in block mapping (empty-values)
-./Documentation/devicetree/bindings/net/ethernet-controller.yaml:279:18: [error] empty value in block mapping (empty-values)
+> > --
+> > [PATCH] tcp: fix tcp_init_transfer() to not reset icsk_ca_initialized
+> >
+> > This commit fixes a bug (found by syzkaller) that could cause spurious
+> > double-initializations for congestion control modules, which could cause memory
+> > leaks orother problems for congestion control modules (like CDG) that allocate
+> > memory in their init functions.
+> >
+> > The buggy scenario constructed by syzkaller was something like:
+> >
+> > (1) create a TCP socket
+> > (2) initiate a TFO connect via sendto()
+> > (3) while socket is in TCP_SYN_SENT, call setsockopt(TCP_CONGESTION),
+> >      which calls:
+> >         tcp_set_congestion_control() ->
+> >           tcp_reinit_congestion_control() ->
+> >             tcp_init_congestion_control()
+> > (4) receive ACK, connection is established, call tcp_init_transfer(),
+> >      set icsk_ca_initialized=0 (without first calling cc->release()),
+> >      call tcp_init_congestion_control() again.
+> >
+> > Note that in this sequence tcp_init_congestion_control() is called twice
+> > without a cc->release() call in between. Thus, for CC modules that allocate
+> > memory in their init() function, e.g, CDG, a memory leak may occur. The
+> > syzkaller tool managed to find a reproducer that triggered such a leak in CDG.
+> >
+> > The bug was introduced when that 8919a9b31eb4 commit introduced
+> > icsk_ca_initialized and set icsk_ca_initialized to 0 in tcp_init_transfer(),
+> > missing the possibility for a sequence like the one above, where a process
+> > could call setsockopt(TCP_CONGESTION) in state TCP_SYN_SENT (i.e. after the
+> > connect() or TFO open sendmsg()), which would call
+> > tcp_init_congestion_control(). The 8919a9b31eb4 commit did not intend to reset
+> > any initialization that the user had already explicitly made; it just missed
+> > the possibility of that particular sequence (which syzkaller managed to find).
+>
+> Could I use your commit message when I resubmit patch?
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ethernet-controller.yaml: properties:signal-multiplexer:patternProperties:^endpoint@[01]$:properties:phy-connection-type:$ref: None is not of type 'string'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ethernet-controller.yaml: properties:signal-multiplexer:patternProperties:^endpoint@[01]$:properties:phy-mode:$ref: None is not of type 'string'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ethernet-controller.yaml: properties:signal-multiplexer:patternProperties:^endpoint@[01]$:properties:fixed-link:$ref: None is not of type 'string'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ethernet-controller.yaml: properties:signal-multiplexer:patternProperties:^endpoint@[01]$:properties:phy:$ref: None is not of type 'string'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ethernet-controller.yaml: properties:signal-multiplexer:patternProperties:^endpoint@[01]$:properties:phy-device:$ref: None is not of type 'string'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ethernet-controller.yaml: properties:signal-multiplexer:patternProperties:^endpoint@[01]$:properties:sfp:$ref: None is not of type 'string'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ethernet-controller.yaml: properties:signal-multiplexer:patternProperties:^endpoint@[01]$:properties:managed:$ref: None is not of type 'string'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ethernet-controller.yaml: properties:signal-multiplexer:patternProperties:^endpoint@[01]$:properties:phy-handle:$ref: None is not of type 'string'
-	from schema $id: http://json-schema.org/draft-07/schema#
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy-connection-type: $ref
-./Documentation/devicetree/bindings/net/ethernet-controller.yaml: Unresolvable JSON pointer: 'properties/phy-connection-type'
-./Documentation/devicetree/bindings/net/snps,dwmac.yaml: Unresolvable JSON pointer: 'properties/phy-connection-type'
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: sfp: $ref
-warning: no schema found in file: ./Documentation/devicetree/bindings/net/ethernet-controller.yaml
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: sfp: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy-handle: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy-handle: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: sfp: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy-handle: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: fixed-link: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy-connection-type: $ref
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: 'compatible' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: 'reg-names' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: 'ranges' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: 'clocks' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: 'clock-names' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: 'power-domains' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: 'dmas' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: 'dma-names' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: '#address-cells' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: '#size-cells' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.yaml: ethernet@46000000: ethernet-ports:port@1: 'label', 'phy-handle', 'phy-mode', 'phys', 'ti,mac-only', 'ti,syscon-efuse' do not match any of the regexes: '^cpts@[0-9a-f]+', '^mdio@[0-9a-f]+$', 'pinctrl-[0-9]+'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy-device: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: fixed-link: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy-device: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy-device: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: fixed-link: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: fixed-link: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: sfp: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: managed: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: fixed-link: $ref
-dt-validate: recursion error: Check for prior errors in a referenced schema
-dt-validate: recursion error: Check for prior errors in a referenced schema
-schemas/net/ethernet-controller.yaml: ignoring, error in schema: properties: signal-multiplexer: patternProperties: ^endpoint@[01]$: properties: phy: $ref
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@1: 'compatible' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@1: 'ranges' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@1: 'clocks' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@1: 'clock-names' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@1: 'interrupt-names' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@1: '#address-cells' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@1: '#size-cells' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@1: 'label', 'mac-address', 'phy-handle', 'phy-mode', 'phys', 'ti,dual-emac-pvid' do not match any of the regexes: '^mdio@'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@1: 'oneOf' conditional failed, one must be fixed:
-	'interrupts' is a required property
-	'interrupts-extended' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@2: 'compatible' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@2: 'ranges' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@2: 'clocks' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@2: 'clock-names' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@2: 'interrupt-names' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@2: '#address-cells' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@2: '#size-cells' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@2: 'label', 'mac-address', 'phy-handle', 'phy-mode', 'phys', 'ti,dual-emac-pvid' do not match any of the regexes: '^mdio@'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: switch@0: ethernet-ports:port@2: 'oneOf' conditional failed, one must be fixed:
-	'interrupts' is a required property
-	'interrupts-extended' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-\ndoc reference errors (make refcheckdocs):
+Yes, feel free to use that commit message verbatim or modified.
 
-See https://patchwork.ozlabs.org/patch/1499168
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+thanks,
+neal
