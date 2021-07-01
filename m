@@ -2,140 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC973B907B
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 12:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD4FA3B90F5
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 13:06:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235978AbhGAK3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 06:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35596 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbhGAK3E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 06:29:04 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA52C061756
-        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 03:26:34 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id i24so7672055edx.4
-        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 03:26:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=a9K4jyXYx47Q8btyuDKrrTrq0PEaaUA3+QP6HJIrGos=;
-        b=UbsrHWUQ+mj/292xk46YRGIEWdXS7+QUOxq+6nNb3yIUs4zHYJrkuHGgQOce8DFrQe
-         md9AW7iO+3I2/Gy/0pAB4ksC45W+234IMOkL++jK9Ut5s1vRLJE3bHdXjN761/r4oe2f
-         rrENVsppo3Jrt+VvPkoj8uviilfOhQYD1fLZsSYmxlaq+oX/ZAl36g/kjQIzB82UT/ci
-         MsYhbtWrw18oEv5eBIolntsiKHP3qi59dFbBWXD2KwR7OAOnPaSBv5xvF7/vHO2gDnY9
-         DYJCzMg6LY4GJsFkzIZYE13B6X8/NPbpnEh/pX4mSS3+UYLngtGXoFLSkaU2VGZ/3SUB
-         VdKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=a9K4jyXYx47Q8btyuDKrrTrq0PEaaUA3+QP6HJIrGos=;
-        b=lzcFlBNEp0pnrOoy3aRBj9ihM70zDLzy+Dl93q2jAC52XzNZZRx/lkXg7TjMCuQTOK
-         GCIaEeuyza+lCpX+3eMrOJ9Q0UDugK9lM/m6jlAb4LgZ7OPm/VIPI67cxULhP9LP+w3K
-         dbYLjmum+l1TZnS7UnXybydB4ABolozXKCCeqEybQmbfR/5ZeVRxi//3RGtYsmSS+h/p
-         4yw82gmbWuF5Zg82t3jYJPYdQLohlOaBy5YMjCiSGMTmcLZzr++3W3McMyIoxt1fuydq
-         l9G5evNuOqYi/GMKsv6DtfYOLDMAswj6rP+cxebHHjbwr2LrhBlOj37GAOjxeZ6h/9bV
-         NlyA==
-X-Gm-Message-State: AOAM533nBcgZdyvSBKl4eDHv2qHvwJ2tUN9eOU2eg8Jby2IVGAtNxfYt
-        1sGjCNPBY8Nuep33qRHEkb7hZjmZZCRIkec/IQN9
-X-Google-Smtp-Source: ABdhPJz1/meMgJS0CbGomq08efo6oPox9DOh/ZiqfZwarY0z7LVGZFk2nW7ff1FIg7dKAGvVHmDMMOZVK5XkBCN2Y10=
-X-Received: by 2002:a50:ff01:: with SMTP id a1mr52286665edu.253.1625135192829;
- Thu, 01 Jul 2021 03:26:32 -0700 (PDT)
+        id S236121AbhGALIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 07:08:54 -0400
+Received: from www259.your-server.de ([188.40.28.39]:57030 "EHLO
+        www259.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236015AbhGALIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 07:08:53 -0400
+X-Greylist: delayed 1100 seconds by postgrey-1.27 at vger.kernel.org; Thu, 01 Jul 2021 07:08:53 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=waldheinz.de; s=default1911; h=MIME-Version:Content-Type:Subject:Cc:To:From
+        :Message-ID:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References;
+        bh=olo+q1cjkFiUEc1+lqyaJ97zQc/9rXBpSSCctXlU9IU=; b=NUSaLnZ+eNDbFL+yVpNkDfMybV
+        44R+wChzeFxFmRp15INUM4066E+99FuF8O7fJ4a/gpqBWbL2sPvORD7D+fJuKszpoBcYky8Ls9wXj
+        0w5AvLqaFyoS2BT+HF2yTRsWTxHvykS+KdjOMWf+hEyoTh+AGBQmnYtT79TkeyABrN4CpVNhReXTT
+        pFdBDFerboSFM0vVyzH2P89Vh8SaeyK6OOvioXwIA0IiU3Q6umerKvCVE/GWH6tqczVxxbFK/kCbi
+        i7AoLeC2INxPm9fVigesa+7NiEHo8BXXYM8187uB2wET0vMYnMz83g6jt847ags2iIeHCWF7BaJPv
+        gq9wR3sg==;
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www259.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <mt@waldheinz.de>)
+        id 1lyuEV-0006ze-GM; Thu, 01 Jul 2021 12:47:47 +0200
+Received: from [192.168.0.31] (helo=mail.your-server.de)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-CHACHA20-POLY1305:256)
+        (Exim 4.92)
+        (envelope-from <mt@waldheinz.de>)
+        id 1lyuEV-000Xy1-9u; Thu, 01 Jul 2021 12:47:47 +0200
+Received: from [77.21.132.210] ([77.21.132.210]) by mail.your-server.de
+ (Horde Framework) with HTTPS; Thu, 01 Jul 2021 12:47:47 +0200
+Date:   Thu, 01 Jul 2021 12:47:32 +0200
+Message-ID: <20210701124732.Horde.HT4urccbfqv0Nr1Aayuy0BM@mail.your-server.de>
+From:   Matthias Treydte <mt@waldheinz.de>
+To:     stable@vger.kernel.org
+Cc:     netdev@vger.kernel.org, regressions@lists.linux.dev,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Subject: [regression] UDP recv data corruption
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-References: <20210615141331.407-1-xieyongji@bytedance.com> <20210615141331.407-10-xieyongji@bytedance.com>
- <YNSatrDFsg+4VvH4@stefanha-x1.localdomain> <CACycT3vaXQ4dxC9QUzXXJs7og6TVqqVGa8uHZnTStacsYAiFwQ@mail.gmail.com>
- <YNw+q/ADMPviZi6S@stefanha-x1.localdomain> <CACycT3t6M5i0gznABm52v=rdmeeLZu8smXAOLg+WsM3WY1fgTw@mail.gmail.com>
- <7264cb0b-7072-098e-3d22-2b7e89216545@redhat.com>
-In-Reply-To: <7264cb0b-7072-098e-3d22-2b7e89216545@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 1 Jul 2021 18:26:21 +0800
-Message-ID: <CACycT3v7pYXAFtijPgWCMZ2WXxjT2Y-DUwS3hN_T7dhfE5o_6g@mail.gmail.com>
-Subject: Re: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+X-Authenticated-Sender: mt@waldheinz.de
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26217/Wed Jun 30 13:10:04 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 1, 2021 at 3:55 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2021/7/1 =E4=B8=8B=E5=8D=882:50, Yongji Xie =E5=86=99=E9=81=93:
-> > On Wed, Jun 30, 2021 at 5:51 PM Stefan Hajnoczi <stefanha@redhat.com> w=
-rote:
-> >> On Tue, Jun 29, 2021 at 10:59:51AM +0800, Yongji Xie wrote:
-> >>> On Mon, Jun 28, 2021 at 9:02 PM Stefan Hajnoczi <stefanha@redhat.com>=
- wrote:
-> >>>> On Tue, Jun 15, 2021 at 10:13:30PM +0800, Xie Yongji wrote:
-> >>>>> +/* ioctls */
-> >>>>> +
-> >>>>> +struct vduse_dev_config {
-> >>>>> +     char name[VDUSE_NAME_MAX]; /* vduse device name */
-> >>>>> +     __u32 vendor_id; /* virtio vendor id */
-> >>>>> +     __u32 device_id; /* virtio device id */
-> >>>>> +     __u64 features; /* device features */
-> >>>>> +     __u64 bounce_size; /* bounce buffer size for iommu */
-> >>>>> +     __u16 vq_size_max; /* the max size of virtqueue */
-> >>>> The VIRTIO specification allows per-virtqueue sizes. A device can ha=
-ve
-> >>>> two virtqueues, where the first one allows up to 1024 descriptors an=
-d
-> >>>> the second one allows only 128 descriptors, for example.
-> >>>>
-> >>> Good point! But it looks like virtio-vdpa/virtio-pci doesn't support
-> >>> that now. All virtqueues have the same maximum size.
-> >> I see struct vpda_config_ops only supports a per-device max vq size:
-> >> u16 (*get_vq_num_max)(struct vdpa_device *vdev);
-> >>
-> >> virtio-pci supports per-virtqueue sizes because the struct
-> >> virtio_pci_common_cfg->queue_size register is per-queue (controlled by
-> >> queue_select).
-> >>
-> > Oh, yes. I miss queue_select.
-> >
-> >> I guess this is a question for Jason: will vdpa will keep this limitat=
-ion?
-> >> If yes, then VDUSE can stick to it too without running into problems i=
-n
-> >> the future.
->
->
-> I think it's better to extend the get_vq_num_max() per virtqueue.
->
-> Currently, vDPA assumes the parent to have a global max size. This seems
-> to work on most of the parents but not vp-vDPA (which could be backed by
-> QEMU, in that case cvq's size is smaller).
->
-> Fortunately, we haven't enabled had cvq support in the userspace now.
->
-> I can post the fixes.
->
+Hello,
 
-OK. If so, it looks like we need to support the per-vq configuration.
-I wonder if it's better to use something like: VDUSE_CREATE_DEVICE ->
-VDUSE_SETUP_VQ -> VDUSE_SETUP_VQ -> ... -> VDUSE_ENABLE_DEVICE to do
-initialization rather than only use VDUSE_CREATE_DEVICE.
+we recently upgraded the Linux kernel from 5.11.21 to 5.12.12 in our  
+video stream receiver appliance and noticed compression artifacts on  
+video streams that were previously looking fine. We are receiving UDP  
+multicast MPEG TS streams through an FFMpeg / libav layer which does  
+the socket and lower level protocol handling. For affected kernels it  
+spills the log with messages like
 
-Thanks,
-Yongji
+> [mpegts @ 0x7fa130000900] Packet corrupt (stream = 0, dts = 6870802195).
+> [mpegts @ 0x7fa11c000900] Packet corrupt (stream = 0, dts = 6870821068).
+
+Bisecting identified commit 18f25dc399901426dff61e676ba603ff52c666f7  
+as the one introducing the problem in the mainline kernel. It was  
+backported to the 5.12 series in  
+450687386cd16d081b58cd7a342acff370a96078. Some random observations  
+which may help to understand what's going on:
+
+    * the problem exists in Linux 5.13
+    * reverting that commit on top of 5.13 makes the problem go away
+    * Linux 5.10.45 is fine
+    * no relevant output in dmesg
+    * can be reproduced on different hardware (Intel, AMD, different NICs, ...)
+    * we do use the bonding driver on the systems (but I did not yet  
+verify that this is related)
+    * we do not use vxlan (mentioned in the commit message)
+    * the relevant code in FFMpeg identifying packet corruption is here:
+      https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/mpegts.c#L2758
+
+And the bonding configuration:
+
+# cat /proc/net/bonding/bond0
+Ethernet Channel Bonding Driver: v5.10.45
+
+Bonding Mode: fault-tolerance (active-backup)
+Primary Slave: None
+Currently Active Slave: enp2s0
+MII Status: up
+MII Polling Interval (ms): 100
+Up Delay (ms): 0
+Down Delay (ms): 0
+Peer Notification Delay (ms): 0
+
+Slave Interface: enp2s0
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 80:ee:73:XX:XX:XX
+Slave queue ID: 0
+
+Slave Interface: enp3s0
+MII Status: down
+Speed: Unknown
+Duplex: Unknown
+Link Failure Count: 0
+Permanent HW addr: 80:ee:73:XX:XX:XX
+Slave queue ID: 0
+
+
+If there is anything else I can do to help tracking this down please  
+let me know.
+
+
+Regards,
+-Matthias Treydte
+
+
