@@ -2,84 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 620F73B971E
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 22:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08CC23B9721
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 22:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233980AbhGAUVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 16:21:13 -0400
-Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:39668 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233920AbhGAUVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 16:21:12 -0400
-Received: from localhost.localdomain ([86.243.172.93])
-        by mwinf5d15 with ME
-        id PwJf2500y21Fzsu03wJga7; Thu, 01 Jul 2021 22:18:40 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 01 Jul 2021 22:18:40 +0200
-X-ME-IP: 86.243.172.93
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     csully@google.com, sagis@google.com, jonolson@google.com,
-        davem@davemloft.net, kuba@kernel.org, awogbemila@google.com,
-        willemb@google.com, yangchun@google.com, bcf@google.com,
-        kuozhao@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH net v2 2/2] gve: Propagate error codes to caller
-Date:   Thu,  1 Jul 2021 22:18:37 +0200
-Message-Id: <2a1bcfa7f84f63ab2076175c6a5c0a5a181d3bcb.1625170569.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <f5dbb1ed01d13d4eac2b719db42cb02bf8166ceb.1625170569.git.christophe.jaillet@wanadoo.fr>
-References: <f5dbb1ed01d13d4eac2b719db42cb02bf8166ceb.1625170569.git.christophe.jaillet@wanadoo.fr>
+        id S234038AbhGAUWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 16:22:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58594 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232113AbhGAUWh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Jul 2021 16:22:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 504BB61416;
+        Thu,  1 Jul 2021 20:20:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625170806;
+        bh=igiiiI7bmYyrms3VOQ1TlbR2ORuUpoQUwcPnglcTAQ8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=dCAPj02znvCYkLSZc6CIkYvaCBIh5KzJw8l34hWqIdTlJSuDNfLMtC0XauFIjevjS
+         ozAWq/PUfzbG9K1Q4EUuRo1gf2ELZmpTjkWhjOVkV6J1Gq2KZ16X4RSy1ppvznR/DP
+         oBS0z9M+zZAd2U5DU/gVSsDgHfFFvSqTX5IiQ+IjNlSORqt9iJpuHvmtvYcPQdhRjA
+         BA0c5LaV8mRlrCh7vgXeHqlYSgA+qJThlcvToag+F/wpLXHMXTcwfFxJSZTNZNjYTi
+         nUdfaN3f6rMijtVEFeDdvZj09WW0AqovBhN9+lJgTm04mEYAhcfr9w7yhRjXa28bfe
+         5oiHLz2Nwh+cQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 43E0F60A6C;
+        Thu,  1 Jul 2021 20:20:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V2 1/5] net: wwan: iosm: fix uevent reporting
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162517080627.9938.15088340708232753641.git-patchwork-notify@kernel.org>
+Date:   Thu, 01 Jul 2021 20:20:06 +0000
+References: <20210701150706.1005000-1-m.chetan.kumar@linux.intel.com>
+In-Reply-To: <20210701150706.1005000-1-m.chetan.kumar@linux.intel.com>
+To:     M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, krishna.c.sudi@intel.com,
+        linuxwwan@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If 'gve_probe()' fails, we should propagate the error code, instead of
-hard coding a -ENXIO value.
-Make sure that all error handling paths set a correct value for 'err'.
+Hello:
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-v2: Unchanged
-    The previous serie had 3 patches. Now their are only 2
----
- drivers/net/ethernet/google/gve/gve_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+This series was applied to netdev/net.git (refs/heads/master):
 
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 44262c9f9ec2..c03984b26db4 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -1469,7 +1469,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	err = pci_enable_device(pdev);
- 	if (err)
--		return -ENXIO;
-+		return err;
- 
- 	err = pci_request_regions(pdev, "gvnic-cfg");
- 	if (err)
-@@ -1512,6 +1512,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	dev = alloc_etherdev_mqs(sizeof(*priv), max_tx_queues, max_rx_queues);
- 	if (!dev) {
- 		dev_err(&pdev->dev, "could not allocate netdev\n");
-+		err = -ENOMEM;
- 		goto abort_with_db_bar;
- 	}
- 	SET_NETDEV_DEV(dev, &pdev->dev);
-@@ -1593,7 +1594,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- abort_with_enabled:
- 	pci_disable_device(pdev);
--	return -ENXIO;
-+	return err;
- }
- 
- static void gve_remove(struct pci_dev *pdev)
--- 
-2.30.2
+On Thu,  1 Jul 2021 20:37:06 +0530 you wrote:
+> Change uevent env variable name to IOSM_EVENT & correct
+> reporting format to key=value pair.
+> 
+> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+> ---
+> v2: no change.
+> 
+> [...]
+
+Here is the summary with links:
+  - [V2,1/5] net: wwan: iosm: fix uevent reporting
+    https://git.kernel.org/netdev/net/c/856a5c97268d
+  - [V2,2/5] net: wwan: iosm: remove reduandant check
+    https://git.kernel.org/netdev/net/c/3bcfc0a2d319
+  - [V2,3/5] net: wwan: iosm: correct link-id handling
+    https://git.kernel.org/netdev/net/c/5bb4eea0c5f5
+  - [V2,4/5] net: wwan: iosm: fix netdev tx stats
+    https://git.kernel.org/netdev/net/c/c302e3a1c86f
+  - [V2,5/5] net: wwan: iosm: set default mtu
+    https://git.kernel.org/netdev/net/c/d7340f46beae
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
