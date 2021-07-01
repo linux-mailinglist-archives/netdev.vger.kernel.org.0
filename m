@@ -2,89 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94D363B8C84
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 05:03:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EC6D3B8CBE
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 05:54:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238707AbhGADGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 23:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51702 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238056AbhGADGI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 23:06:08 -0400
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC211C061756;
-        Wed, 30 Jun 2021 20:03:38 -0700 (PDT)
-Received: by mail-oo1-xc2e.google.com with SMTP id d1-20020a4ad3410000b029024c4d2ea72aso1200791oos.4;
-        Wed, 30 Jun 2021 20:03:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=miX+HUGNry9LPmmE01qiRM28/4hRXxW/rSyq1X5RMvA=;
-        b=rrcLIpMYDVHo8YMMCg+C5g3Y2pyHlfkH9Yasw0GfBTJIJG5VkNl/+aT2dHxvcG0KsZ
-         58ARZrBU4ydpsDCtR+e6MwvgQ08Y4ibgDTktIZ6qHftwV2zNobAZm0Ke0KvdEBDdjJeA
-         FHi5esfucH4d0STJBO/p9uYNtDeepR4HxMhnAO9G50xqtpMaHe1BQZJim6ZRYeaxZBBO
-         5kRB5Tb5rDsvbJJzpnY68MmDDr1K4Gm+PicNXhDZHyx58gvPWIoraS5uflsiArm/o70G
-         4W+fctfsQQVHlRXh8/PsKiaQdBuom0cXbMOnGCwKcxokZ/O5i/M++eR3WO81Sz17gBBN
-         e1Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=miX+HUGNry9LPmmE01qiRM28/4hRXxW/rSyq1X5RMvA=;
-        b=sszzhreMmEWVS9BKM3YqLNH/5aODVbHrKDlwJZDdp0AKdkUdl4xztsWR16pBr9W1Lf
-         3Cn8X0Ij5hcMISSC1C4DFvy5L52S395euWAogXAdVFQEMWqsmYGUmKJOrLtLjzUU34yh
-         bkzCzcrPJ/v66Tw7IQuHc9JsbGgLbQTjNUiEF79abLCQfltJKhDA7j2RrynqGn7CmUOT
-         1B3KDfpACiBIs0VVsPRFzvDHSpDDKz3aFxXDR8pHd8lqCxZYT5rfoQwxHTGDbIaqnxg/
-         zvkmb/YBrYn328eq+H2CHy9k7fvx1FrmgK2h3V7JNUjOF+UJA+uxBAlsaB3HXvr/f8up
-         A+Wg==
-X-Gm-Message-State: AOAM5310yDFof1QcZkkijPdaXWMc4Gj3rMlaI+NXN+be9URDnOUu5Txj
-        FhYTvoiCOmTY3heDpoQ4baY=
-X-Google-Smtp-Source: ABdhPJxNS3uM9ZSKZcUsFOgGvl15CC7VjYn6u1n4W3yLMranX1a/tzUlEv8HZdfoRQfVP/XaZUYLaA==
-X-Received: by 2002:a4a:cb06:: with SMTP id r6mr11136256ooq.15.1625108618137;
-        Wed, 30 Jun 2021 20:03:38 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.38])
-        by smtp.googlemail.com with ESMTPSA id c34sm5236974otu.42.2021.06.30.20.03.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Jun 2021 20:03:37 -0700 (PDT)
-Subject: Re: [PATCH] net: ipv6: don't generate link-local address in any
- addr_gen_mode
-To:     Rocco Yue <rocco.yue@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S233942AbhGAD5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 23:57:10 -0400
+Received: from mailgw01.mediatek.com ([60.244.123.138]:46842 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S232930AbhGAD5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 23:57:09 -0400
+X-UUID: 4476006f41c6483896e4d1fa29978755-20210701
+X-UUID: 4476006f41c6483896e4d1fa29978755-20210701
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 442614381; Thu, 01 Jul 2021 11:54:35 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 1 Jul 2021 11:54:34 +0800
+Received: from localhost.localdomain (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 1 Jul 2021 11:54:33 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com,
-        Rocco.Yue@gmail.com, chao.song@mediatek.com,
-        kuohong.wang@mediatek.com, zhuoliang.zhang@mediatek.com
-References: <20210701015940.29726-1-rocco.yue@mediatek.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3c0e5c52-4204-ae1e-526a-5f3a5c9738c2@gmail.com>
-Date:   Wed, 30 Jun 2021 21:03:35 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <wsd_upstream@mediatek.com>,
+        <rocco.yue@gmail.com>, <chao.song@mediatek.com>,
+        <kuohong.wang@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        Rocco Yue <rocco.yue@mediatek.com>
+Subject: Re: [PATCH] net: ipv6: don't generate link-local address in any addr_gen_mode
+Date:   Thu, 1 Jul 2021 11:39:20 +0800
+Message-ID: <20210701033920.5167-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <3c0e5c52-4204-ae1e-526a-5f3a5c9738c2@gmail.com>
+References: <3c0e5c52-4204-ae1e-526a-5f3a5c9738c2@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210701015940.29726-1-rocco.yue@mediatek.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 2021-06-30 at 21:03 -0600, David Ahern wrote:
 On 6/30/21 7:59 PM, Rocco Yue wrote:
-> This patch provides an ipv6 proc file named
-> "disable_gen_linklocal_addr", its absolute path is as follows:
-> "/proc/sys/net/ipv6/conf/<iface>/disable_gen_linklocal_addr".
+>> This patch provides an ipv6 proc file named
+>> "disable_gen_linklocal_addr", its absolute path is as follows:
+>> "/proc/sys/net/ipv6/conf/<iface>/disable_gen_linklocal_addr".
+>> 
+>> When the "disable_gen_linklocal_addr" value of a device is 1,
+>> it means that this device does not need the Linux kernel to
+>> automatically generate the ipv6 link-local address no matter
+>> which IN6_ADDR_GEN_MODE is used.
+>> 
 > 
-> When the "disable_gen_linklocal_addr" value of a device is 1,
-> it means that this device does not need the Linux kernel to
-> automatically generate the ipv6 link-local address no matter
-> which IN6_ADDR_GEN_MODE is used.
+> doesn't this duplicate addr_gen_mode == 1 == IN6_ADDR_GEN_MODE_NONE?
 > 
 
-doesn't this duplicate addr_gen_mode == 1 == IN6_ADDR_GEN_MODE_NONE?
+Hi David,
+
+Thanks for your review.
+
+This patch is different with IN6_ADDR_GEN_MODE_NONE.
+
+When the addr_gen_mode == IN6_ADDR_GEN_MODE_NONE, the Linux kernel
+doesn't automatically generate the ipv6 link-local address.
+
+But when the addr_gen_mode == IN6_ADDR_GEN_MODE_STABLE_PRIVACY, the
+Linux kernel will still automatically generate an ipv6 link-local
+address.
+
+Among global mobile operators, some operators have already request
+MT (Mobile Terminal) to support RFC7217, such as AT&T. In this case,
+addr_gen_mode will be set to IN6_ADDR_GEN_MODE_STABLE_PRIVACY to
+support RFC7217. This means that the device not only needs the IID
+assigned by the GGSN to build the ipv6 link-local address to trigger
+the RS message, but also needs to use the stable privacy mode to build
+the ipv6 global address after receiving the RA.
+
+After this patch, when the "disable_gen_linklocal_addr" value of a device
+is 1, no matter in which addr_gen_mode, the Linux kernel will not automatically
+generate an ipv6 link-local for this device.
+
+Thanks,
+Rocco
