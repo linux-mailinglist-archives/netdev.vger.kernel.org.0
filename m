@@ -2,139 +2,328 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 401043B97D0
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 22:54:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2743B97EA
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 23:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234278AbhGAU5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 16:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232637AbhGAU5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 16:57:03 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E29C061762;
-        Thu,  1 Jul 2021 13:54:31 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id e20so7383018pgg.0;
-        Thu, 01 Jul 2021 13:54:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bejbpdzWWOIMJGxxaqncK4cvXUou7+0QN70+h87YgDs=;
-        b=FlbdvNwkRM83irrFusIbAD3vMHujJ0igoZqXNyK1JXmd9EV4cPCbV4nNcFArau7k54
-         ES4K2Ws3jtF0VUbsQefwJQ4KaeC3OWB010uwffflmnpjh9dZ060nav9OdKDePMIRq6ao
-         moSESHAdDaK9lrB7rSF4E5PNIYRo2VnIquUHpxlWBCik1myVCVLgQFnh0saHPILs7BEP
-         VV6x4GpIuY35G/cweGO/5ze0H5CGOuMkLaM5UNGaB0EtT9HR4c4h9VjpCce3nKyWODDj
-         QP7x4Kriu0VD138elHi92qymPvQWV5e/o+glHgX+KaKdF7XBpQ2CwRQTKa0aK2C81D0m
-         vvDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bejbpdzWWOIMJGxxaqncK4cvXUou7+0QN70+h87YgDs=;
-        b=PB54J3dDMiETSHxQilG3uN/WfJwQx7uyHQU5um3zqDf6FxVudfJXx/AH9nlatyYWws
-         mtXpsRCnWaL06N9QxFUBRik+BqlkgrAOlwZSxVeTqoofcfhMGoE04pkRPb2gcZRDNkP5
-         HD19vV2/5INHGxB1PUhuipReVyo6j2MYKdZ1VHpMLwWF7JNAn6q/+qHL8Egtee2ovZ+7
-         g7lnfSCPe8pTnfszbJ9MbvsJdMDDoYIDOp+neAG4CB+yVnaxJtWZnmZXKRhOeXDeBDcI
-         CjgNMrnTPRdvn1GhG7V4CQu3L7iz9mX+0narq/1aGBktsQ8urKMU7FnDhvGbSusJJSlS
-         WgeQ==
-X-Gm-Message-State: AOAM532QpRvqOUWX8xEkqLRRVWW+rA9cXpvQvJ+grTmD0Y3kV2AiIK6P
-        5buI4/IcxH8OH0/gsCAAqegkZSA4T0gzOB2ijFAJZvOc
-X-Google-Smtp-Source: ABdhPJyPDlB+L3xy8R1qK6DR4obf/aFfKpiGOTeiTfYmOZlcnhsLr0IMAu0f5D4dvailNq75gWnkh4z2BtwXUEEK+QA=
-X-Received: by 2002:a63:f65:: with SMTP id 37mr1393805pgp.367.1625172871084;
- Thu, 01 Jul 2021 13:54:31 -0700 (PDT)
+        id S234374AbhGAVCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 17:02:40 -0400
+Received: from smtp.sysclose.org ([69.164.214.230]:44078 "EHLO sysclose.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233893AbhGAVCg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Jul 2021 17:02:36 -0400
+Received: from localhost (unknown [191.7.188.189])
+        by sysclose.org (Postfix) with ESMTPSA id 8CC7623BA;
+        Thu,  1 Jul 2021 21:00:07 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 sysclose.org 8CC7623BA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sysclose.org;
+        s=201903; t=1625173207;
+        bh=eqc9+aKlxP5jqHc0US/GmzFUU1hkaA9R4ddnr4hdIcw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gSmOq9k5i3FeA8YzUZdgpbyygyr8D+GWJDzsh+MqijH3QIy0NFIY2p1vZjYMnGrJj
+         F6CRoNKyzLIYIweYfJKq5K36TrInrUGGgyFTC3KUjq0iPvXvYwGJv0x6wxL3zUnwIe
+         D0VhKu9SI/hv3UZpnn+MXxvZMnshUxLmNIioOEWTG4D2QqsWttLI3MW9PWf6m6r/pN
+         NG3zPqRmY2mh/AuIJUw39HwHifqLHkeJS3a/+HQ8vTk4j6+wDfObFeiMF2xHK52Kal
+         X3547QUO+zjFjeAQPTO2/q6snTr6nBTqfhS/WHx3zoVGEnnhE1Lpj8cVrgMGyfU5/C
+         Oa2+h0CXXA0Sw==
+Date:   Thu, 1 Jul 2021 17:59:59 -0300
+From:   Flavio Leitner <fbl@sysclose.org>
+To:     Mark Gray <mark.d.gray@redhat.com>
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        dan.carpenter@oracle.com, pravin.ovn@gmail.com
+Subject: Re: [PATCH net-next] openvswitch: Introduce per-cpu upcall dispatch
+Message-ID: <YN4szx1sCKwjRJfi@p50>
+References: <20210630095350.817785-1-mark.d.gray@redhat.com>
 MIME-Version: 1.0
-References: <CAHQn7pKcyC_jYmGyTcPCdk9xxATwW5QPNph=bsZV8d-HPwNsyA@mail.gmail.com>
- <a7f11cc2-7bef-4727-91b7-b51da218d2ee@nbd.name> <YNtdKb+2j02fxfJl@kroah.com> <872e3ea6-bbdf-f67c-58f9-4c2dafc2023a@nbd.name>
-In-Reply-To: <872e3ea6-bbdf-f67c-58f9-4c2dafc2023a@nbd.name>
-From:   Davis Mosenkovs <davikovs@gmail.com>
-Date:   Thu, 1 Jul 2021 23:54:19 +0300
-Message-ID: <CAHQn7pJY4Vv_eWpeCvuH_C6SHwAvKrSE2cQ=cTir72Ffcr9VXg@mail.gmail.com>
-Subject: Re: Posible memory corruption from "mac80211: do not accept/forward
- invalid EAPOL frames"
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210630095350.817785-1-mark.d.gray@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-06-30 at 21:01 Felix Fietkau (<nbd@nbd.name>) wrote:
->
-> On 2021-06-29 19:49, Greg Kroah-Hartman wrote:
-> > On Tue, Jun 29, 2021 at 07:26:03PM +0200, Felix Fietkau wrote:
-> >>
-> >> Hi,
-> >>
-> >> On 2021-06-29 06:48, Davis wrote:
-> >> > Greetings!
-> >> >
-> >> > Could it be possible that
-> >> > https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=v5.12.13&id=a8c4d76a8dd4fb9666fc8919a703d85fb8f44ed8
-> >> > or at least its backport to 4.4 has the potential for memory
-> >> > corruption due to incorrect pointer calculation?
-> >> > Shouldn't the line:
-> >> >   struct ethhdr *ehdr = (void *)skb_mac_header(skb);
-> >> > be:
-> >> >   struct ethhdr *ehdr = (struct ethhdr *) skb->data;
-> >> >
-> >> > Later ehdr->h_dest is referenced, read and (when not equal to expected
-> >> > value) written:
-> >> >   if (unlikely(skb->protocol == sdata->control_port_protocol &&
-> >> >       !ether_addr_equal(ehdr->h_dest, sdata->vif.addr)))
-> >> >     ether_addr_copy(ehdr->h_dest, sdata->vif.addr);
-> >> >
-> >> > In my case after cherry-picking
-> >> > https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=v4.4.273&id=e3d4030498c304d7c36bccc6acdedacf55402387
-> >> > to 4.4 kernel of an ARM device occasional memory corruption was observed.
-> >> >
-> >> > To investigate this issue logging was added - the pointer calculation
-> >> > was expressed as:
-> >> >   struct ethhdr *ehdr = (void *)skb_mac_header(skb);
-> >> >   struct ethhdr *ehdr2 = (struct ethhdr *) skb->data;
-> >> > and memory writing was replaced by logging:
-> >> >   if (unlikely(skb->protocol == sdata->control_port_protocol &&
-> >> >       (!ether_addr_equal(ehdr->h_dest, sdata->vif.addr) ||
-> >> > !ether_addr_equal(ehdr2->h_dest, sdata->vif.addr))))
-> >> >     printk(KERN_ERR "Matching1: %u, matching2: %u, addr1: %px, addr2:
-> >> > %px", !ether_addr_equal(ehdr->h_dest, sdata->vif.addr),
-> >> > !ether_addr_equal(ehdr2->h_dest, sdata->vif.addr), ehdr->h_dest,
-> >> > ehdr2->h_dest);
-> >> >
-> >> > During normal use of wifi (in residential environment) logging was
-> >> > triggered several times, in all cases matching1 was 1 and matching2
-> >> > was 0.
-> >> > This makes me think that normal control frames were received and
-> >> > correctly validated by !ether_addr_equal(ehdr2->h_dest,
-> >> > sdata->vif.addr), however !ether_addr_equal(ehdr->h_dest,
-> >> > sdata->vif.addr) was checking incorrect buffer and identified the
-> >> > frames as malformed/correctable.
-> >> > This also explains memory corruption - offset difference between both
-> >> > buffers (addr1 and addr2) was close to 64 KB in all cases, virtually
-> >> > always a random memory location (around 64 KB away from the correct
-> >> > buffer) will belong to something else, will have a value that differs
-> >> > from the expected MAC address and will get overwritten by the
-> >> > cherry-picked code.
-> >> It seems that the 4.4 backport is broken. The problem is the fact that
-> >> skb_mac_header is called before eth_type_trans(). This means that the
-> >> mac header offset still has the default value of (u16)-1, resulting in
-> >> the 64 KB memory offset that you observed.
-> >>
-> >> I think that for 4.4, the code should be changed to use skb->data
-> >> instead of skb_mac_header. 4.9 looks broken in the same way.
-> >> 5.4 seems fine, so newer kernels should be fine as well.
-> >
-> > Thanks for looking into this, can you submit a patch to fix this up in
-> > the older kernel trees?
-> Sorry, I don't have time to prepare and test the patches at the moment.
->
-> - Felix
-If testing procedure mentioned in my first email is sufficient (and
-using skb->data is the correct solution in kernel trees where current
-code doesn't work properly), I can make and test the patches.
-Should I do that?
 
-Br,
-Davis
+Hi Mark,
+
+Thanks for addressing the comments. The patch looks good to me
+and I plan to test it tomorrow.
+
+fbl
+
+On Wed, Jun 30, 2021 at 05:53:49AM -0400, Mark Gray wrote:
+> The Open vSwitch kernel module uses the upcall mechanism to send
+> packets from kernel space to user space when it misses in the kernel
+> space flow table. The upcall sends packets via a Netlink socket.
+> Currently, a Netlink socket is created for every vport. In this way,
+> there is a 1:1 mapping between a vport and a Netlink socket.
+> When a packet is received by a vport, if it needs to be sent to
+> user space, it is sent via the corresponding Netlink socket.
+> 
+> This mechanism, with various iterations of the corresponding user
+> space code, has seen some limitations and issues:
+> 
+> * On systems with a large number of vports, there is a correspondingly
+> large number of Netlink sockets which can limit scaling.
+> (https://bugzilla.redhat.com/show_bug.cgi?id=1526306)
+> * Packet reordering on upcalls.
+> (https://bugzilla.redhat.com/show_bug.cgi?id=1844576)
+> * A thundering herd issue.
+> (https://bugzilla.redhat.com/show_bug.cgi?id=1834444)
+> 
+> This patch introduces an alternative, feature-negotiated, upcall
+> mode using a per-cpu dispatch rather than a per-vport dispatch.
+> 
+> In this mode, the Netlink socket to be used for the upcall is
+> selected based on the CPU of the thread that is executing the upcall.
+> In this way, it resolves the issues above as:
+> 
+> a) The number of Netlink sockets scales with the number of CPUs
+> rather than the number of vports.
+> b) Ordering per-flow is maintained as packets are distributed to
+> CPUs based on mechanisms such as RSS and flows are distributed
+> to a single user space thread.
+> c) Packets from a flow can only wake up one user space thread.
+> 
+> The corresponding user space code can be found at:
+> https://mail.openvswitch.org/pipermail/ovs-dev/2021-April/382618.html
+> 
+> Bugzilla: https://bugzilla.redhat.com/1844576
+> Signed-off-by: Mark Gray <mark.d.gray@redhat.com>
+> ---
+> 
+> Notes:
+>     v1 - Reworked based on Flavio's comments:
+>          * Fixed handling of userspace action case
+>          * Renamed 'struct dp_portids'
+>          * Fixed handling of return from kmalloc()
+>          * Removed check for dispatch type from ovs_dp_get_upcall_portid()
+>        - Reworked based on Dan's comments:
+>          * Fixed handling of return from kmalloc()
+>        - Reworked based on Pravin's comments:
+>          * Fixed handling of userspace action case
+>        - Added kfree() in destroy_dp_rcu() to cleanup netlink port ids
+> 
+>  include/uapi/linux/openvswitch.h |  8 ++++
+>  net/openvswitch/actions.c        |  6 ++-
+>  net/openvswitch/datapath.c       | 70 +++++++++++++++++++++++++++++++-
+>  net/openvswitch/datapath.h       | 20 +++++++++
+>  4 files changed, 101 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> index 8d16744edc31..6571b57b2268 100644
+> --- a/include/uapi/linux/openvswitch.h
+> +++ b/include/uapi/linux/openvswitch.h
+> @@ -70,6 +70,8 @@ enum ovs_datapath_cmd {
+>   * set on the datapath port (for OVS_ACTION_ATTR_MISS).  Only valid on
+>   * %OVS_DP_CMD_NEW requests. A value of zero indicates that upcalls should
+>   * not be sent.
+> + * OVS_DP_ATTR_PER_CPU_PIDS: Per-cpu array of PIDs for upcalls when
+> + * OVS_DP_F_DISPATCH_UPCALL_PER_CPU feature is set.
+>   * @OVS_DP_ATTR_STATS: Statistics about packets that have passed through the
+>   * datapath.  Always present in notifications.
+>   * @OVS_DP_ATTR_MEGAFLOW_STATS: Statistics about mega flow masks usage for the
+> @@ -87,6 +89,9 @@ enum ovs_datapath_attr {
+>  	OVS_DP_ATTR_USER_FEATURES,	/* OVS_DP_F_*  */
+>  	OVS_DP_ATTR_PAD,
+>  	OVS_DP_ATTR_MASKS_CACHE_SIZE,
+> +	OVS_DP_ATTR_PER_CPU_PIDS,   /* Netlink PIDS to receive upcalls in per-cpu
+> +				     * dispatch mode
+> +				     */
+>  	__OVS_DP_ATTR_MAX
+>  };
+>  
+> @@ -127,6 +132,9 @@ struct ovs_vport_stats {
+>  /* Allow tc offload recirc sharing */
+>  #define OVS_DP_F_TC_RECIRC_SHARING	(1 << 2)
+>  
+> +/* Allow per-cpu dispatch of upcalls */
+> +#define OVS_DP_F_DISPATCH_UPCALL_PER_CPU	(1 << 3)
+> +
+>  /* Fixed logical ports. */
+>  #define OVSP_LOCAL      ((__u32)0)
+>  
+> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+> index ef15d9eb4774..f79679746c62 100644
+> --- a/net/openvswitch/actions.c
+> +++ b/net/openvswitch/actions.c
+> @@ -924,7 +924,11 @@ static int output_userspace(struct datapath *dp, struct sk_buff *skb,
+>  			break;
+>  
+>  		case OVS_USERSPACE_ATTR_PID:
+> -			upcall.portid = nla_get_u32(a);
+> +			if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU)
+> +				upcall.portid =
+> +				   ovs_dp_get_upcall_portid(dp, smp_processor_id());
+> +			else
+> +				upcall.portid = nla_get_u32(a);
+>  			break;
+>  
+>  		case OVS_USERSPACE_ATTR_EGRESS_TUN_PORT: {
+> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> index bc164b35e67d..8d54fa323543 100644
+> --- a/net/openvswitch/datapath.c
+> +++ b/net/openvswitch/datapath.c
+> @@ -166,6 +166,7 @@ static void destroy_dp_rcu(struct rcu_head *rcu)
+>  	free_percpu(dp->stats_percpu);
+>  	kfree(dp->ports);
+>  	ovs_meters_exit(dp);
+> +	kfree(dp->upcall_portids);
+>  	kfree(dp);
+>  }
+>  
+> @@ -239,7 +240,12 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+>  
+>  		memset(&upcall, 0, sizeof(upcall));
+>  		upcall.cmd = OVS_PACKET_CMD_MISS;
+> -		upcall.portid = ovs_vport_find_upcall_portid(p, skb);
+> +
+> +		if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU)
+> +			upcall.portid = ovs_dp_get_upcall_portid(dp, smp_processor_id());
+> +		else
+> +			upcall.portid = ovs_vport_find_upcall_portid(p, skb);
+> +
+>  		upcall.mru = OVS_CB(skb)->mru;
+>  		error = ovs_dp_upcall(dp, skb, key, &upcall, 0);
+>  		if (unlikely(error))
+> @@ -1594,16 +1600,67 @@ static void ovs_dp_reset_user_features(struct sk_buff *skb,
+>  
+>  DEFINE_STATIC_KEY_FALSE(tc_recirc_sharing_support);
+>  
+> +int ovs_dp_set_upcall_portids(struct datapath *dp,
+> +			      const struct nlattr *ids)
+> +{
+> +	struct dp_nlsk_pids *old, *dp_nlsk_pids;
+> +
+> +	if (!nla_len(ids) || nla_len(ids) % sizeof(u32))
+> +		return -EINVAL;
+> +
+> +	old = ovsl_dereference(dp->upcall_portids);
+> +
+> +	dp_nlsk_pids = kmalloc(sizeof(*dp_nlsk_pids) + nla_len(ids),
+> +			       GFP_KERNEL);
+> +	if (!dp_nlsk_pids)
+> +		return -ENOMEM;
+> +
+> +	dp_nlsk_pids->n_pids = nla_len(ids) / sizeof(u32);
+> +	nla_memcpy(dp_nlsk_pids->pids, ids, nla_len(ids));
+> +
+> +	rcu_assign_pointer(dp->upcall_portids, dp_nlsk_pids);
+> +
+> +	kfree_rcu(old, rcu);
+> +
+> +	return 0;
+> +}
+> +
+> +u32 ovs_dp_get_upcall_portid(const struct datapath *dp, uint32_t cpu_id)
+> +{
+> +	struct dp_nlsk_pids *dp_nlsk_pids;
+> +
+> +	dp_nlsk_pids = rcu_dereference_ovsl(dp->upcall_portids);
+> +
+> +	if (dp_nlsk_pids) {
+> +		if (cpu_id < dp_nlsk_pids->n_pids) {
+> +			return dp_nlsk_pids->pids[cpu_id];
+> +		} else if (dp_nlsk_pids->n_pids > 0 && cpu_id >= dp_nlsk_pids->n_pids) {
+> +			/* If the number of netlink PIDs is mismatched with the number of
+> +			 * CPUs as seen by the kernel, log this and send the upcall to an
+> +			 * arbitrary socket (0) in order to not drop packets
+> +			 */
+> +			pr_info_ratelimited("cpu_id mismatch with handler threads");
+> +			return dp_nlsk_pids->pids[cpu_id % dp_nlsk_pids->n_pids];
+> +		} else {
+> +			return 0;
+> +		}
+> +	} else {
+> +		return 0;
+> +	}
+> +}
+> +
+>  static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
+>  {
+>  	u32 user_features = 0;
+> +	int err;
+>  
+>  	if (a[OVS_DP_ATTR_USER_FEATURES]) {
+>  		user_features = nla_get_u32(a[OVS_DP_ATTR_USER_FEATURES]);
+>  
+>  		if (user_features & ~(OVS_DP_F_VPORT_PIDS |
+>  				      OVS_DP_F_UNALIGNED |
+> -				      OVS_DP_F_TC_RECIRC_SHARING))
+> +				      OVS_DP_F_TC_RECIRC_SHARING |
+> +				      OVS_DP_F_DISPATCH_UPCALL_PER_CPU))
+>  			return -EOPNOTSUPP;
+>  
+>  #if !IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+> @@ -1624,6 +1681,15 @@ static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
+>  
+>  	dp->user_features = user_features;
+>  
+> +	if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU &&
+> +	    a[OVS_DP_ATTR_PER_CPU_PIDS]) {
+> +		/* Upcall Netlink Port IDs have been updated */
+> +		err = ovs_dp_set_upcall_portids(dp,
+> +						a[OVS_DP_ATTR_PER_CPU_PIDS]);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+>  	if (dp->user_features & OVS_DP_F_TC_RECIRC_SHARING)
+>  		static_branch_enable(&tc_recirc_sharing_support);
+>  	else
+> diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
+> index 38f7d3e66ca6..a12a7d0168b1 100644
+> --- a/net/openvswitch/datapath.h
+> +++ b/net/openvswitch/datapath.h
+> @@ -50,6 +50,21 @@ struct dp_stats_percpu {
+>  	struct u64_stats_sync syncp;
+>  };
+>  
+> +/**
+> + * struct dp_nlsk_pids - array of netlink portids of for a datapath.
+> + *                       This is used when OVS_DP_F_DISPATCH_UPCALL_PER_CPU
+> + *                       is enabled and must be protected by rcu.
+> + * @rcu: RCU callback head for deferred destruction.
+> + * @n_pids: Size of @pids array.
+> + * @pids: Array storing the Netlink socket PIDs indexed by CPU ID for packets
+> + *       that miss the flow table.
+> + */
+> +struct dp_nlsk_pids {
+> +	struct rcu_head rcu;
+> +	u32 n_pids;
+> +	u32 pids[];
+> +};
+> +
+>  /**
+>   * struct datapath - datapath for flow-based packet switching
+>   * @rcu: RCU callback head for deferred destruction.
+> @@ -61,6 +76,7 @@ struct dp_stats_percpu {
+>   * @net: Reference to net namespace.
+>   * @max_headroom: the maximum headroom of all vports in this datapath; it will
+>   * be used by all the internal vports in this dp.
+> + * @upcall_portids: RCU protected 'struct dp_nlsk_pids'.
+>   *
+>   * Context: See the comment on locking at the top of datapath.c for additional
+>   * locking information.
+> @@ -87,6 +103,8 @@ struct datapath {
+>  
+>  	/* Switch meters. */
+>  	struct dp_meter_table meter_tbl;
+> +
+> +	struct dp_nlsk_pids __rcu *upcall_portids;
+>  };
+>  
+>  /**
+> @@ -243,6 +261,8 @@ int ovs_dp_upcall(struct datapath *, struct sk_buff *,
+>  		  const struct sw_flow_key *, const struct dp_upcall_info *,
+>  		  uint32_t cutlen);
+>  
+> +u32 ovs_dp_get_upcall_portid(const struct datapath *dp, uint32_t cpu_id);
+> +int ovs_dp_set_upcall_portids(struct datapath *dp, const struct nlattr *ids);
+>  const char *ovs_dp_name(const struct datapath *dp);
+>  struct sk_buff *ovs_vport_cmd_build_info(struct vport *vport, struct net *net,
+>  					 u32 portid, u32 seq, u8 cmd);
+> -- 
+> 2.27.0
+> 
+
+-- 
+fbl
