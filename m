@@ -2,77 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D2833B96F4
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 22:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE4F83B971A
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 22:18:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233494AbhGAUMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 16:12:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55668 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230149AbhGAUMf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Jul 2021 16:12:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C024B6140D;
-        Thu,  1 Jul 2021 20:10:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625170204;
-        bh=gYkZ2snUWYSqUK/4sIX1aGBwlpzegamfkak6iW8cmOY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SAxSKlV9n+6jAJUsKBqBBWzVraVsWFxAHlYDuFrfXR9YFGB/RBun4LbG+QbdaRBjn
-         eoM3tCkq7M59VQ1irHY3+LcmfwjClTW2OpjKYqkogT8QUgozmzAAz0cQHWA6xdwurA
-         0oQpL02MroYEtkFRvaI+6u31jRXjyGeKAyzY7quAJGcWsXnbnLN6tPAfCblOIGiorz
-         ZcXSjnjyanJRJU3BJgitV0oispBo6qOXFXCsKy9GWAIPZU6aUF55eMgKdr5TAucvlF
-         gNyl+ZUpmkoN0UCOjHgzJ4VEO4q8uh2qR3jV7CmPfLK9BfjYEPL3jsObd6NVF/u9d7
-         JhbjUQGGsDFIA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AC763609F7;
-        Thu,  1 Jul 2021 20:10:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233894AbhGAUVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 16:21:00 -0400
+Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:47427 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230149AbhGAUU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 16:20:59 -0400
+Received: from localhost.localdomain ([86.243.172.93])
+        by mwinf5d15 with ME
+        id PwJS2500K21Fzsu03wJSY4; Thu, 01 Jul 2021 22:18:27 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 01 Jul 2021 22:18:27 +0200
+X-ME-IP: 86.243.172.93
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     csully@google.com, sagis@google.com, jonolson@google.com,
+        davem@davemloft.net, kuba@kernel.org, awogbemila@google.com,
+        willemb@google.com, yangchun@google.com, bcf@google.com,
+        kuozhao@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH net v2 1/2] gve: Fix an error handling path in 'gve_probe()'
+Date:   Thu,  1 Jul 2021 22:18:24 +0200
+Message-Id: <f5dbb1ed01d13d4eac2b719db42cb02bf8166ceb.1625170569.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next Patch v3 0/3] DMAC based packet filtering
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162517020470.3771.14716519937544292426.git-patchwork-notify@kernel.org>
-Date:   Thu, 01 Jul 2021 20:10:04 +0000
-References: <20210630101059.27334-1-hkelam@marvell.com>
-In-Reply-To: <20210630101059.27334-1-hkelam@marvell.com>
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net,
-        willemdebruijn.kernel@gmail.com, andrew@lunn.ch,
-        sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
-        jerinj@marvell.com, sbhatta@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+If the 'register_netdev() call fails, we must release the resources
+allocated by the previous 'gve_init_priv()' call, as already done in the
+remove function.
 
-This series was applied to netdev/net.git (refs/heads/master):
+Add a new label and the missing 'gve_teardown_priv_resources()' in the
+error handling path.
 
-On Wed, 30 Jun 2021 15:40:56 +0530 you wrote:
-> Each MAC block supports 32 DMAC filters which can be configured to accept
-> or drop packets based on address match This patch series adds mbox
-> handlers and extends ntuple filter callbacks to accomdate DMAC filters
-> such that user can install DMAC based filters on interface from ethtool.
-> 
-> Patch1 adds necessary mbox handlers such that mbox consumers like PF netdev
-> can add/delete/update DMAC filters and Patch2 adds debugfs support to dump
-> current list of installed filters. Patch3 adds support to call mbox
-> handlers upon receiving DMAC filters from ethtool ntuple commands.
-> 
-> [...]
+Fixes: 893ce44df565 ("gve: Add basic driver framework for Compute Engine Virtual NIC")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+v2: Fix a typo in the label name
+    The previous serie had 3 patches. Now their are only 2
+---
+ drivers/net/ethernet/google/gve/gve_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Here is the summary with links:
-  - [net-next,v3,1/3] octeontx2-af: DMAC filter support in MAC block
-    https://git.kernel.org/netdev/net/c/6f14078e3ee5
-  - [net-next,v3,2/3] octeontx2-af: Debugfs support for DMAC filters
-    https://git.kernel.org/netdev/net/c/dbc52debf95f
-  - [net-next,v3,3/3] octeontx2-pf: offload DMAC filters to CGX/RPM block
-    https://git.kernel.org/netdev/net/c/79d2be385e9e
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 867e87af3432..44262c9f9ec2 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -1565,7 +1565,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	err = register_netdev(dev);
+ 	if (err)
+-		goto abort_with_wq;
++		goto abort_with_gve_init;
+ 
+ 	dev_info(&pdev->dev, "GVE version %s\n", gve_version_str);
+ 	dev_info(&pdev->dev, "GVE queue format %d\n", (int)priv->queue_format);
+@@ -1573,6 +1573,9 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	queue_work(priv->gve_wq, &priv->service_task);
+ 	return 0;
+ 
++abort_with_gve_init:
++	gve_teardown_priv_resources(priv);
++
+ abort_with_wq:
+ 	destroy_workqueue(priv->gve_wq);
+ 
+-- 
+2.30.2
 
