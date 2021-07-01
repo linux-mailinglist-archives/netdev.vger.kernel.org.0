@@ -2,83 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6EDF3B8D34
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 06:40:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90E693B8D37
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 06:44:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233294AbhGAEiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 00:38:06 -0400
-Received: from smtprelay0066.hostedemail.com ([216.40.44.66]:55928 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229577AbhGAEiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 00:38:05 -0400
-Received: from omf19.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 5B578181EE40C;
-        Thu,  1 Jul 2021 04:35:35 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id D603320D770;
-        Thu,  1 Jul 2021 04:35:33 +0000 (UTC)
-Message-ID: <fe4a647d5324e9d8d23564f6d685f3ca720db166.camel@perches.com>
-Subject: Re: [RFC 13/19] staging: qlge: rewrite do while loop as for loop in
- qlge_sem_spinlock
-From:   Joe Perches <joe@perches.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        Benjamin Poirier <benjamin.poirier@gmail.com>,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>
-Date:   Wed, 30 Jun 2021 21:35:31 -0700
-In-Reply-To: <20210630233338.2l34shhrm3bdd4gx@Rk>
-References: <20210621134902.83587-1-coiby.xu@gmail.com>
-         <20210621134902.83587-14-coiby.xu@gmail.com> <20210622072036.GK1861@kadam>
-         <20210624112245.zgvkcxyu7hzrzc23@Rk>
-         <f7beb9aee00a1cdb8dd97a49a36abd60d58279f2.camel@perches.com>
-         <20210630233338.2l34shhrm3bdd4gx@Rk>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+        id S232295AbhGAEoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 00:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44620 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229577AbhGAEoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 00:44:02 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76482C061756;
+        Wed, 30 Jun 2021 21:41:31 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id a133so5805590oib.13;
+        Wed, 30 Jun 2021 21:41:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ULZfPJnXFZifSjfdbhwtJxBX08db8bBGWvZTGfYyVog=;
+        b=SaUIeMwU9ZfcVbwMg1gCvQSr9O8/iAVHlTuuGaSO23aqy5hzsIpWLtN9F0ZkLl7S8h
+         sXERkfOYm8aBpV/ZfOZFc9JrYuY2sQSVAIwihOBOjv4ZTAoj1IiGg+qS6qku3J8OzxpK
+         mODvlNIjvRof/wfmfHMuxB3Bpha3pPkf4SSEx8DfS9QK+5TFFP9VhIvGLc3upnL4GNzl
+         +78ody4y+olE1VotFvRvn94uAfKFuHZEt9UjLZc3H/P0JzrQH1GinVYExBKOywz0n9Po
+         H6JzDptcIervypalzZBGedV7J16U9T9NmtBzWLyCkrz1Tc6II05qiBE3tGvd31Qa9USS
+         3kQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ULZfPJnXFZifSjfdbhwtJxBX08db8bBGWvZTGfYyVog=;
+        b=VaVeZ1VqADWP2CTZO3JwJajQJ+SqRouHr03zsd3KvcgJ0nqIsE0CfUxnfz4A98N2o+
+         mgsaPOJGlribUqJtXm6Q8/FupCmQbf34yNB8qziAkr4MClHgue2yR0rquSfAGBd7iC8b
+         OjmLysaD86y/dSFkYcHGnbfW5VS4hwGwg7D7Aso5XOuie4bZhyEGf3NKDnoAnx0HpTRA
+         uDQYyC5OM1tC7Z5ZH8OZm/mkp90eexfhEWnj6vsvbCmEBMnkjdc51HwWe7ulzWO+RT8M
+         JHgYDKB5WXbLCd0nAc+uqTc1QHhTVLLaT7SiSu1/vjSF8K6fJ827tZqU7YLPiS9r2AEY
+         J+2Q==
+X-Gm-Message-State: AOAM5308Xkp1OYYmvJygvZ8dsPVpzzrbk4qKWS4nZbKB7QW+HVZtRYk3
+        OYJjmhQrjzing+aNLQfShtA=
+X-Google-Smtp-Source: ABdhPJwng88MdmilLbYrvSx4xD7nBARB1R0iz1j9OQ+rXTBXgSdeicMT0lKSXKhcnPxjODOd9EOq0g==
+X-Received: by 2002:a05:6808:301:: with SMTP id i1mr27556536oie.144.1625114490758;
+        Wed, 30 Jun 2021 21:41:30 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id o24sm5326459otp.13.2021.06.30.21.41.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Jun 2021 21:41:30 -0700 (PDT)
+Subject: Re: [PATCH] net: ipv6: don't generate link-local address in any
+ addr_gen_mode
+To:     Rocco Yue <rocco.yue@mediatek.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com,
+        rocco.yue@gmail.com, chao.song@mediatek.com,
+        kuohong.wang@mediatek.com, zhuoliang.zhang@mediatek.com
+References: <3c0e5c52-4204-ae1e-526a-5f3a5c9738c2@gmail.com>
+ <20210701033920.5167-1-rocco.yue@mediatek.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <46a9dbf2-9748-330a-963e-57e615a15440@gmail.com>
+Date:   Wed, 30 Jun 2021 22:41:26 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <20210701033920.5167-1-rocco.yue@mediatek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.37
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: D603320D770
-X-Stat-Signature: 7rmdc1nrquttg9xgaoqxcsmo73w5qmoc
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19n/GBQXP7gIkMOXhN3RXKOLxsT9DwiqiU=
-X-HE-Tag: 1625114133-240606
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-07-01 at 07:33 +0800, Coiby Xu wrote:
-> On Wed, Jun 30, 2021 at 03:58:06AM -0700, Joe Perches wrote:
-> > On Thu, 2021-06-24 at 19:22 +0800, Coiby Xu wrote:
-> > > On Tue, Jun 22, 2021 at 10:20:36AM +0300, Dan Carpenter wrote:
-> > > > On Mon, Jun 21, 2021 at 09:48:56PM +0800, Coiby Xu wrote:
-> > > > > Since wait_count=30 > 0, the for loop is equivalent to do while
-> > > > > loop. This commit also replaces 100 with UDELAY_DELAY.
-> > []
-> > > > > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-> > []
-> > I also think using UDELAY_DELAY is silly and essentially misleading
-> > as it's also used as an argument value for mdelay
-> > 
-> > $ git grep -w UDELAY_DELAY
-> > drivers/staging/qlge/qlge.h:#define UDELAY_DELAY 100
-> > drivers/staging/qlge/qlge_main.c:               udelay(UDELAY_DELAY);
-> > drivers/staging/qlge/qlge_main.c:               udelay(UDELAY_DELAY);
-> > drivers/staging/qlge/qlge_mpi.c:                mdelay(UDELAY_DELAY);
-> > drivers/staging/qlge/qlge_mpi.c:                mdelay(UDELAY_DELAY);
-> > drivers/staging/qlge/qlge_mpi.c:                mdelay(UDELAY_DELAY); /* 100ms */
+On 6/30/21 9:39 PM, Rocco Yue wrote:
+> On Wed, 2021-06-30 at 21:03 -0600, David Ahern wrote:
+> On 6/30/21 7:59 PM, Rocco Yue wrote:
+>>> This patch provides an ipv6 proc file named
+>>> "disable_gen_linklocal_addr", its absolute path is as follows:
+>>> "/proc/sys/net/ipv6/conf/<iface>/disable_gen_linklocal_addr".
+>>>
+>>> When the "disable_gen_linklocal_addr" value of a device is 1,
+>>> it means that this device does not need the Linux kernel to
+>>> automatically generate the ipv6 link-local address no matter
+>>> which IN6_ADDR_GEN_MODE is used.
+>>>
+>>
+>> doesn't this duplicate addr_gen_mode == 1 == IN6_ADDR_GEN_MODE_NONE?
+>>
 > 
-> Thanks for spotting this issue! How about "#define MDELAY_DELAY 100" for
-> mdelay?
+> Hi David,
+> 
+> Thanks for your review.
+> 
+> This patch is different with IN6_ADDR_GEN_MODE_NONE.
+> 
+> When the addr_gen_mode == IN6_ADDR_GEN_MODE_NONE, the Linux kernel
+> doesn't automatically generate the ipv6 link-local address.
+> 
 
-I think the define is pointless and it'd be more readable
-to just use 100 in all the cases.
+...
 
-IMO: There really aren't enough cases to justify using defines.
+> 
+> After this patch, when the "disable_gen_linklocal_addr" value of a device
+> is 1, no matter in which addr_gen_mode, the Linux kernel will not automatically
+> generate an ipv6 link-local for this device.
+> 
 
+those 2 sentences are saying the same thing to me.
+
+for your use case, why is setting addr_gen_mode == 1 for the device not
+sufficient?
 
