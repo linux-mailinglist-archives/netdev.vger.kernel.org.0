@@ -2,109 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7673B9539
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 19:07:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9268E3B9562
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 19:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbhGARJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 13:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbhGARJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 13:09:46 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD946C061762
-        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 10:07:15 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id b12so5347880pfv.6
-        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 10:07:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6FMY/kxmgn4j+MFoV2yKtdR5pbXvSpbLhYPD+QyU59k=;
-        b=iezfM3navqMPjlGMFCettuoByytPdCx0/NiGTFWg8rDYjxaOFYPktP8nhPgowKE/YF
-         6tJWId28b/m7Q2l6DU0wDjYlXIKjzLJQcECK6RZF+Iy2DucjizysiIY3FDVfUn04iThs
-         tj6o/PSn4XcgduoptiW44K6Li5GAoKvYaD9VQIqgxHqvl2ReG7Obz33rXXH+qPcMqpbB
-         gGnws3Zhz/C5EInHaUYSk0dn/RJxsh+cuoZf2SwMyeCvMSEm9L1ahuK5/mxXTx/+DTXe
-         zh88I1NfdnOBkkNwk9jrEs/puVj8N90eMpEHkPdWKrqRUsmxNeFt7Ce6635pSnQOwUxM
-         xItg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6FMY/kxmgn4j+MFoV2yKtdR5pbXvSpbLhYPD+QyU59k=;
-        b=SBtJbNF51UmhBh25W2eWBBABg11BWnU2PcQAAXtNC1rcpJvAk+2vJRyNxmNt6HqlA5
-         g5G6kAsjgbz9YuBUb8ZfNhawe+GhFZtV5IBY3Ytx3frphcYAPANUwaNkwiMH7DYGQm30
-         GI1XqzUdRb83+sBb8fGDgjB6qBfW0/8rMoki92jCbkYwmDIGIkr5FM51R4Zsma/0Hm3G
-         45kw84oGnMY7CCAV7/j1gKzl855cbBM9Q3NPwmWzGQ0gRWr1Ww7FdDJbi4hTfODzN51Z
-         Do3NU0paSuOKjAXOOln1QSGUzdM1yM0cb42gCcQ+80FwZQHD7XpS9abi8mWQncoJ14h7
-         09lQ==
-X-Gm-Message-State: AOAM532vztown5a9EpNqQqp4Pv85pCkNGbmZFDtWe7mFWOGYZT+V7aNo
-        FMQTa5E1XcL57C9VQwOZ31o=
-X-Google-Smtp-Source: ABdhPJyBTQ0Pobk9HOnuuAInTN+w81uz/HO3qQGfhhhW14k+QDnb1RhthBSPkJk0gzTui+5EBMZaLQ==
-X-Received: by 2002:a63:4719:: with SMTP id u25mr577739pga.193.1625159235226;
-        Thu, 01 Jul 2021 10:07:15 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id p45sm605529pfw.19.2021.07.01.10.07.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 10:07:14 -0700 (PDT)
-Date:   Thu, 1 Jul 2021 10:07:12 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
-Message-ID: <20210701170712.GB24430@hoboy.vegasvil.org>
-References: <20210628184611.3024919-1-jonathan.lemon@gmail.com>
- <20210628233056.GA766@hoboy.vegasvil.org>
- <20210629001928.yhiql2dngstkpadb@bsd-mbp.dhcp.thefacebook.com>
- <20210630000933.GA21533@hoboy.vegasvil.org>
- <20210630035031.ulgiwewccgiz3rsv@bsd-mbp.dhcp.thefacebook.com>
- <20210701145935.GB22819@hoboy.vegasvil.org>
- <20210701161555.y4p6wz6l6e6ea2vg@bsd-mbp.dhcp.thefacebook.com>
+        id S232766AbhGARWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 13:22:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51298 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229949AbhGARWs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Jul 2021 13:22:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5CBA961406;
+        Thu,  1 Jul 2021 17:20:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625160017;
+        bh=vFNQSZ6n/Twg5RyCG/BGeZ7teVzZyqjvOrQsP/LFtG8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=P94t7cQAuSQqXCrjmnh+s+7Jk0lVVMg3K2NInzWULuobktsJnAU/C6VVT49PTTZLv
+         +tk6354FcpzQ7C5AmMftBytIKGNSVhcJ3iXCiQ3tomWcvXPvClClmL9GiHfY5Necez
+         jiyMDYl5JRi/3NL9v9Nfbd/xNpaDmNJl28c8rDpkWP5yNTa4rV0+rPUUQaQhgwVQmt
+         WSQp3EuDJUKdjV7/FPBxu7jAUO9pjWiyG1M9T3LXBw8kLbqE+nTNWzOwMGFVOenmvL
+         gyaLBGnUQ37wsHZInaeckHswSyJaTs2ILdpkaI1O2p7OJmk9JsIL4OAJ+Lc4BEdvug
+         PNRcLACazMNmw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 56B4C40B1A; Thu,  1 Jul 2021 14:20:13 -0300 (-03)
+Date:   Thu, 1 Jul 2021 14:20:13 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Zhihao Cheng <chengzhihao1@huawei.com>
+Cc:     peterz@infradead.org, mingo@redhat.com, jolsa@redhat.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, yukuai3@huawei.com
+Subject: Re: [PATCH] perf llvm: Fix error return code in llvm__compile_bpf()
+Message-ID: <YN35TYxboEdM5iHc@kernel.org>
+References: <20210609115945.2193194-1-chengzhihao1@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210701161555.y4p6wz6l6e6ea2vg@bsd-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210609115945.2193194-1-chengzhihao1@huawei.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 01, 2021 at 09:15:55AM -0700, Jonathan Lemon wrote:
-> static void enqueue_external_timestamp(struct timestamp_event_queue *queue,
->                                        struct ptp_clock_event *src)
-> {
->         struct ptp_extts_event *dst;
->         unsigned long flags;
->         s64 seconds;
->         u32 remainder;
+Em Wed, Jun 09, 2021 at 07:59:45PM +0800, Zhihao Cheng escreveu:
+> Fix to return a negative error code from the error handling
+> case instead of 0, as done elsewhere in this function.
+
+I checked and llvm__compile_bpf() returns -errno, so I'll change this to
+instead set err to -ENOMEM just before the if (asprintf)(), ok?
+
+- Arnaldo
+ 
+> Fixes: cb76371441d098 ("perf llvm: Allow passing options to llc ...")
+> Fixes: 5eab5a7ee032ac ("perf llvm: Display eBPF compiling command ...")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+> ---
+>  tools/perf/util/llvm-utils.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 > 
->         seconds = div_u64_rem(src->timestamp, 1000000000, &remainder);
+> diff --git a/tools/perf/util/llvm-utils.c b/tools/perf/util/llvm-utils.c
+> index 3ceaf7ef3301..2de02639fb67 100644
+> --- a/tools/perf/util/llvm-utils.c
+> +++ b/tools/perf/util/llvm-utils.c
+> @@ -504,8 +504,9 @@ int llvm__compile_bpf(const char *path, void **p_obj_buf,
+>  			goto errout;
+>  		}
+>  
+> -		if (asprintf(&pipe_template, "%s -emit-llvm | %s -march=bpf %s -filetype=obj -o -",
+> -			      template, llc_path, opts) < 0) {
+> +		err = asprintf(&pipe_template, "%s -emit-llvm | %s -march=bpf %s -filetype=obj -o -",
+> +			       template, llc_path, opts);
+> +		if (err < 0) {
+>  			pr_err("ERROR:\tnot enough memory to setup command line\n");
+>  			goto errout;
+>  		}
+> @@ -524,7 +525,8 @@ int llvm__compile_bpf(const char *path, void **p_obj_buf,
+>  
+>  	pr_debug("llvm compiling command template: %s\n", template);
+>  
+> -	if (asprintf(&command_echo, "echo -n \"%s\"", template) < 0)
+> +	err = asprintf(&command_echo, "echo -n \"%s\"", template);
+> +	if (err < 0)
+>  		goto errout;
+>  
+>  	err = read_from_pipe(command_echo, (void **) &command_out, NULL);
+> -- 
+> 2.31.1
 > 
-> 
-> It seems like there should be a way to use pps_times here instead
-> of needing to convert back and forth.
 
-You could re-factor that to have two callers, with the part that
-enqueues in a shared helper function.  The only reason the API has a
-64 bit word instead of a timespec is that many, but not all drivers
-use timecounter_cyc2time() or similar to calculate the time stamp.
+-- 
 
-But the ptp_clock_event is really meant to be polymorphic, with
-pps_times only set for traditional NTP PPS events (activated by the
-PTP_ENABLE_PPS ioctl).
-
- * struct ptp_clock_event - decribes a PTP hardware clock event
- *
- * @type:  One of the ptp_clock_events enumeration values.
- * @index: Identifies the source of the event.
- * @timestamp: When the event occurred (%PTP_CLOCK_EXTTS only).
- * @pps_times: When the event occurred (%PTP_CLOCK_PPSUSR only).
-
-The PTP_CLOCK_EXTTS is different.  It is meant for generic time
-stamping of external signals, activated by the PTP_EXTTS_REQUEST
-ioctl.
-
-I'm not sure which type is better suited to your HW.
-
-Thanks,
-Richard
+- Arnaldo
