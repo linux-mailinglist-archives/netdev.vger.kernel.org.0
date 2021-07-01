@@ -2,141 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A4683B9614
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 20:20:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B013B9612
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 20:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234025AbhGASWo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 1 Jul 2021 14:22:44 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:39564 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233194AbhGASWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 14:22:40 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1lz1IB-0006iC-D2; Thu, 01 Jul 2021 18:20:03 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id EF88C5FDD5; Thu,  1 Jul 2021 11:20:01 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id E83A7A040B;
-        Thu,  1 Jul 2021 11:20:01 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     joamaki@gmail.com
-cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        andy@greyhouse.net, vfalico@gmail.com, andrii@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com
-Subject: Re: [PATCH bpf-next v2 0/4] XDP bonding support
-In-reply-to: <20210624091843.5151-1-joamaki@gmail.com>
-References: <20210609135537.1460244-1-joamaki@gmail.com> <20210624091843.5151-1-joamaki@gmail.com>
-Comments: In-reply-to joamaki@gmail.com
-   message dated "Thu, 24 Jun 2021 09:18:39 -0000."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S234005AbhGASWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 14:22:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38292 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233194AbhGASWf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Jul 2021 14:22:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 585A461422;
+        Thu,  1 Jul 2021 18:20:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625163604;
+        bh=XFltTWcxDU1KP76KWFFxAFMse4pbMnTWGzAdab8E1Jw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YixcfPz31JAcOX8oT7wa15wr3u2bt7rLRJ+PizQS7Y7i261KK7Dw9lF+lKW6OzOl9
+         Mmk41DiUwqM0HCvoedWRBqRsU6EJru5EOyVh56IMQH4obHpdLr079IAIRFLDDTjD8k
+         +oYfrAjun4ETJvv3SLbaoy4KFbOD75uDDl8XNQrO6tfuJo6qOJjj6JRlPTMMVnXqAw
+         NyFB38ORHAUVu7UT0v6fGYjXnnpaOqw2qtgwzH2YV7SNakwi6xHck5XK6geu6s2cAw
+         jxUcqwABrkUk9CzV3ALh1DuT+dloOEtHIaiwaYAbFw7m3SdEXP1g2KzUjuIXogSJnc
+         OKA8UE5DCzfSg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4970760CD0;
+        Thu,  1 Jul 2021 18:20:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <31458.1625163601.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Thu, 01 Jul 2021 11:20:01 -0700
-Message-ID: <31459.1625163601@famine>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v1 1/1] net: usb: asix: ax88772: suspend PHY on
+ driver probe
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162516360429.12749.17906449690561610280.git-patchwork-notify@kernel.org>
+Date:   Thu, 01 Jul 2021 18:20:04 +0000
+References: <20210629044305.32322-1-o.rempel@pengutronix.de>
+In-Reply-To: <20210629044305.32322-1-o.rempel@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        m.szyprowski@samsung.com, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-joamaki@gmail.com wrote:
+Hello:
 
->From: Jussi Maki <joamaki@gmail.com>
->
->This patchset introduces XDP support to the bonding driver.
->
->The motivation for this change is to enable use of bonding (and
->802.3ad) in hairpinning L4 load-balancers such as [1] implemented with
->XDP and also to transparently support bond devices for projects that
->use XDP given most modern NICs have dual port adapters.  An alternative
->to this approach would be to implement 802.3ad in user-space and
->implement the bonding load-balancing in the XDP program itself, but
->is rather a cumbersome endeavor in terms of slave device management
->(e.g. by watching netlink) and requires separate programs for native
->vs bond cases for the orchestrator. A native in-kernel implementation
->overcomes these issues and provides more flexibility.
->
->Below are benchmark results done on two machines with 100Gbit
->Intel E810 (ice) NIC and with 32-core 3970X on sending machine, and
->16-core 3950X on receiving machine. 64 byte packets were sent with
->pktgen-dpdk at full rate. Two issues [2, 3] were identified with the
->ice driver, so the tests were performed with iommu=off and patch [2]
->applied. Additionally the bonding round robin algorithm was modified
->to use per-cpu tx counters as high CPU load (50% vs 10%) and high rate
->of cache misses were caused by the shared rr_tx_counter. Fix for this
->has been already merged into net-next. The statistics were collected 
->using "sar -n dev -u 1 10".
->
-> -----------------------|  CPU  |--| rxpck/s |--| txpck/s |----
-> without patch (1 dev):
->   XDP_DROP:              3.15%      48.6Mpps
->   XDP_TX:                3.12%      18.3Mpps     18.3Mpps
->   XDP_DROP (RSS):        9.47%      116.5Mpps
->   XDP_TX (RSS):          9.67%      25.3Mpps     24.2Mpps
-> -----------------------
-> with patch, bond (1 dev):
->   XDP_DROP:              3.14%      46.7Mpps
->   XDP_TX:                3.15%      13.9Mpps     13.9Mpps
->   XDP_DROP (RSS):        10.33%     117.2Mpps
->   XDP_TX (RSS):          10.64%     25.1Mpps     24.0Mpps
-> -----------------------
-> with patch, bond (2 devs):
->   XDP_DROP:              6.27%      92.7Mpps
->   XDP_TX:                6.26%      17.6Mpps     17.5Mpps
->   XDP_DROP (RSS):       11.38%      117.2Mpps
->   XDP_TX (RSS):         14.30%      28.7Mpps     27.4Mpps
-> --------------------------------------------------------------
+This patch was applied to netdev/net.git (refs/heads/master):
 
-	To be clear, the fact that the performance numbers for XDP_DROP
-and XDP_TX are lower for "with patch, bond (1 dev)" than "without patch
-(1 dev)" is expected, correct?
+On Tue, 29 Jun 2021 06:43:05 +0200 you wrote:
+> After probe/bind sequence is the PHY in active state, even if interface
+> is stopped. As result, on some systems like Samsung Exynos5250 SoC based Arndale
+> board, the ASIX PHY will be able to negotiate the link but fail to
+> transmit the data.
+> 
+> To handle it, suspend the PHY on probe.
+> 
+> [...]
 
-	-J
+Here is the summary with links:
+  - [net-next,v1,1/1] net: usb: asix: ax88772: suspend PHY on driver probe
+    https://git.kernel.org/netdev/net/c/a3609ac24c18
 
->RSS: Receive Side Scaling, e.g. the packets were sent to a range of
->destination IPs.
->
->[1]: https://cilium.io/blog/2021/05/20/cilium-110#standalonelb
->[2]: https://lore.kernel.org/bpf/20210601113236.42651-1-maciej.fijalkowski@intel.com/T/#t
->[3]: https://lore.kernel.org/bpf/CAHn8xckNXci+X_Eb2WMv4uVYjO2331UWB2JLtXr_58z0Av8+8A@mail.gmail.com/
->
->Patch 1 prepares bond_xmit_hash for hashing xdp_buff's
->Patch 2 adds hooks to implement redirection after bpf prog run
->Patch 3 implements the hooks in the bonding driver. 
->Patch 4 modifies devmap to properly handle EXCLUDE_INGRESS with a slave device.
->
->v1->v2:
->- Split up into smaller easier to review patches and address cosmetic 
->  review comments.
->- Drop the INDIRECT_CALL optimization as it showed little improvement in tests.
->- Drop the rr_tx_counter patch as that has already been merged into net-next.
->- Separate the test suite into another patch set. This will follow later once a
->  patch set from Magnus Karlsson is merged and provides test utilities that can
->  be reused for XDP bonding tests. v2 contains no major functional changes and
->  was tested with the test suite included in v1.
->  (https://lore.kernel.org/bpf/202106221509.kwNvAAZg-lkp@intel.com/T/#m464146d47299125d5868a08affd6d6ce526dfad1)
->
->---
->
->Jussi Maki (4):
->  net: bonding: Refactor bond_xmit_hash for use with xdp_buff
->  net: core: Add support for XDP redirection to slave device
->  net: bonding: Add XDP support to the bonding driver
->  devmap: Exclude XDP broadcast to master device
->
-> drivers/net/bonding/bond_main.c | 431 +++++++++++++++++++++++++++-----
-> include/linux/filter.h          |  13 +-
-> include/linux/netdevice.h       |   5 +
-> include/net/bonding.h           |   1 +
-> kernel/bpf/devmap.c             |  34 ++-
-> net/core/filter.c               |  25 ++
-> 6 files changed, 445 insertions(+), 64 deletions(-)
->
->-- 
->2.27.0
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+
