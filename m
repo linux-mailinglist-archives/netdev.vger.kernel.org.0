@@ -2,101 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11DB63B8F78
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 11:07:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EA6E3B8F5F
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 11:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235695AbhGAJJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 05:09:52 -0400
-Received: from mailgw01.mediatek.com ([60.244.123.138]:36881 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S235088AbhGAJJw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 05:09:52 -0400
-X-UUID: e0d9a7106c684aef81196d6e901da683-20210701
-X-UUID: e0d9a7106c684aef81196d6e901da683-20210701
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw01.mediatek.com
-        (envelope-from <rocco.yue@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2055808077; Thu, 01 Jul 2021 17:07:17 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 1 Jul 2021 17:07:09 +0800
-Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 1 Jul 2021 17:07:08 +0800
-From:   Rocco Yue <rocco.yue@mediatek.com>
-To:     David Ahern <dsahern@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <wsd_upstream@mediatek.com>,
-        <rocco.yue@gmail.com>, <chao.song@mediatek.com>,
-        <kuohong.wang@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
-        Rocco Yue <rocco.yue@mediatek.com>
-Subject: Re: [PATCH] net: ipv6: don't generate link-local address in any addr_gen_mode
-Date:   Thu, 1 Jul 2021 16:51:18 +0800
-Message-ID: <20210701085117.19018-1-rocco.yue@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <46a9dbf2-9748-330a-963e-57e615a15440@gmail.com>
-References: <46a9dbf2-9748-330a-963e-57e615a15440@gmail.com>
+        id S235579AbhGAJGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 05:06:10 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:10232 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235067AbhGAJGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 05:06:09 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GFsZ03QBWz1BRLr;
+        Thu,  1 Jul 2021 16:58:16 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Thu, 1 Jul 2021 17:03:33 +0800
+Received: from [10.67.102.67] (10.67.102.67) by dggemi759-chm.china.huawei.com
+ (10.1.198.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 1 Jul
+ 2021 17:03:32 +0800
+Subject: Re: [PATCH net-next 3/3] net: hns3: add support for link diagnosis
+ info in debugfs
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <lipeng321@huawei.com>
+References: <1624545405-37050-1-git-send-email-huangguangbin2@huawei.com>
+ <1624545405-37050-4-git-send-email-huangguangbin2@huawei.com>
+ <20210624122517.7c8cb329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <08395721-4ca1-9913-19fd-4d8ec7e41e4b@huawei.com>
+Date:   Thu, 1 Jul 2021 17:03:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+In-Reply-To: <20210624122517.7c8cb329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-06-30 at 22:41 -0600, David Ahern wrote:
-> On 6/30/21 9:39 PM, Rocco Yue wrote:
->> 
->> Hi David,
->> 
->> Thanks for your review.
->> 
->> This patch is different with IN6_ADDR_GEN_MODE_NONE.
->> 
->> When the addr_gen_mode == IN6_ADDR_GEN_MODE_NONE, the Linux kernel
->> doesn't automatically generate the ipv6 link-local address.
->> 
-> 
-> ...
-> 
->> 
->> After this patch, when the "disable_gen_linklocal_addr" value of a device
->> is 1, no matter in which addr_gen_mode, the Linux kernel will not automatically
->> generate an ipv6 link-local for this device.
->> 
-> 
-> those 2 sentences are saying the same thing to me.
-> 
-> for your use case, why is setting addr_gen_mode == 1 for the device not
-> sufficient?
-> 
 
-For mobile operators that don't need to support RFC7217, setting
-addr_gen_mode == 1 is sufficient;
 
-But for some other mobile operators that need to support RFC7217, such as AT&T,
-the mobile device's addr_gen_mode will be switched to the
-IN6_ADDR_GEN_MODE_STABLE_PRIVACY, instead of using IN6_ADDR_GEN_MODE_NONE.
-The purpose is: in the IN6_ADDR_GEN_MODE_STABLE_PRIVACY mode, kernel can
-gererate a stable privacy global ipv6 address after receiveing RA, and
-network processes can use this global address to communicate with the
-outside network.
+On 2021/6/25 3:25, Jakub Kicinski wrote:
+> On Thu, 24 Jun 2021 22:36:45 +0800 Guangbin Huang wrote:
+>> In order to know reason why link down, add a debugfs file
+>> "link_diagnosis_info" to get link faults from firmware, and each bit
+>> represents one kind of fault.
+>>
+>> usage example:
+>> $ cat link_diagnosis_info
+>> Reference clock lost
+> 
+> Please use ethtool->get_link_ext_state instead.
+> .
+> 
+Hi Jakub, I have a question to consult you.
+Some fault information in our patch are not existed in current ethtool extended
+link states, for examples:
+"Serdes reference clock lost"
+"Serdes analog loss of signal"
+"SFP tx is disabled"
+"PHY power down"
+"Remote fault"
 
-Of course, mobile operators that need to support RFC7217 should also meet
-the requirement of 3GPP TS 29.061, that is, MT should use IID assigned by
-the GGSN to build its ipv6 link-local address and use this address to send RS.
-We don't want the kernel to automatically generate an ipv6 link-local address
-when addr_gen_mode == 2. Otherwise, using the stable privacy ipv6 link-local
-address automatically generated by the kernel to send RS message, GGSN will
-not be able to respond to the RS and reply a RA message.
-
-Therefore, after this patch, kernel will not generate ipv6 link-local address
-for the corresponding device when addr_gen_mode == 1 or addr_gen_mode == 2.
+Do you think these fault information can be added to ethtool extended link states?
 
 Thanks,
-Rocco
+Guangbin
+.
+
