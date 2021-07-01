@@ -2,118 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F06653B9824
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 23:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FC4B3B9853
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 23:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234325AbhGAV3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 17:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234255AbhGAV3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 17:29:40 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE808C061764
-        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 14:27:08 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id e3so1978482ljo.6
-        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 14:27:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tNdovWONAJS2tmla2jBCM5Itz2o4pqMUjGORL+HptVU=;
-        b=kNiciE1LKvyy4oLjI1gsH75NPWT6lqeO2ZobdhJ5FuiJiASUJ7WhGVQDwXaox9IWqb
-         sDgEKqepnkz0avDsZjGb+wr7h1FJIbDfaJgCBQcMvoxv/JHElZ1uM8YB/OlBkN7Hb3ET
-         LBQVxNBuUUY9VM792HIoU+GSfrsx25WYxwp0cBnAfsnuoE4xcH2oOczPgX+fo6tnFnAZ
-         4kvCLLgpPwVT3pjSRLLIzng4lnnAvcymVtaINT3OoysXzgyPMLo5eVUmRBjqInnBBcm2
-         tZqZPjzh3Si96zFD0tXxg0mHQuSh+MfZkJjsk/rx1tcifTze5i/LCy16p29HVp2l3527
-         Igrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tNdovWONAJS2tmla2jBCM5Itz2o4pqMUjGORL+HptVU=;
-        b=obv00mFExftzd9zxQfnGk/f7O4Q5h9cw7j+8t0DLthdBeXTNlzramEHLJo+Sb6dzeT
-         I2c5MhpXWzifndfGZdJH7kY63ok/aZWnxgISexhHpO9CasnGew7UiwEmfVmMKeMwt5pI
-         R/ZB4qyrCHICn1X018NQIASTFCR961EW2XKv87GE9wESo6qVedIrb21Dk5BP1RJpUH5L
-         l/qKHp08SHvGqdgJd2/LGNAd1AExoNtDmALYwodfvwSdopksDHsKU2/VemgwuEL0uU55
-         YaG92T1LCdBEqObcoMx3JpQ66tNXoVL1r5dzHxzBiCDoFVz7A2y/J5xCMoutX8gW/2Sl
-         mBrw==
-X-Gm-Message-State: AOAM533GDWaLXOtsn7c1uToehqurzehHhR+cg4xooDyWWulavT2P2kk6
-        wmGNZ0RTXtjQSuhLQtkRLzFOejXTwMNq41a++Axq+g==
-X-Google-Smtp-Source: ABdhPJwFqmciUVS+yaaqjQV5c2F883P7rLgFT4w/dpSTBGNG7drC0d+KS7wtsp1DcNlNLXKew0OzKqYf8TbyEYWqdWU=
-X-Received: by 2002:a05:651c:305:: with SMTP id a5mr1167662ljp.337.1625174826795;
- Thu, 01 Jul 2021 14:27:06 -0700 (PDT)
+        id S234150AbhGAVwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 17:52:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48960 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229934AbhGAVwg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Jul 2021 17:52:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5CBC161410;
+        Thu,  1 Jul 2021 21:50:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625176205;
+        bh=cGOMZByQqCqoeZqutFl15vu2klspjkouf3L+jbu4U9I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=t6NKyIdTxQrb3tKfCcG7GH8NGKvF3urg0Opgxv+MZ7Fnerq/Jtx+mfhbdwvE6jlnA
+         L6oxESbre4PqKJc22nSmVVAoIaZnS1ZG4+MN8LI6KGEJi96tCv19JTNznt8ve/AZRY
+         hM2miH6xtCJizql8F9zQqSW7c5lWEk/+7OIP7k1gMP4xcEVAKdAWne+yTR6zHkP2Xp
+         0lop6/oyJijYkvZiTzZKRIb/DsctHTs/DGs6sT2i1g91KtQww9z6/oHYSn2q726whj
+         uV0RENSbOEgc6NYhWfcP5UYikGPPtF4ot8Fpu2xAY/gkN9onVpziPFsbyQby767rLb
+         tGWFtB61hAvIA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 49EA660A38;
+        Thu,  1 Jul 2021 21:50:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <a8ff6511e4740cff2bb549708b98fb1e6dd7e070.1625172036.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <a8ff6511e4740cff2bb549708b98fb1e6dd7e070.1625172036.git.christophe.jaillet@wanadoo.fr>
-From:   Catherine Sullivan <csully@google.com>
-Date:   Thu, 1 Jul 2021 14:26:30 -0700
-Message-ID: <CAH_-1qyRsfFzm_F26WV4wSjMojTVQSdahASWTKXb7VgQPHHUNA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] gve: Simplify code and axe the use of a
- deprecated API
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Sagi Shahar <sagis@google.com>, Jon Olson <jonolson@google.com>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        David Awogbemila <awogbemila@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Yangchun Fu <yangchun@google.com>,
-        Bailey Forrest <bcf@google.com>, Kuo Zhao <kuozhao@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 00/11][pull request] Intel Wired LAN Driver Updates
+ 2021-07-01
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162517620529.8715.10997019866052168999.git-patchwork-notify@kernel.org>
+Date:   Thu, 01 Jul 2021 21:50:05 +0000
+References: <20210701180420.346126-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20210701180420.346126-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 1, 2021 at 1:41 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> The wrappers in include/linux/pci-dma-compat.h should go away.
->
-> Replace 'pci_set_dma_mask/pci_set_consistent_dma_mask' by an equivalent
-> and less verbose 'dma_set_mask_and_coherent()' call.
->
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Hello:
 
-Reviewed-by: Catherine Sullivan <csully@google.com>
+This series was applied to netdev/net.git (refs/heads/master):
 
-> ---
-> If needed, see post from Christoph Hellwig on the kernel-janitors ML:
->    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
->
-> v2: Unchanged
->     This patch was previously 3/3 of a serie
-> ---
->  drivers/net/ethernet/google/gve/gve_main.c | 9 +--------
->  1 file changed, 1 insertion(+), 8 deletions(-)
->
-> diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-> index c03984b26db4..099a2bc5ae67 100644
-> --- a/drivers/net/ethernet/google/gve/gve_main.c
-> +++ b/drivers/net/ethernet/google/gve/gve_main.c
-> @@ -1477,19 +1477,12 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->
->         pci_set_master(pdev);
->
-> -       err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-> +       err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
->         if (err) {
->                 dev_err(&pdev->dev, "Failed to set dma mask: err=%d\n", err);
->                 goto abort_with_pci_region;
->         }
->
-> -       err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-> -       if (err) {
-> -               dev_err(&pdev->dev,
-> -                       "Failed to set consistent dma mask: err=%d\n", err);
-> -               goto abort_with_pci_region;
-> -       }
-> -
->         reg_bar = pci_iomap(pdev, GVE_REGISTER_BAR, 0);
->         if (!reg_bar) {
->                 dev_err(&pdev->dev, "Failed to map pci bar!\n");
-> --
-> 2.30.2
->
+On Thu,  1 Jul 2021 11:04:09 -0700 you wrote:
+> This series contains updates to igb, igc, ixgbe, e1000e, fm10k, and iavf
+> drivers.
+> 
+> Vinicius fixes a use-after-free issue present in igc and igb.
+> 
+> Tom Rix fixes the return value for igc_read_phy_reg() when the
+> operation is not supported for igc.
+> 
+> [...]
 
-Thanks!
+Here is the summary with links:
+  - [net,01/11] igc: Fix use-after-free error during reset
+    https://git.kernel.org/netdev/net/c/56ea7ed103b4
+  - [net,02/11] igb: Fix use-after-free error during reset
+    https://git.kernel.org/netdev/net/c/7b292608db23
+  - [net,03/11] igc: change default return of igc_read_phy_reg()
+    https://git.kernel.org/netdev/net/c/05682a0a61b6
+  - [net,04/11] ixgbe: Fix an error handling path in 'ixgbe_probe()'
+    https://git.kernel.org/netdev/net/c/dd2aefcd5e37
+  - [net,05/11] igc: Fix an error handling path in 'igc_probe()'
+    https://git.kernel.org/netdev/net/c/c6bc9e5ce5d3
+  - [net,06/11] igb: Fix an error handling path in 'igb_probe()'
+    https://git.kernel.org/netdev/net/c/fea03b1cebd6
+  - [net,07/11] fm10k: Fix an error handling path in 'fm10k_probe()'
+    https://git.kernel.org/netdev/net/c/e85e14d68f51
+  - [net,08/11] e1000e: Fix an error handling path in 'e1000_probe()'
+    https://git.kernel.org/netdev/net/c/458907560842
+  - [net,09/11] iavf: Fix an error handling path in 'iavf_probe()'
+    https://git.kernel.org/netdev/net/c/af30cbd2f4d6
+  - [net,10/11] igb: Check if num of q_vectors is smaller than max before array access
+    https://git.kernel.org/netdev/net/c/6c19d772618f
+  - [net,11/11] igb: Fix position of assignment to *ring
+    https://git.kernel.org/netdev/net/c/382a7c20d925
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
