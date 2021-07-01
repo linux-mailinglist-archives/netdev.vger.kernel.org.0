@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 182043B9632
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 20:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78DF23B9630
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 20:40:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232373AbhGASmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 14:42:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40630 "EHLO mail.kernel.org"
+        id S230213AbhGASmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 14:42:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40620 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229894AbhGASme (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229812AbhGASme (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 1 Jul 2021 14:42:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 21F3461406;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 14B9B6140E;
         Thu,  1 Jul 2021 18:40:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1625164804;
-        bh=I5Q5ZRClVobEHwo46H0qpm6Dv1sl27G12pLsE/42/WM=;
+        bh=HeVOAPZepgrDMx6AtEfiCdTVaH/t7uVwXubMMHgyAH8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=n1PSOH01pqbbguEg2h1QgGSlyAW9a3XYHpIwGvFjiaQcIaufVCYGPeXltQOa/LIjh
-         LJEiqitKbMnQszVw7J2VYH6T+KZy0A0FgzVHdxUOa/tIPLgPjSKu5bIj2jq/wXtq1e
-         rq4T58W70ZxA3WW9gPCsmpEM1axNbQep8UaclAmqJwq07DGKXrGZRtV9C4MXbXbr7+
-         VayFVR2u1Qt8PazK2pCyIQalFe5UHv2pnNtYFUBAc4yegX/BYnj3oXoeRybmY1LR8I
-         554HhVSUcW+f7aJNUUVNIKgwKTXSsSr2wT2njw+mwIi5arF2SJdzwRyn3HhIIpVb4L
-         F+BzhyGYkns8A==
+        b=q6N+nJpODdqAHnevELADfKShU8rG4lfNX/7+aGY29C+FTPXbJ8YLfj4ElP7us7bI7
+         d0h0k8AW6E7RVr6ZKHV3QwKOMTGzCwSLGqG1zZTtVAJ0JBgg57eqiDJZwFJUXj5Y5A
+         gHsnyjC+qsALza0Hvk4ORIMhHpANDZuqWXUGRow4RUZkw5UjNUJclTcsp93RbQ9CRW
+         ERpknHMjUaN7Y05fUnkBZcIxqg7TzeCAG33HMVGG5Mp1IYsQ3HBVk1k2pGxmubFxlw
+         oHaYxTyGiuU3X+13GJty2bXZNGfgeTo/Mb+nz2Hz9Lmgc+/zR3LeCxa/MSTc9TCZdo
+         9GEDJQ9b3NUPQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 10AAE60A17;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 053A760A56;
         Thu,  1 Jul 2021 18:40:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: dsa: return -EOPNOTSUPP when driver does not
- implement .port_lag_join
+Subject: Re: [net-next PATCH 0/3] Dynamic LMTST region setup
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162516480406.21656.16205874493520440945.git-patchwork-notify@kernel.org>
+Message-Id: <162516480401.21656.5714473098578182788.git-patchwork-notify@kernel.org>
 Date:   Thu, 01 Jul 2021 18:40:04 +0000
-References: <20210629203215.2639720-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20210629203215.2639720-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com
+References: <20210629170006.722-1-gakula@marvell.com>
+In-Reply-To: <20210629170006.722-1-gakula@marvell.com>
+To:     Geetha sowjanya <gakula@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, sbhatta@marvell.com,
+        hkelam@marvell.com, jerinj@marvell.com, lcherian@marvell.com,
+        sgoutham@marvell.com, hkalra@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 29 Jun 2021 23:32:15 +0300 you wrote:
-> The DSA core has a layered structure, and even though we end up
-> returning 0 (success) to user space when setting a bonding/team upper
-> that can't be offloaded, some parts of the framework actually need to
-> know that we couldn't offload that.
-> 
-> For example, if dsa_switch_lag_join returns 0 as it currently does,
-> dsa_port_lag_join has no way to tell a successful offload from a
-> software fallback, and it will call dsa_port_bridge_join afterwards.
-> Then we'll think we're offloading the bridge master of the LAG, when in
-> fact we're not even offloading the LAG. In turn, this will make us set
-> skb->offload_fwd_mark = true, which is incorrect and the bridge doesn't
-> like it.
+On Tue, 29 Jun 2021 22:30:03 +0530 you wrote:
+> This patch series allows RVU PF/VF to allocate memory for
+> LMTST operations instead of using memory reserved by firmware
+> which is mapped as device memory.
+> The LMTST mapping table contains the RVU PF/VF LMTST memory base
+> address entries. This table is used by hardware for LMTST operations.
+> Patch1 introduces new mailbox message to update the LMTST table with
+> the new allocated memory address.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: dsa: return -EOPNOTSUPP when driver does not implement .port_lag_join
-    https://git.kernel.org/netdev/net-next/c/b71d09871566
+  - [net-next,1/3] octeontx2-af: cn10k: Setting up lmtst map table
+    https://git.kernel.org/netdev/net-next/c/873a1e3d207a
+  - [net-next,2/3] octeontx2-af: cn10k: Support configurable LMTST regions
+    https://git.kernel.org/netdev/net-next/c/893ae97214c3
+  - [net-next,3/3] octeontx2-pf: cn10k: Use runtime allocated LMTLINE region
+    https://git.kernel.org/netdev/net-next/c/5c0512072f65
 
 You are awesome, thank you!
 --
