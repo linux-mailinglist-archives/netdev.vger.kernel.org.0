@@ -2,63 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DFD13B9629
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 20:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 182043B9632
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 20:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232859AbhGAScf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 14:32:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40128 "EHLO mail.kernel.org"
+        id S232373AbhGASmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 14:42:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40630 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229894AbhGASce (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Jul 2021 14:32:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 18B2561405;
-        Thu,  1 Jul 2021 18:30:04 +0000 (UTC)
+        id S229894AbhGASme (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Jul 2021 14:42:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 21F3461406;
+        Thu,  1 Jul 2021 18:40:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625164204;
-        bh=GihiRSbccHSR4LmYVwQDKPEnx2x4PtODwIrG+6Xdw0Y=;
+        s=k20201202; t=1625164804;
+        bh=I5Q5ZRClVobEHwo46H0qpm6Dv1sl27G12pLsE/42/WM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pnNK2MQcV3kl4l3R6/PCxDMwtwi3KelAfnnwp5uQjrKIA/XQUs1vY/dHYSxVhNEvW
-         cjPEZVd2ncwuIf998UMemDjoczk1BTe05pYFy5hV/eGmd6c0vwdlE4KJG1jbKG+Tc4
-         L2jhJW8tvmagR9JmRiIw4M/MnZ43BXQZFZciBZyk2DXS/TCLQeNUWjFKwzP1XV6EjH
-         0ODlzVVczVVhdqFePm9DxzB5AUMCopiYwaJwH/rxAdPtspKzVRsrhyVw/Uu/OTdL2h
-         GVtWQcGoX22VCmoBUv9FloCQP+GmZpEc+WDeDJpsKQdmulh5GGqpe1gM3RMoN8O8/D
-         FuhXeWjaf7EcA==
+        b=n1PSOH01pqbbguEg2h1QgGSlyAW9a3XYHpIwGvFjiaQcIaufVCYGPeXltQOa/LIjh
+         LJEiqitKbMnQszVw7J2VYH6T+KZy0A0FgzVHdxUOa/tIPLgPjSKu5bIj2jq/wXtq1e
+         rq4T58W70ZxA3WW9gPCsmpEM1axNbQep8UaclAmqJwq07DGKXrGZRtV9C4MXbXbr7+
+         VayFVR2u1Qt8PazK2pCyIQalFe5UHv2pnNtYFUBAc4yegX/BYnj3oXoeRybmY1LR8I
+         554HhVSUcW+f7aJNUUVNIKgwKTXSsSr2wT2njw+mwIi5arF2SJdzwRyn3HhIIpVb4L
+         F+BzhyGYkns8A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0D14A609F7;
-        Thu,  1 Jul 2021 18:30:04 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 10AAE60A17;
+        Thu,  1 Jul 2021 18:40:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: annotate data race around sk_ll_usec
+Subject: Re: [PATCH net-next] net: dsa: return -EOPNOTSUPP when driver does not
+ implement .port_lag_join
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162516420404.17332.15046751218544947451.git-patchwork-notify@kernel.org>
-Date:   Thu, 01 Jul 2021 18:30:04 +0000
-References: <20210629141245.1278533-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210629141245.1278533-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, syzkaller@googlegroups.com
+Message-Id: <162516480406.21656.16205874493520440945.git-patchwork-notify@kernel.org>
+Date:   Thu, 01 Jul 2021 18:40:04 +0000
+References: <20210629203215.2639720-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210629203215.2639720-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 29 Jun 2021 07:12:45 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Tue, 29 Jun 2021 23:32:15 +0300 you wrote:
+> The DSA core has a layered structure, and even though we end up
+> returning 0 (success) to user space when setting a bonding/team upper
+> that can't be offloaded, some parts of the framework actually need to
+> know that we couldn't offload that.
 > 
-> sk_ll_usec is read locklessly from sk_can_busy_loop()
-> while another thread can change its value in sock_setsockopt()
-> 
-> This is correct but needs annotations.
+> For example, if dsa_switch_lag_join returns 0 as it currently does,
+> dsa_port_lag_join has no way to tell a successful offload from a
+> software fallback, and it will call dsa_port_bridge_join afterwards.
+> Then we'll think we're offloading the bridge master of the LAG, when in
+> fact we're not even offloading the LAG. In turn, this will make us set
+> skb->offload_fwd_mark = true, which is incorrect and the bridge doesn't
+> like it.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: annotate data race around sk_ll_usec
-    https://git.kernel.org/netdev/net/c/0dbffbb5335a
+  - [net-next] net: dsa: return -EOPNOTSUPP when driver does not implement .port_lag_join
+    https://git.kernel.org/netdev/net-next/c/b71d09871566
 
 You are awesome, thank you!
 --
