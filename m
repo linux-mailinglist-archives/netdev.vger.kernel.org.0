@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08CC23B9721
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 22:20:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25F733B9722
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 22:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234038AbhGAUWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 16:22:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58594 "EHLO mail.kernel.org"
+        id S233852AbhGAUWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 16:22:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58602 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232113AbhGAUWh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233308AbhGAUWh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 1 Jul 2021 16:22:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 504BB61416;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 66F166141A;
         Thu,  1 Jul 2021 20:20:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1625170806;
-        bh=igiiiI7bmYyrms3VOQ1TlbR2ORuUpoQUwcPnglcTAQ8=;
+        bh=uLBrEB3WYlCY6kVDTcI3QKa9q2JbdFEDWY/GYeIY4no=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dCAPj02znvCYkLSZc6CIkYvaCBIh5KzJw8l34hWqIdTlJSuDNfLMtC0XauFIjevjS
-         ozAWq/PUfzbG9K1Q4EUuRo1gf2ELZmpTjkWhjOVkV6J1Gq2KZ16X4RSy1ppvznR/DP
-         oBS0z9M+zZAd2U5DU/gVSsDgHfFFvSqTX5IiQ+IjNlSORqt9iJpuHvmtvYcPQdhRjA
-         BA0c5LaV8mRlrCh7vgXeHqlYSgA+qJThlcvToag+F/wpLXHMXTcwfFxJSZTNZNjYTi
-         nUdfaN3f6rMijtVEFeDdvZj09WW0AqovBhN9+lJgTm04mEYAhcfr9w7yhRjXa28bfe
-         5oiHLz2Nwh+cQ==
+        b=asdCrjDnHIvLlLtlSY+GzKjHSEifB+XotNF0UE35MGbFfGZ3atq4IKTarzZAa0hM5
+         grPHn4yIkbUPU4EF+vFX5jaKnxKbCz8wn/rtHQl9uvFgRhL8zIWyY+KVD6J4MuZ5hQ
+         sjG2vC2FVcyHouRu6yEANLDfRJyL6uevxP/+3qGhqIM8tDrH8dShJZU6aKTAl+fOAX
+         3UV0p636Y4bv7hPaiQu6neGlCMJqa2Lg7rSZH32Q8VJrPq0pZPE8p2MCidVE6wBDvs
+         +GHoiw5lobu9ynRWSXg3PZ2GUpiy+QWiF5inhSMraKAnpUweJx88X7C9bRs8BrHC9L
+         YR7rqWfR/yiHg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 43E0F60A6C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5905760CD0;
         Thu,  1 Jul 2021 20:20:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2 1/5] net: wwan: iosm: fix uevent reporting
+Subject: Re: [PATCH 1/1] ibmvnic: retry reset if there are no other resets
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162517080627.9938.15088340708232753641.git-patchwork-notify@kernel.org>
+Message-Id: <162517080636.9938.2548233825825133465.git-patchwork-notify@kernel.org>
 Date:   Thu, 01 Jul 2021 20:20:06 +0000
-References: <20210701150706.1005000-1-m.chetan.kumar@linux.intel.com>
-In-Reply-To: <20210701150706.1005000-1-m.chetan.kumar@linux.intel.com>
-To:     M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        johannes@sipsolutions.net, krishna.c.sudi@intel.com,
-        linuxwwan@intel.com
+References: <20210630183617.3093690-1-sukadev@linux.ibm.com>
+In-Reply-To: <20210630183617.3093690-1-sukadev@linux.ibm.com>
+To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, drt@linux.ibm.com,
+        brking@linux.vnet.ibm.com, ricklind@linux.vnet.ibm.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu,  1 Jul 2021 20:37:06 +0530 you wrote:
-> Change uevent env variable name to IOSM_EVENT & correct
-> reporting format to key=value pair.
-> 
-> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> ---
-> v2: no change.
+On Wed, 30 Jun 2021 14:36:17 -0400 you wrote:
+> Normally, if a reset fails due to failover or other communication error
+> there is another reset (eg: FAILOVER) in the queue and we would process
+> that reset. But if we are unable to communicate with PHYP or VIOS after
+> H_FREE_CRQ, there would be no other resets in the queue and the adapter
+> would be in an undefined state even though it was in the OPEN state
+> earlier. While starting the reset we set the carrier to off state so
+> we won't even get the timeout resets.
 > 
 > [...]
 
 Here is the summary with links:
-  - [V2,1/5] net: wwan: iosm: fix uevent reporting
-    https://git.kernel.org/netdev/net/c/856a5c97268d
-  - [V2,2/5] net: wwan: iosm: remove reduandant check
-    https://git.kernel.org/netdev/net/c/3bcfc0a2d319
-  - [V2,3/5] net: wwan: iosm: correct link-id handling
-    https://git.kernel.org/netdev/net/c/5bb4eea0c5f5
-  - [V2,4/5] net: wwan: iosm: fix netdev tx stats
-    https://git.kernel.org/netdev/net/c/c302e3a1c86f
-  - [V2,5/5] net: wwan: iosm: set default mtu
-    https://git.kernel.org/netdev/net/c/d7340f46beae
+  - [1/1] ibmvnic: retry reset if there are no other resets
+    https://git.kernel.org/netdev/net/c/4f408e1fa6e1
 
 You are awesome, thank you!
 --
