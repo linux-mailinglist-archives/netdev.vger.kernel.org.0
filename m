@@ -2,810 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDD4C3B8ECB
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 10:27:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CE593B8EE0
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 10:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235051AbhGAI3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 04:29:46 -0400
-Received: from us-smtp-delivery-115.mimecast.com ([216.205.24.115]:23395 "EHLO
-        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234709AbhGAI3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 04:29:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
-        s=selector; t=1625128035;
+        id S235221AbhGAIhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 04:37:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49356 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235159AbhGAIhE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 04:37:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625128474;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YqsKebREs1bWxUx/3JBCNyWId9BNjoLH81cyavHOX2M=;
-        b=J0p/sMGvWkkoiB+Pm2/MbsIQr3+Dpqk4g0gFgRarRsFBg4BsMfbPclKkN8mKc2MBqnL5y9
-        GfZzwHMcNfqg309HPmhbItnYiiTd1vIClQxCocJKrDqWtoe2SXrJwyz0w5Ai/g2jITS1Vd
-        hM6FoCC9h5RWsdx7M2HMVliNi9syfuA=
-Received: from mail.maxlinear.com (174-47-1-83.static.ctl.one [174.47.1.83])
- (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-375-NvJ05aL2PJ-wK8QrZOX6tw-4; Thu, 01 Jul 2021 04:27:13 -0400
-X-MC-Unique: NvJ05aL2PJ-wK8QrZOX6tw-4
-Received: from sgsxdev002.isng.phoenix.local (10.226.81.112) by
- mail.maxlinear.com (10.23.38.120) with Microsoft SMTP Server id 15.1.2242.4;
- Thu, 1 Jul 2021 01:27:05 -0700
-From:   Xu Liang <lxu@maxlinear.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <vee.khee.wong@linux.intel.com>
-CC:     <linux@armlinux.org.uk>, <hmehrtens@maxlinear.com>,
-        <tmohren@maxlinear.com>, <mohammad.athari.ismail@intel.com>,
-        Xu Liang <lxu@maxlinear.com>
-Subject: [PATCH v5 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
-Date:   Thu, 1 Jul 2021 16:26:58 +0800
-Message-ID: <20210701082658.21875-2-lxu@maxlinear.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210701082658.21875-1-lxu@maxlinear.com>
-References: <20210701082658.21875-1-lxu@maxlinear.com>
+        bh=QbZDZ4ZHDFYvEp+MYmYMyVNCMzCBKo4jKnhjj4SN9Mw=;
+        b=Zkw3V6hIaU21lVllJR/HRZWMFsaPTngp9BqGAeatKM54nOCVjc9MHTuig5Yu3k8aAXZpoh
+        fzJlExpvkcFaNHd3f3cH4jBL5TTpFEb5jBr5FhiWYXDr9Axs/ifmLpR1AAFphZiSVt5/a2
+        q1iOVP5gPe0Y8Gtbb1IYPWi2QcSkDec=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-134-tPoOW8YWOnGSzvobREhf3A-1; Thu, 01 Jul 2021 04:34:32 -0400
+X-MC-Unique: tPoOW8YWOnGSzvobREhf3A-1
+Received: by mail-ed1-f71.google.com with SMTP id m4-20020a0564024304b0290394d27742e4so2654344edc.10
+        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 01:34:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QbZDZ4ZHDFYvEp+MYmYMyVNCMzCBKo4jKnhjj4SN9Mw=;
+        b=eFBBeYpXR3hcUn/mzFHA3nKjABs1N/JVIU9r/94h62SNOPY5ShBDs/I/nTqC09vnBz
+         ltoYfO5jH1RQGLhi0oa+WCPs6KzFxpWh/0YN4RG4KdgIzL87o5TJsK69fwSx0Pmk0d+x
+         KSnkwHsNzBF7zx5s2CalyPfxC7TXMQNoze2BdybTYr859BxqRq3sqdswHsxIOV+GzmYy
+         8RI7W3ls2UXFJCcL51KzL1UXmhw49BkWK2Gjbq67pNItLEVEyzdNtSudbA+PK773W8Yu
+         heooSma/C6W/Inea8ufoSZFJ1PnS3c75trdTuAtdWJnq+jXjvddWogq2Z7WXtHs8MYK2
+         7kUQ==
+X-Gm-Message-State: AOAM533vE1h3tCIfhd0kTduIGyeBePmnE/GCUITfXmddIf7oTWu6j7T0
+        WhjmcfmO0ZOyiip8zJkbH+sq80Fs4nAZY1sk4D/g/SKcmu56CAgUqabHCXn9RlQWRfFqNjUwqAM
+        rP0/lNLRUtXln+ht4
+X-Received: by 2002:a05:6402:10d7:: with SMTP id p23mr52205976edu.74.1625128471736;
+        Thu, 01 Jul 2021 01:34:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwNRoCTv59leRdo72JrMgUlFAjhjvxTe1Ob16ob0KnFpksXUFIcydSWDH2QctTutviqSFjmVg==
+X-Received: by 2002:a05:6402:10d7:: with SMTP id p23mr52205945edu.74.1625128471529;
+        Thu, 01 Jul 2021 01:34:31 -0700 (PDT)
+Received: from krava ([185.153.78.55])
+        by smtp.gmail.com with ESMTPSA id l22sm13514617edr.15.2021.07.01.01.34.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Jul 2021 01:34:31 -0700 (PDT)
+Date:   Thu, 1 Jul 2021 10:34:28 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH bpf-next 4/5] bpf: Add bpf_get_func_ip helper for kprobe
+ programs
+Message-ID: <YN1+FJG6XXyuHNQe@krava>
+References: <20210629192945.1071862-1-jolsa@kernel.org>
+ <20210629192945.1071862-5-jolsa@kernel.org>
+ <9286ce63-5cba-e16a-a7db-886548a04a64@fb.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: maxlinear.com
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9286ce63-5cba-e16a-a7db-886548a04a64@fb.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add driver to support the Maxlinear GPY115, GPY211, GPY212, GPY215,
-GPY241, GPY245 PHYs. Separate from XWAY PHY driver because this series
-has different register layout and new features not supported in XWAY PHY.
+On Wed, Jun 30, 2021 at 10:47:01AM -0700, Yonghong Song wrote:
+> 
+> 
+> On 6/29/21 12:29 PM, Jiri Olsa wrote:
+> > Adding bpf_get_func_ip helper for BPF_PROG_TYPE_KPROBE programs,
+> > so it's now possible to call bpf_get_func_ip from both kprobe and
+> > kretprobe programs.
+> > 
+> > Taking the caller's address from 'struct kprobe::addr', which is
+> > defined for both kprobe and kretprobe.
+> > 
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >   include/uapi/linux/bpf.h       |  2 +-
+> >   kernel/bpf/verifier.c          |  2 ++
+> >   kernel/trace/bpf_trace.c       | 14 ++++++++++++++
+> >   kernel/trace/trace_kprobe.c    | 20 ++++++++++++++++++--
+> >   kernel/trace/trace_probe.h     |  5 +++++
+> >   tools/include/uapi/linux/bpf.h |  2 +-
+> >   6 files changed, 41 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 83e87ffdbb6e..4894f99a1993 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -4783,7 +4783,7 @@ union bpf_attr {
+> >    *
+> >    * u64 bpf_get_func_ip(void *ctx)
+> >    * 	Description
+> > - * 		Get address of the traced function (for tracing programs).
+> > + * 		Get address of the traced function (for tracing and kprobe programs).
+> >    * 	Return
+> >    * 		Address of the traced function.
+> >    */
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 701ff7384fa7..b66e0a7104f8 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -5979,6 +5979,8 @@ static bool has_get_func_ip(struct bpf_verifier_env *env)
+> >   			return -ENOTSUPP;
+> >   		}
+> >   		return 0;
+> > +	} else if (type == BPF_PROG_TYPE_KPROBE) {
+> > +		return 0;
+> >   	}
+> >   	verbose(env, "func %s#%d not supported for program type %d\n",
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index 9edd3b1a00ad..1a5bddce9abd 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -961,6 +961,18 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_tracing = {
+> >   	.arg1_type	= ARG_PTR_TO_CTX,
+> >   };
+> > +BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
+> > +{
+> > +	return trace_current_kprobe_addr();
+> > +}
+> > +
+> > +static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
+> > +	.func		= bpf_get_func_ip_kprobe,
+> > +	.gpl_only	= true,
+> > +	.ret_type	= RET_INTEGER,
+> > +	.arg1_type	= ARG_PTR_TO_CTX,
+> > +};
+> > +
+> >   const struct bpf_func_proto *
+> >   bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >   {
+> > @@ -1092,6 +1104,8 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >   	case BPF_FUNC_override_return:
+> >   		return &bpf_override_return_proto;
+> >   #endif
+> > +	case BPF_FUNC_get_func_ip:
+> > +		return &bpf_get_func_ip_proto_kprobe;
+> >   	default:
+> >   		return bpf_tracing_func_proto(func_id, prog);
+> >   	}
+> > diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+> > index ea6178cb5e33..b07d5888db14 100644
+> > --- a/kernel/trace/trace_kprobe.c
+> > +++ b/kernel/trace/trace_kprobe.c
+> > @@ -1570,6 +1570,18 @@ static int kretprobe_event_define_fields(struct trace_event_call *event_call)
+> >   }
+> >   #ifdef CONFIG_PERF_EVENTS
+> > +/* Used by bpf get_func_ip helper */
+> > +DEFINE_PER_CPU(u64, current_kprobe_addr) = 0;
+> 
+> Didn't check other architectures. But this should work
+> for x86 where if nested kprobe happens, the second
+> kprobe will not call kprobe handlers.
+> 
+> This essentially is to provide an additional parameter to
+> bpf program. Andrii is developing a mechanism to
+> save arbitrary data in *current task_struct*, which
+> might be used here to save current_kprobe_addr, we can
+> save one per cpu variable.
 
-Signed-off-by: Xu Liang <lxu@maxlinear.com>
----
-v2 changes:
- Fix format warning from checkpath and some comments.
- Use smaller PHY ID mask.
- Split FWV register mask.
- Call phy_trigger_machine if necessary when clear interrupt.
-v3 changes:
- Replace unnecessary phy_modify_mmd_changed with phy_modify_mmd
- Move firmware version print to probe.
-v4 changes:
- Separate PHY ID for new silicon.
- Use full Maxlinear name in Kconfig.
- Add and use C45 ID read API, and use genphy_c45_pma_read_abilities.
- Use my name instead of company as author.
-v5 changes:
- Fix comment for link speed 2.5G.
+ok, will check.. was there a post already?
 
- MAINTAINERS               |   6 +
- drivers/net/phy/Kconfig   |   6 +
- drivers/net/phy/Makefile  |   1 +
- drivers/net/phy/mxl-gpy.c | 671 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 684 insertions(+)
- create mode 100644 drivers/net/phy/mxl-gpy.c
+thanks,
+jirka
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 19cb1ea49c24..fd02995d7fad 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11180,6 +11180,12 @@ W:=09https://linuxtv.org
- T:=09git git://linuxtv.org/media_tree.git
- F:=09drivers/media/radio/radio-maxiradio*
-=20
-+MAXLINEAR ETHERNET PHY DRIVER
-+M:=09Xu Liang <lxu@maxlinear.com>
-+L:=09netdev@vger.kernel.org
-+S:=09Supported
-+F:=09drivers/net/phy/mxl-gpy.c
-+
- MCAN MMIO DEVICE DRIVER
- M:=09Chandrasekar Ramakrishnan <rcsekar@samsung.com>
- L:=09linux-can@vger.kernel.org
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 288bf405ebdb..7dba83822bc0 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -207,6 +207,12 @@ config MARVELL_88X2222_PHY
- =09  Support for the Marvell 88X2222 Dual-port Multi-speed Ethernet
- =09  Transceiver.
-=20
-+config MAXLINEAR_GPHY
-+=09tristate "Maxlinear Ethernet PHYs"
-+=09help
-+=09  Support for the Maxlinear GPY115, GPY211, GPY212, GPY215,
-+=09  GPY241, GPY245 PHYs.
-+
- config MICREL_PHY
- =09tristate "Micrel PHYs"
- =09help
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index bcda7ed2455d..7aa3a5bd9bc2 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -70,6 +70,7 @@ obj-$(CONFIG_MICREL_PHY)=09+=3D micrel.o
- obj-$(CONFIG_MICROCHIP_PHY)=09+=3D microchip.o
- obj-$(CONFIG_MICROCHIP_T1_PHY)=09+=3D microchip_t1.o
- obj-$(CONFIG_MICROSEMI_PHY)=09+=3D mscc/
-+obj-$(CONFIG_MAXLINEAR_GPHY)=09+=3D mxl-gpy.o
- obj-$(CONFIG_NATIONAL_PHY)=09+=3D national.o
- obj-$(CONFIG_NXP_C45_TJA11XX_PHY)=09+=3D nxp-c45-tja11xx.o
- obj-$(CONFIG_NXP_TJA11XX_PHY)=09+=3D nxp-tja11xx.o
-diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
-new file mode 100644
-index 000000000000..789b9ac9369f
---- /dev/null
-+++ b/drivers/net/phy/mxl-gpy.c
-@@ -0,0 +1,671 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/* Copyright (C) 2021 Maxlinear Corporation
-+ * Copyright (C) 2020 Intel Corporation
-+ *
-+ * Drivers for Maxlinear Ethernet GPY
-+ *
-+ */
-+
-+#include <linux/version.h>
-+#include <linux/module.h>
-+#include <linux/bitfield.h>
-+#include <linux/phy.h>
-+#include <linux/netdevice.h>
-+
-+/* PHY ID */
-+#define PHY_ID_GPYx15B_MASK=090xFFFFFFFC
-+#define PHY_ID_GPY21xB_MASK=090xFFFFFFF9
-+#define PHY_ID_GPY2xx=09=090x67C9DC00
-+#define PHY_ID_GPY115B=09=090x67C9DF00
-+#define PHY_ID_GPY115C=09=090x67C9DF10
-+#define PHY_ID_GPY211B=09=090x67C9DE08
-+#define PHY_ID_GPY211C=09=090x67C9DE10
-+#define PHY_ID_GPY212B=09=090x67C9DE09
-+#define PHY_ID_GPY212C=09=090x67C9DE20
-+#define PHY_ID_GPY215B=09=090x67C9DF04
-+#define PHY_ID_GPY215C=09=090x67C9DF20
-+
-+#define PHY_MIISTAT=09=090x18=09/* MII state */
-+#define PHY_IMASK=09=090x19=09/* interrupt mask */
-+#define PHY_ISTAT=09=090x1A=09/* interrupt status */
-+#define PHY_FWV=09=09=090x1E=09/* firmware version */
-+
-+#define PHY_MIISTAT_SPD_MASK=09GENMASK(2, 0)
-+#define PHY_MIISTAT_DPX=09=09BIT(3)
-+#define PHY_MIISTAT_LS=09=09BIT(10)
-+
-+#define PHY_MIISTAT_SPD_10=090
-+#define PHY_MIISTAT_SPD_100=091
-+#define PHY_MIISTAT_SPD_1000=092
-+#define PHY_MIISTAT_SPD_2500=094
-+
-+#define PHY_IMASK_WOL=09=09BIT(15)=09/* Wake-on-LAN */
-+#define PHY_IMASK_ANC=09=09BIT(10)=09/* Auto-Neg complete */
-+#define PHY_IMASK_ADSC=09=09BIT(5)=09/* Link auto-downspeed detect */
-+#define PHY_IMASK_DXMC=09=09BIT(2)=09/* Duplex mode change */
-+#define PHY_IMASK_LSPC=09=09BIT(1)=09/* Link speed change */
-+#define PHY_IMASK_LSTC=09=09BIT(0)=09/* Link state change */
-+#define PHY_IMASK_MASK=09=09(PHY_IMASK_LSTC | \
-+=09=09=09=09 PHY_IMASK_LSPC | \
-+=09=09=09=09 PHY_IMASK_DXMC | \
-+=09=09=09=09 PHY_IMASK_ADSC | \
-+=09=09=09=09 PHY_IMASK_ANC)
-+
-+#define PHY_FWV_REL_MASK=09BIT(15)
-+#define PHY_FWV_TYPE_MASK=09GENMASK(11, 8)
-+#define PHY_FWV_MINOR_MASK=09GENMASK(7, 0)
-+
-+/* SGMII */
-+#define VSPEC1_SGMII_CTRL=090x08
-+#define VSPEC1_SGMII_CTRL_ANEN=09BIT(12)=09=09/* Aneg enable */
-+#define VSPEC1_SGMII_CTRL_ANRS=09BIT(9)=09=09/* Restart Aneg */
-+#define VSPEC1_SGMII_ANEN_ANRS=09(VSPEC1_SGMII_CTRL_ANEN | \
-+=09=09=09=09 VSPEC1_SGMII_CTRL_ANRS)
-+
-+/* WoL */
-+#define VPSPEC2_WOL_CTL=09=090x0E06
-+#define VPSPEC2_WOL_AD01=090x0E08
-+#define VPSPEC2_WOL_AD23=090x0E09
-+#define VPSPEC2_WOL_AD45=090x0E0A
-+#define WOL_EN=09=09=09BIT(0)
-+
-+static const struct {
-+=09int type;
-+=09int minor;
-+} ver_need_sgmii_reaneg[] =3D {
-+=09{7, 0x6D},
-+=09{8, 0x6D},
-+=09{9, 0x73},
-+};
-+
-+static int gpy_config_init(struct phy_device *phydev)
-+{
-+=09int ret;
-+
-+=09/* Mask all interrupts */
-+=09ret =3D phy_write(phydev, PHY_IMASK, 0);
-+=09if (ret)
-+=09=09return ret;
-+
-+=09/* Clear all pending interrupts */
-+=09ret =3D phy_read(phydev, PHY_ISTAT);
-+=09return ret < 0 ? ret : 0;
-+}
-+
-+static int gpy_probe(struct phy_device *phydev)
-+{
-+=09int ret;
-+
-+=09if (!phydev->is_c45) {
-+=09=09ret =3D phy_get_c45_ids(phydev);
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+=09}
-+
-+=09/* Show GPY PHY FW version in dmesg */
-+=09ret =3D phy_read(phydev, PHY_FWV);
-+=09if (ret < 0)
-+=09=09return ret;
-+
-+=09phydev_info(phydev, "Firmware Version: 0x%04X (%s)\n", ret,
-+=09=09    (ret & PHY_FWV_REL_MASK) ? "release" : "test");
-+
-+=09return 0;
-+}
-+
-+static bool gpy_sgmii_need_reaneg(struct phy_device *phydev)
-+{
-+=09int fw_ver, fw_type, fw_minor;
-+=09size_t i;
-+
-+=09fw_ver =3D phy_read(phydev, PHY_FWV);
-+=09if (fw_ver < 0)
-+=09=09return true;
-+
-+=09fw_type =3D FIELD_GET(PHY_FWV_TYPE_MASK, fw_ver);
-+=09fw_minor =3D FIELD_GET(PHY_FWV_MINOR_MASK, fw_ver);
-+
-+=09for (i =3D 0; i < ARRAY_SIZE(ver_need_sgmii_reaneg); i++) {
-+=09=09if (fw_type !=3D ver_need_sgmii_reaneg[i].type)
-+=09=09=09continue;
-+=09=09if (fw_minor < ver_need_sgmii_reaneg[i].minor)
-+=09=09=09return true;
-+=09=09break;
-+=09}
-+
-+=09return false;
-+}
-+
-+static bool gpy_2500basex_chk(struct phy_device *phydev)
-+{
-+=09int ret;
-+
-+=09ret =3D phy_read(phydev, PHY_MIISTAT);
-+=09if (ret < 0) {
-+=09=09phydev_err(phydev, "Error: MDIO register access failed: %d\n",
-+=09=09=09   ret);
-+=09=09return false;
-+=09}
-+
-+=09if (!(ret & PHY_MIISTAT_LS) ||
-+=09    FIELD_GET(PHY_MIISTAT_SPD_MASK, ret) !=3D PHY_MIISTAT_SPD_2500)
-+=09=09return false;
-+
-+=09phydev->speed =3D SPEED_2500;
-+=09phydev->interface =3D PHY_INTERFACE_MODE_2500BASEX;
-+=09phy_modify_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_SGMII_CTRL,
-+=09=09       VSPEC1_SGMII_CTRL_ANEN, 0);
-+=09return true;
-+}
-+
-+static bool gpy_sgmii_aneg_en(struct phy_device *phydev)
-+{
-+=09int ret;
-+
-+=09ret =3D phy_read_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_SGMII_CTRL);
-+=09if (ret < 0) {
-+=09=09phydev_err(phydev, "Error: MMD register access failed: %d\n",
-+=09=09=09   ret);
-+=09=09return true;
-+=09}
-+
-+=09return (ret & VSPEC1_SGMII_CTRL_ANEN) ? true : false;
-+}
-+
-+static int gpy_config_aneg(struct phy_device *phydev)
-+{
-+=09bool changed =3D false;
-+=09u32 adv;
-+=09int ret;
-+
-+=09if (phydev->autoneg =3D=3D AUTONEG_DISABLE) {
-+=09=09/* Configure half duplex with genphy_setup_forced,
-+=09=09 * because genphy_c45_pma_setup_forced does not support.
-+=09=09 */
-+=09=09return phydev->duplex !=3D DUPLEX_FULL
-+=09=09=09? genphy_setup_forced(phydev)
-+=09=09=09: genphy_c45_pma_setup_forced(phydev);
-+=09}
-+
-+=09ret =3D genphy_c45_an_config_aneg(phydev);
-+=09if (ret < 0)
-+=09=09return ret;
-+=09if (ret > 0)
-+=09=09changed =3D true;
-+
-+=09adv =3D linkmode_adv_to_mii_ctrl1000_t(phydev->advertising);
-+=09ret =3D phy_modify_changed(phydev, MII_CTRL1000,
-+=09=09=09=09 ADVERTISE_1000FULL | ADVERTISE_1000HALF,
-+=09=09=09=09 adv);
-+=09if (ret < 0)
-+=09=09return ret;
-+=09if (ret > 0)
-+=09=09changed =3D true;
-+
-+=09ret =3D genphy_c45_check_and_restart_aneg(phydev, changed);
-+=09if (ret < 0)
-+=09=09return ret;
-+
-+=09if (phydev->interface =3D=3D PHY_INTERFACE_MODE_USXGMII ||
-+=09    phydev->interface =3D=3D PHY_INTERFACE_MODE_INTERNAL)
-+=09=09return 0;
-+
-+=09/* No need to trigger re-ANEG if link speed is 2.5G or SGMII ANEG is
-+=09 * disabled.
-+=09 */
-+=09if (!gpy_sgmii_need_reaneg(phydev) || gpy_2500basex_chk(phydev) ||
-+=09    !gpy_sgmii_aneg_en(phydev))
-+=09=09return 0;
-+
-+=09/* There is a design constraint in GPY2xx device where SGMII AN is
-+=09 * only triggered when there is change of speed. If, PHY link
-+=09 * partner`s speed is still same even after PHY TPI is down and up
-+=09 * again, SGMII AN is not triggered and hence no new in-band message
-+=09 * from GPY to MAC side SGMII.
-+=09 * This could cause an issue during power up, when PHY is up prior to
-+=09 * MAC. At this condition, once MAC side SGMII is up, MAC side SGMII
-+=09 * wouldn`t receive new in-band message from GPY with correct link
-+=09 * status, speed and duplex info.
-+=09 *
-+=09 * 1) If PHY is already up and TPI link status is still down (such as
-+=09 *    hard reboot), TPI link status is polled for 4 seconds before
-+=09 *    retriggerring SGMII AN.
-+=09 * 2) If PHY is already up and TPI link status is also up (such as soft
-+=09 *    reboot), polling of TPI link status is not needed and SGMII AN is
-+=09 *    immediately retriggered.
-+=09 * 3) Other conditions such as PHY is down, speed change etc, skip
-+=09 *    retriggering SGMII AN. Note: in case of speed change, GPY FW will
-+=09 *    initiate SGMII AN.
-+=09 */
-+
-+=09if (phydev->state !=3D PHY_UP)
-+=09=09return 0;
-+
-+=09ret =3D phy_read_poll_timeout(phydev, MII_BMSR, ret, ret & BMSR_LSTATUS=
-,
-+=09=09=09=09    20000, 4000000, false);
-+=09if (ret =3D=3D -ETIMEDOUT)
-+=09=09return 0;
-+=09else if (ret < 0)
-+=09=09return ret;
-+
-+=09/* Trigger SGMII AN. */
-+=09return phy_modify_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_SGMII_CTRL,
-+=09=09=09      VSPEC1_SGMII_CTRL_ANRS, VSPEC1_SGMII_CTRL_ANRS);
-+}
-+
-+static void gpy_update_interface(struct phy_device *phydev)
-+{
-+=09int ret;
-+
-+=09/* Interface mode is fixed for USXGMII and integrated PHY */
-+=09if (phydev->interface =3D=3D PHY_INTERFACE_MODE_USXGMII ||
-+=09    phydev->interface =3D=3D PHY_INTERFACE_MODE_INTERNAL)
-+=09=09return;
-+
-+=09/* Automatically switch SERDES interface between SGMII and 2500-BaseX
-+=09 * according to speed. Disable ANEG in 2500-BaseX mode.
-+=09 */
-+=09switch (phydev->speed) {
-+=09case SPEED_2500:
-+=09=09phydev->interface =3D PHY_INTERFACE_MODE_2500BASEX;
-+=09=09ret =3D phy_modify_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_SGMII_CTRL,
-+=09=09=09=09     VSPEC1_SGMII_CTRL_ANEN, 0);
-+=09=09if (ret < 0)
-+=09=09=09phydev_err(phydev,
-+=09=09=09=09   "Error: Disable of SGMII ANEG failed: %d\n",
-+=09=09=09=09   ret);
-+=09=09break;
-+=09case SPEED_1000:
-+=09case SPEED_100:
-+=09case SPEED_10:
-+=09=09phydev->interface =3D PHY_INTERFACE_MODE_SGMII;
-+=09=09if (gpy_sgmii_aneg_en(phydev))
-+=09=09=09break;
-+=09=09/* Enable and restart SGMII ANEG for 10/100/1000Mbps link speed
-+=09=09 * if ANEG is disabled (in 2500-BaseX mode).
-+=09=09 */
-+=09=09ret =3D phy_modify_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_SGMII_CTRL,
-+=09=09=09=09     VSPEC1_SGMII_ANEN_ANRS,
-+=09=09=09=09     VSPEC1_SGMII_ANEN_ANRS);
-+=09=09if (ret < 0)
-+=09=09=09phydev_err(phydev,
-+=09=09=09=09   "Error: Enable of SGMII ANEG failed: %d\n",
-+=09=09=09=09   ret);
-+=09=09break;
-+=09}
-+}
-+
-+static int gpy_read_status(struct phy_device *phydev)
-+{
-+=09int ret;
-+
-+=09ret =3D genphy_update_link(phydev);
-+=09if (ret)
-+=09=09return ret;
-+
-+=09phydev->speed =3D SPEED_UNKNOWN;
-+=09phydev->duplex =3D DUPLEX_UNKNOWN;
-+=09phydev->pause =3D 0;
-+=09phydev->asym_pause =3D 0;
-+
-+=09if (phydev->autoneg =3D=3D AUTONEG_ENABLE && phydev->autoneg_complete) =
-{
-+=09=09ret =3D genphy_c45_read_lpa(phydev);
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+
-+=09=09/* Read the link partner's 1G advertisement */
-+=09=09ret =3D phy_read(phydev, MII_STAT1000);
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+=09=09mii_stat1000_mod_linkmode_lpa_t(phydev->lp_advertising, ret);
-+=09} else if (phydev->autoneg =3D=3D AUTONEG_DISABLE) {
-+=09=09linkmode_zero(phydev->lp_advertising);
-+=09}
-+
-+=09ret =3D phy_read(phydev, PHY_MIISTAT);
-+=09if (ret < 0)
-+=09=09return ret;
-+
-+=09phydev->link =3D (ret & PHY_MIISTAT_LS) ? 1 : 0;
-+=09phydev->duplex =3D (ret & PHY_MIISTAT_DPX) ? DUPLEX_FULL : DUPLEX_HALF;
-+=09switch (FIELD_GET(PHY_MIISTAT_SPD_MASK, ret)) {
-+=09case PHY_MIISTAT_SPD_10:
-+=09=09phydev->speed =3D SPEED_10;
-+=09=09break;
-+=09case PHY_MIISTAT_SPD_100:
-+=09=09phydev->speed =3D SPEED_100;
-+=09=09break;
-+=09case PHY_MIISTAT_SPD_1000:
-+=09=09phydev->speed =3D SPEED_1000;
-+=09=09break;
-+=09case PHY_MIISTAT_SPD_2500:
-+=09=09phydev->speed =3D SPEED_2500;
-+=09=09break;
-+=09}
-+
-+=09if (phydev->link)
-+=09=09gpy_update_interface(phydev);
-+
-+=09return 0;
-+}
-+
-+static int gpy_config_intr(struct phy_device *phydev)
-+{
-+=09u16 mask =3D 0;
-+
-+=09if (phydev->interrupts =3D=3D PHY_INTERRUPT_ENABLED)
-+=09=09mask =3D PHY_IMASK_MASK;
-+
-+=09return phy_write(phydev, PHY_IMASK, mask);
-+}
-+
-+static irqreturn_t gpy_handle_interrupt(struct phy_device *phydev)
-+{
-+=09int reg;
-+
-+=09reg =3D phy_read(phydev, PHY_ISTAT);
-+=09if (reg < 0) {
-+=09=09phy_error(phydev);
-+=09=09return IRQ_NONE;
-+=09}
-+
-+=09if (!(reg & PHY_IMASK_MASK))
-+=09=09return IRQ_NONE;
-+
-+=09phy_trigger_machine(phydev);
-+
-+=09return IRQ_HANDLED;
-+}
-+
-+static int gpy_set_wol(struct phy_device *phydev,
-+=09=09       struct ethtool_wolinfo *wol)
-+{
-+=09struct net_device *attach_dev =3D phydev->attached_dev;
-+=09int ret;
-+
-+=09if (wol->wolopts & WAKE_MAGIC) {
-+=09=09/* MAC address - Byte0:Byte1:Byte2:Byte3:Byte4:Byte5
-+=09=09 * VPSPEC2_WOL_AD45 =3D Byte0:Byte1
-+=09=09 * VPSPEC2_WOL_AD23 =3D Byte2:Byte3
-+=09=09 * VPSPEC2_WOL_AD01 =3D Byte4:Byte5
-+=09=09 */
-+=09=09ret =3D phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
-+=09=09=09=09       VPSPEC2_WOL_AD45,
-+=09=09=09=09       ((attach_dev->dev_addr[0] << 8) |
-+=09=09=09=09       attach_dev->dev_addr[1]));
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+
-+=09=09ret =3D phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
-+=09=09=09=09       VPSPEC2_WOL_AD23,
-+=09=09=09=09       ((attach_dev->dev_addr[2] << 8) |
-+=09=09=09=09       attach_dev->dev_addr[3]));
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+
-+=09=09ret =3D phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
-+=09=09=09=09       VPSPEC2_WOL_AD01,
-+=09=09=09=09       ((attach_dev->dev_addr[4] << 8) |
-+=09=09=09=09       attach_dev->dev_addr[5]));
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+
-+=09=09/* Enable the WOL interrupt */
-+=09=09ret =3D phy_write(phydev, PHY_IMASK, PHY_IMASK_WOL);
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+
-+=09=09/* Enable magic packet matching */
-+=09=09ret =3D phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
-+=09=09=09=09       VPSPEC2_WOL_CTL,
-+=09=09=09=09       WOL_EN);
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+
-+=09=09/* Clear the interrupt status register.
-+=09=09 * Only WoL is enabled so clear all.
-+=09=09 */
-+=09=09ret =3D phy_read(phydev, PHY_ISTAT);
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+=09} else {
-+=09=09/* Disable magic packet matching */
-+=09=09ret =3D phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
-+=09=09=09=09=09 VPSPEC2_WOL_CTL,
-+=09=09=09=09=09 WOL_EN);
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+=09}
-+
-+=09if (wol->wolopts & WAKE_PHY) {
-+=09=09/* Enable the link state change interrupt */
-+=09=09ret =3D phy_set_bits(phydev, PHY_IMASK, PHY_IMASK_LSTC);
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+
-+=09=09/* Clear the interrupt status register */
-+=09=09ret =3D phy_read(phydev, PHY_ISTAT);
-+=09=09if (ret < 0)
-+=09=09=09return ret;
-+
-+=09=09if (ret & (PHY_IMASK_MASK & ~PHY_IMASK_LSTC))
-+=09=09=09phy_trigger_machine(phydev);
-+
-+=09=09return 0;
-+=09}
-+
-+=09/* Disable the link state change interrupt */
-+=09return phy_clear_bits(phydev, PHY_IMASK, PHY_IMASK_LSTC);
-+}
-+
-+static void gpy_get_wol(struct phy_device *phydev,
-+=09=09=09struct ethtool_wolinfo *wol)
-+{
-+=09int ret;
-+
-+=09wol->supported =3D WAKE_MAGIC | WAKE_PHY;
-+=09wol->wolopts =3D 0;
-+
-+=09ret =3D phy_read_mmd(phydev, MDIO_MMD_VEND2, VPSPEC2_WOL_CTL);
-+=09if (ret & WOL_EN)
-+=09=09wol->wolopts |=3D WAKE_MAGIC;
-+
-+=09ret =3D phy_read(phydev, PHY_IMASK);
-+=09if (ret & PHY_IMASK_LSTC)
-+=09=09wol->wolopts |=3D WAKE_PHY;
-+}
-+
-+static int gpy_loopback(struct phy_device *phydev, bool enable)
-+{
-+=09int ret;
-+
-+=09ret =3D phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
-+=09=09=09 enable ? BMCR_LOOPBACK : 0);
-+=09if (!ret) {
-+=09=09/* It takes some time for PHY device to switch
-+=09=09 * into/out-of loopback mode.
-+=09=09 */
-+=09=09msleep(100);
-+=09}
-+
-+=09return ret;
-+}
-+
-+static struct phy_driver gpy_drivers[] =3D {
-+=09{
-+=09=09PHY_ID_MATCH_MODEL(PHY_ID_GPY2xx),
-+=09=09.name=09=09=3D "Maxlinear Ethernet GPY2xx",
-+=09=09.get_features=09=3D genphy_c45_pma_read_abilities,
-+=09=09.config_init=09=3D gpy_config_init,
-+=09=09.probe=09=09=3D gpy_probe,
-+=09=09.suspend=09=3D genphy_suspend,
-+=09=09.resume=09=09=3D genphy_resume,
-+=09=09.config_aneg=09=3D gpy_config_aneg,
-+=09=09.aneg_done=09=3D genphy_c45_aneg_done,
-+=09=09.read_status=09=3D gpy_read_status,
-+=09=09.config_intr=09=3D gpy_config_intr,
-+=09=09.handle_interrupt =3D gpy_handle_interrupt,
-+=09=09.set_wol=09=3D gpy_set_wol,
-+=09=09.get_wol=09=3D gpy_get_wol,
-+=09=09.set_loopback=09=3D gpy_loopback,
-+=09},
-+=09{
-+=09=09.phy_id=09=09=3D PHY_ID_GPY115B,
-+=09=09.phy_id_mask=09=3D PHY_ID_GPYx15B_MASK,
-+=09=09.name=09=09=3D "Maxlinear Ethernet GPY115B",
-+=09=09.get_features=09=3D genphy_c45_pma_read_abilities,
-+=09=09.config_init=09=3D gpy_config_init,
-+=09=09.probe=09=09=3D gpy_probe,
-+=09=09.suspend=09=3D genphy_suspend,
-+=09=09.resume=09=09=3D genphy_resume,
-+=09=09.config_aneg=09=3D gpy_config_aneg,
-+=09=09.aneg_done=09=3D genphy_c45_aneg_done,
-+=09=09.read_status=09=3D gpy_read_status,
-+=09=09.config_intr=09=3D gpy_config_intr,
-+=09=09.handle_interrupt =3D gpy_handle_interrupt,
-+=09=09.set_wol=09=3D gpy_set_wol,
-+=09=09.get_wol=09=3D gpy_get_wol,
-+=09=09.set_loopback=09=3D gpy_loopback,
-+=09},
-+=09{
-+=09=09PHY_ID_MATCH_MODEL(PHY_ID_GPY115C),
-+=09=09.name=09=09=3D "Maxlinear Ethernet GPY115C",
-+=09=09.get_features=09=3D genphy_c45_pma_read_abilities,
-+=09=09.config_init=09=3D gpy_config_init,
-+=09=09.probe=09=09=3D gpy_probe,
-+=09=09.suspend=09=3D genphy_suspend,
-+=09=09.resume=09=09=3D genphy_resume,
-+=09=09.config_aneg=09=3D gpy_config_aneg,
-+=09=09.aneg_done=09=3D genphy_c45_aneg_done,
-+=09=09.read_status=09=3D gpy_read_status,
-+=09=09.config_intr=09=3D gpy_config_intr,
-+=09=09.handle_interrupt =3D gpy_handle_interrupt,
-+=09=09.set_wol=09=3D gpy_set_wol,
-+=09=09.get_wol=09=3D gpy_get_wol,
-+=09=09.set_loopback=09=3D gpy_loopback,
-+=09},
-+=09{
-+=09=09.phy_id=09=09=3D PHY_ID_GPY211B,
-+=09=09.phy_id_mask=09=3D PHY_ID_GPY21xB_MASK,
-+=09=09.name=09=09=3D "Maxlinear Ethernet GPY211B",
-+=09=09.get_features=09=3D genphy_c45_pma_read_abilities,
-+=09=09.config_init=09=3D gpy_config_init,
-+=09=09.probe=09=09=3D gpy_probe,
-+=09=09.suspend=09=3D genphy_suspend,
-+=09=09.resume=09=09=3D genphy_resume,
-+=09=09.config_aneg=09=3D gpy_config_aneg,
-+=09=09.aneg_done=09=3D genphy_c45_aneg_done,
-+=09=09.read_status=09=3D gpy_read_status,
-+=09=09.config_intr=09=3D gpy_config_intr,
-+=09=09.handle_interrupt =3D gpy_handle_interrupt,
-+=09=09.set_wol=09=3D gpy_set_wol,
-+=09=09.get_wol=09=3D gpy_get_wol,
-+=09=09.set_loopback=09=3D gpy_loopback,
-+=09},
-+=09{
-+=09=09PHY_ID_MATCH_MODEL(PHY_ID_GPY211C),
-+=09=09.name=09=09=3D "Maxlinear Ethernet GPY211C",
-+=09=09.get_features=09=3D genphy_c45_pma_read_abilities,
-+=09=09.config_init=09=3D gpy_config_init,
-+=09=09.probe=09=09=3D gpy_probe,
-+=09=09.suspend=09=3D genphy_suspend,
-+=09=09.resume=09=09=3D genphy_resume,
-+=09=09.config_aneg=09=3D gpy_config_aneg,
-+=09=09.aneg_done=09=3D genphy_c45_aneg_done,
-+=09=09.read_status=09=3D gpy_read_status,
-+=09=09.config_intr=09=3D gpy_config_intr,
-+=09=09.handle_interrupt =3D gpy_handle_interrupt,
-+=09=09.set_wol=09=3D gpy_set_wol,
-+=09=09.get_wol=09=3D gpy_get_wol,
-+=09=09.set_loopback=09=3D gpy_loopback,
-+=09},
-+=09{
-+=09=09.phy_id=09=09=3D PHY_ID_GPY212B,
-+=09=09.phy_id_mask=09=3D PHY_ID_GPY21xB_MASK,
-+=09=09.name=09=09=3D "Maxlinear Ethernet GPY212B",
-+=09=09.get_features=09=3D genphy_c45_pma_read_abilities,
-+=09=09.config_init=09=3D gpy_config_init,
-+=09=09.probe=09=09=3D gpy_probe,
-+=09=09.suspend=09=3D genphy_suspend,
-+=09=09.resume=09=09=3D genphy_resume,
-+=09=09.config_aneg=09=3D gpy_config_aneg,
-+=09=09.aneg_done=09=3D genphy_c45_aneg_done,
-+=09=09.read_status=09=3D gpy_read_status,
-+=09=09.config_intr=09=3D gpy_config_intr,
-+=09=09.handle_interrupt =3D gpy_handle_interrupt,
-+=09=09.set_wol=09=3D gpy_set_wol,
-+=09=09.get_wol=09=3D gpy_get_wol,
-+=09=09.set_loopback=09=3D gpy_loopback,
-+=09},
-+=09{
-+=09=09PHY_ID_MATCH_MODEL(PHY_ID_GPY212C),
-+=09=09.name=09=09=3D "Maxlinear Ethernet GPY212C",
-+=09=09.get_features=09=3D genphy_c45_pma_read_abilities,
-+=09=09.config_init=09=3D gpy_config_init,
-+=09=09.probe=09=09=3D gpy_probe,
-+=09=09.suspend=09=3D genphy_suspend,
-+=09=09.resume=09=09=3D genphy_resume,
-+=09=09.config_aneg=09=3D gpy_config_aneg,
-+=09=09.aneg_done=09=3D genphy_c45_aneg_done,
-+=09=09.read_status=09=3D gpy_read_status,
-+=09=09.config_intr=09=3D gpy_config_intr,
-+=09=09.handle_interrupt =3D gpy_handle_interrupt,
-+=09=09.set_wol=09=3D gpy_set_wol,
-+=09=09.get_wol=09=3D gpy_get_wol,
-+=09=09.set_loopback=09=3D gpy_loopback,
-+=09},
-+=09{
-+=09=09.phy_id=09=09=3D PHY_ID_GPY215B,
-+=09=09.phy_id_mask=09=3D PHY_ID_GPYx15B_MASK,
-+=09=09.name=09=09=3D "Maxlinear Ethernet GPY215B",
-+=09=09.get_features=09=3D genphy_c45_pma_read_abilities,
-+=09=09.config_init=09=3D gpy_config_init,
-+=09=09.probe=09=09=3D gpy_probe,
-+=09=09.suspend=09=3D genphy_suspend,
-+=09=09.resume=09=09=3D genphy_resume,
-+=09=09.config_aneg=09=3D gpy_config_aneg,
-+=09=09.aneg_done=09=3D genphy_c45_aneg_done,
-+=09=09.read_status=09=3D gpy_read_status,
-+=09=09.config_intr=09=3D gpy_config_intr,
-+=09=09.handle_interrupt =3D gpy_handle_interrupt,
-+=09=09.set_wol=09=3D gpy_set_wol,
-+=09=09.get_wol=09=3D gpy_get_wol,
-+=09=09.set_loopback=09=3D gpy_loopback,
-+=09},
-+=09{
-+=09=09PHY_ID_MATCH_MODEL(PHY_ID_GPY215C),
-+=09=09.name=09=09=3D "Maxlinear Ethernet GPY215C",
-+=09=09.get_features=09=3D genphy_c45_pma_read_abilities,
-+=09=09.config_init=09=3D gpy_config_init,
-+=09=09.probe=09=09=3D gpy_probe,
-+=09=09.suspend=09=3D genphy_suspend,
-+=09=09.resume=09=09=3D genphy_resume,
-+=09=09.config_aneg=09=3D gpy_config_aneg,
-+=09=09.aneg_done=09=3D genphy_c45_aneg_done,
-+=09=09.read_status=09=3D gpy_read_status,
-+=09=09.config_intr=09=3D gpy_config_intr,
-+=09=09.handle_interrupt =3D gpy_handle_interrupt,
-+=09=09.set_wol=09=3D gpy_set_wol,
-+=09=09.get_wol=09=3D gpy_get_wol,
-+=09=09.set_loopback=09=3D gpy_loopback,
-+=09},
-+};
-+module_phy_driver(gpy_drivers);
-+
-+static struct mdio_device_id __maybe_unused gpy_tbl[] =3D {
-+=09{PHY_ID_MATCH_MODEL(PHY_ID_GPY2xx)},
-+=09{PHY_ID_GPY115B, PHY_ID_GPYx15B_MASK},
-+=09{PHY_ID_MATCH_MODEL(PHY_ID_GPY115C)},
-+=09{PHY_ID_GPY211B, PHY_ID_GPY21xB_MASK},
-+=09{PHY_ID_MATCH_MODEL(PHY_ID_GPY211C)},
-+=09{PHY_ID_GPY212B, PHY_ID_GPY21xB_MASK},
-+=09{PHY_ID_MATCH_MODEL(PHY_ID_GPY212C)},
-+=09{PHY_ID_GPY215B, PHY_ID_GPYx15B_MASK},
-+=09{PHY_ID_MATCH_MODEL(PHY_ID_GPY215C)},
-+=09{ }
-+};
-+MODULE_DEVICE_TABLE(mdio, gpy_tbl);
-+
-+MODULE_DESCRIPTION("Maxlinear Ethernet GPY Driver");
-+MODULE_AUTHOR("Xu Liang");
-+MODULE_LICENSE("GPL");
---=20
-2.17.1
+> 
+> > +
+> > +u64 trace_current_kprobe_addr(void)
+> > +{
+> > +	return *this_cpu_ptr(&current_kprobe_addr);
+> > +}
+> > +
+> > +static void trace_current_kprobe_set(struct trace_kprobe *tk)
+> > +{
+> > +	__this_cpu_write(current_kprobe_addr, (u64) tk->rp.kp.addr);
+> > +}
+> >   /* Kprobe profile handler */
+> >   static int
+> > @@ -1585,6 +1597,7 @@ kprobe_perf_func(struct trace_kprobe *tk, struct pt_regs *regs)
+> >   		unsigned long orig_ip = instruction_pointer(regs);
+> >   		int ret;
+> > +		trace_current_kprobe_set(tk);
+> >   		ret = trace_call_bpf(call, regs);
+> >   		/*
+> > @@ -1631,8 +1644,11 @@ kretprobe_perf_func(struct trace_kprobe *tk, struct kretprobe_instance *ri,
+> >   	int size, __size, dsize;
+> >   	int rctx;
+> > -	if (bpf_prog_array_valid(call) && !trace_call_bpf(call, regs))
+> > -		return;
+> > +	if (bpf_prog_array_valid(call)) {
+> > +		trace_current_kprobe_set(tk);
+> > +		if (!trace_call_bpf(call, regs))
+> > +			return;
+> > +	}
+> >   	head = this_cpu_ptr(call->perf_events);
+> >   	if (hlist_empty(head))
+> [...]
+> 
 
