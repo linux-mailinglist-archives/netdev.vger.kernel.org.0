@@ -2,130 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6C863B9156
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 13:51:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD4003B9169
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 14:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236287AbhGALxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 07:53:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26354 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236230AbhGALxk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 07:53:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625140269;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cNFWWe/bPNS6BmiZ7sb2iaemvyIzFiI2RZ+5qcnXO7c=;
-        b=IeIA5w5nY/UWciPkFfR+NGSdRnWO2M/+/XPd2K1LoDtd9SYlV2KGj/zADE2P6dHm+Zzy87
-        kH5JpizvG2ijmv3xPvxfNw99Gcmb5SHSGgG/vNzictGgL78JAOG4T4SFQxJM2M3h8BU4tX
-        r/FqMr199U+W+rjgxOEqUVKgMz4cqzc=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-65-6CzUmIOaMyaa96TsNbnYmg-1; Thu, 01 Jul 2021 07:51:07 -0400
-X-MC-Unique: 6CzUmIOaMyaa96TsNbnYmg-1
-Received: by mail-ej1-f71.google.com with SMTP id og25-20020a1709071dd9b02904c99c7e61f1so1999415ejc.18
-        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 04:51:07 -0700 (PDT)
+        id S236366AbhGAMDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 08:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56596 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236260AbhGAMDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 08:03:06 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25520C061756;
+        Thu,  1 Jul 2021 05:00:36 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id o18so5219153pgu.10;
+        Thu, 01 Jul 2021 05:00:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2ccXf4NSKmr2F5OxqDILkQbJWitWryrP323WTdT3fg0=;
+        b=aQdryLRllPcxLoSP4L05eHImlsMtM1VW/JctbqRPDQkezjFHjV3+pMNvrKufOKrFYf
+         pzFtopDBNg1NH3yffNpxpCJo7d4dw/IPPIGkPhbXrRoE1pEE7n4U0ZN9GIAU4m9wSmZf
+         JmEBDofnp7t1+imApVctqplJnFpzZrYyE6LCg0dh4azhPsZy4RLkhGkcFpPuNIY3rp8g
+         ijATBBTHt9bF+zEzMdROyN8Hicm61CGl0rCaJqol1dVE9jtbTTn65SbgRUjKGi1eGWCv
+         9C4J1XAyhhQ8shda1RCrGb6nEDrBvlxmZ2sAAsHh5X8kk5Z2VR3SisYnjGkiIUNG7Kd9
+         gUyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=cNFWWe/bPNS6BmiZ7sb2iaemvyIzFiI2RZ+5qcnXO7c=;
-        b=f1+gCloGXR75fwJ1VCg1jhxoLEH+8l+Qqo78rD6pXwf3Kbr5u05KZwpRpGLEMy/YuK
-         ksqICgCuVDjhq2oKp7cPYMF27ajyI5Gw57QQbLJqTyvqeuAL1VlRBr6euZY4FvihjmRJ
-         EC0kbgzVDanfveor3BbJOsy3LVpTw//+et48/hHNBBsGr3GbFdTbORYN0L36z2Bw4PW2
-         HTO7CRdHLko2nTPUviwemfitdvYE0+LpmKxPAJpnFNQMX0VVrfQv+aZUu1HcNhziCgFq
-         sfTlr9HpjUJZV44uyS9/T6R6HsXgb0fuCLVQNq6ZLiUvHI5NbRUXlyxNhUe2+48Iuu/k
-         8SXw==
-X-Gm-Message-State: AOAM533d+QIKgZa2QfL30IJF/Kr1JEu0YqkqCbyyJurASq9Bhb2djvEY
-        fnVJMtfsvumE8kerZy0a960iUszF1bfwUXAb9tEZ2Dqkyx0B/kCwUWScgRP/U0onZICFSKSjoq7
-        TUv8Uo0hLcT7gCo0I
-X-Received: by 2002:a17:907:72cf:: with SMTP id du15mr315042ejc.54.1625140265966;
-        Thu, 01 Jul 2021 04:51:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyv9hPOtyit1IOG3jiYtp8Wtb+POauZnGECcvO6c9QzO5KiQs3r7RRfaD0ghmQrq1KbC67dDQ==
-X-Received: by 2002:a17:907:72cf:: with SMTP id du15mr315020ejc.54.1625140265573;
-        Thu, 01 Jul 2021 04:51:05 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id yl15sm3993267ejb.85.2021.07.01.04.51.04
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2ccXf4NSKmr2F5OxqDILkQbJWitWryrP323WTdT3fg0=;
+        b=rrVTRuqbEwOqVqQFvBjmpAHA1RK0kC+pD7duGJ2c5ArgcTm80gszFVdxc3jLJ+BEhh
+         Qlgd4LT6RuipIR6ErFWuiaT6r0NjNpyTbqiCir8LedSFa18J7lJZYRzbiS/OdZHR2dQ0
+         IujZ7VNBmafoi1Xw+usQav77+RHsQ0vUuEVvT20kEVx6xCogLnZXed8pkXrYFh2rgDXY
+         5cu9dsn24S1EhY4Y7YTo8RhMvVLrdP4LYy67EoJbE0owbdnkamJ3GNl+k+pYyskAuISL
+         olzX7G6g/SpKkUKOZ5Mb/JvsXuWLy2PvwLw7aY+o6VKd7GckvLIeKIYpsj7+tROI5gzZ
+         iJfg==
+X-Gm-Message-State: AOAM533U//TRcWM3L34Nnruv9MnF2eHlJOjdk/Jg/ybZPYLHxv5MPALl
+        0+h0O37A/PT0FHEdEtkLOls=
+X-Google-Smtp-Source: ABdhPJxS10y8pI4F0CF1sTYadittND67kThOJjvtVX+1qjjKh0iHAY/MvfSyvkZCCbkzBnIn3CpaRQ==
+X-Received: by 2002:aa7:83d9:0:b029:2eb:b0ef:2a67 with SMTP id j25-20020aa783d90000b02902ebb0ef2a67mr41641267pfn.1.1625140835706;
+        Thu, 01 Jul 2021 05:00:35 -0700 (PDT)
+Received: from ubuntu.localdomain ([218.17.89.92])
+        by smtp.gmail.com with ESMTPSA id j20sm24021860pfc.85.2021.07.01.05.00.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 04:51:04 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 325631804B1; Thu,  1 Jul 2021 13:51:04 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v3 bpf-next 1/8] bpf: Introduce bpf timers.
-In-Reply-To: <CAADnVQJrZdC3f8SxxBqQK9Ov4Kcgao0enBNAhmwJuZPgxwjQUg@mail.gmail.com>
-References: <20210624022518.57875-1-alexei.starovoitov@gmail.com>
- <20210624022518.57875-2-alexei.starovoitov@gmail.com>
- <CAADnVQJrZdC3f8SxxBqQK9Ov4Kcgao0enBNAhmwJuZPgxwjQUg@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 01 Jul 2021 13:51:04 +0200
-Message-ID: <878s2q1cd3.fsf@toke.dk>
+        Thu, 01 Jul 2021 05:00:35 -0700 (PDT)
+From:   gushengxian <gushengxian507419@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
+Subject: [PATCH] tools: bpftool: close va_list 'ap' by va_end()
+Date:   Thu,  1 Jul 2021 05:00:26 -0700
+Message-Id: <20210701120026.709862-1-gushengxian507419@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+From: gushengxian <gushengxian@yulong.com>
 
-> On Wed, Jun 23, 2021 at 7:25 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
->>
->> The bpf_timer_init() helper is receiving hidden 'map' argument and
-> ...
->> +               if (insn->imm == BPF_FUNC_timer_init) {
->> +                       aux = &env->insn_aux_data[i + delta];
->> +                       if (bpf_map_ptr_poisoned(aux)) {
->> +                               verbose(env, "bpf_timer_init abusing map_ptr\n");
->> +                               return -EINVAL;
->> +                       }
->> +                       map_ptr = BPF_MAP_PTR(aux->map_ptr_state);
->> +                       {
->> +                               struct bpf_insn ld_addrs[2] = {
->> +                                       BPF_LD_IMM64(BPF_REG_3, (long)map_ptr),
->> +                               };
->
-> After a couple of hours of ohh so painful debugging I realized that this
-> approach doesn't work for inner maps. Duh.
-> For inner maps it remembers inner_map_meta which is a template
-> of inner map.
-> Then bpf_timer_cb() passes map ptr into timer callback and if it tries
-> to do map operations on it the inner_map_meta->ops will be valid,
-> but the struct bpf_map doesn't have the actual data.
-> So to support map-in-map we need to require users to pass map pointer
-> explicitly into bpf_timer_init().
-> Unfortunately the verifier cannot guarantee that bpf timer field inside
-> map element is from the same map that is passed as a map ptr.
-> The verifier can check that they're equivalent from safety pov
-> via bpf_map_meta_equal(), so common user mistakes will be caught by it.
-> Still not pretty that it's partially on the user to do:
-> bpf_timer_init(timer, CLOCK, map);
-> with 'timer' matching the 'map'.
+va_list 'ap' was opened but not closed by va_end(). It should be
+closed by va_end() before return.
 
-The implication being that if they don't match, the callback will just
-get a different argument and it'll be up to the developer to deal with
-any bugs arising from that?
+Signed-off-by: gushengxian <gushengxian@yulong.com>
+---
+ tools/bpf/bpftool/jit_disasm.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> Another option is to drop 'map' arg from timer callback,
-> but the usability of the callback will suffer. The inner maps
-> will be quite painful to use from it.
-> Anyway I'm going with explicit 'map' arg in the next respin.
-> Other ideas?
-
-So the problem here is that the inner map pointer is not known at
-verification time but only at runtime? Could the verifier inject code to
-always spill inner map pointers to a known area of the stack after a
-map-in-map lookup, and then just load them back from there when needed?
-Not sure that would be worth the complexity (and overhead!), though;
-having to supply an explicit callback arg is not that uncommon a pattern
-after all...
-
--Toke
+diff --git a/tools/bpf/bpftool/jit_disasm.c b/tools/bpf/bpftool/jit_disasm.c
+index e7e7eee9f172..3c85fd1f00cb 100644
+--- a/tools/bpf/bpftool/jit_disasm.c
++++ b/tools/bpf/bpftool/jit_disasm.c
+@@ -45,8 +45,10 @@ static int fprintf_json(void *out, const char *fmt, ...)
+ 	char *s;
+ 
+ 	va_start(ap, fmt);
+-	if (vasprintf(&s, fmt, ap) < 0)
++	if (vasprintf(&s, fmt, ap) < 0) {
++		va_end(ap);
+ 		return -1;
++	}
+ 	va_end(ap);
+ 
+ 	if (!oper_count) {
+-- 
+2.25.1
 
