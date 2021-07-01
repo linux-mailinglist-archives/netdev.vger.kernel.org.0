@@ -2,163 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D8843B93A9
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 17:01:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB3883B9396
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 16:52:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233301AbhGAPDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 11:03:35 -0400
-Received: from proxmox-new.maurer-it.com ([94.136.29.106]:64137 "EHLO
-        proxmox-new.maurer-it.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232853AbhGAPDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 11:03:34 -0400
-X-Greylist: delayed 576 seconds by postgrey-1.27 at vger.kernel.org; Thu, 01 Jul 2021 11:03:34 EDT
-Received: from proxmox-new.maurer-it.com (localhost.localdomain [127.0.0.1])
-        by proxmox-new.maurer-it.com (Proxmox) with ESMTP id A6F69400D5;
-        Thu,  1 Jul 2021 16:51:27 +0200 (CEST)
-Message-ID: <131fc6eb-7da2-ccac-2da0-b82c19dfef84@proxmox.com>
-Date:   Thu, 1 Jul 2021 16:51:11 +0200
+        id S233161AbhGAOzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 10:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38494 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232413AbhGAOy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 10:54:59 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05319C061762
+        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 07:52:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=n+WAmZLYN7PJyuyRoStv6iVr7lqrH2yN8IGe+c5jv1A=; b=iq4RJ+dmntJqwr/5glpbGcXI7
+        duYKLrVNU4nn2RTbh0WiwkgolpO0+N4NgTnbxJ9eusHnvdp+wcP9ogDuEUrVWNS1hf+InBqFSHG5V
+        JelHQVFzJfJ7nIhnR6Cao4amQW6tB9Knq3406eW/OtmRtQm4Bg1yKAkjyvZh3apgi2KBWhj0Qf2jk
+        Z3ZoA1z4hbGrCknxFTFTNqOBhZctq65OaeQ3uMNBbBhgTs4Xq2pI6uitwK/wlrqR7FOot11GVbL9w
+        4P3m5UUNolzo51NB3ePjrmZvRbjHnoeQjSViEW5wipvm2VfuuuzHKTpLEHN8G7z2b5A3A7Nmfffuu
+        atYUo9KdA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45580)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lyy3E-0001Jk-8B; Thu, 01 Jul 2021 15:52:24 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lyy3C-0004Am-Cy; Thu, 01 Jul 2021 15:52:22 +0100
+Date:   Thu, 1 Jul 2021 15:52:22 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Robert Hancock <robert.hancock@calian.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phylink: Support disabling autonegotiation
+ for PCS
+Message-ID: <20210701145222.GK22278@shell.armlinux.org.uk>
+References: <20210630174927.1077249-1-robert.hancock@calian.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:90.0) Gecko/20100101
- Thunderbird/90.0
-Subject: Re: [PATCH 1/1] net: bridge: sync fdb to new unicast-filtering ports
-Content-Language: en-US
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Wolfgang Bumiller <w.bumiller@proxmox.com>,
-        netdev@vger.kernel.org
-Cc:     bridge@lists.linux-foundation.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Vlad Yasevich <vyasevic@redhat.com>
-References: <20210701122830.2652-1-w.bumiller@proxmox.com>
- <20210701122830.2652-2-w.bumiller@proxmox.com>
- <39385134-e499-2444-aa0d-48b0315e1002@nvidia.com>
-From:   Thomas Lamprecht <t.lamprecht@proxmox.com>
-In-Reply-To: <39385134-e499-2444-aa0d-48b0315e1002@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210630174927.1077249-1-robert.hancock@calian.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01.07.21 15:49, Nikolay Aleksandrov wrote:
-> On 01/07/2021 15:28, Wolfgang Bumiller wrote:
->> Since commit 2796d0c648c9 ("bridge: Automatically manage
->> port promiscuous mode.")
->> bridges with `vlan_filtering 1` and only 1 auto-port don't
->> set IFF_PROMISC for unicast-filtering-capable ports.
->>
->> Normally on port changes `br_manage_promisc` is called to
->> update the promisc flags and unicast filters if necessary,
->> but it cannot distinguish between *new* ports and ones
->> losing their promisc flag, and new ports end up not
->> receiving the MAC address list.
->>
->> Fix this by calling `br_fdb_sync_static` in `br_add_if`
->> after the port promisc flags are updated and the unicast
->> filter was supposed to have been filled.
->>
->> Signed-off-by: Wolfgang Bumiller <w.bumiller@proxmox.com>
->> ---
->>  net/bridge/br_if.c | 12 ++++++++++++
->>  1 file changed, 12 insertions(+)
->>
->> diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
->> index f7d2f472ae24..183e72e7b65e 100644
->> --- a/net/bridge/br_if.c
->> +++ b/net/bridge/br_if.c
->> @@ -652,6 +652,18 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
->>  	list_add_rcu(&p->list, &br->port_list);
->>  
->>  	nbp_update_port_count(br);
->> +	if (!br_promisc_port(p) && (p->dev->priv_flags & IFF_UNICAST_FLT)) {
->> +		/* When updating the port count we also update all ports'
->> +		 * promiscuous mode.
->> +		 * A port leaving promiscuous mode normally gets the bridge's
->> +		 * fdb synced to the unicast filter (if supported), however,
->> +		 * `br_port_clear_promisc` does not distinguish between
->> +		 * non-promiscuous ports and *new* ports, so we need to
->> +		 * sync explicitly here.
->> +		 */
->> +		if (br_fdb_sync_static(br, p))
->> +			netdev_err(dev, "failed to sync bridge addresses to this port\n");
->> +	}
->>  
->>  	netdev_update_features(br->dev);
->>  
->>
+On Wed, Jun 30, 2021 at 11:49:27AM -0600, Robert Hancock wrote:
+> The auto-negotiation state in the PCS as set by
+> phylink_mii_c22_pcs_config was previously always enabled when the driver is
+> configured for in-band autonegotiation, even if autonegotiation was
+> disabled on the interface with ethtool. Update the code to set the
+> BMCR_ANENABLE bit based on the interface's autonegotiation enabled
+> state.
 > 
-> Hi,
-
-Hi, commenting as was peripherally involved into this.
-
-> The patch is wrong because br_add_if() can fail after you sync these entries and
-> then nothing will unsync them. Out of curiousity what's the use case of a bridge with a
-> single port only ? Because, as you've also noted, this will be an issue only if there is
-> a single port and sounds like a corner case, maybe there's a better way to handle it.
-
-In practice you're right, it is not often useful, but that does not means that it
-won't happen. For example, in Proxmox VE, a hypervisor/clustering debian-based distro,
-we recommend users that they need to migrate all (QEMU) VMs to another cluster-node when
-doing a (major) upgrade as with that way they get no downtime for the VMs.
-
-Now, if the user had a bridge with a single port this was not an issue as long as VMs
-where running the TAP device we use for them where bridge ports too.
-
-But on reboot, with all VMs and thus ports still gone, the system comes up with that
-bridge having a single port.
-
-That itself was seen as a problem until recently because the system set the MAC of the
-bridge to one of the bridge ports.
-
-But with the next Debian Version (Bullseye) we're pulling in a systemd version which
-now defaults to MACAddressPolicy=persistent[0] also for virtual devices like bridges,
-so with that update done and rebooted the bridge has another MAC address, not matching
-the one of a bridge port anymore, which means the host may, depending on some other
-side effects like vlan-awareness on (as without that promisc would be enabled anyway),
-not be ping'able and other issue anymore.
-Due to some specialty handling of learning/filtering in specific drivers this is not
-reproducible on every NIC model (IIRC, it was in igb and e1000e ones but not in some
-realtek ones).
-
-Hope that was not written to confusingly.
-
-[0]: https://www.freedesktop.org/software/systemd/man/systemd.link.html#MACAddressPolicy=
-
+> Update phylink_mii_c22_pcs_get_state to not check
+> autonegotiation-related fields when autonegotiation is disabled.
 > 
-> To be honest this promisc management has caused us headaches with scale setups with thousands
-> of permanent and static entries where we don't need to sync uc lists, we've actually thought
-> about flags to disable this altogether.
+> Update phylink_mac_pcs_get_state to initialize the state based on the
+> interface's configured speed, duplex and pause parameters rather than to
+> unknown when autonegotiation is disabled, before calling the driver's
+> pcs_get_state functions, as they are not likely to provide meaningful data
+> for these fields when autonegotiation is disabled. In this case the
+> driver is really just filling in the link state field.
+> 
+> Note that in cases where there is a downstream PHY connected, such as
+> with SGMII and a copper PHY, the configuration set by ethtool is handled by
+> phy_ethtool_ksettings_set and not propagated to the PCS. This is correct
+> since SGMII or 1000Base-X autonegotiation with the PCS should normally
+> still be used even if the copper side has disabled it.
 
-FWIW, when we got this reported by a beta tester a initial (not really thought out) idea
-of mine was to drop the special br_manage_promisc case to disable promisc on the bridge
-port for one single auto-port, introduced by commit 2796d0c648c940b4796f84384fbcfb0a2399db84
-in 2014, i.e., something like (still not 100% thought out):
+In theory, this seems to be correct, but...
 
+We do have some cases where, if a port is in 1000Base-X mode, the
+documentation explicitly states that AN must be enabled. So, I think
+if we are introducing the possibility to disable the negotiation in
+1000Base-X mode, we need to give an option to explicitly reject that
+configuration attempt.
 
-----8<----
-diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-index f7d2f472ae24..520c79c21362 100644
---- a/net/bridge/br_if.c
-+++ b/net/bridge/br_if.c
-@@ -147,18 +147,7 @@ void br_manage_promisc(struct net_bridge *br)
- 		if (set_all) {
- 			br_port_set_promisc(p);
- 		} else {
--			/* If the number of auto-ports is <= 1, then all other
--			 * ports will have their output configuration
--			 * statically specified through fdbs.  Since ingress
--			 * on the auto-port becomes forwarding/egress to other
--			 * ports and egress configuration is statically known,
--			 * we can say that ingress configuration of the
--			 * auto-port is also statically known.
--			 * This lets us disable promiscuous mode and write
--			 * this config to hw.
--			 */
--			if (br->auto_cnt == 0 ||
--			    (br->auto_cnt == 1 && br_auto_port(p)))
-+			if (br->auto_cnt == 0)
- 				br_port_clear_promisc(p);
- 			else
- 				br_port_set_promisc(p);
+We also need this to be consistently applied over all the existing
+phylink-using drivers that support 1000Base-X without AN - we shouldn't
+end up in the situation where we have different behaviours with
+different network drivers.
 
+So, we need mvneta and mvpp2 to reject such a configuration - with
+these ports in 1000Base-X mode, the documentation states:
+
+"Bit 2 Field InBandAnEn In-band Auto-Negotiation enable. ...
+When <PortType> = 1 (1000BASE-X) this field must be set to 1."
+
+We should be aware that there may be other hardware out there which
+may not support 1000BASE-X without inband.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
