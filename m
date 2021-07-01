@@ -2,92 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81A9F3B949C
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 18:20:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 524C43B94A1
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 18:23:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232335AbhGAQWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 12:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58268 "EHLO
+        id S232165AbhGAQ0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 12:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231998AbhGAQWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 12:22:47 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95A0C061764
-        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 09:20:16 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id x20so9273764ljc.5
-        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 09:20:16 -0700 (PDT)
+        with ESMTP id S229978AbhGAQ0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 12:26:09 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6EDC061762;
+        Thu,  1 Jul 2021 09:23:38 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id g5so4636108iox.11;
+        Thu, 01 Jul 2021 09:23:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=brRBtSWPzl3A8EO3IIUcfNsjS22D/ywhnA28QnZfB6M=;
-        b=d1+9kxcLWBvJSpk3fPYeulpwABLezPQJEk+Zy5DmBCHiV5k8fys4vw9rA6zQazJKc2
-         axsZXI/dx/8bY1setfHEYMO0trSZO9E1jscAwqkUc35Jb6iAXsIo7AKCKK+UvXc4yq3e
-         qiMCd+A5iPA4rWbSxd7fv0SiZp5q2XVbT5RkihF/c9RqhFql0Y9/wfOxBCtfxgXbFAMr
-         Mx7KUZrtHN63OOzj6Yug9Kv/mnaN8sHZt8YTIbHepTjFUeytb0b2nHtfQ8RV40xMkSSe
-         5qtgbQrElgjEnzp0Iq1NHO5GO/OXxxgwKceI1RgUEbvxexDjJYgB8i2ImLpq/VwKKJNu
-         X9Ow==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=0JeKB22sEFVH2OHfyjjswISFP46Q0b13zeqLEZJolsg=;
+        b=vX3FwSZdCH3V7dWrRtZD/fvYvleRoOQ9fx5LgJs6FJUYkCUJInZr7dOdAYicTWdiMb
+         WmvZ3JbgjgZs8gaPECULDds3rnZ0j/pVLYXB4CfYgEW+OVauq1Z83GDuRryDcNWW1RcF
+         fl3wlTYY0A9nMkBAlmR4FjCygX0k0DHJXc7rs3rrBQWldfLu+ACuDJ4xgSOsER1USWiD
+         FJU1zqlS3CQ3DBPqIpd1uVZvrgk8poDewaUzhQOqAK0B8srPVhbrLf/qep6JXj0Cnlob
+         FgpjVoNVAjbCNxPRQBEOI4xtgjNICrPZRHm09h6KKCb8SYG92Uv/lICh6q+GcVY5WifJ
+         Le2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=brRBtSWPzl3A8EO3IIUcfNsjS22D/ywhnA28QnZfB6M=;
-        b=mDcuieSpHG7LFuzRMQS2i53d6kQoktuOSymGttaG5p6iJbfNsGLCJzFRZgQap4AgCQ
-         ihOVUb/U0/smNx+eOLEGmnqqur0mGdLww8qHUlkwX0KXYyMkXjdH+UpeZy1jFvqJFSS4
-         D1KB0LHC0AhPJwantedjFEOUB953NPIWiE57R6++uTqOJXroVPvSAeYeZApcJA8WFYnO
-         Dta5mSPyNYM7i8rPB4fNETOZQWuAliaL/nbU6PuWsLpycaA6HxtY8mLt6UeI/3SJ4dzi
-         LQ+JKyUlWuMSxFPW/0FT9xRAQGizZu1RG/p3X7AzHd7VHc0czbSRAXfCMDYVKCsL33Db
-         PcVQ==
-X-Gm-Message-State: AOAM530IQ6RAO2Q8QUOJQg2Oj2ZyE69RQQrkKthKCBom6oKQfezbpEAd
-        9gPE45kO5B4U0tRFxjSbeYdXDBoSiaSbcqVBtSlFNg==
-X-Google-Smtp-Source: ABdhPJzlkFKmKNMzZS30KJjmaWJKGOg+VZfCnW52PNfjtWzIQLq1y7OZwuioLXRe/ssoxTIomnKsV7xS/xJcAu4SAEI=
-X-Received: by 2002:a2e:b4ce:: with SMTP id r14mr319557ljm.76.1625156414497;
- Thu, 01 Jul 2021 09:20:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1625118581.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <cover.1625118581.git.christophe.jaillet@wanadoo.fr>
-From:   Jeroen de Borst <jeroendb@google.com>
-Date:   Thu, 1 Jul 2021 09:20:03 -0700
-Message-ID: <CAErkTsQLP9_y-Am3MN-O4vZXe3cTKHfYMwkFk-9YWWPLAQM1cw@mail.gmail.com>
-Subject: Re: [PATCH 0/3] gve: Fixes and clean-up
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     csully@google.com, sagis@google.com, jonolson@google.com,
-        davem@davemloft.net, kuba@kernel.org, awogbemila@google.com,
-        willemb@google.com, yangchun@google.com, bcf@google.com,
-        kuozhao@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=0JeKB22sEFVH2OHfyjjswISFP46Q0b13zeqLEZJolsg=;
+        b=h6+3AtqF+C9xYlL6n4w38DI2i/J45nxwlr5dHCLp3gnNkFFw4BZusJILKNKdSwuXiH
+         D1ZosSdLq0DstV9ijz6KWOk6QFQOfLsYBNnoamSjyWFmx6bXelMgGDIkqjDeGKDEhUWF
+         eD+r8OG4ib1EtaYn79FWZJOdXBOzTcI2+fPE6nct60zeZF7rdPR3k98dImPFiygkZT7O
+         DkE8k4NPa8wcv1cULtL9yAaLZpD392KUYmaUiLIIeyMdb6GKv/SCTBGYc5CZtRxXHlsh
+         JIdYdwpHcNS1OQA6NIvYAawbiSZbBw05TJ2fQlWTXQdX5XMYocC3MVtaCk449HJbdF6Y
+         C43A==
+X-Gm-Message-State: AOAM531a/jXQkRzCh/Vng+wpJTHbj7eF7dYfAVMCQecaz47QjvXlw30v
+        /qDGyOsk1cEJV75iAPqW7Sw=
+X-Google-Smtp-Source: ABdhPJzUEe8WwvD5QeuHmNBIf2Z1Hmc46D/yRs2EvF1g+hW6cOOsxu4beCgyGRRlxaKuKnFz7MilZQ==
+X-Received: by 2002:a6b:6205:: with SMTP id f5mr213241iog.60.1625156618173;
+        Thu, 01 Jul 2021 09:23:38 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id e14sm240290ilq.32.2021.07.01.09.23.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Jul 2021 09:23:37 -0700 (PDT)
+Date:   Thu, 01 Jul 2021 09:23:29 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Message-ID: <60ddec01c651b_3fe24208dc@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210701061656.34150-1-xiyou.wangcong@gmail.com>
+References: <20210701061656.34150-1-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf v2] skmsg: check sk_rcvbuf limit before queuing to
+ ingress_skb
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 30, 2021 at 10:58 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> This serie is part of the effort to axe the wrappers in
-> include/linux/pci-dma-compat.h
->
-> While looking at it, I spotted:
->   - a resource leak in an error handling path (patch 1)
->   - an error code that could be propagated. (patch 2)
->     This patch could be ignored. It's only goal is to be more consistent
->     with other drivers.
->
-> These 2 paches are not related to the 'pci-dma-compat.h' stuff, which can
-> be found in patch 3.
->
-> Christophe JAILLET (3):
->   gve: Fix an error handling path in 'gve_probe()'
->   gve: Propagate error codes to caller
->   gve: Simplify code and axe the use of a deprecated API
->
->
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> Jiang observed OOM frequently when testing our AF_UNIX/UDP
+> proxy. This is due to the fact that we do not actually limit
+> the socket memory before queueing skb to ingress_skb. We
+> charge the skb memory later when handling the psock backlog,
+> but it is not limited either.
 
-Thanks for these patches.
+Right, its not limiting but charging it should push back on
+the stack so it stops feeding skbs to us. Maybe this doesn't
+happen in UDP side?
 
-Can split this into 2 patch series; one for net (with the first 2
-patches) and one for net-next (with the cleanup one)?
-Also the label in the first patch should probably read
-'abort_with_gve_init' instead of 'abort_with_vge_init'.
+> 
+> This patch adds checks for sk->sk_rcvbuf right before queuing
+> to ingress_skb and drops packets if this limit exceeds. This
+> is very similar to UDP receive path. Ideally we should set the
+> skb owner before this check too, but it is hard to make TCP
+> happy about sk_forward_alloc.
 
-Jeroen
+But it breaks TCP side see below.
+
+> 
+> Reported-by: Jiang Wang <jiang.wang@bytedance.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  net/core/skmsg.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> index 9b6160a191f8..a5185c781332 100644
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
+> @@ -854,7 +854,8 @@ static int sk_psock_skb_redirect(struct sk_psock *from, struct sk_buff *skb)
+>  		return -EIO;
+>  	}
+>  	spin_lock_bh(&psock_other->ingress_lock);
+> -	if (!sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED)) {
+> +	if (!sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED) ||
+> +	    atomic_read(&sk_other->sk_rmem_alloc) > READ_ONCE(sk_other->sk_rcvbuf)) {
+>  		spin_unlock_bh(&psock_other->ingress_lock);
+>  		skb_bpf_redirect_clear(skb);
+>  		sock_drop(from->sk, skb);
+> @@ -930,7 +931,8 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
+>  		}
+>  		if (err < 0) {
+>  			spin_lock_bh(&psock->ingress_lock);
+> -			if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
+> +			if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED) &&
+> +			    atomic_read(&sk_other->sk_rmem_alloc) <= READ_ONCE(sk_other->sk_rcvbuf)) {
+>  				skb_queue_tail(&psock->ingress_skb, skb);
+
+We can't just drop the packet in the memory overrun case here. This will
+break TCP because the data will be gone and no one will retransmit.
+
+Thats why in the current scheme on redirect we can push back when we
+move it to the other queues ingress message queue or redirect into
+the other socket via send.
+
+At one point I considered charging the data sitting in the ingress_skb?
+Would that solve the problem here? I think it would cause the enqueue
+at the UDP to start dropping packets from __udp_enqueue_schedule_skb()?
+
+>  				schedule_work(&psock->work);
+>  				err = 0;
+> -- 
+> 2.27.0
+> 
