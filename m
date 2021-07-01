@@ -2,69 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 264213B8B4F
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 02:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8E833B8B74
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 02:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238239AbhGAAcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Jun 2021 20:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238236AbhGAAco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Jun 2021 20:32:44 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1201C061756;
-        Wed, 30 Jun 2021 17:30:14 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id 22-20020a17090a0c16b0290164a5354ad0so5793033pjs.2;
-        Wed, 30 Jun 2021 17:30:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KfeZbHLaSagpSWbMcY2CgR88Lxlqz7ykXlSuHFuKJ+0=;
-        b=CXeSyTs2kYg5SZQywjQPVPk4IAL2mP8UI3mV+Et62qf6pvOH9iJLnZ+Q7RGidz00kN
-         x+qK8BZUS15siwMPM6ch4vu06Vo3T45T7DWxkoHbICEktxfGqTVqAf0kau7jpVOAm/MN
-         BYW1m67bY+lPjtevKdyMwRCQZCmLHthK9JjQFPm94E7WMaLslkdj/wmF6XoEQ+BHPpLs
-         Yr/gYObDkeNGoc7JjutV0kbhUZrgePCEsOx65OmrGJgrtCJEC63ouI3YoK2TWHOZ0++u
-         WKPkskHAd4c2BQkwxwZbPKUYM7mBM+Fbk6ytyWBY0LaicSAl+Kd6nmokwKFpI1/8rJ+6
-         NEcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KfeZbHLaSagpSWbMcY2CgR88Lxlqz7ykXlSuHFuKJ+0=;
-        b=m6lLhvpodNXvmS2oEHVAqRnYjuux5y+xx4KbizDICkpSZ2wAp3cWkRWakeOzZezisg
-         JvMC+74YRW7CudeJnrTbQdlrogvHcLBHOKhfeFvxUwTM7iStSrzQiJG5m7t/64wVSY5l
-         Iu5pZCMq4F+mg73z/hfz6VsYQFeJbVy0pKbfVVuGHYQeohrHQRy8Heb2AsnspgwwVXec
-         nOTxFFhHZg63kWlxLjeDLC2ERTBaMrjeuDSa3NXYaLG0a8chMd7+Oek/qwE/06ga1FkQ
-         2ZXDg233c6sSCkoBeXKFeEoSisSFgxOhfWhlWf6HhA+PJkDHRo51/w7jDR6VihPYh+P+
-         pprg==
-X-Gm-Message-State: AOAM531RWwW7eiW0gJXmODHn2+csqgOBzh1CYM4/u7ZBgPwL9aw/YJTY
-        McGBS9/tg/wfpbtFD7eUIVSFXLMHuwg=
-X-Google-Smtp-Source: ABdhPJxiPjHyY13PeYJEmuShSJL69/6GqAcAI0fOVxfJTqP3Ub3856G9CvCNCYXkXJdiIbOtJcxbSQ==
-X-Received: by 2002:a17:90b:1809:: with SMTP id lw9mr42269799pjb.128.1625099414238;
-        Wed, 30 Jun 2021 17:30:14 -0700 (PDT)
-Received: from localhost ([2402:3a80:11db:6f6:e6a8:37a6:1da7:fbc7])
-        by smtp.gmail.com with ESMTPSA id o34sm25890345pgm.6.2021.06.30.17.30.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Jun 2021 17:30:13 -0700 (PDT)
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Subject: [PATCH net-next v5 5/5] bpf: tidy xdp attach selftests
-Date:   Thu,  1 Jul 2021 05:57:59 +0530
-Message-Id: <20210701002759.381983-6-memxor@gmail.com>
+        id S238231AbhGAA4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Jun 2021 20:56:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57952 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232066AbhGAA4V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Jun 2021 20:56:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6FC196124B;
+        Thu,  1 Jul 2021 00:53:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625100831;
+        bh=X1Yit87ebjU7Q0XF7mRkUpCYj5/wowh8TWqrZoeyU4Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SKl4Fpadc7lo6ehwAu0BJ1KKR2gfNrh+iGLFwYrT4deSd1kJtk7bf7870Z7vavLdU
+         fTXJWecinMaBCmyaNQRZHFfBh9PfEZXuphZ1FIlIX76ebVgO7O06P2R+323DKiXLeA
+         KAj2VQG8mSZQGBoh6jr1Kg0lOKc8LTw6qzGyeL9im84FyVlHcAqhIKK9FVx0x8dzIt
+         JbYVT+irzZulaA45GEkkBmE7tfHqnXrdi5FU0n06HR33wSG1y7balaRDRDjvzGyCb6
+         ZNvdNew/IIayHwGsRUN/dIXSjcprzzqXO+7AEa65Vo7ulMBxmDVVgQcmBhaUv/NdzY
+         +YXgAXKVMu9TQ==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     Peter Rosin <peda@axentia.se>, Andrew Lunn <andrew@lunn.ch>,
+        netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH RFC net-next] dt-bindings: ethernet-controller: document signal multiplexer
+Date:   Thu,  1 Jul 2021 02:53:47 +0200
+Message-Id: <20210701005347.8280-1-kabel@kernel.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210701002759.381983-1-memxor@gmail.com>
-References: <20210701002759.381983-1-memxor@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -72,189 +39,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for cpumap and devmap entry progs in previous commits means the
-test needs to be updated for the new semantics. Also take this
-opportunity to convert it from CHECK macros to the new ASSERT macros.
+There are devices where the MAC signals from the ethernet controller are
+not directly connected to an ethernet PHY or a SFP cage, but to a
+multiplexer, so that the device can switch between the endpoints.
 
-Since xdp_cpumap_attach has no subtest, put the sole test inside
-test_xdptest_xdp_cpumap_attach function.
+For example on Turris Omnia the WAN controller is connected to a SerDes
+switch, which multiplexes the SerDes lanes between SFP cage and ethernet
+PHY, depending on whether a SFP module is present (MOD_DEF0 GPIO from
+the SFP cage).
 
-Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Document how to describe such a situation for an ethernet controller in
+the device tree bindings.
+
+Example usage could then look like:
+  &eth2 {
+    status = "okay";
+    phys = <&comphy5 2>;
+    buffer-manager = <&bm>;
+    bm,pool-long = <2>;
+    bm,pool-short = <3>;
+
+    signal-multiplexer {
+      compatible = "gpio-signal-multiplexer";
+      gpios = <&pcawan 4 GPIO_ACTIVE_LOW>;
+
+      endpoint@0 {
+        phy-mode = "sgmii";
+	phy-handle = <&phy1>;
+      };
+
+      endpoint@1 {
+        sfp = <&sfp>;
+	phy-mode = "sgmii";
+	managed = "in-band-status";
+      };
+    };
+  };
+
+Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- .../bpf/prog_tests/xdp_cpumap_attach.c        | 43 +++++++------------
- .../bpf/prog_tests/xdp_devmap_attach.c        | 39 +++++++----------
- 2 files changed, 32 insertions(+), 50 deletions(-)
+I wonder if this is the proper way to do this.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-index 0176573fe4e7..8755effd80b0 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-@@ -7,64 +7,53 @@
+We already have framework for multiplexers in Linux, in drivers/mux.
+But as I understand it, that framework is meant to be used when the
+multiplexer state is to be set by kernel, while here it is possible
+that the multiplexer state can be (and on Turris Omnia is) set by
+the user plugging a SFP module into the SFP cage.
+
+We theoretically could add a method for getting mux state into the mux
+framework and state notification support. But using the mux framework
+to solve this case in phylink would be rather complicated, especially
+since mux framework is abstract, and if the multiplexer state is
+determined by the MOD_DEF0 GPIO, which is also used by SFP code, the
+implementation would get rather complicate in phylink...
+
+I wonder whether driver implementation complexity should play a role
+when proposing device tree bindings :-)
+
+Some thoughts?
+---
+ .../bindings/net/ethernet-controller.yaml     | 60 +++++++++++++++++++
+ 1 file changed, 60 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index b0933a8c295a..a7770edaec2b 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -226,6 +226,66 @@ properties:
+           required:
+             - speed
  
- #define IFINDEX_LO	1
- 
--void test_xdp_with_cpumap_helpers(void)
-+void test_xdp_cpumap_attach(void)
- {
- 	struct test_xdp_with_cpumap_helpers *skel;
- 	struct bpf_prog_info info = {};
-+	__u32 len = sizeof(info);
- 	struct bpf_cpumap_val val = {
- 		.qsize = 192,
- 	};
--	__u32 duration = 0, idx = 0;
--	__u32 len = sizeof(info);
- 	int err, prog_fd, map_fd;
-+	__u32 idx = 0;
- 
- 	skel = test_xdp_with_cpumap_helpers__open_and_load();
--	if (CHECK_FAIL(!skel)) {
--		perror("test_xdp_with_cpumap_helpers__open_and_load");
-+	if (!ASSERT_OK_PTR(skel, "test_xdp_with_cpumap_helpers__open_and_load"))
- 		return;
--	}
- 
--	/* can not attach program with cpumaps that allow programs
--	 * as xdp generic
--	 */
- 	prog_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
- 	err = bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd, XDP_FLAGS_SKB_MODE);
--	CHECK(err == 0, "Generic attach of program with 8-byte CPUMAP",
--	      "should have failed\n");
-+	if (!ASSERT_OK(err, "Generic attach of program with 8-byte CPUMAP"))
-+		goto out_close;
++  signal-multiplexer:
++    type: object
++    description:
++      Specifies that the signal pins (for example SerDes lanes) are connected
++      to a multiplexer from which they can be multiplexed to several different
++      endpoints, depending on the multiplexer configuration. (For example SerDes
++      lanes can be switched between an ethernet PHY and a SFP cage.)
 +
-+	err = bpf_set_link_xdp_fd(IFINDEX_LO, -1, XDP_FLAGS_SKB_MODE);
-+	ASSERT_OK(err, "XDP program detach");
- 
- 	prog_fd = bpf_program__fd(skel->progs.xdp_dummy_cm);
- 	map_fd = bpf_map__fd(skel->maps.cpu_map);
- 	err = bpf_obj_get_info_by_fd(prog_fd, &info, &len);
--	if (CHECK_FAIL(err))
-+	if (!ASSERT_OK(err, "bpf_obj_get_info_by_fd"))
- 		goto out_close;
- 
- 	val.bpf_prog.fd = prog_fd;
- 	err = bpf_map_update_elem(map_fd, &idx, &val, 0);
--	CHECK(err, "Add program to cpumap entry", "err %d errno %d\n",
--	      err, errno);
-+	ASSERT_OK(err, "Add program to cpumap entry");
- 
- 	err = bpf_map_lookup_elem(map_fd, &idx, &val);
--	CHECK(err, "Read cpumap entry", "err %d errno %d\n", err, errno);
--	CHECK(info.id != val.bpf_prog.id, "Expected program id in cpumap entry",
--	      "expected %u read %u\n", info.id, val.bpf_prog.id);
-+	ASSERT_OK(err, "Read cpumap entry");
-+	ASSERT_EQ(info.id, val.bpf_prog.id, "Match program id to cpumap entry prog_id");
- 
- 	/* can not attach BPF_XDP_CPUMAP program to a device */
- 	err = bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd, XDP_FLAGS_SKB_MODE);
--	CHECK(err == 0, "Attach of BPF_XDP_CPUMAP program",
--	      "should have failed\n");
-+	if (!ASSERT_NEQ(err, 0, "Attach of BPF_XDP_CPUMAP program"))
-+		bpf_set_link_xdp_fd(IFINDEX_LO, -1, XDP_FLAGS_SKB_MODE);
- 
- 	val.qsize = 192;
- 	val.bpf_prog.fd = bpf_program__fd(skel->progs.xdp_dummy_prog);
- 	err = bpf_map_update_elem(map_fd, &idx, &val, 0);
--	CHECK(err == 0, "Add non-BPF_XDP_CPUMAP program to cpumap entry",
--	      "should have failed\n");
-+	ASSERT_NEQ(err, 0, "Add non-BPF_XDP_CPUMAP program to cpumap entry");
- 
- out_close:
- 	test_xdp_with_cpumap_helpers__destroy(skel);
- }
--
--void test_xdp_cpumap_attach(void)
--{
--	if (test__start_subtest("cpumap_with_progs"))
--		test_xdp_with_cpumap_helpers();
--}
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-index 88ef3ec8ac4c..c72af030ff10 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_devmap_attach.c
-@@ -16,50 +16,45 @@ void test_xdp_with_devmap_helpers(void)
- 		.ifindex = IFINDEX_LO,
- 	};
- 	__u32 len = sizeof(info);
--	__u32 duration = 0, idx = 0;
- 	int err, dm_fd, map_fd;
-+	__u32 idx = 0;
- 
- 
- 	skel = test_xdp_with_devmap_helpers__open_and_load();
--	if (CHECK_FAIL(!skel)) {
--		perror("test_xdp_with_devmap_helpers__open_and_load");
-+	if (!ASSERT_OK_PTR(skel, "test_xdp_with_devmap_helpers__open_and_load"))
- 		return;
--	}
- 
--	/* can not attach program with DEVMAPs that allow programs
--	 * as xdp generic
--	 */
- 	dm_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
- 	err = bpf_set_link_xdp_fd(IFINDEX_LO, dm_fd, XDP_FLAGS_SKB_MODE);
--	CHECK(err == 0, "Generic attach of program with 8-byte devmap",
--	      "should have failed\n");
-+	if (!ASSERT_OK(err, "Generic attach of program with 8-byte devmap"))
-+		goto out_close;
++    properties:
++      compatible:
++        const: gpio-signal-multiplexer
 +
-+	err = bpf_set_link_xdp_fd(IFINDEX_LO, -1, XDP_FLAGS_SKB_MODE);
-+	ASSERT_OK(err, "XDP program detach");
++      gpios:
++        maxItems: 1
++        description:
++          GPIO to determine which endpoint the multiplexer is switched to.
++
++    patternProperties:
++      "^endpoint@[01]$":
++        type: object
++        description:
++          Specifies a multiplexer endpoint settings. Each endpoint can have
++          different settings. (For example in the case when multiplexing between
++          an ethernet PHY and a SFP cage, the SFP cage endpoint should specify
++          SFP phandle, while the PHY endpoint should specify PHY handle.)
++
++        properties:
++          reg:
++            enum: [ 0, 1 ]
++
++          phy-connection-type:
++            $ref: #/properties/phy-connection-type
++
++          phy-mode:
++            $ref: #/properties/phy-mode
++
++          phy-handle:
++            $ref: #/properties/phy-handle
++
++          phy:
++            $ref: #/properties/phy
++
++          phy-device:
++            $ref: #/properties/phy-device
++
++          sfp:
++            $ref: #/properties/sfp
++
++          managed:
++            $ref: #/properties/managed
++
++          fixed-link:
++            $ref: #/properties/fixed-link
++
++        required:
++          - reg
++
++    required:
++      - gpios
++
+ additionalProperties: true
  
- 	dm_fd = bpf_program__fd(skel->progs.xdp_dummy_dm);
- 	map_fd = bpf_map__fd(skel->maps.dm_ports);
- 	err = bpf_obj_get_info_by_fd(dm_fd, &info, &len);
--	if (CHECK_FAIL(err))
-+	if (!ASSERT_OK(err, "bpf_obj_get_info_by_fd"))
- 		goto out_close;
- 
- 	val.bpf_prog.fd = dm_fd;
- 	err = bpf_map_update_elem(map_fd, &idx, &val, 0);
--	CHECK(err, "Add program to devmap entry",
--	      "err %d errno %d\n", err, errno);
-+	ASSERT_OK(err, "Add program to devmap entry");
- 
- 	err = bpf_map_lookup_elem(map_fd, &idx, &val);
--	CHECK(err, "Read devmap entry", "err %d errno %d\n", err, errno);
--	CHECK(info.id != val.bpf_prog.id, "Expected program id in devmap entry",
--	      "expected %u read %u\n", info.id, val.bpf_prog.id);
-+	ASSERT_OK(err, "Read devmap entry");
-+	ASSERT_EQ(info.id, val.bpf_prog.id, "Match program id to devmap entry prog_id");
- 
- 	/* can not attach BPF_XDP_DEVMAP program to a device */
- 	err = bpf_set_link_xdp_fd(IFINDEX_LO, dm_fd, XDP_FLAGS_SKB_MODE);
--	CHECK(err == 0, "Attach of BPF_XDP_DEVMAP program",
--	      "should have failed\n");
-+	if (!ASSERT_NEQ(err, 0, "Attach of BPF_XDP_DEVMAP program"))
-+		bpf_set_link_xdp_fd(IFINDEX_LO, -1, XDP_FLAGS_SKB_MODE);
- 
- 	val.ifindex = 1;
- 	val.bpf_prog.fd = bpf_program__fd(skel->progs.xdp_dummy_prog);
- 	err = bpf_map_update_elem(map_fd, &idx, &val, 0);
--	CHECK(err == 0, "Add non-BPF_XDP_DEVMAP program to devmap entry",
--	      "should have failed\n");
-+	ASSERT_NEQ(err, 0, "Add non-BPF_XDP_DEVMAP program to devmap entry");
- 
- out_close:
- 	test_xdp_with_devmap_helpers__destroy(skel);
-@@ -68,12 +63,10 @@ void test_xdp_with_devmap_helpers(void)
- void test_neg_xdp_devmap_helpers(void)
- {
- 	struct test_xdp_devmap_helpers *skel;
--	__u32 duration = 0;
- 
- 	skel = test_xdp_devmap_helpers__open_and_load();
--	if (CHECK(skel,
--		  "Load of XDP program accessing egress ifindex without attach type",
--		  "should have failed\n")) {
-+	if (!ASSERT_EQ(skel, NULL,
-+		    "Load of XDP program accessing egress ifindex without attach type")) {
- 		test_xdp_devmap_helpers__destroy(skel);
- 	}
- }
+ ...
 -- 
 2.31.1
 
