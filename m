@@ -2,151 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 907A53B9331
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 16:23:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D8843B93A9
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 17:01:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233335AbhGAO0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 10:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233301AbhGAO0D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 10:26:03 -0400
-Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20B9C061762
-        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 07:23:31 -0700 (PDT)
-Received: by mail-ua1-x929.google.com with SMTP id q3so2310734uao.0
-        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 07:23:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8ZYZZPLtxm0D8wKCq6t4+Fy+RhxhZRnjK7G5sIibVAY=;
-        b=kBv9cdGrIayWfMzZazwxNI9/duBTp2RkiZ5RCpTGoMmI4sxwPfmxtyqijgoC6eFaHP
-         vuY6nQPmSg0rBx1F6AnU3iGjJXVrIv6hMPT5BDZnXtJ8kZ6ta2AKfwvSzsQiBoGDBLxe
-         Dmi2eQ+66de1aSZjyItIFwNWh1cy7b6EjIO393RJPGKNXebp3P4Yx/mAegF28z7zxu3H
-         LLjGSN1TkEEC2gynwHgOJdUg1KIDxVmNmxUfSOg+YNg1SDUVOYC9QVrLdvNk9oHHIut5
-         NEaw07sNcTuAQPUw2+IKV8UcC+TCiR2ZQmvtrZRt2mROer1FgbKX1f54BG6f/nPVo19B
-         +X5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8ZYZZPLtxm0D8wKCq6t4+Fy+RhxhZRnjK7G5sIibVAY=;
-        b=nYNxpNwnEI44MDWqDqwDQYDWWmU9FU9T8uNs8y/RsuNd0jAj8pqxP8WLRsu00ACdWG
-         F//RItkvPAbcOZGIlLQ2wW58ZRPnJrMFvYadelkLg69GHNJZNYgzy3Xhn/cSYeGGxFfX
-         lCvBnzmd0tk66eJW8BgsXAlaj0eIdxroDsJVmTB4kVtTBByZ+xoEhWMBcEbJrNZHYhuC
-         ZuOVRMy5AyUjSKTbUSSqirs0zZwR0z1Vd6Yn/M6sVhCLCyTqLxXZMNQm3qnXv99uyqjv
-         idiSYcppUIv4xfviw7aVbdZpx8VyCudW3t31zqpYN3r2H4EJyTUYH3KVp4yONza8PxZU
-         Gbvg==
-X-Gm-Message-State: AOAM530Hye0KjweP3qfJ1ubHhOF3Ghb+oQCV2OX0gB6VpwhxMnNn1DpL
-        cm71XkYRfDL8VZv0wbC9BSV5xmsGdx7/T5ei4AZJDQ==
-X-Google-Smtp-Source: ABdhPJx2oBw+TeBECEm0/q5V+pChm69gVODCsQXZeTvzl9jaJ3WWW/V23J8lrJcxwiS1GyjoBORkKFEfajqRXSJj0AE=
-X-Received: by 2002:ab0:3ae:: with SMTP id 43mr211048uau.63.1625149409711;
- Thu, 01 Jul 2021 07:23:29 -0700 (PDT)
+        id S233301AbhGAPDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 11:03:35 -0400
+Received: from proxmox-new.maurer-it.com ([94.136.29.106]:64137 "EHLO
+        proxmox-new.maurer-it.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232853AbhGAPDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 11:03:34 -0400
+X-Greylist: delayed 576 seconds by postgrey-1.27 at vger.kernel.org; Thu, 01 Jul 2021 11:03:34 EDT
+Received: from proxmox-new.maurer-it.com (localhost.localdomain [127.0.0.1])
+        by proxmox-new.maurer-it.com (Proxmox) with ESMTP id A6F69400D5;
+        Thu,  1 Jul 2021 16:51:27 +0200 (CEST)
+Message-ID: <131fc6eb-7da2-ccac-2da0-b82c19dfef84@proxmox.com>
+Date:   Thu, 1 Jul 2021 16:51:11 +0200
 MIME-Version: 1.0
-References: <20210628144908.881499-1-phind.uet@gmail.com> <CANn89iJ6M2WFS3B+sSOysekScUFmO9q5YHxgHGsbozbvkW9ivg@mail.gmail.com>
- <79490158-e6d1-aabf-64aa-154b71205c74@gmail.com> <CADVnQy=Q9W=Vxu81ctPLx08D=ALnHBXGr0c4BLtQGxwQE+yjRg@mail.gmail.com>
- <ee5ef69e-ee3f-1df0-2033-5adc06a46b9c@gmail.com> <CADVnQynqMQhO4cBON=xUCkne9-E1hze3naMZZ8tQ-a0k71kh8g@mail.gmail.com>
- <205F52AB-4A5B-4953-B97E-17E7CACBBCD8@gmail.com> <CANn89iJbquZ=tVBRg7JNR8pB106UY4Xvi7zkPVn0Uov9sj8akg@mail.gmail.com>
- <1786BBEE-9C7B-45B2-B451-F535ABB804EF@gmail.com> <CANn89iK4Qwf0ezWac3Cn1xWN_Hw+-QL-+H8YmDm4cZP=FH+MTQ@mail.gmail.com>
- <CADVnQyk9maCc+tJ4-b6kufcBES9+Y2KpHPZadXssoVWX=Xr1Vw@mail.gmail.com> <30527e25-dd66-da7a-7344-494b4539abf7@gmail.com>
-In-Reply-To: <30527e25-dd66-da7a-7344-494b4539abf7@gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 1 Jul 2021 10:23:13 -0400
-Message-ID: <CADVnQyn_965EHdQke_S7FUySiamyyRx-3b8o+cm+=4jYxG_GOw@mail.gmail.com>
-Subject: Re: [PATCH] tcp: Do not reset the icsk_ca_initialized in tcp_init_transfer.
-To:     Phi Nguyen <phind.uet@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:90.0) Gecko/20100101
+ Thunderbird/90.0
+Subject: Re: [PATCH 1/1] net: bridge: sync fdb to new unicast-filtering ports
+Content-Language: en-US
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Wolfgang Bumiller <w.bumiller@proxmox.com>,
+        netdev@vger.kernel.org
+Cc:     bridge@lists.linux-foundation.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Vlad Yasevich <vyasevic@redhat.com>
+References: <20210701122830.2652-1-w.bumiller@proxmox.com>
+ <20210701122830.2652-2-w.bumiller@proxmox.com>
+ <39385134-e499-2444-aa0d-48b0315e1002@nvidia.com>
+From:   Thomas Lamprecht <t.lamprecht@proxmox.com>
+In-Reply-To: <39385134-e499-2444-aa0d-48b0315e1002@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 30, 2021 at 2:25 PM Phi Nguyen <phind.uet@gmail.com> wrote:
->
-> On 6/29/2021 11:59 PM, Neal Cardwell wrote:
-> >    On Tue, Jun 29, 2021 at 8:58 AM Eric Dumazet <edumazet@google.com> wrote:
-> >  From my perspective, the bug was introduced when that 8919a9b31eb4
-> > commit introduced icsk_ca_initialized and set icsk_ca_initialized to 0
-> > in tcp_init_transfer(), missing the possibility that a process could
-> > call setsockopt(TCP_CONGESTION)  in state TCP_SYN_SENT (i.e. after the
-> > connect() or TFO open sendmsg()), which would call
-> > tcp_init_congestion_control(). The 8919a9b31eb4 commit did not intend
-> > to reset any initialization that the user had already explicitly made;
-> > it just missed the possibility of that particular sequence (which
-> > syzkaller managed to find!).
-> >
-> >> Although I am not sure what happens at accept() time when the listener
-> >> socket is cloned.
-> >
-> > It seems that for listener sockets, they cannot initialize their CC
-> > module state, because there is no way for them to reach
-> > tcp_init_congestion_control(), since:
-> >
-> > (a) tcp_set_congestion_control() -> tcp_reinit_congestion_control()
-> > will not call tcp_init_congestion_control() on a socket in CLOSE or
-> > LISTEN
-> >
-> > (b) tcp_init_transfer() -> tcp_init_congestion_control() can only
-> > happen for established sockets and successful TFO SYN_RECV sockets
-> Is this what was mentioned in this commit ce69e563b325(tcp: make sure
-> listeners don't initialize congestion-control state)
+On 01.07.21 15:49, Nikolay Aleksandrov wrote:
+> On 01/07/2021 15:28, Wolfgang Bumiller wrote:
+>> Since commit 2796d0c648c9 ("bridge: Automatically manage
+>> port promiscuous mode.")
+>> bridges with `vlan_filtering 1` and only 1 auto-port don't
+>> set IFF_PROMISC for unicast-filtering-capable ports.
+>>
+>> Normally on port changes `br_manage_promisc` is called to
+>> update the promisc flags and unicast filters if necessary,
+>> but it cannot distinguish between *new* ports and ones
+>> losing their promisc flag, and new ports end up not
+>> receiving the MAC address list.
+>>
+>> Fix this by calling `br_fdb_sync_static` in `br_add_if`
+>> after the port promisc flags are updated and the unicast
+>> filter was supposed to have been filled.
+>>
+>> Signed-off-by: Wolfgang Bumiller <w.bumiller@proxmox.com>
+>> ---
+>>  net/bridge/br_if.c | 12 ++++++++++++
+>>  1 file changed, 12 insertions(+)
+>>
+>> diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
+>> index f7d2f472ae24..183e72e7b65e 100644
+>> --- a/net/bridge/br_if.c
+>> +++ b/net/bridge/br_if.c
+>> @@ -652,6 +652,18 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
+>>  	list_add_rcu(&p->list, &br->port_list);
+>>  
+>>  	nbp_update_port_count(br);
+>> +	if (!br_promisc_port(p) && (p->dev->priv_flags & IFF_UNICAST_FLT)) {
+>> +		/* When updating the port count we also update all ports'
+>> +		 * promiscuous mode.
+>> +		 * A port leaving promiscuous mode normally gets the bridge's
+>> +		 * fdb synced to the unicast filter (if supported), however,
+>> +		 * `br_port_clear_promisc` does not distinguish between
+>> +		 * non-promiscuous ports and *new* ports, so we need to
+>> +		 * sync explicitly here.
+>> +		 */
+>> +		if (br_fdb_sync_static(br, p))
+>> +			netdev_err(dev, "failed to sync bridge addresses to this port\n");
+>> +	}
+>>  
+>>  	netdev_update_features(br->dev);
+>>  
+>>
+> 
+> Hi,
 
-Yes, exactly.
+Hi, commenting as was peripherally involved into this.
 
-> > --
-> > [PATCH] tcp: fix tcp_init_transfer() to not reset icsk_ca_initialized
-> >
-> > This commit fixes a bug (found by syzkaller) that could cause spurious
-> > double-initializations for congestion control modules, which could cause memory
-> > leaks orother problems for congestion control modules (like CDG) that allocate
-> > memory in their init functions.
-> >
-> > The buggy scenario constructed by syzkaller was something like:
-> >
-> > (1) create a TCP socket
-> > (2) initiate a TFO connect via sendto()
-> > (3) while socket is in TCP_SYN_SENT, call setsockopt(TCP_CONGESTION),
-> >      which calls:
-> >         tcp_set_congestion_control() ->
-> >           tcp_reinit_congestion_control() ->
-> >             tcp_init_congestion_control()
-> > (4) receive ACK, connection is established, call tcp_init_transfer(),
-> >      set icsk_ca_initialized=0 (without first calling cc->release()),
-> >      call tcp_init_congestion_control() again.
-> >
-> > Note that in this sequence tcp_init_congestion_control() is called twice
-> > without a cc->release() call in between. Thus, for CC modules that allocate
-> > memory in their init() function, e.g, CDG, a memory leak may occur. The
-> > syzkaller tool managed to find a reproducer that triggered such a leak in CDG.
-> >
-> > The bug was introduced when that 8919a9b31eb4 commit introduced
-> > icsk_ca_initialized and set icsk_ca_initialized to 0 in tcp_init_transfer(),
-> > missing the possibility for a sequence like the one above, where a process
-> > could call setsockopt(TCP_CONGESTION) in state TCP_SYN_SENT (i.e. after the
-> > connect() or TFO open sendmsg()), which would call
-> > tcp_init_congestion_control(). The 8919a9b31eb4 commit did not intend to reset
-> > any initialization that the user had already explicitly made; it just missed
-> > the possibility of that particular sequence (which syzkaller managed to find).
->
-> Could I use your commit message when I resubmit patch?
+> The patch is wrong because br_add_if() can fail after you sync these entries and
+> then nothing will unsync them. Out of curiousity what's the use case of a bridge with a
+> single port only ? Because, as you've also noted, this will be an issue only if there is
+> a single port and sounds like a corner case, maybe there's a better way to handle it.
 
-Yes, feel free to use that commit message verbatim or modified.
+In practice you're right, it is not often useful, but that does not means that it
+won't happen. For example, in Proxmox VE, a hypervisor/clustering debian-based distro,
+we recommend users that they need to migrate all (QEMU) VMs to another cluster-node when
+doing a (major) upgrade as with that way they get no downtime for the VMs.
 
-thanks,
-neal
+Now, if the user had a bridge with a single port this was not an issue as long as VMs
+where running the TAP device we use for them where bridge ports too.
+
+But on reboot, with all VMs and thus ports still gone, the system comes up with that
+bridge having a single port.
+
+That itself was seen as a problem until recently because the system set the MAC of the
+bridge to one of the bridge ports.
+
+But with the next Debian Version (Bullseye) we're pulling in a systemd version which
+now defaults to MACAddressPolicy=persistent[0] also for virtual devices like bridges,
+so with that update done and rebooted the bridge has another MAC address, not matching
+the one of a bridge port anymore, which means the host may, depending on some other
+side effects like vlan-awareness on (as without that promisc would be enabled anyway),
+not be ping'able and other issue anymore.
+Due to some specialty handling of learning/filtering in specific drivers this is not
+reproducible on every NIC model (IIRC, it was in igb and e1000e ones but not in some
+realtek ones).
+
+Hope that was not written to confusingly.
+
+[0]: https://www.freedesktop.org/software/systemd/man/systemd.link.html#MACAddressPolicy=
+
+> 
+> To be honest this promisc management has caused us headaches with scale setups with thousands
+> of permanent and static entries where we don't need to sync uc lists, we've actually thought
+> about flags to disable this altogether.
+
+FWIW, when we got this reported by a beta tester a initial (not really thought out) idea
+of mine was to drop the special br_manage_promisc case to disable promisc on the bridge
+port for one single auto-port, introduced by commit 2796d0c648c940b4796f84384fbcfb0a2399db84
+in 2014, i.e., something like (still not 100% thought out):
+
+
+----8<----
+diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
+index f7d2f472ae24..520c79c21362 100644
+--- a/net/bridge/br_if.c
++++ b/net/bridge/br_if.c
+@@ -147,18 +147,7 @@ void br_manage_promisc(struct net_bridge *br)
+ 		if (set_all) {
+ 			br_port_set_promisc(p);
+ 		} else {
+-			/* If the number of auto-ports is <= 1, then all other
+-			 * ports will have their output configuration
+-			 * statically specified through fdbs.  Since ingress
+-			 * on the auto-port becomes forwarding/egress to other
+-			 * ports and egress configuration is statically known,
+-			 * we can say that ingress configuration of the
+-			 * auto-port is also statically known.
+-			 * This lets us disable promiscuous mode and write
+-			 * this config to hw.
+-			 */
+-			if (br->auto_cnt == 0 ||
+-			    (br->auto_cnt == 1 && br_auto_port(p)))
++			if (br->auto_cnt == 0)
+ 				br_port_clear_promisc(p);
+ 			else
+ 				br_port_set_promisc(p);
+
