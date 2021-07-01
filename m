@@ -2,58 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD4003B9169
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 14:00:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34F673B9173
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 14:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236366AbhGAMDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 08:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56596 "EHLO
+        id S236391AbhGAME5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 08:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236260AbhGAMDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 08:03:06 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25520C061756;
-        Thu,  1 Jul 2021 05:00:36 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id o18so5219153pgu.10;
-        Thu, 01 Jul 2021 05:00:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2ccXf4NSKmr2F5OxqDILkQbJWitWryrP323WTdT3fg0=;
-        b=aQdryLRllPcxLoSP4L05eHImlsMtM1VW/JctbqRPDQkezjFHjV3+pMNvrKufOKrFYf
-         pzFtopDBNg1NH3yffNpxpCJo7d4dw/IPPIGkPhbXrRoE1pEE7n4U0ZN9GIAU4m9wSmZf
-         JmEBDofnp7t1+imApVctqplJnFpzZrYyE6LCg0dh4azhPsZy4RLkhGkcFpPuNIY3rp8g
-         ijATBBTHt9bF+zEzMdROyN8Hicm61CGl0rCaJqol1dVE9jtbTTn65SbgRUjKGi1eGWCv
-         9C4J1XAyhhQ8shda1RCrGb6nEDrBvlxmZ2sAAsHh5X8kk5Z2VR3SisYnjGkiIUNG7Kd9
-         gUyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2ccXf4NSKmr2F5OxqDILkQbJWitWryrP323WTdT3fg0=;
-        b=rrVTRuqbEwOqVqQFvBjmpAHA1RK0kC+pD7duGJ2c5ArgcTm80gszFVdxc3jLJ+BEhh
-         Qlgd4LT6RuipIR6ErFWuiaT6r0NjNpyTbqiCir8LedSFa18J7lJZYRzbiS/OdZHR2dQ0
-         IujZ7VNBmafoi1Xw+usQav77+RHsQ0vUuEVvT20kEVx6xCogLnZXed8pkXrYFh2rgDXY
-         5cu9dsn24S1EhY4Y7YTo8RhMvVLrdP4LYy67EoJbE0owbdnkamJ3GNl+k+pYyskAuISL
-         olzX7G6g/SpKkUKOZ5Mb/JvsXuWLy2PvwLw7aY+o6VKd7GckvLIeKIYpsj7+tROI5gzZ
-         iJfg==
-X-Gm-Message-State: AOAM533U//TRcWM3L34Nnruv9MnF2eHlJOjdk/Jg/ybZPYLHxv5MPALl
-        0+h0O37A/PT0FHEdEtkLOls=
-X-Google-Smtp-Source: ABdhPJxS10y8pI4F0CF1sTYadittND67kThOJjvtVX+1qjjKh0iHAY/MvfSyvkZCCbkzBnIn3CpaRQ==
-X-Received: by 2002:aa7:83d9:0:b029:2eb:b0ef:2a67 with SMTP id j25-20020aa783d90000b02902ebb0ef2a67mr41641267pfn.1.1625140835706;
-        Thu, 01 Jul 2021 05:00:35 -0700 (PDT)
-Received: from ubuntu.localdomain ([218.17.89.92])
-        by smtp.gmail.com with ESMTPSA id j20sm24021860pfc.85.2021.07.01.05.00.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 05:00:35 -0700 (PDT)
-From:   gushengxian <gushengxian507419@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
-Subject: [PATCH] tools: bpftool: close va_list 'ap' by va_end()
-Date:   Thu,  1 Jul 2021 05:00:26 -0700
-Message-Id: <20210701120026.709862-1-gushengxian507419@gmail.com>
+        with ESMTP id S236289AbhGAME4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 08:04:56 -0400
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6C1C0617AE
+        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 05:02:25 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:445e:1c3:be41:9e10])
+        by michel.telenet-ops.be with bizsmtp
+        id Po2P2500a474TTe06o2PAE; Thu, 01 Jul 2021 14:02:24 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1lyvOh-005MHS-6G; Thu, 01 Jul 2021 14:02:23 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1lyvOg-00EXS9-KF; Thu, 01 Jul 2021 14:02:22 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2 0/2] sms911x: DTS fixes and DT binding to json-schema conversion
+Date:   Thu,  1 Jul 2021 14:02:19 +0200
+Message-Id: <cover.1625140615.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -61,32 +44,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: gushengxian <gushengxian@yulong.com>
+	Hi all,
 
-va_list 'ap' was opened but not closed by va_end(). It should be
-closed by va_end() before return.
+This patch series converts the Smart Mixed-Signal Connectivity (SMSC)
+LAN911x/912x Controller Device Tree binding documentation to
+json-schema, after fixing a few issues in DTS files.
 
-Signed-off-by: gushengxian <gushengxian@yulong.com>
----
- tools/bpf/bpftool/jit_disasm.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Changed compared to v1[1]:
+  - Dropped applied patches,
+  - Add Reviewed-by,
+  - Drop bogus double quotes in compatible values,
+  - Add comment explaining why "additionalProperties: true" is needed.
 
-diff --git a/tools/bpf/bpftool/jit_disasm.c b/tools/bpf/bpftool/jit_disasm.c
-index e7e7eee9f172..3c85fd1f00cb 100644
---- a/tools/bpf/bpftool/jit_disasm.c
-+++ b/tools/bpf/bpftool/jit_disasm.c
-@@ -45,8 +45,10 @@ static int fprintf_json(void *out, const char *fmt, ...)
- 	char *s;
- 
- 	va_start(ap, fmt);
--	if (vasprintf(&s, fmt, ap) < 0)
-+	if (vasprintf(&s, fmt, ap) < 0) {
-+		va_end(ap);
- 		return -1;
-+	}
- 	va_end(ap);
- 
- 	if (!oper_count) {
+Thanks!
+
+[1] [PATCH 0/5] sms911x: DTS fixes and DT binding to json-schema conversion
+    https://lore.kernel.org/r/cover.1621518686.git.geert+renesas@glider.be
+
+Geert Uytterhoeven (2):
+  ARM: dts: qcom-apq8060: Correct Ethernet node name and drop bogus irq
+    property
+  dt-bindings: net: sms911x: Convert to json-schema
+
+ .../devicetree/bindings/net/gpmc-eth.txt      |   2 +-
+ .../devicetree/bindings/net/smsc,lan9115.yaml | 110 ++++++++++++++++++
+ .../devicetree/bindings/net/smsc911x.txt      |  43 -------
+ .../arm/boot/dts/qcom-apq8060-dragonboard.dts |   4 +-
+ 4 files changed, 112 insertions(+), 47 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/smsc,lan9115.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/smsc911x.txt
+
 -- 
 2.25.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
