@@ -2,216 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D221D3B95DE
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 20:04:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7523B95F7
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 20:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233820AbhGASHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 14:07:01 -0400
-Received: from mail-il1-f182.google.com ([209.85.166.182]:34320 "EHLO
-        mail-il1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233683AbhGASHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 14:07:00 -0400
-Received: by mail-il1-f182.google.com with SMTP id s19so7277567ilj.1;
-        Thu, 01 Jul 2021 11:04:29 -0700 (PDT)
+        id S233605AbhGASOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 14:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233140AbhGASOC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 14:14:02 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7D5C061765
+        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 11:11:31 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id r16so9691622ljk.9
+        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 11:11:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mhB/YI84F2jHO2Py8UfLFqOobb3dwNmtuci/rX0g1cM=;
+        b=jasMDnHxjyvUllqlfSgbkf3lsM1C59ID2VwFAdbjR9jGHNGK1c2ePnhO1K6hQd4uHR
+         VNFP4RkpTx7f7HnBJ1LkRS5Ak84RttR+CblcIUzjyT1uvl9F/Q9fYLgYsI7SIBGe0+VC
+         MXZTwtPrF00/sqmgD0tpytwSPhW2eYdAr2tt1K86OJeSK4UdjflKRozDqyGvo2LnmGNd
+         P5O4Ey4joC6Wkcv4izcVRLLTbA8iOYxYOUC/sk4kDRh+2zGG4mi+7NF5DdZbNBr7ASwH
+         PDSFwbXmoTxzDNDMVAYbsyKsB8xS9Wr9Xfi4CGlSRBwXaPvtjjLSp+4TAns0df3xBvF5
+         1HZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=nLpPbTEaH7bJoawLTwKW+ZFTzKsRW9kcPRyI4/uVbns=;
-        b=a5XjQObiFoL1ZGUtHl4xleJPD600GTwHKn8pcl+Va25GqoxXhvZqJo6V/2ftXIYC3o
-         1nR7b2SCk/xrw7KmOngr/VFF+T6Q7zrm+Cgq8zfmw2Ra0Bxf2EpDOwDR8vmclyTl0UrA
-         rNwMEnLl8RRIs9DDmiVbTIrs2+89t5Fa/XVInW6dS5DSWRHLbLPEq+dDgjjZHI6Vbmdj
-         XKpkyKePwNK1Zy2rfi9xpLsbyZMp4Og5wHHB63TQWFR7IIeNy/ZPiq46buyhUu0av6tz
-         CbhOlno8N+BF00AuMHJrH9U4gS5Q7KtDP5iXGylP6K+5LpqRrOaF2bFRpJN8n8yTvPra
-         RxUA==
-X-Gm-Message-State: AOAM530HUCgoHjttjT6tbJJA/Foi3MDZDC/EsIyhy2dw+aRJkz+QK4Gs
-        9pXjyBE+2Wdi5bo63YoPeA==
-X-Google-Smtp-Source: ABdhPJxBr2Zqbg3SKs3yZCdYqFZ4i4GsT3KjymIH9OjXeanlwvWmym5M68+qcKOL32uJhYofh+7Aog==
-X-Received: by 2002:a05:6e02:2144:: with SMTP id d4mr490842ilv.136.1625162668913;
-        Thu, 01 Jul 2021 11:04:28 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id c2sm355278ilk.30.2021.07.01.11.04.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 11:04:28 -0700 (PDT)
-Received: (nullmailer pid 2650224 invoked by uid 1000);
-        Thu, 01 Jul 2021 18:04:22 -0000
-Date:   Thu, 1 Jul 2021 12:04:22 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Peter Rosin <peda@axentia.se>, Andrew Lunn <andrew@lunn.ch>,
-        netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH RFC net-next] dt-bindings: ethernet-controller: document
- signal multiplexer
-Message-ID: <20210701180422.GA2597277@robh.at.kernel.org>
-References: <20210701005347.8280-1-kabel@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mhB/YI84F2jHO2Py8UfLFqOobb3dwNmtuci/rX0g1cM=;
+        b=bcFmsS1ykC9hQDcQhEKQ12aUBl80+D88W/Lyg0yL1vu1pCaXI5UrSPCD7F9KcSJhlX
+         DhUUbpfGj0tbUm8ahdBx4+W0OKT3Fiyf2Es2kihL+D3etyLEMK4y12NtaftLmpjTlEW3
+         QeuwC3emdDoX/S16laiPt5DB4jTWytsOLT4hvQ0/6aFD2VN0wCQ0oHinsGYMh92iYspb
+         lA0Aa4q/GXt8mZ10gKZ9PYbSjPM6/7begyqmodJt2TLvvkmrAI+CUkVOG/c9y86vTfZ8
+         MDwhK5YsHiuf4yVxU+ati2Jt+QebYXS2y/PAkLUa5FY4zrTDu40dz/NUmxHd3ZsU8oWf
+         o6vQ==
+X-Gm-Message-State: AOAM531InDqJSK6mD2nlitsTg7P0GYmVI3efw6WScD17gCxwrWD4XwGX
+        rJy+nKRunGrSUFwy3Rd3WIwmnzDN9jX/wGYOevCuag==
+X-Google-Smtp-Source: ABdhPJzwrzWKarSKuQaZfnYcXLi//voBFmL1XAoyCfEpVCtf51jw2GU48PRryMrkCjV1uF3c6fUtqkW0zqveSiAJIiY=
+X-Received: by 2002:a2e:9e04:: with SMTP id e4mr613052ljk.431.1625163089028;
+ Thu, 01 Jul 2021 11:11:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210701005347.8280-1-kabel@kernel.org>
+References: <cover.1625118581.git.christophe.jaillet@wanadoo.fr>
+ <CAErkTsQLP9_y-Am3MN-O4vZXe3cTKHfYMwkFk-9YWWPLAQM1cw@mail.gmail.com> <29632746-3234-1991-040d-3c0dfb3b3acb@wanadoo.fr>
+In-Reply-To: <29632746-3234-1991-040d-3c0dfb3b3acb@wanadoo.fr>
+From:   Jeroen de Borst <jeroendb@google.com>
+Date:   Thu, 1 Jul 2021 11:11:17 -0700
+Message-ID: <CAErkTsS36YV2f4sHMDyKMTteGOwF+wGmvqfpqj36vh41gPz-2A@mail.gmail.com>
+Subject: Re: [PATCH 0/3] gve: Fixes and clean-up
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     csully@google.com, sagis@google.com, jonolson@google.com,
+        davem@davemloft.net, kuba@kernel.org, awogbemila@google.com,
+        willemb@google.com, yangchun@google.com, bcf@google.com,
+        kuozhao@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 01, 2021 at 02:53:47AM +0200, Marek Behún wrote:
-> There are devices where the MAC signals from the ethernet controller are
-> not directly connected to an ethernet PHY or a SFP cage, but to a
-> multiplexer, so that the device can switch between the endpoints.
-> 
-> For example on Turris Omnia the WAN controller is connected to a SerDes
-> switch, which multiplexes the SerDes lanes between SFP cage and ethernet
-> PHY, depending on whether a SFP module is present (MOD_DEF0 GPIO from
-> the SFP cage).
+On Thu, Jul 1, 2021 at 10:42 AM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> Le 01/07/2021 =C3=A0 18:20, Jeroen de Borst a =C3=A9crit :
+> > On Wed, Jun 30, 2021 at 10:58 PM Christophe JAILLET
+> > <christophe.jaillet@wanadoo.fr> wrote:
+> >>
+> >> This serie is part of the effort to axe the wrappers in
+> >> include/linux/pci-dma-compat.h
+> >>
+> >> While looking at it, I spotted:
+> >>    - a resource leak in an error handling path (patch 1)
+> >>    - an error code that could be propagated. (patch 2)
+> >>      This patch could be ignored. It's only goal is to be more consist=
+ent
+> >>      with other drivers.
+> >>
+> >> These 2 paches are not related to the 'pci-dma-compat.h' stuff, which =
+can
+> >> be found in patch 3.
+> >>
+> >> Christophe JAILLET (3):
+> >>    gve: Fix an error handling path in 'gve_probe()'
+> >>    gve: Propagate error codes to caller
+> >>    gve: Simplify code and axe the use of a deprecated API
+> >>
+> >>
+> >
+> > Thanks for these patches.
+> >
+> > Can split this into 2 patch series;
+>
+> Sure.
+>
+> > one for net (with the first 2
+> > patches) and one for net-next (with the cleanup one)?
+>
+> I've never worked with net and net-next directly.
+> If just adding net and net-next after [PATCH] in the subject of the
+> mail, yes, I can do it if it helps.
+>
+>
+> BTW, I gave a look at https://patchwork.kernel.org/project/netdevbpf/list=
+/
+> The patch 1/3 is marked as failed because "1 blamed authors not CCed:
+> lrizzo@google.com; 1 maintainers not CCed: lrizzo@google.com"
+>
+> This author/blame was not spotted by get_maintainer.pl. Is it something
+> I should worry about?
+>
+>
+> > Also the label in the first patch should probably read
+> > 'abort_with_gve_init' instead of 'abort_with_vge_init'.
+>
+> Good catch. Sorry about that.
+>
+> >
+> > Jeroen
+> >
+>
+> CJ
+>
 
-And s/w can read the MOD_DEF0 state to determine if SFP is present?
+[again, now in plaintext, sorry for the spam]
 
-> 
-> Document how to describe such a situation for an ethernet controller in
-> the device tree bindings.
-> 
-> Example usage could then look like:
->   &eth2 {
->     status = "okay";
->     phys = <&comphy5 2>;
->     buffer-manager = <&bm>;
->     bm,pool-long = <2>;
->     bm,pool-short = <3>;
-> 
->     signal-multiplexer {
->       compatible = "gpio-signal-multiplexer";
->       gpios = <&pcawan 4 GPIO_ACTIVE_LOW>;
-> 
->       endpoint@0 {
->         phy-mode = "sgmii";
-> 	phy-handle = <&phy1>;
->       };
-> 
->       endpoint@1 {
->         sfp = <&sfp>;
-> 	phy-mode = "sgmii";
-> 	managed = "in-band-status";
->       };
->     };
->   };
-> 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> ---
-> I wonder if this is the proper way to do this.
-> 
-> We already have framework for multiplexers in Linux, in drivers/mux.
-> But as I understand it, that framework is meant to be used when the
-> multiplexer state is to be set by kernel, while here it is possible
-> that the multiplexer state can be (and on Turris Omnia is) set by
-> the user plugging a SFP module into the SFP cage.
+You tag the patch sets with [PATCH net <n>/2] for the 2 fixes and just
+[PATCH net-next] for the cleanup one.
 
-Right, seems like not a good fit ATM.
+You can cc Luigi (lrizzo@google.com) on that one patch for
+completeness, but I think it shouldn't be necessary.
 
-> 
-> We theoretically could add a method for getting mux state into the mux
-> framework and state notification support. But using the mux framework
-> to solve this case in phylink would be rather complicated, especially
-> since mux framework is abstract, and if the multiplexer state is
-> determined by the MOD_DEF0 GPIO, which is also used by SFP code, the
-> implementation would get rather complicate in phylink...
-
-This doesn't seem like it would be very common, so I think I'd stick 
-with the simple solution unless there's a strong desire to make the mux 
-control work for this use case. Generically it would be a read-only or 
-externally controlled mux. 
-
-> I wonder whether driver implementation complexity should play a role
-> when proposing device tree bindings :-)
-
-Yes, at least in the sense of complicating any driver implementation.
-
-Keep in mind that using a binding doesn't require using a subsystem. You 
-could use the mux binding, but not the mux framework. (And the latter 
-could evolve with the OS.)
-
-> 
-> Some thoughts?
-> ---
->  .../bindings/net/ethernet-controller.yaml     | 60 +++++++++++++++++++
->  1 file changed, 60 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> index b0933a8c295a..a7770edaec2b 100644
-> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> @@ -226,6 +226,66 @@ properties:
->            required:
->              - speed
->  
-> +  signal-multiplexer:
-> +    type: object
-> +    description:
-> +      Specifies that the signal pins (for example SerDes lanes) are connected
-> +      to a multiplexer from which they can be multiplexed to several different
-> +      endpoints, depending on the multiplexer configuration. (For example SerDes
-> +      lanes can be switched between an ethernet PHY and a SFP cage.)
-> +
-> +    properties:
-> +      compatible:
-> +        const: gpio-signal-multiplexer
-> +
-> +      gpios:
-> +        maxItems: 1
-> +        description:
-> +          GPIO to determine which endpoint the multiplexer is switched to.
-> +
-> +    patternProperties:
-> +      "^endpoint@[01]$":
-
-'endpoint' as a node name is already taken by the OF graph binding, so 
-pick something else.
-
-> +        type: object
-> +        description:
-> +          Specifies a multiplexer endpoint settings. Each endpoint can have
-> +          different settings. (For example in the case when multiplexing between
-> +          an ethernet PHY and a SFP cage, the SFP cage endpoint should specify
-> +          SFP phandle, while the PHY endpoint should specify PHY handle.)
-> +
-> +        properties:
-> +          reg:
-> +            enum: [ 0, 1 ]
-> +
-> +          phy-connection-type:
-> +            $ref: #/properties/phy-connection-type
-> +
-> +          phy-mode:
-> +            $ref: #/properties/phy-mode
-> +
-> +          phy-handle:
-> +            $ref: #/properties/phy-handle
-> +
-> +          phy:
-> +            $ref: #/properties/phy
-> +
-> +          phy-device:
-> +            $ref: #/properties/phy-device
-> +
-> +          sfp:
-> +            $ref: #/properties/sfp
-> +
-> +          managed:
-> +            $ref: #/properties/managed
-> +
-> +          fixed-link:
-> +            $ref: #/properties/fixed-link
-> +
-> +        required:
-> +          - reg
-> +
-> +    required:
-> +      - gpios
-> +
->  additionalProperties: true
->  
->  ...
-> -- 
-> 2.31.1
-> 
-> 
+Thanks!
