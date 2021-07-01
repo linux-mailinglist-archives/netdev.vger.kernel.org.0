@@ -2,79 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EA6E3B8F5F
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 11:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 990A33B8F95
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 11:14:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235579AbhGAJGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 05:06:10 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:10232 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235067AbhGAJGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 05:06:09 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GFsZ03QBWz1BRLr;
-        Thu,  1 Jul 2021 16:58:16 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Thu, 1 Jul 2021 17:03:33 +0800
-Received: from [10.67.102.67] (10.67.102.67) by dggemi759-chm.china.huawei.com
- (10.1.198.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 1 Jul
- 2021 17:03:32 +0800
-Subject: Re: [PATCH net-next 3/3] net: hns3: add support for link diagnosis
- info in debugfs
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <lipeng321@huawei.com>
-References: <1624545405-37050-1-git-send-email-huangguangbin2@huawei.com>
- <1624545405-37050-4-git-send-email-huangguangbin2@huawei.com>
- <20210624122517.7c8cb329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
-Message-ID: <08395721-4ca1-9913-19fd-4d8ec7e41e4b@huawei.com>
-Date:   Thu, 1 Jul 2021 17:03:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S235677AbhGAJQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 05:16:35 -0400
+Received: from novek.ru ([213.148.174.62]:40094 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235088AbhGAJQe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Jul 2021 05:16:34 -0400
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id D4C06503B07;
+        Thu,  1 Jul 2021 12:11:58 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru D4C06503B07
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1625130720; bh=ZssubnTsRYCGHXANQcA+xAsy3JW6+np0OSyPXXlcPkk=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=zEOztgpcx6gOtCNY2LbAQ+ykbcdYhEbpHbqAS7CbBJpn1oD8b70olgPu5fhTKeXOT
+         FPSF95OAx0yEYrGB9dUES1yqgnOa9IHDh9qMNFojFZY4x27kHAEHAVLzfth0hijJqh
+         SrJ6lvxjBAU0LUHt9vVAoN7+D6F0fnksIBf/PIKc=
+Subject: Re: [RFC net-next 2/2] net: ipv4: Consolidate ipv4_mtu and
+ ip_dst_mtu_maybe_forward
+To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+References: <20210701011728.22626-1-vfedorenko@novek.ru>
+ <20210701011728.22626-3-vfedorenko@novek.ru>
+ <424dcef7-9d5e-ce3a-d9af-190ffca2a093@gmail.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <1e6bea71-d1f4-0b4a-2cba-6e48d483ed5f@novek.ru>
+Date:   Thu, 1 Jul 2021 10:14:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210624122517.7c8cb329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <424dcef7-9d5e-ce3a-d9af-190ffca2a093@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.67]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2021/6/25 3:25, Jakub Kicinski wrote:
-> On Thu, 24 Jun 2021 22:36:45 +0800 Guangbin Huang wrote:
->> In order to know reason why link down, add a debugfs file
->> "link_diagnosis_info" to get link faults from firmware, and each bit
->> represents one kind of fault.
+On 01.07.2021 02:40, David Ahern wrote:
+> On 6/30/21 7:17 PM, Vadim Fedorenko wrote:
+>> Consolidate IPv4 MTU code the same way it is done in IPv6 to have code
+>> aligned in both address families
 >>
->> usage example:
->> $ cat link_diagnosis_info
->> Reference clock lost
+>> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+>> ---
+>>   include/net/ip.h | 22 ++++++++++++++++++----
+>>   net/ipv4/route.c | 21 +--------------------
+>>   2 files changed, 19 insertions(+), 24 deletions(-)
+>>
+>> diff --git a/include/net/ip.h b/include/net/ip.h
+>> index d9683bef8684..ed261f2a40ac 100644
+>> --- a/include/net/ip.h
+>> +++ b/include/net/ip.h
+>> @@ -436,18 +436,32 @@ static inline bool ip_sk_ignore_df(const struct sock *sk)
+>>   static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
+>>   						    bool forwarding)
+>>   {
+>> +	const struct rtable *rt = (const struct rtable *)dst;
 > 
-> Please use ethtool->get_link_ext_state instead.
-> .
+> I realize this a code move from ipv4_mtu, but please use container_of
+> here; I have been removing the typecasts as code is changed.
 > 
-Hi Jakub, I have a question to consult you.
-Some fault information in our patch are not existed in current ethtool extended
-link states, for examples:
-"Serdes reference clock lost"
-"Serdes analog loss of signal"
-"SFP tx is disabled"
-"PHY power down"
-"Remote fault"
-
-Do you think these fault information can be added to ethtool extended link states?
-
-Thanks,
-Guangbin
-.
+No problem, I will change in next iteration
 
