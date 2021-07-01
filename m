@@ -2,130 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C1A03B9495
-	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 18:16:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A9F3B949C
+	for <lists+netdev@lfdr.de>; Thu,  1 Jul 2021 18:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231902AbhGAQS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 12:18:29 -0400
-Received: from smtp1.emailarray.com ([65.39.216.14]:30452 "EHLO
-        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbhGAQS3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 12:18:29 -0400
-Received: (qmail 69747 invoked by uid 89); 1 Jul 2021 16:15:56 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMQ==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 1 Jul 2021 16:15:56 -0000
-Date:   Thu, 1 Jul 2021 09:15:55 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH] ptp: Add PTP_CLOCK_EXTTSUSR internal ptp_event
-Message-ID: <20210701161555.y4p6wz6l6e6ea2vg@bsd-mbp.dhcp.thefacebook.com>
-References: <20210628184611.3024919-1-jonathan.lemon@gmail.com>
- <20210628233056.GA766@hoboy.vegasvil.org>
- <20210629001928.yhiql2dngstkpadb@bsd-mbp.dhcp.thefacebook.com>
- <20210630000933.GA21533@hoboy.vegasvil.org>
- <20210630035031.ulgiwewccgiz3rsv@bsd-mbp.dhcp.thefacebook.com>
- <20210701145935.GB22819@hoboy.vegasvil.org>
+        id S232335AbhGAQWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 12:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231998AbhGAQWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 12:22:47 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95A0C061764
+        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 09:20:16 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id x20so9273764ljc.5
+        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 09:20:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=brRBtSWPzl3A8EO3IIUcfNsjS22D/ywhnA28QnZfB6M=;
+        b=d1+9kxcLWBvJSpk3fPYeulpwABLezPQJEk+Zy5DmBCHiV5k8fys4vw9rA6zQazJKc2
+         axsZXI/dx/8bY1setfHEYMO0trSZO9E1jscAwqkUc35Jb6iAXsIo7AKCKK+UvXc4yq3e
+         qiMCd+A5iPA4rWbSxd7fv0SiZp5q2XVbT5RkihF/c9RqhFql0Y9/wfOxBCtfxgXbFAMr
+         Mx7KUZrtHN63OOzj6Yug9Kv/mnaN8sHZt8YTIbHepTjFUeytb0b2nHtfQ8RV40xMkSSe
+         5qtgbQrElgjEnzp0Iq1NHO5GO/OXxxgwKceI1RgUEbvxexDjJYgB8i2ImLpq/VwKKJNu
+         X9Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=brRBtSWPzl3A8EO3IIUcfNsjS22D/ywhnA28QnZfB6M=;
+        b=mDcuieSpHG7LFuzRMQS2i53d6kQoktuOSymGttaG5p6iJbfNsGLCJzFRZgQap4AgCQ
+         ihOVUb/U0/smNx+eOLEGmnqqur0mGdLww8qHUlkwX0KXYyMkXjdH+UpeZy1jFvqJFSS4
+         D1KB0LHC0AhPJwantedjFEOUB953NPIWiE57R6++uTqOJXroVPvSAeYeZApcJA8WFYnO
+         Dta5mSPyNYM7i8rPB4fNETOZQWuAliaL/nbU6PuWsLpycaA6HxtY8mLt6UeI/3SJ4dzi
+         LQ+JKyUlWuMSxFPW/0FT9xRAQGizZu1RG/p3X7AzHd7VHc0czbSRAXfCMDYVKCsL33Db
+         PcVQ==
+X-Gm-Message-State: AOAM530IQ6RAO2Q8QUOJQg2Oj2ZyE69RQQrkKthKCBom6oKQfezbpEAd
+        9gPE45kO5B4U0tRFxjSbeYdXDBoSiaSbcqVBtSlFNg==
+X-Google-Smtp-Source: ABdhPJzlkFKmKNMzZS30KJjmaWJKGOg+VZfCnW52PNfjtWzIQLq1y7OZwuioLXRe/ssoxTIomnKsV7xS/xJcAu4SAEI=
+X-Received: by 2002:a2e:b4ce:: with SMTP id r14mr319557ljm.76.1625156414497;
+ Thu, 01 Jul 2021 09:20:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210701145935.GB22819@hoboy.vegasvil.org>
+References: <cover.1625118581.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <cover.1625118581.git.christophe.jaillet@wanadoo.fr>
+From:   Jeroen de Borst <jeroendb@google.com>
+Date:   Thu, 1 Jul 2021 09:20:03 -0700
+Message-ID: <CAErkTsQLP9_y-Am3MN-O4vZXe3cTKHfYMwkFk-9YWWPLAQM1cw@mail.gmail.com>
+Subject: Re: [PATCH 0/3] gve: Fixes and clean-up
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     csully@google.com, sagis@google.com, jonolson@google.com,
+        davem@davemloft.net, kuba@kernel.org, awogbemila@google.com,
+        willemb@google.com, yangchun@google.com, bcf@google.com,
+        kuozhao@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 01, 2021 at 07:59:35AM -0700, Richard Cochran wrote:
-> On Tue, Jun 29, 2021 at 08:50:31PM -0700, Jonathan Lemon wrote:
-> 
-> > Since these events are channel specific, I don't see why
-> > this is problematic.
-> 
-> The problem is that the semantics of ptp_clock_event::data are not
-> defined...
-> 
-> > The code blocks in question from my
-> > upcoming patch (dependent on this) is:
-> > 
-> >     static irqreturn_t
-> >     ptp_ocp_phase_irq(int irq, void *priv)
-> >     {
-> >             struct ptp_ocp_ext_src *ext = priv;
-> >             struct ocp_phase_reg __iomem *reg = ext->mem;
-> >             struct ptp_clock_event ev;
-> >             u32 phase_error;
-> > 
-> >             phase_error = ioread32(&reg->phase_error);
-> > 
-> >             ev.type = PTP_CLOCK_EXTTSUSR;
-> >             ev.index = ext->info->index;
-> >             ev.data = phase_error;
-> >             pps_get_ts(&ev.pps_times);
-> 
-> Here the time stamp is the system time, and the .data field is the
-> mysterious "phase_error", but ...
+On Wed, Jun 30, 2021 at 10:58 PM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> This serie is part of the effort to axe the wrappers in
+> include/linux/pci-dma-compat.h
+>
+> While looking at it, I spotted:
+>   - a resource leak in an error handling path (patch 1)
+>   - an error code that could be propagated. (patch 2)
+>     This patch could be ignored. It's only goal is to be more consistent
+>     with other drivers.
+>
+> These 2 paches are not related to the 'pci-dma-compat.h' stuff, which can
+> be found in patch 3.
+>
+> Christophe JAILLET (3):
+>   gve: Fix an error handling path in 'gve_probe()'
+>   gve: Propagate error codes to caller
+>   gve: Simplify code and axe the use of a deprecated API
+>
+>
 
-Yes, the time here is not really relevant.
+Thanks for these patches.
 
+Can split this into 2 patch series; one for net (with the first 2
+patches) and one for net-next (with the cleanup one)?
+Also the label in the first patch should probably read
+'abort_with_gve_init' instead of 'abort_with_vge_init'.
 
-  
-> >             ptp_clock_event(ext->bp->ptp, &ev);
-> > 
-> >             iowrite32(0, &reg->intr);
-> > 
-> >             return IRQ_HANDLED;
-> >     }
-> > 
-> > and
-> > 
-> >     static irqreturn_t
-> >     ptp_ocp_ts_irq(int irq, void *priv)
-> >     {
-> >             struct ptp_ocp_ext_src *ext = priv;
-> >             struct ts_reg __iomem *reg = ext->mem;
-> >             struct ptp_clock_event ev;
-> > 
-> >             ev.type = PTP_CLOCK_EXTTSUSR;
-> >             ev.index = ext->info->index;
-> >             ev.pps_times.ts_real.tv_sec = ioread32(&reg->time_sec);
-> >             ev.pps_times.ts_real.tv_nsec = ioread32(&reg->time_ns);
-> >             ev.data = ioread32(&reg->ts_count);
-> 
-> here the time stamp comes from the PHC device, apparently, and the
-> .data field is a counter.
-> 
-> >             ptp_clock_event(ext->bp->ptp, &ev);
-> > 
-> >             iowrite32(1, &reg->intr);       /* write 1 to ack */
-> > 
-> >             return IRQ_HANDLED;
-> >     }
-> > 
-> > 
-> > I'm not seeing why this is controversial.
-> 
-> Simply put, it makes no sense to provide a new PTP_CLOCK_EXTTSUSR that
-> has multiple, random meanings.  There has got to be a better way.
-
-I agree with this.  I just talked to the HW folks, and they're willing
-to change things so 2 PPS events are returned, which eliminates the need
-for an internal comparator.  The returned time would come from a latched
-value from a HW register (same as the ptp_ocp_ts_irq version above).
-
-I'm still stuck with how to provide the sec/nsec from the hardware 
-directly to the application, though, since the current code does:
-
-static void enqueue_external_timestamp(struct timestamp_event_queue *queue,
-                                       struct ptp_clock_event *src)
-{
-        struct ptp_extts_event *dst;
-        unsigned long flags;
-        s64 seconds;
-        u32 remainder;
-
-        seconds = div_u64_rem(src->timestamp, 1000000000, &remainder);
-
-
-It seems like there should be a way to use pps_times here instead
-of needing to convert back and forth.
--- 
-Jonathan
+Jeroen
