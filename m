@@ -2,126 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E79963B9F1A
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 12:29:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84E7C3B9F30
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 12:42:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231441AbhGBKcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 06:32:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22358 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231192AbhGBKcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 06:32:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625221779;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DPxMNn2CCE4cxpTvsVh+CYPLZZTodxuHXGUXkbr4MMw=;
-        b=S0Kmn7NtIScTIUSGY9HLR1onvdjkgQXkcoiv2U/qqd1xujwE9oPQaGyqbxvwY2a7qRz8xq
-        eDcnCUnoK3WLhIP7mZ+41SClFIi4kc54MTO2I8kZQnUh8f9XC0Yf9UfTTkFh581Miqbw42
-        2izhHAk1Wkjlmb4KjwAZxGUzdITP/fA=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-121-hv8HLHc5NL2p1AE1b2lKoA-1; Fri, 02 Jul 2021 06:29:38 -0400
-X-MC-Unique: hv8HLHc5NL2p1AE1b2lKoA-1
-Received: by mail-ed1-f70.google.com with SMTP id df18-20020a05640230b2b0290397ebdc6c03so791102edb.7
-        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 03:29:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=DPxMNn2CCE4cxpTvsVh+CYPLZZTodxuHXGUXkbr4MMw=;
-        b=RAmgVdhPdWhPdUdPauzMK/+3ZP50W7thC5rBij30iXzhiB45HQL7cF4tBKfpwz624K
-         tQ6lqulGANXKvWTNRgXzKQlAohaMQ3rOtiXwQonpAaohj/MIX9GF+F6pWB2rA/lN41Vo
-         +ENOKohjOxxUQFAYOD4sxHi+lJq0sw/d+OBsRTPUuxjfSFx2SN1HpSU1/sU0cvu9l2H1
-         WVUgy8JMLxvWTnaQDqzUqfXjgt6OvBxxzt+5JA5pb7OPZhlIT5rqpjaO0CMnzvOGLUjS
-         66BZIQPdOQFfXXkdx3IH7Pz6N6EO2y/NQoTScUdu5MBTX2VenlfzcmVc1BX3uUmgaH9F
-         HYRQ==
-X-Gm-Message-State: AOAM532fM/PKRzVKt+uRvq5oW8LnEDk1y3hq5sJ9WlMBDQ8gA98t86R5
-        10MghT10BXsKIgIRuAXvyUs1mer1CzZJ8oph9+T2kCp+lh1gVCh9rEpsD+HITUz16mpgLF3E4qi
-        smPo7heLHCZDnCxBd
-X-Received: by 2002:a05:6402:2813:: with SMTP id h19mr5739019ede.39.1625221776628;
-        Fri, 02 Jul 2021 03:29:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyeTV7Vr11aiyTEXIqNuKKngfk6mHPBCj/YJvYik4FkcZfq09iNjgHFyinId+fVKL5hjUuW0Q==
-X-Received: by 2002:a05:6402:2813:: with SMTP id h19mr5739002ede.39.1625221776482;
-        Fri, 02 Jul 2021 03:29:36 -0700 (PDT)
-Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id br4sm666879ejb.110.2021.07.02.03.29.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Jul 2021 03:29:36 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH bpf] samples/bpf: Fix the error return code of
- xdp_redirect's main()
-To:     Wang Hai <wanghai38@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210616042534.315097-1-wanghai38@huawei.com>
-Message-ID: <94aad4ed-8384-1841-88ec-6c7e39d63148@redhat.com>
-Date:   Fri, 2 Jul 2021 12:29:35 +0200
+        id S231574AbhGBKo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 06:44:56 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:57661 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231474AbhGBKoy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 06:44:54 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lzGck-00012b-9Z; Fri, 02 Jul 2021 10:42:18 +0000
+To:     Jes Sorensen <jes@trained-monkey.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "open list:HIPPI" <linux-hippi@sunsite.dk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Subject: hippi: incorrect address masking and compare operation
+Message-ID: <8931251f-b24a-5043-3bdd-f6ea810759f3@canonical.com>
+Date:   Fri, 2 Jul 2021 11:42:17 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210616042534.315097-1-wanghai38@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-On 16/06/2021 06.25, Wang Hai wrote:
-> Fix to return a negative error code from the error handling
-> case instead of 0, as done elsewhere in this function.
+Static analysis with Coverity has detected an issue in
+drivers/net/hippi/rrunner.c where a masking operation and a comparison
+is always false.
 
-The main() function in C should never return a negative value on Unix 
-POSIX systems.
+The analysis is as follows:
 
+656                /*
+657                 * Sanity test to see if we conflict with the DMA
+658                 * limitations of the Roadrunner.
+659                 */
 
-There is a good explaination in exit(3p): `man 3p exit`
+Operands don't affect result (CONSTANT_EXPRESSION_RESULT)
+dead_error_condition: The condition ((unsigned long)skb->data & 0xfffUL)
+> 18446744073709486295UL cannot be true.
 
-    The  value  of  status may be 0, EXIT_SUCCESS, EXIT_FAILURE, or any 
-other value, though only the least significant 8 bits (that is, status & 
-0377) shall be available to a waiting parent process.
+660                if ((((unsigned long)skb->data) & 0xfff) > ~65320)
 
-Thus, negative values are often seen as 255 in the $? program exit 
-status variable $?.
+Logically dead code (DEADCODE)dead_error_line: Execution cannot reach
+this statement: printk("skb alloc error\n");.
 
+661                        printk("skb alloc error\n");
+662
 
-Also explained in exit(3):
+I suspect the masking 0xfff is incorrect here, I think it be ~0xfff but
+I'm not 100% sure.
 
-     The C standard specifies two constants, EXIT_SUCCESS=0 and 
-EXIT_FAILURE=1.
-
-I see the 'samples/bpf/xdp_redirect_user.c' in most places just use 0 or 1.
-
-
-> If bpf_map_update_elem() failed, main() should return a negative error.
->
-> Fixes: 832622e6bd18 ("xdp: sample program for new bpf_redirect helper")
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> ---
->   samples/bpf/xdp_redirect_user.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/samples/bpf/xdp_redirect_user.c b/samples/bpf/xdp_redirect_user.c
-> index 41d705c3a1f7..c903f1ccc15e 100644
-> --- a/samples/bpf/xdp_redirect_user.c
-> +++ b/samples/bpf/xdp_redirect_user.c
-> @@ -213,5 +213,5 @@ int main(int argc, char **argv)
->   	poll_stats(2, ifindex_out);
->   
->   out:
-> -	return 0;
-> +	return ret;
->   }
-
-
-(Sorry, I didn't complain it time as I see this patch is already applied)
-
+Colin
