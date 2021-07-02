@@ -2,113 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97AF83BA215
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 16:21:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DAD33BA21B
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 16:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232824AbhGBOYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 10:24:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35995 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232726AbhGBOYN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 10:24:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625235700;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Sma5BoejRfGVgsKn91ewTAqHSqX8AdF0MwNnrl1mCnM=;
-        b=gsa4TIudEdVV8iQFkbOEwpYw9TqpTFqXY90aBYTCAglDLUU7bcuRbiZhA7UbUrCoCUt9Ye
-        hxf03NPcO6tSAce1gIVIQHhM7Nls1zDUHSMB7BRsFhVkWeYEVW0+Ffn0FgvCvBTMZKo+N1
-        ++vgdu/EcnoV9/UOgKNfZLrUYBbwFRY=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-431-LSq5CwRJPnKPdR2ufMKnwA-1; Fri, 02 Jul 2021 10:21:37 -0400
-X-MC-Unique: LSq5CwRJPnKPdR2ufMKnwA-1
-Received: by mail-wr1-f70.google.com with SMTP id x8-20020a5d54c80000b029012583535285so3961353wrv.8
-        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 07:21:37 -0700 (PDT)
+        id S233044AbhGBO3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 10:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232882AbhGBO3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 10:29:35 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400E4C061762
+        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 07:27:02 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id b8-20020a17090a4888b02901725eedd346so3245678pjh.4
+        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 07:27:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=LVdwwqVF/XZk39P/8nVH8GZpFL5LYEAsDqyuMwIEhh0=;
+        b=KNwieUJbjyrDJya825rX/JxeJpZaH1FqOC2VBqqewLgfWC1uXzogpz3jh0X1HV4HUw
+         5PGr3jO4W30awUg9jRxlP0ILhPoSXOgzD3QmGLTlwQSI2JXEvSyE8bZuErmViv02Wlnk
+         TOSWHCjBOZvUZ2qap5yqdrdRTqY3II0U2yNlg0dVt0paH7LFh6GKZJOIsbEnlvcV3R9R
+         pPmdobiZh0Cl4FhhoPzSyR2RUa3TYLK7Xq1LqcHkRXBVCVCARZgBEQw1PD9WyhM7inkI
+         T4KRu92X5DxUWku5djVMJ+bwDkAl5VgwQlGZGYDUBjniUeXFHdCUrImdebpUukIQRO9P
+         8ioQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=Sma5BoejRfGVgsKn91ewTAqHSqX8AdF0MwNnrl1mCnM=;
-        b=LA3PQ3wZCQ989syIsySSY10XtxheJt0t+A/QNXRU1YeCDz11iWskOQaZa0vwonRulW
-         yRi7U+NlL5mkQxdVSJhmywLW/XKG5KgOeAJ+mScwPi7CiWkCEhjPHVw8lwJNNJn27HGt
-         9KRcOV0cJmvqEGTr9P63SGH7vAsiqdiNlBkGZhDL6WtTSYUu0Da+FpC/ar7xUPmahGZN
-         qABS84hkqCM4QZmHujA8J5UYw/nn8Nxcg3AtpUe19z+qHk3tcL1aGMkxZ2suAyObV9Nf
-         xxQucBCXUJYoIxNq+Iww8QImHUQruadKrYaw3s09vYRrhx0o01ftF+TgMduzag+IdslS
-         ShTw==
-X-Gm-Message-State: AOAM530HJmrkezrW74OsX7pcDVzUFuO9UhJGIcz+Y6SGwxqk+q4zZvsa
-        CWuR42vel4nvPTLlUPtkslvlz7HnpgLp4PBrKNqYXk62Zo+3Jutffz1Cq0o1jT+D5ZyJpCu3fVt
-        UvvzGBoVFC9oAEmTT
-X-Received: by 2002:a7b:cc82:: with SMTP id p2mr32496wma.120.1625235696192;
-        Fri, 02 Jul 2021 07:21:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwOAaMkNvMjsnDJPXbOLmSwL2zHyk6V/6ha+5UmQtuV1707Eexid74H5raVKy+yak97MaLcHA==
-X-Received: by 2002:a7b:cc82:: with SMTP id p2mr32473wma.120.1625235695947;
-        Fri, 02 Jul 2021 07:21:35 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-171.dyn.eolo.it. [146.241.112.171])
-        by smtp.gmail.com with ESMTPSA id e8sm3493358wrq.10.2021.07.02.07.21.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LVdwwqVF/XZk39P/8nVH8GZpFL5LYEAsDqyuMwIEhh0=;
+        b=p2nHphLKiUEimWhz8B0izEhMrvdP3Ch7fp2cJjg98d27ICJYvQcClBzxsxAe2y4Dkr
+         pnYQ2G9+lVcurzUnLe/RyrC+F6rdZMgJUayeMIxipZ4dVkE1UfjQIHx78rpgmqC2LqTp
+         AnB1P13OLV774BxKTZgF7SG68OkOdlppfVgiR82rLYrNdEWUXff5eRqdlzhI/KvCX1Ou
+         2laykV6SPHAcH+AQzBrAYe41QfzINxNWlfL+A5vyLgxMGN6BdAHMCXZxla3sj7Vt4SB+
+         61orXBrIgX2b6P7dKMXo7mgqprF8o+YaRFjuf/Hb23Db5TAjfDv2S1MpueNx5QwMY5sW
+         8qTg==
+X-Gm-Message-State: AOAM531GmVITmAl6qQOYUwbt8zCYcp0JO1+6PhKajPJatKAemK2oH5Rv
+        E/nv8XxCTzaOrE0FwNjRC1k=
+X-Google-Smtp-Source: ABdhPJzOS3tskzLp+3Ip5cIPeh0p6NlZFSrWmoHbf0Y7aQjp86DUgPFh5UxOnaRLQCynIpbSSbWUBA==
+X-Received: by 2002:a17:90a:1d0a:: with SMTP id c10mr72160pjd.39.1625236021689;
+        Fri, 02 Jul 2021 07:27:01 -0700 (PDT)
+Received: from localhost.localdomain ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id nr12sm12683747pjb.1.2021.07.02.07.26.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jul 2021 07:21:35 -0700 (PDT)
-Message-ID: <d8061b19ec2a8123d7cf69dad03f1250a5b03220.camel@redhat.com>
-Subject: Re: [regression] UDP recv data corruption
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Matthias Treydte <mt@waldheinz.de>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, stable@vger.kernel.org,
-        netdev@vger.kernel.org, regressions@lists.linux.dev,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org
-Date:   Fri, 02 Jul 2021 16:21:34 +0200
-In-Reply-To: <6c6eee2832c658d689895aa9585fd30f54ab3ed9.camel@redhat.com>
-References: <20210701124732.Horde.HT4urccbfqv0Nr1Aayuy0BM@mail.your-server.de>
-         <38ddc0e8-ba27-279b-8b76-4062db6719c6@gmail.com>
-         <CA+FuTSc3POcZo0En3JBqRwq2+eF645_Cs4U-4nBmTs9FvjoVkg@mail.gmail.com>
-         <20210702143642.Horde.PFbG3LFNTZ3wp0TYiBRGsCM@mail.your-server.de>
-         <6c6eee2832c658d689895aa9585fd30f54ab3ed9.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Fri, 02 Jul 2021 07:27:01 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, jarod@redhat.com,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net 0/8] net: fix bonding ipsec offload problems
+Date:   Fri,  2 Jul 2021 14:26:40 +0000
+Message-Id: <20210702142648.7677-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This series fixes some problems related to bonding ipsec offload.
 
-On Fri, 2021-07-02 at 16:06 +0200, Paolo Abeni wrote:
-> On Fri, 2021-07-02 at 14:36 +0200, Matthias Treydte wrote:
-> > And to answer Paolo's questions from his mail to the list (@Paolo: I'm  
-> > not subscribed, please also send to me directly so I don't miss your mail)
-> 
-> (yup, that is what I did ?!?)
-> 
-> > > Could you please:
-> > > - tell how frequent is the pkt corruption, even a rough estimate of the
-> > > frequency.
-> > 
-> > # journalctl --since "5min ago" | grep "Packet corrupt" | wc -l
-> > 167
-> > 
-> > So there are 167 detected failures in 5 minutes, while the system is receiving
-> > at a moderate rate of about 900 pkts/s (according to Prometheus' node exporter
-> > at least, but seems about right)
+The 1, 5, and 8th patches are to add a missing rcu_read_lock().
+The 2nd patch is to add null check code to bond_ipsec_add_sa.
+When bonding interface doesn't have an active real interface, the
+bond->curr_active_slave pointer is null.
+But bond_ipsec_add_sa() uses that pointer without null check.
+So that it results in null-ptr-deref.
+The 3 and 4th patches are to replace xs->xso.dev with xs->xso.real_dev.
+The 6th patch is to disallow to set ipsec offload if a real interface
+type is bonding.
+The 7th patch is to add struct bond_ipsec to manage SA.
+If bond mode is changed, or active real interface is changed, SA should
+be removed from old current active real interface then it should be added
+to new active real interface.
+But it can't, because it doesn't manage SA.
 
-I'm sorry for the high-frequency spamming.
+Taehee Yoo (8):
+  bonding: fix suspicious RCU usage in bond_ipsec_add_sa()
+  bonding: fix null dereference in bond_ipsec_add_sa()
+  net: netdevsim: use xso.real_dev instead of xso.dev in callback
+    functions of struct xfrmdev_ops
+  ixgbevf: use xso.real_dev instead of xso.dev in callback functions of
+    struct xfrmdev_ops
+  bonding: fix suspicious RCU usage in bond_ipsec_del_sa()
+  bonding: disallow setting nested bonding + ipsec offload
+  bonding: Add struct bond_ipesc to manage SA
+  bonding: fix suspicious RCU usage in bond_ipsec_offload_ok()
 
-Could you please try the following patch ? (only compile-tested)
+ drivers/net/bonding/bond_main.c            | 176 +++++++++++++++++----
+ drivers/net/ethernet/intel/ixgbevf/ipsec.c |  20 ++-
+ drivers/net/netdevsim/ipsec.c              |   8 +-
+ include/net/bonding.h                      |   8 +-
+ 4 files changed, 172 insertions(+), 40 deletions(-)
 
-I fear some packets may hang in the GRO engine for no reasons.
----
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index 54e06b88af69..458c888337a5 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -526,6 +526,8 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
-                if ((!sk && (skb->dev->features & NETIF_F_GRO_UDP_FWD)) ||
-                    (sk && udp_sk(sk)->gro_enabled) || NAPI_GRO_CB(skb)->is_flist)
-                        pp = call_gro_receive(udp_gro_receive_segment, head, skb);
-+               else
-+                       goto out;
-                return pp;
-        }
+-- 
+2.17.1
 
