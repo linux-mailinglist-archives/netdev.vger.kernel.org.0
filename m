@@ -2,50 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DD863B9A49
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 02:56:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B43083B9A60
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 03:04:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234638AbhGBA7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 20:59:23 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:42048 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234370AbhGBA7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 20:59:22 -0400
-Received: from netfilter.org (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 6A7CC60705;
-        Fri,  2 Jul 2021 02:56:43 +0200 (CEST)
-Date:   Fri, 2 Jul 2021 02:56:48 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        id S234627AbhGBBHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 21:07:04 -0400
+Received: from mail-pg1-f174.google.com ([209.85.215.174]:42771 "EHLO
+        mail-pg1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230427AbhGBBHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 21:07:03 -0400
+Received: by mail-pg1-f174.google.com with SMTP id d12so7962189pgd.9;
+        Thu, 01 Jul 2021 18:04:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eaR++vjtiNX6DzHjutKmZUMGyUp8898EKANyRVFBEw0=;
+        b=GYbRh3WRynklyYDXdXAmwJWBssd06qENgQD20dWyDBzL/0tAzswwRUmLtB3agJVFiJ
+         G3a9UWTFo7hFekXc+IHvgThwgM3j69SFEizORWTV2cp3PVSppUgybJsIQcN4oH5uS3Z3
+         Fy0p7XfDs0Ew4jvhnfFU3vXEIm+hxy5ESbwrCw92Yw9yUt1sJL9Qc597jpf43/CskvIV
+         QgTnOOuyPsMMt8AGO0OHBZKFn+0XTobrHQWi9S6C/kT01rafjMa9wxb+Ja3QndMu7//u
+         2T86ddvsiDGUtBh9pIM9tYz7dPfG3yxy054sFy2rI5KdWroGF/ruzx/j/V/hA07tjYPH
+         Ostg==
+X-Gm-Message-State: AOAM5318R2vDWFR3zfB2h5XqbUYBPoMum1dBhN2SFu3P5aX0OQ7XsqZ1
+        71bwbfqmNft/u0nUgVZdrWE=
+X-Google-Smtp-Source: ABdhPJwqfas45MGSvqIPpCYJVbZ5WEkNtXeEvDY+hBGZMizW2iqQHZEJwbh1Lk8KVFSTlbL6hSCAbg==
+X-Received: by 2002:a63:c1e:: with SMTP id b30mr256447pgl.118.1625187870738;
+        Thu, 01 Jul 2021 18:04:30 -0700 (PDT)
+Received: from garbanzo ([191.96.121.144])
+        by smtp.gmail.com with ESMTPSA id t5sm1198320pgb.58.2021.07.01.18.04.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Jul 2021 18:04:29 -0700 (PDT)
+Date:   Thu, 1 Jul 2021 18:04:25 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>, Tejun Heo <tj@kernel.org>
+Cc:     rafael@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, andriin@fb.com, daniel@iogearbox.net,
+        atenart@kernel.org, alobakin@pm.me, weiwan@google.com,
+        ap420073@gmail.com, jeyu@kernel.org, ngupta@vflare.org,
+        sergey.senozhatsky.work@gmail.com, minchan@kernel.org,
+        axboe@kernel.dk, mbenes@suse.com, jpoimboe@redhat.com,
+        tglx@linutronix.de, keescook@chromium.org, jikos@kernel.org,
+        rostedt@goodmis.org, peterz@infradead.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] netfilter: nf_tables: Fix dereference of null
- pointer flow
-Message-ID: <20210702005648.GC29227@salvia>
-References: <20210624195718.170796-1-colin.king@canonical.com>
+Subject: Re: [PATCH v4] sysfs: fix kobject refcount to address races with
+ kobject removal
+Message-ID: <20210702010425.frwcbregdyuguaak@garbanzo>
+References: <20210623215007.862787-1-mcgrof@kernel.org>
+ <YNRnzxTabyoToKKJ@kroah.com>
+ <20210625215558.xn4a24ts26bdyfzo@garbanzo>
+ <20210701224816.pkzeyo4uqu3kbqdo@garbanzo>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210624195718.170796-1-colin.king@canonical.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210701224816.pkzeyo4uqu3kbqdo@garbanzo>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 24, 2021 at 08:57:18PM +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Thu, Jul 01, 2021 at 03:48:22PM -0700, Luis Chamberlain wrote:
+> On Fri, Jun 25, 2021 at 02:56:03PM -0700, Luis Chamberlain wrote:
+> > On Thu, Jun 24, 2021 at 01:09:03PM +0200, Greg KH wrote:
+> > > thanks for making this change and sticking with it!
+> > > 
+> > > Oh, and with this change, does your modprobe/rmmod crazy test now work?
+> > 
+> > It does but I wrote a test_syfs driver and I believe I see an issue with
+> > this. I'll debug a bit more and see what it was, and I'll then also use
+> > the driver to demo the issue more clearly, and then verification can be
+> > an easy selftest test.
 > 
-> In the case where chain->flags & NFT_CHAIN_HW_OFFLOAD is false then
-> nft_flow_rule_create is not called and flow is NULL. The subsequent
-> error handling execution via label err_destroy_flow_rule will lead
-> to a null pointer dereference on flow when calling nft_flow_rule_destroy.
-> Since the error path to err_destroy_flow_rule has to cater for null
-> and non-null flows, only call nft_flow_rule_destroy if flow is non-null
-> to fix this issue.
+> OK my conclusion based on a new selftest driver I wrote is we can drop
+> this patch safely. The selftest will cover this corner case well now.
+> 
+> In short: the kernfs active reference will ensure the store operation
+> still exists. The kernfs mutex is not enough, but if the driver removes
+> the operation prior to getting the active reference, the write will just
+> fail. The deferencing inside of the sysfs operation is abstract to
+> kernfs, and while kernfs can't do anything to prevent a driver from
+> doing something stupid, it at least can ensure an open file ensure the
+> op is not removed until the operation completes.
 
-Applied, thanks.
+OK and now its not so clear, as it would seem the refcount can indeed
+get reduced after we validated it. In any case we'll have enough tools
+to reproduce any possible failure soon.
+
+  Luis
