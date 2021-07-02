@@ -2,109 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8FC53B9D9A
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:36:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 321A53B9DA2
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:40:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbhGBIik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 04:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230438AbhGBIij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 04:38:39 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3489C061764
-        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 01:36:07 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id v5so11478998wrt.3
-        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 01:36:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7FZN41zFvSYxh+iEV226AlMaIZ9YuMRVvjo0w5RlrRg=;
-        b=zARHa0Smrt/1UIlw1UhZvHTz5jbXFIGlSVYne/ZG7zj6bAj6G68ScyCLlTxEQAxFv6
-         qJIJhckBCmxtJ/QsW6Ck5W5YdiIyOzm987UxCmeVfg6hQIeZDSaq1Ztj+kQdNHpMx1w/
-         4z7MpEVjIQK9G1EMnQvMQ/N9Vw0cYmo1OTj9n5toT/cZ/IVEvLZwXVYMq6IxhOxLpHQm
-         2haIVsCbbQstJkfnjqc0XnHwPD0TDrZt7G/d8b828z248uFm6YZGw1yiEBqmXzCCXeeU
-         f1Arll1K+2v/i6+OfR8AWn0cl8ylzGpknTGQMmVvBxehFETzzN+IU/X3BlGrdZAASvPY
-         Fcag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7FZN41zFvSYxh+iEV226AlMaIZ9YuMRVvjo0w5RlrRg=;
-        b=WRImYwGUs/ECfowZFkOxxC5lffbewIS8RfXGq0Y/en0JRgOEBBtFAHRyMZw+OmDaGX
-         p8hmzWJ78gB0DWjZX3AxsIYDYd69b1lxQTcExCphVHlfpOde8zCYOp22yws/jW8waLMD
-         6LDCt4mqkvFKB96EBzj4OgthFXm89b2pgZjZTzzGRYasvE86rBcBK4cHwULsqCBkwvmn
-         b3ykymSXhoRQKer36wvsnJfxKW6MA0MfKcuNQ03su0YIW48Z3mgedcftqS8kiJmt2FfM
-         jmiGdQidWS5FlNSbGFTItqugo/rC8pB4Rf8LvaaPKkvALY6zlBY4WpEXZ8cndqRvwNgB
-         pogg==
-X-Gm-Message-State: AOAM532yOVc9sNz5QHzzZ5O29jVs/49VezJ+Uy9Y0cmL2b+yQ/ykbu+/
-        7SouNVqG8tc9M/sY6gEzJfAGjw==
-X-Google-Smtp-Source: ABdhPJzga7frJg+9Zf+0ANeCdeGJyDqrA4zrx8RoTlibuVEj3L9i0gf3FY/cbI1z2ewA+/OBYH4y6A==
-X-Received: by 2002:a05:6000:1251:: with SMTP id j17mr4499946wrx.122.1625214966270;
-        Fri, 02 Jul 2021 01:36:06 -0700 (PDT)
-Received: from enceladus (ppp-94-66-242-227.home.otenet.gr. [94.66.242.227])
-        by smtp.gmail.com with ESMTPSA id w3sm11965453wmi.24.2021.07.02.01.36.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jul 2021 01:36:05 -0700 (PDT)
-Date:   Fri, 2 Jul 2021 11:36:01 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linuxarm@openeuler.org,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        thomas.petazzoni@bootlin.com, mw@semihalf.com,
-        linux@armlinux.org.uk, hawk@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com,
-        akpm@linux-foundation.org, peterz@infradead.org, will@kernel.org,
-        willy@infradead.org, vbabka@suse.cz, fenghua.yu@intel.com,
-        guro@fb.com, peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
-        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
-        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
-        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
-        elver@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next RFC 0/2] add elevated refcnt support for page
- pool
-Message-ID: <YN7P8Y+qWxAADJJR@enceladus>
-References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
+        id S230432AbhGBIn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 04:43:27 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9444 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230166AbhGBIn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 04:43:26 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GGT3r3MkHzZpPK;
+        Fri,  2 Jul 2021 16:37:44 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 2 Jul 2021 16:40:48 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 2 Jul 2021
+ 16:40:48 +0800
+Subject: Re: [Linuxarm] Re: [PATCH net-next v3 2/3] ptr_ring: move r->queue[]
+ clearing after r->consumer_head updating
+To:     Jason Wang <jasowang@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <mst@redhat.com>
+CC:     <brouer@redhat.com>, <paulmck@kernel.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <shuah@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
+References: <1625142402-64945-1-git-send-email-linyunsheng@huawei.com>
+ <1625142402-64945-3-git-send-email-linyunsheng@huawei.com>
+ <230f0b91-fe92-c53f-4df0-ec36c7c6e223@redhat.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <00b5d5d6-a5ee-94c3-1c9b-81fd32e5d9e2@huawei.com>
+Date:   Fri, 2 Jul 2021 16:40:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <230f0b91-fe92-c53f-4df0-ec36c7c6e223@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yunsheng, 
-
-On Wed, Jun 30, 2021 at 05:17:54PM +0800, Yunsheng Lin wrote:
-> This patchset adds elevated refcnt support for page pool
-> and enable skb's page frag recycling based on page pool
-> in hns3 drvier.
+On 2021/7/2 14:45, Jason Wang wrote:
 > 
-
-Thanks for taking the time with this! I am a bit overloaded atm, give me a
-few days and I'll go through the patches
-
-Cheers
-/Ilias
-
-
-> Yunsheng Lin (2):
->   page_pool: add page recycling support based on elevated refcnt
->   net: hns3: support skb's frag page recycling based on page pool
+> 在 2021/7/1 下午8:26, Yunsheng Lin 写道:
+>> Currently r->queue[] clearing is done before r->consumer_head
+>> updating, which makes the __ptr_ring_empty() returning false
+>> positive result(the ring is non-empty, but __ptr_ring_empty()
+>> suggest that it is empty) if the checking is done after the
+>> r->queue clearing and before the consumer_head moving forward.
+>>
+>> Move the r->queue[] clearing after consumer_head moving forward
+>> to avoid the above case.
+>>
+>> As a side effect of above change, a consumer_head checking is
+>> avoided for the likely case, and it has noticeable performance
+>> improvement when it is tested using the ptr_ring_test selftest
+>> added in the previous patch.
+>>
+>> Tested using the "perf stat -r 1000 ./ptr_ring_test -s 1000 -m 1
+>> -N 100000000", comparing the elapsed time:
+>>
+>>   arch     unpatched           patched       improvement
+>> arm64    2.087205 sec       1.888224 sec      +9.5%
+>>   X86      2.6538 sec         2.5422 sec       +4.2%
 > 
->  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  79 +++++++-
->  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   3 +
->  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   1 +
->  drivers/net/ethernet/marvell/mvneta.c              |   6 +-
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 +-
->  include/linux/mm_types.h                           |   2 +-
->  include/linux/skbuff.h                             |   4 +-
->  include/net/page_pool.h                            |  30 ++-
->  net/core/page_pool.c                               | 215 +++++++++++++++++----
->  9 files changed, 285 insertions(+), 57 deletions(-)
 > 
-> -- 
-> 2.7.4
+> I think we need the number of real workloads here.
+
+As it is a low optimization, and overhead of enqueuing
+and dequeuing is small for any real workloads, so the
+performance improvement could be buried in deviation.
+And that is why the ptr_ring_test is added, the about
+10% improvement for arm64 seems big, but note that it
+is tested using the taskset to avoid the numa effects
+for arm64.
+
+Anyway, here is the performance data for pktgen in
+queue_xmit mode + dummy netdev with pfifo_fast(which
+uses ptr_ring too), which is not obvious to the above
+data:
+
+ threads    unpatched        unpatched        delta
+    1       3.21Mpps         3.23Mpps         +0.6%
+    2       5.56Mpps         3.59Mpps         +0.5%
+    4       5.58Mpps         5.61Mpps         +0.5%
+    8       2.76Mpps         2.75Mpps         -0.3%
+   16       2.23Mpps         2.22Mpps         -0.4%
+
 > 
+> Thanks
+> 
+> 
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+
