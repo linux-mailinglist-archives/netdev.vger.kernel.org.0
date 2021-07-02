@@ -2,92 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57EB63B99B7
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 01:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 642A63B99EA
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 02:11:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234306AbhGAXtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 19:49:41 -0400
-Received: from novek.ru ([213.148.174.62]:56146 "EHLO novek.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234194AbhGAXtl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Jul 2021 19:49:41 -0400
-Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id E5FAA503D1E;
-        Fri,  2 Jul 2021 02:45:02 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru E5FAA503D1E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1625183104; bh=LxJw3lBEtC/K81eQ1xS6EnOP6QvMurYUi7ifuZ3YkN8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=A/jY5RwY4bvuUYp9D2Mj6clCem5csOCOvyOMyMFGX+zYqD0hjNGeJSSqNEknMbU3I
-         +Q647NuBD2LnhzKz8xZ0uRKMlp3C+587+UwPF6pvtY5SXQQMZfFkvZ05MI52euu4Dl
-         CGSrnKNnT7/kkQSNHb+Z2FbzXw5oonJbgctDt3uU=
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vadim Fedorenko <vfedorenko@novek.ru>
-Subject: [PATCH net v2] net: ipv6: fix return value of ip6_skb_dst_mtu
-Date:   Fri,  2 Jul 2021 02:47:00 +0300
-Message-Id: <20210701234700.22762-1-vfedorenko@novek.ru>
-X-Mailer: git-send-email 2.18.4
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+        id S234391AbhGBAOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 20:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234253AbhGBAOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 20:14:11 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2AA1C061762;
+        Thu,  1 Jul 2021 17:11:40 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id g22so9753366iom.1;
+        Thu, 01 Jul 2021 17:11:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Froo3pVmxBy9Mm0Ff8X2esM20Aq/ijCeG8TIGmQDoSU=;
+        b=IHgEqonbR2j0/ZGvfBLx6tjXgYoAcJ2QIYnXMIhjF2q+Yw1GD8ntk7d0c1X382pH3U
+         5iI2U0TauS4lxyE8Euvh4ZUQRstaT+tg0CRLa+/y+/UO8Coin+9YADcccsm8oUa1T4xp
+         T7mY8HMrQ+ly2wRcXGW8cK4KToo7Uf+SoV9PsVgCb5vz4jI09jzMB1PYg1oRRrZ29vRI
+         u2+qbqrk4c5+JnXrY9LGaeqEYnhzkTT3Z53KMsbHd4b9wFyPnXXCJteyChcuS5cMadiC
+         JWaxcDnW7YRNi57bLxyxPWvnSwrS5RQRQ4KbFxuxLADePKPLfMdJMKdC9+MKnHc/+uF9
+         ZJCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Froo3pVmxBy9Mm0Ff8X2esM20Aq/ijCeG8TIGmQDoSU=;
+        b=GpSWRgDW0uZfZ9lxyuzkUwykd/UU3cZR68C0plFj2bvuDw/QARsqCdhiEW3gYd7l1a
+         vbFNgk1rj5eSQalWUby7AEW7mN3sb8wIU2NtpXzI3a/VIkQR2PMn/ZSaX0orhQIwfVuf
+         Y51WSZJT9mu021Nkbuk33Y8wnMT6a+1bG4knL1vJ5561948lkRSKHiD2XsoNWfv8TNEq
+         idD9Jy8evqwjuGBht8gcHwJG4q5KKjX5083fPzZNXOWhH5C04Uv9S5eLfWaDztVfSjVw
+         MY9znMXVM3BmFb1lCZC8Qs5VQSJDNsyWsDDO4nQYSPo2KPnUrbvBxjDDO6+gbTLvY4Hk
+         hVig==
+X-Gm-Message-State: AOAM533X4jPp6uEf5vp+zKVCO9MwCTwSFag3xXfNiZQf28JI+fnMM8/L
+        rdC8/QsKzRwX2a7YfarBrdU=
+X-Google-Smtp-Source: ABdhPJwDsbOwFyW+CdRtb0UKNRjt0rQZFISHqObDnVpGiHg+odgCkpEHG36p/ZsvPIoWpbVMPF4EfA==
+X-Received: by 2002:a02:caad:: with SMTP id e13mr1980990jap.129.1625184699318;
+        Thu, 01 Jul 2021 17:11:39 -0700 (PDT)
+Received: from john-XPS-13-9370.lan ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id c23sm704010ioz.42.2021.07.01.17.11.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Jul 2021 17:11:38 -0700 (PDT)
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        john.fastabend@gmail.com
+Subject: [PATCH v2 bpf 0/2] potential sockmap memleak and proc stats fix
+Date:   Thu,  1 Jul 2021 17:11:21 -0700
+Message-Id: <20210702001123.728035-1-john.fastabend@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 628a5c561890 ("[INET]: Add IP(V6)_PMTUDISC_RPOBE") introduced
-ip6_skb_dst_mtu with return value of signed int which is inconsistent
-with actually returned values. Also 2 users of this function actually
-assign its value to unsigned int variable and only __xfrm6_output
-assigns result of this function to signed variable but actually uses
-as unsigned in further comparisons and calls. Change this function
-to return unsigned int value.
+While investigating a memleak in sockmap I found these two issues. Patch
+1 found doing code review, I wasn't able to get KASAN to trigger a
+memleak here, but should be necessary. Patch 2 fixes proc stats so when
+we use sockstats for debugging we get correct values.
 
-Fixes: 628a5c561890 ("[INET]: Add IP(V6)_PMTUDISC_RPOBE")
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
----
- v2: rebase on top current net
+The fix for observered memleak will come after these, but requires some
+more discussion and potentially patch revert so I'll try to get the set
+here going now.
 
- Actually I'm not sure why it could not be applied last time
----
- include/net/ip6_route.h | 2 +-
- net/ipv6/xfrm6_output.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+John Fastabend (2):
+  bpf, sockmap: fix potential memory leak on unlikely error case
+  bpf, sockmap: sk_prot needs inuse_idx set for proc stats
 
-diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
-index f14149df5a65..625a38ccb5d9 100644
---- a/include/net/ip6_route.h
-+++ b/include/net/ip6_route.h
-@@ -263,7 +263,7 @@ static inline bool ipv6_anycast_destination(const struct dst_entry *dst,
- int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
- 		 int (*output)(struct net *, struct sock *, struct sk_buff *));
- 
--static inline int ip6_skb_dst_mtu(struct sk_buff *skb)
-+static inline unsigned int ip6_skb_dst_mtu(struct sk_buff *skb)
- {
- 	int mtu;
- 
-diff --git a/net/ipv6/xfrm6_output.c b/net/ipv6/xfrm6_output.c
-index 57fa27c1cdf9..d0d280077721 100644
---- a/net/ipv6/xfrm6_output.c
-+++ b/net/ipv6/xfrm6_output.c
-@@ -49,7 +49,7 @@ static int __xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
- {
- 	struct dst_entry *dst = skb_dst(skb);
- 	struct xfrm_state *x = dst->xfrm;
--	int mtu;
-+	unsigned int mtu;
- 	bool toobig;
- 
- #ifdef CONFIG_NETFILTER
+ net/core/skmsg.c    | 4 +++-
+ net/core/sock_map.c | 9 +++++++++
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
 -- 
-2.18.4
+2.25.1
 
