@@ -2,122 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5988B3BA148
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 15:33:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DE263BA151
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 15:40:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232375AbhGBNgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 09:36:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56723 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231985AbhGBNgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 09:36:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625232830;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hYKQz8dHROV63iIjkLsL92tnKpMRXspNrGM7O81lboU=;
-        b=ENdjRLUcFcjxSw3odCnLS8mlWF/kxhfvNTINdTWi5aRLcxG6kACOMR9joTwLUqFYGAOgNB
-        ipCiiELbBX+67ApuFaHP0ctwZu0BOkNWjgOxEJT00jL0ZEfdiIkw0TCY0EQqTMLw4VGXDO
-        siIY8Ioep1j45bnbmyh7OTHQH1wK7rE=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-17-IREetcUiMAC-unZ0tXYEYQ-1; Fri, 02 Jul 2021 09:33:49 -0400
-X-MC-Unique: IREetcUiMAC-unZ0tXYEYQ-1
-Received: by mail-ed1-f70.google.com with SMTP id i19-20020a05640200d3b02903948b71f25cso5090472edu.4
-        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 06:33:48 -0700 (PDT)
+        id S232563AbhGBNma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 09:42:30 -0400
+Received: from mail-ed1-f52.google.com ([209.85.208.52]:42886 "EHLO
+        mail-ed1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232524AbhGBNma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 09:42:30 -0400
+Received: by mail-ed1-f52.google.com with SMTP id n25so13273904edw.9;
+        Fri, 02 Jul 2021 06:39:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=hYKQz8dHROV63iIjkLsL92tnKpMRXspNrGM7O81lboU=;
-        b=bwMwpfG0+p6URFiVY2UM2t30slD+Nj4tmHsSCdwwgIKt11172BjYiJLjvrAiTNfTQR
-         TyyZQpC+/vKUqsQRvYbmv7LysnPMeHYTuOucpEeetN4fmVQJ8kX31C6yqpPfv+r/FW01
-         5XKXO1X5EGMyTJU6Pqt11ffXzDQ2Ze8s0FahddTd4YkyNO686ka1bvQnqwE/lcqWCh2L
-         NNhmBUzaCuLm3KUhB8cGb9ZdzNlQTzgsGQn4nY6BHHxNUoG+crN0gBkeXUNZSHDXF/An
-         1PoVaQEmDn8sQCFS8P1wKXRWXqgU//iJun0lxlzyaVV0o7C+FTTVfhY33UFys9u51Q2h
-         UX6A==
-X-Gm-Message-State: AOAM533+16ispgUuWbQ0wDbXv+Z9hOdJGpXdhqdr+t8bY6fsnHEoz7F8
-        sZnVZHACLmoMVb1nBXl0xTiLYJDqdplSUOjTN4caGi7Xv4VOf8fbOCBm865mlUl2psbr6bRnIGD
-        ok1o+tUNMb61eaN4P
-X-Received: by 2002:aa7:d309:: with SMTP id p9mr6770686edq.340.1625232827889;
-        Fri, 02 Jul 2021 06:33:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxOMUHDoddBA5sp10yG3YXm6PqdvK6huTExDGur4boRDEBmFAt35QaUttGF5RdlnIST91GBCA==
-X-Received: by 2002:aa7:d309:: with SMTP id p9mr6770656edq.340.1625232827709;
-        Fri, 02 Jul 2021 06:33:47 -0700 (PDT)
-Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id ee25sm1355416edb.6.2021.07.02.06.33.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Jul 2021 06:33:47 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH net-next v6 3/5] bpf: cpumap: implement generic cpumap
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, netdev@vger.kernel.org
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Eric Leblond <eric@regit.org>, bpf@vger.kernel.org
-References: <20210702111825.491065-1-memxor@gmail.com>
- <20210702111825.491065-4-memxor@gmail.com>
-Message-ID: <954f8592-285c-8d2b-db22-7d8818e0903c@redhat.com>
-Date:   Fri, 2 Jul 2021 15:33:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=w9kubsVWaTOUK+nU0YjZV/Ze/jgMiHptRWmLi0Ujvvg=;
+        b=LCaclHVVTFcyBclFiXQlzb4AKlZZxnu9WAJFydVcmRnI2zuN7akKrF7FZcnXx/jjqi
+         1EcMXXDp8YEoUofvMO+/FY5YFEZPhOnbWDYoCumMW6kPUPWUEwVieoVlvwVQD4cWdW8N
+         adlnCbXizKxWVZxLJX4DyP0i6vdoOuskQxOWubKx5icb9VyYUXvSoc9cPepnhPhlnt2Z
+         OFgg7BtZwJLKtXsLaBGOlAMNCYfkk6ox1LgA+CAB1NvhsVk86JLIXPiOwR3ndvcSK4tt
+         A5vFguwzAR5lcjAH/8R+EpE5APIfIwu0sMZHZ9lJ/K9+o3xa8vlV3+XLj7hHhKhnHCFU
+         OoNg==
+X-Gm-Message-State: AOAM5302g2INy6/RvrMUSqOyfme2siyF1Zam3T0hakVF5arbOd4hxoKV
+        fC5WltTHupH29tg6eJv0UuIWJSVQZXLJBhfN
+X-Google-Smtp-Source: ABdhPJwIHuKU+e0GC/3/lK/8AFkZf088CPagR8W+iav39xxS3ibBGzCEopLZXrN9ZYeu7IIv1zPHNg==
+X-Received: by 2002:a05:6402:88b:: with SMTP id e11mr6844737edy.21.1625233196688;
+        Fri, 02 Jul 2021 06:39:56 -0700 (PDT)
+Received: from localhost (host-80-182-89-242.retail.telecomitalia.it. [80.182.89.242])
+        by smtp.gmail.com with ESMTPSA id b8sm1336709edr.42.2021.07.02.06.39.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Jul 2021 06:39:56 -0700 (PDT)
+Date:   Fri, 2 Jul 2021 15:39:47 +0200
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>, <mw@semihalf.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>, <linuxarm@openeuler.org>,
+        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <thomas.petazzoni@bootlin.com>, <linux@armlinux.org.uk>,
+        <hawk@kernel.org>, <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
+        <akpm@linux-foundation.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
+        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
+        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
+        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
+        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
+        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+Subject: Re: [PATCH net-next RFC 0/2] add elevated refcnt support for page
+ pool
+Message-ID: <20210702153947.7b44acdf@linux.microsoft.com>
+In-Reply-To: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
+References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
+Organization: Microsoft
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20210702111825.491065-4-memxor@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 30 Jun 2021 17:17:54 +0800
+Yunsheng Lin <linyunsheng@huawei.com> wrote:
 
-On 02/07/2021 13.18, Kumar Kartikeya Dwivedi wrote:
-> This change implements CPUMAP redirect support for generic XDP programs.
-> The idea is to reuse the cpu map entry's queue that is used to push
-> native xdp frames for redirecting skb to a different CPU. This will
-> match native XDP behavior (in that RPS is invoked again for packet
-> reinjected into networking stack).
->
-> To be able to determine whether the incoming skb is from the driver or
-> cpumap, we reuse skb->redirected bit that skips generic XDP processing
-> when it is set. To always make use of this, CONFIG_NET_REDIRECT guard on
-> it has been lifted and it is always available.
->
->  From the redirect side, we add the skb to ptr_ring with its lowest bit
-> set to 1.  This should be safe as skb is not 1-byte aligned. This allows
-> kthread to discern between xdp_frames and sk_buff. On consumption of the
-> ptr_ring item, the lowest bit is unset.
->
-> In the end, the skb is simply added to the list that kthread is anyway
-> going to maintain for xdp_frames converted to skb, and then received
-> again by using netif_receive_skb_list.
->
-> Bulking optimization for generic cpumap is left as an exercise for a
-> future patch for now.
->
-> Since cpumap entry progs are now supported, also remove check in
-> generic_xdp_install for the cpumap.
->
-> Reviewed-by: Toke Høiland-Jørgensen<toke@redhat.com>
-> Signed-off-by: Kumar Kartikeya Dwivedi<memxor@gmail.com>
-> ---
->   include/linux/bpf.h    |   9 +++-
->   include/linux/skbuff.h |  10 +---
->   kernel/bpf/cpumap.c    | 116 ++++++++++++++++++++++++++++++++++-------
->   net/core/dev.c         |   3 +-
->   net/core/filter.c      |   6 ++-
->   5 files changed, 114 insertions(+), 30 deletions(-)
+> This patchset adds elevated refcnt support for page pool
+> and enable skb's page frag recycling based on page pool
+> in hns3 drvier.
+> 
+> Yunsheng Lin (2):
+>   page_pool: add page recycling support based on elevated refcnt
+>   net: hns3: support skb's frag page recycling based on page pool
+> 
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  79 +++++++-
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   3 +
+>  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   1 +
+>  drivers/net/ethernet/marvell/mvneta.c              |   6 +-
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 +-
+>  include/linux/mm_types.h                           |   2 +-
+>  include/linux/skbuff.h                             |   4 +-
+>  include/net/page_pool.h                            |  30 ++-
+>  net/core/page_pool.c                               | 215
+> +++++++++++++++++---- 9 files changed, 285 insertions(+), 57
+> deletions(-)
+> 
 
+Interesting!
+Unfortunately I'll not have access to my macchiatobin anytime soon, can
+someone test the impact, if any, on mvpp2?
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-
+Regards,
+-- 
+per aspera ad upstream
