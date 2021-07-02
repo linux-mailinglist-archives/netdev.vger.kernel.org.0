@@ -2,95 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7308C3B9AF1
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 05:14:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 318B63B9B05
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 05:25:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234944AbhGBDQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 23:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234891AbhGBDQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 23:16:42 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D60C061762
-        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 20:14:11 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id w13-20020a056902100db0290559a715f5bbso10775586ybt.23
-        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 20:14:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=SNDX35d8qCG/og3qkyCbtgJdC3v6hE1jOVYNB3mBoDU=;
-        b=IRiWHwxg1hDjv2ZtuQs9GTqSjWnwcJF/wRGbjOW15j4KG44S/VetKaOQgeKnxv1rHg
-         pJp9WtwxXg9q/vPNmg7Hg26rIE3Z8JYVFmU38U2sjBBQFvy71TySzH6H1JbPl5ZTL7Xb
-         fZDwrCYJJd2S48xVD9y9Y9c01b64xasXPqwLku5tXQ7ZxwxfHi6kpDx2/4fQkOJPMoWW
-         xlsL4/vpN2ULg3LQMyGQ7IOi3Zt+nCJOxRb9RtZ+ZGe/7wjuwwtQuqn6+SKULIqqIE0L
-         8fAetVZDjZoR6+8D/NRKBgBm5bI6KR0dXzD2yUYPWfa+DqiMZFYD2cED3nOgt0ry0yFP
-         XgfA==
+        id S234899AbhGBD2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 23:28:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45143 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234859AbhGBD16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 23:27:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625196327;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KnDTUBO/qel2LJGKzNIBMBJoNluIIwfxXdRX1zb5ugw=;
+        b=BwKbchlaUmuikYl4oojjCU4TUBykBYIj94wm8Id2MfOokQ1awVY7JBjvziP5icaTabCvMT
+        CgrBAzf5Si9GkWvfOm5RgaEvrc1mH7pZnNipIyX+XnrrIAFUkVaKIepqxKuNnDmMBzZ6IF
+        S5Cw+ulDyFrUAQGMoCgH6A7Yt8YIRe8=
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
+ [209.85.215.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-441-K6hK_VFHOBWEniVB9tqMNw-1; Thu, 01 Jul 2021 23:25:26 -0400
+X-MC-Unique: K6hK_VFHOBWEniVB9tqMNw-1
+Received: by mail-pg1-f200.google.com with SMTP id b125-20020a6367830000b0290227fc6e43a5so5620251pgc.18
+        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 20:25:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=SNDX35d8qCG/og3qkyCbtgJdC3v6hE1jOVYNB3mBoDU=;
-        b=cf102zMk5I27EC21myQ61E9dPoxHKxRusjkKsNzQwvCGrICGaZOpbdSiZVg2N516bX
-         PP1ohbHWO4W40Iao2L5jQuOqfhZDgRMiQ2iLSDqWqkBXi86awJ6Xd/efrMoxsyYrX4aW
-         U0N5YelduOAPBFnfkDARiDMxx2U2ZWp3FjVS+sGPelYl7gWnhqEhu268iI6RppiE1Cxl
-         w0OgwqOU98qsk/23YDUYjLA4aS3DuyXr8WPpSYeDNzEZRNcv2swoGUQ6DtafxokmyDcr
-         nAUL7wCf6qlq2up9ux2gOrR+0T2GHc3qDqPYUHGE0C/fQLb1xFYdN/hnrvAI70k+VtNl
-         OKRA==
-X-Gm-Message-State: AOAM533Or82mO9r8ug7oQXWHD3B8PqcQ2N73gs8JKd+LWPtd4Wb3NChi
-        oj11oo1g6i6EMo5DinlPm2zUGmQ=
-X-Google-Smtp-Source: ABdhPJz7fGFUKyjrcOlPuovwpZ1orHZ9ZTBRZSXsn+1HVFIWZrrq3jnNc3awigkGbmah8Hu/Bxr2kL0=
-X-Received: from bcf-linux.svl.corp.google.com ([2620:15c:2c4:1:25bf:4c6:5da8:bb57])
- (user=bcf job=sendgmr) by 2002:a25:9981:: with SMTP id p1mr4275044ybo.246.1625195649190;
- Thu, 01 Jul 2021 20:14:09 -0700 (PDT)
-Date:   Thu,  1 Jul 2021 20:13:36 -0700
-Message-Id: <20210702031336.3517086-1-bcf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
-Subject: [PATCH net] gve: DQO: Remove incorrect prefetch
-From:   Bailey Forrest <bcf@google.com>
-To:     Bailey Forrest <bcf@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=KnDTUBO/qel2LJGKzNIBMBJoNluIIwfxXdRX1zb5ugw=;
+        b=XYuj05KwoSnxXi56tHjmh+zEBuqiZdFN8jOdX/ClwJJ3viuBny4i4NAeAAo5YLQykL
+         LJW+ACwRyAkJZ6n7MMbeuLX9GMaooP3qwmzzNgCt2EObOG9nn3hqeQXEblOZdAqZPLzt
+         B310yQVoCS8SD7HaGtSo4Raeq3mVlu43LehDnnb05Sb7wPeuJs39s/qIHlujothuzt6L
+         yOowKRgtrShRzzlmlu7ycTl6gSfA0GxLNz2JAlFHGigXWGnBmUkNVn/d41NYHbxBLVJC
+         fqINaoBfZsOSWJjGLvxWh6f8tGBQBe7B+zeKstkL0tVxPybp0OHKXKI/WjKfEUQecG25
+         HdVw==
+X-Gm-Message-State: AOAM532D+Gr5KRki2fiOGykBMLXgAsv239PeHmiaogLrZEQzvwLXSZS8
+        G3KrUpIxai3XLiIdtTBz+DIFe7LGH+iI14e1dFUdSxM7XDoOft9OB+UXSDxjJi+6TnQkQjVxWxP
+        dIwjEK1tHxdD+5EoK
+X-Received: by 2002:a05:6a00:174e:b029:308:35eb:4593 with SMTP id j14-20020a056a00174eb029030835eb4593mr3353622pfc.8.1625196324986;
+        Thu, 01 Jul 2021 20:25:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyKMQl/tw5Kx6FHOmk54WvFeYF610dbfRRBBaUlCrS6TkxAlUSkb5jlHy46VzHh0+l9ZFtiag==
+X-Received: by 2002:a05:6a00:174e:b029:308:35eb:4593 with SMTP id j14-20020a056a00174eb029030835eb4593mr3353600pfc.8.1625196324718;
+        Thu, 01 Jul 2021 20:25:24 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id p17sm11147627pjg.54.2021.07.01.20.25.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Jul 2021 20:25:23 -0700 (PDT)
+Subject: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in
+ Userspace
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20210615141331.407-1-xieyongji@bytedance.com>
+ <20210615141331.407-10-xieyongji@bytedance.com>
+ <YNSatrDFsg+4VvH4@stefanha-x1.localdomain>
+ <CACycT3vaXQ4dxC9QUzXXJs7og6TVqqVGa8uHZnTStacsYAiFwQ@mail.gmail.com>
+ <YNw+q/ADMPviZi6S@stefanha-x1.localdomain>
+ <CACycT3t6M5i0gznABm52v=rdmeeLZu8smXAOLg+WsM3WY1fgTw@mail.gmail.com>
+ <7264cb0b-7072-098e-3d22-2b7e89216545@redhat.com>
+ <CACycT3v7pYXAFtijPgWCMZ2WXxjT2Y-DUwS3hN_T7dhfE5o_6g@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <c7d3473c-f855-166b-f4da-47be5a329859@redhat.com>
+Date:   Fri, 2 Jul 2021 11:25:15 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <CACycT3v7pYXAFtijPgWCMZ2WXxjT2Y-DUwS3hN_T7dhfE5o_6g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The prefetch is incorrectly using the dma address instead of the virtual
-address.
 
-It's supposed to be:
-prefetch((char *)buf_state->page_info.page_address +
-	 buf_state->page_info.page_offset)
+在 2021/7/1 下午6:26, Yongji Xie 写道:
+> On Thu, Jul 1, 2021 at 3:55 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> 在 2021/7/1 下午2:50, Yongji Xie 写道:
+>>> On Wed, Jun 30, 2021 at 5:51 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
+>>>> On Tue, Jun 29, 2021 at 10:59:51AM +0800, Yongji Xie wrote:
+>>>>> On Mon, Jun 28, 2021 at 9:02 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
+>>>>>> On Tue, Jun 15, 2021 at 10:13:30PM +0800, Xie Yongji wrote:
+>>>>>>> +/* ioctls */
+>>>>>>> +
+>>>>>>> +struct vduse_dev_config {
+>>>>>>> +     char name[VDUSE_NAME_MAX]; /* vduse device name */
+>>>>>>> +     __u32 vendor_id; /* virtio vendor id */
+>>>>>>> +     __u32 device_id; /* virtio device id */
+>>>>>>> +     __u64 features; /* device features */
+>>>>>>> +     __u64 bounce_size; /* bounce buffer size for iommu */
+>>>>>>> +     __u16 vq_size_max; /* the max size of virtqueue */
+>>>>>> The VIRTIO specification allows per-virtqueue sizes. A device can have
+>>>>>> two virtqueues, where the first one allows up to 1024 descriptors and
+>>>>>> the second one allows only 128 descriptors, for example.
+>>>>>>
+>>>>> Good point! But it looks like virtio-vdpa/virtio-pci doesn't support
+>>>>> that now. All virtqueues have the same maximum size.
+>>>> I see struct vpda_config_ops only supports a per-device max vq size:
+>>>> u16 (*get_vq_num_max)(struct vdpa_device *vdev);
+>>>>
+>>>> virtio-pci supports per-virtqueue sizes because the struct
+>>>> virtio_pci_common_cfg->queue_size register is per-queue (controlled by
+>>>> queue_select).
+>>>>
+>>> Oh, yes. I miss queue_select.
+>>>
+>>>> I guess this is a question for Jason: will vdpa will keep this limitation?
+>>>> If yes, then VDUSE can stick to it too without running into problems in
+>>>> the future.
+>>
+>> I think it's better to extend the get_vq_num_max() per virtqueue.
+>>
+>> Currently, vDPA assumes the parent to have a global max size. This seems
+>> to work on most of the parents but not vp-vDPA (which could be backed by
+>> QEMU, in that case cvq's size is smaller).
+>>
+>> Fortunately, we haven't enabled had cvq support in the userspace now.
+>>
+>> I can post the fixes.
+>>
+> OK. If so, it looks like we need to support the per-vq configuration.
+> I wonder if it's better to use something like: VDUSE_CREATE_DEVICE ->
+> VDUSE_SETUP_VQ -> VDUSE_SETUP_VQ -> ... -> VDUSE_ENABLE_DEVICE to do
+> initialization rather than only use VDUSE_CREATE_DEVICE.
 
-However, after correcting this mistake, there is no evidence of
-performance improvement.
 
-Fixes: 9b8dd5e5ea48 ("gve: DQO: Add RX path")
-Signed-off-by: Bailey Forrest <bcf@google.com>
----
- drivers/net/ethernet/google/gve/gve_rx_dqo.c | 7 -------
- 1 file changed, 7 deletions(-)
+This should be fine.
 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-index 77bb8227f89b..8500621b2cd4 100644
---- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-@@ -566,13 +566,6 @@ static int gve_rx_dqo(struct napi_struct *napi, struct gve_rx_ring *rx,
- 		return 0;
- 	}
- 
--	/* Prefetch the payload header. */
--	prefetch((char *)buf_state->addr + buf_state->page_info.page_offset);
--#if L1_CACHE_BYTES < 128
--	prefetch((char *)buf_state->addr + buf_state->page_info.page_offset +
--		 L1_CACHE_BYTES);
--#endif
--
- 	if (eop && buf_len <= priv->rx_copybreak) {
- 		rx->skb_head = gve_rx_copy(priv->dev, napi,
- 					   &buf_state->page_info, buf_len, 0);
--- 
-2.32.0.93.g670b81a890-goog
+Thanks
+
+
+>
+> Thanks,
+> Yongji
+>
 
