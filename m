@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E9183B9FB0
+	by mail.lfdr.de (Postfix) with ESMTP id AC1983B9FB2
 	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 13:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231816AbhGBLW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 07:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
+        id S231876AbhGBLXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 07:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230424AbhGBLW4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 07:22:56 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9AF7C061762;
-        Fri,  2 Jul 2021 04:20:23 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id e33so9236477pgm.3;
-        Fri, 02 Jul 2021 04:20:23 -0700 (PDT)
+        with ESMTP id S231865AbhGBLW7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 07:22:59 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF270C061762;
+        Fri,  2 Jul 2021 04:20:27 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id u14so9190091pga.11;
+        Fri, 02 Jul 2021 04:20:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Pu6s/bZWRTuBtOPeO5jualkpubf/IINLtS9eFBKRQso=;
-        b=l3DMROhBejaWiPdmTwkCprGmi0YvK+RFa9OYaKraCBuJCG9YkhEuY/ZMXihq+BG0QV
-         GkzWGhg0ywqBoS8Q5M/GUOncX0qJtRivGiIqJ3QelCa+OVplrtK8POq2f33qeiD6H3vn
-         du84c9DB/j6JOn2TWty1obMfenmdWptfu1xhu0fevQZrfFtpqPOlwrxldaNRBHw5+APr
-         6OzwT0oSFUhds2WdWkBiMv3xKq/vgwNGK7xBuVn8xMwhbFxo8fe2hw9HZrmpaVU6G0vu
-         w3xRPwZuCGtZUCz52E1ToYo17BGKG/ycirKmAxspvkwbhuW1lrnGyIv8tNZ0kFeU+gDd
-         Lfjw==
+        bh=xl2XQWEJG8begT6rZuY2RmzXT/AoqbtgvUhn3YaKP7M=;
+        b=qcTzLh92hj03rlhXIFhZnwtBGfTM/0T0YtunyglUMeoXMjshQFU5LccL5TrrhMMFzo
+         /kCTZL+h5rA+hVNOLmA9qSitdHTogXq/dl60f0JssY9n7uUabMZLoNQK+2Uyr1ceqfH8
+         b9ct5yAk+lF0C2io2kG3cWuhTkQ34nh3rvIwnoxnv4X5eNpcSgF1DRt+LEZBPnW8t0q/
+         7IctqBL1PVVL8y5tsq5iuI6amdaXt+1VACKAyr5RLiVbUtEw2VAech/SFT530zv+21E0
+         zuJggkDn/+GKIwotBtB/B+tsa2cbYsMRREJzv13BqQzkXRxFbknTw+HxtcRw/JKt8KG6
+         tbQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Pu6s/bZWRTuBtOPeO5jualkpubf/IINLtS9eFBKRQso=;
-        b=Tv/gVbeFhH1H03HI6lMlyAiovDVs0IZokeQESOK7lvNM1NWnN0LxITmnNiNmGZfHBT
-         hiybg2rZrM9XBwtYADNPh2+T+NAB+zqL7Ut6vKX2bR8wy5u3HmimXtEfpsTr6jLil1Rb
-         eqM8mCFhwplR78vqZuwDFhcFqFmkS5NR+yZzkXbY3fL10awZuiD6GxlWrKKUr9ThMPAL
-         aHi3/TD6RtEKNJkzXLt+15GV7moDseU53XdWhTZ3NnofKpuCeByfhvUzkB4rzQI5I3dA
-         59hxKB8v2AE1Q3GPy02Cd5qrVBwj6qbVJeMk5rewJ9JZDvzlQkLi2x9eRKCMKpQH73G3
-         D4GA==
-X-Gm-Message-State: AOAM531Snzpy0iIN5BBiGfc2gWctJ409LVBUByS9qya4n6LjLl5bHiCS
-        U3IcsDALypmVkAEuhCPoVL6M9/ax0Bg=
-X-Google-Smtp-Source: ABdhPJyiJev5O+4QxZ88EgSuUy7G0OA5F1gH/tcqu4eBQCUZGBxBk2nsFLBBCP9ldc4fCPQwTsncxQ==
-X-Received: by 2002:a63:1443:: with SMTP id 3mr1514771pgu.7.1625224823148;
-        Fri, 02 Jul 2021 04:20:23 -0700 (PDT)
+        bh=xl2XQWEJG8begT6rZuY2RmzXT/AoqbtgvUhn3YaKP7M=;
+        b=ikXxbIqYNa+gpmTOLqDTtkQ4IeDk1HLHlR+d9cv94Efo7ovcj0FMfkxAH/cY7AYQdz
+         kEdbBhPRDJJ3BpgQ1K6icLWxV9Gx3U6GAZC2P2PTbHcVw56KbV6cv2Pq9/fosAP9/PHS
+         MP7qZZh9vrMRZQaVzv6SVl92f+MtCyfs9e9szH5nwpD+UCoiDfyWGHFNNp5B3LQ26Aqv
+         XDw7UJKSYgXeVkgm8GQpYJhg/y0nABHHO+5AFAy3nWYH5vCXF/gX5K3QLdz+QY0gh3uY
+         Exrwyp+UhFkAaFZBtnxHbyPDyCI0Op9m03nsvwZTSrZ+QIAksnjILPClArgzG/8uppnf
+         9tgw==
+X-Gm-Message-State: AOAM532KTfr68xBFORtBkgUrkN9X6YFJh86Zmdkzfx4C7MgSe+VN34qr
+        h3mz4e/1i0S0PT5crnPck7mxYIZE6FY=
+X-Google-Smtp-Source: ABdhPJyu/4/S95BlUQEBZLpYPTvZ+JUCewwovtx90/NqzBrsM/4Y6Kj+jckh/VID5GZlVAY7ebe3VA==
+X-Received: by 2002:a62:7e8a:0:b029:2f8:183:8aa2 with SMTP id z132-20020a627e8a0000b02902f801838aa2mr4774076pfc.58.1625224827414;
+        Fri, 02 Jul 2021 04:20:27 -0700 (PDT)
 Received: from localhost ([2409:4063:4d83:c0b5:70cd:e919:ab0c:33ce])
-        by smtp.gmail.com with ESMTPSA id 27sm3442869pgr.31.2021.07.02.04.20.22
+        by smtp.gmail.com with ESMTPSA id j24sm3076690pfe.58.2021.07.02.04.20.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jul 2021 04:20:22 -0700 (PDT)
+        Fri, 02 Jul 2021 04:20:27 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -60,9 +60,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Eric Leblond <eric@regit.org>, bpf@vger.kernel.org
-Subject: [PATCH net-next v6 1/5] net: core: split out code to run generic XDP prog
-Date:   Fri,  2 Jul 2021 16:48:21 +0530
-Message-Id: <20210702111825.491065-2-memxor@gmail.com>
+Subject: [PATCH net-next v6 2/5] bitops: add non-atomic bitops for pointers
+Date:   Fri,  2 Jul 2021 16:48:22 +0530
+Message-Id: <20210702111825.491065-3-memxor@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210702111825.491065-1-memxor@gmail.com>
 References: <20210702111825.491065-1-memxor@gmail.com>
@@ -73,163 +73,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This helper can later be utilized in code that runs cpumap and devmap
-programs in generic redirect mode and adjust skb based on changes made
-to xdp_buff.
+cpumap needs to set, clear, and test the lowest bit in skb pointer in
+various places. To make these checks less noisy, add pointer friendly
+bitop macros that also do some typechecking to sanitize the argument.
 
-When returning XDP_REDIRECT/XDP_TX, it invokes __skb_push, so whenever a
-generic redirect path invokes devmap/cpumap prog if set, it must
-__skb_pull again as we expect mac header to be pulled.
-
-It also drops the skb_reset_mac_len call after do_xdp_generic, as the
-mac_header and network_header are advanced by the same offset, so the
-difference (mac_len) remains constant.
+These wrap the non-atomic bitops __set_bit, __clear_bit, and test_bit
+but for pointer arguments. Pointer's address has to be passed in and it
+is treated as an unsigned long *, since width and representation of
+pointer and unsigned long match on targets Linux supports. They are
+prefixed with double underscore to indicate lack of atomicity.
 
 Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/netdevice.h |  2 +
- net/core/dev.c            | 84 ++++++++++++++++++++++++---------------
- 2 files changed, 55 insertions(+), 31 deletions(-)
+ include/linux/bitops.h    | 50 +++++++++++++++++++++++++++++++++++++++
+ include/linux/typecheck.h |  9 +++++++
+ 2 files changed, 59 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index be1dcceda5e4..90472ea70db2 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3984,6 +3984,8 @@ static inline void dev_consume_skb_any(struct sk_buff *skb)
- 	__dev_kfree_skb_any(skb, SKB_REASON_CONSUMED);
+diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+index 26bf15e6cd35..5e62e2383b7f 100644
+--- a/include/linux/bitops.h
++++ b/include/linux/bitops.h
+@@ -4,6 +4,7 @@
+ 
+ #include <asm/types.h>
+ #include <linux/bits.h>
++#include <linux/typecheck.h>
+ 
+ #include <uapi/linux/kernel.h>
+ 
+@@ -253,6 +254,55 @@ static __always_inline void __assign_bit(long nr, volatile unsigned long *addr,
+ 		__clear_bit(nr, addr);
  }
  
-+u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, struct xdp_buff *xdp,
-+			     struct bpf_prog *xdp_prog);
- void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog);
- int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb);
- int netif_rx(struct sk_buff *skb);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 991d09b67bd9..ad5ab33cbd39 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4740,45 +4740,18 @@ static struct netdev_rx_queue *netif_get_rxqueue(struct sk_buff *skb)
- 	return rxqueue;
- }
++/**
++ * __ptr_set_bit - Set bit in a pointer's value
++ * @nr: the bit to set
++ * @addr: the address of the pointer variable
++ *
++ * Example:
++ *	void *p = foo();
++ *	__ptr_set_bit(bit, &p);
++ */
++#define __ptr_set_bit(nr, addr)                         \
++	({                                              \
++		typecheck_pointer(*(addr));             \
++		__set_bit(nr, (unsigned long *)(addr)); \
++	})
++
++/**
++ * __ptr_clear_bit - Clear bit in a pointer's value
++ * @nr: the bit to clear
++ * @addr: the address of the pointer variable
++ *
++ * Example:
++ *	void *p = foo();
++ *	__ptr_clear_bit(bit, &p);
++ */
++#define __ptr_clear_bit(nr, addr)                         \
++	({                                                \
++		typecheck_pointer(*(addr));               \
++		__clear_bit(nr, (unsigned long *)(addr)); \
++	})
++
++/**
++ * __ptr_test_bit - Test bit in a pointer's value
++ * @nr: the bit to test
++ * @addr: the address of the pointer variable
++ *
++ * Example:
++ *	void *p = foo();
++ *	if (__ptr_test_bit(bit, &p)) {
++ *	        ...
++ *	} else {
++ *		...
++ *	}
++ */
++#define __ptr_test_bit(nr, addr)                       \
++	({                                             \
++		typecheck_pointer(*(addr));            \
++		test_bit(nr, (unsigned long *)(addr)); \
++	})
++
+ #ifdef __KERNEL__
  
--static u32 netif_receive_generic_xdp(struct sk_buff *skb,
--				     struct xdp_buff *xdp,
--				     struct bpf_prog *xdp_prog)
-+u32 bpf_prog_run_generic_xdp(struct sk_buff *skb, struct xdp_buff *xdp,
-+			     struct bpf_prog *xdp_prog)
- {
- 	void *orig_data, *orig_data_end, *hard_start;
- 	struct netdev_rx_queue *rxqueue;
--	u32 metalen, act = XDP_DROP;
- 	bool orig_bcast, orig_host;
- 	u32 mac_len, frame_sz;
- 	__be16 orig_eth_type;
- 	struct ethhdr *eth;
-+	u32 metalen, act;
- 	int off;
+ #ifndef set_mask_bits
+diff --git a/include/linux/typecheck.h b/include/linux/typecheck.h
+index 20d310331eb5..46b15e2aaefb 100644
+--- a/include/linux/typecheck.h
++++ b/include/linux/typecheck.h
+@@ -22,4 +22,13 @@
+ 	(void)__tmp; \
+ })
  
--	/* Reinjected packets coming from act_mirred or similar should
--	 * not get XDP generic processing.
--	 */
--	if (skb_is_redirected(skb))
--		return XDP_PASS;
--
--	/* XDP packets must be linear and must have sufficient headroom
--	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
--	 * native XDP provides, thus we need to do it here as well.
--	 */
--	if (skb_cloned(skb) || skb_is_nonlinear(skb) ||
--	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
--		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
--		int troom = skb->tail + skb->data_len - skb->end;
--
--		/* In case we have to go down the path and also linearize,
--		 * then lets do the pskb_expand_head() work just once here.
--		 */
--		if (pskb_expand_head(skb,
--				     hroom > 0 ? ALIGN(hroom, NET_SKB_PAD) : 0,
--				     troom > 0 ? troom + 128 : 0, GFP_ATOMIC))
--			goto do_drop;
--		if (skb_linearize(skb))
--			goto do_drop;
--	}
--
- 	/* The XDP program wants to see the packet starting at the MAC
- 	 * header.
- 	 */
-@@ -4833,6 +4806,13 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 		skb->protocol = eth_type_trans(skb, skb->dev);
- 	}
- 
-+	/* Redirect/Tx gives L2 packet, code that will reuse skb must __skb_pull
-+	 * before calling us again on redirect path. We do not call do_redirect
-+	 * as we leave that up to the caller.
-+	 *
-+	 * Caller is responsible for managing lifetime of skb (i.e. calling
-+	 * kfree_skb in response to actions it cannot handle/XDP_DROP).
-+	 */
- 	switch (act) {
- 	case XDP_REDIRECT:
- 	case XDP_TX:
-@@ -4843,6 +4823,49 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 		if (metalen)
- 			skb_metadata_set(skb, metalen);
- 		break;
-+	}
++/*
++ * Check at compile time that something is a pointer type.
++ */
++#define typecheck_pointer(x) \
++({	typeof(x) __dummy; \
++	(void)sizeof(*__dummy); \
++	1; \
++})
 +
-+	return act;
-+}
-+
-+static u32 netif_receive_generic_xdp(struct sk_buff *skb,
-+				     struct xdp_buff *xdp,
-+				     struct bpf_prog *xdp_prog)
-+{
-+	u32 act = XDP_DROP;
-+
-+	/* Reinjected packets coming from act_mirred or similar should
-+	 * not get XDP generic processing.
-+	 */
-+	if (skb_is_redirected(skb))
-+		return XDP_PASS;
-+
-+	/* XDP packets must be linear and must have sufficient headroom
-+	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
-+	 * native XDP provides, thus we need to do it here as well.
-+	 */
-+	if (skb_cloned(skb) || skb_is_nonlinear(skb) ||
-+	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
-+		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
-+		int troom = skb->tail + skb->data_len - skb->end;
-+
-+		/* In case we have to go down the path and also linearize,
-+		 * then lets do the pskb_expand_head() work just once here.
-+		 */
-+		if (pskb_expand_head(skb,
-+				     hroom > 0 ? ALIGN(hroom, NET_SKB_PAD) : 0,
-+				     troom > 0 ? troom + 128 : 0, GFP_ATOMIC))
-+			goto do_drop;
-+		if (skb_linearize(skb))
-+			goto do_drop;
-+	}
-+
-+	act = bpf_prog_run_generic_xdp(skb, xdp, xdp_prog);
-+	switch (act) {
-+	case XDP_REDIRECT:
-+	case XDP_TX:
-+	case XDP_PASS:
-+		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
- 		fallthrough;
-@@ -5308,7 +5331,6 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
- 			ret = NET_RX_DROP;
- 			goto out;
- 		}
--		skb_reset_mac_len(skb);
- 	}
- 
- 	if (eth_type_vlan(skb->protocol)) {
+ #endif		/* TYPECHECK_H_INCLUDED */
 -- 
 2.31.1
 
