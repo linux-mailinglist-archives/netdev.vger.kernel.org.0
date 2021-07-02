@@ -2,82 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 642A63B99EA
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 02:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 672BC3B99ED
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 02:11:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234391AbhGBAOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 20:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
+        id S234435AbhGBAOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 20:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234253AbhGBAOL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 20:14:11 -0400
+        with ESMTP id S234195AbhGBAOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 20:14:20 -0400
 Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2AA1C061762;
-        Thu,  1 Jul 2021 17:11:40 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id g22so9753366iom.1;
-        Thu, 01 Jul 2021 17:11:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C8EC061762;
+        Thu,  1 Jul 2021 17:11:49 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id k16so9650894ios.10;
+        Thu, 01 Jul 2021 17:11:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Froo3pVmxBy9Mm0Ff8X2esM20Aq/ijCeG8TIGmQDoSU=;
-        b=IHgEqonbR2j0/ZGvfBLx6tjXgYoAcJ2QIYnXMIhjF2q+Yw1GD8ntk7d0c1X382pH3U
-         5iI2U0TauS4lxyE8Euvh4ZUQRstaT+tg0CRLa+/y+/UO8Coin+9YADcccsm8oUa1T4xp
-         T7mY8HMrQ+ly2wRcXGW8cK4KToo7Uf+SoV9PsVgCb5vz4jI09jzMB1PYg1oRRrZ29vRI
-         u2+qbqrk4c5+JnXrY9LGaeqEYnhzkTT3Z53KMsbHd4b9wFyPnXXCJteyChcuS5cMadiC
-         JWaxcDnW7YRNi57bLxyxPWvnSwrS5RQRQ4KbFxuxLADePKPLfMdJMKdC9+MKnHc/+uF9
-         ZJCA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=SiO6sM+XvfiysPkLpQDRfRvm5Fce6TSrKOnYNqubSNc=;
+        b=HnAhX5T9DHn2AetAynjXwUeQyoAVoefGCIEIUKsghuwufX3E6U+iuirgoFEhdiqyh3
+         9vjBrhFpwU795oZzHrY7GrdtWhaflf70YF8Ohzol6Hbkvtq0oqkYglO/WJgYD4fFKyPN
+         w13uaOv52B7y7FPiAaFY9J5VrUzUEvl5wqYd2aQ966sIq8T/QNFjBR0XZKm0U7X8f5iX
+         WK3GMss5tkvN954bW9HJLZmhrYWSxfEAEloLcZDP+jCLO4HstqQ2rLn2gc/36IaLEQf+
+         kC+kAiRLf+gmbNhuYWE8XaBBpGT/BRuHjFXlcnogqx7wyv+5kFDlcpzQv+JKov1QBf58
+         yEmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Froo3pVmxBy9Mm0Ff8X2esM20Aq/ijCeG8TIGmQDoSU=;
-        b=GpSWRgDW0uZfZ9lxyuzkUwykd/UU3cZR68C0plFj2bvuDw/QARsqCdhiEW3gYd7l1a
-         vbFNgk1rj5eSQalWUby7AEW7mN3sb8wIU2NtpXzI3a/VIkQR2PMn/ZSaX0orhQIwfVuf
-         Y51WSZJT9mu021Nkbuk33Y8wnMT6a+1bG4knL1vJ5561948lkRSKHiD2XsoNWfv8TNEq
-         idD9Jy8evqwjuGBht8gcHwJG4q5KKjX5083fPzZNXOWhH5C04Uv9S5eLfWaDztVfSjVw
-         MY9znMXVM3BmFb1lCZC8Qs5VQSJDNsyWsDDO4nQYSPo2KPnUrbvBxjDDO6+gbTLvY4Hk
-         hVig==
-X-Gm-Message-State: AOAM533X4jPp6uEf5vp+zKVCO9MwCTwSFag3xXfNiZQf28JI+fnMM8/L
-        rdC8/QsKzRwX2a7YfarBrdU=
-X-Google-Smtp-Source: ABdhPJwDsbOwFyW+CdRtb0UKNRjt0rQZFISHqObDnVpGiHg+odgCkpEHG36p/ZsvPIoWpbVMPF4EfA==
-X-Received: by 2002:a02:caad:: with SMTP id e13mr1980990jap.129.1625184699318;
-        Thu, 01 Jul 2021 17:11:39 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=SiO6sM+XvfiysPkLpQDRfRvm5Fce6TSrKOnYNqubSNc=;
+        b=MOkx/lcCRnH+/74y3Q+vUv0s7D6xp1TZnWFrMjXEZv2ALg7U443+vNcS+v4RNWcvG6
+         D71dQKOrb7jf1BSXW1HCrNM8qsWL2R8VVoAxXzGW0QdiLrYKgIw3VVRKnEV32U2QlbZK
+         kO/KBs8aR/4g65ENjx8qXWff4YlZrPxn2lqy2TlxSan9x7Hz6aQs7U1yGkpqUfXea8wD
+         J6JIz6OHunJ8apnWNhhR7zeY8PN+UaXjpkTeIHsA5Sb2v5s/z+oBwcLwOn7t33PLnsiR
+         bOkUdLzOR3cQpVkCKT+eFJnrMXntXC78rLeASfv1rZRGXXK8lZcXeao42PpyRDIjZIrD
+         /hbg==
+X-Gm-Message-State: AOAM53283bqxJez9FYSlA/2Dysd9u/WA3cj5cTtWck7x/lCb1Yp7is5q
+        +Ux8yYj2OPgU/WOsUXKM1wA=
+X-Google-Smtp-Source: ABdhPJxbuImpLy8fRkcJqnFJWjmponTKI4guhH90PnxD4QIJh625euNgLNhLjxpPYSYiWL5uEwfVXw==
+X-Received: by 2002:a05:6638:e8f:: with SMTP id p15mr1632084jas.69.1625184708815;
+        Thu, 01 Jul 2021 17:11:48 -0700 (PDT)
 Received: from john-XPS-13-9370.lan ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id c23sm704010ioz.42.2021.07.01.17.11.32
+        by smtp.gmail.com with ESMTPSA id c23sm704010ioz.42.2021.07.01.17.11.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 17:11:38 -0700 (PDT)
+        Thu, 01 Jul 2021 17:11:48 -0700 (PDT)
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         john.fastabend@gmail.com
-Subject: [PATCH v2 bpf 0/2] potential sockmap memleak and proc stats fix
-Date:   Thu,  1 Jul 2021 17:11:21 -0700
-Message-Id: <20210702001123.728035-1-john.fastabend@gmail.com>
+Subject: [PATCH v2 bpf 1/2] bpf, sockmap: fix potential msg memory leak
+Date:   Thu,  1 Jul 2021 17:11:22 -0700
+Message-Id: <20210702001123.728035-2-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210702001123.728035-1-john.fastabend@gmail.com>
+References: <20210702001123.728035-1-john.fastabend@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While investigating a memleak in sockmap I found these two issues. Patch
-1 found doing code review, I wasn't able to get KASAN to trigger a
-memleak here, but should be necessary. Patch 2 fixes proc stats so when
-we use sockstats for debugging we get correct values.
+If skb_linearize is needed and fails we could leak a msg on the error
+handling. To fix ensure we kfree the msg block before returning error.
+Found during code review.
 
-The fix for observered memleak will come after these, but requires some
-more discussion and potentially patch revert so I'll try to get the set
-here going now.
+Fixes: 4363023d2668e ("bpf, sockmap: Avoid failures from skb_to_sgvec when skb has frag_list")
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+---
+ net/core/skmsg.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-John Fastabend (2):
-  bpf, sockmap: fix potential memory leak on unlikely error case
-  bpf, sockmap: sk_prot needs inuse_idx set for proc stats
-
- net/core/skmsg.c    | 4 +++-
- net/core/sock_map.c | 9 +++++++++
- 2 files changed, 12 insertions(+), 1 deletion(-)
-
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 9b6160a191f8..22603289c2b2 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -505,8 +505,10 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
+ 	 * drop the skb. We need to linearize the skb so that the mapping
+ 	 * in skb_to_sgvec can not error.
+ 	 */
+-	if (skb_linearize(skb))
++	if (skb_linearize(skb)) {
++		kfree(msg);
+ 		return -EAGAIN;
++	}
+ 	num_sge = skb_to_sgvec(skb, msg->sg.data, 0, skb->len);
+ 	if (unlikely(num_sge < 0)) {
+ 		kfree(msg);
 -- 
 2.25.1
 
