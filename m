@@ -2,98 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DE263BA151
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 15:40:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C78D23BA1F3
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 16:06:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232563AbhGBNma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 09:42:30 -0400
-Received: from mail-ed1-f52.google.com ([209.85.208.52]:42886 "EHLO
-        mail-ed1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232524AbhGBNma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 09:42:30 -0400
-Received: by mail-ed1-f52.google.com with SMTP id n25so13273904edw.9;
-        Fri, 02 Jul 2021 06:39:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=w9kubsVWaTOUK+nU0YjZV/Ze/jgMiHptRWmLi0Ujvvg=;
-        b=LCaclHVVTFcyBclFiXQlzb4AKlZZxnu9WAJFydVcmRnI2zuN7akKrF7FZcnXx/jjqi
-         1EcMXXDp8YEoUofvMO+/FY5YFEZPhOnbWDYoCumMW6kPUPWUEwVieoVlvwVQD4cWdW8N
-         adlnCbXizKxWVZxLJX4DyP0i6vdoOuskQxOWubKx5icb9VyYUXvSoc9cPepnhPhlnt2Z
-         OFgg7BtZwJLKtXsLaBGOlAMNCYfkk6ox1LgA+CAB1NvhsVk86JLIXPiOwR3ndvcSK4tt
-         A5vFguwzAR5lcjAH/8R+EpE5APIfIwu0sMZHZ9lJ/K9+o3xa8vlV3+XLj7hHhKhnHCFU
-         OoNg==
-X-Gm-Message-State: AOAM5302g2INy6/RvrMUSqOyfme2siyF1Zam3T0hakVF5arbOd4hxoKV
-        fC5WltTHupH29tg6eJv0UuIWJSVQZXLJBhfN
-X-Google-Smtp-Source: ABdhPJwIHuKU+e0GC/3/lK/8AFkZf088CPagR8W+iav39xxS3ibBGzCEopLZXrN9ZYeu7IIv1zPHNg==
-X-Received: by 2002:a05:6402:88b:: with SMTP id e11mr6844737edy.21.1625233196688;
-        Fri, 02 Jul 2021 06:39:56 -0700 (PDT)
-Received: from localhost (host-80-182-89-242.retail.telecomitalia.it. [80.182.89.242])
-        by smtp.gmail.com with ESMTPSA id b8sm1336709edr.42.2021.07.02.06.39.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jul 2021 06:39:56 -0700 (PDT)
-Date:   Fri, 2 Jul 2021 15:39:47 +0200
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>, <mw@semihalf.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     <davem@davemloft.net>, <kuba@kernel.org>, <linuxarm@openeuler.org>,
-        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <thomas.petazzoni@bootlin.com>, <linux@armlinux.org.uk>,
-        <hawk@kernel.org>, <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
-        <akpm@linux-foundation.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
-        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
-        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
-        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
-        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-Subject: Re: [PATCH net-next RFC 0/2] add elevated refcnt support for page
- pool
-Message-ID: <20210702153947.7b44acdf@linux.microsoft.com>
-In-Reply-To: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
-References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
-Organization: Microsoft
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        id S232903AbhGBOI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 10:08:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53773 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232606AbhGBOI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 10:08:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625234784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=WugI9bAUw80AJ8qQnTPNf+VMgnnHS/8KQnN29WJyVOA=;
+        b=UfVV1qw6zC5IUlvyc/87iExeCuTAF7tkeUgL8/AMehPTPcYfVRYTZSiG3+g4cHibqHnJ85
+        fo4VzmMYfV3FEa7iQgm4j2YBOir0X8paymKXzHQVawqs6mxS8/gtudu1Y8V9YJtUe3zJP5
+        k3q/bvF+NlPUIgjsGR/m49pv0EUUZ3w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-423-YQAwctH3ORuLlhs42T-iIg-1; Fri, 02 Jul 2021 10:06:23 -0400
+X-MC-Unique: YQAwctH3ORuLlhs42T-iIg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E0F4F50751;
+        Fri,  2 Jul 2021 14:06:21 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.52])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A86EE10016F8;
+        Fri,  2 Jul 2021 14:06:17 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 7845A30000DDD;
+        Fri,  2 Jul 2021 16:06:16 +0200 (CEST)
+Subject: [PATCH bpf-next V1] samples/bpf: xdp_redirect_cpu_user: cpumap qsize
+ set larger default
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 02 Jul 2021 16:06:16 +0200
+Message-ID: <162523477604.786243.13372630844944530891.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Jun 2021 17:17:54 +0800
-Yunsheng Lin <linyunsheng@huawei.com> wrote:
+Experience from production shows queue size of 192 is too small, as
+this caused packet drops during cpumap-enqueue on RX-CPU.  This can be
+diagnosed with xdp_monitor sample program.
 
-> This patchset adds elevated refcnt support for page pool
-> and enable skb's page frag recycling based on page pool
-> in hns3 drvier.
-> 
-> Yunsheng Lin (2):
->   page_pool: add page recycling support based on elevated refcnt
->   net: hns3: support skb's frag page recycling based on page pool
-> 
->  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  79 +++++++-
->  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   3 +
->  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   1 +
->  drivers/net/ethernet/marvell/mvneta.c              |   6 +-
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 +-
->  include/linux/mm_types.h                           |   2 +-
->  include/linux/skbuff.h                             |   4 +-
->  include/net/page_pool.h                            |  30 ++-
->  net/core/page_pool.c                               | 215
-> +++++++++++++++++---- 9 files changed, 285 insertions(+), 57
-> deletions(-)
-> 
+This bpftrace program was used to diagnose the problem in more detail:
 
-Interesting!
-Unfortunately I'll not have access to my macchiatobin anytime soon, can
-someone test the impact, if any, on mvpp2?
+ bpftrace -e '
+  tracepoint:xdp:xdp_cpumap_kthread { @deq_bulk = lhist(args->processed,0,10,1); @drop_net = lhist(args->drops,0,10,1) }
+  tracepoint:xdp:xdp_cpumap_enqueue { @enq_bulk = lhist(args->processed,0,10,1); @enq_drops = lhist(args->drops,0,10,1); }'
 
-Regards,
--- 
-per aspera ad upstream
+Watch out for the @enq_drops counter. The @drop_net counter can happen
+when netstack gets invalid packets, so don't despair it can be
+natural, and that counter will likely disappear in newer kernels as it
+was a source of confusion (look at netstat info for reason of the
+netstack @drop_net counters).
+
+The production system was configured with CPU power-saving C6 state.
+Learn more in this blogpost[1].
+
+And wakeup latency in usec for the states are:
+
+ # grep -H . /sys/devices/system/cpu/cpu0/cpuidle/*/latency
+ /sys/devices/system/cpu/cpu0/cpuidle/state0/latency:0
+ /sys/devices/system/cpu/cpu0/cpuidle/state1/latency:2
+ /sys/devices/system/cpu/cpu0/cpuidle/state2/latency:10
+ /sys/devices/system/cpu/cpu0/cpuidle/state3/latency:133
+
+Deepest state take 133 usec to wakeup from (133/10^6). The link speed
+is 25Gbit/s ((25*10^9/8) in bytes/sec). How many bytes can arrive with
+in 133 usec at this speed: (25*10^9/8)*(133/10^6) = 415625 bytes. With
+MTU size packets this is 275 packets, and with minimum Ethernet (incl
+intergap overhead) 84 bytes it is 4948 packets. Clearly default queue
+size is too small.
+
+Setting default cpumap queue to 2048 as worst-case (small packet) at
+10Gbit/s is 1979 packets with 133 usec wakeup time, +64 packet before
+kthread wakeup call (due to xdp_do_flush) worst-case 2043 packets.
+
+Thus, if a packet burst on RX-CPU will enqueue packets to a remote
+cpumap CPU that is in deep-sleep state it can overrun the cpumap queue.
+
+The production system was also configured to avoid deep-sleep via:
+ tuned-adm profile network-latency
+
+[1] https://jeremyeder.com/2013/08/30/oh-did-you-expect-the-cpu/
+
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ samples/bpf/xdp_redirect_cpu_user.c |   22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
+
+diff --git a/samples/bpf/xdp_redirect_cpu_user.c b/samples/bpf/xdp_redirect_cpu_user.c
+index 576411612523..d3ecdc18b9c1 100644
+--- a/samples/bpf/xdp_redirect_cpu_user.c
++++ b/samples/bpf/xdp_redirect_cpu_user.c
+@@ -792,13 +792,23 @@ int main(int argc, char **argv)
+ 
+ 	n_cpus = get_nprocs_conf();
+ 
+-	/* Notice: choosing he queue size is very important with the
+-	 * ixgbe driver, because it's driver page recycling trick is
+-	 * dependend on pages being returned quickly.  The number of
+-	 * out-standing packets in the system must be less-than 2x
+-	 * RX-ring size.
++	/* Notice: Choosing the queue size is very important when CPU is
++	 * configured with power-saving states.
++	 *
++	 * If deepest state take 133 usec to wakeup from (133/10^6). When link
++	 * speed is 10Gbit/s ((10*10^9/8) in bytes/sec). How many bytes can
++	 * arrive with in 133 usec at this speed: (10*10^9/8)*(133/10^6) =
++	 * 166250 bytes. With MTU size packets this is 110 packets, and with
++	 * minimum Ethernet (MAC-preamble + intergap) 84 bytes is 1979 packets.
++	 *
++	 * Setting default cpumap queue to 2048 as worst-case (small packet)
++	 * should be +64 packet due kthread wakeup call (due to xdp_do_flush)
++	 * worst-case is 2043 packets.
++	 *
++	 * Sysadm can configured system to avoid deep-sleep via:
++	 *   tuned-adm profile network-latency
+ 	 */
+-	qsize = 128+64;
++	qsize = 2048;
+ 
+ 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
+ 	prog_load_attr.file = filename;
+
+
