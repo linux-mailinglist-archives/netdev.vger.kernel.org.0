@@ -2,162 +2,638 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A18073B9E0F
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 11:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 909FB3B9E75
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 11:42:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230427AbhGBJYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 05:24:44 -0400
-Received: from mail-mw2nam10on2115.outbound.protection.outlook.com ([40.107.94.115]:9857
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230333AbhGBJYf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Jul 2021 05:24:35 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j54r1CC3fMalkXejdIu3mhYtTV6rFEGDmso2a+Qj171Xne2m6o8lDDfh7wBkcToL5g6QYDPpaAvAUZIz03NplVFnZuLeL/mEiXKyCtSGlpqTOFGXvUrrtWM4JPeaHY5iFivlcxz1PaaWEkSO4kDihiK7lGfyYGiDLCyZqxN1yrSFpd7DX2vY7cVw2cazSBKFdoRWM+2ckMgnO9D4zR7O4GLyfQUPEBbzOarKZex5N+OpqlkjQdJxMGIJRb6G9mbUGsiYsgs2wq9N+TbjBx6nG1HBn3RVtbHKeiAPD8xRfls1hcQKk2UdHQp2p+90YpY++uA3qkOlMzNQJFdGhAePdQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZNkZOJIcdADK+WyPfkjAbmqflIx8sO18zj0iEdoRLUQ=;
- b=FgWKmLGpYQuczwfsOD36qOZ7q2OMy/qCupQWeBriLZ0x4UlHIHGcf10nI+VPZ78Sz6ISCxRkFcxuIJPNARsZm2ID/iqolZIqTylLw5JnNMUFa1EzW333jTc1sfPWOeEqUcx+4tXdtjrYkXF198hwRpSyw5jlwpKJ/V+tThwNKCSTpUAeId8yWceTk9UFk/9ISVum77YGgUUsBb2DvOBVy3XJfYLkquAtu3ID99hMLKtgyrEb0kRp4Qx9fFsX8Ode4A8c/NC8U9fjq/vQe/NIQidnwwinEMT6pIuNB1zM4adSCPcQfZLBPpXCnHkqdqc9aZOac5jaIIHAoRXH/poZCg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZNkZOJIcdADK+WyPfkjAbmqflIx8sO18zj0iEdoRLUQ=;
- b=R7k3wHtkeT3BUxGv/W2YCDjPIHlhdHx3mvf+z3mAU4zpJ8W5g7frlrnBVZbd4su2iCPEBSvD+VPELa0NqlGfwFnFmrwO7BXH4SIu9ODgaGhYQoMhOuB1+bwEIUls3ojUDT4g+13TzC99AFZLCob8Xg3xp9LnkMtVfSKxyDNdpkQ=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4987.namprd13.prod.outlook.com (2603:10b6:510:75::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.12; Fri, 2 Jul
- 2021 09:22:02 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::4596:4181:eeee:7a8a]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::4596:4181:eeee:7a8a%9]) with mapi id 15.20.4308.012; Fri, 2 Jul 2021
- 09:22:02 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Louis Peens <louis.peens@corigine.com>,
-        Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net 2/2] nfp: flower-ct: remove callback delete deadlock
-Date:   Fri,  2 Jul 2021 11:21:39 +0200
-Message-Id: <20210702092139.25662-3-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210702092139.25662-1-simon.horman@corigine.com>
-References: <20210702092139.25662-1-simon.horman@corigine.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR07CA0112.eurprd07.prod.outlook.com
- (2603:10a6:207:7::22) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        id S231210AbhGBJor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 05:44:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50833 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230476AbhGBJoq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 05:44:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625218934;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bxwKO+TgelEV59wHN0aU2wt3K0vBg//dDFe7XB1ce7E=;
+        b=F4ach72GgX/rgKB3+Ap/AHxx9hVSUuM0PcUKLIoRt4oq7qy9PpAXMRcGVGQY29v+Pd7Vqu
+        BgeaDb/ci4wE1UvzEkv7tgXOXXoxd9lxfzPJgg3w05jCvuYXfio2lPuAmsg6/Ht6iwgUxL
+        nQQmeVW5LucALrg15asGU/NeNaGlQ54=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-104-nZwYnQ5pOO-_Z0Zn3jsyrA-1; Fri, 02 Jul 2021 05:42:13 -0400
+X-MC-Unique: nZwYnQ5pOO-_Z0Zn3jsyrA-1
+Received: by mail-ed1-f71.google.com with SMTP id ee28-20020a056402291cb0290394a9a0bfaeso4799839edb.6
+        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 02:42:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=bxwKO+TgelEV59wHN0aU2wt3K0vBg//dDFe7XB1ce7E=;
+        b=AjDDCBrTeOQla1rlMhUXvOPgwiP7+JCCvCUa6nuPcJggSzUuyAybXivIdlN6KpMSBp
+         dwTh/yExNhYVN6A4nJnr+Lwuv5iF4oD1gXimvg5X3HKGnhULOeU8B8A7f0yqzxVVd3pQ
+         T6yLlPNrAKTI8mCXl/kVKpPMeYMljjpd9D8G1+R79vwwTgLzcdyeN9tzTcEWa+StgMgv
+         UxQWgaGHgNG8MGY3jSTsinH/zi543MT4YbKiOGjtJhLoP140tdK82V16Dvg45uV7Gek1
+         PytvIc/0WsdLuBCoEL0yVi1JbFWs6OGb4aReraNBnYL8z7CIkLt9ViUi/rr5hMuP1TyO
+         ZOhA==
+X-Gm-Message-State: AOAM530ZfpiBUI0CD73u+YTDk0uSgwmHSwxxGDMWjW6SvFPCxc3Q5Eby
+        i+sLrntnzX7szvWcy5uf6QiyNNez3Sob8vpxbQxd+nQ79gLWFsmnB7zCemWxu5iqN/6Kxs9iJTZ
+        oswl/w2sy8FYEGt5l
+X-Received: by 2002:a17:907:9d1:: with SMTP id bx17mr4458908ejc.322.1625218931896;
+        Fri, 02 Jul 2021 02:42:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxXQq2Jx5p3GqWzgfje8ySA7IuGECFOa3d4+7aEND9A5+IbSzdoCyPoB1grnU8zZJ4lXr2uww==
+X-Received: by 2002:a17:907:9d1:: with SMTP id bx17mr4458853ejc.322.1625218931404;
+        Fri, 02 Jul 2021 02:42:11 -0700 (PDT)
+Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id h8sm864954ejj.22.2021.07.02.02.42.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Jul 2021 02:42:11 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH net-next RFC 1/2] page_pool: add page recycling support
+ based on elevated refcnt
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linuxarm@openeuler.org, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, thomas.petazzoni@bootlin.com,
+        mw@semihalf.com, linux@armlinux.org.uk, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, ast@kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, akpm@linux-foundation.org,
+        peterz@infradead.org, will@kernel.org, willy@infradead.org,
+        vbabka@suse.cz, fenghua.yu@intel.com, guro@fb.com,
+        peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
+        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
+        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
+        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
+        elver@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Alexander Duyck <alexander.duyck@gmail.com>
+References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
+ <1625044676-12441-2-git-send-email-linyunsheng@huawei.com>
+Message-ID: <6c2d76e2-30ce-5c0f-9d71-f6b71f9ad34f@redhat.com>
+Date:   Fri, 2 Jul 2021 11:42:08 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from momiji.horms.nl (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM3PR07CA0112.eurprd07.prod.outlook.com (2603:10a6:207:7::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.8 via Frontend Transport; Fri, 2 Jul 2021 09:22:01 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 110c7b46-9816-46d2-3f9c-08d93d3ada2f
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4987:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB4987AE6F37CE9BBBF6F5C04AE81F9@PH0PR13MB4987.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YWY4gbyTtL93Irr4sZVlIAekRNgEaAKSx4op73tgkVHEP+tQF3yRzdEpPG0Bh+98ejMh9LPONEwRpZxF5B0uEgZhPqm//uw2Mc7khro0XDNUOY+LgYmQebaNoPvM0W56nBuSGra/RjymYmRMOlses+1hfmA8RbNE8EIbyG02/sczpeYUXR/t4oEqzL4cvYSuKm4zVuFzX/7WLGD/srI3VPxkOimau77Bm+ytO29E2KRHRKQZBBAZ6c9at8WLi9w3t/5i4WYwyNMLDxEPuzTnuoQN5qDFkTwc3du1QOr+aiMrBajI9mpRZu8qFv6nb/WG0qxkhJJOCWehqEZXw1/Sqrjy4vU2pFKg2Fs5vgDQqkn6js3KoldumsXP/bvH3izGrkAm7V2xBFHFnA8afNCZHNASXjbc7fHRlUCY1umZy0IFWTC+tJ9xtl2OMeb+XkCypI6XinI6u0HWPZbVIUUWaKboP7RpmIhLZPyCv+H7uvhtxaqUZ41lSN/GFwi84jp1Iv6+xmthGHq1lW5m/YG6jmgtY7IyQDpzZY0vFK3yRdMpRAp0FmogLADz2HuGzdPPLVNPSbfTtbRotkeM8dN7C7MBwFXlAdVSo/kAVgWLkP8i+7fRM7wK+XRajqD23WbkLmA/8+YoGs9vELUwoINq2Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(396003)(39830400003)(136003)(366004)(478600001)(36756003)(6666004)(38100700002)(54906003)(2616005)(110136005)(6506007)(2906002)(44832011)(52116002)(316002)(6512007)(107886003)(66476007)(66946007)(6486002)(186003)(4326008)(8936002)(8676002)(66556008)(5660300002)(83380400001)(1076003)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bZeU2qWXB3FZFP4CZhApPRVz3tBa7/zjsvdRBqu6544npGhN9VmAGw4zsFkM?=
- =?us-ascii?Q?qP3OqeAGDgbRKRDiDlB7FwrUp32QshBica3JLqewfODFn9eyZHkvVaI7+KGw?=
- =?us-ascii?Q?ScDB0P3/g/Jgh85sdvYXUDpMDuYu3vzHOxiOebvRtaoKOQtHOIDjChHj4BhK?=
- =?us-ascii?Q?wE/CwsfmNjwM/P1UnkgViAX1WB9TewbklXmRqN9YVYQTq9tOZpINVLD3EHxw?=
- =?us-ascii?Q?1uTIK/tGJF9Ui/Gx2r7tzT8Ja+WVFRuKHQb3XKL8ACaSv9AqBCrG3mmN8JBH?=
- =?us-ascii?Q?ZbBrRYY8usiOaJo1egrxShMZTiGzTjeb5dGwqFfroaR8IPzfRNb5X0Fs+Qrd?=
- =?us-ascii?Q?zwhRMp+Vdw7HlcBqZv+KlfY2lMmY3cGvRbni8l40/YyEvZju2NQqYiS2GWNF?=
- =?us-ascii?Q?JrTwEioshHQUm8KMlzhR4AeRnkhrWwS6pjBuo3ZW9+vmXM4Pj2VvZHVHcc4H?=
- =?us-ascii?Q?6LkNJELiWkeK5ndN+kvslf3BNelMkVP1mZpKLrpasZwVzYwxISZwETjmxEml?=
- =?us-ascii?Q?l8sesxx8AQM2GdWf39RSUGW3rrB6HGVYjNamMQlj6GhGNYX4K9OG7rrbnpq0?=
- =?us-ascii?Q?Og+ZYCwR5KJr8nINeqmiUBimWdu9VmHPgo+Uw3xOMYXC84WxPHK5FwwVLCzV?=
- =?us-ascii?Q?zvcGplNBZXAoSM0Nd8nAC5zNy0JfwAyZAJz5Hu7U00546gZ/sZIK4RpfIA7y?=
- =?us-ascii?Q?8JiCw+D1SXcDhLZYsye46wxw2be1dJvaPCUEbXqQ6aBIbe1iU24saxGduOnw?=
- =?us-ascii?Q?EDxl6WSnioPXWy5H2Pq+4q9ikZVGqmiSQaOK23knIme07mA2674yULOpj6/W?=
- =?us-ascii?Q?niGufF9ZZ4XmzyA553xJCDdWpOV5TJ6ueV4HnaHq1RFNJYe0+DO8i/To55RX?=
- =?us-ascii?Q?PdPOB84QVaWr8w7tJv7dHkUQ0lU6R1QWyJL1XxaGp+FFZvXLvau6DkCToTj8?=
- =?us-ascii?Q?O+6E/vrZKmL5sbdt/b0MyOiE0H9P28eurgz6Eqe2z9ROe+eUdRmRQ2bdcSQg?=
- =?us-ascii?Q?Pp7jRyPF4IxD9MGzbwBCJais6Wnmo4vIWp6inD3GWHFr+9ruZEJVCYRRnu/c?=
- =?us-ascii?Q?izD1PRZC0g+srQORDjd+Q5fq1ByaGlN8AZOUi6biQG3c6VpyvTY4nMvJS0Xp?=
- =?us-ascii?Q?g3+Q5MV0TqNnCezu/SbUqIyGBkeaZAsJ2p+n7KuaK981ssh62PLiF4OSH9ge?=
- =?us-ascii?Q?LpjSJvzpO3Ke13RMnoEWxVwrNfXu25sxlPkqGB41tYA6AzVK0zWZ+egL+T03?=
- =?us-ascii?Q?4GcCUrgcWdBu6i0/c032aUzh9gijfEtF9ZbPcrW/BJVUYArWFZwdmqVoV6D2?=
- =?us-ascii?Q?+IqrTss2yO1avh5LkQKO9DVr83jwqhxjsRX+vY/mGhYSgm1xo3Krj5/0ET5X?=
- =?us-ascii?Q?Jpn093X0AhceU58rQqnacLxxUZoY?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 110c7b46-9816-46d2-3f9c-08d93d3ada2f
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2021 09:22:02.8458
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Vv5SG4oDK1LcJ+4sLgmbiyA3PWOoTRHpeMWRQ8aGP8hVScLja4jpIY4Es7ONOpoazQXDLTBgzS1CgNra9Pw0ofNbovsYbJYBHxBl07ljflU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4987
+In-Reply-To: <1625044676-12441-2-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Louis Peens <louis.peens@corigine.com>
 
-The current location of the callback delete can lead to a race
-condition where deleting the callback requires a write_lock on
-the nf_table, but at the same time another thread from netfilter
-could have taken a read lock on the table before trying to offload.
-Since the driver is taking a rtnl_lock this can lead into a deadlock
-situation, where the netfilter offload will wait for the cls_flower
-rtnl_lock to be released, but this cannot happen since this is
-waiting for the nf_table read_lock to be released before it can
-delete the callback.
+On 30/06/2021 11.17, Yunsheng Lin wrote:
+> Currently page pool only support page recycling only when
+> refcnt of page is one, which means it can not support the
+> split page recycling implemented in the most ethernet driver.
 
-Solve this by completely removing the nf_flow_table_offload_del_cb
-call, as this will now be cleaned up by act_ct itself when cleaning
-up the specific nf_table.
+Cc. Alex Duyck as I consider him an expert in this area.
 
-Fixes: 62268e78145f ("nfp: flower-ct: add nft callback stubs")
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- .../net/ethernet/netronome/nfp/flower/conntrack.c   | 13 -------------
- 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-index 273d529d43c2..128020b1573e 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -1141,20 +1141,7 @@ int nfp_fl_ct_del_flow(struct nfp_fl_ct_map_entry *ct_map_ent)
- 		nfp_fl_ct_clean_flow_entry(ct_entry);
- 		kfree(ct_map_ent);
- 
--		/* If this is the last pre_ct_rule it means that it is
--		 * very likely that the nft table will be cleaned up next,
--		 * as this happens on the removal of the last act_ct flow.
--		 * However we cannot deregister the callback on the removal
--		 * of the last nft flow as this runs into a deadlock situation.
--		 * So deregister the callback on removal of the last pre_ct flow
--		 * and remove any remaining nft flow entries. We also cannot
--		 * save this state and delete the callback later since the
--		 * nft table would already have been freed at that time.
--		 */
- 		if (!zt->pre_ct_count) {
--			nf_flow_table_offload_del_cb(zt->nft,
--						     nfp_fl_ct_handle_nft_flow,
--						     zt);
- 			zt->nft = NULL;
- 			nfp_fl_ct_clean_nft_entries(zt);
- 		}
--- 
-2.20.1
+> So add elevated refcnt support in page pool, and support
+> allocating page frag to enable multi-frames-per-page based
+> on the elevated refcnt support.
+>
+> As the elevated refcnt is per page, and there is no space
+> for that in "struct page" now, so add a dynamically allocated
+> "struct page_pool_info" to record page pool ptr and refcnt
+> corrsponding to a page for now. Later, we can recycle the
+> "struct page_pool_info" too, or use part of page memory to
+> record pp_info.
+
+I'm not happy with allocating a memory (slab) object "struct 
+page_pool_info" per page.
+
+This also gives us an extra level of indirection.
+
+
+You are also adding a page "frag" API inside page pool, which I'm not 
+100% convinced belongs inside page_pool APIs.
+
+Please notice the APIs that Alex Duyck added in mm/page_alloc.c:
+
+  __page_frag_cache_refill() + __page_frag_cache_drain() + 
+page_frag_alloc_align()
+
+
+No more comments below, but kept it if Alex wants to review the details.
+
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+>   drivers/net/ethernet/marvell/mvneta.c           |   6 +-
+>   drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |   2 +-
+>   include/linux/mm_types.h                        |   2 +-
+>   include/linux/skbuff.h                          |   4 +-
+>   include/net/page_pool.h                         |  30 +++-
+>   net/core/page_pool.c                            | 215 ++++++++++++++++++++----
+>   6 files changed, 207 insertions(+), 52 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index 88a7550..5a29af2 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -2327,7 +2327,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+>   	if (!skb)
+>   		return ERR_PTR(-ENOMEM);
+>   
+> -	skb_mark_for_recycle(skb, virt_to_page(xdp->data), pool);
+> +	skb_mark_for_recycle(skb);
+>   
+>   	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+>   	skb_put(skb, xdp->data_end - xdp->data);
+> @@ -2339,10 +2339,6 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+>   		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+>   				skb_frag_page(frag), skb_frag_off(frag),
+>   				skb_frag_size(frag), PAGE_SIZE);
+> -		/* We don't need to reset pp_recycle here. It's already set, so
+> -		 * just mark fragments for recycling.
+> -		 */
+> -		page_pool_store_mem_info(skb_frag_page(frag), pool);
+>   	}
+>   
+>   	return skb;
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 3135220..540e387 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -3997,7 +3997,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+>   		}
+>   
+>   		if (pp)
+> -			skb_mark_for_recycle(skb, page, pp);
+> +			skb_mark_for_recycle(skb);
+>   		else
+>   			dma_unmap_single_attrs(dev->dev.parent, dma_addr,
+>   					       bm_pool->buf_size, DMA_FROM_DEVICE,
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 862f88a..cf613df 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -101,7 +101,7 @@ struct page {
+>   			 * page_pool allocated pages.
+>   			 */
+>   			unsigned long pp_magic;
+> -			struct page_pool *pp;
+> +			struct page_pool_info *pp_info;
+>   			unsigned long _pp_mapping_pad;
+>   			/**
+>   			 * @dma_addr: might require a 64-bit value on
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index b2db9cd..7795979 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -4711,11 +4711,9 @@ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
+>   }
+>   
+>   #ifdef CONFIG_PAGE_POOL
+> -static inline void skb_mark_for_recycle(struct sk_buff *skb, struct page *page,
+> -					struct page_pool *pp)
+> +static inline void skb_mark_for_recycle(struct sk_buff *skb)
+>   {
+>   	skb->pp_recycle = 1;
+> -	page_pool_store_mem_info(page, pp);
+>   }
+>   #endif
+>   
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 3dd62dd..44e7545 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -45,7 +45,9 @@
+>   					* Please note DMA-sync-for-CPU is still
+>   					* device driver responsibility
+>   					*/
+> -#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV)
+> +#define PP_FLAG_PAGECNT_BIAS	BIT(2)	/* Enable elevated refcnt */
+> +#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV |\
+> +				 PP_FLAG_PAGECNT_BIAS)
+>   
+>   /*
+>    * Fast allocation side cache array/stack
+> @@ -77,6 +79,7 @@ struct page_pool_params {
+>   	enum dma_data_direction dma_dir; /* DMA mapping direction */
+>   	unsigned int	max_len; /* max DMA sync memory size */
+>   	unsigned int	offset;  /* DMA addr offset */
+> +	unsigned int	frag_size;
+>   };
+>   
+>   struct page_pool {
+> @@ -88,6 +91,8 @@ struct page_pool {
+>   	unsigned long defer_warn;
+>   
+>   	u32 pages_state_hold_cnt;
+> +	unsigned int frag_offset;
+> +	struct page *frag_page;
+>   
+>   	/*
+>   	 * Data structure for allocation side
+> @@ -128,6 +133,11 @@ struct page_pool {
+>   	u64 destroy_cnt;
+>   };
+>   
+> +struct page_pool_info {
+> +	struct page_pool *pp;
+> +	int pagecnt_bias;
+> +};
+> +
+>   struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
+>   
+>   static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
+> @@ -137,6 +147,17 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
+>   	return page_pool_alloc_pages(pool, gfp);
+>   }
+>   
+> +struct page *page_pool_alloc_frag(struct page_pool *pool,
+> +				  unsigned int *offset, gfp_t gfp);
+> +
+> +static inline struct page *page_pool_dev_alloc_frag(struct page_pool *pool,
+> +						    unsigned int *offset)
+> +{
+> +	gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
+> +
+> +	return page_pool_alloc_frag(pool, offset, gfp);
+> +}
+> +
+>   /* get the stored dma direction. A driver might decide to treat this locally and
+>    * avoid the extra cache line from page_pool to determine the direction
+>    */
+> @@ -253,11 +274,4 @@ static inline void page_pool_ring_unlock(struct page_pool *pool)
+>   		spin_unlock_bh(&pool->ring.producer_lock);
+>   }
+>   
+> -/* Store mem_info on struct page and use it while recycling skb frags */
+> -static inline
+> -void page_pool_store_mem_info(struct page *page, struct page_pool *pp)
+> -{
+> -	page->pp = pp;
+> -}
+> -
+>   #endif /* _NET_PAGE_POOL_H */
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 5e4eb45..95d94a7 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -206,6 +206,49 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
+>   	return true;
+>   }
+>   
+> +static int page_pool_set_pp_info(struct page_pool *pool,
+> +				 struct page *page, gfp_t gfp)
+> +{
+> +	struct page_pool_info *pp_info;
+> +
+> +	pp_info = kzalloc_node(sizeof(*pp_info), gfp, pool->p.nid);
+> +	if (!pp_info)
+> +		return -ENOMEM;
+> +
+> +	if (pool->p.flags & PP_FLAG_PAGECNT_BIAS) {
+> +		page_ref_add(page, USHRT_MAX);
+> +		pp_info->pagecnt_bias = USHRT_MAX;
+> +	} else {
+> +		pp_info->pagecnt_bias = 0;
+> +	}
+> +
+> +	page->pp_magic |= PP_SIGNATURE;
+> +	pp_info->pp = pool;
+> +	page->pp_info = pp_info;
+> +	return 0;
+> +}
+> +
+> +static int page_pool_clear_pp_info(struct page *page)
+> +{
+> +	struct page_pool_info *pp_info = page->pp_info;
+> +	int bias;
+> +
+> +	bias = pp_info->pagecnt_bias;
+> +
+> +	kfree(pp_info);
+> +	page->pp_info = NULL;
+> +	page->pp_magic = 0;
+> +
+> +	return bias;
+> +}
+> +
+> +static void page_pool_clear_and_drain_page(struct page *page)
+> +{
+> +	int bias = page_pool_clear_pp_info(page);
+> +
+> +	__page_frag_cache_drain(page, bias + 1);
+> +}
+> +
+>   static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+>   						 gfp_t gfp)
+>   {
+> @@ -216,13 +259,16 @@ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+>   	if (unlikely(!page))
+>   		return NULL;
+>   
+> -	if ((pool->p.flags & PP_FLAG_DMA_MAP) &&
+> -	    unlikely(!page_pool_dma_map(pool, page))) {
+> +	if (unlikely(page_pool_set_pp_info(pool, page, gfp))) {
+>   		put_page(page);
+>   		return NULL;
+>   	}
+>   
+> -	page->pp_magic |= PP_SIGNATURE;
+> +	if ((pool->p.flags & PP_FLAG_DMA_MAP) &&
+> +	    unlikely(!page_pool_dma_map(pool, page))) {
+> +		page_pool_clear_and_drain_page(page);
+> +		return NULL;
+> +	}
+>   
+>   	/* Track how many pages are held 'in-flight' */
+>   	pool->pages_state_hold_cnt++;
+> @@ -261,12 +307,17 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>   	 */
+>   	for (i = 0; i < nr_pages; i++) {
+>   		page = pool->alloc.cache[i];
+> +		if (unlikely(page_pool_set_pp_info(pool, page, gfp))) {
+> +			put_page(page);
+> +			continue;
+> +		}
+> +
+>   		if ((pp_flags & PP_FLAG_DMA_MAP) &&
+>   		    unlikely(!page_pool_dma_map(pool, page))) {
+> -			put_page(page);
+> +			page_pool_clear_and_drain_page(page);
+>   			continue;
+>   		}
+> -		page->pp_magic |= PP_SIGNATURE;
+> +
+>   		pool->alloc.cache[pool->alloc.count++] = page;
+>   		/* Track how many pages are held 'in-flight' */
+>   		pool->pages_state_hold_cnt++;
+> @@ -284,6 +335,25 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>   	return page;
+>   }
+>   
+> +static void page_pool_sub_bias(struct page *page, int nr)
+> +{
+> +	struct page_pool_info *pp_info = page->pp_info;
+> +
+> +	/* "pp_info->pagecnt_bias == 0" indicates the PAGECNT_BIAS
+> +	 * flags is not set.
+> +	 */
+> +	if (!pp_info->pagecnt_bias)
+> +		return;
+> +
+> +	/* Make sure pagecnt_bias > 0 for elevated refcnt case */
+> +	if (unlikely(pp_info->pagecnt_bias <= nr)) {
+> +		page_ref_add(page, USHRT_MAX);
+> +		pp_info->pagecnt_bias += USHRT_MAX;
+> +	}
+> +
+> +	pp_info->pagecnt_bias -= nr;
+> +}
+> +
+>   /* For using page_pool replace: alloc_pages() API calls, but provide
+>    * synchronization guarantee for allocation side.
+>    */
+> @@ -293,15 +363,66 @@ struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
+>   
+>   	/* Fast-path: Get a page from cache */
+>   	page = __page_pool_get_cached(pool);
+> -	if (page)
+> +	if (page) {
+> +		page_pool_sub_bias(page, 1);
+>   		return page;
+> +	}
+>   
+>   	/* Slow-path: cache empty, do real allocation */
+>   	page = __page_pool_alloc_pages_slow(pool, gfp);
+> +	if (page)
+> +		page_pool_sub_bias(page, 1);
+> +
+>   	return page;
+>   }
+>   EXPORT_SYMBOL(page_pool_alloc_pages);
+>   
+> +struct page *page_pool_alloc_frag(struct page_pool *pool,
+> +				  unsigned int *offset, gfp_t gfp)
+> +{
+> +	unsigned int frag_offset = pool->frag_offset;
+> +	unsigned int frag_size = pool->p.frag_size;
+> +	struct page *frag_page = pool->frag_page;
+> +	unsigned int max_len = pool->p.max_len;
+> +
+> +	if (!frag_page || frag_offset + frag_size > max_len) {
+> +		frag_page = page_pool_alloc_pages(pool, gfp);
+> +		if (unlikely(!frag_page)) {
+> +			pool->frag_page = NULL;
+> +			return NULL;
+> +		}
+> +
+> +		pool->frag_page = frag_page;
+> +		frag_offset = 0;
+> +
+> +		page_pool_sub_bias(frag_page, max_len / frag_size - 1);
+> +	}
+> +
+> +	*offset = frag_offset;
+> +	pool->frag_offset = frag_offset + frag_size;
+> +
+> +	return frag_page;
+> +}
+> +EXPORT_SYMBOL(page_pool_alloc_frag);
+> +
+> +static void page_pool_empty_frag(struct page_pool *pool)
+> +{
+> +	unsigned int frag_offset = pool->frag_offset;
+> +	unsigned int frag_size = pool->p.frag_size;
+> +	struct page *frag_page = pool->frag_page;
+> +	unsigned int max_len = pool->p.max_len;
+> +
+> +	if (!frag_page)
+> +		return;
+> +
+> +	while (frag_offset + frag_size <= max_len) {
+> +		page_pool_put_full_page(pool, frag_page, false);
+> +		frag_offset += frag_size;
+> +	}
+> +
+> +	pool->frag_page = NULL;
+> +}
+> +
+>   /* Calculate distance between two u32 values, valid if distance is below 2^(31)
+>    *  https://en.wikipedia.org/wiki/Serial_number_arithmetic#General_Solution
+>    */
+> @@ -326,10 +447,11 @@ static s32 page_pool_inflight(struct page_pool *pool)
+>    * a regular page (that will eventually be returned to the normal
+>    * page-allocator via put_page).
+>    */
+> -void page_pool_release_page(struct page_pool *pool, struct page *page)
+> +static int __page_pool_release_page(struct page_pool *pool,
+> +				    struct page *page)
+>   {
+>   	dma_addr_t dma;
+> -	int count;
+> +	int bias, count;
+>   
+>   	if (!(pool->p.flags & PP_FLAG_DMA_MAP))
+>   		/* Always account for inflight pages, even if we didn't
+> @@ -345,22 +467,29 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
+>   			     DMA_ATTR_SKIP_CPU_SYNC);
+>   	page_pool_set_dma_addr(page, 0);
+>   skip_dma_unmap:
+> -	page->pp_magic = 0;
+> +	bias = page_pool_clear_pp_info(page);
+>   
+>   	/* This may be the last page returned, releasing the pool, so
+>   	 * it is not safe to reference pool afterwards.
+>   	 */
+>   	count = atomic_inc_return(&pool->pages_state_release_cnt);
+>   	trace_page_pool_state_release(pool, page, count);
+> +	return bias;
+> +}
+> +
+> +void page_pool_release_page(struct page_pool *pool, struct page *page)
+> +{
+> +	int bias = __page_pool_release_page(pool, page);
+> +
+> +	WARN_ONCE(bias, "PAGECNT_BIAS is not supposed to be enabled\n");
+>   }
+>   EXPORT_SYMBOL(page_pool_release_page);
+>   
+>   /* Return a page to the page allocator, cleaning up our state */
+>   static void page_pool_return_page(struct page_pool *pool, struct page *page)
+>   {
+> -	page_pool_release_page(pool, page);
+> +	__page_frag_cache_drain(page, __page_pool_release_page(pool, page) + 1);
+>   
+> -	put_page(page);
+>   	/* An optimization would be to call __free_pages(page, pool->p.order)
+>   	 * knowing page is not part of page-cache (thus avoiding a
+>   	 * __page_cache_release() call).
+> @@ -395,7 +524,16 @@ static bool page_pool_recycle_in_cache(struct page *page,
+>   	return true;
+>   }
+>   
+> -/* If the page refcnt == 1, this will try to recycle the page.
+> +static bool page_pool_bias_page_recyclable(struct page *page, int bias)
+> +{
+> +	int ref = page_ref_dec_return(page);
+> +
+> +	WARN_ON(ref < bias);
+> +	return ref == bias + 1;
+> +}
+> +
+> +/* If pagecnt_bias == 0 and the page refcnt == 1, this will try to
+> + * recycle the page.
+>    * if PP_FLAG_DMA_SYNC_DEV is set, we'll try to sync the DMA area for
+>    * the configured size min(dma_sync_size, pool->max_len).
+>    * If the page refcnt != 1, then the page will be returned to memory
+> @@ -405,16 +543,35 @@ static __always_inline struct page *
+>   __page_pool_put_page(struct page_pool *pool, struct page *page,
+>   		     unsigned int dma_sync_size, bool allow_direct)
+>   {
+> -	/* This allocator is optimized for the XDP mode that uses
+> +	int bias = page->pp_info->pagecnt_bias;
+> +
+> +	/* Handle the elevated refcnt case first:
+> +	 * multi-frames-per-page, it is likely from the skb, which
+> +	 * is likely called in non-sofrirq context, so do not recycle
+> +	 * it in pool->alloc.
+> +	 *
+> +	 * Then handle non-elevated refcnt case:
+>   	 * one-frame-per-page, but have fallbacks that act like the
+>   	 * regular page allocator APIs.
+> -	 *
+>   	 * refcnt == 1 means page_pool owns page, and can recycle it.
+>   	 *
+>   	 * page is NOT reusable when allocated when system is under
+>   	 * some pressure. (page_is_pfmemalloc)
+>   	 */
+> -	if (likely(page_ref_count(page) == 1 && !page_is_pfmemalloc(page))) {
+> +	if (bias) {
+> +		/* We have gave some refcnt to the stack, so wait for
+> +		 * all refcnt of the stack to be decremented before
+> +		 * enabling recycling.
+> +		 */
+> +		if (!page_pool_bias_page_recyclable(page, bias))
+> +			return NULL;
+> +
+> +		/* only enable recycling when it is not pfmemalloced */
+> +		if (!page_is_pfmemalloc(page))
+> +			return page;
+> +
+> +	} else if (likely(page_ref_count(page) == 1 &&
+> +			  !page_is_pfmemalloc(page))) {
+>   		/* Read barrier done in page_ref_count / READ_ONCE */
+>   
+>   		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+> @@ -428,22 +585,8 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+>   		/* Page found as candidate for recycling */
+>   		return page;
+>   	}
+> -	/* Fallback/non-XDP mode: API user have elevated refcnt.
+> -	 *
+> -	 * Many drivers split up the page into fragments, and some
+> -	 * want to keep doing this to save memory and do refcnt based
+> -	 * recycling. Support this use case too, to ease drivers
+> -	 * switching between XDP/non-XDP.
+> -	 *
+> -	 * In-case page_pool maintains the DMA mapping, API user must
+> -	 * call page_pool_put_page once.  In this elevated refcnt
+> -	 * case, the DMA is unmapped/released, as driver is likely
+> -	 * doing refcnt based recycle tricks, meaning another process
+> -	 * will be invoking put_page.
+> -	 */
+> -	/* Do not replace this with page_pool_return_page() */
+> +
+>   	page_pool_release_page(pool, page);
+> -	put_page(page);
+>   
+>   	return NULL;
+>   }
+> @@ -452,6 +595,7 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
+>   			unsigned int dma_sync_size, bool allow_direct)
+>   {
+>   	page = __page_pool_put_page(pool, page, dma_sync_size, allow_direct);
+> +
+>   	if (page && !page_pool_recycle_in_ring(pool, page)) {
+>   		/* Cache full, fallback to free pages */
+>   		page_pool_return_page(pool, page);
+> @@ -503,8 +647,11 @@ static void page_pool_empty_ring(struct page_pool *pool)
+>   
+>   	/* Empty recycle ring */
+>   	while ((page = ptr_ring_consume_bh(&pool->ring))) {
+> -		/* Verify the refcnt invariant of cached pages */
+> -		if (!(page_ref_count(page) == 1))
+> +		/* Verify the refcnt invariant of cached pages for
+> +		 * non elevated refcnt case.
+> +		 */
+> +		if (!(pool->p.flags & PP_FLAG_PAGECNT_BIAS) &&
+> +		    !(page_ref_count(page) == 1))
+>   			pr_crit("%s() page_pool refcnt %d violation\n",
+>   				__func__, page_ref_count(page));
+>   
+> @@ -544,6 +691,7 @@ static void page_pool_empty_alloc_cache_once(struct page_pool *pool)
+>   
+>   static void page_pool_scrub(struct page_pool *pool)
+>   {
+> +	page_pool_empty_frag(pool);
+>   	page_pool_empty_alloc_cache_once(pool);
+>   	pool->destroy_cnt++;
+>   
+> @@ -637,14 +785,13 @@ bool page_pool_return_skb_page(struct page *page)
+>   	if (unlikely(page->pp_magic != PP_SIGNATURE))
+>   		return false;
+>   
+> -	pp = page->pp;
+> +	pp = page->pp_info->pp;
+>   
+>   	/* Driver set this to memory recycling info. Reset it on recycle.
+>   	 * This will *not* work for NIC using a split-page memory model.
+>   	 * The page will be returned to the pool here regardless of the
+>   	 * 'flipped' fragment being in use or not.
+>   	 */
+> -	page->pp = NULL;
+>   	page_pool_put_full_page(pp, page, false);
+>   
+>   	return true;
 
