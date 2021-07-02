@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C813B9E0E
+	by mail.lfdr.de (Postfix) with ESMTP id A18073B9E0F
 	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 11:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbhGBJYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 05:24:39 -0400
-Received: from mail-mw2nam10on2090.outbound.protection.outlook.com ([40.107.94.90]:15104
+        id S230427AbhGBJYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 05:24:44 -0400
+Received: from mail-mw2nam10on2115.outbound.protection.outlook.com ([40.107.94.115]:9857
         "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230245AbhGBJYd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Jul 2021 05:24:33 -0400
+        id S230333AbhGBJYf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Jul 2021 05:24:35 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ey7HgyGN9CSilNBnxFOEoNvVifpOoADVmubSDsIIltKss44FPDlhf3XbbFiO6ssNaKimXXBVH0AyE5VCtesgpRmDtWPjLAjIx8S8U1Ycix1EQWUYW9Ys+u+NOb3NqtvE3rFL4WhogLUNdOUOade3tPN9+60pcDk9tOJCZYYGPj7Mp4dxMUNP5PVOcNZKUOagyn2FCHeyAPws/S9aKqk86SKfepVo/4kdGThpRfYpLFCQO2oOeukF8KcTqAQcUittUyXgKyr/fKrL+PXLkwcUl9MMkijvWOFe//T7nLUKPqH7AHSm2XsXPl5VoPMNe/b9ZwhJo6eRgfr15GExNVWosA==
+ b=j54r1CC3fMalkXejdIu3mhYtTV6rFEGDmso2a+Qj171Xne2m6o8lDDfh7wBkcToL5g6QYDPpaAvAUZIz03NplVFnZuLeL/mEiXKyCtSGlpqTOFGXvUrrtWM4JPeaHY5iFivlcxz1PaaWEkSO4kDihiK7lGfyYGiDLCyZqxN1yrSFpd7DX2vY7cVw2cazSBKFdoRWM+2ckMgnO9D4zR7O4GLyfQUPEBbzOarKZex5N+OpqlkjQdJxMGIJRb6G9mbUGsiYsgs2wq9N+TbjBx6nG1HBn3RVtbHKeiAPD8xRfls1hcQKk2UdHQp2p+90YpY++uA3qkOlMzNQJFdGhAePdQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FDPj+sAbpQ+bk45cUpeknTA/coqgNfvhcw/k6eRDecg=;
- b=fWGvLRp82glq2cHkcBnV7wBXZffSx8akf2iVv2Emva8HVSSi557z9BxeAUFtlTLCiigY1wqPUEEpwvwoiWt3QQNR+0OFrexEAYAwUavSJzYiLhoEsmp/DVCfzdtgsPHtQYXN2fKit3EJOwuYoCYnltrO2HxuB6t2qvgerzBaePAhV6iwgVmIEDbIKdKWPOkk4JXU3OHxNyKMKbI6r0iKr4uxOJd87T+CXCXUmXplRSc/ZQkmFr1XBdqDUBYSFTOHPMG9A1RkMbDI1kRX8x0SrUU9CYHaMnE+MAGSeNqjt9x/N1YtvKB07ibtRyFFx/F7hUQXXUdLDRGeIG3dqv4TfA==
+ bh=ZNkZOJIcdADK+WyPfkjAbmqflIx8sO18zj0iEdoRLUQ=;
+ b=FgWKmLGpYQuczwfsOD36qOZ7q2OMy/qCupQWeBriLZ0x4UlHIHGcf10nI+VPZ78Sz6ISCxRkFcxuIJPNARsZm2ID/iqolZIqTylLw5JnNMUFa1EzW333jTc1sfPWOeEqUcx+4tXdtjrYkXF198hwRpSyw5jlwpKJ/V+tThwNKCSTpUAeId8yWceTk9UFk/9ISVum77YGgUUsBb2DvOBVy3XJfYLkquAtu3ID99hMLKtgyrEb0kRp4Qx9fFsX8Ode4A8c/NC8U9fjq/vQe/NIQidnwwinEMT6pIuNB1zM4adSCPcQfZLBPpXCnHkqdqc9aZOac5jaIIHAoRXH/poZCg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FDPj+sAbpQ+bk45cUpeknTA/coqgNfvhcw/k6eRDecg=;
- b=qFTUUTEUGojGNEnZ+RMcB+7edBFtb2pVkEaIsykXlE8ep8JqeaFLSh7UgcTVZIPGqBEGZGTKtKvWNEeg+mdhN//aE75+incAtOj2XpZaSEl4wlFjj8ilRE53WHYim5WA/VbVWJlp9ynx075rDzUUJXEq5fvlQ2naLX8At9tfx80=
+ bh=ZNkZOJIcdADK+WyPfkjAbmqflIx8sO18zj0iEdoRLUQ=;
+ b=R7k3wHtkeT3BUxGv/W2YCDjPIHlhdHx3mvf+z3mAU4zpJ8W5g7frlrnBVZbd4su2iCPEBSvD+VPELa0NqlGfwFnFmrwO7BXH4SIu9ODgaGhYQoMhOuB1+bwEIUls3ojUDT4g+13TzC99AFZLCob8Xg3xp9LnkMtVfSKxyDNdpkQ=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH0PR13MB4987.namprd13.prod.outlook.com (2603:10b6:510:75::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.12; Fri, 2 Jul
- 2021 09:22:01 +0000
+ 2021 09:22:02 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::4596:4181:eeee:7a8a%9]) with mapi id 15.20.4308.012; Fri, 2 Jul 2021
- 09:22:01 +0000
+ 09:22:02 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -45,9 +45,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Louis Peens <louis.peens@corigine.com>,
         Yinjun Zhang <yinjun.zhang@corigine.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net 1/2] net/sched: act_ct: remove and free nf_table callbacks
-Date:   Fri,  2 Jul 2021 11:21:38 +0200
-Message-Id: <20210702092139.25662-2-simon.horman@corigine.com>
+Subject: [PATCH net 2/2] nfp: flower-ct: remove callback delete deadlock
+Date:   Fri,  2 Jul 2021 11:21:39 +0200
+Message-Id: <20210702092139.25662-3-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210702092139.25662-1-simon.horman@corigine.com>
 References: <20210702092139.25662-1-simon.horman@corigine.com>
@@ -58,52 +58,52 @@ X-ClientProxiedBy: AM3PR07CA0112.eurprd07.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from momiji.horms.nl (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM3PR07CA0112.eurprd07.prod.outlook.com (2603:10a6:207:7::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.8 via Frontend Transport; Fri, 2 Jul 2021 09:21:59 +0000
+Received: from momiji.horms.nl (2001:982:756:703:d63d:7eff:fe99:ac9d) by AM3PR07CA0112.eurprd07.prod.outlook.com (2603:10a6:207:7::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.8 via Frontend Transport; Fri, 2 Jul 2021 09:22:01 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4fe981da-fdb0-400b-bcef-08d93d3ad921
+X-MS-Office365-Filtering-Correlation-Id: 110c7b46-9816-46d2-3f9c-08d93d3ada2f
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4987:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB4987E8F3660FE8F5E90383B5E81F9@PH0PR13MB4987.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB4987AE6F37CE9BBBF6F5C04AE81F9@PH0PR13MB4987.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mUnqDKl3LhQohuYZZNOeP0Ip2AuK0vm/RnorRz3eF2p0jc8vvL1lDRUCo28Yjmyp3z+JS/1i8CmPUFjr63KE3W9KYoHVkf5PIguw97hnEw+FUdqJNiO9w1B4PjclmSRhw06XtuZd8a5TQxfLTHDzA8HRDljM7TG7bXOT0eoBOsAS9FnrAYxW5l7HOBBQUqxqp3bQD4m1EtUQsFOXX0CmyG3p6U089cv7tMVHPTMJgtMR5fbcrStbW24jFUUqWoItq1dg8FE+gwjwCFjCHm1z/sakxl8Fi10pZx7JJ4imv6IHEO9rpMQki1f0CgppYFcdmE+/+ueOJtYY/uBv0nJd1Q9LIIzKm2SGhOCBjN5CPEecszTaWB6zoryzUZkmvJKi7flt79HSRPYNpTuSs+29f9cKd1u3Xci06mC6zC7gKz0VuQwZ7KX97+S2mvevpS5FjUqztAe75QphD4GqhH0Rf8NmIrukiBra0tiQXFsFXb85/haElA1JhWrexlGEL12ujiv4ilGoMJJfLRaw0P/OtZqLuTTM76pKt+SQ0sopHbZUDHbGOKCuK59bRMXKDxoHKN2KmWLIcqmRXFx6Ou7LzugEGvAZgfxTiWZtstiB6Lx+Zo0rQG+rbtUVHZqqoQM3uD8kGdKU08IjIW13hEh6ug==
+X-Microsoft-Antispam-Message-Info: YWY4gbyTtL93Irr4sZVlIAekRNgEaAKSx4op73tgkVHEP+tQF3yRzdEpPG0Bh+98ejMh9LPONEwRpZxF5B0uEgZhPqm//uw2Mc7khro0XDNUOY+LgYmQebaNoPvM0W56nBuSGra/RjymYmRMOlses+1hfmA8RbNE8EIbyG02/sczpeYUXR/t4oEqzL4cvYSuKm4zVuFzX/7WLGD/srI3VPxkOimau77Bm+ytO29E2KRHRKQZBBAZ6c9at8WLi9w3t/5i4WYwyNMLDxEPuzTnuoQN5qDFkTwc3du1QOr+aiMrBajI9mpRZu8qFv6nb/WG0qxkhJJOCWehqEZXw1/Sqrjy4vU2pFKg2Fs5vgDQqkn6js3KoldumsXP/bvH3izGrkAm7V2xBFHFnA8afNCZHNASXjbc7fHRlUCY1umZy0IFWTC+tJ9xtl2OMeb+XkCypI6XinI6u0HWPZbVIUUWaKboP7RpmIhLZPyCv+H7uvhtxaqUZ41lSN/GFwi84jp1Iv6+xmthGHq1lW5m/YG6jmgtY7IyQDpzZY0vFK3yRdMpRAp0FmogLADz2HuGzdPPLVNPSbfTtbRotkeM8dN7C7MBwFXlAdVSo/kAVgWLkP8i+7fRM7wK+XRajqD23WbkLmA/8+YoGs9vELUwoINq2Q==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(396003)(39830400003)(136003)(366004)(478600001)(36756003)(6666004)(38100700002)(54906003)(2616005)(110136005)(6506007)(2906002)(44832011)(52116002)(316002)(6512007)(107886003)(66476007)(66946007)(6486002)(186003)(4326008)(8936002)(8676002)(66556008)(5660300002)(83380400001)(1076003)(86362001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sfAX/ySVvGWBag0S1QjsqF4WOr8qU2Dxo3eLNPrLtQE+Y+BR3j4rRlOtrpHH?=
- =?us-ascii?Q?UZco6aS4m+UN6KLBxEJgLkuWII9ujt9084BMhd8f7Q9fAL1Ca8ZCRy2VicJT?=
- =?us-ascii?Q?+TtbCMkD3i+F5PsyFOT5CPf4IHYmOTcIQy8BMTJuFLU2ZGQ6j8oQlGiJTXNu?=
- =?us-ascii?Q?Yxrd8l8PbzsnPjUiHbro3Kz7xs9fQAHHmkqghDeunt9FGlguKymdd/n7sUjp?=
- =?us-ascii?Q?ZQsaS1CST4DcHYwZFvOuTOHQxaJfOH3Ws/v12F/DJVPRIotEAGGPpOtnFVmf?=
- =?us-ascii?Q?uWxCZ8qz2itPrGSc3q83mAXUKQ1fZLX6EVaiKDiwf7UZSmV46cnfSAupNxMx?=
- =?us-ascii?Q?ypWRadtS3zB5k8Ms9LFOcriyhzO8r5UN8GJuKwvBQPlNQb1YbIj7ucs4YIvA?=
- =?us-ascii?Q?EZsTXQ8gmIc26OSgOF04SYgmabKSC8eTuFpfxiLPYLHkcXeQGVhn8McQ+X6J?=
- =?us-ascii?Q?VgVV7Fu1Y8Dp7OC9gGhyusWO27p7Kfitq9ZGlRtfeblbd/WQF/4D7xScMXFp?=
- =?us-ascii?Q?Rzt2CcxobPeLI4U5+wflA2ozy99E0ORakYeb7AOZAF0K/tUM+0vVHJVmUuB3?=
- =?us-ascii?Q?RPhvGav2Y4IrdLKxbKT/hVDFbmoO6bMVmLlmWJwk9Y0ctXXKMakcjl7/SVvi?=
- =?us-ascii?Q?vtdP+OQnowYCp/Kdqf3Zi1iFUYxyCLAqBzKt157pwD/+diSk8y9nkZyJYTPh?=
- =?us-ascii?Q?iYsXXzKvrplq2Oac2apmHG+E16A7j82vI7+p1+glIGvk8Vtf6Gv1I2rrdbiB?=
- =?us-ascii?Q?5nACGWgdtAYgvnHzKbXDYgrUa29uvkxvCK5s1L2PGz5MOo9niWcRy6F7WaFM?=
- =?us-ascii?Q?Rw1qwMOZrBP8sbCLjbdszW4oI2kgueytmBg4kxGq/9FcNsarbUSquYxwPTSt?=
- =?us-ascii?Q?EyE5CTZKP+CoJ71+TnI3ECEy2AM+MNX+lcnQzJD9qSVWJio7m1vf0yyqapio?=
- =?us-ascii?Q?k6DsGPUE8PTasTJKib2yeqM24/9UxUr79NdNFPlQ9IGPuGyP078wGUsOKFSB?=
- =?us-ascii?Q?g/TndgCjz82BeGWElIK9Ep4ibS9x5K7VigwMK0B7QJMCVfGInJtAf51hYFp+?=
- =?us-ascii?Q?yDakoDsfASV3yrAWSQdj6tiLG+hiL6ClSfvFyXyecZIhwcIvQShsSrS9hDiB?=
- =?us-ascii?Q?nC+G+tZY5zZEOjkFMYhXa4K2exqFfKqeRDWfZE+CjIHSldZG7bgnB0dAYLfs?=
- =?us-ascii?Q?NKR/o3QT9f33pDTjUpTNsA0udmsZdbPnD+ypCVwGHlT9yC1My1L7GzhFMBYu?=
- =?us-ascii?Q?uMwn1QM92N5D0pzjNVY5qwEiLGeO+HDhgQ7cT+SvqhpK4Ev/Z5o1zWSlXHkz?=
- =?us-ascii?Q?FxKuotekd+lhwAWxAhNBqT9D/d2l4Mhxd9taAqw0NMUkCwKOhyHzb3VMs3Fr?=
- =?us-ascii?Q?z7TTn54dxMhJYpscLdsUO5oA86lT?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bZeU2qWXB3FZFP4CZhApPRVz3tBa7/zjsvdRBqu6544npGhN9VmAGw4zsFkM?=
+ =?us-ascii?Q?qP3OqeAGDgbRKRDiDlB7FwrUp32QshBica3JLqewfODFn9eyZHkvVaI7+KGw?=
+ =?us-ascii?Q?ScDB0P3/g/Jgh85sdvYXUDpMDuYu3vzHOxiOebvRtaoKOQtHOIDjChHj4BhK?=
+ =?us-ascii?Q?wE/CwsfmNjwM/P1UnkgViAX1WB9TewbklXmRqN9YVYQTq9tOZpINVLD3EHxw?=
+ =?us-ascii?Q?1uTIK/tGJF9Ui/Gx2r7tzT8Ja+WVFRuKHQb3XKL8ACaSv9AqBCrG3mmN8JBH?=
+ =?us-ascii?Q?ZbBrRYY8usiOaJo1egrxShMZTiGzTjeb5dGwqFfroaR8IPzfRNb5X0Fs+Qrd?=
+ =?us-ascii?Q?zwhRMp+Vdw7HlcBqZv+KlfY2lMmY3cGvRbni8l40/YyEvZju2NQqYiS2GWNF?=
+ =?us-ascii?Q?JrTwEioshHQUm8KMlzhR4AeRnkhrWwS6pjBuo3ZW9+vmXM4Pj2VvZHVHcc4H?=
+ =?us-ascii?Q?6LkNJELiWkeK5ndN+kvslf3BNelMkVP1mZpKLrpasZwVzYwxISZwETjmxEml?=
+ =?us-ascii?Q?l8sesxx8AQM2GdWf39RSUGW3rrB6HGVYjNamMQlj6GhGNYX4K9OG7rrbnpq0?=
+ =?us-ascii?Q?Og+ZYCwR5KJr8nINeqmiUBimWdu9VmHPgo+Uw3xOMYXC84WxPHK5FwwVLCzV?=
+ =?us-ascii?Q?zvcGplNBZXAoSM0Nd8nAC5zNy0JfwAyZAJz5Hu7U00546gZ/sZIK4RpfIA7y?=
+ =?us-ascii?Q?8JiCw+D1SXcDhLZYsye46wxw2be1dJvaPCUEbXqQ6aBIbe1iU24saxGduOnw?=
+ =?us-ascii?Q?EDxl6WSnioPXWy5H2Pq+4q9ikZVGqmiSQaOK23knIme07mA2674yULOpj6/W?=
+ =?us-ascii?Q?niGufF9ZZ4XmzyA553xJCDdWpOV5TJ6ueV4HnaHq1RFNJYe0+DO8i/To55RX?=
+ =?us-ascii?Q?PdPOB84QVaWr8w7tJv7dHkUQ0lU6R1QWyJL1XxaGp+FFZvXLvau6DkCToTj8?=
+ =?us-ascii?Q?O+6E/vrZKmL5sbdt/b0MyOiE0H9P28eurgz6Eqe2z9ROe+eUdRmRQ2bdcSQg?=
+ =?us-ascii?Q?Pp7jRyPF4IxD9MGzbwBCJais6Wnmo4vIWp6inD3GWHFr+9ruZEJVCYRRnu/c?=
+ =?us-ascii?Q?izD1PRZC0g+srQORDjd+Q5fq1ByaGlN8AZOUi6biQG3c6VpyvTY4nMvJS0Xp?=
+ =?us-ascii?Q?g3+Q5MV0TqNnCezu/SbUqIyGBkeaZAsJ2p+n7KuaK981ssh62PLiF4OSH9ge?=
+ =?us-ascii?Q?LpjSJvzpO3Ke13RMnoEWxVwrNfXu25sxlPkqGB41tYA6AzVK0zWZ+egL+T03?=
+ =?us-ascii?Q?4GcCUrgcWdBu6i0/c032aUzh9gijfEtF9ZbPcrW/BJVUYArWFZwdmqVoV6D2?=
+ =?us-ascii?Q?+IqrTss2yO1avh5LkQKO9DVr83jwqhxjsRX+vY/mGhYSgm1xo3Krj5/0ET5X?=
+ =?us-ascii?Q?Jpn093X0AhceU58rQqnacLxxUZoY?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4fe981da-fdb0-400b-bcef-08d93d3ad921
+X-MS-Exchange-CrossTenant-Network-Message-Id: 110c7b46-9816-46d2-3f9c-08d93d3ada2f
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2021 09:22:01.0776
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2021 09:22:02.8458
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QgS01Fmw2/q6pTJZaQoOyiuvdKs7hTW0iJIFNn2LlgxEhdJRneBHvFO+CvwQQ9nXM7iF4hesdteLz1o0sSfDRTklBOvcNm963RuL9IoshRo=
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vv5SG4oDK1LcJ+4sLgmbiyA3PWOoTRHpeMWRQ8aGP8hVScLja4jpIY4Es7ONOpoazQXDLTBgzS1CgNra9Pw0ofNbovsYbJYBHxBl07ljflU=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4987
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -111,49 +111,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Louis Peens <louis.peens@corigine.com>
 
-When cleaning up the nf_table in tcf_ct_flow_table_cleanup_work
-there is no guarantee that the callback list, added to by
-nf_flow_table_offload_add_cb, is empty. This means that it is
-possible that the flow_block_cb memory allocated will be lost.
+The current location of the callback delete can lead to a race
+condition where deleting the callback requires a write_lock on
+the nf_table, but at the same time another thread from netfilter
+could have taken a read lock on the table before trying to offload.
+Since the driver is taking a rtnl_lock this can lead into a deadlock
+situation, where the netfilter offload will wait for the cls_flower
+rtnl_lock to be released, but this cannot happen since this is
+waiting for the nf_table read_lock to be released before it can
+delete the callback.
 
-Fix this by iterating the list and freeing the flow_block_cb entries
-before freeing the nf_table entry (via freeing ct_ft).
+Solve this by completely removing the nf_flow_table_offload_del_cb
+call, as this will now be cleaned up by act_ct itself when cleaning
+up the specific nf_table.
 
-Fixes: 978703f42549 ("netfilter: flowtable: Add API for registering to flow table events")
+Fixes: 62268e78145f ("nfp: flower-ct: add nft callback stubs")
 Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- net/sched/act_ct.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ .../net/ethernet/netronome/nfp/flower/conntrack.c   | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index a656baa321fe..7ec443ca48d6 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -322,11 +322,22 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
+index 273d529d43c2..128020b1573e 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
+@@ -1141,20 +1141,7 @@ int nfp_fl_ct_del_flow(struct nfp_fl_ct_map_entry *ct_map_ent)
+ 		nfp_fl_ct_clean_flow_entry(ct_entry);
+ 		kfree(ct_map_ent);
  
- static void tcf_ct_flow_table_cleanup_work(struct work_struct *work)
- {
-+	struct flow_block_cb *block_cb, *tmp_cb;
- 	struct tcf_ct_flow_table *ct_ft;
-+	struct flow_block *block;
- 
- 	ct_ft = container_of(to_rcu_work(work), struct tcf_ct_flow_table,
- 			     rwork);
- 	nf_flow_table_free(&ct_ft->nf_ft);
-+
-+	/* Remove any remaining callbacks before cleanup */
-+	block = &ct_ft->nf_ft.flow_block;
-+	down_write(&ct_ft->nf_ft.flow_block_lock);
-+	list_for_each_entry_safe(block_cb, tmp_cb, &block->cb_list, list) {
-+		list_del(&block_cb->list);
-+		flow_block_cb_free(block_cb);
-+	}
-+	up_write(&ct_ft->nf_ft.flow_block_lock);
- 	kfree(ct_ft);
- 
- 	module_put(THIS_MODULE);
+-		/* If this is the last pre_ct_rule it means that it is
+-		 * very likely that the nft table will be cleaned up next,
+-		 * as this happens on the removal of the last act_ct flow.
+-		 * However we cannot deregister the callback on the removal
+-		 * of the last nft flow as this runs into a deadlock situation.
+-		 * So deregister the callback on removal of the last pre_ct flow
+-		 * and remove any remaining nft flow entries. We also cannot
+-		 * save this state and delete the callback later since the
+-		 * nft table would already have been freed at that time.
+-		 */
+ 		if (!zt->pre_ct_count) {
+-			nf_flow_table_offload_del_cb(zt->nft,
+-						     nfp_fl_ct_handle_nft_flow,
+-						     zt);
+ 			zt->nft = NULL;
+ 			nfp_fl_ct_clean_nft_entries(zt);
+ 		}
 -- 
 2.20.1
 
