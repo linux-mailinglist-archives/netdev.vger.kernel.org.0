@@ -2,64 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F9E23B9FC8
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 13:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 026613B9FCB
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 13:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231889AbhGBL37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 07:29:59 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:58721 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231145AbhGBL36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 07:29:58 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <colin.king@canonical.com>)
-        id 1lzHKK-0003x3-Lf; Fri, 02 Jul 2021 11:27:20 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        id S231892AbhGBLbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 07:31:55 -0400
+Received: from proxmox-new.maurer-it.com ([94.136.29.106]:54408 "EHLO
+        proxmox-new.maurer-it.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231145AbhGBLbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 07:31:55 -0400
+Received: from proxmox-new.maurer-it.com (localhost.localdomain [127.0.0.1])
+        by proxmox-new.maurer-it.com (Proxmox) with ESMTP id 08C344043D;
+        Fri,  2 Jul 2021 13:29:22 +0200 (CEST)
+Date:   Fri, 2 Jul 2021 13:29:19 +0200
+From:   Wolfgang Bumiller <w.bumiller@proxmox.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
         Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iavf: remove redundant null check on key
-Date:   Fri,  2 Jul 2021 12:27:20 +0100
-Message-Id: <20210702112720.16006-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.31.1
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Vlad Yasevich <vyasevic@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Thomas Lamprecht <t.lamprecht@proxmox.com>
+Subject: Re: [PATCH v2] net: bridge: sync fdb to new unicast-filtering ports
+Message-ID: <20210702112919.ccxyp4fyvrjrxkrz@wobu-vie.proxmox.com>
+References: <20210702082605.6034-1-w.bumiller@proxmox.com>
+ <113d8503-8670-c0a3-54a6-0b18af64632e@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <113d8503-8670-c0a3-54a6-0b18af64632e@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Fri, Jul 02, 2021 at 02:16:51PM +0300, Nikolay Aleksandrov wrote:
+> On 02/07/2021 11:26, Wolfgang Bumiller wrote:
+> > Since commit 2796d0c648c9 ("bridge: Automatically manage
+> > port promiscuous mode.")
+> > bridges with `vlan_filtering 1` and only 1 auto-port don't
+> > set IFF_PROMISC for unicast-filtering-capable ports.
+> > 
+> > Normally on port changes `br_manage_promisc` is called to
+> > update the promisc flags and unicast filters if necessary,
+> > but it cannot distinguish between *new* ports and ones
+> > losing their promisc flag, and new ports end up not
+> > receiving the MAC address list.
+> > 
+> > Fix this by calling `br_fdb_sync_static` in `br_add_if`
+> > after the port promisc flags are updated and the unicast
+> > filter was supposed to have been filled.
+> > 
+> > Fixes: 2796d0c648c9 ("bridge: Automatically manage port promiscuous mode.")
+> > Signed-off-by: Wolfgang Bumiller <w.bumiller@proxmox.com>
+> > ---
+> > Changes to v1:
+> >   * Added unsync to error case.
+> >   * Improved error message
+> >   * Added `Fixes` tag to commit message
+> > 
+> 
+> Hi,
+> One comment below..
+> 
+> >  net/bridge/br_if.c | 13 +++++++++++++
+> >  1 file changed, 13 insertions(+)
+> > 
+> > diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
+> > index f7d2f472ae24..2fd03a9742c8 100644
+> > --- a/net/bridge/br_if.c
+> > +++ b/net/bridge/br_if.c
+> > @@ -652,6 +652,18 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
+> >  	list_add_rcu(&p->list, &br->port_list);
+> >  
+> >  	nbp_update_port_count(br);
+> > +	if (!br_promisc_port(p) && (p->dev->priv_flags & IFF_UNICAST_FLT)) {
+> > +		/* When updating the port count we also update all ports'
+> > +		 * promiscuous mode.
+> > +		 * A port leaving promiscuous mode normally gets the bridge's
+> > +		 * fdb synced to the unicast filter (if supported), however,
+> > +		 * `br_port_clear_promisc` does not distinguish between
+> > +		 * non-promiscuous ports and *new* ports, so we need to
+> > +		 * sync explicitly here.
+> > +		 */
+> > +		if (br_fdb_sync_static(br, p))
+> > +			netdev_err(dev, "failed to sync bridge static fdb addresses to this port\n");
+> > +	}
+> >  
+> >  	netdev_update_features(br->dev);
+> >  
+> > @@ -701,6 +713,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
+> >  	return 0;
+> >  
+> >  err7:
+> > +	br_fdb_unsync_static(br, p);
+> 
+> I don't think you should always unsync, but only if they were synced otherwise you
+> might delete an entry that wasn't added by the bridge (e.g. promisc bond dev with mac A ->
+> port mac A and if the bridge has that as static fdb it will delete it on error)
 
-The null check on pointer key has already been performed at the
-start of the function and this leads to a return of -EOPNOTSUPP.
-The second null check on key is therefore always false, it is
-redundant and can be removed.
+Right, sorry, I don't know why I missed that.
+Conditional setup => conditional teardown, obviously >.>
 
-Addresses-Coverity: ("Logically dead code")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> I've been thinking some more about this and obviously you can check if the sync happened,
+> but you could avoid the error path if you move that sync after the vlan init (nbp_vlan_init())
+> but before the port is STP enabled, that would avoid error handling altogether.
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-index af43fbd8cb75..70193d8d54ed 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-@@ -1873,8 +1873,7 @@ static int iavf_set_rxfh(struct net_device *netdev, const u32 *indir,
- 	if (!indir)
- 		return 0;
- 
--	if (key)
--		memcpy(adapter->rss_key, key, adapter->rss_key_size);
-+	memcpy(adapter->rss_key, key, adapter->rss_key_size);
- 
- 	/* Each 32 bits pointed by 'indir' is stored with a lut entry */
- 	for (i = 0; i < adapter->rss_lut_size; i++)
--- 
-2.31.1
+Yeah, that's true. Although it'll be easier for future changes
+introducing another error case to forget about taking this into account.
+Which way do you prefer?
 
