@@ -2,106 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 321A53B9DA2
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:40:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 083123B9DA5
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:42:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230432AbhGBIn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 04:43:27 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:9444 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbhGBIn0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 04:43:26 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GGT3r3MkHzZpPK;
-        Fri,  2 Jul 2021 16:37:44 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 2 Jul 2021 16:40:48 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 2 Jul 2021
- 16:40:48 +0800
-Subject: Re: [Linuxarm] Re: [PATCH net-next v3 2/3] ptr_ring: move r->queue[]
- clearing after r->consumer_head updating
-To:     Jason Wang <jasowang@redhat.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <mst@redhat.com>
-CC:     <brouer@redhat.com>, <paulmck@kernel.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <shuah@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
-References: <1625142402-64945-1-git-send-email-linyunsheng@huawei.com>
- <1625142402-64945-3-git-send-email-linyunsheng@huawei.com>
- <230f0b91-fe92-c53f-4df0-ec36c7c6e223@redhat.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <00b5d5d6-a5ee-94c3-1c9b-81fd32e5d9e2@huawei.com>
-Date:   Fri, 2 Jul 2021 16:40:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S230447AbhGBIor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 04:44:47 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:54380 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230166AbhGBIor (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Jul 2021 04:44:47 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1625215335; h=Content-Type: MIME-Version: Message-ID: Date:
+ References: In-Reply-To: Subject: Cc: To: From: Sender;
+ bh=w3yBGSGoQ8cNaUpst5+zJFm90DXtuz3EZYf+rk4KsIk=; b=L+lEnrrV9QlBDJCCvkS8LF6wwI6JTKRIhHfkIhrtZ+nr3lOXw6uIHfOj+Se8eYncfaINLoyB
+ rDYnvdPdpfxnWBslgCH2JKMZfGpkNeTEk/nJQb+0RG5s8ocOtO7aFnf3W/8j7RbgaS9Q2U+M
+ L+nQLttZUdzw3xJnCvCsjJDLPd8=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 60ded15eec0b18a7455b8bec (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 02 Jul 2021 08:42:06
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 570D9C4323A; Fri,  2 Jul 2021 08:42:05 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6DB36C433D3;
+        Fri,  2 Jul 2021 08:42:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6DB36C433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     chris.chiu@canonical.com
+Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        code@reto-schneider.ch, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rtl8xxxu: disable interrupt_in transfer for 8188cu and 8192cu
+In-Reply-To: <20210701163354.118403-1-chris.chiu@canonical.com> (chris chiu's
+        message of "Fri, 2 Jul 2021 00:33:54 +0800")
+References: <20210701163354.118403-1-chris.chiu@canonical.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+Date:   Fri, 02 Jul 2021 11:41:58 +0300
+Message-ID: <87v95thzu1.fsf@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <230f0b91-fe92-c53f-4df0-ec36c7c6e223@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/7/2 14:45, Jason Wang wrote:
-> 
-> 在 2021/7/1 下午8:26, Yunsheng Lin 写道:
->> Currently r->queue[] clearing is done before r->consumer_head
->> updating, which makes the __ptr_ring_empty() returning false
->> positive result(the ring is non-empty, but __ptr_ring_empty()
->> suggest that it is empty) if the checking is done after the
->> r->queue clearing and before the consumer_head moving forward.
->>
->> Move the r->queue[] clearing after consumer_head moving forward
->> to avoid the above case.
->>
->> As a side effect of above change, a consumer_head checking is
->> avoided for the likely case, and it has noticeable performance
->> improvement when it is tested using the ptr_ring_test selftest
->> added in the previous patch.
->>
->> Tested using the "perf stat -r 1000 ./ptr_ring_test -s 1000 -m 1
->> -N 100000000", comparing the elapsed time:
->>
->>   arch     unpatched           patched       improvement
->> arm64    2.087205 sec       1.888224 sec      +9.5%
->>   X86      2.6538 sec         2.5422 sec       +4.2%
-> 
-> 
-> I think we need the number of real workloads here.
+chris.chiu@canonical.com writes:
 
-As it is a low optimization, and overhead of enqueuing
-and dequeuing is small for any real workloads, so the
-performance improvement could be buried in deviation.
-And that is why the ptr_ring_test is added, the about
-10% improvement for arm64 seems big, but note that it
-is tested using the taskset to avoid the numa effects
-for arm64.
+> From: Chris Chiu <chris.chiu@canonical.com>
+>
+> There will be crazy numbers of interrupts triggered by 8188cu and
+> 8192cu module, around 8000~10000 interrupts per second, on the usb
+> host controller. Compare with the vendor driver source code, it's
+> mapping to the configuration CONFIG_USB_INTERRUPT_IN_PIPE and it is
+> disabled by default.
+>
+> Since the interrupt transfer is neither used for TX/RX nor H2C
+> commands. Disable it to avoid the confusing interrupts for the
+> 8188cu and 8192cu module which I only have for verification.
 
-Anyway, here is the performance data for pktgen in
-queue_xmit mode + dummy netdev with pfifo_fast(which
-uses ptr_ring too), which is not obvious to the above
-data:
+The last paragraph is not entirely clear for me, can you elaborate it
+more? What do you mean with "confusing interrupts"? And is this fixing
+an actual user visible bug or are you just reducing the number of
+interrupts?
 
- threads    unpatched        unpatched        delta
-    1       3.21Mpps         3.23Mpps         +0.6%
-    2       5.56Mpps         3.59Mpps         +0.5%
-    4       5.58Mpps         5.61Mpps         +0.5%
-    8       2.76Mpps         2.75Mpps         -0.3%
-   16       2.23Mpps         2.22Mpps         -0.4%
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-> 
-> Thanks
-> 
-> 
->>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
