@@ -2,129 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8313A3B9D6D
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:17:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B8493B9D6F
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:17:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbhGBITa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 04:19:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23485 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230226AbhGBIT1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 04:19:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625213815;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zBkbuL0GAQIoWtsDWjIVFNTZu/k7IM9ZWEHLrdTuBFM=;
-        b=gxFWVMuVLRQlLw85KWIoHfWUyee3/FK3kzWKcb/Jkxr0RSCWVJ0se8Fi60qhMCmgq7Lamg
-        4EMUH339MOCItDEL2GWSJb2CKrs+4r08FBWP9CIyZGB1DeqNyPbgL4Ek3bzjX1m5Jan3cM
-        H+RnMF+skT7ErC+Zrj29iQ0Jfl29eMk=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-595-AJtEa-esPT29WoBlIdvHiw-1; Fri, 02 Jul 2021 04:16:54 -0400
-X-MC-Unique: AJtEa-esPT29WoBlIdvHiw-1
-Received: by mail-ej1-f71.google.com with SMTP id k1-20020a17090666c1b029041c273a883dso3270902ejp.3
-        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 01:16:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zBkbuL0GAQIoWtsDWjIVFNTZu/k7IM9ZWEHLrdTuBFM=;
-        b=N7PMRBibB/ZYf0pOnI8lK7EfHwlvH1qt/r2LCTzYiE9SZ08VCLlvgVxPw8ACR3/C61
-         q3dGZ5PQC6prb4VaqOD6he1ldSPU+LNtljfc7B8hgkb7BIjxfLmjpbfZ049p/W6kXGbh
-         lR9QsyL1WouMoqbQ0UjrWP7Xx/w+RxzdyMeZT5yOm5j+QbY1RGGw0KVrfSt6ZUUjhj64
-         q48QE4ANy2ozUGvxpHlgTZIISbndWxHMxpSsuAGo065+JR/j7vry1hJtq7ZpdEfQbCyL
-         5wD47TA0reUEXdZd6n0k013huYehJhxwkeJ+xcOrIArBPIv6vPqaoaUN8YGbBVU9iRI7
-         MC7A==
-X-Gm-Message-State: AOAM531YB2hu2h4UtjXDinUrNEi6Ixs/jJfthxyls+klDEWIOg+uv1oJ
-        wlomw9PC2f36mhNsoGZif2he1uIWsVL2VZ547B3kqTqPVhX+GwFlEN3Ixj0WTpuhFR6wZ7Cuvfq
-        5GBo4N61d/2yPhoGo
-X-Received: by 2002:a17:906:940b:: with SMTP id q11mr4274033ejx.79.1625213812782;
-        Fri, 02 Jul 2021 01:16:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyzi6ZvJtE42/Z8dw3YYQEScj3zDC9d9Z8uOfAcwviCkH+zoWbYqKCjfOrDMjV851yZkNo9sw==
-X-Received: by 2002:a17:906:940b:: with SMTP id q11mr4274024ejx.79.1625213812587;
-        Fri, 02 Jul 2021 01:16:52 -0700 (PDT)
-Received: from krava ([185.153.78.55])
-        by smtp.gmail.com with ESMTPSA id jz12sm738900ejc.94.2021.07.02.01.16.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jul 2021 01:16:52 -0700 (PDT)
-Date:   Fri, 2 Jul 2021 10:16:48 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [RFC bpf-next 0/5] bpf, x86: Add bpf_get_func_ip helper
-Message-ID: <YN7LcJu73nCz3Ips@krava>
-References: <20210629192945.1071862-1-jolsa@kernel.org>
- <alpine.LRH.2.23.451.2107011819160.27594@localhost>
+        id S230334AbhGBITy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 04:19:54 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:10237 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230149AbhGBITx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 04:19:53 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GGSV43NdSz1BPTq;
+        Fri,  2 Jul 2021 16:11:56 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 2 Jul 2021 16:17:18 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 2 Jul 2021
+ 16:17:18 +0800
+Subject: Re: [PATCH net-next v3 1/3] selftests/ptr_ring: add benchmark
+ application for ptr_ring
+To:     Jason Wang <jasowang@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <mst@redhat.com>
+CC:     <brouer@redhat.com>, <paulmck@kernel.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <shuah@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
+References: <1625142402-64945-1-git-send-email-linyunsheng@huawei.com>
+ <1625142402-64945-2-git-send-email-linyunsheng@huawei.com>
+ <e1ec4577-a48f-ff56-b766-1445c2501b9f@redhat.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <91bcade8-f034-4bc7-f329-d5e1849867e7@huawei.com>
+Date:   Fri, 2 Jul 2021 16:17:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.23.451.2107011819160.27594@localhost>
+In-Reply-To: <e1ec4577-a48f-ff56-b766-1445c2501b9f@redhat.com>
+Content-Type: text/plain; charset="gbk"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme716-chm.china.huawei.com (10.1.199.112) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 01, 2021 at 06:22:45PM +0100, Alan Maguire wrote:
-> On Tue, 29 Jun 2021, Jiri Olsa wrote:
+On 2021/7/2 14:43, Jason Wang wrote:
 > 
-> > hi,
-> > adding bpf_get_func_ip helper that returns IP address of the
-> > caller function for trampoline and krobe programs.
-> > 
-> > There're 2 specific implementation of the bpf_get_func_ip
-> > helper, one for trampoline progs and one for kprobe/kretprobe
-> > progs.
-> > 
-> > The trampoline helper call is replaced/inlined by verifier
-> > with simple move instruction. The kprobe/kretprobe is actual
-> > helper call that returns prepared caller address.
-> > 
-> > The trampoline extra 3 instructions for storing IP address
-> > is now optional, which I'm not completely sure is necessary,
-> > so I plan to do some benchmarks, if it's noticeable, hence
-> > the RFC. I'm also not completely sure about the kprobe/kretprobe
-> > implementation.
-> > 
-> > Also available at:
-> >   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-> >   bpf/get_func_ip
-> > 
-> > thanks,
-> > jirka
-> > 
-> >
-> 
-> This is great Jiri! Feel free to add for the series:
-> 
-> Tested-by: Alan Maguire <alan.maguire@oracle.com>
+> ÔÚ 2021/7/1 ÏÂÎç8:26, Yunsheng Lin Ð´µÀ:
+>> Currently ptr_ring selftest is embedded within the virtio
+>> selftest, which involves some specific virtio operation,
+>> such as notifying and kicking.
+>>
+>> As ptr_ring has been used by various subsystems, it deserves
+>> it's owner selftest in order to benchmark different usecase
+>> of ptr_ring, such as page pool and pfifo_fast qdisc.
+>>
+>> So add a simple application to benchmark ptr_ring performance.
+>> Currently two test mode is supported:
+>> Mode 0: Both producing and consuming is done in a single thread,
+>>          it is called simple test mode in the test app.
+>> Mode 1: Producing and consuming is done in different thread
+>>          concurrently, also known as SPSC(single-producer/
+>>          single-consumer) test.
+>>
+>> The multi-producer/single-consumer test for pfifo_fast case is
+>> not added yet, which can be added if using CAS atomic operation
+>> to enable lockless multi-producer is proved to be better than
+>> using r->producer_lock.
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>> V3: Remove timestamp sampling, use standard C library as much
+>>      as possible.
 
-great, thanks for testing
+[...]
+
+>> +static void *produce_worker(void *arg)
+>> +{
+>> +    struct worker_info *info = arg;
+>> +    unsigned long i = 0;
+>> +    int ret;
+>> +
+>> +    while (++i <= info->test_count) {
+>> +        while (__ptr_ring_full(&ring))
+>> +            cpu_relax();
+>> +
+>> +        ret = __ptr_ring_produce(&ring, (void *)i);
+>> +        if (ret) {
+>> +            fprintf(stderr, "produce failed: %d\n", ret);
+>> +            info->error = true;
+>> +            return NULL;
+>> +        }
+>> +    }
+>> +
+>> +    info->error = false;
+>> +
+>> +    return NULL;
+>> +}
+>> +
+>> +static void *consume_worker(void *arg)
+>> +{
+>> +    struct worker_info *info = arg;
+>> +    unsigned long i = 0;
+>> +    int *ptr;
+>> +
+>> +    while (++i <= info->test_count) {
+>> +        while (__ptr_ring_empty(&ring))
+>> +            cpu_relax();
+> 
+> 
+> Any reason for not simply use __ptr_ring_consume() here?
+
+No particular reason, just to make sure the ring is
+non-empty before doing the enqueuing, we could check
+if the __ptr_ring_consume() return NULL to decide
+the if the ring is empty. Using __ptr_ring_consume()
+here enable testing the correctness and performance of
+__ptr_ring_consume() too.
 
 > 
-> BTW I also verified that if we extend bpf_program__attach_kprobe() to
-> support the function+offset format in the func_name argument for kprobes, 
-> the following test will pass too:
 > 
-> __u64 test5_result = 0;
-> SEC("kprobe/bpf_fentry_test5+0x6")
-> int test5(struct pt_regs *ctx)
-> {
->         __u64 addr = bpf_get_func_ip(ctx);
+>> +
+>> +        ptr = __ptr_ring_consume(&ring);
+>> +        if ((unsigned long)ptr != i) {
+>> +            fprintf(stderr, "consumer failed, ptr: %lu, i: %lu\n",
+>> +                (unsigned long)ptr, i);
+>> +            info->error = true;
+>> +            return NULL;
+>> +        }
+>> +    }
+>> +
+>> +    if (!__ptr_ring_empty(&ring)) {
+>> +        fprintf(stderr, "ring should be empty, test failed\n");
+>> +        info->error = true;
+>> +        return NULL;
+>> +    }
+>> +
+>> +    info->error = false;
+>> +    return NULL;
+>> +}
+>> +
+
+[...]
+
+>> +
+>> +    return 0;
+>> +}
+>> diff --git a/tools/testing/selftests/ptr_ring/ptr_ring_test.h b/tools/testing/selftests/ptr_ring/ptr_ring_test.h
+>> new file mode 100644
+>> index 0000000..32bfefb
+>> --- /dev/null
+>> +++ b/tools/testing/selftests/ptr_ring/ptr_ring_test.h
 > 
->         test5_result = (const void *) addr == (&bpf_fentry_test5 + 0x6);
->         return 0;
-> }
+> 
+> Let's reuse ptr_ring.c in tools/virtio/ringtest. Nothing virt specific there.
 
-right, I did not think of this test, I'll add it
+It *does* have some virtio specific at the end of ptr_ring.c.
+It can be argued that the ptr_ring.c in tools/virtio/ringtest
+could be refactored to remove the function related to virtio.
 
-thanks,
-jirka
+But as mentioned in the previous disscusion [1], the tools/virtio/
+seems to have compile error in the latest kernel, it does not seems
+right to reuse that. And most of testcase in tools/virtio/ seems
+better be in tools/virtio/ringtest instead£¬so until the testcase
+in tools/virtio/ is compile-error-free and moved to tools/testing/
+selftests/, it seems better not to reuse it for now.
 
+1. https://patchwork.kernel.org/project/netdevbpf/patch/1624591136-6647-2-git-send-email-linyunsheng@huawei.com/#24278945
+
+> 
+> Thanks
+> 
+
+[...]
+
+> 
+> .
+> 
