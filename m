@@ -2,70 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E2BD3BA4D3
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 22:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0204D3BA4F3
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 23:07:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231631AbhGBUwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 16:52:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46472 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230274AbhGBUwf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Jul 2021 16:52:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 588BC613F5;
-        Fri,  2 Jul 2021 20:50:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625259003;
-        bh=+c8qKgOyi7r/Kcr0+2ETDkixMDrLcl3BfE0cDD1jsuA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JvfM33LhcWH0L/+S1Nki0NoNYFQ+zWxXN5NayseiThqSKbgUgGurRukyvy4TP9UBK
-         7WTVYdxyx6uAjxQsDwSGFW5BdRvsREu8E4sC5lOTzSryDzAWYizUOuuIlnbTJn8Dk0
-         +5JtAKWTf4mPiDJxBg9bbbjOXKAo9AsghiwFsLHYMU1LExKKS01J6a9Jm2Vl6o5DKw
-         i8aK8ycTduyAHBNSHIIigyMSMF8yQM7Vmd7ZUTc0Cygu3vYSf2e7dGcsVicXlyuMOc
-         mePDh9v1gji++uvKCBsQWEJ9DYvOvMRTVY+C76yk0BA+xwY5/OaFslK7l1UVRyrtfo
-         A8wrDK0rHxnfQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4C0EB60283;
-        Fri,  2 Jul 2021 20:50:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231895AbhGBVJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 17:09:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44776 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231502AbhGBVJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 17:09:49 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA2EC061762
+        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 14:07:16 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id l19so1128285plg.6
+        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 14:07:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=ynthYvBMotVu1g9BIHz1qpPRB80oBAlXHsbdujXizSs=;
+        b=trMGRwm3+cAE/bi8TqG5Ryd5p7qP4KCZpBwSSZ4Bo/ePRGUIMRvY3Vu8gYy73p/P8x
+         b/xUf9drbxf2XNI904KDciviz662kbLE0VQdceAmFwA0TsIcsJRyQ+J4CJehIMn3gPpC
+         MqfwSOlD37mKe/CpkSArE95Dz9I/O1EyOZEZX+mNBDo2Z0ZdTb2/vCntNHze5Pv3nF5d
+         J3+7loa88iadXnqwT6CT581uLBCZ6Ykl3/P8NNW5JkRBXnr9J546xWzMkzCqtuWL7AzO
+         iX+JXC/JZ83iVw7SdzEPEOy4+POWDt2mPW+PAelzBp4XZWh0QlCN3VdRtRXtwXoZnHLX
+         N9tA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=ynthYvBMotVu1g9BIHz1qpPRB80oBAlXHsbdujXizSs=;
+        b=rSjKnVSykpy2tGc6ZiPMAujeVkRzwVKPEjqnlUu+pBBBD2DwWNJUKLVxunZiRmPEor
+         x7N/SdoQq7Av4d5H7ezhdQB30li5671DjlkES2F6mwVWAgULsmRatrAwkGAmmdUaY4CT
+         m9jVXRgDbhCoJNRzKPUmcOI4a0nPyVViNRnKruEL/LxekGoLNlQYXwvIfm6p89gFtivc
+         8RO1IudYY9JykNhsOenUgmzZchUnUma0B98IF3A8sYmfOZZIRqKKiFSwRfqmefggltIG
+         LJ7fCg3uCZXWaUHxIB8SZA4y5B57/7ne9qvedCgZaolb5sQKOWELvGymiep+UIhQJDQU
+         /8kA==
+X-Gm-Message-State: AOAM533lKvdTvuvRb9sq8713VYI1xJsOBucwXPlWkMpu69JkdLNeJlGV
+        UpwQ6FQNdfBsAksL46YQ8XbSe+nnNIPoH2Z7LtA=
+X-Google-Smtp-Source: ABdhPJyXi4Q8JvEPikOuTzBMrMfwSVCHc56X6XHJUohejWlcLf0qZUAeUB8ZYGj+2J751SvvPKqii7v+mHbqRpfuVQg=
+X-Received: by 2002:a17:902:ecc3:b029:129:324d:9b05 with SMTP id
+ a3-20020a170902ecc3b0290129324d9b05mr1391533plh.7.1625260035975; Fri, 02 Jul
+ 2021 14:07:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] vmxnet3: fix cksum offload issues for tunnels with
- non-default udp ports
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162525900330.32544.14329304021795937679.git-patchwork-notify@kernel.org>
-Date:   Fri, 02 Jul 2021 20:50:03 +0000
-References: <20210702064427.32378-1-doshir@vmware.com>
-In-Reply-To: <20210702064427.32378-1-doshir@vmware.com>
-To:     Ronak Doshi <doshir@vmware.com>
-Cc:     netdev@vger.kernel.org, pv-drivers@vmware.com, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org
+Received: by 2002:a05:6a10:1884:0:0:0:0 with HTTP; Fri, 2 Jul 2021 14:07:15
+ -0700 (PDT)
+Reply-To: michaelrachid7@gmail.com
+From:   Michael Rachid <hamfranck877@gmail.com>
+Date:   Fri, 2 Jul 2021 22:07:15 +0100
+Message-ID: <CANe2if01pzq+SzAR6Naa_Kj31VOhmfDHqWCS-+9L9j7iZHFsYg@mail.gmail.com>
+Subject: Proposal
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Dear friend,
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Thu, 1 Jul 2021 23:44:27 -0700 you wrote:
-> Commit dacce2be3312 ("vmxnet3: add geneve and vxlan tunnel offload
-> support") added support for encapsulation offload. However, the inner
-> offload capability is to be restricted to UDP tunnels with default
-> Vxlan and Geneve ports.
-> 
-> This patch fixes the issue for tunnels with non-default ports using
-> features check capability and filtering appropriate features for such
-> tunnels.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] vmxnet3: fix cksum offload issues for tunnels with non-default udp ports
-    https://git.kernel.org/netdev/net/c/b22580233d47
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+I am Michael Rachid. I would love to have a very fruitful and mutually
+beneficial discussion with you, if permitted.
