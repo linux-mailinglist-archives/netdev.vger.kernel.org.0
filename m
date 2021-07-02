@@ -2,79 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45F663B9A8D
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 03:43:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D25F23B9AC7
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 05:01:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234604AbhGBBbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Jul 2021 21:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234476AbhGBBbd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 21:31:33 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6747CC061762
-        for <netdev@vger.kernel.org>; Thu,  1 Jul 2021 18:29:01 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id b12so6490542pfv.6
-        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 18:29:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wKaRT4oclA5LX4YD5bwhBUiTf56m8NS0XymmIaIcnC0=;
-        b=ue7Pk3O5fG+Omfx1DpJDmmI7MoYjOleGOfy/cc48fzBaF4OMDkE05sYSQfGyVbh0XE
-         v/7IXAcZ86aApMFKa/zDsVTs0C31t9KnKK6rKMzfb7doy3TfGMEgN/wkT/DPZJuoXt8z
-         j4ENVfALyEbLsQV7DsNhv1fRGWrqtpuYP9KGhhFnYvIn1uFXyMz07/9zPc8Ej1LwEMJh
-         nOT7ZhLvW7AAd/N2Erw86uEUntLswQk8EE6xpwbOBt48MdEOt/Z/nZuF7jkqqk/Z21EF
-         gi6TpcfxH5Z3MjdBkbtQ14gf0DH8q8LGBtf8F1KD/4VRJqQnOMwy96qd3/iMPRfWV18B
-         W2/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wKaRT4oclA5LX4YD5bwhBUiTf56m8NS0XymmIaIcnC0=;
-        b=Db2hhtI8REC+hre7XIvLcjZMxUzEMV9aeBC+zusJJfpmbo216SVYZW2jYzY+mKkSTq
-         LOGjdh4t8uwT2HzsiljxsADoDbQWbdmOyZS0oxCRDN3Els2jMxuiDnG1eLYiPXR90UeY
-         5mRFrzal8M3oXq2eSJVVElfpPWCJ31O8F+cAlefxrl9fJpBYKctUskS6tZ2wX6xi46wu
-         AUsBp/SKX5DqiqJ77XvCS1Rk6a1G6IiX+PrxJs++5KwrZ+ZRtNSGcREhrNJS8YOjE2cD
-         wcVGlGNTk4h0DH94iP2PDUATsRpxoYVOz69pLsJ+A5fHlfGlQqy4stVYSlhbeoBviyjK
-         5XTw==
-X-Gm-Message-State: AOAM531PJwSXq8UJ2idM0EyIxvfjLHs+rKWGqNIE1Zto5DCoWZwZuA/3
-        TvFDpF+kW1bPsNskWNdvWsZ/D3cjrRA=
-X-Google-Smtp-Source: ABdhPJwEWaK2cnNAqEJ6+8cnLWmn47c5Fhpv40kf+zM5x1NR5OhFd4WsGbcnOLvZRZFb9aGXBKHrjg==
-X-Received: by 2002:a63:1a01:: with SMTP id a1mr2439969pga.269.1625189340760;
-        Thu, 01 Jul 2021 18:29:00 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id gg18sm11423291pjb.0.2021.07.01.18.28.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 18:29:00 -0700 (PDT)
-Date:   Thu, 1 Jul 2021 18:28:57 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH] ptp: Set lookup cookie when creating a PTP PPS source.
-Message-ID: <20210702012857.GA30639@hoboy.vegasvil.org>
-References: <20210628182533.2930715-1-jonathan.lemon@gmail.com>
- <20210628233835.GB766@hoboy.vegasvil.org>
- <20210702003936.22m2rz7sajkwusaa@skbuf>
+        id S234796AbhGBDEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Jul 2021 23:04:04 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:6033 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234627AbhGBDED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Jul 2021 23:04:03 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GGKTf5fn4zXmKM;
+        Fri,  2 Jul 2021 10:56:06 +0800 (CST)
+Received: from dggema761-chm.china.huawei.com (10.1.198.203) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Fri, 2 Jul 2021 11:01:28 +0800
+Received: from [10.174.178.46] (10.174.178.46) by
+ dggema761-chm.china.huawei.com (10.1.198.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Fri, 2 Jul 2021 11:01:27 +0800
+Subject: Re: [PATCH] perf llvm: Fix error return code in llvm__compile_bpf()
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+CC:     <peterz@infradead.org>, <mingo@redhat.com>, <jolsa@redhat.com>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <nathan@kernel.org>, <ndesaulniers@google.com>,
+        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <clang-built-linux@googlegroups.com>, <yukuai3@huawei.com>
+References: <20210609115945.2193194-1-chengzhihao1@huawei.com>
+ <YN35TYxboEdM5iHc@kernel.org>
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+Message-ID: <21406430-56f0-c59b-7ece-7fd387bb47e9@huawei.com>
+Date:   Fri, 2 Jul 2021 11:01:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210702003936.22m2rz7sajkwusaa@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YN35TYxboEdM5iHc@kernel.org>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.46]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggema761-chm.china.huawei.com (10.1.198.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 02, 2021 at 03:39:36AM +0300, Vladimir Oltean wrote:
+ÔÚ 2021/7/2 1:20, Arnaldo Carvalho de Melo Ð´µÀ:
+> Em Wed, Jun 09, 2021 at 07:59:45PM +0800, Zhihao Cheng escreveu:
+>> Fix to return a negative error code from the error handling
+>> case instead of 0, as done elsewhere in this function.
+> 
+> I checked and llvm__compile_bpf() returns -errno, so I'll change this to
+> instead set err to -ENOMEM just before the if (asprintf)(), ok?
+> 
+> - Arnaldo
+>   
+Glad to accept this change.
+>> Fixes: cb76371441d098 ("perf llvm: Allow passing options to llc ...")
+>> Fixes: 5eab5a7ee032ac ("perf llvm: Display eBPF compiling command ...")
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
 
-> Like perhaps the fact that ptp->pps_source is an arbitrary NULL pointer
-> at the time the assignment to ->lookup_cookie is being made, because it
-> is being created later?
-
-Oops.  @Jonathan please submit a fix as soon as you can.  This patch
-is already in net-next.
-
-Thanks,
-Richard
 
