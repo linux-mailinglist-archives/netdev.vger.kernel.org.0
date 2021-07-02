@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1DB53BA3F0
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 20:30:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E2D3BA3F4
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 20:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbhGBScW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 14:32:22 -0400
+        id S230236AbhGBSc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 14:32:27 -0400
 Received: from mail-vi1eur05on2124.outbound.protection.outlook.com ([40.107.21.124]:46816
         "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230115AbhGBScU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Jul 2021 14:32:20 -0400
+        id S230119AbhGBScV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Jul 2021 14:32:21 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hZjN/j4uNQfr+AmB2yIHKcOo9aS8emmRwIFRZnZvmPWwguDEb8lS8w09ss9N4k0Ib1d1+cEhUnGdFjmRmTKPJ/Egd1Viucw4KNBrpJXpXCbc5K0gv8YzQby1GeXFim6JkP+D8wBMOo6FZtv5tHtb2yXsNV9upZbiIkhIugFoV/dgFDPBFXtjH6cy48guV3MqNaoFbAwPbPySH0Vk2mSBqxfykKty7KxQa8rOo5yJnOI5hcIxx/oFQ0dB468lG5MHd8fdsK2fy71UK3S1UbNDWtsBx2AyjImj8iPuKeyd/+iVO/TyzuiOlwC4lHbgXJH/FxgzkyaYMW02tzUygaaMYQ==
+ b=UB+og3lebGB8DQLfUCvqnurrTzekQNXpvfDfwFJ+51nPFjAwn78xJ5CWBPFm8K+K7XvxXWbOuZDKJ3mAMdWsp/3pJvmHD7WnFzJyX6MDtX+2Ljz8DM88Rwbl4GFCp0cMd4z/zJkHyzzp/uMMKwhFC13SWOybQIT7tZn6cXiUI58XgqiLtb0JeHzDLTOnByMbyw6ujaYTXctUfBpZxbThFKmQgpBVFsWgqAGVWcBy/qXQ9wxEqSCuPKZLV86bO8qyaP9wxYmfuH8IGM+7rt3ZXKYBV+mkVhte6kz2LM04ZBa4/oqb9B1F2PhxCz33pPvIMopvFqGMPruieMwMiVoPzw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LxSjiu8IfMhD2mbGIqePBMiVmiMtjHrQJ4FJ1AwMn1k=;
- b=kqPzlpAOTdicMTzRqKeWhL7ROy0/vIG20rO0ylBzRTo9y609nFsqofoVYJHVhJExmo+gvONRUa3golP5vZ8nKGUbMBd1DJ7ospi7IqBbOTg5hwhFQ5KQjmnH9z9u7A+OOuRzMGsAL133Vb4hCO59bu380WlQX0zxccZfAUkZFUCS5iiGQ2Tn50xk+S1PT3+DILl8c01IOZ3HtKQqAdsPdYqA43r3R2pMkPOqubL/TCD+y1/8F38pjUZXfSXA7RootO70L/CsjXzBBr+DYtjNtAGzgQ0dYT/Lrm2kuoUqxeFxfFti8wHt9hixMsLMVEhM5xYtGZyg1zqiPwKYXtmVBw==
+ bh=RhIQKg3e+sAjl5xUMnlo6aA0gTaTnuJ/iSkCqIi//OM=;
+ b=ed6pFY+YBLB+LbVtoREdK5GZn2zLXZtk6CeO5dUczRQQx7pyG52e+GtZCeQbnoX4MElK6UayPfFuFEFxp9lOtY/3PBK4cXuxjydp8HNU+rKnDy38psVClkaw+roYmgHf9xQ0MGGYjQbwMzfkut0fF1LJAmZXkmTSX7+IYbcVZoSbO/tmCCXx0J1o0nno1kanTh4f6+OHPFQVPivW2COzswyN2NkYGQK4/bvxuEF1OqUroWyTl4PsQaAtaPdGbdytgDgqR+dLcp0eIy5WK4ZCI3CgTXwp3zy2M9PBhTHOrbuSkwIzbqz+NPN1Kvht4tTadIc+mtaWE8xu1uXDrI6utQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LxSjiu8IfMhD2mbGIqePBMiVmiMtjHrQJ4FJ1AwMn1k=;
- b=OEiY3kSr5bR1ZsbB310h+hAFxys3qCmzAsLCivMV1UnlBiRs5ye9Y8CMV3bnvfs5OGo9Kh6TjbEVspts3V9DdsLTiRvmCHZtPHjyLEGvcd4mHlED+/afZZW/pn+mRHoGjYTj9dYKBUfELu6ivf/o4yiYbe4ngxuhQMxQsXKIqGU=
+ bh=RhIQKg3e+sAjl5xUMnlo6aA0gTaTnuJ/iSkCqIi//OM=;
+ b=wM+aYHKeZ+YPVcin5Ok3N3GkfrwegIxyKPay7XhDB7PwAF7GHJxfy7w1BeM50o/Fqr3XQC7T5bxYWXnBlt8IMG6y3ozmWDXogW7h5tKAkCxjhEmYA1lI7w6l5VNfHfZt+tO8Z+ynyKN3bbLIOdfe6hv4ng+8v/F1f787Bm1I1Yk=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
 Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
  HE1P190MB0394.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:62::31) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4287.23; Fri, 2 Jul 2021 18:29:45 +0000
+ 15.20.4287.23; Fri, 2 Jul 2021 18:29:46 +0000
 Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
  ([fe80::40d:b065:3aa7:ac38]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
  ([fe80::40d:b065:3aa7:ac38%5]) with mapi id 15.20.4264.032; Fri, 2 Jul 2021
- 18:29:45 +0000
+ 18:29:46 +0000
 From:   Vadym Kochan <vadym.kochan@plvision.eu>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
@@ -49,9 +49,9 @@ Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
         linux-kernel@vger.kernel.org,
         Mickey Rachamim <mickeyr@marvell.com>,
         Vadym Kochan <vkochan@marvell.com>
-Subject: [RFC net-next 1/4] net: marvell: prestera: do not fail if FW reply is bigger
-Date:   Fri,  2 Jul 2021 21:29:12 +0300
-Message-Id: <20210702182915.1035-2-vadym.kochan@plvision.eu>
+Subject: [RFC net-next 2/4] net: marvell: prestera: turn FW supported versions into an array
+Date:   Fri,  2 Jul 2021 21:29:13 +0300
+Message-Id: <20210702182915.1035-3-vadym.kochan@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210702182915.1035-1-vadym.kochan@plvision.eu>
 References: <20210702182915.1035-1-vadym.kochan@plvision.eu>
@@ -62,51 +62,51 @@ X-ClientProxiedBy: AS8PR04CA0108.eurprd04.prod.outlook.com
  (2603:10a6:7:56::28)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AS8PR04CA0108.eurprd04.prod.outlook.com (2603:10a6:20b:31e::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend Transport; Fri, 2 Jul 2021 18:29:44 +0000
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AS8PR04CA0108.eurprd04.prod.outlook.com (2603:10a6:20b:31e::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend Transport; Fri, 2 Jul 2021 18:29:45 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0604c0b2-2392-404b-3213-08d93d875d9d
+X-MS-Office365-Filtering-Correlation-Id: d465d096-d4ff-4dd6-b8f9-08d93d875e4c
 X-MS-TrafficTypeDiagnostic: HE1P190MB0394:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1P190MB03940761BDFA5498A89DD3C9951F9@HE1P190MB0394.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
+X-Microsoft-Antispam-PRVS: <HE1P190MB0394622F1957A35066CA9ACD951F9@HE1P190MB0394.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:346;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n+neQMYGYgMAa2GB6XLErqqfckKvo/OrKq8/CRgshex5r9iPcwoYmQpDtGJltDEK0x2O7TQOpiRRl0aTnMJEjpnvwqi7NlPjRN8iKQR2TAcG7ULzIzXuV88sw1fosqs9dFBHABQbJxjr76z9fB5CqD2r1JCmJ0+bYs1/gjAbzERlM7f3qjJS7AcdOJIP5oXyUr1bPbvS+xbz86qcC3DOoL2qsbY5Kq6r73KFvw2UelUp1v0ru/1ZSlBHbqDz9j0knRRu3QOP5Xr/RZnLfob2q1AWJ3wDv9IdHRF3uVXoJRKgIqYl0gVeeJoi7YwC8ZhsZW98yAoqw9bxN10fTX3VbzzR9qtCCby/KPmV+YaQYegnUytx1dymPU694CaAnnqSUgHnubWIIic0/TJICrBwSa5XSqxZ7RayhKxTGI3X1sOtO/dQWGzyefzsGZiw4i61NBPneLEY/his9t9OeyFWcIy9BjmztDBP0RlqaFOjf1AiGOp1PCZ0V2kvx5vlHqtOP/ZsmvAwrLpE+OusL1uDFU5bCdeKf24TwcrDmO8kzsLhKRBemwdb36VUdKmz7HmsxfYfoJ7IpGf1SjyoC6WTnHvJ0OrtcB1Fn0u9YJ/LZcAne11zN4Jq4kr5FjIQfMueFPV+lFdwr6vnCjKg1sXxwQih3Mgi7Nd1JtgEIbXzDDb6urF8ooVQOZ9YXhXQddblOJMg3Ejb/vVNT05e3C8N3gF9/i7Ngb5KgGqTjG/jYwc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(39830400003)(396003)(366004)(346002)(376002)(136003)(6636002)(7416002)(2906002)(316002)(110136005)(54906003)(44832011)(2616005)(956004)(38350700002)(83380400001)(86362001)(6666004)(36756003)(38100700002)(66476007)(4326008)(1076003)(6506007)(8676002)(8936002)(5660300002)(52116002)(16526019)(66556008)(6486002)(26005)(478600001)(66946007)(6512007)(186003)(135533001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: qZIZn5pw21+97dZZiBJkGzFzAkRVoXX82LCfwoIAAwyp3X9ZMBV9IE96G5yrfAXNM/qYzGJfSw+w8XpRKr1j9/rHgVtM+17YSDDlw3UY0wZvpF1wisZtCPtKyz8XUilh2rsnWXNzEXBlSFbC7DHcEJPfgmF88TSYPx8lymDaR/0y6MvZWjnW/T/PWSiuFwcJII1ad/Txes1YrRCidkV/3mKzpQIqslstnm6CQDX1Tewj/Jsh1Nkk8kCK/fIL11hFxx6ergYcsOG87L5MJ8zMAgyFMIB/cE2PN2GRxfqqgec9J1Lyu9SJZIV7ptjKVd67foZyj2G56LktB6Cu7AznAhybIYADVOUO3GUjzMR7QTy+7T1bzpSMHTlzyxEcScWx77i07pERSNxieEBJqpDo52WsmOlut5aabs8ouFhA3A3nKMPbBcUSwllW8Annovvjyj/9MVCylOMJyIQZL3CU/A2TOvf8Q7kt1Pss7gfk/ldsoGIQ+tMAyoztIXHTS8z8Hr1yVClM0Wt+RX8yPUkyifKa+kwCqmpxaIamOpbrD7m1KXm7Lb9IzlATgnyjmkoE7TG+8qSVXSL5rCRGAR95mHX/MkkegMHPQnQ8q6WO8Q0suuIgCtH2CyG6elGzhxYAvRepJxmSB0eKIcDP7X4smJfXo2Kz4LAtikzopjmTQU7j4a1h0QtTXEvk+00h2Rg7QSXn0RF3kS0XY9LDCuljRQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(39830400003)(396003)(366004)(346002)(376002)(136003)(6636002)(7416002)(2906002)(316002)(110136005)(54906003)(44832011)(2616005)(956004)(38350700002)(83380400001)(86362001)(6666004)(36756003)(38100700002)(66476007)(4326008)(1076003)(6506007)(8676002)(8936002)(5660300002)(52116002)(16526019)(66556008)(6486002)(26005)(478600001)(66946007)(6512007)(186003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?P71OMki/uARe8rkLvCjlY0/KbFWOA24y3uGqu2JtdziELIyqJoJieFdzqV9l?=
- =?us-ascii?Q?NrPj1LSCEm8JqHfyBHe0znppm2Yl4DebSY3adOTvslE1N7F9xa5hoIf/u8Gd?=
- =?us-ascii?Q?+mgbctrWwCMCWCHekKwE6mm9FF4IRB/ngfoyQ3SoSeAgZTxjhB02sccS6ede?=
- =?us-ascii?Q?orRRkGBM4LzAv/07FVb5kt7RFGTzzWGcfu90vFAsNlRjkRolMTA7r0Z2hQ0N?=
- =?us-ascii?Q?uQghbIWy9663nenYn6ZF4Mgy2Tb7n8vzfjlyFz1vDc0pI4+VaelBZ+jGppKm?=
- =?us-ascii?Q?SVc2TfIvgYIv7BP20vvohGZBjJELTi69M8JfyaAvh9/L1EqLBr8UUAIaa9fr?=
- =?us-ascii?Q?1APJw/9wTRZxV2R8qnaMjni0vy6I7j7XcZE0hgDAwK1AOqkyImuYPCzT2pQH?=
- =?us-ascii?Q?7gazTuyfX+7my1rCf1sBMCQfG88A5arjz67emeiCAFVZsU8sIMHY4TF5c8ZW?=
- =?us-ascii?Q?p3EkD2+WYKYD9g8J4746sVF/eFWRvFroTqj2E+32PUjFpzTNEVFUvpUEC9q9?=
- =?us-ascii?Q?P94bPSLwuum9Wx70BvQusMCBBSKLe2m/Ldx3493EyYI9Jsbht1aql6N3FR5/?=
- =?us-ascii?Q?F6hbAnjarHj4etunlAP0JSw9mUd2gNeegCoJCuO352Cc9kTiDREnSpG8G2tA?=
- =?us-ascii?Q?rRvu9ETWeqlg954oBvcslVwQ6f8Mv67CJRe1iwwni+A5yik3OapghaKfi9U0?=
- =?us-ascii?Q?RvkBaqdnF2B/D8HUDvbt98qiAMy9Mo4YgXXptbne2MvZV6J9u3qELtL6ttwM?=
- =?us-ascii?Q?37kn5l/AXtEQrmc48qx57NkEfgXtaenFPx6zzALgSRVm6SrSbpLarrhcNfa9?=
- =?us-ascii?Q?8QTsW1ri+oUX4hbIle19fYeP4AS5spGXfcph4CHzwuDjVD60/z4BaHeJ8ucR?=
- =?us-ascii?Q?z8n13IZcqlvFhqLHE50hc5+q7AQ0gQv57FZucTEzasg52YWI5zYj5lnDMhl/?=
- =?us-ascii?Q?GTYF+sXq579Ou5+tkAa5ciBOy0RXGvsb8ny+INYb+8EeafXICKCAn3KSOVOC?=
- =?us-ascii?Q?+35soJUE7Qyz8FsaMDE2W/37+ol2tRBwszPmBp5MdRpnLTxdsVHBnJZxiDnG?=
- =?us-ascii?Q?jFOGktqE2pjqhvMlPmTfPem6u/3H1unGyAWtFrnmnRRao6d9hke722T5jP99?=
- =?us-ascii?Q?6CiokINO6J6sXudbKb6dovrrwcH2/Zv2/W61jMjqR0fRORmwJ5FhD/W8qObq?=
- =?us-ascii?Q?eFjr8yPS75LKZoAbJMiKnxMMQQwiWyK/fJn4M9bi1OpxpYJza2VusQPdwO9p?=
- =?us-ascii?Q?SVIzdDdqwx5yVuTdbcmiGevBggU+bOPUfSFDGCcqsBm46DVt2lN5Alj4+VP5?=
- =?us-ascii?Q?9CrymYk53j4FbXuEwwlj73xf?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gmY1UpY7m513fOVW2f09PmzR9C/NzTq5oyW+/d+CZepOMMr3M3BtsXy5Ih9k?=
+ =?us-ascii?Q?4tHdivi+DodmCiPgQG6TnUqVS7pRBwazvlLBN+H5FMAYVskmnZUWlNjf1XrS?=
+ =?us-ascii?Q?4nI86ZxhIwMyfZadpIdGLTAKNUYGoUqKlZTjOYj7h737zgtdUieuKRNwRSjT?=
+ =?us-ascii?Q?SAuuvw+OvwPpjuNrWrIPeaJI+nNXn9jNFh2Oyr2knY8ufdCEhfWml0O4XW7F?=
+ =?us-ascii?Q?Rc2KorKas+BAuf3PnCFHA651BhVhCRlXCTOqycZGMxD0BAcrntF+N8TJ/ms0?=
+ =?us-ascii?Q?JzxoMF5WbPCcDoLuz6cse1kMLpc0SoZVyhPSxeQT4h0lTZfz1RrB3V2tRqYG?=
+ =?us-ascii?Q?+aOuDLBEAomCkrBRddW7eIRsohdGnFyrtKtJ041cCZwiveztE5g1ZKh2Y2LH?=
+ =?us-ascii?Q?KX1FBXrNHleCLpKXl9zIMloZYVKtAiEyvXduQKaz/f4QKthPiXygfXa98sZK?=
+ =?us-ascii?Q?UB5UVstzHnz6SQUKEm452AzQFukHG3EB/KetjznpAsgMhH9w9ByI4TMMskFE?=
+ =?us-ascii?Q?KoRHMiEpmVHzhOnMlAFpIoaYLe3/yDWpayI4LwAgXy2sFvN8Bs2OLELUMK3n?=
+ =?us-ascii?Q?Igs6qEFR5myUBBwqKicVtNUbZ6r/9qhQ9dla05TiYC9MsCsxLvwvTirutJIa?=
+ =?us-ascii?Q?po8xaaU8BbL2HbJKG19cpRJKqrLG7hjfKRcyitQzt2+N977Ud4Vf5iCmeRqB?=
+ =?us-ascii?Q?H6YwyVa1HCyRo6CQiNnlwRbfQa80abFSd5Uf8lkeILzQmvL1Gs5YjQr8FNvo?=
+ =?us-ascii?Q?a0h6V5TsHyPOaHre0zuHkuIlkNHj078SHZTO0UcfFgx1S7GAUQXfj/0fASgo?=
+ =?us-ascii?Q?MmmgFEeQnXP7b8mA9aFugFWI0BqdD9m9o2ABfuajMWI4hHiaoBq1RMZYyjrT?=
+ =?us-ascii?Q?As25l2Ea5LSITN3BgDMAOwc8ax23skt2LxlzBY5ui6KTV4sDamWy6uGeIr5f?=
+ =?us-ascii?Q?KUWrknWx3Uca9VPc49XVxJZ6Iif74USPDP7QhNMPK2gvmgRikHnA6eZOrOOF?=
+ =?us-ascii?Q?OionOTCFDWH2uw9nvLrspNaaMKSxSm2RU6JLZb2dxU5CdZWvztt7fT/M+Zh1?=
+ =?us-ascii?Q?ULDn1dsfdW4CpzzYLGHYN9FeEtzAb8dF/VX8X8NIV17tojjV2oHA/1+l+IEE?=
+ =?us-ascii?Q?mAMW0xzLX4U9NInB/4GUtWT2TEqt6LSqFv8Emqf7OmHun6KyjxPwJS2E103b?=
+ =?us-ascii?Q?wXsqElHh7SuPK/iJSKxyfUPi318pI0ouLwCYaPwFoDaSyE46XAVfqjY9wR10?=
+ =?us-ascii?Q?h7/3Y6rcwwllPZ7PUqLuynpL5g4G4PDZ51ji5sPznez7lHqpoTTv2bW+014Z?=
+ =?us-ascii?Q?g0vywZ4Wb7O5UOjJxGw1MHEb?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0604c0b2-2392-404b-3213-08d93d875d9d
+X-MS-Exchange-CrossTenant-Network-Message-Id: d465d096-d4ff-4dd6-b8f9-08d93d875e4c
 X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2021 18:29:45.1877
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2021 18:29:46.3050
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: p9N7QkkwsEcP/4imLYh2r1GXgd90fObsPQSiTlYjDWT/unVXKRay9L8ScXNolCEuYb70y9GWo0qtQkiOmWo1RDcyey+YNrDOW/tfkqLveNE=
+X-MS-Exchange-CrossTenant-UserPrincipalName: z/BbmvnTQda8NIJ9LaeCOjxzlFNyK+Pyp+5Wgu3RXlflHwdphXfFbOl44aykdLcKCEE8/GGEuOteTehyICZ63eB9IjasMmNYDkigONdUPn0=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0394
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -114,33 +114,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vadym Kochan <vkochan@marvell.com>
 
-There might be a case when driver talks to the newer FW version
-which has extended message packets with extra fields, in that case
-lets just copy minimum what we need/can.
+In case of supporting more than 2 FW versions it is more flexible to
+have them defined as array.
 
 Signed-off-by: Vadym Kochan <vkochan@marvell.com>
 ---
- drivers/net/ethernet/marvell/prestera/prestera_pci.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ .../ethernet/marvell/prestera/prestera_pci.c  | 55 ++++++++-----------
+ 1 file changed, 24 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_pci.c b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-index a250d394da38..58642b540322 100644
+index 58642b540322..ce4cf51dba5a 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_pci.c
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-@@ -359,12 +359,7 @@ static int prestera_fw_cmd_send(struct prestera_fw *fw,
- 	}
+@@ -14,11 +14,10 @@
  
- 	ret_size = prestera_fw_read(fw, PRESTERA_CMD_RCV_LEN_REG);
--	if (ret_size > out_size) {
--		dev_err(fw->dev.dev, "ret_size (%u) > out_len(%zu)\n",
--			ret_size, out_size);
--		err = -EMSGSIZE;
--		goto cmd_exit;
+ #define PRESTERA_MSG_MAX_SIZE 1500
+ 
+-#define PRESTERA_SUPP_FW_MAJ_VER	3
+-#define PRESTERA_SUPP_FW_MIN_VER	0
+-
+-#define PRESTERA_PREV_FW_MAJ_VER	2
+-#define PRESTERA_PREV_FW_MIN_VER	0
++static struct prestera_fw_rev prestera_fw_supp[] = {
++	{ 3, 0 },
++	{ 2, 0 }
++};
+ 
+ #define PRESTERA_FW_PATH_FMT	"mrvl/prestera/mvsw_prestera_fw-v%u.%u.img"
+ 
+@@ -629,40 +628,34 @@ static int prestera_fw_hdr_parse(struct prestera_fw *fw)
+ 
+ static int prestera_fw_get(struct prestera_fw *fw)
+ {
+-	int ver_maj = PRESTERA_SUPP_FW_MAJ_VER;
+-	int ver_min = PRESTERA_SUPP_FW_MIN_VER;
+ 	char fw_path[128];
+ 	int err;
++	int i;
+ 
+-pick_fw_ver:
+-	snprintf(fw_path, sizeof(fw_path), PRESTERA_FW_PATH_FMT,
+-		 ver_maj, ver_min);
+-
+-	err = request_firmware_direct(&fw->bin, fw_path, fw->dev.dev);
+-	if (err) {
+-		if (ver_maj == PRESTERA_SUPP_FW_MAJ_VER) {
+-			ver_maj = PRESTERA_PREV_FW_MAJ_VER;
+-			ver_min = PRESTERA_PREV_FW_MIN_VER;
++	for (i = 0; i < ARRAY_SIZE(prestera_fw_supp); i++) {
++		struct prestera_fw_rev *ver = &prestera_fw_supp[i];
+ 
+-			dev_warn(fw->dev.dev,
+-				 "missing latest %s firmware, fall-back to previous %u.%u version\n",
+-				 fw_path, ver_maj, ver_min);
++		snprintf(fw_path, sizeof(fw_path), PRESTERA_FW_PATH_FMT,
++			 ver->maj, ver->min);
+ 
+-			goto pick_fw_ver;
+-		} else {
+-			dev_err(fw->dev.dev, "failed to request previous firmware: %s\n",
+-				fw_path);
+-			return err;
++		err = request_firmware_direct(&fw->bin, fw_path, fw->dev.dev);
++		if (!err) {
++			dev_info(fw->dev.dev, "Loading %s ...", fw_path);
++			fw->rev_supp = *ver;
++			return 0;
+ 		}
 -	}
-+	ret_size = min_t(u32, ret_size, out_size);
+-
+-	dev_info(fw->dev.dev, "Loading %s ...", fw_path);
  
- 	memcpy_fromio(out_msg, fw->cmd_mbox + in_size, ret_size);
+-	fw->rev_supp.maj = ver_maj;
+-	fw->rev_supp.min = ver_min;
+-	fw->rev_supp.sub = 0;
++		if (i == 0)
++			dev_warn(fw->dev.dev,
++				 "missing latest %s firmware, fall-back to previous version\n",
++				 fw_path);
++		else
++			dev_warn(fw->dev.dev, "failed to request previous firmware: %s\n",
++				 fw_path);
++	}
  
+-	return 0;
++	dev_err(fw->dev.dev, "could not find any of the supported firmware versions\n");
++	return -ENOENT;
+ }
+ 
+ static void prestera_fw_put(struct prestera_fw *fw)
 -- 
 2.17.1
 
