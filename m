@@ -2,104 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CFB33B9D95
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:34:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8FC53B9D9A
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:36:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230427AbhGBIgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 04:36:40 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:34474 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230166AbhGBIgj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 04:36:39 -0400
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1628HB0Y023539;
-        Fri, 2 Jul 2021 08:34:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=p1fdxON4YZiX04AnQjMpcG7PIg89DU/zakNCxmA8d5U=;
- b=xrYdjuOW3hKCFKgXnQz0nfUx8p6t1v26rX+dJgCSUuVKfel1pzEJY8lELYS1JZ7KHJqN
- mArOc3sFZ3QfC0jxn+AgjR5R6wpTXFu5vqCWW323s5TXuCOs8wqcDbbCD2TMBn7tNktr
- ynr+Ig5hvBTUoYIgTsd//lgb4UAUGpqnAAnpsD0O6u7Zk4r496Tt5EJS93R/Lrfzb3Ff
- IFpLjy1QJM6PRIrlFfcDQmUUCZCh9fy8/tpbCr1ann6oALkFD69Vu9PTRTC2VYtKhb7e
- 2D9mm120UZPlPNqNngPUM7E0N+Bcuu27FUYX73ZNQe5nqz9ViGvXr2dM4WbiOM3UO5Da Rg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 39gguq4yf1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 02 Jul 2021 08:34:02 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1628GCJv016939;
-        Fri, 2 Jul 2021 08:34:01 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 39ee12t8ye-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 02 Jul 2021 08:34:01 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 1628Xxou063457;
-        Fri, 2 Jul 2021 08:34:00 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 39ee12t8x7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 02 Jul 2021 08:33:59 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 1628Xvkg011095;
-        Fri, 2 Jul 2021 08:33:57 GMT
-Received: from kadam (/102.222.70.252)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 02 Jul 2021 08:33:56 +0000
-Date:   Fri, 2 Jul 2021 11:33:47 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Jeroen de Borst <jeroendb@google.com>, csully@google.com,
-        sagis@google.com, jonolson@google.com, davem@davemloft.net,
-        kuba@kernel.org, awogbemila@google.com, willemb@google.com,
-        yangchun@google.com, bcf@google.com, kuozhao@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH 0/3] gve: Fixes and clean-up
-Message-ID: <20210702083347.GU2040@kadam>
-References: <cover.1625118581.git.christophe.jaillet@wanadoo.fr>
- <CAErkTsQLP9_y-Am3MN-O4vZXe3cTKHfYMwkFk-9YWWPLAQM1cw@mail.gmail.com>
- <29632746-3234-1991-040d-3c0dfb3b3acb@wanadoo.fr>
+        id S230479AbhGBIik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 04:38:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230438AbhGBIij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 04:38:39 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3489C061764
+        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 01:36:07 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id v5so11478998wrt.3
+        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 01:36:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7FZN41zFvSYxh+iEV226AlMaIZ9YuMRVvjo0w5RlrRg=;
+        b=zARHa0Smrt/1UIlw1UhZvHTz5jbXFIGlSVYne/ZG7zj6bAj6G68ScyCLlTxEQAxFv6
+         qJIJhckBCmxtJ/QsW6Ck5W5YdiIyOzm987UxCmeVfg6hQIeZDSaq1Ztj+kQdNHpMx1w/
+         4z7MpEVjIQK9G1EMnQvMQ/N9Vw0cYmo1OTj9n5toT/cZ/IVEvLZwXVYMq6IxhOxLpHQm
+         2haIVsCbbQstJkfnjqc0XnHwPD0TDrZt7G/d8b828z248uFm6YZGw1yiEBqmXzCCXeeU
+         f1Arll1K+2v/i6+OfR8AWn0cl8ylzGpknTGQMmVvBxehFETzzN+IU/X3BlGrdZAASvPY
+         Fcag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7FZN41zFvSYxh+iEV226AlMaIZ9YuMRVvjo0w5RlrRg=;
+        b=WRImYwGUs/ECfowZFkOxxC5lffbewIS8RfXGq0Y/en0JRgOEBBtFAHRyMZw+OmDaGX
+         p8hmzWJ78gB0DWjZX3AxsIYDYd69b1lxQTcExCphVHlfpOde8zCYOp22yws/jW8waLMD
+         6LDCt4mqkvFKB96EBzj4OgthFXm89b2pgZjZTzzGRYasvE86rBcBK4cHwULsqCBkwvmn
+         b3ykymSXhoRQKer36wvsnJfxKW6MA0MfKcuNQ03su0YIW48Z3mgedcftqS8kiJmt2FfM
+         jmiGdQidWS5FlNSbGFTItqugo/rC8pB4Rf8LvaaPKkvALY6zlBY4WpEXZ8cndqRvwNgB
+         pogg==
+X-Gm-Message-State: AOAM532yOVc9sNz5QHzzZ5O29jVs/49VezJ+Uy9Y0cmL2b+yQ/ykbu+/
+        7SouNVqG8tc9M/sY6gEzJfAGjw==
+X-Google-Smtp-Source: ABdhPJzga7frJg+9Zf+0ANeCdeGJyDqrA4zrx8RoTlibuVEj3L9i0gf3FY/cbI1z2ewA+/OBYH4y6A==
+X-Received: by 2002:a05:6000:1251:: with SMTP id j17mr4499946wrx.122.1625214966270;
+        Fri, 02 Jul 2021 01:36:06 -0700 (PDT)
+Received: from enceladus (ppp-94-66-242-227.home.otenet.gr. [94.66.242.227])
+        by smtp.gmail.com with ESMTPSA id w3sm11965453wmi.24.2021.07.02.01.36.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Jul 2021 01:36:05 -0700 (PDT)
+Date:   Fri, 2 Jul 2021 11:36:01 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linuxarm@openeuler.org,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        thomas.petazzoni@bootlin.com, mw@semihalf.com,
+        linux@armlinux.org.uk, hawk@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com,
+        akpm@linux-foundation.org, peterz@infradead.org, will@kernel.org,
+        willy@infradead.org, vbabka@suse.cz, fenghua.yu@intel.com,
+        guro@fb.com, peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
+        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
+        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
+        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
+        elver@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH net-next RFC 0/2] add elevated refcnt support for page
+ pool
+Message-ID: <YN7P8Y+qWxAADJJR@enceladus>
+References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <29632746-3234-1991-040d-3c0dfb3b3acb@wanadoo.fr>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-ORIG-GUID: GV9X0QQKB7necXf1VDT28w9qquFJCvrv
-X-Proofpoint-GUID: GV9X0QQKB7necXf1VDT28w9qquFJCvrv
+In-Reply-To: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 01, 2021 at 07:42:48PM +0200, Christophe JAILLET wrote:
-> > one for net (with the first 2
-> > patches) and one for net-next (with the cleanup one)?
+Hi Yunsheng, 
+
+On Wed, Jun 30, 2021 at 05:17:54PM +0800, Yunsheng Lin wrote:
+> This patchset adds elevated refcnt support for page pool
+> and enable skb's page frag recycling based on page pool
+> in hns3 drvier.
 > 
-> I've never worked with net and net-next directly.
-> If just adding net and net-next after [PATCH] in the subject of the mail,
-> yes, I can do it if it helps.
 
-I have a separate tree that I use for sending net patches.  I generally
-write my patches against linux-next and then postpone sending them until
-the next day.
+Thanks for taking the time with this! I am a bit overloaded atm, give me a
+few days and I'll go through the patches
 
-Then I open my patch in mutt.
-cd tmp_tree/
-../switch_to_net.sh
-cat /var/tmp/mutt-speke-1000-511162-9994856746594827871 | patch -p1 --dry-run
-If that applies then I "net" to the subject.  Otherwise I do a
-`../switch_to_net-next.sh` verify it applies and send that.
+Cheers
+/Ilias
 
-Once in a while I will have to modify my patches to apply cleanly
-against the net tree.
 
-It's a pain in the butt and I get it wrong disappointingly often.  I
-only do it for networking.  Not for linux-wireless.  There is another
-tree where they complain if you don't add a tree to their patches but I
-forget what it is...  (I don't use the process for them, only for
-networking).
-
-regards,
-dan carpenter
-
+> Yunsheng Lin (2):
+>   page_pool: add page recycling support based on elevated refcnt
+>   net: hns3: support skb's frag page recycling based on page pool
+> 
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  79 +++++++-
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   3 +
+>  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   1 +
+>  drivers/net/ethernet/marvell/mvneta.c              |   6 +-
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 +-
+>  include/linux/mm_types.h                           |   2 +-
+>  include/linux/skbuff.h                             |   4 +-
+>  include/net/page_pool.h                            |  30 ++-
+>  net/core/page_pool.c                               | 215 +++++++++++++++++----
+>  9 files changed, 285 insertions(+), 57 deletions(-)
+> 
+> -- 
+> 2.7.4
+> 
