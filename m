@@ -2,169 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0463B9FF9
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 13:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8E33BA065
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 14:31:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231952AbhGBLom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 07:44:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40413 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231950AbhGBLol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 07:44:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625226129;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h4fTVxwT0YGbBlnm0LY7mfLhhlD7ZJz2gTZLQx0lukk=;
-        b=R75z5f35KfJqgz56p9AI0W3RuiBHF7Dr7UY7GByycnBkvzwbYzIa4YOWXuWctIrqVxIMVn
-        OHF9RPx+/yCH+Ewb/lz6RFFLzFR5R9hOB/lbRPTsTbi+CBII9xRLty/Dpvk9ccXS8TQsg1
-        7mM5ypEzF6/grBcsgW3YJczioR8Tk4Y=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-567-vOk4LzfxN3uOJbMrMo8ASw-1; Fri, 02 Jul 2021 07:42:08 -0400
-X-MC-Unique: vOk4LzfxN3uOJbMrMo8ASw-1
-Received: by mail-wr1-f69.google.com with SMTP id e13-20020a5d530d0000b0290126d989c76eso3795433wrv.18
-        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 04:42:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=h4fTVxwT0YGbBlnm0LY7mfLhhlD7ZJz2gTZLQx0lukk=;
-        b=n6hj5KzNYb4hWuc72MGS52NHq0qhJ52hEksMfMOHIYovhIWcK/0koFi3bZnjd7p8Ma
-         fcS4LHIbKPqDfRR4hfvlWt1Qpm7cwDh07U8NYO2uIfI/Ajp8Yt5ItNLXhoAndmmDZOTR
-         74bkJuZmItYOLFYjVwzkpguyiwc6dTHMFcirVAGGTBV+mb9x4BXnFI3WHExp/FcCIEeC
-         QpF024bJWabmRSdCfPxTtUD+nN2g4YaOBYST9T8XORVchVFGSJkRTKMupdsYKDdrVh1f
-         AOhQG+eGReAPgeDbAwJEKc8oCO1ux1XTa+L69lCsslGRJx8QhfhGeHIAPmqP+h1ArOLx
-         iyRg==
-X-Gm-Message-State: AOAM532A4ayU7Si3rXAIVr3T73ygTTN3hvR5kWk6+unBvLnOgHcbiFnj
-        mDEXeYw3Pkiy73JNzIQSBncdHA8JOaaR3OADg/ajkCAXYc47V36uIR/eZ+I7EAj3uUGJXpQzylo
-        XmJAFq+l09W2Oenp9
-X-Received: by 2002:a7b:c2a2:: with SMTP id c2mr5008492wmk.89.1625226126815;
-        Fri, 02 Jul 2021 04:42:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxWYuJGIGbYFRs7gC4LCE1k8CaBwN2PtmCW/QOzVqlx2uInbLjzu/GrMJi0BvnwfYQ8dz6lEA==
-X-Received: by 2002:a7b:c2a2:: with SMTP id c2mr5008472wmk.89.1625226126642;
-        Fri, 02 Jul 2021 04:42:06 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-171.dyn.eolo.it. [146.241.112.171])
-        by smtp.gmail.com with ESMTPSA id t11sm3073597wrz.7.2021.07.02.04.42.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jul 2021 04:42:06 -0700 (PDT)
-Message-ID: <39df657bee89e56c704782e0c061383d276d2f7c.camel@redhat.com>
-Subject: Re: [regression] UDP recv data corruption
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Matthias Treydte <mt@waldheinz.de>
-Cc:     stable@vger.kernel.org, netdev@vger.kernel.org,
-        regressions@lists.linux.dev, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Ahern <dsahern@gmail.com>
-Date:   Fri, 02 Jul 2021 13:42:05 +0200
-In-Reply-To: <CA+FuTSc3POcZo0En3JBqRwq2+eF645_Cs4U-4nBmTs9FvjoVkg@mail.gmail.com>
-References: <20210701124732.Horde.HT4urccbfqv0Nr1Aayuy0BM@mail.your-server.de>
-         <38ddc0e8-ba27-279b-8b76-4062db6719c6@gmail.com>
-         <CA+FuTSc3POcZo0En3JBqRwq2+eF645_Cs4U-4nBmTs9FvjoVkg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S232138AbhGBMdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 08:33:36 -0400
+Received: from proxmox-new.maurer-it.com ([94.136.29.106]:8616 "EHLO
+        proxmox-new.maurer-it.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232005AbhGBMdg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 08:33:36 -0400
+Received: from proxmox-new.maurer-it.com (localhost.localdomain [127.0.0.1])
+        by proxmox-new.maurer-it.com (Proxmox) with ESMTP id 126A34048F;
+        Fri,  2 Jul 2021 14:07:43 +0200 (CEST)
+From:   Wolfgang Bumiller <w.bumiller@proxmox.com>
+To:     netdev@vger.kernel.org
+Cc:     bridge@lists.linux-foundation.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Vlad Yasevich <vyasevic@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Thomas Lamprecht <t.lamprecht@proxmox.com>
+Subject: [PATCH v3] net: bridge: sync fdb to new unicast-filtering ports
+Date:   Fri,  2 Jul 2021 14:07:36 +0200
+Message-Id: <20210702120736.3746-1-w.bumiller@proxmox.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Since commit 2796d0c648c9 ("bridge: Automatically manage
+port promiscuous mode.")
+bridges with `vlan_filtering 1` and only 1 auto-port don't
+set IFF_PROMISC for unicast-filtering-capable ports.
 
-On Thu, 2021-07-01 at 20:31 -0400, Willem de Bruijn wrote:
-> On Thu, Jul 1, 2021 at 11:39 AM David Ahern <dsahern@gmail.com> wrote:
-> > [ adding Paolo, author of 18f25dc39990 ]
-> > 
-> > On 7/1/21 4:47 AM, Matthias Treydte wrote:
-> > > Hello,
-> > > 
-> > > we recently upgraded the Linux kernel from 5.11.21 to 5.12.12 in our
-> > > video stream receiver appliance and noticed compression artifacts on
-> > > video streams that were previously looking fine. We are receiving UDP
-> > > multicast MPEG TS streams through an FFMpeg / libav layer which does the
-> > > socket and lower level protocol handling. For affected kernels it spills
-> > > the log with messages like
-> > > 
-> > > > [mpegts @ 0x7fa130000900] Packet corrupt (stream = 0, dts = 6870802195).
-> > > > [mpegts @ 0x7fa11c000900] Packet corrupt (stream = 0, dts = 6870821068).
-> > > 
-> > > Bisecting identified commit 18f25dc399901426dff61e676ba603ff52c666f7 as
-> > > the one introducing the problem in the mainline kernel. It was
-> > > backported to the 5.12 series in
-> > > 450687386cd16d081b58cd7a342acff370a96078. Some random observations which
-> > > may help to understand what's going on:
-> > > 
-> > >    * the problem exists in Linux 5.13
-> > >    * reverting that commit on top of 5.13 makes the problem go away
-> > >    * Linux 5.10.45 is fine
-> > >    * no relevant output in dmesg
-> > >    * can be reproduced on different hardware (Intel, AMD, different
-> > > NICs, ...)
-> > >    * we do use the bonding driver on the systems (but I did not yet
-> > > verify that this is related)
-> > >    * we do not use vxlan (mentioned in the commit message)
-> > >    * the relevant code in FFMpeg identifying packet corruption is here:
-> > > 
-> > > https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/mpegts.c#L2758
-> > > 
-> > > And the bonding configuration:
-> > > 
-> > > # cat /proc/net/bonding/bond0
-> > > Ethernet Channel Bonding Driver: v5.10.45
-> > > 
-> > > Bonding Mode: fault-tolerance (active-backup)
-> > > Primary Slave: None
-> > > Currently Active Slave: enp2s0
-> > > MII Status: up
-> > > MII Polling Interval (ms): 100
-> > > Up Delay (ms): 0
-> > > Down Delay (ms): 0
-> > > Peer Notification Delay (ms): 0
-> > > 
-> > > Slave Interface: enp2s0
-> > > MII Status: up
-> > > Speed: 1000 Mbps
-> > > Duplex: full
-> > > Link Failure Count: 0
-> > > Permanent HW addr: 80:ee:73:XX:XX:XX
-> > > Slave queue ID: 0
-> > > 
-> > > Slave Interface: enp3s0
-> > > MII Status: down
-> > > Speed: Unknown
-> > > Duplex: Unknown
-> > > Link Failure Count: 0
-> > > Permanent HW addr: 80:ee:73:XX:XX:XX
-> > > Slave queue ID: 0
-> > > 
-> > > 
-> > > If there is anything else I can do to help tracking this down please let
-> > > me know.
+Normally on port changes `br_manage_promisc` is called to
+update the promisc flags and unicast filters if necessary,
+but it cannot distinguish between *new* ports and ones
+losing their promisc flag, and new ports end up not
+receiving the MAC address list.
 
-Thank you for the report!
+Fix this by calling `br_fdb_sync_static` in `br_add_if`
+after the port promisc flags are updated and the unicast
+filter was supposed to have been filled.
 
-According to the above I would wild guess that the GRO layer is
-wrongly/unexpectly aggregating some UDP packets, but I do agree with
-Willem, it looks like the code pointed by the bisecting should not do
-anything evil here, but I'm likely missing some items.
+Fixes: 2796d0c648c9 ("bridge: Automatically manage port promiscuous mode.")
+Signed-off-by: Wolfgang Bumiller <w.bumiller@proxmox.com>
+---
+Changes to v2:
+  * Added 'fdb_synced' boolean to only unsync on error if it was
+    actually synced.
+    `br_fdb_sync_static()` already unrolls changes if it encounters an
+    error in the middle, so only a successful call will trigger the
+    unsync.
+    I opted for the explicit error handling as I felt that avoiding the
+    error cleanup by moving the code down might be more easily missed in
+    future changes (I just felt safer this way), plus, it's closer to
+    the call which would normally be responsible for doing this which
+    felt more natural to me.
 
-Could you please:
-- tell how frequent is the pkt corruption, even a rough estimate of the
-frequency.
+    I hope this is fine, otherwise I can still move it :-)
 
-- provide the features exposed by the relevant devices: 
-ethtool -k <nic name>
+ net/bridge/br_if.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-- check, if possibly, how exactly the pkts are corrupted. Wrong size?
-bad csum? what else?
+diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
+index f7d2f472ae24..6e4a32354a13 100644
+--- a/net/bridge/br_if.c
++++ b/net/bridge/br_if.c
+@@ -562,7 +562,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
+ 	struct net_bridge_port *p;
+ 	int err = 0;
+ 	unsigned br_hr, dev_hr;
+-	bool changed_addr;
++	bool changed_addr, fdb_synced = false;
+ 
+ 	/* Don't allow bridging non-ethernet like devices. */
+ 	if ((dev->flags & IFF_LOOPBACK) ||
+@@ -652,6 +652,19 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
+ 	list_add_rcu(&p->list, &br->port_list);
+ 
+ 	nbp_update_port_count(br);
++	if (!br_promisc_port(p) && (p->dev->priv_flags & IFF_UNICAST_FLT)) {
++		/* When updating the port count we also update all ports'
++		 * promiscuous mode.
++		 * A port leaving promiscuous mode normally gets the bridge's
++		 * fdb synced to the unicast filter (if supported), however,
++		 * `br_port_clear_promisc` does not distinguish between
++		 * non-promiscuous ports and *new* ports, so we need to
++		 * sync explicitly here.
++		 */
++		fdb_synced = br_fdb_sync_static(br, p) == 0;
++		if (!fdb_synced)
++			netdev_err(dev, "failed to sync bridge static fdb addresses to this port\n");
++	}
+ 
+ 	netdev_update_features(br->dev);
+ 
+@@ -701,6 +714,8 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
+ 	return 0;
+ 
+ err7:
++	if (fdb_synced)
++		br_fdb_unsync_static(br, p);
+ 	list_del_rcu(&p->list);
+ 	br_fdb_delete_by_port(br, p, 0, 1);
+ 	nbp_update_port_count(br);
+-- 
+2.32.0
 
-- ideally a short pcap trace comprising the problematic packets would
-be great!
-
-Thanks!
-
-Paolo
 
