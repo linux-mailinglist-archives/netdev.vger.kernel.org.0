@@ -2,124 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26DB63BA48D
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 22:09:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94AF33BA4B2
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 22:32:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231128AbhGBULl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 16:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
+        id S231486AbhGBUed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 16:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230116AbhGBULl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 16:11:41 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020CAC061762
-        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 13:09:08 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id mn20-20020a17090b1894b02901707fc074e8so8341854pjb.0
-        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 13:09:07 -0700 (PDT)
+        with ESMTP id S230447AbhGBUed (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 16:34:33 -0400
+Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B11C061764
+        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 13:32:00 -0700 (PDT)
+Received: by mail-ua1-x92d.google.com with SMTP id g21so4297010uaw.3
+        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 13:32:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7hsxLPE6n9hDKQXhj6wLUqqXLVyZdJIo7vOg1HKqVME=;
-        b=k1IVm6et8+mDTWsm55kZV8Uv5MWSNKejWXcf1Smip1J3r5s98ucQHPjZuIqSHfrwXQ
-         XmBFNO3Fx4jdsMpd86oIqcBuXDk6YXIBNv1Yxmp4M1RNQCTn+ozNyP4KWsXVxEKLRKLZ
-         xlKrtxgRMck0SrBKPyKB4F6vDKJ4LhNFHtXDrdQFH8iK5/y5VEtiUCGOVkS3ZnvSoAIl
-         BdMpLx0vyTUlMS+OrfboUtlS26S7LlzkEaKiJAg0xsr1JdtZrNlVS36Pk9zaZdv/BVrV
-         TS8/KR9omqcVzoR6OhifPE40FMW/mOxBTaeAwGEzeneiQP8zkLPxYS8ZsPXgZ63zl3K3
-         idWA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iGOVo0v3XCUiMjAb3ZKMCET9+F7mgGvVi8d4kWAB/nQ=;
+        b=PIFD2PkAcBtdfGneD9rdOJGSbRlyUuSajHo5rEdUXjADsabsK9eaOyFu3SMjmK39Fs
+         MYrFqCKI2Kd4ntd9AaXV8eU9jGb+yNTC9Ku5Qxr0uNu2sboax8qlfTjSn/Lmx+xndcXD
+         WNQg85BnCQ55UBKyglFn2HSsvvbLEEozt5WIjhlPlFsgzopHUNiXv/A9mOlJZkJPwv5G
+         fWGxW7MifwodbKAKIly274PrM3e2FWqdiz/YcZ644HkCHK88cGVrftnRUIe1tHBK8tUx
+         ENvkbjIC3xpUgG5SZbZvGlS5n2oB19kmyL+Du1wgrdbBysCAj+KHsV9I+KrkT7JCM5LW
+         Allg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7hsxLPE6n9hDKQXhj6wLUqqXLVyZdJIo7vOg1HKqVME=;
-        b=sZfsZs03AR+2MWpe3RgdUlyBPjjjJz3jaYqSOXx2q6vdRq8lLnv666mKS8WNclszJ9
-         C/HR7bWrR2l0cbhLprngNEQ59tvbQg3HVqZbUMEIxCp02/NdBB9m1JAsw9XWhUjsYodK
-         DkPMETW8rk/R3QHxERtW5zQnEseowYmTPFJFNOKziYWIBP6jY/aG8f/MR5ev9lqRDptA
-         qaWPZhupe4Xrobnn9URTGvYpYTYoY/UYNt6OygnfDXkVvB+S57l+LG6x+w2t0oN+kp9d
-         4lkWHv5pqKI4VEI2KGPz+ok01TTTZCvc9j2SrfelZMB4+IdQWd5xVGgC8ikOSF9GKKa7
-         XKRw==
-X-Gm-Message-State: AOAM530TJuv+WhHAncdZRjIzRt+RCn0T1M7cpNDWi4P1aQk2wK234rW4
-        aJ2zF91R+heVSmG0ae2eDh6lLhsCc2E=
-X-Google-Smtp-Source: ABdhPJyZYm3GkwFT2c0m+090ldIMc9heOiTPgMOO5kNAA6EHiOgy8MEu2CtTb+y09qSciXR26VO1OQ==
-X-Received: by 2002:a17:902:aa4a:b029:10e:f98c:2b83 with SMTP id c10-20020a170902aa4ab029010ef98c2b83mr1231970plr.62.1625256547523;
-        Fri, 02 Jul 2021 13:09:07 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7c57:ec32:6dc8:bd6c])
-        by smtp.gmail.com with ESMTPSA id j205sm4653065pfd.4.2021.07.02.13.09.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jul 2021 13:09:06 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net] tcp: annotate data races around tp->mtu_info
-Date:   Fri,  2 Jul 2021 13:09:03 -0700
-Message-Id: <20210702200903.4088572-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iGOVo0v3XCUiMjAb3ZKMCET9+F7mgGvVi8d4kWAB/nQ=;
+        b=Pm8nTSt9khIb4qe7V0PXLMLlhsFYTr7H/Lb0+4ZxUCeOFAKdqsvG+kkc6VspBBQs+J
+         ztPmO4rmTJ+CHxCAR7cuvjrQhqnKwbiXJgaVD5eaXhEQU++LBKtvk3UmUQyh+9jAhfly
+         xA/vNrFTXbKlnxzF/xebwwsqAbNofOwnH/vst6umUZ8gJ/qpzHdClGliAUxkT0OBTKk5
+         eR/JNxq2A5R8nshwU9Bv2lGwfmEHGrwB02qcosZPylu3cEXpxeqyz0um/ytesJRhKwFZ
+         UNGU6UFJMcd5HIscY4eU59KvFATRGNsKp4uCm9rQMUuxACCxP3lkqKiF4pgwGN1WJZd+
+         /cdA==
+X-Gm-Message-State: AOAM533UUESh8XSwrWk8W07QmFQsYWF3ldffqwLQz/9ljVh22POsEINK
+        6Mf75lnd/6J8ZOiZRPRDkggMkE4tm2d7iow/LKf2Sw==
+X-Google-Smtp-Source: ABdhPJz4axXxYgNaw6qv30zYaVckpnHi/S38bZVet4scjqfWTYa4pK51kVkcebfSQ3hnZ/OxwnV3PR1gwx3ni/HCqUw=
+X-Received: by 2002:ab0:77d0:: with SMTP id y16mr2408304uar.46.1625257919512;
+ Fri, 02 Jul 2021 13:31:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210702194033.1370634-1-phind.uet@gmail.com>
+In-Reply-To: <20210702194033.1370634-1-phind.uet@gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Fri, 2 Jul 2021 16:31:42 -0400
+Message-ID: <CADVnQynvWsD2qWfw4qJsNhyyPXbFGfhZmhMzaggfJ8JtUUt9VA@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: fix tcp_init_transfer() to not reset icsk_ca_initialized
+To:     Nguyen Dinh Phi <phind.uet@gmail.com>
+Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Fri, Jul 2, 2021 at 3:41 PM Nguyen Dinh Phi <phind.uet@gmail.com> wrote:
+>
+> This commit fixes a bug (found by syzkaller) that could cause spurious
+> double-initializations for congestion control modules, which could cause
+> memory leaks orother problems for congestion control modules (like CDG)
+> that allocate memory in their init functions.
+>
+> The buggy scenario constructed by syzkaller was something like:
+>
+> (1) create a TCP socket
+> (2) initiate a TFO connect via sendto()
+> (3) while socket is in TCP_SYN_SENT, call setsockopt(TCP_CONGESTION),
+>     which calls:
+>        tcp_set_congestion_control() ->
+>          tcp_reinit_congestion_control() ->
+>            tcp_init_congestion_control()
+> (4) receive ACK, connection is established, call tcp_init_transfer(),
+>     set icsk_ca_initialized=0 (without first calling cc->release()),
+>     call tcp_init_congestion_control() again.
+>
+> Note that in this sequence tcp_init_congestion_control() is called
+> twice without a cc->release() call in between. Thus, for CC modules
+> that allocate memory in their init() function, e.g, CDG, a memory leak
+> may occur. The syzkaller tool managed to find a reproducer that
+> triggered such a leak in CDG.
+>
+> The bug was introduced when that commit 8919a9b31eb4 ("tcp: Only init
+> congestion control if not initialized already")
+> introduced icsk_ca_initialized and set icsk_ca_initialized to 0 in
+> tcp_init_transfer(), missing the possibility for a sequence like the
+> one above, where a process could call setsockopt(TCP_CONGESTION) in
+> state TCP_SYN_SENT (i.e. after the connect() or TFO open sendmsg()),
+> which would call tcp_init_congestion_control(). It did not intend to
+> reset any initialization that the user had already explicitly made;
+> it just missed the possibility of that particular sequence (which
+> syzkaller managed to find).
+>
+> Fixes: commit 8919a9b31eb4 ("tcp: Only init congestion control if not
+> initialized already")
 
-While tp->mtu_info is read while socket is owned, the write
-sides happen from err handlers (tcp_v[46]_mtu_reduced)
-which only own the socket spinlock.
+Please note that the patchwork tools have found a style/formatting
+issue with your Fixes tag:
 
-Fixes: 563d34d05786 ("tcp: dont drop MTU reduction indications")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+You can find them at:
+https://patchwork.kernel.org/project/netdevbpf/list/
+ ->
+ https://patchwork.kernel.org/project/netdevbpf/patch/20210702194033.1370634-1-phind.uet@gmail.com/
+  ->
+   https://patchwork.hopto.org/static/nipa/510221/12356435/verify_fixes/stdout
+
+The error is:
 ---
- net/ipv4/tcp_ipv4.c | 4 ++--
- net/ipv6/tcp_ipv6.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Fixes tag: Fixes: commit 8919a9b31eb4 ("tcp: Only init congestion control if not
+Has these problem(s):
+- leading word 'commit' unexpected
+- Subject has leading but no trailing parentheses
+- Subject has leading but no trailing quotes
+---
 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index e66ad6bfe8083bfde66d24d9644abcdb649508be..b9dc2d6197be8b8b03a4d052ad1c87987c7a62aa 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -342,7 +342,7 @@ void tcp_v4_mtu_reduced(struct sock *sk)
- 
- 	if ((1 << sk->sk_state) & (TCPF_LISTEN | TCPF_CLOSE))
- 		return;
--	mtu = tcp_sk(sk)->mtu_info;
-+	mtu = READ_ONCE(tcp_sk(sk)->mtu_info);
- 	dst = inet_csk_update_pmtu(sk, mtu);
- 	if (!dst)
- 		return;
-@@ -546,7 +546,7 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
- 			if (sk->sk_state == TCP_LISTEN)
- 				goto out;
- 
--			tp->mtu_info = info;
-+			WRITE_ONCE(tp->mtu_info, info);
- 			if (!sock_owned_by_user(sk)) {
- 				tcp_v4_mtu_reduced(sk);
- 			} else {
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 578ab6305c3f84819bb38054acf1e62c00a9061e..593c32fe57ed13a218492fd6056f2593e601ec79 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -352,7 +352,7 @@ static void tcp_v6_mtu_reduced(struct sock *sk)
- 	if ((1 << sk->sk_state) & (TCPF_LISTEN | TCPF_CLOSE))
- 		return;
- 
--	dst = inet6_csk_update_pmtu(sk, tcp_sk(sk)->mtu_info);
-+	dst = inet6_csk_update_pmtu(sk, READ_ONCE(tcp_sk(sk)->mtu_info));
- 	if (!dst)
- 		return;
- 
-@@ -443,7 +443,7 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
- 		if (!ip6_sk_accept_pmtu(sk))
- 			goto out;
- 
--		tp->mtu_info = ntohl(info);
-+		WRITE_ONCE(tp->mtu_info, ntohl(info));
- 		if (!sock_owned_by_user(sk))
- 			tcp_v6_mtu_reduced(sk);
- 		else if (!test_and_set_bit(TCP_MTU_REDUCED_DEFERRED,
--- 
-2.32.0.93.g670b81a890-goog
+Basically, please omit the "commit" and don't wrap the text (it's OK
+if it's longer than 80 or 100 characters).
 
+thanks,
+neal
