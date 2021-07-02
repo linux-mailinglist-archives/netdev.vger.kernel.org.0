@@ -2,69 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C70D3BA4BD
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 22:40:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE983BA4C1
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 22:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231467AbhGBUmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 16:42:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45322 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231179AbhGBUmh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Jul 2021 16:42:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B4F2961410;
-        Fri,  2 Jul 2021 20:40:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625258404;
-        bh=lAkRQ5usyVEp6kumtIgnVP7z3vQLnIxPSNfHfHlE7yA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CdRdjE9a3W/T+LHcrwQOUtnY6jRdk5/CbubEuGSR4IT5Pi+ADTl/z3MZVJWnfiBEZ
-         bEQPV4fjoO7Opg2bE0nAIp+feCufsILSW7Kuu2d5tCJMn9gxYmO9Vl9FFcLOrqMK6E
-         jamrp0I6O2HLXuO7vVuNjUlvN6msjOOz2XPESntSKjXsbp1djWPJUnvVWaORTyu4Mo
-         uGk5qlixMlQR4lH9aFJ8q1S8cPA22HRbUC+GSZOySPROfk3iA6QMJ5YHcRaIsOd4CM
-         betLw6NfbZieNUqGt0CoriPf1pQkbajxDiCggX7mMmTabfT1p99a6B1iLFuQ+Snpw4
-         GeHln756Qsp/w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A43D360A6C;
-        Fri,  2 Jul 2021 20:40:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] tcp: annotate data races around tp->mtu_info
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162525840466.26489.12938719023143907145.git-patchwork-notify@kernel.org>
-Date:   Fri, 02 Jul 2021 20:40:04 +0000
-References: <20210702200903.4088572-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210702200903.4088572-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com
+        id S231618AbhGBUnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 16:43:15 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:38070 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230434AbhGBUnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 16:43:14 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id A09214D252307;
+        Fri,  2 Jul 2021 13:40:41 -0700 (PDT)
+Date:   Fri, 02 Jul 2021 13:40:41 -0700 (PDT)
+Message-Id: <20210702.134041.2064148932022807436.davem@davemloft.net>
+To:     pei.lee.ling@intel.com
+Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, marek.behun@nic.cz,
+        weifeng.voon@intel.com, vee.khee.wong@linux.intel.com,
+        vee.khee.wong@intel.com
+Subject: Re: [PATCH net-next V3] net: phy: marvell10g: enable WoL for
+ 88X3310 and 88E2110
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210702080454.1688190-1-pei.lee.ling@intel.com>
+References: <20210702080454.1688190-1-pei.lee.ling@intel.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Fri, 02 Jul 2021 13:40:42 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Ling Pei Lee <pei.lee.ling@intel.com>
+Date: Fri,  2 Jul 2021 16:04:54 +0800
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri,  2 Jul 2021 13:09:03 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+> From: Voon Weifeng <weifeng.voon@intel.com>
 > 
-> While tp->mtu_info is read while socket is owned, the write
-> sides happen from err handlers (tcp_v[46]_mtu_reduced)
-> which only own the socket spinlock.
+> Implement Wake-on-LAN feature for 88X3310 and 88E2110.
 > 
-> Fixes: 563d34d05786 ("tcp: dont drop MTU reduction indications")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> This is done by enabling WoL interrupt and WoL detection and
+> configuring MAC address into WoL magic packet registers
 > 
-> [...]
+> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+> Signed-off-by: Ling PeiLee <pei.lee.ling@intel.com>
 
-Here is the summary with links:
-  - [net] tcp: annotate data races around tp->mtu_info
-    https://git.kernel.org/netdev/net/c/561022acb1ce
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Please resubmit this when net-next opens back up, thank you.
