@@ -2,97 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 421A63B9F99
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 13:16:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F9E23B9FC8
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 13:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231802AbhGBLTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 07:19:10 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:33944 "EHLO mta-01.yadro.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231130AbhGBLTI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Jul 2021 07:19:08 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id F3BC6412FC;
-        Fri,  2 Jul 2021 11:16:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-type:content-type:content-transfer-encoding:mime-version
-        :references:in-reply-to:x-mailer:message-id:date:date:subject
-        :subject:from:from:received:received:received; s=mta-01; t=
-        1625224594; x=1627038995; bh=53CF/KNZ4GNzBxFyhuLIVxgugZREVEo9tgE
-        QtjQBoP8=; b=gqWVP9XLzraeSRgBSRBQKPHURYWvT6lOOprUFrpAydqJ6GgZDkc
-        PlF2xO7TfIVtXAoLpjLCB8z/FId0gq9loV/0Cn+s66GOiJy5CLUQH3/hleVE7ymH
-        TwyGkAL4SAmwATyoRUMj+8SWSQqTVDGePkZFjAThCu/jHAKptjPtZ/+k=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id AlwNigx6kSjN; Fri,  2 Jul 2021 14:16:34 +0300 (MSK)
-Received: from T-EXCH-03.corp.yadro.com (t-exch-03.corp.yadro.com [172.17.100.103])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id E39FD46788;
-        Fri,  2 Jul 2021 14:16:33 +0300 (MSK)
-Received: from localhost.yadro.com (10.199.0.133) by T-EXCH-03.corp.yadro.com
- (172.17.100.103) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.669.32; Fri, 2 Jul
- 2021 14:16:29 +0300
-From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        id S231889AbhGBL37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 07:29:59 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:58721 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231145AbhGBL36 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 07:29:58 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lzHKK-0003x3-Lf; Fri, 02 Jul 2021 11:27:20 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>
-CC:     Ivan Mikhaylov <i.mikhaylov@yadro.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <openbmc@lists.ozlabs.org>
-Subject: [PATCH 2/2] net/ncsi: add dummy response handler for Intel boards
-Date:   Fri, 2 Jul 2021 14:25:19 +0300
-Message-ID: <20210702112519.76385-3-i.mikhaylov@yadro.com>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iavf: remove redundant null check on key
+Date:   Fri,  2 Jul 2021 12:27:20 +0100
+Message-Id: <20210702112720.16006-1-colin.king@canonical.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210702112519.76385-1-i.mikhaylov@yadro.com>
-References: <20210702112519.76385-1-i.mikhaylov@yadro.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.199.0.133]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-EXCH-03.corp.yadro.com (172.17.100.103)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the dummy response handler for Intel boards to prevent incorrect
-handling of OEM commands.
+From: Colin Ian King <colin.king@canonical.com>
 
-Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
+The null check on pointer key has already been performed at the
+start of the function and this leads to a return of -EOPNOTSUPP.
+The second null check on key is therefore always false, it is
+redundant and can be removed.
+
+Addresses-Coverity: ("Logically dead code")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- net/ncsi/ncsi-rsp.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
-index 888ccc2d4e34..22330a80887b 100644
---- a/net/ncsi/ncsi-rsp.c
-+++ b/net/ncsi/ncsi-rsp.c
-@@ -699,12 +699,19 @@ static int ncsi_rsp_handler_oem_bcm(struct ncsi_request *nr)
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+index af43fbd8cb75..70193d8d54ed 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+@@ -1873,8 +1873,7 @@ static int iavf_set_rxfh(struct net_device *netdev, const u32 *indir,
+ 	if (!indir)
+ 		return 0;
  
-+/* Response handler for Intel card */
-+static int ncsi_rsp_handler_oem_inl(struct ncsi_request *nr)
-+{
-+	return 0;
-+}
-+
- static struct ncsi_rsp_oem_handler {
- 	unsigned int	mfr_id;
- 	int		(*handler)(struct ncsi_request *nr);
- } ncsi_rsp_oem_handlers[] = {
- 	{ NCSI_OEM_MFR_MLX_ID, ncsi_rsp_handler_oem_mlx },
--	{ NCSI_OEM_MFR_BCM_ID, ncsi_rsp_handler_oem_bcm }
-+	{ NCSI_OEM_MFR_BCM_ID, ncsi_rsp_handler_oem_bcm },
-+	{ NCSI_OEM_MFR_INL_ID, ncsi_rsp_handler_oem_inl }
- };
+-	if (key)
+-		memcpy(adapter->rss_key, key, adapter->rss_key_size);
++	memcpy(adapter->rss_key, key, adapter->rss_key_size);
  
- /* Response handler for OEM command */
+ 	/* Each 32 bits pointed by 'indir' is stored with a lut entry */
+ 	for (i = 0; i < adapter->rss_lut_size; i++)
 -- 
 2.31.1
 
