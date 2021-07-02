@@ -2,84 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 083123B9DA5
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:42:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 720FC3B9DAF
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 10:46:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230447AbhGBIor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 04:44:47 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:54380 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230166AbhGBIor (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Jul 2021 04:44:47 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1625215335; h=Content-Type: MIME-Version: Message-ID: Date:
- References: In-Reply-To: Subject: Cc: To: From: Sender;
- bh=w3yBGSGoQ8cNaUpst5+zJFm90DXtuz3EZYf+rk4KsIk=; b=L+lEnrrV9QlBDJCCvkS8LF6wwI6JTKRIhHfkIhrtZ+nr3lOXw6uIHfOj+Se8eYncfaINLoyB
- rDYnvdPdpfxnWBslgCH2JKMZfGpkNeTEk/nJQb+0RG5s8ocOtO7aFnf3W/8j7RbgaS9Q2U+M
- L+nQLttZUdzw3xJnCvCsjJDLPd8=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 60ded15eec0b18a7455b8bec (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 02 Jul 2021 08:42:06
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 570D9C4323A; Fri,  2 Jul 2021 08:42:05 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6DB36C433D3;
-        Fri,  2 Jul 2021 08:42:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6DB36C433D3
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     chris.chiu@canonical.com
-Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        code@reto-schneider.ch, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rtl8xxxu: disable interrupt_in transfer for 8188cu and 8192cu
-In-Reply-To: <20210701163354.118403-1-chris.chiu@canonical.com> (chris chiu's
-        message of "Fri, 2 Jul 2021 00:33:54 +0800")
-References: <20210701163354.118403-1-chris.chiu@canonical.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Fri, 02 Jul 2021 11:41:58 +0300
-Message-ID: <87v95thzu1.fsf@codeaurora.org>
+        id S230512AbhGBIsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 04:48:55 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:13052 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230166AbhGBIsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 04:48:54 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GGTB815PLzZkn2;
+        Fri,  2 Jul 2021 16:43:12 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 2 Jul 2021 16:46:20 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 2 Jul 2021
+ 16:46:19 +0800
+Subject: Re: [PATCH net-next v3 1/3] selftests/ptr_ring: add benchmark
+ application for ptr_ring
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Jason Wang <jasowang@redhat.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <brouer@redhat.com>, <paulmck@kernel.org>,
+        <peterz@infradead.org>, <will@kernel.org>, <shuah@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linuxarm@openeuler.org>
+References: <1625142402-64945-1-git-send-email-linyunsheng@huawei.com>
+ <1625142402-64945-2-git-send-email-linyunsheng@huawei.com>
+ <e1ec4577-a48f-ff56-b766-1445c2501b9f@redhat.com>
+ <91bcade8-f034-4bc7-f329-d5e1849867e7@huawei.com>
+ <20210702042838-mutt-send-email-mst@kernel.org>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <661a84bc-e7c5-bc21-25ac-75a68efa79ca@huawei.com>
+Date:   Fri, 2 Jul 2021 16:46:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20210702042838-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme709-chm.china.huawei.com (10.1.199.105) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-chris.chiu@canonical.com writes:
+On 2021/7/2 16:30, Michael S. Tsirkin wrote:
+> On Fri, Jul 02, 2021 at 04:17:17PM +0800, Yunsheng Lin wrote:
+>>> Let's reuse ptr_ring.c in tools/virtio/ringtest. Nothing virt specific there.
+>>
+>> It *does* have some virtio specific at the end of ptr_ring.c.
+>> It can be argued that the ptr_ring.c in tools/virtio/ringtest
+>> could be refactored to remove the function related to virtio.
+>>
+>> But as mentioned in the previous disscusion [1], the tools/virtio/
+>> seems to have compile error in the latest kernel, it does not seems
+>> right to reuse that.
+>> And most of testcase in tools/virtio/ seems
+>> better be in tools/virtio/ringtest instead，so until the testcase
+>> in tools/virtio/ is compile-error-free and moved to tools/testing/
+>> selftests/, it seems better not to reuse it for now.
+> 
+> 
+> That's a great reason to reuse - so tools/virtio/ stays working.
+> Please just fix that.
 
-> From: Chris Chiu <chris.chiu@canonical.com>
->
-> There will be crazy numbers of interrupts triggered by 8188cu and
-> 8192cu module, around 8000~10000 interrupts per second, on the usb
-> host controller. Compare with the vendor driver source code, it's
-> mapping to the configuration CONFIG_USB_INTERRUPT_IN_PIPE and it is
-> disabled by default.
->
-> Since the interrupt transfer is neither used for TX/RX nor H2C
-> commands. Disable it to avoid the confusing interrupts for the
-> 8188cu and 8192cu module which I only have for verification.
+I understand that you guys like to see a working testcase of virtio.
+I would love to do that if I have the time and knowledge of virtio,
+But I do not think I have the time and I am familiar enough with
+virtio to fix that now.
 
-The last paragraph is not entirely clear for me, can you elaborate it
-more? What do you mean with "confusing interrupts"? And is this fixing
-an actual user visible bug or are you just reducing the number of
-interrupts?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> 
