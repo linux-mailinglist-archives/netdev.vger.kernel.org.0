@@ -2,90 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EDA03BA419
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 20:51:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AA843BA42E
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 21:02:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230227AbhGBSyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 14:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbhGBSyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 14:54:13 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B509AC061762
-        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 11:51:40 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id k21so14632657ljh.2
-        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 11:51:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:date:from:user-agent:mime-version:to:cc:subject
-         :references:in-reply-to:content-transfer-encoding;
-        bh=JPKVudL6PfqWrbkbZh1f6GiTfa8IkX+CXBD/7o66dK0=;
-        b=g2ZrSfwStkON1HqNIvHik1z2qqpdcINTys0PnxU81UnEy3qYkVWTAaivnlH2cGtWcG
-         qpQAqOmOLZ9ZPPvwfhXn0n+iys8Pbc+FbTE4GCkvQlcvEvCu+d+MOsFb0Qb3RPpoucnt
-         Qatd4sl1aAVtd9oJEJm6JaIbgvGoTOZcs+UmKi3loOLuZos3q0jUIzjyWUpAvUR/Mtbo
-         xfsu8et8ILRdoNx3bqk2yDwyn+KL1mjg31cPknBbGsb+7/yb5qXsE6yy2g0+m9/J2A5m
-         bde4SglnPiWeMQ1jjgzE5ovItAWHuZcZYm+kPgpABfRC+IMKlqA6Filczl8SZ0c7CfGD
-         aodA==
+        id S230215AbhGBTFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 15:05:09 -0400
+Received: from mail-pj1-f45.google.com ([209.85.216.45]:46622 "EHLO
+        mail-pj1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229794AbhGBTFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 15:05:09 -0400
+Received: by mail-pj1-f45.google.com with SMTP id b5-20020a17090a9905b029016fc06f6c5bso6682127pjp.5;
+        Fri, 02 Jul 2021 12:02:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
-         :cc:subject:references:in-reply-to:content-transfer-encoding;
-        bh=JPKVudL6PfqWrbkbZh1f6GiTfa8IkX+CXBD/7o66dK0=;
-        b=TnMf9EFIWyEasTwkCIXQ2f6ONMX7KQpjqLePIubxQVu3aOEynMBvK05X1qFYiUI0RU
-         v9rcRTVgainVYuynRkmKhY3ov3nyLL2IfmEwPi2AtFo1N0f6xgksRhd0MssAeBM+2h5g
-         dWgTZlWy1w/Ivch+1oQwlM4L9xJ0isWy20GAd4Obix2oJYV7+hFLWEmwXt8QmCsEXk6R
-         1qTQpsw0riQX4INDPesl0f/TCGbkIyOJOQeAQdiCvAHOYf8Ye6JwXr9Bbslx4aCjFvJQ
-         gr4VoJ0u67ocoY0ff19JhiOa2CyGM3/TjAp7WgGoUolxln7f/7gpxBS0WbzliEDyJE2o
-         lt9Q==
-X-Gm-Message-State: AOAM533nmugpxJ36rUcRwtzfTdh6coarKUjTtRoEVSzw7TNrvF+FwH59
-        VE0i9lOUGxHZTSXBnoUTcXo=
-X-Google-Smtp-Source: ABdhPJxTGqiZKBqkmGlMSfom4YkaXFM51tEhL/9RHD6+E1guQ1rZxn/b3dktYIxUvSglvjVi2BDdlw==
-X-Received: by 2002:a2e:b5a6:: with SMTP id f6mr641357ljn.198.1625251899125;
-        Fri, 02 Jul 2021 11:51:39 -0700 (PDT)
-Received: from [192.168.0.91] ([188.242.181.97])
-        by smtp.googlemail.com with ESMTPSA id x10sm344049lfu.263.2021.07.02.11.51.38
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Fri, 02 Jul 2021 11:51:38 -0700 (PDT)
-Message-ID: <60DF62DA.6030508@gmail.com>
-Date:   Fri, 02 Jul 2021 22:02:50 +0300
-From:   Nikolai Zhubr <zhubr.2@gmail.com>
-User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yB0ZQpA9XJtnRtrSbqsDl0rPIO7pvP8OCnrT7G8ciAM=;
+        b=itcQIXjXtf0p8inMVBt7UOqv4ZStxluiaiKctxCqOh3OgO8POztPeDV/E+kseNxmDp
+         uBTDsd4sQhdxGEJ74LGzLw4hqhjiiil0NxuNnOFpRm0eyHIWekG/W6SEKp8P806BEf4C
+         Bu4yyAaPtaFn73KzeA8L4yx1zWO89lrs2bAveJyEGFPEX8F57hLFh7PaE6boW/h1jYbM
+         aHPMI2ZOCZP5AjZrLwK+tIGZyYEbGHHdeylHQ77uU9IsxfHuAhCwWNoaMonz3uuEvdZq
+         DE6ZJFGGG5Al/O2HCmPxOLhB8Sj2HCMptjPfZ01gorCy6TNh+hhCQ5sNRLCB0zQ2D50M
+         g85g==
+X-Gm-Message-State: AOAM532SirlrIpnG1/5kbUv54zVeOEA5TXaS2WLNW8Gl37Vc3z7FODuE
+        rCz7wwQT7Re7BE8tLKZmkLs=
+X-Google-Smtp-Source: ABdhPJw+K/k5WgtbywwaL0MKsZ7NkF/S5cQbPmtspDf+gqWkxwa5FCqh5acmQsllS/twoyyGikr8vg==
+X-Received: by 2002:a17:90a:6744:: with SMTP id c4mr40645pjm.27.1625252555299;
+        Fri, 02 Jul 2021 12:02:35 -0700 (PDT)
+Received: from garbanzo ([191.96.121.144])
+        by smtp.gmail.com with ESMTPSA id z76sm4372769pfc.173.2021.07.02.12.02.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Jul 2021 12:02:34 -0700 (PDT)
+Date:   Fri, 2 Jul 2021 12:02:30 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     tj@kernel.org, shuah@kernel.org, akpm@linux-foundation.org,
+        Richard Fontana <fontana@sharpeleven.org>, rafael@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        andriin@fb.com, daniel@iogearbox.net, atenart@kernel.org,
+        alobakin@pm.me, weiwan@google.com, ap420073@gmail.com,
+        jeyu@kernel.org, ngupta@vflare.org,
+        sergey.senozhatsky.work@gmail.com, minchan@kernel.org,
+        axboe@kernel.dk, mbenes@suse.com, jpoimboe@redhat.com,
+        tglx@linutronix.de, keescook@chromium.org, jikos@kernel.org,
+        rostedt@goodmis.org, peterz@infradead.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] selftests: add tests_sysfs module
+Message-ID: <20210702190230.r46bck4vib7u3qo6@garbanzo>
+References: <20210702050543.2693141-1-mcgrof@kernel.org>
+ <20210702050543.2693141-2-mcgrof@kernel.org>
+ <YN6iSKCetBrk2y8V@kroah.com>
 MIME-Version: 1.0
-To:     Arnd Bergmann <arnd@kernel.org>
-CC:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: Realtek 8139 problem on 486.
-References: <60B24AC2.9050505@gmail.com> <60B560A8.8000800@gmail.com> <49f40dd8-da68-f579-b359-7a7e229565e1@gmail.com> <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com> <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com> <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com> <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk> <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com> <877dipgyrb.ffs@nanos.tec.linutronix.de> <alpine.DEB.2.21.2106200749300.61140@angie.orcam.me.uk> <CAK8P3a0Z56XvLHJHjvsX3F76ZF0n-VXwPoWbvfQdTgfEBfOneg@mail.gmail.com> <60D1DAC1.9060200@gmail.com> <CAK8P3a1XaTUgxM3YBa=iHGrLX_Wn66NhTTEXtV=vaNre7K3GOA@mail.gmail.com> <60D22F1D.1000205@gmail.com> <CAK8P3a3Jk+zNnQ5r9gb60deqCmJT+S07VvL3SipKRYXdxM2kPQ@mail.gmail.com> <60D361FF.70905@gmail.com> <alpine.DEB.2.21.2106240044080.37803@angie.orcam.me.uk> <CAK8P3a0u+usoPon7aNOAB_g+Jzkhbz9Q7-vyYci1ReHB6c-JMQ@mail.gmail.com>
-In-Reply-To: <CAK8P3a0u+usoPon7aNOAB_g+Jzkhbz9Q7-vyYci1ReHB6c-JMQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YN6iSKCetBrk2y8V@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-24.06.2021 11:28, Arnd Bergmann:
-> Right, I forgot you saw that one WARN_ON trigger. If you enable KALLSYMS
-> and BUGVERBOSE, it should become obvious what that one is about.
+On Fri, Jul 02, 2021 at 07:21:12AM +0200, Greg KH wrote:
+> On Thu, Jul 01, 2021 at 10:05:40PM -0700, Luis Chamberlain wrote:
+> > @@ -0,0 +1,953 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+> > +/*
+> > + * sysfs test driver
+> > + *
+> > + * Copyright (C) 2021 Luis Chamberlain <mcgrof@kernel.org>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify it
+> > + * under the terms of the GNU General Public License as published by the Free
+> > + * Software Foundation; either version 2 of the License, or at your option any
+> > + * later version; or, when distributed separately from the Linux kernel or
+> > + * when incorporated into other software packages, subject to the following
+> > + * license:
+> 
+> This boilerplate should not be here, only the spdx line is needed.
 
-Here is new log with a better backtrace:
+As per Documentation/process/license-rules.rst we use the SPDX license
+tag for the license that applies but it also states about dual
+licensing:
 
-https://pastebin.com/DP3dSE4w
+"Aside from that, individual files can be provided under a dual license,         
+e.g. one of the compatible GPL variants and alternatively under a               
+permissive license like BSD, MIT etc."
 
-The respective diff against regular 8139too.c is here:
+Let me know if things should change somehow here to clarify this better.
 
-https://pastebin.com/v8kA7ZmX
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify it
+> > + * under the terms of copyleft-next (version 0.3.1 or later) as published
+> > + * at http://copyleft-next.org/.
+> 
+> Please no, this is a totally different license :(
 
-(Basically the same as you proposed initially, just slight difference 
-might be as a remainder of my various previous testing)
+Dual licensing copyleft-next / GPLv2 was discussed in 2016 and I have
+been using it since for my new drivers. As far as the kernel is
+concerned only the GPLv2 applies and this is cleary clarified with the
+MODULE_LICENSE("GPL") as per Linus' preference [0] on this topic. Later
+due to Ted's and Alans's request I ironed out an "or" language clause to
+use [1].  This was also vetted by 2 attorneys at SUSE, and one at Red
+Hat [2]. The first driver submission under this dual strategy was
+lib/test_sysctl.c through commit 9308f2f9e7f05 ("test_sysctl: add
+dedicated proc sysctl test driver") merged in July 2017. Shortly after
+that I also added test_kmod through commit d9c6a72d6fa29 ("kmod: add
+test driver to stress test the module loader") in the same month. These
+two drivers went in just a few months before the SPDX license pratice
+kicked in.
 
+And so we already have this practice in place of dual GPLv2 /
+copyleft-next. What was missing was the SPDX tag. I can go and
+update the other 2 drivers to reflect this as well, but as far as I
+can tell, due to the dual licensing the boilerplace is still needed
+in this case.
 
-Thank you,
+Let me know!
 
-Regards,
-Nikolai
+[0] https://lore.kernel.org/lkml/CA+55aFyhxcvD+q7tp+-yrSFDKfR0mOHgyEAe=f_94aKLsOu0Og@mail.gmail.com/
+[1] https://lkml.kernel.org/r/1495234558.7848.122.camel@linux.intel.com
+[2] https://lore.kernel.org/lkml/20170516232702.GL17314@wotan.suse.de/
+
+  Luis
