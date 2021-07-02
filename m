@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A76053BA25E
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 16:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4603C3BA280
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 17:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232665AbhGBOxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 10:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231474AbhGBOxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 10:53:15 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F4FC061762
-        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 07:50:43 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1lzKV1-0004qt-8J; Fri, 02 Jul 2021 16:50:35 +0200
-Date:   Fri, 2 Jul 2021 16:50:35 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        id S232058AbhGBPIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 11:08:52 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37628 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231791AbhGBPIw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Jul 2021 11:08:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=vEFH4//fNmJ1dKiJR0SLis4t45bfQOPUbiQDB7XuDNA=; b=5nT8qjfrkE0IcxtelKNfFJfBZf
+        6OFa1V+xg9+TiiXGmlDA0ryD9DxZfhWyNTvJ2Mm2CuiY0cxad3rCHR7insTZQjDKMFSBebwgkaIpu
+        9gRhMJincKxaaa8BNxYV1F58ZkTUQu//gmc1wrDpSNyolk7fOIPafVp9iF1bvhYlW0Ec=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lzKk7-00BviL-G6; Fri, 02 Jul 2021 17:06:11 +0200
+Date:   Fri, 2 Jul 2021 17:06:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        John Sperbeck <jsperbeck@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Westphal <fw@strlen.de>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: Re: [PATCH net] sock: fix error in sock_setsockopt()
-Message-ID: <20210702145035.GF18022@breakpoint.cc>
-References: <20210702144101.3815601-1-eric.dumazet@gmail.com>
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/6] net: dsa: qca: ar9331: make proper
+ initial port defaults
+Message-ID: <YN8rY5wDVv0tca85@lunn.ch>
+References: <20210702101751.13168-1-o.rempel@pengutronix.de>
+ <20210702101751.13168-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210702144101.3815601-1-eric.dumazet@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210702101751.13168-3-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Fri, Jul 02, 2021 at 12:17:47PM +0200, Oleksij Rempel wrote:
+> Make sure that all external port are actually isolated from each other,
+> so no packets are leaked.
 > 
-> Some tests are failing, John bisected the issue to a recent commit.
-> 
-> sock_set_timestamp() parameters should be :
-> 
-> 1) sk
-> 2) optname
-> 3) valbool
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Oh, right!
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Thanks for fixing this.
-
-Reviewed-by: Florian Westphal <fw@strlen.de>
+    Andrew
