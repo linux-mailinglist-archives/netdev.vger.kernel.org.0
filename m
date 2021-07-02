@@ -2,350 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B20993B9EF9
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 12:18:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E79963B9F1A
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 12:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231734AbhGBKUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 06:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231402AbhGBKUl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 06:20:41 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C621C061764
-        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 03:18:09 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lzGFH-0005BF-3x; Fri, 02 Jul 2021 12:18:03 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lzGFG-0003g1-6d; Fri, 02 Jul 2021 12:18:02 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: [PATCH net-next v2 6/6] net: dsa: qca: ar9331: add vlan support
-Date:   Fri,  2 Jul 2021 12:17:51 +0200
-Message-Id: <20210702101751.13168-7-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210702101751.13168-1-o.rempel@pengutronix.de>
-References: <20210702101751.13168-1-o.rempel@pengutronix.de>
+        id S231441AbhGBKcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 06:32:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22358 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231192AbhGBKcL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 06:32:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625221779;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DPxMNn2CCE4cxpTvsVh+CYPLZZTodxuHXGUXkbr4MMw=;
+        b=S0Kmn7NtIScTIUSGY9HLR1onvdjkgQXkcoiv2U/qqd1xujwE9oPQaGyqbxvwY2a7qRz8xq
+        eDcnCUnoK3WLhIP7mZ+41SClFIi4kc54MTO2I8kZQnUh8f9XC0Yf9UfTTkFh581Miqbw42
+        2izhHAk1Wkjlmb4KjwAZxGUzdITP/fA=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-121-hv8HLHc5NL2p1AE1b2lKoA-1; Fri, 02 Jul 2021 06:29:38 -0400
+X-MC-Unique: hv8HLHc5NL2p1AE1b2lKoA-1
+Received: by mail-ed1-f70.google.com with SMTP id df18-20020a05640230b2b0290397ebdc6c03so791102edb.7
+        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 03:29:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=DPxMNn2CCE4cxpTvsVh+CYPLZZTodxuHXGUXkbr4MMw=;
+        b=RAmgVdhPdWhPdUdPauzMK/+3ZP50W7thC5rBij30iXzhiB45HQL7cF4tBKfpwz624K
+         tQ6lqulGANXKvWTNRgXzKQlAohaMQ3rOtiXwQonpAaohj/MIX9GF+F6pWB2rA/lN41Vo
+         +ENOKohjOxxUQFAYOD4sxHi+lJq0sw/d+OBsRTPUuxjfSFx2SN1HpSU1/sU0cvu9l2H1
+         WVUgy8JMLxvWTnaQDqzUqfXjgt6OvBxxzt+5JA5pb7OPZhlIT5rqpjaO0CMnzvOGLUjS
+         66BZIQPdOQFfXXkdx3IH7Pz6N6EO2y/NQoTScUdu5MBTX2VenlfzcmVc1BX3uUmgaH9F
+         HYRQ==
+X-Gm-Message-State: AOAM532fM/PKRzVKt+uRvq5oW8LnEDk1y3hq5sJ9WlMBDQ8gA98t86R5
+        10MghT10BXsKIgIRuAXvyUs1mer1CzZJ8oph9+T2kCp+lh1gVCh9rEpsD+HITUz16mpgLF3E4qi
+        smPo7heLHCZDnCxBd
+X-Received: by 2002:a05:6402:2813:: with SMTP id h19mr5739019ede.39.1625221776628;
+        Fri, 02 Jul 2021 03:29:36 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyeTV7Vr11aiyTEXIqNuKKngfk6mHPBCj/YJvYik4FkcZfq09iNjgHFyinId+fVKL5hjUuW0Q==
+X-Received: by 2002:a05:6402:2813:: with SMTP id h19mr5739002ede.39.1625221776482;
+        Fri, 02 Jul 2021 03:29:36 -0700 (PDT)
+Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id br4sm666879ejb.110.2021.07.02.03.29.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Jul 2021 03:29:36 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH bpf] samples/bpf: Fix the error return code of
+ xdp_redirect's main()
+To:     Wang Hai <wanghai38@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210616042534.315097-1-wanghai38@huawei.com>
+Message-ID: <94aad4ed-8384-1841-88ec-6c7e39d63148@redhat.com>
+Date:   Fri, 2 Jul 2021 12:29:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <20210616042534.315097-1-wanghai38@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This switch provides simple VLAN resolution database for 16 entries.
-With this database we can cover typical functionalities as port based
-VLANs, untagged and tagged egress. Port based ingress filtering.
 
-The VLAN database is working on top of forwarding database. So,
-potentially, we can have multiple VLANs on top of multiple bridges.
-Hawing one VLAN on top of multiple bridges will fail on different
-levels, most probably DSA framework should warn if some one won't to make
-something likes this.
+On 16/06/2021 06.25, Wang Hai wrote:
+> Fix to return a negative error code from the error handling
+> case instead of 0, as done elsewhere in this function.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/qca/ar9331.c | 235 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 233 insertions(+), 2 deletions(-)
+The main() function in C should never return a negative value on Unix 
+POSIX systems.
 
-diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-index 66456752a436..211a2631d519 100644
---- a/drivers/net/dsa/qca/ar9331.c
-+++ b/drivers/net/dsa/qca/ar9331.c
-@@ -67,6 +67,27 @@
- #define AR9331_SW_REG_GLOBAL_CTRL		0x30
- #define AR9331_SW_GLOBAL_CTRL_MFS_M		GENMASK(13, 0)
- 
-+#define AR9331_SW_NUM_VLAN_RECORDS		16
-+
-+#define AR9331_SW_REG_VLAN_TABLE_FUNCTION0	0x40
-+#define AR9331_SW_VT0_PRI_EN			BIT(31)
-+#define AR9331_SW_VT0_PRI			GENMASK(30, 28)
-+#define AR9331_SW_VT0_VID			GENMASK(27, 16)
-+#define AR9331_SW_VT0_PORT_NUM			GENMASK(11, 8)
-+#define AR9331_SW_VT0_FULL_VIO			BIT(4)
-+#define AR9331_SW_VT0_BUSY			BIT(3)
-+#define AR9331_SW_VT0_FUNC			GENMASK(2, 0)
-+#define AR9331_SW_VT0_FUNC_NOP			0
-+#define AR9331_SW_VT0_FUNC_FLUSH_ALL		1
-+#define AR9331_SW_VT0_FUNC_LOAD_ENTRY		2
-+#define AR9331_SW_VT0_FUNC_PURGE_ENTRY		3
-+#define AR9331_SW_VT0_FUNC_DEL_PORT		4
-+#define AR9331_SW_VT0_FUNC_GET_NEXT		5
-+
-+#define AR9331_SW_REG_VLAN_TABLE_FUNCTION1	0x44
-+#define AR9331_SW_VT1_VALID			BIT(11)
-+#define AR9331_SW_VT1_VID_MEM			GENMASK(9, 0)
-+
- /* Size of the address resolution table (ARL) */
- #define AR9331_SW_NUM_ARL_RECORDS		1024
- 
-@@ -309,6 +330,11 @@ struct ar9331_sw_port {
- 	struct spinlock stats_lock;
- };
- 
-+struct ar9331_sw_vlan_db {
-+	u16 vid;
-+	u8 port_mask;
-+};
-+
- struct ar9331_sw_fdb {
- 	u8 port_mask;
- 	u8 aging;
-@@ -327,6 +353,7 @@ struct ar9331_sw_priv {
- 	struct regmap *regmap;
- 	struct reset_control *sw_reset;
- 	struct ar9331_sw_port port[AR9331_SW_PORTS];
-+	struct ar9331_sw_vlan_db vdb[AR9331_SW_NUM_VLAN_RECORDS];
- };
- 
- static struct ar9331_sw_priv *ar9331_sw_port_to_priv(struct ar9331_sw_port *port)
-@@ -557,8 +584,6 @@ static int ar9331_sw_setup(struct dsa_switch *ds)
- 			goto error;
- 	}
- 
--	ds->configure_vlan_while_not_filtering = false;
--
- 	return 0;
- error:
- 	dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
-@@ -1146,6 +1171,209 @@ static void ar9331_sw_port_bridge_leave(struct dsa_switch *ds, int port,
- 	ar9331_sw_port_bridge_mod(ds, port, br, false);
- }
- 
-+static int ar9331_port_vlan_filtering(struct dsa_switch *ds, int port,
-+				      bool vlan_filtering,
-+				      struct netlink_ext_ack *extack)
-+{
-+	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
-+	struct regmap *regmap = priv->regmap;
-+	u32 mode;
-+	int ret;
-+
-+	if (vlan_filtering)
-+		mode = AR9331_SW_8021Q_MODE_SECURE;
-+	else
-+		mode = AR9331_SW_8021Q_MODE_NONE;
-+
-+	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
-+				 AR9331_SW_PORT_VLAN_8021Q_MODE,
-+				 FIELD_PREP(AR9331_SW_PORT_VLAN_8021Q_MODE,
-+					    mode));
-+	if (ret)
-+		dev_err(priv->dev, "%s: error: %pe\n", __func__, ERR_PTR(ret));
-+
-+	return ret;
-+}
-+
-+static int ar9331_sw_vt_wait(struct ar9331_sw_priv *priv, u32 *f0)
-+{
-+	struct regmap *regmap = priv->regmap;
-+
-+	return regmap_read_poll_timeout(regmap,
-+					AR9331_SW_REG_VLAN_TABLE_FUNCTION0,
-+					*f0, !(*f0 & AR9331_SW_VT0_BUSY),
-+					100, 2000);
-+}
-+
-+static int ar9331_sw_port_vt_rmw(struct ar9331_sw_priv *priv, u16 vid,
-+				 u8 port_mask_set, u8 port_mask_clr)
-+{
-+	struct regmap *regmap = priv->regmap;
-+	u32 f0, f1, port_mask = 0, port_mask_new, func;
-+	struct ar9331_sw_vlan_db *vdb = NULL;
-+	int ret, i;
-+
-+	if (!vid)
-+		return 0;
-+
-+	ret = ar9331_sw_vt_wait(priv, &f0);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION0, 0);
-+	if (ret)
-+		goto error;
-+
-+	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION1, 0);
-+	if (ret)
-+		goto error;
-+
-+	for (i = 0; i < ARRAY_SIZE(priv->vdb); i++) {
-+		if (priv->vdb[i].vid == vid) {
-+			vdb = &priv->vdb[i];
-+			break;
-+		}
-+	}
-+
-+	ret = regmap_read(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION1, &f1);
-+	if (ret)
-+		return ret;
-+
-+	if (vdb)
-+		port_mask = vdb->port_mask;
-+
-+	port_mask_new = port_mask & ~port_mask_clr;
-+	port_mask_new |= port_mask_set;
-+
-+	if (port_mask_new && port_mask_new == port_mask)
-+		return 0;
-+
-+	if (port_mask_new) {
-+		func = AR9331_SW_VT0_FUNC_LOAD_ENTRY;
-+	} else {
-+		func = AR9331_SW_VT0_FUNC_PURGE_ENTRY;
-+		port_mask_new = port_mask;
-+	}
-+
-+	if (vdb) {
-+		vdb->port_mask = port_mask_new;
-+
-+		if (!port_mask_new)
-+			vdb->vid = 0;
-+	} else {
-+		for (i = 0; i < ARRAY_SIZE(priv->vdb); i++) {
-+			if (!priv->vdb[i].vid) {
-+				vdb = &priv->vdb[i];
-+				break;
-+			}
-+		}
-+
-+		if (!vdb)
-+			return -ENOMEM;
-+
-+		vdb->vid = vid;
-+		vdb->port_mask = port_mask_new;
-+	}
-+
-+	f0 = FIELD_PREP(AR9331_SW_VT0_VID, vid) |
-+	     FIELD_PREP(AR9331_SW_VT0_FUNC, func) |
-+	     AR9331_SW_VT0_BUSY;
-+	f1 = FIELD_PREP(AR9331_SW_VT1_VID_MEM, port_mask_new) |
-+		AR9331_SW_VT1_VALID;
-+
-+	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION1, f1);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION0, f0);
-+	if (ret)
-+		return ret;
-+
-+	ret = ar9331_sw_vt_wait(priv, &f0);
-+	if (ret)
-+		return ret;
-+
-+	if (f0 & AR9331_SW_VT0_FULL_VIO) {
-+		/* cleanup error status */
-+		regmap_write(regmap, AR9331_SW_REG_VLAN_TABLE_FUNCTION0, 0);
-+		return -ENOMEM;
-+	}
-+
-+	return 0;
-+
-+error:
-+	dev_err(priv->dev, "%s: error: %pe\n", __func__, ERR_PTR(ret));
-+
-+	return ret;
-+}
-+
-+static int ar9331_port_vlan_set_pvid(struct ar9331_sw_priv *priv, int port,
-+				     u16 pvid)
-+{
-+	struct regmap *regmap = priv->regmap;
-+	int ret;
-+	u32 mask, val;
-+
-+	mask = AR9331_SW_PORT_VLAN_8021Q_MODE |
-+		AR9331_SW_PORT_VLAN_FORCE_DEFALUT_VID_EN |
-+		AR9331_SW_PORT_VLAN_FORCE_PORT_VLAN_EN;
-+	val = AR9331_SW_PORT_VLAN_FORCE_DEFALUT_VID_EN |
-+		AR9331_SW_PORT_VLAN_FORCE_PORT_VLAN_EN |
-+		FIELD_PREP(AR9331_SW_PORT_VLAN_8021Q_MODE,
-+			   AR9331_SW_8021Q_MODE_FALLBACK);
-+
-+	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
-+				 mask, val);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
-+				  AR9331_SW_PORT_VLAN_PORT_VID,
-+				  FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID,
-+					     pvid));
-+}
-+
-+static int ar9331_port_vlan_add(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_vlan *vlan,
-+				struct netlink_ext_ack *extack)
-+{
-+	struct ar9331_sw_priv *priv = ds->priv;
-+	struct regmap *regmap = priv->regmap;
-+	int ret, mode;
-+
-+	ret = ar9331_sw_port_vt_rmw(priv, vlan->vid, BIT(port), 0);
-+	if (ret)
-+		goto error;
-+
-+	if (vlan->flags & BRIDGE_VLAN_INFO_PVID)
-+		ret = ar9331_port_vlan_set_pvid(priv, port, vlan->vid);
-+
-+	if (ret)
-+		goto error;
-+
-+	if (vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED)
-+		mode = AR9331_SW_PORT_CTRL_EG_VLAN_MODE_STRIP;
-+	else
-+		mode = AR9331_SW_PORT_CTRL_EG_VLAN_MODE_ADD;
-+
-+	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_CTRL(port),
-+				 AR9331_SW_PORT_CTRL_EG_VLAN_MODE, mode);
-+	if (ret)
-+		goto error;
-+
-+	return 0;
-+error:
-+	dev_err(priv->dev, "%s: error: %pe\n", __func__, ERR_PTR(ret));
-+
-+	return ret;
-+}
-+
-+static int ar9331_port_vlan_del(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_vlan *vlan)
-+{
-+	return ar9331_sw_port_vt_rmw(ds->priv, vlan->vid, 0, BIT(port));
-+}
-+
- static const struct dsa_switch_ops ar9331_sw_ops = {
- 	.get_tag_protocol	= ar9331_sw_get_tag_protocol,
- 	.setup			= ar9331_sw_setup,
-@@ -1164,6 +1392,9 @@ static const struct dsa_switch_ops ar9331_sw_ops = {
- 	.set_ageing_time	= ar9331_sw_set_ageing_time,
- 	.port_bridge_join	= ar9331_sw_port_bridge_join,
- 	.port_bridge_leave	= ar9331_sw_port_bridge_leave,
-+	.port_vlan_filtering	= ar9331_port_vlan_filtering,
-+	.port_vlan_add		= ar9331_port_vlan_add,
-+	.port_vlan_del		= ar9331_port_vlan_del,
- };
- 
- static irqreturn_t ar9331_sw_irq(int irq, void *data)
--- 
-2.30.2
+
+There is a good explaination in exit(3p): `man 3p exit`
+
+    The  value  of  status may be 0, EXIT_SUCCESS, EXIT_FAILURE, or any 
+other value, though only the least significant 8 bits (that is, status & 
+0377) shall be available to a waiting parent process.
+
+Thus, negative values are often seen as 255 in the $? program exit 
+status variable $?.
+
+
+Also explained in exit(3):
+
+     The C standard specifies two constants, EXIT_SUCCESS=0 and 
+EXIT_FAILURE=1.
+
+I see the 'samples/bpf/xdp_redirect_user.c' in most places just use 0 or 1.
+
+
+> If bpf_map_update_elem() failed, main() should return a negative error.
+>
+> Fixes: 832622e6bd18 ("xdp: sample program for new bpf_redirect helper")
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> ---
+>   samples/bpf/xdp_redirect_user.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/samples/bpf/xdp_redirect_user.c b/samples/bpf/xdp_redirect_user.c
+> index 41d705c3a1f7..c903f1ccc15e 100644
+> --- a/samples/bpf/xdp_redirect_user.c
+> +++ b/samples/bpf/xdp_redirect_user.c
+> @@ -213,5 +213,5 @@ int main(int argc, char **argv)
+>   	poll_stats(2, ifindex_out);
+>   
+>   out:
+> -	return 0;
+> +	return ret;
+>   }
+
+
+(Sorry, I didn't complain it time as I see this patch is already applied)
 
