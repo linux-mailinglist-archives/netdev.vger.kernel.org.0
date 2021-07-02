@@ -2,171 +2,521 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65DA03B9C26
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 08:24:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D564D3B9C43
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 08:43:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230108AbhGBG0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 02:26:43 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39708 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229542AbhGBG0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 02:26:42 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 1626Ncgj006837;
-        Thu, 1 Jul 2021 23:23:55 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=4AJaQMUHhKzOdTh+Wfr2+fQLoywU7NT/K6vczlos0pw=;
- b=nQ6dhzTAoBJD7oE1YVycwEL6pZrYVUX6iLyoKiHrrbBxllBEytCLhc9QpgW3+ACW8TSt
- 4Ulsz3WovFw1lv8EgDVYXw9YnbXF+qz8HbuE9uwI3M/JWxg2Q+i+ivI62v7y520rZBFe
- bvVFeQ34AHusxWnGSLkTvZ8e4n65BxwLeO0= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 39gt4j404t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 01 Jul 2021 23:23:55 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 1 Jul 2021 23:23:50 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NHXBmMcNPN0wFM0DPkJh9L5gt2mBOLKFVNYf1aDAcVIjCDEqq10ztV/C0SEeClSt+EsQmyhX9WxMN+AQ5PfYwfcC4EBxpurltZci5hUOZNt8B124vaxJ1vq/yTfN6qMBQWL5qliPU2NqG2sYaTAa3ggZvZRKVglrMZ04nhDcDUGyoCtgyT1QGEn2KRS81teB5UIxS3S0wfFDjw25bjObHMNJ0JJecJ3/+X7xyShIWfuI2aabxPPwGFlmg695t4WloQvMu5t36AI3FxPS4C78xkq72gEUwyYG3glgV4RHoA6FJhJv5Bzb9Qva8Dj+omNdgcvp6lte/0yMmEs2lMaLOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4AJaQMUHhKzOdTh+Wfr2+fQLoywU7NT/K6vczlos0pw=;
- b=dK5SGaChrr/kuSXmLEFqafuCylAFbyuf5aol8NuJ9XAbCwVVWCFxqGPK+I/HYkaf4woW1we9pZCsUqADkrkffsKbx2B3kxYg8Wxn0n1Vhg9+u07PZStYqgkoXZm8wwSTYqtPt7J9wHGLXv17AsupVSC0MMuJSAcjLnGAMndAU2z4o77xF7yYOVGKlW9A66clFNLzG0YEIEnqvPxiR7+OzW7nx9p6jx6zvCHjE+WPk1puvZbh4IOI8dimmlVUi7gk0J9uwAKHCmub1/Vb0KgdHeq74ayXAUBX7lnBqN+B6bBmEJMEueL+oRWKNOo8ZvdeOVGK+I3f1sEG44vv1VNSng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by SA1PR15MB5047.namprd15.prod.outlook.com (2603:10b6:806:1da::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.23; Fri, 2 Jul
- 2021 06:23:47 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::1b5:fa51:a2b9:28f]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::1b5:fa51:a2b9:28f%7]) with mapi id 15.20.4287.024; Fri, 2 Jul 2021
- 06:23:47 +0000
-Date:   Thu, 1 Jul 2021 23:23:43 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     <davem@davemloft.net>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <kernel-team@fb.com>
-Subject: Re: [PATCH v4 bpf-next 2/9] bpf: Add map side support for bpf timers.
-Message-ID: <20210702062343.dblrnycfwzjch6py@kafai-mbp.dhcp.thefacebook.com>
-References: <20210701192044.78034-1-alexei.starovoitov@gmail.com>
- <20210701192044.78034-3-alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210701192044.78034-3-alexei.starovoitov@gmail.com>
-X-Originating-IP: [2620:10d:c090:400::5:6d89]
-X-ClientProxiedBy: CO2PR18CA0058.namprd18.prod.outlook.com
- (2603:10b6:104:2::26) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
+        id S229903AbhGBGps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 02:45:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50625 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229542AbhGBGpq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 02:45:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625208194;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NIZKTtb1jwEZjcV4ldpwwLBX6Xr32O8eSrh/qCluvFg=;
+        b=cNGroAR+BcQ2RVnn8AxyFRCe1hta5PrW3LoLab8F1Pb0ZDyUj09CNrw7JhvavvoD5Z5mew
+        dat2uQlpMSKjuv12kWrAAFBRVqSlfpM/RYFDW1/cE3JSwjpPV+LmtEQhBO114nDvETOOJb
+        Q26rrO8NkyBfXzUBS7JnPhRURfGmUa0=
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
+ [209.85.210.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-559-EWQxFPWCOISsWEOoe9YL3w-1; Fri, 02 Jul 2021 02:43:13 -0400
+X-MC-Unique: EWQxFPWCOISsWEOoe9YL3w-1
+Received: by mail-pf1-f197.google.com with SMTP id d22-20020a056a0024d6b0290304cbae6fdcso5653361pfv.21
+        for <netdev@vger.kernel.org>; Thu, 01 Jul 2021 23:43:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=NIZKTtb1jwEZjcV4ldpwwLBX6Xr32O8eSrh/qCluvFg=;
+        b=r8GehPLtR4bkY9IUn3GnYcx2/vfAjjj2icNDax12+YY6hHDowFN8IrXdU65Vl0xS8W
+         LZQsVziZQebuo74yXchMkvheuKSzVxyck4oN32CjVXzFRy1L46B6qSUsmU6fzqElDHQm
+         hVGW7GCkhyZ4IavctwKr9aIOC6ME4K1VTUL31v7S3nuYsy9cuTFNuHd1bv92+NFB0h1y
+         i8aiMo8yONQFy49XfVfUfOawJedboXbRcX6f3CsKnJ4ZlQiZ/GR00Ght/aRvJ9ffjclu
+         Qia+fKt76OMFV1FnuNfW+on50J+As5RJKfhOGZrMZS9cTJphfDRaoCPfsdhoavNcV0TN
+         DAzg==
+X-Gm-Message-State: AOAM531VbyCHTR2hMKgLgz9JhgkwinmQ/IV41DcnQncdcqJm6rH4x6uN
+        1+AnPAmSe+IxFDFC8Yd5HRi66T54jn3mtdJ3cPyCFfGAZCC+bdBWd0pJifOHDmTSukcLz/XJd0h
+        ml40OG5+y6oZeGXRR
+X-Received: by 2002:a17:90a:bf03:: with SMTP id c3mr13829494pjs.47.1625208192480;
+        Thu, 01 Jul 2021 23:43:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy8RBqMWjGesXmA7QADFcA80JK/C9xfE+4ue9p0+hy9GwBlzNiE8EMod0Nsdpmp7E2oSK8xqA==
+X-Received: by 2002:a17:90a:bf03:: with SMTP id c3mr13829482pjs.47.1625208192174;
+        Thu, 01 Jul 2021 23:43:12 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id j15sm2167117pfh.194.2021.07.01.23.43.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Jul 2021 23:43:11 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 1/3] selftests/ptr_ring: add benchmark
+ application for ptr_ring
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, mst@redhat.com
+Cc:     brouer@redhat.com, paulmck@kernel.org, peterz@infradead.org,
+        will@kernel.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linuxarm@openeuler.org
+References: <1625142402-64945-1-git-send-email-linyunsheng@huawei.com>
+ <1625142402-64945-2-git-send-email-linyunsheng@huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <e1ec4577-a48f-ff56-b766-1445c2501b9f@redhat.com>
+Date:   Fri, 2 Jul 2021 14:43:02 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:6d89) by CO2PR18CA0058.namprd18.prod.outlook.com (2603:10b6:104:2::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.21 via Frontend Transport; Fri, 2 Jul 2021 06:23:46 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 39c56faa-af46-4f69-c0b2-08d93d21f342
-X-MS-TrafficTypeDiagnostic: SA1PR15MB5047:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA1PR15MB5047E687A493821946ADD941D51F9@SA1PR15MB5047.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nMZLZL1hEom9gcwPZPvAqT6sgAgZhzTf2/5p4IQloDE1dAXJ3wNZ7IHn2VyOh+n2dB/g9cWik8KOF7JUMnu2BGx/CMakZ9eDre2F4kUaN9/PWPMt6O4vzLPl16/HEwe2CVaQ2OnXJ5X+cLNpwpyq0Jkma5vOdUDpI/XBMZY08Ck9CpnB9ir4vdK+3O3opHFIlbz6BDzCxbSHLQdKs+zUpNggh7jWJsVEibw3DXoGoMTWrGtAb5nU6G9IBi+v9sffNH863BEUTu0wxoRXrd70MM1YB4SQ+Vk902g7CyLynRo+7JevoPdJxf+bZxQQf2fxKlb2bMEuUty7jZ0SOuw/ugeTxoOZp1GtdvFmT2nbf2r+SimTpiIMOKcZbfkcPCLmsRYzddVczozBinWcCVpSZijpPfwKOu9TFtz8PRG6N1fOwy1FLLnAXpAwwPr8KpP/0EYYWGDAYBOUqsuXldCzBGep1Ab9r0c6KPdD6C2c7BeQqiZPSCE9njztd+VPQ5x4xqdU2l0p70lJpzNrdjrJpcJlqmRN/khh3/a7NZqRnh68cf0IBBZ/7GyiShTdObnQmlPAGy6DsVZG5gfcg7SLnD6zCAQfKvPoEgJ+tg3T5iMERjyeWt63sWeSXsWDyWUbqoiPl3aasxrSVuGZ6PnVwQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(136003)(396003)(346002)(376002)(66556008)(8676002)(316002)(66476007)(4326008)(9686003)(86362001)(2906002)(1076003)(66946007)(6916009)(5660300002)(55016002)(186003)(6666004)(6506007)(52116002)(478600001)(38100700002)(7696005)(8936002)(16526019)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rUBp5yQU1vXUeWjSSUW3SCw6uYzd/r8Txz6H7dOnwyXDdEXtIirxLJecM8nO?=
- =?us-ascii?Q?alFJM9ElEvQ8zZq+JcPTGtDrIfDqL8UpqZ6XlnbrMlTETbgYGuo+u13ae2s5?=
- =?us-ascii?Q?t8vrDywsbNnJoM//dz+WLyfS47joV6otibv3BxfXcnhLxHAu66qnZ2EkdnJZ?=
- =?us-ascii?Q?E/OS4Ihdj6tXMOWP7Qn6YfNWZktcNJbQp09kSBFt6/HgWwpiHfMx2RN1YBPp?=
- =?us-ascii?Q?XLZQQMS2s/Pi/yYYXwp0aNKr5g/u65HML9p8yWmA8YBKvy5HiCHSLATaHiJf?=
- =?us-ascii?Q?Zmru8ANLPXcuxQlIK8Y4lB9Y+8h12rRZI+sHSoBSvemD5yf2VM33rwZezCDa?=
- =?us-ascii?Q?wtTtsG1CkzxOAj1X8O01M5ZY5a8iVweievnHY4CfNjaliQceXGc67Po6n+Lt?=
- =?us-ascii?Q?yFdU1VXMYWO1+Cd62PJpc0PGl8tTOtmXNUUTcnCGAuSqrgI+2LXX57jUmTOI?=
- =?us-ascii?Q?h7iPwF1xrYXpXjwdtvFaF8sOcXqzwnw2eJfokAr0TOw7AbqcKRbIg+d9Ix05?=
- =?us-ascii?Q?3c3p8pX7rVX5r2AsRBtM/VRp7VYPVMvhBmaj9PDLoaxPTpOFhadzbvrVP6Sn?=
- =?us-ascii?Q?e5ee2/t1qi8M2FsvCeL1zAcu1+9prt6Fhm8NrMBv8kXJI0IihZse2eneaG6I?=
- =?us-ascii?Q?0vlNeH9s0wBRG+NK+UWi3ryqUFEIViVAfVMHj6GzdfiL/BIicJNJIYgVxtBB?=
- =?us-ascii?Q?cM6ggcU827HumOYp+5X9KrgHzJipefe4cDkgumV6lg73rYw1zMfLlUfXaCi4?=
- =?us-ascii?Q?oqG3EqBksUrD/wdwCbAsfqq6VqVsGebIF1X7ARBSaB1HGzuPDF0tA4jis2/W?=
- =?us-ascii?Q?Td2AgUbiMVPJ4ISMwHuTtncG4elEc1yOsU2M3UN1IQJGsdbIMxXPFtE4/HqC?=
- =?us-ascii?Q?N+zpCfTbEk7VI2tc9P5UKXlTb+cgp4Du50K3i1nNBIlFLh6Dv/i2ME0sYQ/x?=
- =?us-ascii?Q?e9vi5Xm5iUc+W1Cvxw8Y8qSyR9SC9YGCUMjFEK5XHZYiGhKUnXi3PVpvGwIR?=
- =?us-ascii?Q?MKKEhvTz5eO4+EeAZQNQOyp+gMmil8tgfY3SnmKndnuquPZAibOrvEs28Si3?=
- =?us-ascii?Q?tyCxeJO1quVhm52wHyzB8jKeLW1xUHdsqmuA40pw5nTAI1W88rs31UjRMiGQ?=
- =?us-ascii?Q?OmHy/fXrXeAIbb44/QOTK6fzcgPfdrxOXZphudrvp7Ztma6L8/9Snn6IwtV3?=
- =?us-ascii?Q?T/2JmC4C+9qXj5ptE53flowIK2gQ2G/PsR8cvdYF8Of4M2k6sUdn1GULfdB/?=
- =?us-ascii?Q?u3gMtk0twVGUJsROGDe9dqk81dRpoBcQvYqPqT7NPqjAdPSqzoMeSNd8O2Yq?=
- =?us-ascii?Q?J5cNaYtP5j9auDfI8eE/yQCgCXls8vGJ7vYiDv+Zm/A5FQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39c56faa-af46-4f69-c0b2-08d93d21f342
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2021 06:23:47.6209
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AAm2KVZt0YWEZb9ApulCkPkFpCilbmNo5iy5Im35MQ2oZ83BNBJxhKDznpS0UZt1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB5047
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: NCxMV33haGXyK4ZbeMYg4h_zZ5c63JcP
-X-Proofpoint-ORIG-GUID: NCxMV33haGXyK4ZbeMYg4h_zZ5c63JcP
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-01_15:2021-07-01,2021-07-01 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
- malwarescore=0 impostorscore=0 mlxlogscore=930 clxscore=1015 mlxscore=0
- priorityscore=1501 suspectscore=0 adultscore=0 lowpriorityscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2107020035
-X-FB-Internal: deliver
+In-Reply-To: <1625142402-64945-2-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 01, 2021 at 12:20:37PM -0700, Alexei Starovoitov wrote:
-[ ... ]
 
-> +static void htab_free_prealloced_timers(struct bpf_htab *htab)
+ÔÚ 2021/7/1 ÏÂÎç8:26, Yunsheng Lin Ð´µÀ:
+> Currently ptr_ring selftest is embedded within the virtio
+> selftest, which involves some specific virtio operation,
+> such as notifying and kicking.
+>
+> As ptr_ring has been used by various subsystems, it deserves
+> it's owner selftest in order to benchmark different usecase
+> of ptr_ring, such as page pool and pfifo_fast qdisc.
+>
+> So add a simple application to benchmark ptr_ring performance.
+> Currently two test mode is supported:
+> Mode 0: Both producing and consuming is done in a single thread,
+>          it is called simple test mode in the test app.
+> Mode 1: Producing and consuming is done in different thread
+>          concurrently, also known as SPSC(single-producer/
+>          single-consumer) test.
+>
+> The multi-producer/single-consumer test for pfifo_fast case is
+> not added yet, which can be added if using CAS atomic operation
+> to enable lockless multi-producer is proved to be better than
+> using r->producer_lock.
+>
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+> V3: Remove timestamp sampling, use standard C library as much
+>      as possible.
+> ---
+>   MAINTAINERS                                      |   5 +
+>   tools/testing/selftests/ptr_ring/Makefile        |   6 +
+>   tools/testing/selftests/ptr_ring/ptr_ring_test.c | 224 +++++++++++++++++++++++
+>   tools/testing/selftests/ptr_ring/ptr_ring_test.h | 130 +++++++++++++
+>   4 files changed, 365 insertions(+)
+>   create mode 100644 tools/testing/selftests/ptr_ring/Makefile
+>   create mode 100644 tools/testing/selftests/ptr_ring/ptr_ring_test.c
+>   create mode 100644 tools/testing/selftests/ptr_ring/ptr_ring_test.h
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index cc375fd..1227022 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14847,6 +14847,11 @@ F:	drivers/net/phy/dp83640*
+>   F:	drivers/ptp/*
+>   F:	include/linux/ptp_cl*
+>   
+> +PTR RING BENCHMARK
+> +M:	Yunsheng Lin <linyunsheng@huawei.com>
+> +L:	netdev@vger.kernel.org
+> +F:	tools/testing/selftests/ptr_ring/
+> +
+>   PTRACE SUPPORT
+>   M:	Oleg Nesterov <oleg@redhat.com>
+>   S:	Maintained
+> diff --git a/tools/testing/selftests/ptr_ring/Makefile b/tools/testing/selftests/ptr_ring/Makefile
+> new file mode 100644
+> index 0000000..346dea9
+> --- /dev/null
+> +++ b/tools/testing/selftests/ptr_ring/Makefile
+> @@ -0,0 +1,6 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +LDLIBS = -lpthread
+> +
+> +TEST_GEN_PROGS := ptr_ring_test
+> +
+> +include ../lib.mk
+> diff --git a/tools/testing/selftests/ptr_ring/ptr_ring_test.c b/tools/testing/selftests/ptr_ring/ptr_ring_test.c
+> new file mode 100644
+> index 0000000..4a5312f
+> --- /dev/null
+> +++ b/tools/testing/selftests/ptr_ring/ptr_ring_test.c
+> @@ -0,0 +1,224 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Copyright (C) 2021 HiSilicon Limited.
+> + */
+> +
+> +#include <stdio.h>
+> +#include <stdlib.h>
+> +#include <unistd.h>
+> +#include <string.h>
+> +#include <errno.h>
+> +#include <malloc.h>
+> +#include <stdbool.h>
+> +
+> +#include "ptr_ring_test.h"
+> +#include "../../../../include/linux/ptr_ring.h"
+> +
+> +#define MIN_RING_SIZE	2
+> +#define MAX_RING_SIZE	10000000
+> +
+> +static struct ptr_ring ring ____cacheline_aligned_in_smp;
+> +
+> +struct worker_info {
+> +	pthread_t tid;
+> +	int test_count;
+> +	bool error;
+> +};
+> +
+> +static void *produce_worker(void *arg)
 > +{
-> +	u32 num_entries = htab->map.max_entries;
-> +	int i;
+> +	struct worker_info *info = arg;
+> +	unsigned long i = 0;
+> +	int ret;
 > +
-> +	if (likely(!map_value_has_timer(&htab->map)))
-> +		return;
-> +	if (htab_has_extra_elems(htab))
-> +		num_entries += num_possible_cpus();
+> +	while (++i <= info->test_count) {
+> +		while (__ptr_ring_full(&ring))
+> +			cpu_relax();
 > +
-> +	for (i = 0; i < num_entries; i++) {
-> +		struct htab_elem *elem;
-> +
-> +		elem = get_htab_elem(htab, i);
-> +		bpf_timer_cancel_and_free(elem->key +
-> +					  round_up(htab->map.key_size, 8) +
-> +					  htab->map.timer_off);
-> +		cond_resched();
+> +		ret = __ptr_ring_produce(&ring, (void *)i);
+> +		if (ret) {
+> +			fprintf(stderr, "produce failed: %d\n", ret);
+> +			info->error = true;
+> +			return NULL;
+> +		}
 > +	}
+> +
+> +	info->error = false;
+> +
+> +	return NULL;
 > +}
 > +
-[ ... ]
-
-> +static void htab_free_malloced_timers(struct bpf_htab *htab)
+> +static void *consume_worker(void *arg)
 > +{
-> +	int i;
+> +	struct worker_info *info = arg;
+> +	unsigned long i = 0;
+> +	int *ptr;
 > +
-> +	for (i = 0; i < htab->n_buckets; i++) {
-> +		struct hlist_nulls_head *head = select_bucket(htab, i);
-> +		struct hlist_nulls_node *n;
-> +		struct htab_elem *l;
-> +
-> +		hlist_nulls_for_each_entry(l, n, head, hash_node)
-It is called from map_release_uref() which is not under rcu.
-Either a bucket lock or rcu_read_lock is needed here.
+> +	while (++i <= info->test_count) {
+> +		while (__ptr_ring_empty(&ring))
+> +			cpu_relax();
 
-Another question, can prealloc map does the same thing
-like here (i.e. walk the buckets) during map_release_uref()?
+
+Any reason for not simply use __ptr_ring_consume() here?
+
+
+> +
+> +		ptr = __ptr_ring_consume(&ring);
+> +		if ((unsigned long)ptr != i) {
+> +			fprintf(stderr, "consumer failed, ptr: %lu, i: %lu\n",
+> +				(unsigned long)ptr, i);
+> +			info->error = true;
+> +			return NULL;
+> +		}
+> +	}
+> +
+> +	if (!__ptr_ring_empty(&ring)) {
+> +		fprintf(stderr, "ring should be empty, test failed\n");
+> +		info->error = true;
+> +		return NULL;
+> +	}
+> +
+> +	info->error = false;
+> +	return NULL;
+> +}
+> +
+> +/* test case for single producer single consumer */
+> +static void spsc_test(int size, int count)
+> +{
+> +	struct worker_info producer, consumer;
+> +	pthread_attr_t attr;
+> +	void *res;
+> +	int ret;
+> +
+> +	ret = ptr_ring_init(&ring, size, 0);
+> +	if (ret) {
+> +		fprintf(stderr, "init failed: %d\n", ret);
+> +		return;
+> +	}
+> +
+> +	producer.test_count = count;
+> +	consumer.test_count = count;
+> +
+> +	ret = pthread_attr_init(&attr);
+> +	if (ret) {
+> +		fprintf(stderr, "pthread attr init failed: %d\n", ret);
+> +		goto out;
+> +	}
+> +
+> +	ret = pthread_create(&producer.tid, &attr,
+> +			     produce_worker, &producer);
+> +	if (ret) {
+> +		fprintf(stderr, "create producer thread failed: %d\n", ret);
+> +		goto out;
+> +	}
+> +
+> +	ret = pthread_create(&consumer.tid, &attr,
+> +			     consume_worker, &consumer);
+> +	if (ret) {
+> +		fprintf(stderr, "create consumer thread failed: %d\n", ret);
+> +		goto out;
+> +	}
+> +
+> +	ret = pthread_join(producer.tid, &res);
+> +	if (ret) {
+> +		fprintf(stderr, "join producer thread failed: %d\n", ret);
+> +		goto out;
+> +	}
+> +
+> +	ret = pthread_join(consumer.tid, &res);
+> +	if (ret) {
+> +		fprintf(stderr, "join consumer thread failed: %d\n", ret);
+> +		goto out;
+> +	}
+> +
+> +	if (producer.error || consumer.error) {
+> +		fprintf(stderr, "spsc test failed\n");
+> +		goto out;
+> +	}
+> +
+> +	printf("ptr_ring(size:%d) perf spsc test produced/comsumed %d items, finished\n",
+> +	       size, count);
+> +out:
+> +	ptr_ring_cleanup(&ring, NULL);
+> +}
+> +
+> +static void simple_test(int size, int count)
+> +{
+> +	struct timeval start, end;
+> +	int i = 0;
+> +	int *ptr;
+> +	int ret;
+> +
+> +	ret = ptr_ring_init(&ring, size, 0);
+> +	if (ret) {
+> +		fprintf(stderr, "init failed: %d\n", ret);
+> +		return;
+> +	}
+> +
+> +	while (++i <= count) {
+> +		ret = __ptr_ring_produce(&ring, &count);
+> +		if (ret) {
+> +			fprintf(stderr, "produce failed: %d\n", ret);
+> +			goto out;
+> +		}
+> +
+> +		ptr = __ptr_ring_consume(&ring);
+> +		if (ptr != &count)  {
+> +			fprintf(stderr, "consume failed: %p\n", ptr);
+> +			goto out;
+> +		}
+> +	}
+> +
+> +	printf("ptr_ring(size:%d) perf simple test produced/consumed %d items, finished\n",
+> +	       size, count);
+> +
+> +out:
+> +	ptr_ring_cleanup(&ring, NULL);
+> +}
+> +
+> +int main(int argc, char *argv[])
+> +{
+> +	int count = 1000000;
+> +	int size = 1000;
+> +	int mode = 0;
+> +	int opt;
+> +
+> +	while ((opt = getopt(argc, argv, "N:s:m:h")) != -1) {
+> +		switch (opt) {
+> +		case 'N':
+> +			count = atoi(optarg);
+> +			break;
+> +		case 's':
+> +			size = atoi(optarg);
+> +			break;
+> +		case 'm':
+> +			mode = atoi(optarg);
+> +			break;
+> +		case 'h':
+> +			printf("usage: ptr_ring_test [-N COUNT] [-s RING_SIZE] [-m TEST_MODE]\n");
+> +			return 0;
+> +		default:
+> +			return -1;
+> +		}
+> +	}
+> +
+> +	if (count <= 0) {
+> +		fprintf(stderr, "invalid test count, must be > 0\n");
+> +		return -1;
+> +	}
+> +
+> +	if (size < MIN_RING_SIZE || size > MAX_RING_SIZE) {
+> +		fprintf(stderr, "invalid ring size, must be in %d-%d\n",
+> +			MIN_RING_SIZE, MAX_RING_SIZE);
+> +		return -1;
+> +	}
+> +
+> +	switch (mode) {
+> +	case 0:
+> +		simple_test(size, count);
+> +		break;
+> +	case 1:
+> +		spsc_test(size, count);
+> +		break;
+> +	default:
+> +		fprintf(stderr, "invalid test mode\n");
+> +		return -1;
+> +	}
+> +
+> +	return 0;
+> +}
+> diff --git a/tools/testing/selftests/ptr_ring/ptr_ring_test.h b/tools/testing/selftests/ptr_ring/ptr_ring_test.h
+> new file mode 100644
+> index 0000000..32bfefb
+> --- /dev/null
+> +++ b/tools/testing/selftests/ptr_ring/ptr_ring_test.h
+
+
+Let's reuse ptr_ring.c in tools/virtio/ringtest. Nothing virt specific 
+there.
+
+Thanks
+
+
+> @@ -0,0 +1,130 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> +
+> +#ifndef _TEST_PTR_RING_TEST_H
+> +#define _TEST_PTR_RING_TEST_H
+> +
+> +#include <assert.h>
+> +#include <stdatomic.h>
+> +#include <pthread.h>
+> +
+> +/* Assuming the cache line size is 64 for most cpu,
+> + * change it accordingly if the running cpu has different
+> + * cache line size in order to get more accurate result.
+> + */
+> +#define SMP_CACHE_BYTES	64
+> +
+> +#define cpu_relax()	sched_yield()
+> +#define smp_release()	atomic_thread_fence(memory_order_release)
+> +#define smp_acquire()	atomic_thread_fence(memory_order_acquire)
+> +#define smp_wmb()	smp_release()
+> +#define smp_store_release(p, v)	\
+> +		atomic_store_explicit(p, v, memory_order_release)
+> +
+> +#define READ_ONCE(x)		(*(volatile typeof(x) *)&(x))
+> +#define WRITE_ONCE(x, val)	((*(volatile typeof(x) *)&(x)) = (val))
+> +#define cache_line_size		SMP_CACHE_BYTES
+> +#define unlikely(x)		(__builtin_expect(!!(x), 0))
+> +#define likely(x)		(__builtin_expect(!!(x), 1))
+> +#define ALIGN(x, a)		(((x) + (a) - 1) / (a) * (a))
+> +#define SIZE_MAX		(~(size_t)0)
+> +#define KMALLOC_MAX_SIZE	SIZE_MAX
+> +#define spinlock_t		pthread_spinlock_t
+> +#define gfp_t			int
+> +#define __GFP_ZERO		0x1
+> +
+> +#define ____cacheline_aligned_in_smp \
+> +		__attribute__((aligned(SMP_CACHE_BYTES)))
+> +
+> +static inline void *kmalloc(unsigned int size, gfp_t gfp)
+> +{
+> +	void *p;
+> +
+> +	p = memalign(64, size);
+> +	if (!p)
+> +		return p;
+> +
+> +	if (gfp & __GFP_ZERO)
+> +		memset(p, 0, size);
+> +
+> +	return p;
+> +}
+> +
+> +static inline void *kzalloc(unsigned int size, gfp_t flags)
+> +{
+> +	return kmalloc(size, flags | __GFP_ZERO);
+> +}
+> +
+> +static inline void *kmalloc_array(size_t n, size_t size, gfp_t flags)
+> +{
+> +	if (size != 0 && n > SIZE_MAX / size)
+> +		return NULL;
+> +	return kmalloc(n * size, flags);
+> +}
+> +
+> +static inline void *kcalloc(size_t n, size_t size, gfp_t flags)
+> +{
+> +	return kmalloc_array(n, size, flags | __GFP_ZERO);
+> +}
+> +
+> +static inline void kfree(void *p)
+> +{
+> +	free(p);
+> +}
+> +
+> +#define kvmalloc_array		kmalloc_array
+> +#define kvfree			kfree
+> +
+> +static inline void spin_lock_init(spinlock_t *lock)
+> +{
+> +	int r = pthread_spin_init(lock, 0);
+> +
+> +	assert(!r);
+> +}
+> +
+> +static inline void spin_lock(spinlock_t *lock)
+> +{
+> +	int ret = pthread_spin_lock(lock);
+> +
+> +	assert(!ret);
+> +}
+> +
+> +static inline void spin_unlock(spinlock_t *lock)
+> +{
+> +	int ret = pthread_spin_unlock(lock);
+> +
+> +	assert(!ret);
+> +}
+> +
+> +static inline void spin_lock_bh(spinlock_t *lock)
+> +{
+> +	spin_lock(lock);
+> +}
+> +
+> +static inline void spin_unlock_bh(spinlock_t *lock)
+> +{
+> +	spin_unlock(lock);
+> +}
+> +
+> +static inline void spin_lock_irq(spinlock_t *lock)
+> +{
+> +	spin_lock(lock);
+> +}
+> +
+> +static inline void spin_unlock_irq(spinlock_t *lock)
+> +{
+> +	spin_unlock(lock);
+> +}
+> +
+> +static inline void spin_lock_irqsave(spinlock_t *lock,
+> +				     unsigned long f)
+> +{
+> +	spin_lock(lock);
+> +}
+> +
+> +static inline void spin_unlock_irqrestore(spinlock_t *lock,
+> +					  unsigned long f)
+> +{
+> +	spin_unlock(lock);
+> +}
+> +
+> +#endif
+
