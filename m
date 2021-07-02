@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60C743B9BDA
-	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 07:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E5C3B9BDE
+	for <lists+netdev@lfdr.de>; Fri,  2 Jul 2021 07:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235075AbhGBFIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 01:08:40 -0400
-Received: from mail-pl1-f181.google.com ([209.85.214.181]:33589 "EHLO
-        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235003AbhGBFIb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 01:08:31 -0400
-Received: by mail-pl1-f181.google.com with SMTP id f11so5010459plg.0;
-        Thu, 01 Jul 2021 22:05:59 -0700 (PDT)
+        id S235118AbhGBFIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 01:08:49 -0400
+Received: from mail-pf1-f177.google.com ([209.85.210.177]:39693 "EHLO
+        mail-pf1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235042AbhGBFIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 01:08:35 -0400
+Received: by mail-pf1-f177.google.com with SMTP id b12so6849841pfv.6;
+        Thu, 01 Jul 2021 22:06:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4FAlwqE5abcbNbARikw4H/w3FhoLS+d1SpBZUryZHXE=;
-        b=Du+WxiaQJWHxuO0mTWeBkJUmL9QF+n6GlMXsp/ObXfSLRF965EpaF568f/tqukch5U
-         If5VgUCVO0USx/aGcugi84GekdU9bk8kEBncLX9dh8ICDkYZP7Lwr39noHVsfMx93QvO
-         SsFWLNChfR1O0XtWAoZx5FQ/vv0TshiXMw7BiP4Bov/dJMQ89O2zGoqxJ7HOUxQ/hM0n
-         W2+IZ6j6GcrxcaWLXU/UDQYaXcW6w79oh7GfaG2TEnY+xBn6i1CkSd+HCvjtT0bdXiww
-         HHtvrEajsJuHUfUECq7pm4Ueqi3WsyxXXfJL6NgpRUJnPw63JcZZ88sRSopS1GBiXLbf
-         lkRw==
-X-Gm-Message-State: AOAM5309OlXxg6I73rxjOhGADU0YYOd6CbMSuMqhv3P72Vs+Mrk3fXkr
-        P0zDVutVzp2LC6HXHtfq3Pg=
-X-Google-Smtp-Source: ABdhPJyCOgxuaUma+YJ2cqUlJwByO+Ym7oGxM3ZykqbwzmKTRiezUsqXJuyFPFoFdDnmHxf8H99lRw==
-X-Received: by 2002:a17:902:74c7:b029:129:2e87:a869 with SMTP id f7-20020a17090274c7b02901292e87a869mr3014920plt.71.1625202359400;
-        Thu, 01 Jul 2021 22:05:59 -0700 (PDT)
+        bh=yb7yd96lVQdzsAfi54y0XMr48MTe0F0qlcJZv2yL6qg=;
+        b=INugmE317P0sozjHcViV6CvnrWg4hGKMKZnu4MISS6csJPHuKilZjNv+qKAc9pbQMA
+         F9waEiIyZYDvIBaW90zTJ2HaCWq+K0U5UHSjTiOwVje88VDAvQ4ViufcYu4nAo7dnccP
+         Mf0H5WpWEvtqHWGr9FXMdseCatQu0EsTe/21poTWXXLyzzs/s5tfcP1Ognp/OVAVD/O1
+         bFq6vNEk+LTvNPQgEg8CED5GAQfAT/uWPbpij62IeGnoRcp1VVqCKhIeHRc7v+WbI4Xb
+         zx44WUh6Ft9uqYGiMI9vWaNWTI1+7j15djpoUsWesWoIqdQKP3dp2WfKsL/l1tDiYyEA
+         msYQ==
+X-Gm-Message-State: AOAM530SO8CyYaJTII/2pGf4SxJCR3cne+TsBwdLRYiG+6ooVnpirxKJ
+        K0ghsjqMBn8wZHZl496Bo4A=
+X-Google-Smtp-Source: ABdhPJz/xW1JT7tQMx5UpXTUIanmhykMXdMIGdizdHoHH8iToRv8f+jdEVj3jS05k5GRICWmyHtehQ==
+X-Received: by 2002:a65:5086:: with SMTP id r6mr1661647pgp.237.1625202363120;
+        Thu, 01 Jul 2021 22:06:03 -0700 (PDT)
 Received: from localhost ([191.96.121.144])
-        by smtp.gmail.com with ESMTPSA id a9sm1617809pfv.185.2021.07.01.22.05.56
+        by smtp.gmail.com with ESMTPSA id x22sm1768206pfr.214.2021.07.01.22.06.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Jul 2021 22:05:58 -0700 (PDT)
+        Thu, 01 Jul 2021 22:06:02 -0700 (PDT)
 From:   Luis Chamberlain <mcgrof@kernel.org>
 To:     gregkh@linuxfoundation.org, tj@kernel.org, shuah@kernel.org,
         akpm@linux-foundation.org, rafael@kernel.org, davem@davemloft.net,
@@ -46,9 +46,9 @@ Cc:     jeyu@kernel.org, ngupta@vflare.org,
         jikos@kernel.org, rostedt@goodmis.org, peterz@infradead.org,
         linux-block@vger.kernel.org, netdev@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] test_sysfs: add support to use kernfs failure injection
-Date:   Thu,  1 Jul 2021 22:05:42 -0700
-Message-Id: <20210702050543.2693141-4-mcgrof@kernel.org>
+Subject: [PATCH 4/4] test_sysfs: demonstrate deadlock fix
+Date:   Thu,  1 Jul 2021 22:05:43 -0700
+Message-Id: <20210702050543.2693141-5-mcgrof@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210702050543.2693141-1-mcgrof@kernel.org>
 References: <20210702050543.2693141-1-mcgrof@kernel.org>
@@ -58,347 +58,193 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This extends test_sysfs with support for using the failure injection
-wait completion and knobs to force a few race conditions which
-demonstrates that kernfs active reference protection is sufficient
-for kobject / device protection at higher layers.
+Two mechanisms have been proposed to fix the sysfs deadlock issue.
+The first approach proposed is by optionally allowing drivers to specify
+a module and augmenting attributes with module information [0]. A secondary
+approach is to use macros on drivers which needs this, in the meantime. This
+embraces the secondary approach, in lieu of agreement of a generic solution.
+This should be enough to allow for room for experimentation and demonstration
+of the issue.
 
-This adds 4 new tests which tries to remove the device attribute
-store operation in 4 different situations:
+This then also enables the two test cases which we have disabled as
+otherwise they would deadlock your system.
 
-  1) at the start of kernfs_kernfs_fop_write_iter()
-  2) before the of->mutex is held in kernfs_kernfs_fop_write_iter()
-  3) after the of->mutex is held in kernfs_kernfs_fop_write_iter()
-  4) after the kernfs node active reference is taken
+./tools/testing/selftests/sysfs/sysfs.sh -t 0027
+Running test: sysfs_test_0027 - run #0
+Test for possible rmmod deadlock while writing x ... ok
 
-A write fails in call cases.
+./tools/testing/selftests/sysfs/sysfs.sh -t 0028
+Running test: sysfs_test_0028 - run #0
+Test for possible rmmod deadlock using rtnl_lock while writing x ... ok
 
-No null dereferences are reproduced, even though this has been observed
-in some complex testing cases [0]. If this issue really exists we should
-have enough tools on the sysfs_test toolbox now to try to reproduce
-this easily without having to poke around other drivers.
-
-[0] https://lkml.kernel.org/r/20210623215007.862787-1-mcgrof@kernel.org
+[0] https://lkml.kernel.org/r/20210401235925.GR4332@42.do-not-panic.com
 
 Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 ---
- lib/Kconfig.debug                      |   3 +
- lib/test_sysfs.c                       |  31 +++++
- tools/testing/selftests/sysfs/config   |   3 +
- tools/testing/selftests/sysfs/sysfs.sh | 174 +++++++++++++++++++++++++
- 4 files changed, 211 insertions(+)
+ lib/test_sysfs.c                       | 71 ++++++++++++++++++++++----
+ tools/testing/selftests/sysfs/sysfs.sh |  4 +-
+ 2 files changed, 64 insertions(+), 11 deletions(-)
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 9d3c0d0db0f3..61bf0bad15ec 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2356,6 +2356,9 @@ config TEST_SYSCTL
- config TEST_SYSFS
- 	tristate "sysfs test driver"
- 	depends on SYSFS
-+	select FAULT_INJECTION
-+	select FAULT_INJECTION_DEBUG_FS
-+	select FAIL_KERNFS_KNOBS
- 	help
- 	  This builds the "test_sysfs" module. This driver enables to test the
- 	  sysfs file system safely without affecting production knobs which
 diff --git a/lib/test_sysfs.c b/lib/test_sysfs.c
-index 8e844e30e8f9..96af668edd4a 100644
+index 96af668edd4a..0a77f2887c87 100644
 --- a/lib/test_sysfs.c
 +++ b/lib/test_sysfs.c
-@@ -38,6 +38,11 @@
- #include <linux/rtnetlink.h>
- #include <linux/genhd.h>
- #include <linux/blkdev.h>
-+#include <linux/kernfs.h>
+@@ -94,6 +94,59 @@ MODULE_PARM_DESC(enable_completion_on_rmmod,
+ 		 "enable sending a kernfs completion on rmmod");
+ #endif
+ 
++#undef __ATTR_RO
++#undef __ATTR_RW
++#undef __ATTR_WO
 +
-+#ifdef CONFIG_FAIL_KERNFS_KNOBS
-+MODULE_IMPORT_NS(KERNFS_DEBUG_PRIVATE);
-+#endif
- 
- static bool enable_lock;
- module_param(enable_lock, bool_enable_only, 0644);
-@@ -82,6 +87,13 @@ static bool enable_verbose_rmmod;
- module_param(enable_verbose_rmmod, bool_enable_only, 0644);
- MODULE_PARM_DESC(enable_verbose_rmmod, "enable verbose print messages on rmmod");
- 
-+#ifdef CONFIG_FAIL_KERNFS_KNOBS
-+static bool enable_completion_on_rmmod;
-+module_param(enable_completion_on_rmmod, bool_enable_only, 0644);
-+MODULE_PARM_DESC(enable_completion_on_rmmod,
-+		 "enable sending a kernfs completion on rmmod");
-+#endif
++#define __ATTR_RO(_name) {						\
++	.attr	= { .name = __stringify(_name), .mode = 0444 },		\
++	.show	= module_##_name##_show,						\
++}
++#define __ATTR_RW(_name) __ATTR(_name, 0644, module_##_name##_show, module_##_name##_store)
++#define __ATTR_WO(_name) {						\
++	.attr	= { .name = __stringify(_name), .mode = 0200 },		\
++	.store	= module_##_name##_store,				\
++}
++
++#define MODULE_DEVICE_ATTR_FUNC_STORE(_name) \
++static ssize_t module_ ## _name ## _store(struct device *dev, \
++				   struct device_attribute *attr, \
++				   const char *buf, size_t len) \
++{ \
++	ssize_t __ret; \
++	if (!try_module_get(THIS_MODULE)) \
++		return -ENODEV; \
++	__ret = _name ## _store(dev, attr, buf, len); \
++	module_put(THIS_MODULE); \
++	return __ret; \
++}
++
++#define MODULE_DEVICE_ATTR_FUNC_SHOW(_name) \
++static ssize_t module_ ## _name ## _show(struct device *dev, \
++					 struct device_attribute *attr, \
++					 char *buf) \
++{ \
++	ssize_t __ret; \
++	if (!try_module_get(THIS_MODULE)) \
++		return -ENODEV; \
++	__ret = _name ## _show(dev, attr, buf); \
++	module_put(THIS_MODULE); \
++	return __ret; \
++}
++
++#define MODULE_DEVICE_ATTR_WO(_name) \
++MODULE_DEVICE_ATTR_FUNC_STORE(_name); \
++static DEVICE_ATTR_WO(_name)
++
++#define MODULE_DEVICE_ATTR_RW(_name) \
++MODULE_DEVICE_ATTR_FUNC_STORE(_name); \
++MODULE_DEVICE_ATTR_FUNC_SHOW(_name); \
++static DEVICE_ATTR_RW(_name)
++
++#define MODULE_DEVICE_ATTR_RO(_name) \
++MODULE_DEVICE_ATTR_FUNC_SHOW(_name); \
++static DEVICE_ATTR_RO(_name)
 +
  static int sysfs_test_major;
  
  /**
-@@ -289,6 +301,12 @@ static ssize_t config_show(struct device *dev,
- 			"enable_verbose_writes:\t%s\n",
- 			enable_verbose_writes ? "true" : "false");
- 
-+#ifdef CONFIG_FAIL_KERNFS_KNOBS
-+	len += snprintf(buf+len, PAGE_SIZE - len,
-+			"enable_completion_on_rmmod:\t%s\n",
-+			enable_completion_on_rmmod ? "true" : "false");
-+#endif
-+
- 	test_dev_config_unlock(test_dev);
+@@ -311,7 +364,7 @@ static ssize_t config_show(struct device *dev,
  
  	return len;
-@@ -936,10 +954,23 @@ static int __init test_sysfs_init(void)
  }
- module_init(test_sysfs_init);
+-static DEVICE_ATTR_RO(config);
++MODULE_DEVICE_ATTR_RO(config);
  
-+#ifdef CONFIG_FAIL_KERNFS_KNOBS
-+/* The goal is to race our device removal with a pending kernfs -> store call */
-+static void test_sysfs_kernfs_send_completion_rmmod(void)
-+{
-+	if (!enable_completion_on_rmmod)
-+		return;
-+	complete(&kernfs_debug_wait_completion);
-+}
-+#else
-+static inline void test_sysfs_kernfs_send_completion_rmmod(void) {}
-+#endif
-+
- static void __exit test_sysfs_exit(void)
+ static ssize_t reset_store(struct device *dev,
+ 			   struct device_attribute *attr,
+@@ -336,7 +389,7 @@ static ssize_t reset_store(struct device *dev,
+ 
+ 	return count;
+ }
+-static DEVICE_ATTR_WO(reset);
++MODULE_DEVICE_ATTR_WO(reset);
+ 
+ static void test_dev_busy_alloc(struct sysfs_test_device *test_dev)
  {
- 	if (enable_debugfs)
- 		debugfs_remove(debugfs_dir);
-+	test_sysfs_kernfs_send_completion_rmmod();
- 	if (delay_rmmod_ms)
- 		msleep(delay_rmmod_ms);
- 	unregister_test_dev_sysfs(first_test_dev);
-diff --git a/tools/testing/selftests/sysfs/config b/tools/testing/selftests/sysfs/config
-index 9196f452ecd5..2876a229f95b 100644
---- a/tools/testing/selftests/sysfs/config
-+++ b/tools/testing/selftests/sysfs/config
-@@ -1,2 +1,5 @@
- CONFIG_SYSFS=m
- CONFIG_TEST_SYSFS=m
-+CONFIG_FAULT_INJECTION=y
-+CONFIG_FAULT_INJECTION_DEBUG_FS=y
-+CONFIG_FAIL_KERNFS_KNOBS=y
+@@ -388,7 +441,7 @@ static ssize_t test_dev_x_show(struct device *dev,
+ 
+ 	return ret;
+ }
+-static DEVICE_ATTR_RW(test_dev_x);
++MODULE_DEVICE_ATTR_RW(test_dev_x);
+ 
+ static ssize_t test_dev_y_store(struct device *dev,
+ 				struct device_attribute *attr,
+@@ -432,7 +485,7 @@ static ssize_t test_dev_y_show(struct device *dev,
+ 
+ 	return ret;
+ }
+-static DEVICE_ATTR_RW(test_dev_y);
++MODULE_DEVICE_ATTR_RW(test_dev_y);
+ 
+ static ssize_t config_enable_lock_store(struct device *dev,
+ 					struct device_attribute *attr,
+@@ -477,7 +530,7 @@ static ssize_t config_enable_lock_show(struct device *dev,
+ 
+ 	return ret;
+ }
+-static DEVICE_ATTR_RW(config_enable_lock);
++MODULE_DEVICE_ATTR_RW(config_enable_lock);
+ 
+ static ssize_t config_enable_lock_on_rmmod_store(struct device *dev,
+ 						 struct device_attribute *attr,
+@@ -519,7 +572,7 @@ static ssize_t config_enable_lock_on_rmmod_show(struct device *dev,
+ 
+ 	return ret;
+ }
+-static DEVICE_ATTR_RW(config_enable_lock_on_rmmod);
++MODULE_DEVICE_ATTR_RW(config_enable_lock_on_rmmod);
+ 
+ static ssize_t config_use_rtnl_lock_store(struct device *dev,
+ 					  struct device_attribute *attr,
+@@ -558,7 +611,7 @@ static ssize_t config_use_rtnl_lock_show(struct device *dev,
+ 
+ 	return snprintf(buf, PAGE_SIZE, "%d\n", config->use_rtnl_lock);
+ }
+-static DEVICE_ATTR_RW(config_use_rtnl_lock);
++MODULE_DEVICE_ATTR_RW(config_use_rtnl_lock);
+ 
+ static ssize_t config_write_delay_msec_y_store(struct device *dev,
+ 					       struct device_attribute *attr,
+@@ -592,7 +645,7 @@ static ssize_t config_write_delay_msec_y_show(struct device *dev,
+ 
+ 	return snprintf(buf, PAGE_SIZE, "%d\n", config->write_delay_msec_y);
+ }
+-static DEVICE_ATTR_RW(config_write_delay_msec_y);
++MODULE_DEVICE_ATTR_RW(config_write_delay_msec_y);
+ 
+ static ssize_t config_enable_busy_alloc_store(struct device *dev,
+ 					      struct device_attribute *attr,
+@@ -626,7 +679,7 @@ static ssize_t config_enable_busy_alloc_show(struct device *dev,
+ 
+ 	return snprintf(buf, PAGE_SIZE, "%d\n", config->enable_busy_alloc);
+ }
+-static DEVICE_ATTR_RW(config_enable_busy_alloc);
++MODULE_DEVICE_ATTR_RW(config_enable_busy_alloc);
+ 
+ #define TEST_SYSFS_DEV_ATTR(name)		(&dev_attr_##name.attr)
+ 
 diff --git a/tools/testing/selftests/sysfs/sysfs.sh b/tools/testing/selftests/sysfs/sysfs.sh
-index 681b27579f6f..f27ea61e0e95 100755
+index f27ea61e0e95..2de9f37cb00b 100755
 --- a/tools/testing/selftests/sysfs/sysfs.sh
 +++ b/tools/testing/selftests/sysfs/sysfs.sh
-@@ -62,6 +62,10 @@ ALL_TESTS="$ALL_TESTS 0025:1:1:test_dev_y:block"
+@@ -60,8 +60,8 @@ ALL_TESTS="$ALL_TESTS 0023:1:1:test_dev_y:block"
+ ALL_TESTS="$ALL_TESTS 0024:1:1:test_dev_x:block"
+ ALL_TESTS="$ALL_TESTS 0025:1:1:test_dev_y:block"
  ALL_TESTS="$ALL_TESTS 0026:1:1:test_dev_y:block"
- ALL_TESTS="$ALL_TESTS 0027:1:0:test_dev_x:block" # deadlock test
- ALL_TESTS="$ALL_TESTS 0028:1:0:test_dev_x:block" # deadlock test with rntl_lock
-+ALL_TESTS="$ALL_TESTS 0029:1:1:test_dev_x:block" # kernfs race removal of store
-+ALL_TESTS="$ALL_TESTS 0030:1:1:test_dev_x:block" # kernfs race removal before mutex
-+ALL_TESTS="$ALL_TESTS 0031:1:1:test_dev_x:block" # kernfs race removal after mutex
-+ALL_TESTS="$ALL_TESTS 0032:1:1:test_dev_x:block" # kernfs race removal after active
- 
- allow_user_defaults()
- {
-@@ -92,6 +96,9 @@ allow_user_defaults()
- 	if [ -z $SYSFS_DEBUGFS_DIR ]; then
- 		SYSFS_DEBUGFS_DIR="/sys/kernel/debug/test_sysfs"
- 	fi
-+	if [ -z $KERNFS_DEBUGFS_DIR ]; then
-+		KERNFS_DEBUGFS_DIR="/sys/kernel/debug/kernfs"
-+	fi
- 	if [ -z $PAGE_SIZE ]; then
- 		PAGE_SIZE=$(getconf PAGESIZE)
- 	fi
-@@ -167,6 +174,14 @@ modprobe_reset_enable_rtnl_lock_on_rmmod()
- 	unset FIRST_MODPROBE_ARGS
- }
- 
-+modprobe_reset_enable_completion()
-+{
-+	FIRST_MODPROBE_ARGS="enable_completion_on_rmmod=1 enable_verbose_writes=1"
-+	FIRST_MODPROBE_ARGS="$FIRST_MODPROBE_ARGS enable_verbose_rmmod=1 delay_rmmod_ms=0"
-+	modprobe_reset
-+	unset FIRST_MODPROBE_ARGS
-+}
-+
- load_req_mod()
- {
- 	modprobe_reset
-@@ -197,6 +212,63 @@ debugfs_reset_first_test_dev_ignore_errors()
- 	echo -n "1" >"$SYSFS_DEBUGFS_DIR"/reset_first_test_dev
- }
- 
-+debugfs_kernfs_kernfs_fop_write_iter_exists()
-+{
-+	KNOB_DIR="${KERNFS_DEBUGFS_DIR}/config_fail_kernfs_fop_write_iter"
-+	if [[ ! -d $KNOB_DIR ]]; then
-+		echo "kernfs debugfs does not exist $KNOB_DIR"
-+		return 0;
-+	fi
-+	KNOB_DEBUGFS="${KERNFS_DEBUGFS_DIR}/fail_kernfs_fop_write_iter"
-+	if [[ ! -d $KNOB_DEBUGFS ]]; then
-+		echo -n "kernfs debugfs for coniguring fail_kernfs_fop_write_iter "
-+		echo "does not exist $KNOB_DIR"
-+		return 0;
-+	fi
-+	return 1
-+}
-+
-+debugfs_kernfs_kernfs_fop_write_iter_set_fail_once()
-+{
-+	KNOB_DEBUGFS="${KERNFS_DEBUGFS_DIR}/fail_kernfs_fop_write_iter"
-+	echo 1 > $KNOB_DEBUGFS/interval
-+	echo 100 > $KNOB_DEBUGFS/probability
-+	echo 0 > $KNOB_DEBUGFS/space
-+	# Disable verbose messages on the kernel ring buffer which may
-+	# confuse developers with a kernel panic.
-+	echo 0 > $KNOB_DEBUGFS/verbose
-+
-+	# Fail only once
-+	echo 1 > $KNOB_DEBUGFS/times
-+}
-+
-+debugfs_kernfs_kernfs_fop_write_iter_set_fail_never()
-+{
-+	KNOB_DEBUGFS="${KERNFS_DEBUGFS_DIR}/fail_kernfs_fop_write_iter"
-+	echo 0 > $KNOB_DEBUGFS/times
-+}
-+
-+debugfs_kernfs_set_wait_ms()
-+{
-+	SLEEP_AFTER_WAIT_MS="${KERNFS_DEBUGFS_DIR}/sleep_after_wait_ms"
-+	echo $1 > $SLEEP_AFTER_WAIT_MS
-+}
-+
-+debugfs_kernfs_disable_wait_kernfs_fop_write_iter()
-+{
-+	ENABLE_WAIT_KNOB="${KERNFS_DEBUGFS_DIR}/config_fail_kernfs_fop_write_iter/wait_"
-+	for KNOB in ${ENABLE_WAIT_KNOB}*; do
-+		echo 0 > $KNOB
-+	done
-+}
-+
-+debugfs_kernfs_enable_wait_kernfs_fop_write_iter()
-+{
-+	ENABLE_WAIT_KNOB="${KERNFS_DEBUGFS_DIR}/config_fail_kernfs_fop_write_iter/wait_$1"
-+	echo -n "1" > $ENABLE_WAIT_KNOB
-+	return $?
-+}
-+
- set_orig()
- {
- 	if [[ ! -z $TARGET ]] && [[ ! -z $ORIG ]]; then
-@@ -972,6 +1044,104 @@ sysfs_test_0028()
- 	fi
- }
- 
-+sysfs_race_kernfs_kernfs_fop_write_iter()
-+{
-+	TARGET="${DIR}/$(get_test_target $1)"
-+	WAIT_AT=$2
-+	EXPECT_WRITE_RETURNS=$3
-+	MSDELAY=$4
-+
-+	modprobe_reset_enable_completion
-+	ORIG=$(cat "${TARGET}")
-+	TEST_STR=$(( $ORIG + 1 ))
-+
-+	echo -n "Test racing removal of sysfs store op with kernfs $WAIT_AT ... "
-+
-+	if debugfs_kernfs_kernfs_fop_write_iter_exists; then
-+		echo -n "skipping test as CONFIG_FAIL_KERNFS_KNOBS "
-+		echo " or CONFIG_FAULT_INJECTION_DEBUG_FS is disabled"
-+		return $ksft_skip
-+	fi
-+
-+	# Allow for failing the kernfs_kernfs_fop_write_iter call once,
-+	# we'll provide exact context shortly afterwards.
-+	debugfs_kernfs_kernfs_fop_write_iter_set_fail_once
-+
-+	# First disable all waits
-+	debugfs_kernfs_disable_wait_kernfs_fop_write_iter
-+
-+	# Enable a wait_for_completion(&kernfs_debug_wait_completion) at the
-+	# specified location inside the kernfs_fop_write_iter() routine
-+	debugfs_kernfs_enable_wait_kernfs_fop_write_iter $WAIT_AT
-+
-+	# Configure kernfs so that after its wait_for_completion() it
-+	# will msleep() this amount of time and schedule(). We figure this
-+	# will be sufficient time to allow for our module removal to complete.
-+	debugfs_kernfs_set_wait_ms $MSDELAY
-+
-+	# Now we trigger a kernfs write op, which will run kernfs_fop_write_iter,
-+	# but will wait until our driver sends a respective completion
-+	set_test_ignore_errors &
-+	write_pid=$!
-+
-+	# At this point kernfs_fop_write_iter() hasn't run our op, its
-+	# waiting for our completion at the specified time $WAIT_AT.
-+	# We now remove our module which will send a
-+	# complete(&kernfs_debug_wait_completion) right before we deregister
-+	# our device and the sysfs device attributes are removed.
-+	#
-+	# After the completion is sent, the test_sysfs driver races with
-+	# kernfs to do the device deregistration with the kernfs msleep
-+	# and schedule(). This should mean we've forced trying to remove the
-+	# module prior to allowing kernfs to run our store operation. If the
-+	# race did happen we'll panic with a null dereference on the store op.
-+	#
-+	# If no race happens we should see no write operation triggered.
-+	modprobe -r $TEST_DRIVER > /dev/null 2>&1
-+
-+	debugfs_kernfs_kernfs_fop_write_iter_set_fail_never
-+
-+	wait $write_pid
-+	if [[ $? -eq $EXPECT_WRITE_RETURNS ]]; then
-+		echo "ok"
-+	else
-+		echo "FAIL" >&2
-+	fi
-+}
-+
-+sysfs_test_0029()
-+{
-+	for delay in 0 2 4 8 16 32 64 128 246 512 1024; do
-+		echo "Using delay-after-completion: $delay"
-+		sysfs_race_kernfs_kernfs_fop_write_iter 0029 at_start 1 $delay
-+	done
-+}
-+
-+sysfs_test_0030()
-+{
-+	for delay in 0 2 4 8 16 32 64 128 246 512 1024; do
-+		echo "Using delay-after-completion: $delay"
-+		sysfs_race_kernfs_kernfs_fop_write_iter 0030 before_mutex 1 $delay
-+	done
-+}
-+
-+sysfs_test_0031()
-+{
-+	for delay in 0 2 4 8 16 32 64 128 246 512 1024; do
-+		echo "Using delay-after-completion: $delay"
-+		sysfs_race_kernfs_kernfs_fop_write_iter 0031 after_mutex 1 $delay
-+	done
-+}
-+
-+# Even if we get the active reference the write fails
-+sysfs_test_0032()
-+{
-+	for delay in 0 2 4 8 16 32 64 128 246 512 1024; do
-+		echo "Using delay-after-completion: $delay"
-+		sysfs_race_kernfs_kernfs_fop_write_iter 0032 after_active 1 $delay
-+	done
-+}
-+
- test_gen_desc()
- {
- 	echo -n "$1 x $(get_test_count $1)"
-@@ -1013,6 +1183,10 @@ list_tests()
- 	echo "$(test_gen_desc 0026) - block test writing y larger delay and resetting device"
- 	echo "$(test_gen_desc 0027) - test rmmod deadlock while writing x ... "
- 	echo "$(test_gen_desc 0028) - test rmmod deadlock using rtnl_lock while writing x ..."
-+	echo "$(test_gen_desc 0029) - racing removal of store op with kernfs at start"
-+	echo "$(test_gen_desc 0030) - racing removal of store op with kernfs before mutex"
-+	echo "$(test_gen_desc 0031) - racing removal of store op with kernfs after mutex"
-+	echo "$(test_gen_desc 0032) - racing removal of store op with kernfs after active"
- }
- 
- usage()
+-ALL_TESTS="$ALL_TESTS 0027:1:0:test_dev_x:block" # deadlock test
+-ALL_TESTS="$ALL_TESTS 0028:1:0:test_dev_x:block" # deadlock test with rntl_lock
++ALL_TESTS="$ALL_TESTS 0027:1:1:test_dev_x:block" # deadlock test
++ALL_TESTS="$ALL_TESTS 0028:1:1:test_dev_x:block" # deadlock test with rntl_lock
+ ALL_TESTS="$ALL_TESTS 0029:1:1:test_dev_x:block" # kernfs race removal of store
+ ALL_TESTS="$ALL_TESTS 0030:1:1:test_dev_x:block" # kernfs race removal before mutex
+ ALL_TESTS="$ALL_TESTS 0031:1:1:test_dev_x:block" # kernfs race removal after mutex
 -- 
 2.27.0
 
