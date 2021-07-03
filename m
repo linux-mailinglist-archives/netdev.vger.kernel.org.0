@@ -2,118 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A957F3BA65B
-	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 02:00:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 791453BA67B
+	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 02:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbhGCAC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Jul 2021 20:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230017AbhGCAC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 20:02:58 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4866DC061762;
-        Fri,  2 Jul 2021 17:00:26 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id d12so11430416pgd.9;
-        Fri, 02 Jul 2021 17:00:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zLdbz+KNKw9C/s+UQg9D2c39mkDMgDODryRHEG/G82M=;
-        b=LwIRYO0PPgUIWAquYY8ces1Lo5AOOwxoJysiMqJ+rjZyGg7w7Ao+0dMA8KSfoZfGc5
-         6Oo5YcN7fF0sVh6fupTmApnNdpAGn0YuYpHa3RdeQ9HLQtFmhKFA3f737hiIjh27Ij9W
-         owDAfDx429O+hOGvZlaLFR5Gkd4rsw2ghLWiFb4HPFKGswr0TqZDMdTWh+D6pXzBIzC7
-         TJ9RTXC3Xzp9hMEp4/8lV4iOgbNyczTGxqFceZe6SCY88tHvesGZii0SoTh/P5FCHODa
-         F2OjEMox6EmIGtzQ+Ffmxx62uJ3YQeVAGZmu5Hho5VHRcvFY4uTXVB2IrttX3BrbRW5b
-         2TKw==
+        id S230209AbhGCAtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Jul 2021 20:49:12 -0400
+Received: from mail-pf1-f176.google.com ([209.85.210.176]:33634 "EHLO
+        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230017AbhGCAtL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Jul 2021 20:49:11 -0400
+Received: by mail-pf1-f176.google.com with SMTP id s14so10773390pfg.0;
+        Fri, 02 Jul 2021 17:46:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zLdbz+KNKw9C/s+UQg9D2c39mkDMgDODryRHEG/G82M=;
-        b=AA6yxv0EfJVuS8nt5BGcYAlqDXQ4QaEIuuCMAVQHS5GsiqrxSAMpTJIXmEbHAsirq4
-         LjQb9+KgkVd6/WBm47vQx7WMPWuIzNO+7XJPTFF3GdP8Hjai4Rk2RGbf4DXiAP3rfydf
-         JxI+KxpNqXQ4++bTDudbBM3YjhJKOlQZvzSHxjgc8hwJu4UQG4uLazxpJCUEED8h6LOQ
-         HrgutMBctc3KfCuMo/Jr1uXSapnIfWZGokHSFtW7HCeWHduypVWglpVbsJQX8S67U/zm
-         ct2hG9wwrcANaKMRG4xRBLzmvhCh5RbBgIQQkf3JaCs1JMAB+WGqOHdSW6TF47MS+u5M
-         vHQQ==
-X-Gm-Message-State: AOAM532f4UcYYlq6Lsp+4duYpPbWQ+ApVKV5HlHWDTbVIHW8mKpLBfN+
-        ktAgR7roFBIKSh97IY9gHQc=
-X-Google-Smtp-Source: ABdhPJxnbtYL89n654xSOh6b90sp+H5567DRf8tKX47V90OuB40VjJA3YNDZpUKDYmDN9dyRce4MsA==
-X-Received: by 2002:a63:7d5:: with SMTP id 204mr2416568pgh.309.1625270425816;
-        Fri, 02 Jul 2021 17:00:25 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 20sm3597615pfu.5.2021.07.02.17.00.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jul 2021 17:00:24 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Sat, 3 Jul 2021 07:56:29 +0800
-To:     Joe Perches <joe@perches.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        Benjamin Poirier <benjamin.poirier@gmail.com>,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC 13/19] staging: qlge: rewrite do while loop as for loop in
- qlge_sem_spinlock
-Message-ID: <20210702235629.k2k2q7b2lxzw4kzd@Rk>
-References: <20210621134902.83587-1-coiby.xu@gmail.com>
- <20210621134902.83587-14-coiby.xu@gmail.com>
- <20210622072036.GK1861@kadam>
- <20210624112245.zgvkcxyu7hzrzc23@Rk>
- <f7beb9aee00a1cdb8dd97a49a36abd60d58279f2.camel@perches.com>
- <20210630233338.2l34shhrm3bdd4gx@Rk>
- <fe4a647d5324e9d8d23564f6d685f3ca720db166.camel@perches.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2kl9UtuLXwqigXL0z/0Ce1Bg3PqN6wXeWZxwKnEIWoE=;
+        b=BPZ81H9+/ugQyisrsbjJllDnnoVOcWEpRFGxzrUevq6dCeyEsjGzxq6m0UDjqc1qVj
+         zpsvH61SLm9URpFXuirfZ8zyE7U/DN0MOIAQ5Unhh6uKN6Ig4WX8Gw278uUnE5kbUOUI
+         Om+b3mb+uZw+5LFMdywQphF2NCy4baIj5S6DhcpAjRUcw2TviFQmDG9u5skRpMZoHXkX
+         dwWtlyID4LRQPSf2EKsEx+ynZMjxDpjIXhF/28DEC1D/ek6kAaJRlrqUWab1z2A3yLiG
+         cQf+D1G7tRqtfHJPHpc+REyt65JsOveka5Ca9PXlgidhFjNbFwXJcyHavLk1O7Q1sM1X
+         GrQw==
+X-Gm-Message-State: AOAM532bBHTIQho+EMRZMtnqSDKh2V0UyG+MPyREYR7iLjEG1xgaWMgu
+        4IrDARMLE8KaWpqOhRdISxU=
+X-Google-Smtp-Source: ABdhPJwGJju08VhRuXSU6vHnaEQqhLvLgMpIjXX58qMb53c2M1AVO015kQMXy6Yi1waWrN3B2dyxKQ==
+X-Received: by 2002:a62:9290:0:b029:318:a43b:e99 with SMTP id o138-20020a6292900000b0290318a43b0e99mr1385332pfd.6.1625273197181;
+        Fri, 02 Jul 2021 17:46:37 -0700 (PDT)
+Received: from localhost ([191.96.121.144])
+        by smtp.gmail.com with ESMTPSA id y16sm4801730pfe.70.2021.07.02.17.46.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Jul 2021 17:46:36 -0700 (PDT)
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     gregkh@linuxfoundation.org, tj@kernel.org, shuah@kernel.org,
+        akpm@linux-foundation.org, rafael@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, andriin@fb.com,
+        daniel@iogearbox.net, atenart@kernel.org, alobakin@pm.me,
+        weiwan@google.com, ap420073@gmail.com
+Cc:     jeyu@kernel.org, ngupta@vflare.org,
+        sergey.senozhatsky.work@gmail.com, minchan@kernel.org,
+        mcgrof@kernel.org, axboe@kernel.dk, mbenes@suse.com,
+        jpoimboe@redhat.com, tglx@linutronix.de, keescook@chromium.org,
+        jikos@kernel.org, rostedt@goodmis.org, peterz@infradead.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] selftests: add a new test driver for sysfs
+Date:   Fri,  2 Jul 2021 17:46:28 -0700
+Message-Id: <20210703004632.621662-1-mcgrof@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <fe4a647d5324e9d8d23564f6d685f3ca720db166.camel@perches.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 30, 2021 at 09:35:31PM -0700, Joe Perches wrote:
->On Thu, 2021-07-01 at 07:33 +0800, Coiby Xu wrote:
->> On Wed, Jun 30, 2021 at 03:58:06AM -0700, Joe Perches wrote:
->> > On Thu, 2021-06-24 at 19:22 +0800, Coiby Xu wrote:
->> > > On Tue, Jun 22, 2021 at 10:20:36AM +0300, Dan Carpenter wrote:
->> > > > On Mon, Jun 21, 2021 at 09:48:56PM +0800, Coiby Xu wrote:
->> > > > > Since wait_count=30 > 0, the for loop is equivalent to do while
->> > > > > loop. This commit also replaces 100 with UDELAY_DELAY.
->> > []
->> > > > > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
->> > []
->> > I also think using UDELAY_DELAY is silly and essentially misleading
->> > as it's also used as an argument value for mdelay
->> >
->> > $ git grep -w UDELAY_DELAY
->> > drivers/staging/qlge/qlge.h:#define UDELAY_DELAY 100
->> > drivers/staging/qlge/qlge_main.c:               udelay(UDELAY_DELAY);
->> > drivers/staging/qlge/qlge_main.c:               udelay(UDELAY_DELAY);
->> > drivers/staging/qlge/qlge_mpi.c:                mdelay(UDELAY_DELAY);
->> > drivers/staging/qlge/qlge_mpi.c:                mdelay(UDELAY_DELAY);
->> > drivers/staging/qlge/qlge_mpi.c:                mdelay(UDELAY_DELAY); /* 100ms */
->>
->> Thanks for spotting this issue! How about "#define MDELAY_DELAY 100" for
->> mdelay?
->
->I think the define is pointless and it'd be more readable
->to just use 100 in all the cases.
->
->IMO: There really aren't enough cases to justify using defines.
+This v2 rebases onto the latest linux-next tag, next-20210701. A few
+changes were needed, namely:
 
-I thought magic number should be avoided if possible. This case is new
-to me. Thanks for the explanation!
+  1) changes kernfs_init_failure_injection() to return int instead
+     of void. On the latest linux-next we have a new static build
+     check for this, so this mistake was captured when building.
 
->
->
+  2) I made kernfs_init_failure_injection static
+
+  3) lib/test_sysfs.c moved to the new blk_alloc_disk() added by
+     Christoph as direct queue allocation is no longer supported,
+     ie, blk_alloc_queue() is no longer exported. This work was
+     done by Christoph in preparation to help make add_disk*()
+     callers eventually return an error code and make the error
+     handling much saner. Because of this same change
+     blk_cleanup_queue() is no longer needed so we embrace
+     the shiny new blk_cleanup_disk().
+
+I've put this up on my linux-next git tree [0] under the branch
+named 20210701-sysfs-fix-races-v2.
+
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git/log/?h=20210701-sysfs-fix-races-v2
+
+Luis Chamberlain (4):
+  selftests: add tests_sysfs module
+  kernfs: add initial failure injection support
+  test_sysfs: add support to use kernfs failure injection
+  test_sysfs: demonstrate deadlock fix
+
+ .../fault-injection/fault-injection.rst       |   22 +
+ MAINTAINERS                                   |    9 +-
+ fs/kernfs/Makefile                            |    1 +
+ fs/kernfs/failure-injection.c                 |   83 +
+ fs/kernfs/file.c                              |   13 +
+ fs/kernfs/kernfs-internal.h                   |   72 +
+ include/linux/kernfs.h                        |    5 +
+ lib/Kconfig.debug                             |   23 +
+ lib/Makefile                                  |    1 +
+ lib/test_sysfs.c                              | 1027 ++++++++++++
+ tools/testing/selftests/sysfs/Makefile        |   12 +
+ tools/testing/selftests/sysfs/config          |    5 +
+ tools/testing/selftests/sysfs/sysfs.sh        | 1376 +++++++++++++++++
+ 13 files changed, 2648 insertions(+), 1 deletion(-)
+ create mode 100644 fs/kernfs/failure-injection.c
+ create mode 100644 lib/test_sysfs.c
+ create mode 100644 tools/testing/selftests/sysfs/Makefile
+ create mode 100644 tools/testing/selftests/sysfs/config
+ create mode 100755 tools/testing/selftests/sysfs/sysfs.sh
 
 -- 
-Best regards,
-Coiby
+2.27.0
+
