@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84D7D3BA7F8
-	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 11:02:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F30EE3BA7FE
+	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 11:04:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbhGCJFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Jul 2021 05:05:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23390 "EHLO
+        id S230081AbhGCJGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Jul 2021 05:06:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33885 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229811AbhGCJFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Jul 2021 05:05:01 -0400
+        by vger.kernel.org with ESMTP id S229582AbhGCJGt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Jul 2021 05:06:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625302948;
+        s=mimecast20190719; t=1625303055;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=xv+xkO4lgJG88m3AquNVw5YTZ0JyMWWfOa5ZsUkDJhE=;
-        b=PkpKpiM+oCaNq8/j5HeGnS+k+0vTAWHWTXtphZ9JABb4ML+bQIvaEr3W5EIeRIMv0BOtiz
-        5K/Q7/p+bSR1nliOIqwp5UeMEP8X0uXuXzdzWQfoAZHKVLA7Mn7j9ZufFXIaUHI6z+PcEM
-        Hp5CuRtDCEc/gEJj74dFZqFIzpn9NBg=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-332-YOWjCHzsMt-y1AjLwVs7WQ-1; Sat, 03 Jul 2021 05:02:27 -0400
-X-MC-Unique: YOWjCHzsMt-y1AjLwVs7WQ-1
-Received: by mail-wm1-f71.google.com with SMTP id r129-20020a1c44870000b0290202a27a576aso182422wma.3
-        for <netdev@vger.kernel.org>; Sat, 03 Jul 2021 02:02:26 -0700 (PDT)
+        bh=TVu0raAXHHac8RYBeboQlPHsVSFx1+2WCdPZevKx+R0=;
+        b=EVFXqqoBc85nnNKiYKr/a03krcowvMv+XbMOLvPBBH0YIGt1cMcahHe3rVn2tRK5kI7qM7
+        W1Vf1Okc9ILQdyeKkdZ5WKShGh7IQB31afeHJAzcYwwhonZoMJD7k4DTzYiGemAtmSTvAf
+        WM1hspD8jk9A+UJjjZxS87iVWI1LrhA=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-266-X0vpI8kfNpmnalXYWuHW1g-1; Sat, 03 Jul 2021 05:04:14 -0400
+X-MC-Unique: X0vpI8kfNpmnalXYWuHW1g-1
+Received: by mail-wm1-f72.google.com with SMTP id j38-20020a05600c1c26b02901dbf7d18ff8so7537752wms.8
+        for <netdev@vger.kernel.org>; Sat, 03 Jul 2021 02:04:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=xv+xkO4lgJG88m3AquNVw5YTZ0JyMWWfOa5ZsUkDJhE=;
-        b=djMEYW5qA4zcBpR0/BjUluyPHliiL4c3bm2g2DXjVSk25wKd4qEYegcPpdsKLyAlAo
-         OH7GP36HFru9+RrCZRIzrE7y9+/Fu/+PvrHEbHqouzjNystlJv4m7Dfqzsi64Fa8pkZS
-         GbMJTJmjnp4zSUUjMS+75Qd+bhTXi7xSt00Jj3k+4eQaZjhN6HX8m+y7AMrZpqKRViT3
-         dzxUwjdwVrdtk5wRs6Gzuw9GsZZY7w73r2fvO2KL83Hi4nKRnudQl1St28CwqgDiIIVh
-         ahOdhmFdJgcEttYGTX2xUTUDaEFaSxRZDmpv7jYc16iWqRuAh1JhDNXDXnPMU1Ca2qR5
-         LX4Q==
-X-Gm-Message-State: AOAM532Q/qx4+v0UU7x22YA0JOXCAjw1VAPOJkPoO30qR2WZxlnXBacl
-        MtoC5PLhqf/LQKhNIBYBB4RBcMxd4jbjCjKOBCgq3v5t6aunUFO0zsI2WiOR7L0LI7X02SMBX3+
-        dGf3F6cU2wtTgtHcL
-X-Received: by 2002:a05:6000:551:: with SMTP id b17mr4224328wrf.32.1625302944790;
-        Sat, 03 Jul 2021 02:02:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzi9PlyExYyP2P8EpqE+5f50nPCN3RY6pWg/ajXkoyyYdV1IDk+i5VXLKH9JDXByKY3rzC+TA==
-X-Received: by 2002:a05:6000:551:: with SMTP id b17mr4224298wrf.32.1625302944507;
-        Sat, 03 Jul 2021 02:02:24 -0700 (PDT)
+        bh=TVu0raAXHHac8RYBeboQlPHsVSFx1+2WCdPZevKx+R0=;
+        b=TSBuInW2c6ZT1EARGgVa2srY68MbekEEoXXeKHG2GdOZSwWuKZnCpKZVdWIdR9LMi+
+         MHbSVMB40KFJhW87lS9iuxvm7l05Cn+kx5hyHwe3of9b31DUY1SawN2d3aPiIAdobrW4
+         Aj0ymIpoXY6oZ0Darqv5jKXD+qoAIZ6CzL451oegbfoAKEUrgvMHesHrPIBL+YnhgbrB
+         Uk6dlpD0J7N1/gUfuU4NW8LBxHCOI8JJU6JFFr87BihQmcZ5z9I/wmAfXsNwVq0rAm3K
+         1NMuVH2N+fjz9RDSqFYjXCDTwEiF3q7fMfTlcQlFXVQwIOaNEpXx1Z4T8qagssi2IInr
+         sAbA==
+X-Gm-Message-State: AOAM531RErbqEr8xg+pAqUYYffNO7ggi3GggKyo5I6gdIGegA0qpbHp9
+        muznA7XWHgQyoqw+03Pg/sUe52hfby6T3R8q3eu5E+lg5CVAju5/LnfKdWd7h+9reWcP5H1Hi++
+        3AuK0ABQRCmOLatDq
+X-Received: by 2002:a05:600c:1d06:: with SMTP id l6mr1310992wms.111.1625303051925;
+        Sat, 03 Jul 2021 02:04:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwBiMbxnrnsML4eQwt8oUtcimEaS5j9QhAj9zlj+jkBSqLAfDER1GiUjarz9whoxVL6duyUJw==
+X-Received: by 2002:a05:600c:1d06:: with SMTP id l6mr1310965wms.111.1625303051644;
+        Sat, 03 Jul 2021 02:04:11 -0700 (PDT)
 Received: from redhat.com ([2.55.4.39])
-        by smtp.gmail.com with ESMTPSA id g15sm5858731wri.75.2021.07.03.02.02.20
+        by smtp.gmail.com with ESMTPSA id 2sm5714024wrz.87.2021.07.03.02.04.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Jul 2021 02:02:22 -0700 (PDT)
-Date:   Sat, 3 Jul 2021 05:02:17 -0400
+        Sat, 03 Jul 2021 02:04:11 -0700 (PDT)
+Date:   Sat, 3 Jul 2021 05:04:07 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     kernel test robot <lkp@intel.com>
 Cc:     Zhu Lingshan <lingshan.zhu@intel.com>, jasowang@redhat.com,
@@ -58,7 +58,7 @@ Cc:     Zhu Lingshan <lingshan.zhu@intel.com>, jasowang@redhat.com,
         kvm@vger.kernel.org
 Subject: Re: [PATCH 2/3] vDPA/ifcvf: implement management netlink framework
  for ifcvf
-Message-ID: <20210703050022-mutt-send-email-mst@kernel.org>
+Message-ID: <20210703050320-mutt-send-email-mst@kernel.org>
 References: <20210630082145.5729-3-lingshan.zhu@intel.com>
  <202107010221.pN7dwv6A-lkp@intel.com>
 MIME-Version: 1.0
@@ -109,11 +109,15 @@ On Thu, Jul 01, 2021 at 03:04:09AM +0800, kernel test robot wrote:
 >                                         ^
 >                                          = NULL
 >    1 warning generated.
-
-
-compiler being silly again?
-
 > 
+
+
+Actually the problem is real and this is almost surely the wrong fix.
+We need an extra label to skip using put_device when adapter was not
+yet initialized.
+
+
+
 > vim +/adapter +612 drivers/vdpa/ifcvf/ifcvf_main.c
 > 
 > 7ea782fbd896e1 drivers/vdpa/ifcvf/ifcvf_main.c        Zhu Lingshan 2021-06-30  541  
