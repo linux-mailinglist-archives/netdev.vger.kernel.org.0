@@ -2,113 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 862DE3BA703
-	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 06:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C2543BA73F
+	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 06:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbhGCES0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Jul 2021 00:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbhGCESZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Jul 2021 00:18:25 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516F5C061762
-        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 21:15:52 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lzX4H-0001Gu-RT; Sat, 03 Jul 2021 06:15:49 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lzX4G-0002K2-9w; Sat, 03 Jul 2021 06:15:48 +0200
-Date:   Sat, 3 Jul 2021 06:15:48 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH 04/24] rtw89: add debug files
-Message-ID: <20210703041548.nhe6iedtrkwihefo@pengutronix.de>
-References: <20210618064625.14131-1-pkshih@realtek.com>
- <20210618064625.14131-5-pkshih@realtek.com>
- <20210702072308.GA4184@pengutronix.de>
- <CA+ASDXNjHJoXgRAM4E7TcLuz9zBmQkaBMuhK2DEVy3dnE-3XcA@mail.gmail.com>
- <20210702175740.5cdhmfp4ldiv6tn7@pengutronix.de>
- <CA+ASDXP0_Y1x_1OixJFWDCeZX3txV+xbwXcXfTbw1ZiGjSFiCQ@mail.gmail.com>
- <20210702193253.sjj75qp7kainvxza@pengutronix.de>
- <CA+ASDXP8JU+VXQV1ZHLsV88y_Ejr4YbS3YwDmWiKjhYsQ-F2Yw@mail.gmail.com>
+        id S229893AbhGCEtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Jul 2021 00:49:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42962 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229461AbhGCEtW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Jul 2021 00:49:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DE87661405;
+        Sat,  3 Jul 2021 04:46:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1625287608;
+        bh=bdqIjdWS6ByoG+Rr4ADz7N1F9WKftDDWxQ52YTc5eNA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hVZGm1mQn1KY3S7UU3o7OMw0ALThdr8gNKdtJax+HC9Xa0nOKSiJ5eoaAz7avoxIP
+         Pqavy8lTQm0sC1SzHiVlKerBZbo+eQyW2rF5rXuPb+oRRnk1hMAXhU7lgB7mp8RjFy
+         851PXQEnO0hBzWPkNq7zYv2RQWPUKrd1OPBCW8Nk=
+Date:   Sat, 3 Jul 2021 06:46:46 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     tj@kernel.org, shuah@kernel.org, akpm@linux-foundation.org,
+        Richard Fontana <fontana@sharpeleven.org>, rafael@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        andriin@fb.com, daniel@iogearbox.net, atenart@kernel.org,
+        alobakin@pm.me, weiwan@google.com, ap420073@gmail.com,
+        jeyu@kernel.org, ngupta@vflare.org,
+        sergey.senozhatsky.work@gmail.com, minchan@kernel.org,
+        axboe@kernel.dk, mbenes@suse.com, jpoimboe@redhat.com,
+        tglx@linutronix.de, keescook@chromium.org, jikos@kernel.org,
+        rostedt@goodmis.org, peterz@infradead.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] selftests: add tests_sysfs module
+Message-ID: <YN/rtmZbd6velB1L@kroah.com>
+References: <20210702050543.2693141-1-mcgrof@kernel.org>
+ <20210702050543.2693141-2-mcgrof@kernel.org>
+ <YN6iSKCetBrk2y8V@kroah.com>
+ <20210702190230.r46bck4vib7u3qo6@garbanzo>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+ASDXP8JU+VXQV1ZHLsV88y_Ejr4YbS3YwDmWiKjhYsQ-F2Yw@mail.gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 05:56:09 up 212 days, 18:02, 44 users,  load average: 0.07, 0.04,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20210702190230.r46bck4vib7u3qo6@garbanzo>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 02, 2021 at 01:00:27PM -0700, Brian Norris wrote:
-> On Fri, Jul 2, 2021 at 12:32 PM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> > On Fri, Jul 02, 2021 at 11:38:26AM -0700, Brian Norris wrote:
-> > > Well mainly, I don't really like people dreaming up arbitrary rules
-> > > and enforcing them only on new submissions.
-> >
-> > It is technical discussion. There is no reason to get personal.
+On Fri, Jul 02, 2021 at 12:02:30PM -0700, Luis Chamberlain wrote:
+> On Fri, Jul 02, 2021 at 07:21:12AM +0200, Greg KH wrote:
+> > On Thu, Jul 01, 2021 at 10:05:40PM -0700, Luis Chamberlain wrote:
+> > > @@ -0,0 +1,953 @@
+> > > +// SPDX-License-Identifier: GPL-2.0-or-later
+> > > +/*
+> > > + * sysfs test driver
+> > > + *
+> > > + * Copyright (C) 2021 Luis Chamberlain <mcgrof@kernel.org>
+> > > + *
+> > > + * This program is free software; you can redistribute it and/or modify it
+> > > + * under the terms of the GNU General Public License as published by the Free
+> > > + * Software Foundation; either version 2 of the License, or at your option any
+> > > + * later version; or, when distributed separately from the Linux kernel or
+> > > + * when incorporated into other software packages, subject to the following
+> > > + * license:
+> > 
+> > This boilerplate should not be here, only the spdx line is needed.
 > 
-> I'm not really intending to make this personal, so apologies if it
-> appeared that way.
+> As per Documentation/process/license-rules.rst we use the SPDX license
+> tag for the license that applies but it also states about dual
+> licensing:
 > 
-> What I'm trying to get at is that
-> (a) no other wireless driver does this, so why should this one? and
-> (b) the feature you claim this driver can use does not appear suited
-> to the task.
+> "Aside from that, individual files can be provided under a dual license,         
+> e.g. one of the compatible GPL variants and alternatively under a               
+> permissive license like BSD, MIT etc."
 > 
-> It's easier to make suggestions than to make them a reality.
-> 
-> > > If such a change was
-> > > Recommended, it seems like a better first step would be to prove that
-> > > existing drivers (where there are numerous examples) can be converted
-> > > nicely, instead of pushing the work to new contributors arbitrarily.
-> >
-> > Hm, my experience as patch submitter is rather different, but who knows,
-> > every subsystem has diffent rules. Good to know, wireless is different.
-> 
-> I'm not an arbiter for "wireless" -- so my thoughts are purely my own
-> opinion. But I have noted some technical reasons why wireless drivers
-> may be different than ethernet drivers, and the suggested (again,
-> purely my own opinion) exercise might show you that your suggestion
-> won't really work out in practice.
+> Let me know if things should change somehow here to clarify this better.
 
-Ok, so we still need to find the way to go.
-For example drivers/net/wireless/realtek/rtw89/debug.c is 2404 of potentially
-removable code. Some one should review it or outoptimize it by using
-existing frameworks.
+The spdx line is not matching the actual license for the file, which is
+wrong.
 
-As you noticed, not many people are willing to review this driver. IMO,
-it is related to the RealTek reputation of making code drops with lots
-of not not usable or duplicated code. So to say - offloading the dirty work to
-the community. For example this patch set:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/drivers/staging/rts5139?h=v5.13&qt=author&q=rempel
-This new rtw89 driver seems to confirm this reputation, but I cani't say it
-for sure without spending a week on reverse engineering it.
+And "copyright-left" is not a valid license according to our list of
+valid licenses in the LICENSES directory, so please do not add it to
+kernel code when it is obviously not needed.
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+And given that this is directly interacting with sysfs, which is
+GPLv2-only, trying to claim a different license on the code that tests
+it is going to be a total mess for any lawyer who wants to look into
+this.  Just keep it simple please.
+
+thanks,
+
+greg k-h
