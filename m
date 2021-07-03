@@ -2,165 +2,316 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6667B3BA82D
-	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 11:50:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 889673BA893
+	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 13:58:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbhGCJwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Jul 2021 05:52:30 -0400
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:57330 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229981AbhGCJwa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Jul 2021 05:52:30 -0400
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1639lCPf018898;
-        Sat, 3 Jul 2021 09:49:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2020-01-29;
- bh=5kfS2EGXNPFBMlsgCSre09THnCJjwsWMakvRnmjKSwQ=;
- b=D1/Tb5TOp/GQDTAUauQzD9hLCWHBSptOnBspqGUNpfmyq+HGS4mBanBgCQ8AZRn1jqJG
- inVt0/TrWMBvZVfGvcYZZ0Ml2CI+W7XAkSL27MS4KIyGUpZUfYUQmjSK6AppYQGxFMiA
- ezQAJ8UDdJynvh3L0ktAUczBVVY4vPGlIhJUKsOoWkx9P+ujBclopt4nYf7bEmcgXOCi
- T6Sli98HPq2Kkql5hlxNUny5Fv1GqUFoRi8Q/GeWK7jiYJ+tTETTaJBmFzJrQPD2zkBk
- YtcbbnMrMWZyCNugvWw4nV/8zFvLS+EoKahvTxNhnyQLefnSRwOboY1pcKMSBgMUZDNf jw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 39jeg1g9ku-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 03 Jul 2021 09:49:50 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1639k4FV043061;
-        Sat, 3 Jul 2021 09:49:49 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
-        by aserp3020.oracle.com with ESMTP id 39jfq2vyaq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 03 Jul 2021 09:49:49 +0000
+        id S230226AbhGCMBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Jul 2021 08:01:03 -0400
+Received: from mail-eopbgr20072.outbound.protection.outlook.com ([40.107.2.72]:8275
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230196AbhGCMBC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Jul 2021 08:01:02 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f/VDZRNeu1zWTF5akNbMFXL/9TSAdS/e9+SuLcwi2A0aPGFU92DoL3kjpy0hIfCK2QUcHN1zt7/kcbswgg+x8ilOdVqg4lSiftk+lYLdGhNQBJ53q0Qx19ZwOG3iLAKMq2DOYMrdClxr/JB/jBmaVsFKDd8fddz8V6m4RDcX0pLkgQd/KKTrYQr0Z7HaOmqnOVQecyGrrHXmFV1Nn2d3Q/00oyphIyyE04l+FHN5ewogmF7LZLujbpeWEPhRXkFSuOmjgN2m0gIP64Dl/xEvVA1H7o2lK5kiePFS10qeW5OZ+TkoJX9kIpRuuaVCANti3hqCTGhV2zzkZO1XPQaH9Q==
+ b=EOu5s93/uyfGNnUWzoASdpPCMrQjKfVBWJgM9bmvDPUdG+8WisWp67g2F98zWVRXdzDK8+xefIHaJt1FngoorViKoZu0cjlySQuyCcrxAO9Vuje8y4l2FNeZZbD7qxNsmPZbhZQmVh12fnayxlqUz8iAraz6aVmzS7D4iKo9k+xwF2/w0jWlsreV/KmDn92oOGZhwzt7REuxSArHIkALhdRG8xdt5+eahm9o9cD00evFQ6eY85VWkzzXHfJ+LR86hBDqvaViEoPYIkWULG7BvDyUaFl3XGdi4nKTUmmcumAqhqucXZ9NtTfYEkWE2bj/7x4pmigwhtj+9jJj6OhHyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5kfS2EGXNPFBMlsgCSre09THnCJjwsWMakvRnmjKSwQ=;
- b=A3fBXhpNY0N1+jNSFxpJAbYSGEbox0hyGWb9ITukZvjAy5au+DvpzAqfJK81ngOQe0AlKP0MnF5KTFpb9wfSjROo2cyEOIQtSsCUgvs6idP5/e7AicWVgMKfTEvrBC7dN3Gf/2Gb0yb9Rc71x2Gnq81xIXAnjEqze1RfR8MIPdoHxH9tMN9aw/DL+CZbrT4HZE2pT7HQzEgdi9nVxp6SHPVV9wnA3EKB57jNRB1cNn4Yu9TPBg9efe2A25H2yhTOSuxGG+NDPwAYHAjqZE07WAQOfpYe2qK06m8mQ/Z1Sfzhjm12Oofr04W49iAMlJAcFSmMVYF23RUHvnNAeIntMw==
+ bh=59voxxYYPSGMxzZfLg+j2gbtEYV66sJBuRkSAM1xX9U=;
+ b=Kv9aXi1HA0Rduf+lbCTxRAsarZ69OOkJEoEWOMdILlzPfpj++2rdBw5Jsl5mb1a3JYhbU/K8E1135gNdk7p8qfteqRaIv64DaT4K60s8JkcBiKmKsdMQ8iEl6Sv2SaCmxols3ZNFw2Jo5fLBgIQm1wohXlQ1fCFViko+RYWoz7N0dlSzk5UMMF3ckA3h1PTFcKo+AHmRmXYzZduiGpnvdfO4pj+Uc75RhcJxFmC2fO7UOsceS/VTmGf4Jfh3ecxg3fugqie0Oq9N3aum+HGqnrRadkkjz1LHgLP6dvJHg9kHrFDgERhv2hk6GcahPZDGLEe63yWvo33dgPPM2x32vA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5kfS2EGXNPFBMlsgCSre09THnCJjwsWMakvRnmjKSwQ=;
- b=HnQWjGkvu4UcDEjE28dYJY06zVj9xU5DKzJg7k+JQnKH8IdQg8qjA2qNXpyQiGLANEx7jxYz3CPuaNhwhid7lTEIavv0Os4Ws95hg90/6uWeS9JHDfuVG2MZjjnzwXYfys9Dn5VyJSgGBQl6H6rosejtPfzwj/H4DRRhTSUPHGg=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=oracle.com;
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by MWHPR10MB1568.namprd10.prod.outlook.com
- (2603:10b6:300:26::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.27; Sat, 3 Jul
- 2021 09:49:47 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::3413:3c61:5067:ba73]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::3413:3c61:5067:ba73%5]) with mapi id 15.20.4287.030; Sat, 3 Jul 2021
- 09:49:47 +0000
-Date:   Sat, 3 Jul 2021 12:49:18 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Colin King <colin.king@canonical.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        kbuild-all@lists.01.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iavf: remove redundant null check on key
-Message-ID: <20210703092040.GX2040@kadam>
-References: <20210702112720.16006-1-colin.king@canonical.com>
- <202107030209.xwGHO2JN-lkp@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202107030209.xwGHO2JN-lkp@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Originating-IP: [102.222.70.252]
-X-ClientProxiedBy: JNAP275CA0037.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::7)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+ bh=59voxxYYPSGMxzZfLg+j2gbtEYV66sJBuRkSAM1xX9U=;
+ b=hMok4ZWmDp0/4MwXURELZjeu/urfwuIq3Wsdvi7khY2COpZez/wlx2Otev+5keob52HAR4dp25ZghISMj8yPyt3b94KKFVWWo4+VfJvaCGmouBhIMW6CbGuU49Ajm7SzY4fnjlAoXge8Im9IoAgInn+SUOJB2qHL5QMknUQJ8ao=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0401MB2509.eurprd04.prod.outlook.com (2603:10a6:800:56::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22; Sat, 3 Jul
+ 2021 11:58:26 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::b1a0:d654:a578:53ab]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::b1a0:d654:a578:53ab%7]) with mapi id 15.20.4287.031; Sat, 3 Jul 2021
+ 11:58:26 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        bridge@lists.linux-foundation.org,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: [RFC PATCH v2 net-next 00/10] Allow forwarding for the software bridge data path to be offloaded to capable devices
+Date:   Sat,  3 Jul 2021 14:56:55 +0300
+Message-Id: <20210703115705.1034112-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [188.26.224.68]
+X-ClientProxiedBy: PR3P189CA0081.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:102:b4::26) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kadam (102.222.70.252) by JNAP275CA0037.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend Transport; Sat, 3 Jul 2021 09:49:40 +0000
+Received: from localhost.localdomain (188.26.224.68) by PR3P189CA0081.EURP189.PROD.OUTLOOK.COM (2603:10a6:102:b4::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.23 via Frontend Transport; Sat, 3 Jul 2021 11:58:24 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8e3f4213-dfaa-4613-0b6d-08d93e07e49f
-X-MS-TrafficTypeDiagnostic: MWHPR10MB1568:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MWHPR10MB156851EFF19F361D8C8A41208E1E9@MWHPR10MB1568.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:534;
+X-MS-Office365-Filtering-Correlation-Id: 4ac096fb-eb19-4f20-9f43-08d93e19dd46
+X-MS-TrafficTypeDiagnostic: VI1PR0401MB2509:
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB25091B9D511F986F23DDA419E01E9@VI1PR0401MB2509.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Se7n3l9kyXiRxGxO7FsL0kYxqq3QId9krR3sFwD0VUTE3ousu6aclvjLsy8HWJ1Z/G6MYvlXkZgyMEZQaxm6VsjvovGXJIupDKlYaWm9Ez+EiiNqTH/ljz6W4kYWM0wxMrj+knlxQZIsASZcLKTA0cdT31aGN4cqHiZQQyIYHSSvW6CMmzlnNB9GsnTQYTuzL42yQmUjFF9aOiecgGnxUqGtXSCMkFODjhXb3IXt8+2h7TGAr+/+27rOdJoaB8t7xGpiEGExqkxvZk22IcidwL1hv0kx8GQ5HbU7Aq1mzZ5/gWHa2MWhR7vcBi3/DnHx1eloiVvBwVAM1w3aEktWegWJSKzLHMUdIQWIp2ydk4Su2UOflc1Hk3Akj6t9j0bOxVaX5qxxQBUSNbJTIrhlB0M4BvaqjrLEURP/1qpmwZlgSUjMzzcOF1mf3kCBPtyIFQMY6FmfWUjvu6CN58aPz2B+HyTedyjcVWKWK/dSv7LUy9JXnyEfxmLGQTIYlX7m33dSxMpmKdXbjCmkrXNzrurAgy3QrHpuoBYnM58Nn6Qt80685EoPJq4jLyH7rksIob/FHA/3Pj5ejiSgHWVpVCd8L3lVtWUclK8muUKwzP/Bpk7cIOPSOrMLaajR7n6orTrWXAhM2SF2Q+0mZaFF/tS+jTK/7L2+8asGil1PazUSmR3IZQM1xvZU/TWAkVDp0mfKXiGLfDtQnfyvz5CVDw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(396003)(136003)(366004)(376002)(346002)(478600001)(7416002)(186003)(66946007)(83380400001)(4326008)(1076003)(33656002)(9686003)(9576002)(33716001)(26005)(66476007)(66556008)(8676002)(54906003)(6496006)(6666004)(55016002)(316002)(52116002)(38100700002)(38350700002)(2906002)(16526019)(4001150100001)(5660300002)(8936002)(6916009)(956004)(86362001)(44832011);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: owqH+y5sbmpS6AHFb/cTRrE5rlEz+APMVHQeC4MGaV9/vW9OoTvO1kcOQAeKjNf6uICOBjppr28HOhL4lkwG2BkLtCU91GCI8AhzwNVn+aSSMwVAEJzPXp98/Pgf5tZdkzXTGyDPXfl/LNvndz/zr163aayEHtPO9fIEn76pEXp0madVsGyc6zPDb6xkSmyg34Nxcxbc6b+ZZjKZC5jXdNaEB/22+V1fCzuW8b9AU4N6FzEkD2mD+5qUdtQv7soxx0D2wL4+qGNbzJwEHoiPjHkrL8JDZPYfx96XI5ISBp+386EFBaYnR6d8HfzY1sQ54NFb238HiVQtLq4NTrnTn5aYYelmzluLJpoVgMhQa+KYJTt1MfoqNWIQpQV0Os+J2NdGp4PYwLssRfEI1sSAaQWN6iixMGVcVNOX4+JdnMwBwxKs5ZaP/LrSCTEoKwRyYgsTzFxJSvCW6ZswFbiJ9KHJOBu1f7OeFK49ZDWIUY7uk7lM36Dv8Q8xbbXF7bbRUpXTnp1YP1qmDsOVhIWVPxuookC2ARMWpc/i1H2UoJ1dCAShr2KvOUzf4Wh8jirFKwbagWphGRzNrrzuSyePYS6W5iEOPJHeG/rtLj7Qsd5fXS6CidfEyg5m+X7KCXiaVktlACWxztYDCPIgaYUOZXNEyk+B5IgYBWNVURMi9Gs1B/boaGJ8btPogfAa4SfwHqSSZWG8wlT1tlkFQqTRR0cc9Rvdi+LCqKySgvypP6coBJxwvVRTQIzsgdYW2vNB58bYbMSmGQXP+cBOiJzObSdSAyOjt5N2Dg4grEapd+H9jESdjRv69tifOPyQHVpt
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(366004)(346002)(136003)(39850400004)(6506007)(2906002)(966005)(4326008)(36756003)(2616005)(44832011)(956004)(6666004)(478600001)(7416002)(5660300002)(110136005)(66946007)(26005)(52116002)(1076003)(8676002)(8936002)(316002)(54906003)(66476007)(66556008)(6486002)(38100700002)(16526019)(38350700002)(186003)(66574015)(83380400001)(86362001)(6512007)(69590400013);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EeelIUiTXAuIzCW5z03SGzSUvsqQ8McBcfQV9f8AynQlwX5cBvGDAVfsECe6?=
- =?us-ascii?Q?HOUifd96viK1B1i49GMN8iZjeX77fV0YvDkYtZW+0NtdEvOCAepNLoie78Sn?=
- =?us-ascii?Q?WN3rM1bnOY9QX1zi1auN3GgC3qYTd7USdx8DNwv/ScI/hd2Fed4KkJoNQhHn?=
- =?us-ascii?Q?Cz8iS2MHk+e8Av1XtxK1iDh2LHd6w+XvSINwiZqwIfO7ZTgen6j9boVVJyRi?=
- =?us-ascii?Q?kvHAFmOYn9f9jkCOjCDKP+hI4BMVpW5wEeDVAMq60o7VcoJDHpGLehxFSth0?=
- =?us-ascii?Q?a6z3/iGZr16bx7hSN+enZ0w7r3ZlxeRnpEL0foQdjgZhdrpxn7WteRDqY1pm?=
- =?us-ascii?Q?+UR5nrJDPFGnLzoHqj4EzFawUAPbtz8gJNMPYI7T0khclKeBMbtZY/I0mhSS?=
- =?us-ascii?Q?f5Y02xXmjmsBL7g+nVto/fsGvCB7QAjWV0t/hh5HIf0aQHR0p9OQRyUCVmtP?=
- =?us-ascii?Q?W/abmuxsAh8RFQ3fivKjLNAPIiibDz0K8ky1m2mRgafD/5xxYRL+/yhPEf3B?=
- =?us-ascii?Q?h0k4WYwdT6wcKEh8/42KAs+A2phCOTVjSqawlc6Aj4xQHYHPsdGvKT2w06lO?=
- =?us-ascii?Q?W8Yz0ve0ukzQV7sATglaUE7fZeq5nlF/tOPXjFkV9/5/CVq/O4Pvu7rWibKc?=
- =?us-ascii?Q?gpO89OJFd0Jwsk+ELpAEjAdaXFONGvKl2Vx6iEvOq+D+cUOdrl3Grs0cId02?=
- =?us-ascii?Q?JtTN3P+IWBf/OY1BKpcebh4fvtcOYGXfK8lkYUajvgcS0cT2glVAUysV6PNL?=
- =?us-ascii?Q?aGA+Eb4eSLyBptgldeuDn0bEo7W619+fennfwkXjniGq+JUdzIxeQPGG2gi7?=
- =?us-ascii?Q?pSUIlKTuHORkrwiRJ1OExQ7M6avAKfrtfSe+Vh5H2u87bkAT+P7Opm8k020C?=
- =?us-ascii?Q?AzJk7xJaHA5lddPmGgpfP2w7RWQjlWOnmAsDwCy75lksDg1laWaqKFTSCu+v?=
- =?us-ascii?Q?mH99swXBkZSSW3k1mmJGXRFCjndqaTqvU/K1xxY7zGN9UcmKQB05qCAfrxy3?=
- =?us-ascii?Q?2Y+2lRDehX8hKj2tsWw+8VR7CSzd1reRg1SydbTTiZ3o5IVKC+y+qWHy/gmZ?=
- =?us-ascii?Q?89WgNjn47/Vr9lDps9Zo56HbAhnpXc9kIjhm8a87VBXXxDlHoan9C6xQ2pLn?=
- =?us-ascii?Q?XpuAo91d0fOuxHS7o2AqOmMZ8pW0oLNvZAkuCQrBK5pNkgi0gvsJSp7HK7ZL?=
- =?us-ascii?Q?M3BuM5lf0yoRW4DDD6Yu2BQwrbkPHKGGbLpeCRUo9Iq+02FXoExPs5QUiUyM?=
- =?us-ascii?Q?7VqHjizuFAlKeo7JZOU6Qb4W+Ab3v33ieZgLLYktptO9sDPKQiUYfKcsvFkm?=
- =?us-ascii?Q?X5gGIN89kjG8I7o5B6Nx5PeH?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e3f4213-dfaa-4613-0b6d-08d93e07e49f
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y4xSUeypW7xXewZhyWWZ7Lgq6uf5N0/IutfN40TVcol27NBSyHQk2u6nIRZj?=
+ =?us-ascii?Q?LyV09eqDLNtDNBNKrB5BuYf9C3DeDSuGC0B+Y7yx6+JeD0r6bmNgxR/t6ij4?=
+ =?us-ascii?Q?5sQpxLoEv/H9PxGjWsywYHJKlFL3qx+0jnG+epDi2VfH1QwOBTDu8ZiJ1Z9R?=
+ =?us-ascii?Q?3m94ifEYg3QEkRFyP8GBcm0OrMlx+/EdOYx6uWJ/dj3mCWO8KU8Fduz9c4cy?=
+ =?us-ascii?Q?kr5z0nyrJPXzqZLDMsnuwgbMqAg7fCQmJaN+jBMLCQIVs2w95hbrRTN8tDIX?=
+ =?us-ascii?Q?+kuzTHPyWNZs0eMagxrN59DcXW3+eN8NCinxzGgYQNatqcSnhb3a9hIhNOOc?=
+ =?us-ascii?Q?P7M7e2dejA5pxdvFwKIlzB7mQwSL+zM/G6VR2IKkfTy4f8Y9uS5xV5NO/tGf?=
+ =?us-ascii?Q?/UXj1jSuberR3zygdLNP9tP9JfqF2Vq+B2gGBjAHPqdndZwAYZQhQuIkL4eC?=
+ =?us-ascii?Q?mMgKTw+3umt9F7jB0tremvZONGTz5rfLmh0GfM8tvfJELVAVTl4yzUE5tul4?=
+ =?us-ascii?Q?zsKTN5QwWIiITRYzqxHP2pH0r/zeMklhuShB0EzKHoxxUL5r7w+S0H74j5xY?=
+ =?us-ascii?Q?vVxNOgT76OYq8OH4eJ1G05rdGILIxk4A0WbxiEbKjyZbY+aZg9WyRB1pxUa9?=
+ =?us-ascii?Q?mBDXGhCn+qstQdktzKO+nrvpUNAB3B2I2ElFquoR6qF4XWyYH0/fO7Njlwiw?=
+ =?us-ascii?Q?f8WHp+woz8P1iTM/p80dkYz79viZwzomq+Ghf/UBgHUWxOYdD1soXLWEi845?=
+ =?us-ascii?Q?zDv/IPqJ6NteMI0FuOD8W/y/o4CQgxP5XQ/nENZ3l1arI50HkLNTpp00oNke?=
+ =?us-ascii?Q?BxKcHefHoqfs6g5sTz8CZoLXAKuJTnjEUtVCopqErJWnDFEFx9vra8Rlq+76?=
+ =?us-ascii?Q?S/rq5CFVx650rYvoSlhbxIz6TmqzNWPrkMpBaCrBnKOYUoye2hCSepOTMvWa?=
+ =?us-ascii?Q?IR7dU3iYTTHGkTY/HdQ1SLyb0iQccCDP2JUb/7IMK3sL8Gg7kOwnUf6Ug1uE?=
+ =?us-ascii?Q?/AXpPbV5LgD+cBVr8NCzJnoOgmplCd08NOkhmCBgWmavMut7Uva86AwbSSo0?=
+ =?us-ascii?Q?XJxIHZHIWJVuovbtk3Rkzx3wwnLsAl0P3Tc5mL27sW2xRxdEMbjaa4q+x5MB?=
+ =?us-ascii?Q?7unPra7nfnD/yd5AX9R54f35Eari4qGJlOnPCeWU9/WESd7NY4b52Dcoyplh?=
+ =?us-ascii?Q?/bChn0+M66EbnAhEnFIYgWe5+5pEePNekghf87etGUrY9SJz82JlK/O0vV+Z?=
+ =?us-ascii?Q?//+7JR38JQCPviW7Q0dxEgOw4s6om2tTe9MlzHshdbHGjl+Cj7DF3/FU5IUf?=
+ =?us-ascii?Q?Hcg+He83/vb+XaGTDgiBxMmr?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ac096fb-eb19-4f20-9f43-08d93e19dd46
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2021 09:49:47.3795
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2021 11:58:26.0901
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s0eJp1wgOsZD3j8lyqrFxAmM5af15jSGZbdmLyhWftzxxX0LWUYlgFbmhRlXYPEF2M1SE6WpylXFNTH7yGl6akl3UBIZUpWNdB9sMVw+HSE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1568
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10033 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0 phishscore=0
- mlxscore=0 bulkscore=0 malwarescore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2107030060
-X-Proofpoint-GUID: xT7QdpRBXMKJmHTB0Xom3jBLIc_aAjLc
-X-Proofpoint-ORIG-GUID: xT7QdpRBXMKJmHTB0Xom3jBLIc_aAjLc
+X-MS-Exchange-CrossTenant-UserPrincipalName: s31b8jHxFddS6c+otvG6x5MMWcQXSy2a4bZQiF7wpj8LQ68ZGh7C64uP5lo1vem+0FDb/Qy99ogieuDXwwxLdw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2509
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 03, 2021 at 02:43:46AM +0800, kernel test robot wrote:
-> 129cf89e585676 drivers/net/ethernet/intel/iavf/i40evf_ethtool.c   Jesse Brandeburg 2018-09-14  1899  static int iavf_set_rxfh(struct net_device *netdev, const u32 *indir,
-> 892311f66f2411 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Eyal Perry       2014-12-02  1900  			 const u8 *key, const u8 hfunc)
-> 4e9dc31f696ae8 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Mitch A Williams 2014-04-01  1901  {
-> 129cf89e585676 drivers/net/ethernet/intel/iavf/i40evf_ethtool.c   Jesse Brandeburg 2018-09-14  1902  	struct iavf_adapter *adapter = netdev_priv(netdev);
-> 2c86ac3c70794f drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Helin Zhang      2015-10-27  1903  	u16 i;
-> 4e9dc31f696ae8 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Mitch A Williams 2014-04-01  1904  
-> 892311f66f2411 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Eyal Perry       2014-12-02  1905  	/* We do not allow change in unsupported parameters */
-> 892311f66f2411 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Eyal Perry       2014-12-02  1906  	if (key ||
-> 892311f66f2411 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Eyal Perry       2014-12-02  1907  	    (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP))
-> 892311f66f2411 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Eyal Perry       2014-12-02  1908  		return -EOPNOTSUPP;
-> 892311f66f2411 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Eyal Perry       2014-12-02  1909  	if (!indir)
-> 892311f66f2411 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Eyal Perry       2014-12-02  1910  		return 0;
-> 892311f66f2411 drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Eyal Perry       2014-12-02  1911  
-> 43a3d9ba34c9ca drivers/net/ethernet/intel/i40evf/i40evf_ethtool.c Mitch Williams   2016-04-12 @1912  	memcpy(adapter->rss_key, key, adapter->rss_key_size);
+For this series I have taken Tobias' work from here:
+https://patchwork.kernel.org/project/netdevbpf/cover/20210426170411.1789186-1-tobias@waldekranz.com/
+and made the following changes:
+- I collected and integrated (hopefully all of) Nikolay's, Ido's and my
+  feedback on the bridge driver changes. Otherwise, the structure of the
+  bridge changes is pretty much the same as Tobias left it.
+- I basically rewrote the DSA infrastructure for the data plane
+  forwarding offload, based on the commonalities with another switch
+  driver for which I implemented this feature (not submitted here)
+- I adapted mv88e6xxx to use the new infrastructure, hopefully it still
+  works but I didn't test that
 
-Heh...  There have been a bunch of patches modifying the behavior if
-"key" is non-NULL and no one noticed that it's actually impossible.
+The data plane of the software bridge can be partially offloaded to
+switchdev, in the sense that we can trust the accelerator to:
+(a) look up its FDB (which is more or less in sync with the software
+    bridge FDB) for selecting the destination ports for a packet
+(b) replicate the frame in hardware in case it's a multicast/broadcast,
+    instead of the software bridge having to clone it and send the
+    clones to each net device one at a time. This reduces the bandwidth
+    needed between the CPU and the accelerator, as well as the CPU time
+    spent.
 
-:P
+The data path forwarding offload is managed per "hardware domain" - a
+generalization of the "offload_fwd_mark" concept which is being
+introduced in this series. Every packet is delivered only once to each
+hardware domain.
 
-regards,
-dan carpenter
+In addition, Tobias said in the original cover letter:
+
+====================
+## Overview
+
+   vlan1   vlan2
+       \   /
+   .-----------.
+   |    br0    |
+   '-----------'
+   /   /   \   \
+swp0 swp1 swp2 eth0
+  :   :   :
+  (hwdom 1)
+
+Up to this point, switchdevs have been trusted with offloading
+forwarding between bridge ports, e.g. forwarding a unicast from swp0
+to swp1 or flooding a broadcast from swp2 to swp1 and swp0. This
+series extends forward offloading to include some new classes of
+traffic:
+
+- Locally originating flows, i.e. packets that ingress on br0 that are
+  to be forwarded to one or several of the ports swp{0,1,2}. Notably
+  this also includes routed flows, e.g. a packet ingressing swp0 on
+  VLAN 1 which is then routed over to VLAN 2 by the CPU and then
+  forwarded to swp1 is "locally originating" from br0's point of view.
+
+- Flows originating from "foreign" interfaces, i.e. an interface that
+  is not offloaded by a particular switchdev instance. This includes
+  ports belonging to other switchdev instances. A typical example
+  would be flows from eth0 towards swp{0,1,2}.
+
+The bridge still looks up its FDB/MDB as usual and then notifies the
+switchdev driver that a particular skb should be offloaded if it
+matches one of the classes above. It does so by using the _accel
+version of dev_queue_xmit, supplying its own netdev as the
+"subordinate" device. The driver can react to the presence of the
+subordinate in its .ndo_select_queue in what ever way it needs to make
+sure to forward the skb in much the same way that it would for packets
+ingressing on regular ports.
+
+Hardware domains to which a particular skb has been forwarded are
+recorded so that duplicates are avoided.
+
+The main performance benefit is thus seen on multicast flows. Imagine
+for example that:
+
+- An IP camera is connected to swp0 (VLAN 1)
+
+- The CPU is acting as a multicast router, routing the group from VLAN
+  1 to VLAN 2.
+
+- There are subscribers for the group in question behind both swp1 and
+  swp2 (VLAN 2).
+
+With this offloading in place, the bridge need only send a single skb
+to the driver, which will send it to the hardware marked in such a way
+that the switch will perform the multicast replication according to
+the MDB configuration. Naturally, the number of saved skb_clones
+increase linearly with the number of subscribed ports.
+
+As an extra benefit, on mv88e6xxx, this also allows the switch to
+perform source address learning on these flows, which avoids having to
+sync dynamic FDB entries over slow configuration interfaces like MDIO
+to avoid flows directed towards the CPU being flooded as unknown
+unicast by the switch.
+
+
+## RFC
+
+- In general, what do you think about this idea?
+
+- hwdom. What do you think about this terminology? Personally I feel
+  that we had too many things called offload_fwd_mark, and that as the
+  use of the bridge internal ID (nbp->offload_fwd_mark) expands, it
+  might be useful to have a separate term for it.
+
+- .dfwd_{add,del}_station. Am I stretching this abstraction too far,
+  and if so do you have any suggestion/preference on how to signal the
+  offloading from the bridge down to the switchdev driver?
+
+- The way that flooding is implemented in br_forward.c (lazily cloning
+  skbs) means that you have to mark the forwarding as completed very
+  early (right after should_deliver in maybe_deliver) in order to
+  avoid duplicates. Is there some way to move this decision point to a
+  later stage that I am missing?
+
+- BR_MULTICAST_TO_UNICAST. Right now, I expect that this series is not
+  compatible with unicast-to-multicast being used on a port. Then
+  again, I think that this would also be broken for regular switchdev
+  bridge offloading as this flag is not offloaded to the switchdev
+  port, so there is no way for the driver to refuse it. Any ideas on
+  how to handle this?
+
+
+## mv88e6xxx Specifics
+
+Since we are now only receiving a single skb for both unicast and
+multicast flows, we can tag the packets with the FORWARD command
+instead of FROM_CPU. The swich(es) will then forward the packet in
+accordance with its ATU, VTU, STU, and PVT configuration - just like
+for packets ingressing on user ports.
+
+Crucially, FROM_CPU is still used for:
+
+- Ports in standalone mode.
+
+- Flows that are trapped to the CPU and software-forwarded by a
+  bridge. Note that these flows match neither of the classes discussed
+  in the overview.
+
+- Packets that are sent directly to a port netdev without going
+  through the bridge, e.g. lldpd sending out PDU via an AF_PACKET
+  socket.
+
+We thus have a pretty clean separation where the data plane uses
+FORWARDs and the control plane uses TO_/FROM_CPU.
+
+The barrier between different bridges is enforced by port based VLANs
+on mv88e6xxx, which in essence is a mapping from a source device/port
+pair to an allowed set of egress ports. In order to have a FORWARD
+frame (which carries a _source_ device/port) correctly mapped by the
+PVT, we must use a unique pair for each bridge.
+
+Fortunately, there is typically lots of unused address space in most
+switch trees. When was the last time you saw an mv88e6xxx product
+using more than 4 chips? Even if you found one with 16 (!) devices,
+you would still have room to allocate 16*16 virtual ports to software
+bridges.
+
+Therefore, the mv88e6xxx driver will allocate a virtual device/port
+pair to each bridge that it offloads. All members of the same bridge
+are then configured to allow packets from this virtual port in their
+PVTs.
+====================
+
+Tobias Waldekranz (5):
+  net: dfwd: constrain existing users to macvlan subordinates
+  net: bridge: disambiguate offload_fwd_mark
+  net: bridge: switchdev: recycle unused hwdoms
+  net: bridge: switchdev: allow the data plane forwarding to be
+    offloaded
+  net: dsa: tag_dsa: offload the bridge forwarding process
+
+Vladimir Oltean (5):
+  net: extract helpers for binding a subordinate device to TX queues
+  net: allow ndo_select_queue to go beyond dev->num_real_tx_queues
+  net: dsa: track the number of switches in a tree
+  net: dsa: add support for bridge forwarding offload
+  net: dsa: mv88e6xxx: map virtual bridges with forwarding offload in
+    the PVT
+
+ drivers/net/dsa/mv88e6xxx/chip.c              | 106 +++++++++++-
+ .../net/ethernet/intel/fm10k/fm10k_netdev.c   |   3 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |   3 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   3 +
+ include/linux/if_bridge.h                     |   1 +
+ include/linux/netdevice.h                     |  13 +-
+ include/net/dsa.h                             |  37 ++++
+ net/bridge/br_forward.c                       |  18 +-
+ net/bridge/br_if.c                            |   4 +-
+ net/bridge/br_private.h                       |  49 +++++-
+ net/bridge/br_switchdev.c                     | 163 +++++++++++++++---
+ net/bridge/br_vlan.c                          |  10 +-
+ net/core/dev.c                                |  31 +++-
+ net/dsa/dsa2.c                                |   3 +
+ net/dsa/dsa_priv.h                            |  28 +++
+ net/dsa/port.c                                |  35 ++++
+ net/dsa/slave.c                               | 134 +++++++++++++-
+ net/dsa/switch.c                              |  58 +++++++
+ net/dsa/tag_dsa.c                             |  60 ++++++-
+ 19 files changed, 700 insertions(+), 59 deletions(-)
+
+-- 
+2.25.1
 
