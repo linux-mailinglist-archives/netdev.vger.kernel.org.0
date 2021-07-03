@@ -2,114 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 187B33BA798
-	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 08:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AF623BA7BC
+	for <lists+netdev@lfdr.de>; Sat,  3 Jul 2021 10:12:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbhGCGtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Jul 2021 02:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57926 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbhGCGtM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Jul 2021 02:49:12 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19319C061762
-        for <netdev@vger.kernel.org>; Fri,  2 Jul 2021 23:46:38 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id x21-20020a17090aa395b029016e25313bfcso7736532pjp.2
-        for <netdev@vger.kernel.org>; Fri, 02 Jul 2021 23:46:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lpOTqypZyxtIpHFRzx4qIPmrE1PnUqrG1SNhRQLuIOs=;
-        b=NXO1PppLTgIRN/vXBnF9ON/SGdrjRVgvxOzMvl2gXa3cGJKF4ieiJ2ATtkGI6/Wetd
-         x2wtRqb9mBiB/UG8DCKr9ejg4EjN/HauH3w5PWXO7meiQEkzTa4ZxKzGagdtb9HunVDF
-         Kbd6Eu8Ch6kmnFtXtKu2FJ6S6ocSiNHhpKmRp3HjnJlO2f6JgSIvaKPS/nyXHBEsY271
-         6CoPU1t6U+rwVJZCYjpF9Z0oKXfLUkt4hz9t7DwttTtIbC02ZqVTylAxJoY5b5lOrDsE
-         XmwWLXYHT75XqzOMg0YZb21AzvII9hVKdLHA1njsF/gJzTLFIX/zuTVEPTVbnmPaRq0J
-         8THQ==
+        id S229993AbhGCIO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Jul 2021 04:14:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45117 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229823AbhGCIO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Jul 2021 04:14:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625299913;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KNgXYIOgFk3/50sq9zIL4S0YcLBbQBv9LP1nNZa2JAA=;
+        b=Is/0ClB5ELfAofWQMDsaxB3Kb/nK36FlRH+ZEQksYtN1iYzZEhCa91txECZEvXPM/BYrgC
+        77wawFIYhKYRuu9/tFxSCaIW69s+HvY1Q4KSQco49rFgyXD1HljYwNbw9jhnMGkauVjN08
+        s5RuufRHWPytaeGyAD4/TG58VzTWu2w=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-410-zmH32ntfN1S4nIk0uh7aKg-1; Sat, 03 Jul 2021 04:11:51 -0400
+X-MC-Unique: zmH32ntfN1S4nIk0uh7aKg-1
+Received: by mail-wr1-f72.google.com with SMTP id g4-20020a5d64e40000b029012469ad3be8so4489828wri.1
+        for <netdev@vger.kernel.org>; Sat, 03 Jul 2021 01:11:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lpOTqypZyxtIpHFRzx4qIPmrE1PnUqrG1SNhRQLuIOs=;
-        b=GihYwMoI8pexzEdERPxndV9Aey8YkRZN/0NdeJDZq1OMDiChKYKQkDsBneaxxbqQWh
-         hpLfurLXKSLvMFtiYX0Cry2JIPyKKu3dI5P3aAztn3BM6n0d/hu24v5S8N06fGMZYiYh
-         S7+0m4vpEBFJTh8r99YHCk93AzVLjoyCzXyM2S3dZKlRRAKfHNwyQcL9MzfyDJKIyYKV
-         bWfZ2u3yU+gH4gQVAwS3jfRiE+5o50iFpsq4Mru+XjXhd6N8JtDlaKv2W7lYJ3ijC8dT
-         QBwSJFbCx87bUd/G9zHWKbd2797P3hsUZjcS79FXs0xA8alGbMNpzxoXPjslc4HMmlry
-         t/1w==
-X-Gm-Message-State: AOAM5301HVnAaKOga4knEAFkN8fk2Mz1I8g4EFO4vHkRF+toWFFftrQo
-        e8sqVISJBaYgAZnv0fWJzPI=
-X-Google-Smtp-Source: ABdhPJzvq7xn4q8Tjty232pOch0TdcjZ+0SGc5vlLRCkdG716EDHjVjS2DXjK0YL1OkgcH5ZMO9frg==
-X-Received: by 2002:a17:90a:4417:: with SMTP id s23mr3324624pjg.228.1625294797568;
-        Fri, 02 Jul 2021 23:46:37 -0700 (PDT)
-Received: from [172.30.1.44] ([211.250.74.184])
-        by smtp.gmail.com with ESMTPSA id 18sm14348043pje.22.2021.07.02.23.46.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Jul 2021 23:46:37 -0700 (PDT)
-Subject: Re: [PATCH net 6/8] bonding: disallow setting nested bonding + ipsec
- offload
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, vfalico@gmail.com,
-        andy@greyhouse.net, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, jarod@redhat.com,
-        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-References: <20210702142648.7677-1-ap420073@gmail.com>
- <20210702142648.7677-7-ap420073@gmail.com> <14516.1625261184@famine>
-From:   Taehee Yoo <ap420073@gmail.com>
-Message-ID: <f6f99418-fc81-6ddb-2a44-1b3d02179730@gmail.com>
-Date:   Sat, 3 Jul 2021 15:46:33 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=KNgXYIOgFk3/50sq9zIL4S0YcLBbQBv9LP1nNZa2JAA=;
+        b=d998fdY5l7Cn8XneduRHxQii7ohnE9QVpc7ighlqY2n7PrOzs/Ln3kjwGdWOxkpykJ
+         soLou/HNX0lDTivb+gn/sgmi9SAviYQkEYSu39qk5FzufisKbI2U4yddQ9F5J0yhHI3R
+         emiB9/+JOkXDGS9gcxTCwjgeaq3ndxBBscTlNo1qhFb6IaF9o00n6Zdtfd2T6EEoV7pm
+         UM+5LIAS/nnPLvvukpYshW6YxC4DDUyHmnmnok2IbStVJfxjqfrn2ffooaLMFUk3oX3i
+         FRsuuZOE/Rt1UY7wNQMWiNHliYly+Rnu2/9KrQNdUk54oR15q18JFcw3DvP/iLdqG7Qs
+         KukQ==
+X-Gm-Message-State: AOAM531wT6wlOkFlpB5mvSvbaf8YVGqGqBcAYpmWNFQ/dwsp1bCY4uwU
+        li+t7wWU4Z78Urkq89r2XyvijfHVedEAa4abEyJHcn7TCtE8+qNl3oZaHVNZrbRTc3EtEdNqhl9
+        wJ2JLMWEQqrAo43vA
+X-Received: by 2002:a05:600c:296:: with SMTP id 22mr3824990wmk.17.1625299910480;
+        Sat, 03 Jul 2021 01:11:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwK/iU/CBYEp+7S7mKEGeGippXEk01Zz5EGl2SiAx3okylS3s7KpViTuEX44OaCNPVpb3WcZg==
+X-Received: by 2002:a05:600c:296:: with SMTP id 22mr3824967wmk.17.1625299910246;
+        Sat, 03 Jul 2021 01:11:50 -0700 (PDT)
+Received: from redhat.com ([2.55.4.39])
+        by smtp.gmail.com with ESMTPSA id j37sm2822258wms.37.2021.07.03.01.11.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Jul 2021 01:11:48 -0700 (PDT)
+Date:   Sat, 3 Jul 2021 04:11:45 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Gautam Dawar <gdawar.xilinx@gmail.com>, martinh@xilinx.com,
+        hanand@xilinx.com, gdawar@xilinx.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost-vdpa: log warning message if vhost_vdpa_remove
+ gets blocked
+Message-ID: <20210703041124-mutt-send-email-mst@kernel.org>
+References: <20210606132909.177640-1-gdawar.xilinx@gmail.com>
+ <aa866c72-c3d9-9022-aa5b-b5a9fc9e946a@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <14516.1625261184@famine>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aa866c72-c3d9-9022-aa5b-b5a9fc9e946a@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/3/21 6:26 AM, Jay Vosburgh wrote:
- > Taehee Yoo <ap420073@gmail.com> wrote:
- >
- > [...]
- >> @@ -479,8 +481,9 @@ static bool bond_ipsec_offload_ok(struct sk_buff 
-*skb, struct xfrm_state *xs)
- >> 	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
- >> 		return true;
- >
- > 	Not a question about this patch, but isn't the "return true"
- > above incorrect (i.e., should return false)?  I understand that the
- > ipsec offload is only available for active-backup mode, but the test
- > above will return true for all modes other than active-backup.
- >
+On Tue, Jun 15, 2021 at 10:33:22PM +0800, Jason Wang wrote:
+> 
+> 在 2021/6/6 下午9:29, Gautam Dawar 写道:
+> > From: Gautam Dawar <gdawar@xilinx.com>
+> > 
+> > If some module invokes vdpa_device_unregister (usually in the module
+> > unload function) when the userspace app (eg. QEMU) which had opened
+> > the vhost-vdpa character device is still running, vhost_vdpa_remove()
+> > function will block indefinitely in call to wait_for_completion().
+> > 
+> > This causes the vdpa_device_unregister caller to hang and with a
+> > usual side-effect of rmmod command not returning when this call
+> > is in the module_exit function.
+> > 
+> > This patch converts the wait_for_completion call to its timeout based
+> > counterpart (wait_for_completion_timeout) and also adds a warning
+> > message to alert the user/administrator about this hang situation.
+> > 
+> > To eventually fix this problem, a mechanism will be required to let
+> > vhost-vdpa module inform the userspace of this situation and
+> > userspace will close the descriptor of vhost-vdpa char device.
+> > This will enable vhost-vdpa to continue with graceful clean-up.
+> > 
+> > Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+> > ---
+> >   drivers/vhost/vdpa.c | 6 +++++-
+> >   1 file changed, 5 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > index bfa4c6ef554e..572b64d09b06 100644
+> > --- a/drivers/vhost/vdpa.c
+> > +++ b/drivers/vhost/vdpa.c
+> > @@ -1091,7 +1091,11 @@ static void vhost_vdpa_remove(struct vdpa_device *vdpa)
+> >   		opened = atomic_cmpxchg(&v->opened, 0, 1);
+> >   		if (!opened)
+> >   			break;
+> > -		wait_for_completion(&v->completion);
+> > +		wait_for_completion_timeout(&v->completion,
+> > +					    msecs_to_jiffies(1000));
+> > +		dev_warn_ratelimited(&v->dev,
+> > +				     "%s waiting for /dev/%s to be closed\n",
+> > +				     __func__, dev_name(&v->dev));
 
-I really agree with you.
-I tried to test it but I couldn't because my NIC isn't working TX side 
-ipsec offload(ixgbevf).
-(dev->ndo_dev_offload_okf() is called in only tx side.)
-So, I didn't include that change.
+Can fill up the kernel log in this case ... dev_warn_once seems more
+appropriate.
 
-Thanks a lot,
-Taehee
+> >   	} while (1);
+> >   	put_device(&v->dev);
+> 
+> 
+> Acked-by: Jason Wang <jasowang@redhat.com>
+> 
 
- > 	-J
- >
- >> -	if (!(slave_dev->xfrmdev_ops
- >> -	      && slave_dev->xfrmdev_ops->xdo_dev_offload_ok)) {
- >> +	if (!slave_dev->xfrmdev_ops ||
- >> +	    !slave_dev->xfrmdev_ops->xdo_dev_offload_ok ||
- >> +	    netif_is_bond_master(slave_dev)) {
- >> 		slave_warn(bond_dev, slave_dev, "%s: no slave 
-xdo_dev_offload_ok\n", __func__);
- >> 		return false;
- >> 	}
- >> --
- >> 2.17.1
- >>
- >
- > ---
- > 	-Jay Vosburgh, jay.vosburgh@canonical.com
- >
