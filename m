@@ -2,105 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 981F73BAEA2
-	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 21:53:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E453BAEA4
+	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 22:00:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbhGDT4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Jul 2021 15:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbhGDT4a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 15:56:30 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE80C061574;
-        Sun,  4 Jul 2021 12:53:53 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id h1-20020a17090a3d01b0290172d33bb8bcso921129pjc.0;
-        Sun, 04 Jul 2021 12:53:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sKEQiSSfLXdLhV4kE48qS2B58wxDqK9svhuMqm9hVhg=;
-        b=LLDFTd57J2KFVVhaJUWqowH+lbs+Cll4BU0REzKX7kp9azxgnHZJMaNugdeN94hYne
-         EdDt0WyS0ond/ZNmxCAmNNkSJnc77RNf5kFoZRe+h9X8mpEKtYpv1FEiajNjclGfCeS/
-         kVvzTc4en+ayuUKFvB0FyPnPVFop0bkFwfwisnMIl9gAqVx1kPpKlLyb+tMxapadh9o3
-         83NurNqpytJNJDXWYSzRMlcjho7fGZXH84vSwUGwXM7/xnfin0DgwAG8AkGSEOccuSUq
-         9plpXFu/CzZGFxv1/5quByFtXasPY1bJgkATIL4u6LewBWN/LhtD7B7MnSNcJsJST2/S
-         nPRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sKEQiSSfLXdLhV4kE48qS2B58wxDqK9svhuMqm9hVhg=;
-        b=KMbxAUUjWwcg2IWsoZGvODICo0vsorTQqkcnzPRSlg7qumwfsCwcTWePvw8YN6uJ+G
-         DYkKgb9U2EwA6kFzljVDbNR02uDVQe4oy7wBWyWaKH+e0cDoM7HddRBvdBvGNm921/ZZ
-         6KxRsIrN9upZxZTCRlTgqg4hU9mOqYYVPLLT3eL02JiDjk2sUU8wWBVCWICGJEG2t5pR
-         w4AfyoalhB/bzqcFb7F0Gqr9Jq14pb9/l2sK3SzEWAzRqcZIaiNGxuJqB3qNM29r7Ek+
-         0sSmg5qAqKuMoN2kkDWowxZw1jPzejsdejAw2xoJ5GpXHaodfm3BmqJV7DaaXtz+qMXS
-         zwEg==
-X-Gm-Message-State: AOAM533icQ89SHNJL6R1I6wvC29h3fUppQc/DVY5Dc4QLsAjbg9AV/4l
-        DCrz2W976Y39dZ9wdmPEPL9uacOWG0Oi9EuXyjc=
-X-Google-Smtp-Source: ABdhPJwTjwXCS26Z3l4kjK7U9nSI04aG0PYcUYWrVYewkDkaNtPE/LAhnzzKlmXBSg00AfgENIQ7m1jco8X6cFRSM10=
-X-Received: by 2002:a17:902:a615:b029:126:351c:e6bf with SMTP id
- u21-20020a170902a615b0290126351ce6bfmr9329718plq.70.1625428432916; Sun, 04
- Jul 2021 12:53:52 -0700 (PDT)
+        id S229744AbhGDUAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Jul 2021 16:00:37 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39568 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229614AbhGDUAg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Jul 2021 16:00:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=kkGwSeTdihBY36VFXp/FW0w8u9NpfYN2EtWNHDIxCb4=; b=hj9idZMGWGuJ3OuEEx3R84ooYL
+        ZNgwUH5aH6cg/IZPHrfGZ84NRfkBRkqjskcuyHD7W9Ks9Ey/xMXLo9bVDP0YrbI/1+yhxbYgv5jjC
+        kstaa/KJ5OWOr3D5fCElI2wl0vBhrVMHP7A0gBI0Isafnc3PMqBnRJpVn3xURURd0SdI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m08FU-00C9ez-Qc; Sun, 04 Jul 2021 21:57:52 +0200
+Date:   Sun, 4 Jul 2021 21:57:52 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "huangguangbin (A)" <huangguangbin2@huawei.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        salil.mehta@huawei.com, lipeng321@huawei.com
+Subject: Re: [PATCH net-next 3/3] net: hns3: add support for link diagnosis
+ info in debugfs
+Message-ID: <YOISwD+8ZoMpjP2m@lunn.ch>
+References: <1624545405-37050-1-git-send-email-huangguangbin2@huawei.com>
+ <1624545405-37050-4-git-send-email-huangguangbin2@huawei.com>
+ <20210624122517.7c8cb329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <08395721-4ca1-9913-19fd-4d8ec7e41e4b@huawei.com>
+ <20210701085447.2270b1df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a5d42bf6-d71f-978e-b9ae-6b04f072d988@huawei.com>
 MIME-Version: 1.0
-References: <20210701061656.34150-1-xiyou.wangcong@gmail.com>
- <60ddec01c651b_3fe24208dc@john-XPS-13-9370.notmuch> <875yxrs2sc.fsf@cloudflare.com>
-In-Reply-To: <875yxrs2sc.fsf@cloudflare.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 4 Jul 2021 12:53:41 -0700
-Message-ID: <CAM_iQpW69PGfp_Y8mZoqznwCk2axask5qJLB7ntZjFgGO+Eizg@mail.gmail.com>
-Subject: Re: [Patch bpf v2] skmsg: check sk_rcvbuf limit before queuing to ingress_skb
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a5d42bf6-d71f-978e-b9ae-6b04f072d988@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 3, 2021 at 10:52 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
-> When running with just the verdict prog attached, the -EIO error from
-> sk_psock_verdict_apply is propagated up to tcp_read_sock. That is, it
-> maps to 0 bytes used by recv_actor. sk_psock_verdict_recv in this case.
->
-> tcp_read_sock, if 0 bytes were used = copied, won't sk_eat_skb. It stays
-> on sk_receive_queue.
+> > > Hi Jakub, I have a question to consult you.
+> > > Some fault information in our patch are not existed in current ethtool extended
+> > > link states, for examples:
+> > > "Serdes reference clock lost"
+> > > "Serdes analog loss of signal"
+> > > "SFP tx is disabled"
+> > > "PHY power down"
+> > 
+> > Why would the PHY be powered down if user requested port to be up?
+> > 
+> In the case of other user may use MDIO tool to write PHY register directly to make
+> PHY power down, if link state can display this information, I think it is helpful.
 
-Are you sure?
+If the user directly writes to PHY registers, they should expect bad
+things to happen. They can do a lot more than power the PHY down. They
+could configure it into loopback mode, turn off autoneg and force a
+mode which is compatible with the peer, etc.
 
-When recv_actor() returns 0, the while loop breaks:
+I don't think you need to tell the user they have pointed a foot gun
+at their feet and pulled the trigger.
 
-1661                         used = recv_actor(desc, skb, offset, len);
-1662                         if (used <= 0) {
-1663                                 if (!copied)
-1664                                         copied = used;
-1665                                 break;
-
-then it calls sk_eat_skb() a few lines after the loop:
-...
-1690                 sk_eat_skb(sk, skb);
-
->
->   sk->sk_data_ready
->     sk_psock_verdict_data_ready
->       ->read_sock(..., sk_psock_verdict_recv)
->         tcp_read_sock (used = copied = 0)
->           sk_psock_verdict_recv -> ret = 0
->             sk_psock_verdict_apply -> -EIO
->               sk_psock_skb_redirect -> -EIO
->
-> However, I think this gets us stuck. What if no more data gets queued,
-> and sk_data_ready doesn't get called again?
-
-I think it is dropped by sk_eat_skb() in TCP case and of course the
-sender will retransmit it after detecting this loss. So from this point of
-view, there is no difference between drops due to overlimit and drops
-due to eBPF program policy.
-
-Thanks.
+   Andrew
