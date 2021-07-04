@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED9C3BAE86
-	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 21:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 923333BAE89
+	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 21:03:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbhGDTFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Jul 2021 15:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
+        id S229947AbhGDTF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Jul 2021 15:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbhGDTFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 15:05:47 -0400
-Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F677C061762;
-        Sun,  4 Jul 2021 12:03:12 -0700 (PDT)
-Received: by mail-oo1-xc2b.google.com with SMTP id d1-20020a4ad3410000b029024c4d2ea72aso3933727oos.4;
-        Sun, 04 Jul 2021 12:03:12 -0700 (PDT)
+        with ESMTP id S229884AbhGDTFs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 15:05:48 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1108FC061574;
+        Sun,  4 Jul 2021 12:03:13 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id 7-20020a9d0d070000b0290439abcef697so16051414oti.2;
+        Sun, 04 Jul 2021 12:03:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9uGAz049IX75nMdfOYnDXXm0Hw/xQddkbeLasyfCyVs=;
-        b=hjARaeEokkf0nA6tqh1o/fo1F7g+fArZzAEOYbNMIbLTA31RIXn04dsGQzyTPQE98c
-         fECw2BdKOmbsbhsNQQ28Lrlpd/9m+IJct99lvfaEiQD++AoJaUTvC6IFQYfumwkrKGVj
-         kfifjLQn7E1St4x+Q6BO6p0ncC6O/8ycPJZnk2TW+s/KU6GbgzJxOg2YUMc4k+uLE7IB
-         caAR27DcXNM0ixUJ3f3x4LtpHItobRNpAincdXGTavYm+5dllE8E42z2P5GFlsd6emyi
-         M8brUSL5fFBtjNydkScuXMAbwukHPaQgKqRvm6P402xehKVGVI7Q5RorjBgdgHqbdSfX
-         Xx4g==
+        bh=YB4pREa650U7bhhcAeuwPw+Lb9YN7orZLUUMC3iUzAE=;
+        b=sI2pSY6P7pbIyw/wo0EgbxpLXq5xLCudwFpcAVDjwGvgWIGfDc+uHIjxKlJ49gESwC
+         iBhIFESizDK5y1cJKYLAu/knaSu+Xrz3p9sCA27tkzDvB+FlMSLHD/pW153GvYtgjx8k
+         S6nm0HW1kkdbDe54LDC9PGwAYSjZVVA7qBfuPeM6428v3jnIes3RNMNXC1cICN2MoVkD
+         IHK/46TS/8LDCoZogjjHQz/5/gI1qumbacAzMbH4CeodkfqvPB3TVzT0623N1Mdzo1Hx
+         pOl85ArU1DjGRcXAJ9xUX8m/TVLFFy3TRJQkldULc64obz5V8XoPNM6QkukJa3xTOcNO
+         ovHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9uGAz049IX75nMdfOYnDXXm0Hw/xQddkbeLasyfCyVs=;
-        b=rlHrzf2m4BM9hOy8PQQ5RCffJPZ01o+vxinJf2OFSq3MMTCzmC1vy2GsA+TT7fvLD8
-         OCrAuIJHWdYl2KO9pWUskY+Qgi5MAcBYZBZOLRpPIuwdpuryUplldZkHJ1LOhzY9d0E7
-         6B/fHYhqLU4OsKfg+thu3We0st4LpBuFu8sjRMZXtZdSgNhhKQAYSg5mBoNnOMPd2wGo
-         FmYo7BX1ImHaUHfmlnVzaJ95TBhzCUi8wHEenBYct21lQ8omRcvUeCFQ0jU9xY8y2Ldq
-         FgaM0agqM18NUtOUqEV27s/JrXoTzAEItB+GfeUzVrcItSLGBiL/i7JglOgzrzBz5Iaf
-         ZBxw==
-X-Gm-Message-State: AOAM530B1ujZqG6GOPm/7wKdpDEvcHuv5STaNnrRoyWQ5PKnlxleEMfI
-        lOj0L0gpy1pXKBrDo+dT2jVBCLnNS54=
-X-Google-Smtp-Source: ABdhPJyLMOCV/opvodDOZnj8qXKd33oXH5bqHfkzRicAiudhBf7sG6rCK3NW7UCN+MAB9ByKiizS8A==
-X-Received: by 2002:a4a:d126:: with SMTP id n6mr4773945oor.86.1625425391302;
-        Sun, 04 Jul 2021 12:03:11 -0700 (PDT)
+        bh=YB4pREa650U7bhhcAeuwPw+Lb9YN7orZLUUMC3iUzAE=;
+        b=SgrFiiqvCnIO1zAviYxmuglsScmxojZTWjaw15mDv13AFFS3WALU0vjihi/0cQitG+
+         8Oeaah4hRa9abECm+FNP4+MqKuiULKbGm4NeiXshSmXgJ/thsphJA9YAju1wRQweyZ7N
+         rHiLTNYkGNL2ouwxFuhP49OUSKp1mttW9io6UUZQGyomiloI6FG0lQ9gDdeZJ/BbZqzn
+         naGzmpGEXwDXs+bDLz99Mj/n1cxhQIIeXhC3gN1Nv7E2zeglLxLFLufabHhg/JVFrt30
+         HLYB0kIj3hlbVi410cG5LtO79c7JZeCLYRLs1IPGpurH4+sXQOhB3t2UDqR2lcDym8vZ
+         PPgg==
+X-Gm-Message-State: AOAM531WGlcmhC0W501RI6b9oOJA5rrqQSXKaZw2Gkbeo3W5F8iA+ETo
+        mRAJy2A6bUJK4J1SDr8jKbPBxKjT6Jc=
+X-Google-Smtp-Source: ABdhPJy9RmzPTFFhzIvI3wva0STzTZyC1sFDf6s53JeweOMuX2m2vjq8uP+jVODZKpkdPdxbikHQjw==
+X-Received: by 2002:a05:6830:452:: with SMTP id d18mr7166152otc.258.1625425392368;
+        Sun, 04 Jul 2021 12:03:12 -0700 (PDT)
 Received: from unknown.attlocal.net (76-217-55-94.lightspeed.sntcca.sbcglobal.net. [76.217.55.94])
-        by smtp.gmail.com with ESMTPSA id 186sm1865848ooe.28.2021.07.04.12.03.10
+        by smtp.gmail.com with ESMTPSA id 186sm1865848ooe.28.2021.07.04.12.03.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Jul 2021 12:03:11 -0700 (PDT)
+        Sun, 04 Jul 2021 12:03:12 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
@@ -54,13 +54,14 @@ Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH bpf-next v5 05/11] af_unix: add a dummy ->close() for sockmap
-Date:   Sun,  4 Jul 2021 12:02:46 -0700
-Message-Id: <20210704190252.11866-6-xiyou.wangcong@gmail.com>
+Subject: [PATCH bpf-next v5 06/11] af_unix: implement ->psock_update_sk_prot()
+Date:   Sun,  4 Jul 2021 12:02:47 -0700
+Message-Id: <20210704190252.11866-7-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210704190252.11866-1-xiyou.wangcong@gmail.com>
 References: <20210704190252.11866-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -68,10 +69,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-Unlike af_inet, unix_proto is very different, it does not even
-have a ->close(). We have to add a dummy implementation to
-satisfy sockmap. Normally it is just a nop, it is introduced only
-for sockmap to replace it.
+Now we can implement unix_bpf_update_proto() to update
+sk_prot, especially prot->close().
 
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
@@ -79,40 +78,151 @@ Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/unix/af_unix.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ MAINTAINERS           |  1 +
+ include/net/af_unix.h | 10 +++++++++
+ net/core/sock_map.c   |  1 +
+ net/unix/Makefile     |  1 +
+ net/unix/af_unix.c    |  6 +++++-
+ net/unix/unix_bpf.c   | 47 +++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 65 insertions(+), 1 deletion(-)
+ create mode 100644 net/unix/unix_bpf.c
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 88449b7a4c95..2c793df1d873 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10277,6 +10277,7 @@ F:	net/core/skmsg.c
+ F:	net/core/sock_map.c
+ F:	net/ipv4/tcp_bpf.c
+ F:	net/ipv4/udp_bpf.c
++F:	net/unix/unix_bpf.c
+ 
+ LANDLOCK SECURITY MODULE
+ M:	Mickaël Salaün <mic@digikod.net>
+diff --git a/include/net/af_unix.h b/include/net/af_unix.h
+index f42fdddecd41..cca645846af1 100644
+--- a/include/net/af_unix.h
++++ b/include/net/af_unix.h
+@@ -89,4 +89,14 @@ void unix_sysctl_unregister(struct net *net);
+ static inline int unix_sysctl_register(struct net *net) { return 0; }
+ static inline void unix_sysctl_unregister(struct net *net) {}
+ #endif
++
++#ifdef CONFIG_BPF_SYSCALL
++extern struct proto unix_proto;
++
++int unix_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore);
++void __init unix_bpf_build_proto(void);
++#else
++static inline void __init unix_bpf_build_proto(void)
++{}
++#endif
+ #endif
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index 3c427e7e6df9..ae5fa4338d9c 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -1517,6 +1517,7 @@ void sock_map_close(struct sock *sk, long timeout)
+ 	release_sock(sk);
+ 	saved_close(sk, timeout);
+ }
++EXPORT_SYMBOL_GPL(sock_map_close);
+ 
+ static int sock_map_iter_attach_target(struct bpf_prog *prog,
+ 				       union bpf_iter_link_info *linfo,
+diff --git a/net/unix/Makefile b/net/unix/Makefile
+index 54e58cc4f945..20491825b4d0 100644
+--- a/net/unix/Makefile
++++ b/net/unix/Makefile
+@@ -7,6 +7,7 @@ obj-$(CONFIG_UNIX)	+= unix.o
+ 
+ unix-y			:= af_unix.o garbage.o
+ unix-$(CONFIG_SYSCTL)	+= sysctl_net_unix.o
++unix-$(CONFIG_BPF_SYSCALL) += unix_bpf.o
+ 
+ obj-$(CONFIG_UNIX_DIAG)	+= unix_diag.o
+ unix_diag-y		:= diag.o
 diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 77fb3910e1c3..875eeaaddc07 100644
+index 875eeaaddc07..573253c5b5c2 100644
 --- a/net/unix/af_unix.c
 +++ b/net/unix/af_unix.c
-@@ -781,10 +781,18 @@ static const struct proto_ops unix_seqpacket_ops = {
- 	.show_fdinfo =	unix_show_fdinfo,
- };
+@@ -788,11 +788,14 @@ static void unix_close(struct sock *sk, long timeout)
+ 	 */
+ }
  
-+static void unix_close(struct sock *sk, long timeout)
-+{
-+	/* Nothing to do here, unix socket does not need a ->close().
-+	 * This is merely for sockmap.
-+	 */
-+}
-+
- static struct proto unix_proto = {
+-static struct proto unix_proto = {
++struct proto unix_proto = {
  	.name			= "UNIX",
  	.owner			= THIS_MODULE,
  	.obj_size		= sizeof(struct unix_sock),
-+	.close			= unix_close,
+ 	.close			= unix_close,
++#ifdef CONFIG_BPF_SYSCALL
++	.psock_update_sk_prot	= unix_bpf_update_proto,
++#endif
  };
  
  static struct sock *unix_create1(struct net *net, struct socket *sock, int kern)
-@@ -868,6 +876,7 @@ static int unix_release(struct socket *sock)
- 	if (!sk)
- 		return 0;
+@@ -2973,6 +2976,7 @@ static int __init af_unix_init(void)
  
-+	sk->sk_prot->close(sk, 0);
- 	unix_release_sock(sk, 0);
- 	sock->sk = NULL;
- 
+ 	sock_register(&unix_family_ops);
+ 	register_pernet_subsys(&unix_net_ops);
++	unix_bpf_build_proto();
+ out:
+ 	return rc;
+ }
+diff --git a/net/unix/unix_bpf.c b/net/unix/unix_bpf.c
+new file mode 100644
+index 000000000000..b1582a659427
+--- /dev/null
++++ b/net/unix/unix_bpf.c
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 Cong Wang <cong.wang@bytedance.com> */
++
++#include <linux/skmsg.h>
++#include <linux/bpf.h>
++#include <net/sock.h>
++#include <net/af_unix.h>
++
++static struct proto *unix_prot_saved __read_mostly;
++static DEFINE_SPINLOCK(unix_prot_lock);
++static struct proto unix_bpf_prot;
++
++static void unix_bpf_rebuild_protos(struct proto *prot, const struct proto *base)
++{
++	*prot        = *base;
++	prot->close  = sock_map_close;
++}
++
++static void unix_bpf_check_needs_rebuild(struct proto *ops)
++{
++	if (unlikely(ops != smp_load_acquire(&unix_prot_saved))) {
++		spin_lock_bh(&unix_prot_lock);
++		if (likely(ops != unix_prot_saved)) {
++			unix_bpf_rebuild_protos(&unix_bpf_prot, ops);
++			smp_store_release(&unix_prot_saved, ops);
++		}
++		spin_unlock_bh(&unix_prot_lock);
++	}
++}
++
++int unix_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore)
++{
++	if (restore) {
++		sk->sk_write_space = psock->saved_write_space;
++		WRITE_ONCE(sk->sk_prot, psock->sk_proto);
++		return 0;
++	}
++
++	unix_bpf_check_needs_rebuild(psock->sk_proto);
++	WRITE_ONCE(sk->sk_prot, &unix_bpf_prot);
++	return 0;
++}
++
++void __init unix_bpf_build_proto(void)
++{
++	unix_bpf_rebuild_protos(&unix_bpf_prot, &unix_proto);
++}
 -- 
 2.27.0
 
