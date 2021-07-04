@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8663BAC08
+	by mail.lfdr.de (Postfix) with ESMTP id 83ECC3BAC09
 	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 10:11:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbhGDINj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Jul 2021 04:13:39 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:54670 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbhGDINh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 04:13:37 -0400
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 085B275BEE;
-        Sun,  4 Jul 2021 11:11:01 +0300 (MSK)
+        id S229978AbhGDIN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Jul 2021 04:13:57 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:33766 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229649AbhGDIN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 04:13:57 -0400
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 9A4575213BA;
+        Sun,  4 Jul 2021 11:11:20 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1625386261;
-        bh=LuJjRY82zTnA9mN/A9Qke4o/Lwm3BTwLfaEmmDDmvXQ=;
+        s=mail202102; t=1625386280;
+        bh=5x5/eutDlDBy7csgIRAOiBd8x+Qpc2SvlIIL2kYZolI=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=JMAdMTRYWA7Yi0xCQGA25BI9ElWtFAiZloQ4hbrE8LYmI1nPO2OeCUxrFKnOzhWCF
-         sU6x1r/sHWXSIZB5Cyz48UYsnuxNfcKN9zYGaXUm3ntP5z28rQEz3EBh1HZb0NAwW1
-         F2cl22MW3h02RHoUVV3FVx78onX7RcMy3IdvRG3GRBAy+TPLRQCX+W0eIraCMpSJ5e
-         nisG3+2jPg5KxSL9X1JzipU81uZD04azZoHIguApEGh4H+K+k6Dkxzvjqsqhr+foVb
-         4dKCh+/WZBOLH7o8VcjeQf6cxJADhtqWNA3vjwhime2rnwXI//aIGDDcv4SsYdccLK
-         t+7vw7gq2DGCg==
+        b=cn3KnGHzQA6eSAwijkOwiwtuoYRq0E35QHNm3iORuwdBM2X7R2O+IcMyu+Es9IZj/
+         Q0v4Wi0rR6pzclew4kqZ+A+WDGxdUXVPR7KKISXo9yWwS+chrtz4jEOrAUawX+duaY
+         JqQs+fFJz/fdJJlGroonyTSc0a59Bt8hGImjLDGMPHoI8IZXVm5+8YnbCuts0tdVOt
+         fPbcpvUDQCd0EfozIssyrtyVoZ+eykvbtml2p5ap3yzF1GZpYAFPPO93PfjjpzqQN7
+         2sDFfDNOKHHZ46AYa2yFN4PuSWogBjgIr+eyFXLWYeD9Ifcm+9zdAmoTuV1H+subgj
+         mmu/x2res/OLw==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id C447C7708E;
-        Sun,  4 Jul 2021 11:11:00 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 4A3055213EA;
+        Sun,  4 Jul 2021 11:11:20 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Sun, 4
- Jul 2021 11:11:00 +0300
+ Jul 2021 11:11:19 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -41,23 +41,22 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
         Colin Ian King <colin.king@canonical.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
         Andra Paraschiv <andraprs@amazon.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <oxffffaa@gmail.com>
-Subject: [RFC PATCH v2 5/6] virtio/vsock: remove record size limit for SEQPACKET
-Date:   Sun, 4 Jul 2021 11:10:52 +0300
-Message-ID: <20210704081055.89685-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v2 6/6] vsock_test: SEQPACKET read to broken buffer
+Date:   Sun, 4 Jul 2021 11:11:11 +0300
+Message-ID: <20210704081114.89811-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210704080820.88746-1-arseny.krasnov@kaspersky.com>
 References: <20210704080820.88746-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.129]
+X-Originating-IP: [10.64.64.121]
 X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
@@ -99,38 +98,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove record size limit which was 'peer_buf_alloc' value.
-New approach doesn't need this, because data is copied to
-user's buffer in stream manner(we don't wait until whole
-record is received).
+Add test where sender sends two message, each with own
+data pattern. Reader tries to read first to broken buffer:
+it has three pages size, but middle page is unmapped. Then,
+reader tries to read second message to valid buffer. Test
+checks, that uncopied part of first message was dropped
+and thus not copied as part of second message.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- net/vmw_vsock/virtio_transport_common.c | 11 -----------
- 1 file changed, 11 deletions(-)
+ tools/testing/vsock/vsock_test.c | 120 +++++++++++++++++++++++++++++++
+ 1 file changed, 120 insertions(+)
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 52765754edcd..5cfdf701a8af 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -507,17 +507,6 @@ virtio_transport_seqpacket_enqueue(struct vsock_sock *vsk,
- 				   struct msghdr *msg,
- 				   size_t len)
- {
--	struct virtio_vsock_sock *vvs = vsk->trans;
--
--	spin_lock_bh(&vvs->tx_lock);
--
--	if (len > vvs->peer_buf_alloc) {
--		spin_unlock_bh(&vvs->tx_lock);
--		return -EMSGSIZE;
--	}
--
--	spin_unlock_bh(&vvs->tx_lock);
--
- 	return virtio_transport_stream_enqueue(vsk, msg, len);
+diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+index 67766bfe176f..cdaa154fc3a9 100644
+--- a/tools/testing/vsock/vsock_test.c
++++ b/tools/testing/vsock/vsock_test.c
+@@ -16,6 +16,7 @@
+ #include <linux/kernel.h>
+ #include <sys/types.h>
+ #include <sys/socket.h>
++#include <sys/mman.h>
+ 
+ #include "timeout.h"
+ #include "control.h"
+@@ -385,6 +386,120 @@ static void test_seqpacket_msg_trunc_server(const struct test_opts *opts)
+ 	close(fd);
  }
- EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_enqueue);
+ 
++#define BUF_PATTERN_1 'a'
++#define BUF_PATTERN_2 'b'
++
++static void test_seqpacket_invalid_rec_buffer_client(const struct test_opts *opts)
++{
++	int fd;
++	unsigned char *buf1;
++	unsigned char *buf2;
++	int buf_size = getpagesize() * 3;
++
++	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
++	if (fd < 0) {
++		perror("connect");
++		exit(EXIT_FAILURE);
++	}
++
++	buf1 = malloc(buf_size);
++	if (!buf1) {
++		perror("'malloc()' for 'buf1'");
++		exit(EXIT_FAILURE);
++	}
++
++	buf2 = malloc(buf_size);
++	if (!buf2) {
++		perror("'malloc()' for 'buf2'");
++		exit(EXIT_FAILURE);
++	}
++
++	memset(buf1, BUF_PATTERN_1, buf_size);
++	memset(buf2, BUF_PATTERN_2, buf_size);
++
++	if (send(fd, buf1, buf_size, 0) != buf_size) {
++		perror("send failed");
++		exit(EXIT_FAILURE);
++	}
++
++	if (send(fd, buf2, buf_size, 0) != buf_size) {
++		perror("send failed");
++		exit(EXIT_FAILURE);
++	}
++
++	close(fd);
++}
++
++static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opts)
++{
++	int fd;
++	unsigned char *broken_buf;
++	unsigned char *valid_buf;
++	int page_size = getpagesize();
++	int buf_size = page_size * 3;
++	ssize_t res;
++	int prot = PROT_READ | PROT_WRITE;
++	int flags = MAP_PRIVATE | MAP_ANONYMOUS;
++	int i;
++
++	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
++	if (fd < 0) {
++		perror("accept");
++		exit(EXIT_FAILURE);
++	}
++
++	/* Setup first buffer. */
++	broken_buf = mmap(NULL, buf_size, prot, flags, -1, 0);
++	if (broken_buf == MAP_FAILED) {
++		perror("mmap for 'broken_buf'");
++		exit(EXIT_FAILURE);
++	}
++
++	/* Unmap "hole" in buffer. */
++	if (munmap(broken_buf + page_size, page_size)) {
++		perror("'broken_buf' setup");
++		exit(EXIT_FAILURE);
++	}
++
++	valid_buf = mmap(NULL, buf_size, prot, flags, -1, 0);
++	if (valid_buf == MAP_FAILED) {
++		perror("mmap for 'valid_buf'");
++		exit(EXIT_FAILURE);
++	}
++
++	/* Try to fill buffer with unmapped middle. */
++	res = read(fd, broken_buf, buf_size);
++	if (res != -1) {
++		perror("invalid read result of 'broken_buf'");
++		exit(EXIT_FAILURE);
++	}
++
++	if (errno != ENOMEM) {
++		perror("invalid errno of 'broken_buf'");
++		exit(EXIT_FAILURE);
++	}
++
++	/* Try to fill valid buffer. */
++	res = read(fd, valid_buf, buf_size);
++	if (res != buf_size) {
++		perror("invalid read result of 'valid_buf'");
++		exit(EXIT_FAILURE);
++	}
++
++	for (i = 0; i < buf_size; i++) {
++		if (valid_buf[i] != BUF_PATTERN_2) {
++			perror("invalid pattern for valid buf");
++			exit(EXIT_FAILURE);
++		}
++	}
++
++	/* Unmap buffers. */
++	munmap(broken_buf, page_size);
++	munmap(broken_buf + page_size * 2, page_size);
++	munmap(valid_buf, buf_size);
++	close(fd);
++}
++
+ static struct test_case test_cases[] = {
+ 	{
+ 		.name = "SOCK_STREAM connection reset",
+@@ -425,6 +540,11 @@ static struct test_case test_cases[] = {
+ 		.run_client = test_seqpacket_msg_trunc_client,
+ 		.run_server = test_seqpacket_msg_trunc_server,
+ 	},
++	{
++		.name = "SOCK_SEQPACKET invalid receive buffer",
++		.run_client = test_seqpacket_invalid_rec_buffer_client,
++		.run_server = test_seqpacket_invalid_rec_buffer_server,
++	},
+ 	{},
+ };
+ 
 -- 
 2.25.1
 
