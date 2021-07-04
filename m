@@ -2,259 +2,322 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83ECC3BAC09
-	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 10:11:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C74E63BAC0D
+	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 10:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbhGDIN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Jul 2021 04:13:57 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:33766 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbhGDIN5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 04:13:57 -0400
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 9A4575213BA;
-        Sun,  4 Jul 2021 11:11:20 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1625386280;
-        bh=5x5/eutDlDBy7csgIRAOiBd8x+Qpc2SvlIIL2kYZolI=;
-        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=cn3KnGHzQA6eSAwijkOwiwtuoYRq0E35QHNm3iORuwdBM2X7R2O+IcMyu+Es9IZj/
-         Q0v4Wi0rR6pzclew4kqZ+A+WDGxdUXVPR7KKISXo9yWwS+chrtz4jEOrAUawX+duaY
-         JqQs+fFJz/fdJJlGroonyTSc0a59Bt8hGImjLDGMPHoI8IZXVm5+8YnbCuts0tdVOt
-         fPbcpvUDQCd0EfozIssyrtyVoZ+eykvbtml2p5ap3yzF1GZpYAFPPO93PfjjpzqQN7
-         2sDFfDNOKHHZ46AYa2yFN4PuSWogBjgIr+eyFXLWYeD9Ifcm+9zdAmoTuV1H+subgj
-         mmu/x2res/OLw==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 4A3055213EA;
-        Sun,  4 Jul 2021 11:11:20 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Sun, 4
- Jul 2021 11:11:19 +0300
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S229990AbhGDIOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Jul 2021 04:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229649AbhGDIOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 04:14:11 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C3EC061762
+        for <netdev@vger.kernel.org>; Sun,  4 Jul 2021 01:11:35 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id l2so95274edt.1
+        for <netdev@vger.kernel.org>; Sun, 04 Jul 2021 01:11:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qfi4cvWP5E/EzQLTsZwopW9c0zJOVMt9TX/Vp18aP7s=;
+        b=N+URJQpPSI2Katp4q3ZcqifhNnjZNrwFwcX1PTNoMFoJg9IqUG3ALjsoKHEowxEJjT
+         f9oZVEw2SxCP8/zxQ2XZ84MD6GMqcFIGy+nOI+yfj3y+qqLj1Bzoui1Jaf384balXbAg
+         y75PD2fCw5506bF993n3WIghCL22vmCxrGGd70nYW7qYZQVWzaPfDRtv0A9oDyy/ieIL
+         EVdNRTRSMVdvLExak64+WwkZt78l+RO6YKlStffzWnV/hYPFCOhdSrSA5asPX6WWBmEY
+         QIHgbCiCV0pDlhm1q6hnxm7SBMK1tNLxa0QxkkFGl23k4KYBHyjzzTL+K4HmNRljx5Zm
+         akBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qfi4cvWP5E/EzQLTsZwopW9c0zJOVMt9TX/Vp18aP7s=;
+        b=pnsBOtgNvbemu8ZLdVwUpVHFytopZ/BaxAyZ3VkqMO/94y7xVMuQBEyA8AqjTFINX3
+         4psXhG56WbYlCx0FYtrZMyV6J7RyCqN34eXk+4eQehmUpOKfJS/FP2jovmCQeYiwRQ8q
+         LgsOwkauDy0HSlfj0SJxDNMQPgYX0E9/TyeRM9Fh8catE0cQpq7+6Bl+OPIcVXx7MH8I
+         qf3jk2r/Xd8tuqyFrJmQ/7VkHx7QNcoVG/o+r7uVdSkXKwMB4mHQkfQvHJNOskaLGORh
+         fb7vGOE8uhqhivy62Mnq/iOoV/9OWfVMw/NPLGUHlEa52D515/XtUIwcIto3Tkcp+Z89
+         qMYA==
+X-Gm-Message-State: AOAM531zOW4vx4rwmCWk/o05QLmPKyT7lXGicU9wuH2Zi823+dDKesxm
+        Z82fzBAM8lEOEGcz64aGb/U=
+X-Google-Smtp-Source: ABdhPJzxPihvOmRgrazRZLnc5EKJeyqANS4zJE3XRuPbP0WE6HH56u/QLofQFQdrmfvrnmfxEG4ung==
+X-Received: by 2002:aa7:d34f:: with SMTP id m15mr9241261edr.155.1625386294210;
+        Sun, 04 Jul 2021 01:11:34 -0700 (PDT)
+Received: from skbuf ([188.26.224.68])
+        by smtp.gmail.com with ESMTPSA id jx12sm2956531ejb.9.2021.07.04.01.11.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Jul 2021 01:11:33 -0700 (PDT)
+Date:   Sun, 4 Jul 2021 11:11:32 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <oxffffaa@gmail.com>
-Subject: [RFC PATCH v2 6/6] vsock_test: SEQPACKET read to broken buffer
-Date:   Sun, 4 Jul 2021 11:11:11 +0300
-Message-ID: <20210704081114.89811-1-arseny.krasnov@kaspersky.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210704080820.88746-1-arseny.krasnov@kaspersky.com>
-References: <20210704080820.88746-1-arseny.krasnov@kaspersky.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        bridge@lists.linux-foundation.org,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [RFC PATCH v2 net-next 00/10] Allow forwarding for the software
+ bridge data path to be offloaded to capable devices
+Message-ID: <20210704081132.a2xxvq5sguhpxxxv@skbuf>
+References: <20210703115705.1034112-1-vladimir.oltean@nxp.com>
+ <871r8f836d.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/04/2021 07:43:44
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 164820 [Jul 03 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
-X-KSE-AntiSpam-Info: {Tracking_from_exist}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;arseniy-pc.avp.ru:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 07/04/2021 07:45:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 04.07.2021 5:50:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/07/04 06:12:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/07/04 01:03:00 #16855183
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <871r8f836d.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test where sender sends two message, each with own
-data pattern. Reader tries to read first to broken buffer:
-it has three pages size, but middle page is unmapped. Then,
-reader tries to read second message to valid buffer. Test
-checks, that uncopied part of first message was dropped
-and thus not copied as part of second message.
+Hi Tobias,
 
-Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
----
- tools/testing/vsock/vsock_test.c | 120 +++++++++++++++++++++++++++++++
- 1 file changed, 120 insertions(+)
+On Sun, Jul 04, 2021 at 12:04:26AM +0200, Tobias Waldekranz wrote:
+> On Sat, Jul 03, 2021 at 14:56, Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> > For this series I have taken Tobias' work from here:
+> > https://patchwork.kernel.org/project/netdevbpf/cover/20210426170411.1789186-1-tobias@waldekranz.com/
+> > and made the following changes:
+> > - I collected and integrated (hopefully all of) Nikolay's, Ido's and my
+> >   feedback on the bridge driver changes. Otherwise, the structure of the
+> >   bridge changes is pretty much the same as Tobias left it.
+> > - I basically rewrote the DSA infrastructure for the data plane
+> >   forwarding offload, based on the commonalities with another switch
+> >   driver for which I implemented this feature (not submitted here)
+> > - I adapted mv88e6xxx to use the new infrastructure, hopefully it still
+> >   works but I didn't test that
+>
+> Hi Vladimir,
+>
+> Sorry that I have dropped the ball on this series. I have actually had a
+> v1 of this queued up for a while. Unfortunately I ran into mv88e6xxx
+> specific problems. (See below)
+>
+> > The data plane of the software bridge can be partially offloaded to
+> > switchdev, in the sense that we can trust the accelerator to:
+> > (a) look up its FDB (which is more or less in sync with the software
+> >     bridge FDB) for selecting the destination ports for a packet
+> > (b) replicate the frame in hardware in case it's a multicast/broadcast,
+> >     instead of the software bridge having to clone it and send the
+> >     clones to each net device one at a time. This reduces the bandwidth
+> >     needed between the CPU and the accelerator, as well as the CPU time
+> >     spent.
+> >
+> > The data path forwarding offload is managed per "hardware domain" - a
+> > generalization of the "offload_fwd_mark" concept which is being
+> > introduced in this series. Every packet is delivered only once to each
+> > hardware domain.
+> >
+> > In addition, Tobias said in the original cover letter:
+> >
+> > ====================
+> > ## Overview
+> >
+> >    vlan1   vlan2
+> >        \   /
+> >    .-----------.
+> >    |    br0    |
+> >    '-----------'
+> >    /   /   \   \
+> > swp0 swp1 swp2 eth0
+> >   :   :   :
+> >   (hwdom 1)
+> >
+> > Up to this point, switchdevs have been trusted with offloading
+> > forwarding between bridge ports, e.g. forwarding a unicast from swp0
+> > to swp1 or flooding a broadcast from swp2 to swp1 and swp0. This
+> > series extends forward offloading to include some new classes of
+> > traffic:
+> >
+> > - Locally originating flows, i.e. packets that ingress on br0 that are
+> >   to be forwarded to one or several of the ports swp{0,1,2}. Notably
+> >   this also includes routed flows, e.g. a packet ingressing swp0 on
+> >   VLAN 1 which is then routed over to VLAN 2 by the CPU and then
+> >   forwarded to swp1 is "locally originating" from br0's point of view.
+> >
+> > - Flows originating from "foreign" interfaces, i.e. an interface that
+> >   is not offloaded by a particular switchdev instance. This includes
+> >   ports belonging to other switchdev instances. A typical example
+> >   would be flows from eth0 towards swp{0,1,2}.
+> >
+> > The bridge still looks up its FDB/MDB as usual and then notifies the
+> > switchdev driver that a particular skb should be offloaded if it
+> > matches one of the classes above. It does so by using the _accel
+> > version of dev_queue_xmit, supplying its own netdev as the
+> > "subordinate" device. The driver can react to the presence of the
+> > subordinate in its .ndo_select_queue in what ever way it needs to make
+> > sure to forward the skb in much the same way that it would for packets
+> > ingressing on regular ports.
+> >
+> > Hardware domains to which a particular skb has been forwarded are
+> > recorded so that duplicates are avoided.
+> >
+> > The main performance benefit is thus seen on multicast flows. Imagine
+> > for example that:
+> >
+> > - An IP camera is connected to swp0 (VLAN 1)
+> >
+> > - The CPU is acting as a multicast router, routing the group from VLAN
+> >   1 to VLAN 2.
+> >
+> > - There are subscribers for the group in question behind both swp1 and
+> >   swp2 (VLAN 2).
+> >
+> > With this offloading in place, the bridge need only send a single skb
+> > to the driver, which will send it to the hardware marked in such a way
+> > that the switch will perform the multicast replication according to
+> > the MDB configuration. Naturally, the number of saved skb_clones
+> > increase linearly with the number of subscribed ports.
+> >
+> > As an extra benefit, on mv88e6xxx, this also allows the switch to
+> > perform source address learning on these flows, which avoids having to
+> > sync dynamic FDB entries over slow configuration interfaces like MDIO
+> > to avoid flows directed towards the CPU being flooded as unknown
+> > unicast by the switch.
+> >
+> >
+> > ## RFC
+> >
+> > - In general, what do you think about this idea?
+> >
+> > - hwdom. What do you think about this terminology? Personally I feel
+> >   that we had too many things called offload_fwd_mark, and that as the
+> >   use of the bridge internal ID (nbp->offload_fwd_mark) expands, it
+> >   might be useful to have a separate term for it.
+> >
+> > - .dfwd_{add,del}_station. Am I stretching this abstraction too far,
+> >   and if so do you have any suggestion/preference on how to signal the
+> >   offloading from the bridge down to the switchdev driver?
+> >
+> > - The way that flooding is implemented in br_forward.c (lazily cloning
+> >   skbs) means that you have to mark the forwarding as completed very
+> >   early (right after should_deliver in maybe_deliver) in order to
+> >   avoid duplicates. Is there some way to move this decision point to a
+> >   later stage that I am missing?
+> >
+> > - BR_MULTICAST_TO_UNICAST. Right now, I expect that this series is not
+> >   compatible with unicast-to-multicast being used on a port. Then
+> >   again, I think that this would also be broken for regular switchdev
+> >   bridge offloading as this flag is not offloaded to the switchdev
+> >   port, so there is no way for the driver to refuse it. Any ideas on
+> >   how to handle this?
+> >
+> >
+> > ## mv88e6xxx Specifics
+> >
+> > Since we are now only receiving a single skb for both unicast and
+> > multicast flows, we can tag the packets with the FORWARD command
+> > instead of FROM_CPU. The swich(es) will then forward the packet in
+> > accordance with its ATU, VTU, STU, and PVT configuration - just like
+> > for packets ingressing on user ports.
+> >
+> > Crucially, FROM_CPU is still used for:
+> >
+> > - Ports in standalone mode.
+> >
+> > - Flows that are trapped to the CPU and software-forwarded by a
+> >   bridge. Note that these flows match neither of the classes discussed
+> >   in the overview.
+> >
+> > - Packets that are sent directly to a port netdev without going
+> >   through the bridge, e.g. lldpd sending out PDU via an AF_PACKET
+> >   socket.
+> >
+> > We thus have a pretty clean separation where the data plane uses
+> > FORWARDs and the control plane uses TO_/FROM_CPU.
+> >
+> > The barrier between different bridges is enforced by port based VLANs
+> > on mv88e6xxx, which in essence is a mapping from a source device/port
+> > pair to an allowed set of egress ports.
+>
+> Unless I am missing something, it turns out that the PVT is not enough
+> to support multiple (non-VLAN filtering) bridges in multi-chip
+> setups. While the isolation barrier works, there is no way of correctly
+> managing automatic learning.
+>
+> > In order to have a FORWARD
+> > frame (which carries a _source_ device/port) correctly mapped by the
+> > PVT, we must use a unique pair for each bridge.
+> >
+> > Fortunately, there is typically lots of unused address space in most
+> > switch trees. When was the last time you saw an mv88e6xxx product
+> > using more than 4 chips? Even if you found one with 16 (!) devices,
+> > you would still have room to allocate 16*16 virtual ports to software
+> > bridges.
+> >
+> > Therefore, the mv88e6xxx driver will allocate a virtual device/port
+> > pair to each bridge that it offloads. All members of the same bridge
+> > are then configured to allow packets from this virtual port in their
+> > PVTs.
+>
+> So while this solution is cute, it does not work in this example:
+>
+>  CPU
+>   | .-----.
+> .-0-1-. .-0-1-.
+> | sw0 | | sw1 |
+> '-2-3-' '-2-3-'
+>
+> - [sw0p2, sw1p2] are attached to one bridge
+> - [sw0p3, sw1p3] are attached to another bridge
+> - Neither bridge uses VLAN filtering
+>
+> Since no VLAN information available in the frames, the source addresses
+> of FORWARDs sent over the DSA link (sw0p1, sw1p0) cannot possibly be
+> separated into different FIDs. They will all be placed in the respective
+> port's default FID. Thus, the two bridges are not isolated with respect
+> to their FDBs.
+>
+> My current plan is therefore to start by reworking how bridges are
+> isolated on mv88e6xxx. Roughly by allocating a reserved VID/FID pair for
+> each non-filtering bridge. Two of these can be easily managed since both
+> VID 0 and 4095 are illegal on the wire but allowed in the VTU - after
+> that it gets tricky. The best scheme I have come up with is to just grab
+> an unused VID when adding any subsequent non-filtering bridge; in the
+> event that that VID is requested by a filtering bridge or a VLAN upper,
+> you move the non-filtering bridge to another currently unused VID.
+>
+> Does that sound reasonable?
 
-diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
-index 67766bfe176f..cdaa154fc3a9 100644
---- a/tools/testing/vsock/vsock_test.c
-+++ b/tools/testing/vsock/vsock_test.c
-@@ -16,6 +16,7 @@
- #include <linux/kernel.h>
- #include <sys/types.h>
- #include <sys/socket.h>
-+#include <sys/mman.h>
- 
- #include "timeout.h"
- #include "control.h"
-@@ -385,6 +386,120 @@ static void test_seqpacket_msg_trunc_server(const struct test_opts *opts)
- 	close(fd);
- }
- 
-+#define BUF_PATTERN_1 'a'
-+#define BUF_PATTERN_2 'b'
-+
-+static void test_seqpacket_invalid_rec_buffer_client(const struct test_opts *opts)
-+{
-+	int fd;
-+	unsigned char *buf1;
-+	unsigned char *buf2;
-+	int buf_size = getpagesize() * 3;
-+
-+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
-+	if (fd < 0) {
-+		perror("connect");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	buf1 = malloc(buf_size);
-+	if (!buf1) {
-+		perror("'malloc()' for 'buf1'");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	buf2 = malloc(buf_size);
-+	if (!buf2) {
-+		perror("'malloc()' for 'buf2'");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	memset(buf1, BUF_PATTERN_1, buf_size);
-+	memset(buf2, BUF_PATTERN_2, buf_size);
-+
-+	if (send(fd, buf1, buf_size, 0) != buf_size) {
-+		perror("send failed");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	if (send(fd, buf2, buf_size, 0) != buf_size) {
-+		perror("send failed");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	close(fd);
-+}
-+
-+static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opts)
-+{
-+	int fd;
-+	unsigned char *broken_buf;
-+	unsigned char *valid_buf;
-+	int page_size = getpagesize();
-+	int buf_size = page_size * 3;
-+	ssize_t res;
-+	int prot = PROT_READ | PROT_WRITE;
-+	int flags = MAP_PRIVATE | MAP_ANONYMOUS;
-+	int i;
-+
-+	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
-+	if (fd < 0) {
-+		perror("accept");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	/* Setup first buffer. */
-+	broken_buf = mmap(NULL, buf_size, prot, flags, -1, 0);
-+	if (broken_buf == MAP_FAILED) {
-+		perror("mmap for 'broken_buf'");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	/* Unmap "hole" in buffer. */
-+	if (munmap(broken_buf + page_size, page_size)) {
-+		perror("'broken_buf' setup");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	valid_buf = mmap(NULL, buf_size, prot, flags, -1, 0);
-+	if (valid_buf == MAP_FAILED) {
-+		perror("mmap for 'valid_buf'");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	/* Try to fill buffer with unmapped middle. */
-+	res = read(fd, broken_buf, buf_size);
-+	if (res != -1) {
-+		perror("invalid read result of 'broken_buf'");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	if (errno != ENOMEM) {
-+		perror("invalid errno of 'broken_buf'");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	/* Try to fill valid buffer. */
-+	res = read(fd, valid_buf, buf_size);
-+	if (res != buf_size) {
-+		perror("invalid read result of 'valid_buf'");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	for (i = 0; i < buf_size; i++) {
-+		if (valid_buf[i] != BUF_PATTERN_2) {
-+			perror("invalid pattern for valid buf");
-+			exit(EXIT_FAILURE);
-+		}
-+	}
-+
-+	/* Unmap buffers. */
-+	munmap(broken_buf, page_size);
-+	munmap(broken_buf + page_size * 2, page_size);
-+	munmap(valid_buf, buf_size);
-+	close(fd);
-+}
-+
- static struct test_case test_cases[] = {
- 	{
- 		.name = "SOCK_STREAM connection reset",
-@@ -425,6 +540,11 @@ static struct test_case test_cases[] = {
- 		.run_client = test_seqpacket_msg_trunc_client,
- 		.run_server = test_seqpacket_msg_trunc_server,
- 	},
-+	{
-+		.name = "SOCK_SEQPACKET invalid receive buffer",
-+		.run_client = test_seqpacket_invalid_rec_buffer_client,
-+		.run_server = test_seqpacket_invalid_rec_buffer_server,
-+	},
- 	{},
- };
- 
--- 
-2.25.1
+I don't think this patch series makes the problem you are describing any
+worse than it already is in mainline, does it?
 
+I mean even with multiple VLAN-unaware bridges spanning the same single
+switch chip today, it is still true that you can not have two stations
+with the same MAC address, one in one bridge and another in the other
+bridge, right?
+
+Do you have an example when this causes issues that need to be addressed
+immediately?
+
+I thought the only case where this is a real problem is when you have
+multiple CPU ports or multiple DSA links between 2 switches, because
+then, if learning is enabled, that same MAC address will bounce between
+the 2 ports. For that case, the consensus was that you just can't enable
+address learning on those ports, and you let the software manage the FDB
+in a way that is compatible with multiple CPU ports / DSA links (install
+the MAC DA as a sort of multicast address and let the port forwarding
+matrix choose only one of the 2 destinations based on source port).
+
+Lack of FDB partitioning also used to be a problem when the standalone
+ports were left to do address learning, but that changed too.
+
+The hardware I am working with simply does not have any way to solve
+this either - the FDB is simply not partitionable without VLAN
+filtering (we have simple shared VLAN filtering, where the VID is
+ignored and the FDB lookup is performed with VID 0, but not anything
+more complex). So the simple solution I've been advising for people who
+want their MAC addresses to be isolated is to create a single VLAN-aware
+bridge and manage the VLAN broadcast domains themselves - that seems to
+work and is simple to understand and flexible (note that I am going to
+send a patch at some point to prevent the user from partitioning a
+sja1105 switch tree into multiple VLAN-aware bridges).
+
+Basically unless I'm misunderstanding something, I think what you're
+proposing makes theoretical sense, but without a use case behind it it
+might just be too much work with no real life benefit.
