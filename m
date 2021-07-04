@@ -2,152 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E6473BAC21
-	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 10:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C81B3BAC2D
+	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 10:57:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229569AbhGDIdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Jul 2021 04:33:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58185 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229476AbhGDIdc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 04:33:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625387457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5mjv6RdL7FMrY4HG6p07wZrW4/GnliOhXTbPvIgXM+o=;
-        b=H8THpi2wAXgD4xRxaIMpHH1/wIRiAf8o95SRKboOploAm87ookkwqHgBorKmJUj7dWPEic
-        BVT1eleqQzftnHXhWo/b6XrKRyI94HSvXzNVECXCmcg5KQwIgoMXfvAKHxjK3afO7cx9YD
-        gnACHFXL+ojo9LakNIpOSf0wxoWq0lc=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-398-x9ONYpzxOQWuw_LjM7RuKA-1; Sun, 04 Jul 2021 04:30:56 -0400
-X-MC-Unique: x9ONYpzxOQWuw_LjM7RuKA-1
-Received: by mail-wm1-f72.google.com with SMTP id t82-20020a1cc3550000b02901ee1ed24f94so8204307wmf.9
-        for <netdev@vger.kernel.org>; Sun, 04 Jul 2021 01:30:56 -0700 (PDT)
+        id S229642AbhGDI7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Jul 2021 04:59:53 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:55166 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229530AbhGDI7v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 04:59:51 -0400
+Received: by mail-io1-f70.google.com with SMTP id m14-20020a5d898e0000b02904f7957d92b5so10911442iol.21
+        for <netdev@vger.kernel.org>; Sun, 04 Jul 2021 01:57:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5mjv6RdL7FMrY4HG6p07wZrW4/GnliOhXTbPvIgXM+o=;
-        b=iHA4v6SCbEyRc5d/AJxzRRO7ld9amDsS3Lw5mjs+dBxPSNcUpKedY8cJcm66z3ODjt
-         5MXbv14/jXcSXYm0T2tg6jUN7p2Od+VyxTN5GFm7NcK0t+jYqcJHZHcRoXIvgmbxkBWx
-         M649eqf7jS4TR1c37TwtVFiWDv6fec5r6NJyJhu5IidC97Pb4M2OqQANQ06hBcn8ekIR
-         P6XvNdo+Uh1dEbSAA+YaoRCcLiiAtkUqfnOhK6pYrgABQpMiSSKXVVEWjEXbqrL+XHPk
-         dGADmmc5iQPjutUuzQn8UM3eR5HPRZ80Fe9rnueHiGiO6Wn6tFBFB2aPFm7lw9IOsi/j
-         iITA==
-X-Gm-Message-State: AOAM5300Vz60eX7Ceys/ILHay0YHACctb6Vm0VJocsGebOVnrl3ZaQ4V
-        5uhVRAdtb9rrg4/SO5DFCKlKIogSdnCD8wB7ug3I0R6Y+jaINcH36IKC3XZDfl2h7DmCceTsdHf
-        sIfr9Dxc7vN287rqa
-X-Received: by 2002:adf:e5c9:: with SMTP id a9mr8700555wrn.376.1625387455168;
-        Sun, 04 Jul 2021 01:30:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzwxGgBxRdRHKsi3pLvnR9YQmU1IRGI0nidEiliUf/DDtuDrxohgpJHy7wgnQWR8PGRO13Hew==
-X-Received: by 2002:adf:e5c9:: with SMTP id a9mr8700530wrn.376.1625387454934;
-        Sun, 04 Jul 2021 01:30:54 -0700 (PDT)
-Received: from redhat.com ([2.55.4.39])
-        by smtp.gmail.com with ESMTPSA id l10sm8293941wrt.49.2021.07.04.01.30.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Jul 2021 01:30:54 -0700 (PDT)
-Date:   Sun, 4 Jul 2021 04:30:50 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v2 0/6] Improve SOCK_SEQPACKET receive logic
-Message-ID: <20210704042843-mutt-send-email-mst@kernel.org>
-References: <20210704080820.88746-1-arseny.krasnov@kaspersky.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=CBFbWWG2no/RXNUb57K5ovDWepx1taZTCUg2vEu4ahY=;
+        b=ZxLV0mhcnDvSXuKqa6qM6BPfsA2EVrHLAn894yBfTsAcjgHw8gcGav/dlMXHOrJQhx
+         GvW2LFUW7bBTOidcqjge5AdlhzR0EuEPE1c0sqtFAdpRW5v8fq21tDjszcqQTvUhxvPV
+         xshvIBqiDU2z0g10POphD7nSR97TnhYnBOLywf8k4A9rvdY2OWjd+haahqIB1wweqSMo
+         pb1BDS8AFs4W1o/H8WHbyWOWV3UlJVlBQS4zy0DgN/3i7wcoFw+SMR6hzUKZCDSJXIHq
+         8018Fw6gsadm/cvUoSZ7z+fPnQVkcAdgmGqL209hkpnZZ5lbkyWWwWY4IgilvXiXp5Jz
+         c0Kw==
+X-Gm-Message-State: AOAM530iEEwi6/WzgPMrzBs6bQ8wWfhXryxQ1rFOeZgy/KhkHTCcIP10
+        xPM2AZxWGOFh50CAn6dECsqj6bgSE/m4SH4I4chtrRj/2zV1
+X-Google-Smtp-Source: ABdhPJyRTW4jXgkVKOnEQ77RC6obW6JoNHPPvQag9GfjYxABk5Si7BZzdgrFakKtQ7Oekk0GOhQz4xjlEqKu3suvf+K0gzjp9+Be
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210704080820.88746-1-arseny.krasnov@kaspersky.com>
+X-Received: by 2002:a05:6e02:1521:: with SMTP id i1mr6308661ilu.155.1625389036410;
+ Sun, 04 Jul 2021 01:57:16 -0700 (PDT)
+Date:   Sun, 04 Jul 2021 01:57:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000231b1705c64860b3@google.com>
+Subject: [syzbot] upstream test error: possible deadlock in __fs_reclaim_acquire
+From:   syzbot <syzbot+c259b724a0f86d1f5459@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
+        axboe@kernel.dk, bpf@vger.kernel.org, christian@brauner.io,
+        clang-built-linux@googlegroups.com, daniel@iogearbox.net,
+        ebiederm@xmission.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, peterz@infradead.org, shakeelb@google.com,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 04, 2021 at 11:08:13AM +0300, Arseny Krasnov wrote:
-> 	This patchset modifies receive logic for SOCK_SEQPACKET.
-> Difference between current implementation and this version is that
-> now reader is woken up when there is at least one RW packet in rx
-> queue of socket and data is copied to user's buffer, while merged
-> approach wake up user only when whole message is received and kept
-> in queue. New implementation has several advantages:
->  1) There is no limit for message length. Merged approach requires
->     that length must be smaller than 'peer_buf_alloc', otherwise
->     transmission will stuck.
->  2) There is no need to keep whole message in queue, thus no
->     'kmalloc()' memory will be wasted until EOR is received.
-> 
->     Also new approach has some feature: as fragments of message
-> are copied until EOR is received, it is possible that part of
-> message will be already in user's buffer, while rest of message
-> still not received. And if user will be interrupted by signal or
-> timeout with part of message in buffer, it will exit receive loop,
-> leaving rest of message in queue. To solve this problem special
-> callback was added to transport: it is called when user was forced
-> to leave exit loop and tells transport to drop any packet until
-> EOR met.
+Hello,
 
-Sorry about commenting late in the game.  I'm a bit lost
+syzbot found the following issue on:
 
+HEAD commit:    007b350a Merge tag 'dlm-5.14' of git://git.kernel.org/pub/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1690caac300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d126a83e6a7982cb
+dashboard link: https://syzkaller.appspot.com/bug?extid=c259b724a0f86d1f5459
+compiler:       Debian clang version 11.0.1-2
 
-SOCK_SEQPACKET
-Provides sequenced, reliable, bidirectional, connection-mode transmission paths for records. A record can be sent using one or more output operations and received using one or more input operations, but a single operation never transfers part of more than one record. Record boundaries are visible to the receiver via the MSG_EOR flag.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c259b724a0f86d1f5459@syzkaller.appspotmail.com
 
-it's supposed to be reliable - how is it legal to drop packets?
+======================================================
+WARNING: possible circular locking dependency detected
+5.13.0-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-fuzzer/8414 is trying to acquire lock:
+ffffffff8cfd67c0 (fs_reclaim){+.+.}-{0:0}, at: __fs_reclaim_acquire+0x0/0x30 mm/page_alloc.c:4222
+
+but task is already holding lock:
+ffff8880b9a31088 (lock#2){-.-.}-{2:2}, at: local_lock_acquire+0x7/0x130 include/linux/local_lock_internal.h:41
+
+which lock already depends on the new lock.
 
 
-> When EOR is found, this mode is disabled and normal packet
-> processing started. Note, that when 'drop until EOR' mode is on,
-> incoming packets still inserted in queue, reader will be woken up,
-> tries to copy data, but nothing will be copied until EOR found.
-> It was possible to drain such unneeded packets it rx work without
-> kicking user, but implemented way is simplest. Anyway, i think
-> such cases are rare.
+the existing dependency chain (in reverse order) is:
+
+-> #1 (lock#2){-.-.}-{2:2}:
+       lock_acquire+0x182/0x4a0 kernel/locking/lockdep.c:5625
+       local_lock_acquire+0x23/0x130 include/linux/local_lock_internal.h:42
+       free_unref_page+0x242/0x550 mm/page_alloc.c:3439
+       mm_free_pgd kernel/fork.c:636 [inline]
+       __mmdrop+0xae/0x3f0 kernel/fork.c:687
+       mmdrop include/linux/sched/mm.h:49 [inline]
+       finish_task_switch+0x221/0x630 kernel/sched/core.c:4582
+       context_switch kernel/sched/core.c:4686 [inline]
+       __schedule+0xb5b/0x1450 kernel/sched/core.c:5940
+       preempt_schedule_irq+0xe3/0x190 kernel/sched/core.c:6328
+       irqentry_exit+0x56/0x90 kernel/entry/common.c:427
+       asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
+       lock_acquire+0x1e7/0x4a0 kernel/locking/lockdep.c:5629
+       __fs_reclaim_acquire+0x20/0x30 mm/page_alloc.c:4564
+       fs_reclaim_acquire+0x59/0xf0 mm/page_alloc.c:4578
+       might_alloc include/linux/sched/mm.h:198 [inline]
+       slab_pre_alloc_hook mm/slab.h:485 [inline]
+       slab_alloc_node mm/slub.c:2891 [inline]
+       slab_alloc mm/slub.c:2978 [inline]
+       kmem_cache_alloc+0x3a/0x340 mm/slub.c:2983
+       getname_flags+0xba/0x640 fs/namei.c:138
+       user_path_at_empty+0x28/0x50 fs/namei.c:2734
+       user_path_at include/linux/namei.h:60 [inline]
+       vfs_statx+0x102/0x3d0 fs/stat.c:203
+       vfs_fstatat fs/stat.c:225 [inline]
+       vfs_lstat include/linux/fs.h:3384 [inline]
+       __do_sys_newlstat fs/stat.c:380 [inline]
+       __se_sys_newlstat fs/stat.c:374 [inline]
+       __x64_sys_newlstat+0xd3/0x150 fs/stat.c:374
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+-> #0 (fs_reclaim){+.+.}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3051 [inline]
+       check_prevs_add+0x4f9/0x5b30 kernel/locking/lockdep.c:3174
+       validate_chain kernel/locking/lockdep.c:3789 [inline]
+       __lock_acquire+0x4476/0x6100 kernel/locking/lockdep.c:5015
+       lock_acquire+0x182/0x4a0 kernel/locking/lockdep.c:5625
+       __fs_reclaim_acquire+0x20/0x30 mm/page_alloc.c:4564
+       fs_reclaim_acquire+0x59/0xf0 mm/page_alloc.c:4578
+       prepare_alloc_pages+0x151/0x5a0 mm/page_alloc.c:5176
+       __alloc_pages+0x14d/0x5f0 mm/page_alloc.c:5375
+       stack_depot_save+0x361/0x490 lib/stackdepot.c:303
+       save_stack+0xf9/0x1f0 mm/page_owner.c:120
+       __set_page_owner+0x42/0x2f0 mm/page_owner.c:181
+       prep_new_page mm/page_alloc.c:2445 [inline]
+       __alloc_pages_bulk+0x9f6/0x10b0 mm/page_alloc.c:5313
+       alloc_pages_bulk_array_node include/linux/gfp.h:557 [inline]
+       vm_area_alloc_pages mm/vmalloc.c:2775 [inline]
+       __vmalloc_area_node mm/vmalloc.c:2845 [inline]
+       __vmalloc_node_range+0x3ad/0x7f0 mm/vmalloc.c:2947
+       vmalloc_user+0x70/0x80 mm/vmalloc.c:3082
+       kcov_mmap+0x28/0x130 kernel/kcov.c:465
+       call_mmap include/linux/fs.h:2119 [inline]
+       mmap_region+0x10e2/0x1da0 mm/mmap.c:1809
+       do_mmap+0x930/0x11a0 mm/mmap.c:1585
+       vm_mmap_pgoff+0x19e/0x2b0 mm/util.c:519
+       ksys_mmap_pgoff+0x504/0x7b0 mm/mmap.c:1636
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(lock#2);
+                               lock(fs_reclaim);
+                               lock(lock#2);
+  lock(fs_reclaim);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-fuzzer/8414:
+ #0: ffff8880187fea28 (&mm->mmap_lock#2){++++}-{3:3}, at: mmap_write_lock_killable include/linux/mmap_lock.h:87 [inline]
+ #0: ffff8880187fea28 (&mm->mmap_lock#2){++++}-{3:3}, at: vm_mmap_pgoff+0x14d/0x2b0 mm/util.c:517
+ #1: ffff8880b9a31088 (lock#2){-.-.}-{2:2}, at: local_lock_acquire+0x7/0x130 include/linux/local_lock_internal.h:41
+
+stack backtrace:
+CPU: 0 PID: 8414 Comm: syz-fuzzer Not tainted 5.13.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack_lvl+0x1ae/0x29f lib/dump_stack.c:96
+ print_circular_bug+0xb17/0xdc0 kernel/locking/lockdep.c:2009
+ check_noncircular+0x2cc/0x390 kernel/locking/lockdep.c:2131
+ check_prev_add kernel/locking/lockdep.c:3051 [inline]
+ check_prevs_add+0x4f9/0x5b30 kernel/locking/lockdep.c:3174
+ validate_chain kernel/locking/lockdep.c:3789 [inline]
+ __lock_acquire+0x4476/0x6100 kernel/locking/lockdep.c:5015
+ lock_acquire+0x182/0x4a0 kernel/locking/lockdep.c:5625
+ __fs_reclaim_acquire+0x20/0x30 mm/page_alloc.c:4564
+ fs_reclaim_acquire+0x59/0xf0 mm/page_alloc.c:4578
+ prepare_alloc_pages+0x151/0x5a0 mm/page_alloc.c:5176
+ __alloc_pages+0x14d/0x5f0 mm/page_alloc.c:5375
+ stack_depot_save+0x361/0x490 lib/stackdepot.c:303
+ save_stack+0xf9/0x1f0 mm/page_owner.c:120
+ __set_page_owner+0x42/0x2f0 mm/page_owner.c:181
+ prep_new_page mm/page_alloc.c:2445 [inline]
+ __alloc_pages_bulk+0x9f6/0x10b0 mm/page_alloc.c:5313
+ alloc_pages_bulk_array_node include/linux/gfp.h:557 [inline]
+ vm_area_alloc_pages mm/vmalloc.c:2775 [inline]
+ __vmalloc_area_node mm/vmalloc.c:2845 [inline]
+ __vmalloc_node_range+0x3ad/0x7f0 mm/vmalloc.c:2947
+ vmalloc_user+0x70/0x80 mm/vmalloc.c:3082
+ kcov_mmap+0x28/0x130 kernel/kcov.c:465
+ call_mmap include/linux/fs.h:2119 [inline]
+ mmap_region+0x10e2/0x1da0 mm/mmap.c:1809
+ do_mmap+0x930/0x11a0 mm/mmap.c:1585
+ vm_mmap_pgoff+0x19e/0x2b0 mm/util.c:519
+ ksys_mmap_pgoff+0x504/0x7b0 mm/mmap.c:1636
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4af20a
+Code: e8 3b 82 fb ff 48 8b 7c 24 10 48 8b 74 24 18 48 8b 54 24 20 4c 8b 54 24 28 4c 8b 44 24 30 4c 8b 4c 24 38 48 8b 44 24 08 0f 05 <48> 3d 01 f0 ff ff 76 20 48 c7 44 24 40 ff ff ff ff 48 c7 44 24 48
+RSP: 002b:000000c0003715d8 EFLAGS: 00000212 ORIG_RAX: 0000000000000009
+RAX: ffffffffffffffda RBX: 000000c00001c000 RCX: 00000000004af20a
+RDX: 0000000000000003 RSI: 0000000000080000 RDI: 0000000000000000
+RBP: 000000c000371638 R08: 0000000000000006 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000212 R12: 00000000007798c5
+R13: 00000000000000de R14: 00000000000000dd R15: 0000000000000100
+BUG: sleeping function called from invalid context at mm/page_alloc.c:5179
+in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 8414, name: syz-fuzzer
+INFO: lockdep is turned off.
+irq event stamp: 67846
+hardirqs last  enabled at (67845): [<ffffffff89c89aab>] __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160 [inline]
+hardirqs last  enabled at (67845): [<ffffffff89c89aab>] _raw_spin_unlock_irqrestore+0x8b/0x120 kernel/locking/spinlock.c:191
+hardirqs last disabled at (67846): [<ffffffff81bee901>] __alloc_pages_bulk+0x801/0x10b0 mm/page_alloc.c:5291
+softirqs last  enabled at (67050): [<ffffffff814d502b>] invoke_softirq kernel/softirq.c:432 [inline]
+softirqs last  enabled at (67050): [<ffffffff814d502b>] __irq_exit_rcu+0x21b/0x260 kernel/softirq.c:636
+softirqs last disabled at (66829): [<ffffffff814d502b>] invoke_softirq kernel/softirq.c:432 [inline]
+softirqs last disabled at (66829): [<ffffffff814d502b>] __irq_exit_rcu+0x21b/0x260 kernel/softirq.c:636
+CPU: 0 PID: 8414 Comm: syz-fuzzer Not tainted 5.13.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack_lvl+0x1ae/0x29f lib/dump_stack.c:96
+ ___might_sleep+0x4e5/0x6b0 kernel/sched/core.c:9153
+ prepare_alloc_pages+0x1c0/0x5a0 mm/page_alloc.c:5179
+ __alloc_pages+0x14d/0x5f0 mm/page_alloc.c:5375
+ stack_depot_save+0x361/0x490 lib/stackdepot.c:303
+ save_stack+0xf9/0x1f0 mm/page_owner.c:120
+ __set_page_owner+0x42/0x2f0 mm/page_owner.c:181
+ prep_new_page mm/page_alloc.c:2445 [inline]
+ __alloc_pages_bulk+0x9f6/0x10b0 mm/page_alloc.c:5313
+ alloc_pages_bulk_array_node include/linux/gfp.h:557 [inline]
+ vm_area_alloc_pages mm/vmalloc.c:2775 [inline]
+ __vmalloc_area_node mm/vmalloc.c:2845 [inline]
+ __vmalloc_node_range+0x3ad/0x7f0 mm/vmalloc.c:2947
+ vmalloc_user+0x70/0x80 mm/vmalloc.c:3082
+ kcov_mmap+0x28/0x130 kernel/kcov.c:465
+ call_mmap include/linux/fs.h:2119 [inline]
+ mmap_region+0x10e2/0x1da0 mm/mmap.c:1809
+ do_mmap+0x930/0x11a0 mm/mmap.c:1585
+ vm_mmap_pgoff+0x19e/0x2b0 mm/util.c:519
+ ksys_mmap_pgoff+0x504/0x7b0 mm/mmap.c:1636
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4af20a
+Code: e8 3b 82 fb ff 48 8b 7c 24 10 48 8b 74 24 18 48 8b 54 24 20 4c 8b 54 24 28 4c 8b 44 24 30 4c 8b 4c 24 38 48 8b 44 24 08 0f 05 <48> 3d 01 f0 ff ff 76 20 48 c7 44 24 40 ff ff ff ff 48 c7 44 24 48
+RSP: 002b:000000c0003715d8 EFLAGS: 00000212 ORIG_RAX: 0000000000000009
+RAX: ffffffffffffffda RBX: 000000c00001c000 RCX: 00000000004af20a
+RDX: 0000000000000003 RSI: 0000000000080000 RDI: 0000000000000000
+RBP: 000000c000371638 R08: 0000000000000006 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000212 R12: 00000000007798c5
+R13: 00000000000000de R14: 00000000000000dd R15: 0000000000000100
+can: request_module (can-proto-0) failed.
+can: request_module (can-proto-0) failed.
+can: request_module (can-proto-0) failed.
 
 
->     New test also added - it tries to copy to invalid user's
-> buffer.
-> 
-> Arseny Krasnov (16):
->  af_vsock/virtio/vsock: change seqpacket receive logic
->  af_vsock/virtio/vsock: remove 'seqpacket_has_data' callback
->  virtio/vsock: remove 'msg_count' based logic
->  af_vsock/virtio/vsock: add 'seqpacket_drop()' callback
->  virtio/vsock: remove record size limit for SEQPACKET
->  vsock_test: SEQPACKET read to broken buffer
-> 
->  drivers/vhost/vsock.c                   |   2 +-
->  include/linux/virtio_vsock.h            |   7 +-
->  include/net/af_vsock.h                  |   4 +-
->  net/vmw_vsock/af_vsock.c                |  44 ++++----
->  net/vmw_vsock/virtio_transport.c        |   2 +-
->  net/vmw_vsock/virtio_transport_common.c | 103 ++++++++-----------
->  net/vmw_vsock/vsock_loopback.c          |   2 +-
->  tools/testing/vsock/vsock_test.c        | 120 ++++++++++++++++++++++
->  8 files changed, 193 insertions(+), 91 deletions(-)
-> 
->  v1 -> v2:
->  Patches reordered and reorganized.
-> 
-> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
-> ---
->  cv.txt | 0
->  1 file changed, 0 insertions(+), 0 deletions(-)
->  create mode 100644 cv.txt
-> 
-> diff --git a/cv.txt b/cv.txt
-> new file mode 100644
-> index 000000000000..e69de29bb2d1
-> -- 
-> 2.25.1
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
