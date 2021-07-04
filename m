@@ -2,255 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EED6F3BAF07
-	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 22:38:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3FE83BAF17
+	for <lists+netdev@lfdr.de>; Sun,  4 Jul 2021 22:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbhGDUlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Jul 2021 16:41:10 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:45585 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbhGDUlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Jul 2021 16:41:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id e24-20020a5d8e180000b02904dd8a55bbd7so12024793iod.12
-        for <netdev@vger.kernel.org>; Sun, 04 Jul 2021 13:38:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=MLuticSE4LQzdZP0NRfEKiJDbhJOy5ADvFzX0FtLti4=;
-        b=lu/OJzGKcIVkupkTpx2Q4CmJ6YNkAEiap7ILNDDrXpvn/otU+xHvC9INEmJz3L0cOS
-         hmUxLQ+d+CebJzUmj6xJensG5mMH/cNz9wmkwkwLiSUodyiYLtzI1JfijUcLSxZk1/lM
-         YXV/IkDD0/VRFiK1HmYtOWz0QpKfEFZ8RInLiNmoCdSqqVrj9bJOS4Pjrl9WkFet8AD5
-         sThYL9WNu+p8FHOBF1Hg5msRg17nCidDPfWEQcII96NwshHvWjO4AgA8OXH28JCbC457
-         BBywpxdiz8jEsKn1Yja47YcUH7TjzxZ+eJCYmDqZXCr/VPpR9V46d3j0uevcca+vwHfu
-         iCHw==
-X-Gm-Message-State: AOAM530v4iAP0obWxdSCvkonqTkt88k5tWKmZfhbrlUydIaeI1k9+z/X
-        QSbKSk4R36A6mvmL3/g7d76E+WRicgydr3GRNYVFkV7cIvIY
-X-Google-Smtp-Source: ABdhPJzuo27ypgJUxAtOEluYDIcClDZ625Oha1VKjo2FdKhVsryX0hD93G995cfZ2WYMD0n31Gfc3wXnxi2XO1tM8oa68JIhoDL2
+        id S230053AbhGDUzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Jul 2021 16:55:09 -0400
+Received: from mail-co1nam11on2041.outbound.protection.outlook.com ([40.107.220.41]:20256
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229993AbhGDUzG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Jul 2021 16:55:06 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ICktUMPpMMWd02v8GZveevsUrec1wWphPIZ5KZDq9RUiyPMIjRhjaxxFQkWKNa2pxUf6WPsOO+JYkfJL3y7VjZHCPzAnCzGQo7D4irNmQm9BWZ2hvNY9OdwrSxbAd74TxdcY/VaqMh804w87M5/ruaBdzFFQYdN7W28V1Egp/9bXUbiG5+7YohUDI8ponfGSNoQCnSaZpfE8s62SbSy1nHR4HzkdYX6D0uQqbSeC3wHpVgrLCjRIjBxazRmAmKy3nHjt1cYPtczuqNSG+0u/XWF7xiqWRDd1ZMPVsslM4MbxjuEz4QokseXpvrG7Fl5itB+SS7XK0CPnle3O9ks34g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oqcPIFQcyNyr/HkunJOg7peb6T4Uizzxa/iiUu/K0/o=;
+ b=An9k/2sbMLQpglAYpDWI/n1YGg/c0zTGV8IWxwhUGcyfAcyRb9oMfrBH4ZN4zTyghzpvsCiY/Vxj+zjxNjpNM+lqeSnj9ai0gWMI3VU2fpJrzfOjvnXBvt9u/VkPnB3E7BVUHxN0Byy1u0l7tGNaKYrdfEMoaEp9B/z/lPFYmGPzk8c0wRChQUGFGLCoEUvKyeZMLGf6qdHtbqTytoyXRa8sychBRJVuiqsDK4hpTvvRPi0BP5RZr0eDe4cv7bsx/B+Vh9oQKAjVqWcJfGWvucaIjC83DShLKSEsHlQDjpzWde81CkUfB+xbPSuPwahanF25uBwZmho18zGw/HVVew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oqcPIFQcyNyr/HkunJOg7peb6T4Uizzxa/iiUu/K0/o=;
+ b=Et57EfZ6RgCkYg9HTowlvpDGi31Xtk6lm3CoCYwrZUQJXaH7YS8FEh/KVXWYi2p2JTHyss+NMhZJoZ/rm57gO3TyNSgYdOuxmHCAG6rE9d9WAVSGRMulRYBjHlxPoYV6cybCnaYzmgiJK8Sh4C4FFBbdYte9bUIS6lNp4jv2nsc=
+Received: from SN6PR04CA0089.namprd04.prod.outlook.com (2603:10b6:805:f2::30)
+ by BYAPR02MB5974.namprd02.prod.outlook.com (2603:10b6:a03:125::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.30; Sun, 4 Jul
+ 2021 20:52:28 +0000
+Received: from SN1NAM02FT0040.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:805:f2:cafe::4c) by SN6PR04CA0089.outlook.office365.com
+ (2603:10b6:805:f2::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend
+ Transport; Sun, 4 Jul 2021 20:52:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0040.mail.protection.outlook.com (10.97.5.204) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4287.22 via Frontend Transport; Sun, 4 Jul 2021 20:52:28 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Sun, 4 Jul 2021 13:52:28 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Sun, 4 Jul 2021 13:52:28 -0700
+Envelope-to: mst@redhat.com,
+ jasowang@redhat.com,
+ kvm@vger.kernel.org,
+ virtualization@lists.linux-foundation.org,
+ netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.177.4.102] (port=43696 helo=xndengvm004102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <gautam.dawar@xilinx.com>)
+        id 1m096J-0006NY-Lq; Sun, 04 Jul 2021 13:52:28 -0700
+From:   <gautam.dawar@xilinx.com>
+CC:     <martinh@xilinx.com>, <hanand@xilinx.com>, <gdawar@xilinx.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [RFC PATCH] vhost-vdpa: mark vhost device invalid to reflect vdpa device unregistration
+Date:   Mon, 5 Jul 2021 02:22:04 +0530
+Message-ID: <20210704205205.6132-1-gdawar@xilinx.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3594:: with SMTP id v20mr9090624jal.25.1625431107414;
- Sun, 04 Jul 2021 13:38:27 -0700 (PDT)
-Date:   Sun, 04 Jul 2021 13:38:27 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c3b12f05c6522ba9@google.com>
-Subject: [syzbot] upstream test error: possible deadlock in fs_reclaim_acquire
-From:   syzbot <syzbot+957fdc00c16da68efb1b@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
-        axboe@kernel.dk, bpf@vger.kernel.org, christian@brauner.io,
-        daniel@iogearbox.net, ebiederm@xmission.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        peterz@infradead.org, shakeelb@google.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1132d640-530c-46fc-ce7b-08d93f2da2de
+X-MS-TrafficTypeDiagnostic: BYAPR02MB5974:
+X-Microsoft-Antispam-PRVS: <BYAPR02MB5974DC012FB7AEBD552EB078B11D9@BYAPR02MB5974.namprd02.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IumzZknY8CfSm8rLoXTfTJrtknARJ8DlhKdlA/eKyIhKAUqaLYEbXHimVq+daXV38szfnl64vM1KXpoQqqv4uIcwHHz74REqquc7MqUnPLQniz147/go54aUlAKk4SyfsrgH6+awI8Gfu+uPTIwZsSYDE0O9uIbyLC4iFs5ifHYbHaTaUESfL+TsW7paLsLyme+XhmlFkUznwoCec2Cx744tHS70pb4uDjGo+8qKiR4XdsRwyC0yL3KJjoM7+7iXYl8DakHi+T2JvUIpN7PB4SKNc3m/QEEJbHvJJQ4QywiGgknMeEQa1aLd1ZLxKFI4pHAcOQX1A+pjMKmr8pKkOrMkORJx5BJW0M9/XbInSmPWOdE3NNAK6iCdTkJe0nOz1HZmCxpgXm8iwv7DNuLHvciW4u66d/LFnXrZqQXQ1SuLA9INhZ3p4ZnTSswJRRDk72eTbAMw0N21tbis3pcV7Ax7L6udkxh55yJ4GTnpMP1ijaxCNTnFIINTKa6qZs6D3bnZaBQ4DkZQHtPJVX7s9LBorgM+ukoD6+S/d78r93d2XaILS7uzqHyz3cnln9G+Tg3ezJGQPY2hVNDZjkYS4KQKTPtAc8GVW70GmUhr6bddOwq+stS0cj1lT1Zmkl8+P0iU9uwVtW+0Hv2xa++xA23lUH5g2/rmrI+nO17+ElJaSaNcMN3reBATZc5Zwwi/OufAkoLAZ/frf8Tzg7G1ffmhNI5H7YJU8aPsjqKT2TsHg8jBJwCG/ryYitRW/5ms
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(39850400004)(346002)(36840700001)(46966006)(4326008)(82740400003)(36860700001)(70586007)(83380400001)(8676002)(426003)(5660300002)(54906003)(82310400003)(2616005)(186003)(6666004)(36756003)(70206006)(26005)(1076003)(356005)(9786002)(109986005)(7636003)(36906005)(478600001)(336012)(2876002)(316002)(7696005)(2906002)(8936002)(47076005)(102446001)(266003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2021 20:52:28.7435
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1132d640-530c-46fc-ce7b-08d93f2da2de
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0040.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB5974
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Gautam Dawar <gdawar@xilinx.com>
 
-syzbot found the following issue on:
+As mentioned in Bug 213179, any malicious user-space application can render
+a module registering a vDPA device to hang forever. This will typically
+surface when vdpa_device_unregister() is called from the function
+responsible for module unload, leading rmmod commands to not return.
 
-HEAD commit:    df04fbe8 Merge branch 'for-linus' of git://git.kernel.org/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15be418c300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a5c1e3acc43bcfec
-dashboard link: https://syzkaller.appspot.com/bug?extid=957fdc00c16da68efb1b
+This patch unblocks the caller module by continuing with the clean-up
+but after marking the vhost device as unavailable. For future requests
+from user-space application, the vhost device availability is checked
+first and if it has gone unavailable, such requests are denied.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+957fdc00c16da68efb1b@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-5.13.0-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-fuzzer/8436 is trying to acquire lock:
-ffffffff8c099780 (fs_reclaim){+.+.}-{0:0}, at: fs_reclaim_acquire+0xf7/0x160 mm/page_alloc.c:4586
-
-but task is already holding lock:
-ffff8880b9d31620 (lock#2){-.-.}-{2:2}, at: __alloc_pages_bulk+0x4ad/0x1870 mm/page_alloc.c:5291
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (lock#2){-.-.}-{2:2}:
-       local_lock_acquire include/linux/local_lock_internal.h:42 [inline]
-       free_unref_page+0x1bf/0x690 mm/page_alloc.c:3439
-       mm_free_pgd kernel/fork.c:636 [inline]
-       __mmdrop+0xcb/0x3f0 kernel/fork.c:687
-       mmdrop include/linux/sched/mm.h:49 [inline]
-       finish_task_switch.isra.0+0x7cd/0xb80 kernel/sched/core.c:4582
-       context_switch kernel/sched/core.c:4686 [inline]
-       __schedule+0xb41/0x5980 kernel/sched/core.c:5940
-       preempt_schedule_irq+0x4e/0x90 kernel/sched/core.c:6328
-       irqentry_exit+0x31/0x80 kernel/entry/common.c:427
-       asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
-       lock_release+0x12/0x720 kernel/locking/lockdep.c:5633
-       might_alloc include/linux/sched/mm.h:199 [inline]
-       slab_pre_alloc_hook mm/slab.h:485 [inline]
-       slab_alloc mm/slab.c:3306 [inline]
-       kmem_cache_alloc+0x41/0x530 mm/slab.c:3507
-       anon_vma_alloc mm/rmap.c:89 [inline]
-       anon_vma_fork+0xed/0x630 mm/rmap.c:354
-       dup_mmap kernel/fork.c:554 [inline]
-       dup_mm+0x9a0/0x1380 kernel/fork.c:1379
-       copy_mm kernel/fork.c:1431 [inline]
-       copy_process+0x71f0/0x74d0 kernel/fork.c:2119
-       kernel_clone+0xe7/0xab0 kernel/fork.c:2509
-       __do_sys_clone+0xc8/0x110 kernel/fork.c:2626
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
-
--> #0 (fs_reclaim){+.+.}-{0:0}:
-       check_prev_add kernel/locking/lockdep.c:3051 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3174 [inline]
-       validate_chain kernel/locking/lockdep.c:3789 [inline]
-       __lock_acquire+0x2a07/0x54a0 kernel/locking/lockdep.c:5015
-       lock_acquire kernel/locking/lockdep.c:5625 [inline]
-       lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
-       __fs_reclaim_acquire mm/page_alloc.c:4564 [inline]
-       fs_reclaim_acquire+0x117/0x160 mm/page_alloc.c:4578
-       prepare_alloc_pages+0x15c/0x580 mm/page_alloc.c:5176
-       __alloc_pages+0x12f/0x500 mm/page_alloc.c:5375
-       alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2272
-       stack_depot_save+0x39d/0x4e0 lib/stackdepot.c:303
-       save_stack+0x15e/0x1e0 mm/page_owner.c:120
-       __set_page_owner+0x50/0x290 mm/page_owner.c:181
-       prep_new_page mm/page_alloc.c:2445 [inline]
-       __alloc_pages_bulk+0x8b9/0x1870 mm/page_alloc.c:5313
-       alloc_pages_bulk_array_node include/linux/gfp.h:557 [inline]
-       vm_area_alloc_pages mm/vmalloc.c:2775 [inline]
-       __vmalloc_area_node mm/vmalloc.c:2845 [inline]
-       __vmalloc_node_range+0x39d/0x960 mm/vmalloc.c:2947
-       vmalloc_user+0x67/0x80 mm/vmalloc.c:3082
-       kcov_mmap+0x2b/0x140 kernel/kcov.c:465
-       call_mmap include/linux/fs.h:2119 [inline]
-       mmap_region+0xcde/0x1760 mm/mmap.c:1809
-       do_mmap+0x86e/0x11d0 mm/mmap.c:1585
-       vm_mmap_pgoff+0x1b7/0x290 mm/util.c:519
-       ksys_mmap_pgoff+0x4a8/0x620 mm/mmap.c:1636
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(lock#2);
-                               lock(fs_reclaim);
-                               lock(lock#2);
-  lock(fs_reclaim);
-
- *** DEADLOCK ***
-
-2 locks held by syz-fuzzer/8436:
- #0: ffff88802a51c128 (&mm->mmap_lock#2){++++}-{3:3}, at: mmap_write_lock_killable include/linux/mmap_lock.h:87 [inline]
- #0: ffff88802a51c128 (&mm->mmap_lock#2){++++}-{3:3}, at: vm_mmap_pgoff+0x15c/0x290 mm/util.c:517
- #1: ffff8880b9d31620 (lock#2){-.-.}-{2:2}, at: __alloc_pages_bulk+0x4ad/0x1870 mm/page_alloc.c:5291
-
-stack backtrace:
-CPU: 1 PID: 8436 Comm: syz-fuzzer Not tainted 5.13.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:96
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2131
- check_prev_add kernel/locking/lockdep.c:3051 [inline]
- check_prevs_add kernel/locking/lockdep.c:3174 [inline]
- validate_chain kernel/locking/lockdep.c:3789 [inline]
- __lock_acquire+0x2a07/0x54a0 kernel/locking/lockdep.c:5015
- lock_acquire kernel/locking/lockdep.c:5625 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5590
- __fs_reclaim_acquire mm/page_alloc.c:4564 [inline]
- fs_reclaim_acquire+0x117/0x160 mm/page_alloc.c:4578
- prepare_alloc_pages+0x15c/0x580 mm/page_alloc.c:5176
- __alloc_pages+0x12f/0x500 mm/page_alloc.c:5375
- alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2272
- stack_depot_save+0x39d/0x4e0 lib/stackdepot.c:303
- save_stack+0x15e/0x1e0 mm/page_owner.c:120
- __set_page_owner+0x50/0x290 mm/page_owner.c:181
- prep_new_page mm/page_alloc.c:2445 [inline]
- __alloc_pages_bulk+0x8b9/0x1870 mm/page_alloc.c:5313
- alloc_pages_bulk_array_node include/linux/gfp.h:557 [inline]
- vm_area_alloc_pages mm/vmalloc.c:2775 [inline]
- __vmalloc_area_node mm/vmalloc.c:2845 [inline]
- __vmalloc_node_range+0x39d/0x960 mm/vmalloc.c:2947
- vmalloc_user+0x67/0x80 mm/vmalloc.c:3082
- kcov_mmap+0x2b/0x140 kernel/kcov.c:465
- call_mmap include/linux/fs.h:2119 [inline]
- mmap_region+0xcde/0x1760 mm/mmap.c:1809
- do_mmap+0x86e/0x11d0 mm/mmap.c:1585
- vm_mmap_pgoff+0x1b7/0x290 mm/util.c:519
- ksys_mmap_pgoff+0x4a8/0x620 mm/mmap.c:1636
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4af20a
-Code: e8 3b 82 fb ff 48 8b 7c 24 10 48 8b 74 24 18 48 8b 54 24 20 4c 8b 54 24 28 4c 8b 44 24 30 4c 8b 4c 24 38 48 8b 44 24 08 0f 05 <48> 3d 01 f0 ff ff 76 20 48 c7 44 24 40 ff ff ff ff 48 c7 44 24 48
-RSP: 002b:000000c0006175d8 EFLAGS: 00000212 ORIG_RAX: 0000000000000009
-RAX: ffffffffffffffda RBX: 000000c00001e800 RCX: 00000000004af20a
-RDX: 0000000000000003 RSI: 0000000000080000 RDI: 0000000000000000
-RBP: 000000c000617638 R08: 0000000000000006 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000212 R12: 00000000007798c5
-R13: 00000000000000d3 R14: 00000000000000d2 R15: 0000000000000100
-BUG: sleeping function called from invalid context at mm/page_alloc.c:5179
-in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 8436, name: syz-fuzzer
-INFO: lockdep is turned off.
-irq event stamp: 6576
-hardirqs last  enabled at (6575): [<ffffffff891e6120>] __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:160 [inline]
-hardirqs last  enabled at (6575): [<ffffffff891e6120>] _raw_spin_unlock_irqrestore+0x50/0x70 kernel/locking/spinlock.c:191
-hardirqs last disabled at (6576): [<ffffffff81b1bf0c>] __alloc_pages_bulk+0x101c/0x1870 mm/page_alloc.c:5291
-softirqs last  enabled at (5362): [<ffffffff812b500e>] copy_kernel_to_xregs arch/x86/include/asm/fpu/internal.h:330 [inline]
-softirqs last  enabled at (5362): [<ffffffff812b500e>] __fpu__restore_sig+0xe5e/0x14d0 arch/x86/kernel/fpu/signal.c:360
-softirqs last disabled at (5360): [<ffffffff812b4aa2>] __fpu__restore_sig+0x8f2/0x14d0 arch/x86/kernel/fpu/signal.c:325
-CPU: 1 PID: 8436 Comm: syz-fuzzer Not tainted 5.13.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:96
- ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:9153
- prepare_alloc_pages+0x3da/0x580 mm/page_alloc.c:5179
- __alloc_pages+0x12f/0x500 mm/page_alloc.c:5375
- alloc_pages+0x18c/0x2a0 mm/mempolicy.c:2272
- stack_depot_save+0x39d/0x4e0 lib/stackdepot.c:303
- save_stack+0x15e/0x1e0 mm/page_owner.c:120
- __set_page_owner+0x50/0x290 mm/page_owner.c:181
- prep_new_page mm/page_alloc.c:2445 [inline]
- __alloc_pages_bulk+0x8b9/0x1870 mm/page_alloc.c:5313
- alloc_pages_bulk_array_node include/linux/gfp.h:557 [inline]
- vm_area_alloc_pages mm/vmalloc.c:2775 [inline]
- __vmalloc_area_node mm/vmalloc.c:2845 [inline]
- __vmalloc_node_range+0x39d/0x960 mm/vmalloc.c:2947
- vmalloc_user+0x67/0x80 mm/vmalloc.c:3082
- kcov_mmap+0x2b/0x140 kernel/kcov.c:465
- call_mmap include/linux/fs.h:2119 [inline]
- mmap_region+0xcde/0x1760 mm/mmap.c:1809
- do_mmap+0x86e/0x11d0 mm/mmap.c:1585
- vm_mmap_pgoff+0x1b7/0x290 mm/util.c:519
- ksys_mmap_pgoff+0x4a8/0x620 mm/mmap.c:1636
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4af20a
-Code: e8 3b 82 fb ff 48 8b 7c 24 10 48 8b 74 24 18 48 8b 54 24 20 4c 8b 54 24 28 4c 8b 44 24 30 4c 8b 4c 24 38 48 8b 44 24 08 0f 05 <48> 3d 01 f0 ff ff 76 20 48 c7 44 24 40 ff ff ff ff 48 c7 44 24 48
-RSP: 002b:000000c0006175d8 EFLAGS: 00000212 ORIG_RAX: 0000000000000009
-RAX: ffffffffffffffda RBX: 000000c00001e800 RCX: 00000000004af20a
-RDX: 0000000000000003 RSI: 0000000000080000 RDI: 0000000000000000
-RBP: 000000c000617638 R08: 0000000000000006 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000212 R12: 00000000007798c5
-R13: 00000000000000d3 R14: 00000000000000d2 R15: 0000000000000100
-
-
+Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/vhost/vdpa.c | 45 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 39 insertions(+), 6 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index e4b7d26649d8..623bc7f0c0ca 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -47,6 +47,7 @@ struct vhost_vdpa {
+ 	int minor;
+ 	struct eventfd_ctx *config_ctx;
+ 	int in_batch;
++	int dev_invalid;
+ 	struct vdpa_iova_range range;
+ };
+ 
+@@ -61,6 +62,11 @@ static void handle_vq_kick(struct vhost_work *work)
+ 	struct vhost_vdpa *v = container_of(vq->dev, struct vhost_vdpa, vdev);
+ 	const struct vdpa_config_ops *ops = v->vdpa->config;
+ 
++	if (v->dev_invalid) {
++		dev_info(&v->dev,
++			 "%s: vhost_vdpa device unavailable\n", __func__);
++		return;
++	}
+ 	ops->kick_vq(v->vdpa, vq - v->vqs);
+ }
+ 
+@@ -120,6 +126,11 @@ static void vhost_vdpa_reset(struct vhost_vdpa *v)
+ {
+ 	struct vdpa_device *vdpa = v->vdpa;
+ 
++	if (v->dev_invalid) {
++		dev_info(&v->dev,
++			 "%s: vhost_vdpa device unavailable\n", __func__);
++		return;
++	}
+ 	vdpa_reset(vdpa);
+ 	v->in_batch = 0;
+ }
+@@ -367,6 +378,11 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+ 	u32 idx;
+ 	long r;
+ 
++	if (v->dev_invalid) {
++		dev_info(&v->dev,
++			 "%s: vhost_vdpa device unavailable\n", __func__);
++		return -ENODEV;
++	}
+ 	r = get_user(idx, (u32 __user *)argp);
+ 	if (r < 0)
+ 		return r;
+@@ -450,6 +466,11 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+ 		return 0;
+ 	}
+ 
++	if (v->dev_invalid) {
++		dev_info(&v->dev,
++			 "%s: vhost_vdpa device unavailable\n", __func__);
++		return -ENODEV;
++	}
+ 	mutex_lock(&d->mutex);
+ 
+ 	switch (cmd) {
+@@ -745,8 +766,13 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev,
+ 	const struct vdpa_config_ops *ops = vdpa->config;
+ 	int r = 0;
+ 
+-	mutex_lock(&dev->mutex);
++	if (v->dev_invalid) {
++		dev_info(&v->dev,
++			 "%s: vhost_vdpa device unavailable\n", __func__);
++		return -ENODEV;
++	}
+ 
++	mutex_lock(&dev->mutex);
+ 	r = vhost_dev_check_owner(dev);
+ 	if (r)
+ 		goto unlock;
+@@ -949,6 +975,11 @@ static vm_fault_t vhost_vdpa_fault(struct vm_fault *vmf)
+ 	struct vm_area_struct *vma = vmf->vma;
+ 	u16 index = vma->vm_pgoff;
+ 
++	if (v->dev_invalid) {
++		dev_info(&v->dev,
++			 "%s: vhost_vdpa device unavailable\n", __func__);
++		return VM_FAULT_NOPAGE;
++	}
+ 	notify = ops->get_vq_notification(vdpa, index);
+ 
+ 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+@@ -1091,11 +1122,13 @@ static void vhost_vdpa_remove(struct vdpa_device *vdpa)
+ 		opened = atomic_cmpxchg(&v->opened, 0, 1);
+ 		if (!opened)
+ 			break;
+-		wait_for_completion_timeout(&v->completion,
+-					    msecs_to_jiffies(1000));
+-		dev_warn_once(&v->dev,
+-			      "%s waiting for /dev/%s to be closed\n",
+-			      __func__, dev_name(&v->dev));
++		if (!wait_for_completion_timeout(&v->completion,
++					    msecs_to_jiffies(1000))) {
++			dev_warn(&v->dev,
++				 "%s /dev/%s in use, continue..\n",
++				 __func__, dev_name(&v->dev));
++			break;
++		}
+ 	} while (1);
+ 
+ 	put_device(&v->dev);
++	v->dev_invalid = true;
+-- 
+2.30.1
+
