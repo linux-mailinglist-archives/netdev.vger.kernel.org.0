@@ -2,339 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D93763BBB81
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:48:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCCA03BBB83
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:48:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231183AbhGEKvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 06:51:01 -0400
-Received: from mail-sn1anam02on2084.outbound.protection.outlook.com ([40.107.96.84]:6090
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230511AbhGEKvA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Jul 2021 06:51:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PnxsYetn2L5T4P9OrQdTxNu5ei9HM85Qn+nWv+qDxaWuB8It6U2IMtiw5zGq6TkIaWz6677AKhrA4qEqf0bhZqgx4relUOeg90au5FJlubCDWtIvAYpEfVETSW8hUQGr7r+TGVFdUDzSmg9gNgo4aMhaNnPwNVFfxGxubhcg1cjrOh+ztb2ZTuAwuYh6Mo+6JgpC7yH6ZfOTGV6fXKmP4eYBP08/BjAs7iYzkSoGEdrhqryAlNz8RxLTOOSXSiZx86li9kTnNgbF0fzqdUpBNtbSkhRlmVvd88Lps/V1JxZrt1U4u8dhhNK02SnEybka6P5fVjsM86I3uuebdMZXqw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=igQZN5JyzEIfoRbzuapK8qUmEudFJA/rHdkN61kdhuA=;
- b=Q8n0OxjNqRwLD2U4a21ky71UDHELtrYi6zx6bUgjtLyHrCmufRlj/alOmrGanv0lT3HUQcbkLvbxtnqsolNHffLm1+v0/UFAjKpAluJrja+/UPoLTB6VfBmwmQVHg6KEUiq5xXSsfRLJBp3Lo2sbUrlQrCgNbu8r7rQZ5f5KNZgCNbOKp6ZIWwwvbuOgR2UdeGZiQH+eqDyaK9uejSGwd8VePmBvTTGEPhKF+Wk1YRbHxJD6iPzw1Nd1qRMHvxCDRrxvB4YlU4R/iK8LnTWMD5gdNNL3JcXgteIhRaHbNGj2pAVgoZFm5qsTeeX9zXSGSbu1xS+Exeee56PZ5QVdug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=igQZN5JyzEIfoRbzuapK8qUmEudFJA/rHdkN61kdhuA=;
- b=UK/vhmbmcWeDWLthf0npc2fNxcYp4PYrlgfG6OfFGiaCrWqFcdDxngIfTGZluGqyAuSVbffGKIK60nzZsojbhN/jBKsz9jD4UcGt+z/aZWBK1QwPEHWfBZztSi7uxXraopuWTP/2IqYrKrpCrNwpjbg5fCBrT0kmIvnIAvNB4CwstahD9PHSxYa89xxs0DdwRXFj7flx+7BFfS5m/7SG2yPzKMcugiqijO1JbMHdOUdgTSWOCE/RFFEsmuDjoKmbBvHsC7W+Cg8pXplJwnKXLQF8Lfq5k+yKWP8c+tnSP2yZApbigusSngRHxVkYcWcdsHqqyH8r3v8st+2Yd4T+Kg==
-Received: from BN0PR04CA0002.namprd04.prod.outlook.com (2603:10b6:408:ee::7)
- by BY5PR12MB4049.namprd12.prod.outlook.com (2603:10b6:a03:201::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.23; Mon, 5 Jul
- 2021 10:48:22 +0000
-Received: from BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ee:cafe::f5) by BN0PR04CA0002.outlook.office365.com
- (2603:10b6:408:ee::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend
- Transport; Mon, 5 Jul 2021 10:48:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT037.mail.protection.outlook.com (10.13.177.182) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4287.22 via Frontend Transport; Mon, 5 Jul 2021 10:48:22 +0000
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (172.20.187.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 5 Jul 2021 10:48:18 +0000
-Date:   Mon, 5 Jul 2021 13:48:10 +0300
-From:   Paul Blakey <paulb@nvidia.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, Eric Dumazet <eric.dumazet@gmail.com>,
+        id S231240AbhGEKvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 06:51:10 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:16018 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230482AbhGEKvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 06:51:09 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 5970675FD6;
+        Mon,  5 Jul 2021 13:48:31 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1625482111;
+        bh=r5Z1vzpteloz/5230YXT1DtK09ZfwpWzllYWGELadvQ=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=lBRCPbvL+OhqDXqtnOvFsBwWS1MIjNEI+9b5cqqKB5AylqgOtGwAhfbRfkrtI9kC2
+         Ow1Ma7MbK5pODy7JF7lLiHJ3kgeGkBCIRM6FeKL/UVRSU/COJr0aDjsfy/TBkTDpey
+         TYbifR0wiNkvIheTcUJFf470XUewWFYMhI9Jg0cZ73X3iftUXcSW5uFRqVhO5y9b6U
+         9OLShgveInxCunlShptWierzjPubf7v1428flenPj00F23d5Hz3XVZqbGWsBgdNnNF
+         9XIEUaTlwyUsG3/HE91mVoguJSV80cZc9KF0ePFeRPj9M4vsyLB2+FI6l+gRFBSipq
+         qRmcz/1M3orLA==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id A240775FAE;
+        Mon,  5 Jul 2021 13:48:30 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.64.121) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.14; Mon, 5
+ Jul 2021 13:48:29 +0300
+Subject: Re: [MASSMAIL KLMS]Re: [RFC PATCH v2 0/6] Improve SOCK_SEQPACKET
+ receive logic
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "Oz Shlomo" <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [PATCH net v2] skbuff: Release nfct refcount on napi stolen or
- re-used skbs
-In-Reply-To: <cba3fd4b530e05c8262713e32bad54d87c5a151a.camel@redhat.com>
-Message-ID: <d0b4ca2e-d58e-f611-219b-a8aff6c5fc75@nvidia.com>
-References: <1625471347-21730-1-git-send-email-paulb@nvidia.com> <cba3fd4b530e05c8262713e32bad54d87c5a151a.camel@redhat.com>
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Colin Ian King <colin.king@canonical.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210704080820.88746-1-arseny.krasnov@kaspersky.com>
+ <20210704042843-mutt-send-email-mst@kernel.org>
+ <b427dee7-5c1b-9686-9004-05fa05d45b28@kaspersky.com>
+ <20210704055037-mutt-send-email-mst@kernel.org>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <c9f0d355-27a1-fb19-eac0-06a5d7648f5d@kaspersky.com>
+Date:   Mon, 5 Jul 2021 13:48:28 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8e72f537-bd79-4fdd-44f8-08d93fa268b0
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4049:
-X-Microsoft-Antispam-PRVS: <BY5PR12MB4049353B511C2242A6EA3277C21C9@BY5PR12MB4049.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mxOhxgT5Ax+aQlbO05fIjzFwlJIHSrS/VwoxiFwoKyxdTi4RwhiFpe+HfOB5qZKj8W3PHdPkueW0yTUSgpm012qpgGcYBqil9wi/VT6FjOg206hb+WxyL5icDE3xv1a0vmxNZS+hLAS4oGSffLAkeAQgeoegolB4uJB45h5BM2qvOdXIhZ0F3XQNXS3dkx/XYmj08Bcs8WTc5I2ZM0VPrKUwaCL55+DnZFoqXw7H4flG62JUBXDgERHQcTpuIiEH1IhTvp00odqzg0RNIXdLFQFQp2G14DFGKUhvGF93WJCvi19vUH1Xw3siVl4JwQL9I9r3R4UhqRLdT4JxpIC35nQ9BlWZf4io3uXCPKQdZnYa8WE0WHzrBohm4MH2PyBqrKIH3eM8hgxOyJ9Kur55veTnZcR5Tr5fYkUV0+ONnGxlbU47nDDd162OwqXsAscVCJE4c0aNV5c2xCvJURX0l3ma95LLgI1YhaX/k86yasZQfRHmy6UDhwbr3RKrlMU7FY3jaKQdtqAlzswmXBRySO6DaMG9eDEJm4KFGPtYJbIMpdf9NpxIxCofeDBeZDcUFG/w8FkQ7EZQy7LuRGN+TI98LmcisN+T6ldVi3KYB2uuFVB8WVA9IM5utmh7CejrWpPz9TsCIXnDM2bYI+BXbrAv0qHgQsccF5W+Q5Tpn+BQT8MR4b5NGZrwbp/NjH2Mv0dD3/QUm6tRbaikd1+fYg==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(136003)(396003)(39860400002)(346002)(36840700001)(46966006)(31696002)(426003)(6916009)(336012)(8936002)(2616005)(86362001)(7636003)(31686004)(16526019)(356005)(36756003)(47076005)(8676002)(26005)(186003)(82310400003)(36860700001)(2906002)(36906005)(5660300002)(316002)(4326008)(70586007)(54906003)(82740400003)(107886003)(6666004)(478600001)(70206006);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2021 10:48:22.0851
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e72f537-bd79-4fdd-44f8-08d93fa268b0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4049
+In-Reply-To: <20210704055037-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.64.64.121]
+X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/05/2021 10:23:33
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 164836 [Jul 05 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
+X-KSE-AntiSpam-Info: {Tracking_from_exist}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;kaspersky.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/05/2021 10:25:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 05.07.2021 7:14:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/07/05 06:23:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/07/05 06:33:00 #16857317
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 04.07.2021 12:54, Michael S. Tsirkin wrote:
+> On Sun, Jul 04, 2021 at 12:23:03PM +0300, Arseny Krasnov wrote:
+>> On 04.07.2021 11:30, Michael S. Tsirkin wrote:
+>>> On Sun, Jul 04, 2021 at 11:08:13AM +0300, Arseny Krasnov wrote:
+>>>> 	This patchset modifies receive logic for SOCK_SEQPACKET.
+>>>> Difference between current implementation and this version is that
+>>>> now reader is woken up when there is at least one RW packet in rx
+>>>> queue of socket and data is copied to user's buffer, while merged
+>>>> approach wake up user only when whole message is received and kept
+>>>> in queue. New implementation has several advantages:
+>>>>  1) There is no limit for message length. Merged approach requires
+>>>>     that length must be smaller than 'peer_buf_alloc', otherwise
+>>>>     transmission will stuck.
+>>>>  2) There is no need to keep whole message in queue, thus no
+>>>>     'kmalloc()' memory will be wasted until EOR is received.
+>>>>
+>>>>     Also new approach has some feature: as fragments of message
+>>>> are copied until EOR is received, it is possible that part of
+>>>> message will be already in user's buffer, while rest of message
+>>>> still not received. And if user will be interrupted by signal or
+>>>> timeout with part of message in buffer, it will exit receive loop,
+>>>> leaving rest of message in queue. To solve this problem special
+>>>> callback was added to transport: it is called when user was forced
+>>>> to leave exit loop and tells transport to drop any packet until
+>>>> EOR met.
+>>> Sorry about commenting late in the game.  I'm a bit lost
+>>>
+>>>
+>>> SOCK_SEQPACKET
+>>> Provides sequenced, reliable, bidirectional, connection-mode transmission paths for records. A record can be sent using one or more output operations and received using one or more input operations, but a single operation never transfers part of more than one record. Record boundaries are visible to the receiver via the MSG_EOR flag.
+>>>
+>>> it's supposed to be reliable - how is it legal to drop packets?
+>> Sorry, seems i need to rephrase description. "Packet" here means fragment of record(message) at transport
+>>
+>> layer. As this is SEQPACKET mode, receiver could get only whole message or error, so if only several fragments
+>>
+>> of message was copied (if signal received for example) we can't return it to user - it breaks SEQPACKET sense. I think,
+>>
+>> in this case we can drop rest of record's fragments legally.
+>>
+>>
+>> Thank You
+> Would not that violate the reliable property? IIUC it's only ok to
+> return an error if socket gets closed. Just like e.g. TCP ...
+>
+Sorry for late answer, yes You're right, seems this is unwanted drop...
 
-On Mon, 5 Jul 2021, Paolo Abeni wrote:
-
-> On Mon, 2021-07-05 at 10:49 +0300, Paul Blakey wrote:
-> > When multiple SKBs are merged to a new skb under napi GRO,
-> > or SKB is re-used by napi, if nfct was set for them in the
-> > driver, it will not be released while freeing their stolen
-> > head state or on re-use.
-> > 
-> > Release nfct on napi's stolen or re-used SKBs, and
-> > in gro_list_prepare, check conntrack metadata diff.
-> > 
-> > Fixes: 5c6b94604744 ("net/mlx5e: CT: Handle misses after executing CT action")
-> > Reviewed-by: Roi Dayan <roid@nvidia.com>
-> > Signed-off-by: Paul Blakey <paulb@nvidia.com>
-> > ---
-> > Changelog:
-> > 	v1->v2:
-> > 	 Check for different flows based on CT and chain metadata in gro_list_prepare
-> > 
-> >  net/core/dev.c    | 13 +++++++++++++
-> >  net/core/skbuff.c |  1 +
-> >  2 files changed, 14 insertions(+)
-> > 
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 439faadab0c2..bf62cb2ec6da 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -5981,6 +5981,18 @@ static void gro_list_prepare(const struct list_head *head,
-> >  			diffs = memcmp(skb_mac_header(p),
-> >  				       skb_mac_header(skb),
-> >  				       maclen);
-> > +
-> > +		diffs |= skb_get_nfct(p) ^ skb_get_nfct(skb);
-> > +
-> > +		if (!diffs) {
-> > +			struct tc_skb_ext *skb_ext = skb_ext_find(skb, TC_SKB_EXT);
-> > +			struct tc_skb_ext *p_ext = skb_ext_find(p, TC_SKB_EXT);
-> > +
-> > +			diffs |= (!!p_ext) ^ (!!skb_ext);
-> > +			if (!diffs && unlikely(skb_ext))
-> > +				diffs |= p_ext->chain ^ skb_ext->chain;
-> > +		}
-> 
-> I'm wondering... if 2 skbs are merged, and have the same L2/L3/L4
-> headers - except len and csum - can they have different dst/TC_EXT?
-
-Yes and same tunnel header metadata... so even tunnels are the same.
-
-So probably not, I had trouble thinking of when it can happen as well.
-But user might have some weird tc policy where it will happen, especially
-with header rewrite.
-
-To test this, I ran two tcp streams that do some hops in hardware (tc 
-goto chain), and for one stream of the two, I used tc pedit rules to 
-rewrite an ip/mac so the two stream will be the same 5 tuple (macs, 
-ips, ports) just on different chains and on different connection tracking 
-zones.
-
-For the last hop where both streams where the same, I used tc flower
-skip_hw flag so it will miss to software and we get here with same
-same_flow = false.
+Lets wait for Stefano Garzarella feedback
 
 
+Thank You
 
-This might be too much for email (so I won't bother formatting it :)) but 
-here is the setup I used:
-
-
-    echo "add arp rules"
-    tc_filter add dev $REP ingress protocol arp prio 888 flower skip_hw 
-$tc_verbose \
-        action mirred egress mirror dev $VETH_REP1 pipe \
-        action mirred egress redirect dev $VETH_REP2
-    tc_filter add dev $VETH_REP2 ingress protocol arp prio 888 flower 
-skip_hw $tc_verbose \
-        action mirred egress redirect dev $REP
-    tc_filter add dev $VETH_REP1 ingress protocol arp prio 888 flower 
-skip_hw $tc_verbose \
-        action mirred egress redirect dev $REP
-
-
-    echo "add ct rules"
-
-    flag=""
-
-    #ORIG:
-    #chain 0, REP->VETH[12], send to diff chains based on mac,
-    #for zone 4 first do hw rewrite of fake ip so we have same tuple
-    tc_filter add dev $REP ingress protocol ip chain 0 prio 1 flower 
-ip_proto $proto dst_ip $ip_remote1 $tc_verbose $flag \
-        dst_mac $remote_mac ct_state -trk \
-        action ct zone 3 action goto chain 3
-    #chain 2, continuation of header rewrite, send to chain 4 & zone 4
-    tc_filter add dev $REP ingress protocol ip chain 2 prio 1 flower 
-ip_proto $proto $tc_verbose \
-        action ct zone 4 action goto chain 4
-
-    #chain 3, REP->VETH, zone 3
-    tc_filter add dev $REP ingress protocol ip chain 3 prio 1 flower 
-ip_proto $proto $tc_verbose \
-        ct_state +trk+new ct_zone 3 \
-        action ct zone 3 commit \
-        action mirred egress redirect dev $VETH_REP1
-    tc_filter add dev $REP ingress protocol ip chain 3 prio 1 flower 
-ip_proto $proto $tc_verbose \
-        ct_state +trk+est ct_zone 3 \
-        action mirred egress redirect dev $VETH_REP1
-
-    #others...
-    tc_filter add dev $REP ingress protocol ip chain 3 prio 5 flower 
-ip_proto $proto skip_hw $tc_verbose \
-        ct_zone 3 \
-        action drop
-    tc_filter add dev $REP ingress protocol ip chain 3 prio 6 flower 
-ip_proto $proto skip_hw $tc_verbose \
-        action drop
-
-    #chain 4, REP->VETH2, zone 4, +new/+est, rewrite back mac/ip and fwd
-    tc_filter add dev $REP ingress protocol ip chain 4 prio 5 flower 
-ip_proto $proto skip_hw $tc_verbose \
-        ct_zone 4 \
-        action drop
-    tc_filter add dev $REP ingress protocol ip chain 4 prio 6 flower 
-ip_proto $proto skip_hw $tc_verbose \
-        action drop
-
-    #catch wrong packets
-    tc_filter add dev $REP ingress protocol ip chain 4 prio 2 flower 
-ip_proto $proto $tc_verbose skip_hw \
-        ct_zone 3 \
-        action drop
-    tc_filter add dev $REP ingress protocol ip chain 3 prio 2 flower 
-ip_proto $proto $tc_verbose skip_hw \
-        ct_zone 4 \
-        action drop
-
-
-    #REPLY:
-    #chain 0, VETH->REP, send to zone 3, then chain 6 for fwd
-    tc_filter add dev $VETH_REP1 ingress protocol ip chain 0 prio 1 flower 
-ip_proto $proto $tc_verbose $flag \
-        ct_state -trk \
-        action ct zone 3 action goto chain 6
-
-    #chain 6, VETH->REP, zone 3, +est, fwd
-    tc_filter add dev $VETH_REP1 ingress protocol ip chain 6 prio 1 flower 
-ip_proto $proto $tc_verbose \
-        ct_state +trk+est \
-        action mirred egress redirect dev $REP
-
-    #chain 0, VETH->REP, send to zone 4, fake ip for ct, then chain 6 for 
-fwd
-
-
-    #chain 6, VETH2->REP, zone 3, +est, revert fake ip and fwd to dev
-
-
-
-    port1=6000
-    port2=7000
-
-    echo port1 $port1 port2 $port2
-
-    tc_filter add dev $REP ingress protocol ip chain 0 prio 1 flower 
-ip_proto $proto dst_ip $ip_remote2 $tc_verbose $flag \
-        dst_mac $remote_mac2 ct_state -trk src_port $port2 \
-        action pedit ex \
-           munge eth dst set $remote_mac \
-           munge ip dst set $ip_remote1 \
-           munge $proto sport set $port1 \
-           pipe \
-        action csum $proto ip pipe \
-        action action goto chain 2
-    tc_filter add dev $REP ingress protocol ip chain 0 prio 2 flower 
-ip_proto $proto dst_ip $ip_remote2 $tc_verbose $flag \
-        dst_mac $remote_mac2 \
-        action mirred egress redirect dev $VETH_REP2
-    tc_filter add dev $REP ingress protocol ip chain 4 prio 1 flower 
-ip_proto $proto $tc_verbose \
-        ct_state +trk+new ct_zone 4 src_port $port1 \
-        action ct zone 4 commit pipe \
-        action pedit ex \
-           munge eth dst set $remote_mac2 \
-           munge ip dst set $ip_remote2 \
-           munge $proto sport set $port2 \
-           pipe \
-        action csum $proto ip pipe \
-        action mirred egress redirect dev $VETH_REP2
-    tc_filter add dev $REP ingress protocol ip chain 4 prio 1 flower 
-ip_proto $proto $tc_verbose \
-        ct_state +trk+est ct_zone 4 src_port $port1 \
-        action pedit ex \
-           munge eth dst set $remote_mac2 \
-           munge ip dst set $ip_remote2 \
-           munge $proto sport set $port2 \
-           pipe \
-        action csum $proto ip pipe \
-        action mirred egress redirect dev $VETH_REP2
-
-    tc_filter add dev $VETH_REP2 ingress protocol ip chain 0 prio 1 flower 
-ip_proto $proto $tc_verbose $flag \
-        ct_state -trk dst_port $port2 \
-        action pedit ex \
-           munge ip src set $ip_remote1 \
-           munge $proto dport set $port1 \
-           pipe \
-        action csum $proto ip pipe \
-        action ct zone 4 action goto chain 6
-    tc_filter add dev $VETH_REP2 ingress protocol ip chain 0 prio 2 flower 
-ip_proto $proto $tc_verbose $flag \
-        action mirred egress redirect dev $REP
-    tc_filter add dev $VETH_REP2 ingress protocol ip chain 6 prio 1 flower 
-ip_proto $proto $tc_verbose \
-        ct_state +trk+est dst_port $port1 \
-        action pedit ex \
-           munge ip src set $ip_remote2 \
-           munge $proto dport set $port2 \
-           pipe \
-        action csum $proto ip pipe \
-        action mirred egress redirect dev $REP
-
-
-
-
-
-
-
-> 
-> @Eric: I'm sorry for the very dumb and late question. You reported v1
-> of this patch would make "GRO slow as hell", could you please elaborate
-> a bit more? I thought most skbs (with no ct attached) would see little
-> difference???
-> 
-> Cheers,
-> 
-> Paolo
-> 
-> 
-> 
+>
+>>>
+>>>> When EOR is found, this mode is disabled and normal packet
+>>>> processing started. Note, that when 'drop until EOR' mode is on,
+>>>> incoming packets still inserted in queue, reader will be woken up,
+>>>> tries to copy data, but nothing will be copied until EOR found.
+>>>> It was possible to drain such unneeded packets it rx work without
+>>>> kicking user, but implemented way is simplest. Anyway, i think
+>>>> such cases are rare.
+>>>>     New test also added - it tries to copy to invalid user's
+>>>> buffer.
+>>>>
+>>>> Arseny Krasnov (16):
+>>>>  af_vsock/virtio/vsock: change seqpacket receive logic
+>>>>  af_vsock/virtio/vsock: remove 'seqpacket_has_data' callback
+>>>>  virtio/vsock: remove 'msg_count' based logic
+>>>>  af_vsock/virtio/vsock: add 'seqpacket_drop()' callback
+>>>>  virtio/vsock: remove record size limit for SEQPACKET
+>>>>  vsock_test: SEQPACKET read to broken buffer
+>>>>
+>>>>  drivers/vhost/vsock.c                   |   2 +-
+>>>>  include/linux/virtio_vsock.h            |   7 +-
+>>>>  include/net/af_vsock.h                  |   4 +-
+>>>>  net/vmw_vsock/af_vsock.c                |  44 ++++----
+>>>>  net/vmw_vsock/virtio_transport.c        |   2 +-
+>>>>  net/vmw_vsock/virtio_transport_common.c | 103 ++++++++-----------
+>>>>  net/vmw_vsock/vsock_loopback.c          |   2 +-
+>>>>  tools/testing/vsock/vsock_test.c        | 120 ++++++++++++++++++++++
+>>>>  8 files changed, 193 insertions(+), 91 deletions(-)
+>>>>
+>>>>  v1 -> v2:
+>>>>  Patches reordered and reorganized.
+>>>>
+>>>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>>>> ---
+>>>>  cv.txt | 0
+>>>>  1 file changed, 0 insertions(+), 0 deletions(-)
+>>>>  create mode 100644 cv.txt
+>>>>
+>>>> diff --git a/cv.txt b/cv.txt
+>>>> new file mode 100644
+>>>> index 000000000000..e69de29bb2d1
+>>>> -- 
+>>>> 2.25.1
+>
