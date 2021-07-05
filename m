@@ -2,164 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12A783BBB9C
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:55:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3793BBC57
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 13:44:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231264AbhGEK5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 06:57:36 -0400
-Received: from mail-dm6nam08on2082.outbound.protection.outlook.com ([40.107.102.82]:55136
-        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230511AbhGEK5g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Jul 2021 06:57:36 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gMv+7iukrLAIfjVJTvAQkTfLQFOcqECI4d5l3+mg2COV3T2eNurxf5PGz7jW4/q7gVCvD+vj5lVjx41vH/CPqTlhonnvR4qQxGNEGA5g1TCGYjfJMJ/HogCkKD/pwGXZKxfI+vhv9s7OjuIYWUVZNB7SaWE62G79kjgNS7LKALcQ0bljsOEwOy2oCvDCWa/AFpYRQSzua6AeGrAkXrzi4Dv+zHlqJVBlXCUuYPz/8MXm1PL0+6QcRhRVBxKUlwky23MUmnK3w7D55x5YCjTawT4fj8ZxM2kIt4xixcSmt+R+k2m56G/5sqZzwwL0PumvE2cLUADQh28kwr5cMxpPIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2FF0JXY2H0fgHQgg2W7hNEgKr+IEHWhywpRieUJ6s2U=;
- b=JnOGOwueZ6Fo+HyATpCJXU1yzFgbIB31a53iiagQ3ODZIFG9MPBdaoSzgA00eFNCj+DL3z5XC6FB6z4+Ic4sNxinE2Cm5icoIxSkscF3OVBjwQodhjlFmfS3hkjMe/O6PTMzU7Bsb2Pls4cyjIdJhjMYujkaMFq6z/pW7hGF8vCc4y949Qy4Mvg+B1K3P2+FvGadAwuwGu5cukxj0pbMKvTp8FUvpCSneN7wZNVA3JBhWJFu6/5LQOsfwB04bnJAKBDPO8RLQC26Fa3FWK/EBZQEWrSx65jsEe8zKfVSmAs6AMTlQKTeMtGaKZUIFjrMDIeevxroXxpswA3X8PEgMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2FF0JXY2H0fgHQgg2W7hNEgKr+IEHWhywpRieUJ6s2U=;
- b=jaoItmEvC0FRX/YeF1D3PWFjV+CNfctJtFfwQPd921ZbfxJ/AoZ/h/y+sgVbVJ66A52vujdPq37vy30mXdSmrD2XzPdV/1vfC4pzwNY/eyQOdha0BFcBQgYB8l2aBC/g6X0yq4WttGJ32Mr5CtbypTRaq29WY+6iFUXdfSQPs/aK7Hi/GFebBXIuGr9jnNCzlwXxWpfupsOjRAApCg3EIYRySJ+FuaPtP9jT7GThJq7GBG4JZyG7gzQOngmJ6Y3DSm5TRbVaWYOCI2xvsRZQu/jIu+XRPk8XETfan57wRFxaZncztRPPmnVLCPFMXNL2kwJ1zBAoMRjMeM2aDd1INg==
-Received: from BN6PR17CA0002.namprd17.prod.outlook.com (2603:10b6:404:65::12)
- by DM6PR12MB4156.namprd12.prod.outlook.com (2603:10b6:5:218::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.23; Mon, 5 Jul
- 2021 10:54:58 +0000
-Received: from BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:65:cafe::8e) by BN6PR17CA0002.outlook.office365.com
- (2603:10b6:404:65::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.23 via Frontend
- Transport; Mon, 5 Jul 2021 10:54:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- BN8NAM11FT036.mail.protection.outlook.com (10.13.177.168) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4287.22 via Frontend Transport; Mon, 5 Jul 2021 10:54:58 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 5 Jul
- 2021 03:54:57 -0700
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (172.20.187.5) by
- mail.nvidia.com (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via
- Frontend Transport; Mon, 5 Jul 2021 10:54:54 +0000
-From:   Paul Blakey <paulb@nvidia.com>
-To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        mika penttila <mika.penttila@nextfour.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "Saeed Mahameed" <saeedm@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net v3] skbuff: Release nfct refcount on napi stolen or re-used skbs
-Date:   Mon, 5 Jul 2021 13:54:51 +0300
-Message-ID: <1625482491-17536-1-git-send-email-paulb@nvidia.com>
-X-Mailer: git-send-email 1.8.4.3
+        id S231146AbhGELrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 07:47:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230174AbhGELrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 07:47:06 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B519EC061574;
+        Mon,  5 Jul 2021 04:44:28 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id e14so5785379qkl.9;
+        Mon, 05 Jul 2021 04:44:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y5GEj+8326+PbDDr2Nykyt3XrIRloqp5T0iaY8wvCN4=;
+        b=G24fJESmPH7nMdQIwUF+gb58lyy7jFnZXRymXctn3VclV53TwK3vCHPmR/+fy1Xiyk
+         dZrcbk1TXH/kk/UA+a6WCEsgPASxBYuaz82UQSBuNNgO+iio+ACdlfpBBU26QLIoGjiI
+         dbu9d3RBTrQrDstdev67/pEn1BoL9D3wfA60ghspnb4O0cloQ6Lu5Nx3hcx5XPiNqVdG
+         G1kWJSPXzWx+JdAwMj8CJMlsKRrq5z5PZGjgbBg2tbavl4CVvYtS97LWempUSqoPmSw1
+         SBQZ0JnrwvvEbuVxaTvRqXLfh1+udw7lUA471drIw9XIQUJyqgWMW+v9BN+R8xSHkR7W
+         BMzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y5GEj+8326+PbDDr2Nykyt3XrIRloqp5T0iaY8wvCN4=;
+        b=pHrFsn9iQH3l0+h/oyKuMPc6349fuzAYYO/ycW3ipASxQR6Q6wqcyQNdXi+oauZuuI
+         a3PhMP1NvbY2aR+x9J7GFVQV/Rh9cN4117YL11SV3S0gO12deQJSon3/jyDCEb1Tt0hO
+         ZHr4tEkO6irBit1S9285WolQ9jJDK+6XIGJMhjDP9ofoHLnBQ4pHt90dvfi6kM0a7+qP
+         5+agLZzynULyF93VkJKV3Dv16ed80BRX1g0KjpJBJG2yEqgTfdsenJcjkTrwr4q+XELj
+         0UbliqZ/ZaHF9Ui6CcK7JmfUOSSFVj7t+l7y51vKngHVrFv+EkZTTcEspM3pfErZm2eC
+         I6XQ==
+X-Gm-Message-State: AOAM5327HD9S1yDVMjyci+wd2Aj7thO2VhlnYAYhNbmjQbRR3BKZu6WT
+        zb/LYSLkFC/vINCFf2fnxJyNDUVgKOZO7o1Ctw==
+X-Google-Smtp-Source: ABdhPJzzvfN9ja3xrr+zfs22ZbMSe98belDpsaJbzFRIfwLcqhb3FwVgOTTioY6zAgoIuzsz2uwHW9CofOuY+gGxr0E=
+X-Received: by 2002:a05:620a:17a5:: with SMTP id ay37mr13801980qkb.465.1625485467815;
+ Mon, 05 Jul 2021 04:44:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f88a557e-ee9b-47ed-92bd-08d93fa354db
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4156:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB415675C0FAB6A19091FAA9CBC21C9@DM6PR12MB4156.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GcqNOydcjrBpSsoPqmWZsxXbwVG2PSIvTEoh6Il+Y8+5RU17rk+e3q9HYxRFy73RA/tZv9opo+lr3weKqmT4yYnCkBw5AcKiJV2PoUNaH51Hd8HTgyizmoARBCZwFAyZiXBKqr8/rfEl/HScf8H8Lrk55VEmqAvXAIiS+cz9Wxb/y+OIosXhqV4I+HdUf4wQLqVgDQw175lM6GwhuHR9rtfMV6s5pfamKq9jU0STAEdmOMr41z1Uug11oFJQKwDvGN3k/+9T5BthT3giA7ZgQGueLQBau9pG92KTGr84Ji9CRyuZtJUnm6AQCNYmWde5zMznEG2vE5XPVyT9P3bfXLZ72B9nXJR+Sl9PZtAy+7nYWg4tNsdoavBhtz107goL0XiyeFK5SiyEMH9bZOx3Pupqz2YdM+n335SCDImlRxZ1V8oXWGWgSARNk6HLbTJfnqUZDPjjFDniq1/hOFE9FdUpjCa+OHiow0I9VCE3MPexVt5JEvBco/1ibKy1nAI1OKAhYqN0xsEfKgM6bpEO+KkdMpboEk+CXSPPiLJ52k8/7MMv45Pri19E8RGBFOsgp1rBNt5sJfqm84BAs7XNd9Ngbnq4BPs5E9AH3k9sjTg3SiuNAME4kI5YDoesikX7gaB12FS4EMC9p8EkzspI1Je6T4/39ZhTRqlx+xFQHQc6sbdtdNUd1sZnyhn1Uw0a/fETk9BdB2CjWg8/rY7DNA==
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(39860400002)(346002)(396003)(136003)(46966006)(36840700001)(4326008)(47076005)(478600001)(6666004)(26005)(5660300002)(82740400003)(110136005)(36756003)(54906003)(70206006)(36860700001)(2616005)(8936002)(107886003)(2906002)(356005)(8676002)(336012)(426003)(82310400003)(316002)(70586007)(7636003)(86362001)(186003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2021 10:54:58.3672
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f88a557e-ee9b-47ed-92bd-08d93fa354db
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4156
+References: <20210609135537.1460244-1-joamaki@gmail.com> <20210624091843.5151-1-joamaki@gmail.com>
+ <20210624091843.5151-5-joamaki@gmail.com> <31210.1625163167@famine>
+In-Reply-To: <31210.1625163167@famine>
+From:   Jussi Maki <joamaki@gmail.com>
+Date:   Mon, 5 Jul 2021 14:44:16 +0300
+Message-ID: <CAHn8xcmkDz9DG_s_6G9osakb5QD9O3AE46PfZTeAyi12h_s5rQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 4/4] devmap: Exclude XDP broadcast to master device
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andy Gospodarek <andy@greyhouse.net>, vfalico@gmail.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When multiple SKBs are merged to a new skb under napi GRO,
-or SKB is re-used by napi, if nfct was set for them in the
-driver, it will not be released while freeing their stolen
-head state or on re-use.
+On Thu, Jul 1, 2021 at 9:12 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+> >+      if (static_branch_unlikely(&bpf_master_redirect_enabled_key)) {
+> >+              struct net_device *master = netdev_master_upper_dev_get_rcu(dev_rx);
+> >+
+> >+              exclude_ifindex_master = (master && exclude_ingress) ? master->ifindex : 0;
+> >+      }
+> >+
+>
+>         Will the above logic do what is intended if the device stacking
+> isn't a simple bond -> ethX arrangement?  I.e., bond -> VLAN.?? -> ethX
+> or perhaps even bondA -> VLAN.?? -> bondB -> ethX ?
 
-Release nfct on napi's stolen or re-used SKBs, and
-in gro_list_prepare, check conntrack metadata diff.
-
-Fixes: 5c6b94604744 ("net/mlx5e: CT: Handle misses after executing CT action")
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
----
-Changelog:
-	v2->v1:
-	 in napi_skb_free_stolen_head() use nf_reset_ct(skb) instead, so we also zero nfct ptr.
-	v1->v2:
-	 Check for different flows based on CT and chain metadata in gro_list_prepare
-
- net/core/dev.c    | 13 +++++++++++++
- net/core/skbuff.c |  1 +
- 2 files changed, 14 insertions(+)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 439faadab0c2..bf62cb2ec6da 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5981,6 +5981,18 @@ static void gro_list_prepare(const struct list_head *head,
- 			diffs = memcmp(skb_mac_header(p),
- 				       skb_mac_header(skb),
- 				       maclen);
-+
-+		diffs |= skb_get_nfct(p) ^ skb_get_nfct(skb);
-+
-+		if (!diffs) {
-+			struct tc_skb_ext *skb_ext = skb_ext_find(skb, TC_SKB_EXT);
-+			struct tc_skb_ext *p_ext = skb_ext_find(p, TC_SKB_EXT);
-+
-+			diffs |= (!!p_ext) ^ (!!skb_ext);
-+			if (!diffs && unlikely(skb_ext))
-+				diffs |= p_ext->chain ^ skb_ext->chain;
-+		}
-+
- 		NAPI_GRO_CB(p)->same_flow = !diffs;
- 	}
- }
-@@ -6243,6 +6255,7 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
- 	skb_shinfo(skb)->gso_type = 0;
- 	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
- 	skb_ext_reset(skb);
-+	nf_reset_ct(skb);
- 
- 	napi->skb = skb;
- }
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index bbc3b4b62032..30ca61d91b69 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -939,6 +939,7 @@ void __kfree_skb_defer(struct sk_buff *skb)
- 
- void napi_skb_free_stolen_head(struct sk_buff *skb)
- {
-+	nf_reset_ct(skb);
- 	skb_dst_drop(skb);
- 	skb_ext_put(skb);
- 	napi_skb_cache_put(skb);
--- 
-2.30.1
-
+Good point. "bond -> VLAN -> eth" isn't an issue currently as vlan
+devices do not support XDP. "bondA -> bondB -> ethX" however would be
+supported, so I think it makes sense to change the code to collect all
+upper devices and exclude them. I'll try to follow up with an updated
+patch for this soon.
