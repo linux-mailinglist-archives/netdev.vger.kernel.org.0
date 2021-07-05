@@ -2,84 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 771513BC3FA
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 01:02:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F9F3BC40B
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 01:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbhGEXEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 19:04:54 -0400
-Received: from mail-lf1-f50.google.com ([209.85.167.50]:40918 "EHLO
-        mail-lf1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbhGEXEx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 19:04:53 -0400
-Received: by mail-lf1-f50.google.com with SMTP id q18so34888760lfc.7;
-        Mon, 05 Jul 2021 16:02:14 -0700 (PDT)
+        id S233061AbhGEXWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 19:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231640AbhGEXV7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 19:21:59 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB07C061574;
+        Mon,  5 Jul 2021 16:19:20 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id mn20-20020a17090b1894b02901707fc074e8so659497pjb.0;
+        Mon, 05 Jul 2021 16:19:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AwbRb3jpffDliQd5+ObWDoU7B1AAjNEgpgkFUzNvpnw=;
+        b=pFesCE1VkR9SI4pdCrxbURHurlHIt4eRLJKC8LblTfpZ+XHwCZFE94HfRtesarR2c7
+         P5k1nbLOJKFwJLf4a4y4M6wRcFb7zhs37sKOtNxAwiMvhJuNyzPZCOHZT4z/P/9qQBv1
+         aC3lUFw++YSCh1PCm5Q5LFBVOsGOLQ44/N6nnKu2jO4hvfxSzw6IVvlHZCdx2lZtNacc
+         C/3yT8MoCMkD/KaNVf9sEmyJ+2GlJpWybsTS83FI/edMdDU1v/nB0ivYvWfvWJ8+qX1b
+         hB3aXw4wdmZQBQtQoKVhlfRNyrtbeXKpuYq92Ciq1XcAPxKbzVz6QrnZ/K8+A5HZfgk5
+         j09Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=opgV/1dSlT5CgMY/0CX/nuPAXjFoizd2I+M4agkbai8=;
-        b=aacaY3uXF9YeLBtCIsBw+EklE1UXjgU7ft83ao55sRJvTxglzxZcO9SOVDeCmYuaxJ
-         mPOX6GqdbTV4VqC08F8vOV3bnxK752515yU/kHKhC9+nZ2JOqPr/Zo0S5wl9GJ4zyKgb
-         F4mB10nm3zGffjLZsno9SOIHk9mgLoikhM+VC8AwGwD9uRHXVgdHY2X/0JLm2iDhUog8
-         PVsvAG88REDJIEndk/u5zFtWsl6kdp/i1mbfCNQzYgho27DHF6H7eNvVzF4Ulp3+dfq9
-         XLsLaE34DYM4Xk02kPBgsrTOJl4E2SHSEuqrD8Bwk0kvTb7BAZaHayNgqCnwZRqOS3Et
-         JbUA==
-X-Gm-Message-State: AOAM530bs74MrMh+1NYg6EZcq7jR6WwB899OSY8gSaF81fPca6pJlpWw
-        AnjcdgDBMXmEw1slyaF1b1M=
-X-Google-Smtp-Source: ABdhPJxGcdoMlt+O4KlMPB6m89KUIwV/UznGIwolBu//VdjxQJJ6rv4GIHsixITGAHepa6Y807nsfQ==
-X-Received: by 2002:a05:6512:238b:: with SMTP id c11mr4669725lfv.548.1625526133811;
-        Mon, 05 Jul 2021 16:02:13 -0700 (PDT)
-Received: from rocinante ([95.155.85.46])
-        by smtp.gmail.com with ESMTPSA id s21sm1208097lfc.249.2021.07.05.16.02.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AwbRb3jpffDliQd5+ObWDoU7B1AAjNEgpgkFUzNvpnw=;
+        b=bilbkT0Nmw9YxwGidlKLvdDy8aTSEN5uOnml8BibIUOeMw+yEJqoEKJEHcOT/mpcsj
+         8dfsVjt54czZEEzSZ0AmXNaO/fPMd0dxUUFJEm75iEWLwShOBEeKT4gHzVKwRV0BNHav
+         q9DejzXzCmjUQglyWIfic66WnwroFVT3ubPDa3nCzVj/y6VsQCYhMuriN+Xr5gQClhbx
+         z9v58SqO1L8AIqzkreYbRA9xoIsTIeA2fOfHQ3GYllmWpskqJGOzNmtCEjQpfWMiHQKo
+         3uhgvt9wKx/Kui/I9cWSffaezhRVN9ajtVe7EGEyODmKrdf+1OgST61a+9BLGSLz7V5/
+         z1LQ==
+X-Gm-Message-State: AOAM531kucPVveBM79JxbUO/3mNXa6mZDNq9GHvfomHEPrxQeeAg915Y
+        Z5oSVJKXpl+TqCffpIDqANk=
+X-Google-Smtp-Source: ABdhPJzkoI7y2nCb4uw1FOobg+RUTq8genZo373bH67t9YA/FNNwL/28LTVHjjYnaLLreGColocYCA==
+X-Received: by 2002:a17:902:b210:b029:11a:bf7b:1a83 with SMTP id t16-20020a170902b210b029011abf7b1a83mr14306975plr.84.1625527160305;
+        Mon, 05 Jul 2021 16:19:20 -0700 (PDT)
+Received: from pn-hyperv.lan (bb42-60-144-185.singnet.com.sg. [42.60.144.185])
+        by smtp.gmail.com with ESMTPSA id h9sm6579067pgi.43.2021.07.05.16.19.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jul 2021 16:02:13 -0700 (PDT)
-Date:   Tue, 6 Jul 2021 01:02:12 +0200
-From:   Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-To:     Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-Cc:     Aaron Ma <aaron.ma@canonical.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Subject: Re: [PATCH 1/2] igc: don't rd/wr iomem when PCI is removed
-Message-ID: <20210705230212.GC142312@rocinante>
-References: <20210702045120.22855-1-aaron.ma@canonical.com>
- <20210704142808.f43jbcufk37hundo@pali>
+        Mon, 05 Jul 2021 16:19:19 -0700 (PDT)
+From:   Nguyen Dinh Phi <phind.uet@gmail.com>
+To:     yhs@fb.com, edumazet@google.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, ycheng@google.com, ncardwell@google.com,
+        yyd@google.com
+Cc:     Nguyen Dinh Phi <phind.uet@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
+Subject: [PATCH v6] tcp: fix tcp_init_transfer() to not reset icsk_ca_initialized
+Date:   Tue,  6 Jul 2021 07:19:12 +0800
+Message-Id: <20210705231912.532186-1-phind.uet@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210704142808.f43jbcufk37hundo@pali>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pali,
+This commit fixes a bug (found by syzkaller) that could cause spurious
+double-initializations for congestion control modules, which could cause
+memory leaks or other problems for congestion control modules (like CDG)
+that allocate memory in their init functions.
 
-[...]
-> Aaron: can you check if pci_dev_is_disconnected() is really something
-> which should be used and it helps you?
+The buggy scenario constructed by syzkaller was something like:
 
-While having a closer look, I've noticed that quite a few of the network
-drivers handle this somewhat, as I see that a lot of them have some sort
-of I/O error handles set where a check for "pci_channel_io_perm_failure"
-seem to be having place.  This is also true for this driver looking at
-the igc_io_error_detected().
+(1) create a TCP socket
+(2) initiate a TFO connect via sendto()
+(3) while socket is in TCP_SYN_SENT, call setsockopt(TCP_CONGESTION),
+    which calls:
+       tcp_set_congestion_control() ->
+         tcp_reinit_congestion_control() ->
+           tcp_init_congestion_control()
+(4) receive ACK, connection is established, call tcp_init_transfer(),
+    set icsk_ca_initialized=0 (without first calling cc->release()),
+    call tcp_init_congestion_control() again.
 
-Is this not working for the igc driver?  Or is this for something
-completely different?
+Note that in this sequence tcp_init_congestion_control() is called
+twice without a cc->release() call in between. Thus, for CC modules
+that allocate memory in their init() function, e.g, CDG, a memory leak
+may occur. The syzkaller tool managed to find a reproducer that
+triggered such a leak in CDG.
 
-Having said all that, I am not an expert in network drivers, so pardon
-me if I am asking about something completely different, and I apologise
-if that is the case.
+The bug was introduced when that commit 8919a9b31eb4 ("tcp: Only init
+congestion control if not initialized already")
+introduced icsk_ca_initialized and set icsk_ca_initialized to 0 in
+tcp_init_transfer(), missing the possibility for a sequence like the
+one above, where a process could call setsockopt(TCP_CONGESTION) in
+state TCP_SYN_SENT (i.e. after the connect() or TFO open sendmsg()),
+which would call tcp_init_congestion_control(). It did not intend to
+reset any initialization that the user had already explicitly made;
+it just missed the possibility of that particular sequence (which
+syzkaller managed to find).
 
-> Bjorn, Krzysztof: what do you think about lifting helper function
-> pci_dev_is_disconnected() to be available to all drivers and not only in
-> PCI subsystem?
+Fixes: 8919a9b31eb4 ("tcp: Only init congestion control if not initialized already")
+Reported-by: syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
+Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+---
+V2:     - Modify the Subject line.
+        - Adjust the commit message.
+        - Add Fixes: tag.
+V3:     - Fix netdev/verify_fixes format error.
+V4:     - Add blamed authors to receiver list.
+V5:	- Add comment about the congestion control initialization.
+V6:	- Fix typo in commit message.
+ net/ipv4/tcp_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-No objections from me, if we believe it's useful and that it might
-encourage people to use a common API.  Currently, I can see at least
-five potential users of this helper.
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 7d5e59f688de..84c70843b404 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5922,8 +5922,8 @@ void tcp_init_transfer(struct sock *sk, int bpf_op, struct sk_buff *skb)
+ 		tp->snd_cwnd = tcp_init_cwnd(tp, __sk_dst_get(sk));
+ 	tp->snd_cwnd_stamp = tcp_jiffies32;
 
-	Krzysztof
+-	icsk->icsk_ca_initialized = 0;
+ 	bpf_skops_established(sk, bpf_op, skb);
++	/* Initialize congestion control unless BPF initialized it already: */
+ 	if (!icsk->icsk_ca_initialized)
+ 		tcp_init_congestion_control(sk);
+ 	tcp_init_buffer_space(sk);
+--
+2.25.1
+
