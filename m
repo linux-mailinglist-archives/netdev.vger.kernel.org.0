@@ -2,86 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2D4D3BBC84
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 13:59:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4017B3BBCA3
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 14:06:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231260AbhGEMBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 08:01:31 -0400
-Received: from mailout1.secunet.com ([62.96.220.44]:52068 "EHLO
-        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230174AbhGEMB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 08:01:29 -0400
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id F0CCB80004A;
-        Mon,  5 Jul 2021 13:58:50 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+        id S231274AbhGEMJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 08:09:31 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:6403 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230435AbhGEMJ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 08:09:29 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GJPTn3QfRz7872;
+        Mon,  5 Jul 2021 20:03:25 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 5 Jul 2021 13:58:50 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 5 Jul 2021
- 13:58:50 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 52696318041B; Mon,  5 Jul 2021 13:58:50 +0200 (CEST)
-Date:   Mon, 5 Jul 2021 13:58:50 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-CC:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Ahmed S . Darwish" <a.darwish@linutronix.de>,
-        <stable@vger.kernel.org>, Varad Gautam <varad.gautam@suse.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+ 15.1.2176.2; Mon, 5 Jul 2021 20:06:51 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 5 Jul 2021
+ 20:06:51 +0800
+Subject: Re: [PATCH net-next 0/2] refactor the ringtest testing for ptr_ring
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <mst@redhat.com>,
+        <jasowang@redhat.com>, <nickhu@andestech.com>,
+        <green.hu@gmail.com>, <deanbo422@gmail.com>,
+        <akpm@linux-foundation.org>, <yury.norov@gmail.com>,
+        <ojeda@kernel.org>, <ndesaulniers@gooogle.com>, <joe@perches.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>
-Subject: Re: [PATCH] xfrm: Fix RCU vs hash_resize_mutex lock inversion
-Message-ID: <20210705115850.GF40979@gauss3.secunet.de>
-References: <20210628133428.5660-1-frederic@kernel.org>
- <20210630065753.GU40979@gauss3.secunet.de>
+References: <1625457455-4667-1-git-send-email-linyunsheng@huawei.com>
+ <YOLXTB6VxtLBmsuC@smile.fi.intel.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <c6844e2b-530f-14b2-0ec3-d47574135571@huawei.com>
+Date:   Mon, 5 Jul 2021 20:06:50 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210630065753.GU40979@gauss3.secunet.de>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <YOLXTB6VxtLBmsuC@smile.fi.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme716-chm.china.huawei.com (10.1.199.112) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 30, 2021 at 08:57:53AM +0200, Steffen Klassert wrote:
-> On Mon, Jun 28, 2021 at 03:34:28PM +0200, Frederic Weisbecker wrote:
-> > xfrm_bydst_resize() calls synchronize_rcu() while holding
-> > hash_resize_mutex. But then on PREEMPT_RT configurations,
-> > xfrm_policy_lookup_bytype() may acquire that mutex while running in an
-> > RCU read side critical section. This results in a deadlock.
-> > 
-> > In fact the scope of hash_resize_mutex is way beyond the purpose of
-> > xfrm_policy_lookup_bytype() to just fetch a coherent and stable policy
-> > for a given destination/direction, along with other details.
-> > 
-> > The lower level net->xfrm.xfrm_policy_lock, which among other things
-> > protects per destination/direction references to policy entries, is
-> > enough to serialize and benefit from priority inheritance against the
-> > write side. As a bonus, it makes it officially a per network namespace
-> > synchronization business where a policy table resize on namespace A
-> > shouldn't block a policy lookup on namespace B.
-> > 
-> > Fixes: 77cc278f7b20 (xfrm: policy: Use sequence counters with associated lock)
-> > Cc: stable@vger.kernel.org
-> > Cc: Ahmed S. Darwish <a.darwish@linutronix.de>
-> > Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > Cc: Varad Gautam <varad.gautam@suse.com>
-> > Cc: Steffen Klassert <steffen.klassert@secunet.com>
-> > Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> > Cc: David S. Miller <davem@davemloft.net>
-> > Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+On 2021/7/5 17:56, Andy Shevchenko wrote:
+> On Mon, Jul 05, 2021 at 11:57:33AM +0800, Yunsheng Lin wrote:
+>> tools/include/* have a lot of abstract layer for building
+>> kernel code from userspace, so reuse or add the abstract
+>> layer in tools/include/ to build the ptr_ring for ringtest
+>> testing.
 > 
-> Your patch has a conflicht with ("commit d7b0408934c7 xfrm: policy: Read
-> seqcount outside of rcu-read side in xfrm_policy_lookup_bytype")
-> from Varad. Can you please rebase onto the ipsec tree?
+> ...
+> 
+>>  create mode 100644 tools/include/asm/cache.h
+>>  create mode 100644 tools/include/asm/processor.h
+>>  create mode 100644 tools/include/generated/autoconf.h
+>>  create mode 100644 tools/include/linux/align.h
+>>  create mode 100644 tools/include/linux/cache.h
+>>  create mode 100644 tools/include/linux/slab.h
+> 
+> Maybe somebody can change this to be able to include in-tree headers directly?
 
-This patch is now applied to the ipsec tree (on top of the
-revert of commit d7b0408934c7).
+If the above works, maybe the files in tools/include/* is not
+necessary any more, just use the in-tree headers to compile
+the user space app?
 
-Thanks everyone!
+Or I missed something here?
+
+> 
+> Besides above, had you tested this with `make O=...`?
+
+You are right, the generated/autoconf.h is in another directory
+with `make O=...`.
+
+Any nice idea to fix the above problem?
+
+> 
