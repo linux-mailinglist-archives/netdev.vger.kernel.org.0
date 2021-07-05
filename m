@@ -2,131 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B2723BC26C
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 19:59:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E759E3BC279
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 20:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229852AbhGESCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 14:02:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26713 "EHLO
+        id S229770AbhGESLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 14:11:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21706 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229686AbhGESCP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 14:02:15 -0400
+        by vger.kernel.org with ESMTP id S229725AbhGESLG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 14:11:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625507978;
+        s=mimecast20190719; t=1625508508;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5H38ZiEbwdys/XKq02eU1KZlFMkGpzH6Mp6cE7wcdag=;
-        b=MZ6mV90zngTbe5E1qSzQzx74mzrUuFRaZwoUPdVblmllRnXQyrDtEPwsGbTs/5RdT2qI62
-        kWgfQRg7XJaseZwJh2P2tDqEPiPv1TMkJ15o6AN1QaLxjorbou5sZXKU+h0tV7p4Mi+Nq8
-        uFPHtXFQEGYCF1LXhVp7qw9HtXplHE4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-399-AFyUEs5mNIKFdTYfGh44qg-1; Mon, 05 Jul 2021 13:59:37 -0400
-X-MC-Unique: AFyUEs5mNIKFdTYfGh44qg-1
-Received: by mail-wm1-f69.google.com with SMTP id j38-20020a05600c1c26b02901dbf7d18ff8so10130685wms.8
-        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 10:59:36 -0700 (PDT)
+        bh=+XDBgAIxW6pdEejIaonmOo/MplTpWCHPD2NVSNjT1SA=;
+        b=V87CLZkTqPM0AuLIoNUApKZRRKiuZi2juuH8h63Rsxnj5htNNSSRgGcdjAbzpENvTbhPhh
+        7sjS9dcxLedwX1WU2S/NoE9ZLyQY43JhNaysXNO7oTdYpGvvz54ceLVSLT+TdWP3a9QnX0
+        qAgMVbeoJY+7YcuhNmM9zjl8mxxlHgE=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-441-89ApJas6NSSFnvf2lTQv-A-1; Mon, 05 Jul 2021 14:08:27 -0400
+X-MC-Unique: 89ApJas6NSSFnvf2lTQv-A-1
+Received: by mail-ej1-f72.google.com with SMTP id u4-20020a1709061244b02904648b302151so5285697eja.17
+        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 11:08:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=5H38ZiEbwdys/XKq02eU1KZlFMkGpzH6Mp6cE7wcdag=;
-        b=Ruz0W8S85LLy1IbQ3UUbnyXOZRZ90H1RuazGGevKf8+8pvrAXpA2FUB96H7Hvk7q7W
-         0jrXQCTdeQ3rhBIJZGZU+JEp/2a0TNLcEi8reCnsi4j+lQTa8cQsFhfM0a58VPY5uYZ9
-         C+id1I68bcIIScxxGfm2KhQ0v+ItPHfIWl8M7Ra3qWF01ATisr0MAHZReZG3ddOIJDhx
-         G2jjtm4gpihFhC2UhccB/8gntOpco3hHzGFhEIZBXFWmS776dUuaijfo836zP3TIdyvL
-         1QgkEwP/Ysvne+Uaee2LW5/E3W0SX8Qg+rmpYflzz6QDyfegoapgl8LWTFujLqnWvQ5A
-         rCYg==
-X-Gm-Message-State: AOAM532Z5ESl9FluWsuugd5Dv7FbwoMJ2zAF3ECEEV1IxlNOnhYzhR+/
-        FW20xvgewp5bm90CP+vMWTVl9RoYc+am3a3rCmhJz6sqdP7uV+ei5mMaJJaohMVj41pIJUUXYmO
-        sFcnhiEUIKCzgR6Ru
-X-Received: by 2002:a5d:4c50:: with SMTP id n16mr17129682wrt.249.1625507975903;
-        Mon, 05 Jul 2021 10:59:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyF5s5Q0gB/0vxcQB2xCkwrdclED6Lm4U5rUd1KxdAr0pLnHm/bJh1UbIAHK2B4wx7WbXxmQw==
-X-Received: by 2002:a5d:4c50:: with SMTP id n16mr17129668wrt.249.1625507975669;
-        Mon, 05 Jul 2021 10:59:35 -0700 (PDT)
+         :mime-version:content-disposition:in-reply-to;
+        bh=+XDBgAIxW6pdEejIaonmOo/MplTpWCHPD2NVSNjT1SA=;
+        b=r4AQtEWRx5F3bR6BTwk2SFtCT05WFcRE4TDUeDlbH3EqWKrR4hTxsBZqcm4zyqvdO+
+         U5qZ+pZj3HV33atcH/1+6+755zs2zMPSYaexGo/2jbhymTj6e7jX8zpWxBiyLmsLx54L
+         f7HuUnHtdYvR5RU5YhzqCy6gsTnYIDV3Bqipc9jkfiD5PXQKD7qDx104KC9P6FrF1j6N
+         /bYqnFrdjIWRDwU483bUVDZAvdmy85vNvzppZyO1m1myfRc4N0bUUJOCNIBhhIfyk+QO
+         YkJrGanGS2DCN5sEzrVW0BvcT++Z4fwVHAuEUwQyfdR5XAxGvjlvvicnG2pj8z2PTtHM
+         HYpQ==
+X-Gm-Message-State: AOAM5320IcfhBdmkRX7S1RroqnO6UJgIWgLHiGid3bDw1Qj7jm3UgKPC
+        1N/CuBFyLOS3AzD33uNxBWyAHBraPgfP4BHSmoo13H4JhT0Lxi8HlEkINGDEzKMaPNG47YTw6sJ
+        3DQKMfGed+UH8vx5Q
+X-Received: by 2002:a17:906:25d5:: with SMTP id n21mr14622123ejb.156.1625508506153;
+        Mon, 05 Jul 2021 11:08:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzx0csAmCPBvgJN2qcgJ2LBHypBgXDhn2ZX3wnzq6YN56MELAQQsGKH3g2ad49ggziNI8A80g==
+X-Received: by 2002:a17:906:25d5:: with SMTP id n21mr14622106ejb.156.1625508505979;
+        Mon, 05 Jul 2021 11:08:25 -0700 (PDT)
 Received: from redhat.com ([2.55.8.91])
-        by smtp.gmail.com with ESMTPSA id s9sm3028372wrn.87.2021.07.05.10.59.33
+        by smtp.gmail.com with ESMTPSA id j1sm5871273edl.80.2021.07.05.11.08.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jul 2021 10:59:34 -0700 (PDT)
-Date:   Mon, 5 Jul 2021 13:59:31 -0400
+        Mon, 05 Jul 2021 11:08:25 -0700 (PDT)
+Date:   Mon, 5 Jul 2021 14:08:22 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, xieyongji@bytedance.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH 2/2] vdpa: vp_vdpa: don't use hard-coded maximum
- virtqueue size
-Message-ID: <20210705065534-mutt-send-email-mst@kernel.org>
-References: <20210705071910.31965-1-jasowang@redhat.com>
- <20210705071910.31965-2-jasowang@redhat.com>
- <20210705032602-mutt-send-email-mst@kernel.org>
- <02139c5f-92c5-eda6-8d2d-8e1b6ac70f3e@redhat.com>
+To:     wangyunjian <wangyunjian@huawei.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        jasowang@redhat.com, dingxiaoxiong@huawei.com
+Subject: Re: [PATCH net] virtio_net: check virtqueue_add_sgs() return value
+Message-ID: <20210705140505-mutt-send-email-mst@kernel.org>
+References: <63453491987be2b31062449bd59224faca9f546a.1625486802.git.wangyunjian@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <02139c5f-92c5-eda6-8d2d-8e1b6ac70f3e@redhat.com>
+In-Reply-To: <63453491987be2b31062449bd59224faca9f546a.1625486802.git.wangyunjian@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 05, 2021 at 03:29:47PM +0800, Jason Wang wrote:
+On Mon, Jul 05, 2021 at 09:53:39PM +0800, wangyunjian wrote:
+> From: Yunjian Wang <wangyunjian@huawei.com>
 > 
-> 在 2021/7/5 下午3:26, Michael S. Tsirkin 写道:
-> > On Mon, Jul 05, 2021 at 03:19:10PM +0800, Jason Wang wrote:
-> > > This patch switch to read virtqueue size from the capability instead
-> > > of depending on the hardcoded value. This allows the per virtqueue
-> > > size could be advertised.
-> > > 
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > So let's add an ioctl for this? It's really a bug we don't..
+> As virtqueue_add_sgs() can fail, we should check the return value.
 > 
-> 
-> As explained in patch 1. Qemu doesn't use VHOST_VDPA_GET_VRING_NUM actually.
-> Instead it checks the result VHOST_VDPA_SET_VRING_NUM.
-> 
-> So I change VHOST_VDPA_GET_VRING_NUM to return the minimal size of all the
-> virtqueues.
-> 
-> If you wish we can add a VHOST_VDPA_GET_VRING_NUM2, but I'm not sure it will
-> have a user or not.
-> 
-> Thanks
+> Addresses-Coverity-ID: 1464439 ("Unchecked return value")
+> Fixes: a7c58146cf9a ("virtio_net: don't crash if virtqueue is broken.")
 
-Question is how do we know returning the minimal and not e.g. the max
-size is the right thing to do?
+What does this have to do with it?
 
-
+> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+> ---
+>  drivers/net/virtio_net.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> > 
-> > > ---
-> > >   drivers/vdpa/virtio_pci/vp_vdpa.c | 6 ++++--
-> > >   1 file changed, 4 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
-> > > index 2926641fb586..198f7076e4d9 100644
-> > > --- a/drivers/vdpa/virtio_pci/vp_vdpa.c
-> > > +++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
-> > > @@ -18,7 +18,6 @@
-> > >   #include <linux/virtio_pci.h>
-> > >   #include <linux/virtio_pci_modern.h>
-> > > -#define VP_VDPA_QUEUE_MAX 256
-> > >   #define VP_VDPA_DRIVER_NAME "vp_vdpa"
-> > >   #define VP_VDPA_NAME_SIZE 256
-> > > @@ -197,7 +196,10 @@ static void vp_vdpa_set_status(struct vdpa_device *vdpa, u8 status)
-> > >   static u16 vp_vdpa_get_vq_num_max(struct vdpa_device *vdpa, u16 qid)
-> > >   {
-> > > -	return VP_VDPA_QUEUE_MAX;
-> > > +	struct vp_vdpa *vp_vdpa = vdpa_to_vp(vdpa);
-> > > +	struct virtio_pci_modern_device *mdev = &vp_vdpa->mdev;
-> > > +
-> > > +	return vp_modern_get_queue_size(mdev, qid);
-> > >   }
-> > >   static int vp_vdpa_get_vq_state(struct vdpa_device *vdpa, u16 qid,
-> > > -- 
-> > > 2.25.1
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index b0b81458ca94..2b852578551e 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1743,6 +1743,7 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
+>  {
+>  	struct scatterlist *sgs[4], hdr, stat;
+>  	unsigned out_num = 0, tmp;
+> +	int ret;
+>  
+>  	/* Caller should know better */
+>  	BUG_ON(!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_VQ));
+> @@ -1762,7 +1763,9 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
+>  	sgs[out_num] = &stat;
+>  
+>  	BUG_ON(out_num + 1 > ARRAY_SIZE(sgs));
+> -	virtqueue_add_sgs(vi->cvq, sgs, out_num, 1, vi, GFP_ATOMIC);
+> +	ret = virtqueue_add_sgs(vi->cvq, sgs, out_num, 1, vi, GFP_ATOMIC);
+> +	if (ret < 0)
+> +		return false;
+
+and maybe dev_warn here. these things should not happen.
+
+
+>  
+>  	if (unlikely(!virtqueue_kick(vi->cvq)))
+>  		return vi->ctrl->status == VIRTIO_NET_OK;
+> -- 
+> 2.23.0
 
