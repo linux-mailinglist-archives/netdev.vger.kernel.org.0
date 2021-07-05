@@ -2,110 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 590383BB70D
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 08:03:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DF423BB739
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 08:35:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbhGEGGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 02:06:24 -0400
-Received: from mailgw01.mediatek.com ([60.244.123.138]:37061 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229734AbhGEGGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 02:06:23 -0400
-X-UUID: a359db07d60241c1950bb2b35d7a9fde-20210705
-X-UUID: a359db07d60241c1950bb2b35d7a9fde-20210705
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <rocco.yue@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 888824830; Mon, 05 Jul 2021 14:03:44 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 5 Jul 2021 14:03:42 +0800
-Received: from localhost.localdomain (10.15.20.246) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 5 Jul 2021 14:03:41 +0800
-From:   Rocco Yue <rocco.yue@mediatek.com>
-To:     David Ahern <dsahern@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <wsd_upstream@mediatek.com>,
-        <rocco.yue@gmail.com>, <chao.song@mediatek.com>,
-        <kuohong.wang@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
-        Rocco Yue <rocco.yue@mediatek.com>
-Subject: Re: [PATCH] net: ipv6: don't generate link-local address in any addr_gen_mode
-Date:   Mon, 5 Jul 2021 13:48:02 +0800
-Message-ID: <20210705054802.31052-1-rocco.yue@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20210701085117.19018-1-rocco.yue@mediatek.com>
-References: <20210701085117.19018-1-rocco.yue@mediatek.com>
+        id S229876AbhGEGhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 02:37:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36838 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229813AbhGEGhg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 02:37:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625466899;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dUn2BLJAFkyaHY1ZuaHGYZbVrSRfM4IcVOnAHiEUpR8=;
+        b=JXpMHg0eaoemgiv811epzyIMlFrjDRlU2aOhdRHJuYqX0nIWUmG28wb5Mszet2fAAQKL4N
+        qcB2FtmQwYYmSSJu2obOSjwdgYmxMVTlkahLdlqdgYGP4sTeviLDxsZMDCwTVhRH4RpoYU
+        lJimrkAna1Fu7p2QNZPSrUDPBukYhgU=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-229-ZUNyqDL6MCeTZtyB7mfplQ-1; Mon, 05 Jul 2021 02:34:57 -0400
+X-MC-Unique: ZUNyqDL6MCeTZtyB7mfplQ-1
+Received: by mail-ed1-f71.google.com with SMTP id da21-20020a0564021775b02903997f7760a6so2257961edb.10
+        for <netdev@vger.kernel.org>; Sun, 04 Jul 2021 23:34:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dUn2BLJAFkyaHY1ZuaHGYZbVrSRfM4IcVOnAHiEUpR8=;
+        b=Vmy1K7bRLhKEC+izCQwCV01dEtsVRoEBfZIKTr900fGar1vSXFG5WoVW62Ph6HA/tf
+         t2Bb0HMuxiBisDVKTzFBun1nNIpQzyfaO/TmFtUj0myLxXx1P2Uz278/1exgmjoQU1ff
+         GnuAZsGTiyYnKhdtFICFTazfkZBtsvye2zuZP9mDD+EztirdZ45N4mbxVB1eSn6pxAeB
+         ++jjj3bjxogpvjhY8/amwbXT7AQMnmuqQl6OtR4NJmK7k5u1t17vshZy2TjFJtzyMWL4
+         TwUBC3Y7f9lulkyXSM67uzc9NvQaE4kDWG3Wt5Je/hZBn/cuk+q6z+oMLixkSZJMYGLG
+         dx1g==
+X-Gm-Message-State: AOAM532P7S/6nM2uRdEqoUbhCpvFmi9HzIhPHFrVgRNU1F5uRU4VQjjT
+        stpIK1EjAWu0zyDQ4jdJd3PBSvvO3y/RStrfvSm8yNRYfooHRxFEH4aQdPNc658Gl1H2o/JHD2O
+        MJ3zHwVxPhOX8eatJ
+X-Received: by 2002:a05:6402:1001:: with SMTP id c1mr14439023edu.26.1625466896741;
+        Sun, 04 Jul 2021 23:34:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxrRq3MRlQH+mGsiMRP8CKAZ/zYD48i3O+gBiuOktjRvq+QwTg+tzV3G5Q/ybjcyomyf2ha9w==
+X-Received: by 2002:a05:6402:1001:: with SMTP id c1mr14439011edu.26.1625466896604;
+        Sun, 04 Jul 2021 23:34:56 -0700 (PDT)
+Received: from redhat.com ([2.55.4.39])
+        by smtp.gmail.com with ESMTPSA id ja11sm3945759ejc.62.2021.07.04.23.34.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Jul 2021 23:34:54 -0700 (PDT)
+Date:   Mon, 5 Jul 2021 02:34:50 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Zhu Lingshan <lingshan.zhu@intel.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH 2/3] vDPA/ifcvf: implement management netlink framework
+ for ifcvf
+Message-ID: <20210705023354-mutt-send-email-mst@kernel.org>
+References: <20210630082145.5729-1-lingshan.zhu@intel.com>
+ <20210630082145.5729-3-lingshan.zhu@intel.com>
+ <1ebb3dc8-5416-f718-2837-8371e78dd3d0@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1ebb3dc8-5416-f718-2837-8371e78dd3d0@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-07-01 at 16:51 +0800, Rocco Yue wrote:
-> On Wed, 2021-06-30 at 22:41 -0600, David Ahern wrote:
->> On 6/30/21 9:39 PM, Rocco Yue wrote:
->>> 
->>> Hi David,
->>> 
->>> Thanks for your review.
->>> 
->>> This patch is different with IN6_ADDR_GEN_MODE_NONE.
->>> 
->>> When the addr_gen_mode == IN6_ADDR_GEN_MODE_NONE, the Linux kernel
->>> doesn't automatically generate the ipv6 link-local address.
->>> 
->> 
->> ...
->> 
->>> 
->>> After this patch, when the "disable_gen_linklocal_addr" value of a device
->>> is 1, no matter in which addr_gen_mode, the Linux kernel will not automatically
->>> generate an ipv6 link-local for this device.
->>> 
->> 
->> those 2 sentences are saying the same thing to me.
->> 
->> for your use case, why is setting addr_gen_mode == 1 for the device not
->> sufficient?
->> 
+On Mon, Jul 05, 2021 at 01:04:11PM +0800, Jason Wang wrote:
+> > +static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> > +{
+> > +	struct ifcvf_vdpa_mgmt_dev *ifcvf_mgmt_dev;
+> > +	struct device *dev = &pdev->dev;
+> > +	struct ifcvf_adapter *adapter;
 > 
-> For mobile operators that don't need to support RFC7217, setting
-> addr_gen_mode == 1 is sufficient;
 > 
-> But for some other mobile operators that need to support RFC7217, such as AT&T,
-> the mobile device's addr_gen_mode will be switched to the
-> IN6_ADDR_GEN_MODE_STABLE_PRIVACY, instead of using IN6_ADDR_GEN_MODE_NONE.
-> The purpose is: in the IN6_ADDR_GEN_MODE_STABLE_PRIVACY mode, kernel can
-> gererate a stable privacy global ipv6 address after receiveing RA, and
-> network processes can use this global address to communicate with the
-> outside network.
-> 
-> Of course, mobile operators that need to support RFC7217 should also meet
-> the requirement of 3GPP TS 29.061, that is, MT should use IID assigned by
-> the GGSN to build its ipv6 link-local address and use this address to send RS.
-> We don't want the kernel to automatically generate an ipv6 link-local address
-> when addr_gen_mode == 2. Otherwise, using the stable privacy ipv6 link-local
-> address automatically generated by the kernel to send RS message, GGSN will
-> not be able to respond to the RS and reply a RA message.
-> 
-> Therefore, after this patch, kernel will not generate ipv6 link-local address
-> for the corresponding device when addr_gen_mode == 1 or addr_gen_mode == 2.
-> 
-> Thanks,
-> Rocco
-> 
+> adapter is not used.
 
-Hi David,
+It's used in error handling below. It's not *initialized*.
 
-Gentle ping for this patch.
+> 
+> > +	u32 dev_type;
+> > +	int ret;
+> > +
+> > +	ifcvf_mgmt_dev = kzalloc(sizeof(struct ifcvf_vdpa_mgmt_dev), GFP_KERNEL);
+> > +	if (!ifcvf_mgmt_dev) {
+> > +		IFCVF_ERR(pdev, "Failed to alloc memory for the vDPA management device\n");
+> > +		return -ENOMEM;
+> > +	}
+> > +
+> > +	dev_type = get_dev_type(pdev);
+> > +	switch (dev_type) {
+> > +	case VIRTIO_ID_NET:
+> > +		ifcvf_mgmt_dev->mdev.id_table = id_table_net;
+> > +		break;
+> > +	case VIRTIO_ID_BLOCK:
+> > +		ifcvf_mgmt_dev->mdev.id_table = id_table_blk;
+> > +		break;
+> > +	default:
+> > +		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", dev_type);
+> > +		ret = -EOPNOTSUPP;
+> > +		goto err;
+> > +	}
+> > +
+> > +	ifcvf_mgmt_dev->mdev.ops = &ifcvf_vdpa_mgmt_dev_ops;
+> > +	ifcvf_mgmt_dev->mdev.device = dev;
+> > +	ifcvf_mgmt_dev->pdev = pdev;
+> > +
+> > +	ret = pcim_enable_device(pdev);
+> > +	if (ret) {
+> > +		IFCVF_ERR(pdev, "Failed to enable device\n");
+> > +		goto err;
+> > +	}
+> > +
+> > +	ret = pcim_iomap_regions(pdev, BIT(0) | BIT(2) | BIT(4),
+> > +				 IFCVF_DRIVER_NAME);
+> > +	if (ret) {
+> > +		IFCVF_ERR(pdev, "Failed to request MMIO region\n");
+> > +		goto err;
+> > +	}
+> > +
+> > +	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
+> > +	if (ret) {
+> > +		IFCVF_ERR(pdev, "No usable DMA configuration\n");
+> > +		goto err;
+> > +	}
+> > +
+> > +	ret = devm_add_action_or_reset(dev, ifcvf_free_irq_vectors, pdev);
+> > +	if (ret) {
+> > +		IFCVF_ERR(pdev,
+> > +			  "Failed for adding devres for freeing irq vectors\n");
+> > +		goto err;
+> > +	}
+> > +
+> > +	pci_set_master(pdev);
+> > +
+> > +	ret = vdpa_mgmtdev_register(&ifcvf_mgmt_dev->mdev);
+> > +	if (ret) {
+> > +		IFCVF_ERR(pdev,
+> > +			  "Failed to initialize the management interfaces\n");
+> >   		goto err;
+> >   	}
+> > @@ -533,14 +610,21 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> >   err:
+> >   	put_device(&adapter->vdpa.dev);
+> > +	kfree(ifcvf_mgmt_dev);
+> >   	return ret;
+> >   }
 
-Thanks,
-Rocco
