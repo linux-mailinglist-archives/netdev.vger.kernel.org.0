@@ -2,73 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4762E3BBA3C
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 11:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBA803BBA76
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 11:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbhGEJiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 05:38:16 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:46364 "EHLO inva020.nxp.com"
+        id S230390AbhGEJta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 05:49:30 -0400
+Received: from mga17.intel.com ([192.55.52.151]:7585 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230262AbhGEJiP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Jul 2021 05:38:15 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A90BC1A0476;
-        Mon,  5 Jul 2021 11:35:37 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 707951A0465;
-        Mon,  5 Jul 2021 11:35:37 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id BD96E183AC98;
-        Mon,  5 Jul 2021 17:35:35 +0800 (+08)
-From:   Yangbo Lu <yangbo.lu@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Sebastien Laveze <sebastien.laveze@nxp.com>
-Subject: [net] ptp: fix format string mismatch in ptp_sysfs.c
-Date:   Mon,  5 Jul 2021 17:46:17 +0800
-Message-Id: <20210705094617.15470-1-yangbo.lu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S230000AbhGEJt3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Jul 2021 05:49:29 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10035"; a="189332553"
+X-IronPort-AV: E=Sophos;i="5.83,325,1616482800"; 
+   d="scan'208";a="189332553"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2021 02:46:50 -0700
+X-IronPort-AV: E=Sophos;i="5.83,325,1616482800"; 
+   d="scan'208";a="456668177"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.255.31.182]) ([10.255.31.182])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2021 02:46:48 -0700
+Subject: Re: [PATCH 3/3] vDPA/ifcvf: set_status() should get a adapter from
+ the mgmt dev
+To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20210630082145.5729-1-lingshan.zhu@intel.com>
+ <20210630082145.5729-4-lingshan.zhu@intel.com>
+ <81d8aaed-f2e8-bbf8-a7d5-71e41837d866@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Message-ID: <15c5660e-3db8-a41e-072a-c8f710d10ab0@intel.com>
+Date:   Mon, 5 Jul 2021 17:46:45 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
+MIME-Version: 1.0
+In-Reply-To: <81d8aaed-f2e8-bbf8-a7d5-71e41837d866@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix format string mismatch in ptp_sysfs.c. Use %u for unsigned int.
 
-Fixes: 73f37068d540 ("ptp: support ptp physical/virtual clocks conversion")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
----
- drivers/ptp/ptp_sysfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
-index 6a36590ca77a..b3d96b747292 100644
---- a/drivers/ptp/ptp_sysfs.c
-+++ b/drivers/ptp/ptp_sysfs.c
-@@ -179,7 +179,7 @@ static ssize_t n_vclocks_show(struct device *dev,
- 	if (mutex_lock_interruptible(&ptp->n_vclocks_mux))
- 		return -ERESTARTSYS;
- 
--	size = snprintf(page, PAGE_SIZE - 1, "%d\n", ptp->n_vclocks);
-+	size = snprintf(page, PAGE_SIZE - 1, "%u\n", ptp->n_vclocks);
- 
- 	mutex_unlock(&ptp->n_vclocks_mux);
- 
-@@ -252,7 +252,7 @@ static ssize_t max_vclocks_show(struct device *dev,
- 	struct ptp_clock *ptp = dev_get_drvdata(dev);
- 	ssize_t size;
- 
--	size = snprintf(page, PAGE_SIZE - 1, "%d\n", ptp->max_vclocks);
-+	size = snprintf(page, PAGE_SIZE - 1, "%u\n", ptp->max_vclocks);
- 
- 	return size;
- }
+On 7/5/2021 1:09 PM, Jason Wang wrote:
+>
+> 在 2021/6/30 下午4:21, Zhu Lingshan 写道:
+>> ifcvf_vdpa_set_status() should get a adapter from the
+>> management device
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> ---
+>>   drivers/vdpa/ifcvf/ifcvf_main.c | 4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> index 7c2f64ca2163..28c71eef1d2b 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> @@ -212,13 +212,15 @@ static u8 ifcvf_vdpa_get_status(struct 
+>> vdpa_device *vdpa_dev)
+>>     static void ifcvf_vdpa_set_status(struct vdpa_device *vdpa_dev, 
+>> u8 status)
+>>   {
+>> +    struct ifcvf_vdpa_mgmt_dev *ifcvf_mgmt_dev;
+>>       struct ifcvf_adapter *adapter;
+>>       struct ifcvf_hw *vf;
+>>       u8 status_old;
+>>       int ret;
+>>         vf  = vdpa_to_vf(vdpa_dev);
+>> -    adapter = dev_get_drvdata(vdpa_dev->dev.parent);
+>
+>
+> If this is a fix for patch 2, you need to squash this into that one.
+sure will squash it to patch 2
+>
+> Any reason that vdpa_to_adapter() can't work?
+will use it in V2.
+>
+> And I see:
+>
+> +struct ifcvf_vdpa_mgmt_dev {
+> +    struct vdpa_mgmt_dev mdev;
+> +    struct ifcvf_adapter *adapter;
+> +    struct pci_dev *pdev;
+> +};
+>
+> What's the reason for having a adapter pointer here?
+because in ifcvf_remove(), we need to get the management device from 
+pdev struct, so need to set the management device pointor
+to the pdev drvdata, then need this *adapter pointor to address the adapter.
 
-base-commit: 6ff63a150b5556012589ae59efac1b5eeb7d32c3
--- 
-2.25.1
+Thanks
+>
+>
+> Thanks
+>
+>
+>> +    ifcvf_mgmt_dev = dev_get_drvdata(vdpa_dev->dev.parent);
+>> +    adapter = ifcvf_mgmt_dev->adapter;
+>>       status_old = ifcvf_get_status(vf);
+>>         if (status_old == status)
+>
 
