@@ -2,129 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58B493BC2CE
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 20:42:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EB3D3BC2D5
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 20:44:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbhGESpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 14:45:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52115 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229941AbhGESpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 14:45:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625510546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hxieeAsO+aYesQyPodozZxutTsNb3aB6Ym4RXVeMxF8=;
-        b=Qc/Y976XLaN2XGyao14eqlGzITLS5A45gwE58S8bUhnWPgfFZIVx7eh/9B47/BYETMfMZg
-        m6/YYm7NI943rlW1nIG+b0Y6y0H0zj8gtyGVf+OnTgyw4QbcmM5LJkGXD1iJ80CT2u6k/M
-        NNozdGMJ5oF2mIRipO0CVqrEq6O4oCw=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-141-NZKU4JKENT2LT3sP-gGPgw-1; Mon, 05 Jul 2021 14:42:25 -0400
-X-MC-Unique: NZKU4JKENT2LT3sP-gGPgw-1
-Received: by mail-wr1-f71.google.com with SMTP id v18-20020adfa1d20000b029012c379fbc45so5953730wrv.22
-        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 11:42:24 -0700 (PDT)
+        id S230023AbhGESqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 14:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229963AbhGESqn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 14:46:43 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42501C06175F;
+        Mon,  5 Jul 2021 11:44:05 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id 17so17129563pfz.4;
+        Mon, 05 Jul 2021 11:44:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=q9B674I/+/MTqKFyAT06vY9UMY1nLlYo82cmty5TYFU=;
+        b=U76TMLXOV4pdFDQFVwfpz4YW7eAM3VMSh+sg+dkwJDnf5Wyu2diLJptad2GOzoaJhj
+         9K27nXn0+L6f/KD5uuiR7ez//OnVNMSyK77IQ7ytOlmH6cDgOYcefVnITNhc4efdDhmC
+         eW6mYSiUh26B1kMlcJ1VZJOWZpWRL+cIs4OkuPEut6GN8jaSsojbfSIZBXruzABLFXa4
+         LXn+hPgjIIVsIsCTY0uNkwbuX0fmjFuYJ/urIhLx7BrAhzSDiCVBqg46y7GXL4uKG+Jw
+         QoFDNEJwBjUrGaPSLLNZ1YASrGV/MQOMNJgLldQCac4k880XzGqFMF110w+TKtJHHDdC
+         oO9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hxieeAsO+aYesQyPodozZxutTsNb3aB6Ym4RXVeMxF8=;
-        b=JGon6MsWyovLU6ChKvF1odM3eTctGcSyUELM/fAUIrAddjvXtl8gJVWzxKpbMhbnjV
-         1h10/4coza3/iRKWLdG/9USdLOemBjSfGWaLKHmqNVKi3KvNz3UmwXowQKcSniaDQ5OB
-         bQYnMeT2s07CXLkWz289ohcGBcsG9OFYITXVOk8vnD0beHKFlFC4TzsXQnoMO09KK+Ey
-         /ZTATel81XFDNNKq5ahWNrfxe/iT/t7CZgp+O4JlQUr/JiAe8hOv4VlfiYS4tJitMSZJ
-         twthUxXl28dB+FYM8wrOLjU8Lk3HA4qx3B7frl+ACT/x7bYCGZwT9zpu46g+Ln7+8b7k
-         t48g==
-X-Gm-Message-State: AOAM532cyztvJuIDL94cFQ3vYS8uk+XIl7bICn42DpEbUoZl9FsiiyrC
-        8W1g8AdHJca+QNduqHjKY2W0cNjPVyMuVyAS9QfSGKe5dEadAjVEbtJQf3FWErcaZfQQq/B2WN4
-        b5aLKl229lmsHNSWm
-X-Received: by 2002:a05:600c:4fc7:: with SMTP id o7mr15993598wmq.16.1625510544104;
-        Mon, 05 Jul 2021 11:42:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzlJJFPAXlaTcZQswco9ajV7a/O8ZHwJcSxi3zqI4tlkfUQnVjdSqzPKdDB74yLS1uXV1+ndA==
-X-Received: by 2002:a05:600c:4fc7:: with SMTP id o7mr15993574wmq.16.1625510543917;
-        Mon, 05 Jul 2021 11:42:23 -0700 (PDT)
-Received: from redhat.com ([2.55.8.91])
-        by smtp.gmail.com with ESMTPSA id o3sm14223510wrw.56.2021.07.05.11.42.20
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=q9B674I/+/MTqKFyAT06vY9UMY1nLlYo82cmty5TYFU=;
+        b=Ymeex6Ms0jM58OjBh9ZTWc4TCxhZfJ9LbmB9yT3rRD2YX+iSE4fxn7eNkgaBZB0ElR
+         WmhrXEmlY2t5MP/Ez5FZB4zIdOUhVZ+NBPOjIsPQFvbMgp5pLTmXxb8cLIwB97VhOFKc
+         O6TMav/imOlyqjHB13CzRbVuWzfMg5EqW7gYxIl5YXQWgsARCzvlQL9kPamHZexzIiu9
+         2NRQzJYvu+jodsb3Ep9WWuebnnxDqAqho+MXZ8JsZctZfwG5bN1JGMlN/Ea76OmEcksR
+         vCCzxQwAHYG4tS3g6WWXgom372zE1cmq/47dSuwPtjiQDgfY62TkKfASgA7G8WLN9adQ
+         SyPw==
+X-Gm-Message-State: AOAM533kE7ms4ycYo62DefVSGb9E2GvreeiWZxqRTZkq0exOsSwOLSG/
+        S4JjQ/0ud7aSVwchu9bUigA=
+X-Google-Smtp-Source: ABdhPJyFPZFlKa0i+0rwZcF+zTp1p31HnTBY1c4ty+efUwLDX1BzuLrPZs1aVYGImcZW2oWQ6iM2Jg==
+X-Received: by 2002:a63:dd51:: with SMTP id g17mr17197215pgj.238.1625510644823;
+        Mon, 05 Jul 2021 11:44:04 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id 31sm4292038pgu.17.2021.07.05.11.44.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jul 2021 11:42:23 -0700 (PDT)
-Date:   Mon, 5 Jul 2021 14:42:18 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, jasowang@redhat.com, nickhu@andestech.com,
-        green.hu@gmail.com, deanbo422@gmail.com, akpm@linux-foundation.org,
-        yury.norov@gmail.com, ojeda@kernel.org, ndesaulniers@gooogle.com,
-        joe@perches.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] refactor the ringtest testing for ptr_ring
-Message-ID: <20210705143952-mutt-send-email-mst@kernel.org>
-References: <1625457455-4667-1-git-send-email-linyunsheng@huawei.com>
- <YOLXTB6VxtLBmsuC@smile.fi.intel.com>
- <c6844e2b-530f-14b2-0ec3-d47574135571@huawei.com>
- <20210705142555-mutt-send-email-mst@kernel.org>
- <YONRKnDzCzSAXptx@smile.fi.intel.com>
+        Mon, 05 Jul 2021 11:44:04 -0700 (PDT)
+Date:   Mon, 5 Jul 2021 11:44:01 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Y.b. Lu" <yangbo.lu@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "mptcp@lists.linux.dev" <mptcp@lists.linux.dev>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Rui Sousa <rui.sousa@nxp.com>,
+        Sebastien Laveze <sebastien.laveze@nxp.com>
+Subject: Re: [net-next, v5, 08/11] net: sock: extend SO_TIMESTAMPING for PHC
+ binding
+Message-ID: <20210705184401.GA16128@hoboy.vegasvil.org>
+References: <20210630081202.4423-1-yangbo.lu@nxp.com>
+ <20210630081202.4423-9-yangbo.lu@nxp.com>
+ <20210704133331.GA4268@hoboy.vegasvil.org>
+ <DB7PR04MB50174906EE8CCEB4A02F4C17F81C9@DB7PR04MB5017.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YONRKnDzCzSAXptx@smile.fi.intel.com>
+In-Reply-To: <DB7PR04MB50174906EE8CCEB4A02F4C17F81C9@DB7PR04MB5017.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 05, 2021 at 09:36:26PM +0300, Andy Shevchenko wrote:
-> On Mon, Jul 05, 2021 at 02:26:32PM -0400, Michael S. Tsirkin wrote:
-> > On Mon, Jul 05, 2021 at 08:06:50PM +0800, Yunsheng Lin wrote:
-> > > On 2021/7/5 17:56, Andy Shevchenko wrote:
-> > > > On Mon, Jul 05, 2021 at 11:57:33AM +0800, Yunsheng Lin wrote:
-> > > >> tools/include/* have a lot of abstract layer for building
-> > > >> kernel code from userspace, so reuse or add the abstract
-> > > >> layer in tools/include/ to build the ptr_ring for ringtest
-> > > >> testing.
-> > > > 
-> > > > ...
-> > > > 
-> > > >>  create mode 100644 tools/include/asm/cache.h
-> > > >>  create mode 100644 tools/include/asm/processor.h
-> > > >>  create mode 100644 tools/include/generated/autoconf.h
-> > > >>  create mode 100644 tools/include/linux/align.h
-> > > >>  create mode 100644 tools/include/linux/cache.h
-> > > >>  create mode 100644 tools/include/linux/slab.h
-> > > > 
-> > > > Maybe somebody can change this to be able to include in-tree headers directly?
-> > > 
-> > > If the above works, maybe the files in tools/include/* is not
-> > > necessary any more, just use the in-tree headers to compile
-> > > the user space app?
-> > > 
-> > > Or I missed something here?
-> > 
-> > why would it work? kernel headers outside of uapi are not
-> > intended to be consumed by userspace.
+On Mon, Jul 05, 2021 at 08:19:30AM +0000, Y.b. Lu wrote:
+> When several ptp virtual clocks are created, the ptp physical clock is guaranteed for free running.
 > 
-> The problem here, that we are almost getting two copies of the headers, and
-> tools are not in a good maintenance, so it's often desynchronized from the
-> actual Linux headers. This will become more and more diverse if we keep same
-> way of operation. So, I would rather NAK any new copies of the headers from
-> include/ to tools/include.
-
-We already have the copies
-yes they are not maintained well ... what's the plan then?
-NAK won't help us improve the situation.
-I would say copies are kind of okay just make sure they are
-built with kconfig. Then any breakage will be
-detected.
-
-> > > > Besides above, had you tested this with `make O=...`?
-> > > 
-> > > You are right, the generated/autoconf.h is in another directory
-> > > with `make O=...`.
-> > > 
-> > > Any nice idea to fix the above problem?
+> What I think is, for timestamping, if no flag SOF_TIMESTAMPING_BIND_PHC, the timestamping keeps using ptp physical clock.
+> If application wants to bind one ptp virtual clock for timestamping, the flag SOF_TIMESTAMPING_BIND_PHC should be set and clock index should be provided.
+> After all, several ptp virtual clocks created are likely for different timescale/use case. There should be a method for any of applications to select the right one to use.
 > 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
+> Does it make sense?
 
+Yes, indeed.  I totally forgot that the user space PTP stack has
+network sockets bond to interfaces, and they are completely separate
+from the PHC clockid_t.  Need more sleep...
+
+Thanks,
+Richard
