@@ -2,158 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96F7E3BBAFF
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAC913BBB46
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231210AbhGEKS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 06:18:58 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:45270 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231181AbhGEKSz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Jul 2021 06:18:55 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 30D55200690;
-        Mon,  5 Jul 2021 12:16:17 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id C294D2015FC;
-        Mon,  5 Jul 2021 12:16:16 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 97381183ACDD;
-        Mon,  5 Jul 2021 18:16:14 +0800 (+08)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     davem@davemloft.net, joabreu@synopsys.com, kuba@kernel.org,
-        alexandre.torgue@st.com, peppe.cavallaro@st.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org
-Cc:     boon.leong.ong@intel.com, weifeng.voon@intel.com,
-        vee.khee.wong@intel.com, tee.min.tan@intel.com,
-        mohammad.athari.ismail@intel.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        leoyang.li@nxp.com, qiangqing.zhang@nxp.com, rui.sousa@nxp.com,
-        xiaoliang.yang_1@nxp.com
-Subject: [PATCH v2 net-next 3/3] net: stmmac: ptp: update tas basetime after ptp adjust
-Date:   Mon,  5 Jul 2021 18:26:55 +0800
-Message-Id: <20210705102655.6280-4-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210705102655.6280-1-xiaoliang.yang_1@nxp.com>
-References: <20210705102655.6280-1-xiaoliang.yang_1@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S230506AbhGEKfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 06:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230498AbhGEKfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 06:35:36 -0400
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778EEC061762;
+        Mon,  5 Jul 2021 03:32:59 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id fi7so7519606qvb.0;
+        Mon, 05 Jul 2021 03:32:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Uv5ai65gHb5m/HxZd5R8XWhGgD//S0MpoNfax4VMuGs=;
+        b=pERmxVpJmV1UrNZlchRsmpGEyukTJjAGELhKWFeg2cWIqeduB/v1eJoeNhJI74by/E
+         S7SUC8tgnz9RLMqcjuBehNr/iVc/fANx0fABKhZr9ixp6seEtQVbByay4VbmQpKYFnUh
+         MDzd8kOsDFiWRcjQd98+2gcxNzwPidP2veYdL/67fdE80nwUgDHj9y34U3yzPFqBYDTS
+         m//98Yf6SQNi7nAD9jHB297Rwe+OXYfQsnwXNkoLvTdmVSlGxDJfWqGB0KFk7o19eIN0
+         KSJw0xk2Dq8RZ0IV5p1Fdx/E1HkA8wLPlkizX0UvyehtFnYf/5I6MV24iIKX1gsHAt6F
+         IGXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Uv5ai65gHb5m/HxZd5R8XWhGgD//S0MpoNfax4VMuGs=;
+        b=I2+Ww1+FI3WKuV/sWzzKGuRLd5WK7gN74XhTiqceJ/5ZO31XMu3G16YKf4Q5yplEsW
+         /WvR6bFFEBMHq2eXwg66V7LAj6xkE6nnQhlxvr6OgLWikyYJ4ulRL2+sPLP0mngeyqBA
+         yzXwh8HY7A79oBfwXXxOZmdg4y4GPrVCq00hDB/FeshM8AMsckreH+EPkv5D0qbtWeVo
+         QHdCKCOkiFeBDs2NcbxRqqCKBwdJmfZWeJ6gekdXELUb0heHcEiR+EZ4D1ZEAtdtj6fs
+         x/5XW33gsHaKHJDqovvCxzZQ3gFGfs9oa37VTdTzbvOcygTZGuesJlrxfnYI6GiQEvDk
+         1rXw==
+X-Gm-Message-State: AOAM533IPHmtk3kQiqGNi/N0i3S9EWzcOMaMLUl6M/rkcnbsxgXKPpmE
+        zF+5vZvwzarpZcQ+dho1+Hm+/cVzNjQ/80E3fw==
+X-Google-Smtp-Source: ABdhPJwKsyJm8Wuj7b6z76dHg62Zky63dEg6wUu5O0hnKGVA97DUdqDQEJox82/1WorM6l8DpAAER6+FmaysKpWQP4g=
+X-Received: by 2002:a0c:f8d1:: with SMTP id h17mr7863652qvo.21.1625481178553;
+ Mon, 05 Jul 2021 03:32:58 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210609135537.1460244-1-joamaki@gmail.com> <20210624091843.5151-1-joamaki@gmail.com>
+ <31459.1625163601@famine>
+In-Reply-To: <31459.1625163601@famine>
+From:   Jussi Maki <joamaki@gmail.com>
+Date:   Mon, 5 Jul 2021 13:32:47 +0300
+Message-ID: <CAHn8xcn0CpcmX7fzkWwHWJpXTxVD=9XScCsDYT-bg3+d+5M5zA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/4] XDP bonding support
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andy Gospodarek <andy@greyhouse.net>, vfalico@gmail.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After adjusting the ptp time, the Qbv base time may be the past time
-of the new current time. dwmac5 hardware limited the base time cannot
-be set as past time. This patch add a btr_reserve to store the base
-time get from qopt, then calculate the base time and reset the Qbv
-configuration after ptp time adjust.
+On Thu, Jul 1, 2021 at 9:20 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>
+> joamaki@gmail.com wrote:
+>
+> >From: Jussi Maki <joamaki@gmail.com>
+> >
+> >This patchset introduces XDP support to the bonding driver.
+> >
+> >The motivation for this change is to enable use of bonding (and
+> >802.3ad) in hairpinning L4 load-balancers such as [1] implemented with
+> >XDP and also to transparently support bond devices for projects that
+> >use XDP given most modern NICs have dual port adapters.  An alternative
+> >to this approach would be to implement 802.3ad in user-space and
+> >implement the bonding load-balancing in the XDP program itself, but
+> >is rather a cumbersome endeavor in terms of slave device management
+> >(e.g. by watching netlink) and requires separate programs for native
+> >vs bond cases for the orchestrator. A native in-kernel implementation
+> >overcomes these issues and provides more flexibility.
+> >
+> >Below are benchmark results done on two machines with 100Gbit
+> >Intel E810 (ice) NIC and with 32-core 3970X on sending machine, and
+> >16-core 3950X on receiving machine. 64 byte packets were sent with
+> >pktgen-dpdk at full rate. Two issues [2, 3] were identified with the
+> >ice driver, so the tests were performed with iommu=off and patch [2]
+> >applied. Additionally the bonding round robin algorithm was modified
+> >to use per-cpu tx counters as high CPU load (50% vs 10%) and high rate
+> >of cache misses were caused by the shared rr_tx_counter. Fix for this
+> >has been already merged into net-next. The statistics were collected
+> >using "sar -n dev -u 1 10".
+> >
+> > -----------------------|  CPU  |--| rxpck/s |--| txpck/s |----
+> > without patch (1 dev):
+> >   XDP_DROP:              3.15%      48.6Mpps
+> >   XDP_TX:                3.12%      18.3Mpps     18.3Mpps
+> >   XDP_DROP (RSS):        9.47%      116.5Mpps
+> >   XDP_TX (RSS):          9.67%      25.3Mpps     24.2Mpps
+> > -----------------------
+> > with patch, bond (1 dev):
+> >   XDP_DROP:              3.14%      46.7Mpps
+> >   XDP_TX:                3.15%      13.9Mpps     13.9Mpps
+> >   XDP_DROP (RSS):        10.33%     117.2Mpps
+> >   XDP_TX (RSS):          10.64%     25.1Mpps     24.0Mpps
+> > -----------------------
+> > with patch, bond (2 devs):
+> >   XDP_DROP:              6.27%      92.7Mpps
+> >   XDP_TX:                6.26%      17.6Mpps     17.5Mpps
+> >   XDP_DROP (RSS):       11.38%      117.2Mpps
+> >   XDP_TX (RSS):         14.30%      28.7Mpps     27.4Mpps
+> > --------------------------------------------------------------
+>
+>         To be clear, the fact that the performance numbers for XDP_DROP
+> and XDP_TX are lower for "with patch, bond (1 dev)" than "without patch
+> (1 dev)" is expected, correct?
 
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 41 ++++++++++++++++++-
- .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |  6 ++-
- include/linux/stmmac.h                        |  1 +
- 3 files changed, 46 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-index 4e86cdf2bc9f..580cc035536b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-@@ -62,7 +62,8 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
- 	u32 sec, nsec;
- 	u32 quotient, reminder;
- 	int neg_adj = 0;
--	bool xmac;
-+	bool xmac, est_rst = false;
-+	int ret;
- 
- 	xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
- 
-@@ -75,10 +76,48 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
- 	sec = quotient;
- 	nsec = reminder;
- 
-+	/* If EST is enabled, disabled it before adjust ptp time. */
-+	if (priv->plat->est && priv->plat->est->enable) {
-+		est_rst = true;
-+		mutex_lock(&priv->plat->est->lock);
-+		priv->plat->est->enable = false;
-+		stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
-+				     priv->plat->clk_ptp_rate);
-+		mutex_unlock(&priv->plat->est->lock);
-+	}
-+
- 	spin_lock_irqsave(&priv->ptp_lock, flags);
- 	stmmac_adjust_systime(priv, priv->ptpaddr, sec, nsec, neg_adj, xmac);
- 	spin_unlock_irqrestore(&priv->ptp_lock, flags);
- 
-+	/* Caculate new basetime and re-configured EST after PTP time adjust. */
-+	if (est_rst) {
-+		struct timespec64 current_time, time;
-+		ktime_t current_time_ns, basetime;
-+		u64 cycle_time;
-+
-+		mutex_lock(&priv->plat->est->lock);
-+		priv->ptp_clock_ops.gettime64(&priv->ptp_clock_ops, &current_time);
-+		current_time_ns = timespec64_to_ktime(current_time);
-+		time.tv_nsec = priv->plat->est->btr_reserve[0];
-+		time.tv_sec = priv->plat->est->btr_reserve[1];
-+		basetime = timespec64_to_ktime(time);
-+		cycle_time = priv->plat->est->ctr[1] * NSEC_PER_SEC +
-+			     priv->plat->est->ctr[0];
-+		time = stmmac_calc_tas_basetime(basetime,
-+						current_time_ns,
-+						cycle_time);
-+
-+		priv->plat->est->btr[0] = (u32)time.tv_nsec;
-+		priv->plat->est->btr[1] = (u32)time.tv_sec;
-+		priv->plat->est->enable = true;
-+		ret = stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
-+					   priv->plat->clk_ptp_rate);
-+		mutex_unlock(&priv->plat->est->lock);
-+		if (ret)
-+			netdev_err(priv->dev, "failed to configure EST\n");
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-index b2a276aac724..c277595341ee 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -741,7 +741,7 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- {
- 	u32 size, wid = priv->dma_cap.estwid, dep = priv->dma_cap.estdep;
- 	struct plat_stmmacenet_data *plat = priv->plat;
--	struct timespec64 time, current_time;
-+	struct timespec64 time, current_time, qopt_time;
- 	ktime_t current_time_ns;
- 	bool fpe = false;
- 	int i, ret = 0;
-@@ -850,6 +850,10 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 	priv->plat->est->btr[0] = (u32)time.tv_nsec;
- 	priv->plat->est->btr[1] = (u32)time.tv_sec;
- 
-+	qopt_time = ktime_to_timespec64(qopt->base_time);
-+	priv->plat->est->btr_reserve[0] = (u32)qopt_time.tv_nsec;
-+	priv->plat->est->btr_reserve[1] = (u32)qopt_time.tv_sec;
-+
- 	ctr = qopt->cycle_time;
- 	priv->plat->est->ctr[0] = do_div(ctr, NSEC_PER_SEC);
- 	priv->plat->est->ctr[1] = (u32)ctr;
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index c38b65aaf8c2..f5ae3cf05918 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -117,6 +117,7 @@ struct stmmac_axi {
- struct stmmac_est {
- 	struct mutex lock;
- 	int enable;
-+	u32 btr_reserve[2];
- 	u32 btr_offset[2];
- 	u32 btr[2];
- 	u32 ctr[2];
--- 
-2.17.1
-
+Yes that is correct. With the patch the ndo callback for choosing the
+slave device is invoked which in this test (mode=xor) hashes L2&L3
+headers (I seem to have failed to mention this in the original
+message). In round-robin mode I recall it being about 16Mpps versus
+the 18Mpps without the patch. I did also try "INDIRECT_CALL" to avoid
+going via ndo_ops, but that had no discernible effect.
