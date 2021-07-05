@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E834E3BC3B7
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 23:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB2153BC3B5
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 23:37:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230108AbhGEVko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 17:40:44 -0400
-Received: from novek.ru ([213.148.174.62]:46158 "EHLO novek.ru"
+        id S234590AbhGEVkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 17:40:24 -0400
+Received: from novek.ru ([213.148.174.62]:46188 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233476AbhGEVjT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Jul 2021 17:39:19 -0400
+        id S233506AbhGEVjV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Jul 2021 17:39:21 -0400
 Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id C05C7503221;
-        Tue,  6 Jul 2021 00:34:31 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru C05C7503221
+        by novek.ru (Postfix) with ESMTPSA id 2F9CF503B57;
+        Tue,  6 Jul 2021 00:34:33 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 2F9CF503B57
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1625520872; bh=S9dAAHDp1jEnrAkc5uQ1mfVv7nWGZZAC0uE0HeVYlls=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WG/8NfBGXebxEhxch/a9uMunhDxgkBAPLMqFlXgz9Ru51XD/PYjgisfiek1mZQgWL
-         j8ZRxzLe91vEF5he42se3wUWQrMZ9OuZYmSp/8OLeGhObCdtRsoLzt7bqT299oSGRU
-         3ESJ3vyTJyyFzdSswl//YeM/96vHmgvWH7vsDnTI=
+        t=1625520874; bh=0/7mMKyzPJlTYehJtEHyy2u2E6O6Pnoalk/CdtyKY28=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Te749wn6v3LRQhAbKo28aeWq2vr0PBQ38pAPdm0tgDdHu+hj54NnrYxf9EqAPqMI7
+         PLSwOT0z3FNZFuMLlXfdHfCGp0NWBKNxlXrgDb1E9ndjRkfsz4DEdR+H7+lkXArsgZ
+         5xqzpCi24HGxy/p5C3PRIufIvvcPhWqWojYnvOo8=
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
 To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -31,10 +31,12 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Florian Westphal <fw@strlen.de>,
         Vadim Fedorenko <vfedorenko@novek.ru>
-Subject: [PATCH net-next 0/2] Remove duplicate code around MTU
-Date:   Tue,  6 Jul 2021 00:36:15 +0300
-Message-Id: <20210705213617.18317-1-vfedorenko@novek.ru>
+Subject: [PATCH net-next 1/2] net: ipv6: introduce ip6_dst_mtu_maybe_forward
+Date:   Tue,  6 Jul 2021 00:36:16 +0300
+Message-Id: <20210705213617.18317-2-vfedorenko@novek.ru>
 X-Mailer: git-send-email 2.18.4
+In-Reply-To: <20210705213617.18317-1-vfedorenko@novek.ru>
+References: <20210705213617.18317-1-vfedorenko@novek.ru>
 X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
         autolearn=ham autolearn_force=no version=3.4.1
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
@@ -42,22 +44,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset is intended to remove duplicated code around MTU calculation
-and consolidate in one function. Also it alignes IPv4 and IPv6 code in
-functions naming and usage
+Replace ip6_dst_mtu_forward with ip6_dst_mtu_maybe_forward and
+reuse this code in ip6_mtu. Actually these two functions were
+almost duplicates, this change will simplify the maintaince of
+mtu calculation code.
 
-Vadim Fedorenko (2):
-  net: ipv6: introduce ip6_dst_mtu_maybe_forward
-  net: ipv4: Consolidate ipv4_mtu and ip_dst_mtu_maybe_forward
-
- include/net/ip.h                   | 22 ++++++++++++++++++----
+Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+---
  include/net/ip6_route.h            |  5 +++--
- net/ipv4/route.c                   | 21 +--------------------
  net/ipv6/ip6_output.c              |  2 +-
  net/ipv6/route.c                   | 20 +-------------------
  net/netfilter/nf_flow_table_core.c |  2 +-
- 6 files changed, 25 insertions(+), 47 deletions(-)
+ 4 files changed, 6 insertions(+), 23 deletions(-)
 
+diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+index f14149df5a65..76efb3950b4e 100644
+--- a/include/net/ip6_route.h
++++ b/include/net/ip6_route.h
+@@ -316,12 +316,13 @@ static inline bool rt6_duplicate_nexthop(struct fib6_info *a, struct fib6_info *
+ 	       !lwtunnel_cmp_encap(nha->fib_nh_lws, nhb->fib_nh_lws);
+ }
+ 
+-static inline unsigned int ip6_dst_mtu_forward(const struct dst_entry *dst)
++static inline unsigned int ip6_dst_mtu_maybe_forward(const struct dst_entry *dst,
++						     bool forwarding)
+ {
+ 	struct inet6_dev *idev;
+ 	unsigned int mtu;
+ 
+-	if (dst_metric_locked(dst, RTAX_MTU)) {
++	if (!forwarding || dst_metric_locked(dst, RTAX_MTU)) {
+ 		mtu = dst_metric_raw(dst, RTAX_MTU);
+ 		if (mtu)
+ 			goto out;
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 984050f35c61..bdfe96fe6fc3 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -577,7 +577,7 @@ int ip6_forward(struct sk_buff *skb)
+ 		}
+ 	}
+ 
+-	mtu = ip6_dst_mtu_forward(dst);
++	mtu = ip6_dst_mtu_maybe_forward(dst, true);
+ 	if (mtu < IPV6_MIN_MTU)
+ 		mtu = IPV6_MIN_MTU;
+ 
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 7b756a7dc036..da2c651325e2 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3201,25 +3201,7 @@ static unsigned int ip6_default_advmss(const struct dst_entry *dst)
+ 
+ INDIRECT_CALLABLE_SCOPE unsigned int ip6_mtu(const struct dst_entry *dst)
+ {
+-	struct inet6_dev *idev;
+-	unsigned int mtu;
+-
+-	mtu = dst_metric_raw(dst, RTAX_MTU);
+-	if (mtu)
+-		goto out;
+-
+-	mtu = IPV6_MIN_MTU;
+-
+-	rcu_read_lock();
+-	idev = __in6_dev_get(dst->dev);
+-	if (idev)
+-		mtu = idev->cnf.mtu6;
+-	rcu_read_unlock();
+-
+-out:
+-	mtu = min_t(unsigned int, mtu, IP6_MAX_MTU);
+-
+-	return mtu - lwtunnel_headroom(dst->lwtstate, mtu);
++	return ip6_dst_mtu_maybe_forward(dst, false);
+ }
+ EXPORT_INDIRECT_CALLABLE(ip6_mtu);
+ 
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index 1e50908b1b7e..8fe024a0ae46 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -99,7 +99,7 @@ static int flow_offload_fill_route(struct flow_offload *flow,
+ 		flow_tuple->mtu = ip_dst_mtu_maybe_forward(dst, true);
+ 		break;
+ 	case NFPROTO_IPV6:
+-		flow_tuple->mtu = ip6_dst_mtu_forward(dst);
++		flow_tuple->mtu = ip6_dst_mtu_maybe_forward(dst, true);
+ 		break;
+ 	}
+ 
 -- 
 2.18.4
 
