@@ -2,86 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4017B3BBCA3
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 14:06:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C901D3BBCF9
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 14:43:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231274AbhGEMJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 08:09:31 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:6403 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbhGEMJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 08:09:29 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GJPTn3QfRz7872;
-        Mon,  5 Jul 2021 20:03:25 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 5 Jul 2021 20:06:51 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 5 Jul 2021
- 20:06:51 +0800
-Subject: Re: [PATCH net-next 0/2] refactor the ringtest testing for ptr_ring
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <nickhu@andestech.com>,
-        <green.hu@gmail.com>, <deanbo422@gmail.com>,
-        <akpm@linux-foundation.org>, <yury.norov@gmail.com>,
-        <ojeda@kernel.org>, <ndesaulniers@gooogle.com>, <joe@perches.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-References: <1625457455-4667-1-git-send-email-linyunsheng@huawei.com>
- <YOLXTB6VxtLBmsuC@smile.fi.intel.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <c6844e2b-530f-14b2-0ec3-d47574135571@huawei.com>
-Date:   Mon, 5 Jul 2021 20:06:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S230502AbhGEMqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 08:46:01 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:49515 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230247AbhGEMqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 08:46:00 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3F9A25C00F9;
+        Mon,  5 Jul 2021 08:43:23 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Mon, 05 Jul 2021 08:43:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=AlpY3EVeFaaGGaHMg
+        uyLzl1R1b77+miegqGsG3nafAs=; b=Qm18D2fSvVp9kFpRGwlIB+8JAgBxzKa24
+        WJMbjdllsTwpkfyZb2KZgUHbZOasDNHdQh32vDpoGlYrMftApe+hBviWpv1CcNRM
+        zr7J+8qkS9XqV94FUwWylGX5/ct9JG/JokPzEhyXCJTtMkCbrSCjfUyPNlmh/97l
+        2UMgY1BVFSKRomf6RJmYUC8r9pyWtvYvl3Ntsy+HmOAqJsHNH3s2GNElr0MZZynK
+        EjOMTvB4kkIAxzc7k18z0b4CbOvrunVM5DLryyXX1k6i3xS9GVyGaBVNAtmD0N7l
+        htaR2d5ejNKB2W6kRa7ThWvhAKGdTh897hp67P4+fip+GsJ5ms+IA==
+X-ME-Sender: <xms:av7iYMB62o2hPqcqzfhLd4CIG1wmMJwNKnUQVPueEOK_6CnJXGYBZg>
+    <xme:av7iYOjfRKGh1hAK7wR6c9mSz72PctbpcQdbV-mJygpCgM1wanq5e-hIxBLxTqgZ3
+    RtVV6zhnL9VD7MEqMM>
+X-ME-Received: <xmr:av7iYPkdvhyeMwVoY4GoJaiVQi__DLTiI_2g14VgZ6r83YA59sUi_nFw9rvV-1e4fYFnJw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeejgedgheegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepofgrrhhthihnrghsucfruhhmphhuthhishcuoehmsehlrghmsggu
+    rgdrlhhtqeenucggtffrrghtthgvrhhnpeeuhfefvdehleeiudehvdeviefftdelheeiud
+    euheejjedtkeduvddtffehueeljeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
+    mhepmhgrihhlfhhrohhmpehmsehlrghmsggurgdrlhht
+X-ME-Proxy: <xmx:av7iYCzlT-Cll3lZRZsFpB3r7gFEYzVlpEJX0tUVoTj9hzY7QnjQzQ>
+    <xmx:av7iYBTgvfJV8a7aG03ir8mU2v5sWNy-ATfXHGqFxGJe2JS_fTpq2g>
+    <xmx:av7iYNb8gF0k6xdHiw-IBVAmfyQJbwb3Pv51QaeT39_2V5iCDrAxew>
+    <xmx:a_7iYMdbVcSR0wwuDg82WvTn4Tgy0NqepuKr01DZJXIYmlfzcklDPw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 5 Jul 2021 08:43:21 -0400 (EDT)
+From:   Martynas Pumputis <m@lambda.lt>
+To:     netdev@vger.kernel.org
+Cc:     haliu@redhat.com, stephen@networkplumber.org, dsahern@gmail.com,
+        m@lambda.lt
+Subject: [PATCH iproute2] libbpf: fix attach of prog with multiple sections
+Date:   Mon,  5 Jul 2021 14:43:07 +0200
+Message-Id: <20210705124307.201303-1-m@lambda.lt>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <YOLXTB6VxtLBmsuC@smile.fi.intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme716-chm.china.huawei.com (10.1.199.112) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/7/5 17:56, Andy Shevchenko wrote:
-> On Mon, Jul 05, 2021 at 11:57:33AM +0800, Yunsheng Lin wrote:
->> tools/include/* have a lot of abstract layer for building
->> kernel code from userspace, so reuse or add the abstract
->> layer in tools/include/ to build the ptr_ring for ringtest
->> testing.
-> 
-> ...
-> 
->>  create mode 100644 tools/include/asm/cache.h
->>  create mode 100644 tools/include/asm/processor.h
->>  create mode 100644 tools/include/generated/autoconf.h
->>  create mode 100644 tools/include/linux/align.h
->>  create mode 100644 tools/include/linux/cache.h
->>  create mode 100644 tools/include/linux/slab.h
-> 
-> Maybe somebody can change this to be able to include in-tree headers directly?
+When BPF programs which consists of multiple executable sections via
+iproute2+libbpf (configured with LIBBPF_FORCE=on), we noticed that a
+wrong section can be attached to a device. E.g.:
 
-If the above works, maybe the files in tools/include/* is not
-necessary any more, just use the in-tree headers to compile
-the user space app?
+    # tc qdisc replace dev lxc_health clsact
+    # tc filter replace dev lxc_health ingress prio 1 \
+        handle 1 bpf da obj bpf_lxc.o sec from-container
+    # tc filter show dev lxc_health ingress filter protocol all
+        pref 1 bpf chain 0 filter protocol all pref 1 bpf chain 0
+        handle 0x1 bpf_lxc.o:[__send_drop_notify] <-- WRONG SECTION
+        direct-action not_in_hw id 38 tag 7d891814eda6809e jited
 
-Or I missed something here?
+After taking a closer look into load_bpf_object() in lib/bpf_libbpf.c,
+we noticed that the filter used in the program iterator does not check
+whether a program section name matches a requested section name
+(cfg->section). This can lead to a wrong prog FD being used to attach
+the program.
 
-> 
-> Besides above, had you tested this with `make O=...`?
+Fixes: 6d61a2b55799 ("lib: add libbpf support")
+Signed-off-by: Martynas Pumputis <m@lambda.lt>
+---
+ lib/bpf_libbpf.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-You are right, the generated/autoconf.h is in another directory
-with `make O=...`.
+diff --git a/lib/bpf_libbpf.c b/lib/bpf_libbpf.c
+index d05737a4..f76b90d2 100644
+--- a/lib/bpf_libbpf.c
++++ b/lib/bpf_libbpf.c
+@@ -267,10 +267,12 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
+ 	}
+ 
+ 	bpf_object__for_each_program(p, obj) {
++		bool prog_to_attach = !prog && cfg->section &&
++			!strcmp(get_bpf_program__section_name(p), cfg->section);
++
+ 		/* Only load the programs that will either be subsequently
+ 		 * attached or inserted into a tail call map */
+-		if (find_legacy_tail_calls(p, obj) < 0 && cfg->section &&
+-		    strcmp(get_bpf_program__section_name(p), cfg->section)) {
++		if (find_legacy_tail_calls(p, obj) < 0 && !prog_to_attach) {
+ 			ret = bpf_program__set_autoload(p, false);
+ 			if (ret)
+ 				return -EINVAL;
+@@ -279,7 +281,8 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
+ 
+ 		bpf_program__set_type(p, cfg->type);
+ 		bpf_program__set_ifindex(p, cfg->ifindex);
+-		if (!prog)
++
++		if (prog_to_attach)
+ 			prog = p;
+ 	}
+ 
+-- 
+2.32.0
 
-Any nice idea to fix the above problem?
-
-> 
