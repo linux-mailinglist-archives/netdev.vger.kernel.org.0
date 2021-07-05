@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E8EC3BBAFE
+	by mail.lfdr.de (Postfix) with ESMTP id 96F7E3BBAFF
 	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:16:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbhGEKSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 06:18:54 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:33304 "EHLO inva020.nxp.com"
+        id S231210AbhGEKS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 06:18:58 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:45270 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231150AbhGEKSx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Jul 2021 06:18:53 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4C0381A04B3;
-        Mon,  5 Jul 2021 12:16:15 +0200 (CEST)
+        id S231181AbhGEKSz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Jul 2021 06:18:55 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 30D55200690;
+        Mon,  5 Jul 2021 12:16:17 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1043D1A16BD;
-        Mon,  5 Jul 2021 12:16:15 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id C294D2015FC;
+        Mon,  5 Jul 2021 12:16:16 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id DB0A7183AC98;
-        Mon,  5 Jul 2021 18:16:12 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 97381183ACDD;
+        Mon,  5 Jul 2021 18:16:14 +0800 (+08)
 From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 To:     davem@davemloft.net, joabreu@synopsys.com, kuba@kernel.org,
         alexandre.torgue@st.com, peppe.cavallaro@st.com,
@@ -31,9 +31,9 @@ Cc:     boon.leong.ong@intel.com, weifeng.voon@intel.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         leoyang.li@nxp.com, qiangqing.zhang@nxp.com, rui.sousa@nxp.com,
         xiaoliang.yang_1@nxp.com
-Subject: [PATCH v2 net-next 2/3] net: stmmac: add mutex lock to protect est parameters
-Date:   Mon,  5 Jul 2021 18:26:54 +0800
-Message-Id: <20210705102655.6280-3-xiaoliang.yang_1@nxp.com>
+Subject: [PATCH v2 net-next 3/3] net: stmmac: ptp: update tas basetime after ptp adjust
+Date:   Mon,  5 Jul 2021 18:26:55 +0800
+Message-Id: <20210705102655.6280-4-xiaoliang.yang_1@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210705102655.6280-1-xiaoliang.yang_1@nxp.com>
 References: <20210705102655.6280-1-xiaoliang.yang_1@nxp.com>
@@ -42,90 +42,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a mutex lock to protect est structure parameters so that the
-EST parameters can be updated by other threads.
+After adjusting the ptp time, the Qbv base time may be the past time
+of the new current time. dwmac5 hardware limited the base time cannot
+be set as past time. This patch add a btr_reserve to store the base
+time get from qopt, then calculate the base time and reset the Qbv
+configuration after ptp time adjust.
 
 Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c | 12 +++++++++++-
- include/linux/stmmac.h                          |  1 +
- 2 files changed, 12 insertions(+), 1 deletion(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 41 ++++++++++++++++++-
+ .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |  6 ++-
+ include/linux/stmmac.h                        |  1 +
+ 3 files changed, 46 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+index 4e86cdf2bc9f..580cc035536b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+@@ -62,7 +62,8 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
+ 	u32 sec, nsec;
+ 	u32 quotient, reminder;
+ 	int neg_adj = 0;
+-	bool xmac;
++	bool xmac, est_rst = false;
++	int ret;
+ 
+ 	xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
+ 
+@@ -75,10 +76,48 @@ static int stmmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
+ 	sec = quotient;
+ 	nsec = reminder;
+ 
++	/* If EST is enabled, disabled it before adjust ptp time. */
++	if (priv->plat->est && priv->plat->est->enable) {
++		est_rst = true;
++		mutex_lock(&priv->plat->est->lock);
++		priv->plat->est->enable = false;
++		stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
++				     priv->plat->clk_ptp_rate);
++		mutex_unlock(&priv->plat->est->lock);
++	}
++
+ 	spin_lock_irqsave(&priv->ptp_lock, flags);
+ 	stmmac_adjust_systime(priv, priv->ptpaddr, sec, nsec, neg_adj, xmac);
+ 	spin_unlock_irqrestore(&priv->ptp_lock, flags);
+ 
++	/* Caculate new basetime and re-configured EST after PTP time adjust. */
++	if (est_rst) {
++		struct timespec64 current_time, time;
++		ktime_t current_time_ns, basetime;
++		u64 cycle_time;
++
++		mutex_lock(&priv->plat->est->lock);
++		priv->ptp_clock_ops.gettime64(&priv->ptp_clock_ops, &current_time);
++		current_time_ns = timespec64_to_ktime(current_time);
++		time.tv_nsec = priv->plat->est->btr_reserve[0];
++		time.tv_sec = priv->plat->est->btr_reserve[1];
++		basetime = timespec64_to_ktime(time);
++		cycle_time = priv->plat->est->ctr[1] * NSEC_PER_SEC +
++			     priv->plat->est->ctr[0];
++		time = stmmac_calc_tas_basetime(basetime,
++						current_time_ns,
++						cycle_time);
++
++		priv->plat->est->btr[0] = (u32)time.tv_nsec;
++		priv->plat->est->btr[1] = (u32)time.tv_sec;
++		priv->plat->est->enable = true;
++		ret = stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
++					   priv->plat->clk_ptp_rate);
++		mutex_unlock(&priv->plat->est->lock);
++		if (ret)
++			netdev_err(priv->dev, "failed to configure EST\n");
++	}
++
+ 	return 0;
+ }
+ 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-index d7d448c5a72b..b2a276aac724 100644
+index b2a276aac724..c277595341ee 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -798,14 +798,18 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 					 GFP_KERNEL);
- 		if (!plat->est)
- 			return -ENOMEM;
+@@ -741,7 +741,7 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
+ {
+ 	u32 size, wid = priv->dma_cap.estwid, dep = priv->dma_cap.estdep;
+ 	struct plat_stmmacenet_data *plat = priv->plat;
+-	struct timespec64 time, current_time;
++	struct timespec64 time, current_time, qopt_time;
+ 	ktime_t current_time_ns;
+ 	bool fpe = false;
+ 	int i, ret = 0;
+@@ -850,6 +850,10 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
+ 	priv->plat->est->btr[0] = (u32)time.tv_nsec;
+ 	priv->plat->est->btr[1] = (u32)time.tv_sec;
+ 
++	qopt_time = ktime_to_timespec64(qopt->base_time);
++	priv->plat->est->btr_reserve[0] = (u32)qopt_time.tv_nsec;
++	priv->plat->est->btr_reserve[1] = (u32)qopt_time.tv_sec;
 +
-+		mutex_init(&priv->plat->est->lock);
- 	} else {
- 		memset(plat->est, 0, sizeof(*plat->est));
- 	}
- 
- 	size = qopt->num_entries;
- 
-+	mutex_lock(&priv->plat->est->lock);
- 	priv->plat->est->gcl_size = size;
- 	priv->plat->est->enable = qopt->enable;
-+	mutex_unlock(&priv->plat->est->lock);
- 
- 	for (i = 0; i < size; i++) {
- 		s64 delta_ns = qopt->entries[i].interval;
-@@ -836,6 +840,7 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 		priv->plat->est->gcl[i] = delta_ns | (gates << wid);
- 	}
- 
-+	mutex_lock(&priv->plat->est->lock);
- 	/* Adjust for real system time */
- 	priv->ptp_clock_ops.gettime64(&priv->ptp_clock_ops, &current_time);
- 	current_time_ns = timespec64_to_ktime(current_time);
-@@ -849,8 +854,10 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
+ 	ctr = qopt->cycle_time;
  	priv->plat->est->ctr[0] = do_div(ctr, NSEC_PER_SEC);
  	priv->plat->est->ctr[1] = (u32)ctr;
- 
--	if (fpe && !priv->dma_cap.fpesel)
-+	if (fpe && !priv->dma_cap.fpesel) {
-+		mutex_unlock(&priv->plat->est->lock);
- 		return -EOPNOTSUPP;
-+	}
- 
- 	/* Actual FPE register configuration will be done after FPE handshake
- 	 * is success.
-@@ -859,6 +866,7 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 
- 	ret = stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
- 				   priv->plat->clk_ptp_rate);
-+	mutex_unlock(&priv->plat->est->lock);
- 	if (ret) {
- 		netdev_err(priv->dev, "failed to configure EST\n");
- 		goto disable;
-@@ -874,9 +882,11 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
- 	return 0;
- 
- disable:
-+	mutex_lock(&priv->plat->est->lock);
- 	priv->plat->est->enable = false;
- 	stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,
- 			     priv->plat->clk_ptp_rate);
-+	mutex_unlock(&priv->plat->est->lock);
- 
- 	priv->plat->fpe_cfg->enable = false;
- 	stmmac_fpe_configure(priv, priv->ioaddr,
 diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index e14a12df381b..c38b65aaf8c2 100644
+index c38b65aaf8c2..f5ae3cf05918 100644
 --- a/include/linux/stmmac.h
 +++ b/include/linux/stmmac.h
-@@ -115,6 +115,7 @@ struct stmmac_axi {
- 
- #define EST_GCL		1024
+@@ -117,6 +117,7 @@ struct stmmac_axi {
  struct stmmac_est {
-+	struct mutex lock;
+ 	struct mutex lock;
  	int enable;
++	u32 btr_reserve[2];
  	u32 btr_offset[2];
  	u32 btr[2];
+ 	u32 ctr[2];
 -- 
 2.17.1
 
