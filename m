@@ -2,122 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4E0D3BC1BC
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 18:35:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 482EA3BC1BD
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 18:35:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbhGEQhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 12:37:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
+        id S229817AbhGEQho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 12:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbhGEQhk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 12:37:40 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED4DC06175F;
+        with ESMTP id S229794AbhGEQhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 12:37:42 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB22CC061574;
         Mon,  5 Jul 2021 09:35:03 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id b14-20020a17090a7aceb029017261c7d206so9045180pjl.5;
+Received: by mail-ot1-x32a.google.com with SMTP id m18-20020a9d4c920000b029048b4f23a9bcso6839769otf.9;
         Mon, 05 Jul 2021 09:35:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fJA+d5ID8q3IsTw9va0CZTFXOsFZE3rsEkxwpk4NWbM=;
-        b=H5V1Lk+cSTzjUoH3HLe+PiPcr3U0ePf5/obcZHzGbuX7ko73wrzWJjIwZqtChvRk8c
-         0J5s53u19WPJbISAFqiiwhenCJfGvK60bF4NXJLlSZ2ZWTfdTSrxZRIS0vbaxYUpjap6
-         cQzWRzTdvXZpj13UQN6J5m0lcyTx5IpjM6WR1Vs+272JXWAoZCKObgtKKq7d2Y78BGXm
-         nNKK84pHhXzzYtjSOq5syjuURF5JVc9Xy4EpCboP7VIww4rebJhfr+PeOH5AipVzzbNh
-         qx6wCnL4YchmfCJW4WRKN3A1vxwX7ao6E5brYcwMBJ4JsmyCipHECJP+lyxqvGeXkS/I
-         c4gQ==
+        bh=2TAR10t0SeeOnNIpVqOCA/P0iG1nNKQebPXrjWaJtb8=;
+        b=rHesvuimK2TFARWHbzpaATGZCmguf1XLopFhCTk8H0teOqcYrl44e1MoR0WPrDJo/Z
+         +C1fVSdrhfunXLnR4etceGNEOxs/t9aC+7m3yg9wKrlQgilx6BGoXT6LN618mX9qAT8f
+         NNXqsjZ1+/P7sXs00JmLMHkQC3XixmKhfV8PHXF6ftHAmI+4HDIal4T5f0eCM9lSomIW
+         ojg8xfqc493+vgeCdpd2J8VLOGMn4xGFZCDXQVlhSiAthDI+HLz/i4ayptgYKMvpM9XI
+         pB8NodwdI1FXS1JlISb48mrSVitpdYDyK0oeKEzwT/m33YV6ObsxbW2Ttz+dBVz1gmX8
+         u44Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=fJA+d5ID8q3IsTw9va0CZTFXOsFZE3rsEkxwpk4NWbM=;
-        b=hdsHuKjlRI8nolP+iukEC/vZoM/3YTkxJG/aMmR+49X3xsdgjTm4f2LDCp501GDSTc
-         TqQNB6rDmj8BH6U8kJP8vizyGtxwsBc9jv1O8d61AxEN6pd12w1IJecVDvSq84tnIm3H
-         5c6hqi6QUF85wpQi/CiuAHSW1PhX53gX3NNN5J+xgVNCUbFRUfz8oApHRYm/BNciucqh
-         ofwhZAWbRHn0oTgL84C2+wiRZhcJO+IhKnbZUeI4QynmWzETLGs3Lboe56ttFCv2jqL6
-         GvyGhsKSv3LWrhEnWcOD7/jc39xQkZ7HP6cGOQiSUfBwD8eTjKAG5VlZMFQaUQBUCxFQ
-         2O0A==
-X-Gm-Message-State: AOAM532QEpvZfplFejZ8zT6tlc3UTGAIcI/MZ49htWsZLO0ronVKLgp4
-        rECSnbxTH9ar02kOm6EwnME=
-X-Google-Smtp-Source: ABdhPJyYnDrM6ONgbRFkp9RIr5kc0oySIgLKyHM4GePcEqZcwvV4LC194NZShXNsrrxS6D/vARkc2w==
-X-Received: by 2002:a17:90a:f16:: with SMTP id 22mr21345pjy.38.1625502903374;
+        bh=2TAR10t0SeeOnNIpVqOCA/P0iG1nNKQebPXrjWaJtb8=;
+        b=De2EOFYL+e/FdemrL9fpb04K76ARVqwAJfIT2Q/KgfzUDNRuB5T06Pwy6M63OgPEx4
+         eQ54cclXiOXfkrYLXA2LMS6p4jeTmKhyhGNcOsemA/MHiPOQ0ERIymFSx6bJ+vk0+pap
+         5fHFgixWHHe0j0wmzo8BIHjpAOYJ+WdqqYwabiDy/dYqwG6rX3UAFW+08OvZCYkcaNoW
+         BrVWywCpcG1GhrFBEfM9wJOASX+8E5IK14E8FPiz0OLT/i6bmB20gu8vT7EUfcLL8/fk
+         /bWSF4pjuSsHXzLEt1sntEXP2Bem8Fpvik6c04KXLysqj/MOlxf299Z+PB8KU24g9eFA
+         8JyQ==
+X-Gm-Message-State: AOAM531Ragf5QtkaHsG7RTmxDt4HM7i3nzNoImFxko6FbSgGQWxEfHTc
+        VtIZ2r4OLZQxfcjJmOsAhKU=
+X-Google-Smtp-Source: ABdhPJwnjz4hvEqwtKjSPE7H7MmjVjGF2KI7AM+yiP4/0VF/t9dcVNqbrVzot4kwkj/23frWhct5Qw==
+X-Received: by 2002:a9d:17d0:: with SMTP id j74mr11215444otj.92.1625502903254;
         Mon, 05 Jul 2021 09:35:03 -0700 (PDT)
-Received: from [192.168.93.106] (bb42-60-144-185.singnet.com.sg. [42.60.144.185])
-        by smtp.gmail.com with ESMTPSA id u21sm13118250pfh.163.2021.07.05.09.34.53
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id b20sm132106ots.26.2021.07.05.09.35.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
         Mon, 05 Jul 2021 09:35:02 -0700 (PDT)
-Subject: Re: [PATCH v4] tcp: fix tcp_init_transfer() to not reset
- icsk_ca_initialized
-To:     Neal Cardwell <ncardwell@google.com>,
-        David Miller <davem@davemloft.net>
-Cc:     yhs@fb.com, edumazet@google.com, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, ycheng@google.com, yyd@google.com,
+Subject: Re: [PATCH] net: ipv6: don't generate link-local address in any
+ addr_gen_mode
+To:     Rocco Yue <rocco.yue@mediatek.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
-References: <20210703093417.1569943-1-phind.uet@gmail.com>
- <20210703.144945.1327654903412498334.davem@davemloft.net>
- <CADVnQynxFKthexWRFRGN_9enRt7cmgrNo7mpNOMpNVm_jJpt4w@mail.gmail.com>
-From:   Phi Nguyen <phind.uet@gmail.com>
-Message-ID: <ea882927-a6f6-6d26-66bd-442d03ac3ea0@gmail.com>
-Date:   Tue, 6 Jul 2021 00:34:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com,
+        rocco.yue@gmail.com, chao.song@mediatek.com,
+        kuohong.wang@mediatek.com, zhuoliang.zhang@mediatek.com
+References: <46a9dbf2-9748-330a-963e-57e615a15440@gmail.com>
+ <20210701085117.19018-1-rocco.yue@mediatek.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <62c9f5b7-84bd-d809-4e33-39fed7a9d780@gmail.com>
+Date:   Mon, 5 Jul 2021 10:35:00 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <CADVnQynxFKthexWRFRGN_9enRt7cmgrNo7mpNOMpNVm_jJpt4w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210701085117.19018-1-rocco.yue@mediatek.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/4/2021 9:52 PM, Neal Cardwell wrote:
+On 7/1/21 2:51 AM, Rocco Yue wrote:
+> On Wed, 2021-06-30 at 22:41 -0600, David Ahern wrote:
+>> On 6/30/21 9:39 PM, Rocco Yue wrote:
+>>>
+>>> Hi David,
+>>>
+>>> Thanks for your review.
+>>>
+>>> This patch is different with IN6_ADDR_GEN_MODE_NONE.
+>>>
+>>> When the addr_gen_mode == IN6_ADDR_GEN_MODE_NONE, the Linux kernel
+>>> doesn't automatically generate the ipv6 link-local address.
+>>>
+>>
+>> ...
+>>
+>>>
+>>> After this patch, when the "disable_gen_linklocal_addr" value of a device
+>>> is 1, no matter in which addr_gen_mode, the Linux kernel will not automatically
+>>> generate an ipv6 link-local for this device.
+>>>
+>>
+>> those 2 sentences are saying the same thing to me.
+>>
+>> for your use case, why is setting addr_gen_mode == 1 for the device not
+>> sufficient?
+>>
 > 
+> For mobile operators that don't need to support RFC7217, setting
+> addr_gen_mode == 1 is sufficient;
 > 
-> On Sat, Jul 3, 2021 at 5:49 PM David Miller <davem@davemloft.net 
-> <mailto:davem@davemloft.net>> wrote:
->  >
->  > From: Nguyen Dinh Phi <phind.uet@gmail.com <mailto:phind.uet@gmail.com>>
->  > Date: Sat,  3 Jul 2021 17:34:17 +0800
->  >
->  > > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
->  > > index 7d5e59f688de..855ada2be25e 100644
->  > > --- a/net/ipv4/tcp_input.c
->  > > +++ b/net/ipv4/tcp_input.c
->  > > @@ -5922,7 +5922,6 @@ void tcp_init_transfer(struct sock *sk, int 
-> bpf_op, struct sk_buff *skb)
->  > >               tp->snd_cwnd = tcp_init_cwnd(tp, __sk_dst_get(sk));
->  > >       tp->snd_cwnd_stamp = tcp_jiffies32;
->  > >
->  > > -     icsk->icsk_ca_initialized = 0;
->  > >       bpf_skops_established(sk, bpf_op, skb);
->  > >       if (!icsk->icsk_ca_initialized)
->  > >               tcp_init_congestion_control(sk);
->  >
->  > Don't you have to make the tcp_init_congestion_control() call 
-> unconditional now?
+> But for some other mobile operators that need to support RFC7217, such as AT&T,
+> the mobile device's addr_gen_mode will be switched to the
+> IN6_ADDR_GEN_MODE_STABLE_PRIVACY, instead of using IN6_ADDR_GEN_MODE_NONE.
+> The purpose is: in the IN6_ADDR_GEN_MODE_STABLE_PRIVACY mode, kernel can
+> gererate a stable privacy global ipv6 address after receiveing RA, and
+> network processes can use this global address to communicate with the
+> outside network.
 > 
-> I think we want to keep it conditional, to avoid double-initialization 
-> if the BPF code sets the congestion control algorithm and initializes 
-> it. But that's relatively new and subtle, so it might be nice for this 
-> patch to add a comment about that, since it's touching this part of the 
-> code anyway:
+> Of course, mobile operators that need to support RFC7217 should also meet
+> the requirement of 3GPP TS 29.061, that is, MT should use IID assigned by
+> the GGSN to build its ipv6 link-local address and use this address to send RS.
+> We don't want the kernel to automatically generate an ipv6 link-local address
+> when addr_gen_mode == 2. Otherwise, using the stable privacy ipv6 link-local
+> address automatically generated by the kernel to send RS message, GGSN will
+> not be able to respond to the RS and reply a RA message.
 > 
-> -       icsk->icsk_ca_initialized = 0;
->          bpf_skops_established(sk, bpf_op, skb);
-> +       /* Initialize congestion control unless a BPF op initialized it 
-> already: */
->          if (!icsk->icsk_ca_initialized)
->                  tcp_init_congestion_control(sk);
+> Therefore, after this patch, kernel will not generate ipv6 link-local address
+> for the corresponding device when addr_gen_mode == 1 or addr_gen_mode == 2.
 > 
-> neal
-> 
-I will make a new version with your comment.
-Thank you very much for helping.
+
+I think another addr_gen_mode is better than a separate sysctl. It looks
+like IN6_ADDR_GEN_MODE_STABLE_PRIVACY and IN6_ADDR_GEN_MODE_RANDOM are
+the ones used for RAs, so add something like:
+
+IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
+IN6_ADDR_GEN_MODE_RANDOM_NO_LLA,
+
+to in6_addr_gen_mode.
