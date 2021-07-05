@@ -2,118 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A09A3BC2E3
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 20:52:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B40A93BC2FB
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 21:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbhGESzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 14:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
+        id S229941AbhGETIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 15:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229876AbhGESzU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 14:55:20 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74B5C06175F
-        for <netdev@vger.kernel.org>; Mon,  5 Jul 2021 11:52:41 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id o7so10594717vss.5
-        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 11:52:41 -0700 (PDT)
+        with ESMTP id S229743AbhGETIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 15:08:45 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA811C061574;
+        Mon,  5 Jul 2021 12:06:07 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id w22so13750504pff.5;
+        Mon, 05 Jul 2021 12:06:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CsKdkHbuBPD2Gcdm0gZ0pxBBsvN9q/irczUpL7TbVnY=;
-        b=s6NbtxjP8I9FIBgeUHiGzKWBeDfHtboUVcxG6y7xNCM9n5TMHRghpBkPNGMmBwW12B
-         kGHI/yAkoiQl1PLnHvaxMDmccT3Y1m5cJm9PpOV98O90UzqBqjTOkb6ZnqdEVa4W+xNh
-         Vp4JZ6nygBZG7A6lEvBrTDpsg3e4gpZASz6u8WDxIaWsS/dv4/ZCvKfPwpRZpn8+Q/we
-         K0R3FtrUQeq6/BpXvMVXlft3pE/C1i9dEykhwTSHFKX9bfjoaUYp7l5LL2zP3ZIKmVdm
-         LuJ+LyjC8pFHm3fMYf5dg4LrZZBc5ztnSx0UtIZZyASSbGPAltfVUaQtcgn45vn+U0fW
-         9Fww==
+        bh=UuZh8eJmQ1lIEadR8z/9iR40GstH8GqfR3g6tCx7cRE=;
+        b=WJQx9NA8BlzVRMafs+7EpMWi9x3rYpCEMMXMC1Ug33QN7MAfMRBh94GJhwCibzemus
+         iJcwK/0iE9ddqwI6SQMjUMDFDVLHvu+HV55386PbGPr9F+dKnQkokj1QpnCWW9mtArHh
+         jpILZUSOgLC+7ulmGkfLrB+3T9kd5fmujRIroAVpuNcbAjYEnRfhX3bAcLTHKlZckFQ3
+         YREPXxjt7YglLinDmsMpMSOzEum9OZ7UGJkW6JC74oIkPreY58UJ1C3+2uYkV3TQZzeg
+         5vPeL94bY3wV1z3QJj/yefgZQjEyJftH0s79OomsaPClPOk9T2fKQhKK8Hg8P/fHVTmW
+         RIwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CsKdkHbuBPD2Gcdm0gZ0pxBBsvN9q/irczUpL7TbVnY=;
-        b=JeZ1BTBihiJ972t6qOgwFA36BNsRoGk7NbsEbEsLboZ/4dKsL6LmfzdvkJmxrVix5j
-         iYYaW/Akmi1YIqM8HzSpRdHyu9jNEqToD7GzYfHIrNNii5X14JYSK+qM+D9VfGgkdd+3
-         qnybP80iwpeJuO5CNhJwGNkObhjfdxLqgZZQRboE+CharEGAeaC6LXAEeOkrQq8y90TB
-         MSOsd2SZCUa4QXFM/T41iG0bDdBMqKqvf4tCYnqLoCkdzc58Y7hzSgrDqbd41LsHZQ/1
-         e4Jq+m7Z+YKvNV90L/52AjXVzDM6Mh/TvUJCR1z21ChvSJwZnnG7YrtCFxuxEyFCy7OT
-         y2PA==
-X-Gm-Message-State: AOAM533O6hZW/Vxaw9lPybEK5RCMorhc/dlRiajQA4fmcub7nQ/caJdf
-        Uc647V2ZSnhe8XkmYMc/NrBQPnuntwP5lhRvcVZL3w==
-X-Google-Smtp-Source: ABdhPJwLm8mKpOQUltOsVP1fdOymZXdXyoMOgOViH4N34T5gMl2NCQhyeRjsXINy7mBVKAtCCYNbbjI4KYLHcwGaIKQ=
-X-Received: by 2002:a67:f7c8:: with SMTP id a8mr5129788vsp.16.1625511160510;
- Mon, 05 Jul 2021 11:52:40 -0700 (PDT)
+        bh=UuZh8eJmQ1lIEadR8z/9iR40GstH8GqfR3g6tCx7cRE=;
+        b=p53Hfzjxs8Jre9vM3xnjSVxKdDoeXZVqTfRsfqUV5fpSWzTGuoZ/PSK8B9Zz8xIizA
+         /7c6Ajo/N1sJKEItHKeAl1dC4bXyO64+Ky6hc3FzrEoFP6E+5b4rh3Ywhw7/cCNaLc/3
+         bquXdOSPksMsVV1cV3QRTUTaBQGrk0vKNCN53Vgw+3cH4/wZkOPWnLF2bDne/zlZTfnz
+         p2s9+3Agf8SGW/pl5aH3ObCTGQCtuwm7kG+flu83IHmt2Iyhb7H+22qqzLqeEQzkM98G
+         BvuKZ9Y1pK9OapYHr4pEujKd+tYeKWP5hb3A73CFDhRAAX0EIPOafziNVF8kJsUHZsVL
+         FYGA==
+X-Gm-Message-State: AOAM530zHwb+MsmUBZFyqt1gNdPsE6/YQeLR0QVJz0Y42oLAWDxMrSBf
+        WR0TYm251xbB3TqOh5zp7wRBPoCcOkrhD22M7eU=
+X-Google-Smtp-Source: ABdhPJzBtBfYSQTDKaFdu9uHDDFSuLkh44ARNTnK7EYRd7Fh8DbqQD1vimLJIZZeQcUJ8XkToCJGZtqoXm1ttwjjbcE=
+X-Received: by 2002:a63:d014:: with SMTP id z20mr17034219pgf.203.1625511967330;
+ Mon, 05 Jul 2021 12:06:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210705171823.524171-1-phind.uet@gmail.com>
-In-Reply-To: <20210705171823.524171-1-phind.uet@gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Mon, 5 Jul 2021 14:52:23 -0400
-Message-ID: <CADVnQymo8xmN44zwvrpMLs0pxGt3XTT_vosR-1TJJURgVWO1ZA@mail.gmail.com>
-Subject: Re: [PATCH v5] tcp: fix tcp_init_transfer() to not reset icsk_ca_initialized
-To:     Nguyen Dinh Phi <phind.uet@gmail.com>
-Cc:     yhs@fb.com, edumazet@google.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, ycheng@google.com, yyd@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
+References: <1625457455-4667-1-git-send-email-linyunsheng@huawei.com>
+ <YOLXTB6VxtLBmsuC@smile.fi.intel.com> <c6844e2b-530f-14b2-0ec3-d47574135571@huawei.com>
+ <20210705142555-mutt-send-email-mst@kernel.org> <YONRKnDzCzSAXptx@smile.fi.intel.com>
+ <20210705143952-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20210705143952-mutt-send-email-mst@kernel.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 5 Jul 2021 22:05:30 +0300
+Message-ID: <CAHp75VcsUxOqu48E1+RNqn=RhJqfd7XG8e3AKRHyMb3ywzSPrg@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/2] refactor the ringtest testing for ptr_ring
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Yury Norov <yury.norov@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>, ndesaulniers@gooogle.com,
+        Joe Perches <joe@perches.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 5, 2021 at 1:18 PM Nguyen Dinh Phi <phind.uet@gmail.com> wrote:
+On Mon, Jul 5, 2021 at 9:45 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 >
-> This commit fixes a bug (found by syzkaller) that could cause spurious
-> double-initializations for congestion control modules, which could cause
-> memory leaks orother problems for congestion control modules (like CDG)
-
-nit: typo: "orother" -> "or other"
-
-> that allocate memory in their init functions.
+> On Mon, Jul 05, 2021 at 09:36:26PM +0300, Andy Shevchenko wrote:
+> > On Mon, Jul 05, 2021 at 02:26:32PM -0400, Michael S. Tsirkin wrote:
+> > > On Mon, Jul 05, 2021 at 08:06:50PM +0800, Yunsheng Lin wrote:
+> > > > On 2021/7/5 17:56, Andy Shevchenko wrote:
+> > > > > On Mon, Jul 05, 2021 at 11:57:33AM +0800, Yunsheng Lin wrote:
+> > > > >> tools/include/* have a lot of abstract layer for building
+> > > > >> kernel code from userspace, so reuse or add the abstract
+> > > > >> layer in tools/include/ to build the ptr_ring for ringtest
+> > > > >> testing.
+> > > > >
+> > > > > ...
+> > > > >
+> > > > >>  create mode 100644 tools/include/asm/cache.h
+> > > > >>  create mode 100644 tools/include/asm/processor.h
+> > > > >>  create mode 100644 tools/include/generated/autoconf.h
+> > > > >>  create mode 100644 tools/include/linux/align.h
+> > > > >>  create mode 100644 tools/include/linux/cache.h
+> > > > >>  create mode 100644 tools/include/linux/slab.h
+> > > > >
+> > > > > Maybe somebody can change this to be able to include in-tree headers directly?
+> > > >
+> > > > If the above works, maybe the files in tools/include/* is not
+> > > > necessary any more, just use the in-tree headers to compile
+> > > > the user space app?
+> > > >
+> > > > Or I missed something here?
+> > >
+> > > why would it work? kernel headers outside of uapi are not
+> > > intended to be consumed by userspace.
+> >
+> > The problem here, that we are almost getting two copies of the headers, and
+> > tools are not in a good maintenance, so it's often desynchronized from the
+> > actual Linux headers. This will become more and more diverse if we keep same
+> > way of operation. So, I would rather NAK any new copies of the headers from
+> > include/ to tools/include.
 >
-> The buggy scenario constructed by syzkaller was something like:
->
-> (1) create a TCP socket
-> (2) initiate a TFO connect via sendto()
-> (3) while socket is in TCP_SYN_SENT, call setsockopt(TCP_CONGESTION),
->     which calls:
->        tcp_set_congestion_control() ->
->          tcp_reinit_congestion_control() ->
->            tcp_init_congestion_control()
-> (4) receive ACK, connection is established, call tcp_init_transfer(),
->     set icsk_ca_initialized=0 (without first calling cc->release()),
->     call tcp_init_congestion_control() again.
->
-> Note that in this sequence tcp_init_congestion_control() is called
-> twice without a cc->release() call in between. Thus, for CC modules
-> that allocate memory in their init() function, e.g, CDG, a memory leak
-> may occur. The syzkaller tool managed to find a reproducer that
-> triggered such a leak in CDG.
->
-> The bug was introduced when that commit 8919a9b31eb4 ("tcp: Only init
-> congestion control if not initialized already")
-> introduced icsk_ca_initialized and set icsk_ca_initialized to 0 in
-> tcp_init_transfer(), missing the possibility for a sequence like the
-> one above, where a process could call setsockopt(TCP_CONGESTION) in
-> state TCP_SYN_SENT (i.e. after the connect() or TFO open sendmsg()),
-> which would call tcp_init_congestion_control(). It did not intend to
-> reset any initialization that the user had already explicitly made;
-> it just missed the possibility of that particular sequence (which
-> syzkaller managed to find).
->
-> Fixes: 8919a9b31eb4 (tcp: Only init congestion control if not initialized already)
+> We already have the copies
+> yes they are not maintained well ... what's the plan then?
+> NAK won't help us improve the situation.
 
-Style nit: I believe this Fixes line should have double quotes around
-the commit title, like:
+I understand and the proposal is to leave only the files which are not
+the same (can we do kinda wrappers or so in tools/include rather than
+copying everything?).
 
-  Fixes: 8919a9b31eb4 ("tcp: Only init congestion control if not
-initialized already")
+> I would say copies are kind of okay just make sure they are
+> built with kconfig. Then any breakage will be
+> detected.
+>
+> > > > > Besides above, had you tested this with `make O=...`?
+> > > >
+> > > > You are right, the generated/autoconf.h is in another directory
+> > > > with `make O=...`.
+> > > >
+> > > > Any nice idea to fix the above problem?
 
-Otherwise, this looks good to me, and it passes our internal packetdrill tests.
 
-thanks,
-neal
+-- 
+With Best Regards,
+Andy Shevchenko
