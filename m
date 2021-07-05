@@ -2,311 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E4793BB602
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 05:58:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A29C53BB614
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 06:09:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229666AbhGEEAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 00:00:49 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:6045 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbhGEEAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 00:00:49 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GJBbc1S69zXnMc;
-        Mon,  5 Jul 2021 11:52:44 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 5 Jul 2021 11:58:10 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 5 Jul 2021 11:58:09 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <mst@redhat.com>,
-        <jasowang@redhat.com>
-CC:     <nickhu@andestech.com>, <green.hu@gmail.com>,
-        <deanbo422@gmail.com>, <akpm@linux-foundation.org>,
-        <yury.norov@gmail.com>, <andriy.shevchenko@linux.intel.com>,
-        <ojeda@kernel.org>, <ndesaulniers@gooogle.com>, <joe@perches.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH net-next 2/2] tools/virtio: use common infrastructure to build ptr_ring.h
-Date:   Mon, 5 Jul 2021 11:57:35 +0800
-Message-ID: <1625457455-4667-3-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1625457455-4667-1-git-send-email-linyunsheng@huawei.com>
-References: <1625457455-4667-1-git-send-email-linyunsheng@huawei.com>
+        id S229725AbhGEEMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 00:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229713AbhGEEMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 00:12:12 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFC1C061574
+        for <netdev@vger.kernel.org>; Sun,  4 Jul 2021 21:09:36 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 0C2D6806B7;
+        Mon,  5 Jul 2021 16:09:31 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1625458171;
+        bh=CowyWUvzpCh9y/R1jbZYsayfadcPRDKitIhu4cUZRGo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=RVDfL2Yuxos8JUh67YBdLtTZrRUPZ6x3Y/LqBWK09ZvciG5I8dgczCMyQLyPIfHum
+         u2RcbZUtyq5p4HXWMeR6TLkZNwdWaFTLWV5u5o3tEUSLcBAf+zY6dt3JNiQ9/WXQoo
+         JgFM1yydcToaG7kbOFVX1O7JSi61Ej/rkaOe3J0EVmrxAjoa4mE0xl1G2dVS6dtt/3
+         0EV7bKS/TksFk6jEseI/d9J5C9ALSEb4JF7RqGI+CRMYFaUpg3bw92gepLPapGM8Ka
+         AsKGiJODjmYCBlPPtLfOWjFkshyfH5snHTP9G/xYUpbNzKO86DuQDyUgHCm4QWYsC+
+         6COXAyerj23wQ==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B60e285fa0000>; Mon, 05 Jul 2021 16:09:30 +1200
+Received: from coled-dl.ws.atlnz.lc (coled-dl.ws.atlnz.lc [10.33.25.26])
+        by pat.atlnz.lc (Postfix) with ESMTP id DB80F13EE8E;
+        Mon,  5 Jul 2021 16:09:30 +1200 (NZST)
+Received: by coled-dl.ws.atlnz.lc (Postfix, from userid 1801)
+        id D81F3240C05; Mon,  5 Jul 2021 16:09:30 +1200 (NZST)
+From:   Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+To:     pablo@netfilter.org
+Cc:     Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>,
+        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
+        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
+        Blair Steven <blair.steven@alliedtelesis.co.nz>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] net: netfilter: Add RFC-7597 Section 5.1 PSID support xtables API
+Date:   Mon,  5 Jul 2021 16:08:54 +1200
+Message-Id: <20210705040856.25191-2-Cole.Dishington@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210705040856.25191-1-Cole.Dishington@alliedtelesis.co.nz>
+References: <20210630142049.GC18022@breakpoint.cc>
+ <20210705040856.25191-1-Cole.Dishington@alliedtelesis.co.nz>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=IOh89TnG c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=e_q4qTt1xDgA:10 a=3HDBlxybAAAA:8 a=mhPBjSskWxd-kjGSbREA:9 a=laEoCiVfU_Unz3mSdgXN:22
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the common infrastructure in tools/include to build
-ptr_ring.h in user space.
+Add support for revision 2 of xtables masquerade extension.
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Co-developed-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+Signed-off-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+Co-developed-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+Signed-off-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+Signed-off-by: Blair Steven <blair.steven@alliedtelesis.co.nz>
+Signed-off-by: Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
 ---
- tools/virtio/ringtest/Makefile   |   2 +-
- tools/virtio/ringtest/main.h     | 100 +++-----------------------------------
- tools/virtio/ringtest/ptr_ring.c | 102 ++-------------------------------------
- 3 files changed, 12 insertions(+), 192 deletions(-)
+ include/uapi/linux/netfilter/nf_nat.h |  3 +-
+ net/netfilter/xt_MASQUERADE.c         | 44 ++++++++++++++++++++++++---
+ 2 files changed, 41 insertions(+), 6 deletions(-)
 
-diff --git a/tools/virtio/ringtest/Makefile b/tools/virtio/ringtest/Makefile
-index 85c98c2..89fc024 100644
---- a/tools/virtio/ringtest/Makefile
-+++ b/tools/virtio/ringtest/Makefile
-@@ -3,7 +3,7 @@ all:
- 
- all: ring virtio_ring_0_9 virtio_ring_poll virtio_ring_inorder ptr_ring noring
- 
--CFLAGS += -Wall
-+CFLAGS += -Wall -I../../include
- CFLAGS += -pthread -O2 -ggdb -flto -fwhole-program
- LDFLAGS += -pthread -O2 -ggdb -flto -fwhole-program
- 
-diff --git a/tools/virtio/ringtest/main.h b/tools/virtio/ringtest/main.h
-index 6d1fccd..95ea050 100644
---- a/tools/virtio/ringtest/main.h
-+++ b/tools/virtio/ringtest/main.h
-@@ -10,6 +10,13 @@
- 
- #include <stdbool.h>
- 
-+#include <linux/compiler.h>
-+#include <asm/barrier.h>
-+#include <asm/processor.h>
+diff --git a/include/uapi/linux/netfilter/nf_nat.h b/include/uapi/linux/n=
+etfilter/nf_nat.h
+index a64586e77b24..660e53ffdb57 100644
+--- a/include/uapi/linux/netfilter/nf_nat.h
++++ b/include/uapi/linux/netfilter/nf_nat.h
+@@ -12,6 +12,7 @@
+ #define NF_NAT_RANGE_PROTO_RANDOM_FULLY		(1 << 4)
+ #define NF_NAT_RANGE_PROTO_OFFSET		(1 << 5)
+ #define NF_NAT_RANGE_NETMAP			(1 << 6)
++#define NF_NAT_RANGE_PSID			(1 << 7)
+=20
+ #define NF_NAT_RANGE_PROTO_RANDOM_ALL		\
+ 	(NF_NAT_RANGE_PROTO_RANDOM | NF_NAT_RANGE_PROTO_RANDOM_FULLY)
+@@ -20,7 +21,7 @@
+ 	(NF_NAT_RANGE_MAP_IPS | NF_NAT_RANGE_PROTO_SPECIFIED |	\
+ 	 NF_NAT_RANGE_PROTO_RANDOM | NF_NAT_RANGE_PERSISTENT |	\
+ 	 NF_NAT_RANGE_PROTO_RANDOM_FULLY | NF_NAT_RANGE_PROTO_OFFSET | \
+-	 NF_NAT_RANGE_NETMAP)
++	 NF_NAT_RANGE_NETMAP | NF_NAT_RANGE_PSID)
+=20
+ struct nf_nat_ipv4_range {
+ 	unsigned int			flags;
+diff --git a/net/netfilter/xt_MASQUERADE.c b/net/netfilter/xt_MASQUERADE.=
+c
+index eae05c178336..dc6870ca2b71 100644
+--- a/net/netfilter/xt_MASQUERADE.c
++++ b/net/netfilter/xt_MASQUERADE.c
+@@ -16,7 +16,7 @@ MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.=
+org>");
+ MODULE_DESCRIPTION("Xtables: automatic-address SNAT");
+=20
+ /* FIXME: Multiple targets. --RR */
+-static int masquerade_tg_check(const struct xt_tgchk_param *par)
++static int masquerade_tg_check_v0(const struct xt_tgchk_param *par)
+ {
+ 	const struct nf_nat_ipv4_multi_range_compat *mr =3D par->targinfo;
+=20
+@@ -31,8 +31,19 @@ static int masquerade_tg_check(const struct xt_tgchk_p=
+aram *par)
+ 	return nf_ct_netns_get(par->net, par->family);
+ }
+=20
++static int masquerade_tg_check_v1(const struct xt_tgchk_param *par)
++{
++	const struct nf_nat_range2 *range =3D par->targinfo;
 +
-+#define smp_acquire	smp_rmb
-+#define smp_release	smp_wmb
++	if (range->flags & NF_NAT_RANGE_MAP_IPS) {
++		pr_debug("bad MAP_IPS.\n");
++		return -EINVAL;
++	}
++	return nf_ct_netns_get(par->net, par->family);
++}
 +
- extern int param;
- 
- extern bool do_exit;
-@@ -87,18 +94,6 @@ void wait_for_call(void);
- 
- extern unsigned ring_size;
- 
--/* Compiler barrier - similar to what Linux uses */
--#define barrier() asm volatile("" ::: "memory")
--
--/* Is there a portable way to do this? */
--#if defined(__x86_64__) || defined(__i386__)
--#define cpu_relax() asm ("rep; nop" ::: "memory")
--#elif defined(__s390x__)
--#define cpu_relax() barrier()
--#else
--#define cpu_relax() assert(0)
--#endif
--
- extern bool do_relax;
- 
- static inline void busy_wait(void)
-@@ -110,85 +105,4 @@ static inline void busy_wait(void)
- 		barrier();
- } 
- 
--#if defined(__x86_64__) || defined(__i386__)
--#define smp_mb()     asm volatile("lock; addl $0,-132(%%rsp)" ::: "memory", "cc")
--#else
--/*
-- * Not using __ATOMIC_SEQ_CST since gcc docs say they are only synchronized
-- * with other __ATOMIC_SEQ_CST calls.
-- */
--#define smp_mb() __sync_synchronize()
--#endif
--
--/*
-- * This abuses the atomic builtins for thread fences, and
-- * adds a compiler barrier.
-- */
--#define smp_release() do { \
--    barrier(); \
--    __atomic_thread_fence(__ATOMIC_RELEASE); \
--} while (0)
--
--#define smp_acquire() do { \
--    __atomic_thread_fence(__ATOMIC_ACQUIRE); \
--    barrier(); \
--} while (0)
--
--#if defined(__i386__) || defined(__x86_64__) || defined(__s390x__)
--#define smp_wmb() barrier()
--#else
--#define smp_wmb() smp_release()
--#endif
--
--#ifdef __alpha__
--#define smp_read_barrier_depends() smp_acquire()
--#else
--#define smp_read_barrier_depends() do {} while(0)
--#endif
--
--static __always_inline
--void __read_once_size(const volatile void *p, void *res, int size)
--{
--        switch (size) {                                                 \
--        case 1: *(unsigned char *)res = *(volatile unsigned char *)p; break;              \
--        case 2: *(unsigned short *)res = *(volatile unsigned short *)p; break;            \
--        case 4: *(unsigned int *)res = *(volatile unsigned int *)p; break;            \
--        case 8: *(unsigned long long *)res = *(volatile unsigned long long *)p; break;            \
--        default:                                                        \
--                barrier();                                              \
--                __builtin_memcpy((void *)res, (const void *)p, size);   \
--                barrier();                                              \
--        }                                                               \
--}
--
--static __always_inline void __write_once_size(volatile void *p, void *res, int size)
--{
--	switch (size) {
--	case 1: *(volatile unsigned char *)p = *(unsigned char *)res; break;
--	case 2: *(volatile unsigned short *)p = *(unsigned short *)res; break;
--	case 4: *(volatile unsigned int *)p = *(unsigned int *)res; break;
--	case 8: *(volatile unsigned long long *)p = *(unsigned long long *)res; break;
--	default:
--		barrier();
--		__builtin_memcpy((void *)p, (const void *)res, size);
--		barrier();
--	}
--}
--
--#define READ_ONCE(x) \
--({									\
--	union { typeof(x) __val; char __c[1]; } __u;			\
--	__read_once_size(&(x), __u.__c, sizeof(x));		\
--	smp_read_barrier_depends(); /* Enforce dependency ordering from x */ \
--	__u.__val;							\
--})
--
--#define WRITE_ONCE(x, val) \
--({							\
--	union { typeof(x) __val; char __c[1]; } __u =	\
--		{ .__val = (typeof(x)) (val) }; \
--	__write_once_size(&(x), __u.__c, sizeof(x));	\
--	__u.__val;					\
--})
--
+ static unsigned int
+-masquerade_tg(struct sk_buff *skb, const struct xt_action_param *par)
++masquerade_tg_v0(struct sk_buff *skb, const struct xt_action_param *par)
+ {
+ 	struct nf_nat_range2 range;
+ 	const struct nf_nat_ipv4_multi_range_compat *mr;
+@@ -46,6 +57,15 @@ masquerade_tg(struct sk_buff *skb, const struct xt_act=
+ion_param *par)
+ 				      xt_out(par));
+ }
+=20
++static unsigned int
++masquerade_tg_v1(struct sk_buff *skb, const struct xt_action_param *par)
++{
++	const struct nf_nat_range2 *range =3D par->targinfo;
++
++	return nf_nat_masquerade_ipv4(skb, xt_hooknum(par), range,
++				      xt_out(par));
++}
++
+ static void masquerade_tg_destroy(const struct xt_tgdtor_param *par)
+ {
+ 	nf_ct_netns_put(par->net, par->family);
+@@ -73,6 +93,7 @@ static struct xt_target masquerade_tg_reg[] __read_most=
+ly =3D {
+ 	{
+ #if IS_ENABLED(CONFIG_IPV6)
+ 		.name		=3D "MASQUERADE",
++		.revision	=3D 0,
+ 		.family		=3D NFPROTO_IPV6,
+ 		.target		=3D masquerade_tg6,
+ 		.targetsize	=3D sizeof(struct nf_nat_range),
+@@ -84,15 +105,28 @@ static struct xt_target masquerade_tg_reg[] __read_m=
+ostly =3D {
+ 	}, {
  #endif
-diff --git a/tools/virtio/ringtest/ptr_ring.c b/tools/virtio/ringtest/ptr_ring.c
-index c9b2633..e058874 100644
---- a/tools/virtio/ringtest/ptr_ring.c
-+++ b/tools/virtio/ringtest/ptr_ring.c
-@@ -10,104 +10,10 @@
- #include <errno.h>
- #include <limits.h>
- 
--#define SMP_CACHE_BYTES 64
--#define cache_line_size() SMP_CACHE_BYTES
--#define ____cacheline_aligned_in_smp __attribute__ ((aligned (SMP_CACHE_BYTES)))
--#define unlikely(x)    (__builtin_expect(!!(x), 0))
--#define likely(x)    (__builtin_expect(!!(x), 1))
--#define ALIGN(x, a) (((x) + (a) - 1) / (a) * (a))
--#define SIZE_MAX        (~(size_t)0)
--#define KMALLOC_MAX_SIZE SIZE_MAX
--
--typedef pthread_spinlock_t  spinlock_t;
--
--typedef int gfp_t;
--#define __GFP_ZERO 0x1
--
--static void *kmalloc(unsigned size, gfp_t gfp)
--{
--	void *p = memalign(64, size);
--	if (!p)
--		return p;
--
--	if (gfp & __GFP_ZERO)
--		memset(p, 0, size);
--	return p;
--}
--
--static inline void *kzalloc(unsigned size, gfp_t flags)
--{
--	return kmalloc(size, flags | __GFP_ZERO);
--}
--
--static inline void *kmalloc_array(size_t n, size_t size, gfp_t flags)
--{
--	if (size != 0 && n > SIZE_MAX / size)
--		return NULL;
--	return kmalloc(n * size, flags);
--}
--
--static inline void *kcalloc(size_t n, size_t size, gfp_t flags)
--{
--	return kmalloc_array(n, size, flags | __GFP_ZERO);
--}
--
--static void kfree(void *p)
--{
--	if (p)
--		free(p);
--}
--
--#define kvmalloc_array kmalloc_array
--#define kvfree kfree
--
--static void spin_lock_init(spinlock_t *lock)
--{
--	int r = pthread_spin_init(lock, 0);
--	assert(!r);
--}
--
--static void spin_lock(spinlock_t *lock)
--{
--	int ret = pthread_spin_lock(lock);
--	assert(!ret);
--}
--
--static void spin_unlock(spinlock_t *lock)
--{
--	int ret = pthread_spin_unlock(lock);
--	assert(!ret);
--}
--
--static void spin_lock_bh(spinlock_t *lock)
--{
--	spin_lock(lock);
--}
--
--static void spin_unlock_bh(spinlock_t *lock)
--{
--	spin_unlock(lock);
--}
--
--static void spin_lock_irq(spinlock_t *lock)
--{
--	spin_lock(lock);
--}
--
--static void spin_unlock_irq(spinlock_t *lock)
--{
--	spin_unlock(lock);
--}
--
--static void spin_lock_irqsave(spinlock_t *lock, unsigned long f)
--{
--	spin_lock(lock);
--}
--
--static void spin_unlock_irqrestore(spinlock_t *lock, unsigned long f)
--{
--	spin_unlock(lock);
--}
-+#include <linux/align.h>
-+#include <linux/cache.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
- 
- #include "../../../include/linux/ptr_ring.h"
- 
--- 
-2.7.4
+ 		.name		=3D "MASQUERADE",
++		.revision	=3D 0,
+ 		.family		=3D NFPROTO_IPV4,
+-		.target		=3D masquerade_tg,
++		.target		=3D masquerade_tg_v0,
+ 		.targetsize	=3D sizeof(struct nf_nat_ipv4_multi_range_compat),
+ 		.table		=3D "nat",
+ 		.hooks		=3D 1 << NF_INET_POST_ROUTING,
+-		.checkentry	=3D masquerade_tg_check,
++		.checkentry	=3D masquerade_tg_check_v0,
+ 		.destroy	=3D masquerade_tg_destroy,
+ 		.me		=3D THIS_MODULE,
+-	}
++	},
++	{
++		.name		=3D "MASQUERADE",
++		.revision	=3D 1,
++		.family		=3D NFPROTO_IPV4,
++		.target		=3D masquerade_tg_v1,
++		.targetsize	=3D sizeof(struct nf_nat_range2),
++		.table		=3D "nat",
++		.hooks		=3D 1 << NF_INET_POST_ROUTING,
++		.checkentry	=3D masquerade_tg_check_v1,
++		.destroy	=3D masquerade_tg_destroy,
++		.me		=3D THIS_MODULE,
++	},
+ };
+=20
+ static int __init masquerade_tg_init(void)
+--=20
+2.32.0
 
