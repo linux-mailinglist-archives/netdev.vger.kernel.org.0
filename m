@@ -2,103 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30CB13BBB49
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:33:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D1433BBB58
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:39:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231133AbhGEKfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 06:35:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37337 "EHLO
+        id S231126AbhGEKlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 06:41:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59495 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230521AbhGEKft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 06:35:49 -0400
+        by vger.kernel.org with ESMTP id S230114AbhGEKlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 06:41:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625481192;
+        s=mimecast20190719; t=1625481550;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9kAkedCnhjEK0sIJXrBd38PA3bwhHRpR3SisBIAqIAs=;
-        b=d570qjfXDIfgG00Qf8U+pMSVhZ/sGSLgzQNo2/e0Bfvn+BYLoo63rawyJ2m6dIF/s/P5zg
-        jBJJSmv9l3Io+tjnf9W63R8iZmgnBahAUL8IUTAsYHFLu0NBGLNDgbow1kft41IrAMporl
-        2DPs/t8X40n4xgliRAh17Lzkci/1/1s=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-352-4jdum2-rMKidEJWYvrjR7A-1; Mon, 05 Jul 2021 06:33:11 -0400
-X-MC-Unique: 4jdum2-rMKidEJWYvrjR7A-1
-Received: by mail-ed1-f72.google.com with SMTP id i8-20020a50fc080000b02903989feb4920so3393646edr.1
-        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 03:33:11 -0700 (PDT)
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nGQUOo7dih5SsR/eYJTAqFGEk1u85z/Uj7xxDty7zgs=;
+        b=dOSqwtsdHPlXNGPCSTe8Gfj0AabwDIc/n7wbMIpGvAZ1bpQASVlg5t5GdLNHJJvZxw4bba
+        UsSFmHm2Cz1hesSeGE9dXBAFxBG0HLrtoJwlWppGl6NLDWMUBcE1T6WAyETm1NHIKWdooQ
+        7OzgT4DQRzGme2wG/TseuneT2h0yFpY=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-92-3UnKnGotNe-ksnpvQRr24g-1; Mon, 05 Jul 2021 06:39:06 -0400
+X-MC-Unique: 3UnKnGotNe-ksnpvQRr24g-1
+Received: by mail-ej1-f72.google.com with SMTP id f1-20020a1709064941b02903f6b5ef17bfso5052706ejt.20
+        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 03:39:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=9kAkedCnhjEK0sIJXrBd38PA3bwhHRpR3SisBIAqIAs=;
-        b=VzbaIY8K1mqTgy7dY93V8TGRTCUco491LJ0Ye2aZhO8QAo4aWb4FlLXzfwxo7tBHWi
-         6405yHwTLNJAYLjl1gwDs1w58yQXVvVYbcH3uAXTH9vETDC3qGwnvVrhIAfn0VuTBzQD
-         KBDEPC082FYlXwz+GOoCiNRUqIxDjlMiR+Sqv3DJOXyM/zPtJzanqU8vSBNv2N1AhMVu
-         MWCZxVldy5FmswucoBd5/8Z/V7fGkwqBFy6YYPTYnUKu1oMFAE2T8c/1pw2Nnq2CgTpZ
-         IqG/qhchGazLNVCjeBP+c1oBesM8x9tc+EUv6fW9RsghthA3ttgIhBK7VMRekPkPGi1x
-         Vf0A==
-X-Gm-Message-State: AOAM531D5ul189AAefjREbVycAW7ky2HxWiX33srDTwOpnpE52XKQXjj
-        HFK1utwzAEjgAyH9P65+4ID+vWnCVDbtNgHvhsiKnw/wGy8nBTwRNNVla1tSGEPfRAY/TYfTDsE
-        QRmStVYHgGnzcHaEy
-X-Received: by 2002:a05:6402:1d25:: with SMTP id dh5mr15616014edb.355.1625481190565;
-        Mon, 05 Jul 2021 03:33:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw477+XlnSb8fOKkMYmWXPMweRQkIMjIXsFTPyNgKj7RYTdDaNExdGmvb358k+9Eo+BIngwdQ==
-X-Received: by 2002:a05:6402:1d25:: with SMTP id dh5mr15615999edb.355.1625481190426;
-        Mon, 05 Jul 2021 03:33:10 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id zn21sm4183686ejb.78.2021.07.05.03.33.09
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nGQUOo7dih5SsR/eYJTAqFGEk1u85z/Uj7xxDty7zgs=;
+        b=VK3L7XhyWW3CQpK5EwEIe4A4bJexkbRL6/mC+EigSXeIU3sPvxrExjCgw4Eb7yz+wX
+         oMr1BgYlHtVwDG0uULg7gM/+dPMh/caccI1+cPrYeDxm5BrwyqZ0RluDlvYxNJ2gDf+w
+         2Mu0gMQLZ6F62cdEamlny3rlh9CRj8eq628u+IPVhFS50YORwzo2pUFhnq84sp9Yv6EV
+         xxjPDv2CLEzaM9mLE22YTWjXdr0oQ7S7zHiGGdKwGAZ/4PZErK81XK+D5M3Ol2SNaaSE
+         FM4t4HMlSLIiBAUULBHFke2s28L4t8gMBNOC2u+eIdr4IV509ldwug/Q3RxA8fvu/6CE
+         B93Q==
+X-Gm-Message-State: AOAM530slJGEehxPb2lNGLASwlF1TIMUEeXDzjwILnlF/B+O05n7TtYD
+        bd+7Xa5etNXNRXEBYILFMlqoBNi4cFFuXUxhpZX4lIVDLuntEJSTKRJJZLtBvYdYFajgyoFSWmY
+        faRaE9HRdJ0HY55+J
+X-Received: by 2002:a50:ff0a:: with SMTP id a10mr15534602edu.273.1625481545588;
+        Mon, 05 Jul 2021 03:39:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx7AdVa/ufIWFAME312qFMf9TF3XV/MioLYjFkYwJs7x9qatrRfikQLgmYhM9YTs1FWMmfkxg==
+X-Received: by 2002:a50:ff0a:: with SMTP id a10mr15534579edu.273.1625481545241;
+        Mon, 05 Jul 2021 03:39:05 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id x16sm1622024ejj.74.2021.07.05.03.39.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jul 2021 03:33:09 -0700 (PDT)
+        Mon, 05 Jul 2021 03:39:04 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 4394118072E; Mon,  5 Jul 2021 12:33:09 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next] libbpf: ignore .eh_frame sections when parsing
- elf files
-In-Reply-To: <ac14ef3c-ccd5-5f74-dda5-1d9366883813@iogearbox.net>
-References: <20210629110923.580029-1-toke@redhat.com>
- <ac14ef3c-ccd5-5f74-dda5-1d9366883813@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 05 Jul 2021 12:33:09 +0200
-Message-ID: <87czrxyrru.fsf@toke.dk>
+        id 1650918072E; Mon,  5 Jul 2021 12:39:04 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: [PATCH bpf-next] samples/bpf: add -fno-asynchronous-unwind-tables to BPF Clang invocation
+Date:   Mon,  5 Jul 2021 12:38:41 +0200
+Message-Id: <20210705103841.180260-1-toke@redhat.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+The samples/bpf Makefile currently compiles BPF files in a way that will
+produce an .eh_frame section, which will in turn confuse libbpf and produce
+errors when loading BPF programs, like:
 
-> On 6/29/21 1:09 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> The .eh_frame and .rel.eh_frame sections will be present in BPF object
->> files when compiled using a multi-stage compile pipe like in samples/bpf.
->> This produces errors when loading such a file with libbpf. While the err=
-ors
->> are technically harmless, they look odd and confuse users. So add .eh_fr=
-ame
->> sections to is_sec_name_dwarf() so they will also be ignored by libbpf
->> processing. This gets rid of output like this from samples/bpf:
->>=20
->> libbpf: elf: skipping unrecognized data section(32) .eh_frame
->> libbpf: elf: skipping relo section(33) .rel.eh_frame for section(32) .eh=
-_frame
->>=20
->> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> For the samples/bpf case, could we instead just add a -fno-asynchronous-u=
-nwind-tables
-> to clang as cflags to avoid .eh_frame generation in the first place?
+libbpf: elf: skipping unrecognized data section(32) .eh_frame
+libbpf: elf: skipping relo section(33) .rel.eh_frame for section(32) .eh_frame
 
-Ah, great suggestion! Was trying, but failed, to figure out how to do
-that. Just tested it, and yeah, that does fix samples; will send a
-separate patch to add that.
+Fix this by instruction Clang not to produce this section, as it's useless
+for BPF anyway.
 
-I still think filtering this section name in libbpf is worthwhile,
-though, as the error message is really just noise... WDYT?
+Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ samples/bpf/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
--Toke
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 520434ea966f..036998d11ded 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -331,6 +331,7 @@ $(obj)/%.o: $(src)/%.c
+ 		-Wno-gnu-variable-sized-type-not-at-end \
+ 		-Wno-address-of-packed-member -Wno-tautological-compare \
+ 		-Wno-unknown-warning-option $(CLANG_ARCH_ARGS) \
++		-fno-asynchronous-unwind-tables \
+ 		-I$(srctree)/samples/bpf/ -include asm_goto_workaround.h \
+ 		-O2 -emit-llvm -Xclang -disable-llvm-passes -c $< -o - | \
+ 		$(OPT) -O2 -mtriple=bpf-pc-linux | $(LLVM_DIS) | \
+-- 
+2.32.0
 
