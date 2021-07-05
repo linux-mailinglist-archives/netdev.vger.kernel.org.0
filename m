@@ -2,98 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05D853BC204
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 19:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B02EC3BC22F
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 19:18:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229807AbhGERJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 13:09:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22096 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229753AbhGERJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 13:09:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625504790;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KuRy89eXRByFxlnTN23uE6bhIohFVEQlDPFd8c6xtSg=;
-        b=NIK/2adLFFIyPAa2rthe+Uhpc6pI1el/FZ3yV8vMNeChpzRiry0YFQdKxRFPV3z3WTc8eG
-        FJtEJ/xlkV1giJ/U8blSzKMTc6JynV0IFZZVc8xhWHxcV9qR2Gf0z5Su/CfQbbfEleDJwT
-        xD4EanjLb4FeB2qoEkq/8opkWNu1xIQ=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-30-s2cihlHANQOlfpQPp53EeA-1; Mon, 05 Jul 2021 13:06:29 -0400
-X-MC-Unique: s2cihlHANQOlfpQPp53EeA-1
-Received: by mail-ed1-f70.google.com with SMTP id d5-20020a0564020785b02903958939248aso9343161edy.15
-        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 10:06:28 -0700 (PDT)
+        id S229760AbhGERVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 13:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229686AbhGERVT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 13:21:19 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1D9C061574;
+        Mon,  5 Jul 2021 10:18:42 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id y17so18846003pgf.12;
+        Mon, 05 Jul 2021 10:18:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8AsOPg4uvziFNGy4LwJbOa0Julbheb6cKC2U9CBvyi8=;
+        b=upNQc2CcpFBftWiYE6Px2uScC9wQC67aHGAdWpMcWEUpbU+a9XaRFECmqLlUbxDM9m
+         uP6wB+P6LsRPHlGn+k4pZtEx/R5+oTlbl9Y5VF+a+fyos7kwxCm1RD6yNutR/P+IFiyn
+         4TGigeKDNE6KCBnH0PfR8LpOW/uYhBUny3CcQHmODyuZUa9qM9X8QugLAl6UD5X1TtJF
+         y+V8mD9x/ciCVuqqzYAFx8AV2J0iD/3vJM9wnDGBICaRyRmFCweTbkkINDU3NHDEltzg
+         /lFSS53bYMQvFfxyeTuvBxa3aIw7FBn1DwzjRersxWRKyJOiQxFhofUjqX/pOvZMpCja
+         ELSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=KuRy89eXRByFxlnTN23uE6bhIohFVEQlDPFd8c6xtSg=;
-        b=oVS+9LX8oRuY1XBlwfhpkZq0NDBF0rwwikUQ05ekT+RcZnzN4RvNxtlwusb/k/ERSV
-         xxRBbY2XdrBfgGR0+lCg+xvcCal95ygrFQtAbtmVINbUZwF0EhCwJ10STP5pqBfcKAJq
-         rBouwLxYjLf3plKLmgbiads45iEtQClIIq6FrunWPzg5h0jeNo/L5gQaJvtSDx3FZd/4
-         pDSQDPEgsi7eEjGcoFQMu4JPoB53pvMmYUiFB3WasPpxF6wngp9XI1xP73lFySZFF7tY
-         AYRCiQTSm/o6zJYFVfDtHCRnjxZ2FIfVuG2zsuqAYMGhmuCJRQb+/pqu3+K1hrGwBJDv
-         iY3A==
-X-Gm-Message-State: AOAM531xk+2x5T69ZKJekTtrXLCjKI8yZX2gYoZXEPPWja2++jNDQ5J7
-        5X1pnlyA82b+iVmBvhhhmw8w+rqRlSE6IUVqIQwF94RQiw31kUbCZlTuYsLMCLJnwmtW05Pvx9t
-        tMBlwkv4aHewO9d0K
-X-Received: by 2002:aa7:c352:: with SMTP id j18mr17349728edr.67.1625504788079;
-        Mon, 05 Jul 2021 10:06:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwneJgqJmKUm7lMhmUUKbEhjFjPR6z10Dv09ddqoEicPZlix5wWcSXu7hx55pTRnnUYqwL4+w==
-X-Received: by 2002:aa7:c352:: with SMTP id j18mr17349702edr.67.1625504787894;
-        Mon, 05 Jul 2021 10:06:27 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id e16sm5842643edr.86.2021.07.05.10.06.27
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8AsOPg4uvziFNGy4LwJbOa0Julbheb6cKC2U9CBvyi8=;
+        b=IJFRBLW/3N1ke0IGS+5sG8PGK9DdeLG8lYvOY/EjwI9POLaVQzk9Qm1uU6ewjec3Xq
+         cAaq3WJ3sF116/aDy+UtG0O9WSlwJzs47DO309Pl3VKUCxpee0GVyJ6hCKBBFhtXZ5/Y
+         vBs8USkwPogJ/BT1BFaPvuKtM4TbEwiDhEvNTXn8Aw8Xqi93OxWZais0FV30K2OJek8i
+         zu17o+/Rt9bkjdZpLJdwV6uzSbOpS5S79m0pdlOlWNQmvCeYoEpX4tPBKrophVwL1/Vu
+         C49N+S90cnrnZuq9lnbDE0QCqSE+ZSFNsgNo7b6j+FAQHNLhgDvbpk2xcGr1nUoITnB8
+         b5gQ==
+X-Gm-Message-State: AOAM530QoCH73oe+PEekuxnUy8SIoToSxzuzapuphu48lUEaufGFgSJR
+        9TdQ0IZizrIhdgEQ+gfYjUo=
+X-Google-Smtp-Source: ABdhPJxs/nY4JyPTwoilJvNPBltEPhPrGuUa2VABDHNtmXi9TLeDaL/dlTprvVj8RoPbhY9AglqMcQ==
+X-Received: by 2002:a63:e214:: with SMTP id q20mr15107616pgh.437.1625505521847;
+        Mon, 05 Jul 2021 10:18:41 -0700 (PDT)
+Received: from pn-hyperv.lan (bb42-60-144-185.singnet.com.sg. [42.60.144.185])
+        by smtp.gmail.com with ESMTPSA id w123sm14059300pff.152.2021.07.05.10.18.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jul 2021 10:06:27 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BCFB9180639; Mon,  5 Jul 2021 19:06:26 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        anthony.l.nguyen@intel.com, kuba@kernel.org, bjorn@kernel.org,
-        magnus.karlsson@intel.com, joamaki@gmail.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: Re: [PATCH v2 intel-next 0/4] XDP_TX improvements for ice
-In-Reply-To: <20210705164338.58313-1-maciej.fijalkowski@intel.com>
-References: <20210705164338.58313-1-maciej.fijalkowski@intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 05 Jul 2021 19:06:26 +0200
-Message-ID: <87sg0sy9kd.fsf@toke.dk>
+        Mon, 05 Jul 2021 10:18:41 -0700 (PDT)
+From:   Nguyen Dinh Phi <phind.uet@gmail.com>
+To:     yhs@fb.com, edumazet@google.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, ycheng@google.com, ncardwell@google.com,
+        yyd@google.com
+Cc:     Nguyen Dinh Phi <phind.uet@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
+Subject: [PATCH v5] tcp: fix tcp_init_transfer() to not reset icsk_ca_initialized
+Date:   Tue,  6 Jul 2021 01:18:23 +0800
+Message-Id: <20210705171823.524171-1-phind.uet@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
+This commit fixes a bug (found by syzkaller) that could cause spurious
+double-initializations for congestion control modules, which could cause
+memory leaks orother problems for congestion control modules (like CDG)
+that allocate memory in their init functions.
 
-> Hi,
->
-> this is a second revision of a series around XDP_TX improvements for ice
-> driver. When compared to v1 (which can be found under [1]), two new
-> patches are introduced that are focused on improving the performance for
-> XDP_TX as Jussi reported that the numbers were pretty low on his side.
-> Furthermore the fallback path is now based on static branch, as
-> suggested by Toke on v1. This means that there's no further need for a
-> standalone net_device_ops that were serving the locked version of
-> ndo_xdp_xmit callback.
->
-> Idea from 2nd patch is borrowed from a joint work that was done against
-> OOT driver among with Sridhar Samudrala, Jesse Brandeburg and Piotr
-> Raczynski, where we working on fixing the scaling issues for Tx AF_XDP
-> ZC path.
->
-> Last but not least, with this series I observe the improvement of
-> performance by around 30%.
+The buggy scenario constructed by syzkaller was something like:
 
-Wow, "but not least" indeed! :D
-You can't just drop that at the end like that! I want details -
-whaddyamean, "by around 30%"? In all cases? Only for TX? Gimme numbers! :)
+(1) create a TCP socket
+(2) initiate a TFO connect via sendto()
+(3) while socket is in TCP_SYN_SENT, call setsockopt(TCP_CONGESTION),
+    which calls:
+       tcp_set_congestion_control() ->
+         tcp_reinit_congestion_control() ->
+           tcp_init_congestion_control()
+(4) receive ACK, connection is established, call tcp_init_transfer(),
+    set icsk_ca_initialized=0 (without first calling cc->release()),
+    call tcp_init_congestion_control() again.
 
--Toke
+Note that in this sequence tcp_init_congestion_control() is called
+twice without a cc->release() call in between. Thus, for CC modules
+that allocate memory in their init() function, e.g, CDG, a memory leak
+may occur. The syzkaller tool managed to find a reproducer that
+triggered such a leak in CDG.
+
+The bug was introduced when that commit 8919a9b31eb4 ("tcp: Only init
+congestion control if not initialized already")
+introduced icsk_ca_initialized and set icsk_ca_initialized to 0 in
+tcp_init_transfer(), missing the possibility for a sequence like the
+one above, where a process could call setsockopt(TCP_CONGESTION) in
+state TCP_SYN_SENT (i.e. after the connect() or TFO open sendmsg()),
+which would call tcp_init_congestion_control(). It did not intend to
+reset any initialization that the user had already explicitly made;
+it just missed the possibility of that particular sequence (which
+syzkaller managed to find).
+
+Fixes: 8919a9b31eb4 (tcp: Only init congestion control if not initialized already)
+Reported-by: syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
+Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+---
+V2:     - Modify the Subject line.
+        - Adjust the commit message.
+        - Add Fixes: tag.
+V3:     - Fix netdev/verify_fixes format error.
+V4:     - Add blamed authors to receiver list.
+V5:	- Add comment about the congestion control initialization.
+ net/ipv4/tcp_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 7d5e59f688de..84c70843b404 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5922,8 +5922,8 @@ void tcp_init_transfer(struct sock *sk, int bpf_op, struct sk_buff *skb)
+ 		tp->snd_cwnd = tcp_init_cwnd(tp, __sk_dst_get(sk));
+ 	tp->snd_cwnd_stamp = tcp_jiffies32;
+
+-	icsk->icsk_ca_initialized = 0;
+ 	bpf_skops_established(sk, bpf_op, skb);
++	/* Initialize congestion control unless BPF initialized it already: */
+ 	if (!icsk->icsk_ca_initialized)
+ 		tcp_init_congestion_control(sk);
+ 	tcp_init_buffer_space(sk);
+--
+2.25.1
 
