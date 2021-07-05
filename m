@@ -2,117 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B9C23BBA1E
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 11:23:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4762E3BBA3C
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 11:35:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230352AbhGEJZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 05:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230149AbhGEJZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 05:25:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0370FC061574
-        for <netdev@vger.kernel.org>; Mon,  5 Jul 2021 02:23:11 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1m0Koi-0004St-Ld; Mon, 05 Jul 2021 11:23:04 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1m0Koh-0004hF-Ib; Mon, 05 Jul 2021 11:23:03 +0200
-Date:   Mon, 5 Jul 2021 11:23:03 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH 04/24] rtw89: add debug files
-Message-ID: <20210705092303.v37xayrsqt2ilciz@pengutronix.de>
-References: <20210618064625.14131-1-pkshih@realtek.com>
- <20210618064625.14131-5-pkshih@realtek.com>
- <20210702072308.GA4184@pengutronix.de>
- <CA+ASDXNjHJoXgRAM4E7TcLuz9zBmQkaBMuhK2DEVy3dnE-3XcA@mail.gmail.com>
- <20210702175740.5cdhmfp4ldiv6tn7@pengutronix.de>
- <87k0m5i3o8.fsf@codeaurora.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87k0m5i3o8.fsf@codeaurora.org>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 11:18:17 up 214 days, 23:24, 48 users,  load average: 0.08, 0.10,
- 0.08
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S230375AbhGEJiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 05:38:16 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:46364 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230262AbhGEJiP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Jul 2021 05:38:15 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A90BC1A0476;
+        Mon,  5 Jul 2021 11:35:37 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 707951A0465;
+        Mon,  5 Jul 2021 11:35:37 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id BD96E183AC98;
+        Mon,  5 Jul 2021 17:35:35 +0800 (+08)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>, linux-kernel@vger.kernel.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Sebastien Laveze <sebastien.laveze@nxp.com>
+Subject: [net] ptp: fix format string mismatch in ptp_sysfs.c
+Date:   Mon,  5 Jul 2021 17:46:17 +0800
+Message-Id: <20210705094617.15470-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 05, 2021 at 11:08:07AM +0300, Kalle Valo wrote:
-> Oleksij Rempel <o.rempel@pengutronix.de> writes:
-> 
-> > On Fri, Jul 02, 2021 at 10:08:53AM -0700, Brian Norris wrote:
-> >> On Fri, Jul 2, 2021 at 12:23 AM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> >> > On Fri, Jun 18, 2021 at 02:46:05PM +0800, Ping-Ke Shih wrote:
-> >> > > +#ifdef CONFIG_RTW89_DEBUGMSG
-> >> > > +unsigned int rtw89_debug_mask;
-> >> > > +EXPORT_SYMBOL(rtw89_debug_mask);
-> >> > > +module_param_named(debug_mask, rtw89_debug_mask, uint, 0644);
-> >> > > +MODULE_PARM_DESC(debug_mask, "Debugging mask");
-> >> > > +#endif
-> >> >
-> >> >
-> >> > For dynamic debugging we usually use ethtool msglvl.
-> >> > Please, convert all dev_err/warn/inf.... to netif_ counterparts
-> >> 
-> >> Have you ever looked at a WiFi driver?
-> >
-> > Yes. You can parse the kernel log for my commits.
-> >
-> >> I haven't seen a single one that uses netif_*() for logging.
-> >> On the other hand, almost every
-> >> single one has a similar module parameter or debugfs knob for enabling
-> >> different types of debug messages.
-> >> 
-> >> As it stands, the NETIF_* categories don't really align at all with
-> >> the kinds of message categories most WiFi drivers support. Do you
-> >> propose adding a bunch of new options to the netif debug feature?
-> >
-> > Why not? It make no sense or it is just "it is tradition, we never do
-> > it!" ? 
-> >
-> > Even dynamic printk provide even more granularity. So module parameter looks
-> > like stone age against all existing possibilities.
-> 
-> I'm all for improving wireless driver debugging features, but let's
-> please keep that as a separate thread from reviewing new drivers. I
-> think there are 4-5 new drivers in the queue at the moment so to keep
-> all this manageable let's have the review process as simple as possible,
-> please.
+Fix format string mismatch in ptp_sysfs.c. Use %u for unsigned int.
 
-Ok, there is enough work to do.
+Fixes: 73f37068d540 ("ptp: support ptp physical/virtual clocks conversion")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+---
+ drivers/ptp/ptp_sysfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Using a module parameter for setting the debug mask is a standard
-> feature in wireless drivers so it shouldn't block rtw89. If we want a
-> generic debug framework for wireless drivers, an rfc patch for an
-> existing upstream wireless driver is a good way to get that discussion
-> forward.
+diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
+index 6a36590ca77a..b3d96b747292 100644
+--- a/drivers/ptp/ptp_sysfs.c
++++ b/drivers/ptp/ptp_sysfs.c
+@@ -179,7 +179,7 @@ static ssize_t n_vclocks_show(struct device *dev,
+ 	if (mutex_lock_interruptible(&ptp->n_vclocks_mux))
+ 		return -ERESTARTSYS;
+ 
+-	size = snprintf(page, PAGE_SIZE - 1, "%d\n", ptp->n_vclocks);
++	size = snprintf(page, PAGE_SIZE - 1, "%u\n", ptp->n_vclocks);
+ 
+ 	mutex_unlock(&ptp->n_vclocks_mux);
+ 
+@@ -252,7 +252,7 @@ static ssize_t max_vclocks_show(struct device *dev,
+ 	struct ptp_clock *ptp = dev_get_drvdata(dev);
+ 	ssize_t size;
+ 
+-	size = snprintf(page, PAGE_SIZE - 1, "%d\n", ptp->max_vclocks);
++	size = snprintf(page, PAGE_SIZE - 1, "%u\n", ptp->max_vclocks);
+ 
+ 	return size;
+ }
 
-Ok, sounds good.
-
-Regards,
-Oleksij
+base-commit: 6ff63a150b5556012589ae59efac1b5eeb7d32c3
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.25.1
+
