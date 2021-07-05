@@ -2,151 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 134A63BB82A
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 09:47:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E50C3BB832
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 09:49:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbhGEHtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 03:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46646 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbhGEHtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 03:49:50 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DBBC061574;
-        Mon,  5 Jul 2021 00:47:12 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id y40so7416196ede.4;
-        Mon, 05 Jul 2021 00:47:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3lU+yaKyB51Nd0BK8K42+im13NtdWR4bDe3Aamdm8jM=;
-        b=uL2q1Zm27Mou4aR++Qi4k2PhgTcOxmTaP/AvPFFD6VwvtpuVHyKE+SeDhn9TagmhLM
-         gAUS+muSbU17ieGtmK6jbT3cVJ1D2VAdrTPbA2KDHp9BJ47Blcxph91HM9uAxUeHe+xq
-         6oA9502f2xIpoXh/nGgdlrE07cDFvnvonT3fhqoEyotKc3pba1Evzn7QSt73TMejW+X3
-         5Dx6/3ghkpKVg76hBPLASmOgrjkx4it6ctWl9fA1+FXW7Z4So0zQLyzyLGqc5LrkHj9m
-         UWRfTqUBaYfHwqKFDN4Z2CTBr+xWVeAk0A1rubFbE1AuVe76++CPrUk5XHWmByVPHqup
-         vHMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3lU+yaKyB51Nd0BK8K42+im13NtdWR4bDe3Aamdm8jM=;
-        b=HdlFlocNrTpzEPgFkSCZBtE4/TjV2LsHpGBIU56oqs5DleA0A+g7aKza8qmSNCwczG
-         mf3gfz9uUeqft//+n+PYSf8yrh06fuIkOEl4tqtokSu9hMiORQ6FoUd9kQKoY/0XjwU0
-         e8a+JPC012HopLeiE0UDm5YwV9QfpN3+cU8TwzbUt0RaYqIiOhVthxpMxisiPsm5Pnzy
-         z4EGRmu9FdI14GXF0BBSUs8X1W77oeKz/WNxdvtL7cvMmU5qKkRLuenNgM4YGLfx+dxM
-         nzbbP76WKtmWAG78KwmrUPpae9QhBq22tyqWXB6tEES+u0ySCiqrnEb53tOQf6b4pHLI
-         C1vg==
-X-Gm-Message-State: AOAM531msBmAVjNghkuZumL4Rm4P2BCXkSm7PmjTJlL51+AffI3P66Wp
-        BNmRLxX//Mg6ZZ0tW8czITlrgVjmuTzZXp+JeyY=
-X-Google-Smtp-Source: ABdhPJz69wsIJaVHAjEsyhlptcdaiCA6lkPbcEgV2ZN7vTcn2KJseSzhclcqBiPPooE+gAluDhZBtkKzSUMJypwiJb4=
-X-Received: by 2002:a05:6402:430f:: with SMTP id m15mr2352655edc.113.1625471231421;
- Mon, 05 Jul 2021 00:47:11 -0700 (PDT)
+        id S230001AbhGEHvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 03:51:52 -0400
+Received: from mail-dm6nam10on2051.outbound.protection.outlook.com ([40.107.93.51]:48897
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229884AbhGEHvv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Jul 2021 03:51:51 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kAo14dVcteVPyHSAwInVy2/rEu/JkLSIs91oE7fugRU+Waheq8ot05ooI9/x0kc0rhwQ1pSJulITagiY2s/4EQNqJ4MjvhJtNu0mKQqCVUOqqq8mTHFe++JWFv5oEj6yf3FGnmWg9Q27B/504dXSusY4t3HneH1fIy9wfDHLdWYIEe0Lfe24L8T+ifpBy0BtI/kYsx1JOo78ntoSYXWBBRQE4878/ZKfT2a2YRgYBsLY679JHuu2clN9WWG/gqiy4wpPFC8fn9rZI1a0rpws+3p9geKTu9Zx4If0ZhXMRERbYFi8d3cmjR/Jgme3NtHO8ypf/B2u0yMyqg0r8Dtk5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pD75l1dbCFnn7z1SSZY5GxO/X6MQAVH9OojLhaWBcsQ=;
+ b=G02Mq1ey/FO/XIcK0uMnaaQ7Avf6ewMb8T6GoeOOGFGgVM1Bu8/E5FHbOuujzkCOs0bbnbIEhY8NnjB/T810DQQHc3CR5gTG4pQX8+yXlMW1Bt3e0/jC/+CInoEP2a0gOpdk7H6Gruwx4eGNhPn71zAxz4DcJqqjxmLsMWggg8Smu74ds5HZ4O3ozsVedtn0H+mkQNjOC1GGRgnhPQp4wa6rL06KA/WWk3xb1S1knEHjjlpzTOsyPXVynjWZ6OXKfwOWt4oatRRpjC9Xgdz/DtsgeVKk8oDWoWTa27aOaSygBiQ1uOrCrfmCQ0Msl2c5BZ6UKQwuS6/Jg1ae331/5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pD75l1dbCFnn7z1SSZY5GxO/X6MQAVH9OojLhaWBcsQ=;
+ b=h9uqDPCD1B0sEaJM7ViNyCau3ICIxDASz8rzhh1tEGdeTAupdSUC/PufWaZjPbSosehVItT4i3MoOTRVSZTNmuceN6RtDwYQTPLFZwUxM8JpJRzSSnWrYMt8mSncGVIKXCqZ+ZqddrOubSj+7l4i0RWced7OaxO30LfU0iQ1NYeCugZcvQNS4ZS6r6dmC4sUIKotv1Z5IxDOdfCiEutPI5OPVN+vtgFvSegnI02sVlJTnKA9PyjDwpQrpxwEgWXwPkpnnSJQoQfovZ0hlR/bXMtII5uZmgaFQmlJjSFk13Y/j/YimRSrRKo3d3xx8keRGkkRACwkYeLLR696cdLuqg==
+Received: from MWHPR17CA0064.namprd17.prod.outlook.com (2603:10b6:300:93::26)
+ by PH0PR12MB5404.namprd12.prod.outlook.com (2603:10b6:510:d7::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.23; Mon, 5 Jul
+ 2021 07:49:13 +0000
+Received: from CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:93:cafe::bd) by MWHPR17CA0064.outlook.office365.com
+ (2603:10b6:300:93::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend
+ Transport; Mon, 5 Jul 2021 07:49:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT029.mail.protection.outlook.com (10.13.174.214) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4287.22 via Frontend Transport; Mon, 5 Jul 2021 07:49:13 +0000
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 5 Jul
+ 2021 07:49:12 +0000
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (172.20.187.6) by
+ mail.nvidia.com (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.2 via
+ Frontend Transport; Mon, 5 Jul 2021 07:49:09 +0000
+From:   Paul Blakey <paulb@nvidia.com>
+To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "Saeed Mahameed" <saeedm@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
+Subject: [PATCH net v2] skbuff: Release nfct refcount on napi stolen or re-used skbs
+Date:   Mon, 5 Jul 2021 10:49:07 +0300
+Message-ID: <1625471347-21730-1-git-send-email-paulb@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 MIME-Version: 1.0
-References: <20210702045120.22855-1-aaron.ma@canonical.com>
-In-Reply-To: <20210702045120.22855-1-aaron.ma@canonical.com>
-From:   Dave Airlie <airlied@gmail.com>
-Date:   Mon, 5 Jul 2021 17:47:00 +1000
-Message-ID: <CAPM=9twzx0aa5Dq-L5oOSk+w8z7audCq_biXwtFVh3QVY1VceA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] igc: don't rd/wr iomem when PCI is removed
-To:     Aaron Ma <aaron.ma@canonical.com>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 694b9863-faa9-4bbf-8161-08d93f8961d3
+X-MS-TrafficTypeDiagnostic: PH0PR12MB5404:
+X-Microsoft-Antispam-PRVS: <PH0PR12MB5404790BFF1B0FE6DF614784C21C9@PH0PR12MB5404.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: S+TTMFeuXSnf0SqYIklZZJ0+Ncu+TU6pa/EARpWElfoZWzNkGhwFEUR66jOX4sdx9pSEhHvyuyjJN0kn6qRtPBwv7JcLadeSUqeCJZR/p7qfnvHe89SM4IETLHAPsr6/hwUUMEi+bBfswDCoLn4AAUuVyQxaQPhx3RxGrG+80MjBIPaZA94rSNX5E0opRaN3RdpceokSfWjGtC85lPLICxW5g/JkoqRlB4nuQ6rtblWsXNmQ6AB78jX6kODJzZpdfslfq/bzP3TIskgXi3H0j5+GrQx8+Js9C07lP7KRYrF56nIJf6kFAGVXoCj+FcS+9/XlgllWNTH5MpSvNIYJzPjuyO36rj7+1ym3ebCOyepDKNz/snpxuqTCift1YPZitlkwpDlyKeaCyBDTJQ7hk3GHPQ/JXI7J27yUx3M7PHC+LqU62oyr7Q5p4TuKimVxxV83X39qTJWu/cPkArhn4GnVeYFyYh4mTNLRGxLf2bKusmesLnxZcW+FEzR05XLYlAU4gytSpnR6CoqVXvr8HyoFpkRqG4/91ZivjNzAPSaORgdcCdPlte8PqcBc7jnycD1i/PbyB1a+WpX5ReupSK48SEygO69JSkNIuPHHK0oAJd1sYRpLW6TDuegLeNuaey6DgUTSw8TKkG4Rp16nr5cXbZpKbT7tWNIpNJTMYbsqH+hOhgib7iVFrVTBmrztZbppMHrneD4pD9OtMT+73g==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(346002)(376002)(396003)(136003)(46966006)(36840700001)(70586007)(36756003)(70206006)(478600001)(82310400003)(82740400003)(36860700001)(2906002)(26005)(5660300002)(186003)(110136005)(54906003)(47076005)(107886003)(4326008)(86362001)(426003)(8676002)(36906005)(316002)(7636003)(2616005)(8936002)(336012)(356005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2021 07:49:13.2857
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 694b9863-faa9-4bbf-8161-08d93f8961d3
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5404
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2 Jul 2021 at 14:53, Aaron Ma <aaron.ma@canonical.com> wrote:
->
-> Check PCI state when rd/wr iomem.
-> Implement wr32 function as rd32 too.
->
-> When unplug TBT dock with i225, rd/wr PCI iomem will cause error log:
-> Trace:
-> BUG: unable to handle page fault for address: 000000000000b604
-> Oops: 0000 [#1] SMP NOPTI
-> RIP: 0010:igc_rd32+0x1c/0x90 [igc]
-> Call Trace:
-> igc_ptp_suspend+0x6c/0xa0 [igc]
-> igc_ptp_stop+0x12/0x50 [igc]
-> igc_remove+0x7f/0x1c0 [igc]
-> pci_device_remove+0x3e/0xb0
-> __device_release_driver+0x181/0x240
->
-> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
-> ---
+When multiple SKBs are merged to a new skb under napi GRO,
+or SKB is re-used by napi, if nfct was set for them in the
+driver, it will not be released while freeing their stolen
+head state or on re-use.
 
-Drive-by, but won't this add a lot of overhead on every register
-access? has this been benchmarked with lots of small network transfers
-or anything?
+Release nfct on napi's stolen or re-used SKBs, and
+in gro_list_prepare, check conntrack metadata diff.
 
-Dave.
+Fixes: 5c6b94604744 ("net/mlx5e: CT: Handle misses after executing CT action")
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+---
+Changelog:
+	v1->v2:
+	 Check for different flows based on CT and chain metadata in gro_list_prepare
 
+ net/core/dev.c    | 13 +++++++++++++
+ net/core/skbuff.c |  1 +
+ 2 files changed, 14 insertions(+)
 
->  drivers/net/ethernet/intel/igc/igc_main.c | 16 ++++++++++++++++
->  drivers/net/ethernet/intel/igc/igc_regs.h |  7 ++-----
->  2 files changed, 18 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-> index f1adf154ec4a..606b72cb6193 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_main.c
-> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-> @@ -5292,6 +5292,10 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
->         u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
->         u32 value = 0;
->
-> +       if (igc->pdev &&
-> +               igc->pdev->error_state == pci_channel_io_perm_failure)
-> +               return 0;
-> +
->         value = readl(&hw_addr[reg]);
->
->         /* reads should not return all F's */
-> @@ -5308,6 +5312,18 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
->         return value;
->  }
->
-> +void igc_wr32(struct igc_hw *hw, u32 reg, u32 val)
-> +{
-> +       struct igc_adapter *igc = container_of(hw, struct igc_adapter, hw);
-> +       u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
-> +
-> +       if (igc->pdev &&
-> +               igc->pdev->error_state == pci_channel_io_perm_failure)
-> +               return;
-> +
-> +       writel((val), &hw_addr[(reg)]);
-> +}
-> +
->  int igc_set_spd_dplx(struct igc_adapter *adapter, u32 spd, u8 dplx)
->  {
->         struct igc_mac_info *mac = &adapter->hw.mac;
-> diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-> index cc174853554b..eb4be87d0e8b 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_regs.h
-> +++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-> @@ -260,13 +260,10 @@ struct igc_hw;
->  u32 igc_rd32(struct igc_hw *hw, u32 reg);
->
->  /* write operations, indexed using DWORDS */
-> -#define wr32(reg, val) \
-> -do { \
-> -       u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
-> -       writel((val), &hw_addr[(reg)]); \
-> -} while (0)
-> +void igc_wr32(struct igc_hw *hw, u32 reg, u32 val);
->
->  #define rd32(reg) (igc_rd32(hw, reg))
-> +#define wr32(reg, val) (igc_wr32(hw, reg, val))
->
->  #define wrfl() ((void)rd32(IGC_STATUS))
->
-> --
-> 2.30.2
->
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 439faadab0c2..bf62cb2ec6da 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5981,6 +5981,18 @@ static void gro_list_prepare(const struct list_head *head,
+ 			diffs = memcmp(skb_mac_header(p),
+ 				       skb_mac_header(skb),
+ 				       maclen);
++
++		diffs |= skb_get_nfct(p) ^ skb_get_nfct(skb);
++
++		if (!diffs) {
++			struct tc_skb_ext *skb_ext = skb_ext_find(skb, TC_SKB_EXT);
++			struct tc_skb_ext *p_ext = skb_ext_find(p, TC_SKB_EXT);
++
++			diffs |= (!!p_ext) ^ (!!skb_ext);
++			if (!diffs && unlikely(skb_ext))
++				diffs |= p_ext->chain ^ skb_ext->chain;
++		}
++
+ 		NAPI_GRO_CB(p)->same_flow = !diffs;
+ 	}
+ }
+@@ -6243,6 +6255,7 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
+ 	skb_shinfo(skb)->gso_type = 0;
+ 	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
+ 	skb_ext_reset(skb);
++	nf_reset_ct(skb);
+ 
+ 	napi->skb = skb;
+ }
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index bbc3b4b62032..239eb2fba255 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -939,6 +939,7 @@ void __kfree_skb_defer(struct sk_buff *skb)
+ 
+ void napi_skb_free_stolen_head(struct sk_buff *skb)
+ {
++	nf_conntrack_put(skb_nfct(skb));
+ 	skb_dst_drop(skb);
+ 	skb_ext_put(skb);
+ 	napi_skb_cache_put(skb);
+-- 
+2.30.1
+
