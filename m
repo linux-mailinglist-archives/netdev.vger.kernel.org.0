@@ -2,98 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D1433BBB58
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97CD23BBB60
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 12:40:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231126AbhGEKlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 06:41:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59495 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230114AbhGEKlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 06:41:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625481550;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=nGQUOo7dih5SsR/eYJTAqFGEk1u85z/Uj7xxDty7zgs=;
-        b=dOSqwtsdHPlXNGPCSTe8Gfj0AabwDIc/n7wbMIpGvAZ1bpQASVlg5t5GdLNHJJvZxw4bba
-        UsSFmHm2Cz1hesSeGE9dXBAFxBG0HLrtoJwlWppGl6NLDWMUBcE1T6WAyETm1NHIKWdooQ
-        7OzgT4DQRzGme2wG/TseuneT2h0yFpY=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-92-3UnKnGotNe-ksnpvQRr24g-1; Mon, 05 Jul 2021 06:39:06 -0400
-X-MC-Unique: 3UnKnGotNe-ksnpvQRr24g-1
-Received: by mail-ej1-f72.google.com with SMTP id f1-20020a1709064941b02903f6b5ef17bfso5052706ejt.20
-        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 03:39:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nGQUOo7dih5SsR/eYJTAqFGEk1u85z/Uj7xxDty7zgs=;
-        b=VK3L7XhyWW3CQpK5EwEIe4A4bJexkbRL6/mC+EigSXeIU3sPvxrExjCgw4Eb7yz+wX
-         oMr1BgYlHtVwDG0uULg7gM/+dPMh/caccI1+cPrYeDxm5BrwyqZ0RluDlvYxNJ2gDf+w
-         2Mu0gMQLZ6F62cdEamlny3rlh9CRj8eq628u+IPVhFS50YORwzo2pUFhnq84sp9Yv6EV
-         xxjPDv2CLEzaM9mLE22YTWjXdr0oQ7S7zHiGGdKwGAZ/4PZErK81XK+D5M3Ol2SNaaSE
-         FM4t4HMlSLIiBAUULBHFke2s28L4t8gMBNOC2u+eIdr4IV509ldwug/Q3RxA8fvu/6CE
-         B93Q==
-X-Gm-Message-State: AOAM530slJGEehxPb2lNGLASwlF1TIMUEeXDzjwILnlF/B+O05n7TtYD
-        bd+7Xa5etNXNRXEBYILFMlqoBNi4cFFuXUxhpZX4lIVDLuntEJSTKRJJZLtBvYdYFajgyoFSWmY
-        faRaE9HRdJ0HY55+J
-X-Received: by 2002:a50:ff0a:: with SMTP id a10mr15534602edu.273.1625481545588;
-        Mon, 05 Jul 2021 03:39:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx7AdVa/ufIWFAME312qFMf9TF3XV/MioLYjFkYwJs7x9qatrRfikQLgmYhM9YTs1FWMmfkxg==
-X-Received: by 2002:a50:ff0a:: with SMTP id a10mr15534579edu.273.1625481545241;
-        Mon, 05 Jul 2021 03:39:05 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id x16sm1622024ejj.74.2021.07.05.03.39.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jul 2021 03:39:04 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1650918072E; Mon,  5 Jul 2021 12:39:04 +0200 (CEST)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next] samples/bpf: add -fno-asynchronous-unwind-tables to BPF Clang invocation
-Date:   Mon,  5 Jul 2021 12:38:41 +0200
-Message-Id: <20210705103841.180260-1-toke@redhat.com>
-X-Mailer: git-send-email 2.32.0
+        id S231171AbhGEKmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 06:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230474AbhGEKmv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 06:42:51 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FB4C061574;
+        Mon,  5 Jul 2021 03:40:14 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1m0M19-0001Ez-WE; Mon, 05 Jul 2021 12:40:00 +0200
+Date:   Mon, 5 Jul 2021 12:39:59 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+Cc:     pablo@netfilter.org,
+        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
+        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
+        Blair Steven <blair.steven@alliedtelesis.co.nz>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: netfilter: Add RFC-7597 Section 5.1 PSID support
+Message-ID: <20210705103959.GG18022@breakpoint.cc>
+References: <20210630142049.GC18022@breakpoint.cc>
+ <20210705040856.25191-1-Cole.Dishington@alliedtelesis.co.nz>
+ <20210705040856.25191-3-Cole.Dishington@alliedtelesis.co.nz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210705040856.25191-3-Cole.Dishington@alliedtelesis.co.nz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The samples/bpf Makefile currently compiles BPF files in a way that will
-produce an .eh_frame section, which will in turn confuse libbpf and produce
-errors when loading BPF programs, like:
+Cole Dishington <Cole.Dishington@alliedtelesis.co.nz> wrote:
+> Adds support for masquerading into a smaller subset of ports -
+> defined by the PSID values from RFC-7597 Section 5.1. This is part of
+> the support for MAP-E and Lightweight 4over6, which allows multiple
+> devices to share an IPv4 address by splitting the L4 port / id into
+> ranges.
+> 
+> Co-developed-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+> Signed-off-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+> Co-developed-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+> Signed-off-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+> Signed-off-by: Blair Steven <blair.steven@alliedtelesis.co.nz>
+> Signed-off-by: Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+> ---
 
-libbpf: elf: skipping unrecognized data section(32) .eh_frame
-libbpf: elf: skipping relo section(33) .rel.eh_frame for section(32) .eh_frame
+Just a quick review:
+> +	/* In this case we are in PSID mode, avoid checking all ranges by computing bitmasks */
+> +	if (is_psid) {
+> +		u16 j = ntohs(max->all) - ntohs(min->all) + 1;
+> +		u16 a = (1 << 16) / ntohs(base->all);
 
-Fix this by instruction Clang not to produce this section, as it's useless
-for BPF anyway.
+This gives crash when base->all is 0.
+If this is impossible, please add a comment, otherwise this needs
+a sanity test on the divisor.
 
-Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- samples/bpf/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+> @@ -55,8 +55,21 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
+>  	newrange.flags       = range->flags | NF_NAT_RANGE_MAP_IPS;
+>  	newrange.min_addr.ip = newsrc;
+>  	newrange.max_addr.ip = newsrc;
+> -	newrange.min_proto   = range->min_proto;
+> -	newrange.max_proto   = range->max_proto;
+> +
+> +	if (range->flags & NF_NAT_RANGE_PSID) {
+> +		u16 off = prandom_u32();
+> +		u16 base = ntohs(range->base_proto.all);
+> +		u16 min =  ntohs(range->min_proto.all);
+> +		u16 max_off = ((1 << 16) / base) - 1;
+> +
+> +		newrange.flags           = newrange.flags | NF_NAT_RANGE_PROTO_SPECIFIED;
+> +		newrange.min_proto.all   = htons(min + base * (off % max_off));
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 520434ea966f..036998d11ded 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -331,6 +331,7 @@ $(obj)/%.o: $(src)/%.c
- 		-Wno-gnu-variable-sized-type-not-at-end \
- 		-Wno-address-of-packed-member -Wno-tautological-compare \
- 		-Wno-unknown-warning-option $(CLANG_ARCH_ARGS) \
-+		-fno-asynchronous-unwind-tables \
- 		-I$(srctree)/samples/bpf/ -include asm_goto_workaround.h \
- 		-O2 -emit-llvm -Xclang -disable-llvm-passes -c $< -o - | \
- 		$(OPT) -O2 -mtriple=bpf-pc-linux | $(LLVM_DIS) | \
--- 
-2.32.0
-
+Same here for base and max_off.
