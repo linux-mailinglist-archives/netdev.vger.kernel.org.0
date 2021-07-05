@@ -2,80 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB35D3BC236
-	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 19:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E589F3BC240
+	for <lists+netdev@lfdr.de>; Mon,  5 Jul 2021 19:25:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229812AbhGERWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 13:22:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36822 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229693AbhGERWl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Jul 2021 13:22:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CDB9C6196C;
-        Mon,  5 Jul 2021 17:20:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625505603;
-        bh=Kdm1QRA1v5jpFpHW2SlQG+K4nJeQ/1fZZM9yGGKe6lw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZZR4oEAWlOS7sY1Ot72plRxmYtSYA0xOiqrjnMMotM5eLSgDWFbqRbGfwZ/X/uMqM
-         Ka8s30NIy1uAQFMPk7+oSGrKobHA8I+QbKgZmh16yyXVfAfEx0HRsq5uc0ZuZL5sqt
-         vZqRJNUYZ/z2RE18ilwSo03RxcTUPppsFDhs/FOzDtm5ljy5lsd1xQKi8YoVBiEufU
-         qFyfQbTaJYkt4lOUCwX8ki4RCV/zfWkXpk7WWV/uXeRJDSMPHz22y+zABlk9qjyu3M
-         8h5VB8X7zsC/VOCPnMw/zWug0gBoOctzYjJLLPOv7OFw7RRWKiG7KQV/0twnXQ/u9E
-         TbeGO3/SwH0gg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BB2A1609EF;
-        Mon,  5 Jul 2021 17:20:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229757AbhGER2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 13:28:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229686AbhGER2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 13:28:02 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B85EC061574
+        for <netdev@vger.kernel.org>; Mon,  5 Jul 2021 10:25:24 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id q190so17604130qkd.2
+        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 10:25:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=stGKzx5MqRwRk+9Us9nYzahGLFsprjaqOct4Iq0rayM=;
+        b=QzS8BuFHids4m0qR0o2LCp+vkuC0qXEEupsyz8juz7zW36fhBJ2YaYpSTj0NuTvTIc
+         eoiGkFVgPEgTkSfkC8nxKM6jo9KLdOYJBiIYlFemp7f/7lEwchJ2X0Kxv94p+2mhp08Q
+         7NkKitTXTwMezaBIvhE5WTaNCCjpnWwKmA60AJan3F6DAGbt5Q/9Ly7NVRcUjjSPWGLk
+         KZxd+Muo7B07MNSExgsAyiOfzZlhrl+aPGfD8yeALxmhYrCXZ/XSBlOjWhaFpG5Gk8VJ
+         +Te87hpzPka3bkNlpnn0cVuPJ35Gox1tbeRiJcZHH4j4KpKB9SVDQjjX/d82ePxh/IGz
+         RQDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=stGKzx5MqRwRk+9Us9nYzahGLFsprjaqOct4Iq0rayM=;
+        b=muzyi39dbVjh++fiMotr4/iXmd8nC5rAdGTJ5avkscw/EeYar9Duryp2Yxqda3xLIA
+         1uLgowOzQdmoCJR59o0uVuR3npQerb6XxX3sFIjJ3RUEQxOD+T6OBKbZCmbuc88Z56C9
+         aFJWhXFjxCMDhPNEcpamBWtwH/MKkIcdSCc3ud/v6YhmwazMZxh942YlH5LsL3DMXclh
+         uVhpIihaka88BlGMksRQ1YxCZoxikZWJugdIVSfbQQ4/ckVmYEYt2jjPIsjASb41HnK5
+         SI111yDjMHHdrVsWPSd6a1ehLXGF2LHRhU+8ZF8cQlfU1TX5623dHl0Kq/z9FMFfyo2k
+         rDKQ==
+X-Gm-Message-State: AOAM5301QL1lgptHDIakR/7fQbN3m7is38+5oKYVAskIwhVEw/yPbaIm
+        jaDufxJWkQAoEMSIUMN8Xz4ZXrdQSVaHso0Y
+X-Google-Smtp-Source: ABdhPJxMF15Is6+HEkJJOtUMoAmxWLAblrZIcIAX3IByUQtDIQrsSI2Ft1/no4iiy9Km9XKF2lrxxw==
+X-Received: by 2002:a37:7046:: with SMTP id l67mr15221488qkc.69.1625505923105;
+        Mon, 05 Jul 2021 10:25:23 -0700 (PDT)
+Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
+        by smtp.googlemail.com with ESMTPSA id f1sm5651170qkh.75.2021.07.05.10.25.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Jul 2021 10:25:22 -0700 (PDT)
+Subject: Re: [iproute PATCH] tc: u32: Fix key folding in sample option
+To:     Phil Sutter <phil@nwl.cc>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+References: <20210202183051.21022-1-phil@nwl.cc>
+ <20210705141740.GI3673@orbyte.nwl.cc>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <12ac420d-1b04-9338-03bf-b18ce2d71dcf@mojatatu.com>
+Date:   Mon, 5 Jul 2021 13:25:21 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/3] net: stmmac: re-configure tas basetime after
- ptp time adjust
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162550560376.14411.831006675509469053.git-patchwork-notify@kernel.org>
-Date:   Mon, 05 Jul 2021 17:20:03 +0000
-References: <20210705102655.6280-1-xiaoliang.yang_1@nxp.com>
-In-Reply-To: <20210705102655.6280-1-xiaoliang.yang_1@nxp.com>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Cc:     davem@davemloft.net, joabreu@synopsys.com, kuba@kernel.org,
-        alexandre.torgue@st.com, peppe.cavallaro@st.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        boon.leong.ong@intel.com, weifeng.voon@intel.com,
-        vee.khee.wong@intel.com, tee.min.tan@intel.com,
-        mohammad.athari.ismail@intel.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        leoyang.li@nxp.com, qiangqing.zhang@nxp.com, rui.sousa@nxp.com
+In-Reply-To: <20210705141740.GI3673@orbyte.nwl.cc>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Mon,  5 Jul 2021 18:26:52 +0800 you wrote:
-> If the DWMAC Ethernet device has already set the Qbv EST configuration
-> before using ptp to synchronize the time adjustment, the Qbv base time
-> may change to be the past time of the new current time. This is not
-> allowed by hardware.
+On 2021-07-05 10:17 a.m., Phil Sutter wrote:
+> Hi,
 > 
-> This patch calculates and re-configures the Qbv basetime after ptp time
-> adjustment.
+> On Tue, Feb 02, 2021 at 07:30:51PM +0100, Phil Sutter wrote:
+>> In between Linux kernel 2.4 and 2.6, key folding for hash tables changed
+>> in kernel space. When iproute2 dropped support for the older algorithm,
+>> the wrong code was removed and kernel 2.4 folding method remained in
+>> place. To get things functional for recent kernels again, restoring the
+>> old code alone was not sufficient - additional byteorder fixes were
+>> needed.
+>>
+>> While being at it, make use of ffs() and thereby align the code with how
+>> kernel determines the shift width.
+>>
+>> Fixes: 267480f55383c ("Backout the 2.4 utsname hash patch.")
+>> Signed-off-by: Phil Sutter <phil@nwl.cc>
 > 
-> [...]
+> Seems this patch fell off the table? Or was there an objection I missed?
+> 
 
-Here is the summary with links:
-  - [v2,net-next,1/3] net: stmmac: separate the tas basetime calculation function
-    https://git.kernel.org/netdev/net/c/81c52c42afd9
-  - [v2,net-next,2/3] net: stmmac: add mutex lock to protect est parameters
-    https://git.kernel.org/netdev/net/c/b2aae654a479
-  - [v2,net-next,3/3] net: stmmac: ptp: update tas basetime after ptp adjust
-    https://git.kernel.org/netdev/net/c/e9e3720002f6
+None i am aware of. I did ACK the patch.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+cheers,
+jamal
